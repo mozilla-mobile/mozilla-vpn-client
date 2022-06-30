@@ -109,6 +109,7 @@ VPNFlickable {
             }
 
             VPNLinkButton {
+                objectName: "accountDeletionButton"
                 fontName: VPNTheme.theme.fontBoldFamily
                 labelText: VPNl18n.DeleteAccountButtonLabel
                 linkColor: VPNTheme.theme.redButton

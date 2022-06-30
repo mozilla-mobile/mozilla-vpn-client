@@ -4,6 +4,25 @@
 const assert = require('assert');
 const vpn = require('./helper.js');
 
+const SUBSCRIPTION_DETAILS = {
+  plan: {amount: 123, currency: 'usd', interval: 'year', interval_count: 1},
+  payment: {
+    payment_provider: 'stripe',
+    payment_type: 'credit',
+    last4: '1234',
+    exp_month: 12,
+    exp_year: 2022,
+    brand: 'visa',
+  },
+  subscription: {
+    _subscription_type: 'web',
+    created: 1,
+    current_period_end: 2,
+    cancel_at_period_end: true,
+    status: 'active'
+  },
+};
+
 describe('Subscription view', function() {
   this.timeout(120000);
   this.ctx.authenticationNeeded = true;
@@ -18,14 +37,201 @@ describe('Subscription view', function() {
     POSTs: {},
     DELETEs: {},
   };
+  this.ctx.fxaOverrideEndpoints = {
+    GETs: {
+      '/v1/account/attached_clients': {
+        status: 200,
+        body: [],
+      },
+    },
+    POSTs: {
+      '/v1/account/login': {
+        status: 200,
+        body: null,
+        callback: (req) => this.ctx.fxaLoginCallback(req)
+      },
+      '/v1/session/verify/totp': {
+        status: 200,
+        body: null,
+        callback: (req) => this.ctx.fxaTotpCallback(req)
+      },
+      '/v1/account/destroy': {
+        status: 200,
+        body: null,
+        callback: (req) => this.ctx.fxaDestroyCallback(req)
+      },
+    },
+    DELETEs: {},
+  };
 
   beforeEach(async () => {
     if (!(await vpn.isFeatureFlippedOn('subscriptionManagement'))) {
       await vpn.flipFeatureOn('subscriptionManagement');
     }
+    if ((await vpn.isFeatureFlippedOn('accountDeletion'))) {
+      await vpn.flipFeatureOff('accountDeletion');
+    }
+  });
+
+  it('Authentication needed - sample', async () => {
+    this.ctx.fxaLoginCallback = (req) => {
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
+        sessionToken: 'session',
+        verified: true,
+        verificationMethod: ''
+      };
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
+    };
+    this.ctx.guardianSubscriptionDetailsCallback = req => {
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .status = 401;
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .body = {}
+    };
+
+    await vpn.waitForElement('settingsButton');
+    await vpn.clickOnElement('settingsButton');
+
+    await vpn.waitForElement('settingsUserProfile');
+    await vpn.waitForElementProperty('settingsUserProfile', 'visible', 'true');
+
+    await vpn.waitForElement('settingsUserProfile-displayName');
+    await vpn.waitForElementProperty(
+        'settingsUserProfile-displayName', 'visible', 'true');
+    await vpn.waitForElementProperty(
+        'settingsUserProfile-displayName', 'text', 'Test test');
+
+    await vpn.waitForElement('settingsUserProfile-emailAddress');
+    await vpn.waitForElementProperty(
+        'settingsUserProfile-emailAddress', 'visible', 'true');
+    await vpn.waitForElementProperty(
+        'settingsUserProfile-emailAddress', 'text', 'test@mozilla.com');
+
+    await vpn.waitForElement('settingsUserProfile-manageAccountButton');
+    await vpn.waitForElementProperty(
+        'settingsUserProfile-manageAccountButton', 'visible', 'true');
+    await vpn.clickOnElement('settingsUserProfile-manageAccountButton');
+
+    await vpn.waitForElement('MainStackView');
+    await vpn.waitForElementProperty('MainStackView', 'busy', 'false');
+
+    await vpn.waitForElement('authSignIn-passwordInput');
+    await vpn.waitForElementProperty(
+        'authSignIn-passwordInput', 'visible', 'true');
+    await vpn.setElementProperty(
+        'authSignIn-passwordInput', 'text', 's', 'P4ass0rd!!');
+
+    await vpn.waitForElementProperty('authSignIn-button', 'enabled', 'true');
+
+    this.ctx.guardianSubscriptionDetailsCallback = req => {
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .status = 200;
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .body = SUBSCRIPTION_DETAILS;
+    };
+
+    await vpn.clickOnElement('authSignIn-button');
+
+    await vpn.waitForElement('subscriptionManagmentView');
+    await vpn.waitForElementProperty(
+        'subscriptionManagmentView', 'visible', 'true');
+    await vpn.wait();
+  });
+
+  it('Authentication needed - totp', async () => {
+    this.ctx.guardianSubscriptionDetailsCallback = req => {
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .status = 401;
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .body = {}
+    };
+
+    await vpn.waitForElement('settingsButton');
+    await vpn.clickOnElement('settingsButton');
+
+    await vpn.waitForElement('settingsUserProfile');
+    await vpn.waitForElementProperty('settingsUserProfile', 'visible', 'true');
+
+    await vpn.waitForElement('settingsUserProfile-displayName');
+    await vpn.waitForElementProperty(
+        'settingsUserProfile-displayName', 'visible', 'true');
+    await vpn.waitForElementProperty(
+        'settingsUserProfile-displayName', 'text', 'Test test');
+
+    await vpn.waitForElement('settingsUserProfile-emailAddress');
+    await vpn.waitForElementProperty(
+        'settingsUserProfile-emailAddress', 'visible', 'true');
+    await vpn.waitForElementProperty(
+        'settingsUserProfile-emailAddress', 'text', 'test@mozilla.com');
+
+    await vpn.waitForElement('settingsUserProfile-manageAccountButton');
+    await vpn.waitForElementProperty(
+        'settingsUserProfile-manageAccountButton', 'visible', 'true');
+    await vpn.clickOnElement('settingsUserProfile-manageAccountButton');
+
+    await vpn.waitForElement('MainStackView');
+    await vpn.waitForElementProperty('MainStackView', 'busy', 'false');
+
+    await vpn.waitForElement('authSignIn-passwordInput');
+    await vpn.waitForElementProperty(
+        'authSignIn-passwordInput', 'visible', 'true');
+    await vpn.setElementProperty(
+        'authSignIn-passwordInput', 'text', 's', 'P4ass0rd!!');
+
+    await vpn.waitForElementProperty('authSignIn-button', 'enabled', 'true');
+
+    this.ctx.fxaLoginCallback = (req) => {
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
+        sessionToken: 'session',
+        verified: false,
+        verificationMethod: 'totp-2fa'
+      };
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
+    };
+
+    await vpn.clickOnElement('authSignIn-button');
+
+    await vpn.waitForElement('authVerificationSessionByTotpNeeded-textInput');
+    await vpn.waitForElementProperty(
+        'authVerificationSessionByTotpNeeded-textInput', 'visible', 'true');
+    await vpn.waitForElementProperty(
+        'authVerificationSessionByTotpNeeded-button', 'enabled', 'false');
+    await vpn.setElementProperty(
+        'authVerificationSessionByTotpNeeded-textInput', 'text', 's', '123456');
+    await vpn.waitForElementProperty(
+        'authVerificationSessionByTotpNeeded-button', 'enabled', 'true');
+
+    this.ctx.fxaTotpCallback = (req) => {
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/session/verify/totp'].body = {
+        success: true
+      }
+    };
+
+    this.ctx.guardianSubscriptionDetailsCallback = req => {
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .status = 200;
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .body = SUBSCRIPTION_DETAILS;
+    };
+
+    await vpn.clickOnElement('authVerificationSessionByTotpNeeded-button');
+
+    await vpn.waitForElement('subscriptionManagmentView');
+    await vpn.waitForElementProperty(
+        'subscriptionManagmentView', 'visible', 'true');
+    await vpn.wait();
   });
 
   it('Playing with the subscription view', async () => {
+    this.ctx.fxaLoginCallback = (req) => {
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
+        sessionToken: 'session',
+        verified: true,
+        verificationMethod: ''
+      };
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
+    };
+
     const tests = [
       {
         name: 'plan: USD - yearly',
@@ -354,6 +560,9 @@ describe('Subscription view', function() {
       this.ctx.guardianSubscriptionDetailsCallback = req => {
         this.ctx.guardianOverrideEndpoints
             .GETs['/api/v1/vpn/subscriptionDetails']
+            .status = 200;
+        this.ctx.guardianOverrideEndpoints
+            .GETs['/api/v1/vpn/subscriptionDetails']
             .body = {
           plan: data.plan.value,
           payment: data.payment.value,
@@ -478,5 +687,420 @@ describe('Subscription view', function() {
       await vpn.waitForElement('controllerTitle');
       await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
     }
+  });
+
+  it('Account deletion - simple', async () => {
+    this.ctx.fxaLoginCallback = (req) => {
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
+        sessionToken: 'session',
+        verified: true,
+        verificationMethod: ''
+      };
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
+    };
+    this.ctx.guardianSubscriptionDetailsCallback = req => {
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .status = 200;
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .body = SUBSCRIPTION_DETAILS;
+    };
+
+    await vpn.waitForElement('settingsButton');
+    await vpn.clickOnElement('settingsButton');
+
+    await vpn.waitForElement('settingsUserProfile');
+    await vpn.waitForElementProperty('settingsUserProfile', 'visible', 'true');
+
+    await vpn.waitForElement('settingsUserProfile-displayName');
+    await vpn.waitForElementProperty(
+        'settingsUserProfile-displayName', 'visible', 'true');
+    await vpn.waitForElementProperty(
+        'settingsUserProfile-displayName', 'text', 'Test test');
+
+    await vpn.waitForElement('settingsUserProfile-emailAddress');
+    await vpn.waitForElementProperty(
+        'settingsUserProfile-emailAddress', 'visible', 'true');
+    await vpn.waitForElementProperty(
+        'settingsUserProfile-emailAddress', 'text', 'test@mozilla.com');
+
+    await vpn.waitForElement('settingsUserProfile-manageAccountButton');
+    await vpn.waitForElementProperty(
+        'settingsUserProfile-manageAccountButton', 'visible', 'true');
+    await vpn.clickOnElement('settingsUserProfile-manageAccountButton');
+
+    await vpn.waitForElement('subscriptionManagmentView');
+    await vpn.waitForElementProperty(
+        'subscriptionManagmentView', 'visible', 'true');
+
+    await vpn.waitForElement('accountDeletionButton');
+    await vpn.waitForElementProperty(
+        'accountDeletionButton', 'visible', 'false');
+    await vpn.wait();
+
+    await vpn.flipFeatureOn('accountDeletion');
+    await vpn.waitForElementProperty(
+        'accountDeletionButton', 'visible', 'true');
+    await vpn.wait();
+
+    await vpn.setElementProperty(
+        'subscriptionManagmentView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('accountDeletionButton', 'y')));
+    await vpn.wait();
+
+    await vpn.clickOnElement('accountDeletionButton');
+
+    await vpn.waitForElement('MainStackView');
+    await vpn.waitForElementProperty('MainStackView', 'busy', 'false');
+
+    await vpn.waitForElement('authSignIn-passwordInput');
+    await vpn.waitForElementProperty(
+        'authSignIn-passwordInput', 'visible', 'true');
+    await vpn.setElementProperty(
+        'authSignIn-passwordInput', 'text', 's', 'P4ass0rd!!');
+
+    await vpn.waitForElementProperty('authSignIn-button', 'enabled', 'true');
+    await vpn.clickOnElement('authSignIn-button');
+
+    await vpn.waitForElement('deleteAccountForRealButton');
+    await vpn.waitForElementProperty(
+        'deleteAccountForRealButton', 'visible', 'true');
+    await vpn.waitForElementProperty(
+        'deleteAccountForRealButton', 'enabled', 'false');
+
+    await vpn.waitForElement('accountDeletionLabel');
+    await vpn.waitForElementProperty('accountDeletionLabel', 'visible', 'true');
+
+    await vpn.setElementProperty(
+        'viewDeleteAccountRequest', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty(
+            'accountDeletionLayout/accountDeletionCheckbox-check1', 'y')));
+
+    await vpn.waitForElement(
+        'accountDeletionLayout/accountDeletionCheckbox-check1');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check1', 'visible',
+        'true');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check1', 'isChecked',
+        'false');
+    await vpn.waitForElement(
+        'accountDeletionLayout/accountDeletionCheckbox-check1/checkbox');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check1/checkbox',
+        'visible', 'true');
+    await vpn.clickOnElement(
+        'accountDeletionLayout/accountDeletionCheckbox-check1/checkbox');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check1', 'isChecked',
+        'true');
+    await vpn.waitForElementProperty(
+        'deleteAccountForRealButton', 'enabled', 'false');
+
+    await vpn.setElementProperty(
+        'viewDeleteAccountRequest', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty(
+            'accountDeletionLayout/accountDeletionCheckbox-check2', 'y')));
+
+    await vpn.waitForElement(
+        'accountDeletionLayout/accountDeletionCheckbox-check2');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check2', 'visible',
+        'true');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check2', 'isChecked',
+        'false');
+    await vpn.waitForElement(
+        'accountDeletionLayout/accountDeletionCheckbox-check2/checkbox');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check2/checkbox',
+        'visible', 'true');
+    await vpn.clickOnElement(
+        'accountDeletionLayout/accountDeletionCheckbox-check2/checkbox');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check2', 'isChecked',
+        'true');
+    await vpn.waitForElementProperty(
+        'deleteAccountForRealButton', 'enabled', 'false');
+
+    await vpn.setElementProperty(
+        'viewDeleteAccountRequest', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty(
+            'accountDeletionLayout/accountDeletionCheckbox-check3', 'y')));
+
+    await vpn.waitForElement(
+        'accountDeletionLayout/accountDeletionCheckbox-check3');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check3', 'visible',
+        'true');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check3', 'isChecked',
+        'false');
+    await vpn.waitForElement(
+        'accountDeletionLayout/accountDeletionCheckbox-check3/checkbox');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check3/checkbox',
+        'visible', 'true');
+    await vpn.clickOnElement(
+        'accountDeletionLayout/accountDeletionCheckbox-check3/checkbox');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check3', 'isChecked',
+        'true');
+    await vpn.waitForElementProperty(
+        'deleteAccountForRealButton', 'enabled', 'false');
+
+    await vpn.setElementProperty(
+        'viewDeleteAccountRequest', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty(
+            'accountDeletionLayout/accountDeletionCheckbox-check4', 'y')));
+
+    await vpn.waitForElement(
+        'accountDeletionLayout/accountDeletionCheckbox-check4');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check4', 'visible',
+        'true');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check4', 'isChecked',
+        'false');
+    await vpn.waitForElement(
+        'accountDeletionLayout/accountDeletionCheckbox-check4/checkbox');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check4/checkbox',
+        'visible', 'true');
+    await vpn.clickOnElement(
+        'accountDeletionLayout/accountDeletionCheckbox-check4/checkbox');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check4', 'isChecked',
+        'true');
+    await vpn.waitForElementProperty(
+        'deleteAccountForRealButton', 'enabled', 'true');
+
+    this.ctx.fxaDestroyCallback = (req) => {
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/destroy'].status = 200;
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/destroy'].body = {}
+    };
+
+    await vpn.clickOnElement('deleteAccountForRealButton');
+
+    await vpn.waitForElement('getHelpLink');
+    await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
+    assert(await vpn.getElementProperty('getStarted', 'visible') === 'true');
+    assert(await vpn.getElementProperty('learnMoreLink', 'visible') === 'true');
+  });
+
+  it('Account deletion - totp', async () => {
+    this.ctx.fxaLoginCallback = (req) => {
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
+        sessionToken: 'session',
+        verified: false,
+        verificationMethod: 'totp-2fa'
+      };
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
+    };
+
+    this.ctx.guardianSubscriptionDetailsCallback = req => {
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .status = 200;
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .body = SUBSCRIPTION_DETAILS;
+    };
+
+    await vpn.waitForElement('settingsButton');
+    await vpn.clickOnElement('settingsButton');
+
+    await vpn.waitForElement('settingsUserProfile');
+    await vpn.waitForElementProperty('settingsUserProfile', 'visible', 'true');
+
+    await vpn.waitForElement('settingsUserProfile-displayName');
+    await vpn.waitForElementProperty(
+        'settingsUserProfile-displayName', 'visible', 'true');
+    await vpn.waitForElementProperty(
+        'settingsUserProfile-displayName', 'text', 'Test test');
+
+    await vpn.waitForElement('settingsUserProfile-emailAddress');
+    await vpn.waitForElementProperty(
+        'settingsUserProfile-emailAddress', 'visible', 'true');
+    await vpn.waitForElementProperty(
+        'settingsUserProfile-emailAddress', 'text', 'test@mozilla.com');
+
+    await vpn.waitForElement('settingsUserProfile-manageAccountButton');
+    await vpn.waitForElementProperty(
+        'settingsUserProfile-manageAccountButton', 'visible', 'true');
+    await vpn.clickOnElement('settingsUserProfile-manageAccountButton');
+
+    await vpn.waitForElement('subscriptionManagmentView');
+    await vpn.waitForElementProperty(
+        'subscriptionManagmentView', 'visible', 'true');
+
+    await vpn.waitForElement('accountDeletionButton');
+    await vpn.waitForElementProperty(
+        'accountDeletionButton', 'visible', 'false');
+    await vpn.wait();
+
+    await vpn.flipFeatureOn('accountDeletion');
+    await vpn.waitForElementProperty(
+        'accountDeletionButton', 'visible', 'true');
+    await vpn.wait();
+
+    await vpn.setElementProperty(
+        'subscriptionManagmentView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('accountDeletionButton', 'y')));
+    await vpn.wait();
+
+    await vpn.clickOnElement('accountDeletionButton');
+
+    await vpn.waitForElement('MainStackView');
+    await vpn.waitForElementProperty('MainStackView', 'busy', 'false');
+
+    await vpn.waitForElement('authSignIn-passwordInput');
+    await vpn.waitForElementProperty(
+        'authSignIn-passwordInput', 'visible', 'true');
+    await vpn.setElementProperty(
+        'authSignIn-passwordInput', 'text', 's', 'P4ass0rd!!');
+
+    await vpn.waitForElementProperty('authSignIn-button', 'enabled', 'true');
+    await vpn.clickOnElement('authSignIn-button');
+
+    await vpn.waitForElement('authVerificationSessionByTotpNeeded-textInput');
+    await vpn.waitForElementProperty(
+        'authVerificationSessionByTotpNeeded-textInput', 'visible', 'true');
+    await vpn.waitForElementProperty(
+        'authVerificationSessionByTotpNeeded-button', 'enabled', 'false');
+    await vpn.setElementProperty(
+        'authVerificationSessionByTotpNeeded-textInput', 'text', 's', '123456');
+    await vpn.waitForElementProperty(
+        'authVerificationSessionByTotpNeeded-button', 'enabled', 'true');
+
+    this.ctx.fxaTotpCallback = (req) => {
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/session/verify/totp'].body = {
+        success: true
+      }
+    };
+
+    await vpn.clickOnElement('authVerificationSessionByTotpNeeded-button');
+
+    await vpn.waitForElement('deleteAccountForRealButton');
+    await vpn.waitForElementProperty(
+        'deleteAccountForRealButton', 'visible', 'true');
+    await vpn.waitForElementProperty(
+        'deleteAccountForRealButton', 'enabled', 'false');
+
+    await vpn.waitForElement('accountDeletionLabel');
+    await vpn.waitForElementProperty('accountDeletionLabel', 'visible', 'true');
+
+    await vpn.setElementProperty(
+        'viewDeleteAccountRequest', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty(
+            'accountDeletionLayout/accountDeletionCheckbox-check1', 'y')));
+
+    await vpn.waitForElement(
+        'accountDeletionLayout/accountDeletionCheckbox-check1');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check1', 'visible',
+        'true');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check1', 'isChecked',
+        'false');
+    await vpn.waitForElement(
+        'accountDeletionLayout/accountDeletionCheckbox-check1/checkbox');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check1/checkbox',
+        'visible', 'true');
+    await vpn.clickOnElement(
+        'accountDeletionLayout/accountDeletionCheckbox-check1/checkbox');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check1', 'isChecked',
+        'true');
+    await vpn.waitForElementProperty(
+        'deleteAccountForRealButton', 'enabled', 'false');
+
+    await vpn.setElementProperty(
+        'viewDeleteAccountRequest', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty(
+            'accountDeletionLayout/accountDeletionCheckbox-check2', 'y')));
+
+    await vpn.waitForElement(
+        'accountDeletionLayout/accountDeletionCheckbox-check2');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check2', 'visible',
+        'true');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check2', 'isChecked',
+        'false');
+    await vpn.waitForElement(
+        'accountDeletionLayout/accountDeletionCheckbox-check2/checkbox');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check2/checkbox',
+        'visible', 'true');
+    await vpn.clickOnElement(
+        'accountDeletionLayout/accountDeletionCheckbox-check2/checkbox');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check2', 'isChecked',
+        'true');
+    await vpn.waitForElementProperty(
+        'deleteAccountForRealButton', 'enabled', 'false');
+
+    await vpn.setElementProperty(
+        'viewDeleteAccountRequest', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty(
+            'accountDeletionLayout/accountDeletionCheckbox-check3', 'y')));
+
+    await vpn.waitForElement(
+        'accountDeletionLayout/accountDeletionCheckbox-check3');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check3', 'visible',
+        'true');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check3', 'isChecked',
+        'false');
+    await vpn.waitForElement(
+        'accountDeletionLayout/accountDeletionCheckbox-check3/checkbox');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check3/checkbox',
+        'visible', 'true');
+    await vpn.clickOnElement(
+        'accountDeletionLayout/accountDeletionCheckbox-check3/checkbox');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check3', 'isChecked',
+        'true');
+    await vpn.waitForElementProperty(
+        'deleteAccountForRealButton', 'enabled', 'false');
+
+    await vpn.setElementProperty(
+        'viewDeleteAccountRequest', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty(
+            'accountDeletionLayout/accountDeletionCheckbox-check4', 'y')));
+
+    await vpn.waitForElement(
+        'accountDeletionLayout/accountDeletionCheckbox-check4');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check4', 'visible',
+        'true');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check4', 'isChecked',
+        'false');
+    await vpn.waitForElement(
+        'accountDeletionLayout/accountDeletionCheckbox-check4/checkbox');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check4/checkbox',
+        'visible', 'true');
+    await vpn.clickOnElement(
+        'accountDeletionLayout/accountDeletionCheckbox-check4/checkbox');
+    await vpn.waitForElementProperty(
+        'accountDeletionLayout/accountDeletionCheckbox-check4', 'isChecked',
+        'true');
+    await vpn.waitForElementProperty(
+        'deleteAccountForRealButton', 'enabled', 'true');
+
+    this.ctx.fxaDestroyCallback = (req) => {
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/destroy'].status = 200;
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/destroy'].body = {}
+    };
+
+    await vpn.clickOnElement('deleteAccountForRealButton');
+
+    await vpn.waitForElement('getHelpLink');
+    await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
+    assert(await vpn.getElementProperty('getStarted', 'visible') === 'true');
+    assert(await vpn.getElementProperty('learnMoreLink', 'visible') === 'true');
   });
 });
