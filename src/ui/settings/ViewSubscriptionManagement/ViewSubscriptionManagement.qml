@@ -201,9 +201,8 @@ VPNFlickable {
             && VPNSubscriptionData.paymentProvider
         ) {
             if (
-                VPNSubscriptionData.paymentType === "credit"
-                || VPNSubscriptionData.paymentType === "debit"
-                || VPNSubscriptionData.paymentType === "prepaid"
+                VPNSubscriptionData.paymentType
+                && VPNSubscriptionData.paymentType !== "unknown"
             ) {
                 // Credit card brand
                 subscriptionPaymentModel.append({

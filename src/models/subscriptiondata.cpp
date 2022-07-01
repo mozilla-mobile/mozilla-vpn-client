@@ -163,8 +163,7 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
     m_paymentType = paymentData["payment_type"].toString();
 
     // For credit cards we also show card details
-    if (m_paymentType == "credit" || m_paymentType == "debit" ||
-        m_paymentType == "prepaid") {
+    if (!m_paymentType.isEmpty() && m_paymentType != "unknown") {
       m_creditCardBrand = paymentData["brand"].toString();
       if (m_creditCardBrand.isEmpty()) {
         return false;
