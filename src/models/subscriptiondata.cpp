@@ -159,31 +159,11 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
       return false;
     }
 
-    // Payment type
-    m_paymentType = paymentData["payment_type"].toString();
-
     // For credit cards we also show card details
-    if (m_paymentType == "credit") {
-      m_creditCardBrand = paymentData["brand"].toString();
-      if (m_creditCardBrand.isEmpty()) {
-        return false;
-      }
-
-      m_creditCardLast4 = paymentData["last4"].toString();
-      if (m_creditCardLast4.isEmpty()) {
-        return false;
-      }
-
-      m_creditCardExpMonth = paymentData["exp_month"].toInt();
-      if (!m_creditCardExpMonth) {
-        return false;
-      }
-
-      m_creditCardExpYear = paymentData["exp_year"].toInt();
-      if (!m_creditCardExpYear) {
-        return false;
-      }
-    }
+    m_creditCardBrand = paymentData["brand"].toString();
+    m_creditCardLast4 = paymentData["last4"].toString();
+    m_creditCardExpMonth = paymentData["exp_month"].toInt();
+    m_creditCardExpYear = paymentData["exp_year"].toInt();
   }
 
   m_rawJson = json;

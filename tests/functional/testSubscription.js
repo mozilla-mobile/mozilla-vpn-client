@@ -307,6 +307,96 @@ describe('Subscription view', function() {
         }
       },
       {
+        name: 'payment: Mastercard',
+        payment: {
+          value: {
+            payment_provider: 'stripe',
+            payment_type: 'credit',
+            last4: '0000',
+            exp_month: 1,
+            exp_year: 2022,
+            brand: 'mastercard'
+          },
+          expected: {
+            card: 'Card ending in 0000',
+            expires: 'January 2022',
+            brand: 'Mastercard'
+          }
+        }
+      },
+      {
+        name: 'payment: Mastercard (debit)',
+        payment: {
+          value: {
+            payment_provider: 'stripe',
+            payment_type: 'debit',
+            last4: '0000',
+            exp_month: 1,
+            exp_year: 2022,
+            brand: 'mastercard'
+          },
+          expected: {
+            card: 'Card ending in 0000',
+            expires: 'January 2022',
+            brand: 'Mastercard'
+          }
+        }
+      },
+      {
+        name: 'payment: Mastercard (prepaid)',
+        payment: {
+          value: {
+            payment_provider: 'stripe',
+            payment_type: 'prepaid',
+            last4: '0000',
+            exp_month: 1,
+            exp_year: 2022,
+            brand: 'mastercard'
+          },
+          expected: {
+            card: 'Card ending in 0000',
+            expires: 'January 2022',
+            brand: 'Mastercard'
+          }
+        }
+      },
+      {
+        name: 'payment: Visa',
+        payment: {
+          value: {
+            payment_provider: 'stripe',
+            payment_type: 'credit',
+            last4: '0000',
+            exp_month: 1,
+            exp_year: 2022,
+            brand: 'visa'
+          },
+          expected: {
+            card: 'Card ending in 0000',
+            expires: 'January 2022',
+            brand: 'Visa'
+          }
+        }
+      },
+      {
+        name: 'payment: Visa (prepaid)',
+        payment: {
+          value: {
+            payment_provider: 'stripe',
+            payment_type: 'prepaid',
+            last4: '0000',
+            exp_month: 1,
+            exp_year: 2022,
+            brand: 'visa'
+          },
+          expected: {
+            card: 'Card ending in 0000',
+            expires: 'January 2022',
+            brand: 'Visa'
+          }
+        }
+      },
+      {
         name: 'payment: american express',
         payment: {
           value: {
