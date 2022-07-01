@@ -28,7 +28,6 @@ class SubscriptionData final : public QObject {
 
   // Payment
   Q_PROPERTY(QString paymentProvider MEMBER m_paymentProvider CONSTANT)
-  Q_PROPERTY(QString paymentType MEMBER m_paymentType CONSTANT)
   Q_PROPERTY(QString creditCardBrand MEMBER m_creditCardBrand CONSTANT)
   Q_PROPERTY(QString creditCardLast4 MEMBER m_creditCardLast4 CONSTANT)
   Q_PROPERTY(int creditCardExpMonth MEMBER m_creditCardExpMonth CONSTANT)
@@ -83,7 +82,6 @@ class SubscriptionData final : public QObject {
   QString m_planCurrency;
 
   QString m_paymentProvider;
-  QString m_paymentType;
   QString m_creditCardBrand;
   QString m_creditCardLast4;
   int m_creditCardExpMonth = 0;

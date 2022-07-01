@@ -201,8 +201,8 @@ VPNFlickable {
             && VPNSubscriptionData.paymentProvider
         ) {
             if (
-                VPNSubscriptionData.paymentType
-                && VPNSubscriptionData.paymentType !== "unknown"
+                VPNSubscriptionData.creditCardBrand
+                && VPNSubscriptionData.creditCardLast4
             ) {
                 // Credit card brand
                 subscriptionPaymentModel.append({
@@ -212,18 +212,23 @@ VPNFlickable {
                     type: "payment",
                 });
 
-                // Credit card expires
-                subscriptionPaymentModel.append({
-                    _objectName: "subscriptionItem-expires",
-                    labelText: VPNl18n.SubscriptionManagementCardExpiresLabel,
-                    valueText: getPaymentExpiration(),
-                    type: "text",
-                });
+                if (
+                    VPNSubscriptionData.creditCardExpMonth
+                    && VPNSubscriptionData.creditCardExpYear
+                ) {
+                    // Credit card expires
+                    subscriptionPaymentModel.append({
+                        _objectName: "subscriptionItem-expires",
+                        labelText: VPNl18n.SubscriptionManagementCardExpiresLabel,
+                        valueText: getPaymentExpiration(),
+                        type: "text",
+                    });
+                }
             } else {
-                // Payment type or provider
+                // Payment provider
                 subscriptionPaymentModel.append({
                     _objectName: "subscriptionItem-payment",
-                    labelText: VPNSubscriptionData.paymentType || VPNSubscriptionData.paymentProvider,
+                    labelText: VPNSubscriptionData.paymentProvider,
                     valueText: "",
                     type: "payment",
                 });
