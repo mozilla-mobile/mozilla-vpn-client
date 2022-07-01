@@ -5,9 +5,43 @@
 cmake_minimum_required(VERSION 3.16)
 
 
-list(APPEND CMAKE_PREFIX_PATH "/Users/basti/Code/qt/6.2.4/android_x86/lib/cmake")
-#list(APPEND CMAKE_FIND_ROOT_PATH "/Users/basti/Code/qt/6.2.4/android_x86/lib/cmake")
-set(CMAKE_FIND_DEBUG_MODE TRUE)
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
+
+    if("${ANDROID_QT_DIR}" STREQUAL "")
+        message(FATAL_ERROR "ANDROID_QT_DIR was not provided")
+    endif()
+
+    # ANDROID HACKS
+    message("Using QT Provided in ${ANDROID_QT_DIR}")
+    # Otherwise the NDK Toolchain wont find qt
+    set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE NEVER)
+
+    set(QT_HOST_PATH "~/Code/Qt/6.2.4/macos")
+    # We need to have a diffrent qt-installation per arch
+    # Select the right one based of the ndk arch
+    if(${CMAKE_ANDROID_ARCH_ABI} STREQUAL "arm64-v8a")
+        set(QT_ARCH_DIR  "${ANDROID_QT_DIR}/android_arm64_v8a")
+    elseif(${CMAKE_ANDROID_ARCH_ABI} STREQUAL "armeabi-v7a")
+        set(QT_ARCH_DIR  "${ANDROID_QT_DIR}/android_armeabi_v7a")
+    elseif(${CMAKE_ANDROID_ARCH_ABI} STREQUAL "x86")
+        set(QT_ARCH_DIR  "${ANDROID_QT_DIR}/android_x86")
+    elseif(${CMAKE_ANDROID_ARCH_ABI} STREQUAL "x86_64")
+        set(QT_ARCH_DIR  "${ANDROID_QT_DIR}/android_x86_64")
+    else()
+        message(FATAL_ERROR "Used ABI not supported: ${CMAKE_ANDROID_ARCH_ABI}")
+    endif()
+
+    # Add the Selected QT to the prefix
+    set(CMAKE_PREFIX_PATH "${QT_ARCH_DIR}/lib/cmake")
+    # Set variables the QT Toolchain needs
+    set(ANDROID_SDK_ROOT "${ANDROID_NDK}/../..")
+    set(ANDROID_NDK_ROOT "${ANDROID_NDK}")
+    # Preload the QT-Android toolchain 
+    set(CMAKE_PROJECT_INCLUDE_BEFORE "${QT_ARCH_DIR}/lib/cmake/Qt6/qt.toolchain.cmake")
+
+    set(CMAKE_CROSSCOMPILING TRUE)
+endif()
+
 ## Some workarounds for platform build quirks
 if(WIN32)
     ## CMake v3.20 has problems with race conditions in dependency generation.
@@ -104,22 +138,23 @@ add_subdirectory(lottie)
 add_subdirectory(nebula)
 add_subdirectory(translations)
 
-# Testing build targets
-option(BUILD_TESTING "Build the testing tree." OFF)
-include(CTest)
-add_custom_target(build_tests)
-set_target_properties(build_tests PROPERTIES
-    EXCLUDE_FROM_ALL $<NOT:$<BOOL:${BUILD_TESTING}>>
-    FOLDER "Tests"
-)
-add_subdirectory(tests/auth)
-add_subdirectory(tests/nativemessaging)
-add_subdirectory(tests/unit)
-add_subdirectory(tests/qml)
-
-# Web Extension build targets
 if(NOT CMAKE_CROSSCOMPILING)
+# Web Extension build targets
     add_subdirectory(extension)
+
+    # Testing build targets
+    option(BUILD_TESTING "Build the testing tree." OFF)
+    include(CTest)
+    add_custom_target(build_tests)
+    set_target_properties(build_tests PROPERTIES
+        EXCLUDE_FROM_ALL $<NOT:$<BOOL:${BUILD_TESTING}>>
+        FOLDER "Tests"
+    )
+    add_subdirectory(tests/auth)
+    add_subdirectory(tests/nativemessaging)
+    add_subdirectory(tests/unit)
+    add_subdirectory(tests/qml)
+
 endif()
 
 # Extra platform targets

@@ -14,6 +14,13 @@ android {
     defaultConfig {
         minSdkVersion Config.minSdkVersion
     }
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+        }
+    }
+
     externalNativeBuild {
         cmake {
             version "3.18.1"
@@ -23,8 +30,12 @@ android {
     defaultConfig {
         externalNativeBuild {
             cmake {
+                // TODO, find out how to tell gradle to only do one
+                abiFilters "arm64-v8a" // "armeabi-v7a", "armeabi"
                 // Passes optional arguments to CMake.
-                arguments "-DCMAKE_PREFIX_PATH=/Users/basti/Code/qt/6.2.4/android_x86", "-DCMAKE_FIND_ROOT_PATH=/Users/basti/Code/qt"
+                arguments "-DANDROID_QT_DIR=${mozillavpn_qt_android_dir}",
+                          "-DQT_HOST_PATH_CMAKE_DIR=${mozillavpn_qt_host_dir}/lib/cmake",
+                          "--target mozillavpn"
             }
         }
     }
