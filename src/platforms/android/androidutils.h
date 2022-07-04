@@ -51,6 +51,10 @@ class AndroidUtils final : public QObject {
 
   static void runOnAndroidThreadSync(const std::function<void()> runnable);
 
+  static bool verifySignature(const QByteArray& publicKey,
+                              const QByteArray& content,
+                              const QByteArray& signature);
+
  private:
   AndroidUtils(QObject* parent);
   ~AndroidUtils();
