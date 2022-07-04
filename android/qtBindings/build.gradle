@@ -13,9 +13,28 @@ plugins {
 // code completeion and such in their favorite ide
 
 dependencies {
-    implementation fileTree(dir: '../libs', include: ['*.jar', '*.aar'])
+    // This will be populated by importQtJar
+    implementation fileTree(dir: 'build/qt_jar', include: ['*.jar', '*.aar'])
 }
-
+ext{
+    // Todo: move all of that selector logic into BuildSRC
+    // They are totally interchangeable
+    if(new File(mozillavpn_qt_android_dir+"/android_arm64_v8a").exists()){
+        qtAndroidDir = mozillavpn_qt_android_dir+"/android_arm64_v8a"
+    }
+    else if(new File(mozillavpn_qt_android_dir+"/android_armeabi_v7a").exists()){
+        qtAndroidDir = mozillavpn_qt_android_dir+"/android_armeabi_v7a"
+    }
+    else if(new File(mozillavpn_qt_android_dir+"/android_x86").exists()){
+        qtAndroidDir = mozillavpn_qt_android_dir+"/android_x86"
+    }
+    else if(new File(mozillavpn_qt_android_dir+"/android_x86_64").exists()){
+        qtAndroidDir = mozillavpn_qt_android_dir+"/android_x86_64"
+    }
+    else{
+        throw new Exception("NOOOO")
+    }
+}
 
 android {
     compileSdkVersion Config.compileSdkVersion
@@ -23,17 +42,12 @@ android {
         minSdkVersion Config.minSdkVersion
     }
     sourceSets {
+        println(qtAndroidDir)
         main {
-            try {
-                java.srcDirs = [qtAndroidDir + '/src']
-                aidl.srcDirs = [qtAndroidDir + '/src']
-            } catch (Exception ignored) {
-                print("Using fake Qt-Application, this will not build a real app!")
-                print("Please invoke the build using qmake")
-                java.srcDirs = ['moc']
-                aidl.srcDirs = ['moc']
-            }
+            java.srcDirs = [qtAndroidDir + '/src/android/java/src/org/qtproject/qt/android/bindings/']
+            aidl.srcDirs = [qtAndroidDir + '/src/android/java/src/org/qtproject/qt/android/bindings/']
             manifest.srcFile 'AndroidManifest.xml'
+            jniLibs.srcDirs = ['qt_plugins']
         }
     }
     compileOptions {
@@ -41,3 +55,25 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 }
+
+task importQtJar(type: Copy) {
+    from(qtAndroidDir+'/jar') {
+        include '*.jar'
+    }
+    into 'build/qt_jar'
+}
+preBuild.dependsOn importQtJar
+
+
+// Tasks to Import the Platform plugins
+task importQtPluginsArm64(type: Copy) {
+    from(mozillavpn_qt_android_dir+"/android_arm64_v8a/plugins/platforms") {
+        include '*.so'
+    }
+    into 'qt_plugins/arm64-v8a'
+    onlyIf {
+        (new File(mozillavpn_qt_android_dir+"/android_arm64_v8a")).exists()
+    }
+}
+preBuild.dependsOn importQtPluginsArm64
+

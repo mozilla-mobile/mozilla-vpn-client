@@ -18,6 +18,9 @@ android {
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
+            res.srcDirs =  [
+                    "res"
+            ]
         }
     }
 
@@ -35,6 +38,7 @@ android {
                 // Passes optional arguments to CMake.
                 arguments "-DANDROID_QT_DIR=${mozillavpn_qt_android_dir}",
                           "-DQT_HOST_PATH_CMAKE_DIR=${mozillavpn_qt_host_dir}/lib/cmake",
+                          "-DANDROID_STL=c++_shared",
                           "--target mozillavpn"
             }
         }

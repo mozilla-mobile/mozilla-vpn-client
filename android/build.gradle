@@ -42,7 +42,7 @@ apply plugin: 'kotlinx-serialization'
 
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    implementation project(path: ':client')
     implementation project(path: ':daemon')
     implementation project(path: ':qtBindings')
 

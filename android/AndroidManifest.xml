@@ -43,11 +43,12 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
             </intent-filter>
 
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"></action>
-                <category android:name="android.intent.category.DEFAULT"></category>
-                <category android:name="android.intent.category.BROWSABLE"></category>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
                 <!-- Checks URL of this format "mozilla-vpn://*" -->
-                <data android:scheme="mozilla-vpn"></data>
+                <data android:scheme="mozilla-vpn" />
             </intent-filter>
 
             <meta-data

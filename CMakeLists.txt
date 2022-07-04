@@ -40,6 +40,9 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
     set(CMAKE_PROJECT_INCLUDE_BEFORE "${QT_ARCH_DIR}/lib/cmake/Qt6/qt.toolchain.cmake")
 
     set(CMAKE_CROSSCOMPILING TRUE)
+    # Re-Enable exporting of symbols as we are gonna make a lib :) 
+    set(CMAKE_CXX_VISIBILITY_PRESET default)
+    set(CMAKE_VISIBILITY_INLINES_HIDDEN 0)
 endif()
 
 ## Some workarounds for platform build quirks

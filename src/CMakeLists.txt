@@ -8,7 +8,16 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin/minimal)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-add_library(mozillavpn SHARED)
+# Note: apparently qt- knows that we need a lib for android.
+#if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
+#    # We need to create a lib instead of an executable
+#    # qt_add_library(mozillavpn SHARED)#
+#
+#else()
+#    qt_add_executable(mozillavpn MANUAL_FINALIZATION)
+#endif()
+
+qt_add_executable(mozillavpn MANUAL_FINALIZATION)
 
 target_link_libraries(mozillavpn PRIVATE
     Qt6::NetworkAuth
