@@ -16,7 +16,6 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 #else()
 #    qt_add_executable(mozillavpn MANUAL_FINALIZATION)
 #endif()
-
 qt_add_executable(mozillavpn MANUAL_FINALIZATION)
 
 target_link_libraries(mozillavpn PRIVATE

@@ -6,7 +6,7 @@
 target_link_libraries(mozillavpn PRIVATE
     Qt6::Xml)
 
-# TODO:
+# TODO: 
 # Figure out why this does not add the android platform plugin to the install
 qt_import_plugins(mozillavpn
   INCLUDE_BY_TYPE platforms

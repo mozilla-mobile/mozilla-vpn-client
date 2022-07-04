@@ -4,7 +4,7 @@
 
 package org.mozilla.firefox.vpn.qt;
 
-// TODO: Acutally make adjust not a thing we copy into the folder and re-add
+// TODO: Acutally make adjust a proper dependency and not a thing we copy into the folder and re-add
 import android.app.Activity;
 import android.os.Bundle;
 

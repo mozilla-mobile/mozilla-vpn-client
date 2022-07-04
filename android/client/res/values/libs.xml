@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <!-- DO NOT EDIT THIS: This file is populated automatically by the deployment tool. -->
+    <!-- Todo: either automate this or let gradle/cmake invoke android-deploy-qt to create this file -->
 
     <array name="bundled_libs">
     </array>
