@@ -10,7 +10,7 @@ namespace {
 Logger logger(LOG_MAIN, "TaskGroup");
 }
 
-TaskGroup::TaskGroup(std::initializer_list<Task*> list)
+TaskGroup::TaskGroup(const QList<Task*>& list)
     : Task("TaskGroup"), m_tasks(list) {
   MVPN_COUNT_CTOR(TaskGroup);
 }

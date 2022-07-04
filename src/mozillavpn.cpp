@@ -239,14 +239,14 @@ void MozillaVPN::initialize() {
   }
 
   AddonManager::instance();
-  TaskScheduler::scheduleTask(new TaskAddonIndex());
 
-  TaskScheduler::scheduleTask(new TaskGetFeatureList());
+  QList<Task*> initTasks{new TaskAddonIndex(), new TaskGetFeatureList()};
 
 #ifdef MVPN_ADJUST
-  TaskScheduler::scheduleTask(
-      new TaskFunction([] { AdjustHandler::initialize(); }));
+  initTasks.append(new TaskFunction([] { AdjustHandler::initialize(); }));
 #endif
+
+  TaskScheduler::scheduleTask(new TaskGroup(initTasks));
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
@@ -341,13 +341,15 @@ void MozillaVPN::initialize() {
     m_private->m_serverData.writeSettings();
   }
 
-  TaskScheduler::scheduleTask(
-      new TaskGroup({new TaskAccount(), new TaskServers(),
-                     new TaskCaptivePortalLookup(), new TaskSurveyData()}));
+  QList<Task*> refreshTasks{new TaskAccount(), new TaskServers(),
+                            new TaskCaptivePortalLookup(),
+                            new TaskSurveyData()};
 
   if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-    TaskScheduler::scheduleTask(new TaskProducts());
+    refreshTasks.append(new TaskProducts());
   }
+
+  TaskScheduler::scheduleTask(new TaskGroup(refreshTasks));
 
   setUserState(UserAuthenticated);
   maybeStateMain();
