@@ -22,6 +22,9 @@ class IOSUtils final {
   static int compareStrings(const QString& a, const QString& b);
 
   static void setStatusBarTextColor(Theme::StatusBarTextColor color);
+
+  static bool verifySignature(const QByteArray& publicKey, const QByteArray& content,
+                              const QByteArray& signature);
 };
 
 #endif  // IOSUTILS_H

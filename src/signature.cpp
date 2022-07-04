@@ -4,6 +4,14 @@
 
 #include "signature.h"
 
+#ifdef MVPN_IOS
+#  include "platforms/ios/iosutils.h"
+#endif
+
+#ifdef MVPN_ANDROID
+#  include "platforms/android/androidutils.h"
+#endif
+
 #ifdef MVPN_SIGNATURE
 extern "C" {
 // Implemented in rust. See the `signature` folder.
@@ -15,16 +23,21 @@ bool verify_rsa(const char* publicKey, size_t pubKeyLen, const char* message,
 // static
 bool Signature::verify(const QByteArray& publicKey, const QByteArray& content,
                        const QByteArray& signature) {
-#ifdef MVPN_SIGNATURE
+#if defined(MVPN_SIGNATURE)
   return verify_rsa(publicKey.constData(), publicKey.length(),
                     content.constData(), content.length(),
                     signature.constData(), signature.length());
-#endif
-
+#elif defined(MVPN_IOS)
+  return IOSUtils::verifySignature(publicKey, content, signature);
+#elif defined(MVPN_ANDROID)
+  return AndroidUtils::verifySignature(publicKey, content, signature);
+#elif defined(MVPN_WASM) or defined(UNIT_TEST) or defined(MVPN_DUMMY)
   Q_UNUSED(publicKey);
   Q_UNUSED(content);
   Q_UNUSED(signature);
 
-  // No RSA-signature implementation
   return true;
+#else
+#  error Unsupported platform
+#endif
 }

@@ -241,3 +241,16 @@ void AndroidUtils::recordGleanEventWithExtraKeys(JNIEnv* env, jobject VPNUtils,
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       event, extras.toVariantMap());
 }
+
+// static
+bool AndroidUtils::verifySignature(const QByteArray& publicKey,
+                                   const QByteArray& content,
+                                   const QByteArray& signature) {
+  Q_UNUSED(publicKey);
+  Q_UNUSED(content);
+  Q_UNUSED(signature);
+
+  // TODO
+
+  return true;
+}
