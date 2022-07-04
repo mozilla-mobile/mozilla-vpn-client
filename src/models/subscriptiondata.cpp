@@ -31,6 +31,8 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
     return true;
   }
 
+  resetData();
+
   QJsonDocument doc = QJsonDocument::fromJson(json);
   if (!doc.isObject()) {
     return false;
@@ -225,4 +227,25 @@ bool SubscriptionData::parseSubscriptionDataWeb(
   }
 
   return true;
+}
+
+void SubscriptionData::resetData() {
+  logger.debug() << "Reset data";
+  m_rawJson.clear();
+
+  m_type = SubscriptionUnknown;
+  m_status = Inactive;
+  m_createdAt = 0;
+  m_expiresOn = 0;
+  m_isCancelled = false;
+
+  m_planBillingInterval = BillingIntervalUnknown;
+  m_planAmount = 0;
+  m_planCurrency.clear();
+
+  m_paymentProvider.clear();
+  m_creditCardBrand.clear();
+  m_creditCardLast4.clear();
+  m_creditCardExpMonth = 0;
+  m_creditCardExpYear = 0;
 }
