@@ -309,6 +309,8 @@ target_sources(mozillavpn PRIVATE
     urlopener.h
     websocket/exponentialbackoffstrategy.cpp
     websocket/exponentialbackoffstrategy.h
+    websocket/pushmessage.cpp
+    websocket/pushmessage.h
     websocket/websockethandler.cpp
     websocket/websockethandler.h
 )
