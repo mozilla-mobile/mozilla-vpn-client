@@ -207,8 +207,6 @@ VPNFlickable {
             if (
                 VPNSubscriptionData.creditCardBrand
                 && VPNSubscriptionData.creditCardLast4
-                // For PayPal we only show the payment method
-                && VPNSubscriptionData.paymentProvider !== "paypal"
             ) {
                 // Credit card brand
                 subscriptionPaymentModel.append({
