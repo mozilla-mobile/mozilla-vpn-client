@@ -36,29 +36,21 @@ $env:BUILDDIR=resolve-path $FETCHES_PATH/QT_OUT
 Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x64.msm -Destination $REPO_ROOT_PATH\\Microsoft_VC142_CRT_x64.msm
 Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x86.msm -Destination $REPO_ROOT_PATH\\Microsoft_VC142_CRT_x86.msm
 
-# CMD does for some reason not use the new PATH, thus
-# We need to pre-generate those resources here.
-python3 ./scripts/utils/generate_glean.py
-python3 ./scripts/utils/import_languages.py
+# Setup Openssl Import
+$SSL_PATH = resolve-path "$FETCHES_PATH/QT_OUT/SSL"
+$env:OPENSSL_ROOT_DIR = (resolve-path "$SSL_PATH").toString()
+$env:OPENSSL_USE_STATIC_LIBS = "TRUE"
 
 #Do not continune from this point on when we encounter an error
 $ErrorActionPreference = "Stop"
 
-# Actually compile!
-./scripts/windows/compile.bat --nmake
-# Copies all relevant files into unsigned/
-nmake install 
-
-# For some reason qmake does ignore split-tunnel stuff
-# But we are switching to cmake, which handles this fine
-# so consider this a temporary fix :) 
-Copy-Item -Path windows/split-tunnel/* -Destination unsigned -Exclude "*.ps1","*.txt",".status"
-
-New-Item -ItemType Directory -Path "$TASK_WORKDIR/artifacts" -Force
-$ARTIFACTS_PATH =resolve-path "$TASK_WORKDIR/artifacts"
+mkdir build
+cmake -S . -B build
+cmake --build build --config RelWithDebInfo
+cmake --build build --config RelWithDebInfo --target msi
 
 Write-Output "Writing Artifacts"
-Copy-Item -Path windows/installer/x64/MozillaVPN.msi -Destination $ARTIFACTS_PATH/MozillaVPN.msi
+Copy-Item -Path MozillaVPN.msi -Destination $ARTIFACTS_PATH/MozillaVPN.msi
 Copy-Item -Path MozillaVPN.pdb -Destination $ARTIFACTS_PATH/MozillaVPN.pdb
 
 Compress-Archive -Path unsigned/* -Destination $TASK_WORKDIR/artifacts/unsigned.zip
