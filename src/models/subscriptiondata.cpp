@@ -161,11 +161,13 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
       return false;
     }
 
-    // For credit cards we also show card details
-    m_creditCardBrand = paymentData["brand"].toString();
-    m_creditCardLast4 = paymentData["last4"].toString();
-    m_creditCardExpMonth = paymentData["exp_month"].toInt();
-    m_creditCardExpYear = paymentData["exp_year"].toInt();
+    // We show card details only for stripe
+    if (m_paymentProvider == "stripe") {
+      m_creditCardBrand = paymentData["brand"].toString();
+      m_creditCardLast4 = paymentData["last4"].toString();
+      m_creditCardExpMonth = paymentData["exp_month"].toInt();
+      m_creditCardExpYear = paymentData["exp_year"].toInt();
+    }
   }
 
   m_rawJson = json;
