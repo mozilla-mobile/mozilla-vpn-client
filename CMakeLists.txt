@@ -4,6 +4,11 @@
 
 cmake_minimum_required(VERSION 3.16)
 
+project("Mozilla VPN" VERSION 2.10.0 LANGUAGES C CXX
+        DESCRIPTION "A fast, secure and easy to use VPN. Built by the makers of Firefox."
+        HOMEPAGE_URL "https://vpn.mozilla.org"
+)
+
 ## Some workarounds for platform build quirks
 if(WIN32)
     ## CMake v3.20 has problems with race conditions in dependency generation.
@@ -38,11 +43,6 @@ if(APPLE)
 endif()
 
 option(BUILD_DUMMY "Build for the dummy platform" OFF)
-
-project("Mozilla VPN" VERSION 2.10.0 LANGUAGES C CXX
-        DESCRIPTION "A fast, secure and easy to use VPN. Built by the makers of Firefox."
-        HOMEPAGE_URL "https://vpn.mozilla.org"
-)
 
 message("Configuring for ${CMAKE_GENERATOR}")
 if(NOT (DEFINED CMAKE_CONFIGURATION_TYPES OR "${CMAKE_BUILD_TYPE}"))
