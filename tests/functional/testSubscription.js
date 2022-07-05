@@ -711,7 +711,8 @@ describe('Subscription view', function() {
               'text') === data.subscription.expected.status);
       }
 
-      if (data.plan.expected) {
+      if (data.plan.expected &&
+          data.subscription.value._subscription_type != "iap_apple") {
         await vpn.waitForElement(
             'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText');
         await vpn.waitForElementProperty(
