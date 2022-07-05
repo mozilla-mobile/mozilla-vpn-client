@@ -55,6 +55,7 @@ VPNFlickable {
             spacing: 0
             objectName: "subscriptionItem"
 
+            Layout.alignment: Qt.AlignTop
             Layout.leftMargin: VPNTheme.theme.windowMargin / 2
             Layout.rightMargin: VPNTheme.theme.windowMargin / 2
 
