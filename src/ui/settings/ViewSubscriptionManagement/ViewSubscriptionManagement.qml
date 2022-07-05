@@ -153,7 +153,11 @@ VPNFlickable {
     function populateListModels() {
         // Subscription info model
         // Subscription plan
-        if (VPNSubscriptionData.planCurrency && VPNSubscriptionData.planAmount) {
+        if (
+            VPNSubscriptionData.planCurrency
+            && VPNSubscriptionData.planAmount
+            && VPNSubscriptionData.type === VPNSubscriptionData.SubscriptionWeb
+        ) {
             subscriptionInfoModel.append({
                 _objectName: "subscriptionItem-plan",
                 labelText: VPNl18n.SubscriptionManagementPlanLabel,
