@@ -156,7 +156,7 @@ VPNFlickable {
         if (
             VPNSubscriptionData.planCurrency
             && VPNSubscriptionData.planAmount
-            && VPNSubscriptionData.type !== VPNSubscriptionData.SubscriptionGoogle
+            && VPNSubscriptionData.type === VPNSubscriptionData.SubscriptionWeb
         ) {
             subscriptionInfoModel.append({
                 _objectName: "subscriptionItem-plan",
