@@ -153,7 +153,11 @@ VPNFlickable {
     function populateListModels() {
         // Subscription info model
         // Subscription plan
-        if (VPNSubscriptionData.planCurrency && VPNSubscriptionData.planAmount) {
+        if (
+            VPNSubscriptionData.planCurrency
+            && VPNSubscriptionData.planAmount
+            && VPNSubscriptionData.type !== VPNSubscriptionData.SubscriptionGoogle
+        ) {
             subscriptionInfoModel.append({
                 _objectName: "subscriptionItem-plan",
                 labelText: VPNl18n.SubscriptionManagementPlanLabel,
@@ -203,6 +207,8 @@ VPNFlickable {
             if (
                 VPNSubscriptionData.creditCardBrand
                 && VPNSubscriptionData.creditCardLast4
+                // For PayPal we only show the payment method
+                && VPNSubscriptionData.paymentProvider !== "paypal"
             ) {
                 // Credit card brand
                 subscriptionPaymentModel.append({
