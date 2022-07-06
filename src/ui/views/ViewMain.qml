@@ -9,6 +9,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
 import compat 0.1
+import telemetry 0.30
 
 VPNFlickable {
     id: vpnFlickable
@@ -184,6 +185,9 @@ VPNFlickable {
         sourceComponent: VPNSimplePopup {
             id: tipsAndTricksIntroPopup
 
+            //Keeps track of how the popup was closed to determine whether or not to fire "dismissed" telemetry
+            property bool closedByPrimaryButton: false
+
             anchors.centerIn: Overlay.overlay
             closeButtonObjectName: "tipsAndTricksIntroPopupCloseButton"
             imageSrc: "qrc:/ui/resources/logo-sparkles.svg"
@@ -197,6 +201,7 @@ VPNFlickable {
                     text: VPNl18n.GlobalDiscoverNow
                     onClicked: {
                         tipAndTricksIntroButton.enabled = false
+                        closedByPrimaryButton = true
                         tipsAndTricksIntroPopup.close()
                         mainStackView.push(tipsAndTricksDeepLinkView)
                     }
@@ -208,8 +213,15 @@ VPNFlickable {
                 }
             ]
 
-            onOpened: VPNSettings.tipsAndTricksIntroShown = true
-            onClosed: tipsAndTricksIntroPopupLoader.active = false
+            onOpened: {
+                VPNSettings.tipsAndTricksIntroShown = true
+                Sample.tipsAndTricksModalShown.record();
+            }
+
+            onClosed: {
+                tipsAndTricksIntroPopupLoader.active = false
+                VPN.recordGleanEventWithExtraKeys("tipsAndTricksModalClosed", {"action": closedByPrimaryButton ? "cta" : "dismissed"});
+            }
         }
 
         onActiveChanged: if (active) { item.open() }

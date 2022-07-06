@@ -9,6 +9,7 @@
 
 #include <QList>
 #include <QAbstractListModel>
+#include "addons/addontutorial.h"
 
 class Addon;
 class AddonTutorial;
@@ -19,6 +20,8 @@ class Tutorial final : public QObject {
   Q_DISABLE_COPY_MOVE(Tutorial)
   Q_PROPERTY(bool tooltipShown MEMBER m_tooltipShown NOTIFY tooltipShownChanged)
   Q_PROPERTY(bool playing READ isPlaying NOTIFY playingChanged)
+  Q_PROPERTY(AddonTutorial* currentTutorial MEMBER m_currentTutorial NOTIFY
+                 playingChanged)
 
  public:
   static Tutorial* instance();

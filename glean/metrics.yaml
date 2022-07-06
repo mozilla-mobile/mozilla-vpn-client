@@ -1128,3 +1128,200 @@ sample:
     notification_emails:
       - amarchesini@mozilla.com
     expires: never
+
+  tips_and_tricks_view_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the tips and tricks page
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-2292
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1776499
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+    expires: never
+
+  tips_and_tricks_modal_shown:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has been shown the tips and tricks introduction modal
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-2292
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1776499
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+    expires: never
+
+  tips_and_tricks_modal_closed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has dismissed the tips and tricks introduction modal
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-2292
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1776499
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+    expires: never
+    extra_keys:
+      action:
+        description: |
+          The trigger that caused the modal to be closed (dismissed | cta)
+        type: string
+
+  guide_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened a guide from the tips and tricks page
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-2292
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1776499
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+    expires: never
+    extra_keys:
+      id:
+        description: |
+          The id of the guide that was opened
+        type: string
+
+  guide_closed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has closed a guide from the tips and tricks page
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-2292
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1776499
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+    expires: never
+    extra_keys:
+      id:
+        description: |
+          The id of the guide that was closed
+        type: string
+      duration_ms:
+        description: |
+          The amount of time that the user spent in the guide (in seconds)
+        type: quantity
+        unit: milliseconds
+
+  tutorial_started:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has started a tutorial
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-2292
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1776499
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+    expires: never
+    extra_keys:
+      id:
+        description: |
+          The id of the tutorial that was started
+        type: string
+
+  tutorial_completed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has completed a tutorial
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-2292
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1776499
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+    expires: never
+    extra_keys:
+      id:
+        description: |
+          The id of the tutorial that was completed
+        type: string
+
+  tutorial_aborted:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has aborted a tutorial
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-2292
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1776499
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+    expires: never
+    extra_keys:
+      id:
+        description: |
+          The id of the tutorial that was aborted
+        type: string
+
+  tutorial_step_viewed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has viewed a step in a tutorial
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-2292
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1776499
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+    expires: never
+    extra_keys:
+      tutorial_id:
+        description: |
+          The id of the tutorial in progress
+        type: string
+      step_id:
+        description: |
+          The id of the step that was viewed
+        type: string
