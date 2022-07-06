@@ -6,6 +6,8 @@
 #include "tutorial.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
+#include "telemetry/gleansample.h"
 
 #include <QCoreApplication>
 #include <QDir>
@@ -107,6 +109,9 @@ void TutorialModel::play(Tutorial* tutorial) {
   emit playingChanged();
 
   tutorial->play(m_allowedItems);
+
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::tutorialStarted, {{"id", m_currentTutorial->id()}});
 }
 
 void TutorialModel::stop() {
@@ -126,6 +131,10 @@ void TutorialModel::requireTooltipNeeded(Tutorial* tutorial,
   Q_ASSERT(tutorial);
   Q_ASSERT(tutorial == m_currentTutorial);
   emit tooltipNeeded(tooltipText, targetElement);
+
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::tutorialStepViewed,
+      {{"tutorial_id", m_currentTutorial->id()}, {"step_id", tooltipText}});
 }
 
 void TutorialModel::requireTutorialCompleted(
@@ -133,6 +142,9 @@ void TutorialModel::requireTutorialCompleted(
   Q_ASSERT(tutorial);
   Q_ASSERT(tutorial == m_currentTutorial);
   emit tutorialCompleted(completionMessageText);
+
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::tutorialCompleted, {{"id", m_currentTutorial->id()}});
 }
 
 void TutorialModel::requireTooltipShown(Tutorial* tutorial, bool shown) {

@@ -9,6 +9,7 @@ import QtQuick.Controls 2.15
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
+import telemetry 0.30
 
 VPNFlickable {
     id: vpnFlickable
@@ -134,7 +135,12 @@ VPNFlickable {
                                 imageSrc: guide.image
                                 title: qsTrId(guide.titleId)
 
-                                onClicked: mainStackView.push("qrc:/ui/settings/ViewGuide.qml", {"guide": guide, "imageBgColor": imageBgColor})
+                                onClicked:{
+                                    mainStackView.push("qrc:/ui/settings/ViewGuide.qml", {"guide": guide, "imageBgColor": imageBgColor})
+                                    VPN.recordGleanEventWithExtraKeys("guideOpened",{
+                                                                      "id": guide.titleId
+                                    });
+                                }
                             }
                         }
                     }
@@ -184,6 +190,10 @@ VPNFlickable {
                 Layout.preferredHeight: 66
             }
         }
+    }
+
+    Component.onCompleted: {
+        Sample.tipsAndTricksViewOpened.record();
     }
 }
 

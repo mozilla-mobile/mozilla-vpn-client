@@ -21,6 +21,8 @@ class TutorialModel final : public QAbstractListModel {
   Q_PROPERTY(bool playing READ isPlaying NOTIFY playingChanged)
   Q_PROPERTY(Tutorial* highlightedTutorial READ highlightedTutorial NOTIFY
                  highlightedTutorialChanged)
+  Q_PROPERTY(
+      Tutorial* currentTutorial MEMBER m_currentTutorial NOTIFY playingChanged)
 
  public:
   enum ModelRoles {
