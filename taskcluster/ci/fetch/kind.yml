@@ -23,7 +23,6 @@ jobs:
             size: 1514372704
         #artifact-prefix: vpn/win-dev-env
         fetch-alias: win-dev-env
-
     win-perl:
         description: Strawberry Perl
         fetch:
@@ -49,7 +48,10 @@ jobs:
             url: https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe
             sha256: 780b445ee18bdc5a31ad6a4a63943927e5c0bba8bff664e8ecc8d5bca3906c7b
             size: 9284608
-
-
-
-    
+    unsigned-internals:
+        description: Unsigned internals
+        fetch:
+            type: static-url
+            url: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/So0h1mM2QeaACYFZqhi1WA/artifacts/public/build/signed-internals.zip
+            sha256: 42df598d8075c441d449370697cf106d0c21a2c8ac2e68d22ff4dd2efa0884e4
+            size: 40098386

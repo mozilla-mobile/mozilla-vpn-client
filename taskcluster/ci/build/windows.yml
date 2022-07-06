@@ -15,6 +15,7 @@ windows/opt:
         fetch:
             - win-dev-env
             - win-rustup
+            - unsigned-internals
         toolchain:
             - qt-win
     worker:
@@ -27,6 +28,7 @@ windows/opt:
               path: artifacts/
     run:
         using: run-task
-        cwd: '{checkout}'
+        cwd: build/src/windows/installer
+        workdir: build/src/windows/installer
         exec-with: powershell
-        command: taskcluster/scripts/build/windows.ps1
+        command: build_prod.cmd
