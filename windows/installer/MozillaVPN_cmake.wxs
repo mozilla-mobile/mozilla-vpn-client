@@ -25,11 +25,6 @@
       Description="Mozilla VPN"
       ReadOnly="yes" />
 
-    <Condition Message="This application is only supported on Windows 10 or higher.">
-      <![CDATA[Installed OR (VersionNT >= 603)]]>
-    </Condition>
-    <Condition Message="This application is only supported on 64 bit x86 platforms."> %PROCESSOR_ARCHITECTURE="AMD64" </Condition>
-
     <Upgrade Id="$(var.UpgradeCode)">
       <UpgradeVersion OnlyDetect='no' Property='PREVIOUSFOUND'
         Minimum='0.0.0.0' IncludeMinimum='yes'
@@ -154,11 +149,9 @@
     <!--
       Launch after setup complete
     -->
-    <CustomAction Id="LaunchVPNFirstExecution" Impersonate="yes" FileKey="MozillaVPNExecutable" ExeCommand="" Return="asyncNoWait" />
-    <CustomAction Id="LaunchVPNAfterUpdate" Impersonate="yes" FileKey="MozillaVPNExecutable" ExeCommand="ui --updated" Return="asyncNoWait" />
+    <CustomAction Id="LaunchVPN" Impersonate="yes" FileKey="MozillaVPNExecutable" ExeCommand="" Return="asyncNoWait" />
     <InstallExecuteSequence>
-       <Custom Action="LaunchVPNFirstExecution" After="InstallFinalize">NOT Installed</Custom>
-       <Custom Action="LaunchVPNAfterUpdate" After="InstallFinalize">WIX_UPGRADE_DETECTED</Custom>
+      <Custom Action="LaunchVPN" After="InstallFinalize">NOT Installed OR WIX_UPGRADE_DETECTED</Custom>
     </InstallExecuteSequence>
 
     <!--
