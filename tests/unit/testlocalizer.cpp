@@ -58,4 +58,11 @@ void TestLocalizer::localizeCurrency() {
   QVERIFY(l.localizeCurrency(123.123, "EUR").contains("€"));
 }
 
+void TestLocalizer::majorLanguageCode() {
+  QCOMPARE(Localizer::majorLanguageCode(""), "");
+  QCOMPARE(Localizer::majorLanguageCode("fo"), "fo");
+  QCOMPARE(Localizer::majorLanguageCode("fo-BA"), "fo");
+  QCOMPARE(Localizer::majorLanguageCode("fo_BA"), "fo");
+}
+
 static TestLocalizer s_testLocalizer;

@@ -196,9 +196,11 @@ VPNFlickable {
             description: VPNl18n.TipsAndTricksIntroModalDescription
             buttons: [
                 VPNButton {
+                    id: tipAndTricksIntroButton
                     objectName: "tipsAndTricksIntroPopupDiscoverNowButton"
                     text: VPNl18n.GlobalDiscoverNow
                     onClicked: {
+                        tipAndTricksIntroButton.enabled = false
                         closedByPrimaryButton = true
                         tipsAndTricksIntroPopup.close()
                         mainStackView.push(tipsAndTricksDeepLinkView)

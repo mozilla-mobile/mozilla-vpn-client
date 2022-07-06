@@ -4,6 +4,7 @@
 
 #include "notificationhandler.h"
 #include "constants.h"
+#include "externalophandler.h"
 #include "leakdetector.h"
 #include "l18nstrings.h"
 #include "logger.h"
@@ -251,6 +252,9 @@ void NotificationHandler::messageClickHandle() {
     logger.warning() << "Random message clicked received";
     return;
   }
+
+  ExternalOpHandler::instance()->request(
+      ExternalOpHandler::OpNotificationClicked);
 
   emit notificationClicked(m_lastMessage);
   m_lastMessage = None;

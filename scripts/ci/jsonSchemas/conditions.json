@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "additionalProperties": false,
-  "description": "Optional list of conditions to include this guide",
+  "description": "Optional list of conditions",
   "properties": {
     "enabledFeatures": {
       "type": "array",

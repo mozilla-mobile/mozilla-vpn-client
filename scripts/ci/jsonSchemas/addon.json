@@ -28,9 +28,11 @@
     "guide": {
       "$ref": "guide.json#"
     },
-    "qml": {
-      "type": "string",
-      "description": "The QML entry point"
+    "message": {
+      "$ref": "message.json#"
+    },
+    "demo": {
+      "$ref": "demo.json#"
     }
   },
   "required": [ "id", "name", "api_version", "type" ]

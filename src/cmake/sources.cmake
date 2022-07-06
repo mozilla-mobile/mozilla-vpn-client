@@ -18,6 +18,8 @@ target_sources(mozillavpn PRIVATE
     addons/addonguide.h
     addons/addoni18n.cpp
     addons/addoni18n.h
+    addons/addonmessage.cpp
+    addons/addonmessage.h
     addons/addontutorial.cpp
     addons/addontutorial.h
     appimageprovider.h
@@ -104,6 +106,8 @@ target_sources(mozillavpn PRIVATE
     dnspingsender.h
     errorhandler.cpp
     errorhandler.h
+    externalophandler.cpp
+    externalophandler.h
     filterproxymodel.cpp
     filterproxymodel.h
     fontloader.cpp

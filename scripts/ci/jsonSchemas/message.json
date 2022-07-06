@@ -5,28 +5,16 @@
   "properties": {
     "id": {
       "type": "string",
-      "description": "The ID of the guide",
+      "description": "The ID of the message",
       "pattern": "^[A-Za-z0-9_]+"
     },
     "title": {
       "type": "string",
-      "description": "The title of the guide"
+      "description": "The title of the message"
     },
     "title_comment": {
       "type": "string",
       "description": "A comment to describe how to translate the title"
-    },
-    "subtitle": {
-      "type": "string",
-      "description": "The subtitle of the guide"
-    },
-    "subtitle_comment": {
-      "type": "string",
-      "description": "A comment to describe how to translate the subtitle"
-    },
-    "image": {
-      "type": "string",
-      "description": "The image of the guide"
     },
     "blocks": {
       "type": "array",
@@ -36,5 +24,5 @@
       }
     }
   },
-  "required": [ "id", "title", "subtitle", "image", "blocks" ]
+  "required": [ "id", "title", "blocks" ]
 }

@@ -71,7 +71,7 @@ exports.mochaHooks = {
       fxa.overrideEndpoints = null;
 
       await startAndConnect();
-      await vpn.hardReset();
+      await vpn.reset();
       await vpn.setSetting('tips-and-tricks-intro-shown', 'true')
       await vpn.authenticateInApp(true, true);
 
@@ -101,7 +101,7 @@ exports.mochaHooks = {
       }
 
       await startAndConnect();
-      await vpn.hardReset();
+      await vpn.reset();
       await vpn.setSetting('tips-and-tricks-intro-shown', 'true')
     }
 

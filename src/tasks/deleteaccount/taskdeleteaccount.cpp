@@ -4,11 +4,13 @@
 
 #include "taskdeleteaccount.h"
 #include "authenticationlistener.h"
+#include "authenticationinapp/authenticationinapp.h"
 #include "authenticationinapp/authenticationinappsession.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
+#include "taskscheduler.h"
 
 namespace {
 Logger logger(LOG_MAIN, "TaskDeleteAccount");
@@ -74,7 +76,25 @@ void TaskDeleteAccount::run() {
   connect(m_authenticationInAppSession,
           &AuthenticationInAppSession::accountDeleted, this, [this]() {
             m_authenticationInAppSession->terminate();
+            TaskScheduler::deleteTasks();
             emit MozillaVPN::instance()->accountDeleted();
+          });
+
+  connect(AuthenticationInApp::instance(), &AuthenticationInApp::stateChanged,
+          this, [this] {
+            switch (AuthenticationInApp::instance()->state()) {
+              case AuthenticationInApp::StateSignUp:
+                [[fallthrough]];
+              case AuthenticationInApp::StateFallbackInBrowser:
+                MozillaVPN::instance()->errorHandle(
+                    ErrorHandler::AuthenticationError);
+                m_authenticationInAppSession->terminate();
+                break;
+
+              default:
+                // All the other states should be handled by the front-end code.
+                break;
+            }
           });
 
   m_authenticationInAppSession->start(this, pkceCodeChallenge,

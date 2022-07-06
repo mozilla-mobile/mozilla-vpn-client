@@ -146,13 +146,22 @@ sample:
       Encountered an error while processing incoming purchase updates
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1620
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3754
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1746457
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1774433
     data_sensitivity:
       - technical
     notification_emails:
       - sstreich@mozilla.com
     expires: never
+    extra_keys:
+      reason:
+        description: |
+          The reason of the failure. It can be:
+          "item-already-owned","user-canceled","item-unavailable"
+          "unknown-$someInteger" in case an unhandled error is added by google.
+        type: string
 
   iap_g_purchases_update_is_null:
     type: event
@@ -761,13 +770,20 @@ sample:
       The user has started the subscription flow in app
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3754
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1774433
     data_sensitivity:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
     expires: never
+    extra_keys:
+      sku:
+        description: |
+          The sku of the started Subscription
+        type: string
 
   iap_restore_sub_started:
     type: event
@@ -795,8 +811,10 @@ sample:
       The user has completed the subscription flow in app
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3754
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1774433
     data_sensitivity:
       - interaction
     notification_emails:
@@ -808,6 +826,10 @@ sample:
           The reason of the failure. It can be "billing-not-available",
           "canceled" or "failed"
         type: string
+      sku:
+        description: |
+          The sku of the failed Subscription
+        type: string
 
   iap_subscription_completed:
     type: event
@@ -818,13 +840,20 @@ sample:
       The user has completed the subscription flow in app
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3754
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1774433
     data_sensitivity:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
     expires: never
+    extra_keys:
+      sku:
+        description: |
+          The sku of the completed Subscription
+        type: string
 
   connectivity_handshake_timeout:
     type: event
@@ -1014,6 +1043,10 @@ sample:
       - amarchesini@mozilla.com
     expires: never
     extra_keys:
+      interval:
+        description: |
+          Unhandled interval
+        type: string
       interval_count:
         description: |
           Unhandled interval count

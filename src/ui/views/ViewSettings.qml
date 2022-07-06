@@ -17,13 +17,12 @@ Item {
         id: menu
         objectName: "settingsBackButton"
         _menuOnBackClicked: () => {
+            VPNProfileFlow.reset();
             if (settingsStackView.depth !== 1) {
-                VPNProfileFlow.reset();
-
                 return settingsStackView.pop();
             }
 
-            mainStackView.pop()
+            mainStackView.pop();
         }
         _iconButtonSource: settingsStackView.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
 
