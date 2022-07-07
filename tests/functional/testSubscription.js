@@ -801,7 +801,8 @@ describe('Subscription view', function() {
       await vpn.clickOnElement('subscriptionUserProfile-manageAccountButton');
       await vpn.waitForCondition(async () => {
         const url = await vpn.getLastUrl();
-        return url.includes('r/vpn/account?email=test@mozilla.com');
+        return url.includes('https://accounts.stage.mozaws.net') &&
+            url.includes('?email=test@mozilla.com');
       });
 
       if (data.manageSubscriptionLink) {

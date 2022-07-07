@@ -508,8 +508,7 @@ void MozillaVPN::openLink(LinkType linkType) {
 
   switch (linkType) {
     case LinkAccount:
-      url = NetworkRequest::apiBaseUrl();
-      url.append("/r/vpn/account");
+      url = Constants::fxaUrl();
       addEmailAddress = true;
       break;
 
