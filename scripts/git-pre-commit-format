@@ -37,7 +37,7 @@ function realpath() {
     else
         # Python should always be available on macOS.
         # We use sys.stdout.write instead of print so it's compatible with both Python 2 and 3.
-        python -c "import sys; import os.path; sys.stdout.write(os.path.realpath('''$1''') + '\\n')"
+        python3 -c "import sys; import os.path; sys.stdout.write(os.path.realpath('''$1''') + '\\n')"
     fi
 }
 
