@@ -7,6 +7,9 @@
 #include "../../src/addons/addonguide.h"
 #include "../../src/addons/addonmessage.h"
 #include "../../src/addons/addontutorial.h"
+#include "../../src/addons/conditionwatchers/addonconditionwatchergroup.h"
+#include "../../src/addons/conditionwatchers/addonconditionwatcherlocales.h"
+#include "../../src/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h"
 #include "../../src/settingsholder.h"
 #include "../../src/qmlengineholder.h"
 #include "../../src/tutorial/tutorial.h"
@@ -124,6 +127,107 @@ void TestAddon::conditions() {
   QCOMPARE(Addon::evaluateConditions(conditions), result);
 }
 
+void TestAddon::conditionWatcher_locale() {
+  SettingsHolder settingsHolder;
+
+  QObject parent;
+
+  // No locales -> no watcher.
+  QVERIFY(!AddonConditionWatcherLocales::maybeCreate(&parent, QStringList()));
+
+  AddonConditionWatcher* acw =
+      AddonConditionWatcherLocales::maybeCreate(&parent, QStringList{"it"});
+  QVERIFY(!!acw);
+
+  QVERIFY(!acw->conditionApplied());
+
+  settingsHolder.setLanguageCode("it");
+  QVERIFY(acw->conditionApplied());
+
+  settingsHolder.setLanguageCode("ru");
+  QVERIFY(!acw->conditionApplied());
+
+  settingsHolder.setLanguageCode("it-IT");
+  QVERIFY(acw->conditionApplied());
+
+  settingsHolder.setLanguageCode("en");
+  QVERIFY(!acw->conditionApplied());
+
+  settingsHolder.setLanguageCode("it_RU");
+  QVERIFY(acw->conditionApplied());
+
+  QSignalSpy signalSpy(acw, &AddonConditionWatcher::conditionChanged);
+  QCOMPARE(signalSpy.count(), 0);
+  settingsHolder.setLanguageCode("en");
+  QCOMPARE(signalSpy.count(), 1);
+  settingsHolder.setLanguageCode("it_RU");
+  QCOMPARE(signalSpy.count(), 2);
+  settingsHolder.setLanguageCode("it");
+  QCOMPARE(signalSpy.count(), 2);
+}
+
+void TestAddon::conditionWatcher_group() {
+  SettingsHolder settingsHolder;
+
+  QObject parent;
+  AddonConditionWatcher* acw =
+      AddonConditionWatcherTriggerTimeSecs::maybeCreate(&parent, 1);
+  QVERIFY(!!acw);
+
+  QVERIFY(!acw->conditionApplied());
+
+  QEventLoop loop;
+  bool currentStatus = false;
+  connect(acw, &AddonConditionWatcher::conditionChanged, [&](bool status) {
+    currentStatus = status;
+    loop.exit();
+  });
+  loop.exec();
+
+  QVERIFY(currentStatus);
+  QVERIFY(acw->conditionApplied());
+}
+
+void TestAddon::conditionWatcher_triggerTime() {
+  SettingsHolder settingsHolder;
+
+  QObject parent;
+
+  AddonConditionWatcher* acw1 =
+      AddonConditionWatcherLocales::maybeCreate(&parent, QStringList{"it"});
+  QVERIFY(!!acw1);
+
+  AddonConditionWatcher* acw = new AddonConditionWatcherGroup(
+      &parent, QList<AddonConditionWatcher*>{acw1});
+  QVERIFY(!!acw);
+
+  QVERIFY(!acw->conditionApplied());
+
+  settingsHolder.setLanguageCode("it");
+  QVERIFY(acw->conditionApplied());
+
+  settingsHolder.setLanguageCode("ru");
+  QVERIFY(!acw->conditionApplied());
+
+  settingsHolder.setLanguageCode("it-IT");
+  QVERIFY(acw->conditionApplied());
+
+  settingsHolder.setLanguageCode("en");
+  QVERIFY(!acw->conditionApplied());
+
+  settingsHolder.setLanguageCode("it_RU");
+  QVERIFY(acw->conditionApplied());
+
+  QSignalSpy signalSpy(acw, &AddonConditionWatcher::conditionChanged);
+  QCOMPARE(signalSpy.count(), 0);
+  settingsHolder.setLanguageCode("en");
+  QCOMPARE(signalSpy.count(), 1);
+  settingsHolder.setLanguageCode("it_RU");
+  QCOMPARE(signalSpy.count(), 2);
+  settingsHolder.setLanguageCode("it");
+  QCOMPARE(signalSpy.count(), 2);
+}
+
 void TestAddon::guide_create_data() {
   QTest::addColumn<QString>("id");
   QTest::addColumn<QJsonObject>("content");
@@ -223,7 +327,8 @@ void TestAddon::guide_create() {
   QJsonObject obj;
   obj["guide"] = content;
 
-  Addon* guide = AddonGuide::create(nullptr, "foo", "bar", "name", obj);
+  QObject parent;
+  Addon* guide = AddonGuide::create(&parent, "foo", "bar", "name", obj);
   QCOMPARE(!!guide, created);
 
   if (!guide) {
@@ -236,8 +341,6 @@ void TestAddon::guide_create() {
   QCOMPARE(guideSubTitleId, QString("guide.%1.subtitle").arg(id));
 
   QCOMPARE(guide->property("image").toString(), "foo.png");
-
-  delete guide;
 }
 
 void TestAddon::tutorial_create_data() {
@@ -346,7 +449,8 @@ void TestAddon::tutorial_create() {
   QJsonObject obj;
   obj["tutorial"] = content;
 
-  Addon* tutorial = AddonTutorial::create(nullptr, "foo", "bar", "name", obj);
+  QObject parent;
+  Addon* tutorial = AddonTutorial::create(&parent, "foo", "bar", "name", obj);
   QCOMPARE(!!tutorial, created);
 
   if (!tutorial) {
@@ -379,8 +483,6 @@ void TestAddon::tutorial_create() {
 
   tm->stop();
   QCOMPARE(signalSpy.count(), 2);
-
-  delete tutorial;
 }
 
 void TestAddon::message_create_data() {
@@ -405,7 +507,8 @@ void TestAddon::message_create() {
   QJsonObject obj;
   obj["message"] = content;
 
-  Addon* message = AddonMessage::create(nullptr, "foo", "bar", "name", obj);
+  QObject parent;
+  Addon* message = AddonMessage::create(&parent, "foo", "bar", "name", obj);
   QCOMPARE(!!message, created);
 
   if (!message) {
@@ -414,8 +517,6 @@ void TestAddon::message_create() {
 
   QString messageTitleId = message->property("titleId").toString();
   QCOMPARE(messageTitleId, QString("message.%1.title").arg(id));
-
-  delete message;
 }
 
 static TestAddon s_testAddon;

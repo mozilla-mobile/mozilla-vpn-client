@@ -203,9 +203,25 @@ bool AddonManager::loadManifest(const QString& manifestFileName,
     return false;
   }
 
-  beginResetModel();
+  bool addonEnabled = addon->enabled();
+  if (addonEnabled) {
+    beginResetModel();
+  }
+
   m_addons.insert(addon->id(), {sha256, addon->id(), addon});
-  endResetModel();
+
+  if (addonEnabled) {
+    endResetModel();
+  }
+
+  connect(addon, &Addon::conditionChanged, this, [this](bool) {
+    beginResetModel();
+    // In theory, we could be smart and try to add/remove lines, but the
+    // changing of conditions should happen rarely. Let's refresh the entire
+    // model for now.
+    endResetModel();
+  });
+
   return true;
 }
 
@@ -223,9 +239,16 @@ void AddonManager::unload(const QString& addonId) {
   Addon* addon = m_addons[addonId].m_addon;
   Q_ASSERT(addon);
 
-  beginResetModel();
+  bool addonEnabled = addon->enabled();
+  if (addonEnabled) {
+    beginResetModel();
+  }
+
   m_addons.remove(addonId);
-  endResetModel();
+
+  if (addonEnabled) {
+    endResetModel();
+  }
 
   addon->deleteLater();
 }
@@ -429,7 +452,14 @@ QHash<int, QByteArray> AddonManager::roleNames() const {
 }
 
 int AddonManager::rowCount(const QModelIndex&) const {
-  return m_addons.count();
+  int count = 0;
+  for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
+       i != m_addons.constEnd(); ++i) {
+    if (i.value().m_addon->enabled()) {
+      ++count;
+    }
+  }
+  return count;
 }
 
 QVariant AddonManager::data(const QModelIndex& index, int role) const {
@@ -438,9 +468,19 @@ QVariant AddonManager::data(const QModelIndex& index, int role) const {
   }
 
   switch (role) {
-    case AddonRole:
-      return QVariant::fromValue(
-          m_addons[m_addons.keys().at(index.row())].m_addon);
+    case AddonRole: {
+      int row = index.row();
+      for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
+           i != m_addons.constEnd(); ++i) {
+        if (!i.value().m_addon->enabled()) {
+          continue;
+        }
+        if (row == 0) {
+          return QVariant::fromValue(i.value().m_addon);
+        }
+        --row;
+      }
+    }
 
     default:
       return QVariant();
@@ -451,7 +491,9 @@ void AddonManager::forEach(std::function<void(Addon*)>&& a_callback) {
   std::function<void(Addon*)> callback = std::move(a_callback);
   for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
        i != m_addons.constEnd(); ++i) {
-    callback(i.value().m_addon);
+    if (i.value().m_addon->enabled()) {
+      callback(i.value().m_addon);
+    }
   }
 }
 
@@ -466,6 +508,10 @@ Addon* AddonManager::pick(QJSValue filterCallback) const {
 
   for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
        i != m_addons.constEnd(); ++i) {
+    if (!i.value().m_addon->enabled()) {
+      continue;
+    }
+
     QJSValueList arguments;
     arguments.append(engine->toScriptValue(i.value().m_addon));
     QJSValue retValue = filterCallback.call(arguments);
