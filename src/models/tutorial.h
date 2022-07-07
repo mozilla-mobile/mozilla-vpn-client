@@ -31,6 +31,8 @@ class Tutorial final : public ItemPicker {
 
   bool highlighted() const { return m_highlighted; }
 
+  const QString& titleId() const { return m_titleId; }
+
  private:
   explicit Tutorial(QObject* parent);
 

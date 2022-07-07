@@ -111,7 +111,7 @@ void TutorialModel::play(Tutorial* tutorial) {
   tutorial->play(m_allowedItems);
 
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::tutorialStarted, {{"id", m_currentTutorial->id()}});
+      GleanSample::tutorialStarted, {{"id", m_currentTutorial->titleId()}});
 }
 
 void TutorialModel::stop() {
@@ -134,7 +134,8 @@ void TutorialModel::requireTooltipNeeded(Tutorial* tutorial,
 
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::tutorialStepViewed,
-      {{"tutorial_id", m_currentTutorial->id()}, {"step_id", tooltipText}});
+      {{"tutorial_id", m_currentTutorial->titleId()},
+       {"step_id", tooltipText}});
 }
 
 void TutorialModel::requireTutorialCompleted(
@@ -144,7 +145,7 @@ void TutorialModel::requireTutorialCompleted(
   emit tutorialCompleted(completionMessageText);
 
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::tutorialCompleted, {{"id", m_currentTutorial->id()}});
+      GleanSample::tutorialCompleted, {{"id", m_currentTutorial->titleId()}});
 }
 
 void TutorialModel::requireTooltipShown(Tutorial* tutorial, bool shown) {

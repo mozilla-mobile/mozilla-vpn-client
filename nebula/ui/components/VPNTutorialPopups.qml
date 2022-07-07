@@ -234,7 +234,7 @@ Item {
         }
 
         tutorialPopup.secondaryButtonOnClicked = () => {
-            VPN.recordGleanEventWithExtraKeys("tutorialAborted", {"id": VPNTutorial.currentTutorial.id});
+            VPN.recordGleanEventWithExtraKeys("tutorialAborted", {"id": VPNTutorial.currentTutorial.titleId});
             tutorialPopup._onClosed = () => callback()
             leaveTutorial();
         }
