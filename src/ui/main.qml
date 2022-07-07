@@ -121,6 +121,29 @@ Window {
         }
     }
 
+    VPNBottomNavigationBar {
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.leftMargin: 16
+        anchors.rightMargin: 16
+        anchors.bottomMargin: 16
+
+        height: 64
+        radius: 50
+
+//        Image {
+//            anchors.centerIn: parent
+//            sourceSize: Qt.size(32)
+//            source: "qrc:/nebula/resources/navbar/home-selected.svg"
+//        }
+
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+        }
+    }
+
     Component {
         id: mainView
 

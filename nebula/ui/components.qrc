@@ -19,6 +19,7 @@
         <file>components/VPNAvatar.qml</file>
         <file>components/VPNBoldInterLabel.qml</file>
         <file>components/VPNBoldLabel.qml</file>
+        <file>components/VPNBottomNavigationBar.qml</file>
         <file>components/VPNButtonBase.qml</file>
         <file>components/VPNButtonLoader.qml</file>
         <file>components/VPNButton.qml</file>
