@@ -16,7 +16,7 @@ ColumnLayout {
     Layout.maximumWidth: parent.width - VPNTheme.theme.windowMargin
     Layout.alignment: Qt.AlignHCenter
     Layout.fillHeight: false
-    visible: VPNSurveyModel.hasSurvey || VPN.updateRecommended || isWasmViewer
+    visible: VPN.updateRecommended || isWasmViewer
     property var stackviewMode: StackView.Immediate
     property string updateURL: ""
 
@@ -37,24 +37,4 @@ ColumnLayout {
              VPN.hideUpdateRecommendedAlert();
         }
     }
-
-    VPNAlert {
-        id: surveyAlert
-        isLayout: true
-        alertType: alertTypes.success
-
-        //% "We’d love your feedback!"
-        alertText: qsTrId("vpn.systray.survey.wouldLoveYourFeedback")
-        //% "Take Survey"
-        alertActionText: qsTrId("vpn.systray.survey.takeSurvey")
-        visible: VPNSurveyModel.hasSurvey || isWasmViewer
-
-        onActionPressed: ()=>{
-            VPNSurveyModel.openCurrentSurvey();
-        }
-        onClosePressed: ()=>{
-            VPNSurveyModel.dismissCurrentSurvey();
-        }
-    }
-
 }

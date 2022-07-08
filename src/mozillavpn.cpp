@@ -33,7 +33,6 @@
 #include "tasks/products/taskproducts.h"
 #include "tasks/removedevice/taskremovedevice.h"
 #include "tasks/servers/taskservers.h"
-#include "tasks/surveydata/tasksurveydata.h"
 #include "tasks/sendfeedback/tasksendfeedback.h"
 #include "tasks/getfeaturelist/taskgetfeaturelist.h"
 #include "taskscheduler.h"
@@ -118,8 +117,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {
     TaskScheduler::scheduleTask(new TaskGroup(
         {new TaskAccount(), new TaskServers(), new TaskCaptivePortalLookup(),
-         new TaskHeartbeat(), new TaskSurveyData(), new TaskGetFeatureList(),
-         new TaskAddonIndex()}));
+         new TaskHeartbeat(), new TaskGetFeatureList(), new TaskAddonIndex()}));
   });
 
   connect(this, &MozillaVPN::stateChanged, [this]() {
@@ -324,10 +322,6 @@ void MozillaVPN::initialize() {
     // We do not care about CaptivePortal settings.
   }
 
-  if (!m_private->m_surveyModel.fromSettings()) {
-    // We do not care about Survey settings.
-  }
-
   if (!modelsInitialized()) {
     logger.error() << "Models not initialized yet";
     settingsHolder->clear();
@@ -342,8 +336,7 @@ void MozillaVPN::initialize() {
   }
 
   QList<Task*> refreshTasks{new TaskAccount(), new TaskServers(),
-                            new TaskCaptivePortalLookup(),
-                            new TaskSurveyData()};
+                            new TaskCaptivePortalLookup()};
 
   if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
     refreshTasks.append(new TaskProducts());
@@ -699,8 +692,6 @@ void MozillaVPN::completeActivation() {
     TaskScheduler::scheduleTask(new TaskProducts());
   }
 
-  TaskScheduler::scheduleTask(new TaskSurveyData());
-
   // Finally we are able to activate the client.
   TaskScheduler::scheduleTask(new TaskFunction([this]() { maybeStateMain(); }));
 }
@@ -882,17 +873,6 @@ void MozillaVPN::accountChecked(const QByteArray& json) {
 
   // To test the subscription needed view, comment out this line:
   // m_private->m_controller.subscriptionNeeded();
-}
-
-void MozillaVPN::surveyChecked(const QByteArray& json) {
-  logger.debug() << "Survey checked";
-
-  if (!m_private->m_surveyModel.fromJson(json)) {
-    logger.error() << "Failed to parse the Survey JSON data";
-    return;
-  }
-
-  m_private->m_surveyModel.writeSettings();
 }
 
 void MozillaVPN::cancelAuthentication() {

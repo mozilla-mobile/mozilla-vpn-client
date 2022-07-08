@@ -69,14 +69,6 @@ SETTING_BOOL(connectionChangeNotification,     // getter
              false                             // remove when reset
 )
 
-SETTING_STRINGLIST(consumedSurveys,     // getter
-                   setConsumedSurveys,  // setter
-                   hasConsumedSurveys,  // has
-                   "consumedSurveys",   // key
-                   QStringList(),       // default value
-                   false                // remove when reset
-)
-
 SETTING_STRING(currentServerCity,     // getter
                setCurrentServerCity,  // setter
                hasCurrentServerCity,  // has
@@ -312,14 +304,6 @@ SETTING_BOOL(startAtBoot,     // getter
              "startAtBoot",   // key
              false,           // default value
              false            // remove when reset
-)
-
-SETTING_BYTEARRAY(surveys,     // getter
-                  setSurveys,  // setter
-                  hasSurveys,  // has
-                  "surveys",   // key
-                  "",          // default value
-                  true         // remove when reset
 )
 
 SETTING_BOOL(systemLanguageCodeMigrated,     // getter

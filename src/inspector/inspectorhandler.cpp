@@ -805,34 +805,6 @@ static QList<InspectorCommand> s_commands{
                      }},
 #endif
 
-    InspectorCommand{
-        "reset_surveys",
-        "Reset the list of triggered surveys and the installation time", 0,
-        [](InspectorHandler*, const QList<QByteArray>&) {
-          SettingsHolder* settingsHolder = SettingsHolder::instance();
-          Q_ASSERT(settingsHolder);
-
-          settingsHolder->setInstallationTime(QDateTime::currentDateTime());
-          settingsHolder->setConsumedSurveys(QStringList());
-
-          return QJsonObject();
-        }},
-    InspectorCommand{
-        "dismiss_surveys", "Dismisses all surveys", 0,
-        [](InspectorHandler*, const QList<QByteArray>&) {
-          SettingsHolder* settingsHolder = SettingsHolder::instance();
-          Q_ASSERT(settingsHolder);
-          auto surveys = MozillaVPN::instance()->surveyModel()->surveys();
-          QStringList consumedSurveys;
-          for (auto& survey : surveys) {
-            consumedSurveys.append(survey.id());
-          }
-          settingsHolder->setInstallationTime(QDateTime::currentDateTime());
-          settingsHolder->setConsumedSurveys(consumedSurveys);
-          MozillaVPN::instance()->surveyModel()->dismissCurrentSurvey();
-          return QJsonObject();
-        }},
-
     InspectorCommand{"devices", "Retrieve the list of devices", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        MozillaVPN* vpn = MozillaVPN::instance();

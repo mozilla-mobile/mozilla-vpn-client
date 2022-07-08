@@ -189,10 +189,6 @@ target_sources(mozillavpn PRIVATE
     models/subscriptiondata.h
     models/supportcategorymodel.cpp
     models/supportcategorymodel.h
-    models/survey.cpp
-    models/survey.h
-    models/surveymodel.cpp
-    models/surveymodel.h
     models/user.cpp
     models/user.h
     models/whatsnewmodel.cpp
@@ -291,8 +287,6 @@ target_sources(mozillavpn PRIVATE
     tasks/sendfeedback/tasksendfeedback.h
     tasks/servers/taskservers.cpp
     tasks/servers/taskservers.h
-    tasks/surveydata/tasksurveydata.cpp
-    tasks/surveydata/tasksurveydata.h
     telemetry.cpp
     telemetry.h
     theme.cpp

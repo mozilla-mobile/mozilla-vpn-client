@@ -110,10 +110,6 @@ NetworkRequest* NetworkRequest::createForIOSPurchase(Task* parent,
 }
 #endif
 
-NetworkRequest* NetworkRequest::createForSurveyData(Task* parent) {
-  return new NetworkRequest(parent, 1234, false);
-}
-
 NetworkRequest* NetworkRequest::createForFeedback(Task* parent,
                                                   const QString& feedbackText,
                                                   const QString& logs,

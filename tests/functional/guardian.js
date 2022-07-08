@@ -177,7 +177,6 @@ const GuardianEndpoints = {
       }
     },
 
-    '/api/v1/vpn/surveys': {status: 200, body: []},
     '/api/v1/vpn/dns/detectportal': {
       status: 200,
       body: [
