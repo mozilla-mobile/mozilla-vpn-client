@@ -330,5 +330,11 @@ if(NOT CMAKE_CROSSCOMPILING)
         systemtraynotificationhandler.h
         tasks/authenticate/desktopauthenticationlistener.cpp
         tasks/authenticate/desktopauthenticationlistener.h
+        server/serverconnection.cpp
+        server/serverconnection.h
+        server/serverhandler.cpp
+        server/serverhandler.h
     )
+
+    add_compile_definitions(MVPN_WEBEXTENSION)
 endif()
