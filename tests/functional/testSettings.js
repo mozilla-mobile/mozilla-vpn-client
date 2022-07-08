@@ -92,7 +92,8 @@ describe('Settings', function() {
       await vpn.clickOnElement('manageAccountButton');
       await vpn.waitForCondition(async () => {
         const url = await vpn.getLastUrl();
-        return url.includes('/r/vpn/account');
+        return url.includes('https://accounts.stage.mozaws.net') &&
+            url.includes('?email=test@mozilla.com');
       });
     }
   });
