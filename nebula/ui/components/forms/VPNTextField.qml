@@ -59,6 +59,7 @@ TextField {
 
     MouseArea {
         anchors.fill: textField
+        visible: !textField.activeFocus
         onPressed: {
             textField.forceActiveFocus();
         }
