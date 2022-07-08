@@ -24,6 +24,10 @@ class AddonMessage final : public Addon {
 
   ~AddonMessage();
 
+  Q_INVOKABLE void dismiss();
+
+  bool enabled() const override;
+
  private:
   AddonMessage(QObject* parent, const QString& manifestFileName,
                const QString& id, const QString& name);
@@ -31,6 +35,8 @@ class AddonMessage final : public Addon {
  private:
   QString m_titleId;
   Composer* m_composer = nullptr;
+
+  bool m_dismissed = false;
 };
 
 #endif  // ADDONMESSAGE_H

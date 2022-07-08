@@ -5,6 +5,7 @@
 #include "addonmessage.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "settingsholder.h"
 
 #include <QJsonObject>
 
@@ -16,6 +17,15 @@ Logger logger(LOG_MAIN, "AddonMessage");
 Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
                             const QString& id, const QString& name,
                             const QJsonObject& obj) {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  QStringList dismissedAddonMessages = settingsHolder->dismissedAddonMessages();
+  if (dismissedAddonMessages.contains(id)) {
+    logger.info() << "Message" << id << "has been already dismissed";
+    return nullptr;
+  }
+
   QJsonObject messageObj = obj["message"].toObject();
 
   QString messageId = messageObj["id"].toString();
@@ -47,3 +57,23 @@ AddonMessage::AddonMessage(QObject* parent, const QString& manifestFileName,
 }
 
 AddonMessage::~AddonMessage() { MVPN_COUNT_DTOR(AddonMessage); }
+
+void AddonMessage::dismiss() {
+  m_dismissed = true;
+  disable();
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  QStringList dismissedAddonMessages = settingsHolder->dismissedAddonMessages();
+  dismissedAddonMessages.append(id());
+  settingsHolder->setDismissedAddonMessages(dismissedAddonMessages);
+}
+
+bool AddonMessage::enabled() const {
+  if (!Addon::enabled()) {
+    return false;
+  }
+
+  return !m_dismissed;
+}

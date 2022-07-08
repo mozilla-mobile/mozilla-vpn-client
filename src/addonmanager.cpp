@@ -219,6 +219,8 @@ bool AddonManager::loadManifest(const QString& manifestFileName,
     // In theory, we could be smart and try to add/remove lines, but the
     // changing of conditions should happen rarely. Let's refresh the entire
     // model for now.
+    // In case, with multiple messages, the UI will start flickering, we can do
+    // something better.
     endResetModel();
   });
 

@@ -7,9 +7,9 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
+import Mozilla.VPN.qmlcomponents 1.0
 import components 0.1
 import components.forms 0.1
-
 
 Item {
     id: root
@@ -17,12 +17,12 @@ Item {
     VPNMenu {
         id: menu
         // Do not translate this string!
-        title: "Tutorials - REMOVE ME"
+        title: "Messages - REMOVE ME"
     }
 
     VPNFlickable {
         id: vpnFlickable
-        flickContentHeight: tutorialsHolder.height + 100
+        flickContentHeight: messagessHolder.height + 100
         anchors.top: menu.bottom
         height: root.height - menu.height
         anchors.left: parent.left
@@ -34,33 +34,35 @@ Item {
             anchors.leftMargin: VPNTheme.theme.windowMargin
 
             spacing: VPNTheme.theme.windowMargin
-            id: tutorialsHolder
+            id: messagessHolder
+
+            VPNFilterProxyModel {
+                id: messagesModel
+                source: VPNAddonManager
+                filterCallback: obj => obj.addon.type === "message"
+            }
 
             Repeater {
-                model: VPNTutorial
+                model: messagesModel
                 delegate: VPNCheckBoxRow {
                     // I'm too lazy to create a proper view.
-                    function showTutorialContent(tutorial) {
+                    function showMessageContent(addon) {
                         const list = [];
-                        list.push("Translate title: " + qsTrId(tutorial.titleId));
-                        list.push("Translate subtitle: " + qsTrId(tutorial.subtitleId));
-                        list.push("Image: " + tutorial.image);
-                        list.push("Highlighted: " + tutorial.highlighted + "(" + (tutorial === VPNTutorial.highlightedTutorial ? "true" : "false")  + ")");
-
+                        list.push("Translate title: " + qsTrId(addon.titleId));
+                        list.push("Blocks: " + addon.composer.blocks.length);
                         return list.join("\n");
                     }
 
                     showDivider: false
-                    labelText: tutorial.id
-                    subLabelText: showTutorialContent(tutorial)
+                    labelText: addon.id
+                    subLabelText: showMessageContent(addon)
                     showAppImage: false
                     // Only enable the list on features where devModeEnable has any impact
                     enabled: true
                     Layout.minimumHeight: VPNTheme.theme.rowHeight * 1.5
 
                     onClicked: {
-                       VPNTutorial.play(tutorial);
-                       VPNCloseEventHandler.removeAllStackViews();
+                       addon.dismiss();
                     }
                 }
             }
