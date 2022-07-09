@@ -928,8 +928,8 @@ static QList<InspectorCommand> s_commands{
                        // This is a debugging method. We don't need to compute
                        // the hash of the addon because we will not be able to
                        // find it in the addon index.
-                       obj["value"] = AddonManager::instance()->loadManifest(
-                           arguments[1], "INVALID SHA256");
+                       obj["value"] =
+                           AddonManager::instance()->loadManifest(arguments[1]);
                        return obj;
                      }},
 
