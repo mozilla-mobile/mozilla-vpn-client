@@ -10,4 +10,9 @@ class TestPushMessage : public TestHelper {
  private slots:
   void tst_invalidMessagesAreIgnored();
   void tst_validMessagesAreParsedAndExecuted();
+
+  // Message handler tests are under
+  // `test/functional/testPushMessageHandlers.js`, because these rely too much
+  // on the MozillaVPN singleton state and so cannot be easily tests as unit
+  // tests where that singletong is mostly no-op.
 };

@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+const WebSocketServer = require('websocket').server;
 const Server = require('./server.js');
 const constants = require('./constants.js');
 
@@ -207,14 +208,27 @@ const GuardianEndpoints = {
 };
 
 let server = null;
+let wsServer = null;
 module.exports = {
   start() {
     server = new Server('Guardian', constants.GUARDIAN_PORT, GuardianEndpoints);
+
+    wsServer = new WebSocketServer({
+      httpServer: server._server,
+      autoAcceptConnections: true,
+    });
+
     return constants.GUARDIAN_PORT;
   },
 
   stop() {
+    wsServer.closeAllConnections();
+    wsServer.unmount();
     server.stop();
+  },
+
+  broadcastMessage(message) {
+    wsServer.broadcast(message);
   },
 
   get overrideEndpoints() {
