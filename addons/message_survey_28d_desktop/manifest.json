@@ -1,0 +1,16 @@
+{
+  "api_version": "0.1",
+  "id": "message_survey_28d_desktop",
+  "name": "Survey 28d Desktop",
+  "type": "message",
+  "conditions": {
+    "trigger_time": 2419200,
+    "platforms": ["windows", "macos", "linux"],
+    "locales": ["en"]
+  },
+  "message": {
+    "id": "survey_28d_mobile",
+    "title": "TODO",
+    "blocks": []
+  }
+}

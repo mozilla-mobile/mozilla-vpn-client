@@ -47,6 +47,14 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/addons/addonmessage.h
     ${MVPN_SOURCE_DIR}/addons/addontutorial.cpp
     ${MVPN_SOURCE_DIR}/addons/addontutorial.h
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcher.cpp
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcher.h
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchergroup.cpp
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchergroup.h
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherlocales.cpp
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherlocales.h
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h
     ${MVPN_SOURCE_DIR}/adjust/adjustfiltering.cpp
     ${MVPN_SOURCE_DIR}/adjust/adjustfiltering.h
     ${MVPN_SOURCE_DIR}/adjust/adjustproxypackagehandler.cpp

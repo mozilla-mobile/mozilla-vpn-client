@@ -34,10 +34,7 @@ Addon* AddonDemo::create(QObject* parent, const QString& manifestFileName,
     return nullptr;
   }
 
-  Addon* addon = new AddonDemo(parent, manifestFileName, id, name, qmlFileName);
-  emit AddonManager::instance()->runAddon(addon);
-
-  return addon;
+  return new AddonDemo(parent, manifestFileName, id, name, qmlFileName);
 }
 
 AddonDemo::AddonDemo(QObject* parent, const QString& manifestFileName,
@@ -56,4 +53,9 @@ QString AddonDemo::qml() const {
   }
 
   return QString("file:%1").arg(m_qmlFileName);
+}
+
+void AddonDemo::enable() {
+  Addon::enable();
+  emit AddonManager::instance()->runAddon(this);
 }

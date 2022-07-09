@@ -11,6 +11,17 @@
         "type": "string"
       }
     },
+    "env": {
+      "type": "string",
+      "description": "Enable the addon only in a particular environment: staging, production"
+    },
+    "locales": {
+      "type": "array",
+      "description": "List of supported locales",
+      "items": {
+        "type": "string"
+      }
+    },
     "platforms": {
       "type": "array",
       "description": "List of supported platforms",
@@ -40,6 +51,10 @@
         },
         "required": [ "setting", "value", "op" ]
       }
+    },
+    "trigger_time": {
+      "type": "number",
+      "description": "How many seconds from the first execution of the mozilla vpn client"
     }
   }
 }

@@ -28,6 +28,8 @@ class AddonDemo final : public Addon {
   AddonDemo(QObject* parent, const QString& manifestFileName, const QString& id,
             const QString& name, const QString& qmlFileName);
 
+  void enable() override;
+
  private:
   QString m_qmlFileName;
 };

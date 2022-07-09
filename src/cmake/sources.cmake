@@ -22,6 +22,14 @@ target_sources(mozillavpn PRIVATE
     addons/addonmessage.h
     addons/addontutorial.cpp
     addons/addontutorial.h
+    addons/conditionwatchers/addonconditionwatcher.cpp
+    addons/conditionwatchers/addonconditionwatcher.h
+    addons/conditionwatchers/addonconditionwatchergroup.cpp
+    addons/conditionwatchers/addonconditionwatchergroup.h
+    addons/conditionwatchers/addonconditionwatcherlocales.cpp
+    addons/conditionwatchers/addonconditionwatcherlocales.h
+    addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp
+    addons/conditionwatchers/addonconditionwatchertriggertimesecs.h
     appimageprovider.h
     applistprovider.h
     apppermission.cpp

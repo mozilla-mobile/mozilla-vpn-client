@@ -10,6 +10,10 @@ SOURCES += \
         addons/addoni18n.cpp \
         addons/addonmessage.cpp \
         addons/addontutorial.cpp \
+        addons/conditionwatchers/addonconditionwatcher.cpp \
+        addons/conditionwatchers/addonconditionwatchergroup.cpp \
+        addons/conditionwatchers/addonconditionwatcherlocales.cpp \
+        addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp \
         apppermission.cpp \
         authenticationlistener.cpp \
         authenticationinapp/authenticationinapp.cpp \
@@ -162,6 +166,10 @@ HEADERS += \
         addons/addoni18n.h \
         addons/addonmessage.h \
         addons/addontutorial.h \
+        addons/conditionwatchers/addonconditionwatcher.h \
+        addons/conditionwatchers/addonconditionwatcherlocales.h \
+        addons/conditionwatchers/addonconditionwatchertriggertimesecs.h \
+        addons/conditionwatchers/addonconditionwatchergroup.h \
         appimageprovider.h \
         apppermission.h \
         applistprovider.h \

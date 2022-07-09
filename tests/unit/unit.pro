@@ -50,6 +50,10 @@ HEADERS += \
     ../../src/addons/addoni18n.h \
     ../../src/addons/addonmessage.h \
     ../../src/addons/addontutorial.h \
+    ../../src/addons/conditionwatchers/addonconditionwatcher.h \
+    ../../src/addons/conditionwatchers/addonconditionwatchergroup.h \
+    ../../src/addons/conditionwatchers/addonconditionwatcherlocales.h \
+    ../../src/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h \
     ../../src/adjust/adjustfiltering.h \
     ../../src/adjust/adjustproxypackagehandler.h \
     ../../src/captiveportal/captiveportal.h \
@@ -166,6 +170,10 @@ SOURCES += \
     ../../src/addons/addoni18n.cpp \
     ../../src/addons/addonmessage.cpp \
     ../../src/addons/addontutorial.cpp \
+    ../../src/addons/conditionwatchers/addonconditionwatcher.cpp \
+    ../../src/addons/conditionwatchers/addonconditionwatchergroup.cpp \
+    ../../src/addons/conditionwatchers/addonconditionwatcherlocales.cpp \
+    ../../src/addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp \
     ../../src/adjust/adjustfiltering.cpp \
     ../../src/adjust/adjustproxypackagehandler.cpp \
     ../../src/captiveportal/captiveportal.cpp \
