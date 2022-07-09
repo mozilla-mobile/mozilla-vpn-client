@@ -51,7 +51,7 @@ add_custom_command(
     DEPENDS mozillavpn
     COMMAND ${CMAKE_COMMAND} -E remove_directory -f ${CMAKE_CURRENT_BINARY_DIR}/staging
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/staging
-    COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_BUNDLE_DIR:mozillavpn>
+    COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_FILE_DIR:mozillavpn>
        ${CMAKE_CURRENT_BINARY_DIR}/staging/Applications/$<TARGET_PROPERTY:mozillavpn,OUTPUT_NAME>.app/
     COMMAND pkgbuild --identifier "$<TARGET_PROPERTY:mozillavpn,MACOSX_BUNDLE_GUI_IDENTIFIER>" --version "2.0"
         --scripts ${CMAKE_CURRENT_SOURCE_DIR}/scripts --root ${CMAKE_CURRENT_BINARY_DIR}/staging
