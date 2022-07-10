@@ -6,6 +6,7 @@ VPNAvatar 0.1 VPNAvatar.qml
 VPNBoldInterLabel 0.1 VPNBoldInterLabel.qml
 VPNBoldLabel 0.1 VPNBoldLabel.qml
 VPNBottomNavigationBar 0.1 VPNBottomNavigationBar.qml
+VPNBottomNavigationBarButton 0.1 VPNBottomNavigationBarButton.qml
 VPNButton 0.1 VPNButton.qml
 VPNButtonBase 0.1 VPNButtonBase.qml
 VPNButtonLoader 0.1 VPNButtonLoader.qml

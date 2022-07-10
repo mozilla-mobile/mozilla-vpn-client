@@ -337,6 +337,8 @@
         <file>resources/navbar/home-selected.svg</file>
         <file>resources/navbar/messages.svg</file>
         <file>resources/navbar/messages-selected.svg</file>
+        <file>resources/navbar/messages-notification.svg</file>
+        <file>resources/navbar/messages-notification-selected.svg</file>
         <file>resources/navbar/settings.svg</file>
         <file>resources/navbar/settings-selected.svg</file> 
     </qresource>

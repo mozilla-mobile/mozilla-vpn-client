@@ -129,19 +129,53 @@ Window {
         anchors.rightMargin: 16
         anchors.bottomMargin: 16
 
-        height: 64
-        radius: 50
+        height: VPNTheme.theme.navBarHeight
+        radius: height / 2
+        visible: !VPNTutorial.playing
 
-//        Image {
-//            anchors.centerIn: parent
-//            sourceSize: Qt.size(32)
-//            source: "qrc:/nebula/resources/navbar/home-selected.svg"
-//        }
-
-        MouseArea {
-            anchors.fill: parent
-            hoverEnabled: true
+        ButtonGroup {
+            id: navBarTabsButtonGroup
         }
+
+        tabs: [
+            //Each tab is wrapped in an item so that the tab buttons themselves aren't stretched in VPNBottomNavigationBar when setting their Layout.fillWidth property
+            //Can't use item as root object for VPNBottomNavigationBarButton because it needs to conform to AbstractButton so it can join a button group
+            Item {
+                VPNBottomNavigationBarButton {
+                    anchors.centerIn: parent
+                    source: checked ? "qrc:/nebula/resources/navbar/home-selected.svg" : "qrc:/nebula/resources/navbar/home.svg"
+                    ButtonGroup.group: navBarTabsButtonGroup
+                    checked: true
+                    accessibleName: VPNl18n.NavBarHomeTab
+                }
+            },
+            Item {
+                VPNBottomNavigationBarButton {
+                    anchors.centerIn: parent
+                    source: checked ? (hasNotification ? "qrc:/nebula/resources/navbar/messages-notification-selected.svg" : "qrc:/nebula/resources/navbar/messages-selected.svg") : (hasNotification ? "qrc:/nebula/resources/navbar/messages-notification.svg" : "qrc:/nebula/resources/navbar/messages.svg")
+                    ButtonGroup.group: navBarTabsButtonGroup
+                    accessibleName: VPNl18n.NavBarMessagesTab
+                }
+            },
+            Item {
+                VPNBottomNavigationBarButton {
+                    anchors.centerIn: parent
+                    source: checked ? "qrc:/nebula/resources/navbar/settings-selected.svg" : "qrc:/nebula/resources/navbar/settings.svg"
+                    ButtonGroup.group: navBarTabsButtonGroup
+                    accessibleName: VPNl18n.NavBarSettingsTab
+                }
+            }
+//            //test 4th button
+//            ,Item {
+//                VPNBottomNavigationBarButton {
+//                    anchors.centerIn: parent
+//                    source: checked ? "qrc:/nebula/resources/navbar/home-selected.svg" : "qrc:/nebula/resources/navbar/home.svg"
+//                    ButtonGroup.group: navBarTabsButtonGroup
+//                    checked: true
+//                    accessibleName: VPNl18n.NavBarHomeTab
+//                }
+//            }
+        ]
     }
 
     Component {
