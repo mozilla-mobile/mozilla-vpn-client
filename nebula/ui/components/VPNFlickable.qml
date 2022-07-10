@@ -63,7 +63,7 @@ Flickable {
         ensureVisAnimation.start();
     }
 
-    contentHeight: Math.max(window.safeContentHeight, flickContentHeight)
+    contentHeight: Math.max(window.safeContentHeight, flickContentHeight + VPNTheme.theme.navBarHeight /*ML TODO: only if flickcontentheight > height OR theres stuff at the bottom of the screen so flickcontentheight > x% of the screen height*/)
     boundsBehavior: Flickable.StopAtBounds
     opacity: 0
 
