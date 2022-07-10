@@ -14,6 +14,8 @@ VPNButtonBase {
     property bool skipEnsureVisible: false
     property var accessibleName
     property var buttonColorScheme: VPNTheme.theme.iconButtonLightBackground
+    property alias backgroundRadius: uiStates.radius
+    property alias uiStatesVisible: uiStates.visible
 
     height: VPNTheme.theme.rowHeight
     width: VPNTheme.theme.rowHeight
@@ -38,6 +40,7 @@ VPNButtonBase {
     }
 
     VPNUIStates {
+        id: uiStates
         itemToFocus: iconButton
         colorScheme: buttonColorScheme
     }
