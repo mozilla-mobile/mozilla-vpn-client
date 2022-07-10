@@ -28,6 +28,14 @@
 
 // Please! Keep the alphabetic order!
 
+SETTING_STRINGLIST(dismissedAddonMessages,      // getter
+                   setDismissedAddonMessages,   // setter
+                   hasDismissedAddonMessages,   // has
+                   "addons/dismissedMessages",  // key
+                   QStringList(),               // default value
+                   true                         // remove when reset
+)
+
 SETTING_BOOL(captivePortalAlert,     // getter
              setCaptivePortalAlert,  // setter
              hasCaptivePortalAlert,  // has

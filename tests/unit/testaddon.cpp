@@ -494,7 +494,10 @@ void TestAddon::message_create_data() {
 
   QJsonObject obj;
   obj["id"] = "foo";
-  QTest::addRow("invalid-id") << "foo" << obj << false;
+  QTest::addRow("no blocks") << "foo" << obj << false;
+
+  obj["blocks"] = QJsonArray();
+  QTest::addRow("good but empty") << "foo" << obj << true;
 }
 
 void TestAddon::message_create() {
@@ -517,6 +520,30 @@ void TestAddon::message_create() {
 
   QString messageTitleId = message->property("titleId").toString();
   QCOMPARE(messageTitleId, QString("message.%1.title").arg(id));
+}
+
+void TestAddon::message_dismiss() {
+  SettingsHolder settingsHolder;
+
+  QJsonObject messageObj;
+  messageObj["id"] = "foo";
+  messageObj["blocks"] = QJsonArray();
+
+  QJsonObject obj;
+  obj["message"] = messageObj;
+
+  QObject parent;
+  Addon* message = AddonMessage::create(&parent, "foo", "bar", "name", obj);
+  QVERIFY(!!message);
+  QVERIFY(message->enabled());
+
+  // After dismissing the message, it becomes inactive.
+  static_cast<AddonMessage*>(message)->dismiss();
+  QVERIFY(!message->enabled());
+
+  // No new messages are loaded for the same ID:
+  Addon* message2 = AddonMessage::create(&parent, "foo", "bar", "name", obj);
+  QVERIFY(!message2);
 }
 
 static TestAddon s_testAddon;

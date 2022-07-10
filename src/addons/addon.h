@@ -31,7 +31,7 @@ class Addon : public QObject {
 
   void retranslate();
 
-  bool enabled() const;
+  virtual bool enabled() const;
 
  signals:
   void conditionChanged(bool enabled);

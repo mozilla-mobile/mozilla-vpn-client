@@ -310,9 +310,6 @@ void Addon::maybeCreateConditionWatchers(const QJsonObject& conditions) {
   Q_ASSERT(m_conditionWatcher);
 
   connect(m_conditionWatcher, &AddonConditionWatcher::conditionChanged, this,
-          &Addon::conditionChanged);
-
-  connect(m_conditionWatcher, &AddonConditionWatcher::conditionChanged, this,
           [this](bool enabled) {
             if (enabled) {
               enable();
@@ -356,6 +353,12 @@ bool Addon::enabled() const {
 void Addon::enable() {
   QCoreApplication::installTranslator(&m_translator);
   retranslate();
+
+  emit conditionChanged(true);
 }
 
-void Addon::disable() { QCoreApplication::removeTranslator(&m_translator); }
+void Addon::disable() {
+  QCoreApplication::removeTranslator(&m_translator);
+
+  emit conditionChanged(false);
+}

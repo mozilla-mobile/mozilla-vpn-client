@@ -56,6 +56,6 @@ QString AddonDemo::qml() const {
 }
 
 void AddonDemo::enable() {
-  Addon::enable();
   emit AddonManager::instance()->runAddon(this);
+  Addon::enable();
 }

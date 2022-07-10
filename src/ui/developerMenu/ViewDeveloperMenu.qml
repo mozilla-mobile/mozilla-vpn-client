@@ -145,7 +145,7 @@ Item {
             }
 
             VPNSettingsItem {
-                id: tutorialLink
+                id: messagesLink
 
                 Layout.topMargin: VPNTheme.theme.listSpacing
                 Layout.leftMargin: VPNTheme.theme.windowMargin/2
@@ -153,11 +153,12 @@ Item {
                 Layout.fillWidth: true
 
                 // Do not translate this string!
-                settingTitle: "Tutorial - REMOVE ME!"
+                settingTitle: "Messages - REMOVE ME!"
                 imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: mainStackView.push("qrc:/ui/developerMenu/ViewTutorials.qml")
+                onClicked: mainStackView.push("qrc:/ui/developerMenu/ViewMessages.qml")
             }
+
 
             VPNSettingsItem {
                 id: animationsPlaygroundLink

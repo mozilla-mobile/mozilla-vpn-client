@@ -1,0 +1,16 @@
+{
+  "api_version": "0.1",
+  "id": "message_survey_staging_locale",
+  "name": "Staging Survey 1 secs",
+  "type": "message",
+  "conditions": {
+    "env": "staging",
+    "trigger_time": 1,
+    "locales": [ "en" ]
+  },
+  "message": {
+    "id": "message_survey_staging_locale",
+    "title": "TODO",
+    "blocks": []
+  }
+}

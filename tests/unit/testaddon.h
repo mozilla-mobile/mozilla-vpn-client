@@ -23,4 +23,6 @@ class TestAddon final : public TestHelper {
 
   void message_create_data();
   void message_create();
+
+  void message_dismiss();
 };
