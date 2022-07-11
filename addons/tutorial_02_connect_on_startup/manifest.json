@@ -3,7 +3,7 @@
   "id": "tutorial_02_connect_on_startup",
   "name": "Tutorial: Connect on startup",
   "conditions": {
-    "enabledFeatures": ["startOnBoot"]
+    "enabled_features": ["startOnBoot"]
   },
   "type": "tutorial",
   "tutorial": {

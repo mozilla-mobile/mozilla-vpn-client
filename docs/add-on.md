@@ -8,9 +8,14 @@ The condition object contains the following properties:
 
 | Property | Description | Type | Required |
 | --- | --- | --- | --- |
-| enabledFeatures | An array of features to be enabled | Array of string | No |
+| enabled_features | An array of features to be enabled | Array of string | No |
+| env | A string to match a particular env: staging, production | No |
+| locales | An array of locales to be checked | Array of string | No |
+| min_client_version | The min client version | String | No |
+| max_client_version | The max client version | String | No |
 | platforms | An array of platforms to be checked | Array of string | No |
 | settings | An array of Condition Setting object. See below | Array of Condition Setting object | No |
+| trigger_time | A number identifying the number of seconds from the first execution of the client | No |
 
 ### Condition Setting object
 
