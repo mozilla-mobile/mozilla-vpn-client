@@ -16,6 +16,7 @@
 #include "models/feature.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
+#include "update/versionapi.h"
 
 #include <QCoreApplication>
 #include <QDir>
@@ -77,6 +78,23 @@ bool evaluateConditionsEnv(const QString& env) {
 
   logger.info() << "Unknown env value:" << env;
   return false;
+}
+
+bool evaluateConditionsClientVersion(const QString& min, const QString& max) {
+  QString currentVersion = Constants::versionString();
+
+  if (!min.isEmpty() && VersionApi::compareVersions(min, currentVersion) == 1) {
+    logger.info() << "Min version is" << min << " curent" << currentVersion;
+    return false;
+  }
+
+  if (!max.isEmpty() &&
+      VersionApi::compareVersions(max, currentVersion) == -1) {
+    logger.info() << "Max version is" << min << " curent" << currentVersion;
+    return false;
+  }
+
+  return true;
 }
 
 bool evaluateConditionsSettingsOp(const QString& op, bool result) {
@@ -322,7 +340,7 @@ void Addon::maybeCreateConditionWatchers(const QJsonObject& conditions) {
 // static
 bool Addon::evaluateConditions(const QJsonObject& conditions) {
   if (!evaluateConditionsEnabledFeatures(
-          conditions["enabledFeatures"].toArray())) {
+          conditions["enabled_features"].toArray())) {
     return false;
   }
 
@@ -336,6 +354,12 @@ bool Addon::evaluateConditions(const QJsonObject& conditions) {
   }
 
   if (!evaluateConditionsEnv(conditions["env"].toString())) {
+    return false;
+  }
+
+  if (!evaluateConditionsClientVersion(
+          conditions["min_client_version"].toString(),
+          conditions["max_client_version"].toString())) {
     return false;
   }
 

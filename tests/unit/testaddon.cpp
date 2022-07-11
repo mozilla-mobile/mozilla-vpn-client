@@ -31,8 +31,8 @@ void TestAddon::conditions_data() {
 
   {
     QJsonObject obj;
-    obj["enabledFeatures"] = QJsonArray{"appReview"};
-    QTest::addRow("enabledFeatures") << obj << false << "" << QVariant();
+    obj["enabled_features"] = QJsonArray{"appReview"};
+    QTest::addRow("enabled_features") << obj << false << "" << QVariant();
   }
 
   {
@@ -109,6 +109,31 @@ void TestAddon::conditions_data() {
     obj["settings"] = QJsonArray{settings};
     QTest::addRow("op=neq settings - string")
         << obj << true << "foo" << QVariant("woow");
+  }
+
+  {
+    QJsonObject obj;
+    obj["min_client_version"] = "2.1";
+    QTest::addRow("min client version ok")
+        << obj << true << "" << QVariant("woow");
+  }
+  {
+    QJsonObject obj;
+    obj["min_client_version"] = "3.0";
+    QTest::addRow("min client version ko")
+        << obj << false << "" << QVariant("woow");
+  }
+  {
+    QJsonObject obj;
+    obj["max_client_version"] = "2.0";
+    QTest::addRow("max client version ko")
+        << obj << false << "" << QVariant("woow");
+  }
+  {
+    QJsonObject obj;
+    obj["max_client_version"] = "3.0";
+    QTest::addRow("max client version ok")
+        << obj << true << "" << QVariant("woow");
   }
 }
 
