@@ -133,10 +133,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/models/subscriptiondata.h
     ${MVPN_SOURCE_DIR}/models/supportcategorymodel.cpp
     ${MVPN_SOURCE_DIR}/models/supportcategorymodel.h
-    ${MVPN_SOURCE_DIR}/models/survey.cpp
-    ${MVPN_SOURCE_DIR}/models/survey.h
-    ${MVPN_SOURCE_DIR}/models/surveymodel.cpp
-    ${MVPN_SOURCE_DIR}/models/surveymodel.h
     ${MVPN_SOURCE_DIR}/models/user.cpp
     ${MVPN_SOURCE_DIR}/models/user.h
     ${MVPN_SOURCE_DIR}/models/whatsnewmodel.cpp

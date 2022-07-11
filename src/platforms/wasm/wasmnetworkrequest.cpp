@@ -206,15 +206,6 @@ NetworkRequest* NetworkRequest::createForHeartbeat(Task* parent) {
 }
 
 // static
-NetworkRequest* NetworkRequest::createForSurveyData(Task* parent) {
-  Q_ASSERT(parent);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
-  return r;
-}
-
-// static
 NetworkRequest* NetworkRequest::createForFeedback(Task* parent,
                                                   const QString& feedbackText,
                                                   const QString& logs,

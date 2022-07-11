@@ -94,8 +94,6 @@ SOURCES += \
         models/serverdata.cpp \
         models/subscriptiondata.cpp \
         models/supportcategorymodel.cpp \
-        models/survey.cpp \
-        models/surveymodel.cpp \
         models/user.cpp \
         models/whatsnewmodel.cpp \
         mozillavpn.cpp \
@@ -143,7 +141,6 @@ SOURCES += \
         tasks/removedevice/taskremovedevice.cpp \
         tasks/sendfeedback/tasksendfeedback.cpp \
         tasks/servers/taskservers.cpp \
-        tasks/surveydata/tasksurveydata.cpp \
         taskscheduler.cpp \
         telemetry.cpp \
         theme.cpp \
@@ -249,8 +246,6 @@ HEADERS += \
         models/serverdata.h \
         models/subscriptiondata.h \
         models/supportcategorymodel.h \
-        models/survey.h \
-        models/surveymodel.h \
         models/user.h \
         models/whatsnewmodel.h \
         mozillavpn.h \
@@ -300,7 +295,6 @@ HEADERS += \
         tasks/removedevice/taskremovedevice.h \
         tasks/sendfeedback/tasksendfeedback.h \
         tasks/servers/taskservers.h \
-        tasks/surveydata/tasksurveydata.h \
         taskscheduler.h \
         telemetry.h \
         theme.h \

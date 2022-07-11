@@ -23,7 +23,6 @@
 #include "models/serverdata.h"
 #include "models/subscriptiondata.h"
 #include "models/supportcategorymodel.h"
-#include "models/surveymodel.h"
 #include "models/user.h"
 #include "models/whatsnewmodel.h"
 #include "networkwatcher.h"
@@ -248,7 +247,6 @@ class MozillaVPN final : public QObject {
   SubscriptionData* subscriptionData() {
     return &m_private->m_subscriptionData;
   }
-  SurveyModel* surveyModel() { return &m_private->m_surveyModel; }
   Telemetry* telemetry() { return &m_private->m_telemetry; }
   Theme* theme() { return &m_private->m_theme; }
   WhatsNewModel* whatsNewModel() { return &m_private->m_whatsNewModel; }
@@ -267,8 +265,6 @@ class MozillaVPN final : public QObject {
   void serversFetched(const QByteArray& serverData);
 
   void accountChecked(const QByteArray& json);
-
-  void surveyChecked(const QByteArray& json);
 
   const QList<Server> exitServers() const;
   const QList<Server> entryServers() const;
@@ -459,7 +455,6 @@ class MozillaVPN final : public QObject {
     StatusIcon m_statusIcon;
     SubscriptionData m_subscriptionData;
     ProfileFlow m_profileFlow;
-    SurveyModel m_surveyModel;
     Telemetry m_telemetry;
     Theme m_theme;
     WebSocketHandler m_webSocketHandler;

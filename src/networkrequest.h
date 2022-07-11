@@ -66,8 +66,6 @@ class NetworkRequest final : public QObject {
 
   static NetworkRequest* createForHeartbeat(Task* parent);
 
-  static NetworkRequest* createForSurveyData(Task* parent);
-
   static NetworkRequest* createForFeedback(Task* parent,
                                            const QString& feedbackText,
                                            const QString& logs,
