@@ -190,3 +190,9 @@ extension/bridge/target
 extension/bridge/vendor
 extension/bridge/.cargo_home
 extension/bridge/.cargo
+
+
+
+# LEL
+android/**/*.so
+.rustc_info.json

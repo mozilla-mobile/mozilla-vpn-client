@@ -24,6 +24,9 @@ target_link_libraries(mozillavpn PRIVATE
     Qt6::Test
     Qt6::WebSockets
     Qt6::Widgets
+    Qt6::Qml
+    Qt6::QuickControls2
+    Qt6::QuickTemplates2
 )
 
 target_link_libraries(mozillavpn PRIVATE glean lottie nebula translations)

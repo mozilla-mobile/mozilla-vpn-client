@@ -7,33 +7,10 @@ plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
 }
-
-// This module either loads the Qt-Provided bindings, present in qtAndroid dir
-// or replaces them with it's basic android counter part form moc/ , so dev's can enjoy
-// code completeion and such in their favorite ide
+apply plugin: QtConfig
 
 dependencies {
-    // This will be populated by importQtJar
-    implementation fileTree(dir: 'build/qt_jar', include: ['*.jar', '*.aar'])
-}
-ext{
-    // Todo: move all of that selector logic into BuildSRC
-    // They are totally interchangeable
-    if(new File(mozillavpn_qt_android_dir+"/android_arm64_v8a").exists()){
-        qtAndroidDir = mozillavpn_qt_android_dir+"/android_arm64_v8a"
-    }
-    else if(new File(mozillavpn_qt_android_dir+"/android_armeabi_v7a").exists()){
-        qtAndroidDir = mozillavpn_qt_android_dir+"/android_armeabi_v7a"
-    }
-    else if(new File(mozillavpn_qt_android_dir+"/android_x86").exists()){
-        qtAndroidDir = mozillavpn_qt_android_dir+"/android_x86"
-    }
-    else if(new File(mozillavpn_qt_android_dir+"/android_x86_64").exists()){
-        qtAndroidDir = mozillavpn_qt_android_dir+"/android_x86_64"
-    }
-    else{
-        throw new Exception("NOOOO")
-    }
+    implementation fileTree(dir: QtConfiguration.anyAndroid+"/jar", include: ['*.jar', '*.aar'])
 }
 
 android {
@@ -42,12 +19,15 @@ android {
         minSdkVersion Config.minSdkVersion
     }
     sourceSets {
-        println(qtAndroidDir)
         main {
-            java.srcDirs = [qtAndroidDir + '/src/android/java/src/org/qtproject/qt/android/bindings/']
-            aidl.srcDirs = [qtAndroidDir + '/src/android/java/src/org/qtproject/qt/android/bindings/']
+            java.srcDirs = [QtConfiguration.bindingsFolder]
+            aidl.srcDirs = [QtConfiguration.bindingsFolder]
             manifest.srcFile 'AndroidManifest.xml'
-            jniLibs.srcDirs = ['qt_plugins']
+            jniLibs.srcDirs = [
+                    "test",
+                    //'build/qt_plugins',
+                    //'build/qml_plugins',
+            ]
         }
     }
     compileOptions {
@@ -56,24 +36,28 @@ android {
     }
 }
 
-task importQtJar(type: Copy) {
-    from(qtAndroidDir+'/jar') {
-        include '*.jar'
-    }
-    into 'build/qt_jar'
-}
-preBuild.dependsOn importQtJar
-
-
 // Tasks to Import the Platform plugins
-task importQtPluginsArm64(type: Copy) {
-    from(mozillavpn_qt_android_dir+"/android_arm64_v8a/plugins/platforms") {
-        include '*.so'
-    }
-    into 'qt_plugins/arm64-v8a'
-    onlyIf {
-        (new File(mozillavpn_qt_android_dir+"/android_arm64_v8a")).exists()
-    }
+task importQtPlatformPlugins(type: Copy) {
+    with QtConfiguration.copyAndroidPlugin(QtConfiguration.x64,QtConfiguration.NDK_x64)
+    with QtConfiguration.copyAndroidPlugin(QtConfiguration.arm64,QtConfiguration.NDK_arm64)
+    with QtConfiguration.copyAndroidPlugin(QtConfiguration.x86,QtConfiguration.NDK_x86)
+    with QtConfiguration.copyAndroidPlugin(QtConfiguration.armv7,QtConfiguration.NDK_armv7)
+    into("build/qt_plugins")
 }
-preBuild.dependsOn importQtPluginsArm64
+preBuild.dependsOn importQtPlatformPlugins
 
+// Tasks to Import the QML plugins
+task importQMLPlugins(type: Copy) {
+    onlyIf {
+        // Qml import scanning is quite a bit of i/o, while the output rearly changes.
+        // so once we have done this, don't do it again until the cache is cleared
+        !(new File("build/qml_plugins")).exists()
+    }
+
+    with QtConfiguration.copyQMLPlugin(QtConfiguration.x64,QtConfiguration.NDK_x64)
+    with QtConfiguration.copyQMLPlugin(QtConfiguration.arm64,QtConfiguration.NDK_arm64)
+    with QtConfiguration.copyQMLPlugin(QtConfiguration.x86,QtConfiguration.NDK_x86)
+    with QtConfiguration.copyQMLPlugin(QtConfiguration.armv7,QtConfiguration.NDK_armv7)
+    into("build/qml_plugins")
+}
+preBuild.dependsOn importQMLPlugins

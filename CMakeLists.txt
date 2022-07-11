@@ -22,7 +22,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
     if(${CMAKE_ANDROID_ARCH_ABI} STREQUAL "arm64-v8a")
         set(QT_ARCH_DIR  "${ANDROID_QT_DIR}/android_arm64_v8a")
     elseif(${CMAKE_ANDROID_ARCH_ABI} STREQUAL "armeabi-v7a")
-        set(QT_ARCH_DIR  "${ANDROID_QT_DIR}/android_armeabi_v7a")
+        set(QT_ARCH_DIR  "${ANDROID_QT_DIR}/android_armv7")
     elseif(${CMAKE_ANDROID_ARCH_ABI} STREQUAL "x86")
         set(QT_ARCH_DIR  "${ANDROID_QT_DIR}/android_x86")
     elseif(${CMAKE_ANDROID_ARCH_ABI} STREQUAL "x86_64")
@@ -123,6 +123,8 @@ find_package(Qt6 COMPONENTS
     NetworkAuth
     Qml
     Quick
+    QuickControls2
+    QuickTemplates2
     QuickTest
     Sql
     Test

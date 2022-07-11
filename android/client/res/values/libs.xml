@@ -17,10 +17,9 @@
         <item>arm64-v8a;Qt6Xml_arm64-v8a</item>
         <item>arm64-v8a;Qt6Network_arm64-v8a</item>
         <item>arm64-v8a;Qt6Sql_arm64-v8a</item>
-        <item>arm64-v8a;mozillavpn_arm64-v8a</item>
         <item>arm64-v8a;Qt6OpenGL_arm64-v8a</item>
         <item>arm64-v8a;Qt6Test_arm64-v8a</item>
-        <item>arm64-v8a;qml_Mozilla_VPN_qmlcomponents_mozillavpnplugin_arm64-v8a</item>
+        <item>arm64-v8a;Qt6QuickControls2_arm64-v8a</item>
     </array>
 
     <array name="load_local_libs">

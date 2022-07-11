@@ -7,6 +7,7 @@ plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
 }
+apply plugin: QtConfig
 
 android {
     ndkVersion '24.0.8215888'
@@ -33,11 +34,10 @@ android {
     defaultConfig {
         externalNativeBuild {
             cmake {
-                // TODO, find out how to tell gradle to only do one
-                abiFilters "arm64-v8a" // "armeabi-v7a", "armeabi"
+                abiFilters QtConfiguration.abis.split(",") // We can't pass lists, so lets split it here :)
                 // Passes optional arguments to CMake.
-                arguments "-DANDROID_QT_DIR=${mozillavpn_qt_android_dir}",
-                          "-DQT_HOST_PATH_CMAKE_DIR=${mozillavpn_qt_host_dir}/lib/cmake",
+                arguments "-DANDROID_QT_DIR=${QtConfiguration.qtAndroidRootDir}",
+                          "-DQT_HOST_PATH_CMAKE_DIR=${QtConfiguration.host}/lib/cmake",
                           "-DANDROID_STL=c++_shared",
                           "--target mozillavpn"
             }
