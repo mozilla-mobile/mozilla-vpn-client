@@ -10,6 +10,7 @@ plugins {
 apply plugin: QtConfig
 
 dependencies {
+   // implementation project(path: ':openssl')
     implementation fileTree(dir: QtConfiguration.anyAndroid+"/jar", include: ['*.jar', '*.aar'])
 }
 
@@ -24,9 +25,9 @@ android {
             aidl.srcDirs = [QtConfiguration.bindingsFolder]
             manifest.srcFile 'AndroidManifest.xml'
             jniLibs.srcDirs = [
-                    "test",
-                    //'build/qt_plugins',
-                    //'build/qml_plugins',
+                    //"test",
+                    'build/qt_plugins',
+                    'build/qml_plugins',
             ]
         }
     }
@@ -58,6 +59,11 @@ task importQMLPlugins(type: Copy) {
     with QtConfiguration.copyQMLPlugin(QtConfiguration.arm64,QtConfiguration.NDK_arm64)
     with QtConfiguration.copyQMLPlugin(QtConfiguration.x86,QtConfiguration.NDK_x86)
     with QtConfiguration.copyQMLPlugin(QtConfiguration.armv7,QtConfiguration.NDK_armv7)
+
+    with QtConfiguration.copyQMLCompat(QtConfiguration.x64,QtConfiguration.NDK_x64)
+    with QtConfiguration.copyQMLCompat(QtConfiguration.arm64,QtConfiguration.NDK_arm64)
+    with QtConfiguration.copyQMLCompat(QtConfiguration.x86,QtConfiguration.NDK_x86)
+    with QtConfiguration.copyQMLCompat(QtConfiguration.armv7,QtConfiguration.NDK_armv7)
     into("build/qml_plugins")
 }
 preBuild.dependsOn importQMLPlugins

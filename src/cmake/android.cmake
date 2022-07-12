@@ -4,6 +4,12 @@
 
 
 target_link_libraries(mozillavpn PRIVATE
+    Qt6::QuickControls2Impl
+    Qt6::QmlWorkerScript
+    Qt6::QuickLayouts
+    Qt6::QmlLocalStorage
+    Qt6::QuickShapesPrivate
+    Qt6::LabsQmlModels
     Qt6::Xml)
 
 # TODO: 
@@ -11,6 +17,8 @@ target_link_libraries(mozillavpn PRIVATE
 qt_import_plugins(mozillavpn
   INCLUDE_BY_TYPE platforms
 )
+include(../3rdparty/openSSL/CMakeLists.txt)
+
 
 target_link_libraries(
     mozillavpn PRIVATE

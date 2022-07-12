@@ -9,6 +9,8 @@ buildCache {
         removeUnusedEntriesAfterDays = 30
     }
 }
+include ':openssl'
 include ':daemon'
 include ':qtBindings'
 include ':client'
+

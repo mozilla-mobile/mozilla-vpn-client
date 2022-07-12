@@ -1,25 +1,49 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <!-- Todo: either automate this or let gradle/cmake invoke android-deploy-qt to create this file -->
-
-    <array name="bundled_libs">
-    </array>
-
     <array name="qt_libs">
         <item>arm64-v8a;Qt6Core_arm64-v8a</item>
-        <item>arm64-v8a;Qt6QmlModels_arm64-v8a</item>
-        <item>arm64-v8a;Qt6WebSockets_arm64-v8a</item>
         <item>arm64-v8a;Qt6Gui_arm64-v8a</item>
-        <item>arm64-v8a;Qt6Qml_arm64-v8a</item>
-        <item>arm64-v8a;Qt6Widgets_arm64-v8a</item>
         <item>arm64-v8a;Qt6NetworkAuth_arm64-v8a</item>
-        <item>arm64-v8a;Qt6Quick_arm64-v8a</item>
-        <item>arm64-v8a;Qt6Xml_arm64-v8a</item>
         <item>arm64-v8a;Qt6Network_arm64-v8a</item>
-        <item>arm64-v8a;Qt6Sql_arm64-v8a</item>
         <item>arm64-v8a;Qt6OpenGL_arm64-v8a</item>
-        <item>arm64-v8a;Qt6Test_arm64-v8a</item>
+        <item>arm64-v8a;Qt6QmlModels_arm64-v8a</item>
+        <item>arm64-v8a;Qt6Qml_arm64-v8a</item>
         <item>arm64-v8a;Qt6QuickControls2_arm64-v8a</item>
+        <item>arm64-v8a;Qt6QuickTemplates2_arm64-v8a</item>
+        <item>arm64-v8a;Qt6Quick_arm64-v8a</item>
+        <item>arm64-v8a;Qt6Sql_arm64-v8a</item>
+        <item>arm64-v8a;Qt6Test_arm64-v8a</item>
+        <item>arm64-v8a;Qt6WebSockets_arm64-v8a</item>
+        <item>arm64-v8a;Qt6Widgets_arm64-v8a</item>
+        <item>arm64-v8a;Qt6Xml_arm64-v8a</item>
+        <item>arm64-v8a;c++_shared</item>
+        <item>arm64-v8a;jnidispatch</item>
+        <item>arm64-v8a;plugins_platforms_qtforandroid_arm64-v8a</item>
+        <item>arm64-v8a;qml_QtQml_Models_modelsplugin_arm64-v8a</item>
+        <item>arm64-v8a;qml_QtQml_WorkerScript_workerscriptplugin_arm64-v8a</item>
+        <item>arm64-v8a;qml_QtQml_qmlplugin_arm64-v8a</item>
+        <item>arm64-v8a;qml_QtQuick_Controls_Basic_impl_qtquickcontrols2basicstyleimplplugin_arm64-v8a</item>
+        <item>arm64-v8a;qml_QtQuick_Controls_Basic_qtquickcontrols2basicstyleplugin_arm64-v8a</item>
+        <item>arm64-v8a;qml_QtQuick_Controls_Fusion_impl_qtquickcontrols2fusionstyleimplplugin_arm64-v8a</item>
+        <item>arm64-v8a;qml_QtQuick_Controls_Fusion_qtquickcontrols2fusionstyleplugin_arm64-v8a</item>
+        <item>arm64-v8a;qml_QtQuick_Controls_Imagine_impl_qtquickcontrols2imaginestyleimplplugin_arm64-v8a</item>
+        <item>arm64-v8a;qml_QtQuick_Controls_Imagine_qtquickcontrols2imaginestyleplugin_arm64-v8a</item>
+        <item>arm64-v8a;qml_QtQuick_Controls_Material_impl_qtquickcontrols2materialstyleimplplugin_arm64-v8a</item>
+        <item>arm64-v8a;qml_QtQuick_Controls_Material_qtquickcontrols2materialstyleplugin_arm64-v8a</item>
+        <item>arm64-v8a;qml_QtQuick_Controls_Universal_impl_qtquickcontrols2universalstyleimplplugin_arm64-v8a</item>
+        <item>arm64-v8a;qml_QtQuick_Controls_Universal_qtquickcontrols2universalstyleplugin_arm64-v8a</item>
+        <item>arm64-v8a;qml_QtQuick_Controls_impl_qtquickcontrols2implplugin_arm64-v8a</item>
+        <item>arm64-v8a;qml_QtQuick_Controls_qtquickcontrols2plugin_arm64-v8a</item>
+        <item>arm64-v8a;qml_QtQuick_Layouts_qquicklayoutsplugin_arm64-v8a</item>
+        <item>arm64-v8a;qml_QtQuick_LocalStorage_qmllocalstorageplugin_arm64-v8a</item>
+        <item>arm64-v8a;qml_QtQuick_Shapes_qmlshapesplugin_arm64-v8a</item>
+        <item>arm64-v8a;qml_QtQuick_Templates_qtquicktemplates2plugin_arm64-v8a</item>
+        <item>arm64-v8a;qml_QtQuick_Window_quickwindowplugin_arm64-v8a</item>
+        <item>arm64-v8a;qml_QtQuick_qtquick2plugin_arm64-v8a</item>
+        <item>arm64-v8a;qml_Qt_labs_qmlmodels_labsmodelsplugin_arm64-v8a</item>
+        <item>arm64-v8a;qml_Qt5Compat_GraphicalEffects_private_qtgraphicaleffectsprivateplugin_arm64-v8a</item>
+        <item>arm64-v8a;qml_Qt5Compat_GraphicalEffects_qtgraphicaleffectsplugin_arm64-v8a</item>
     </array>
 
     <array name="load_local_libs">

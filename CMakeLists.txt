@@ -124,6 +124,12 @@ find_package(Qt6 COMPONENTS
     Qml
     Quick
     QuickControls2
+    QmlWorkerScript
+    QuickControls2Impl
+    QuickLayouts
+    QmlLocalStorage
+    QuickShapesPrivate
+    LabsQmlModels
     QuickTemplates2
     QuickTest
     Sql

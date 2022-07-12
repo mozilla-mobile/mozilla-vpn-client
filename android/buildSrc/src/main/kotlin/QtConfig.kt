@@ -112,6 +112,20 @@ open class QTConfigurationExtension
         }
     }
 
+    fun copyQMLCompat(abi:String, target:String):CopySpec{
+        val copyTask = project.copySpec()
+        val path = getPath(abi)+"/qml/Qt5Compat/GraphicalEffects/private"
+        val Qt5CompatFolder = File(path)
+        if (!Qt5CompatFolder.exists()) {
+            return copyTask;
+        }
+        copyTask.from(path){
+            include("*.so")
+        }
+        copyTask.into(target)
+        return copyTask;
+    }
+
     // Generates Gradle Copy Tasks to for our QML imports for the given ABI
     fun copyQMLPlugin(abi:String, target:String):CopySpec{
         val imports = getQMLImports(abi)
