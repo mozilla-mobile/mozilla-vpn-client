@@ -17,6 +17,9 @@ class AddonManager final : public QAbstractListModel {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AddonManager)
 
+  Q_PROPERTY(
+      bool loadCompleted MEMBER m_loadCompleted NOTIFY loadCompletedChanged)
+
  public:
   Q_INVOKABLE Addon* pick(QJSValue filterCallback) const;
 
@@ -69,6 +72,8 @@ class AddonManager final : public QAbstractListModel {
  signals:
   void runAddon(Addon* addon);
 
+  void loadCompletedChanged();
+
  private:
   struct AddonData {
     QByteArray m_sha256;
@@ -77,6 +82,8 @@ class AddonManager final : public QAbstractListModel {
   };
 
   QMap<QString, AddonData> m_addons;
+
+  bool m_loadCompleted = false;
 };
 
 #endif  // ADDONMANAGER_H
