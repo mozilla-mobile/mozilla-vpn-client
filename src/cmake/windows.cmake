@@ -81,13 +81,13 @@ endif()
 include(cmake/golang.cmake)
 
 # Enable Balrog for update support.
-add_definitions(-DMVPN_BALROG)
-add_go_library(balrog ../balrog/balrog-api.go)
-target_link_libraries(mozillavpn PRIVATE balrog)
-target_sources(mozillavpn PRIVATE
-    update/balrog.cpp
-    update/balrog.h
-)
+#add_definitions(-DMVPN_BALROG)
+#add_go_library(balrog ../balrog/balrog-api.go)
+#target_link_libraries(mozillavpn PRIVATE balrog)
+#target_sources(mozillavpn PRIVATE
+#    update/balrog.cpp
+#    update/balrog.h
+#)
 
 include(cmake/signature.cmake)
 

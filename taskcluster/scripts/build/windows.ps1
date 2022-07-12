@@ -50,7 +50,7 @@ $ErrorActionPreference = "Stop"
 
 
 $env:PATH ="windows\tunnel\.deps\go\bin;$env:PATH"
-
+go -v 
 
 mkdir build
 cmake -S . -B build -GNinja
