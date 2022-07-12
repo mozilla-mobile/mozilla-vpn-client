@@ -44,6 +44,11 @@ $env:OPENSSL_USE_STATIC_LIBS = "TRUE"
 #Do not continune from this point on when we encounter an error
 $ErrorActionPreference = "Stop"
 
+# Call the Subcommands for balrog and tunnel dll outside of cmake, as they setup go for us.
+. "windows/tunnel/build.cmd"
+. "balrog/build.cmd"
+
+
 mkdir build
 cmake -S . -B build -GNinja
 cmake --build build --config RelWithDebInfo
