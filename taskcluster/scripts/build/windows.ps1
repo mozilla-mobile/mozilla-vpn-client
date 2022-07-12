@@ -49,6 +49,9 @@ $ErrorActionPreference = "Stop"
 . "balrog/build.cmd"
 
 
+$env:PATH ="windows\tunnel\.deps\go\bin;$env:PATH"
+
+
 mkdir build
 cmake -S . -B build -GNinja
 cmake --build build --config RelWithDebInfo
