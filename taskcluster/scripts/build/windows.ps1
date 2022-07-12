@@ -45,7 +45,7 @@ $env:OPENSSL_USE_STATIC_LIBS = "TRUE"
 $ErrorActionPreference = "Stop"
 
 mkdir build
-cmake -S . -B build
+cmake -S . -B build -GNinja
 cmake --build build --config RelWithDebInfo
 cmake --build build --config RelWithDebInfo --target msi
 
