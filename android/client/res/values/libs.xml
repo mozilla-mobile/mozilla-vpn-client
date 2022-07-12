@@ -19,6 +19,7 @@
         <item>arm64-v8a;Qt6WebSockets_arm64-v8a</item>
         <item>arm64-v8a;Qt6Widgets_arm64-v8a</item>
         <item>arm64-v8a;Qt6Xml_arm64-v8a</item>
+        <item>arm64-v8a;Qt6Svg_arm64-v8a</item>
         <item>arm64-v8a;c++_shared</item>
         <item>arm64-v8a;jnidispatch</item>
         <item>arm64-v8a;plugins_platforms_qtforandroid_arm64-v8a</item>
@@ -46,6 +47,7 @@
         <item>arm64-v8a;qml_Qt_labs_qmlmodels_labsmodelsplugin_arm64-v8a</item>
         <item>arm64-v8a;qml_Qt5Compat_GraphicalEffects_private_qtgraphicaleffectsprivateplugin_arm64-v8a</item>
         <item>arm64-v8a;qml_Qt5Compat_GraphicalEffects_qtgraphicaleffectsplugin_arm64-v8a</item>
+        <item>arm64-v8a;plugins_tls_qopensslbackend_arm64-v8a</item>
     </array>
 
     <array name="load_local_libs">

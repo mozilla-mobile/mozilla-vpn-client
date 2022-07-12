@@ -112,6 +112,17 @@ open class QTConfigurationExtension
         }
     }
 
+    fun importQtPlugin(name:String,abi:String,target:String):CopySpec{
+        val pluginPath = File("$abi/plugins/$name")
+        if(!pluginPath.exists()){
+            return project.copySpec()
+        }
+        return project.copySpec {
+            this.into(target)
+            this.from(pluginPath)
+        }
+    }
+
     fun copyQMLCompat(abi:String, target:String):CopySpec{
         val copyTask = project.copySpec()
         val path = getPath(abi)+"/qml/Qt5Compat/GraphicalEffects/private"
