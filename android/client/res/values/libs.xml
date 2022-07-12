@@ -2,6 +2,8 @@
 <resources>
     <!-- Todo: either automate this or let gradle/cmake invoke android-deploy-qt to create this file -->
     <array name="qt_libs">
+        <item>arm64-v8a;crypto_1_1</item>
+        <item>arm64-v8a;ssl_1_1</item>
         <item>arm64-v8a;Qt6Core_arm64-v8a</item>
         <item>arm64-v8a;Qt6Gui_arm64-v8a</item>
         <item>arm64-v8a;Qt6NetworkAuth_arm64-v8a</item>
@@ -48,6 +50,16 @@
 
     <array name="load_local_libs">
         <item>arm64-v8a;libplugins_platforms_qtforandroid_arm64-v8a.so</item>
+    </array>
+    <array name="bundled_libs">
+        <item>x86_64;crypto_1_1</item>
+        <item>x86_64;ssl_1_1</item>
+        <item>arm64-v8a;crypto_1_1</item>
+        <item>arm64-v8a;ssl_1_1</item>
+        <item>x86;crypto_1_1</item>
+        <item>x86;ssl_1_1</item>
+        <item>armeabi-v7a;crypto_1_1</item>
+        <item>armeabi-v7a;ssl_1_1</item>
     </array>
 
     <string name="static_init_classes"> </string>

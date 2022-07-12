@@ -45,6 +45,7 @@ dependencies {
     implementation project(path: ':client')
     implementation project(path: ':daemon')
     implementation project(path: ':qtBindings')
+    implementation project(path: ':openssl')
 
     implementation Dependencies.androidx_core
     implementation Dependencies.android_installreferrer

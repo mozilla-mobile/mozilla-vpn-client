@@ -6,6 +6,8 @@ cmake_minimum_required(VERSION 3.16)
 
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
+    # Include 
+    #include(3rdparty/openSSL/CMakeLists.txt)
 
     if("${ANDROID_QT_DIR}" STREQUAL "")
         message(FATAL_ERROR "ANDROID_QT_DIR was not provided")
@@ -132,6 +134,7 @@ find_package(Qt6 COMPONENTS
     LabsQmlModels
     QuickTemplates2
     QuickTest
+    Svg
     Sql
     Test
     WebSockets
