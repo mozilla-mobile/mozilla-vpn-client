@@ -54,18 +54,19 @@ $ErrorActionPreference = "Stop"
 
 
 $env:PATH ="windows\tunnel\.deps\go\bin;$env:PATH"
-go -v 
+
 
 mkdir build
 cmake -S . -B build -GNinja
 cmake --build build --config RelWithDebInfo
-cmake --install build --prefix "$TASK_WORKDIR/artifacts"
+cmake --build build --config RelWithDebInfo --target msi
+cmake --install build --prefix "$TASK_WORKDIR/unsigned"
 
 Write-Output "Writing Artifacts"
 Copy-Item -Path MozillaVPN.msi -Destination $ARTIFACTS_PATH/MozillaVPN.msi
 Copy-Item -Path MozillaVPN.pdb -Destination $ARTIFACTS_PATH/MozillaVPN.pdb
 
-Compress-Archive -Path unsigned/* -Destination $TASK_WORKDIR/artifacts/unsigned.zip
+Compress-Archive -Path $TASK_WORKDIR/unsigned/* -Destination $TASK_WORKDIR/artifacts/unsigned.zip
 
 Write-Output "Artifacts Location:$TASK_WORKDIR/artifacts"
 Get-ChildItem -Path $TASK_WORKDIR/artifacts
