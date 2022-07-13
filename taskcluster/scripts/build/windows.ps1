@@ -56,8 +56,8 @@ $ErrorActionPreference = "Stop"
 $env:PATH ="windows\tunnel\.deps\go\bin;$env:PATH"
 
 
-mkdir $TASK_WORKDIR/build 
-$BUILD_DIR =resolve-path "$TASK_WORKDIR/build"
+mkdir $TASK_WORKDIR/cmake_build 
+$BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
 
 cmake -S . -B $BUILD_DIR -GNinja
 cmake --build $BUILD_DIR --config RelWithDebInfo
