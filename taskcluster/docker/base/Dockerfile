@@ -36,6 +36,8 @@ RUN apt-get update -qq \
                           git \
                           wget \
                           zip \
+                          cmake \
+                          ninja \
     && apt-get clean
 
 RUN pip install --upgrade pip

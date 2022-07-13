@@ -52,3 +52,17 @@ qt-ios:
     worker-type: b-linux
     worker:
         docker-image: {in-tree: base}
+
+qt-linux-testing:
+    description: "Static QT Build / linux"
+    run:
+        script: compile_qt_linux.sh
+        resources:
+            - taskcluster/scripts/toolchain/compile_qt_linux.sh
+        toolchain-alias: qt-testing
+        toolchain-artifact: public/build/qt6_linux.zip
+    treeherder:
+        symbol: TL(qt-test)
+    worker-type: b-linux
+    worker:
+        docker-image: {in-tree: base}
