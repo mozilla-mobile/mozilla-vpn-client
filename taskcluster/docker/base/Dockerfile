@@ -39,6 +39,8 @@ RUN apt-get update -qq \
                           cmake \
                           ninja-build \
                           curl \
+                          clang \
+                          
     && apt-get clean
 
 RUN pip install --upgrade pip
