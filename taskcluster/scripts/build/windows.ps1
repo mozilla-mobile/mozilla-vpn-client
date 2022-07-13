@@ -59,7 +59,7 @@ go -v
 mkdir build
 cmake -S . -B build -GNinja
 cmake --build build --config RelWithDebInfo
-cmake --build build --config RelWithDebInfo --target msi
+cmake --install build --prefix "$TASK_WORKDIR/artifacts"
 
 Write-Output "Writing Artifacts"
 Copy-Item -Path MozillaVPN.msi -Destination $ARTIFACTS_PATH/MozillaVPN.msi
