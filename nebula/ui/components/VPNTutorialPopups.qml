@@ -56,11 +56,15 @@ Item {
         verticalPadding: VPNTheme.theme.windowMargin
         horizontalPadding: VPNTheme.theme.windowMargin
         focus: true
-
         y: {
             if (targetElement) {
                const windowHeight = window.height;
-               const targetElementDistanceFromTop = targetElement.mapToItem(window.contentItem, 0, 0).y
+               let targetElementDistanceFromTop = getTargetElementYPosition();
+
+                if (windowHeight < targetElementDistanceFromTop && targetElement.ensureVisibleDuringTutorial) {
+                    targetElement.ensureVisibleDuringTutorial();
+                    targetElementDistanceFromTop = getTargetElementYPosition();
+                }
 
                if (targetElementDistanceFromTop + targetElement.height + tutorialTooltip.implicitHeight > windowHeight) {
                    tooltipPositionedAboveTargetElement = true;
@@ -174,6 +178,9 @@ Item {
                     sourceSize.width: VPNTheme.theme.windowMargin
                 }
             }
+        }
+        function getTargetElementYPosition() {
+            return targetElement.mapToItem(window.contentItem, 0, 0).y;
         }
     }
 

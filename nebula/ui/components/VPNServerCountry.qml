@@ -20,6 +20,13 @@ VPNClickableRow {
     property var currentCityIndex
     property alias serverCountryName: countryName.text
 
+    function ensureVisibleDuringTutorial() {
+        const serverListYCenter = vpnFlickable.height / 2 - listOffset
+        const emitterYPosition = serverCountry.y + - serverListYCenter;
+        const destinationY = (emitterYPosition + vpnFlickable.height > vpnFlickable.contentHeight) ? vpnFlickable.contentHeight - vpnFlickable.height : emitterYPosition;
+        vpnFlickable.contentY = destinationY;
+    }
+
     function openCityList() {
         cityListVisible = !cityListVisible;
         const itemDistanceFromWindowTop = serverCountry.mapToItem(null, 0, 0).y - multiHopMenuHeight;
