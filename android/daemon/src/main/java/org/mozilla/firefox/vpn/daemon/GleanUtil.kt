@@ -5,6 +5,9 @@
 package org.mozilla.firefox.vpn.daemon
 
 import android.content.Context
+import android.content.pm.PackageInfo
+import android.os.Build
+import androidx.annotation.RequiresApi
 import mozilla.telemetry.glean.BuildInfo
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.config.Configuration
@@ -21,6 +24,7 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.primaryConstructor
 
+
 // @MainThread
 @Suppress("UNUSED") // All the calls are via jni from the client, so we can ignore
 class GleanUtil(aParent: Context) {
@@ -34,7 +38,15 @@ class GleanUtil(aParent: Context) {
             "production"
         }
         val conf = Configuration(Configuration.DEFAULT_TELEMETRY_ENDPOINT, channel, 500, HttpURLConnectionUploader())
-        val build = BuildInfo("versionCode", "VersionName", Calendar.getInstance())
+        val info: PackageInfo = mParent.packageManager.getPackageInfo(mParent.packageName, 0)
+        val build = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            BuildInfo(info.longVersionCode.toString(), info.versionName, Calendar.getInstance())
+        } else {
+            BuildInfo(info.versionCode.toString(), info.versionName, Calendar.getInstance())
+        }
+        Log.e("tag", build.versionCode)
+        Log.e("tag", build.versionName)
+
         Glean.registerPings(Pings)
         Glean.initialize(
             applicationContext = mParent.applicationContext,
