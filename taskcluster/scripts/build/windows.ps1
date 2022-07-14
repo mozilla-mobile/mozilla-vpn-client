@@ -2,6 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+$BACKUP_PATH = $env:PATH 
+
 
 $REPO_ROOT_PATH =resolve-path "$PSScriptRoot/../../../"
 $FETCHES_PATH =resolve-path "$REPO_ROOT_PATH/../../fetches"
@@ -52,8 +54,13 @@ $ErrorActionPreference = "Stop"
 . "windows/tunnel/build.cmd"
 . "balrog/build.cmd"
 
-
+set GOPATH="windows\tunnel\.deps\go\bin"
+set GOROOT="windows\tunnel\.deps\go\bin"
 $env:PATH ="windows\tunnel\.deps\go\bin;$env:PATH"
+
+# Set it for everything now.
+setx PATH $env:PATH /m
+
 
 
 mkdir $TASK_WORKDIR/cmake_build 
@@ -82,3 +89,6 @@ Stop-Process -Name "vctip.exe" -Force -ErrorAction SilentlyContinue
 Write-Output "Open Processes:"
 
 wmic process get description,executablepath 
+
+# Reset path to not fuck up other tasks in the machine
+setx PATH $BACKUP_PATH -m
