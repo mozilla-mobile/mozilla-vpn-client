@@ -14,16 +14,12 @@ add_custom_target(tunneldll ALL
     BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/tunnel.dll ${CMAKE_CURRENT_BINARY_DIR}/tunnel.h
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMAND ${CMAKE_COMMAND} -E env 
-                GOCACHE=${CMAKE_BINARY_DIR}/go-cache
-                GOOS=windows CGO_ENABLED=1
-                CGO_CFLAGS="-O3 -Wall -Wno-unused-function -Wno-switch -std=gnu11 -DWINVER=0x0601"
-                CGO_LDFLAGS="-Wl,--dynamicbase -Wl,--nxcompat -Wl,--export-all-symbols -Wl,--high-entropy-va"
-            go build -buildmode c-shared -ldflags="-w -s" -trimpath -v -o "${CMAKE_CURRENT_BINARY_DIR}/tunnel.dll"
+            go version
 )
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_BINARY_DIR}/go-cache)
 
-install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/tunnel.dll
-    ${CMAKE_CURRENT_BINARY_DIR}/.deps/wintun/bin/${CMAKE_SYSTEM_PROCESSOR}/wintun.dll
-    DESTINATION .
-)
+#install(FILES
+#    ${CMAKE_CURRENT_BINARY_DIR}/tunnel.dll
+#    ${CMAKE_CURRENT_BINARY_DIR}/.deps/wintun/bin/${CMAKE_SYSTEM_PROCESSOR}/wintun.dll
+#    DESTINATION .
+#)
