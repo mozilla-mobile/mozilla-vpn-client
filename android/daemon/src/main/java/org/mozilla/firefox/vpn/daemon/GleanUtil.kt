@@ -7,7 +7,6 @@ package org.mozilla.firefox.vpn.daemon
 import android.content.Context
 import android.content.pm.PackageInfo
 import android.os.Build
-import androidx.annotation.RequiresApi
 import mozilla.telemetry.glean.BuildInfo
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.config.Configuration
@@ -23,7 +22,6 @@ import java.util.*
 import kotlin.reflect.KParameter
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.primaryConstructor
-
 
 // @MainThread
 @Suppress("UNUSED") // All the calls are via jni from the client, so we can ignore
@@ -44,9 +42,6 @@ class GleanUtil(aParent: Context) {
         } else {
             BuildInfo(info.versionCode.toString(), info.versionName, Calendar.getInstance())
         }
-        Log.e("tag", build.versionCode)
-        Log.e("tag", build.versionName)
-
         Glean.registerPings(Pings)
         Glean.initialize(
             applicationContext = mParent.applicationContext,
