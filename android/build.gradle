@@ -39,13 +39,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlinx-serialization'
+apply plugin: VPNVersionPlugin
 
 
 dependencies {
     implementation project(path: ':client')
     implementation project(path: ':daemon')
-    implementation project(path: ':qtBindings')
-    implementation project(path: ':openssl')
 
     implementation Dependencies.androidx_core
     implementation Dependencies.android_installreferrer
@@ -77,36 +76,18 @@ android {
             jniLibs.srcDirs = ['libs']
        }
         debug{
-            try {
-                res.srcDirs =  [
-                        qtAndroidDir + '/res',
+            res.srcDirs = [
                         'resources/all',
                         'resources/debug',
                         'res'
-                ]
-            }catch(Exception ignored){
-                res.srcDirs = [
-                        'resources/all',
-                        'resources/debug',
-                        'res'
-                ]
-            }
+            ]
         }
         release{
-            try {
-                res.srcDirs =  [
-                        qtAndroidDir + '/res',
+            res.srcDirs = [
                         'resources/all',
                         'resources/release',
                         'res'
-                ]
-            }catch(Exception ignored){
-                res.srcDirs = [
-                        'resources/all',
-                        'resources/release',
-                        'res'
-                ]
-            }
+            ]
         }
     }
 
@@ -136,8 +117,10 @@ android {
         release {
             // That would enable treeshaking and remove java code that is just called from qt
             minifyEnabled false
+            ndk.debugSymbolLevel "FULL"
         }
         debug {
+            ndk.debugSymbolLevel "FULL"
             applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
             packagingOptions {
@@ -151,8 +134,8 @@ android {
         resConfig "en"
         minSdkVersion Config.minSdkVersion
         targetSdkVersion Config.targetSdkVersion
-        versionCode  System.getenv("VERSIONCODE")? System.getenv("VERSIONCODE")?.toInteger() : 99999
-        versionName  System.getenv("SHORTVERSION") ? System.getenv("SHORTVERSION"): ""
+        versionCode  VPNVersion.versionCode
+        versionName  VPNVersion.versionName
         buildConfigField "String", "ADJUST_SDK_TOKEN", '"' + System.getenv("ADJUST_SDK_TOKEN") + '"'
     }
     compileOptions {

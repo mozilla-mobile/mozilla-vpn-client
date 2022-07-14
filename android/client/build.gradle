@@ -9,6 +9,12 @@ plugins {
 }
 apply plugin: QtConfig
 
+dependencies {
+    // implementation project(path: ':openssl')
+    implementation fileTree(dir: QtConfiguration.anyAndroid+"/jar", include: ['*.jar', '*.aar'])
+}
+
+
 android {
     ndkVersion '24.0.8215888'
     compileSdkVersion Config.compileSdkVersion
@@ -18,7 +24,14 @@ android {
 
     sourceSets {
         main {
+            java.srcDirs = [QtConfiguration.bindingsFolder]
+            aidl.srcDirs = [QtConfiguration.bindingsFolder]
             manifest.srcFile 'AndroidManifest.xml'
+            jniLibs.srcDirs = [
+                    'build/qt_plugins',
+                    'build/qml_plugins',
+                    'build/ssl',
+            ]
             res.srcDirs =  [
                     "res"
             ]
@@ -44,4 +57,79 @@ android {
         }
     }
 
+}
+
+// Tasks to Import the Platform plugins
+task importQtPlatformPlugins(type: Copy) {
+    with QtConfiguration.copyAndroidPlugin(QtConfiguration.x64,QtConfiguration.NDK_x64)
+    with QtConfiguration.copyAndroidPlugin(QtConfiguration.arm64,QtConfiguration.NDK_arm64)
+    with QtConfiguration.copyAndroidPlugin(QtConfiguration.x86,QtConfiguration.NDK_x86)
+    with QtConfiguration.copyAndroidPlugin(QtConfiguration.armv7,QtConfiguration.NDK_armv7)
+
+    with QtConfiguration.importQtPlugin("tls",QtConfiguration.x64,QtConfiguration.NDK_x64)
+    with QtConfiguration.importQtPlugin("tls",QtConfiguration.arm64,QtConfiguration.NDK_arm64)
+    with QtConfiguration.importQtPlugin("tls",QtConfiguration.x86,QtConfiguration.NDK_x86)
+    with QtConfiguration.importQtPlugin("tls",QtConfiguration.armv7,QtConfiguration.NDK_armv7)
+
+    with QtConfiguration.importQtPlugin("imageformats",QtConfiguration.x64,QtConfiguration.NDK_x64)
+    with QtConfiguration.importQtPlugin("imageformats",QtConfiguration.arm64,QtConfiguration.NDK_arm64)
+    with QtConfiguration.importQtPlugin("imageformats",QtConfiguration.x86,QtConfiguration.NDK_x86)
+    with QtConfiguration.importQtPlugin("imageformats",QtConfiguration.armv7,QtConfiguration.NDK_armv7)
+
+    into("build/qt_plugins")
+}
+preBuild.dependsOn importQtPlatformPlugins
+
+// Tasks to Import the QML plugins
+task importQMLPlugins(type: Copy) {
+    onlyIf {
+        // Qml import scanning is quite a bit of i/o, while the output rearly changes.
+        // so once we have done this, don't do it again until the cache is cleared
+        !(new File("build/qml_plugins")).exists()
+    }
+
+    with QtConfiguration.copyQMLPlugin(QtConfiguration.x64,QtConfiguration.NDK_x64)
+    with QtConfiguration.copyQMLPlugin(QtConfiguration.arm64,QtConfiguration.NDK_arm64)
+    with QtConfiguration.copyQMLPlugin(QtConfiguration.x86,QtConfiguration.NDK_x86)
+    with QtConfiguration.copyQMLPlugin(QtConfiguration.armv7,QtConfiguration.NDK_armv7)
+
+    with QtConfiguration.copyQMLCompat(QtConfiguration.x64,QtConfiguration.NDK_x64)
+    with QtConfiguration.copyQMLCompat(QtConfiguration.arm64,QtConfiguration.NDK_arm64)
+    with QtConfiguration.copyQMLCompat(QtConfiguration.x86,QtConfiguration.NDK_x86)
+    with QtConfiguration.copyQMLCompat(QtConfiguration.armv7,QtConfiguration.NDK_armv7)
+    into("build/qml_plugins")
+}
+preBuild.dependsOn importQMLPlugins
+
+
+// Tasks to Import the Platform plugins
+task importOpenSSL(type: Copy) {
+    with(copySpec(){
+        from("../../3rdparty/openSSL/latest/arm")
+        into("armeabi-v7a")
+    })
+    with(copySpec(){
+        from("../../3rdparty/openSSL/latest/arm64")
+        into("arm64-v8a")
+    })
+    with(copySpec(){
+        from("../../3rdparty/openSSL/latest/x86")
+        into("x86")
+    })
+    with(copySpec(){
+        from("../../3rdparty/openSSL/latest/x86_64")
+        into("x86_64")
+    })
+    into("build/ssl")
+}
+preBuild.dependsOn importOpenSSL
+
+tasks.whenTaskAdded {
+    theTask ->
+        if (theTask.name.contains('externalNativeBuild')) {
+            theTask.doLast{
+                println "[*] begin to copy file."
+            }
+        }
+        println theTask.name
 }
