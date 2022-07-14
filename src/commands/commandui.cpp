@@ -547,8 +547,13 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterType<FilterProxyModel>("Mozilla.VPN", 1, 0,
                                       "VPNFilterProxyModel");
 
+#if MVPN_IOS && QT_VERSION >= 0x060000 && QT_VERSION < 0x060300
+    QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
+                     &MozillaVPN::quit);
+#else
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
                      &MozillaVPN::aboutToQuit);
+#endif
 
     QObject::connect(
         qApp, &QGuiApplication::commitDataRequest, &vpn,
