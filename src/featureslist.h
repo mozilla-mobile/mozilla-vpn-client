@@ -215,6 +215,14 @@ FEATURE_SIMPLE(shareLogs,      // Feature ID
                QStringList(),  // feature dependencies
                FeatureCallback_shareLogs)
 
+FEATURE_SIMPLE(socks5proxy,     // Feature ID
+               "Socks5 proxy",  // Feature name
+               "2.10",          // released
+               true,            // Can be flipped on
+               true,            // Can be flipped off
+               QStringList(),   // feature dependencies
+               FeatureCallback_socks5proxy)
+
 FEATURE_SIMPLE(splitTunnel,     // Feature ID
                "Split-tunnel",  // Feature name
                "2.4",           // released

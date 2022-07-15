@@ -16,6 +16,7 @@
         <file>developerMenu/ViewDeveloperMenu.qml</file>
         <file>developerMenu/ViewFeatureList.qml</file>
         <file>developerMenu/ViewMessages.qml</file>
+        <file>developerMenu/ViewSocks5Proxy.qml</file>
         <file>developerMenu/ViewThemeList.qml</file>
         <file>main.qml</file>
         <file>qmldir</file>

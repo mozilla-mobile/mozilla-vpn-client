@@ -90,6 +90,7 @@ target_sources(mozillavpn PRIVATE
 )
 
 include(cmake/signature.cmake)
+include(cmake/socks5proxy.cmake)
 
 install(TARGETS mozillavpn DESTINATION .)
 install(FILES $<TARGET_PDB_FILE:mozillavpn> DESTINATION . OPTIONAL)

@@ -145,8 +145,6 @@ Item {
             }
 
             VPNSettingsItem {
-                id: messagesLink
-
                 Layout.topMargin: VPNTheme.theme.listSpacing
                 Layout.leftMargin: VPNTheme.theme.windowMargin/2
                 Layout.rightMargin: VPNTheme.theme.windowMargin/2
@@ -157,6 +155,21 @@ Item {
                 imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 onClicked: mainStackView.push("qrc:/ui/developerMenu/ViewMessages.qml")
+            }
+
+            VPNSettingsItem {
+                Layout.topMargin: VPNTheme.theme.listSpacing
+                Layout.leftMargin: VPNTheme.theme.windowMargin/2
+                Layout.rightMargin: VPNTheme.theme.windowMargin/2
+                Layout.fillWidth: true
+
+                // Do not translate this string!
+                settingTitle: "Proxy - REMOVE ME!"
+                imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
+                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                onClicked: mainStackView.push("qrc:/ui/developerMenu/ViewSocks5Proxy.qml")
+
+                visible: VPNFeatureList.get("socks5proxy").isSupported
             }
 
 

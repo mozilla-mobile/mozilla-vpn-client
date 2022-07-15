@@ -98,6 +98,7 @@ add_subdirectory(src)
 add_subdirectory(glean)
 add_subdirectory(lottie)
 add_subdirectory(nebula)
+add_subdirectory(socks5proxy)
 add_subdirectory(translations)
 
 # Testing build targets

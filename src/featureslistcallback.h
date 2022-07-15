@@ -96,6 +96,14 @@ bool FeatureCallback_shareLogs() {
 #endif
 }
 
+bool FeatureCallback_socks5proxy() {
+#if defined(MVPN_SOCKS5PROXY)
+  return true;
+#else
+  return false;
+#endif
+}
+
 bool FeatureCallback_splitTunnel() {
 #if defined(MVPN_ANDROID) || defined(MVPN_WINDOWS) || defined(MVPN_DUMMY)
   return true;

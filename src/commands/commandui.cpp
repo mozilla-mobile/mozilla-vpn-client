@@ -78,6 +78,10 @@
 #  include "server/serverhandler.h"
 #endif
 
+#ifdef MVPN_SOCKS5PROXY
+#  include "socks5proxyhandler.h"
+#endif
+
 #include <QApplication>
 
 namespace {
@@ -529,6 +533,16 @@ int CommandUI::run(QStringList& tokens) {
           return obj;
         });
 
+#ifdef MVPN_SOCKS5PROXY
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNSocks5Proxy",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = Socks5ProxyHandler::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+#endif
+
 #if MVPN_IOS && QT_VERSION >= 0x060000 && QT_VERSION < 0x060300
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
                      &MozillaVPN::quit);
@@ -611,6 +625,10 @@ int CommandUI::run(QStringList& tokens) {
     ServerHandler serverHandler;
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &serverHandler,
                      &ServerHandler::close);
+#endif
+
+#ifdef MVPN_SOCKS5PROXY
+    Socks5ProxyHandler::instance();
 #endif
 
     // Let's go.
