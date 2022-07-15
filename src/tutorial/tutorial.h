@@ -15,7 +15,7 @@ class Addon;
 class AddonTutorial;
 class QJsonObject;
 
-class Tutorial final : public QObject {
+class Tutorial final : public QObject, public ExternalOpHandler::Blocker {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Tutorial)
   Q_PROPERTY(bool tooltipShown MEMBER m_tooltipShown NOTIFY tooltipShownChanged)
@@ -31,6 +31,7 @@ class Tutorial final : public QObject {
   Q_INVOKABLE void play(Addon* tutorial);
   Q_INVOKABLE void stop();
   Q_INVOKABLE void allowItem(const QString& objectName);
+  Q_INVOKABLE void interruptAccepted(ExternalOpHandler::Op op);
 
   bool isPlaying() const { return !!m_currentTutorial; }
 
@@ -40,16 +41,18 @@ class Tutorial final : public QObject {
                                 const QString& completionMessageText);
   void requireTooltipShown(AddonTutorial* tutorial, bool shown);
 
+  // ExternalOpHandler::Blocker
+  bool maybeBlockRequest(ExternalOpHandler::Op op) override;
+
  signals:
   void playingChanged();
   void tooltipNeeded(const QString& tooltipText, QObject* targetElement);
   void tooltipShownChanged();
   void tutorialCompleted(const QString& completionMessageText);
+  void interruptRequest(ExternalOpHandler::Op op);
 
  private:
   explicit Tutorial(QObject* parent);
-
-  void externalRequestReceived(ExternalOpHandler::Op op);
 
   QStringList m_allowedItems;
   bool m_tooltipShown = false;

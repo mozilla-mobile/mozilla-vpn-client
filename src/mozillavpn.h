@@ -224,7 +224,7 @@ class MozillaVPN final : public QObject {
   ConnectionHealth* connectionHealth() {
     return &m_private->m_connectionHealth;
   }
-  Controller* controller() { return &m_private->m_controller; }
+  Controller* controller();
   ServerData* currentServer() { return &m_private->m_serverData; }
   DeviceModel* deviceModel() { return &m_private->m_deviceModel; }
   FeedbackCategoryModel* feedbackCategoryModel() {

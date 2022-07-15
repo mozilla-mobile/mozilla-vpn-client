@@ -201,6 +201,8 @@ MozillaVPN::~MozillaVPN() {
   delete m_private;
 }
 
+Controller* MozillaVPN::controller() { return &m_private->m_controller; }
+
 MozillaVPN::State MozillaVPN::state() const { return m_state; }
 
 MozillaVPN::UserState MozillaVPN::userState() const { return m_userState; }
