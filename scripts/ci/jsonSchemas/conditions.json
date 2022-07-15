@@ -2,14 +2,33 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "additionalProperties": false,
-  "description": "Optional list of conditions to include this guide",
+  "description": "Optional list of conditions",
   "properties": {
-    "enabledFeatures": {
+    "enabled_features": {
       "type": "array",
       "description": "List of required features",
       "items": {
         "type": "string"
       }
+    },
+    "env": {
+      "type": "string",
+      "description": "Enable the addon only in a particular environment: staging, production"
+    },
+    "locales": {
+      "type": "array",
+      "description": "List of supported locales",
+      "items": {
+        "type": "string"
+      }
+    },
+    "min_client_version": {
+      "type": "string",
+      "description": "Enable the addon only if the client version is eq or higher than this valie"
+    },
+    "max_client_version": {
+      "type": "string",
+      "description": "Enable the addon only if the client version is eq or lower than this valie"
     },
     "platforms": {
       "type": "array",
@@ -40,6 +59,10 @@
         },
         "required": [ "setting", "value", "op" ]
       }
+    },
+    "trigger_time": {
+      "type": "number",
+      "description": "How many seconds from the first execution of the mozilla vpn client"
     }
   }
 }

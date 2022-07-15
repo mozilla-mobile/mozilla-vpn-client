@@ -8,7 +8,12 @@ SOURCES += \
         addons/addondemo.cpp \
         addons/addonguide.cpp \
         addons/addoni18n.cpp \
+        addons/addonmessage.cpp \
         addons/addontutorial.cpp \
+        addons/conditionwatchers/addonconditionwatcher.cpp \
+        addons/conditionwatchers/addonconditionwatchergroup.cpp \
+        addons/conditionwatchers/addonconditionwatcherlocales.cpp \
+        addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp \
         apppermission.cpp \
         authenticationlistener.cpp \
         authenticationinapp/authenticationinapp.cpp \
@@ -49,6 +54,7 @@ SOURCES += \
         dnshelper.cpp \
         dnspingsender.cpp \
         errorhandler.cpp \
+        externalophandler.cpp \
         filterproxymodel.cpp \
         fontloader.cpp \
         hacl-star/Hacl_Chacha20.c \
@@ -88,8 +94,6 @@ SOURCES += \
         models/serverdata.cpp \
         models/subscriptiondata.cpp \
         models/supportcategorymodel.cpp \
-        models/survey.cpp \
-        models/surveymodel.cpp \
         models/user.cpp \
         models/whatsnewmodel.cpp \
         mozillavpn.cpp \
@@ -137,7 +141,6 @@ SOURCES += \
         tasks/removedevice/taskremovedevice.cpp \
         tasks/sendfeedback/tasksendfeedback.cpp \
         tasks/servers/taskservers.cpp \
-        tasks/surveydata/tasksurveydata.cpp \
         taskscheduler.cpp \
         telemetry.cpp \
         theme.cpp \
@@ -158,7 +161,12 @@ HEADERS += \
         addons/addondemo.h \
         addons/addonguide.h \
         addons/addoni18n.h \
+        addons/addonmessage.h \
         addons/addontutorial.h \
+        addons/conditionwatchers/addonconditionwatcher.h \
+        addons/conditionwatchers/addonconditionwatcherlocales.h \
+        addons/conditionwatchers/addonconditionwatchertriggertimesecs.h \
+        addons/conditionwatchers/addonconditionwatchergroup.h \
         appimageprovider.h \
         apppermission.h \
         applistprovider.h \
@@ -203,6 +211,7 @@ HEADERS += \
         dnshelper.h \
         dnspingsender.h \
         errorhandler.h \
+        externalophandler.h \
         filterproxymodel.h \
         fontloader.h \
         hawkauth.h \
@@ -237,8 +246,6 @@ HEADERS += \
         models/serverdata.h \
         models/subscriptiondata.h \
         models/supportcategorymodel.h \
-        models/survey.h \
-        models/surveymodel.h \
         models/user.h \
         models/whatsnewmodel.h \
         mozillavpn.h \
@@ -288,7 +295,6 @@ HEADERS += \
         tasks/removedevice/taskremovedevice.h \
         tasks/sendfeedback/tasksendfeedback.h \
         tasks/servers/taskservers.h \
-        tasks/surveydata/tasksurveydata.h \
         taskscheduler.h \
         telemetry.h \
         theme.h \

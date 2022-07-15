@@ -202,7 +202,7 @@ int CommandUI::run(QStringList& tokens) {
     }
 #endif
     // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
-    QmlEngineHolder engineHolder;
+    QmlEngineHolder* engineHolder = new QmlEngineHolder();
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
 
     // TODO pending #3398
@@ -368,14 +368,6 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNProfileFlow",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance()->profileFlow();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNSurveyModel",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->surveyModel();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -567,7 +559,7 @@ int CommandUI::run(QStringList& tokens) {
     engine->load(url);
 
     NotificationHandler* notificationHandler =
-        NotificationHandler::create(&engineHolder);
+        NotificationHandler::create(engineHolder);
 
     QObject::connect(vpn.controller(), &Controller::stateChanged,
                      notificationHandler,
@@ -601,6 +593,7 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
       MozillaVPN::instance()->serverCountryModel()->retranslate();
+      MozillaVPN::instance()->currentServer()->retranslate();
     });
 
     InspectorHandler::initialize();

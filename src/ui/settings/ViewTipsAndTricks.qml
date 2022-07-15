@@ -10,6 +10,7 @@ import Mozilla.VPN 1.0
 import Mozilla.VPN.qmlcomponents 1.0
 import components 0.1
 import components.forms 0.1
+import telemetry 0.30
 
 VPNFlickable {
     id: vpnFlickable
@@ -149,7 +150,12 @@ VPNFlickable {
                                 imageSrc: addon.image
                                 title: qsTrId(addon.titleId)
 
-                                onClicked: mainStackView.push("qrc:/ui/settings/ViewGuide.qml", {"guide": addon, "imageBgColor": imageBgColor})
+                                onClicked:{
+                                    mainStackView.push("qrc:/ui/settings/ViewGuide.qml", {"guide": addon, "imageBgColor": imageBgColor})
+                                    VPN.recordGleanEventWithExtraKeys("guideOpened",{
+                                                                      "id": addon.id
+                                    });
+                                }
                             }
                         }
                     }
@@ -190,6 +196,10 @@ VPNFlickable {
                 Layout.preferredHeight: 66
             }
         }
+    }
+
+    Component.onCompleted: {
+        Sample.tipsAndTricksViewOpened.record();
     }
 }
 

@@ -12,10 +12,10 @@ import shutil
 import sys
 
 comment_types = {
-    "text": "Standard text in a guide block",
-    "title": "Title in a guide block",
-    "ulist": "Bullet unordered list item in a guide block",
-    "olist": "Bullet ordered list item in a guide block",
+    "text": "Standard text in a composer block",
+    "title": "Title in a composer block",
+    "ulist": "Bullet unordered list item in a composer block",
+    "olist": "Bullet ordered list item in a composer block",
 }
 
 
@@ -77,6 +77,53 @@ def retrieve_strings_tutorial(manifest, filename):
     return tutorial_strings
 
 
+def retrieve_strings_blocks(blocks, filename, strings, prefix):
+    for block in blocks:
+        if "id" not in block:
+            exit(f"{filename} does not have an id for one of the blocks")
+        if "type" not in block:
+            exit(f"{filename} does not have a type for block id {block['id']}")
+        if "content" not in block:
+            exit(f"{filename} does not have a content for block id {block['id']}")
+
+        block_id = block["id"]
+        block_string_id = f"{prefix}.block.{block_id}"
+        block_default_comment = comment_types.get(block["type"], "")
+        if block_string_id in strings:
+            exit(f"Duplicate block enum {block_string_id} when parsing {filename}")
+
+        if not isinstance(block["content"], list):
+            strings[block_string_id] = {
+                "value": block["content"],
+                "comments": block.get("comment", block_default_comment),
+            }
+            continue
+
+        for subblock in block["content"]:
+            if "id" not in subblock:
+                exit(
+                    f"{filename} does not have an id for one of the subblocks of block {block_id}"
+                )
+            if "content" not in subblock:
+                exit(
+                    f"File {filename} does not have a content for subblock id {subblock['id']}"
+                )
+
+            subblock_id = subblock["id"]
+            subblock_string_id = f"{prefix}.block.{block_id}.{subblock_id}"
+            if subblock_string_id in strings:
+                exit(
+                    f"Duplicate sub-block enum {subblock_string_id} when parsing {filename}"
+                )
+
+            strings[subblock_string_id] = {
+                "value": subblock["content"],
+                "comments": subblock.get("comment", block_default_comment),
+            }
+
+    return strings
+
+
 def retrieve_strings_guide(manifest, filename):
     guide_strings = {}
 
@@ -102,50 +149,28 @@ def retrieve_strings_guide(manifest, filename):
         "comments": guide_json.get("subtitle_comment", "Subtitle for a guide view"),
     }
 
-    for block in guide_json["blocks"]:
-        if "id" not in block:
-            exit(f"Guide {filename} does not have an id for one of the blocks")
-        if "type" not in block:
-            exit(f"Guide {filename} does not have a type for block id {block['id']}")
-        if "content" not in block:
-            exit(f"Guide {filename} does not have a content for block id {block['id']}")
+    return retrieve_strings_blocks(guide_json["blocks"], filename, guide_strings, f"guide.{guide_id}")
 
-        block_id = block["id"]
-        block_string_id = f"guide.{guide_id}.block.{block_id}"
-        block_default_comment = comment_types.get(block["type"], "")
-        if block_string_id in guide_strings:
-            exit(f"Duplicate block enum {block_string_id} when parsing {filename}")
 
-        if not isinstance(block["content"], list):
-            guide_strings[block_string_id] = {
-                "value": block["content"],
-                "comments": block.get("comment", block_default_comment),
-            }
-            continue
+def retrieve_strings_message(manifest, filename):
+    message_strings = {}
 
-        for subblock in block["content"]:
-            if "id" not in subblock:
-                exit(
-                    f"Guide {filename} does not have an id for one of the subblocks of block {block_id}"
-                )
-            if "content" not in subblock:
-                exit(
-                    f"Guide file {filename} does not have a content for subblock id {subblock['id']}"
-                )
+    message_json = manifest["message"]
+    if "id" not in message_json:
+        exit(f"Message {filename} does not have an id")
+    if "title" not in message_json:
+        exit(f"Message {filename} does not have a title")
+    if "blocks" not in message_json:
+        exit(f"Message {filename} does not have a blocks")
 
-            subblock_id = subblock["id"]
-            subblock_string_id = f"guide.{guide_id}.block.{block_id}.{subblock_id}"
-            if subblock_string_id in guide_strings:
-                exit(
-                    f"Duplicate sub-block enum {subblock_string_id} when parsing {filename}"
-                )
+    message_id = message_json["id"]
+    title_id = f"message.{message_id}.title"
+    message_strings[title_id] = {
+        "value": message_json["title"],
+        "comments": message_json.get("title_comment", "Title for a message view"),
+    }
 
-            guide_strings[subblock_string_id] = {
-                "value": subblock["content"],
-                "comments": subblock.get("comment", block_default_comment),
-            }
-
-    return guide_strings
+    return retrieve_strings_blocks(message_json["blocks"], filename, message_strings, f"message.{message_id}")
 
 
 def write_en_language(filename, strings):
@@ -311,6 +336,8 @@ with open(args.source, "r", encoding="utf-8") as file:
         strings = retrieve_strings_tutorial(manifest, args.source)
     elif manifest["type"] == "guide":
         strings = retrieve_strings_guide(manifest, args.source)
+    elif manifest["type"] == "message":
+        strings = retrieve_strings_message(manifest, args.source)
     else:
         exit(f"Unupported manifest type `{manifest['type']}`")
 

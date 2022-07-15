@@ -93,6 +93,8 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/tasks/deleteaccount/taskdeleteaccount.h
     ${MVPN_SOURCE_DIR}/tasks/function/taskfunction.cpp
     ${MVPN_SOURCE_DIR}/tasks/function/taskfunction.h
+    ${MVPN_SOURCE_DIR}/taskscheduler.cpp
+    ${MVPN_SOURCE_DIR}/taskscheduler.h
     ${MVPN_SOURCE_DIR}/update/updater.cpp
     ${MVPN_SOURCE_DIR}/update/updater.h
     ${MVPN_SOURCE_DIR}/update/versionapi.cpp

@@ -7,6 +7,7 @@
 #include "logger.h"
 
 #include <QJsonObject>
+#include <QScopeGuard>
 
 namespace {
 Logger logger(LOG_MAIN, "AddonGuide");

@@ -264,19 +264,6 @@ NetworkRequest* NetworkRequest::createForServers(Task* parent) {
   return r;
 }
 
-NetworkRequest* NetworkRequest::createForSurveyData(Task* parent) {
-  Q_ASSERT(parent);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, true);
-
-  QUrl url(apiBaseUrl());
-  url.setPath("/api/v1/vpn/surveys");
-  r->m_request.setUrl(url);
-
-  r->getRequest();
-  return r;
-}
-
 NetworkRequest* NetworkRequest::createForVersions(Task* parent) {
   Q_ASSERT(parent);
 

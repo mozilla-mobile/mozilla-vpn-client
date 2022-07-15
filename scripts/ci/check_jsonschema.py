@@ -19,8 +19,8 @@ args = parser.parse_args()
 def validateFile(file, schema, resolver):
   print(f'Validating {file}...')
   with open(file, "r", encoding="utf-8") as file:
-    guide_json = json.load(file)
-    validate(guide_json, schema=schema, resolver=resolver)
+    json_data = json.load(file)
+    validate(json_data, schema=schema, resolver=resolver)
 
 jsonSchema = os.path.join(os.getcwd(), "scripts", "ci", "jsonSchemas", args.jsonSchema[0])
 if not os.path.isfile(jsonSchema):

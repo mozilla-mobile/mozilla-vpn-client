@@ -39,6 +39,8 @@ VPNFlickable {
         }
 
         VPNUserProfile {
+            objectName: "subscriptionUserProfile"
+
             _iconButtonImageSource: "qrc:/nebula/resources/open-in-new.svg"
             _iconButtonOnClicked: () => {
                 VPN.recordGleanEvent("manageAccountClicked");
@@ -53,6 +55,7 @@ VPNFlickable {
             spacing: 0
             objectName: "subscriptionItem"
 
+            Layout.alignment: Qt.AlignTop
             Layout.leftMargin: VPNTheme.theme.windowMargin / 2
             Layout.rightMargin: VPNTheme.theme.windowMargin / 2
 
@@ -96,11 +99,10 @@ VPNFlickable {
             }
 
             VPNButton {
+                objectName: "manageSubscriptionButton"
                 id: manageSubscriptionButton
 
-                onClicked: {
-                    handleManageAccountClicked();
-                }
+                onClicked: handleManageAccountClicked()
                 text: VPNl18n.SubscriptionManagementManageSubscriptionButton
                 width: undefined
 
@@ -109,6 +111,7 @@ VPNFlickable {
             }
 
             VPNLinkButton {
+                objectName: "accountDeletionButton"
                 fontName: VPNTheme.theme.fontBoldFamily
                 labelText: VPNl18n.DeleteAccountButtonLabel
                 linkColor: VPNTheme.theme.redButton
@@ -132,13 +135,13 @@ VPNFlickable {
 
     function handleManageAccountClicked() {
         switch(VPNSubscriptionData.type) {
-            case VPNSubscriptionData.web:
+            case VPNSubscriptionData.SubscriptionWeb:
                 VPN.openLink(VPN.LinkSubscriptionFxa);
                 break;
-            case VPNSubscriptionData.iap_google:
+            case VPNSubscriptionData.SubscriptionGoogle:
                 VPN.openLink(VPN.LinkSubscriptionIapGoogle);
                 break;
-            case VPNSubscriptionData.iap_apple:
+            case VPNSubscriptionData.SubscriptionApple:
                 VPN.openLink(VPN.LinkSubscriptionIapApple);
                 break;
             default:
@@ -151,22 +154,29 @@ VPNFlickable {
     function populateListModels() {
         // Subscription info model
         // Subscription plan
-        subscriptionInfoModel.append({
-            _objectName: "subscriptionItem-plan",
-            labelText: VPNl18n.SubscriptionManagementPlanLabel,
-            valueText: getPlanText(
-                VPNSubscriptionData.planCurrency,
-                VPNSubscriptionData.planAmount,
-                VPNSubscriptionData.planIntervalCount
-            ),
-            type: "text",
-        });
+        if (
+            VPNSubscriptionData.planCurrency
+            && VPNSubscriptionData.planAmount
+            && VPNSubscriptionData.type === VPNSubscriptionData.SubscriptionWeb
+        ) {
+            subscriptionInfoModel.append({
+                _objectName: "subscriptionItem-plan",
+                labelText: VPNl18n.SubscriptionManagementPlanLabel,
+                valueText: getPlanText(
+                    VPNSubscriptionData.planCurrency,
+                    VPNSubscriptionData.planAmount,
+                ),
+                type: "text",
+            });
+        }
 
         // Status
         subscriptionInfoModel.append({
             _objectName: "subscriptionItem-status",
             labelText: VPNl18n.SubscriptionManagementStatusLabel,
-            valueText: VPNSubscriptionData.status,
+            valueText: VPNSubscriptionData.status === VPNSubscriptionData.Active
+                ? VPNl18n.SubscriptionManagementStatusActive
+                : VPNl18n.SubscriptionManagementStatusInactive,
             type: "pill",
         });
 
@@ -191,8 +201,14 @@ VPNFlickable {
         });
 
         // Subscription payment model
-        if (VPNSubscriptionData.paymentProvider) {
-            if (VPNSubscriptionData.paymentType === "credit") {
+        if (
+            VPNSubscriptionData.type === VPNSubscriptionData.SubscriptionWeb
+            && VPNSubscriptionData.paymentProvider
+        ) {
+            if (
+                VPNSubscriptionData.creditCardBrand
+                && VPNSubscriptionData.creditCardLast4
+            ) {
                 // Credit card brand
                 subscriptionPaymentModel.append({
                     _objectName: "subscriptionItem-brand",
@@ -201,22 +217,43 @@ VPNFlickable {
                     type: "payment",
                 });
 
-                // Credit card expires
-                subscriptionPaymentModel.append({
-                    _objectName: "subscriptionItem-expires",
-                    labelText: VPNl18n.SubscriptionManagementCardExpiresLabel,
-                    valueText: getPaymentExpiration(),
-                    type: "text",
-                });
+                if (
+                    VPNSubscriptionData.creditCardExpMonth
+                    && VPNSubscriptionData.creditCardExpYear
+                ) {
+                    // Credit card expires
+                    subscriptionPaymentModel.append({
+                        _objectName: "subscriptionItem-expires",
+                        labelText: VPNl18n.SubscriptionManagementCardExpiresLabel,
+                        valueText: getPaymentExpiration(),
+                        type: "text",
+                    });
+                }
             } else {
-                // Payment type or provider
+                // Payment provider
                 subscriptionPaymentModel.append({
                     _objectName: "subscriptionItem-payment",
-                    labelText: VPNSubscriptionData.paymentType || VPNSubscriptionData.paymentProvider,
+                    labelText: VPNSubscriptionData.paymentProvider,
                     valueText: "",
                     type: "payment",
                 });
             }
+        } else if (VPNSubscriptionData.type === VPNSubscriptionData.SubscriptionApple) {
+            // IAP Apple
+            subscriptionPaymentModel.append({
+                _objectName: "subscriptionItem-payment",
+                labelText: "iap_apple",
+                valueText: "",
+                type: "payment",
+            });
+        } else if (VPNSubscriptionData.type === VPNSubscriptionData.SubscriptionGoogle) {
+            // IAP Google
+            subscriptionPaymentModel.append({
+                _objectName: "subscriptionItem-payment",
+                labelText: "iap_google",
+                valueText: "",
+                type: "payment",
+            });
         }
     }
 
@@ -232,29 +269,29 @@ VPNFlickable {
         );
     }
 
-    function getPlanText(currencyCode, amount, intervalCount) {
+    function getPlanText(currencyCode, amount) {
         const amountDisplay = (amount || 0) / 100;
         const localizedCurrency = VPNLocalizer.localizeCurrency(amountDisplay, currencyCode);
 
-        let labelText;
-
-        if (intervalCount === 12) {
-            // {¤amount} Yearly
-            labelText = VPNl18n.SubscriptionManagementPlanValueYearly.arg(localizedCurrency);
-        } else if (intervalCount === 6) {
-            // {¤amount} Half-yearly
-            labelText = VPNl18n.SubscriptionManagementPlanValueHalfYearly.arg(localizedCurrency);
-        } else if (intervalCount === 1) {
-            // {¤amount} Monthly
-            labelText = VPNl18n.SubscriptionManagementPlanValueMonthly.arg(localizedCurrency);
-        } else {
-            console.warn(`Unexpected value for intervalCount: ${intervalCount}`);
-            VPN.recordGleanEventWithExtraKeys("unhandledSubPlanInterval", {
-                "interval_count": intervalCount,
-            });
+        switch (VPNSubscriptionData.planBillingInterval) {
+            case VPNSubscriptionData.BillingIntervalMonthly:
+                // {¤amount} Monthly
+                return VPNl18n.SubscriptionManagementPlanValueMonthly.arg(localizedCurrency);
+            case VPNSubscriptionData.BillingIntervalHalfYearly:
+                // {¤amount} Half-yearly
+                return VPNl18n.SubscriptionManagementPlanValueHalfYearly.arg(localizedCurrency);
+            case VPNSubscriptionData.BillingIntervalYearly:
+                // {¤amount} Yearly
+                return VPNl18n.SubscriptionManagementPlanValueYearly.arg(localizedCurrency);
+            default:
+                // If we made it here something went wrong. In case we encounter
+                // an unhandled TypeBillingInterval we should have should have
+                // already handled this SubscriptionData::fromJson and not
+                // render this view at all.
+                throw new Error("ViewSubscriptionManagement out of sync");
+                console.warn("Unhandled billing interval.");
+                return "";
         }
-
-        return labelText;
     }
 
     Component.onCompleted: {

@@ -18,8 +18,18 @@ target_sources(mozillavpn PRIVATE
     addons/addonguide.h
     addons/addoni18n.cpp
     addons/addoni18n.h
+    addons/addonmessage.cpp
+    addons/addonmessage.h
     addons/addontutorial.cpp
     addons/addontutorial.h
+    addons/conditionwatchers/addonconditionwatcher.cpp
+    addons/conditionwatchers/addonconditionwatcher.h
+    addons/conditionwatchers/addonconditionwatchergroup.cpp
+    addons/conditionwatchers/addonconditionwatchergroup.h
+    addons/conditionwatchers/addonconditionwatcherlocales.cpp
+    addons/conditionwatchers/addonconditionwatcherlocales.h
+    addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp
+    addons/conditionwatchers/addonconditionwatchertriggertimesecs.h
     appimageprovider.h
     applistprovider.h
     apppermission.cpp
@@ -104,6 +114,8 @@ target_sources(mozillavpn PRIVATE
     dnspingsender.h
     errorhandler.cpp
     errorhandler.h
+    externalophandler.cpp
+    externalophandler.h
     filterproxymodel.cpp
     filterproxymodel.h
     fontloader.cpp
@@ -177,10 +189,6 @@ target_sources(mozillavpn PRIVATE
     models/subscriptiondata.h
     models/supportcategorymodel.cpp
     models/supportcategorymodel.h
-    models/survey.cpp
-    models/survey.h
-    models/surveymodel.cpp
-    models/surveymodel.h
     models/user.cpp
     models/user.h
     models/whatsnewmodel.cpp
@@ -279,8 +287,6 @@ target_sources(mozillavpn PRIVATE
     tasks/sendfeedback/tasksendfeedback.h
     tasks/servers/taskservers.cpp
     tasks/servers/taskservers.h
-    tasks/surveydata/tasksurveydata.cpp
-    tasks/surveydata/tasksurveydata.h
     telemetry.cpp
     telemetry.h
     theme.cpp
@@ -331,7 +337,13 @@ if(NOT CMAKE_CROSSCOMPILING)
         systemtraynotificationhandler.h
         tasks/authenticate/desktopauthenticationlistener.cpp
         tasks/authenticate/desktopauthenticationlistener.h
+        server/serverconnection.cpp
+        server/serverconnection.h
+        server/serverhandler.cpp
+        server/serverhandler.h
     )
+
+    add_compile_definitions(MVPN_WEBEXTENSION)
 endif()
 
 qt6_add_qml_module(mozillavpn

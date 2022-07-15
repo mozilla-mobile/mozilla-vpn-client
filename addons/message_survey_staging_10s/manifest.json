@@ -1,0 +1,15 @@
+{
+  "api_version": "0.1",
+  "id": "message_survey_staging_10s",
+  "name": "Staging Survey 10 secs",
+  "type": "message",
+  "conditions": {
+    "env": "staging",
+    "trigger_time": 10
+  },
+  "message": {
+    "id": "message_survey_staging_10s",
+    "title": "TODO",
+    "blocks": []
+  }
+}

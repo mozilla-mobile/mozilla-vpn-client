@@ -5,8 +5,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 set -x
 
-
-
 # This script creates a qt-bundle that we can use in xcode-cloud and 
 # in the taskcluser/ios builds ( to be coming ... )
 

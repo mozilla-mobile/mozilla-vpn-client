@@ -15,19 +15,19 @@ class SubscriptionData final : public QObject {
 
   // Subscription
   Q_PROPERTY(TypeSubscription type MEMBER m_type CONSTANT)
+  Q_PROPERTY(TypeStatus status MEMBER m_status CONSTANT)
   Q_PROPERTY(quint64 createdAt MEMBER m_createdAt CONSTANT)
   Q_PROPERTY(quint64 expiresOn MEMBER m_expiresOn CONSTANT)
   Q_PROPERTY(bool isCancelled MEMBER m_isCancelled CONSTANT)
-  Q_PROPERTY(QString status MEMBER m_status CONSTANT)
 
   // Plan
+  Q_PROPERTY(TypeBillingInterval planBillingInterval MEMBER
+                 m_planBillingInterval CONSTANT)
   Q_PROPERTY(int planAmount MEMBER m_planAmount CONSTANT)
   Q_PROPERTY(QString planCurrency MEMBER m_planCurrency CONSTANT)
-  Q_PROPERTY(int planIntervalCount MEMBER m_planIntervalCount CONSTANT)
 
   // Payment
   Q_PROPERTY(QString paymentProvider MEMBER m_paymentProvider CONSTANT)
-  Q_PROPERTY(QString paymentType MEMBER m_paymentType CONSTANT)
   Q_PROPERTY(QString creditCardBrand MEMBER m_creditCardBrand CONSTANT)
   Q_PROPERTY(QString creditCardLast4 MEMBER m_creditCardLast4 CONSTANT)
   Q_PROPERTY(int creditCardExpMonth MEMBER m_creditCardExpMonth CONSTANT)
@@ -38,11 +38,26 @@ class SubscriptionData final : public QObject {
   ~SubscriptionData();
 
   enum TypeSubscription {
-    iap_apple,
-    iap_google,
-    web,
+    SubscriptionApple,
+    SubscriptionGoogle,
+    SubscriptionWeb,
+    SubscriptionUnknown,
   };
   Q_ENUM(TypeSubscription)
+
+  enum TypeStatus {
+    Active,
+    Inactive,
+  };
+  Q_ENUM(TypeStatus)
+
+  enum TypeBillingInterval {
+    BillingIntervalMonthly,
+    BillingIntervalHalfYearly,
+    BillingIntervalYearly,
+    BillingIntervalUnknown,
+  };
+  Q_ENUM(TypeBillingInterval)
 
   [[nodiscard]] bool fromJson(const QByteArray& json);
 
@@ -54,22 +69,22 @@ class SubscriptionData final : public QObject {
  private:
   bool parseSubscriptionDataIap(const QJsonObject& subscriptionData);
   bool parseSubscriptionDataWeb(const QJsonObject& subscriptionData);
+  void resetData();
 
  private:
   QByteArray m_rawJson;
 
-  TypeSubscription m_type;
+  TypeSubscription m_type = SubscriptionUnknown;
+  TypeStatus m_status = Inactive;
   quint64 m_createdAt = 0;
   quint64 m_expiresOn = 0;
   bool m_isCancelled = false;
-  QString m_status;
 
+  TypeBillingInterval m_planBillingInterval = BillingIntervalUnknown;
   int m_planAmount = 0;
   QString m_planCurrency;
-  int m_planIntervalCount = 0;
 
   QString m_paymentProvider;
-  QString m_paymentType;
   QString m_creditCardBrand;
   QString m_creditCardLast4;
   int m_creditCardExpMonth = 0;

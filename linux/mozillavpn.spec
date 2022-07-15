@@ -26,6 +26,7 @@ BuildRequires: qt6-qtsvg-devel >= 6.0
 BuildRequires: qt6-qttools-devel >= 6.0
 BuildRequires: qt6-qtwebsockets-devel >= 6.0
 BuildRequires: qt6-qt5compat-devel >= 6.0
+BuildRequires: systemd
 BuildRequires: systemd-rpm-macros
 
 %description
@@ -36,12 +37,12 @@ Read more on https://vpn.mozilla.org
 %undefine _lto_cflags
 
 %build
-%{_srcdir}/scripts/utils/import_languages.py
-%{qmake_qt6} %{_srcdir}/mozillavpn.pro QT+=svg
-make %{?_smp_mflags}
+%define _vpath_srcdir %{_srcdir}
+%cmake -DWEBEXT_INSTALL_LIBDIR=/usr/lib -DCMAKE_INSTALL_SYSCONFDIR=/etc
+%cmake_build
 
 %install
-make install INSTALL_ROOT=%{buildroot}
+%cmake_install
 install -d %{buildroot}/%{_licensedir}/%{name}
 install %{_srcdir}/LICENSE.md %{buildroot}/%{_licensedir}/%{name}/
 

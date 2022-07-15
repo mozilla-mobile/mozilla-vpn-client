@@ -15,7 +15,7 @@ Item {
     property var guide
     property alias imageBgColor: imageBg.color
     property int safeAreaHeight: window.safeAreaHeightByDevice()
-
+    readonly property double timeOfOpen: new Date().getTime()
 
     ColumnLayout {
         anchors.fill: parent
@@ -253,4 +253,11 @@ Item {
     }
 
     Component.onCompleted: VPNCloseEventHandler.addView(root)
+
+    Component.onDestruction: {
+        VPN.recordGleanEventWithExtraKeys("guideClosed",{
+                                          "id": guide.id,
+                                          "duration_ms": new Date().getTime() - timeOfOpen
+        });
+    }
 }

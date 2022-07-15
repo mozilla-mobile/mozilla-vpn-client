@@ -28,6 +28,14 @@
 
 // Please! Keep the alphabetic order!
 
+SETTING_STRINGLIST(dismissedAddonMessages,      // getter
+                   setDismissedAddonMessages,   // setter
+                   hasDismissedAddonMessages,   // has
+                   "addons/dismissedMessages",  // key
+                   QStringList(),               // default value
+                   true                         // remove when reset
+)
+
 SETTING_BOOL(captivePortalAlert,     // getter
              setCaptivePortalAlert,  // setter
              hasCaptivePortalAlert,  // has
@@ -59,14 +67,6 @@ SETTING_BOOL(connectionChangeNotification,     // getter
              "connectionChangeNotification",   // key
              true,                             // default value
              false                             // remove when reset
-)
-
-SETTING_STRINGLIST(consumedSurveys,     // getter
-                   setConsumedSurveys,  // setter
-                   hasConsumedSurveys,  // has
-                   "consumedSurveys",   // key
-                   QStringList(),       // default value
-                   false                // remove when reset
 )
 
 SETTING_STRING(currentServerCity,     // getter
@@ -304,14 +304,6 @@ SETTING_BOOL(startAtBoot,     // getter
              "startAtBoot",   // key
              false,           // default value
              false            // remove when reset
-)
-
-SETTING_BYTEARRAY(surveys,     // getter
-                  setSurveys,  // setter
-                  hasSurveys,  // has
-                  "surveys",   // key
-                  "",          // default value
-                  true         // remove when reset
 )
 
 SETTING_BOOL(systemLanguageCodeMigrated,     // getter

@@ -56,9 +56,6 @@ void ProfileFlow::start() {
   TaskGetSubscriptionDetails* task =
       new TaskGetSubscriptionDetails(user->email(), m_forceReauthFlow);
 
-  // Reset forcing the re-auth flow
-  setForceReauthFlow(false);
-
   connect(task, &TaskGetSubscriptionDetails::receivedData, this,
           [this, task](const QByteArray& data) {
             if (task == m_currentTask) {
@@ -68,9 +65,12 @@ void ProfileFlow::start() {
           });
   connect(task, &TaskGetSubscriptionDetails::needsAuthentication, this,
           [this, task] {
-            if (task == m_currentTask) {
+            if (task == m_currentTask || m_forceReauthFlow) {
               logger.debug() << "Needs authentication";
               setState(StateAuthenticationNeeded);
+
+              // Reset forcing the re-auth flow
+              setForceReauthFlow(false);
             }
           });
   connect(task, &TaskGetSubscriptionDetails::failed, this, [this, task]() {

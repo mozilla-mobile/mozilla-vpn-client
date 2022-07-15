@@ -26,6 +26,6 @@ QMLTEST {
     SUBDIRS += lottie/tests/qml
 }
 
-linux:!android|macos|win* {
+macos|win* {
     SUBDIRS += tests/nativemessaging
 }

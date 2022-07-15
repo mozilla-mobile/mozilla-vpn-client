@@ -97,7 +97,7 @@ PATH the build process is effectively the same on each of the supported platform
 1. Start by creating a build directory and using `cmake` to generate the Makefiles.
 
 ```bash
-mkdir build && cmake -S . -B build
+mkdir build && cmake -S . -B build -DCMAKE_INSTALL_PREFIX=/usr
 ```
 
 This generation step can be augmented by providing variable definitions on the

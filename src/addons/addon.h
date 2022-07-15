@@ -8,6 +8,7 @@
 #include <QObject>
 #include <QTranslator>
 
+class AddonConditionWatcher;
 class QJsonObject;
 
 class Addon : public QObject {
@@ -23,16 +24,27 @@ class Addon : public QObject {
 
   static bool evaluateConditions(const QJsonObject& conditions);
 
-  ~Addon();
+  virtual ~Addon();
 
   const QString& id() const { return m_id; }
   const QString& type() const { return m_type; }
 
   void retranslate();
 
+  virtual bool enabled() const;
+
+ signals:
+  void conditionChanged(bool enabled);
+
  protected:
   Addon(QObject* parent, const QString& manifestFileName, const QString& id,
         const QString& name, const QString& type);
+
+  virtual void enable();
+  virtual void disable();
+
+ private:
+  void maybeCreateConditionWatchers(const QJsonObject& conditions);
 
  private:
   const QString m_manifestFileName;
@@ -41,6 +53,8 @@ class Addon : public QObject {
   const QString m_type;
 
   QTranslator m_translator;
+
+  AddonConditionWatcher* m_conditionWatcher = nullptr;
 };
 
 #endif  // ADDON_H

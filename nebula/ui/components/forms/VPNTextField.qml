@@ -37,7 +37,7 @@ TextField {
     rightPadding: VPNTheme.theme.windowMargin
     topPadding: VPNTheme.theme.windowMargin / 2
     bottomPadding: VPNTheme.theme.windowMargin / 2
-
+    focus: true
     cursorDelegate: VPNCursorDelegate {}
 
     Text {
@@ -55,5 +55,13 @@ TextField {
     VPNInputStates {
         id: textFieldState
         itemToTarget: textField
+    }
+
+    MouseArea {
+        anchors.fill: textField
+        visible: !textField.activeFocus
+        onPressed: {
+            textField.forceActiveFocus();
+        }
     }
 }

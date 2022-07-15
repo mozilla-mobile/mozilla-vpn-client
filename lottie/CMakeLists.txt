@@ -14,6 +14,9 @@ set(CMAKE_AUTOUIC ON)
 if(NOT CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set(CMAKE_FOLDER "Lottie")
 endif()
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.17)
+    cmake_policy(SET CMP0099 OLD)
+endif()
 
 add_library(lottie STATIC)
 

@@ -16,6 +16,10 @@ class AddonI18n final : public Addon {
             const QString& name);
 
   ~AddonI18n();
+
+ private:
+  void enable() override;
+  void disable() override;
 };
 
 #endif  // ADDONI18N_H

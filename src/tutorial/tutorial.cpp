@@ -6,6 +6,8 @@
 #include "addons/addontutorial.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
+#include "telemetry/gleansample.h"
 
 #include <QCoreApplication>
 #include <QDir>
@@ -27,6 +29,9 @@ Tutorial* Tutorial::instance() {
 Tutorial::Tutorial(QObject* parent) : QObject(parent) {
   logger.debug() << "create";
   MVPN_COUNT_CTOR(Tutorial);
+
+  connect(ExternalOpHandler::instance(), &ExternalOpHandler::requestReceived,
+          this, &Tutorial::externalRequestReceived);
 }
 
 Tutorial::~Tutorial() { MVPN_COUNT_DTOR(Tutorial); }
@@ -50,6 +55,9 @@ void Tutorial::play(Addon* tutorial) {
   emit playingChanged();
 
   m_currentTutorial->play(m_allowedItems);
+
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::tutorialStarted, {{"id", m_currentTutorial->id()}});
 }
 
 void Tutorial::stop() {
@@ -69,6 +77,10 @@ void Tutorial::requireTooltipNeeded(AddonTutorial* tutorial,
   Q_ASSERT(tutorial);
   Q_ASSERT(tutorial == m_currentTutorial);
   emit tooltipNeeded(tooltipText, targetElement);
+
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::tutorialStepViewed,
+      {{"tutorial_id", m_currentTutorial->id()}, {"step_id", tooltipText}});
 }
 
 void Tutorial::requireTutorialCompleted(AddonTutorial* tutorial,
@@ -76,6 +88,9 @@ void Tutorial::requireTutorialCompleted(AddonTutorial* tutorial,
   Q_ASSERT(tutorial);
   Q_ASSERT(tutorial == m_currentTutorial);
   emit tutorialCompleted(completionMessageText);
+
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::tutorialCompleted, {{"id", m_currentTutorial->id()}});
 }
 
 void Tutorial::requireTooltipShown(AddonTutorial* tutorial, bool shown) {
@@ -84,4 +99,21 @@ void Tutorial::requireTooltipShown(AddonTutorial* tutorial, bool shown) {
 
   m_tooltipShown = shown;
   emit tooltipShownChanged();
+}
+
+void Tutorial::externalRequestReceived(ExternalOpHandler::Op op) {
+  logger.debug() << "External request received" << op;
+
+  if (!isPlaying()) {
+    return;
+  }
+
+  if (op != ExternalOpHandler::OpActivate &&
+      op != ExternalOpHandler::OpDeactivate &&
+      op != ExternalOpHandler::OpCloseEvent &&
+      op != ExternalOpHandler::OpNotificationClicked) {
+    return;
+  }
+
+  stop();
 }

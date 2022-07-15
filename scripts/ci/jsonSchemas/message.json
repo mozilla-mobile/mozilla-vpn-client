@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "The ID of the message",
+      "pattern": "^[A-Za-z0-9_]+"
+    },
+    "title": {
+      "type": "string",
+      "description": "The title of the message"
+    },
+    "title_comment": {
+      "type": "string",
+      "description": "A comment to describe how to translate the title"
+    },
+    "blocks": {
+      "type": "array",
+      "description": "The list of text blocks",
+      "items": {
+        "$ref": "composer_block.json"
+      }
+    }
+  },
+  "required": [ "id", "title", "blocks" ]
+}

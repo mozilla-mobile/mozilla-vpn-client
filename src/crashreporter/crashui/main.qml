@@ -32,7 +32,7 @@ Window {
     maximumHeight: fullscreenRequired() ? Screen.height : VPNTheme.theme.desktopAppHeight;
 
     title: VPNl18n.CrashreporterMainTitle
-    color: "#F9F9FA"
+    color: VPNTheme.theme.bgColor
 
     Rectangle {
         id: iosSafeAreaTopMargin

@@ -39,6 +39,8 @@ _compile() {
   xcodebuild build \
     CODE_SIGN_IDENTITY="" \
     CODE_SIGNING_REQUIRED=NO \
+    ONLY_ACTIVE_ARCH=NO \
+    -arch x86_64 \
     -derivedDataPath=/build \
     -resultBundlePath=/tmp \
     -enableCodeCoverage=YES \

@@ -63,7 +63,7 @@ Window {
 
     //% "Mozilla VPN"
     title: qsTrId("vpn.main.productName")
-    color: "#F9F9FA"
+    color: VPNTheme.theme.bgColor
     onClosing: close => {
         console.log("Closing request handling");
 
@@ -92,18 +92,6 @@ Window {
 
         }
         VPN.mainWindowLoaded()
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        propagateComposedEvents: true
-        z: 10
-        onPressed: mouse => {
-            if (window.activeFocusItem && window.activeFocusItem.forceBlurOnOutsidePress) {
-                window.activeFocusItem.focus = false;
-            }
-            mouse.accepted = false;
-        }
     }
 
     VPNMobileStatusBarModifier {

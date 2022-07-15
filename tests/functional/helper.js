@@ -88,6 +88,13 @@ module.exports = {
         `Command failed: ${json.error}`);
   },
 
+  async reset() {
+    const json = await this._writeCommand('reset');
+    assert(
+        json.type === 'reset' && !('error' in json),
+        `Command failed: ${json.error}`);
+  },
+
   async waitForMainView() {
     await this.waitForElement('getHelpLink');
     await this.waitForElementProperty('getHelpLink', 'visible', 'true');

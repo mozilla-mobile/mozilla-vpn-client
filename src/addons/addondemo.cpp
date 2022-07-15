@@ -19,7 +19,9 @@ Logger logger(LOG_MAIN, "AddonDemo");
 Addon* AddonDemo::create(QObject* parent, const QString& manifestFileName,
                          const QString& id, const QString& name,
                          const QJsonObject& obj) {
-  QString qml = obj["qml"].toString();
+  QJsonObject demoObj = obj["demo"].toObject();
+
+  QString qml = demoObj["qml"].toString();
   if (qml.isEmpty()) {
     logger.warning() << "No qml in the manifest" << manifestFileName;
     return nullptr;
@@ -32,10 +34,7 @@ Addon* AddonDemo::create(QObject* parent, const QString& manifestFileName,
     return nullptr;
   }
 
-  Addon* addon = new AddonDemo(parent, manifestFileName, id, name, qmlFileName);
-  emit AddonManager::instance()->runAddon(addon);
-
-  return addon;
+  return new AddonDemo(parent, manifestFileName, id, name, qmlFileName);
 }
 
 AddonDemo::AddonDemo(QObject* parent, const QString& manifestFileName,
@@ -54,4 +53,9 @@ QString AddonDemo::qml() const {
   }
 
   return QString("file:%1").arg(m_qmlFileName);
+}
+
+void AddonDemo::enable() {
+  emit AddonManager::instance()->runAddon(this);
+  Addon::enable();
 }

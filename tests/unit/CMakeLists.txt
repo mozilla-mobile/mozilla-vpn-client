@@ -43,8 +43,18 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/addons/addonguide.h
     ${MVPN_SOURCE_DIR}/addons/addoni18n.cpp
     ${MVPN_SOURCE_DIR}/addons/addoni18n.h
+    ${MVPN_SOURCE_DIR}/addons/addonmessage.cpp
+    ${MVPN_SOURCE_DIR}/addons/addonmessage.h
     ${MVPN_SOURCE_DIR}/addons/addontutorial.cpp
     ${MVPN_SOURCE_DIR}/addons/addontutorial.h
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcher.cpp
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcher.h
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchergroup.cpp
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchergroup.h
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherlocales.cpp
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherlocales.h
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h
     ${MVPN_SOURCE_DIR}/adjust/adjustfiltering.cpp
     ${MVPN_SOURCE_DIR}/adjust/adjustfiltering.h
     ${MVPN_SOURCE_DIR}/adjust/adjustproxypackagehandler.cpp
@@ -70,6 +80,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/dnspingsender.h
     ${MVPN_SOURCE_DIR}/errorhandler.cpp
     ${MVPN_SOURCE_DIR}/errorhandler.h
+    ${MVPN_SOURCE_DIR}/externalophandler.cpp
+    ${MVPN_SOURCE_DIR}/externalophandler.h
     ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Chacha20.c
     ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Chacha20Poly1305_32.c
     ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Curve25519_51.c
@@ -121,10 +133,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/models/subscriptiondata.h
     ${MVPN_SOURCE_DIR}/models/supportcategorymodel.cpp
     ${MVPN_SOURCE_DIR}/models/supportcategorymodel.h
-    ${MVPN_SOURCE_DIR}/models/survey.cpp
-    ${MVPN_SOURCE_DIR}/models/survey.h
-    ${MVPN_SOURCE_DIR}/models/surveymodel.cpp
-    ${MVPN_SOURCE_DIR}/models/surveymodel.h
     ${MVPN_SOURCE_DIR}/models/user.cpp
     ${MVPN_SOURCE_DIR}/models/user.h
     ${MVPN_SOURCE_DIR}/models/whatsnewmodel.cpp

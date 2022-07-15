@@ -13,6 +13,7 @@
 #include <QtGui/qpa/qplatformnativeinterface.h>
 #include <QtQuick>
 
+#import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
 namespace {
@@ -127,4 +128,24 @@ void IOSUtils::setStatusBarTextColor(Theme::StatusBarTextColor color) {
         rootViewController.preferredStatusBarStyle = UIStatusBarStyleDarkContent;
     }
     [rootViewController setNeedsStatusBarAppearanceUpdate];
+}
+
+// static
+bool IOSUtils::verifySignature(const QByteArray& publicKey, const QByteArray& content,
+                               const QByteArray& signature) {
+  NSDictionary* attributes = @{
+    (__bridge NSString*)kSecAttrKeyType : (__bridge NSString*)kSecAttrKeyTypeRSA,
+    (__bridge NSString*)kSecAttrKeyClass : (__bridge NSString*)kSecAttrKeyClassPublic
+  };
+  SecKeyRef publicKeyRef = SecKeyCreateWithData((CFDataRef)publicKey.toNSData(),
+                                                (__bridge CFDictionaryRef)attributes, nullptr);
+
+  if (SecKeyVerifySignature(publicKeyRef, kSecKeyAlgorithmRSASignatureMessagePKCS1v15SHA256,
+                            (CFDataRef)content.toNSData(), (CFDataRef)signature.toNSData(),
+                            nullptr)) {
+    return true;
+  }
+
+  logger.warning() << "Signature verification failed";
+  return false;
 }

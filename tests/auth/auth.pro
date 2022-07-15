@@ -67,6 +67,7 @@ HEADERS += \
     ../../src/tasks/authenticate/taskauthenticate.h \
     ../../src/tasks/deleteaccount/taskdeleteaccount.h \
     ../../src/tasks/function/taskfunction.h \
+    ../../src/taskscheduler.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
     ../../src/update/webupdater.h \
@@ -106,6 +107,7 @@ SOURCES += \
     ../../src/tasks/authenticate/taskauthenticate.cpp \
     ../../src/tasks/deleteaccount/taskdeleteaccount.cpp \
     ../../src/tasks/function/taskfunction.cpp \
+    ../../src/taskscheduler.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
     ../../src/update/webupdater.cpp \
