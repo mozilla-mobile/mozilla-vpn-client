@@ -12,6 +12,10 @@
       "type": "boolean",
       "description": "Is this tutorial highlighted?"
     },
+    "advanced": {
+      "type": "boolean",
+      "description": "Is this an advanced tutorial? Defaults to `false`. This property is ignored in case `highlighted` is `true`."
+    },
     "title": {
       "type": "string",
       "description": "The title of the tutorial"
