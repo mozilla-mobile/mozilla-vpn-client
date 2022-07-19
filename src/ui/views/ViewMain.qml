@@ -253,9 +253,13 @@ VPNFlickable {
         }
     }
 
-    Component.onCompleted: {
-        if (!VPNSettings.tipsAndTricksIntroShown) {
-            tipsAndTricksIntroPopupLoader.active = true
+    Connections {
+        target: VPNAddonManager
+        function onLoadCompletedChanged() {
+            if (!VPNSettings.tipsAndTricksIntroShown &&
+                !!VPNAddonManager.pick(addon => addon.type === "tutorial" || addon.type === "guide")) {
+                tipsAndTricksIntroPopupLoader.active = true
+            }
         }
     }
 }

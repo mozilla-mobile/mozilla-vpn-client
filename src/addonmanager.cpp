@@ -11,6 +11,7 @@
 #include "signature.h"
 #include "taskscheduler.h"
 #include "tasks/addon/taskaddon.h"
+#include "tasks/function/taskfunction.h"
 
 #include <QCoreApplication>
 #include <QCryptographicHash>
@@ -82,7 +83,11 @@ void AddonManager::initialize() {
 
   if (!validateIndex(index, indexSignature)) {
     logger.debug() << "Unable to validate the index";
+    return;
   }
+
+  m_loadCompleted = true;
+  emit loadCompletedChanged();
 }
 
 void AddonManager::updateIndex(const QByteArray& index,
@@ -175,6 +180,8 @@ bool AddonManager::validateIndex(const QByteArray& index,
     removeAddon(addonId);
   }
 
+  bool taskAdded = false;
+
   // Fetch new addons
   for (const AddonData& addonData : addons) {
     if (!m_addons.contains(addonData.m_addonId) &&
@@ -188,7 +195,15 @@ bool AddonManager::validateIndex(const QByteArray& index,
         m_addons[addonData.m_addonId].m_sha256 != addonData.m_sha256) {
       TaskScheduler::scheduleTask(
           new TaskAddon(addonData.m_addonId, addonData.m_sha256));
+      taskAdded = true;
     }
+  }
+
+  if (taskAdded && !m_loadCompleted) {
+    TaskScheduler::scheduleTask(new TaskFunction([this]() {
+      m_loadCompleted = true;
+      emit loadCompletedChanged();
+    }));
   }
 
   return true;
