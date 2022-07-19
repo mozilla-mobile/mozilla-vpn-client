@@ -11,8 +11,6 @@ file(ARCHIVE_EXTRACT INPUT ${CMAKE_CURRENT_BINARY_DIR}/.deps/wintun.zip DESTINAT
 
 ## Build the tunnel DLL
 add_custom_target(tunneldll ALL
-    BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/tunnel.dll ${CMAKE_CURRENT_BINARY_DIR}/tunnel.h
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMAND ${CMAKE_COMMAND} -E env 
             go version
 )
