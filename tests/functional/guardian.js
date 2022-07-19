@@ -26,8 +26,9 @@ const GuardianEndpoints = {
     '/api/v1/vpn/featurelist': {status: 200, body: {features: {}}},
     '/api/v1/vpn/versions': {status: 200, body: {}},
     '/__heartbeat__': {status: 200, body: {mullvadOK: true, dbOK: true}},
-    '/api/v2/vpn/login/ios': {
+    '/api/v2/vpn/login/': {
       status: 200,
+      match: 'startWith',
       body: {
         fxa_oauth: {
           url: 'https://accounts.stage.mozaws.net/authorization',
