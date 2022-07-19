@@ -77,7 +77,8 @@ void TaskGetSubscriptionDetails::run() {
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
-            logger.debug() << "Get subscription details completed" << data;
+            logger.debug() << "Get subscription details completed"
+                           << logger.sensitive(data);
 
             emit receivedData(data);
 
