@@ -48,8 +48,9 @@ VPNTextField {
             passwordInput.charactersMasked = !passwordInput.charactersMasked;
         }
 
-        // Fix for QTBUG-78813: TextInput prevents touch events from reaching
-        // other MouseAreas (https://bugreports.qt.io/browse/QTBUG-78813)
+        // Temporary workaround for QTBUG-78813: TextInput prevents touch events
+        // from reaching other MouseAreas.
+        // https://bugreports.qt.io/browse/QTBUG-78813
         MouseArea {
             anchors.fill: parent
             onPressed: {
