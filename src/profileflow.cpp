@@ -50,7 +50,9 @@ void ProfileFlow::start() {
 
   setState(StateLoading);
 
-  User* user = MozillaVPN::instance()->user();
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+  User* user = vpn->user();
   Q_ASSERT(user);
 
   TaskGetSubscriptionDetails* task =
@@ -80,6 +82,7 @@ void ProfileFlow::start() {
       setState(StateError);
     }
   });
+  connect(vpn, &MozillaVPN::accountDeleted, this, [&] { reset(); });
 
   TaskScheduler::scheduleTask(task);
   m_currentTask = task;
