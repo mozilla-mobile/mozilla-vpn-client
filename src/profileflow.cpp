@@ -82,7 +82,11 @@ void ProfileFlow::start() {
       setState(StateError);
     }
   });
-  connect(vpn, &MozillaVPN::accountDeleted, this, [&] { reset(); });
+  connect(vpn, &MozillaVPN::stateChanged, this, [&] {
+    if (vpn->state() != MozillaVPN::StateMain) {
+      reset();
+    }
+  });
 
   TaskScheduler::scheduleTask(task);
   m_currentTask = task;
