@@ -20,6 +20,7 @@ job-defaults:
 # Debug Builds:
 android-arm64/debug:
         description: "Android Debug (arm64-v8a)"
+        task-priority: 'low'
         treeherder:
             platform: android/arm64-v8a
         worker:
@@ -55,6 +56,7 @@ android-x86/debug:
             - mozillavpn-x86-debug.apk
 android-x64/debug:
         description: "Android Debug (x86_64)"
+        task-priority: 'low'
         treeherder:
             platform: android/x86_64
         worker:
@@ -70,6 +72,7 @@ android-x64/debug:
 android-arm64/release:
         description: "Android Release (arm64-v8a)"
         requires-level: 3
+        task-priority: 'low'
         scopes:
             - 'secrets:get:project/mozillavpn/tokens'
         treeherder:
@@ -119,6 +122,7 @@ android-x86/release:
 android-x64/release:
         description: "Android Release (x86_64)"
         requires-level: 3
+        task-priority: 'low'
         scopes:
             - 'secrets:get:project/mozillavpn/tokens'
         treeherder:
