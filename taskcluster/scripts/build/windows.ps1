@@ -51,8 +51,7 @@ $ErrorActionPreference = "Stop"
 . "windows/tunnel/build.cmd"
 . "balrog/build.cmd"
 
-$env:GOPATH="$REPO_ROOT_PATH\windows\tunnel\.deps\go\bin"
-$env:GOROOT="$REPO_ROOT_PATH\windows\tunnel\.deps\go\bin"
+$env:GOROOT="$REPO_ROOT_PATH\windows\tunnel\.deps\go\"
 $env:PATH ="$REPO_ROOT_PATH\windows\tunnel\.deps\go\bin;$env:PATH"
 
 mkdir $TASK_WORKDIR/cmake_build 
