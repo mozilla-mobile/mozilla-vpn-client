@@ -5,6 +5,7 @@
 #include "connectionbenchmark.h"
 #include "benchmarktaskdownload.h"
 #include "benchmarktaskping.h"
+#include "benchmarktaskupload.h"
 #include "connectionhealth.h"
 #include "controller.h"
 #include "constants.h"
@@ -18,7 +19,8 @@ Logger logger(LOG_MODEL, "ConnectionBenchmark");
 }
 
 ConnectionBenchmark::ConnectionBenchmark()
-    : m_downloadUrl(Constants::BENCHMARK_DOWNLOAD_URL) {
+    : m_downloadUrl(Constants::BENCHMARK_DOWNLOAD_URL),
+      m_uploadUrl(Constants::BENCHMARK_UPLOAD_URL) {
   MVPN_COUNT_CTOR(ConnectionBenchmark);
 }
 
@@ -93,6 +95,16 @@ void ConnectionBenchmark::start() {
           [this, downloadTask]() { m_benchmarkTasks.removeOne(downloadTask); });
   m_benchmarkTasks.append(downloadTask);
   TaskScheduler::scheduleTask(downloadTask);
+
+  // Create upload benchmark
+  BenchmarkTaskUpload* uploadTask = new BenchmarkTaskUpload(m_uploadUrl);
+  Q_UNUSED(uploadTask);
+  connect(uploadTask, &BenchmarkTaskUpload::finished, this,
+          &ConnectionBenchmark::uploadBenchmarked);
+  connect(uploadTask->sentinel(), &BenchmarkTask::destroyed, this,
+          [this, uploadTask]() { m_benchmarkTasks.removeOne(uploadTask); });
+  m_benchmarkTasks.append(uploadTask);
+  TaskScheduler::scheduleTask(uploadTask);
 }
 
 void ConnectionBenchmark::stop() {
@@ -142,6 +154,10 @@ void ConnectionBenchmark::pingBenchmarked(quint64 pingLatency) {
 
   m_pingLatency = pingLatency;
   emit pingLatencyChanged();
+}
+
+void ConnectionBenchmark::uploadBenchmarked() {
+  logger.debug() << "Benchmarked upload";
 }
 
 void ConnectionBenchmark::handleControllerState() {

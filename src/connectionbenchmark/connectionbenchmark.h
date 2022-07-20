@@ -19,6 +19,8 @@ class ConnectionBenchmark final : public QObject {
 
   Q_PROPERTY(QString downloadUrl READ downloadUrl WRITE setDownloadUrl NOTIFY
                  downloadUrlChanged)
+  Q_PROPERTY(QString uploadUrl READ uploadUrl WRITE setUploadUrl NOTIFY
+                 uploadUrlChanged)
   Q_PROPERTY(State state READ state NOTIFY stateChanged);
   Q_PROPERTY(Speed speed READ speed NOTIFY speedChanged);
   Q_PROPERTY(quint64 bitsPerSec READ bitsPerSec NOTIFY bitsPerSecChanged);
@@ -59,16 +61,24 @@ class ConnectionBenchmark final : public QObject {
     emit downloadUrlChanged();
   }
 
+  QString uploadUrl() const { return m_uploadUrl.toString(); }
+  void setUploadUrl(QString url) {
+    m_uploadUrl.setUrl(url);
+    emit uploadUrlChanged();
+  }
+
  signals:
   void bitsPerSecChanged();
   void pingLatencyChanged();
   void speedChanged();
   void stateChanged();
   void downloadUrlChanged();
+  void uploadUrlChanged();
 
  private:
   void downloadBenchmarked(quint64 bitsPerSec, bool hasUnexpectedError);
   void pingBenchmarked(quint64 pingLatencyLatency);
+  void uploadBenchmarked();
 
   void handleControllerState();
   void handleStabilityChange();
@@ -78,6 +88,7 @@ class ConnectionBenchmark final : public QObject {
 
  private:
   QUrl m_downloadUrl;
+  QUrl m_uploadUrl;
 
   QList<BenchmarkTask*> m_benchmarkTasks;
 

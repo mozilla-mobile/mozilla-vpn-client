@@ -45,6 +45,7 @@ SOURCES += \
         connectionbenchmark/benchmarktask.cpp \
         connectionbenchmark/benchmarktaskdownload.cpp \
         connectionbenchmark/benchmarktaskping.cpp \
+        connectionbenchmark/benchmarktaskupload.cpp \
         connectionbenchmark/connectionbenchmark.cpp \
         connectionhealth.cpp \
         constants.cpp \
@@ -200,6 +201,7 @@ HEADERS += \
         connectionbenchmark/benchmarktask.h \
         connectionbenchmark/benchmarktaskdownload.h \
         connectionbenchmark/benchmarktaskping.h \
+        connectionbenchmark/benchmarktaskupload.h \
         connectionbenchmark/benchmarktasksentinel.h \
         connectionbenchmark/connectionbenchmark.h \
         connectionhealth.h \
