@@ -5,6 +5,7 @@
 #include "wasmauthenticationlistener.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "wasmstarter.h"
 
 #include <QTimer>
 
@@ -35,5 +36,5 @@ void WasmAuthenticationListener::start(Task* task, const QString& codeChallenge,
 
   QTimer* timer = new QTimer(this);
   connect(timer, &QTimer::timeout, this, [this]() { emit completed("WASM"); });
-  timer->start(2000);
+  timer->start(WasmStarter::s_authLoadingTimeoutMSec);
 }

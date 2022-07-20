@@ -49,13 +49,13 @@
 
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androidiaphandler.h"
-#  include "platforms/android/androidutils.h"
-#endif
-
-#ifdef MVPN_ANDROID
 #  include "platforms/android/androiddatamigration.h"
 #  include "platforms/android/androidvpnactivity.h"
 #  include "platforms/android/androidutils.h"
+#endif
+
+#ifdef MVPN_WASM
+#  include "platforms/wasm/wasmstarter.h"
 #endif
 
 #ifdef MVPN_ADJUST
@@ -269,6 +269,10 @@ void MozillaVPN::initialize() {
 
   m_private->m_captivePortalDetection.initialize();
   m_private->m_networkWatcher.initialize();
+
+#ifdef MVPN_WASM
+  WasmStarter::initialize();
+#endif
 
   if (!settingsHolder->hasToken()) {
     return;

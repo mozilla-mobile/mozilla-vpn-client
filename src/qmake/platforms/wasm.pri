@@ -27,19 +27,21 @@ SOURCES += \
     platforms/dummy/dummycryptosettings.cpp \
     platforms/macos/macosmenubar.cpp \
     platforms/wasm/wasmauthenticationlistener.cpp \
+    platforms/wasm/wasminspector.cpp \
     platforms/wasm/wasmnetworkrequest.cpp \
     platforms/wasm/wasmnetworkwatcher.cpp \
+    platforms/wasm/wasmstarter.cpp \
     platforms/wasm/wasmwindowcontroller.cpp \
-    platforms/wasm/wasminspector.cpp \
     systemtraynotificationhandler.cpp
 
 HEADERS += \
     platforms/dummy/dummycontroller.h \
     platforms/macos/macosmenubar.h \
     platforms/wasm/wasmauthenticationlistener.h \
-    platforms/wasm/wasmnetworkwatcher.h \
-    platforms/wasm/wasmwindowcontroller.h \
     platforms/wasm/wasminspector.h \
+    platforms/wasm/wasmnetworkwatcher.h \
+    platforms/wasm/wasmstarter.h \
+    platforms/wasm/wasmwindowcontroller.h \
     systemtraynotificationhandler.h
 
 SOURCES -= networkrequest.cpp

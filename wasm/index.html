@@ -75,6 +75,9 @@
                   bodyClassList.add("wasm-loaded");
                   status.textContent = '';
               },
+              environment: { "wasmConfig": JSON.stringify({
+                "skipAuthentication": false
+              }) },
           });
           qtLoader.loadEmscriptenModule("mozillavpn");
       }
