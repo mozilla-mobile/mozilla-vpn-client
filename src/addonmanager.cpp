@@ -384,6 +384,13 @@ bool AddonManager::validateAndLoad(const QString& addonId,
                                    const QByteArray& sha256, bool checkSha256) {
   logger.debug() << "Load addon" << addonId;
 
+#ifdef MVPN_WASM
+  if (addonId.startsWith("message_")) {
+    logger.debug() << "Skipping the message addon";
+    return true;
+  }
+#endif
+
   if (m_addons.contains(addonId)) {
     logger.warning() << "Addon" << addonId << "already loaded";
     return false;
