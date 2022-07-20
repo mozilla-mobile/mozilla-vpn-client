@@ -14,7 +14,6 @@ import "C"
 
 import (
 	"errors"
-	"log"
 	"unsafe"
 
 	"github.com/mozilla-services/autograph/verifier/contentsignature"
@@ -43,17 +42,17 @@ func balrogSetLogger(loggerFn uintptr) {
 
 //export balrogValidate
 func balrogValidate(x5u string, input string, signature string, rootHash string, leafCertSubject string) bool {
-	logger := log.New(&CLogger{level: 0}, "", 0)
+	//logger := log.New(&CLogger{level: 0}, "", 0)
 	err := contentsignature.Verify([]byte(input), []byte(x5u), signature, rootHash)
 	if err != nil {
-		logger.Println("Verification failed with error:", err.Error())
+		//logger.Println("Verification failed with error:", err.Error())
 		return false
 	}
 	// Verify method does not verify the leaf cert subject, so we do it here.
 	certs, _ := contentsignature.ParseChain([]byte(x5u))
 	leaf := certs[0]
 	if string(leaf.Subject.CommonName) != leafCertSubject {
-		logger.Println("Leaf subject didn't match. Expected: ", leafCertSubject, " Got: ", leaf.Subject)
+		//logger.Println("Leaf subject didn't match. Expected: ", leafCertSubject, " Got: ", leaf.Subject)
 		return false
 	}
 	return true
