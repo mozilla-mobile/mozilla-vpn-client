@@ -56,6 +56,11 @@ jobs:
             url: https://download.wireguard.com/windows-toolchain/distfiles/go1.17beta1-windows_amd64_2021-06-11.zip
             sha256: 09601956a35ee4c2fa199da301c4b210fd365a46d286a7160388a1cdc07b7a6d
             size: 83720417
-
-
+    win-mingw:
+        description: MinGW for windows 
+        fetch:
+            type: static-url
+            url: https://download.wireguard.com/windows-toolchain/distfiles/llvm-mingw-20201020-msvcrt-x86_64.zip 
+            sha256: 2e46593245090df96d15e360e092f0b62b97e93866e0162dca7f93b16722b844
+            size: 186551751
     

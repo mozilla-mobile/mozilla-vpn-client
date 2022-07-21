@@ -27,6 +27,11 @@ git submodule update --init --force --recursive --depth=1
 $PYTHON_SCRIPTS =resolve-path "$env:APPDATA\Python\Python36\Scripts"
 $env:PATH ="$QTPATH;$PYTHON_SCRIPTS;$env:PATH"
 
+# Setup Go and MinGW up (for gco)
+$env:GOROOT="$FETCHES_PATH\go\"
+$env:PATH ="$FETCHES_PATH\go\bin;$env:PATH"
+$env:PATH ="$env:PATH;$FETCHES_PATH\llvm-mingw\bin;"
+
 # Set Env's required for the windows/compile.bat
 $env:VCToolsRedistDir=(resolve-path "$FETCHES_PATH/VisualStudio/VC/Redist/MSVC/14.30.30704/").ToString()
 $env:BUILDDIR=resolve-path $FETCHES_PATH/QT_OUT
@@ -46,14 +51,6 @@ $env:OPENSSL_USE_STATIC_LIBS = "TRUE"
 
 #Do not continune from this point on when we encounter an error
 $ErrorActionPreference = "Stop"
-
-# Call the Subcommands for balrog and tunnel dll outside of cmake, as they setup go for us.
-. "windows/tunnel/build.cmd"
-
-$env:GOROOT="$REPO_ROOT_PATH\windows\tunnel\.deps\go\"
-$env:PATH ="$REPO_ROOT_PATH\windows\tunnel\.deps\go\bin;$env:PATH"
-$env:PATH ="$env:PATH;$REPO_ROOT_PATH\windows\tunnel\.deps\llvm-mingw\bin;" # Put it onto the end of the path
-
 mkdir $TASK_WORKDIR/cmake_build 
 $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
 
