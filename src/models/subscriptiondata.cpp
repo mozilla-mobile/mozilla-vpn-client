@@ -219,13 +219,10 @@ bool SubscriptionData::parseSubscriptionDataWeb(
     return false;
   }
 
-  if (subscriptionStatus == "active") {
+  if (subscriptionStatus == "active" || subscriptionStatus == "trialing") {
     m_status = Active;
-  } else if (subscriptionStatus == "inactive") {
-    m_status = Inactive;
   } else {
-    logger.error() << "Unexpected subscription status:" << subscriptionStatus;
-    return false;
+    m_status = Inactive;
   }
 
   return true;

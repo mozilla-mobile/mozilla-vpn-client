@@ -528,6 +528,26 @@ describe('Subscription view', function() {
             'https://accounts.stage.mozaws.net/subscriptions',
       },
       {
+        name: 'web subscription: trailing',
+        subscription: {
+          value: {
+            _subscription_type: 'web',
+            created: 23677200,
+            current_period_end: 2147483647,
+            cancel_at_period_end: true,
+            status: 'trailing'
+          },
+          expected: {
+            activated: '10/2/70',
+            cancelled: '1/19/38',
+            label: 'Expires',
+            status: 'Inactive'
+          }
+        },
+        manageSubscriptionLink:
+            'https://accounts.stage.mozaws.net/subscriptions',
+      },
+      {
         name: 'apple subscription: auto renew',
         subscription: {
           value: {
@@ -590,10 +610,7 @@ describe('Subscription view', function() {
           expected:
               {cancelled: '1/25/70', label: 'Next billed', status: 'Inactive'}
         },
-        payment: {
-          value: {},
-          expected: {payment: 'Apple subscription'}
-        },
+        payment: {value: {}, expected: {payment: 'Apple subscription'}},
       },
       {
         name: 'google subscription: no payment data',
@@ -606,10 +623,7 @@ describe('Subscription view', function() {
           expected:
               {cancelled: '1/25/70', label: 'Next billed', status: 'Inactive'}
         },
-        payment: {
-          value: {},
-          expected: {payment: 'Google subscription'}
-        },
+        payment: {value: {}, expected: {payment: 'Google subscription'}},
       },
     ];
 
