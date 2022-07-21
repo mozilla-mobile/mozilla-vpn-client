@@ -106,27 +106,18 @@ ColumnLayout {
     }
 
     VPNSearchBar {
-        id: filterInput
-        Layout.preferredWidth: parent.width
-        Layout.preferredHeight: VPNTheme.theme.rowHeight
-        onTextChanged: text => {
-            model.invalidate();
-        }
-        _placeholderText: searchBarPlaceholder
-        hasError: applist.count === 0
+        id: searchBar
+        _filterProxySource: VPNAppPermissions
+        _filterProxyCallback: obj => {
+             const filterValue = getSearchBarText();
+             return obj.appName.toLowerCase().includes(filterValue);
+         }
+        _searchBarHasError: () => { return applist.count === 0 }
+        _searchBarPlaceholderText: searchBarPlaceholder
+
         enabled: vpnFlickable.vpnIsOff && VPNSettings.protectSelectedApps
+        Layout.fillWidth: true
     }
-
-    VPNFilterProxyModel {
-        id: model
-        source: VPNAppPermissions
-        // No filter
-        filterCallback: obj => {
-           const filterValue = filterInput.text.toLowerCase();
-           return obj.appName.toLowerCase().includes(filterValue);
-        }
-    }
-
 
 
     ColumnLayout {
@@ -138,7 +129,9 @@ ColumnLayout {
 
         Repeater {
             id: applist
-            model: model
+            model: searchBar.getProxyModel()
+            Layout.fillHeight: false
+            visible: count > 0
             delegate: VPNCheckBoxRow {
                 showDivider: false
                 labelText: appName
