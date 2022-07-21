@@ -52,7 +52,7 @@ function(add_go_library GOTARGET SOURCE)
         INTERFACE_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/${HEADER_NAME}
         IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/${ARCHIVE_NAME})
 
-    if(MSVC AND NOT (MSVC_VERSION LESS 1900))
+    if(MSVC)
         # prevent error LNK2019: unresolved external symbol fprintf referenced in function ...
         set_property(TARGET ${GOTARGET} APPEND PROPERTY
             INTERFACE_SOURCES ${CMAKE_SOURCE_DIR}/src/platforms/windows/golang-msvc-fixup.cpp)
