@@ -18,7 +18,6 @@ $QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/bin/"
 # and __sometimes__ taskcluster will fail to do cleanup once the task is done
 Remove-Item $FETCHES_PATH/VisualStudio/VC/Tools/MSVC/14.30.30705/bin/HostX64/x64/VCTIP.EXE  
 
-
 # Fetch 3rdparty stuff.
 python3 -m pip install -r requirements.txt --user
 git submodule update --init --force --recursive --depth=1
@@ -31,6 +30,7 @@ $env:PATH ="$QTPATH;$PYTHON_SCRIPTS;$env:PATH"
 $env:GOROOT="$FETCHES_PATH\go\"
 $env:PATH ="$FETCHES_PATH\go\bin;$env:PATH"
 $env:PATH ="$env:PATH;$FETCHES_PATH\llvm-mingw\bin;"
+$ENV:LIB ="$ENV:LIB;$FETCHES_PATH\llvm-mingw\x86_64-w64-mingw32\lib"
 
 # Set Env's required for the windows/compile.bat
 $env:VCToolsRedistDir=(resolve-path "$FETCHES_PATH/VisualStudio/VC/Redist/MSVC/14.30.30704/").ToString()
