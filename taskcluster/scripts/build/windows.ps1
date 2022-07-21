@@ -53,7 +53,8 @@ $ErrorActionPreference = "Stop"
 
 $env:GOROOT="$REPO_ROOT_PATH\windows\tunnel\.deps\go\"
 $env:PATH ="$REPO_ROOT_PATH\windows\tunnel\.deps\go\bin;$env:PATH"
-$env:PATH ="$env:PATH;$REPO_ROOT_PATH\windows\tunnel\.deps\llvm-mingw\bin;" # Put it onto the end of the path
+$env:CC="cl.exe"
+#$env:PATH ="$env:PATH;$REPO_ROOT_PATH\windows\tunnel\.deps\llvm-mingw\bin;" # Put it onto the end of the path
 
 mkdir $TASK_WORKDIR/cmake_build 
 $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
