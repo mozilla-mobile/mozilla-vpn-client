@@ -278,10 +278,6 @@ Item {
 
                 text: VPN.devVersion
             }
-
-            VPNVerticalSpacer {
-                height: VPNTheme.theme.windowMargin
-            }
         }
     }
 }

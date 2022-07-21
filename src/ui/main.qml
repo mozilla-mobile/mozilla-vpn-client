@@ -122,6 +122,7 @@ Window {
     }
 
     VPNBottomNavigationBar {
+        id: navbar
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
@@ -131,7 +132,21 @@ Window {
 
         height: VPNTheme.theme.navBarHeight
         radius: height / 2
-        visible: !VPNTutorial.playing
+        visible: VPN.state === VPN.StateMain
+        enabled: opacity !== 0.0
+
+        Behavior on opacity {
+            PropertyAnimation {
+                duration: 500
+            }
+        }
+
+        Connections {
+            target: VPNConnectionBenchmark
+            onStateChanged: {
+                navbar.opacity = VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateInitial ? 1 : 0
+            }
+        }
 
         ButtonGroup {
             id: navBarTabsButtonGroup

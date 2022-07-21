@@ -191,11 +191,6 @@ VPNFlickable {
                     }
                 }
             }
-
-            //padding for the bottom of the flickable
-            Item {
-                Layout.preferredHeight: 66
-            }
         }
     }
 

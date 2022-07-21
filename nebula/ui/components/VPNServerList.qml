@@ -14,7 +14,6 @@ import components.forms 0.1
 FocusScope {
     id: focusScope
 
-    property real listOffset: (VPNTheme.theme.menuHeight * 2)
     property bool showRecentConnections: false
     property var currentServer
 
@@ -66,16 +65,9 @@ FocusScope {
         id: vpnFlickable
         objectName: "serverCountryView"
 
-        flickContentHeight: serverList.implicitHeight + listOffset
+        flickContentHeight: serverList.implicitHeight
         anchors.fill: parent
 
-        Rectangle {
-            id: verticalSpacer
-
-            height: VPNTheme.theme.vSpacing
-            width: parent.width
-            color: VPNTheme.theme.transparent
-        }
 
         NumberAnimation on contentY {
             id: scrollAnimation
@@ -84,13 +76,15 @@ FocusScope {
             easing.type: Easing.OutQuad
         }
 
-        Column {
+        ColumnLayout {
             id: serverList
             objectName: "serverCountryList"
 
             spacing: 14
-            width: parent.width
-            anchors.top: verticalSpacer.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+
 
             VPNSearchBar {
                 id: searchBar
@@ -110,28 +104,43 @@ FocusScope {
                 _searchBarHasError: () => { return countriesRepeater.count === 0 }
                 _searchBarPlaceholderText: VPNl18n.ServersViewSearchPlaceholder
 
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: VPNTheme.theme.vSpacing
-                anchors.rightMargin: VPNTheme.theme.vSpacing
+                Layout.fillWidth: true
+                Layout.leftMargin: VPNTheme.theme.vSpacing
+                Layout.rightMargin: VPNTheme.theme.vSpacing
+                Layout.preferredHeight: VPNTheme.theme.rowHeight
+                enabled: true
+                onTextChanged: () => {
+                    countriesModel.invalidate();
+                }
+                _placeholderText: VPNl18n.ServersViewSearchPlaceholder
+                hasError: countriesRepeater.count === 0
+                Keys.onDownPressed: recentConnections.visible ? recentConnections.focusItemAt(0) : countriesRepeater.itemAt(0).forceActiveFocus()
             }
 
 
             VPNRecentConnections {
                 id: recentConnections
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.rightMargin: VPNTheme.theme.windowMargin / 2
-                anchors.leftMargin: anchors.rightMargin
+                Layout.fillWidth: true
+                Layout.rightMargin: VPNTheme.theme.windowMargin / 2
+                Layout.leftMargin: VPNTheme.theme.windowMargin / 2
+                Layout.preferredHeight: showRecentConnections ? implicitHeight : 0
                 visible: showRecentConnections && searchBar.getSearchBarText().length === 0
                 showMultiHopRecentConnections: false
-                height: showRecentConnections ? implicitHeight : 0
             }
 
             Repeater {
                 id: countriesRepeater
                 model: searchBar.getProxyModel()
-                delegate: VPNServerCountry{}
+                delegate: VPNServerCountry{
+                    //Necessary because VPNClickableRow has hardcoded anchors (that we aren't using here because this is a layout)
+                    anchors.left: undefined
+                    anchors.right: undefined
+                    anchors.leftMargin: undefined
+                    anchors.rightMargin: undefined
+
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: height
+                }
             }
         }
     }

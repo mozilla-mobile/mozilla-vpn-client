@@ -32,7 +32,7 @@ Item {
             id: vpnFlickable
 
             objectName: "settingsLanguagesView"
-            flickContentHeight: col.y + col.implicitHeight + (VPNTheme.theme.rowHeight * 2)
+            flickContentHeight: col.y + col.implicitHeight
             anchors.fill: parent
 
             VPNToggleCard {
