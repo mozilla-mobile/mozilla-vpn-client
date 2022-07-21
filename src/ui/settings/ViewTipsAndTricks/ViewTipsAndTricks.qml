@@ -22,21 +22,14 @@ VPNFlickable {
     flickContentHeight: layout.implicitHeight + layout.anchors.topMargin
     interactive: flickContentHeight > height
 
-    // The list of add-on guides
-    VPNFilterProxyModel {
-        id: guideModel
-        source: VPNAddonManager
-        filterCallback: obj => obj.addon.type === "guide"
+    function isQuickAddon(addon, type) {
+        return (addon.type === type && !addon.advanced && !addon.highlighted)
     }
 
-    //Model containing all tutorials except the highlighted one (if there are any more)
-    VPNFilterProxyModel {
-        id: highlightedTutorialExcludedModel
-        source: VPNAddonManager
-        filterCallback: obj => obj.addon.type === "tutorial" && !obj.addon.highlighted;
+    function isAdvancedAddon(addon, type) {
+        return (addon.type === type && addon.advanced && !addon.highlighted)
     }
 
-    // Highlighted tutorials
     Column {
         id: layout
         anchors.top: parent.top
@@ -55,6 +48,7 @@ VPNFlickable {
 
             spacing: 0
 
+            // Highlighted tutorials
             Flow {
                 Layout.fillWidth: true
                 spacing: VPNTheme.theme.vSpacingSmall
@@ -100,19 +94,63 @@ VPNFlickable {
             }
 
             // Quick Tips
+            VPNFilterProxyModel {
+                id: quickGuidesModel
+                source: VPNAddonManager
+                filterCallback: ({ addon }) => isQuickAddon(addon, "guide")
+            }
+
+            VPNFilterProxyModel {
+                id: quickTutorialsModel
+                source: VPNAddonManager
+                filterCallback: ({ addon }) => isQuickAddon(addon, "tutorial")
+            }
+
             TipsAndTricksSection {
+                Layout.topMargin: 32
+
                 id: quicksTips
 
-                flickableParent: vpnFlickable
+                parentWidth: vpnFlickable.width
 
                 title: VPNl18n.TipsAndTricksQuickTipsTitle
                 description: VPNl18n.TipsAndTricksQuickTipsDescription
 
-                hasGuides: !!VPNAddonManager.pick(addon => addon.type === "guide")
-                guidesModel: guideModel
+                hasGuides: !!VPNAddonManager.pick(addon => isQuickAddon(addon, "guide"))
+                guidesModel: quickGuidesModel
 
-                hasTutorials: !!VPNAddonManager.pick(addon => addon.type === "tutorial" && !addon.highlighted)
-                tutorialsModel: highlightedTutorialExcludedModel
+                hasTutorials: !!VPNAddonManager.pick(addon => isQuickAddon(addon, "tutorial"))
+                tutorialsModel: quickTutorialsModel
+            }
+
+            // Advanced Tips
+            VPNFilterProxyModel {
+                id: advancedGuidesModel
+                source: VPNAddonManager
+                filterCallback: ({ addon }) => isAdvancedAddon(addon, "guide")
+            }
+
+            VPNFilterProxyModel {
+                id: advancedTutorialsModel
+                source: VPNAddonManager
+                filterCallback: ({ addon }) => isAdvancedAddon(addon, "tutorial")
+            }
+
+            TipsAndTricksSection {
+                Layout.topMargin: 32
+
+                id: advancedsTips
+
+                parentWidth: vpnFlickable.width
+
+                title: VPNl18n.TipsAndTricksAdvancedTipsTitle
+                description: VPNl18n.TipsAndTricksAdvancedTipsDescription
+
+                hasGuides: !!VPNAddonManager.pick(addon => isAdvancedAddon(addon, "guide"))
+                guidesModel: advancedGuidesModel
+
+                hasTutorials: !!VPNAddonManager.pick(addon => isAdvancedAddon(addon, "tutorial"))
+                tutorialsModel: advancedTutorialsModel
             }
 
             //padding for the bottom of the flickable

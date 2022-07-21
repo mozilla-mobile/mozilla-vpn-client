@@ -12,7 +12,7 @@ import components 0.1
 ColumnLayout {
     id: tipsAndTricksSection
 
-    property var flickableParent
+    property var parentWidth
 
     property string title
     property string description
@@ -27,7 +27,6 @@ ColumnLayout {
 
     // Title
     VPNBoldLabel {
-        Layout.topMargin: 32
         Layout.fillWidth: true
 
         text: title
@@ -76,7 +75,7 @@ ColumnLayout {
                         objectName: addon.id
 
                         height: 172
-                        width: flickableParent.width < VPNTheme.theme.tabletMinimumWidth ? (parent.width - parent.spacing) / 2 : (parent.width - (parent.spacing * 2)) / 3
+                        width: parentWidth < VPNTheme.theme.tabletMinimumWidth ? (parent.width - parent.spacing) / 2 : (parent.width - (parent.spacing * 2)) / 3
 
                         imageSrc: addon.image
                         title: qsTrId(addon.titleId)
@@ -108,7 +107,7 @@ ColumnLayout {
                 model: tutorialsModel
 
                 delegate: VPNTutorialCard {
-                    width: flickableParent.width < VPNTheme.theme.tabletMinimumWidth ? parent.width : (parent.width - parent.spacing) / 2
+                    width: parentWidth < VPNTheme.theme.tabletMinimumWidth ? parent.width : (parent.width - parent.spacing) / 2
                     height: VPNTheme.theme.tutorialCardHeight
 
                     imageSrc: addon.image
