@@ -143,11 +143,6 @@ VPNFlickable {
                 onClicked: settingsStackView.push(aboutUsComponent)
             }
 
-            VPNVerticalSpacer {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-            }
-
             VPNSignOut {
                 id: signOutLink
 
@@ -158,11 +153,12 @@ VPNFlickable {
                     bottomMargin: undefined
                 }
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
+                Layout.topMargin: VPNTheme.theme.vSpacing
             }
 
             VPNVerticalSpacer {
                 Layout.fillWidth: true
-                Layout.minimumHeight: VPNTheme.theme.rowHeight
+                Layout.fillHeight: true
             }
         }
     }

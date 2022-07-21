@@ -267,13 +267,6 @@ Item {
 
                         }
                     }
-
-                    VPNVerticalSpacer {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        Layout.minimumHeight: VPNTheme.theme.rowHeight * 2
-                        Layout.maximumHeight: Layout.minimumHeight
-                    }
                 }
             }
         }
