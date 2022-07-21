@@ -693,3 +693,4 @@ global:
   goBack:
     value: Go back
     comment: Label for button used in intro modals to return to the app.
+
