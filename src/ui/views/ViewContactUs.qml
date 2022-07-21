@@ -105,6 +105,7 @@ Item {
                     spacing: 24
 
                     ColumnLayout {
+                        objectName: "contactUs-unauthedUserInputs"
                         Layout.fillHeight: true
                         spacing: 24
                         visible: VPN.userState !== VPN.UserAuthenticated
@@ -149,6 +150,7 @@ Item {
                     }
 
                     VPNUserProfile {
+                        objectName: "contactUs-userInfo"
                         enabled: false
                         Layout.preferredWidth: parent.width
                         visible: VPN.userState === VPN.UserAuthenticated
