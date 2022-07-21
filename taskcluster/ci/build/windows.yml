@@ -16,6 +16,7 @@ windows/opt:
             - win-dev-env
             - win-rustup
             - win-go
+            - win-mingw
         toolchain:
             - qt-win
     worker:
