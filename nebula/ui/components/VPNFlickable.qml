@@ -68,7 +68,7 @@ Flickable {
 
     onFlickContentHeightChanged: {
         if (mapToGlobal(x, y).y + height >= window.height - VPNTheme.theme.navBarHeightWithMargins
-                && flickContentHeight + mapToGlobal(x, y).y >= window.height - VPNTheme.theme.navBarHeightWithMargins) {
+                && flickContentHeight + mapToGlobal(x, y).y >= window.height - VPNTheme.theme.navBarHeightWithMargins && vpnFlickable.considerNavBar) {
             vpnFlickable.contentHeight = flickContentHeight + (flickContentHeight >= height ? VPNTheme.theme.navBarHeightWithMargins : (mapToGlobal(x, y).y + flickContentHeight) - (window.height - VPNTheme.theme.navBarHeightWithMargins) + (height - flickContentHeight))
         }
         else {
