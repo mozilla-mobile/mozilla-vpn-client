@@ -137,6 +137,28 @@ NetworkRequest* NetworkRequest::createForGetHostAddress(
 }
 
 // static
+NetworkRequest* NetworkRequest::createForUploadData(Task* parent,
+    const QString& url) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QUrl requestUrl(url);
+  r->m_request.setUrl(url);
+
+  QJsonObject obj;
+  obj.insert("test", "string");
+
+  QJsonDocument json;
+  json.setObject(obj);
+
+  r->postRequest(json.toJson(QJsonDocument::Compact));
+  return r;
+}
+
+// static
 NetworkRequest* NetworkRequest::createForAuthenticationVerification(
     Task* parent, const QString& pkceCodeSuccess,
     const QString& pkceCodeVerifier) {
