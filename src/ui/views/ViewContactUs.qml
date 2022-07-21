@@ -80,8 +80,7 @@ Item {
             id: vpnFlickable
             property var appRating
             property var feedbackCategory
-            flickContentHeight: col.childrenRect.height
-            interactive: flickContentHeight > height
+            flickContentHeight: col.implicitHeight + col.anchors.topMargin
 
             Rectangle {
                 anchors.fill: parent
@@ -253,7 +252,6 @@ Item {
                             Layout.preferredHeight: VPNTheme.theme.rowHeight
                             onClicked: mainStackView.pop()
                             implicitHeight: VPNTheme.theme.rowHeight
-
                         }
                     }
                 }

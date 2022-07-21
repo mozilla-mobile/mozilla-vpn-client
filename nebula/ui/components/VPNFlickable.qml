@@ -14,7 +14,10 @@ Flickable {
     property var flickContentHeight
     property bool contentExceedsHeight: height < flickContentHeight
     property bool hideScollBarOnStackTransition: false
-    interactive: !VPNTutorial.playing
+    //This property should be true if the flickable appears behind the main navbar
+    property bool considerNavBar: true
+
+    interactive: !VPNTutorial.playing && contentHeight > height
 
     MouseArea {
 
@@ -63,7 +66,16 @@ Flickable {
         ensureVisAnimation.start();
     }
 
-    contentHeight: flickContentHeight > height ? flickContentHeight + VPNTheme.theme.navBarHeightWithMargins : flickContentHeight
+    onFlickContentHeightChanged: {
+        if (mapToGlobal(x, y).y + height >= window.height - VPNTheme.theme.navBarHeightWithMargins
+                && flickContentHeight + mapToGlobal(x, y).y >= window.height - VPNTheme.theme.navBarHeightWithMargins) {
+            vpnFlickable.contentHeight = flickContentHeight + (flickContentHeight >= height ? VPNTheme.theme.navBarHeightWithMargins : (mapToGlobal(x, y).y + flickContentHeight) - (window.height - VPNTheme.theme.navBarHeightWithMargins) + (height - flickContentHeight))
+        }
+        else {
+            vpnFlickable.contentHeight = flickContentHeight
+        }
+    }
+
     boundsBehavior: Flickable.StopAtBounds
     opacity: 0
 
