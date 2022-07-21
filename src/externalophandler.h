@@ -13,6 +13,7 @@ class ExternalOpHandler final : public QObject {
 
  public:
   enum Op {
+    OpAbout,
     OpActivate,
     OpCloseEvent,
     OpContactUs,

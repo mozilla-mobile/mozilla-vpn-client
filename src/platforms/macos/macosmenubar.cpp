@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macosmenubar.h"
+#include "externalophandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -56,14 +57,16 @@ void MacOSMenuBar::initialize() {
   quit->setMenuRole(QAction::QuitRole);
 
   // Do not use qtTrId here!
-  m_aboutAction =
-      fileMenu->addAction("about.vpn", vpn, &MozillaVPN::requestAbout);
+  m_aboutAction = fileMenu->addAction("about.vpn", []() {
+    ExternalOpHandler::instance()->request(ExternalOpHandler::OpAbout);
+  });
   m_aboutAction->setMenuRole(QAction::AboutRole);
   m_aboutAction->setVisible(vpn->state() == MozillaVPN::StateMain);
 
   // Do not use qtTrId here!
-  m_preferencesAction =
-      fileMenu->addAction("preferences", vpn, &MozillaVPN::requestSettings);
+  m_preferencesAction = fileMenu->addAction("preferences", []() {
+    ExternalOpHandler::instance()->request(ExternalOpHandler::OpSettings);
+  });
   m_preferencesAction->setMenuRole(QAction::PreferencesRole);
   m_preferencesAction->setVisible(vpn->state() == MozillaVPN::StateMain);
 
