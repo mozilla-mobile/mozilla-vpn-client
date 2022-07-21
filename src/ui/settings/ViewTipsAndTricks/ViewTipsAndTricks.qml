@@ -107,9 +107,9 @@ VPNFlickable {
             }
 
             TipsAndTricksSection {
-                Layout.topMargin: 32
-
                 id: quicksTips
+
+                Layout.topMargin: 32
 
                 parentWidth: vpnFlickable.width
 
@@ -137,9 +137,9 @@ VPNFlickable {
             }
 
             TipsAndTricksSection {
-                Layout.topMargin: 32
-
                 id: advancedsTips
+
+                Layout.topMargin: 32
 
                 parentWidth: vpnFlickable.width
 
