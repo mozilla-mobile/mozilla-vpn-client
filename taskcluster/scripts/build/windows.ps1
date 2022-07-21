@@ -49,12 +49,10 @@ $ErrorActionPreference = "Stop"
 
 # Call the Subcommands for balrog and tunnel dll outside of cmake, as they setup go for us.
 . "windows/tunnel/build.cmd"
-. "balrog/build.cmd"
 
 $env:GOROOT="$REPO_ROOT_PATH\windows\tunnel\.deps\go\"
 $env:PATH ="$REPO_ROOT_PATH\windows\tunnel\.deps\go\bin;$env:PATH"
-$env:CC="cl.exe"
-#$env:PATH ="$env:PATH;$REPO_ROOT_PATH\windows\tunnel\.deps\llvm-mingw\bin;" # Put it onto the end of the path
+$env:PATH ="$env:PATH;$REPO_ROOT_PATH\windows\tunnel\.deps\llvm-mingw\bin;" # Put it onto the end of the path
 
 mkdir $TASK_WORKDIR/cmake_build 
 $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
