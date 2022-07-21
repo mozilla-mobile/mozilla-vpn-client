@@ -287,7 +287,7 @@ Item {
                     VPNVerticalSpacer {
                         Layout.fillWidth: true
                         Layout.minimumHeight: 16
-                        Layout.fillHeight: !window.fullscreenRequired()
+                        Layout.fillHeight: window.fullscreenRequired()
                     }
 
                     Column {
