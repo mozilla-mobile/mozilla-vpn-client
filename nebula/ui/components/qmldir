@@ -97,7 +97,3 @@ VPNUIStates 0.1 VPNUIStates.qml
 VPNUserProfile 0.1 VPNUserProfile.qml
 VPNVerticalSpacer 0.1 VPNVerticalSpacer.qml
 VPNViewDNSSettings 0.1 VPNViewDNSSettings.qml
-VPNWasmAlerts 0.1 VPNWasmAlerts.qml
-VPNWasmHeader 0.1 VPNWasmHeader.qml
-VPNWasmMenu 0.1 VPNWasmMenu.qml
-VPNWasmMenuButton 0.1 VPNWasmMenuButton.qml

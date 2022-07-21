@@ -9,8 +9,7 @@ const vpn = require('./helper.js');
 describe('Mobile Onboarding', function() {
   beforeEach(async () => {
     await vpn.waitForElement('initialStackView');
-    await vpn.setElementProperty(
-        'initialStackView', 'state', 's', 'testMobileOnboarding');
+    await vpn.flipFeatureOn('mobileOnboarding');
   });
 
   it('Navigating to and from the help menu is possible', async () => {

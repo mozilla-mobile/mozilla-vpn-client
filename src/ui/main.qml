@@ -21,7 +21,6 @@ Window {
 
     property bool _fallbackQtQuickRenderer: QT_QUICK_BACKEND == "software" //TODO pending #3398
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
-    property var isWasmApp: Qt.platform.os === "wasm"
 
     function fullscreenRequired() {
         return Qt.platform.os === "android" ||
@@ -107,14 +106,6 @@ Window {
         anchors.top: parent.top
     }
 
-    VPNWasmHeader {
-        id: wasmMenuHeader
-        visible: isWasmApp
-        height: visible ? VPNTheme.theme.menuHeight : 0
-        anchors.top: parent.top
-        anchors.topMargin: iosSafeAreaTopMargin.height
-    }
-
     VPNStackView {
         id: mainStackView
 
@@ -122,7 +113,7 @@ Window {
         initialItem: mainView
         width: parent.width
         anchors.top: parent.top
-        anchors.topMargin: iosSafeAreaTopMargin.height + wasmMenuHeader.height
+        anchors.topMargin: iosSafeAreaTopMargin.height
         height: safeContentHeight
 
         function getHelpViewNeeded() {

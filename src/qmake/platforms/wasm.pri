@@ -37,10 +37,8 @@ HEADERS += \
     platforms/dummy/dummycontroller.h \
     platforms/macos/macosmenubar.h \
     platforms/wasm/wasmauthenticationlistener.h \
+    platforms/wasm/wasmnetworkrequest.h \
     platforms/wasm/wasmnetworkwatcher.h \
     platforms/wasm/wasmwindowcontroller.h \
     platforms/wasm/wasminspector.h \
     systemtraynotificationhandler.h
-
-SOURCES -= networkrequest.cpp
-RESOURCES += platforms/wasm/networkrequests.qrc

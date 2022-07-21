@@ -1,9 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>networkrequests/authentication.json</file>
-        <file>networkrequests/account.json</file>
-        <file>networkrequests/servers.json</file>
-        <file>networkrequests/ipinfo.json</file>
-    </qresource>
-</RCC>
-

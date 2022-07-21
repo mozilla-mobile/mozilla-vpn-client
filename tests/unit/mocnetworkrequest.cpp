@@ -144,6 +144,8 @@ void NetworkRequest::replyFinished() { QFAIL("Not called!"); }
 
 void NetworkRequest::timeout() {}
 
+#ifndef QT_NO_SSL
 void NetworkRequest::sslErrors(const QList<QSslError>& errors) {
   Q_UNUSED(errors);
 }
+#endif
