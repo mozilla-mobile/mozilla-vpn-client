@@ -69,8 +69,9 @@ VPNButtonBase {
     }
 
     VPNMouseArea {
+        enabled: parent.enabled
         anchors.fill: rowVisualStates
-        hoverEnabled: !rowShouldBeDisabled
+        hoverEnabled: enabled
         targetEl: rowVisualStates
         onMouseAreaClicked: handleMouseClick
     }
