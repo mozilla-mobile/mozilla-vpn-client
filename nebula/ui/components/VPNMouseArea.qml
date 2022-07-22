@@ -26,7 +26,7 @@ MouseArea {
     onPressed: changeState(uiState.statePressed)
     onCanceled: changeState(uiState.stateDefault)
     onReleased: {
-        if (hoverEnabled) {
+        if (hoverEnabled && mouseArea.containsMouse) {
             changeState(uiState.stateDefault);
             onMouseAreaClicked();
         }
