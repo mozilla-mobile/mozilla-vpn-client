@@ -19,6 +19,7 @@ VPNFlickable {
     flickContentHeight: col.height + VPNTheme.theme.windowMargin / 2
     anchors.left: parent.left
     anchors.right: parent.right
+    considerNavBar: false //TODO: Remove this when we move my devices nav into settings menu
 
     states: [
         State {

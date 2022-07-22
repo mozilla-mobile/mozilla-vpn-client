@@ -25,7 +25,6 @@ Item {
 
     VPNFlickable {
         id: flickableContent
-        flickContentHeight: layout.implicitHeight
 
         anchors.top: menu.bottom
         anchors.left: parent.left
@@ -279,6 +278,10 @@ Item {
                 text: VPN.devVersion
             }
         }
+    }
+
+    Component.onCompleted: {
+        flickableContent.flickContentHeight = layout.implicitHeight
     }
 }
 

@@ -67,9 +67,13 @@ Flickable {
     }
 
     onFlickContentHeightChanged: {
-        if (mapToGlobal(x, y).y + height >= window.height - VPNTheme.theme.navBarHeightWithMargins
-                && flickContentHeight + mapToGlobal(x, y).y >= window.height - VPNTheme.theme.navBarHeightWithMargins && vpnFlickable.considerNavBar) {
-            vpnFlickable.contentHeight = flickContentHeight + (flickContentHeight >= height ? VPNTheme.theme.navBarHeightWithMargins : (mapToGlobal(x, y).y + flickContentHeight) - (window.height - VPNTheme.theme.navBarHeightWithMargins) + (height - flickContentHeight))
+//        console.log("AAA: " + flickContentHeight)
+//        console.log("AAA: " + height)
+//        console.log("AAA: " + mapToItem(window.contentItem, 0, 0).y)
+//        console.log("AAA: " + window.height)
+        if (mapToItem(window.contentItem, 0, 0).y + height >= window.height - VPNTheme.theme.navBarHeightWithMargins
+                && flickContentHeight + mapToItem(window.contentItem, 0, 0).y >= window.height - VPNTheme.theme.navBarHeightWithMargins && vpnFlickable.considerNavBar) {
+            vpnFlickable.contentHeight = flickContentHeight + (flickContentHeight >= height ? VPNTheme.theme.navBarHeightWithMargins : (mapToItem(window.contentItem, 0, 0).y + flickContentHeight) - (window.height - VPNTheme.theme.navBarHeightWithMargins) + (height - flickContentHeight))
         }
         else {
             vpnFlickable.contentHeight = flickContentHeight

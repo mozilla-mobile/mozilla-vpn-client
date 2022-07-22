@@ -32,8 +32,7 @@ Item {
         anchors.left: root.left
         anchors.right: root.right
         interactive: true
-        flickContentHeight: maxDevicesReached.height + content.height + col.height
-        contentHeight: maxDevicesReached.height + content.height + col.height
+        flickContentHeight: state === "deviceLimit" ? maxDevicesReached.height + content.height + col.height : content.height
         state: VPN.state !== VPN.StateDeviceLimit ? "active" : "deviceLimit"
 
         Component.onCompleted: {
