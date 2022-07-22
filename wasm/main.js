@@ -82,11 +82,12 @@ class MVPNWasm {
 
     if (u.hostname === location.hostname) {
       // same location.
-      fetch(url).then(async resp => Module.mvpnNetworkResponse(JSON.stringify({
-        status: resp.status,
-        body: btoa(String.fromCharCode.apply(
-            null, new Uint8Array(await resp.arrayBuffer())))
-      })));
+      fetch(url).then(
+          async resp => Module.mvpnNetworkResponse(id, JSON.stringify({
+            status: resp.status,
+            body: btoa(String.fromCharCode.apply(
+                null, new Uint8Array(await resp.arrayBuffer())))
+          })));
       return;
     }
 
