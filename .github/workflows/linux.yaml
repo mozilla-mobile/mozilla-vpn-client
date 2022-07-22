@@ -47,7 +47,6 @@ jobs:
         config:
             - { name: "Bionic", dist: bionic, ppa: "ppa:okirby/qt6-backports" }
             - { name: "Focal", dist: focal, ppa: "ppa:okirby/qt6-backports" }
-            - { name: "Impish", dist: impish, ppa: "ppa:okirby/qt6-backports" }
             - { name: "Jammy", dist: jammy, ppa: "" }
 
     runs-on: ubuntu-latest
