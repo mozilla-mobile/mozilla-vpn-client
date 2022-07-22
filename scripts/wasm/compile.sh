@@ -78,4 +78,6 @@ mv src/mozillavpn.wasm wasm || die "Failed"
 mv src/mozillavpn.js wasm || die "Failed"
 mv src/qtloader.js wasm || die "Failed"
 cp -r tools/logviewer wasm || die "Failed"
+cp -r tests/functional/fxa_endpoints.js wasm || die
+cp -r tests/functional/guardian_endpoints.js wasm || die
 print G "done."
