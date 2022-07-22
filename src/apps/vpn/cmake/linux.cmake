@@ -2,13 +2,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+option(BUILD_FLATPAK "Build for the Flatpak distribution" OFF)
+
 find_package(Qt6 REQUIRED COMPONENTS DBus)
 target_link_libraries(mozillavpn PRIVATE Qt6::DBus)
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(polkit REQUIRED IMPORTED_TARGET polkit-gobject-1)
 pkg_check_modules(libsecret REQUIRED IMPORTED_TARGET libsecret-1)
-target_link_libraries(mozillavpn PRIVATE PkgConfig::polkit PkgConfig::libsecret)
+target_link_libraries(mozillavpn PRIVATE PkgConfig::libsecret)
 
 # Linux platform source files
 target_sources(mozillavpn PRIVATE
@@ -56,8 +58,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/linuxdaemon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/pidtracker.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/pidtracker.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/polkithelper.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/polkithelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/wireguardutilslinux.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/wireguardutilslinux.h
 )
@@ -86,11 +86,6 @@ configure_file(../linux/extra/mozillavpn.desktop.in
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 
-configure_file(../linux/extra/mozillavpn-startup.desktop.in
-    ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn-startup.desktop)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn-startup.desktop
-    DESTINATION /etc/xdg/autostart)
-
 install(FILES ../linux/extra/icons/16x16/mozillavpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/16x16/apps)
 
@@ -107,23 +102,39 @@ install(FILES ../linux/extra/icons/64x64/mozillavpn.png
 install(FILES ../linux/extra/icons/128x128/mozillavpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/128x128/apps)
 
-pkg_get_variable(POLKIT_POLICY_DIR polkit-gobject-1 policydir)
-install(FILES apps/vpn/platforms/linux/daemon/org.mozilla.vpn.policy
-    DESTINATION ${POLKIT_POLICY_DIR})
-
-install(FILES apps/vpn/platforms/linux/daemon/org.mozilla.vpn.conf
-    DESTINATION /usr/share/dbus-1/system.d)
-
-install(FILES apps/vpn/platforms/linux/daemon/org.mozilla.vpn.dbus.service
-    DESTINATION /usr/share/dbus-1/system-services)
-
-pkg_check_modules(SYSTEMD systemd)
-if("${SYSTEMD_FOUND}" EQUAL 1)
-    pkg_get_variable(SYSTEMD_UNIT_DIR systemd systemdsystemunitdir)
+if(${BUILD_FLATPAK})
+  add_compile_definitions(MVPN_FLATPAK)
 else()
+  pkg_check_modules(polkit REQUIRED IMPORTED_TARGET polkit-gobject-1)
+  target_link_libraries(mozillavpn PRIVATE PkgConfig::polkit)
+  target_sources(mozillavpn PRIVATE
+      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/polkithelper.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/polkithelper.h
+  )
+
+  pkg_get_variable(POLKIT_POLICY_DIR polkit-gobject-1 policydir)
+  install(FILES apps/vpn/platforms/linux/daemon/org.mozilla.vpn.policy
+      DESTINATION ${POLKIT_POLICY_DIR})
+
+  configure_file(../linux/extra/mozillavpn-startup.desktop.in
+      ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn-startup.desktop)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn-startup.desktop
+      DESTINATION /etc/xdg/autostart)
+
+  install(FILES apps/vpn/platforms/linux/daemon/org.mozilla.vpn.conf
+      DESTINATION /usr/share/dbus-1/system.d)
+
+  install(FILES apps/vpn/platforms/linux/daemon/org.mozilla.vpn.dbus.service
+      DESTINATION /usr/share/dbus-1/system-services)
+
+  pkg_check_modules(SYSTEMD systemd)
+  if("${SYSTEMD_FOUND}" EQUAL 1)
+    pkg_get_variable(SYSTEMD_UNIT_DIR systemd systemdsystemunitdir)
+  else()
     set(SYSTEMD_UNIT_DIR /lib/systemd/system)
+  endif()
+  configure_file(../linux/mozillavpn.service.in
+      ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.service)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.service
+      DESTINATION ${SYSTEMD_UNIT_DIR})
 endif()
-configure_file(../linux/mozillavpn.service.in
-    ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.service)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.service
-    DESTINATION ${SYSTEMD_UNIT_DIR})
