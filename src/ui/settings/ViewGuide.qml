@@ -96,8 +96,7 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            contentHeight: layout.implicitHeight + layout.anchors.topMargin
-            flickContentHeight: contentHeight
+            flickContentHeight: layout.implicitHeight + layout.anchors.topMargin
             interactive: contentHeight > height
 
             Column {
@@ -231,11 +230,6 @@ Item {
                                 }
                             }
                         }
-                    }
-
-                    //padding for the bottom of the flickable
-                    Item {
-                        Layout.preferredHeight: 56
                     }
                 }
             }

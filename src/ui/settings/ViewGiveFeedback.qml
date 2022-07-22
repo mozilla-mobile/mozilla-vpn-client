@@ -45,7 +45,6 @@ Item {
 
             anchors.bottom: parent.bottom
             anchors.top: parent.top
-            anchors.bottomMargin: window.fullscreenRequired() ? VPNTheme.theme.windowMargin * 4 + feebackContinueButton.height : 0
 
             ButtonGroup {
                 id: btnGroup
@@ -61,12 +60,18 @@ Item {
 
                 Component.onCompleted: {
                     if (window.fullscreenRequired()) {
-                        anchors.centerIn = parent;
+                        anchors.top = parent.top;
+                        anchors.bottom = feebackContinueButton.top
                         return;
                     }
 
                     anchors.top = parent.top;
                     anchors.topMargin = VPNTheme.theme.contentTopMarginDesktop;
+                }
+
+                Item {
+                    Layout.fillHeight: true
+                    visible: window.fullscreenRequired()
                 }
 
                 VPNBoldLabel {
@@ -156,6 +161,10 @@ Item {
                         }
                     }
                 }
+                Item {
+                    Layout.fillHeight: true
+                    visible: window.fullscreenRequired()
+                }
             }
 
             VPNButton {
@@ -189,7 +198,8 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 Component.onCompleted: {
                     if (window.fullscreenRequired()) {
-                        anchors.top = parent.bottom;
+                        anchors.bottom = parent.bottom
+                        anchors.bottomMargin = VPNTheme.theme.navBarHeightWithMargins
                         return;
                     }
 
@@ -331,12 +341,6 @@ Item {
                             implicitHeight: VPNTheme.theme.rowHeight
 
                         }
-                    }
-                    VPNVerticalSpacer {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        Layout.minimumHeight: VPNTheme.theme.rowHeight * 2
-                        Layout.maximumHeight: Layout.minimumHeight
                     }
                 }
             }
