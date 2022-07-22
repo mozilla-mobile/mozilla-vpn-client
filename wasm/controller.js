@@ -93,7 +93,7 @@ class Controller {
   }
 
   async forceUpdateCheck(version) {
-    const json = await this._writeCommand(`force_update_check ${verrsion}`);
+    const json = await this._writeCommand(`force_update_check ${version}`);
     assert(
         json.type === 'force_update_check' && !('error' in json),
         `Command failed: ${json.error}`);
