@@ -16,7 +16,7 @@ VPNFlickable {
 
     anchors.top: parent.top
     height: parent.height
-    flickContentHeight: contentColumn.implicitHeight + VPNTheme.theme.rowHeight
+    flickContentHeight: contentColumn.implicitHeight
 
     ListModel {
         id: subscriptionInfoModel
@@ -125,11 +125,6 @@ VPNFlickable {
 
                 Layout.alignment: Qt.AlignHCenter
                 Layout.topMargin: VPNTheme.theme.vSpacing
-            }
-
-            VPNVerticalSpacer {
-                Layout.fillWidth: true
-                Layout.minimumHeight: VPNTheme.theme.rowHeight
             }
         }
     }

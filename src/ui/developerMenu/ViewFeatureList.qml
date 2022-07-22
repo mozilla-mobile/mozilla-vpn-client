@@ -37,7 +37,7 @@ Item {
 
     VPNFlickable {
         id: vpnFlickable
-        flickContentHeight: featureListHolder.height + 100
+        flickContentHeight: featureListHolder.height
         anchors.top: menu.bottom
         height: root.height - menu.height
         anchors.left: parent.left

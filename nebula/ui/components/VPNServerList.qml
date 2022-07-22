@@ -66,6 +66,8 @@ FocusScope {
         objectName: "serverCountryView"
 
         flickContentHeight: serverList.implicitHeight
+        considerNavBar: false //workaround since this flickable isn't mapping to window coordinates properly (its mapping from top of segmented toggle)
+
         anchors.fill: parent
 
 
@@ -141,6 +143,10 @@ FocusScope {
                     Layout.fillWidth: true
                     Layout.preferredHeight: height
                 }
+            }
+
+            Item {
+                Layout.preferredHeight: VPNTheme.theme.navBarHeightWithMargins
             }
         }
     }
