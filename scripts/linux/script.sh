@@ -183,6 +183,16 @@ EOF
   rpmbuild --define "_srcrpmdir $(pwd)" --define "_sourcedir $(pwd)" -bs mozillavpn.spec
 }
 
+## Update the flatpak manifest to use the source tarball.
+build_flatpak_manifest() {
+cp $WORKDIR/linux/flatpak-pyyaml.yaml flatpak-pyyaml.yaml
+sed -e '1,/[[:space:]]\+sources:/!d' $WORKDIR/linux/org.mozilla.vpn.yml > org.mozilla.vpn.yml
+cat << EOF >> org.mozilla.vpn.yml
+      - type: archive
+        path: mozillavpn_$SHORTVERSION.orig.tar.gz
+EOF
+}
+
 ## Build the DSC and debian tarball.
 build_deb_source() {
   print Y "Building sources for $distro..."
@@ -207,6 +217,9 @@ build_deb_source() {
 if [ "$SOURCEONLY" == "Y" ]; then
   print Y "Building RPM sources"
   build_rpm_source
+
+  print Y "Building Flatpak manifest"
+  build_flatpak_manifest
 
   print Y "Building Debian sources"
   build_deb_source
