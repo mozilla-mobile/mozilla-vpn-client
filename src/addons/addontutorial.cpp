@@ -52,6 +52,8 @@ Addon* AddonTutorial::create(QObject* parent, const QString& manifestFileName,
   auto guard = qScopeGuard([&] { tutorial->deleteLater(); });
 
   tutorial->m_highlighted = tutorialObj["highlighted"].toBool();
+  tutorial->m_advanced =
+      tutorialObj["advanced"].toBool() && !tutorial->m_highlighted;
 
   tutorial->m_titleId = QString("tutorial.%1.title").arg(tutorialId);
   tutorial->m_subtitleId = QString("tutorial.%1.subtitle").arg(tutorialId);

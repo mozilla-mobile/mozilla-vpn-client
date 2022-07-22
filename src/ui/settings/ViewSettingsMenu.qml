@@ -92,7 +92,7 @@ VPNFlickable {
                 settingTitle: VPNl18n.TipsAndTricksSettingsEntryLabel
                 imageLeftSrc: "qrc:/nebula/resources/sparkles.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push("qrc:/ui/settings/ViewTipsAndTricks.qml")
+                onClicked: settingsStackView.push("qrc:/ui/settings/ViewTipsAndTricks/ViewTipsAndTricks.qml")
             }
 
             VPNSettingsItem {

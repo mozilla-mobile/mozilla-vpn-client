@@ -8,6 +8,10 @@
       "description": "The ID of the guide",
       "pattern": "^[A-Za-z0-9_]+"
     },
+    "advanced": {
+      "type": "boolean",
+      "description": "Is this an advanced guide? Defaults to `false`."
+    },
     "title": {
       "type": "string",
       "description": "The title of the guide"
