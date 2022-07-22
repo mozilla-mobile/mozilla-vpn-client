@@ -225,8 +225,7 @@ Item {
             id: vpnFlickable
             property var appRating
             property var feedbackCategory
-            flickContentHeight: col.childrenRect.height
-            interactive: flickContentHeight > height
+            flickContentHeight: col.childrenRect.height + col.anchors.topMargin
 
             Rectangle {
                 anchors.fill: parent
@@ -379,7 +378,7 @@ Item {
                        anchors.top = undefined;
                        anchors.topMargin = undefined;
                        anchors.bottom= parent.bottom
-                       anchors.bottomMargin = VPNTheme.theme.windowMargin * 4
+                       anchors.bottomMargin = VPNTheme.theme.navBarHeightWithMargins
                    }
                }
             }
@@ -412,6 +411,8 @@ Item {
 
             VPNFooterLink {
                 id: skipLink
+
+                anchors.bottomMargin: VPNTheme.theme.navBarHeightWithMargins
 
                 labelText: qsTrId("vpn.feedbackForm.skip")
                 onClicked: feedbackStackView.push(thankYouView);
