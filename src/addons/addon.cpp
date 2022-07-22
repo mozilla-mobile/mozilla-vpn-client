@@ -28,75 +28,6 @@
 namespace {
 Logger logger(LOG_MAIN, "Addon");
 
-bool evaluateConditionsEnabledFeatures(const QJsonArray& enabledFeatures) {
-  for (QJsonValue enabledFeature : enabledFeatures) {
-    QString featureName = enabledFeature.toString();
-
-    // If the feature doesn't exist, we crash.
-    const Feature* feature = Feature::get(featureName);
-    if (!feature) {
-      logger.info() << "Feature not found" << featureName;
-      return false;
-    }
-
-    if (!feature->isSupported()) {
-      logger.info() << "Feature not supported" << featureName;
-      return false;
-    }
-  }
-
-  return true;
-}
-
-bool evaluateConditionsPlatforms(const QJsonArray& platformArray) {
-  QStringList platforms;
-  for (QJsonValue platform : platformArray) {
-    platforms.append(platform.toString());
-  }
-
-  if (!platforms.isEmpty() &&
-      !platforms.contains(MozillaVPN::instance()->platform())) {
-    logger.info() << "Not supported platform";
-    return false;
-  }
-
-  return true;
-}
-
-bool evaluateConditionsEnv(const QString& env) {
-  if (env.isEmpty()) {
-    return true;
-  }
-
-  if (env == "staging") {
-    return !Constants::inProduction();
-  }
-
-  if (env == "production") {
-    return Constants::inProduction();
-  }
-
-  logger.info() << "Unknown env value:" << env;
-  return false;
-}
-
-bool evaluateConditionsClientVersion(const QString& min, const QString& max) {
-  QString currentVersion = Constants::versionString();
-
-  if (!min.isEmpty() && VersionApi::compareVersions(min, currentVersion) == 1) {
-    logger.info() << "Min version is" << min << " curent" << currentVersion;
-    return false;
-  }
-
-  if (!max.isEmpty() &&
-      VersionApi::compareVersions(max, currentVersion) == -1) {
-    logger.info() << "Max version is" << min << " curent" << currentVersion;
-    return false;
-  }
-
-  return true;
-}
-
 bool evaluateConditionsSettingsOp(const QString& op, bool result) {
   if (op == "eq") return result;
 
@@ -106,56 +37,152 @@ bool evaluateConditionsSettingsOp(const QString& op, bool result) {
   return false;
 }
 
-bool evaluateConditionsSettings(const QJsonArray& settings) {
-  for (QJsonValue setting : settings) {
-    QJsonObject obj = setting.toObject();
+struct ConditionCallback {
+  QString m_key;
+  std::function<bool(const QJsonValue&)> m_callback;
+};
 
-    QString op = obj["op"].toString();
-    QString key = obj["setting"].toString();
-    QVariant valueA = SettingsHolder::instance()->rawSetting(key);
-    if (!valueA.isValid()) {
-      logger.info() << "Unable to retrieve setting key" << key;
-      return false;
-    }
+QList<ConditionCallback> s_conditionCallbacks{
+    {"enabled_features",
+     [](const QJsonValue& value) -> bool {
+       for (const QJsonValue& enabledFeature : value.toArray()) {
+         QString featureName = enabledFeature.toString();
 
-    QJsonValue valueB = obj["value"];
-    switch (valueB.type()) {
-      case QJsonValue::Bool:
-        if (!evaluateConditionsSettingsOp(op,
-                                          valueA.toBool() == valueB.toBool())) {
-          logger.info() << "Setting value doesn't match for key" << key;
-          return false;
-        }
+         // If the feature doesn't exist, we crash.
+         const Feature* feature = Feature::get(featureName);
+         if (!feature) {
+           logger.info() << "Feature not found" << featureName;
+           return false;
+         }
 
-        break;
+         if (!feature->isSupported()) {
+           logger.info() << "Feature not supported" << featureName;
+           return false;
+         }
+       }
 
-      case QJsonValue::Double:
-        if (!evaluateConditionsSettingsOp(
-                op, valueA.toDouble() == valueB.toDouble())) {
-          logger.info() << "Setting value doesn't match for key" << key;
-          return false;
-        }
+       return true;
+     }},
 
-        break;
-        break;
+    {"platforms",
+     [](const QJsonValue& value) -> bool {
+       QStringList platforms;
+       for (QJsonValue platform : value.toArray()) {
+         platforms.append(platform.toString());
+       }
 
-      case QJsonValue::String:
-        if (!evaluateConditionsSettingsOp(
-                op, valueA.toString() == valueB.toString())) {
-          logger.info() << "Setting value doesn't match for key" << key;
-          return false;
-        }
+       if (!platforms.isEmpty() &&
+           !platforms.contains(MozillaVPN::instance()->platform())) {
+         logger.info() << "Not supported platform";
+         return false;
+       }
 
-        break;
+       return true;
+     }},
 
-      default:
-        logger.warning() << "Unsupported setting value type for key" << key;
-        return false;
-    }
-  }
+    {"settings",
+     [](const QJsonValue& value) -> bool {
+       for (QJsonValue setting : value.toArray()) {
+         QJsonObject obj = setting.toObject();
 
-  return true;
-}
+         QString op = obj["op"].toString();
+         QString key = obj["setting"].toString();
+         QVariant valueA = SettingsHolder::instance()->rawSetting(key);
+         if (!valueA.isValid()) {
+           logger.info() << "Unable to retrieve setting key" << key;
+           return false;
+         }
+
+         QJsonValue valueB = obj["value"];
+         switch (valueB.type()) {
+           case QJsonValue::Bool:
+             if (!evaluateConditionsSettingsOp(
+                     op, valueA.toBool() == valueB.toBool())) {
+               logger.info() << "Setting value doesn't match for key" << key;
+               return false;
+             }
+
+             break;
+
+           case QJsonValue::Double:
+             if (!evaluateConditionsSettingsOp(
+                     op, valueA.toDouble() == valueB.toDouble())) {
+               logger.info() << "Setting value doesn't match for key" << key;
+               return false;
+             }
+
+             break;
+             break;
+
+           case QJsonValue::String:
+             if (!evaluateConditionsSettingsOp(
+                     op, valueA.toString() == valueB.toString())) {
+               logger.info() << "Setting value doesn't match for key" << key;
+               return false;
+             }
+
+             break;
+
+           default:
+             logger.warning()
+                 << "Unsupported setting value type for key" << key;
+             return false;
+         }
+       }
+
+       return true;
+     }},
+
+    {"env",
+     [](const QJsonValue& value) -> bool {
+       QString env = value.toString();
+
+       if (env.isEmpty()) {
+         return true;
+       }
+
+       if (env == "staging") {
+         return !Constants::inProduction();
+       }
+
+       if (env == "production") {
+         return Constants::inProduction();
+       }
+
+       logger.info() << "Unknown env value:" << env;
+       return false;
+     }},
+
+    {"min_client_version",
+     [](const QJsonValue& value) -> bool {
+       QString min = value.toString();
+       QString currentVersion = Constants::versionString();
+
+       if (!min.isEmpty() &&
+           VersionApi::compareVersions(min, currentVersion) == 1) {
+         logger.info() << "Min version is" << min << " curent"
+                       << currentVersion;
+         return false;
+       }
+
+       return true;
+     }},
+
+    {"max_client_version",
+     [](const QJsonValue& value) -> bool {
+       QString max = value.toString();
+       QString currentVersion = Constants::versionString();
+
+       if (!max.isEmpty() &&
+           VersionApi::compareVersions(max, currentVersion) == -1) {
+         logger.info() << "Max version is" << max << " curent"
+                       << currentVersion;
+         return false;
+       }
+
+       return true;
+     }},
+};
 
 }  // namespace
 
@@ -339,28 +366,22 @@ void Addon::maybeCreateConditionWatchers(const QJsonObject& conditions) {
 
 // static
 bool Addon::evaluateConditions(const QJsonObject& conditions) {
-  if (!evaluateConditionsEnabledFeatures(
-          conditions["enabled_features"].toArray())) {
-    return false;
-  }
+  for (const QString& key : conditions.keys()) {
+    bool found = false;
+    for (const ConditionCallback& condition : s_conditionCallbacks) {
+      if (condition.m_key == key) {
+        if (!condition.m_callback(conditions[key])) {
+          return false;
+        }
+        found = true;
+        break;
+      }
+    }
 
-  if (!evaluateConditionsPlatforms(conditions["platforms"].toArray())) {
-    return false;
-  }
-
-  // TODO: this could be a watcher too but we are not using it yet.
-  if (!evaluateConditionsSettings(conditions["settings"].toArray())) {
-    return false;
-  }
-
-  if (!evaluateConditionsEnv(conditions["env"].toString())) {
-    return false;
-  }
-
-  if (!evaluateConditionsClientVersion(
-          conditions["min_client_version"].toString(),
-          conditions["max_client_version"].toString())) {
-    return false;
+    if (!found) {
+      logger.error() << "Invalid condition key" << key;
+      return false;
+    }
   }
 
   return true;
