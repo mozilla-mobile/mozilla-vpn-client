@@ -152,11 +152,6 @@ VPNFlickable {
                 hasTutorials: !!VPNAddonManager.pick(addon => isAdvancedAddon(addon, "tutorial"))
                 tutorialsModel: advancedTutorialsModel
             }
-
-            //padding for the bottom of the flickable
-            Item {
-                Layout.preferredHeight: 66
-            }
         }
     }
 
