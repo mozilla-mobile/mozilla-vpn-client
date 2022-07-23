@@ -85,9 +85,6 @@ void AddonManager::initialize() {
     logger.debug() << "Unable to validate the index";
     return;
   }
-
-  m_loadCompleted = true;
-  emit loadCompletedChanged();
 }
 
 void AddonManager::updateIndex(const QByteArray& index,
@@ -191,26 +188,31 @@ bool AddonManager::validateIndex(const QByteArray& index,
       continue;
     }
 
-    if (!m_addons.contains(addonData.m_addonId) ||
-        m_addons[addonData.m_addonId].m_sha256 != addonData.m_sha256) {
+    Q_ASSERT(m_addons.contains(addonData.m_addonId));
+
+    if (m_addons[addonData.m_addonId].m_sha256 != addonData.m_sha256) {
       TaskScheduler::scheduleTask(
           new TaskAddon(addonData.m_addonId, addonData.m_sha256));
       taskAdded = true;
     }
   }
 
-  if (taskAdded && !m_loadCompleted) {
-    TaskScheduler::scheduleTask(new TaskFunction([this]() {
+  if (!m_loadCompleted) {
+    if (taskAdded) {
+      TaskScheduler::scheduleTask(new TaskFunction([this]() {
+        m_loadCompleted = true;
+        emit loadCompletedChanged();
+      }));
+    } else {
       m_loadCompleted = true;
       emit loadCompletedChanged();
-    }));
+    }
   }
 
   return true;
 }
 
-bool AddonManager::loadManifest(const QString& manifestFileName,
-                                const QByteArray& sha256) {
+bool AddonManager::loadManifest(const QString& manifestFileName) {
   Addon* addon = Addon::create(this, manifestFileName);
   if (!addon) {
     logger.warning() << "Unable to create an addon from manifest"
@@ -223,7 +225,8 @@ bool AddonManager::loadManifest(const QString& manifestFileName,
     beginResetModel();
   }
 
-  m_addons.insert(addon->id(), {sha256, addon->id(), addon});
+  Q_ASSERT(m_addons.contains(addon->id()));
+  m_addons[addon->id()].m_addon = addon;
 
   if (addonEnabled) {
     endResetModel();
@@ -254,26 +257,29 @@ void AddonManager::unload(const QString& addonId) {
   }
 
   Addon* addon = m_addons[addonId].m_addon;
-  Q_ASSERT(addon);
 
-  bool addonEnabled = addon->enabled();
-  if (addonEnabled) {
-    beginResetModel();
+  if (addon) {
+    bool addonEnabled = addon->enabled();
+    if (addonEnabled) {
+      beginResetModel();
+    }
+
+    m_addons.remove(addonId);
+
+    if (addonEnabled) {
+      endResetModel();
+    }
+
+    addon->deleteLater();
   }
-
-  m_addons.remove(addonId);
-
-  if (addonEnabled) {
-    endResetModel();
-  }
-
-  addon->deleteLater();
 }
 
 void AddonManager::retranslate() {
   foreach (const AddonData& addonData, m_addons) {
-    // This comment is here to make the linter happy.
-    addonData.m_addon->retranslate();
+    if (addonData.m_addon) {
+      // This comment is here to make the linter happy.
+      addonData.m_addon->retranslate();
+    }
   }
 }
 
@@ -396,6 +402,8 @@ bool AddonManager::validateAndLoad(const QString& addonId,
     return false;
   }
 
+  m_addons.insert(addonId, {QByteArray(), addonId, nullptr});
+
   // Hash validation
   QDir dir;
   if (!addonDir(&dir)) {
@@ -417,14 +425,15 @@ bool AddonManager::validateAndLoad(const QString& addonId,
     }
   }
 
+  m_addons[addonId].m_sha256 = sha256;
+
   if (!QResource::registerResource(addonFileName,
                                    QString("/addons/%1").arg(addonId))) {
     logger.warning() << "Unable to load resource from file" << addonFileName;
     return false;
   }
 
-  if (!loadManifest(QString(":/addons/%1/manifest.json").arg(addonId),
-                    sha256)) {
+  if (!loadManifest(QString(":/addons/%1/manifest.json").arg(addonId))) {
     QResource::unregisterResource(addonFileName, "/addons");
     return false;
   }
@@ -479,7 +488,7 @@ int AddonManager::rowCount(const QModelIndex&) const {
   int count = 0;
   for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
        i != m_addons.constEnd(); ++i) {
-    if (i.value().m_addon->enabled()) {
+    if (i.value().m_addon && i.value().m_addon->enabled()) {
       ++count;
     }
   }
@@ -496,7 +505,7 @@ QVariant AddonManager::data(const QModelIndex& index, int role) const {
       int row = index.row();
       for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
            i != m_addons.constEnd(); ++i) {
-        if (!i.value().m_addon->enabled()) {
+        if (!i.value().m_addon || !i.value().m_addon->enabled()) {
           continue;
         }
         if (row == 0) {
@@ -515,7 +524,7 @@ void AddonManager::forEach(std::function<void(Addon*)>&& a_callback) {
   std::function<void(Addon*)> callback = std::move(a_callback);
   for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
        i != m_addons.constEnd(); ++i) {
-    if (i.value().m_addon->enabled()) {
+    if (i.value().m_addon && i.value().m_addon->enabled()) {
       callback(i.value().m_addon);
     }
   }
@@ -532,7 +541,7 @@ Addon* AddonManager::pick(QJSValue filterCallback) const {
 
   for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
        i != m_addons.constEnd(); ++i) {
-    if (!i.value().m_addon->enabled()) {
+    if (!i.value().m_addon || !i.value().m_addon->enabled()) {
       continue;
     }
 
