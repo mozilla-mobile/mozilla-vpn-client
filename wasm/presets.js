@@ -485,8 +485,25 @@ const MVPNPresets = [
     }
   },
 
+  {
+    name: 'Backend failure',
+    callback: async function() {
+      await controller.waitForMainView();
+
+      await controller.wait();
+      await controller.waitForElementProperty(
+          'initialStackView', 'busy', 'false');
+      await controller.clickOnElement('getStarted');
+    },
+
+    guardianOverrideEndpoints: {
+      GETs: {
+        '/__heartbeat__': {status: 200, body: {mullvadOK: false, dbOK: false}},
+      },
+    }
+  },
+
   // TODO:
-  // - backend failure
   // - unstable connection
   // - no signal
   // - alerts
