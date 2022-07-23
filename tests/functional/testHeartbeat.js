@@ -6,6 +6,8 @@ const assert = require('assert');
 const vpn = require('./helper.js');
 
 describe('Backend failure', function() {
+  this.timeout(300000);
+
   async function backendFailureAndRestore() {
     await vpn.forceHeartbeatFailure();
 
@@ -80,6 +82,11 @@ describe('Backend failure', function() {
   });
 
   it('BackendFailure during the authentication', async () => {
+    if (this.ctx.wasm) {
+      // Ignore this test in wasm
+      return;
+    }
+
     await vpn.waitForMainView();
     await vpn.clickOnElement('getStarted');
 
@@ -191,5 +198,4 @@ describe('Backend failure', function() {
           'VPN is off');
     });
   });
-
 });

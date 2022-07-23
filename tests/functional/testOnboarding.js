@@ -6,6 +6,8 @@ const assert = require('assert');
 const vpn = require('./helper.js');
 
 describe('Initial view and onboarding', function() {
+  this.timeout(240000);
+
   beforeEach(async () => {
     assert(await vpn.getLastUrl() === '');
   })

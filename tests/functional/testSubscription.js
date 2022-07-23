@@ -25,7 +25,7 @@ const SUBSCRIPTION_DETAILS = {
 };
 
 describe('Subscription view', function() {
-  this.timeout(120000);
+  this.timeout(3000000);
   this.ctx.authenticationNeeded = true;
   this.ctx.guardianOverrideEndpoints = {
     GETs: {
@@ -65,6 +65,32 @@ describe('Subscription view', function() {
     DELETEs: {},
   };
 
+  this.ctx.resetCallbacks = () => {
+    this.ctx.fxaLoginCallback = (req) => {
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
+        sessionToken: 'session',
+        verified: true,
+        verificationMethod: '',
+      };
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
+    };
+
+    this.ctx.fxaTotpCallback = (req) => {
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/session/verify/totp'].body = {
+        success: true
+      }
+    };
+
+    this.ctx.guardianSubscriptionDetailsCallback = req => {
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .status = 200;
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .body = SUBSCRIPTION_DETAILS;
+    };
+  };
+
+  this.ctx.resetCallbacks();
+
   beforeEach(async () => {
     if (!(await vpn.isFeatureFlippedOn('subscriptionManagement'))) {
       await vpn.flipFeatureOn('subscriptionManagement');
@@ -72,6 +98,10 @@ describe('Subscription view', function() {
     if ((await vpn.isFeatureFlippedOn('accountDeletion'))) {
       await vpn.flipFeatureOff('accountDeletion');
     }
+  });
+
+  afterEach(() => {
+    this.ctx.resetCallbacks();
   });
 
   it('Authentication needed - sample', async () => {
@@ -848,6 +878,7 @@ describe('Subscription view', function() {
 
       await vpn.waitForElement('controllerTitle');
       await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
+      await vpn.wait();
     }
   });
 

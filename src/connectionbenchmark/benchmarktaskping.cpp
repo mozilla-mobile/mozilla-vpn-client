@@ -13,7 +13,8 @@ Logger logger(LOG_MAIN, "BenchmarkTaskPing");
 }
 
 BenchmarkTaskPing::BenchmarkTaskPing()
-    : BenchmarkTask(Constants::BENCHMARK_MAX_DURATION_PING) {
+    : BenchmarkTask("BenchmarkTaskPing",
+                    Constants::BENCHMARK_MAX_DURATION_PING) {
   MVPN_COUNT_CTOR(BenchmarkTaskPing);
 
   connect(this, &BenchmarkTask::stateChanged, this,

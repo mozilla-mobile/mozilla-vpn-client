@@ -126,8 +126,6 @@ jobs:
             xvfb-run -a npm run functionalTest -- ${{matrix.test.path}}
           on_retry_command: npm run cleanup-flaky-script-output
         env:
-          ACCOUNT_EMAIL: ${{ secrets.ACCOUNT_EMAIL }}
-          ACCOUNT_PASSWORD: ${{ secrets.ACCOUNT_PASSWORD }}
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
           MVPN_BIN: ./build/cmake/src/mozillavpn
 
