@@ -52,6 +52,68 @@ const DeviceLimitUserData = {
   ],
 };
 
+const SubscriptionNeededUserData = {
+  avatar: '',
+  display_name: 'Test test',
+  email: 'test@mozilla.com',
+  max_devices: 5,
+  subscriptions: {},
+  devices: [{
+    name: 'Current device',
+    unique_id: '',
+    pubkey: '',
+    ipv4_address: '127.0.0.1',
+    ipv6_address: '::1',
+    created_at: new Date().toISOString()
+  }],
+};
+
+const SubscriptionCompletedUserData = {
+  avatar: '',
+  display_name: 'Test test',
+  email: 'test@mozilla.com',
+  max_devices: 5,
+  subscriptions: {vpn: {active: true}},
+  devices: [{
+    name: 'Current device',
+    unique_id: '',
+    pubkey: '',
+    ipv4_address: '127.0.0.1',
+    ipv6_address: '::1',
+    created_at: new Date().toISOString()
+  }],
+};
+
+const SubscriptionProducts = [
+  {platform: 'dummy', id: 'ok', featured_product: true, type: 'monthly'},
+  {
+    platform: 'dummy',
+    id: 'invalid',
+    featured_product: false,
+    type: 'half-yearly'
+  },
+  {platform: 'dummy', id: 'failed', featured_product: true, type: 'yearly'},
+  {platform: 'dummy', id: 'canceled', featured_product: false, type: 'monthly'},
+  {
+    platform: 'dummy',
+    id: 'already-subscribed',
+    featured_product: false,
+    type: 'half-yearly'
+  },
+  {
+    platform: 'dummy',
+    id: 'billing-not-available',
+    featured_product: false,
+    type: 'yearly'
+  },
+  {
+    platform: 'dummy',
+    id: 'not-validated',
+    featured_product: false,
+    type: 'monthly'
+  },
+];
+
 const MVPNPresets = [
   {
     name: 'Main view',
@@ -381,11 +443,49 @@ const MVPNPresets = [
     }
   },
 
+  {
+    name: 'Subscription flow',
+    callback: async function() {
+      SubscriptionProducts.forEach((product, pos) => {
+        mvpnWasm.addPresetInfo(`Product ${pos} has output ${product.id}`);
+      });
+
+      MVPNPresets.find(a => a.name === 'Subscription flow')
+          .guardianOverrideEndpoints.GETs['/api/v1/vpn/account']
+          .body = SubscriptionNeededUserData;
+
+      await controller.waitForMainView();
+
+      await controller.wait();
+      await controller.waitForElementProperty(
+          'initialStackView', 'busy', 'false');
+      await controller.clickOnElement('getStarted');
+    },
+
+    guardianOverrideEndpoints: {
+      GETs: {
+        '/api/v1/vpn/account': {status: 200, body: SubscriptionNeededUserData},
+        '/api/v3/vpn/products':
+            {status: 200, body: {products: SubscriptionProducts}},
+      },
+      POSTs: {
+        '/api/v1/vpn/purchases/wasm': {
+          callback: (req, that) => {
+            if (req.body.productId === 'ok') {
+              MVPNPresets.find(a => a.name === 'Subscription flow')
+                  .guardianOverrideEndpoints.GETs['/api/v1/vpn/account']
+                  .body = SubscriptionCompletedUserData;
+            }
+            that.body = { status: req.body.productId }
+          },
+          status: 200,
+        }
+      },
+      DELETEs: {},
+    }
+  },
+
   // TODO:
-  // - subscription needed
-  // - subscription blocked
-  // - billing not available
-  // - subscription not validated
   // - backend failure
   // - unstable connection
   // - no signal

@@ -28,7 +28,32 @@ class MVPNWasm {
         '/api/v1/vpn/subscriptionDetails': {
           status: 200,
           body: SUBSCRIPTION_DETAILS,
-        }
+        },
+        '/api/v3/vpn/products': {
+          status: 200,
+          body: {
+            products: [
+              {
+                platform: 'dummy',
+                id: 'monthly',
+                featured_product: false,
+                type: 'monthly'
+              },
+              {
+                platform: 'dummy',
+                id: 'half-monthly',
+                featured_product: false,
+                type: 'half-yearly'
+              },
+              {
+                platform: 'dummy',
+                id: 'yearly',
+                featured_product: true,
+                type: 'yearly'
+              },
+            ]
+          }
+        },
       }
     };
 

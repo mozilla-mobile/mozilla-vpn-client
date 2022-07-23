@@ -141,6 +141,10 @@ class NetworkRequest final : public QObject {
                                                   const QString& sku,
                                                   const QString& purchaseToken);
 #endif
+#ifdef MVPN_WASM
+  static NetworkRequest* createForWasmPurchase(Task* parent,
+                                               const QString& productId);
+#endif
 
   void disableTimeout();
 

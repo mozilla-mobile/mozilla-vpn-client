@@ -22,6 +22,9 @@ class TaskPurchase final : public Task {
   static TaskPurchase* createForAndroid(const QString& sku,
                                         const QString& token);
 #endif
+#ifdef MVPN_WASM
+  static TaskPurchase* createForWasm(const QString& productId);
+#endif
 
   ~TaskPurchase();
 
@@ -39,6 +42,9 @@ class TaskPurchase final : public Task {
 #ifdef MVPN_ANDROID
     Android,
 #endif
+#ifdef MVPN_WASM
+    Wasm,
+#endif
   };
 
   explicit TaskPurchase(Op op);
@@ -51,6 +57,9 @@ class TaskPurchase final : public Task {
 #ifdef MVPN_ANDROID
   QString m_androidSku;
   QString m_androidToken;
+#endif
+#ifdef MVPN_WASM
+  QString m_productId;
 #endif
 };
 
