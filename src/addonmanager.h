@@ -36,8 +36,7 @@ class AddonManager final : public QAbstractListModel {
   void storeAndLoadAddon(const QByteArray& addonData, const QString& addonId,
                          const QByteArray& sha256);
 
-  bool loadManifest(const QString& addonManifestFileName,
-                    const QByteArray& sha256);
+  bool loadManifest(const QString& addonManifestFileName);
 
   void unload(const QString& addonId);
 
@@ -75,6 +74,8 @@ class AddonManager final : public QAbstractListModel {
   void loadCompletedChanged();
 
  private:
+  // This struct can be partially empty in case the sha does not match, or the
+  // addon does not need to be loaded for unmatched conditions.
   struct AddonData {
     QByteArray m_sha256;
     QString m_addonId;
