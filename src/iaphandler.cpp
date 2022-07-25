@@ -20,6 +20,8 @@
 #  include "platforms/ios/iosiaphandler.h"
 #elif MVPN_ANDROID
 #  include "platforms/android/androidiaphandler.h"
+#elif MVPN_WASM
+#  include "platforms/wasm/wasmiaphandler.h"
 #else
 #  include "platforms/dummy/dummyiaphandler.h"
 #endif
@@ -36,6 +38,8 @@ IAPHandler* IAPHandler::createInstance() {
   new IOSIAPHandler(qApp);
 #elif MVPN_ANDROID
   new AndroidIAPHandler(qApp);
+#elif MVPN_WASM
+  new WasmIAPHandler(qApp);
 #else
   new DummyIAPHandler(qApp);
 #endif

@@ -848,6 +848,30 @@ NetworkRequest* NetworkRequest::createForAndroidPurchase(
 }
 #endif
 
+#ifdef MVPN_WASM
+NetworkRequest* NetworkRequest::createForWasmPurchase(
+    Task* parent, const QString& productId) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, true);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QUrl url(apiBaseUrl());
+  url.setPath("/api/v1/vpn/purchases/wasm");
+  r->m_request.setUrl(url);
+
+  QJsonObject obj;
+  obj.insert("productId", productId);
+
+  QJsonDocument json;
+  json.setObject(obj);
+
+  r->postRequest(json.toJson(QJsonDocument::Compact));
+  return r;
+}
+#endif
+
 void NetworkRequest::replyFinished() {
   Q_ASSERT(m_reply);
   Q_ASSERT(m_reply->isFinished());
