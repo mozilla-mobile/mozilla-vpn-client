@@ -1551,7 +1551,7 @@
   "countryCode": "ie",
   "languages": {
    "co": "Irlanda",
-   "cy": "Iwerddon",
+   "cy": "Yr Iwerddon",
    "de": "Irland",
    "dsb": "Irska",
    "el": "Δημοκρατία της Ιρλανδίας",
@@ -1790,6 +1790,55 @@
   "wikiDataID": "Q334"
  },
  {
+  "wikiDataID": "Q214",
+  "countryCode": "sk",
+  "languages": {
+   "co": "Sluvacchia",
+   "cy": "Slofacia",
+   "de": "Slowakei",
+   "dsb": "Słowakska",
+   "el": "Σλοβακία",
+   "es_AR": "Eslovaquia",
+   "es_CL": "Eslovaquia",
+   "es_ES": "Eslovaquia",
+   "es_MX": "Eslovaquia",
+   "fr": "Slovaquie",
+   "fy_NL": "Slowakije",
+   "hsb": "Słowakska",
+   "hu": "Szlovákia",
+   "ia": "Slovachia",
+   "id": "Slowakia",
+   "is": "Slóvakía",
+   "it": "Slovacchia",
+   "ja": "スロバキア",
+   "nl": "Slowakije",
+   "pa_IN": "ਸਲੋਵਾਕੀਆ",
+   "pt_BR": "Eslováquia",
+   "ru": "Словакия",
+   "sk": "Slovensko",
+   "sq": "Sllovakia",
+   "uk": "Словаччина",
+   "zh_TW": "斯洛伐克"
+  },
+  "cities": [
+   {
+    "wikiDataID": "Q1780",
+    "city": "Bratislava",
+    "languages": {
+     "el": "Μπρατισλάβα",
+     "hsb": "Bratisława",
+     "hu": "Pozsony",
+     "ja": "ブラチスラヴァ",
+     "pa_IN": "ਬ੍ਰਾਤਿਸਲਾਵਾ",
+     "ru": "Братислава",
+     "sq": "Bratisllava",
+     "uk": "Братислава",
+     "zh_TW": "布拉提斯拉瓦"
+    }
+   }
+  ]
+ },
+ {
   "countryCode": "es",
   "languages": {
    "co": "Spagna",
@@ -2016,7 +2065,7 @@
   "countryCode": "gb",
   "languages": {
    "co": "Regnu Unitu",
-   "cy": "Y Deyrnas Gyfunol",
+   "cy": "Y Deyrnas Unedig",
    "de": "Vereinigtes Königreich",
    "dsb": "Zjadnośone kralojstwo",
    "el": "Ηνωμένο Βασίλειο",
@@ -2424,7 +2473,7 @@
      "hsb": "New York City",
      "hu": "New York",
      "ia": "New York",
-     "id": "New York City",
+     "id": "Kota New York",
      "is": "New York-borg",
      "it": "New York",
      "ja": "ニューヨーク",
