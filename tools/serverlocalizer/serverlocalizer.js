@@ -11,7 +11,7 @@ import program from 'commander';
 import websocket from 'websocket';
 import WBK from 'wikibase-sdk';
 
-const DEFAULT_MOZILLAVPN = '../../src/mozillavpn';
+const DEFAULT_MOZILLAVPN = '../../build/src/mozillavpn';
 const SERVERS_OUTPUT_FILE = '../../translations/servers.json';
 
 const ServerLocalizer = {
@@ -129,13 +129,12 @@ const ServerLocalizer = {
     program.option(
         '-p, --path <mozillavpn>',
         `config file. Default: ${DEFAULT_MOZILLAVPN}`, DEFAULT_MOZILLAVPN);
-    program.action(
-        async (emailAddress, password) => await this.run(program.opts()));
+    program.action(async () => await this.run(program.opts()));
 
     program.parseAsync(process.argv);
   },
 
-  async run(option) {
+  async run(options) {
     this.execClient(options.path);
     await this.connectToClient();
 
@@ -213,6 +212,7 @@ const ServerLocalizer = {
         wikiDataID: null,
         countryCode: server.code,
         languages: {},
+        cities: [],
       }
     } else if (!serverData.wikiDataID) {
       console.log(
