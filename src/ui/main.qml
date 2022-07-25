@@ -189,16 +189,6 @@ Window {
                     accessibleName: VPNl18n.NavBarSettingsTab
                 }
             }
-//            //test 4th button
-//            ,Item {
-//                VPNBottomNavigationBarButton {
-//                    anchors.centerIn: parent
-//                    source: checked ? "qrc:/nebula/resources/navbar/home-selected.svg" : "qrc:/nebula/resources/navbar/home.svg"
-//                    ButtonGroup.group: navBarTabsButtonGroup
-//                    checked: true
-//                    accessibleName: VPNl18n.NavBarHomeTab
-//                }
-//            }
         ]
     }
 
