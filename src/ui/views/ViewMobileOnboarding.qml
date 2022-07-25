@@ -54,6 +54,7 @@ Item {
         flickContentHeight: window.safeContentHeight / 2 + col.implicitHeight
         anchors.fill: parent
         interactive: flickContentHeight > height
+        considerNavBar: false
 
         ListModel {
             id: onboardingModel

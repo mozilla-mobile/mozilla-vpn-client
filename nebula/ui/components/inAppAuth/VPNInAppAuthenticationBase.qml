@@ -29,6 +29,7 @@ VPNFlickable {
 
     id: authBase
     flickContentHeight: col.implicitHeight
+    considerNavBar: false
 
     ColumnLayout {
         id: col

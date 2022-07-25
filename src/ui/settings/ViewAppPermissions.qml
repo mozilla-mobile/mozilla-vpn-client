@@ -28,7 +28,7 @@ Item {
     VPNFlickable {
         id: vpnFlickable
         property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
-        flickContentHeight: col.height + VPNTheme.theme.menuHeight
+        flickContentHeight: col.height
         anchors.fill: parent
         interactive: (VPNSettings.protectSelectedApps)
         Component.onCompleted: {
