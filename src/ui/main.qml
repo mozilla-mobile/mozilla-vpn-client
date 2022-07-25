@@ -148,6 +148,15 @@ Window {
             }
         }
 
+        Connections {
+            target: VPNAuthInApp
+            onStateChanged: {
+                if(VPNAuthInApp.state === VPNAuthInApp.StateInitializing) {
+                    navbar.visible = Qt.binding(() => VPN.state === VPN.StateMain)
+                }
+            }
+        }
+
         ButtonGroup {
             id: navBarTabsButtonGroup
         }

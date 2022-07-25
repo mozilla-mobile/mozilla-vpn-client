@@ -120,6 +120,7 @@ VPNFlickable {
 
                 onClicked: {
                     VPN.recordGleanEvent("deleteAccountRequested");
+                    navbar.visible = false
                     mainStackView.push("qrc:/ui/deleteAccount/ViewDeleteAccount.qml");
                 }
 

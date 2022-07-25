@@ -67,10 +67,9 @@ Flickable {
     }
 
     onFlickContentHeightChanged: {
-//        console.log("AAA: " + flickContentHeight)
-//        console.log("AAA: " + height)
-//        console.log("AAA: " + mapToItem(window.contentItem, 0, 0).y)
-//        console.log("AAA: " + window.height)
+        //Adds the necessary space to the bottom of a flickable so that no content is ever blocked behind the navbar
+        //and there is always the same amount of space between the bottom of the flickables contentItem and the navbar for all flickables
+        //for all contentItem's that impede on the navbars location
         if (mapToItem(window.contentItem, 0, 0).y + height >= window.height - VPNTheme.theme.navBarHeightWithMargins
                 && flickContentHeight + mapToItem(window.contentItem, 0, 0).y >= window.height - VPNTheme.theme.navBarHeightWithMargins && vpnFlickable.considerNavBar) {
             vpnFlickable.contentHeight = flickContentHeight + (flickContentHeight >= height ? VPNTheme.theme.navBarHeightWithMargins : (mapToItem(window.contentItem, 0, 0).y + flickContentHeight) - (window.height - VPNTheme.theme.navBarHeightWithMargins) + (height - flickContentHeight))
