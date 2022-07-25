@@ -52,6 +52,68 @@ const DeviceLimitUserData = {
   ],
 };
 
+const SubscriptionNeededUserData = {
+  avatar: '',
+  display_name: 'Test test',
+  email: 'test@mozilla.com',
+  max_devices: 5,
+  subscriptions: {},
+  devices: [{
+    name: 'Current device',
+    unique_id: '',
+    pubkey: '',
+    ipv4_address: '127.0.0.1',
+    ipv6_address: '::1',
+    created_at: new Date().toISOString()
+  }],
+};
+
+const SubscriptionCompletedUserData = {
+  avatar: '',
+  display_name: 'Test test',
+  email: 'test@mozilla.com',
+  max_devices: 5,
+  subscriptions: {vpn: {active: true}},
+  devices: [{
+    name: 'Current device',
+    unique_id: '',
+    pubkey: '',
+    ipv4_address: '127.0.0.1',
+    ipv6_address: '::1',
+    created_at: new Date().toISOString()
+  }],
+};
+
+const SubscriptionProducts = [
+  {platform: 'dummy', id: 'ok', featured_product: true, type: 'monthly'},
+  {
+    platform: 'dummy',
+    id: 'invalid',
+    featured_product: false,
+    type: 'half-yearly'
+  },
+  {platform: 'dummy', id: 'failed', featured_product: true, type: 'yearly'},
+  {platform: 'dummy', id: 'canceled', featured_product: false, type: 'monthly'},
+  {
+    platform: 'dummy',
+    id: 'already-subscribed',
+    featured_product: false,
+    type: 'half-yearly'
+  },
+  {
+    platform: 'dummy',
+    id: 'billing-not-available',
+    featured_product: false,
+    type: 'yearly'
+  },
+  {
+    platform: 'dummy',
+    id: 'not-validated',
+    featured_product: false,
+    type: 'monthly'
+  },
+];
+
 const MVPNPresets = [
   {
     name: 'Main view',
@@ -90,82 +152,6 @@ const MVPNPresets = [
 
   {
     name: 'Authentication in app',
-    extraInfo: 'Username: wasm@wasm.wasm - Password: wasm - TOTP: 123456',
-    callback: async function() {
-      await controller.flipFeatureOn('inAppAuthentication');
-
-      await controller.waitForMainView();
-
-      await controller.wait();
-      await controller.waitForElementProperty(
-          'initialStackView', 'busy', 'false');
-      await controller.clickOnElement('getStarted');
-    },
-
-    fxaOverrideEndpoints: {
-      GETs: {},
-      POSTs: {
-        '/v1/account/login': {
-          callback: (req, that) => {
-            if (req.body.email === 'wasm@wasm.wasm' &&
-                req.body.authPW ===
-                    '8c021c875ea5e86ed5b6229a0b1b5a3e7c94ebc68f397d858897156041fe6638') {
-              that.status = 200;
-              that.body = {
-                sessionToken: 'sesionToken',
-                verified: false,
-                verificationMethod: 'totp-2fa'
-              };
-            } else {
-              that.status = 300;
-              that.body = {
-                errno: 103,  // Incorrect password
-              };
-            }
-          },
-        },
-        '/v1/session/verify/totp': {
-          status: 200,
-          callback: (req, that) => {
-            that.body = {success: req.body.code === '123456'};
-          },
-        },
-      },
-      DELETEs: {},
-    }
-  },
-
-  {
-    name: 'Authentication in app (unblock code)',
-    callback: async function() {
-      await controller.flipFeatureOn('inAppAuthentication');
-
-      await controller.waitForMainView();
-
-      await controller.wait();
-      await controller.waitForElementProperty(
-          'initialStackView', 'busy', 'false');
-      await controller.clickOnElement('getStarted');
-    },
-
-    fxaOverrideEndpoints: {
-      GETs: {},
-      POSTs: {
-        '/v1/account/status': {
-          status: 400,
-          body: {
-            errno: 107,
-            validation: {keys: ['unblockCode']},
-          }
-        },
-      },
-      DELETEs: {},
-    }
-  },
-
-  {
-    name: 'Account creation in app',
-    extraInfo: 'Email code: 123456',
     callback: async function() {
       await controller.flipFeatureOn('inAppAccountCreate');
 
@@ -175,19 +161,103 @@ const MVPNPresets = [
       await controller.waitForElementProperty(
           'initialStackView', 'busy', 'false');
       await controller.clickOnElement('getStarted');
+
+      mvpnWasm.addPresetInfo(
+          'Existing account: wasm@wasm.wasm - Password: wasm');
+      mvpnWasm.addPresetInfo('Blocked account: blocked@wasm.wasm');
+      mvpnWasm.addPresetInfo('Invalid email address: invalid@wasm.wasm');
+      mvpnWasm.addPresetInfo(
+          'Already existing address in creation: dup@wasm.wasm');
+      mvpnWasm.addPresetInfo('Unusable email: unusable@wasm.wasm');
+      mvpnWasm.addPresetInfo('Type not supported address: type@wasm.wasm');
+      mvpnWasm.addPresetInfo('Too many requests: toomany@wasm.wasm');
+      mvpnWasm.addPresetInfo('Unknown account: unknown@wasm.wasm');
     },
 
     fxaOverrideEndpoints: {
       GETs: {},
       POSTs: {
-        '/v1/account/status': {status: 200, body: {exists: false}},
-        '/v1/account/create': {
-          status: 200,
-          body: {
-            sessionToken: 'sessionToken',
-            'verified': false,
-            verificationMethod: 'email-otp'
+        '/v1/account/status': {
+          callback: (req, that) => {
+            if (req.body.email === 'blocked@wasm.wasm') {
+              mvpnWasm.addPresetInfo('Unblock verification code: 12345678');
+              that.body = {errno: 107, validation: {keys: ['unblockCode']}};
+              that.status = 400;
+            } else if (req.body.email === 'unusable@wasm.wasm') {
+              that.body = {
+                errno: 149 /* This email can not currently be used to login */
+              };
+              that.status = 400;
+            } else if (req.body.email === 'type@wasm.wasm') {
+              that.body = {
+                errno: 142 /* Sign in with this email type is not currently
+                              supported */
+              };
+              that.status = 400;
+            } else if (req.body.email === 'toomany@wasm.wasm') {
+              that.body = {
+                errno: 114 /* Client has sent too many requests */,
+                retryAfter: 1234
+              };
+              that.status = 400;
+            } else if (req.body.email === 'unknown@wasm.wasm') {
+              that.body = {errno: 102 /* Unknwon account */};
+              that.status = 400;
+            } else if (req.body.email === 'invalid@wasm.wasm') {
+              that.body = {errno: 107, validation: {keys: ['email']}};
+              that.status = 400;
+            } else {
+              that.body = {exists: (req.body.email === 'wasm@wasm.wasm')};
+              that.status = 200;
+            }
           }
+        },
+        '/v1/account/create': {
+          callback: (req, that) => {
+            if (req.body.email === 'dup@wasm.wasm') {
+              that.status = 400;
+              that.body = {errno: 101 /* Account already exists */};
+            } else {
+              mvpnWasm.addPresetInfo('Email verification code: 123456');
+              that.status = 200;
+              that.body = {
+                sessionToken: 'sessionToken',
+                verified: false,
+                verificationMethod: 'email-otp'
+              };
+            }
+          }
+        },
+        '/v1/account/login': {
+          callback: (req, that) => {
+            if (req.body.email === 'wasm@wasm.wasm' &&
+                req.body.authPW ===
+                    '8c021c875ea5e86ed5b6229a0b1b5a3e7c94ebc68f397d858897156041fe6638') {
+              mvpnWasm.addPresetInfo('TOTP code: 123456');
+              that.status = 200;
+              that.body = {
+                sessionToken: 'sesionToken',
+                verified: false,
+                verificationMethod: 'totp-2fa'
+              };
+            } else if (
+                req.body.email === 'blocked@wasm.wasm' &&
+                req.body.unblockCode === '12345678') {
+              that.status = 200;
+              that.body = {
+                sessionToken: 'sesionToken',
+                verified: true,
+              };
+            } else if (req.body.email === 'blocked@wasm.wasm') {
+              that.status = 400;
+              that.body = {errno: 107, validation: {keys: ['unblockCode']}};
+            } else {
+              that.status = 400;
+              that.body = {
+                errno: 103,  // Incorrect password
+              };
+            }
+          },
         },
         '/v1/session/verify_code': {
           callback: (req, that) => {
@@ -198,6 +268,12 @@ const MVPNPresets = [
               that.status = 400;
               that.body = {errno: 107, validation: {keys: ['code']}};
             }
+          },
+        },
+        '/v1/session/verify/totp': {
+          status: 200,
+          callback: (req, that) => {
+            that.body = {success: req.body.code === '123456'};
           },
         },
       },
@@ -367,23 +443,67 @@ const MVPNPresets = [
     }
   },
 
+  {
+    name: 'Subscription flow',
+    callback: async function() {
+      SubscriptionProducts.forEach((product, pos) => {
+        mvpnWasm.addPresetInfo(`Product ${pos} has output ${product.id}`);
+      });
+
+      MVPNPresets.find(a => a.name === 'Subscription flow')
+          .guardianOverrideEndpoints.GETs['/api/v1/vpn/account']
+          .body = SubscriptionNeededUserData;
+
+      await controller.waitForMainView();
+
+      await controller.wait();
+      await controller.waitForElementProperty(
+          'initialStackView', 'busy', 'false');
+      await controller.clickOnElement('getStarted');
+    },
+
+    guardianOverrideEndpoints: {
+      GETs: {
+        '/api/v1/vpn/account': {status: 200, body: SubscriptionNeededUserData},
+        '/api/v3/vpn/products':
+            {status: 200, body: {products: SubscriptionProducts}},
+      },
+      POSTs: {
+        '/api/v1/vpn/purchases/wasm': {
+          callback: (req, that) => {
+            if (req.body.productId === 'ok') {
+              MVPNPresets.find(a => a.name === 'Subscription flow')
+                  .guardianOverrideEndpoints.GETs['/api/v1/vpn/account']
+                  .body = SubscriptionCompletedUserData;
+            }
+            that.body = { status: req.body.productId }
+          },
+          status: 200,
+        }
+      },
+      DELETEs: {},
+    }
+  },
+
+  {
+    name: 'Backend failure',
+    callback: async function() {
+      await controller.waitForMainView();
+
+      await controller.wait();
+      await controller.waitForElementProperty(
+          'initialStackView', 'busy', 'false');
+      await controller.clickOnElement('getStarted');
+    },
+
+    guardianOverrideEndpoints: {
+      GETs: {
+        '/__heartbeat__': {status: 200, body: {mullvadOK: false, dbOK: false}},
+      },
+    }
+  },
+
   // TODO:
-  // - More error code for auth:
-  //   * unblock code error
-  //   * account already exists
-  //   * email cannot be used to login
-  //   * email type not supported
-  //   * invalid email address
-  //   * invalid unblock code
-  //   * too many requests
-  //   * server unavaiable
-  //   * connection timeout
-  //   * unknown account
-  // - subscription needed
-  // - subscription blocked
-  // - billing not available
-  // - subscription not validated
-  // - backend failure
   // - unstable connection
   // - no signal
   // - alerts

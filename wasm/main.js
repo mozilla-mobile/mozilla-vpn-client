@@ -28,7 +28,32 @@ class MVPNWasm {
         '/api/v1/vpn/subscriptionDetails': {
           status: 200,
           body: SUBSCRIPTION_DETAILS,
-        }
+        },
+        '/api/v3/vpn/products': {
+          status: 200,
+          body: {
+            products: [
+              {
+                platform: 'dummy',
+                id: 'monthly',
+                featured_product: false,
+                type: 'monthly'
+              },
+              {
+                platform: 'dummy',
+                id: 'half-monthly',
+                featured_product: false,
+                type: 'half-yearly'
+              },
+              {
+                platform: 'dummy',
+                id: 'yearly',
+                featured_product: true,
+                type: 'yearly'
+              },
+            ]
+          }
+        },
       }
     };
 
@@ -80,17 +105,6 @@ class MVPNWasm {
   networkRequest(id, method, url, body) {
     const u = new URL(url);
 
-    if (u.hostname === location.hostname) {
-      // same location.
-      fetch(url).then(
-          async resp => Module.mvpnNetworkResponse(id, JSON.stringify({
-            status: resp.status,
-            body: btoa(String.fromCharCode.apply(
-                null, new Uint8Array(await resp.arrayBuffer())))
-          })));
-      return;
-    }
-
     let obj;
     if (u.hostname === 'stage-vpn.guardian.nonprod.cloudops.mozgcp.net') {
       obj = this._findResponse(
@@ -107,10 +121,17 @@ class MVPNWasm {
     }
 
     if (!obj) {
-      console.error('Unable to find a good answer for url', url);
-      setTimeout(() => {
-        Module.mvpnNetworkResponse(id, JSON.stringify({status: 0, body: ''}));
-      }, 200);
+      fetch(url)
+          .then(async resp => Module.mvpnNetworkResponse(id, JSON.stringify({
+            status: resp.status,
+            body: btoa(String.fromCharCode.apply(
+                null, new Uint8Array(await resp.arrayBuffer())))
+          })))
+          .catch(() => {
+            console.error('Unable to fetch content for URL', url);
+            Module.mvpnNetworkResponse(
+                id, JSON.stringify({status: 0, body: ''}));
+          });
       return;
     }
 
@@ -188,7 +209,7 @@ class MVPNWasm {
     this._guardianOverrideEndpointsPreset = null;
 
     const presetInfo = document.querySelector('#presetInfo');
-    presetInfo.textContent = '';
+    while (presetInfo.firstChild) presetInfo.firstChild.remove();
 
     const preset = MVPNPresets.find(p => p.name === presetName);
     if (!preset) return;
@@ -196,9 +217,15 @@ class MVPNWasm {
     this._fxaOverrideEndpointsPreset = preset.fxaOverrideEndpoints;
     this._guardianOverrideEndpointsPreset = preset.guardianOverrideEndpoints;
 
-    presetInfo.textContent = preset.extraInfo || '';
-
     await preset.callback();
+  }
+
+  addPresetInfo(msg) {
+    const p = document.createElement('p');
+    p.textContent = msg;
+
+    const presetInfo = document.querySelector('#presetInfo');
+    presetInfo.appendChild(p);
   }
 };
 
