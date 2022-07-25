@@ -19,7 +19,7 @@ function(add_go_library GOTARGET SOURCE)
 
     set(GOCACHE ${CMAKE_BINARY_DIR}/go-cache)
     set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_BINARY_DIR}/go-cache)
-    set(GOFLAGS -buildmode=c-archive -v)
+    set(GOFLAGS -buildmode=c-shared -v)
     if(IS_DIRECTORY ${DIR_NAME}/vendor)
         set(GOFLAGS ${GOFLAGS} -mod vendor)
     endif()
@@ -40,7 +40,7 @@ function(add_go_library GOTARGET SOURCE)
         COMMAND ${CMAKE_COMMAND} -E env GOCACHE=${GOCACHE}
                     CGO_ENABLED=1
                     CC=gcc
-                    CGO_CFLAGS="${GOLANG_CGO_CFLAGS}"
+                    CGO_CFLAGS="${GOLANG_CGO_CFLAGS} -std=gnu11 -DWINVER=0x0601"
                     CGO_LDFLAGS="${GOLANG_CGO_LDFLAGS}"
                 go build ${GOFLAGS} -o ${CMAKE_CURRENT_BINARY_DIR}/${ARCHIVE_NAME} ${SRC_NAME}
     )
