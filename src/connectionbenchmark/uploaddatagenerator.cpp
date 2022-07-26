@@ -9,7 +9,7 @@
 #include <QBuffer>
 #include <QRandomGenerator>
 
-constexpr int32_t MAX_BUFFER_SIZE = 8;
+constexpr int32_t MAX_BUFFER_SIZE = 4096;
 
 namespace {
 Logger logger(LOG_MAIN, "UploadDataGenerator");

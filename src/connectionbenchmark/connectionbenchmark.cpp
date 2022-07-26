@@ -169,7 +169,7 @@ void ConnectionBenchmark::uploadBenchmarked(quint64 bitsPerSec,
   m_uploadBps = bitsPerSec;
   emit uploadBpsChanged();
 
-  // All benchmarks ran successfully and we can set the connection speed
+  // All benchmarks ran successfully and we can set the connection speed.
   setConnectionSpeed();
 }
 
