@@ -94,9 +94,9 @@ target_sources(mozillavpn PRIVATE
     connectionbenchmark/benchmarktaskdownload.h
     connectionbenchmark/benchmarktaskping.cpp
     connectionbenchmark/benchmarktaskping.h
-    connectionbenchmark/benchmarktaskupload.cpp
-    connectionbenchmark/benchmarktaskupload.h
     connectionbenchmark/benchmarktasksentinel.h
+    connectionbenchmark/benchmarktasktransfer.cpp
+    connectionbenchmark/benchmarktasktransfer.h
     connectionbenchmark/connectionbenchmark.cpp
     connectionbenchmark/connectionbenchmark.h
     connectionbenchmark/uploaddatagenerator.cpp

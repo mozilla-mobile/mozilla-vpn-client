@@ -3,9 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "connectionbenchmark.h"
-#include "benchmarktaskdownload.h"
 #include "benchmarktaskping.h"
-#include "benchmarktaskupload.h"
+#include "benchmarktasktransfer.h"
 #include "connectionhealth.h"
 #include "controller.h"
 #include "constants.h"
@@ -88,9 +87,9 @@ void ConnectionBenchmark::start() {
   TaskScheduler::scheduleTask(pingTask);
 
   // Create download benchmark
-  BenchmarkTaskDownload* downloadTask =
-      new BenchmarkTaskDownload(m_downloadUrl);
-  connect(downloadTask, &BenchmarkTaskDownload::finished, this,
+  BenchmarkTaskTransfer* downloadTask = new BenchmarkTaskTransfer(
+      BenchmarkTaskTransfer::BenchmarkDownload, m_downloadUrl);
+  connect(downloadTask, &BenchmarkTaskTransfer::finished, this,
           &ConnectionBenchmark::downloadBenchmarked);
   connect(downloadTask->sentinel(), &BenchmarkTask::destroyed, this,
           [this, downloadTask]() { m_benchmarkTasks.removeOne(downloadTask); });
@@ -98,10 +97,11 @@ void ConnectionBenchmark::start() {
   TaskScheduler::scheduleTask(downloadTask);
 
   // Create upload benchmark
-  BenchmarkTaskUpload* uploadTask = new BenchmarkTaskUpload(m_uploadUrl);
+  BenchmarkTaskTransfer* uploadTask = new BenchmarkTaskTransfer(
+      BenchmarkTaskTransfer::BenchmarkUpload, m_uploadUrl);
   Q_UNUSED(uploadTask);
 
-  connect(uploadTask, &BenchmarkTaskUpload::finished, this,
+  connect(uploadTask, &BenchmarkTaskTransfer::finished, this,
           &ConnectionBenchmark::uploadBenchmarked);
   connect(uploadTask->sentinel(), &BenchmarkTask::destroyed, this,
           [this, uploadTask]() { m_benchmarkTasks.removeOne(uploadTask); });

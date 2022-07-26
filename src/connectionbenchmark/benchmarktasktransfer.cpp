@@ -2,11 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "benchmarktaskdownload.h"
+#include "benchmarktasktransfer.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
+#include "uploaddatagenerator.h"
 
 #include <QByteArray>
 #include <QDnsLookup>
@@ -18,46 +19,60 @@ constexpr const char* MULLVAD_DEFAULT_DNS = "10.64.0.1";
 #endif
 
 namespace {
-Logger logger(LOG_MAIN, "BenchmarkTaskDownload");
+Logger logger(LOG_MAIN, "BenchmarkTaskTransfer");
 }
 
-BenchmarkTaskDownload::BenchmarkTaskDownload(const QUrl& url)
-    : BenchmarkTask(Constants::BENCHMARK_MAX_DURATION_DOWNLOAD),
+BenchmarkTaskTransfer::BenchmarkTaskTransfer(BenchmarkType type,
+                                             const QUrl& url)
+    : BenchmarkTask(Constants::BENCHMARK_MAX_DURATION_TRANSFER),
+      m_type(type),
       m_dnsLookup(QDnsLookup::A, url.host()),
-      m_fileUrl(url) {
-  MVPN_COUNT_CTOR(BenchmarkTaskDownload);
+      m_url(url) {
+  MVPN_COUNT_CTOR(BenchmarkTaskTransfer);
 
   connect(this, &BenchmarkTask::stateChanged, this,
-          &BenchmarkTaskDownload::handleState);
+          &BenchmarkTaskTransfer::handleState);
   connect(&m_dnsLookup, &QDnsLookup::finished, this,
-          &BenchmarkTaskDownload::dnsLookupFinished);
+          &BenchmarkTaskTransfer::dnsLookupFinished);
 }
 
-BenchmarkTaskDownload::~BenchmarkTaskDownload() {
-  MVPN_COUNT_DTOR(BenchmarkTaskDownload);
+BenchmarkTaskTransfer::~BenchmarkTaskTransfer() {
+  MVPN_COUNT_DTOR(BenchmarkTaskTransfer);
 }
 
-void BenchmarkTaskDownload::handleState(BenchmarkTask::State state) {
+void BenchmarkTaskTransfer::handleState(BenchmarkTask::State state) {
   logger.debug() << "Handle state" << state;
 
   if (state == BenchmarkTask::StateActive) {
-    // Start DNS resolution
+    if (m_type == BenchmarkDownload) {
+// Start DNS resolution
 #if !defined(MVPN_DUMMY)
-    m_dnsLookup.setNameserver(QHostAddress(MULLVAD_DEFAULT_DNS));
+      m_dnsLookup.setNameserver(QHostAddress(MULLVAD_DEFAULT_DNS));
 #endif
 
 #if QT_VERSION >= 0x060400
-#  error Check if QT added support for QDnsLookup::lookup() on Android
+#     error Check if QT added support for QDnsLookup::lookup() on Android
 #endif
 
 #ifdef MVPN_ANDROID
-    NetworkRequest* request =
-        NetworkRequest::createForGetUrl(this, m_fileUrl.toString());
-    connectNetworkRequest(request);
-    m_elapsedTimer.start();
+      NetworkRequest* request =
+          NetworkRequest::createForGetUrl(this, m_fileUrl.toString());
+      connectNetworkRequest(request);
+      m_elapsedTimer.start();
 #else
-    m_dnsLookup.lookup();
+      m_dnsLookup.lookup();
 #endif
+    } else if (m_type == BenchmarkUpload) {
+      UploadDataGenerator* uploadData =
+          new UploadDataGenerator(Constants::BENCHMARK_MAX_BITS_UPLOAD);
+      uploadData->open(UploadDataGenerator::ReadOnly);
+
+      NetworkRequest* request = NetworkRequest::createForUploadData(this,
+          m_url.toString(), uploadData);
+      connectNetworkRequest(request);
+    }
+
+    m_elapsedTimer.start();
   } else if (state == BenchmarkTask::StateInactive) {
     for (NetworkRequest* request : m_requests) {
       request->abort();
@@ -67,23 +82,29 @@ void BenchmarkTaskDownload::handleState(BenchmarkTask::State state) {
   }
 }
 
-void BenchmarkTaskDownload::connectNetworkRequest(NetworkRequest* request) {
+void BenchmarkTaskTransfer::connectNetworkRequest(NetworkRequest* request) {
   logger.debug() << "Connect network requests";
 
-  connect(request, &NetworkRequest::requestUpdated, this,
-          &BenchmarkTaskDownload::downloadProgressed);
+  if (m_type == BenchmarkDownload) {
+    connect(request, &NetworkRequest::requestUpdated, this,
+            &BenchmarkTaskTransfer::transferProgressed);
+  } else if (m_type == BenchmarkUpload) {
+    connect(request, &NetworkRequest::uploadProgressed, this,
+        &BenchmarkTaskTransfer::transferProgressed);
+  }
+
   connect(request, &NetworkRequest::requestFailed, this,
-          &BenchmarkTaskDownload::downloadReady);
+          &BenchmarkTaskTransfer::transferReady);
   connect(request, &NetworkRequest::requestCompleted, this,
           [&](const QByteArray& data) {
-            downloadReady(QNetworkReply::NoError, data);
+            transferReady(QNetworkReply::NoError, data);
           });
 
   logger.debug() << "Starting request";
   m_requests.append(request);
 }
 
-void BenchmarkTaskDownload::dnsLookupFinished() {
+void BenchmarkTaskTransfer::dnsLookupFinished() {
   auto guard = qScopeGuard([&] {
     emit finished(0, true);
     emit completed();
@@ -107,7 +128,7 @@ void BenchmarkTaskDownload::dnsLookupFinished() {
     logger.debug() << "Host record:" << record.value().toString();
 
     NetworkRequest* request = NetworkRequest::createForGetHostAddress(
-        this, m_fileUrl.toString(), record.value());
+        this, m_url.toString(), record.value());
     connectNetworkRequest(request);
   }
 
@@ -115,23 +136,28 @@ void BenchmarkTaskDownload::dnsLookupFinished() {
   guard.dismiss();
 }
 
-void BenchmarkTaskDownload::downloadProgressed(qint64 bytesReceived,
+void BenchmarkTaskTransfer::transferProgressed(qint64 bytesSent,
                                                qint64 bytesTotal,
                                                QNetworkReply* reply) {
 #ifdef MVPN_DEBUG
-  logger.debug() << "Handle progressed:" << bytesReceived << "(received)"
+  logger.debug() << "Transfer progressed:" << bytesSent << "(transferred)"
                  << bytesTotal << "(total)";
 #else
-  Q_UNUSED(bytesReceived);
+  Q_UNUSED(bytesTotal);
 #endif
 
-  // Count and discard downloaded data
-  m_bytesReceived += reply->skip(bytesTotal);
+  if (m_type == BenchmarkDownload) {
+    // Count and discard downloaded data
+    m_bytesTransferred += reply->skip(bytesTotal);
+  } else if (m_type == BenchmarkUpload) {
+    Q_UNUSED(reply);
+    m_bytesTransferred += bytesSent;
+  }
 }
 
-void BenchmarkTaskDownload::downloadReady(QNetworkReply::NetworkError error,
+void BenchmarkTaskTransfer::transferReady(QNetworkReply::NetworkError error,
                                           const QByteArray& data) {
-  logger.debug() << "Download ready" << error;
+  logger.debug() << "Transfer ready" << error;
   Q_UNUSED(data);
 
   NetworkRequest* request = qobject_cast<NetworkRequest*>(QObject::sender());
@@ -139,16 +165,16 @@ void BenchmarkTaskDownload::downloadReady(QNetworkReply::NetworkError error,
 
   quint64 bitsPerSec = 0;
   double msecs = static_cast<double>(m_elapsedTimer.elapsed());
-  if (m_bytesReceived > 0 && msecs > 0) {
-    bitsPerSec = static_cast<quint64>(static_cast<double>(m_bytesReceived * 8) /
-                                      (msecs / 1000.00));
+  if (m_bytesTransferred > 0 && msecs > 0) {
+    bitsPerSec = static_cast<quint64>(
+       static_cast<double>(m_bytesTransferred * 8) / (msecs / 1000.00));
   }
 
   bool hasUnexpectedError = (error != QNetworkReply::NoError &&
                              error != QNetworkReply::OperationCanceledError &&
                              error != QNetworkReply::TimeoutError) ||
                             bitsPerSec == 0;
-  logger.debug() << "Download completed" << bitsPerSec << "baud";
+  logger.debug() << "Transfer completed" << bitsPerSec << "baud";
 
   if (m_requests.isEmpty()) {
     emit finished(bitsPerSec, hasUnexpectedError);

@@ -43,9 +43,8 @@ SOURCES += \
         composer.cpp \
         composerblock.cpp \
         connectionbenchmark/benchmarktask.cpp \
-        connectionbenchmark/benchmarktaskdownload.cpp \
         connectionbenchmark/benchmarktaskping.cpp \
-        connectionbenchmark/benchmarktaskupload.cpp \
+        connectionbenchmark/benchmarktasktransfer.cpp \
         connectionbenchmark/connectionbenchmark.cpp \
         connectionbenchmark/uploaddatagenerator.cpp \
         connectionhealth.cpp \
@@ -200,10 +199,9 @@ HEADERS += \
         composer.h \
         composerblock.h \
         connectionbenchmark/benchmarktask.h \
-        connectionbenchmark/benchmarktaskdownload.h \
         connectionbenchmark/benchmarktaskping.h \
-        connectionbenchmark/benchmarktaskupload.h \
         connectionbenchmark/benchmarktasksentinel.h \
+        connectionbenchmark/benchmarktasktransfer.h \
         connectionbenchmark/connectionbenchmark.h \
         connectionbenchmark/uploaddatagenerator.h \
         connectionhealth.h \
