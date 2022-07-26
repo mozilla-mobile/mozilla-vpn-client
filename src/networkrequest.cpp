@@ -138,23 +138,17 @@ NetworkRequest* NetworkRequest::createForGetHostAddress(
 
 // static
 NetworkRequest* NetworkRequest::createForUploadData(Task* parent,
-    const QString& url) {
+    const QString& url, QIODevice* uploadData) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
-                         "application/json");
-
+                         "application/x-www-form-urlencoded");
   QUrl requestUrl(url);
   r->m_request.setUrl(url);
 
-  QJsonObject obj;
-  obj.insert("test", "string");
+  r->uploadDataRequest(uploadData);
 
-  QJsonDocument json;
-  json.setObject(obj);
-
-  r->postRequest(json.toJson(QJsonDocument::Compact));
   return r;
 }
 
@@ -1009,6 +1003,13 @@ void NetworkRequest::postRequest(const QByteArray& body) {
   m_timer.start(REQUEST_TIMEOUT_MSEC);
 }
 
+void NetworkRequest::uploadDataRequest(QIODevice* data) {
+  QNetworkAccessManager* manager =
+      NetworkManager::instance()->networkAccessManager();
+  handleReply(manager->post(m_request, data));
+  m_timer.start(REQUEST_TIMEOUT_MSEC);
+}
+
 void NetworkRequest::handleReply(QNetworkReply* reply) {
   Q_ASSERT(reply);
   Q_ASSERT(!m_reply);
@@ -1028,6 +1029,10 @@ void NetworkRequest::handleReply(QNetworkReply* reply) {
   connect(m_reply, &QNetworkReply::downloadProgress, this,
           [&](qint64 bytesReceived, qint64 bytesTotal) {
             requestUpdated(bytesReceived, bytesTotal, m_reply);
+          });
+  connect(m_reply, &QNetworkReply::uploadProgress, this,
+          [&](qint64 bytesSent, qint64 bytesTotal) {
+            uploadProgressed(bytesSent, bytesTotal, m_reply);
           });
 }
 

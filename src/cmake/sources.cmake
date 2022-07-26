@@ -99,6 +99,8 @@ target_sources(mozillavpn PRIVATE
     connectionbenchmark/benchmarktasksentinel.h
     connectionbenchmark/connectionbenchmark.cpp
     connectionbenchmark/connectionbenchmark.h
+    connectionbenchmark/uploaddatagenerator.cpp
+    connectionbenchmark/uploaddatagenerator.h
     connectionhealth.cpp
     connectionhealth.h
     constants.cpp

@@ -23,7 +23,7 @@ class BenchmarkTaskDownload final : public BenchmarkTask {
   ~BenchmarkTaskDownload();
 
  signals:
-  void finished(quint64 bytesPerSecond, bool hasUnexpectedError);
+  void finished(quint64 bitsPerSec, bool hasUnexpectedError);
 
  private:
   void connectNetworkRequest(NetworkRequest* request);

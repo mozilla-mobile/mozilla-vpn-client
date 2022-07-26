@@ -30,6 +30,10 @@ class NetworkRequest final : public QObject {
                                                  const QString& url,
                                                  const QHostAddress& address);
 
+  static NetworkRequest* createForUploadData(Task* parent,
+                                             const QString& url,
+                                             QIODevice* uploadData);
+
   static NetworkRequest* createForAuthenticationVerification(
       Task* parent, const QString& pkceCodeSuccess,
       const QString& pkceCodeVerifier);
@@ -158,6 +162,7 @@ class NetworkRequest final : public QObject {
   void deleteRequest();
   void getRequest();
   void postRequest(const QByteArray& body);
+  void uploadDataRequest(QIODevice* data);
 
   void handleReply(QNetworkReply* reply);
   void handleHeaderReceived();
@@ -180,6 +185,8 @@ class NetworkRequest final : public QObject {
   void requestCompleted(const QByteArray& data);
   void requestUpdated(qint64 bytesReceived, qint64 bytesTotal,
                       QNetworkReply* reply);
+  void uploadProgressed(qint64 bytesReceived, qint64 bytesTotal,
+                        QNetworkReply* reply);
 
  private:
   QNetworkRequest m_request;

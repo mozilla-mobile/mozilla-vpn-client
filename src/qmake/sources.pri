@@ -47,6 +47,7 @@ SOURCES += \
         connectionbenchmark/benchmarktaskping.cpp \
         connectionbenchmark/benchmarktaskupload.cpp \
         connectionbenchmark/connectionbenchmark.cpp \
+        connectionbenchmark/uploaddatagenerator.cpp \
         connectionhealth.cpp \
         constants.cpp \
         controller.cpp \
@@ -204,6 +205,7 @@ HEADERS += \
         connectionbenchmark/benchmarktaskupload.h \
         connectionbenchmark/benchmarktasksentinel.h \
         connectionbenchmark/connectionbenchmark.h \
+        connectionbenchmark/uploaddatagenerator.h \
         connectionhealth.h \
         constants.h \
         controller.h \
