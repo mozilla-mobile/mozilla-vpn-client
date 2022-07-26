@@ -23,8 +23,9 @@ class ConnectionBenchmark final : public QObject {
                  uploadUrlChanged)
   Q_PROPERTY(State state READ state NOTIFY stateChanged);
   Q_PROPERTY(Speed speed READ speed NOTIFY speedChanged);
-  Q_PROPERTY(quint64 bitsPerSec READ bitsPerSec NOTIFY bitsPerSecChanged);
+  Q_PROPERTY(quint64 downloadBps READ downloadBps NOTIFY downloadBpsChanged);
   Q_PROPERTY(quint16 pingLatency READ pingLatency NOTIFY pingLatencyChanged);
+  Q_PROPERTY(quint64 uploadBps READ uploadBps NOTIFY uploadBpsChanged);
 
  public:
   ConnectionBenchmark();
@@ -53,7 +54,8 @@ class ConnectionBenchmark final : public QObject {
   State state() const { return m_state; }
   Speed speed() const { return m_speed; }
   quint16 pingLatency() const { return m_pingLatency; }
-  quint64 bitsPerSec() const { return m_bitsPerSec; }
+  quint64 downloadBps() const { return m_downloadBps; }
+  quint64 uploadBps() const { return m_uploadBps; }
 
   QString downloadUrl() const { return m_downloadUrl.toString(); }
   void setDownloadUrl(QString url) {
@@ -68,8 +70,9 @@ class ConnectionBenchmark final : public QObject {
   }
 
  signals:
-  void bitsPerSecChanged();
+  void downloadBpsChanged();
   void pingLatencyChanged();
+  void uploadBpsChanged();
   void speedChanged();
   void stateChanged();
   void downloadUrlChanged();
@@ -78,7 +81,7 @@ class ConnectionBenchmark final : public QObject {
  private:
   void downloadBenchmarked(quint64 bitsPerSec, bool hasUnexpectedError);
   void pingBenchmarked(quint64 pingLatencyLatency);
-  void uploadBenchmarked();
+  void uploadBenchmarked(quint64 bitsPerSec, bool hasUnexpectedError);
 
   void handleControllerState();
   void handleStabilityChange();
@@ -95,8 +98,9 @@ class ConnectionBenchmark final : public QObject {
   State m_state = StateInitial;
   Speed m_speed = SpeedSlow;
 
-  quint64 m_bitsPerSec = 0;
+  quint64 m_downloadBps = 0;
   quint16 m_pingLatency = 0;
+  quint64 m_uploadBps = 0;
 };
 
 #endif  // CONNECTIONBENCHMARK_H

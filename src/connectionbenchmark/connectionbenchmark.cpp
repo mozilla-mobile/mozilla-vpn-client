@@ -42,11 +42,11 @@ void ConnectionBenchmark::initialize() {
 }
 
 void ConnectionBenchmark::setConnectionSpeed() {
-  logger.debug() << "Set speed";
+  logger.debug() << "Set connection speed";
 
-  if (m_bitsPerSec >= Constants::BENCHMARK_THRESHOLD_SPEED_FAST) {
+  if (m_downloadBps >= Constants::BENCHMARK_THRESHOLD_SPEED_FAST) {
     m_speed = SpeedFast;
-  } else if (m_bitsPerSec >= Constants::BENCHMARK_THRESHOLD_SPEED_MEDIUM) {
+  } else if (m_downloadBps >= Constants::BENCHMARK_THRESHOLD_SPEED_MEDIUM) {
     m_speed = SpeedMedium;
   } else {
     m_speed = SpeedSlow;
@@ -71,34 +71,35 @@ void ConnectionBenchmark::start() {
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
-  Controller* controller = vpn->controller();
-  Controller::State controllerState = controller->state();
-  Q_ASSERT(controllerState == Controller::StateOn);
+  // Controller* controller = vpn->controller();
+  // Controller::State controllerState = controller->state();
+  // Q_ASSERT(controllerState == Controller::StateOn);
 
   setState(StateRunning);
 
-  // Create ping benchmark
-  BenchmarkTaskPing* pingTask = new BenchmarkTaskPing();
-  connect(pingTask, &BenchmarkTaskPing::finished, this,
-          &ConnectionBenchmark::pingBenchmarked);
-  connect(pingTask->sentinel(), &BenchmarkTask::destroyed, this,
-          [this, pingTask]() { m_benchmarkTasks.removeOne(pingTask); });
-  m_benchmarkTasks.append(pingTask);
-  TaskScheduler::scheduleTask(pingTask);
+  // // Create ping benchmark
+  // BenchmarkTaskPing* pingTask = new BenchmarkTaskPing();
+  // connect(pingTask, &BenchmarkTaskPing::finished, this,
+  //         &ConnectionBenchmark::pingBenchmarked);
+  // connect(pingTask->sentinel(), &BenchmarkTask::destroyed, this,
+  //         [this, pingTask]() { m_benchmarkTasks.removeOne(pingTask); });
+  // m_benchmarkTasks.append(pingTask);
+  // TaskScheduler::scheduleTask(pingTask);
 
-  // Create download benchmark
-  BenchmarkTaskDownload* downloadTask =
-      new BenchmarkTaskDownload(m_downloadUrl);
-  connect(downloadTask, &BenchmarkTaskDownload::finished, this,
-          &ConnectionBenchmark::downloadBenchmarked);
-  connect(downloadTask->sentinel(), &BenchmarkTask::destroyed, this,
-          [this, downloadTask]() { m_benchmarkTasks.removeOne(downloadTask); });
-  m_benchmarkTasks.append(downloadTask);
-  TaskScheduler::scheduleTask(downloadTask);
+  // // Create download benchmark
+  // BenchmarkTaskDownload* downloadTask =
+  //     new BenchmarkTaskDownload(m_downloadUrl);
+  // connect(downloadTask, &BenchmarkTaskDownload::finished, this,
+  //         &ConnectionBenchmark::downloadBenchmarked);
+  // connect(downloadTask->sentinel(), &BenchmarkTask::destroyed, this,
+  //         [this, downloadTask]() { m_benchmarkTasks.removeOne(downloadTask); });
+  // m_benchmarkTasks.append(downloadTask);
+  // TaskScheduler::scheduleTask(downloadTask);
 
   // Create upload benchmark
   BenchmarkTaskUpload* uploadTask = new BenchmarkTaskUpload(m_uploadUrl);
   Q_UNUSED(uploadTask);
+
   connect(uploadTask, &BenchmarkTaskUpload::finished, this,
           &ConnectionBenchmark::uploadBenchmarked);
   connect(uploadTask->sentinel(), &BenchmarkTask::destroyed, this,
@@ -128,7 +129,8 @@ void ConnectionBenchmark::reset() {
 
   stop();
 
-  m_bitsPerSec = 0;
+  m_downloadBps = 0;
+  m_uploadBps = 0;
   m_pingLatency = 0;
 
   setState(StateInitial);
@@ -143,10 +145,8 @@ void ConnectionBenchmark::downloadBenchmarked(quint64 bitsPerSec,
     return;
   }
 
-  m_bitsPerSec = bitsPerSec;
-  emit bitsPerSecChanged();
-
-  setConnectionSpeed();
+  m_downloadBps = bitsPerSec;
+  emit downloadBpsChanged();
 }
 
 void ConnectionBenchmark::pingBenchmarked(quint64 pingLatency) {
@@ -156,8 +156,20 @@ void ConnectionBenchmark::pingBenchmarked(quint64 pingLatency) {
   emit pingLatencyChanged();
 }
 
-void ConnectionBenchmark::uploadBenchmarked() {
+void ConnectionBenchmark::uploadBenchmarked(quint64 bitsPerSec,
+                                            bool hasUnexpectedError) {
   logger.debug() << "Benchmarked upload";
+
+  if (hasUnexpectedError) {
+    setState(StateError);
+    return;
+  }
+
+  m_uploadBps = bitsPerSec;
+  emit uploadBpsChanged();
+
+  // All benchmarks ran successfully and we can set the connection speed
+  setConnectionSpeed();
 }
 
 void ConnectionBenchmark::handleControllerState() {
