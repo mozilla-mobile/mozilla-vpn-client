@@ -17,6 +17,7 @@ FocusScope {
 
     property bool showRecentConnections: false
     property var currentServer
+    property real listOffset: (VPNTheme.theme.menuHeight * 2)
 
     Component.onCompleted: centerActiveServer();
 
@@ -93,6 +94,7 @@ FocusScope {
                 id: serverSearchInput
 
                 Layout.fillWidth: true
+                Layout.topMargin: VPNTheme.theme.vSpacing
                 Layout.leftMargin: VPNTheme.theme.vSpacing
                 Layout.rightMargin: VPNTheme.theme.vSpacing
                 Layout.preferredHeight: VPNTheme.theme.rowHeight
