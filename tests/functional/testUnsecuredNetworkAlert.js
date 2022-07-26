@@ -31,6 +31,11 @@ describe('Unsecured network alert', function() {
     });
 
     it('Unsecured network alert during the authentication', async () => {
+      if (this.ctx.wasm) {
+        // In wasm, the auth is fake and we cannot cancel the auth flow
+        return;
+      }
+
       await vpn.waitForElement('getHelpLink');
       await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
 

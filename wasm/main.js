@@ -2,60 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const SUBSCRIPTION_DETAILS = {
-  plan: {amount: 123, currency: 'usd', interval: 'year', interval_count: 1},
-  payment: {
-    payment_provider: 'stripe',
-    payment_type: 'credit',
-    last4: '1234',
-    exp_month: 12,
-    exp_year: 2022,
-    brand: 'visa',
-  },
-  subscription: {
-    _subscription_type: 'web',
-    created: 1,
-    current_period_end: 2,
-    cancel_at_period_end: true,
-    status: 'active'
-  },
-};
-
 class MVPNWasm {
   constructor() {
-    this._guardianOverrideEndpoints = {
-      GETs: {
-        '/api/v1/vpn/subscriptionDetails': {
-          status: 200,
-          body: SUBSCRIPTION_DETAILS,
-        },
-        '/api/v3/vpn/products': {
-          status: 200,
-          body: {
-            products: [
-              {
-                platform: 'dummy',
-                id: 'monthly',
-                featured_product: false,
-                type: 'monthly'
-              },
-              {
-                platform: 'dummy',
-                id: 'half-monthly',
-                featured_product: false,
-                type: 'half-yearly'
-              },
-              {
-                platform: 'dummy',
-                id: 'yearly',
-                featured_product: true,
-                type: 'yearly'
-              },
-            ]
-          }
-        },
-      }
-    };
+    this._guardianOverrideEndpoints = {};
 
     this._fxaOverrideEndpoints = {};
   }
@@ -118,6 +67,16 @@ class MVPNWasm {
                 'https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net'
           }),
           this._fxaOverrideEndpoints, this._fxaOverrideEndpointsPreset);
+    } else if (
+        url == 'https://archive.mozilla.org/pub/vpn/speedtest/50m.data') {
+      // 50mb of data is too much to be handled in the browser.
+      setTimeout(
+          () => Module.mvpnNetworkResponse(id, JSON.stringify({
+            status: 200,
+            body: btoa(String.fromCharCode.apply(null, new Uint8Array(1024)))
+          })),
+          15000);
+      return;
     }
 
     if (!obj) {

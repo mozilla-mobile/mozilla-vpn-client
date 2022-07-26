@@ -22,7 +22,8 @@ Logger logger(LOG_MAIN, "BenchmarkTaskDownload");
 }
 
 BenchmarkTaskDownload::BenchmarkTaskDownload(const QUrl& url)
-    : BenchmarkTask(Constants::BENCHMARK_MAX_DURATION_DOWNLOAD),
+    : BenchmarkTask("BenchmarkTaskDownload",
+                    Constants::BENCHMARK_MAX_DURATION_DOWNLOAD),
       m_dnsLookup(QDnsLookup::A, url.host()),
       m_fileUrl(url) {
   MVPN_COUNT_CTOR(BenchmarkTaskDownload);
@@ -50,7 +51,7 @@ void BenchmarkTaskDownload::handleState(BenchmarkTask::State state) {
 #  error Check if QT added support for QDnsLookup::lookup() on Android
 #endif
 
-#ifdef MVPN_ANDROID
+#if defined(MVPN_ANDROID) || defined(MVPN_WASM)
     NetworkRequest* request =
         NetworkRequest::createForGetUrl(this, m_fileUrl.toString());
     connectNetworkRequest(request);
@@ -146,8 +147,12 @@ void BenchmarkTaskDownload::downloadReady(QNetworkReply::NetworkError error,
 
   bool hasUnexpectedError = (error != QNetworkReply::NoError &&
                              error != QNetworkReply::OperationCanceledError &&
-                             error != QNetworkReply::TimeoutError) ||
-                            bitsPerSec == 0;
+                             error != QNetworkReply::TimeoutError)
+#ifndef MVPN_WASM
+                            || bitsPerSec == 0
+#endif
+      ;
+
   logger.debug() << "Download completed" << bitsPerSec << "baud";
 
   if (m_requests.isEmpty()) {
