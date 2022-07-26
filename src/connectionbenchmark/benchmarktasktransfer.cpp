@@ -67,6 +67,7 @@ void BenchmarkTaskTransfer::handleState(BenchmarkTask::State state) {
           new UploadDataGenerator(Constants::BENCHMARK_MAX_BITS_UPLOAD);
       uploadData->open(UploadDataGenerator::ReadOnly);
 
+      // TODO: Create multiple network requests for upload
       NetworkRequest* request = NetworkRequest::createForUploadData(this,
           m_url.toString(), uploadData);
       connectNetworkRequest(request);

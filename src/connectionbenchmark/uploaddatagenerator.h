@@ -25,6 +25,7 @@ class UploadDataGenerator : public QIODevice {
   
  private:
   const qint64 m_totalSize;
+  QByteArray m_dataBuffer;
 };
 
 #endif  // UPLOADDATAGENERATOR_H

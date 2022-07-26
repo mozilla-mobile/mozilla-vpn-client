@@ -159,7 +159,7 @@ void ConnectionBenchmark::pingBenchmarked(quint64 pingLatency) {
 
 void ConnectionBenchmark::uploadBenchmarked(quint64 bitsPerSec,
                                             bool hasUnexpectedError) {
-  logger.debug() << "Benchmarked upload";
+  logger.debug() << "Benchmarked upload" << bitsPerSec;
 
   if (hasUnexpectedError) {
     setState(StateError);
