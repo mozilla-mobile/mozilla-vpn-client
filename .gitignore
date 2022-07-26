@@ -190,3 +190,6 @@ extension/bridge/target
 extension/bridge/vendor
 extension/bridge/.cargo_home
 extension/bridge/.cargo
+
+# Private key for staging
+src/resources/public_keys/privateKey.pem
