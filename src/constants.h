@@ -36,17 +36,16 @@ constexpr int RECENT_CONNECTIONS_MAX_COUNT = 5;
 constexpr uint32_t SERVER_UNRESPONSIVE_COOLDOWN_SEC = 300;
 
 // Number of msecs for max runtime of the connection benchmarks.
+constexpr uint32_t BENCHMARK_MAX_BITS_UPLOAD = 8000000; // 1 Megabyte
 constexpr uint32_t BENCHMARK_MAX_DURATION_PING = 3000;
 constexpr uint32_t BENCHMARK_MAX_DURATION_DOWNLOAD = 15000;
-constexpr uint32_t BENCHMARK_MAX_DURATION_UPLOAD = 20000;
+constexpr uint32_t BENCHMARK_MAX_DURATION_UPLOAD = 15000;
 constexpr uint32_t BENCHMARK_THRESHOLD_SPEED_FAST = 25000000;    // 25 Megabit
 constexpr uint32_t BENCHMARK_THRESHOLD_SPEED_MEDIUM = 10000000;  // 10 Megabit
 constexpr const char* BENCHMARK_DOWNLOAD_URL =
     "https://archive.mozilla.org/pub/vpn/speedtest/50m.data";
-constexpr const char* BENCHMARK_UPLOAD_URL =
-    "https://ber.wsqm.telekom-dienste.de.prod.hosts.ooklaserver.net:8080/"
-    "upload?nocache=048de89c-19f8-4e70-91b1-f5dfc1f03cab&guid=f324dca9-"
-    "f4f6-4cdb-8b5e-68fa2f462dd9";
+// TODO: Endpoint(s) for uploads
+constexpr const char* BENCHMARK_UPLOAD_URL = "";
 
 #if defined(UNIT_TEST)
 #  define CONSTEXPR(type, functionName, releaseValue, debugValue, \
