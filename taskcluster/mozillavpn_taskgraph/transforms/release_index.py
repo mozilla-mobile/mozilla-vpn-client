@@ -35,6 +35,7 @@ def add_index_routes(config, tasks):
             branch = config.params["head_ref"]
             if branch.startswith(_GIT_REFS_HEADS_PREFIX):
                 branch = branch[len(_GIT_REFS_HEADS_PREFIX):]
+            branch = branch.replace("/",".") # We can't have "/" in the index -> so releases/2.9.0 needs to be releases.2.9.0
             context["branch"] = branch
 
         elif config.params["tasks_for"] == "github-release":

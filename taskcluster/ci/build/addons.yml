@@ -2,33 +2,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
-loader: taskgraph.loader.transform:loader
 
-transforms:
-    - mozillavpn_taskgraph.transforms.addons:transforms
-    - taskgraph.transforms.job:transforms
-    - taskgraph.transforms.task:transforms
-
-kind-dependencies:
-    - addons
-
-jobs:
-  stage/deploy:
-      description: "Addons Stage Deploy"
+addons:
+      description: "Addons Build"
       treeherder:
-          symbol: D
+          symbol: B
           kind: build
           tier: 1
           platform: addons/all
       worker-type: b-linux
-      requires-level: 3
-      scopes:
-         - 'secrets:get:project/mozillavpn/tokens'
-      dependencies:
-        addons: "addons-addons/any"
-      fetches:
-        addons:
-            - artifact: public/build
       worker:
           docker-image: {in-tree: wasm}
           max-run-time: 3600
@@ -40,4 +22,4 @@ jobs:
           using: run-task
           use-caches: true
           cwd: '{checkout}'
-          command: ./taskcluster/scripts/addons-stage/deploy.sh
+          command: ./taskcluster/scripts/build/addons.sh

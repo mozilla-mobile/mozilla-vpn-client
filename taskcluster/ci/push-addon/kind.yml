@@ -5,17 +5,30 @@
 loader: taskgraph.loader.transform:loader
 
 transforms:
+    - mozillavpn_taskgraph.transforms.release_index:transforms
     - taskgraph.transforms.job:transforms
     - taskgraph.transforms.task:transforms
+
+kind-dependencies:
+    - build
+
 jobs:
-  addons/any:
-      description: "Addons Build"
+  stage/deploy:
+      description: "Addons Stage Deploy"
       treeherder:
-          symbol: A
+          symbol: D
           kind: build
           tier: 1
           platform: addons/all
       worker-type: b-linux
+      add-index-routes: addons # Name of the index
+      scopes:
+         - 'secrets:get:project/mozillavpn/tokens'
+      dependencies:
+        build: "build-addons"
+      fetches:
+        build:
+            - artifact: addons.zip
       worker:
           docker-image: {in-tree: wasm}
           max-run-time: 3600
@@ -27,4 +40,4 @@ jobs:
           using: run-task
           use-caches: true
           cwd: '{checkout}'
-          command: ./taskcluster/scripts/addons/build.sh
+          command: ./taskcluster/scripts/push-addons/deploy.sh
