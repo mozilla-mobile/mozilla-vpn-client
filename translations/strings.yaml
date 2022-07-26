@@ -367,6 +367,9 @@ connectionInfo:
   labelPing:
     value: Ping
     comment: Latency of the connection
+  labelUpload:
+    value: Upload
+    comment: Upload speed of the connection
   unitPing:
     value: ms
     commnent: milliseconds

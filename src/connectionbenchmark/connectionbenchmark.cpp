@@ -44,6 +44,7 @@ void ConnectionBenchmark::initialize() {
 void ConnectionBenchmark::setConnectionSpeed() {
   logger.debug() << "Set connection speed";
 
+  // TODO: Take uploadBps for calculating speed into account
   if (m_downloadBps >= Constants::BENCHMARK_THRESHOLD_SPEED_FAST) {
     m_speed = SpeedFast;
   } else if (m_downloadBps >= Constants::BENCHMARK_THRESHOLD_SPEED_MEDIUM) {
@@ -71,30 +72,30 @@ void ConnectionBenchmark::start() {
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
-  // Controller* controller = vpn->controller();
-  // Controller::State controllerState = controller->state();
-  // Q_ASSERT(controllerState == Controller::StateOn);
+  Controller* controller = vpn->controller();
+  Controller::State controllerState = controller->state();
+  Q_ASSERT(controllerState == Controller::StateOn);
 
   setState(StateRunning);
 
-  // // Create ping benchmark
-  // BenchmarkTaskPing* pingTask = new BenchmarkTaskPing();
-  // connect(pingTask, &BenchmarkTaskPing::finished, this,
-  //         &ConnectionBenchmark::pingBenchmarked);
-  // connect(pingTask->sentinel(), &BenchmarkTask::destroyed, this,
-  //         [this, pingTask]() { m_benchmarkTasks.removeOne(pingTask); });
-  // m_benchmarkTasks.append(pingTask);
-  // TaskScheduler::scheduleTask(pingTask);
+  // Create ping benchmark
+  BenchmarkTaskPing* pingTask = new BenchmarkTaskPing();
+  connect(pingTask, &BenchmarkTaskPing::finished, this,
+          &ConnectionBenchmark::pingBenchmarked);
+  connect(pingTask->sentinel(), &BenchmarkTask::destroyed, this,
+          [this, pingTask]() { m_benchmarkTasks.removeOne(pingTask); });
+  m_benchmarkTasks.append(pingTask);
+  TaskScheduler::scheduleTask(pingTask);
 
-  // // Create download benchmark
-  // BenchmarkTaskDownload* downloadTask =
-  //     new BenchmarkTaskDownload(m_downloadUrl);
-  // connect(downloadTask, &BenchmarkTaskDownload::finished, this,
-  //         &ConnectionBenchmark::downloadBenchmarked);
-  // connect(downloadTask->sentinel(), &BenchmarkTask::destroyed, this,
-  //         [this, downloadTask]() { m_benchmarkTasks.removeOne(downloadTask); });
-  // m_benchmarkTasks.append(downloadTask);
-  // TaskScheduler::scheduleTask(downloadTask);
+  // Create download benchmark
+  BenchmarkTaskDownload* downloadTask =
+      new BenchmarkTaskDownload(m_downloadUrl);
+  connect(downloadTask, &BenchmarkTaskDownload::finished, this,
+          &ConnectionBenchmark::downloadBenchmarked);
+  connect(downloadTask->sentinel(), &BenchmarkTask::destroyed, this,
+          [this, downloadTask]() { m_benchmarkTasks.removeOne(downloadTask); });
+  m_benchmarkTasks.append(downloadTask);
+  TaskScheduler::scheduleTask(downloadTask);
 
   // Create upload benchmark
   BenchmarkTaskUpload* uploadTask = new BenchmarkTaskUpload(m_uploadUrl);
