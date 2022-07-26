@@ -5,6 +5,7 @@
 loader: taskgraph.loader.transform:loader
 
 transforms:
+    - mozillavpn_taskgraph.transforms.build:transforms # So we can do "requires-level"
     - mozillavpn_taskgraph.transforms.release_index:transforms
     - taskgraph.transforms.job:transforms
     - taskgraph.transforms.task:transforms
@@ -21,6 +22,7 @@ jobs:
           tier: 1
           platform: addons/all
       worker-type: b-linux
+      requires-level: 3
       add-index-routes: addons # Name of the index
       scopes:
          - 'secrets:get:project/mozillavpn/tokens'
