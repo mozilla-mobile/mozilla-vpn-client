@@ -95,7 +95,7 @@ class MVPNWasm {
     for (let p of MVPNPresets) {
       const option = document.createElement('option');
       option.value = p.name;
-      option.appendChild(document.createTextNode(p.name));
+      option.appendChild(document.createTextNode(`Preset: ${p.name}`));
       preset.appendChild(option);
     }
 
@@ -226,6 +226,24 @@ class MVPNWasm {
 
     const presetInfo = document.querySelector('#presetInfo');
     presetInfo.appendChild(p);
+  }
+
+  updateLanguages(langs) {
+    const languages = document.querySelector('#languages');
+    while (languages.firstChild) languages.firstChild.remove();
+
+    for (let p of langs) {
+      const option = document.createElement('option');
+      option.value = p;
+      option.appendChild(document.createTextNode(`Language: ${p}`));
+      languages.appendChild(option);
+    }
+
+    languages.onchange = () => this._loadLanguage(languages.value);
+  }
+
+  _loadLanguage(lang) {
+    controller.setSetting('language-code', lang);
   }
 };
 
