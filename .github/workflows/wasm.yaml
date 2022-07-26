@@ -18,6 +18,8 @@ jobs:
   wasmQt6:
     name: Wasm Qt6
     runs-on: ubuntu-20.04
+    outputs:
+      matrix: ${{ steps.testGen.outputs.tests }}
     env:
       QTVERSION: 6.2.4
 
@@ -63,6 +65,22 @@ jobs:
         run: |
           export PATH=/opt/$QTVERSION/wasm_32/bin:/opt/$QTVERSION/gcc_64/bin:$PATH
           ./scripts/wasm/compile.sh
+
+      - name: Generate tasklist
+        id: testGen
+        shell: bash
+        run: |
+          echo -n "::set-output name=tests::"
+          for test in $(find tests/functional -name 'test*.js' | sort); do
+            grep "$(basename ${test%.js})" tests/functional/wasm-test-ignore &>/dev/null || printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
+          done | jq -s -c
+
+      - name: Check tests
+        shell: bash
+        env:
+          TEST_LIST: ${{ steps.testGen.outputs.tests }}
+        run: |
+          echo $TEST_LIST | jq
 
       - name: Uploading
         uses: actions/upload-artifact@v1
@@ -181,3 +199,51 @@ jobs:
           email: sstreich@mozilla.com
           # Where static files are.
           build_dir: _site
+
+  functionaltests:
+    name: Functional tests
+    needs:
+      - wasmQt6
+    runs-on: ubuntu-20.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false # Don't cancel other jobs if a test fails
+      matrix:
+        test: ${{ fromJson(needs.wasmQt6.outputs.matrix) }}
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Cache build
+        id: cache-build
+        uses: actions/cache@v2
+        with:
+          path: build/
+          key: ${{ github.sha }}
+
+      - name: Install dependecies
+        run: |
+          sudo apt install ./build/archive/*.deb
+          sudo apt install --no-upgrade firefox xvfb -y
+          pip3 install -r requirements.txt
+          npm install
+
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v2.0.8
+        with:
+          name: WebAssembly Build Qt6
+          # Destination path
+          path: wasm
+
+      - uses: browser-actions/setup-geckodriver@latest
+
+      - name: Running ${{matrix.test.name}} Tests
+        id: runTests
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 15
+          max_attempts: 3
+          command: |
+            export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
+            export HEADLESS=yes
+            xvfb-run -a npm run functionalTestWasm -- ${{matrix.test.path}}

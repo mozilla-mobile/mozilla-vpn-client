@@ -11,8 +11,8 @@ namespace {
 Logger logger(LOG_MAIN, "BenchmarkTask");
 }
 
-BenchmarkTask::BenchmarkTask(uint32_t maxExecutionTime)
-    : Task("BenchmarkTask"), m_maxExecutionTime(maxExecutionTime) {
+BenchmarkTask::BenchmarkTask(const QString& taskName, uint32_t maxExecutionTime)
+    : Task(taskName), m_maxExecutionTime(maxExecutionTime) {
   MVPN_COUNT_CTOR(BenchmarkTask);
 }
 

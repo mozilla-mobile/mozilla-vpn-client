@@ -1,12 +1,15 @@
 {
   "scripts": {
-    "functionalTest": "mocha --require ./tests/functional/setupVpn.js --timeout 30000 --retries 3"
+    "functionalTest": "mocha --require ./tests/functional/setupVpn.js --timeout 30000 --retries 3",
+    "functionalTestWasm": "mocha --require ./tests/functional/setupWasm.js --timeout 30000 --retries 3"
   },
   "devDependencies": {
-    "dotenv": "^10.0.0",
-    "mocha": "^9.2.1",
-    "websocket": "^1.0.34",
     "body-parser": "^1.20.0",
-    "express": "^4.18.1"
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.18.1",
+    "mocha": "^9.2.1",
+    "selenium-webdriver": "^4.3.1",
+    "websocket": "^1.0.34"
   }
 }
