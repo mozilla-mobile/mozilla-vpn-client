@@ -122,3 +122,17 @@ QString LinuxDependencies::findCgroup2Path() {
 
   return QString();
 }
+
+// static
+QString LinuxDependencies::gnomeShellVersion() {
+  QDBusInterface iface("org.gnome.Shell", "/org/gnome/Shell", "org.gnome.Shell");
+  if (!iface.isValid()) {
+    return QString();
+  }
+
+  QVariant shellVersion = iface.property("ShellVersion");
+  if (!shellVersion.isValid()) {
+    return QString();
+  }
+  return shellVersion.toString();
+}
