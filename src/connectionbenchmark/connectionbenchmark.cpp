@@ -17,9 +17,7 @@ namespace {
 Logger logger(LOG_MODEL, "ConnectionBenchmark");
 }
 
-ConnectionBenchmark::ConnectionBenchmark()
-    : m_downloadUrl(Constants::BENCHMARK_DOWNLOAD_URL),
-      m_uploadUrl(Constants::BENCHMARK_UPLOAD_URL) {
+ConnectionBenchmark::ConnectionBenchmark() {
   MVPN_COUNT_CTOR(ConnectionBenchmark);
 }
 
@@ -97,6 +95,7 @@ void ConnectionBenchmark::start() {
   TaskScheduler::scheduleTask(downloadTask);
 
   // Create upload benchmark
+  setUploadUrl(Constants::BENCHMARK_UPLOAD_URL);
   BenchmarkTaskTransfer* uploadTask = new BenchmarkTaskTransfer(
       BenchmarkTaskTransfer::BenchmarkUpload, m_uploadUrl);
   Q_UNUSED(uploadTask);

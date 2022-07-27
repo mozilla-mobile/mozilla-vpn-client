@@ -24,7 +24,6 @@ class BenchmarkTaskTransfer : public BenchmarkTask {
     BenchmarkDownload,
     BenchmarkUpload,
   };
-  Q_ENUM(BenchmarkType);
 
   explicit BenchmarkTaskTransfer(BenchmarkType type, const QUrl& url);
   virtual ~BenchmarkTaskTransfer();

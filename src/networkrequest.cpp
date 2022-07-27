@@ -150,6 +150,7 @@ NetworkRequest* NetworkRequest::createForGetHostAddress(
 NetworkRequest* NetworkRequest::createForUploadData(Task* parent,
     const QString& url, QIODevice* uploadData) {
   Q_ASSERT(parent);
+  Q_ASSERT(uploadData);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,

@@ -24,7 +24,8 @@ Logger logger(LOG_MAIN, "BenchmarkTaskTransfer");
 
 BenchmarkTaskTransfer::BenchmarkTaskTransfer(BenchmarkType type,
                                              const QUrl& url)
-    : BenchmarkTask(Constants::BENCHMARK_MAX_DURATION_TRANSFER),
+    : BenchmarkTask("BenchmarkTaskTransfer",
+          Constants::BENCHMARK_MAX_DURATION_TRANSFER),
       m_type(type),
       m_dnsLookup(QDnsLookup::A, url.host()),
       m_url(url) {
@@ -65,7 +66,11 @@ void BenchmarkTaskTransfer::handleState(BenchmarkTask::State state) {
     } else if (m_type == BenchmarkUpload) {
       UploadDataGenerator* uploadData =
           new UploadDataGenerator(Constants::BENCHMARK_MAX_BITS_UPLOAD);
-      uploadData->open(UploadDataGenerator::ReadOnly);
+
+      if (!uploadData->open(UploadDataGenerator::ReadOnly)) {
+        emit finished(0, true);
+        emit completed();
+      };
 
       // TODO: Create multiple network requests for upload
       NetworkRequest* request = NetworkRequest::createForUploadData(this,
