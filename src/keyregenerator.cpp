@@ -68,9 +68,6 @@ void KeyRegenerator::stateChanged() {
 
   logger.debug() << "Triggering the key regeneration";
 
-  // OK! This is the tricky part. If the user closes the app during the key
-  // regenerator, they need to log in again at the next execution.
-
   TaskScheduler::scheduleTask(
       new TaskAddDevice(Device::currentDeviceName(), Device::uniqueDeviceId()));
   TaskScheduler::scheduleTask(new TaskAccount());

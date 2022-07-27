@@ -243,6 +243,14 @@ SETTING_STRING(privateKey,     // getter
                true            // remove when reset
 )
 
+SETTING_STRING(privateKeyJournal,     // getter
+               setPrivateKeyJournal,  // setter
+               hasPrivateKeyJournal,  // has
+               "privateKeyJournal",   // key
+               "",                    // default value
+               true                   // remove when reset
+)
+
 SETTING_BOOL(protectSelectedApps,     // getter
              setProtectSelectedApps,  // setter
              hasProtectSelectedApps,  // has
@@ -257,6 +265,14 @@ SETTING_STRING(publicKey,     // getter
                "publicKey",   // key
                "",            // default value
                true           // remove when reset
+)
+
+SETTING_STRING(publicKeyJournal,     // getter
+               setPublicKeyJournal,  // setter
+               hasPublicKeyJournal,  // has
+               "publicKeyJournal",   // key
+               "",                   // default value
+               true                  // remove when reset
 )
 
 SETTING_STRINGLIST(recentConnections,     // getter
