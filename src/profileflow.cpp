@@ -50,7 +50,9 @@ void ProfileFlow::start() {
 
   setState(StateLoading);
 
-  User* user = MozillaVPN::instance()->user();
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+  User* user = vpn->user();
   Q_ASSERT(user);
 
   TaskGetSubscriptionDetails* task =
@@ -78,6 +80,13 @@ void ProfileFlow::start() {
       logger.debug() << "Task failed";
       m_currentTask = nullptr;
       setState(StateError);
+    }
+  });
+  connect(vpn, &MozillaVPN::stateChanged, this, [this]() {
+    MozillaVPN* vpn = MozillaVPN::instance();
+    Q_ASSERT(vpn);
+    if (vpn->state() != MozillaVPN::StateMain) {
+      reset();
     }
   });
 
