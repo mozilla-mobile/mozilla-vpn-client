@@ -12,7 +12,7 @@ import components 0.1
 VPNFlickable {
     id: vpnFlickable
 
-    flickContentHeight: content.height
+    flickContentHeight: content.implicitHeight + content.anchors.topMargin
 
     state: (VPNController.state == VPNController.StateOff) ? "pre-activation" : "post-activation"
     states: [
@@ -44,8 +44,8 @@ VPNFlickable {
     ColumnLayout {
         id: content
 
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.top: parent.top
+        anchors.topMargin: 92
         width: Math.min(vpnFlickable.width, VPNTheme.theme.maxHorizontalContentWidth)
 
         VPNPanel {
@@ -69,7 +69,7 @@ VPNFlickable {
             color: VPNTheme.theme.fontColor
             font.pixelSize: VPNTheme.theme.fontSizeSmall
             font.family: VPNTheme.theme.fontBoldFamily
-            text: VPNl18n.CaptivePortalAlertPreActivation
+            text: VPNl18n.CaptivePortalAlertActionPreActivation
             width: openPortalButton.width
 
             Layout.alignment: Qt.AlignHCenter
@@ -84,7 +84,7 @@ VPNFlickable {
             id: openPortalButton
 
             objectName: "captivePortalAlertActionButton"
-            text: VPNl18n.CaptivePortalAlertPreActivation
+            text: VPNl18n.CaptivePortalAlertButtonTextPreActivation
             radius: 4
             onClicked: {
                 if(vpnFlickable.state === "pre-activation"){
