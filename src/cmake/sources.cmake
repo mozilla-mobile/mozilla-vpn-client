@@ -148,6 +148,8 @@ target_sources(mozillavpn PRIVATE
     ipaddresslookup.h
     itempicker.cpp
     itempicker.h
+    keyregenerator.cpp
+    keyregenerator.h
     leakdetector.cpp
     leakdetector.h
     localizer.cpp

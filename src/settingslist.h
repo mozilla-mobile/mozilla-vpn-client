@@ -20,6 +20,9 @@
 
 #define SETTING_INT(getter, ...) SETTING(int, toInt, getter, __VA_ARGS__)
 
+#define SETTING_INT64(getter, ...) \
+  SETTING(qint64, toLongLong, getter, __VA_ARGS__)
+
 #define SETTING_STRING(getter, ...) \
   SETTING(QString, toString, getter, __VA_ARGS__)
 
@@ -182,6 +185,14 @@ SETTING_DATETIME(installationTime,     // getter
                  "installationTime",   // key
                  QDateTime(),          // default value
                  false                 // remove when reset
+)
+
+SETTING_INT64(keyRegenerationTimeSec,     // getter
+              setKeyRegenerationTimeSec,  // setter
+              hasKeyRegenerationTimeSec,  // has
+              "keyRegenerationTimeSec",   // key
+              0,                          // default value
+              true                        // remove when reset
 )
 
 SETTING_STRING(languageCode,     // getter

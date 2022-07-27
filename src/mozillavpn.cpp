@@ -712,6 +712,8 @@ void MozillaVPN::deviceAdded(const QString& deviceName,
   m_private->m_keys.storeKeys(privateKey, publicKey);
 
   settingsHolder->setDeviceKeyVersion(Constants::versionString());
+
+  settingsHolder->setKeyRegenerationTimeSec(QDateTime::currentSecsSinceEpoch());
 }
 
 void MozillaVPN::deviceRemoved(const QString& publicKey) {
