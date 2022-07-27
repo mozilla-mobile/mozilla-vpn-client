@@ -46,7 +46,7 @@ if(APPLE)
     endif()
     set(CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM ${BUILD_OSX_DEVELOPMENT_TEAM})
 
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14 CACHE STRING "OSX minimum supported OS version")
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14)
 endif()
 
 option(BUILD_DUMMY "Build for the dummy platform" OFF)
