@@ -856,6 +856,20 @@ static QList<InspectorCommand> s_commands{
           return QJsonObject();
         }},
 
+    InspectorCommand{"public_key",
+                     "Retrieve the public key of the current device", 0,
+                     [](InspectorHandler*, const QList<QByteArray>&) {
+                       MozillaVPN* vpn = MozillaVPN::instance();
+                       Q_ASSERT(vpn);
+
+                       Keys* keys = vpn->keys();
+                       Q_ASSERT(keys);
+
+                       QJsonObject obj;
+                       obj["value"] = keys->publicKey();
+                       return obj;
+                     }},
+
     InspectorCommand{"open_settings", "Open settings menu", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        ExternalOpHandler::instance()->request(
