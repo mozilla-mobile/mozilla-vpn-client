@@ -920,6 +920,7 @@ void MozillaVPN::reset(bool forceInitialState) {
   logger.debug() << "Cleaning up all";
 
   TaskScheduler::deleteTasks();
+  m_private->m_closeEventHandler.removeAllStackViews();
 
   SettingsHolder::instance()->clear();
   m_private->m_keys.forgetKeys();

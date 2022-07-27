@@ -12,7 +12,9 @@
 
 class QHostAddress;
 class QNetworkAccessManager;
+#ifndef QT_NO_SSL
 class QSslCertificate;
+#endif
 class Task;
 
 class NetworkRequest final : public QObject {
@@ -143,6 +145,10 @@ class NetworkRequest final : public QObject {
                                                   const QString& sku,
                                                   const QString& purchaseToken);
 #endif
+#ifdef MVPN_WASM
+  static NetworkRequest* createForWasmPurchase(Task* parent,
+                                               const QString& productId);
+#endif
 
   void disableTimeout();
 
@@ -156,6 +162,10 @@ class NetworkRequest final : public QObject {
 
   static QString apiBaseUrl();
 
+  void processData(QNetworkReply::NetworkError error,
+                   const QString& errorString, int status,
+                   const QByteArray& data);
+
  private:
   NetworkRequest(Task* parent, int status, bool setAuthorizationHeader);
 
@@ -167,7 +177,10 @@ class NetworkRequest final : public QObject {
   void handleReply(QNetworkReply* reply);
   void handleHeaderReceived();
   void handleRedirect(const QUrl& url);
+
+#ifndef QT_NO_SSL
   bool checkSubjectName(const QSslCertificate& cert);
+#endif
 
   bool isRedirect() const;
 
@@ -176,7 +189,10 @@ class NetworkRequest final : public QObject {
  private slots:
   void replyFinished();
   void timeout();
+
+#ifndef QT_NO_SSL
   void sslErrors(const QList<QSslError>& errors);
+#endif
 
  signals:
   void requestHeaderReceived(NetworkRequest* request);
@@ -192,7 +208,9 @@ class NetworkRequest final : public QObject {
   QNetworkRequest m_request;
   QTimer m_timer;
 
+#ifndef QT_NO_SSL
   void enableSSLIntervention();
+#endif
 
   QNetworkReply* m_reply = nullptr;
   int m_status = 0;

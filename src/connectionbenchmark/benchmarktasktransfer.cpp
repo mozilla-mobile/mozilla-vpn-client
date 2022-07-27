@@ -54,11 +54,11 @@ void BenchmarkTaskTransfer::handleState(BenchmarkTask::State state) {
 #     error Check if QT added support for QDnsLookup::lookup() on Android
 #endif
 
-#ifdef MVPN_ANDROID
-      NetworkRequest* request =
-          NetworkRequest::createForGetUrl(this, m_fileUrl.toString());
-      connectNetworkRequest(request);
-      m_elapsedTimer.start();
+#if defined(MVPN_ANDROID) || defined(MVPN_WASM)
+    NetworkRequest* request =
+        NetworkRequest::createForGetUrl(this, m_url.toString());
+    connectNetworkRequest(request);
+    m_elapsedTimer.start();
 #else
       m_dnsLookup.lookup();
 #endif
@@ -173,8 +173,12 @@ void BenchmarkTaskTransfer::transferReady(QNetworkReply::NetworkError error,
 
   bool hasUnexpectedError = (error != QNetworkReply::NoError &&
                              error != QNetworkReply::OperationCanceledError &&
-                             error != QNetworkReply::TimeoutError) ||
-                            bitsPerSec == 0;
+                             error != QNetworkReply::TimeoutError)
+#ifndef MVPN_WASM
+                            || bitsPerSec == 0
+#endif
+      ;
+
   logger.debug() << "Transfer completed" << bitsPerSec << "baud";
 
   if (m_requests.isEmpty()) {

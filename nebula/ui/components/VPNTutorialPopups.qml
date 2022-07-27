@@ -232,6 +232,7 @@ Item {
             VPN.recordGleanEventWithExtraKeys("tutorialAborted", {"id": VPNTutorial.currentTutorial.id});
             tutorialPopup._onClosed = () => {
                 if (op !== null) VPNTutorial.interruptAccepted(op);
+                else VPNTutorial.stop();
             }
             tutorialPopup.close();
         }

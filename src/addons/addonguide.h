@@ -18,6 +18,7 @@ class AddonGuide final : public Addon {
   Q_PROPERTY(QString subtitleId MEMBER m_subtitleId CONSTANT)
   Q_PROPERTY(QString image MEMBER m_image CONSTANT)
   Q_PROPERTY(Composer* composer MEMBER m_composer CONSTANT)
+  Q_PROPERTY(bool advanced MEMBER m_advanced CONSTANT)
 
  public:
   static Addon* create(QObject* parent, const QString& manifestFileName,
@@ -34,6 +35,8 @@ class AddonGuide final : public Addon {
   QString m_titleId;
   QString m_subtitleId;
   QString m_image;
+  bool m_advanced = false;
+
   Composer* m_composer = nullptr;
 };
 

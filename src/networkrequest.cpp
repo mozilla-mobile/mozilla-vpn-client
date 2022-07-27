@@ -13,6 +13,10 @@
 #include "settingsholder.h"
 #include "task.h"
 
+#ifdef MVPN_WASM
+#  include "platforms/wasm/wasmnetworkrequest.h"
+#endif
+
 #include <QDirIterator>
 #include <QHostAddress>
 #include <QJsonDocument>
@@ -33,7 +37,10 @@ constexpr const char* IPINFO_URL_IPV6 = "https://[%1]/api/v1/vpn/ipinfo";
 
 namespace {
 Logger logger(LOG_NETWORKING, "NetworkRequest");
+
+#ifndef QT_NO_SSL
 QList<QSslCertificate> s_intervention_certs;
+#endif
 }  // namespace
 
 NetworkRequest::NetworkRequest(Task* parent, int status,
@@ -70,7 +77,10 @@ NetworkRequest::NetworkRequest(Task* parent, int status,
   connect(&m_timer, &QTimer::timeout, this, &NetworkRequest::maybeDeleteLater);
 
   NetworkManager::instance()->increaseNetworkRequestCount();
+
+#ifndef QT_NO_SSL
   enableSSLIntervention();
+#endif
 }
 
 NetworkRequest::~NetworkRequest() {
@@ -854,6 +864,30 @@ NetworkRequest* NetworkRequest::createForAndroidPurchase(
 }
 #endif
 
+#ifdef MVPN_WASM
+NetworkRequest* NetworkRequest::createForWasmPurchase(
+    Task* parent, const QString& productId) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, true);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QUrl url(apiBaseUrl());
+  url.setPath("/api/v1/vpn/purchases/wasm");
+  r->m_request.setUrl(url);
+
+  QJsonObject obj;
+  obj.insert("productId", productId);
+
+  QJsonDocument json;
+  json.setObject(obj);
+
+  r->postRequest(json.toJson(QJsonDocument::Compact));
+  return r;
+}
+#endif
+
 void NetworkRequest::replyFinished() {
   Q_ASSERT(m_reply);
   Q_ASSERT(m_reply->isFinished());
@@ -904,14 +938,19 @@ void NetworkRequest::replyFinished() {
                  << "- expected:" << expect;
 
   QByteArray data = m_reply->readAll();
+  processData(m_reply->error(), m_reply->errorString(), status, data);
+}
 
-  if (m_reply->error() != QNetworkReply::NoError) {
+void NetworkRequest::processData(QNetworkReply::NetworkError error,
+                                 const QString& errorString, int status,
+                                 const QByteArray& data) {
+  if (error != QNetworkReply::NoError) {
     QUrl::FormattingOptions options = QUrl::RemoveQuery | QUrl::RemoveUserInfo;
-    logger.error() << "Network error:" << m_reply->errorString()
+    logger.error() << "Network error:" << errorString
                    << "status code:" << status
                    << "- body:" << logger.sensitive(data);
     logger.error() << "Failed to access:" << m_request.url().toString(options);
-    emit requestFailed(m_reply->error(), data);
+    emit requestFailed(error, data);
     return;
   }
 
@@ -983,23 +1022,35 @@ void NetworkRequest::timeout() {
 }
 
 void NetworkRequest::getRequest() {
+#ifdef MVPN_WASM
+  WasmNetworkRequest::getRequest(this);
+#else
   QNetworkAccessManager* manager =
       NetworkManager::instance()->networkAccessManager();
   handleReply(manager->get(m_request));
+#endif
   m_timer.start(REQUEST_TIMEOUT_MSEC);
 }
 
 void NetworkRequest::deleteRequest() {
+#ifdef MVPN_WASM
+  WasmNetworkRequest::deleteRequest(this);
+#else
   QNetworkAccessManager* manager =
       NetworkManager::instance()->networkAccessManager();
   handleReply(manager->sendCustomRequest(m_request, "DELETE"));
+#endif
   m_timer.start(REQUEST_TIMEOUT_MSEC);
 }
 
 void NetworkRequest::postRequest(const QByteArray& body) {
+#ifdef MVPN_WASM
+  WasmNetworkRequest::postRequest(this, body);
+#else
   QNetworkAccessManager* manager =
       NetworkManager::instance()->networkAccessManager();
   handleReply(manager->post(m_request, body));
+#endif
   m_timer.start(REQUEST_TIMEOUT_MSEC);
 }
 
@@ -1019,7 +1070,9 @@ void NetworkRequest::handleReply(QNetworkReply* reply) {
 
   connect(m_reply, &QNetworkReply::finished, this,
           &NetworkRequest::replyFinished);
+#ifndef QT_NO_SSL
   connect(m_reply, &QNetworkReply::sslErrors, this, &NetworkRequest::sslErrors);
+#endif
   connect(m_reply, &QNetworkReply::metaDataChanged, this,
           &NetworkRequest::handleHeaderReceived);
   connect(m_reply, &QNetworkReply::redirected, this,
@@ -1078,6 +1131,7 @@ void NetworkRequest::abort() {
   m_reply->abort();
 }
 
+#ifndef QT_NO_SSL
 bool NetworkRequest::checkSubjectName(const QSslCertificate& cert) {
   QString hostname = QString(m_request.rawHeader("Host"));
   if (hostname.isEmpty()) {
@@ -1156,3 +1210,4 @@ void NetworkRequest::enableSSLIntervention() {
   conf.addCaCertificates(s_intervention_certs);
   m_request.setSslConfiguration(conf);
 }
+#endif

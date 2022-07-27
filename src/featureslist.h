@@ -129,7 +129,7 @@ FEATURE_SIMPLE(inAppPurchase,      // Feature ID
                false,              // Can be flipped on
                false,              // Can be flipped off
                QStringList(),      // feature dependencies
-               FeatureCallback_iosOrAndroid)
+               FeatureCallback_inAppPurchase)
 
 FEATURE_SIMPLE(lanAccess,                    // Feature ID
                "Local area network access",  // Feature name

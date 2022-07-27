@@ -472,3 +472,12 @@ input:focus {
   padding-right: 1em;
 }
 
+select {
+  margin-top: 1em;
+  width: 100%
+}
+
+#presetInfo {
+  margin-top: 1em;
+  width: 100%
+}

@@ -58,6 +58,9 @@ void ExternalOpHandler::request(Op op) {
   }
 
   switch (op) {
+    case OpAbout:
+      vpn->requestAbout();
+      break;
     case OpContactUs:
       vpn->requestContactUs();
       break;
