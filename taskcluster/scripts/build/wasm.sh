@@ -19,11 +19,17 @@ python3 ./scripts/utils/generate_glean.py
 # translations
 python3 ./scripts/utils/import_languages.py
 
-# Add the Wasm qmake after import languages into the path,
-# Otherwise import_languages.py will search for lupdate 
-# in the wasm folder, but the qt does not seem to ship it in the wasm build. 
 export PATH="$QTPATH/wasm_32/bin:$PATH"
-./scripts/wasm/compile.sh
+mkdir build
+$QTPATH/wasm_32/bin/qt-cmake -S . -B build
+cmake -B build
+cp src/mozillavpn.wasm wasm
+cp src/mozillavpn.js wasm
+cp src/qtloader.js wasm
+cp tests/functional/fxa_endpoints.js wasm
+cp tests/functional/guardian_endpoints.js wasm
+cp -r tools/logviewer wasm
+
 # Artifacts should be placed here!
 mkdir -p /builds/worker/artifacts/
 

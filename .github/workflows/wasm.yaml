@@ -64,7 +64,15 @@ jobs:
         shell: bash
         run: |
           export PATH=/opt/$QTVERSION/wasm_32/bin:/opt/$QTVERSION/gcc_64/bin:$PATH
-          ./scripts/wasm/compile.sh
+          mkdir build
+          /opt/$QTVERSION/wasm_32/bin/qt-cmake -S . -B build #-DQT_HOST_PATH=/opt/$QTVERSION/gcc_64/bin -DQT_HOST_PATH_CMAKE_DIR=/opt/$QTVERSION/gcc_64/lib/cmake
+          cmake --build build
+          cp $(pwd)/src/mozillavpn.wasm wasm
+          cp $(pwd)/src/mozillavpn.js wasm
+          cp $(pwd)/src/qtloader.js wasm
+          cp $(pwd)/tests/functional/fxa_endpoints.js wasm
+          cp $(pwd)/tests/functional/guardian_endpoints.js wasm
+          cp -r $(pwd)/tools/logviewer wasm
 
       - name: Generate tasklist
         id: testGen

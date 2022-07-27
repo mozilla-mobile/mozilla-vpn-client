@@ -79,16 +79,20 @@ find_package(Qt6 COMPONENTS
     Core
     Gui
     Network
-    NetworkAuth
     Qml
     Quick
     QuickTest
-    Sql
     Test
     WebSockets
     Widgets
     Xml
 )
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    find_package(Qt6 COMPONENTS
+        NetworkAuth
+        Sql
+    )
+endif()
 message("Using Qt version ${Qt6_VERSION}")
 add_definitions(-DQT_DEPRECATED_WARNINGS)
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0x050F00)
@@ -108,10 +112,12 @@ set_target_properties(build_tests PROPERTIES
     EXCLUDE_FROM_ALL $<NOT:$<BOOL:${BUILD_TESTING}>>
     FOLDER "Tests"
 )
-add_subdirectory(tests/auth)
-add_subdirectory(tests/nativemessaging)
-add_subdirectory(tests/unit)
-add_subdirectory(tests/qml)
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    add_subdirectory(tests/auth)
+    add_subdirectory(tests/nativemessaging)
+    add_subdirectory(tests/unit)
+    add_subdirectory(tests/qml)
+endif()
 
 # Web Extension build targets
 if(NOT CMAKE_CROSSCOMPILING)
