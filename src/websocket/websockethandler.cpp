@@ -11,6 +11,7 @@
 #include "settingsholder.h"
 #include "urlopener.h"
 #include "exponentialbackoffstrategy.h"
+#include "pushmessage.h"
 
 namespace {
 Logger logger(LOG_MAIN, "WebSocketHandler");
@@ -236,10 +237,11 @@ void WebSocketHandler::onError(QAbstractSocket::SocketError error) {
 /**
  * @brief Acknowledges a message was received from the WebSocket server.
  *
- * Each message will trigger a different task on the VPN client.
+ * Each message will trigger a different task.
  */
 void WebSocketHandler::onMessageReceived(const QString& message) {
   logger.debug() << "Message received:" << message;
 
-  // TODO: DO SOMETHING WITH THE MESSAGE.
+  PushMessage parsedMessage(message);
+  parsedMessage.executeAction();
 }

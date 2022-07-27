@@ -5,7 +5,9 @@
 #include "pushmessage.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
 
+#include <QEventLoop>
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonValue>
@@ -23,7 +25,7 @@ Logger logger(LOG_MAIN, "PushMessage");
  * {
  *   "type": "DEVICE_DELETED",
  *   "payload": {
- *     "deviceId": "e95cfedd-119b-4ef1-aa51-46f9427e2337"
+ *     "publicKey": "e95cfedd-119b-4ef1-aa51-46f9427e2337"
  *   }
  * }
  * ```
@@ -52,23 +54,14 @@ PushMessage::~PushMessage() { MVPN_COUNT_DTOR(PushMessage); }
  * this function will not error.
  */
 void PushMessage::parseMessage(const QString& message) {
-  QJsonObject obj;
   QJsonDocument doc = QJsonDocument::fromJson(message.toUtf8());
 
-  if (!doc.isNull()) {
-    if (doc.isObject()) {
-      obj = doc.object();
+  QJsonObject obj = doc.object();
 
-      m_messagePayload = obj.take("payload").toObject();
+  m_messagePayload = obj["payload"].toObject();
 
-      QString messageType = obj.take("type").toString();
-      m_messageType = messageTypeFromString(messageType);
-    } else {
-      logger.debug() << "Push message is a not a JSON object:" << message;
-    }
-  } else {
-    logger.debug() << "Push message is invalid JSON:" << message;
-  }
+  QString messageType = obj["type"].toString();
+  m_messageType = messageTypeFromString(messageType);
 }
 
 /**
@@ -80,7 +73,10 @@ void PushMessage::parseMessage(const QString& message) {
  * https://github.com/mozilla-services/guardian-website/blob/7da6d52b334e35bd858bd22c7add5cde7ced9ef2/server/websocket/messages.ts
  */
 // static
-PushMessage::MessageType PushMessage::messageTypeFromString(QString& str) {
+PushMessage::MessageType PushMessage::messageTypeFromString(
+    const QString& str) {
+  if (str == "DEVICE_DELETED") return MessageType_DeviceDeleted;
+
 #ifdef UNIT_TEST
   if (str == "TEST_MESSAGE") return MessageType_TestMessage;
 #endif
@@ -94,21 +90,61 @@ PushMessage::MessageType PushMessage::messageTypeFromString(QString& str) {
  *
  * If the message is malformatted or of unknown type, this is a no-op.
  *
- * The `onExecutionCompleted` is emited this function is done.
+ * The `onExecutionCompleted` signal is emited this function is done.
  * If nothing was done e.g. if the message was unknown, it will emit a `false`
  * value.
  */
 bool PushMessage::executeAction() {
   switch (m_messageType) {
-    case MessageType_UnknownMessage:
-      logger.debug()
-          << "Attempted to execute action for unknown message. Ignoring.";
-      return false;
+    case MessageType_DeviceDeleted:
+      logger.debug() << "Executing action for 'DeviceDeleted'";
+      return handleDeviceDeleted(m_messagePayload);
 
 #ifdef UNIT_TEST
     case MessageType_TestMessage:
       logger.debug() << "Executing action for 'TestMessage'";
       return true;
 #endif
+
+    default:
+      logger.debug()
+          << "Attempted to execute action for unknown message. Ignoring.";
+      return false;
   }
+}
+
+/**
+ * @brief Handler for the `MessageType_DeviceDeleted` message type.
+ *
+ * Expected payload:
+ *
+ * ```json
+ * {
+ *    "publicKey": "<device public key>",
+ * }
+ * ```
+ *
+ * If the current device was the one that got deleted, user will be logged out.
+ * Otherwise, deleted device will be deleted from the settings.
+ */
+// static
+bool PushMessage::handleDeviceDeleted(const QJsonObject& payload) {
+  const QString& publicKey = payload["publicKey"].toString();
+  logger.debug() << publicKey;
+  if (publicKey.isEmpty()) {
+    logger.error()
+        << "Malformed message payload for DeviceDeleted message. Ignoring.";
+    return false;
+  }
+
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+  if (vpn->keys()->publicKey() == publicKey) {
+    logger.info() << "Current device has been deleted from this subscription.";
+    vpn->reset(true);
+    return true;
+  }
+
+  MozillaVPN::instance()->deviceRemoved(publicKey);
+  return true;
 }

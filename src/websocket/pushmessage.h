@@ -12,22 +12,28 @@
 class PushMessage final : public QObject {
   Q_OBJECT
  public:
+  ~PushMessage();
+
   PushMessage(const QString& message);
 
   bool executeAction();
 
   enum MessageType {
+    MessageType_DeviceDeleted,
+
 #ifdef UNIT_TEST
     MessageType_TestMessage,
 #endif
 
     MessageType_UnknownMessage
   };
-  Q_ENUM(MessageType);
-  static MessageType messageTypeFromString(QString& str);
+  static MessageType messageTypeFromString(const QString& str);
 
  private:
   void parseMessage(const QString& message);
+
+  // Action handlers
+  static bool handleDeviceDeleted(const QJsonObject& payload);
 
  private:
   MessageType m_messageType;
