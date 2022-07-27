@@ -85,6 +85,7 @@ void ConnectionBenchmark::start() {
   TaskScheduler::scheduleTask(pingTask);
 
   // Create download benchmark
+  setDownloadUrl(Constants::BENCHMARK_DOWNLOAD_URL);
   BenchmarkTaskTransfer* downloadTask = new BenchmarkTaskTransfer(
       BenchmarkTaskTransfer::BenchmarkDownload, m_downloadUrl);
   connect(downloadTask, &BenchmarkTaskTransfer::finished, this,

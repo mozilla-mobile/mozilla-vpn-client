@@ -7,25 +7,27 @@
 
 #include <QIODevice>
 
-class UploadDataGenerator : public QIODevice {
+constexpr int32_t MAX_BUFFER_SIZE = 4096;
+
+class UploadDataGenerator final : public QIODevice {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(UploadDataGenerator)
 
  public:
-  explicit UploadDataGenerator(const qint64& totalSize);
-  virtual ~UploadDataGenerator();
+  explicit UploadDataGenerator(const qint64 totalSize);
+  ~UploadDataGenerator();
 
   qint64 size() const override {
     return m_totalSize;
   }
 
- protected:
+ private:
   virtual qint64 readData(char* data, qint64 maxSize) override;
   virtual qint64 writeData(const char* data, qint64 maxSize) override;
   
  private:
   const qint64 m_totalSize;
-  QByteArray m_dataBuffer;
+  char m_dataBuffer[MAX_BUFFER_SIZE];
 };
 
 #endif  // UPLOADDATAGENERATOR_H
