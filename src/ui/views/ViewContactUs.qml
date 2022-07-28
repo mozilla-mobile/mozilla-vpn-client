@@ -95,9 +95,8 @@ Item {
                 anchors.right: parent.right
                 anchors.top: parent.top
                 spacing: VPNTheme.theme.windowMargin
-                anchors.margins: VPNTheme.theme.windowMargin * 2
+                anchors.margins: VPNTheme.theme.windowMargin
                 anchors.topMargin: window.fullscreenRequired() ? VPNTheme.theme.contentTopMarginMobile : VPNTheme.theme.contentTopMarginDesktop
-
 
                 ColumnLayout {
                     Layout.alignment: Qt.AlignTop
@@ -106,10 +105,13 @@ Item {
                     spacing: 24
 
                     ColumnLayout {
+                        objectName: "contactUs-unauthedUserInputs"
                         Layout.fillHeight: true
                         spacing: 24
                         visible: VPN.userState !== VPN.UserAuthenticated
+                        Layout.alignment: Qt.AlignHCenter
                         Layout.fillWidth: true
+                        Layout.maximumWidth: parent.width - VPNTheme.theme.windowMargin
 
                         ColumnLayout {
                             spacing: 10
@@ -147,16 +149,21 @@ Item {
                         }
                     }
 
+                    VPNUserProfile {
+                        objectName: "contactUs-userInfo"
+                        enabled: false
+                        Layout.preferredWidth: parent.width
+                        visible: VPN.userState === VPN.UserAuthenticated
+                        Layout.topMargin: -VPNTheme.theme.windowMargin / 2
+                        Layout.bottomMargin: -VPNTheme.theme.windowMargin / 2
+                    }
+
                     ColumnLayout {
                         Layout.fillWidth: true
-                        Layout.preferredWidth: parent.width
+                        Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin
+                        Layout.maximumWidth: parent.width - VPNTheme.theme.windowMargin
+                        Layout.alignment: Qt.AlignHCenter
                         spacing: 10
-
-                        VPNUserProfile {
-                            Layout.bottomMargin: VPNTheme.theme.windowMargin / 2
-                            visible: VPN.userState === VPN.UserAuthenticated
-                        }
-
 
                         VPNBoldLabel {
                             property string enterEmailAddress: VPNl18n.InAppSupportWorkflowSupportFieldHeader
@@ -181,19 +188,23 @@ Item {
                     VPNTextField {
                         id: subjectInput
 
-                        width: parent.width
                         verticalAlignment: Text.AlignVCenter
-                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignHCenter
+                        Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin
                         _placeholderText: VPNl18n.InAppSupportWorkflowSubjectFieldPlaceholder
                     }
 
                     VPNTextArea {
                         id: textArea
                         placeholderText: VPNl18n.InAppSupportWorkflowIssueFieldPlaceholder
+                        Layout.alignment: Qt.AlignHCenter
+                        Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin
                     }
                 }
 
                 ColumnLayout {
+                    Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin * 2
+                    Layout.alignment: Qt.AlignHCenter
                     Layout.fillHeight: true
                     spacing: 24
 

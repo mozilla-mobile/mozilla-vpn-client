@@ -64,6 +64,9 @@ describe('Settings', function() {
     await vpn.waitForElementProperty(
         'settingsUserProfile-manageAccountButton', 'visible', 'true');
 
+    await vpn.waitForElementProperty(
+        'settingsUserProfile-manageAccountButton', 'enabled', 'true');
+
     await vpn.clickOnElement('settingsBackButton');
     await vpn.wait();
 
