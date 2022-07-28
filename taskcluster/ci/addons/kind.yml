@@ -2,11 +2,16 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
+loader: taskgraph.loader.transform:loader
 
-addons:
+transforms:
+    - taskgraph.transforms.job:transforms
+    - taskgraph.transforms.task:transforms
+jobs:
+  bundle:
       description: "Addons Build"
       treeherder:
-          symbol: B
+          symbol: A
           kind: build
           tier: 1
           platform: addons/all
@@ -22,4 +27,4 @@ addons:
           using: run-task
           use-caches: true
           cwd: '{checkout}'
-          command: ./taskcluster/scripts/build/addons.sh
+          command: ./taskcluster/scripts/addons/build.sh

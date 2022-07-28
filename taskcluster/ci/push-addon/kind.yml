@@ -5,13 +5,13 @@
 loader: taskgraph.loader.transform:loader
 
 transforms:
-    - mozillavpn_taskgraph.transforms.build:transforms # So we can do "requires-level"
+    - mozillavpn_taskgraph.transforms.requires_level:transforms
     - mozillavpn_taskgraph.transforms.release_index:transforms
     - taskgraph.transforms.job:transforms
     - taskgraph.transforms.task:transforms
 
 kind-dependencies:
-    - build
+    - addons
 
 jobs:
   stage/deploy:
@@ -27,7 +27,7 @@ jobs:
       scopes:
          - 'secrets:get:project/mozillavpn/tokens'
       dependencies:
-        build: "build-addons"
+        build: "addons-bundle"
       fetches:
         build:
             - artifact: addons.zip

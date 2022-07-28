@@ -6,6 +6,7 @@ loader: taskgraph.loader.transform:loader
 
 transforms:
     - mozillavpn_taskgraph.transforms.release_index:transforms
+    - mozillavpn_taskgraph.transforms.requires_level:transforms
     - mozillavpn_taskgraph.transforms.build:transforms
     - taskgraph.transforms.job:transforms
     - taskgraph.transforms.task:transforms
@@ -20,4 +21,3 @@ jobs-from:
     - android.yml
     - macos.yml
     - wasm.yml
-    - addons.yml
