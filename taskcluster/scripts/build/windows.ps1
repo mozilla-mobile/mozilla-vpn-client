@@ -62,8 +62,7 @@ Write-Output "Writing Artifacts"
 New-Item -ItemType Directory -Path "$TASK_WORKDIR/artifacts" -Force
 $ARTIFACTS_PATH =resolve-path "$TASK_WORKDIR/artifacts"
 Copy-Item -Path $BUILD_DIR/windows/installer/MozillaVPN.msi -Destination $ARTIFACTS_PATH/MozillaVPN.msi
-# TODO: Check why this is missing?
-# Copy-Item -Path $BUILD_DIR/MozillaVPN.pdb -Destination $ARTIFACTS_PATH/MozillaVPN.pdb
+Copy-Item -Path "$TASK_WORKDIR/unsigned/Mozilla VPN.pdb" -Destination "$ARTIFACTS_PATH/Mozilla VPN.pdb"
 Compress-Archive -Path $TASK_WORKDIR/unsigned/* -Destination $ARTIFACTS_PATH/unsigned.zip
 Write-Output "Artifacts Location:$TASK_WORKDIR/artifacts"
 Get-ChildItem -Path $TASK_WORKDIR/artifacts
