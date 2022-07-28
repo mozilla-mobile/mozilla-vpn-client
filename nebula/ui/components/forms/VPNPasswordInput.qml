@@ -33,9 +33,6 @@ VPNTextField {
         }
         height: parent.height - VPNTheme.theme.listSpacing
         width: parent.height - VPNTheme.theme.listSpacing
-        onClicked: {
-            toggleVisibility();
-        }
 
         Image {
             anchors.centerIn: toggleButton
@@ -48,7 +45,17 @@ VPNTextField {
         }
 
         function toggleVisibility() {
-            passwordInput.charactersMasked = !passwordInput.charactersMasked
+            passwordInput.charactersMasked = !passwordInput.charactersMasked;
+        }
+
+        // Temporary workaround for QTBUG-78813: TextInput prevents touch events
+        // from reaching other MouseAreas.
+        // https://bugreports.qt.io/browse/QTBUG-78813
+        MouseArea {
+            anchors.fill: parent
+            onPressed: {
+                toggleButton.toggleVisibility();
+            }
         }
     }
 }
