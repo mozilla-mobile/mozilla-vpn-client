@@ -61,7 +61,7 @@ TestCase {
         verify(expected === actual, `propagateClickToParent was ${actual} not ${expected}.`);
 
         //Ensures parent does not get `clicked' events on VPNMouseArea 'release' signal
-        testCase.testComponent.mouseArea.released(TestEvent)
+        testCase.testComponent.mouseArea.clicked(TestEvent)
         compare(testCase.testComponent.spyTestButtonClicked.count, 0)
     }
 
