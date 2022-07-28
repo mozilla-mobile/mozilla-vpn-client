@@ -368,7 +368,7 @@ connectionInfo:
     comment: Latency of the connection
   labelUpload:
     value: Upload
-    comment: Upload speed of the connection
+    comment: Label for the upload benchmark shown in the speed test view.
   unitPing:
     value: ms
     commnent: milliseconds
