@@ -147,8 +147,9 @@ NetworkRequest* NetworkRequest::createForGetHostAddress(
 }
 
 // static
-NetworkRequest* NetworkRequest::createForUploadData(
-    Task* parent, const QString& url, QIODevice* uploadData) {
+NetworkRequest* NetworkRequest::createForUploadData(Task* parent,
+                                                    const QString& url,
+                                                    QIODevice* uploadData) {
   Q_ASSERT(parent);
   Q_ASSERT(uploadData);
   QUrl requestUrl(url);
@@ -163,8 +164,9 @@ NetworkRequest* NetworkRequest::createForUploadData(
 }
 
 // static
-NetworkRequest* NetworkRequest::createForUploadDataHostAddress(Task* parent,
-    const QString& url, QIODevice* uploadData, const QHostAddress& address) {
+NetworkRequest* NetworkRequest::createForUploadDataHostAddress(
+    Task* parent, const QString& url, QIODevice* uploadData,
+    const QHostAddress& address) {
   Q_ASSERT(parent);
   Q_ASSERT(uploadData);
   QUrl requestUrl(url);

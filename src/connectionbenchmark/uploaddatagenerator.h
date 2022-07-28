@@ -17,14 +17,12 @@ class UploadDataGenerator final : public QIODevice {
   explicit UploadDataGenerator(const qint64 totalSize);
   ~UploadDataGenerator();
 
-  qint64 size() const override {
-    return m_totalSize;
-  }
+  qint64 size() const override { return m_totalSize; }
 
  private:
   virtual qint64 readData(char* data, qint64 maxSize) override;
   virtual qint64 writeData(const char* data, qint64 maxSize) override;
-  
+
  private:
   const qint64 m_totalSize;
   char m_dataBuffer[MAX_BUFFER_SIZE];

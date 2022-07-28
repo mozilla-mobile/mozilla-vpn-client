@@ -54,7 +54,7 @@ void BenchmarkTaskTransfer::handleState(BenchmarkTask::State state) {
 #endif
 
 #if QT_VERSION >= 0x060400
-#   error Check if QT added support for QDnsLookup::lookup() on Android
+#  error Check if QT added support for QDnsLookup::lookup() on Android
 #endif
 
     m_elapsedTimer.start();
@@ -77,8 +77,8 @@ void BenchmarkTaskTransfer::createNetworkRequest() {
       break;
     }
     case BenchmarkUpload: {
-      UploadDataGenerator* uploadData = new UploadDataGenerator(
-          Constants::BENCHMARK_MAX_BITS_UPLOAD);
+      UploadDataGenerator* uploadData =
+          new UploadDataGenerator(Constants::BENCHMARK_MAX_BITS_UPLOAD);
 
       if (!uploadData->open(UploadDataGenerator::ReadOnly)) {
         emit finished(0, true);
@@ -101,13 +101,13 @@ void BenchmarkTaskTransfer::createNetworkRequestWithRecord(
   NetworkRequest* request = nullptr;
   switch (m_type) {
     case BenchmarkDownload: {
-      request = NetworkRequest::createForGetHostAddress(
-          this, m_url.toString(), record.value());
+      request = NetworkRequest::createForGetHostAddress(this, m_url.toString(),
+                                                        record.value());
       break;
     }
     case BenchmarkUpload: {
-      UploadDataGenerator* uploadData = new UploadDataGenerator(
-          Constants::BENCHMARK_MAX_BITS_UPLOAD);
+      UploadDataGenerator* uploadData =
+          new UploadDataGenerator(Constants::BENCHMARK_MAX_BITS_UPLOAD);
 
       if (!uploadData->open(UploadDataGenerator::ReadOnly)) {
         emit finished(0, true);
@@ -226,7 +226,7 @@ void BenchmarkTaskTransfer::transferReady(QNetworkReply::NetworkError error,
   double msecs = static_cast<double>(m_elapsedTimer.elapsed());
   if (m_bytesTransferred > 0 && msecs > 0) {
     bitsPerSec = static_cast<quint64>(
-       static_cast<double>(m_bytesTransferred * 8) / (msecs / 1000.00));
+        static_cast<double>(m_bytesTransferred * 8) / (msecs / 1000.00));
   }
 
   bool hasUnexpectedError = (error != QNetworkReply::NoError &&

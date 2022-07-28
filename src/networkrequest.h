@@ -33,13 +33,12 @@ class NetworkRequest final : public QObject {
                                                  const QString& url,
                                                  const QHostAddress& address);
 
-  static NetworkRequest* createForUploadData(Task* parent,
-                                             const QString& url,
+  static NetworkRequest* createForUploadData(Task* parent, const QString& url,
                                              QIODevice* uploadData);
 
   static NetworkRequest* createForUploadDataHostAddress(
-    Task* parent, const QString& url, QIODevice* uploadData,
-    const QHostAddress& address);
+      Task* parent, const QString& url, QIODevice* uploadData,
+      const QHostAddress& address);
 
   static NetworkRequest* createForAuthenticationVerification(
       Task* parent, const QString& pkceCodeSuccess,
