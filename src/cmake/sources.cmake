@@ -90,8 +90,6 @@ target_sources(mozillavpn PRIVATE
     composer.h
     connectionbenchmark/benchmarktask.cpp
     connectionbenchmark/benchmarktask.h
-    connectionbenchmark/benchmarktaskdownload.cpp
-    connectionbenchmark/benchmarktaskdownload.h
     connectionbenchmark/benchmarktaskping.cpp
     connectionbenchmark/benchmarktaskping.h
     connectionbenchmark/benchmarktasksentinel.h
