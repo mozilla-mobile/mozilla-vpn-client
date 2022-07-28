@@ -6,7 +6,7 @@ $REPO_ROOT_PATH =resolve-path "$PSScriptRoot/../../../"
 $FETCHES_PATH =resolve-path "$REPO_ROOT_PATH/../../fetches"
 $TASK_WORKDIR =resolve-path "$REPO_ROOT_PATH/../../"
 $QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/bin/"
-
+$PERL_GCC_PATH =resolve-path "$FETCHES_PATH/c/bin"
 # Prep Env:
 # Enable qt, enable msvc, enable rust
 . "$FETCHES_PATH/VisualStudio/enter_dev_shell.ps1"
@@ -29,9 +29,8 @@ $env:PATH ="$QTPATH;$PYTHON_SCRIPTS;$env:PATH"
 # Setup Go and MinGW up (for gco)
 $env:GOROOT="$FETCHES_PATH\go\"
 $env:PATH ="$FETCHES_PATH\go\bin;$env:PATH"
-$env:PATH ="$env:PATH;$FETCHES_PATH\llvm-mingw\bin;"
-$ENV:LIB ="$ENV:LIB;$FETCHES_PATH\llvm-mingw\x86_64-w64-mingw32\lib"
-$ENV:LIBPATH="$ENV:LIBPATH;$FETCHES_PATH\llvm-mingw\x86_64-w64-mingw32\lib"
+# $env:PATH ="$env:PATH;$FETCHES_PATH\llvm-mingw\bin;" <- not in the task rn
+$env:PATH = "$env:PATH;$PERL_GCC_PATH;"
 
 # Set Env's required for the windows/compile.bat
 $env:VCToolsRedistDir=(resolve-path "$FETCHES_PATH/VisualStudio/VC/Redist/MSVC/14.30.30704/").ToString()

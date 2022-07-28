@@ -16,7 +16,7 @@ windows/opt:
             - win-dev-env
             - win-rustup
             - win-go
-            - win-mingw
+            - win-perl
         toolchain:
             - qt-win
     worker:

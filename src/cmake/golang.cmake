@@ -40,7 +40,7 @@ function(add_go_library GOTARGET SOURCE)
         COMMAND ${CMAKE_COMMAND} -E env GOCACHE=${GOCACHE}
                     CGO_ENABLED=1
                     CC=gcc
-                    CGO_CFLAGS="${GOLANG_CGO_CFLAGS} -std=gnu11 -DWINVER=0x0601"
+                    CGO_CFLAGS="${GOLANG_CGO_CFLAGS}"
                     CGO_LDFLAGS="${GOLANG_CGO_LDFLAGS}"
                 go build ${GOFLAGS} -o ${CMAKE_CURRENT_BINARY_DIR}/${ARCHIVE_NAME} ${SRC_NAME}
     )
@@ -53,9 +53,10 @@ function(add_go_library GOTARGET SOURCE)
         INTERFACE_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/${HEADER_NAME}
         IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/${ARCHIVE_NAME})
 
-
+    if(MSVC)
         # prevent error LNK2019: unresolved external symbol fprintf referenced in function ...
     set_property(TARGET ${GOTARGET} APPEND PROPERTY
             INTERFACE_SOURCES ${CMAKE_SOURCE_DIR}/src/platforms/windows/golang-msvc-fixup.cpp)
+    endif()
 
 endfunction(add_go_library)
