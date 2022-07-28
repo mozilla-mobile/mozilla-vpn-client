@@ -29,7 +29,6 @@ $env:PATH ="$QTPATH;$PYTHON_SCRIPTS;$env:PATH"
 # Setup Go and MinGW up (for gco)
 $env:GOROOT="$FETCHES_PATH\go\"
 $env:PATH ="$FETCHES_PATH\go\bin;$env:PATH"
-# $env:PATH ="$env:PATH;$FETCHES_PATH\llvm-mingw\bin;" <- not in the task rn
 $env:PATH = "$env:PATH;$PERL_GCC_PATH;"
 
 # Set Env's required for the windows/compile.bat
@@ -60,11 +59,12 @@ cmake --build $BUILD_DIR --config RelWithDebInfo --target msi
 cmake --install $BUILD_DIR --prefix "$TASK_WORKDIR/unsigned"
 
 Write-Output "Writing Artifacts"
-Copy-Item -Path MozillaVPN.msi -Destination $ARTIFACTS_PATH/MozillaVPN.msi
-Copy-Item -Path MozillaVPN.pdb -Destination $ARTIFACTS_PATH/MozillaVPN.pdb
-
-Compress-Archive -Path $TASK_WORKDIR/unsigned/* -Destination $TASK_WORKDIR/artifacts/unsigned.zip
-
+New-Item -ItemType Directory -Path "$TASK_WORKDIR/artifacts" -Force
+$ARTIFACTS_PATH =resolve-path "$TASK_WORKDIR/artifacts"
+Copy-Item -Path $BUILD_DIR/windows/installer/MozillaVPN.msi -Destination $ARTIFACTS_PATH/MozillaVPN.msi
+# TODO: Check why this is missing?
+# Copy-Item -Path $BUILD_DIR/MozillaVPN.pdb -Destination $ARTIFACTS_PATH/MozillaVPN.pdb
+Compress-Archive -Path $TASK_WORKDIR/unsigned/* -Destination $ARTIFACTS_PATH/unsigned.zip
 Write-Output "Artifacts Location:$TASK_WORKDIR/artifacts"
 Get-ChildItem -Path $TASK_WORKDIR/artifacts
 
