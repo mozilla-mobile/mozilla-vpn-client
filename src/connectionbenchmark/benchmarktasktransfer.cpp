@@ -14,7 +14,7 @@
 #include <QHostAddress>
 #include <QScopeGuard>
 
-#if !defined(MVPN_DUMMY)
+#if !defined(MVPN_DUMMY) && !defined(MVPN_ANDROID) && !defined(MVPN_WASM)
 constexpr const char* MULLVAD_DEFAULT_DNS = "10.64.0.1";
 #endif
 
