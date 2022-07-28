@@ -12,7 +12,6 @@ qmake --version
 git submodule init
 git submodule update
 
-
 pip3 install -r requirements.txt
 # glean
 python3 ./scripts/utils/generate_glean.py
@@ -21,11 +20,11 @@ python3 ./scripts/utils/import_languages.py
 
 export PATH="$QTPATH/wasm_32/bin:$PATH"
 mkdir build
-$QTPATH/wasm_32/bin/qt-cmake -S . -B build
-cmake -B build
-cp src/mozillavpn.wasm wasm
-cp src/mozillavpn.js wasm
-cp src/qtloader.js wasm
+$QTPATH/wasm_32/bin/qt-cmake -S . -B build -DQT_HOST_PATH=/$QTPATH/gcc_64 -DQT_HOST_PATH_CMAKE_DIR=/$QTPATH/gcc_64/lib/cmake
+cmake --build build -j8
+cp build/src/mozillavpn.wasm wasm
+cp build/src/mozillavpn.js wasm
+cp build/src/qtloader.js wasm
 cp tests/functional/fxa_endpoints.js wasm
 cp tests/functional/guardian_endpoints.js wasm
 cp -r tools/logviewer wasm
