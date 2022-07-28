@@ -20,3 +20,4 @@ jobs-from:
     - android.yml
     - macos.yml
     - wasm.yml
+    - ios.yml
