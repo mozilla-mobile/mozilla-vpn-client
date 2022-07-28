@@ -17,7 +17,12 @@ import android.provider.Settings
 import android.util.Log
 import org.mozilla.firefox.vpn.glean.GleanEvent
 import java.io.IOException
-import java.lang.Exception
+import java.security.KeyFactory
+import java.security.Signature
+import java.security.SignatureException
+import java.security.spec.PKCS8EncodedKeySpec
+import java.security.spec.RSAPublicKeySpec
+import java.security.spec.X509EncodedKeySpec
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -111,6 +116,25 @@ object VPNUtils {
     }
     fun recordGleanEventWithExtraKeys(metricName: GleanEvent, keysJSON: String) {
         recordGleanEventWithExtraKeys(metricName.toString(), keysJSON)
+    }
+    @SuppressLint("Unused")
+    @JvmStatic
+    fun verifyContentSignature(publicKey:ByteArray, content:ByteArray, signature:ByteArray ):Boolean{
+        Log.e("BAASTI", "HHELLLOOOOO")
+        val sig = Signature.getInstance("SHA256withRSA")
+        return try {
+
+            val spec = PKCS8EncodedKeySpec(publicKey)
+            val kf: KeyFactory = KeyFactory.getInstance("RSA")
+            val pk = kf.generatePublic(spec);
+            sig.initVerify(pk)
+
+            sig.update(content)
+            sig.verify(signature)
+        }catch (e:Exception){
+            Log.e("VPNUtils", "Signature Exception ${e.toString()}")
+            false;
+        }
     }
 
     @SuppressLint("Unused")

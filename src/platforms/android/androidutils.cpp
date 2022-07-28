@@ -140,7 +140,7 @@ QJsonObject AndroidUtils::getQJsonObjectFromJString(JNIEnv* env, jstring data) {
 
 bool AndroidUtils::ShareText(const QString& text) {
   return (bool)QJniObject::callStaticMethod<jboolean>(
-      "org/mozilla/firefox/vpn/qt/VPNUtils", "sharePlainText",
+      UTILS_CLASS, "sharePlainText",
       "(Ljava/lang/String;)Z", QJniObject::fromString(text).object());
 }
 
@@ -156,7 +156,7 @@ QByteArray AndroidUtils::DeviceId() {
   QJniEnvironment env;
   QJniObject activity = getActivity();
   QJniObject string = QJniObject::callStaticObjectMethod(
-      "org/mozilla/firefox/vpn/qt/VPNUtils", "getDeviceID",
+      UTILS_CLASS, "getDeviceID",
       "(Landroid/content/Context;)Ljava/lang/String;", activity.object());
   jstring value = (jstring)string.object();
   const char* buffer = env->GetStringUTFChars(value, nullptr);
@@ -171,7 +171,7 @@ QByteArray AndroidUtils::DeviceId() {
 }
 
 void AndroidUtils::openNotificationSettings() {
-  QJniObject::callStaticMethod<void>("org/mozilla/firefox/vpn/qt/VPNUtils",
+  QJniObject::callStaticMethod<void>(UTILS_CLASS,
                                      "openNotificationSettings", "()V");
 }
 
@@ -246,11 +246,25 @@ void AndroidUtils::recordGleanEventWithExtraKeys(JNIEnv* env, jobject VPNUtils,
 bool AndroidUtils::verifySignature(const QByteArray& publicKey,
                                    const QByteArray& content,
                                    const QByteArray& signature) {
-  Q_UNUSED(publicKey);
-  Q_UNUSED(content);
-  Q_UNUSED(signature);
+  QJniEnvironment env;
+  logger.info() << "START ANDROID SIGNATURE";
+  auto out = (bool) QJniObject::callStaticMethod<jboolean>(UTILS_CLASS,
+                                            "verifyContentSignature", 
+                                            "([B[B[B)Z",
+                                            tojByteArray(publicKey),
+                                            tojByteArray(content),
+                                            tojByteArray(signature));
+  logger.info() << "Got response" << out;
 
-  // TODO
-
-  return true;
+  return out;
+}
+// Static 
+// Creates a copy of the passed QByteArray in the JVM and passes back a ref
+jbyteArray AndroidUtils::tojByteArray(const QByteArray& data) {
+  QJniEnvironment env;
+  jbyteArray out = env->NewByteArray(data.size());
+  env->SetByteArrayRegion(out, 0, data.size(),
+                          reinterpret_cast<const jbyte*>(data.constData()));
+  logger.info() << "DONE jbyteArray";
+  return out;
 }
