@@ -183,6 +183,7 @@ Item {
         property var primaryButtonOnClicked: () => {}
         property var secondaryButtonOnClicked: () => {}
         property var _onClosed: () => {}
+        property var dismissOnStop: true
         closeButtonObjectName: "vpnPopupCloseButton"
 
         id: tutorialPopup
@@ -220,13 +221,7 @@ Item {
     }
 
 
-    function leaveTutorial() {
-        VPNTutorial.stop();
-        tutorialPopup.close();
-    }
-
-
-    function openLeaveTutorialPopup(callback = () => {}) {
+    function openLeaveTutorialPopup(op = null) {
         tutorialPopup.imageSrc = "qrc:/ui/resources/logo-error.svg";
         tutorialPopup._onClosed = () => {};
         tutorialPopup.primaryButtonOnClicked = () => {
@@ -235,8 +230,11 @@ Item {
 
         tutorialPopup.secondaryButtonOnClicked = () => {
             VPN.recordGleanEventWithExtraKeys("tutorialAborted", {"id": VPNTutorial.currentTutorial.id});
-            tutorialPopup._onClosed = () => callback()
-            leaveTutorial();
+            tutorialPopup._onClosed = () => {
+                if (op !== null) VPNTutorial.interruptAccepted(op);
+                else VPNTutorial.stop();
+            }
+            tutorialPopup.close();
         }
 
         tutorialPopup.primaryButtonText = VPNl18n.TutorialPopupTutorialLeavePrimaryButtonLabel;
@@ -263,6 +261,16 @@ Item {
     Connections {
         target: VPNTutorial
 
+        function onInterruptRequest(op) {
+          openLeaveTutorialPopup(op)
+        }
+
+        function onPlayingChanged() {
+            if (!VPNTutorial.playing && tutorialPopup.opened && tutorialPopup.dismissOnStop) {
+                tutorialPopup.close();
+            }
+        }
+
         function onTooltipNeeded(text, targetEl) {
             root.targetElement = targetEl;
             tutorialTooltip.tooltipText = qsTrId(text);
@@ -277,6 +285,7 @@ Item {
             tutorialPopup.title =  VPNl18n.TutorialPopupTutorialCompleteHeadline;
             tutorialPopup.description = qsTrId(tutorialCompletedStringId);
             tutorialPopup._onClosed = () => {};
+            tutorialPopup.dismissOnStop = false;
             tutorialPopup.open();
         }
     }

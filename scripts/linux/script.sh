@@ -79,7 +79,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
   --source)
-    RELEASE="bionic focal impish jammy fedora"
+    RELEASE="bionic focal jammy fedora"
     SOURCEONLY=Y
     shift
     ;;

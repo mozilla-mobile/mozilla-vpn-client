@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-debug {
+CONFIG(debug, debug|release) {
     # If in debug mode, set mvpn_debug flag too.
     CONFIG += mvpn_debug
 }

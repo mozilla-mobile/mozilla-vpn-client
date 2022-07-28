@@ -15,16 +15,16 @@ On this page, we want to describe how to write new guides.
 The Guide JSON files are add-on JSON objects, with type "guide" and a "guide"
 property object with the following properties:
 
-
-| Property | Description | Type | Required |
-| --- | --- | --- | --- |
-| id | Each guide must have an id. This is used for the localization | String | Yes |
-| title | The title of the Guide | String | Yes |
-| title_comment | An optional comment to describe the meaning of the title | String | No |
-| subtitle | The subtitle of the Guide | String | Yes |
-| subtitle_comment | An optional comment to describe the meaning of the subtitle | String | No |
-| image | The URL (qrc:) of the image | String | Yes |
-| blocks | An array of graphical blocks. See below | Array of Block objects | Yes |
+| Property         | Description                                                   | Type                   | Required |
+| ---------------- | ------------------------------------------------------------- | ---------------------- | -------- |
+| id               | Each guide must have an id. This is used for the localization | String                 | Yes      |
+| advanced         | Is this an advanced guide? Defaults to `false`.               | Boolean                | No       |
+| title            | The title of the Guide                                        | String                 | Yes      |
+| title_comment    | An optional comment to describe the meaning of the title      | String                 | No       |
+| subtitle         | The subtitle of the Guide                                     | String                 | Yes      |
+| subtitle_comment | An optional comment to describe the meaning of the subtitle   | String                 | No       |
+| image            | The URL (qrc:) of the image                                   | String                 | Yes      |
+| blocks           | An array of graphical blocks. See below                       | Array of Block objects | Yes      |
 
 ### Block object
 
@@ -32,19 +32,19 @@ Each guide view is composed of a list of graphical blocks: titles, paragraphs, l
 
 A block is a JSON object composed of the following properties:
 
-| Property | Description | Type | Required |
-| --- | --- | --- | --- |
-| id | Each block must have an id. This is used for the localization | String | Yes |
-| content | The text content of the block it can be a string or an array of objects. See below | String or array of Content objects | Yes |
-| comment | An optional comment to describe the meaning of the content | String | No | 
-| type | The type of the block. Possible values: text, title, ulist, olist | String | Yes |
+| Property | Description                                                                        | Type                               | Required |
+| -------- | ---------------------------------------------------------------------------------- | ---------------------------------- | -------- |
+| id       | Each block must have an id. This is used for the localization                      | String                             | Yes      |
+| content  | The text content of the block it can be a string or an array of objects. See below | String or array of Content objects | Yes      |
+| comment  | An optional comment to describe the meaning of the content                         | String                             | No       |
+| type     | The type of the block. Possible values: text, title, ulist, olist                  | String                             | Yes      |
 
 ### Content object
 
 If the content is an object, it must contains the following properties:
 
-| Property | Description | Type | Required |
-| --- | --- | --- | --- |
-| id | Each content must have an id. This is used for the localization | String | Yes |
-| content | The text content of the sub block | String | Yes |
-| comment | An optional comment to describe the meaning of the content | String | No | 
+| Property | Description                                                     | Type   | Required |
+| -------- | --------------------------------------------------------------- | ------ | -------- |
+| id       | Each content must have an id. This is used for the localization | String | Yes      |
+| content  | The text content of the sub block                               | String | Yes      |
+| comment  | An optional comment to describe the meaning of the content      | String | No       |

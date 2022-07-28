@@ -13,6 +13,7 @@ class ExternalOpHandler final : public QObject {
 
  public:
   enum Op {
+    OpAbout,
     OpActivate,
     OpCloseEvent,
     OpContactUs,
@@ -21,6 +22,12 @@ class ExternalOpHandler final : public QObject {
     OpSettings,
     OpQuit,
     OpViewLogs,
+  };
+  Q_ENUM(Op);
+
+  class Blocker {
+   public:
+    virtual bool maybeBlockRequest(Op op) = 0;
   };
 
   static ExternalOpHandler* instance();
@@ -31,12 +38,15 @@ class ExternalOpHandler final : public QObject {
   void requestOpSettings() { return request(OpSettings); }
   void requestOpQuit() { return request(OpQuit); }
 
- signals:
-  void requestReceived(Op op);
+  void registerBlocker(Blocker* blocker);
+  void unregisterBlocker(Blocker* blocker);
 
  private:
   explicit ExternalOpHandler(QObject* parent);
   ~ExternalOpHandler();
+
+ private:
+  QList<Blocker*> m_blockers;
 };
 
 #endif  // EXTERNALOPHANDLER_H

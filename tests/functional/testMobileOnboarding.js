@@ -9,8 +9,7 @@ const vpn = require('./helper.js');
 describe('Mobile Onboarding', function() {
   beforeEach(async () => {
     await vpn.waitForElement('initialStackView');
-    await vpn.setElementProperty(
-        'initialStackView', 'state', 's', 'testMobileOnboarding');
+    await vpn.flipFeatureOn('mobileOnboarding');
   });
 
   it('Navigating to and from the help menu is possible', async () => {
@@ -92,10 +91,13 @@ describe('Mobile Onboarding', function() {
     await vpn.clickOnElement('signUpButton');
     await vpn.wait();
 
-    await vpn.waitForCondition(async () => {
-      const url = await vpn.getLastUrl();
-      return url.includes('/api/v2/vpn/login');
-    });
+    if (!this.ctx.wasm) {
+      await vpn.waitForCondition(async () => {
+        const url = await vpn.getLastUrl();
+        return url.includes('/api/v2/vpn/login');
+      });
+    }
+
     await vpn.waitForElement('authenticatingView');
     await vpn.waitForElementProperty('authenticatingView', 'visible', 'true');
   });
@@ -106,10 +108,13 @@ describe('Mobile Onboarding', function() {
     await vpn.clickOnElement('alreadyASubscriberLink');
     await vpn.wait();
 
-    await vpn.waitForCondition(async () => {
-      const url = await vpn.getLastUrl();
-      return url.includes('/api/v2/vpn/login');
-    });
+    if (!this.ctx.wasm) {
+      await vpn.waitForCondition(async () => {
+        const url = await vpn.getLastUrl();
+        return url.includes('/api/v2/vpn/login');
+      });
+    }
+
     await vpn.waitForElement('authenticatingView');
     await vpn.waitForElementProperty('authenticatingView', 'visible', 'true');
   });

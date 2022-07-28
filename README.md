@@ -209,7 +209,9 @@ Some variables that might be useful when configuring the project:
 cmake --build build
 ```
 
-This will produce the application bundle in `build/src/Mozilla VPN.app`
+This will produce the application bundle in `build/src/Mozilla VPN.app`.
+
+> **Note**: to open the application from the command line, run `open -n build/src/Mozilla\ VPN.app`.
 
 5.  **Optional**: To build the installer package, we can specify the `pkg` target when
 building:

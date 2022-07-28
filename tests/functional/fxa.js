@@ -4,38 +4,13 @@
 
 const Server = require('./server.js');
 const constants = require('./constants.js');
-
-const FxaEndpoints = {
-  GETs: {},
-
-  POSTs: {
-    '/v1/account/status': {status: 200, body: {exists: true}},
-    '/v1/account/login': {
-      status: 200,
-      body: {
-        sessionToken: 'sessionToken',
-        'verified': true,
-        verificationMethod: ''
-      }
-    },
-    '/v1/oauth/authorization': {
-      status: 200,
-      body: {
-        code: 'the-code',
-        state: '',
-        redirect: `http://localhost:${constants.GUARDIAN_PORT}/final_redirect`
-      }
-    },
-    '/v1/session/destroy': {status: 200, body: {}},
-  },
-
-  DELETEs: {},
-};
+const fxaEndpoints = require('./fxa_endpoints.js')
 
 let server = null;
 module.exports = {
   start() {
-    server = new Server('FxA', constants.FXA_PORT, FxaEndpoints);
+    server = new Server(
+        'FxA', constants.FXA_PORT, fxaEndpoints.generateEndpoints(constants));
     return constants.FXA_PORT;
   },
 

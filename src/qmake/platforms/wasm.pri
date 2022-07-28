@@ -30,17 +30,19 @@ SOURCES += \
     platforms/wasm/wasmnetworkrequest.cpp \
     platforms/wasm/wasmnetworkwatcher.cpp \
     platforms/wasm/wasmwindowcontroller.cpp \
+    platforms/wasm/wasmiaphandler.cpp \
     platforms/wasm/wasminspector.cpp \
-    systemtraynotificationhandler.cpp
+    systemtraynotificationhandler.cpp \
+    tasks/purchase/taskpurchase.cpp
 
 HEADERS += \
     platforms/dummy/dummycontroller.h \
     platforms/macos/macosmenubar.h \
     platforms/wasm/wasmauthenticationlistener.h \
+    platforms/wasm/wasmnetworkrequest.h \
     platforms/wasm/wasmnetworkwatcher.h \
     platforms/wasm/wasmwindowcontroller.h \
+    platforms/wasm/wasmiaphandler.h \
     platforms/wasm/wasminspector.h \
-    systemtraynotificationhandler.h
-
-SOURCES -= networkrequest.cpp
-RESOURCES += platforms/wasm/networkrequests.qrc
+    systemtraynotificationhandler.h \
+    tasks/purchase/taskpurchase.h

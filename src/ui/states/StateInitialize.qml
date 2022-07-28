@@ -26,15 +26,4 @@ VPNStackView {
            stackview.replace(defaultView());
         }
     }
-
-    states: [
-        State {
-            name: "testMobileOnboarding"
-            StateChangeScript {
-                script: {
-                    stackview.replace("qrc:/ui/views/ViewMobileOnboarding.qml", StackView.Immediate)
-                }
-            }
-        }
-    ]
 }

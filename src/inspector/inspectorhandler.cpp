@@ -6,6 +6,7 @@
 #include "addonmanager.h"
 #include "constants.h"
 #include "controller.h"
+#include "externalophandler.h"
 #include "inspectoritempicker.h"
 #include "inspectorutils.h"
 #include "leakdetector.h"
@@ -857,12 +858,14 @@ static QList<InspectorCommand> s_commands{
 
     InspectorCommand{"open_settings", "Open settings menu", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
-                       MozillaVPN::instance()->settingsNeeded();
+                       ExternalOpHandler::instance()->request(
+                           ExternalOpHandler::OpSettings);
                        return QJsonObject();
                      }},
     InspectorCommand{"open_contact_us", "Open in-app support form", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
-                       MozillaVPN::instance()->requestContactUs();
+                       ExternalOpHandler::instance()->request(
+                           ExternalOpHandler::OpContactUs);
                        return QJsonObject();
                      }},
     InspectorCommand{"is_feature_flipped_on",
@@ -925,8 +928,8 @@ static QList<InspectorCommand> s_commands{
                        // This is a debugging method. We don't need to compute
                        // the hash of the addon because we will not be able to
                        // find it in the addon index.
-                       obj["value"] = AddonManager::instance()->loadManifest(
-                           arguments[1], "INVALID SHA256");
+                       obj["value"] =
+                           AddonManager::instance()->loadManifest(arguments[1]);
                        return obj;
                      }},
 

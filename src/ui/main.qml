@@ -21,7 +21,6 @@ Window {
 
     property bool _fallbackQtQuickRenderer: QT_QUICK_BACKEND == "software" //TODO pending #3398
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
-    property var isWasmApp: Qt.platform.os === "wasm"
 
     function fullscreenRequired() {
         return Qt.platform.os === "android" ||
@@ -107,14 +106,6 @@ Window {
         anchors.top: parent.top
     }
 
-    VPNWasmHeader {
-        id: wasmMenuHeader
-        visible: isWasmApp
-        height: visible ? VPNTheme.theme.menuHeight : 0
-        anchors.top: parent.top
-        anchors.topMargin: iosSafeAreaTopMargin.height
-    }
-
     VPNStackView {
         id: mainStackView
 
@@ -122,7 +113,7 @@ Window {
         initialItem: mainView
         width: parent.width
         anchors.top: parent.top
-        anchors.topMargin: iosSafeAreaTopMargin.height + wasmMenuHeader.height
+        anchors.topMargin: iosSafeAreaTopMargin.height
         height: safeContentHeight
 
         function getHelpViewNeeded() {
@@ -273,20 +264,12 @@ Window {
                 }
             }
 
-            if (tutorialUI.visible) {
-                return tutorialUI.openLeaveTutorialPopup(VPN.viewLogsNeeded)
-            }
-
             // If we can't show logs natively, open the viewer
             if (mainStackView.currentItem.objectName !== "viewLogs") {
                 mainStackView.push("qrc:/ui/views/ViewLogs.qml");
             }
         }
         function onContactUsNeeded() {
-            if (tutorialUI.visible) {
-                return tutorialUI.openLeaveTutorialPopup(VPN.contactUsNeeded)
-            }
-
             // Check if Contact Us view is already in mainStackView
             const contactUsViewInStack = mainStackView.find((view) => { return view.objectName === "contactUs" });
             if (contactUsViewInStack) {
@@ -297,10 +280,6 @@ Window {
         }
 
         function onSettingsNeeded() {
-            if (tutorialUI.visible) {
-                return tutorialUI.openLeaveTutorialPopup(VPN.settingsNeeded);
-            }
-
             // Check if Settings view is already in mainStackView
             const settingsViewInMainStack = mainStackView.find((view) => { return view.objectName === "settings" })
 
@@ -503,21 +482,13 @@ Window {
         showServerList();
     }
 
-    function exitTutorialIfNeeded() {
-        if (tutorialUI.visible) {
-            tutorialUI.leaveTutorial();
-        }
-    }
-
     function pushCaptivePortalView() {
-        exitTutorialIfNeeded();
         mainStackView.push("qrc:/ui/views/ViewCaptivePortalInfo.qml", StackView.Immediate);
     }
 
     Connections {
         target: VPNController
         function onReadyToServerUnavailable() {
-            exitTutorialIfNeeded();
             serverUnavailablePopup.open();
         }
         function onActivationBlockedForCaptivePortal() {
