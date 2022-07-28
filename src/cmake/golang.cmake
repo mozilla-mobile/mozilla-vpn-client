@@ -55,7 +55,7 @@ function(add_go_library GOTARGET SOURCE)
 
     if(MSVC)
         # prevent error LNK2019: unresolved external symbol fprintf referenced in function ...
-    set_property(TARGET ${GOTARGET} APPEND PROPERTY
+        set_property(TARGET ${GOTARGET} APPEND PROPERTY
             INTERFACE_SOURCES ${CMAKE_SOURCE_DIR}/src/platforms/windows/golang-msvc-fixup.cpp)
     endif()
 
