@@ -28,6 +28,8 @@ Addon* AddonGuide::create(QObject* parent, const QString& manifestFileName,
   AddonGuide* guide = new AddonGuide(parent, manifestFileName, id, name);
   auto guard = qScopeGuard([&] { guide->deleteLater(); });
 
+  guide->m_advanced = guideObj["advanced"].toBool();
+
   guide->m_titleId = QString("guide.%1.title").arg(guideId);
   guide->m_subtitleId = QString("guide.%1.subtitle").arg(guideId);
 

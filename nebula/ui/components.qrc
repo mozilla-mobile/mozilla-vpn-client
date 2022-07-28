@@ -107,10 +107,6 @@
         <file>components/VPNUIStates.qml</file>
         <file>components/VPNVerticalSpacer.qml</file>
         <file>components/VPNViewDNSSettings.qml</file>
-        <file>components/VPNWasmAlerts.qml</file>
-        <file>components/VPNWasmHeader.qml</file>
-        <file>components/VPNWasmMenuButton.qml</file>
-        <file>components/VPNWasmMenu.qml</file>
         <file>components/inAppAuth/qmldir</file>
         <file>components/inAppAuth/VPNInAppAuthenticationBase.qml</file>
         <file>components/inAppAuth/VPNInAppAuthenticationErrorPopup.qml</file>

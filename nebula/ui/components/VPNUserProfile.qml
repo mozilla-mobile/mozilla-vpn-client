@@ -9,79 +9,96 @@ import Mozilla.VPN 1.0
 import components 0.1
 
 
-RowLayout {
-    property string _iconButtonImageSource: ""
-    property bool _loaderVisible: false
-    property var _iconButtonOnClicked
-    property alias _iconButtonEnabled: iconButton.enabled
-
+VPNClickableRow {
     id: userInfo
-    spacing: VPNTheme.theme.windowMargin
+    canGrowVertical: true
 
-    Rectangle {
-        Layout.preferredWidth: VPNTheme.theme.rowHeight
-        Layout.preferredHeight: VPNTheme.theme.rowHeight
-        Layout.alignment: Qt.AlignVCenter
-        color: VPNTheme.theme.transparent
+    property string _objNameBase: "settingsUserProfile"
+    property string _iconSource: ""
+    property bool _loaderVisible: false
+    property var _buttonOnClicked
 
-        VPNAvatar {
-            id: avatar
-            avatarUrl: VPNUser.avatar
-            anchors.fill: parent
-        }
-    }
+    Layout.preferredHeight: row.implicitHeight + VPNTheme.theme.windowMargin * 2
+    Layout.fillWidth: true
+    accessibleName: qsTrId("vpn.main.manageAccount")
+    objectName: _objNameBase + "-manageAccountButton"
+    onClicked: _buttonOnClicked()
 
-    ColumnLayout {
-        spacing: VPNTheme.theme.listSpacing
+    height: undefined
 
-        Layout.alignment: Qt.AlignVCenter
+    RowLayout {
+        id: row
+        spacing: VPNTheme.theme.windowMargin
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: parent.left
+        anchors.leftMargin: VPNTheme.theme.windowMargin / 2
+        width: parent.width - anchors.leftMargin
 
-        VPNBoldLabel {
-            objectName: userInfo.objectName + "-displayName"
-            readonly property var textVpnUser: VPNl18n.GlobalVpnUser
-            text: VPNUser.displayName ? VPNUser.displayName : textVpnUser
-            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-            Layout.fillWidth: true
-        }
+        Rectangle {
+            Layout.preferredWidth: VPNTheme.theme.rowHeight
+            Layout.preferredHeight: VPNTheme.theme.rowHeight
+            Layout.alignment: Qt.AlignVCenter
+            color: VPNTheme.theme.transparent
 
-        VPNTextBlock {
-            id: serverLocation
-            objectName: userInfo.objectName + "-emailAddress"
-            text: VPNUser.email
-            Accessible.ignored: true
-            Layout.alignment: Qt.AlignLeft
-            width: undefined
-            Layout.fillWidth: true
-            wrapMode: Text.NoWrap
-            elide: Text.ElideRight
-            lineHeight: 1
-            lineHeightMode: Text.FixedHeight
-        }
-    }
-
-    VPNIconButton {
-        id: iconButton
-        objectName: userInfo.objectName + "-manageAccountButton"
-        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-        Layout.preferredHeight: VPNTheme.theme.rowHeight
-        Layout.preferredWidth: VPNTheme.theme.rowHeight
-        accessibleName: qsTrId("vpn.main.manageAccount")
-        onClicked: _iconButtonOnClicked()
-        visible: _iconButtonImageSource !== ""
-
-        VPNIcon {
-            id: icon
-            source: _iconButtonImageSource
-            fillMode: Image.PreserveAspectFit
-            anchors.centerIn: iconButton
+            VPNAvatar {
+                id: avatar
+                avatarUrl: VPNUser.avatar
+                anchors.fill: parent
+            }
         }
 
-        VPNButtonLoader {
-            id: loader
+        ColumnLayout {
+            spacing: VPNTheme.theme.listSpacing
 
-            color: VPNTheme.theme.bgColor
-            iconUrl: "qrc:/nebula/resources/spinner.svg"
-            state: _loaderVisible ? "active" : "inactive"
+            Layout.alignment: Qt.AlignVCenter
+
+            VPNBoldLabel {
+                objectName: _objNameBase + "-displayName"
+                readonly property var textVpnUser: VPNl18n.GlobalVpnUser
+                text: VPNUser.displayName ? VPNUser.displayName : textVpnUser
+                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                Layout.fillWidth: true
+            }
+
+            VPNTextBlock {
+                id: serverLocation
+                objectName: _objNameBase + "-emailAddress"
+                text: VPNUser.email
+                Accessible.ignored: true
+                Layout.alignment: Qt.AlignLeft
+                width: undefined
+                Layout.fillWidth: true
+                wrapMode: Text.NoWrap
+                elide: Text.ElideRight
+                lineHeight: 1
+                lineHeightMode: Text.FixedHeight
+            }
+        }
+
+        Rectangle {
+            id: iconButton
+            objectName: _objNameBase + "-manageAccountButton"
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            Layout.preferredHeight: VPNTheme.theme.rowHeight
+            Layout.preferredWidth: VPNTheme.theme.rowHeight
+            visible: _iconButtonImageSource !== ""
+            color: VPNTheme.theme.transparent
+
+            VPNIcon {
+                id: icon
+                source: _iconSource
+                fillMode: Image.PreserveAspectFit
+                anchors.centerIn: iconButton
+                visible: !_loaderVisible
+            }
+
+            VPNButtonLoader {
+                id: loader
+
+                color: VPNTheme.theme.transparent
+                iconUrl: "qrc:/nebula/resources/spinner.svg"
+                state: _loaderVisible ? "active" : "inactive"
+            }
         }
     }
 }

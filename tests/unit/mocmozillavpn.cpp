@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "../../src/mozillavpn.h"
+#include "../../src/controller.h"
 #include "helper.h"
 
 // The singleton.
@@ -32,6 +33,8 @@ MozillaVPN::UserState MozillaVPN::userState() const {
 
 bool MozillaVPN::stagingMode() const { return true; }
 bool MozillaVPN::debugMode() const { return true; }
+
+Controller* MozillaVPN::controller() { return new Controller(); }
 
 void MozillaVPN::initialize() {}
 

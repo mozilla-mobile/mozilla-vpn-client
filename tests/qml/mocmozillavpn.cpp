@@ -4,6 +4,7 @@
 
 #include "helper.h"
 #include "mozillavpn.h"
+#include "controller.h"
 
 // The singleton.
 static MozillaVPN* s_instance = nullptr;
@@ -23,6 +24,8 @@ MozillaVPN* MozillaVPN::maybeInstance() {
 MozillaVPN::MozillaVPN() {}
 
 MozillaVPN::~MozillaVPN() {}
+
+Controller* MozillaVPN::controller() { return new Controller(); }
 
 MozillaVPN::State MozillaVPN::state() const { return StateInitialize; }
 MozillaVPN::UserState MozillaVPN::userState() const {

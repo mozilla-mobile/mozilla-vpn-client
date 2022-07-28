@@ -29,7 +29,7 @@ VPNFlickable {
         id: settingsList
 
         spacing: VPNTheme.theme.windowMargin
-        width: parent.width - VPNTheme.theme.windowMargin
+        width: parent.width
         height: Math.max(vpnFlickable.height, settingsList.implicitHeight)
 
         anchors {
@@ -39,21 +39,22 @@ VPNFlickable {
 
         ColumnLayout {
             spacing: 0
+            Layout.fillWidth: true
 
             VPNVerticalSpacer {
-                Layout.preferredHeight: VPNTheme.theme.windowMargin * 2
+                Layout.preferredHeight: VPNTheme.theme.windowMargin * 1
             }
 
             VPNUserProfile {
+                property bool subscriptionManagementEnabled: VPNFeatureList.get("subscriptionManagement").isSupported
                 objectName: "settingsUserProfile"
 
-                property bool subscriptionManagementEnabled: VPNFeatureList.get("subscriptionManagement").isSupported
-                _iconButtonEnabled: VPNProfileFlow.state === VPNProfileFlow.StateInitial
+                enabled: VPNProfileFlow.state === VPNProfileFlow.StateInitial
 
-                _iconButtonImageSource: subscriptionManagementEnabled
+                _iconSource: subscriptionManagementEnabled
                     ? "qrc:/nebula/resources/chevron.svg"
                     : "qrc:/nebula/resources/open-in-new.svg"
-                _iconButtonOnClicked: () => {                    
+                _buttonOnClicked: () => {
                     if (subscriptionManagementEnabled) {
                         VPNProfileFlow.start();
                     } else {
@@ -63,11 +64,10 @@ VPNFlickable {
                 }
                 _loaderVisible: VPNProfileFlow.state === VPNProfileFlow.StateLoading
 
-                Layout.leftMargin: VPNTheme.theme.windowMargin / 2
             }
 
             VPNVerticalSpacer {
-                Layout.preferredHeight: VPNTheme.theme.windowMargin * 2
+                Layout.preferredHeight: VPNTheme.theme.windowMargin * 1
             }
 
             Rectangle {
@@ -84,15 +84,17 @@ VPNFlickable {
 
         // TODO: Move to subscription management
         ColumnLayout {
-            Layout.fillWidth: true
-            Layout.minimumWidth: parent.width
+//            Layout.fillWidth: true
+            Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin
+            Layout.maximumWidth: parent.width - VPNTheme.theme.windowMargin
+            Layout.alignment: Qt.AlignHCenter
 
             VPNSettingsItem {
                 objectName: "settingsTipsAndTricks"
                 settingTitle: VPNl18n.TipsAndTricksSettingsEntryLabel
                 imageLeftSrc: "qrc:/nebula/resources/sparkles.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push("qrc:/ui/settings/ViewTipsAndTricks.qml")
+                onClicked: settingsStackView.push("qrc:/ui/settings/ViewTipsAndTricks/ViewTipsAndTricks.qml")
             }
 
             VPNSettingsItem {

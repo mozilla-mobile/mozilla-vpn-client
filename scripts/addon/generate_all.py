@@ -20,11 +20,18 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
+lang_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "utils", "import_languages.py")
 build_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "build.py")
 addons_path = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))),
     "addons",
 )
+
+lang_cmd = [sys.executable, lang_path]
+if args.qtpath:
+    lang_cmd.append("-q")
+    lang_cmd.append(args.qtpath)
+subprocess.call(lang_cmd)
 
 generated_path = os.path.join(addons_path, "generated")
 if not os.path.isdir(generated_path):

@@ -73,6 +73,7 @@ void SettingsHolder::clear() {
                 removeWhenReset)                                  \
   if (removeWhenReset) {                                          \
     m_settings.remove(key);                                       \
+    emit getter##Changed(defvalue);                               \
   }
 
 #include "settingslist.h"
@@ -84,6 +85,13 @@ void SettingsHolder::sync() { m_settings.sync(); }
 void SettingsHolder::hardReset() {
   logger.debug() << "Hard reset";
   m_settings.clear();
+
+#define SETTING(type, toType, getter, setter, has, key, defvalue, \
+                removeWhenReset)                                  \
+  emit getter##Changed(defvalue);
+
+#include "settingslist.h"
+#undef SETTING
 }
 
 QString SettingsHolder::settingsFileName() const {

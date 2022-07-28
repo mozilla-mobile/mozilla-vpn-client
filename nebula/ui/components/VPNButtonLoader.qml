@@ -14,7 +14,7 @@ Rectangle {
     anchors.margins: -1
     radius: VPNTheme.theme.cornerRadius
     opacity: 0
-    color: "#98bff2"
+    color: VPNTheme.theme.transparent
 
     state: "inactive"
 

@@ -247,15 +247,24 @@ VPNFlickable {
                 Loader {
                     Layout.fillHeight: true
                     Layout.fillWidth: true
-                    source: "qrc:/ui/settings/ViewTipsAndTricks.qml"
+                    source: "qrc:/ui/settings/ViewTipsAndTricks/ViewTipsAndTricks.qml"
                 }
             }
         }
     }
 
-    Component.onCompleted: {
-        if (!VPNSettings.tipsAndTricksIntroShown) {
+    function maybeActivateTipsAndTricksIntro() {
+        if (!VPNSettings.tipsAndTricksIntroShown &&
+            VPNAddonManager.loadCompleted &&
+            !!VPNAddonManager.pick(addon => addon.type === "tutorial" || addon.type === "guide")) {
             tipsAndTricksIntroPopupLoader.active = true
         }
+    }
+
+    Component.onCompleted: () => maybeActivateTipsAndTricksIntro();
+
+    Connections {
+        target: VPNAddonManager
+        function onLoadCompletedChanged() { maybeActivateTipsAndTricksIntro(); }
     }
 }

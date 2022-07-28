@@ -201,6 +201,8 @@ MozillaVPN::~MozillaVPN() {
   delete m_private;
 }
 
+Controller* MozillaVPN::controller() { return &m_private->m_controller; }
+
 MozillaVPN::State MozillaVPN::state() const { return m_state; }
 
 MozillaVPN::UserState MozillaVPN::userState() const { return m_userState; }
@@ -918,6 +920,7 @@ void MozillaVPN::reset(bool forceInitialState) {
   logger.debug() << "Cleaning up all";
 
   TaskScheduler::deleteTasks();
+  m_private->m_closeEventHandler.removeAllStackViews();
 
   SettingsHolder::instance()->clear();
   m_private->m_keys.forgetKeys();

@@ -340,6 +340,12 @@ void TestAddon::guide_create_data() {
   blocks.replace(0, block);
   obj["blocks"] = blocks;
   QTest::addRow("with-block-type-olist-with-subblock") << "foo" << obj << true;
+
+  obj["advanced"] = true;
+  QTest::addRow("advanced") << "foo" << obj << true;
+
+  obj["advanced"] = false;
+  QTest::addRow("not-advanced") << "foo" << obj << true;
 }
 
 void TestAddon::guide_create() {
@@ -366,6 +372,7 @@ void TestAddon::guide_create() {
   QCOMPARE(guideSubTitleId, QString("guide.%1.subtitle").arg(id));
 
   QCOMPARE(guide->property("image").toString(), "foo.png");
+  QCOMPARE(guide->property("advanced").toBool(), content["advanced"].toBool());
 }
 
 void TestAddon::tutorial_create_data() {
@@ -462,6 +469,16 @@ void TestAddon::tutorial_create_data() {
 
   obj["conditions"] = QJsonObject();
   QTest::addRow("with-step-element and conditions") << "foo" << obj << true;
+
+  obj["advanced"] = true;
+  QTest::addRow("advanced") << "foo" << obj << true;
+
+  obj["advanced"] = false;
+  QTest::addRow("not-advanced") << "foo" << obj << true;
+
+  obj["advanced"] = true;
+  obj["highlighted"] = true;
+  QTest::addRow("advanced-and-highlighted") << "foo" << obj << true;
 }
 
 void TestAddon::tutorial_create() {
@@ -498,6 +515,10 @@ void TestAddon::tutorial_create() {
            QString("tutorial.%1.completion_message").arg(id));
 
   QCOMPARE(tutorial->property("image").toString(), "foo.png");
+
+  bool isAdvanced =
+      content["highlighted"].toBool() ? false : content["advanced"].toBool();
+  QCOMPARE(tutorial->property("advanced").toBool(), isAdvanced);
 
   QmlEngineHolder qml;
 
