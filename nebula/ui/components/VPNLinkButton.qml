@@ -109,6 +109,7 @@ VPNButtonBase {
         font.pixelSize: fontSize
         font.family: fontName
         wrapMode: Text.WordWrap
+        opacity: loaderVisible ? 0 : 1
         Behavior on color {
             ColorAnimation {
                 duration: 200
