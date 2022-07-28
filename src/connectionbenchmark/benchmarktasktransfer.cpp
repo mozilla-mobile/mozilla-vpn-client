@@ -22,10 +22,10 @@ namespace {
 Logger logger(LOG_MAIN, "BenchmarkTaskTransfer");
 }
 
-BenchmarkTaskTransfer::BenchmarkTaskTransfer(BenchmarkType type,
+BenchmarkTaskTransfer::BenchmarkTaskTransfer(const QString& name,
+                                             BenchmarkType type,
                                              const QUrl& url)
-    : BenchmarkTask("BenchmarkTaskTransfer",
-          Constants::BENCHMARK_MAX_DURATION_TRANSFER),
+    : BenchmarkTask(name, Constants::BENCHMARK_MAX_DURATION_TRANSFER),
       m_type(type),
       m_dnsLookup(QDnsLookup::A, url.host()),
       m_url(url) {
@@ -45,20 +45,18 @@ void BenchmarkTaskTransfer::handleState(BenchmarkTask::State state) {
   logger.debug() << "Handle state" << state;
 
   if (state == BenchmarkTask::StateActive) {
-// Start DNS resolution
-#if !defined(MVPN_DUMMY)
+#if defined(MVPN_DUMMY) || defined(MVPN_ANDROID) || defined(MVPN_WASM)
+    createNetworkRequest();
+#else
+    // Start DNS resolution
     m_dnsLookup.setNameserver(QHostAddress(MULLVAD_DEFAULT_DNS));
+    m_dnsLookup.lookup();
 #endif
 
 #if QT_VERSION >= 0x060400
-#     error Check if QT added support for QDnsLookup::lookup() on Android
+#   error Check if QT added support for QDnsLookup::lookup() on Android
 #endif
 
-#if defined(MVPN_ANDROID) || defined(MVPN_WASM)
-    createNetworkRequest();
-#else
-    m_dnsLookup.lookup();
-#endif
     m_elapsedTimer.start();
   } else if (state == BenchmarkTask::StateInactive) {
     for (NetworkRequest* request : m_requests) {
@@ -91,6 +89,8 @@ void BenchmarkTaskTransfer::createNetworkRequest() {
       break;
     }
   }
+
+  Q_ASSERT(request);
   connectNetworkRequest(request);
 }
 
@@ -122,6 +122,8 @@ void BenchmarkTaskTransfer::createNetworkRequestWithRecord(
       break;
     }
   }
+
+  Q_ASSERT(request);
   connectNetworkRequest(request);
 }
 

@@ -87,7 +87,8 @@ void ConnectionBenchmark::start() {
   // Create download benchmark
   setDownloadUrl(Constants::BENCHMARK_DOWNLOAD_URL);
   BenchmarkTaskTransfer* downloadTask = new BenchmarkTaskTransfer(
-      BenchmarkTaskTransfer::BenchmarkDownload, m_downloadUrl);
+      "BenchmarkTaskDownload", BenchmarkTaskTransfer::BenchmarkDownload,
+      m_downloadUrl);
   connect(downloadTask, &BenchmarkTaskTransfer::finished, this,
           &ConnectionBenchmark::downloadBenchmarked);
   connect(downloadTask->sentinel(), &BenchmarkTask::destroyed, this,
@@ -98,7 +99,8 @@ void ConnectionBenchmark::start() {
   // Create upload benchmark
   setUploadUrl(Constants::BENCHMARK_UPLOAD_URL);
   BenchmarkTaskTransfer* uploadTask = new BenchmarkTaskTransfer(
-      BenchmarkTaskTransfer::BenchmarkUpload, m_uploadUrl);
+      "BenchmarkTaskUpload", BenchmarkTaskTransfer::BenchmarkUpload,
+      m_uploadUrl);
   Q_UNUSED(uploadTask);
 
   connect(uploadTask, &BenchmarkTaskTransfer::finished, this,

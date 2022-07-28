@@ -17,7 +17,7 @@ UploadDataGenerator::UploadDataGenerator(const qint64 totalSize)
     : m_totalSize(totalSize) {
   MVPN_COUNT_CTOR(UploadDataGenerator);
 
-  memset(m_dataBuffer, '0x00', qMin(totalSize, MAX_BUFFER_SIZE));
+  memset(m_dataBuffer, 0x00, sizeof(m_dataBuffer));
 }
 
 UploadDataGenerator::~UploadDataGenerator() {

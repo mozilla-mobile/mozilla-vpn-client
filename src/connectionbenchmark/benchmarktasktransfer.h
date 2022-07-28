@@ -25,7 +25,8 @@ class BenchmarkTaskTransfer : public BenchmarkTask {
     BenchmarkUpload,
   };
 
-  explicit BenchmarkTaskTransfer(BenchmarkType type, const QUrl& url);
+  explicit BenchmarkTaskTransfer(const QString& name, BenchmarkType type,
+                                 const QUrl& url);
   virtual ~BenchmarkTaskTransfer();
 
  signals:
