@@ -7,7 +7,6 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
-import Mozilla.VPN.qmlcomponents 1.0
 import components 0.1
 import components.forms 0.1
 
@@ -94,7 +93,7 @@ Item {
                     // Scroll vpnFlickable so that the current language is
                     // vertically centered in the view
 
-                    const yCenter = (vpnFlickable.height - menu.height - filterInput.height) / 2
+                    const yCenter = (vpnFlickable.height - menu.height - searchBar.height) / 2
 
                     for (let idx = 0; idx < repeater.count; idx++) {
                         const repeaterItem = repeater.itemAt(idx);
@@ -117,33 +116,25 @@ Item {
                 }
 
                 VPNSearchBar {
-                    id: filterInput
-                    height: VPNTheme.theme.rowHeight
+                    id: searchBar
+                    _filterProxySource: VPNLocalizer
+                    _filterProxyCallback: obj => {
+                         const filterValue = getSearchBarText();
+                         return obj.localizedLanguage.toLowerCase().includes(filterValue) ||
+                                 obj.language.toLowerCase().includes(filterValue);
+                     }
+                    _searchBarHasError: () => { return repeater.count === 0 }
+                    _searchBarPlaceholderText: VPNl18n.LanguageViewSearchPlaceholder
+
+                    enabled: !useSystemLanguageEnabled
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    onTextChanged: text => {
-                        model.invalidate();
-                    }
-                    hasError: repeater.count === 0
-                    enabled: !useSystemLanguageEnabled
-                    _placeholderText: VPNl18n.LanguageViewSearchPlaceholder
-                }
-
-                VPNFilterProxyModel {
-                    id: model
-                    source: VPNLocalizer
-                    // No filter
-                    filterCallback: obj => {
-                       const filterValue = filterInput.text.toLowerCase();
-                       return obj.localizedLanguage.toLowerCase().includes(filterValue) ||
-                              obj.language.toLowerCase().includes(filterValue);
-                    }
                 }
 
                 Repeater {
                     id: repeater
 
-                    model: model
+                    model: searchBar.getProxyModel()
                     delegate: ColumnLayout {
 
                         spacing: 0
@@ -171,8 +162,8 @@ Item {
                             activeFocusOnTab: !useSystemLanguageEnabled
                             onActiveFocusChanged: if (focus) vpnFlickable.ensureVisible(del)
                             Keys.onDownPressed: repeater.itemAt(index + 1) ? repeater.itemAt(index + 1).forceActiveFocus() : repeater.itemAt(0).forceActiveFocus()
-                            Keys.onUpPressed: repeater.itemAt(index - 1) ? repeater.itemAt(index - 1).forceActiveFocus() : filterInput.forceActiveFocus()
-                            Keys.onBacktabPressed: filterInput.forceActiveFocus()
+                            Keys.onUpPressed: repeater.itemAt(index - 1) ? repeater.itemAt(index - 1).forceActiveFocus() : searchBar.forceActiveFocus()
+                            Keys.onBacktabPressed: searchBar.forceActiveFocus()
                         }
 
                         VPNTextBlock {

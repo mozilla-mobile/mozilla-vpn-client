@@ -130,6 +130,7 @@ Item {
             VPNExpandableAppList {
                 id: enabledList
                 Layout.fillWidth: true
+                Layout.fillHeight: false
                 Layout.leftMargin: VPNTheme.theme.vSpacing
                 Layout.rightMargin: VPNTheme.theme.vSpacing
                 Layout.preferredWidth: parent.width - VPNTheme.theme.vSpacing * 2
