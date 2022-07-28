@@ -32,6 +32,8 @@ class BenchmarkTaskTransfer : public BenchmarkTask {
   void finished(quint64 bitsPerSec, bool hasUnexpectedError);
 
  private:
+  void createNetworkRequest();
+  void createNetworkRequestWithRecord(const QDnsHostAddressRecord& record);
   void connectNetworkRequest(NetworkRequest* request);
   void dnsLookupFinished();
   void handleState(BenchmarkTask::State state);

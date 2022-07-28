@@ -147,19 +147,44 @@ NetworkRequest* NetworkRequest::createForGetHostAddress(
 }
 
 // static
-NetworkRequest* NetworkRequest::createForUploadData(Task* parent,
-    const QString& url, QIODevice* uploadData) {
+NetworkRequest* NetworkRequest::createForUploadData(
+    Task* parent, const QString& url, QIODevice* uploadData) {
   Q_ASSERT(parent);
   Q_ASSERT(uploadData);
+  QUrl requestUrl(url);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/x-www-form-urlencoded");
-  QUrl requestUrl(url);
   r->m_request.setUrl(url);
 
   r->uploadDataRequest(uploadData);
+  return r;
+}
 
+// static
+NetworkRequest* NetworkRequest::createForUploadDataHostAddress(Task* parent,
+    const QString& url, QIODevice* uploadData, const QHostAddress& address) {
+  Q_ASSERT(parent);
+  Q_ASSERT(uploadData);
+  QUrl requestUrl(url);
+  QString hostname = requestUrl.host();
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/x-www-form-urlencoded");
+
+  // Rewrite the request URL to use an explicit host address.
+  if (address.protocol() == QAbstractSocket::IPv6Protocol) {
+    requestUrl.setHost("[" + address.toString() + "]");
+  } else {
+    requestUrl.setHost(address.toString());
+  }
+  r->m_request.setUrl(requestUrl);
+  r->m_request.setRawHeader("Host", hostname.toLocal8Bit());
+  r->m_request.setPeerVerifyName(hostname);
+
+  r->uploadDataRequest(uploadData);
   return r;
 }
 

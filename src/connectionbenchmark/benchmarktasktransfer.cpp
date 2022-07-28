@@ -45,10 +45,9 @@ void BenchmarkTaskTransfer::handleState(BenchmarkTask::State state) {
   logger.debug() << "Handle state" << state;
 
   if (state == BenchmarkTask::StateActive) {
-    if (m_type == BenchmarkDownload) {
 // Start DNS resolution
 #if !defined(MVPN_DUMMY)
-      m_dnsLookup.setNameserver(QHostAddress(MULLVAD_DEFAULT_DNS));
+    m_dnsLookup.setNameserver(QHostAddress(MULLVAD_DEFAULT_DNS));
 #endif
 
 #if QT_VERSION >= 0x060400
@@ -56,28 +55,10 @@ void BenchmarkTaskTransfer::handleState(BenchmarkTask::State state) {
 #endif
 
 #if defined(MVPN_ANDROID) || defined(MVPN_WASM)
-    NetworkRequest* request =
-        NetworkRequest::createForGetUrl(this, m_url.toString());
-    connectNetworkRequest(request);
-    m_elapsedTimer.start();
+    createNetworkRequest();
 #else
-      m_dnsLookup.lookup();
+    m_dnsLookup.lookup();
 #endif
-    } else if (m_type == BenchmarkUpload) {
-      UploadDataGenerator* uploadData =
-          new UploadDataGenerator(Constants::BENCHMARK_MAX_BITS_UPLOAD);
-
-      if (!uploadData->open(UploadDataGenerator::ReadOnly)) {
-        emit finished(0, true);
-        emit completed();
-      };
-
-      // TODO: Create multiple network requests for upload
-      NetworkRequest* request = NetworkRequest::createForUploadData(this,
-          m_url.toString(), uploadData);
-      connectNetworkRequest(request);
-    }
-
     m_elapsedTimer.start();
   } else if (state == BenchmarkTask::StateInactive) {
     for (NetworkRequest* request : m_requests) {
@@ -86,6 +67,51 @@ void BenchmarkTaskTransfer::handleState(BenchmarkTask::State state) {
     m_requests.clear();
     m_dnsLookup.abort();
   }
+}
+
+void BenchmarkTaskTransfer::createNetworkRequest() {
+  NetworkRequest* request = nullptr;
+  switch (m_type) {
+    case BenchmarkDownload:
+      request = NetworkRequest::createForGetUrl(this, m_url.toString());
+      break;
+    case BenchmarkUpload:
+      UploadDataGenerator* uploadData = new UploadDataGenerator(
+          Constants::BENCHMARK_MAX_BITS_UPLOAD);
+
+      if (!uploadData->open(UploadDataGenerator::ReadOnly)) {
+        emit finished(0, true);
+        emit completed();
+      };
+
+      request = NetworkRequest::createForUploadData(this, m_url.toString(),
+                                                    uploadData);
+      break;
+  }
+  connectNetworkRequest(request);
+}
+
+void BenchmarkTaskTransfer::createNetworkRequestWithRecord(
+    const QDnsHostAddressRecord& record) {
+  NetworkRequest* request = nullptr;
+  switch (m_type) {
+    case BenchmarkDownload:
+      request = NetworkRequest::createForGetHostAddress(
+          this, m_url.toString(), record.value());
+      break;
+    case BenchmarkUpload:
+      UploadDataGenerator* uploadData = new UploadDataGenerator(
+          Constants::BENCHMARK_MAX_BITS_UPLOAD);
+
+      if (!uploadData->open(UploadDataGenerator::ReadOnly)) {
+        emit finished(0, true);
+        emit completed();
+      };
+      request = NetworkRequest::createForUploadDataHostAddress(
+          this, m_url.toString(), uploadData, record.value());
+      break;
+  }
+  connectNetworkRequest(request);
 }
 
 void BenchmarkTaskTransfer::connectNetworkRequest(NetworkRequest* request) {
@@ -132,10 +158,7 @@ void BenchmarkTaskTransfer::dnsLookupFinished() {
   logger.debug() << "DNS Lookup Finished";
   for (const QDnsHostAddressRecord& record : m_dnsLookup.hostAddressRecords()) {
     logger.debug() << "Host record:" << record.value().toString();
-
-    NetworkRequest* request = NetworkRequest::createForGetHostAddress(
-        this, m_url.toString(), record.value());
-    connectNetworkRequest(request);
+    createNetworkRequestWithRecord(record);
   }
 
   m_elapsedTimer.start();
