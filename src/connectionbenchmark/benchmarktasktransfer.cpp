@@ -70,12 +70,15 @@ void BenchmarkTaskTransfer::handleState(BenchmarkTask::State state) {
 }
 
 void BenchmarkTaskTransfer::createNetworkRequest() {
+  logger.debug() << "Create network request";
+
   NetworkRequest* request = nullptr;
   switch (m_type) {
-    case BenchmarkDownload:
+    case BenchmarkDownload: {
       request = NetworkRequest::createForGetUrl(this, m_url.toString());
       break;
-    case BenchmarkUpload:
+    }
+    case BenchmarkUpload: {
       UploadDataGenerator* uploadData = new UploadDataGenerator(
           Constants::BENCHMARK_MAX_BITS_UPLOAD);
 
@@ -83,23 +86,26 @@ void BenchmarkTaskTransfer::createNetworkRequest() {
         emit finished(0, true);
         emit completed();
       };
-
       request = NetworkRequest::createForUploadData(this, m_url.toString(),
                                                     uploadData);
       break;
+    }
   }
   connectNetworkRequest(request);
 }
 
 void BenchmarkTaskTransfer::createNetworkRequestWithRecord(
     const QDnsHostAddressRecord& record) {
+  logger.debug() << "Create network request with record";
+
   NetworkRequest* request = nullptr;
   switch (m_type) {
-    case BenchmarkDownload:
+    case BenchmarkDownload: {
       request = NetworkRequest::createForGetHostAddress(
           this, m_url.toString(), record.value());
       break;
-    case BenchmarkUpload:
+    }
+    case BenchmarkUpload: {
       UploadDataGenerator* uploadData = new UploadDataGenerator(
           Constants::BENCHMARK_MAX_BITS_UPLOAD);
 
@@ -110,6 +116,11 @@ void BenchmarkTaskTransfer::createNetworkRequestWithRecord(
       request = NetworkRequest::createForUploadDataHostAddress(
           this, m_url.toString(), uploadData, record.value());
       break;
+    }
+    default: {
+      logger.error() << "Unhandled benchmark type";
+      break;
+    }
   }
   connectNetworkRequest(request);
 }
@@ -117,14 +128,22 @@ void BenchmarkTaskTransfer::createNetworkRequestWithRecord(
 void BenchmarkTaskTransfer::connectNetworkRequest(NetworkRequest* request) {
   logger.debug() << "Connect network requests";
 
-  if (m_type == BenchmarkDownload) {
-    connect(request, &NetworkRequest::requestUpdated, this,
-            &BenchmarkTaskTransfer::transferProgressed);
-  } else if (m_type == BenchmarkUpload) {
-    connect(request, &NetworkRequest::uploadProgressed, this,
-        &BenchmarkTaskTransfer::transferProgressed);
+  switch (m_type) {
+    case BenchmarkDownload: {
+      connect(request, &NetworkRequest::requestUpdated, this,
+              &BenchmarkTaskTransfer::transferProgressed);
+      break;
+    }
+    case BenchmarkUpload: {
+      connect(request, &NetworkRequest::uploadProgressed, this,
+              &BenchmarkTaskTransfer::transferProgressed);
+      break;
+    }
+    default: {
+      logger.error() << "Unhandled benchmark type";
+      break;
+    }
   }
-
   connect(request, &NetworkRequest::requestFailed, this,
           &BenchmarkTaskTransfer::transferReady);
   connect(request, &NetworkRequest::requestCompleted, this,
@@ -175,12 +194,21 @@ void BenchmarkTaskTransfer::transferProgressed(qint64 bytesSent,
   Q_UNUSED(bytesTotal);
 #endif
 
-  if (m_type == BenchmarkDownload) {
-    // Count and discard downloaded data
-    m_bytesTransferred += reply->skip(bytesTotal);
-  } else if (m_type == BenchmarkUpload) {
-    Q_UNUSED(reply);
-    m_bytesTransferred += bytesSent;
+  switch (m_type) {
+    case BenchmarkDownload: {
+      // Count and discard downloaded data
+      m_bytesTransferred += reply->skip(bytesTotal);
+      break;
+    }
+    case BenchmarkUpload: {
+      Q_UNUSED(reply);
+      m_bytesTransferred += bytesSent;
+      break;
+    }
+    default: {
+      logger.error() << "Unhandled benchmark type";
+      break;
+    }
   }
 }
 
