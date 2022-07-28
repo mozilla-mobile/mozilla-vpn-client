@@ -25,7 +25,7 @@ Item {
             mainStackView.pop();
         }
         _iconButtonSource: settingsStackView.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
-
+        _iconButtonAccessibleName: settingsStackView.depth === 1 ? qsTrId("vpn.connectionInfo.close") : qsTrId("vpn.main.back")
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
