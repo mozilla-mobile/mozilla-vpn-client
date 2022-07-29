@@ -43,6 +43,7 @@ apply plugin: VPNVersionPlugin
 
 
 dependencies {
+    implementation project(path: ':adjust')
     implementation project(path: ':client')
     implementation project(path: ':daemon')
 
