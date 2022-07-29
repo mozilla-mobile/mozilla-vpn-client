@@ -28,7 +28,7 @@ open class VPNVersionExtension
         val slice = timeString.dropLast(3)
         slice.toInt()
     }
-
+    @Suppress("unused")
     val versionName : String by lazy{
         val cmake = File("${project.rootDir.absolutePath}/../CMakeLists.txt")
         if(!cmake.exists()){

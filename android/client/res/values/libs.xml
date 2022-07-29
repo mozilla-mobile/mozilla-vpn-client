@@ -1,7 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <!-- Todo: either automate this or let gradle/cmake invoke android-deploy-qt to create this file -->
+    <!-- Todo: either automate this or let gradle/cmake qt to create this file -->
     <array name="qt_libs">
+        <!-- This controlls which shared libs qt will be loading on start, keyed by abi -->
         <item>arm64-v8a;crypto_1_1</item>
         <item>arm64-v8a;ssl_1_1</item>
         <item>arm64-v8a;Qt6Core_arm64-v8a</item>
@@ -48,11 +49,157 @@
         <item>arm64-v8a;qml_Qt5Compat_GraphicalEffects_private_qtgraphicaleffectsprivateplugin_arm64-v8a</item>
         <item>arm64-v8a;qml_Qt5Compat_GraphicalEffects_qtgraphicaleffectsplugin_arm64-v8a</item>
         <item>arm64-v8a;plugins_tls_qopensslbackend_arm64-v8a</item>
+
+        <item>armeabi-v7a;crypto_1_1</item>
+        <item>armeabi-v7a;ssl_1_1</item>
+        <item>armeabi-v7a;Qt6Core_armeabi-v7a</item>
+        <item>armeabi-v7a;Qt6Gui_armeabi-v7a</item>
+        <item>armeabi-v7a;Qt6NetworkAuth_armeabi-v7a</item>
+        <item>armeabi-v7a;Qt6Network_armeabi-v7a</item>
+        <item>armeabi-v7a;Qt6OpenGL_armeabi-v7a</item>
+        <item>armeabi-v7a;Qt6QmlModels_armeabi-v7a</item>
+        <item>armeabi-v7a;Qt6Qml_armeabi-v7a</item>
+        <item>armeabi-v7a;Qt6QuickControls2_armeabi-v7a</item>
+        <item>armeabi-v7a;Qt6QuickTemplates2_armeabi-v7a</item>
+        <item>armeabi-v7a;Qt6Quick_armeabi-v7a</item>
+        <item>armeabi-v7a;Qt6Sql_armeabi-v7a</item>
+        <item>armeabi-v7a;Qt6Test_armeabi-v7a</item>
+        <item>armeabi-v7a;Qt6WebSockets_armeabi-v7a</item>
+        <item>armeabi-v7a;Qt6Widgets_armeabi-v7a</item>
+        <item>armeabi-v7a;Qt6Xml_armeabi-v7a</item>
+        <item>armeabi-v7a;Qt6Svg_armeabi-v7a</item>
+        <item>armeabi-v7a;c++_shared</item>
+        <item>armeabi-v7a;jnidispatch</item>
+        <item>armeabi-v7a;plugins_platforms_qtforandroid_armeabi-v7a</item>
+        <item>armeabi-v7a;qml_QtQml_Models_modelsplugin_armeabi-v7a</item>
+        <item>armeabi-v7a;qml_QtQml_WorkerScript_workerscriptplugin_armeabi-v7a</item>
+        <item>armeabi-v7a;qml_QtQml_qmlplugin_armeabi-v7a</item>
+        <item>armeabi-v7a;qml_QtQuick_Controls_Basic_impl_qtquickcontrols2basicstyleimplplugin_armeabi-v7a</item>
+        <item>armeabi-v7a;qml_QtQuick_Controls_Basic_qtquickcontrols2basicstyleplugin_armeabi-v7a</item>
+        <item>armeabi-v7a;qml_QtQuick_Controls_Fusion_impl_qtquickcontrols2fusionstyleimplplugin_armeabi-v7a</item>
+        <item>armeabi-v7a;qml_QtQuick_Controls_Fusion_qtquickcontrols2fusionstyleplugin_armeabi-v7a</item>
+        <item>armeabi-v7a;qml_QtQuick_Controls_Imagine_impl_qtquickcontrols2imaginestyleimplplugin_armeabi-v7a</item>
+        <item>armeabi-v7a;qml_QtQuick_Controls_Imagine_qtquickcontrols2imaginestyleplugin_armeabi-v7a</item>
+        <item>armeabi-v7a;qml_QtQuick_Controls_Material_impl_qtquickcontrols2materialstyleimplplugin_armeabi-v7a</item>
+        <item>armeabi-v7a;qml_QtQuick_Controls_Material_qtquickcontrols2materialstyleplugin_armeabi-v7a</item>
+        <item>armeabi-v7a;qml_QtQuick_Controls_Universal_impl_qtquickcontrols2universalstyleimplplugin_armeabi-v7a</item>
+        <item>armeabi-v7a;qml_QtQuick_Controls_Universal_qtquickcontrols2universalstyleplugin_armeabi-v7a</item>
+        <item>armeabi-v7a;qml_QtQuick_Controls_impl_qtquickcontrols2implplugin_armeabi-v7a</item>
+        <item>armeabi-v7a;qml_QtQuick_Controls_qtquickcontrols2plugin_armeabi-v7a</item>
+        <item>armeabi-v7a;qml_QtQuick_Layouts_qquicklayoutsplugin_armeabi-v7a</item>
+        <item>armeabi-v7a;qml_QtQuick_LocalStorage_qmllocalstorageplugin_armeabi-v7a</item>
+        <item>armeabi-v7a;qml_QtQuick_Shapes_qmlshapesplugin_armeabi-v7a</item>
+        <item>armeabi-v7a;qml_QtQuick_Templates_qtquicktemplates2plugin_armeabi-v7a</item>
+        <item>armeabi-v7a;qml_QtQuick_Window_quickwindowplugin_armeabi-v7a</item>
+        <item>armeabi-v7a;qml_QtQuick_qtquick2plugin_armeabi-v7a</item>
+        <item>armeabi-v7a;qml_Qt_labs_qmlmodels_labsmodelsplugin_armeabi-v7a</item>
+        <item>armeabi-v7a;qml_Qt5Compat_GraphicalEffects_private_qtgraphicaleffectsprivateplugin_armeabi-v7a</item>
+        <item>armeabi-v7a;qml_Qt5Compat_GraphicalEffects_qtgraphicaleffectsplugin_armeabi-v7a</item>
+        <item>armeabi-v7a;plugins_tls_qopensslbackend_armeabi-v7a</item>
+
+        <item>x86;crypto_1_1</item>
+        <item>x86;ssl_1_1</item>
+        <item>x86;Qt6Core_x86</item>
+        <item>x86;Qt6Gui_x86</item>
+        <item>x86;Qt6NetworkAuth_x86</item>
+        <item>x86;Qt6Network_x86</item>
+        <item>x86;Qt6OpenGL_x86</item>
+        <item>x86;Qt6QmlModels_x86</item>
+        <item>x86;Qt6Qml_x86</item>
+        <item>x86;Qt6QuickControls2_x86</item>
+        <item>x86;Qt6QuickTemplates2_x86</item>
+        <item>x86;Qt6Quick_x86</item>
+        <item>x86;Qt6Sql_x86</item>
+        <item>x86;Qt6Test_x86</item>
+        <item>x86;Qt6WebSockets_x86</item>
+        <item>x86;Qt6Widgets_x86</item>
+        <item>x86;Qt6Xml_x86</item>
+        <item>x86;Qt6Svg_x86</item>
+        <item>x86;c++_shared</item>
+        <item>x86;jnidispatch</item>
+        <item>x86;plugins_platforms_qtforandroid_x86</item>
+        <item>x86;qml_QtQml_Models_modelsplugin_x86</item>
+        <item>x86;qml_QtQml_WorkerScript_workerscriptplugin_x86</item>
+        <item>x86;qml_QtQml_qmlplugin_x86</item>
+        <item>x86;qml_QtQuick_Controls_Basic_impl_qtquickcontrols2basicstyleimplplugin_x86</item>
+        <item>x86;qml_QtQuick_Controls_Basic_qtquickcontrols2basicstyleplugin_x86</item>
+        <item>x86;qml_QtQuick_Controls_Fusion_impl_qtquickcontrols2fusionstyleimplplugin_x86</item>
+        <item>x86;qml_QtQuick_Controls_Fusion_qtquickcontrols2fusionstyleplugin_x86</item>
+        <item>x86;qml_QtQuick_Controls_Imagine_impl_qtquickcontrols2imaginestyleimplplugin_x86</item>
+        <item>x86;qml_QtQuick_Controls_Imagine_qtquickcontrols2imaginestyleplugin_x86</item>
+        <item>x86;qml_QtQuick_Controls_Material_impl_qtquickcontrols2materialstyleimplplugin_x86</item>
+        <item>x86;qml_QtQuick_Controls_Material_qtquickcontrols2materialstyleplugin_x86</item>
+        <item>x86;qml_QtQuick_Controls_Universal_impl_qtquickcontrols2universalstyleimplplugin_x86</item>
+        <item>x86;qml_QtQuick_Controls_Universal_qtquickcontrols2universalstyleplugin_x86</item>
+        <item>x86;qml_QtQuick_Controls_impl_qtquickcontrols2implplugin_x86</item>
+        <item>x86;qml_QtQuick_Controls_qtquickcontrols2plugin_x86</item>
+        <item>x86;qml_QtQuick_Layouts_qquicklayoutsplugin_x86</item>
+        <item>x86;qml_QtQuick_LocalStorage_qmllocalstorageplugin_x86</item>
+        <item>x86;qml_QtQuick_Shapes_qmlshapesplugin_x86</item>
+        <item>x86;qml_QtQuick_Templates_qtquicktemplates2plugin_x86</item>
+        <item>x86;qml_QtQuick_Window_quickwindowplugin_x86</item>
+        <item>x86;qml_QtQuick_qtquick2plugin_x86</item>
+        <item>x86;qml_Qt_labs_qmlmodels_labsmodelsplugin_x86</item>
+        <item>x86;qml_Qt5Compat_GraphicalEffects_private_qtgraphicaleffectsprivateplugin_x86</item>
+        <item>x86;qml_Qt5Compat_GraphicalEffects_qtgraphicaleffectsplugin_x86</item>
+        <item>x86;plugins_tls_qopensslbackend_x86</item> 
+
+        <item>x86_64;crypto_1_1</item>
+        <item>x86_64;ssl_1_1</item>
+        <item>x86_64;Qt6Core_x86_64</item>
+        <item>x86_64;Qt6Gui_x86_64</item>
+        <item>x86_64;Qt6NetworkAuth_x86_64</item>
+        <item>x86_64;Qt6Network_x86_64</item>
+        <item>x86_64;Qt6OpenGL_x86_64</item>
+        <item>x86_64;Qt6QmlModels_x86_64</item>
+        <item>x86_64;Qt6Qml_x86_64</item>
+        <item>x86_64;Qt6QuickControls2_x86_64</item>
+        <item>x86_64;Qt6QuickTemplates2_x86_64</item>
+        <item>x86_64;Qt6Quick_x86_64</item>
+        <item>x86_64;Qt6Sql_x86_64</item>
+        <item>x86_64;Qt6Test_x86_64</item>
+        <item>x86_64;Qt6WebSockets_x86_64</item>
+        <item>x86_64;Qt6Widgets_x86_64</item>
+        <item>x86_64;Qt6Xml_x86_64</item>
+        <item>x86_64;Qt6Svg_x86_64</item>
+        <item>x86_64;c++_shared</item>
+        <item>x86_64;jnidispatch</item>
+        <item>x86_64;plugins_platforms_qtforandroid_x86_64</item>
+        <item>x86_64;qml_QtQml_Models_modelsplugin_x86_64</item>
+        <item>x86_64;qml_QtQml_WorkerScript_workerscriptplugin_x86_64</item>
+        <item>x86_64;qml_QtQml_qmlplugin_x86_64</item>
+        <item>x86_64;qml_QtQuick_Controls_Basic_impl_qtquickcontrols2basicstyleimplplugin_x86_64</item>
+        <item>x86_64;qml_QtQuick_Controls_Basic_qtquickcontrols2basicstyleplugin_x86_64</item>
+        <item>x86_64;qml_QtQuick_Controls_Fusion_impl_qtquickcontrols2fusionstyleimplplugin_x86_64</item>
+        <item>x86_64;qml_QtQuick_Controls_Fusion_qtquickcontrols2fusionstyleplugin_x86_64</item>
+        <item>x86_64;qml_QtQuick_Controls_Imagine_impl_qtquickcontrols2imaginestyleimplplugin_x86_64</item>
+        <item>x86_64;qml_QtQuick_Controls_Imagine_qtquickcontrols2imaginestyleplugin_x86_64</item>
+        <item>x86_64;qml_QtQuick_Controls_Material_impl_qtquickcontrols2materialstyleimplplugin_x86_64</item>
+        <item>x86_64;qml_QtQuick_Controls_Material_qtquickcontrols2materialstyleplugin_x86_64</item>
+        <item>x86_64;qml_QtQuick_Controls_Universal_impl_qtquickcontrols2universalstyleimplplugin_x86_64</item>
+        <item>x86_64;qml_QtQuick_Controls_Universal_qtquickcontrols2universalstyleplugin_x86_64</item>
+        <item>x86_64;qml_QtQuick_Controls_impl_qtquickcontrols2implplugin_x86_64</item>
+        <item>x86_64;qml_QtQuick_Controls_qtquickcontrols2plugin_x86_64</item>
+        <item>x86_64;qml_QtQuick_Layouts_qquicklayoutsplugin_x86_64</item>
+        <item>x86_64;qml_QtQuick_LocalStorage_qmllocalstorageplugin_x86_64</item>
+        <item>x86_64;qml_QtQuick_Shapes_qmlshapesplugin_x86_64</item>
+        <item>x86_64;qml_QtQuick_Templates_qtquicktemplates2plugin_x86_64</item>
+        <item>x86_64;qml_QtQuick_Window_quickwindowplugin_x86_64</item>
+        <item>x86_64;qml_QtQuick_qtquick2plugin_x86_64</item>
+        <item>x86_64;qml_Qt_labs_qmlmodels_labsmodelsplugin_x86_64</item>
+        <item>x86_64;qml_Qt5Compat_GraphicalEffects_private_qtgraphicaleffectsprivateplugin_x86_64</item>
+        <item>x86_64;qml_Qt5Compat_GraphicalEffects_qtgraphicaleffectsplugin_x86_64</item>
+        <item>x86_64;plugins_tls_qopensslbackend_x86_64</item>       
     </array>
 
+    <!-- This determines where qt will load the plattform plugin-->
     <array name="load_local_libs">
         <item>arm64-v8a;libplugins_platforms_qtforandroid_arm64-v8a.so</item>
+        <item>armeabi-v7a;libplugins_platforms_qtforandroid_arm64-v8a.so</item>
+        <item>x86;libplugins_platforms_qtforandroid_arm64-v8a.so</item>
+        <item>x86_64;libplugins_platforms_qtforandroid_arm64-v8a.so</item>
     </array>
+     <!-- This determines where plugins that have dependencies for other libs will look-->
     <array name="bundled_libs">
         <item>x86_64;crypto_1_1</item>
         <item>x86_64;ssl_1_1</item>

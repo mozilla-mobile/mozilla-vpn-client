@@ -59,6 +59,7 @@ asset_catalog_compiler.Info.plist
 android/.gradle/
 android/.idea/
 android/build
+android/adjust/src
 android/local.properties
 android/**/*.cxx
 android/.cxx/*
