@@ -224,6 +224,7 @@ VPNClickableRow {
                     visible: !del.isAvailable
                 }
 
+                VPNServerLatencyIndicator {}
             }
         }
 

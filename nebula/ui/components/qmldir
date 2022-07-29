@@ -74,6 +74,7 @@ VPNSegmentedToggle 0.1 VPNSegmentedToggle.qml
 VPNSemiMonoLabel 0.1 VPNSemiMonoLabel.qml
 VPNServerCountry 0.1 VPNServerCountry.qml
 VPNServerLabel 0.1 VPNServerLabel.qml
+VPNServerLatencyIndicator 0.1 VPNServerLatencyIndicator.qml
 VPNServerList 0.1 VPNServerList.qml
 VPNServerListToggle 0.1 VPNServerListToggle.qml
 VPNServerUnavailablePopup 0.1 VPNServerUnavailablePopup.qml

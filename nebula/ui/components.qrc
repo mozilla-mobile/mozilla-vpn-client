@@ -86,6 +86,7 @@
         <file>components/VPNSemiMonoLabel.qml</file>
         <file>components/VPNServerCountry.qml</file>
         <file>components/VPNServerLabel.qml</file>
+        <file>components/VPNServerLatencyIndicator.qml</file>
         <file>components/VPNServerList.qml</file>
         <file>components/VPNServerListToggle.qml</file>
         <file>components/VPNServerUnavailablePopup.qml</file>
