@@ -125,7 +125,8 @@ QString LinuxDependencies::findCgroup2Path() {
 
 // static
 QString LinuxDependencies::gnomeShellVersion() {
-  QDBusInterface iface("org.gnome.Shell", "/org/gnome/Shell", "org.gnome.Shell");
+  QDBusInterface iface("org.gnome.Shell", "/org/gnome/Shell",
+                       "org.gnome.Shell");
   if (!iface.isValid()) {
     return QString();
   }
