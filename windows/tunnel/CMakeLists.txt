@@ -16,6 +16,7 @@ add_custom_target(tunneldll ALL
     COMMAND ${CMAKE_COMMAND} -E env 
                 GOCACHE=${CMAKE_BINARY_DIR}/go-cache
                 GOOS=windows CGO_ENABLED=1
+                CC=gcc
                 CGO_CFLAGS="-O3 -Wall -Wno-unused-function -Wno-switch -std=gnu11 -DWINVER=0x0601"
                 CGO_LDFLAGS="-Wl,--dynamicbase -Wl,--nxcompat -Wl,--export-all-symbols -Wl,--high-entropy-va"
             go build -buildmode c-shared -ldflags="-w -s" -trimpath -v -o "${CMAKE_CURRENT_BINARY_DIR}/tunnel.dll"
