@@ -31,6 +31,7 @@ TestCase {
 
             VPNMouseArea {
                 id: mouseArea
+                qmlUnitTestWorkaround: true
             }
 
             SignalSpy {
@@ -49,7 +50,7 @@ TestCase {
         verify(expected === actual, `propagateClickToParent was ${actual} not ${expected}.`);
 
         //Ensures parent gets 'clicked' event on VPNMouseArea 'release' signal
-        testCase.testComponent.mouseArea.clicked(TestEvent)
+        testCase.testComponent.mouseArea.released(TestEvent)
         compare(testCase.testComponent.spyTestButtonClicked.count, 1)
     }
 
@@ -61,7 +62,7 @@ TestCase {
         verify(expected === actual, `propagateClickToParent was ${actual} not ${expected}.`);
 
         //Ensures parent does not get `clicked' events on VPNMouseArea 'release' signal
-        testCase.testComponent.mouseArea.clicked(TestEvent)
+        testCase.testComponent.mouseArea.released(TestEvent)
         compare(testCase.testComponent.spyTestButtonClicked.count, 0)
     }
 
