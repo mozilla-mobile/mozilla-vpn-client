@@ -262,6 +262,10 @@ class MozillaVPN final : public QObject {
   void deviceRemoved(const QString& publicKey);
   void deviceRemovalCompleted(const QString& publicKey);
 
+  void setJournalPublicAndPrivateKeys(const QString& publicKey,
+                                      const QString& privateKey);
+  void resetJournalPublicAndPrivateKeys();
+
   void serversFetched(const QByteArray& serverData);
 
   void accountChecked(const QByteArray& json);
@@ -393,6 +397,8 @@ class MozillaVPN final : public QObject {
   void maybeRegenerateDeviceKey();
 
   QList<Server> filterServerList(const QList<Server>& servers) const;
+
+  bool checkCurrentDevice();
 
  public slots:
   void requestSettings();
