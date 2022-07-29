@@ -15,6 +15,7 @@
 #include "iaphandler.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
+#include "keyregenerator.h"
 #include "l18nstrings.h"
 #include "leakdetector.h"
 #include "localizer.h"
@@ -612,6 +613,8 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &serverHandler,
                      &ServerHandler::close);
 #endif
+
+    KeyRegenerator keyRegenerator;
 
     // Let's go.
     return qApp->exec();

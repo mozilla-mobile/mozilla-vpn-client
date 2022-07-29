@@ -62,6 +62,7 @@ SOURCES += \
         hacl-star/Hacl_Curve25519_51.c \
         hacl-star/Hacl_Poly1305_32.c \
         hawkauth.cpp \
+        keyregenerator.cpp \
         hkdf.cpp \
         iaphandler.cpp \
         imageproviderfactory.cpp \
@@ -215,6 +216,7 @@ HEADERS += \
         filterproxymodel.h \
         fontloader.h \
         hawkauth.h \
+        keyregenerator.h \
         hkdf.h \
         iaphandler.h \
         imageproviderfactory.h \

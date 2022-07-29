@@ -119,6 +119,8 @@ PRODBETAEXPR(const char*, addonPublicKeyFile,
              ":/addons_signature/production.der",
              ":/addons_signature/staging.der");
 
+PRODBETAEXPR(qint64, keyRegeneratorTimeSec, 604800, 300);
+
 #undef PRODBETAEXPR
 
 constexpr const char* PLATFORM_NAME =
