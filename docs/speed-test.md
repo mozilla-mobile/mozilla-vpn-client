@@ -1,18 +1,22 @@
-# VPN Connection benchmarks
+# VPN Speed test
 
-For showing the user information on their internet speed we need to be able to test their current connection. The test can be run successfully only when the VPN is on and the connection has a signal. Results of the connection test are shown on the **Connection Info Screen**.
+The VPN speed test gives users information on their current network connection. The test can be run only when the VPN is activated and the connection is healthy. Results of the connection test are shown on the **Connection Info Screen**.
 
 ## Benchmarks
 
-In order to get information on the current connection the following benchmarks are written as `Task`s that are run sequentially.
+There are three benchmarks that are `Task`s and are being run sequentially.
 
 ### Benchmark: Ping
 
-The value for ping is determined by listening to changes of ping latency using the `ConnectionHealth` class for a certain duration and calculating the average of all sent and received pings.
+The value for `ping` is determined by listening to changes of ping latency using the `ConnectionHealth` class for a certain duration and calculating the average of all sent and received pings.
 
 ### Benchmark: Download
 
 The value for download is determined by downloading data from a remote file server and calculating the amount of data that is being received while running the download.
+
+### Benchmark: Upload
+
+The value for upload is determined by posting data to a remote server.
 
 ## Result
 
