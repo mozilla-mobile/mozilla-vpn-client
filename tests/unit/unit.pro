@@ -62,6 +62,10 @@ HEADERS += \
     ../../src/commandlineparser.h \
     ../../src/composer/composer.h \
     ../../src/composer/composerblock.h \
+    ../../composer/composerblocktext.h \
+    ../../composer/composerblocktitle.h \
+    ../../composer/composerblockorderedlist.h \
+    ../../composer/composerblockunorderedlist.h \
     ../../src/constants.h \
     ../../src/controller.h \
     ../../src/curve25519.h \
@@ -184,6 +188,10 @@ SOURCES += \
     ../../src/commandlineparser.cpp \
     ../../src/composer/composer.cpp \
     ../../src/composer/composerblock.cpp \
+    ../../composer/composerblocktext.cpp \
+    ../../composer/composerblocktitle.cpp \
+    ../../composer/composerblockorderedlist.cpp \
+    ../../composer/composerblockunorderedlist.cpp \
     ../../src/constants.cpp \
     ../../src/curve25519.cpp \
     ../../src/dnspingsender.cpp \

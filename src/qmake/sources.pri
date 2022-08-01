@@ -42,6 +42,10 @@ SOURCES += \
         commands/commandui.cpp \
         composer/composer.cpp \
         composer/composerblock.cpp \
+        composer/composerblocktext.cpp \
+        composer/composerblocktitle.cpp \
+        composer/composerblockorderedlist.cpp \
+        composer/composerblockunorderedlist.cpp \
         connectionbenchmark/benchmarktask.cpp \
         connectionbenchmark/benchmarktaskdownload.cpp \
         connectionbenchmark/benchmarktaskping.cpp \
@@ -200,6 +204,10 @@ HEADERS += \
         commands/commandui.h \
         composer/composer.h \
         composer/composerblock.h \
+        composer/composerblocktext.h \
+        composer/composerblocktitle.h \
+        composer/composerblockorderedlist.h \
+        composer/composerblockunorderedlist.h \
         connectionbenchmark/benchmarktask.h \
         connectionbenchmark/benchmarktaskdownload.h \
         connectionbenchmark/benchmarktaskping.h \

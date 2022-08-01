@@ -9,36 +9,24 @@
 
 class QJsonObject;
 
-class ComposerBlock final : public QObject {
+class ComposerBlock : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(ComposerBlock)
   QML_NAMED_ELEMENT(VPNComposerBlock)
   QML_UNCREATABLE("")
 
-  Q_PROPERTY(QString id MEMBER m_id CONSTANT)
-  Q_PROPERTY(ComposerBlockType type MEMBER m_type CONSTANT)
-  Q_PROPERTY(QStringList subBlockIds MEMBER m_subBlockIds CONSTANT)
+  Q_PROPERTY(QString type MEMBER m_type CONSTANT)
 
  public:
-  enum ComposerBlockType {
-    ComposerBlockTypeTitle,
-    ComposerBlockTypeText,
-    ComposerBlockTypeOrderedList,
-    ComposerBlockTypeUnorderedList,
-  };
-  Q_ENUM(ComposerBlockType);
-
   static ComposerBlock* create(QObject* parent, const QString& prefix,
                                const QJsonObject& json);
-  ~ComposerBlock();
+  virtual ~ComposerBlock();
+
+ protected:
+  explicit ComposerBlock(QObject* parent, const QString& type);
 
  private:
-  explicit ComposerBlock(QObject* parent);
-
- private:
-  QString m_id;
-  ComposerBlockType m_type;
-  QStringList m_subBlockIds;
+  const QString m_type;
 };
 
 #endif  // COMPOSERBLOCK_H

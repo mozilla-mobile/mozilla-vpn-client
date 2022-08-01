@@ -72,6 +72,14 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/composer/composer.h
     ${MVPN_SOURCE_DIR}/composer/composerblock.cpp
     ${MVPN_SOURCE_DIR}/composer/composerblock.h
+    ${MVPN_SOURCE_DIR}/composer/composerblocktext.cpp
+    ${MVPN_SOURCE_DIR}/composer/composerblocktext.h
+    ${MVPN_SOURCE_DIR}/composer/composerblocktitle.cpp
+    ${MVPN_SOURCE_DIR}/composer/composerblocktitle.h
+    ${MVPN_SOURCE_DIR}/composer/composerblockorderedlist.cpp
+    ${MVPN_SOURCE_DIR}/composer/composerblockorderedlist.h
+    ${MVPN_SOURCE_DIR}/composer/composerblockunorderedlist.cpp
+    ${MVPN_SOURCE_DIR}/composer/composerblockunorderedlist.h
     ${MVPN_SOURCE_DIR}/constants.cpp
     ${MVPN_SOURCE_DIR}/constants.h
     ${MVPN_SOURCE_DIR}/controller.h
