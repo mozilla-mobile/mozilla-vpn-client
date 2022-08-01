@@ -183,8 +183,6 @@ bool AddonManager::validateIndex(const QByteArray& index,
   for (const AddonData& addonData : addons) {
     if (!m_addons.contains(addonData.m_addonId) &&
         validateAndLoad(addonData.m_addonId, addonData.m_sha256)) {
-      Q_ASSERT(m_addons.contains(addonData.m_addonId));
-      Q_ASSERT(m_addons[addonData.m_addonId].m_sha256 == addonData.m_sha256);
       continue;
     }
 

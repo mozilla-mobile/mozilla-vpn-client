@@ -5,7 +5,12 @@
 add_library(glean STATIC)
 
 set_target_properties(glean PROPERTIES FOLDER "Libs")
-target_link_libraries(glean PRIVATE Qt6::Core Qt6::Qml Qt6::Sql)
+target_link_libraries(glean PRIVATE Qt6::Core Qt6::Qml)
+
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    target_link_libraries(glean PRIVATE Qt6::Sql)
+endif()
+
 target_include_directories(glean PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(glean PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 

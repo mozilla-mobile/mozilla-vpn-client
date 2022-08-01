@@ -44,10 +44,6 @@ TODO:
 - ./windows/compile.bat - compile the client
 - ./windows/utils/commons.sh - common functions for cross-platform scrips
 
-# Wasm-specific scripts
-
-- ./wasm/compile.sh - compile the client for Wasm. See the main README.md file.
-
 # CI tools
 
 - ./ci/check_qrc.py - check qrc files to avoid duplicate entries and other errors

@@ -366,9 +366,15 @@ Read the following pages to know more:
 - https://emscripten.org/docs/getting_started/index.html
 - https://doc.qt.io/qt-6/wasm.html
 
-When you are ready, use this script to generate the build:
+When you are ready, create a build directory and configure the project for
+building using `qt-cmake` + `cmake`:
 ```bash
-scripts/wasm/compile.sh
+mkdir build && qt-cmake cmake -S . -B build
+```
+
+Compile the source code:
+```bash
+cmake --build build -j$(nproc)
 ```
 
 ## Testing
