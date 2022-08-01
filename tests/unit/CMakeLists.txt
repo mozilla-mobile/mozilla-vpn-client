@@ -9,6 +9,7 @@ get_filename_component(MVPN_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src ABSOLUTE)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${MVPN_SOURCE_DIR})
+include_directories(${MVPN_SOURCE_DIR}/composer)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin/minimal)
@@ -67,10 +68,10 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/command.h
     ${MVPN_SOURCE_DIR}/commandlineparser.cpp
     ${MVPN_SOURCE_DIR}/commandlineparser.h
-    ${MVPN_SOURCE_DIR}/composer.cpp
-    ${MVPN_SOURCE_DIR}/composer.h
-    ${MVPN_SOURCE_DIR}/composerblock.cpp
-    ${MVPN_SOURCE_DIR}/composerblock.h
+    ${MVPN_SOURCE_DIR}/composer/composer.cpp
+    ${MVPN_SOURCE_DIR}/composer/composer.h
+    ${MVPN_SOURCE_DIR}/composer/composerblock.cpp
+    ${MVPN_SOURCE_DIR}/composer/composerblock.h
     ${MVPN_SOURCE_DIR}/constants.cpp
     ${MVPN_SOURCE_DIR}/constants.h
     ${MVPN_SOURCE_DIR}/controller.h

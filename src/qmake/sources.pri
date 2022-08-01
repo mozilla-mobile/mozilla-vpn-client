@@ -40,8 +40,8 @@ SOURCES += \
         commands/commandservers.cpp \
         commands/commandstatus.cpp \
         commands/commandui.cpp \
-        composer.cpp \
-        composerblock.cpp \
+        composer/composer.cpp \
+        composer/composerblock.cpp \
         connectionbenchmark/benchmarktask.cpp \
         connectionbenchmark/benchmarktaskdownload.cpp \
         connectionbenchmark/benchmarktaskping.cpp \
@@ -198,8 +198,8 @@ HEADERS += \
         commands/commandservers.h \
         commands/commandstatus.h \
         commands/commandui.h \
-        composer.h \
-        composerblock.h \
+        composer/composer.h \
+        composer/composerblock.h \
         connectionbenchmark/benchmarktask.h \
         connectionbenchmark/benchmarktaskdownload.h \
         connectionbenchmark/benchmarktaskping.h \

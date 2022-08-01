@@ -60,8 +60,8 @@ HEADERS += \
     ../../src/collator.h \
     ../../src/command.h \
     ../../src/commandlineparser.h \
-    ../../src/composer.h \
-    ../../src/composerblock.h \
+    ../../src/composer/composer.h \
+    ../../src/composer/composerblock.h \
     ../../src/constants.h \
     ../../src/controller.h \
     ../../src/curve25519.h \
@@ -182,8 +182,8 @@ SOURCES += \
     ../../src/collator.cpp \
     ../../src/command.cpp \
     ../../src/commandlineparser.cpp \
-    ../../src/composer.cpp \
-    ../../src/composerblock.cpp \
+    ../../src/composer/composer.cpp \
+    ../../src/composer/composerblock.cpp \
     ../../src/constants.cpp \
     ../../src/curve25519.cpp \
     ../../src/dnspingsender.cpp \

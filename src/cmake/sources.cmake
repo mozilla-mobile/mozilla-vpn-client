@@ -84,10 +84,10 @@ target_sources(mozillavpn PRIVATE
     commands/commandstatus.h
     commands/commandui.cpp
     commands/commandui.h
-    composerblock.cpp
-    composerblock.h
-    composer.cpp
-    composer.h
+    composer/composerblock.cpp
+    composer/composerblock.h
+    composer/composer.cpp
+    composer/composer.h
     connectionbenchmark/benchmarktask.cpp
     connectionbenchmark/benchmarktask.h
     connectionbenchmark/benchmarktaskdownload.cpp
