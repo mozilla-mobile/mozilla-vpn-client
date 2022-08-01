@@ -53,9 +53,11 @@ $ErrorActionPreference = "Stop"
 mkdir $TASK_WORKDIR/cmake_build 
 $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
 
-cmake -S . -B $BUILD_DIR -GNinja
-cmake --build $BUILD_DIR --config RelWithDebInfo
-cmake --build $BUILD_DIR --config RelWithDebInfo --target msi
+
+cmake --version
+cmake -S . -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release
+cmake --build $BUILD_DIR #--config RelWithDebInfo Ignored as we are using ninja
+cmake --build $BUILD_DIR --target msi # --config RelWithDebInfo 
 cmake --install $BUILD_DIR --prefix "$TASK_WORKDIR/unsigned"
 
 Write-Output "Writing Artifacts"
