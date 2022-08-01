@@ -117,13 +117,3 @@ install(FILES ${VC_TOOLS_REDIST_PATH}/MergeModules/Microsoft_VC${MSVC_TOOLSET_VE
     DESTINATION . RENAME Microsoft_CRT_x64.msm)
 
 install(FILES ui/resources/logo.ico DESTINATION .)
-
-## TODO: Are these still needed? It's not clear.
-#libssl.files = $$PWD/../../../libssl-1_1-x64.dll
-#libssl.path = $$PWD/../../../unsigned/
-#INSTALLS += libssl
-#
-#libcrypto.files = $$PWD/../../../libcrypto-1_1-x64.dll
-#libcrypto.path = $$PWD/../../../unsigned/
-#INSTALLS += libcrypto
-#
