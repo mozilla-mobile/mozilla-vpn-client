@@ -157,6 +157,7 @@ VPNFlickable {
 
                 VPNLightLabel {
                     id: serverLocation
+                    objectName: "deviceListButtonLabel"
                     Accessible.ignored: true
                     Layout.alignment: Qt.AlignLeft
                     elide: Text.ElideRight

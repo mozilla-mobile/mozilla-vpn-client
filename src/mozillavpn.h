@@ -31,7 +31,7 @@
 #include "statusicon.h"
 #include "telemetry.h"
 #include "theme.h"
-#include "websockethandler.h"
+#include "websocket/websockethandler.h"
 
 #include <QList>
 #include <QNetworkReply>

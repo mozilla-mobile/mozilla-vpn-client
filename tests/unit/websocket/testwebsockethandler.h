@@ -42,7 +42,6 @@ class TestWebSocketHandler : public TestHelper {
   void tst_connectionRequestContainsRequiredHeaders();
   void tst_reconnectionAttemptsAfterUnexpectedClose();
   void tst_reconnectionsAreAttemptedUntilSuccessfull();
-  void tst_reconnectionBackoffTimeExponentiallyIncreases();
   void tst_reconnectionBackoffIsResetOnSuccessfullConnection();
   void tst_reconnectionAttemptsOnPingTimeout();
 };
