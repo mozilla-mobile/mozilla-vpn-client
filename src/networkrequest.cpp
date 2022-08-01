@@ -49,6 +49,7 @@ NetworkRequest::NetworkRequest(Task* parent, int status,
   MVPN_COUNT_CTOR(NetworkRequest);
   logger.debug() << "Network request created by" << parent->name();
 
+  m_request.setAttribute(QNetworkRequest::Http2AllowedAttribute, false);
   m_request.setRawHeader("User-Agent", NetworkManager::userAgent());
   m_request.setMaximumRedirectsAllowed(REQUEST_MAX_REDIRECTS);
   m_request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,

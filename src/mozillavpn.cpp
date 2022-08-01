@@ -40,7 +40,7 @@
 #include "update/updater.h"
 #include "update/versionapi.h"
 #include "urlopener.h"
-#include "websockethandler.h"
+#include "websocket/websockethandler.h"
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosdatamigration.h"

@@ -154,7 +154,9 @@ SOURCES += \
         update/versionapi.cpp \
         urlopener.cpp \
         update/webupdater.cpp \
-        websockethandler.cpp
+        websocket/exponentialbackoffstrategy.cpp \
+        websocket/pushmessage.cpp \
+        websocket/websockethandler.cpp
 
 HEADERS += \
         addonmanager.h \
@@ -309,7 +311,9 @@ HEADERS += \
         update/versionapi.h \
         update/webupdater.h \
         urlopener.h \
-        websockethandler.h
+        websocket/exponentialbackoffstrategy.h \
+        websocket/pushmessage.h \
+        websocket/websockethandler.h
 
 # Signal handling for unix platforms
 unix {
