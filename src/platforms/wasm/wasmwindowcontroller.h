@@ -26,7 +26,7 @@ class WasmWindowController final : public QObject {
   void retranslate();
 
  private:
-  void iconChanged(const QString& icon);
+  void iconChanged(const QString& icon, bool isMask);
 
  private:
   QMainWindow m_window;

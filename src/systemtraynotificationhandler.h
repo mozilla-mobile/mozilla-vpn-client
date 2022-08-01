@@ -26,13 +26,13 @@ class SystemTrayNotificationHandler : public NotificationHandler {
                       const QString& message, int timerMsec) override;
 
  private:
-  void updateIcon(const QString& icon);
-
-  void updateContextMenu();
+  void maybeActivated(QSystemTrayIcon::ActivationReason reason);
 
   void showHideWindow();
 
-  void maybeActivated(QSystemTrayIcon::ActivationReason reason);
+  void updateIcon(const QString& icon);
+
+  void updateContextMenu();
 
  private:
   QMenu m_menu;

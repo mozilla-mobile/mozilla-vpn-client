@@ -52,7 +52,7 @@ WasmWindowController::WasmWindowController() {
     StatusIcon* statusIcon = MozillaVPN::instance()->statusIcon();
     connect(statusIcon, &StatusIcon::iconChanged, this,
             &WasmWindowController::iconChanged);
-    iconChanged(statusIcon->iconString());
+    iconChanged(statusIcon->iconString(), true);
 
     QMenu* menu = NotificationHandler::instance()->contextMenu();
     m_systemTrayMenuBar->addMenu(menu);

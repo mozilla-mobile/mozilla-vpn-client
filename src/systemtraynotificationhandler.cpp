@@ -16,6 +16,7 @@
 #endif
 
 #include <QIcon>
+#include <QPainter>
 #include <QWindow>
 
 namespace {
@@ -220,9 +221,39 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 }
 
 void SystemTrayNotificationHandler::updateIcon(const QString& icon) {
-  QIcon trayIconMask(icon);
-  trayIconMask.setIsMask(true);
-  m_systemTrayIcon.setIcon(trayIconMask);
+  Q_UNUSED(icon);
+
+  // Modify icon: start
+  QColor color = QColor(255, 0, 0, 255);
+  QPixmap iconPixmap = QPixmap(icon);
+
+  QPainter painter(&iconPixmap);
+  painter.setRenderHint(QPainter::Antialiasing);
+  painter.setPen(Qt::NoPen);
+  painter.setBrush(color);
+
+  // Create mask for the indicator
+  float maskSize = iconPixmap.width() * 0.475;
+  float maskPosition = iconPixmap.width() - maskSize;
+
+  QRectF indicatorMask(maskPosition, maskPosition, maskSize, maskSize);
+  painter.setCompositionMode(QPainter::CompositionMode_Clear);
+  painter.drawEllipse(indicatorMask);
+
+  // Draw colored indicator dot
+  float dotPadding = maskSize * 0.15;
+  float dotSize = maskSize - dotPadding;
+  float dotPosition = maskPosition + dotPadding / 2;
+
+  QRectF indicatorDot(dotPosition, dotPosition, dotSize, dotSize);
+  painter.setCompositionMode(QPainter::CompositionMode_DestinationOver);
+  painter.drawEllipse(indicatorDot);
+
+  QIcon trayIcon = QIcon(iconPixmap);
+  // Modify icon: end
+
+  trayIcon.setIsMask(false);
+  m_systemTrayIcon.setIcon(trayIcon);
 }
 
 void SystemTrayNotificationHandler::showHideWindow() {

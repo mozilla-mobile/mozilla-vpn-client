@@ -18,14 +18,12 @@ constexpr const std::array<const char*, 4> ANIMATED_LOGO_STEPS = {
     ":/ui/resources/logo-animated1.png", ":/ui/resources/logo-animated2.png",
     ":/ui/resources/logo-animated3.png", ":/ui/resources/logo-animated4.png"};
 
-constexpr const char* LOGO_ON = ":/ui/resources/logo-on.png";
 constexpr const char* LOGO_GENERIC = ":/ui/resources/logo-generic.png";
 #else
 constexpr const std::array<const char*, 4> ANIMATED_LOGO_STEPS = {
     ":/ui/resources/logo-animated1.svg", ":/ui/resources/logo-animated2.svg",
     ":/ui/resources/logo-animated3.svg", ":/ui/resources/logo-animated4.svg"};
 
-constexpr const char* LOGO_ON = ":/ui/resources/logo-on.svg";
 constexpr const char* LOGO_GENERIC = ":/ui/resources/logo-generic.svg";
 #endif
 
@@ -54,12 +52,32 @@ void StatusIcon::animateIcon() {
   }
 }
 
+void StatusIcon::stabilityChanged() {
+  logger.debug() << "Stability changed";
+
+  switch (MozillaVPN::instance()->connectionHealth()->stability()) {
+    case ConnectionHealth::Stable:
+      logger.debug() << "ConnectionHealth::Stable";
+      break;
+    case ConnectionHealth::Unstable:
+      logger.debug() << "ConnectionHealth::Unstable";
+      break;
+    case ConnectionHealth::NoSignal:
+      logger.debug() << "ConnectionHealth::NoSignal";
+      break;
+    default:
+      logger.debug() << "default";
+      break;
+  }
+}
+
 void StatusIcon::stateChanged() {
-  logger.debug() << "Show notification";
+  logger.debug() << "State changed";
 
   m_animatedIconTimer.stop();
 
   MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
 
   // If we are in a non-main state, we don't need to show special icons.
   if (vpn->state() != MozillaVPN::StateMain) {
@@ -69,13 +87,11 @@ void StatusIcon::stateChanged() {
 
   switch (vpn->controller()->state()) {
     case Controller::StateOn:
-      setIcon(LOGO_ON);
+      setIcon(LOGO_GENERIC);
       break;
-
     case Controller::StateOff:
       setIcon(LOGO_GENERIC);
       break;
-
     case Controller::StateSwitching:
       [[fallthrough]];
     case Controller::StateConnecting:
