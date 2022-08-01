@@ -42,6 +42,10 @@ Item {
                 filterCallback: obj => obj.addon.type === "message"
             }
 
+            Text {
+               text: "Unread messages: " + VPNAddonManager.reduce((addon, initialValue) => initialValue + (addon.type === "message" ? 1 : 0), 0);
+            }
+
             Repeater {
                 model: messagesModel
                 delegate: VPNCheckBoxRow {
