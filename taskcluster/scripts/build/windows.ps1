@@ -55,16 +55,16 @@ $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
 
 
 cmake --version
-cmake -S . -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release # TODO: Linking breaks horribly with RelWithDebInfo
 cmake --build $BUILD_DIR #--config RelWithDebInfo Ignored as we are using ninja
-cmake --build $BUILD_DIR --target msi # --config RelWithDebInfo 
+cmake --build $BUILD_DIR --target msi
 cmake --install $BUILD_DIR --prefix "$TASK_WORKDIR/unsigned"
 
 Write-Output "Writing Artifacts"
 New-Item -ItemType Directory -Path "$TASK_WORKDIR/artifacts" -Force
 $ARTIFACTS_PATH =resolve-path "$TASK_WORKDIR/artifacts"
 Copy-Item -Path $BUILD_DIR/windows/installer/MozillaVPN.msi -Destination $ARTIFACTS_PATH/MozillaVPN.msi
-Copy-Item -Path "$TASK_WORKDIR/unsigned/Mozilla VPN.pdb" -Destination "$ARTIFACTS_PATH/Mozilla VPN.pdb" -ErrorAction SilentlyContinue
+Copy-Item -Path "$TASK_WORKDIR/src/CMakeFiles/mozillavpn.dir/vc140.pdb" -Destination "$ARTIFACTS_PATH/Mozilla VPN.pdb"
 Compress-Archive -Path $TASK_WORKDIR/unsigned/* -Destination $ARTIFACTS_PATH/unsigned.zip
 Write-Output "Artifacts Location:$TASK_WORKDIR/artifacts"
 Get-ChildItem -Path $TASK_WORKDIR/artifacts

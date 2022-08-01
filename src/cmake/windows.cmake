@@ -9,6 +9,13 @@ set_target_properties(mozillavpn PROPERTIES
     VERSION ${CMAKE_PROJECT_VERSION}
     WIN32_EXECUTABLE ON
 )
+# Todo: This will force the generation of a .pdb
+# ignoring buildmode. we need to fix the relwithdebug target
+# and then we can remove this :) 
+target_compile_options(mozillavpn
+    PRIVATE 
+    /ZI
+)
 
 # Generate the Windows version resource file.
 configure_file(../windows/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
@@ -94,15 +101,16 @@ include(cmake/signature.cmake)
 install(TARGETS mozillavpn DESTINATION .)
 install(FILES $<TARGET_PDB_FILE:mozillavpn> DESTINATION . OPTIONAL)
 
+# As we compile staticly against the whole qml module this step should not be needed?
 ## Deploy Qt runtime dependencies during installation.
-get_target_property(QT_QMLLINT_EXECUTABLE Qt6::qmllint LOCATION)
-get_filename_component(QT_TOOL_PATH ${QT_QMLLINT_EXECUTABLE} PATH)
-find_program(QT_WINDEPLOY_EXECUTABLE
-    NAMES windeployqt
-    PATHS ${QT_TOOL_PATH}
-    NO_DEFAULT_PATH)
-set(WINDEPLOYQT_FLAGS "--verbose 1 --no-translations --compiler-runtime --dir . --plugindir plugins")
-install(CODE "execute_process(COMMAND \"${QT_WINDEPLOY_EXECUTABLE}\" \"$<TARGET_FILE:mozillavpn>\" ${WINDEPLOYQT_FLAGS} WORKING_DIRECTORY \${CMAKE_INSTALL_PREFIX})")
+# get_target_property(QT_QMLLINT_EXECUTABLE Qt6::qmllint LOCATION)
+# get_filename_component(QT_TOOL_PATH ${QT_QMLLINT_EXECUTABLE} PATH)
+# find_program(QT_WINDEPLOY_EXECUTABLE
+#     NAMES windeployqt
+#     PATHS ${QT_TOOL_PATH}
+#     NO_DEFAULT_PATH)
+# set(WINDEPLOYQT_FLAGS "--verbose 1 --no-translations --compiler-runtime --dir . --plugindir plugins")
+# install(CODE "execute_process(COMMAND \"${QT_WINDEPLOY_EXECUTABLE}\" \"$<TARGET_FILE:mozillavpn>\" ${WINDEPLOYQT_FLAGS} WORKING_DIRECTORY \${CMAKE_INSTALL_PREFIX})")
 
 # Use the merge module that comes with our version of Visual Studio
 cmake_path(CONVERT "$ENV{VCToolsRedistDir}" TO_CMAKE_PATH_LIST VC_TOOLS_REDIST_PATH)
