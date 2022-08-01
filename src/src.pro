@@ -43,7 +43,7 @@ DUMMY {
 } else:win* {
    include($$PWD/qmake/platforms/windows.pri)
 } else:wasm {
-   include($$PWD/qmake/platforms/wasm.pri)
+   error(qmake is not supported for Wasm. Please use cmake.)
 } else {
    error(Unsupported platform)
 }

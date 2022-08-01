@@ -206,7 +206,13 @@ class NetworkRequest final : public QObject {
 #endif
 
   QNetworkReply* m_reply = nullptr;
-  int m_status = 0;
+  int m_expectedStatusCode = 0;
+#ifdef MVPN_WASM
+  // In wasm network request, m_reply is null. So we need to store the "status
+  // code" in a variable member.
+  int m_finalStatusCode = 0;
+#endif
+
   bool m_completed = false;
   bool m_aborted = false;
 
