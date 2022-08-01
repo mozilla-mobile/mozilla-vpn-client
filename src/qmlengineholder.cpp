@@ -61,6 +61,10 @@ QWindow* QmlEngineHolder::window() const {
   return qobject_cast<QWindow*>(rootObject);
 }
 
+bool QmlEngineHolder::hasWindow() const {
+  return !m_engine.rootObjects().isEmpty();
+}
+
 void QmlEngineHolder::showWindow() {
   QWindow* w = window();
   Q_ASSERT(w);
