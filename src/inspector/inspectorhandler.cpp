@@ -34,6 +34,7 @@
 #include <QMetaObject>
 #include <QNetworkAccessManager>
 #include <QPixmap>
+#include <QQmlApplicationEngine>
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QScreen>
@@ -1115,7 +1116,12 @@ QJsonObject InspectorHandler::getViewTree() {
   QJsonObject out;
   out["type"] = "qml_tree";
 
-  QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
+  QQmlApplicationEngine* engine = qobject_cast<QQmlApplicationEngine*>(
+      QmlEngineHolder::instance()->engine());
+  if (!engine) {
+    return out;
+  }
+
   QJsonArray viewRoots;
   for (auto& root : engine->rootObjects()) {
     QQuickWindow* window = qobject_cast<QQuickWindow*>(root);
