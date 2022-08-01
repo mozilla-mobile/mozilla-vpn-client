@@ -189,7 +189,7 @@ Item {
 
                             VPNInterLabel {
                                 property var guideBlock
-                                property string listType
+                                property string listType: guideBlock && guideBlock.type === "olist" ? "ol" : "ul"
                                 property var tagsList: guideBlock.subBlockIds.map(subBlockId => `<li>${qsTrId(subBlockId)}</li>`)
 
                                 text: `<${listType} style='margin-left: -24px;-qt-list-indent:1;'>%1</${listType}>`.arg(tagsList.join(""))
@@ -207,15 +207,18 @@ Item {
                             Layout.fillWidth: true
 
                             sourceComponent: {
-                                switch(modelData.type) {
-                                case VPNComposerBlock.ComposerBlockTypeTitle:
+                                if (modelData instanceof VPNComposerBlockTitle) {
                                     Layout.topMargin = VPNTheme.theme.vSpacingSmall
                                     return titleBlock
-                                case VPNComposerBlock.ComposerBlockTypeText:
+                                }
+
+                                if (modelData instanceof VPNComposerBlockText) {
                                     Layout.topMargin = VPNTheme.theme.listSpacing * 0.5
                                     return textBlock
-                                case VPNComposerBlock.ComposerBlockTypeOrderedList:
-                                case VPNComposerBlock.ComposerBlockTypeUnorderedList:
+                                }
+
+                                if (modelData instanceof VPNComposerBlockOrderedList ||
+                                    modelData instanceof VPNComposerBlockUnorderedList) {
                                     Layout.topMargin = VPNTheme.theme.listSpacing * 0.5
                                     return listBlock
                                 }
@@ -223,12 +226,6 @@ Item {
 
                             onLoaded: {
                                 item.guideBlock = modelData
-                                if(modelData.type === VPNComposerBlock.ComposerBlockTypeOrderedList) {
-                                    item.listType = "ol"
-                                }
-                                else if(modelData.type === VPNComposerBlock.ComposerBlockTypeUnorderedList) {
-                                    item.listType = "ul"
-                                }
                             }
                         }
                     }
