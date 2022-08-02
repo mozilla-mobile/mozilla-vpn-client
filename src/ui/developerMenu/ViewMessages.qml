@@ -52,7 +52,7 @@ Item {
                     // I'm too lazy to create a proper view.
                     function showMessageContent(addon) {
                         const list = [];
-                        list.push("Translate title: " + qsTrId(addon.titleId));
+                        list.push("Translate title: " + addon.title);
                         list.push("Blocks: " + addon.composer.blocks.length);
                         return list.join("\n");
                     }

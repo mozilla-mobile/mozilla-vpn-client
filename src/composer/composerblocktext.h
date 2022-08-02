@@ -5,6 +5,7 @@
 #ifndef COMPOSERBLOCKTEXT_H
 #define COMPOSERBLOCKTEXT_H
 
+#include "../addons/addonproperty.h"
 #include "composerblock.h"
 
 class ComposerBlockText final : public ComposerBlock {
@@ -13,18 +14,18 @@ class ComposerBlockText final : public ComposerBlock {
   QML_NAMED_ELEMENT(VPNComposerBlockText)
   QML_UNCREATABLE("")
 
-  Q_PROPERTY(QString id MEMBER m_id CONSTANT)
+  ADDON_PROPERTY(text, m_text, retranslationCompleted)
 
  public:
-  static ComposerBlock* create(QObject* parent, const QString& prefix,
+  static ComposerBlock* create(Composer* composer, const QString& prefix,
                                const QJsonObject& json);
   virtual ~ComposerBlockText();
 
  private:
-  ComposerBlockText(QObject* parent, const QString& id);
+  explicit ComposerBlockText(Composer* composer);
 
  private:
-  QString m_id;
+  AddonProperty m_text;
 };
 
 #endif  // COMPOSERBLOCKTEXT_H

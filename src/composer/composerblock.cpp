@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "composerblock.h"
+#include "composer.h"
 #include "composerblocktext.h"
 #include "composerblocktitle.h"
 #include "composerblockorderedlist.h"
@@ -16,33 +17,36 @@ namespace {
 Logger logger(LOG_MAIN, "ComposerBlock");
 }
 
-ComposerBlock::ComposerBlock(QObject* parent, const QString& type)
-    : QObject(parent), m_type(type) {
+ComposerBlock::ComposerBlock(Composer* composer, const QString& type)
+    : QObject(composer), m_type(type) {
   MVPN_COUNT_CTOR(ComposerBlock);
+
+  connect(composer, &Composer::retranslationCompleted, this,
+          &ComposerBlock::retranslationCompleted);
 }
 
 ComposerBlock::~ComposerBlock() { MVPN_COUNT_DTOR(ComposerBlock); }
 
 // static
-ComposerBlock* ComposerBlock::create(QObject* parent, const QString& prefix,
+ComposerBlock* ComposerBlock::create(Composer* composer, const QString& prefix,
                                      const QJsonObject& blockObj) {
-  Q_ASSERT(parent);
+  Q_ASSERT(composer);
 
   QString type = blockObj["type"].toString();
   if (type == "title") {
-    return ComposerBlockTitle::create(parent, prefix, blockObj);
+    return ComposerBlockTitle::create(composer, prefix, blockObj);
   }
 
   if (type == "text") {
-    return ComposerBlockText::create(parent, prefix, blockObj);
+    return ComposerBlockText::create(composer, prefix, blockObj);
   }
 
   if (type == "olist") {
-    return ComposerBlockOrderedList::create(parent, prefix, blockObj);
+    return ComposerBlockOrderedList::create(composer, prefix, blockObj);
   }
 
   if (type == "ulist") {
-    return ComposerBlockUnorderedList::create(parent, prefix, blockObj);
+    return ComposerBlockUnorderedList::create(composer, prefix, blockObj);
   }
 
   logger.error() << "Invalid type for block for composer";

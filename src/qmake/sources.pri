@@ -9,6 +9,8 @@ SOURCES += \
         addons/addonguide.cpp \
         addons/addoni18n.cpp \
         addons/addonmessage.cpp \
+        addons/addonproperty.cpp \
+        addons/addonpropertylist.cpp \
         addons/addontutorial.cpp \
         addons/conditionwatchers/addonconditionwatcher.cpp \
         addons/conditionwatchers/addonconditionwatchergroup.cpp \
@@ -169,6 +171,8 @@ HEADERS += \
         addons/addonguide.h \
         addons/addoni18n.h \
         addons/addonmessage.h \
+        addons/addonproperty.h \
+        addons/addonpropertylist.h \
         addons/addontutorial.h \
         addons/conditionwatchers/addonconditionwatcher.h \
         addons/conditionwatchers/addonconditionwatcherlocales.h \

@@ -49,6 +49,8 @@ HEADERS += \
     ../../src/addons/addonguide.h \
     ../../src/addons/addoni18n.h \
     ../../src/addons/addonmessage.h \
+    ../../src/addons/addonproperty.h \
+    ../../src/addons/addonpropertylist.h \
     ../../src/addons/addontutorial.h \
     ../../src/addons/conditionwatchers/addonconditionwatcher.h \
     ../../src/addons/conditionwatchers/addonconditionwatchergroup.h \
@@ -175,6 +177,8 @@ SOURCES += \
     ../../src/addons/addonguide.cpp \
     ../../src/addons/addoni18n.cpp \
     ../../src/addons/addonmessage.cpp \
+    ../../src/addons/addonproperty.cpp \
+    ../../src/addons/addonpropertylist.cpp \
     ../../src/addons/addontutorial.cpp \
     ../../src/addons/conditionwatchers/addonconditionwatcher.cpp \
     ../../src/addons/conditionwatchers/addonconditionwatchergroup.cpp \

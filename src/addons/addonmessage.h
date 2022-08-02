@@ -6,6 +6,7 @@
 #define ADDONMESSAGE_H
 
 #include "addon.h"
+#include "addonproperty.h"
 #include "../composer/composer.h"
 
 class QJsonObject;
@@ -14,7 +15,8 @@ class AddonMessage final : public Addon {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AddonMessage)
 
-  Q_PROPERTY(QString titleId MEMBER m_titleId CONSTANT)
+  ADDON_PROPERTY(title, m_title, retranslationCompleted)
+
   Q_PROPERTY(Composer* composer MEMBER m_composer CONSTANT)
 
  public:
@@ -33,7 +35,7 @@ class AddonMessage final : public Addon {
                const QString& id, const QString& name);
 
  private:
-  QString m_titleId;
+  AddonProperty m_title;
   Composer* m_composer = nullptr;
 
   bool m_dismissed = false;

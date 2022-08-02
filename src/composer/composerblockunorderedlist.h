@@ -5,6 +5,7 @@
 #ifndef COMPOSERBLOCKUNORDEREDLIST_H
 #define COMPOSERBLOCKUNORDEREDLIST_H
 
+#include "../addons/addonpropertylist.h"
 #include "composerblock.h"
 
 class ComposerBlockUnorderedList : public ComposerBlock {
@@ -13,22 +14,20 @@ class ComposerBlockUnorderedList : public ComposerBlock {
   QML_NAMED_ELEMENT(VPNComposerBlockUnorderedList)
   QML_UNCREATABLE("")
 
-  Q_PROPERTY(QStringList subBlockIds MEMBER m_subBlockIds CONSTANT)
+  ADDON_PROPERTY_LIST(subBlocks, m_subBlocks, retranslationCompleted)
 
  public:
-  static ComposerBlock* create(QObject* parent, const QString& prefix,
+  static ComposerBlock* create(Composer* composer, const QString& prefix,
                                const QJsonObject& json);
   virtual ~ComposerBlockUnorderedList();
 
  protected:
-  ComposerBlockUnorderedList(QObject* parent, const QString& type,
-                             const QStringList& subBlockIds);
+  ComposerBlockUnorderedList(Composer* composer, const QString& type);
 
-  static bool parseJson(const QString& prefix, const QJsonObject& json,
-                        QStringList& subBlockIds);
+  bool parseJson(const QString& prefix, const QJsonObject& json);
 
  private:
-  QStringList m_subBlockIds;
+  AddonPropertyList m_subBlocks;
 };
 
 #endif  // COMPOSERBLOCKUNORDEREDLIST_H

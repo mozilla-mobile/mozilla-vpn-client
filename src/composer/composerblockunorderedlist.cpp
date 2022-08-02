@@ -14,21 +14,21 @@ Logger logger(LOG_MAIN, "ComposerBlockUnorderedList");
 }
 
 // static
-ComposerBlock* ComposerBlockUnorderedList::create(QObject* parent,
+ComposerBlock* ComposerBlockUnorderedList::create(Composer* composer,
                                                   const QString& prefix,
                                                   const QJsonObject& json) {
-  QStringList subBlockIds;
-  if (!parseJson(prefix, json, subBlockIds)) {
+  ComposerBlockUnorderedList* block =
+      new ComposerBlockUnorderedList(composer, "ulist");
+  if (!block->parseJson(prefix, json)) {
+    block->deleteLater();
     return nullptr;
   }
 
-  return new ComposerBlockUnorderedList(parent, "ulist", subBlockIds);
+  return block;
 }
 
-// static
 bool ComposerBlockUnorderedList::parseJson(const QString& prefix,
-                                           const QJsonObject& json,
-                                           QStringList& subBlockIds) {
+                                           const QJsonObject& json) {
   QString blockId = json["id"].toString();
   if (blockId.isEmpty()) {
     logger.error() << "Empty block ID for composer block list";
@@ -55,16 +55,17 @@ bool ComposerBlockUnorderedList::parseJson(const QString& prefix,
       return false;
     }
 
-    subBlockIds.append(
-        QString("%1.block.%2.%3").arg(prefix).arg(blockId).arg(subBlockId));
+    m_subBlocks.append(
+        QString("%1.block.%2.%3").arg(prefix).arg(blockId).arg(subBlockId),
+        subBlockObj["content"].toString());
   }
 
   return true;
 }
 
-ComposerBlockUnorderedList::ComposerBlockUnorderedList(
-    QObject* parent, const QString& type, const QStringList& subBlockIds)
-    : ComposerBlock(parent, type), m_subBlockIds(subBlockIds) {
+ComposerBlockUnorderedList::ComposerBlockUnorderedList(Composer* composer,
+                                                       const QString& type)
+    : ComposerBlock(composer, type) {
   MVPN_COUNT_CTOR(ComposerBlockUnorderedList);
 }
 

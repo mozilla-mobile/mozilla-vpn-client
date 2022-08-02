@@ -37,7 +37,8 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
   AddonMessage* message = new AddonMessage(parent, manifestFileName, id, name);
   auto guard = qScopeGuard([&] { message->deleteLater(); });
 
-  message->m_titleId = QString("message.%1.title").arg(messageId);
+  message->m_title.initialize(QString("message.%1.title").arg(messageId),
+                              messageObj["title"].toString());
 
   message->m_composer = Composer::create(
       message, QString("message.%1").arg(messageId), messageObj);
@@ -54,6 +55,9 @@ AddonMessage::AddonMessage(QObject* parent, const QString& manifestFileName,
                            const QString& id, const QString& name)
     : Addon(parent, manifestFileName, id, name, "message") {
   MVPN_COUNT_CTOR(AddonMessage);
+
+  connect(this, &Addon::retranslationCompleted, m_composer,
+          &Composer::retranslationCompleted);
 }
 
 AddonMessage::~AddonMessage() { MVPN_COUNT_DTOR(AddonMessage); }

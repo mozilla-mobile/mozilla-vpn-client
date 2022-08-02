@@ -356,6 +356,8 @@ void Addon::retranslate() {
           QFileInfo(m_manifestFileName).dir().filePath("i18n"))) {
     logger.error() << "Loading the locale failed. - code:" << code;
   }
+
+  emit retranslationCompleted();
 }
 
 void Addon::maybeCreateConditionWatchers(const QJsonObject& conditions) {
