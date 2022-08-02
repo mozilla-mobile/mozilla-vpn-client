@@ -54,6 +54,8 @@ dependencies {
     implementation Dependencies.androidx_security_security_identity_credential
     implementation Dependencies.com_google_android_gms_play_services_ads_identifier
     implementation Dependencies.org_jetbrains_kotlinx_kotlinx_serialization_json
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
+
     coreLibraryDesugaring Dependencies.com_android_tools_desugar_jdk_libs
 }
 

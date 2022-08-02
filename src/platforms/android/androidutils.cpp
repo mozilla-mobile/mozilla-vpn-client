@@ -247,15 +247,13 @@ bool AndroidUtils::verifySignature(const QByteArray& publicKey,
                                    const QByteArray& content,
                                    const QByteArray& signature) {
   QJniEnvironment env;
-  logger.info() << "START ANDROID SIGNATURE";
   auto out = (bool) QJniObject::callStaticMethod<jboolean>(UTILS_CLASS,
                                             "verifyContentSignature", 
                                             "([B[B[B)Z",
                                             tojByteArray(publicKey),
                                             tojByteArray(content),
                                             tojByteArray(signature));
-  logger.info() << "Got response" << out;
-
+  logger.info() << "Android Signature Response" << out;
   return out;
 }
 // Static 
@@ -265,6 +263,5 @@ jbyteArray AndroidUtils::tojByteArray(const QByteArray& data) {
   jbyteArray out = env->NewByteArray(data.size());
   env->SetByteArrayRegion(out, 0, data.size(),
                           reinterpret_cast<const jbyte*>(data.constData()));
-  logger.info() << "DONE jbyteArray";
   return out;
 }
