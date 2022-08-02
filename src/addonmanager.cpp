@@ -21,6 +21,7 @@
 #include <QJsonObject>
 #include <QFileInfo>
 #include <QResource>
+#include <QQmlEngine>
 #include <QSaveFile>
 #include <QStandardPaths>
 
