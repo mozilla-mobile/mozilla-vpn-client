@@ -18,7 +18,7 @@ Item {
         id: licenses
 
         anchors.fill: parent
-        flickContentHeight: body.height + VPNTheme.theme.windowMargin * 2
+        flickContentHeight: body.height + body.anchors.topMargin
         width: root.width
 
         Column {
