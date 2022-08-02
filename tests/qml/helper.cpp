@@ -3,6 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "helper.h"
+#include "../../src/qmlengineholder.h"
+
 #include <glean.h>
 #include <nebula.h>
 
@@ -59,6 +61,12 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
   Nebula::Initialize(engine);
   Glean::Initialize(engine);
   engine->addImportPath("qrc:///");
+
+  if (!QmlEngineHolder::exists()) {
+    new QmlEngineHolder(engine);
+  } else {
+    QmlEngineHolder::instance()->replaceEngine(engine);
+  }
 
   qmlRegisterSingletonType<TestHelper>(
       "TestHelper", 1, 0, "TestHelper",

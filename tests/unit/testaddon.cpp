@@ -15,6 +15,8 @@
 #include "../../src/tutorial/tutorial.h"
 #include "helper.h"
 
+#include <QQmlApplicationEngine>
+
 void TestAddon::conditions_data() {
   QTest::addColumn<QJsonObject>("conditions");
   QTest::addColumn<bool>("result");
@@ -520,7 +522,8 @@ void TestAddon::tutorial_create() {
       content["highlighted"].toBool() ? false : content["advanced"].toBool();
   QCOMPARE(tutorial->property("advanced").toBool(), isAdvanced);
 
-  QmlEngineHolder qml;
+  QQmlApplicationEngine engine;
+  QmlEngineHolder qml(&engine);
 
   QSignalSpy signalSpy(tm, &Tutorial::playingChanged);
 

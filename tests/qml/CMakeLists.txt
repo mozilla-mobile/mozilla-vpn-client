@@ -34,6 +34,8 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/controller.h
     ${MVPN_SOURCE_DIR}/externalophandler.cpp
     ${MVPN_SOURCE_DIR}/externalophandler.h
+    ${MVPN_SOURCE_DIR}/filterproxymodel.cpp
+    ${MVPN_SOURCE_DIR}/filterproxymodel.h
     ${MVPN_SOURCE_DIR}/hawkauth.cpp
     ${MVPN_SOURCE_DIR}/hawkauth.h
     ${MVPN_SOURCE_DIR}/hkdf.cpp
@@ -67,6 +69,8 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/update/versionapi.h
     ${MVPN_SOURCE_DIR}/update/webupdater.cpp
     ${MVPN_SOURCE_DIR}/update/webupdater.h
+    ${MVPN_SOURCE_DIR}/qmlengineholder.cpp
+    ${MVPN_SOURCE_DIR}/qmlengineholder.h
 )
 
 # VPN Client UI resources
@@ -98,3 +102,8 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     list(APPEND QML_TEST_ARGS -platform offscreen)
 endif()
 add_test(NAME qml_tests COMMAND qml_tests ${QML_TEST_ARGS})
+
+qt6_add_qml_module(qml_tests
+  URI Mozilla.VPN.qmlcomponents
+  VERSION 1.0
+)
