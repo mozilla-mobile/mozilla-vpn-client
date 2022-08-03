@@ -9,6 +9,7 @@ treeherder:
         'lint': 'Linting tasks'
         'Fetch': 'Fetching Tasks'
         'TL': 'Toolchain Tasks'
+        'rpk': 'Re-Package Tasks'
 
 task-priority:
     by-project:
