@@ -14,7 +14,7 @@ set_target_properties(mozillavpn PROPERTIES
 # and then we can remove this :) 
 target_compile_options(mozillavpn
     PRIVATE 
-    /ZI
+    $<$<CONFIG:Release>:/ZI>>
 )
 
 # Generate the Windows version resource file.
