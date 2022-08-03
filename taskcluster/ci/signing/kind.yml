@@ -24,10 +24,10 @@ only-for-build-types:
     - android-armv7/release
     - linux/opt
     - macos/opt
+    - windows/opt
 
 job-template:
-    description: Sign MozillaVPN
-    worker: {} # Will be configured by signing:transforms
+    description: sign mozillavpn
     run-on-tasks-for: []
     add-index-routes: build
     signing-format:
@@ -35,10 +35,13 @@ job-template:
             android.*: autograph_apk
             linux.*: autograph_debsign
             macos.*: macapp
-            default: ""
+            windows/opt: autograph_authenticode
 
     treeherder:
-        job-symbol: Bs
+        job-symbol:
+            by-build-type:
+                windows/opt: Bs-internals
+                default: Bs
         kind: build
         tier: 1
         platform:
@@ -49,3 +52,4 @@ job-template:
                 android-armv7/release: android/armv7
                 linux/opt: linux/opt
                 macos/opt: macos/opt
+                windows/opt: windows/x86_64

@@ -19,6 +19,7 @@ PRODUCTION_SIGNING_BUILD_TYPES = [
     "android-armv7/release",
     "linux/opt",
     "macos/opt",
+    "windows/opt",
 ]
 
 SIGNING_BUILD_TYPES = PRODUCTION_SIGNING_BUILD_TYPES + [
@@ -40,7 +41,7 @@ def set_run_on_tasks_for(config, tasks):
 @transforms.add
 def resolve_keys(config, tasks):
     for task in tasks:
-        for key in ("signing-format",):
+        for key in ("signing-format", "treeherder.job-symbol"):
             resolve_keyed_by(
                 task,
                 key,
