@@ -7,6 +7,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
+#include "models/feature.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #include "tasks/account/taskaccount.h"
@@ -27,6 +28,8 @@ KeyRegenerator::KeyRegenerator() {
   connect(vpn->controller(), &Controller::stateChanged, this,
           &KeyRegenerator::stateChanged);
   connect(&m_timer, &QTimer::timeout, this, &KeyRegenerator::stateChanged);
+  connect(Feature::get(Feature::Feature_keyRegeneration),
+          &Feature::supportedChanged, this, &KeyRegenerator::stateChanged);
 
   stateChanged();
 }
@@ -37,6 +40,11 @@ void KeyRegenerator::stateChanged() {
   logger.debug() << "Let's check if the key has to be regenerated";
 
   m_timer.stop();
+
+  if (!Feature::get(Feature::Feature_keyRegeneration)->isSupported()) {
+    logger.debug() << "Feature disabled";
+    return;
+  }
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
