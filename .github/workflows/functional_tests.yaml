@@ -103,7 +103,9 @@ jobs:
       
       - name: Check build
         shell: bash
-        run: ./build/cmake/src/mozillavpn -v
+        run: |
+            chmod +x ./build/cmake/src/mozillavpn
+            ./build/cmake/src/mozillavpn -v
 
       - name: Running ${{matrix.test.name}} Tests
         id: runTests
