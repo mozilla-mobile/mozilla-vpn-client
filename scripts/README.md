@@ -8,12 +8,6 @@ execution of the Mozilla VPN client.
 The `tests` folder contains anything related to test execution. These scripts
 can be used to run tests locally or via the CI.
 
-- ./tests/qml_tests.sh - Runs QML tests (Linux, MacOS)
-- ./tests/unit_tests.sh - Runs unit tests (Linux, MacOS)
-- ./tests/lottie_tests.sh - Runs lottie tests (Linux, MacOS)
-- ./tests/functional_tests.ps1 - run functional tests on windows
-- ./tests/functional_tests.sh - run functional tests
-
 # Android-specific scripts
 
 - ./android/package.sh - compile the client for android. See the main README.md file.
@@ -30,7 +24,6 @@ TODO: unify build.sh and script.sh (or remove build.sh)
 
 - ./macos/apple_compile.sh - compile the client for iOS or macOS. See the main README.md file.
 - ./macos/utils/xcode_patcher.rb - tool to patch xcode project
-- ./macos/utils/commons.sh - common functions for cross-platform scrips
 - ./macos/import_pkg_resources.py - configure resources for the PKG generation
 - ./macos/scope_only_change.sh - runs tests when needed
 

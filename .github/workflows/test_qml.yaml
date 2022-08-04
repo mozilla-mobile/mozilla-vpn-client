@@ -95,17 +95,10 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-      - name: Generating glean samples
+      - name: Install depedencies
         shell: bash
         run: |
           pip3 install -r requirements.txt
-          python3 scripts/utils/generate_glean.py
-
-      - name: Importing translation files
-        shell: bash
-        run: |
-          export PATH=/opt/qt6/bin:$PATH
-          python3 scripts/utils/import_languages.py -m
 
       - name: Install Grcov
         shell: bash
@@ -123,7 +116,8 @@ jobs:
       - name: Running tests
         shell: bash
         run: |
-          $(pwd)/build/tests/qml/qml_tests -platform offscreen
+          export PATH=/opt/qt6/bin:$PATH
+          $(pwd)/build/tests/qml/qml_tests
           grcov $(pwd)/build/tests/qml/CMakeFiles/qml_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/qml_lcov.info
 
