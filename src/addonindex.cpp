@@ -8,6 +8,7 @@
 #include "logger.h"
 #include "signature.h"
 #include "addondirectory.h"
+#include "models/feature.h"
 
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -70,9 +71,17 @@ bool AddonIndex::getOnDiskAddonsList(QList<AddonData>* addonsList) {
  * @returns Whether or not reading of both files was successfull.
  */
 bool AddonIndex::read(QByteArray& index, QByteArray& indexSignature) {
-  return m_addonDirectory->readFile(ADDON_INDEX_FILENAME, &index) &&
-         m_addonDirectory->readFile(ADDON_INDEX_SIGNATURE_FILENAME,
-                                    &indexSignature);
+  if (!m_addonDirectory->readFile(ADDON_INDEX_FILENAME, &index)) {
+    return false;
+  }
+
+  if (Feature::get(Feature::Feature_addonSignature)->isSupported() &&
+      !m_addonDirectory->readFile(ADDON_INDEX_SIGNATURE_FILENAME,
+                                  &indexSignature)) {
+    return false;
+  }
+
+  return true;
 }
 
 /**
@@ -86,7 +95,11 @@ bool AddonIndex::read(QByteArray& index, QByteArray& indexSignature) {
 void AddonIndex::write(const QByteArray& index,
                        const QByteArray& indexSignature) {
   m_addonDirectory->writeToFile(ADDON_INDEX_FILENAME, index);
-  m_addonDirectory->writeToFile(ADDON_INDEX_SIGNATURE_FILENAME, indexSignature);
+
+  if (Feature::get(Feature::Feature_addonSignature)->isSupported()) {
+    m_addonDirectory->writeToFile(ADDON_INDEX_SIGNATURE_FILENAME,
+                                  indexSignature);
+  }
 }
 
 /**
@@ -138,8 +151,16 @@ void AddonIndex::update(const QByteArray& index,
 bool AddonIndex::validate(const QByteArray& index,
                           const QByteArray& indexSignature,
                           QJsonObject* indexObj) {
-  return validateIndexSignature(index, indexSignature) &&
-         validateIndex(index, indexObj);
+  if (!validateIndex(index, indexObj)) {
+    return false;
+  }
+
+  if (Feature::get(Feature::Feature_addonSignature)->isSupported() &&
+      !validateIndexSignature(index, indexSignature)) {
+    return false;
+  }
+
+  return true;
 }
 
 bool AddonIndex::validateIndex(const QByteArray& index, QJsonObject* indexObj) {
