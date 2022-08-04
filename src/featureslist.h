@@ -269,4 +269,4 @@ FEATURE_SIMPLE(websocket,      // Feature ID
                true,           // Can be flipped on
                true,           // Can be flipped off
                QStringList(),  // feature dependencies
-               FeatureCallback_false)
+               FeatureCallback_true)
