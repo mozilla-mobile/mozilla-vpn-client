@@ -28,13 +28,17 @@ void TaskAddonIndex::run() {
     connect(request, &NetworkRequest::requestFailed, this,
             [this](QNetworkReply::NetworkError error, const QByteArray&) {
               logger.error() << "Get addon index failed" << error;
-              emit completed();
+
+              m_indexRequestComplete = true;
+              maybeComplete();
             });
 
     connect(request, &NetworkRequest::requestCompleted, this,
             [this](const QByteArray& data) {
               logger.debug() << "Get addon index completed";
+
               m_indexData = data;
+              m_indexRequestComplete = true;
               maybeComplete();
             });
   }
@@ -48,23 +52,27 @@ void TaskAddonIndex::run() {
     connect(request, &NetworkRequest::requestFailed, this,
             [this](QNetworkReply::NetworkError error, const QByteArray&) {
               logger.error() << "Get addon index signature failed" << error;
-              emit completed();
+
+              m_indexSignatureRequestComplete = true;
+              maybeComplete();
             });
 
     connect(request, &NetworkRequest::requestCompleted, this,
             [this](const QByteArray& data) {
               logger.debug() << "Get addon index signature completed";
+
               m_indexSignData = data;
+              m_indexSignatureRequestComplete = true;
               maybeComplete();
             });
   }
 }
 
 void TaskAddonIndex::maybeComplete() {
-  if (m_indexData.isEmpty() || m_indexSignData.isEmpty()) {
+  if (!m_indexSignatureRequestComplete || !m_indexRequestComplete) {
     return;
   }
 
-  AddonManager::instance()->updateIndex(m_indexData, m_indexSignData);
+  AddonManager::instance()->index()->update(m_indexData, m_indexSignData);
   emit completed();
 }

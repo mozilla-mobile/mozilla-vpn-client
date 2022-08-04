@@ -2,11 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "testaddonmanager.h"
-#include "../../src/addonmanager.h"
+#include "testaddonindex.h"
+#include "../../src/addondirectory.h"
+#include "../../src/addonindex.h"
 #include "../../src/settingsholder.h"
 
-void TestAddonManager::index_data() {
+void TestAddonIndex::update_data() {
   QTest::addColumn<QByteArray>("index");
   QTest::addColumn<QStringList>("addonIds");
 
@@ -57,22 +58,31 @@ void TestAddonManager::index_data() {
       << QJsonDocument(obj).toJson() << QStringList{"foo"};
 }
 
-void TestAddonManager::index() {
+void TestAddonIndex::update() {
   QFETCH(QByteArray, index);
   QFETCH(QStringList, addonIds);
 
   SettingsHolder settingsHolder;
 
-  AddonManager* am = AddonManager::instance();
-  QVERIFY(!!am);
+  AddonDirectory ad();
+  AddonIndex ai(&ad);
 
-  for (int i = 0; i < addonIds.length(); ++i) {
-    TestHelper::networkConfig.append(TestHelper::NetworkConfig(
-        TestHelper::NetworkConfig::Failure, QByteArray()));
+  QSignalSpy indexUpdatedSpy(&ai, SIGNAL(indexUpdated(QList<AddonData>)));
+
+  ai->update(index, QByteArray());
+
+  QVERIFY(indexUpdatedSpy.wait());
+  QCOMPARE(indexUpdatedSpy, count(), 1);
+
+  QList<QVariant> arguments = indexUpdatedSpy.takeFirst();
+  QList<AddonData> addonData = arguments.at(0).value<QList<AddonData>>();
+
+  QStringList addonIds;
+  for (int i = 0; i < addonData.size(); ++i) {
+    addonIds << addonData.at(i);
   }
 
-  am->updateIndex(index, QByteArray());
   QCOMPARE(addonIds, am->addonIds());
 }
 
-static TestAddonManager s_testAddonManager;
+static TestAddonIndex s_testAddonManager;

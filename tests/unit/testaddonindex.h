@@ -4,10 +4,10 @@
 
 #include "helper.h"
 
-class TestAddonManager final : public TestHelper {
+class TestAddonIndex final : public TestHelper {
   Q_OBJECT
 
  private slots:
-  void index_data();
-  void index();
+  void update_data();
+  void update();
 };

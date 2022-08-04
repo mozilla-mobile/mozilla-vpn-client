@@ -8,6 +8,10 @@ target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 # VPN Client source files
 target_sources(mozillavpn PRIVATE
+    addondirectory.cpp
+    addondirectory.h
+    addonindex.cpp
+    addonindex.h
     addonmanager.cpp
     addonmanager.h
     addons/addon.cpp

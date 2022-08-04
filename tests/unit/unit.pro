@@ -43,6 +43,8 @@ include($$PWD/../../src/qmake/signature.pri)
 RESOURCES ~= 's/.*servers.qrc//g'
 
 HEADERS += \
+    ../../src/addondirectory.h \
+    ../../src/addonindex.h \
     ../../src/addonmanager.h \
     ../../src/addons/addon.h \
     ../../src/addons/addondemo.h \
@@ -166,6 +168,8 @@ HEADERS += \
     websocket/testpushmessage.h
 
 SOURCES += \
+    ../../src/addondirectory.cpp \
+    ../../src/addonindex.cpp \
     ../../src/addonmanager.cpp \
     ../../src/addons/addon.cpp \
     ../../src/addons/addondemo.cpp \
