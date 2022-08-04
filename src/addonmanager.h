@@ -46,6 +46,10 @@ class AddonManager final : public QAbstractListModel {
 
   void forEach(std::function<void(Addon* addon)>&& callback);
 
+#ifdef UNIT_TEST
+  QStringList addonIds() const;
+#endif
+
  private:
   explicit AddonManager(QObject* parent);
 

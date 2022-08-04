@@ -227,6 +227,7 @@ target_sources(unit_tests PRIVATE
 # VPN Client UI resources
 target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/ui/license.qrc
+    ${MVPN_SOURCE_DIR}/resources/public_keys/public_keys.qrc
 )
 
 # Unit test source files
@@ -239,6 +240,8 @@ target_sources(unit_tests PRIVATE
     helper.h
     testaddon.cpp
     testaddon.h
+    testaddonmanager.cpp
+    testaddonmanager.h
     testadjust.cpp
     testadjust.h
     testandroidmigration.cpp

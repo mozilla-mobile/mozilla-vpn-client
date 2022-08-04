@@ -25,6 +25,7 @@ _qmake() {
     -spec macx-xcode \
     QTPLUGIN+=qsvg \
     MVPN_MACOS=1 \
+    CONFIG+=DUMMY \
     CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release \
     CONFIG+=sdk_no_version_check \
     QMAKE_CXXFLAGS+=--coverage QMAKE_LFLAGS+=--coverage \
