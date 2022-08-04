@@ -7,6 +7,7 @@
 
 #include <QQmlEngine>
 
+class Composer;
 class QJsonObject;
 
 class ComposerBlock : public QObject {
@@ -18,12 +19,15 @@ class ComposerBlock : public QObject {
   Q_PROPERTY(QString type MEMBER m_type CONSTANT)
 
  public:
-  static ComposerBlock* create(QObject* parent, const QString& prefix,
+  static ComposerBlock* create(Composer* composer, const QString& prefix,
                                const QJsonObject& json);
   virtual ~ComposerBlock();
 
+ signals:
+  void retranslationCompleted();
+
  protected:
-  explicit ComposerBlock(QObject* parent, const QString& type);
+  explicit ComposerBlock(Composer* composer, const QString& type);
 
  private:
   const QString m_type;

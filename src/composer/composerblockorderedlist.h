@@ -14,12 +14,12 @@ class ComposerBlockOrderedList final : public ComposerBlockUnorderedList {
   QML_UNCREATABLE("")
 
  public:
-  static ComposerBlock* create(QObject* parent, const QString& prefix,
+  static ComposerBlock* create(Composer* composer, const QString& prefix,
                                const QJsonObject& json);
   virtual ~ComposerBlockOrderedList();
 
  private:
-  ComposerBlockOrderedList(QObject* parent, const QStringList& subBlockIds);
+  explicit ComposerBlockOrderedList(Composer* composer);
 };
 
 #endif  // COMPOSERBLOCKORDEREDLIST_H

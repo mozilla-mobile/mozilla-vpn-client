@@ -13,7 +13,8 @@ Logger logger(LOG_MAIN, "ComposerBlockText");
 }
 
 // static
-ComposerBlock* ComposerBlockText::create(QObject* parent, const QString& prefix,
+ComposerBlock* ComposerBlockText::create(Composer* composer,
+                                         const QString& prefix,
                                          const QJsonObject& json) {
   QString blockId = json["id"].toString();
   if (blockId.isEmpty()) {
@@ -21,12 +22,14 @@ ComposerBlock* ComposerBlockText::create(QObject* parent, const QString& prefix,
     return nullptr;
   }
 
-  return new ComposerBlockText(parent,
-                               QString("%1.block.%2").arg(prefix).arg(blockId));
+  ComposerBlockText* block = new ComposerBlockText(composer);
+  block->m_text.initialize(QString("%1.block.%2").arg(prefix).arg(blockId),
+                           json["content"].toString());
+  return block;
 }
 
-ComposerBlockText::ComposerBlockText(QObject* parent, const QString& id)
-    : ComposerBlock(parent, "text"), m_id(id) {
+ComposerBlockText::ComposerBlockText(Composer* composer)
+    : ComposerBlock(composer, "text") {
   MVPN_COUNT_CTOR(ComposerBlockText);
 }
 

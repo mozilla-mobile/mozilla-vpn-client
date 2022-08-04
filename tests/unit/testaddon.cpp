@@ -6,6 +6,8 @@
 #include "../../src/addons/addon.h"
 #include "../../src/addons/addonguide.h"
 #include "../../src/addons/addonmessage.h"
+#include "../../src/addons/addonproperty.h"
+#include "../../src/addons/addonpropertylist.h"
 #include "../../src/addons/addontutorial.h"
 #include "../../src/addons/conditionwatchers/addonconditionwatchergroup.h"
 #include "../../src/addons/conditionwatchers/addonconditionwatcherlocales.h"
@@ -16,6 +18,23 @@
 #include "helper.h"
 
 #include <QQmlApplicationEngine>
+
+void TestAddon::property() {
+  AddonProperty p;
+  p.initialize("foo", "bar");
+  QCOMPARE(p.get(), "bar");
+  QCOMPARE(p.property("value").toString(), "bar");
+}
+
+void TestAddon::property_list() {
+  AddonPropertyList p;
+  p.append("a", "foo");
+  p.append("b", "bar");
+
+  QStringList list{"foo", "bar"};
+  QCOMPARE(p.get(), list);
+  QCOMPARE(p.property("value").toStringList(), list);
+}
 
 void TestAddon::conditions_data() {
   QTest::addColumn<QJsonObject>("conditions");
@@ -368,10 +387,8 @@ void TestAddon::guide_create() {
     return;
   }
 
-  QString guideTitleId = guide->property("titleId").toString();
-  QCOMPARE(guideTitleId, QString("guide.%1.title").arg(id));
-  QString guideSubTitleId = guide->property("subtitleId").toString();
-  QCOMPARE(guideSubTitleId, QString("guide.%1.subtitle").arg(id));
+  QCOMPARE(guide->property("title").type(), QMetaType::QString);
+  QCOMPARE(guide->property("subtitle").type(), QMetaType::QString);
 
   QCOMPARE(guide->property("image").toString(), "foo.png");
   QCOMPARE(guide->property("advanced").toBool(), content["advanced"].toBool());
@@ -505,17 +522,9 @@ void TestAddon::tutorial_create() {
   QVERIFY(!!tm);
   QVERIFY(!tm->isPlaying());
 
-  QString tutorialTitleId = tutorial->property("titleId").toString();
-  QCOMPARE(tutorialTitleId, QString("tutorial.%1.title").arg(id));
-
-  QString tutorialSubtitleId = tutorial->property("subtitleId").toString();
-  QCOMPARE(tutorialSubtitleId, QString("tutorial.%1.subtitle").arg(id));
-
-  QString tutorialCompletionMessageId =
-      tutorial->property("completionMessageId").toString();
-  QCOMPARE(tutorialCompletionMessageId,
-           QString("tutorial.%1.completion_message").arg(id));
-
+  QCOMPARE(tutorial->property("title").type(), QMetaType::QString);
+  QCOMPARE(tutorial->property("subtitle").type(), QMetaType::QString);
+  QCOMPARE(tutorial->property("completionMessage").type(), QMetaType::QString);
   QCOMPARE(tutorial->property("image").toString(), "foo.png");
 
   bool isAdvanced =
@@ -567,8 +576,7 @@ void TestAddon::message_create() {
     return;
   }
 
-  QString messageTitleId = message->property("titleId").toString();
-  QCOMPARE(messageTitleId, QString("message.%1.title").arg(id));
+  QCOMPARE(message->property("title").type(), QMetaType::QString);
 }
 
 void TestAddon::message_dismiss() {

@@ -46,6 +46,10 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/addons/addoni18n.h
     ${MVPN_SOURCE_DIR}/addons/addonmessage.cpp
     ${MVPN_SOURCE_DIR}/addons/addonmessage.h
+    ${MVPN_SOURCE_DIR}/addons/addonproperty.cpp
+    ${MVPN_SOURCE_DIR}/addons/addonproperty.h
+    ${MVPN_SOURCE_DIR}/addons/addonpropertylist.cpp
+    ${MVPN_SOURCE_DIR}/addons/addonpropertylist.h
     ${MVPN_SOURCE_DIR}/addons/addontutorial.cpp
     ${MVPN_SOURCE_DIR}/addons/addontutorial.h
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcher.cpp
