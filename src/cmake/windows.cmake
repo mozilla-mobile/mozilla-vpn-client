@@ -9,6 +9,13 @@ set_target_properties(mozillavpn PROPERTIES
     VERSION ${CMAKE_PROJECT_VERSION}
     WIN32_EXECUTABLE ON
 )
+# Todo: This will force the generation of a .pdb
+# ignoring buildmode. we need to fix the relwithdebug target
+# and then we can remove this :) 
+target_compile_options(mozillavpn
+    PRIVATE 
+    $<$<CONFIG:Release>:/ZI>>
+)
 
 # Generate the Windows version resource file.
 configure_file(../windows/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
@@ -94,7 +101,7 @@ include(cmake/signature.cmake)
 install(TARGETS mozillavpn DESTINATION .)
 install(FILES $<TARGET_PDB_FILE:mozillavpn> DESTINATION . OPTIONAL)
 
-## Deploy Qt runtime dependencies during installation.
+# Deploy Qt runtime dependencies during installation.
 get_target_property(QT_QMLLINT_EXECUTABLE Qt6::qmllint LOCATION)
 get_filename_component(QT_TOOL_PATH ${QT_QMLLINT_EXECUTABLE} PATH)
 find_program(QT_WINDEPLOY_EXECUTABLE
@@ -110,13 +117,3 @@ install(FILES ${VC_TOOLS_REDIST_PATH}/MergeModules/Microsoft_VC${MSVC_TOOLSET_VE
     DESTINATION . RENAME Microsoft_CRT_x64.msm)
 
 install(FILES ui/resources/logo.ico DESTINATION .)
-
-## TODO: Are these still needed? It's not clear.
-#libssl.files = $$PWD/../../../libssl-1_1-x64.dll
-#libssl.path = $$PWD/../../../unsigned/
-#INSTALLS += libssl
-#
-#libcrypto.files = $$PWD/../../../libcrypto-1_1-x64.dll
-#libcrypto.path = $$PWD/../../../unsigned/
-#INSTALLS += libcrypto
-#
