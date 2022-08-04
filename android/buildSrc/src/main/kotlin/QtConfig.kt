@@ -1,6 +1,7 @@
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.CopySpec
+import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.internal.impldep.com.google.gson.JsonArray
 import org.gradle.kotlin.dsl.provideDelegate
 import org.json.JSONArray
@@ -134,6 +135,7 @@ open class QTConfigurationExtension
             include("*.so")
         }
         copyTask.into(target)
+        copyTask.duplicatesStrategy=DuplicatesStrategy.EXCLUDE
         return copyTask;
     }
 
