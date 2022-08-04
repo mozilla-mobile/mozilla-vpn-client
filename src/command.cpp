@@ -14,6 +14,7 @@
 #include "simplenetworkmanager.h"
 
 #ifdef MVPN_WINDOWS
+#  include <iostream>
 #  include <QSGRendererInterface>
 #  include <QQuickWindow>
 #  include <Windows.h>
@@ -138,6 +139,18 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
 
 int Command::runQmlApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
+
+#ifdef MVPN_WINDOWS
+    // Allocate a console to view log output in debug mode on windows
+    if (AllocConsole()) {
+      FILE* unusedFile;
+      freopen_s(&unusedFile, "CONOUT$", "w", stdout);
+      freopen_s(&unusedFile, "CONOUT$", "w", stderr);
+      std::cout.clear();
+      std::clog.clear();
+      std::cerr.clear();
+    }
+#  endif
 
   SettingsHolder settingsHolder;
 
