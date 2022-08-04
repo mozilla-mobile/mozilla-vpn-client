@@ -3,15 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addonmanager.h"
-#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
 #include "qmlengineholder.h"
-#include "signature.h"
 #include "taskscheduler.h"
 #include "tasks/addon/taskaddon.h"
 #include "tasks/function/taskfunction.h"
+#include "addondirectory.h"
+#include "addonindex.h"
 
 #include <QCoreApplication>
 #include <QCryptographicHash>
@@ -23,27 +23,10 @@
 #include <QResource>
 #include <QQmlEngine>
 #include <QSaveFile>
-#include <QStandardPaths>
-
-constexpr const char* ADDON_FOLDER = "addons";
-constexpr const char* ADDON_INDEX_FILENAME = "manifest.json";
-constexpr const char* ADDON_INDEX_SIGNATURE_FILENAME = "manifest.json.sign";
 
 namespace {
-
 Logger logger(LOG_MAIN, "AddonManager");
-
 AddonManager* s_instance = nullptr;
-
-QString rootAppFolder() {
-#ifdef MVPN_WASM
-  // https://wiki.qt.io/Qt_for_WebAssembly#Files_and_local_file_system_access
-  return "/";
-#else
-  return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-#endif
-}
-
 }  // namespace
 
 // static
@@ -55,7 +38,8 @@ AddonManager* AddonManager::instance() {
   return s_instance;
 }
 
-AddonManager::AddonManager(QObject* parent) : QAbstractListModel(parent) {
+AddonManager::AddonManager(QObject* parent)
+    : QAbstractListModel(parent), m_addonIndex(&m_addonDirectory) {
   MVPN_COUNT_CTOR(AddonManager);
 }
 
@@ -67,95 +51,21 @@ void AddonManager::initialize() {
     return;
   }
 
-  // Initialization of the addon folder.
-  {
-    QDir addonDir(rootAppFolder());
-    if (!addonDir.exists(ADDON_FOLDER) && !addonDir.mkdir(ADDON_FOLDER)) {
-      logger.info() << "Unable to create the addon folder";
-      return;
-    }
-  }
-
-  QByteArray index;
-  QByteArray indexSignature;
-  if (!readIndex(index, indexSignature)) {
-    return;
-  }
-
-  if (!validateIndex(index, indexSignature)) {
-    logger.debug() << "Unable to validate the index";
-    return;
-  }
-}
-
-void AddonManager::updateIndex(const QByteArray& index,
-                               const QByteArray& indexSignature) {
-  QByteArray currentIndex;
-  QByteArray currentIndexSignature;
-  if (readIndex(currentIndex, currentIndexSignature) && currentIndex == index &&
-      currentIndexSignature == indexSignature) {
-    logger.debug() << "The index has not changed";
-    return;
-  }
-
-  if (!validateIndex(index, indexSignature)) {
-    logger.debug() << "Unable to validate the index";
-    return;
-  }
-
-  writeIndex(index, indexSignature);
-}
-
-bool AddonManager::validateIndex(const QByteArray& index,
-                                 const QByteArray& indexSignature) {
-  QFile publicKeyFile(Constants::addonPublicKeyFile());
-  if (!publicKeyFile.open(QIODevice::ReadOnly)) {
-    logger.warning() << "Unable to open the addon public key file";
-    return false;
-  }
-
-  QByteArray publicKey = publicKeyFile.readAll();
-  if (!Signature::verify(publicKey, index, indexSignature)) {
-    logger.warning() << "Unable to verify the signature of the addon index";
-    return false;
-  }
-
-  QJsonDocument doc = QJsonDocument::fromJson(index);
-  if (!doc.isObject()) {
-    logger.debug() << "The index must be an object";
-    return false;
-  }
-
-  QJsonObject obj = doc.object();
-  if (obj["api_version"].toString() != "0.1") {
-    logger.debug() << "Invalid index file - api_version does not match";
-    return false;
-  }
-
+  // Load on disk addons, doing this will initialize the addons directory
   QList<AddonData> addons;
-  for (const QJsonValue item : obj["addons"].toArray()) {
-    QJsonObject addonObj = item.toObject();
-
-    QString sha256hex = addonObj["sha256"].toString();
-    if (sha256hex.isEmpty()) {
-      logger.warning() << "Incomplete index - sha256";
-      return false;
-    }
-
-    if (sha256hex.length() != 64) {
-      logger.warning() << "Invalid sha256 hash";
-      return false;
-    }
-
-    QString addonId = addonObj["id"].toString();
-    if (addonId.isEmpty()) {
-      logger.warning() << "Incomplete index - addonId";
-      return false;
-    }
-
-    addons.append(
-        {QByteArray::fromHex(sha256hex.toLocal8Bit()), addonId, nullptr});
+  if (m_addonIndex.getOnDiskAddonsList(&addons)) {
+    updateAddonsList(addons);
   }
+
+  // Listen for updates in the addons list
+  connect(&m_addonIndex, &AddonIndex::indexUpdated, this,
+          &AddonManager::updateAddonsList);
+}
+
+AddonIndex* AddonManager::index() { return &m_addonIndex; }
+
+void AddonManager::updateAddonsList(QList<AddonData> addons) {
+  logger.debug() << "Updating addons list";
 
   // Remove unknown addons
   QStringList addonsToBeRemoved;
@@ -207,8 +117,6 @@ bool AddonManager::validateIndex(const QByteArray& index,
       emit loadCompletedChanged();
     }
   }
-
-  return true;
 }
 
 bool AddonManager::loadManifest(const QString& manifestFileName) {
@@ -286,131 +194,9 @@ void AddonManager::retranslate() {
 }
 
 // static
-bool AddonManager::addonDir(QDir* dir) {
-  Q_ASSERT(dir);
-
-  QDir addonDir(rootAppFolder());
-  if (!addonDir.exists(ADDON_FOLDER)) {
-    return false;
-  }
-
-  if (!addonDir.cd(ADDON_FOLDER)) {
-    logger.warning() << "Unable to open the addons folder";
-    return false;
-  }
-
-  *dir = addonDir;
-  return true;
-}
-
-// static
-bool AddonManager::readIndex(QByteArray& index, QByteArray& indexSignature) {
-  QDir dir;
-  if (!addonDir(&dir)) {
-    return false;
-  }
-
-  // Index file
-  {
-    QFile indexFile(dir.filePath(ADDON_INDEX_FILENAME));
-    if (!indexFile.exists()) {
-      logger.info() << "Index file does not exist yet";
-      return false;
-    }
-
-    if (!indexFile.open(QIODevice::ReadOnly)) {
-      logger.warning() << "Unable to open the addon index"
-                       << indexFile.errorString();
-      return false;
-    }
-
-    index = indexFile.readAll();
-  }
-
-  // Index signature file
-  {
-    QFile indexSignatureFile(dir.filePath(ADDON_INDEX_SIGNATURE_FILENAME));
-    if (!indexSignatureFile.exists()) {
-      logger.info() << "The addon index signature file does not exists yet";
-      return false;
-    }
-
-    if (!indexSignatureFile.open(QIODevice::ReadOnly)) {
-      logger.warning() << "Unable to open the addon index signature"
-                       << indexSignatureFile.errorString();
-      return false;
-    }
-
-    indexSignature = indexSignatureFile.readAll();
-  }
-
-  return true;
-}
-
-// static
-void AddonManager::writeIndex(const QByteArray& index,
-                              const QByteArray& indexSignature) {
-  QDir dir;
-  if (!addonDir(&dir)) {
-    return;
-  }
-
-  // Index file
-  {
-    QSaveFile indexFile(dir.filePath(ADDON_INDEX_FILENAME));
-    if (!indexFile.open(QIODevice::WriteOnly)) {
-      logger.warning() << "Unable to open the addon index file"
-                       << indexFile.errorString();
-      return;
-    }
-
-    if (!indexFile.write(index)) {
-      logger.warning() << "Unable to write the addon index file";
-      return;
-    }
-
-    if (!indexFile.commit()) {
-      logger.warning() << "Unable to commit the addon index file";
-      return;
-    }
-  }
-
-  // Index signature file
-  {
-    QSaveFile indexSignatureFile(dir.filePath(ADDON_INDEX_SIGNATURE_FILENAME));
-    if (!indexSignatureFile.open(QIODevice::WriteOnly)) {
-      logger.warning() << "Unable to open the addon index signature file"
-                       << indexSignatureFile.errorString();
-      return;
-    }
-
-    if (!indexSignatureFile.write(indexSignature)) {
-      logger.warning() << "Unable to write the addon index signature file";
-      return;
-    }
-
-    if (!indexSignatureFile.commit()) {
-      logger.warning() << "Unable to commit the addon index signature file";
-      return;
-    }
-  }
-}
-
-// static
 void AddonManager::removeAddon(const QString& addonId) {
-  QDir dir;
-  if (!addonDir(&dir)) {
-    return;
-  }
-
   QString addonFileName(QString("%1.rcc").arg(addonId));
-  if (!dir.exists(addonFileName)) {
-    return;
-  }
-
-  if (!dir.remove(addonFileName)) {
-    logger.warning() << "Unable to remove the addon file name";
-  }
+  instance()->m_addonDirectory.deleteFile(addonFileName);
 }
 
 bool AddonManager::validateAndLoad(const QString& addonId,
@@ -431,44 +217,39 @@ bool AddonManager::validateAndLoad(const QString& addonId,
 
   m_addons.insert(addonId, {QByteArray(), addonId, nullptr});
 
-  // Hash validation
+  QString addonFileName(QString("%1.rcc").arg(addonId));
+
   QDir dir;
-  if (!addonDir(&dir)) {
+  if (!m_addonDirectory.getDirectory(&dir)) {
     return false;
   }
+  QString addonFilePath(dir.filePath(addonFileName));
 
-  QString addonFileName(dir.filePath(QString("%1.rcc").arg(addonId)));
+  // Hash validation
   if (checkSha256) {
-    QFile addonFile(addonFileName);
-    if (!addonFile.exists()) {
-      logger.info() << "The addon file" << addonFileName
-                    << "does not exist yet";
+    QByteArray addonFileContents;
+
+    if (!m_addonDirectory.readFile(addonFileName, &addonFileContents)) {
       return false;
     }
 
-    if (!addonFile.open(QIODevice::ReadOnly)) {
-      logger.warning() << "Unable to open the addon file" << addonFileName
-                       << addonFile.errorString();
-      return false;
-    }
-
-    if (QCryptographicHash::hash(addonFile.readAll(),
+    if (QCryptographicHash::hash(addonFileContents,
                                  QCryptographicHash::Sha256) != sha256) {
-      logger.warning() << "Addon hash does not match" << addonFileName;
+      logger.warning() << "Addon hash does not match" << addonFilePath;
       return false;
     }
   }
 
   m_addons[addonId].m_sha256 = sha256;
 
-  if (!QResource::registerResource(addonFileName,
+  if (!QResource::registerResource(addonFilePath,
                                    QString("/addons/%1").arg(addonId))) {
-    logger.warning() << "Unable to load resource from file" << addonFileName;
+    logger.warning() << "Unable to load resource from file" << addonFilePath;
     return false;
   }
 
   if (!loadManifest(QString(":/addons/%1/manifest.json").arg(addonId))) {
-    QResource::unregisterResource(addonFileName, "/addons");
+    QResource::unregisterResource(addonFilePath, "/addons");
     return false;
   }
 
@@ -492,26 +273,8 @@ void AddonManager::storeAndLoadAddon(const QByteArray& addonData,
     return;
   }
 
-  QDir dir;
-  if (!addonDir(&dir)) {
-    return;
-  }
-
-  QString addonFileName(dir.filePath(QString("%1.rcc").arg(addonId)));
-  QSaveFile addonFile(addonFileName);
-  if (!addonFile.open(QIODevice::WriteOnly)) {
-    logger.warning() << "Unable to open to write the addon" << addonFileName
-                     << addonFile.errorString();
-    return;
-  }
-
-  if (!addonFile.write(addonData)) {
-    logger.warning() << "Unable to write the addon file";
-    return;
-  }
-
-  if (!addonFile.commit()) {
-    logger.warning() << "Unable to commit the addon file";
+  QString addonFileName(QString("%1.rcc").arg(addonId));
+  if (!m_addonDirectory.writeToFile(addonFileName, addonData)) {
     return;
   }
 

@@ -3,6 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 SOURCES += \
+        addondirectory.cpp \
+        addonindex.cpp \
         addonmanager.cpp \
         addons/addon.cpp \
         addons/addondemo.cpp \
@@ -167,6 +169,8 @@ SOURCES += \
         websocket/websockethandler.cpp
 
 HEADERS += \
+        addondirectory.h \
+        addonindex.h \
         addonmanager.h \
         addons/addon.h \
         addons/addondemo.h \
