@@ -47,6 +47,9 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
     return nullptr;
   }
 
+  QStringList readAddonMessages = settingsHolder->readAddonMessages();
+  message->m_isRead = readAddonMessages.contains(id);
+
   guard.dismiss();
   return message;
 }
@@ -72,6 +75,22 @@ void AddonMessage::dismiss() {
   QStringList dismissedAddonMessages = settingsHolder->dismissedAddonMessages();
   dismissedAddonMessages.append(id());
   settingsHolder->setDismissedAddonMessages(dismissedAddonMessages);
+}
+
+void AddonMessage::maskAsRead() {
+  if (m_isRead) {
+    return;
+  }
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  QStringList readAddonMessages = settingsHolder->readAddonMessages();
+  readAddonMessages.append(id());
+  settingsHolder->setReadAddonMessages(readAddonMessages);
+
+  m_isRead = true;
+  emit isReadChanged();
 }
 
 bool AddonMessage::enabled() const {

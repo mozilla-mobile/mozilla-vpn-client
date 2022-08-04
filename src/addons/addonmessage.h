@@ -18,6 +18,7 @@ class AddonMessage final : public Addon {
   ADDON_PROPERTY(title, m_title, retranslationCompleted)
 
   Q_PROPERTY(Composer* composer MEMBER m_composer CONSTANT)
+  Q_PROPERTY(bool isRead MEMBER m_isRead NOTIFY isReadChanged)
 
  public:
   static Addon* create(QObject* parent, const QString& manifestFileName,
@@ -27,8 +28,12 @@ class AddonMessage final : public Addon {
   ~AddonMessage();
 
   Q_INVOKABLE void dismiss();
+  Q_INVOKABLE void maskAsRead();
 
   bool enabled() const override;
+
+ signals:
+  void isReadChanged();
 
  private:
   AddonMessage(QObject* parent, const QString& manifestFileName,
@@ -39,6 +44,7 @@ class AddonMessage final : public Addon {
   Composer* m_composer = nullptr;
 
   bool m_dismissed = false;
+  bool m_isRead = false;
 };
 
 #endif  // ADDONMESSAGE_H
