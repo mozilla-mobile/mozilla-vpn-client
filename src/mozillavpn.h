@@ -405,6 +405,7 @@ class MozillaVPN final : public QObject {
   void requestAbout();
   void requestViewLogs();
   void requestContactUs();
+  void requestDevMenu();
 
  signals:
   void stateChanged();
@@ -416,6 +417,7 @@ class MozillaVPN final : public QObject {
   void aboutNeeded();
   void viewLogsNeeded();
   void contactUsNeeded();
+  void devMenuNeeded();
   void updatingChanged();
   void accountDeleted();
 

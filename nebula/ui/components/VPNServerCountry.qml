@@ -190,7 +190,7 @@ VPNClickableRow {
 
                     if (currentServer.whichHop === "singleHopServer") {
                         VPNController.changeServer(code, del._cityName);
-                        return stackview.pop();
+                        return homeStack.pop();
                     }
 
                     segmentedNav[currentServer.whichHop] = [del._countryCode,  del._cityName, del._localizedCityName]; // [countryCode, cityName, localizedCityName]

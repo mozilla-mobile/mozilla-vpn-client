@@ -81,7 +81,9 @@ ColumnLayout {
                         title: qsTrId(addon.titleId)
 
                         onClicked:{
-                            mainStackView.push("qrc:/ui/settings/ViewGuide.qml", {"guide": addon, "imageBgColor": imageBgColor})
+                            settingsStack.push("qrc:/ui/settings/ViewGuide.qml", {"guide": addon, "imageBgColor": imageBgColor})
+                            settingsStack.Layout.topMargin = -settingsStackMenu.height - window.safeAreaHeightByDevice()
+                            settingsStack.z = 2
                             VPN.recordGleanEventWithExtraKeys("guideOpened",{
                                                                 "id": addon.id
                             });
@@ -115,7 +117,8 @@ ColumnLayout {
                     description: qsTrId(addon.subtitleId)
                     onClicked: {
                         VPNTutorial.play(addon);
-                        VPNCloseEventHandler.removeAllStackViews();
+                        window.showHomeStack(false)
+                        mainStackLayout.unwindAllStacks()
                     }
                 }
             }

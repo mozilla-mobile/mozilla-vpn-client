@@ -65,5 +65,6 @@
         <file>views/ViewSubscriptionNeeded.qml</file>
         <file>views/ViewUpdate.qml</file>
         <file>views/ViewMobileOnboarding.qml</file>
+        <file>messages/ViewMessagesInbox.qml</file>
     </qresource>
 </RCC>

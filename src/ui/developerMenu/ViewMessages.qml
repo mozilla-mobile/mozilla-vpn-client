@@ -14,16 +14,19 @@ import components.forms 0.1
 Item {
     id: root
 
+    property string _menuTitle: "Messages - REMOVE ME"
+
     VPNMenu {
         id: menu
         // Do not translate this string!
         title: "Messages - REMOVE ME"
+        visible: VPN.state !== VPN.StateMain
     }
 
     VPNFlickable {
         id: vpnFlickable
         flickContentHeight: messagessHolder.height + 100
-        anchors.top: menu.bottom
+        anchors.top: menu.visible ? menu.bottom : parent.top
         height: root.height - menu.height
         anchors.left: parent.left
         anchors.right: parent.right

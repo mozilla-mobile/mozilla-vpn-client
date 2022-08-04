@@ -25,6 +25,7 @@ Item {
         id: menu
         title: qsTrId("vpn.settings.giveFeedback")
         objectName: "giveFeedbackBackButton"
+        visible: VPN.state !== VPN.StateMain
     }
 
     StackView {
@@ -32,7 +33,7 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        anchors.top: menu.bottom
+        anchors.top: menu.visible ? menu.bottom : parent.top
         anchors.topMargin: 0
         initialItem: appRatingView
     }
@@ -372,7 +373,7 @@ Item {
                 anchors.top: col.bottom
                 anchors.topMargin: VPNTheme.theme.vSpacing
                 anchors.horizontalCenter: parent.horizontalCenter
-                onClicked: mainStackView.pop()
+                onClicked: settingsStack.pop()
                 Component.onCompleted: {
                    if (window.fullscreenRequired()) {
                        anchors.top = undefined;

@@ -85,7 +85,7 @@ VPNFlickable {
                         VPNAndroidUtils.openNotificationSettings();
                         return;
                     }
-                    settingsStackView.push("qrc:/ui/settings/ViewNotifications.qml")
+                    settingsStack.push("qrc:/ui/settings/ViewNotifications.qml")
                 }
                 visible: VPNFeatureList.get("captivePortal").isSupported || VPNFeatureList.get("unsecuredNetworkNotification").isSupported || VPNFeatureList.get("notificationControl").isSupported
                 width: parent.width - VPNTheme.theme.windowMargin
@@ -100,7 +100,7 @@ VPNFlickable {
                 settingTitle: _languageTitle
                 imageLeftSrc: "qrc:/ui/resources/settings/language.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push("qrc:/ui/settings/ViewLanguage.qml")
+                onClicked: settingsStack.push("qrc:/ui/settings/ViewLanguage.qml")
                 visible: VPNLocalizer.hasLanguages
                 width: parent.width - VPNTheme.theme.windowMargin
             }

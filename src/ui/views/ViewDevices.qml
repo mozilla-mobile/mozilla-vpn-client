@@ -14,6 +14,7 @@ Item {
 
     property var isModalDialogOpened: removePopup.visible
     property var wasmView
+    property string _menuTitle: qsTrId("vpn.devices.myDevices")
 
     VPNMenu {
         id: menu
@@ -22,12 +23,13 @@ Item {
         //% "My devices"
         title: qsTrId("vpn.devices.myDevices")
         accessibleIgnored: isModalDialogOpened
+        visible: VPN.state !== VPN.StateMain
     }
 
     VPNFlickable {
         id: vpnFlickable
 
-        anchors.top: menu.bottom
+        anchors.top: menu.visible ? menu.bottom : parent.top
         height: root.height - menu.height
         anchors.left: root.left
         anchors.right: root.right
@@ -45,7 +47,7 @@ Item {
                 name: "active" // normal mode
 
                 PropertyChanges {
-                    target: menu
+                    target: VPN.state === VPN.StateMain ? settingsStackMenu : menu
                     rightTitle: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices).arg(VPNUser.maxDevices)
                 }
                 PropertyChanges {
@@ -169,4 +171,6 @@ Item {
     }
 
     Component.onCompleted: VPN.refreshDevices()
+
+    Component.onDestruction: settingsStackMenu.rightTitle = ""
 }

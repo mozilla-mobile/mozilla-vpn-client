@@ -37,6 +37,7 @@ Item {
         //% "Get help"
         title: qsTrId("vpn.main.getHelp2")
         anchors.top: parent.top
+        visible: VPN.state !== VPN.StateMain
     }
 
     VPNMouseArea {
@@ -60,7 +61,7 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.topMargin: VPNTheme.theme.windowMargin
-        anchors.top: menu.bottom
+        anchors.top: menu.visible ? menu.bottom : parent.top
 
         Repeater {
             id: getHelpList
@@ -87,7 +88,7 @@ Item {
 
             accessibleName: title
             title: qsTrId("vpn.settings.giveFeedback")
-            onClicked: mainStackView.push("qrc:/ui/settings/ViewGiveFeedback.qml")
+            onClicked: settingsStack.push("qrc:/ui/settings/ViewGiveFeedback.qml")
             iconSource: "qrc:/nebula/resources/chevron.svg"
             backgroundColor: VPNTheme.theme.iconButtonLightBackground
             width: parent.width - VPNTheme.theme.windowMargin
@@ -107,7 +108,7 @@ Item {
             imageLeftSrc: "qrc:/ui/resources/developer.svg"
             imageRightSrc: "qrc:/nebula/resources/chevron.svg"
             visible: VPNSettings.developerUnlock
-            onClicked: mainStackView.push("qrc:/ui/developerMenu/ViewDeveloperMenu.qml")
+            onClicked: VPN.state === VPN.StateMain ? settingsStack.push("qrc:/ui/developerMenu/ViewDeveloperMenu.qml") : mainStackView.push("qrc:/ui/developerMenu/ViewDeveloperMenu.qml")
         }
     }
 }

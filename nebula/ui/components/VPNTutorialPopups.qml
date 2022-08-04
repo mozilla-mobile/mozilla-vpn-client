@@ -62,7 +62,7 @@ Item {
                const windowHeight = window.height;
                const targetElementDistanceFromTop = targetElement.mapToItem(window.contentItem, 0, 0).y
 
-               if (targetElementDistanceFromTop + targetElement.height + tutorialTooltip.implicitHeight > windowHeight) {
+                if (targetElementDistanceFromTop + targetElement.height + tutorialTooltip.implicitHeight > windowHeight) {
                    tooltipPositionedAboveTargetElement = true;
                    return targetElementDistanceFromTop - targetElement.height - notchHeight * 2.5;
                }
@@ -247,8 +247,8 @@ Item {
     function openTipsAndTricks() {
         tutorialPopup.close();
         VPN.settingsNeeded();
-        const settingsViewInMainStack = mainStackView.find((view) => { return view.objectName === "settings" });
-        settingsViewInMainStack._openTipsAndTricks();
+        window.showSettingsStack(true)
+        window.deepLinkToSettingsView("qrc:/ui/settings/ViewTipsAndTricks/ViewTipsAndTricks.qml")
     }
 
 

@@ -1464,6 +1464,13 @@ void MozillaVPN::requestContactUs() {
   emit contactUsNeeded();
 }
 
+void MozillaVPN::requestDevMenu() {
+  logger.debug() << "Dev menu view requested";
+
+  QmlEngineHolder::instance()->showWindow();
+  emit devMenuNeeded();
+}
+
 void MozillaVPN::activate() {
   logger.debug() << "VPN tunnel activation";
 

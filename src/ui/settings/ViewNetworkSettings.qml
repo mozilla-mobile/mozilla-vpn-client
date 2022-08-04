@@ -109,7 +109,7 @@ VPNFlickable {
                 settingTitle: qsTrId("vpn.settings.networking.advancedDNSSettings")
                 imageLeftSrc: "qrc:/ui/resources/settings-dark.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push("qrc:/ui/settings/ViewAdvancedDNSSettings.qml")
+                onClicked: settingsStack.push("qrc:/ui/settings/ViewAdvancedDNSSettings.qml")
                 visible: VPNFeatureList.get("customDNS").isSupported
             }
 
@@ -121,7 +121,7 @@ VPNFlickable {
                 settingTitle: _appPermissionsTitle
                 imageLeftSrc: "qrc:/ui/resources/settings/apps.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push("qrc:/ui/settings/ViewAppPermissions.qml")
+                onClicked: settingsStack.push("qrc:/ui/settings/ViewAppPermissions.qml")
                 visible: VPNFeatureList.get("splitTunnel").isSupported
             }
         }

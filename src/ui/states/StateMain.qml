@@ -3,29 +3,135 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
+import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.14
 
+import Mozilla.VPN 1.0
 import components 0.1
 
-VPNStackView {
-    id: stackview
+StackLayout {
+    id: mainStackLayout
+
+    property int selectedTab: StateMain.Tab.Home
+
+    enum Tab {
+        Home,
+        Messages,
+        Settings
+    }
+
+    function unwindAllStacks() {
+        homeStack.unwindToInitialItem()
+        messagesStack.unwindToInitialItem()
+        settingsStack.unwindToInitialItem()
+    }
+
     objectName: "ViewMainStackView"
 
-    Component.onCompleted: function(){
-        stackview.push("qrc:/ui/views/ViewMain.qml")
-    }
+    anchors.fill: parent
+
+    currentIndex: selectedTab
 
     Connections {
         target: window
         function onShowServerList() {
             // We get here after the user clicks the "Choose new location" button in VPNServerUnavailablePopup {}
             // We need to (maybe) unwind the stack back to ViewMain.qml and then push the server list.
-            if (stackview.currentItem.objectName === "viewServers") {
+            if (homeStack.currentItem.objectName === "viewServers") {
                 // User is already on server list view so we stay put
                 return;
             }
-            stackview.unwindToInitialItem();
-            stackview.push("qrc:/ui/views/ViewServers.qml", StackView.Immediate)
+            homeStack.unwindToInitialItem();
+            homeStack.push("qrc:/ui/views/ViewServers.qml", StackView.Immediate)
+        }
+        function onShowHomeStack(popToRoot) {
+            if(mainStackLayout.selectedTab === StateMain.Tab.Home || popToRoot) {
+                homeStack.unwindToInitialItem()
+                mainStackView.unwindToInitialItem()
+            }
+            mainStackLayout.selectedTab = StateMain.Tab.Home
+        }
+        function onShowMessagesStack(popToRoot) {
+            if(mainStackLayout.selectedTab === StateMain.Tab.Messages || popToRoot) {
+                messagesStack.unwindToInitialItem()
+                mainStackView.unwindToInitialItem()
+            }
+            mainStackLayout.selectedTab = StateMain.Tab.Messages
+        }
+        function onShowSettingsStack(popToRoot) {
+            if(mainStackLayout.selectedTab === StateMain.Tab.Settings || popToRoot)  {
+                settingsStack.Layout.topMargin = 0
+                settingsStack.z = 0
+                settingsStack.unwindToInitialItem()
+                mainStackView.unwindToInitialItem()
+            }
+            mainStackLayout.selectedTab = StateMain.Tab.Settings
+        }
+        function onDeepLinkToSettingsView(src) {
+            settingsStack.push(src)
         }
     }
+
+    VPNStackView {
+        id: homeStack
+
+        anchors.fill: undefined
+    }
+
+    VPNStackView {
+        id: messagesStack
+
+        anchors.fill: undefined
+    }
+
+    ColumnLayout {
+        id: settings
+
+        spacing: 0
+
+        VPNMenu {
+            id: settingsStackMenu
+
+            Layout.fillWidth: true
+            width: undefined
+
+            objectName: "settingsBackButton"
+            _menuOnBackClicked: () => {
+                VPNProfileFlow.reset();
+                if (settingsStack.depth > 1) {
+                    settingsStack.pop();
+                }
+            }
+            _iconButtonSource: "qrc:/nebula/resources/back.svg"
+
+            visible: settingsStack.depth > 1
+        }
+
+        VPNStackView {
+            id: settingsStack
+
+            anchors.fill: undefined
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+
+            onCurrentItemChanged: settingsStackMenu.title = Qt.binding(() => currentItem._menuTitle || "");
+        }
+    }
+
+    Component.onCompleted: {
+        const homeComponent = Qt.createComponent("qrc:/ui/views/ViewMain.qml")
+        const homeObject = homeComponent.createObject(homeStack, {height: parent.height, width: parent.width})
+        homeStack.push(homeObject)
+        window.showHomeStack(true)
+
+        const messagesComponent = Qt.createComponent("qrc:/ui/messages/ViewMessagesInbox.qml")
+        const messagesObject = messagesComponent.createObject(messagesStack, {height: parent.height, width: parent.width})
+        messagesStack.push(messagesObject)
+
+        const settingsComponent = Qt.createComponent("qrc:/ui/settings/ViewSettingsMenu.qml")
+        const settingsObject = settingsComponent.createObject(settingsStack, {height: parent.height, width: parent.width})
+        settingsStack.push(settingsObject)
+
+    }
 }
+

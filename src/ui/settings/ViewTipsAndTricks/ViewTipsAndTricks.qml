@@ -74,7 +74,8 @@ VPNFlickable {
 
                         onClicked: {
                             VPNTutorial.play(highlightedTutorial);
-                            VPNCloseEventHandler.removeAllStackViews();
+                            window.showHomeStack(false)
+                            mainStackLayout.unwindAllStacks()
                         }
                     }
                 }

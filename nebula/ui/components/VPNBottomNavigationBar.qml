@@ -36,10 +36,10 @@ Rectangle {
         border.color: VPNTheme.theme.ink
     }
 
-    MouseArea {
-        anchors.fill: parent
-        hoverEnabled: true
-    }
+//    MouseArea {
+//        anchors.fill: parent
+//        hoverEnabled: true
+//    }
 
     RowLayout {
         id: layout

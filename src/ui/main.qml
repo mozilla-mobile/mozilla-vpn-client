@@ -18,6 +18,10 @@ Window {
     id: window
 
     signal showServerList
+    signal showHomeStack(bool popToRoot)
+    signal showMessagesStack(bool popToRoot)
+    signal showSettingsStack(bool popToRoot)
+    signal deepLinkToSettingsView(string src)
 
     property bool _fallbackQtQuickRenderer: QT_QUICK_BACKEND == "software" //TODO pending #3398
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
@@ -145,7 +149,7 @@ Window {
 
         Connections {
             target: VPNConnectionBenchmark
-            onStateChanged: {
+            function onStateChanged () {
                 navbar.opacity = VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateInitial ? 1 : 0
             }
         }
@@ -159,27 +163,64 @@ Window {
             //Can't use item as root object for VPNBottomNavigationBarButton because it needs to conform to AbstractButton so it can join a button group
             Item {
                 VPNBottomNavigationBarButton {
+                    id: homeNavButton
                     anchors.centerIn: parent
                     source: checked ? "qrc:/nebula/resources/navbar/home-selected.svg" : "qrc:/nebula/resources/navbar/home.svg"
                     ButtonGroup.group: navBarTabsButtonGroup
                     checked: true
                     accessibleName: VPNl18n.NavBarHomeTab
+
+                    onClicked: {
+                        showHomeStack(false)
+                    }
+
+                    Connections {
+                        target: window
+                        function onShowHomeStack() {
+                            if(!homeNavButton.checked) homeNavButton.checked = true
+                        }
+                    }
                 }
             },
             Item {
                 VPNBottomNavigationBarButton {
+                    id: messagesNavButton
                     anchors.centerIn: parent
                     source: checked ? (hasNotification ? "qrc:/nebula/resources/navbar/messages-notification-selected.svg" : "qrc:/nebula/resources/navbar/messages-selected.svg") : (hasNotification ? "qrc:/nebula/resources/navbar/messages-notification.svg" : "qrc:/nebula/resources/navbar/messages.svg")
                     ButtonGroup.group: navBarTabsButtonGroup
                     accessibleName: VPNl18n.NavBarMessagesTab
+                    onClicked: {
+                        showMessagesStack(false)
+                    }
+
+                    Connections {
+                        target: window
+                        function onShowMessagesStack() {
+                            if(!messagesNavButton.checked) messagesNavButton.checked = true
+                        }
+                    }
                 }
             },
             Item {
                 VPNBottomNavigationBarButton {
+                    id: settingsNavButton
+                    objectName: "settingsNavButton"
                     anchors.centerIn: parent
                     source: checked ? "qrc:/nebula/resources/navbar/settings-selected.svg" : "qrc:/nebula/resources/navbar/settings.svg"
                     ButtonGroup.group: navBarTabsButtonGroup
                     accessibleName: VPNl18n.NavBarSettingsTab
+
+                    onClicked: {
+                        showSettingsStack(false)
+                    }
+
+                    Connections {
+                        target: window
+                        function onShowSettingsStack() {
+                            if(!settingsNavButton.checked) settingsNavButton.checked = true
+                            VPN.recordGleanEvent("settingsViewOpened"); //ML TODO: Event every time settings nav stack is shown? Or only main settings menu is shown? Even on back button clicked to main settings menu?
+                        }
+                    }
                 }
             }
         ]
@@ -343,18 +384,30 @@ Window {
             mainStackView.push("qrc:/ui/views/ViewContactUs.qml", StackView.Immediate);
         }
 
+        function onDevMenuNeeded() {
+            // Check if Dev Menu view is already in mainStackView
+            const devMenuViewInStack = mainStackView.find((view) => { return view.objectName === "devMenu" });
+            if (devMenuViewInStack) {
+                // Unwind mainStackView back to Contact Us
+                return mainStackView.pop(devMenuViewInStack, StackView.Immediate);
+            }
+            mainStackView.push("qrc:/ui/views/ViewDeveloperMenu.qml", StackView.Immediate);
+        }
+
+
         function onSettingsNeeded() {
             // Check if Settings view is already in mainStackView
-            const settingsViewInMainStack = mainStackView.find((view) => { return view.objectName === "settings" })
+//            const settingsViewInMainStack = mainStackView.find((view) => { return view.objectName === "settings" })
 
-            if (settingsViewInMainStack) {
-                // Unwind settingsStackView back to menu
-                settingsViewInMainStack._unwindSettingsStackView();
+//            if (settingsViewInMainStack) {
+//                // Unwind settingsStackView back to menu
+//                settingsViewInMainStack._unwindSettingsStackView();
 
-                // Unwind mainStackView back to Settings
-                return mainStackView.pop(settingsViewInMainStack, StackView.Immediate);
-            }
-            mainStackView.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate);
+//                // Unwind mainStackView back to Settings
+//                return mainStackView.pop(settingsViewInMainStack, StackView.Immediate);
+//            }
+//            mainStackView.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate);
+            showSettingsStack(true)
         }
         function onAccountDeleted() {
             VPNController.logout();

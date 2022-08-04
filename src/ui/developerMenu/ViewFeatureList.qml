@@ -17,10 +17,13 @@ import telemetry 0.30
 Item {
     id: root
 
+    property string _menuTitle: "Feature List"
+
     VPNMenu {
         id: menu
         // Do not translate this string!
         title: "Feature List"
+        visible: VPN.state !== VPN.StateMain
     }
 
     VPNFilterProxyModel {
@@ -38,7 +41,7 @@ Item {
     VPNFlickable {
         id: vpnFlickable
         flickContentHeight: featureListHolder.height
-        anchors.top: menu.bottom
+        anchors.top: menu.visible ? menu.bottom : parent.top
         height: root.height - menu.height
         anchors.left: parent.left
         anchors.right: parent.right

@@ -42,7 +42,7 @@ Item {
                 VPNController.changeServer(VPNCurrentServer.exitCountryCode, VPNCurrentServer.exitCityName)
             }
 
-            return stackview.pop()
+            return homeStack.pop()
         }
     }
 

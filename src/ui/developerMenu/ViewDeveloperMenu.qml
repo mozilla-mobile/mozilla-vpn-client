@@ -17,16 +17,19 @@ Item {
 
     id: root
 
+    objectName: "devMenu"
+
     VPNMenu {
         id: menu
         title: VPNl18n.SettingsDevTitle
         anchors.top: parent.top
+        visible: VPN.state !== VPN.StateMain
     }
 
     VPNFlickable {
         id: flickableContent
 
-        anchors.top: menu.bottom
+        anchors.top: menu.visible ? menu.bottom : parent.top
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
@@ -124,7 +127,7 @@ Item {
                 settingTitle: "Theme list"
                 imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: mainStackView.push("qrc:/ui/developerMenu/ViewThemeList.qml")
+                onClicked: VPN.state === VPN.StateMain ? settingsStack.push("qrc:/ui/developerMenu/ViewThemeList.qml") : mainStackView.push("qrc:/ui/developerMenu/ViewThemeList.qml")
             }
 
             VPNSettingsItem {
@@ -140,7 +143,7 @@ Item {
                 settingTitle: "Feature list"
                 imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: mainStackView.push("qrc:/ui/developerMenu/ViewFeatureList.qml")
+                onClicked: VPN.state === VPN.StateMain ? settingsStack.push("qrc:/ui/developerMenu/ViewFeatureList.qml") : mainStackView.push("qrc:/ui/developerMenu/ViewFeatureList.qml")
             }
 
             VPNSettingsItem {
@@ -155,7 +158,7 @@ Item {
                 settingTitle: "Messages - REMOVE ME!"
                 imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: mainStackView.push("qrc:/ui/developerMenu/ViewMessages.qml")
+                onClicked: VPN.state === VPN.StateMain ? settingsStack.push("qrc:/ui/developerMenu/ViewMessages.qml") : mainStackView.push("qrc:/ui/developerMenu/ViewMessages.qml")
             }
 
 
@@ -172,7 +175,7 @@ Item {
                 settingTitle: "Animations playground"
                 imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: mainStackView.push("qrc:/ui/developerMenu/ViewAnimationsPlayground.qml")
+                onClicked: VPN.state === VPN.StateMain ? settingsStack.push("qrc:/ui/developerMenu/ViewAnimationsPlayground.qml") : mainStackView.push("qrc:/ui/developerMenu/ViewAnimationsPlayground.qml")
             }
 
             //Need to wrap VPNExternalLinkListItem in an item since it is not written to work in a layout

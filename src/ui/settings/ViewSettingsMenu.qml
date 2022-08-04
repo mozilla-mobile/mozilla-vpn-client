@@ -11,8 +11,6 @@ import components 0.1
 
 
 VPNFlickable {
-    property string _menuTitle: qsTrId("vpn.main.settings")
-
     id: vpnFlickable
     objectName: "settingsView"
     flickContentHeight: settingsList.implicitHeight
@@ -94,7 +92,7 @@ VPNFlickable {
                 settingTitle: VPNl18n.TipsAndTricksSettingsEntryLabel
                 imageLeftSrc: "qrc:/nebula/resources/sparkles.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push("qrc:/ui/settings/ViewTipsAndTricks/ViewTipsAndTricks.qml")
+                onClicked: settingsStack.push("qrc:/ui/settings/ViewTipsAndTricks/ViewTipsAndTricks.qml")
             }
 
             VPNSettingsItem {
@@ -102,7 +100,7 @@ VPNFlickable {
                 settingTitle: qsTrId("vpn.settings.networking")
                 imageLeftSrc: "qrc:/ui/resources/settings/networkSettings.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push("qrc:/ui/settings/ViewNetworkSettings.qml", {
+                onClicked: settingsStack.push("qrc:/ui/settings/ViewNetworkSettings.qml", {
                                                       //% "App permissions"
                                                       _appPermissionsTitle: Qt.binding(() => qsTrId("vpn.settings.appPermissions2"))
                                                   })
@@ -114,12 +112,20 @@ VPNFlickable {
                 settingTitle: VPNl18n.SettingsSystemPreferences
                 imageLeftSrc: "qrc:/ui/resources/settings/preferences.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push("qrc:/ui/settings/ViewPrivacySecurity.qml", {
+                onClicked: settingsStack.push("qrc:/ui/settings/ViewPrivacySecurity.qml", {
                                                     _startAtBootTitle: Qt.binding(() => VPNl18n.SettingsStartAtBootTitle),
                                                     _languageTitle:  Qt.binding(() => qsTrId("vpn.settings.language")),
                                                     _notificationsTitle:  Qt.binding(() => qsTrId("vpn.settings.notifications")),
                                                     _menuTitle: Qt.binding(() => preferencesSetting.settingTitle)
                                                   })
+            }
+
+            VPNSettingsItem {
+                objectName: "deviceListButton"
+                settingTitle: qsTrId("vpn.devices.myDevices")
+                imageLeftSrc: "qrc:/nebula/resources/devices.svg"
+                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                onClicked: settingsStack.push("qrc:/ui/views/ViewDevices.qml")
             }
 
             VPNSettingsItem {
@@ -131,7 +137,7 @@ VPNFlickable {
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 onClicked: {
                     VPN.recordGleanEvent("getHelpClickedViewSettings");
-                    getHelpViewNeeded();
+                    settingsStack.push("qrc:/ui/views/ViewGetHelp.qml")
                 }
             }
 
@@ -140,7 +146,7 @@ VPNFlickable {
                 settingTitle: qsTrId("vpn.settings.aboutUs")
                 imageLeftSrc: "qrc:/ui/resources/settings/aboutUs.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push(aboutUsComponent)
+                onClicked: settingsStack.push(aboutUsComponent)
             }
 
             VPNSignOut {
@@ -169,9 +175,9 @@ VPNFlickable {
         function onStateChanged() {
             if (
                 VPNProfileFlow.state === VPNProfileFlow.StateReady
-                && settingsStackView.currentItem.objectName !== "subscriptionManagmentView"
+                && settingsStack.currentItem.objectName !== "subscriptionManagmentView"
             ) {
-                return settingsStackView.push("qrc:/ui/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml");
+                return settingsStack.push("qrc:/ui/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml");
             }
 
             // Only push the profile view if it’s not already in the stack

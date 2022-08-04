@@ -119,6 +119,8 @@ void MozillaVPN::requestViewLogs() {}
 
 void MozillaVPN::requestContactUs() {}
 
+void MozillaVPN::requestDevMenu() {}
+
 void MozillaVPN::retrieveLogs() {}
 
 void MozillaVPN::storeInClipboard(const QString&) {}

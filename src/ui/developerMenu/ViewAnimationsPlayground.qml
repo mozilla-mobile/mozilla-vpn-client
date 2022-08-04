@@ -17,17 +17,19 @@ Item {
     property int totalAnimationFrames: 0
     property double currentAnimationFrame: 0
     property string selectedAnimationSource
+    property string _menuTitle: "Animations playground"
 
     VPNMenu {
         id: menu
         // Do not translate this string!
         title: "Animations playground"
+        visible: VPN.state !== VPN.StateMain
     }
 
     Rectangle {
         id: animationContainer
 
-        anchors.top: menu.bottom
+        anchors.top: menu.visible ? menu.bottom : parent.top
         color: VPNTheme.colors.grey50
         height: parent.width * 0.6
         width: parent.width

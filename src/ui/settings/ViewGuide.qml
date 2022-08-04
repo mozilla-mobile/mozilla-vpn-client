@@ -48,7 +48,9 @@ Item {
 
                 onClicked: {
                     statusBarModifier.resetDefaults()
-                    mainStackView.pop()
+                    settingsStack.Layout.topMargin = 0
+                    settingsStack.z = 0
+                    settingsStack.pop()
                 }
 
                 Image {

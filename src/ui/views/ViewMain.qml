@@ -17,9 +17,6 @@ VPNFlickable {
     objectName: "viewMainFlickable"
 
     flickContentHeight: col.height + VPNTheme.theme.windowMargin / 2
-    anchors.left: parent.left
-    anchors.right: parent.right
-    considerNavBar: false //TODO: Remove this when we move my devices nav into settings menu
 
     states: [
         State {
@@ -95,7 +92,7 @@ VPNFlickable {
                     return
                 }
 
-                stackview.push("ViewServers.qml")
+                homeStack.push("ViewServers.qml")
             }
 
             id: serverInfo
@@ -138,40 +135,6 @@ VPNFlickable {
             ]
         }
 
-        VPNControllerNav {
-            function handleClick() {
-                stackview.push("ViewDevices.qml")
-            }
-
-            Layout.topMargin: 6
-
-            objectName: "deviceListButton"
-            btnObjectName: "deviceListButton-btn"
-            //% "My devices"
-            titleText: qsTrId("vpn.devices.myDevices")
-            disableRowWhen: box.connectionInfoScreenVisible
-            contentChildren: [
-                VPNIcon {
-                    source: "qrc:/nebula/resources/devices.svg"
-                    Layout.alignment: Qt.AlignLeft | Qt.AlignCenter
-                },
-
-                VPNLightLabel {
-                    id: serverLocation
-                    objectName: "deviceListButtonLabel"
-                    Accessible.ignored: true
-                    Layout.alignment: Qt.AlignLeft
-                    elide: Text.ElideRight
-                    //% "%1 of %2"
-                    //: Example: You have "x of y" devices in your account, where y is the limit of allowed devices.
-                    text: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(
-                              VPNDeviceModel.activeDevices
-                              + (VPN.state !== VPN.StateDeviceLimit ? 0 : 1)).arg(
-                              VPNUser.maxDevices)
-                }
-            ]
-        }
-
         VPNVerticalSpacer {
             Layout.fillWidth: true
             Layout.preferredHeight: 1
@@ -205,7 +168,8 @@ VPNFlickable {
                         tipAndTricksIntroButton.enabled = false
                         closedByPrimaryButton = true
                         tipsAndTricksIntroPopup.close()
-                        mainStackView.push(tipsAndTricksDeepLinkView)
+                        window.showSettingsStack()
+                        settingsStack.push("qrc:/ui/settings/ViewTipsAndTricks/ViewTipsAndTricks.qml")
                     }
                 },
                 VPNLinkButton {
@@ -226,39 +190,13 @@ VPNFlickable {
             }
         }
 
-        onActiveChanged: if (active) { item.open() }
-
-        Component {
-            id: tipsAndTricksDeepLinkView
-
-            ColumnLayout {
-
-                spacing: 0
-
-                VPNMenu {
-                    id: menu
-                    objectName: "tipsAndTricksCloseButton"
-
-                    Layout.fillWidth: true
-
-                    _iconButtonSource:"qrc:/nebula/resources/close-dark.svg"
-                    title: VPNl18n.TipsAndTricksSettingsEntryLabel
-                    _menuOnBackClicked: () => { mainStackView.pop() }
-                }
-
-                Loader {
-                    Layout.fillHeight: true
-                    Layout.fillWidth: true
-                    source: "qrc:/ui/settings/ViewTipsAndTricks/ViewTipsAndTricks.qml"
-                }
-            }
-        }
+        onStatusChanged: if (status === Loader.Ready) item.open()
     }
 
     function maybeActivateTipsAndTricksIntro() {
         if (!VPNSettings.tipsAndTricksIntroShown &&
             VPNAddonManager.loadCompleted &&
-            !!VPNAddonManager.pick(addon => addon.type === "tutorial" || addon.type === "guide")) {
+            !!VPNAddonManager.pick(addon => addon.type === "t tutorial" || addon.type === "guide")) {
             tipsAndTricksIntroPopupLoader.active = true
         }
     }

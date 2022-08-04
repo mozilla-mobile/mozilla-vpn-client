@@ -51,7 +51,7 @@ Item {
                     accessibleName: licenseTitle
                     title: licenseTitle
                     iconSource: "qrc:/nebula/resources/chevron.svg"
-                    onClicked: settingsStackView.push("qrc:/ui/views/ViewLicense.qml", { _menuTitle: licenseTitle, licenseContent })
+                    onClicked: settingsStack.push("qrc:/ui/views/ViewLicense.qml", { _menuTitle: licenseTitle, licenseContent })
 
                 }
             }
