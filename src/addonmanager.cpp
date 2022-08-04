@@ -623,3 +623,7 @@ QJSValue AddonManager::reduce(QJSValue callback, QJSValue initialValue) const {
 
   return reducedValue;
 }
+
+#ifdef UNIT_TEST
+QStringList AddonManager::addonIds() const { return m_addons.keys(); }
+#endif
