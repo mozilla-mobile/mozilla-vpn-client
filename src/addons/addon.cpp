@@ -39,7 +39,9 @@ bool evaluateConditionsSettingsOp(const QString& op, bool result) {
 
 struct ConditionCallback {
   QString m_key;
-  std::function<bool(const QJsonValue&)> m_callback;
+  std::function<bool(const QJsonValue&)> m_staticCallback;
+  std::function<AddonConditionWatcher*(QObject*, const QJsonValue&)>
+      m_dynamicCallback;
 };
 
 QList<ConditionCallback> s_conditionCallbacks{
@@ -62,6 +64,9 @@ QList<ConditionCallback> s_conditionCallbacks{
        }
 
        return true;
+     },
+     [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
+       return nullptr;
      }},
 
     {"platforms",
@@ -78,6 +83,9 @@ QList<ConditionCallback> s_conditionCallbacks{
        }
 
        return true;
+     },
+     [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
+       return nullptr;
      }},
 
     {"settings",
@@ -131,6 +139,9 @@ QList<ConditionCallback> s_conditionCallbacks{
        }
 
        return true;
+     },
+     [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
+       return nullptr;
      }},
 
     {"env",
@@ -151,6 +162,9 @@ QList<ConditionCallback> s_conditionCallbacks{
 
        logger.info() << "Unknown env value:" << env;
        return false;
+     },
+     [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
+       return nullptr;
      }},
 
     {"min_client_version",
@@ -166,6 +180,9 @@ QList<ConditionCallback> s_conditionCallbacks{
        }
 
        return true;
+     },
+     [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
+       return nullptr;
      }},
 
     {"max_client_version",
@@ -181,6 +198,33 @@ QList<ConditionCallback> s_conditionCallbacks{
        }
 
        return true;
+     },
+     [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
+       return nullptr;
+     }},
+
+    {"locales",
+     [](const QJsonValue&) -> bool {
+       // dynamic condition
+       return true;
+     },
+     [](QObject* parent, const QJsonValue& value) -> AddonConditionWatcher* {
+       QStringList locales;
+       for (const QJsonValue& v : value.toArray()) {
+         locales.append(v.toString().toLower());
+       }
+
+       return AddonConditionWatcherLocales::maybeCreate(parent, locales);
+     }},
+
+    {"trigger_time",
+     [](const QJsonValue&) -> bool {
+       // dynamic condition
+       return true;
+     },
+     [](QObject* parent, const QJsonValue& value) -> AddonConditionWatcher* {
+       return AddonConditionWatcherTriggerTimeSecs::maybeCreate(
+           parent, value.toInteger());
      }},
 };
 
@@ -317,25 +361,16 @@ void Addon::retranslate() {
 void Addon::maybeCreateConditionWatchers(const QJsonObject& conditions) {
   QList<AddonConditionWatcher*> watcherList;
 
-  {
-    QStringList locales;
-    for (const QJsonValue& value : conditions["locales"].toArray()) {
-      locales.append(value.toString().toLower());
-    }
-
-    AddonConditionWatcher* tmpWatcher =
-        AddonConditionWatcherLocales::maybeCreate(this, locales);
-    if (tmpWatcher) {
-      watcherList.append(tmpWatcher);
-    }
-  }
-
-  {
-    AddonConditionWatcher* tmpWatcher =
-        AddonConditionWatcherTriggerTimeSecs::maybeCreate(
-            this, conditions["trigger_time"].toInteger());
-    if (tmpWatcher) {
-      watcherList.append(tmpWatcher);
+  for (const QString& key : conditions.keys()) {
+    for (const ConditionCallback& condition : s_conditionCallbacks) {
+      if (condition.m_key == key) {
+        AddonConditionWatcher* conditionWatcher =
+            condition.m_dynamicCallback(this, conditions[key]);
+        if (conditionWatcher) {
+          watcherList.append(conditionWatcher);
+        }
+        break;
+      }
     }
   }
 
@@ -370,7 +405,7 @@ bool Addon::evaluateConditions(const QJsonObject& conditions) {
     bool found = false;
     for (const ConditionCallback& condition : s_conditionCallbacks) {
       if (condition.m_key == key) {
-        if (!condition.m_callback(conditions[key])) {
+        if (!condition.m_staticCallback(conditions[key])) {
           return false;
         }
         found = true;

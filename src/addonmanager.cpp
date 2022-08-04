@@ -21,6 +21,8 @@
 #include <QJsonObject>
 #include <QFileInfo>
 #include <QResource>
+#include <QQmlEngine>
+#include <QSaveFile>
 #include <QStandardPaths>
 
 constexpr const char* ADDON_FOLDER = "addons";
@@ -182,8 +184,6 @@ bool AddonManager::validateIndex(const QByteArray& index,
   for (const AddonData& addonData : addons) {
     if (!m_addons.contains(addonData.m_addonId) &&
         validateAndLoad(addonData.m_addonId, addonData.m_sha256)) {
-      Q_ASSERT(m_addons.contains(addonData.m_addonId));
-      Q_ASSERT(m_addons[addonData.m_addonId].m_sha256 == addonData.m_sha256);
       continue;
     }
 
@@ -357,7 +357,7 @@ void AddonManager::writeIndex(const QByteArray& index,
 
   // Index file
   {
-    QFile indexFile(dir.filePath(ADDON_INDEX_FILENAME));
+    QSaveFile indexFile(dir.filePath(ADDON_INDEX_FILENAME));
     if (!indexFile.open(QIODevice::WriteOnly)) {
       logger.warning() << "Unable to open the addon index file"
                        << indexFile.errorString();
@@ -366,12 +366,18 @@ void AddonManager::writeIndex(const QByteArray& index,
 
     if (!indexFile.write(index)) {
       logger.warning() << "Unable to write the addon index file";
+      return;
+    }
+
+    if (!indexFile.commit()) {
+      logger.warning() << "Unable to commit the addon index file";
+      return;
     }
   }
 
   // Index signature file
   {
-    QFile indexSignatureFile(dir.filePath(ADDON_INDEX_SIGNATURE_FILENAME));
+    QSaveFile indexSignatureFile(dir.filePath(ADDON_INDEX_SIGNATURE_FILENAME));
     if (!indexSignatureFile.open(QIODevice::WriteOnly)) {
       logger.warning() << "Unable to open the addon index signature file"
                        << indexSignatureFile.errorString();
@@ -380,6 +386,12 @@ void AddonManager::writeIndex(const QByteArray& index,
 
     if (!indexSignatureFile.write(indexSignature)) {
       logger.warning() << "Unable to write the addon index signature file";
+      return;
+    }
+
+    if (!indexSignatureFile.commit()) {
+      logger.warning() << "Unable to commit the addon index signature file";
+      return;
     }
   }
 }
@@ -486,7 +498,7 @@ void AddonManager::storeAndLoadAddon(const QByteArray& addonData,
   }
 
   QString addonFileName(dir.filePath(QString("%1.rcc").arg(addonId)));
-  QFile addonFile(addonFileName);
+  QSaveFile addonFile(addonFileName);
   if (!addonFile.open(QIODevice::WriteOnly)) {
     logger.warning() << "Unable to open to write the addon" << addonFileName
                      << addonFile.errorString();
@@ -495,6 +507,11 @@ void AddonManager::storeAndLoadAddon(const QByteArray& addonData,
 
   if (!addonFile.write(addonData)) {
     logger.warning() << "Unable to write the addon file";
+    return;
+  }
+
+  if (!addonFile.commit()) {
+    logger.warning() << "Unable to commit the addon file";
     return;
   }
 
@@ -579,4 +596,30 @@ Addon* AddonManager::pick(QJSValue filterCallback) const {
   }
 
   return nullptr;
+}
+
+QJSValue AddonManager::reduce(QJSValue callback, QJSValue initialValue) const {
+  if (!callback.isCallable()) {
+    logger.error() << "AddonManager.reduce must receive a callable JS value";
+    return initialValue;
+  }
+
+  QJSEngine* engine = QmlEngineHolder::instance()->engine();
+  Q_ASSERT(engine);
+
+  QJSValue reducedValue = initialValue;
+
+  for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
+       i != m_addons.constEnd(); ++i) {
+    if (!i.value().m_addon || !i.value().m_addon->enabled()) {
+      continue;
+    }
+
+    QJSValueList arguments;
+    arguments.append(engine->toScriptValue(i.value().m_addon));
+    arguments.append(reducedValue);
+    reducedValue = callback.call(arguments);
+  }
+
+  return reducedValue;
 }

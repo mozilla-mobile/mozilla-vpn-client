@@ -73,7 +73,8 @@ exports.mochaHooks = {
 
       await startAndConnect();
       await vpn.reset();
-      await vpn.setSetting('tips-and-tricks-intro-shown', 'true')
+      await vpn.setSetting('tips-and-tricks-intro-shown', 'true');
+      await vpn.flipFeatureOn('websocket');
       await vpn.authenticateInApp(true, true);
 
       const fileName = await vpn.settingsFileName();

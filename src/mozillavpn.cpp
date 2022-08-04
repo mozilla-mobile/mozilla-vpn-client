@@ -40,7 +40,7 @@
 #include "update/updater.h"
 #include "update/versionapi.h"
 #include "urlopener.h"
-#include "websockethandler.h"
+#include "websocket/websockethandler.h"
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosdatamigration.h"
@@ -673,14 +673,14 @@ void MozillaVPN::completeActivation() {
     --deviceCount;
   }
 
-  if (deviceCount >= m_private->m_user.maxDevices()) {
+  if (deviceCount >= m_private->m_user.maxDevices() &&
+      option == DeviceNotFound) {
     maybeStateMain();
     return;
   }
 
   // Here we add the current device.
-  if (m_private->m_keys.privateKey().isEmpty() ||
-      !m_private->m_deviceModel.hasCurrentDevice(keys())) {
+  if (option != DeviceStillValid) {
     addCurrentDeviceAndRefreshData();
   } else {
     // Let's fetch the account and the servers.

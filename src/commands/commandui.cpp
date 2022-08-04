@@ -10,7 +10,6 @@
 #include "closeeventhandler.h"
 #include "commandlineparser.h"
 #include "constants.h"
-#include "filterproxymodel.h"
 #include "fontloader.h"
 #include "iaphandler.h"
 #include "imageproviderfactory.h"
@@ -35,6 +34,7 @@
 #include <lottie.h>
 #include <nebula.h>
 
+#include <QQmlApplicationEngine>
 #include <QQmlContext>
 
 #ifdef MVPN_DEBUG
@@ -203,8 +203,8 @@ int CommandUI::run(QStringList& tokens) {
     }
 #endif
     // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
-    QmlEngineHolder* engineHolder = new QmlEngineHolder();
-    QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
+    QQmlApplicationEngine* engine = new QQmlApplicationEngine();
+    QmlEngineHolder engineHolder(engine);
 
     // TODO pending #3398
     QQmlContext* ctx = engine->rootContext();
@@ -565,7 +565,7 @@ int CommandUI::run(QStringList& tokens) {
     engine->load(url);
 
     NotificationHandler* notificationHandler =
-        NotificationHandler::create(engineHolder);
+        NotificationHandler::create(&engineHolder);
 
     QObject::connect(vpn.controller(), &Controller::stateChanged,
                      notificationHandler,

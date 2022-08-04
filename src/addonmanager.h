@@ -23,6 +23,8 @@ class AddonManager final : public QAbstractListModel {
  public:
   Q_INVOKABLE Addon* pick(QJSValue filterCallback) const;
 
+  Q_INVOKABLE QJSValue reduce(QJSValue callback, QJSValue initialValue) const;
+
   enum ModelRoles {
     AddonRole = Qt::UserRole + 1,
   };

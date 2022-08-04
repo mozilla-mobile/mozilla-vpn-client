@@ -14,7 +14,7 @@ namespace {};
 
 NetworkRequest::NetworkRequest(Task* parent, int status,
                                bool setAuthorizationHeader)
-    : QObject(parent), m_status(status) {
+    : QObject(parent), m_expectedStatusCode(status) {
   Q_UNUSED(setAuthorizationHeader);
 
   MVPN_COUNT_CTOR(NetworkRequest);
