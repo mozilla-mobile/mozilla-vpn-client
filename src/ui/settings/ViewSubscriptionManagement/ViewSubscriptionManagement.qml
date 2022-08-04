@@ -30,8 +30,8 @@ VPNFlickable {
         id: contentColumn
 
         height: Math.max(vpnFlickable.height - VPNTheme.theme.menuHeight, contentColumn.implicitHeight)
-        spacing: VPNTheme.theme.windowMargin * 2
-        width: parent.width - VPNTheme.theme.windowMargin
+        spacing: VPNTheme.theme.windowMargin
+        width: parent.width
 
         anchors {
             horizontalCenter: parent.horizontalCenter
@@ -40,15 +40,15 @@ VPNFlickable {
 
         VPNUserProfile {
             objectName: "subscriptionUserProfile"
+            _objNameBase: "subscriptionUserProfile"
 
-            _iconButtonImageSource: "qrc:/nebula/resources/open-in-new.svg"
-            _iconButtonOnClicked: () => {
+            _iconSource: "qrc:/nebula/resources/open-in-new.svg"
+            _buttonOnClicked: () => {
                 VPN.recordGleanEvent("manageAccountClicked");
                 VPN.openLink(VPN.LinkAccount);
             }
 
-            Layout.leftMargin: VPNTheme.theme.windowMargin / 2
-            Layout.topMargin: VPNTheme.theme.windowMargin * 2
+            Layout.topMargin: VPNTheme.theme.windowMargin
         }
 
         ColumnLayout {
@@ -56,8 +56,9 @@ VPNFlickable {
             objectName: "subscriptionItem"
 
             Layout.alignment: Qt.AlignTop
-            Layout.leftMargin: VPNTheme.theme.windowMargin / 2
-            Layout.rightMargin: VPNTheme.theme.windowMargin / 2
+            Layout.leftMargin: VPNTheme.theme.windowMargin
+            Layout.rightMargin: VPNTheme.theme.windowMargin
+
 
             VPNMetropolisLabel {
                 color: VPNTheme.theme.fontColorDark

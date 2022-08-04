@@ -46,7 +46,7 @@ if(APPLE)
     endif()
     set(CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM ${BUILD_OSX_DEVELOPMENT_TEAM})
 
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14 CACHE STRING "OSX minimum supported OS version")
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14)
 endif()
 
 option(BUILD_DUMMY "Build for the dummy platform" OFF)
@@ -79,16 +79,20 @@ find_package(Qt6 COMPONENTS
     Core
     Gui
     Network
-    NetworkAuth
     Qml
     Quick
     QuickTest
-    Sql
     Test
     WebSockets
     Widgets
     Xml
 )
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    find_package(Qt6 COMPONENTS
+        NetworkAuth
+        Sql
+    )
+endif()
 message("Using Qt version ${Qt6_VERSION}")
 add_definitions(-DQT_DEPRECATED_WARNINGS)
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0x050F00)
@@ -108,14 +112,16 @@ set_target_properties(build_tests PROPERTIES
     EXCLUDE_FROM_ALL $<NOT:$<BOOL:${BUILD_TESTING}>>
     FOLDER "Tests"
 )
-add_subdirectory(tests/auth)
-add_subdirectory(tests/nativemessaging)
-add_subdirectory(tests/unit)
-add_subdirectory(tests/qml)
 
-# Web Extension build targets
 if(NOT CMAKE_CROSSCOMPILING)
+    # Web Extension build targets
     add_subdirectory(extension)
+
+    # Tests
+    add_subdirectory(tests/auth)
+    add_subdirectory(tests/nativemessaging)
+    add_subdirectory(tests/unit)
+    add_subdirectory(tests/qml)
 endif()
 
 # Extra platform targets

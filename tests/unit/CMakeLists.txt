@@ -216,6 +216,12 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/update/webupdater.h
     ${MVPN_SOURCE_DIR}/urlopener.cpp
     ${MVPN_SOURCE_DIR}/urlopener.h
+    ${MVPN_SOURCE_DIR}/websocket/exponentialbackoffstrategy.cpp
+    ${MVPN_SOURCE_DIR}/websocket/exponentialbackoffstrategy.h
+    ${MVPN_SOURCE_DIR}/websocket/pushmessage.cpp
+    ${MVPN_SOURCE_DIR}/websocket/pushmessage.h
+    ${MVPN_SOURCE_DIR}/websocket/websockethandler.cpp
+    ${MVPN_SOURCE_DIR}/websocket/websockethandler.h
 )
 
 # VPN Client UI resources

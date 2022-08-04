@@ -20,6 +20,25 @@ const UserData = {
   }],
 };
 
+const SubscriptionDetails = {
+  plan: {amount: 123, currency: 'usd', interval: 'year', interval_count: 1},
+  payment: {
+    payment_provider: 'stripe',
+    payment_type: 'credit',
+    last4: '1234',
+    exp_month: 12,
+    exp_year: 2022,
+    brand: 'visa',
+  },
+  subscription: {
+    _subscription_type: 'web',
+    created: 1,
+    current_period_end: 2,
+    cancel_at_period_end: true,
+    status: 'active'
+  },
+};
+
 exports.endpoints = {
   GETs: {
     '/api/v1/vpn/featurelist': {status: 200, body: {features: {}}},
@@ -184,6 +203,41 @@ exports.endpoints = {
         {address: '2600:1901:0:38d7::', family: 6}
       ]
     },
+    '/api/v1/vpn/subscriptionDetails': {
+      status: 200,
+      body: SubscriptionDetails,
+    },
+    '/api/v3/vpn/products': {
+      status: 200,
+      body: {
+        products: [
+          {
+            platform: 'dummy',
+            id: 'monthly',
+            featured_product: false,
+            type: 'monthly'
+          },
+          {
+            platform: 'dummy',
+            id: 'half-monthly',
+            featured_product: false,
+            type: 'half-yearly'
+          },
+          {
+            platform: 'dummy',
+            id: 'yearly',
+            featured_product: true,
+            type: 'yearly'
+          },
+        ]
+      }
+    },
+
+    '/r/vpn/terms': {status: 200, body: {}},
+
+    '/r/vpn/privacy': {status: 200, body: {}},
+
+    '/r/vpn/support': {status: 200, body: {}},
   },
 
   POSTs: {

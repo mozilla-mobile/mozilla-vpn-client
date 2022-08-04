@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const websocket = require('websocket').w3cwebsocket;
 const {URL} = require('node:url');
 const http = require('http')
 
@@ -17,40 +16,33 @@ let _lastNotification = {
 };
 
 module.exports = {
-  async connect(hostname = '127.0.0.1') {
+  async connect(impl, options) {
+    client = impl;
     await this.waitForCondition(async () => {
-      return await new Promise(resolve => {
-        client = new websocket(`ws://${hostname}:8765/`, '');
+      return await impl.connect(
+          options,
+          async () => {
+            const json = await this._writeCommand('stealurls');
+            assert(
+                json.type === 'stealurls' && !('error' in json),
+                `Command failed: ${json.error}`);
+          },
+          () => this._resolveWaitRead({}),
+          json => {
+            // Ignoring logs.
+            if (json.type === 'log') return;
+            if (json.type === 'network') return;
 
-        client.onopen = async () => {
-          const json = await this._writeCommand('stealurls');
-          assert(
-              json.type === 'stealurls' && !('error' in json),
-              `Command failed: ${json.error}`);
-          resolve(true);
-        };
+            // Store the last notification
+            if (json.type === 'notification') {
+              _lastNotification.title = json.title;
+              _lastNotification.message = json.message;
+              return;
+            }
 
-        client.onclose = () => this._resolveWaitRead({});
-        client.onerror = () => resolve(false);
-
-        client.onmessage = data => {
-          const json = JSON.parse(data.data);
-
-          // Ignoring logs.
-          if (json.type === 'log') return;
-          if (json.type === 'network') return;
-
-          // Store the last notification
-          if (json.type === 'notification') {
-            _lastNotification.title = json.title;
-            _lastNotification.message = json.message;
-            return;
-          }
-
-          assert(waitReadCallback, 'No waiting callback?');
-          this._resolveWaitRead(json);
-        };
-      });
+            assert(waitReadCallback, 'No waiting callback?');
+            this._resolveWaitRead(json);
+          });
     });
   },
 
@@ -102,7 +94,6 @@ module.exports = {
     assert(
         await this.getElementProperty('learnMoreLink', 'visible') === 'true');
   },
-
 
   async forceHeartbeatFailure() {
     const json = await this._writeCommand('force_heartbeat_failure');
@@ -257,41 +248,43 @@ module.exports = {
 
   // TODO - The expected staging urls are hardcoded, we may want to
   // move these hardcoded urls out if testing in alternate environments.
-  async authenticateInBrowser(
-      clickOnPostAuthenticate = false, acceptTelemetry = false) {
+  async authenticateInBrowser(clickOnPostAuthenticate, acceptTelemetry, wasm) {
     // This method must be called when the client is on the "Get Started" view.
     await this.waitForMainView();
     await this.setElementProperty('VPN', 'lastUrl', 's', '');
 
     // Click on get started and wait for authenticating view
     await this.clickOnElement('getStarted');
-    await this.waitForCondition(async () => {
-      const url = await this.getLastUrl();
-      return url.includes('/api/v2/vpn/login');
-    });
-    await this.wait();
 
-    // We don't really want to go through the authentication flow because we are
-    // mocking everything.
-    const url = await this.getLastUrl();
-    const urlObj = new URL(url);
-
-    const options = {
-      hostname: urlObj.hostname,
-      port: parseInt(urlObj.searchParams.get('port'), 10),
-      path: '/?code=the_code',
-      method: 'GET',
-    };
-
-    await new Promise(resolve => {
-      const req = http.request(options, res => {});
-      req.on('close', resolve);
-      req.on('error', error => {
-        throw new error(
-            `Unable to connect to ${urlObj.hostname} to complete the auth`);
+    if (!wasm) {
+      await this.waitForCondition(async () => {
+        const url = await this.getLastUrl();
+        return url.includes('/api/v2/vpn/login');
       });
-      req.end();
-    });
+      await this.wait();
+
+      // We don't really want to go through the authentication flow because we
+      // are mocking everything.
+      const url = await this.getLastUrl();
+      const urlObj = new URL(url);
+
+      const options = {
+        hostname: urlObj.hostname,
+        port: parseInt(urlObj.searchParams.get('port'), 10),
+        path: '/?code=the_code',
+        method: 'GET',
+      };
+
+      await new Promise(resolve => {
+        const req = http.request(options, res => {});
+        req.on('close', resolve);
+        req.on('error', error => {
+          throw new error(
+              `Unable to connect to ${urlObj.hostname} to complete the auth`);
+        });
+        req.end();
+      });
+    }
 
     // Wait for VPN client screen to move from spinning wheel to next screen
     await this.waitForElementProperty('VPN', 'userState', 'UserAuthenticated');
@@ -476,6 +469,22 @@ module.exports = {
     assert(
         json.type === 'open_settings' && !('error' in json),
         `Command failed: ${json.error}`);
+    return json.value;
+  },
+
+  async getDevices() {
+    const json = await this._writeCommand('devices');
+    assert(
+      json.type === 'devices' && !('error' in json),
+      `Command failed: ${json.error}`);
+    return json.value;
+  },
+
+  async getPublicKey() {
+    const json = await this._writeCommand('public_key');
+    assert(
+      json.type === 'public_key' && !('error' in json),
+      `Command failed: ${json.error}`);
     return json.value;
   },
 

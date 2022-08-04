@@ -14,21 +14,22 @@ RUN mkdir -p /builds/worker/.cache/go-build &&\
     chown -R worker:worker /builds/worker/.cache/ &&\
     chmod -R 777 /builds/worker/ 
 
-RUN apt-get -q update && apt-get install -y git ccache python3 libglib2.0-0 &&\
-     python3 -m pip install aqtinstall &&\
-     # qt6 for wasm needs the desktop linux installation
-     python3 -m aqt install-qt -O /opt linux desktop ${QT_VERSION} gcc_64 &&\
-     python3 -m aqt install-qt -O /opt linux desktop ${QT_VERSION} wasm_32 -m qtwebsockets qt5compat &&\
-     # see: https://wiki.qt.io/Qt_6.2_Known_Issues#WebAssembly
-     sed '/sse/,+5 d' /opt/${QT_VERSION}/wasm_32/mkspecs/features/wasm/wasm.prf > /tmp/wasm.prf &&\
-     mv /tmp/wasm.prf /opt/${QT_VERSION}/wasm_32/mkspecs/features/wasm/wasm.prf &&\
-     cd /opt/ &&\
-     git clone https://github.com/emscripten-core/emsdk.git &&\
-     cd emsdk &&\
-     ./emsdk install 2.0.14 &&\
-     ./emsdk activate 2.0.14 
+RUN apt-get -q update && apt-get install -y git ccache python3 python3-pip libglib2.0-0 && \
+    python3 -m pip install aqtinstall && \
+    # qt6 for wasm needs the desktop linux installation
+    python3 -m aqt install-qt -O /opt linux desktop ${QT_VERSION} gcc_64 && \
+    python3 -m aqt install-qt -O /opt linux desktop ${QT_VERSION} wasm_32 -m qtwebsockets qt5compat && \
+    cd /opt/ && \
+    git clone https://github.com/emscripten-core/emsdk.git && \
+    cd emsdk && \
+    ./emsdk install 2.0.14 && \
+    ./emsdk activate 2.0.14 && \
+    wget https://github.com/Kitware/CMake/releases/download/v3.24.0-rc4/cmake-3.24.0-rc4-linux-x86_64.sh && \
+    chmod +x cmake-3.24.0-rc4-linux-x86_64.sh && \
+    mkdir /tmp/cmake && \
+    ./cmake-3.24.0-rc4-linux-x86_64.sh --skip-license --prefix=/tmp/cmake
 
 ENV QTPATH=/opt/${QT_VERSION}/
 ENV EMSDKPATH=/opt/emsdk/
 
-ENV PATH="/opt/${QT_VERSION}/gcc_64/bin:${PATH}"
+ENV PATH="/opt/${QT_VERSION}/gcc_64/bin:${PATH}:/tmp/cmake/bin"

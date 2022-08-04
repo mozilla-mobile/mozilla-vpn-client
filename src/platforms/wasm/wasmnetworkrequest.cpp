@@ -39,6 +39,12 @@ void processNetworkResponse(int id, const QByteArray& data) {
     return;
   }
 
+  if (status == 401) {
+    request->processData(QNetworkReply::AuthenticationRequiredError,
+                         QString("Unauthorized"), status, body);
+    return;
+  }
+
   if (status == 403) {
     request->processData(QNetworkReply::ContentAccessDenied,
                          QString("Access denied"), status, body);

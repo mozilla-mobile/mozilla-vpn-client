@@ -33,6 +33,13 @@ class Controller {
     return json.value || '';
   }
 
+  async setSetting(key, value) {
+    const json = await this._writeCommand(`set_setting ${key} ${value}`);
+    assert(
+        json.type === 'set_setting' && !('error' in json),
+        `Command failed: ${json.error}`);
+  }
+
   async waitForElement(id) {
     return this.waitForCondition(async () => {
       return await this.hasElement(id);
@@ -107,6 +114,11 @@ class Controller {
   }
 
   _messageReceived(obj) {
+    if (!this._initialized) {
+      this._initialized = true;
+      this._initialize();
+    }
+
     // Ignoring logs.
     if (obj.type === 'log') return;
     if (obj.type === 'network') return;
@@ -116,6 +128,14 @@ class Controller {
     const wr = this._waitReadCallback;
     this._waitReadCallback = null;
     wr(obj);
+  }
+
+  async _initialize() {
+    const json = await this._writeCommand(`languages`);
+    assert(
+        json.type === 'languages' && !('error' in json),
+        `Command failed: ${json.error}`);
+    mvpnWasm.updateLanguages(json.value);
   }
 };
 

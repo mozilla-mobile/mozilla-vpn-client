@@ -62,6 +62,7 @@ SOURCES += \
         hacl-star/Hacl_Curve25519_51.c \
         hacl-star/Hacl_Poly1305_32.c \
         hawkauth.cpp \
+        keyregenerator.cpp \
         hkdf.cpp \
         iaphandler.cpp \
         imageproviderfactory.cpp \
@@ -153,7 +154,9 @@ SOURCES += \
         update/versionapi.cpp \
         urlopener.cpp \
         update/webupdater.cpp \
-        websockethandler.cpp
+        websocket/exponentialbackoffstrategy.cpp \
+        websocket/pushmessage.cpp \
+        websocket/websockethandler.cpp
 
 HEADERS += \
         addonmanager.h \
@@ -215,6 +218,7 @@ HEADERS += \
         filterproxymodel.h \
         fontloader.h \
         hawkauth.h \
+        keyregenerator.h \
         hkdf.h \
         iaphandler.h \
         imageproviderfactory.h \
@@ -307,7 +311,9 @@ HEADERS += \
         update/versionapi.h \
         update/webupdater.h \
         urlopener.h \
-        websockethandler.h
+        websocket/exponentialbackoffstrategy.h \
+        websocket/pushmessage.h \
+        websocket/websockethandler.h
 
 # Signal handling for unix platforms
 unix {

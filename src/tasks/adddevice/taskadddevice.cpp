@@ -48,22 +48,30 @@ void TaskAddDevice::run() {
   logger.debug() << "Private key: " << logger.sensitive(privateKey);
   logger.debug() << "Public key: " << logger.sensitive(publicKey);
 
+  MozillaVPN::instance()->setJournalPublicAndPrivateKeys(publicKey, privateKey);
+
   NetworkRequest* request = NetworkRequest::createForDeviceCreation(
       this, m_deviceName, publicKey, m_deviceID);
 
-  connect(
-      request, &NetworkRequest::requestFailed, this,
-      [this](QNetworkReply::NetworkError error, const QByteArray&) {
-        logger.error() << "Failed to add the device" << error;
-        MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
-        emit completed();
-      });
+  connect(request, &NetworkRequest::requestFailed, this,
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+            logger.error() << "Failed to add the device" << error;
+            MozillaVPN* vpn = MozillaVPN::instance();
+            Q_ASSERT(vpn);
+
+            vpn->resetJournalPublicAndPrivateKeys();
+            vpn->errorHandle(ErrorHandler::toErrorType(error));
+            emit completed();
+          });
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this, publicKey, privateKey](const QByteArray&) {
             logger.debug() << "Device added";
-            MozillaVPN::instance()->deviceAdded(m_deviceName, publicKey,
-                                                privateKey);
+            MozillaVPN* vpn = MozillaVPN::instance();
+            Q_ASSERT(vpn);
+
+            vpn->deviceAdded(m_deviceName, publicKey, privateKey);
+            vpn->resetJournalPublicAndPrivateKeys();
             emit completed();
           });
 }

@@ -6,7 +6,7 @@ const assert = require('assert');
 const vpn = require('./helper.js');
 
 describe('User authentication', function() {
-  this.timeout(60000);
+  this.timeout(300000);
 
   it('Completes authentication int app', async () => {
     await vpn.authenticateInApp();

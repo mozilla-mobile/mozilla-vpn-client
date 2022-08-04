@@ -109,6 +109,5 @@ void WasmIAPHandler::nativeStartSubscription(Product* product) {
 }
 
 void WasmIAPHandler::nativeRestoreSubscription() {
-  // Not available on Android
-  logger.error() << "Restore not possible on Android!!!";
+  logger.error() << "Restore not possible on Wasm (yet?)!!!";
 }

@@ -15,7 +15,6 @@ VPNFlickable {
     property var wasmView: false
 
     flickContentHeight: col.y + col.height
-    anchors.fill: parent
 
     Rectangle {
         color: VPNTheme.theme.bgColor

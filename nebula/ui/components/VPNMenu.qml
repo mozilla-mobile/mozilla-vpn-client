@@ -17,6 +17,7 @@ Item {
     property bool btnDisabled: false
     property alias forceFocus: iconButton.focus
     property string _iconButtonSource: "qrc:/nebula/resources/back.svg"
+    property alias _iconButtonAccessibleName: iconButton.accessibleName
     property var _menuOnBackClicked: () => { goBack(); }
 
     width: parent.width

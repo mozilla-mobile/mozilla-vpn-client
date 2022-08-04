@@ -18,6 +18,7 @@
 #include <QJsonValue>
 #include <QHash>
 #include <QProcessEnvironment>
+#include <QQmlEngine>
 
 namespace {
 FeatureModel* s_instance = nullptr;

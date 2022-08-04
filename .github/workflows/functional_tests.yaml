@@ -30,14 +30,6 @@ jobs:
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
-
-      - name: Cache build
-        id: cache-build
-        uses: actions/cache@v2
-        with:
-          path: build/
-          key: ${{ github.sha }}
-
       - name: Install dependecies
         if: steps.cache-build.outputs.cache-hit != 'true'
         run: |
@@ -64,6 +56,10 @@ jobs:
           cmake -S $(pwd) -B build/cmake -DBUILD_DUMMY=ON \
               -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
           cmake --build build/cmake -j$(nproc)
+      - uses: actions/upload-artifact@v3
+        with:
+          name: test-client-${{ github.sha }}
+          path: build/
 
       - name: Generate tasklist
         id: testGen
@@ -73,7 +69,6 @@ jobs:
           for test in $(find tests/functional -name 'test*.js' | sort); do
             printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
           done | jq -s -c
-
       - name: Check tests
         shell: bash
         env:
@@ -94,13 +89,10 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
-      
-      - name: Cache build
-        id: cache-build
-        uses: actions/cache@v2
+      - uses: actions/download-artifact@v3
         with:
+          name: test-client-${{ github.sha }}
           path: build/
-          key: ${{ github.sha }}
 
       - name: Install dependecies
         run: |
@@ -111,7 +103,9 @@ jobs:
       
       - name: Check build
         shell: bash
-        run: ./build/cmake/src/mozillavpn -v
+        run: |
+            chmod +x ./build/cmake/src/mozillavpn
+            ./build/cmake/src/mozillavpn -v
 
       - name: Running ${{matrix.test.name}} Tests
         id: runTests
@@ -124,10 +118,7 @@ jobs:
             export HEADLESS=yes
             mkdir -p $ARTIFACT_DIR
             xvfb-run -a npm run functionalTest -- ${{matrix.test.path}}
-          on_retry_command: npm run cleanup-flaky-script-output
         env:
-          ACCOUNT_EMAIL: ${{ secrets.ACCOUNT_EMAIL }}
-          ACCOUNT_PASSWORD: ${{ secrets.ACCOUNT_PASSWORD }}
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
           MVPN_BIN: ./build/cmake/src/mozillavpn
 
