@@ -41,7 +41,7 @@ DUMMY {
 } else:ios {
    include($$PWD/qmake/platforms/ios.pri)
 } else:win* {
-   include($$PWD/qmake/platforms/windows.pri)
+   error(qmake is not supported for Windows. Please use cmake.)
 } else:wasm {
    error(qmake is not supported for Wasm. Please use cmake.)
 } else {
