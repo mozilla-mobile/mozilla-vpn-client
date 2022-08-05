@@ -8,7 +8,14 @@
 #include "logger.h"
 #include "mozillavpn.h"
 
+#ifdef MVPN_MACOS
+#  include "platforms/macos/macosutils.h"
+#endif
+
 #include <array>
+#include <QBitmap>
+#include <QPainter>
+#include <QPixmap>
 
 namespace {
 Logger logger(LOG_MAIN, "StatusIcon");
@@ -29,9 +36,10 @@ constexpr const char* LOGO_GENERIC = ":/ui/resources/logo-generic.svg";
 
 }  // namespace
 
-StatusIcon::StatusIcon() : m_icon(LOGO_GENERIC) {
+StatusIcon::StatusIcon() : m_iconUrl(LOGO_GENERIC) {
   MVPN_COUNT_CTOR(StatusIcon);
 
+  MacOSUtils::test();
   connect(&m_animatedIconTimer, &QTimer::timeout, this,
           &StatusIcon::animateIcon);
 }
@@ -52,23 +60,23 @@ void StatusIcon::animateIcon() {
   }
 }
 
+void StatusIcon::setEffectiveAppearance(bool isDarkAppearance) {
+  logger.debug() << "Set effective appearance" << isDarkAppearance;
+
+  if (isDarkAppearance) {
+    m_effectiveAppearance = EffectiveAppearanceDark;
+  } else {
+    m_effectiveAppearance = EffectiveAppearanceLight;
+  }
+  setIcon(LOGO_GENERIC);
+
+  emit effectiveAppearanceChanged();
+}
+
 void StatusIcon::stabilityChanged() {
   logger.debug() << "Stability changed";
 
-  switch (MozillaVPN::instance()->connectionHealth()->stability()) {
-    case ConnectionHealth::Stable:
-      logger.debug() << "ConnectionHealth::Stable";
-      break;
-    case ConnectionHealth::Unstable:
-      logger.debug() << "ConnectionHealth::Unstable";
-      break;
-    case ConnectionHealth::NoSignal:
-      logger.debug() << "ConnectionHealth::NoSignal";
-      break;
-    default:
-      logger.debug() << "default";
-      break;
-  }
+  setIcon(LOGO_GENERIC);
 }
 
 void StatusIcon::stateChanged() {
@@ -78,17 +86,9 @@ void StatusIcon::stateChanged() {
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
-
-  // If we are in a non-main state, we don't need to show special icons.
-  if (vpn->state() != MozillaVPN::StateMain) {
-    setIcon(LOGO_GENERIC);
-    return;
-  }
-
   switch (vpn->controller()->state()) {
     case Controller::StateOn:
-      setIcon(LOGO_GENERIC);
-      break;
+      [[fallthrough]];
     case Controller::StateOff:
       setIcon(LOGO_GENERIC);
       break;
@@ -101,16 +101,84 @@ void StatusIcon::stateChanged() {
     case Controller::StateDisconnecting:
       activateAnimation();
       break;
-
     default:
       setIcon(LOGO_GENERIC);
       break;
   }
 }
 
-void StatusIcon::setIcon(const QString& icon) {
-  m_icon = icon;
-  emit iconChanged(icon);
+QIcon StatusIcon::getIconFromUrl(const QString& iconUrl) const {
+  logger.debug() << "Get icon from URL";
+
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+  // If we are in a non-main state, we don't need to show special icons.
+  if (vpn->state() != MozillaVPN::StateMain) {
+    return QIcon(iconUrl);
+  }
+
+  QColor color = QColor(63, 225, 176);  // green
+  switch (MozillaVPN::instance()->connectionHealth()->stability()) {
+    case ConnectionHealth::Stable:
+      break;
+    case ConnectionHealth::Unstable:
+      color = QColor(255, 164, 54);  // orange
+      break;
+    case ConnectionHealth::NoSignal:
+      color = QColor(226, 40, 80);  // red
+    default:
+      logger.error() << "Unhandled status indicator for connection stability";
+      break;
+  }
+
+  // Create pixmap so that we can paint on the original resource
+  QPixmap iconPixmap = QPixmap(iconUrl);
+  QPainter painter(&iconPixmap);
+  painter.setRenderHint(QPainter::Antialiasing);
+  painter.setPen(Qt::NoPen);
+  painter.setBrush(color);
+
+  // Create mask for the indicator
+  float maskSize = iconPixmap.width() * 0.5;
+  float maskPosition = iconPixmap.width() - maskSize;
+  QRectF indicatorMask(maskPosition, maskPosition, maskSize, maskSize);
+  painter.setCompositionMode(QPainter::CompositionMode_Clear);
+  painter.drawEllipse(indicatorMask);
+
+  // Add a colored status indicator
+  float dotPadding = maskSize * 0.2;
+  float dotSize = maskSize - dotPadding;
+  float dotPosition = maskPosition + dotPadding * 0.5;
+  QRectF indicatorDot(dotPosition, dotPosition, dotSize, dotSize);
+  painter.setCompositionMode(QPainter::CompositionMode_DestinationOver);
+  painter.drawEllipse(indicatorDot);
+
+  return QIcon(iconPixmap);
 }
 
-QUrl StatusIcon::iconUrl() const { return QUrl(QString("qrc%1").arg(m_icon)); }
+void StatusIcon::setIcon(const QString& iconUrl) {
+  logger.debug() << "Set icon" << iconUrl;
+
+  switch (m_effectiveAppearance) {
+    case EffectiveAppearanceDark: {
+      // Get the light version of the logo
+      QStringList iconUrlParts = iconUrl.split(".");
+      m_iconUrl = QString("%1-light.%2").arg(iconUrlParts[0])
+                                        .arg(iconUrlParts[1]);
+      break;
+    }
+    case EffectiveAppearanceLight: {
+      [[fallthrough]];
+    }
+    default: {
+      m_iconUrl = iconUrl;
+      break;
+    }
+  }
+  m_icon = getIconFromUrl(m_iconUrl);
+  emit iconChanged(m_icon);
+}
+
+QUrl StatusIcon::iconUrl() const {
+  return QUrl(QString("qrc%1").arg(m_iconUrl));
+}

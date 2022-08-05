@@ -5,13 +5,11 @@
 #include "macosutils.h"
 #include "logger.h"
 #include "models/helpmodel.h"
+#include "mozillavpn.h"
 #include "qmlengineholder.h"
 
 #include <objc/message.h>
 #include <objc/objc.h>
-
-#include <QFile>
-#include <QMenuBar>
 
 #import <Cocoa/Cocoa.h>
 #import <ServiceManagement/ServiceManagement.h>
@@ -20,8 +18,57 @@ namespace {
 Logger logger(LOG_MACOS, "MacOSUtils");
 }
 
+NSStatusItem* statusItem = nullptr;
+
+@interface StatusItemObserver : NSObject
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context;
+@end
+@implementation StatusItemObserver
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"button.effectiveAppearance"]) {
+      bool isDarkAppearance = [statusItem.button.effectiveAppearance.name containsString:@"ark"];
+      logger.debug() << "lel changed" << (isDarkAppearance ? ":)" : ":(");
+
+      StatusIcon* statusIcon = MozillaVPN::instance()->statusIcon();
+      statusIcon->setEffectiveAppearance(isDarkAppearance);
+    }
+}
+@end
+
+void MacOSUtils::test() {
+  statusItem = [[[NSStatusBar systemStatusBar] statusItemWithLength:NSSquareStatusItemLength] retain];
+  statusItem.visible = true;
+
+  StatusItemObserver* statusItemObserver = [[StatusItemObserver alloc] init];
+  [statusItem
+    addObserver:statusItemObserver
+    forKeyPath:@"button.effectiveAppearance"
+    options:NSKeyValueObservingOptionNew
+    context:nil];
+  [statusItem
+    addObserver:statusItemObserver
+    forKeyPath:@"button.frame"
+    options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionInitial
+    context:nil];
+
+  // Create status item
+  NSImage* image = [NSImage imageNamed:@"NSMenuItemBullet"];
+  [image setTemplate:true];
+  [statusItem.button setImage:image];
+
+  // Add a view to status item
+  NSView* view = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 10, 10)];
+  view.wantsLayer = true;
+  NSColor* color = [NSColor blueColor];
+  view.layer.backgroundColor = color.CGColor;
+  [statusItem.button addSubview:view];
+}
+
 // static
 NSString* MacOSUtils::appId() {
+  logger.debug() << "lel appId";
+
   NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
   if (!appId) {
     // Fallback. When an unsigned/un-notarized app is executed in
@@ -125,7 +172,6 @@ void MacOSUtils::patchNSStatusBarSetImageForBigSur() {
 }
 
 @interface NSImageScalingHelper : NSObject
-
 /**
  * Create a proportionally scaled image according to the given target size.
  *

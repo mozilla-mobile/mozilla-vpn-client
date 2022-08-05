@@ -5,11 +5,14 @@
 #ifndef MACOSUTILS_H
 #define MACOSUTILS_H
 
+#include <QMenu>
 #include <QObject>
 #include <QString>
 
 class MacOSUtils final {
  public:
+  static void test();
+
   static NSString* appId();
 
   static QString computerName();

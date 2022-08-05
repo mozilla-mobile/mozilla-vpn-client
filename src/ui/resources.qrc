@@ -24,14 +24,19 @@
         <file>resources/heart-check.svg</file>
         <file>resources/logo-animated1.png</file>
         <file>resources/logo-animated1.svg</file>
+        <file>resources/logo-animated1-light.svg</file>
         <file>resources/logo-animated2.png</file>
         <file>resources/logo-animated2.svg</file>
+        <file>resources/logo-animated2-light.svg</file>
         <file>resources/logo-animated3.png</file>
         <file>resources/logo-animated3.svg</file>
+        <file>resources/logo-animated3-light.svg</file>
         <file>resources/logo-animated4.png</file>
         <file>resources/logo-animated4.svg</file>
+        <file>resources/logo-animated4-light.svg</file>
         <file>resources/logo-generic.png</file>
         <file>resources/logo-generic.svg</file>
+        <file>resources/logo-generic-light.svg</file>
         <file>resources/logo.ico</file>
         <file>resources/logo.svg</file>
         <file>resources/logo-sparkles.svg</file>

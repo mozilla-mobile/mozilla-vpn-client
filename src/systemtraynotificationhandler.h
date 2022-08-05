@@ -30,7 +30,7 @@ class SystemTrayNotificationHandler : public NotificationHandler {
 
   void showHideWindow();
 
-  void updateIcon(const QString& icon);
+  void updateIcon(const QIcon& icon);
 
   void updateContextMenu();
 
