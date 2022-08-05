@@ -41,15 +41,9 @@ if ! [ -d "src" ] || ! [ -d "lottie" ]; then
   die "This script must be executed at the root of the repository."
 fi
 
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-  print N "Configure for linux"
-  . scripts/linux/utils/commons.sh
-elif [[ "$OSTYPE" == "darwin"* ]]; then
+if [[ "$OSTYPE" == "darwin"* ]]; then
   print N "Configure for darwin"
   . scripts/macos/utils/commons.sh
-elif [[ "$OSTYPE" == "msys"* ]]; then
-  print N "Configure for windows"
-  . scripts/windows/utils/commons.sh
 else
   die "Unsupported platform (yet?)"
 fi
