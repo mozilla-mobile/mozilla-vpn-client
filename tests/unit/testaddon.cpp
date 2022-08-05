@@ -12,6 +12,7 @@
 #include "../../src/addons/conditionwatchers/addonconditionwatchergroup.h"
 #include "../../src/addons/conditionwatchers/addonconditionwatcherlocales.h"
 #include "../../src/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h"
+#include "../../src/localizer.h"
 #include "../../src/settingsholder.h"
 #include "../../src/qmlengineholder.h"
 #include "../../src/tutorial/tutorial.h"
@@ -577,6 +578,84 @@ void TestAddon::message_create() {
   }
 
   QCOMPARE(message->property("title").type(), QMetaType::QString);
+}
+
+void TestAddon::message_date_data() {
+  QTest::addColumn<QString>("languageCode");
+  QTest::addColumn<QDateTime>("now");
+  QTest::addColumn<QDateTime>("date");
+  QTest::addColumn<QString>("result");
+  QTest::addColumn<qint64>("timer");
+
+  QTest::addRow("en - future")
+      << "en" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(11, 0), QTimeZone(0)) << "10:00 AM"
+      << (qint64)(14 * 3600);
+  QTest::addRow("it - future")
+      << "it" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(11, 0), QTimeZone(0)) << "10:00"
+      << (qint64)(14 * 3600);
+
+  QTest::addRow("en - same")
+      << "en" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0)) << "10:00 AM"
+      << (qint64)(14 * 3600);
+  QTest::addRow("it - same")
+      << "it" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0)) << "10:00"
+      << (qint64)(14 * 3600);
+
+  QTest::addRow("en - one hour ago")
+      << "en" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(9, 0), QTimeZone(0)) << "9:00 AM"
+      << (qint64)(15 * 3600);
+  QTest::addRow("it - one hour ago")
+      << "it" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(9, 0), QTimeZone(0)) << "09:00"
+      << (qint64)(15 * 3600);
+
+  QTest::addRow("en - midnight")
+      << "en" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(0, 0), QTimeZone(0)) << "12:00 AM"
+      << (qint64)(24 * 3600);
+  QTest::addRow("it - midnight")
+      << "it" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(0, 0), QTimeZone(0)) << "00:00"
+      << (qint64)(24 * 3600);
+
+  QTest::addRow("en - yesterday but less than 24 hours")
+      << "en" << QDateTime(QDate(2000, 1, 2), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(21, 0), QTimeZone(0)) << "Yesterday"
+      << (qint64)(3 * 3600);
+
+  QTest::addRow("en - more than 24 hours")
+      << "en" << QDateTime(QDate(2000, 1, 2), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(9, 0), QTimeZone(0)) << "1/1/00"
+      << (qint64)-1;
+  QTest::addRow("it - more than 24 hours")
+      << "it" << QDateTime(QDate(2000, 1, 2), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(9, 0), QTimeZone(0)) << "01/01/00"
+      << (qint64)-1;
+}
+
+void TestAddon::message_date() {
+  SettingsHolder settingsHolder;
+  Localizer localizer;
+
+  QFETCH(QString, languageCode);
+  localizer.setCode(languageCode);
+
+  QFETCH(QDateTime, now);
+  QVERIFY(now.isValid());
+
+  QFETCH(QDateTime, date);
+  QVERIFY(date.isValid());
+
+  QFETCH(QString, result);
+  QCOMPARE(AddonMessage::dateInternal(now, date), result);
+
+  QFETCH(qint64, timer);
+  QCOMPARE(AddonMessage::planDateRetranslationInternal(now, date), timer);
 }
 
 void TestAddon::message_dismiss() {

@@ -16,6 +16,10 @@
       "type": "string",
       "description": "A comment to describe how to translate the title"
     },
+    "date": {
+      "type": "number",
+      "description": "Epoch time of this message"
+    },
     "blocks": {
       "type": "array",
       "description": "The list of text blocks",
