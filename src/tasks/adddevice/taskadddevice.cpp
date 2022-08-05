@@ -59,7 +59,6 @@ void TaskAddDevice::run() {
             MozillaVPN* vpn = MozillaVPN::instance();
             Q_ASSERT(vpn);
 
-            vpn->resetJournalPublicAndPrivateKeys();
             vpn->errorHandle(ErrorHandler::toErrorType(error));
             emit completed();
           });
