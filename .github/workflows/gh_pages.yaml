@@ -123,17 +123,24 @@ jobs:
           path: _site/inspector
 
       - name: Create Artifact
-        shell: bash}
+        shell: bash
         run: |
           tar \
             --dereference --hard-dereference \
             --directory _site \
             -cvf ${{ runner.temp }}/artifact.tar \
             .
-
+      - name: Upload artifact (no-deploy)
+        uses: actions/upload-artifact@main
+        if: github.ref != 'refs/heads/main'  
+        with:
+          name: github-pages_test
+          path: ${{ runner.temp }}/artifact.tar
+          retention-days: ${{ inputs.retention-days }}
       - name: Upload artifact
         uses: actions/upload-artifact@main
+        if: github.ref == 'refs/heads/main'  # Only publish on main branch.
         with:
-          name: github-pages
+          name: github-pages # This name will trigger the deploy
           path: ${{ runner.temp }}/artifact.tar
           retention-days: ${{ inputs.retention-days }}
