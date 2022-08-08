@@ -14,11 +14,10 @@ ColumnLayout {
 
     id: root
 
-    spacing: 0
+    spacing: VPNTheme.theme.listSpacing
 
     VPNTextBlock {
         Layout.fillWidth: true
-        Layout.bottomMargin: VPNTheme.theme.listSpacing
 
         color: VPNTheme.colors.white
         text: root.listHeader
