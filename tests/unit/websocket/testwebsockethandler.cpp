@@ -252,28 +252,17 @@ void TestWebSocketHandler::
   QVERIFY(newConnectionSpy.wait());
   QCOMPARE(newConnectionSpy.count(), 2);
 
-  // Give it just a bit of time for the `onConnected` handler to be called.
-  // The new connection spy is triggered before that and if we don't wait
+  // Give it time for the `onConnected` handler to be called.
+  // It seems this can take quite a while on CI, this the long(ish) timeout
+  // here. The new connection spy is triggered before that and if we don't wait
   // there is no time for the handler to reset the interval.
   //
   // Yes, this is a bit hacky.
-  QTest::qWait(50);
-
-  // Close the open connections to prompt a new reconnection.
-  server.closeEach();
+  QTest::qWait(500);
 
   // The reconnection interval should have been reset.
-  // Reconnection might be so fast that when we get to this line
-  // m_currentBackoffInterval has already been reset to 0.
-  QVERIFY(handler.m_currentBackoffInterval <= testBaseRetryInterval);
-
-  // Wait for reconnection.
-  QVERIFY(newConnectionSpy.wait());
-  QCOMPARE(newConnectionSpy.count(), 3);
-
-  // The backoff interval is reset to 0 when not waiting for reconnection
-  // attempt.
-  QCOMPARE(handler.m_currentBackoffInterval, testBaseRetryInterval);
+  // When not waiting for reconnection it is set to the special value `0`.
+  QCOMPARE(handler.m_currentBackoffInterval, 0);
 }
 
 void TestWebSocketHandler::tst_reconnectionAttemptsOnPingTimeout() {
