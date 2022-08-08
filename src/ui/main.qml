@@ -21,7 +21,7 @@ Window {
     signal showHomeStack(bool popToRoot)
     signal showMessagesStack(bool popToRoot)
     signal showSettingsStack(bool popToRoot)
-    signal deepLinkToSettingsView(string src)
+    signal deepLinkToSettingsView(var src)
 
     property bool _fallbackQtQuickRenderer: QT_QUICK_BACKEND == "software" //TODO pending #3398
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
@@ -375,13 +375,20 @@ Window {
             }
         }
         function onContactUsNeeded() {
-            // Check if Contact Us view is already in mainStackView
-            const contactUsViewInStack = mainStackView.find((view) => { return view.objectName === "contactUs" });
-            if (contactUsViewInStack) {
-                // Unwind mainStackView back to Contact Us
-                return mainStackView.pop(contactUsViewInStack, StackView.Immediate);
+            if (VPN.state === VPN.StateMain) {
+                showSettingsStack(true)
+                deepLinkToSettingsView(["qrc:/ui/views/ViewGetHelp.qml", "qrc:/ui/views/ViewContactUs.qml"])
+
             }
-            mainStackView.push("qrc:/ui/views/ViewContactUs.qml", StackView.Immediate);
+            else {
+                // Check if Contact Us view is already in mainStackView
+                const contactUsViewInStack = mainStackView.find((view) => { return view.objectName === "contactUs" });
+                if (contactUsViewInStack) {
+                    // Unwind mainStackView back to Contact Us
+                    return mainStackView.pop(contactUsViewInStack, StackView.Immediate);
+                }
+                mainStackView.push(["qrc:/ui/views/ViewGetHelp.qml", "qrc:/ui/views/ViewContactUs.qml"], StackView.Immediate);
+            }
         }
 
         function onDevMenuNeeded() {

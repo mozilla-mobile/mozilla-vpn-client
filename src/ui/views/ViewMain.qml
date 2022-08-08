@@ -168,7 +168,7 @@ VPNFlickable {
                         tipAndTricksIntroButton.enabled = false
                         closedByPrimaryButton = true
                         tipsAndTricksIntroPopup.close()
-                        window.showSettingsStack()
+                        window.showSettingsStack(true)
                         settingsStack.push("qrc:/ui/settings/ViewTipsAndTricks/ViewTipsAndTricks.qml")
                     }
                 },
