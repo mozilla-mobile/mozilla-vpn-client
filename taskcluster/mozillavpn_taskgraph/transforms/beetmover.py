@@ -14,32 +14,27 @@ transforms = TransformSequence()
 @transforms.add
 def add_beetmover_worker_config(config, tasks):
     for task in tasks:
+        app_name = "vpn"
         worker_type = task["worker-type"]
         task_name = task["name"]
         task_label = f"{worker_type}-{task_name}"
-        resolve_keyed_by(
-            task,
-            "bucket",
-            item_name=task_label,
-            **{"level": config.params["level"]},
+        l3_relpro = (
+            config.params["level"] == "3"
+            and config.params["tasks_for"] in task["run-on-tasks-for"]
         )
-        bucket = task["bucket"]
-        # When we add balrog releases we will need to add an action to beetmoverscript
-        action = "push-to-nightly"
-        app_name = "vpn"
-        attributes = task["attributes"]
-        run_on_tasks_for = task["run-on-tasks-for"]
+        bucket = "release" if l3_relpro else "dep"
         build_id = config.params["moz_build_date"]
-        build_type = attributes["build-type"]
+        build_type = task["attributes"]["build-type"]
         build_os = os.path.dirname(build_type)
-        dependencies = task["dependencies"]
         app_version = config.params["version"]
         candidates_path = os.path.join(
             "pub", app_name, "candidates", app_version, build_id, build_os
         )
         destination_paths = [candidates_path]
-        archive_url = "https://ftp.stage.mozaws.net/" if config.params["level"] != 3 else "https://ftp.mozilla.org/"
-        task_description = f"This {worker_type} task will upload a {build_os} release candidate for {app_name} v{app_version} to {archive_url}{candidates_path}/"
+        archive_url = (
+            "https://ftp.mozilla.org/" if l3_relpro else "https://ftp.stage.mozaws.net/"
+        )
+        task_description = f"This {worker_type} task will upload a {build_os} release candidate for v{app_version} to {archive_url}{candidates_path}/"
         branch = config.params["head_ref"]
 
         def get_artifact_path(path):
@@ -81,7 +76,7 @@ def add_beetmover_worker_config(config, tasks):
         worker = {
             "upstream-artifacts": upstream_artifacts,
             "bucket": bucket,
-            "action": action,
+            "action": "push-to-candidates",
             "release-properties": {
                 "app-name": app_name,
                 "app-version": app_version,
@@ -95,10 +90,10 @@ def add_beetmover_worker_config(config, tasks):
             "label": task_label,
             "name": task_label,
             "description": task_description,
-            "dependencies": dependencies,
+            "dependencies": task["dependencies"],
             "worker-type": worker_type,
             "worker": worker,
-            "attributes": attributes,
-            "run-on-tasks-for": run_on_tasks_for,
+            "attributes": task["attributes"],
+            "run-on-tasks-for": task["run-on-tasks-for"],
         }
         yield task_def
