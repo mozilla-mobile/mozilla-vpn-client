@@ -12,16 +12,18 @@ transforms = TransformSequence()
 _GIT_REFS_HEADS_PREFIX = "refs/heads/"
 
 BRANCH_INDEX_ROUTES = (
-    "index.mozillavpn.v2.mozilla-vpn-client.branch.{branch}.latest.{task_type}.{name}",
+    "index.mozillavpn.v2.mozilla-vpn-client.branch.{branch}.latest.{type}.{name}",
 )
 RELEASE_INDEX_ROUTES = (
-    "index.mozillavpn.v2.mozilla-vpn-client.release.{version}.latest.{task_type}.{name}",
+    "index.mozillavpn.v2.mozilla-vpn-client.release.{version}.latest.{type}.{name}",
 )
 
 
 release_index_schema = Schema(
     {
-        Optional("add-index-routes"): optionally_keyed_by("build-type", Any(str, None)),
+        Optional("add-index-routes"): optionally_keyed_by(
+            "build-type", Any(str, {"name": str, "type": str}, None)
+        ),
         Extra: object,
     }
 )
@@ -32,23 +34,26 @@ transforms.add_validate(release_index_schema)
 @transforms.add
 def resolve_keys(config, tasks):
     for task in tasks:
-        resolve_keyed_by(task, "add-index-routes", item_name=task["name"])
+        resolve_keyed_by(
+            task, "add-index-routes", item_name=task["name"], **task["attributes"]
+        )
         yield task
 
 
 @transforms.add
 def add_index_routes(config, tasks):
     for task in tasks:
-        task_type = task.pop("add-index-routes", None)
-        if not task_type or int(config.params["level"]) != 3:
+        context = task.pop("add-index-routes", None)
+        if not context or int(config.params["level"]) != 3:
             yield task
             continue
 
+        if isinstance(context, str):
+            context = {
+                "name": task["name"].split("/")[0],
+                "type": context,
+            }
         routes = []
-        context = {
-            "name": task["name"].split("/")[0],
-            "task_type": task_type,
-        }
         if config.params["tasks_for"] == "github-push":
             routes = BRANCH_INDEX_ROUTES
             branch = config.params["head_ref"]

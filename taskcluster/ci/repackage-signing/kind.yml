@@ -23,7 +23,9 @@ only-for-build-types:
 job-template:
     description: repackage mozillavpn msi
     run-on-tasks-for: []
-    add-index-routes: build
+    add-index-routes:
+        name: windows
+        type: build
     signing-format: autograph_authenticode
     treeherder:
         job-symbol: Bs
