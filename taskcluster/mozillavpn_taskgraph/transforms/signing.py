@@ -19,6 +19,7 @@ PRODUCTION_SIGNING_BUILD_TYPES = [
     "android-armv7/release",
     "linux/opt",
     "macos/opt",
+    "windows/opt",
 ]
 
 SIGNING_BUILD_TYPES = PRODUCTION_SIGNING_BUILD_TYPES + [
@@ -40,7 +41,7 @@ def set_run_on_tasks_for(config, tasks):
 @transforms.add
 def resolve_keys(config, tasks):
     for task in tasks:
-        for key in ("signing-format",):
+        for key in ("signing-format", "treeherder.job-symbol"):
             resolve_keyed_by(
                 task,
                 key,
@@ -55,30 +56,21 @@ def resolve_keys(config, tasks):
 
 
 @transforms.add
-def set_worker_type(config, tasks):
+def set_worker_and_signing_type(config, tasks):
     for task in tasks:
-        worker_type = "dep-signing"
+        worker_type = signing_type = "dep-signing"
         build_type = task["attributes"]["build-type"]
         if (
             str(config.params["level"]) == "3"
             and build_type in PRODUCTION_SIGNING_BUILD_TYPES
         ):
+            signing_type = "release-signing"
             worker_type = "signing"
 
         if build_type.startswith("macos"):
             worker_type = f"macos-{worker_type}"
 
         task["worker-type"] = worker_type
-        yield task
-
-
-@transforms.add
-def set_signing_type(config, tasks):
-    for task in tasks:
-        signing_type = "dep-signing"
-        if str(config.params["level"]) == "3":
-            if task["attributes"]["build-type"] in PRODUCTION_SIGNING_BUILD_TYPES:
-                signing_type = "release-signing"
         task.setdefault("worker", {})["signing-type"] = signing_type
         yield task
 
