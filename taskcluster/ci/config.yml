@@ -10,6 +10,7 @@ treeherder:
         'Fetch': 'Fetching Tasks'
         'TL': 'Toolchain Tasks'
         'rpk': 'Re-Package Tasks'
+        'BM': 'Beetmover Tasks'
 
 task-priority:
     by-project:
