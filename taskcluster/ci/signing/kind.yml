@@ -29,7 +29,10 @@ only-for-build-types:
 job-template:
     description: sign mozillavpn
     run-on-tasks-for: []
-    add-index-routes: build
+    add-index-routes:
+        by-build-type:
+            windows/opt: null  # for Windows we want the 'repackage-signing' task
+            default: build
     signing-format:
         by-build-type:
             android.*: autograph_apk
