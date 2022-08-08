@@ -1,0 +1,31 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+loader: mozillavpn_taskgraph.loader.multi_dep:loader
+
+transforms:
+    - mozillavpn_taskgraph.transforms.multi_dep:transforms
+    - mozillavpn_taskgraph.transforms.beetmover:transforms
+    - taskgraph.transforms.task:transforms
+
+group-by: build-type
+
+only-for-build-types:
+    - macos/opt
+
+kind-dependencies:
+    - signing
+
+primary-dependency: signing
+
+job-template:
+    worker-type: beetmover
+    run-on-tasks-for: [action:release-promotion, github-release]
+    treeherder:
+        job-symbol: BM
+        kind: build
+        tier: 1
+        platform:
+            by-build-type:
+                macos/opt: macos/all
