@@ -3,7 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
 windows/opt:
-    add-index-routes: build
     description: "Windows Build"
     treeherder:
         symbol: B
@@ -24,9 +23,14 @@ windows/opt:
         chain-of-trust: true
         max-run-time: 3600
         artifacts:
-            - type: directory
-              name: public/build
-              path: artifacts/
+            - type: file
+              name: public/build/MozillaVPN.msi
+              path: artifacts/MozillaVPN.msi
+            - type: file
+              name: public/build/Mozilla VPN.pdb
+              path: artifacts/Mozilla VPN.pdb
+    release-artifacts:
+        - unsigned.zip
     run:
         using: run-task
         cwd: '{checkout}'

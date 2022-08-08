@@ -5,13 +5,9 @@
 Apply some defaults and minor modifications to the jobs defined in the build
 kind.
 """
-import os
-
 from taskgraph.transforms.base import TransformSequence
-from taskgraph.transforms.task import task_description_schema
 from taskgraph.util.schema import Schema
-from taskgraph.util.workertypes import worker_type_implementation
-from voluptuous import Optional, Required, Any, Extra
+from voluptuous import Optional, Required, Extra
 
 
 transforms = TransformSequence()
@@ -19,18 +15,8 @@ transforms = TransformSequence()
 build_schema = Schema(
     {
         Required("name"): str,
-        Required("description"): task_description_schema["description"],
-        Required("treeherder"): task_description_schema["treeherder"],
-        Required("worker-type"): task_description_schema["worker-type"],
-        Optional("scopes"): task_description_schema["scopes"],
-        Optional("job-from"): task_description_schema["job-from"],
-        Required("worker"): object,
-        Required("run"): {str: Any(str, bool)},
         Optional("requires-level"): int,
-        Optional("release-artifacts"): [str],
-        Optional("dependencies"): task_description_schema["dependencies"],
-        Optional("fetches"): any, 
-        Extra: object   
+        Extra: object,
     }
 )
 
@@ -57,33 +43,4 @@ def add_variant_config(config, tasks):
         attributes = task.setdefault("attributes", {})
         if not attributes.get("build-type"):
             attributes["build-type"] = task["name"]
-        yield task
-
-
-@transforms.add
-def add_artifacts(config, tasks):
-    for task in tasks:
-        artifacts = task.setdefault("worker", {}).setdefault("artifacts", [])
-
-        impl, _ = worker_type_implementation(config.graph_config, task["worker-type"])
-        if impl == "generic-worker":
-            path_tmpl = "artifacts/{}"
-        else:
-            path_tmpl = "/builds/worker/artifacts/{}"
-
-        # Android artifacts
-        if "release-artifacts" in task:
-            for path in task.pop("release-artifacts"):
-                if os.path.isabs(path):
-                    raise Exception("Cannot have absolute path artifacts")
-
-                artifacts.append(
-                    {
-                        "type": "file",
-                        "name": f"public/build/{path}",
-                        "path": path_tmpl.format(path),
-                    }
-                )
-
-        task["attributes"]["release-artifacts"] = artifacts
         yield task
