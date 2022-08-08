@@ -389,6 +389,9 @@
    "de": "Tschechien",
    "dsb": "Česka",
    "el": "Τσεχία",
+   "en": "Czechia",
+   "en_CA": "Czechia",
+   "en_GB": "Czechia",
    "es_AR": "República Checa",
    "es_CL": "República Checa",
    "es_ES": "República Checa",
@@ -892,6 +895,44 @@
    }
   ],
   "wikiDataID": "Q28"
+ },
+ {
+  "wikiDataID": "Q801",
+  "countryCode": "il",
+  "languages": {
+   "co": "Israele",
+   "el": "Ισραήλ",
+   "fr": "Israël",
+   "hu": "Izrael",
+   "is": "Ísrael",
+   "it": "Israele",
+   "ja": "イスラエル",
+   "nl": "Israël",
+   "pa_IN": "ਇਜ਼ਰਾਈਲ",
+   "ru": "Израиль",
+   "sk": "Izrael",
+   "sq": "Izraeli",
+   "uk": "Ізраїль",
+   "zh_TW": "以色列"
+  },
+  "cities": [
+   {
+    "wikiDataID": "Q33935",
+    "city": "Tel Aviv",
+    "languages": {
+     "de": "Tel Aviv-Jaffa",
+     "el": "Τελ Αβίβ",
+     "hu": "Tel-Aviv",
+     "is": "Tel Avív",
+     "ja": "テルアビブ",
+     "pa_IN": "ਤਲ ਅਵੀਵ",
+     "ru": "Тель-Авив",
+     "sk": "Tel Aviv - Jafo",
+     "uk": "Тель-Авів-Яфо",
+     "zh_TW": "特拉維夫"
+    }
+   }
+  ]
  },
  {
   "countryCode": "it",
@@ -2187,10 +2228,10 @@
      "en": "Ashburn",
      "en_CA": "Ashburn",
      "en_GB": "Ashburn",
-     "es_AR": "Ashburn (Virginia)",
-     "es_CL": "Ashburn (Virginia)",
-     "es_ES": "Ashburn (Virginia)",
-     "es_MX": "Ashburn (Virginia)",
+     "es_AR": "Ashburn",
+     "es_CL": "Ashburn",
+     "es_ES": "Ashburn",
+     "es_MX": "Ashburn",
      "fr": "Ashburn",
      "id": "Ashburn",
      "it": "Ashburn",

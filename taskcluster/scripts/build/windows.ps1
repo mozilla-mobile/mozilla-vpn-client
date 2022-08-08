@@ -2,12 +2,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
 $REPO_ROOT_PATH =resolve-path "$PSScriptRoot/../../../"
 $FETCHES_PATH =resolve-path "$REPO_ROOT_PATH/../../fetches"
 $TASK_WORKDIR =resolve-path "$REPO_ROOT_PATH/../../"
 $QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/bin/"
-
+$PERL_GCC_PATH =resolve-path "$FETCHES_PATH/c/bin"
 # Prep Env:
 # Enable qt, enable msvc, enable rust
 . "$FETCHES_PATH/VisualStudio/enter_dev_shell.ps1"
@@ -19,7 +18,6 @@ $QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/bin/"
 # and __sometimes__ taskcluster will fail to do cleanup once the task is done
 Remove-Item $FETCHES_PATH/VisualStudio/VC/Tools/MSVC/14.30.30705/bin/HostX64/x64/VCTIP.EXE  
 
-
 # Fetch 3rdparty stuff.
 python3 -m pip install -r requirements.txt --user
 git submodule update --init --force --recursive --depth=1
@@ -27,6 +25,11 @@ git submodule update --init --force --recursive --depth=1
 # Fix: pip scripts are not on path by default on tc, so glean would fail
 $PYTHON_SCRIPTS =resolve-path "$env:APPDATA\Python\Python36\Scripts"
 $env:PATH ="$QTPATH;$PYTHON_SCRIPTS;$env:PATH"
+
+# Setup Go and MinGW up (for gco)
+$env:GOROOT="$FETCHES_PATH\go\"
+$env:PATH ="$FETCHES_PATH\go\bin;$env:PATH"
+$env:PATH = "$env:PATH;$PERL_GCC_PATH;"
 
 # Set Env's required for the windows/compile.bat
 $env:VCToolsRedistDir=(resolve-path "$FETCHES_PATH/VisualStudio/VC/Redist/MSVC/14.30.30704/").ToString()
@@ -36,33 +39,34 @@ $env:BUILDDIR=resolve-path $FETCHES_PATH/QT_OUT
 Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x64.msm -Destination $REPO_ROOT_PATH\\Microsoft_VC142_CRT_x64.msm
 Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x86.msm -Destination $REPO_ROOT_PATH\\Microsoft_VC142_CRT_x86.msm
 
-# CMD does for some reason not use the new PATH, thus
-# We need to pre-generate those resources here.
-python3 ./scripts/utils/generate_glean.py
-python3 ./scripts/utils/import_languages.py
+Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x64.msm -Destination $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC142_CRT_x64.msm
+Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x86.msm -Destination $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC142_CRT_x86.msm
+
+
+# Setup Openssl Import
+$SSL_PATH = resolve-path "$FETCHES_PATH/QT_OUT/SSL"
+$env:OPENSSL_ROOT_DIR = (resolve-path "$SSL_PATH").toString()
+$env:OPENSSL_USE_STATIC_LIBS = "TRUE"
 
 #Do not continune from this point on when we encounter an error
 $ErrorActionPreference = "Stop"
+mkdir $TASK_WORKDIR/cmake_build 
+$BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
 
-# Actually compile!
-./scripts/windows/compile.bat --nmake
-# Copies all relevant files into unsigned/
-nmake install 
 
-# For some reason qmake does ignore split-tunnel stuff
-# But we are switching to cmake, which handles this fine
-# so consider this a temporary fix :) 
-Copy-Item -Path windows/split-tunnel/* -Destination unsigned -Exclude "*.ps1","*.txt",".status"
-
-New-Item -ItemType Directory -Path "$TASK_WORKDIR/artifacts" -Force
-$ARTIFACTS_PATH =resolve-path "$TASK_WORKDIR/artifacts"
+cmake --version
+cmake -S . -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release # TODO: Linking breaks horribly with RelWithDebInfo
+cmake --build $BUILD_DIR #--config RelWithDebInfo Ignored as we are using ninja
+cmake --build $BUILD_DIR --target msi
+cmake --install $BUILD_DIR --prefix "$TASK_WORKDIR/unsigned"
 
 Write-Output "Writing Artifacts"
-Copy-Item -Path windows/installer/x64/MozillaVPN.msi -Destination $ARTIFACTS_PATH/MozillaVPN.msi
-Copy-Item -Path MozillaVPN.pdb -Destination $ARTIFACTS_PATH/MozillaVPN.pdb
-
-Compress-Archive -Path unsigned/* -Destination $TASK_WORKDIR/artifacts/unsigned.zip
-
+New-Item -ItemType Directory -Path "$TASK_WORKDIR/artifacts" -Force
+$ARTIFACTS_PATH =resolve-path "$TASK_WORKDIR/artifacts"
+Copy-Item -Path $BUILD_DIR/windows/installer/MozillaVPN.msi -Destination $ARTIFACTS_PATH/MozillaVPN.msi
+# Note: vc140.pdb is just the default name for pdb files (as we are using vc14x)
+Copy-Item -Path "$BUILD_DIR/src/CMakeFiles/mozillavpn.dir/vc140.pdb" -Destination "$ARTIFACTS_PATH/Mozilla VPN.pdb"
+Compress-Archive -Path $TASK_WORKDIR/unsigned/* -Destination $ARTIFACTS_PATH/unsigned.zip
 Write-Output "Artifacts Location:$TASK_WORKDIR/artifacts"
 Get-ChildItem -Path $TASK_WORKDIR/artifacts
 

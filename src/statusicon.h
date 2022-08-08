@@ -51,7 +51,7 @@ class StatusIcon final : public QObject {
  private:
   void activateAnimation();
 
-  QIcon getIconFromUrl(const QString& iconUrl) const;
+  QIcon setStatusIndicator(const QString& iconUrl) const;
 
   void setIcon(const QString& iconUrl);
 

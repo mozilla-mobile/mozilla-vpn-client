@@ -27,8 +27,10 @@ NSStatusItem* statusItem = nullptr;
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
     if ([keyPath isEqualToString:@"button.effectiveAppearance"]) {
+      // If the appearance name contains `(d)ark` the status icon should be
+      // displayed in a dark color.
       bool isDarkAppearance = [statusItem.button.effectiveAppearance.name containsString:@"ark"];
-      logger.debug() << "lel changed" << (isDarkAppearance ? ":)" : ":(");
+      logger.debug() << "effectiveAppearance changed" << (isDarkAppearance ? "dark" : "light");
 
       StatusIcon* statusIcon = MozillaVPN::instance()->statusIcon();
       statusIcon->setEffectiveAppearance(isDarkAppearance);
@@ -38,7 +40,7 @@ NSStatusItem* statusItem = nullptr;
 
 void MacOSUtils::test() {
   statusItem = [[[NSStatusBar systemStatusBar] statusItemWithLength:NSSquareStatusItemLength] retain];
-  statusItem.visible = true;
+  statusItem.visible = false;
 
   StatusItemObserver* statusItemObserver = [[StatusItemObserver alloc] init];
   [statusItem
@@ -51,24 +53,10 @@ void MacOSUtils::test() {
     forKeyPath:@"button.frame"
     options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionInitial
     context:nil];
-
-  // Create status item
-  NSImage* image = [NSImage imageNamed:@"NSMenuItemBullet"];
-  [image setTemplate:true];
-  [statusItem.button setImage:image];
-
-  // Add a view to status item
-  NSView* view = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 10, 10)];
-  view.wantsLayer = true;
-  NSColor* color = [NSColor blueColor];
-  view.layer.backgroundColor = color.CGColor;
-  [statusItem.button addSubview:view];
 }
 
 // static
 NSString* MacOSUtils::appId() {
-  logger.debug() << "lel appId";
-
   NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
   if (!appId) {
     // Fallback. When an unsigned/un-notarized app is executed in

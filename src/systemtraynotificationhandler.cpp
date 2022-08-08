@@ -220,7 +220,7 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 }
 
 void SystemTrayNotificationHandler::updateIcon(const QIcon& icon) {
-  logger.debug() << "lel updateIcon";
+  logger.debug() << "Update icon";
   m_systemTrayIcon.setIcon(icon);
 }
 

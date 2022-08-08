@@ -23,6 +23,24 @@ void FilterProxyModel::setFilterCallback(QJSValue filterCallback) {
   }
 
   m_filterCallback = filterCallback;
+  invalidate();
+
+  emit filterCallbackChanged();
+}
+
+QJSValue FilterProxyModel::sortCallback() const { return m_sortCallback; }
+
+void FilterProxyModel::setSortCallback(QJSValue sortCallback) {
+  if (!sortCallback.isCallable()) {
+    logger.error()
+        << "FilterProxyModel.sortCallback must be a JS callable value";
+    return;
+  }
+
+  m_sortCallback = sortCallback;
+  invalidate();
+
+  emit sortCallbackChanged();
 }
 
 QAbstractListModel* FilterProxyModel::source() const {
@@ -39,9 +57,19 @@ void FilterProxyModel::setSource(QAbstractListModel* sourceModel) {
   }
 }
 
+QVariant FilterProxyModel::get(int pos) const {
+  QModelIndex i = index(pos, 0);
+  QJSValue value = dataToJSValue(this, i);
+  return QVariant::fromValue(value);
+}
+
 bool FilterProxyModel::filterAcceptsRow(
     int source_row, const QModelIndex& source_parent) const {
-  if (m_filterCallback.isNull()) {
+  if (!m_completed) {
+    return false;
+  }
+
+  if (m_filterCallback.isNull() || m_filterCallback.isUndefined()) {
     logger.debug() << "No filter callback set!";
     return true;
   }
@@ -58,6 +86,56 @@ bool FilterProxyModel::filterAcceptsRow(
     return false;
   }
 
+  QJSValue value = dataToJSValue(sourceModel(), index);
+
+  QJSValueList arguments;
+  arguments.append(value);
+
+  QJSValue retValue = m_filterCallback.call(arguments);
+  return retValue.toBool();
+}
+
+bool FilterProxyModel::lessThan(const QModelIndex& left,
+                                const QModelIndex& right) const {
+  if (!m_completed) {
+    return false;
+  }
+
+  if (m_sortCallback.isNull() || m_sortCallback.isUndefined()) {
+    return QSortFilterProxyModel::lessThan(left, right);
+  }
+
+  Q_ASSERT(m_sortCallback.isCallable());
+
+  if (!QmlEngineHolder::exists()) {
+    logger.error() << "Something bad is happening. Are we shutting down?";
+    return false;
+  }
+
+  QJSValue valueA = dataToJSValue(sourceModel(), left);
+  QJSValue valueB = dataToJSValue(sourceModel(), right);
+
+  QJSValueList arguments;
+  arguments.append(valueA);
+  arguments.append(valueB);
+
+  QJSValue retValue = m_sortCallback.call(arguments);
+  return retValue.toBool();
+}
+
+void FilterProxyModel::classBegin() {}
+
+void FilterProxyModel::componentComplete() {
+  m_completed = true;
+  invalidate();
+
+  if (m_sortCallback.isCallable()) {
+    sort(0);
+  }
+}
+
+QJSValue FilterProxyModel::dataToJSValue(const QAbstractItemModel* model,
+                                         const QModelIndex& index) const {
   QJSEngine* engine = QmlEngineHolder::instance()->engine();
   Q_ASSERT(engine);
 
@@ -67,13 +145,9 @@ bool FilterProxyModel::filterAcceptsRow(
   for (QHash<int, QByteArray>::const_iterator i =
            m_sourceModelRoleNames.constBegin();
        i != m_sourceModelRoleNames.constEnd(); ++i) {
-    QVariant data = sourceModel()->data(index, i.key());
+    QVariant data = model->data(index, i.key());
     value.setProperty(QString(i.value()), engine->toScriptValue(data));
   }
 
-  QJSValueList arguments;
-  arguments.append(value);
-
-  QJSValue retValue = m_filterCallback.call(arguments);
-  return retValue.toBool();
+  return value;
 }

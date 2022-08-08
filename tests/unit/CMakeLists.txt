@@ -12,6 +12,7 @@ include_directories(${MVPN_SOURCE_DIR})
 include_directories(${MVPN_SOURCE_DIR}/hacl-star)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin/minimal)
+include_directories(${CMAKE_SOURCE_DIR}/tests/unit)
 
 qt_add_executable(unit_tests EXCLUDE_FROM_ALL)
 set_target_properties(unit_tests PROPERTIES FOLDER "Tests")
@@ -216,11 +217,18 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/update/webupdater.h
     ${MVPN_SOURCE_DIR}/urlopener.cpp
     ${MVPN_SOURCE_DIR}/urlopener.h
+    ${MVPN_SOURCE_DIR}/websocket/exponentialbackoffstrategy.cpp
+    ${MVPN_SOURCE_DIR}/websocket/exponentialbackoffstrategy.h
+    ${MVPN_SOURCE_DIR}/websocket/pushmessage.cpp
+    ${MVPN_SOURCE_DIR}/websocket/pushmessage.h
+    ${MVPN_SOURCE_DIR}/websocket/websockethandler.cpp
+    ${MVPN_SOURCE_DIR}/websocket/websockethandler.h
 )
 
 # VPN Client UI resources
 target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/ui/license.qrc
+    ${MVPN_SOURCE_DIR}/resources/public_keys/public_keys.qrc
 )
 
 # Unit test source files
@@ -233,6 +241,8 @@ target_sources(unit_tests PRIVATE
     helper.h
     testaddon.cpp
     testaddon.h
+    testaddonmanager.cpp
+    testaddonmanager.h
     testadjust.cpp
     testadjust.h
     testandroidmigration.cpp
@@ -271,6 +281,12 @@ target_sources(unit_tests PRIVATE
     testthemes.h
     testtimersingleshot.cpp
     testtimersingleshot.h
+    websocket/testexponentialbackoffstrategy.cpp
+    websocket/testexponentialbackoffstrategy.h
+    websocket/testpushmessage.cpp
+    websocket/testpushmessage.h
+    websocket/testwebsockethandler.cpp
+    websocket/testwebsockethandler.h
 )
 
 # Generate the version header

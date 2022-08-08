@@ -14,6 +14,9 @@ MouseArea {
     property bool propagateClickToParent: true
     property var onMouseAreaClicked: () => { if(propagateClickToParent) parent.clicked() }
 
+    // Set to true in tst_VPNMouseArea.qml to prevent failing
+    // at L32 `mouseArea.containsMouse`.
+    property bool qmlUnitTestWorkaround: false
     function changeState(stateName) {
         targetEl.state = stateName;
     }
@@ -26,7 +29,7 @@ MouseArea {
     onPressed: changeState(uiState.statePressed)
     onCanceled: changeState(uiState.stateDefault)
     onReleased: {
-        if (hoverEnabled) {
+        if (hoverEnabled && (mouseArea.containsMouse || mouseArea.qmlUnitTestWorkaround)) {
             changeState(uiState.stateDefault);
             onMouseAreaClicked();
         }

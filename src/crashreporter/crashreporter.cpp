@@ -4,11 +4,13 @@
 
 #include "crashreporter.h"
 #include "crashui.h"
+#include "qmlengineholder.h"
 
 using namespace std;
 
 CrashReporter::CrashReporter(QObject* parent) : QObject(parent) {
   m_ui = make_unique<CrashUI>();
+  new QmlEngineHolder(&m_engine);
 }
 
 bool CrashReporter::shouldPromptUser() {
