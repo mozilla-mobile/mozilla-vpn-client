@@ -32,17 +32,9 @@ def add_beetmover_worker_config(config, tasks):
         )
         destination_paths = [candidates_path]
         archive_url = (
-<<<<<<< HEAD
             "https://ftp.mozilla.org/" if l3_relpro else "https://ftp.stage.mozaws.net/"
         )
         task_description = f"This {worker_type} task will upload a {build_os} release candidate for v{app_version} to {archive_url}{candidates_path}/"
-=======
-            "https://ftp.stage.mozaws.net/"
-            if config.params["level"] != 3
-            else "https://ftp.mozilla.org/"
-        )
-        task_description = f"This {worker_type} task will upload a {build_os} release candidate for {app_name} v{app_version} to {archive_url}{candidates_path}/"
->>>>>>> f02b663680342802248071a2edd69d6a73cc71d4
         branch = config.params["head_ref"]
 
         def get_artifact_path(path):
