@@ -2,8 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+from voluptuous import Any, Extra, Optional
 
 from taskgraph.transforms.base import TransformSequence
+from taskgraph.util.schema import Schema, optionally_keyed_by, resolve_keyed_by
 
 transforms = TransformSequence()
 
@@ -15,6 +17,23 @@ BRANCH_INDEX_ROUTES = (
 RELEASE_INDEX_ROUTES = (
     "index.mozillavpn.v2.mozilla-vpn-client.release.{version}.latest.{task_type}.{name}",
 )
+
+
+release_index_schema = Schema(
+    {
+        Optional("add-index-routes"): optionally_keyed_by("build-type", Any(str, None)),
+        Extra: object,
+    }
+)
+
+transforms.add_validate(release_index_schema)
+
+
+@transforms.add
+def resolve_keys(config, tasks):
+    for task in tasks:
+        resolve_keyed_by(task, "add-index-routes", item_name=task["name"])
+        yield task
 
 
 @transforms.add
@@ -34,7 +53,7 @@ def add_index_routes(config, tasks):
             routes = BRANCH_INDEX_ROUTES
             branch = config.params["head_ref"]
             if branch.startswith(_GIT_REFS_HEADS_PREFIX):
-                branch = branch[len(_GIT_REFS_HEADS_PREFIX):]
+                branch = branch[len(_GIT_REFS_HEADS_PREFIX) :]
             context["branch"] = branch
 
         elif config.params["tasks_for"] == "github-release":
