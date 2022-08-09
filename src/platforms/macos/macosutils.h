@@ -11,8 +11,6 @@
 
 class MacOSUtils final {
  public:
-  static void test();
-
   static NSString* appId();
 
   static QString computerName();
@@ -20,6 +18,10 @@ class MacOSUtils final {
   static void enableLoginItem(bool startAtBoot);
 
   static void setDockClickHandler();
+  static void setStatusBarIcon(QString iconUrl);
+  static void setStatusBarIndicatorColor(float redValue, float greenValue,
+                                         float blueValue);
+  static void setStatusBarMenu(NSMenu* statusBarMenu);
   static void setStatusBarTextColor();
 
   static void hideDockIcon();

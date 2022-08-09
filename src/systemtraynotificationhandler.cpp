@@ -10,12 +10,12 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
-
 #ifdef MVPN_MACOS
 #  include "platforms/macos/macosutils.h"
 #endif
 
 #include <QIcon>
+#include <QMenu>
 #include <QWindow>
 
 namespace {
@@ -40,8 +40,6 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
 
   connect(vpn->statusIcon(), &StatusIcon::iconChanged, this,
           &SystemTrayNotificationHandler::updateIcon);
-
-  m_systemTrayIcon.setToolTip(qtTrId("vpn.main.productName"));
 
   // Status label
   m_statusLabel = m_menu.addAction("");
@@ -72,7 +70,6 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
 
   m_quitAction = m_menu.addAction("", externalOpHandler,
                                   &ExternalOpHandler::requestOpQuit);
-  m_systemTrayIcon.setContextMenu(&m_menu);
 
   updateIcon(vpn->statusIcon()->icon());
 
@@ -87,7 +84,13 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
 
   retranslate();
 
+#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
+  m_systemTrayIcon.setToolTip(qtTrId("vpn.main.productName"));
+  m_systemTrayIcon.setContextMenu(&m_menu);
   m_systemTrayIcon.show();
+#else
+  MacOSUtils::setStatusBarMenu(m_menu.toNSMenu());
+#endif
 }
 
 SystemTrayNotificationHandler::~SystemTrayNotificationHandler() {
@@ -221,7 +224,32 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 
 void SystemTrayNotificationHandler::updateIcon(const QIcon& icon) {
   logger.debug() << "Update icon";
+#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
   m_systemTrayIcon.setIcon(icon);
+#else
+  Q_UNUSED(icon);
+  QString iconUrl = "NSMenuItemBullet";
+  // QString iconUrl = "NSMenuCheckmark";
+
+  MacOSUtils::setStatusBarIcon(iconUrl);
+
+  // green
+  float redValue = 63;
+  float greenValue = 225;
+  float blueValue = 176;
+
+  // // orange
+  // float redValue = 255;
+  // float greenValue = 164;
+  // float blueValue = 54;
+
+  // // red
+  // float redValue = 226;
+  // float greenValue = 40;
+  // float blueValue = 80;
+
+  MacOSUtils::setStatusBarIndicatorColor(redValue, greenValue, blueValue);
+#endif
 }
 
 void SystemTrayNotificationHandler::showHideWindow() {

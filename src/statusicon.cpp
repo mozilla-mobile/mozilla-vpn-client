@@ -39,7 +39,6 @@ constexpr const char* LOGO_GENERIC = ":/ui/resources/logo-generic.svg";
 StatusIcon::StatusIcon() : m_iconUrl(LOGO_GENERIC) {
   MVPN_COUNT_CTOR(StatusIcon);
 
-  MacOSUtils::test();
   connect(&m_animatedIconTimer, &QTimer::timeout, this,
           &StatusIcon::animateIcon);
 }
@@ -58,19 +57,6 @@ void StatusIcon::animateIcon() {
   if (m_animatedIconIndex == ANIMATED_LOGO_STEPS.size()) {
     m_animatedIconIndex = 0;
   }
-}
-
-void StatusIcon::setEffectiveAppearance(bool isDarkAppearance) {
-  logger.debug() << "Set effective appearance" << isDarkAppearance;
-
-  if (isDarkAppearance) {
-    m_effectiveAppearance = EffectiveAppearanceDark;
-  } else {
-    m_effectiveAppearance = EffectiveAppearanceLight;
-  }
-  setIcon(LOGO_GENERIC);
-
-  emit effectiveAppearanceChanged();
 }
 
 void StatusIcon::stabilityChanged() {
@@ -154,25 +140,6 @@ QIcon StatusIcon::setStatusIndicator(const QString& iconUrl) const {
 void StatusIcon::setIcon(const QString& iconUrl) {
   logger.debug() << "Set icon" << iconUrl;
 
-  // Set the url for the status icon.
-  switch (m_effectiveAppearance) {
-    case EffectiveAppearanceDark: {
-      // Get the light version of the icon.
-      QStringList iconUrlParts = iconUrl.split(".");
-      Q_ASSERT(iconUrlParts.size() == 2);
-      m_iconUrl = QString("%1-light.%2").arg(iconUrlParts[0])
-                                        .arg(iconUrlParts[1]);
-      break;
-    }
-    case EffectiveAppearanceLight: {
-      [[fallthrough]];
-    }
-    default: {
-      m_iconUrl = iconUrl;
-      break;
-    }
-  }
-
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
   // If we are in state main and the VPN is on we show a status indicator that
@@ -184,6 +151,7 @@ void StatusIcon::setIcon(const QString& iconUrl) {
     m_icon = QIcon(m_iconUrl);
   }
 
+  m_icon.setIsMask(true);
   emit iconChanged(m_icon);
 }
 

@@ -33,8 +33,6 @@ class StatusIcon final : public QObject {
 
   const QIcon& icon() const { return m_icon; }
 
-  void setEffectiveAppearance(bool isDarkAppearance);
-
  signals:
   void iconChanged(const QIcon& icon);
 

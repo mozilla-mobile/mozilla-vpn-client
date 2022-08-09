@@ -10,6 +10,7 @@
 
 #include <objc/message.h>
 #include <objc/objc.h>
+#include <QMenu>
 
 #import <Cocoa/Cocoa.h>
 #import <ServiceManagement/ServiceManagement.h>
@@ -18,41 +19,106 @@ namespace {
 Logger logger(LOG_MACOS, "MacOSUtils");
 }
 
-NSStatusItem* statusItem = nullptr;
+@interface StatusBarIndicatorIcon : NSObject
+@property (atomic, assign, readwrite) NSStatusItem* statusItem;
+@property (atomic, assign, readwrite) NSView* statusIndicator;
 
-@interface StatusItemObserver : NSObject
--(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context;
+- (id)initWithIcon:(NSString*)iconUrl;
+- (void)setIcon:(NSString*)iconUrl;
+- (void)setIndicatorColor:(NSColor*)color;
+- (void)setMenu:(NSMenu*)statusBarMenu;
 @end
-@implementation StatusItemObserver
--(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
-{
-    if ([keyPath isEqualToString:@"button.effectiveAppearance"]) {
-      // If the appearance name contains `(d)ark` the status icon should be
-      // displayed in a dark color.
-      bool isDarkAppearance = [statusItem.button.effectiveAppearance.name containsString:@"ark"];
-      logger.debug() << "effectiveAppearance changed" << (isDarkAppearance ? "dark" : "light");
 
-      StatusIcon* statusIcon = MozillaVPN::instance()->statusIcon();
-      statusIcon->setEffectiveAppearance(isDarkAppearance);
-    }
+@implementation StatusBarIndicatorIcon
+- (id)initWithIcon:(NSString*)iconUrl {
+  self = [super init];
+
+  // Create status item
+  self.statusItem = [[[NSStatusBar systemStatusBar]
+      statusItemWithLength:NSSquareStatusItemLength] retain];
+  self.statusItem.visible = true;
+
+  // Add the indicator as a subview
+  float viewHeight = NSHeight([self.statusItem.button bounds]);
+  int dotSize = round(viewHeight * 0.5);
+  int dotOrigin = round((viewHeight - dotSize) * 0.85);
+  self.statusIndicator = [[NSView alloc]
+      initWithFrame:NSMakeRect(dotOrigin, dotOrigin, dotSize, dotSize)];
+  self.statusIndicator.wantsLayer = true;
+  self.statusIndicator.layer.cornerRadius = dotSize * 0.5;
+
+  [self.statusItem.button addSubview:self.statusIndicator];
+
+  // Init icon
+  [self setIcon:iconUrl];
+
+  return self;
+}
+
+- (void)setIcon:(NSString*)iconUrl {
+  logger.debug() << "Set icon" << iconUrl;
+
+  NSImage* image = [NSImage imageNamed:iconUrl];
+  [image setTemplate:true];
+
+  [self.statusItem.button setImage:image];
+}
+
+- (void)setIndicator {
+  logger.debug() << "Set indicator";
+
+  // Add a view to status item
+  float viewHeight = NSHeight([self.statusItem.button bounds]);
+  int dotSize = round(viewHeight * 0.5);
+  int dotOrigin = round((viewHeight - dotSize) * 0.85);
+
+  self.statusIndicator = [[NSView alloc]
+      initWithFrame:NSMakeRect(dotOrigin, dotOrigin, dotSize, dotSize)];
+  self.statusIndicator.wantsLayer = true;
+  self.statusIndicator.layer.cornerRadius = dotSize * 0.5;
+
+  [self.statusItem.button addSubview:self.statusIndicator];
+}
+
+- (void)setIndicatorColor:(NSColor*)color {
+  logger.debug() << "Set indicator color";
+
+  self.statusIndicator.layer.backgroundColor = color.CGColor;
+}
+
+- (void)setMenu:(NSMenu*)statusBarMenu {
+  logger.debug() << "Set menu";
+
+  [self.statusItem setMenu:statusBarMenu];
 }
 @end
 
-void MacOSUtils::test() {
-  statusItem = [[[NSStatusBar systemStatusBar] statusItemWithLength:NSSquareStatusItemLength] retain];
-  statusItem.visible = false;
+StatusBarIndicatorIcon* statusBarIcon = nil;
 
-  StatusItemObserver* statusItemObserver = [[StatusItemObserver alloc] init];
-  [statusItem
-    addObserver:statusItemObserver
-    forKeyPath:@"button.effectiveAppearance"
-    options:NSKeyValueObservingOptionNew
-    context:nil];
-  [statusItem
-    addObserver:statusItemObserver
-    forKeyPath:@"button.frame"
-    options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionInitial
-    context:nil];
+void MacOSUtils::setStatusBarIcon(QString iconUrl) {
+  logger.debug() << "Set status bar icon";
+
+  if (!statusBarIcon) {
+    statusBarIcon = [[StatusBarIndicatorIcon alloc]
+        initWithIcon:iconUrl.toNSString()];
+  }
+}
+
+void MacOSUtils::setStatusBarIndicatorColor(float redValue, float greenValue,
+                                            float blueValue) {
+  logger.debug() << "Set status bar indicator color";
+
+  NSColor* color = [NSColor colorWithCalibratedRed:(redValue / 255)
+      green:(greenValue / 255)
+      blue:(blueValue / 255)
+      alpha:1.0f];
+  [statusBarIcon setIndicatorColor:color];
+}
+
+void MacOSUtils::setStatusBarMenu(NSMenu* statusBarMenu) {
+  logger.debug() << "Set status bar menu";
+
+  [statusBarIcon setMenu:statusBarMenu];
 }
 
 // static
