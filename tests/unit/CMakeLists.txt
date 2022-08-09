@@ -262,8 +262,8 @@ target_sources(unit_tests PRIVATE
     helper.h
     testaddon.cpp
     testaddon.h
-    testaddonmanager.cpp
-    testaddonmanager.h
+    testaddonindex.cpp
+    testaddonindex.h
     testadjust.cpp
     testadjust.h
     testandroidmigration.cpp

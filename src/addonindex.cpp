@@ -134,7 +134,11 @@ void AddonIndex::update(const QByteArray& index,
   // Question: Should we not emit the signal in case write is unsuccessfull?
   write(index, indexSignature);
 
-  emit indexUpdated(extractAddonsFromIndex(indexObj));
+  QList<AddonData> addons = extractAddonsFromIndex(indexObj);
+
+  if (!addons.isEmpty()) {
+    emit indexUpdated(addons);
+  }
 }
 
 /**

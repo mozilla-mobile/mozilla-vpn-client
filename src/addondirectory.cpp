@@ -19,6 +19,8 @@ QString rootAppFolder() {
 #ifdef MVPN_WASM
   // https://wiki.qt.io/Qt_for_WebAssembly#Files_and_local_file_system_access
   return "/";
+#elif defined(UNIT_TEST)
+  return QStandardPaths::writableLocation(QStandardPaths::TempLocation);
 #else
   return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 #endif
