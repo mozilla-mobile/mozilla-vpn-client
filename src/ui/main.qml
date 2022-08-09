@@ -218,7 +218,6 @@ Window {
                         target: window
                         function onShowSettingsStack() {
                             if(!settingsNavButton.checked) settingsNavButton.checked = true
-                            VPN.recordGleanEvent("settingsViewOpened"); //ML TODO: Event every time settings nav stack is shown? Or only main settings menu is shown? Even on back button clicked to main settings menu?
                         }
                     }
                 }
@@ -401,21 +400,10 @@ Window {
             mainStackView.push("qrc:/ui/views/ViewDeveloperMenu.qml", StackView.Immediate);
         }
 
-
         function onSettingsNeeded() {
-            // Check if Settings view is already in mainStackView
-//            const settingsViewInMainStack = mainStackView.find((view) => { return view.objectName === "settings" })
-
-//            if (settingsViewInMainStack) {
-//                // Unwind settingsStackView back to menu
-//                settingsViewInMainStack._unwindSettingsStackView();
-
-//                // Unwind mainStackView back to Settings
-//                return mainStackView.pop(settingsViewInMainStack, StackView.Immediate);
-//            }
-//            mainStackView.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate);
             showSettingsStack(true)
         }
+
         function onAccountDeleted() {
             VPNController.logout();
             mainStackView.unwindToInitialItem();

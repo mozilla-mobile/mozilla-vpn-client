@@ -61,7 +61,6 @@
         <file>views/ViewMultiHop.qml</file>
         <file>views/ViewOnboarding.qml</file>
         <file>views/ViewServers.qml</file>
-        <file>views/ViewSettings.qml</file>
         <file>views/ViewSubscriptionNeeded.qml</file>
         <file>views/ViewUpdate.qml</file>
         <file>views/ViewMobileOnboarding.qml</file>

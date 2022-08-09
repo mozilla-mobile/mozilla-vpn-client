@@ -15,6 +15,10 @@ VPNFlickable {
     objectName: "settingsView"
     flickContentHeight: settingsList.implicitHeight
 
+    onVisibleChanged: {
+        if(visible) VPN.recordGleanEvent("settingsViewOpened")
+    }
+
     Component {
         id: aboutUsComponent
 
