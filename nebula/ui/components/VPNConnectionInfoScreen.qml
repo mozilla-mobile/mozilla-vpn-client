@@ -141,13 +141,13 @@ Rectangle {
     VPNIconButton {
         id: connectionInfoRestartButton
 
-        visible: connectionInfoContent.visible || connectionInfoError.visible
+        visible: root.state === "open-ready"
 
         anchors {
             top: parent.top
-            right: parent.right
+            left: parent.left
             topMargin: VPNTheme.theme.windowMargin / 2
-            rightMargin: VPNTheme.theme.windowMargin / 2
+            leftMargin: VPNTheme.theme.windowMargin / 2
         }
         // TODO: Replace with localized string
         accessibleName: "Restart speed test"

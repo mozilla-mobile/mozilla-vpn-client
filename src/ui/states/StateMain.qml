@@ -103,8 +103,8 @@ StackLayout {
                 }
             }
             _iconButtonSource: "qrc:/nebula/resources/back.svg"
+            iconButtonVisible: settingsStack.depth > 1
 
-            visible: settingsStack.depth > 1
         }
 
         VPNStackView {
@@ -114,7 +114,7 @@ StackLayout {
             Layout.fillHeight: true
             Layout.fillWidth: true
 
-            onCurrentItemChanged: settingsStackMenu.title = Qt.binding(() => currentItem._menuTitle || "");
+            onCurrentItemChanged: settingsStackMenu.title = Qt.binding(() => currentItem._menuTitle || qsTrId("vpn.main.settings"));
         }
     }
 
