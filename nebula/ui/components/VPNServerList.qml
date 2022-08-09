@@ -91,7 +91,6 @@ FocusScope {
 
             VPNSearchBar {
                 id: searchBar
-
                 _filterProxySource: VPNServerCountryModel
                 _filterProxyCallback: country => {
                           const searchString = getSearchBarText();
@@ -106,7 +105,6 @@ FocusScope {
                       }
                 _searchBarHasError: () => { return countriesRepeater.count === 0 }
                 _searchBarPlaceholderText: VPNl18n.ServersViewSearchPlaceholder
-
                 Layout.fillWidth: true
                 Layout.topMargin: VPNTheme.theme.vSpacing
                 Layout.leftMargin: VPNTheme.theme.vSpacing
