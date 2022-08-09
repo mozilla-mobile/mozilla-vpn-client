@@ -6,7 +6,6 @@
 import os.path
 
 from taskgraph.transforms.base import TransformSequence
-from taskgraph.util.schema import resolve_keyed_by
 
 transforms = TransformSequence()
 
@@ -16,13 +15,11 @@ def add_beetmover_worker_config(config, tasks):
     for task in tasks:
         app_name = "vpn"
         worker_type = task["worker-type"]
-        task_name = task["name"]
-        task_label = f"{worker_type}-{task_name}"
-        l3_relpro = (
+        is_relpro = (
             config.params["level"] == "3"
             and config.params["tasks_for"] in task["run-on-tasks-for"]
         )
-        bucket = "release" if l3_relpro else "dep"
+        bucket = "release" if is_relpro else "dep"
         build_id = config.params["moz_build_date"]
         build_type = task["attributes"]["build-type"]
         build_os = os.path.dirname(build_type)
@@ -32,26 +29,23 @@ def add_beetmover_worker_config(config, tasks):
         )
         destination_paths = [candidates_path]
         archive_url = (
-            "https://ftp.mozilla.org/" if l3_relpro else "https://ftp.stage.mozaws.net/"
+            "https://ftp.mozilla.org/" if is_relpro else "https://ftp.stage.mozaws.net/"
         )
         task_description = f"This {worker_type} task will upload a {build_os} release candidate for v{app_version} to {archive_url}{candidates_path}/"
         branch = config.params["head_ref"]
 
-        def get_artifact_path(path):
-            # iscript turns .tar.gz files into signed .pkg files
-            if build_os == "macos":
-                return path.replace(".tar.gz", ".pkg")
-            return path
-
-        upstream_artifacts = [
-            {
-                **upstream_artifact,
-                "paths": [
-                    get_artifact_path(path) for path in upstream_artifact["paths"]
-                ],
-            }
-            for upstream_artifact in task["worker"]["upstream-artifacts"]
-        ]
+        upstream_artifacts = []
+        for dep in task["dependencies"]:
+            upstream_artifacts.append(
+                {
+                    "taskId": {"task-reference": f"<{dep}>"},
+                    "taskType": "scriptworker",
+                    "paths": [
+                        release_artifact["name"]
+                        for release_artifact in task["attributes"]["release-artifacts"]
+                    ],
+                }
+            )
 
         artifact_map = []
         for artifact in upstream_artifacts:
@@ -87,8 +81,7 @@ def add_beetmover_worker_config(config, tasks):
             "artifact-map": artifact_map,
         }
         task_def = {
-            "label": task_label,
-            "name": task_label,
+            "name": task["name"],
             "description": task_description,
             "dependencies": task["dependencies"],
             "worker-type": worker_type,
