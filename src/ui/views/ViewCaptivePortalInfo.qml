@@ -12,7 +12,7 @@ import components 0.1
 VPNFlickable {
     id: vpnFlickable
 
-    flickContentHeight: content.implicitHeight + content.anchors.topMargin
+    flickContentHeight: content.height + content.anchors.topMargin
 
     state: (VPNController.state == VPNController.StateOff) ? "pre-activation" : "post-activation"
     states: [

@@ -680,13 +680,13 @@ tutorialPopup:
 navBar:
   homeTab:
     value: Home
-    comment: Label for the tab on the nav bar that takes the user to the home screen
+    comment: Label for the tab on the navigation bar that takes the user to the home screen
   messagesTab:
     value: Messages
-    comment: Label for the tab on the nav bar that takes the user to the messages inbox screen
+    comment: Label for the tab on the navigation bar that takes the user to the messages inbox screen
   settingsTab:
     value: Settings
-    comment: Label for the tab on the nav bar that takes the user to the settings screen
+    comment: Label for the tab on the navigation bar that takes the user to the settings screen
 
 global:
   expand:

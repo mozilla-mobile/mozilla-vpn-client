@@ -80,7 +80,7 @@ Item {
             id: vpnFlickable
             property var appRating
             property var feedbackCategory
-            flickContentHeight: col.implicitHeight + col.anchors.topMargin
+            flickContentHeight: col.height + col.anchors.topMargin
 
             Rectangle {
                 anchors.fill: parent

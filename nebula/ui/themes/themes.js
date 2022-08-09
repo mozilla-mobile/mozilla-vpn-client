@@ -76,8 +76,9 @@ theme.tabletMinimumWidth = 600
 theme.menuHeight = 56;
 theme.tutorialCardHeight = 144
 theme.navBarHeight = 64
+theme.navBarMaxWidth = 608
 theme.navBarTopMargin = 48
-theme.navBarBottomMargin = 16
+theme.navBarBottomMargin = Qt.platform.os !== "ios" ? 16 : 34
 theme.navBarHeightWithMargins = theme.navBarHeight + theme.navBarTopMargin + theme.navBarBottomMargin
 
 theme.darkFocusBorder = theme.fontColor;
