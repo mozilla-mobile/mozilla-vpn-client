@@ -143,7 +143,7 @@ HEADERS += \
     ../../src/websocket/pushmessage.h \
     helper.h \
     testaddon.h \
-    testaddonmanager.h \
+    testaddonindex.h \
     testadjust.h \
     testandroidmigration.h \
     testcommandlineparser.h \
@@ -269,7 +269,7 @@ SOURCES += \
     mocmozillavpn.cpp \
     mocnetworkrequest.cpp \
     testaddon.cpp \
-    testaddonmanager.cpp \
+    testaddonindex.cpp \
     testadjust.cpp \
     testandroidmigration.cpp \
     testcommandlineparser.cpp \

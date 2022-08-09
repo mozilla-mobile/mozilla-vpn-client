@@ -9,7 +9,7 @@
 
 void TestAddonIndex::update_data() {
   QTest::addColumn<QByteArray>("index");
-  QTest::addColumn<QStringList>("addonIds");
+  QTest::addColumn<QStringList>("expectedAddonIds");
 
   QTest::addRow("invalid") << QByteArray() << QStringList();
 
@@ -60,29 +60,32 @@ void TestAddonIndex::update_data() {
 
 void TestAddonIndex::update() {
   QFETCH(QByteArray, index);
-  QFETCH(QStringList, addonIds);
+  QFETCH(QStringList, expectedAddonIds);
 
   SettingsHolder settingsHolder;
 
-  AddonDirectory ad();
+  AddonDirectory ad;
   AddonIndex ai(&ad);
 
   QSignalSpy indexUpdatedSpy(&ai, SIGNAL(indexUpdated(QList<AddonData>)));
 
-  ai->update(index, QByteArray());
+  ai.update(index, QByteArray());
 
-  QVERIFY(indexUpdatedSpy.wait());
-  QCOMPARE(indexUpdatedSpy, count(), 1);
+  if (expectedAddonIds.isEmpty()) {
+    QTRY_COMPARE(indexUpdatedSpy.count(), 0);
+  } else {
+    QTRY_COMPARE(indexUpdatedSpy.count(), 1);
 
-  QList<QVariant> arguments = indexUpdatedSpy.takeFirst();
-  QList<AddonData> addonData = arguments.at(0).value<QList<AddonData>>();
+    QList<QVariant> arguments = indexUpdatedSpy.takeFirst();
+    QList<AddonData> addonData = arguments.at(0).value<QList<AddonData>>();
 
-  QStringList addonIds;
-  for (int i = 0; i < addonData.size(); ++i) {
-    addonIds << addonData.at(i);
+    QStringList addonIds;
+    for (int i = 0; i < addonData.size(); ++i) {
+      addonIds.append(addonData.at(i).m_addonId);
+    }
+
+    QCOMPARE(addonIds, expectedAddonIds);
   }
-
-  QCOMPARE(addonIds, am->addonIds());
 }
 
-static TestAddonIndex s_testAddonManager;
+static TestAddonIndex s_testAddonIndex;
