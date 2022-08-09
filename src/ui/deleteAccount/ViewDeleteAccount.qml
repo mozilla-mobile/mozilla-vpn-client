@@ -13,6 +13,7 @@ import components.inAppAuth 0.1
 Item {
 
     id: viewDeleteAccount
+    objectName: "viewDeleteAccount"
 
     Loader {
         id: loader

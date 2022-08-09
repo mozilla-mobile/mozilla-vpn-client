@@ -123,16 +123,18 @@ Window {
 
     VPNBottomNavigationBar {
         id: navbar
-        anchors.left: parent.left
-        anchors.right: parent.right
+        anchors.horizontalCenter: window.width < VPNTheme.theme.tabletMinimumWidth ? undefined : parent.horizontalCenter
+        anchors.left: window.width < VPNTheme.theme.tabletMinimumWidth ? parent.left : undefined
+        anchors.right: window.width < VPNTheme.theme.tabletMinimumWidth ? parent.right : undefined
         anchors.bottom: parent.bottom
-        anchors.leftMargin: 16
-        anchors.rightMargin: 16
-        anchors.bottomMargin: 16
+        anchors.leftMargin: VPNTheme.theme.windowMargin
+        anchors.rightMargin: VPNTheme.theme.windowMargin
+        anchors.bottomMargin: VPNTheme.theme.navBarBottomMargin
 
         height: VPNTheme.theme.navBarHeight
+        width: window.width < VPNTheme.theme.tabletMinimumWidth ? undefined : VPNTheme.theme.navBarMaxWidth
         radius: height / 2
-        visible: VPN.state === VPN.StateMain
+        visible: VPN.state === VPN.StateMain && mainStackView.currentItem.objectName !== "viewDeleteAccount"
         enabled: opacity !== 0.0
 
         Behavior on opacity {
@@ -145,15 +147,6 @@ Window {
             target: VPNConnectionBenchmark
             onStateChanged: {
                 navbar.opacity = VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateInitial ? 1 : 0
-            }
-        }
-
-        Connections {
-            target: VPNAuthInApp
-            onStateChanged: {
-                if(VPNAuthInApp.state === VPNAuthInApp.StateInitializing) {
-                    navbar.visible = Qt.binding(() => VPN.state === VPN.StateMain)
-                }
             }
         }
 

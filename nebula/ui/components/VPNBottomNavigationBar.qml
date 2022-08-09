@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 import QtQuick 2.0
 import QtQuick.Layouts 1.15
 
@@ -40,14 +44,14 @@ Rectangle {
     RowLayout {
         id: layout
         anchors.fill: parent
-        anchors.leftMargin: tabs.length === 3 ? 48 : 32
-        anchors.rightMargin: anchors.leftMargin
+        anchors.leftMargin: VPNTheme.theme.windowMargin
+        anchors.rightMargin: VPNTheme.theme.windowMargin
 
-        spacing: tabs.length === 3 ? 51.5 : 24
+        spacing: 0
         data: tabs
 
         Component.onCompleted: {
-            for(var i = 0 ; i < tabs.length; i++) {
+            for(let i = 0 ; i < tabs.length; i++) {
                 tabs[i].Layout.fillWidth = true
             }
         }
