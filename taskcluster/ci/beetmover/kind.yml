@@ -9,6 +9,10 @@ transforms:
     - mozillavpn_taskgraph.transforms.beetmover:transforms
     - taskgraph.transforms.task:transforms
 
+kind-dependencies:
+    - signing
+    - repackage-signing
+
 jobs:
     macos:
         worker-type: beetmover
