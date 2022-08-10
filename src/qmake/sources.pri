@@ -151,6 +151,7 @@ SOURCES += \
         tasks/group/taskgroup.cpp \
         tasks/heartbeat/taskheartbeat.cpp \
         tasks/ipfinder/taskipfinder.cpp \
+        tasks/latency/tasklatency.cpp \
         tasks/products/taskproducts.cpp \
         tasks/release/taskrelease.cpp \
         tasks/removedevice/taskremovedevice.cpp \
@@ -324,6 +325,7 @@ HEADERS += \
         tasks/group/taskgroup.h \
         tasks/heartbeat/taskheartbeat.h \
         tasks/ipfinder/taskipfinder.h \
+        tasks/latency/tasklatency.h \
         tasks/products/taskproducts.h \
         tasks/release/taskrelease.h \
         tasks/removedevice/taskremovedevice.h \

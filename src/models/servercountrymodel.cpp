@@ -325,6 +325,13 @@ void ServerCountryModel::retranslate() {
   endResetModel();
 }
 
+void ServerCountryModel::setServerLatency(const QString& publicKey,
+                                          unsigned int msec) {
+  if (m_servers.contains(publicKey)) {
+    m_servers[publicKey].setLatency(msec);
+  }
+}
+
 void ServerCountryModel::setServerCooldown(const QString& publicKey,
                                            unsigned int duration) {
   if (m_servers.contains(publicKey)) {
