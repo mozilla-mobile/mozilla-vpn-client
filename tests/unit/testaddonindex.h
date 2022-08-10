@@ -8,6 +8,8 @@ class TestAddonIndex final : public TestHelper {
   Q_OBJECT
 
  private slots:
+  void testSignatureChecksCanBeToggled();
+
   void update_data();
   void update();
 };

@@ -69,7 +69,7 @@ void TestAddonIndex::update() {
 
   QSignalSpy indexUpdatedSpy(&ai, SIGNAL(indexUpdated(QList<AddonData>)));
 
-  ai.update(index, QByteArray());
+  ai.update(index, QByteArray("test signature"));
 
   if (expectedAddonIds.isEmpty()) {
     QTRY_COMPARE(indexUpdatedSpy.count(), 0);
@@ -86,6 +86,47 @@ void TestAddonIndex::update() {
 
     QCOMPARE(addonIds, expectedAddonIds);
   }
+}
+
+void TestAddonIndex::testSignatureChecksCanBeToggled() {
+  SettingsHolder settingsHolder;
+
+  settingsHolder.setFeaturesFlippedOff(QStringList{"addonSignature"});
+
+  AddonDirectory ad;
+  AddonIndex ai(&ad);
+
+  QSignalSpy indexUpdatedSpy(&ai, SIGNAL(indexUpdated(QList<AddonData>)));
+
+  QJsonObject addon;
+  addon["sha256"] =
+      "142296a59cf2ef0d56086aca7d756a8424298af4fb3f236a36d5f263fd06fb0a";
+  addon["id"] = "foo";
+
+  QJsonObject index;
+  index["api_version"] = "0.1";
+  index["addons"] = QJsonArray{addon};
+
+  // We need to reset otherwise update
+  // will bail early due to index not having changed.
+  ad.testReset();
+  ai.update(QJsonDocument(index).toJson(), nullptr);
+
+  QTRY_COMPARE(indexUpdatedSpy.count(), 1);
+
+  settingsHolder.setFeaturesFlippedOn(QStringList{"addonSignature"});
+
+  // We need to reset otherwise update
+  // will bail early due to index not having changed.
+  ad.testReset();
+  ai.update(QJsonDocument(index).toJson(), nullptr);
+
+  // Still one, no signals emitted. Validation should have failed.
+  QTRY_COMPARE(indexUpdatedSpy.count(), 1);
+
+  // With a non null signature all is good.
+  ai.update(QJsonDocument(index).toJson(), QByteArray("test signature"));
+  QTRY_COMPARE(indexUpdatedSpy.count(), 2);
 }
 
 static TestAddonIndex s_testAddonIndex;

@@ -121,3 +121,24 @@ bool AddonDirectory::deleteFile(const QString& fileName) {
 
   return true;
 }
+
+#ifdef UNIT_TEST
+/**
+ * @brief Deletes all files in the directory.
+ *
+ * Useful for testing. This can be called to ensure
+ * when the addon index is updated it will not be a no-op.
+ */
+void AddonDirectory::testReset() {
+  QDir dir;
+  if (!getDirectory(&dir)) {
+    return;
+  }
+
+  dir.setNameFilters(QStringList() << "*");
+  dir.setFilter(QDir::Files);
+  foreach (QString dirFile, dir.entryList()) {
+    dir.remove(dirFile);
+  }
+}
+#endif
