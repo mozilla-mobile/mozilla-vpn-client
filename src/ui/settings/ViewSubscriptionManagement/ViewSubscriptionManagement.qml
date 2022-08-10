@@ -14,8 +14,6 @@ VPNFlickable {
     id: vpnFlickable
     objectName: "subscriptionManagmentView"
 
-    anchors.top: parent.top
-    height: parent.height
     flickContentHeight: contentColumn.implicitHeight
 
     ListModel {
@@ -48,7 +46,15 @@ VPNFlickable {
                 VPN.openLink(VPN.LinkAccount);
             }
 
+            anchors.left: undefined
+            anchors.right: undefined
+            anchors.leftMargin: undefined
+            anchors.rightMargin: undefined
+
             Layout.topMargin: VPNTheme.theme.windowMargin
+            Layout.leftMargin: VPNTheme.theme.windowMargin / 2
+            Layout.rightMargin: VPNTheme.theme.windowMargin / 2
+
         }
 
         ColumnLayout {

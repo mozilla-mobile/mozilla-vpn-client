@@ -81,7 +81,7 @@ VPNClickableRow {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             Layout.preferredHeight: VPNTheme.theme.rowHeight
             Layout.preferredWidth: VPNTheme.theme.rowHeight
-            visible: _iconButtonImageSource !== ""
+            visible: _iconSource !== ""
             color: VPNTheme.theme.transparent
 
             VPNIcon {

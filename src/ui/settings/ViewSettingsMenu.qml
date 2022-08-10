@@ -51,6 +51,14 @@ VPNFlickable {
                 property bool subscriptionManagementEnabled: VPNFeatureList.get("subscriptionManagement").isSupported
                 objectName: "settingsUserProfile"
 
+                anchors.left: undefined
+                anchors.right: undefined
+                anchors.leftMargin: undefined
+                anchors.rightMargin: undefined
+
+                Layout.leftMargin: VPNTheme.theme.windowMargin / 2
+                Layout.rightMargin: VPNTheme.theme.windowMargin / 2
+
                 enabled: VPNProfileFlow.state === VPNProfileFlow.StateInitial
 
                 _iconSource: subscriptionManagementEnabled

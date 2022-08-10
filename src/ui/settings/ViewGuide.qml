@@ -32,7 +32,7 @@ Item {
             VPNIconButton {
                 anchors.top: parent.top
                 anchors.left: parent.left
-                anchors.topMargin: root.safeAreaHeight + 8
+                anchors.topMargin: (Qt.platform.os === "ios" ? root.safeAreaHeight * 2 : root.safeAreaHeight) + VPNTheme.theme.vSpacingSmall / 2
                 anchors.leftMargin: VPNTheme.theme.listSpacing
                 buttonColorScheme: {
                     'defaultColor': VPNTheme.theme.transparent,
