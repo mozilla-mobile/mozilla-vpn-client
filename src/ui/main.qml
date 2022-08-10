@@ -159,66 +159,70 @@ Window {
         }
 
         tabs: [
-            //Each tab is wrapped in an item so that the tab buttons themselves aren't stretched in VPNBottomNavigationBar when setting their Layout.fillWidth property
-            //Can't use item as root object for VPNBottomNavigationBarButton because it needs to conform to AbstractButton so it can join a button group
-            Item {
-                VPNBottomNavigationBarButton {
-                    id: homeNavButton
-                    anchors.centerIn: parent
-                    source: checked ? "qrc:/nebula/resources/navbar/home-selected.svg" : "qrc:/nebula/resources/navbar/home.svg"
-                    ButtonGroup.group: navBarTabsButtonGroup
-                    checked: true
-                    accessibleName: VPNl18n.NavBarHomeTab
+            VPNBottomNavigationBarButton {
+                id: homeNavButton
 
-                    onClicked: {
-                        showHomeStack(false)
-                    }
+                Layout.fillHeight: true
+                Layout.preferredWidth: VPNTheme.theme.iconSize * 3
+                Layout.preferredHeight: VPNTheme.theme.iconSize * 3
 
-                    Connections {
-                        target: window
-                        function onShowHomeStack() {
-                            if(!homeNavButton.checked) homeNavButton.checked = true
-                        }
+                source: checked ? "qrc:/nebula/resources/navbar/home-selected.svg" : "qrc:/nebula/resources/navbar/home.svg"
+                ButtonGroup.group: navBarTabsButtonGroup
+                checked: true
+                accessibleName: VPNl18n.NavBarHomeTab
+
+                onClicked: {
+                    showHomeStack(false)
+                }
+
+                Connections {
+                    target: window
+                    function onShowHomeStack() {
+                        if(!homeNavButton.checked) homeNavButton.checked = true
                     }
                 }
             },
-            Item {
-                VPNBottomNavigationBarButton {
-                    id: messagesNavButton
-                    anchors.centerIn: parent
-                    source: checked ? (hasNotification ? "qrc:/nebula/resources/navbar/messages-notification-selected.svg" : "qrc:/nebula/resources/navbar/messages-selected.svg") : (hasNotification ? "qrc:/nebula/resources/navbar/messages-notification.svg" : "qrc:/nebula/resources/navbar/messages.svg")
-                    ButtonGroup.group: navBarTabsButtonGroup
-                    accessibleName: VPNl18n.NavBarMessagesTab
-                    onClicked: {
-                        showMessagesStack(false)
-                    }
+            VPNBottomNavigationBarButton {
+                id: messagesNavButton
 
-                    Connections {
-                        target: window
-                        function onShowMessagesStack() {
-                            if(!messagesNavButton.checked) messagesNavButton.checked = true
-                        }
+                Layout.fillHeight: true
+                Layout.preferredWidth: VPNTheme.theme.iconSize * 3
+                Layout.preferredHeight: VPNTheme.theme.iconSize * 3
+
+                source: checked ? (hasNotification ? "qrc:/nebula/resources/navbar/messages-notification-selected.svg" : "qrc:/nebula/resources/navbar/messages-selected.svg") : (hasNotification ? "qrc:/nebula/resources/navbar/messages-notification.svg" : "qrc:/nebula/resources/navbar/messages.svg")
+                ButtonGroup.group: navBarTabsButtonGroup
+                accessibleName: VPNl18n.NavBarMessagesTab
+                onClicked: {
+                    showMessagesStack(false)
+                }
+
+                Connections {
+                    target: window
+                    function onShowMessagesStack() {
+                        if(!messagesNavButton.checked) messagesNavButton.checked = true
                     }
                 }
             },
-            Item {
-                VPNBottomNavigationBarButton {
-                    id: settingsNavButton
-                    objectName: "settingsNavButton"
-                    anchors.centerIn: parent
-                    source: checked ? "qrc:/nebula/resources/navbar/settings-selected.svg" : "qrc:/nebula/resources/navbar/settings.svg"
-                    ButtonGroup.group: navBarTabsButtonGroup
-                    accessibleName: VPNl18n.NavBarSettingsTab
+            VPNBottomNavigationBarButton {
+                id: settingsNavButton
 
-                    onClicked: {
-                        showSettingsStack(false)
-                    }
+                Layout.fillHeight: true
+                Layout.preferredWidth: VPNTheme.theme.iconSize * 3
+                Layout.preferredHeight: VPNTheme.theme.iconSize * 3
 
-                    Connections {
-                        target: window
-                        function onShowSettingsStack() {
-                            if(!settingsNavButton.checked) settingsNavButton.checked = true
-                        }
+                objectName: "settingsNavButton"
+                source: checked ? "qrc:/nebula/resources/navbar/settings-selected.svg" : "qrc:/nebula/resources/navbar/settings.svg"
+                ButtonGroup.group: navBarTabsButtonGroup
+                accessibleName: VPNl18n.NavBarSettingsTab
+
+                onClicked: {
+                    showSettingsStack(false)
+                }
+
+                Connections {
+                    target: window
+                    function onShowSettingsStack() {
+                        if(!settingsNavButton.checked) settingsNavButton.checked = true
                     }
                 }
             }

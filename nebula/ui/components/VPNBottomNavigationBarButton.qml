@@ -12,8 +12,6 @@ VPNIconButton {
     property alias source: image.source
     property bool hasNotification: true
 
-    height: 48
-    width: 48
     backgroundRadius: height / 2
     buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
     uiStatesVisible: !checked

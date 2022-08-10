@@ -110,13 +110,6 @@ FocusScope {
                 Layout.leftMargin: VPNTheme.theme.vSpacing
                 Layout.rightMargin: VPNTheme.theme.vSpacing
                 Layout.preferredHeight: VPNTheme.theme.rowHeight
-                enabled: true
-                onTextChanged: () => {
-                    countriesModel.invalidate();
-                }
-                _placeholderText: VPNl18n.ServersViewSearchPlaceholder
-                hasError: countriesRepeater.count === 0
-                Keys.onDownPressed: recentConnections.visible ? recentConnections.focusItemAt(0) : countriesRepeater.itemAt(0).forceActiveFocus()
             }
 
 

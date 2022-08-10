@@ -9,7 +9,8 @@ import Mozilla.VPN 1.0
 import compat 0.1
 
 Rectangle {
-    property list<Item> tabs
+    id: root
+    property list<VPNBottomNavigationBarButton> tabs
 
     color: VPNTheme.theme.ink
 
@@ -36,24 +37,15 @@ Rectangle {
         border.color: VPNTheme.theme.ink
     }
 
-//    MouseArea {
-//        anchors.fill: parent
-//        hoverEnabled: true
-//    }
-
     RowLayout {
         id: layout
         anchors.fill: parent
-        anchors.leftMargin: VPNTheme.theme.windowMargin
-        anchors.rightMargin: VPNTheme.theme.windowMargin
+        anchors.topMargin: VPNTheme.theme.vSpacingSmall / 2
+        anchors.leftMargin: (VPNTheme.theme.windowMargin * 6) - (tabs.length * 16)
+        anchors.rightMargin: (VPNTheme.theme.windowMargin * 6) - (tabs.length * 16)
+        anchors.bottomMargin: VPNTheme.theme.vSpacingSmall / 2
 
-        spacing: 0
+        spacing: (root.width - anchors.leftMargin - anchors.rightMargin - (48 * tabs.length)) / tabs.length
         data: tabs
-
-        Component.onCompleted: {
-            for(let i = 0 ; i < tabs.length; i++) {
-                tabs[i].Layout.fillWidth = true
-            }
-        }
     }
 }
