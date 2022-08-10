@@ -24,6 +24,10 @@ class AddonDirectory final : public QObject {
   bool readFile(const QString& fileName, QByteArray* contents);
   bool writeToFile(const QString& fileName, const QByteArray& contents);
   bool deleteFile(const QString& fileName);
+
+#ifdef UNIT_TEST
+  void testReset();
+#endif
 };
 
 #endif  // ADDONDIRECTORY_H
