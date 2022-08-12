@@ -10,7 +10,6 @@
 
 #include <objc/message.h>
 #include <objc/objc.h>
-#include <QMenu>
 
 #import <Cocoa/Cocoa.h>
 #import <ServiceManagement/ServiceManagement.h>
@@ -191,110 +190,6 @@ void MacOSUtils::patchNSStatusBarSetImageForBigSur() {
   [self setImagePatched:img];
 }
 @end
-
-@interface StatusBarIndicatorIcon : NSObject
-@property (atomic, assign, readwrite) NSStatusItem* statusItem;
-@property (atomic, assign, readwrite) NSView* statusIndicator;
-
-- (id)initWithIcon:(NSString*)iconUrl;
-- (void)setIcon:(NSString*)iconUrl;
-- (void)setIndicator;
-- (void)setIndicatorColor:(NSColor*)color;
-- (void)setMenu:(NSMenu*)statusBarMenu;
-@end
-
-@implementation StatusBarIndicatorIcon
-- (id)initWithIcon:(NSString*)iconUrl {
-  self = [super init];
-
-  // Create status item
-  self.statusItem = [[[NSStatusBar systemStatusBar]
-      statusItemWithLength:NSSquareStatusItemLength] retain];
-  self.statusItem.visible = true;
-
-  // Add the indicator as a subview
-  [self setIndicator];
-
-  // Init icon
-  [self setIcon:iconUrl];
-
-  return self;
-}
-
-- (void)setIcon:(NSString*)iconUrl {
-  logger.debug() << "Set icon" << iconUrl;
-
-  NSImage* image = [[NSImage alloc] initWithContentsOfFile:iconUrl];
-  [image setTemplate:true];
-
-  [self.statusItem.button setImage:image];
-}
-
-- (void)setIndicator {
-  logger.debug() << "Set indicator";
-
-  // Add a view to status item
-  float viewHeight = NSHeight([self.statusItem.button bounds]);
-  float dotSize = viewHeight * 0.35;
-  float dotOrigin = (viewHeight - dotSize) * 0.8;
-
-  self.statusIndicator = [[NSView alloc]
-      initWithFrame:NSMakeRect(dotOrigin, dotOrigin, dotSize, dotSize)];
-  self.statusIndicator.wantsLayer = true;
-  self.statusIndicator.layer.cornerRadius = dotSize * 0.5;
-
-  [self.statusItem.button addSubview:self.statusIndicator];
-}
-
-- (void)setIndicatorColor:(NSColor*)color {
-  logger.debug() << "Set indicator color";
-  self.statusIndicator.layer.backgroundColor = color.CGColor;
-}
-
-- (void)setMenu:(NSMenu*)statusBarMenu {
-  logger.debug() << "Set menu";
-  [self.statusItem setMenu:statusBarMenu];
-}
-@end
-
-StatusBarIndicatorIcon* statusBarIcon = nil;
-void MacOSUtils::setStatusBarIcon(QString iconUrl) {
-  logger.debug() << "Set status bar icon";
-
-  NSString* iconUrlNS = iconUrl.toNSString();
-  if (!statusBarIcon) {
-    statusBarIcon = [[StatusBarIndicatorIcon alloc]
-        initWithIcon:iconUrlNS];
-    return;
-  }
-
-  [statusBarIcon setIcon:iconUrlNS];
-}
-
-void MacOSUtils::setStatusBarIndicatorColor(QColor indicatorColor) {
-  logger.debug() << "Set status bar indicator color";
-
-  if (!indicatorColor.isValid()) {
-    [statusBarIcon setIndicatorColor:[NSColor clearColor]];
-    return;
-  }
-
-  int redValue = indicatorColor.red();
-  int greenValue = indicatorColor.green();
-  int blueValue = indicatorColor.blue();
-  int alphaValue = indicatorColor.alpha();
-
-  NSColor* color = [NSColor colorWithCalibratedRed:(redValue / 255)
-      green:(greenValue / 255)
-      blue:(blueValue / 255)
-      alpha:(alphaValue / 255)];
-  [statusBarIcon setIndicatorColor:color];
-}
-
-void MacOSUtils::setStatusBarMenu(NSMenu* statusBarMenu) {
-  logger.debug() << "Set status bar menu";
-  [statusBarIcon setMenu:statusBarMenu];
-}
 
 // static
 NSString* MacOSUtils::appId() {

@@ -75,6 +75,8 @@ target_sources(mozillavpn PRIVATE
     platforms/macos/macoscryptosettings.mm
     platforms/macos/macosnetworkwatcher.mm
     platforms/macos/macosnetworkwatcher.h
+    platforms/macos/macosstatusicon.mm
+    platforms/macos/macosstatusicon.h
     platforms/macos/macosutils.mm
     platforms/macos/macosutils.h
     platforms/ios/iosnetworkwatcher.mm

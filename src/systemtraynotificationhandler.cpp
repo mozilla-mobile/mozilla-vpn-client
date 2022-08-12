@@ -76,8 +76,6 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
   m_quitAction = m_menu.addAction("", externalOpHandler,
                                   &ExternalOpHandler::requestOpQuit);
 
-  updateIcon();
-
   connect(QmlEngineHolder::instance()->window(), &QWindow::visibleChanged, this,
           &SystemTrayNotificationHandler::updateContextMenu);
 
@@ -94,8 +92,12 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
   m_systemTrayIcon.setContextMenu(&m_menu);
   m_systemTrayIcon.show();
 #else
-  MacOSUtils::setStatusBarMenu(m_menu.toNSMenu());
+  // TODO: Set tool tip for macOS
+  m_macOSStatusIcon = new MacOSStatusIcon(this);
+  m_macOSStatusIcon->setStatusBarMenu(m_menu.toNSMenu());
 #endif
+
+  updateIcon();
 }
 
 SystemTrayNotificationHandler::~SystemTrayNotificationHandler() {
@@ -235,7 +237,7 @@ void SystemTrayNotificationHandler::updateIcon() {
 #if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
   m_systemTrayIcon.setIcon(vpn->statusIcon()->icon());
 #else
-  MacOSUtils::setStatusBarIcon(vpn->statusIcon()->iconString());
+  m_macOSStatusIcon->setStatusBarIcon(vpn->statusIcon()->iconString());
 #endif
 }
 
@@ -245,7 +247,7 @@ void SystemTrayNotificationHandler::updateIcon() {
 
     MozillaVPN* vpn = MozillaVPN::instance();
     Q_ASSERT(vpn);
-    MacOSUtils::setStatusBarIndicatorColor(vpn->statusIcon()->indicatorColor());
+    m_macOSStatusIcon->setStatusBarIndicatorColor(vpn->statusIcon()->indicatorColor());
   }
 #endif
 

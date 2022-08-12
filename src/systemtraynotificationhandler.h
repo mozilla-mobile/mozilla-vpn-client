@@ -9,6 +9,9 @@
 
 #include <QMenu>
 #include <QSystemTrayIcon>
+#ifdef MVPN_MACOS
+#  include "platforms/macos/macosstatusicon.h"
+#endif
 
 class SystemTrayNotificationHandler : public NotificationHandler {
  public:
@@ -50,6 +53,10 @@ class SystemTrayNotificationHandler : public NotificationHandler {
   QAction* m_showHideLabel = nullptr;
   QAction* m_quitAction = nullptr;
   QMenu* m_helpMenu = nullptr;
+
+#if defined(MVPN_MACOS)
+  MacOSStatusIcon* m_macOSStatusIcon = nullptr;
+#endif
 };
 
 #endif  // SYSTEMTRAYNOTIFICATIONHANDLER_H
