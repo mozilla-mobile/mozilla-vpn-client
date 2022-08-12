@@ -141,6 +141,7 @@ HEADERS += \
     ../../src/websocket/pushmessage.h \
     helper.h \
     testaddon.h \
+    testaddonmanager.h \
     testadjust.h \
     testandroidmigration.h \
     testcommandlineparser.h \
@@ -264,6 +265,7 @@ SOURCES += \
     mocmozillavpn.cpp \
     mocnetworkrequest.cpp \
     testaddon.cpp \
+    testaddonmanager.cpp \
     testadjust.cpp \
     testandroidmigration.cpp \
     testcommandlineparser.cpp \
@@ -330,6 +332,7 @@ UI_DIR = .ui
 
 RESOURCES += servers/servers.qrc
 RESOURCES += ../../src/ui/license.qrc
+RESOURCES += ../../src/resources/public_keys/public_keys.qrc
 RESOURCES += themes/themes.qrc
 RESOURCES += guides/guides.qrc
 RESOURCES += tutorials/tutorials.qrc

@@ -38,6 +38,8 @@ class AndroidUtils final : public QObject {
 
   static QByteArray getQByteArrayFromJString(JNIEnv* env, jstring data);
 
+  static jbyteArray tojByteArray(const QByteArray& data);
+
   static QString getQStringFromJString(JNIEnv* env, jstring data);
 
   static QJsonObject getQJsonObjectFromJString(JNIEnv* env, jstring data);
