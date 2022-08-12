@@ -145,13 +145,12 @@ QIcon StatusIcon::drawStatusIndicator(const QString& iconUrl) const {
   QPainter painter(&iconPixmap);
   painter.setRenderHint(QPainter::Antialiasing);
   painter.setPen(Qt::NoPen);
-  painter.setBrush(m_indicatorColor);
 
   // Create mask for the indicator.
   float maskSize = iconPixmap.width() * 0.5;
   float maskPosition = iconPixmap.width() - maskSize;
   QRectF indicatorMask(maskPosition, maskPosition, maskSize, maskSize);
-  painter.setCompositionMode(QPainter::CompositionMode_Clear);
+  painter.setBrush(QColor(0, 0, 0, 255));  // black
   painter.drawEllipse(indicatorMask);
 
   // Add a colored status indicator.
@@ -159,7 +158,7 @@ QIcon StatusIcon::drawStatusIndicator(const QString& iconUrl) const {
   float dotSize = maskSize - dotPadding;
   float dotPosition = maskPosition + dotPadding * 0.5;
   QRectF indicatorDot(dotPosition, dotPosition, dotSize, dotSize);
-  painter.setCompositionMode(QPainter::CompositionMode_DestinationOver);
+  painter.setBrush(m_indicatorColor);
   painter.drawEllipse(indicatorDot);
 
   return QIcon(iconPixmap);
