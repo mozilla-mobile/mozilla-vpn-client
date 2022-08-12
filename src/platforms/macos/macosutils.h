@@ -18,9 +18,6 @@ class MacOSUtils final {
   static void enableLoginItem(bool startAtBoot);
 
   static void setDockClickHandler();
-  static void setStatusBarIcon(QString iconUrl);
-  static void setStatusBarIndicatorColor(QColor indicatorColor);
-  static void setStatusBarMenu(NSMenu* statusBarMenu);
   static void setStatusBarTextColor();
 
   static void hideDockIcon();

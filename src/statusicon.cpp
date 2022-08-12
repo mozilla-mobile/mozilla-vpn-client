@@ -9,8 +9,8 @@
 #include "mozillavpn.h"
 
 #ifdef MVPN_MACOS
-#endif
 #  include "platforms/macos/macosutils.h"
+#endif
 
 #include <array>
 #include <QBitmap>
@@ -29,14 +29,16 @@ constexpr const std::array<const char*, 4> ANIMATED_LOGO_STEPS = {
 constexpr const char* LOGO_GENERIC = ":/ui/resources/logo-generic.png";
 #else
 constexpr const std::array<const char*, 4> ANIMATED_LOGO_STEPS = {
-    "/Users/flozia/mozilla/vpn/mozilla-vpn-client/src/ui/resources/logo-animated-mask1.png",
-    "/Users/flozia/mozilla/vpn/mozilla-vpn-client/src/ui/resources/logo-animated-mask2.png",
-    "/Users/flozia/mozilla/vpn/mozilla-vpn-client/src/ui/resources/logo-animated-mask3.png",
-    "/Users/flozia/mozilla/vpn/mozilla-vpn-client/src/ui/resources/logo-animated-mask4.png"};
+    ":/ui/resources/logo-animated-mask1.png",
+    ":/ui/resources/logo-animated-mask2.png",
+    ":/ui/resources/logo-animated-mask3.png",
+    ":/ui/resources/logo-animated-mask4.png"};
 
-constexpr const char* LOGO_GENERIC = "/Users/flozia/mozilla/vpn/mozilla-vpn-client/src/ui/resources/logo-generic-mask.png";
-constexpr const char* LOGO_GENERIC_OFF = "/Users/flozia/mozilla/vpn/mozilla-vpn-client/src/ui/resources/logo-generic-mask-off.png";
-constexpr const char* LOGO_GENERIC_ON = "/Users/flozia/mozilla/vpn/mozilla-vpn-client/src/ui/resources/logo-generic-mask-on.png";
+constexpr const char* LOGO_GENERIC = ":/ui/resources/logo-generic-mask.png";
+constexpr const char* LOGO_GENERIC_OFF =
+    ":/ui/resources/logo-generic-mask-off.png";
+constexpr const char* LOGO_GENERIC_ON =
+    ":/ui/resources/logo-generic-mask-on.png";
 #endif
 
 }  // namespace
@@ -50,9 +52,8 @@ StatusIcon::StatusIcon() : m_iconUrl(LOGO_GENERIC) {
   // On Linux and Windows we’ll have to redraw the status indicator onto
   // the systray icon resource.
 #if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
-  connect(this, &StatusIcon::indicatorColorChanged, [this] {
-    setIcon(m_iconUrl, false);
-  });
+  connect(this, &StatusIcon::indicatorColorChanged,
+          [this] { setIcon(m_iconUrl, false); });
 #endif
 }
 
@@ -99,6 +100,7 @@ void StatusIcon::stateChanged() {
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
+  // If we are in a non-main state, we don't need to show special icons.
   if (vpn->state() != MozillaVPN::StateMain) {
     setIcon(LOGO_GENERIC, false);
     return;
@@ -138,21 +140,21 @@ void StatusIcon::stateChanged() {
 QIcon StatusIcon::drawStatusIndicator(const QString& iconUrl) const {
   logger.debug() << "Get icon from URL";
 
-  // Create pixmap so that we can paint on the original resource
+  // Create pixmap so that we can paint on the original resource.
   QPixmap iconPixmap = QPixmap(iconUrl);
   QPainter painter(&iconPixmap);
   painter.setRenderHint(QPainter::Antialiasing);
   painter.setPen(Qt::NoPen);
   painter.setBrush(m_indicatorColor);
 
-  // Create mask for the indicator
+  // Create mask for the indicator.
   float maskSize = iconPixmap.width() * 0.5;
   float maskPosition = iconPixmap.width() - maskSize;
   QRectF indicatorMask(maskPosition, maskPosition, maskSize, maskSize);
   painter.setCompositionMode(QPainter::CompositionMode_Clear);
   painter.drawEllipse(indicatorMask);
 
-  // Add a colored status indicator
+  // Add a colored status indicator.
   float dotPadding = maskSize * 0.2;
   float dotSize = maskSize - dotPadding;
   float dotPosition = maskPosition + dotPadding * 0.5;

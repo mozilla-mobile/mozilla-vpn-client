@@ -10,6 +10,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
+
 #ifdef MVPN_MACOS
 #  include "platforms/macos/macosutils.h"
 #endif
@@ -242,13 +243,13 @@ void SystemTrayNotificationHandler::updateIcon() {
 }
 
 #ifdef MVPN_MACOS
-  void SystemTrayNotificationHandler::updateIconIndicator() {
-    logger.debug() << "Update icon indicator";
+void SystemTrayNotificationHandler::updateIconIndicator() {
+  logger.debug() << "Update icon indicator";
 
-    MozillaVPN* vpn = MozillaVPN::instance();
-    Q_ASSERT(vpn);
-    m_macOSStatusIcon->setStatusBarIndicatorColor(vpn->statusIcon()->indicatorColor());
-  }
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+  m_macOSStatusIcon->setStatusBarIndicatorColor(vpn->statusIcon()->indicatorColor());
+}
 #endif
 
 void SystemTrayNotificationHandler::showHideWindow() {
