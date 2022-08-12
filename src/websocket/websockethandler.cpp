@@ -37,6 +37,14 @@ WebSocketHandler::WebSocketHandler() {
           this, &WebSocketHandler::open);
 }
 
+WebSocketHandler::~WebSocketHandler() {
+  MVPN_COUNT_DTOR(WebSocketHandler);
+
+  m_webSocket.disconnect();
+  m_backoffStrategy.disconnect();
+  m_pingTimer.disconnect();
+}
+
 // static
 QString WebSocketHandler::s_customWebSocketServerUrl = "";
 
@@ -166,7 +174,8 @@ void WebSocketHandler::close() {
  * authenticated.
  */
 void WebSocketHandler::onClose() {
-  logger.debug() << "WebSocket closed";
+  // https://doc.qt.io/qt-6/qwebsocketprotocol.html#CloseCode-enum
+  logger.debug() << "WebSocket closed:" << m_webSocket.closeCode();
 
   if (isUserAuthenticated()) {
     int nextAttemptIn = m_backoffStrategy.scheduleNextAttempt();

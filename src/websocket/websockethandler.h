@@ -18,6 +18,8 @@ class WebSocketHandler final : public QObject {
   Q_OBJECT
  public:
   WebSocketHandler();
+  ~WebSocketHandler();
+
   void initialize();
 
 #ifdef UNIT_TEST
