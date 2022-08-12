@@ -25,6 +25,7 @@ idna==3.3 \
     --hash=sha256:9d643ff0a55b762d5cdb124b8eaa99c66322e2157b69160bc32796e824360e6d
     # via requests
 json-e==4.4.3 \
+    --hash=sha256:604cc506746ece244e5f4c66ce1b77887b0340749f9f10f58f311caf5701315f \
     --hash=sha256:8ed3974faa887ca96a7987298f6550cf2ad35472419a980766b3abe48258de0a
     # via taskcluster-taskgraph
 pyyaml==6.0 \
@@ -79,9 +80,9 @@ slugid==2.0.0 \
     --hash=sha256:a950d98b72691178bdd4d6c52743c4a2aa039207cf7a97d71060a111ff9ba297 \
     --hash=sha256:aec8b0e01c4ad32e38e12d609eab3ec912fd129aaf6b2ded0199b56a5f8fd67c
     # via taskcluster-taskgraph
-taskcluster-taskgraph==1.6.0 \
-    --hash=sha256:4074bd5d08db8785b34e06d15dfe7cb5767834b80e378d16c12787dd483c97a8 \
-    --hash=sha256:8f5365f2fc0305285a943140a6e06946fbc3cd4e460d75f1436d76f21d90c636
+taskcluster-taskgraph==1.7.1 \
+    --hash=sha256:736054efee8c56987417d4ad2960cfc99c91338253580eadece072a43e042718 \
+    --hash=sha256:9cb13e19ddf74331c51a9f1dd68afde179f148e7856269e8e5f6182e0a2e5732
     # via -r requirements.in
 taskcluster-urls==13.0.1 \
     --hash=sha256:5e25e7e6818e8877178b175ff43d2e6548afad72694aa125f404a7329ece0973 \

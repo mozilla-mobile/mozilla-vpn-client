@@ -1,0 +1,50 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+loader: taskgraph.loader.transform:loader
+
+transforms:
+    - mozillavpn_taskgraph.transforms.release_artifacts:transforms
+    - mozillavpn_taskgraph.transforms.beetmover:transforms
+    - taskgraph.transforms.task:transforms
+
+kind-dependencies:
+    - signing
+    - repackage-signing
+
+jobs:
+    macos:
+        worker-type: beetmover
+        worker:
+            chain-of-trust: true
+            max-run-time: 3600
+        run-on-tasks-for: [github-release, action:release-promotion]
+        release-artifacts: [MozillaVPN.pkg]
+        dependencies:
+            signing: signing-macos/opt
+        if-dependencies: [signing]
+        attributes:
+            build-type: macos/opt
+        treeherder:
+            symbol: BM(macos)
+            kind: build
+            tier: 1
+            platform: macos/opt
+    windows:
+        worker-type: beetmover
+        worker:
+            chain-of-trust: true
+            max-run-time: 3600
+        run-on-tasks-for: [github-release, action:release-promotion]
+        release-artifacts: [MozillaVPN.msi]
+        dependencies:
+            repackage-signing: repackage-signing-msi
+        if-dependencies: [repackage-signing]
+        attributes:
+            build-type: windows/opt
+        treeherder:
+            symbol: BM(windows)
+            kind: build
+            tier: 1
+            platform: windows/x86_64

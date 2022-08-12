@@ -170,7 +170,8 @@ void TestWebSocketHandler::tst_reconnectionAttemptsAfterUnexpectedClose() {
   QCOMPARE(newConnectionSpy.count(), 2);
 }
 
-void TestWebSocketHandler::tst_reconnectionsAreAttemptedUntilSuccessfull() {
+void TestWebSocketHandler::
+    tst_reconnectionBackoffIsResetOnSuccessfullConnection() {
   SettingsHolder settingsHolder;
   WebSocketHandler::testOverrideWebSocketServerUrl(MOCK_SERVER_ADDRESS);
 
@@ -180,45 +181,7 @@ void TestWebSocketHandler::tst_reconnectionsAreAttemptedUntilSuccessfull() {
   WebSocketHandler handler;
   // We don't want too high of a interval here, because intervals are
   // exponentially increasing.
-  handler.testOverrideBaseRetryInterval(5);
-  handler.initialize();
-
-  // Mock a user log in, this should prompt a new websocket connection.
-  TestHelper::userState = MozillaVPN::UserAuthenticated;
-  emit MozillaVPN::instance()->userStateChanged();
-
-  QVERIFY(newConnectionSpy.wait());
-  QCOMPARE(newConnectionSpy.count(), 1);
-
-  // Close the whole server. All subsequent reconnection attempts will be
-  // unsuccesfull.
-  server.close();
-
-  // No need to do anything here.
-  //
-  // The handler should be polling for reconnection every 5ms,
-  // we will let it do that a few times.
-  QTest::qWait(100);
-
-  // Reopen the server so reconnections can take place.
-  server.open();
-
-  // Wait for reconnection.
-  QVERIFY(newConnectionSpy.wait());
-  QCOMPARE(newConnectionSpy.count(), 2);
-}
-
-void TestWebSocketHandler::
-    tst_reconnectionBackoffIsResetOnSuccessfullConnection() {
-  SettingsHolder settingsHolder;
-  WebSocketHandler::testOverrideWebSocketServerUrl(MOCK_SERVER_ADDRESS);
-
-  MockServer server;
-  QSignalSpy newConnectionSpy(&server, SIGNAL(newConnection(QNetworkRequest)));
-  QSignalSpy socketDisconnectedSpy(&server, SIGNAL(socketDisconnected()));
-
   int testBaseRetryInterval = 5;
-  WebSocketHandler handler;
   handler.testOverrideBaseRetryInterval(testBaseRetryInterval);
   handler.initialize();
 
@@ -235,45 +198,27 @@ void TestWebSocketHandler::
 
   // No need to do anything here.
   //
-  // The handler should be polling for reconnection every 5ms,
-  // we will let it do that at least 3 times.
-  QTest::qWait(qPow(testBaseRetryInterval, 5));
-
-  // We have to be a bit loose here with the checks.
-  //
-  // We know there were at least three retries,
-  // so the current backoff interval should be at least longer than the 3rd
-  // interval.
-  QVERIFY(handler.m_currentBackoffInterval > qPow(testBaseRetryInterval, 3));
+  // The handler should be polling for reconnection,
+  // we will let it do that a few times.
+  QTest::qWait(500);
 
   // Reopen the server so reconnections can take place.
   server.open();
+
+  // Before waiting for reconnection, let's see if the interval has increased.
+  // It is expected to increase on every reconnection attempt.
+  QVERIFY(handler.m_currentBackoffInterval >= testBaseRetryInterval);
+
   // Wait for reconnection.
   QVERIFY(newConnectionSpy.wait());
   QCOMPARE(newConnectionSpy.count(), 2);
 
-  // Give it just a bit of time for the `onConnected` handler to be called.
-  // The new connection spy is triggered before that and if we don't wait
-  // there is no time for the handler to reset the interval.
-  //
-  // Yes, this is a bit hacky.
-  QTest::qWait(50);
-
-  // Close the open connections to prompt a new reconnection.
-  server.closeEach();
-
   // The reconnection interval should have been reset.
-  // Reconnection might be so fast that when we get to this line
-  // m_currentBackoffInterval has already been reset to 0.
-  QVERIFY(handler.m_currentBackoffInterval <= testBaseRetryInterval);
-
-  // Wait for reconnection.
-  QVERIFY(newConnectionSpy.wait());
-  QCOMPARE(newConnectionSpy.count(), 3);
-
-  // The backoff interval is reset to 0 when not waiting for reconnection
-  // attempt.
-  QCOMPARE(handler.m_currentBackoffInterval, testBaseRetryInterval);
+  // When not waiting for reconnection it is set to the special value `0`.
+  //
+  // We use QTRY here, because it may take a little bit
+  // for the `onConnected` handler to be called and the interval to be reset.
+  QTRY_COMPARE(handler.m_currentBackoffInterval, 0);
 }
 
 void TestWebSocketHandler::tst_reconnectionAttemptsOnPingTimeout() {

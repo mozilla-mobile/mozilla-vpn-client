@@ -3,8 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 $REPO_ROOT_PATH =resolve-path "$PSScriptRoot/../../../"
-$FETCHES_PATH =resolve-path "$REPO_ROOT_PATH/../../fetches"
 $TASK_WORKDIR =resolve-path "$REPO_ROOT_PATH/../../"
+$FETCHES_PATH =resolve-path "$TASK_WORKDIR/fetches"
 $QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/bin/"
 $PERL_GCC_PATH =resolve-path "$FETCHES_PATH/c/bin"
 # Prep Env:
@@ -13,10 +13,10 @@ $PERL_GCC_PATH =resolve-path "$FETCHES_PATH/c/bin"
 . "$FETCHES_PATH/QT_OUT/configure_qt.ps1"
 . "$REPO_ROOT_PATH/taskcluster/scripts/fetch/enable_win_rust.ps1"
 
-# Remove Long lasting ms-compiler-telemetry service: 
+# Remove Long lasting ms-compiler-telemetry service:
 # This will sometimes live longer then our compile
 # and __sometimes__ taskcluster will fail to do cleanup once the task is done
-Remove-Item $FETCHES_PATH/VisualStudio/VC/Tools/MSVC/14.30.30705/bin/HostX64/x64/VCTIP.EXE  
+Remove-Item $FETCHES_PATH/VisualStudio/VC/Tools/MSVC/14.30.30705/bin/HostX64/x64/VCTIP.EXE
 
 # Fetch 3rdparty stuff.
 python3 -m pip install -r requirements.txt --user
@@ -50,7 +50,7 @@ $env:OPENSSL_USE_STATIC_LIBS = "TRUE"
 
 #Do not continune from this point on when we encounter an error
 $ErrorActionPreference = "Stop"
-mkdir $TASK_WORKDIR/cmake_build 
+mkdir $TASK_WORKDIR/cmake_build
 $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
 
 
@@ -70,7 +70,6 @@ Compress-Archive -Path $TASK_WORKDIR/unsigned/* -Destination $ARTIFACTS_PATH/uns
 Write-Output "Artifacts Location:$TASK_WORKDIR/artifacts"
 Get-ChildItem -Path $TASK_WORKDIR/artifacts
 
-
 # mspdbsrv might be stil running after the build, so we need to kill it
 Stop-Process -Name "mspdbsrv.exe" -Force -ErrorAction SilentlyContinue
 Stop-Process -Name "mspdbsrv" -Force -ErrorAction SilentlyContinue
@@ -78,4 +77,4 @@ Stop-Process -Name "vctip.exe" -Force -ErrorAction SilentlyContinue
 
 Write-Output "Open Processes:"
 
-wmic process get description,executablepath 
+wmic process get description,executablepath

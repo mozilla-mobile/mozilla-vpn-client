@@ -95,6 +95,7 @@ CheckBox {
 
         anchors.fill: hoverPressHandler
         targetEl: uiPlaceholder
+        hoverEnabled: parent.enabled
     }
 
     Rectangle {
@@ -112,7 +113,7 @@ CheckBox {
                 name: uiState.stateHovered
                 PropertyChanges {
                     target: hoverPressHandler
-                    opacity: 0.2;
+                    opacity: parent.enabled ? 0.2 : 0;
 
                 }
             },
@@ -120,7 +121,7 @@ CheckBox {
                 name: uiState.statePressed
                 PropertyChanges {
                     target: hoverPressHandler
-                    opacity: .3
+                    opacity: parent.enabled ? .3 : 0
                 }
             }
         ]
