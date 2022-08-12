@@ -19,8 +19,7 @@ class MacOSUtils final {
 
   static void setDockClickHandler();
   static void setStatusBarIcon(QString iconUrl);
-  static void setStatusBarIndicatorColor(float redValue, float greenValue,
-                                         float blueValue);
+  static void setStatusBarIndicatorColor(QColor indicatorColor);
   static void setStatusBarMenu(NSMenu* statusBarMenu);
   static void setStatusBarTextColor();
 

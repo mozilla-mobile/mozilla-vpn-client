@@ -14,6 +14,7 @@
 
 #include <array>
 #include <QBitmap>
+#include <QFileInfo>
 #include <QPainter>
 #include <QPixmap>
 
@@ -28,10 +29,14 @@ constexpr const std::array<const char*, 4> ANIMATED_LOGO_STEPS = {
 constexpr const char* LOGO_GENERIC = ":/ui/resources/logo-generic.png";
 #else
 constexpr const std::array<const char*, 4> ANIMATED_LOGO_STEPS = {
-    ":/ui/resources/logo-animated1.svg", ":/ui/resources/logo-animated2.svg",
-    ":/ui/resources/logo-animated3.svg", ":/ui/resources/logo-animated4.svg"};
+    "/Users/flozia/mozilla/vpn/mozilla-vpn-client/src/ui/resources/logo-animated-mask1.png",
+    "/Users/flozia/mozilla/vpn/mozilla-vpn-client/src/ui/resources/logo-animated-mask2.png",
+    "/Users/flozia/mozilla/vpn/mozilla-vpn-client/src/ui/resources/logo-animated-mask3.png",
+    "/Users/flozia/mozilla/vpn/mozilla-vpn-client/src/ui/resources/logo-animated-mask4.png"};
 
-constexpr const char* LOGO_GENERIC = ":/ui/resources/logo-generic.svg";
+constexpr const char* LOGO_GENERIC = "/Users/flozia/mozilla/vpn/mozilla-vpn-client/src/ui/resources/logo-generic-mask.png";
+constexpr const char* LOGO_GENERIC_OFF = "/Users/flozia/mozilla/vpn/mozilla-vpn-client/src/ui/resources/logo-generic-mask-off.png";
+constexpr const char* LOGO_GENERIC_ON = "/Users/flozia/mozilla/vpn/mozilla-vpn-client/src/ui/resources/logo-generic-mask-on.png";
 #endif
 
 }  // namespace
@@ -41,6 +46,14 @@ StatusIcon::StatusIcon() : m_iconUrl(LOGO_GENERIC) {
 
   connect(&m_animatedIconTimer, &QTimer::timeout, this,
           &StatusIcon::animateIcon);
+
+  // On Linux and Windows we’ll have to redraw the status indicator onto
+  // the systray icon resource.
+#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
+  connect(this, &StatusIcon::indicatorColorChanged, [this] {
+    setIcon(m_iconUrl, false);
+  });
+#endif
 }
 
 StatusIcon::~StatusIcon() { MVPN_COUNT_DTOR(StatusIcon); }
@@ -53,7 +66,7 @@ void StatusIcon::activateAnimation() {
 
 void StatusIcon::animateIcon() {
   Q_ASSERT(m_animatedIconIndex < ANIMATED_LOGO_STEPS.size());
-  setIcon(ANIMATED_LOGO_STEPS[m_animatedIconIndex++]);
+  setIcon(ANIMATED_LOGO_STEPS[m_animatedIconIndex++], false);
   if (m_animatedIconIndex == ANIMATED_LOGO_STEPS.size()) {
     m_animatedIconIndex = 0;
   }
@@ -62,7 +75,20 @@ void StatusIcon::animateIcon() {
 void StatusIcon::stabilityChanged() {
   logger.debug() << "Stability changed";
 
-  setIcon(LOGO_GENERIC);
+  switch (MozillaVPN::instance()->connectionHealth()->stability()) {
+    case ConnectionHealth::Stable:
+      setIndicatorColor(QColor(63, 225, 176, 255));  // green
+      break;
+    case ConnectionHealth::Unstable:
+      setIndicatorColor(QColor(255, 164, 54, 255));  // orange
+      break;
+    case ConnectionHealth::NoSignal:
+      setIndicatorColor(QColor(226, 40, 80, 255));  // red
+      break;
+    default:
+      logger.error() << "Unhandled status indicator for connection stability";
+      setIndicatorColor(QColor());
+  }
 }
 
 void StatusIcon::stateChanged() {
@@ -72,12 +98,28 @@ void StatusIcon::stateChanged() {
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
+
+  if (vpn->state() != MozillaVPN::StateMain) {
+    setIcon(LOGO_GENERIC, false);
+    return;
+  }
+
   switch (vpn->controller()->state()) {
+#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
     case Controller::StateOn:
       [[fallthrough]];
     case Controller::StateOff:
-      setIcon(LOGO_GENERIC);
+      setIcon(LOGO_GENERIC, true);
       break;
+#else
+    case Controller::StateOn:
+      setIcon(LOGO_GENERIC_ON, false);
+      break;
+    case Controller::StateOff:
+      setIcon(LOGO_GENERIC_OFF, false);
+      setIndicatorColor(QColor());
+      break;
+#endif
     case Controller::StateSwitching:
       [[fallthrough]];
     case Controller::StateConnecting:
@@ -88,45 +130,29 @@ void StatusIcon::stateChanged() {
       activateAnimation();
       break;
     default:
-      setIcon(LOGO_GENERIC);
+      setIcon(LOGO_GENERIC, false);
       break;
   }
 }
 
-QIcon StatusIcon::setStatusIndicator(const QString& iconUrl) const {
+QIcon StatusIcon::drawStatusIndicator(const QString& iconUrl) const {
   logger.debug() << "Get icon from URL";
 
-  QColor color = QColor();
-  switch (MozillaVPN::instance()->connectionHealth()->stability()) {
-    case ConnectionHealth::Stable:
-      color = QColor(63, 225, 176);  // green
-      break;
-    case ConnectionHealth::Unstable:
-      color = QColor(255, 164, 54);  // orange
-      break;
-    case ConnectionHealth::NoSignal:
-      color = QColor(226, 40, 80);  // red
-      break;
-    default:
-      logger.error() << "Unhandled status indicator for connection stability";
-      return QIcon(iconUrl);
-  }
-
-  // Create pixmap so that we can paint on the original resource.
+  // Create pixmap so that we can paint on the original resource
   QPixmap iconPixmap = QPixmap(iconUrl);
   QPainter painter(&iconPixmap);
   painter.setRenderHint(QPainter::Antialiasing);
   painter.setPen(Qt::NoPen);
-  painter.setBrush(color);
+  painter.setBrush(m_indicatorColor);
 
-  // Create mask for the indicator.
+  // Create mask for the indicator
   float maskSize = iconPixmap.width() * 0.5;
   float maskPosition = iconPixmap.width() - maskSize;
   QRectF indicatorMask(maskPosition, maskPosition, maskSize, maskSize);
   painter.setCompositionMode(QPainter::CompositionMode_Clear);
   painter.drawEllipse(indicatorMask);
 
-  // Add a colored status indicator.
+  // Add a colored status indicator
   float dotPadding = maskSize * 0.2;
   float dotSize = maskSize - dotPadding;
   float dotPosition = maskPosition + dotPadding * 0.5;
@@ -137,22 +163,27 @@ QIcon StatusIcon::setStatusIndicator(const QString& iconUrl) const {
   return QIcon(iconPixmap);
 }
 
-void StatusIcon::setIcon(const QString& iconUrl) {
+void StatusIcon::setIndicatorColor(QColor color) {
+  logger.debug() << "Set indicator color";
+
+  m_indicatorColor = color;
+  emit indicatorColorChanged();
+}
+
+void StatusIcon::setIcon(const QString& iconUrl, bool shouldDrawIndicator) {
   logger.debug() << "Set icon" << iconUrl;
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
-  // If we are in state main and the VPN is on we show a status indicator that
-  // gives a visual clue about the current connection stability.
-  if (vpn->state() == MozillaVPN::StateMain &&
-      vpn->controller()->state() == Controller::StateOn) {
-    m_icon = setStatusIndicator(m_iconUrl);
+  m_iconUrl = iconUrl;
+
+  // If we are in state main and the VPN is on we draw the status indicator
+  // directly onto the image Windows and Linux.
+  if (shouldDrawIndicator) {
+    m_icon = drawStatusIndicator(m_iconUrl);
   } else {
     m_icon = QIcon(m_iconUrl);
   }
 
-  m_icon.setIsMask(true);
-  emit iconChanged(m_icon);
+  emit iconChanged();
 }
 
 QUrl StatusIcon::iconUrl() const {

@@ -30,7 +30,11 @@ class SystemTrayNotificationHandler : public NotificationHandler {
 
   void showHideWindow();
 
-  void updateIcon(const QIcon& icon);
+  void updateIcon();
+
+#ifdef MVPN_MACOS
+  void updateIconIndicator();
+#endif
 
   void updateContextMenu();
 

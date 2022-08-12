@@ -22,25 +22,17 @@ class StatusIcon final : public QObject {
   StatusIcon();
   ~StatusIcon();
 
-  enum EffectiveAppearance {
-    EffectiveAppearanceLight,
-    EffectiveAppearanceDark,
-  };
-
   QUrl iconUrl() const;
-
   const QString& iconString() const { return m_iconUrl; }
-
   const QIcon& icon() const { return m_icon; }
+  const QColor& indicatorColor() const { return m_indicatorColor; }
 
  signals:
-  void iconChanged(const QIcon& icon);
-
-  void effectiveAppearanceChanged();
+  void iconChanged();
+  void indicatorColorChanged();
 
  public slots:
   void stateChanged();
-
   void stabilityChanged();
 
  private slots:
@@ -48,17 +40,14 @@ class StatusIcon final : public QObject {
 
  private:
   void activateAnimation();
-
-  QIcon setStatusIndicator(const QString& iconUrl) const;
-
-  void setIcon(const QString& iconUrl);
+  QIcon drawStatusIndicator(const QString& iconUrl) const;
+  void setIcon(const QString& iconUrl, bool shouldDrawIndicator);
+  void setIndicatorColor(QColor color);
 
  private:
   QString m_iconUrl;
-
   QIcon m_icon;
-
-  EffectiveAppearance m_effectiveAppearance = EffectiveAppearanceLight;
+  QColor m_indicatorColor = QColor();
 
   // Animated icon.
   QTimer m_animatedIconTimer;

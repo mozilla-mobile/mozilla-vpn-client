@@ -41,6 +41,11 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
   connect(vpn->statusIcon(), &StatusIcon::iconChanged, this,
           &SystemTrayNotificationHandler::updateIcon);
 
+#if defined(MVPN_MACOS)
+  connect(vpn->statusIcon(), &StatusIcon::indicatorColorChanged, this,
+          &SystemTrayNotificationHandler::updateIconIndicator);
+#endif
+
   // Status label
   m_statusLabel = m_menu.addAction("");
   m_statusLabel->setEnabled(false);
@@ -71,7 +76,7 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
   m_quitAction = m_menu.addAction("", externalOpHandler,
                                   &ExternalOpHandler::requestOpQuit);
 
-  updateIcon(vpn->statusIcon()->icon());
+  updateIcon();
 
   connect(QmlEngineHolder::instance()->window(), &QWindow::visibleChanged, this,
           &SystemTrayNotificationHandler::updateContextMenu);
@@ -222,35 +227,27 @@ void SystemTrayNotificationHandler::updateContextMenu() {
                                   Controller::StateOff);
 }
 
-void SystemTrayNotificationHandler::updateIcon(const QIcon& icon) {
+void SystemTrayNotificationHandler::updateIcon() {
   logger.debug() << "Update icon";
+
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
 #if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
-  m_systemTrayIcon.setIcon(icon);
+  m_systemTrayIcon.setIcon(vpn->statusIcon()->icon());
 #else
-  Q_UNUSED(icon);
-  QString iconUrl = "NSMenuItemBullet";
-  // QString iconUrl = "NSMenuCheckmark";
-
-  MacOSUtils::setStatusBarIcon(iconUrl);
-
-  // green
-  float redValue = 63;
-  float greenValue = 225;
-  float blueValue = 176;
-
-  // // orange
-  // float redValue = 255;
-  // float greenValue = 164;
-  // float blueValue = 54;
-
-  // // red
-  // float redValue = 226;
-  // float greenValue = 40;
-  // float blueValue = 80;
-
-  MacOSUtils::setStatusBarIndicatorColor(redValue, greenValue, blueValue);
+  MacOSUtils::setStatusBarIcon(vpn->statusIcon()->iconString());
 #endif
 }
+
+#ifdef MVPN_MACOS
+  void SystemTrayNotificationHandler::updateIconIndicator() {
+    logger.debug() << "Update icon indicator";
+
+    MozillaVPN* vpn = MozillaVPN::instance();
+    Q_ASSERT(vpn);
+    MacOSUtils::setStatusBarIndicatorColor(vpn->statusIcon()->indicatorColor());
+  }
+#endif
 
 void SystemTrayNotificationHandler::showHideWindow() {
   QmlEngineHolder* engine = QmlEngineHolder::instance();
