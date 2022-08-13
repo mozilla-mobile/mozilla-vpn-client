@@ -118,14 +118,14 @@ MacOSStatusIcon::~MacOSStatusIcon() {
   }
 }
 
-void MacOSStatusIcon::setStatusBarIcon(QString iconPath) {
-  logger.debug() << "Set status bar icon" << iconPath;
+void MacOSStatusIcon::setIcon(QString iconPath) {
+  logger.debug() << "Set icon" << iconPath;
   [m_statusBarIcon setIcon:iconPath.toNSString()];
 }
 
-void MacOSStatusIcon::setStatusBarIndicatorColor(
+void MacOSStatusIcon::setIndicatorColor(
     QColor indicatorColor) {
-  logger.debug() << "Set status bar indicator color";
+  logger.debug() << "Set indicator color";
 
   if (!indicatorColor.isValid()) {
     [m_statusBarIcon setIndicatorColor:[NSColor clearColor]];
@@ -140,7 +140,7 @@ void MacOSStatusIcon::setStatusBarIndicatorColor(
   [m_statusBarIcon setIndicatorColor:color];
 }
 
-void MacOSStatusIcon::setStatusBarMenu(NSMenu* statusBarMenu) {
-  logger.debug() << "Set status bar menu";
+void MacOSStatusIcon::setMenu(NSMenu* statusBarMenu) {
+  logger.debug() << "Set menu";
   [m_statusBarIcon setMenu:statusBarMenu];
 }

@@ -29,16 +29,16 @@ constexpr const std::array<const char*, 4> ANIMATED_LOGO_STEPS = {
 constexpr const char* LOGO_GENERIC = ":/ui/resources/logo-generic.png";
 #else
 constexpr const std::array<const char*, 4> ANIMATED_LOGO_STEPS = {
-    ":/ui/resources/logo-animated-mask1.png",
-    ":/ui/resources/logo-animated-mask2.png",
-    ":/ui/resources/logo-animated-mask3.png",
-    ":/ui/resources/logo-animated-mask4.png"};
+    "/Users/flozia/mozilla/vpn/mozilla-vpn-client/src/ui/resources/logo-animated-mask1.png",
+    "/Users/flozia/mozilla/vpn/mozilla-vpn-client/src/ui/resources/logo-animated-mask2.png",
+    "/Users/flozia/mozilla/vpn/mozilla-vpn-client/src/ui/resources/logo-animated-mask3.png",
+    "/Users/flozia/mozilla/vpn/mozilla-vpn-client/src/ui/resources/logo-animated-mask4.png"};
 
-constexpr const char* LOGO_GENERIC = ":/ui/resources/logo-generic-mask.png";
+constexpr const char* LOGO_GENERIC = "/Users/flozia/mozilla/vpn/mozilla-vpn-client/src/ui/resources/logo-generic-mask.png";
 constexpr const char* LOGO_GENERIC_OFF =
-    ":/ui/resources/logo-generic-mask-off.png";
+    "/Users/flozia/mozilla/vpn/mozilla-vpn-client/src/ui/resources/logo-generic-mask-off.png";
 constexpr const char* LOGO_GENERIC_ON =
-    ":/ui/resources/logo-generic-mask-on.png";
+    "/Users/flozia/mozilla/vpn/mozilla-vpn-client/src/ui/resources/logo-generic-mask-on.png";
 #endif
 
 }  // namespace

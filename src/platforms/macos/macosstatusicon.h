@@ -14,9 +14,9 @@ class MacOSStatusIcon final : public QObject {
   ~MacOSStatusIcon();
 
  public:
-  void setStatusBarIcon(QString iconUrl);
-  void setStatusBarIndicatorColor(QColor indicatorColor);
-  void setStatusBarMenu(NSMenu* statusBarMenu);
+  void setIcon(QString iconUrl);
+  void setIndicatorColor(QColor indicatorColor);
+  void setMenu(NSMenu* statusBarMenu);
 };
 
 #endif  // MACOSSTATUSICON_H

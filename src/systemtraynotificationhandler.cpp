@@ -95,7 +95,7 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
 #else
   // TODO: Set tool tip for macOS
   m_macOSStatusIcon = new MacOSStatusIcon(this);
-  m_macOSStatusIcon->setStatusBarMenu(m_menu.toNSMenu());
+  m_macOSStatusIcon->setMenu(m_menu.toNSMenu());
 #endif
 
   updateIcon();
@@ -238,7 +238,7 @@ void SystemTrayNotificationHandler::updateIcon() {
 #if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
   m_systemTrayIcon.setIcon(vpn->statusIcon()->icon());
 #else
-  m_macOSStatusIcon->setStatusBarIcon(vpn->statusIcon()->iconString());
+  m_macOSStatusIcon->setIcon(vpn->statusIcon()->iconString());
 #endif
 }
 
@@ -248,7 +248,7 @@ void SystemTrayNotificationHandler::updateIconIndicator() {
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
-  m_macOSStatusIcon->setStatusBarIndicatorColor(vpn->statusIcon()->indicatorColor());
+  m_macOSStatusIcon->setIndicatorColor(vpn->statusIcon()->indicatorColor());
 }
 #endif
 
