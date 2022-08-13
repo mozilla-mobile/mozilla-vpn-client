@@ -92,7 +92,7 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
   m_systemTrayIcon.setToolTip(qtTrId("vpn.main.productName"));
   m_systemTrayIcon.setContextMenu(&m_menu);
   m_systemTrayIcon.show();
-#else
+#elif defined(MVPN_MACOS)
   // TODO: Set tool tip for macOS
   m_macOSStatusIcon = new MacOSStatusIcon(this);
   m_macOSStatusIcon->setMenu(m_menu.toNSMenu());
@@ -237,7 +237,7 @@ void SystemTrayNotificationHandler::updateIcon() {
   Q_ASSERT(vpn);
 #if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
   m_systemTrayIcon.setIcon(vpn->statusIcon()->icon());
-#else
+#elif defined(MVPN_MACOS)
   m_macOSStatusIcon->setIcon(vpn->statusIcon()->iconString());
 #endif
 }
