@@ -25,6 +25,7 @@ Window {
 
     property bool _fallbackQtQuickRenderer: QT_QUICK_BACKEND == "software" //TODO pending #3398
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
+    property alias navBarVisible: navbar.visible
 
     function fullscreenRequired() {
         return Qt.platform.os === "android" ||
@@ -127,6 +128,8 @@ Window {
 
     VPNBottomNavigationBar {
         id: navbar
+        objectName: "navBar"
+
         anchors.horizontalCenter: window.width < VPNTheme.theme.tabletMinimumWidth ? undefined : parent.horizontalCenter
         anchors.left: window.width < VPNTheme.theme.tabletMinimumWidth ? parent.left : undefined
         anchors.right: window.width < VPNTheme.theme.tabletMinimumWidth ? parent.right : undefined
@@ -161,6 +164,7 @@ Window {
         tabs: [
             VPNBottomNavigationBarButton {
                 id: homeNavButton
+                objectName: "homeNavButton"
 
                 Layout.fillHeight: true
                 Layout.preferredWidth: VPNTheme.theme.iconSize * 3
@@ -388,7 +392,15 @@ Window {
                 const contactUsViewInStack = mainStackView.find((view) => { return view.objectName === "contactUs" });
                 if (contactUsViewInStack) {
                     // Unwind mainStackView back to Contact Us
-                    return mainStackView.pop(contactUsViewInStack, StackView.Immediate);
+                    mainStackView.pop(contactUsViewInStack, StackView.Immediate);
+                    return
+                }
+                const getHelpInStack = mainStackView.find((view) => { return view.objectName === "getHelp" });
+                if (getHelpInStack) {
+                    // Unwind mainStackView back to Contact Us
+                    mainStackView.pop(getHelpInStack, StackView.Immediate);
+                    mainStackView.push("qrc:/ui/views/ViewContactUs.qml", StackView.Immediate);
+                    return
                 }
                 mainStackView.push(["qrc:/ui/views/ViewGetHelp.qml", "qrc:/ui/views/ViewContactUs.qml"], StackView.Immediate);
             }

@@ -9,6 +9,11 @@ describe('Devices', function() {
     this.ctx.authenticationNeeded = true;
 
     it('Opens and closes the device list', async () => {
+      await vpn.waitForElement('settingsNavButton');
+      await vpn.waitForElementProperty('settingsNavButton', 'visible', 'true');
+      await vpn.clickOnElement('settingsNavButton');
+      await vpn.wait();
+
       await vpn.waitForElement('deviceListButton');
       await vpn.waitForElementProperty('deviceListButton', 'visible', 'true');
       await vpn.wait();
@@ -16,10 +21,10 @@ describe('Devices', function() {
       await vpn.clickOnElement('deviceListButton');
       await vpn.wait();
 
-      await vpn.waitForElement('deviceListBackButton');
+      await vpn.waitForElement('settingsBackButton');
       await vpn.waitForElementProperty(
-          'deviceListBackButton', 'visible', 'true');
-      await vpn.clickOnElement('deviceListBackButton');
+          'settingsBackButton', 'visible', 'true');
+      await vpn.clickOnElement('settingsBackButton');
       await vpn.wait();
 
       await vpn.waitForElement('deviceListButton');
@@ -159,6 +164,7 @@ describe('Devices', function() {
       await vpn.clickOnElement(
           'deviceList/device-device_1/deviceLayout/deviceRemoveButton');
 
+      await vpn.wait()
       await vpn.waitForElement('confirmRemoveDeviceButton');
       await vpn.waitForElementProperty(
           'confirmRemoveDeviceButton', 'visible', 'true');

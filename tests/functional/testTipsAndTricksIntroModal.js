@@ -21,8 +21,8 @@ describe('Tips and tricks intro modal', function() {
 
         await vpn.wait()
         await vpn.waitForElement('settingsTipsAndTricksPage');
-        await vpn.waitForElement('tipsAndTricksCloseButton');
-        await vpn.clickOnElement('tipsAndTricksCloseButton');
+        await vpn.waitForElement('settingsBackButton');
+        await vpn.clickOnElement('settingsBackButton');
 
         await vpn.wait()
         await vpn.waitForElement('ViewMainStackView');

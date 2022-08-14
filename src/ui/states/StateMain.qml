@@ -105,10 +105,39 @@ StackLayout {
             _iconButtonSource: "qrc:/nebula/resources/back.svg"
             iconButtonVisible: settingsStack.depth > 1
 
+            //Developer menu unlock
+            VPNMouseArea {
+                property int unlockCounter: 0
+
+                anchors.fill: settingsStackMenu.titleComponent
+                enabled: settingsStack.currentItem.objectName === "getHelp"
+                cursorShape: Qt.ArrowCursor
+                hoverEnabled: true
+                onMouseAreaClicked: function() {
+                    if (unlockCounter >= 5) {
+                        unlockCounter = 0
+                        VPNSettings.developerUnlock = true
+                    }
+                    else if (!VPNSettings.developerUnlock) {
+                        unlockTimeout.restart()
+                        unlockCounter = unlockCounter + 1
+                    }
+                }
+
+                Timer {
+                    id: unlockTimeout
+                    repeat: false
+                    running: false
+                    interval: 10000
+                    onTriggered: unlockCounter = 0
+                }
+            }
+
         }
 
         VPNStackView {
             id: settingsStack
+            objectName: "settingsStack"
 
             anchors.fill: undefined
             Layout.fillHeight: true

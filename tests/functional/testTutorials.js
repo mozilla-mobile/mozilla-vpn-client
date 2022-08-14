@@ -9,8 +9,8 @@ describe('Tutorials', function() {
   this.ctx.authenticationNeeded = true;
 
   async function openHighlightedTutorial() {
-    await vpn.waitForElement('settingsButton');
-    await vpn.clickOnElement('settingsButton');
+    await vpn.waitForElement('settingsNavButton');
+    await vpn.clickOnElement('settingsNavButton');
     await vpn.wait();
 
     await vpn.waitForElement('settingsTipsAndTricks');
@@ -123,9 +123,9 @@ describe('Tutorials', function() {
                  (await vpn.getElementProperty('tutorialUiRoot', 'visible')) ===
                  'false');
 
-             await vpn.waitForElement('settings');
+             await vpn.waitForElement('settingsView');
              assert(
-                 (await vpn.getElementProperty('settings', 'visible')) ===
+                 (await vpn.getElementProperty('settingsView', 'visible')) ===
                  'true');
            });
       });

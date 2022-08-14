@@ -9,19 +9,14 @@ describe('Settings', function() {
   this.ctx.authenticationNeeded = true;
 
   beforeEach(async () => {
-    await vpn.waitForElement('settingsButton');
-    await vpn.clickOnElement('settingsButton');
+    await vpn.waitForElement('settingsNavButton');
+    await vpn.clickOnElement('settingsNavButton');
     await vpn.wait();
 
     if (!(await vpn.isFeatureFlippedOff('subscriptionManagement'))) {
       await vpn.flipFeatureOff('subscriptionManagement');
     }
   });
-
-  async function getMainStackViewDepth() {
-    await vpn.waitForElement('MainStackView');
-    return await vpn.getElementProperty('MainStackView', 'depth')
-  }
 
   async function checkSetting(objectName, settingKey) {
     await vpn.waitForElement(objectName);
@@ -47,18 +42,16 @@ describe('Settings', function() {
     await vpn.clickOnElement('settingsGetHelp');
 
     await vpn.wait;
-    await vpn.waitForElement('getHelpBack');
-    await vpn.waitForElementProperty('getHelpBack', 'visible', 'true');
+    await vpn.waitForElement('settingsBackButton');
+    await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
   }
 
   it('Opening and closing the settings view', async () => {
+    await vpn.waitForElement('navBar');
+    await vpn.waitForElementProperty('navBar', 'visible', 'true');
+
+
     await vpn.waitForElement('settingsBackButton');
-    await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
-
-
-    await vpn.waitForElement('menuIcon');
-    await vpn.waitForElementProperty(
-        'menuIcon', 'source', 'qrc:/nebula/resources/close-dark.svg');
 
     await vpn.waitForElement('settingsUserProfile-manageAccountButton');
     await vpn.waitForElementProperty(
@@ -67,27 +60,19 @@ describe('Settings', function() {
     await vpn.waitForElementProperty(
         'settingsUserProfile-manageAccountButton', 'enabled', 'true');
 
-    await vpn.clickOnElement('settingsBackButton');
+    await vpn.clickOnElement('homeNavButton');
     await vpn.wait();
 
     await vpn.waitForElement('controllerTitle');
     await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
   });
 
-  it('Settings is pushed to, and popped from, mainStackView', async () => {
-    await vpn.waitForElement('settingsBackButton');
-    await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
+  it('Settings menu is pushed on to settings stack', async () => {
+    await vpn.waitForElement('navBar');
+    await vpn.waitForElementProperty('navBar', 'visible', 'true');
 
-    const stackDepth = await getMainStackViewDepth();
-
-    await vpn.clickOnElement('settingsBackButton');
-    await vpn.wait();
-    await vpn.waitForElement('controllerTitle');
-    await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
-
-    assert(
-        await getMainStackViewDepth() ===
-        (parseInt(stackDepth) - 1).toString());
+    await vpn.waitForElement('settingsStack');
+    assert(await vpn.getElementProperty('settingsStack', 'depth') === '1')
   });
 
   it('Checking settings entries', async () => {
@@ -413,8 +398,8 @@ describe('Settings', function() {
     await vpn.clickOnElement('settingsGetHelp');
     await vpn.wait();
 
-    await vpn.waitForElement('getHelpBack');
-    await vpn.waitForElementProperty('getHelpBack', 'visible', 'true');
+    await vpn.waitForElement('settingsBackButton');
+    await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
 
     await vpn.waitForElement('getHelpLinks');
     await vpn.waitForElementProperty('getHelpLinks', 'visible', 'true');
@@ -436,10 +421,10 @@ describe('Settings', function() {
     await vpn.clickOnElement('giveFeedbackView');
     await vpn.wait();
 
-    await vpn.waitForElement('giveFeedbackBackButton');
+    await vpn.waitForElement('settingsBackButton');
     await vpn.waitForElementProperty(
-        'giveFeedbackBackButton', 'visible', 'true');
-    await vpn.clickOnElement('giveFeedbackBackButton');
+        'settingsBackButton', 'visible', 'true');
+    await vpn.clickOnElement('settingsBackButton');
     await vpn.wait();
 
     await vpn.waitForElement('getHelpLinks');
@@ -482,80 +467,92 @@ describe('Settings', function() {
     */
 
     await vpn.wait();
-    await vpn.waitForElement('getHelpBack');
-    await vpn.clickOnElement('getHelpBack');
+    await vpn.waitForElement('settingsBackButton');
+    await vpn.clickOnElement('settingsBackButton');
 
     await vpn.waitForElement('settingsGetHelp');
     await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
   });
 
-  it('Get help is pushed to, and popped from, mainStackView', async () => {
-    const mainStackDepth = await getMainStackViewDepth();
+  it('Get help is pushed on to and popped from the settings stack', async () => {
+    await vpn.waitForElement('settingsStack');
+    assert(await vpn.getElementProperty('settingsStack', 'depth') === '1')
     await getToGetHelpView();
-    assert(
-        await getMainStackViewDepth() ===
-        (parseInt(mainStackDepth) + 1).toString());
+
+    assert(await vpn.getElementProperty('settingsStack', 'depth') === '2')
 
     await vpn.wait();
-    await vpn.waitForElement('getHelpBack');
-    await vpn.clickOnElement('getHelpBack');
+    await vpn.waitForElement('settingsBackButton');
+    await vpn.clickOnElement('settingsBackButton');
 
     await vpn.wait();
-    await vpn.waitForElement('settingsGetHelp');
-    await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
-    assert(await getMainStackViewDepth() === mainStackDepth.toString());
+    await vpn.waitForElement('settingsView');
+    await vpn.waitForElementProperty('settingsView', 'visible', 'true');
+    assert(await vpn.getElementProperty('settingsStack', 'depth') === '1')
   });
 
-  it('Give feedback is pushed to, and popped from, mainStackView', async () => {
+  it('Give feedback is pushed on to and popped from the settings stack', async () => {
+    await vpn.waitForElement('settingsStack');
+    await vpn.wait();
+    assert(await vpn.getElementProperty('settingsStack', 'depth') === '1')
+
     await getToGetHelpView();
     await vpn.wait();
-    const mainStackDepth = await getMainStackViewDepth();
+    assert(await vpn.getElementProperty('settingsStack', 'depth') === '2')
 
     await vpn.waitForElement('getHelpLinks/settingsGiveFeedback');
     await vpn.waitForElementProperty(
-        'getHelpLinks/settingsGiveFeedback', 'visible', 'true');
-
+      'getHelpLinks/settingsGiveFeedback', 'visible', 'true');
     await vpn.clickOnElement('getHelpLinks/settingsGiveFeedback');
     await vpn.wait();
+    assert(await vpn.getElementProperty('settingsStack', 'depth') === '3')
 
-    assert(
-        await getMainStackViewDepth() ===
-        (parseInt(mainStackDepth) + 1).toString());
-
+    await vpn.waitForElement('settingsBackButton');
+    await vpn.clickOnElement('settingsBackButton');
+    
+    assert(await vpn.getElementProperty('settingsStack', 'depth') === '2')
     await vpn.wait();
-    await vpn.waitForElement('giveFeedbackBackButton');
-    await vpn.clickOnElement('giveFeedbackBackButton');
-    await vpn.wait();
+    await vpn.waitForElement('settingsBackButton');
+    await vpn.clickOnElement('settingsBackButton');
 
-    assert(
-        await getMainStackViewDepth() === parseInt(mainStackDepth).toString());
+    await vpn.waitForElement('settingsView');
+    await vpn.waitForElementProperty('settingsView', 'visible', 'true');
+    await vpn.wait();
+    assert(await vpn.getElementProperty('settingsStack', 'depth') === '1')
   });
 
+  it('Contact us is pushed on to and popped from the settings stack', async () => {
+    await vpn.waitForElement('settingsStack');
+    await vpn.wait();
+    assert(await vpn.getElementProperty('settingsStack', 'depth') === '1')
 
-  it('Contact us is pushed to, and popped from, mainStackView', async () => {
     await getToGetHelpView();
     await vpn.wait();
-    const mainStackDepth = await getMainStackViewDepth();
+    assert(await vpn.getElementProperty('settingsStack', 'depth') === '2')
 
-    await vpn.waitForElement('getHelpLinks/getHelpBackList-1')
-        await vpn.waitForElementProperty(
-            'getHelpLinks/getHelpBackList-1', 'visible', 'true');
-
+    await vpn.waitForElement('getHelpLinks/getHelpBackList-1');
+    await vpn.waitForElementProperty(
+      'getHelpLinks/getHelpBackList-1', 'visible', 'true');
     await vpn.clickOnElement('getHelpLinks/getHelpBackList-1');
-
     await vpn.wait();
-
-    assert(
-        await getMainStackViewDepth() ===
-        (parseInt(mainStackDepth) + 1).toString());
+    assert(await vpn.getElementProperty('settingsStack', 'depth') === '3')
 
     await vpn.wait();
     await vpn.waitForElement('supportTicketScreen');
     await vpn.clickOnElement('supportTicketScreen');
-    await vpn.wait();
 
-    assert(
-        await getMainStackViewDepth() === parseInt(mainStackDepth).toString());
+    await vpn.waitForElement('settingsBackButton');
+    await vpn.clickOnElement('settingsBackButton');
+    
+    assert(await vpn.getElementProperty('settingsStack', 'depth') === '2')
+    await vpn.wait();
+    await vpn.waitForElement('settingsBackButton');
+    await vpn.clickOnElement('settingsBackButton');
+
+    await vpn.waitForElement('settingsView');
+    await vpn.waitForElementProperty('settingsView', 'visible', 'true');
+    await vpn.wait();
+    assert(await vpn.getElementProperty('settingsStack', 'depth') === '1')
   });
 
   it('Checking the preferences settings', async () => {

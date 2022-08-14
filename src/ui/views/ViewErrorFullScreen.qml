@@ -12,6 +12,8 @@ import org.mozilla.Glean 0.30
 import telemetry 0.30
 
 VPNFlickable {
+    id: vpnFlickable
+
     property var headlineText
     property var errorMessage: ""
     property var errorMessage2: ""
@@ -28,7 +30,8 @@ VPNFlickable {
 
     property var getHelpLinkVisible: false
     property var statusLinkVisible: false
-    id: vpnFlickable
+
+    considerNavBar: window.navBarVisible
 
     Component.onCompleted: {
         flickContentHeight = col.childrenRect.height

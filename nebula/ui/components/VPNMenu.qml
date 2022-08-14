@@ -20,6 +20,7 @@ Item {
     property alias _iconButtonAccessibleName: iconButton.accessibleName
     property alias iconButtonVisible: iconButton.visible
     property var _menuOnBackClicked: () => { goBack(); }
+    property alias titleComponent: title
 
     width: parent.width
     height: VPNTheme.theme.menuHeight

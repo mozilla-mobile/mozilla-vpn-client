@@ -156,6 +156,11 @@ Item {
                         visible: VPN.userState === VPN.UserAuthenticated
                         Layout.topMargin: -VPNTheme.theme.windowMargin / 2
                         Layout.bottomMargin: -VPNTheme.theme.windowMargin / 2
+
+                        anchors.left: undefined
+                        anchors.right: undefined
+                        anchors.leftMargin: undefined
+                        anchors.rightMargin: undefined
                     }
 
                     ColumnLayout {
@@ -295,8 +300,13 @@ Item {
                anchors.topMargin: VPNTheme.theme.vSpacing
                anchors.horizontalCenter: parent.horizontalCenter
                onClicked: {
-                   mainStackView.pop();
-                   mainStackView.pop();
+                   const getHelpInStack = mainStackView.find((view) => { return view.objectName === "getHelp" });
+                   console.log(getHelpInStack)
+                   if (getHelpInStack) {
+                       // Unwind mainStackView back to Get Help
+                       mainStackView.pop(getHelpInStack, StackView.Immediate);
+                       return
+                   }
                }
                Component.onCompleted: {
                  if (window.fullscreenRequired()) {
