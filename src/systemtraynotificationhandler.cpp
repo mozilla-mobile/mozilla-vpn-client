@@ -93,8 +93,8 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
   m_systemTrayIcon.setContextMenu(&m_menu);
   m_systemTrayIcon.show();
 #elif defined(MVPN_MACOS)
-  // TODO: Set tool tip for macOS
   m_macOSStatusIcon = new MacOSStatusIcon(this);
+  m_macOSStatusIcon->setToolTip(qtTrId("vpn.main.productName"));
   m_macOSStatusIcon->setMenu(m_menu.toNSMenu());
 #endif
 

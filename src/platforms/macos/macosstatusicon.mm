@@ -25,6 +25,7 @@
 - (void)setIndicator;
 - (void)setIndicatorColor:(NSColor*)color;
 - (void)setMenu:(NSMenu*)statusBarMenu;
+- (void)setToolTip:(NSString*)tooltip;
 @end
 
 @implementation MacOSStatusIconDelegate
@@ -42,6 +43,7 @@
   self.statusItem.visible = true;
   // Add the indicator as a subview
   [self setIndicator];
+
   return self;
 }
 
@@ -90,6 +92,15 @@
 - (void)setMenu:(NSMenu*)statusBarMenu {
   [self.statusItem setMenu:statusBarMenu];
 }
+
+/**
+ * Sets the tooltip string for the status item.
+ *
+ * @param tooltip The tooltip string.
+ */
+- (void)setToolTip:(NSString*)tooltip {
+  [self.statusItem.button setToolTip:tooltip];
+}
 @end
 
 namespace {
@@ -124,6 +135,7 @@ void MacOSStatusIcon::setIcon(QString iconPath) {
 
   QResource imageResource = QResource(iconPath);
   Q_ASSERT(imageResource.isValid());
+
   [m_statusBarIcon setIcon:imageResource.uncompressedData().toNSData()];
 }
 
@@ -147,4 +159,9 @@ void MacOSStatusIcon::setIndicatorColor(
 void MacOSStatusIcon::setMenu(NSMenu* statusBarMenu) {
   logger.debug() << "Set menu";
   [m_statusBarIcon setMenu:statusBarMenu];
+}
+
+void MacOSStatusIcon::setToolTip(QString tooltip) {
+  logger.debug() << "Set tooltip";
+  [m_statusBarIcon setToolTip:tooltip.toNSString()];
 }
