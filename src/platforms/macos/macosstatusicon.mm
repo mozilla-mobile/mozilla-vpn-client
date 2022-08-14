@@ -8,6 +8,7 @@
 #include "mozillavpn.h"
 
 #import <Cocoa/Cocoa.h>
+#import <QResource>
 
 /**
  * Creates a NSStatusItem with that can hold an icon. Additionally a NSView is
@@ -20,7 +21,7 @@
 @property (assign) NSStatusItem* statusItem;
 @property (assign) NSView* statusIndicator;
 
-- (void)setIcon:(NSString*)iconPath;
+- (void)setIcon:(NSData*)imageData;
 - (void)setIndicator;
 - (void)setIndicatorColor:(NSColor*)color;
 - (void)setMenu:(NSMenu*)statusBarMenu;
@@ -45,12 +46,12 @@
 }
 
 /**
- * Sets the image source of the status icon.
+ * Sets the image for the status icon.
  *
- * @param iconPath The path of the icon resource.
+ * @param iconPath The data for the icon image.
  */
-- (void)setIcon:(NSString*)iconPath {
-  NSImage* image = [[NSImage alloc] initWithContentsOfFile:iconPath];
+- (void)setIcon:(NSData*)imageData {
+  NSImage* image = [[NSImage alloc] initWithData:imageData];
   [image setTemplate:true];
 
   [self.statusItem.button setImage:image];
@@ -120,7 +121,10 @@ MacOSStatusIcon::~MacOSStatusIcon() {
 
 void MacOSStatusIcon::setIcon(QString iconPath) {
   logger.debug() << "Set icon" << iconPath;
-  [m_statusBarIcon setIcon:iconPath.toNSString()];
+
+  QResource imageResource = QResource(iconPath);
+  Q_ASSERT(imageResource.isValid());
+  [m_statusBarIcon setIcon:imageResource.uncompressedData().toNSData()];
 }
 
 void MacOSStatusIcon::setIndicatorColor(
