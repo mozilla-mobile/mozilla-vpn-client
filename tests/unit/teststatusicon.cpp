@@ -9,23 +9,45 @@
 
 void TestStatusIcon::basic() {
   StatusIcon si;
-  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-generic.svg");
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic.svg");
+#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
+  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-generic.png");
+  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic.png");
+#else
+  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-generic-mask.png");
+  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask.png");
+#endif
 
   si.stateChanged();
-  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-generic.svg");
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic.svg");
+#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
+  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-generic.png");
+  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic.png");
+#else
+  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-generic-mask.png");
+  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask.png");
+#endif
 
   TestHelper::vpnState = MozillaVPN::StateMain;
   TestHelper::controllerState = Controller::StateOn;
   si.stateChanged();
-  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-on.svg");
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-on.svg");
+#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
+  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-on.png");
+  QCOMPARE(si.iconString(), ":/ui/resources/logo-on.png");
+#else
+  QCOMPARE(si.iconUrl().toString(),
+           "qrc:/ui/resources/logo-generic-mask-on.png");
+  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask-on.png");
+#endif
 
   TestHelper::controllerState = Controller::StateOff;
   si.stateChanged();
-  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-generic.svg");
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic.svg");
+#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
+  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-generic.png");
+  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic.png");
+#else
+  QCOMPARE(si.iconUrl().toString(),
+           "qrc:/ui/resources/logo-generic-mask-off.png");
+  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask-off.png");
+#endif
 
   TestHelper::controllerState = Controller::StateSwitching;
 
@@ -37,17 +59,31 @@ void TestStatusIcon::basic() {
       loop.exit();
       return;
     }
-
+#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
     QCOMPARE(si.iconUrl().toString(),
-             QString("qrc:/ui/resources/logo-animated%1.svg").arg((i % 4) + 1));
+             QString("qrc:/ui/resources/logo-animated%1.png").arg((i % 4) + 1));
     QCOMPARE(si.iconString(),
-             QString(":/ui/resources/logo-animated%1.svg").arg((i % 4) + 1));
+             QString(":/ui/resources/logo-animated%1.png").arg((i % 4) + 1));
+#else
+    QCOMPARE(si.iconUrl().toString(),
+             QString("qrc:/ui/resources/logo-animated-mask%1.png")
+             .arg((i % 4) + 1));
+    QCOMPARE(si.iconString(),
+             QString(":/ui/resources/logo-animated-mask%1.png")
+             .arg((i % 4) + 1));
+#endif
     ++i;
   });
 
   si.stateChanged();
-  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-animated1.svg");
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-animated1.svg");
+#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
+  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-animated1.png");
+  QCOMPARE(si.iconString(), ":/ui/resources/logo-animated1.png");
+#else
+  QCOMPARE(si.iconUrl().toString(),
+           "qrc:/ui/resources/logo-animated-mask1.png");
+  QCOMPARE(si.iconString(), ":/ui/resources/logo-animated-mask1.png");
+#endif
   loop.exec();
 }
 
