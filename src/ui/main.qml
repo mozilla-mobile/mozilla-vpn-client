@@ -399,7 +399,7 @@ Window {
                 if (getHelpInStack) {
                     // Unwind mainStackView back to Contact Us
                     mainStackView.pop(getHelpInStack, StackView.Immediate);
-                    mainStackView.push("qrc:/ui/views/ViewContactUs.qml", StackView.Immediate);
+                    mainStackView.push("qrc:/ui/views/ViewContactUs.qml");
                     return
                 }
                 mainStackView.push(["qrc:/ui/views/ViewGetHelp.qml", "qrc:/ui/views/ViewContactUs.qml"], StackView.Immediate);

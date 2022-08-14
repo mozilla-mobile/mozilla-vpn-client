@@ -31,8 +31,6 @@ VPNFlickable {
     property var getHelpLinkVisible: false
     property var statusLinkVisible: false
 
-    considerNavBar: window.navBarVisible
-
     Component.onCompleted: {
         flickContentHeight = col.childrenRect.height
     }

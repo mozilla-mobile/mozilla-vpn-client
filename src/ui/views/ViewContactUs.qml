@@ -85,7 +85,7 @@ Item {
 
             Rectangle {
                 anchors.fill: parent
-                color: VPNTheme.theme.bgColor
+                color:  VPNTheme.theme.bgColor
             }
 
             ColumnLayout {
@@ -94,183 +94,169 @@ Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.top: parent.top
-                spacing: VPNTheme.theme.windowMargin
-                anchors.margins: VPNTheme.theme.windowMargin
                 anchors.topMargin: window.fullscreenRequired() ? VPNTheme.theme.contentTopMarginMobile : VPNTheme.theme.contentTopMarginDesktop
+                anchors.leftMargin: VPNTheme.theme.windowMargin * 2
+                anchors.rightMargin: VPNTheme.theme.windowMargin * 2
 
                 ColumnLayout {
-                    Layout.alignment: Qt.AlignTop
-                    Layout.preferredWidth: parent.width
+                    objectName: "contactUs-unauthedUserInputs"
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignHCenter
+                    spacing: 0
 
-                    spacing: 24
+                    visible: VPN.userState !== VPN.UserAuthenticated
 
-                    ColumnLayout {
-                        objectName: "contactUs-unauthedUserInputs"
-                        Layout.fillHeight: true
-                        spacing: 24
-                        visible: VPN.userState !== VPN.UserAuthenticated
-                        Layout.alignment: Qt.AlignHCenter
+                    VPNBoldLabel {
+                        property string enterEmailAddress: VPNl18n.InAppSupportWorkflowSupportEmailFieldLabel
+
                         Layout.fillWidth: true
-                        Layout.maximumWidth: parent.width - VPNTheme.theme.windowMargin
 
-                        ColumnLayout {
-                            spacing: 10
-                            VPNBoldLabel {
-                                property string enterEmailAddress: VPNl18n.InAppSupportWorkflowSupportEmailFieldLabel
+                        text: enterEmailAddress
+                        lineHeight: VPNTheme.theme.labelLineHeight
+                        lineHeightMode: Text.FixedHeight
+                        wrapMode: Text.WordWrap
+                        verticalAlignment: Text.AlignVCenter
+                        width: undefined
 
-                                text: enterEmailAddress
-                                lineHeight: VPNTheme.theme.labelLineHeight
-                                lineHeightMode: Text.FixedHeight
-                                wrapMode: Text.WordWrap
-                                verticalAlignment: Text.AlignVCenter
-                                Layout.fillWidth: true
-                                width: undefined
-
-                            }
-
-                            VPNTextField {
-                                id: emailInput
-
-                                verticalAlignment: Text.AlignVCenter
-                                Layout.fillWidth: true
-                                hasError: !VPNAuthInApp.validateEmailAddress(emailInput.text)
-                                _placeholderText: VPNl18n.InAppSupportWorkflowSupportEmailFieldPlaceholder
-                            }
-                        }
-
-                        VPNTextField {
-                            id: confirmEmailInput
-
-                            width: parent.width
-                            verticalAlignment: Text.AlignVCenter
-                            Layout.fillWidth: true
-                            hasError: !VPNAuthInApp.validateEmailAddress(confirmEmailInput.text) || emailInput.text != confirmEmailInput.text
-                            _placeholderText: VPNl18n.InAppSupportWorkflowSupportConfirmEmailPlaceholder
-                        }
-                    }
-
-                    VPNUserProfile {
-                        objectName: "contactUs-userInfo"
-                        enabled: false
-                        Layout.preferredWidth: parent.width
-                        visible: VPN.userState === VPN.UserAuthenticated
-                        Layout.topMargin: -VPNTheme.theme.windowMargin / 2
-                        Layout.bottomMargin: -VPNTheme.theme.windowMargin / 2
-
-                        anchors.left: undefined
-                        anchors.right: undefined
-                        anchors.leftMargin: undefined
-                        anchors.rightMargin: undefined
-                    }
-
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin
-                        Layout.maximumWidth: parent.width - VPNTheme.theme.windowMargin
-                        Layout.alignment: Qt.AlignHCenter
-                        spacing: 10
-
-                        VPNBoldLabel {
-                            property string enterEmailAddress: VPNl18n.InAppSupportWorkflowSupportFieldHeader
-
-                            text: enterEmailAddress
-                            lineHeight: VPNTheme.theme.labelLineHeight
-                            lineHeightMode: Text.FixedHeight
-                            wrapMode: Text.WordWrap
-                            verticalAlignment: Text.AlignVCenter
-                            Layout.preferredWidth: parent.width
-                            width: undefined
-                        }
-
-                        VPNComboBox {
-                            id: dropDown
-                            placeholderText: VPNl18n.InAppSupportWorkflowDropdownLabel
-                            model: VPNSupportCategoryModel
-                            Layout.preferredWidth: parent.width
-                        }
                     }
 
                     VPNTextField {
-                        id: subjectInput
+                        id: emailInput
+
+                        Layout.topMargin: 10
+                        Layout.fillWidth: true
 
                         verticalAlignment: Text.AlignVCenter
-                        Layout.alignment: Qt.AlignHCenter
-                        Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin
-                        _placeholderText: VPNl18n.InAppSupportWorkflowSubjectFieldPlaceholder
+                        hasError: !VPNAuthInApp.validateEmailAddress(emailInput.text)
+                        _placeholderText: VPNl18n.InAppSupportWorkflowSupportEmailFieldPlaceholder
                     }
 
-                    VPNTextArea {
-                        id: textArea
-                        placeholderText: VPNl18n.InAppSupportWorkflowIssueFieldPlaceholder
-                        Layout.alignment: Qt.AlignHCenter
-                        Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin
+                    VPNTextField {
+                        id: confirmEmailInput
+
+                        Layout.topMargin: VPNTheme.theme.vSpacing
+                        Layout.fillWidth: true
+
+                        width: parent.width
+                        verticalAlignment: Text.AlignVCenter
+                        hasError: !VPNAuthInApp.validateEmailAddress(confirmEmailInput.text) || emailInput.text != confirmEmailInput.text
+                        _placeholderText: VPNl18n.InAppSupportWorkflowSupportConfirmEmailPlaceholder
                     }
                 }
 
-                ColumnLayout {
-                    Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin * 2
+                VPNUserProfile {
+                    objectName: "contactUs-userInfo"
+
+                    Layout.preferredWidth: parent.width
+                    Layout.topMargin: VPNTheme.theme.vSpacing
+
+                    enabled: false
+                    visible: VPN.userState === VPN.UserAuthenticated
+
+                    anchors.left: undefined
+                    anchors.right: undefined
+                    anchors.leftMargin: undefined
+                    anchors.rightMargin: undefined
+                }
+
+                VPNBoldLabel {
+                    property string enterEmailAddress: VPNl18n.InAppSupportWorkflowSupportFieldHeader
+
+                    Layout.topMargin: VPNTheme.theme.vSpacing
+                    Layout.preferredWidth: parent.width
+
+                    text: enterEmailAddress
+                    lineHeight: VPNTheme.theme.labelLineHeight
+                    lineHeightMode: Text.FixedHeight
+                    wrapMode: Text.WordWrap
+                    verticalAlignment: Text.AlignVCenter
+                    width: undefined
+                }
+
+                VPNComboBox {
+                    id: dropDown
+
+                    Layout.topMargin: 10
+
+                    placeholderText: VPNl18n.InAppSupportWorkflowDropdownLabel
+                    model: VPNSupportCategoryModel
+                    Layout.preferredWidth: parent.width
+                }
+
+                VPNTextField {
+                    id: subjectInput
+
+                    Layout.topMargin: VPNTheme.theme.vSpacing
                     Layout.alignment: Qt.AlignHCenter
-                    Layout.fillHeight: true
-                    spacing: 24
+                    Layout.fillWidth: true
 
-                    VPNVerticalSpacer {
-                        Layout.fillWidth: true
-                        Layout.minimumHeight: 16
-                        Layout.fillHeight: !window.fullscreenRequired()
+                    verticalAlignment: Text.AlignVCenter
+                    _placeholderText: VPNl18n.InAppSupportWorkflowSubjectFieldPlaceholder
+                }
+
+                VPNTextArea {
+                    id: textArea
+
+                    Layout.topMargin: VPNTheme.theme.vSpacing
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin
+
+                    placeholderText: VPNl18n.InAppSupportWorkflowIssueFieldPlaceholder
+                }
+
+                VPNTextBlock {
+                    Layout.topMargin: VPNTheme.theme.vSpacingSmall * 3.5
+                    Layout.fillWidth: true
+
+                    font.pixelSize: VPNTheme.theme.fontSize
+                    horizontalAlignment: Text.AlignHCenter
+                    text: VPNl18n.InAppSupportWorkflowDisclaimerText
+                    width:parent.width
+                }
+
+                VPNLinkButton {
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignHCenter
+                    labelText: VPNl18n.InAppSupportWorkflowPrivacyNoticeLinkText
+                    onClicked: VPN.openLink(VPN.LinkPrivacyNotice)
+                    width: parent.width
+                }
+
+                VPNButton {
+                    text: VPNl18n.InAppSupportWorkflowSupportPrimaryButtonText
+                    onClicked: {
+                        contactUsRoot.emailAddress = (VPN.userState === VPN.UserAuthenticated ? VPNUser.email : emailInput.text);
+                        contactUsRoot.createSupportTicket(contactUsRoot.emailAddress, subjectInput.text, textArea.userEntry, dropDown.currentValue);
                     }
-
-                    Column {
-                        spacing: 0
-                        Layout.fillWidth: true
-
-
-                        VPNTextBlock {
-                            font.pixelSize: VPNTheme.theme.fontSize
-                            horizontalAlignment: Text.AlignHCenter
-                            text: VPNl18n.InAppSupportWorkflowDisclaimerText
-                            width:parent.width
-                        }
-
-                        VPNLinkButton {
-                            labelText: VPNl18n.InAppSupportWorkflowPrivacyNoticeLinkText
-                            Layout.alignment: Qt.AlignHCenter
-                            onClicked: VPN.openLink(VPN.LinkPrivacyNotice)
-                            width: parent.width
-                        }
-                    }
-
-                    ColumnLayout {
-                        spacing: VPNTheme.theme.windowMargin
-
-                        VPNButton {
-                            text: VPNl18n.InAppSupportWorkflowSupportPrimaryButtonText
-                            onClicked: {
-                              contactUsRoot.emailAddress = (VPN.userState === VPN.UserAuthenticated ? VPNUser.email : emailInput.text);
-                              contactUsRoot.createSupportTicket(contactUsRoot.emailAddress, subjectInput.text, textArea.userEntry, dropDown.currentValue);
-                            }
-                            enabled: dropDown.currentValue != null && textArea.userEntry != "" &&
-                                     (VPN.userState === VPN.UserAuthenticated ? true :
-                                        (VPNAuthInApp.validateEmailAddress(emailInput.text) && emailInput.text == confirmEmailInput.text)
-                                     )
-                            opacity: enabled ? 1 : .5
-                            Layout.preferredHeight: VPNTheme.theme.rowHeight
-                            Layout.fillWidth: true
-                            width: undefined
-                            height: undefined
-                            Behavior on opacity {
-                                PropertyAnimation {
-                                    duration: 100
-                                }
-                            }
-                        }
-
-                        VPNCancelButton {
-                            Layout.alignment: Qt.AlignHCenter
-                            Layout.preferredHeight: VPNTheme.theme.rowHeight
-                            onClicked: mainStackView.pop()
-                            implicitHeight: VPNTheme.theme.rowHeight
+                    enabled: dropDown.currentValue != null && textArea.userEntry != "" &&
+                             (VPN.userState === VPN.UserAuthenticated ? true :
+                                                                        (VPNAuthInApp.validateEmailAddress(emailInput.text) && emailInput.text == confirmEmailInput.text)
+                              )
+                    opacity: enabled ? 1 : .5
+                    Layout.preferredHeight: VPNTheme.theme.rowHeight
+                    Layout.fillWidth: true
+                    Layout.topMargin: VPNTheme.theme.vSpacingSmall
+                    width: undefined
+                    height: undefined
+                    Behavior on opacity {
+                        PropertyAnimation {
+                            duration: 100
                         }
                     }
+                }
+
+                VPNCancelButton {
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.preferredHeight: VPNTheme.theme.rowHeight
+                    Layout.topMargin: VPNTheme.theme.vSpacingSmall
+
+                    onClicked: VPN.state === VPN.StateMain ? settingsStack.pop() : mainStackView.pop()
+                    implicitHeight: VPNTheme.theme.rowHeight
+                }
+
+                VPNVerticalSpacer {
+                    Layout.preferredHeight: window.navBarVisible ? 0 : 40
                 }
             }
         }
