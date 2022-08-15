@@ -24,9 +24,6 @@ class TaskAddonIndex final : public Task {
  private:
   QByteArray m_indexData;
   QByteArray m_indexSignData;
-
-  bool m_indexRequestComplete = false;
-  bool m_indexSignatureRequestComplete = false;
 };
 
 #endif  // TASKADDONINDEX_H
