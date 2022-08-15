@@ -49,6 +49,8 @@ HEADERS += \
     ../../src/addons/addonguide.h \
     ../../src/addons/addoni18n.h \
     ../../src/addons/addonmessage.h \
+    ../../src/addons/addonproperty.h \
+    ../../src/addons/addonpropertylist.h \
     ../../src/addons/addontutorial.h \
     ../../src/addons/conditionwatchers/addonconditionwatcher.h \
     ../../src/addons/conditionwatchers/addonconditionwatchergroup.h \
@@ -62,8 +64,12 @@ HEADERS += \
     ../../src/collator.h \
     ../../src/command.h \
     ../../src/commandlineparser.h \
-    ../../src/composer.h \
-    ../../src/composerblock.h \
+    ../../src/composer/composer.h \
+    ../../src/composer/composerblock.h \
+    ../../src/composer/composerblocktext.h \
+    ../../src/composer/composerblocktitle.h \
+    ../../src/composer/composerblockorderedlist.h \
+    ../../src/composer/composerblockunorderedlist.h \
     ../../src/constants.h \
     ../../src/controller.h \
     ../../src/curve25519.h \
@@ -174,6 +180,8 @@ SOURCES += \
     ../../src/addons/addonguide.cpp \
     ../../src/addons/addoni18n.cpp \
     ../../src/addons/addonmessage.cpp \
+    ../../src/addons/addonproperty.cpp \
+    ../../src/addons/addonpropertylist.cpp \
     ../../src/addons/addontutorial.cpp \
     ../../src/addons/conditionwatchers/addonconditionwatcher.cpp \
     ../../src/addons/conditionwatchers/addonconditionwatchergroup.cpp \
@@ -187,8 +195,12 @@ SOURCES += \
     ../../src/collator.cpp \
     ../../src/command.cpp \
     ../../src/commandlineparser.cpp \
-    ../../src/composer.cpp \
-    ../../src/composerblock.cpp \
+    ../../src/composer/composer.cpp \
+    ../../src/composer/composerblock.cpp \
+    ../../src/composer/composerblocktext.cpp \
+    ../../src/composer/composerblocktitle.cpp \
+    ../../src/composer/composerblockorderedlist.cpp \
+    ../../src/composer/composerblockunorderedlist.cpp \
     ../../src/constants.cpp \
     ../../src/curve25519.cpp \
     ../../src/dnspingsender.cpp \

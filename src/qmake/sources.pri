@@ -9,6 +9,8 @@ SOURCES += \
         addons/addonguide.cpp \
         addons/addoni18n.cpp \
         addons/addonmessage.cpp \
+        addons/addonproperty.cpp \
+        addons/addonpropertylist.cpp \
         addons/addontutorial.cpp \
         addons/conditionwatchers/addonconditionwatcher.cpp \
         addons/conditionwatchers/addonconditionwatchergroup.cpp \
@@ -42,8 +44,12 @@ SOURCES += \
         commands/commandservers.cpp \
         commands/commandstatus.cpp \
         commands/commandui.cpp \
-        composer.cpp \
-        composerblock.cpp \
+        composer/composer.cpp \
+        composer/composerblock.cpp \
+        composer/composerblocktext.cpp \
+        composer/composerblocktitle.cpp \
+        composer/composerblockorderedlist.cpp \
+        composer/composerblockunorderedlist.cpp \
         connectionbenchmark/benchmarktask.cpp \
         connectionbenchmark/benchmarktaskdownload.cpp \
         connectionbenchmark/benchmarktaskping.cpp \
@@ -167,6 +173,8 @@ HEADERS += \
         addons/addonguide.h \
         addons/addoni18n.h \
         addons/addonmessage.h \
+        addons/addonproperty.h \
+        addons/addonpropertylist.h \
         addons/addontutorial.h \
         addons/conditionwatchers/addonconditionwatcher.h \
         addons/conditionwatchers/addonconditionwatcherlocales.h \
@@ -202,8 +210,12 @@ HEADERS += \
         commands/commandservers.h \
         commands/commandstatus.h \
         commands/commandui.h \
-        composer.h \
-        composerblock.h \
+        composer/composer.h \
+        composer/composerblock.h \
+        composer/composerblocktext.h \
+        composer/composerblocktitle.h \
+        composer/composerblockorderedlist.h \
+        composer/composerblockunorderedlist.h \
         connectionbenchmark/benchmarktask.h \
         connectionbenchmark/benchmarktaskdownload.h \
         connectionbenchmark/benchmarktaskping.h \

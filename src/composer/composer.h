@@ -21,6 +21,9 @@ class Composer final : public QObject {
 
   ~Composer();
 
+ signals:
+  void retranslationCompleted();
+
  private:
   explicit Composer(QObject* parent);
 

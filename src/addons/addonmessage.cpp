@@ -3,9 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addonmessage.h"
+#include "l18nstrings.h"
 #include "leakdetector.h"
+#include "localizer.h"
 #include "logger.h"
 #include "settingsholder.h"
+#include "timersingleshot.h"
 
 #include <QJsonObject>
 
@@ -37,7 +40,8 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
   AddonMessage* message = new AddonMessage(parent, manifestFileName, id, name);
   auto guard = qScopeGuard([&] { message->deleteLater(); });
 
-  message->m_titleId = QString("message.%1.title").arg(messageId);
+  message->m_title.initialize(QString("message.%1.title").arg(messageId),
+                              messageObj["title"].toString());
 
   message->m_composer = Composer::create(
       message, QString("message.%1").arg(messageId), messageObj);
@@ -45,6 +49,12 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
     logger.warning() << "Composer failed";
     return nullptr;
   }
+
+  QStringList readAddonMessages = settingsHolder->readAddonMessages();
+  message->m_isRead = readAddonMessages.contains(id);
+
+  message->m_date = messageObj["date"].toInteger();
+  message->planDateRetranslation();
 
   guard.dismiss();
   return message;
@@ -54,6 +64,9 @@ AddonMessage::AddonMessage(QObject* parent, const QString& manifestFileName,
                            const QString& id, const QString& name)
     : Addon(parent, manifestFileName, id, name, "message") {
   MVPN_COUNT_CTOR(AddonMessage);
+
+  connect(this, &Addon::retranslationCompleted, m_composer,
+          &Composer::retranslationCompleted);
 }
 
 AddonMessage::~AddonMessage() { MVPN_COUNT_DTOR(AddonMessage); }
@@ -70,10 +83,106 @@ void AddonMessage::dismiss() {
   settingsHolder->setDismissedAddonMessages(dismissedAddonMessages);
 }
 
+void AddonMessage::maskAsRead() {
+  if (m_isRead) {
+    return;
+  }
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  QStringList readAddonMessages = settingsHolder->readAddonMessages();
+  readAddonMessages.append(id());
+  settingsHolder->setReadAddonMessages(readAddonMessages);
+
+  m_isRead = true;
+  emit isReadChanged();
+}
+
 bool AddonMessage::enabled() const {
   if (!Addon::enabled()) {
     return false;
   }
 
   return !m_dismissed;
+}
+
+QString AddonMessage::date() const {
+  if (m_date == 0) {
+    return QString();
+  }
+
+  return dateInternal(QDateTime::currentDateTime(),
+                      QDateTime::fromSecsSinceEpoch(m_date));
+}
+
+// static
+QString AddonMessage::dateInternal(const QDateTime& nowDateTime,
+                                   const QDateTime& messageDateTime) {
+  logger.debug() << "Now" << nowDateTime.toString() << "date"
+                 << messageDateTime.toString();
+
+  qint64 diff = messageDateTime.secsTo(nowDateTime);
+  if (diff < 0) {
+    // The addon has a date set in the future...?
+    return Localizer::instance()->locale().toString(nowDateTime.time(),
+                                                    QLocale::ShortFormat);
+  }
+
+  // Less than 24 hours ago, but still in the same day
+  if (diff < 86400 && messageDateTime.time() <= nowDateTime.time()) {
+    return Localizer::instance()->locale().toString(messageDateTime.time(),
+                                                    QLocale::ShortFormat);
+  }
+
+  // Less than 24 hours ago
+  if (diff < 86400) {
+    return L18nStrings::instance()->t(
+        L18nStrings::InAppMessagingDateTimeYesterday);
+  }
+
+  return Localizer::instance()->locale().toString(messageDateTime.date(),
+                                                  QLocale::ShortFormat);
+}
+
+void AddonMessage::planDateRetranslation() {
+  if (m_date == 0) {
+    return;
+  }
+
+  qint64 time = planDateRetranslationInternal(
+      QDateTime::currentDateTime(), QDateTime::fromSecsSinceEpoch(m_date));
+  if (time == -1) {
+    return;
+  }
+
+  TimerSingleShot::create(this, (1 + time) * 1000, [this]() {
+    emit retranslationCompleted();
+    planDateRetranslation();
+  });
+}
+
+// static
+qint64 AddonMessage::planDateRetranslationInternal(
+    const QDateTime& nowDateTime, const QDateTime& messageDateTime) {
+  qint64 diff = messageDateTime.secsTo(nowDateTime);
+
+  qint64 secsTo = 0;
+  if (diff < 0) {
+    secsTo = nowDateTime.time().secsTo(QTime(0, 0));
+  } else if (diff < 86400 && messageDateTime.time() <= nowDateTime.time()) {
+    // Less than 24 hours ago, but still in the same day
+    secsTo = messageDateTime.time().secsTo(QTime(0, 0));
+  } else if (diff < 86400) {
+    // Less than 24 hours ago
+    secsTo = messageDateTime.time().secsTo(QTime(0, 0));
+  } else {
+    return -1;
+  }
+
+  if (secsTo > 0) {
+    return secsTo;
+  }
+
+  return 86400 + secsTo;
 }

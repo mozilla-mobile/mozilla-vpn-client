@@ -20,6 +20,10 @@ target_sources(mozillavpn PRIVATE
     addons/addoni18n.h
     addons/addonmessage.cpp
     addons/addonmessage.h
+    addons/addonproperty.cpp
+    addons/addonproperty.h
+    addons/addonpropertylist.cpp
+    addons/addonpropertylist.h
     addons/addontutorial.cpp
     addons/addontutorial.h
     addons/conditionwatchers/addonconditionwatcher.cpp
@@ -88,10 +92,18 @@ target_sources(mozillavpn PRIVATE
     commands/commandstatus.h
     commands/commandui.cpp
     commands/commandui.h
-    composerblock.cpp
-    composerblock.h
-    composer.cpp
-    composer.h
+    composer/composerblock.cpp
+    composer/composerblock.h
+    composer/composerblocktext.cpp
+    composer/composerblocktext.h
+    composer/composerblocktitle.cpp
+    composer/composerblocktitle.h
+    composer/composerblockorderedlist.cpp
+    composer/composerblockorderedlist.h
+    composer/composerblockunorderedlist.cpp
+    composer/composerblockunorderedlist.h
+    composer/composer.cpp
+    composer/composer.h
     connectionbenchmark/benchmarktask.cpp
     connectionbenchmark/benchmarktask.h
     connectionbenchmark/benchmarktaskdownload.cpp

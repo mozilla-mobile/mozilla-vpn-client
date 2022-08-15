@@ -8,6 +8,9 @@ class TestAddon final : public TestHelper {
   Q_OBJECT
 
  private slots:
+  void property();
+  void property_list();
+
   void conditions_data();
   void conditions();
 
@@ -25,6 +28,7 @@ class TestAddon final : public TestHelper {
 
   void message_create_data();
   void message_create();
-
+  void message_date_data();
+  void message_date();
   void message_dismiss();
 };
