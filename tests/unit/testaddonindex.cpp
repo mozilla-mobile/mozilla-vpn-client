@@ -10,40 +10,43 @@
 void TestAddonIndex::update_data() {
   QTest::addColumn<QByteArray>("index");
   QTest::addColumn<QStringList>("expectedAddonIds");
+  QTest::addColumn<bool>("expectsSignal");
 
-  QTest::addRow("invalid") << QByteArray() << QStringList();
+  QTest::addRow("invalid") << QByteArray() << QStringList() << false;
 
   QJsonObject obj;
-  QTest::addRow("empty object") << QJsonDocument(obj).toJson() << QStringList();
+  QTest::addRow("empty object")
+      << QJsonDocument(obj).toJson() << QStringList() << false;
 
   obj["api_version"] = "0";
   obj["addons"] = QJsonArray();
   QTest::addRow("invalid API version")
-      << QJsonDocument(obj).toJson() << QStringList();
+      << QJsonDocument(obj).toJson() << QStringList() << false;
 
   obj["api_version"] = "0.1";
-  QTest::addRow("empty") << QJsonDocument(obj).toJson() << QStringList();
+  QTest::addRow("empty") << QJsonDocument(obj).toJson() << QStringList()
+                         << true;
 
   QJsonObject addon;
   obj["addons"] = QJsonArray{addon};
   QTest::addRow("invalid addon")
-      << QJsonDocument(obj).toJson() << QStringList();
+      << QJsonDocument(obj).toJson() << QStringList() << false;
 
   addon["sha256"] = "aaa";
   obj["addons"] = QJsonArray{addon};
   QTest::addRow("invalid addon sha256")
-      << QJsonDocument(obj).toJson() << QStringList();
+      << QJsonDocument(obj).toJson() << QStringList() << false;
 
   addon["sha256"] =
       "142296a59cf2ef0d56086aca7d756a8424298af4fb3f236a36d5f263fd06fb0a";
   obj["addons"] = QJsonArray{addon};
   QTest::addRow("missing addon id")
-      << QJsonDocument(obj).toJson() << QStringList();
+      << QJsonDocument(obj).toJson() << QStringList() << false;
 
   addon["id"] = "foo";
   obj["addons"] = QJsonArray{addon};
   QTest::addRow("one addon")
-      << QJsonDocument(obj).toJson() << QStringList{"foo"};
+      << QJsonDocument(obj).toJson() << QStringList{"foo"} << true;
 
   QJsonObject addon2;
   addon2["id"] = "foobar";
@@ -51,16 +54,17 @@ void TestAddonIndex::update_data() {
       "142296a59cf2ef0d56086aca7d756a8424298af4fb3f236a36d5f263fd06fb0a";
   obj["addons"] = QJsonArray{addon, addon2};
   QTest::addRow("two addons")
-      << QJsonDocument(obj).toJson() << QStringList{"foo", "foobar"};
+      << QJsonDocument(obj).toJson() << QStringList{"foo", "foobar"} << true;
 
   obj["addons"] = QJsonArray{addon};
   QTest::addRow("back to one addon")
-      << QJsonDocument(obj).toJson() << QStringList{"foo"};
+      << QJsonDocument(obj).toJson() << QStringList{"foo"} << true;
 }
 
 void TestAddonIndex::update() {
   QFETCH(QByteArray, index);
   QFETCH(QStringList, expectedAddonIds);
+  QFETCH(bool, expectsSignal);
 
   SettingsHolder settingsHolder;
 
@@ -71,9 +75,7 @@ void TestAddonIndex::update() {
 
   ai.update(index, QByteArray("test signature"));
 
-  if (expectedAddonIds.isEmpty()) {
-    QTRY_COMPARE(indexUpdatedSpy.count(), 0);
-  } else {
+  if (expectsSignal) {
     QTRY_COMPARE(indexUpdatedSpy.count(), 1);
 
     QList<QVariant> arguments = indexUpdatedSpy.takeFirst();
@@ -85,6 +87,8 @@ void TestAddonIndex::update() {
     }
 
     QCOMPARE(addonIds, expectedAddonIds);
+  } else {
+    QTRY_COMPARE(indexUpdatedSpy.count(), 0);
   }
 }
 
@@ -110,7 +114,7 @@ void TestAddonIndex::testSignatureChecksCanBeToggled() {
   // We need to reset otherwise update
   // will bail early due to index not having changed.
   ad.testReset();
-  ai.update(QJsonDocument(index).toJson(), nullptr);
+  ai.update(QJsonDocument(index).toJson(), QByteArray());
 
   QTRY_COMPARE(indexUpdatedSpy.count(), 1);
 
@@ -119,12 +123,12 @@ void TestAddonIndex::testSignatureChecksCanBeToggled() {
   // We need to reset otherwise update
   // will bail early due to index not having changed.
   ad.testReset();
-  ai.update(QJsonDocument(index).toJson(), nullptr);
+  ai.update(QJsonDocument(index).toJson(), QByteArray());
 
   // Still one, no signals emitted. Validation should have failed.
   QTRY_COMPARE(indexUpdatedSpy.count(), 1);
 
-  // With a non null signature all is good.
+  // With a non empty signature all is good.
   ai.update(QJsonDocument(index).toJson(), QByteArray("test signature"));
   QTRY_COMPARE(indexUpdatedSpy.count(), 2);
 }

@@ -38,7 +38,7 @@ AddonDirectory::AddonDirectory() {
   }
 }
 
-bool AddonDirectory::getDirectory(QDir* dir) {
+bool AddonDirectory::getDirectory(QDir* dir) const {
   QDir addonDirectory(rootAppFolder());
   if (!addonDirectory.exists(ADDON_FOLDER)) {
     return false;
@@ -53,7 +53,8 @@ bool AddonDirectory::getDirectory(QDir* dir) {
   return true;
 }
 
-bool AddonDirectory::readFile(const QString& fileName, QByteArray* contents) {
+bool AddonDirectory::readFile(const QString& fileName,
+                              QByteArray* contents) const {
   QDir dir;
   if (!getDirectory(&dir)) {
     return false;
@@ -77,7 +78,7 @@ bool AddonDirectory::readFile(const QString& fileName, QByteArray* contents) {
 }
 
 bool AddonDirectory::writeToFile(const QString& fileName,
-                                 const QByteArray& contents) {
+                                 const QByteArray& contents) const {
   QDir dir;
   if (!getDirectory(&dir)) {
     return false;
@@ -104,7 +105,7 @@ bool AddonDirectory::writeToFile(const QString& fileName,
   return true;
 }
 
-bool AddonDirectory::deleteFile(const QString& fileName) {
+bool AddonDirectory::deleteFile(const QString& fileName) const {
   QDir dir;
   if (!getDirectory(&dir)) {
     return false;

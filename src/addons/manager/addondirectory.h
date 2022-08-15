@@ -13,17 +13,15 @@ class QDir;
 
 constexpr const char* ADDON_FOLDER = "addons";
 
-class AddonDirectory final : public QObject {
-  Q_OBJECT
-
+class AddonDirectory final {
  public:
   AddonDirectory();
 
-  bool getDirectory(QDir* dir);
+  bool getDirectory(QDir* dir) const;
 
-  bool readFile(const QString& fileName, QByteArray* contents);
-  bool writeToFile(const QString& fileName, const QByteArray& contents);
-  bool deleteFile(const QString& fileName);
+  bool readFile(const QString& fileName, QByteArray* contents) const;
+  bool writeToFile(const QString& fileName, const QByteArray& contents) const;
+  bool deleteFile(const QString& fileName) const;
 
 #ifdef UNIT_TEST
   void testReset();

@@ -34,6 +34,7 @@ Logger logger(LOG_MAIN, "AddonIndex");
 AddonIndex::AddonIndex(AddonDirectory* addonDirectory) {
   MVPN_COUNT_CTOR(AddonIndex);
 
+  Q_ASSERT(addonDirectory);
   m_addonDirectory = addonDirectory;
 }
 
@@ -92,14 +93,19 @@ bool AddonIndex::read(QByteArray& index, QByteArray& indexSignature) {
  * @param index The contents to write to the index file.
  * @param indexSignature The contents to write to the index signature file.
  */
-void AddonIndex::write(const QByteArray& index,
+bool AddonIndex::write(const QByteArray& index,
                        const QByteArray& indexSignature) {
-  m_addonDirectory->writeToFile(ADDON_INDEX_FILENAME, index);
-
-  if (Feature::get(Feature::Feature_addonSignature)->isSupported()) {
-    m_addonDirectory->writeToFile(ADDON_INDEX_SIGNATURE_FILENAME,
-                                  indexSignature);
+  if (!m_addonDirectory->writeToFile(ADDON_INDEX_FILENAME, index)) {
+    return false;
   }
+
+  if (Feature::get(Feature::Feature_addonSignature)->isSupported() &&
+      !m_addonDirectory->writeToFile(ADDON_INDEX_SIGNATURE_FILENAME,
+                                     indexSignature)) {
+    return false;
+  }
+
+  return true;
 }
 
 /**
@@ -131,14 +137,13 @@ void AddonIndex::update(const QByteArray& index,
     return;
   }
 
-  // Question: Should we not emit the signal in case write is unsuccessfull?
-  write(index, indexSignature);
+  if (!write(index, indexSignature)) {
+    logger.debug() << "Unable to write to index file";
+    return;
+  }
 
   QList<AddonData> addons = extractAddonsFromIndex(indexObj);
-
-  if (!addons.isEmpty()) {
-    emit indexUpdated(addons);
-  }
+  emit indexUpdated(addons);
 }
 
 /**
@@ -237,7 +242,8 @@ bool AddonIndex::validateIndexSignature(const QByteArray& index,
 }
 
 // static
-QList<AddonData> AddonIndex::extractAddonsFromIndex(QJsonObject indexObj) {
+QList<AddonData> AddonIndex::extractAddonsFromIndex(
+    const QJsonObject& indexObj) {
   QList<AddonData> addons;
   for (const QJsonValue item : indexObj["addons"].toArray()) {
     QJsonObject addon = item.toObject();
