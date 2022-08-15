@@ -43,9 +43,6 @@ include($$PWD/../../src/qmake/signature.pri)
 RESOURCES ~= 's/.*servers.qrc//g'
 
 HEADERS += \
-    ../../src/addondirectory.h \
-    ../../src/addonindex.h \
-    ../../src/addonmanager.h \
     ../../src/addons/addon.h \
     ../../src/addons/addondemo.h \
     ../../src/addons/addonguide.h \
@@ -60,6 +57,9 @@ HEADERS += \
     ../../src/addons/conditionwatchers/addonconditionwatchertimestart.h \
     ../../src/addons/conditionwatchers/addonconditionwatchertimeend.h \
     ../../src/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h \
+    ../../src/addons/manager/addondirectory.h \
+    ../../src/addons/manager/addonindex.h \
+    ../../src/addons/manager/addonmanager.h \
     ../../src/adjust/adjustfiltering.h \
     ../../src/adjust/adjustproxypackagehandler.h \
     ../../src/captiveportal/captiveportal.h \
@@ -176,9 +176,6 @@ HEADERS += \
     websocket/testpushmessage.h
 
 SOURCES += \
-    ../../src/addondirectory.cpp \
-    ../../src/addonindex.cpp \
-    ../../src/addonmanager.cpp \
     ../../src/addons/addon.cpp \
     ../../src/addons/addondemo.cpp \
     ../../src/addons/addonguide.cpp \
@@ -193,6 +190,9 @@ SOURCES += \
     ../../src/addons/conditionwatchers/addonconditionwatchertimestart.cpp \
     ../../src/addons/conditionwatchers/addonconditionwatchertimeend.cpp \
     ../../src/addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp \
+    ../../src/addons/manager/addondirectory.cpp \
+    ../../src/addons/manager/addonindex.cpp \
+    ../../src/addons/manager/addonmanager.cpp \
     ../../src/adjust/adjustfiltering.cpp \
     ../../src/adjust/adjustproxypackagehandler.cpp \
     ../../src/captiveportal/captiveportal.cpp \
