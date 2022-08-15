@@ -36,16 +36,7 @@ void CloseEventHandler::removeAllStackViews() {
     }
 
     Q_ASSERT(layer.m_type == Layer::eView);
-    QVariant property = layer.m_layer->property("visible");
-    if (!property.isValid()) {
-      logger.warning() << "Invalid visible property!!";
-      continue;
-    }
-
-    bool visible = property.toBool();
-    if (visible) {
-      emit goBack(layer.m_layer);
-    }
+    emit goBack(layer.m_layer);
   }
 }
 
