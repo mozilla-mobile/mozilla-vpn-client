@@ -68,6 +68,8 @@ void TestAddonIndex::update() {
 
   SettingsHolder settingsHolder;
 
+  settingsHolder.setFeaturesFlippedOn(QStringList{"addonSignature"});
+
   AddonDirectory ad;
   AddonIndex ai(&ad);
 
@@ -76,7 +78,7 @@ void TestAddonIndex::update() {
   ai.update(index, QByteArray("test signature"));
 
   if (expectsSignal) {
-    QTRY_COMPARE(indexUpdatedSpy.count(), 1);
+    QTRY_COMPARE_WITH_TIMEOUT(indexUpdatedSpy.count(), 1, 10000);
 
     QList<QVariant> arguments = indexUpdatedSpy.takeFirst();
     QList<AddonData> addonData = arguments.at(0).value<QList<AddonData>>();
@@ -88,7 +90,7 @@ void TestAddonIndex::update() {
 
     QCOMPARE(addonIds, expectedAddonIds);
   } else {
-    QTRY_COMPARE(indexUpdatedSpy.count(), 0);
+    QTRY_COMPARE_WITH_TIMEOUT(indexUpdatedSpy.count(), 0, 10000);
   }
 }
 
@@ -116,7 +118,7 @@ void TestAddonIndex::testSignatureChecksCanBeToggled() {
   ad.testReset();
   ai.update(QJsonDocument(index).toJson(), QByteArray());
 
-  QTRY_COMPARE(indexUpdatedSpy.count(), 1);
+  QTRY_COMPARE_WITH_TIMEOUT(indexUpdatedSpy.count(), 1, 10000);
 
   settingsHolder.setFeaturesFlippedOn(QStringList{"addonSignature"});
 
@@ -126,11 +128,11 @@ void TestAddonIndex::testSignatureChecksCanBeToggled() {
   ai.update(QJsonDocument(index).toJson(), QByteArray());
 
   // Still one, no signals emitted. Validation should have failed.
-  QTRY_COMPARE(indexUpdatedSpy.count(), 1);
+  QTRY_COMPARE_WITH_TIMEOUT(indexUpdatedSpy.count(), 1, 10000);
 
   // With a non empty signature all is good.
   ai.update(QJsonDocument(index).toJson(), QByteArray("test signature"));
-  QTRY_COMPARE(indexUpdatedSpy.count(), 2);
+  QTRY_COMPARE_WITH_TIMEOUT(indexUpdatedSpy.count(), 2, 10000);
 }
 
 static TestAddonIndex s_testAddonIndex;
