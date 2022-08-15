@@ -41,28 +41,25 @@ void TaskAddonIndex::run() {
             });
   }
 
+  // Index file signature
   if (Feature::get(Feature::Feature_addonSignature)->isSupported()) {
-    // Index file signature
-    {
-      NetworkRequest* request = NetworkRequest::createForGetUrl(
-          this,
-          QString("%1manifest.json.sign").arg(Constants::addonSourceUrl()),
-          200);
+    NetworkRequest* request = NetworkRequest::createForGetUrl(
+        this, QString("%1manifest.json.sign").arg(Constants::addonSourceUrl()),
+        200);
 
-      connect(request, &NetworkRequest::requestFailed, this,
-              [this](QNetworkReply::NetworkError error, const QByteArray&) {
-                logger.error() << "Get addon index signature failed" << error;
-                emit completed();
-              });
+    connect(request, &NetworkRequest::requestFailed, this,
+            [this](QNetworkReply::NetworkError error, const QByteArray&) {
+              logger.error() << "Get addon index signature failed" << error;
+              emit completed();
+            });
 
-      connect(request, &NetworkRequest::requestCompleted, this,
-              [this](const QByteArray& data) {
-                logger.debug() << "Get addon index signature completed";
+    connect(request, &NetworkRequest::requestCompleted, this,
+            [this](const QByteArray& data) {
+              logger.debug() << "Get addon index signature completed";
 
-                m_indexSignData = data;
-                maybeComplete();
-              });
-    }
+              m_indexSignData = data;
+              maybeComplete();
+            });
   }
 }
 
