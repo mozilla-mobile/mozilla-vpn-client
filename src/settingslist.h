@@ -31,14 +31,6 @@
 
 // Please! Keep the alphabetic order!
 
-SETTING_STRINGLIST(dismissedAddonMessages,      // getter
-                   setDismissedAddonMessages,   // setter
-                   hasDismissedAddonMessages,   // has
-                   "addons/dismissedMessages",  // key
-                   QStringList(),               // default value
-                   true                         // remove when reset
-)
-
 SETTING_BOOL(captivePortalAlert,     // getter
              setCaptivePortalAlert,  // setter
              hasCaptivePortalAlert,  // has
@@ -110,6 +102,14 @@ SETTING_BYTEARRAY(devices,     // getter
                   "devices",   // key
                   "",          // default value
                   true         // remove when reset
+)
+
+SETTING_STRINGLIST(dismissedAddonMessages,      // getter
+                   setDismissedAddonMessages,   // setter
+                   hasDismissedAddonMessages,   // has
+                   "addons/dismissedMessages",  // key
+                   QStringList(),               // default value
+                   true                         // remove when reset
 )
 
 SETTING_STRINGLIST(featuresFlippedOn,     // getter
@@ -273,6 +273,14 @@ SETTING_STRING(publicKeyJournal,     // getter
                "publicKeyJournal",   // key
                "",                   // default value
                true                  // remove when reset
+)
+
+SETTING_STRINGLIST(readAddonMessages,      // getter
+                   setReadAddonMessages,   // setter
+                   hasReadAddonMessages,   // has
+                   "addons/readMessages",  // key
+                   QStringList(),          // default value
+                   true                    // remove when reset
 )
 
 SETTING_STRINGLIST(recentConnections,     // getter

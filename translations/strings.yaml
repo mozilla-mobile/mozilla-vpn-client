@@ -677,6 +677,9 @@ tutorialPopup:
   tutorialLeaveSubtitle: Looks like you haven’t finished the tutorial quite yet. Would you like to continue and finish now or quit and come back later?
   tutorialLeavePrimaryButtonLabel: Resume tutorial
 
+inAppMessaging:
+  dateTimeYesterday: Yesterday
+
 global:
   expand:
     value: Expand

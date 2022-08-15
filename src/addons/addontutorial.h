@@ -6,6 +6,7 @@
 #define ADDONTUTORIAL_H
 
 #include "addon.h"
+#include "addonproperty.h"
 
 class QJsonObject;
 class QQuickItem;
@@ -15,9 +16,10 @@ class AddonTutorial final : public Addon {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AddonTutorial)
 
-  Q_PROPERTY(QString titleId MEMBER m_titleId CONSTANT)
-  Q_PROPERTY(QString subtitleId MEMBER m_subtitleId CONSTANT)
-  Q_PROPERTY(QString completionMessageId MEMBER m_completionMessageId CONSTANT)
+  ADDON_PROPERTY(title, m_title, retranslationCompleted)
+  ADDON_PROPERTY(subtitle, m_subtitle, retranslationCompleted)
+  ADDON_PROPERTY(completionMessage, m_completionMessage, retranslationCompleted)
+
   Q_PROPERTY(QString image MEMBER m_image CONSTANT)
   Q_PROPERTY(bool highlighted READ highlighted CONSTANT)
   Q_PROPERTY(bool advanced MEMBER m_advanced CONSTANT)
@@ -48,9 +50,9 @@ class AddonTutorial final : public Addon {
   bool maybeStop(bool completed = false);
 
  private:
-  QString m_titleId;
-  QString m_subtitleId;
-  QString m_completionMessageId;
+  AddonProperty m_title;
+  AddonProperty m_subtitle;
+  AddonProperty m_completionMessage;
   QString m_image;
 
   QList<TutorialStep*> m_steps;

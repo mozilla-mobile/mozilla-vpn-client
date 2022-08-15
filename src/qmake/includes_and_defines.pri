@@ -13,6 +13,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
 
 INCLUDEPATH += \
+            composer \
             hacl-star \
             hacl-star/kremlin \
             hacl-star/kremlin/minimal \

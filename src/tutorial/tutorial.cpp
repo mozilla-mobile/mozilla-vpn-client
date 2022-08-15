@@ -79,25 +79,24 @@ void Tutorial::stop() {
 }
 
 void Tutorial::requireTooltipNeeded(AddonTutorial* tutorial,
-                                    const QString& tooltipText,
+                                    AddonProperty* property,
                                     QObject* targetElement) {
   Q_ASSERT(tutorial);
   Q_ASSERT(tutorial == m_currentTutorial);
-  emit tooltipNeeded(tooltipText, targetElement);
+  emit tooltipNeeded(property, targetElement);
 
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::tutorialStepViewed,
-      {{"tutorial_id", m_currentTutorial->id()}, {"step_id", tooltipText}});
+      {{"tutorial_id", m_currentTutorial->id()}, {"step_id", property->get()}});
 }
 
-void Tutorial::requireTutorialCompleted(AddonTutorial* tutorial,
-                                        const QString& completionMessageText) {
+void Tutorial::requireTutorialCompleted(AddonTutorial* tutorial) {
   Q_ASSERT(tutorial);
   Q_ASSERT(tutorial == m_currentTutorial);
-  emit tutorialCompleted(completionMessageText);
+  emit tutorialCompleted(tutorial);
 
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::tutorialCompleted, {{"id", m_currentTutorial->id()}});
+      GleanSample::tutorialCompleted, {{"id", tutorial->id()}});
 }
 
 void Tutorial::requireTooltipShown(AddonTutorial* tutorial, bool shown) {
