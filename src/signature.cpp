@@ -23,7 +23,7 @@ bool verify_rsa(const char* publicKey, size_t pubKeyLen, const char* message,
 // static
 bool Signature::verify(const QByteArray& publicKey, const QByteArray& content,
                        const QByteArray& signature) {
-  if (publicKey == nullptr || content == nullptr || signature == nullptr) {
+  if (signature.isEmpty()) {
     return false;
   }
 

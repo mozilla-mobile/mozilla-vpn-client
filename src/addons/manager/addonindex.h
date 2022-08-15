@@ -32,17 +32,17 @@ class AddonIndex final : public QObject {
   Q_DISABLE_COPY_MOVE(AddonIndex);
 
  public:
-  AddonIndex(AddonDirectory* dir);
+  explicit AddonIndex(AddonDirectory* dir);
 
   bool getOnDiskAddonsList(QList<AddonData>* addonsList);
   void update(const QByteArray& index, const QByteArray& indexSignature);
 
  signals:
-  void indexUpdated(QList<AddonData> addons);
+  void indexUpdated(const QList<AddonData>& addons);
 
  private:
   bool read(QByteArray& index, QByteArray& indexSignature);
-  void write(const QByteArray& index, const QByteArray& indexSignature);
+  bool write(const QByteArray& index, const QByteArray& indexSignature);
   bool validate(const QByteArray& index, const QByteArray& indexSignature,
                 QJsonObject* indexObj);
 
@@ -52,10 +52,10 @@ class AddonIndex final : public QObject {
   static bool validateIndexSignature(const QByteArray& index,
                                      const QByteArray& indexSignature);
 
-  static QList<AddonData> extractAddonsFromIndex(QJsonObject indexObj);
+  static QList<AddonData> extractAddonsFromIndex(const QJsonObject& indexObj);
 
  private:
-  AddonDirectory* m_addonDirectory;
+  AddonDirectory* m_addonDirectory = nullptr;
 };
 
 #endif  // ADDONINDEX_H
