@@ -23,6 +23,49 @@
 namespace {
 FeatureModel* s_instance = nullptr;
 Logger logger(LOG_MODEL, "FeatureModel");
+
+void featureToggleOff(const QString& feature, bool add_to_off) {
+  auto const settings = SettingsHolder::instance();
+
+  QStringList flags = settings->featuresFlippedOff();
+  if (add_to_off) {
+    Q_ASSERT(!flags.contains(feature));
+    flags.append(feature);
+  } else {
+    Q_ASSERT(flags.contains(feature));
+    flags.removeAll(feature);
+  }
+
+  settings->setFeaturesFlippedOff(flags);
+
+  flags = settings->featuresFlippedOn();
+  if (flags.contains(feature)) {
+    flags.removeAll(feature);
+    settings->setFeaturesFlippedOn(flags);
+  }
+}
+
+void featureToggleOn(const QString& feature, bool add_to_on) {
+  auto const settings = SettingsHolder::instance();
+
+  QStringList flags = settings->featuresFlippedOn();
+  if (add_to_on) {
+    Q_ASSERT(!flags.contains(feature));
+    flags.append(feature);
+  } else {
+    Q_ASSERT(flags.contains(feature));
+    flags.removeAll(feature);
+  }
+
+  settings->setFeaturesFlippedOn(flags);
+
+  flags = settings->featuresFlippedOff();
+  if (flags.contains(feature)) {
+    flags.removeAll(feature);
+    settings->setFeaturesFlippedOff(flags);
+  }
+}
+
 }  // namespace
 
 FeatureModel* FeatureModel::instance() {
@@ -32,8 +75,8 @@ FeatureModel* FeatureModel::instance() {
   return s_instance;
 }
 
-void FeatureModel::toggleForcedEnable(const QString& feature) {
-  logger.debug() << "Flipping on" << feature;
+void FeatureModel::toggle(const QString& feature) {
+  logger.debug() << "Toggle feature" << feature;
 
   const Feature* f = Feature::get(feature);
   if (!f) {
@@ -41,73 +84,46 @@ void FeatureModel::toggleForcedEnable(const QString& feature) {
     return;
   }
 
-  if (!f->isFlippableOn()) {
-    logger.debug() << "Feature" << feature << "cannot be flipped on";
+  // On -> off
+  if (f->isSupported()) {
+    if (f->isSupportedIgnoringFlip()) {
+      // On -> On(+flipped-off)
+      if (!f->isFlippableOff()) {
+        logger.error() << "This feature should not be toggleable!";
+        return;
+      }
+
+      featureToggleOff(feature, true);
+      emit dataChanged(createIndex(0, 0),
+                       createIndex(Feature::getAll().size(), 0));
+      return;
+    }
+
+    // Off(+flipped-on) -> Off
+    featureToggleOn(feature, false);
+    emit dataChanged(createIndex(0, 0),
+                     createIndex(Feature::getAll().size(), 0));
     return;
   }
 
-  if (f->isSupportedIgnoringFlip()) {
-    logger.debug() << "This is an internal bug. Why flipping on a pref that is "
-                      "already supported?";
-    return;
-  }
-
-  auto const settings = SettingsHolder::instance();
-  QStringList flags = settings->featuresFlippedOn();
-
-  logger.debug() << "Got List - size:" << flags.size();
-
-  if (flags.contains(feature)) {
-    logger.debug() << "Contains yes -> remove" << flags.size();
-    flags.removeAll(feature);
-  } else {
-    logger.debug() << "Contains no -> add" << flags.size();
-    flags.append(feature);
-  }
-
-  settings->setFeaturesFlippedOn(flags);
-
-  logger.debug() << "Feature Flipped! new size:" << flags.size();
-  emit dataChanged(createIndex(0, 0), createIndex(Feature::getAll().size(), 0));
-}
-
-void FeatureModel::toggleForcedDisable(const QString& feature) {
-  logger.debug() << "Flipping off" << feature;
-
-  const Feature* f = Feature::get(feature);
-  if (!f) {
-    logger.debug() << "Feature" << feature << "does not exist";
-    return;
-  }
-
-  if (!f->isFlippableOff()) {
-    logger.debug() << "Feature" << feature << "cannot be flipped off";
-    return;
-  }
-
+  // Off -> on
   if (!f->isSupportedIgnoringFlip()) {
-    logger.debug() << "This is an internal bug. Why flipping off a pref that "
-                      "is already supported?";
+    // Off -> on((+flipped-off)
+    if (!f->isFlippableOn()) {
+      logger.error() << "This feature should not be toggleable!";
+      return;
+    }
+
+    featureToggleOn(feature, true);
+    emit dataChanged(createIndex(0, 0),
+                     createIndex(Feature::getAll().size(), 0));
     return;
   }
 
-  auto const settings = SettingsHolder::instance();
-  QStringList flags = settings->featuresFlippedOff();
-
-  logger.debug() << "Got List - size:" << flags.size();
-
-  if (flags.contains(feature)) {
-    logger.debug() << "Contains yes -> remove" << flags.size();
-    flags.removeAll(feature);
-  } else {
-    logger.debug() << "Contains no -> add" << flags.size();
-    flags.append(feature);
-  }
-
-  settings->setFeaturesFlippedOff(flags);
-
-  logger.debug() << "Feature Flipped! new size:" << flags.size();
+  // On(+flipped-off) -> On
+  featureToggleOff(feature, false);
   emit dataChanged(createIndex(0, 0), createIndex(Feature::getAll().size(), 0));
+  return;
 }
 
 QHash<int, QByteArray> FeatureModel::roleNames() const {
