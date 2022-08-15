@@ -4,7 +4,8 @@
 
 
 import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
-const octokit = new Octokit({  });
+const octokit = new Octokit({ });
+const static_branch_info = fetch("./branch_runs.json").then(r=>r.json());
 
 const TASKCLUSTER_INSTANCE ="https://firefox-ci-tc.services.mozilla.com/"
 const TASKCLUSTER_TASK_NAME = "build-wasm/opt";
@@ -28,6 +29,8 @@ class TaskclusterFrame extends HTMLElement{
     /** @type {String} */
     taskID = "";
 
+    #static_info = {};
+
     artifact_url="";
 
     constructor(){
@@ -48,6 +51,8 @@ class TaskclusterFrame extends HTMLElement{
         this.#dom = this.attachShadow({mode: 'open'});
         this.render();
         this.update();
+
+        this.#static_info = await static_branch_info
     }
 
 
@@ -71,26 +76,38 @@ class TaskclusterFrame extends HTMLElement{
         if(this.#sha == ""){
             return;
         }
-        this.#iframe.src="about:blank";
-
-        const wasm_run = await this.getData(this.#sha);
-        if(wasm_run == undefined){ 
-            this.#iframe.src="about:blank";
+        this.taskID = await this.getTaskID(this.#sha);
+        if(this.taskID == ""){
+            alert("Unable to find a Task for this branch");
+            return;
+        }
+        const task_status = await fetch(`${TASKCLUSTER_INSTANCE}/api/queue/v1/task/${this.taskID}/status`).then((r)=>r.json());
+        if(task_status?.status?.state != "completed"){
+            alert("Task is missing or not complete");
+            return;
         }
 
-        const task_url = wasm_run.details_url;
-        const task_id = task_url.split("/").at(-1);
-
-        this.taskID = task_id;
-        this.artifact_url = `${TASKCLUSTER_INSTANCE}api/queue/v1/task/${task_id}/artifacts/public/build/index.html`;
-        this.#iframe.src = this.artifact_url;
-
+        this.#iframe.src =`${TASKCLUSTER_INSTANCE}api/queue/v1/task/${this.taskID}/artifacts/public/build/index.html`;
         this.dispatchEvent(new CustomEvent("taskChanged", {}));
     }
 
+    async getTaskID(sha){
+        // Before doing any api call, see if we have a ref for that sha in the static files.
+        const static_data = this.#static_info[sha]
+        if(static_data && static_data.task_status == "ok" && static_data.task_id != ""){
+            return static_data.task_id;
+        }
 
+        const wasm_run = await this.getGithubRun(sha);
+        if(wasm_run == undefined){ 
+            return "";
+        }
+        const task_url = wasm_run.details_url;
+        const task_id = task_url.split("/").at(-1);
+        return task_id;
+    }
 
-    async getData(sha){
+    async getGithubRun(sha){
         const maybe_stored = localStorage.getItem(sha);
         if(maybe_stored){
             return JSON.parse(maybe_stored);
