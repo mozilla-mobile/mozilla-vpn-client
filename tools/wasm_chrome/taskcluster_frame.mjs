@@ -81,12 +81,7 @@ class TaskclusterFrame extends HTMLElement{
             alert("Unable to find a Task for this branch");
             return;
         }
-        const task_status = await fetch(`${TASKCLUSTER_INSTANCE}/api/queue/v1/task/${this.taskID}/status`).then((r)=>r.json());
-        if(task_status?.status?.state != "completed"){
-            alert("Task is missing or not complete");
-            return;
-        }
-
+ 
         this.#iframe.src =`${TASKCLUSTER_INSTANCE}api/queue/v1/task/${this.taskID}/artifacts/public/build/index.html`;
         this.dispatchEvent(new CustomEvent("taskChanged", {}));
     }
