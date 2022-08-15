@@ -53,6 +53,8 @@ HEADERS += \
     ../../src/addons/conditionwatchers/addonconditionwatcher.h \
     ../../src/addons/conditionwatchers/addonconditionwatchergroup.h \
     ../../src/addons/conditionwatchers/addonconditionwatcherlocales.h \
+    ../../src/addons/conditionwatchers/addonconditionwatchertimestart.h \
+    ../../src/addons/conditionwatchers/addonconditionwatchertimeend.h \
     ../../src/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h \
     ../../src/adjust/adjustfiltering.h \
     ../../src/adjust/adjustproxypackagehandler.h \
@@ -176,6 +178,8 @@ SOURCES += \
     ../../src/addons/conditionwatchers/addonconditionwatcher.cpp \
     ../../src/addons/conditionwatchers/addonconditionwatchergroup.cpp \
     ../../src/addons/conditionwatchers/addonconditionwatcherlocales.cpp \
+    ../../src/addons/conditionwatchers/addonconditionwatchertimestart.cpp \
+    ../../src/addons/conditionwatchers/addonconditionwatchertimeend.cpp \
     ../../src/addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp \
     ../../src/adjust/adjustfiltering.cpp \
     ../../src/adjust/adjustproxypackagehandler.cpp \

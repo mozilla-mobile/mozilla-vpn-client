@@ -9,6 +9,8 @@
 #include "../../src/addons/addontutorial.h"
 #include "../../src/addons/conditionwatchers/addonconditionwatchergroup.h"
 #include "../../src/addons/conditionwatchers/addonconditionwatcherlocales.h"
+#include "../../src/addons/conditionwatchers/addonconditionwatchertimeend.h"
+#include "../../src/addons/conditionwatchers/addonconditionwatchertimestart.h"
 #include "../../src/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h"
 #include "../../src/settingsholder.h"
 #include "../../src/qmlengineholder.h"
@@ -137,6 +139,39 @@ void TestAddon::conditions_data() {
     QTest::addRow("max client version ok")
         << obj << true << "" << QVariant("woow");
   }
+
+  {
+    QJsonObject obj;
+    obj["trigger_time"] = 1;
+    QTest::addRow("trigger time") << obj << true << "" << QVariant("woow");
+  }
+
+  // All of these conditions are not considered in `evaluteConditions` becaue
+  // they are dynamic.
+  {
+    QJsonObject obj;
+    obj["start_time"] = 1;
+    QTest::addRow("start time (valid)")
+        << obj << true << "" << QVariant("woow");
+  }
+  {
+    QJsonObject obj;
+    obj["start_time"] = QDateTime::currentSecsSinceEpoch() + 1;
+    QTest::addRow("start time (expired)")
+        << obj << true << "" << QVariant("woow");
+  }
+
+  {
+    QJsonObject obj;
+    obj["end_time"] = QDateTime::currentSecsSinceEpoch() + 1;
+    QTest::addRow("end time (valid)") << obj << true << "" << QVariant("woow");
+  }
+  {
+    QJsonObject obj;
+    obj["end_time"] = QDateTime::currentSecsSinceEpoch() - 1;
+    QTest::addRow("end time (expired)")
+        << obj << true << "" << QVariant("woow");
+  }
 }
 
 void TestAddon::conditions() {
@@ -197,6 +232,50 @@ void TestAddon::conditionWatcher_group() {
   SettingsHolder settingsHolder;
 
   QObject parent;
+  AddonConditionWatcher* acw1 =
+      AddonConditionWatcherTriggerTimeSecs::maybeCreate(&parent, 1);
+  QVERIFY(!!acw1);
+  QVERIFY(!acw1->conditionApplied());
+
+  AddonConditionWatcher* acw2 =
+      AddonConditionWatcherTriggerTimeSecs::maybeCreate(&parent, 2);
+  QVERIFY(!!acw2);
+  QVERIFY(!acw2->conditionApplied());
+
+  AddonConditionWatcher* acwGroup = new AddonConditionWatcherGroup(
+      &parent, QList<AddonConditionWatcher*>{acw1, acw2});
+  QVERIFY(!acwGroup->conditionApplied());
+
+  QEventLoop loop;
+  bool currentStatus = false;
+  connect(acw1, &AddonConditionWatcher::conditionChanged, [&](bool status) {
+    currentStatus = status;
+    loop.exit();
+  });
+  loop.exec();
+
+  QVERIFY(currentStatus);
+  QVERIFY(acw1->conditionApplied());
+  QVERIFY(!acw2->conditionApplied());
+  QVERIFY(!acwGroup->conditionApplied());
+
+  currentStatus = false;
+  connect(acw2, &AddonConditionWatcher::conditionChanged, [&](bool status) {
+    currentStatus = status;
+    loop.exit();
+  });
+  loop.exec();
+
+  QVERIFY(currentStatus);
+  QVERIFY(acw1->conditionApplied());
+  QVERIFY(acw2->conditionApplied());
+  QVERIFY(acwGroup->conditionApplied());
+}
+
+void TestAddon::conditionWatcher_triggerTime() {
+  SettingsHolder settingsHolder;
+
+  QObject parent;
   AddonConditionWatcher* acw =
       AddonConditionWatcherTriggerTimeSecs::maybeCreate(&parent, 1);
   QVERIFY(!!acw);
@@ -215,44 +294,50 @@ void TestAddon::conditionWatcher_group() {
   QVERIFY(acw->conditionApplied());
 }
 
-void TestAddon::conditionWatcher_triggerTime() {
+void TestAddon::conditionWatcher_startTime() {
   SettingsHolder settingsHolder;
 
   QObject parent;
-
-  AddonConditionWatcher* acw1 =
-      AddonConditionWatcherLocales::maybeCreate(&parent, QStringList{"it"});
-  QVERIFY(!!acw1);
-
-  AddonConditionWatcher* acw = new AddonConditionWatcherGroup(
-      &parent, QList<AddonConditionWatcher*>{acw1});
-  QVERIFY(!!acw);
-
-  QVERIFY(!acw->conditionApplied());
-
-  settingsHolder.setLanguageCode("it");
+  AddonConditionWatcher* acw = new AddonConditionWatcherTimeStart(&parent, 0);
   QVERIFY(acw->conditionApplied());
 
-  settingsHolder.setLanguageCode("ru");
+  acw = new AddonConditionWatcherTimeStart(
+      &parent, QDateTime::currentSecsSinceEpoch() + 1);
   QVERIFY(!acw->conditionApplied());
 
-  settingsHolder.setLanguageCode("it-IT");
-  QVERIFY(acw->conditionApplied());
+  QEventLoop loop;
+  bool currentStatus = false;
+  connect(acw, &AddonConditionWatcher::conditionChanged, [&](bool status) {
+    currentStatus = status;
+    loop.exit();
+  });
+  loop.exec();
 
-  settingsHolder.setLanguageCode("en");
+  QVERIFY(currentStatus);
+  QVERIFY(acw->conditionApplied());
+}
+
+void TestAddon::conditionWatcher_endTime() {
+  SettingsHolder settingsHolder;
+
+  QObject parent;
+  AddonConditionWatcher* acw = new AddonConditionWatcherTimeEnd(&parent, 0);
   QVERIFY(!acw->conditionApplied());
 
-  settingsHolder.setLanguageCode("it_RU");
+  acw = new AddonConditionWatcherTimeEnd(
+      &parent, QDateTime::currentSecsSinceEpoch() + 1);
   QVERIFY(acw->conditionApplied());
 
-  QSignalSpy signalSpy(acw, &AddonConditionWatcher::conditionChanged);
-  QCOMPARE(signalSpy.count(), 0);
-  settingsHolder.setLanguageCode("en");
-  QCOMPARE(signalSpy.count(), 1);
-  settingsHolder.setLanguageCode("it_RU");
-  QCOMPARE(signalSpy.count(), 2);
-  settingsHolder.setLanguageCode("it");
-  QCOMPARE(signalSpy.count(), 2);
+  QEventLoop loop;
+  bool currentStatus = false;
+  connect(acw, &AddonConditionWatcher::conditionChanged, [&](bool status) {
+    currentStatus = status;
+    loop.exit();
+  });
+  loop.exec();
+
+  QVERIFY(!currentStatus);
+  QVERIFY(!acw->conditionApplied());
 }
 
 void TestAddon::guide_create_data() {

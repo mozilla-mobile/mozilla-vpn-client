@@ -11,6 +11,8 @@
 #include "conditionwatchers/addonconditionwatchergroup.h"
 #include "conditionwatchers/addonconditionwatcherlocales.h"
 #include "conditionwatchers/addonconditionwatchertriggertimesecs.h"
+#include "conditionwatchers/addonconditionwatchertimestart.h"
+#include "conditionwatchers/addonconditionwatchertimeend.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
@@ -225,6 +227,24 @@ QList<ConditionCallback> s_conditionCallbacks{
      [](QObject* parent, const QJsonValue& value) -> AddonConditionWatcher* {
        return AddonConditionWatcherTriggerTimeSecs::maybeCreate(
            parent, value.toInteger());
+     }},
+
+    {"start_time",
+     [](const QJsonValue&) -> bool {
+       // dynamic condition
+       return true;
+     },
+     [](QObject* parent, const QJsonValue& value) -> AddonConditionWatcher* {
+       return new AddonConditionWatcherTimeStart(parent, value.toInteger());
+     }},
+
+    {"end_time",
+     [](const QJsonValue&) -> bool {
+       // dynamic condition
+       return true;
+     },
+     [](QObject* parent, const QJsonValue& value) -> AddonConditionWatcher* {
+       return new AddonConditionWatcherTimeEnd(parent, value.toInteger());
      }},
 };
 

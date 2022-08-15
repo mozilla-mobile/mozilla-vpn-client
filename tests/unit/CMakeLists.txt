@@ -54,6 +54,10 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchergroup.h
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherlocales.cpp
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherlocales.h
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertimeend.cpp
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertimeend.h
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertimestart.cpp
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertimestart.h
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h
     ${MVPN_SOURCE_DIR}/adjust/adjustfiltering.cpp
