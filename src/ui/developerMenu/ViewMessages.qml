@@ -53,6 +53,7 @@ Item {
                     function showMessageContent(addon) {
                         const list = [];
                         list.push("Translate title: " + addon.title);
+                        list.push("Is read: " + addon.isRead);
                         list.push("Blocks: " + addon.composer.blocks.length);
                         return list.join("\n");
                     }
@@ -66,7 +67,11 @@ Item {
                     Layout.minimumHeight: VPNTheme.theme.rowHeight * 1.5
 
                     onClicked: {
-                       addon.dismiss();
+                       if (addon.isRead) {
+                         addon.dismiss();
+                       } else {
+                         addon.maskAsRead();
+                       }
                     }
                 }
             }
