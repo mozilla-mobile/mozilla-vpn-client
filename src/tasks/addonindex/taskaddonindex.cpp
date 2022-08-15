@@ -76,6 +76,6 @@ void TaskAddonIndex::maybeComplete() {
     return;
   }
 
-  AddonManager::instance()->index()->update(m_indexData, m_indexSignData);
+  AddonManager::instance()->updateIndex(m_indexData, m_indexSignData);
   emit completed();
 }
