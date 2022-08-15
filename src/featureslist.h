@@ -247,14 +247,6 @@ FEATURE_SIMPLE(subscriptionManagement,     // Feature ID
                QStringList(),              // feature dependencies
                FeatureCallback_true)
 
-FEATURE_SIMPLE(tipsAndTricks,      // Feature ID
-               "Tips and tricks",  // Feature name
-               "2.9",              // released
-               false,              // Can be flipped on
-               true,               // Can be flipped off
-               QStringList(),      // feature dependencies
-               FeatureCallback_false)
-
 FEATURE_SIMPLE(unsecuredNetworkNotification,      // Feature ID
                "Unsecured network notification",  // Feature name
                "2.2",                             // released
