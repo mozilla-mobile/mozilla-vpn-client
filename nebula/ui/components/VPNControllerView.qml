@@ -709,4 +709,15 @@ Item {
         radius: VPNTheme.theme.cornerRadius * 2
     }
 
+    Component.onCompleted: VPNCloseEventHandler.addView(connectionInfoScreen)
+
+    Connections {
+        function onGoBack(item) {
+            if (item === connectionInfoScreen && connectionInfoScreen.isOpen) {
+                closeConnectionInfo();
+            }
+        }
+
+        target: VPNCloseEventHandler
+    }
 }

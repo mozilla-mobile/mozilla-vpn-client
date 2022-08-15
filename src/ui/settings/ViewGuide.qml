@@ -241,7 +241,7 @@ Item {
 
     Connections {
         function onGoBack(item) {
-            if (item === root)
+            if (item === root && root.visible)
                 mainStackView.pop();
 
         }

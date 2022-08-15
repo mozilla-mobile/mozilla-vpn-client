@@ -155,7 +155,7 @@ Item {
     Connections {
         target: VPNCloseEventHandler
         function onGoBack(item) {
-            if (item !== onboardingPanel) {
+            if (item !== onboardingPanel || !onboardingPanel.visible) {
                 return;
             }
 
