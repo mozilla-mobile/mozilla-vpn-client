@@ -123,7 +123,7 @@ Item {
 
     Connections {
         function onGoBack(item) {
-            if (item === logs)
+            if (item === logs && logs.visible)
                 mainStackView.pop();
 
         }
