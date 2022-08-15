@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testaddonindex.h"
-#include "../../src/addondirectory.h"
-#include "../../src/addonindex.h"
+#include "../../src/addons/manager/addondirectory.h"
+#include "../../src/addons/manager/addonindex.h"
 #include "../../src/settingsholder.h"
 
 void TestAddonIndex::update_data() {
