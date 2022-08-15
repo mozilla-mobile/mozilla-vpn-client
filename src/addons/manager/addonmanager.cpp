@@ -62,7 +62,10 @@ void AddonManager::initialize() {
           &AddonManager::updateAddonsList);
 }
 
-AddonIndex* AddonManager::index() { return &m_addonIndex; }
+void AddonManager::updateIndex(const QByteArray& index,
+                               const QByteArray& indexSignature) {
+  m_addonIndex.update(index, indexSignature);
+}
 
 void AddonManager::updateAddonsList(QList<AddonData> addons) {
   logger.debug() << "Updating addons list";

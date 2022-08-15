@@ -139,6 +139,7 @@ void AddonDirectory::testReset() {
   dir.setNameFilters(QStringList() << "*");
   dir.setFilter(QDir::Files);
   foreach (QString dirFile, dir.entryList()) {
+    // This comment is here to make the linter happy.
     dir.remove(dirFile);
   }
 }

@@ -43,7 +43,7 @@ class AddonManager final : public QAbstractListModel {
 
   void forEach(std::function<void(Addon* addon)>&& callback);
 
-  AddonIndex* index();
+  void updateIndex(const QByteArray& index, const QByteArray& indexSignature);
 
 #ifdef UNIT_TEST
   QStringList addonIds() const;
