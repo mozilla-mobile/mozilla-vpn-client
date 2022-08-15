@@ -13,6 +13,8 @@ SOURCES += \
         addons/conditionwatchers/addonconditionwatcher.cpp \
         addons/conditionwatchers/addonconditionwatchergroup.cpp \
         addons/conditionwatchers/addonconditionwatcherlocales.cpp \
+        addons/conditionwatchers/addonconditionwatchertimeend.cpp \
+        addons/conditionwatchers/addonconditionwatchertimestart.cpp \
         addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp \
         apppermission.cpp \
         authenticationlistener.cpp \
@@ -168,6 +170,8 @@ HEADERS += \
         addons/addontutorial.h \
         addons/conditionwatchers/addonconditionwatcher.h \
         addons/conditionwatchers/addonconditionwatcherlocales.h \
+        addons/conditionwatchers/addonconditionwatchertimeend.h \
+        addons/conditionwatchers/addonconditionwatchertimestart.h \
         addons/conditionwatchers/addonconditionwatchertriggertimesecs.h \
         addons/conditionwatchers/addonconditionwatchergroup.h \
         appimageprovider.h \
