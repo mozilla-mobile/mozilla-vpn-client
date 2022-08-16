@@ -193,14 +193,6 @@ Window {
 
 /* TODO
     Connections {
-        target: VPNAddonManager
-        function onRunAddon(addon) {
-            console.log("Loading addon", addon.name);
-            mainStackView.push("qrc:/ui/views/ViewAddon.qml", { addon })
-        }
-    }
-
-    Connections {
         target: VPNSettings
         enabled: Qt.platform.os != "android"
         function onGleanEnabledChanged() {

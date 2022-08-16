@@ -4,7 +4,6 @@
 
 SOURCES += \
         addons/addon.cpp \
-        addons/addondemo.cpp \
         addons/addonguide.cpp \
         addons/addoni18n.cpp \
         addons/addonmessage.cpp \
@@ -171,7 +170,6 @@ SOURCES += \
 
 HEADERS += \
         addons/addon.h \
-        addons/addondemo.h \
         addons/addonguide.h \
         addons/addoni18n.h \
         addons/addonmessage.h \
