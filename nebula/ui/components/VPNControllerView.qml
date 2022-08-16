@@ -572,7 +572,7 @@ Item {
             }
 
             VPN.recordGleanEvent("settingsViewOpened");
-            mainStackView.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate)
+            VPNNavigator.requestScreen(VPNNavigator.ScreenSettings)
 
         }
 

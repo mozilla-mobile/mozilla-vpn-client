@@ -7,6 +7,7 @@
 #include "authenticationinapp/authenticationinapp.h"
 #include "constants.h"
 #include "dnshelper.h"
+#include "frontend/navigator.h"
 #include "iaphandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -1440,7 +1441,7 @@ void MozillaVPN::requestSettings() {
   logger.debug() << "Settings required";
 
   QmlEngineHolder::instance()->showWindow();
-  emit settingsNeeded();
+  Navigator::instance()->requestScreen(Navigator::ScreenSettings);
 }
 
 void MozillaVPN::requestAbout() {

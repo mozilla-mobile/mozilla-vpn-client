@@ -412,7 +412,6 @@ class MozillaVPN final : public QObject {
   void updateRecommendedChanged();
   void userStateChanged();
   void deviceRemoving(const QString& publicKey);
-  void settingsNeeded();
   void aboutNeeded();
   void viewLogsNeeded();
   void contactUsNeeded();

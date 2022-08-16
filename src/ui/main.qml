@@ -134,25 +134,11 @@ Window {
             }
             mainStackView.push("qrc:/ui/views/ViewContactUs.qml", StackView.Immediate);
         }
+*/
 
-        function onSettingsNeeded() {
-            // Check if Settings view is already in mainStackView
-            const settingsViewInMainStack = mainStackView.find((view) => { return view.objectName === "settings" })
-
-            if (settingsViewInMainStack) {
-                // Unwind settingsStackView back to menu
-                settingsViewInMainStack._unwindSettingsStackView();
-
-                // Unwind mainStackView back to Settings
-                return mainStackView.pop(settingsViewInMainStack, StackView.Immediate);
-            }
-            mainStackView.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate);
-        }
         function onAccountDeleted() {
             VPNController.logout();
-            mainStackView.unwindToInitialItem();
         }
-*/
     }
 
     // Glean Connections

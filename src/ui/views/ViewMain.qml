@@ -24,9 +24,11 @@ VPNFlickable {
         State {
             when: window.fullscreenRequired()
 
+/* TODO
             PropertyChanges {
                 target: mainView
             }
+*/
             PropertyChanges {
                 target: mobileHeader
                 visible: true
@@ -34,9 +36,11 @@ VPNFlickable {
         },
         State {
             when: !window.fullscreenRequired()
+/* TODO
             PropertyChanges {
                 target: mainView
             }
+*/
             PropertyChanges {
                 target: mobileHeader
                 visible: false
