@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskaddon.h"
-#include "addonmanager.h"
+#include "addons/manager/addonmanager.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"

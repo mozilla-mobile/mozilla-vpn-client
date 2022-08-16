@@ -43,7 +43,6 @@ include($$PWD/../../src/qmake/signature.pri)
 RESOURCES ~= 's/.*servers.qrc//g'
 
 HEADERS += \
-    ../../src/addonmanager.h \
     ../../src/addons/addon.h \
     ../../src/addons/addondemo.h \
     ../../src/addons/addonguide.h \
@@ -58,6 +57,9 @@ HEADERS += \
     ../../src/addons/conditionwatchers/addonconditionwatchertimestart.h \
     ../../src/addons/conditionwatchers/addonconditionwatchertimeend.h \
     ../../src/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h \
+    ../../src/addons/manager/addondirectory.h \
+    ../../src/addons/manager/addonindex.h \
+    ../../src/addons/manager/addonmanager.h \
     ../../src/adjust/adjustfiltering.h \
     ../../src/adjust/adjustproxypackagehandler.h \
     ../../src/captiveportal/captiveportal.h \
@@ -149,7 +151,7 @@ HEADERS += \
     ../../src/websocket/pushmessage.h \
     helper.h \
     testaddon.h \
-    testaddonmanager.h \
+    testaddonindex.h \
     testadjust.h \
     testandroidmigration.h \
     testcommandlineparser.h \
@@ -174,7 +176,6 @@ HEADERS += \
     websocket/testpushmessage.h
 
 SOURCES += \
-    ../../src/addonmanager.cpp \
     ../../src/addons/addon.cpp \
     ../../src/addons/addondemo.cpp \
     ../../src/addons/addonguide.cpp \
@@ -189,6 +190,9 @@ SOURCES += \
     ../../src/addons/conditionwatchers/addonconditionwatchertimestart.cpp \
     ../../src/addons/conditionwatchers/addonconditionwatchertimeend.cpp \
     ../../src/addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp \
+    ../../src/addons/manager/addondirectory.cpp \
+    ../../src/addons/manager/addonindex.cpp \
+    ../../src/addons/manager/addonmanager.cpp \
     ../../src/adjust/adjustfiltering.cpp \
     ../../src/adjust/adjustproxypackagehandler.cpp \
     ../../src/captiveportal/captiveportal.cpp \
@@ -281,7 +285,7 @@ SOURCES += \
     mocmozillavpn.cpp \
     mocnetworkrequest.cpp \
     testaddon.cpp \
-    testaddonmanager.cpp \
+    testaddonindex.cpp \
     testadjust.cpp \
     testandroidmigration.cpp \
     testcommandlineparser.cpp \
