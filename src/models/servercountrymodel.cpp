@@ -160,22 +160,14 @@ QVariant ServerCountryModel::data(const QModelIndex& index, int role) const {
 
     case CitiesRole: {
       const ServerCountry& country = m_countries.at(index.row());
-      qint64 now = QDateTime::currentSecsSinceEpoch();
 
       QList<QVariant> list;
       const QList<ServerCity>& cities = country.cities();
       for (const ServerCity& city : cities) {
-        int activeServerCount = 0;
-        for (const QString& pubkey : city.servers()) {
-          if (m_servers.value(pubkey).cooldownTimeout() <= now) {
-            activeServerCount++;
-          }
-        }
-
         QStringList names{
             city.name(),
             ServerI18N::translateCityName(country.code(), city.name()),
-            QString::number(activeServerCount)};
+            QString::number(cityConnectionScore(city))};
         list.append(QVariant(names));
       }
 
@@ -184,6 +176,41 @@ QVariant ServerCountryModel::data(const QModelIndex& index, int role) const {
 
     default:
       return QVariant();
+  }
+}
+
+
+int ServerCountryModel::cityConnectionScore(const ServerCity& city) const {
+  qint64 now = QDateTime::currentSecsSinceEpoch();
+  int activeServerCount = 0;
+  uint32_t avgLatencyMsec = 0;
+  for (QString pubkey : city.servers()) {
+    const Server& server = m_servers[pubkey];
+    if (server.cooldownTimeout() <= now) {
+      avgLatencyMsec += server.latency();
+      activeServerCount++;
+    }
+  }
+
+  // If there are no reachable servers, then return a score of zero.
+  if (activeServerCount == 0) {
+    return 0;
+  }
+
+  // Otherwise, return a score depending on the average latency.
+  avgLatencyMsec /= activeServerCount;
+  logger.debug() << "Server data" << city.code() << avgLatencyMsec << activeServerCount;
+  if (avgLatencyMsec < 50) {
+    return 4; // Great!
+  }
+  else if (avgLatencyMsec < 100) {
+    return 3; // Acceptable
+  }
+  else if (avgLatencyMsec < 200) {
+    return 2; // Poor
+  }
+  else {
+    return 1; // Really Bad!
   }
 }
 

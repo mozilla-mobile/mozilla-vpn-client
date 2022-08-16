@@ -74,7 +74,7 @@ class Server final {
   uint32_t m_weight = 0;
   uint32_t m_multihopPort = 0;
   qint64 m_cooldownTimeout = 0;
-  uint32_t m_latency;
+  uint32_t m_latency = 0;
 };
 
 #endif  // SERVER_H

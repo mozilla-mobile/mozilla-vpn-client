@@ -167,10 +167,10 @@ VPNClickableRow {
 
             delegate: VPNRadioDelegate {
                 property string _cityName: modelData[0]
-                property string _localizedCityName: modelData[1]
-                property string _activeServerCount: modelData[2]
                 property string _countryCode: code
-                property bool isAvailable: _activeServerCount > 0
+                property string _localizedCityName: modelData[1]
+                property string locationScore: modelData[2]
+                property bool isAvailable: locationScore > 0
                 property int itemHeight: 54
 
                 id: del
@@ -216,12 +216,13 @@ VPNClickableRow {
                         top: del.top
                         verticalCenter: del.verticalCenter
                     }
-                    source: "qrc:/nebula/resources/warning.svg"
+                    source: del.locationScore == 0 ? "qrc:/nebula/resources/warning.svg" :
+                        "qrc:/nebula/resources/wifi-" + (del.locationScore-1) + ".svg"
                     sourceSize {
                         height: VPNTheme.theme.iconSizeSmall
                         width: VPNTheme.theme.iconSizeSmall
                     }
-                    visible: !del.isAvailable
+                    visible: true
                 }
 
             }

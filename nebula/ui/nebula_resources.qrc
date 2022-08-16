@@ -337,6 +337,10 @@
         <file>resources/check-green70.svg</file>
         <file>resources/shield-green50.svg</file>
         <file>resources/checkmark-blue50.svg</file>
+        <file>resources/wifi-0.svg</file>
+        <file>resources/wifi-1.svg</file>
+        <file>resources/wifi-2.svg</file>
+        <file>resources/wifi-3.svg</file>
         <file>resources/navbar/home.svg</file>
         <file>resources/navbar/home-selected.svg</file>
         <file>resources/navbar/messages.svg</file>

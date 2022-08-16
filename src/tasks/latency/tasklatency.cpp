@@ -59,6 +59,7 @@ void TaskLatency::recvPing(quint16 sequence) {
 
   ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
   quint64 latency = QDateTime::currentMSecsSinceEpoch() - record.timestamp;
+  logger.debug() << "Server" << logger.keys(record.publicKey) << "latency" << latency << "msec";
   scm->setServerLatency(record.publicKey, latency);
 
   if (m_pingReplyList.isEmpty()) {
