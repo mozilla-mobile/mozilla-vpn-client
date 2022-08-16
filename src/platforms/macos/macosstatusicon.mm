@@ -149,10 +149,10 @@ void MacOSStatusIcon::setIndicatorColor(
   }
 
   NSColor* color = [NSColor
-      colorWithCalibratedRed:(indicatorColor.red() / 255)
-      green:(indicatorColor.green() / 255)
-      blue:(indicatorColor.blue() / 255)
-      alpha:(indicatorColor.alpha() / 255)];
+      colorWithCalibratedRed:indicatorColor.red() / 255.0f
+      green:indicatorColor.green() / 255.0f
+      blue:indicatorColor.blue() / 255.0f
+      alpha:indicatorColor.alpha() / 255.0f];
   [m_statusBarIcon setIndicatorColor:color];
 }
 

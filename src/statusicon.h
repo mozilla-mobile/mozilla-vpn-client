@@ -49,7 +49,7 @@ class StatusIcon final : public QObject {
   QIcon m_icon;
   QColor m_indicatorColor = QColor();
 
-  // Animated icon.
+  // Animated icon
   QTimer m_animatedIconTimer;
   uint8_t m_animatedIconIndex = 0;
 };
