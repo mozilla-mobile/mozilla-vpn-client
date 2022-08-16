@@ -48,7 +48,7 @@ Item {
 
                 onClicked: {
                     statusBarModifier.resetDefaults()
-                    mainStackView.pop()
+                    settingsStackView.pop()
                 }
 
                 Image {
@@ -242,8 +242,7 @@ Item {
     Connections {
         function onGoBack(item) {
             if (item === root && root.visible)
-                mainStackView.pop();
-
+                settingsStackView.pop();
         }
 
         target: VPNCloseEventHandler

@@ -88,7 +88,7 @@ Item {
 
              accessibleName: title
              title: qsTrId("vpn.settings.giveFeedback")
-             onClicked: getHelpStackView.push("qrc:/ui/settings/ViewGiveFeedback.qml")
+             onClicked: getHelpStackView.push("qrc:/ui/screenSettings/ViewGiveFeedback.qml")
              iconSource: "qrc:/nebula/resources/chevron.svg"
              backgroundColor: VPNTheme.theme.iconButtonLightBackground
              width: parent.width - VPNTheme.theme.windowMargin

@@ -94,7 +94,7 @@ VPNFlickable {
                 settingTitle: VPNl18n.TipsAndTricksSettingsEntryLabel
                 imageLeftSrc: "qrc:/nebula/resources/sparkles.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push("qrc:/ui/settings/ViewTipsAndTricks/ViewTipsAndTricks.qml")
+                onClicked: settingsStackView.push("qrc:/ui/screenSettings/ViewTipsAndTricks/ViewTipsAndTricks.qml")
             }
 
             VPNSettingsItem {
@@ -102,7 +102,7 @@ VPNFlickable {
                 settingTitle: qsTrId("vpn.settings.networking")
                 imageLeftSrc: "qrc:/ui/resources/settings/networkSettings.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push("qrc:/ui/settings/ViewNetworkSettings.qml", {
+                onClicked: settingsStackView.push("qrc:/ui/screenSettings/ViewNetworkSettings.qml", {
                                                       //% "App permissions"
                                                       _appPermissionsTitle: Qt.binding(() => qsTrId("vpn.settings.appPermissions2"))
                                                   })
@@ -114,7 +114,7 @@ VPNFlickable {
                 settingTitle: VPNl18n.SettingsSystemPreferences
                 imageLeftSrc: "qrc:/ui/resources/settings/preferences.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push("qrc:/ui/settings/ViewPrivacySecurity.qml", {
+                onClicked: settingsStackView.push("qrc:/ui/screenSettings/ViewPrivacySecurity.qml", {
                                                     _startAtBootTitle: Qt.binding(() => VPNl18n.SettingsStartAtBootTitle),
                                                     _languageTitle:  Qt.binding(() => qsTrId("vpn.settings.language")),
                                                     _notificationsTitle:  Qt.binding(() => qsTrId("vpn.settings.notifications")),
@@ -175,7 +175,7 @@ VPNFlickable {
                 VPNProfileFlow.state === VPNProfileFlow.StateReady
                 && settingsStackView.currentItem.objectName !== "subscriptionManagmentView"
             ) {
-                return settingsStackView.push("qrc:/ui/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml");
+                return settingsStackView.push("qrc:/ui/screenSettings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml");
             }
 
             // Only push the profile view if it’s not already in the stack

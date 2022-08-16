@@ -39,20 +39,20 @@
         <file>screens/ScreenTelemetryPolicy.qml</file>
         <file>screens/ScreenUpdateRequired.qml</file>
         <file>screens/ScreenViewLogs.qml</file>
-        <file>settings/ViewAdvancedDNSSettings.qml</file>
-        <file>settings/ViewAppPermissions.qml</file>
-        <file>settings/ViewGiveFeedback.qml</file>
-        <file>settings/ViewGuide.qml</file>
-        <file>settings/ViewLanguage.qml</file>
-        <file>settings/ViewNetworkSettings.qml</file>
-        <file>settings/ViewNotifications.qml</file>
-        <file>settings/ViewPrivacySecurity.qml</file>
-        <file>settings/ViewSettingsMenu.qml</file>
-        <file>settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml</file>
-        <file>settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml</file>
-        <file>settings/ViewTipsAndTricks/TipsAndTricksSection.qml</file>
-        <file>settings/ViewTipsAndTricks/ViewTipsAndTricks.qml</file>
-        <file>settings/ViewWhatsNew.qml</file>
+        <file>screenSettings/ViewAdvancedDNSSettings.qml</file>
+        <file>screenSettings/ViewAppPermissions.qml</file>
+        <file>screenSettings/ViewGiveFeedback.qml</file>
+        <file>screenSettings/ViewGuide.qml</file>
+        <file>screenSettings/ViewLanguage.qml</file>
+        <file>screenSettings/ViewNetworkSettings.qml</file>
+        <file>screenSettings/ViewNotifications.qml</file>
+        <file>screenSettings/ViewPrivacySecurity.qml</file>
+        <file>screenSettings/ViewSettingsMenu.qml</file>
+        <file>screenSettings/ViewSubscriptionManagement/SubscriptionManagementItem.qml</file>
+        <file>screenSettings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml</file>
+        <file>screenSettings/ViewTipsAndTricks/TipsAndTricksSection.qml</file>
+        <file>screenSettings/ViewTipsAndTricks/ViewTipsAndTricks.qml</file>
+        <file>screenSettings/ViewWhatsNew.qml</file>
         <file>views/ViewAddon.qml</file>
         <file>views/ViewCaptivePortalInfo.qml</file>
         <file>views/ViewContactUs.qml</file>
