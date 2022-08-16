@@ -156,6 +156,74 @@ struct ScreenData {
         QVector<MozillaVPN::State>{},
         []() -> int8_t { return 0; },
     },
+    {
+        Navigator::Screen::ScreenSubscriptionGenericError,
+        []() -> QString {
+          return "qrc:/ui/screens/ScreenSubscriptionGenericError.qml";
+        },
+        QVector<MozillaVPN::State>{},
+        QVector<MozillaVPN::State>{},
+        []() -> int8_t {
+          MozillaVPN* vpn = MozillaVPN::instance();
+          Q_ASSERT(vpn);
+
+          return vpn->state() != MozillaVPN::StateSubscriptionNeeded &&
+                         vpn->state() != MozillaVPN::StateSubscriptionInProgress
+                     ? -1
+                     : 0;
+        },
+    },
+    {
+        Navigator::Screen::ScreenNoSubscriptionFoundError,
+        []() -> QString {
+          return "qrc:/ui/screens/ScreenNoSubscriptionFoundError.qml";
+        },
+        QVector<MozillaVPN::State>{},
+        QVector<MozillaVPN::State>{},
+        []() -> int8_t {
+          MozillaVPN* vpn = MozillaVPN::instance();
+          Q_ASSERT(vpn);
+
+          return vpn->state() != MozillaVPN::StateSubscriptionNeeded &&
+                         vpn->state() != MozillaVPN::StateSubscriptionInProgress
+                     ? -1
+                     : 0;
+        },
+    },
+    {
+        Navigator::Screen::ScreenSubscriptionExpiredError,
+        []() -> QString {
+          return "qrc:/ui/screens/ScreenSubscriptionExpiredError.qml";
+        },
+        QVector<MozillaVPN::State>{},
+        QVector<MozillaVPN::State>{},
+        []() -> int8_t {
+          MozillaVPN* vpn = MozillaVPN::instance();
+          Q_ASSERT(vpn);
+
+          return vpn->state() != MozillaVPN::StateSubscriptionNeeded &&
+                         vpn->state() != MozillaVPN::StateSubscriptionInProgress
+                     ? -1
+                     : 0;
+        },
+    },
+    {
+        Navigator::Screen::ScreenSubscriptionInUseError,
+        []() -> QString {
+          return "qrc:/ui/screens/ScreenSubscriptionInUseError.qml";
+        },
+        QVector<MozillaVPN::State>{},
+        QVector<MozillaVPN::State>{},
+        []() -> int8_t {
+          MozillaVPN* vpn = MozillaVPN::instance();
+          Q_ASSERT(vpn);
+
+          return vpn->state() != MozillaVPN::StateSubscriptionNeeded &&
+                         vpn->state() != MozillaVPN::StateSubscriptionInProgress
+                     ? -1
+                     : 0;
+        },
+    },
 };
 
 bool computeScreen(const ScreenData& screen) {
@@ -213,6 +281,18 @@ Navigator::Navigator(QObject* parent) : QObject(parent) {
 
   connect(Feature::get(Feature::Feature_inAppAuthentication),
           &Feature::supportedChanged, this, &Navigator::computeComponent);
+
+  connect(ErrorHandler::instance(), &ErrorHandler::subscriptionGeneric, this,
+          [this]() { requestScreen(ScreenSubscriptionGenericError); });
+
+  connect(ErrorHandler::instance(), &ErrorHandler::noSubscriptionFound, this,
+          [this]() { requestScreen(ScreenNoSubscriptionFoundError); });
+
+  connect(ErrorHandler::instance(), &ErrorHandler::subscriptionExpired, this,
+          [this]() { requestScreen(ScreenSubscriptionExpiredError); });
+
+  connect(ErrorHandler::instance(), &ErrorHandler::subscriptionInUse, this,
+          [this]() { requestScreen(ScreenSubscriptionInUseError); });
 
   computeComponent();
 }

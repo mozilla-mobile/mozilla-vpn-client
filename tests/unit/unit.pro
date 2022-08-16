@@ -44,7 +44,6 @@ RESOURCES ~= 's/.*servers.qrc//g'
 
 HEADERS += \
     ../../src/addons/addon.h \
-    ../../src/addons/addondemo.h \
     ../../src/addons/addonguide.h \
     ../../src/addons/addoni18n.h \
     ../../src/addons/addonmessage.h \
@@ -177,7 +176,6 @@ HEADERS += \
 
 SOURCES += \
     ../../src/addons/addon.cpp \
-    ../../src/addons/addondemo.cpp \
     ../../src/addons/addonguide.cpp \
     ../../src/addons/addoni18n.cpp \
     ../../src/addons/addonmessage.cpp \

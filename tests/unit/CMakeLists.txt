@@ -37,8 +37,6 @@ target_link_libraries(unit_tests PRIVATE glean lottie nebula translations)
 target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/addons/addon.cpp
     ${MVPN_SOURCE_DIR}/addons/addon.h
-    ${MVPN_SOURCE_DIR}/addons/addondemo.cpp
-    ${MVPN_SOURCE_DIR}/addons/addondemo.h
     ${MVPN_SOURCE_DIR}/addons/addonguide.cpp
     ${MVPN_SOURCE_DIR}/addons/addonguide.h
     ${MVPN_SOURCE_DIR}/addons/addoni18n.cpp

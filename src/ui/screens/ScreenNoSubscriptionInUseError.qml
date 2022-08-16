@@ -1,0 +1,33 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+import QtQuick 2.5
+import QtQuick.Controls 2.14
+
+import components 0.1
+
+VPNStackView {
+    id: stackView
+
+    Component.onCompleted: function(){
+       stackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
+           // Problem confirming subscription...
+           headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
+
+           // Another Firefox Account has already subscribed using this Apple ID.
+           // Visit our help center below to learn more about how to manage your subscriptions.
+           errorMessage: VPNl18n.RestorePurchaseInUseErrorRestorePurchaseInUseErrorText,
+
+           // Sign out
+           primaryButtonText: qsTrId("vpn.main.signOut2"),
+           primaryButtonObjectName: "errorSignOutButton",
+           primaryButtonOnClick: () => {
+               VPNController.logout();
+               mainStackView.pop();
+           },
+           secondaryButtonIsSignOff: false,
+           getHelpLinkVisible: true
+       });
+    }
+}

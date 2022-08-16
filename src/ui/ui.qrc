@@ -30,10 +30,14 @@
         <file>screens/ScreenHome.qml</file>
         <file>screens/ScreenInitialize.qml</file>
         <file>screens/ScreenMessaging.qml</file>
+        <file>screens/ScreenNoSubscriptionFoundError.qml</file>
         <file>screens/ScreenPostAuthentication.qml</file>
         <file>screens/ScreenSettings.qml</file>
         <file>screens/ScreenSubscriptionBlocked.qml</file>
+        <file>screens/ScreenSubscriptionGenericError.qml</file>
+        <file>screens/ScreenSubscriptionExpiredError.qml</file>
         <file>screens/ScreenSubscriptionInProgress.qml</file>
+        <file>screens/ScreenSubscriptionInUseError.qml</file>
         <file>screens/ScreenSubscriptionNeeded.qml</file>
         <file>screens/ScreenSubscriptionNotValidated.qml</file>
         <file>screens/ScreenTelemetryPolicy.qml</file>
