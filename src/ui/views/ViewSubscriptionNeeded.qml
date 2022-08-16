@@ -25,7 +25,7 @@ VPNFlickable {
         id: headerLink
 
         labelText: qsTrId("vpn.main.getHelp2")
-        onClicked: getHelpViewNeeded()
+        onClicked: VPNNavigator.requestScreen(VPNNavigator.ScreenGetHelp)
     }
 
     Image {

@@ -18,7 +18,7 @@ Item {
         labelText: qsTrId("vpn.main.getHelp2")
         onClicked: {
             VPN.recordGleanEvent("getHelpClickedInitialize")
-            getHelpViewNeeded();
+            VPNNavigator.requestScreen(VPNNavigator.ScreenGetHelp)
         }
     }
 

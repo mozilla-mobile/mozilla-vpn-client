@@ -233,7 +233,7 @@ Item {
             objectName: "getHelpLink"
             labelText: qsTrId("vpn.main.getHelp2")
             isLightTheme: false
-            onClicked: getHelpViewNeeded();
+            onClicked: VPNNavigator.requestScreen(VPNNavigator.ScreenGetHelp)
 
             anchors.topMargin: VPNTheme.theme.listSpacing
         }

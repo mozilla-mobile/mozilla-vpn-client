@@ -132,7 +132,7 @@ Item {
 
                     labelText: qsTrId("vpn.main.getHelp2")
                     Layout.alignment: Qt.AlignHCenter
-                    onClicked: getHelpViewNeeded()
+                    onClicked: VPNNavigator.requestScreen(VPNNavigator.ScreenGetHelp)
                     Layout.preferredHeight: VPNTheme.theme.rowHeight
                 }
 

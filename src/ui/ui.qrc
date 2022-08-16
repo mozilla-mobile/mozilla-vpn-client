@@ -12,13 +12,33 @@
         <file>authenticationInApp/ViewReauthenticationFlow.qml</file>
         <file>deleteAccount/ViewDeleteAccount.qml</file>
         <file>deleteAccount/ViewDeleteAccountRequest.qml</file>
-        <file>developerMenu/ViewAnimationsPlayground.qml</file>
-        <file>developerMenu/ViewDeveloperMenu.qml</file>
-        <file>developerMenu/ViewFeatureList.qml</file>
-        <file>developerMenu/ViewMessages.qml</file>
-        <file>developerMenu/ViewThemeList.qml</file>
         <file>main.qml</file>
         <file>qmldir</file>
+        <file>screenGetHelp/ViewGetHelp.qml</file>
+        <file>screenGetHelp/developerMenu/ViewAnimationsPlayground.qml</file>
+        <file>screenGetHelp/developerMenu/ViewDeveloperMenu.qml</file>
+        <file>screenGetHelp/developerMenu/ViewFeatureList.qml</file>
+        <file>screenGetHelp/developerMenu/ViewMessages.qml</file>
+        <file>screenGetHelp/developerMenu/ViewThemeList.qml</file>
+        <file>screens/ScreenAuthenticating.qml</file>
+        <file>screens/ScreenAuthenticationInApp.qml</file>
+        <file>screens/ScreenBackendFailure.qml</file>
+        <file>screens/ScreenBillingNotAvailable.qml</file>
+        <file>screens/ScreenContactUs.qml</file>
+        <file>screens/ScreenDeviceLimit.qml</file>
+        <file>screens/ScreenGetHelp.qml</file>
+        <file>screens/ScreenHome.qml</file>
+        <file>screens/ScreenInitialize.qml</file>
+        <file>screens/ScreenMessaging.qml</file>
+        <file>screens/ScreenPostAuthentication.qml</file>
+        <file>screens/ScreenSettings.qml</file>
+        <file>screens/ScreenSubscriptionBlocked.qml</file>
+        <file>screens/ScreenSubscriptionInProgress.qml</file>
+        <file>screens/ScreenSubscriptionNeeded.qml</file>
+        <file>screens/ScreenSubscriptionNotValidated.qml</file>
+        <file>screens/ScreenTelemetryPolicy.qml</file>
+        <file>screens/ScreenUpdateRequired.qml</file>
+        <file>screens/ScreenViewLogs.qml</file>
         <file>settings/ViewAdvancedDNSSettings.qml</file>
         <file>settings/ViewAppPermissions.qml</file>
         <file>settings/ViewGiveFeedback.qml</file>
@@ -33,30 +53,14 @@
         <file>settings/ViewTipsAndTricks/TipsAndTricksSection.qml</file>
         <file>settings/ViewTipsAndTricks/ViewTipsAndTricks.qml</file>
         <file>settings/ViewWhatsNew.qml</file>
-        <file>states/StateAuthenticating.qml</file>
-        <file>states/StateAuthenticationInApp.qml</file>
-        <file>states/StateBackendFailure.qml</file>
-        <file>states/StateBillingNotAvailable.qml</file>
-        <file>states/StateDeviceLimit.qml</file>
-        <file>states/StateInitialize.qml</file>
-        <file>states/StateMain.qml</file>
-        <file>states/StatePostAuthentication.qml</file>
-        <file>states/StateSubscriptionBlocked.qml</file>
-        <file>states/StateSubscriptionInProgress.qml</file>
-        <file>states/StateSubscriptionNeeded.qml</file>
-        <file>states/StateSubscriptionNotValidated.qml</file>
-        <file>states/StateTelemetryPolicy.qml</file>
-        <file>states/StateUpdateRequired.qml</file>
         <file>views/ViewAddon.qml</file>
         <file>views/ViewCaptivePortalInfo.qml</file>
         <file>views/ViewContactUs.qml</file>
         <file>views/ViewDevices.qml</file>
         <file>views/ViewErrorFullScreen.qml</file>
-        <file>views/ViewGetHelp.qml</file>
         <file>views/ViewInitialize.qml</file>
         <file>views/ViewLicense.qml</file>
         <file>views/ViewLicenses.qml</file>
-        <file>views/ViewLogs.qml</file>
         <file>views/ViewMain.qml</file>
         <file>views/ViewMultiHop.qml</file>
         <file>views/ViewOnboarding.qml</file>

@@ -11,6 +11,7 @@
 #include "commandlineparser.h"
 #include "constants.h"
 #include "fontloader.h"
+#include "frontend/navigator.h"
 #include "iaphandler.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
@@ -285,6 +286,7 @@ int CommandUI::run(QStringList& tokens) {
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
+
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNCaptivePortal",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
@@ -466,6 +468,14 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNCloseEventHandler",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance()->closeEventHandler();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNNavigator",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = Navigator::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

@@ -106,153 +106,10 @@ Window {
         anchors.top: parent.top
     }
 
-    VPNStackView {
-        id: mainStackView
-
-        objectName: "MainStackView"
-        initialItem: mainView
-        width: parent.width
-        anchors.top: parent.top
-        anchors.topMargin: iosSafeAreaTopMargin.height
-        height: safeContentHeight
-
-        function getHelpViewNeeded() {
-            mainStackView.push("qrc:/ui/views/ViewGetHelp.qml")
-        }
-    }
-
-    Component {
-        id: mainView
-
-        Item {
-            state: VPN.state
-            states: [
-                State {
-                    name: VPN.StateInitialize
-
-                    PropertyChanges {
-                        target: loader
-                        source: "states/StateInitialize.qml"
-                    }
-
-                },
-                State {
-                    name: VPN.StateAuthenticating
-
-                    PropertyChanges {
-                        target: loader
-                        source: VPNFeatureList.get("inAppAuthentication").isSupported ? "states/StateAuthenticationInApp.qml" : "states/StateAuthenticating.qml"
-                    }
-
-                },
-                State {
-                    name: VPN.StatePostAuthentication
-
-                    PropertyChanges {
-                        target: loader
-                        source: "states/StatePostAuthentication.qml"
-                    }
-
-                },
-                State {
-                    name: VPN.StateTelemetryPolicy
-
-                    PropertyChanges {
-                        target: loader
-                        source: "states/StateTelemetryPolicy.qml"
-                    }
-
-                },
-                State {
-                    name: VPN.StateMain
-
-                    PropertyChanges {
-                        target: loader
-                        source: "states/StateMain.qml"
-                    }
-
-                },
-                State {
-                    name: VPN.StateUpdateRequired
-
-                    PropertyChanges {
-                        target: loader
-                        source: "states/StateUpdateRequired.qml"
-                    }
-
-                },
-                State {
-                    name: VPN.StateSubscriptionNeeded
-
-                    PropertyChanges {
-                        target: loader
-                        source: "states/StateSubscriptionNeeded.qml"
-                    }
-
-                },
-                State {
-                    name: VPN.StateSubscriptionInProgress
-
-                    PropertyChanges {
-                        target: loader
-                        source: "states/StateSubscriptionInProgress.qml"
-                    }
-
-                },
-                State {
-                    name: VPN.StateSubscriptionBlocked
-
-                    PropertyChanges {
-                        target: loader
-                        source: "states/StateSubscriptionBlocked.qml"
-                    }
-
-                },
-                State {
-                    name: VPN.StateDeviceLimit
-
-                    PropertyChanges {
-                        target: loader
-                        source: "states/StateDeviceLimit.qml"
-                    }
-
-                },
-                State {
-                    name: VPN.StateBackendFailure
-
-                    PropertyChanges {
-                        target: loader
-                        source: "states/StateBackendFailure.qml"
-                    }
-
-                },
-                State {
-                    name: VPN.StateBillingNotAvailable
-
-                    PropertyChanges {
-                        target: loader
-                        source: "states/StateBillingNotAvailable.qml"
-                    }
-                },
-                State {
-                    name: VPN.StateSubscriptionNotValidated
-
-                    PropertyChanges {
-                        target: loader
-                        source: "states/StateSubscriptionNotValidated.qml"
-                    }
-                }
-            ]
-
-            Loader {
-                id: loader
-
-                asynchronous: true
-                anchors.fill: parent
-            }
-
-        }
-
+    Loader {
+      asynchronous: true
+      sourceComponent: VPNNavigator.component
+      anchors.fill: parent
     }
 
     Connections {
@@ -264,11 +121,10 @@ Window {
                 }
             }
 
-            // If we can't show logs natively, open the viewer
-            if (mainStackView.currentItem.objectName !== "viewLogs") {
-                mainStackView.push("qrc:/ui/views/ViewLogs.qml");
-            }
+            VPNNavigator.requestScreen(VPNNavigator.ScreenViewLogs);
         }
+
+/* TODO
         function onContactUsNeeded() {
             // Check if Contact Us view is already in mainStackView
             const contactUsViewInStack = mainStackView.find((view) => { return view.objectName === "contactUs" });
@@ -296,6 +152,7 @@ Window {
             VPNController.logout();
             mainStackView.unwindToInitialItem();
         }
+*/
     }
 
     // Glean Connections
@@ -348,6 +205,7 @@ Window {
         }
     }
 
+/* TODO
     Connections {
         target: VPNAddonManager
         function onRunAddon(addon) {
@@ -507,4 +365,5 @@ Window {
 
         anchors.centerIn: parent
     }
+*/
 }

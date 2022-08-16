@@ -21,6 +21,7 @@ Item {
         id: menu
         // Do not translate this string!
         title: "Feature List"
+        _menuOnBackClicked: () => getHelpStackView.pop()
     }
 
     VPNFlickable {

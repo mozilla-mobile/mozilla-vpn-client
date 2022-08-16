@@ -18,6 +18,7 @@ Item {
         id: menu
         // Do not translate this string!
         title: "Messages - REMOVE ME"
+        _menuOnBackClicked: () => getHelpStackView.pop()
     }
 
     VPNFlickable {

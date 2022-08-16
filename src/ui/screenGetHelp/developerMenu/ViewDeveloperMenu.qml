@@ -21,6 +21,7 @@ Item {
         id: menu
         title: VPNl18n.SettingsDevTitle
         anchors.top: parent.top
+        _menuOnBackClicked: () => getHelpStackView.pop()
     }
 
     VPNFlickable {
@@ -169,7 +170,7 @@ Item {
                 settingTitle: "Theme list"
                 imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: mainStackView.push("qrc:/ui/developerMenu/ViewThemeList.qml")
+                onClicked: getHelpStackView.push("qrc:/ui/screenGetHelp/developerMenu/ViewThemeList.qml")
             }
 
             VPNSettingsItem {
@@ -185,7 +186,7 @@ Item {
                 settingTitle: "Feature list"
                 imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: mainStackView.push("qrc:/ui/developerMenu/ViewFeatureList.qml")
+                onClicked: getHelpStackView.push("qrc:/ui/screenGetHelp/developerMenu/ViewFeatureList.qml")
             }
 
             VPNSettingsItem {
@@ -200,7 +201,7 @@ Item {
                 settingTitle: "Messages - REMOVE ME!"
                 imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: mainStackView.push("qrc:/ui/developerMenu/ViewMessages.qml")
+                onClicked: getHelpStackView.push("qrc:/ui/screenGetHelp/developerMenu/ViewMessages.qml")
             }
 
 
@@ -217,7 +218,7 @@ Item {
                 settingTitle: "Animations playground"
                 imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: mainStackView.push("qrc:/ui/developerMenu/ViewAnimationsPlayground.qml")
+                onClicked: getHelpStackView.push("qrc:/ui/developerMenu/ViewAnimationsPlayground.qml")
             }
 
             //Need to wrap VPNExternalLinkListItem in an item since it is not written to work in a layout

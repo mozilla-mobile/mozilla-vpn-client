@@ -131,7 +131,7 @@ VPNFlickable {
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 onClicked: {
                     VPN.recordGleanEvent("getHelpClickedViewSettings");
-                    getHelpViewNeeded();
+                    VPNNavigator.requestScreen(VPNNavigator.ScreenGetHelp);
                 }
             }
 

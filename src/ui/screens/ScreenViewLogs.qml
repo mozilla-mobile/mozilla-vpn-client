@@ -24,6 +24,7 @@ Item {
 
         //% "View Logs"
         title: qsTrId("vpn.viewlogs.title")
+        _menuOnBackClicked: () => VPNNavigator.requestPreviousScreen()
     }
 
     VPNFlickable {
