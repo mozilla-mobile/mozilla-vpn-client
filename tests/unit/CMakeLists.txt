@@ -35,8 +35,6 @@ target_link_libraries(unit_tests PRIVATE glean lottie nebula translations)
 
 # VPN Client source files
 target_sources(unit_tests PRIVATE
-    ${MVPN_SOURCE_DIR}/addonmanager.cpp
-    ${MVPN_SOURCE_DIR}/addonmanager.h
     ${MVPN_SOURCE_DIR}/addons/addon.cpp
     ${MVPN_SOURCE_DIR}/addons/addon.h
     ${MVPN_SOURCE_DIR}/addons/addondemo.cpp
@@ -65,6 +63,12 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertimestart.h
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h
+    ${MVPN_SOURCE_DIR}/addons/manager/addondirectory.cpp
+    ${MVPN_SOURCE_DIR}/addons/manager/addondirectory.h
+    ${MVPN_SOURCE_DIR}/addons/manager/addonindex.cpp
+    ${MVPN_SOURCE_DIR}/addons/manager/addonindex.h
+    ${MVPN_SOURCE_DIR}/addons/manager/addonmanager.cpp
+    ${MVPN_SOURCE_DIR}/addons/manager/addonmanager.h
     ${MVPN_SOURCE_DIR}/adjust/adjustfiltering.cpp
     ${MVPN_SOURCE_DIR}/adjust/adjustfiltering.h
     ${MVPN_SOURCE_DIR}/adjust/adjustproxypackagehandler.cpp
@@ -258,8 +262,8 @@ target_sources(unit_tests PRIVATE
     helper.h
     testaddon.cpp
     testaddon.h
-    testaddonmanager.cpp
-    testaddonmanager.h
+    testaddonindex.cpp
+    testaddonindex.h
     testadjust.cpp
     testadjust.h
     testandroidmigration.cpp

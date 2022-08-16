@@ -3,7 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 SOURCES += \
-        addonmanager.cpp \
         addons/addon.cpp \
         addons/addondemo.cpp \
         addons/addonguide.cpp \
@@ -18,6 +17,9 @@ SOURCES += \
         addons/conditionwatchers/addonconditionwatchertimeend.cpp \
         addons/conditionwatchers/addonconditionwatchertimestart.cpp \
         addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp \
+        addons/manager/addondirectory.cpp \
+        addons/manager/addonindex.cpp \
+        addons/manager/addonmanager.cpp \
         apppermission.cpp \
         authenticationlistener.cpp \
         authenticationinapp/authenticationinapp.cpp \
@@ -167,7 +169,6 @@ SOURCES += \
         websocket/websockethandler.cpp
 
 HEADERS += \
-        addonmanager.h \
         addons/addon.h \
         addons/addondemo.h \
         addons/addonguide.h \
@@ -177,11 +178,14 @@ HEADERS += \
         addons/addonpropertylist.h \
         addons/addontutorial.h \
         addons/conditionwatchers/addonconditionwatcher.h \
+        addons/conditionwatchers/addonconditionwatchergroup.h \
         addons/conditionwatchers/addonconditionwatcherlocales.h \
         addons/conditionwatchers/addonconditionwatchertimeend.h \
         addons/conditionwatchers/addonconditionwatchertimestart.h \
         addons/conditionwatchers/addonconditionwatchertriggertimesecs.h \
-        addons/conditionwatchers/addonconditionwatchergroup.h \
+        addons/manager/addondirectory.h \
+        addons/manager/addonindex.h \
+        addons/manager/addonmanager.h \
         appimageprovider.h \
         apppermission.h \
         applistprovider.h \

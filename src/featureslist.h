@@ -262,3 +262,11 @@ FEATURE_SIMPLE(websocket,      // Feature ID
                true,           // Can be flipped off
                QStringList(),  // feature dependencies
                FeatureCallback_true)
+
+FEATURE_SIMPLE(addonSignature,              // Feature ID
+               "Addons Signature",          // Feature name
+               "2.10.0",                    // released
+               !Constants::inProduction(),  // Can be flipped on
+               !Constants::inProduction(),  // Can be flipped off
+               QStringList(),               // feature dependencies
+               FeatureCallback_true)

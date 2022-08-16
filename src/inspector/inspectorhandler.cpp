@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "inspectorhandler.h"
-#include "addonmanager.h"
+#include "addons/manager/addonmanager.h"
 #include "constants.h"
 #include "controller.h"
 #include "externalophandler.h"
