@@ -109,8 +109,8 @@ jobs:
         run: |
           export PATH=/opt/qt6/bin:${{github.workspace}}/grcov-build/bin:$PATH
           mkdir -p build
-          cmake -S lottie -B $(pwd)/build -DBUILD_TESTING=ON
-          cmake --build $(pwd)/build --config Release
+          cmake -S lottie -B $(pwd)/build -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release
+          cmake --build $(pwd)/build
 
       - name: Running tests
         shell: bash
