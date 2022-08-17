@@ -98,3 +98,10 @@ workers:
             implementation: scriptworker-beetmover
             os: scriptworker
             worker-type: 'mozillavpn-{level}-beetmover'
+
+release-promotion:
+    flavors:
+        promote-addons:
+            target-tasks-method: promote_addons
+        ship-addons:
+            target-tasks-method: ship_addons

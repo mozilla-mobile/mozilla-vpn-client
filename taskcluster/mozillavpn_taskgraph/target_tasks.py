@@ -5,13 +5,19 @@
 from taskgraph.target_tasks import _target_task
 
 
-@_target_task("nightly")
-def target_tasks_nightly(full_task_graph, parameters, graph_config):
-    """Select the set of tasks required for a nightly build."""
+@_target_task("promote-addons")
+def target_tasks_promote_addons(full_task_graph, parameters, graph_config):
 
-    def filter(task, parameters):
-        # TODO: decide what does into nightly
+    def filter(task):
         return False
-        # return task.attributes.get("nightly", False)
 
-    return [l for l, t in full_task_graph.tasks.items() if filter(t, parameters)]
+    return [label for label, task in full_task_graph.tasks.items() if filter(task)]
+
+
+@_target_task("ship-addons")
+def target_tasks_ship_addons(full_task_graph, parameters, graph_config):
+
+    def filter(task):
+        return False
+
+    return [label for label, task in full_task_graph.tasks.items() if filter(task)]
