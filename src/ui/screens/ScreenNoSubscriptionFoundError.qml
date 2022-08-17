@@ -22,7 +22,7 @@ VPNStackView {
            // Try again
            primaryButtonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
            primaryButtonObjectName: "errorTryAgainButton",
-           primaryButtonOnClick: mainStackView.pop,
+           primaryButtonOnClick: stackView.pop,
            secondaryButtonIsSignOff: true,
            getHelpLinkVisible: true,
            popWhenSignOff: true

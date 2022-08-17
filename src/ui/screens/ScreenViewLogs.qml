@@ -125,7 +125,7 @@ Item {
     Connections {
         function onGoBack(item) {
             if (item === logs && logs.visible)
-                mainStackView.pop();
+                mainStackView.pop(); // TODO
 
         }
 

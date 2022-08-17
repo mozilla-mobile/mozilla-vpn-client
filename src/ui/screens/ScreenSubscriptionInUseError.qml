@@ -24,7 +24,7 @@ VPNStackView {
            primaryButtonObjectName: "errorSignOutButton",
            primaryButtonOnClick: () => {
                VPNController.logout();
-               mainStackView.pop();
+               stackView.pop();
            },
            secondaryButtonIsSignOff: false,
            getHelpLinkVisible: true
