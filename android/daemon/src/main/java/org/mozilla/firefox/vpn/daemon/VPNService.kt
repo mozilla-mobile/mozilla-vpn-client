@@ -28,6 +28,12 @@ class VPNService : android.net.VpnService() {
     private var mConnectionTime: Long = 0
     private var mAlreadyInitialised = false
     private val controllerPeriodicStateRecorderMsec: Long = 10800000
+    private val mDiagnosticsAdapter = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        ConnectionHealth(this)
+    } else {
+        TODO("VERSION.SDK_INT < R")
+        null
+    }
 
     private val mGleanTimer = object : CountDownTimer(
         controllerPeriodicStateRecorderMsec,
@@ -218,6 +224,21 @@ class VPNService : android.net.VpnService() {
 
         NotificationUtil.get(this)?.show(this) // Go foreground
         mGleanTimer.start()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            mDiagnosticsAdapter?.start(
+                    mConfig?.getJSONObject("server")?.getString("ipv4AddrIn")!!,
+                    mConfig?.getJSONObject("server")?.getString("ipv4Gateway")!!
+            )
+        }
+    }
+
+    fun reconnect(){
+        if(this.mConfig == null){
+            Log.e(tag, "Called reconnect without setting any conf first?")
+            return;
+        }
+        Log.v(tag, "Try to reconnect tunnel with same conf")
+        this.turnOn(this.mConfig!!)
     }
 
     fun turnOff() {
