@@ -14,96 +14,68 @@ import org.mozilla.Glean 0.30
 import telemetry 0.30
 
 
-Item {
-    id: root
+VPNViewBase {
+    _menuTitle: "Feature list"
+    _viewContentData: ColumnLayout {
+        id: featureListHolder
+        spacing: VPNTheme.theme.windowMargin
+        Layout.fillWidth: true
+        Layout.leftMargin: VPNTheme.theme.windowMargin * 1.5
+        Layout.rightMargin: VPNTheme.theme.windowMargin * 1.5
 
-    VPNMenu {
-        id: menu
-        // Do not translate this string!
-        title: "Feature List"
-        _menuOnBackClicked: () => getHelpStackView.pop()
-    }
+        Repeater {
+            id: rep
 
-    VPNFlickable {
-        id: vpnFlickable
+            model: VPNFeatureList
+            delegate: ColumnLayout {
+                Layout.fillWidth: true
+                spacing: VPNTheme.theme.windowMargin / 1.5
 
-        flickContentHeight: featureListHolder.height + 100
-        height: root.height - menu.height
-
-        anchors {
-            top: menu.bottom
-            left: parent.left
-            right: parent.right
-        }
-
-        ColumnLayout {
-            id: featureListHolder
-
-            anchors {
-                top: parent.top
-                left: parent.left
-                right: parent.right
-                margins: VPNTheme.theme.windowMargin * 1.5
-            }
-
-            spacing: VPNTheme.theme.windowMargin
-
-            Repeater {
-                id: rep
-
-                model: VPNFeatureList
-                delegate: ColumnLayout {
+                RowLayout {
 
                     Layout.preferredWidth: featureListHolder.width
-                    spacing: VPNTheme.theme.windowMargin / 1.5
 
-                    RowLayout {
+                    ColumnLayout {
 
-                        Layout.preferredWidth: featureListHolder.width
+                        Layout.fillWidth: true
 
-                        ColumnLayout {
-
-                            Layout.fillWidth: true
-
-                            VPNLightLabel {
-                                text: feature.name
-                                color: VPNTheme.theme.fontColorDark
-                            }
-
-                            VPNTextBlock {
-                                text: `id: ${feature.id}`
-                                font.pixelSize: VPNTheme.theme.fontSizeSmall
-                            }
+                        VPNLightLabel {
+                            text: feature.name
+                            color: VPNTheme.theme.fontColorDark
                         }
 
-                        VPNSettingsToggle {
-                            checked: feature.isSupported
-                            enabled: feature.isToggleable
-                            Layout.preferredHeight: 24
-                            Layout.preferredWidth: 45
-                            Layout.alignment: Qt.AlignTop | Qt. AlignRight
-                            opacity: enabled ? 1 : .3
-                            onClicked: {
-                                VPNFeatureList.toggle(feature.id);
-                            }
-
+                        VPNTextBlock {
+                            text: `id: ${feature.id}`
+                            font.pixelSize: VPNTheme.theme.fontSizeSmall
                         }
                     }
 
-                    Rectangle {
-                        Layout.alignment: Qt.AlignBottom
-                        Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: 1
-                        color: VPNTheme.colors.grey10
-                        visible: index < rep.count - 1
+                    VPNSettingsToggle {
+                        checked: feature.isSupported
+                        enabled: feature.isToggleable
+                        Layout.preferredHeight: 24
+                        Layout.preferredWidth: 45
+                        Layout.alignment: Qt.AlignTop | Qt. AlignRight
+                        opacity: enabled ? 1 : .3
+                        onClicked: {
+                            VPNFeatureList.toggle(feature.id);
+                        }
                     }
+
+                }
+                Rectangle {
+                    Layout.alignment: Qt.AlignBottom
+                    Layout.preferredWidth: parent.width
+                    Layout.preferredHeight: 1
+                    color: VPNTheme.colors.grey10
+                    visible: index < rep.count - 1
                 }
             }
+        }
 
-            VPNVerticalSpacer {
-                Layout.preferredHeight: 1
-                Layout.fillWidth: true
-            }
+        VPNVerticalSpacer {
+            Layout.preferredHeight: 1
+            Layout.fillWidth: true
         }
     }
 }

@@ -10,47 +10,30 @@ import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 
-Item {
-    id: root
 
-    VPNMenu {
-        id: menu
-        // Do not translate this string!
-        title: "Theme List"
-        _menuOnBackClicked: () => getHelpStackView.pop()
-    }
+VPNViewBase {
+    _menuTitle: "Theme list"
 
-    VPNFlickable {
-        id: vpnFlickable
-        flickContentHeight: themeListHolder.height
-        anchors.top: menu.bottom
-        height: root.height - menu.height
-        anchors.left: parent.left
-        anchors.right: parent.right
+    _viewContentData: ColumnLayout {
+        id: themeListHolder
 
-        ColumnLayout {
-            id: themeListHolder
+        Layout.fillWidth: true
+        Layout.margins: VPNTheme.theme.windowMargin
+        spacing: VPNTheme.theme.windowMargin
 
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.topMargin: VPNTheme.theme.windowMargin
-            anchors.leftMargin: VPNTheme.theme.windowMargin
-            spacing: VPNTheme.theme.windowMargin
+        ButtonGroup {
+            id: radioButtonGroup
+        }
 
-            ButtonGroup {
-                id: radioButtonGroup
-            }
+        Repeater {
+            Layout.fillWidth: true
+            model: VPNTheme
 
-            Repeater {
-                Layout.fillWidth: true
-                model: VPNTheme
-                delegate: VPNRadioDelegate {
-                    radioButtonLabelText: name
-                    accessibleName: name
-                    checked: VPNTheme.currentTheme === name
-                    onClicked: VPNTheme.currentTheme = name
-                }
+            delegate: VPNRadioDelegate {
+                radioButtonLabelText: name
+                accessibleName: name
+                checked: VPNTheme.currentTheme === name
+                onClicked: VPNTheme.currentTheme = name
             }
         }
     }

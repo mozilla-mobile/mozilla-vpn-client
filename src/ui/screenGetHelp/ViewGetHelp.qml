@@ -9,106 +9,66 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
 
-Item {
-     //% "Get help"
-     property string _menuTitle: qsTrId("vpn.main.getHelp2")
-     property int unlockCounter: 0
 
-     id: getHelp
-     objectName: "getHelp"
+VPNViewBase {
+    //% "Get help"
+    _menuTitle: qsTrId("vpn.main.getHelp2")
+    _menuOnBackClicked: () => VPNNavigator.requestPreviousScreen()
+    _viewContentData: Column {
 
-     Rectangle {
-         anchors.fill: getHelp
-         color: window.color
-     }
+        objectName: "getHelpLinks"
+        spacing: VPNTheme.theme.windowMargin
 
-     Timer {
-         id: unlockTimeout
-         repeat: false
-         running: false
-         interval: 10000
-         onTriggered: unlockCounter = 0
-     }
+        Layout.fillWidth: true
 
-     VPNMenu {
-         id: menu
-         objectName: "getHelpBack"
+        Repeater {
+            id: getHelpList
+            objectName: "getHelpBackList"
+            anchors.left: parent.left
+            anchors.right: parent.right
 
-         //% "Get help"
-         title: qsTrId("vpn.main.getHelp2")
-         anchors.top: parent.top
-         _menuOnBackClicked: () => VPNNavigator.requestPreviousScreen()
-     }
+            model: VPNHelpModel
 
-     VPNMouseArea {
-         anchors.fill: menu
-         hoverEnabled: true
-         onMouseAreaClicked: function() {
-             if (unlockCounter >= 5) {
-                 unlockCounter = 0
-                 VPNSettings.developerUnlock = true
-             }
-             else if (!VPNSettings.developerUnlock) {
-                 unlockTimeout.restart()
-                 unlockCounter = unlockCounter + 1
-             }
-         }
-     }
+            delegate: VPNExternalLinkListItem {
+                objectName: "getHelpBackList-" + id
+                title: name
+                accessibleName: name
+                iconSource: externalLink ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"
+                backgroundColor: externalLink ? VPNTheme.theme.clickableRowBlue : VPNTheme.theme.iconButtonLightBackground
+                onClicked: {
+                    VPNHelpModel.open(id)
+                }
+            }
+        }
 
-     Column {
-         objectName: "getHelpLinks"
-         spacing: VPNTheme.theme.windowMargin
-         anchors.left: parent.left
-         anchors.right: parent.right
-         anchors.topMargin: VPNTheme.theme.windowMargin
-         anchors.top: menu.bottom
+        VPNExternalLinkListItem {
+            id: gf
+            objectName: "settingsGiveFeedback"
 
-         Repeater {
-             id: getHelpList
-             objectName: "getHelpBackList"
-             anchors.left: parent.left
-             anchors.right: parent.right
+            accessibleName: title
+            title: qsTrId("vpn.settings.giveFeedback")
+            onClicked: getHelpStackView.push("qrc:/ui/screenSettings/ViewGiveFeedback.qml")
+            iconSource: "qrc:/nebula/resources/chevron.svg"
+            backgroundColor: VPNTheme.theme.iconButtonLightBackground
+            width: parent.width - VPNTheme.theme.windowMargin
+            visible: VPN.userState === VPN.UserAuthenticated
+        }
 
-             model: VPNHelpModel
-             delegate: VPNExternalLinkListItem {
-                 objectName: "getHelpBackList-" + id
-                 title: name
-                 accessibleName: name
-                 iconSource: externalLink ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"
-                 backgroundColor: externalLink ? VPNTheme.theme.clickableRowBlue : VPNTheme.theme.iconButtonLightBackground
-                 onClicked: {
-                     VPNHelpModel.open(id)
-                 }
-             }
-         }
+        VPNSettingsItem {
+            id: developer
+            objectName: "developer"
 
-         VPNExternalLinkListItem {
-             id: gf
-             objectName: "settingsGiveFeedback"
+            width: parent.width - VPNTheme.theme.windowMargin
+            spacing: VPNTheme.theme.listSpacing
+            anchors.horizontalCenter: parent.horizontalCenter
 
-             accessibleName: title
-             title: qsTrId("vpn.settings.giveFeedback")
-             onClicked: getHelpStackView.push("qrc:/ui/screenSettings/ViewGiveFeedback.qml")
-             iconSource: "qrc:/nebula/resources/chevron.svg"
-             backgroundColor: VPNTheme.theme.iconButtonLightBackground
-             width: parent.width - VPNTheme.theme.windowMargin
-             visible: VPN.userState === VPN.UserAuthenticated
-         }
+            //% "Developer Options"
+            settingTitle: qsTrId("vpn.settings.developer")
+            imageLeftSrc: "qrc:/ui/resources/developer.svg"
+            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+            visible: VPNSettings.developerUnlock
+            onClicked: getHelpStackView.push("qrc:/ui/screenGetHelp/developerMenu/ViewDeveloperMenu.qml")
+        }
 
-         VPNSettingsItem {
-             id: developer
-             objectName: "developer"
-
-             width: parent.width - VPNTheme.theme.windowMargin
-             spacing: VPNTheme.theme.listSpacing
-             anchors.horizontalCenter: parent.horizontalCenter
-
-             //% "Developer Options"
-             settingTitle: qsTrId("vpn.settings.developer")
-             imageLeftSrc: "qrc:/ui/resources/developer.svg"
-             imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-             visible: VPNSettings.developerUnlock
-             onClicked: getHelpStackView.push("qrc:/ui/screenGetHelp/developerMenu/ViewDeveloperMenu.qml")
-         }
-     }
+    }
 }
