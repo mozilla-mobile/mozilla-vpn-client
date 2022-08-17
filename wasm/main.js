@@ -49,6 +49,9 @@ class MVPNWasm {
     }
 
     preset.onchange = () => this._loadPreset(preset.value);
+
+    document.querySelector('#backButton').onclick = () =>
+        this._backButtonClicked();
   }
 
   networkRequest(id, method, url, body) {
@@ -203,6 +206,10 @@ class MVPNWasm {
 
   _loadLanguage(lang) {
     controller.setSetting('language-code', lang);
+  }
+
+  _backButtonClicked() {
+    controller.backButtonClicked();
   }
 };
 

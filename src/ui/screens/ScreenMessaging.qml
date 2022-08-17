@@ -5,11 +5,6 @@
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
-import Mozilla.VPN 1.0
-import components 0.1
-import components.forms 0.1
-import components.inAppAuth 0.1
-
 Item {
   Text {
     anchors.fill: parent

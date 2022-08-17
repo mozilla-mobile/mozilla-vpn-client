@@ -5,10 +5,13 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 
+import Mozilla.VPN 1.0
+
 StackView {
     id: stackview
 
     Component.onCompleted: function(){
+        VPNNavigator.addStackView(VPNNavigator.ScreenSubscriptionNeeded, stackview)
         stackview.push("qrc:/ui/views/ViewSubscriptionNeeded.qml")
     }
 }
