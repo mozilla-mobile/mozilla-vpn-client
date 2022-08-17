@@ -101,6 +101,50 @@ Item {
                 }
             }
 
+            VPNCheckBoxRow {
+                Layout.fillWidth: true
+                Layout.topMargin: VPNTheme.theme.windowMargin
+                Layout.rightMargin: VPNTheme.theme.windowMargin
+
+                labelText: "Custom Add-on URL"
+                subLabelText: "Load add-ons from an alternative URL address"
+
+                isChecked: VPNSettings.addonCustomServer
+                showDivider: false
+                onClicked: {
+                    if (root.vpnIsOff) {
+                        VPNSettings.addonCustomServer = !VPNSettings.addonCustomServer
+                    }
+                }
+            }
+
+            VPNTextField {
+                id: addonCustomServerInput
+
+                Layout.topMargin: VPNTheme.theme.windowMargin
+                Layout.rightMargin: VPNTheme.theme.windowMargin * 2
+                implicitWidth: checkBoxRowStagingServer.labelWidth - VPNTheme.theme.windowMargin
+                Layout.alignment: Qt.AlignRight
+
+                enabled: VPNSettings.addonCustomServer
+                _placeholderText: "Addon Custom Server Address"
+                height: 40
+
+                PropertyAnimation on opacity {
+                    duration: 200
+                }
+
+                onTextChanged: text => {
+                                   if (VPNSettings.addonCustomServerAddress !== addonCustomServerInput.text) {
+                                       VPNSettings.addonCustomServerAddress = addonCustomServerInput.text;
+                                   }
+                               }
+
+                Component.onCompleted: {
+                    addonCustomServerInput.text = VPNSettings.addonCustomServerAddress;
+                }
+            }
+
             Rectangle {
                 id: divider
 

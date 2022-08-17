@@ -5,10 +5,12 @@
 #include "addondirectory.h"
 #include "addonindex.h"
 #include "addons/manager/addonmanager.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
 #include "qmlengineholder.h"
+#include "settingsholder.h"
 #include "tasks/addon/taskaddon.h"
 #include "tasks/function/taskfunction.h"
 #include "taskscheduler.h"
@@ -36,6 +38,22 @@ AddonManager* AddonManager::instance() {
     s_instance->initialize();
   }
   return s_instance;
+}
+
+// static
+QString AddonManager::addonServerAddress() {
+  if (Constants::inProduction()) {
+    return Constants::ADDON_PRODUCTION_URL;
+  }
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  if (settingsHolder->addonCustomServer()) {
+    return settingsHolder->addonCustomServerAddress();
+  }
+
+  return Constants::ADDON_STAGING_URL;
 }
 
 AddonManager::AddonManager(QObject* parent)

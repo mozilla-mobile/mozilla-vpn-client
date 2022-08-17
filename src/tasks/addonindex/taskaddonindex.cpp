@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addons/manager/addonmanager.h"
-#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
@@ -24,7 +23,9 @@ void TaskAddonIndex::run() {
   // Index file
   {
     NetworkRequest* request = NetworkRequest::createForGetUrl(
-        this, QString("%1manifest.json").arg(Constants::addonSourceUrl()), 200);
+        this,
+        QString("%1manifest.json").arg(AddonManager::addonServerAddress()),
+        200);
 
     connect(request, &NetworkRequest::requestFailed, this,
             [this](QNetworkReply::NetworkError error, const QByteArray&) {
@@ -44,7 +45,8 @@ void TaskAddonIndex::run() {
   // Index file signature
   if (Feature::get(Feature::Feature_addonSignature)->isSupported()) {
     NetworkRequest* request = NetworkRequest::createForGetUrl(
-        this, QString("%1manifest.json.sign").arg(Constants::addonSourceUrl()),
+        this,
+        QString("%1manifest.json.sign").arg(AddonManager::addonServerAddress()),
         200);
 
     connect(request, &NetworkRequest::requestFailed, this,
