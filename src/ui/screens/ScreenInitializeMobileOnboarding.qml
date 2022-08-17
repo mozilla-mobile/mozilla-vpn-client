@@ -12,5 +12,5 @@ VPNStackView {
     id: stackview
     objectName: "initialStackView"
     anchors.fill: parent
-    initialItem: "qrc:/ui/views/ViewInitialize.qml"
+    initialItem: "qrc:/ui/views/ViewMobileOnboarding.qml"
 }

@@ -31,6 +31,7 @@
         <file>screens/ScreenGetHelp.qml</file>
         <file>screens/ScreenHome.qml</file>
         <file>screens/ScreenInitialize.qml</file>
+        <file>screens/ScreenInitializeMobileOnboarding.qml</file>
         <file>screens/ScreenMessaging.qml</file>
         <file>screens/ScreenNoSubscriptionFoundError.qml</file>
         <file>screens/ScreenPostAuthentication.qml</file>
