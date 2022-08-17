@@ -715,7 +715,7 @@ bool WireguardUtilsLinux::moveCgroupProcs(const QString& src,
 }
 
 void WireguardUtilsLinux::excludeCgroup(const QString& cgroup) {
-  logger.error() << "Excluding traffic from" << cgroup;
+  logger.info() << "Excluding traffic from" << cgroup;
   if (m_cgroupVersion == 1) {
     // Add all PIDs from the unified cgroup to the net_cls exclusion cgroup.
     moveCgroupProcs(m_cgroupUnified + cgroup,
@@ -725,11 +725,13 @@ void WireguardUtilsLinux::excludeCgroup(const QString& cgroup) {
     GoString goCgroup = {.p = cgpath.constData(),
                          .n = (ptrdiff_t)cgpath.length()};
     NetfilterMarkCgroupV2(goCgroup);
+  } else {
+    Q_ASSERT(m_cgroupVersion == 0);
   }
 }
 
 void WireguardUtilsLinux::resetCgroup(const QString& cgroup) {
-  logger.error() << "Permitting traffic from" << cgroup;
+  logger.info() << "Permitting traffic from" << cgroup;
   if (m_cgroupVersion == 1) {
     // Add all PIDs from the unified cgroup to the net_cls default cgroup.
     moveCgroupProcs(m_cgroupUnified + cgroup, m_cgroupNetClass);
@@ -738,16 +740,20 @@ void WireguardUtilsLinux::resetCgroup(const QString& cgroup) {
     GoString goCgroup = {.p = cgpath.constData(),
                          .n = (ptrdiff_t)cgpath.length()};
     NetfilterResetCgroupV2(goCgroup);
+  } else {
+    Q_ASSERT(m_cgroupVersion == 0);
   }
 }
 
 void WireguardUtilsLinux::resetAllCgroups() {
-  logger.error() << "Permitting traffic from all cgroups";
+  logger.info() << "Permitting traffic from all cgroups";
   if (m_cgroupVersion == 1) {
     // Add all PIDs from the net_cls exclusion cgroup to the default cgroup.
     moveCgroupProcs(m_cgroupNetClass + VPN_EXCLUDE_CGROUP, m_cgroupNetClass);
   } else if (m_cgroupVersion == 2) {
     NetfilterResetAllCgroupsV2();
+  } else {
+    Q_ASSERT(m_cgroupVersion == 0);
   }
 }
 
