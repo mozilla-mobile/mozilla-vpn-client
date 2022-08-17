@@ -4,12 +4,78 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
-
+import Mozilla.VPN 1.0
 import components 0.1
 
-VPNStackView {
-    id: getHelpStackView
-    Component.onCompleted: function(){
-        getHelpStackView.push("qrc:/ui/screenGetHelp/ViewGetHelp.qml")
+
+Item {
+    property int unlockCounter: 0
+
+    Rectangle {
+        anchors.fill: parent
+        color: window.color
+    }
+
+    VPNMenu {
+        id: menu
+        objectName: "getHelpBack"
+        _menuOnBackClicked: () => VPNNavigator.requestPreviousScreen()
+        _iconButtonSource: getHelpStackView.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
+    }
+
+    VPNMouseArea {
+        anchors.fill: menu
+        hoverEnabled: getHelpStackView.depth === 1
+        cursorShape: Qt.ArrowCursor
+        onMouseAreaClicked: function() {
+            if (unlockCounter >= 5) {
+                unlockCounter = 0
+                VPNSettings.developerUnlock = true
+            }
+            else if (!VPNSettings.developerUnlock) {
+                unlockTimeout.restart()
+                unlockCounter = unlockCounter + 1
+            }
+        }
+    }
+
+    Timer {
+        id: unlockTimeout
+        repeat: false
+        running: false
+        interval: 10000
+        onTriggered: unlockCounter = 0
+    }
+
+    VPNStackView {
+        id: getHelpStackView
+
+        anchors {
+            top: menu.buttom
+        }
+
+        Component.onCompleted: function(){
+            getHelpStackView.push("qrc:/ui/screenGetHelp/ViewGetHelp.qml")
+        }
+
+        onCurrentItemChanged: {
+            menu.title = Qt.binding(() => currentItem._menuTitle || "");
+            menu.visible = Qt.binding(() => menu.title !== "");
+            menu._menuOnBackClicked = currentItem._menuOnBackClicked ? currentItem._menuOnBackClicked : () => getHelpStackView.pop()
+        }
+    }
+
+    Connections {
+        target: VPN
+        function onContactUsNeeded() {
+            // TODO: Remove once this link is no longer in sys tray menu
+            // Check if Contact Us view is already in getHelpStackView
+            const contactUsViewInStack = getHelpStackView.find((view) => { return view.objectName === "contactUs" });
+            if (contactUsViewInStack) {
+                // Unwind mainStackView back to Contact Us
+                return getHelpStackView.pop(contactUsViewInStack, StackView.Immediate);
+            }
+            getHelpStackView.push("qrc:/ui/screenGetHelp/contactUs/ViewContactUsForm.qml");
+        }
     }
 }
