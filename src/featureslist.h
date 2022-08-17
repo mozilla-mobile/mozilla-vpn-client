@@ -137,8 +137,8 @@ FEATURE_SIMPLE(keyRegeneration,     // Feature ID
                true,                // Can be flipped on
                true,                // Can be flipped off
                QStringList(),       // feature dependencies
-               // TODO: Disabled for now in prod - VPN-2693
-               FeatureCallback_notInProduction)
+               // TODO: Disabled - VPN-2693
+               FeatureCallback_false)
 
 FEATURE_SIMPLE(lanAccess,                    // Feature ID
                "Local area network access",  // Feature name
