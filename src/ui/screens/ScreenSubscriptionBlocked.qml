@@ -17,6 +17,8 @@ VPNStackView {
     }
 
     Component.onCompleted: {
+        VPNNavigator.addStackView(VPNNavigator.ScreenSubscriptionBlocked, stackview)
+
         stackview.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
             // "Problem confirming subscription…"
             headlineText: VPNl18n.MultiFxaAccountErrorFxaAccountErrorHeader,

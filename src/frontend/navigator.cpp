@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "navigator.h"
+#include "externalophandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
@@ -10,17 +11,50 @@
 #include "qmlengineholder.h"
 
 #include <QCoreApplication>
+#include <QQuickItem>
 
 namespace {
 Navigator* s_instance = nullptr;
+Logger logger(LOG_MAIN, "Navigator");
 
+struct Layer {
+  enum Type {
+    eStackView,
+    eView,
+  };
+
+  Layer(QQuickItem* layer, Type type) : m_layer(layer), m_type(type) {}
+
+  QQuickItem* m_layer;
+  Type m_type;
+};
+
+// This struct contains the data for a single screen.
 struct ScreenData {
+  // The screen name.
   Navigator::Screen m_screen;
+
+  // The URL of the component.
   QString m_qmlComponentUrl;
+
+  // The list of acceptable VPN states. Empty means any state is OK.
   QVector<MozillaVPN::State> m_requiredState;
-  int8_t (*m_priorityGetter)(Navigator::Screen* requiredScreen);
+
+  // This function ptr is used to obtain the priority for this screen. If it
+  // returns -1, the screen is removed from the computation. Otherwise, if we
+  // do not need to show a particular screen (see requestScreen() method), the
+  // top priority screen is shown.
+  int8_t (*m_priorityGetter)(Navigator::Screen* requestedScreen);
+
+  // The cache of the QML component.
   QQmlComponent* m_qmlComponent = nullptr;
-} s_screens[] = {
+
+  // List of stack views, or views registered by this screen.
+  QList<Layer> m_layers;
+};
+
+// The list of screens.
+ScreenData s_screens[] = {
     {
         Navigator::Screen::ScreenInitialize,
         "qrc:/ui/screens/ScreenInitialize.qml",
@@ -62,6 +96,24 @@ struct ScreenData {
                      ? -1
                      : 0;
         },
+    },
+    {
+        Navigator::Screen::ScreenBackendFailure,
+        "qrc:/ui/screens/ScreenBackendFailure.qml",
+        QVector<MozillaVPN::State>{MozillaVPN::StateBackendFailure},
+        [](Navigator::Screen*) -> int8_t { return 0; },
+    },
+    {
+        Navigator::Screen::ScreenBillingNotAvailable,
+        "qrc:/ui/screens/ScreenBillingNotAvailable.qml",
+        QVector<MozillaVPN::State>{MozillaVPN::StateBillingNotAvailable},
+        [](Navigator::Screen*) -> int8_t { return 0; },
+    },
+    {
+        Navigator::Screen::ScreenDeviceLimit,
+        "qrc:/ui/screens/ScreenDeviceLimit.qml",
+        QVector<MozillaVPN::State>{MozillaVPN::StateDeviceLimit},
+        [](Navigator::Screen*) -> int8_t { return 0; },
     },
     {
         Navigator::Screen::ScreenPostAuthentication,
@@ -145,9 +197,9 @@ struct ScreenData {
      "qrc:/ui/screens/ScreenSubscriptionGenericError.qml",
      QVector<MozillaVPN::State>{MozillaVPN::StateSubscriptionNeeded,
                                 MozillaVPN::StateSubscriptionInProgress},
-     [](Navigator::Screen* requiredScreen) -> int8_t {
-       return (requiredScreen &&
-               *requiredScreen ==
+     [](Navigator::Screen* requestedScreen) -> int8_t {
+       return (requestedScreen &&
+               *requestedScreen ==
                    Navigator::Screen::ScreenSubscriptionGenericError)
                   ? 99
                   : -1;
@@ -156,9 +208,9 @@ struct ScreenData {
      "qrc:/ui/screens/ScreenNoSubscriptionFoundError.qml",
      QVector<MozillaVPN::State>{MozillaVPN::StateSubscriptionNeeded,
                                 MozillaVPN::StateSubscriptionInProgress},
-     [](Navigator::Screen* requiredScreen) -> int8_t {
-       return (requiredScreen &&
-               *requiredScreen ==
+     [](Navigator::Screen* requestedScreen) -> int8_t {
+       return (requestedScreen &&
+               *requestedScreen ==
                    Navigator::Screen::ScreenNoSubscriptionFoundError)
                   ? 99
                   : -1;
@@ -167,9 +219,9 @@ struct ScreenData {
      "qrc:/ui/screens/ScreenSubscriptionExpiredError.qml",
      QVector<MozillaVPN::State>{MozillaVPN::StateSubscriptionNeeded,
                                 MozillaVPN::StateSubscriptionInProgress},
-     [](Navigator::Screen* requiredScreen) -> int8_t {
-       return requiredScreen &&
-                      *requiredScreen ==
+     [](Navigator::Screen* requestedScreen) -> int8_t {
+       return requestedScreen &&
+                      *requestedScreen ==
                           Navigator::Screen::ScreenSubscriptionExpiredError
                   ? 99
                   : -1;
@@ -178,9 +230,9 @@ struct ScreenData {
      "qrc:/ui/screens/ScreenSubscriptionInUseError.qml",
      QVector<MozillaVPN::State>{MozillaVPN::StateSubscriptionNeeded,
                                 MozillaVPN::StateSubscriptionInProgress},
-     [](Navigator::Screen* requiredScreen) -> int8_t {
-       return requiredScreen &&
-                      *requiredScreen ==
+     [](Navigator::Screen* requestedScreen) -> int8_t {
+       return requestedScreen &&
+                      *requestedScreen ==
                           Navigator::Screen::ScreenSubscriptionInUseError
                   ? 99
                   : -1;
@@ -225,6 +277,8 @@ void maybeGenerateComponent(Navigator* navigator, ScreenData* screen) {
   }
 }
 
+void removeItem(ScreenData* screen, QObject* object) {}
+
 };  // namespace
 
 // static
@@ -265,6 +319,8 @@ Navigator::Navigator(QObject* parent) : QObject(parent) {
 Navigator::~Navigator() { MVPN_COUNT_DTOR(Navigator); }
 
 void Navigator::computeComponent() {
+  logger.debug() << "Compute component";
+
   QList<ScreenData*> screens = computeScreens(nullptr);
   Q_ASSERT(!screens.isEmpty());
 
@@ -272,6 +328,7 @@ void Navigator::computeComponent() {
   if (m_currentComponent) {
     for (ScreenData* screen : screens) {
       if (screen->m_qmlComponent == m_currentComponent) {
+        logger.debug() << "The current screen is still acceptable";
         return;
       }
     }
@@ -289,16 +346,13 @@ void Navigator::computeComponent() {
   }
   Q_ASSERT(topPriorityScreen);
 
-  if (m_currentComponent &&
-      topPriorityScreen->m_qmlComponent == m_currentComponent) {
-    return;
-  }
-
   maybeGenerateComponent(this, topPriorityScreen);
   loadScreen(topPriorityScreen->m_screen, topPriorityScreen->m_qmlComponent);
 }
 
 void Navigator::requestScreen(Navigator::Screen requestedScreen) {
+  logger.debug() << "Screen request:" << requestedScreen;
+
   QList<ScreenData*> screens = computeScreens(&requestedScreen);
   Q_ASSERT(!screens.isEmpty());
 
@@ -309,10 +363,15 @@ void Navigator::requestScreen(Navigator::Screen requestedScreen) {
       return;
     }
   }
+
+  logger.debug() << "Unable to show the requested screen";
 }
 
 void Navigator::requestPreviousScreen() {
+  logger.debug() << "Previous screen request";
+
   if (m_screenHistory.length() <= 1) {
+    logger.error() << "not enough screens!";
     return;
   }
 
@@ -321,7 +380,137 @@ void Navigator::requestPreviousScreen() {
 }
 
 void Navigator::loadScreen(Screen screen, QQmlComponent* component) {
+  logger.debug() << "Loading screen" << screen;
+
   m_screenHistory.append(screen);
   m_currentComponent = component;
   emit currentComponentChanged();
+}
+
+void Navigator::addStackView(Screen requestedScreen,
+                             const QVariant& stackView) {
+  logger.debug() << "Add stack view for screen" << requestedScreen;
+
+  QQuickItem* item = qobject_cast<QQuickItem*>(stackView.value<QObject*>());
+  Q_ASSERT(item);
+
+  QList<ScreenData*> screens = computeScreens(&requestedScreen);
+  Q_ASSERT(!screens.isEmpty());
+
+  for (ScreenData* screen : screens) {
+    if (screen->m_screen == requestedScreen) {
+      connect(item, &QObject::destroyed, this, &Navigator::removeItem);
+      screen->m_layers.append(Layer(item, Layer::eStackView));
+      return;
+    }
+  }
+
+  logger.error() << "Unable to find the screen" << requestedScreen;
+}
+
+void Navigator::addView(Screen requestedScreen, const QVariant& view) {
+  logger.debug() << "Add view for screen" << requestedScreen;
+
+  QQuickItem* item = qobject_cast<QQuickItem*>(view.value<QObject*>());
+  Q_ASSERT(item);
+
+  QList<ScreenData*> screens = computeScreens(&requestedScreen);
+  Q_ASSERT(!screens.isEmpty());
+
+  for (ScreenData* screen : screens) {
+    if (screen->m_screen == requestedScreen) {
+      connect(item, &QObject::destroyed, this, &Navigator::removeItem);
+      screen->m_layers.append(Layer(item, Layer::eView));
+      return;
+    }
+  }
+
+  logger.error() << "Unable to find the screen" << requestedScreen;
+}
+
+void Navigator::removeItem(QObject* item) {
+  logger.debug() << "Remove item";
+  Q_ASSERT(item);
+
+#ifdef MVPN_DEBUG
+  bool found = false;
+#endif
+
+  for (ScreenData& screen : s_screens) {
+    for (int i = 0; i < screen.m_layers.length(); ++i) {
+      if (screen.m_layers.at(i).m_layer == item) {
+        screen.m_layers.removeAt(i);
+#ifdef MVPN_DEBUG
+        found = true;
+#endif
+        break;
+      }
+    }
+  }
+
+#ifdef MVPN_DEBUG
+  Q_ASSERT(found);
+#endif
+}
+
+bool Navigator::eventHandled() {
+  logger.debug() << "Close event handled";
+
+  ExternalOpHandler::instance()->request(ExternalOpHandler::OpCloseEvent);
+
+#if defined(MVPN_ANDROID) || defined(MVPN_WASM)
+  if (!m_screenHistory.isEmpty()) {
+    for (ScreenData& screen : s_screens) {
+      if (screen.m_screen == m_screenHistory.last()) {
+        for (int i = screen.m_layers.length() - 1; i >= 0; --i) {
+          const Layer& layer = screen.m_layers.at(i);
+
+          if (layer.m_type == Layer::eStackView) {
+            QVariant property = layer.m_layer->property("depth");
+            if (!property.isValid()) {
+              logger.warning() << "Invalid depth property!!";
+              continue;
+            }
+
+            int depth = property.toInt();
+            if (depth > 1) {
+              emit goBack(layer.m_layer);
+              return true;
+            }
+
+            continue;
+          }
+
+          Q_ASSERT(layer.m_type == Layer::eView);
+          QVariant property = layer.m_layer->property("visible");
+          if (!property.isValid()) {
+            logger.warning() << "Invalid visible property!!";
+            continue;
+          }
+
+          bool visible = property.toBool();
+          if (visible) {
+            emit goBack(layer.m_layer);
+            return true;
+          }
+
+          continue;
+        }
+
+        break;
+      }
+    }
+  }
+
+  return false;
+#elif defined(MVPN_IOS)
+  return false;
+#elif defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS) || \
+    defined(MVPN_DUMMY)
+  logger.error() << "We should not be here! Why "
+                    "CloseEventHandler::eventHandled() is called on desktop?!?";
+  return true;
+#else
+#  error Unsupported platform
+#endif
 }

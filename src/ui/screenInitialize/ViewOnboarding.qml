@@ -150,10 +150,10 @@ Item {
 
     }
 
-    Component.onCompleted: VPNCloseEventHandler.addView(onboardingPanel)
+    Component.onCompleted: VPNNavigator.addView(VPNNavigator.ScreenInitialize, onboardingPanel)
 
     Connections {
-        target: VPNCloseEventHandler
+        target: VPNNavigator
         function onGoBack(item) {
             if (item !== onboardingPanel || !onboardingPanel.visible) {
                 return;

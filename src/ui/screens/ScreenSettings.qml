@@ -50,6 +50,7 @@ Item {
         anchors.bottom: parent.bottom
 
         Component.onCompleted: {
+            VPNNavigator.addStackView(VPNNavigator.ScreenSettings, settingsStackView)
             settingsStackView.push("qrc:/ui/screenSettings/ViewSettingsMenu.qml")
         }
 

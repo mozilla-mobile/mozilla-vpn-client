@@ -17,7 +17,6 @@ Item {
     objectName: "viewLogs"
     width: window.width
     height: window.safeContentHeight
-    Component.onCompleted: VPNCloseEventHandler.addView(logs)
 
     VPNMenu {
         id: menu
@@ -121,15 +120,4 @@ Item {
         }
 
     }
-
-    Connections {
-        function onGoBack(item) {
-            if (item === logs && logs.visible)
-                mainStackView.pop(); // TODO
-
-        }
-
-        target: VPNCloseEventHandler
-    }
-
 }

@@ -54,7 +54,8 @@ Item {
             top: menu.buttom
         }
 
-        Component.onCompleted: function(){
+        Component.onCompleted: function() {
+            VPNNavigator.addStackView(VPNNavigator.ScreenGetHelp, getHelpStackView)
             getHelpStackView.push("qrc:/ui/screenGetHelp/ViewGetHelp.qml")
         }
 

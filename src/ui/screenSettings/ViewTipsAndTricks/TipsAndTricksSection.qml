@@ -115,7 +115,7 @@ ColumnLayout {
                     description: addon.subtitle
                     onClicked: {
                         VPNTutorial.play(addon);
-                        VPNCloseEventHandler.removeAllStackViews();
+                        VPNNavigator.requestScreen(VPNNavigator.ScreenHome)
                     }
                 }
             }

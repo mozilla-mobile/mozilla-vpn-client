@@ -7,7 +7,6 @@
 
 #include "captiveportal/captiveportal.h"
 #include "captiveportal/captiveportaldetection.h"
-#include "closeeventhandler.h"
 #include "connectionbenchmark/connectionbenchmark.h"
 #include "connectionhealth.h"
 #include "constants.h"
@@ -214,9 +213,6 @@ class MozillaVPN final : public QObject {
   CaptivePortal* captivePortal() { return &m_private->m_captivePortal; }
   CaptivePortalDetection* captivePortalDetection() {
     return &m_private->m_captivePortalDetection;
-  }
-  CloseEventHandler* closeEventHandler() {
-    return &m_private->m_closeEventHandler;
   }
   ConnectionBenchmark* connectionBenchmark() {
     return &m_private->m_connectionBenchmark;
@@ -442,7 +438,6 @@ class MozillaVPN final : public QObject {
   struct Private {
     CaptivePortal m_captivePortal;
     CaptivePortalDetection m_captivePortalDetection;
-    CloseEventHandler m_closeEventHandler;
     ConnectionBenchmark m_connectionBenchmark;
     ConnectionHealth m_connectionHealth;
     Controller m_controller;

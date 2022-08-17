@@ -10,7 +10,9 @@ import components 0.1
 VPNStackView {
     id: stackView
 
-    Component.onCompleted: function(){
+    Component.onCompleted: function() {
+       VPNNavigator.addStackView(VPNNavigator.ScreenSubscriptionGenericError, stackView)
+
        stackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
            // Problem confirming subscription...
            headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,

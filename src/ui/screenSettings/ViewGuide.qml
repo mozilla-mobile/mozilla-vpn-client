@@ -245,10 +245,10 @@ Item {
                 settingsStackView.pop();
         }
 
-        target: VPNCloseEventHandler
+        target: VPNNavigator
     }
 
-    Component.onCompleted: VPNCloseEventHandler.addView(root)
+    Component.onCompleted: VPNNavigator.addView(VPNNavigator.ScreenSettings, root)
 
     Component.onDestruction: {
         VPN.recordGleanEventWithExtraKeys("guideClosed",{

@@ -5,13 +5,15 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 
+import Mozilla.VPN 1.0
 import components 0.1
 
 VPNStackView {
     id: stackview
     objectName: "ViewMainStackView"
 
-    Component.onCompleted: function(){
+    Component.onCompleted: function() {
+        VPNNavigator.addStackView(VPNNavigator.ScreenHome, stackview)
         stackview.push("qrc:/ui/views/ViewMain.qml")
     }
 

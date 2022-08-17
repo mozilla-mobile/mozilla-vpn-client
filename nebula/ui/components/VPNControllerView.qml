@@ -709,7 +709,7 @@ Item {
         radius: VPNTheme.theme.cornerRadius * 2
     }
 
-    Component.onCompleted: VPNCloseEventHandler.addView(connectionInfoScreen)
+    Component.onCompleted: VPNNavigator.addView(VPNNavigator.ScreenHome, connectionInfoScreen)
 
     Connections {
         function onGoBack(item) {
@@ -718,6 +718,6 @@ Item {
             }
         }
 
-        target: VPNCloseEventHandler
+        target: VPNNavigator
     }
 }

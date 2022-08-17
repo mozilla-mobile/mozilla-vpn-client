@@ -10,7 +10,8 @@ import components 0.1
 VPNStackView {
     id: stackview
 
-    Component.onCompleted: function(){
+    Component.onCompleted: function() {
+        VPNNavigator.addStackView(VPNNavigator.ScreenAuthenticationInApp, stackview)
         stackview.push("qrc:/ui/authenticationInApp/ViewAuthenticationInApp.qml")
     }
 }

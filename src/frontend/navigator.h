@@ -8,6 +8,8 @@
 #include <QObject>
 #include <QQmlComponent>
 
+class QQuickItem;
+
 class Navigator final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Navigator)
@@ -17,11 +19,19 @@ class Navigator final : public QObject {
 
  public:
   enum Screen {
-    ScreenInitialize,
     ScreenAuthenticationInApp,
     ScreenAuthenticating,
+    ScreenBackendFailure,
+    ScreenBillingNotAvailable,
+    ScreenContactUs,
+    ScreenDeviceLimit,
+    ScreenGetHelp,
+    ScreenHome,
+    ScreenInitialize,
+    ScreenMessaging,
     ScreenNoSubscriptionFoundError,
     ScreenPostAuthentication,
+    ScreenSettings,
     ScreenSubscriptionBlocked,
     ScreenSubscriptionNeeded,
     ScreenSubscriptionExpiredError,
@@ -31,11 +41,6 @@ class Navigator final : public QObject {
     ScreenSubscriptionNotValidated,
     ScreenTelemetryPolicy,
     ScreenUpdateRequired,
-    ScreenHome,
-    ScreenMessaging,
-    ScreenSettings,
-    ScreenContactUs,
-    ScreenGetHelp,
     ScreenViewLogs,
   };
   Q_ENUM(Screen);
@@ -47,7 +52,13 @@ class Navigator final : public QObject {
   Q_INVOKABLE void requestScreen(Screen screen);
   Q_INVOKABLE void requestPreviousScreen();
 
+  Q_INVOKABLE void addStackView(Screen screen, const QVariant& stackView);
+  Q_INVOKABLE void addView(Screen screen, const QVariant& view);
+
+  Q_INVOKABLE bool eventHandled();
+
  signals:
+  void goBack(QQuickItem* item);
   void currentComponentChanged();
 
  private:
@@ -55,6 +66,8 @@ class Navigator final : public QObject {
 
   void computeComponent();
   void loadScreen(Screen screen, QQmlComponent* component);
+
+  void removeItem(QObject* obj);
 
  private:
   QQmlComponent* m_currentComponent = nullptr;

@@ -16,7 +16,10 @@ VPNStackView {
     function handleButtonClick() {
         VPN.triggerHeartbeat();
     }
+
     Component.onCompleted: {
+        VPNNavigator.addStackView(VPNNavigator.ScreenBackendFailure, stackview)
+
         stackview.push(
             "qrc:/ui/views/ViewErrorFullScreen.qml", {
                 //% "Something went wrong…"

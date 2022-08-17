@@ -68,8 +68,6 @@ target_sources(mozillavpn PRIVATE
     captiveportal/captiveportalrequest.h
     captiveportal/captiveportalrequesttask.cpp
     captiveportal/captiveportalrequesttask.h
-    closeeventhandler.cpp
-    closeeventhandler.h
     collator.cpp
     collator.h
     command.cpp

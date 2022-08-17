@@ -74,7 +74,7 @@ VPNFlickable {
 
                         onClicked: {
                             VPNTutorial.play(highlightedTutorial);
-                            VPNCloseEventHandler.removeAllStackViews();
+                            VPNNavigator.requestScreen(VPNNavigator.ScreenHome)
                         }
                     }
                 }

@@ -73,7 +73,7 @@ Window {
             return;
         }
 
-        if (VPNCloseEventHandler.eventHandled()) {
+        if (VPNNavigator.eventHandled()) {
             close.accepted = false;
             return;
         }
