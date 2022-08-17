@@ -15,6 +15,8 @@
         <file>main.qml</file>
         <file>qmldir</file>
         <file>screenGetHelp/ViewGetHelp.qml</file>
+        <file>screenGetHelp/contactUs/ViewContactUsForm.qml</file>
+        <file>screenGetHelp/contactUs/ViewContactUsThankYou.qml</file>
         <file>screenGetHelp/developerMenu/ViewAnimationsPlayground.qml</file>
         <file>screenGetHelp/developerMenu/ViewDeveloperMenu.qml</file>
         <file>screenGetHelp/developerMenu/ViewFeatureList.qml</file>
@@ -59,7 +61,6 @@
         <file>screenSettings/ViewWhatsNew.qml</file>
         <file>views/ViewAddon.qml</file>
         <file>views/ViewCaptivePortalInfo.qml</file>
-        <file>views/ViewContactUs.qml</file>
         <file>views/ViewDevices.qml</file>
         <file>views/ViewErrorFullScreen.qml</file>
         <file>views/ViewInitialize.qml</file>
