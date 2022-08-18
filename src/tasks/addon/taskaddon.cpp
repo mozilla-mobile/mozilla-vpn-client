@@ -4,7 +4,6 @@
 
 #include "taskaddon.h"
 #include "addons/manager/addonmanager.h"
-#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
@@ -22,7 +21,10 @@ TaskAddon::~TaskAddon() { MVPN_COUNT_DTOR(TaskAddon); }
 
 void TaskAddon::run() {
   NetworkRequest* request = NetworkRequest::createForGetUrl(
-      this, QString("%1%2.rcc").arg(Constants::addonSourceUrl()).arg(m_addonId),
+      this,
+      QString("%1%2.rcc")
+          .arg(AddonManager::addonServerAddress())
+          .arg(m_addonId),
       200);
 
   connect(request, &NetworkRequest::requestFailed, this,
