@@ -110,8 +110,10 @@
         <file>components/VPNSegmentedToggle.qml</file>
         <file>components/VPNSegmentedNavigation.qml</file>
         <file>components/VPNUserProfile.qml</file>
-        <file>components/VPNViewBase.qml</file>
         <file>components/VPNTutorialPopups.qml</file>
+        <file>components/VPNTutorialList.qml</file>
+        <file>components/VPNGuideList.qml</file>
         <file>components/VPNScreenBase.qml</file>
+        <file>components/VPNViewBase.qml</file>
     </qresource>
 </RCC>

@@ -600,6 +600,9 @@ tipsAndTricks:
   advancedTipsDescription: Let us help you learn more about Mozilla VPN
   quickTipsGuideViewTitle: Quick tip
   introModalDescription: Here’s a great list of useful tips and tricks to get the best out of your Mozilla VPN experience. Check it out now or find it anytime in the settings.
+  tabTitleAll: All
+  tabTitleTutorials: Tutorials
+  tabTitleTips: Tips
 
 subscriptionManagement:
   menuTitle:
