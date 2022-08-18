@@ -107,6 +107,7 @@ Window {
     }
 
     Loader {
+      objectName: "screenLoader"
       asynchronous: true
       sourceComponent: VPNNavigator.component
       anchors.fill: parent
