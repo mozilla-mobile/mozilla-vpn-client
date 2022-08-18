@@ -3,7 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
-const octokit = new Octokit({  });
+const octokit = new Octokit({ });
+
+const static_branch_info = fetch("./branch_runs.json").then(r=>r.json());
 
 
 /**
@@ -53,20 +55,35 @@ class BranchSelector extends HTMLElement{
                 return stored.data;
             }
         }
+        // We can't use the stored ones >:c - Too old
         const response = await octokit.request('GET /repos/{owner}/{repo}/branches', {
             owner: 'mozilla-mobile',
             repo: 'mozilla-vpn-client',
             per_page: 100
-
         });
+        const branch_info = await static_branch_info; // Make Sure this is ready
+        const unfiltered_branches = response.data;
+        // Filter the branches we just got from github:
+        // if we know the head-sha of the breanch does not have 
+        // a taskcluster run (because too told), drop it. 
+        const data = unfiltered_branches.filter((branch) => {
+            const branch_metadata = branch_info[branch.commit.sha]
+            if(!branch_metadata){
+                // We don't know anything about that branch, add it to final list
+                return true;
+            }
+            // It's ok if it has a running or completed task attached.
+            return branch_metadata.task_status == "ok";
+        })
+        
 
         console.log(`RateLimit -> ${response.headers["x-ratelimit-remaining"]}`)
 
         localStorage.setItem("branches", JSON.stringify({
             date: new Date(),
-            data: response.data
+            data,
         }));
-        return response.data;
+        return data;
     }
 
     render(){
