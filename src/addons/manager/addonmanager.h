@@ -20,6 +20,8 @@ class AddonManager final : public QAbstractListModel {
       bool loadCompleted MEMBER m_loadCompleted NOTIFY loadCompletedChanged)
 
  public:
+  static QString addonServerAddress();
+
   Q_INVOKABLE Addon* pick(QJSValue filterCallback) const;
 
   Q_INVOKABLE QJSValue reduce(QJSValue callback, QJSValue initialValue) const;
