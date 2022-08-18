@@ -192,7 +192,6 @@ Window {
         }
     }
 
-/* TODO
     Connections {
         target: VPNSettings
         enabled: Qt.platform.os != "android"
@@ -213,6 +212,7 @@ Window {
         id: serverUnavailablePopup
     }
 
+/* TODO
     function goToServersView() {
         if (VPN.state !== VPN.StateMain) {
             return;
@@ -226,6 +226,7 @@ Window {
     function pushCaptivePortalView() {
         mainStackView.push("qrc:/ui/views/ViewCaptivePortalInfo.qml", StackView.Immediate);
     }
+*/
 
     Connections {
         target: VPNController
@@ -248,5 +249,4 @@ Window {
 
         anchors.centerIn: parent
     }
-*/
 }

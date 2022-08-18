@@ -44,12 +44,12 @@ struct ScreenData {
   // returns -1, the screen is removed from the computation. Otherwise, if we
   // do not need to show a particular screen (see requestScreen() method), the
   // top priority screen is shown.
-  int8_t (*m_priorityGetter)(Navigator::Screen* requestedScreen);
+  int8_t (*m_priorityGetter)(Navigator::Screen* requestedScreen) = nullptr;
 
   // On android/wasm, when the user clicks the back-button, the app uses this
   // function to decide the screen policy. If the function returns false, the
   // app will quit.
-  bool (*m_quitBlocked)();
+  bool (*m_quitBlocked)() = nullptr;
 
   // The cache of the QML component.
   QQmlComponent* m_qmlComponent = nullptr;
