@@ -38,6 +38,18 @@ jobs:
             name: Wasm-Chrome
             path: tools/wasm_chrome
 
+  logviewer: 
+      name: Add Logviewer
+      runs-on: ubuntu-20.04
+      steps:
+        - name: Clone repository
+          uses: actions/checkout@v2
+        - name: Uploading
+          uses: actions/upload-artifact@v1
+          with:
+              name: Logviewer
+              path: tools/logviewer
+
   inspector:
     name: Add Inspector
     runs-on: ubuntu-20.04
@@ -111,7 +123,7 @@ jobs:
 
   ghPages:
     runs-on: ubuntu-20.04
-    needs: [wasm_chrome, inspector,addons]
+    needs: [wasm_chrome, inspector,addons,logviewer]
     name: Compile Github Page from Components
     env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -128,6 +140,11 @@ jobs:
         with:
           name: Addons
           path: _site/addons
+      - name: Download the Logviewer Artifact
+        uses: actions/download-artifact@v2.0.8
+        with:
+          name: Logviewer
+          path: _site/logviewer
 
       - name: Download a Inspector Artifact
         uses: actions/download-artifact@v2.0.8
