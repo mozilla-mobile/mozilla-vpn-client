@@ -25,6 +25,7 @@
         <file>screenGetHelp/giveFeedback/ViewGiveFeedback.qml</file>
         <file>screenInitialize/ViewInitialize.qml</file>
         <file>screenInitialize/ViewOnboarding.qml</file>
+        <file>screenInitialize/ViewMobileOnboarding.qml</file>
         <file>screens/ScreenAuthenticating.qml</file>
         <file>screens/ScreenAuthenticationInApp.qml</file>
         <file>screens/ScreenBackendFailure.qml</file>
@@ -66,6 +67,7 @@
         <file>screenSettings/ViewTipsAndTricks/TipsAndTricksSection.qml</file>
         <file>screenSettings/ViewTipsAndTricks/ViewTipsAndTricks.qml</file>
         <file>screenSettings/ViewWhatsNew.qml</file>
+        <file>screenSubscriptionNeeded/ViewSubscriptionNeeded.qml</file>
         <file>views/ViewAddon.qml</file>
         <file>views/ViewCaptivePortalInfo.qml</file>
         <file>views/ViewDevices.qml</file>
@@ -73,8 +75,6 @@
         <file>views/ViewMain.qml</file>
         <file>views/ViewMultiHop.qml</file>
         <file>views/ViewServers.qml</file>
-        <file>views/ViewSubscriptionNeeded.qml</file>
         <file>views/ViewUpdate.qml</file>
-        <file>views/ViewMobileOnboarding.qml</file>
     </qresource>
 </RCC>
