@@ -12,6 +12,6 @@ StackView {
 
     Component.onCompleted: function(){
         VPNNavigator.addStackView(VPNNavigator.ScreenSubscriptionNeeded, stackview)
-        stackview.push("qrc:/ui/screenSubscriptionNeeded/ViewSubscriptionNeeded.qml")
+        stackview.push("qrc:/ui/screens/subscriptionNeeded/ViewSubscriptionNeeded.qml")
     }
 }

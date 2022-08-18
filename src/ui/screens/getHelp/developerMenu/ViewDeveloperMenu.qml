@@ -135,19 +135,19 @@ VPNViewBase {
 
                 ListElement {
                     title: "Feature list"
-                    viewQrc: "qrc:/ui/screenGetHelp/developerMenu/ViewFeatureList.qml"
+                    viewQrc: "qrc:/ui/screens/getHelp/developerMenu/ViewFeatureList.qml"
                 }
                 ListElement {
                     title: "Theme list"
-                    viewQrc: "qrc:/ui/screenGetHelp/developerMenu/ViewThemeList.qml"
+                    viewQrc: "qrc:/ui/screens/getHelp/developerMenu/ViewThemeList.qml"
                 }
                 ListElement {
                     title: "Messages - REMOVE ME"
-                    viewQrc: "qrc:/ui/screenGetHelp/developerMenu/ViewMessages.qml"
+                    viewQrc: "qrc:/ui/screens/getHelp/developerMenu/ViewMessages.qml"
                 }
                 ListElement {
                     title: "Animations playground"
-                    viewQrc: "qrc:/ui/screenGetHelp/developerMenu/ViewAnimationsPlayground.qml"
+                    viewQrc: "qrc:/ui/screens/getHelp/developerMenu/ViewAnimationsPlayground.qml"
                 }
             }
 

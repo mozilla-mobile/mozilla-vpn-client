@@ -14,18 +14,18 @@
         <file>deleteAccount/ViewDeleteAccountRequest.qml</file>
         <file>main.qml</file>
         <file>qmldir</file>
-        <file>screenGetHelp/ViewGetHelp.qml</file>
-        <file>screenGetHelp/contactUs/ViewContactUsForm.qml</file>
-        <file>screenGetHelp/contactUs/ViewContactUsThankYou.qml</file>
-        <file>screenGetHelp/developerMenu/ViewAnimationsPlayground.qml</file>
-        <file>screenGetHelp/developerMenu/ViewDeveloperMenu.qml</file>
-        <file>screenGetHelp/developerMenu/ViewFeatureList.qml</file>
-        <file>screenGetHelp/developerMenu/ViewMessages.qml</file>
-        <file>screenGetHelp/developerMenu/ViewThemeList.qml</file>
-        <file>screenGetHelp/giveFeedback/ViewGiveFeedback.qml</file>
-        <file>screenInitialize/ViewInitialize.qml</file>
-        <file>screenInitialize/ViewOnboarding.qml</file>
-        <file>screenInitialize/ViewMobileOnboarding.qml</file>
+        <file>screens/getHelp/ViewGetHelp.qml</file>
+        <file>screens/getHelp/contactUs/ViewContactUsForm.qml</file>
+        <file>screens/getHelp/contactUs/ViewContactUsThankYou.qml</file>
+        <file>screens/getHelp/developerMenu/ViewAnimationsPlayground.qml</file>
+        <file>screens/getHelp/developerMenu/ViewDeveloperMenu.qml</file>
+        <file>screens/getHelp/developerMenu/ViewFeatureList.qml</file>
+        <file>screens/getHelp/developerMenu/ViewMessages.qml</file>
+        <file>screens/getHelp/developerMenu/ViewThemeList.qml</file>
+        <file>screens/getHelp/giveFeedback/ViewGiveFeedback.qml</file>
+        <file>screens/initialize/ViewInitialize.qml</file>
+        <file>screens/initialize/ViewOnboarding.qml</file>
+        <file>screens/initialize/ViewMobileOnboarding.qml</file>
         <file>screens/ScreenAuthenticating.qml</file>
         <file>screens/ScreenAuthenticationInApp.qml</file>
         <file>screens/ScreenBackendFailure.qml</file>
@@ -50,24 +50,24 @@
         <file>screens/ScreenTelemetryPolicy.qml</file>
         <file>screens/ScreenUpdateRequired.qml</file>
         <file>screens/ScreenViewLogs.qml</file>
-        <file>screenSettings/appPermissions/AppPermissionsList.qml</file>
-        <file>screenSettings/appPermissions/ViewAppPermissions.qml</file>
-        <file>screenSettings/ViewAboutUs.qml</file>
-        <file>screenSettings/ViewAdvancedDNSSettings.qml</file>
-        <file>screenSettings/ViewGuide.qml</file>
-        <file>screenSettings/ViewLanguage.qml</file>
-        <file>screenSettings/ViewLicense.qml</file>
-        <file>screenSettings/ViewLicenses.qml</file>
-        <file>screenSettings/ViewNetworkSettings.qml</file>
-        <file>screenSettings/ViewNotifications.qml</file>
-        <file>screenSettings/ViewPrivacySecurity.qml</file>
-        <file>screenSettings/ViewSettingsMenu.qml</file>
-        <file>screenSettings/ViewSubscriptionManagement/SubscriptionManagementItem.qml</file>
-        <file>screenSettings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml</file>
-        <file>screenSettings/ViewTipsAndTricks/TipsAndTricksSection.qml</file>
-        <file>screenSettings/ViewTipsAndTricks/ViewTipsAndTricks.qml</file>
-        <file>screenSettings/ViewWhatsNew.qml</file>
-        <file>screenSubscriptionNeeded/ViewSubscriptionNeeded.qml</file>
+        <file>screens/settings/appPermissions/AppPermissionsList.qml</file>
+        <file>screens/settings/appPermissions/ViewAppPermissions.qml</file>
+        <file>screens/settings/ViewAboutUs.qml</file>
+        <file>screens/settings/ViewAdvancedDNSSettings.qml</file>
+        <file>screens/settings/ViewGuide.qml</file>
+        <file>screens/settings/ViewLanguage.qml</file>
+        <file>screens/settings/ViewLicense.qml</file>
+        <file>screens/settings/ViewLicenses.qml</file>
+        <file>screens/settings/ViewNetworkSettings.qml</file>
+        <file>screens/settings/ViewNotifications.qml</file>
+        <file>screens/settings/ViewPrivacySecurity.qml</file>
+        <file>screens/settings/ViewSettingsMenu.qml</file>
+        <file>screens/settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml</file>
+        <file>screens/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml</file>
+        <file>screens/settings/ViewTipsAndTricks/TipsAndTricksSection.qml</file>
+        <file>screens/settings/ViewTipsAndTricks/ViewTipsAndTricks.qml</file>
+        <file>screens/settings/ViewWhatsNew.qml</file>
+        <file>screens/subscriptionNeeded/ViewSubscriptionNeeded.qml</file>
         <file>views/ViewCaptivePortalInfo.qml</file>
         <file>views/ViewDevices.qml</file>
         <file>views/ViewErrorFullScreen.qml</file>

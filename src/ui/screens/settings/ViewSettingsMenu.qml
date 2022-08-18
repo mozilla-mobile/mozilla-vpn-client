@@ -73,7 +73,7 @@ VPNViewBase {
                 settingTitle: VPNl18n.TipsAndTricksSettingsEntryLabel
                 imageLeftSrc: "qrc:/nebula/resources/sparkles.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push("qrc:/ui/screenSettings/ViewTipsAndTricks/ViewTipsAndTricks.qml")
+                onClicked: settingsStackView.push("qrc:/ui/screens/settings/ViewTipsAndTricks/ViewTipsAndTricks.qml")
             }
 
             VPNSettingsItem {
@@ -81,7 +81,7 @@ VPNViewBase {
                 settingTitle: qsTrId("vpn.settings.networking")
                 imageLeftSrc: "qrc:/ui/resources/settings/networkSettings.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push("qrc:/ui/screenSettings/ViewNetworkSettings.qml", {
+                onClicked: settingsStackView.push("qrc:/ui/screens/settings/ViewNetworkSettings.qml", {
                                                       //% "App permissions"
                                                       _appPermissionsTitle: Qt.binding(() => qsTrId("vpn.settings.appPermissions2"))
                                                   })
@@ -93,7 +93,7 @@ VPNViewBase {
                 settingTitle: VPNl18n.SettingsSystemPreferences
                 imageLeftSrc: "qrc:/ui/resources/settings/preferences.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push("qrc:/ui/screenSettings/ViewPrivacySecurity.qml", {
+                onClicked: settingsStackView.push("qrc:/ui/screens/settings/ViewPrivacySecurity.qml", {
                                                     _startAtBootTitle: Qt.binding(() => VPNl18n.SettingsStartAtBootTitle),
                                                     _languageTitle:  Qt.binding(() => qsTrId("vpn.settings.language")),
                                                     _notificationsTitle:  Qt.binding(() => qsTrId("vpn.settings.notifications")),
@@ -119,7 +119,7 @@ VPNViewBase {
                 settingTitle: qsTrId("vpn.settings.aboutUs")
                 imageLeftSrc: "qrc:/ui/resources/settings/aboutUs.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push("qrc:/ui/screenSettings/ViewAboutUs.qml")
+                onClicked: settingsStackView.push("qrc:/ui/screens/settings/ViewAboutUs.qml")
             }
 
             VPNVerticalSpacer {
@@ -154,7 +154,7 @@ VPNViewBase {
                 VPNProfileFlow.state === VPNProfileFlow.StateReady
                 && settingsStackView.currentItem.objectName !== "subscriptionManagmentView"
             ) {
-                return settingsStackView.push("qrc:/ui/screenSettings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml");
+                return settingsStackView.push("qrc:/ui/screens/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml");
             }
 
             // Only push the profile view if it’s not already in the stack

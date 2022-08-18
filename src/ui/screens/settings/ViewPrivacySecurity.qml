@@ -77,7 +77,7 @@ VPNViewBase {
                         VPNAndroidUtils.openNotificationSettings();
                         return;
                     }
-                    settingsStackView.push("qrc:/ui/screenSettings/ViewNotifications.qml")
+                    settingsStackView.push("qrc:/ui/screens/settings/ViewNotifications.qml")
                 }
                 visible: VPNFeatureList.get("captivePortal").isSupported || VPNFeatureList.get("unsecuredNetworkNotification").isSupported || VPNFeatureList.get("notificationControl").isSupported
                 width: parent.width - VPNTheme.theme.windowMargin
@@ -92,7 +92,7 @@ VPNViewBase {
                 settingTitle: _languageTitle
                 imageLeftSrc: "qrc:/ui/resources/settings/language.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push("qrc:/ui/screenSettings/ViewLanguage.qml")
+                onClicked: settingsStackView.push("qrc:/ui/screens/settings/ViewLanguage.qml")
                 visible: VPNLocalizer.hasLanguages
                 width: parent.width - VPNTheme.theme.windowMargin
             }

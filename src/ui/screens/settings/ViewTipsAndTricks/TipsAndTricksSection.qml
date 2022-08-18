@@ -82,7 +82,7 @@ ColumnLayout {
                         title: addon.title
 
                         onClicked:{
-                            settingsStackView.push("qrc:/ui/screenSettings/ViewGuide.qml", {"guide": addon, "imageBgColor": imageBgColor})
+                            settingsStackView.push("qrc:/ui/screens/settings/ViewGuide.qml", {"guide": addon, "imageBgColor": imageBgColor})
                             VPN.recordGleanEventWithExtraKeys("guideOpened",{
                                                                 "id": addon.id
                             });

@@ -36,7 +36,7 @@ VPNViewBase {
                 accessibleName: licenseTitle
                 title: licenseTitle
                 iconSource: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push("qrc:/ui/screenSettings/ViewLicense.qml", { _menuTitle: licenseTitle, licenseContent })
+                onClicked: settingsStackView.push("qrc:/ui/screens/settings/ViewLicense.qml", { _menuTitle: licenseTitle, licenseContent })
             }
         }
     }

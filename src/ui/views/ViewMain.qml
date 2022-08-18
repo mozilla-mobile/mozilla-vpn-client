@@ -252,7 +252,7 @@ VPNFlickable {
                 Loader {
                     Layout.fillHeight: true
                     Layout.fillWidth: true
-                    source: "qrc:/ui/screenSettings/ViewTipsAndTricks/ViewTipsAndTricks.qml"
+                    source: "qrc:/ui/screens/settings/ViewTipsAndTricks/ViewTipsAndTricks.qml"
                 }
             }
         }

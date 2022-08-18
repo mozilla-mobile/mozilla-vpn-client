@@ -75,7 +75,7 @@ VPNFlickable {
                 delegate: Loader {
                     objectName: _objectName
                     Layout.fillWidth: true
-                    source: "qrc:/ui/screenSettings/ViewSubscriptionManagement/SubscriptionManagementItem.qml"
+                    source: "qrc:/ui/screens/settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml"
                 }
             }
 
@@ -95,7 +95,7 @@ VPNFlickable {
                 delegate: Loader {
                     Layout.fillWidth: true
                     objectName: _objectName
-                    source: "qrc:/ui/screenSettings/ViewSubscriptionManagement/SubscriptionManagementItem.qml"
+                    source: "qrc:/ui/screens/settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml"
                 }
             }
 

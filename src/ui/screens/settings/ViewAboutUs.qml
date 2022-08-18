@@ -121,7 +121,7 @@ VPNViewBase {
               aboutUsListModel.append({
                    linkId: "license",
                    linkTitle: VPNl18n.AboutUsLicenses,
-                   openView: "qrc:/ui/screenSettings/ViewLicenses.qml"
+                   openView: "qrc:/ui/screens/settings/ViewLicenses.qml"
               });
            }
         }

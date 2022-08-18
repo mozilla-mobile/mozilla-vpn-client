@@ -56,7 +56,7 @@ Item {
 
         Component.onCompleted: function() {
             VPNNavigator.addStackView(VPNNavigator.ScreenGetHelp, getHelpStackView)
-            getHelpStackView.push("qrc:/ui/screenGetHelp/ViewGetHelp.qml")
+            getHelpStackView.push("qrc:/ui/screens/getHelp/ViewGetHelp.qml")
         }
 
         onCurrentItemChanged: {
@@ -76,7 +76,7 @@ Item {
                 // Unwind getHelpStackView back to Contact Us
                 return getHelpStackView.pop(contactUsViewInStack, StackView.Immediate);
             }
-            getHelpStackView.push("qrc:/ui/screenGetHelp/contactUs/ViewContactUsForm.qml");
+            getHelpStackView.push("qrc:/ui/screens/getHelp/contactUs/ViewContactUsForm.qml");
         }
     }
 }

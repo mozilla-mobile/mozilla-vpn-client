@@ -47,7 +47,7 @@ VPNViewBase {
 
             accessibleName: title
             title: qsTrId("vpn.settings.giveFeedback")
-            onClicked: getHelpStackView.push("qrc:/ui/screenGetHelp/giveFeedback/ViewGiveFeedback.qml")
+            onClicked: getHelpStackView.push("qrc:/ui/screens/getHelp/giveFeedback/ViewGiveFeedback.qml")
             iconSource: "qrc:/nebula/resources/chevron.svg"
             backgroundColor: VPNTheme.theme.iconButtonLightBackground
             width: parent.width - VPNTheme.theme.windowMargin
@@ -67,7 +67,7 @@ VPNViewBase {
             imageLeftSrc: "qrc:/ui/resources/developer.svg"
             imageRightSrc: "qrc:/nebula/resources/chevron.svg"
             visible: VPNSettings.developerUnlock
-            onClicked: getHelpStackView.push("qrc:/ui/screenGetHelp/developerMenu/ViewDeveloperMenu.qml")
+            onClicked: getHelpStackView.push("qrc:/ui/screens/getHelp/developerMenu/ViewDeveloperMenu.qml")
         }
 
     }
