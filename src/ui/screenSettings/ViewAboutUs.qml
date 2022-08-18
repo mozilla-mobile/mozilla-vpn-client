@@ -11,9 +11,9 @@ import Mozilla.VPN 1.0
 import components 0.1
 
 VPNViewBase {
+    objectName: "viewAboutUs"
     property bool listenForUpdateEvents:false
     property string licenseURL: ""
-
 
     //% "About us"
     _menuTitle: qsTrId("vpn.settings.aboutUs")
@@ -21,6 +21,7 @@ VPNViewBase {
     _viewContentData: ColumnLayout {
         spacing: VPNTheme.theme.windowMargin
         Layout.fillWidth: true
+        objectName: "aboutUsList"
 
         ColumnLayout {
             Layout.leftMargin: VPNTheme.theme.windowMargin
@@ -75,8 +76,6 @@ VPNViewBase {
         }
 
         Repeater {
-           objectName: "aboutUsList"
-
            model: ListModel {
                id: aboutUsListModel
                ListElement {

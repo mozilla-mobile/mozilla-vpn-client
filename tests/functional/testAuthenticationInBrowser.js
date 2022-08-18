@@ -90,7 +90,7 @@ describe('User authentication in browser', function() {
     await vpn.clickOnElement('settingsButton');
 
     await vpn.waitForElement('settingsLogout');
-    await vpn.scrollToElement('settingsView', 'settingsLogout');
+    await vpn.scrollToElement('settingsView-flickable', 'settingsLogout');
     await vpn.clickOnElement('settingsLogout');
     await vpn.waitForMainView();
 

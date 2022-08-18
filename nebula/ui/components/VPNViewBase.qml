@@ -30,6 +30,7 @@ Item {
 
     VPNFlickable {
         id: vpnFlickable
+        objectName: parent.objectName + "-flickable"
 
         flickContentHeight: viewContent.implicitHeight + anchors.topMargin
         interactive: viewContent.implicitHeight > height - anchors.topMargin

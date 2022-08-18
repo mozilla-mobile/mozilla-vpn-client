@@ -21,16 +21,12 @@ describe('Initial view and onboarding', function() {
 
   it('Open the help menu', async () => {
     await vpn.clickOnElement('getHelpLink');
-    await vpn.waitForElementProperty('getHelpLink', 'visible', 'false');
-
     await vpn.waitForElement('getHelpBack');
     await vpn.waitForElementProperty('getHelpBack', 'visible', 'true');
   });
 
   it('Open help links', async () => {
     await vpn.clickOnElement('getHelpLink');
-    await vpn.waitForElementProperty('getHelpLink', 'visible', 'false');
-
     await vpn.waitForElement('getHelpLinks');
     await vpn.waitForElementProperty('getHelpLinks', 'visible', 'true');
 
@@ -60,8 +56,9 @@ describe('Initial view and onboarding', function() {
     });
 
     await vpn.clickOnElement('getHelpLinks/getHelpBackList-1');
-    await vpn.waitForElement('supportTicketScreen');
-    await vpn.waitForElementProperty('supportTicketScreen', 'visible', 'true');
+    await vpn.waitForElement('contactUs-unauthedUserInputs');
+    await vpn.waitForElementProperty(
+        'contactUs-unauthedUserInputs', 'visible', 'true');
   });
 
   it('Complete the onboarding (aborting in each phase)', async () => {

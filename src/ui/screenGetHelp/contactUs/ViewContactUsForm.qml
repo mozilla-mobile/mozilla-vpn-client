@@ -11,6 +11,7 @@ import components 0.1
 import components.forms 0.1
 
 VPNViewBase {
+    objectName: "contactUs"
     _menuTitle: VPNl18n.InAppSupportWorkflowSupportNavLinkText
    _viewContentData: ColumnLayout {
        property string _emailAddress: ""

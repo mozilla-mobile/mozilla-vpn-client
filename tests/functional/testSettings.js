@@ -1,6 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 const assert = require('assert');
 const vpn = require('./helper.js');
 
@@ -17,11 +18,6 @@ describe('Settings', function() {
       await vpn.flipFeatureOff('subscriptionManagement');
     }
   });
-
-  async function getMainStackViewDepth() {
-    await vpn.waitForElement('MainStackView');
-    return await vpn.getElementProperty('MainStackView', 'depth')
-  }
 
   async function checkSetting(objectName, settingKey) {
     await vpn.waitForElement(objectName);
@@ -74,22 +70,6 @@ describe('Settings', function() {
     await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
   });
 
-  it('Settings is pushed to, and popped from, mainStackView', async () => {
-    await vpn.waitForElement('settingsBackButton');
-    await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
-
-    const stackDepth = await getMainStackViewDepth();
-
-    await vpn.clickOnElement('settingsBackButton');
-    await vpn.wait();
-    await vpn.waitForElement('controllerTitle');
-    await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
-
-    assert(
-        await getMainStackViewDepth() ===
-        (parseInt(stackDepth) - 1).toString());
-  });
-
   it('Checking settings entries', async () => {
     await vpn.waitForElement('settingsUserProfile-manageAccountButton');
     await vpn.waitForElementProperty(
@@ -110,7 +90,7 @@ describe('Settings', function() {
     await vpn.waitForElementProperty('settingsTipsAndTricks', 'visible', 'true');
 
     await vpn.setElementProperty(
-        'settingsView', 'contentY', 'i',
+        'settingsView-flickable', 'contentY', 'i',
         parseInt(await vpn.getElementProperty('settingsTipsAndTricks', 'y')));
     await vpn.wait();
 
@@ -123,8 +103,8 @@ describe('Settings', function() {
     let featureTourFeatures = await vpn.featureTourFeatures();
 
     await vpn.setElementProperty(
-      'settingsTipsAndTricksPage', 'contentY', 'i',
-      parseInt(await vpn.getElementProperty('featureTourCard', 'y')));
+        'settingsTipsAndTricksPage-flickable', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('featureTourCard', 'y')));
     await vpn.wait();
 
     await vpn.waitForElement('featureTourCard');
@@ -201,7 +181,7 @@ describe('Settings', function() {
     await vpn.waitForElementProperty('settingsNetworking', 'visible', 'true');
 
     await vpn.setElementProperty(
-        'settingsView', 'contentY', 'i',
+        'settingsView-flickable', 'contentY', 'i',
         parseInt(await vpn.getElementProperty('settingsNetworking', 'y')));
     await vpn.wait();
 
@@ -247,7 +227,7 @@ describe('Settings', function() {
     await vpn.getElementProperty(
         'languageList/language-column-it/language-it', 'y');
     await vpn.setElementProperty(
-        'settingsLanguagesView', 'contentY', 'i',
+        'settingsLanguagesView-flickable', 'contentY', 'i',
         parseInt(await vpn.getElementProperty(
             'languageList/language-column-it/language-it', 'y')));
     await vpn.wait();
@@ -287,7 +267,7 @@ describe('Settings', function() {
         'settingsSystemLanguageToggle', 'checked', 'false');
 
     await vpn.setElementProperty(
-        'settingsLanguagesView', 'contentY', 'i',
+        'settingsLanguagesView-flickable', 'contentY', 'i',
         parseInt(await vpn.getElementProperty(
             'languageList/language-column-en/language-en', 'y')));
     await vpn.wait();
@@ -321,7 +301,8 @@ describe('Settings', function() {
     await vpn.wait();
     await vpn.waitForElement('settingsBackButton');
 
-    await vpn.setElementProperty('settingsLanguagesView', 'contentY', 'i', 0);
+    await vpn.setElementProperty(
+        'settingsLanguagesView-flickable', 'contentY', 'i', 0);
     await vpn.wait();
 
     await vpn.waitForElementProperty(
@@ -350,7 +331,7 @@ describe('Settings', function() {
     await vpn.waitForElementProperty('settingsAboutUs', 'visible', 'true');
 
     await vpn.setElementProperty(
-        'settingsView', 'contentY', 'i',
+        'settingsView-flickable', 'contentY', 'i',
         parseInt(await vpn.getElementProperty('settingsAboutUs', 'y')));
     await vpn.wait();
 
@@ -362,6 +343,7 @@ describe('Settings', function() {
 
     await vpn.waitForElement('aboutUsList');
 
+    await vpn.waitForElement('viewAboutUs');
     await vpn.waitForElement('aboutUsList/aboutUsList-tos');
     await vpn.waitForElementProperty(
         'aboutUsList/aboutUsList-tos', 'visible', 'true');
@@ -406,7 +388,7 @@ describe('Settings', function() {
     await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
 
     await vpn.setElementProperty(
-        'settingsView', 'contentY', 'i',
+        'settingsView-flickable', 'contentY', 'i',
         parseInt(await vpn.getElementProperty('settingsGetHelp', 'y')));
     await vpn.wait();
 
@@ -489,12 +471,8 @@ describe('Settings', function() {
     await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
   });
 
-  it('Get help is pushed to, and popped from, mainStackView', async () => {
-    const mainStackDepth = await getMainStackViewDepth();
+  it('Get help is opened and closed', async () => {
     await getToGetHelpView();
-    assert(
-        await getMainStackViewDepth() ===
-        (parseInt(mainStackDepth) + 1).toString());
 
     await vpn.wait();
     await vpn.waitForElement('getHelpBack');
@@ -503,13 +481,11 @@ describe('Settings', function() {
     await vpn.wait();
     await vpn.waitForElement('settingsGetHelp');
     await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
-    assert(await getMainStackViewDepth() === mainStackDepth.toString());
   });
 
-  it('Give feedback is pushed to, and popped from, mainStackView', async () => {
+  it('Give feedback is opened and closed', async () => {
     await getToGetHelpView();
     await vpn.wait();
-    const mainStackDepth = await getMainStackViewDepth();
 
     await vpn.waitForElement('getHelpLinks/settingsGiveFeedback');
     await vpn.waitForElementProperty(
@@ -518,24 +494,16 @@ describe('Settings', function() {
     await vpn.clickOnElement('getHelpLinks/settingsGiveFeedback');
     await vpn.wait();
 
-    assert(
-        await getMainStackViewDepth() ===
-        (parseInt(mainStackDepth) + 1).toString());
-
     await vpn.wait();
     await vpn.waitForElement('giveFeedbackBackButton');
     await vpn.clickOnElement('giveFeedbackBackButton');
     await vpn.wait();
-
-    assert(
-        await getMainStackViewDepth() === parseInt(mainStackDepth).toString());
   });
 
 
-  it('Contact us is pushed to, and popped from, mainStackView', async () => {
+  it('Contact us is opened and closed', async () => {
     await getToGetHelpView();
     await vpn.wait();
-    const mainStackDepth = await getMainStackViewDepth();
 
     await vpn.waitForElement('getHelpLinks/getHelpBackList-1')
         await vpn.waitForElementProperty(
@@ -544,18 +512,9 @@ describe('Settings', function() {
     await vpn.clickOnElement('getHelpLinks/getHelpBackList-1');
 
     await vpn.wait();
-
-    assert(
-        await getMainStackViewDepth() ===
-        (parseInt(mainStackDepth) + 1).toString());
-
+    await vpn.waitForElement('contactUs-userInfo');
+    await vpn.clickOnElement('getHelpBack');
     await vpn.wait();
-    await vpn.waitForElement('supportTicketScreen');
-    await vpn.clickOnElement('supportTicketScreen');
-    await vpn.wait();
-
-    assert(
-        await getMainStackViewDepth() === parseInt(mainStackDepth).toString());
   });
 
   it('Checking the preferences settings', async () => {
@@ -564,7 +523,7 @@ describe('Settings', function() {
         'settingsPreferences', 'visible', 'true');
 
     await vpn.setElementProperty(
-        'settingsView', 'contentY', 'i',
+        'settingsView-flickable', 'contentY', 'i',
         parseInt(await vpn.getElementProperty('settingsPreferences', 'y')));
     await vpn.wait();
 
@@ -594,7 +553,7 @@ describe('Settings', function() {
         'settingsNotifications', 'visible', 'true');
 
     await vpn.setElementProperty(
-        'settingsView', 'contentY', 'i',
+        'settingsView-flickable', 'contentY', 'i',
         parseInt(await vpn.getElementProperty('settingsNotifications', 'y')));
     await vpn.wait();
 
@@ -622,7 +581,7 @@ describe('Settings', function() {
   it('Checking the logout', async () => {
     await vpn.waitForElement('settingsLogout');
     await vpn.waitForElementProperty('settingsLogout', 'visible', 'true');
-    await vpn.scrollToElement('settingsView', 'settingsLogout');
+    await vpn.scrollToElement('settingsView-flickable', 'settingsLogout');
 
     await vpn.clickOnElement('settingsLogout');
     await vpn.waitForMainView();

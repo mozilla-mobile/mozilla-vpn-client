@@ -143,8 +143,7 @@ describe('Subscription view', function() {
         'settingsUserProfile-manageAccountButton', 'visible', 'true');
     await vpn.clickOnElement('settingsUserProfile-manageAccountButton');
 
-    await vpn.waitForElement('MainStackView');
-    await vpn.waitForElementProperty('MainStackView', 'busy', 'false');
+    await vpn.waitForElementProperty('screenLoader', 'status', 'Ready');
 
     await vpn.waitForElement('authSignIn-passwordInput');
     await vpn.waitForElementProperty(
@@ -200,8 +199,7 @@ describe('Subscription view', function() {
         'settingsUserProfile-manageAccountButton', 'visible', 'true');
     await vpn.clickOnElement('settingsUserProfile-manageAccountButton');
 
-    await vpn.waitForElement('MainStackView');
-    await vpn.waitForElementProperty('MainStackView', 'busy', 'false');
+    await vpn.waitForElementProperty('screenLoader', 'status', 'Ready');
 
     await vpn.waitForElement('authSignIn-passwordInput');
     await vpn.waitForElementProperty(
@@ -942,8 +940,7 @@ describe('Subscription view', function() {
 
     await vpn.clickOnElement('accountDeletionButton');
 
-    await vpn.waitForElement('MainStackView');
-    await vpn.waitForElementProperty('MainStackView', 'busy', 'false');
+    await vpn.waitForElementProperty('screenLoader', 'status', 'Ready');
 
     await vpn.waitForElement('authSignIn-passwordInput');
     await vpn.waitForElementProperty(
@@ -1141,8 +1138,7 @@ describe('Subscription view', function() {
 
     await vpn.clickOnElement('accountDeletionButton');
 
-    await vpn.waitForElement('MainStackView');
-    await vpn.waitForElementProperty('MainStackView', 'busy', 'false');
+    await vpn.waitForElementProperty('screenLoader', 'status', 'Ready');
 
     await vpn.waitForElement('authSignIn-passwordInput');
     await vpn.waitForElementProperty(
