@@ -12,25 +12,17 @@ import components 0.1
 // TODO: This filename should be changed to 'ViewPreferences.qml' after the 2.5 release
 // The legacy name has been kept to prevent the creation of additional strings
 
-VPNFlickable {
+VPNViewBase {
     property string _startAtBootTitle: ""
     property string _notificationsTitle: ""
     property string _languageTitle: ""
-    property string _menuTitle
 
-    id: vpnFlickable
     objectName: "settingsPreferencesView"
-    flickContentHeight: col.implicitHeight
-    interactive: flickContentHeight > height
 
-    Column {
-        id: col
-        anchors.top: parent.top
-        anchors.topMargin: VPNTheme.theme.windowMargin
-        anchors.left: parent.left
-        anchors.right: parent.right
+    _viewContentData: Column {
         spacing: VPNTheme.theme.windowMargin
-        width: parent.width - VPNTheme.theme.windowMargin
+        Layout.fillWidth: true
+        Layout.alignment: Qt.AlignHCenter
 
         VPNCheckBoxRow {
             id: startAtBootCheckBox

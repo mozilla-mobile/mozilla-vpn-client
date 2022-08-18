@@ -12,33 +12,19 @@ import components.forms 0.1
 
 
 
-VPNFlickable {
+VPNViewBase {
     id: vpnFlickable
-    property string _appPermissionsTitle
-    //% "Network settings"
-    property string _menuTitle: qsTrId("vpn.settings.networking")
-    property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
     objectName: "settingsNetworkingBackButton"
 
-    flickContentHeight: col.childrenRect.height
+    property string _appPermissionsTitle
+    property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
 
-    Component.onCompleted: {
-        VPN.recordGleanEvent("networkSettingsViewOpened");
-        if (!vpnIsOff) {
-            VPN.recordGleanEvent("networkSettingsViewWarning");
-        }
-    }
-
-    Column {
+    //% "Network settings"
+    _menuTitle: qsTrId("vpn.settings.networking")
+    _viewContentData: Column {
         id: col
-
-        anchors {
-            left: parent.left
-            right: parent.right
-            top: parent.top
-            topMargin: VPNTheme.theme.windowMargin
-        }
         spacing: VPNTheme.theme.windowMargin
+        Layout.fillWidth: true
 
         VPNContextualAlerts {
             anchors {
@@ -121,9 +107,16 @@ VPNFlickable {
                 settingTitle: _appPermissionsTitle
                 imageLeftSrc: "qrc:/ui/resources/settings/apps.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push("qrc:/ui/screenSettings/ViewAppPermissions.qml")
-                visible: VPNFeatureList.get("splitTunnel").isSupported
+                onClicked: settingsStackView.push("qrc:/ui/screenSettings/appPermissions/ViewAppPermissions.qml")
+//                visible: VPNFeatureList.get("splitTunnel").isSupported
             }
+        }
+    }
+
+    Component.onCompleted: {
+        VPN.recordGleanEvent("networkSettingsViewOpened");
+        if (!vpnIsOff) {
+            VPN.recordGleanEvent("networkSettingsViewWarning");
         }
     }
 }

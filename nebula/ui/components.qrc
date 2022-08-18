@@ -12,7 +12,6 @@
         <file>components/forms/VPNTextArea.qml</file>
         <file>components/forms/VPNTextField.qml</file>
         <file>components/qmldir</file>
-        <file>components/VPNAboutUs.qml</file>
         <file>components/VPNAlert.qml</file>
         <file>components/VPNAlerts.qml</file>
         <file>components/VPNAnimatedRings.qml</file>
@@ -43,7 +42,6 @@
         <file>components/VPNDeviceListItem.qml</file>
         <file>components/VPNDevicesListHeader.qml</file>
         <file>components/VPNDropShadowWithStates.qml</file>
-        <file>components/VPNExpandableAppList.qml</file>
         <file>components/VPNExternalLinkListItem.qml</file>
         <file>components/VPNFeatureTourPopup.qml</file>
         <file>components/VPNFeatureTour.qml</file>

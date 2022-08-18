@@ -10,173 +10,144 @@ import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 
-Item {
+VPNViewBase {
     property var useSystemLanguageEnabled: toggleCard.toggleChecked
+
+    id: root
+    objectName: "settingsLanguagesView"
+
     //% "Language"
-    property string _menuTitle :  qsTrId("vpn.settings.language")
-    id: container
+    _menuTitle :  qsTrId("vpn.settings.language")
+    _viewContentData: ColumnLayout {
+        id: col
 
-    FocusScope {
-        id: focusScope
+        Layout.fillWidth: true
+        spacing: VPNTheme.theme.windowMargin
 
-        anchors.fill: parent
-        width: parent.width
-        Accessible.name: menu.title
-        Accessible.role: Accessible.List
+        VPNToggleCard {
+            id: toggleCard
+            toggleObjectName: "settingsSystemLanguageToggle"
+            Layout.fillWidth: true
+            Layout.topMargin: -VPNTheme.theme.windowMargin
+            Layout.preferredHeight: childrenRect.height
 
-        ButtonGroup {
-            id: radioButtonGroup
-        }
+            //% "Use system language"
+            //: Title for the language switcher toggle.
+            labelText: qsTrId("vpn.settings.systemLanguageTitle")
 
-        VPNFlickable {
-            id: vpnFlickable
+            //% "Mozilla VPN will use the default system language."
+            //: Description for the language switcher toggle when
+            //: "Use system language" is enabled.
+            sublabelText: qsTrId("vpn.settings.systemLangaugeSubtitle")
 
-            objectName: "settingsLanguagesView"
-            flickContentHeight: col.y + col.implicitHeight + (VPNTheme.theme.rowHeight * 2)
-            anchors.fill: parent
-
-            VPNToggleCard {
-                id: toggleCard
-
-                toggleObjectName: "settingsSystemLanguageToggle"
-                anchors.left: parent.left
-                anchors.right: parent.right
-                height: childrenRect.height
-
-                //% "Use system language"
-                //: Title for the language switcher toggle.
-                labelText: qsTrId("vpn.settings.systemLanguageTitle")
-
-                //% "Mozilla VPN will use the default system language."
-                //: Description for the language switcher toggle when
-                //: "Use system language" is enabled.
-                sublabelText: qsTrId("vpn.settings.systemLangaugeSubtitle")
-
-                toolTipTitleText: {
-                    if (toggleChecked) {
-                       //% "Disable to select a different language"
-                       //: Tooltip for the language switcher toggle
-                       return qsTrId("vpn.settings.systemLanguageEnabled");
-                    }
-                    return qsTrId("vpn.settings.systemLanguageTitle");
+            toolTipTitleText: {
+                if (toggleChecked) {
+                   //% "Disable to select a different language"
+                   //: Tooltip for the language switcher toggle
+                   return qsTrId("vpn.settings.systemLanguageEnabled");
                 }
-
-                toggleChecked: VPNLocalizer.code === ""
-                function handleClick() {
-                    toggleChecked = !toggleChecked
-                    if (toggleChecked) {
-                        VPNLocalizer.code = "";
-                    } else {
-                        VPNLocalizer.code = VPNLocalizer.previousCode;
-                    }
-                }
+                return qsTrId("vpn.settings.systemLanguageTitle");
             }
 
-            Column {
-                id: col
+            toggleChecked: VPNLocalizer.code === ""
+            function handleClick() {
+                toggleChecked = !toggleChecked
+                if (toggleChecked) {
+                    VPNLocalizer.code = "";
+                } else {
+                    VPNLocalizer.code = VPNLocalizer.previousCode;
+                }
+            }
+        }
 
-                objectName: "languageList"
-                opacity: useSystemLanguageEnabled ? .5 : 1
-                spacing: VPNTheme.theme.vSpacing
+        Column {
+            id: languageList
+            objectName: "languageList"
+            opacity: useSystemLanguageEnabled ? .5 : 1
+            spacing: VPNTheme.theme.hSpacing
+            Layout.fillWidth: true
+            Layout.margins: VPNTheme.theme.windowMargin * 1.5
+
+            VPNSearchBar {
+                id: searchBar
+                _filterProxySource: VPNLocalizer
+                _filterProxyCallback: obj => {
+                     const filterValue = getSearchBarText();
+                     return obj.localizedLanguage.toLowerCase().includes(filterValue) ||
+                             obj.language.toLowerCase().includes(filterValue);
+                 }
+                _searchBarHasError: () => { return repeater.count === 0 }
+                _searchBarPlaceholderText: VPNl18n.LanguageViewSearchPlaceholder
+
+                enabled: !useSystemLanguageEnabled
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.leftMargin: VPNTheme.theme.vSpacing
-                anchors.rightMargin: VPNTheme.theme.vSpacing
-                anchors.top: toggleCard.bottom
-                anchors.topMargin: VPNTheme.theme.vSpacing *  1.5
+            }
+
+            Repeater {
+                id: repeater
+
+                model: searchBar.getProxyModel()
+
                 Component.onCompleted: {
-
-                    if (useSystemLanguageEnabled) {
-                        return;
-                    }
-
-                    // Scroll vpnFlickable so that the current language is
-                    // vertically centered in the view
-
-                    const yCenter = (vpnFlickable.height - menu.height - searchBar.height) / 2
-
                     for (let idx = 0; idx < repeater.count; idx++) {
-                        const repeaterItem = repeater.itemAt(idx);
-                        const repeaterItemYPosition = repeaterItem.mapToItem(vpnFlickable.contentItem, 0, 0).y;
-                        if (!repeaterItem.checked || repeaterItemYPosition < yCenter) {
-                            continue;
+                        const langItem = repeater.itemAt(idx);
+                        if (langItem.isSelectedLanguage) {
+                            const yCenter = root.height / 2;
+                            const selectedItemYPosition = langItem.y + (languageList.y + repeater.y + VPNTheme.theme.menuHeight + toggleCard.height + langItem.height) - yCenter;
+                            const destinationY = (selectedItemYPosition + root.height >col.implicitHeight) ? col.implicitHeight - root.height / 2: selectedItemYPosition;
+                            if (destinationY < 0) {
+                                return;
+                            }
+                            setContentY(destinationY)
                         }
-
-                        const selectedItemYPosition = repeaterItem.y + (VPNTheme.theme.rowHeight * 4) - yCenter;
-                        const destinationY = (selectedItemYPosition + vpnFlickable.height > vpnFlickable.contentHeight) ? vpnFlickable.contentHeight - vpnFlickable.height : selectedItemYPosition;
-
-                        // Prevent edge case negative scrolling
-                        if (destinationY < 0) {
-                            return;
-                        }
-
-                        vpnFlickable.contentY = destinationY;
-                        return;
                     }
                 }
 
-                VPNSearchBar {
-                    id: searchBar
-                    _filterProxySource: VPNLocalizer
-                    _filterProxyCallback: obj => {
-                         const filterValue = getSearchBarText();
-                         return obj.localizedLanguage.toLowerCase().includes(filterValue) ||
-                                 obj.language.toLowerCase().includes(filterValue);
-                     }
-                    _searchBarHasError: () => { return repeater.count === 0 }
-                    _searchBarPlaceholderText: VPNl18n.LanguageViewSearchPlaceholder
+                delegate: ColumnLayout {
+                    property bool isSelectedLanguage: delRadio.checked
+                    id: del
+                    spacing: 0
+                    objectName: "language-column-" + code
 
-                    enabled: !useSystemLanguageEnabled
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                }
+                    function pushFocusToRadio() {
+                        delRadio.forceActiveFocus();
+                    }
 
-                Repeater {
-                    id: repeater
-
-                    model: searchBar.getProxyModel()
-                    delegate: ColumnLayout {
-
-                        spacing: 0
-                        objectName: "language-column-" + code
-
-                        VPNRadioDelegate {
-                            property bool isSelectedLanguage: checked
-
-                            id: del
-                            objectName: "language-" + code
-                            enabled: !useSystemLanguageEnabled
-                            radioButtonLabelText: localizedLanguage
-                            checked: VPNLocalizer.code === code && !useSystemLanguageEnabled
-                            onClicked: {
-                                VPNLocalizer.code = code;
-                            }
-
-                            //% "%1 %2"
-                            //: This string is read by accessibility tools.
-                            //: %1 is the language name, %2 is the localized language name.
-                            accessibleName: qsTrId("vpn.settings.languageAccessibleName")
-                                                .arg(language)
-                                                .arg(localizedLanguage)
-
-                            activeFocusOnTab: !useSystemLanguageEnabled
-                            onActiveFocusChanged: if (focus) vpnFlickable.ensureVisible(del)
-                            Keys.onDownPressed: repeater.itemAt(index + 1) ? repeater.itemAt(index + 1).forceActiveFocus() : repeater.itemAt(0).forceActiveFocus()
-                            Keys.onUpPressed: repeater.itemAt(index - 1) ? repeater.itemAt(index - 1).forceActiveFocus() : searchBar.forceActiveFocus()
-                            Keys.onBacktabPressed: searchBar.forceActiveFocus()
+                    VPNRadioDelegate {
+                        id: delRadio
+                        objectName: "language-" + code
+                        enabled: !useSystemLanguageEnabled
+                        radioButtonLabelText: localizedLanguage
+                        checked: VPNLocalizer.code === code && !useSystemLanguageEnabled
+                        onClicked: {
+                            VPNLocalizer.code = code;
                         }
 
-                        VPNTextBlock {
-                            Layout.leftMargin: del.indicator.implicitWidth + VPNTheme.theme.hSpacing - 2
-                            Layout.topMargin: 4
-                            Layout.fillWidth: true
+                        //% "%1 %2"
+                        //: This string is read by accessibility tools.
+                        //: %1 is the language name, %2 is the localized language name.
+                        accessibleName: qsTrId("vpn.settings.languageAccessibleName")
+                                            .arg(language)
+                                            .arg(localizedLanguage)
 
-                            text: language
-                        }
+                        activeFocusOnTab: !useSystemLanguageEnabled
+                        Keys.onDownPressed: repeater.itemAt(index + 1) ? repeater.itemAt(index + 1).pushFocusToRadio() : repeater.itemAt(0).pushFocusToRadio()
+                        Keys.onUpPressed: repeater.itemAt(index - 1) ? repeater.itemAt(index - 1).pushFocusToRadio() : searchBar.forceActiveFocus()
+                    }
+
+                    VPNTextBlock {
+                        Layout.leftMargin: delRadio.indicator.implicitWidth + VPNTheme.theme.hSpacing - 2
+                        Layout.topMargin: 4
+                        Layout.fillWidth: true
+                        text: language
                     }
                 }
             }
         }
     }
-
+    ButtonGroup {
+        id: radioButtonGroup
+    }
 }
+

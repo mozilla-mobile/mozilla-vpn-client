@@ -20,24 +20,28 @@ Item {
        color: VPNTheme.theme.bgColor
    }
 
+   function ensureVisible(itm) {
+       vpnFlickable.ensureVisible(itm)
+   }
+
+   function setContentY(newY) {
+       vpnFlickable.contentY = newY;
+   }
+
     VPNFlickable {
         id: vpnFlickable
 
         flickContentHeight: viewContent.implicitHeight + anchors.topMargin
+        interactive: viewContent.implicitHeight > height - anchors.topMargin
 
         anchors {
             fill: root
-            top: root.top
-            left: root.left
-            right: root.right
             topMargin: _menuTitle === "" ? 0 : VPNTheme.theme.menuHeight
         }
 
         ColumnLayout {
             id: viewContent
-
             spacing: VPNTheme.theme.windowMargin
-
             anchors {
                 top: parent.top
                 topMargin: VPNTheme.theme.windowMargin

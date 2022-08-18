@@ -10,40 +10,20 @@ import Mozilla.VPN 1.0
 import components 0.1
 
 
-VPNFlickable {
-    property string _menuTitle: qsTrId("vpn.main.settings")
-
-    id: vpnFlickable
+VPNViewBase {
+    id: settingsList
     objectName: "settingsView"
-    flickContentHeight: settingsList.implicitHeight
 
-    Component {
-        id: aboutUsComponent
-
-        VPNAboutUs {
-            licenseURL: "qrc:/ui/views/ViewLicenses.qml"
-        }
-    }
-
-    ColumnLayout {
-        id: settingsList
-
+    _menuTitle: qsTrId("vpn.main.settings")
+    _viewContentData: ColumnLayout {
         spacing: VPNTheme.theme.windowMargin
-        width: parent.width
-        height: Math.max(vpnFlickable.height, settingsList.implicitHeight)
-
-        anchors {
-            top: parent.top
-            horizontalCenter: parent.horizontalCenter
-        }
+        Layout.fillWidth: true
 
         ColumnLayout {
             spacing: 0
             Layout.fillWidth: true
-
-            VPNVerticalSpacer {
-                Layout.preferredHeight: VPNTheme.theme.windowMargin * 1
-            }
+            Layout.leftMargin: VPNTheme.theme.windowMargin  / 2
+            Layout.rightMargin: VPNTheme.theme.windowMargin / 2
 
             VPNUserProfile {
                 property bool subscriptionManagementEnabled: VPNFeatureList.get("subscriptionManagement").isSupported
@@ -84,7 +64,6 @@ VPNFlickable {
 
         // TODO: Move to subscription management
         ColumnLayout {
-//            Layout.fillWidth: true
             Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin
             Layout.maximumWidth: parent.width - VPNTheme.theme.windowMargin
             Layout.alignment: Qt.AlignHCenter
@@ -140,7 +119,7 @@ VPNFlickable {
                 settingTitle: qsTrId("vpn.settings.aboutUs")
                 imageLeftSrc: "qrc:/ui/resources/settings/aboutUs.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push(aboutUsComponent)
+                onClicked: settingsStackView.push("qrc:/ui/screenSettings/ViewAboutUs.qml")
             }
 
             VPNVerticalSpacer {

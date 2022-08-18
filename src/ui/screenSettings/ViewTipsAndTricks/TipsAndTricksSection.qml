@@ -63,6 +63,7 @@ ColumnLayout {
             spacing: 0
 
             Flow {
+                id: guideFlow
                 objectName: "guideLayout"
                 Layout.topMargin: VPNTheme.theme.vSpacingSmall
                 Layout.fillWidth: true
@@ -75,7 +76,7 @@ ColumnLayout {
                         objectName: addon.id
 
                         height: 172
-                        width: parentWidth < VPNTheme.theme.tabletMinimumWidth ? (parent.width - parent.spacing) / 2 : (parent.width - (parent.spacing * 2)) / 3
+                        width: parentWidth < VPNTheme.theme.tabletMinimumWidth ? (guideFlow.width - guideFlow.spacing) / 2 : (guideFlow.width - (guideFlow.spacing * 2)) / 3
 
                         imageSrc: addon.image
                         title: addon.title
@@ -101,13 +102,14 @@ ColumnLayout {
         visible: hasTutorials
 
         sourceComponent: Flow {
+            id: tutorialFlow
             spacing: 16
 
             Repeater {
                 model: tutorialsModel
 
                 delegate: VPNTutorialCard {
-                    width: parentWidth < VPNTheme.theme.tabletMinimumWidth ? parent.width : (parent.width - parent.spacing) / 2
+                    width: parentWidth < VPNTheme.theme.tabletMinimumWidth ? tutorialFlow.width : (tutorialFlow.width - tutorialFlow.spacing) / 2
                     height: VPNTheme.theme.tutorialCardHeight
 
                     imageSrc: addon.image

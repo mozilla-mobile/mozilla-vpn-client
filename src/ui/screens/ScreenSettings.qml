@@ -44,7 +44,6 @@ Item {
         property bool _settingsView: true
         id: settingsStackView
         anchors.top: menu.bottom
-        anchors.topMargin: VPNTheme.theme.menuHeight
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
@@ -56,7 +55,7 @@ Item {
 
         onCurrentItemChanged: {
             menu.title = Qt.binding(() => currentItem._menuTitle || "");
-            menu.visible = Qt.binding(() => currentItem._menuTitle);
+            menu.visible = Qt.binding(() => menu.title !== "");
         }
     }
 }

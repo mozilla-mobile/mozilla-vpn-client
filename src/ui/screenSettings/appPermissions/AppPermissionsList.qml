@@ -10,11 +10,12 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import Mozilla.VPN.qmlcomponents 1.0
 import components.forms 0.1
+import components 0.1
 
 ColumnLayout {
     id: appListContainer
 
-    property var header: ""
+    property string header: ""
     property string searchBarPlaceholder: ""
 
     spacing: VPNTheme.theme.windowMargin
@@ -28,7 +29,7 @@ ColumnLayout {
     states: [
         State {
             name: "visibleAndEnabled"
-            when: VPNSettings.protectSelectedApps && vpnFlickable.vpnIsOff
+            when: VPNSettings.protectSelectedApps && vpnIsOff
             PropertyChanges {
                 target: appListContainer
                 opacity: 1
@@ -37,7 +38,7 @@ ColumnLayout {
 
         },
         State {
-            when: VPNSettings.protectSelectedApps && !vpnFlickable.vpnIsOff
+            when: VPNSettings.protectSelectedApps && !vpnIsOff
             PropertyChanges {
                 target: appListContainer
                 opacity: .5
@@ -97,12 +98,11 @@ ColumnLayout {
         Accessible.role: Accessible.Heading
         color: VPNTheme.theme.fontColorDark
         horizontalAlignment: Text.AlignLeft
-        Layout.alignment: Qt.AlignLeft
         verticalAlignment: Text.AlignVCenter
         lineHeight: VPNTheme.theme.vSpacing
         lineHeightMode: Text.FixedHeight
         wrapMode: Text.WordWrap
-        Layout.preferredWidth: parent.width
+        Layout.fillWidth: true
     }
 
     VPNSearchBar {
@@ -115,7 +115,7 @@ ColumnLayout {
         _searchBarHasError: () => { return applist.count === 0 }
         _searchBarPlaceholderText: searchBarPlaceholder
 
-        enabled: vpnFlickable.vpnIsOff && VPNSettings.protectSelectedApps
+        enabled: vpnIsOff && VPNSettings.protectSelectedApps
         Layout.fillWidth: true
     }
 
@@ -139,7 +139,7 @@ ColumnLayout {
                 showAppImage: true
                 onClicked: VPNAppPermissions.flip(appID)
                 isChecked: !appIsEnabled
-                isEnabled: vpnFlickable.vpnIsOff && VPNSettings.protectSelectedApps
+                isEnabled: vpnIsOff && VPNSettings.protectSelectedApps
                 Layout.minimumHeight: VPNTheme.theme.rowHeight * 1.5
             }
         }
@@ -148,6 +148,7 @@ ColumnLayout {
     VPNButton {
         text: ""
         Layout.fillWidth: true
+        width: undefined
         onClicked: VPNAppPermissions.openFilePicker()
         visible: Qt.platform.os === "windows"
         contentItem: Text {

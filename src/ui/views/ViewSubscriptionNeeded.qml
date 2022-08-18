@@ -140,7 +140,7 @@ VPNFlickable {
                 VPNGreyLink {
                     id: termsOfService
 
-                    // Terms of Service - string defined in VPNAboutUs.qml
+                    // Terms of Service - string defined in ViewAboutUs.qml
                     labelText: qsTrId("vpn.aboutUs.tos2")
                     Layout.alignment: grid.columns > 1 ? Qt.AlignRight : Qt.AlignHCenter
                     textAlignment: grid.columns > 1 ? Text.AlignRight : Text.AlignHCenter
@@ -160,7 +160,7 @@ VPNFlickable {
                 VPNGreyLink {
                     id: privacyNotice
 
-                    // Privacy Notice - string defined in VPNAboutUs.qml
+                    // Privacy Notice - string defined in ViewAboutUs.qml
                     labelText: qsTrId("vpn.aboutUs.privacyNotice2")
                     onClicked: VPN.openLink(VPN.LinkPrivacyNotice)
                     textAlignment: grid.columns > 1 ? Text.AlignLeft : Text.AlignHCenter

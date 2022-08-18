@@ -18,7 +18,7 @@ Item {
 
     function sendFeedback(appRating, category, message) {
         VPN.submitFeedback(message, appRating, category);
-        feedbackStackView.push(thankYouView)
+        getHelpStackView.push(thankYouView)
     }
 
     VPNMenu {
@@ -28,7 +28,6 @@ Item {
     }
 
     StackView {
-        id: feedbackStackView
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
@@ -173,15 +172,15 @@ Item {
                         feedbackRoot.sendFeedback(btnGroup.checkedButton.value, 0, "");
 
                         if (VPNFeatureList.get("appReview").isSupported) {
-                          feedbackStackView.push(appReviewView);
+                          getHelpStackView.push(appReviewView);
                           return;
                         }
 
-                        feedbackStackView.push(thankYouView);
+                        getHelpStackView.push(thankYouView);
                         return;
                     }
 
-                    feedbackStackView.push(feedbackFormView, {
+                    getHelpStackView.push(feedbackFormView, {
                                                "appRating": btnGroup.checkedButton.value
                                            })
                 }
@@ -211,27 +210,20 @@ Item {
 
     Component {
         id: feedbackFormView
-        VPNFlickable {
-            id: vpnFlickable
+        VPNViewBase {
             property var appRating
             property var feedbackCategory
-            flickContentHeight: col.childrenRect.height
-            interactive: flickContentHeight > height
 
-            Rectangle {
-                anchors.fill: parent
-                color: VPNTheme.theme.bgColor
-            }
+            id: vpnFlickable
 
-            ColumnLayout {
+            _menuTitle: qsTrId("vpn.settings.giveFeedback")
+            _viewContentData: ColumnLayout {
                 id: col
 
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
+                Layout.fillWidth: true
+                Layout.leftMargin: VPNTheme.theme.windowMargin * 1.5
+                Layout.rightMargin: VPNTheme.theme.windowMargin * 1.5
                 spacing: VPNTheme.theme.windowMargin
-                anchors.margins: VPNTheme.theme.windowMargin * 2
-                anchors.topMargin: window.fullscreenRequired() ? VPNTheme.theme.contentTopMarginMobile : VPNTheme.theme.contentTopMarginDesktop
 
 
                 ColumnLayout {
@@ -369,7 +361,8 @@ Item {
                 anchors.top: col.bottom
                 anchors.topMargin: VPNTheme.theme.vSpacing
                 anchors.horizontalCenter: parent.horizontalCenter
-                onClicked: mainStackView.pop()
+                onClicked: getHelpStackView.pop(null)
+
                 Component.onCompleted: {
                    if (window.fullscreenRequired()) {
                        anchors.top = undefined;
@@ -402,7 +395,7 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: {
                     VPN.openAppStoreReviewLink();
-                    feedbackStackView.push(thankYouView);
+                    getHelpStackView.push(thankYouView);
                }
             }
 
@@ -410,7 +403,7 @@ Item {
                 id: skipLink
 
                 labelText: qsTrId("vpn.feedbackForm.skip")
-                onClicked: feedbackStackView.push(thankYouView);
+                onClicked: getHelpStackView.push(thankYouView);
                 implicitHeight: VPNTheme.theme.rowHeight
             }
         }

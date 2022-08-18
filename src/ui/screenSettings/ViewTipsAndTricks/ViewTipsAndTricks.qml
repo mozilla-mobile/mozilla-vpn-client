@@ -12,154 +12,140 @@ import components 0.1
 import components.forms 0.1
 import telemetry 0.30
 
-VPNFlickable {
+VPNViewBase {
     id: vpnFlickable
-
-    property string _menuTitle: VPNl18n.TipsAndTricksSettingsEntryLabel
-
     objectName: "settingsTipsAndTricksPage"
 
-    flickContentHeight: layout.implicitHeight + layout.anchors.topMargin
-    interactive: flickContentHeight > height
+    _menuTitle: VPNl18n.TipsAndTricksSettingsEntryLabel
+    _viewContentData: ColumnLayout {
 
-    function isQuickAddon(addon, type) {
-        return (addon.type === type && !addon.advanced && !addon.highlighted)
-    }
+        function isQuickAddon(addon, type) {
+            return (addon.type === type && !addon.advanced && !addon.highlighted)
+        }
 
-    function isAdvancedAddon(addon, type) {
-        return (addon.type === type && addon.advanced && !addon.highlighted)
-    }
+        function isAdvancedAddon(addon, type) {
+            return (addon.type === type && addon.advanced && !addon.highlighted)
+        }
 
-    Column {
-        id: layout
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.topMargin: VPNTheme.theme.vSpacing
-        anchors.leftMargin: VPNTheme.theme.windowMargin
-        anchors.rightMargin: VPNTheme.theme.windowMargin
+        Layout.fillWidth: true
+        Layout.leftMargin: VPNTheme.theme.windowMargin
+        Layout.rightMargin: VPNTheme.theme.windowMargin
 
-        spacing: 0
 
-        //superfluous columnlayout that fixes a binding loop
-        ColumnLayout {
-            anchors.left: parent.left
-            anchors.right: parent.right
+        // Highlighted tutorials
+        Flow {
+            id: flow
+            Layout.fillWidth: true
+            spacing: VPNTheme.theme.vSpacingSmall
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
 
-            spacing: 0
+            Loader {
+                id: highlightedTutorialLoader
+                property variant highlightedTutorial: VPNAddonManager.pick(addon => addon.type === "tutorial" && addon.highlighted)
 
-            // Highlighted tutorials
-            Flow {
-                Layout.fillWidth: true
-                spacing: VPNTheme.theme.vSpacingSmall
+                height: VPNTheme.theme.tutorialCardHeight
+                width: flow.width < VPNTheme.theme.tabletMinimumWidth ? flow.width : (flow.width - flow.spacing) / 2
 
-                Loader {
-                    id: highlightedTutorialLoader
-                    property variant highlightedTutorial: VPNAddonManager.pick(addon => addon.type === "tutorial" && addon.highlighted)
+                active: highlightedTutorial
+                visible: active
 
-                    height: VPNTheme.theme.tutorialCardHeight
-                    width: vpnFlickable.width < VPNTheme.theme.tabletMinimumWidth ? parent.width : (parent.width - parent.spacing) / 2
+                sourceComponent: VPNTutorialCard {
 
-                    active: highlightedTutorial
-                    visible: active
+                    objectName: "highlightedTutorial"
+                    width: parent.width
+                    height: parent.height
 
-                    sourceComponent: VPNTutorialCard {
-                        objectName: "highlightedTutorial"
-                        width: parent.width
-                        height: parent.height
-
-                        imageSrc: highlightedTutorial.image
-                        title: highlightedTutorial.title
-                        description: highlightedTutorial.subtitle
-
-                        onClicked: {
-                            VPNTutorial.play(highlightedTutorial);
-                            VPNNavigator.requestScreen(VPNNavigator.ScreenHome)
-                        }
+                    imageSrc: highlightedTutorial.image
+                    title: highlightedTutorial.title
+                    description: highlightedTutorial.subtitle
+                    onClicked: {
+                        VPNTutorial.play(highlightedTutorial);
+                        VPNNavigator.requestScreen(VPNNavigator.ScreenHome)
                     }
                 }
-
-                VPNTutorialCard {
-                    objectName: "featureTourCard"
-
-                    width: vpnFlickable.width < VPNTheme.theme.tabletMinimumWidth ? parent.width : (parent.width - parent.spacing) / 2
-                    height: VPNTheme.theme.tutorialCardHeight
-
-                    imageSrc: "qrc:/ui/resources/sparkling-check.svg"
-                    imageBgColor: "#2B2A33"
-                    title: VPNl18n.TipsAndTricksFeatureTourCardTitle
-                    description: VPNl18n.TipsAndTricksFeatureTourCardDescription
-                    onClicked: featureTourPopup.startTour();
-                }
             }
 
-            // Quick Tips
-            VPNFilterProxyModel {
-                id: quickGuidesModel
-                source: VPNAddonManager
-                filterCallback: ({ addon }) => isQuickAddon(addon, "guide")
+            VPNTutorialCard {
+                objectName: "featureTourCard"
+
+                width: vpnFlickable.width < VPNTheme.theme.tabletMinimumWidth ? parent.width : (parent.width - parent.spacing) / 2
+                height: VPNTheme.theme.tutorialCardHeight
+
+                imageSrc: "qrc:/ui/resources/sparkling-check.svg"
+                imageBgColor: "#2B2A33"
+                title: VPNl18n.TipsAndTricksFeatureTourCardTitle
+                description: VPNl18n.TipsAndTricksFeatureTourCardDescription
+                onClicked: featureTourPopup.startTour();
             }
 
-            VPNFilterProxyModel {
-                id: quickTutorialsModel
-                source: VPNAddonManager
-                filterCallback: ({ addon }) => isQuickAddon(addon, "tutorial")
-            }
-
-            TipsAndTricksSection {
-                id: quicksTips
-
-                Layout.topMargin: 32
-
-                parentWidth: vpnFlickable.width
-
-                title: VPNl18n.TipsAndTricksQuickTipsTitle
-                description: VPNl18n.TipsAndTricksQuickTipsDescription
-
-                hasGuides: !!VPNAddonManager.pick(addon => isQuickAddon(addon, "guide"))
-                guidesModel: quickGuidesModel
-
-                hasTutorials: !!VPNAddonManager.pick(addon => isQuickAddon(addon, "tutorial"))
-                tutorialsModel: quickTutorialsModel
-            }
-
-            // Advanced Tips
-            VPNFilterProxyModel {
-                id: advancedGuidesModel
-                source: VPNAddonManager
-                filterCallback: ({ addon }) => isAdvancedAddon(addon, "guide")
-            }
-
-            VPNFilterProxyModel {
-                id: advancedTutorialsModel
-                source: VPNAddonManager
-                filterCallback: ({ addon }) => isAdvancedAddon(addon, "tutorial")
-            }
-
-            TipsAndTricksSection {
-                id: advancedsTips
-
-                Layout.topMargin: 32
-
-                parentWidth: vpnFlickable.width
-
-                title: VPNl18n.TipsAndTricksAdvancedTipsTitle
-                description: VPNl18n.TipsAndTricksAdvancedTipsDescription
-
-                hasGuides: !!VPNAddonManager.pick(addon => isAdvancedAddon(addon, "guide"))
-                guidesModel: advancedGuidesModel
-
-                hasTutorials: !!VPNAddonManager.pick(addon => isAdvancedAddon(addon, "tutorial"))
-                tutorialsModel: advancedTutorialsModel
-            }
-
-            //padding for the bottom of the flickable
-            Item {
-                Layout.preferredHeight: 66
-            }
         }
+
+        // Quick Tips
+        VPNFilterProxyModel {
+            id: quickGuidesModel
+            source: VPNAddonManager
+            filterCallback: ({ addon }) => isQuickAddon(addon, "guide")
+        }
+
+        VPNFilterProxyModel {
+            id: quickTutorialsModel
+            source: VPNAddonManager
+            filterCallback: ({ addon }) => isQuickAddon(addon, "tutorial")
+        }
+
+        TipsAndTricksSection {
+            id: quicksTips
+
+            Layout.topMargin: 32
+
+            parentWidth: vpnFlickable.width
+
+            title: VPNl18n.TipsAndTricksQuickTipsTitle
+            description: VPNl18n.TipsAndTricksQuickTipsDescription
+
+            hasGuides: !!VPNAddonManager.pick(addon => isQuickAddon(addon, "guide"))
+            guidesModel: quickGuidesModel
+
+            hasTutorials: !!VPNAddonManager.pick(addon => isQuickAddon(addon, "tutorial"))
+            tutorialsModel: quickTutorialsModel
+        }
+
+        // Advanced Tips
+        VPNFilterProxyModel {
+            id: advancedGuidesModel
+            source: VPNAddonManager
+            filterCallback: ({ addon }) => isAdvancedAddon(addon, "guide")
+        }
+
+        VPNFilterProxyModel {
+            id: advancedTutorialsModel
+            source: VPNAddonManager
+            filterCallback: ({ addon }) => isAdvancedAddon(addon, "tutorial")
+        }
+
+        TipsAndTricksSection {
+            id: advancedsTips
+
+            Layout.topMargin: 32
+
+            parentWidth: vpnFlickable.width
+
+            title: VPNl18n.TipsAndTricksAdvancedTipsTitle
+            description: VPNl18n.TipsAndTricksAdvancedTipsDescription
+
+            hasGuides: !!VPNAddonManager.pick(addon => isAdvancedAddon(addon, "guide"))
+            guidesModel: advancedGuidesModel
+
+            hasTutorials: !!VPNAddonManager.pick(addon => isAdvancedAddon(addon, "tutorial"))
+            tutorialsModel: advancedTutorialsModel
+        }
+
     }
 
+    //padding for the bottom of the flickable
+    Item {
+        Layout.preferredHeight: 66
+    }
     Component.onCompleted: {
         Sample.tipsAndTricksViewOpened.record();
     }

@@ -122,7 +122,7 @@ Flickable {
         minimumSize: 0
 
         opacity: hideScollBarOnStackTransition && (vpnFlickable.StackView.status !== StackView.Active) ? 0 : 1
-        visible: contentExceedsHeight
+        visible: contentExceedsHeight && interactive
 
         Behavior on opacity {
             PropertyAnimation {
