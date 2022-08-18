@@ -68,7 +68,6 @@
         <file>screenSettings/ViewTipsAndTricks/ViewTipsAndTricks.qml</file>
         <file>screenSettings/ViewWhatsNew.qml</file>
         <file>screenSubscriptionNeeded/ViewSubscriptionNeeded.qml</file>
-        <file>views/ViewAddon.qml</file>
         <file>views/ViewCaptivePortalInfo.qml</file>
         <file>views/ViewDevices.qml</file>
         <file>views/ViewErrorFullScreen.qml</file>
