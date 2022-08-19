@@ -369,6 +369,12 @@ Item {
             statusBarModifier.statusBarTextColor = VPNTheme.StatusBarTextColorLight;
         }
 
+        VPNMobileStatusBarModifier {
+            id: statusBarModifier
+            statusBarTextColor: VPNTheme.StatusBarTextColorLight
+
+        }
+
         Component.onDestruction: {
             statusBarModifier.resetDefaults();
         }
