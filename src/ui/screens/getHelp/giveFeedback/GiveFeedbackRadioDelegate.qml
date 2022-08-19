@@ -16,11 +16,13 @@ RadioDelegate {
     property alias iconSource: img.source
     property var heightWidth: 30
     property var uiState: VPNTheme.theme.uiState
+
     id: radio
-    checked: false
+
     implicitHeight: VPNTheme.theme.rowHeight
     implicitWidth: VPNTheme.theme.rowHeight
     activeFocusOnTab: true
+    focus: true
     Component.onCompleted: {
         state = uiState.stateDefault
     }
@@ -33,17 +35,6 @@ RadioDelegate {
         sourceSize.width: heightWidth
     }
 
-    VPNColorOverlay {
-        id: colorOverlay
-        anchors.fill: img
-        source: img
-        color: radio.checked || radio.focus || radio.activeFocus ? VPNTheme.theme.blue : VPNTheme.theme.fontColor
-        Behavior on color {
-            PropertyAnimation {
-                duration: 100
-            }
-        }
-    }
 
     Keys.onPressed: event => {
         if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
@@ -78,30 +69,5 @@ RadioDelegate {
             radio.checked = !radio.checked;
         }
     }
-
-    states: [
-        State {
-            name: uiState.statePressed
-            PropertyChanges {
-                target: colorOverlay
-                color: VPNTheme.theme.bluePressed
-            }
-        },
-        State {
-            name: uiState.stateDefault
-
-            PropertyChanges {
-                target: colorOverlay
-                color: radio.checked || radio.focus || radio.activeFocus ? VPNTheme.theme.blue : VPNTheme.theme.fontColor
-            }
-        },
-        State {
-            name: uiState.stateHovered
-            PropertyChanges {
-                target: colorOverlay
-                color: VPNTheme.theme.blue
-            }
-        }
-    ]
 
 }

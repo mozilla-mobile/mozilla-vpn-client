@@ -45,7 +45,6 @@
         <file>components/VPNExternalLinkListItem.qml</file>
         <file>components/VPNFeatureTourPopup.qml</file>
         <file>components/VPNFeatureTour.qml</file>
-        <file>components/VPNFeedbackRadioDelegate.qml</file>
         <file>components/VPNFlickable.qml</file>
         <file>components/VPNFocusBorder.qml</file>
         <file>components/VPNFocusOutline.qml</file>

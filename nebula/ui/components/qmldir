@@ -31,7 +31,6 @@ VPNDropShadowWithStates 0.1 VPNDropShadowWithStates.qml
 VPNExternalLinkListItem 0.1 VPNExternalLinkListItem.qml
 VPNFeatureTour 0.1 VPNFeatureTour.qml
 VPNFeatureTourPopup 0.1 VPNFeatureTourPopup.qml
-VPNFeedbackRadioDelegate 0.1 VPNFeedbackRadioDelegate.qml
 VPNFlickable 0.1 VPNFlickable.qml
 VPNFocusBorder 0.1 VPNFocusBorder.qml
 VPNFocusOutline 0.1 VPNFocusOutline.qml
