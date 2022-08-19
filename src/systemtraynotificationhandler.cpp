@@ -11,10 +11,6 @@
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
 
-#ifdef MVPN_MACOS
-#  include "platforms/macos/macosutils.h"
-#endif
-
 #include <QIcon>
 #include <QMenu>
 #include <QWindow>
@@ -42,12 +38,29 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
   connect(vpn->statusIcon(), &StatusIcon::iconChanged, this,
           &SystemTrayNotificationHandler::updateIcon);
 
-#if defined(MVPN_MACOS)
-  connect(vpn->statusIcon(), &StatusIcon::indicatorColorChanged, this,
-          &SystemTrayNotificationHandler::updateIconIndicator);
-#endif
+  connect(QmlEngineHolder::instance()->window(), &QWindow::visibleChanged, this,
+          &SystemTrayNotificationHandler::updateContextMenu);
 
-  // Status label
+  connect(&m_systemTrayIcon, &QSystemTrayIcon::activated, this,
+          &SystemTrayNotificationHandler::maybeActivated);
+
+  connect(&m_systemTrayIcon, &QSystemTrayIcon::messageClicked, this,
+          &SystemTrayNotificationHandler::messageClickHandle);
+
+  // Initial setup for the systray
+  createStatusMenu();
+  setStatusMenu();
+  retranslate();
+  updateIcon();
+}
+
+SystemTrayNotificationHandler::~SystemTrayNotificationHandler() {
+  MVPN_COUNT_DTOR(SystemTrayNotificationHandler);
+}
+
+void SystemTrayNotificationHandler::createStatusMenu() {
+  logger.debug() << "Create status menu";
+
   m_statusLabel = m_menu.addAction("");
   m_statusLabel->setEnabled(false);
 
@@ -76,33 +89,20 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
 
   m_quitAction = m_menu.addAction("", externalOpHandler,
                                   &ExternalOpHandler::requestOpQuit);
+}
 
-  connect(QmlEngineHolder::instance()->window(), &QWindow::visibleChanged, this,
-          &SystemTrayNotificationHandler::updateContextMenu);
+void SystemTrayNotificationHandler::setStatusMenu() {
+  logger.debug() << "Set status menu";
 
-  connect(&m_systemTrayIcon, &QSystemTrayIcon::activated, this,
-          &SystemTrayNotificationHandler::maybeActivated);
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
 
-  connect(&m_systemTrayIcon, &QSystemTrayIcon::messageClicked, this,
-          &SystemTrayNotificationHandler::messageClickHandle);
-
-  retranslate();
-
+  // TODO: Check if method is called on these devices.
 #if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
   m_systemTrayIcon.setToolTip(qtTrId("vpn.main.productName"));
   m_systemTrayIcon.setContextMenu(&m_menu);
   m_systemTrayIcon.show();
-#elif defined(MVPN_MACOS)
-  m_macOSStatusIcon = new MacOSStatusIcon(this);
-  m_macOSStatusIcon->setToolTip(qtTrId("vpn.main.productName"));
-  m_macOSStatusIcon->setMenu(m_menu.toNSMenu());
 #endif
-
-  updateIcon();
-}
-
-SystemTrayNotificationHandler::~SystemTrayNotificationHandler() {
-  MVPN_COUNT_DTOR(SystemTrayNotificationHandler);
 }
 
 void SystemTrayNotificationHandler::notify(NotificationHandler::Message type,
@@ -235,35 +235,18 @@ void SystemTrayNotificationHandler::updateIcon() {
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
+
 #if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
   m_systemTrayIcon.setIcon(vpn->statusIcon()->icon());
-#elif defined(MVPN_MACOS)
-  m_macOSStatusIcon->setIcon(vpn->statusIcon()->iconString());
 #endif
 }
-
-#ifdef MVPN_MACOS
-void SystemTrayNotificationHandler::updateIconIndicator() {
-  logger.debug() << "Update icon indicator";
-
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
-  m_macOSStatusIcon->setIndicatorColor(vpn->statusIcon()->indicatorColor());
-}
-#endif
 
 void SystemTrayNotificationHandler::showHideWindow() {
   QmlEngineHolder* engine = QmlEngineHolder::instance();
   if (engine->window()->isVisible()) {
     engine->hideWindow();
-#ifdef MVPN_MACOS
-    MacOSUtils::hideDockIcon();
-#endif
   } else {
     engine->showWindow();
-#ifdef MVPN_MACOS
-    MacOSUtils::showDockIcon();
-#endif
   }
 }
 

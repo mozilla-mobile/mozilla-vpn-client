@@ -8,10 +8,6 @@
 #include "logger.h"
 #include "mozillavpn.h"
 
-#ifdef MVPN_MACOS
-#  include "platforms/macos/macosutils.h"
-#endif
-
 #include <array>
 #include <QBitmap>
 #include <QFileInfo>

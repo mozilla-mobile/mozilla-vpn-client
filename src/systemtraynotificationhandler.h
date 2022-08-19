@@ -9,9 +9,6 @@
 
 #include <QMenu>
 #include <QSystemTrayIcon>
-#ifdef MVPN_MACOS
-#  include "platforms/macos/macosstatusicon.h"
-#endif
 
 class SystemTrayNotificationHandler : public NotificationHandler {
  public:
@@ -28,23 +25,24 @@ class SystemTrayNotificationHandler : public NotificationHandler {
   virtual void notify(Message type, const QString& title,
                       const QString& message, int timerMsec) override;
 
+  virtual void showHideWindow();
+
+  virtual void setStatusMenu();
+
+  virtual void updateIcon();
+
+ protected:
+  QMenu m_menu;
+  QSystemTrayIcon m_systemTrayIcon;
+
  private:
+  void createStatusMenu();
+
   void maybeActivated(QSystemTrayIcon::ActivationReason reason);
-
-  void showHideWindow();
-
-  void updateIcon();
-
-#ifdef MVPN_MACOS
-  void updateIconIndicator();
-#endif
 
   void updateContextMenu();
 
  private:
-  QMenu m_menu;
-  QSystemTrayIcon m_systemTrayIcon;
-
   QAction* m_statusLabel = nullptr;
   QAction* m_lastLocationLabel = nullptr;
   QAction* m_disconnectAction = nullptr;
@@ -53,10 +51,6 @@ class SystemTrayNotificationHandler : public NotificationHandler {
   QAction* m_showHideLabel = nullptr;
   QAction* m_quitAction = nullptr;
   QMenu* m_helpMenu = nullptr;
-
-#if defined(MVPN_MACOS)
-  MacOSStatusIcon* m_macOSStatusIcon = nullptr;
-#endif
 };
 
 #endif  // SYSTEMTRAYNOTIFICATIONHANDLER_H

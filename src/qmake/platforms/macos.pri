@@ -50,6 +50,7 @@ SOURCES += \
     platforms/macos/macosmenubar.cpp \
     platforms/macos/macospingsender.cpp \
     platforms/macos/macosstartatbootwatcher.cpp \
+    platforms/macos/macossystemtraynotificationhandler.cpp \
     systemtraynotificationhandler.cpp \
     tasks/authenticate/desktopauthenticationlistener.cpp \
     wgquickprocess.cpp
@@ -80,6 +81,7 @@ HEADERS += \
     platforms/macos/macosmenubar.h \
     platforms/macos/macospingsender.h \
     platforms/macos/macosstartatbootwatcher.h \
+    platforms/macos/macossystemtraynotificationhandler.h \
     systemtraynotificationhandler.h \
     tasks/authenticate/desktopauthenticationlistener.h \
     wgquickprocess.h

@@ -70,6 +70,8 @@ target_sources(mozillavpn PRIVATE
     platforms/macos/macospingsender.h
     platforms/macos/macosstartatbootwatcher.cpp
     platforms/macos/macosstartatbootwatcher.h
+    platforms/macos/macossystemtraynotificationhandler.cpp
+    platforms/macos/macossystemtraynotificationhandler.h
     wgquickprocess.cpp
     wgquickprocess.h
     platforms/macos/macoscryptosettings.mm
