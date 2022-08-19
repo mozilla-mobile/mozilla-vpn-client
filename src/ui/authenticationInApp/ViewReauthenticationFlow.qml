@@ -44,9 +44,8 @@ Item {
             name: "StateInitializing"
             when: (
                 VPNAuthInApp.state === VPNAuthInApp.StateInitializing
-                || VPNAuthInApp.state === VPNAuthInApp.StateAuthenticated
                 || VPNAuthInApp.state === VPNAuthInApp.StateCheckingAccount
-            ) && !_targetViewCondition
+            ) || !_targetViewCondition
             PropertyChanges {
                 target: loader
                 source: "qrc:/ui/authenticationInApp/ViewAuthenticationInitializing.qml"
@@ -103,10 +102,7 @@ Item {
 
         State {
             name: "StateAuthenticated"
-            when: (
-                VPNAuthInApp.state === VPNAuthInApp.StateInitializing
-                || VPNAuthInApp.state === VPNAuthInApp.StateAuthenticated
-            ) && _targetViewCondition
+            when: VPNAuthInApp.state === VPNAuthInApp.StateAuthenticated && _targetViewCondition
             StateChangeScript {
                 name: "closeReAuth"
                 script: {

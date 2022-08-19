@@ -149,7 +149,7 @@ describe('Settings', function() {
       guide = guideParent + "/" + guide;
 
       await vpn.setElementProperty(
-          'settingsTipsAndTricksPage', 'contentY', 'i',
+          'settingsTipsAndTricksPage-flickable', 'contentY', 'i',
           parseInt(await vpn.getElementProperty(guide, 'y')) +
               parseInt(await vpn.getElementProperty(guide, 'height')) +
               parseInt(await vpn.getElementProperty(guideParent, 'y')));
@@ -382,7 +382,6 @@ describe('Settings', function() {
         'settingsUserProfile-manageAccountButton', 'visible', 'true');
   });
 
-
   it('Checking the get help', async () => {
     await vpn.waitForElement('settingsGetHelp');
     await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
@@ -418,10 +417,8 @@ describe('Settings', function() {
     await vpn.clickOnElement('giveFeedbackView');
     await vpn.wait();
 
-    await vpn.waitForElement('giveFeedbackBackButton');
-    await vpn.waitForElementProperty(
-        'giveFeedbackBackButton', 'visible', 'true');
-    await vpn.clickOnElement('giveFeedbackBackButton');
+    await vpn.waitForElement('getHelpBack');
+    await vpn.clickOnElement('getHelpBack');
     await vpn.wait();
 
     await vpn.waitForElement('getHelpLinks');
@@ -495,11 +492,10 @@ describe('Settings', function() {
     await vpn.wait();
 
     await vpn.wait();
-    await vpn.waitForElement('giveFeedbackBackButton');
-    await vpn.clickOnElement('giveFeedbackBackButton');
+    await vpn.waitForElement('getHelpBack');
+    await vpn.clickOnElement('getHelpBack');
     await vpn.wait();
   });
-
 
   it('Contact us is opened and closed', async () => {
     await getToGetHelpView();

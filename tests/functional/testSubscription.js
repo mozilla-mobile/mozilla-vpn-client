@@ -122,6 +122,7 @@ describe('Subscription view', function() {
 
     await vpn.waitForElement('settingsButton');
     await vpn.clickOnElement('settingsButton');
+    await vpn.waitForElementProperty('screenLoader', 'status', 'Ready');
 
     await vpn.waitForElement('settingsUserProfile');
     await vpn.waitForElementProperty('settingsUserProfile', 'visible', 'true');
@@ -160,6 +161,7 @@ describe('Subscription view', function() {
           .body = SUBSCRIPTION_DETAILS;
     };
 
+    await vpn.wait();
     await vpn.clickOnElement('authSignIn-button');
 
     await vpn.waitForElement('subscriptionManagmentView');
@@ -207,6 +209,7 @@ describe('Subscription view', function() {
     await vpn.setElementProperty(
         'authSignIn-passwordInput', 'text', 's', 'P4ass0rd!!');
 
+    await vpn.wait();
     await vpn.waitForElementProperty('authSignIn-button', 'enabled', 'true');
 
     this.ctx.fxaLoginCallback = (req) => {
@@ -218,6 +221,7 @@ describe('Subscription view', function() {
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
     };
 
+    await vpn.wait();
     await vpn.clickOnElement('authSignIn-button');
 
     await vpn.waitForElement('authVerificationSessionByTotpNeeded-textInput');
@@ -243,6 +247,7 @@ describe('Subscription view', function() {
           .body = SUBSCRIPTION_DETAILS;
     };
 
+    await vpn.wait();
     await vpn.clickOnElement('authVerificationSessionByTotpNeeded-button');
 
     await vpn.waitForElement('subscriptionManagmentView');
@@ -852,7 +857,7 @@ describe('Subscription view', function() {
         await vpn.waitForElementProperty(
             'manageSubscriptionButton', 'visible', 'true');
         await vpn.setElementProperty(
-            'subscriptionManagmentView', 'contentY', 'i',
+            'subscriptionManagmentView-flickable', 'contentY', 'i',
             parseInt(
                 await vpn.getElementProperty('manageSubscriptionButton', 'y')));
         await vpn.clickOnElement('manageSubscriptionButton');
@@ -934,7 +939,7 @@ describe('Subscription view', function() {
     await vpn.wait();
 
     await vpn.setElementProperty(
-        'subscriptionManagmentView', 'contentY', 'i',
+        'subscriptionManagmentView-flickable', 'contentY', 'i',
         parseInt(await vpn.getElementProperty('accountDeletionButton', 'y')));
     await vpn.wait();
 
@@ -948,6 +953,7 @@ describe('Subscription view', function() {
     await vpn.setElementProperty(
         'authSignIn-passwordInput', 'text', 's', 'P4ass0rd!!');
 
+    await vpn.wait();
     await vpn.waitForElementProperty('authSignIn-button', 'enabled', 'true');
     await vpn.clickOnElement('authSignIn-button');
 
@@ -1132,7 +1138,7 @@ describe('Subscription view', function() {
     await vpn.wait();
 
     await vpn.setElementProperty(
-        'subscriptionManagmentView', 'contentY', 'i',
+        'subscriptionManagmentView-flickable', 'contentY', 'i',
         parseInt(await vpn.getElementProperty('accountDeletionButton', 'y')));
     await vpn.wait();
 
@@ -1146,6 +1152,7 @@ describe('Subscription view', function() {
     await vpn.setElementProperty(
         'authSignIn-passwordInput', 'text', 's', 'P4ass0rd!!');
 
+    await vpn.wait();
     await vpn.waitForElementProperty('authSignIn-button', 'enabled', 'true');
     await vpn.clickOnElement('authSignIn-button');
 
@@ -1165,6 +1172,7 @@ describe('Subscription view', function() {
       }
     };
 
+    await vpn.wait();
     await vpn.clickOnElement('authVerificationSessionByTotpNeeded-button');
 
     await vpn.waitForElement('deleteAccountForRealButton');
