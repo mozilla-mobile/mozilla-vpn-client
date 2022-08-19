@@ -229,6 +229,8 @@ void MozillaVPN::initialize() {
 
   m_private->m_ipAddressLookup.initialize();
 
+  m_private->m_serverLatency.initialize();
+
   if (Feature::get(Feature::Feature_websocket)->isSupported()) {
     m_private->m_webSocketHandler.initialize();
   }
@@ -342,7 +344,6 @@ void MozillaVPN::initialize() {
   }
 
   TaskScheduler::scheduleTask(new TaskGroup(refreshTasks));
-  TaskScheduler::scheduleTask(new TaskLatency());
 
   setUserState(UserAuthenticated);
   maybeStateMain();
@@ -678,6 +679,9 @@ void MozillaVPN::serversFetched(const QByteArray& serverData) {
     Q_ASSERT(m_private->m_serverData.initialized());
     m_private->m_serverData.writeSettings();
   }
+
+  // After fetching the servers, schedule a refresh of the latency data.
+  m_private->m_serverLatency.start();
 }
 
 void MozillaVPN::deviceRemovalCompleted(const QString& publicKey) {

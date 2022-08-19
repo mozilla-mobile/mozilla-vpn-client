@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef TASKLATENCY_H
-#define TASKLATENCY_H
+#ifndef SERVERLATENCY_H
+#define SERVERLATENCY_H
 
 #include "pingsender.h"
 #include "task.h"
@@ -11,15 +11,17 @@
 #include <QObject>
 #include <QTimer>
 
-class TaskLatency final : public Task {
+class ServerLatency final : public QObject {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(TaskLatency)
+  Q_DISABLE_COPY_MOVE(ServerLatency)
 
  public:
-  TaskLatency();
-  ~TaskLatency();
+  ServerLatency();
+  ~ServerLatency();
 
-  void run() override;
+  void initialize();
+  void start();
+  void stop();
 
  private:
   struct ServerPingRecord {
@@ -29,10 +31,12 @@ class TaskLatency final : public Task {
   PingSender* m_pingSender = nullptr;
   QMap<int, ServerPingRecord> m_pingReplyList;
   QTimer m_timeout;
+  bool m_wantRefresh = false;
 
  private slots:
+  void stateChanged();
   void recvPing(quint16 sequence);
   void criticalPingError();
 };
 
-#endif  // TASKLATENCY_H
+#endif  // SERVERLATENCY_H

@@ -266,6 +266,8 @@ target_sources(mozillavpn PRIVATE
     rfc/rfc5735.h
     serveri18n.cpp
     serveri18n.h
+    serverlatency.cpp
+    serverlatency.h
     settingsholder.cpp
     settingsholder.h
     signature.cpp
@@ -305,8 +307,6 @@ target_sources(mozillavpn PRIVATE
     tasks/heartbeat/taskheartbeat.h
     tasks/ipfinder/taskipfinder.cpp
     tasks/ipfinder/taskipfinder.h
-    tasks/latency/tasklatency.cpp
-    tasks/latency/tasklatency.h
     tasks/products/taskproducts.cpp
     tasks/products/taskproducts.h
     tasks/release/taskrelease.cpp
