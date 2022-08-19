@@ -110,7 +110,7 @@ VPNViewBase {
                        VPN.openLink(openUrl)
                    }
                    if (openView) {
-                       settingsStackView.push(openView)
+                       stackview.push(openView)
                    }
                }
                iconSource: openUrl ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"

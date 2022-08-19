@@ -48,7 +48,7 @@ Item {
 
                 onClicked: {
                     statusBarModifier.resetDefaults()
-                    settingsStackView.pop()
+                    stackview.pop()
                 }
 
                 Image {
@@ -242,7 +242,7 @@ Item {
     Connections {
         function onGoBack(item) {
             if (item === root && root.visible)
-                settingsStackView.pop();
+                stackview.pop();
         }
 
         target: VPNNavigator

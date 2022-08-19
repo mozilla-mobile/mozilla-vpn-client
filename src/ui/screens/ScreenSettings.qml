@@ -11,21 +11,20 @@ import components 0.1
 
 Item {
     objectName: "settings"
-    property var _unwindSettingsStackView: () => settingsStackView.unwindToInitialItem();
-    property var _openTipsAndTricks: () => settingsStackView.push("qrc:/ui/screens/settings/ViewTipsAndTricks/ViewTipsAndTricks.qml", StackView.Immediate)
+    property var _openTipsAndTricks: () => stackview.push("qrc:/ui/screens/settings/ViewTipsAndTricks/ViewTipsAndTricks.qml", StackView.Immediate)
     VPNMenu {
         id: menu
         objectName: "settingsBackButton"
         _menuOnBackClicked: () => {
             VPNProfileFlow.reset();
-            if (settingsStackView.depth !== 1) {
-                return settingsStackView.pop();
+            if (stackview.depth !== 1) {
+                return stackview.pop();
             }
 
             VPNNavigator.requestPreviousScreen();
         }
-        _iconButtonSource: settingsStackView.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
-        _iconButtonAccessibleName: settingsStackView.depth === 1 ? qsTrId("vpn.connectionInfo.close") : qsTrId("vpn.main.back")
+        _iconButtonSource: stackview.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
+        _iconButtonAccessibleName: stackview.depth === 1 ? qsTrId("vpn.connectionInfo.close") : qsTrId("vpn.main.back")
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
@@ -42,15 +41,15 @@ Item {
 
     VPNStackView {
         property bool _settingsView: true
-        id: settingsStackView
+        id: stackview
         anchors.top: menu.bottom
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
 
         Component.onCompleted: {
-            VPNNavigator.addStackView(VPNNavigator.ScreenSettings, settingsStackView)
-            settingsStackView.push("qrc:/ui/screens/settings/ViewSettingsMenu.qml")
+            VPNNavigator.addStackView(VPNNavigator.ScreenSettings, stackview)
+            stackview.push("qrc:/ui/screens/settings/ViewSettingsMenu.qml")
         }
 
         onCurrentItemChanged: {

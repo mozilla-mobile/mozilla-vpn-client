@@ -73,7 +73,7 @@ VPNViewBase {
                 settingTitle: VPNl18n.TipsAndTricksSettingsEntryLabel
                 imageLeftSrc: "qrc:/nebula/resources/sparkles.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push("qrc:/ui/screens/settings/ViewTipsAndTricks/ViewTipsAndTricks.qml")
+                onClicked: stackview.push("qrc:/ui/screens/settings/ViewTipsAndTricks/ViewTipsAndTricks.qml")
             }
 
             VPNSettingsItem {
@@ -81,7 +81,7 @@ VPNViewBase {
                 settingTitle: qsTrId("vpn.settings.networking")
                 imageLeftSrc: "qrc:/ui/resources/settings/networkSettings.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push("qrc:/ui/screens/settings/ViewNetworkSettings.qml", {
+                onClicked: stackview.push("qrc:/ui/screens/settings/ViewNetworkSettings.qml", {
                                                       //% "App permissions"
                                                       _appPermissionsTitle: Qt.binding(() => qsTrId("vpn.settings.appPermissions2"))
                                                   })
@@ -93,7 +93,7 @@ VPNViewBase {
                 settingTitle: VPNl18n.SettingsSystemPreferences
                 imageLeftSrc: "qrc:/ui/resources/settings/preferences.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push("qrc:/ui/screens/settings/ViewPreferences.qml", {
+                onClicked: stackview.push("qrc:/ui/screens/settings/ViewPreferences.qml", {
                                                     _startAtBootTitle: Qt.binding(() => VPNl18n.SettingsStartAtBootTitle),
                                                     _languageTitle:  Qt.binding(() => qsTrId("vpn.settings.language")),
                                                     _notificationsTitle:  Qt.binding(() => qsTrId("vpn.settings.notifications")),
@@ -119,7 +119,7 @@ VPNViewBase {
                 settingTitle: qsTrId("vpn.settings.aboutUs")
                 imageLeftSrc: "qrc:/ui/resources/settings/aboutUs.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push("qrc:/ui/screens/settings/ViewAboutUs.qml")
+                onClicked: stackview.push("qrc:/ui/screens/settings/ViewAboutUs.qml")
             }
 
             VPNVerticalSpacer {
@@ -152,21 +152,21 @@ VPNViewBase {
         function onStateChanged() {
             if (
                 VPNProfileFlow.state === VPNProfileFlow.StateReady
-                && settingsStackView.currentItem.objectName !== "subscriptionManagmentView"
+                && stackview.currentItem.objectName !== "subscriptionManagmentView"
             ) {
-                return settingsStackView.push("qrc:/ui/screens/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml");
+                return stackview.push("qrc:/ui/screens/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml");
             }
 
             // Only push the profile view if it’s not already in the stack
             if (
                 VPNProfileFlow.state === VPNProfileFlow.StateAuthenticationNeeded
-                && settingsStackView.currentItem.objectName !== "reauthenticationFlow"
+                && stackview.currentItem.objectName !== "reauthenticationFlow"
             ) {
-                return settingsStackView.push("qrc:/ui/authenticationInApp/ViewReauthenticationFlow.qml", {
+                return stackview.push("qrc:/ui/authenticationInApp/ViewReauthenticationFlow.qml", {
                     _targetViewCondition: Qt.binding(() => VPNProfileFlow.state === VPNProfileFlow.StateReady),
                     _onClose: () => {
                         VPNProfileFlow.reset();
-                        settingsStackView.pop();
+                        stackview.pop();
                     }
                 });
             }
@@ -175,8 +175,8 @@ VPNViewBase {
             // to the main settings view.
             const hasError = VPNProfileFlow.state === VPNProfileFlow.StateError;
             if (hasError) {
-                if (settingsStackView.currentItem.objectName === "reauthenticationFlow") {
-                    settingsStackView.pop();
+                if (stackview.currentItem.objectName === "reauthenticationFlow") {
+                    stackview.pop();
                 }
                 VPNProfileFlow.reset();
             }
