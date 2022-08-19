@@ -8,13 +8,36 @@ import QtQuick.Controls 2.14
 import Mozilla.VPN 1.0
 import components 0.1
 
-VPNStackView {
-    id: stackview
+Item {
     objectName: "ViewMainStackView"
 
-    Component.onCompleted: function() {
-        VPNNavigator.addStackView(VPNNavigator.ScreenHome, stackview)
-        stackview.push("qrc:/ui/views/ViewMain.qml")
+    VPNMenu {
+        id: menu
+        objectName: "ViewMainBack"
+        _menuOnBackClicked: () => {
+            if (stackview.depth !== 1) {
+                return stackview.pop();
+            }
+            VPNNavigator.requestPreviousScreen();
+        }
+        _iconButtonSource: stackview.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
+        _iconButtonAccessibleName: stackview.depth === 1 ? qsTrId("vpn.connectionInfo.close") : qsTrId("vpn.main.back")
+    }
+
+    VPNStackView {
+        id: stackview
+        anchors.top: menu.bottom
+
+        Component.onCompleted: {
+            VPNNavigator.addStackView(VPNNavigator.ScreenHome, stackview)
+            stackview.push("qrc:/ui/views/ViewMain.qml")
+        }
+
+        onCurrentItemChanged: {
+            menu.title = Qt.binding(() => currentItem._menuTitle || "");
+            menu.visible = Qt.binding(() => menu.title !== "");
+            menu._menuOnBackClicked = currentItem._menuOnBackClicked ? currentItem._menuOnBackClicked : () => stackview.pop()
+        }
     }
 
     Connections {
@@ -28,6 +51,15 @@ VPNStackView {
             }
             stackview.unwindToInitialItem();
             stackview.push("qrc:/ui/views/ViewServers.qml", StackView.Immediate)
+        }
+    }
+
+    Connections {
+        target: VPNTutorial
+        function onPlayingChanged() {
+           if (VPNTutorial.playing) {
+               stackview.pop(null, StackView.Immediate)
+           }
         }
     }
 }

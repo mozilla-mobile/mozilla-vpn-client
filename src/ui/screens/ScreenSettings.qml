@@ -10,7 +10,13 @@ import Mozilla.VPN 1.0
 import components 0.1
 
 Item {
+    id: settings
     objectName: "settings"
+
+    Connections {
+        target: window
+    }
+
     property var _openTipsAndTricks: () => stackview.push("qrc:/ui/screens/settings/ViewTipsAndTricks/ViewTipsAndTricks.qml", StackView.Immediate)
     VPNMenu {
         id: menu

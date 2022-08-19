@@ -208,7 +208,7 @@ VPNFlickable {
                         tipAndTricksIntroButton.enabled = false
                         closedByPrimaryButton = true
                         tipsAndTricksIntroPopup.close()
-                        mainStackView.push(tipsAndTricksDeepLinkView)
+                        stackview.push("qrc:/ui/screens/settings/ViewTipsAndTricks/ViewTipsAndTricks.qml", StackView.Immediate)
                     }
                 },
                 VPNLinkButton {
@@ -230,32 +230,6 @@ VPNFlickable {
         }
 
         onActiveChanged: if (active) { item.open() }
-
-        Component {
-            id: tipsAndTricksDeepLinkView
-
-            ColumnLayout {
-
-                spacing: 0
-
-                VPNMenu {
-                    id: menu
-                    objectName: "tipsAndTricksCloseButton"
-
-                    Layout.fillWidth: true
-
-                    _iconButtonSource:"qrc:/nebula/resources/close-dark.svg"
-                    title: VPNl18n.TipsAndTricksSettingsEntryLabel
-                    _menuOnBackClicked: () => { mainStackView.pop() }
-                }
-
-                Loader {
-                    Layout.fillHeight: true
-                    Layout.fillWidth: true
-                    source: "qrc:/ui/screens/settings/ViewTipsAndTricks/ViewTipsAndTricks.qml"
-                }
-            }
-        }
     }
 
     function maybeActivateTipsAndTricksIntro() {
