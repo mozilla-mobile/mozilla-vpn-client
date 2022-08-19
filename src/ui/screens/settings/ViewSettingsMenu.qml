@@ -93,7 +93,7 @@ VPNViewBase {
                 settingTitle: VPNl18n.SettingsSystemPreferences
                 imageLeftSrc: "qrc:/ui/resources/settings/preferences.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: settingsStackView.push("qrc:/ui/screens/settings/ViewPrivacySecurity.qml", {
+                onClicked: settingsStackView.push("qrc:/ui/screens/settings/ViewPreferences.qml", {
                                                     _startAtBootTitle: Qt.binding(() => VPNl18n.SettingsStartAtBootTitle),
                                                     _languageTitle:  Qt.binding(() => qsTrId("vpn.settings.language")),
                                                     _notificationsTitle:  Qt.binding(() => qsTrId("vpn.settings.notifications")),

@@ -64,7 +64,7 @@
         <file>screens/settings/ViewLicenses.qml</file>
         <file>screens/settings/ViewNetworkSettings.qml</file>
         <file>screens/settings/ViewNotifications.qml</file>
-        <file>screens/settings/ViewPrivacySecurity.qml</file>
+        <file>screens/settings/ViewPreferences.qml</file>
         <file>screens/settings/ViewSettingsMenu.qml</file>
         <file>screens/settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml</file>
         <file>screens/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml</file>

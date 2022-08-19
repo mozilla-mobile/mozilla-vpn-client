@@ -9,9 +9,6 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
 
-// TODO: This filename should be changed to 'ViewPreferences.qml' after the 2.5 release
-// The legacy name has been kept to prevent the creation of additional strings
-
 VPNViewBase {
     property string _startAtBootTitle: ""
     property string _notificationsTitle: ""
