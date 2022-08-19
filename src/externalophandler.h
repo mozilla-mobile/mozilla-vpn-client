@@ -16,7 +16,6 @@ class ExternalOpHandler final : public QObject {
     OpAbout,
     OpActivate,
     OpCloseEvent,
-    OpContactUs,
     OpDeactivate,
     OpNotificationClicked,
     OpSettings,
@@ -32,7 +31,7 @@ class ExternalOpHandler final : public QObject {
 
   static ExternalOpHandler* instance();
 
-  void request(Op op);
+  Q_INVOKABLE void request(Op op);
   void requestOpActivate() { return request(OpActivate); }
   void requestOpDeactivate() { return request(OpDeactivate); }
   void requestOpSettings() { return request(OpSettings); }

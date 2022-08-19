@@ -34,7 +34,6 @@
         <file>screens/ScreenAuthenticationInApp.qml</file>
         <file>screens/ScreenBackendFailure.qml</file>
         <file>screens/ScreenBillingNotAvailable.qml</file>
-        <file>screens/ScreenContactUs.qml</file>
         <file>screens/ScreenDeviceLimit.qml</file>
         <file>screens/ScreenGetHelp.qml</file>
         <file>screens/ScreenHome.qml</file>

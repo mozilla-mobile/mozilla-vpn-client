@@ -189,8 +189,6 @@ target_sources(mozillavpn PRIVATE
     models/featuremodel.h
     models/feedbackcategorymodel.cpp
     models/feedbackcategorymodel.h
-    models/helpmodel.cpp
-    models/helpmodel.h
     models/keys.cpp
     models/keys.h
     models/licensemodel.cpp

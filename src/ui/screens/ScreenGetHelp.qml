@@ -65,18 +65,4 @@ Item {
             menu._menuOnBackClicked = currentItem._menuOnBackClicked ? currentItem._menuOnBackClicked : () => getHelpStackView.pop()
         }
     }
-
-    Connections {
-        target: VPN
-        function onContactUsNeeded() {
-            // TODO: Remove once this link is no longer in sys tray menu
-            // Check if Contact Us view is already in getHelpStackView
-            const contactUsViewInStack = getHelpStackView.find((view) => { return view.objectName === "contactUs" });
-            if (contactUsViewInStack) {
-                // Unwind getHelpStackView back to Contact Us
-                return getHelpStackView.pop(contactUsViewInStack, StackView.Immediate);
-            }
-            getHelpStackView.push("qrc:/ui/screens/getHelp/contactUs/ViewContactUsForm.qml");
-        }
-    }
 }

@@ -125,18 +125,6 @@ Window {
             VPNNavigator.requestScreen(VPNNavigator.ScreenViewLogs);
         }
 
-/* TODO
-        function onContactUsNeeded() {
-            // Check if Contact Us view is already in mainStackView
-            const contactUsViewInStack = mainStackView.find((view) => { return view.objectName === "contactUs" });
-            if (contactUsViewInStack) {
-                // Unwind mainStackView back to Contact Us
-                return mainStackView.pop(contactUsViewInStack, StackView.Immediate);
-            }
-            mainStackView.push("qrc:/ui/views/ViewContactUs.qml", StackView.Immediate);
-        }
-*/
-
         function onAccountDeleted() {
             VPNController.logout();
         }

@@ -91,7 +91,6 @@ HEADERS += \
     ../../src/models/feature.h \
     ../../src/models/featuremodel.h \
     ../../src/models/feedbackcategorymodel.h \
-    ../../src/models/helpmodel.h \
     ../../src/models/keys.h \
     ../../src/models/licensemodel.h \
     ../../src/models/server.h \
@@ -225,7 +224,6 @@ SOURCES += \
     ../../src/models/feature.cpp \
     ../../src/models/featuremodel.cpp \
     ../../src/models/feedbackcategorymodel.cpp \
-    ../../src/models/helpmodel.cpp \
     ../../src/models/keys.cpp \
     ../../src/models/licensemodel.cpp \
     ../../src/models/server.cpp \

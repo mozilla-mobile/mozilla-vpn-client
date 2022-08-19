@@ -878,12 +878,6 @@ static QList<InspectorCommand> s_commands{
                            ExternalOpHandler::OpSettings);
                        return QJsonObject();
                      }},
-    InspectorCommand{"open_contact_us", "Open in-app support form", 0,
-                     [](InspectorHandler*, const QList<QByteArray>&) {
-                       ExternalOpHandler::instance()->request(
-                           ExternalOpHandler::OpContactUs);
-                       return QJsonObject();
-                     }},
     InspectorCommand{"is_feature_flipped_on",
                      "Check if a feature is flipped on", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {

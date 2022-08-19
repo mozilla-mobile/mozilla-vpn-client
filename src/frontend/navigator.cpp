@@ -203,14 +203,6 @@ ScreenData s_screens[] = {
           return true;
         }),
     ScreenData(
-        Navigator::Screen::ScreenContactUs,
-        "qrc:/ui/screens/ScreenContactUs.qml", QVector<MozillaVPN::State>{},
-        [](Navigator::Screen*) -> int8_t { return 0; },
-        []() -> bool {
-          Navigator::instance()->requestPreviousScreen();
-          return true;
-        }),
-    ScreenData(
         Navigator::Screen::ScreenGetHelp, "qrc:/ui/screens/ScreenGetHelp.qml",
         QVector<MozillaVPN::State>{},
         [](Navigator::Screen*) -> int8_t { return 0; },

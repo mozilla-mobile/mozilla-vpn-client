@@ -21,28 +21,40 @@ VPNViewBase {
 
         Layout.fillWidth: true
 
-        Repeater {
-            id: getHelpList
-            objectName: "getHelpBackList"
-            anchors.left: parent.left
-            anchors.right: parent.right
+        VPNExternalLinkListItem {
+            objectName: "helpCenter"
 
-            model: VPNHelpModel
-
-            delegate: VPNExternalLinkListItem {
-                objectName: "getHelpBackList-" + id
-                title: name
-                accessibleName: name
-                iconSource: externalLink ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"
-                backgroundColor: externalLink ? VPNTheme.theme.clickableRowBlue : VPNTheme.theme.iconButtonLightBackground
-                onClicked: {
-                    VPNHelpModel.open(id)
-                }
-            }
+            accessibleName: qsTrId("help.helpCenter2")
+            title: qsTrId("help.helpCenter2")
+            onClicked: VPN.openLink(VPN.LinkHelpSupport)
+            iconSource: "qrc:/nebula/resources/externalLink.svg"
+            backgroundColor: VPNTheme.theme.clickableRowBlue
+            width: parent.width - VPNTheme.theme.windowMargin
         }
 
         VPNExternalLinkListItem {
-            id: gf
+            objectName: "inAppSupport"
+
+            accessibleName: VPNl18n.InAppSupportWorkflowSupportNavLinkText
+            title: VPNl18n.InAppSupportWorkflowSupportNavLinkText
+            onClicked: getHelpStackView.push("qrc:/ui/screens/getHelp/contactUs/ViewContactUsForm.qml");
+            iconSource: "qrc:/nebula/resources/chevron.svg"
+            backgroundColor: VPNTheme.theme.iconButtonLightBackground
+            width: parent.width - VPNTheme.theme.windowMargin
+        }
+
+        VPNExternalLinkListItem {
+            objectName: "viewLog"
+
+            accessibleName: qsTrId("help.viewLog")
+            title: qsTrId("help.viewLog")
+            onClicked: VPNExternalOpHandler.request(VPNExternalOpHandler.OpViewLogs)
+            iconSource: VPNFeatureList.get("shareLogs").isSupported ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"
+            backgroundColor: VPNFeatureList.get("shareLogs").isSupported ?VPNTheme.theme.clickableRowBlue : VPNTheme.theme.iconButtonLightBackground
+            width: parent.width - VPNTheme.theme.windowMargin
+        }
+
+        VPNExternalLinkListItem {
             objectName: "settingsGiveFeedback"
 
             accessibleName: title
@@ -55,7 +67,6 @@ VPNViewBase {
         }
 
         VPNSettingsItem {
-            id: developer
             objectName: "developer"
 
             width: parent.width - VPNTheme.theme.windowMargin

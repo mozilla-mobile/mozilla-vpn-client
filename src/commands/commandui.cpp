@@ -9,6 +9,7 @@
 #include "captiveportal/captiveportaldetection.h"
 #include "commandlineparser.h"
 #include "constants.h"
+#include "externalophandler.h"
 #include "fontloader.h"
 #include "frontend/navigator.h"
 #include "iaphandler.h"
@@ -343,14 +344,6 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNHelpModel",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->helpModel();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNServerCountryModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance()->serverCountryModel();
@@ -511,6 +504,14 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNErrorHandler",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = ErrorHandler::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNExternalOpHandler",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = ExternalOpHandler::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

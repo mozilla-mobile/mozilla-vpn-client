@@ -303,6 +303,7 @@ systray:
     comment: Location in the systray. %1 is the country, %2 is the city.
   disconnect: Disconnect
   help: Help
+  getHelp: Get Help
   preferences: Preferences…
   quit: Quit Mozilla VPN
 

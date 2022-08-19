@@ -23,7 +23,6 @@ class Navigator final : public QObject {
     ScreenAuthenticating,
     ScreenBackendFailure,
     ScreenBillingNotAvailable,
-    ScreenContactUs,
     ScreenDeviceLimit,
     ScreenGetHelp,
     ScreenHome,

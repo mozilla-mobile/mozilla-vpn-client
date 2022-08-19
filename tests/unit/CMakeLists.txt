@@ -133,8 +133,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/models/featuremodel.h
     ${MVPN_SOURCE_DIR}/models/feedbackcategorymodel.cpp
     ${MVPN_SOURCE_DIR}/models/feedbackcategorymodel.h
-    ${MVPN_SOURCE_DIR}/models/helpmodel.cpp
-    ${MVPN_SOURCE_DIR}/models/helpmodel.h
     ${MVPN_SOURCE_DIR}/models/keys.cpp
     ${MVPN_SOURCE_DIR}/models/keys.h
     ${MVPN_SOURCE_DIR}/models/licensemodel.cpp

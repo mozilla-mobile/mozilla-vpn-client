@@ -5,6 +5,7 @@
 #include "systemtraynotificationhandler.h"
 #include "constants.h"
 #include "externalophandler.h"
+#include "frontend/navigator.h"
 #include "leakdetector.h"
 #include "l18nstrings.h"
 #include "logger.h"
@@ -116,10 +117,8 @@ void SystemTrayNotificationHandler::retranslate() {
     m_helpMenu->removeAction(action);
   }
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  vpn->helpModel()->forEach([&](const char* nameId, int id) {
-    m_helpMenu->addAction(qtTrId(nameId),
-                          [help = vpn->helpModel(), id]() { help->open(id); });
+  m_helpMenu->addAction(l18nStrings->t(L18nStrings::SystrayGetHelp), []() {
+    Navigator::instance()->requestScreen(Navigator::ScreenGetHelp);
   });
 
   m_preferencesAction->setText(l18nStrings->t(L18nStrings::SystrayPreferences));
