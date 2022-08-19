@@ -160,13 +160,13 @@ VPNViewBase {
             // Only push the profile view if it’s not already in the stack
             if (
                 VPNProfileFlow.state === VPNProfileFlow.StateAuthenticationNeeded
-                && mainStackView.currentItem.objectName !== "reauthenticationFlow"
+                && settingsStackView.currentItem.objectName !== "reauthenticationFlow"
             ) {
-                return mainStackView.push("qrc:/ui/authenticationInApp/ViewReauthenticationFlow.qml", {
+                return settingsStackView.push("qrc:/ui/authenticationInApp/ViewReauthenticationFlow.qml", {
                     _targetViewCondition: Qt.binding(() => VPNProfileFlow.state === VPNProfileFlow.StateReady),
                     _onClose: () => {
                         VPNProfileFlow.reset();
-                        mainStackView.pop();
+                        settingsStackView.pop();
                     }
                 });
             }
@@ -175,8 +175,8 @@ VPNViewBase {
             // to the main settings view.
             const hasError = VPNProfileFlow.state === VPNProfileFlow.StateError;
             if (hasError) {
-                if (mainStackView.currentItem.objectName === "reauthenticationFlow") {
-                    mainStackView.pop();
+                if (settingsStackView.currentItem.objectName === "reauthenticationFlow") {
+                    settingsStackView.pop();
                 }
                 VPNProfileFlow.reset();
             }

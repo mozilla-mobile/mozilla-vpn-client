@@ -9,36 +9,26 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
 
-VPNFlickable {
-    property string _menuTitle: VPNl18n.SubscriptionManagementMenuTitle
+VPNViewBase {
     id: vpnFlickable
     objectName: "subscriptionManagmentView"
 
-    anchors.top: parent.top
-    height: parent.height
-    flickContentHeight: contentColumn.implicitHeight + VPNTheme.theme.rowHeight
-
-    ListModel {
-        id: subscriptionInfoModel
-    }
-
-    ListModel {
-        id: subscriptionPaymentModel
-    }
-
-    ColumnLayout {
-        id: contentColumn
-
-        height: Math.max(vpnFlickable.height - VPNTheme.theme.menuHeight, contentColumn.implicitHeight)
+    _menuTitle: VPNl18n.SubscriptionManagementMenuTitle
+    _viewContentData: ColumnLayout {
         spacing: VPNTheme.theme.windowMargin
-        width: parent.width
 
-        anchors {
-            horizontalCenter: parent.horizontalCenter
-            top: parent.top
+        ListModel {
+            id: subscriptionInfoModel
+        }
+
+        ListModel {
+            id: subscriptionPaymentModel
         }
 
         VPNUserProfile {
+            Layout.leftMargin: VPNTheme.theme.windowMargin / 2
+            Layout.rightMargin: VPNTheme.theme.windowMargin / 2
+
             objectName: "subscriptionUserProfile"
             _objNameBase: "subscriptionUserProfile"
 
@@ -47,8 +37,6 @@ VPNFlickable {
                 VPN.recordGleanEvent("manageAccountClicked");
                 VPN.openLink(VPN.LinkAccount);
             }
-
-            Layout.topMargin: VPNTheme.theme.windowMargin
         }
 
         ColumnLayout {
@@ -67,6 +55,7 @@ VPNFlickable {
                 text: VPNl18n.SubscriptionManagementSummaryHeadline
 
                 Layout.bottomMargin: VPNTheme.theme.listSpacing * 0.5
+                Layout.topMargin: VPNTheme.theme.listSpacing * 0.5
                 Layout.fillWidth: true
             }
 
@@ -120,7 +109,7 @@ VPNFlickable {
 
                 onClicked: {
                     VPN.recordGleanEvent("deleteAccountRequested");
-                    mainStackView.push("qrc:/ui/deleteAccount/ViewDeleteAccount.qml");
+                    settingsStackView.push("qrc:/ui/deleteAccount/ViewDeleteAccount.qml");
                 }
 
                 Layout.alignment: Qt.AlignHCenter
