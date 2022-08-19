@@ -110,7 +110,12 @@ Window {
       objectName: "screenLoader"
       asynchronous: true
       sourceComponent: VPNNavigator.component
-      anchors.fill: parent
+      anchors {
+          top: iosSafeAreaTopMargin.bottom
+          left: parent.left
+          right: parent.right
+          bottom: parent.bottom
+      }
     }
 
     Connections {
