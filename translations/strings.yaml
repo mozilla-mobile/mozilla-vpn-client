@@ -698,3 +698,6 @@ global:
     value: Go back
     comment: Label for button used in intro modals to return to the app.
 
+getHelp:
+  helpCenter: Help Center
+  viewLogs: View Logs

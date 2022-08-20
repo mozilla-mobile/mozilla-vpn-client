@@ -24,8 +24,8 @@ VPNViewBase {
         VPNExternalLinkListItem {
             objectName: "helpCenter"
 
-            accessibleName: qsTrId("help.helpCenter2")
-            title: qsTrId("help.helpCenter2")
+            accessibleName: VPNl18n.GetHelpHelpCenter
+            title: VPNl18n.GetHelpHelpCenter
             onClicked: VPN.openLink(VPN.LinkHelpSupport)
             iconSource: "qrc:/nebula/resources/externalLink.svg"
             backgroundColor: VPNTheme.theme.clickableRowBlue
@@ -46,8 +46,8 @@ VPNViewBase {
         VPNExternalLinkListItem {
             objectName: "viewLogs"
 
-            accessibleName: qsTrId("help.viewLog")
-            title: qsTrId("help.viewLog")
+            accessibleName: VPNl18n.GetHelpViewLogs
+            title: VPNl18n.GetHelpViewLogs
             onClicked: VPN.requestViewLogs()
             iconSource: VPNFeatureList.get("shareLogs").isSupported ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"
             backgroundColor: VPNFeatureList.get("shareLogs").isSupported ?VPNTheme.theme.clickableRowBlue : VPNTheme.theme.iconButtonLightBackground
