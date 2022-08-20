@@ -1452,8 +1452,6 @@ void MozillaVPN::requestAbout() {
 
 void MozillaVPN::requestViewLogs() {
   logger.debug() << "View log requested";
-
-  QmlEngineHolder::instance()->showWindow();
   emit viewLogsNeeded();
 }
 

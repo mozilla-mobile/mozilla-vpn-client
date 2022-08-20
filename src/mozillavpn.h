@@ -205,6 +205,7 @@ class MozillaVPN final : public QObject {
 #ifdef MVPN_ANDROID
   Q_INVOKABLE void launchPlayStore();
 #endif
+  Q_INVOKABLE void requestViewLogs();
 
   void authenticateWithType(AuthenticationType authenticationType);
 
@@ -397,7 +398,6 @@ class MozillaVPN final : public QObject {
  public slots:
   void requestSettings();
   void requestAbout();
-  void requestViewLogs();
 
  signals:
   void stateChanged();

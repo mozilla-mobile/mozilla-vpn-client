@@ -48,7 +48,7 @@ VPNViewBase {
 
             accessibleName: qsTrId("help.viewLog")
             title: qsTrId("help.viewLog")
-            onClicked: VPNExternalOpHandler.request(VPNExternalOpHandler.OpViewLogs)
+            onClicked: VPN.requestViewLogs()
             iconSource: VPNFeatureList.get("shareLogs").isSupported ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"
             backgroundColor: VPNFeatureList.get("shareLogs").isSupported ?VPNTheme.theme.clickableRowBlue : VPNTheme.theme.iconButtonLightBackground
             width: parent.width - VPNTheme.theme.windowMargin

@@ -20,7 +20,6 @@ class ExternalOpHandler final : public QObject {
     OpNotificationClicked,
     OpSettings,
     OpQuit,
-    OpViewLogs,
   };
   Q_ENUM(Op);
 
@@ -31,7 +30,7 @@ class ExternalOpHandler final : public QObject {
 
   static ExternalOpHandler* instance();
 
-  Q_INVOKABLE void request(Op op);
+  void request(Op op);
   void requestOpActivate() { return request(OpActivate); }
   void requestOpDeactivate() { return request(OpDeactivate); }
   void requestOpSettings() { return request(OpSettings); }

@@ -61,9 +61,6 @@ void ExternalOpHandler::request(Op op) {
     case OpAbout:
       vpn->requestAbout();
       break;
-    case OpViewLogs:
-      vpn->requestViewLogs();
-      break;
     case OpActivate:
       vpn->controller()->activate();
       break;
