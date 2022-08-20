@@ -14,35 +14,42 @@ describe('Tips and tricks intro modal', function() {
               await vpn.authenticateInApp(true, true)});
 
   it('Access and navigate tips and tricks via intro modal', async () => {
-    await vpn.wait() await vpn.waitForElementProperty(
+    await vpn.wait();
+    await vpn.waitForElementProperty(
         'tipsAndTricksIntroPopupLoader', 'active', 'true');
     await vpn.waitForElement('tipsAndTricksIntroPopupDiscoverNowButton');
     await vpn.clickOnElement('tipsAndTricksIntroPopupDiscoverNowButton');
 
-    await vpn.wait() await vpn.waitForElement('settingsTipsAndTricksPage');
+    await vpn.wait();
+    await vpn.waitForElement('settingsTipsAndTricksPage');
     await vpn.waitForElement('ViewMainBack');
     await vpn.clickOnElement('ViewMainBack');
 
-    await vpn.wait() await vpn.waitForElement('ViewMainStackView');
+    await vpn.wait();
+    await vpn.waitForElement('ViewMainStackView');
   });
 
   it('Closing modal with close button', async () => {
-    await vpn.wait() await vpn.waitForElementProperty(
+    await vpn.wait();
+    await vpn.waitForElementProperty(
         'tipsAndTricksIntroPopupLoader', 'active', 'true');
     await vpn.waitForElement('tipsAndTricksIntroPopupCloseButton');
     await vpn.clickOnElement('tipsAndTricksIntroPopupCloseButton');
 
-    await vpn.wait() await vpn.waitForElementProperty(
+    await vpn.wait();
+    await vpn.waitForElementProperty(
         'tipsAndTricksIntroPopupLoader', 'active', 'false');
   });
 
   it('Closing modal with go back button', async () => {
-    await vpn.wait() await vpn.waitForElementProperty(
+    await vpn.wait();
+    await vpn.waitForElementProperty(
         'tipsAndTricksIntroPopupLoader', 'active', 'true');
     await vpn.waitForElement('tipsAndTricksIntroPopupGoBackButton');
     await vpn.clickOnElement('tipsAndTricksIntroPopupGoBackButton');
 
-    await vpn.wait() await vpn.waitForElementProperty(
+    await vpn.wait();
+    await vpn.waitForElementProperty(
         'tipsAndTricksIntroPopupLoader', 'active', 'false');
   });
 })
