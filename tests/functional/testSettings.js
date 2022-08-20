@@ -400,15 +400,10 @@ describe('Settings', function() {
     await vpn.waitForElement('getHelpLinks');
     await vpn.waitForElementProperty('getHelpLinks', 'visible', 'true');
 
-    await vpn.waitForElement('getHelpLinks/getHelpBackList');
-    await vpn.waitForElementProperty(
-        'getHelpLinks/getHelpBackList', 'visible', 'true');
+    await vpn.waitForElement('settingsGiveFeedback');
+    await vpn.waitForElementProperty('settingsGiveFeedback', 'visible', 'true');
 
-    await vpn.waitForElement('getHelpLinks/settingsGiveFeedback');
-    await vpn.waitForElementProperty(
-      'getHelpLinks/settingsGiveFeedback', 'visible', 'true');
-
-    await vpn.clickOnElement('getHelpLinks/settingsGiveFeedback');
+    await vpn.clickOnElement('settingsGiveFeedback');
     await vpn.wait();
 
     await vpn.waitForElement('giveFeedbackView');
@@ -426,11 +421,9 @@ describe('Settings', function() {
 
     // TODO: checking the give feedback views
 
-    await vpn.waitForElement('getHelpLinks/getHelpBackList-2');
-    await vpn.waitForElementProperty(
-        'getHelpLinks/getHelpBackList-2', 'visible', 'true');
-
-    await vpn.clickOnElement('getHelpLinks/getHelpBackList-2');
+    await vpn.waitForElement('viewLogs');
+    await vpn.waitForElementProperty('viewLogs', 'visible', 'true');
+    await vpn.clickOnElement('viewLogs');
 
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
@@ -438,27 +431,14 @@ describe('Settings', function() {
           url.endsWith('.txt');
     });
 
-    await vpn.waitForElement('getHelpLinks/getHelpBackList-0')
-        await vpn.waitForElementProperty(
-            'getHelpLinks/getHelpBackList-0', 'visible', 'true');
+    await vpn.waitForElement('helpCenter');
+    await vpn.waitForElementProperty('helpCenter', 'visible', 'true');
 
-    await vpn.clickOnElement('getHelpLinks/getHelpBackList-0');
+    await vpn.clickOnElement('helpCenter');
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
       return url.endsWith('/r/vpn/support');
     });
-
-    /* TODO:  Reinstate this test correctly
-        https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1638
-        Disabling this test will let us continue running all testSettings tests
-        to make sure nothing else is broken.
-
-        await vpn.clickOnElement('getHelpBackList/getHelpBackList-2');
-        await vpn.waitForCondition(async () => {
-            const url = await vpn.getLastUrl();
-            return url.endsWith('/r/vpn/contact');
-        });
-    */
 
     await vpn.wait();
     await vpn.waitForElement('getHelpBack');
@@ -484,11 +464,10 @@ describe('Settings', function() {
     await getToGetHelpView();
     await vpn.wait();
 
-    await vpn.waitForElement('getHelpLinks/settingsGiveFeedback');
-    await vpn.waitForElementProperty(
-        'getHelpLinks/settingsGiveFeedback', 'visible', 'true');
+    await vpn.waitForElement('settingsGiveFeedback');
+    await vpn.waitForElementProperty('settingsGiveFeedback', 'visible', 'true');
 
-    await vpn.clickOnElement('getHelpLinks/settingsGiveFeedback');
+    await vpn.clickOnElement('settingsGiveFeedback');
     await vpn.wait();
 
     await vpn.wait();
@@ -501,11 +480,10 @@ describe('Settings', function() {
     await getToGetHelpView();
     await vpn.wait();
 
-    await vpn.waitForElement('getHelpLinks/getHelpBackList-1')
-        await vpn.waitForElementProperty(
-            'getHelpLinks/getHelpBackList-1', 'visible', 'true');
+    await vpn.waitForElement('inAppSupport');
+    await vpn.waitForElementProperty('inAppSupport', 'visible', 'true');
 
-    await vpn.clickOnElement('getHelpLinks/getHelpBackList-1');
+    await vpn.clickOnElement('inAppSupport');
 
     await vpn.wait();
     await vpn.waitForElement('contactUs-userInfo');

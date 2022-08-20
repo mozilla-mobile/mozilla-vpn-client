@@ -44,7 +44,7 @@ VPNViewBase {
         }
 
         VPNExternalLinkListItem {
-            objectName: "viewLog"
+            objectName: "viewLogs"
 
             accessibleName: qsTrId("help.viewLog")
             title: qsTrId("help.viewLog")
