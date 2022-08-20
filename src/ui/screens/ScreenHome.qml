@@ -30,7 +30,7 @@ Item {
 
         Component.onCompleted: {
             VPNNavigator.addStackView(VPNNavigator.ScreenHome, stackview)
-            stackview.push("qrc:/ui/views/ViewMain.qml")
+            stackview.push("qrc:/ui/screens/home/ViewHome.qml")
         }
 
         onCurrentItemChanged: {
@@ -44,13 +44,13 @@ Item {
         target: window
         function onShowServerList() {
             // We get here after the user clicks the "Choose new location" button in VPNServerUnavailablePopup {}
-            // We need to (maybe) unwind the stack back to ViewMain.qml and then push the server list.
+            // We need to (maybe) unwind the stack back to ViewHome.qml and then push the server list.
             if (stackview.currentItem.objectName === "viewServers") {
                 // User is already on server list view so we stay put
                 return;
             }
             stackview.unwindToInitialItem();
-            stackview.push("qrc:/ui/views/ViewServers.qml", StackView.Immediate)
+            stackview.push("qrc:/ui/screens/home/ViewServers.qml", StackView.Immediate)
         }
     }
 

@@ -27,6 +27,9 @@
         <file>screens/getHelp/giveFeedback/ViewGiveFeedbackForm.qml</file>
         <file>screens/getHelp/giveFeedback/ViewGiveFeedbackReview.qml</file>
         <file>screens/getHelp/giveFeedback/ViewGiveFeedbackThankYou.qml</file>
+        <file>screens/home/ViewHome.qml</file>
+        <file>screens/home/ViewMultiHop.qml</file>
+        <file>screens/home/ViewServers.qml</file>
         <file>screens/initialize/ViewInitialize.qml</file>
         <file>screens/initialize/ViewOnboarding.qml</file>
         <file>screens/initialize/ViewMobileOnboarding.qml</file>
@@ -74,9 +77,6 @@
         <file>views/ViewCaptivePortalInfo.qml</file>
         <file>views/ViewDevices.qml</file>
         <file>views/ViewErrorFullScreen.qml</file>
-        <file>views/ViewMain.qml</file>
-        <file>views/ViewMultiHop.qml</file>
-        <file>views/ViewServers.qml</file>
         <file>views/ViewUpdate.qml</file>
     </qresource>
 </RCC>
