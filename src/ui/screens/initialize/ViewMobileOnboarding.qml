@@ -13,16 +13,6 @@ import compat 0.1
 
 Item {
     property int safeAreaHeight: window.safeContentHeight
-    property var initialMainStackViewDepth
-    property var currentMainStackViewDepth: mainStackView.depth
-
-    onCurrentMainStackViewDepthChanged: {
-        // Change native status bar text color as onboarding panel comes into and out of view
-        if (currentMainStackViewDepth === initialMainStackViewDepth) {
-            return statusBarModifier.statusBarTextColor = VPNTheme.StatusBarTextColorLight;
-        }
-        return statusBarModifier.resetDefaults();
-    }
 
     VPNRadialGradient {
         id: mobileOnboardingBackground
@@ -365,7 +355,6 @@ Item {
         }
 
         Component.onCompleted: {
-            initialMainStackViewDepth = mainStackView.depth;
             statusBarModifier.statusBarTextColor = VPNTheme.StatusBarTextColorLight;
         }
 
