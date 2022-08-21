@@ -20,29 +20,29 @@ VPNFlickable {
     property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
     property alias settingsListModel: repeater.model
 
-
-    flickContentHeight: col.height + VPNTheme.theme.menuHeight*2
-    interactive: flickContentHeight > height
-
-    VPNCheckBoxAlert {
-        id: alert
-        //% "VPN must be off to edit these settings"
-        //: Associated to a group of settings that require the VPN to be disconnected to change
-        errorMessage: qsTrId("vpn.settings.vpnMustBeOff")
-        anchors.top: parent.top
-        anchors.topMargin: 18
-    }
+    flickContentHeight: col.height
 
     ColumnLayout {
         id: col
         width: parent.width
-        anchors.top: alert.visible ? alert.bottom : parent.top
+        anchors.top: parent.top
         anchors.topMargin: 18
         anchors.left: parent.left
         anchors.leftMargin: 18
         anchors.right: parent.right
         anchors.rightMargin: VPNTheme.theme.windowMargin
         spacing: VPNTheme.theme.vSpacing
+
+        VPNCheckBoxAlert {
+            id: alert
+            //% "VPN must be off to edit these settings"
+            //: Associated to a group of settings that require the VPN to be disconnected to change
+            errorMessage: qsTrId("vpn.settings.vpnMustBeOff")
+            anchors {
+                left: undefined
+                right: undefined
+            }
+        }
 
         Repeater {
             id: repeater
@@ -142,10 +142,10 @@ VPNFlickable {
                         id: errorAlert
 
                         anchors {
-                            left: parent.left
-                            right: parent.right
-                            topMargin: VPNTheme.theme.listSpacing
+                            left: undefined
+                            right: undefined
                         }
+                        Layout.topMargin: VPNTheme.theme.listSpacing
 
                         messages: [
                             {

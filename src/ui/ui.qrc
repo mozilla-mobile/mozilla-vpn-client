@@ -58,8 +58,9 @@
         <file>screens/ScreenViewLogs.qml</file>
         <file>screens/settings/appPermissions/AppPermissionsList.qml</file>
         <file>screens/settings/appPermissions/ViewAppPermissions.qml</file>
+        <file>screens/settings/dnsSettings/DNSSettingsTabContent.qml</file>
+        <file>screens/settings/dnsSettings/ViewAdvancedDNSSettings.qml</file>
         <file>screens/settings/ViewAboutUs.qml</file>
-        <file>screens/settings/ViewAdvancedDNSSettings.qml</file>
         <file>screens/settings/ViewGuide.qml</file>
         <file>screens/settings/ViewLanguage.qml</file>
         <file>screens/settings/ViewLicense.qml</file>

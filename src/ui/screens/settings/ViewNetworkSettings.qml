@@ -95,7 +95,7 @@ VPNViewBase {
                 settingTitle: qsTrId("vpn.settings.networking.advancedDNSSettings")
                 imageLeftSrc: "qrc:/ui/resources/settings-dark.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: stackview.push("qrc:/ui/screens/settings/ViewAdvancedDNSSettings.qml")
+                onClicked: stackview.push("qrc:/ui/screens/settings/dnsSettings/ViewAdvancedDNSSettings.qml")
                 visible: VPNFeatureList.get("customDNS").isSupported
             }
 

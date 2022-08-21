@@ -103,7 +103,6 @@
         <file>components/VPNTutorialCard.qml</file>
         <file>components/VPNUIStates.qml</file>
         <file>components/VPNVerticalSpacer.qml</file>
-        <file>components/VPNViewDNSSettings.qml</file>
         <file>components/inAppAuth/qmldir</file>
         <file>components/inAppAuth/VPNInAppAuthenticationBase.qml</file>
         <file>components/inAppAuth/VPNInAppAuthenticationErrorPopup.qml</file>

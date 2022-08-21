@@ -11,6 +11,7 @@ import components 0.1
 
 Item {
    id: root
+   property alias _interactive: vpnFlickable.interactive
    property string _menuTitle: ""
    property var _menuOnBackClicked
    property alias _viewContentData: viewContent.data
@@ -33,7 +34,6 @@ Item {
         objectName: parent.objectName + "-flickable"
 
         flickContentHeight: viewContent.implicitHeight + anchors.topMargin
-        interactive: viewContent.implicitHeight > height - anchors.topMargin
 
         anchors {
             fill: root

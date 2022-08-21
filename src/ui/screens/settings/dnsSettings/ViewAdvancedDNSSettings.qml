@@ -14,25 +14,18 @@ import org.mozilla.Glean 0.30
 import telemetry 0.30
 
 
-Item {
-    property string _menuTitle: VPNl18n.CustomDNSSettingsDnsNavItem
+VPNViewBase {
     id: root
     objectName: "advancedDNSSettingsView"
 
-    StackView.onDeactivating: root.opacity = 0
+    _menuTitle: VPNl18n.CustomDNSSettingsDnsNavItem
+    _interactive: false
 
-    Behavior on opacity {
-        PropertyAnimation {
-            duration: 100
-        }
-   }
-
-    VPNTabNavigation {
-        // hacks to circumvent the fact that we can't send
-        // "scripts" as property values through ListModel/ListElement
-
+    _viewContentData: VPNTabNavigation {
         id: tabs
-        anchors.fill: parent
+        Layout.topMargin: -VPNTheme.theme.windowMargin
+        Layout.preferredHeight: root.height - VPNTheme.theme.menuHeight
+        Layout.preferredWidth: root.width
 
         tabList: ListModel {
             id: tabButtonList
@@ -51,7 +44,7 @@ Item {
         }
 
         stackContent: [
-            VPNViewDNSSettings {
+            DNSSettingsTabContent {
                 settingsListModel: ListModel {
                     id:defaultTabListModel
                 }
@@ -64,10 +57,12 @@ Item {
                     })
                 }
             },
-            VPNViewDNSSettings {
+            DNSSettingsTabContent {
                 settingsListModel: ListModel{
                     id:advancedListModel
                 }
+                // hacks to circumvent the fact that we can't send
+                // "scripts" as property values through ListModel/ListElement
                 Component.onCompleted: {
                     advancedListModel.append({
                                                  settingValue: VPNSettings.BlockAds,
