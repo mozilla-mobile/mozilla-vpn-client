@@ -9,58 +9,11 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
 
-Item {
-    id: settings
+VPNScreenBase {
     objectName: "settings"
 
-    Connections {
-        target: window
-    }
-
-    property var _openTipsAndTricks: () => stackview.push("qrc:/ui/screens/settings/ViewTipsAndTricks/ViewTipsAndTricks.qml", StackView.Immediate)
-    VPNMenu {
-        id: menu
-        objectName: "settingsBackButton"
-        _menuOnBackClicked: () => {
-            VPNProfileFlow.reset();
-            if (stackview.depth !== 1) {
-                return stackview.pop();
-            }
-
-            VPNNavigator.requestPreviousScreen();
-        }
-        _iconButtonSource: stackview.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
-        _iconButtonAccessibleName: stackview.depth === 1 ? qsTrId("vpn.connectionInfo.close") : qsTrId("vpn.main.back")
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-
-        title: ""
-        opacity: visible ? 1 : 0
-
-        Behavior on opacity {
-            PropertyAnimation {
-                duration: 200
-            }
-        }
-    }
-
-    VPNStackView {
-        property bool _settingsView: true
-        id: stackview
-        anchors.top: menu.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-
-        Component.onCompleted: {
-            VPNNavigator.addStackView(VPNNavigator.ScreenSettings, stackview)
-            stackview.push("qrc:/ui/screens/settings/ViewSettingsMenu.qml")
-        }
-
-        onCurrentItemChanged: {
-            menu.title = Qt.binding(() => currentItem._menuTitle || "");
-            menu.visible = Qt.binding(() => menu.title !== "");
-        }
+    _onStackCompleted: () => {
+        VPNNavigator.addStackView(VPNNavigator.ScreenHome, getStack())
+        getStack().push("qrc:/ui/screens/settings/ViewSettingsMenu.qml")
     }
 }

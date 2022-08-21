@@ -66,6 +66,7 @@ VPNRadioButtonLabel 0.1 VPNRadioButtonLabel.qml
 VPNRadioDelegate 0.1 VPNRadioDelegate.qml
 VPNRecentConnections 0.1 VPNRecentConnections.qml
 VPNRemoveDevicePopup 0.1 VPNRemoveDevicePopup.qml
+VPNScreenBase 0.1 VPNScreenBase.qml
 VPNSegmentedNavigation 0.1 VPNSegmentedNavigation.qml
 VPNSegmentedToggle 0.1 VPNSegmentedToggle.qml
 VPNSemiMonoLabel 0.1 VPNSemiMonoLabel.qml

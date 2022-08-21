@@ -867,16 +867,16 @@ describe('Subscription view', function() {
         });
       }
 
-      await vpn.waitForElement('settingsBackButton');
-      await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
-      await vpn.clickOnElement('settingsBackButton');
+      await vpn.waitForElement('settings-back');
+      await vpn.waitForElementProperty('settings-back', 'visible', 'true');
+      await vpn.clickOnElement('settings-back');
       await vpn.wait();
 
       await vpn.waitForElement('settingsUserProfile');
       await vpn.waitForElementProperty(
           'settingsUserProfile', 'visible', 'true');
 
-      await vpn.clickOnElement('settingsBackButton');
+      await vpn.clickOnElement('settings-back');
       await vpn.wait();
 
       await vpn.waitForElement('controllerTitle');

@@ -115,5 +115,6 @@
         <file>components/VPNUserProfile.qml</file>
         <file>components/VPNViewBase.qml</file>
         <file>components/VPNTutorialPopups.qml</file>
+        <file>components/VPNScreenBase.qml</file>
     </qresource>
 </RCC>

@@ -22,11 +22,11 @@ describe('Tips and tricks intro modal', function() {
 
     await vpn.wait();
     await vpn.waitForElement('settingsTipsAndTricksPage');
-    await vpn.waitForElement('ViewMainBack');
-    await vpn.clickOnElement('ViewMainBack');
+    await vpn.waitForElement('screenHome-back');
+    await vpn.clickOnElement('screenHome-back');
 
     await vpn.wait();
-    await vpn.waitForElement('ViewMainStackView');
+    await vpn.waitForElement('screenHome');
   });
 
   it('Closing modal with close button', async () => {
