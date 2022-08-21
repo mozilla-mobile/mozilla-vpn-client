@@ -20,7 +20,7 @@ Item {
         id: menu
         objectName: "getHelpBack"
         _menuOnBackClicked: () => VPNNavigator.requestPreviousScreen()
-        _iconButtonSource: getHelpStackView.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
+        _menuIconButtonSource: getHelpStackView.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
     }
 
     VPNMouseArea {
