@@ -108,7 +108,7 @@ VPNViewBase {
                 imageLeftSrc: "qrc:/ui/resources/settings/apps.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 onClicked: stackview.push("qrc:/ui/screens/settings/appPermissions/ViewAppPermissions.qml")
-//                visible: VPNFeatureList.get("splitTunnel").isSupported
+                visible: VPNFeatureList.get("splitTunnel").isSupported
             }
         }
     }
