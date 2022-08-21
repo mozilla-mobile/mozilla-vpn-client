@@ -10,7 +10,6 @@ import components 0.1
 
 VPNScreenBase {
     objectName: "screenHome"
-    _initialView: "qrc:/ui/views/ViewMain.qml"
     _onStackCompleted: () => {
         VPNNavigator.addStackView(VPNNavigator.ScreenHome, getStack())
         getStack().push("qrc:/ui/screens/home/ViewHome.qml")

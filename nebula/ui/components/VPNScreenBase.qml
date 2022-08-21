@@ -12,7 +12,6 @@ import telemetry 0.30
 
 
 Item {
-    property string _initialView: ""
     property alias _menuOnBackClicked: menu._menuOnBackClicked
     property alias _menuIconButtonSource: menu._menuIconButtonSource
     property var _onStackCompleted: () => {}
