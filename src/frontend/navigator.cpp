@@ -71,25 +71,19 @@ struct ScreenData {
 // The list of screens.
 ScreenData s_screens[] = {
     ScreenData(
-        Navigator::Screen::ScreenInitialize,
-        "qrc:/ui/screens/ScreenInitialize.qml",
-        QVector<MozillaVPN::State>{MozillaVPN::StateInitialize},
+        Navigator::Screen::ScreenAuthenticating,
+        "qrc:/ui/screens/ScreenAuthenticating.qml",
+        QVector<MozillaVPN::State>{MozillaVPN::StateAuthenticating},
         [](Navigator::Screen*) -> int8_t {
-          return Feature::get(Feature::Feature_mobileOnboarding)->isSupported()
+          return Feature::get(Feature::Feature_inAppAuthentication)
+                         ->isSupported()
                      ? -1
                      : 0;
         },
-        []() -> bool { return false; }),
-    ScreenData(
-        Navigator::Screen::ScreenInitialize,
-        "qrc:/ui/screens/ScreenInitializeMobileOnboarding.qml",
-        QVector<MozillaVPN::State>{MozillaVPN::StateInitialize},
-        [](Navigator::Screen*) -> int8_t {
-          return Feature::get(Feature::Feature_mobileOnboarding)->isSupported()
-                     ? 0
-                     : -1;
-        },
-        []() -> bool { return false; }),
+        []() -> bool {
+          MozillaVPN::instance()->cancelAuthentication();
+          return true;
+        }),
     ScreenData(
         Navigator::Screen::ScreenAuthenticationInApp,
         "qrc:/ui/screens/ScreenAuthenticationInApp.qml",
@@ -99,20 +93,6 @@ ScreenData s_screens[] = {
                          ->isSupported()
                      ? 0
                      : -1;
-        },
-        []() -> bool {
-          MozillaVPN::instance()->cancelAuthentication();
-          return true;
-        }),
-    ScreenData(
-        Navigator::Screen::ScreenAuthenticating,
-        "qrc:/ui/screens/ScreenAuthenticating.qml",
-        QVector<MozillaVPN::State>{MozillaVPN::StateAuthenticating},
-        [](Navigator::Screen*) -> int8_t {
-          return Feature::get(Feature::Feature_inAppAuthentication)
-                         ->isSupported()
-                     ? -1
-                     : 0;
         },
         []() -> bool {
           MozillaVPN::instance()->cancelAuthentication();
@@ -137,9 +117,80 @@ ScreenData s_screens[] = {
         [](Navigator::Screen*) -> int8_t { return 0; },
         []() -> bool { return false; }),
     ScreenData(
+        Navigator::Screen::ScreenGetHelp, "qrc:/ui/screens/ScreenGetHelp.qml",
+        QVector<MozillaVPN::State>{},
+        [](Navigator::Screen*) -> int8_t { return 0; },
+        []() -> bool {
+          Navigator::instance()->requestPreviousScreen();
+          return true;
+        }),
+    ScreenData(
+        Navigator::Screen::ScreenHome, "qrc:/ui/screens/ScreenHome.qml",
+        QVector<MozillaVPN::State>{MozillaVPN::StateMain},
+        [](Navigator::Screen*) -> int8_t { return 99; },
+        []() -> bool { return false; }),
+    ScreenData(
+        Navigator::Screen::ScreenInitialize,
+        "qrc:/ui/screens/ScreenInitialize.qml",
+        QVector<MozillaVPN::State>{MozillaVPN::StateInitialize},
+        [](Navigator::Screen*) -> int8_t {
+          return Feature::get(Feature::Feature_mobileOnboarding)->isSupported()
+                     ? -1
+                     : 99;
+        },
+        []() -> bool { return false; }),
+    ScreenData(
+        Navigator::Screen::ScreenInitialize,
+        "qrc:/ui/screens/ScreenInitializeMobileOnboarding.qml",
+        QVector<MozillaVPN::State>{MozillaVPN::StateInitialize},
+        [](Navigator::Screen*) -> int8_t {
+          return Feature::get(Feature::Feature_mobileOnboarding)->isSupported()
+                     ? 99
+                     : -1;
+        },
+        []() -> bool { return false; }),
+    ScreenData(
+        Navigator::Screen::ScreenMessaging,
+        "qrc:/ui/screens/ScreenMessaging.qml",
+        QVector<MozillaVPN::State>{MozillaVPN::StateMain},
+        [](Navigator::Screen*) -> int8_t { return 0; },
+        []() -> bool {
+          Navigator::instance()->requestScreen(Navigator::ScreenHome);
+          // TODO: reset the stack
+          return true;
+        }),
+    ScreenData(
+        Navigator::Screen::ScreenNoSubscriptionFoundError,
+        "qrc:/ui/screens/ScreenNoSubscriptionFoundError.qml",
+        QVector<MozillaVPN::State>{MozillaVPN::StateSubscriptionNeeded,
+                                   MozillaVPN::StateSubscriptionInProgress},
+        [](Navigator::Screen* requestedScreen) -> int8_t {
+          return (requestedScreen &&
+                  *requestedScreen ==
+                      Navigator::Screen::ScreenNoSubscriptionFoundError)
+                     ? 99
+                     : -1;
+        },
+        []() -> bool { return false; }),
+    ScreenData(
         Navigator::Screen::ScreenPostAuthentication,
         "qrc:/ui/screens/ScreenPostAuthentication.qml",
         QVector<MozillaVPN::State>{MozillaVPN::StatePostAuthentication},
+        [](Navigator::Screen*) -> int8_t { return 0; },
+        []() -> bool { return false; }),
+    ScreenData(
+        Navigator::Screen::ScreenSettings, "qrc:/ui/screens/ScreenSettings.qml",
+        QVector<MozillaVPN::State>{MozillaVPN::StateMain},
+        [](Navigator::Screen*) -> int8_t { return 0; },
+        []() -> bool {
+          Navigator::instance()->requestScreen(Navigator::ScreenHome);
+          // TODO: reset the stack
+          return true;
+        }),
+    ScreenData(
+        Navigator::Screen::ScreenSubscriptionBlocked,
+        "qrc:/ui/screens/ScreenSubscriptionBlocked.qml",
+        QVector<MozillaVPN::State>{MozillaVPN::StateSubscriptionBlocked},
         [](Navigator::Screen*) -> int8_t { return 0; },
         []() -> bool { return false; }),
     ScreenData(
@@ -149,16 +200,49 @@ ScreenData s_screens[] = {
         [](Navigator::Screen*) -> int8_t { return 0; },
         []() -> bool { return false; }),
     ScreenData(
+        Navigator::Screen::ScreenSubscriptionExpiredError,
+        "qrc:/ui/screens/ScreenSubscriptionExpiredError.qml",
+        QVector<MozillaVPN::State>{MozillaVPN::StateSubscriptionNeeded,
+                                   MozillaVPN::StateSubscriptionInProgress},
+        [](Navigator::Screen* requestedScreen) -> int8_t {
+          return requestedScreen &&
+                         *requestedScreen ==
+                             Navigator::Screen::ScreenSubscriptionExpiredError
+                     ? 99
+                     : -1;
+        },
+        []() -> bool { return false; }),
+    ScreenData(
+        Navigator::Screen::ScreenSubscriptionGenericError,
+        "qrc:/ui/screens/ScreenSubscriptionGenericError.qml",
+        QVector<MozillaVPN::State>{MozillaVPN::StateSubscriptionNeeded,
+                                   MozillaVPN::StateSubscriptionInProgress},
+        [](Navigator::Screen* requestedScreen) -> int8_t {
+          return (requestedScreen &&
+                  *requestedScreen ==
+                      Navigator::Screen::ScreenSubscriptionGenericError)
+                     ? 99
+                     : -1;
+        },
+        []() -> bool { return false; }),
+    ScreenData(
         Navigator::Screen::ScreenSubscriptionInProgress,
         "qrc:/ui/screens/ScreenSubscriptionInProgress.qml",
         QVector<MozillaVPN::State>{MozillaVPN::StateSubscriptionInProgress},
         [](Navigator::Screen*) -> int8_t { return 0; },
         []() -> bool { return false; }),
     ScreenData(
-        Navigator::Screen::ScreenSubscriptionBlocked,
-        "qrc:/ui/screens/ScreenSubscriptionBlocked.qml",
-        QVector<MozillaVPN::State>{MozillaVPN::StateSubscriptionBlocked},
-        [](Navigator::Screen*) -> int8_t { return 0; },
+        Navigator::Screen::ScreenSubscriptionInUseError,
+        "qrc:/ui/screens/ScreenSubscriptionInUseError.qml",
+        QVector<MozillaVPN::State>{MozillaVPN::StateSubscriptionNeeded,
+                                   MozillaVPN::StateSubscriptionInProgress},
+        [](Navigator::Screen* requestedScreen) -> int8_t {
+          return requestedScreen &&
+                         *requestedScreen ==
+                             Navigator::Screen::ScreenSubscriptionInUseError
+                     ? 99
+                     : -1;
+        },
         []() -> bool { return false; }),
     ScreenData(
         Navigator::Screen::ScreenSubscriptionNotValidated,
@@ -179,38 +263,6 @@ ScreenData s_screens[] = {
         [](Navigator::Screen*) -> int8_t { return 0; },
         []() -> bool { return false; }),
     ScreenData(
-        Navigator::Screen::ScreenHome, "qrc:/ui/screens/ScreenHome.qml",
-        QVector<MozillaVPN::State>{MozillaVPN::StateMain},
-        [](Navigator::Screen*) -> int8_t { return 99; },
-        []() -> bool { return false; }),
-    ScreenData(
-        Navigator::Screen::ScreenMessaging,
-        "qrc:/ui/screens/ScreenMessaging.qml",
-        QVector<MozillaVPN::State>{MozillaVPN::StateMain},
-        [](Navigator::Screen*) -> int8_t { return 0; },
-        []() -> bool {
-          Navigator::instance()->requestScreen(Navigator::ScreenHome);
-          // TODO: reset the stack
-          return true;
-        }),
-    ScreenData(
-        Navigator::Screen::ScreenSettings, "qrc:/ui/screens/ScreenSettings.qml",
-        QVector<MozillaVPN::State>{MozillaVPN::StateMain},
-        [](Navigator::Screen*) -> int8_t { return 0; },
-        []() -> bool {
-          Navigator::instance()->requestScreen(Navigator::ScreenHome);
-          // TODO: reset the stack
-          return true;
-        }),
-    ScreenData(
-        Navigator::Screen::ScreenGetHelp, "qrc:/ui/screens/ScreenGetHelp.qml",
-        QVector<MozillaVPN::State>{},
-        [](Navigator::Screen*) -> int8_t { return 0; },
-        []() -> bool {
-          Navigator::instance()->requestPreviousScreen();
-          return true;
-        }),
-    ScreenData(
         Navigator::Screen::ScreenViewLogs, "qrc:/ui/screens/ScreenViewLogs.qml",
         QVector<MozillaVPN::State>{},
         [](Navigator::Screen*) -> int8_t { return 0; },
@@ -218,58 +270,6 @@ ScreenData s_screens[] = {
           Navigator::instance()->requestPreviousScreen();
           return true;
         }),
-    ScreenData(
-        Navigator::Screen::ScreenSubscriptionGenericError,
-        "qrc:/ui/screens/ScreenSubscriptionGenericError.qml",
-        QVector<MozillaVPN::State>{MozillaVPN::StateSubscriptionNeeded,
-                                   MozillaVPN::StateSubscriptionInProgress},
-        [](Navigator::Screen* requestedScreen) -> int8_t {
-          return (requestedScreen &&
-                  *requestedScreen ==
-                      Navigator::Screen::ScreenSubscriptionGenericError)
-                     ? 99
-                     : -1;
-        },
-        []() -> bool { return false; }),
-    ScreenData(
-        Navigator::Screen::ScreenNoSubscriptionFoundError,
-        "qrc:/ui/screens/ScreenNoSubscriptionFoundError.qml",
-        QVector<MozillaVPN::State>{MozillaVPN::StateSubscriptionNeeded,
-                                   MozillaVPN::StateSubscriptionInProgress},
-        [](Navigator::Screen* requestedScreen) -> int8_t {
-          return (requestedScreen &&
-                  *requestedScreen ==
-                      Navigator::Screen::ScreenNoSubscriptionFoundError)
-                     ? 99
-                     : -1;
-        },
-        []() -> bool { return false; }),
-    ScreenData(
-        Navigator::Screen::ScreenSubscriptionExpiredError,
-        "qrc:/ui/screens/ScreenSubscriptionExpiredError.qml",
-        QVector<MozillaVPN::State>{MozillaVPN::StateSubscriptionNeeded,
-                                   MozillaVPN::StateSubscriptionInProgress},
-        [](Navigator::Screen* requestedScreen) -> int8_t {
-          return requestedScreen &&
-                         *requestedScreen ==
-                             Navigator::Screen::ScreenSubscriptionExpiredError
-                     ? 99
-                     : -1;
-        },
-        []() -> bool { return false; }),
-    ScreenData(
-        Navigator::Screen::ScreenSubscriptionInUseError,
-        "qrc:/ui/screens/ScreenSubscriptionInUseError.qml",
-        QVector<MozillaVPN::State>{MozillaVPN::StateSubscriptionNeeded,
-                                   MozillaVPN::StateSubscriptionInProgress},
-        [](Navigator::Screen* requestedScreen) -> int8_t {
-          return requestedScreen &&
-                         *requestedScreen ==
-                             Navigator::Screen::ScreenSubscriptionInUseError
-                     ? 99
-                     : -1;
-        },
-        []() -> bool { return false; }),
 };
 
 bool computeScreen(const ScreenData& screen,

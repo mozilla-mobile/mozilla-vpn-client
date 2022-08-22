@@ -19,8 +19,8 @@ class Navigator final : public QObject {
 
  public:
   enum Screen {
-    ScreenAuthenticationInApp,
     ScreenAuthenticating,
+    ScreenAuthenticationInApp,
     ScreenBackendFailure,
     ScreenBillingNotAvailable,
     ScreenDeviceLimit,
