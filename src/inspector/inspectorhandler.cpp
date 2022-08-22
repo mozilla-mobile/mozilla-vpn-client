@@ -917,8 +917,9 @@ static QList<InspectorCommand> s_commands{
                          return obj;
                        }
 
-                       FeatureModel::instance()->toggleForcedEnable(
-                           arguments[1]);
+                       if (!feature->isSupported()) {
+                         FeatureModel::instance()->toggle(arguments[1]);
+                       }
                        return QJsonObject();
                      }},
 
@@ -932,8 +933,9 @@ static QList<InspectorCommand> s_commands{
                          return obj;
                        }
 
-                       FeatureModel::instance()->toggleForcedDisable(
-                           arguments[1]);
+                       if (feature->isSupported()) {
+                         FeatureModel::instance()->toggle(arguments[1]);
+                       }
                        return QJsonObject();
                      }},
 

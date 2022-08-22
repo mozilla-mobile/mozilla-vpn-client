@@ -76,18 +76,14 @@ Item {
                         }
 
                         VPNSettingsToggle {
-                            checked: feature.isFlippedOn() || (feature.isSupported && !feature.isFlippedOff()) || (feature.isSupported && !enabled)
-                            enabled: feature.flippableOn && !feature.isSupportedIgnoringFlip || feature.flippableOff && feature.isSupportedIgnoringFlip
+                            checked: feature.isSupported
+                            enabled: feature.isToggleable
                             Layout.preferredHeight: 24
                             Layout.preferredWidth: 45
                             Layout.alignment: Qt.AlignTop | Qt. AlignRight
                             opacity: enabled ? 1 : .3
                             onClicked: {
-                                if (feature.flippableOn && !feature.isSupportedIgnoringFlip) {
-                                    VPNFeatureList.toggleForcedEnable(feature.id)
-                                } else if (feature.flippableOff && feature.isSupportedIgnoringFlip){
-                                   VPNFeatureList.toggleForcedDisable(feature.id)
-                                }
+                                VPNFeatureList.toggle(feature.id);
                             }
 
                         }
