@@ -62,8 +62,10 @@ void ServerLatency::stop() {
   m_timeout.stop();
   m_pingReplyList.clear();
 
-  delete m_pingSender;
-  m_pingSender = nullptr;
+  if (m_pingSender) {
+    delete m_pingSender;
+    m_pingSender = nullptr;
+  }
 }
 
 void ServerLatency::stateChanged() {
