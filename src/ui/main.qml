@@ -203,17 +203,7 @@ Window {
     VPNServerUnavailablePopup {
         id: serverUnavailablePopup
     }
-/* TODO
-    function goToServersView() {
-        if (VPN.state !== VPN.StateMain) {
-            return;
-        }
-        if (mainStackView.depth > 1) {
-            mainStackView.unwindToInitialItem();
-        }
-        showServerList();
-    }
-*/
+
     Connections {
         target: VPNController
         function onReadyToServerUnavailable() {

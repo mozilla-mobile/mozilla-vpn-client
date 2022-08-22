@@ -9,32 +9,34 @@ import Mozilla.VPN 1.0
 import components 0.1
 
 VPNScreenBase {
+
     objectName: "screenHome"
     Component.onCompleted: () => {
         VPNNavigator.addStackView(VPNNavigator.ScreenHome, getStack())
         getStack().push("qrc:/ui/screens/home/ViewHome.qml")
     }
-
-    Connections {
-        target: window
-        function onShowServerList() {
-            // We get here after the user clicks the "Choose new location" button in VPNServerUnavailablePopup {}
-            // We need to (maybe) unwind the stack back to ViewHome.qml and then push the server list.
-            if (stackview.currentItem.objectName === "viewServers") {
-                // User is already on server list view so we stay put
-                return;
-            }
-            stackview.unwindToInitialItem();
-            stackview.push("qrc:/ui/screens/home/ViewServers.qml", StackView.Immediate)
-        }
-    }
-
     Connections {
         target: VPNTutorial
         function onPlayingChanged() {
            if (VPNTutorial.playing) {
                getStack().pop(null, StackView.Immediate)
            }
+        }
+    }
+    Connections {
+        target: window
+
+        // TODO - This only works when we are already in ScreenHome
+        function onShowServerList() {
+
+            // Don't push another server view if it's already open
+            if (getStack().currentItem.objectName === "viewServers") { return; }
+
+            // unwind stackview to initial view
+            getStack().pop(null);
+
+            // push server view
+            getStack().push("qrc:/ui/screens/home/ViewServers.qml", StackView.Immediate);
         }
     }
 }
