@@ -47,5 +47,5 @@ VPNIcon {
         height: VPNTheme.theme.iconSizeSmall
         width: VPNTheme.theme.iconSizeSmall
     }
-    width: VPNTheme.theme.iconSizeSmall        
+    width: VPNTheme.theme.iconSizeSmall
 }
