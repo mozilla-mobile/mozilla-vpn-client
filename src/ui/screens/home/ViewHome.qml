@@ -132,7 +132,7 @@ VPNFlickable {
 
         VPNControllerNav {
             function handleClick() {
-                stackview.push("qrc:/ui/views/ViewDevices.qml")
+                stackview.push("qrc:/ui/screens/devices/ViewDevices.qml")
             }
 
             Layout.topMargin: 6

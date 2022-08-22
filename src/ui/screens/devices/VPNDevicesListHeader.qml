@@ -3,15 +3,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-
+import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
+
+import components 0.1
 
 Item {
     id: listHeader
+    objectName: "deviceLimitHeader"
 
     property var pendingDeviceRemoval: false
 
-    width: deviceList.width
+    Layout.fillWidth: true
     states: [
         State {
             when: vpnFlickable.state === "deviceLimit" || vpnFlickable.wasmShowMaxDeviceWarning === true
@@ -28,7 +31,7 @@ Item {
 
             PropertyChanges {
                 target: listHeader
-                height: 8
+                height: 0
                 opacity: 0
                 pendingDeviceRemoval: false
             }
@@ -68,7 +71,6 @@ Item {
     VPNPanel {
         id: vpnPanel
         objectName: "deviceLimitPanel"
-
         anchors.top: spacer.bottom
         logoSize: 80
         logo: "qrc:/nebula/resources/devicesLimit.svg"

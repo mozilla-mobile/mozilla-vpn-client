@@ -7,18 +7,18 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
+import components 0.1
 
 Item {
     id: device
 
-    anchors.left: parent.left
-    anchors.right: parent.right
-    height: deviceRow.implicitHeight + VPNTheme.theme.windowMargin
+    Layout.fillWidth: true
+    Layout.preferredHeight: deviceRow.implicitHeight + VPNTheme.theme.windowMargin
     //% "%1 %2"
     //: Example: "deviceName deviceDescription"
     Accessible.name: qsTrId("vpn.devices.deviceAccessibleName").arg(name).arg(deviceDesc.text)
     Accessible.role: Accessible.ListItem
-    Accessible.ignored: root.isModalDialogOpened
+    Accessible.ignored: isModalDialogOpened
     activeFocusOnTab: true
     onActiveFocusChanged: if (focus) vpnFlickable.ensureVisible(device)
 
@@ -133,7 +133,7 @@ Item {
                 horizontalAlignment: Text.AlignLeft
                 anchors.right: parent.right
                 opacity: enabled ? 1 : 0.6
-                Accessible.ignored: root.isModalDialogOpened
+                Accessible.ignored: isModalDialogOpened
             }
 
             VPNTextBlock {
@@ -192,7 +192,7 @@ Item {
             accessibleName: qsTrId("vpn.devices.removeA11Y").arg(deviceRow.deviceName)
             // Only allow focus within the current item in the list.
 
-            Accessible.ignored: root.isModalDialogOpened
+            Accessible.ignored: isModalDialogOpened
 
             VPNIcon {
                 id: icon

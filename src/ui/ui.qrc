@@ -14,6 +14,10 @@
         <file>deleteAccount/ViewDeleteAccountRequest.qml</file>
         <file>main.qml</file>
         <file>qmldir</file>
+        <file>screens/devices/ViewDevices.qml</file>
+        <file>screens/devices/VPNDevicesListHeader.qml</file>
+        <file>screens/devices/VPNDeviceListItem.qml</file>
+        <file>screens/devices/VPNRemoveDevicePopup.qml</file>
         <file>screens/getHelp/ViewGetHelp.qml</file>
         <file>screens/getHelp/contactUs/ViewContactUsForm.qml</file>
         <file>screens/getHelp/contactUs/ViewContactUsThankYou.qml</file>
@@ -76,7 +80,6 @@
         <file>screens/settings/ViewWhatsNew.qml</file>
         <file>screens/subscriptionNeeded/ViewSubscriptionNeeded.qml</file>
         <file>views/ViewCaptivePortalInfo.qml</file>
-        <file>views/ViewDevices.qml</file>
         <file>views/ViewErrorFullScreen.qml</file>
         <file>views/ViewUpdate.qml</file>
     </qresource>

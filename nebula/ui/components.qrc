@@ -39,8 +39,6 @@
         <file>components/VPNConnectionStability.qml</file>
         <file>components/VPNControllerNav.qml</file>
         <file>components/VPNControllerView.qml</file>
-        <file>components/VPNDeviceListItem.qml</file>
-        <file>components/VPNDevicesListHeader.qml</file>
         <file>components/VPNDropShadowWithStates.qml</file>
         <file>components/VPNExternalLinkListItem.qml</file>
         <file>components/VPNFeatureTourPopup.qml</file>
@@ -79,7 +77,6 @@
         <file>components/VPNRadioButtonLabel.qml</file>
         <file>components/VPNRadioDelegate.qml</file>
         <file>components/VPNRecentConnections.qml</file>
-        <file>components/VPNRemoveDevicePopup.qml</file>
         <file>components/VPNSemiMonoLabel.qml</file>
         <file>components/VPNServerCountry.qml</file>
         <file>components/VPNServerLabel.qml</file>

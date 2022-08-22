@@ -8,11 +8,12 @@ import QtQuick.Controls 2.14
 import Mozilla.VPN 1.0
 import components 0.1
 
-VPNStackView {
+VPNScreenBase {
     id: stackview
+    objectName: "deviceList"
 
-    Component.onCompleted: function() {
-        VPNNavigator.addStackView(VPNNavigator.ScreenDeviceLimit, stackview)
-        stackview.push("qrc:/ui/views/ViewDevices.qml")
+    Component.onCompleted: () => {
+        VPNNavigator.addStackView(VPNNavigator.ScreenDeviceLimit, getStack())
+        getStack().push("qrc:/ui/screens/devices/ViewDevices.qml")
     }
 }

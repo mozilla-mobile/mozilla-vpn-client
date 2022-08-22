@@ -16,10 +16,10 @@ describe('Devices', function() {
       await vpn.clickOnElement('deviceListButton');
       await vpn.wait();
 
-      await vpn.waitForElement('deviceListBackButton');
-      await vpn.waitForElementProperty(
-          'deviceListBackButton', 'visible', 'true');
-      await vpn.clickOnElement('deviceListBackButton');
+
+      await vpn.waitForElement('screenHome-back');
+      await vpn.waitForElementProperty('screenHome-back', 'visible', 'true');
+      await vpn.clickOnElement('screenHome-back');
       await vpn.wait();
 
       await vpn.waitForElement('deviceListButton');
@@ -139,25 +139,23 @@ describe('Devices', function() {
 
       await vpn.waitForElement('telemetryPolicyButton');
       await vpn.clickOnElement('telemetryPolicyButton');
-      await vpn.waitForElement('deviceListBackButton');
-      await vpn.waitForElement('deviceLimitPanel');
-      await vpn.waitForElementProperty('deviceLimitPanel', 'visible', 'true');
+      await vpn.waitForElement('deviceList-back');
 
-      await vpn.waitForElement('deviceListBackButton');
-      await vpn.waitForElementProperty(
-          'deviceListBackButton', 'visible', 'true');
-      await vpn.waitForElement('deviceList/device-device_1');
-      await vpn.waitForElementProperty(
-          'deviceList/device-device_1', 'visible', 'true');
+      await vpn.waitForElement('deviceListView');
+      await vpn.waitForElementProperty('deviceListView', 'visible', 'true');
+
+
+      await vpn.waitForElement('deviceLimitHeader');
+      await vpn.waitForElementProperty('deviceLimitHeader', 'visible', 'true');
 
       // Let's remove a device
       await vpn.waitForElement(
-          'deviceList/device-device_1/deviceLayout/deviceRemoveButton');
+          'deviceListView/device-device_1/deviceLayout/deviceRemoveButton');
       await vpn.waitForElementProperty(
-          'deviceList/device-device_1/deviceLayout/deviceRemoveButton',
+          'deviceListView/device-device_1/deviceLayout/deviceRemoveButton',
           'visible', 'true');
       await vpn.clickOnElement(
-          'deviceList/device-device_1/deviceLayout/deviceRemoveButton');
+          'deviceListView/device-device_1/deviceLayout/deviceRemoveButton');
 
       await vpn.waitForElement('confirmRemoveDeviceButton');
       await vpn.waitForElementProperty(
