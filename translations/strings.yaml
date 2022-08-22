@@ -75,6 +75,8 @@
 serversView:
   searchPlaceholder: Search countries
   searchNoResultsLabel: No results. Try a different search
+  tabAll: All
+  tabRecommended: Recommended
 
 languageView:
   searchPlaceholder:

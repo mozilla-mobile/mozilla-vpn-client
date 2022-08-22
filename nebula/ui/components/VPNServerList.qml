@@ -18,16 +18,13 @@ FocusScope {
     property bool showRecentConnections: false
     property var currentServer
 
-    Component.onCompleted: centerActiveServer();
-
-    function centerActiveServer() {
-
+    function centerActiveServer(serverListFlickable) {
         // Scroll vpnFlickable so that the current server city is
         // vertically centered in the view
-        const serverListYCenter = vpnFlickable.height / 2 - listOffset
+        const serverListYCenter = serverListFlickable.height / 2 - listOffset
 
-        for (let idx = 0; idx < countriesRepeater.count; idx++) {
-            const countryItem = countriesRepeater.itemAt(idx);
+        for (let idx = 0; idx < serverListFlickable.countries.count; idx++) {
+            const countryItem = serverListFlickable.countries.itemAt(idx);
 
             if (
                 // Country does not host current active server
@@ -41,8 +38,10 @@ FocusScope {
 
             // Get distance to the current server city and scroll
             const currentCityYPosition = countryItem.y + (54 * countryItem.currentCityIndex) - serverListYCenter;
-            const destinationY = (currentCityYPosition + vpnFlickable.height > vpnFlickable.contentHeight) ? vpnFlickable.contentHeight - vpnFlickable.height : currentCityYPosition;
-            vpnFlickable.contentY = destinationY;
+            const destinationY = (currentCityYPosition + serverListFlickable.height > serverListFlickable.contentHeight)
+                ? serverListFlickable.contentHeight - serverListFlickable.height
+                : currentCityYPosition;
+            serverListFlickable.contentY = destinationY;
 
             if (!countryItem.cityListVisible) {
                 countryItem.openCityList();
@@ -51,7 +50,6 @@ FocusScope {
             return;
         }
     }
-
 
     Layout.fillWidth: true
     Layout.fillHeight: true
@@ -62,77 +60,125 @@ FocusScope {
         id: radioButtonGroup
     }
 
-    VPNFlickable {
-        id: vpnFlickable
-        objectName: "serverCountryView"
+    // All servers tab content
+    Component {
+        id: listServersAll
 
-        flickContentHeight: serverList.implicitHeight + listOffset
+        VPNFlickable {
+            id: vpnFlickable
+            property alias countries: countriesRepeater
+            objectName: "serverCountryView"
+
+            flickContentHeight: serverList.implicitHeight + listOffset
+            anchors.fill: parent
+
+            Rectangle {
+                id: verticalSpacer
+
+                height: VPNTheme.theme.vSpacing
+                width: parent.width
+                color: VPNTheme.theme.transparent
+            }
+
+            NumberAnimation on contentY {
+                id: scrollAnimation
+
+                duration: 200
+                easing.type: Easing.OutQuad
+            }
+
+            Column {
+                id: serverList
+                objectName: "serverCountryList"
+
+                spacing: 14
+                width: parent.width
+                anchors.top: verticalSpacer.bottom
+
+                VPNSearchBar {
+                    id: searchBar
+
+                    _filterProxySource: VPNServerCountryModel
+                    _filterProxyCallback: country => {
+                            const searchString = getSearchBarText();
+                            const includesSearchString = nameString => (
+                                nameString.toLowerCase().includes(searchString)
+                            );
+                            const includesName = includesSearchString(country.name);
+                            const includesLocalizedName = includesSearchString(country.localizedName);
+                            const matchesCountryCode = country.code.toLowerCase() === searchString;
+
+                            return includesName || includesLocalizedName || matchesCountryCode;
+                        }
+                    _searchBarHasError: () => { return countriesRepeater.count === 0 }
+                    _searchBarPlaceholderText: VPNl18n.ServersViewSearchPlaceholder
+
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.leftMargin: VPNTheme.theme.vSpacing
+                    anchors.rightMargin: VPNTheme.theme.vSpacing
+                }
+
+
+                VPNRecentConnections {
+                    id: recentConnections
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.rightMargin: VPNTheme.theme.windowMargin / 2
+                    anchors.leftMargin: anchors.rightMargin
+                    visible: showRecentConnections && searchBar.getSearchBarText().length === 0
+                    showMultiHopRecentConnections: false
+                    height: showRecentConnections ? implicitHeight : 0
+                }
+
+                Repeater {
+                    id: countriesRepeater
+                    model: searchBar.getProxyModel()
+                    delegate: VPNServerCountry{}
+                }
+            }
+        }
+    }
+
+    // Recommended servers tab content
+    Component {
+        id: listServersRecommended
+
+        Text {
+            text: "Recommended servers"
+        }
+    }
+
+    VPNTabNavigation {
+        id: serverTabs
+
         anchors.fill: parent
+        z: 1
 
-        Rectangle {
-            id: verticalSpacer
-
-            height: VPNTheme.theme.vSpacing
-            width: parent.width
-            color: VPNTheme.theme.transparent
-        }
-
-        NumberAnimation on contentY {
-            id: scrollAnimation
-
-            duration: 200
-            easing.type: Easing.OutQuad
-        }
-
-        Column {
-            id: serverList
-            objectName: "serverCountryList"
-
-            spacing: 14
-            width: parent.width
-            anchors.top: verticalSpacer.bottom
-
-            VPNSearchBar {
-                id: searchBar
-
-                _filterProxySource: VPNServerCountryModel
-                _filterProxyCallback: country => {
-                          const searchString = getSearchBarText();
-                          const includesSearchString = nameString => (
-                              nameString.toLowerCase().includes(searchString)
-                          );
-                          const includesName = includesSearchString(country.name);
-                          const includesLocalizedName = includesSearchString(country.localizedName);
-                          const matchesCountryCode = country.code.toLowerCase() === searchString;
-
-                          return includesName || includesLocalizedName || matchesCountryCode;
-                      }
-                _searchBarHasError: () => { return countriesRepeater.count === 0 }
-                _searchBarPlaceholderText: VPNl18n.ServersViewSearchPlaceholder
-
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: VPNTheme.theme.vSpacing
-                anchors.rightMargin: VPNTheme.theme.vSpacing
+        tabList: ListModel {
+            id: tabButtonList
+            ListElement {
+                tabLabelStringId: "ServersViewTabAll"
+                tabButtonId: "tabAllServers"
             }
-
-
-            VPNRecentConnections {
-                id: recentConnections
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.rightMargin: VPNTheme.theme.windowMargin / 2
-                anchors.leftMargin: anchors.rightMargin
-                visible: showRecentConnections && searchBar.getSearchBarText().length === 0
-                showMultiHopRecentConnections: false
-                height: showRecentConnections ? implicitHeight : 0
-            }
-
-            Repeater {
-                id: countriesRepeater
-                model: searchBar.getProxyModel()
-                delegate: VPNServerCountry{}
+            ListElement {
+                tabLabelStringId: "ServersViewTabRecommended"
+                tabButtonId: "tabRecommendedServers"
             }
         }
+
+        stackContent: [
+            Loader {
+                id: loader
+                sourceComponent: listServersAll
+
+                onStatusChanged: if (loader.status === Loader.Ready) {
+                    centerActiveServer(loader.item);
+                }
+            },
+            Loader {
+                sourceComponent: listServersRecommended
+            }
+        ]
     }
 }
