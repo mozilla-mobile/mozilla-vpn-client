@@ -179,7 +179,6 @@ QVariant ServerCountryModel::data(const QModelIndex& index, int role) const {
   }
 }
 
-
 int ServerCountryModel::cityConnectionScore(const ServerCity& city) const {
   qint64 now = QDateTime::currentSecsSinceEpoch();
   int activeServerCount = 0;
@@ -202,13 +201,13 @@ int ServerCountryModel::cityConnectionScore(const ServerCity& city) const {
   logger.debug() << "Server data" << city.code() << avgLatencyMsec
                  << activeServerCount;
   if (avgLatencyMsec < 50) {
-    return 4; // Great!
+    return 4;  // Great!
   } else if (avgLatencyMsec < 100) {
-    return 3; // Acceptable
+    return 3;  // Acceptable
   } else if (avgLatencyMsec < 200) {
-    return 2; // Poor
+    return 2;  // Poor
   } else {
-    return 1; // Really Bad!
+    return 1;  // Really Bad!
   }
 }
 
