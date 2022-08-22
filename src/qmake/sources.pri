@@ -132,6 +132,7 @@ SOURCES += \
         rfc/rfc4291.cpp \
         rfc/rfc5735.cpp \
         serveri18n.cpp \
+        serverlatency.cpp \
         settingsholder.cpp \
         signature.cpp \
         simplenetworkmanager.cpp \
@@ -151,7 +152,6 @@ SOURCES += \
         tasks/group/taskgroup.cpp \
         tasks/heartbeat/taskheartbeat.cpp \
         tasks/ipfinder/taskipfinder.cpp \
-        tasks/latency/tasklatency.cpp \
         tasks/products/taskproducts.cpp \
         tasks/release/taskrelease.cpp \
         tasks/removedevice/taskremovedevice.cpp \
@@ -305,6 +305,7 @@ HEADERS += \
         rfc/rfc4291.h \
         rfc/rfc5735.h \
         serveri18n.h \
+        serverlatency.h \
         settingsholder.h \
         signature.h \
         simplenetworkmanager.h \
@@ -325,7 +326,6 @@ HEADERS += \
         tasks/group/taskgroup.h \
         tasks/heartbeat/taskheartbeat.h \
         tasks/ipfinder/taskipfinder.h \
-        tasks/latency/tasklatency.h \
         tasks/products/taskproducts.h \
         tasks/release/taskrelease.h \
         tasks/removedevice/taskremovedevice.h \
