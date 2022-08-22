@@ -3,17 +3,23 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 SOURCES += \
-        addonmanager.cpp \
         addons/addon.cpp \
         addons/addondemo.cpp \
         addons/addonguide.cpp \
         addons/addoni18n.cpp \
         addons/addonmessage.cpp \
+        addons/addonproperty.cpp \
+        addons/addonpropertylist.cpp \
         addons/addontutorial.cpp \
         addons/conditionwatchers/addonconditionwatcher.cpp \
         addons/conditionwatchers/addonconditionwatchergroup.cpp \
         addons/conditionwatchers/addonconditionwatcherlocales.cpp \
+        addons/conditionwatchers/addonconditionwatchertimeend.cpp \
+        addons/conditionwatchers/addonconditionwatchertimestart.cpp \
         addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp \
+        addons/manager/addondirectory.cpp \
+        addons/manager/addonindex.cpp \
+        addons/manager/addonmanager.cpp \
         apppermission.cpp \
         authenticationlistener.cpp \
         authenticationinapp/authenticationinapp.cpp \
@@ -40,8 +46,12 @@ SOURCES += \
         commands/commandservers.cpp \
         commands/commandstatus.cpp \
         commands/commandui.cpp \
-        composer.cpp \
-        composerblock.cpp \
+        composer/composer.cpp \
+        composer/composerblock.cpp \
+        composer/composerblocktext.cpp \
+        composer/composerblocktitle.cpp \
+        composer/composerblockorderedlist.cpp \
+        composer/composerblockunorderedlist.cpp \
         connectionbenchmark/benchmarktask.cpp \
         connectionbenchmark/benchmarktaskdownload.cpp \
         connectionbenchmark/benchmarktaskping.cpp \
@@ -154,20 +164,28 @@ SOURCES += \
         update/versionapi.cpp \
         urlopener.cpp \
         update/webupdater.cpp \
-        websockethandler.cpp
+        websocket/exponentialbackoffstrategy.cpp \
+        websocket/pushmessage.cpp \
+        websocket/websockethandler.cpp
 
 HEADERS += \
-        addonmanager.h \
         addons/addon.h \
         addons/addondemo.h \
         addons/addonguide.h \
         addons/addoni18n.h \
         addons/addonmessage.h \
+        addons/addonproperty.h \
+        addons/addonpropertylist.h \
         addons/addontutorial.h \
         addons/conditionwatchers/addonconditionwatcher.h \
-        addons/conditionwatchers/addonconditionwatcherlocales.h \
-        addons/conditionwatchers/addonconditionwatchertriggertimesecs.h \
         addons/conditionwatchers/addonconditionwatchergroup.h \
+        addons/conditionwatchers/addonconditionwatcherlocales.h \
+        addons/conditionwatchers/addonconditionwatchertimeend.h \
+        addons/conditionwatchers/addonconditionwatchertimestart.h \
+        addons/conditionwatchers/addonconditionwatchertriggertimesecs.h \
+        addons/manager/addondirectory.h \
+        addons/manager/addonindex.h \
+        addons/manager/addonmanager.h \
         appimageprovider.h \
         apppermission.h \
         applistprovider.h \
@@ -196,8 +214,12 @@ HEADERS += \
         commands/commandservers.h \
         commands/commandstatus.h \
         commands/commandui.h \
-        composer.h \
-        composerblock.h \
+        composer/composer.h \
+        composer/composerblock.h \
+        composer/composerblocktext.h \
+        composer/composerblocktitle.h \
+        composer/composerblockorderedlist.h \
+        composer/composerblockunorderedlist.h \
         connectionbenchmark/benchmarktask.h \
         connectionbenchmark/benchmarktaskdownload.h \
         connectionbenchmark/benchmarktaskping.h \
@@ -309,7 +331,9 @@ HEADERS += \
         update/versionapi.h \
         update/webupdater.h \
         urlopener.h \
-        websockethandler.h
+        websocket/exponentialbackoffstrategy.h \
+        websocket/pushmessage.h \
+        websocket/websockethandler.h
 
 # Signal handling for unix platforms
 unix {

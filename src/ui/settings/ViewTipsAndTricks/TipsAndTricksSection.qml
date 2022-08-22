@@ -78,7 +78,7 @@ ColumnLayout {
                         width: parentWidth < VPNTheme.theme.tabletMinimumWidth ? (parent.width - parent.spacing) / 2 : (parent.width - (parent.spacing * 2)) / 3
 
                         imageSrc: addon.image
-                        title: qsTrId(addon.titleId)
+                        title: addon.title
 
                         onClicked:{
                             mainStackView.push("qrc:/ui/settings/ViewGuide.qml", {"guide": addon, "imageBgColor": imageBgColor})
@@ -111,8 +111,8 @@ ColumnLayout {
                     height: VPNTheme.theme.tutorialCardHeight
 
                     imageSrc: addon.image
-                    title: qsTrId(addon.titleId)
-                    description: qsTrId(addon.subtitleId)
+                    title: addon.title
+                    description: addon.subtitle
                     onClicked: {
                         VPNTutorial.play(addon);
                         VPNCloseEventHandler.removeAllStackViews();

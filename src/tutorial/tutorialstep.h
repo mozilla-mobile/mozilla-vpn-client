@@ -5,6 +5,8 @@
 #ifndef TUTORIALSTEP_H
 #define TUTORIALSTEP_H
 
+#include "../addons/addonproperty.h"
+
 #include <QList>
 #include <QObject>
 #include <QJsonObject>
@@ -35,7 +37,8 @@ class TutorialStep final : public QObject {
 
  private:
   TutorialStep(AddonTutorial* parent, const QString& element,
-               const QString& stringId, const QJsonObject& conditions,
+               const QString& stringId, const QString& fallback,
+               const QJsonObject& conditions,
                const QList<TutorialStepBefore*>& before,
                TutorialStepNext* next);
 
@@ -44,7 +47,7 @@ class TutorialStep final : public QObject {
  private:
   AddonTutorial* m_parent = nullptr;
   const QString m_element;
-  const QString m_stringId;
+  AddonProperty m_string;
   const QJsonObject m_conditions;
   const QList<TutorialStepBefore*> m_before;
   TutorialStepNext* m_next = nullptr;

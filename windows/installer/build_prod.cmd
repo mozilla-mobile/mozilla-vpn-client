@@ -6,6 +6,8 @@ rem Copyright (C) 2019 Edge Security LLC. All Rights Reserved.
 setlocal
 set PATHEXT=.exe
 set BUILDDIR=%~dp0
+set ARTIFACTDIR=%TASK_WORKDIR%\artifacts
+set FETCHESDIR=%TASK_WORKDIR%\fetches
 cd /d %BUILDDIR% || exit /b 1
 
 set WIX_CANDLE_FLAGS=-nologo -ext WiXUtilExtension
@@ -26,6 +28,8 @@ if exist .deps\prepared goto :build
 	cd .. || goto :error
 
 :build
+	echo [+] Extracting %FETCHESDIR%\unsigned.zip
+	powershell -command "Expand-Archive" -Path %FETCHESDIR%\unsigned.zip -DestinationPath %TASK_WORKDIR%\build\src || exit /b 1
 	set WIX=%BUILDDIR%.deps\wix\
 	call :msi x64 || goto :error
 
@@ -41,11 +45,11 @@ if exist .deps\prepared goto :build
 	goto :eof
 
 :msi
-	if not exist "%~1" mkdir "%~1"
+	if not exist "%ARTIFACTDIR%" mkdir "%ARTIFACTDIR%"
 	echo [+] Compiling %1
-       "%WIX%bin\candle" %WIX_CANDLE_FLAGS% -dPlatform=%1 -out "%~1\MozillaVPN.wixobj" -arch %1 MozillaVPN_prod.wxs || exit /b %errorlevel%
+       "%WIX%bin\candle" %WIX_CANDLE_FLAGS% -dPlatform=%1 -out "%ARTIFACTDIR%\MozillaVPN.wixobj" -arch %1 MozillaVPN_prod.wxs || exit /b %errorlevel%
 	echo [+] Linking %1
-       "%WIX%bin\light" %WIX_LIGHT_FLAGS% -out "%~1/MozillaVPN.msi" "%~1\MozillaVPN.wixobj" || exit /b %errorlevel%
+       "%WIX%bin\light" %WIX_LIGHT_FLAGS% -out "%ARTIFACTDIR%/MozillaVPN.msi" "%ARTIFACTDIR%\MozillaVPN.wixobj" || exit /b %errorlevel%
 	goto :eof
 
 :error

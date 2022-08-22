@@ -5,6 +5,7 @@
 #include "inspectorutils.h"
 #include "qmlengineholder.h"
 
+#include <QQmlApplicationEngine>
 #include <QQuickItem>
 
 // static
@@ -13,7 +14,12 @@ QObject* InspectorUtils::findObject(const QString& name) {
   Q_ASSERT(!parts.isEmpty());
 
   QQuickItem* parent = nullptr;
-  QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
+  QQmlApplicationEngine* engine = qobject_cast<QQmlApplicationEngine*>(
+      QmlEngineHolder::instance()->engine());
+  if (!engine) {
+    return nullptr;
+  }
+
   for (QObject* rootObject : engine->rootObjects()) {
     if (!rootObject) {
       continue;

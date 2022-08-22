@@ -7,22 +7,25 @@
 
 #include "networkmanager.h"
 
-#include <QQmlApplicationEngine>
-
+class QQmlEngine;
 class QWindow;
 
 class QmlEngineHolder final : public NetworkManager {
   Q_DISABLE_COPY_MOVE(QmlEngineHolder)
 
  public:
-  QmlEngineHolder();
+  explicit QmlEngineHolder(QQmlEngine* engine);
   ~QmlEngineHolder();
 
   static QmlEngineHolder* instance();
 
   static bool exists();
 
-  QQmlApplicationEngine* engine() { return &m_engine; }
+  QQmlEngine* engine() { return m_engine; }
+
+#ifdef UNIT_TEST
+  void replaceEngine(QQmlEngine* engine) { m_engine = engine; }
+#endif
 
   QNetworkAccessManager* networkAccessManager() override;
 
@@ -34,7 +37,7 @@ class QmlEngineHolder final : public NetworkManager {
   void clearCacheInternal() override;
 
  private:
-  QQmlApplicationEngine m_engine;
+  QQmlEngine* m_engine = nullptr;
 };
 
 #endif  // QMLENGINEHOLDER_H

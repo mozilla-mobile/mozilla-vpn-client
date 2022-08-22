@@ -95,7 +95,6 @@ module.exports = {
         await this.getElementProperty('learnMoreLink', 'visible') === 'true');
   },
 
-
   async forceHeartbeatFailure() {
     const json = await this._writeCommand('force_heartbeat_failure');
     assert(
@@ -470,6 +469,22 @@ module.exports = {
     assert(
         json.type === 'open_settings' && !('error' in json),
         `Command failed: ${json.error}`);
+    return json.value;
+  },
+
+  async getDevices() {
+    const json = await this._writeCommand('devices');
+    assert(
+      json.type === 'devices' && !('error' in json),
+      `Command failed: ${json.error}`);
+    return json.value;
+  },
+
+  async getPublicKey() {
+    const json = await this._writeCommand('public_key');
+    assert(
+      json.type === 'public_key' && !('error' in json),
+      `Command failed: ${json.error}`);
     return json.value;
   },
 

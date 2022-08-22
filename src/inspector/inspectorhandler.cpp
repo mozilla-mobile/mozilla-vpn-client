@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "inspectorhandler.h"
-#include "addonmanager.h"
+#include "addons/manager/addonmanager.h"
 #include "constants.h"
 #include "controller.h"
 #include "externalophandler.h"
@@ -34,6 +34,7 @@
 #include <QMetaObject>
 #include <QNetworkAccessManager>
 #include <QPixmap>
+#include <QQmlApplicationEngine>
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QScreen>
@@ -856,6 +857,20 @@ static QList<InspectorCommand> s_commands{
           return QJsonObject();
         }},
 
+    InspectorCommand{"public_key",
+                     "Retrieve the public key of the current device", 0,
+                     [](InspectorHandler*, const QList<QByteArray>&) {
+                       MozillaVPN* vpn = MozillaVPN::instance();
+                       Q_ASSERT(vpn);
+
+                       Keys* keys = vpn->keys();
+                       Q_ASSERT(keys);
+
+                       QJsonObject obj;
+                       obj["value"] = keys->publicKey();
+                       return obj;
+                     }},
+
     InspectorCommand{"open_settings", "Open settings menu", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        ExternalOpHandler::instance()->request(
@@ -1101,7 +1116,12 @@ QJsonObject InspectorHandler::getViewTree() {
   QJsonObject out;
   out["type"] = "qml_tree";
 
-  QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
+  QQmlApplicationEngine* engine = qobject_cast<QQmlApplicationEngine*>(
+      QmlEngineHolder::instance()->engine());
+  if (!engine) {
+    return out;
+  }
+
   QJsonArray viewRoots;
   for (auto& root : engine->rootObjects()) {
     QQuickWindow* window = qobject_cast<QQuickWindow*>(root);

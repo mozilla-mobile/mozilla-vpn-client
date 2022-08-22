@@ -23,88 +23,89 @@ Item {
         title: "Feature List"
     }
 
-    VPNFilterProxyModel {
-        id: flippableOnFeatureModel
-        source: VPNFeatureList
-        filterCallback: entry => entry.feature.flippableOn && !entry.feature.isSupportedIgnoringFlip
-    }
-
-    VPNFilterProxyModel {
-        id: flippableOffFeatureModel
-        source: VPNFeatureList
-        filterCallback: entry => entry.feature.flippableOff && entry.feature.isSupportedIgnoringFlip
-    }
-
     VPNFlickable {
         id: vpnFlickable
+
         flickContentHeight: featureListHolder.height + 100
-        anchors.top: menu.bottom
         height: root.height - menu.height
-        anchors.left: parent.left
-        anchors.right: parent.right
+
+        anchors {
+            top: menu.bottom
+            left: parent.left
+            right: parent.right
+        }
 
         ColumnLayout {
-            anchors.top:  parent.top
-            anchors.left:  parent.left
-            anchors.leftMargin: VPNTheme.theme.windowMargin
-
-            spacing: VPNTheme.theme.windowMargin
             id: featureListHolder
 
-            VPNBoldLabel{
-                // Do not translate this string!
-                text: "Features that can be flipped on"
+            anchors {
+                top: parent.top
+                left: parent.left
+                right: parent.right
+                margins: VPNTheme.theme.windowMargin * 1.5
             }
+
+            spacing: VPNTheme.theme.windowMargin
 
             Repeater {
-                model: flippableOnFeatureModel
-                delegate: VPNCheckBoxRow {
-                    showDivider: false
-                    labelText: feature.name
-                    subLabelText: feature.id
-                    showAppImage: false
-                    onClicked: VPNFeatureList.toggleForcedEnable(feature.id)
-                    enabled: true
-                    isChecked: feature.isFlippedOn()
-                    Layout.minimumHeight: VPNTheme.theme.rowHeight * 1.5
-                }
-            }
+                id: rep
 
-            VPNBoldLabel{
-                // Do not translate this string!
-                text: "Features that can be flipped off"
-            }
-
-            Repeater {
-                model: flippableOffFeatureModel
-                delegate: VPNCheckBoxRow {
-                    showDivider: false
-                    labelText: feature.name
-                    subLabelText: feature.id
-                    showAppImage: false
-                    onClicked: VPNFeatureList.toggleForcedDisable(feature.id)
-                    enabled: true
-                    isChecked: feature.isFlippedOff()
-                    Layout.minimumHeight: VPNTheme.theme.rowHeight * 1.5
-                }
-            }
-
-            VPNBoldLabel{
-                // Do not translate this string!
-                text: "Feature list"
-            }
-
-            Repeater {
                 model: VPNFeatureList
-                delegate: VPNCheckBoxRow {
-                    showDivider: false
-                    labelText: feature.name
-                    subLabelText: feature.id
-                    showAppImage: false
-                    enabled: false
-                    isChecked: feature.isSupported
-                    Layout.minimumHeight: VPNTheme.theme.rowHeight * 1.5
+                delegate: ColumnLayout {
+
+                    Layout.preferredWidth: featureListHolder.width
+                    spacing: VPNTheme.theme.windowMargin / 1.5
+
+                    RowLayout {
+
+                        Layout.preferredWidth: featureListHolder.width
+
+                        ColumnLayout {
+
+                            Layout.fillWidth: true
+
+                            VPNLightLabel {
+                                text: feature.name
+                                color: VPNTheme.theme.fontColorDark
+                            }
+
+                            VPNTextBlock {
+                                text: `id: ${feature.id}`
+                                font.pixelSize: VPNTheme.theme.fontSizeSmall
+                            }
+                        }
+
+                        VPNSettingsToggle {
+                            checked: feature.isFlippedOn() || (feature.isSupported && !feature.isFlippedOff()) || (feature.isSupported && !enabled)
+                            enabled: feature.flippableOn && !feature.isSupportedIgnoringFlip || feature.flippableOff && feature.isSupportedIgnoringFlip
+                            Layout.preferredHeight: 24
+                            Layout.preferredWidth: 45
+                            Layout.alignment: Qt.AlignTop | Qt. AlignRight
+                            opacity: enabled ? 1 : .3
+                            onClicked: {
+                                if (feature.flippableOn && !feature.isSupportedIgnoringFlip) {
+                                    VPNFeatureList.toggleForcedEnable(feature.id)
+                                } else if (feature.flippableOff && feature.isSupportedIgnoringFlip){
+                                   VPNFeatureList.toggleForcedDisable(feature.id)
+                                }
+                            }
+
+                        }
+                    }
+
+                    Rectangle {
+                        Layout.alignment: Qt.AlignBottom
+                        Layout.preferredWidth: parent.width
+                        Layout.preferredHeight: 1
+                        color: VPNTheme.colors.grey10
+                        visible: index < rep.count - 1
+                    }
                 }
+            }
+
+            VPNVerticalSpacer {
+                Layout.preferredHeight: 1
+                Layout.fillWidth: true
             }
         }
     }

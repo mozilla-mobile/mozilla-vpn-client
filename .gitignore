@@ -182,6 +182,8 @@ tools/inspector/.cache
 tools/inspector/.parcel-cache
 tools/inspector/dist
 tools/inspector/node_modules
+tools/wasm_chrome/branch_runs.json
+!tools/wasm_chrome/*.ts
 
 *.PDB
 

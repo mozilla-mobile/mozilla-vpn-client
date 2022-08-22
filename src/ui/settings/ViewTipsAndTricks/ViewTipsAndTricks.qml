@@ -69,8 +69,8 @@ VPNFlickable {
                         height: parent.height
 
                         imageSrc: highlightedTutorial.image
-                        title: qsTrId(highlightedTutorial.titleId)
-                        description: qsTrId(highlightedTutorial.subtitleId)
+                        title: highlightedTutorial.title
+                        description: highlightedTutorial.subtitle
 
                         onClicked: {
                             VPNTutorial.play(highlightedTutorial);

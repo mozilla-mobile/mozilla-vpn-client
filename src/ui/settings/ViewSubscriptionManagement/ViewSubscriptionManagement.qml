@@ -40,6 +40,7 @@ VPNFlickable {
 
         VPNUserProfile {
             objectName: "subscriptionUserProfile"
+            _objNameBase: "subscriptionUserProfile"
 
             _iconSource: "qrc:/nebula/resources/open-in-new.svg"
             _buttonOnClicked: () => {

@@ -2,12 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "taskaddonindex.h"
-#include "addonmanager.h"
-#include "constants.h"
+#include "addons/manager/addonmanager.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/feature.h"
 #include "networkrequest.h"
+#include "taskaddonindex.h"
 
 namespace {
 Logger logger(LOG_MAIN, "TaskAddonIndex");
@@ -23,7 +23,9 @@ void TaskAddonIndex::run() {
   // Index file
   {
     NetworkRequest* request = NetworkRequest::createForGetUrl(
-        this, QString("%1manifest.json").arg(Constants::addonSourceUrl()), 200);
+        this,
+        QString("%1manifest.json").arg(AddonManager::addonServerAddress()),
+        200);
 
     connect(request, &NetworkRequest::requestFailed, this,
             [this](QNetworkReply::NetworkError error, const QByteArray&) {
@@ -34,15 +36,17 @@ void TaskAddonIndex::run() {
     connect(request, &NetworkRequest::requestCompleted, this,
             [this](const QByteArray& data) {
               logger.debug() << "Get addon index completed";
+
               m_indexData = data;
               maybeComplete();
             });
   }
 
   // Index file signature
-  {
+  if (Feature::get(Feature::Feature_addonSignature)->isSupported()) {
     NetworkRequest* request = NetworkRequest::createForGetUrl(
-        this, QString("%1manifest.json.sign").arg(Constants::addonSourceUrl()),
+        this,
+        QString("%1manifest.json.sign").arg(AddonManager::addonServerAddress()),
         200);
 
     connect(request, &NetworkRequest::requestFailed, this,
@@ -54,6 +58,7 @@ void TaskAddonIndex::run() {
     connect(request, &NetworkRequest::requestCompleted, this,
             [this](const QByteArray& data) {
               logger.debug() << "Get addon index signature completed";
+
               m_indexSignData = data;
               maybeComplete();
             });
@@ -61,7 +66,12 @@ void TaskAddonIndex::run() {
 }
 
 void TaskAddonIndex::maybeComplete() {
-  if (m_indexData.isEmpty() || m_indexSignData.isEmpty()) {
+  if (m_indexData.isEmpty()) {
+    return;
+  }
+
+  if (Feature::get(Feature::Feature_addonSignature)->isSupported() &&
+      m_indexSignData.isEmpty()) {
     return;
   }
 

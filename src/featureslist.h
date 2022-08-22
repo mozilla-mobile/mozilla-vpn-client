@@ -131,6 +131,15 @@ FEATURE_SIMPLE(inAppPurchase,      // Feature ID
                QStringList(),      // feature dependencies
                FeatureCallback_inAppPurchase)
 
+FEATURE_SIMPLE(keyRegeneration,     // Feature ID
+               "Key Regeneration",  // Feature name
+               "2.10.0",            // released
+               true,                // Can be flipped on
+               true,                // Can be flipped off
+               QStringList(),       // feature dependencies
+               // TODO: Disabled - VPN-2693
+               FeatureCallback_false)
+
 FEATURE_SIMPLE(lanAccess,                    // Feature ID
                "Local area network access",  // Feature name
                "2.2",                        // released
@@ -239,14 +248,6 @@ FEATURE_SIMPLE(subscriptionManagement,     // Feature ID
                QStringList(),              // feature dependencies
                FeatureCallback_true)
 
-FEATURE_SIMPLE(tipsAndTricks,      // Feature ID
-               "Tips and tricks",  // Feature name
-               "2.9",              // released
-               false,              // Can be flipped on
-               true,               // Can be flipped off
-               QStringList(),      // feature dependencies
-               FeatureCallback_false)
-
 FEATURE_SIMPLE(unsecuredNetworkNotification,      // Feature ID
                "Unsecured network notification",  // Feature name
                "2.2",                             // released
@@ -261,4 +262,12 @@ FEATURE_SIMPLE(websocket,      // Feature ID
                true,           // Can be flipped on
                true,           // Can be flipped off
                QStringList(),  // feature dependencies
-               FeatureCallback_false)
+               FeatureCallback_true)
+
+FEATURE_SIMPLE(addonSignature,              // Feature ID
+               "Addons Signature",          // Feature name
+               "2.10.0",                    // released
+               !Constants::inProduction(),  // Can be flipped on
+               !Constants::inProduction(),  // Can be flipped off
+               QStringList(),               // feature dependencies
+               FeatureCallback_true)

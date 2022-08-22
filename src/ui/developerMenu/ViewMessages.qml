@@ -42,13 +42,18 @@ Item {
                 filterCallback: obj => obj.addon.type === "message"
             }
 
+            Text {
+               text: "Unread messages: " + VPNAddonManager.reduce((addon, initialValue) => initialValue + (addon.type === "message" ? 1 : 0), 0);
+            }
+
             Repeater {
                 model: messagesModel
                 delegate: VPNCheckBoxRow {
                     // I'm too lazy to create a proper view.
                     function showMessageContent(addon) {
                         const list = [];
-                        list.push("Translate title: " + qsTrId(addon.titleId));
+                        list.push("Translate title: " + addon.title);
+                        list.push("Is read: " + addon.isRead);
                         list.push("Blocks: " + addon.composer.blocks.length);
                         return list.join("\n");
                     }
@@ -62,7 +67,11 @@ Item {
                     Layout.minimumHeight: VPNTheme.theme.rowHeight * 1.5
 
                     onClicked: {
-                       addon.dismiss();
+                       if (addon.isRead) {
+                         addon.dismiss();
+                       } else {
+                         addon.maskAsRead();
+                       }
                     }
                 }
             }

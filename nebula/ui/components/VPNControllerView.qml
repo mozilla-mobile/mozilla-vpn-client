@@ -50,9 +50,9 @@ Item {
     Rectangle {
         id: boxBackground
 
-        property int maximumBoxHeight
+        property var maximumBoxHeight: window.safeContentHeight - VPNTheme.theme.windowMargin * 2 - (window.fullscreenRequired() ? box.y + VPNTheme.theme.windowMargin : 0);
+        color: VPNTheme.theme.transparent
 
-        color: VPNTheme.theme.bgColor
         radius: VPNTheme.theme.cornerRadius * 2
         antialiasing: true
 
@@ -66,13 +66,6 @@ Item {
                 duration: connectionInfoScreen.transitionDuration
                 easing.type: Easing.InOutQuad
             }
-        }
-
-        Component.onCompleted: {
-            const boxCoordinates = box.mapToItem(box.parent, 0, 0);
-            maximumBoxHeight = window.safeContentHeight
-                - VPNTheme.theme.windowMargin * 2
-                - (window.fullscreenRequired() ? boxCoordinates.y + VPNTheme.theme.windowMargin : 0);
         }
     }
 
@@ -716,4 +709,15 @@ Item {
         radius: VPNTheme.theme.cornerRadius * 2
     }
 
+    Component.onCompleted: VPNCloseEventHandler.addView(connectionInfoScreen)
+
+    Connections {
+        function onGoBack(item) {
+            if (item === connectionInfoScreen && connectionInfoScreen.isOpen) {
+                closeConnectionInfo();
+            }
+        }
+
+        target: VPNCloseEventHandler
+    }
 }

@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/composer)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hacl-star)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin/minimal)
@@ -11,12 +12,17 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 qt_add_executable(mozillavpn MANUAL_FINALIZATION)
 
 target_link_libraries(mozillavpn PRIVATE
-    Qt6::NetworkAuth
     Qt6::Quick
     Qt6::Test
     Qt6::WebSockets
     Qt6::Widgets
 )
+
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    target_link_libraries(mozillavpn PRIVATE
+        Qt6::NetworkAuth
+    )
+endif()
 
 target_link_libraries(mozillavpn PRIVATE glean lottie nebula translations)
 
@@ -34,13 +40,17 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
     set(MVPN_PLATFORM_NAME "android")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
     set(MVPN_PLATFORM_NAME "ios")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    set(MVPN_PLATFORM_NAME "wasm")
 endif()
 
 add_compile_definitions("$<$<CONFIG:Debug>:MVPN_DEBUG>")
 add_compile_definitions("MVPN_$<UPPER_CASE:${MVPN_PLATFORM_NAME}>")
 include(cmake/${MVPN_PLATFORM_NAME}.cmake)
 
-add_subdirectory(crashreporter)
-target_link_libraries(mozillavpn PRIVATE crashreporter)
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    add_subdirectory(crashreporter)
+    target_link_libraries(mozillavpn PRIVATE crashreporter)
+endif()
 
 qt_finalize_target(mozillavpn)
