@@ -18,7 +18,6 @@ Window {
     id: window
 
     signal showServerList
-
     property bool _fallbackQtQuickRenderer: QT_QUICK_BACKEND == "software" //TODO pending #3398
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
 
@@ -204,7 +203,6 @@ Window {
     VPNServerUnavailablePopup {
         id: serverUnavailablePopup
     }
-
 /* TODO
     function goToServersView() {
         if (VPN.state !== VPN.StateMain) {
@@ -215,25 +213,11 @@ Window {
         }
         showServerList();
     }
-
-    function pushCaptivePortalView() {
-        mainStackView.push("qrc:/ui/views/ViewCaptivePortalInfo.qml", StackView.Immediate);
-    }
 */
-
     Connections {
         target: VPNController
         function onReadyToServerUnavailable() {
             serverUnavailablePopup.open();
-        }
-        function onActivationBlockedForCaptivePortal() {
-          pushCaptivePortalView();
-        }
-    }
-    Connections{
-        target: VPNCaptivePortal
-        function onCaptivePortalPresent() {
-            pushCaptivePortalView();
         }
     }
 
@@ -242,4 +226,5 @@ Window {
 
         anchors.centerIn: parent
     }
+
 }
