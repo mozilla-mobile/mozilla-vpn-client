@@ -199,17 +199,15 @@ int ServerCountryModel::cityConnectionScore(const ServerCity& city) const {
 
   // Otherwise, return a score depending on the average latency.
   avgLatencyMsec /= activeServerCount;
-  logger.debug() << "Server data" << city.code() << avgLatencyMsec << activeServerCount;
+  logger.debug() << "Server data" << city.code() << avgLatencyMsec
+                 << activeServerCount;
   if (avgLatencyMsec < 50) {
     return 4; // Great!
-  }
-  else if (avgLatencyMsec < 100) {
+  } else if (avgLatencyMsec < 100) {
     return 3; // Acceptable
-  }
-  else if (avgLatencyMsec < 200) {
+  } else if (avgLatencyMsec < 200) {
     return 2; // Poor
-  }
-  else {
+  } else {
     return 1; // Really Bad!
   }
 }

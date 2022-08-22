@@ -73,8 +73,7 @@ void ServerLatency::stateChanged() {
   if (state != Controller::StateOff) {
     // If the VPN is active, then do not attempt to measure the server latency.
     stop();
-  }
-  else if (m_wantRefresh) {
+  } else if (m_wantRefresh) {
     // If the VPN has been deactivated, start a refresh if desired.
     start();
   }
@@ -89,7 +88,8 @@ void ServerLatency::recvPing(quint16 sequence) {
 
   ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
   quint64 latency = QDateTime::currentMSecsSinceEpoch() - record.timestamp;
-  logger.debug() << "Server" << logger.keys(record.publicKey) << "latency" << latency << "msec";
+  logger.debug() << "Server" << logger.keys(record.publicKey) << "latency"
+                 << latency << "msec";
   scm->setServerLatency(record.publicKey, latency);
 
   if (m_pingReplyList.isEmpty()) {
