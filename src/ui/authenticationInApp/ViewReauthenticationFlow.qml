@@ -12,7 +12,6 @@ import components.inAppAuth 0.1
 
 Item {
     id: reauthenticationFlow
-    property bool _targetViewCondition: false
     property var _onClose: () => {}
     objectName: "reauthenticationFlow"
 
@@ -45,7 +44,7 @@ Item {
             when: (
                 VPNAuthInApp.state === VPNAuthInApp.StateInitializing
                 || VPNAuthInApp.state === VPNAuthInApp.StateCheckingAccount
-            ) || !_targetViewCondition
+            )
             PropertyChanges {
                 target: loader
                 source: "qrc:/ui/authenticationInApp/ViewAuthenticationInitializing.qml"
@@ -102,7 +101,7 @@ Item {
 
         State {
             name: "StateAuthenticated"
-            when: VPNAuthInApp.state === VPNAuthInApp.StateAuthenticated && _targetViewCondition
+            when: VPNAuthInApp.state === VPNAuthInApp.StateAuthenticated
             StateChangeScript {
                 name: "closeReAuth"
                 script: {

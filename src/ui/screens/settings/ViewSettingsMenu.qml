@@ -163,7 +163,6 @@ VPNViewBase {
                 && stackview.currentItem.objectName !== "reauthenticationFlow"
             ) {
                 return stackview.push("qrc:/ui/authenticationInApp/ViewReauthenticationFlow.qml", {
-                    _targetViewCondition: Qt.binding(() => VPNProfileFlow.state === VPNProfileFlow.StateReady),
                     _onClose: () => {
                         VPNProfileFlow.reset();
                         stackview.pop();

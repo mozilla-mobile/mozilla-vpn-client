@@ -13,6 +13,8 @@ VPNViewBase {
     id: vpnFlickable
     objectName: "subscriptionManagmentView"
 
+    Component.onDestruction: () => VPNProfileFlow.reset()
+
     _menuTitle: VPNl18n.SubscriptionManagementMenuTitle
     _viewContentData: ColumnLayout {
         spacing: VPNTheme.theme.windowMargin
