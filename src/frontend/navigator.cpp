@@ -119,7 +119,12 @@ ScreenData s_screens[] = {
     ScreenData(
         Navigator::Screen::ScreenGetHelp, "qrc:/ui/screens/ScreenGetHelp.qml",
         QVector<MozillaVPN::State>{},
-        [](Navigator::Screen*) -> int8_t { return 0; },
+        [](Navigator::Screen* requestedScreen) -> int8_t {
+          return (requestedScreen &&
+                  *requestedScreen == Navigator::Screen::ScreenGetHelp)
+                     ? 99
+                     : -1;
+        },
         []() -> bool {
           Navigator::instance()->requestPreviousScreen();
           return true;
@@ -265,7 +270,12 @@ ScreenData s_screens[] = {
     ScreenData(
         Navigator::Screen::ScreenViewLogs, "qrc:/ui/screens/ScreenViewLogs.qml",
         QVector<MozillaVPN::State>{},
-        [](Navigator::Screen*) -> int8_t { return 0; },
+        [](Navigator::Screen* requestedScreen) -> int8_t {
+          return (requestedScreen &&
+                  *requestedScreen == Navigator::Screen::ScreenViewLogs)
+                     ? 99
+                     : -1;
+        },
         []() -> bool {
           Navigator::instance()->requestPreviousScreen();
           return true;

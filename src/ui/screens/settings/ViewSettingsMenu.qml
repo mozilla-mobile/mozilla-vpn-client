@@ -162,7 +162,7 @@ VPNViewBase {
                 VPNProfileFlow.state === VPNProfileFlow.StateAuthenticationNeeded
                 && stackview.currentItem.objectName !== "reauthenticationFlow"
             ) {
-                return stackview.push("qrc:/ui/authenticationInApp/ViewReauthenticationFlow.qml", {
+                return stackview.push("qrc:/ui/screens/settings/ViewSubscriptionManagement/ViewReauthenticationFlow.qml", {
                     _onClose: () => {
                         VPNProfileFlow.reset();
                         stackview.pop();

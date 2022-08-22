@@ -32,7 +32,7 @@ Item {
             when: VPNAuthInApp.state === VPNAuthInApp.StateInitializing || VPNAuthInApp.state === VPNAuthInApp.StateAuthenticated
             PropertyChanges {
                 target: loader
-                source: "ViewAuthenticationInitializing.qml"
+                source: "qrc:/ui/authenticationInApp/ViewAuthenticationInitializing.qml"
             }
         },
 
@@ -41,7 +41,7 @@ Item {
             when: VPNAuthInApp.state === VPNAuthInApp.StateStart || VPNAuthInApp.state === VPNAuthInApp.StateCheckingAccount
             PropertyChanges {
                 target: loader
-                source: "ViewAuthenticationStart.qml"
+                source: "qrc:/ui/authenticationInApp/ViewAuthenticationStart.qml"
             }
         },
 
@@ -50,7 +50,7 @@ Item {
             when: VPNAuthInApp.state === VPNAuthInApp.StateSignIn || VPNAuthInApp.state === VPNAuthInApp.StateSigningIn
             PropertyChanges {
                 target: loader
-                source: "ViewAuthenticationSignIn.qml"
+                source: "qrc:/ui/authenticationInApp/ViewAuthenticationSignIn.qml"
             }
         },
 
@@ -58,7 +58,7 @@ Item {
             when: VPNAuthInApp.state === VPNAuthInApp.StateSignUp || VPNAuthInApp.state === VPNAuthInApp.StateSigningUp
             PropertyChanges {
                 target: loader
-                source: "ViewAuthenticationSignUp.qml"
+                source: "qrc:/ui/authenticationInApp/ViewAuthenticationSignUp.qml"
             }
         },
 
@@ -67,7 +67,7 @@ Item {
             when: VPNAuthInApp.state === VPNAuthInApp.StateUnblockCodeNeeded || VPNAuthInApp.state === VPNAuthInApp.StateVerifyingUnblockCode
             PropertyChanges {
                 target: loader
-                source: "ViewAuthenticationUnblockCodeNeeded.qml"
+                source: "qrc:/ui/authenticationInApp/ViewAuthenticationUnblockCodeNeeded.qml"
             }
         },
 
@@ -76,7 +76,7 @@ Item {
             when: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByEmailNeeded || VPNAuthInApp.state === VPNAuthInApp.StateVerifyingSessionEmailCode
             PropertyChanges {
                 target: loader
-                source: "ViewAuthenticationVerificationSessionByEmailNeeded.qml"
+                source: "qrc:/ui/authenticationInApp/ViewAuthenticationVerificationSessionByEmailNeeded.qml"
             }
         },
 
@@ -85,7 +85,7 @@ Item {
             when: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByTotpNeeded || VPNAuthInApp.state === VPNAuthInApp.StateVerifyingSessionTotpCode
             PropertyChanges {
                 target: loader
-                source: "ViewAuthenticationVerificationSessionByTotpNeeded.qml"
+                source: "qrc:/ui/authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml"
             }
         },
 
@@ -94,7 +94,7 @@ Item {
             when: VPNAuthInApp.state === VPNAuthInApp.StateFallbackInBrowser
             PropertyChanges {
                 target: loader
-                source: "ViewAuthenticationFallbackInBrowser.qml"
+                source: "qrc:/ui/authenticationInApp/ViewAuthenticationFallbackInBrowser.qml"
             }
         }
     ]
