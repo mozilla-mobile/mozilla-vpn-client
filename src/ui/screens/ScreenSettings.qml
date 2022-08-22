@@ -13,7 +13,7 @@ VPNScreenBase {
     objectName: "settings"
 
     Component.onCompleted: () => {
-        VPNNavigator.addStackView(VPNNavigator.ScreenHome, getStack())
+        VPNNavigator.addStackView(VPNNavigator.ScreenSettings, getStack())
         getStack().push("qrc:/ui/screens/settings/ViewSettingsMenu.qml")
     }
 }
