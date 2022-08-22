@@ -153,7 +153,7 @@ print Y "Creating the xcode project via qmake..."
 $QMAKE \
   VERSION=$SHORTVERSION \
   BUILD_ID=$FULLVERSION \
-  -spec macx-ios-clang \
+  -spec macx-xcode \
   $MODE \
   $PLATFORM \
   $ADJUST \
