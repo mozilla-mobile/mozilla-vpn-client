@@ -15,7 +15,7 @@ VPNIcon {
             when: VPNServerLatency.status === VPNServerLatency.StrongSignal
             PropertyChanges {
                 target: icon
-                source: "qrc:/nebula/resources/server-strong.svg"
+                source: "qrc:/nebula/resources/server-latency-strong.svg"
             }
         },
         // High latency
@@ -23,7 +23,7 @@ VPNIcon {
             when: VPNServerLatency.status === VPNServerLatency.WeakSignal
             PropertyChanges {
                 target: icon
-                source: "qrc:/nebula/resources/server-weak.svg"
+                source: "qrc:/nebula/resources/server-latency-weak.svg"
             }
         },
         // Very high latency or server unavailable
@@ -31,7 +31,7 @@ VPNIcon {
             when: VPNServerLatency.status === VPNServerLatency.NoSignal
             PropertyChanges {
                 target: icon
-                source: "qrc:/nebula/resources/server-unavailable.svg"
+                source: "qrc:/nebula/resources/server-latency-unavailable.svg"
             }
         }
     ]
