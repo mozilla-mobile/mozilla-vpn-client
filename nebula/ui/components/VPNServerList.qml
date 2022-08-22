@@ -144,8 +144,40 @@ FocusScope {
     Component {
         id: listServersRecommended
 
-        Text {
-            text: "Recommended servers"
+        VPNFlickable {
+            id: vpnFlickableRecommended
+            objectName: "serverCountryViewRecommend"
+
+            flickContentHeight: serverListRecommended.implicitHeight + listOffset
+            anchors.fill: parent
+
+            ColumnLayout {
+                id: serverListRecommended
+                spacing: 14
+                width: parent.width
+
+                anchors {
+                    top: parent.top
+                    topMargin: VPNTheme.theme.windowMargin
+                    left: parent.left
+                    right: parent.right
+                    leftMargin: VPNTheme.theme.windowMargin / 2
+                    rightMargin: VPNTheme.theme.windowMargin / 2
+                }
+
+                VPNCollapsibleCard {
+                    title: "Why are these locations recommended?"
+
+                    iconSrc: "qrc:/ui/resources/tip.svg"
+                    contentItem: VPNTextBlock {
+                        text: "These locations are sorted by expected performance."
+                        textFormat: Text.StyledText
+                        Layout.fillWidth: true
+                    }
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin
+                }
+            }
         }
     }
 
