@@ -390,7 +390,7 @@ class XCodeprojPatcher
   end
 
   def die(msg)
-   print $msg
+   puts msg
    exit 1
   end
 end
