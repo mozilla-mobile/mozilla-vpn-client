@@ -46,8 +46,6 @@ Item {
     VPNStackView {
         id: stackview
         anchors.top: menu.bottom
-
-        Component.onCompleted: _onStackCompleted()
         onCurrentItemChanged: {
             menu.title = Qt.binding(() => currentItem._menuTitle || "");
             menu.visible = Qt.binding(() => menu.title !== "");
