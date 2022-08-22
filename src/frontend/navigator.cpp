@@ -111,6 +111,12 @@ ScreenData s_screens[] = {
         [](Navigator::Screen*) -> int8_t { return 0; },
         []() -> bool { return false; }),
     ScreenData(
+        Navigator::Screen::ScreenCaptivePortal,
+        "qrc:/ui/screens/ScreenCaptivePortal.qml",
+        QVector<MozillaVPN::State>{MozillaVPN::StateMain},
+        [](Navigator::Screen*) -> int8_t { return 0; },
+        []() -> bool { return false; }),
+    ScreenData(
         Navigator::Screen::ScreenDeviceLimit,
         "qrc:/ui/screens/ScreenDeviceLimit.qml",
         QVector<MozillaVPN::State>{MozillaVPN::StateDeviceLimit},

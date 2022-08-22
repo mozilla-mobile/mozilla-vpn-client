@@ -93,7 +93,7 @@ VPNFlickable {
                 if(vpnFlickable.state === "post-activation"){
                     VPNCaptivePortal.deactivationRequired();
                 }
-                mainStackView.pop(StackView.Immediate);
+                VPNNavigator.requestScreen(VPNNavigator.ScreenHome);
             }
 
             Layout.fillWidth: true

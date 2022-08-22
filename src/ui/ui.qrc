@@ -40,6 +40,7 @@
         <file>screens/ScreenAuthenticationInApp.qml</file>
         <file>screens/ScreenBackendFailure.qml</file>
         <file>screens/ScreenBillingNotAvailable.qml</file>
+        <file>screens/ScreenCaptivePortal.qml</file>
         <file>screens/ScreenDeviceLimit.qml</file>
         <file>screens/ScreenGetHelp.qml</file>
         <file>screens/ScreenHome.qml</file>
@@ -79,7 +80,6 @@
         <file>screens/settings/ViewTipsAndTricks/ViewTipsAndTricks.qml</file>
         <file>screens/settings/ViewWhatsNew.qml</file>
         <file>screens/subscriptionNeeded/ViewSubscriptionNeeded.qml</file>
-        <file>views/ViewCaptivePortalInfo.qml</file>
         <file>views/ViewErrorFullScreen.qml</file>
         <file>views/ViewUpdate.qml</file>
     </qresource>
