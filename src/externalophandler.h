@@ -16,12 +16,10 @@ class ExternalOpHandler final : public QObject {
     OpAbout,
     OpActivate,
     OpCloseEvent,
-    OpContactUs,
     OpDeactivate,
     OpNotificationClicked,
     OpSettings,
     OpQuit,
-    OpViewLogs,
   };
   Q_ENUM(Op);
 

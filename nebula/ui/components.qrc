@@ -12,7 +12,6 @@
         <file>components/forms/VPNTextArea.qml</file>
         <file>components/forms/VPNTextField.qml</file>
         <file>components/qmldir</file>
-        <file>components/VPNAboutUs.qml</file>
         <file>components/VPNAlert.qml</file>
         <file>components/VPNAlerts.qml</file>
         <file>components/VPNAnimatedRings.qml</file>
@@ -40,14 +39,10 @@
         <file>components/VPNConnectionStability.qml</file>
         <file>components/VPNControllerNav.qml</file>
         <file>components/VPNControllerView.qml</file>
-        <file>components/VPNDeviceListItem.qml</file>
-        <file>components/VPNDevicesListHeader.qml</file>
         <file>components/VPNDropShadowWithStates.qml</file>
-        <file>components/VPNExpandableAppList.qml</file>
         <file>components/VPNExternalLinkListItem.qml</file>
         <file>components/VPNFeatureTourPopup.qml</file>
         <file>components/VPNFeatureTour.qml</file>
-        <file>components/VPNFeedbackRadioDelegate.qml</file>
         <file>components/VPNFlickable.qml</file>
         <file>components/VPNFocusBorder.qml</file>
         <file>components/VPNFocusOutline.qml</file>
@@ -82,7 +77,6 @@
         <file>components/VPNRadioButtonLabel.qml</file>
         <file>components/VPNRadioDelegate.qml</file>
         <file>components/VPNRecentConnections.qml</file>
-        <file>components/VPNRemoveDevicePopup.qml</file>
         <file>components/VPNSemiMonoLabel.qml</file>
         <file>components/VPNServerCountry.qml</file>
         <file>components/VPNServerLabel.qml</file>
@@ -106,7 +100,6 @@
         <file>components/VPNTutorialCard.qml</file>
         <file>components/VPNUIStates.qml</file>
         <file>components/VPNVerticalSpacer.qml</file>
-        <file>components/VPNViewDNSSettings.qml</file>
         <file>components/inAppAuth/qmldir</file>
         <file>components/inAppAuth/VPNInAppAuthenticationBase.qml</file>
         <file>components/inAppAuth/VPNInAppAuthenticationErrorPopup.qml</file>
@@ -117,6 +110,8 @@
         <file>components/VPNSegmentedToggle.qml</file>
         <file>components/VPNSegmentedNavigation.qml</file>
         <file>components/VPNUserProfile.qml</file>
+        <file>components/VPNViewBase.qml</file>
         <file>components/VPNTutorialPopups.qml</file>
+        <file>components/VPNScreenBase.qml</file>
     </qresource>
 </RCC>

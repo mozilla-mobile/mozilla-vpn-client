@@ -9,6 +9,7 @@
 #include "captiveportalnotifier.h"
 #include "constants.h"
 #include "controller.h"
+#include "frontend/navigator.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -174,6 +175,7 @@ void CaptivePortalDetection::captivePortalDetected() {
     return;
   }
   emit captivePortalPresent();
+  Navigator::instance()->requestScreen(Navigator::ScreenCaptivePortal);
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);

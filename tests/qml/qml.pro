@@ -43,7 +43,6 @@ SOURCES += \
     moccontroller.cpp \
     mocmozillavpn.cpp \
     ../unit/mocinspectorhandler.cpp \
-    ../../src/closeeventhandler.cpp \
     ../../src/externalophandler.cpp \
     ../../src/filterproxymodel.cpp \
     ../../src/hawkauth.cpp \
@@ -66,7 +65,6 @@ SOURCES += \
 
 HEADERS += \
     helper.h \
-    ../../src/closeeventhandler.h \
     ../../src/constants.h \
     ../../src/controller.h \
     ../../src/externalophandler.h \

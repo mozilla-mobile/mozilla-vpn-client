@@ -33,7 +33,7 @@ Item {
     TabBar {
         id: bar
         objectName: "tabBar"
-        width: parent.width
+        width: root.width
         visible: stack.children.length > 1
         contentHeight: stack.children.length === 1 ? 0 : VPNTheme.theme.menuHeight
         background: Rectangle {

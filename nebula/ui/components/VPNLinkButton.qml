@@ -21,7 +21,6 @@ VPNButtonBase {
 
 
     radius: 4
-    horizontalPadding: buttonPadding
 
     Keys.onReleased: event => {
         if (loaderVisible) {

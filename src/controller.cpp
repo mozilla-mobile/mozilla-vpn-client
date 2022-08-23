@@ -6,6 +6,7 @@
 #include "controller.h"
 #include "controllerimpl.h"
 #include "dnshelper.h"
+#include "frontend/navigator.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -169,6 +170,8 @@ bool Controller::activate() {
   if (m_state == StateOff) {
     if (m_portalDetected) {
       emit activationBlockedForCaptivePortal();
+      Navigator::instance()->requestScreen(Navigator::ScreenCaptivePortal);
+
       m_portalDetected = false;
       return true;
     }

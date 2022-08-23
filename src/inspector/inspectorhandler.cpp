@@ -7,6 +7,7 @@
 #include "constants.h"
 #include "controller.h"
 #include "externalophandler.h"
+#include "frontend/navigator.h"
 #include "inspectoritempicker.h"
 #include "inspectorutils.h"
 #include "leakdetector.h"
@@ -877,12 +878,6 @@ static QList<InspectorCommand> s_commands{
                            ExternalOpHandler::OpSettings);
                        return QJsonObject();
                      }},
-    InspectorCommand{"open_contact_us", "Open in-app support form", 0,
-                     [](InspectorHandler*, const QList<QByteArray>&) {
-                       ExternalOpHandler::instance()->request(
-                           ExternalOpHandler::OpContactUs);
-                       return QJsonObject();
-                     }},
     InspectorCommand{"is_feature_flipped_on",
                      "Check if a feature is flipped on", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
@@ -953,6 +948,13 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{"unload_addon", "Unload an add-on", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        AddonManager::instance()->unload(arguments[1]);
+                       return QJsonObject();
+                     }},
+
+    InspectorCommand{"back_button_clicked",
+                     "Simulate an android back-button clicked", 0,
+                     [](InspectorHandler*, const QList<QByteArray>&) {
+                       Navigator::instance()->eventHandled();
                        return QJsonObject();
                      }},
 };

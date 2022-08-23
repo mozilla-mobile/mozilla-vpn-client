@@ -4,7 +4,6 @@
 
 SOURCES += \
         addons/addon.cpp \
-        addons/addondemo.cpp \
         addons/addonguide.cpp \
         addons/addoni18n.cpp \
         addons/addonmessage.cpp \
@@ -33,7 +32,6 @@ SOURCES += \
         captiveportal/captiveportalnotifier.cpp \
         captiveportal/captiveportalrequest.cpp \
         captiveportal/captiveportalrequesttask.cpp \
-        closeeventhandler.cpp \
         collator.cpp \
         command.cpp \
         commandlineparser.cpp \
@@ -67,6 +65,7 @@ SOURCES += \
         externalophandler.cpp \
         filterproxymodel.cpp \
         fontloader.cpp \
+        frontend/navigator.cpp \
         hacl-star/Hacl_Chacha20.c \
         hacl-star/Hacl_Chacha20Poly1305_32.c \
         hacl-star/Hacl_Curve25519_51.c \
@@ -95,7 +94,6 @@ SOURCES += \
         models/feature.cpp \
         models/featuremodel.cpp \
         models/feedbackcategorymodel.cpp \
-        models/helpmodel.cpp \
         models/keys.cpp \
         models/licensemodel.cpp \
         models/server.cpp \
@@ -170,7 +168,6 @@ SOURCES += \
 
 HEADERS += \
         addons/addon.h \
-        addons/addondemo.h \
         addons/addonguide.h \
         addons/addoni18n.h \
         addons/addonmessage.h \
@@ -201,7 +198,6 @@ HEADERS += \
         captiveportal/captiveportalnotifier.h \
         captiveportal/captiveportalrequest.h \
         captiveportal/captiveportalrequesttask.h \
-        closeeventhandler.h \
         collator.h \
         command.h \
         commandlineparser.h \
@@ -237,6 +233,7 @@ HEADERS += \
         externalophandler.h \
         filterproxymodel.h \
         fontloader.h \
+        frontend/navigator.h \
         hawkauth.h \
         keyregenerator.h \
         hkdf.h \
@@ -260,7 +257,6 @@ HEADERS += \
         models/feature.h \
         models/featuremodel.h \
         models/feedbackcategorymodel.h \
-        models/helpmodel.h \
         models/keys.h \
         models/licensemodel.h \
         models/server.h \

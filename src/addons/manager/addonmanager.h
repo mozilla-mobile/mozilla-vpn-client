@@ -71,8 +71,6 @@ class AddonManager final : public QAbstractListModel {
   QVariant data(const QModelIndex& index, int role) const override;
 
  signals:
-  void runAddon(Addon* addon);
-
   void loadCompletedChanged();
 
  private:
