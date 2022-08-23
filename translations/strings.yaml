@@ -700,4 +700,6 @@ global:
 
 getHelp:
   helpCenter: Help Center
-  viewLogs: View Logs
+  viewLogs:
+    value: View Logs
+    comment: Label for a clickable item in the Get-Help view
