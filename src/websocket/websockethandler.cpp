@@ -189,6 +189,7 @@ void WebSocketHandler::close() {
 void WebSocketHandler::onClose() {
   // https://doc.qt.io/qt-6/qwebsocketprotocol.html#CloseCode-enum
   logger.debug() << "WebSocket closed:" << m_webSocket.closeCode();
+  m_pingTimer.stop();
 
   if (isUserAuthenticated()) {
     int nextAttemptIn = m_backoffStrategy.scheduleNextAttempt();
