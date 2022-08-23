@@ -151,18 +151,18 @@ FocusScope {
             flickContentHeight: serverListRecommended.implicitHeight + listOffset
             anchors.fill: parent
 
-            ColumnLayout {
+            Column {
                 id: serverListRecommended
                 spacing: 14
                 width: parent.width
 
                 anchors {
                     top: parent.top
-                    topMargin: VPNTheme.theme.windowMargin
+                    topMargin: VPNTheme.theme.vSpacingSmall
                     left: parent.left
+                    leftMargin: VPNTheme.theme.windowMargin
                     right: parent.right
-                    leftMargin: VPNTheme.theme.windowMargin / 2
-                    rightMargin: VPNTheme.theme.windowMargin / 2
+                    rightMargin: VPNTheme.theme.windowMargin
                 }
 
                 VPNCollapsibleCard {
@@ -174,10 +174,15 @@ FocusScope {
                         textFormat: Text.StyledText
                         Layout.fillWidth: true
                     }
-                    Layout.alignment: Qt.AlignHCenter
-                    Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin
+                }
+
+                Repeater {
+                    id: countriesRepeater
+                    model: VPNServerCountryModel
+                    delegate: VPNServerCountry {}
                 }
             }
+
         }
     }
 
