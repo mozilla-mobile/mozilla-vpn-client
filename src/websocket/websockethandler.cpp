@@ -163,6 +163,19 @@ void WebSocketHandler::onConnected() {
  * No-op in case the connection is already closed.
  */
 void WebSocketHandler::close() {
+  // If there is an attempt to close the websocket when it is not connected,
+  // QAbstractSocket may throw a write error before even attempting to close the
+  // underlying socket (see:
+  // https://code.woboq.org/qt5/qtwebsockets/src/websockets/qwebsocket_p.cpp.html#357).
+  // The error then triggers the onError handler, which attempts to close again
+  // causing an infinite loop. This checks prevent that.
+  if (m_webSocket.state() == QAbstractSocket::ClosingState ||
+      m_webSocket.state() == QAbstractSocket::UnconnectedState) {
+    logger.debug() << "Attempted to close a WebSocket connection, but it's "
+                      "already closed.";
+    return;
+  }
+
   logger.debug() << "Closing WebSocket";
   m_webSocket.close();
 }
