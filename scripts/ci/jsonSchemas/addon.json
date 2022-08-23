@@ -30,9 +30,6 @@
     },
     "message": {
       "$ref": "message.json#"
-    },
-    "demo": {
-      "$ref": "demo.json#"
     }
   },
   "required": [ "id", "name", "api_version", "type" ]

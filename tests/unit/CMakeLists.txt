@@ -37,8 +37,6 @@ target_link_libraries(unit_tests PRIVATE glean lottie nebula translations)
 target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/addons/addon.cpp
     ${MVPN_SOURCE_DIR}/addons/addon.h
-    ${MVPN_SOURCE_DIR}/addons/addondemo.cpp
-    ${MVPN_SOURCE_DIR}/addons/addondemo.h
     ${MVPN_SOURCE_DIR}/addons/addonguide.cpp
     ${MVPN_SOURCE_DIR}/addons/addonguide.h
     ${MVPN_SOURCE_DIR}/addons/addoni18n.cpp
@@ -135,8 +133,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/models/featuremodel.h
     ${MVPN_SOURCE_DIR}/models/feedbackcategorymodel.cpp
     ${MVPN_SOURCE_DIR}/models/feedbackcategorymodel.h
-    ${MVPN_SOURCE_DIR}/models/helpmodel.cpp
-    ${MVPN_SOURCE_DIR}/models/helpmodel.h
     ${MVPN_SOURCE_DIR}/models/keys.cpp
     ${MVPN_SOURCE_DIR}/models/keys.h
     ${MVPN_SOURCE_DIR}/models/licensemodel.cpp

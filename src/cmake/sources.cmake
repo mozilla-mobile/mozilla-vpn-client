@@ -10,8 +10,6 @@ target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 target_sources(mozillavpn PRIVATE
     addons/addon.cpp
     addons/addon.h
-    addons/addondemo.cpp
-    addons/addondemo.h
     addons/addonguide.cpp
     addons/addonguide.h
     addons/addoni18n.cpp
@@ -70,8 +68,6 @@ target_sources(mozillavpn PRIVATE
     captiveportal/captiveportalrequest.h
     captiveportal/captiveportalrequesttask.cpp
     captiveportal/captiveportalrequesttask.h
-    closeeventhandler.cpp
-    closeeventhandler.h
     collator.cpp
     collator.h
     command.cpp
@@ -140,6 +136,8 @@ target_sources(mozillavpn PRIVATE
     filterproxymodel.h
     fontloader.cpp
     fontloader.h
+    frontend/navigator.cpp
+    frontend/navigator.h
     hacl-star/Hacl_Chacha20.c
     hacl-star/Hacl_Chacha20Poly1305_32.c
     hacl-star/Hacl_Curve25519_51.c
@@ -191,8 +189,6 @@ target_sources(mozillavpn PRIVATE
     models/featuremodel.h
     models/feedbackcategorymodel.cpp
     models/feedbackcategorymodel.h
-    models/helpmodel.cpp
-    models/helpmodel.h
     models/keys.cpp
     models/keys.h
     models/licensemodel.cpp

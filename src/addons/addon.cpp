@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addon.h"
-#include "addondemo.h"
 #include "addonguide.h"
 #include "addoni18n.h"
 #include "addonmessage.h"
@@ -307,11 +306,7 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
 
   Addon* addon = nullptr;
 
-  if (!Constants::inProduction() && type == "demo") {
-    addon = AddonDemo::create(parent, manifestFileName, id, name, obj);
-  }
-
-  else if (type == "i18n") {
+  if (type == "i18n") {
     addon = new AddonI18n(parent, manifestFileName, id, name);
   }
 

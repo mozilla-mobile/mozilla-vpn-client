@@ -28,8 +28,6 @@ target_link_libraries(qml_tests PRIVATE glean lottie nebula translations)
 
 # VPN Client source files
 target_sources(qml_tests PRIVATE
-    ${MVPN_SOURCE_DIR}/closeeventhandler.cpp
-    ${MVPN_SOURCE_DIR}/closeeventhandler.h
     ${MVPN_SOURCE_DIR}/constants.h
     ${MVPN_SOURCE_DIR}/controller.h
     ${MVPN_SOURCE_DIR}/externalophandler.cpp

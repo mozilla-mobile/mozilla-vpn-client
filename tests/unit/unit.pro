@@ -44,7 +44,6 @@ RESOURCES ~= 's/.*servers.qrc//g'
 
 HEADERS += \
     ../../src/addons/addon.h \
-    ../../src/addons/addondemo.h \
     ../../src/addons/addonguide.h \
     ../../src/addons/addoni18n.h \
     ../../src/addons/addonmessage.h \
@@ -92,7 +91,6 @@ HEADERS += \
     ../../src/models/feature.h \
     ../../src/models/featuremodel.h \
     ../../src/models/feedbackcategorymodel.h \
-    ../../src/models/helpmodel.h \
     ../../src/models/keys.h \
     ../../src/models/licensemodel.h \
     ../../src/models/server.h \
@@ -177,7 +175,6 @@ HEADERS += \
 
 SOURCES += \
     ../../src/addons/addon.cpp \
-    ../../src/addons/addondemo.cpp \
     ../../src/addons/addonguide.cpp \
     ../../src/addons/addoni18n.cpp \
     ../../src/addons/addonmessage.cpp \
@@ -227,7 +224,6 @@ SOURCES += \
     ../../src/models/feature.cpp \
     ../../src/models/featuremodel.cpp \
     ../../src/models/feedbackcategorymodel.cpp \
-    ../../src/models/helpmodel.cpp \
     ../../src/models/keys.cpp \
     ../../src/models/licensemodel.cpp \
     ../../src/models/server.cpp \

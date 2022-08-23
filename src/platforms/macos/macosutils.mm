@@ -4,7 +4,6 @@
 
 #include "macosutils.h"
 #include "logger.h"
-#include "models/helpmodel.h"
 #include "qmlengineholder.h"
 
 #include <objc/message.h>
