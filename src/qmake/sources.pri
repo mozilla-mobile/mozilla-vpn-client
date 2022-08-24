@@ -4,6 +4,7 @@
 
 SOURCES += \
         addons/addon.cpp \
+        addons/addonapi.cpp \
         addons/addonguide.cpp \
         addons/addoni18n.cpp \
         addons/addonmessage.cpp \
@@ -12,6 +13,7 @@ SOURCES += \
         addons/addontutorial.cpp \
         addons/conditionwatchers/addonconditionwatcher.cpp \
         addons/conditionwatchers/addonconditionwatchergroup.cpp \
+        addons/conditionwatchers/addonconditionwatcherjavascript.cpp \
         addons/conditionwatchers/addonconditionwatcherlocales.cpp \
         addons/conditionwatchers/addonconditionwatchertimeend.cpp \
         addons/conditionwatchers/addonconditionwatchertimestart.cpp \
@@ -169,6 +171,7 @@ SOURCES += \
 
 HEADERS += \
         addons/addon.h \
+        addons/addonapi.h \
         addons/addonguide.h \
         addons/addoni18n.h \
         addons/addonmessage.h \
@@ -177,6 +180,7 @@ HEADERS += \
         addons/addontutorial.h \
         addons/conditionwatchers/addonconditionwatcher.h \
         addons/conditionwatchers/addonconditionwatchergroup.h \
+        addons/conditionwatchers/addonconditionwatcherjavascript.h \
         addons/conditionwatchers/addonconditionwatcherlocales.h \
         addons/conditionwatchers/addonconditionwatchertimeend.h \
         addons/conditionwatchers/addonconditionwatchertimestart.h \

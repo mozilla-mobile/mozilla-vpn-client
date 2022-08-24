@@ -37,6 +37,9 @@ target_link_libraries(unit_tests PRIVATE glean lottie nebula translations)
 target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/addons/addon.cpp
     ${MVPN_SOURCE_DIR}/addons/addon.h
+    ${MVPN_SOURCE_DIR}/addons/addonapi.cpp
+    ${MVPN_SOURCE_DIR}/addons/addonapi.h
+    ${MVPN_SOURCE_DIR}/addons/addonguide.cpp
     ${MVPN_SOURCE_DIR}/addons/addonguide.cpp
     ${MVPN_SOURCE_DIR}/addons/addonguide.h
     ${MVPN_SOURCE_DIR}/addons/addoni18n.cpp
@@ -53,6 +56,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcher.h
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchergroup.cpp
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchergroup.h
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherjavascript.cpp
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherjavascript.h
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherlocales.cpp
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherlocales.h
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertimeend.cpp
@@ -316,6 +321,7 @@ target_sources(auth_tests PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 # Unit test mock resources
 target_sources(unit_tests PRIVATE
+    addons/addons.qrc
     guides/guides.qrc
     servers/servers.qrc
     themes/themes.qrc

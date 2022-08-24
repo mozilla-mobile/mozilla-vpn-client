@@ -11,6 +11,7 @@
 #include "../../src/addons/addontutorial.h"
 #include "../../src/addons/conditionwatchers/addonconditionwatchergroup.h"
 #include "../../src/addons/conditionwatchers/addonconditionwatcherlocales.h"
+#include "../../src/addons/conditionwatchers/addonconditionwatcherjavascript.h"
 #include "../../src/addons/conditionwatchers/addonconditionwatchertimeend.h"
 #include "../../src/addons/conditionwatchers/addonconditionwatchertimestart.h"
 #include "../../src/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h"
@@ -207,6 +208,78 @@ void TestAddon::conditions() {
   }
 
   QCOMPARE(Addon::evaluateConditions(conditions), result);
+}
+
+void TestAddon::conditionWatcher_javascript() {
+  MozillaVPN vpn;
+  SettingsHolder settingsHolder;
+
+  QQmlApplicationEngine engine;
+  QmlEngineHolder qml(&engine);
+
+  qmlRegisterSingletonType<MozillaVPN>(
+      "Mozilla.VPN", 1, 0, "VPNSettings",
+      [](QQmlEngine*, QJSEngine*) -> QObject* {
+        QObject* obj = SettingsHolder::instance();
+        QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+        return obj;
+      });
+
+  QObject parent;
+
+  QJsonObject content;
+  content["id"] = "foo";
+  content["blocks"] = QJsonArray();
+
+  QJsonObject obj;
+  obj["message"] = content;
+
+  Addon* message = AddonMessage::create(&parent, "foo", "bar", "name", obj);
+
+  QVERIFY(!AddonConditionWatcherJavascript::maybeCreate(message, QString()));
+  QVERIFY(!AddonConditionWatcherJavascript::maybeCreate(message, "foo"));
+  QVERIFY(!AddonConditionWatcherJavascript::maybeCreate(
+      message, ":/addons_test/condition1.js"));
+
+  {
+    AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
+        message, ":/addons_test/condition2.js");
+    QVERIFY(!!a);
+    QVERIFY(!a->conditionApplied());
+  }
+
+  {
+    AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
+        message, ":/addons_test/condition3.js");
+    QVERIFY(!!a);
+    QVERIFY(a->conditionApplied());
+  }
+
+  {
+    AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
+        message, ":/addons_test/condition4.js");
+    QVERIFY(!!a);
+    QVERIFY(!a->conditionApplied());
+
+    QEventLoop loop;
+    bool currentStatus = false;
+    connect(a, &AddonConditionWatcher::conditionChanged, [&](bool status) {
+      currentStatus = status;
+      loop.exit();
+    });
+    loop.exec();
+    QVERIFY(currentStatus);
+  }
+
+  {
+    AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
+        message, ":/addons_test/condition5.js");
+    QVERIFY(!!a);
+    QVERIFY(!a->conditionApplied());
+
+    settingsHolder.setStartAtBoot(true);
+    QVERIFY(a->conditionApplied());
+  }
 }
 
 void TestAddon::conditionWatcher_locale() {

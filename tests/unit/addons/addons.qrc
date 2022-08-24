@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/addons_test">
+        <file>condition1.js</file>
+        <file>condition2.js</file>
+        <file>condition3.js</file>
+        <file>condition4.js</file>
+        <file>condition5.js</file>
+    </qresource>
+</RCC>
+

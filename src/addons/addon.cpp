@@ -8,6 +8,7 @@
 #include "addonmessage.h"
 #include "addontutorial.h"
 #include "conditionwatchers/addonconditionwatchergroup.h"
+#include "conditionwatchers/addonconditionwatcherjavascript.h"
 #include "conditionwatchers/addonconditionwatcherlocales.h"
 #include "conditionwatchers/addonconditionwatchertriggertimesecs.h"
 #include "conditionwatchers/addonconditionwatchertimestart.h"
@@ -41,7 +42,7 @@ bool evaluateConditionsSettingsOp(const QString& op, bool result) {
 struct ConditionCallback {
   QString m_key;
   std::function<bool(const QJsonValue&)> m_staticCallback;
-  std::function<AddonConditionWatcher*(QObject*, const QJsonValue&)>
+  std::function<AddonConditionWatcher*(Addon*, const QJsonValue&)>
       m_dynamicCallback;
 };
 
@@ -209,13 +210,13 @@ QList<ConditionCallback> s_conditionCallbacks{
        // dynamic condition
        return true;
      },
-     [](QObject* parent, const QJsonValue& value) -> AddonConditionWatcher* {
+     [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
        QStringList locales;
        for (const QJsonValue& v : value.toArray()) {
          locales.append(v.toString().toLower());
        }
 
-       return AddonConditionWatcherLocales::maybeCreate(parent, locales);
+       return AddonConditionWatcherLocales::maybeCreate(addon, locales);
      }},
 
     {"trigger_time",
@@ -223,9 +224,9 @@ QList<ConditionCallback> s_conditionCallbacks{
        // dynamic condition
        return true;
      },
-     [](QObject* parent, const QJsonValue& value) -> AddonConditionWatcher* {
+     [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
        return AddonConditionWatcherTriggerTimeSecs::maybeCreate(
-           parent, value.toInteger());
+           addon, value.toInteger());
      }},
 
     {"start_time",
@@ -233,8 +234,8 @@ QList<ConditionCallback> s_conditionCallbacks{
        // dynamic condition
        return true;
      },
-     [](QObject* parent, const QJsonValue& value) -> AddonConditionWatcher* {
-       return new AddonConditionWatcherTimeStart(parent, value.toInteger());
+     [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
+       return new AddonConditionWatcherTimeStart(addon, value.toInteger());
      }},
 
     {"end_time",
@@ -242,8 +243,18 @@ QList<ConditionCallback> s_conditionCallbacks{
        // dynamic condition
        return true;
      },
-     [](QObject* parent, const QJsonValue& value) -> AddonConditionWatcher* {
-       return new AddonConditionWatcherTimeEnd(parent, value.toInteger());
+     [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
+       return new AddonConditionWatcherTimeEnd(addon, value.toInteger());
+     }},
+
+    {"javascript",
+     [](const QJsonValue&) -> bool {
+       // dynamic condition
+       return true;
+     },
+     [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
+       return AddonConditionWatcherJavascript::maybeCreate(addon,
+                                                           value.toString());
      }},
 };
 

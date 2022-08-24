@@ -10,6 +10,8 @@ target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 target_sources(mozillavpn PRIVATE
     addons/addon.cpp
     addons/addon.h
+    addons/addonapi.cpp
+    addons/addonapi.h
     addons/addonguide.cpp
     addons/addonguide.h
     addons/addoni18n.cpp
@@ -26,6 +28,8 @@ target_sources(mozillavpn PRIVATE
     addons/conditionwatchers/addonconditionwatcher.h
     addons/conditionwatchers/addonconditionwatchergroup.cpp
     addons/conditionwatchers/addonconditionwatchergroup.h
+    addons/conditionwatchers/addonconditionwatcherjavascript.cpp
+    addons/conditionwatchers/addonconditionwatcherjavascript.h
     addons/conditionwatchers/addonconditionwatcherlocales.cpp
     addons/conditionwatchers/addonconditionwatcherlocales.h
     addons/conditionwatchers/addonconditionwatchertimeend.cpp
