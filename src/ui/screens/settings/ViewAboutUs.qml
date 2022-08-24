@@ -219,7 +219,7 @@ VPNViewBase {
                 id: popupBtn
                 text: VPNl18n.UpdateButtonActionOnUpdate
                 onClicked: {
-                   if (updateAvailable) {
+                   if (updatePopup.updateAvailable) {
                        VPN.update()
                    }
                     updatePopup.close()
