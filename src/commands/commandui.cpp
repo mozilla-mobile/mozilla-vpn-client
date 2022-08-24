@@ -3,14 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "commandui.h"
-#include "addonmanager.h"
+#include "addons/manager/addonmanager.h"
 #include "apppermission.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "captiveportal/captiveportaldetection.h"
-#include "closeeventhandler.h"
 #include "commandlineparser.h"
 #include "constants.h"
 #include "fontloader.h"
+#include "frontend/navigator.h"
 #include "iaphandler.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
@@ -285,6 +285,7 @@ int CommandUI::run(QStringList& tokens) {
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
+
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNCaptivePortal",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
@@ -337,14 +338,6 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNSupportCategoryModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance()->supportCategoryModel();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNHelpModel",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->helpModel();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -463,9 +456,9 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNCloseEventHandler",
+        "Mozilla.VPN", 1, 0, "VPNNavigator",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->closeEventHandler();
+          QObject* obj = Navigator::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

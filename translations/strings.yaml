@@ -303,6 +303,7 @@ systray:
     comment: Location in the systray. %1 is the country, %2 is the city.
   disconnect: Disconnect
   help: Help
+  getHelp: Get Help
   preferences: Preferences…
   quit: Quit Mozilla VPN
 
@@ -677,6 +678,9 @@ tutorialPopup:
   tutorialLeaveSubtitle: Looks like you haven’t finished the tutorial quite yet. Would you like to continue and finish now or quit and come back later?
   tutorialLeavePrimaryButtonLabel: Resume tutorial
 
+inAppMessaging:
+  dateTimeYesterday: Yesterday
+
 global:
   expand:
     value: Expand
@@ -694,3 +698,8 @@ global:
     value: Go back
     comment: Label for button used in intro modals to return to the app.
 
+getHelp:
+  helpCenter: Help Center
+  viewLogs:
+    value: View Logs
+    comment: Label for a clickable item in the Get-Help view

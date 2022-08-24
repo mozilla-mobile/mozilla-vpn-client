@@ -4,8 +4,6 @@
 
 #include "macosutils.h"
 #include "logger.h"
-#include "models/helpmodel.h"
-#include "mozillavpn.h"
 #include "qmlengineholder.h"
 
 #include <objc/message.h>

@@ -273,17 +273,17 @@ Item {
 
         function onTooltipNeeded(text, targetEl) {
             root.targetElement = targetEl;
-            tutorialTooltip.tooltipText = qsTrId(text);
+            tutorialTooltip.tooltipText = text.value;
             tutorialTooltip.open();
         }
 
-        function onTutorialCompleted(tutorialCompletedStringId) {
+        function onTutorialCompleted(tutorial) {
             tutorialPopup.imageSrc = "qrc:/ui/resources/logo-success.svg";
             tutorialPopup.primaryButtonOnClicked = () => openTipsAndTricks();
             tutorialPopup.primaryButtonText = VPNl18n.TutorialPopupTutorialCompletePrimaryButtonLabel;
             tutorialPopup.secondaryButtonOnClicked = () => tutorialPopup.close();
             tutorialPopup.title =  VPNl18n.TutorialPopupTutorialCompleteHeadline;
-            tutorialPopup.description = qsTrId(tutorialCompletedStringId);
+            tutorialPopup.description = tutorial.completionMessage;
             tutorialPopup._onClosed = () => {};
             tutorialPopup.dismissOnStop = false;
             tutorialPopup.open();

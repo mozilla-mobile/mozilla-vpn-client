@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addon.h"
-#include "addondemo.h"
 #include "addonguide.h"
 #include "addoni18n.h"
 #include "addonmessage.h"
@@ -11,6 +10,8 @@
 #include "conditionwatchers/addonconditionwatchergroup.h"
 #include "conditionwatchers/addonconditionwatcherlocales.h"
 #include "conditionwatchers/addonconditionwatchertriggertimesecs.h"
+#include "conditionwatchers/addonconditionwatchertimestart.h"
+#include "conditionwatchers/addonconditionwatchertimeend.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
@@ -226,6 +227,24 @@ QList<ConditionCallback> s_conditionCallbacks{
        return AddonConditionWatcherTriggerTimeSecs::maybeCreate(
            parent, value.toInteger());
      }},
+
+    {"start_time",
+     [](const QJsonValue&) -> bool {
+       // dynamic condition
+       return true;
+     },
+     [](QObject* parent, const QJsonValue& value) -> AddonConditionWatcher* {
+       return new AddonConditionWatcherTimeStart(parent, value.toInteger());
+     }},
+
+    {"end_time",
+     [](const QJsonValue&) -> bool {
+       // dynamic condition
+       return true;
+     },
+     [](QObject* parent, const QJsonValue& value) -> AddonConditionWatcher* {
+       return new AddonConditionWatcherTimeEnd(parent, value.toInteger());
+     }},
 };
 
 }  // namespace
@@ -287,11 +306,7 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
 
   Addon* addon = nullptr;
 
-  if (!Constants::inProduction() && type == "demo") {
-    addon = AddonDemo::create(parent, manifestFileName, id, name, obj);
-  }
-
-  else if (type == "i18n") {
+  if (type == "i18n") {
     addon = new AddonI18n(parent, manifestFileName, id, name);
   }
 
@@ -356,6 +371,8 @@ void Addon::retranslate() {
           QFileInfo(m_manifestFileName).dir().filePath("i18n"))) {
     logger.error() << "Loading the locale failed. - code:" << code;
   }
+
+  emit retranslationCompleted();
 }
 
 void Addon::maybeCreateConditionWatchers(const QJsonObject& conditions) {

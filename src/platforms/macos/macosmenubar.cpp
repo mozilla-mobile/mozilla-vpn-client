@@ -4,6 +4,8 @@
 
 #include "macosmenubar.h"
 #include "externalophandler.h"
+#include "frontend/navigator.h"
+#include "l18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -101,9 +103,10 @@ void MacOSMenuBar::retranslate() {
     m_helpMenu->removeAction(action);
   }
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  vpn->helpModel()->forEach([&](const char* nameId, int id) {
-    m_helpMenu->addAction(qtTrId(nameId),
-                          [help = vpn->helpModel(), id]() { help->open(id); });
+  L18nStrings* l18nStrings = L18nStrings::instance();
+  Q_ASSERT(l18nStrings);
+
+  m_helpMenu->addAction(l18nStrings->t(L18nStrings::SystrayGetHelp), []() {
+    Navigator::instance()->requestScreen(Navigator::ScreenGetHelp);
   });
 }

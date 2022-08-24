@@ -23,6 +23,10 @@ bool verify_rsa(const char* publicKey, size_t pubKeyLen, const char* message,
 // static
 bool Signature::verify(const QByteArray& publicKey, const QByteArray& content,
                        const QByteArray& signature) {
+  if (signature.isEmpty()) {
+    return false;
+  }
+
 #if defined(MVPN_SIGNATURE)
   return verify_rsa(publicKey.constData(), publicKey.length(),
                     content.constData(), content.length(),

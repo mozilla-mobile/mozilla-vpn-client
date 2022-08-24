@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozillavpn.h"
-#include "addonmanager.h"
+#include "addons/manager/addonmanager.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "constants.h"
 #include "dnshelper.h"
+#include "frontend/navigator.h"
 #include "iaphandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -973,7 +974,6 @@ void MozillaVPN::reset(bool forceInitialState) {
   logger.debug() << "Cleaning up all";
 
   TaskScheduler::deleteTasks();
-  m_private->m_closeEventHandler.removeAllStackViews();
 
   SettingsHolder::instance()->clear();
   m_private->m_keys.forgetKeys();
@@ -1443,7 +1443,7 @@ void MozillaVPN::requestSettings() {
   logger.debug() << "Settings required";
 
   QmlEngineHolder::instance()->showWindow();
-  emit settingsNeeded();
+  Navigator::instance()->requestScreen(Navigator::ScreenSettings);
 }
 
 void MozillaVPN::requestAbout() {
@@ -1455,16 +1455,7 @@ void MozillaVPN::requestAbout() {
 
 void MozillaVPN::requestViewLogs() {
   logger.debug() << "View log requested";
-
-  QmlEngineHolder::instance()->showWindow();
   emit viewLogsNeeded();
-}
-
-void MozillaVPN::requestContactUs() {
-  logger.debug() << "Contact us view requested";
-
-  QmlEngineHolder::instance()->showWindow();
-  emit contactUsNeeded();
 }
 
 void MozillaVPN::activate() {

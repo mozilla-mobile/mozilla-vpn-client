@@ -1,4 +1,3 @@
-VPNAboutUs 0.1 VPNAboutUs.qml
 VPNAlert 0.1 VPNAlert.qml
 VPNAlerts 0.1 VPNAlerts.qml
 VPNAnimatedRings 0.1 VPNAnimatedRings.qml
@@ -26,14 +25,10 @@ VPNConnectionInfoItem 0.1 VPNConnectionInfoItem.qml
 VPNConnectionStability 0.1 VPNConnectionStability.qml
 VPNControllerNav 0.1 VPNControllerNav.qml
 VPNControllerView 0.1 VPNControllerView.qml
-VPNDeviceListItem 0.1 VPNDeviceListItem.qml
-VPNDevicesListHeader 0.1 VPNDevicesListHeader.qml
 VPNDropShadowWithStates 0.1 VPNDropShadowWithStates.qml
-VPNExpandableAppList 0.1 VPNExpandableAppList.qml
 VPNExternalLinkListItem 0.1 VPNExternalLinkListItem.qml
 VPNFeatureTour 0.1 VPNFeatureTour.qml
 VPNFeatureTourPopup 0.1 VPNFeatureTourPopup.qml
-VPNFeedbackRadioDelegate 0.1 VPNFeedbackRadioDelegate.qml
 VPNFlickable 0.1 VPNFlickable.qml
 VPNFocusBorder 0.1 VPNFocusBorder.qml
 VPNFocusOutline 0.1 VPNFocusOutline.qml
@@ -68,7 +63,7 @@ VPNPopupButton 0.1 VPNPopupButton.qml
 VPNRadioButtonLabel 0.1 VPNRadioButtonLabel.qml
 VPNRadioDelegate 0.1 VPNRadioDelegate.qml
 VPNRecentConnections 0.1 VPNRecentConnections.qml
-VPNRemoveDevicePopup 0.1 VPNRemoveDevicePopup.qml
+VPNScreenBase 0.1 VPNScreenBase.qml
 VPNSegmentedNavigation 0.1 VPNSegmentedNavigation.qml
 VPNSegmentedToggle 0.1 VPNSegmentedToggle.qml
 VPNSemiMonoLabel 0.1 VPNSemiMonoLabel.qml
@@ -96,4 +91,4 @@ VPNTutorialPopups 0.1 VPNTutorialPopups.qml
 VPNUIStates 0.1 VPNUIStates.qml
 VPNUserProfile 0.1 VPNUserProfile.qml
 VPNVerticalSpacer 0.1 VPNVerticalSpacer.qml
-VPNViewDNSSettings 0.1 VPNViewDNSSettings.qml
+VPNViewBase 0.1 VPNViewBase.qml

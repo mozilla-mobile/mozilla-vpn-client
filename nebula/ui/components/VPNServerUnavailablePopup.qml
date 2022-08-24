@@ -20,8 +20,9 @@ VPNSimplePopup {
         VPNButton {
             text: VPNl18n.ServerUnavailableModalButtonLabel
             onClicked: {
+                VPNNavigator.requestScreen(VPNNavigator.ScreenHome)
+                window.showServerList();
                 root.close();
-                window.goToServersView();
             }
         }]
 }
