@@ -1010,7 +1010,7 @@ void TestModels::serverCountryModelFromJson_data() {
       << QJsonDocument(obj).toJson() << true << 1
       << QVariant("serverCountryName") << QVariant("serverCountryCode")
       << QVariant(QList<QVariant>{
-             QStringList{"serverCityName", "serverCityName", "1"}});
+             QStringList{"serverCityName", "serverCityName", "4"}});
 
   cities.append(city);
   d.insert("cities", cities);
@@ -1020,7 +1020,7 @@ void TestModels::serverCountryModelFromJson_data() {
       << QJsonDocument(obj).toJson() << true << 2
       << QVariant("serverCountryName") << QVariant("serverCountryCode")
       << QVariant(QList<QVariant>{
-             QStringList{"serverCityName", "serverCityName", "1"}});
+             QStringList{"serverCityName", "serverCityName", "4"}});
 }
 
 void TestModels::serverCountryModelFromJson() {

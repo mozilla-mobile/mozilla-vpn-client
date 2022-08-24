@@ -121,6 +121,7 @@ bool Server::fromJson(const QJsonObject& obj) {
   m_socksName = socks5_name.toString();
   m_multihopPort = multihop_port.toInt();
   m_cooldownTimeout = 0;
+  m_latency = 0;
 
   return true;
 }
