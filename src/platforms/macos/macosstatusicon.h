@@ -13,14 +13,14 @@ class MacOSStatusIcon final : public QObject {
   Q_DISABLE_COPY_MOVE(MacOSStatusIcon)
 
  public:
-  MacOSStatusIcon(QObject* parent);
+  explicit MacOSStatusIcon(QObject* parent);
   ~MacOSStatusIcon();
 
  public:
-  void setIcon(QString iconUrl);
-  void setIndicatorColor(QColor indicatorColor);
+  void setIcon(const QString& iconUrl);
+  void setIndicatorColor(const QColor& indicatorColor);
   void setMenu(NSMenu* statusBarMenu);
-  void setToolTip(QString tooltip);
+  void setToolTip(const QString& tooltip);
 };
 
 #endif  // MACOSSTATUSICON_H

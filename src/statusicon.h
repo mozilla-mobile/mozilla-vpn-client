@@ -42,14 +42,14 @@ class StatusIcon final : public QObject {
   void activateAnimation();
   QIcon drawStatusIndicator(const QString& iconUrl) const;
   void setIcon(const QString& iconUrl, bool shouldDrawIndicator);
-  void setIndicatorColor(QColor color);
+  void setIndicatorColor(const QColor& color);
 
  private:
   QString m_iconUrl;
   QIcon m_icon;
-  QColor m_indicatorColor = QColor();
+  QColor m_indicatorColor;
 
-  // Animated icon
+  // Animated icon.
   QTimer m_animatedIconTimer;
   uint8_t m_animatedIconIndex = 0;
 };

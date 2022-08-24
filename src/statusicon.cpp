@@ -17,6 +17,10 @@
 namespace {
 Logger logger(LOG_MAIN, "StatusIcon");
 
+constexpr const QColor GREEN_COLOR = QColor(63, 225, 176, 255);
+constexpr const QColor ORANGE_COLOR = QColor(255, 164, 54, 255);
+constexpr const QColor RED_COLOR = QColor(226, 40, 80, 255);
+
 #if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
 constexpr const std::array<const char*, 4> ANIMATED_LOGO_STEPS = {
     ":/ui/resources/logo-animated1.png", ":/ui/resources/logo-animated2.png",
@@ -74,13 +78,13 @@ void StatusIcon::stabilityChanged() {
 
   switch (MozillaVPN::instance()->connectionHealth()->stability()) {
     case ConnectionHealth::Stable:
-      setIndicatorColor(QColor(63, 225, 176, 255));  // green
+      setIndicatorColor(GREEN_COLOR);
       break;
     case ConnectionHealth::Unstable:
-      setIndicatorColor(QColor(255, 164, 54, 255));  // orange
+      setIndicatorColor(ORANGE_COLOR);
       break;
     case ConnectionHealth::NoSignal:
-      setIndicatorColor(QColor(226, 40, 80, 255));  // red
+      setIndicatorColor(RED_COLOR);
       break;
     default:
       logger.error() << "Unhandled status indicator for connection stability";
@@ -161,7 +165,7 @@ QIcon StatusIcon::drawStatusIndicator(const QString& iconUrl) const {
   return QIcon(iconPixmap);
 }
 
-void StatusIcon::setIndicatorColor(QColor color) {
+void StatusIcon::setIndicatorColor(const QColor& color) {
   logger.debug() << "Set indicator color";
 
   m_indicatorColor = color;

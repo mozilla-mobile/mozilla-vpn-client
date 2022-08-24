@@ -19,6 +19,18 @@ Logger logger(LOG_MACOS, "MacOSUtils");
 }
 
 // static
+NSString* MacOSUtils::appId() {
+  NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
+  if (!appId) {
+    // Fallback. When an unsigned/un-notarized app is executed in
+    // command-line mode, it could fail the fetching of its own bundle id.
+    appId = @"org.mozilla.macos.FirefoxVPN";
+  }
+
+  return appId;
+}
+
+// static
 QString MacOSUtils::computerName() {
   NSString* name = [[NSHost currentHost] localizedName];
   return QString::fromNSString(name);
@@ -190,15 +202,3 @@ void MacOSUtils::patchNSStatusBarSetImageForBigSur() {
   [self setImagePatched:img];
 }
 @end
-
-// static
-NSString* MacOSUtils::appId() {
-  NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
-  if (!appId) {
-    // Fallback. When an unsigned/un-notarized app is executed in
-    // command-line mode, it could fail the fetching of its own bundle id.
-    appId = @"org.mozilla.macos.FirefoxVPN";
-  }
-
-  return appId;
-}

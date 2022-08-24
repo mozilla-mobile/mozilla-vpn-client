@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macossystemtraynotificationhandler.h"
-#include "platforms/macos/macosutils.h"
+#include "macosutils.h"
 
 #include "leakdetector.h"
 #include "logger.h"
@@ -29,16 +29,6 @@ MacosSystemTrayNotificationHandler::MacosSystemTrayNotificationHandler(
 
 MacosSystemTrayNotificationHandler::~MacosSystemTrayNotificationHandler() {
   MVPN_COUNT_DTOR(MacosSystemTrayNotificationHandler);
-}
-
-void MacosSystemTrayNotificationHandler::notify(
-    NotificationHandler::Message type, const QString& title,
-    const QString& message, int timerMsec) {
-  logger.debug() << "Notify";
-  Q_UNUSED(type);
-
-  QIcon icon(Constants::LOGO_URL);
-  m_systemTrayIcon.showMessage(title, message, icon, timerMsec);
 }
 
 void MacosSystemTrayNotificationHandler::setStatusMenu() {

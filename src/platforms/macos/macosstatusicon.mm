@@ -57,6 +57,7 @@
   [image setTemplate:true];
 
   [self.statusItem.button setImage:image];
+  [image release];
 }
 
 /**
@@ -67,12 +68,14 @@
   float dotSize = viewHeight * 0.35;
   float dotOrigin = (viewHeight - dotSize) * 0.8;
 
-  self.statusIndicator = [[NSView alloc]
+  NSView* dot = [[NSView alloc]
       initWithFrame:NSMakeRect(dotOrigin, dotOrigin, dotSize, dotSize)];
+  self.statusIndicator = dot;
   self.statusIndicator.wantsLayer = true;
   self.statusIndicator.layer.cornerRadius = dotSize * 0.5;
 
   [self.statusItem.button addSubview:self.statusIndicator];
+  [dot release];
 }
 
 /**
@@ -81,7 +84,9 @@
  * @param color The indicator background color.
  */
 - (void)setIndicatorColor:(NSColor*)color {
-  self.statusIndicator.layer.backgroundColor = color.CGColor;
+  if (self.statusIndicator) {
+    self.statusIndicator.layer.backgroundColor = color.CGColor;
+  }
 }
 
 /**
@@ -112,25 +117,23 @@ MacOSStatusIconDelegate* m_statusBarIcon = nullptr;
 MacOSStatusIcon::MacOSStatusIcon(QObject* parent) : QObject(parent) {
   MVPN_COUNT_CTOR(MacOSStatusIcon);
 
-  if (m_statusBarIcon) {
-    logger.debug() << "Delegate already registered";
-    return;
-  }
+  logger.debug() << "Register delegate";
+  Q_ASSERT(!m_statusBarIcon);
 
-  logger.debug() << "Registering delegate";
   m_statusBarIcon = [[MacOSStatusIconDelegate alloc] init];
 }
 
 MacOSStatusIcon::~MacOSStatusIcon() {
   MVPN_COUNT_DTOR(MacOSStatusIcon);
 
-  if (m_statusBarIcon) {
-    [static_cast<MacOSStatusIconDelegate*>(m_statusBarIcon) dealloc];
-    m_statusBarIcon = nullptr;
-  }
+  logger.debug() << "Remove delegate";
+  Q_ASSERT(m_statusBarIcon);
+
+  [static_cast<MacOSStatusIconDelegate*>(m_statusBarIcon) dealloc];
+  m_statusBarIcon = nullptr;
 }
 
-void MacOSStatusIcon::setIcon(QString iconPath) {
+void MacOSStatusIcon::setIcon(const QString& iconPath) {
   logger.debug() << "Set icon" << iconPath;
 
   QResource imageResource = QResource(iconPath);
@@ -140,7 +143,7 @@ void MacOSStatusIcon::setIcon(QString iconPath) {
 }
 
 void MacOSStatusIcon::setIndicatorColor(
-    QColor indicatorColor) {
+    const QColor& indicatorColor) {
   logger.debug() << "Set indicator color";
 
   if (!indicatorColor.isValid()) {
@@ -161,7 +164,7 @@ void MacOSStatusIcon::setMenu(NSMenu* statusBarMenu) {
   [m_statusBarIcon setMenu:statusBarMenu];
 }
 
-void MacOSStatusIcon::setToolTip(QString tooltip) {
+void MacOSStatusIcon::setToolTip(const QString& tooltip) {
   logger.debug() << "Set tooltip";
   [m_statusBarIcon setToolTip:tooltip.toNSString()];
 }

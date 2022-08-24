@@ -20,9 +20,6 @@ class MacosSystemTrayNotificationHandler
   void updateIconIndicator();
 
  protected:
-  virtual void notify(Message type, const QString& title,
-                      const QString& message, int timerMsec) override;
-
   virtual void showHideWindow() override;
 
   virtual void setStatusMenu() override;
