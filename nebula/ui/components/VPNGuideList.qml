@@ -11,14 +11,13 @@ import Mozilla.VPN.qmlcomponents 1.0
 import components 0.1
 
 GridLayout {
-    property int parentWidth
     property var customGuideFilter: () => true
     property var count: guideRepeater.count
 
     Layout.alignment: Qt.AlignTop
 
-    width: parentWidth
-    columns: parentWidth < VPNTheme.theme.tabletMinimumWidth ? 2 : 3
+    width: width
+    columns: width < VPNTheme.theme.tabletMinimumWidth ? 2 : 3
     columnSpacing: VPNTheme.theme.vSpacingSmall
     rowSpacing: VPNTheme.theme.vSpacingSmall
 

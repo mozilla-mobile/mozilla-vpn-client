@@ -10,147 +10,166 @@ import Mozilla.VPN 1.0
 import components 0.1
 import telemetry 0.30
 
-VPNTabNavigation {
-    property string _menuTitle: VPNl18n.TipsAndTricksSettingsEntryLabel
+VPNViewBase {
+    id: root
     objectName: "settingsTipsAndTricksPage"
 
-    tabList: ListModel {
-        id: tabButtonList
-        ListElement {
-            tabLabelStringId: "TipsAndTricksTabTitleAll"
-            tabButtonId: "tabAll"
-        }
-        ListElement {
-            tabLabelStringId:"TipsAndTricksTabTitleTutorials"
-            tabButtonId: "tabTutorials"
-        }
-        ListElement {
-            tabLabelStringId:"TipsAndTricksTabTitleTips"
-            tabButtonId: "tabTips"
-        }
-    }
+    _menuTitle: VPNl18n.TipsAndTricksSettingsEntryLabel
+    _interactive: false
 
-    stackContent: [
-        // All
-        VPNFlickable {
-            flickContentHeight: layoutAll.implicitHeight + (VPNTheme.theme.vSpacing * 2)
-            interactive: flickContentHeight > height
+    _viewContentData: VPNTabNavigation {
+        id: tabs
+        Layout.topMargin: -VPNTheme.theme.windowMargin
+        Layout.preferredHeight: root.height - VPNTheme.theme.menuHeight
+        Layout.preferredWidth: root.width
 
-            ObjectModel {
-                id: tipsAndTricksSections
-
-                Item { 
-                    property string title: VPNl18n.TipsAndTricksQuickTipsTitle
-                    property string description: VPNl18n.TipsAndTricksQuickTipsDescription
-                    property var filter: (addon) => !addon.advanced && !addon.highlighted
-                }
-
-                Item { 
-                    property string title: VPNl18n.TipsAndTricksAdvancedTipsTitle
-                    property string description: VPNl18n.TipsAndTricksAdvancedTipsDescription
-                    property var filter: (addon) => addon.advanced && !addon.highlighted
-                }
+        tabList: ListModel {
+            id: tabButtonList
+            ListElement {
+                tabLabelStringId: "TipsAndTricksTabTitleAll"
+                tabButtonId: "tabAll"
             }
+            ListElement {
+                tabLabelStringId:"TipsAndTricksTabTitleTutorials"
+                tabButtonId: "tabTutorials"
+            }
+            ListElement {
+                tabLabelStringId:"TipsAndTricksTabTitleTips"
+                tabButtonId: "tabTips"
+            }
+        }
 
-            ColumnLayout {
-                id: layoutAll
+        stackContent: [
+            // All
+            VPNFlickable {
+                flickContentHeight: layoutAll.implicitHeight + (VPNTheme.theme.vSpacing * 2)
+                interactive: flickContentHeight > height
 
-                anchors.fill: parent
-                anchors.topMargin: VPNTheme.theme.vSpacing
-                anchors.bottomMargin: VPNTheme.theme.vSpacing
-                anchors.leftMargin: VPNTheme.theme.windowMargin
-                anchors.rightMargin: VPNTheme.theme.windowMargin
+                ObjectModel {
+                    id: tipsAndTricksSections
 
-                VPNTutorialList {
-                    parentWidth: layoutAll.width
-                    customTutorialFilter: (addon) => addon.highlighted
+                    Item { 
+                        property string title: VPNl18n.TipsAndTricksQuickTipsTitle
+                        property string description: VPNl18n.TipsAndTricksQuickTipsDescription
+                        property var filter: (addon) => !addon.advanced && !addon.highlighted
+                    }
+
+                    Item { 
+                        property string title: VPNl18n.TipsAndTricksAdvancedTipsTitle
+                        property string description: VPNl18n.TipsAndTricksAdvancedTipsDescription
+                        property var filter: (addon) => addon.advanced && !addon.highlighted
+                    }
                 }
 
-                Repeater {
-                    model: tipsAndTricksSections.count
+                ColumnLayout {
+                    id: layoutAll
 
-                    Column {
-                        property var section: tipsAndTricksSections.get(index)
+                    anchors.fill: parent
+                    anchors.topMargin: VPNTheme.theme.vSpacing
+                    anchors.bottomMargin: VPNTheme.theme.vSpacing
+                    anchors.leftMargin: VPNTheme.theme.windowMargin
+                    anchors.rightMargin: VPNTheme.theme.windowMargin
+                    spacing: VPNTheme.theme.vSpacingSmall
 
-                        visible: guidesList.count || tutorialsList.count
+                    VPNTutorialList {
+                        customTutorialFilter: (addon) => addon.highlighted
+                    }
 
-                        Layout.alignment: Qt.AlignTop
-                        Layout.topMargin: 32
-                        spacing: VPNTheme.theme.vSpacingSmall
+                    VPNTutorialCard {
+                        objectName: "featureTourCard"
 
-                        VPNBoldLabel {
-                            text: section.title
+                        Layout.preferredHeight: VPNTheme.theme.tutorialCardHeight
+                        Layout.fillWidth: true
 
-                            Accessible.role: Accessible.StaticText
-                            Accessible.name: text
-                        }
+                        imageSrc: "qrc:/ui/resources/sparkling-check.svg"
+                        imageBgColor: "#2B2A33"
+                        title: VPNl18n.TipsAndTricksFeatureTourCardTitle
+                        description: VPNl18n.TipsAndTricksFeatureTourCardDescription
+                        onClicked: featureTourPopup.startTour();
+                    }
 
-                        VPNTextBlock {
-                            text: section.description
+                    Repeater {
+                        model: tipsAndTricksSections.count
 
-                            Accessible.role: Accessible.StaticText
-                            Accessible.name: text
-                        }
+                        Column {
+                            property var section: tipsAndTricksSections.get(index)
 
-                        VPNGuideList {
-                            id: guidesList
-                            parentWidth: layoutAll.width
-                            customGuideFilter: section.filter
-                        }
+                            visible: guidesList.count || tutorialsList.count
 
-                        VPNTutorialList {
-                            id: tutorialsList
-                            parentWidth: layoutAll.width
-                            customTutorialFilter: section.filter
-                            showVPNTour: false
+                            Layout.fillWidth: true
+                            Layout.alignment: Qt.AlignTop
+                            Layout.topMargin: 16
+                            spacing: VPNTheme.theme.vSpacingSmall
+
+                            VPNBoldLabel {
+                                text: section.title
+                                wrapMode: Text.WordWrap
+
+                                Accessible.role: Accessible.StaticText
+                                Accessible.name: text
+                            }
+
+                            VPNTextBlock {
+                                text: section.description
+                                wrapMode: Text.WordWrap
+
+                                Accessible.role: Accessible.StaticText
+                                Accessible.name: text
+                            }
+
+                            VPNGuideList {
+                                id: guidesList
+                                customGuideFilter: section.filter
+                            }
+
+                            VPNTutorialList {
+                                id: tutorialsList
+                                customTutorialFilter: section.filter
+                            }
                         }
                     }
                 }
-            }
-        },
+            },
 
-        // Tutorials
-        VPNFlickable {
-            flickContentHeight: layoutTutorial.implicitHeight + (VPNTheme.theme.vSpacing * 2)
-            interactive: flickContentHeight > height
+            // Tutorials
+            VPNFlickable {
+                flickContentHeight: layoutTutorial.implicitHeight + (VPNTheme.theme.vSpacing * 2)
+                interactive: flickContentHeight > height
 
-            ColumnLayout {
-                id: layoutTutorial
+                ColumnLayout {
+                    id: layoutTutorial
 
-                anchors.fill: parent
-                anchors.topMargin: VPNTheme.theme.vSpacing
-                anchors.bottomMargin: VPNTheme.theme.vSpacing
-                anchors.leftMargin: VPNTheme.theme.windowMargin
-                anchors.rightMargin: VPNTheme.theme.windowMargin
+                    anchors.fill: parent
+                    anchors.topMargin: VPNTheme.theme.vSpacing
+                    anchors.bottomMargin: VPNTheme.theme.vSpacing
+                    anchors.leftMargin: VPNTheme.theme.windowMargin
+                    anchors.rightMargin: VPNTheme.theme.windowMargin
 
-                VPNTutorialList {
-                    parentWidth: layoutTutorial.width
+                    VPNTutorialList { }
+                }
+            },
+
+            // Tips
+            VPNFlickable {
+                flickContentHeight: layoutGuide.implicitHeight + (VPNTheme.theme.vSpacing * 2)
+                interactive: flickContentHeight > height
+
+                ColumnLayout {
+                    id: layoutGuide
+
+                    anchors.fill: parent
+                    anchors.topMargin: VPNTheme.theme.vSpacing
+                    anchors.bottomMargin: VPNTheme.theme.vSpacing
+                    anchors.leftMargin: VPNTheme.theme.windowMargin
+                    anchors.rightMargin: VPNTheme.theme.windowMargin
+
+                    VPNGuideList { }
                 }
             }
-        },
+        ]
 
-        // Tips
-        VPNFlickable {
-            flickContentHeight: layoutGuide.implicitHeight + (VPNTheme.theme.vSpacing * 2)
-            interactive: flickContentHeight > height
-
-            ColumnLayout {
-                id: layoutGuide
-
-                anchors.fill: parent
-                anchors.topMargin: VPNTheme.theme.vSpacing
-                anchors.bottomMargin: VPNTheme.theme.vSpacing
-                anchors.leftMargin: VPNTheme.theme.windowMargin
-                anchors.rightMargin: VPNTheme.theme.windowMargin
-
-                VPNGuideList {
-                    parentWidth: layoutGuide.width
-                }
-            }
+        Component.onCompleted: {
+            Sample.tipsAndTricksViewOpened.record();
         }
-    ]
-
-    Component.onCompleted: {
-        Sample.tipsAndTricksViewOpened.record();
     }
 }
