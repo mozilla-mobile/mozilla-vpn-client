@@ -1,5 +1,9 @@
 # Mozilla VPN
 
+TODO: this needs a note in it somewhere about the required installation of Cmake. (May not be necessary if you use the installer version?)
+TODO document the `-d` flag to `apple_compile.sh` (see Lesley's slack comments)
+TODO does the command about running xcodebuild from command line actually work? It seems like you need to sign stuff.
+
 >_One tap to privacy
 Surf, stream, game, and get work done while maintaining your privacy online.
 Whether you’re traveling, using public WiFi, or simply looking for more online
@@ -54,8 +58,7 @@ In order to build this application, you need to install a few dependencies.
 
 Qt6 can be installed in a number of ways:
 
-- download a binary package or the installer from the official QT website:
-  https://www.qt.io/download - this is the recommended way for Android and iOS
+- download a binary package or the installer from the [official QT website]( https://www.qt.io/download) - this is the recommended way for Android and iOS
   builds.
 - use a package manager. For instance, we use
   [aqt](https://github.com/miurahr/aqtinstall) for WASM builds.
@@ -259,6 +262,8 @@ This step needs to be executed each time XCode updates.
 
 ### How to build from source code for iOS
 
+*Note*: These instructions assume that you have installed QT using the [official QT online installer](https://www.qt.io/download).
+
 1. On iOS, we compile the app using
 [XCode](https://developer.apple.com/xcode/) version 12 or higher.
 
@@ -267,39 +272,44 @@ extra components such as the wireguard, the browser bridge and so on. We patch
 the XCode project using [xcodeproj](https://github.com/CocoaPods/Xcodeproj). To
 install it:
 ```
-gem install xcodeproj # probably you want to run this command wityh `sudo`
+gem install xcodeproj  # probably you want to run this command with `sudo`
 ```
 
 3. You also need to install go >= v1.16. If you don't have it done already,
 download go from the [official website](https://golang.org/dl/).
 
-4. Copy `xcode.config.template` to `xcode.config`
+You may need to symlink the Go binary into a place where Xcode can find it.
+
 ```bash
-cp xcode.config.template xcode.config
+sudo ln -s /usr/local/go/bin/go /Applications/Xcode.app/Contents/Developer/usr/bin/go
 ```
 
-5. Modify the xcode.config to something like:
+4. Copy `xcode.xconfig.template` to `xcode.xconfig`
+```bash
+cp xcode.xconfig.template xcode.xconfig
 ```
-# MacOS configuration
+
+5. Modify the xcode.xconfig to something like:
+```
 APP_ID_MACOS = org.mozilla.macos.FirefoxVPN
 LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item
-
-# IOS configuration
 GROUP_ID_IOS = group.org.mozilla.ios.Guardian
 APP_ID_IOS = org.mozilla.ios.FirefoxVPN
 NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 ```
 
-6. Generate the XCode project using our script (and an optional adjust token):
+6. Generate the XCode project using our script.
+You will need to provide the path to the iOS binaries provided by QT using the `QT_IOS_BIN` environment variable.
+You can also pass an optional adjust token.
 ```bash
-./scripts/macos/apple_compile.sh ios [--adjust <adjust_token>]
+QT_IOS_BIN=<path/to/Qt>/<QtVersionNumber>/ios/bin ./scripts/macos/apple_compile.sh ios [--adjust <adjust_token>]
 ```
 
 7. Xcode should automatically open. You can then run/test/archive/ship the app.
 If you prefer to compile the appa in command-line mode, use the following
 command:
 ```bash
-xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project "Mozilla VPN.xcodeproj" 
+xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project "Mozilla VPN.xcodeproj"
 ```
 
 ### How to build from source code for Android
