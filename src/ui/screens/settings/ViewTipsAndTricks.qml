@@ -102,6 +102,9 @@ VPNViewBase {
                             spacing: VPNTheme.theme.vSpacingSmall
 
                             VPNBoldLabel {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                
                                 text: section.title
                                 wrapMode: Text.WordWrap
 
@@ -110,6 +113,9 @@ VPNViewBase {
                             }
 
                             VPNTextBlock {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+
                                 text: section.description
                                 wrapMode: Text.WordWrap
 
@@ -118,11 +124,17 @@ VPNViewBase {
                             }
 
                             VPNGuideList {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+
                                 id: guidesList
                                 customGuideFilter: section.filter
                             }
 
                             VPNTutorialList {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+
                                 id: tutorialsList
                                 customTutorialFilter: section.filter
                             }
