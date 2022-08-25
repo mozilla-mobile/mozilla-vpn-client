@@ -39,27 +39,27 @@ VPNViewBase {
             }
         }
 
+        ObjectModel {
+            id: tipsSections
+
+            Item { 
+                property string title: VPNl18n.TipsAndTricksQuickTipsTitle
+                property string description: VPNl18n.TipsAndTricksQuickTipsDescription
+                property var filter: (addon) => !addon.advanced && !addon.highlighted
+            }
+
+            Item { 
+                property string title: VPNl18n.TipsAndTricksAdvancedTipsTitle
+                property string description: VPNl18n.TipsAndTricksAdvancedTipsDescription
+                property var filter: (addon) => addon.advanced && !addon.highlighted
+            }
+        }
+
         stackContent: [
             // All
             VPNFlickable {
                 flickContentHeight: layoutAll.implicitHeight + (VPNTheme.theme.vSpacing * 2)
                 interactive: flickContentHeight > height
-
-                ObjectModel {
-                    id: tipsAndTricksSections
-
-                    Item { 
-                        property string title: VPNl18n.TipsAndTricksQuickTipsTitle
-                        property string description: VPNl18n.TipsAndTricksQuickTipsDescription
-                        property var filter: (addon) => !addon.advanced && !addon.highlighted
-                    }
-
-                    Item { 
-                        property string title: VPNl18n.TipsAndTricksAdvancedTipsTitle
-                        property string description: VPNl18n.TipsAndTricksAdvancedTipsDescription
-                        property var filter: (addon) => addon.advanced && !addon.highlighted
-                    }
-                }
 
                 ColumnLayout {
                     id: layoutAll
@@ -72,6 +72,8 @@ VPNViewBase {
                     spacing: VPNTheme.theme.vSpacingSmall
 
                     VPNTutorialList {
+                        Layout.fillWidth: true
+
                         customTutorialFilter: (addon) => addon.highlighted
                     }
 
@@ -89,45 +91,25 @@ VPNViewBase {
                     }
 
                     Repeater {
-                        model: tipsAndTricksSections.count
+                        model: tipsSections.count
 
                         Column {
-                            property var section: tipsAndTricksSections.get(index)
+                            property var section: tipsSections.get(index)
 
                             visible: guidesList.count || tutorialsList.count
 
                             Layout.fillWidth: true
                             Layout.alignment: Qt.AlignTop
-                            Layout.topMargin: 16
-                            spacing: VPNTheme.theme.vSpacingSmall
-
-                            VPNBoldLabel {
-                                anchors.left: parent.left
-                                anchors.right: parent.right
-                                
-                                text: section.title
-                                wrapMode: Text.WordWrap
-
-                                Accessible.role: Accessible.StaticText
-                                Accessible.name: text
-                            }
-
-                            VPNTextBlock {
-                                anchors.left: parent.left
-                                anchors.right: parent.right
-
-                                text: section.description
-                                wrapMode: Text.WordWrap
-
-                                Accessible.role: Accessible.StaticText
-                                Accessible.name: text
-                            }
+                            Layout.topMargin: VPNTheme.theme.vSpacingSmall
+                            spacing: VPNTheme.theme.vSpacing
 
                             VPNGuideList {
                                 anchors.left: parent.left
                                 anchors.right: parent.right
 
                                 id: guidesList
+                                title: section.title
+                                description: section.description
                                 customGuideFilter: section.filter
                             }
 
@@ -157,7 +139,9 @@ VPNViewBase {
                     anchors.leftMargin: VPNTheme.theme.windowMargin
                     anchors.rightMargin: VPNTheme.theme.windowMargin
 
-                    VPNTutorialList { }
+                    VPNTutorialList { 
+                        Layout.fillWidth: true
+                    }
                 }
             },
 
@@ -175,7 +159,28 @@ VPNViewBase {
                     anchors.leftMargin: VPNTheme.theme.windowMargin
                     anchors.rightMargin: VPNTheme.theme.windowMargin
 
-                    VPNGuideList { }
+                    Repeater {
+                        model: tipsSections.count
+
+                        Column {
+                            property var section: tipsSections.get(index)
+
+                            visible: !!guidesList.count
+
+                            Layout.fillWidth: true
+                            Layout.alignment: Qt.AlignTop
+
+                            VPNGuideList {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+
+                                id: guidesList
+                                title: section.title
+                                description: section.description
+                                customGuideFilter: section.filter
+                            }
+                        }
+                    }
                 }
             }
         ]
