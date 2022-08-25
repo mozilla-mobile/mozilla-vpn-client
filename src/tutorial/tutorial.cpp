@@ -113,7 +113,7 @@ bool Tutorial::maybeBlockRequest(ExternalOpHandler::Op op) {
 
   if (op != ExternalOpHandler::OpActivate &&
       op != ExternalOpHandler::OpDeactivate &&
-      op != ExternalOpHandler::OpCloseEvent &&
+      op != ExternalOpHandler::OpQuit &&
       op != ExternalOpHandler::OpNotificationClicked) {
     emit interruptRequest(op);
     return true;
