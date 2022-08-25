@@ -406,6 +406,12 @@ void Navigator::requestScreen(Navigator::Screen requestedScreen) {
   for (ScreenData* screen : screens) {
     if (screen->m_screen == requestedScreen) {
       maybeGenerateComponent(this, screen);
+
+      if (screen->m_qmlComponent == m_currentComponent) {
+        logger.debug() << "Already in the right screen";
+        return;
+      }
+
       loadScreen(screen->m_screen, screen->m_qmlComponent);
       return;
     }
