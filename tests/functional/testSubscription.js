@@ -122,7 +122,7 @@ describe('Subscription view', function() {
 
     await vpn.waitForElement('settingsButton');
     await vpn.clickOnElement('settingsButton');
-    await vpn.waitForElementProperty('screenLoader', 'status', 'Ready');
+    await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
 
     await vpn.waitForElement('settingsUserProfile');
     await vpn.waitForElementProperty('settingsUserProfile', 'visible', 'true');
@@ -144,7 +144,7 @@ describe('Subscription view', function() {
         'settingsUserProfile-manageAccountButton', 'visible', 'true');
     await vpn.clickOnElement('settingsUserProfile-manageAccountButton');
 
-    await vpn.waitForElementProperty('screenLoader', 'status', 'Ready');
+    await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
 
     await vpn.waitForElement('authSignIn-passwordInput');
     await vpn.waitForElementProperty(
@@ -201,7 +201,7 @@ describe('Subscription view', function() {
         'settingsUserProfile-manageAccountButton', 'visible', 'true');
     await vpn.clickOnElement('settingsUserProfile-manageAccountButton');
 
-    await vpn.waitForElementProperty('screenLoader', 'status', 'Ready');
+    await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
 
     await vpn.waitForElement('authSignIn-passwordInput');
     await vpn.waitForElementProperty(
@@ -945,7 +945,7 @@ describe('Subscription view', function() {
 
     await vpn.clickOnElement('accountDeletionButton');
 
-    await vpn.waitForElementProperty('screenLoader', 'status', 'Ready');
+    await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
 
     await vpn.waitForElement('authSignIn-passwordInput');
     await vpn.waitForElementProperty(
@@ -1144,7 +1144,7 @@ describe('Subscription view', function() {
 
     await vpn.clickOnElement('accountDeletionButton');
 
-    await vpn.waitForElementProperty('screenLoader', 'status', 'Ready');
+    await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
 
     await vpn.waitForElement('authSignIn-passwordInput');
     await vpn.waitForElementProperty(
