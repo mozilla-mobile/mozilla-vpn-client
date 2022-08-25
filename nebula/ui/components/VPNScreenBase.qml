@@ -14,6 +14,7 @@ import telemetry 0.30
 Item {
     property alias _menuOnBackClicked: menu._menuOnBackClicked
     property alias _menuIconButtonSource: menu._menuIconButtonSource
+    property alias _menuIconVisibility: menu._menuIconVisibility
     property var _onStackCompleted: () => {}
 
     Rectangle {
@@ -27,6 +28,7 @@ Item {
         _menuIconButtonSource: stackview.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
         _iconButtonAccessibleName: stackview.depth === 1 ? qsTrId("vpn.connectionInfo.close") : qsTrId("vpn.main.back")
         _menuOnBackClicked: () => maybeRequestPreviousScreen()
+
 
         title: ""
         visible: false

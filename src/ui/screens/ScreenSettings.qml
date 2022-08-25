@@ -11,6 +11,7 @@ import components 0.1
 
 VPNScreenBase {
     objectName: "settings"
+    _menuIconVisibility: getStack().depth > 1
 
     Component.onCompleted: () => {
         VPNNavigator.addStackView(VPNNavigator.ScreenSettings, getStack())

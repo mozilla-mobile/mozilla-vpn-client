@@ -107,11 +107,6 @@ Item {
             }
 
             PropertyChanges {
-                target: settingsImage
-                source: "qrc:/nebula/resources/settings.svg"
-            }
-
-            PropertyChanges {
                 target: connectionInfoToggleButton
                 visible: false
             }
@@ -152,11 +147,6 @@ Item {
             PropertyChanges {
                 target: logoSubtitleOn
                 visible: false
-            }
-
-            PropertyChanges {
-                target: settingsImage
-                source: "qrc:/nebula/resources/settings.svg"
             }
 
             PropertyChanges {
@@ -202,16 +192,6 @@ Item {
             PropertyChanges {
                 target: logoSubtitleOn
                 visible: false
-            }
-
-            PropertyChanges {
-                target: settingsImage
-                source: "qrc:/nebula/resources/settings-white.svg"
-            }
-
-            PropertyChanges {
-                target: settingsButton
-                buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
             }
 
             PropertyChanges {
@@ -261,16 +241,6 @@ Item {
             }
 
             PropertyChanges {
-                target: settingsImage
-                source: "qrc:/nebula/resources/settings-white.svg"
-            }
-
-            PropertyChanges {
-                target: settingsButton
-                buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
-            }
-
-            PropertyChanges {
                 target: connectionInfoToggleButton
                 visible: connectionInfoScreenVisible
             }
@@ -309,16 +279,6 @@ Item {
             PropertyChanges {
                 target: logoSubtitleOn
                 visible: true
-            }
-
-            PropertyChanges {
-                target: settingsButton
-                buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
-            }
-
-            PropertyChanges {
-                target: settingsImage
-                source: "qrc:/nebula/resources/settings-white.svg"
             }
 
             PropertyChanges {
@@ -361,16 +321,6 @@ Item {
             PropertyChanges {
                 target: logoSubtitleOn
                 visible: false
-            }
-
-            PropertyChanges {
-                target: settingsImage
-                source: "qrc:/nebula/resources/settings.svg"
-            }
-
-            PropertyChanges {
-                target: settingsButton
-                buttonColorScheme: VPNTheme.theme.iconButtonLightBackground
             }
 
             PropertyChanges {
@@ -417,16 +367,6 @@ Item {
             PropertyChanges {
                 target: logoSubtitleOn
                 visible: false
-            }
-
-            PropertyChanges {
-                target: settingsImage
-                source: "qrc:/nebula/resources/settings-white.svg"
-            }
-
-            PropertyChanges {
-                target: settingsButton
-                buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
             }
 
             PropertyChanges {
@@ -558,37 +498,6 @@ Item {
             NumberAnimation {
                 duration: 300
             }
-        }
-    }
-
-    VPNIconButton {
-        id: settingsButton
-        objectName: "settingsButton"
-        opacity: 1
-
-        onClicked: {
-            if (box.connectionInfoScreenVisible) {
-                return;
-            }
-
-            VPN.recordGleanEvent("settingsViewOpened");
-            VPNNavigator.requestScreen(VPNNavigator.ScreenSettings)
-
-        }
-
-        anchors.top: parent.top
-        anchors.right: parent.right
-        anchors.topMargin: VPNTheme.theme.windowMargin / 2
-        anchors.rightMargin: VPNTheme.theme.windowMargin / 2
-        //% "Settings"
-        accessibleName: qsTrId("vpn.main.settings")
-        Accessible.ignored: box.connectionInfoScreenVisible
-        enabled: !box.connectionInfoScreenVisible
-
-        VPNIcon {
-            id: settingsImage
-
-            anchors.centerIn: settingsButton
         }
     }
 

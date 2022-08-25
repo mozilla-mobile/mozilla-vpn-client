@@ -72,10 +72,19 @@ theme.windowMargin = 16;
 theme.popupMargin = 24;
 theme.desktopAppHeight = 626;
 theme.desktopAppWidth = 360;
-theme.tabletMinimumWidth = 600
+theme.tabletMinimumWidth = 600;
 theme.menuHeight = 56;
+
 theme.tutorialCardHeight = 144
 theme.guideCardHeight = 172
+
+theme.tutorialCardHeight = 144;
+theme.navBarHeight = 64;
+theme.navBarMaxWidth = 608;
+theme.navBarTopMargin = 48;
+theme.navBarBottomMargin = Qt.platform.os !== 'ios' ? 16 : 34;
+theme.navBarHeightWithMargins =
+theme.navBarHeight + theme.navBarTopMargin + theme.navBarBottomMargin;
 
 theme.darkFocusBorder = theme.fontColor;
 theme.lightFocusBorder = '#d5d3e0';

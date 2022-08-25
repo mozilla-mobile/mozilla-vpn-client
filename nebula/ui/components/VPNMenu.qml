@@ -19,6 +19,7 @@ Item {
     property string _menuIconButtonSource: "qrc:/nebula/resources/back.svg"
     property alias _iconButtonAccessibleName: iconButton.accessibleName
     property var _menuOnBackClicked: () => {}
+    property alias _menuIconVisibility: iconButton.visible
 
     width: parent.width
     height: VPNTheme.theme.menuHeight
