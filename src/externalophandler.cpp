@@ -69,7 +69,7 @@ void ExternalOpHandler::request(Op op) {
       vpn->controller()->deactivate();
       break;
     case OpGetHelp:
-      Navigator::instance()->requestScreen(Navigator::ScreenGetHelp);
+      vpn->requestGetHelp();
       break;
     case OpSettings:
       vpn->requestSettings();
