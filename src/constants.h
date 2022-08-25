@@ -44,7 +44,7 @@ constexpr uint32_t BENCHMARK_THRESHOLD_SPEED_MEDIUM = 10000000;  // 10 Megabit
 constexpr const char* BENCHMARK_DOWNLOAD_URL =
     "https://archive.mozilla.org/pub/vpn/speedtest/50m.data";
 // TODO: Add url for upload benchmark
-constexpr const char* BENCHMARK_UPLOAD_URL = "";
+constexpr const char* BENCHMARK_UPLOAD_URL = "http://localhost:8080/upload";
 
 #if defined(UNIT_TEST)
 #  define CONSTEXPR(type, functionName, releaseValue, debugValue, \
