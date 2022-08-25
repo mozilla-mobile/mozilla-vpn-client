@@ -14,10 +14,20 @@ class Navigator final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Navigator)
 
+  Q_PROPERTY(
+      Screen screen MEMBER m_currentScreen NOTIFY currentComponentChanged)
+  Q_PROPERTY(LoadPolicy loadPolicy MEMBER m_currentLoadPolicy NOTIFY
+                 currentComponentChanged)
   Q_PROPERTY(QQmlComponent* component MEMBER m_currentComponent NOTIFY
                  currentComponentChanged)
 
  public:
+  enum LoadPolicy {
+    LoadPersistently,
+    LoadTemporarily,
+  };
+  Q_ENUM(LoadPolicy);
+
   enum Screen {
     ScreenAuthenticating,
     ScreenAuthenticationInApp,
@@ -65,12 +75,16 @@ class Navigator final : public QObject {
   explicit Navigator(QObject* parent);
 
   void computeComponent();
-  void loadScreen(Screen screen, QQmlComponent* component);
+  void loadScreen(Screen screen, LoadPolicy loadPolicy,
+                  QQmlComponent* component);
 
   void removeItem(QObject* obj);
 
  private:
+  Screen m_currentScreen = ScreenInitialize;
+  LoadPolicy m_currentLoadPolicy = LoadTemporarily;
   QQmlComponent* m_currentComponent = nullptr;
+
   QList<Screen> m_screenHistory;
 };
 

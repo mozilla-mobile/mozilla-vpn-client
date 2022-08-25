@@ -128,20 +128,17 @@ const MVPNPresets = [
           'VPN', 'userState', 'UserAuthenticated');
       await controller.wait();
 
-      await controller.waitForElementProperty(
-          'screenLoader', 'status', 'Ready');
+      await controller.waitForElementProperty('screenLoader', 'busy', 'false');
       await controller.waitForElement('postAuthenticationButton');
       await controller.clickOnElement('postAuthenticationButton');
 
       await controller.wait();
-      await controller.waitForElementProperty(
-          'screenLoader', 'status', 'Ready');
+      await controller.waitForElementProperty('screenLoader', 'busy', 'false');
       await controller.waitForElement('telemetryPolicyButton');
       await controller.clickOnElement('telemetryPolicyButton');
 
       await controller.wait();
-      await controller.waitForElementProperty(
-          'screenLoader', 'status', 'Ready');
+      await controller.waitForElementProperty('screenLoader', 'busy', 'false');
       await controller.waitForElement('controllerTitle');
     }
   },
@@ -298,14 +295,12 @@ const MVPNPresets = [
           'VPN', 'userState', 'UserAuthenticated');
       await controller.wait();
 
-      await controller.waitForElementProperty(
-          'screenLoader', 'status', 'Ready');
+      await controller.waitForElementProperty('screenLoader', 'busy', 'false');
       await controller.waitForElement('postAuthenticationButton');
       await controller.clickOnElement('postAuthenticationButton');
 
       await controller.wait();
-      await controller.waitForElementProperty(
-          'screenLoader', 'status', 'Ready');
+      await controller.waitForElementProperty('screenLoader', 'busy', 'false');
       await controller.waitForElement('telemetryPolicyButton');
       await controller.clickOnElement('telemetryPolicyButton');
     },
@@ -356,20 +351,17 @@ const MVPNPresets = [
           'VPN', 'userState', 'UserAuthenticated');
       await controller.wait();
 
-      await controller.waitForElementProperty(
-          'screenLoader', 'status', 'Ready');
+      await controller.waitForElementProperty('screenLoader', 'busy', 'false');
       await controller.waitForElement('postAuthenticationButton');
       await controller.clickOnElement('postAuthenticationButton');
 
       await controller.wait();
-      await controller.waitForElementProperty(
-          'screenLoader', 'status', 'Ready');
+      await controller.waitForElementProperty('screenLoader', 'busy', 'false');
       await controller.waitForElement('telemetryPolicyButton');
       await controller.clickOnElement('telemetryPolicyButton');
 
       await controller.wait();
-      await controller.waitForElementProperty(
-          'screenLoader', 'status', 'Ready');
+      await controller.waitForElementProperty('screenLoader', 'busy', 'false');
       await controller.waitForElement('controllerTitle');
 
       await controller.forceUpdateCheck('2.0.0');
@@ -412,20 +404,17 @@ const MVPNPresets = [
           'VPN', 'userState', 'UserAuthenticated');
       await controller.wait();
 
-      await controller.waitForElementProperty(
-          'screenLoader', 'status', 'Ready');
+      await controller.waitForElementProperty('screenLoader', 'busy', 'false');
       await controller.waitForElement('postAuthenticationButton');
       await controller.clickOnElement('postAuthenticationButton');
 
       await controller.wait();
-      await controller.waitForElementProperty(
-          'screenLoader', 'status', 'Ready');
+      await controller.waitForElementProperty('screenLoader', 'busy', 'false');
       await controller.waitForElement('telemetryPolicyButton');
       await controller.clickOnElement('telemetryPolicyButton');
 
       await controller.wait();
-      await controller.waitForElementProperty(
-          'screenLoader', 'status', 'Ready');
+      await controller.waitForElementProperty('screenLoader', 'busy', 'false');
       await controller.waitForElement('controllerTitle');
 
       await controller.forceUpdateCheck('2.0.0');
