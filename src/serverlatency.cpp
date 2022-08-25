@@ -12,6 +12,8 @@
 
 constexpr const uint32_t SERVER_LATENCY_TIMEOUT_MSEC = 5000;
 
+constexpr const int SERVER_LATENCY_MAX_PARALLEL = 8;
+
 namespace {
 Logger logger(LOG_MAIN, "ServerLatency");
 }
@@ -24,15 +26,24 @@ void ServerLatency::initialize() {
   MozillaVPN* vpn = MozillaVPN::instance();
   connect(vpn->controller(), &Controller::stateChanged, this,
           &ServerLatency::stateChanged);
+
+  connect(&m_timeout, &QTimer::timeout, this, &ServerLatency::maybeSendPings);
 }
 
 void ServerLatency::start() {
   MozillaVPN* vpn = MozillaVPN::instance();
   if (vpn->controller()->state() != Controller::StateOff) {
+    // Don't attempt to refresh latency when the VPN is active, or
+    // we could get misleading results.
     m_wantRefresh = true;
     return;
   }
+  if (m_pingSender != nullptr) {
+    // Don't start a latency refresh if one is already in progress.
+    return;
+  }
 
+  m_sequence = 0;
   m_wantRefresh = false;
   m_pingSender = PingSenderFactory::create(QHostAddress(), this);
   ServerCountryModel* scm = vpn->serverCountryModel();
@@ -41,25 +52,65 @@ void ServerLatency::start() {
           SLOT(recvPing(quint16)));
   connect(m_pingSender, SIGNAL(criticalPingError()), this,
           SLOT(criticalPingError()));
-  connect(&m_timeout, &QTimer::timeout, this, &ServerLatency::stop);
 
-  // Send a ping to every server.
-  quint16 seq = 1;
+  // Generate a list of servers to ping.
+  // TODO: Could be m_pingSendQueue = scm->m_servers.keys(), but it's private.
   for (const Server& server : scm->servers()) {
-    m_pingSender->sendPing(QHostAddress(server.ipv4AddrIn()), seq);
-
-    ServerPingRecord record;
-    record.publicKey = server.publicKey();
-    record.timestamp = QDateTime::currentMSecsSinceEpoch();
-    m_pingReplyList[seq] = record;
-    seq++;
+    m_pingSendQueue.append(server.publicKey());
   }
 
-  m_timeout.start(SERVER_LATENCY_TIMEOUT_MSEC);
+  maybeSendPings();
+}
+
+void ServerLatency::maybeSendPings() {
+  quint64 now = QDateTime::currentMSecsSinceEpoch();
+  ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
+  if (m_pingSender == nullptr) {
+    return;
+  }
+
+  // Scan through the reply list, looking for timeouts.
+  while (!m_pingReplyList.isEmpty()) {
+    const ServerPingRecord& record = m_pingReplyList.first();
+    if ((record.timestamp + SERVER_LATENCY_TIMEOUT_MSEC) > now) {
+      break;
+    }
+
+    // TODO: Retries? Mark the server unavailable?
+    logger.debug() << "Server" << logger.keys(record.publicKey) << "timeout";
+    m_pingReplyList.removeFirst();
+  }
+
+  // Generate new pings until we reach our max number of parallel pings.
+  while (m_pingReplyList.count() < SERVER_LATENCY_MAX_PARALLEL) {
+    if (m_pingSendQueue.isEmpty()) {
+      break;
+    }
+
+    ServerPingRecord record;
+    record.publicKey = m_pingSendQueue.takeFirst();
+    record.sequence = m_sequence++;
+    record.timestamp = now;
+    m_pingReplyList.append(record);
+
+    Server server = scm->server(record.publicKey);
+    m_pingSender->sendPing(QHostAddress(server.ipv4AddrIn()), record.sequence);
+  }
+
+  if (m_pingReplyList.isEmpty()) {
+    // If the ping reply list is empty, then we have nothing left to do.
+    stop();
+  } else {
+    // Otherwise, the list should be sorted by transmit time. Schedule a timer to
+    // cleanup anything that experiences a timeout.
+    const ServerPingRecord& record = m_pingReplyList.first();
+    m_timeout.start(SERVER_LATENCY_TIMEOUT_MSEC - (now - record.timestamp));
+  }
 }
 
 void ServerLatency::stop() {
   m_timeout.stop();
+  m_pingSendQueue.clear();
   m_pingReplyList.clear();
 
   if (m_pingSender) {
@@ -80,20 +131,21 @@ void ServerLatency::stateChanged() {
 }
 
 void ServerLatency::recvPing(quint16 sequence) {
-  ServerPingRecord record = m_pingReplyList.take(sequence);
-  if (record.publicKey.isEmpty()) {
-    // We didn't expect this ping reply.
+  for (auto i = m_pingReplyList.begin(); i != m_pingReplyList.end(); i++) {
+    const ServerPingRecord& record = *i;
+    if (record.sequence != sequence) {
+      continue;
+    }
+
+    ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
+    quint64 latency = QDateTime::currentMSecsSinceEpoch() - record.timestamp;
+    logger.debug() << "Server" << logger.keys(record.publicKey) << "latency"
+                  << latency << "msec";
+    scm->setServerLatency(record.publicKey, latency);
+
+    m_pingReplyList.erase(i);
+    maybeSendPings();
     return;
-  }
-
-  ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
-  quint64 latency = QDateTime::currentMSecsSinceEpoch() - record.timestamp;
-  logger.debug() << "Server" << logger.keys(record.publicKey) << "latency"
-                 << latency << "msec";
-  scm->setServerLatency(record.publicKey, latency);
-
-  if (m_pingReplyList.isEmpty()) {
-    stop();
   }
 }
 

@@ -24,12 +24,19 @@ class ServerLatency final : public QObject {
   void stop();
 
  private:
+  void maybeSendPings();
+
+ private:
   struct ServerPingRecord {
     QString publicKey;
     quint64 timestamp;
+    quint16 sequence;
   };
+  quint16 m_sequence = 0;
   PingSender* m_pingSender = nullptr;
-  QMap<int, ServerPingRecord> m_pingReplyList;
+  QList<QString> m_pingSendQueue;
+  QList<ServerPingRecord> m_pingReplyList;
+
   QTimer m_timeout;
   bool m_wantRefresh = false;
 
