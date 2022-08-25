@@ -6,7 +6,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
-#include "navigator.h"
+#include "frontend/navigator.h"
 
 #include <QCoreApplication>
 
