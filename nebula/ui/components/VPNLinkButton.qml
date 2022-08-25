@@ -103,6 +103,7 @@ VPNButtonBase {
         id: label
 
         text: labelText
+        color: root.linkColor.defaultColor
         horizontalAlignment: textAlignment
         verticalAlignment: Text.AlignVCenter
         font.pixelSize: fontSize
