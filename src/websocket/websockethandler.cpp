@@ -146,6 +146,8 @@ void WebSocketHandler::open() {
 void WebSocketHandler::onConnected() {
   logger.debug() << "WebSocket connected";
 
+  m_aboutToClose = false;
+
   m_backoffStrategy.reset();
 #ifdef UNIT_TEST
   m_currentBackoffInterval = 0;
@@ -163,20 +165,20 @@ void WebSocketHandler::onConnected() {
  * No-op in case the connection is already closed.
  */
 void WebSocketHandler::close() {
-  // If there is an attempt to close the websocket when it is not connected,
-  // QAbstractSocket may throw a write error before even attempting to close the
+  // QAbstractSocket may throw a write error when attempting to close the
   // underlying socket (see:
   // https://code.woboq.org/qt5/qtwebsockets/src/websockets/qwebsocket_p.cpp.html#357).
+  //
   // The error then triggers the onError handler, which attempts to close again
-  // causing an infinite loop. This checks prevent that.
-  if (m_webSocket.state() == QAbstractSocket::ClosingState ||
-      m_webSocket.state() == QAbstractSocket::UnconnectedState) {
+  // causing an infinite loop.
+  if (m_aboutToClose) {
     logger.debug() << "Attempted to close a WebSocket connection, but it's "
-                      "already closed.";
+                      "already closing/closed.";
     return;
   }
 
   logger.debug() << "Closing WebSocket";
+  m_aboutToClose = true;
   m_webSocket.close();
 }
 
@@ -189,6 +191,8 @@ void WebSocketHandler::close() {
 void WebSocketHandler::onClose() {
   // https://doc.qt.io/qt-6/qwebsocketprotocol.html#CloseCode-enum
   logger.debug() << "WebSocket closed:" << m_webSocket.closeCode();
+
+  m_aboutToClose = false;
   m_pingTimer.stop();
 
   if (isUserAuthenticated()) {
