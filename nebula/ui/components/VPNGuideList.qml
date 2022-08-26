@@ -17,9 +17,6 @@ ColumnLayout {
     property var customGuideFilter: () => true
     property var count: guideRepeater.count
 
-    Layout.alignment: Qt.AlignTop
-    Layout.fillWidth: true
-
     // Title
     VPNBoldLabel {
         Layout.fillWidth: true

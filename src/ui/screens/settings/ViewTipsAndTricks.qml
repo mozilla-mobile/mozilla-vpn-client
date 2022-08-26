@@ -42,13 +42,13 @@ VPNViewBase {
         ObjectModel {
             id: tipsSections
 
-            Item { 
+            Item {
                 property string title: VPNl18n.TipsAndTricksQuickTipsTitle
                 property string description: VPNl18n.TipsAndTricksQuickTipsDescription
                 property var filter: (addon) => !addon.advanced && !addon.highlighted
             }
 
-            Item { 
+            Item {
                 property string title: VPNl18n.TipsAndTricksAdvancedTipsTitle
                 property string description: VPNl18n.TipsAndTricksAdvancedTipsDescription
                 property var filter: (addon) => addon.advanced && !addon.highlighted
@@ -130,18 +130,16 @@ VPNViewBase {
                 flickContentHeight: layoutTutorial.implicitHeight + (VPNTheme.theme.vSpacing * 2)
                 interactive: flickContentHeight > height
 
-                ColumnLayout {
+                VPNTutorialList {
                     id: layoutTutorial
 
-                    anchors.fill: parent
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
                     anchors.topMargin: VPNTheme.theme.vSpacing
                     anchors.bottomMargin: VPNTheme.theme.vSpacing
                     anchors.leftMargin: VPNTheme.theme.windowMargin
                     anchors.rightMargin: VPNTheme.theme.windowMargin
-
-                    VPNTutorialList { 
-                        Layout.fillWidth: true
-                    }
                 }
             },
 
@@ -159,26 +157,22 @@ VPNViewBase {
                     anchors.leftMargin: VPNTheme.theme.windowMargin
                     anchors.rightMargin: VPNTheme.theme.windowMargin
 
+                    spacing: VPNTheme.theme.vSpacing
+
                     Repeater {
                         model: tipsSections.count
 
-                        Column {
+                        VPNGuideList {
                             property var section: tipsSections.get(index)
 
-                            visible: !!guidesList.count
+                            visible: !!count
 
                             Layout.fillWidth: true
                             Layout.alignment: Qt.AlignTop
 
-                            VPNGuideList {
-                                anchors.left: parent.left
-                                anchors.right: parent.right
-
-                                id: guidesList
-                                title: section.title
-                                description: section.description
-                                customGuideFilter: section.filter
-                            }
+                            title: section.title
+                            description: section.description
+                            customGuideFilter: section.filter
                         }
                     }
                 }
