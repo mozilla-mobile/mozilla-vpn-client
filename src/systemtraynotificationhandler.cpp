@@ -118,7 +118,7 @@ void SystemTrayNotificationHandler::retranslate() {
   }
 
   m_helpMenu->addAction(l18nStrings->t(L18nStrings::SystrayGetHelp), []() {
-    Navigator::instance()->requestScreen(Navigator::ScreenGetHelp);
+    ExternalOpHandler::instance()->request(ExternalOpHandler::OpGetHelp);
   });
 
   m_preferencesAction->setText(l18nStrings->t(L18nStrings::SystrayPreferences));
