@@ -27,11 +27,19 @@ StackView {
 
       const pos = stackView.screens.indexOf(VPNNavigator.screen)
       if (pos === -1) {
-          if (stackView.currentLoadPolicy === VPNNavigator.LoadPersistently) {
+          if (stackView.currentLoadPolicy === VPNNavigator.LoadPersistently ||
+              stackView.currentLoadPolicy === VPNNavigator.ReloadAndLoadPersistently) {
               stackView.screens.push(VPNNavigator.screen);
           }
-          stackView.push(VPNNavigator.component, StackView.Immediate);
+
+          const loaderComponent = Qt.createComponent("navigatorLoaderInternal.qml")
+          stackView.push(loaderComponent, StackView.Immediate);
           return;
+      }
+
+      if (stackView.currentLoadPolicy === VPNNavigator.ReloadAndLoadPersistently) {
+        stackView.get(pos+1).sourceComponent = undefined;
+        stackView.get(pos+1).sourceComponent = VPNNavigator.component;
       }
 
       // Let's hide the initial empty screen.

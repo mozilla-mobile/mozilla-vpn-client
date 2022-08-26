@@ -425,10 +425,11 @@ void Navigator::computeComponent() {
 
   maybeGenerateComponent(this, topPriorityScreen);
   loadScreen(topPriorityScreen->m_screen, topPriorityScreen->m_loadPolicy,
-             topPriorityScreen->m_qmlComponent);
+             topPriorityScreen->m_qmlComponent, false);
 }
 
-void Navigator::requestScreen(Navigator::Screen requestedScreen) {
+void Navigator::requestScreen(Navigator::Screen requestedScreen,
+                              bool forceReload) {
   logger.debug() << "Screen request:" << requestedScreen;
 
   QList<ScreenData*> screens = computeScreens(&requestedScreen);
@@ -438,13 +439,13 @@ void Navigator::requestScreen(Navigator::Screen requestedScreen) {
     if (screen->m_screen == requestedScreen) {
       maybeGenerateComponent(this, screen);
 
-      if (screen->m_qmlComponent == m_currentComponent) {
+      if (screen->m_qmlComponent == m_currentComponent && !forceReload) {
         logger.debug() << "Already in the right screen";
         return;
       }
 
-      loadScreen(screen->m_screen, screen->m_loadPolicy,
-                 screen->m_qmlComponent);
+      loadScreen(screen->m_screen, screen->m_loadPolicy, screen->m_qmlComponent,
+                 forceReload);
       return;
     }
   }
@@ -465,12 +466,23 @@ void Navigator::requestPreviousScreen() {
 }
 
 void Navigator::loadScreen(Screen screen, LoadPolicy loadPolicy,
-                           QQmlComponent* component) {
+                           QQmlComponent* component, bool forceReload) {
   logger.debug() << "Loading screen" << screen;
 
-  m_screenHistory.append(screen);
-  m_currentScreen = screen;
-  m_currentLoadPolicy = loadPolicy, m_currentComponent = component;
+  if (m_screenHistory.isEmpty() || screen != m_currentScreen) {
+    m_screenHistory.append(screen);
+    m_currentScreen = screen;
+  }
+
+  m_currentLoadPolicy = loadPolicy;
+  m_currentComponent = component;
+
+  Q_ASSERT(m_currentLoadPolicy != ReloadAndLoadPersistently);
+
+  if (forceReload && m_currentLoadPolicy == LoadPersistently) {
+    m_currentLoadPolicy = ReloadAndLoadPersistently;
+  }
+
   emit currentComponentChanged();
 }
 
