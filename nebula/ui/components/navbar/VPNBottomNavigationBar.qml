@@ -133,17 +133,4 @@ Rectangle {
     ButtonGroup {
         id: navBarButtonGroup
     }
-
-    Connections {
-        target: VPNNavigator
-        function onCurrentComponentChanged() {
-            if (navBarButtonGroup.checkedButton._screen !== VPNNavigator.screen) {
-                for (let i = 0; i < layout.children.length; ++i) {
-                    if (layout.children[i]._screen === VPNNavigator.screen) {
-                        layout.children[i].checked = true;
-                    }
-                }
-            }
-        }
-    }
 }
