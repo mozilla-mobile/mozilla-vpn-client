@@ -298,7 +298,7 @@ Item {
             if (!targetElement)
                 return
 
-            if (!targetElement.activeFocus && !targetElement.parent.activeFocus && !leaveTutorialBtn.activeFocus && !tutorialPopup.opened) {
+            if (!targetElement.activeFocus && (!targetElement.parent || !targetElement.parent.activeFocus) && !leaveTutorialBtn.activeFocus && !tutorialPopup.opened) {
                 tutorialTooltip.forceActiveFocus();
             }
         }

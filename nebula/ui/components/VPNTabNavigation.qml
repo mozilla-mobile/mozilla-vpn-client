@@ -70,6 +70,7 @@ Item {
 
                 contentItem: VPNBoldLabel {
                     text: VPNl18n[tabLabelStringId]
+                    elide: Qt.ElideRight
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     color: btn.checked || btn.activeFocus ? VPNTheme.colors.purple70 : btn.hovered ? VPNTheme.colors.grey50 : VPNTheme.colors.grey40

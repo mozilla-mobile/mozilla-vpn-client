@@ -75,6 +75,7 @@ theme.desktopAppWidth = 360;
 theme.tabletMinimumWidth = 600
 theme.menuHeight = 56;
 theme.tutorialCardHeight = 144
+theme.guideCardHeight = 172
 
 theme.darkFocusBorder = theme.fontColor;
 theme.lightFocusBorder = '#d5d3e0';

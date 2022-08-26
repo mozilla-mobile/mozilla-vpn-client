@@ -197,7 +197,7 @@ VPNFlickable {
                         tipAndTricksIntroButton.enabled = false
                         closedByPrimaryButton = true
                         tipsAndTricksIntroPopup.close()
-                        stackview.push("qrc:/ui/screens/settings/ViewTipsAndTricks/ViewTipsAndTricks.qml", StackView.Immediate)
+                        stackview.push("qrc:/ui/screens/settings/ViewTipsAndTricks.qml", StackView.Immediate)
                     }
                 },
                 VPNLinkButton {
