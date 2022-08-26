@@ -294,7 +294,8 @@ void WebSocketHandler::onMessageReceived(const QString& message) {
 
   PushMessage parsedMessage(message);
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::pushMessageReceived, {{"type", parsedMessage.type()}});
+      GleanSample::pushMessageReceived,
+      {{"type", QVariant::fromValue(parsedMessage.type()).toString()}});
 
   parsedMessage.executeAction();
 }

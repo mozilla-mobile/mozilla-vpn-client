@@ -84,20 +84,6 @@ PushMessage::MessageType PushMessage::messageTypeFromString(
   return MessageType_UnknownMessage;
 }
 
-// static
-const QString PushMessage::messageTypeToString(MessageType& type) {
-  switch (type) {
-    case MessageType_DeviceDeleted:
-      return "DEVICE_DELETED";
-#ifdef UNIT_TEST
-    case MessageType_TestMessage:
-      return "TEST_MESSAGE";
-#endif
-    default:
-      return "Unknown";
-  }
-}
-
 /**
  * @brief Executes the action related to the given message.
  *
