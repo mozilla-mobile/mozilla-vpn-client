@@ -60,14 +60,6 @@ StackView {
     }
   }
 
-  Connections {
-      target: window
-      function onUnwindCurrentStackView() {
-          const pos = stackView.screens.indexOf(VPNNavigator.screen)
-          stackView.get(pos+1).unwindStack();
-    }
-  }
-
   Component {
     id: initialScreen
     Item {}

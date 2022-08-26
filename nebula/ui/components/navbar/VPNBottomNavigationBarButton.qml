@@ -18,10 +18,7 @@ VPNIconButton {
 
     checked: VPNNavigator.screen === _screen
     onClicked: {
-        if (VPNNavigator.screen === _screen) {
-            window.unwindCurrentStackView();
-        }
-        VPNNavigator.requestScreen(_screen);
+        VPNNavigator.requestScreen(_screen, VPNNavigator.screen === _screen);
     }
 
 

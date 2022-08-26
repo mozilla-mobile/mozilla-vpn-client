@@ -55,8 +55,4 @@ Item {
             menu._menuOnBackClicked = currentItem._menuOnBackClicked ? currentItem._menuOnBackClicked : () => menu.maybeRequestPreviousScreen()
         }
     }
-
-    function unwindStack() {
-        stackview.pop(null)
-    }
 }
