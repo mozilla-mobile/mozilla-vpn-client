@@ -5,18 +5,18 @@
 const assert = require('assert');
 const vpn = require('./helper.js');
 
-describe('Tips and tricks intro modal', function() {
+describe('Tips and tricks intro modal', function () {
   this.timeout(60000);
 
-  beforeEach(
-      async () => {
-          await vpn.setSetting('tips-and-tricks-intro-shown', 'false')
-              await vpn.authenticateInApp(true, true)});
+  beforeEach(async () => {
+    await vpn.setSetting('tips-and-tricks-intro-shown', 'false');
+    await vpn.authenticateInApp(true, true);
+  });
 
   it('Access and navigate tips and tricks via intro modal', async () => {
     await vpn.wait();
     await vpn.waitForElementProperty(
-        'tipsAndTricksIntroPopupLoader', 'active', 'true');
+      'tipsAndTricksIntroPopupLoader', 'active', 'true');
     await vpn.waitForElement('tipsAndTricksIntroPopupDiscoverNowButton');
     await vpn.clickOnElement('tipsAndTricksIntroPopupDiscoverNowButton');
 
@@ -32,24 +32,24 @@ describe('Tips and tricks intro modal', function() {
   it('Closing modal with close button', async () => {
     await vpn.wait();
     await vpn.waitForElementProperty(
-        'tipsAndTricksIntroPopupLoader', 'active', 'true');
+      'tipsAndTricksIntroPopupLoader', 'active', 'true');
     await vpn.waitForElement('tipsAndTricksIntroPopupCloseButton');
     await vpn.clickOnElement('tipsAndTricksIntroPopupCloseButton');
 
     await vpn.wait();
     await vpn.waitForElementProperty(
-        'tipsAndTricksIntroPopupLoader', 'active', 'false');
+      'tipsAndTricksIntroPopupLoader', 'active', 'false');
   });
 
   it('Closing modal with go back button', async () => {
     await vpn.wait();
     await vpn.waitForElementProperty(
-        'tipsAndTricksIntroPopupLoader', 'active', 'true');
+      'tipsAndTricksIntroPopupLoader', 'active', 'true');
     await vpn.waitForElement('tipsAndTricksIntroPopupGoBackButton');
     await vpn.clickOnElement('tipsAndTricksIntroPopupGoBackButton');
 
     await vpn.wait();
     await vpn.waitForElementProperty(
-        'tipsAndTricksIntroPopupLoader', 'active', 'false');
+      'tipsAndTricksIntroPopupLoader', 'active', 'false');
   });
 })

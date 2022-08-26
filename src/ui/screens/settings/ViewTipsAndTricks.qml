@@ -58,6 +58,8 @@ VPNViewBase {
         stackContent: [
             // All
             VPNFlickable {
+                objectName: 'allFlickable'
+
                 flickContentHeight: layoutAll.implicitHeight + (VPNTheme.theme.vSpacing * 2)
                 interactive: flickContentHeight > height
 
@@ -74,6 +76,7 @@ VPNViewBase {
                     VPNTutorialList {
                         Layout.fillWidth: true
 
+                        objectName: "highlightedTutorials"
                         customTutorialFilter: (addon) => addon.highlighted
                     }
 
@@ -102,6 +105,7 @@ VPNViewBase {
                             Layout.alignment: Qt.AlignTop
                             Layout.topMargin: VPNTheme.theme.vSpacingSmall
                             spacing: VPNTheme.theme.vSpacing
+                            objectName: 'guideLayout'
 
                             VPNGuideList {
                                 anchors.left: parent.left

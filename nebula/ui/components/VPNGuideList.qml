@@ -54,6 +54,8 @@ ColumnLayout {
 
     // Guides
     GridLayout {
+        objectName: "guideLayout"
+
         Layout.fillWidth: true
         Layout.topMargin: VPNTheme.theme.vSpacingSmall
 
@@ -72,10 +74,10 @@ ColumnLayout {
                 Layout.fillWidth: true
 
                 imageSrc: addon.image
-                title: addon.title
+                title: addon.id
 
                 onClicked:{
-                    mainStackView.push("qrc:/ui/settings/ViewGuide.qml", { "guide": addon, "imageBgColor": imageBgColor })
+                    stackview.push("qrc:/ui/screens/settings/ViewGuide.qml", {"guide": addon, "imageBgColor": imageBgColor})
                     VPN.recordGleanEventWithExtraKeys("guideOpened", {
                         "id": addon.id
                     });
