@@ -176,7 +176,9 @@ Window {
         }
 
         function onAboutToQuit() {
-            console.debug("about to quit, shutdown Glean");
+            console.debug("about to quit, shutdown Glean"); 
+            // Submit the main ping in case there are outstading metrics in storage before shutdown.
+            Pings.main.submit();
             // Use glean's built-in shutdown method - https://mozilla.github.io/glean/book/reference/general/shutdown.html
             Glean.shutdown();
         }
