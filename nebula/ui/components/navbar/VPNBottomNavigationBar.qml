@@ -11,15 +11,23 @@ import components 0.1
 import compat 0.1
 
 Rectangle {
+    property var showNavigationBar: [
+        VPNNavigator.ScreenSettings,
+        VPNNavigator.ScreenHome,
+        VPNNavigator.ScreenMessaging,
+        VPNNavigator.ScreenGetHelp
+    ]
+
     id: root
     objectName: "navigationBar"
 
     height: VPNTheme.theme.navBarHeight
     width: Math.min(window.width - VPNTheme.theme.windowMargin * 2, VPNTheme.theme.navBarMaxWidth)
     radius: height / 2
-
     color: VPNTheme.theme.ink
+
     clip: true
+    visible: showNavigationBar.includes(VPNNavigator.screen)
 
     anchors {
         horizontalCenter: parent.horizontalCenter
@@ -55,33 +63,7 @@ Rectangle {
         contentWidth: layout.implicitWidth
         interactive: contentX > 0 || contentWidth > width
 
-        ListModel {
-            id: navButtons
-            ListElement {
-                navObjectName: "navButton-home"
-                screen: "ScreenHome"
-                sourceChecked: "qrc:/nebula/resources/navbar/home-selected.svg"
-                sourceUnchecked: "qrc:/nebula/resources/navbar/home.svg"
-                _accessibleName:"NavBarHomeTab"
-            }
-            ListElement {
-                navObjectName: "navButton-messages"
-                screen: "ScreenMessaging"
-                sourceChecked: "qrc:/nebula/resources/navbar/messages-notification-selected.svg"
-                sourceUnchecked: "qrc:/nebula/resources/navbar/messages-notification.svg"
-                _accessibleName: "NavBarMessagesTab"
-            }
-            ListElement {
-                navObjectName: "navButton-settings"
-                screen: "ScreenSettings"
-                sourceChecked: "qrc:/nebula/resources/navbar/settings-selected.svg"
-                sourceUnchecked: "qrc:/nebula/resources/navbar/settings.svg"
-                _accessibleName: "NavBarSettingsTab"
-            }
-        }
-
         RowLayout {
-            id: buttonRow
             height: flickable.height
             width: flickable.width
 
@@ -97,38 +79,38 @@ Rectangle {
                         objectName: navObjectName
                         _screen: VPNNavigator[screen]
                         _source: checked ? sourceChecked : sourceUnchecked
-                        accessibleName: VPNl18n[_accessibleName]
+                        accessibleName: VPNl18n[navAccessibleName]
                         ButtonGroup.group: navBarButtonGroup
-                        Component.onCompleted: if (index === 0) checked = true;
                     }
                 }
             }
         }
     }
 
-    states: [
-        State {
-            when: VPN.state !== VPN.StateMain
-            PropertyChanges {
-                target: root
-                visible: false
-            }
-        },
-        State {
-            when:
-                VPN.state === VPN.StateMain &&
-                [
-                    VPNNavigator.ScreenSettings,
-                    VPNNavigator.ScreenHome,
-                    VPNNavigator.ScreenMessaging,
-                    VPNNavigator.ScreenGetHelp
-                ].includes(VPNNavigator.screen)
-            PropertyChanges {
-                target: root
-                visible: true
-            }
+    ListModel {
+        id: navButtons
+        ListElement {
+            navObjectName: "navButton-home"
+            screen: "ScreenHome"
+            sourceChecked: "qrc:/nebula/resources/navbar/home-selected.svg"
+            sourceUnchecked: "qrc:/nebula/resources/navbar/home.svg"
+            navAccessibleName: "NavBarHomeTab"
         }
-    ]
+        ListElement {
+            navObjectName: "navButton-messages"
+            screen: "ScreenMessaging"
+            sourceChecked: "qrc:/nebula/resources/navbar/messages-notification-selected.svg"
+            sourceUnchecked: "qrc:/nebula/resources/navbar/messages-notification.svg"
+            navAccessibleName: "NavBarMessagesTab"
+        }
+        ListElement {
+            navObjectName: "navButton-settings"
+            screen: "ScreenSettings"
+            sourceChecked: "qrc:/nebula/resources/navbar/settings-selected.svg"
+            sourceUnchecked: "qrc:/nebula/resources/navbar/settings.svg"
+            navAccessibleName: "NavBarSettingsTab"
+        }
+    }
 
     ButtonGroup {
         id: navBarButtonGroup
