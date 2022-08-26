@@ -58,24 +58,24 @@ Rectangle {
         ListModel {
             id: navButtons
             ListElement {
-                _navObjectName: "navButton-home"
-                _navScreen: "ScreenHome"
-                _sourceChecked: "qrc:/nebula/resources/navbar/home-selected.svg"
-                _sourceUnchecked: "qrc:/nebula/resources/navbar/home.svg"
+                navObjectName: "navButton-home"
+                screen: "ScreenHome"
+                sourceChecked: "qrc:/nebula/resources/navbar/home-selected.svg"
+                sourceUnchecked: "qrc:/nebula/resources/navbar/home.svg"
                 _accessibleName:"NavBarHomeTab"
             }
             ListElement {
-                _navObjectName: "navButton-messages"
-                _navScreen: "ScreenMessaging"
-                _sourceChecked: "qrc:/nebula/resources/navbar/messages-notification-selected.svg"
-                _sourceUnchecked: "qrc:/nebula/resources/navbar/messages-notification.svg"
+                navObjectName: "navButton-messages"
+                screen: "ScreenMessaging"
+                sourceChecked: "qrc:/nebula/resources/navbar/messages-notification-selected.svg"
+                sourceUnchecked: "qrc:/nebula/resources/navbar/messages-notification.svg"
                 _accessibleName: "NavBarMessagesTab"
             }
             ListElement {
-                _navObjectName: "navButton-settings"
-                _navScreen: "ScreenSettings"
-                _sourceChecked: "qrc:/nebula/resources/navbar/settings-selected.svg"
-                _sourceUnchecked: "qrc:/nebula/resources/navbar/settings.svg"
+                navObjectName: "navButton-settings"
+                screen: "ScreenSettings"
+                sourceChecked: "qrc:/nebula/resources/navbar/settings-selected.svg"
+                sourceUnchecked: "qrc:/nebula/resources/navbar/settings.svg"
                 _accessibleName: "NavBarSettingsTab"
             }
         }
@@ -87,15 +87,16 @@ Rectangle {
 
             RowLayout {
                 id: layout
+                objectName: "navigationLayout"
                 Layout.alignment: Qt.AlignHCenter
                 spacing: flickable.width * .2 // TODO something better here
 
                 Repeater {
                     model: navButtons
                     delegate: VPNBottomNavigationBarButton {
-                        objectName: _navObjectName
-                        _screen: VPNNavigator[_navScreen]
-                        _source: checked ? _sourceChecked : _sourceUnchecked
+                        objectName: navObjectName
+                        _screen: VPNNavigator[screen]
+                        _source: checked ? sourceChecked : sourceUnchecked
                         accessibleName: VPNl18n[_accessibleName]
                         ButtonGroup.group: navBarButtonGroup
                         Component.onCompleted: if (index === 0) checked = true;
