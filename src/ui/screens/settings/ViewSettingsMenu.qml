@@ -28,9 +28,6 @@ VPNViewBase {
             VPNUserProfile {
                 property bool subscriptionManagementEnabled: VPNFeatureList.get("subscriptionManagement").isSupported
                 objectName: "settingsUserProfile"
-
-                enabled: VPNProfileFlow.state === VPNProfileFlow.StateInitial
-
                 _iconSource: subscriptionManagementEnabled
                     ? "qrc:/nebula/resources/chevron.svg"
                     : "qrc:/nebula/resources/open-in-new.svg"
@@ -156,7 +153,6 @@ VPNViewBase {
             ) {
                 return stackview.push("qrc:/ui/screens/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml");
             }
-
             // Only push the profile view if it’s not already in the stack
             if (
                 VPNProfileFlow.state === VPNProfileFlow.StateAuthenticationNeeded
@@ -165,7 +161,7 @@ VPNViewBase {
                 return stackview.push("qrc:/ui/screens/settings/ViewSubscriptionManagement/ViewReauthenticationFlow.qml", {
                     _onClose: () => {
                         VPNProfileFlow.reset();
-                        stackview.pop();
+                        stackview.pop(null, StackView.Immediate);
                     }
                 });
             }
@@ -175,7 +171,7 @@ VPNViewBase {
             const hasError = VPNProfileFlow.state === VPNProfileFlow.StateError;
             if (hasError) {
                 if (stackview.currentItem.objectName === "reauthenticationFlow") {
-                    stackview.pop();
+                  stackview.pop(null, StackView.Immediate);
                 }
                 VPNProfileFlow.reset();
             }
