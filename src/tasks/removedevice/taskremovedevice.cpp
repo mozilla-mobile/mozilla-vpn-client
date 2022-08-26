@@ -9,6 +9,7 @@
 #include "models/user.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "telemetry/gleansample.h"
 
 namespace {
 Logger logger(LOG_MAIN, "TaskRemoveDevice");
@@ -49,6 +50,9 @@ void TaskRemoveDevice::run() {
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray&) {
             logger.debug() << "Device removed";
+
+            emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+                GleanSample::deviceRemoved, {{"source", "PushMessage"}});
             MozillaVPN::instance()->deviceRemoved(m_publicKey);
             emit completed();
           });
