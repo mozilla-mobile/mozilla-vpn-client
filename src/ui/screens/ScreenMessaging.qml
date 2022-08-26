@@ -4,10 +4,15 @@
 
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
+import Mozilla.VPN 1.0
+import components 0.1
 
-Item {
-  Text {
-    anchors.fill: parent
-    text: "Messaging"
-  }
+VPNScreenBase {
+    objectName: "messaging"
+    _menuIconVisibility: getStack().depth > 1
+
+    Component.onCompleted: () => {
+       VPNNavigator.addStackView(VPNNavigator.ScreenMessaging, getStack())
+       getStack().push("qrc:/ui/screens/messaging/ViewMessaging.qml")
+   }
 }

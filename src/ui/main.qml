@@ -10,6 +10,7 @@ import QtQuick.Window 2.12
 import Mozilla.VPN 1.0
 import compat 0.1
 import components 0.1
+import components.navbar 0.1
 
 import org.mozilla.Glean 0.30
 import telemetry 0.30
@@ -18,6 +19,8 @@ Window {
     id: window
 
     signal showServerList
+    signal unwindCurrentStackView
+
     property bool _fallbackQtQuickRenderer: QT_QUICK_BACKEND == "software" //TODO pending #3398
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
 
@@ -219,6 +222,7 @@ Window {
     }
 
     VPNBottomNavigationBar {
+        id: navbar
     }
 
 }

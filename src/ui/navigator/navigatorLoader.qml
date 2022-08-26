@@ -16,6 +16,8 @@ StackView {
   property var screens: []
   property var currentLoadPolicy: null
 
+
+
   function showCurrentComponent() {
       if (stackView.currentLoadPolicy === VPNNavigator.LoadTemporarily) {
         // Temporarily items will be always at the last position because
@@ -50,10 +52,19 @@ StackView {
       }
   }
 
+
   Connections {
     target: VPNNavigator
     function onCurrentComponentChanged() {
        showCurrentComponent();
+    }
+  }
+
+  Connections {
+      target: window
+      function onUnwindCurrentStackView() {
+          const pos = stackView.screens.indexOf(VPNNavigator.screen)
+          stackView.get(pos+1).unwindStack();
     }
   }
 

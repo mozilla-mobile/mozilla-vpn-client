@@ -48,10 +48,15 @@ Item {
     VPNStackView {
         id: stackview
         anchors.top: menu.bottom
+        height: parent.height - menu.height
         onCurrentItemChanged: {
             menu.title = Qt.binding(() => currentItem._menuTitle || "");
             menu.visible = Qt.binding(() => menu.title !== "");
             menu._menuOnBackClicked = currentItem._menuOnBackClicked ? currentItem._menuOnBackClicked : () => menu.maybeRequestPreviousScreen()
         }
+    }
+
+    function unwindStack() {
+        stackview.pop(null)
     }
 }

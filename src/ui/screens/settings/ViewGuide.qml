@@ -8,8 +8,9 @@ import QtQuick.Layouts 1.15
 import Mozilla.VPN 1.0
 import Mozilla.VPN.qmlcomponents 1.0
 import components 0.1
+import components.navbar 0.1
 
-Item {
+VPNViewBase {
     id: root
 
     property var guide
@@ -17,8 +18,11 @@ Item {
     property int safeAreaHeight: window.safeAreaHeightByDevice()
     readonly property double timeOfOpen: new Date().getTime()
 
-    ColumnLayout {
-        anchors.fill: parent
+    _interactive: false
+
+    _viewContentData: ColumnLayout {
+        Layout.minimumHeight: root.height
+        Layout.fillWidth: true
 
         spacing: 0
 
@@ -93,6 +97,7 @@ Item {
         }
 
         VPNFlickable {
+            id: vpnFlickable
             Layout.fillWidth: true
             Layout.fillHeight: true
 
@@ -231,8 +236,7 @@ Item {
                     }
 
                     //padding for the bottom of the flickable
-                    Item {
-                        Layout.preferredHeight: 56
+                    VPNBottomNavigationBarClearance {
                     }
                 }
             }

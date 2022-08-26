@@ -175,4 +175,7 @@ VPNViewBase {
             }
         }
     }
+    Component.onCompleted: {
+        VPN.recordGleanEvent("settingsViewOpened");
+    }
 }
