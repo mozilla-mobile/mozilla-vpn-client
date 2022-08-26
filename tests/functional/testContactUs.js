@@ -43,10 +43,13 @@ describe('Contact us view', function() {
       await vpn.clickOnElement('settingsButton');
       await vpn.wait();
 
+      await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
+
       await vpn.waitForElement('settingsGetHelp');
       await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
       await vpn.clickOnElement('settingsGetHelp');
 
+      await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
       await vpn.waitForElementProperty('getHelpLinks', 'visible', 'true');
       await vpn.clickOnElement('inAppSupport');
     }
