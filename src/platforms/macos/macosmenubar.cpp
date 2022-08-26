@@ -107,6 +107,6 @@ void MacOSMenuBar::retranslate() {
   Q_ASSERT(l18nStrings);
 
   m_helpMenu->addAction(l18nStrings->t(L18nStrings::SystrayGetHelp), []() {
-    Navigator::instance()->requestScreen(Navigator::ScreenGetHelp);
+    ExternalOpHandler::instance()->request(ExternalOpHandler::OpGetHelp);
   });
 }

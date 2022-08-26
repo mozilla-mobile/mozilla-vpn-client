@@ -17,6 +17,7 @@ class ExternalOpHandler final : public QObject {
     OpActivate,
     OpCloseEvent,
     OpDeactivate,
+    OpGetHelp,
     OpNotificationClicked,
     OpSettings,
     OpQuit,
