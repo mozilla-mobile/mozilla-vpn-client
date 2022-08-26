@@ -10,7 +10,7 @@ import Mozilla.VPN.qmlcomponents 1.0
 import components 0.1
 import components.navbar 0.1
 
-VPNViewBase {
+Item {
     id: root
 
     property var guide
@@ -18,11 +18,8 @@ VPNViewBase {
     property int safeAreaHeight: window.safeAreaHeightByDevice()
     readonly property double timeOfOpen: new Date().getTime()
 
-    _interactive: false
-
-    _viewContentData: ColumnLayout {
-        Layout.minimumHeight: root.height
-        Layout.fillWidth: true
+    ColumnLayout {
+        anchors.fill: parent
 
         spacing: 0
 
