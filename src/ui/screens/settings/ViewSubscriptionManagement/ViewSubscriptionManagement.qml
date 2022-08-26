@@ -16,6 +16,7 @@ VPNViewBase {
     Component.onDestruction: () => VPNProfileFlow.reset()
 
     _menuTitle: VPNl18n.SubscriptionManagementMenuTitle
+    _menuOnBackClicked: () => { stackview.pop(null) }
     _viewContentData: ColumnLayout {
         spacing: VPNTheme.theme.windowMargin
 
