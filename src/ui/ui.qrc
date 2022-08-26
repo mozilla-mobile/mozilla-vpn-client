@@ -78,8 +78,7 @@
         <file>screens/settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml</file>
         <file>screens/settings/ViewSubscriptionManagement/ViewReauthenticationFlow.qml</file>
         <file>screens/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml</file>
-        <file>screens/settings/ViewTipsAndTricks/TipsAndTricksSection.qml</file>
-        <file>screens/settings/ViewTipsAndTricks/ViewTipsAndTricks.qml</file>
+        <file>screens/settings/ViewTipsAndTricks.qml</file>
         <file>screens/settings/ViewWhatsNew.qml</file>
         <file>screens/subscriptionNeeded/ViewSubscriptionNeeded.qml</file>
         <file>views/ViewErrorFullScreen.qml</file>
