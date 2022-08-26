@@ -120,7 +120,7 @@ Rectangle {
                 [
                     VPNNavigator.ScreenSettings,
                     VPNNavigator.ScreenHome,
-                    VPNNavigator.ScreenHome,
+                    VPNNavigator.ScreenMessaging,
                     VPNNavigator.ScreenGetHelp
                 ].includes(VPNNavigator.screen)
             PropertyChanges {
