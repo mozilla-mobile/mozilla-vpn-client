@@ -21,6 +21,8 @@ VPNIconButton {
         VPNNavigator.requestScreen(_screen, VPNNavigator.screen === _screen);
     }
 
+    onCheckedChanged: if (!checked && VPNNavigator.screen === VPNNavigator.ScreenGetHelp) { checked = true }
+
 
     Layout.minimumWidth: VPNTheme.theme.rowHeight
     Layout.alignment: Qt.AlignHCenter
