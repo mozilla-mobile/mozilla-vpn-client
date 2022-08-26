@@ -25,6 +25,7 @@ class Navigator final : public QObject {
   enum LoadPolicy {
     LoadPersistently,
     LoadTemporarily,
+    ReloadAndLoadPersistently,
   };
   Q_ENUM(LoadPolicy);
 
@@ -59,7 +60,7 @@ class Navigator final : public QObject {
 
   ~Navigator();
 
-  Q_INVOKABLE void requestScreen(Screen screen);
+  Q_INVOKABLE void requestScreen(Screen screen, bool forceReload = false);
   Q_INVOKABLE void requestPreviousScreen();
 
   Q_INVOKABLE void addStackView(Screen screen, const QVariant& stackView);
@@ -76,7 +77,7 @@ class Navigator final : public QObject {
 
   void computeComponent();
   void loadScreen(Screen screen, LoadPolicy loadPolicy,
-                  QQmlComponent* component);
+                  QQmlComponent* component, bool forceReload);
 
   void removeItem(QObject* obj);
 
