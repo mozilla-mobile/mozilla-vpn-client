@@ -1337,7 +1337,7 @@ sample:
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3982
     data_reviews:
-      - todo
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4275#issuecomment-1228532390
     data_sensitivity:
       - technical
     notification_emails:
@@ -1354,7 +1354,7 @@ sample:
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3982
     data_reviews:
-      - todo
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4275#issuecomment-1228532390
     data_sensitivity:
       - technical
     notification_emails:
@@ -1371,7 +1371,7 @@ sample:
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3982
     data_reviews:
-      - todo
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4275#issuecomment-1228532390
     data_sensitivity:
       - technical
     notification_emails:
@@ -1394,7 +1394,7 @@ sample:
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3982
     data_reviews:
-      - todo
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4275#issuecomment-1228532390
     data_sensitivity:
       - technical
     notification_emails:
@@ -1411,7 +1411,7 @@ sample:
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3982
     data_reviews:
-      - todo
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4275#issuecomment-1228532390
     data_sensitivity:
       - technical
     notification_emails:
@@ -1428,7 +1428,7 @@ sample:
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3982
     data_reviews:
-      - todo
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4275#issuecomment-1228532390
     data_sensitivity:
       - technical
     notification_emails:
@@ -1451,7 +1451,7 @@ sample:
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3982
     data_reviews:
-      - todo
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4275#issuecomment-1228532390
     data_sensitivity:
       - technical
     notification_emails:
@@ -1474,7 +1474,7 @@ sample:
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3982
     data_reviews:
-      - todo
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4275#issuecomment-1228532390
     data_sensitivity:
       - technical
     notification_emails:
