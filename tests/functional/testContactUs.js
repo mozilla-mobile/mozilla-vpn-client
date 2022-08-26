@@ -39,8 +39,8 @@ describe('Contact us view', function() {
     this.ctx.authenticationNeeded = true;
 
     async function openContactUsInSettings() {
-      await vpn.waitForElement('settingsButton');
-      await vpn.clickOnElement('settingsButton');
+      await vpn.waitForElement('navigationLayout/navButton-settings');
+      await vpn.clickOnElement('navigationLayout/navButton-settings');
       await vpn.wait();
 
       await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
