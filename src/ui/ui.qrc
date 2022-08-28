@@ -13,6 +13,8 @@
         <file>main.qml</file>
         <file>navigator/navigatorLoader.qml</file>
         <file>navigator/navigatorLoaderInternal.qml</file>
+        <file>navigator/navigationBar/VPNBottomNavigationBar.qml</file>
+        <file>navigator/navigationBar/VPNBottomNavigationBarButton.qml</file>
         <file>qmldir</file>
         <file>screens/authenticationInApp/ViewAuthenticationInApp.qml</file>
         <file>screens/devices/ViewDevices.qml</file>
@@ -85,5 +87,6 @@
         <file>screens/subscriptionNeeded/ViewSubscriptionNeeded.qml</file>
         <file>screens/updateRequired/ViewUpdate.qml</file>
         <file>views/ViewErrorFullScreen.qml</file>
+        <file>views/ViewUpdate.qml</file>
     </qresource>
 </RCC>

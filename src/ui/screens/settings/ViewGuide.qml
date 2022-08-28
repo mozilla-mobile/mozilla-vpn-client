@@ -233,7 +233,7 @@ Item {
                     }
 
                     //padding for the bottom of the flickable
-                    VPNBottomNavigationBarClearance {
+                    VPNFooterMargin {
                     }
                 }
             }
