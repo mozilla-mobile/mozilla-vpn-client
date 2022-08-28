@@ -27,7 +27,7 @@ Rectangle {
     color: VPNTheme.theme.ink
 
     clip: true
-    visible: showNavigationBar.includes(VPNNavigator.screen)
+    visible: showNavigationBar.includes(VPNNavigator.screen) && VPN.userState === VPN.UserAuthenticated
 
     anchors {
         horizontalCenter: parent.horizontalCenter
