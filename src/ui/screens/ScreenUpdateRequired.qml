@@ -8,6 +8,6 @@ Loader {
     id: loader
 
     Component.onCompleted: function(){
-        loader.source="qrc:/ui/views/ViewUpdate.qml"
+        loader.source="qrc:/ui/screens/updateRequired/ViewUpdate.qml"
     }
 }

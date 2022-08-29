@@ -71,11 +71,6 @@ VPNFlickable {
             }
         }
 
-        VPNAlerts {
-            id: notifications
-            updateURL: "qrc:/ui/views/ViewUpdate.qml"
-        }
-
         VPNControllerView {
             id: box
             z: 1
