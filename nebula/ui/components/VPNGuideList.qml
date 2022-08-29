@@ -17,6 +17,8 @@ ColumnLayout {
     property var customGuideFilter: () => true
     property var count: guideRepeater.count
 
+    visible: count > 0
+
     // Title
     VPNBoldLabel {
         Layout.fillWidth: true
