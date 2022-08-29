@@ -66,9 +66,10 @@ VPNViewBase {
                 ColumnLayout {
                     id: layoutAll
 
-                    anchors.fill: parent
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
                     anchors.topMargin: VPNTheme.theme.vSpacing
-                    anchors.bottomMargin: VPNTheme.theme.vSpacing
                     anchors.leftMargin: VPNTheme.theme.windowMargin
                     anchors.rightMargin: VPNTheme.theme.windowMargin
                     spacing: VPNTheme.theme.vSpacingSmall
@@ -155,9 +156,10 @@ VPNViewBase {
                 ColumnLayout {
                     id: layoutGuide
 
-                    anchors.fill: parent
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
                     anchors.topMargin: VPNTheme.theme.vSpacing
-                    anchors.bottomMargin: VPNTheme.theme.vSpacing
                     anchors.leftMargin: VPNTheme.theme.windowMargin
                     anchors.rightMargin: VPNTheme.theme.windowMargin
 
