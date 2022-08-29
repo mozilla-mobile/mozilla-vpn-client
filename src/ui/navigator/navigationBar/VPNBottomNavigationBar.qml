@@ -15,7 +15,8 @@ Rectangle {
         VPNNavigator.ScreenSettings,
         VPNNavigator.ScreenHome,
         VPNNavigator.ScreenMessaging,
-        VPNNavigator.ScreenGetHelp
+        VPNNavigator.ScreenGetHelp,
+        VPNNavigator.ScreenTipsAndTricks
     ]
 
     id: root
