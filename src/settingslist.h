@@ -49,6 +49,14 @@ SETTING_STRING(
     false                                                   // remove when reset
 )
 
+SETTING_BOOL(addonProdKeyInStaging,     // getter
+             setAddonProdKeyInStaging,  // setter
+             hasAddonProdKeyInStaging,  // has
+             "addon/prodKeyInStaging",  // key
+             false,                     // default value
+             false                      // remove when reset
+)
+
 SETTING_BOOL(captivePortalAlert,     // getter
              setCaptivePortalAlert,  // setter
              hasCaptivePortalAlert,  // has
