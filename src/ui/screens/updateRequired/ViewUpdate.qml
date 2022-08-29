@@ -35,10 +35,7 @@ VPNFlickable {
             PropertyChanges {
                 target: footerLink
                 onClicked: {
-                    // Let's hide the alert.
-                    VPN.hideUpdateRecommendedAlert();
-
-                    mainStackView.pop();
+                    VPNNavigator.requestPreviousScreen();
                 }
             }
 
@@ -168,6 +165,7 @@ VPNFlickable {
         VPNButton {
             id: updateBtn
 
+            //% "Update now"
             text: qsTrId("vpn.updates.updateNow")
             loaderVisible: VPN.updating
             radius: 4

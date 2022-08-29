@@ -338,59 +338,6 @@ const MVPNPresets = [
   },
 
   {
-    name: 'Update recommended',
-    callback: async function() {
-      await controller.waitForMainView();
-
-      await controller.wait();
-      await controller.waitForElementProperty(
-          'initialStackView', 'busy', 'false');
-      await controller.clickOnElement('getStarted');
-
-      await controller.waitForElementProperty(
-          'VPN', 'userState', 'UserAuthenticated');
-      await controller.wait();
-
-      await controller.waitForElementProperty('screenLoader', 'busy', 'false');
-      await controller.waitForElement('postAuthenticationButton');
-      await controller.clickOnElement('postAuthenticationButton');
-
-      await controller.wait();
-      await controller.waitForElementProperty('screenLoader', 'busy', 'false');
-      await controller.waitForElement('telemetryPolicyButton');
-      await controller.clickOnElement('telemetryPolicyButton');
-
-      await controller.wait();
-      await controller.waitForElementProperty('screenLoader', 'busy', 'false');
-      await controller.waitForElement('controllerTitle');
-
-      await controller.forceUpdateCheck('2.0.0');
-    },
-
-    guardianOverrideEndpoints: {
-      GETs: {
-        '/api/v1/vpn/versions': {
-          status: 200,
-          body: {
-            dummy: {
-              latest: {
-                version: '123.0.0',
-                released_on: '2022-07-22',
-                message: 'The best version ever!'
-              },
-              minimum: {
-                version: '1.0.0',
-                released_on: '2022-07-22',
-                message: 'The best version ever!'
-              }
-            }
-          }
-        },
-      },
-    }
-  },
-
-  {
     name: 'Update required',
     callback: async function() {
       await controller.waitForMainView();
