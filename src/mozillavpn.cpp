@@ -140,8 +140,9 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           });
 
   connect(&m_private->m_controller, &Controller::readyToServerUnavailable, this,
-          []() {
-            NotificationHandler::instance()->serverUnavailableNotification();
+          [](bool pingReceived) {
+            NotificationHandler::instance()->serverUnavailableNotification(
+                pingReceived);
           });
 
   connect(&m_private->m_controller, &Controller::stateChanged, this,

@@ -13,6 +13,7 @@
 #include "models/feature.h"
 #include "models/server.h"
 #include "mozillavpn.h"
+#include "pinghelper.h"
 #include "rfc/rfc1112.h"
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
@@ -121,6 +122,12 @@ void Controller::initialize() {
           &Controller::statusUpdated);
   connect(this, &Controller::stateChanged, this,
           &Controller::maybeEnableDisconnectInConfirming);
+
+  connect(&m_ping_canary, &PingHelper::pingSentAndReceived, [this]() {
+    m_ping_canary.stop();
+    m_ping_recieved = true;
+    logger.info() << "Canary Ping Succeeded";
+  });
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
@@ -274,6 +281,10 @@ void Controller::activateInternal() {
   }
 
   m_activationQueue.append(exitHop);
+  m_ping_recieved = false;
+  m_ping_canary.start(m_activationQueue.first().m_server.ipv4AddrIn(),
+                      "0.0.0.0/0");
+  logger.info() << "Canary Ping Started";
   activateNext();
 }
 
@@ -335,7 +346,7 @@ bool Controller::deactivate() {
       (m_state == StateConnecting)) {
     setState(StateDisconnecting);
   }
-
+  m_ping_canary.stop();
   m_handshakeTimer.stop();
   m_activationQueue.clear();
   clearConnectedTime();
@@ -357,7 +368,7 @@ void Controller::connected(const QString& pubkey) {
     return;
   }
   m_handshakeTimer.stop();
-
+  m_ping_canary.stop();
   // Start the next connection if there is more work to do.
   m_activationQueue.removeFirst();
   if (!m_activationQueue.isEmpty()) {
@@ -589,7 +600,8 @@ bool Controller::processNextStep() {
   }
 
   if (nextStep == ServerUnavailable) {
-    emit readyToServerUnavailable();
+    logger.info() << "Server Unavailable - Ping succeeded: " << m_ping_recieved;
+    emit readyToServerUnavailable(m_ping_recieved);
     return true;
   }
 
