@@ -57,7 +57,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray&, const QString&) {}
 
 void MozillaVPN::deviceAdded(const QString&, const QString&, const QString&) {}
 
-void MozillaVPN::deviceRemoved(const QString&) {}
+void MozillaVPN::deviceRemoved(const QString&, const QString&) {}
 
 void MozillaVPN::deviceRemovalCompleted(const QString&) {}
 
