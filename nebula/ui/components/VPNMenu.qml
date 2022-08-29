@@ -18,7 +18,7 @@ Item {
     property alias forceFocus: iconButton.focus
     property string _menuIconButtonSource: "qrc:/nebula/resources/back.svg"
     property alias _iconButtonAccessibleName: iconButton.accessibleName
-    property var _menuOnBackClicked: () => { goBack(); }
+    property var _menuOnBackClicked: () => {}
 
     width: parent.width
     height: VPNTheme.theme.menuHeight
@@ -82,13 +82,5 @@ Item {
         y: 55
         width: parent.width
         height: 1
-    }
-
-    function goBack() {
-        if (typeof(stackview) !== "undefined") {
-            stackview.pop();
-        } else {
-            mainStackView.pop();
-        }
     }
 }
