@@ -15,11 +15,11 @@
     "steps": [
       {
         "id": "s1",
-        "element": "navButton-settings",
+        "element": "navigationLayout/navButton-settings",
         "tooltip": "Select your account settings",
         "next": {
           "op": "signal",
-          "qml_emitter": "navButton-settings",
+          "qml_emitter": "navigationLayout/navButton-settings",
           "signal": "clicked"
         }
       },
