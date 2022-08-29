@@ -87,6 +87,5 @@
         <file>screens/subscriptionNeeded/ViewSubscriptionNeeded.qml</file>
         <file>screens/updateRequired/ViewUpdate.qml</file>
         <file>views/ViewErrorFullScreen.qml</file>
-        <file>views/ViewUpdate.qml</file>
     </qresource>
 </RCC>
