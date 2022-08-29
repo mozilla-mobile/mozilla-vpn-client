@@ -51,6 +51,7 @@ class Navigator final : public QObject {
     ScreenSubscriptionInUseError,
     ScreenSubscriptionNotValidated,
     ScreenTelemetryPolicy,
+    ScreenTipsAndTricks,
     ScreenUpdateRequired,
     ScreenViewLogs,
   };

@@ -70,7 +70,7 @@ VPNViewBase {
                 settingTitle: VPNl18n.TipsAndTricksSettingsEntryLabel
                 imageLeftSrc: "qrc:/nebula/resources/sparkles.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                onClicked: stackview.push("qrc:/ui/screens/settings/ViewTipsAndTricks.qml")
+                onClicked: VPNNavigator.requestScreen(VPNNavigator.ScreenTipsAndTricks);
             }
 
             VPNSettingsItem {
