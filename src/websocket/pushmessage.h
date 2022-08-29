@@ -27,7 +27,7 @@ class PushMessage final : public QObject {
   };
   Q_ENUM(MessageType)
 
-  const MessageType type() { return m_messageType; }
+  MessageType type() const { return m_messageType; }
 
  private:
   static MessageType messageTypeFromString(const QString& str);

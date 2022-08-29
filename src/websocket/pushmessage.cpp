@@ -144,8 +144,6 @@ bool PushMessage::handleDeviceDeleted(const QJsonObject& payload) {
     return true;
   }
 
-  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::deviceRemoved, {{"source", "TaskRemoveDevice"}});
-  MozillaVPN::instance()->deviceRemoved(publicKey);
+  MozillaVPN::instance()->deviceRemoved(publicKey, "PushMessage");
   return true;
 }

@@ -51,9 +51,8 @@ void TaskRemoveDevice::run() {
           [this](const QByteArray&) {
             logger.debug() << "Device removed";
 
-            emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
-                GleanSample::deviceRemoved, {{"source", "PushMessage"}});
-            MozillaVPN::instance()->deviceRemoved(m_publicKey);
+            MozillaVPN::instance()->deviceRemoved(m_publicKey,
+                                                  "TaskRemoveDevice");
             emit completed();
           });
 }
