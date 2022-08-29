@@ -22,8 +22,6 @@ VPNViewBase {
         ColumnLayout {
             spacing: 0
             Layout.fillWidth: true
-            Layout.leftMargin: VPNTheme.theme.windowMargin  / 2
-            Layout.rightMargin: VPNTheme.theme.windowMargin / 2
 
             VPNUserProfile {
                 property bool subscriptionManagementEnabled: VPNFeatureList.get("subscriptionManagement").isSupported
@@ -52,8 +50,8 @@ VPNViewBase {
 
                 Layout.preferredHeight: 1
                 Layout.fillWidth: true
-                Layout.leftMargin: VPNTheme.theme.windowMargin / 2
-                Layout.rightMargin: VPNTheme.theme.windowMargin / 2
+                Layout.leftMargin: VPNTheme.theme.windowMargin
+                Layout.rightMargin: VPNTheme.theme.windowMargin
                 color: VPNTheme.colors.grey10
             }
         }
