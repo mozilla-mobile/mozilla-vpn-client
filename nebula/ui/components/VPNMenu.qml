@@ -16,7 +16,7 @@ Item {
     property bool accessibleIgnored: false
     property bool btnDisabled: false
     property alias forceFocus: iconButton.focus
-    property string _iconButtonSource: "qrc:/nebula/resources/back.svg"
+    property string _menIconButtonSource: "qrc:/nebula/resources/back.svg"
     property alias _iconButtonAccessibleName: iconButton.accessibleName
     property var _menuOnBackClicked: () => {}
 
@@ -58,7 +58,7 @@ Item {
 
             Image {
                 objectName: "menuIcon"
-                source: _iconButtonSource
+                source: _menuIconButtonSource
                 sourceSize.width: VPNTheme.theme.iconSize
                 fillMode: Image.PreserveAspectFit
                 anchors.centerIn: iconButton
