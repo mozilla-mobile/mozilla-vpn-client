@@ -182,8 +182,7 @@ ScreenData s_screens[] = {
         QVector<MozillaVPN::State>{MozillaVPN::StateMain},
         [](Navigator::Screen*) -> int8_t { return 0; },
         []() -> bool {
-          Navigator::instance()->requestScreen(Navigator::ScreenHome);
-          // TODO: reset the stack
+          Navigator::instance()->requestScreen(Navigator::ScreenHome, true);
           return true;
         }),
     ScreenData(
@@ -214,8 +213,7 @@ ScreenData s_screens[] = {
         QVector<MozillaVPN::State>{MozillaVPN::StateMain},
         [](Navigator::Screen*) -> int8_t { return 0; },
         []() -> bool {
-          Navigator::instance()->requestScreen(Navigator::ScreenHome);
-          // TODO: reset the stack
+          Navigator::instance()->requestScreen(Navigator::ScreenHome, true);
           return true;
         }),
     ScreenData(
