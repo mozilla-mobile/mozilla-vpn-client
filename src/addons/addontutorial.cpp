@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addontutorial.h"
+#include "frontend/navigatorreloader.h"
 #include "itempicker.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -113,6 +114,12 @@ void AddonTutorial::play(const QStringList& allowedItems) {
   m_allowedItems = allowedItems;
   m_currentStep = 0;
 
+  if (m_navigatorReloader) {
+    m_navigatorReloader->deleteLater();
+  }
+
+  m_navigatorReloader = new NavigatorReloader(this);
+
   m_itemPicker->start();
 
   processNextOp();
@@ -129,26 +136,29 @@ void AddonTutorial::stop() {
 
   m_itemPicker->stop();
   m_currentStep = -1;
+
+  if (m_navigatorReloader) {
+    m_navigatorReloader->deleteLater();
+    m_navigatorReloader = nullptr;
+  }
 }
 
-bool AddonTutorial::maybeStop(bool completed) {
+bool AddonTutorial::maybeStop() {
   if (m_currentStep != m_steps.length()) {
     return false;
   }
 
-  if (completed) {
-    Tutorial* tutorial = Tutorial::instance();
-    Q_ASSERT(tutorial);
+  Tutorial* tutorial = Tutorial::instance();
+  Q_ASSERT(tutorial);
 
-    tutorial->requireTutorialCompleted(this);
-  }
+  tutorial->requireTutorialCompleted(this);
 
   Tutorial::instance()->stop();
   return true;
 }
 
 void AddonTutorial::processNextOp() {
-  if (maybeStop(true)) {
+  if (maybeStop()) {
     return;
   }
 

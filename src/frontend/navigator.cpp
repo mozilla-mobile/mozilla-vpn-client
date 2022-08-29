@@ -432,6 +432,10 @@ void Navigator::requestScreen(Navigator::Screen requestedScreen,
                               bool forceReload) {
   logger.debug() << "Screen request:" << requestedScreen;
 
+  if (!m_reloaders.isEmpty()) {
+    forceReload = true;
+  }
+
   QList<ScreenData*> screens = computeScreens(&requestedScreen);
   Q_ASSERT(!screens.isEmpty());
 
@@ -468,6 +472,10 @@ void Navigator::requestPreviousScreen() {
 void Navigator::loadScreen(Screen screen, LoadPolicy loadPolicy,
                            QQmlComponent* component, bool forceReload) {
   logger.debug() << "Loading screen" << screen;
+
+  if (!m_reloaders.isEmpty()) {
+    forceReload = true;
+  }
 
   if (m_screenHistory.isEmpty() || screen != m_currentScreen) {
     m_screenHistory.append(screen);
@@ -610,11 +618,21 @@ bool Navigator::eventHandled() {
 #elif defined(MVPN_IOS)
   return false;
 #elif defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS) || \
-    defined(MVPN_DUMMY)
+    defined(MVPN_DUMMY) || defined(UNIT_TEST)
   logger.error() << "We should not be here! Why "
                     "CloseEventHandler::eventHandled() is called on desktop?!?";
   return true;
 #else
 #  error Unsupported platform
 #endif
+}
+
+void Navigator::registerReloader(NavigatorReloader* reloader) {
+  Q_ASSERT(!m_reloaders.contains(reloader));
+  m_reloaders.append(reloader);
+}
+
+void Navigator::unregisterReloader(NavigatorReloader* reloader) {
+  Q_ASSERT(m_reloaders.contains(reloader));
+  m_reloaders.removeOne(reloader);
 }

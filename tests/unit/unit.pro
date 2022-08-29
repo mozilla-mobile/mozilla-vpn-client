@@ -77,6 +77,8 @@ HEADERS += \
     ../../src/dnspingsender.h \
     ../../src/errorhandler.h \
     ../../src/externalophandler.h \
+    ../../src/frontend/navigator.h \
+    ../../src/frontend/navigatorreloader.h \
     ../../src/inspector/inspectorhandler.h \
     ../../src/inspector/inspectorutils.h \
     ../../src/ipaddress.h \
@@ -207,6 +209,8 @@ SOURCES += \
     ../../src/dnspingsender.cpp \
     ../../src/errorhandler.cpp \
     ../../src/externalophandler.cpp \
+    ../../src/frontend/navigator.cpp \
+    ../../src/frontend/navigatorreloader.cpp \
     ../../src/hacl-star/Hacl_Chacha20.c \
     ../../src/hacl-star/Hacl_Chacha20Poly1305_32.c \
     ../../src/hacl-star/Hacl_Curve25519_51.c \
