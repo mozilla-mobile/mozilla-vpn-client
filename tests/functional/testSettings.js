@@ -167,9 +167,9 @@ describe('Settings', function () {
     //   await vpn.waitForElement('settingsTipsAndTricksPage');
     // }
 
-    await vpn.waitForElement('settings-back');
-    await vpn.waitForElementProperty('settings-back', 'visible', 'true');
-    await vpn.clickOnElement('settings-back');
+    await vpn.waitForElement('tipsAndTricks-back');
+    await vpn.waitForElementProperty('tipsAndTricks-back', 'visible', 'true');
+    await vpn.clickOnElement('tipsAndTricks-back');
     await vpn.wait();
 
     await vpn.waitForElement('settingsUserProfile-manageAccountButton');

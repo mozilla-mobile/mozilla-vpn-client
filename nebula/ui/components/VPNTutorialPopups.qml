@@ -246,9 +246,7 @@ Item {
 
     function openTipsAndTricks() {
         tutorialPopup.close();
-        VPN.settingsNeeded();
-        const settingsViewInMainStack = mainStackView.find((view) => { return view.objectName === "settings" });
-        settingsViewInMainStack._openTipsAndTricks();
+        VPNNavigator.requestScreen(VPNNavigator.ScreenTipsAndTricks);
     }
 
 
