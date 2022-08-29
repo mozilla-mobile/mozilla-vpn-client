@@ -13,7 +13,6 @@
 #include "models/feature.h"
 #include "models/server.h"
 #include "mozillavpn.h"
-#include "pinghelper.h"
 #include "rfc/rfc1112.h"
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
@@ -125,7 +124,7 @@ void Controller::initialize() {
 
   connect(&m_ping_canary, &PingHelper::pingSentAndReceived, [this]() {
     m_ping_canary.stop();
-    m_ping_recieved = true;
+    m_ping_received = true;
     logger.info() << "Canary Ping Succeeded";
   });
 
@@ -281,7 +280,7 @@ void Controller::activateInternal() {
   }
 
   m_activationQueue.append(exitHop);
-  m_ping_recieved = false;
+  m_ping_received = false;
   m_ping_canary.start(m_activationQueue.first().m_server.ipv4AddrIn(),
                       "0.0.0.0/0");
   logger.info() << "Canary Ping Started";
@@ -600,8 +599,8 @@ bool Controller::processNextStep() {
   }
 
   if (nextStep == ServerUnavailable) {
-    logger.info() << "Server Unavailable - Ping succeeded: " << m_ping_recieved;
-    emit readyToServerUnavailable(m_ping_recieved);
+    logger.info() << "Server Unavailable - Ping succeeded: " << m_ping_received;
+    emit readyToServerUnavailable(m_ping_received);
     return true;
   }
 

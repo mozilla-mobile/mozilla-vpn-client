@@ -10,14 +10,14 @@ import Mozilla.VPN 1.0
 
 VPNSimplePopup {
     id: root
-    property bool recivedPing: false;
+    property bool receivedPing: false;
 
     anchors.centerIn: parent
     imageSrc: "qrc:/nebula/resources/server-unavailable.svg"
     imageSize: Qt.size(80, 80)
     title: VPNl18n.ServerUnavailableModalHeaderText
     // In case the handshake failed but the ping succeeded - use the Firewall Error Message
-    description: recivedPing ? VPNl18n.ServerUnavailableNotificationBodyTextFireWallBlocked : VPNl18n.ServerUnavailableModalBodyText
+    description: receivedPing ? VPNl18n.ServerUnavailableNotificationBodyTextFireWallBlocked : VPNl18n.ServerUnavailableModalBodyText
     buttons: [
         VPNButton {
             text: VPNl18n.ServerUnavailableModalButtonLabel

@@ -166,7 +166,7 @@ class Controller final : public QObject {
   QDateTime m_connectedTimeInUTC;
 
   PingHelper m_ping_canary;
-  bool m_ping_recieved = false;
+  bool m_ping_received = false;
 
   QScopedPointer<ControllerImpl> m_impl;
 

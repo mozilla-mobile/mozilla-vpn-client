@@ -206,8 +206,8 @@ Window {
 
     Connections {
         target: VPNController
-        function onReadyToServerUnavailable(recievedPing) {
-            serverUnavailablePopup.recivedPing = recievedPing
+        function onReadyToServerUnavailable(receivedPing) {
+            serverUnavailablePopup.receivedPing = receivedPing
             serverUnavailablePopup.open();
         }
     }
