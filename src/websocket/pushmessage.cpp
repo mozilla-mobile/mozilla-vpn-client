@@ -6,6 +6,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "telemetry/gleansample.h"
 
 #include <QEventLoop>
 #include <QJsonObject>
@@ -76,11 +77,9 @@ void PushMessage::parseMessage(const QString& message) {
 PushMessage::MessageType PushMessage::messageTypeFromString(
     const QString& str) {
   if (str == "DEVICE_DELETED") return MessageType_DeviceDeleted;
-
 #ifdef UNIT_TEST
   if (str == "TEST_MESSAGE") return MessageType_TestMessage;
 #endif
-
   logger.debug() << "Unknown message type" << str;
   return MessageType_UnknownMessage;
 }
@@ -145,6 +144,6 @@ bool PushMessage::handleDeviceDeleted(const QJsonObject& payload) {
     return true;
   }
 
-  MozillaVPN::instance()->deviceRemoved(publicKey);
+  MozillaVPN::instance()->deviceRemoved(publicKey, "PushMessage");
   return true;
 }

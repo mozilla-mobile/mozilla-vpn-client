@@ -254,7 +254,7 @@ class MozillaVPN final : public QObject {
   void deviceAdded(const QString& deviceName, const QString& publicKey,
                    const QString& privateKey);
 
-  void deviceRemoved(const QString& publicKey);
+  void deviceRemoved(const QString& publicKey, const QString& source);
   void deviceRemovalCompleted(const QString& publicKey);
 
   void setJournalPublicAndPrivateKeys(const QString& publicKey,
