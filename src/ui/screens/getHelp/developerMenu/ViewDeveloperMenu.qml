@@ -119,6 +119,20 @@ VPNViewBase {
             }
         }
 
+        VPNCheckBoxRow {
+            id: checkBoxRowProdKeyInStaging
+
+            Layout.fillWidth: true
+            Layout.rightMargin: VPNTheme.theme.windowMargin
+            labelText: "Add-on production signature key in staging"
+            subLabelText: "Use the add-on production signature key in staging"
+            isChecked: VPNSettings.addonProdKeyInStaging
+            showDivider: false
+            onClicked: {
+                VPNSettings.addonProdKeyInStaging = !VPNSettings.addonProdKeyInStaging
+            }
+        }
+
         Rectangle {
             id: divider
             Layout.preferredHeight: 1
