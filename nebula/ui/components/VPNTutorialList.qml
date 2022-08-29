@@ -17,6 +17,7 @@ GridLayout {
     columns: width < VPNTheme.theme.tabletMinimumWidth ? 1 : 2
     columnSpacing: VPNTheme.theme.vSpacingSmall
     rowSpacing: VPNTheme.theme.vSpacingSmall
+    visible: count > 0
 
     function tutorialFilter(addon) {
         return addon.type === "tutorial" && customTutorialFilter(addon);
