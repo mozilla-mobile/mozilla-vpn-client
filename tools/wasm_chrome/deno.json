@@ -1,0 +1,7 @@
+{
+  "tasks": {
+    "build": "deno run --allow-all generate_branch_file.ts",
+    "run": "deno run --allow-net --allow-read https://deno.land/std@0.153.0/http/file_server.ts",
+    "format": "deno fmt ."
+  }
+}
