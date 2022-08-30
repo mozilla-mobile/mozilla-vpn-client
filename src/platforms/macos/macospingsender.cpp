@@ -40,7 +40,10 @@ MacOSPingSender::MacOSPingSender(const QHostAddress& source, QObject* parent)
     return;
   }
 
-  quint32 ipv4addr = source.toIPv4Address();
+  quint32 ipv4addr = INADDR_ANY;
+  if (!source.isNull()) {
+    ipv4addr = source.toIPv4Address();
+  }
   struct sockaddr_in addr;
   bzero(&addr, sizeof(addr));
   addr.sin_family = AF_INET;
