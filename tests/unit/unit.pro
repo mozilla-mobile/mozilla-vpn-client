@@ -37,7 +37,6 @@ include($$PWD/../../version.pri)
 include($$PWD/../../glean/glean.pri)
 include($$PWD/../../nebula/nebula.pri)
 include($$PWD/../../translations/translations.pri)
-include($$PWD/../../src/qmake/signature.pri)
 
 # Remove resouce files that we intend to mock out
 RESOURCES ~= 's/.*servers.qrc//g'
