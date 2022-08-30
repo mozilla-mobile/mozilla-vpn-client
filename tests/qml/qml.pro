@@ -61,6 +61,11 @@ SOURCES += \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
     ../../src/update/webupdater.cpp \
+    ../../src/pinghelper.cpp \ 
+    ../../src/pingsender.cpp \
+    ../../src/platforms/dummy/dummypingsender.cpp \
+    ../../src/dnspingsender.cpp \
+    ../../src/pingsenderfactory.cpp \
     ../../src/qmlengineholder.cpp
 
 HEADERS += \
@@ -82,6 +87,11 @@ HEADERS += \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \
     ../../src/settingsholder.h \
+    ../../src/pinghelper.h \ 
+    ../../src/pingsender.h \
+    ../../src/platforms/dummy/dummypingsender.h \
+    ../../src/dnspingsender.h \
+    ../../src/pingsenderfactory.h \
     ../../src/theme.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
