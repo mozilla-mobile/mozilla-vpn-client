@@ -48,7 +48,7 @@ class BranchSelector extends HTMLElement{
 
         if(maybeStored){
             const stored = JSON.parse(maybeStored);
-            const stored_age = new Date(stored.date) - new Date();
+            const stored_age = new Date() - new Date(stored.date) ;
             // The branches should be cached for 1 hour
             if(stored_age < 1000 * 60 * 60 * 1){
                 console.log("Using Cached Data");
