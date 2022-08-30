@@ -16,7 +16,7 @@ Item {
     property bool accessibleIgnored: false
     property bool btnDisabled: false
     property alias forceFocus: iconButton.focus
-    property string _menIconButtonSource: "qrc:/nebula/resources/back.svg"
+    property string _menuIconButtonSource: "qrc:/nebula/resources/back.svg"
     property alias _iconButtonAccessibleName: iconButton.accessibleName
     property var _menuOnBackClicked: () => {}
 
@@ -34,6 +34,8 @@ Item {
 
     RowLayout {
         id: row
+
+        objectName: "menuBar"
         anchors {
             fill: parent
             margins: VPNTheme.theme.windowMargin / 2
