@@ -160,6 +160,10 @@ class Feature : public QObject {
   bool m_released = false;
   // Is true if the Feature was released in this Version
   bool m_new = false;
+
+#ifdef UNIT_TEST
+  friend class TestAddonIndex;
+#endif
 };
 
 #endif  // FEATURE_H
