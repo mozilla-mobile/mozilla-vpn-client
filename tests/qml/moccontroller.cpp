@@ -5,6 +5,7 @@
 #include "../../src/controllerimpl.h"
 #include "../../src/ipaddress.h"
 #include "../../src/mozillavpn.h"
+#include "../../src/pinghelper.h"
 
 Controller::Controller() {}
 
