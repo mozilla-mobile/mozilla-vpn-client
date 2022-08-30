@@ -61,20 +61,9 @@ android {
 
 // Tasks to Import the Platform plugins
 task importQtPlatformPlugins(type: Copy) {
-    with QtConfiguration.copyAndroidPlugin(QtConfiguration.x64,QtConfiguration.NDK_x64)
-    with QtConfiguration.copyAndroidPlugin(QtConfiguration.arm64,QtConfiguration.NDK_arm64)
-    with QtConfiguration.copyAndroidPlugin(QtConfiguration.x86,QtConfiguration.NDK_x86)
-    with QtConfiguration.copyAndroidPlugin(QtConfiguration.armv7,QtConfiguration.NDK_armv7)
-
-    with QtConfiguration.importQtPlugin("tls",QtConfiguration.x64,QtConfiguration.NDK_x64)
-    with QtConfiguration.importQtPlugin("tls",QtConfiguration.arm64,QtConfiguration.NDK_arm64)
-    with QtConfiguration.importQtPlugin("tls",QtConfiguration.x86,QtConfiguration.NDK_x86)
-    with QtConfiguration.importQtPlugin("tls",QtConfiguration.armv7,QtConfiguration.NDK_armv7)
-
-    with QtConfiguration.importQtPlugin("imageformats",QtConfiguration.x64,QtConfiguration.NDK_x64)
-    with QtConfiguration.importQtPlugin("imageformats",QtConfiguration.arm64,QtConfiguration.NDK_arm64)
-    with QtConfiguration.importQtPlugin("imageformats",QtConfiguration.x86,QtConfiguration.NDK_x86)
-    with QtConfiguration.importQtPlugin("imageformats",QtConfiguration.armv7,QtConfiguration.NDK_armv7)
+    with QtConfiguration.importQtPlugin("tls")
+    with QtConfiguration.importQtPlugin("platforms")
+    with QtConfiguration.importQtPlugin("imageformats")
 
     into("build/qt_plugins")
 }
@@ -87,16 +76,8 @@ task importQMLPlugins(type: Copy) {
         // so once we have done this, don't do it again until the cache is cleared
         !(new File("build/qml_plugins")).exists()
     }
-
-    with QtConfiguration.copyQMLPlugin(QtConfiguration.x64,QtConfiguration.NDK_x64)
-    with QtConfiguration.copyQMLPlugin(QtConfiguration.arm64,QtConfiguration.NDK_arm64)
-    with QtConfiguration.copyQMLPlugin(QtConfiguration.x86,QtConfiguration.NDK_x86)
-    with QtConfiguration.copyQMLPlugin(QtConfiguration.armv7,QtConfiguration.NDK_armv7)
-
-    with QtConfiguration.copyQMLCompat(QtConfiguration.x64,QtConfiguration.NDK_x64)
-    with QtConfiguration.copyQMLCompat(QtConfiguration.arm64,QtConfiguration.NDK_arm64)
-    with QtConfiguration.copyQMLCompat(QtConfiguration.x86,QtConfiguration.NDK_x86)
-    with QtConfiguration.copyQMLCompat(QtConfiguration.armv7,QtConfiguration.NDK_armv7)
+    with QtConfiguration.copyQMLPlugin()
+    with QtConfiguration.copyQMLCompat()
     into("build/qml_plugins")
 }
 preBuild.dependsOn importQMLPlugins
