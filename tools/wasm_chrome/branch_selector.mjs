@@ -72,6 +72,12 @@ class BranchSelector extends HTMLElement{
                 // We don't know anything about that branch, add it to final list
                 return true;
             }
+            if(branch_metadata.name === "main"){
+                // It's okay if we did not have valid info about main
+                // on build time, as gh pages task could have been faster
+                // as the taskcluster-wasm task
+                return true;
+            }
             // It's ok if it has a running or completed task attached.
             return branch_metadata.task_status == "ok";
         })
