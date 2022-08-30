@@ -35,7 +35,9 @@ void ServerLatency::initialize() {
   connect(vpn->controller(), &Controller::stateChanged, this,
           &ServerLatency::stateChanged);
 
-  connect(&m_pingTimeout, &QTimer::timeout, this, &ServerLatency::maybeSendPings);
+  connect(&m_pingTimeout, &QTimer::timeout, this,
+          &ServerLatency::maybeSendPings);
+
   connect(&m_refreshTimer, &QTimer::timeout, this, &ServerLatency::start);
 
   m_refreshTimer.start(SERVER_LATENCY_INITIAL_MSEC);
