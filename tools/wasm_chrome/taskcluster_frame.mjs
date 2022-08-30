@@ -52,7 +52,12 @@ class TaskclusterFrame extends HTMLElement{
         this.render();
         this.update();
 
-        this.#static_info = await static_branch_info
+        this.#static_info = [];
+        try {
+            this.#static_info = await static_branch_info;
+        } catch (error) {
+            console.error(error);
+        }
     }
 
 

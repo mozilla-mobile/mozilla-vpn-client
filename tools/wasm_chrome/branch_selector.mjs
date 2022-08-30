@@ -61,7 +61,12 @@ class BranchSelector extends HTMLElement{
             repo: 'mozilla-vpn-client',
             per_page: 100
         });
-        const branch_info = await static_branch_info; // Make Sure this is ready
+        let branch_info = []
+        try {
+            branch_info = await static_branch_info; // Make Sure this is ready
+        } catch (error) {
+            console.error(error);
+        }
         const unfiltered_branches = response.data;
         // Filter the branches we just got from github:
         // if we know the head-sha of the breanch does not have 
@@ -123,8 +128,7 @@ class BranchSelector extends HTMLElement{
                 const url = new URL(window.location);
                 let name = url.searchParams.get('branch');
                 if(!name){
-                    this.#firedOnload=true;
-                    return;
+                    name="main";
                 }
                 const option = Array.from(selector.querySelectorAll(`option`)).find(e => e.text == name);
                 if(option){
