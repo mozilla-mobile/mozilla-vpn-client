@@ -17,7 +17,7 @@ void Controller::implInitialized(bool, bool, const QDateTime&) {}
 
 bool Controller::activate() { return false; }
 
-void Controller::activateInternal() {}
+void Controller::activateInternal(bool forcePort53) { Q_UNUSED(forcePort53) }
 
 bool Controller::deactivate() { return false; }
 
