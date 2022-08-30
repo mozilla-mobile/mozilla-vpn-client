@@ -184,7 +184,7 @@ bool Controller::activate() {
   return true;
 }
 
-void Controller::activateInternal() {
+void Controller::activateInternal(bool forcePort53) {
   logger.debug() << "Activation internal";
   Q_ASSERT(m_impl);
 
@@ -226,7 +226,7 @@ void Controller::activateInternal() {
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv6AddrIn());
 
     // If requested, force the use of port 53/DNS.
-    if (settingsHolder->tunnelPort53()) {
+    if (settingsHolder->tunnelPort53() || forcePort53) {
       exitHop.m_server.forcePort(53);
     }
     // For single-hop, they are the same
@@ -244,7 +244,7 @@ void Controller::activateInternal() {
       return;
     }
     // If requested, force the use of port 53/DNS.
-    if (settingsHolder->tunnelPort53()) {
+    if (settingsHolder->tunnelPort53() || forcePort53) {
       hop.m_server.forcePort(53);
     }
 
@@ -403,6 +403,13 @@ void Controller::handshakeTimeout() {
   emit connectionRetryChanged();
   if (m_connectionRetry < CONNECTION_MAX_RETRY) {
     activateInternal();
+    return;
+  } else if (m_connectionRetry == CONNECTION_MAX_RETRY &&
+             !SettingsHolder::instance()->tunnelPort53()) {
+    logger.info() << "Last Connection Attempt: Using Port 53 Option this time.";
+    // On the last activation, opportunisticly try again using the port 53
+    // option enabled, if that feature is disabled.
+    activateInternal(true);
     return;
   }
 
