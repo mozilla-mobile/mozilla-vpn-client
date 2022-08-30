@@ -217,7 +217,7 @@ void NotificationHandler::unsecuredNetworkNotification(
                  Constants::UNSECURED_NETWORK_ALERT_MSEC);
 }
 
-void NotificationHandler::serverUnavailableNotification() {
+void NotificationHandler::serverUnavailableNotification(bool pingRecieved) {
   logger.debug() << "Server unavailable notification shown";
 
   if (!SettingsHolder::instance()->serverUnavailableNotification()) {
@@ -230,7 +230,11 @@ void NotificationHandler::serverUnavailableNotification() {
 
   QString title = l18nStrings->t(L18nStrings::ServerUnavailableModalHeaderText);
   QString message =
-      l18nStrings->t(L18nStrings::ServerUnavailableNotificationBodyText);
+      pingRecieved
+          ? l18nStrings->t(
+                L18nStrings::
+                    ServerUnavailableNotificationBodyTextFireWallBlocked)
+          : l18nStrings->t(L18nStrings::ServerUnavailableNotificationBodyText);
 
   notifyInternal(ServerUnavailable, title, message,
                  Constants::SERVER_UNAVAILABLE_ALERT_MSEC);

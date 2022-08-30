@@ -61,6 +61,16 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/settingsholder.h
     ${MVPN_SOURCE_DIR}/theme.cpp
     ${MVPN_SOURCE_DIR}/theme.h
+    ${MVPN_SOURCE_DIR}/pinghelper.cpp
+    ${MVPN_SOURCE_DIR}/pinghelper.h
+    ${MVPN_SOURCE_DIR}/pingsender.cpp
+    ${MVPN_SOURCE_DIR}/pingsender.h
+    ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
+    ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.h
+    ${MVPN_SOURCE_DIR}/dnspingsender.cpp
+    ${MVPN_SOURCE_DIR}/dnspingsender.h
+    ${MVPN_SOURCE_DIR}/pingsenderfactory.cpp
+    ${MVPN_SOURCE_DIR}/pingsenderfactory.h
     ${MVPN_SOURCE_DIR}/update/updater.cpp
     ${MVPN_SOURCE_DIR}/update/updater.h
     ${MVPN_SOURCE_DIR}/update/versionapi.cpp
