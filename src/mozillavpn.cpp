@@ -678,9 +678,6 @@ void MozillaVPN::serversFetched(const QByteArray& serverData) {
     Q_ASSERT(m_private->m_serverData.initialized());
     m_private->m_serverData.writeSettings();
   }
-
-  // After fetching the servers, schedule a refresh of the latency data.
-  m_private->m_serverLatency.start();
 }
 
 void MozillaVPN::deviceRemovalCompleted(const QString& publicKey) {

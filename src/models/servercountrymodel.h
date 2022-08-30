@@ -75,6 +75,9 @@ class ServerCountryModel final : public QAbstractListModel {
 
   QVariant data(const QModelIndex& index, int role) const override;
 
+ signals:
+  void changed();
+
  private:
   [[nodiscard]] bool fromJsonInternal(const QByteArray& data);
 

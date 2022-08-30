@@ -56,6 +56,7 @@ bool ServerCountryModel::fromJson(const QByteArray& s) {
   }
 
   m_rawJson = s;
+  emit changed();
   return true;
 }
 

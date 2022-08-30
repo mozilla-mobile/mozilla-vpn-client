@@ -12,6 +12,10 @@
 
 constexpr const uint32_t SERVER_LATENCY_TIMEOUT_MSEC = 5000;
 
+constexpr const uint32_t SERVER_LATENCY_INITIAL_MSEC = 1000;
+
+constexpr const uint32_t SERVER_LATENCY_REFRESH_MSEC = 1800000;
+
 constexpr const int SERVER_LATENCY_MAX_PARALLEL = 8;
 
 namespace {
@@ -24,10 +28,17 @@ ServerLatency::~ServerLatency() { MVPN_COUNT_DTOR(ServerLatency); }
 
 void ServerLatency::initialize() {
   MozillaVPN* vpn = MozillaVPN::instance();
+
+  connect(vpn->serverCountryModel(), &ServerCountryModel::changed, this,
+          &ServerLatency::start);
+
   connect(vpn->controller(), &Controller::stateChanged, this,
           &ServerLatency::stateChanged);
 
-  connect(&m_timeout, &QTimer::timeout, this, &ServerLatency::maybeSendPings);
+  connect(&m_pingTimeout, &QTimer::timeout, this, &ServerLatency::maybeSendPings);
+  connect(&m_refreshTimer, &QTimer::timeout, this, &ServerLatency::start);
+
+  m_refreshTimer.start(SERVER_LATENCY_INITIAL_MSEC);
 }
 
 void ServerLatency::start() {
@@ -59,6 +70,7 @@ void ServerLatency::start() {
     m_pingSendQueue.append(server.publicKey());
   }
 
+  m_refreshTimer.stop();
   maybeSendPings();
 }
 
@@ -101,21 +113,25 @@ void ServerLatency::maybeSendPings() {
     // If the ping reply list is empty, then we have nothing left to do.
     stop();
   } else {
-    // Otherwise, the list should be sorted by transmit time. Schedule a timer to
-    // cleanup anything that experiences a timeout.
+    // Otherwise, the list should be sorted by transmit time. Schedule a timer
+    // to cleanup anything that experiences a timeout.
     const ServerPingRecord& record = m_pingReplyList.first();
-    m_timeout.start(SERVER_LATENCY_TIMEOUT_MSEC - (now - record.timestamp));
+    m_pingTimeout.start(SERVER_LATENCY_TIMEOUT_MSEC - (now - record.timestamp));
   }
 }
 
 void ServerLatency::stop() {
-  m_timeout.stop();
+  m_pingTimeout.stop();
   m_pingSendQueue.clear();
   m_pingReplyList.clear();
 
   if (m_pingSender) {
     delete m_pingSender;
     m_pingSender = nullptr;
+  }
+
+  if (!m_refreshTimer.isActive()) {
+    m_refreshTimer.start(SERVER_LATENCY_REFRESH_MSEC);
   }
 }
 
@@ -140,7 +156,7 @@ void ServerLatency::recvPing(quint16 sequence) {
     ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
     quint64 latency = QDateTime::currentMSecsSinceEpoch() - record.timestamp;
     logger.debug() << "Server" << logger.keys(record.publicKey) << "latency"
-                  << latency << "msec";
+                   << latency << "msec";
     scm->setServerLatency(record.publicKey, latency);
 
     m_pingReplyList.erase(i);

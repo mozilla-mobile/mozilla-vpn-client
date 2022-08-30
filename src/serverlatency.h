@@ -37,7 +37,8 @@ class ServerLatency final : public QObject {
   QList<QString> m_pingSendQueue;
   QList<ServerPingRecord> m_pingReplyList;
 
-  QTimer m_timeout;
+  QTimer m_pingTimeout;
+  QTimer m_refreshTimer;
   bool m_wantRefresh = false;
 
  private slots:
