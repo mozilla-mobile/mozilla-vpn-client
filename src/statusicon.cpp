@@ -115,7 +115,6 @@ void StatusIcon::stateChanged() {
       break;
 #else
     case Controller::StateOn:
-      stabilityChanged();
       setIcon(LOGO_GENERIC_ON, false);
       break;
     case Controller::StateOff:
