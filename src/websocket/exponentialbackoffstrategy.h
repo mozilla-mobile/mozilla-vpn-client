@@ -14,6 +14,8 @@ class ExponentialBackoffStrategy final : public QObject {
   Q_OBJECT
  public:
   ExponentialBackoffStrategy();
+  ~ExponentialBackoffStrategy();
+
   int scheduleNextAttempt();
   void reset();
 

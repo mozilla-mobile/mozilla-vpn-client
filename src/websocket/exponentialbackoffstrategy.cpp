@@ -15,6 +15,10 @@ ExponentialBackoffStrategy::ExponentialBackoffStrategy() {
   m_retryTimer.setSingleShot(true);
 }
 
+ExponentialBackoffStrategy::~ExponentialBackoffStrategy() {
+  MVPN_COUNT_DTOR(ExponentialBackoffStrategy);
+}
+
 #ifdef UNIT_TEST
 void ExponentialBackoffStrategy::testOverrideBaseRetryInterval(
     int newInterval) {
