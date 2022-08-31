@@ -22,6 +22,8 @@ VPNIconButton {
         VPNNavigator.requestScreen(_screen, VPNNavigator.screen === _screen);
     }
 
+    onCheckedChanged: if (checked) root.forceActiveFocus();
+
 
     Layout.alignment: Qt.AlignHCenter
     Layout.preferredWidth: VPNTheme.theme.navBarTopMargin
