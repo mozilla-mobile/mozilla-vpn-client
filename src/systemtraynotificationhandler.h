@@ -25,19 +25,24 @@ class SystemTrayNotificationHandler : public NotificationHandler {
   virtual void notify(Message type, const QString& title,
                       const QString& message, int timerMsec) override;
 
- private:
-  void updateIcon(const QString& icon);
+  virtual void showHideWindow();
 
-  void updateContextMenu();
+  virtual void setStatusMenu();
 
-  void showHideWindow();
+  virtual void updateIcon();
 
-  void maybeActivated(QSystemTrayIcon::ActivationReason reason);
-
- private:
+ protected:
   QMenu m_menu;
   QSystemTrayIcon m_systemTrayIcon;
 
+ private:
+  void createStatusMenu();
+
+  void maybeActivated(QSystemTrayIcon::ActivationReason reason);
+
+  void updateContextMenu();
+
+ private:
   QAction* m_statusLabel = nullptr;
   QAction* m_lastLocationLabel = nullptr;
   QAction* m_disconnectAction = nullptr;

@@ -13,16 +13,21 @@
 
 #if defined(MVPN_IOS)
 #  include "platforms/ios/iosnotificationhandler.h"
-#elif defined(MVPN_ANDROID)
-#  include "platforms/android/androidnotificationhandler.h"
-#else
-
-#  if defined(MVPN_LINUX)
-#    include "platforms/linux/linuxsystemtraynotificationhandler.h"
-#  endif
-
-#  include "systemtraynotificationhandler.h"
 #endif
+
+#if defined(MVPN_ANDROID)
+#  include "platforms/android/androidnotificationhandler.h"
+#endif
+
+#if defined(MVPN_LINUX)
+#  include "platforms/linux/linuxsystemtraynotificationhandler.h"
+#endif
+
+#if defined(MVPN_MACOS)
+#  include "platforms/macos/macossystemtraynotificationhandler.h"
+#endif
+
+#include "systemtraynotificationhandler.h"
 
 namespace {
 Logger logger(LOG_MAIN, "NotificationHandler");
@@ -34,18 +39,23 @@ NotificationHandler* s_instance = nullptr;
 NotificationHandler* NotificationHandler::create(QObject* parent) {
 #if defined(MVPN_IOS)
   return new IOSNotificationHandler(parent);
-#elif defined(MVPN_ANDROID)
-  return new AndroidNotificationHandler(parent);
-#else
+#endif
 
-#  if defined(MVPN_LINUX)
+#if defined(MVPN_ANDROID)
+  return new AndroidNotificationHandler(parent);
+#endif
+
+#if defined(MVPN_LINUX)
   if (LinuxSystemTrayNotificationHandler::requiredCustomImpl()) {
     return new LinuxSystemTrayNotificationHandler(parent);
   }
-#  endif
+#endif
+
+#if defined(MVPN_MACOS)
+  return new MacosSystemTrayNotificationHandler(parent);
+#endif
 
   return new SystemTrayNotificationHandler(parent);
-#endif
 }
 
 // static
