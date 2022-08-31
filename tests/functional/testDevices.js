@@ -5,25 +5,27 @@
 const vpn = require('./helper.js');
 
 describe('Devices', function() {
+
   describe('Device limit', function() {
     this.ctx.authenticationNeeded = true;
 
     it('Opens and closes the device list', async () => {
-      await vpn.waitForElement('deviceListButton');
-      await vpn.waitForElementProperty('deviceListButton', 'visible', 'true');
+      await vpn.waitForElement('navigationLayout/navButton-settings');
+      await vpn.clickOnElement('navigationLayout/navButton-settings');
       await vpn.wait();
 
-      await vpn.clickOnElement('deviceListButton');
+      await vpn.waitForElement('settingsDeviceList');
+      await vpn.waitForElementProperty('settingsDeviceList', 'visible', 'true');
+      await vpn.clickOnElement('settingsDeviceList');
       await vpn.wait();
 
-
-      await vpn.waitForElement('screenHome-back');
-      await vpn.waitForElementProperty('screenHome-back', 'visible', 'true');
-      await vpn.clickOnElement('screenHome-back');
+      await vpn.waitForElement('settings-back');
+      await vpn.waitForElementProperty('settings-back', 'visible', 'true');
+      await vpn.clickOnElement('settings-back');
       await vpn.wait();
 
-      await vpn.waitForElement('deviceListButton');
-      await vpn.waitForElementProperty('deviceListButton', 'visible', 'true');
+      await vpn.waitForElement('settingsDeviceList');
+      await vpn.waitForElementProperty('settingsDeviceList', 'visible', 'true');
     });
   });
 
