@@ -120,8 +120,8 @@ describe('Subscription view', function() {
           .body = {}
     };
 
-    await vpn.waitForElement('settingsButton');
-    await vpn.clickOnElement('settingsButton');
+    await vpn.waitForElement('navigationLayout/navButton-settings');
+    await vpn.clickOnElement('navigationLayout/navButton-settings');
     await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
 
     await vpn.waitForElement('settingsUserProfile');
@@ -178,8 +178,8 @@ describe('Subscription view', function() {
           .body = {}
     };
 
-    await vpn.waitForElement('settingsButton');
-    await vpn.clickOnElement('settingsButton');
+    await vpn.waitForElement('navigationLayout/navButton-settings');
+    await vpn.clickOnElement('navigationLayout/navButton-settings');
 
     await vpn.waitForElement('settingsUserProfile');
     await vpn.waitForElementProperty('settingsUserProfile', 'visible', 'true');
@@ -722,8 +722,8 @@ describe('Subscription view', function() {
         }
       };
 
-      await vpn.waitForElement('settingsButton');
-      await vpn.clickOnElement('settingsButton');
+      await vpn.waitForElement('navigationLayout/navButton-settings');
+      await vpn.clickOnElement('navigationLayout/navButton-settings');
 
       await vpn.waitForElement('settingsUserProfile');
       await vpn.waitForElementProperty(
@@ -876,7 +876,8 @@ describe('Subscription view', function() {
       await vpn.waitForElementProperty(
           'settingsUserProfile', 'visible', 'true');
 
-      await vpn.clickOnElement('settings-back');
+      await vpn.waitForElement('navigationLayout/navButton-home');
+      await vpn.clickOnElement('navigationLayout/navButton-home');
       await vpn.wait();
 
       await vpn.waitForElement('controllerTitle');
@@ -901,8 +902,8 @@ describe('Subscription view', function() {
           .body = SUBSCRIPTION_DETAILS;
     };
 
-    await vpn.waitForElement('settingsButton');
-    await vpn.clickOnElement('settingsButton');
+    await vpn.waitForElement('navigationLayout/navButton-settings');
+    await vpn.clickOnElement('navigationLayout/navButton-settings');
 
     await vpn.waitForElement('settingsUserProfile');
     await vpn.waitForElementProperty('settingsUserProfile', 'visible', 'true');
@@ -1100,8 +1101,8 @@ describe('Subscription view', function() {
           .body = SUBSCRIPTION_DETAILS;
     };
 
-    await vpn.waitForElement('settingsButton');
-    await vpn.clickOnElement('settingsButton');
+    await vpn.waitForElement('navigationLayout/navButton-settings');
+    await vpn.clickOnElement('navigationLayout/navButton-settings');
 
     await vpn.waitForElement('settingsUserProfile');
     await vpn.waitForElementProperty('settingsUserProfile', 'visible', 'true');

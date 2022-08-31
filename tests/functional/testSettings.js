@@ -10,8 +10,8 @@ describe('Settings', function () {
   this.ctx.authenticationNeeded = true;
 
   beforeEach(async () => {
-    await vpn.waitForElement('settingsButton');
-    await vpn.clickOnElement('settingsButton');
+    await vpn.waitForElement('navigationLayout/navButton-settings');
+    await vpn.clickOnElement('navigationLayout/navButton-settings');
     await vpn.wait();
 
     if (!(await vpn.isFeatureFlippedOff('subscriptionManagement'))) {
@@ -48,8 +48,9 @@ describe('Settings', function () {
   }
 
   it('Opening and closing the settings view', async () => {
-    await vpn.waitForElement('settings-back');
-    await vpn.waitForElementProperty('settings-back', 'visible', 'true');
+    await vpn.waitForElement('navigationLayout/navButton-home');
+    await vpn.waitForElementProperty(
+        'navigationLayout/navButton-home', 'visible', 'true');
 
 
     await vpn.waitForElement('menuIcon');
@@ -63,7 +64,7 @@ describe('Settings', function () {
     await vpn.waitForElementProperty(
       'settingsUserProfile-manageAccountButton', 'enabled', 'true');
 
-    await vpn.clickOnElement('settings-back');
+    await vpn.clickOnElement('navigationLayout/navButton-home');
     await vpn.wait();
 
     await vpn.waitForElement('controllerTitle');

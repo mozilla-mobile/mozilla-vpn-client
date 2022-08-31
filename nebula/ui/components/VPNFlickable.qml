@@ -14,7 +14,8 @@ Flickable {
     property var flickContentHeight
     property bool contentExceedsHeight: height < flickContentHeight
     property bool hideScollBarOnStackTransition: false
-    interactive: !VPNTutorial.playing
+    //This property should be true if the flickable appears behind the main navbar
+    interactive: !VPNTutorial.playing && contentHeight > height || contentY > 0
 
     MouseArea {
 

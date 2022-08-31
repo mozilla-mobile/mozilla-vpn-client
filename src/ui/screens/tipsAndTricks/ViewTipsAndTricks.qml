@@ -127,6 +127,8 @@ VPNViewBase {
                             }
                         }
                     }
+
+                    VPNFooterMargin {}
                 }
             },
 
@@ -145,6 +147,8 @@ VPNViewBase {
                     anchors.bottomMargin: VPNTheme.theme.vSpacing
                     anchors.leftMargin: VPNTheme.theme.windowMargin
                     anchors.rightMargin: VPNTheme.theme.windowMargin
+
+                    VPNFooterMargin {}
                 }
             },
 
@@ -181,6 +185,8 @@ VPNViewBase {
                             customGuideFilter: section.filter
                         }
                     }
+
+                    VPNFooterMargin {}
                 }
             }
         ]

@@ -13,6 +13,8 @@
         <file>main.qml</file>
         <file>navigator/navigatorLoader.qml</file>
         <file>navigator/navigatorLoaderInternal.qml</file>
+        <file>navigator/navigationBar/VPNBottomNavigationBar.qml</file>
+        <file>navigator/navigationBar/VPNBottomNavigationBarButton.qml</file>
         <file>qmldir</file>
         <file>screens/authenticationInApp/ViewAuthenticationInApp.qml</file>
         <file>screens/devices/ViewDevices.qml</file>
@@ -38,6 +40,7 @@
         <file>screens/initialize/ViewInitialize.qml</file>
         <file>screens/initialize/ViewOnboarding.qml</file>
         <file>screens/initialize/ViewMobileOnboarding.qml</file>
+        <file>screens/messaging/ViewMessaging.qml</file>
         <file>screens/ScreenAuthenticating.qml</file>
         <file>screens/ScreenAuthenticationInApp.qml</file>
         <file>screens/ScreenBackendFailure.qml</file>

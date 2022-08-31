@@ -333,5 +333,13 @@
         <file>resources/check-green70.svg</file>
         <file>resources/shield-green50.svg</file>
         <file>resources/checkmark-blue50.svg</file>
+        <file>resources/navbar/home.svg</file>
+        <file>resources/navbar/home-selected.svg</file>
+        <file>resources/navbar/messages.svg</file>
+        <file>resources/navbar/messages-selected.svg</file>
+        <file>resources/navbar/settings.svg</file>
+        <file>resources/navbar/settings-selected.svg</file>
+        <file>resources/navbar/messages-notification-selected.svg</file>
+        <file>resources/navbar/messages-notification.svg</file>
     </qresource>
 </RCC>
