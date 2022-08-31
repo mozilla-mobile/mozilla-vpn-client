@@ -149,3 +149,5 @@ void NetworkRequest::sslErrors(const QList<QSslError>& errors) {
   Q_UNUSED(errors);
 }
 #endif
+
+void NetworkRequest::disableTimeout() {}
