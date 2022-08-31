@@ -80,7 +80,9 @@ void MacOSMenuBar::initialize() {
   });
   m_closeAction->setShortcut(QKeySequence::Close);
 
-  m_helpMenu = m_menuBar->addMenu("");
+  m_helpAction = m_menuBar->addAction("", []() {
+    ExternalOpHandler::instance()->request(ExternalOpHandler::OpGetHelp);
+  });
 
   retranslate();
 };
@@ -97,16 +99,8 @@ void MacOSMenuBar::retranslate() {
   //% "Close"
   m_closeAction->setText(qtTrId("menubar.file.close"));
 
-  //% "Help"
-  m_helpMenu->setTitle(qtTrId("menubar.help.title"));
-  for (QAction* action : m_helpMenu->actions()) {
-    m_helpMenu->removeAction(action);
-  }
-
   L18nStrings* l18nStrings = L18nStrings::instance();
   Q_ASSERT(l18nStrings);
 
-  m_helpMenu->addAction(l18nStrings->t(L18nStrings::SystrayGetHelp), []() {
-    ExternalOpHandler::instance()->request(ExternalOpHandler::OpGetHelp);
-  });
+  m_helpAction->setText(l18nStrings->t(L18nStrings::SystrayHelp));
 }

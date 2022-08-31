@@ -50,7 +50,7 @@ class SystemTrayNotificationHandler : public NotificationHandler {
   QAction* m_preferencesAction = nullptr;
   QAction* m_showHideLabel = nullptr;
   QAction* m_quitAction = nullptr;
-  QMenu* m_helpMenu = nullptr;
+  QAction* m_helpAction = nullptr;
 };
 
 #endif  // SYSTEMTRAYNOTIFICATIONHANDLER_H

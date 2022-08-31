@@ -65,14 +65,14 @@ void SystemTrayNotificationHandler::createStatusMenu() {
   m_statusLabel = m_menu.addAction("");
   m_statusLabel->setEnabled(false);
 
-  ExternalOpHandler* externalOpHandler = ExternalOpHandler::instance();
-
-  m_lastLocationLabel = m_menu.addAction("", externalOpHandler,
-                                         &ExternalOpHandler::requestOpActivate);
+  m_lastLocationLabel = m_menu.addAction("", []() {
+    ExternalOpHandler::instance()->request(ExternalOpHandler::OpActivate);
+  });
   m_lastLocationLabel->setEnabled(false);
 
-  m_disconnectAction = m_menu.addAction(
-      "", externalOpHandler, &ExternalOpHandler::requestOpDeactivate);
+  m_disconnectAction = m_menu.addAction("", []() {
+    ExternalOpHandler::instance()->request(ExternalOpHandler::OpDeactivate);
+  });
 
   m_separator = m_menu.addSeparator();
 
@@ -81,15 +81,19 @@ void SystemTrayNotificationHandler::createStatusMenu() {
 
   m_menu.addSeparator();
 
-  m_helpMenu = m_menu.addMenu("");
+  m_helpAction = m_menu.addAction("", []() {
+    ExternalOpHandler::instance()->request(ExternalOpHandler::OpGetHelp);
+  });
 
-  m_preferencesAction = m_menu.addAction("", externalOpHandler,
-                                         &ExternalOpHandler::requestOpSettings);
+  m_preferencesAction = m_menu.addAction("", []() {
+    ExternalOpHandler::instance()->request(ExternalOpHandler::OpSettings);
+  });
 
   m_menu.addSeparator();
 
-  m_quitAction = m_menu.addAction("", externalOpHandler,
-                                  &ExternalOpHandler::requestOpQuit);
+  m_quitAction = m_menu.addAction("", []() {
+    ExternalOpHandler::instance()->request(ExternalOpHandler::OpQuit);
+  });
 }
 
 void SystemTrayNotificationHandler::setStatusMenu() {
@@ -123,15 +127,7 @@ void SystemTrayNotificationHandler::retranslate() {
   Q_ASSERT(l18nStrings);
 
   m_disconnectAction->setText(l18nStrings->t(L18nStrings::SystrayDisconnect));
-  m_helpMenu->setTitle(l18nStrings->t(L18nStrings::SystrayHelp));
-  for (QAction* action : m_helpMenu->actions()) {
-    m_helpMenu->removeAction(action);
-  }
-
-  m_helpMenu->addAction(l18nStrings->t(L18nStrings::SystrayGetHelp), []() {
-    ExternalOpHandler::instance()->request(ExternalOpHandler::OpGetHelp);
-  });
-
+  m_helpAction->setText(l18nStrings->t(L18nStrings::SystrayHelp));
   m_preferencesAction->setText(l18nStrings->t(L18nStrings::SystrayPreferences));
   m_quitAction->setText(l18nStrings->t(L18nStrings::SystrayQuit));
 
