@@ -52,7 +52,7 @@ WasmWindowController::WasmWindowController() {
     StatusIcon* statusIcon = MozillaVPN::instance()->statusIcon();
     connect(statusIcon, &StatusIcon::iconChanged, this,
             &WasmWindowController::iconChanged);
-    iconChanged(statusIcon->iconString());
+    iconChanged();
 
     QMenu* menu = NotificationHandler::instance()->contextMenu();
     m_systemTrayMenuBar->addMenu(menu);
@@ -112,12 +112,11 @@ WasmWindowController* WasmWindowController::instance() {
   return s_instance;
 }
 
-void WasmWindowController::iconChanged(const QString& icon) {
-  QIcon menuIcon(icon);
-  menuIcon.setIsMask(true);
+void WasmWindowController::iconChanged() {
+  StatusIcon* statusIcon = MozillaVPN::instance()->statusIcon();
 
   QMenu* menu = NotificationHandler::instance()->contextMenu();
-  menu->setIcon(menuIcon);
+  menu->setIcon(statusIcon->icon());
 }
 
 void WasmWindowController::notification(const QString& title,

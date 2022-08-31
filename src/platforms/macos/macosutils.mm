@@ -9,9 +9,6 @@
 #include <objc/message.h>
 #include <objc/objc.h>
 
-#include <QFile>
-#include <QMenuBar>
-
 #import <Cocoa/Cocoa.h>
 #import <ServiceManagement/ServiceManagement.h>
 
@@ -124,7 +121,6 @@ void MacOSUtils::patchNSStatusBarSetImageForBigSur() {
 }
 
 @interface NSImageScalingHelper : NSObject
-
 /**
  * Create a proportionally scaled image according to the given target size.
  *
