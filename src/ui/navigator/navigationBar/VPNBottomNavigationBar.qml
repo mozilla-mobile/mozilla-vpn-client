@@ -99,8 +99,8 @@ Rectangle {
         ListElement {
             navObjectName: "navButton-messages"
             screen: "ScreenMessaging"
-            sourceChecked: "qrc:/nebula/resources/navbar/messages-notification-selected.svg"
-            sourceUnchecked: "qrc:/nebula/resources/navbar/messages-notification.svg"
+            sourceChecked: "qrc:/nebula/resources/navbar/messages-selected.svg"
+            sourceUnchecked: "qrc:/nebula/resources/navbar/messages.svg"
             navAccessibleName: "NavBarMessagesTab"
         }
         ListElement {
@@ -110,6 +110,19 @@ Rectangle {
             sourceUnchecked: "qrc:/nebula/resources/navbar/settings.svg"
             navAccessibleName: "NavBarSettingsTab"
         }
+    }
+
+    Connections {
+      target: VPNNavigator
+
+      function onCurrentComponentChanged() {
+          for (let i = 0; i < navBarButtonGroup.buttons.length; i++) {
+              if (navBarButtonGroup.buttons[i]._screen === VPNNavigator.screen) {
+                  navBarButtonGroup.buttons[i].checked = true;
+                  return;
+              }
+          }
+       }
     }
 
     ButtonGroup {

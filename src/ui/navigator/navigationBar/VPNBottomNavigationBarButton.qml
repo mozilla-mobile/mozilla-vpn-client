@@ -17,16 +17,15 @@ VPNIconButton {
     accessibleName: ""
 
     checked: VPNNavigator.screen === _screen
+
     onClicked: {
         VPNNavigator.requestScreen(_screen, VPNNavigator.screen === _screen);
     }
 
-    onCheckedChanged: if (!checked && VPNNavigator.screen === VPNNavigator.ScreenGetHelp) { checked = true }
 
-
-    Layout.minimumWidth: VPNTheme.theme.rowHeight
     Layout.alignment: Qt.AlignHCenter
-    Layout.preferredHeight: VPNTheme.theme.rowHeight
+    Layout.preferredWidth: VPNTheme.theme.navBarTopMargin
+    Layout.preferredHeight: VPNTheme.theme.navBarTopMargin
 
     backgroundRadius: height / 2
     buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground

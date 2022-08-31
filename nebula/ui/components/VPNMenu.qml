@@ -50,9 +50,8 @@ Item {
 
             onClicked: _menuOnBackClicked()
             Layout.alignment: Qt.AlignLeft
-            //% "Back"
-            //: Go back
-            accessibleName: qsTrId("vpn.main.back")
+
+            accessibleName: _menuIconButtonSource.includes("close") ? qsTrId("vpn.connectionInfo.close") : qsTrId("vpn.main.back")
             Accessible.ignored: accessibleIgnored
             Layout.preferredHeight: VPNTheme.theme.rowHeight
             Layout.preferredWidth: VPNTheme.theme.rowHeight
