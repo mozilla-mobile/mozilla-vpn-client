@@ -93,6 +93,7 @@ Item {
         }
 
         VPNFlickable {
+            id: vpnFlickable
             Layout.fillWidth: true
             Layout.fillHeight: true
 
@@ -231,8 +232,7 @@ Item {
                     }
 
                     //padding for the bottom of the flickable
-                    Item {
-                        Layout.preferredHeight: 56
+                    VPNFooterMargin {
                     }
                 }
             }

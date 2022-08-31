@@ -31,6 +31,7 @@ VPNFeatureTourPopup 0.1 VPNFeatureTourPopup.qml
 VPNFlickable 0.1 VPNFlickable.qml
 VPNFocusBorder 0.1 VPNFocusBorder.qml
 VPNFocusOutline 0.1 VPNFocusOutline.qml
+VPNFooterMargin 0.1 VPNFooterMargin.qml
 VPNFooterLink 0.1 VPNFooterLink.qml
 VPNGraphLegendMarker 0.1 VPNGraphLegendMarker.qml
 VPNGreyLink 0.1 VPNGreyLink.qml

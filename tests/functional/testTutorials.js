@@ -9,8 +9,8 @@ describe('Tutorials', function () {
   this.ctx.authenticationNeeded = true;
 
   async function openHighlightedTutorial() {
-    await vpn.waitForElement('settingsButton');
-    await vpn.clickOnElement('settingsButton');
+    await vpn.waitForElement('navigationLayout/navButton-settings');
+    await vpn.clickOnElement('navigationLayout/navButton-settings');
     await vpn.wait();
 
     await vpn.waitForElement('settingsTipsAndTricks');

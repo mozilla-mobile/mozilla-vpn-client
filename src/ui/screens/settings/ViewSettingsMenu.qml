@@ -14,6 +14,7 @@ VPNViewBase {
     id: settingsList
     objectName: "settingsView"
 
+    //% "Settings"
     _menuTitle: qsTrId("vpn.main.settings")
     _viewContentData: ColumnLayout {
         spacing: VPNTheme.theme.windowMargin
@@ -174,5 +175,8 @@ VPNViewBase {
                 VPNProfileFlow.reset();
             }
         }
+    }
+    Component.onCompleted: {
+        VPN.recordGleanEvent("settingsViewOpened");
     }
 }

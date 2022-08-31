@@ -18,6 +18,7 @@ Window {
     id: window
 
     signal showServerList
+
     property bool _fallbackQtQuickRenderer: QT_QUICK_BACKEND == "software" //TODO pending #3398
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
 
@@ -216,6 +217,10 @@ Window {
         id: featureTourPopup
 
         anchors.centerIn: parent
+    }
+
+    VPNBottomNavigationBar {
+        id: navbar
     }
 
 }

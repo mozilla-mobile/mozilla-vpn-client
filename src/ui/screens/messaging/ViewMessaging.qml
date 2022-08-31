@@ -9,12 +9,18 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
 
-VPNScreenBase {
-    objectName: "settings"
-    _menuIconVisibility: getStack().depth > 1
+VPNViewBase {
+    id: root
+    objectName: "messagingView"
 
-    Component.onCompleted: () => {
-        VPNNavigator.addStackView(VPNNavigator.ScreenSettings, getStack())
-        getStack().push("qrc:/ui/screens/settings/ViewSettingsMenu.qml")
+    _menuTitle: "Messages"
+    _viewContentData: ColumnLayout {
+        Layout.fillWidth: true
+
+        VPNBoldLabel {
+            Layout.fillWidth: true
+            text: "MESSAGES!"
+            horizontalAlignment: Text.AlignHCenter
+        }
     }
 }
