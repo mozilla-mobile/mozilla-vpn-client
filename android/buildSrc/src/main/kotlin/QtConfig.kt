@@ -169,6 +169,9 @@ open class QTConfigurationExtension
     // Runs QMLImportscanner from qt_host against the
     // qt_android_<abi> folder, to find out what we need to bundle for qml
     private fun getQMLImports(abi: String): JSONArray {
+        if (abi.isEmpty()) {
+            return JSONArray()
+        }
         val importScanner = File("$host/libexec/qmlimportscanner")
         if (!importScanner.exists()) {
             error("Did not found qmlimportscanner in $host/libexec/qmlimportscanner")
@@ -179,6 +182,7 @@ open class QTConfigurationExtension
         if (!qmlPath.exists()) {
             return JSONArray()
         }
+        print("Calling: $importScanner -rootPath $qmlPath -importPath $qtQMLPath")
         val process =
             Runtime.getRuntime().exec("$importScanner -rootPath $qmlPath -importPath $qtQMLPath")
         val processOutput = StringBuilder()
@@ -192,7 +196,13 @@ open class QTConfigurationExtension
             }
             process.waitFor()
         }
-        return JSONArray(processOutput.toString())
+        val out = processOutput.toString();
+        try{
+            return JSONArray(out)
+        }catch(e:Exception){
+            error("Got Output of: $out \n ${e.toString()}")
+
+        }
     }
 
     companion object {
