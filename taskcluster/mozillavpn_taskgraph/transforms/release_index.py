@@ -35,7 +35,7 @@ transforms.add_validate(release_index_schema)
 def resolve_keys(config, tasks):
     for task in tasks:
         resolve_keyed_by(
-            task, "add-index-routes", item_name=task["name"], **task["attributes"]
+            task, "add-index-routes", item_name=task["name"], **task.get("attributes", {})
         )
         yield task
 
