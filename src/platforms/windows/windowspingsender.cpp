@@ -61,13 +61,19 @@ void WindowsPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
     return;
   }
 
-  quint32 v4src = m_source.toIPv4Address();
   quint32 v4dst = dest.toIPv4Address();
-  IcmpSendEcho2Ex(m_handle, m_event, nullptr, nullptr,
-                  qToBigEndian<quint32>(v4src), qToBigEndian<quint32>(v4dst),
-                  &sequence, sizeof(sequence), nullptr, m_buffer,
-                  sizeof(m_buffer), 10000);
-
+  if (m_source.isNull()) {
+    IcmpSendEcho2(m_handle, m_event, nullptr, nullptr,
+                  qToBigEndian<quint32>(v4dst), &sequence, sizeof(sequence),
+                  nullptr, m_buffer, sizeof(m_buffer), 10000);
+  } else {
+    quint32 v4src = m_source.toIPv4Address();
+    IcmpSendEcho2Ex(m_handle, m_event, nullptr, nullptr,
+                    qToBigEndian<quint32>(v4src), qToBigEndian<quint32>(v4dst),
+                    &sequence, sizeof(sequence), nullptr, m_buffer,
+                    sizeof(m_buffer), 10000);
+  }
+  
   DWORD status = GetLastError();
   if (status != ERROR_IO_PENDING) {
     QString errmsg = WindowsCommons::getErrorMessage();
