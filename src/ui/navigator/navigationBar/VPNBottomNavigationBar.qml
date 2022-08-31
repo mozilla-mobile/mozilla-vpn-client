@@ -8,9 +8,11 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
+import Mozilla.VPN.qmlcomponents 1.0
 import compat 0.1
 
 Rectangle {
+    id: root
     property var showNavigationBar: [
         VPNNavigator.ScreenSettings,
         VPNNavigator.ScreenHome,
@@ -18,8 +20,8 @@ Rectangle {
         VPNNavigator.ScreenGetHelp,
         VPNNavigator.ScreenTipsAndTricks
     ]
+    property var messagesNavButton
 
-    id: root
     objectName: "navigationBar"
 
     height: VPNTheme.theme.navBarHeight
@@ -78,9 +80,13 @@ Rectangle {
                     delegate: VPNBottomNavigationBarButton {
                         objectName: navObjectName
                         _screen: VPNNavigator[screen]
-                        _source: checked ? sourceChecked : sourceUnchecked
+                        _source: checked ? (_hasNotification ? sourceCheckedNotification : sourceChecked) : (_hasNotification ? sourceUncheckedNotification : sourceUnchecked)
                         accessibleName: VPNl18n[navAccessibleName]
                         ButtonGroup.group: navBarButtonGroup
+
+                        Component.onCompleted: {
+                            if(objectName === "navButton-messages") root.messagesNavButton = this
+                        }
                     }
                 }
             }
@@ -101,6 +107,8 @@ Rectangle {
             screen: "ScreenMessaging"
             sourceChecked: "qrc:/nebula/resources/navbar/messages-selected.svg"
             sourceUnchecked: "qrc:/nebula/resources/navbar/messages.svg"
+            sourceCheckedNotification: "qrc:/nebula/resources/navbar/messages-notification-selected.svg"
+            sourceUncheckedNotification: "qrc:/nebula/resources/navbar/messages-notification.svg"
             navAccessibleName: "NavBarMessagesTab"
         }
         ListElement {
@@ -127,5 +135,29 @@ Rectangle {
 
     ButtonGroup {
         id: navBarButtonGroup
+    }
+
+    VPNFilterProxyModel {
+        id: messagesModel
+        source: VPNAddonManager
+        filterCallback: obj => { return obj.addon.type === "message" && !addon.isRead }
+        Component.onCompleted: {
+            messagesNavButton._hasNotification = Qt.binding(() => { return messagesModel.count > 0} )
+        }
+    }
+
+    Connections {
+        target: VPNSettings
+        function onReadAddonMessagesChanged() {
+            root.getUnreadNotificationStatus()
+        }
+        function onDismissedAddonMessagesChanged() {
+            root.getUnreadNotificationStatus()
+        }
+    }
+
+    function getUnreadNotificationStatus() {
+        messagesNavButton._hasNotification = VPNAddonManager.reduce((addon, initialValue) => initialValue + (addon.type === "message" && !addon.isRead), 0)
+
     }
 }

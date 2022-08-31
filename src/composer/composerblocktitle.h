@@ -21,6 +21,10 @@ class ComposerBlockTitle final : public ComposerBlock {
                                const QJsonObject& json);
   virtual ~ComposerBlockTitle();
 
+  bool contains(const QString& string) const override;
+
+  QString getText() const override { return m_title.get(); }
+
  private:
   explicit ComposerBlockTitle(Composer* composer);
 

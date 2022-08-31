@@ -86,6 +86,8 @@ theme.navBarBottomMargin = Qt.platform.os !== 'ios' ? 16 : 34;
 theme.navBarHeightWithMargins =
 theme.navBarHeight + theme.navBarTopMargin + theme.navBarBottomMargin;
 
+theme.swipeDelegateActionWidth = 56;
+
 theme.darkFocusBorder = theme.fontColor;
 theme.lightFocusBorder = '#d5d3e0';
 

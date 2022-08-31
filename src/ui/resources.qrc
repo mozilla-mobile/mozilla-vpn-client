@@ -75,5 +75,6 @@
         <file>resources/main-img-vpn-on.svg</file>
         <file>resources/logo-success.svg</file>
         <file>resources/logo-error.svg</file>
+        <file>resources/messages-empty.svg</file>
     </qresource>
 </RCC>

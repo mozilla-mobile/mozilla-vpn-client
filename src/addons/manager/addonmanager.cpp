@@ -160,14 +160,34 @@ bool AddonManager::loadManifest(const QString& manifestFileName) {
     endResetModel();
   }
 
-  connect(addon, &Addon::conditionChanged, this, [this](bool) {
-    beginResetModel();
-    // In theory, we could be smart and try to add/remove lines, but the
-    // changing of conditions should happen rarely. Let's refresh the entire
-    // model for now.
-    // In case, with multiple messages, the UI will start flickering, we can do
-    // something better.
-    endResetModel();
+  connect(addon, &Addon::conditionChanged, this, [this, addon](bool enabled) {
+//    beginResetModel();
+//    // In theory, we could be smart and try to add/remove lines, but the
+//    // changing of conditions should happen rarely. Let's refresh the entire
+//    // model for now.
+//    // In case, with multiple messages, the UI will start flickering, we can do
+//    // something better.
+//    endResetModel();
+      int pos = 0;
+      for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
+           i != m_addons.constEnd(); ++i) {
+        if (!i.value().m_addon) continue;
+        if (i.value().m_addon != addon) {
+            if (i.value().m_addon->enabled()) ++pos;
+            continue;
+        }
+        if (!enabled) {
+            beginRemoveRows(QModelIndex(), pos, pos);
+            removeRow(pos);
+            endRemoveRows();
+        }
+        else {
+            beginInsertRows(QModelIndex(), pos, pos);
+            insertRow(pos);
+            endInsertRows();
+        }
+        break;
+      }
   });
 
   return true;
@@ -406,6 +426,14 @@ QJSValue AddonManager::reduce(QJSValue callback, QJSValue initialValue) const {
   }
 
   return reducedValue;
+}
+
+//Undismisses any dismissed messages and marks all messages as unread
+void AddonManager::reinstateMessages() const {
+    SettingsHolder* settingsHolder = SettingsHolder::instance();
+    Q_ASSERT(settingsHolder);
+    settingsHolder->setDismissedAddonMessages(QStringList());
+    settingsHolder->setReadAddonMessages(QStringList());
 }
 
 #ifdef UNIT_TEST

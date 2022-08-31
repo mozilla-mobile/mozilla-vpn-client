@@ -72,3 +72,13 @@ ComposerBlockUnorderedList::ComposerBlockUnorderedList(Composer* composer,
 ComposerBlockUnorderedList::~ComposerBlockUnorderedList() {
   MVPN_COUNT_DTOR(ComposerBlockUnorderedList);
 }
+
+bool ComposerBlockUnorderedList::contains(const QString& string) const {
+    QStringList list = m_subBlocks.get();
+    for(QString item : list) {
+        if(item.contains(string, Qt::CaseInsensitive))
+            return true;
+    }
+    return false;
+}
+

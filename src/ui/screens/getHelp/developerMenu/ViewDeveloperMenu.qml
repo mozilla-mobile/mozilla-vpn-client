@@ -226,6 +226,17 @@ VPNViewBase {
         }
 
         VPNButton {
+            id: reinstateMessages
+
+            Layout.topMargin: VPNTheme.theme.listSpacing * 2
+
+            text: "Reinstate messages"
+            onClicked: {
+                VPNAddonManager.reinstateMessages()
+            }
+        }
+
+        VPNButton {
             id: crashApp
             property int clickNeeded: 5
 

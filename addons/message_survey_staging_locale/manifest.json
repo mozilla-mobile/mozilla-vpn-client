@@ -11,7 +11,20 @@
   },
   "message": {
     "id": "message_survey_staging_locale",
-    "title": "TODO",
-    "blocks": []
+    "title": "message_survey_staging_locale",
+    "date": 1661260997,
+    "blocks": [
+      { "id": "c_1",
+        "type": "ulist",
+        "content": [
+          { "id": "l_1",
+            "content": "New feature 1" },
+          { "id": "l_2",
+            "content": "Bug fixes" },
+          { "id": "l_3",
+            "content": "New feature 2" }
+        ]
+      }
+    ]     
   }
 }

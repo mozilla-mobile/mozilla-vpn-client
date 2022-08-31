@@ -34,7 +34,14 @@ VPNButtonBase {
 
     Accessible.name: labelText
 
-    Component.onCompleted: state = uiState.stateDefault;
+    Component.onCompleted: {
+        state = Qt.binding(() => (
+            enabled ? uiState.stateDefault : uiState.stateDisabled
+        ));
+        buttonMouseArea.hoverEnabled = Qt.binding(() => (
+            enabled && loaderVisible === false
+        ));
+    }
 
     states: [
         State {
@@ -72,6 +79,14 @@ VPNButtonBase {
                 color: root.linkColor.defaultColor
             }
 
+        },
+        State {
+            name: uiState.stateDisabled
+
+            PropertyChanges {
+                target: label
+                color: root.linkColor.buttonDisabled
+            }
         }
     ]
 
@@ -91,6 +106,7 @@ VPNButtonBase {
     }
 
     VPNMouseArea {
+        id: buttonMouseArea
         hoverEnabled: loaderVisible === false
     }
 

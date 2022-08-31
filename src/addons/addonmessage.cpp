@@ -50,6 +50,9 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
     return nullptr;
   }
 
+  if(!message->m_composer->get().isEmpty())
+      message->m_subtitle = message->m_composer->get().first()->getText();
+
   QStringList readAddonMessages = settingsHolder->readAddonMessages();
   message->m_isRead = readAddonMessages.contains(id);
 
@@ -88,6 +91,8 @@ void AddonMessage::maskAsRead() {
     return;
   }
 
+  m_isRead = true;
+
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
@@ -95,9 +100,20 @@ void AddonMessage::maskAsRead() {
   readAddonMessages.append(id());
   settingsHolder->setReadAddonMessages(readAddonMessages);
 
-  m_isRead = true;
   emit isReadChanged();
 }
+
+bool AddonMessage::containsSearchString(const QString& query) const {
+    if(m_title.get().contains(query, Qt::CaseInsensitive))
+        return true;
+
+    for(ComposerBlock* block : m_composer->get()) {
+         if(block->contains(query))
+                return true;
+    }
+    return false;
+}
+
 
 bool AddonMessage::enabled() const {
   if (!Addon::enabled()) {
@@ -107,7 +123,7 @@ bool AddonMessage::enabled() const {
   return !m_dismissed;
 }
 
-QString AddonMessage::date() const {
+QString AddonMessage::formattedDate() const {
   if (m_date == 0) {
     return QString();
   }
@@ -129,18 +145,27 @@ QString AddonMessage::dateInternal(const QDateTime& nowDateTime,
                                                     QLocale::ShortFormat);
   }
 
-  // Less than 24 hours ago, but still in the same day
+  // Today
   if (diff < 86400 && messageDateTime.time() <= nowDateTime.time()) {
     return Localizer::instance()->locale().toString(messageDateTime.time(),
                                                     QLocale::ShortFormat);
   }
 
-  // Less than 24 hours ago
-  if (diff < 86400) {
+  // Yesterday
+  if (messageDateTime.date().dayOfYear() == nowDateTime.date().dayOfYear() - 1 || (nowDateTime.date().dayOfYear() == 1 && messageDateTime.date().dayOfYear() == messageDateTime.date().daysInYear())) {
     return L18nStrings::instance()->t(
         L18nStrings::InAppMessagingDateTimeYesterday);
   }
 
+  // Before yesterday (but still this week)
+  if(messageDateTime.date() >= nowDateTime.date().addDays(-6)) {
+      SettingsHolder* settingsHolder = SettingsHolder::instance();
+      QString code = settingsHolder->languageCode();
+      QLocale locale = QLocale(code);
+      return locale.dayName(messageDateTime.date().dayOfWeek());
+  }
+
+  //Before this week
   return Localizer::instance()->locale().toString(messageDateTime.date(),
                                                   QLocale::ShortFormat);
 }
