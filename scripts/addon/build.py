@@ -332,7 +332,7 @@ with open(args.source, "r", encoding="utf-8") as file:
 
     strings = {}
 
-    if not "translatable" in manifest or manifest["translatable"] == True:
+    if "translatable" not in manifest or manifest["translatable"] == True:
         print("Retrieving strings...")
         if manifest["type"] == "tutorial":
             strings = retrieve_strings_tutorial(manifest, args.source)
