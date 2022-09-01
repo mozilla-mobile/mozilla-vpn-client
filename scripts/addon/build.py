@@ -342,37 +342,38 @@ with open(args.source, "r", encoding="utf-8") as file:
             strings = retrieve_strings_message(manifest, args.source)
         else:
             exit(f"Unupported manifest type `{manifest['type']}`")
+
+        print("Create localization file...")
+        os.mkdir(os.path.join(tmp_path, "i18n"))
+        template_ts_file = os.path.join(args.dest, f"{manifest['id']}.ts")
+        write_en_language(template_ts_file, strings)
+
+        # This will be probably replaced by the en locale if it exists
+        en_ts_file = os.path.join(tmp_path, "i18n", "locale_en.ts")
+        shutil.copyfile(template_ts_file, en_ts_file)
+        os.system(f"{lrelease} -idbased {en_ts_file}")
+
+        # Fallback
+        ts_file = os.path.join(tmp_path, "i18n", "locale.ts")
+        shutil.copyfile(template_ts_file, ts_file)
+        os.system(f"{lrelease} -idbased {ts_file}")
+
+        i18n_path = os.path.join(os.path.dirname(script_path), "i18n")
+        for locale in os.listdir(i18n_path):
+            if not os.path.isdir(os.path.join(i18n_path, locale)) or locale.startswith("."):
+                continue
+
+            xliff_path = os.path.join(
+                i18n_path, locale, "addons", manifest["id"], "strings.xliff"
+            )
+
+            if os.path.isfile(xliff_path):
+                locale_file = os.path.join(tmp_path, "i18n", f"locale_{locale}.ts")
+                os.system(f"{lconvert} -if xlf -i {xliff_path} -o {locale_file}")
+                os.system(f"{lrelease} -idbased {locale_file}")
+
     else:
        print("Addon not translatable")
-
-    print("Create localization file...")
-    os.mkdir(os.path.join(tmp_path, "i18n"))
-    template_ts_file = os.path.join(args.dest, f"{manifest['id']}.ts")
-    write_en_language(template_ts_file, strings)
-
-    # This will be probably replaced by the en locale if it exists
-    en_ts_file = os.path.join(tmp_path, "i18n", "locale_en.ts")
-    shutil.copyfile(template_ts_file, en_ts_file)
-    os.system(f"{lrelease} -idbased {en_ts_file}")
-
-    # Fallback
-    ts_file = os.path.join(tmp_path, "i18n", "locale.ts")
-    shutil.copyfile(template_ts_file, ts_file)
-    os.system(f"{lrelease} -idbased {ts_file}")
-
-    i18n_path = os.path.join(os.path.dirname(script_path), "i18n")
-    for locale in os.listdir(i18n_path):
-        if not os.path.isdir(os.path.join(i18n_path, locale)) or locale.startswith("."):
-            continue
-
-        xliff_path = os.path.join(
-            i18n_path, locale, "addons", manifest["id"], "strings.xliff"
-        )
-
-        if os.path.isfile(xliff_path):
-            locale_file = os.path.join(tmp_path, "i18n", f"locale_{locale}.ts")
-            os.system(f"{lconvert} -if xlf -i {xliff_path} -o {locale_file}")
-            os.system(f"{lrelease} -idbased {locale_file}")
 
     print("Generate the RCC file...")
     files = get_file_list(tmp_path, "")

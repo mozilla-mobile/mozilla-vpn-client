@@ -2,6 +2,7 @@
   "api_version": "0.1",
   "id": "message_survey_28d_mobile",
   "name": "Survey 28d Mobile",
+  "translatable": false,
   "type": "message",
   "conditions": {
     "trigger_time": 2419200,
