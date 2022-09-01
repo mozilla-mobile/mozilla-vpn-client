@@ -57,7 +57,6 @@ class AddonMessage final : public Addon {
  private:
   AddonProperty m_title;
   AddonProperty m_subtitle;
-  QString m_formattedDate;
   Composer* m_composer = nullptr;
 
   qint64 m_date = 0;

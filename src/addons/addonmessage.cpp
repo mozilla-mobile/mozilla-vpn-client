@@ -116,7 +116,7 @@ bool AddonMessage::containsSearchString(const QString& query) const {
         return true;
     }
 
-    for(ComposerBlock* block : m_composer->get()) {
+    for(ComposerBlock* block : m_composer->blocks()) {
          if(block->contains(query)) {
              return true;
          }
