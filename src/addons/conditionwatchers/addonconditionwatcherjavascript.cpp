@@ -42,7 +42,7 @@ AddonConditionWatcher* AddonConditionWatcherJavascript::maybeCreate(
   }
 
   if (!output.isCallable()) {
-    logger.debug() << "The condition should be a callbale function";
+    logger.debug() << "The condition should be a callable function";
     return nullptr;
   }
 
