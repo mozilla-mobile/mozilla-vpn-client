@@ -12,7 +12,7 @@ VPNIconButton {
 
     property var _screen
     property alias _source: image.source
-    property bool _hasNotification: true
+    property bool _hasNotification: false
 
     accessibleName: ""
 

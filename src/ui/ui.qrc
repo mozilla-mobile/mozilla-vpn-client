@@ -40,7 +40,8 @@
         <file>screens/initialize/ViewInitialize.qml</file>
         <file>screens/initialize/ViewOnboarding.qml</file>
         <file>screens/initialize/ViewMobileOnboarding.qml</file>
-        <file>screens/messaging/ViewMessaging.qml</file>
+        <file>screens/messaging/ViewMessage.qml</file>
+        <file>screens/messaging/ViewMessagesInbox.qml</file>
         <file>screens/ScreenAuthenticating.qml</file>
         <file>screens/ScreenAuthenticationInApp.qml</file>
         <file>screens/ScreenBackendFailure.qml</file>

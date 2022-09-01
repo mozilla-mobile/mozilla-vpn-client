@@ -13,6 +13,6 @@ VPNScreenBase {
 
     Component.onCompleted: () => {
        VPNNavigator.addStackView(VPNNavigator.ScreenMessaging, getStack())
-       getStack().push("qrc:/ui/screens/messaging/ViewMessaging.qml")
+       getStack().push("qrc:/ui/screens/messaging/ViewMessagesInbox.qml")
    }
 }

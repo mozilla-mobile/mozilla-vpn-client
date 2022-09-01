@@ -107,7 +107,7 @@ FocusScope {
 
                           return includesName || includesLocalizedName || matchesCountryCode;
                       }
-                _searchBarHasError: () => { return countriesRepeater.count === 0 }
+                _searchBarHasError: countriesRepeater.count === 0
                 _searchBarPlaceholderText: VPNl18n.ServersViewSearchPlaceholder
 
                 anchors.left: parent.left

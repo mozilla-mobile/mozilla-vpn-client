@@ -285,6 +285,18 @@ void TestAddon::conditionWatcher_locale() {
       AddonConditionWatcherLocales::maybeCreate(&parent, QStringList{"it"});
   QVERIFY(!!acw);
 
+  QSignalSpy signalSpy(acw, &AddonConditionWatcher::conditionChanged);
+  QCOMPARE(signalSpy.count(), 0);
+  settingsHolder.setLanguageCode("en");
+  QCOMPARE(signalSpy.count(), 0);
+  settingsHolder.setLanguageCode("it_RU");
+  QCOMPARE(signalSpy.count(), 1);
+  settingsHolder.setLanguageCode("it");
+  QCOMPARE(signalSpy.count(), 1);
+  settingsHolder.setLanguageCode("es");
+  QCOMPARE(signalSpy.count(), 2);
+
+  settingsHolder.setLanguageCode("en");
   QVERIFY(!acw->conditionApplied());
 
   settingsHolder.setLanguageCode("it");
@@ -301,15 +313,6 @@ void TestAddon::conditionWatcher_locale() {
 
   settingsHolder.setLanguageCode("it_RU");
   QVERIFY(acw->conditionApplied());
-
-  QSignalSpy signalSpy(acw, &AddonConditionWatcher::conditionChanged);
-  QCOMPARE(signalSpy.count(), 0);
-  settingsHolder.setLanguageCode("en");
-  QCOMPARE(signalSpy.count(), 1);
-  settingsHolder.setLanguageCode("it_RU");
-  QCOMPARE(signalSpy.count(), 2);
-  settingsHolder.setLanguageCode("it");
-  QCOMPARE(signalSpy.count(), 2);
 }
 
 void TestAddon::conditionWatcher_group() {
@@ -777,13 +780,39 @@ void TestAddon::message_date_data() {
       << QDateTime(QDate(2000, 1, 1), QTime(21, 0), QTimeZone(0)) << "Yesterday"
       << (qint64)(3 * 3600);
 
-  QTest::addRow("en - more than 24 hours")
+  QTest::addRow("en - yesterday more than 24 hours")
       << "en" << QDateTime(QDate(2000, 1, 2), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 1), QTime(9, 0), QTimeZone(0)) << "1/1/00"
+      << QDateTime(QDate(2000, 1, 1), QTime(9, 0), QTimeZone(0)) << "Yesterday"
       << (qint64)-1;
-  QTest::addRow("it - more than 24 hours")
-      << "it" << QDateTime(QDate(2000, 1, 2), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 1), QTime(9, 0), QTimeZone(0)) << "01/01/00"
+
+  QTest::addRow("en - 2 days ago")
+      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 8), QTime(10, 0), QTimeZone(0)) << "Saturday"
+      << (qint64)-1;
+
+  QTest::addRow("en - 3 days ago")
+      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 7), QTime(10, 0), QTimeZone(0)) << "Friday"
+      << (qint64)-1;
+
+  QTest::addRow("en - 4 days ago")
+      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 6), QTime(10, 0), QTimeZone(0)) << "Thursday"
+      << (qint64)-1;
+
+  QTest::addRow("en - 5 days ago")
+      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 5), QTime(10, 0), QTimeZone(0)) << "Wednesday"
+      << (qint64)-1;
+
+  QTest::addRow("en - 6 days ago")
+      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 4), QTime(10, 0), QTimeZone(0)) << "Tuesday"
+      << (qint64)-1;
+
+  QTest::addRow("en - 7 days ago")
+      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 3), QTime(10, 0), QTimeZone(0)) << "1/3/00"
       << (qint64)-1;
 }
 

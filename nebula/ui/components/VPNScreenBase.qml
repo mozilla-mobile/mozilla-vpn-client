@@ -28,7 +28,7 @@ Item {
         _menuIconButtonSource: stackview.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
         _iconButtonAccessibleName: stackview.depth === 1 ? qsTrId("vpn.connectionInfo.close") : qsTrId("vpn.main.back")
         _menuOnBackClicked: () => maybeRequestPreviousScreen()
-
+        rightButton: stackview.currentItem.rightMenuButton ? stackview.currentItem.rightMenuButton : null
 
         title: ""
         visible: false
@@ -53,6 +53,13 @@ Item {
             menu.title = Qt.binding(() => currentItem._menuTitle || "");
             menu.visible = Qt.binding(() => menu.title !== "");
             menu._menuOnBackClicked = currentItem._menuOnBackClicked ? currentItem._menuOnBackClicked : () => menu.maybeRequestPreviousScreen()
+        }
+
+        Connections {
+            target: menu
+            function onRightMenuButtonClicked() {
+                menu.rightMenuButtonClicked()
+            }
         }
     }
 }

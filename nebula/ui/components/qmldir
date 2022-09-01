@@ -79,6 +79,8 @@ VPNSimplePopup 0.1 VPNSimplePopup.qml
 VPNStackView 0.1 VPNStackView.qml
 VPNSubscriptionOption 0.1 VPNSubscriptionOption.qml
 VPNSubtitle 0.1 VPNSubtitle.qml
+VPNSwipeAction 0.1 VPNSwipeAction.qml
+VPNSwipeDelegate 0.1 VPNSwipeDelegate.qml
 VPNSystemAlert 0.1 VPNSystemAlert.qml
 VPNTabNavigation 0.1 VPNTabNavigation.qml
 VPNTextBlock 0.1 VPNTextBlock.qml

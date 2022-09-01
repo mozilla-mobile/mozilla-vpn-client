@@ -13,8 +13,9 @@ import components.forms 0.1
 
 ColumnLayout {
     property var _filterProxyCallback: () => {}
+    property var _sortProxyCallback: () => {}
     property alias _filterProxySource: model.source
-    property var _searchBarHasError: () => {}
+    property bool _searchBarHasError: false
     property alias _searchBarPlaceholderText: searchBar._placeholderText
 
     spacing: VPNTheme.theme.windowMargin / 2
@@ -29,7 +30,7 @@ ColumnLayout {
         leftPadding: 48
         onActiveFocusChanged: if (focus && vpnFlickable.ensureVisible) vpnFlickable.ensureVisible(searchBar)
         Layout.fillWidth: true
-        onTextChanged: hasError = _searchBarHasError()
+        onTextChanged: hasError = _searchBarHasError
         onLengthChanged: text => model.invalidate()
 
 
@@ -45,7 +46,7 @@ ColumnLayout {
 
 
         Keys.onPressed: event => {
-            if (focus && _searchBarHasError() && (/[\w\[\]`!@#$%\^&*()={}:;<>+'-]/).test(event.text)) {
+            if (focus && _searchBarHasError && (/[\w\[\]`!@#$%\^&*()={}:;<>+'-]/).test(event.text)) {
                 event.accepted = true;
             }
         }
@@ -54,6 +55,7 @@ ColumnLayout {
     VPNContextualAlerts {
         id: searchWarning
         Layout.fillWidth: true
+        visible: _searchBarHasError
 
         messages: [
             {
@@ -67,6 +69,7 @@ ColumnLayout {
     VPNFilterProxyModel {
         id: model
         filterCallback: _filterProxyCallback
+        sortCallback: _sortProxyCallback
     }
 
     function getProxyModel() {
@@ -75,5 +78,9 @@ ColumnLayout {
 
     function getSearchBarText() {
         return searchBar.text.toLowerCase();
+    }
+
+    function clearText() {
+        searchBar.text = ""
     }
 }

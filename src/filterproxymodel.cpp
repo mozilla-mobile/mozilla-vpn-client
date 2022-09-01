@@ -51,6 +51,14 @@ void FilterProxyModel::setSource(QAbstractListModel* sourceModel) {
   setSourceModel(sourceModel);
 
   if (sourceModel) {
+    connect(sourceModel, &QAbstractItemModel::rowsInserted, this,
+            &FilterProxyModel::countChanged);
+    connect(sourceModel, &QAbstractItemModel::rowsRemoved, this,
+            &FilterProxyModel::countChanged);
+    connect(sourceModel, &QAbstractItemModel::modelReset, this,
+            &FilterProxyModel::countChanged);
+    connect(sourceModel, &QAbstractItemModel::layoutChanged, this,
+            &FilterProxyModel::countChanged);
     m_sourceModelRoleNames = sourceModel->roleNames();
   } else {
     m_sourceModelRoleNames.clear();

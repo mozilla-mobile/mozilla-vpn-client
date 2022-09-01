@@ -76,7 +76,7 @@ VPNViewBase {
                      return obj.localizedLanguage.toLowerCase().includes(filterValue) ||
                              obj.language.toLowerCase().includes(filterValue);
                  }
-                _searchBarHasError: () => { return repeater.count === 0 }
+                _searchBarHasError: repeater.count === 0
                 _searchBarPlaceholderText: VPNl18n.LanguageViewSearchPlaceholder
 
                 enabled: !useSystemLanguageEnabled

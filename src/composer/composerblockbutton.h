@@ -31,6 +31,8 @@ class ComposerBlockButton final : public ComposerBlock {
 
   Style style() const { return m_style; }
 
+  bool contains(const QString& string) const override;
+
   Q_INVOKABLE void click() const;
 
  private:

@@ -13,7 +13,7 @@ VPNButtonBase {
     id: mainRow
 
     property var rowShouldBeDisabled: false
-    property var accessibleName
+    property string accessibleName: ""
     property var backgroundColor: VPNTheme.theme.iconButtonLightBackground
 
     property var handleMouseClick: function() { mainRow.clicked(); }
