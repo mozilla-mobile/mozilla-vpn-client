@@ -171,7 +171,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void authenticate();
   Q_INVOKABLE void cancelAuthentication();
   Q_INVOKABLE void openLink(LinkType linkType);
-  Q_INVOKABLE void openLinkUrl(const QString& linkUrl);
+  Q_INVOKABLE void openLinkUrl(const QString& linkUrl) const;
   Q_INVOKABLE void removeDeviceFromPublicKey(const QString& publicKey);
   Q_INVOKABLE void hideAlert() { setAlert(NoAlert); }
   Q_INVOKABLE void setAlert(AlertType alert);

@@ -603,7 +603,7 @@ void MozillaVPN::openLink(LinkType linkType) {
   UrlOpener::open(url, addEmailAddress);
 }
 
-void MozillaVPN::openLinkUrl(const QString& linkUrl) {
+void MozillaVPN::openLinkUrl(const QString& linkUrl) const {
   logger.debug() << "Opening link: " << linkUrl;
   UrlOpener::open(linkUrl);
 }

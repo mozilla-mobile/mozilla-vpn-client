@@ -212,10 +212,10 @@ void TestAddon::conditions() {
 
 void TestAddon::conditionWatcher_javascript() {
   MozillaVPN vpn;
-  SettingsHolder settingsHolder;
 
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
+  SettingsHolder settingsHolder;
 
   QJsonObject content;
   content["id"] = "foo";
