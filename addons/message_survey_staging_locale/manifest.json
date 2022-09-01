@@ -2,6 +2,7 @@
   "api_version": "0.1",
   "id": "message_survey_staging_locale",
   "name": "Staging Survey 1 secs",
+  "translatable": false,
   "type": "message",
   "conditions": {
     "env": "staging",

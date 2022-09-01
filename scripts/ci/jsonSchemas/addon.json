@@ -15,6 +15,10 @@
       "type": "string",
       "description": "The addon version framework"
     },
+    "translatable": {
+      "type": "boolean",
+      "description": "Set it to false to make the addon not translatable. Default: true"
+    },
     "type": {
       "type": "string",
       "description": "The type of the addon: tutorial, guide, i18n"

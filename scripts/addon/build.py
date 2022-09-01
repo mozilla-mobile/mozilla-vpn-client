@@ -330,16 +330,20 @@ with open(args.source, "r", encoding="utf-8") as file:
     tmp_path = tempfile.mkdtemp()
     copy_files(os.path.dirname(args.source), tmp_path)
 
-    print("Retrieving strings...")
     strings = {}
-    if manifest["type"] == "tutorial":
-        strings = retrieve_strings_tutorial(manifest, args.source)
-    elif manifest["type"] == "guide":
-        strings = retrieve_strings_guide(manifest, args.source)
-    elif manifest["type"] == "message":
-        strings = retrieve_strings_message(manifest, args.source)
+
+    if "translatable" not in manifest or manifest["translatable"] == True:
+        print("Retrieving strings...")
+        if manifest["type"] == "tutorial":
+            strings = retrieve_strings_tutorial(manifest, args.source)
+        elif manifest["type"] == "guide":
+            strings = retrieve_strings_guide(manifest, args.source)
+        elif manifest["type"] == "message":
+            strings = retrieve_strings_message(manifest, args.source)
+        else:
+            exit(f"Unupported manifest type `{manifest['type']}`")
     else:
-        exit(f"Unupported manifest type `{manifest['type']}`")
+       print("Addon not translatable")
 
     print("Create localization file...")
     os.mkdir(os.path.join(tmp_path, "i18n"))
