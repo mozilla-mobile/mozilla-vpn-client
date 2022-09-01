@@ -20,6 +20,6 @@ echo "Building QT"
 echo "Build Qt- Creating dist artifact"
 ls
 echo $PWD
-mv qt-everywhere-src-$QT_VERSION/qt_dist/* qt_dist
+mv $MOZ_FETCHES_DIR/qt-everywhere-src-$QT_VERSION/qt_dist/* qt_dist
 mkdir -p ../../public/build
 zip -qr ../../public/build/qt6_mac.zip qt_dist/*
