@@ -13,7 +13,7 @@ The signature of the add-on index file is verified at any loading. We use RSA
 
 The add-on index file is a JSON array containing add-on IDs and hash (SHA256)
 of the add-on content. The app downloads the add-ons listed in the index file
-if they are not on disk already of if the hash does not match.
+if they are not on disk already or if the hash does not match.
 
 ## Add-on format
 
