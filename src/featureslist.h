@@ -58,54 +58,29 @@ FEATURE_SIMPLE(captivePortal,     // Feature ID
                QStringList(),     // feature dependencies
                FeatureCallback_captivePortal)
 
-FEATURE(
-    connectionInfo,     // Feature ID
-    "Connection info",  // Feature name
-    true,               // Is Major Feature
-    L18nStrings ::WhatsNewReleaseNotesConnectionInfoDisplayName,  // Display
-                                                                  // name
-    L18nStrings::
-        WhatsNewReleaseNotesConnectionInfoDescriptionShort,      // Description
-    L18nStrings::WhatsNewReleaseNotesConnectionInfoDescription,  // LongDescr
-    "qrc:/ui/resources/features/connection-info-preview.png",    // ImagePath
-    "qrc:/ui/resources/features/connection-info-icon.svg",       // IconPath
-    "",                                                          // link URL
-    "2.8",                                                       // released
-    true,           // Can be flipped on
-    false,          // Can be flipped off
-    QStringList(),  // feature dependencies
-    FeatureCallback_true)
+FEATURE_SIMPLE(connectionInfo,     // Feature ID
+               "Connection info",  // Feature name
+               "2.8",              // released
+               true,               // Can be flipped on
+               false,              // Can be flipped off
+               QStringList(),      // feature dependencies
+               FeatureCallback_true)
 
-FEATURE(customDNS,                                         // Feature ID
-        "Custom DNS",                                      // Feature name
-        true,                                              // Is Major Feature
-        L18nStrings::WhatsNewReleaseNotesDnsModalHeader,   // Display name
-        L18nStrings::WhatsNewReleaseNotesDnsListItemBody,  // Description
-        L18nStrings::WhatsNewReleaseNotesDnsModalBodyTextNew,  // LongDescr
-        "qrc:/ui/resources/features/custom-dns-preview.png",   // ImagePath
-        "qrc:/ui/resources/settings/networkSettings.svg",      // IconPath
-        "",                                                    // link URL
-        "2.5",                                                 // released
-        true,           // Can be flipped on
-        false,          // Can be flipped off
-        QStringList(),  // feature dependencies
-        FeatureCallback_true)
+FEATURE_SIMPLE(customDNS,      // Feature ID
+               "Custom DNS",   // Feature name
+               "2.5",          // released
+               true,           // Can be flipped on
+               false,          // Can be flipped off
+               QStringList(),  // feature dependencies
+               FeatureCallback_true)
 
-FEATURE(
-    easyProfile,     // Feature ID
-    "Easy Profile",  // Feature name
-    true,            // Is Major Feature
-    L18nStrings::WhatsNewReleaseNotesEasyProfileDisplayName,  // Display name
-    L18nStrings::Empty,                                       // Description
-    L18nStrings::WhatsNewReleaseNotesEasyProfileDescription,  // LongDescr
-    "qrc:/ui/resources/features/easy-profile-preview",        // ImagePath
-    "",                                                       // IconPath
-    "",                                                       // link URL
-    "2.9",
-    false,          // Can be flipped on
-    false,          // Can be flipped off
-    QStringList(),  // feature dependencies
-    FeatureCallback_true)
+FEATURE_SIMPLE(easyProfile,     // Feature ID
+               "Easy Profile",  // Feature name
+               "2.9",
+               false,          // Can be flipped on
+               false,          // Can be flipped off
+               QStringList(),  // feature dependencies
+               FeatureCallback_true)
 
 FEATURE_SIMPLE(freeTrial,      // Feature ID
                "Free trial",   // Feature name
@@ -164,28 +139,13 @@ FEATURE_SIMPLE(mobileOnboarding,     // Feature ID
                QStringList(),        // feature dependencies
                FeatureCallback_iosOrAndroid)
 
-FEATURE(
-    multiAccountContainers,      // Feature ID
-    "Multi-Account Containers",  // Feature name
-    true,                        // Is Major Feature
-    L18nStrings::WhatsNewReleaseNotesMultiAccountContainersHeader,  // Display
-                                                                    // name
-    L18nStrings::
-        WhatsNewReleaseNotesMultiAccountContainersShortDescription,  // Description
-    L18nStrings::
-        WhatsNewReleaseNotesMultiAccountContainersDescription,  // LongDescr
-    "qrc:/ui/resources/features/"
-    "multi-account-containers-preview.png",  // ImagePath
-    "qrc:/ui/resources/features/multi-account-containers-icon.svg",  // IconPath
-    "https://support.mozilla.org/kb/"
-    "protect-your-container-tabs-mozilla-vpn?utm_source=mozilla.vpn."
-    "client&utm_medium=in-app-link&utm_content=whats-new-panel&utm_"
-    "campaign=vpn-better-together",  // link URL
-    "2.7",
-    false,          // Can be flipped on
-    false,          // Can be flipped off
-    QStringList(),  // feature dependencies
-    FeatureCallback_multiAccountContainers)
+FEATURE_SIMPLE(multiAccountContainers,      // Feature ID
+               "Multi-Account Containers",  // Feature name
+               "2.7",                       // Released
+               false,                       // Can be flipped on
+               false,                       // Can be flipped off
+               QStringList(),               // feature dependencies
+               FeatureCallback_multiAccountContainers)
 
 #if defined(MVPN_ANDROID) || defined(MVPN_IOS)
 #  define MULTIHOP_RELEASE "2.7"
@@ -193,20 +153,13 @@ FEATURE(
 #  define MULTIHOP_RELEASE "2.5"
 #endif
 
-FEATURE(multiHop,                                            // Feature ID
-        "Multi-hop",                                         // Feature name
-        true,                                                // Is Major Feature
-        L18nStrings::WhatsNewReleaseNotesMultiModalHeader,   // Display name
-        L18nStrings::WhatsNewReleaseNotesMultiListItemBody,  // Description
-        L18nStrings::WhatsNewReleaseNotesMultiModalBodyText,  // LongDescr
-        "qrc:/ui/resources/features/multi-hop-preview.png",   // ImagePath
-        "qrc:/nebula/resources/location-dark.svg",            // IconPath
-        "",                                                   // link URL
-        MULTIHOP_RELEASE,  // released for android
-        true,              // Can be flipped on
-        false,             // Can be flipped off
-        QStringList(),     // feature dependencies
-        FeatureCallback_true)
+FEATURE_SIMPLE(multiHop,          // Feature ID
+               "Multi-hop",       // Feature name
+               MULTIHOP_RELEASE,  // released for android
+               true,              // Can be flipped on
+               false,             // Can be flipped off
+               QStringList(),     // feature dependencies
+               FeatureCallback_true)
 
 FEATURE_SIMPLE(notificationControl,     // Feature ID
                "Notification control",  // Feature name
