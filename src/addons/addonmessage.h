@@ -16,12 +16,12 @@ class AddonMessage final : public Addon {
   Q_DISABLE_COPY_MOVE(AddonMessage)
 
   ADDON_PROPERTY(title, m_title, retranslationCompleted)
+  ADDON_PROPERTY(subtitle, m_subtitle, retranslationCompleted)
 
   Q_PROPERTY(Composer* composer READ composer CONSTANT)
   Q_PROPERTY(bool isRead MEMBER m_isRead NOTIFY isReadChanged)
   Q_PROPERTY(qint64 date MEMBER m_date)
   Q_PROPERTY(QString formattedDate READ formattedDate NOTIFY retranslationCompleted)
-  Q_PROPERTY(QString subtitle MEMBER m_subtitle NOTIFY retranslationCompleted)
 
  public:
   static Addon* create(QObject* parent, const QString& manifestFileName,
@@ -56,8 +56,8 @@ class AddonMessage final : public Addon {
 
  private:
   AddonProperty m_title;
+  AddonProperty m_subtitle;
   QString m_formattedDate;
-  QString m_subtitle;
   Composer* m_composer = nullptr;
 
   qint64 m_date = 0;

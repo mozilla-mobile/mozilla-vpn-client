@@ -75,8 +75,9 @@ ComposerBlockUnorderedList::~ComposerBlockUnorderedList() {
 
 bool ComposerBlockUnorderedList::contains(const QString& string) const {
     for(const QString& item : m_subBlocks.get()) {
-        if(item.contains(string, Qt::CaseInsensitive))
+        if(item.contains(string, Qt::CaseInsensitive)) {
             return true;
+        }
     }
     return false;
 }
