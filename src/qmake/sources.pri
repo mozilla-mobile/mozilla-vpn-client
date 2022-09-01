@@ -4,6 +4,7 @@
 
 SOURCES += \
         addons/addon.cpp \
+        addons/addonapi.cpp \
         addons/addonguide.cpp \
         addons/addoni18n.cpp \
         addons/addonmessage.cpp \
@@ -12,6 +13,7 @@ SOURCES += \
         addons/addontutorial.cpp \
         addons/conditionwatchers/addonconditionwatcher.cpp \
         addons/conditionwatchers/addonconditionwatchergroup.cpp \
+        addons/conditionwatchers/addonconditionwatcherjavascript.cpp \
         addons/conditionwatchers/addonconditionwatcherlocales.cpp \
         addons/conditionwatchers/addonconditionwatchertimeend.cpp \
         addons/conditionwatchers/addonconditionwatchertimestart.cpp \
@@ -46,6 +48,7 @@ SOURCES += \
         commands/commandui.cpp \
         composer/composer.cpp \
         composer/composerblock.cpp \
+        composer/composerblockbutton.cpp \
         composer/composerblocktext.cpp \
         composer/composerblocktitle.cpp \
         composer/composerblockorderedlist.cpp \
@@ -169,6 +172,7 @@ SOURCES += \
 
 HEADERS += \
         addons/addon.h \
+        addons/addonapi.h \
         addons/addonguide.h \
         addons/addoni18n.h \
         addons/addonmessage.h \
@@ -177,6 +181,7 @@ HEADERS += \
         addons/addontutorial.h \
         addons/conditionwatchers/addonconditionwatcher.h \
         addons/conditionwatchers/addonconditionwatchergroup.h \
+        addons/conditionwatchers/addonconditionwatcherjavascript.h \
         addons/conditionwatchers/addonconditionwatcherlocales.h \
         addons/conditionwatchers/addonconditionwatchertimeend.h \
         addons/conditionwatchers/addonconditionwatchertimestart.h \
@@ -213,6 +218,7 @@ HEADERS += \
         commands/commandui.h \
         composer/composer.h \
         composer/composerblock.h \
+        composer/composerblockbutton.h \
         composer/composerblocktext.h \
         composer/composerblocktitle.h \
         composer/composerblockorderedlist.h \

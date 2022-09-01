@@ -37,6 +37,9 @@ target_link_libraries(unit_tests PRIVATE glean lottie nebula translations)
 target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/addons/addon.cpp
     ${MVPN_SOURCE_DIR}/addons/addon.h
+    ${MVPN_SOURCE_DIR}/addons/addonapi.cpp
+    ${MVPN_SOURCE_DIR}/addons/addonapi.h
+    ${MVPN_SOURCE_DIR}/addons/addonguide.cpp
     ${MVPN_SOURCE_DIR}/addons/addonguide.cpp
     ${MVPN_SOURCE_DIR}/addons/addonguide.h
     ${MVPN_SOURCE_DIR}/addons/addoni18n.cpp
@@ -53,6 +56,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcher.h
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchergroup.cpp
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchergroup.h
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherjavascript.cpp
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherjavascript.h
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherlocales.cpp
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherlocales.h
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertimeend.cpp
@@ -83,6 +88,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/composer/composer.h
     ${MVPN_SOURCE_DIR}/composer/composerblock.cpp
     ${MVPN_SOURCE_DIR}/composer/composerblock.h
+    ${MVPN_SOURCE_DIR}/composer/composerblockbutton.cpp
+    ${MVPN_SOURCE_DIR}/composer/composerblockbutton.h
     ${MVPN_SOURCE_DIR}/composer/composerblocktext.cpp
     ${MVPN_SOURCE_DIR}/composer/composerblocktext.h
     ${MVPN_SOURCE_DIR}/composer/composerblocktitle.cpp
@@ -270,6 +277,8 @@ target_sources(unit_tests PRIVATE
     testandroidmigration.h
     testcommandlineparser.cpp
     testcommandlineparser.h
+    testcomposer.cpp
+    testcomposer.h
     testfeature.cpp
     testfeature.h
     testipaddress.cpp
@@ -316,6 +325,7 @@ target_sources(auth_tests PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 # Unit test mock resources
 target_sources(unit_tests PRIVATE
+    addons/addons.qrc
     guides/guides.qrc
     servers/servers.qrc
     themes/themes.qrc

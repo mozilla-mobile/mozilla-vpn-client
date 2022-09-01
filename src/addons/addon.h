@@ -28,6 +28,7 @@ class Addon : public QObject {
 
   const QString& id() const { return m_id; }
   const QString& type() const { return m_type; }
+  const QString& manifestFileName() const { return m_manifestFileName; }
 
   virtual void retranslate();
 

@@ -43,6 +43,7 @@ RESOURCES ~= 's/.*servers.qrc//g'
 
 HEADERS += \
     ../../src/addons/addon.h \
+    ../../src/addons/addonapi.h \
     ../../src/addons/addonguide.h \
     ../../src/addons/addoni18n.h \
     ../../src/addons/addonmessage.h \
@@ -51,6 +52,7 @@ HEADERS += \
     ../../src/addons/addontutorial.h \
     ../../src/addons/conditionwatchers/addonconditionwatcher.h \
     ../../src/addons/conditionwatchers/addonconditionwatchergroup.h \
+    ../../src/addons/conditionwatchers/addonconditionwatcherjavascript.h \
     ../../src/addons/conditionwatchers/addonconditionwatcherlocales.h \
     ../../src/addons/conditionwatchers/addonconditionwatchertimestart.h \
     ../../src/addons/conditionwatchers/addonconditionwatchertimeend.h \
@@ -66,6 +68,7 @@ HEADERS += \
     ../../src/commandlineparser.h \
     ../../src/composer/composer.h \
     ../../src/composer/composerblock.h \
+    ../../src/composer/composerblockbutton.h \
     ../../src/composer/composerblocktext.h \
     ../../src/composer/composerblocktitle.h \
     ../../src/composer/composerblockorderedlist.h \
@@ -154,6 +157,7 @@ HEADERS += \
     testadjust.h \
     testandroidmigration.h \
     testcommandlineparser.h \
+    testcomposer.h \
     testfeature.h \
     testipaddress.h \
     testipaddresslookup.h \
@@ -176,6 +180,7 @@ HEADERS += \
 
 SOURCES += \
     ../../src/addons/addon.cpp \
+    ../../src/addons/addonapi.cpp \
     ../../src/addons/addonguide.cpp \
     ../../src/addons/addoni18n.cpp \
     ../../src/addons/addonmessage.cpp \
@@ -184,6 +189,7 @@ SOURCES += \
     ../../src/addons/addontutorial.cpp \
     ../../src/addons/conditionwatchers/addonconditionwatcher.cpp \
     ../../src/addons/conditionwatchers/addonconditionwatchergroup.cpp \
+    ../../src/addons/conditionwatchers/addonconditionwatcherjavascript.cpp \
     ../../src/addons/conditionwatchers/addonconditionwatcherlocales.cpp \
     ../../src/addons/conditionwatchers/addonconditionwatchertimestart.cpp \
     ../../src/addons/conditionwatchers/addonconditionwatchertimeend.cpp \
@@ -199,6 +205,7 @@ SOURCES += \
     ../../src/commandlineparser.cpp \
     ../../src/composer/composer.cpp \
     ../../src/composer/composerblock.cpp \
+    ../../src/composer/composerblockbutton.cpp \
     ../../src/composer/composerblocktext.cpp \
     ../../src/composer/composerblocktitle.cpp \
     ../../src/composer/composerblockorderedlist.cpp \
@@ -288,6 +295,7 @@ SOURCES += \
     testadjust.cpp \
     testandroidmigration.cpp \
     testcommandlineparser.cpp \
+    testcomposer.cpp \
     testfeature.cpp \
     testipaddress.cpp \
     testipaddresslookup.cpp \
@@ -349,6 +357,7 @@ MOC_DIR = .moc
 RCC_DIR = .rcc
 UI_DIR = .ui
 
+RESOURCES += addons/addons.qrc
 RESOURCES += servers/servers.qrc
 RESOURCES += ../../src/ui/license.qrc
 RESOURCES += ../../src/resources/public_keys/public_keys.qrc
