@@ -30,7 +30,7 @@ See the guide, tutorial or manifest documentation.
 | type | One of the supported types (message, guide, tutorial, ...) | String | Yes |
 | conditions | List of conditions to met | Array of Condition objects | No |
 
-Based on the add-on type, extra properties can be included. See the tutorial,
+Based on the add-on type, extra properties can be included. See the [tutorial](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/docs/tutorials.md),
 [guide](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/docs/guides.md), and message documentation.
 
 ## Condition object
