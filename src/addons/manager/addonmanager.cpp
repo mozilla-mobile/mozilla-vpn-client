@@ -161,13 +161,6 @@ bool AddonManager::loadManifest(const QString& manifestFileName) {
   }
 
   connect(addon, &Addon::conditionChanged, this, [this, addon](bool enabled) {
-//    beginResetModel();
-//    // In theory, we could be smart and try to add/remove lines, but the
-//    // changing of conditions should happen rarely. Let's refresh the entire
-//    // model for now.
-//    // In case, with multiple messages, the UI will start flickering, we can do
-//    // something better.
-//    endResetModel();
       int pos = 0;
       for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
            i != m_addons.constEnd(); ++i) {

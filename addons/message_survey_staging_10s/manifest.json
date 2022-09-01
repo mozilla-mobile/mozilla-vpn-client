@@ -11,12 +11,9 @@
   "message": {
     "id": "message_survey_staging_10s",
     "title": "Your subscription is ending soon!",
+    "subtitle": "Your Mozilla VPN subscription is ending soon. If you don’t want to say goodbye you can easily renew your subscription below.",
     "date": 1641406997,
     "blocks": [
-      { "id": "c_1",
-        "type": "text",
-        "content": "Your Mozilla VPN subscription is ending soon. If you don’t want to say goodbye you can easily renew your subscription below. "
-      }
     ]    
   }
 }

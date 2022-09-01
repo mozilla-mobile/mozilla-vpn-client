@@ -21,7 +21,7 @@ class AddonMessage final : public Addon {
   Q_PROPERTY(bool isRead MEMBER m_isRead NOTIFY isReadChanged)
   Q_PROPERTY(qint64 date MEMBER m_date)
   Q_PROPERTY(QString formattedDate READ formattedDate NOTIFY retranslationCompleted)
-  Q_PROPERTY(QString subtitle MEMBER m_subtitle NOTIFY subtitleChanged)
+  Q_PROPERTY(QString subtitle MEMBER m_subtitle NOTIFY retranslationCompleted)
 
  public:
   static Addon* create(QObject* parent, const QString& manifestFileName,
@@ -45,10 +45,8 @@ class AddonMessage final : public Addon {
                               const QDateTime& messageDateTime);
   static qint64 planDateRetranslationInternal(const QDateTime& nowDateTime,
                                               const QDateTime& messageDateTime);
-
  signals:
   void isReadChanged();
-  void subtitleChanged();
 
  private:
   AddonMessage(QObject* parent, const QString& manifestFileName,
@@ -58,11 +56,11 @@ class AddonMessage final : public Addon {
 
  private:
   AddonProperty m_title;
+  QString m_formattedDate;
+  QString m_subtitle;
   Composer* m_composer = nullptr;
 
   qint64 m_date = 0;
-  QString m_formattedDate = "";
-  QString m_subtitle = "";
 
   bool m_dismissed = false;
   bool m_isRead = false;

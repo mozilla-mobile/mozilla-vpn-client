@@ -43,15 +43,14 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
   message->m_title.initialize(QString("message.%1.title").arg(messageId),
                               messageObj["title"].toString());
 
+  message->m_subtitle = messageObj["subtitle"].toString();
+
   message->m_composer = Composer::create(
       message, QString("message.%1").arg(messageId), messageObj);
   if (!message->m_composer) {
     logger.warning() << "Composer failed";
     return nullptr;
   }
-
-  if(!message->m_composer->get().isEmpty())
-      message->m_subtitle = message->m_composer->get().first()->getText();
 
   QStringList readAddonMessages = settingsHolder->readAddonMessages();
   message->m_isRead = readAddonMessages.contains(id);
@@ -104,7 +103,13 @@ void AddonMessage::maskAsRead() {
 }
 
 bool AddonMessage::containsSearchString(const QString& query) const {
+    if(query.isEmpty())
+        return true;
+
     if(m_title.get().contains(query, Qt::CaseInsensitive))
+        return true;
+
+    if(m_subtitle.contains(query, Qt::CaseInsensitive))
         return true;
 
     for(ComposerBlock* block : m_composer->get()) {

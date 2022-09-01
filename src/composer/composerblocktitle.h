@@ -23,8 +23,6 @@ class ComposerBlockTitle final : public ComposerBlock {
 
   bool contains(const QString& string) const override;
 
-  QString getText() const override { return m_title.get(); }
-
  private:
   explicit ComposerBlockTitle(Composer* composer);
 

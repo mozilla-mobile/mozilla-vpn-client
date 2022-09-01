@@ -23,8 +23,6 @@ class ComposerBlockUnorderedList : public ComposerBlock {
 
   bool contains(const QString& string) const override;
 
-  QString getText() const override { return m_subBlocks.get().join(" "); }
-
  protected:
   ComposerBlockUnorderedList(Composer* composer, const QString& type);
 

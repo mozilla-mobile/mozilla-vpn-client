@@ -26,8 +26,6 @@ class ComposerBlock : public QObject {
 
   virtual bool contains(const QString& string) const = 0;
 
-  virtual QString getText() const = 0;
-
  signals:
   void retranslationCompleted();
 

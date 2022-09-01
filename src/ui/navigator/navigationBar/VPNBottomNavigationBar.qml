@@ -158,6 +158,5 @@ Rectangle {
 
     function getUnreadNotificationStatus() {
         messagesNavButton._hasNotification = VPNAddonManager.reduce((addon, initialValue) => initialValue + (addon.type === "message" && !addon.isRead), 0)
-
     }
 }
