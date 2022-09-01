@@ -133,6 +133,19 @@ Rectangle {
        }
     }
 
+    Behavior on opacity {
+        PropertyAnimation {
+            duration: 500
+        }
+    }
+
+    Connections {
+        target: VPNConnectionBenchmark
+        onStateChanged: {
+            navbar.opacity = VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateInitial ? 1 : 0
+        }
+    }
+
     ButtonGroup {
         id: navBarButtonGroup
     }

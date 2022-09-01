@@ -8,7 +8,7 @@ import Mozilla.VPN 1.0
 import components 0.1
 
 VPNIconButton {
-    id: root
+    id: btn
 
     property var _screen
     property alias _source: image.source
@@ -22,7 +22,8 @@ VPNIconButton {
         VPNNavigator.requestScreen(_screen, VPNNavigator.screen === _screen);
     }
 
-    onCheckedChanged: if (checked) root.forceActiveFocus();
+    onCheckedChanged: if (checked) btn.forceActiveFocus();
+    enabled: root.opacity !== 0
 
 
     Layout.alignment: Qt.AlignHCenter
