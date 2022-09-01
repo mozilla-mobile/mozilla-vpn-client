@@ -413,16 +413,6 @@ void Navigator::computeComponent() {
   QList<ScreenData*> screens = computeScreens(nullptr);
   Q_ASSERT(!screens.isEmpty());
 
-  // Maybe the current component is in the list of possible screen.
-  if (m_currentComponent) {
-    for (ScreenData* screen : screens) {
-      if (screen->m_qmlComponent == m_currentComponent) {
-        logger.debug() << "The current screen is still acceptable";
-        return;
-      }
-    }
-  }
-
   ScreenData* topPriorityScreen = nullptr;
   for (ScreenData* screen : screens) {
     int8_t priority = screen->m_priorityGetter(nullptr);
@@ -437,7 +427,7 @@ void Navigator::computeComponent() {
 
   maybeGenerateComponent(this, topPriorityScreen);
   loadScreen(topPriorityScreen->m_screen, topPriorityScreen->m_loadPolicy,
-             topPriorityScreen->m_qmlComponent, false);
+             topPriorityScreen->m_qmlComponent, true);
 }
 
 void Navigator::requestScreen(Navigator::Screen requestedScreen,
