@@ -56,3 +56,10 @@ jobs:
             url: https://download.wireguard.com/windows-toolchain/distfiles/go1.17beta1-windows_amd64_2021-06-11.zip
             sha256: 09601956a35ee4c2fa199da301c4b210fd365a46d286a7160388a1cdc07b7a6d
             size: 83720417
+    qt-6.2.4-tar:
+        description: qt-everywhere-src-6.2.4.tar.xz
+        fetch:
+            type: static-url
+            url: https://download.qt.io/archive/qt/6.2/6.2.4/single/qt-everywhere-src-6.2.4.tar.xz
+            sha256: cfe41905b6bde3712c65b102ea3d46fc80a44c9d1487669f14e4a6ee82ebb8fd
+            size: 661663792

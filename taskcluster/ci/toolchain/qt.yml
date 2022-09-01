@@ -11,6 +11,9 @@ job-defaults:
 
 qt-mac:
     description: "Mac QT compile Task"
+    fetches:
+        fetch:
+            - qt-6.2.4-tar
     run:
         script: compile_qt_6_mac.sh
         toolchain-alias: qt-mac
