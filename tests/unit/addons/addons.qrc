@@ -5,6 +5,10 @@
         <file>condition3.js</file>
         <file>condition4.js</file>
         <file>condition5.js</file>
+        <file>button1.js</file>
+        <file>button2.js</file>
+        <file>button3.js</file>
+        <file>button4.js</file>
     </qresource>
 </RCC>
 

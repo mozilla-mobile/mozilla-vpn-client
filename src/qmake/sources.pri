@@ -48,6 +48,7 @@ SOURCES += \
         commands/commandui.cpp \
         composer/composer.cpp \
         composer/composerblock.cpp \
+        composer/composerblockbutton.cpp \
         composer/composerblocktext.cpp \
         composer/composerblocktitle.cpp \
         composer/composerblockorderedlist.cpp \
@@ -217,6 +218,7 @@ HEADERS += \
         commands/commandui.h \
         composer/composer.h \
         composer/composerblock.h \
+        composer/composerblockbutton.h \
         composer/composerblocktext.h \
         composer/composerblocktitle.h \
         composer/composerblockorderedlist.h \

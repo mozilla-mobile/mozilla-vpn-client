@@ -68,6 +68,7 @@ HEADERS += \
     ../../src/commandlineparser.h \
     ../../src/composer/composer.h \
     ../../src/composer/composerblock.h \
+    ../../src/composer/composerblockbutton.h \
     ../../src/composer/composerblocktext.h \
     ../../src/composer/composerblocktitle.h \
     ../../src/composer/composerblockorderedlist.h \
@@ -156,6 +157,7 @@ HEADERS += \
     testadjust.h \
     testandroidmigration.h \
     testcommandlineparser.h \
+    testcomposer.h \
     testfeature.h \
     testipaddress.h \
     testipaddresslookup.h \
@@ -203,6 +205,7 @@ SOURCES += \
     ../../src/commandlineparser.cpp \
     ../../src/composer/composer.cpp \
     ../../src/composer/composerblock.cpp \
+    ../../src/composer/composerblockbutton.cpp \
     ../../src/composer/composerblocktext.cpp \
     ../../src/composer/composerblocktitle.cpp \
     ../../src/composer/composerblockorderedlist.cpp \
@@ -292,6 +295,7 @@ SOURCES += \
     testadjust.cpp \
     testandroidmigration.cpp \
     testcommandlineparser.cpp \
+    testcomposer.cpp \
     testfeature.cpp \
     testipaddress.cpp \
     testipaddresslookup.cpp \
