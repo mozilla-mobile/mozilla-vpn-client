@@ -5,6 +5,8 @@
 #include "addonapi.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
+#include "qmlengineholder.h"
 
 #include <QCoreApplication>
 #include <QQmlEngine>
@@ -20,6 +22,7 @@ AddonApi* AddonApi::instance() {
   if (!s_instance) {
     s_instance = new AddonApi(qApp);
   }
+
   return s_instance;
 }
 
@@ -70,6 +73,10 @@ void AddonApi::connectSignal(QObject* obj, const QString& signalName,
   connect(obj, signal, cw, slot);
 }
 
+void AddonApi::openURL(const QString& url) const {
+  MozillaVPN::instance()->instance()->openLinkUrl(url);
+}
+
 AddonApiCallbackWrapper::AddonApiCallbackWrapper(QObject* parent,
                                                  const QJSValue& callback)
     : QObject(parent), m_callback(callback) {}
@@ -77,4 +84,18 @@ AddonApiCallbackWrapper::AddonApiCallbackWrapper(QObject* parent,
 void AddonApiCallbackWrapper::run() {
   logger.debug() << "Callback execution";
   m_callback.call();
+}
+
+QJSValue AddonApi::settings() const {
+  QJSEngine* engine = QmlEngineHolder::instance()->engine();
+  QJSValue value = engine->newQObject(SettingsHolder::instance());
+  value.setPrototype(engine->newQMetaObject(&SettingsHolder::staticMetaObject));
+  return value;
+}
+
+QJSValue AddonApi::navigator() const {
+  QJSEngine* engine = QmlEngineHolder::instance()->engine();
+  QJSValue value = engine->newQObject(Navigator::instance());
+  value.setPrototype(engine->newQMetaObject(&Navigator::staticMetaObject));
+  return value;
 }
