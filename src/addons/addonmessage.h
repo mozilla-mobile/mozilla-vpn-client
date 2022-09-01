@@ -21,7 +21,8 @@ class AddonMessage final : public Addon {
   Q_PROPERTY(Composer* composer READ composer CONSTANT)
   Q_PROPERTY(bool isRead MEMBER m_isRead NOTIFY isReadChanged)
   Q_PROPERTY(qint64 date MEMBER m_date)
-  Q_PROPERTY(QString formattedDate READ formattedDate NOTIFY retranslationCompleted)
+  Q_PROPERTY(
+      QString formattedDate READ formattedDate NOTIFY retranslationCompleted)
 
  public:
   static Addon* create(QObject* parent, const QString& manifestFileName,

@@ -44,7 +44,7 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
                               messageObj["title"].toString());
 
   message->m_subtitle.initialize(QString("message.%1.subtitle").arg(messageId),
-                                messageObj["subtitle"].toString());
+                                 messageObj["subtitle"].toString());
 
   message->m_composer = Composer::create(
       message, QString("message.%1").arg(messageId), messageObj);
@@ -104,26 +104,25 @@ void AddonMessage::maskAsRead() {
 }
 
 bool AddonMessage::containsSearchString(const QString& query) const {
-    if(query.isEmpty()) {
-        return true;
-    }
+  if (query.isEmpty()) {
+    return true;
+  }
 
-    if(m_title.get().contains(query, Qt::CaseInsensitive)) {
-        return true;
-    }
+  if (m_title.get().contains(query, Qt::CaseInsensitive)) {
+    return true;
+  }
 
-    if(m_subtitle.get().contains(query, Qt::CaseInsensitive)) {
-        return true;
-    }
+  if (m_subtitle.get().contains(query, Qt::CaseInsensitive)) {
+    return true;
+  }
 
-    for(ComposerBlock* block : m_composer->blocks()) {
-         if(block->contains(query)) {
-             return true;
-         }
+  for (ComposerBlock* block : m_composer->blocks()) {
+    if (block->contains(query)) {
+      return true;
     }
-    return false;
+  }
+  return false;
 }
-
 
 bool AddonMessage::enabled() const {
   if (!Addon::enabled()) {
@@ -162,20 +161,24 @@ QString AddonMessage::dateInternal(const QDateTime& nowDateTime,
   }
 
   // Yesterday
-  if (messageDateTime.date().dayOfYear() == nowDateTime.date().dayOfYear() - 1 || (nowDateTime.date().dayOfYear() == 1 && messageDateTime.date().dayOfYear() == messageDateTime.date().daysInYear())) {
+  if (messageDateTime.date().dayOfYear() ==
+          nowDateTime.date().dayOfYear() - 1 ||
+      (nowDateTime.date().dayOfYear() == 1 &&
+       messageDateTime.date().dayOfYear() ==
+           messageDateTime.date().daysInYear())) {
     return L18nStrings::instance()->t(
         L18nStrings::InAppMessagingDateTimeYesterday);
   }
 
   // Before yesterday (but still this week)
-  if(messageDateTime.date() >= nowDateTime.date().addDays(-6)) {
-      SettingsHolder* settingsHolder = SettingsHolder::instance();
-      QString code = settingsHolder->languageCode();
-      QLocale locale = QLocale(code);
-      return locale.dayName(messageDateTime.date().dayOfWeek());
+  if (messageDateTime.date() >= nowDateTime.date().addDays(-6)) {
+    SettingsHolder* settingsHolder = SettingsHolder::instance();
+    QString code = settingsHolder->languageCode();
+    QLocale locale = QLocale(code);
+    return locale.dayName(messageDateTime.date().dayOfWeek());
   }
 
-  //Before this week
+  // Before this week
   return Localizer::instance()->locale().toString(messageDateTime.date(),
                                                   QLocale::ShortFormat);
 }

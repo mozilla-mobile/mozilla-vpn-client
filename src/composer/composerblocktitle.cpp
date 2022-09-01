@@ -38,5 +38,5 @@ ComposerBlockTitle::~ComposerBlockTitle() {
 }
 
 bool ComposerBlockTitle::contains(const QString& string) const {
-    return m_title.get().contains(string, Qt::CaseInsensitive);
+  return m_title.get().contains(string, Qt::CaseInsensitive);
 }

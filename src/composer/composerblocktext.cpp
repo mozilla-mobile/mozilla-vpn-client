@@ -36,5 +36,5 @@ ComposerBlockText::ComposerBlockText(Composer* composer)
 ComposerBlockText::~ComposerBlockText() { MVPN_COUNT_DTOR(ComposerBlockText); }
 
 bool ComposerBlockText::contains(const QString& string) const {
-    return m_text.get().contains(string, Qt::CaseInsensitive);
+  return m_text.get().contains(string, Qt::CaseInsensitive);
 }

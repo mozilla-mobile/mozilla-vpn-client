@@ -101,5 +101,5 @@ void ComposerBlockButton::click() const {
 }
 
 bool ComposerBlockButton::contains(const QString& string) const {
-    return m_text.get().contains(string, Qt::CaseInsensitive);
+  return m_text.get().contains(string, Qt::CaseInsensitive);
 }

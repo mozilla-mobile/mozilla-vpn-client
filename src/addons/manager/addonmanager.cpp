@@ -161,26 +161,25 @@ bool AddonManager::loadManifest(const QString& manifestFileName) {
   }
 
   connect(addon, &Addon::conditionChanged, this, [this, addon](bool enabled) {
-      int pos = 0;
-      for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
-           i != m_addons.constEnd(); ++i) {
-        if (!i.value().m_addon) continue;
-        if (i.value().m_addon != addon) {
-            if (i.value().m_addon->enabled()) ++pos;
-            continue;
-        }
-        if (!enabled) {
-            beginRemoveRows(QModelIndex(), pos, pos);
-            removeRow(pos);
-            endRemoveRows();
-        }
-        else {
-            beginInsertRows(QModelIndex(), pos, pos);
-            insertRow(pos);
-            endInsertRows();
-        }
-        break;
+    int pos = 0;
+    for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
+         i != m_addons.constEnd(); ++i) {
+      if (!i.value().m_addon) continue;
+      if (i.value().m_addon != addon) {
+        if (i.value().m_addon->enabled()) ++pos;
+        continue;
       }
+      if (!enabled) {
+        beginRemoveRows(QModelIndex(), pos, pos);
+        removeRow(pos);
+        endRemoveRows();
+      } else {
+        beginInsertRows(QModelIndex(), pos, pos);
+        insertRow(pos);
+        endInsertRows();
+      }
+      break;
+    }
   });
 
   return true;
@@ -421,12 +420,12 @@ QJSValue AddonManager::reduce(QJSValue callback, QJSValue initialValue) const {
   return reducedValue;
 }
 
-//Undismisses any dismissed messages and marks all messages as unread
+// Undismisses any dismissed messages and marks all messages as unread
 void AddonManager::reinstateMessages() const {
-    SettingsHolder* settingsHolder = SettingsHolder::instance();
-    Q_ASSERT(settingsHolder);
-    settingsHolder->setDismissedAddonMessages(QStringList());
-    settingsHolder->setReadAddonMessages(QStringList());
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+  settingsHolder->setDismissedAddonMessages(QStringList());
+  settingsHolder->setReadAddonMessages(QStringList());
 }
 
 #ifdef UNIT_TEST
