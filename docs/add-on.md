@@ -20,7 +20,6 @@ if they are not on disk already or if the hash does not match.
 Add-ons are [RCC](https://doc.qt.io/qt-6/resources.html) files containing at
 least a manifest.json file. The properties of this JSON file are:
 
-See the guide, tutorial or manifest documentation.
 
 | Property | Description | Type | Required |
 | --- | --- | --- | --- |
