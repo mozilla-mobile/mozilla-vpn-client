@@ -98,6 +98,15 @@ VPNViewBase {
             }
 
             VPNSettingsItem {
+                objectName: "settingsDeviceList"
+                //% "My devices"
+                settingTitle: qsTrId("vpn.devices.myDevices")
+                imageLeftSrc: "qrc:/nebula/resources/devices.svg"
+                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                onClicked: stackview.push("qrc:/ui/screens/devices/ViewDevices.qml")
+            }
+
+            VPNSettingsItem {
                 //% "Give feedback"
                 property string giveFeedbackTitle: qsTrId("vpn.settings.giveFeedback")
                 objectName: "settingsGetHelp"
