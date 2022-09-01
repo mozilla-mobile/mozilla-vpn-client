@@ -34,20 +34,25 @@ Based on the add-on type, extra properties can be included. See the [tutorial](h
 
 ## Condition object
 
-Add-ons can enable and disable themselves using the "conditions" key in the manifest. The condition object contains the following properties:
+Add-ons can enable and disable themselves using the `conditions` key in the manifest. The condition object contains the following properties:
 
-| Property | Description | Type | Required |
-| --- | --- | --- | --- |
-| enabled_features | An array of features to be enabled | Array of string | No |
-| env | A string to match a particular env: staging, production | No |
-| locales | An array of locales to be checked | Array of string | No |
-| min_client_version | The min client version | String | No |
-| max_client_version | The max client version | String | No |
-| platforms | An array of platforms to be checked | Array of string | No |
-| settings | An array of Condition Setting object. See below | Array of Condition Setting object | No |
-| trigger_time | A number identifying the number of seconds from the first execution of the client | Integer |  No |
-| start_time | the epoch time that activates the current add-on | Integer | No |
-| end_time | the epoch time that deactivates the current add-on | Integer | No |
+| Property | Description | Type | Required | Dynamic |
+| --- | --- | --- | --- | --- |
+| enabled_features | An array of features to be enabled | Array of string | No | No |
+| env | A string to match a particular env: staging, production | String | No | No |
+| locales | An array of locales to be checked | Array of string | No | Yes |
+| min_client_version | The min client version | String | No | No |
+| max_client_version | The max client version | String | No | No |
+| platforms | An array of platforms to be checked | Array of string | No | No |
+| settings | An array of Condition Setting object. See below | Array of Condition Setting object | No | No |
+| trigger_time | A number identifying the number of seconds from the first execution of the client | Integer |  No | Yes |
+| start_time | The epoch time that activates the current add-on | Integer | No | Yes |
+| end_time | The epoch time that deactivates the current add-on | Integer | No | Yes |
+| javascript | A script file is executed to change the condition status. See below | String | No | Yes | 
+
+Some conditions are dynamic. This means that the value can change their status dynamically during the app execution.
+
+The add-on is considered enabled if all the conditions are met.
 
 ### Condition Setting object
 
@@ -60,6 +65,41 @@ When a setting must be checked as a condition, the JSON object must contain the 
 | op | The compare operator: eq or neq | String | Yes |
 
 The list of setting keys can be found here: https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/src/settingslist.h
+
+### Javascript conditions
+
+When the add-on manifest contains a `javascript` property in the `conditions` object, its value must be a javascript filename. 
+
+The javascript file is executed when the add-on is loaded and it has to expose a function. For instance:
+
+```
+(function(api, condition) {
+  // your code goes here.
+})
+```
+
+The function will be executed at the first add-on loading with 2 parameters.
+
+ * api: the [add-on API object](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/docs/add-on-api.md).
+ * condition: a `condition` object.
+
+The `condition` object exposes 2 methods:
+
+ * `condition.enable()` - to be called to enable the add-on
+ * `condition.disable()` - to be called to disable the add-on
+
+An example of javascript conditional object is the following:
+
+```
+(function(vpn, condition) {
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', 'https://mozilla.org');
+  xhr.send();
+  xhr.onreadystatechange = () => {
+    if (xhr.readystate === 4) condition.enable()
+  }
+})
+```
 
 ## How to implement and test add-ons
 
