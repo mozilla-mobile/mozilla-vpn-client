@@ -4,6 +4,7 @@
 
 #include "composerblock.h"
 #include "composer.h"
+#include "composerblockbutton.h"
 #include "composerblocktext.h"
 #include "composerblocktitle.h"
 #include "composerblockorderedlist.h"
@@ -28,13 +29,18 @@ ComposerBlock::ComposerBlock(Composer* composer, const QString& type)
 ComposerBlock::~ComposerBlock() { MVPN_COUNT_DTOR(ComposerBlock); }
 
 // static
-ComposerBlock* ComposerBlock::create(Composer* composer, const QString& prefix,
+ComposerBlock* ComposerBlock::create(Composer* composer, Addon* addon,
+                                     const QString& prefix,
                                      const QJsonObject& blockObj) {
   Q_ASSERT(composer);
 
   QString type = blockObj["type"].toString();
   if (type == "title") {
     return ComposerBlockTitle::create(composer, prefix, blockObj);
+  }
+
+  if (type == "button") {
+    return ComposerBlockButton::create(composer, addon, prefix, blockObj);
   }
 
   if (type == "text") {

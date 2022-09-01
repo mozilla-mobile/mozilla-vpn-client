@@ -7,19 +7,23 @@
 
 #include "composerblock.h"
 
+class Addon;
+
 class Composer final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Composer)
   QML_NAMED_ELEMENT(VPNComposer)
   QML_UNCREATABLE("")
 
-  Q_PROPERTY(QList<ComposerBlock*> blocks MEMBER m_blocks CONSTANT)
+  Q_PROPERTY(QList<ComposerBlock*> blocks READ blocks CONSTANT)
 
  public:
-  static Composer* create(QObject* parent, const QString& prefix,
+  static Composer* create(Addon* addon, const QString& prefix,
                           const QJsonObject& obj);
 
   ~Composer();
+
+  const QList<ComposerBlock*>& blocks() const { return m_blocks; }
 
  signals:
   void retranslationCompleted();
