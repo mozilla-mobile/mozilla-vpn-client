@@ -9,6 +9,7 @@
 #include "composerblocktitle.h"
 #include "composerblockorderedlist.h"
 #include "composerblockunorderedlist.h"
+#include "composerblockbutton.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -53,6 +54,10 @@ ComposerBlock* ComposerBlock::create(Composer* composer, Addon* addon,
 
   if (type == "ulist") {
     return ComposerBlockUnorderedList::create(composer, prefix, blockObj);
+  }
+
+  if (type == "button") {
+    return ComposerBlockButton::create(composer, prefix, blockObj);
   }
 
   logger.error() << "Invalid type for block for composer";

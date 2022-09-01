@@ -118,5 +118,7 @@
         <file>components/VPNViewBase.qml</file>
         <file>components/VPNSwipeDelegate.qml</file>
         <file>components/VPNSwipeAction.qml</file>
+        <file>components/VPNBadge.qml</file>
+        <file>components/VPNComposerView.qml</file>
     </qresource>
 </RCC>

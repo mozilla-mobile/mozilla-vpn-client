@@ -59,6 +59,8 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
   message->m_date = messageObj["date"].toInteger();
   message->planDateRetranslation();
 
+  message->setBadge(messageObj["badge"].toString());
+
   guard.dismiss();
   return message;
 }
@@ -223,4 +225,16 @@ qint64 AddonMessage::planDateRetranslationInternal(
   }
 
   return 86400 + secsTo;
+}
+
+void AddonMessage::setBadge(const QString& badge) {
+    if(badge == "new_update") {
+        m_badge = AddonMessageBadge::Badge::NewUpdate;
+    }
+    else if(badge == "critical") {
+        m_badge = AddonMessageBadge::Badge::Critical;
+    }
+    else {
+        m_badge = AddonMessageBadge::Badge::None;
+    }
 }

@@ -35,13 +35,14 @@ theme.redHovered = '#E22850';
 theme.redPressed = '#C50042';
 theme.redDisabled = '#FFBDC5';
 theme.redfocusOutline = '#66C50042';
+theme.redBadgeText = "#810220";
+theme.greenBadgeText = '#00736C';
+theme.greenBadgeBackground = '#E3FFF3';
 theme.white = '#FFFFFF'
 
 theme.overlayBackground = '#4D000000';
 
 theme.checkBoxWarning = '#C45A27';
-
-theme.errorFocusOutline = '#FFBDC5';
 
 theme.guideCardImageBgColor = "#50134B"
 theme.tutorialCardImageBgColor = "#321C64"
@@ -87,6 +88,8 @@ theme.navBarHeightWithMargins =
 theme.navBarHeight + theme.navBarTopMargin + theme.navBarBottomMargin;
 
 theme.swipeDelegateActionWidth = 56;
+theme.badgeHorizontalPadding = 8
+theme.badgeVerticalPadding = 3
 
 theme.darkFocusBorder = theme.fontColor;
 theme.lightFocusBorder = '#d5d3e0';
@@ -274,6 +277,21 @@ theme.input = {
   'focusBgColor': theme.blue,
   'focusOutline': theme.blueFocusOutline,
   'focusBorder': theme.blueFocusBorder,
+};
+
+theme.grayBadge = {
+    'textColor': theme.fontColorDark,
+    'backgroundColor': theme.greyHovered
+};
+
+theme.greenBadge = {
+    'textColor': theme.greenBadgeText,
+    'backgroundColor': theme.greenBadgeBackground
+};
+
+theme.redBadge = {
+    'textColor': theme.redBadgeText,
+    'backgroundColor': theme.redDisabled
 };
 
 theme;

@@ -243,7 +243,7 @@ VPNFlickable {
                         if (vpnFlickable.anySwipesOpen()) vpnFlickable.closeAllSwipes()
                         else {
                             addon.maskAsRead()
-                            messagesStack.push("qrc:/ui/messages/ViewMessage.qml")
+                            messagesStack.push(viewMessage, {"message": addon})
                         }
                     }
 
@@ -322,6 +322,7 @@ VPNFlickable {
                                 lineHeight: VPNTheme.theme.labelLineHeight
                                 verticalAlignment: Text.AlignVCenter
                                 elide: Text.ElideRight
+                                maximumLineCount: 1
                             }
 
                             VPNInterLabel {
@@ -355,6 +356,17 @@ VPNFlickable {
                     Layout.preferredHeight: 1
 
                     color: VPNTheme.colors.grey10
+                }
+
+                Component {
+                    id: viewMessage
+
+                    ViewMessage {
+                        onDeleteButtonClicked: {
+                            messagesStack.pop()
+                            addon.dismiss()
+                        }
+                    }
                 }
             }
         }

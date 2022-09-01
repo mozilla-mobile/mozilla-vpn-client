@@ -73,6 +73,7 @@ HEADERS += \
     ../../src/composer/composerblocktitle.h \
     ../../src/composer/composerblockorderedlist.h \
     ../../src/composer/composerblockunorderedlist.h \
+    ../../src/composer/composerblockbutton.h \
     ../../src/constants.h \
     ../../src/controller.h \
     ../../src/curve25519.h \
@@ -210,6 +211,7 @@ SOURCES += \
     ../../src/composer/composerblocktitle.cpp \
     ../../src/composer/composerblockorderedlist.cpp \
     ../../src/composer/composerblockunorderedlist.cpp \
+    ../../src/composer/composerblockbutton.cpp \
     ../../src/constants.cpp \
     ../../src/curve25519.cpp \
     ../../src/dnspingsender.cpp \

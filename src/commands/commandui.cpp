@@ -4,10 +4,12 @@
 
 #include "commandui.h"
 #include "addons/manager/addonmanager.h"
+#include "addons/addonmessage.h"
 #include "apppermission.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "commandlineparser.h"
+#include "composerblockbutton.h"
 #include "constants.h"
 #include "fontloader.h"
 #include "frontend/navigator.h"
@@ -522,6 +524,22 @@ int CommandUI::run(QStringList& tokens) {
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
+
+    qmlRegisterUncreatableMetaObject(
+      AddonMessageBadge::staticMetaObject,
+      "Mozilla.VPN",
+      1, 0,
+      "AddonMessageBadge",
+      "Error: only enums"
+    );
+
+    qmlRegisterUncreatableMetaObject(
+      ComposerBlockButtonStyle::staticMetaObject,
+      "Mozilla.VPN",
+      1, 0,
+      "ComposerBlockButtonStyle",
+      "Error: only enums"
+    );
 
 #if MVPN_IOS && QT_VERSION >= 0x060000 && QT_VERSION < 0x060300
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,

@@ -224,7 +224,7 @@ VPNViewBase {
                         if (root.anySwipesOpen()) root.closeAllSwipes()
                         else {
                             addon.maskAsRead()
-                            stackview.push("qrc:/ui/screens/messaging/ViewMessage.qml")
+                            stackview.push(viewMessage, {"message": addon})
                         }
                     }
 
@@ -301,6 +301,7 @@ VPNViewBase {
                                 lineHeight: VPNTheme.theme.labelLineHeight
                                 verticalAlignment: Text.AlignVCenter
                                 elide: Text.ElideRight
+                                maximumLineCount: 1
                             }
 
                             VPNInterLabel {
@@ -334,6 +335,17 @@ VPNViewBase {
                     Layout.preferredHeight: 1
 
                     color: VPNTheme.colors.grey10
+                }
+
+                Component {
+                    id: viewMessage
+
+                    ViewMessage {
+                        onDeleteButtonClicked: {
+                            messagesStack.pop()
+                            addon.dismiss()
+                        }
+                    }
                 }
             }
         }
