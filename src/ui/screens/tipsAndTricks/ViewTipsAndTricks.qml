@@ -40,18 +40,39 @@ VPNViewBase {
         }
 
         ObjectModel {
-            id: tipsSections
+            id: guidesSections
 
+            // Quick tips
             Item {
                 property string title: VPNl18n.TipsAndTricksQuickTipsTitle
                 property string description: VPNl18n.TipsAndTricksQuickTipsDescription
                 property var filter: (addon) => !addon.advanced && !addon.highlighted
             }
 
+            // Advanced tips
             Item {
                 property string title: VPNl18n.TipsAndTricksAdvancedTipsTitle
                 property string description: VPNl18n.TipsAndTricksAdvancedTipsDescription
                 property var filter: (addon) => addon.advanced && !addon.highlighted
+            }
+        }
+
+        ObjectModel {
+            id: tutorialsSections
+
+            // Highlighted tutorials
+            Item {
+                property string title: VPNl18n.TipsAndTricksTutorialsTitle
+                property string description: VPNl18n.TipsAndTricksTutorialsDescription
+                property var filter: (addon) => addon.highlighted
+                property var featureTourCardVisible: true
+            }
+
+            // More tutorials
+            Item {
+                property string title: VPNl18n.TipsAndTricksMoreTutorialsTitle
+                property string description: VPNl18n.TipsAndTricksMoreTutorialsDescription
+                property var filter: (addon) => !addon.highlighted
             }
         }
 
@@ -69,48 +90,43 @@ VPNViewBase {
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    anchors.topMargin: VPNTheme.theme.vSpacing
                     anchors.leftMargin: VPNTheme.theme.windowMargin
                     anchors.rightMargin: VPNTheme.theme.windowMargin
-                    spacing: VPNTheme.theme.vSpacingSmall
-
-                    VPNTutorialList {
-                        Layout.fillWidth: true
-
-                        objectName: "highlightedTutorials"
-                        customTutorialFilter: (addon) => addon.highlighted
-                    }
 
                     Repeater {
-                        model: tipsSections.count
+                        model: 2
 
-                        Column {
-                            property var section: tipsSections.get(index)
-
-                            visible: guidesList.count || tutorialsList.count
-
+                        delegate: Column {
                             Layout.fillWidth: true
-                            Layout.alignment: Qt.AlignTop
-                            Layout.topMargin: VPNTheme.theme.vSpacingSmall
+                            Layout.topMargin: VPNTheme.theme.vSpacing
                             spacing: VPNTheme.theme.vSpacing
-                            objectName: 'guideLayout'
 
-                            VPNGuideList {
-                                anchors.left: parent.left
+                            VPNTipsAndTricksSection {
                                 anchors.right: parent.right
+                                anchors.left: parent.left
 
-                                id: guidesList
+                                property var section: tutorialsSections.get(index)
+
                                 title: section.title
                                 description: section.description
-                                customGuideFilter: section.filter
+
+                                type: "tutorials"
+                                customFilter: section.filter
+                                featureTourCardVisible: section.featureTourCardVisible
                             }
 
-                            VPNTutorialList {
-                                anchors.left: parent.left
+                            VPNTipsAndTricksSection {
                                 anchors.right: parent.right
+                                anchors.left: parent.left
 
-                                id: tutorialsList
-                                customTutorialFilter: section.filter
+                                property var section: guidesSections.get(index)
+
+                                title: section.title
+                                description: section.description
+
+                                type: "guides"
+                                customFilter: section.filter
+                                featureTourCardVisible: section.featureTourCardVisible
                             }
                         }
                     }
@@ -150,26 +166,24 @@ VPNViewBase {
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    anchors.topMargin: VPNTheme.theme.vSpacing
                     anchors.leftMargin: VPNTheme.theme.windowMargin
                     anchors.rightMargin: VPNTheme.theme.windowMargin
 
-                    spacing: VPNTheme.theme.vSpacing
-
                     Repeater {
-                        model: tipsSections.count
+                        model: guidesSections.count
 
-                        VPNGuideList {
-                            property var section: tipsSections.get(index)
-
-                            visible: !!count
-
+                        delegate: VPNTipsAndTricksSection {
                             Layout.fillWidth: true
-                            Layout.alignment: Qt.AlignTop
+                            Layout.topMargin: VPNTheme.theme.vSpacing
+
+                            property var section: guidesSections.get(index)
 
                             title: section.title
                             description: section.description
-                            customGuideFilter: section.filter
+
+                            type: "guides"
+                            customFilter: section.filter
+                            featureTourCardVisible: section.featureTourCardVisible
                         }
                     }
 

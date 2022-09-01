@@ -10,42 +10,14 @@ import Mozilla.VPN 1.0
 import Mozilla.VPN.qmlcomponents 1.0
 import components 0.1
 
-ColumnLayout {
-    property string title
-    property string description
+GridLayout {
+    objectName: "guideLayout"
 
-    property var customGuideFilter: () => true
+    property var customFilter: () => true
     property var count: guideRepeater.count
 
-    visible: count > 0
-
-    // Title
-    VPNBoldLabel {
-        Layout.fillWidth: true
-
-        id: guideListTitle
-        text: title
-        wrapMode: Text.WordWrap
-
-        Accessible.role: Accessible.StaticText
-        Accessible.name: text
-    }
-
-    // Description
-    VPNTextBlock {
-        Layout.fillWidth: true
-        Layout.topMargin: 4
-
-        id: guideListDescription
-        text: description
-        wrapMode: Text.WordWrap
-
-        Accessible.role: Accessible.StaticText
-        Accessible.name: text
-    }
-
     function guideFilter(addon) {
-        return addon.type === "guide" && customGuideFilter(addon);
+        return addon.type === "guide" && customFilter(addon);
     }
 
     VPNFilterProxyModel {
@@ -54,36 +26,28 @@ ColumnLayout {
         filterCallback: ({ addon }) => guideFilter(addon)
     }
 
-    // Guides
-    GridLayout {
-        objectName: "guideLayout"
+    columns: width < VPNTheme.theme.tabletMinimumWidth ? 2 : 3
+    columnSpacing: VPNTheme.theme.vSpacingSmall
+    rowSpacing: VPNTheme.theme.vSpacingSmall
 
-        Layout.fillWidth: true
-        Layout.topMargin: VPNTheme.theme.vSpacingSmall
+    Repeater {
+        id: guideRepeater
+        model: guideModel
 
-        columns: width < VPNTheme.theme.tabletMinimumWidth ? 2 : 3
-        columnSpacing: VPNTheme.theme.vSpacingSmall
-        rowSpacing: VPNTheme.theme.vSpacingSmall
+        delegate: VPNGuideCard {
+            objectName: addon.id
 
-        Repeater {
-            id: guideRepeater
-            model: guideModel
+            Layout.preferredHeight: VPNTheme.theme.guideCardHeight
+            Layout.fillWidth: true
 
-            delegate: VPNGuideCard {
-                objectName: addon.id
+            imageSrc: addon.image
+            title: addon.title
 
-                Layout.preferredHeight: VPNTheme.theme.guideCardHeight
-                Layout.fillWidth: true
-
-                imageSrc: addon.image
-                title: addon.id
-
-                onClicked:{
-                    stackview.push("qrc:/ui/screens/settings/ViewGuide.qml", {"guide": addon, "imageBgColor": imageBgColor})
-                    VPN.recordGleanEventWithExtraKeys("guideOpened", {
-                        "id": addon.id
-                    });
-                }
+            onClicked:{
+                stackview.push("qrc:/ui/screens/settings/ViewGuide.qml", {"guide": addon, "imageBgColor": imageBgColor})
+                VPN.recordGleanEventWithExtraKeys("guideOpened", {
+                    "id": addon.id
+                });
             }
         }
     }

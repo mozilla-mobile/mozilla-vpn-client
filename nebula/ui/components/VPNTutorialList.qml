@@ -11,8 +11,9 @@ import Mozilla.VPN.qmlcomponents 1.0
 import components 0.1
 
 GridLayout {
-    property var customTutorialFilter: () => true
+    property var customFilter: () => true
     property var count: tutorialRepeater.count
+    property var featureTourCardVisible: false
 
     columns: width < VPNTheme.theme.tabletMinimumWidth ? 1 : 2
     columnSpacing: VPNTheme.theme.vSpacingSmall
@@ -20,7 +21,7 @@ GridLayout {
     visible: count > 0
 
     function tutorialFilter(addon) {
-        return addon.type === "tutorial" && customTutorialFilter(addon);
+        return addon.type === "tutorial" && customFilter(addon);
     }
 
     VPNFilterProxyModel {
@@ -47,5 +48,20 @@ GridLayout {
                 VPNNavigator.requestScreen(VPNNavigator.ScreenHome)
             }
         }
+    }
+
+    VPNTutorialCard {
+        objectName: "featureTourCard"
+
+        visible: featureTourCardVisible
+
+        Layout.preferredHeight: VPNTheme.theme.tutorialCardHeight
+        Layout.fillWidth: true
+
+        imageSrc: "qrc:/ui/resources/sparkling-check.svg"
+        imageBgColor: "#2B2A33"
+        title: VPNl18n.TipsAndTricksFeatureTourCardTitle
+        description: VPNl18n.TipsAndTricksFeatureTourCardDescription
+        onClicked: featureTourPopup.startTour();
     }
 }
