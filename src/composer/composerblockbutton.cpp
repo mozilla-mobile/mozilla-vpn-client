@@ -53,7 +53,7 @@ ComposerBlock* ComposerBlockButton::create(Composer* composer, Addon* addon,
   }
 
   if (!function.isCallable()) {
-    logger.debug() << "The button js script should expose a callbale function"
+    logger.debug() << "The button js script should expose a callable function"
                    << blockId;
     return nullptr;
   }
