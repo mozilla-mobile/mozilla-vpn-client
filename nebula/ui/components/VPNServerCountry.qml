@@ -170,7 +170,7 @@ VPNClickableRow {
                 property string _countryCode: code
                 property string _localizedCityName: modelData[1]
                 property string locationScore: modelData[2]
-                property bool isAvailable: locationScore > 0
+                property bool isAvailable: locationScore >= 0
                 property int itemHeight: 54
 
                 id: del
@@ -216,13 +216,13 @@ VPNClickableRow {
                         top: del.top
                         verticalCenter: del.verticalCenter
                     }
-                    source: del.locationScore == 0 ? "qrc:/nebula/resources/warning.svg" :
-                        "qrc:/nebula/resources/wifi-" + (del.locationScore-1) + ".svg"
+                    source: del.locationScore < 0 ? "qrc:/nebula/resources/warning.svg" :
+                        "qrc:/nebula/resources/wifi-" + del.locationScore + ".svg"
                     sourceSize {
                         height: VPNTheme.theme.iconSizeSmall
                         width: VPNTheme.theme.iconSizeSmall
                     }
-                    visible: true
+                    visible: del.locationScore != 0
                 }
 
             }

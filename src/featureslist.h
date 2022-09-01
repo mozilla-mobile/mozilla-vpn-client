@@ -169,6 +169,14 @@ FEATURE_SIMPLE(serverUnavailableNotification,      // Feature ID
                QStringList(),                      // feature dependencies
                FeatureCallback_true)
 
+FEATURE_SIMPLE(serverConnectionScore,      // Feature ID
+               "Server connection score",  // Feature name
+               "2.10",                     // released
+               FeatureCallback_true,       // Can be flipped on
+               FeatureCallback_true,       // Can be flipped off
+               QStringList(),              // feature dependencies
+               FeatureCallback_true)
+
 FEATURE_SIMPLE(shareLogs,              // Feature ID
                "Share Logs",           // Feature name
                "2.6",                  // released

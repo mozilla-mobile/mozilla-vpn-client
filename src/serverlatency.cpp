@@ -5,6 +5,7 @@
 #include "serverlatency.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/feature.h"
 #include "mozillavpn.h"
 #include "pingsenderfactory.h"
 
@@ -44,6 +45,10 @@ void ServerLatency::initialize() {
 }
 
 void ServerLatency::start() {
+  if (!Feature::get(Feature::Feature_serverConnectionScore)->isSupported()) {
+    return;
+  }
+
   MozillaVPN* vpn = MozillaVPN::instance();
   if (vpn->controller()->state() != Controller::StateOff) {
     // Don't attempt to refresh latency when the VPN is active, or

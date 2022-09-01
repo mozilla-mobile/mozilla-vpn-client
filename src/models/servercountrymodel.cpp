@@ -6,6 +6,7 @@
 #include "collator.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/feature.h"
 #include "servercountry.h"
 #include "serverdata.h"
 #include "serveri18n.h"
@@ -192,23 +193,30 @@ int ServerCountryModel::cityConnectionScore(const ServerCity& city) const {
     }
   }
 
-  // If there are no reachable servers, then return a score of zero.
+  // If there are no reachable servers, then return a negative score.
   if (activeServerCount == 0) {
+    return -1;
+  }
+
+  // If the feature is disabled, return a score of zero, to indicate
+  // that we have no data to report.
+  if (!Feature::get(Feature::Feature_serverConnectionScore)->isSupported()) {
+    return 0;
+  }
+  // In the unlikely event that the sum of the latencies is zero, then we
+  // haven't actually measured anything and have nothing to report.
+  if (avgLatencyMsec == 0) {
     return 0;
   }
 
   // Otherwise, return a score depending on the average latency.
   avgLatencyMsec /= activeServerCount;
-  logger.debug() << "Server data" << city.code() << avgLatencyMsec
-                 << activeServerCount;
   if (avgLatencyMsec < 50) {
-    return 4;  // Great!
+    return 3;  // Great!
   } else if (avgLatencyMsec < 100) {
-    return 3;  // Acceptable
-  } else if (avgLatencyMsec < 200) {
-    return 2;  // Poor
+    return 2;  // Acceptable
   } else {
-    return 1;  // Really Bad!
+    return 1;  // Poor
   }
 }
 
