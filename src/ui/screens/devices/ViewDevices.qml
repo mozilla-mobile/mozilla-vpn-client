@@ -114,6 +114,8 @@ VPNViewBase {
 
             PropertyChanges {
                 target: menu
+                //% "%1 of %2"
+                //: Example: You have "x of y" devices in your account, where y is the limit of allowed devices.
                 rightTitle: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices).arg(VPNUser.maxDevices)
             }
             PropertyChanges {
@@ -130,6 +132,8 @@ VPNViewBase {
 
             PropertyChanges {
                 target: menu
+                //% "%1 of %2"
+                //: Example: You have "x of y" devices in yor account, where y is the limit of allowed devices.
                 rightTitle: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices + 1).arg(VPNUser.maxDevices)
             }
             PropertyChanges {

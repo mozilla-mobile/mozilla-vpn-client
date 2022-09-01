@@ -124,45 +124,6 @@ VPNFlickable {
                 }
             ]
         }
-
-        VPNControllerNav {
-            function handleClick() {
-                stackview.push("qrc:/ui/screens/devices/ViewDevices.qml")
-            }
-
-            Layout.topMargin: 6
-
-            objectName: "deviceListButton"
-            btnObjectName: "deviceListButton-btn"
-            //% "My devices"
-            titleText: qsTrId("vpn.devices.myDevices")
-            disableRowWhen: box.connectionInfoScreenVisible
-            contentChildren: [
-                VPNIcon {
-                    source: "qrc:/nebula/resources/devices.svg"
-                    Layout.alignment: Qt.AlignLeft | Qt.AlignCenter
-                },
-
-                VPNLightLabel {
-                    id: serverLocation
-                    objectName: "deviceListButtonLabel"
-                    Accessible.ignored: true
-                    Layout.alignment: Qt.AlignLeft
-                    elide: Text.ElideRight
-                    //% "%1 of %2"
-                    //: Example: You have "x of y" devices in your account, where y is the limit of allowed devices.
-                    text: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(
-                              VPNDeviceModel.activeDevices
-                              + (VPN.state !== VPN.StateDeviceLimit ? 0 : 1)).arg(
-                              VPNUser.maxDevices)
-                }
-            ]
-        }
-
-        VPNVerticalSpacer {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 1
-        }
     }
 
     //Tips and tricks popup
