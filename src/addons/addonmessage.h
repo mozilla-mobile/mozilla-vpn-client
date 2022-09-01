@@ -17,7 +17,7 @@ class AddonMessage final : public Addon {
 
   ADDON_PROPERTY(title, m_title, retranslationCompleted)
 
-  Q_PROPERTY(Composer* composer MEMBER m_composer CONSTANT)
+  Q_PROPERTY(Composer* composer READ composer CONSTANT)
   Q_PROPERTY(bool isRead MEMBER m_isRead NOTIFY isReadChanged)
   Q_PROPERTY(QString date READ date NOTIFY retranslationCompleted)
 
@@ -34,6 +34,8 @@ class AddonMessage final : public Addon {
   QString date() const;
 
   bool enabled() const override;
+
+  Composer* composer() const { return m_composer; }
 
   // Explosed for testing.
   static QString dateInternal(const QDateTime& nowDateTime,

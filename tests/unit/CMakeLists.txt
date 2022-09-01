@@ -88,6 +88,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/composer/composer.h
     ${MVPN_SOURCE_DIR}/composer/composerblock.cpp
     ${MVPN_SOURCE_DIR}/composer/composerblock.h
+    ${MVPN_SOURCE_DIR}/composer/composerblockbutton.cpp
+    ${MVPN_SOURCE_DIR}/composer/composerblockbutton.h
     ${MVPN_SOURCE_DIR}/composer/composerblocktext.cpp
     ${MVPN_SOURCE_DIR}/composer/composerblocktext.h
     ${MVPN_SOURCE_DIR}/composer/composerblocktitle.cpp
@@ -275,6 +277,8 @@ target_sources(unit_tests PRIVATE
     testandroidmigration.h
     testcommandlineparser.cpp
     testcommandlineparser.h
+    testcomposer.cpp
+    testcomposer.h
     testfeature.cpp
     testfeature.h
     testipaddress.cpp

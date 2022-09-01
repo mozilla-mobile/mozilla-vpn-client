@@ -98,6 +98,8 @@ target_sources(mozillavpn PRIVATE
     commands/commandui.h
     composer/composerblock.cpp
     composer/composerblock.h
+    composer/composerblockbutton.cpp
+    composer/composerblockbutton.h
     composer/composerblocktext.cpp
     composer/composerblocktext.h
     composer/composerblocktitle.cpp

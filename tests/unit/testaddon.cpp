@@ -217,16 +217,6 @@ void TestAddon::conditionWatcher_javascript() {
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
-  qmlRegisterSingletonType<MozillaVPN>(
-      "Mozilla.VPN", 1, 0, "VPNSettings",
-      [](QQmlEngine*, QJSEngine*) -> QObject* {
-        QObject* obj = SettingsHolder::instance();
-        QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-        return obj;
-      });
-
-  QObject parent;
-
   QJsonObject content;
   content["id"] = "foo";
   content["blocks"] = QJsonArray();
@@ -234,6 +224,7 @@ void TestAddon::conditionWatcher_javascript() {
   QJsonObject obj;
   obj["message"] = content;
 
+  QObject parent;
   Addon* message = AddonMessage::create(&parent, "foo", "bar", "name", obj);
 
   QVERIFY(!AddonConditionWatcherJavascript::maybeCreate(message, QString()));
