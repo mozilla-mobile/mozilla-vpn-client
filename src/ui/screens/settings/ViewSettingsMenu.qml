@@ -99,6 +99,7 @@ VPNViewBase {
 
             VPNSettingsItem {
                 objectName: "settingsDeviceList"
+                //% "My devices"
                 settingTitle: qsTrId("vpn.devices.myDevices")
                 imageLeftSrc: "qrc:/nebula/resources/devices.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
