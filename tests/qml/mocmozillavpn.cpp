@@ -49,7 +49,7 @@ void MozillaVPN::authenticate() {}
 void MozillaVPN::authenticateWithType(MozillaVPN::AuthenticationType) {}
 
 void MozillaVPN::openLink(LinkType) {}
-void MozillaVPN::openLinkUrl(const QString&) {}
+void MozillaVPN::openLinkUrl(const QString&) const {}
 
 void MozillaVPN::setToken(const QString&) {}
 

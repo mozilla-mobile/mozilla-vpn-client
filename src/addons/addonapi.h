@@ -5,16 +5,23 @@
 #ifndef ADDONAPI_H
 #define ADDONAPI_H
 
+#include "frontend/navigator.h"
 #include "settingsholder.h"
 
 #include <QJSValue>
 #include <QObject>
 
+/*
+ * IMPORTANT!! If you add, change or remove this object, please update the
+ * documentation in `docs/add-on-api.md`.
+ */
+
 class AddonApi final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AddonApi)
 
-  Q_PROPERTY(SettingsHolder* settings READ settings CONSTANT)
+  Q_PROPERTY(QJSValue settings READ settings CONSTANT)
+  Q_PROPERTY(QJSValue navigator READ navigator CONSTANT)
 
  public:
   static AddonApi* instance();
@@ -23,10 +30,13 @@ class AddonApi final : public QObject {
   Q_INVOKABLE void connectSignal(QObject* obj, const QString& signalName,
                                  const QJSValue& callback);
 
+  Q_INVOKABLE void openURL(const QString& url) const;
+
  private:
   explicit AddonApi(QObject* parent);
 
-  SettingsHolder* settings() const { return SettingsHolder::instance(); }
+  QJSValue settings() const;
+  QJSValue navigator() const;
 };
 
 class AddonApiCallbackWrapper final : public QObject {
