@@ -688,7 +688,15 @@ tutorialPopup:
   tutorialLeavePrimaryButtonLabel: Resume tutorial
 
 inAppMessaging:
+  menuTitle: Inbox
+  editButton: Edit
+  searchBarPlaceholderText: Search messages
   dateTimeYesterday: Yesterday
+  emptyStateTitle: No messages
+  emptyStateDescription: You’re up to date!
+  deleteMessage:
+    value: Delete message
+    comment: An action to delete a message from the users inbox
 
 global:
   expand:

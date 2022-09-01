@@ -36,3 +36,7 @@ ComposerBlockTitle::ComposerBlockTitle(Composer* composer)
 ComposerBlockTitle::~ComposerBlockTitle() {
   MVPN_COUNT_DTOR(ComposerBlockTitle);
 }
+
+bool ComposerBlockTitle::contains(const QString& string) const {
+  return m_title.get().contains(string, Qt::CaseInsensitive);
+}

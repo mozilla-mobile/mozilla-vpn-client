@@ -112,7 +112,7 @@ ColumnLayout {
              const filterValue = getSearchBarText();
              return obj.appName.toLowerCase().includes(filterValue);
          }
-        _searchBarHasError: () => { return applist.count === 0 }
+        _searchBarHasError: applist.count === 0
         _searchBarPlaceholderText: searchBarPlaceholder
 
         enabled: vpnIsOff && VPNSettings.protectSelectedApps

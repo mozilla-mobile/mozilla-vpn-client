@@ -23,6 +23,7 @@ class FilterProxyModel : public QSortFilterProxyModel, public QQmlParserStatus {
   Q_PROPERTY(QJSValue sortCallback READ sortCallback WRITE setSortCallback
                  NOTIFY sortCallbackChanged)
   Q_PROPERTY(QAbstractListModel* source READ source WRITE setSource)
+  Q_PROPERTY(int count READ count NOTIFY countChanged)
 
  public:
   FilterProxyModel(QObject* parent = 0);
@@ -34,6 +35,7 @@ class FilterProxyModel : public QSortFilterProxyModel, public QQmlParserStatus {
  signals:
   void filterCallbackChanged();
   void sortCallbackChanged();
+  void countChanged();
 
  public:
   QJSValue filterCallback() const;
@@ -60,6 +62,8 @@ class FilterProxyModel : public QSortFilterProxyModel, public QQmlParserStatus {
 
   void classBegin() override;
   void componentComplete() override;
+
+  int count() const { return rowCount(); }
 
  private:
   mutable QJSValue m_filterCallback;

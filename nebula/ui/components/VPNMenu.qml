@@ -20,6 +20,9 @@ Item {
     property alias _iconButtonAccessibleName: iconButton.accessibleName
     property var _menuOnBackClicked: () => {}
     property alias _menuIconVisibility: iconButton.visible
+    property Component rightButton
+
+    signal rightMenuButtonClicked()
 
     width: parent.width
     height: VPNTheme.theme.menuHeight
@@ -69,9 +72,9 @@ Item {
 
         // This is a hack to preven the menu title from being thrown off horizontal center by varying 'rightTitle' widths.
         Rectangle {
-           Layout.preferredWidth: rightTitle.width > VPNTheme.theme.rowHeight ? Math.max(rightTitle.width - VPNTheme.theme.rowHeight - row.spacing, 0) : 0
-           Layout.preferredHeight: parent.height
-           color: VPNTheme.theme.transparent
+            Layout.preferredWidth: rightTitle.width > VPNTheme.theme.rowHeight ? Math.max(rightTitle.width - VPNTheme.theme.rowHeight - row.spacing, 0) : 0
+            Layout.preferredHeight: parent.height
+            color: VPNTheme.theme.transparent
         }
 
         VPNBoldLabel {
@@ -88,6 +91,7 @@ Item {
         VPNLightLabel {
             id: rightTitle
 
+            visible: text !== ""
             Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
             Layout.minimumWidth: VPNTheme.theme.rowHeight
             Layout.maximumWidth: row.width / 3
@@ -96,6 +100,16 @@ Item {
             rightPadding: VPNTheme.theme.windowMargin / 2
             horizontalAlignment: Text.AlignRight
         }
+    }
+
+    Loader {
+        id: rightMenuButtonLoader
+
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.right: parent.right
+        anchors.rightMargin: VPNTheme.theme.windowMargin
+
+        sourceComponent: menuBar.rightButton
     }
 
     Rectangle {

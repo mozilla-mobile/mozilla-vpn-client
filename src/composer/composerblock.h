@@ -24,6 +24,8 @@ class ComposerBlock : public QObject {
                                const QString& prefix, const QJsonObject& json);
   virtual ~ComposerBlock();
 
+  virtual bool contains(const QString& string) const = 0;
+
  signals:
   void retranslationCompleted();
 
