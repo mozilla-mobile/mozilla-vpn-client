@@ -100,47 +100,6 @@ describe('Settings', function () {
 
     await vpn.waitForElement('settingsTipsAndTricksPage');
 
-    //Test feature tour
-    let featureTourFeatures = await vpn.featureTourFeatures();
-
-    await vpn.setElementProperty(
-      'allFlickable', 'contentY', 'i',
-      parseInt(await vpn.getElementProperty('featureTourCard', 'y')));
-    await vpn.wait();
-
-    await vpn.waitForElement('featureTourCard');
-    await vpn.clickOnElement('featureTourCard');
-    await vpn.wait();
-
-    await vpn.waitForElement('featureSwipeView');
-
-    for (var i = 0; i < featureTourFeatures.length - 1; i++) {
-      if (await vpn.getElementProperty('featureTourSecondaryButton', 'visible') === 'true') {
-        await vpn.clickOnElement('featureTourSecondaryButton');
-        await vpn.wait();
-      }
-
-      await vpn.clickOnElement('featureTourPrimaryButton');
-      await vpn.wait();
-    }
-
-    for (var i = 0; i < featureTourFeatures.length - 1; i++) {
-      await vpn.clickOnElement('backButton');
-      await vpn.wait();
-    }
-
-    for (var i = 0; i < featureTourFeatures.length; i++) {
-      await vpn.clickOnElement('featureTourPrimaryButton');
-      await vpn.wait();
-    }
-
-    await vpn.waitForElement('featureTourCard');
-    await vpn.clickOnElement('featureTourCard');
-    await vpn.wait();
-
-    await vpn.waitForElement('featureTourPopupCloseButton');
-    await vpn.clickOnElement('featureTourPopupCloseButton')
-    await vpn.wait();
 
     // TODO: (VPN-2749)
     // //Test guides

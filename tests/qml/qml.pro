@@ -82,7 +82,6 @@ HEADERS += \
     ../../src/loghandler.h \
     ../../src/models/feature.h \
     ../../src/models/featuremodel.h \
-    ../../src/models/whatsnewmodel.h \
     ../../src/mozillavpn.h \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \

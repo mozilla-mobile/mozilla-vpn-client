@@ -105,7 +105,6 @@ HEADERS += \
     ../../src/models/subscriptiondata.h \
     ../../src/models/supportcategorymodel.h \
     ../../src/models/user.h \
-    ../../src/models/whatsnewmodel.h \
     ../../src/mozillavpn.h \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \
