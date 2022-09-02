@@ -56,10 +56,6 @@ ComposerBlock* ComposerBlock::create(Composer* composer, Addon* addon,
     return ComposerBlockUnorderedList::create(composer, prefix, blockObj);
   }
 
-  if (type == "button") {
-    return ComposerBlockButton::create(composer, prefix, blockObj);
-  }
-
   logger.error() << "Invalid type for block for composer";
   return nullptr;
 }

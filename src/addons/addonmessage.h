@@ -14,6 +14,8 @@ class QJsonObject;
 class AddonMessage final : public Addon {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AddonMessage)
+  QML_NAMED_ELEMENT(VPNAddonMessage)
+  QML_UNCREATABLE("")
 
   ADDON_PROPERTY(title, m_title, retranslationCompleted)
   ADDON_PROPERTY(subtitle, m_subtitle, retranslationCompleted)
@@ -23,8 +25,16 @@ class AddonMessage final : public Addon {
   Q_PROPERTY(qint64 date MEMBER m_date)
   Q_PROPERTY(
       QString formattedDate READ formattedDate NOTIFY retranslationCompleted)
+  Q_PROPERTY(Badge badge MEMBER m_badge CONSTANT)
 
  public:
+  enum Badge {
+      None,
+      NewUpdate,
+      Critical
+  };
+  Q_ENUM(Badge)
+
   static Addon* create(QObject* parent, const QString& manifestFileName,
                        const QString& id, const QString& name,
                        const QJsonObject& obj);
@@ -54,6 +64,7 @@ class AddonMessage final : public Addon {
                const QString& id, const QString& name);
 
   void planDateRetranslation();
+  void setBadge(const QString& badge);
 
  private:
   AddonProperty m_title;
@@ -64,6 +75,7 @@ class AddonMessage final : public Addon {
 
   bool m_dismissed = false;
   bool m_isRead = false;
+  Badge m_badge;
 };
 
 #endif  // ADDONMESSAGE_H

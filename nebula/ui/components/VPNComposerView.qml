@@ -52,7 +52,7 @@ ColumnLayout {
                 if (modelData instanceof VPNComposerBlockOrderedList ||
                     modelData instanceof VPNComposerBlockUnorderedList) return listBlock
                 if (modelData instanceof VPNComposerBlockButton)
-                    return composerBlock.style === ComposerBlockButtonStyle.Link ? linkButtonBlock : buttonBlock
+                    return composerBlock.style === VPNComposerBlockButton.Link ? linkButtonBlock : buttonBlock
             }
 
             function getTopMargin() {
@@ -116,6 +116,9 @@ ColumnLayout {
                 id: textBlock
 
                 VPNInterLabel {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+
                     text: loader.composerBlock.text
                     font.pixelSize: VPNTheme.theme.fontSizeSmall
                     color: VPNTheme.theme.fontColor
@@ -130,12 +133,15 @@ ColumnLayout {
                     property string listType: loader.composerBlock && composerBlock.type === "olist" ? "ol" : "ul"
                     property var tagsList: loader.composerBlock.subBlocks.map(subBlock => `<li>${subBlock}</li>`)
 
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+
                     text: `<${listType} style='margin-left: -24px;-qt-list-indent:1;'>%1</${listType}>`.arg(tagsList.join(""))
                     textFormat: Text.RichText
                     font.pixelSize: VPNTheme.theme.fontSizeSmall
                     color: VPNTheme.theme.fontColor
                     horizontalAlignment: Text.AlignLeft
-                    Accessible.name: tagsList.join("\n").replace(repeater.indentTagRegex, "")
+                    Accessible.name: tagsList.join(".\n").replace(repeater.indentTagRegex, "")
                     lineHeight: 20
                 }
             }
@@ -144,9 +150,14 @@ ColumnLayout {
                 id: buttonBlock
 
                 VPNButton {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+
                     implicitHeight: VPNTheme.theme.rowHeight
                     text: loader.composerBlock.text
-                    colorScheme: loader.composerBlock.style === ComposerBlockButtonStyle.Primary ? VPNTheme.theme.blueButton : VPNTheme.theme.redButton
+                    colorScheme: loader.composerBlock.style === VPNComposerBlockButton.Primary ? VPNTheme.theme.blueButton : VPNTheme.theme.redButton
+
+                    onClicked: loader.composerBlock.click()
                 }
             }
 
@@ -154,7 +165,12 @@ ColumnLayout {
                 id: linkButtonBlock
 
                 VPNLinkButton {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+
                     labelText: loader.composerBlock.text
+
+                    onClicked: loader.composerBlock.click()
                 }
             }
         }

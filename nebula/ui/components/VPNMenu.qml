@@ -20,7 +20,8 @@ Item {
     property alias _iconButtonAccessibleName: iconButton.accessibleName
     property var _menuOnBackClicked: () => {}
     property alias _menuIconVisibility: iconButton.visible
-    property Component rightButton
+    property Component titleComponent
+    property Component rightButtonComponent
 
     signal rightMenuButtonClicked()
 
@@ -29,6 +30,7 @@ Item {
     // Ensure that menu is on top of possible scrollable
     // content.
     z: 2
+    visible: title.text !== "" || titleComponent !== null || rightButtonComponent !== null
 
     Rectangle {
         id: menuBackground
@@ -82,6 +84,7 @@ Item {
 
             Layout.alignment: Qt.AlignHCenter
             Layout.fillWidth: true
+            visible: text !== ""
             elide: Text.ElideRight
             Accessible.ignored: accessibleIgnored
             horizontalAlignment: Text.AlignHCenter
@@ -103,13 +106,21 @@ Item {
     }
 
     Loader {
+        id: titleLoader
+
+        anchors.centerIn: parent
+
+        sourceComponent: menuBar.titleComponent
+    }
+
+    Loader {
         id: rightMenuButtonLoader
 
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
         anchors.rightMargin: VPNTheme.theme.windowMargin
 
-        sourceComponent: menuBar.rightButton
+        sourceComponent: menuBar.rightButtonComponent
     }
 
     Rectangle {

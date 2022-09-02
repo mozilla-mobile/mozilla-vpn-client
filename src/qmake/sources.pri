@@ -53,7 +53,6 @@ SOURCES += \
         composer/composerblocktitle.cpp \
         composer/composerblockorderedlist.cpp \
         composer/composerblockunorderedlist.cpp \
-        composer/composerblockbutton.cpp \
         connectionbenchmark/benchmarktask.cpp \
         connectionbenchmark/benchmarktaskdownload.cpp \
         connectionbenchmark/benchmarktaskping.cpp \
@@ -224,7 +223,6 @@ HEADERS += \
         composer/composerblocktitle.h \
         composer/composerblockorderedlist.h \
         composer/composerblockunorderedlist.h \
-        composer/composerblockbutton.h \
         connectionbenchmark/benchmarktask.h \
         connectionbenchmark/benchmarktaskdownload.h \
         connectionbenchmark/benchmarktaskping.h \

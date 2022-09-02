@@ -229,12 +229,12 @@ qint64 AddonMessage::planDateRetranslationInternal(
 
 void AddonMessage::setBadge(const QString& badge) {
     if(badge == "new_update") {
-        m_badge = AddonMessageBadge::Badge::NewUpdate;
+        m_badge = NewUpdate;
     }
     else if(badge == "critical") {
-        m_badge = AddonMessageBadge::Badge::Critical;
+        m_badge = Critical;
     }
     else {
-        m_badge = AddonMessageBadge::Badge::None;
+        m_badge = None;
     }
 }

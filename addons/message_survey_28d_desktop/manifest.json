@@ -5,13 +5,15 @@
   "translatable": false,
   "type": "message",
   "conditions": {
-    "trigger_time": 2419200,
-    "platforms": ["windows", "macos", "linux"],
-    "locales": ["en"]
+    "trigger_time": 1,
+    "platforms": ["windows", "macos", "linux"]
   },
   "message": {
     "id": "survey_28d_mobile",
-    "title": "TODO",
-    "blocks": []
+    "title": "Desktop Message",
+    "subtitle": "This message is only presented on Desktop",
+    "date": 1647629990,
+    "blocks": [
+    ]   
   }
 }

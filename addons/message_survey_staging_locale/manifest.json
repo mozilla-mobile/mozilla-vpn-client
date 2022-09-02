@@ -2,7 +2,6 @@
   "api_version": "0.1",
   "id": "message_survey_staging_locale",
   "name": "Staging Survey 1 secs",
-  "translatable": false,
   "type": "message",
   "conditions": {
     "env": "staging",
@@ -11,20 +10,10 @@
   },
   "message": {
     "id": "message_survey_staging_locale",
-    "title": "message_survey_staging_locale",
-    "date": 1661260997,
+    "title": "Locale message",
+    "subtitle": "This message is only presented when the app language is set to English",
+    "date": 1661479590,
     "blocks": [
-      { "id": "c_1",
-        "type": "ulist",
-        "content": [
-          { "id": "l_1",
-            "content": "New feature 1" },
-          { "id": "l_2",
-            "content": "Bug fixes" },
-          { "id": "l_3",
-            "content": "New feature 2" }
-        ]
-      }
-    ]     
+    ]   
   }
 }
