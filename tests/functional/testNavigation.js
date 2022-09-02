@@ -115,7 +115,7 @@ describe('Navigation bar', async function() {
     await vpn.wait();
     await vpn.waitForElement('navigationLayout/navButton-messages');
     await vpn.clickOnElement('navigationLayout/navButton-messages');
-    await vpn.waitForElement('messagingView');
+    await vpn.waitForElement('messageInboxView');
 
     await vpn.clickOnElement('navigationLayout/navButton-home');
     await vpn.waitForElement('serverListButton');
@@ -130,7 +130,7 @@ describe('Navigation bar', async function() {
     await vpn.wait();
     await vpn.waitForElement('navigationLayout/navButton-messages');
     await vpn.clickOnElement('navigationLayout/navButton-messages');
-    await vpn.waitForElement('messagingView');
+    await vpn.waitForElement('messageInboxView');
 
     await vpn.clickOnElement('navigationLayout/navButton-home');
     await vpn.waitForElement('serverListButton');
