@@ -104,8 +104,9 @@ describe('Navigation bar', async function() {
     await vpn.wait();
     await vpn.waitForElement('navigationLayout/navButton-messages');
     await vpn.clickOnElement('navigationLayout/navButton-messages');
-    await vpn.waitForElement('messagingView');
-    assert(await vpn.getElementProperty('messagingView', 'visible') === 'true');
+    await vpn.waitForElement('messageInboxView');
+    assert(
+        await vpn.getElementProperty('messageInboxView', 'visible') === 'true');
   });
 
 
