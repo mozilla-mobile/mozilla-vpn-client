@@ -20,6 +20,9 @@
 
 #define SETTING_INT(getter, ...) SETTING(int, toInt, getter, __VA_ARGS__)
 
+#define SETTING_INT64(getter, ...) \
+  SETTING(qint64, toLongLong, getter, __VA_ARGS__)
+
 #define SETTING_STRING(getter, ...) \
   SETTING(QString, toString, getter, __VA_ARGS__)
 
@@ -28,12 +31,30 @@
 
 // Please! Keep the alphabetic order!
 
-SETTING_STRINGLIST(dismissedAddonMessages,      // getter
-                   setDismissedAddonMessages,   // setter
-                   hasDismissedAddonMessages,   // has
-                   "addons/dismissedMessages",  // key
-                   QStringList(),               // default value
-                   true                         // remove when reset
+SETTING_BOOL(addonCustomServer,     // getter
+             setAddonCustomServer,  // setter
+             hasAddonCustomServer,  // has
+             "addon/customServer",  // key
+             false,                 // default value
+             false                  // remove when reset
+)
+
+SETTING_STRING(
+    addonCustomServerAddress,     // getter
+    setAddonCustomServerAddress,  // setter
+    hasAddonCustomServerAddress,  // has
+    "addon/customServerAddress",  // key
+    Constants::envOrDefault("MVPN_ADDON_URL",
+                            Constants::ADDON_STAGING_URL),  // default value
+    false                                                   // remove when reset
+)
+
+SETTING_BOOL(addonProdKeyInStaging,     // getter
+             setAddonProdKeyInStaging,  // setter
+             hasAddonProdKeyInStaging,  // has
+             "addon/prodKeyInStaging",  // key
+             false,                     // default value
+             false                      // remove when reset
 )
 
 SETTING_BOOL(captivePortalAlert,     // getter
@@ -109,20 +130,12 @@ SETTING_BYTEARRAY(devices,     // getter
                   true         // remove when reset
 )
 
-SETTING_STRINGLIST(featuresFlippedOn,     // getter
-                   setFeaturesFlippedOn,  // setter
-                   hasFeaturesFlippedOn,  // has
-                   "featuresFlippedOn",   // key
-                   QStringList(),         // default value
-                   false                  // remove when reset
-)
-
-SETTING_STRINGLIST(featuresFlippedOff,     // getter
-                   setFeaturesFlippedOff,  // setter
-                   hasFeaturesFlippedOff,  // has
-                   "featuresFlippedOff",   // key
-                   QStringList(),          // default value
-                   false                   // remove when reset
+SETTING_STRINGLIST(dismissedAddonMessages,      // getter
+                   setDismissedAddonMessages,   // setter
+                   hasDismissedAddonMessages,   // has
+                   "addons/dismissedMessages",  // key
+                   QStringList(),               // default value
+                   true                         // remove when reset
 )
 
 SETTING_INT(dnsProvider,                           // getter
@@ -147,6 +160,22 @@ SETTING_STRING(entryServerCountryCode,     // getter
                "entryServer/countryCode",  // key
                nullptr,                    // default value
                true                        // remove when reset
+)
+
+SETTING_STRINGLIST(featuresFlippedOff,     // getter
+                   setFeaturesFlippedOff,  // setter
+                   hasFeaturesFlippedOff,  // has
+                   "featuresFlippedOff",   // key
+                   QStringList(),          // default value
+                   false                   // remove when reset
+)
+
+SETTING_STRINGLIST(featuresFlippedOn,     // getter
+                   setFeaturesFlippedOn,  // setter
+                   hasFeaturesFlippedOn,  // has
+                   "featuresFlippedOn",   // key
+                   QStringList(),         // default value
+                   false                  // remove when reset
 )
 
 SETTING_BOOL(featuresTourShown,     // getter
@@ -182,6 +211,14 @@ SETTING_DATETIME(installationTime,     // getter
                  "installationTime",   // key
                  QDateTime(),          // default value
                  false                 // remove when reset
+)
+
+SETTING_INT64(keyRegenerationTimeSec,     // getter
+              setKeyRegenerationTimeSec,  // setter
+              hasKeyRegenerationTimeSec,  // has
+              "keyRegenerationTimeSec",   // key
+              0,                          // default value
+              true                        // remove when reset
 )
 
 SETTING_STRING(languageCode,     // getter
@@ -232,6 +269,14 @@ SETTING_STRING(privateKey,     // getter
                true            // remove when reset
 )
 
+SETTING_STRING(privateKeyJournal,     // getter
+               setPrivateKeyJournal,  // setter
+               hasPrivateKeyJournal,  // has
+               "privateKeyJournal",   // key
+               "",                    // default value
+               true                   // remove when reset
+)
+
 SETTING_BOOL(protectSelectedApps,     // getter
              setProtectSelectedApps,  // setter
              hasProtectSelectedApps,  // has
@@ -246,6 +291,22 @@ SETTING_STRING(publicKey,     // getter
                "publicKey",   // key
                "",            // default value
                true           // remove when reset
+)
+
+SETTING_STRING(publicKeyJournal,     // getter
+               setPublicKeyJournal,  // setter
+               hasPublicKeyJournal,  // has
+               "publicKeyJournal",   // key
+               "",                   // default value
+               true                  // remove when reset
+)
+
+SETTING_STRINGLIST(readAddonMessages,      // getter
+                   setReadAddonMessages,   // setter
+                   hasReadAddonMessages,   // has
+                   "addons/readMessages",  // key
+                   QStringList(),          // default value
+                   true                    // remove when reset
 )
 
 SETTING_STRINGLIST(recentConnections,     // getter
@@ -278,6 +339,15 @@ SETTING_BOOL(serverSwitchNotification,     // getter
              "serverSwitchNotification",   // key
              true,                         // default value
              false                         // remove when reset
+)
+
+SETTING_BOOL(serverUnavailableNotification,     // getter
+             setServerUnavailableNotification,  // setter
+             hasServerUnavailableNotification,  // has
+             "serverUnavailableNotification",   // key
+             Feature::get(Feature::Feature_serverUnavailableNotification)
+                 ->isSupported(),  // default value
+             false                 // remove when reset
 )
 
 SETTING_STRING(
@@ -351,15 +421,6 @@ SETTING_BOOL(unsecuredNetworkAlert,     // getter
              hasUnsecuredNetworkAlert,  // has
              "unsecuredNetworkAlert",   // key
              Feature::get(Feature::Feature_unsecuredNetworkNotification)
-                 ->isSupported(),  // default value
-             false                 // remove when reset
-)
-
-SETTING_BOOL(serverUnavailableNotification,     // getter
-             setServerUnavailableNotification,  // setter
-             hasServerUnavailableNotification,  // has
-             "serverUnavailableNotification",   // key
-             Feature::get(Feature::Feature_serverUnavailableNotification)
                  ->isSupported(),  // default value
              false                 // remove when reset
 )

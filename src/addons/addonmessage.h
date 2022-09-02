@@ -6,7 +6,8 @@
 #define ADDONMESSAGE_H
 
 #include "addon.h"
-#include "composer.h"
+#include "addonproperty.h"
+#include "../composer/composer.h"
 
 class QJsonObject;
 
@@ -14,8 +15,14 @@ class AddonMessage final : public Addon {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AddonMessage)
 
-  Q_PROPERTY(QString titleId MEMBER m_titleId CONSTANT)
-  Q_PROPERTY(Composer* composer MEMBER m_composer CONSTANT)
+  ADDON_PROPERTY(title, m_title, retranslationCompleted)
+  ADDON_PROPERTY(subtitle, m_subtitle, retranslationCompleted)
+
+  Q_PROPERTY(Composer* composer READ composer CONSTANT)
+  Q_PROPERTY(bool isRead MEMBER m_isRead NOTIFY isReadChanged)
+  Q_PROPERTY(qint64 date MEMBER m_date)
+  Q_PROPERTY(
+      QString formattedDate READ formattedDate NOTIFY retranslationCompleted)
 
  public:
   static Addon* create(QObject* parent, const QString& manifestFileName,
@@ -25,18 +32,38 @@ class AddonMessage final : public Addon {
   ~AddonMessage();
 
   Q_INVOKABLE void dismiss();
+  Q_INVOKABLE void maskAsRead();
+  Q_INVOKABLE bool containsSearchString(const QString& query) const;
+
+  QString formattedDate() const;
 
   bool enabled() const override;
+
+  Composer* composer() const { return m_composer; }
+
+  // Explosed for testing.
+  static QString dateInternal(const QDateTime& nowDateTime,
+                              const QDateTime& messageDateTime);
+  static qint64 planDateRetranslationInternal(const QDateTime& nowDateTime,
+                                              const QDateTime& messageDateTime);
+ signals:
+  void isReadChanged();
 
  private:
   AddonMessage(QObject* parent, const QString& manifestFileName,
                const QString& id, const QString& name);
 
+  void planDateRetranslation();
+
  private:
-  QString m_titleId;
+  AddonProperty m_title;
+  AddonProperty m_subtitle;
   Composer* m_composer = nullptr;
 
+  qint64 m_date = 0;
+
   bool m_dismissed = false;
+  bool m_isRead = false;
 };
 
 #endif  // ADDONMESSAGE_H

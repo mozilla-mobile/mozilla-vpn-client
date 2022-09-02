@@ -74,14 +74,11 @@
     -->
     <ComponentGroup Id="MozillaVPNComponents">
       <Component Directory="MozillaVPNFolder" Id="MozillaVPNExecutable" Guid="EF353A73-A10B-4A2D-87AC-4389BBD9313B">
-        <File Id="MozillaVPNExecutable" Source="../../MozillaVPN.exe" KeyPath="yes">
+        <File Id="MozillaVPNExecutable" Source="../../Mozilla VPN.exe" KeyPath="yes">
           <Shortcut Id="MozillaVPNShortcut" Directory="ProgramMenuFolder" Name="Mozilla VPN" Description="A fast, secure and easy to use VPN. Built by the makers of Firefox." WorkingDirectory="MozillaVPNFolder" Advertise="yes" />
         </File>
         <File Source="../../tunnel.dll" />
         <File Source="../../wintun.dll" />
-        <File Source="../../balrog.dll" />
-        <File Source="../../libcrypto-1_1-x64.dll" />
-        <File Source="../../libssl-1_1-x64.dll" />
         <File Source="../../mullvad-split-tunnel.cat" />
         <File Source="../../mullvad-split-tunnel.inf" />
         <File Source="../../mullvad-split-tunnel.sys" />
@@ -119,7 +116,7 @@
       Merge modules
     -->
     <DirectoryRef Id="MozillaVPNFolder">
-      <Merge Id="VCRedistModule" SourceFile="../../Microsoft_VC142_CRT_$(var.Platform).msm" DiskId="1" Language="0"/>
+      <Merge Id="VCRedistModule" SourceFile="../../Microsoft_CRT_x64.msm" DiskId="1" Language="0"/>
     </DirectoryRef>
 
     <DirectoryRef Id="MozillaVPNFolder">
@@ -157,7 +154,7 @@
     <CustomAction Id="LaunchVPNFirstExecution" Impersonate="yes" FileKey="MozillaVPNExecutable" ExeCommand="" Return="asyncNoWait" />
     <CustomAction Id="LaunchVPNAfterUpdate" Impersonate="yes" FileKey="MozillaVPNExecutable" ExeCommand="ui --updated" Return="asyncNoWait" />
     <InstallExecuteSequence>
-       <Custom Action="LaunchVPNFirstExecution" After="InstallFinalize">NOT Installed</Custom>
+       <Custom Action="LaunchVPNFirstExecution" After="InstallFinalize">NOT WIX_UPGRADE_DETECTED</Custom>
        <Custom Action="LaunchVPNAfterUpdate" After="InstallFinalize">WIX_UPGRADE_DETECTED</Custom>
     </InstallExecuteSequence>
 

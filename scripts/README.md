@@ -23,7 +23,6 @@ can be used to run tests locally or via the CI.
 
 - ./linux/ppa_script.sh - upload ubuntu packages to the PPA
 - ./linux/script.sh - compile the client and upload it to the PPA
-- ./linux/utils/commons.sh - common functions for cross-platform scripts
 
 TODO: unify build.sh and script.sh (or remove build.sh)
 
@@ -42,11 +41,6 @@ TODO:
 # Windows-specific scripts
 
 - ./windows/compile.bat - compile the client
-- ./windows/utils/commons.sh - common functions for cross-platform scrips
-
-# Wasm-specific scripts
-
-- ./wasm/compile.sh - compile the client for Wasm. See the main README.md file.
 
 # CI tools
 

@@ -43,8 +43,8 @@ SOURCES += \
     moccontroller.cpp \
     mocmozillavpn.cpp \
     ../unit/mocinspectorhandler.cpp \
-    ../../src/closeeventhandler.cpp \
     ../../src/externalophandler.cpp \
+    ../../src/filterproxymodel.cpp \
     ../../src/hawkauth.cpp \
     ../../src/hkdf.cpp \
     ../../src/ipaddress.cpp \
@@ -60,14 +60,20 @@ SOURCES += \
     ../../src/theme.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
-    ../../src/update/webupdater.cpp
+    ../../src/update/webupdater.cpp \
+    ../../src/pinghelper.cpp \ 
+    ../../src/pingsender.cpp \
+    ../../src/platforms/dummy/dummypingsender.cpp \
+    ../../src/dnspingsender.cpp \
+    ../../src/pingsenderfactory.cpp \
+    ../../src/qmlengineholder.cpp
 
 HEADERS += \
     helper.h \
-    ../../src/closeeventhandler.h \
     ../../src/constants.h \
     ../../src/controller.h \
     ../../src/externalophandler.h \
+    ../../src/filterproxymodel.h \
     ../../src/hawkauth.h \
     ../../src/hkdf.h \
     ../../src/ipaddress.h \
@@ -81,10 +87,16 @@ HEADERS += \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \
     ../../src/settingsholder.h \
+    ../../src/pinghelper.h \ 
+    ../../src/pingsender.h \
+    ../../src/platforms/dummy/dummypingsender.h \
+    ../../src/dnspingsender.h \
+    ../../src/pingsenderfactory.h \
     ../../src/theme.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
-    ../../src/update/webupdater.h
+    ../../src/update/webupdater.h \
+    ../../src/qmlengineholder.h
 
 OBJECTS_DIR = .obj
 MOC_DIR = .moc
@@ -101,3 +113,7 @@ win* {
         RESOURCES += qt6winhack.qrc
     }
 }
+
+CONFIG += qmltypes
+QML_IMPORT_NAME = Mozilla.VPN.qmlcomponents
+QML_IMPORT_MAJOR_VERSION = 1.0

@@ -13,16 +13,21 @@
 
 #if defined(MVPN_IOS)
 #  include "platforms/ios/iosnotificationhandler.h"
-#elif defined(MVPN_ANDROID)
-#  include "platforms/android/androidnotificationhandler.h"
-#else
-
-#  if defined(MVPN_LINUX)
-#    include "platforms/linux/linuxsystemtraynotificationhandler.h"
-#  endif
-
-#  include "systemtraynotificationhandler.h"
 #endif
+
+#if defined(MVPN_ANDROID)
+#  include "platforms/android/androidnotificationhandler.h"
+#endif
+
+#if defined(MVPN_LINUX)
+#  include "platforms/linux/linuxsystemtraynotificationhandler.h"
+#endif
+
+#if defined(MVPN_MACOS)
+#  include "platforms/macos/macossystemtraynotificationhandler.h"
+#endif
+
+#include "systemtraynotificationhandler.h"
 
 namespace {
 Logger logger(LOG_MAIN, "NotificationHandler");
@@ -34,18 +39,23 @@ NotificationHandler* s_instance = nullptr;
 NotificationHandler* NotificationHandler::create(QObject* parent) {
 #if defined(MVPN_IOS)
   return new IOSNotificationHandler(parent);
-#elif defined(MVPN_ANDROID)
-  return new AndroidNotificationHandler(parent);
-#else
+#endif
 
-#  if defined(MVPN_LINUX)
+#if defined(MVPN_ANDROID)
+  return new AndroidNotificationHandler(parent);
+#endif
+
+#if defined(MVPN_LINUX)
   if (LinuxSystemTrayNotificationHandler::requiredCustomImpl()) {
     return new LinuxSystemTrayNotificationHandler(parent);
   }
-#  endif
+#endif
+
+#if defined(MVPN_MACOS)
+  return new MacosSystemTrayNotificationHandler(parent);
+#endif
 
   return new SystemTrayNotificationHandler(parent);
-#endif
 }
 
 // static
@@ -217,7 +227,7 @@ void NotificationHandler::unsecuredNetworkNotification(
                  Constants::UNSECURED_NETWORK_ALERT_MSEC);
 }
 
-void NotificationHandler::serverUnavailableNotification() {
+void NotificationHandler::serverUnavailableNotification(bool pingRecieved) {
   logger.debug() << "Server unavailable notification shown";
 
   if (!SettingsHolder::instance()->serverUnavailableNotification()) {
@@ -230,7 +240,11 @@ void NotificationHandler::serverUnavailableNotification() {
 
   QString title = l18nStrings->t(L18nStrings::ServerUnavailableModalHeaderText);
   QString message =
-      l18nStrings->t(L18nStrings::ServerUnavailableNotificationBodyText);
+      pingRecieved
+          ? l18nStrings->t(
+                L18nStrings::
+                    ServerUnavailableNotificationBodyTextFireWallBlocked)
+          : l18nStrings->t(L18nStrings::ServerUnavailableNotificationBodyText);
 
   notifyInternal(ServerUnavailable, title, message,
                  Constants::SERVER_UNAVAILABLE_ALERT_MSEC);

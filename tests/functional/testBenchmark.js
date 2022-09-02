@@ -33,7 +33,11 @@ describe('Benchmark', function() {
     let bps = parseInt(
         await vpn.getElementProperty('VPNConnectionBenchmark', 'bitsPerSec'));
     assert.strictEqual(state, 'StateReady');
-    assert.strictEqual(speed, (bps >= 25000000) ? 'SpeedFast' : 'SpeedSlow');
+
+    assert.strictEqual(
+        speed,
+        (bps >= 25000000) ? 'SpeedFast' :
+                            ((bps >= 10000000) ? 'SpeedMedium' : 'SpeedSlow'));
 
     // Exit the benchmark
     await vpn.waitForElement('connectionInfoToggleButton');
@@ -130,7 +134,10 @@ describe('Benchmark', function() {
     let speed = await vpn.getElementProperty('VPNConnectionBenchmark', 'speed');
     let bps = parseInt(
         await vpn.getElementProperty('VPNConnectionBenchmark', 'bitsPerSec'));
-    assert.strictEqual(speed, (bps >= 25000000) ? 'SpeedFast' : 'SpeedSlow');
+    assert.strictEqual(
+        speed,
+        (bps >= 25000000) ? 'SpeedFast' :
+                            ((bps >= 10000000) ? 'SpeedMedium' : 'SpeedSlow'));
 
     // Exit the benchmark
     await vpn.waitForElement('connectionInfoToggleButton');

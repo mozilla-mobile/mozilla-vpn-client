@@ -34,11 +34,8 @@ class Feature : public QObject {
   Q_PROPERTY(QString releaseVersion READ releaseVersion CONSTANT)
   Q_PROPERTY(bool isReleased MEMBER m_released CONSTANT)
   Q_PROPERTY(bool isNew READ isNew CONSTANT)
-  Q_PROPERTY(bool flippableOn READ isFlippableOn CONSTANT)
-  Q_PROPERTY(bool flippableOff READ isFlippableOff CONSTANT)
+  Q_PROPERTY(bool isToggleable READ isToggleable CONSTANT)
   Q_PROPERTY(bool isSupported READ isSupported NOTIFY supportedChanged)
-  Q_PROPERTY(bool isSupportedIgnoringFlip READ isSupportedIgnoringFlip NOTIFY
-                 supportedChanged)
 
 #ifndef UNIT_TEST
  private:
@@ -76,11 +73,7 @@ class Feature : public QObject {
   bool isFlippableOn() const { return m_flippableOn; }
   bool isFlippableOff() const { return m_flippableOff; }
 
-  // Returns true if this feature is flipped on via settings
-  Q_INVOKABLE bool isFlippedOn(bool ignoreCache = false) const;
-
-  // Returns true if this feature is flipped off via settings
-  Q_INVOKABLE bool isFlippedOff(bool ignoreCache = false) const;
+  bool isToggleable() const;
 
   // Returns true if this is a newly introduced feature
   bool isNew() const { return m_new; }
@@ -106,6 +99,12 @@ class Feature : public QObject {
  private:
   static void maybeInitialize();
   void maybeFlipOnOrOff();
+
+  // Returns true if this feature is flipped on via settings
+  bool isFlippedOn(bool ignoreCache = false) const;
+
+  // Returns true if this feature is flipped off via settings
+  bool isFlippedOff(bool ignoreCache = false) const;
 
  private:
   // Unique Identifier of the Feature, used to Check
@@ -161,6 +160,10 @@ class Feature : public QObject {
   bool m_released = false;
   // Is true if the Feature was released in this Version
   bool m_new = false;
+
+#ifdef UNIT_TEST
+  friend class TestAddonIndex;
+#endif
 };
 
 #endif  // FEATURE_H

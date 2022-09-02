@@ -28,13 +28,15 @@ class Addon : public QObject {
 
   const QString& id() const { return m_id; }
   const QString& type() const { return m_type; }
+  const QString& manifestFileName() const { return m_manifestFileName; }
 
-  void retranslate();
+  virtual void retranslate();
 
   virtual bool enabled() const;
 
  signals:
   void conditionChanged(bool enabled);
+  void retranslationCompleted();
 
  protected:
   Addon(QObject* parent, const QString& manifestFileName, const QString& id,

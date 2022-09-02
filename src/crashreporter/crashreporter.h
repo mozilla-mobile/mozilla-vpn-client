@@ -6,10 +6,10 @@
 #define CRASHREPORTER_H
 
 #include <QObject>
+#include <QQmlApplicationEngine>
 #include <memory>
 
 #include "crashui.h"
-#include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "localizer.h"
 
@@ -29,7 +29,7 @@ class CrashReporter : public QObject {
 
  private:
   std::unique_ptr<CrashUI> m_ui;
-  QmlEngineHolder m_engineHolder;
+  QQmlApplicationEngine m_engine;
   SettingsHolder settings;
   Localizer localizer;
 };

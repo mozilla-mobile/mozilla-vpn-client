@@ -23,7 +23,7 @@ Item {
 
         function cancelAuthenticationFlow() {
             VPN.cancelReauthentication();
-            mainStackView.pop();
+            stackview.pop();
         }
     }
 

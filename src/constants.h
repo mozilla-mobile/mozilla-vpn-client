@@ -83,6 +83,15 @@ constexpr const char* API_PRODUCTION_URL = "https://vpn.mozilla.org";
 constexpr const char* API_STAGING_URL =
     "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
 
+constexpr const char* ADDON_PRODUCTION_URL =
+    "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/";  // TODO
+constexpr const char* ADDON_PRODUCTION_KEY =
+    ":/addons_signature/production.der";
+
+constexpr const char* ADDON_STAGING_URL =
+    "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/";
+constexpr const char* ADDON_STAGING_KEY = ":/addons_signature/staging.der";
+
 constexpr auto CRASH_PRODUCTION_URL =
     "https://crash-reports.mozilla.com/submit";
 constexpr auto CRASH_STAGING_URL = "https://crash-reports.allizom.org/submit";
@@ -109,15 +118,8 @@ PRODBETAEXPR(
     const char*, balrogRootCertFingerprint,
     "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e",
     "3c01446abe9036cea9a09acaa3a520ac628f20a7ae32ce861cb2efb70fa0c745");
-PRODBETAEXPR(
-    QString, addonSourceUrl,
-    "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/",  // TODO
-    envOrDefault("MVPN_ADDON_URL",
-                 "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/"))
 
-PRODBETAEXPR(const char*, addonPublicKeyFile,
-             ":/addons_signature/production.der",
-             ":/addons_signature/staging.der");
+PRODBETAEXPR(qint64, keyRegeneratorTimeSec, 604800, 300);
 
 #undef PRODBETAEXPR
 

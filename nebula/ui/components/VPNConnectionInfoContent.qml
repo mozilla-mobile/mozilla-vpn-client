@@ -8,12 +8,13 @@ import QtQuick.Controls 2.14
 
 import Mozilla.VPN 1.0
 
-Flickable {
+VPNFlickable {
     id: root
 
-    height: parent.height
-    contentHeight: height
-    width: parent.width
+    anchors.fill: parent
+    flickContentHeight: col.implicitHeight
+    interactive: flickContentHeight > height || contentY > 0
+
     onVisibleChanged: {
         if (visible) {
             speedometerAnimation.play();
@@ -24,128 +25,132 @@ Flickable {
         }
     }
 
-    Component.onCompleted: {
-        root.contentHeight = Qt.binding(() => Math.max(content.height, root.height));
-    }
-
     ListModel {
         id: checkmarkListModel
     }
 
     ColumnLayout {
-        id: content
+        id: col
+        spacing: 0
 
         anchors {
-            horizontalCenter: parent.horizontalCenter
-            verticalCenter: parent.verticalCenter
-        }
-        spacing: 0
-        width: parent.width
-
-        // IP Adresses
-        VPNIPAddress {
-            //% "IPv4:"
-            //: The abbreviation for Internet Protocol. This is followed by the user’s IPv4 address.
-            property var ipv4label: qsTrId("vpn.connectionInfo.ipv4")
-            //% "IP:"
-            //: The abbreviation for Internet Protocol. This is followed by the user’s IP address.
-            property var iplabel: qsTrId("vpn.connectionInfo.ip2")
-
-            ipVersionText: VPNIPAddressLookup.ipv6Address === "" ? iplabel : ipv4label;
-            ipAddressText: VPNIPAddressLookup.ipv4Address
-            visible: VPNIPAddressLookup.ipv4Address !== ""
-
-            Layout.alignment: Qt.AlignHCenter
-            Layout.bottomMargin: VPNTheme.theme.listSpacing * 0.5
-            Layout.topMargin: VPNTheme.theme.windowMargin * 1.5
-        }
-
-        VPNIPAddress {
-            visible: VPNIPAddressLookup.ipv6Address !== ""
-            //% "IPv6:"
-            //: The abbreviation for Internet Procol version 6. This is followed by the user’s IPv6 address.
-            ipVersionText: qsTrId("vpn.connectionInfo.ipv6")
-            ipAddressText: VPNIPAddressLookup.ipv6Address
-
-            Layout.alignment: Qt.AlignHCenter
-            Layout.bottomMargin: VPNTheme.theme.listSpacing * 0.5
-        }
-
-        // Lottie animation
-        Item {
-            Layout.alignment: Qt.AlignHCenter
-            Layout.fillWidth: true
-            Layout.preferredHeight: parent.width * 0.35
-
-            VPNLottieAnimation {
-                id: speedometerAnimation
-                loop: false
-                source: ":/nebula/resources/animations/speedometer_animation.json"
-            }
-        }
-
-        VPNCheckmarkList {
-            id: checkmarkList
-
-            listHeader: VPNConnectionBenchmark.speed === VPNConnectionBenchmark.SpeedSlow
-                ? VPNl18n.ConnectionInfoListHeaderSlow
-                : VPNl18n.ConnectionInfoListHeaderDefault
-            listModel: checkmarkListModel
-
-            Layout.bottomMargin: VPNTheme.theme.vSpacingSmall
-            Layout.topMargin: VPNTheme.theme.listSpacing * 0.5
-            Layout.leftMargin: VPNTheme.theme.windowMargin
-            Layout.rightMargin: VPNTheme.theme.windowMargin
+            left: parent.left
+            right: parent.right
+            top: parent.top
         }
 
         ColumnLayout {
-            spacing: 0
+            // The ColumnLayout nesting here is a hack to get around binding loops caused by less verbose methods of stipulating
+            // that the child content of `root` is vertically centered within `root.height` or is scrollable when root.contentHeight > root.height.
+            Layout.minimumHeight: root.height
 
-            Layout.leftMargin: VPNTheme.theme.windowMargin
-            Layout.rightMargin: VPNTheme.theme.windowMargin
+            ColumnLayout {
+                id: viewContent
 
-            VPNConnectionInfoItem {
-                title: VPNServerCountryModel.getLocalizedCountryName(
-                    VPNCurrentServer.exitCountryCode
-                )
-                subtitle: VPNCurrentServer.localizedCityName
-                iconPath: "qrc:/nebula/resources/flags/"
-                    + VPNCurrentServer.exitCountryCode.toUpperCase()
-                    + ".png"
-                isFlagIcon: true
+                Layout.alignment: Qt.AlignVCenter
+                Layout.preferredWidth: parent.width
+                spacing: VPNTheme.theme.listSpacing * 0.5
+                // IP Adresses
+                VPNIPAddress {
+                    //% "IPv4:"
+                    //: The abbreviation for Internet Protocol. This is followed by the user’s IPv4 address.
+                    property var ipv4label: qsTrId("vpn.connectionInfo.ipv4")
+                    //% "IP:"
+                    //: The abbreviation for Internet Protocol. This is followed by the user’s IP address.
+                    property var iplabel: qsTrId("vpn.connectionInfo.ip2")
+
+                    ipVersionText: VPNIPAddressLookup.ipv6Address === "" ? iplabel : ipv4label;
+                    ipAddressText: VPNIPAddressLookup.ipv4Address
+                    visible: VPNIPAddressLookup.ipv4Address !== ""
+
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.topMargin: VPNTheme.theme.windowMargin * 1.5
+                }
+
+                VPNIPAddress {
+                    visible: VPNIPAddressLookup.ipv6Address !== ""
+                    //% "IPv6:"
+                    //: The abbreviation for Internet Procol version 6. This is followed by the user’s IPv6 address.
+                    ipVersionText: qsTrId("vpn.connectionInfo.ipv6")
+                    ipAddressText: VPNIPAddressLookup.ipv6Address
+                    Layout.alignment: Qt.AlignHCenter
+                }
+
+                // Lottie animation
+                Item {
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.fillWidth: true
+                    Layout.preferredHeight:  root.height * 0.35
+
+                    VPNLottieAnimation {
+                        id: speedometerAnimation
+                        loop: false
+                        source: ":/nebula/resources/animations/speedometer_animation.json"
+                    }
+                }
+
+                VPNCheckmarkList {
+                    id: checkmarkList
+
+                    listHeader: VPNConnectionBenchmark.speed === VPNConnectionBenchmark.SpeedSlow
+                        ? VPNl18n.ConnectionInfoListHeaderSlow
+                        : VPNl18n.ConnectionInfoListHeaderDefault
+                    listModel: checkmarkListModel
+
+                    Layout.bottomMargin: VPNTheme.theme.vSpacingSmall
+                    Layout.topMargin: VPNTheme.theme.listSpacing * 0.5
+                    Layout.leftMargin: VPNTheme.theme.windowMargin
+                    Layout.rightMargin: VPNTheme.theme.windowMargin
+                }
+
+                ColumnLayout {
+                    spacing: 0
+
+                    Layout.leftMargin: VPNTheme.theme.windowMargin
+                    Layout.rightMargin: VPNTheme.theme.windowMargin
+
+                    VPNConnectionInfoItem {
+                        title: VPNServerCountryModel.getLocalizedCountryName(
+                            VPNCurrentServer.exitCountryCode
+                        )
+                        subtitle: VPNCurrentServer.localizedCityName
+                        iconPath: "qrc:/nebula/resources/flags/"
+                            + VPNCurrentServer.exitCountryCode.toUpperCase()
+                            + ".png"
+                        isFlagIcon: true
+                    }
+
+                    Rectangle {
+                        color: VPNTheme.colors.white
+                        height: 1
+                        opacity: 0.2
+                        Layout.fillWidth: true
+                    }
+
+                    VPNConnectionInfoItem {
+                        title: VPNl18n.ConnectionInfoLabelPing
+                        subtitle: VPNConnectionBenchmark.pingLatency + " " + VPNl18n.ConnectionInfoUnitPing
+                        iconPath: "qrc:/nebula/resources/connection-green.svg"
+                    }
+
+                    Rectangle {
+                        color: VPNTheme.colors.white
+                        height: 1
+                        opacity: 0.2
+                        Layout.fillWidth: true
+                    }
+
+                    VPNConnectionInfoItem {
+                        //% "Download"
+                        title: qsTrId("vpn.connectionInfo.download")
+                        subtitle: root.getConnectionLabel(VPNConnectionBenchmark.bitsPerSec)
+                        iconPath: "qrc:/nebula/resources/download.svg"
+                    }
+                }
             }
 
-            Rectangle {
-                color: VPNTheme.colors.white
-                height: 1
-                opacity: 0.2
-
-                Layout.fillWidth: true
-            }
-
-            VPNConnectionInfoItem {
-                title: VPNl18n.ConnectionInfoLabelPing
-                subtitle: VPNConnectionBenchmark.pingLatency + " " + VPNl18n.ConnectionInfoUnitPing
-                iconPath: "qrc:/nebula/resources/connection-green.svg"
-            }
-
-            Rectangle {
-                color: VPNTheme.colors.white
-                height: 1
-                opacity: 0.2
-
-                Layout.fillWidth: true
-            }
-
-            VPNConnectionInfoItem {
-                //% "Download"
-                title: qsTrId("vpn.connectionInfo.download")
-                subtitle: root.getConnectionLabel(VPNConnectionBenchmark.bitsPerSec)
-                iconPath: "qrc:/nebula/resources/download.svg"
             }
         }
-    }
-
     function getConnectionLabel(connectionValueBits) {
         return `${computeValue(connectionValueBits)} ${computeRange(connectionValueBits)}`;
     }

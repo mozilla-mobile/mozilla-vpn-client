@@ -12,6 +12,7 @@
 #include "qmlengineholder.h"
 #include "theme.h"
 
+#include <QQmlApplicationEngine>
 #include <QCoreApplication>
 #include <QWindow>
 
@@ -62,7 +63,8 @@ void CrashUI::initialize() {
         });
 
     const QUrl url(QML_MAIN);
-    QmlEngineHolder::instance()->engine()->load(url);
+    qobject_cast<QQmlApplicationEngine*>(QmlEngineHolder::instance()->engine())
+        ->load(url);
     m_initialized = true;
   }
 }

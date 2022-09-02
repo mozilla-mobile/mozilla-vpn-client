@@ -17,10 +17,12 @@ describe('User authentication in browser', function() {
 
     await vpn.clickOnElement('getStarted');
 
-    await vpn.waitForCondition(async () => {
-      const url = await vpn.getLastUrl();
-      return url.includes('/api/v2/vpn/login');
-    });
+    if (!this.ctx.wasm) {
+      await vpn.waitForCondition(async () => {
+        const url = await vpn.getLastUrl();
+        return url.includes('/api/v2/vpn/login');
+      });
+    }
 
     await vpn.waitForElement('authenticatingView');
     await vpn.waitForElementProperty('authenticatingView', 'visible', 'true');
@@ -66,30 +68,32 @@ describe('User authentication in browser', function() {
     }
     await vpn.clickOnElement('onboardingNext');
 
-    await vpn.waitForCondition(async () => {
-      const url = await vpn.getLastUrl();
-      return url.includes('/api/v2/vpn/login');
-    });
+    if (!this.ctx.wasm) {
+      await vpn.waitForCondition(async () => {
+        const url = await vpn.getLastUrl();
+        return url.includes('/api/v2/vpn/login');
+      });
+    }
 
     await vpn.waitForElement('authenticatingView');
     await vpn.waitForElementProperty('authenticatingView', 'visible', 'true');
   });
 
   it('Completes authentication', async () => {
-    await vpn.authenticateInBrowser(true, true);
+    await vpn.authenticateInBrowser(true, true, this.ctx.wasm);
   });
 
   it('Completes authentication after logout', async () => {
-    await vpn.authenticateInBrowser(true, true);
+    await vpn.authenticateInBrowser(true, true, this.ctx.wasm);
 
-    await vpn.waitForElement('settingsButton');
-    await vpn.clickOnElement('settingsButton');
+    await vpn.waitForElement('navigationLayout/navButton-settings');
+    await vpn.clickOnElement('navigationLayout/navButton-settings');
 
     await vpn.waitForElement('settingsLogout');
-    await vpn.scrollToElement('settingsView', 'settingsLogout');
+    await vpn.scrollToElement('settingsView-flickable', 'settingsLogout');
     await vpn.clickOnElement('settingsLogout');
     await vpn.waitForMainView();
 
-    await vpn.authenticateInBrowser();
+    await vpn.authenticateInBrowser(false, false, this.ctx.wasm);
   });
 });

@@ -12,9 +12,17 @@
       "type": "string",
       "description": "The title of the message"
     },
+    "subtitle": {
+      "type": "string",
+      "description": "The subtitle of the message"
+    },
     "title_comment": {
       "type": "string",
       "description": "A comment to describe how to translate the title"
+    },
+    "date": {
+      "type": "number",
+      "description": "Epoch time of this message"
     },
     "blocks": {
       "type": "array",

@@ -18,6 +18,7 @@ dotenv.config();
 const fs = require('fs');
 const {execSync, spawn} = require('child_process');
 const vpn = require('./helper.js');
+const vpnWS = require('./helperWS.js');
 
 const fxa = require('./fxa.js');
 const guardian = require('./guardian.js');
@@ -33,7 +34,7 @@ async function startAndConnect() {
     stdErr += data;
   });
   // Connect to VPN
-  await vpn.connect();
+  await vpn.connect(vpnWS, {hostname: '127.0.0.1'});
 }
 
 exports.mochaHooks = {
@@ -72,7 +73,8 @@ exports.mochaHooks = {
 
       await startAndConnect();
       await vpn.reset();
-      await vpn.setSetting('tips-and-tricks-intro-shown', 'true')
+      await vpn.setSetting('tips-and-tricks-intro-shown', 'true');
+      await vpn.flipFeatureOn('websocket');
       await vpn.authenticateInApp(true, true);
 
       const fileName = await vpn.settingsFileName();
@@ -105,7 +107,6 @@ exports.mochaHooks = {
       await vpn.setSetting('tips-and-tricks-intro-shown', 'true')
     }
 
-    await startAndConnect();
     await vpn.setGleanAutomationHeader();
 
     console.log('Starting test:', this.currentTest.title);

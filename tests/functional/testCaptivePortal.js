@@ -5,7 +5,7 @@ const assert = require('assert');
 const vpn = require('./helper.js');
 
 describe('Captive portal', function() {
-  this.timeout(45000);
+  this.timeout(300000);
 
   beforeEach(async function() {
     vpn.resetLastNotification();
@@ -28,6 +28,11 @@ describe('Captive portal', function() {
   });
 
   it('Captive portal during the authentication', async () => {
+    if (this.ctx.wasm) {
+      // This test cannot run in wasm
+      return;
+    }
+
     await vpn.waitForMainView();
 
     await vpn.flipFeatureOff('inAppAuthentication');
@@ -82,6 +87,8 @@ describe('Captive portal', function() {
       assert(
           await vpn.getElementProperty('controllerTitle', 'text') ===
           'VPN is off');
+
+      vpn.resetLastNotification();
 
       await vpn.forceCaptivePortalDetection();
       await vpn.wait();

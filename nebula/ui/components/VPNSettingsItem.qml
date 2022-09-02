@@ -14,7 +14,6 @@ VPNClickableRow {
     property var settingTitle
     property var imageLeftSrc
     property var imageRightSrc
-    property bool showIndicator: false
     property string fontColor: VPNTheme.theme.fontColorDark
 
     accessibleName: settingTitle
@@ -25,22 +24,42 @@ VPNClickableRow {
     Layout.alignment: Qt.AlignHCenter
     Layout.minimumHeight: VPNTheme.theme.rowHeight
     Layout.preferredWidth: parent.width
+    Layout.maximumWidth: parent.width
+    canGrowVertical: true
+    Layout.preferredHeight: title.lineCount > 1 ? title.implicitHeight + VPNTheme.theme.windowMargin : VPNTheme.theme.rowHeight
 
     RowLayout {
         id: row
-        spacing: 0
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.leftMargin: VPNTheme.theme.windowMargin / 2
-        anchors.rightMargin: VPNTheme.theme.windowMargin / 2
+        spacing: VPNTheme.theme.windowMargin
         anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: root.width - VPNTheme.theme.windowMargin
 
-        VPNIconAndLabel {
-            id: iconAndLabel
-            icon: imageLeftSrc
-            title: settingTitle
-            fontColor: root.fontColor
-            showIndicator: root.showIndicator
+        Rectangle {
+            Layout.preferredHeight: VPNTheme.theme.rowHeight
+            Layout.preferredWidth: icon.width
+            Layout.alignment: Qt.AlignTop
+            color: VPNTheme.theme.transparent
+
+            VPNIcon {
+                id: icon
+                anchors.centerIn: parent
+                source: imageLeftSrc
+            }
+        }
+
+        VPNBoldLabel {
+            id: title
+            text: settingTitle
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignLeft
+            Layout.fillWidth: true
+            lineHeightMode: Text.FixedHeight
+            lineHeight: VPNTheme.theme.labelLineHeight
+            wrapMode: Text.WordWrap
+            topPadding: 1
+            elide: Text.ElideRight
         }
 
         VPNIcon {

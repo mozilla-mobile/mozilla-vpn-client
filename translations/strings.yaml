@@ -178,7 +178,6 @@ inAppSupportWorkflow:
   supportErrorButton: Try Again
   supportErrorBrowserButton: Try opening in browser
 
-
 # IAP Android edge case 1
 notSignedInGoogle:
   googleModalHeader: Sign in to Google Account
@@ -234,7 +233,7 @@ whatsNewReleaseNotes:
   supportListItemBody: The in-app support form will streamline the process of getting your issues resolved.
   dnsListItemHeader: Custom DNS
   dnsListItemBody: Custom DNS settings allow for faster connection using local servers.
-# system notifications for all platforms
+  # system notifications for all platforms
   tourSystemNotifHeader: What’s new in VPN
   tourSystemNotifBody: Check out all the new features available in the latest version of Mozilla VPN!
   tourSystemNotifCTA: Take the tour
@@ -427,8 +426,8 @@ crashreporter:
     value: No thanks
     comment: User does not agree to send a crash report.
   crashOptInDialogDescription:
-    value:  Don’t show this again. Autosend crash reports to Mozilla.
-    comment:  This is a description for a checkbox on the crash reporter dialog.
+    value: Don’t show this again. Autosend crash reports to Mozilla.
+    comment: This is a description for a checkbox on the crash reporter dialog.
 
 serverUnavailableModal:
   headerText: Server unavailable
@@ -437,6 +436,7 @@ serverUnavailableModal:
 
 serverUnavailableNotification:
   bodyText: This server location is temporarily unavailable. Please open the app to choose a new location.
+  bodyTextFireWallBlocked: The server has been blocked. Check your firewall settings.
   preferencesLabel: Server unavailable notification
   preferencesSubLabel: Get notified when connecting to a server location failed
 
@@ -542,7 +542,7 @@ inAppAuth:
   enterEmailAddressDescription: Enter your email address to continue using Mozilla VPN
   termsOfServiceAndPrivacyDisclaimer:
     value: By continuing, you agree to the <a href="terms-of-service">Terms of Service</a> and the <a href="privacy-notice">Privacy Notice</a>.
-    comment:  Do not remove or translate the markup '<a href="terms-of-service">', '<a href="privacy-notice">', '</a>'.
+    comment: Do not remove or translate the markup '<a href="terms-of-service">', '<a href="privacy-notice">', '</a>'.
   emailTokenResentAlert:
     value: We’ve resent your code to your email.
     comment: User has requested to send a new email containing the 6-digit pin to confirm their email address.
@@ -579,13 +579,13 @@ accessibility:
       - The %2 represents the total number of items in the group.
   selectedAndItemName:
     value: "Selected item: %1"
-    comment: 
+    comment:
       - Used by screen readers to denote that a particular item is currently selected.
       - For example, given a segmented control with 2 items, where the first item is currently selected. We want the screen reader to read out "Selected, <item name>".
       - The %1 represents the name of the selected item.
 
 freeTrials:
-  startYourFreeTrial: 
+  startYourFreeTrial:
     value: Sign up to start your 7-day free trial.
     comment: This string appears above the 'Sign up' button on mobile onboarding views
   freeTrialLabel: 7-day free trial
@@ -596,8 +596,19 @@ tipsAndTricks:
   featureTourCardDescription: Take a tour of Mozilla VPN to learn how the latest features help you protect your online privacy.
   quickTipsTitle: Quick tips
   quickTipsDescription: Let us help you get the most out of Mozilla VPN
+  advancedTipsTitle: Advanced tips
+  advancedTipsDescription: Let us help you learn more about Mozilla VPN
   quickTipsGuideViewTitle: Quick tip
   introModalDescription: Here’s a great list of useful tips and tricks to get the best out of your Mozilla VPN experience. Check it out now or find it anytime in the settings.
+  tabTitleAll:
+    value: All
+    comment: Tab title for the general tab of the Tips & Tricks panels
+  tabTitleTutorials:
+    value: Tutorials
+    comment: Tab title for the tab of the Tips & Tricks panels that only shows tutorials
+  tabTitleTips:
+    value: Tips
+    comment: Tab title for the tab of the Tips & Tricks panels that only shows guides
 
 subscriptionManagement:
   menuTitle:
@@ -676,6 +687,17 @@ tutorialPopup:
   tutorialLeaveSubtitle: Looks like you haven’t finished the tutorial quite yet. Would you like to continue and finish now or quit and come back later?
   tutorialLeavePrimaryButtonLabel: Resume tutorial
 
+inAppMessaging:
+  menuTitle: Inbox
+  editButton: Edit
+  searchBarPlaceholderText: Search messages
+  dateTimeYesterday: Yesterday
+  emptyStateTitle: No messages
+  emptyStateDescription: You’re up to date!
+  deleteMessage:
+    value: Delete message
+    comment: An action to delete a message from the users inbox
+
 global:
   expand:
     value: Expand
@@ -683,13 +705,29 @@ global:
   collapse:
     value: Collapse
     comment: Action used in the context of an expandable/collapsible card component
-  vpnUser: 
+  vpnUser:
     value: VPN User
     comment: Fallback string for users who have not specified a Display Name.
-  discoverNow: 
+  discoverNow:
     value: Discover now
     comment: Label for button used in intro modals to discover new features.
   goBack:
     value: Go back
     comment: Label for button used in intro modals to return to the app.
-    
+
+getHelp:
+  helpCenter: Help Center
+  viewLogs:
+    value: View Logs
+    comment: Label for a clickable item in the Get-Help view
+
+navBar:
+  homeTab:
+    value: Home
+    comment: Label for the tab on the navigation bar that takes the user to the home screen
+  messagesTab:
+    value: Messages
+    comment: Label for the tab on the navigation bar that takes the user to the messages inbox screen
+  settingsTab:
+    value: Settings
+    comment: Label for the tab on the navigation bar that takes the user to the settings screen

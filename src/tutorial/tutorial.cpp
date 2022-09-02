@@ -30,8 +30,11 @@ Tutorial::Tutorial(QObject* parent) : QObject(parent) {
   logger.debug() << "create";
   MVPN_COUNT_CTOR(Tutorial);
 
-  connect(ExternalOpHandler::instance(), &ExternalOpHandler::requestReceived,
-          this, &Tutorial::externalRequestReceived);
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+
+  connect(vpn->controller(), &Controller::readyToServerUnavailable, this,
+          &Tutorial::stop);
 }
 
 Tutorial::~Tutorial() { MVPN_COUNT_DTOR(Tutorial); }
@@ -52,6 +55,8 @@ void Tutorial::play(Addon* tutorial) {
     return;
   }
 
+  ExternalOpHandler::instance()->registerBlocker(this);
+
   emit playingChanged();
 
   m_currentTutorial->play(m_allowedItems);
@@ -67,30 +72,31 @@ void Tutorial::stop() {
     m_currentTutorial->stop();
     m_currentTutorial = nullptr;
 
+    ExternalOpHandler::instance()->unregisterBlocker(this);
+
     emit playingChanged();
   }
 }
 
 void Tutorial::requireTooltipNeeded(AddonTutorial* tutorial,
-                                    const QString& tooltipText,
+                                    AddonProperty* property,
                                     QObject* targetElement) {
   Q_ASSERT(tutorial);
   Q_ASSERT(tutorial == m_currentTutorial);
-  emit tooltipNeeded(tooltipText, targetElement);
+  emit tooltipNeeded(property, targetElement);
 
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::tutorialStepViewed,
-      {{"tutorial_id", m_currentTutorial->id()}, {"step_id", tooltipText}});
+      {{"tutorial_id", m_currentTutorial->id()}, {"step_id", property->get()}});
 }
 
-void Tutorial::requireTutorialCompleted(AddonTutorial* tutorial,
-                                        const QString& completionMessageText) {
+void Tutorial::requireTutorialCompleted(AddonTutorial* tutorial) {
   Q_ASSERT(tutorial);
   Q_ASSERT(tutorial == m_currentTutorial);
-  emit tutorialCompleted(completionMessageText);
+  emit tutorialCompleted(tutorial);
 
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::tutorialCompleted, {{"id", m_currentTutorial->id()}});
+      GleanSample::tutorialCompleted, {{"id", tutorial->id()}});
 }
 
 void Tutorial::requireTooltipShown(AddonTutorial* tutorial, bool shown) {
@@ -101,19 +107,24 @@ void Tutorial::requireTooltipShown(AddonTutorial* tutorial, bool shown) {
   emit tooltipShownChanged();
 }
 
-void Tutorial::externalRequestReceived(ExternalOpHandler::Op op) {
+bool Tutorial::maybeBlockRequest(ExternalOpHandler::Op op) {
   logger.debug() << "External request received" << op;
-
-  if (!isPlaying()) {
-    return;
-  }
+  Q_ASSERT(isPlaying());
 
   if (op != ExternalOpHandler::OpActivate &&
       op != ExternalOpHandler::OpDeactivate &&
-      op != ExternalOpHandler::OpCloseEvent &&
+      op != ExternalOpHandler::OpQuit &&
       op != ExternalOpHandler::OpNotificationClicked) {
-    return;
+    emit interruptRequest(op);
+    return true;
   }
 
   stop();
+  return false;
+}
+
+void Tutorial::interruptAccepted(ExternalOpHandler::Op op) {
+  logger.debug() << "Interrupt by the user";
+  stop();
+  ExternalOpHandler::instance()->request(op);
 }

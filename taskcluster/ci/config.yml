@@ -9,6 +9,8 @@ treeherder:
         'lint': 'Linting tasks'
         'Fetch': 'Fetching Tasks'
         'TL': 'Toolchain Tasks'
+        'rpk': 'Re-Package Tasks'
+        'BM': 'Beetmover Tasks'
 
 task-priority:
     by-project:
@@ -77,7 +79,7 @@ workers:
             provisioner: scriptworker-prov-v1
             implementation: scriptworker-signing
             os: macosx
-            worker-type: mozillavpn-t-signing-mac
+            worker-type: vpn-depsigning-mac-v1
         macos-signing:
             provisioner: scriptworker-prov-v1
             implementation: scriptworker-signing
@@ -85,9 +87,14 @@ workers:
             worker-type:
                 by-level:
                     "3": mozillavpn-3-signing-mac
-                    default: mozillavpn-t-signing-mac
+                    default: vpn-depsigning-mac-v1
         push-apk:
             provisioner: scriptworker-k8s
             implementation: scriptworker-pushapk
             os: scriptworker
             worker-type: 'mozillavpn-{level}-pushapk'
+        beetmover:
+            provisioner: scriptworker-k8s
+            implementation: scriptworker-beetmover
+            os: scriptworker
+            worker-type: 'mozillavpn-{level}-beetmover'

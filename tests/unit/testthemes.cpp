@@ -7,6 +7,8 @@
 #include "../../src/settingsholder.h"
 #include "../../src/theme.h"
 
+#include <QQmlApplicationEngine>
+
 void TestThemes::loadTheme_data() {
   QTest::addColumn<QString>("theme");
   QTest::addColumn<QString>("expected");
@@ -30,7 +32,8 @@ void TestThemes::loadTheme() {
     settingsHolder.setTheme(theme);
   }
 
-  QmlEngineHolder qml;
+  QQmlApplicationEngine engine;
+  QmlEngineHolder qml(&engine);
 
   Theme t;
   t.initialize(qml.engine());
@@ -47,7 +50,9 @@ void TestThemes::loadTheme() {
 
 void TestThemes::model() {
   SettingsHolder settingsHolder;
-  QmlEngineHolder qml;
+
+  QQmlApplicationEngine engine;
+  QmlEngineHolder qml(&engine);
 
   Theme t;
   t.initialize(qml.engine());

@@ -17,8 +17,6 @@ StackView {
     }
 
     Component.onCompleted: function(){
-        VPNCloseEventHandler.addStackView(stackView)
-
         if(!currentItem && typeof initialItem === "number" ){
             console.error("Failed to parse initialItem, try Component.OnComplete:push(someURI)");
         }
@@ -28,7 +26,7 @@ StackView {
     anchors.fill: parent
 
     Connections {
-        target: VPNCloseEventHandler
+        target: VPNNavigator
         function onGoBack(item) {
             if (item === stackView) {
                 stackView.pop();

@@ -50,6 +50,7 @@ SOURCES += \
     platforms/macos/macosmenubar.cpp \
     platforms/macos/macospingsender.cpp \
     platforms/macos/macosstartatbootwatcher.cpp \
+    platforms/macos/macossystemtraynotificationhandler.cpp \
     systemtraynotificationhandler.cpp \
     tasks/authenticate/desktopauthenticationlistener.cpp \
     wgquickprocess.cpp
@@ -58,6 +59,7 @@ OBJECTIVE_SOURCES += \
     platforms/macos/macoscryptosettings.mm \
     platforms/macos/macosnetworkwatcher.mm \
     platforms/ios/iosnetworkwatcher.mm \
+    platforms/macos/macosstatusicon.mm \
     platforms/macos/macosutils.mm
 
 HEADERS += \
@@ -79,6 +81,7 @@ HEADERS += \
     platforms/macos/macosmenubar.h \
     platforms/macos/macospingsender.h \
     platforms/macos/macosstartatbootwatcher.h \
+    platforms/macos/macossystemtraynotificationhandler.h \
     systemtraynotificationhandler.h \
     tasks/authenticate/desktopauthenticationlistener.h \
     wgquickprocess.h
@@ -86,6 +89,7 @@ HEADERS += \
 OBJECTIVE_HEADERS += \
     platforms/macos/macosnetworkwatcher.h \
     platforms/ios/iosnetworkwatcher.h \
+    platforms/macos/macosstatusicon.h
     platforms/macos/macosutils.h
 
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14

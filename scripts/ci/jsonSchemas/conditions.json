@@ -63,6 +63,18 @@
     "trigger_time": {
       "type": "number",
       "description": "How many seconds from the first execution of the mozilla vpn client"
+    },
+    "start_time": {
+      "type": "number",
+      "description": "The Epoch time (in sec) as the start time"
+    },
+    "end_time": {
+      "type": "number",
+      "description": "The Epoch time (in sec) as the end time"
+    },
+    "javascript": {
+      "type": "string",
+      "description": "A javascript file to control the condition"
     }
   }
 }

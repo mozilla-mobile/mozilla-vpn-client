@@ -3,14 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addon.h"
-#include "addondemo.h"
 #include "addonguide.h"
 #include "addoni18n.h"
 #include "addonmessage.h"
 #include "addontutorial.h"
 #include "conditionwatchers/addonconditionwatchergroup.h"
+#include "conditionwatchers/addonconditionwatcherjavascript.h"
 #include "conditionwatchers/addonconditionwatcherlocales.h"
 #include "conditionwatchers/addonconditionwatchertriggertimesecs.h"
+#include "conditionwatchers/addonconditionwatchertimestart.h"
+#include "conditionwatchers/addonconditionwatchertimeend.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
@@ -28,75 +30,6 @@
 namespace {
 Logger logger(LOG_MAIN, "Addon");
 
-bool evaluateConditionsEnabledFeatures(const QJsonArray& enabledFeatures) {
-  for (QJsonValue enabledFeature : enabledFeatures) {
-    QString featureName = enabledFeature.toString();
-
-    // If the feature doesn't exist, we crash.
-    const Feature* feature = Feature::get(featureName);
-    if (!feature) {
-      logger.info() << "Feature not found" << featureName;
-      return false;
-    }
-
-    if (!feature->isSupported()) {
-      logger.info() << "Feature not supported" << featureName;
-      return false;
-    }
-  }
-
-  return true;
-}
-
-bool evaluateConditionsPlatforms(const QJsonArray& platformArray) {
-  QStringList platforms;
-  for (QJsonValue platform : platformArray) {
-    platforms.append(platform.toString());
-  }
-
-  if (!platforms.isEmpty() &&
-      !platforms.contains(MozillaVPN::instance()->platform())) {
-    logger.info() << "Not supported platform";
-    return false;
-  }
-
-  return true;
-}
-
-bool evaluateConditionsEnv(const QString& env) {
-  if (env.isEmpty()) {
-    return true;
-  }
-
-  if (env == "staging") {
-    return !Constants::inProduction();
-  }
-
-  if (env == "production") {
-    return Constants::inProduction();
-  }
-
-  logger.info() << "Unknown env value:" << env;
-  return false;
-}
-
-bool evaluateConditionsClientVersion(const QString& min, const QString& max) {
-  QString currentVersion = Constants::versionString();
-
-  if (!min.isEmpty() && VersionApi::compareVersions(min, currentVersion) == 1) {
-    logger.info() << "Min version is" << min << " curent" << currentVersion;
-    return false;
-  }
-
-  if (!max.isEmpty() &&
-      VersionApi::compareVersions(max, currentVersion) == -1) {
-    logger.info() << "Max version is" << min << " curent" << currentVersion;
-    return false;
-  }
-
-  return true;
-}
-
 bool evaluateConditionsSettingsOp(const QString& op, bool result) {
   if (op == "eq") return result;
 
@@ -106,56 +39,224 @@ bool evaluateConditionsSettingsOp(const QString& op, bool result) {
   return false;
 }
 
-bool evaluateConditionsSettings(const QJsonArray& settings) {
-  for (QJsonValue setting : settings) {
-    QJsonObject obj = setting.toObject();
+struct ConditionCallback {
+  QString m_key;
+  std::function<bool(const QJsonValue&)> m_staticCallback;
+  std::function<AddonConditionWatcher*(Addon*, const QJsonValue&)>
+      m_dynamicCallback;
+};
 
-    QString op = obj["op"].toString();
-    QString key = obj["setting"].toString();
-    QVariant valueA = SettingsHolder::instance()->rawSetting(key);
-    if (!valueA.isValid()) {
-      logger.info() << "Unable to retrieve setting key" << key;
-      return false;
-    }
+QList<ConditionCallback> s_conditionCallbacks{
+    {"enabled_features",
+     [](const QJsonValue& value) -> bool {
+       for (const QJsonValue& enabledFeature : value.toArray()) {
+         QString featureName = enabledFeature.toString();
 
-    QJsonValue valueB = obj["value"];
-    switch (valueB.type()) {
-      case QJsonValue::Bool:
-        if (!evaluateConditionsSettingsOp(op,
-                                          valueA.toBool() == valueB.toBool())) {
-          logger.info() << "Setting value doesn't match for key" << key;
-          return false;
-        }
+         // If the feature doesn't exist, we crash.
+         const Feature* feature = Feature::get(featureName);
+         if (!feature) {
+           logger.info() << "Feature not found" << featureName;
+           return false;
+         }
 
-        break;
+         if (!feature->isSupported()) {
+           logger.info() << "Feature not supported" << featureName;
+           return false;
+         }
+       }
 
-      case QJsonValue::Double:
-        if (!evaluateConditionsSettingsOp(
-                op, valueA.toDouble() == valueB.toDouble())) {
-          logger.info() << "Setting value doesn't match for key" << key;
-          return false;
-        }
+       return true;
+     },
+     [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
+       return nullptr;
+     }},
 
-        break;
-        break;
+    {"platforms",
+     [](const QJsonValue& value) -> bool {
+       QStringList platforms;
+       for (QJsonValue platform : value.toArray()) {
+         platforms.append(platform.toString());
+       }
 
-      case QJsonValue::String:
-        if (!evaluateConditionsSettingsOp(
-                op, valueA.toString() == valueB.toString())) {
-          logger.info() << "Setting value doesn't match for key" << key;
-          return false;
-        }
+       if (!platforms.isEmpty() &&
+           !platforms.contains(MozillaVPN::instance()->platform())) {
+         logger.info() << "Not supported platform";
+         return false;
+       }
 
-        break;
+       return true;
+     },
+     [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
+       return nullptr;
+     }},
 
-      default:
-        logger.warning() << "Unsupported setting value type for key" << key;
-        return false;
-    }
-  }
+    {"settings",
+     [](const QJsonValue& value) -> bool {
+       for (QJsonValue setting : value.toArray()) {
+         QJsonObject obj = setting.toObject();
 
-  return true;
-}
+         QString op = obj["op"].toString();
+         QString key = obj["setting"].toString();
+         QVariant valueA = SettingsHolder::instance()->rawSetting(key);
+         if (!valueA.isValid()) {
+           logger.info() << "Unable to retrieve setting key" << key;
+           return false;
+         }
+
+         QJsonValue valueB = obj["value"];
+         switch (valueB.type()) {
+           case QJsonValue::Bool:
+             if (!evaluateConditionsSettingsOp(
+                     op, valueA.toBool() == valueB.toBool())) {
+               logger.info() << "Setting value doesn't match for key" << key;
+               return false;
+             }
+
+             break;
+
+           case QJsonValue::Double:
+             if (!evaluateConditionsSettingsOp(
+                     op, valueA.toDouble() == valueB.toDouble())) {
+               logger.info() << "Setting value doesn't match for key" << key;
+               return false;
+             }
+
+             break;
+             break;
+
+           case QJsonValue::String:
+             if (!evaluateConditionsSettingsOp(
+                     op, valueA.toString() == valueB.toString())) {
+               logger.info() << "Setting value doesn't match for key" << key;
+               return false;
+             }
+
+             break;
+
+           default:
+             logger.warning()
+                 << "Unsupported setting value type for key" << key;
+             return false;
+         }
+       }
+
+       return true;
+     },
+     [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
+       return nullptr;
+     }},
+
+    {"env",
+     [](const QJsonValue& value) -> bool {
+       QString env = value.toString();
+
+       if (env.isEmpty()) {
+         return true;
+       }
+
+       if (env == "staging") {
+         return !Constants::inProduction();
+       }
+
+       if (env == "production") {
+         return Constants::inProduction();
+       }
+
+       logger.info() << "Unknown env value:" << env;
+       return false;
+     },
+     [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
+       return nullptr;
+     }},
+
+    {"min_client_version",
+     [](const QJsonValue& value) -> bool {
+       QString min = value.toString();
+       QString currentVersion = Constants::versionString();
+
+       if (!min.isEmpty() &&
+           VersionApi::compareVersions(min, currentVersion) == 1) {
+         logger.info() << "Min version is" << min << " curent"
+                       << currentVersion;
+         return false;
+       }
+
+       return true;
+     },
+     [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
+       return nullptr;
+     }},
+
+    {"max_client_version",
+     [](const QJsonValue& value) -> bool {
+       QString max = value.toString();
+       QString currentVersion = Constants::versionString();
+
+       if (!max.isEmpty() &&
+           VersionApi::compareVersions(max, currentVersion) == -1) {
+         logger.info() << "Max version is" << max << " curent"
+                       << currentVersion;
+         return false;
+       }
+
+       return true;
+     },
+     [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
+       return nullptr;
+     }},
+
+    {"locales",
+     [](const QJsonValue&) -> bool {
+       // dynamic condition
+       return true;
+     },
+     [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
+       QStringList locales;
+       for (const QJsonValue& v : value.toArray()) {
+         locales.append(v.toString().toLower());
+       }
+
+       return AddonConditionWatcherLocales::maybeCreate(addon, locales);
+     }},
+
+    {"trigger_time",
+     [](const QJsonValue&) -> bool {
+       // dynamic condition
+       return true;
+     },
+     [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
+       return AddonConditionWatcherTriggerTimeSecs::maybeCreate(
+           addon, value.toInteger());
+     }},
+
+    {"start_time",
+     [](const QJsonValue&) -> bool {
+       // dynamic condition
+       return true;
+     },
+     [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
+       return new AddonConditionWatcherTimeStart(addon, value.toInteger());
+     }},
+
+    {"end_time",
+     [](const QJsonValue&) -> bool {
+       // dynamic condition
+       return true;
+     },
+     [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
+       return new AddonConditionWatcherTimeEnd(addon, value.toInteger());
+     }},
+
+    {"javascript",
+     [](const QJsonValue&) -> bool {
+       // dynamic condition
+       return true;
+     },
+     [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
+       return AddonConditionWatcherJavascript::maybeCreate(addon,
+                                                           value.toString());
+     }},
+};
 
 }  // namespace
 
@@ -216,11 +317,7 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
 
   Addon* addon = nullptr;
 
-  if (!Constants::inProduction() && type == "demo") {
-    addon = AddonDemo::create(parent, manifestFileName, id, name, obj);
-  }
-
-  else if (type == "i18n") {
+  if (type == "i18n") {
     addon = new AddonI18n(parent, manifestFileName, id, name);
   }
 
@@ -285,30 +382,23 @@ void Addon::retranslate() {
           QFileInfo(m_manifestFileName).dir().filePath("i18n"))) {
     logger.error() << "Loading the locale failed. - code:" << code;
   }
+
+  emit retranslationCompleted();
 }
 
 void Addon::maybeCreateConditionWatchers(const QJsonObject& conditions) {
   QList<AddonConditionWatcher*> watcherList;
 
-  {
-    QStringList locales;
-    for (const QJsonValue& value : conditions["locales"].toArray()) {
-      locales.append(value.toString().toLower());
-    }
-
-    AddonConditionWatcher* tmpWatcher =
-        AddonConditionWatcherLocales::maybeCreate(this, locales);
-    if (tmpWatcher) {
-      watcherList.append(tmpWatcher);
-    }
-  }
-
-  {
-    AddonConditionWatcher* tmpWatcher =
-        AddonConditionWatcherTriggerTimeSecs::maybeCreate(
-            this, conditions["trigger_time"].toInteger());
-    if (tmpWatcher) {
-      watcherList.append(tmpWatcher);
+  for (const QString& key : conditions.keys()) {
+    for (const ConditionCallback& condition : s_conditionCallbacks) {
+      if (condition.m_key == key) {
+        AddonConditionWatcher* conditionWatcher =
+            condition.m_dynamicCallback(this, conditions[key]);
+        if (conditionWatcher) {
+          watcherList.append(conditionWatcher);
+        }
+        break;
+      }
     }
   }
 
@@ -339,28 +429,22 @@ void Addon::maybeCreateConditionWatchers(const QJsonObject& conditions) {
 
 // static
 bool Addon::evaluateConditions(const QJsonObject& conditions) {
-  if (!evaluateConditionsEnabledFeatures(
-          conditions["enabled_features"].toArray())) {
-    return false;
-  }
+  for (const QString& key : conditions.keys()) {
+    bool found = false;
+    for (const ConditionCallback& condition : s_conditionCallbacks) {
+      if (condition.m_key == key) {
+        if (!condition.m_staticCallback(conditions[key])) {
+          return false;
+        }
+        found = true;
+        break;
+      }
+    }
 
-  if (!evaluateConditionsPlatforms(conditions["platforms"].toArray())) {
-    return false;
-  }
-
-  // TODO: this could be a watcher too but we are not using it yet.
-  if (!evaluateConditionsSettings(conditions["settings"].toArray())) {
-    return false;
-  }
-
-  if (!evaluateConditionsEnv(conditions["env"].toString())) {
-    return false;
-  }
-
-  if (!evaluateConditionsClientVersion(
-          conditions["min_client_version"].toString(),
-          conditions["max_client_version"].toString())) {
-    return false;
+    if (!found) {
+      logger.error() << "Invalid condition key" << key;
+      return false;
+    }
   }
 
   return true;

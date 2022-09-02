@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozillavpn.h"
-#include "addonmanager.h"
+#include "addons/manager/addonmanager.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "constants.h"
 #include "dnshelper.h"
+#include "frontend/navigator.h"
 #include "iaphandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -40,7 +41,7 @@
 #include "update/updater.h"
 #include "update/versionapi.h"
 #include "urlopener.h"
-#include "websockethandler.h"
+#include "websocket/websockethandler.h"
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosdatamigration.h"
@@ -139,8 +140,9 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           });
 
   connect(&m_private->m_controller, &Controller::readyToServerUnavailable, this,
-          []() {
-            NotificationHandler::instance()->serverUnavailableNotification();
+          [](bool pingReceived) {
+            NotificationHandler::instance()->serverUnavailableNotification(
+                pingReceived);
           });
 
   connect(&m_private->m_controller, &Controller::stateChanged, this,
@@ -151,6 +153,9 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 
   connect(this, &MozillaVPN::stateChanged, &m_private->m_statusIcon,
           &StatusIcon::stateChanged);
+
+  connect(&m_private->m_connectionHealth, &ConnectionHealth::stabilityChanged,
+          &m_private->m_statusIcon, &StatusIcon::stabilityChanged);
 
   connect(&m_private->m_controller, &Controller::stateChanged,
           &m_private->m_connectionHealth,
@@ -200,6 +205,8 @@ MozillaVPN::~MozillaVPN() {
 
   delete m_private;
 }
+
+Controller* MozillaVPN::controller() { return &m_private->m_controller; }
 
 MozillaVPN::State MozillaVPN::state() const { return m_state; }
 
@@ -312,9 +319,7 @@ void MozillaVPN::initialize() {
     return;
   }
 
-  if (!m_private->m_deviceModel.hasCurrentDevice(keys())) {
-    logger.error() << "The current device has not been found";
-    settingsHolder->clear();
+  if (!checkCurrentDevice()) {
     return;
   }
 
@@ -598,7 +603,7 @@ void MozillaVPN::openLink(LinkType linkType) {
   UrlOpener::open(url, addEmailAddress);
 }
 
-void MozillaVPN::openLinkUrl(const QString& linkUrl) {
+void MozillaVPN::openLinkUrl(const QString& linkUrl) const {
   logger.debug() << "Opening link: " << linkUrl;
   UrlOpener::open(linkUrl);
 }
@@ -673,14 +678,14 @@ void MozillaVPN::completeActivation() {
     --deviceCount;
   }
 
-  if (deviceCount >= m_private->m_user.maxDevices()) {
+  if (deviceCount >= m_private->m_user.maxDevices() &&
+      option == DeviceNotFound) {
     maybeStateMain();
     return;
   }
 
   // Here we add the current device.
-  if (m_private->m_keys.privateKey().isEmpty() ||
-      !m_private->m_deviceModel.hasCurrentDevice(keys())) {
+  if (option != DeviceStillValid) {
     addCurrentDeviceAndRefreshData();
   } else {
     // Let's fetch the account and the servers.
@@ -694,6 +699,23 @@ void MozillaVPN::completeActivation() {
 
   // Finally we are able to activate the client.
   TaskScheduler::scheduleTask(new TaskFunction([this]() { maybeStateMain(); }));
+}
+
+void MozillaVPN::setJournalPublicAndPrivateKeys(const QString& publicKey,
+                                                const QString& privateKey) {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  settingsHolder->setPrivateKeyJournal(privateKey);
+  settingsHolder->setPublicKeyJournal(publicKey);
+}
+
+void MozillaVPN::resetJournalPublicAndPrivateKeys() {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  settingsHolder->setPrivateKeyJournal(QString());
+  settingsHolder->setPublicKeyJournal(QString());
 }
 
 void MozillaVPN::deviceAdded(const QString& deviceName,
@@ -710,11 +732,16 @@ void MozillaVPN::deviceAdded(const QString& deviceName,
   m_private->m_keys.storeKeys(privateKey, publicKey);
 
   settingsHolder->setDeviceKeyVersion(Constants::versionString());
+
+  settingsHolder->setKeyRegenerationTimeSec(QDateTime::currentSecsSinceEpoch());
 }
 
-void MozillaVPN::deviceRemoved(const QString& publicKey) {
+void MozillaVPN::deviceRemoved(const QString& publicKey,
+                               const QString& source) {
   logger.debug() << "Device removed";
 
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::deviceRemoved, {{"source", source}});
   m_private->m_deviceModel.removeDeviceFromPublicKey(publicKey);
 }
 
@@ -861,6 +888,10 @@ void MozillaVPN::accountChecked(const QByteArray& json) {
     return;
   }
 
+  if (!checkCurrentDevice()) {
+    return;
+  }
+
   m_private->m_user.writeSettings();
   m_private->m_deviceModel.writeSettings();
 
@@ -886,6 +917,35 @@ void MozillaVPN::cancelAuthentication() {
   emit recordGleanEvent(GleanSample::authenticationAborted);
 
   reset(true);
+}
+
+bool MozillaVPN::checkCurrentDevice() {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  if (m_private->m_deviceModel.hasCurrentDevice(keys())) {
+    return true;
+  }
+
+  if (settingsHolder->privateKeyJournal().isEmpty() ||
+      settingsHolder->publicKeyJournal().isEmpty()) {
+    logger.error() << "The current device has not been found";
+    settingsHolder->clear();
+    return false;
+  }
+
+  keys()->storeKeys(settingsHolder->privateKeyJournal(),
+                    settingsHolder->publicKeyJournal());
+  if (!m_private->m_deviceModel.hasCurrentDevice(keys())) {
+    logger.error() << "The current device has not been found (journal keys)";
+    settingsHolder->clear();
+    return false;
+  }
+
+  settingsHolder->setPrivateKey(settingsHolder->privateKey());
+  settingsHolder->setPublicKey(settingsHolder->publicKey());
+  resetJournalPublicAndPrivateKeys();
+  return true;
 }
 
 void MozillaVPN::logout() {
@@ -1387,7 +1447,7 @@ void MozillaVPN::requestSettings() {
   logger.debug() << "Settings required";
 
   QmlEngineHolder::instance()->showWindow();
-  emit settingsNeeded();
+  Navigator::instance()->requestScreen(Navigator::ScreenSettings, true);
 }
 
 void MozillaVPN::requestAbout() {
@@ -1397,18 +1457,16 @@ void MozillaVPN::requestAbout() {
   emit aboutNeeded();
 }
 
-void MozillaVPN::requestViewLogs() {
-  logger.debug() << "View log requested";
+void MozillaVPN::requestGetHelp() {
+  logger.debug() << "Get help menu requested";
 
   QmlEngineHolder::instance()->showWindow();
-  emit viewLogsNeeded();
+  Navigator::instance()->requestScreen(Navigator::ScreenGetHelp, true);
 }
 
-void MozillaVPN::requestContactUs() {
-  logger.debug() << "Contact us view requested";
-
-  QmlEngineHolder::instance()->showWindow();
-  emit contactUsNeeded();
+void MozillaVPN::requestViewLogs() {
+  logger.debug() << "View log requested";
+  emit viewLogsNeeded();
 }
 
 void MozillaVPN::activate() {

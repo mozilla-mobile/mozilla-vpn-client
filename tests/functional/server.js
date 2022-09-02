@@ -4,6 +4,7 @@
 
 const express = require('express')
 const bodyParser = require('body-parser')
+const cors = require('cors');
 
 class Server {
   constructor(name, port, endpoints) {
@@ -13,6 +14,7 @@ class Server {
 
     const app = express()
     app.use(bodyParser.json());
+    app.use(cors());
     app.use((req, res, next) => {
       switch (req.method) {
         case 'GET':

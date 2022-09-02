@@ -23,18 +23,18 @@
         <file>resources/globe-warning.svg</file>
         <file>resources/heart-check.svg</file>
         <file>resources/logo-animated1.png</file>
-        <file>resources/logo-animated1.svg</file>
+        <file>resources/logo-animated-mask1.png</file>
         <file>resources/logo-animated2.png</file>
-        <file>resources/logo-animated2.svg</file>
+        <file>resources/logo-animated-mask2.png</file>
         <file>resources/logo-animated3.png</file>
-        <file>resources/logo-animated3.svg</file>
+        <file>resources/logo-animated-mask3.png</file>
         <file>resources/logo-animated4.png</file>
-        <file>resources/logo-animated4.svg</file>
+        <file>resources/logo-animated-mask4.png</file>
         <file>resources/logo-generic.png</file>
-        <file>resources/logo-generic.svg</file>
+        <file>resources/logo-generic-mask.png</file>
+        <file>resources/logo-generic-mask-off.png</file>
+        <file>resources/logo-generic-mask-on.png</file>
         <file>resources/logo.ico</file>
-        <file>resources/logo-on.png</file>
-        <file>resources/logo-on.svg</file>
         <file>resources/logo.svg</file>
         <file>resources/logo-sparkles.svg</file>
         <file>resources/magic-purple.svg</file>
@@ -75,5 +75,6 @@
         <file>resources/main-img-vpn-on.svg</file>
         <file>resources/logo-success.svg</file>
         <file>resources/logo-error.svg</file>
+        <file>resources/messages-empty.svg</file>
     </qresource>
 </RCC>

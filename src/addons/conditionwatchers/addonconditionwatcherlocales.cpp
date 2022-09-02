@@ -22,6 +22,8 @@ AddonConditionWatcherLocales::AddonConditionWatcherLocales(
     : AddonConditionWatcher(parent), m_locales(locales) {
   MVPN_COUNT_CTOR(AddonConditionWatcherLocales);
 
+  m_currentStatus = conditionApplied();
+
   connect(SettingsHolder::instance(), &SettingsHolder::languageCodeChanged,
           this, [this]() {
             bool newStatus = conditionApplied();

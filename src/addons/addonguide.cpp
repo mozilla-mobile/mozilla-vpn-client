@@ -28,8 +28,12 @@ Addon* AddonGuide::create(QObject* parent, const QString& manifestFileName,
   AddonGuide* guide = new AddonGuide(parent, manifestFileName, id, name);
   auto guard = qScopeGuard([&] { guide->deleteLater(); });
 
-  guide->m_titleId = QString("guide.%1.title").arg(guideId);
-  guide->m_subtitleId = QString("guide.%1.subtitle").arg(guideId);
+  guide->m_advanced = guideObj["advanced"].toBool();
+
+  guide->m_title.initialize(QString("guide.%1.title").arg(guideId),
+                            guideObj["title"].toString());
+  guide->m_subtitle.initialize(QString("guide.%1.subtitle").arg(guideId),
+                               guideObj["subtitle"].toString());
 
   guide->m_image = guideObj["image"].toString();
   if (guide->m_image.isEmpty()) {
@@ -43,6 +47,9 @@ Addon* AddonGuide::create(QObject* parent, const QString& manifestFileName,
     logger.warning() << "Composer failed";
     return nullptr;
   }
+
+  connect(guide, &Addon::retranslationCompleted, guide->m_composer,
+          &Composer::retranslationCompleted);
 
   guard.dismiss();
   return guide;

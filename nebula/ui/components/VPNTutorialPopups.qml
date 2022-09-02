@@ -183,6 +183,7 @@ Item {
         property var primaryButtonOnClicked: () => {}
         property var secondaryButtonOnClicked: () => {}
         property var _onClosed: () => {}
+        property var dismissOnStop: true
         closeButtonObjectName: "vpnPopupCloseButton"
 
         id: tutorialPopup
@@ -220,13 +221,7 @@ Item {
     }
 
 
-    function leaveTutorial() {
-        VPNTutorial.stop();
-        tutorialPopup.close();
-    }
-
-
-    function openLeaveTutorialPopup(callback = () => {}) {
+    function openLeaveTutorialPopup(op = null) {
         tutorialPopup.imageSrc = "qrc:/ui/resources/logo-error.svg";
         tutorialPopup._onClosed = () => {};
         tutorialPopup.primaryButtonOnClicked = () => {
@@ -235,8 +230,11 @@ Item {
 
         tutorialPopup.secondaryButtonOnClicked = () => {
             VPN.recordGleanEventWithExtraKeys("tutorialAborted", {"id": VPNTutorial.currentTutorial.id});
-            tutorialPopup._onClosed = () => callback()
-            leaveTutorial();
+            tutorialPopup._onClosed = () => {
+                if (op !== null) VPNTutorial.interruptAccepted(op);
+                else VPNTutorial.stop();
+            }
+            tutorialPopup.close();
         }
 
         tutorialPopup.primaryButtonText = VPNl18n.TutorialPopupTutorialLeavePrimaryButtonLabel;
@@ -248,9 +246,7 @@ Item {
 
     function openTipsAndTricks() {
         tutorialPopup.close();
-        VPN.settingsNeeded();
-        const settingsViewInMainStack = mainStackView.find((view) => { return view.objectName === "settings" });
-        settingsViewInMainStack._openTipsAndTricks();
+        VPNNavigator.requestScreen(VPNNavigator.ScreenTipsAndTricks);
     }
 
 
@@ -263,20 +259,31 @@ Item {
     Connections {
         target: VPNTutorial
 
+        function onInterruptRequest(op) {
+          openLeaveTutorialPopup(op)
+        }
+
+        function onPlayingChanged() {
+            if (!VPNTutorial.playing && tutorialPopup.opened && tutorialPopup.dismissOnStop) {
+                tutorialPopup.close();
+            }
+        }
+
         function onTooltipNeeded(text, targetEl) {
             root.targetElement = targetEl;
-            tutorialTooltip.tooltipText = qsTrId(text);
+            tutorialTooltip.tooltipText = text.value;
             tutorialTooltip.open();
         }
 
-        function onTutorialCompleted(tutorialCompletedStringId) {
+        function onTutorialCompleted(tutorial) {
             tutorialPopup.imageSrc = "qrc:/ui/resources/logo-success.svg";
             tutorialPopup.primaryButtonOnClicked = () => openTipsAndTricks();
             tutorialPopup.primaryButtonText = VPNl18n.TutorialPopupTutorialCompletePrimaryButtonLabel;
             tutorialPopup.secondaryButtonOnClicked = () => tutorialPopup.close();
             tutorialPopup.title =  VPNl18n.TutorialPopupTutorialCompleteHeadline;
-            tutorialPopup.description = qsTrId(tutorialCompletedStringId);
+            tutorialPopup.description = tutorial.completionMessage;
             tutorialPopup._onClosed = () => {};
+            tutorialPopup.dismissOnStop = false;
             tutorialPopup.open();
         }
     }
@@ -289,7 +296,7 @@ Item {
             if (!targetElement)
                 return
 
-            if (!targetElement.activeFocus && !targetElement.parent.activeFocus && !leaveTutorialBtn.activeFocus && !tutorialPopup.opened) {
+            if (!targetElement.activeFocus && (!targetElement.parent || !targetElement.parent.activeFocus) && !leaveTutorialBtn.activeFocus && !tutorialPopup.opened) {
                 tutorialTooltip.forceActiveFocus();
             }
         }

@@ -2,10 +2,9 @@ Mozilla VPN Software Licenses
 =============================
 
 Unless otherwise specified below, all files in the Mozilla VPN project are
-licensed under the Mozilla Public License version 2.0 (*MPL2*), with copyright
-belonging to the Mozilla Foundation.  The full text of the MPL is [available on
-Mozilla's website](https://www.mozilla.org/en-US/MPL/2.0/) and a copy is
-provided below.
+licensed under the Mozilla Public License version 2.0 (*MPL2*).  The full text
+of the MPL is [available on Mozilla's
+website](https://www.mozilla.org/en-US/MPL/2.0/) and a copy is provided below.
 
 This project relies on [QT Quick](https://doc.qt.io/qt-5/qtquick-index.html),
 provided by [the QT Company](https://www.qt.io/company) and used unmodified

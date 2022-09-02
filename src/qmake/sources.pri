@@ -3,17 +3,24 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 SOURCES += \
-        addonmanager.cpp \
         addons/addon.cpp \
-        addons/addondemo.cpp \
+        addons/addonapi.cpp \
         addons/addonguide.cpp \
         addons/addoni18n.cpp \
         addons/addonmessage.cpp \
+        addons/addonproperty.cpp \
+        addons/addonpropertylist.cpp \
         addons/addontutorial.cpp \
         addons/conditionwatchers/addonconditionwatcher.cpp \
         addons/conditionwatchers/addonconditionwatchergroup.cpp \
+        addons/conditionwatchers/addonconditionwatcherjavascript.cpp \
         addons/conditionwatchers/addonconditionwatcherlocales.cpp \
+        addons/conditionwatchers/addonconditionwatchertimeend.cpp \
+        addons/conditionwatchers/addonconditionwatchertimestart.cpp \
         addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp \
+        addons/manager/addondirectory.cpp \
+        addons/manager/addonindex.cpp \
+        addons/manager/addonmanager.cpp \
         apppermission.cpp \
         authenticationlistener.cpp \
         authenticationinapp/authenticationinapp.cpp \
@@ -27,7 +34,6 @@ SOURCES += \
         captiveportal/captiveportalnotifier.cpp \
         captiveportal/captiveportalrequest.cpp \
         captiveportal/captiveportalrequesttask.cpp \
-        closeeventhandler.cpp \
         collator.cpp \
         command.cpp \
         commandlineparser.cpp \
@@ -40,8 +46,13 @@ SOURCES += \
         commands/commandservers.cpp \
         commands/commandstatus.cpp \
         commands/commandui.cpp \
-        composer.cpp \
-        composerblock.cpp \
+        composer/composer.cpp \
+        composer/composerblock.cpp \
+        composer/composerblockbutton.cpp \
+        composer/composerblocktext.cpp \
+        composer/composerblocktitle.cpp \
+        composer/composerblockorderedlist.cpp \
+        composer/composerblockunorderedlist.cpp \
         connectionbenchmark/benchmarktask.cpp \
         connectionbenchmark/benchmarktaskdownload.cpp \
         connectionbenchmark/benchmarktaskping.cpp \
@@ -57,11 +68,14 @@ SOURCES += \
         externalophandler.cpp \
         filterproxymodel.cpp \
         fontloader.cpp \
+        frontend/navigator.cpp \
+        frontend/navigatorreloader.cpp \
         hacl-star/Hacl_Chacha20.c \
         hacl-star/Hacl_Chacha20Poly1305_32.c \
         hacl-star/Hacl_Curve25519_51.c \
         hacl-star/Hacl_Poly1305_32.c \
         hawkauth.cpp \
+        keyregenerator.cpp \
         hkdf.cpp \
         iaphandler.cpp \
         imageproviderfactory.cpp \
@@ -84,7 +98,6 @@ SOURCES += \
         models/feature.cpp \
         models/featuremodel.cpp \
         models/feedbackcategorymodel.cpp \
-        models/helpmodel.cpp \
         models/keys.cpp \
         models/licensemodel.cpp \
         models/server.cpp \
@@ -153,20 +166,29 @@ SOURCES += \
         update/versionapi.cpp \
         urlopener.cpp \
         update/webupdater.cpp \
-        websockethandler.cpp
+        websocket/exponentialbackoffstrategy.cpp \
+        websocket/pushmessage.cpp \
+        websocket/websockethandler.cpp
 
 HEADERS += \
-        addonmanager.h \
         addons/addon.h \
-        addons/addondemo.h \
+        addons/addonapi.h \
         addons/addonguide.h \
         addons/addoni18n.h \
         addons/addonmessage.h \
+        addons/addonproperty.h \
+        addons/addonpropertylist.h \
         addons/addontutorial.h \
         addons/conditionwatchers/addonconditionwatcher.h \
-        addons/conditionwatchers/addonconditionwatcherlocales.h \
-        addons/conditionwatchers/addonconditionwatchertriggertimesecs.h \
         addons/conditionwatchers/addonconditionwatchergroup.h \
+        addons/conditionwatchers/addonconditionwatcherjavascript.h \
+        addons/conditionwatchers/addonconditionwatcherlocales.h \
+        addons/conditionwatchers/addonconditionwatchertimeend.h \
+        addons/conditionwatchers/addonconditionwatchertimestart.h \
+        addons/conditionwatchers/addonconditionwatchertriggertimesecs.h \
+        addons/manager/addondirectory.h \
+        addons/manager/addonindex.h \
+        addons/manager/addonmanager.h \
         appimageprovider.h \
         apppermission.h \
         applistprovider.h \
@@ -182,7 +204,6 @@ HEADERS += \
         captiveportal/captiveportalnotifier.h \
         captiveportal/captiveportalrequest.h \
         captiveportal/captiveportalrequesttask.h \
-        closeeventhandler.h \
         collator.h \
         command.h \
         commandlineparser.h \
@@ -195,8 +216,13 @@ HEADERS += \
         commands/commandservers.h \
         commands/commandstatus.h \
         commands/commandui.h \
-        composer.h \
-        composerblock.h \
+        composer/composer.h \
+        composer/composerblock.h \
+        composer/composerblockbutton.h \
+        composer/composerblocktext.h \
+        composer/composerblocktitle.h \
+        composer/composerblockorderedlist.h \
+        composer/composerblockunorderedlist.h \
         connectionbenchmark/benchmarktask.h \
         connectionbenchmark/benchmarktaskdownload.h \
         connectionbenchmark/benchmarktaskping.h \
@@ -214,7 +240,10 @@ HEADERS += \
         externalophandler.h \
         filterproxymodel.h \
         fontloader.h \
+        frontend/navigator.h \
+        frontend/navigatorreloader.h \
         hawkauth.h \
+        keyregenerator.h \
         hkdf.h \
         iaphandler.h \
         imageproviderfactory.h \
@@ -236,7 +265,6 @@ HEADERS += \
         models/feature.h \
         models/featuremodel.h \
         models/feedbackcategorymodel.h \
-        models/helpmodel.h \
         models/keys.h \
         models/licensemodel.h \
         models/server.h \
@@ -307,7 +335,9 @@ HEADERS += \
         update/versionapi.h \
         update/webupdater.h \
         urlopener.h \
-        websockethandler.h
+        websocket/exponentialbackoffstrategy.h \
+        websocket/pushmessage.h \
+        websocket/websockethandler.h
 
 # Signal handling for unix platforms
 unix {

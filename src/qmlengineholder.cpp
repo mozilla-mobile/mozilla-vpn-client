@@ -6,17 +6,19 @@
 #include "leakdetector.h"
 #include "logger.h"
 
-#include <QWindow>
+#include <QQmlApplicationEngine>
 #include <QNetworkAccessManager>
+#include <QWindow>
 
 namespace {
 Logger logger(LOG_MAIN, "QmlEngineHolder");
 QmlEngineHolder* s_instance = nullptr;
 }  // namespace
 
-QmlEngineHolder::QmlEngineHolder() {
+QmlEngineHolder::QmlEngineHolder(QQmlEngine* engine) : m_engine(engine) {
   MVPN_COUNT_CTOR(QmlEngineHolder);
 
+  Q_ASSERT(engine);
   Q_ASSERT(!s_instance);
   s_instance = this;
 }
@@ -38,7 +40,7 @@ QmlEngineHolder* QmlEngineHolder::instance() {
 bool QmlEngineHolder::exists() { return !!s_instance; }
 
 QNetworkAccessManager* QmlEngineHolder::networkAccessManager() {
-  return m_engine.networkAccessManager();
+  return m_engine->networkAccessManager();
 }
 
 void QmlEngineHolder::clearCacheInternal() {
@@ -50,7 +52,11 @@ void QmlEngineHolder::clearCacheInternal() {
 }
 
 QWindow* QmlEngineHolder::window() const {
-  QObject* rootObject = m_engine.rootObjects().first();
+  QQmlApplicationEngine* engine =
+      qobject_cast<QQmlApplicationEngine*>(m_engine);
+  if (!engine) return nullptr;
+
+  QObject* rootObject = engine->rootObjects().first();
   return qobject_cast<QWindow*>(rootObject);
 }
 
