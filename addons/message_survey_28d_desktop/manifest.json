@@ -10,9 +10,10 @@
   },
   "message": {
     "id": "survey_28d_mobile",
-    "title": "Desktop Message",
+    "title": "Desktop message",
     "subtitle": "This message is only presented on Desktop",
     "date": 1647629990,
+    "badge": "warning",
     "blocks": [
     ]   
   }

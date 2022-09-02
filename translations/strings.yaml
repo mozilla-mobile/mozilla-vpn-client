@@ -697,12 +697,21 @@ inAppMessaging:
   deleteMessage:
     value: Delete message
     comment: An action to delete a message from the users inbox
-  newUpdateBadge:
-    value: New update
-    comment: A badge shown in a message signifying an update to the app is available
+  warningBadge:
+    value: Warning
+    comment: A badge shown in a message signifying that this is a warning message
   criticalBadge:
     value: Critical
     comment: A badge shown in a message signifying that this is an important message
+  newUpdateBadge:
+    value: New update
+    comment: A badge shown in a message signifying an update to the app is available
+  whatsNewBadge:
+    value: What’s new
+    comment: A badge shown in a message signifying that this message contains information about what is new in the product
+  surveyBadge:
+    value: Survey
+    comment: A badge shown in a message signifying that this message contains a survey
 
 global:
   expand:

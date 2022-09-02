@@ -30,8 +30,11 @@ class AddonMessage final : public Addon {
  public:
   enum Badge {
       None,
+      Warning,
+      Critical,
       NewUpdate,
-      Critical
+      WhatsNew,
+      Survey
   };
   Q_ENUM(Badge)
 

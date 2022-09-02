@@ -69,19 +69,44 @@ VPNViewBase {
                 Layout.maximumWidth: parent.width - dateLabel.width - spacer.Layout.minimumWidth
                 active: message.badge !== VPNAddonMessage.None
                 sourceComponent: VPNBadge {
-                    id: badge
-
-                    Component.onCompleted: {
+                    type: {
                         switch(message.badge) {
-                        case VPNAddonMessage.NewUpdate:
-                            badge.text = VPNl18n.InAppMessagingNewUpdateBadge
-                            badge.theme = VPNTheme.theme.greenBadge
-                            break;
+                        case VPNAddonMessage.Warning:
+                            return badgeInfo.warningBadge
                         case VPNAddonMessage.Critical:
-                            badge.text = VPNl18n.InAppMessagingCriticalBadge
-                            badge.theme = VPNTheme.theme.redBadge
-                            break;
+                            return badgeInfo.criticalBadge
+                        case VPNAddonMessage.NewUpdate:
+                            return badgeInfo.newUpdateBadge
+                        case VPNAddonMessage.WhatsNew:
+                            return badgeInfo.whatsNewBadge
+                        case VPNAddonMessage.Survey:
+                            return badgeInfo.surveyBadge
                         }
+                    }
+
+                    QtObject {
+                        id: badgeInfo
+
+                        property var warningBadge: {
+                            'badgeText': VPNl18n.InAppMessagingWarningBadge,
+                            'badgeTheme': VPNTheme.theme.orangeBadge
+                        };
+                        property var criticalBadge: {
+                            'badgeText': VPNl18n.InAppMessagingCriticalBadge,
+                            'badgeTheme': VPNTheme.theme.redBadge
+                        };
+                        property var newUpdateBadge: {
+                            'badgeText': VPNl18n.InAppMessagingNewUpdateBadge,
+                            'badgeTheme': VPNTheme.theme.greenBadge
+                        };
+                        property var whatsNewBadge: {
+                            'badgeText': VPNl18n.InAppMessagingWhatsNewBadge,
+                            'badgeTheme': VPNTheme.theme.blueBadge
+                        };
+                        property var surveyBadge: {
+                            'badgeText': VPNl18n.InAppMessagingSurveyBadge,
+                            'badgeTheme': VPNTheme.theme.blueBadge
+                        };
                     }
                 }
             }

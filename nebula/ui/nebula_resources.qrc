@@ -346,6 +346,5 @@
         <file>resources/navbar/settings-selected.svg</file>
         <file>resources/navbar/messages-notification-selected.svg</file>
         <file>resources/navbar/messages-notification.svg</file>
-        <file>resources/delete-white.svg</file>
     </qresource>
 </RCC>

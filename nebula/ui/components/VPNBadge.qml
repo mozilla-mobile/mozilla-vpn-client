@@ -7,10 +7,17 @@ import QtQuick 2.0
 import Mozilla.VPN 1.0
 
 Rectangle {
-    property var theme
-    property alias text: badgeLabel.text
+    id: root
 
-    color: theme.backgroundColor
+    //A type is a JS object containing the badgeText and badgeTheme (backgorund color and text color)
+    property var type
+
+    //Alternatively to setting the type, you can set it's properties manually
+    property alias backgroundColor: root.color
+    property alias text: badgeLabel.text
+    property alias textColor: badgeLabel.color
+
+    color: type.badgeTheme.backgroundColor
     height: badgeLabel.implicitHeight
     width: badgeLabel.implicitWidth
     radius: 4
@@ -19,7 +26,8 @@ Rectangle {
     VPNBoldInterLabel {
         id: badgeLabel
 
-        color: theme.textColor
+        text: type.badgeText
+        color: type.badgeTheme.textColor
         verticalAlignment: Text.AlignVCenter
         topPadding: VPNTheme.theme.badgeVerticalPadding
         leftPadding: VPNTheme.theme.badgeHorizontalPadding

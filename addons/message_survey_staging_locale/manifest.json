@@ -2,6 +2,7 @@
   "api_version": "0.1",
   "id": "message_survey_staging_locale",
   "name": "Staging Survey 1 secs",
+  "translatable": false,
   "type": "message",
   "conditions": {
     "env": "staging",
@@ -13,6 +14,7 @@
     "title": "Locale message",
     "subtitle": "This message is only presented when the app language is set to English",
     "date": 1661479590,
+    "badge": "survey",
     "blocks": [
     ]   
   }

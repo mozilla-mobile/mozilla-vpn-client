@@ -38,6 +38,11 @@ theme.redfocusOutline = '#66C50042';
 theme.redBadgeText = "#810220";
 theme.greenBadgeText = '#00736C';
 theme.greenBadgeBackground = '#E3FFF3';
+theme.orangeBadgeText = '#960E18';
+theme.orangeBadgeBackground = '#FFD5B2';
+theme.blueBadgeText  = "#09204D"
+theme.blueBadgeBackground = "#660060DF"
+
 theme.white = '#FFFFFF'
 
 theme.overlayBackground = '#4D000000';
@@ -279,11 +284,6 @@ theme.input = {
   'focusBorder': theme.blueFocusBorder,
 };
 
-theme.grayBadge = {
-    'textColor': theme.fontColorDark,
-    'backgroundColor': theme.greyHovered
-};
-
 theme.greenBadge = {
     'textColor': theme.greenBadgeText,
     'backgroundColor': theme.greenBadgeBackground
@@ -292,6 +292,16 @@ theme.greenBadge = {
 theme.redBadge = {
     'textColor': theme.redBadgeText,
     'backgroundColor': theme.redDisabled
+};
+
+theme.orangeBadge = {
+    'textColor': theme.orangeBadgeText,
+    'backgroundColor': theme.orangeBadgeBackground
+};
+
+theme.blueBadge = {
+    'textColor': theme.blueBadgeText,
+    'backgroundColor': theme.blueBadgeBackground
 };
 
 theme;
