@@ -56,7 +56,7 @@ VPNFlickable {
             spacing: 6
 
             VPNIcon {
-                source: VPNStatusIcon.iconUrl
+                source: "qrc:/ui/resources/logo.svg"
                 sourceSize.height: 20
                 sourceSize.width: 20
                 antialiasing: true
