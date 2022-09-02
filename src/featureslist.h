@@ -58,26 +58,10 @@ FEATURE_SIMPLE(captivePortal,     // Feature ID
                QStringList(),     // feature dependencies
                FeatureCallback_captivePortal)
 
-FEATURE_SIMPLE(connectionInfo,     // Feature ID
-               "Connection info",  // Feature name
-               "2.8",              // released
-               true,               // Can be flipped on
-               false,              // Can be flipped off
-               QStringList(),      // feature dependencies
-               FeatureCallback_true)
-
 FEATURE_SIMPLE(customDNS,      // Feature ID
                "Custom DNS",   // Feature name
                "2.5",          // released
                true,           // Can be flipped on
-               false,          // Can be flipped off
-               QStringList(),  // feature dependencies
-               FeatureCallback_true)
-
-FEATURE_SIMPLE(easyProfile,     // Feature ID
-               "Easy Profile",  // Feature name
-               "2.9",
-               false,          // Can be flipped on
                false,          // Can be flipped off
                QStringList(),  // feature dependencies
                FeatureCallback_true)
@@ -138,14 +122,6 @@ FEATURE_SIMPLE(mobileOnboarding,     // Feature ID
                false,                // Can be flipped off
                QStringList(),        // feature dependencies
                FeatureCallback_iosOrAndroid)
-
-FEATURE_SIMPLE(multiAccountContainers,      // Feature ID
-               "Multi-Account Containers",  // Feature name
-               "2.7",                       // Released
-               false,                       // Can be flipped on
-               false,                       // Can be flipped off
-               QStringList(),               // feature dependencies
-               FeatureCallback_multiAccountContainers)
 
 #if defined(MVPN_ANDROID) || defined(MVPN_IOS)
 #  define MULTIHOP_RELEASE "2.7"

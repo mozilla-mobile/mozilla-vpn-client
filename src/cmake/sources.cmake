@@ -217,8 +217,6 @@ target_sources(mozillavpn PRIVATE
     models/supportcategorymodel.h
     models/user.cpp
     models/user.h
-    models/whatsnewmodel.cpp
-    models/whatsnewmodel.h
     mozillavpn.cpp
     mozillavpn.h
     networkmanager.cpp
