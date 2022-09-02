@@ -1209,11 +1209,6 @@ void MozillaVPN::telemetryPolicyCompleted() {
   maybeStateMain();
 }
 
-void MozillaVPN::setUpdateRecommended(bool value) {
-  m_updateRecommended = value;
-  emit updateRecommendedChanged();
-}
-
 void MozillaVPN::setUserState(UserState state) {
   logger.debug() << "User authentication state:" << state;
   if (m_userState != state) {
