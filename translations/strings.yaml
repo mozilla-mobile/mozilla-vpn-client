@@ -211,44 +211,6 @@ restorePurchaseExpiredError:
 restorePurchaseInUseError:
   restorePurchaseInUseErrorText: Another Firefox Account has already subscribed using this Apple ID. Please sign out and try again or contact our support team for help.
 
-# v2.5 What’s New? Release notes
-whatsNewReleaseNotes:
-  # tour modal alert on system update
-  tourModalHeader: What’s new in VPN?
-  tourModalBodyText: We’ve added a ton of cool features in this latest release. Take the tour to get a deeper dive into what we’ve added for you!
-  tourModalButtonText: Take the tour
-  multiModalHeader: Multi-hop VPN
-  multiModalBodyText: Multi-hop VPN will route your traffic through a second server for added protection. You can find this feature on the “Select location” screen.
-  supportModalButtonText: Next
-  supportModalHeader: In-app support form
-  supportModalBodyText: The in-app support form will allow you to contact support from within the VPN app. You can find it in the “Get help” section.
-  dnsModalHeader: Custom DNS
-  dnsModalBodyTextNew: Custom DNS servers allow for faster speed using local networks, features like ad-blocking and anti-tracking. You can find this feature in the “Network settings” section.
-  dnsModalButtonText: Done
-  tourPageHeader: What’s new
-  tourSubHeader: Take the tour
-  multiListItemHeader: Multi-hop VPN
-  multiListItemBody: Multi-hop VPN uses multiple VPN servers instead of one for extra security and privacy.
-  supportListItemHeader: In-app support form
-  supportListItemBody: The in-app support form will streamline the process of getting your issues resolved.
-  dnsListItemHeader: Custom DNS
-  dnsListItemBody: Custom DNS settings allow for faster connection using local servers.
-  # system notifications for all platforms
-  tourSystemNotifHeader: What’s new in VPN
-  tourSystemNotifBody: Check out all the new features available in the latest version of Mozilla VPN!
-  tourSystemNotifCTA: Take the tour
-  # Multi-account containers
-  multiAccountContainersHeader: Mozilla VPN in Firefox
-  multiAccountContainersShortDescription:
-    value: Mozilla VPN is now integrated with the Multi-Account Containers add-on for more privacy and security.
-    comment: “Multi-Account Containers” is the name of the add-on and should not be translated.
-  multiAccountContainersDescription: You can now use different Mozilla VPN locations in multiple tabs simultaneously.
-  connectionInfoDisplayName: Test your speed
-  connectionInfoDescription: You can now run speed tests in Mozilla VPN! Select the performance icon in the top left corner of your screen to test your connection speed while using VPN.
-  connectionInfoDescriptionShort: You can now run speed tests within the VPN to check your connection speed.
-  easyProfileDisplayName: Easier-to-use profile
-  easyProfileDescription: Now accessible from the VPN app, users can view their personal information, subscription summary and payment information within the subscription profile page.
-
 # Adding functionality for users selecting custom DNS settings, associated settings nav items, headers, and selectable options. Some is not included in 2.5.
 customDNSSettings:
   dnsInfoAlert: VPN must be off to change these settings
