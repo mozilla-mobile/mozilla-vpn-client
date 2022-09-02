@@ -10,8 +10,8 @@ target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 target_sources(mozillavpn PRIVATE
     addons/addon.cpp
     addons/addon.h
-    addons/addondemo.cpp
-    addons/addondemo.h
+    addons/addonapi.cpp
+    addons/addonapi.h
     addons/addonguide.cpp
     addons/addonguide.h
     addons/addoni18n.cpp
@@ -28,6 +28,8 @@ target_sources(mozillavpn PRIVATE
     addons/conditionwatchers/addonconditionwatcher.h
     addons/conditionwatchers/addonconditionwatchergroup.cpp
     addons/conditionwatchers/addonconditionwatchergroup.h
+    addons/conditionwatchers/addonconditionwatcherjavascript.cpp
+    addons/conditionwatchers/addonconditionwatcherjavascript.h
     addons/conditionwatchers/addonconditionwatcherlocales.cpp
     addons/conditionwatchers/addonconditionwatcherlocales.h
     addons/conditionwatchers/addonconditionwatchertimeend.cpp
@@ -70,8 +72,6 @@ target_sources(mozillavpn PRIVATE
     captiveportal/captiveportalrequest.h
     captiveportal/captiveportalrequesttask.cpp
     captiveportal/captiveportalrequesttask.h
-    closeeventhandler.cpp
-    closeeventhandler.h
     collator.cpp
     collator.h
     command.cpp
@@ -98,6 +98,8 @@ target_sources(mozillavpn PRIVATE
     commands/commandui.h
     composer/composerblock.cpp
     composer/composerblock.h
+    composer/composerblockbutton.cpp
+    composer/composerblockbutton.h
     composer/composerblocktext.cpp
     composer/composerblocktext.h
     composer/composerblocktitle.cpp
@@ -140,6 +142,10 @@ target_sources(mozillavpn PRIVATE
     filterproxymodel.h
     fontloader.cpp
     fontloader.h
+    frontend/navigator.cpp
+    frontend/navigator.h
+    frontend/navigatorreloader.cpp
+    frontend/navigatorreloader.h
     hacl-star/Hacl_Chacha20.c
     hacl-star/Hacl_Chacha20Poly1305_32.c
     hacl-star/Hacl_Curve25519_51.c
@@ -191,8 +197,6 @@ target_sources(mozillavpn PRIVATE
     models/featuremodel.h
     models/feedbackcategorymodel.cpp
     models/feedbackcategorymodel.h
-    models/helpmodel.cpp
-    models/helpmodel.h
     models/keys.cpp
     models/keys.h
     models/licensemodel.cpp

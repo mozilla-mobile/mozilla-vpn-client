@@ -456,14 +456,6 @@ module.exports = {
     return json.value;
   },
 
-  async openContactUs() {
-    const json = await this._writeCommand('open_contact_us');
-    assert(
-        json.type === 'open_contact_us' && !('error' in json),
-        `Command failed: ${json.error}`);
-    return json.value;
-  },
-
   async openSettings() {
     const json = await this._writeCommand('open_settings');
     assert(

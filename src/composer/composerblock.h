@@ -7,6 +7,7 @@
 
 #include <QQmlEngine>
 
+class Addon;
 class Composer;
 class QJsonObject;
 
@@ -19,9 +20,11 @@ class ComposerBlock : public QObject {
   Q_PROPERTY(QString type MEMBER m_type CONSTANT)
 
  public:
-  static ComposerBlock* create(Composer* composer, const QString& prefix,
-                               const QJsonObject& json);
+  static ComposerBlock* create(Composer* composer, Addon* addon,
+                               const QString& prefix, const QJsonObject& json);
   virtual ~ComposerBlock();
+
+  virtual bool contains(const QString& string) const = 0;
 
  signals:
   void retranslationCompleted();

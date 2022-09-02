@@ -8,6 +8,7 @@
 #include "addon.h"
 #include "addonproperty.h"
 
+class NavigatorReloader;
 class QJsonObject;
 class QQuickItem;
 class TutorialStep;
@@ -47,7 +48,7 @@ class AddonTutorial final : public Addon {
   void processNextOp();
 
   // Return true if there are no operations left.
-  bool maybeStop(bool completed = false);
+  bool maybeStop();
 
  private:
   AddonProperty m_title;
@@ -64,6 +65,8 @@ class AddonTutorial final : public Addon {
 
   class TutorialItemPicker;
   TutorialItemPicker* m_itemPicker = nullptr;
+
+  NavigatorReloader* m_navigatorReloader = nullptr;
 };
 
 #endif  // ADDONTUTORIAL_H

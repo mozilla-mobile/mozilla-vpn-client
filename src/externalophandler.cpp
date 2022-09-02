@@ -6,6 +6,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "frontend/navigator.h"
 
 #include <QCoreApplication>
 
@@ -61,17 +62,14 @@ void ExternalOpHandler::request(Op op) {
     case OpAbout:
       vpn->requestAbout();
       break;
-    case OpContactUs:
-      vpn->requestContactUs();
-      break;
-    case OpViewLogs:
-      vpn->requestViewLogs();
-      break;
     case OpActivate:
       vpn->controller()->activate();
       break;
     case OpDeactivate:
       vpn->controller()->deactivate();
+      break;
+    case OpGetHelp:
+      vpn->requestGetHelp();
       break;
     case OpSettings:
       vpn->requestSettings();

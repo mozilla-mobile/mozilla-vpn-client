@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "composer.h"
+#include "addons/addon.h"
 #include "composerblock.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -23,9 +24,9 @@ Composer::Composer(QObject* parent) : QObject(parent) {
 Composer::~Composer() { MVPN_COUNT_DTOR(Composer); }
 
 // static
-Composer* Composer::create(QObject* parent, const QString& prefix,
+Composer* Composer::create(Addon* addon, const QString& prefix,
                            const QJsonObject& obj) {
-  Composer* composer = new Composer(parent);
+  Composer* composer = new Composer(addon);
   auto guard = qScopeGuard([&] { composer->deleteLater(); });
 
   QJsonValue blocksArray = obj["blocks"];
@@ -42,7 +43,8 @@ Composer* Composer::create(QObject* parent, const QString& prefix,
 
     QJsonObject blockObj = blockValue.toObject();
 
-    ComposerBlock* block = ComposerBlock::create(composer, prefix, blockObj);
+    ComposerBlock* block =
+        ComposerBlock::create(composer, addon, prefix, blockObj);
     if (!block) {
       return nullptr;
     }

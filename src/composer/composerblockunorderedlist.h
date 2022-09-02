@@ -21,6 +21,8 @@ class ComposerBlockUnorderedList : public ComposerBlock {
                                const QJsonObject& json);
   virtual ~ComposerBlockUnorderedList();
 
+  bool contains(const QString& string) const override;
+
  protected:
   ComposerBlockUnorderedList(Composer* composer, const QString& type);
 

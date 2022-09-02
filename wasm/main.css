@@ -472,6 +472,11 @@ input:focus {
   padding-right: 1em;
 }
 
+button {
+  margin-top: 1em;
+  width: 100%
+}
+
 select {
   margin-top: 1em;
   width: 100%

@@ -436,6 +436,7 @@ serverUnavailableModal:
 
 serverUnavailableNotification:
   bodyText: This server location is temporarily unavailable. Please open the app to choose a new location.
+  bodyTextFireWallBlocked: The server has been blocked. Check your firewall settings.
   preferencesLabel: Server unavailable notification
   preferencesSubLabel: Get notified when connecting to a server location failed
 
@@ -599,6 +600,15 @@ tipsAndTricks:
   advancedTipsDescription: Let us help you learn more about Mozilla VPN
   quickTipsGuideViewTitle: Quick tip
   introModalDescription: Here’s a great list of useful tips and tricks to get the best out of your Mozilla VPN experience. Check it out now or find it anytime in the settings.
+  tabTitleAll:
+    value: All
+    comment: Tab title for the general tab of the Tips & Tricks panels
+  tabTitleTutorials:
+    value: Tutorials
+    comment: Tab title for the tab of the Tips & Tricks panels that only shows tutorials
+  tabTitleTips:
+    value: Tips
+    comment: Tab title for the tab of the Tips & Tricks panels that only shows guides
 
 subscriptionManagement:
   menuTitle:
@@ -678,7 +688,15 @@ tutorialPopup:
   tutorialLeavePrimaryButtonLabel: Resume tutorial
 
 inAppMessaging:
+  menuTitle: Inbox
+  editButton: Edit
+  searchBarPlaceholderText: Search messages
   dateTimeYesterday: Yesterday
+  emptyStateTitle: No messages
+  emptyStateDescription: You’re up to date!
+  deleteMessage:
+    value: Delete message
+    comment: An action to delete a message from the users inbox
 
 global:
   expand:
@@ -697,3 +715,19 @@ global:
     value: Go back
     comment: Label for button used in intro modals to return to the app.
 
+getHelp:
+  helpCenter: Help Center
+  viewLogs:
+    value: View Logs
+    comment: Label for a clickable item in the Get-Help view
+
+navBar:
+  homeTab:
+    value: Home
+    comment: Label for the tab on the navigation bar that takes the user to the home screen
+  messagesTab:
+    value: Messages
+    comment: Label for the tab on the navigation bar that takes the user to the messages inbox screen
+  settingsTab:
+    value: Settings
+    comment: Label for the tab on the navigation bar that takes the user to the settings screen

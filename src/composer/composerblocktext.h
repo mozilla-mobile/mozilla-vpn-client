@@ -21,6 +21,8 @@ class ComposerBlockText final : public ComposerBlock {
                                const QJsonObject& json);
   virtual ~ComposerBlockText();
 
+  bool contains(const QString& string) const override;
+
  private:
   explicit ComposerBlockText(Composer* composer);
 

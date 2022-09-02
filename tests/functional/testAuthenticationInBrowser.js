@@ -86,11 +86,11 @@ describe('User authentication in browser', function() {
   it('Completes authentication after logout', async () => {
     await vpn.authenticateInBrowser(true, true, this.ctx.wasm);
 
-    await vpn.waitForElement('settingsButton');
-    await vpn.clickOnElement('settingsButton');
+    await vpn.waitForElement('navigationLayout/navButton-settings');
+    await vpn.clickOnElement('navigationLayout/navButton-settings');
 
     await vpn.waitForElement('settingsLogout');
-    await vpn.scrollToElement('settingsView', 'settingsLogout');
+    await vpn.scrollToElement('settingsView-flickable', 'settingsLogout');
     await vpn.clickOnElement('settingsLogout');
     await vpn.waitForMainView();
 

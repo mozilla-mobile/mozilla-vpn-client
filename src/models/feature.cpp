@@ -294,3 +294,16 @@ void Feature::maybeFlipOnOrOff() {
 
   emit supportedChanged();
 }
+
+bool Feature::isToggleable() const {
+  bool isOnByDefault = isSupportedIgnoringFlip();
+  if (isOnByDefault && m_flippableOff) {
+    return true;
+  }
+
+  if (!isOnByDefault && m_flippableOn) {
+    return true;
+  }
+
+  return false;
+}

@@ -16,10 +16,13 @@ class AddonMessage final : public Addon {
   Q_DISABLE_COPY_MOVE(AddonMessage)
 
   ADDON_PROPERTY(title, m_title, retranslationCompleted)
+  ADDON_PROPERTY(subtitle, m_subtitle, retranslationCompleted)
 
-  Q_PROPERTY(Composer* composer MEMBER m_composer CONSTANT)
+  Q_PROPERTY(Composer* composer READ composer CONSTANT)
   Q_PROPERTY(bool isRead MEMBER m_isRead NOTIFY isReadChanged)
-  Q_PROPERTY(QString date READ date NOTIFY retranslationCompleted)
+  Q_PROPERTY(qint64 date MEMBER m_date)
+  Q_PROPERTY(
+      QString formattedDate READ formattedDate NOTIFY retranslationCompleted)
 
  public:
   static Addon* create(QObject* parent, const QString& manifestFileName,
@@ -30,17 +33,19 @@ class AddonMessage final : public Addon {
 
   Q_INVOKABLE void dismiss();
   Q_INVOKABLE void maskAsRead();
+  Q_INVOKABLE bool containsSearchString(const QString& query) const;
 
-  QString date() const;
+  QString formattedDate() const;
 
   bool enabled() const override;
+
+  Composer* composer() const { return m_composer; }
 
   // Explosed for testing.
   static QString dateInternal(const QDateTime& nowDateTime,
                               const QDateTime& messageDateTime);
   static qint64 planDateRetranslationInternal(const QDateTime& nowDateTime,
                                               const QDateTime& messageDateTime);
-
  signals:
   void isReadChanged();
 
@@ -52,6 +57,7 @@ class AddonMessage final : public Addon {
 
  private:
   AddonProperty m_title;
+  AddonProperty m_subtitle;
   Composer* m_composer = nullptr;
 
   qint64 m_date = 0;

@@ -26,6 +26,8 @@ class AddonManager final : public QAbstractListModel {
 
   Q_INVOKABLE QJSValue reduce(QJSValue callback, QJSValue initialValue) const;
 
+  Q_INVOKABLE void reinstateMessages() const;
+
   enum ModelRoles {
     AddonRole = Qt::UserRole + 1,
   };
@@ -71,8 +73,6 @@ class AddonManager final : public QAbstractListModel {
   QVariant data(const QModelIndex& index, int role) const override;
 
  signals:
-  void runAddon(Addon* addon);
-
   void loadCompletedChanged();
 
  private:

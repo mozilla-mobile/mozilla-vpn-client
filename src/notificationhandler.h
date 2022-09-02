@@ -33,7 +33,7 @@ class NotificationHandler : public QObject {
 
   void unsecuredNetworkNotification(const QString& networkName);
 
-  void serverUnavailableNotification();
+  void serverUnavailableNotification(bool pingRecieved);
 
   void showNotification();
 

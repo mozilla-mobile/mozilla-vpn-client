@@ -1,8 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>tutorials/01_get_started.json</file>
-        <file>tutorials/01_get_started.svg</file>
-        <file>tutorials/02_connect_on_startup.json</file>
-        <file>tutorials/02_connect_on_startup.svg</file>
-    </qresource>
-</RCC>

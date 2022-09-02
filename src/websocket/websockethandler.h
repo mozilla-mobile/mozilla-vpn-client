@@ -60,6 +60,8 @@ class WebSocketHandler final : public QObject {
   int m_pingInterval = WEBSOCKET_PING_INTERVAL_MSEC;
   ExponentialBackoffStrategy m_backoffStrategy;
 
+  bool m_aboutToClose = false;
+
   static QString s_customWebSocketServerUrl;
 };
 

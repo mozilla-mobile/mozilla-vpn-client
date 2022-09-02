@@ -5,6 +5,7 @@
 #include "testaddonindex.h"
 #include "../../src/addons/manager/addondirectory.h"
 #include "../../src/addons/manager/addonindex.h"
+#include "../../src/models/feature.h"
 #include "../../src/settingsholder.h"
 
 void TestAddonIndex::update_data() {
@@ -97,6 +98,14 @@ void TestAddonIndex::testSignatureChecksCanBeToggled() {
 
   settingsHolder.setFeaturesFlippedOff(QStringList{"addonSignature"});
 
+  // This is a horrible hack! The `Feature` objects are created at the startup
+  // of the test app, and they listen for signals emitted by another
+  // `SettingsHolder`. This means that the previous line does not reset the
+  // feature-state. We need to force the feature to read the settings from the
+  // current `SettingsHolder`.
+  const_cast<Feature*>(Feature::get(Feature::Feature_addonSignature))
+      ->maybeFlipOnOrOff();
+
   AddonDirectory ad;
   AddonIndex ai(&ad);
 
@@ -119,6 +128,8 @@ void TestAddonIndex::testSignatureChecksCanBeToggled() {
   QTRY_COMPARE(indexUpdatedSpy.count(), 1);
 
   settingsHolder.setFeaturesFlippedOn(QStringList{"addonSignature"});
+  const_cast<Feature*>(Feature::get(Feature::Feature_addonSignature))
+      ->maybeFlipOnOrOff();
 
   // We need to reset otherwise update
   // will bail early due to index not having changed.
