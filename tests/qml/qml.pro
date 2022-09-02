@@ -53,7 +53,6 @@ SOURCES += \
     ../../src/models/feature.cpp \
     ../../src/models/featuremodel.cpp \
     ../../src/models/server.cpp \
-    ../../src/models/whatsnewmodel.cpp \
     ../../src/networkmanager.cpp \
     ../../src/networkrequest.cpp \
     ../../src/settingsholder.cpp \

@@ -243,7 +243,6 @@ SOURCES += \
     ../../src/models/subscriptiondata.cpp \
     ../../src/models/supportcategorymodel.cpp \
     ../../src/models/user.cpp \
-    ../../src/models/whatsnewmodel.cpp \
     ../../src/networkmanager.cpp \
     ../../src/networkwatcher.cpp \
     ../../src/pinghelper.cpp \
