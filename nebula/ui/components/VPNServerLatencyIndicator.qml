@@ -37,10 +37,10 @@ VPNIcon {
     ]
 
     anchors {
-        right: del.right
+        right: parent.right
         rightMargin: VPNTheme.theme.hSpacing
-        top: del.top
-        verticalCenter: del.verticalCenter
+        top: parent.top
+        verticalCenter: parent.verticalCenter
     }
     height: VPNTheme.theme.iconSizeSmall
     sourceSize {
