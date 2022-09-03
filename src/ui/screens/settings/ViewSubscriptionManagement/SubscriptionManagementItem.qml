@@ -216,7 +216,7 @@ ColumnLayout {
                 fontSize: VPNTheme.theme.fontSizeSmall
                 labelText: VPNl18n.SplittunnelInfoLinkText // "Learn more"
                 Layout.alignment: Qt.AlignLeft
-                Layout.fillWidth: True
+                Layout.fillWidth: true
                 padding: 4
                 Layout.leftMargin: -4
 
