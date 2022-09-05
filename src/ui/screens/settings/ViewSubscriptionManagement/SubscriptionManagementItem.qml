@@ -193,7 +193,11 @@ ColumnLayout {
         Layout.topMargin: VPNTheme.theme.listSpacing
         Layout.bottomMargin: VPNTheme.theme.windowMargin
 
-        Component.onCompleted: { /* TODO: Send "upsell viewed" glean ping */ console.log(VPNLocalizer.code, "localizer code") }
+        Component.onCompleted: {
+            if (visible) {
+                VPN.recordGleanEvent("bundle_upsell_viewed");
+            }
+        }
 
         ColumnLayout {
             Layout.fillWidth: true
@@ -221,7 +225,7 @@ ColumnLayout {
                 Layout.leftMargin: -4
 
                 onClicked: {
-                    /* TODO: Send "upsell learn more link clicked" glean ping */
+                    VPN.recordGleanEvent("bundle_upsell_link_clicked");
                     VPN.openLink(VPN.LinkRelayPremium);
                 }
             }
@@ -231,7 +235,7 @@ ColumnLayout {
             objectName: _objectName + "-relayUpsell-upgradeButton"
 
             onClicked: {
-                /* TODO: Send upsell upgrade button clicked */
+                VPN.recordGleanEvent("bundle_upsell_upgrade_clicked");
                 VPN.openLink(VPN.LinkUpgradeToBundle);
             }
 
