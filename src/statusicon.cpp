@@ -117,6 +117,8 @@ void StatusIcon::stateChanged() {
 #else
     case Controller::StateOn:
       setIcon(LOGO_GENERIC_ON, false);
+      // Make sure the indicator color is set initially
+      setIndicatorColor(GREEN_COLOR);
       break;
     case Controller::StateOff:
       setIcon(LOGO_GENERIC_OFF, false);
@@ -183,11 +185,6 @@ void StatusIcon::setIcon(const QString& iconUrl, bool shouldDrawIndicator) {
     m_icon = drawStatusIndicator(m_iconUrl);
   } else {
     m_icon = QIcon(m_iconUrl);
-
-#if !defined(UNIT_TEST)
-    // Make sure the indicator color is set initially
-    // TODO VPN-2808 - stabilityChanged();
-#endif
   }
 
   emit iconChanged();
