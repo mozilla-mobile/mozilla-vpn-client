@@ -53,6 +53,7 @@ class Navigator final : public QObject {
     ScreenSubscriptionNotValidated,
     ScreenTelemetryPolicy,
     ScreenTipsAndTricks,
+    ScreenUpdateRecommended,
     ScreenUpdateRequired,
     ScreenViewLogs,
   };

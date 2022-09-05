@@ -37,7 +37,7 @@ VPNViewBase {
                    getHelpStackView.replace("qrc:/ui/screens/getHelp/contactUs/ViewContactUsThankYou.qml", {_emailAddress: contactUsRoot._emailAddress}, StackView.Immediate);
                } else {
                    // TODO: Navigator.GetTheThing
-                   getHelpStackView.replace("qrc:/ui/views/ViewErrorFullScreen.qml", {
+                   getHelpStackView.replace("qrc:/ui/sharedViews/ViewErrorFullScreen.qml", {
                        headlineText: VPNl18n.InAppSupportWorkflowSupportErrorHeader,
                        errorMessage: VPNl18n.InAppSupportWorkflowSupportErrorText,
                        primaryButtonText: VPNl18n.InAppSupportWorkflowSupportErrorButton,

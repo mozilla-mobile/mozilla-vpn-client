@@ -13,7 +13,7 @@ VPNFlickable {
     id: vpnFlickable
 
     flickContentHeight: vpnPanel.height + alertWrapperBackground.height + footerContent.height + (VPNTheme.theme.windowMargin * 4)
-    state: VPN.updateRecommended ? "recommended" : "required"
+    state: VPN.state === VPN.StateUpdateRequired ? "required" : "recommended"
     states: [
         State {
             name: "recommended"

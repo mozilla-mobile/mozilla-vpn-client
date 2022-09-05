@@ -186,7 +186,7 @@ void StatusIcon::setIcon(const QString& iconUrl, bool shouldDrawIndicator) {
 
 #if !defined(UNIT_TEST)
     // Make sure the indicator color is set initially
-    stabilityChanged();
+    // TODO VPN-2808 - stabilityChanged();
 #endif
   }
 
