@@ -71,7 +71,7 @@ ComposerBlock* ComposerBlockButton::create(Composer* composer, Addon* addon,
   }
 
   ComposerBlockButton* block =
-      new ComposerBlockButton(composer, style, function);
+      new ComposerBlockButton(composer, addon, style, function);
 
   block->m_text.initialize(QString("%1.block.%2").arg(prefix).arg(blockId),
                            json["content"].toString());
@@ -79,9 +79,12 @@ ComposerBlock* ComposerBlockButton::create(Composer* composer, Addon* addon,
   return block;
 }
 
-ComposerBlockButton::ComposerBlockButton(Composer* composer, Style style,
-                                         const QJSValue& function)
-    : ComposerBlock(composer, "button"), m_style(style), m_function(function) {
+ComposerBlockButton::ComposerBlockButton(Composer* composer, Addon* addon,
+                                         Style style, const QJSValue& function)
+    : ComposerBlock(composer, "button"),
+      m_addon(addon),
+      m_style(style),
+      m_function(function) {
   MVPN_COUNT_CTOR(ComposerBlockButton);
 }
 
@@ -91,7 +94,7 @@ ComposerBlockButton::~ComposerBlockButton() {
 
 void ComposerBlockButton::click() const {
   QJSEngine* engine = QmlEngineHolder::instance()->engine();
-  QJSValue api = engine->newQObject(AddonApi::instance());
+  QJSValue api = engine->newQObject(m_addon->api());
 
   QJSValue output = m_function.call(QJSValueList{api});
   if (output.isError()) {

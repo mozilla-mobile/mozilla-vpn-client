@@ -50,12 +50,12 @@ AddonConditionWatcher* AddonConditionWatcherJavascript::maybeCreate(
 }
 
 AddonConditionWatcherJavascript::AddonConditionWatcherJavascript(
-    QObject* parent, const QJSValue& function)
-    : AddonConditionWatcher(parent) {
+    Addon* addon, const QJSValue& function)
+    : AddonConditionWatcher(addon) {
   MVPN_COUNT_CTOR(AddonConditionWatcherJavascript);
 
   QJSEngine* engine = QmlEngineHolder::instance()->engine();
-  QJSValue api = engine->newQObject(AddonApi::instance());
+  QJSValue api = engine->newQObject(addon->api());
   QJSValue self = engine->newQObject(this);
 
   QJSValue output = function.call(QJSValueList{api, self});

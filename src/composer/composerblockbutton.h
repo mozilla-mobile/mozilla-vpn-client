@@ -36,10 +36,12 @@ class ComposerBlockButton final : public ComposerBlock {
   Q_INVOKABLE void click() const;
 
  private:
-  ComposerBlockButton(Composer* composer, Style style,
+  ComposerBlockButton(Composer* composer, Addon* addon, Style style,
                       const QJSValue& function);
 
  private:
+  Addon* m_addon = nullptr;
+
   AddonProperty m_text;
   const Style m_style;
   const QJSValue m_function;
