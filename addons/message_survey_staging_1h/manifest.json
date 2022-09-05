@@ -1,15 +1,15 @@
 {
   "api_version": "0.1",
-  "id": "message_survey_staging_10s",
-  "name": "Staging Survey 10 secs",
+  "id": "message_survey_staging_1h",
+  "name": "Staging Survey 1 hour",
   "translatable": false,
   "type": "message",
   "conditions": {
     "env": "staging",
-    "trigger_time": 10
+    "trigger_time": 3600
   },
   "message": {
-    "id": "message_survey_staging_10s",
+    "id": "message_survey_staging_1h",
     "title": "Your subscription is ending soon!",
     "subtitle": "Your Mozilla VPN subscription is ending soon. If you don’t want to say goodbye you can easily renew your subscription below.",
     "date": 1641406997,
