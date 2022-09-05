@@ -450,7 +450,7 @@ sample:
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4310
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1789284
     data_sensitivity:
       - interaction
     notification_emails:
@@ -467,7 +467,7 @@ sample:
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4310
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1789284
     data_sensitivity:
       - interaction
     notification_emails:
@@ -484,7 +484,7 @@ sample:
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4310
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1789284
     data_sensitivity:
       - interaction
     notification_emails:
