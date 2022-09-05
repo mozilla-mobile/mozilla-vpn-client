@@ -448,7 +448,7 @@ sample:
     description: |
       - "Learn more" link clicked in subscription management bundle upsell.
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4310
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
     data_sensitivity:
@@ -465,7 +465,7 @@ sample:
     description: |
       The user clicked the bundle upsell Upgrade button.
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4310
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
     data_sensitivity:
@@ -482,7 +482,7 @@ sample:
     description: |
       - The user viewed the bundle upsell in the subscription management view.
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4310
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
     data_sensitivity:
