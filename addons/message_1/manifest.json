@@ -1,0 +1,12 @@
+{
+  "api_version": "0.1",
+  "id": "message_1",
+  "name": "Message 1",
+  "type": "message",
+  "message": {
+    "id": "message_1",
+    "title": "Hello 1",
+    "subtitle": "This is message 1",
+    "blocks": []
+  }
+}

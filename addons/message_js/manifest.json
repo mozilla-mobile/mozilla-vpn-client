@@ -1,0 +1,14 @@
+{
+  "api_version": "0.1",
+  "id": "message_js",
+  "name": "JS",
+  "type": "message",
+  "conditions": {
+    "javascript": "main.js"
+  },
+  "message": {
+    "id": "message_js",
+    "title": "JS",
+    "blocks": []
+  }
+}
