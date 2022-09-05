@@ -368,46 +368,10 @@ Rectangle {
     }
 
     Image {
-        id: globe
-        source: "qrc:/nebula/resources/globe.svg";
-        sourceSize.height: logo.height
-        sourceSize.width: logo.width
-        visible: false
-    }
-
-    Image {
         id: globeFallback
         source: logo.showVPNOnIcon ? "qrc:/ui/resources/main-img-vpn-on.svg" : "qrc:/ui/resources/main-img-vpn-off.svg"
         sourceSize.height: globe.height
         sourceSize.width: globe.width
-        visible: window._fallbackQtQuickRenderer
+        visible: true
     }
-
-    VPNLinearGradient {
-        id: gradient
-        anchors.fill: logo
-        start: Qt.point(0, logo.width)
-        end: Qt.point(logo.height,0)
-        gradient:
-            Gradient {
-                  GradientStop {
-                      id: stop1
-                      position: 0
-                      color: logo.showVPNOnIcon ? "#0090ED": "#FD3296"
-                  }
-                  GradientStop {
-                      id: stop2
-                      position: 1
-                      color: logo.showVPNOnIcon ? "#B833E1" : "#9D62FC"
-                  }
-              }
-        visible: false
-    }
-
-    VPNOpacityMask {
-       anchors.fill: globe
-       source: gradient
-       maskSource: globe
-       cached: true
-   }
 }
