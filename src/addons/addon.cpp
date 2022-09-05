@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addon.h"
+#include "addonapi.h"
 #include "addonguide.h"
 #include "addoni18n.h"
 #include "addonmessage.h"
@@ -469,4 +470,12 @@ void Addon::disable() {
   QCoreApplication::removeTranslator(&m_translator);
 
   emit conditionChanged(false);
+}
+
+AddonApi* Addon::api() {
+  if (!m_api) {
+    m_api = new AddonApi(this);
+  }
+
+  return m_api;
 }

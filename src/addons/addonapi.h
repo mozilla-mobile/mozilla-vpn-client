@@ -11,6 +11,8 @@
 #include <QJSValue>
 #include <QObject>
 
+class Addon;
+
 /*
  * IMPORTANT!! If you add, change or remove this object, please update the
  * documentation in `docs/add-on-api.md`.
@@ -24,7 +26,7 @@ class AddonApi final : public QObject {
   Q_PROPERTY(QJSValue navigator READ navigator CONSTANT)
 
  public:
-  static AddonApi* instance();
+  explicit AddonApi(Addon* addon);
   ~AddonApi();
 
   Q_INVOKABLE void connectSignal(QObject* obj, const QString& signalName,
