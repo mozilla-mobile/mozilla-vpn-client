@@ -190,11 +190,9 @@ void MacOSUtils::patchNSStatusBarSetImageForBigSur() {
 - (void)setImagePatched:(NSImage*)image {
   NSImage* img = image;
 
-  if (@available(macOS 11.0, *)) {
-    if (image != nil) {
-      int thickness = [[NSStatusBar systemStatusBar] thickness];
-      img = [NSImageScalingHelper imageByScaling:image size:NSMakeSize(thickness, thickness)];
-    }
+  if (image != nil) {
+    int thickness = [[NSStatusBar systemStatusBar] thickness];
+    img = [NSImageScalingHelper imageByScaling:image size:NSMakeSize(thickness, thickness)];
   }
 
   [self setImagePatched:img];
