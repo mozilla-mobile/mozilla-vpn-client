@@ -308,6 +308,22 @@ ScreenData s_screens[] = {
           return true;
         }),
     ScreenData(
+        Navigator::Screen::ScreenUpdateRecommended,
+        Navigator::LoadPolicy::LoadTemporarily,
+        "qrc:/ui/screens/ScreenUpdateRecommended.qml",
+        QVector<MozillaVPN::State>{},
+        [](Navigator::Screen* requestedScreen) -> int8_t {
+          return (requestedScreen &&
+                  *requestedScreen ==
+                      Navigator::Screen::ScreenUpdateRecommended)
+                     ? 99
+                     : -1;
+        },
+        []() -> bool {
+          Navigator::instance()->requestPreviousScreen();
+          return true;
+        }),
+    ScreenData(
         Navigator::Screen::ScreenUpdateRequired,
         Navigator::LoadPolicy::LoadTemporarily,
         "qrc:/ui/screens/ScreenUpdateRequired.qml",

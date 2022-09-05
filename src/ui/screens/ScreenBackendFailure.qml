@@ -19,7 +19,7 @@ VPNStackView {
         VPNNavigator.addStackView(VPNNavigator.ScreenBackendFailure, stackview)
 
         stackview.push(
-            "qrc:/ui/views/ViewErrorFullScreen.qml", {
+            "qrc:/ui/sharedViews/ViewErrorFullScreen.qml", {
                 //% "Something went wrong…"
                 headlineText: qsTrId("vpn.errors.somethingWentWrong"),
 

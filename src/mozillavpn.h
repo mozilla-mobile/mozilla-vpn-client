@@ -128,8 +128,6 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(QString architecture READ architecture CONSTANT)
   Q_PROPERTY(QString graphicsApi READ graphicsApi CONSTANT)
   Q_PROPERTY(QString platform READ platform CONSTANT)
-  Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY
-                 updateRecommendedChanged)
   Q_PROPERTY(UserState userState READ userState NOTIFY userStateChanged)
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
   Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
@@ -175,7 +173,6 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void removeDeviceFromPublicKey(const QString& publicKey);
   Q_INVOKABLE void hideAlert() { setAlert(NoAlert); }
   Q_INVOKABLE void setAlert(AlertType alert);
-  Q_INVOKABLE void hideUpdateRecommendedAlert() { setUpdateRecommended(false); }
   Q_INVOKABLE void postAuthenticationCompleted();
   Q_INVOKABLE void telemetryPolicyCompleted();
   Q_INVOKABLE void mainWindowLoaded();
@@ -295,10 +292,6 @@ class MozillaVPN final : public QObject {
 
   void logout();
 
-  bool updateRecommended() const { return m_updateRecommended; }
-
-  void setUpdateRecommended(bool value);
-
   UserState userState() const;
 
   bool startMinimized() const { return m_startMinimized; }
@@ -403,7 +396,6 @@ class MozillaVPN final : public QObject {
  signals:
   void stateChanged();
   void alertChanged();
-  void updateRecommendedChanged();
   void userStateChanged();
   void deviceRemoving(const QString& publicKey);
   void aboutNeeded();
@@ -474,7 +466,6 @@ class MozillaVPN final : public QObject {
   QTimer m_periodicOperationsTimer;
   QTimer m_gleanTimer;
 
-  bool m_updateRecommended = false;
   bool m_startMinimized = false;
   bool m_updating = false;
   bool m_controllerInitialized = false;
