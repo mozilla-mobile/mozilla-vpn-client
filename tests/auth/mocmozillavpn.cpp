@@ -82,8 +82,6 @@ void MozillaVPN::mainWindowLoaded() {}
 
 void MozillaVPN::telemetryPolicyCompleted() {}
 
-void MozillaVPN::setUpdateRecommended(bool) {}
-
 void MozillaVPN::setUserState(UserState) {}
 
 void MozillaVPN::startSchedulingPeriodicOperations() {}

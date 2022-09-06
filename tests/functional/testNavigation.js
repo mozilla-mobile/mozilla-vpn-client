@@ -62,138 +62,116 @@ describe('Navigation bar', async function() {
   });
 
 
-  it('Is visible over the Home screen', async () => {
-    await vpn.authenticateInApp(true, true);
-    await vpn.wait();
-    await vpn.waitForElement('navigationLayout/navButton-home');
-    await vpn.waitForElementProperty(
-        'navigationLayout/navButton-home', 'visible', 'true');
-    assert(await navigationBarVisible() === 'true');
+  describe('Authenticated tests', async function() {
+    this.ctx.authenticationNeeded = true;
+
+    it('Is visible over the Home screen', async () => {
+      await vpn.waitForElement('navigationLayout/navButton-home');
+      await vpn.waitForElementProperty(
+          'navigationLayout/navButton-home', 'visible', 'true');
+      assert(await navigationBarVisible() === 'true');
+    });
+
+    it('Has Settings, Messaging, and Home buttons', async () => {
+      await vpn.waitForElement('navigationLayout/navButton-home');
+      await vpn.waitForElementProperty(
+          'navigationLayout/navButton-home', 'visible', 'true');
+
+      await vpn.waitForElement('navigationLayout/navButton-messages');
+      await vpn.waitForElementProperty(
+          'navigationLayout/navButton-messages', 'visible', 'true');
+
+      await vpn.waitForElement('navigationLayout/navButton-settings');
+      await vpn.waitForElementProperty(
+          'navigationLayout/navButton-settings', 'visible', 'true');
+    });
+
+
+    it('Clicking the Settings button opens settings screen', async () => {
+      await vpn.waitForElement('navigationLayout/navButton-settings');
+      await vpn.clickOnElement('navigationLayout/navButton-settings');
+      await vpn.waitForElement('settingsView');
+      assert(
+          await vpn.getElementProperty('settingsView', 'visible') === 'true');
+    });
+
+
+    it('Clicking the Messages button opens messaging screen', async () => {
+      await vpn.waitForElement('navigationLayout/navButton-messages');
+      await vpn.clickOnElement('navigationLayout/navButton-messages');
+      await vpn.waitForElement('messageInboxView');
+      assert(
+          await vpn.getElementProperty('messageInboxView', 'visible') ===
+          'true');
+    });
+
+
+    it('Clicking the Home button opens home screen', async () => {
+      await vpn.waitForElement('navigationLayout/navButton-messages');
+      await vpn.clickOnElement('navigationLayout/navButton-messages');
+      await vpn.waitForElement('messageInboxView');
+
+      await vpn.clickOnElement('navigationLayout/navButton-home');
+      await vpn.waitForElement('serverListButton');
+
+      assert(
+          await vpn.getElementProperty('serverListButton', 'visible') ===
+          'true');
+    });
+
+
+    it('Clicking a selected Home button reloads the Home screen', async () => {
+      await vpn.waitForElement('serverListButton');
+      await vpn.clickOnElement('serverListButton');
+      await vpn.waitForElement('serverListBackButton');
+      await vpn.waitForElementProperty(
+          'serverListBackButton', 'visible', 'true');
+
+      await vpn.clickOnElement('navigationLayout/navButton-home');
+      assert(
+          await vpn.getElementProperty('serverListButton', 'visible') ===
+          'true');
+    });
+
+
+    it('Clicking a selected Settings button reloads the Settings screen',
+       async () => {
+         await vpn
+             .waitForElement('navigationLayout/navButton-settings')
+                 await vpn.clickOnElement(
+                     'navigationLayout/navButton-settings');
+
+         await vpn.waitForElement('settingsGetHelp');
+         await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
+         await vpn.clickOnElement('settingsGetHelp');
+
+         await vpn.waitForElement('getHelpBack');
+         await vpn.waitForElementProperty('getHelpBack', 'visible', 'true');
+
+         await vpn.clickOnElement('navigationLayout/navButton-settings');
+
+         assert(
+             await vpn.getElementProperty('settingsGetHelp', 'visible') ===
+             'true');
+       });
+
+
+    it('Is visible over the post-auth Get help menu', async () => {
+      await vpn.waitForElement('navigationLayout/navButton-settings')
+          await vpn.clickOnElement('navigationLayout/navButton-settings');
+
+      await vpn.waitForElement('settingsGetHelp');
+      await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
+      await vpn.clickOnElement('settingsGetHelp');
+
+      await vpn.waitForElement('getHelpBack');
+      await vpn.waitForElementProperty('getHelpBack', 'visible', 'true');
+
+      await vpn.clickOnElement('navigationLayout/navButton-settings');
+
+      assert(await navigationBarVisible() === 'true');
+    });
   });
-
-
-  it('Has Settings, Messaging, and Home buttons', async () => {
-    await vpn.authenticateInApp(true, true);
-    await vpn.wait();
-    await vpn.waitForElement('navigationLayout/navButton-home');
-    await vpn.waitForElementProperty(
-        'navigationLayout/navButton-home', 'visible', 'true');
-
-    await vpn.waitForElement('navigationLayout/navButton-messages');
-    await vpn.waitForElementProperty(
-        'navigationLayout/navButton-messages', 'visible', 'true');
-
-    await vpn.waitForElement('navigationLayout/navButton-settings');
-    await vpn.waitForElementProperty(
-        'navigationLayout/navButton-settings', 'visible', 'true');
-  });
-
-
-  it('Clicking the Settings button opens settings screen', async () => {
-    await vpn.authenticateInApp(true, true);
-    await vpn.wait();
-    await vpn.waitForElement('navigationLayout/navButton-settings');
-    await vpn.clickOnElement('navigationLayout/navButton-settings');
-    await vpn.waitForElement('settingsView');
-    assert(await vpn.getElementProperty('settingsView', 'visible') === 'true');
-  });
-
-
-  it('Clicking the Messages button opens messaging screen', async () => {
-    await vpn.authenticateInApp(true, true);
-    await vpn.wait();
-    await vpn.waitForElement('navigationLayout/navButton-messages');
-    await vpn.clickOnElement('navigationLayout/navButton-messages');
-    await vpn.waitForElement('messageInboxView');
-    assert(
-        await vpn.getElementProperty('messageInboxView', 'visible') === 'true');
-  });
-
-
-  it('Clicking the Home button opens home screen', async () => {
-    await vpn.authenticateInApp(true, true);
-    await vpn.wait();
-    await vpn.waitForElement('navigationLayout/navButton-messages');
-    await vpn.clickOnElement('navigationLayout/navButton-messages');
-    await vpn.waitForElement('messageInboxView');
-
-    await vpn.clickOnElement('navigationLayout/navButton-home');
-    await vpn.waitForElement('serverListButton');
-
-    assert(
-        await vpn.getElementProperty('serverListButton', 'visible') === 'true');
-  });
-
-
-  it('Clicking the Homes button opens home screen', async () => {
-    await vpn.authenticateInApp(true, true);
-    await vpn.wait();
-    await vpn.waitForElement('navigationLayout/navButton-messages');
-    await vpn.clickOnElement('navigationLayout/navButton-messages');
-    await vpn.waitForElement('messageInboxView');
-
-    await vpn.clickOnElement('navigationLayout/navButton-home');
-    await vpn.waitForElement('serverListButton');
-
-    assert(
-        await vpn.getElementProperty('serverListButton', 'visible') === 'true');
-  });
-
-
-  it('Clicking a selected Home button reloads the Home screen', async () => {
-    await vpn.authenticateInApp(true, true);
-    await vpn.wait();
-    await vpn.waitForElement('serverListButton');
-    await vpn.clickOnElement('serverListButton');
-    await vpn.waitForElement('serverListBackButton');
-    await vpn.waitForElementProperty('serverListBackButton', 'visible', 'true');
-
-    await vpn.clickOnElement('navigationLayout/navButton-home');
-    assert(
-        await vpn.getElementProperty('serverListButton', 'visible') === 'true');
-  });
-
-
-  it('Clicking a selected Settings button reloads the Settings screen',
-     async () => {
-       await vpn.authenticateInApp(true, true);
-       await vpn.wait();
-       await vpn.waitForElement('navigationLayout/navButton-settings')
-           await vpn.clickOnElement('navigationLayout/navButton-settings');
-
-       await vpn.waitForElement('settingsGetHelp');
-       await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
-       await vpn.clickOnElement('settingsGetHelp');
-
-       await vpn.waitForElement('getHelpBack');
-       await vpn.waitForElementProperty('getHelpBack', 'visible', 'true');
-
-       await vpn.clickOnElement('navigationLayout/navButton-settings');
-
-       assert(
-           await vpn.getElementProperty('settingsGetHelp', 'visible') ===
-           'true');
-     });
-
-
-  it('Is visible over the post-auth Get help menu', async () => {
-    await vpn.authenticateInApp(true, true);
-    await vpn.wait();
-    await vpn.waitForElement('navigationLayout/navButton-settings')
-        await vpn.clickOnElement('navigationLayout/navButton-settings');
-
-    await vpn.waitForElement('settingsGetHelp');
-    await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
-    await vpn.clickOnElement('settingsGetHelp');
-
-    await vpn.waitForElement('getHelpBack');
-    await vpn.waitForElementProperty('getHelpBack', 'visible', 'true');
-
-    await vpn.clickOnElement('navigationLayout/navButton-settings');
-
-    assert(await navigationBarVisible() === 'true');
-  });
-
 
   /* TODOS...
     - selected navbar icon correctly reflects screen opens from systray...
