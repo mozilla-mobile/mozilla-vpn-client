@@ -8,6 +8,7 @@
 #include "addoni18n.h"
 #include "addonmessage.h"
 #include "addontutorial.h"
+#include "conditionwatchers/addonconditionwatcherfeaturesenabled.h"
 #include "conditionwatchers/addonconditionwatchergroup.h"
 #include "conditionwatchers/addonconditionwatcherjavascript.h"
 #include "conditionwatchers/addonconditionwatcherlocales.h"
@@ -59,17 +60,19 @@ QList<ConditionCallback> s_conditionCallbacks{
            logger.info() << "Feature not found" << featureName;
            return false;
          }
-
-         if (!feature->isSupported()) {
-           logger.info() << "Feature not supported" << featureName;
-           return false;
-         }
        }
 
+       // dynamic condition
        return true;
      },
-     [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
-       return nullptr;
+     [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
+       QStringList features;
+       for (const QJsonValue& v : value.toArray()) {
+         features.append(v.toString().toLower());
+       }
+
+       return AddonConditionWatcherFeaturesEnabled::maybeCreate(addon,
+                                                                features);
      }},
 
     {"platforms",

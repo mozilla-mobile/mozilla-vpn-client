@@ -15,6 +15,7 @@ class TestAddon final : public TestHelper {
   void conditions();
 
   void conditionWatcher_locale();
+  void conditionWatcher_featuresEnabled();
   void conditionWatcher_group();
   void conditionWatcher_triggerTime();
   void conditionWatcher_startTime();

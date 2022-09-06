@@ -54,6 +54,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/addons/addontutorial.h
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcher.cpp
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcher.h
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherfeaturesenabled.cpp
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherfeaturesenabled.h
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchergroup.cpp
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchergroup.h
     ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherjavascript.cpp

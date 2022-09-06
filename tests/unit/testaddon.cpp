@@ -9,6 +9,7 @@
 #include "../../src/addons/addonproperty.h"
 #include "../../src/addons/addonpropertylist.h"
 #include "../../src/addons/addontutorial.h"
+#include "../../src/addons/conditionwatchers/addonconditionwatcherfeaturesenabled.h"
 #include "../../src/addons/conditionwatchers/addonconditionwatchergroup.h"
 #include "../../src/addons/conditionwatchers/addonconditionwatcherlocales.h"
 #include "../../src/addons/conditionwatchers/addonconditionwatcherjavascript.h"
@@ -16,6 +17,8 @@
 #include "../../src/addons/conditionwatchers/addonconditionwatchertimestart.h"
 #include "../../src/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h"
 #include "../../src/localizer.h"
+#include "../../src/models/feature.h"
+#include "../../src/models/featuremodel.h"
 #include "../../src/settingsholder.h"
 #include "../../src/qmlengineholder.h"
 #include "../../src/tutorial/tutorial.h"
@@ -57,7 +60,7 @@ void TestAddon::conditions_data() {
   {
     QJsonObject obj;
     obj["enabled_features"] = QJsonArray{"appReview"};
-    QTest::addRow("enabled_features") << obj << false << "" << QVariant();
+    QTest::addRow("enabled_features") << obj << true << "" << QVariant();
   }
 
   {
@@ -260,6 +263,8 @@ void TestAddon::conditionWatcher_javascript() {
     });
     loop.exec();
     QVERIFY(currentStatus);
+    loop.exec();
+    QVERIFY(!currentStatus);
   }
 
   {
@@ -313,6 +318,68 @@ void TestAddon::conditionWatcher_locale() {
 
   settingsHolder.setLanguageCode("it_RU");
   QVERIFY(acw->conditionApplied());
+}
+
+void TestAddon::conditionWatcher_featuresEnabled() {
+  SettingsHolder settingsHolder;
+
+  QObject parent;
+
+  // Empty feature list
+  QVERIFY(!AddonConditionWatcherFeaturesEnabled::maybeCreate(&parent,
+                                                             QStringList()));
+
+  // Invalid feature list
+  QVERIFY(!AddonConditionWatcherFeaturesEnabled::maybeCreate(
+      &parent, QStringList{"invalid"}));
+
+  QVERIFY(!Feature::getOrNull("testFeatureAddon"));
+  Feature feature("testFeatureAddon", "Feature Addon",
+                  false,               // Is Major Feature
+                  L18nStrings::Empty,  // Display name
+                  L18nStrings::Empty,  // Description
+                  L18nStrings::Empty,  // LongDescr
+                  "",                  // ImagePath
+                  "",                  // IconPath
+                  "",                  // link URL
+                  "1.0",               // released
+                  true,                // Can be flipped on
+                  true,                // Can be flipped off
+                  QStringList(),       // feature dependencies
+                  []() -> bool { return false; });
+  QVERIFY(!!Feature::get("testFeatureAddon"));
+  QVERIFY(!Feature::get("testFeatureAddon")->isSupported());
+
+  // A condition not enabled by default
+  AddonConditionWatcher* acw =
+      AddonConditionWatcherFeaturesEnabled::maybeCreate(
+          &parent, QStringList{"testFeatureAddon"});
+  QVERIFY(!!acw);
+  QVERIFY(!acw->conditionApplied());
+
+  QSignalSpy signalSpy(acw, &AddonConditionWatcher::conditionChanged);
+  QCOMPARE(signalSpy.count(), 0);
+
+  FeatureModel* fm = FeatureModel::instance();
+
+  fm->toggle("testFeatureAddon");
+  QVERIFY(Feature::get("testFeatureAddon")->isSupported());
+  QCOMPARE(signalSpy.count(), 1);
+  QVERIFY(acw->conditionApplied());
+
+  // A condition enabled by default
+  {
+    AddonConditionWatcher* acw2 =
+        AddonConditionWatcherFeaturesEnabled::maybeCreate(
+            &parent, QStringList{"testFeatureAddon"});
+    QVERIFY(!!acw2);
+    QVERIFY(acw2->conditionApplied());
+  }
+
+  fm->toggle("testFeatureAddon");
+  QVERIFY(!Feature::get("testFeatureAddon")->isSupported());
+  QCOMPARE(signalSpy.count(), 2);
+  QVERIFY(!acw->conditionApplied());
 }
 
 void TestAddon::conditionWatcher_group() {
