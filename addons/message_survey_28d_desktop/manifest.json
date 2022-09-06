@@ -5,7 +5,7 @@
   "translatable": false,
   "type": "message",
   "conditions": {
-    "trigger_time": 1,
+    "trigger_time": 2419200,
     "platforms": ["windows", "macos", "linux"]
   },
   "message": {
