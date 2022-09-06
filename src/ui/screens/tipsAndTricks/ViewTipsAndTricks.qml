@@ -65,7 +65,7 @@ VPNViewBase {
                 property string title: VPNl18n.TipsAndTricksTutorialsTitle
                 property string description: VPNl18n.TipsAndTricksTutorialsDescription
                 property var filter: (addon) => addon.highlighted
-                property var featureTourCardVisible: true
+                property bool featureTourCardVisible: true
             }
 
             // More tutorials
@@ -78,27 +78,23 @@ VPNViewBase {
 
         stackContent: [
             // All
-            VPNFlickable {
-                objectName: 'allFlickable'
+            VPNViewBase {
+                objectName: 'allTab'
 
-                flickContentHeight: layoutAll.implicitHeight + (VPNTheme.theme.vSpacing * 2)
-                interactive: flickContentHeight > height
-
-                ColumnLayout {
+                _viewContentData: ColumnLayout {
                     id: layoutAll
 
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.leftMargin: VPNTheme.theme.windowMargin
-                    anchors.rightMargin: VPNTheme.theme.windowMargin
+                    Layout.fillWidth: true
+                    Layout.leftMargin: VPNTheme.theme.windowMargin
+                    Layout.rightMargin: VPNTheme.theme.windowMargin
+                    Layout.topMargin: 8
+                    spacing: VPNTheme.theme.vSpacing
 
                     Repeater {
                         model: 2
 
                         delegate: Column {
                             Layout.fillWidth: true
-                            Layout.topMargin: VPNTheme.theme.vSpacing
                             spacing: VPNTheme.theme.vSpacing
 
                             VPNTipsAndTricksSection {
@@ -136,45 +132,35 @@ VPNViewBase {
             },
 
             // Tutorials
-            VPNFlickable {
-                flickContentHeight: layoutTutorial.implicitHeight + (VPNTheme.theme.vSpacing * 2)
-                interactive: flickContentHeight > height
-
-                VPNTutorialList {
+            VPNViewBase {
+                _viewContentData: VPNTutorialList {
                     id: layoutTutorial
 
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.topMargin: VPNTheme.theme.vSpacing
-                    anchors.bottomMargin: VPNTheme.theme.vSpacing
-                    anchors.leftMargin: VPNTheme.theme.windowMargin
-                    anchors.rightMargin: VPNTheme.theme.windowMargin
+                    Layout.fillWidth: true
+                    Layout.leftMargin: VPNTheme.theme.windowMargin
+                    Layout.rightMargin: VPNTheme.theme.windowMargin
+                    Layout.topMargin: 8
 
                     VPNFooterMargin {}
                 }
             },
 
             // Tips
-            VPNFlickable {
-                flickContentHeight: layoutGuide.implicitHeight + (VPNTheme.theme.vSpacing * 2)
-                interactive: flickContentHeight > height
-
-                ColumnLayout {
+            VPNViewBase {
+                _viewContentData: ColumnLayout {
                     id: layoutGuide
 
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.leftMargin: VPNTheme.theme.windowMargin
-                    anchors.rightMargin: VPNTheme.theme.windowMargin
+                    Layout.fillWidth: true
+                    Layout.leftMargin: VPNTheme.theme.windowMargin
+                    Layout.rightMargin: VPNTheme.theme.windowMargin
+                    Layout.topMargin: 8
+                    spacing: VPNTheme.theme.vSpacing
 
                     Repeater {
                         model: guidesSections.count
 
                         delegate: VPNTipsAndTricksSection {
                             Layout.fillWidth: true
-                            Layout.topMargin: VPNTheme.theme.vSpacing
 
                             property var section: guidesSections.get(index)
 

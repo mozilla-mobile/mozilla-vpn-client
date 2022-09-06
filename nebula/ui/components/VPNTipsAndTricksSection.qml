@@ -59,9 +59,8 @@ ColumnLayout {
         const source = type === "tutorials" ? "VPNTutorialList.qml" : "VPNGuideList.qml";
         const options = { customFilter };
         if (type === "tutorials") {
-            options["featureTourCardVisible"] = featureTourCardVisible
+            options["featureTourCardVisible"] = !!featureTourCardVisible
         }
         tipsAndTricksListLoader.setSource(source, options)
     }
 }
-

@@ -50,7 +50,7 @@ describe('Settings', function () {
   it('Opening and closing the settings view', async () => {
     await vpn.waitForElement('navigationLayout/navButton-home');
     await vpn.waitForElementProperty(
-        'navigationLayout/navButton-home', 'visible', 'true');
+      'navigationLayout/navButton-home', 'visible', 'true');
 
 
     await vpn.waitForElement('menuIcon');
@@ -110,7 +110,7 @@ describe('Settings', function () {
     //   guide = guideParent + "/" + guide;
 
     //   await vpn.setElementProperty(
-    //     'allFlickable', 'contentY', 'i',
+    //     'allTab', 'contentY', 'i',
     //     parseInt(await vpn.getElementProperty(guide, 'y')) +
     //     parseInt(await vpn.getElementProperty(guide, 'height')) +
     //     parseInt(await vpn.getElementProperty(guideParent, 'y')));
