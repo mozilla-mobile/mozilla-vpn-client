@@ -5,7 +5,6 @@
 import QtQuick 2.5
 
 import Mozilla.VPN 1.0
-import compat 0.1
 
 Rectangle {
     id: logo
