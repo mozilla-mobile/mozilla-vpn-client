@@ -1,5 +1,5 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * License; v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #ifndef HELPER_H
@@ -38,6 +38,22 @@ class TestHelper : public QObject {
   static MozillaVPN::UserState userState;
 
   static Controller::State controllerState;
+
+  struct SystemNotification {
+    NotificationHandler::Message type;
+    QString title;
+    QString message;
+    int timer;
+  };
+
+  static SystemNotification lastSystemNotification;
+
+  static void resetLastSystemNotification() {
+    TestHelper::SystemNotification notification;
+    notification.title = QString();
+    notification.message = QString();
+    TestHelper::lastSystemNotification = notification;
+  }
 
   static QVector<QObject*> testList;
 

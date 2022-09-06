@@ -11,6 +11,10 @@
 
 class QJsonObject;
 
+#ifdef UNIT_TEST
+class TestAddon;
+#endif
+
 class AddonMessage final : public Addon {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AddonMessage)
@@ -86,8 +90,11 @@ class AddonMessage final : public Addon {
 
   qint64 m_date = 0;
 
-  bool m_dismissed = false;
-  bool m_isRead = false;
+  State m_state;
+
+#ifdef UNIT_TEST
+  friend class TestAddon;
+#endif
   Badge m_badge;
 };
 

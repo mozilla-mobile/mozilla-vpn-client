@@ -112,6 +112,7 @@ HEADERS += \
     ../../src/networkrequest.h \
     ../../src/networkwatcher.h \
     ../../src/networkwatcherimpl.h \
+    ../../src/notificationhandler.h \
     ../../src/pinghelper.h \
     ../../src/pingsender.h \
     ../../src/pingsenderfactory.h \
@@ -130,6 +131,7 @@ HEADERS += \
     ../../src/signature.h \
     ../../src/simplenetworkmanager.h \
     ../../src/statusicon.h \
+    ../../src/systemtraynotificationhandler.h \
     ../../src/task.h \
     ../../src/tasks/account/taskaccount.h \
     ../../src/tasks/adddevice/taskadddevice.h \
@@ -250,6 +252,7 @@ SOURCES += \
     ../../src/models/user.cpp \
     ../../src/networkmanager.cpp \
     ../../src/networkwatcher.cpp \
+    ../../src/notificationhandler.cpp \
     ../../src/pinghelper.cpp \
     ../../src/pingsenderfactory.cpp \
     ../../src/platforms/android/androiddatamigration.cpp \
@@ -293,6 +296,7 @@ SOURCES += \
     mocinspectorhandler.cpp \
     mocmozillavpn.cpp \
     mocnetworkrequest.cpp \
+    mocsystemtraynotificationhandler.cpp \
     testaddon.cpp \
     testaddonapi.cpp \
     testaddonindex.cpp \

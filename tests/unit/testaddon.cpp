@@ -20,6 +20,7 @@
 #include "../../src/models/feature.h"
 #include "../../src/models/featuremodel.h"
 #include "../../src/settingsholder.h"
+#include "../../src/systemtraynotificationhandler.h"
 #include "../../src/qmlengineholder.h"
 #include "../../src/tutorial/tutorial.h"
 #include "helper.h"
@@ -793,6 +794,86 @@ void TestAddon::message_create() {
   }
 
   QCOMPARE(message->property("title").type(), QMetaType::QString);
+}
+
+void TestAddon::message_notification_data() {
+  SettingsHolder settingsHolder;
+
+  QObject parent;
+  SystemTrayNotificationHandler nh(&parent);
+
+  QTest::addColumn<QString>("title");
+  QTest::addColumn<QString>("message");
+  QTest::addColumn<QString>("actual_title");
+  QTest::addColumn<QString>("actual_message");
+
+  TestHelper::resetLastSystemNotification();
+  // Message is created for the first time, notification should be sent
+  AddonMessage* message = static_cast<AddonMessage*>(
+      Addon::create(&parent, ":/addons_test/message1.json"));
+  QTest::addRow("do-show") << QString("Test Message 1 - Title")
+                           << QString("Test Message 1 - Subtitle")
+                           << TestHelper::lastSystemNotification.title
+                           << TestHelper::lastSystemNotification.message;
+
+  TestHelper::resetLastSystemNotification();
+  // Message is created for the second time, notification should not be sent
+  Addon::create(&parent, ":/addons_test/message1.json");
+  QTest::addRow("do-not-show")
+      << QString() << QString() << TestHelper::lastSystemNotification.title
+      << TestHelper::lastSystemNotification.message;
+
+  TestHelper::resetLastSystemNotification();
+  // Message is marked as read and we re-attempt to send a notification
+  message->markAsRead();
+  message->maybePushNotification();
+  QTest::addRow("message-is-read")
+      << QString() << QString() << TestHelper::lastSystemNotification.title
+      << TestHelper::lastSystemNotification.message;
+
+  TestHelper::resetLastSystemNotification();
+  // Another message is created for the first time
+  AddonMessage* anotherMessage = static_cast<AddonMessage*>(
+      Addon::create(&parent, ":/addons_test/message2.json"));
+  QTest::addRow("do-show-2") << QString("Test Message 2 - Title")
+                             << QString("Test Message 2 - Subtitle")
+                             << TestHelper::lastSystemNotification.title
+                             << TestHelper::lastSystemNotification.message;
+
+  TestHelper::resetLastSystemNotification();
+  // Message is dismissed and we re-attempt to send a notification
+  anotherMessage->dismiss();
+  anotherMessage->maybePushNotification();
+  QTest::addRow("message-dismissed")
+      << QString() << QString() << TestHelper::lastSystemNotification.title
+      << TestHelper::lastSystemNotification.message;
+
+  TestHelper::resetLastSystemNotification();
+  // Message is created but due to it's conditions it's not enabled
+  AddonMessage* disabledMessage = static_cast<AddonMessage*>(
+      Addon::create(&parent, ":/addons_test/message3.json"));
+  QTest::addRow("message-loaded-disabled")
+      << QString() << QString() << TestHelper::lastSystemNotification.title
+      << TestHelper::lastSystemNotification.message;
+
+  TestHelper::resetLastSystemNotification();
+  // Message is later enabled
+  disabledMessage->enable();
+  QTest::addRow("message-enabled")
+      << QString("Test Message 3 - Title")
+      << QString("Test Message 3 - Subtitle")
+      << TestHelper::lastSystemNotification.title
+      << TestHelper::lastSystemNotification.message;
+}
+
+void TestAddon::message_notification() {
+  QFETCH(QString, title);
+  QFETCH(QString, message);
+  QFETCH(QString, actual_title);
+  QFETCH(QString, actual_message);
+
+  QCOMPARE(actual_title, title);
+  QCOMPARE(actual_message, message);
 }
 
 void TestAddon::message_date_data() {
