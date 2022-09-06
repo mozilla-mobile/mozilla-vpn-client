@@ -12,6 +12,7 @@ SOURCES += \
         addons/addonpropertylist.cpp \
         addons/addontutorial.cpp \
         addons/conditionwatchers/addonconditionwatcher.cpp \
+        addons/conditionwatchers/addonconditionwatcherfeaturesenabled.cpp \
         addons/conditionwatchers/addonconditionwatchergroup.cpp \
         addons/conditionwatchers/addonconditionwatcherjavascript.cpp \
         addons/conditionwatchers/addonconditionwatcherlocales.cpp \
@@ -179,6 +180,7 @@ HEADERS += \
         addons/addonpropertylist.h \
         addons/addontutorial.h \
         addons/conditionwatchers/addonconditionwatcher.h \
+        addons/conditionwatchers/addonconditionwatcherfeaturesenabled.h \
         addons/conditionwatchers/addonconditionwatchergroup.h \
         addons/conditionwatchers/addonconditionwatcherjavascript.h \
         addons/conditionwatchers/addonconditionwatcherlocales.h \

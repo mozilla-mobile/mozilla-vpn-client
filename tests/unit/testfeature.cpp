@@ -5,7 +5,6 @@
 #include "testfeature.h"
 #include "../../src/models/feature.h"
 #include "../../src/models/featuremodel.h"
-#include "../../src/models/feature.h"
 #include "../../src/settingsholder.h"
 #include "../../src/adjust/adjustfiltering.h"
 #include "helper.h"
