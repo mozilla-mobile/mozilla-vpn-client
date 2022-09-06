@@ -63,3 +63,10 @@ jobs:
             url: https://download.qt.io/archive/qt/6.2/6.2.4/single/qt-everywhere-src-6.2.4.tar.xz
             sha256: cfe41905b6bde3712c65b102ea3d46fc80a44c9d1487669f14e4a6ee82ebb8fd
             size: 661663792
+    qt-6.2.4-zip:
+        description: qt-everywhere-src-6.2.4.zip
+        fetch:
+            type: static-url
+            url: https://download.qt.io/archive/qt/6.2/6.2.4/single/qt-everywhere-src-6.2.4.zip
+            sha256: af722a77d2acf07f48291fa8e720f8004e1e0738914ad89ab98142ec55b80fd3
+            size: 1101330318
