@@ -603,8 +603,7 @@ void MozillaVPN::openLink(LinkType linkType) {
     case LinkUpgradeToBundle:
       url = Constants::inProduction() ? Constants::API_PRODUCTION_URL
                                       : Constants::API_STAGING_URL;
-      url.append(
-          "/someGuardianEndpoint/&entrypoint=subscriptionManagement");  // TODO
+      url.append("/r/vpn/upgradeToPrivacyBundle");
       break;
 
     default:
