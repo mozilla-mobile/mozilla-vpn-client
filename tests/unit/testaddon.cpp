@@ -747,10 +747,6 @@ void TestAddon::tutorial_create() {
   QCOMPARE(tutorial->property("completionMessage").type(), QMetaType::QString);
   QCOMPARE(tutorial->property("image").toString(), "foo.png");
 
-  bool isAdvanced =
-      content["highlighted"].toBool() ? false : content["advanced"].toBool();
-  QCOMPARE(tutorial->property("advanced").toBool(), isAdvanced);
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
