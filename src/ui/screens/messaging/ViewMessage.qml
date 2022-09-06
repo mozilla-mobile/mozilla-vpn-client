@@ -26,7 +26,6 @@ VPNViewBase {
             }
 
             VPNBoldLabel {
-                //% "Mozilla VPN"
                 text: qsTrId("MozillaVPN")
                 color: "#000000"
                 Layout.alignment: Qt.AlignVCenter
@@ -69,7 +68,7 @@ VPNViewBase {
                 Layout.maximumWidth: parent.width - dateLabel.width - spacer.Layout.minimumWidth
                 active: message.badge !== VPNAddonMessage.None
                 sourceComponent: VPNBadge {
-                    type: {
+                    badgeType: {
                         switch(message.badge) {
                         case VPNAddonMessage.Warning:
                             return badgeInfo.warningBadge

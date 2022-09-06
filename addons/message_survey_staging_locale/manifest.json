@@ -11,11 +11,15 @@
   },
   "message": {
     "id": "message_survey_staging_locale",
-    "title": "Locale message",
-    "subtitle": "This message is only presented when the app language is set to English",
+    "title": "Survey message locale",
+    "subtitle": "This survey message is only presented when the app language is set to English",
     "date": 1661479590,
     "badge": "survey",
     "blocks": [
+      { "id": "c_1",
+        "type": "text",
+        "content": "*THIS IS A STAGING MESSAGE*" 
+      }
     ]   
   }
 }

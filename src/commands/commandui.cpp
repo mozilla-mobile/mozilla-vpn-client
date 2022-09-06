@@ -523,7 +523,6 @@ int CommandUI::run(QStringList& tokens) {
           return obj;
         });
 
-
 #if MVPN_IOS && QT_VERSION >= 0x060000 && QT_VERSION < 0x060300
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
                      &MozillaVPN::quit);

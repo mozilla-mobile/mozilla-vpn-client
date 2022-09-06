@@ -53,16 +53,13 @@ ColumnLayout {
                     modelData instanceof VPNComposerBlockUnorderedList) return listBlock
                 if (modelData instanceof VPNComposerBlockButton)
                     return composerBlock.style === VPNComposerBlockButton.Link ? linkButtonBlock : buttonBlock
+
+                console.error("Unable to create view for composer block of type: " + modelData)
             }
 
             function getTopMargin() {
                 if (modelData instanceof VPNComposerBlockTitle) {
-                    switch(composer.view) {
-                    case VPNComposerView.View.Guide:
-                    case VPNComposerView.View.Message:
-                    default:
-                        return VPNTheme.theme.vSpacingSmall
-                    }
+                    return VPNTheme.theme.vSpacingSmall
                 }
 
                 if (modelData instanceof VPNComposerBlockText) {
@@ -87,16 +84,10 @@ ColumnLayout {
                 }
 
                 if (modelData instanceof VPNComposerBlockButton) {
-                    switch(composer.view) {
-                    case VPNComposerView.View.Guide:
-                    case VPNComposerView.View.Message:
-                    default:
-                        if(repeater.isFirstButton) {
-                            return VPNTheme.theme.vSpacingSmall * 2
-                        }
-
-                        return VPNTheme.theme.vSpacingSmall
+                    if(repeater.isFirstButton) {
+                        return VPNTheme.theme.vSpacingSmall * 2
                     }
+                    return VPNTheme.theme.vSpacingSmall
                 }
             }
 

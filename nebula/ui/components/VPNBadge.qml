@@ -9,15 +9,15 @@ import Mozilla.VPN 1.0
 Rectangle {
     id: root
 
-    //A type is a JS object containing the badgeText and badgeTheme (backgorund color and text color)
-    property var type
+    //A type is a JS object containing the badgeText and badgeTheme (background color and text color)
+    property var badgeType
 
-    //Alternatively to setting the type, you can set it's properties manually
+    //Alternatively to setting the badgeType, you can set it's properties manually
     property alias backgroundColor: root.color
     property alias text: badgeLabel.text
     property alias textColor: badgeLabel.color
 
-    color: type.badgeTheme.backgroundColor
+    color: badgeType.badgeTheme.backgroundColor
     height: badgeLabel.implicitHeight
     width: badgeLabel.implicitWidth
     radius: 4
@@ -26,8 +26,8 @@ Rectangle {
     VPNBoldInterLabel {
         id: badgeLabel
 
-        text: type.badgeText
-        color: type.badgeTheme.textColor
+        text: badgeType.badgeText
+        color: badgeType.badgeTheme.textColor
         verticalAlignment: Text.AlignVCenter
         topPadding: VPNTheme.theme.badgeVerticalPadding
         leftPadding: VPNTheme.theme.badgeHorizontalPadding

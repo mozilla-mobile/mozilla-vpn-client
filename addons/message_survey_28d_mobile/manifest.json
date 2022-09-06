@@ -7,11 +7,18 @@
   "conditions": {
     "trigger_time": 2419200,
     "platforms": ["ios", "android"],
-    "locales": ["en"]
   },
   "message": {
     "id": "survey_28d_mobile",
-    "title": "TODO",
-    "blocks": []
+    "title": "Survey message mobile 28d",
+    "subtitle": "This survey message is only presented on Mobile after 28 days",
+    "date": 1647629990,
+    "badge": "survey",
+    "blocks": [
+      { "id": "c_1",
+        "type": "text",
+        "content": "*THIS IS A STAGING MESSAGE*" 
+      }
+    ]
   }
 }

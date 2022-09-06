@@ -688,7 +688,7 @@ tutorialPopup:
   tutorialLeavePrimaryButtonLabel: Resume tutorial
 
 inAppMessaging:
-  menuTitle: Inbox
+  menuTitle: Messages
   editButton: Edit
   searchBarPlaceholderText: Search messages
   dateTimeYesterday: Yesterday
