@@ -104,6 +104,9 @@ constexpr const char* APPLE_SUBSCRIPTIONS_URL =
 constexpr const char* GOOGLE_SUBSCRIPTIONS_URL =
     "https://play.google.com/store/account/subscriptions";
 
+// This is the default time a notification will be shown when received.
+constexpr uint32_t DEFAULT_NOTIFICATION_TIMER = 1 * 1000;  // 1s
+
 PRODBETAEXPR(QString, fxaApiBaseUrl, "https://api.accounts.firefox.com",
              envOrDefault("MVPN_FXA_API_BASE_URL",
                           "https://api-accounts.stage.mozaws.net"))

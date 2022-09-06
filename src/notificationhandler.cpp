@@ -250,6 +250,12 @@ void NotificationHandler::serverUnavailableNotification(bool pingRecieved) {
                  Constants::SERVER_UNAVAILABLE_ALERT_MSEC);
 }
 
+void NotificationHandler::newInAppMessageNotification(const QString& title,
+                                                      const QString& message) {
+  logger.debug() << "New in-app message notification shown";
+  notifyInternal(NewInAppMessage, title, message);
+}
+
 void NotificationHandler::notifyInternal(Message type, const QString& title,
                                          const QString& message,
                                          int timerMsec) {

@@ -5,6 +5,8 @@
 #ifndef NOTIFICATIONHANDLER_H
 #define NOTIFICATIONHANDLER_H
 
+#include "constants.h"
+
 #include <QObject>
 
 class QMenu;
@@ -20,6 +22,7 @@ class NotificationHandler : public QObject {
     CaptivePortalBlock,
     CaptivePortalUnblock,
     ServerUnavailable,
+    NewInAppMessage,
   };
 
   static NotificationHandler* create(QObject* parent);
@@ -34,6 +37,9 @@ class NotificationHandler : public QObject {
   void unsecuredNetworkNotification(const QString& networkName);
 
   void serverUnavailableNotification(bool pingRecieved);
+
+  void newInAppMessageNotification(const QString& title,
+                                   const QString& message);
 
   void showNotification();
 
@@ -57,8 +63,9 @@ class NotificationHandler : public QObject {
                       const QString& message, int timerMsec) = 0;
 
  private:
-  virtual void notifyInternal(Message type, const QString& title,
-                              const QString& message, int timerMsec);
+  virtual void notifyInternal(
+      Message type, const QString& title, const QString& message,
+      int timerMsec = Constants::DEFAULT_NOTIFICATION_TIMER);
 
  protected:
   Message m_lastMessage = None;
