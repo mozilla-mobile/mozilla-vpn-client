@@ -23,10 +23,10 @@ PRODUCTION_SIGNING_BUILD_TYPES = [
 ]
 
 SIGNING_BUILD_TYPES = PRODUCTION_SIGNING_BUILD_TYPES + [
-    # Note: it appears we don't have infra for debug sign
-    # contact releng if you need it :)
-    #    "android-debug",
-    #
+    # Note: it appears we don't have infra for debug signing
+    # android builds. Contact releng if you need it :)
+    # "android-debug",
+    "addons/opt",
 ]
 
 

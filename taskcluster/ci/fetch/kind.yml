@@ -9,10 +9,10 @@ transforms:
     - taskgraph.transforms.job:transforms
     - taskgraph.transforms.task:transforms
 
-job-defaults:
+task-defaults:
     docker-image: {in-tree: base}
 
-jobs:
+tasks:
     win-dev-env:
         description: Windows Dev-Enviroment
         fetch:

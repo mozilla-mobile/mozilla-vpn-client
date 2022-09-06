@@ -16,7 +16,7 @@ kind-dependencies:
     - fetch
     - toolchain
 
-jobs-from:
+tasks-from:
     - linux.yml
     - windows.yml
     - android.yml
