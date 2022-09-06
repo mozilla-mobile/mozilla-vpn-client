@@ -29,7 +29,6 @@ class TaskRelease final : public Task {
 
  signals:
   void updateRequired();
-  void updateRecommended();
   void updateRequiredOrRecommended();
   void updateNotAvailable();
 

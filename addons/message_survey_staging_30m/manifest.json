@@ -1,15 +1,15 @@
 {
   "api_version": "0.1",
-  "id": "message_survey_staging_4s",
-  "name": "Staging Survey 4 secs",
+  "id": "message_survey_staging_30m",
+  "name": "Staging Survey 30 minutes",
   "translatable": false,
   "type": "message",
   "conditions": {
     "env": "staging",
-    "trigger_time": 4
+    "trigger_time": 1800
   },
   "message": {
-    "id": "message_survey_staging_4s",
+    "id": "message_survey_staging_30m",
     "title": "You have a new update available ✨",
     "subtitle": "Update your VPN to the latest version. We see that you are currently using an older version of Mozilla VPN, and we have added some new features and fixes to make your experience more enjoyable:",
     "date": 1661116829,

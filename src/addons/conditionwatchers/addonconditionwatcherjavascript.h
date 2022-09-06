@@ -27,7 +27,7 @@ class AddonConditionWatcherJavascript final : public AddonConditionWatcher {
   bool conditionApplied() const override;
 
  private:
-  AddonConditionWatcherJavascript(QObject* parent, const QJSValue& function);
+  AddonConditionWatcherJavascript(Addon* addon, const QJSValue& function);
 
  private:
   bool m_currentStatus = false;
