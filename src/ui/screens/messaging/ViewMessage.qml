@@ -55,19 +55,24 @@ VPNViewBase {
 
     _viewContentData: ColumnLayout {
         Layout.fillHeight: true
-        Layout.fillWidth: true
         Layout.leftMargin: VPNTheme.theme.windowMargin * 1.5
         Layout.rightMargin: VPNTheme.theme.windowMargin * 1.5
 
         spacing: 0
 
         RowLayout {
-            spacing: 0
+            id: badgeAndTimestampRow
+
+            Layout.preferredWidth: parent.width
+
+            spacing: 20
 
             Loader {
-                Layout.maximumWidth: parent.width - dateLabel.width - spacer.Layout.minimumWidth
+                Layout.preferredWidth: item.width
                 active: message.badge !== VPNAddonMessage.None
                 sourceComponent: VPNBadge {
+
+                    badgeLabel.width: Math.min(badgeLabel.implicitWidth, badgeAndTimestampRow.width - dateLabel.width - badgeAndTimestampRow.spacing)
                     badgeType: {
                         switch(message.badge) {
                         case VPNAddonMessage.Warning:
@@ -110,15 +115,11 @@ VPNViewBase {
                 }
             }
 
-            Item {
-                id: spacer
-                Layout.fillWidth: true
-                Layout.minimumWidth: 20
-            }
-
             VPNInterLabel {
                 id: dateLabel
-                Layout.fillWidth: true
+
+                Layout.preferredWidth: implicitWidth
+                Layout.alignment: Qt.AlignRight
 
                 text: message.formattedDate
                 color: VPNTheme.theme.fontColor

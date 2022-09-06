@@ -5,11 +5,10 @@
 #include "composerblock.h"
 #include "composer.h"
 #include "composerblockbutton.h"
+#include "composerblockorderedlist.h"
 #include "composerblocktext.h"
 #include "composerblocktitle.h"
-#include "composerblockorderedlist.h"
 #include "composerblockunorderedlist.h"
-#include "composerblockbutton.h"
 #include "leakdetector.h"
 #include "logger.h"
 

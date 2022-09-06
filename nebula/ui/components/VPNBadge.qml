@@ -17,9 +17,11 @@ Rectangle {
     property alias text: badgeLabel.text
     property alias textColor: badgeLabel.color
 
+    property alias badgeLabel: badgeLabel
+
     color: badgeType.badgeTheme.backgroundColor
-    height: badgeLabel.implicitHeight
-    width: badgeLabel.implicitWidth
+    height: badgeLabel.height
+    width: badgeLabel.width
     radius: 4
     clip: true
 
