@@ -22,7 +22,6 @@
 #include "models/subscriptiondata.h"
 #include "models/supportcategorymodel.h"
 #include "models/user.h"
-#include "models/whatsnewmodel.h"
 #include "networkwatcher.h"
 #include "profileflow.h"
 #include "releasemonitor.h"
@@ -241,7 +240,7 @@ class MozillaVPN final : public QObject {
   }
   Telemetry* telemetry() { return &m_private->m_telemetry; }
   Theme* theme() { return &m_private->m_theme; }
-  WhatsNewModel* whatsNewModel() { return &m_private->m_whatsNewModel; }
+
   User* user() { return &m_private->m_user; }
 
   // Called at the end of the authentication flow. We can continue adding the
@@ -446,7 +445,6 @@ class MozillaVPN final : public QObject {
     Telemetry m_telemetry;
     Theme m_theme;
     WebSocketHandler m_webSocketHandler;
-    WhatsNewModel m_whatsNewModel;
     User m_user;
   };
 

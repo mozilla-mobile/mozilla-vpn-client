@@ -164,8 +164,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/models/supportcategorymodel.h
     ${MVPN_SOURCE_DIR}/models/user.cpp
     ${MVPN_SOURCE_DIR}/models/user.h
-    ${MVPN_SOURCE_DIR}/models/whatsnewmodel.cpp
-    ${MVPN_SOURCE_DIR}/models/whatsnewmodel.h
     ${MVPN_SOURCE_DIR}/mozillavpn.h
     ${MVPN_SOURCE_DIR}/networkmanager.cpp
     ${MVPN_SOURCE_DIR}/networkmanager.h

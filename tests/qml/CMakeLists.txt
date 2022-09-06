@@ -50,8 +50,6 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/models/featuremodel.cpp
     ${MVPN_SOURCE_DIR}/models/featuremodel.h
     ${MVPN_SOURCE_DIR}/models/server.cpp
-    ${MVPN_SOURCE_DIR}/models/whatsnewmodel.cpp
-    ${MVPN_SOURCE_DIR}/models/whatsnewmodel.h
     ${MVPN_SOURCE_DIR}/mozillavpn.h
     ${MVPN_SOURCE_DIR}/networkmanager.cpp
     ${MVPN_SOURCE_DIR}/networkmanager.h

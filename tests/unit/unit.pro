@@ -105,7 +105,6 @@ HEADERS += \
     ../../src/models/subscriptiondata.h \
     ../../src/models/supportcategorymodel.h \
     ../../src/models/user.h \
-    ../../src/models/whatsnewmodel.h \
     ../../src/mozillavpn.h \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \
@@ -244,7 +243,6 @@ SOURCES += \
     ../../src/models/subscriptiondata.cpp \
     ../../src/models/supportcategorymodel.cpp \
     ../../src/models/user.cpp \
-    ../../src/models/whatsnewmodel.cpp \
     ../../src/networkmanager.cpp \
     ../../src/networkwatcher.cpp \
     ../../src/pinghelper.cpp \

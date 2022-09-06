@@ -81,19 +81,6 @@ VPNViewBase {
                         customTutorialFilter: (addon) => addon.highlighted
                     }
 
-                    VPNTutorialCard {
-                        objectName: "featureTourCard"
-
-                        Layout.preferredHeight: VPNTheme.theme.tutorialCardHeight
-                        Layout.fillWidth: true
-
-                        imageSrc: "qrc:/ui/resources/sparkling-check.svg"
-                        imageBgColor: "#2B2A33"
-                        title: VPNl18n.TipsAndTricksFeatureTourCardTitle
-                        description: VPNl18n.TipsAndTricksFeatureTourCardDescription
-                        onClicked: featureTourPopup.startTour();
-                    }
-
                     Repeater {
                         model: tipsSections.count
 

@@ -212,12 +212,6 @@ Window {
         }
     }
 
-    VPNFeatureTourPopup {
-        id: featureTourPopup
-
-        anchors.centerIn: parent
-    }
-
     VPNBottomNavigationBar {
         id: navbar
     }
