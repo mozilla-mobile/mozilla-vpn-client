@@ -59,10 +59,7 @@ NotificationHandler* NotificationHandler::create(QObject* parent) {
 }
 
 // static
-NotificationHandler* NotificationHandler::instance() {
-  Q_ASSERT(s_instance);
-  return s_instance;
-}
+NotificationHandler* NotificationHandler::instance() { return s_instance; }
 
 NotificationHandler::NotificationHandler(QObject* parent) : QObject(parent) {
   MVPN_COUNT_CTOR(NotificationHandler);

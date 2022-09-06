@@ -7,6 +7,7 @@
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
+#include "notificationhandler.h"
 #include "settingsholder.h"
 #include "timersingleshot.h"
 
@@ -157,7 +158,6 @@ void AddonMessage::updateMessageState(State newState) {
   }
 
   m_state = newState;
-  emit stateChanged(newState);
 }
 
 void AddonMessage::dismiss() {
@@ -304,5 +304,30 @@ void AddonMessage::setBadge(const QString& badge) {
     m_badge = Survey;
   } else {
     logger.error() << "Unsupported badge type" << badge;
+  }
+}
+
+void AddonMessage::enable() {
+  Addon::enable();
+
+  maybePushNotification();
+}
+
+void AddonMessage::maybePushNotification() {
+  if (!m_conditionsParsed) {
+    // Only after the conditions have been parsed do we really know if the addon
+    // is enabled or not.
+    return;
+  }
+
+  NotificationHandler* notificationHandler = NotificationHandler::instance();
+  if (!notificationHandler) {
+    return;
+  }
+
+  if (m_state == State::Received) {
+    NotificationHandler::instance()->newInAppMessageNotification(
+        m_title.get(), m_subtitle.get());
+    updateMessageState(State::Notified);
   }
 }

@@ -76,6 +76,8 @@ class AddonMessage final : public Addon {
 
   void planDateRetranslation();
   void setBadge(const QString& badge);
+  void enable() override;
+  void maybePushNotification();
 
  private:
   AddonProperty m_title;
