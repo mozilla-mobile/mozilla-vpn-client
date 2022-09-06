@@ -368,10 +368,10 @@ Rectangle {
     }
 
     Image {
-        id: globeFallback
+        id: globe
         source: logo.showVPNOnIcon ? "qrc:/ui/resources/main-img-vpn-on.svg" : "qrc:/ui/resources/main-img-vpn-off.svg"
-        sourceSize.height: globe.height
-        sourceSize.width: globe.width
+        sourceSize.height: logo.height
+        sourceSize.width: logo.width
         visible: true
     }
 }
