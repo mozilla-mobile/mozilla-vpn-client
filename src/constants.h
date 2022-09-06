@@ -84,7 +84,7 @@ constexpr const char* API_STAGING_URL =
     "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
 
 constexpr const char* ADDON_PRODUCTION_URL =
-    "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/";  // TODO
+    "https://archive.mozilla.org/pub/vpn/addons/releases/latest/";
 constexpr const char* ADDON_PRODUCTION_KEY =
     ":/addons_signature/production.der";
 

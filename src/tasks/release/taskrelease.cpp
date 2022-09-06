@@ -25,8 +25,6 @@ void TaskRelease::run() {
 
   connect(updater, &Updater::updateRequired, this,
           &TaskRelease::updateRequired);
-  connect(updater, &Updater::updateRecommended, this,
-          &TaskRelease::updateRecommended);
   connect(updater, &Updater::updateRequired, this,
           &TaskRelease::updateRequiredOrRecommended);
   connect(updater, &Updater::updateRecommended, this,

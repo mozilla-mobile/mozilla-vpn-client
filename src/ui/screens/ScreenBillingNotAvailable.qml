@@ -18,7 +18,7 @@ VPNStackView {
     Component.onCompleted: {
         VPNNavigator.addStackView(VPNNavigator.ScreenBillingNotAvailable, stackview)
 
-        stackview.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
+        stackview.push("qrc:/ui/sharedViews/ViewErrorFullScreen.qml", {
             // Sign in to Google Account
             headlineText: VPNl18n.NotSignedInGoogleGoogleModalHeader,
 

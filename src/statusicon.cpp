@@ -103,6 +103,7 @@ void StatusIcon::stateChanged() {
   // If we are in a non-main state, we don't need to show special icons.
   if (vpn->state() != MozillaVPN::StateMain) {
     setIcon(LOGO_GENERIC, false);
+    setIndicatorColor(QColor());
     return;
   }
 
@@ -116,6 +117,8 @@ void StatusIcon::stateChanged() {
 #else
     case Controller::StateOn:
       setIcon(LOGO_GENERIC_ON, false);
+      // Make sure the indicator color is set initially
+      setIndicatorColor(GREEN_COLOR);
       break;
     case Controller::StateOff:
       setIcon(LOGO_GENERIC_OFF, false);

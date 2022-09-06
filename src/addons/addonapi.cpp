@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addonapi.h"
+#include "addon.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -13,20 +14,10 @@
 
 namespace {
 Logger logger(LOG_MAIN, "AddonApi");
-
-AddonApi* s_instance = nullptr;
-}  // namespace
-
-// static
-AddonApi* AddonApi::instance() {
-  if (!s_instance) {
-    s_instance = new AddonApi(qApp);
-  }
-
-  return s_instance;
 }
 
-AddonApi::AddonApi(QObject* parent) : QObject(parent) {
+AddonApi::AddonApi(Addon* addon) : QObject(addon) {
+  logger.debug() << "Create API for" << addon->id();
   MVPN_COUNT_CTOR(AddonApi);
 }
 

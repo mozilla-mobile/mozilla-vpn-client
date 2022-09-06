@@ -33,8 +33,6 @@ void ReleaseMonitor::runSoon() {
 
     connect(task, &TaskRelease::updateRequired, this,
             &ReleaseMonitor::updateRequired);
-    connect(task, &TaskRelease::updateRecommended, this,
-            &ReleaseMonitor::updateRecommended);
     connect(task, &TaskRelease::updateRequiredOrRecommended, this,
             &ReleaseMonitor::updateRequiredOrRecommended);
     connect(task, &TaskRelease::updateNotAvailable, this,
@@ -53,13 +51,7 @@ void ReleaseMonitor::schedule() {
 
 void ReleaseMonitor::updateRequired() {
   logger.warning() << "update required";
-  MozillaVPN::instance()->setUpdateRecommended(false);
   MozillaVPN::instance()->controller()->updateRequired();
-}
-
-void ReleaseMonitor::updateRecommended() {
-  logger.debug() << "Update recommended";
-  MozillaVPN::instance()->setUpdateRecommended(true);
 }
 
 void ReleaseMonitor::updateSoon() {
