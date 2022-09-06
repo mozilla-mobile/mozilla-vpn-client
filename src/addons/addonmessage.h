@@ -28,14 +28,7 @@ class AddonMessage final : public Addon {
   Q_PROPERTY(Badge badge MEMBER m_badge CONSTANT)
 
  public:
-  enum Badge {
-      None,
-      Warning,
-      Critical,
-      NewUpdate,
-      WhatsNew,
-      Survey
-  };
+  enum Badge { None, Warning, Critical, NewUpdate, WhatsNew, Survey };
   Q_ENUM(Badge)
 
   static Addon* create(QObject* parent, const QString& manifestFileName,

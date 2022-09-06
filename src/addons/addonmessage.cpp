@@ -228,19 +228,19 @@ qint64 AddonMessage::planDateRetranslationInternal(
 }
 
 void AddonMessage::setBadge(const QString& badge) {
-    m_badge = None;
-    if (badge.isEmpty() || badge == "none") {  // Nothing to do.
-    } else if (badge == "warning") {
-      m_badge = Warning;
-    } else if (badge == "critical") {
-      m_badge = Critical;
-    } else if (badge == "new_update") {
-        m_badge = NewUpdate;
-    } else if (badge == "whats_new") {
-        m_badge = WhatsNew;
-    } else if (badge == "survey") {
-        m_badge = Survey;
-    } else {
-      logger.error() << "Unsupported badge type" << badge;
-    }
+  m_badge = None;
+  if (badge.isEmpty() || badge == "none") {  // Nothing to do.
+  } else if (badge == "warning") {
+    m_badge = Warning;
+  } else if (badge == "critical") {
+    m_badge = Critical;
+  } else if (badge == "new_update") {
+    m_badge = NewUpdate;
+  } else if (badge == "whats_new") {
+    m_badge = WhatsNew;
+  } else if (badge == "survey") {
+    m_badge = Survey;
+  } else {
+    logger.error() << "Unsupported badge type" << badge;
+  }
 }
