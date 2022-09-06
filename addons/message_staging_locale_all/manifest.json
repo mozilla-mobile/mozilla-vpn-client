@@ -1,17 +1,15 @@
 {
   "api_version": "0.1",
-  "id": "message_survey_staging_locale",
-  "name": "Staging Survey 1 secs",
+  "id": "message_staging_locale_all",
+  "name": "Locale: all",
   "translatable": false,
   "type": "message",
   "conditions": {
-    "env": "staging",
-    "trigger_time": 1,
-    "locales": [ "en" ]
+    "env": "staging"
   },
   "message": {
-    "id": "message_survey_staging_locale",
-    "title": "message_survey_staging_locale",
+    "id": "message_staging_locale_all",
+    "title": "Locale: all",
     "date": 1661260997,
     "blocks": [
       { "id": "c_1",

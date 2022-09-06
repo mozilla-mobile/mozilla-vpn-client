@@ -1,0 +1,29 @@
+{
+  "api_version": "0.1",
+  "id": "message_staging_locale_it",
+  "name": "Locale: it",
+  "translatable": false,
+  "type": "message",
+  "conditions": {
+    "env": "staging",
+    "locales": [ "it" ]
+  },
+  "message": {
+    "id": "message_staging_locale_it",
+    "title": "Locale: it",
+    "date": 1661260997,
+    "blocks": [
+      { "id": "c_1",
+        "type": "ulist",
+        "content": [
+          { "id": "l_1",
+            "content": "New feature 1" },
+          { "id": "l_2",
+            "content": "Bug fixes" },
+          { "id": "l_3",
+            "content": "New feature 2" }
+        ]
+      }
+    ]     
+  }
+}
