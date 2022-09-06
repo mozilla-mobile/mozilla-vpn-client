@@ -23,8 +23,8 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  QStringList dismissedAddonMessages = settingsHolder->dismissedAddonMessages();
-  if (dismissedAddonMessages.contains(id)) {
+  State messageState = loadMessageState(id);
+  if (messageState == State::Dismissed) {
     logger.info() << "Message" << id << "has been already dismissed";
     return nullptr;
   }
@@ -40,6 +40,8 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
   AddonMessage* message = new AddonMessage(parent, manifestFileName, id, name);
   auto guard = qScopeGuard([&] { message->deleteLater(); });
 
+  message->m_state = messageState;
+
   message->m_title.initialize(QString("message.%1.title").arg(messageId),
                               messageObj["title"].toString());
 
@@ -52,9 +54,6 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
     logger.warning() << "Composer failed";
     return nullptr;
   }
-
-  QStringList readAddonMessages = settingsHolder->readAddonMessages();
-  message->m_isRead = readAddonMessages.contains(id);
 
   message->m_date = messageObj["date"].toInteger();
   message->planDateRetranslation();
@@ -76,34 +75,97 @@ AddonMessage::AddonMessage(QObject* parent, const QString& manifestFileName,
 
 AddonMessage::~AddonMessage() { MVPN_COUNT_DTOR(AddonMessage); }
 
-void AddonMessage::dismiss() {
-  m_dismissed = true;
-  disable();
-
+// static
+AddonMessage::State AddonMessage::loadMessageState(const QString& id) {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
 
-  QStringList dismissedAddonMessages = settingsHolder->dismissedAddonMessages();
-  dismissedAddonMessages.append(id());
-  settingsHolder->setDismissedAddonMessages(dismissedAddonMessages);
-}
-
-void AddonMessage::maskAsRead() {
-  if (m_isRead) {
-    return;
+  QStringList notifiedAddonMessages = settingsHolder->notifiedAddonMessages();
+  if (notifiedAddonMessages.contains(id)) {
+    return State::Notified;
   }
 
-  m_isRead = true;
+  QStringList readAddonMessages = settingsHolder->readAddonMessages();
+  if (readAddonMessages.contains(id)) {
+    return State::Read;
+  }
+
+  QStringList dismissedAddonMessages = settingsHolder->dismissedAddonMessages();
+  if (dismissedAddonMessages.contains(id)) {
+    return State::Dismissed;
+  }
+
+  return State::Received;
+}
+
+void AddonMessage::updateMessageState(State newState) {
+  if (m_state == newState) return;
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
 
-  QStringList readAddonMessages = settingsHolder->readAddonMessages();
-  readAddonMessages.append(id());
-  settingsHolder->setReadAddonMessages(readAddonMessages);
+  switch (m_state) {
+    case State::Received: {
+      // Do nothing. This state is not saved in settings,
+      // but it's also not an error.
+      break;
+    }
+    case State::Notified: {
+      QStringList notifiedAddonMessages =
+          settingsHolder->notifiedAddonMessages();
+      notifiedAddonMessages.removeAll(id());
+      settingsHolder->setNotifiedAddonMessages(notifiedAddonMessages);
+      break;
+    }
+    case State::Read: {
+      QStringList readAddonMessaged = settingsHolder->readAddonMessages();
+      readAddonMessaged.removeAll(id());
+      settingsHolder->setReadAddonMessages(readAddonMessaged);
+      break;
+    }
+    case State::Dismissed: {
+      logger.error()
+          << "Attempted to change the state of a dismissed message. Ignoring.";
+      return;
+    }
+  }
 
-  emit isReadChanged();
+  switch (newState) {
+    case State::Received: {
+      // Do nothing. This state is not saved in settings,
+      // but it's also not an error.
+      break;
+    }
+    case State::Notified: {
+      QStringList notifiedAddonMessages =
+          settingsHolder->notifiedAddonMessages();
+      notifiedAddonMessages.append(id());
+      settingsHolder->setNotifiedAddonMessages(notifiedAddonMessages);
+      break;
+    }
+    case State::Read: {
+      QStringList readAddonMessages = settingsHolder->readAddonMessages();
+      readAddonMessages.append(id());
+      settingsHolder->setReadAddonMessages(readAddonMessages);
+      break;
+    }
+    case State::Dismissed: {
+      QStringList dismissedAddonMessages =
+          settingsHolder->dismissedAddonMessages();
+      dismissedAddonMessages.append(id());
+      settingsHolder->setDismissedAddonMessages(dismissedAddonMessages);
+      break;
+    }
+  }
+
+  m_state = newState;
+  emit stateChanged(newState);
 }
+
+void AddonMessage::dismiss() {
+  disable();
+  updateMessageState(State::Dismissed);
+}
+
+void AddonMessage::markAsRead() { updateMessageState(State::Read); }
 
 bool AddonMessage::containsSearchString(const QString& query) const {
   if (query.isEmpty()) {
@@ -131,7 +193,7 @@ bool AddonMessage::enabled() const {
     return false;
   }
 
-  return !m_dismissed;
+  return m_state != State::Dismissed;
 }
 
 QString AddonMessage::formattedDate() const {

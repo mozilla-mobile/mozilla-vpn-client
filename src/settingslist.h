@@ -309,6 +309,14 @@ SETTING_STRINGLIST(readAddonMessages,      // getter
                    true                    // remove when reset
 )
 
+SETTING_STRINGLIST(notifiedAddonMessages,      // getter
+                   setNotifiedAddonMessages,   // setter
+                   hasNotifiedAddonMessages,   // has
+                   "addons/notifiedMessages",  // key
+                   QStringList(),              // default value
+                   true                        // remove when reset
+)
+
 SETTING_STRINGLIST(recentConnections,     // getter
                    setRecentConnections,  // setter
                    hasRecentConnections,  // has
