@@ -120,20 +120,6 @@ describe('Navigation bar', async function() {
     });
 
 
-    it('Clicking the Homes button opens home screen', async () => {
-      await vpn.waitForElement('navigationLayout/navButton-messages');
-      await vpn.clickOnElement('navigationLayout/navButton-messages');
-      await vpn.waitForElement('messageInboxView');
-
-      await vpn.clickOnElement('navigationLayout/navButton-home');
-      await vpn.waitForElement('serverListButton');
-
-      assert(
-          await vpn.getElementProperty('serverListButton', 'visible') ===
-          'true');
-    });
-
-
     it('Clicking a selected Home button reloads the Home screen', async () => {
       await vpn.waitForElement('serverListButton');
       await vpn.clickOnElement('serverListButton');

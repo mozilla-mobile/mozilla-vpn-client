@@ -6,7 +6,6 @@
 #define TESTHELPER_H
 
 #include "l18nstrings.h"
-#include "models/whatsnewmodel.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #include "theme.h"
@@ -52,7 +51,6 @@ class TestHelper final : public QObject {
 
   L18nStrings* m_l18nstrings = nullptr;
   MozillaVPN* m_mozillavpn = nullptr;
-  WhatsNewModel* m_whatsNewModel = nullptr;
   Theme* m_theme = nullptr;
 };
 

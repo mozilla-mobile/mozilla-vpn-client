@@ -53,7 +53,6 @@ SOURCES += \
     ../../src/models/feature.cpp \
     ../../src/models/featuremodel.cpp \
     ../../src/models/server.cpp \
-    ../../src/models/whatsnewmodel.cpp \
     ../../src/networkmanager.cpp \
     ../../src/networkrequest.cpp \
     ../../src/settingsholder.cpp \
@@ -82,7 +81,6 @@ HEADERS += \
     ../../src/loghandler.h \
     ../../src/models/feature.h \
     ../../src/models/featuremodel.h \
-    ../../src/models/whatsnewmodel.h \
     ../../src/mozillavpn.h \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \

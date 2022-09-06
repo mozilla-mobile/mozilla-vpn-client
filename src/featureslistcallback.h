@@ -82,16 +82,6 @@ bool FeatureCallback_lanAccess() {
 #endif
 }
 
-bool FeatureCallback_multiAccountContainers() {
-#if defined(MVPN_IOS) || defined(MVPN_ANDROID)
-  // Multi-Account Containers is a Firefox add-on only
-  // released for desktop
-  return false;
-#else
-  return true;
-#endif
-}
-
 bool FeatureCallback_shareLogs() {
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS) || \
     defined(MVPN_IOS) || defined(MVPN_DUMMY)

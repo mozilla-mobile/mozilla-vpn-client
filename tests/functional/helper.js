@@ -440,14 +440,6 @@ module.exports = {
     return json.value;
   },
 
-  async featureTourFeatures() {
-    const json = await this._writeCommand('feature_tour_features');
-    assert(
-        json.type === 'feature_tour_features' && !('error' in json),
-        `Command failed: ${json.error}`);
-    return json.value;
-  },
-
   async screenCapture() {
     const json = await this._writeCommand('screen_capture');
     assert(

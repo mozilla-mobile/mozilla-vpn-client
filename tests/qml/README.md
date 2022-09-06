@@ -20,7 +20,7 @@ The order in which things are setup is important.
 
 The SettingsHolder is made in `main.cpp` so that there is an instance available for everything else to use.
 
-Ths SettingsHolder must be instantiated for the FeatureList to be able to initialize, and the FeatureList must be initialized before WhatsNewModel can be created.
+Ths SettingsHolder must be instantiated for the FeatureList to be able to initialize.
 
 #### QML imports / organization
 
