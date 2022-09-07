@@ -66,7 +66,8 @@ jobs:
     qt-6.2.4-zip:
         description: qt-everywhere-src-6.2.4.zip
         fetch:
-            type: static-url
-            url: https://download.qt.io/archive/qt/6.2/6.2.4/single/qt-everywhere-src-6.2.4.zip
-            sha256: af722a77d2acf07f48291fa8e720f8004e1e0738914ad89ab98142ec55b80fd3
-            size: 1101330318
+            type: git
+            repo: https://code.qt.io/cgit/qt/qt5.git
+            # https://code.qt.io/cgit/qt/qt5.git/refs/tags
+            revision: 4eb1cdeb94d8119e3dbc4ee17b7849968546edf0
+            artifact-name: "qt-everywhere-src-6.2.4.tar.zst"
