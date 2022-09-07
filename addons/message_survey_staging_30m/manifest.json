@@ -12,12 +12,17 @@
     "id": "message_survey_staging_30m",
     "title": "Survey message 30m",
     "subtitle": "This survey message is presented after 30 minutes",
-    "date": 1661116829,
     "badge": "survey",
     "blocks": [
       { "id": "c_1",
         "type": "text",
         "content": "*THIS IS A STAGING MESSAGE*" 
+      },
+      { "id": "c_2",
+        "type": "button",
+        "style": "primary",
+        "content": "Start survey",
+        "javascript": "OpenSurveyURL.js"
       }
     ]  
   }
