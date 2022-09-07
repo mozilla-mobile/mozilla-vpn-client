@@ -1,6 +1,7 @@
 VPNAlert 0.1 VPNAlert.qml
 VPNAnimatedRings 0.1 VPNAnimatedRings.qml
 VPNAvatar 0.1 VPNAvatar.qml
+VPNBadge 0.1 VPNBadge.qml
 VPNBoldInterLabel 0.1 VPNBoldInterLabel.qml
 VPNBoldLabel 0.1 VPNBoldLabel.qml
 VPNButton 0.1 VPNButton.qml
@@ -17,6 +18,7 @@ VPNCheckmarkList 0.1 VPNCheckmarkList.qml
 VPNChevron 0.1 VPNChevron.qml
 VPNClickableRow 0.1 VPNClickableRow.qml
 VPNCollapsibleCard 0.1 VPNCollapsibleCard.qml
+VPNComposerView 0.1 VPNComposerView.qml
 VPNConnectionInfoError 0.1 VPNConnectionInfoError.qml
 VPNConnectionInfoScreen 0.1 VPNConnectionInfoScreen.qml
 VPNConnectionInfoContent 0.1 VPNConnectionInfoContent.qml

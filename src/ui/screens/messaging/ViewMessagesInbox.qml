@@ -224,7 +224,7 @@ VPNViewBase {
                         if (root.anySwipesOpen()) root.closeAllSwipes()
                         else {
                             addon.maskAsRead()
-                            stackview.push("qrc:/ui/screens/messaging/ViewMessage.qml")
+                            stackview.push("qrc:/ui/screens/messaging/ViewMessage.qml", {"message": addon})
                         }
                     }
 
@@ -301,6 +301,7 @@ VPNViewBase {
                                 lineHeight: VPNTheme.theme.labelLineHeight
                                 verticalAlignment: Text.AlignVCenter
                                 elide: Text.ElideRight
+                                maximumLineCount: 1
                             }
 
                             VPNInterLabel {
