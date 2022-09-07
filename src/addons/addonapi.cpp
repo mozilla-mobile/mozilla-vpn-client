@@ -4,10 +4,13 @@
 
 #include "addonapi.h"
 #include "addon.h"
+#include "frontend/navigator.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/featuremodel.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
+#include "settingsholder.h"
 
 #include <QCoreApplication>
 #include <QQmlEngine>
@@ -79,14 +82,33 @@ void AddonApiCallbackWrapper::run() {
 
 QJSValue AddonApi::settings() const {
   QJSEngine* engine = QmlEngineHolder::instance()->engine();
-  QJSValue value = engine->newQObject(SettingsHolder::instance());
+
+  QObject* obj = SettingsHolder::instance();
+  QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+
+  QJSValue value = engine->newQObject(obj);
   value.setPrototype(engine->newQMetaObject(&SettingsHolder::staticMetaObject));
   return value;
 }
 
 QJSValue AddonApi::navigator() const {
   QJSEngine* engine = QmlEngineHolder::instance()->engine();
-  QJSValue value = engine->newQObject(Navigator::instance());
+
+  QObject* obj = SettingsHolder::instance();
+  QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+
+  QJSValue value = engine->newQObject(obj);
   value.setPrototype(engine->newQMetaObject(&Navigator::staticMetaObject));
+  return value;
+}
+
+QJSValue AddonApi::featureList() const {
+  QJSEngine* engine = QmlEngineHolder::instance()->engine();
+
+  QObject* obj = FeatureModel::instance();
+  QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+
+  QJSValue value = engine->newQObject(obj);
+  value.setPrototype(engine->newQMetaObject(&FeatureModel::staticMetaObject));
   return value;
 }

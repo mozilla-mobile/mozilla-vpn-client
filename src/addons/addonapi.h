@@ -5,9 +5,6 @@
 #ifndef ADDONAPI_H
 #define ADDONAPI_H
 
-#include "frontend/navigator.h"
-#include "settingsholder.h"
-
 #include <QJSValue>
 #include <QObject>
 
@@ -22,8 +19,9 @@ class AddonApi final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AddonApi)
 
-  Q_PROPERTY(QJSValue settings READ settings CONSTANT)
+  Q_PROPERTY(QJSValue featureList READ featureList CONSTANT)
   Q_PROPERTY(QJSValue navigator READ navigator CONSTANT)
+  Q_PROPERTY(QJSValue settings READ settings CONSTANT)
 
  public:
   explicit AddonApi(Addon* addon);
@@ -37,8 +35,9 @@ class AddonApi final : public QObject {
  private:
   explicit AddonApi(QObject* parent);
 
-  QJSValue settings() const;
+  QJSValue featureList() const;
   QJSValue navigator() const;
+  QJSValue settings() const;
 };
 
 class AddonApiCallbackWrapper final : public QObject {
