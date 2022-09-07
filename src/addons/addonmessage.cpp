@@ -314,12 +314,6 @@ void AddonMessage::enable() {
 }
 
 void AddonMessage::maybePushNotification() {
-  if (!m_conditionsParsed) {
-    // Only after the conditions have been parsed do we really know if the addon
-    // is enabled or not.
-    return;
-  }
-
   NotificationHandler* notificationHandler = NotificationHandler::instance();
   if (!notificationHandler) {
     return;

@@ -390,13 +390,6 @@ void Addon::retranslate() {
 }
 
 void Addon::maybeCreateConditionWatchers(const QJsonObject& conditions) {
-  if (m_conditionsParsed) {
-    logger.warning() << "Attempted to parse addon conditions, but conditions "
-                        "have already been parsed. Ignoring.";
-    return;
-  }
-  m_conditionsParsed = true;
-
   QList<AddonConditionWatcher*> watcherList;
 
   for (const QString& key : conditions.keys()) {

@@ -49,8 +49,6 @@ class Addon : public QObject {
   virtual void enable();
   virtual void disable();
 
-  bool m_conditionsParsed = false;
-
  private:
   void maybeCreateConditionWatchers(const QJsonObject& conditions);
 

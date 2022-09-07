@@ -90,7 +90,7 @@ class AddonMessage final : public Addon {
 
   qint64 m_date = 0;
 
-  State m_state;
+  State m_state = State::Received;
 
 #ifdef UNIT_TEST
   friend class TestAddon;
