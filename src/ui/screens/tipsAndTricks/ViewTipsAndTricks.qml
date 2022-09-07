@@ -65,7 +65,6 @@ VPNViewBase {
                 property string title: VPNl18n.TipsAndTricksTutorialsTitle
                 property string description: VPNl18n.TipsAndTricksTutorialsDescription
                 property var filter: (addon) => addon.highlighted
-                property bool featureTourCardVisible: true
             }
 
             // More tutorials
@@ -108,7 +107,6 @@ VPNViewBase {
 
                                 type: "tutorials"
                                 customFilter: section.filter
-                                featureTourCardVisible: section.featureTourCardVisible
                             }
 
                             VPNTipsAndTricksSection {
@@ -122,7 +120,6 @@ VPNViewBase {
 
                                 type: "guides"
                                 customFilter: section.filter
-                                featureTourCardVisible: section.featureTourCardVisible
                             }
                         }
                     }
@@ -169,7 +166,6 @@ VPNViewBase {
 
                             type: "guides"
                             customFilter: section.filter
-                            featureTourCardVisible: section.featureTourCardVisible
                         }
                     }
 

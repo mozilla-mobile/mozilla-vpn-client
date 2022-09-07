@@ -18,7 +18,6 @@ ColumnLayout {
 
     property string type
     property var customFilter
-    property var featureTourCardVisible
 
     property alias list: tipsAndTricksListLoader.item
     visible: list ? list.count > 0 : false
@@ -58,9 +57,6 @@ ColumnLayout {
     Component.onCompleted: {
         const source = type === "tutorials" ? "VPNTutorialList.qml" : "VPNGuideList.qml";
         const options = { customFilter };
-        if (type === "tutorials") {
-            options["featureTourCardVisible"] = !!featureTourCardVisible
-        }
         tipsAndTricksListLoader.setSource(source, options)
     }
 }

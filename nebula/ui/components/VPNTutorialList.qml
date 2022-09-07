@@ -13,7 +13,6 @@ import components 0.1
 GridLayout {
     property var customFilter: () => true
     property var count: tutorialRepeater.count
-    property var featureTourCardVisible: false
 
     columns: width < VPNTheme.theme.tabletMinimumWidth ? 1 : 2
     columnSpacing: VPNTheme.theme.vSpacingSmall
@@ -48,20 +47,5 @@ GridLayout {
                 VPNNavigator.requestScreen(VPNNavigator.ScreenHome)
             }
         }
-    }
-
-    VPNTutorialCard {
-        objectName: "featureTourCard"
-
-        visible: featureTourCardVisible
-
-        Layout.preferredHeight: VPNTheme.theme.tutorialCardHeight
-        Layout.fillWidth: true
-
-        imageSrc: "qrc:/ui/resources/sparkling-check.svg"
-        imageBgColor: "#2B2A33"
-        title: VPNl18n.TipsAndTricksFeatureTourCardTitle
-        description: VPNl18n.TipsAndTricksFeatureTourCardDescription
-        onClicked: featureTourPopup.startTour();
     }
 }
