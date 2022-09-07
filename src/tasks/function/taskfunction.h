@@ -14,13 +14,16 @@ class TaskFunction final : public Task {
   Q_DISABLE_COPY_MOVE(TaskFunction)
 
  public:
-  TaskFunction(std::function<void()>&& callback);
+  TaskFunction(std::function<void()>&& callback, bool deletable = true);
   ~TaskFunction();
 
   void run() override;
 
+  bool deletable() const override { return m_deletable; }
+
  private:
   std::function<void()> m_callback;
+  bool m_deletable = true;
 };
 
 #endif  // TASKFUNCTION_H
