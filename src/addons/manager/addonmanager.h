@@ -64,6 +64,8 @@ class AddonManager final : public QAbstractListModel {
 
   static void removeAddon(const QString& addonId);
 
+  static QString mountPath(const QString& addonId);
+
   // QAbstractListModel methods
 
   QHash<int, QByteArray> roleNames() const override;
