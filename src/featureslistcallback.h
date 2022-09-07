@@ -9,6 +9,10 @@
 #  include "androidutils.h"
 #endif
 
+#ifdef MVPN_WINDOWS
+#  include "platforms/windows/daemon/windowssplittunnel.h"
+#endif
+
 #ifdef MVPN_LINUX
 #  include <QProcessEnvironment>
 #  include "platforms/linux/linuxdependencies.h"
@@ -95,8 +99,10 @@ bool FeatureCallback_shareLogs() {
 }
 
 bool FeatureCallback_splitTunnel() {
-#if defined(MVPN_ANDROID) || defined(MVPN_WINDOWS) || defined(MVPN_DUMMY)
+#if defined(MVPN_ANDROID) || defined(MVPN_DUMMY)
   return true;
+#elif defined(MVPN_WINDOWS)
+  return !WindowsSplitTunnel::detectConflict();
 #elif defined(MVPN_LINUX)
   static bool initDone = false;
   static bool splitTunnelSupported = false;

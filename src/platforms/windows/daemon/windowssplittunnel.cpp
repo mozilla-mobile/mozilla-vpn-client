@@ -22,6 +22,11 @@ Logger logger(LOG_WINDOWS, "WindowsSplitTunnel");
 }
 
 WindowsSplitTunnel::WindowsSplitTunnel(QObject* parent) : QObject(parent) {
+  if (detectConflict()) {
+    logger.error() << "Conflict detected, abort Split-Tunnel init.";
+    uninstallDriver();
+    return;
+  }
   if (!isInstalled()) {
     logger.debug() << "Driver is not Installed, doing so";
     auto handle = installDriver();
@@ -43,6 +48,10 @@ WindowsSplitTunnel::~WindowsSplitTunnel() {
 }
 
 void WindowsSplitTunnel::initDriver() {
+  if (detectConflict()) {
+    logger.error() << "Conflict detected, abort Split-Tunnel init.";
+    return;
+  }
   logger.debug() << "Try to open Split Tunnel Driver";
   // Open the Driver Symlink
   m_driver = CreateFileW(DRIVER_SYMLINK, GENERIC_READ | GENERIC_WRITE, 0,
@@ -492,4 +501,37 @@ QString WindowsSplitTunnel::convertPath(const QString& path) {
   parts.prepend(deviceName);
 
   return parts.join("\\");
+}
+
+// static
+bool WindowsSplitTunnel::detectConflict() {
+  auto scm_rights = SC_MANAGER_ENUMERATE_SERVICE;
+  auto serviceManager = OpenSCManager(NULL,  // local computer
+                                      NULL,  // servicesActive database
+                                      scm_rights);
+  auto cleanup = qScopeGuard([&] { CloseServiceHandle(serviceManager); });
+  // Query for Mullvad Service.
+  auto servicehandle =
+      OpenService(serviceManager, MV_SERVICE_NAME, GENERIC_READ);
+  auto err = GetLastError();
+  CloseServiceHandle(servicehandle);
+  if (err != ERROR_SERVICE_DOES_NOT_EXIST) {
+    WindowsCommons::windowsLog("Mullvad Detected - Disabling SplitTunnel: ");
+    // Mullvad is installed, so we would certainly break things.
+    return true;
+  }
+  auto symlink = QFileInfo(QString::fromWCharArray(DRIVER_SYMLINK));
+  if (!symlink.exists()) {
+    // The driver is not loaded / installed.. MV is not installed, all good!
+    logger.info() << "No Split-Tunnel Conflict detected, continue.";
+    return false;
+  }
+  // The driver exists, so let's check if it has been created by us.
+  // If our service is not present, it's has been created by
+  // someone else so we should not use that :)
+  servicehandle =
+      OpenService(serviceManager, DRIVER_SERVICE_NAME, GENERIC_READ);
+  err = GetLastError();
+  CloseServiceHandle(servicehandle);
+  return err == ERROR_SERVICE_DOES_NOT_EXIST;
 }

@@ -145,6 +145,7 @@ class WindowsSplitTunnel final : public QObject {
   static SC_HANDLE installDriver();
   static bool uninstallDriver();
   static bool isInstalled();
+  static bool detectConflict();
 
  private slots:
   void initDriver();
@@ -154,6 +155,7 @@ class WindowsSplitTunnel final : public QObject {
   constexpr static const auto DRIVER_SYMLINK = L"\\\\.\\MULLVADSPLITTUNNEL";
   constexpr static const auto DRIVER_FILENAME = "mullvad-split-tunnel.sys";
   constexpr static const auto DRIVER_SERVICE_NAME = L"MozillaVPNSplitTunnel";
+  constexpr static const auto MV_SERVICE_NAME = L"MullvadVPN";
   DRIVER_STATE getState();
 
   // Initializes the WFP Sublayer
