@@ -47,6 +47,14 @@
     "type": {
       "type": "string",
       "description": "A type for this block: text, title, ulist, olist, etc"
+    },
+    "style": {
+      "type": "string",
+      "description": "A style required for button composer blocks"
+    },
+    "javascript": {
+      "type": "string",
+      "description": "A javascript file that performs an action for button compsoer blocks"
     }
   },
   "required": [ "id", "content", "type" ]

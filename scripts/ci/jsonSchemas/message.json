@@ -24,6 +24,10 @@
       "type": "number",
       "description": "Epoch time of this message"
     },
+    "badge": {
+      "type": "string",
+      "description": "The type of this message"
+    },
     "blocks": {
       "type": "array",
       "description": "The list of text blocks",

@@ -12,6 +12,7 @@ Text {
     lineHeightMode: Text.FixedHeight
     lineHeight: VPNTheme.theme.controllerInterLineHeight
     color: VPNTheme.theme.fontColorDark
+    wrapMode: Text.Wrap
 
     Accessible.role: Accessible.StaticText
     Accessible.name: text

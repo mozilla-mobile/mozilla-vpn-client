@@ -14,6 +14,7 @@ Rectangle {
     width: VPNTheme.theme.swipeDelegateActionWidth
 
     Accessible.role: Accessible.Button
+    Accessible.onPressAction: SwipeDelegate.clicked()
 
     Keys.onSpacePressed: {
         SwipeDelegate.clicked()
