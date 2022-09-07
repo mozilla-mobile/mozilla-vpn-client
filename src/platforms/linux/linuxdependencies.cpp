@@ -101,3 +101,39 @@ QString LinuxDependencies::findCgroupPath(const QString& type) {
 
   return QString();
 }
+
+// static
+QString LinuxDependencies::findCgroup2Path() {
+  struct mntent entry;
+  char buf[PATH_MAX];
+
+  FILE* fp = fopen("/etc/mtab", "r");
+  if (fp == NULL) {
+    return QString();
+  }
+
+  while (getmntent_r(fp, &entry, buf, sizeof(buf)) != NULL) {
+    if (strcmp(entry.mnt_type, "cgroup2") != 0) {
+      continue;
+    }
+    return QString(entry.mnt_dir);
+  }
+  fclose(fp);
+
+  return QString();
+}
+
+// static
+QString LinuxDependencies::gnomeShellVersion() {
+  QDBusInterface iface("org.gnome.Shell", "/org/gnome/Shell",
+                       "org.gnome.Shell");
+  if (!iface.isValid()) {
+    return QString();
+  }
+
+  QVariant shellVersion = iface.property("ShellVersion");
+  if (!shellVersion.isValid()) {
+    return QString();
+  }
+  return shellVersion.toString();
+}
