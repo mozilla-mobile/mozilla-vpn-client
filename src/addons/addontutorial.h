@@ -23,7 +23,6 @@ class AddonTutorial final : public Addon {
 
   Q_PROPERTY(QString image MEMBER m_image CONSTANT)
   Q_PROPERTY(bool highlighted READ highlighted CONSTANT)
-  Q_PROPERTY(bool advanced MEMBER m_advanced CONSTANT)
 
  public:
   static Addon* create(QObject* parent, const QString& manifestFileName,
@@ -59,7 +58,6 @@ class AddonTutorial final : public Addon {
   QList<TutorialStep*> m_steps;
   int32_t m_currentStep = -1;
   bool m_highlighted = false;
-  bool m_advanced = false;
 
   QStringList m_allowedItems;
 

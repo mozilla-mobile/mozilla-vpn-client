@@ -11,7 +11,9 @@ import Mozilla.VPN.qmlcomponents 1.0
 import components 0.1
 
 GridLayout {
-    property var customTutorialFilter: () => true
+    objectName: "tutorialList"
+
+    property var customFilter: () => true
     property var count: tutorialRepeater.count
 
     columns: width < VPNTheme.theme.tabletMinimumWidth ? 1 : 2
@@ -20,7 +22,7 @@ GridLayout {
     visible: count > 0
 
     function tutorialFilter(addon) {
-        return addon.type === "tutorial" && customTutorialFilter(addon);
+        return addon.type === "tutorial" && customFilter(addon);
     }
 
     VPNFilterProxyModel {
@@ -34,7 +36,7 @@ GridLayout {
         model: tutorialModel
 
         delegate: VPNTutorialCard {
-            objectName: addon.id
+            objectName: addon.highlighted ? "highlightedTutorial" : addon.id
 
             Layout.preferredHeight: VPNTheme.theme.tutorialCardHeight
             Layout.fillWidth: true
