@@ -1,3 +1,3 @@
 (function(api) {
-  api.navigator.requestScreen(api.navigator.ScreenUpdateRequired);
+  api.navigator.requestScreen(api.navigator.ScreenUpdateRecommended);
 })
