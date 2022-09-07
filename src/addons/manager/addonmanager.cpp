@@ -129,10 +129,12 @@ void AddonManager::updateAddonsList(QList<AddonData> addons) {
 
   if (!m_loadCompleted) {
     if (taskAdded) {
-      TaskScheduler::scheduleTask(new TaskFunction([this]() {
-        m_loadCompleted = true;
-        emit loadCompletedChanged();
-      }));
+      TaskScheduler::scheduleTask(new TaskFunction(
+          [this]() {
+            m_loadCompleted = true;
+            emit loadCompletedChanged();
+          },
+          false));
     } else {
       m_loadCompleted = true;
       emit loadCompletedChanged();
