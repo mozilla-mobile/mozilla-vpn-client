@@ -5,8 +5,7 @@
   "type": "message",
   "translatable": false,
   "conditions": {
-    "env": "staging",
-    "trigger_time": 1
+    "env": "staging"
   },
   "message": {
     "id": "message_expiring_subscription",
