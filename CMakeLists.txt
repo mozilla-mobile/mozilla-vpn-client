@@ -137,3 +137,15 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     add_subdirectory(macos/loginitem)
     add_subdirectory(macos/pkg)
 endif()
+
+include(ExternalProject)
+set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
+ExternalProject_Add(sentry
+    GIT_REPOSITORY https://github.com/getsentry/sentry-native/
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DSENTRY_BUILD_SHARED_LIBS=false
+)
+
+target_include_directories(mozillavpn PUBLIC ${EXTERNAL_INSTALL_LOCATION}/include)
+target_link_directories( mozillavpn PUBLIC ${EXTERNAL_INSTALL_LOCATION}/lib)
+target_link_libraries(mozillavpn PUBLIC libsentry.a)
+add_dependencies(mozillavpn sentry)
