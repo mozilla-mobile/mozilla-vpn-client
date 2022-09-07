@@ -15,6 +15,7 @@
 #include <QIcon>
 #include <QMenu>
 #include <QWindow>
+#include <QSystemTrayIcon>
 
 namespace {
 Logger logger(LOG_MAIN, "SystemTrayNotificationHandler");
@@ -26,6 +27,9 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
+
+  m_menu = new QMenu();
+  m_systemTrayIcon = new QSystemTrayIcon();
 
   connect(vpn, &MozillaVPN::stateChanged, this,
           &SystemTrayNotificationHandler::updateContextMenu);
@@ -42,10 +46,10 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
   connect(QmlEngineHolder::instance()->window(), &QWindow::visibleChanged, this,
           &SystemTrayNotificationHandler::updateContextMenu);
 
-  connect(&m_systemTrayIcon, &QSystemTrayIcon::activated, this,
+  connect(m_systemTrayIcon, &QSystemTrayIcon::activated, this,
           &SystemTrayNotificationHandler::maybeActivated);
 
-  connect(&m_systemTrayIcon, &QSystemTrayIcon::messageClicked, this,
+  connect(m_systemTrayIcon, &QSystemTrayIcon::messageClicked, this,
           &SystemTrayNotificationHandler::messageClickHandle);
 
   // Initial setup for the systray
@@ -59,39 +63,45 @@ SystemTrayNotificationHandler::~SystemTrayNotificationHandler() {
   MVPN_COUNT_DTOR(SystemTrayNotificationHandler);
 }
 
+#ifdef MVPN_WASM
+QMenu* SystemTrayNotificationHandler::contextMenu() {
+  return m_systemTrayIcon->contextMenu();
+}
+#endif
+
 void SystemTrayNotificationHandler::createStatusMenu() {
   logger.debug() << "Create status menu";
 
-  m_statusLabel = m_menu.addAction("");
+  m_statusLabel = m_menu->addAction("");
   m_statusLabel->setEnabled(false);
 
-  m_lastLocationLabel = m_menu.addAction("", []() {
+  m_lastLocationLabel = m_menu->addAction("", []() {
     ExternalOpHandler::instance()->request(ExternalOpHandler::OpActivate);
   });
   m_lastLocationLabel->setEnabled(false);
 
-  m_disconnectAction = m_menu.addAction("", []() {
+  m_disconnectAction = m_menu->addAction("", []() {
     ExternalOpHandler::instance()->request(ExternalOpHandler::OpDeactivate);
   });
 
-  m_separator = m_menu.addSeparator();
+  m_separator = m_menu->addSeparator();
 
-  m_showHideLabel = m_menu.addAction(
+  m_showHideLabel = m_menu->addAction(
       "", this, &SystemTrayNotificationHandler::showHideWindow);
 
-  m_menu.addSeparator();
+  m_menu->addSeparator();
 
-  m_helpAction = m_menu.addAction("", []() {
+  m_helpAction = m_menu->addAction("", []() {
     ExternalOpHandler::instance()->request(ExternalOpHandler::OpGetHelp);
   });
 
-  m_preferencesAction = m_menu.addAction("", []() {
+  m_preferencesAction = m_menu->addAction("", []() {
     ExternalOpHandler::instance()->request(ExternalOpHandler::OpSettings);
   });
 
-  m_menu.addSeparator();
+  m_menu->addSeparator();
 
-  m_quitAction = m_menu.addAction("", []() {
+  m_quitAction = m_menu->addAction("", []() {
     ExternalOpHandler::instance()->request(ExternalOpHandler::OpQuit);
   });
 }
@@ -104,9 +114,9 @@ void SystemTrayNotificationHandler::setStatusMenu() {
 
   // TODO: Check if method is called on these devices.
 #if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
-  m_systemTrayIcon.setToolTip(qtTrId("vpn.main.productName"));
-  m_systemTrayIcon.setContextMenu(&m_menu);
-  m_systemTrayIcon.show();
+  m_systemTrayIcon->setToolTip(qtTrId("vpn.main.productName"));
+  m_systemTrayIcon->setContextMenu(m_menu);
+  m_systemTrayIcon->show();
 #endif
 }
 
@@ -117,7 +127,7 @@ void SystemTrayNotificationHandler::notify(NotificationHandler::Message type,
   Q_UNUSED(type);
 
   QIcon icon(Constants::LOGO_URL);
-  m_systemTrayIcon.showMessage(title, message, icon, timerMsec);
+  m_systemTrayIcon->showMessage(title, message, icon, timerMsec);
 }
 
 void SystemTrayNotificationHandler::retranslate() {
@@ -232,7 +242,7 @@ void SystemTrayNotificationHandler::updateIcon() {
   Q_ASSERT(vpn);
 
 #if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
-  m_systemTrayIcon.setIcon(vpn->statusIcon()->icon());
+  m_systemTrayIcon->setIcon(vpn->statusIcon()->icon());
 #endif
 }
 
@@ -245,8 +255,7 @@ void SystemTrayNotificationHandler::showHideWindow() {
   }
 }
 
-void SystemTrayNotificationHandler::maybeActivated(
-    QSystemTrayIcon::ActivationReason reason) {
+void SystemTrayNotificationHandler::maybeActivated(int reason) {
   logger.debug() << "Activated";
 
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)

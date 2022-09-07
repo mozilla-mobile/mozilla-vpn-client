@@ -37,5 +37,4 @@ void SystemTrayNotificationHandler::updateIcon() {}
 
 void SystemTrayNotificationHandler::showHideWindow() {}
 
-void SystemTrayNotificationHandler::maybeActivated(
-    QSystemTrayIcon::ActivationReason reason) {}
+void SystemTrayNotificationHandler::maybeActivated(int reason) {}

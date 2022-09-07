@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
   pe.insert("LANG", "en");
   pe.insert("LANGUAGE", "en");
 
-  QApplication app(argc, argv);
+  QCoreApplication app(argc, argv);
 
   int failures = 0;
 
