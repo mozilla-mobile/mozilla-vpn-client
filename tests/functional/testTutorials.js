@@ -17,8 +17,8 @@ describe('Tutorials', function () {
     await vpn.clickOnElement('settingsTipsAndTricks');
     await vpn.wait();
 
-    await vpn.waitForElement('highlightedTutorials');
-    await vpn.clickOnElement('highlightedTutorials');
+    await vpn.waitForElement('tutorialList/highlightedTutorial');
+    await vpn.clickOnElement('tutorialList/highlightedTutorial');
     await vpn.wait();
   }
 

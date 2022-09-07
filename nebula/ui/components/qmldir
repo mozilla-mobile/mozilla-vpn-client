@@ -97,3 +97,4 @@ VPNVerticalSpacer 0.1 VPNVerticalSpacer.qml
 VPNViewBase 0.1 VPNViewBase.qml
 VPNGuideList 0.1 VPNGuideList.qml
 VPNTutorialList 0.1 VPNTutorialList.qml
+VPNTipsAndTricksSection 0.1 VPNTipsAndTricksSection.qml
