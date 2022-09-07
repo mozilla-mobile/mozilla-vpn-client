@@ -43,6 +43,8 @@
 #include "urlopener.h"
 #include "websocket/websockethandler.h"
 
+#include "sentry.h"
+
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosdatamigration.h"
 #  include "platforms/ios/iosutils.h"
@@ -1068,6 +1070,14 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
   }
 
   setAlert(alert);
+
+  QMetaEnum metaEnum = QMetaEnum::fromType<ErrorHandler::ErrorType>();
+  QString error_name = metaEnum.valueToKey(error);
+  sentry_value_t event = sentry_value_new_event();
+  sentry_value_t exc = sentry_value_new_exception(error_name.toUtf8(), "");
+  sentry_value_set_stacktrace(exc, NULL, 0);
+  sentry_event_add_exception(event, exc);
+  sentry_capture_event(event);
 
   logger.error() << "Alert:" << alert << "State:" << m_state;
 

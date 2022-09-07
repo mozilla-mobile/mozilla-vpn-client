@@ -29,6 +29,7 @@ class ErrorHandler final : public QObject {
     UnrecoverableError,
     IgnoredError,
   };
+  Q_ENUM(ErrorType)
 
   static ErrorType toErrorType(QNetworkReply::NetworkError error);
 
