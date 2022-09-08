@@ -1084,6 +1084,7 @@ describe('Subscription view', function() {
     assert(await vpn.getElementProperty('learnMoreLink', 'visible') === 'true');
   });
 
+
   it('Account deletion - totp', async () => {
     this.ctx.fxaLoginCallback = (req) => {
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
@@ -1301,4 +1302,122 @@ describe('Subscription view', function() {
     assert(await vpn.getElementProperty('getStarted', 'visible') === 'true');
     assert(await vpn.getElementProperty('learnMoreLink', 'visible') === 'true');
   });
+
+  const relayUpsell =
+      'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-relayUpsell-layout';
+
+  async function clickSettingsIcon() {
+    await vpn.waitForElement('navigationLayout/navButton-settings');
+    await vpn.clickOnElement('navigationLayout/navButton-settings');
+  }
+  async function openSubscriptionManagement() {
+    await vpn.waitForElement('settingsUserProfile');
+    await vpn.clickOnElement('settingsUserProfile');
+  }
+
+  it('Correctly shows or hides the VPN / Relay upgrade UI based on locale',
+     async () => {
+       this.ctx.fxaLoginCallback = (req) => {
+         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
+           sessionToken: 'session',
+           verified: true,
+           verificationMethod: ''
+         };
+         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
+       };
+       this.ctx.guardianSubscriptionDetailsCallback = req => {
+         this.ctx.guardianOverrideEndpoints
+             .GETs['/api/v1/vpn/subscriptionDetails']
+             .status = 200;
+         this.ctx.guardianOverrideEndpoints
+             .GETs['/api/v1/vpn/subscriptionDetails']
+             .body = SUBSCRIPTION_DETAILS;
+       };
+
+       if (!(await vpn.isFeatureFlippedOn('bundleUpgrade'))) {
+         await vpn.flipFeatureOn('bundleUpgrade');
+       }
+
+       await clickSettingsIcon();
+       await openSubscriptionManagement();
+
+       await vpn.waitForElement(relayUpsell);
+       await vpn.waitForElementProperty(relayUpsell, 'visible', 'true');
+
+
+       await clickSettingsIcon();
+
+       await vpn.setSetting('language-code', 'de');
+       await openSubscriptionManagement();
+
+       await vpn.waitForElement(relayUpsell);
+       await vpn.waitForElementProperty(relayUpsell, 'visible', 'false');
+     });
+
+  it('Hides Relay upsell if bundleUpgrade feature is not enabled', async () => {
+    await vpn.flipFeatureOff('bundleUpgrade');
+
+    this.ctx.fxaLoginCallback = (req) => {
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
+        sessionToken: 'session',
+        verified: true,
+        verificationMethod: ''
+      };
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
+    };
+    this.ctx.guardianSubscriptionDetailsCallback = req => {
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .status = 200;
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .body = SUBSCRIPTION_DETAILS;
+    };
+
+    await clickSettingsIcon();
+    await openSubscriptionManagement();
+
+    await vpn.waitForElement(relayUpsell);
+    await vpn.waitForElementProperty(relayUpsell, 'visible', 'false');
+  });
+
+
+  it('Hides Relay upsell if  subscription type is not "web"', async () => {
+    await vpn.flipFeatureOn('bundleUpgrade');
+
+    const SUBSCRIPTION_DETAILS_CLONE = Object.assign({}, SUBSCRIPTION_DETAILS);
+    SUBSCRIPTION_DETAILS_CLONE.subscription = {
+      _subscription_type: 'iap_apple',
+      expiry_time_millis: 2147483647,
+      auto_renewing: true,
+    };
+
+    this.ctx.fxaLoginCallback = (req) => {
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
+        sessionToken: 'session',
+        verified: true,
+        verificationMethod: ''
+      };
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
+    };
+    this.ctx.guardianSubscriptionDetailsCallback = req => {
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .status = 200;
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .body = SUBSCRIPTION_DETAILS_CLONE;
+    };
+
+    await clickSettingsIcon();
+    await openSubscriptionManagement();
+
+    await vpn.waitForElement(
+        'subscriptionItem/subscriptionItem-status/subscriptionItem-status-parent/subscriptionItem-status-relayUpsell-layout');
+    assert(
+        await vpn.getElementProperty(
+            'subscriptionItem/subscriptionItem-status/subscriptionItem-status-parent/subscriptionItem-status-relayUpsell-layout',
+            'visible') === 'false');
+  });
+
+  // TODO:
+  // Upgrade button works
+  // Learn more link works
+  
 });

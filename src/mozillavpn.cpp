@@ -582,6 +582,11 @@ void MozillaVPN::openLink(LinkType linkType) {
                          .first());
       break;
 
+    case LinkRelayPremium:
+      url = Constants::relayUrl();
+      url.append("/premium");
+      break;
+
     case LinkSubscriptionFxa:
       url = Constants::fxaUrl();
       url.append("/subscriptions");
@@ -593,6 +598,12 @@ void MozillaVPN::openLink(LinkType linkType) {
 
     case LinkSubscriptionIapGoogle:
       url = Constants::GOOGLE_SUBSCRIPTIONS_URL;
+      break;
+
+    case LinkUpgradeToBundle:
+      url = Constants::inProduction() ? Constants::API_PRODUCTION_URL
+                                      : Constants::API_STAGING_URL;
+      url.append("/r/vpn/upgradeToPrivacyBundle");
       break;
 
     default:
