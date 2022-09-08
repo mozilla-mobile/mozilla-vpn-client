@@ -201,12 +201,13 @@ int ServerCountryModel::cityConnectionScore(const QString& countryCode,
 
 int ServerCountryModel::cityConnectionScore(const ServerCity& city) const {
   qint64 now = QDateTime::currentSecsSinceEpoch();
+  int score = Poor;
   int activeServerCount = 0;
-  uint32_t avgLatencyMsec = 0;
+  uint32_t sumLatencyMsec = 0;
   for (const QString& pubkey : city.servers()) {
     const Server& server = m_servers[pubkey];
     if (server.cooldownTimeout() <= now) {
-      avgLatencyMsec += server.latency();
+      sumLatencyMsec += server.latency();
       activeServerCount++;
     }
   }
@@ -222,19 +223,24 @@ int ServerCountryModel::cityConnectionScore(const ServerCity& city) const {
   }
   // In the unlikely event that the sum of the latencies is zero, then we
   // haven't actually measured anything and have nothing to report.
-  if (avgLatencyMsec == 0) {
+  if (sumLatencyMsec == 0) {
     return NoData;
   }
 
-  // Otherwise, return a score depending on the average latency.
-  avgLatencyMsec /= activeServerCount;
-  if (avgLatencyMsec < 50) {
-    return Good;
-  } else if (avgLatencyMsec < 100) {
-    return Moderate;
-  } else {
-    return Poor;
+  // Increase the score if the location has less than 100ms of latency.
+  if ((sumLatencyMsec / activeServerCount) < 100) {
+    score++;
   }
+
+  // Increase the score if the location has 6 or more servers.
+  if (activeServerCount >= 6) {
+    score++;
+  }
+
+  if (score > Good) {
+    score = Good;
+  }
+  return score;
 }
 
 bool ServerCountryModel::pickIfExists(const QString& countryCode,
