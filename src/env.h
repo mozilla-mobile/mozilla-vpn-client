@@ -7,6 +7,10 @@
 
 #include "constants.h"
 
+#ifdef MVPN_WINDOWS
+#include "platforms/windows/windowscommons.h"
+#endif
+
 #include <QObject>
 
 class Env final : public QObject {
