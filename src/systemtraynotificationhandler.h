@@ -7,9 +7,10 @@
 
 #include "notificationhandler.h"
 
+#include <QSystemTrayIcon>
+
 class QAction;
 class QMenu;
-class QSystemTrayIcon;
 
 class SystemTrayNotificationHandler : public NotificationHandler {
  public:
@@ -39,7 +40,7 @@ class SystemTrayNotificationHandler : public NotificationHandler {
  private:
   void createStatusMenu();
 
-  void maybeActivated(int reason);
+  void maybeActivated(QSystemTrayIcon::ActivationReason reason);
 
   void updateContextMenu();
 

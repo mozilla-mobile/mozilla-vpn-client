@@ -255,7 +255,8 @@ void SystemTrayNotificationHandler::showHideWindow() {
   }
 }
 
-void SystemTrayNotificationHandler::maybeActivated(int reason) {
+void SystemTrayNotificationHandler::maybeActivated(
+    QSystemTrayIcon::ActivationReason reason) {
   logger.debug() << "Activated";
 
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
