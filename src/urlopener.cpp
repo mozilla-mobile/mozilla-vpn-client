@@ -55,15 +55,15 @@ QUrl UrlOpener::replaceUrlParams(const QUrl& originalUrl) {
 
   for (QPair<QString, QString>& item : currentQuery.queryItems()) {
     if (item.second == "__VPN_VERSION__") {
-      newQuery.addQueryItem(item.first, MozillaVPN::versionString());
+      newQuery.addQueryItem(item.first, Env::versionString());
     } else if (item.second == "__VPN_BUILDNUMBER__") {
-      newQuery.addQueryItem(item.first, MozillaVPN::buildNumber());
+      newQuery.addQueryItem(item.first, Env::buildNumber());
     } else if (item.second == "__VPN_OS__") {
-      newQuery.addQueryItem(item.first, MozillaVPN::osVersion());
+      newQuery.addQueryItem(item.first, Env::osVersion());
     } else if (item.second == "__VPN_PLATFORM__") {
-      newQuery.addQueryItem(item.first, MozillaVPN::platform());
+      newQuery.addQueryItem(item.first, Env::platform());
     } else if (item.second == "__VPN_ARCH__") {
-      newQuery.addQueryItem(item.first, MozillaVPN::architecture());
+      newQuery.addQueryItem(item.first, Env::architecture());
     } else if (item.second == "__VPN_GRAPHICSAPI__") {
       newQuery.addQueryItem(item.first, MozillaVPN::graphicsApi());
     } else {
