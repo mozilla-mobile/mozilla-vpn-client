@@ -107,6 +107,8 @@ constexpr const char* APPLE_SUBSCRIPTIONS_URL =
 constexpr const char* GOOGLE_SUBSCRIPTIONS_URL =
     "https://play.google.com/store/account/subscriptions";
 
+constexpr const char* ADDON_SETTINGS_GROUP = "addons";
+
 PRODBETAEXPR(QString, fxaApiBaseUrl, "https://api.accounts.firefox.com",
              envOrDefault("MVPN_FXA_API_BASE_URL",
                           "https://api-accounts.stage.mozaws.net"))

@@ -50,6 +50,7 @@ class SettingsHolder final : public QObject {
   QString getReport() const;
 
   void clear();
+  void clearGroup(const QString& group);
 
   void sync();
 
@@ -69,10 +70,29 @@ class SettingsHolder final : public QObject {
 
   QString settingsFileName() const;
 
+  // Addon specific
+
+  struct AddonSettingQuery {
+    QString addonId;
+    QString addonGroup;
+    QString setting;
+    QString defaultValue;
+
+    AddonSettingQuery(QString ai, QString ag, QString s, QString dv)
+        : addonId(ai), addonGroup(ag), setting(s), defaultValue(dv) {}
+  };
+  QString getAddonSetting(AddonSettingQuery query);
+  bool hasAddonSetting(AddonSettingQuery query);
+  void setAddonSetting(AddonSettingQuery query, const QString& value);
+
  private:
   explicit SettingsHolder(QObject* parent);
 
   QString placeholderUserDNS() const;
+
+  // Addon specific
+
+  static QString getAddonSettingKey(AddonSettingQuery query);
 
  private:
   QSettings m_settings;

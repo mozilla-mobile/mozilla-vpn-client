@@ -130,14 +130,6 @@ SETTING_BYTEARRAY(devices,     // getter
                   true         // remove when reset
 )
 
-SETTING_STRINGLIST(dismissedAddonMessages,      // getter
-                   setDismissedAddonMessages,   // setter
-                   hasDismissedAddonMessages,   // has
-                   "addons/dismissedMessages",  // key
-                   QStringList(),               // default value
-                   true                         // remove when reset
-)
-
 SETTING_INT(dnsProvider,                           // getter
             setDNSProvider,                        // setter
             hasDNSProvider,                        // has
@@ -299,22 +291,6 @@ SETTING_STRING(publicKeyJournal,     // getter
                "publicKeyJournal",   // key
                "",                   // default value
                true                  // remove when reset
-)
-
-SETTING_STRINGLIST(readAddonMessages,      // getter
-                   setReadAddonMessages,   // setter
-                   hasReadAddonMessages,   // has
-                   "addons/readMessages",  // key
-                   QStringList(),          // default value
-                   true                    // remove when reset
-)
-
-SETTING_STRINGLIST(notifiedAddonMessages,      // getter
-                   setNotifiedAddonMessages,   // setter
-                   hasNotifiedAddonMessages,   // has
-                   "addons/notifiedMessages",  // key
-                   QStringList(),              // default value
-                   true                        // remove when reset
 )
 
 SETTING_STRINGLIST(recentConnections,     // getter

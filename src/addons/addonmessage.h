@@ -8,12 +8,17 @@
 #include "addon.h"
 #include "addonproperty.h"
 #include "../composer/composer.h"
+#include "settingsholder.h"
 
 class QJsonObject;
 
 #ifdef UNIT_TEST
 class TestAddon;
 #endif
+
+constexpr const char* ADDON_MESSAGE_SETTINGS_GROUP = "message";
+constexpr const char* ADDON_MESSAGE_SETTINGS_STATE_KEY = "state";
+constexpr const char* ADDON_MESSAGE_DEFAULT_STATE = "Received";
 
 class AddonMessage final : public Addon {
   Q_OBJECT
@@ -78,6 +83,13 @@ class AddonMessage final : public Addon {
   AddonMessage(QObject* parent, const QString& manifestFileName,
                const QString& id, const QString& name);
 
+  struct StateQuery : public SettingsHolder::AddonSettingQuery {
+    StateQuery(const QString& ai)
+        : SettingsHolder::AddonSettingQuery(
+              ai, QString(ADDON_MESSAGE_SETTINGS_GROUP),
+              QString(ADDON_MESSAGE_SETTINGS_STATE_KEY),
+              QString(ADDON_MESSAGE_DEFAULT_STATE)) {}
+  };
   static State loadMessageState(const QString& id);
   void updateMessageState(State newState);
 
@@ -95,10 +107,11 @@ class AddonMessage final : public Addon {
 
   State m_state = State::Received;
 
+  Badge m_badge;
+
 #ifdef UNIT_TEST
   friend class TestAddon;
 #endif
-  Badge m_badge;
 };
 
 #endif  // ADDONMESSAGE_H

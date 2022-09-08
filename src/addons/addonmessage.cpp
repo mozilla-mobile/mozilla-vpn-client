@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addonmessage.h"
+#include "constants.h"
 #include "l18nstrings.h"
 #include "leakdetector.h"
 #include "localizer.h"
@@ -12,6 +13,7 @@
 #include "timersingleshot.h"
 
 #include <QJsonObject>
+#include <QMetaEnum>
 
 namespace {
 Logger logger(LOG_MAIN, "AddonMessage");
@@ -80,19 +82,17 @@ AddonMessage::~AddonMessage() { MVPN_COUNT_DTOR(AddonMessage); }
 AddonMessage::State AddonMessage::loadMessageState(const QString& id) {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
-  QStringList notifiedAddonMessages = settingsHolder->notifiedAddonMessages();
-  if (notifiedAddonMessages.contains(id)) {
-    return State::Notified;
-  }
+  bool isValidState;
+  QString stateSetting = settingsHolder->getAddonSetting(StateQuery(id));
+  QMetaEnum stateMetaEnum = QMetaEnum::fromType<State>();
 
-  QStringList readAddonMessages = settingsHolder->readAddonMessages();
-  if (readAddonMessages.contains(id)) {
-    return State::Read;
-  }
+  if (!stateSetting.isEmpty()) {
+    int persistedState = stateMetaEnum.keyToValue(
+        stateSetting.toLocal8Bit().constData(), &isValidState);
 
-  QStringList dismissedAddonMessages = settingsHolder->dismissedAddonMessages();
-  if (dismissedAddonMessages.contains(id)) {
-    return State::Dismissed;
+    if (isValidState) {
+      return static_cast<State>(persistedState);
+    }
   }
 
   return State::Received;
@@ -101,61 +101,10 @@ AddonMessage::State AddonMessage::loadMessageState(const QString& id) {
 void AddonMessage::updateMessageState(State newState) {
   if (m_state == newState) return;
 
+  QMetaEnum stateMetaEnum = QMetaEnum::fromType<State>();
+  QString newStateSetting = stateMetaEnum.valueToKey(newState);
   SettingsHolder* settingsHolder = SettingsHolder::instance();
-
-  switch (m_state) {
-    case State::Received: {
-      // Do nothing. This state is not saved in settings,
-      // but it's also not an error.
-      break;
-    }
-    case State::Notified: {
-      QStringList notifiedAddonMessages =
-          settingsHolder->notifiedAddonMessages();
-      notifiedAddonMessages.removeAll(id());
-      settingsHolder->setNotifiedAddonMessages(notifiedAddonMessages);
-      break;
-    }
-    case State::Read: {
-      QStringList readAddonMessaged = settingsHolder->readAddonMessages();
-      readAddonMessaged.removeAll(id());
-      settingsHolder->setReadAddonMessages(readAddonMessaged);
-      break;
-    }
-    case State::Dismissed: {
-      logger.error()
-          << "Attempted to change the state of a dismissed message. Ignoring.";
-      return;
-    }
-  }
-
-  switch (newState) {
-    case State::Received: {
-      // Do nothing. This state is not saved in settings,
-      // but it's also not an error.
-      break;
-    }
-    case State::Notified: {
-      QStringList notifiedAddonMessages =
-          settingsHolder->notifiedAddonMessages();
-      notifiedAddonMessages.append(id());
-      settingsHolder->setNotifiedAddonMessages(notifiedAddonMessages);
-      break;
-    }
-    case State::Read: {
-      QStringList readAddonMessages = settingsHolder->readAddonMessages();
-      readAddonMessages.append(id());
-      settingsHolder->setReadAddonMessages(readAddonMessages);
-      break;
-    }
-    case State::Dismissed: {
-      QStringList dismissedAddonMessages =
-          settingsHolder->dismissedAddonMessages();
-      dismissedAddonMessages.append(id());
-      settingsHolder->setDismissedAddonMessages(dismissedAddonMessages);
-      break;
-    }
-  }
+  settingsHolder->setAddonSetting(StateQuery(id()), newStateSetting);
 
   m_state = newState;
   emit stateChanged(m_state);

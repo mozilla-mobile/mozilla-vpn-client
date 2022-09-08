@@ -80,6 +80,14 @@ void SettingsHolder::clear() {
 #undef SETTING
 }
 
+void SettingsHolder::clearGroup(const QString& group) {
+  logger.debug() << "Clean up the settings for group" << group;
+
+  m_settings.beginGroup(group);
+  m_settings.remove("");
+  m_settings.endGroup();
+}
+
 void SettingsHolder::sync() { m_settings.sync(); }
 
 void SettingsHolder::hardReset() {
@@ -159,4 +167,35 @@ QString SettingsHolder::placeholderUserDNS() const {
 void SettingsHolder::removeEntryServer() {
   m_settings.remove("entryServer/countryCode");
   m_settings.remove("entryServer/city");
+}
+
+// Addon specific
+
+// static
+QString SettingsHolder::getAddonSettingKey(AddonSettingQuery query) {
+  return QString("%1/%2/%3/%4")
+      .arg(Constants::ADDON_SETTINGS_GROUP)
+      .arg(query.addonGroup)
+      .arg(query.addonId)
+      .arg(query.setting);
+}
+
+bool SettingsHolder::hasAddonSetting(AddonSettingQuery query) {
+  QString key = getAddonSettingKey(query);
+  return m_settings.contains(key);
+}
+
+QString SettingsHolder::getAddonSetting(AddonSettingQuery query) {
+  if (!hasAddonSetting(query)) return query.defaultValue;
+
+  QString key = getAddonSettingKey(query);
+  return m_settings.value(key).toString();
+}
+
+void SettingsHolder::setAddonSetting(AddonSettingQuery query,
+                                     const QString& value) {
+  if (!!hasAddonSetting(query) || getAddonSetting(query) != value) {
+    QString key = getAddonSettingKey(query);
+    m_settings.setValue(key, value);
+  }
 }
