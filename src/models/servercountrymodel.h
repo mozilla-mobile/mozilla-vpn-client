@@ -24,6 +24,7 @@ class ServerCountryModel final : public QAbstractListModel {
     CodeRole,
     CitiesRole,
   };
+
   enum ServerConnectionScores {
     Unavailable = -1,
     NoData = 0,
@@ -31,6 +32,7 @@ class ServerCountryModel final : public QAbstractListModel {
     Moderate = 2,
     Good = 3,
   };
+  Q_ENUM(ServerConnectionScores);
 
   ServerCountryModel();
   ~ServerCountryModel();
@@ -71,6 +73,9 @@ class ServerCountryModel final : public QAbstractListModel {
   void setCooldownForAllServersInACity(const QString& countryCode,
                                        const QString& cityCode,
                                        unsigned int duration);
+
+  Q_INVOKABLE int cityConnectionScore(const QString& countryCode,
+                                      const QString& cityCode) const;
 
   // QAbstractListModel methods
 

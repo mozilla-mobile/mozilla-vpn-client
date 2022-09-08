@@ -164,13 +164,8 @@ QVariant ServerCountryModel::data(const QModelIndex& index, int role) const {
       const ServerCountry& country = m_countries.at(index.row());
 
       QList<QVariant> list;
-      const QList<ServerCity>& cities = country.cities();
-      for (const ServerCity& city : cities) {
-        QStringList names{
-            city.name(),
-            ServerI18N::translateCityName(country.code(), city.name()),
-            QString::number(cityConnectionScore(city))};
-        list.append(QVariant(names));
+      for (const ServerCity& city : country.cities()) {
+        list.append(QVariant::fromValue(&city));
       }
 
       return QVariant(list);
@@ -181,11 +176,34 @@ QVariant ServerCountryModel::data(const QModelIndex& index, int role) const {
   }
 }
 
+int ServerCountryModel::cityConnectionScore(const QString& countryCode,
+                                            const QString& cityCode) const {
+  for (const ServerCountry& country : m_countries) {
+    if (country.code() != countryCode) {
+      continue;
+    }
+
+    for (const ServerCity& city : country.cities()) {
+      if (city.code() != cityCode) {
+        continue;
+      }
+
+      return cityConnectionScore(city);
+    }
+
+    // No such city was found.
+    return NoData;
+  }
+
+  // No such country was found.
+  return NoData;
+}
+
 int ServerCountryModel::cityConnectionScore(const ServerCity& city) const {
   qint64 now = QDateTime::currentSecsSinceEpoch();
   int activeServerCount = 0;
   uint32_t avgLatencyMsec = 0;
-  for (QString pubkey : city.servers()) {
+  for (const QString& pubkey : city.servers()) {
     const Server& server = m_servers[pubkey];
     if (server.cooldownTimeout() <= now) {
       avgLatencyMsec += server.latency();
@@ -193,13 +211,12 @@ int ServerCountryModel::cityConnectionScore(const ServerCity& city) const {
     }
   }
 
-  // If there are no reachable servers, then return a negative score.
+  // Ensure there is at least one reachable server.
   if (activeServerCount == 0) {
     return Unavailable;
   }
 
-  // If the feature is disabled, return a score of zero, to indicate
-  // that we have no data to report.
+  // If the feature is disabled, we have no data to return.
   if (!Feature::get(Feature::Feature_serverConnectionScore)->isSupported()) {
     return NoData;
   }
