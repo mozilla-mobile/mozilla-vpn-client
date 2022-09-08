@@ -78,6 +78,7 @@ HEADERS += \
     ../../src/controller.h \
     ../../src/curve25519.h \
     ../../src/dnspingsender.h \
+    ../../src/env.h \
     ../../src/errorhandler.h \
     ../../src/externalophandler.h \
     ../../src/frontend/navigator.h \

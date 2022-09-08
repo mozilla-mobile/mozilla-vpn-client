@@ -15,13 +15,13 @@ void TestMozillaVPNh::osVersion() {
 #else
   expected = QSysInfo::productVersion();
 #endif
-  QString actual = MozillaVPN::instance()->osVersion();
+  QString actual = Env::osVersion();
   QCOMPARE(actual, expected);
 }
 
 void TestMozillaVPNh::architecture() {
   QString expected = QSysInfo::currentCpuArchitecture();
-  QString actual = MozillaVPN::instance()->architecture();
+  QString actual = Env::architecture();
   QCOMPARE(actual, expected);
 }
 

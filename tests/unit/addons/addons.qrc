@@ -9,6 +9,7 @@
         <file>button2.js</file>
         <file>button3.js</file>
         <file>button4.js</file>
+        <file>api_env.js</file>
         <file>api_featurelist.js</file>
         <file>api_navigator.js</file>
         <file>api_settings.js</file>

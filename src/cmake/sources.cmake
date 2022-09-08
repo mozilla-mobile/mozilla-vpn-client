@@ -136,6 +136,7 @@ target_sources(mozillavpn PRIVATE
     dnshelper.h
     dnspingsender.cpp
     dnspingsender.h
+    env.h
     errorhandler.cpp
     errorhandler.h
     externalophandler.cpp

@@ -42,6 +42,7 @@ HEADERS += \
     ../../src/authenticationinapp/incrementaldecoder.h \
     ../../src/authenticationlistener.h \
     ../../src/constants.h \
+    ../../src/env.h \
     ../../src/errorhandler.h \
     ../../src/hawkauth.h \
     ../../src/hkdf.h \
