@@ -8,7 +8,7 @@
 #include "constants.h"
 
 #ifdef MVPN_WINDOWS
-#include "platforms/windows/windowscommons.h"
+#  include "platforms/windows/windowscommons.h"
 #endif
 
 #include <QObject>
