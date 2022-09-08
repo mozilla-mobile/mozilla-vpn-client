@@ -28,6 +28,8 @@ void UrlOpener::open(QUrl url, bool addEmailAddress) {
     }
   }
 
+  url = replaceUrlParams(url);
+
   if (!Constants::inProduction()) {
     MozillaVPN* vpn = MozillaVPN::instance();
     vpn->setLastUrl(url.toString());
@@ -38,4 +40,37 @@ void UrlOpener::open(QUrl url, bool addEmailAddress) {
   }
 
   QDesktopServices::openUrl(url);
+}
+
+// static
+QUrl UrlOpener::replaceUrlParams(const QUrl& originalUrl) {
+  if (!originalUrl.isValid()) {
+    logger.error() << "Invalid survey URL";
+    return originalUrl;
+  }
+
+  QUrl url(originalUrl);
+  QUrlQuery currentQuery(url.query());
+  QUrlQuery newQuery;
+
+  for (QPair<QString, QString>& item : currentQuery.queryItems()) {
+    if (item.second == "__VPN_VERSION__") {
+      newQuery.addQueryItem(item.first, MozillaVPN::versionString());
+    } else if (item.second == "__VPN_BUILDNUMBER__") {
+      newQuery.addQueryItem(item.first, MozillaVPN::buildNumber());
+    } else if (item.second == "__VPN_OS__") {
+      newQuery.addQueryItem(item.first, MozillaVPN::osVersion());
+    } else if (item.second == "__VPN_PLATFORM__") {
+      newQuery.addQueryItem(item.first, MozillaVPN::platform());
+    } else if (item.second == "__VPN_ARCH__") {
+      newQuery.addQueryItem(item.first, MozillaVPN::architecture());
+    } else if (item.second == "__VPN_GRAPHICSAPI__") {
+      newQuery.addQueryItem(item.first, MozillaVPN::graphicsApi());
+    } else {
+      newQuery.addQueryItem(item.first, item.second);
+    }
+  }
+
+  url.setQuery(newQuery);
+  return url;
 }
