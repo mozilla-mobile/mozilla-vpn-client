@@ -147,11 +147,11 @@ Window {
 
             console.debug("Initializing glean with channel set to:", channel);
             Glean.initialize("mozillavpn", VPNSettings.gleanEnabled, {
-                appBuild: "MozillaVPN/" + VPN.versionString,
-                appDisplayVersion: VPN.versionString,
+                appBuild: "MozillaVPN/" + VPN.env.versionString,
+                appDisplayVersion: VPN.env.versionString,
                 channel: channel,
-                osVersion: VPN.osVersion,
-                architecture: [VPN.architecture, VPN.graphicsApi].join(" ").trim(),
+                osVersion: VPN.env.osVersion,
+                architecture: [VPN.env.architecture, VPN.env.graphicsApi].join(" ").trim(),
             });
         }
 

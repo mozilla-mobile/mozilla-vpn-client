@@ -71,6 +71,7 @@ HEADERS += \
     helper.h \
     ../../src/constants.h \
     ../../src/controller.h \
+    ../../src/env.h \
     ../../src/externalophandler.h \
     ../../src/filterproxymodel.h \
     ../../src/hawkauth.h \

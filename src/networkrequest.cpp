@@ -391,7 +391,7 @@ NetworkRequest* NetworkRequest::createForFeedback(Task* parent,
   QJsonObject obj;
   obj.insert("feedbackText", feedbackText);
   obj.insert("logs", logs);
-  obj.insert("versionString", MozillaVPN::instance()->versionString());
+  obj.insert("versionString", Env::versionString());
   obj.insert("platformVersion", QString(NetworkManager::osVersion()));
   obj.insert("rating", rating);
   obj.insert("category", category);
@@ -427,7 +427,7 @@ NetworkRequest* NetworkRequest::createForSupportTicket(
   QJsonObject obj;
   obj.insert("email", email);
   obj.insert("logs", logs);
-  obj.insert("versionString", MozillaVPN::instance()->versionString());
+  obj.insert("versionString", Env::versionString());
   obj.insert("platformVersion", QString(NetworkManager::osVersion()));
   obj.insert("subject", subject);
   obj.insert("issueText", issueText);
