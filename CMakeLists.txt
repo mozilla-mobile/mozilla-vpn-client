@@ -11,7 +11,7 @@ if(NOT (DEFINED CMAKE_CONFIGURATION_TYPES OR DEFINED CMAKE_BUILD_TYPE))
     message("Setting build type ${CMAKE_BUILD_TYPE}")
 endif()
 
-project("Mozilla VPN" VERSION 2.10.0 LANGUAGES C CXX
+project("Mozilla VPN" VERSION 2.11.0 LANGUAGES C CXX
         DESCRIPTION "A fast, secure and easy to use VPN. Built by the makers of Firefox."
         HOMEPAGE_URL "https://vpn.mozilla.org"
 )
