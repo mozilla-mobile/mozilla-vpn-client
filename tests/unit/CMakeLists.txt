@@ -314,6 +314,8 @@ target_sources(unit_tests PRIVATE
     testthemes.h
     testtimersingleshot.cpp
     testtimersingleshot.h
+    testurlopener.cpp
+    testurlopener.h
     websocket/testexponentialbackoffstrategy.cpp
     websocket/testexponentialbackoffstrategy.h
     websocket/testpushmessage.cpp
