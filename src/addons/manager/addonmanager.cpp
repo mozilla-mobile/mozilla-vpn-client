@@ -4,7 +4,8 @@
 
 #include "addondirectory.h"
 #include "addonindex.h"
-#include "addons/manager/addonmanager.h"
+#include "addonmanager.h"
+#include "addons/addonmessage.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -433,8 +434,9 @@ QJSValue AddonManager::reduce(QJSValue callback, QJSValue initialValue) const {
 void AddonManager::reinstateMessages() const {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
-  settingsHolder->setDismissedAddonMessages(QStringList());
-  settingsHolder->setReadAddonMessages(QStringList());
+  settingsHolder->clearGroup(QString("%1/%2")
+                                 .arg(Constants::ADDON_SETTINGS_GROUP)
+                                 .arg(ADDON_MESSAGE_SETTINGS_GROUP));
 }
 
 #ifdef UNIT_TEST

@@ -7,8 +7,10 @@
 
 #include "notificationhandler.h"
 
-#include <QMenu>
 #include <QSystemTrayIcon>
+
+class QAction;
+class QMenu;
 
 class SystemTrayNotificationHandler : public NotificationHandler {
  public:
@@ -18,7 +20,7 @@ class SystemTrayNotificationHandler : public NotificationHandler {
   void retranslate() override;
 
 #ifdef MVPN_WASM
-  QMenu* contextMenu() override { return m_systemTrayIcon.contextMenu(); }
+  QMenu* contextMenu() override;
 #endif
 
  protected:
@@ -32,8 +34,8 @@ class SystemTrayNotificationHandler : public NotificationHandler {
   virtual void updateIcon();
 
  protected:
-  QMenu m_menu;
-  QSystemTrayIcon m_systemTrayIcon;
+  QScopedPointer<QMenu> m_menu;
+  QSystemTrayIcon* m_systemTrayIcon;
 
  private:
   void createStatusMenu();
