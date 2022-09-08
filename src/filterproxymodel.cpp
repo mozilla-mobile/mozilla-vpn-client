@@ -100,6 +100,11 @@ bool FilterProxyModel::filterAcceptsRow(
   arguments.append(value);
 
   QJSValue retValue = m_filterCallback.call(arguments);
+  if (retValue.isError()) {
+    logger.debug() << "Execution throws an error:" << retValue.toString();
+    return false;
+  }
+
   return retValue.toBool();
 }
 
@@ -128,6 +133,11 @@ bool FilterProxyModel::lessThan(const QModelIndex& left,
   arguments.append(valueB);
 
   QJSValue retValue = m_sortCallback.call(arguments);
+  if (retValue.isError()) {
+    logger.debug() << "Execution throws an error:" << retValue.toString();
+    return false;
+  }
+
   return retValue.toBool();
 }
 
