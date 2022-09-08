@@ -1,6 +1,6 @@
 # Messages
 
-Messages, located in the Messages Inbox, are used to notify users about important information
+Messages, located in the Messages Inbox, are used to notify users about important information.
 
 Technically, they are implemented as add-ons (see the add-on documentation).
 
@@ -20,6 +20,7 @@ property object with the following properties:
 | title | The subject of the message  | String | Yes |
 | subtitle | A brief description of the message | String | No |
 | title_comment | An optional comment to describe the meaning of the title | String | No |
-| date | The date the message was received | Number | No |
+| subtitle_comment | An optional comment to describe the meaning of the subtitle | String | No |
+| date | The date the message was received (using seconds since epoch time) | Number | No |
 | badge | A label used to tag a message (options: `warning`, `critical`, `new_update`, `whats_new`, `survey` ) | String | No |
 | blocks | An array of graphical blocks that compose the user interface of the message's contents (see more info [here](https://github.com/mozilla-mobile/mozilla-vpn-client/wiki/guides#block-object)) | Array of Block objects | Yes | 
