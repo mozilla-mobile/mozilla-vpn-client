@@ -1,0 +1,49 @@
+{
+  "api_version": "0.1",
+  "id": "message_privacy_bundle_staging",
+  "name": "Privacy Bundle Message - Staging",
+  "translatable": false,
+  "type": "message",
+  "conditions": {
+    "env": "staging",
+    "locales": ["en"],
+    "platforms": ["macos", "linux", "windows"],
+    "javascript": "EnableBundleUpgrade.js"
+  },
+  "message": {
+    "id": "message_privacy_bundle_staging",
+    "title": "Privacy Bundle Message - Staging",
+    "subtitle": "This is an example of the Privacy Bundle message.",
+    "date": 1661021990,
+    "badge": "whats_new",
+    "blocks": [
+      { "id": "c_1",
+        "type": "ulist",
+        "content": [
+          { "id": "l_1",
+            "content": "Reason to believe #1" },
+          { "id": "l_2",
+            "content": "Reason to purchase #2" },
+          { "id": "l_3",
+            "content": "Reason to purchase #3" }
+        ]
+      },
+      { "id": "c_2",
+        "type": "text",
+        "content": "Add Firefox Relay today and save 50%!" 
+      },
+      { "id": "c_3",
+      "type": "button",
+      "style": "primary",
+      "content": "Add Firefox Relay",
+      "javascript": "OpenBundleUpgradeFlow.js"
+      },
+      { "id": "c_4",
+        "type": "button",
+        "style": "link",
+        "content": "Get help",
+        "javascript": "OpenGetHelpScreen.js"
+      }
+    ]  
+  }
+}
