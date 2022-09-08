@@ -218,7 +218,7 @@ VPNViewBase {
                     onClicked: {
                         if (root.anySwipesOpen()) root.closeAllSwipes()
                         else {
-                            addon.maskAsRead()
+                            addon.markAsRead()
                             stackview.push("qrc:/ui/screens/messaging/ViewMessage.qml", {"message": addon})
                         }
                     }

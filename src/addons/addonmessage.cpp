@@ -3,14 +3,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addonmessage.h"
+#include "constants.h"
 #include "l18nstrings.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
+#include "notificationhandler.h"
 #include "settingsholder.h"
 #include "timersingleshot.h"
 
 #include <QJsonObject>
+#include <QMetaEnum>
 
 namespace {
 Logger logger(LOG_MAIN, "AddonMessage");
@@ -23,8 +26,8 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  QStringList dismissedAddonMessages = settingsHolder->dismissedAddonMessages();
-  if (dismissedAddonMessages.contains(id)) {
+  State messageState = loadMessageState(id);
+  if (messageState == State::Dismissed) {
     logger.info() << "Message" << id << "has been already dismissed";
     return nullptr;
   }
@@ -40,6 +43,8 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
   AddonMessage* message = new AddonMessage(parent, manifestFileName, id, name);
   auto guard = qScopeGuard([&] { message->deleteLater(); });
 
+  message->m_state = messageState;
+
   message->m_title.initialize(QString("message.%1.title").arg(messageId),
                               messageObj["title"].toString());
 
@@ -52,9 +57,6 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
     logger.warning() << "Composer failed";
     return nullptr;
   }
-
-  QStringList readAddonMessages = settingsHolder->readAddonMessages();
-  message->m_isRead = readAddonMessages.contains(id);
 
   message->m_date = messageObj["date"].toInteger();
   message->planDateRetranslation();
@@ -76,34 +78,42 @@ AddonMessage::AddonMessage(QObject* parent, const QString& manifestFileName,
 
 AddonMessage::~AddonMessage() { MVPN_COUNT_DTOR(AddonMessage); }
 
-void AddonMessage::dismiss() {
-  m_dismissed = true;
-  disable();
-
+// static
+AddonMessage::State AddonMessage::loadMessageState(const QString& id) {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
 
-  QStringList dismissedAddonMessages = settingsHolder->dismissedAddonMessages();
-  dismissedAddonMessages.append(id());
-  settingsHolder->setDismissedAddonMessages(dismissedAddonMessages);
-}
+  QString stateSetting = settingsHolder->getAddonSetting(StateQuery(id));
+  QMetaEnum stateMetaEnum = QMetaEnum::fromType<State>();
 
-void AddonMessage::maskAsRead() {
-  if (m_isRead) {
-    return;
+  bool isValidState = false;
+  int persistedState = stateMetaEnum.keyToValue(
+      stateSetting.toLocal8Bit().constData(), &isValidState);
+
+  if (isValidState) {
+    return static_cast<State>(persistedState);
   }
 
-  m_isRead = true;
-
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
-
-  QStringList readAddonMessages = settingsHolder->readAddonMessages();
-  readAddonMessages.append(id());
-  settingsHolder->setReadAddonMessages(readAddonMessages);
-
-  emit isReadChanged();
+  return State::Received;
 }
+
+void AddonMessage::updateMessageState(State newState) {
+  if (m_state == newState) return;
+
+  QMetaEnum stateMetaEnum = QMetaEnum::fromType<State>();
+  QString newStateSetting = stateMetaEnum.valueToKey(newState);
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  settingsHolder->setAddonSetting(StateQuery(id()), newStateSetting);
+
+  m_state = newState;
+  emit stateChanged(m_state);
+}
+
+void AddonMessage::dismiss() {
+  disable();
+  updateMessageState(State::Dismissed);
+}
+
+void AddonMessage::markAsRead() { updateMessageState(State::Read); }
 
 bool AddonMessage::containsSearchString(const QString& query) const {
   if (query.isEmpty()) {
@@ -131,7 +141,7 @@ bool AddonMessage::enabled() const {
     return false;
   }
 
-  return !m_dismissed;
+  return m_state != State::Dismissed;
 }
 
 QString AddonMessage::formattedDate() const {
@@ -242,5 +252,24 @@ void AddonMessage::setBadge(const QString& badge) {
     m_badge = Survey;
   } else {
     logger.error() << "Unsupported badge type" << badge;
+  }
+}
+
+void AddonMessage::enable() {
+  Addon::enable();
+
+  maybePushNotification();
+}
+
+void AddonMessage::maybePushNotification() {
+  NotificationHandler* notificationHandler = NotificationHandler::instance();
+  if (!notificationHandler) {
+    return;
+  }
+
+  if (m_state == State::Received) {
+    NotificationHandler::instance()->newInAppMessageNotification(
+        m_title.get(), m_subtitle.get());
+    updateMessageState(State::Notified);
   }
 }
