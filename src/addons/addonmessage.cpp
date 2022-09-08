@@ -85,7 +85,7 @@ AddonMessage::State AddonMessage::loadMessageState(const QString& id) {
   QString stateSetting = settingsHolder->getAddonSetting(StateQuery(id));
   QMetaEnum stateMetaEnum = QMetaEnum::fromType<State>();
 
-  bool isValidState;
+  bool isValidState = false;
   int persistedState = stateMetaEnum.keyToValue(
       stateSetting.toLocal8Bit().constData(), &isValidState);
 
