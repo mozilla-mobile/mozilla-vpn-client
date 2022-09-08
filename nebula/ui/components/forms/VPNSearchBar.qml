@@ -14,6 +14,7 @@ import components.forms 0.1
 ColumnLayout {
     property var _filterProxyCallback: () => {}
     property var _sortProxyCallback: () => {}
+    property var _editCallback: () => {}
     property alias _filterProxySource: model.source
     property bool _searchBarHasError: false
     property alias _searchBarPlaceholderText: searchBar._placeholderText
@@ -47,6 +48,7 @@ ColumnLayout {
 
         Keys.onPressed: event => {
             if (focus && _searchBarHasError && (/[\w\[\]`!@#$%\^&*()={}:;<>+'-]/).test(event.text)) {
+                _editCallback();
                 event.accepted = true;
             }
         }
