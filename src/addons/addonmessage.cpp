@@ -158,6 +158,7 @@ void AddonMessage::updateMessageState(State newState) {
   }
 
   m_state = newState;
+  emit stateChanged(m_state);
 }
 
 void AddonMessage::dismiss() {

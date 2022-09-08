@@ -5,8 +5,6 @@
 #ifndef NOTIFICATIONHANDLER_H
 #define NOTIFICATIONHANDLER_H
 
-#include "constants.h"
-
 #include <QObject>
 
 class QMenu;
@@ -63,9 +61,8 @@ class NotificationHandler : public QObject {
                       const QString& message, int timerMsec) = 0;
 
  private:
-  virtual void notifyInternal(
-      Message type, const QString& title, const QString& message,
-      int timerMsec = Constants::DEFAULT_NOTIFICATION_TIMER);
+  virtual void notifyInternal(Message type, const QString& title,
+                              const QString& message, int timerMsec);
 
  protected:
   Message m_lastMessage = None;

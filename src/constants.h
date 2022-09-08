@@ -29,6 +29,9 @@ constexpr uint32_t UNSECURED_NETWORK_ALERT_MSEC = 4000;
 // Number of msecs for the server unavailable alert.
 constexpr uint32_t SERVER_UNAVAILABLE_ALERT_MSEC = 4000;
 
+// Number of msecs for the new in app message alert.
+constexpr uint32_t NEW_IN_APP_MESSAGE_ALERT_MSEC = 4000;
+
 // Number of recent connections to retain.
 constexpr int RECENT_CONNECTIONS_MAX_COUNT = 5;
 
@@ -103,9 +106,6 @@ constexpr const char* APPLE_SUBSCRIPTIONS_URL =
 
 constexpr const char* GOOGLE_SUBSCRIPTIONS_URL =
     "https://play.google.com/store/account/subscriptions";
-
-// This is the default time a notification will be shown when received.
-constexpr uint32_t DEFAULT_NOTIFICATION_TIMER = 1 * 1000;  // 1s
 
 PRODBETAEXPR(QString, fxaApiBaseUrl, "https://api.accounts.firefox.com",
              envOrDefault("MVPN_FXA_API_BASE_URL",

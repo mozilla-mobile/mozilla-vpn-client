@@ -29,7 +29,7 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
   Q_ASSERT(vpn);
 
   m_menu = new QMenu();
-  m_systemTrayIcon = new QSystemTrayIcon();
+  m_systemTrayIcon = new QSystemTrayIcon(parent);
 
   connect(vpn, &MozillaVPN::stateChanged, this,
           &SystemTrayNotificationHandler::updateContextMenu);

@@ -25,8 +25,8 @@ class AddonMessage final : public Addon {
   ADDON_PROPERTY(subtitle, m_subtitle, retranslationCompleted)
 
   Q_PROPERTY(Composer* composer READ composer CONSTANT)
-  Q_PROPERTY(bool isRead READ isRead)
-  Q_PROPERTY(qint64 date MEMBER m_date)
+  Q_PROPERTY(bool isRead READ isRead NOTIFY stateChanged)
+  Q_PROPERTY(qint64 date MEMBER m_date CONSTANT)
   Q_PROPERTY(
       QString formattedDate READ formattedDate NOTIFY retranslationCompleted)
   Q_PROPERTY(Badge badge MEMBER m_badge CONSTANT)
@@ -57,7 +57,7 @@ class AddonMessage final : public Addon {
   Q_INVOKABLE void markAsRead();
   Q_INVOKABLE bool containsSearchString(const QString& query) const;
 
-  bool isRead() { return m_state == State::Read; }
+  bool isRead() const { return m_state == State::Read; }
 
   QString formattedDate() const;
 
@@ -70,6 +70,9 @@ class AddonMessage final : public Addon {
                               const QDateTime& messageDateTime);
   static qint64 planDateRetranslationInternal(const QDateTime& nowDateTime,
                                               const QDateTime& messageDateTime);
+
+ signals:
+  void stateChanged(State state);
 
  private:
   AddonMessage(QObject* parent, const QString& manifestFileName,
