@@ -42,7 +42,7 @@ void MacosSystemTrayNotificationHandler::setStatusMenu() {
 
   m_macOSStatusIcon = new MacOSStatusIcon(this);
   m_macOSStatusIcon->setToolTip(qtTrId("vpn.main.productName"));
-  m_macOSStatusIcon->setMenu(m_menu.toNSMenu());
+  m_macOSStatusIcon->setMenu(m_menu->toNSMenu());
 }
 
 void MacosSystemTrayNotificationHandler::showHideWindow() {

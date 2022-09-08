@@ -39,6 +39,22 @@ class TestHelper : public QObject {
 
   static Controller::State controllerState;
 
+  struct SystemNotification {
+    NotificationHandler::Message type;
+    QString title;
+    QString message;
+    int timer;
+  };
+
+  static SystemNotification lastSystemNotification;
+
+  static void resetLastSystemNotification() {
+    TestHelper::SystemNotification notification;
+    notification.title = QString();
+    notification.message = QString();
+    TestHelper::lastSystemNotification = notification;
+  }
+
   static QVector<QObject*> testList;
 
   static QObject* findTest(const QString& name);

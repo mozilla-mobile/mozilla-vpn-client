@@ -59,10 +59,7 @@ NotificationHandler* NotificationHandler::create(QObject* parent) {
 }
 
 // static
-NotificationHandler* NotificationHandler::instance() {
-  Q_ASSERT(s_instance);
-  return s_instance;
-}
+NotificationHandler* NotificationHandler::instance() { return s_instance; }
 
 NotificationHandler::NotificationHandler(QObject* parent) : QObject(parent) {
   MVPN_COUNT_CTOR(NotificationHandler);
@@ -248,6 +245,13 @@ void NotificationHandler::serverUnavailableNotification(bool pingRecieved) {
 
   notifyInternal(ServerUnavailable, title, message,
                  Constants::SERVER_UNAVAILABLE_ALERT_MSEC);
+}
+
+void NotificationHandler::newInAppMessageNotification(const QString& title,
+                                                      const QString& message) {
+  logger.debug() << "New in-app message notification shown";
+  notifyInternal(NewInAppMessage, title, message,
+                 Constants::NEW_IN_APP_MESSAGE_ALERT_MSEC);
 }
 
 void NotificationHandler::notifyInternal(Message type, const QString& title,

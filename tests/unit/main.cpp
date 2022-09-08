@@ -14,6 +14,7 @@ MozillaVPN::State TestHelper::vpnState = MozillaVPN::StateInitialize;
 Controller::State TestHelper::controllerState = Controller::StateInitializing;
 MozillaVPN::UserState TestHelper::userState = MozillaVPN::UserNotAuthenticated;
 QVector<QObject*> TestHelper::testList;
+TestHelper::SystemNotification TestHelper::lastSystemNotification;
 
 QObject* TestHelper::findTest(const QString& name) {
   for (QObject* obj : TestHelper::testList) {
@@ -42,7 +43,7 @@ int main(int argc, char* argv[]) {
   pe.insert("LANG", "en");
   pe.insert("LANGUAGE", "en");
 
-  QCoreApplication a(argc, argv);
+  QCoreApplication app(argc, argv);
 
   int failures = 0;
 
@@ -50,7 +51,7 @@ int main(int argc, char* argv[]) {
   LogHandler::enableDebug();
 
   // If arguments were passed, then run a subset of tests.
-  QStringList args = a.arguments();
+  QStringList args = app.arguments();
   if (args.count() > 1) {
     args.removeFirst();
     for (const QString& x : args) {
