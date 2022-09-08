@@ -4,6 +4,7 @@
 
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
+import QtQuick.Controls 2.14
 
 import Mozilla.VPN 1.0
 import components 0.1
@@ -34,6 +35,34 @@ ColumnLayout {
                 target: paymentMethod
                 visible: false
             }
+            PropertyChanges {
+                target: relayUpsell
+                visible: false
+            }
+        },
+        State {
+            when: type === "text-upgrade"
+
+            PropertyChanges {
+                target: rowLabel
+                visible: true
+            }
+            PropertyChanges {
+                target: rowText
+                visible: true
+            }
+            PropertyChanges {
+                target: rowPill
+                visible: false
+            }
+            PropertyChanges {
+                target: paymentMethod
+                visible: false
+            }
+            PropertyChanges {
+                target: relayUpsell
+                visible: true
+            }
         },
         State {
             when: type === "pill"
@@ -52,6 +81,10 @@ ColumnLayout {
             }
             PropertyChanges {
                 target: paymentMethod
+                visible: false
+            }
+            PropertyChanges {
+                target: relayUpsell
                 visible: false
             }
         },
@@ -73,6 +106,10 @@ ColumnLayout {
             PropertyChanges {
                 target: paymentMethod
                 visible: true
+            }
+            PropertyChanges {
+                target: relayUpsell
+                visible: false
             }
         }
     ]
@@ -143,6 +180,83 @@ ColumnLayout {
                     right: parent.right
                     verticalCenter: parent.verticalCenter
                 }
+            }
+        }
+    }
+
+    RowLayout {
+        id: relayUpsell
+        objectName: _objectName + "-relayUpsell-layout"
+
+        visible: false
+        Layout.fillWidth: true
+        Layout.topMargin: VPNTheme.theme.listSpacing
+        Layout.bottomMargin: VPNTheme.theme.windowMargin
+
+        Component.onCompleted: {
+            if (visible) {
+                VPN.recordGleanEvent("bundle_upsell_viewed");
+            }
+        }
+
+        ColumnLayout {
+            Layout.fillWidth: true
+
+            VPNInterLabel {
+                color: VPNTheme.theme.fontColorDark
+                horizontalAlignment: Text.AlignLeft
+                font.pixelSize: VPNTheme.theme.fontSizeSmall
+                text: VPNl18n.SubscriptionManagementAddFirefoxRelay // "Add Firefox Relay"
+                wrapMode: Text.WordWrap
+                lineHeight: 13
+                Layout.alignment: Qt.AlignLeft
+                Layout.fillWidth: true
+                elide: Text.ElideRight
+            }
+
+            VPNLinkButton {
+                objectName: _objectName + "-relayUpsell-learnMoreLink"
+                linkColor: VPNTheme.theme.blueButton
+                fontSize: VPNTheme.theme.fontSizeSmall
+                labelText: VPNl18n.SplittunnelInfoLinkText // "Learn more"
+                Layout.alignment: Qt.AlignLeft
+                padding: 4
+                Layout.leftMargin: -4
+
+                onClicked: {
+                    VPN.recordGleanEvent("bundle_upsell_link_clicked");
+                    VPN.openLink(VPN.LinkRelayPremium);
+                }
+            }
+        }
+
+        VPNButtonBase {
+            objectName: _objectName + "-relayUpsell-upgradeButton"
+
+            onClicked: {
+                VPN.recordGleanEvent("bundle_upsell_upgrade_clicked");
+                VPN.openLink(VPN.LinkUpgradeToBundle);
+            }
+
+            contentItem: Label {
+                text: VPNl18n.SubscriptionManagementUpgrade // "Upgrade"
+                font.family: VPNTheme.theme.fontInterFamily
+                font.pixelSize: VPNTheme.theme.fontSizeSmall
+                color: VPNTheme.theme.white
+                anchors.centerIn: parent
+                leftPadding: VPNTheme.theme.windowMargin
+                rightPadding: VPNTheme.theme.windowMargin
+            }
+
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            Layout.preferredHeight: VPNTheme.theme.windowMarginb * 2
+
+            VPNUIStates {
+                colorScheme:VPNTheme.theme.blueButton
+                setMargins: -3
+            }
+            VPNMouseArea {
+                id: buttonMouseArea
             }
         }
     }
