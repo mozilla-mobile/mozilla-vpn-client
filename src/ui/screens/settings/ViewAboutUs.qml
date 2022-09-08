@@ -52,7 +52,7 @@ VPNViewBase {
                 }
                 TextEdit {
                     id: releaseVersion
-                    text: VPN.buildNumber === "" ? VPN.versionString : (VPN.versionString + " (" + VPN.buildNumber + ")")
+                    text: VPN.env.buildNumber === "" ? VPN.env.versionString : (VPN.env.versionString + " (" + VPN.env.buildNumber + ")")
                     readOnly: true
                     wrapMode: Text.WordWrap
                     selectByMouse: true

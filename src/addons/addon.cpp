@@ -82,8 +82,7 @@ QList<ConditionCallback> s_conditionCallbacks{
          platforms.append(platform.toString());
        }
 
-       if (!platforms.isEmpty() &&
-           !platforms.contains(MozillaVPN::instance()->platform())) {
+       if (!platforms.isEmpty() && !platforms.contains(Env::platform())) {
          logger.info() << "Not supported platform";
          return false;
        }
