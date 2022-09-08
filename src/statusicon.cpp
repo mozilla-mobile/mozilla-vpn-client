@@ -92,6 +92,15 @@ void StatusIcon::stabilityChanged() {
   }
 }
 
+const QIcon& StatusIcon::icon() {
+  if (m_icon.isNull()) {
+    stateChanged();
+    Q_ASSERT(!m_icon.isNull());
+  }
+
+  return m_icon;
+}
+
 void StatusIcon::stateChanged() {
   logger.debug() << "State changed";
 
