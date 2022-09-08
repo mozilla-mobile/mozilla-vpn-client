@@ -6,6 +6,8 @@
 #include "helper.h"
 
 #include <QIcon>
+#include <QSystemTrayIcon>
+#include <QMenu>
 
 SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
     : NotificationHandler(parent) {}
@@ -37,4 +39,5 @@ void SystemTrayNotificationHandler::updateIcon() {}
 
 void SystemTrayNotificationHandler::showHideWindow() {}
 
-void SystemTrayNotificationHandler::maybeActivated(int reason) {}
+void SystemTrayNotificationHandler::maybeActivated(
+    QSystemTrayIcon::ActivationReason reason) {}

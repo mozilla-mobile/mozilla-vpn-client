@@ -34,7 +34,7 @@ class SystemTrayNotificationHandler : public NotificationHandler {
   virtual void updateIcon();
 
  protected:
-  QMenu* m_menu;
+  QScopedPointer<QMenu> m_menu;
   QSystemTrayIcon* m_systemTrayIcon;
 
  private:

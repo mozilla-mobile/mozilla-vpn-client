@@ -796,6 +796,29 @@ void TestAddon::message_create() {
   QCOMPARE(message->property("title").type(), QMetaType::QString);
 }
 
+void TestAddon::message_load_state_data() {
+  QTest::addColumn<AddonMessage::State>("state");
+  QTest::addColumn<QString>("setting");
+
+  QTest::addRow("empty-setting") << AddonMessage::State::Received << "";
+  QTest::addRow("wrong-setting") << AddonMessage::State::Received << "WRONG!";
+
+  QTest::addRow("received") << AddonMessage::State::Received << "Received";
+  QTest::addRow("notified") << AddonMessage::State::Notified << "Notified";
+  QTest::addRow("read") << AddonMessage::State::Read << "Read";
+  QTest::addRow("dismissed") << AddonMessage::State::Dismissed << "Dismissed";
+}
+
+void TestAddon::message_load_state() {
+  QFETCH(AddonMessage::State, state);
+  QFETCH(QString, setting);
+
+  SettingsHolder settingsHolder;
+
+  settingsHolder.setAddonSetting(AddonMessage::StateQuery("foo"), setting);
+  QCOMPARE(AddonMessage::loadMessageState("foo"), state);
+}
+
 void TestAddon::message_notification_data() {
   SettingsHolder settingsHolder;
 

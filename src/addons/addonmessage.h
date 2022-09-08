@@ -83,8 +83,8 @@ class AddonMessage final : public Addon {
   AddonMessage(QObject* parent, const QString& manifestFileName,
                const QString& id, const QString& name);
 
-  struct StateQuery : public SettingsHolder::AddonSettingQuery {
-    StateQuery(const QString& ai)
+  struct StateQuery final : public SettingsHolder::AddonSettingQuery {
+    explicit StateQuery(const QString& ai)
         : SettingsHolder::AddonSettingQuery(
               ai, QString(ADDON_MESSAGE_SETTINGS_GROUP),
               QString(ADDON_MESSAGE_SETTINGS_STATE_KEY),

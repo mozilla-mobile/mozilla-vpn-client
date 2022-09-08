@@ -28,7 +28,7 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
-  m_menu = new QMenu();
+  m_menu.reset(new QMenu());
   m_systemTrayIcon = new QSystemTrayIcon(parent);
 
   connect(vpn, &MozillaVPN::stateChanged, this,
@@ -115,7 +115,7 @@ void SystemTrayNotificationHandler::setStatusMenu() {
   // TODO: Check if method is called on these devices.
 #if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
   m_systemTrayIcon->setToolTip(qtTrId("vpn.main.productName"));
-  m_systemTrayIcon->setContextMenu(m_menu);
+  m_systemTrayIcon->setContextMenu(m_menu.get());
   m_systemTrayIcon->show();
 #endif
 }

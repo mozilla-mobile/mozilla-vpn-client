@@ -172,27 +172,27 @@ void SettingsHolder::removeEntryServer() {
 // Addon specific
 
 // static
-QString SettingsHolder::getAddonSettingKey(AddonSettingQuery query) {
+QString SettingsHolder::getAddonSettingKey(const AddonSettingQuery& query) {
   return QString("%1/%2/%3/%4")
       .arg(Constants::ADDON_SETTINGS_GROUP)
-      .arg(query.addonGroup)
-      .arg(query.addonId)
-      .arg(query.setting);
+      .arg(query.m_addonGroup)
+      .arg(query.m_addonId)
+      .arg(query.m_setting);
 }
 
-bool SettingsHolder::hasAddonSetting(AddonSettingQuery query) {
+bool SettingsHolder::hasAddonSetting(const AddonSettingQuery& query) {
   QString key = getAddonSettingKey(query);
   return m_settings.contains(key);
 }
 
-QString SettingsHolder::getAddonSetting(AddonSettingQuery query) {
-  if (!hasAddonSetting(query)) return query.defaultValue;
+QString SettingsHolder::getAddonSetting(const AddonSettingQuery& query) {
+  if (!hasAddonSetting(query)) return query.m_defaultValue;
 
   QString key = getAddonSettingKey(query);
   return m_settings.value(key).toString();
 }
 
-void SettingsHolder::setAddonSetting(AddonSettingQuery query,
+void SettingsHolder::setAddonSetting(const AddonSettingQuery& query,
                                      const QString& value) {
   if (!!hasAddonSetting(query) || getAddonSetting(query) != value) {
     QString key = getAddonSettingKey(query);

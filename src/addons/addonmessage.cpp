@@ -82,17 +82,15 @@ AddonMessage::~AddonMessage() { MVPN_COUNT_DTOR(AddonMessage); }
 AddonMessage::State AddonMessage::loadMessageState(const QString& id) {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
-  bool isValidState;
   QString stateSetting = settingsHolder->getAddonSetting(StateQuery(id));
   QMetaEnum stateMetaEnum = QMetaEnum::fromType<State>();
 
-  if (!stateSetting.isEmpty()) {
-    int persistedState = stateMetaEnum.keyToValue(
-        stateSetting.toLocal8Bit().constData(), &isValidState);
+  bool isValidState;
+  int persistedState = stateMetaEnum.keyToValue(
+      stateSetting.toLocal8Bit().constData(), &isValidState);
 
-    if (isValidState) {
-      return static_cast<State>(persistedState);
-    }
+  if (isValidState) {
+    return static_cast<State>(persistedState);
   }
 
   return State::Received;

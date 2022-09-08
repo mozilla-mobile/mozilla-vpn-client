@@ -73,17 +73,18 @@ class SettingsHolder final : public QObject {
   // Addon specific
 
   struct AddonSettingQuery {
-    QString addonId;
-    QString addonGroup;
-    QString setting;
-    QString defaultValue;
+    QString m_addonId;
+    QString m_addonGroup;
+    QString m_setting;
+    QString m_defaultValue;
 
-    AddonSettingQuery(QString ai, QString ag, QString s, QString dv)
-        : addonId(ai), addonGroup(ag), setting(s), defaultValue(dv) {}
+    AddonSettingQuery(const QString& ai, const QString& ag, const QString& s,
+                      const QString& dv)
+        : m_addonId(ai), m_addonGroup(ag), m_setting(s), m_defaultValue(dv) {}
   };
-  QString getAddonSetting(AddonSettingQuery query);
-  bool hasAddonSetting(AddonSettingQuery query);
-  void setAddonSetting(AddonSettingQuery query, const QString& value);
+  QString getAddonSetting(const AddonSettingQuery& query);
+  bool hasAddonSetting(const AddonSettingQuery& query);
+  void setAddonSetting(const AddonSettingQuery& query, const QString& value);
 
  private:
   explicit SettingsHolder(QObject* parent);
@@ -92,7 +93,7 @@ class SettingsHolder final : public QObject {
 
   // Addon specific
 
-  static QString getAddonSettingKey(AddonSettingQuery query);
+  static QString getAddonSettingKey(const AddonSettingQuery& query);
 
  private:
   QSettings m_settings;
