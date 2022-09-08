@@ -65,11 +65,15 @@ Rectangle {
 
         anchors.fill: parent
         anchors.topMargin: VPNTheme.theme.vSpacingSmall / 2
-        anchors.leftMargin: window.width < VPNTheme.theme.tabletMinimumWidth ? 48 - (8 * (navButtons.count - 3)) : 120
-        anchors.rightMargin: window.width < VPNTheme.theme.tabletMinimumWidth ? 48 - (8 * (navButtons.count - 3)) : 120
+        anchors.leftMargin: {
+            var minNumberOfIcons = 3
+            var paddingFactor = 8 //How much we decrease horizontal margins by for each new icon added (for non-tablets)
+            window.width < VPNTheme.theme.tabletMinimumWidth ? VPNTheme.theme.navBarMaxPadding - (paddingFactor * (navButtons.count - minNumberOfIcons)) : VPNTheme.theme.navBarMaxPaddingTablet
+        }
+        anchors.rightMargin: anchors.leftMargin
         anchors.bottomMargin: VPNTheme.theme.vSpacingSmall / 2
 
-        spacing: (root.width - anchors.leftMargin - anchors.rightMargin - (48 * navButtons.count)) / (navButtons.count - 1)
+        spacing: (root.width - anchors.leftMargin - anchors.rightMargin - (VPNTheme.theme.navBarIconSize * navButtons.count)) / (navButtons.count - 1)
 
         Repeater {
             model: navButtons
