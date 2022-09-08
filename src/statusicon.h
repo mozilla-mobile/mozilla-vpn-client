@@ -24,7 +24,7 @@ class StatusIcon final : public QObject {
 
   QUrl iconUrl() const;
   const QString& iconString() const { return m_iconUrl; }
-  const QIcon& icon() const { return m_icon; }
+  const QIcon& icon();
   const QColor& indicatorColor() const { return m_indicatorColor; }
 
  signals:
