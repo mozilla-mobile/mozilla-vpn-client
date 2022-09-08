@@ -31,7 +31,6 @@ void TestAddon::property() {
   AddonProperty p;
   p.initialize("foo", "bar");
   QCOMPARE(p.get(), "bar");
-  QCOMPARE(p.property("value").toString(), "bar");
 }
 
 void TestAddon::property_list() {

@@ -15,14 +15,15 @@ class AddonGuide final : public Addon {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AddonGuide)
 
-  ADDON_PROPERTY(title, m_title, retranslationCompleted)
-  ADDON_PROPERTY(subtitle, m_subtitle, retranslationCompleted)
+ public:
+  ADDON_PROPERTY(title, m_title, getTitle, setTitle, retranslationCompleted)
+  ADDON_PROPERTY(subtitle, m_subtitle, getSubtitle, setSubtitle,
+                 retranslationCompleted)
 
   Q_PROPERTY(QString image MEMBER m_image CONSTANT)
   Q_PROPERTY(Composer* composer MEMBER m_composer CONSTANT)
   Q_PROPERTY(bool advanced MEMBER m_advanced CONSTANT)
 
- public:
   static Addon* create(QObject* parent, const QString& manifestFileName,
                        const QString& id, const QString& name,
                        const QJsonObject& obj);

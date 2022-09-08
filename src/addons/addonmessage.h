@@ -26,17 +26,18 @@ class AddonMessage final : public Addon {
   QML_NAMED_ELEMENT(VPNAddonMessage)
   QML_UNCREATABLE("")
 
-  ADDON_PROPERTY(title, m_title, retranslationCompleted)
-  ADDON_PROPERTY(subtitle, m_subtitle, retranslationCompleted)
+ public:
+  ADDON_PROPERTY(title, m_title, getTitle, setTitle, retranslationCompleted)
+  ADDON_PROPERTY(subtitle, m_subtitle, getSubtitle, setSubtitle,
+                 retranslationCompleted)
 
   Q_PROPERTY(Composer* composer READ composer CONSTANT)
   Q_PROPERTY(bool isRead READ isRead NOTIFY stateChanged)
   Q_PROPERTY(qint64 date MEMBER m_date CONSTANT)
   Q_PROPERTY(
       QString formattedDate READ formattedDate NOTIFY retranslationCompleted)
-  Q_PROPERTY(Badge badge MEMBER m_badge CONSTANT)
+  Q_PROPERTY(Badge badge MEMBER m_badge WRITE setBadge NOTIFY badgeChanged)
 
- public:
   enum Badge { None, Warning, Critical, NewUpdate, WhatsNew, Survey };
   Q_ENUM(Badge)
 
@@ -62,6 +63,8 @@ class AddonMessage final : public Addon {
   Q_INVOKABLE void markAsRead();
   Q_INVOKABLE bool containsSearchString(const QString& query) const;
 
+  void setBadge(Badge badge);
+
   bool isRead() const { return m_state == State::Read; }
 
   QString formattedDate() const;
@@ -78,6 +81,7 @@ class AddonMessage final : public Addon {
 
  signals:
   void stateChanged(State state);
+  void badgeChanged();
 
  private:
   AddonMessage(QObject* parent, const QString& manifestFileName,

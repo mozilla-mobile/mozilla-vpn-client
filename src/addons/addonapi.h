@@ -21,6 +21,7 @@ class AddonApi final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AddonApi)
 
+  Q_PROPERTY(QJSValue addon READ addon CONSTANT)
   Q_PROPERTY(const Env* env READ env CONSTANT)
   Q_PROPERTY(QJSValue featureList READ featureList CONSTANT)
   Q_PROPERTY(QJSValue navigator READ navigator CONSTANT)
@@ -36,14 +37,14 @@ class AddonApi final : public QObject {
   Q_INVOKABLE void openURL(const QString& url) const;
 
  private:
-  explicit AddonApi(QObject* parent);
-
+  QJSValue addon() const;
   const Env* env() const { return &m_env; }
   QJSValue featureList() const;
   QJSValue navigator() const;
   QJSValue settings() const;
 
  private:
+  Addon* m_addon = nullptr;
   Env m_env;
 };
 

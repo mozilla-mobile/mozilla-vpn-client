@@ -9,6 +9,7 @@
 #include "logger.h"
 
 #include <QJsonArray>
+#include <QJsonDocument>
 #include <QJsonObject>
 #include <QScopeGuard>
 
@@ -17,7 +18,8 @@ Logger logger(LOG_MAIN, "Composer");
 
 }  // namespace
 
-Composer::Composer(QObject* parent) : QObject(parent) {
+Composer::Composer(Addon* addon, const QString& prefix)
+    : QObject(addon), m_addon(addon), m_prefix(prefix) {
   MVPN_COUNT_CTOR(Composer);
 }
 
@@ -26,7 +28,7 @@ Composer::~Composer() { MVPN_COUNT_DTOR(Composer); }
 // static
 Composer* Composer::create(Addon* addon, const QString& prefix,
                            const QJsonObject& obj) {
-  Composer* composer = new Composer(addon);
+  Composer* composer = new Composer(addon, prefix);
   auto guard = qScopeGuard([&] { composer->deleteLater(); });
 
   QJsonValue blocksArray = obj["blocks"];
@@ -54,4 +56,46 @@ Composer* Composer::create(Addon* addon, const QString& prefix,
 
   guard.dismiss();
   return composer;
+}
+
+ComposerBlock* Composer::create(const QString& id, const QString& type,
+                                const QJSValue& params) {
+  QJsonDocument json = QJsonDocument::fromVariant(params.toVariant());
+  if (!json.isObject()) {
+    return nullptr;
+  }
+
+  return ComposerBlock::create(this, m_addon, m_prefix, id, type,
+                               json.object());
+}
+
+void Composer::insert(int pos, ComposerBlock* block) {
+  if (m_blocks.contains(block)) {
+    return;
+  }
+
+  if (pos >= 0 && pos <= m_blocks.length()) {
+    m_blocks.insert(pos, block);
+    emit blocksChanged();
+  }
+}
+
+void Composer::append(ComposerBlock* block) {
+  if (m_blocks.contains(block)) {
+    return;
+  }
+
+  m_blocks.append(block);
+  emit blocksChanged();
+}
+
+void Composer::remove(const QString& id) {
+  for (int i = 0; i < m_blocks.length(); ++i) {
+    if (m_blocks[i]->id() == id) {
+      m_blocks.removeAt(i);
+      break;
+    }
+  }
+
+  emit blocksChanged();
 }
