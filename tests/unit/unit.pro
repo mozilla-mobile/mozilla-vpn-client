@@ -176,6 +176,7 @@ HEADERS += \
     testtasks.h \
     testthemes.h \
     testtimersingleshot.h \
+    testurlopener.h \
     websocket/testwebsockethandler.h \
     websocket/testexponentialbackoffstrategy.h \
     websocket/testpushmessage.h
@@ -315,6 +316,7 @@ SOURCES += \
     testtasks.cpp \
     testthemes.cpp \
     testtimersingleshot.cpp \
+    testurlopener.cpp \
     websocket/testwebsockethandler.cpp \
     websocket/testexponentialbackoffstrategy.cpp \
     websocket/testpushmessage.cpp
