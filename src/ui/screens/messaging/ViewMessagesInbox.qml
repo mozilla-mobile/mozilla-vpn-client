@@ -33,13 +33,8 @@ VPNViewBase {
         }
     }
 
-    _menuTitle: "Inbox"
+    _menuTitle: VPNl18n.InAppMessagingMenuTitle
 
-    //Hacky workaround to recalculate flickables contentHeight once view is loaded and menu bar height
-    //is accounted for in onFlickContentHeightChanged in root (otherwise it thinks the flickable is at (0,0)
-    //when it is actually at (0,56)
-    //Possible soluton: Don't load this view until the page is opened for the first time (instead of pre-loading)
-    //This is also happening in VPNServerList.qml
     onVisibleChanged: if (!visible) resetPage()
 
     function resetPage() {
