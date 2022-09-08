@@ -269,6 +269,8 @@ target_sources(unit_tests PRIVATE
     helper.h
     testaddon.cpp
     testaddon.h
+    testaddonapi.cpp
+    testaddonapi.h
     testaddonindex.cpp
     testaddonindex.h
     testadjust.cpp
