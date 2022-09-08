@@ -119,7 +119,7 @@ ColumnLayout {
         spacing: VPNTheme.theme.listSpacing
 
         Layout.alignment: Qt.AlignVCenter
-        Layout.bottomMargin:  VPNTheme.theme.listSpacing
+        Layout.bottomMargin: VPNTheme.theme.listSpacing
         Layout.fillWidth: true
         Layout.preferredHeight: VPNTheme.theme.rowHeight
         Layout.topMargin: VPNTheme.theme.listSpacing
