@@ -107,6 +107,7 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/curve25519.h
     ${MVPN_SOURCE_DIR}/dnspingsender.cpp
     ${MVPN_SOURCE_DIR}/dnspingsender.h
+    ${MVPN_SOURCE_DIR}/env.h
     ${MVPN_SOURCE_DIR}/errorhandler.cpp
     ${MVPN_SOURCE_DIR}/errorhandler.h
     ${MVPN_SOURCE_DIR}/externalophandler.cpp
@@ -269,6 +270,8 @@ target_sources(unit_tests PRIVATE
     helper.h
     testaddon.cpp
     testaddon.h
+    testaddonapi.cpp
+    testaddonapi.h
     testaddonindex.cpp
     testaddonindex.h
     testadjust.cpp
@@ -311,6 +314,8 @@ target_sources(unit_tests PRIVATE
     testthemes.h
     testtimersingleshot.cpp
     testtimersingleshot.h
+    testurlopener.cpp
+    testurlopener.h
     websocket/testexponentialbackoffstrategy.cpp
     websocket/testexponentialbackoffstrategy.h
     websocket/testpushmessage.cpp

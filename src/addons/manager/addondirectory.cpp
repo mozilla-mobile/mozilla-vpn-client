@@ -32,8 +32,8 @@ AddonDirectory::AddonDirectory() {
 
   QDir addonDirectory(rootAppFolder());
   if (!addonDirectory.exists(ADDON_FOLDER) &&
-      !addonDirectory.mkdir(ADDON_FOLDER)) {
-    logger.error() << "Unable to create the addon folder";
+      !addonDirectory.mkpath(ADDON_FOLDER)) {
+    logger.error() << "Unable to create the addon folder" << rootAppFolder();
     return;
   }
 }

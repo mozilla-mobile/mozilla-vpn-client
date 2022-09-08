@@ -11,6 +11,7 @@
 #include "connectionhealth.h"
 #include "constants.h"
 #include "controller.h"
+#include "env.h"
 #include "errorhandler.h"
 #include "ipaddresslookup.h"
 #include "models/devicemodel.h"
@@ -36,10 +37,6 @@
 #include <QStandardPaths>
 #include <QTimer>
 #include <QVariant>
-
-#ifdef MVPN_WINDOWS
-#  include "platforms/windows/windowscommons.h"
-#endif
 
 class QTextStream;
 
@@ -120,13 +117,8 @@ class MozillaVPN final : public QObject {
  private:
   Q_PROPERTY(State state READ state NOTIFY stateChanged)
   Q_PROPERTY(AlertType alert READ alert NOTIFY alertChanged)
-  Q_PROPERTY(QString versionString READ versionString CONSTANT)
-  Q_PROPERTY(QString buildNumber READ buildNumber CONSTANT)
-  Q_PROPERTY(QString osVersion READ osVersion CONSTANT)
   Q_PROPERTY(QString devVersion READ devVersion CONSTANT)
-  Q_PROPERTY(QString architecture READ architecture CONSTANT)
-  Q_PROPERTY(QString graphicsApi READ graphicsApi CONSTANT)
-  Q_PROPERTY(QString platform READ platform CONSTANT)
+  Q_PROPERTY(const Env* env READ env CONSTANT)
   Q_PROPERTY(UserState userState READ userState NOTIFY userStateChanged)
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
   Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
@@ -275,19 +267,10 @@ class MozillaVPN final : public QObject {
 
   void silentSwitch();
 
-  static QString versionString() { return Constants::versionString(); }
-  static QString buildNumber() { return Constants::buildNumber(); }
-  static QString osVersion() {
-#ifdef MVPN_WINDOWS
-    return WindowsCommons::WindowsVersion();
-#else
-    return QSysInfo::productVersion();
-#endif
-  }
-  static QString architecture() { return QSysInfo::currentCpuArchitecture(); }
-  static QString platform() { return Constants::PLATFORM_NAME; }
   static QString devVersion();
   static QString graphicsApi();
+
+  const Env* env() const { return &m_env; }
 
   void logout();
 
@@ -447,6 +430,8 @@ class MozillaVPN final : public QObject {
     WebSocketHandler m_webSocketHandler;
     User m_user;
   };
+
+  Env m_env;
 
   Private* m_private = nullptr;
 

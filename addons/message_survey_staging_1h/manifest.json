@@ -10,10 +10,15 @@
   },
   "message": {
     "id": "message_survey_staging_1h",
-    "title": "Your subscription is ending soon!",
-    "subtitle": "Your Mozilla VPN subscription is ending soon. If you don’t want to say goodbye you can easily renew your subscription below.",
+    "title": "Survey message 1h",
+    "subtitle": "This survey message is presented after 1 hour",
     "date": 1641406997,
+    "badge": "survey",
     "blocks": [
+      { "id": "c_1",
+        "type": "text",
+        "content": "*THIS IS A STAGING MESSAGE*" 
+      }
     ]    
   }
 }

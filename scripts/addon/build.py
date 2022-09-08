@@ -169,6 +169,11 @@ def retrieve_strings_message(manifest, filename):
         "value": message_json["title"],
         "comments": message_json.get("title_comment", "Title for a message view"),
     }
+    subtitle_id = f"message.{message_id}.subtitle"
+    message_strings[subtitle_id] = {
+        "value": message_json["subtitle"],
+        "comments": message_json.get("subtitle_comment", "Subtitle for a message view"),
+    }
 
     return retrieve_strings_blocks(message_json["blocks"], filename, message_strings, f"message.{message_id}")
 

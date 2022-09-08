@@ -51,28 +51,30 @@ sleep 1
 UPDATING=
 if [ -f "$DAEMON_PLIST_PATH" ]; then
   UPDATING=1
+  # Load the daemon
+  echo "Update detected - Unloading the Daemon"
+  launchctl unload -w $DAEMON_PLIST_PATH
 fi
 
-# Load the daemon
-launchctl unload -w $DAEMON_PLIST_PATH
 echo "$DAEMON_PLIST" > $DAEMON_PLIST_PATH
+echo "Loading the Daemon at $DAEMON_PLIST_PATH"
 launchctl load -w $DAEMON_PLIST_PATH
 
 if [ -f "/Applications/Mozilla VPN.app/Contents/Resources/utils/mozillavpn.json" ]; then
-  # Install the firefox native messaging manifest
+  echo "Install the firefox native messaging manifest"
   mkdir -p "/Library/Application Support/Mozilla/NativeMessagingHosts"
   cp -f "/Applications/Mozilla VPN.app/Contents/Resources/utils/mozillavpn.json" "/Library/Application Support/Mozilla/NativeMessagingHosts/mozillavpn.json"
 
-  # Install the chrome native messaging manifest
+  echo "Install the chrome native messaging manifest"
   mkdir -p "/Library/Google/Chrome/NativeMessagingHosts"
   cp -f "/Applications/Mozilla VPN.app/Contents/Resources/utils/mozillavpn.json" "/Library/Google/Chrome/NativeMessagingHosts/mozillavpn.json"
 
-  # Install the chromium native messaging manifest
+  echo "Install the chromium native messaging manifest"
   mkdir -p "/Library/Application Support/Chromium/NativeMessagingHosts"
   cp -f "/Applications/Mozilla VPN.app/Contents/Resources/utils/mozillavpn.json" "/Library/Application Support/Chromium/NativeMessagingHosts/mozillavpn.json"
 fi
 
-# Run the app
+echo "Install Complete Run the app"
 if [ "$UPDATING" ]; then
   open -a "/Applications/Mozilla VPN.app" --args ui --updated
 else

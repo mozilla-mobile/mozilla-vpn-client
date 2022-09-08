@@ -129,10 +129,12 @@ void AddonManager::updateAddonsList(QList<AddonData> addons) {
 
   if (!m_loadCompleted) {
     if (taskAdded) {
-      TaskScheduler::scheduleTask(new TaskFunction([this]() {
-        m_loadCompleted = true;
-        emit loadCompletedChanged();
-      }));
+      TaskScheduler::scheduleTask(new TaskFunction(
+          [this]() {
+            m_loadCompleted = true;
+            emit loadCompletedChanged();
+          },
+          false));
     } else {
       m_loadCompleted = true;
       emit loadCompletedChanged();
@@ -214,6 +216,13 @@ void AddonManager::unload(const QString& addonId) {
     endResetModel();
   }
 
+  QDir dir;
+  if (m_addonDirectory.getDirectory(&dir)) {
+    QString addonFileName(QString("%1.rcc").arg(addonId));
+    QString addonFilePath(dir.filePath(addonFileName));
+    QResource::unregisterResource(addonFilePath, mountPath(addonId));
+  }
+
   addon->deleteLater();
 }
 
@@ -274,15 +283,15 @@ bool AddonManager::validateAndLoad(const QString& addonId,
   }
 
   m_addons[addonId].m_sha256 = sha256;
+  QString addonMountPath = mountPath(addonId);
 
-  if (!QResource::registerResource(addonFilePath,
-                                   QString("/addons/%1").arg(addonId))) {
+  if (!QResource::registerResource(addonFilePath, addonMountPath)) {
     logger.warning() << "Unable to load resource from file" << addonFilePath;
     return false;
   }
 
-  if (!loadManifest(QString(":/addons/%1/manifest.json").arg(addonId))) {
-    QResource::unregisterResource(addonFilePath, "/addons");
+  if (!loadManifest(QString(":%1/manifest.json").arg(addonMountPath))) {
+    QResource::unregisterResource(addonFilePath, addonMountPath);
     return false;
   }
 
@@ -431,3 +440,8 @@ void AddonManager::reinstateMessages() const {
 #ifdef UNIT_TEST
 QStringList AddonManager::addonIds() const { return m_addons.keys(); }
 #endif
+
+// static
+QString AddonManager::mountPath(const QString& addonId) {
+  return QString("/addons/%1").arg(addonId);
+}

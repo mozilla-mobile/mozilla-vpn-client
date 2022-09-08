@@ -558,6 +558,10 @@ tipsAndTricks:
   quickTipsDescription: Let us help you get the most out of Mozilla VPN
   advancedTipsTitle: Advanced tips
   advancedTipsDescription: Let us help you learn more about Mozilla VPN
+  tutorialsTitle: Getting started
+  tutorialsDescription: Learn the basics of Mozilla VPN
+  moreTutorialsTitle: More tutorials
+  moreTutorialsDescription: Check out some of our other interactive tutorials
   quickTipsGuideViewTitle: Quick tip
   introModalDescription: Here’s a great list of useful tips and tricks to get the best out of your Mozilla VPN experience. Check it out now or find it anytime in the settings.
   tabTitleAll:
@@ -648,7 +652,7 @@ tutorialPopup:
   tutorialLeavePrimaryButtonLabel: Resume tutorial
 
 inAppMessaging:
-  menuTitle: Inbox
+  menuTitle: Messages
   editButton: Edit
   searchBarPlaceholderText: Search messages
   dateTimeYesterday: Yesterday
@@ -657,6 +661,21 @@ inAppMessaging:
   deleteMessage:
     value: Delete message
     comment: An action to delete a message from the users inbox
+  warningBadge:
+    value: Warning
+    comment: A badge shown in a message signifying that this is a warning message
+  criticalBadge:
+    value: Critical
+    comment: A badge shown in a message signifying that this is an important message
+  newUpdateBadge:
+    value: New update
+    comment: A badge shown in a message signifying an update to the app is available
+  whatsNewBadge:
+    value: What’s new
+    comment: A badge shown in a message signifying that this message contains information about what is new in the product
+  surveyBadge:
+    value: Survey
+    comment: A badge shown in a message signifying that this message contains a survey
 
 global:
   expand:

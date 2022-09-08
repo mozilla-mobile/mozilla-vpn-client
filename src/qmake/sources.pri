@@ -237,6 +237,7 @@ HEADERS += \
         curve25519.h \
         dnshelper.h \
         dnspingsender.h \
+        env.h \
         errorhandler.h \
         externalophandler.h \
         filterproxymodel.h \

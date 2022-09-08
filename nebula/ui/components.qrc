@@ -112,9 +112,12 @@
         <file>components/VPNTutorialPopups.qml</file>
         <file>components/VPNTutorialList.qml</file>
         <file>components/VPNGuideList.qml</file>
+        <file>components/VPNTipsAndTricksSection.qml</file>
         <file>components/VPNScreenBase.qml</file>
         <file>components/VPNViewBase.qml</file>
         <file>components/VPNSwipeDelegate.qml</file>
         <file>components/VPNSwipeAction.qml</file>
+        <file>components/VPNBadge.qml</file>
+        <file>components/VPNComposerView.qml</file>
     </qresource>
 </RCC>

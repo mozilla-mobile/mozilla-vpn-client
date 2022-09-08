@@ -10,24 +10,14 @@
   },
   "message": {
     "id": "message_survey_staging_30m",
-    "title": "You have a new update available ✨",
-    "subtitle": "Update your VPN to the latest version. We see that you are currently using an older version of Mozilla VPN, and we have added some new features and fixes to make your experience more enjoyable:",
+    "title": "Survey message 30m",
+    "subtitle": "This survey message is presented after 30 minutes",
     "date": 1661116829,
+    "badge": "survey",
     "blocks": [
       { "id": "c_1",
-        "type": "ulist",
-        "content": [
-          { "id": "l_1",
-            "content": "New feature 1" },
-          { "id": "l_2",
-            "content": "Bug fixes" },
-          { "id": "l_3",
-            "content": "New feature 2" }
-        ]
-      },
-      { "id": "c_2",
         "type": "text",
-        "content": "You can update instantly by hitting the update button below!" 
+        "content": "*THIS IS A STAGING MESSAGE*" 
       }
     ]  
   }

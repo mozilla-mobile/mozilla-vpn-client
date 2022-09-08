@@ -85,10 +85,6 @@ bool DNSHelper::validateUserDNS(const QString& dns) {
   }
 #endif
 
-  if (address.isBroadcast()) {
-    return false;
-  }
-
   return true;
 }
 

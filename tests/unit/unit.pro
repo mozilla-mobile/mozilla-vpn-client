@@ -78,6 +78,7 @@ HEADERS += \
     ../../src/controller.h \
     ../../src/curve25519.h \
     ../../src/dnspingsender.h \
+    ../../src/env.h \
     ../../src/errorhandler.h \
     ../../src/externalophandler.h \
     ../../src/frontend/navigator.h \
@@ -153,6 +154,7 @@ HEADERS += \
     ../../src/websocket/pushmessage.h \
     helper.h \
     testaddon.h \
+    testaddonapi.h \
     testaddonindex.h \
     testadjust.h \
     testandroidmigration.h \
@@ -174,6 +176,7 @@ HEADERS += \
     testtasks.h \
     testthemes.h \
     testtimersingleshot.h \
+    testurlopener.h \
     websocket/testwebsockethandler.h \
     websocket/testexponentialbackoffstrategy.h \
     websocket/testpushmessage.h
@@ -291,6 +294,7 @@ SOURCES += \
     mocmozillavpn.cpp \
     mocnetworkrequest.cpp \
     testaddon.cpp \
+    testaddonapi.cpp \
     testaddonindex.cpp \
     testadjust.cpp \
     testandroidmigration.cpp \
@@ -312,6 +316,7 @@ SOURCES += \
     testtasks.cpp \
     testthemes.cpp \
     testtimersingleshot.cpp \
+    testurlopener.cpp \
     websocket/testwebsockethandler.cpp \
     websocket/testexponentialbackoffstrategy.cpp \
     websocket/testpushmessage.cpp

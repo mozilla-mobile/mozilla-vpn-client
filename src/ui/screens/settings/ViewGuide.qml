@@ -154,81 +154,9 @@ Item {
                         color: VPNTheme.colors.grey10
                     }
 
-                    Repeater {
-                        id: repeater
-                        property var indentTagRegex: /(<\/?li>)/g
-
-                        Component {
-                            id: titleBlock
-
-                            VPNBoldInterLabel {
-                                property var guideBlock
-
-                                text: guideBlock.title
-                                font.pixelSize: VPNTheme.theme.fontSize
-                                lineHeight: VPNTheme.theme.labelLineHeight
-                                verticalAlignment: Text.AlignVCenter
-                                wrapMode: Text.Wrap
-                            }
-                        }
-
-                        Component {
-                            id: textBlock
-
-                            VPNInterLabel {
-                                property var guideBlock
-
-                                text: guideBlock.text
-                                font.pixelSize: VPNTheme.theme.fontSizeSmall
-                                color: VPNTheme.theme.fontColor
-                                horizontalAlignment: Text.AlignLeft
-                            }
-                        }
-
-                        Component {
-                            id: listBlock
-
-                            VPNInterLabel {
-                                property var guideBlock
-                                property string listType: guideBlock && guideBlock.type === "olist" ? "ol" : "ul"
-                                property var tagsList: guideBlock.subBlocks.map(subBlock => `<li>${subBlock}</li>`)
-
-                                text: `<${listType} style='margin-left: -24px;-qt-list-indent:1;'>%1</${listType}>`.arg(tagsList.join(""))
-                                textFormat: Text.RichText
-                                font.pixelSize: VPNTheme.theme.fontSizeSmall
-                                color: VPNTheme.theme.fontColor
-                                horizontalAlignment: Text.AlignLeft
-                                Accessible.name: tagsList.join("\n").replace(repeater.indentTagRegex, "")
-                            }
-                        }
-
-                        model: guide.composer.blocks
-                        delegate: Loader {
-
-                            Layout.fillWidth: true
-
-                            sourceComponent: {
-                                if (modelData instanceof VPNComposerBlockTitle) {
-                                    Layout.topMargin = VPNTheme.theme.vSpacingSmall
-                                    return titleBlock
-                                }
-
-                                if (modelData instanceof VPNComposerBlockText) {
-                                    Layout.topMargin = VPNTheme.theme.listSpacing * 0.5
-                                    return textBlock
-                                }
-
-                                if (modelData instanceof VPNComposerBlockOrderedList ||
-                                    modelData instanceof VPNComposerBlockUnorderedList) {
-                                    Layout.topMargin = VPNTheme.theme.listSpacing * 0.5
-                                    return listBlock
-                                }
-                            }
-
-                            onLoaded: {
-                                item.guideBlock = modelData
-                            }
-                        }
+                    VPNComposerView {
+                        addon: guide
+                        view: VPNComposerView.View.Guide
                     }
 
                     //padding for the bottom of the flickable

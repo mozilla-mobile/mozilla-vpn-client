@@ -6,12 +6,19 @@
   "type": "message",
   "conditions": {
     "trigger_time": 2419200,
-    "platforms": ["windows", "macos", "linux"],
-    "locales": ["en"]
+    "platforms": ["windows", "macos", "linux"]
   },
   "message": {
-    "id": "survey_28d_mobile",
-    "title": "TODO",
-    "blocks": []
+    "id": "survey_28d_desktop",
+    "title": "Survey message desktop 28d",
+    "subtitle": "This survey message is only presented on Desktop after 28 days",
+    "date": 1647629990,
+    "badge": "survey",
+    "blocks": [
+      { "id": "c_1",
+        "type": "text",
+        "content": "*THIS IS A STAGING MESSAGE*" 
+      }
+    ]   
   }
 }

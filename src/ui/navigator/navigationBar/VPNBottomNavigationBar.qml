@@ -153,7 +153,7 @@ Rectangle {
     VPNFilterProxyModel {
         id: messagesModel
         source: VPNAddonManager
-        filterCallback: obj => { return obj.addon.type === "message" && !addon.isRead }
+        filterCallback: obj => { return obj.addon.type === "message" && !obj.addon.isRead }
         Component.onCompleted: {
             messagesNavButton._hasNotification = Qt.binding(() => { return messagesModel.count > 0} )
         }

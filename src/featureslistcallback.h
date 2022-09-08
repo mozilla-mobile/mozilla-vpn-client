@@ -15,6 +15,7 @@
 
 #ifdef MVPN_LINUX
 #  include <QProcessEnvironment>
+#  include "update/versionapi.h"
 #  include "platforms/linux/linuxdependencies.h"
 #endif
 
@@ -111,9 +112,9 @@ bool FeatureCallback_splitTunnel() {
   }
   initDone = true;
 
-  /* Control groups v1 must be mounted for traffic classification
+  /* Control groups v2 must be mounted for app/traffic classification
    */
-  if (LinuxDependencies::findCgroupPath("net_cls").isNull()) {
+  if (LinuxDependencies::findCgroup2Path().isNull()) {
     return false;
   }
 
@@ -124,8 +125,18 @@ bool FeatureCallback_splitTunnel() {
     return false;
   }
   QStringList desktop = pe.value("XDG_CURRENT_DESKTOP").split(":");
-  if (!desktop.contains("GNOME") && !desktop.contains("MATE") &&
-      !desktop.contains("Unity") && !desktop.contains("X-Cinnamon")) {
+  if (desktop.contains("GNOME")) {
+    QString shellVersion = LinuxDependencies::gnomeShellVersion();
+    if (shellVersion.isNull()) {
+      return false;
+    }
+    if (VersionApi::compareVersions(shellVersion, "3.34") < 0) {
+      return false;
+    }
+  }
+  // TODO: These shells need more testing.
+  else if (!desktop.contains("MATE") && !desktop.contains("Unity") &&
+           !desktop.contains("X-Cinnamon")) {
     return false;
   }
   splitTunnelSupported = true;
