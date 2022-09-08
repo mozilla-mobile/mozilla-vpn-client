@@ -34,10 +34,10 @@
         "content": "*THIS IS A STAGING MESSAGE*" 
       },
       { "id": "c_4",
-      "type": "button",
-      "style": "primary",
-      "content": "Update now",
-      "javascript": "PresentUpdateScreen.js"
+        "type": "button",
+        "style": "primary",
+        "content": "Update now",
+        "javascript": "PresentUpdateScreen.js"
       },
       { "id": "c_5",
         "type": "button",
