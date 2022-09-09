@@ -28,7 +28,6 @@ void TestStatusIcon::basic() {
 #if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
   QCOMPARE(si.iconString(), ":/ui/resources/logo-on.png");
 #else
-           "qrc:/ui/resources/logo-generic-mask-on.png");
   QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask-on.png");
 #endif
 
