@@ -26,8 +26,8 @@ VPNIconButton {
     enabled: root.opacity !== 0
 
 
-    width: VPNTheme.theme.navBarTopMargin
-    height: VPNTheme.theme.navBarTopMargin
+    width: VPNTheme.theme.navBarIconSize
+    height: VPNTheme.theme.navBarIconSize
 
     backgroundRadius: height / 2
     buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground

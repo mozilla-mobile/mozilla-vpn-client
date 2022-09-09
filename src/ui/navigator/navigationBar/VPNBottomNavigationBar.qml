@@ -66,8 +66,8 @@ Rectangle {
         anchors.fill: parent
         anchors.topMargin: VPNTheme.theme.vSpacingSmall / 2
         anchors.leftMargin: {
-            var minNumberOfIcons = 3
-            var paddingFactor = 8 //How much we decrease horizontal margins by for each new icon added (for non-tablets)
+            let minNumberOfIcons = 3
+            let paddingFactor = 8 //How much we decrease horizontal margins by for each new icon added (for non-tablets)
             window.width < VPNTheme.theme.tabletMinimumWidth ? VPNTheme.theme.navBarMaxPadding - (paddingFactor * (navButtons.count - minNumberOfIcons)) : VPNTheme.theme.navBarMaxPaddingTablet
         }
         anchors.rightMargin: anchors.leftMargin

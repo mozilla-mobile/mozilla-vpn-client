@@ -91,6 +91,9 @@ theme.navBarTopMargin = 48;
 theme.navBarBottomMargin = Qt.platform.os !== 'ios' ? 16 : 34;
 theme.navBarHeightWithMargins =
 theme.navBarHeight + theme.navBarTopMargin + theme.navBarBottomMargin;
+theme.navBarIconSize = 48
+theme.navBarMaxPaddingTablet = 120
+theme.navBarMaxPadding = 48
 
 theme.swipeDelegateActionWidth = 56;
 theme.badgeHorizontalPadding = 8
