@@ -434,9 +434,7 @@ QJSValue AddonManager::reduce(QJSValue callback, QJSValue initialValue) const {
 void AddonManager::reinstateMessages() const {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
-  settingsHolder->clearGroup(QString("%1/%2")
-                                 .arg(Constants::ADDON_SETTINGS_GROUP)
-                                 .arg(ADDON_MESSAGE_SETTINGS_GROUP));
+  settingsHolder->clearAddonSettings(ADDON_MESSAGE_SETTINGS_GROUP);
 }
 
 #ifdef UNIT_TEST

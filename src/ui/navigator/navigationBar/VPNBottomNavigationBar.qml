@@ -150,26 +150,18 @@ Rectangle {
         id: navBarButtonGroup
     }
 
-    VPNFilterProxyModel {
-        id: messagesModel
-        source: VPNAddonManager
-        filterCallback: obj => { return obj.addon.type === "message" && !obj.addon.isRead }
-        Component.onCompleted: {
-            messagesNavButton._hasNotification = Qt.binding(() => { return messagesModel.count > 0} )
-        }
-    }
-
     Connections {
         target: VPNSettings
-        function onReadAddonMessagesChanged() {
-            root.getUnreadNotificationStatus()
-        }
-        function onDismissedAddonMessagesChanged() {
+        function onAddonSettingsChanged() {
             root.getUnreadNotificationStatus()
         }
     }
 
     function getUnreadNotificationStatus() {
         messagesNavButton._hasNotification = VPNAddonManager.reduce((addon, initialValue) => initialValue + (addon.type === "message" && !addon.isRead), 0)
+    }
+
+    Component.onCompleted: {
+        root.getUnreadNotificationStatus();
     }
 }

@@ -101,11 +101,12 @@ void AddonMessage::updateMessageState(State newState) {
 
   QMetaEnum stateMetaEnum = QMetaEnum::fromType<State>();
   QString newStateSetting = stateMetaEnum.valueToKey(newState);
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  settingsHolder->setAddonSetting(StateQuery(id()), newStateSetting);
 
   m_state = newState;
   emit stateChanged(m_state);
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  settingsHolder->setAddonSetting(StateQuery(id()), newStateSetting);
 }
 
 void AddonMessage::dismiss() {
