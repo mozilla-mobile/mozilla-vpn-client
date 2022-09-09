@@ -38,10 +38,6 @@
 #include <QTimer>
 #include <QVariant>
 
-#ifdef MVPN_WINDOWS
-#  include "platforms/windows/windowscommons.h"
-#endif
-
 class QTextStream;
 
 class MozillaVPN final : public QObject {
@@ -112,9 +108,11 @@ class MozillaVPN final : public QObject {
     LinkSubscriptionBlocked,
     LinkSplitTunnelHelp,
     LinkCaptivePortal,
+    LinkRelayPremium,
     LinkSubscriptionIapApple,
     LinkSubscriptionFxa,
     LinkSubscriptionIapGoogle,
+    LinkUpgradeToBundle,
   };
   Q_ENUM(LinkType)
 

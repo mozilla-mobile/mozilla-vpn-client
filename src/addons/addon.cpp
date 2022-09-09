@@ -68,7 +68,7 @@ QList<ConditionCallback> s_conditionCallbacks{
      [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
        QStringList features;
        for (const QJsonValue& v : value.toArray()) {
-         features.append(v.toString().toLower());
+         features.append(v.toString());
        }
 
        return AddonConditionWatcherFeaturesEnabled::maybeCreate(addon,

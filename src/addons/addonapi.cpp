@@ -94,7 +94,7 @@ QJSValue AddonApi::settings() const {
 QJSValue AddonApi::navigator() const {
   QJSEngine* engine = QmlEngineHolder::instance()->engine();
 
-  QObject* obj = SettingsHolder::instance();
+  QObject* obj = Navigator::instance();
   QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
 
   QJSValue value = engine->newQObject(obj);

@@ -87,15 +87,9 @@ VPNViewBase {
             _searchBarHasError: !root.isEmptyState && listView.count === 0
 
             _filterProxySource: VPNAddonManager
-            _filterProxyCallback: obj => {
-                                      root.closeAllSwipes()
-                                      root.isEditing = false
-                                      const filterValue = getSearchBarText();
-                                      return obj.addon.type === "message" && obj.addon.containsSearchString(filterValue)
-                                  }
-            _sortProxyCallback: (obj1, obj2) => {
-                                    return obj1.addon.date > obj2.addon.date
-                                }
+            _filterProxyCallback: obj => obj.addon.type === "message" && obj.addon.containsSearchString(getSearchBarText())
+            _sortProxyCallback: (obj1, obj2) => obj1.addon.date > obj2.addon.date
+            _editCallback: () => { root.isEditing = false }
         }
 
         Image {
@@ -218,7 +212,7 @@ VPNViewBase {
                     onClicked: {
                         if (root.anySwipesOpen()) root.closeAllSwipes()
                         else {
-                            addon.maskAsRead()
+                            addon.markAsRead()
                             stackview.push("qrc:/ui/screens/messaging/ViewMessage.qml", {"message": addon})
                         }
                     }

@@ -71,7 +71,7 @@ Item {
                        if (addon.isRead) {
                          addon.dismiss();
                        } else {
-                         addon.maskAsRead();
+                         addon.markAsRead();
                        }
                     }
                 }
