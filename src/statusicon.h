@@ -16,24 +16,19 @@ class StatusIcon final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(StatusIcon)
 
-  Q_PROPERTY(QUrl iconUrl READ iconUrl NOTIFY iconChanged)
-
  public:
   StatusIcon();
   ~StatusIcon();
 
-  QUrl iconUrl() const;
+  const QIcon& icon();
   const QString& iconString() const { return m_iconUrl; }
-  const QIcon& icon() const { return m_icon; }
-  const QColor& indicatorColor() const { return m_indicatorColor; }
+  const QColor& indicatorColor();
 
  signals:
-  void iconChanged();
-  void indicatorColorChanged();
+  void iconUpdateNeeded();
 
  public slots:
   void stateChanged();
-  void stabilityChanged();
 
  private slots:
   void animateIcon();
@@ -41,12 +36,12 @@ class StatusIcon final : public QObject {
  private:
   void activateAnimation();
   QIcon drawStatusIndicator(const QString& iconUrl) const;
-  void setIcon(const QString& iconUrl, bool shouldDrawIndicator);
-  void setIndicatorColor(const QColor& color);
+  void generateIcon();
+  void setIcon(const QString& iconUrl);
 
  private:
-  QString m_iconUrl;
   QIcon m_icon;
+  QString m_iconUrl;
   QColor m_indicatorColor;
 
   // Animated icon.

@@ -155,7 +155,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           &StatusIcon::stateChanged);
 
   connect(&m_private->m_connectionHealth, &ConnectionHealth::stabilityChanged,
-          &m_private->m_statusIcon, &StatusIcon::stabilityChanged);
+          &m_private->m_statusIcon, &StatusIcon::stateChanged);
 
   connect(&m_private->m_controller, &Controller::stateChanged,
           &m_private->m_connectionHealth,
