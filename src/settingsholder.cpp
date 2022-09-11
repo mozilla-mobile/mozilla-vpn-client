@@ -185,11 +185,6 @@ QString SettingsHolder::getAddonSettingKey(const AddonSettingQuery& query) {
       .arg(query.m_setting);
 }
 
-bool SettingsHolder::hasAddonSetting(const AddonSettingQuery& query) {
-  QString key = getAddonSettingKey(query);
-  return m_settings.contains(key);
-}
-
 QString SettingsHolder::getAddonSetting(const AddonSettingQuery& query) {
   QString key = getAddonSettingKey(query);
 

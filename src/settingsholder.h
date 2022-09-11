@@ -82,7 +82,6 @@ class SettingsHolder final : public QObject {
         : m_addonId(ai), m_addonGroup(ag), m_setting(s), m_defaultValue(dv) {}
   };
   QString getAddonSetting(const AddonSettingQuery& query);
-  bool hasAddonSetting(const AddonSettingQuery& query);
   void setAddonSetting(const AddonSettingQuery& query, const QString& value);
   void clearAddonSettings(const QString& group);
 
