@@ -160,6 +160,15 @@ module.exports = {
         `Command failed: ${json.error}`);
   },
 
+  async waitForPropertyAndClickOnElement(id, property) {    
+    await this.waitForElementProperty(property ? property : id, 'visible', 'true');
+    assert(await this.hasElement(id), 'Clicking on an non-existing element?!?');
+    const json = await this._writeCommand(`click ${id}`);
+    assert(
+        json.type === 'click' && !('error' in json),
+        `Command failed: ${json.error}`);
+  },
+
   async clickOnNotification() {
     const json = await this._writeCommand('click_notification');
     assert(
@@ -197,6 +206,7 @@ module.exports = {
   },
 
   async setElementProperty(id, property, type, value) {
+    await this.waitForElement(id)
     assert(
         await this.hasElement(id),
         'Property checks must be done on existing elements');
@@ -208,6 +218,7 @@ module.exports = {
   },
 
   async waitForElementProperty(id, property, value) {
+    await this.waitForElement(id)
     assert(
         await this.hasElement(id),
         'Property checks must be done on existing elements');
@@ -243,7 +254,7 @@ module.exports = {
   },
 
   wait() {
-    return new Promise(resolve => setTimeout(resolve, 1000));
+    return new Promise(resolve => setTimeout(resolve, 500));
   },
 
   // TODO - The expected staging urls are hardcoded, we may want to
