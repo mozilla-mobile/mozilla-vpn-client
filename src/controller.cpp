@@ -222,8 +222,8 @@ void Controller::activateInternal(bool forcePort53) {
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   // Splittunnel-feature could have been disabled due to a driver conflict.
-  if (Feature::get(Feature::Feature_splitTunnel)->isSupported() 
-        && settingsHolder->protectSelectedApps()) {
+  if (Feature::get(Feature::Feature_splitTunnel)->isSupported() &&
+      settingsHolder->protectSelectedApps()) {
     exitHop.m_vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
 
