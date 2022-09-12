@@ -21,7 +21,7 @@ class StatusIcon final : public QObject {
   ~StatusIcon();
 
   const QIcon& icon();
-  const QString& iconString() const { return m_iconUrl; }
+  const QString iconString();
   const QColor& indicatorColor();
 
  signals:
@@ -35,12 +35,11 @@ class StatusIcon final : public QObject {
 
  private:
   void activateAnimation();
-  QIcon drawStatusIndicator(const QString& iconUrl) const;
+  QIcon drawStatusIndicator();
   void generateIcon();
 
  private:
   QIcon m_icon;
-  QString m_iconUrl;
   QColor m_indicatorColor;
 
   // Animated icon.

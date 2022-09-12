@@ -46,7 +46,7 @@ constexpr const char* LOGO_GENERIC_ON =
 
 }  // namespace
 
-StatusIcon::StatusIcon() : m_iconUrl(LOGO_GENERIC) {
+StatusIcon::StatusIcon() {
   MVPN_COUNT_CTOR(StatusIcon);
 
   connect(&m_animatedIconTimer, &QTimer::timeout, this,
@@ -57,7 +57,7 @@ StatusIcon::~StatusIcon() { MVPN_COUNT_DTOR(StatusIcon); }
 
 const QIcon& StatusIcon::icon() {
   if (m_icon.isNull()) {
-    m_icon = drawStatusIndicator(m_iconUrl);
+    m_icon = drawStatusIndicator();
     Q_ASSERT(!m_icon.isNull());
   }
 
@@ -65,16 +65,60 @@ const QIcon& StatusIcon::icon() {
 }
 
 void StatusIcon::activateAnimation() {
+  logger.debug() << "Activate animation";
   m_animatedIconIndex = 0;
   m_animatedIconTimer.start(Constants::statusIconAnimationMsec());
   animateIcon();
 }
 
 void StatusIcon::animateIcon() {
+  logger.debug() << "Animate icon" << m_animatedIconIndex;
   Q_ASSERT(m_animatedIconIndex < ANIMATED_LOGO_STEPS.size());
-  setIcon(ANIMATED_LOGO_STEPS[m_animatedIconIndex++]);
+  m_animatedIconIndex++;
   if (m_animatedIconIndex == ANIMATED_LOGO_STEPS.size()) {
     m_animatedIconIndex = 0;
+  }
+  stateChanged();
+}
+
+const QString StatusIcon::iconString() {
+  logger.debug() << "Icon string";
+
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+
+  // If we are in a non-main state, we don't need to show special icons.
+  if (vpn->state() != MozillaVPN::StateMain) {
+    return LOGO_GENERIC;
+  }
+  switch (vpn->controller()->state()) {
+    case Controller::StateOn:
+      m_animatedIconTimer.stop();
+      return LOGO_GENERIC_ON;
+      break;
+    case Controller::StateOff:
+      m_animatedIconTimer.stop();
+      return LOGO_GENERIC_OFF;
+      break;
+    case Controller::StateSwitching:
+      logger.debug() << "lel StateSwitching";
+      [[fallthrough]];
+    case Controller::StateConnecting:
+      logger.debug() << "lel StateConnectin";
+      [[fallthrough]];
+    case Controller::StateConfirming:
+      logger.debug() << "lel StateConfirmin";
+      [[fallthrough]];
+    case Controller::StateDisconnecting:
+      if (!m_animatedIconTimer.isActive()) {
+        activateAnimation();
+      }
+      return ANIMATED_LOGO_STEPS[m_animatedIconIndex];
+      break;
+    default:
+      m_animatedIconTimer.stop();
+      return LOGO_GENERIC;
+      break;
   }
 }
 
@@ -110,47 +154,14 @@ void StatusIcon::stateChanged() {
   if (!m_icon.isNull()) {
     m_icon = QIcon();
   }
-  m_animatedIconTimer.stop();
-
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
-
-  // If we are in a non-main state, we don't need to show special icons.
-  if (vpn->state() != MozillaVPN::StateMain) {
-    m_iconUrl = LOGO_GENERIC;
-    emit iconUpdateNeeded();
-    return;
-  }
-
-  switch (vpn->controller()->state()) {
-    case Controller::StateOn:
-      m_iconUrl = LOGO_GENERIC_ON;
-      break;
-    case Controller::StateOff:
-      m_iconUrl = LOGO_GENERIC_OFF;
-      break;
-    case Controller::StateSwitching:
-      [[fallthrough]];
-    case Controller::StateConnecting:
-      [[fallthrough]];
-    case Controller::StateConfirming:
-      [[fallthrough]];
-    case Controller::StateDisconnecting:
-      activateAnimation();
-      break;
-    default:
-      m_iconUrl = LOGO_GENERIC;
-      break;
-  }
-
   emit iconUpdateNeeded();
 }
 
-QIcon StatusIcon::drawStatusIndicator(const QString& iconUrl) const {
+QIcon StatusIcon::drawStatusIndicator() {
   logger.debug() << "Get icon from URL";
 
   // Create pixmap so that we can paint on the original resource.
-  QPixmap iconPixmap = QPixmap(iconUrl);
+  QPixmap iconPixmap = QPixmap(iconString());
   QPainter painter(&iconPixmap);
   painter.setRenderHint(QPainter::Antialiasing);
   painter.setPen(Qt::NoPen);
