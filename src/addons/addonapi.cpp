@@ -19,7 +19,7 @@ namespace {
 Logger logger(LOG_MAIN, "AddonApi");
 }
 
-AddonApi::AddonApi(Addon* addon) : QObject(addon) {
+AddonApi::AddonApi(Addon* addon) : QObject(addon), m_addon(addon) {
   logger.debug() << "Create API for" << addon->id();
   MVPN_COUNT_CTOR(AddonApi);
 }
@@ -110,5 +110,15 @@ QJSValue AddonApi::featureList() const {
 
   QJSValue value = engine->newQObject(obj);
   value.setPrototype(engine->newQMetaObject(&FeatureModel::staticMetaObject));
+  return value;
+}
+
+QJSValue AddonApi::addon() const {
+  QJSEngine* engine = QmlEngineHolder::instance()->engine();
+
+  QQmlEngine::setObjectOwnership(m_addon, QQmlEngine::CppOwnership);
+
+  QJSValue value = engine->newQObject(m_addon);
+  value.setPrototype(engine->newQMetaObject(&Addon::staticMetaObject));
   return value;
 }

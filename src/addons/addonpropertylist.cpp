@@ -9,8 +9,30 @@ AddonPropertyList::AddonPropertyList() { MVPN_COUNT_CTOR(AddonPropertyList); }
 
 AddonPropertyList::~AddonPropertyList() { MVPN_COUNT_DTOR(AddonPropertyList); }
 
+void AddonPropertyList::set(int pos, const QString& id,
+                            const QString& fallback) {
+  if (pos >= 0 && pos < m_list.length()) {
+    QPair<QString, QString> value(id, fallback);
+    m_list[pos].swap(value);
+  }
+}
+
+void AddonPropertyList::insert(int pos, const QString& id,
+                               const QString& fallback) {
+  if (pos >= 0 && pos <= m_list.length()) {
+    QPair<QString, QString> value(id, fallback);
+    m_list.insert(pos, value);
+  }
+}
+
 void AddonPropertyList::append(const QString& id, const QString& fallback) {
   m_list.append(QPair<QString, QString>(id, fallback));
+}
+
+void AddonPropertyList::remove(int pos) {
+  if (pos >= 0 && pos < m_list.length()) {
+    m_list.removeAt(pos);
+  }
 }
 
 QStringList AddonPropertyList::get() const {

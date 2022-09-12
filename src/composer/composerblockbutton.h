@@ -18,32 +18,37 @@ class ComposerBlockButton final : public ComposerBlock {
   QML_NAMED_ELEMENT(VPNComposerBlockButton)
   QML_UNCREATABLE("")
 
-  ADDON_PROPERTY(text, m_text, retranslationCompleted)
-  Q_PROPERTY(Style style READ style CONSTANT)
-
  public:
+  ADDON_PROPERTY(text, m_text, getText, setText, retranslationCompleted)
+  Q_PROPERTY(Style style READ style WRITE setStyle NOTIFY styleChanged)
+
   enum Style { Primary, Destructive, Link };
   Q_ENUM(Style);
 
   static ComposerBlock* create(Composer* composer, Addon* addon,
-                               const QString& prefix, const QJsonObject& json);
+                               const QString& blockId, const QString& prefix,
+                               const QJsonObject& json);
   virtual ~ComposerBlockButton();
 
   Style style() const { return m_style; }
+  void setStyle(Style style);
 
   bool contains(const QString& string) const override;
 
   Q_INVOKABLE void click() const;
 
  private:
-  ComposerBlockButton(Composer* composer, Addon* addon, Style style,
-                      const QJSValue& function);
+  ComposerBlockButton(Composer* composer, Addon* addon, const QString& blockId,
+                      Style style, const QJSValue& function);
+
+ signals:
+  void styleChanged();
 
  private:
   Addon* m_addon = nullptr;
 
   AddonProperty m_text;
-  const Style m_style;
+  Style m_style;
   const QJSValue m_function;
 };
 
