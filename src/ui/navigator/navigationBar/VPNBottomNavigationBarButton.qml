@@ -26,9 +26,8 @@ VPNIconButton {
     enabled: root.opacity !== 0
 
 
-    Layout.alignment: Qt.AlignHCenter
-    Layout.preferredWidth: VPNTheme.theme.navBarTopMargin
-    Layout.preferredHeight: VPNTheme.theme.navBarTopMargin
+    width: VPNTheme.theme.navBarIconSize
+    height: VPNTheme.theme.navBarIconSize
 
     backgroundRadius: height / 2
     buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
