@@ -278,3 +278,8 @@ void AddonMessage::setBadge(Badge badge) {
   m_badge = badge;
   emit badgeChanged();
 }
+
+void AddonMessage::setDate(qint64 date) {
+  m_date = date;
+  emit dateChanged();
+}

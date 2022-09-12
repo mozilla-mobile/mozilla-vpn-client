@@ -24,10 +24,6 @@
       "type": "string",
       "description": "A comment to describe how to translate the subtitle"
     },
-    "subtitle_comment": {
-      "type": "string",
-      "description": "A comment to describe how to translate the subtitle"
-    },
     "date": {
       "type": "number",
       "description": "Epoch time of this message"
