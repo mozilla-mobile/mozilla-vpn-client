@@ -19,7 +19,7 @@ VPNIconButton {
     checked: VPNNavigator.screen === _screen
 
     onClicked: {
-        VPNNavigator.requestScreen(_screen, VPNNavigator.screen === _screen);
+        VPNNavigator.requestScreen(_screen, VPNNavigator.screen === _screen ? VPNNavigator.ForceReload : VPNNavigator.NoFlags);
     }
 
     onCheckedChanged: if (checked) btn.forceActiveFocus();
