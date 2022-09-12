@@ -34,6 +34,9 @@
     },
     "message": {
       "$ref": "message.json#"
+    },
+    "javascript": {
+      "$ref": "javascript.json#"
     }
   },
   "required": [ "id", "name", "api_version", "type" ]

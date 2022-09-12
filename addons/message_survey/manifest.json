@@ -6,6 +6,9 @@
   "conditions": {
     "trigger_time": 2419200
   },
+  "javascript": {
+    "enable": "setDate.js"
+  },
   "message": {
     "id": "message_survey",
     "title": "Help us improve Mozilla VPN",
