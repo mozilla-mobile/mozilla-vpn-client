@@ -8,6 +8,9 @@
     "env": "staging",
     "trigger_time": 3600
   },
+  "javascript": {
+    "enable": "setDate.js"
+  },
   "message": {
     "id": "message_survey_staging_1h",
     "title": "Survey message 1h",

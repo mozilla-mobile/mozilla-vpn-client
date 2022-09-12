@@ -5,6 +5,7 @@
 #ifndef ADDON_H
 #define ADDON_H
 
+#include <QJSValue>
 #include <QObject>
 #include <QTranslator>
 
@@ -52,6 +53,9 @@ class Addon : public QObject {
  private:
   void maybeCreateConditionWatchers(const QJsonObject& conditions);
 
+  bool evaluateJavascript(const QJsonObject& javascript);
+  bool evaluateJavascriptInternal(const QString& javascript, QJSValue* value);
+
  private:
   const QString m_manifestFileName;
   const QString m_id;
@@ -62,6 +66,9 @@ class Addon : public QObject {
 
   AddonApi* m_api = nullptr;
   AddonConditionWatcher* m_conditionWatcher = nullptr;
+
+  QJSValue m_jsEnableFunction;
+  QJSValue m_jsDisableFunction;
 };
 
 #endif  // ADDON_H

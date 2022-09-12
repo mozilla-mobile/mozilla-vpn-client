@@ -345,6 +345,12 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
     return nullptr;
   }
 
+  QJsonObject javascript = obj["javascript"].toObject();
+  if (!addon->evaluateJavascript(javascript)) {
+    addon->deleteLater();
+    return nullptr;
+  }
+
   addon->maybeCreateConditionWatchers(conditions);
 
   if (addon->enabled()) {
@@ -465,11 +471,35 @@ void Addon::enable() {
   QCoreApplication::installTranslator(&m_translator);
   retranslate();
 
+  if (m_jsEnableFunction.isCallable()) {
+    QJSEngine* engine = QmlEngineHolder::instance()->engine();
+    AddonApi* apiObj = api();
+    QJSValue api = engine->newQObject(apiObj);
+
+    QJSValue output = m_jsEnableFunction.call(QJSValueList{api});
+    if (output.isError()) {
+      logger.debug() << "Execution of enable javascript function failed"
+                     << output.toString();
+    }
+  }
+
   emit conditionChanged(true);
 }
 
 void Addon::disable() {
   QCoreApplication::removeTranslator(&m_translator);
+
+  if (m_jsDisableFunction.isCallable()) {
+    QJSEngine* engine = QmlEngineHolder::instance()->engine();
+    AddonApi* apiObj = api();
+    QJSValue api = engine->newQObject(apiObj);
+
+    QJSValue output = m_jsDisableFunction.call(QJSValueList{api});
+    if (output.isError()) {
+      logger.debug() << "Execution of disable javascript function failed"
+                     << output.toString();
+    }
+  }
 
   emit conditionChanged(false);
 }
@@ -480,4 +510,43 @@ AddonApi* Addon::api() {
   }
 
   return m_api;
+}
+
+bool Addon::evaluateJavascript(const QJsonObject& javascript) {
+  return evaluateJavascriptInternal(javascript["enable"].toString(),
+                                    &m_jsEnableFunction) &&
+         evaluateJavascriptInternal(javascript["disable"].toString(),
+                                    &m_jsDisableFunction);
+}
+
+bool Addon::evaluateJavascriptInternal(const QString& javascript,
+                                       QJSValue* value) {
+  if (javascript.isEmpty()) {
+    // Not an error.
+    return true;
+  }
+
+  QFileInfo manifestFileInfo(manifestFileName());
+  QDir addonPath = manifestFileInfo.dir();
+
+  QFile file(addonPath.filePath(javascript));
+  if (!file.open(QIODevice::ReadOnly)) {
+    logger.debug() << "Unable to open the javascript file" << javascript;
+    return false;
+  }
+
+  QJSValue output =
+      QmlEngineHolder::instance()->engine()->evaluate(file.readAll());
+  if (output.isError()) {
+    logger.debug() << "Execution throws an error:" << output.toString();
+    return false;
+  }
+
+  if (!output.isCallable()) {
+    logger.debug() << "The javascript entry should be a callable function";
+    return false;
+  }
+
+  *value = output;
+  return true;
 }
