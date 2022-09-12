@@ -50,7 +50,6 @@ class SettingsHolder final : public QObject {
   QString getReport() const;
 
   void clear();
-  void clearGroup(const QString& group);
 
   void sync();
 
@@ -83,8 +82,8 @@ class SettingsHolder final : public QObject {
         : m_addonId(ai), m_addonGroup(ag), m_setting(s), m_defaultValue(dv) {}
   };
   QString getAddonSetting(const AddonSettingQuery& query);
-  bool hasAddonSetting(const AddonSettingQuery& query);
   void setAddonSetting(const AddonSettingQuery& query, const QString& value);
+  void clearAddonSettings(const QString& group);
 
  private:
   explicit SettingsHolder(QObject* parent);
@@ -94,6 +93,9 @@ class SettingsHolder final : public QObject {
   // Addon specific
 
   static QString getAddonSettingKey(const AddonSettingQuery& query);
+
+ signals:
+  void addonSettingsChanged();
 
  private:
   QSettings m_settings;
