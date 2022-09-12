@@ -15,7 +15,7 @@ class Composer final : public QObject {
   QML_NAMED_ELEMENT(VPNComposer)
   QML_UNCREATABLE("")
 
-  Q_PROPERTY(QList<ComposerBlock*> blocks READ blocks CONSTANT)
+  Q_PROPERTY(QList<ComposerBlock*> blocks READ blocks NOTIFY blocksChanged)
 
  public:
   static Composer* create(Addon* addon, const QString& prefix,
@@ -25,13 +25,23 @@ class Composer final : public QObject {
 
   const QList<ComposerBlock*>& blocks() const { return m_blocks; }
 
+  Q_INVOKABLE ComposerBlock* create(const QString& id, const QString& type,
+                                    const QJSValue& params);
+  Q_INVOKABLE void insert(int pos, ComposerBlock* block);
+  Q_INVOKABLE void append(ComposerBlock* block);
+  Q_INVOKABLE void remove(const QString& id);
+
  signals:
   void retranslationCompleted();
+  void blocksChanged();
 
  private:
-  explicit Composer(QObject* parent);
+  Composer(Addon* addon, const QString& prefix);
 
  private:
+  Addon* m_addon = nullptr;
+  const QString m_prefix;
+
   QList<ComposerBlock*> m_blocks;
 };
 

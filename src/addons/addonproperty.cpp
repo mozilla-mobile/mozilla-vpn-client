@@ -25,3 +25,8 @@ QString AddonProperty::get() const {
 
   return m_fallback;
 }
+
+void AddonProperty::set(const QString& id, const QString& fallback) {
+  m_id = id;
+  m_fallback = fallback;
+}

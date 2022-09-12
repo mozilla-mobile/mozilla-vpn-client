@@ -273,3 +273,8 @@ void AddonMessage::maybePushNotification() {
     updateMessageState(State::Notified);
   }
 }
+
+void AddonMessage::setBadge(Badge badge) {
+  m_badge = badge;
+  emit badgeChanged();
+}

@@ -15,10 +15,11 @@ Logger logger(LOG_MAIN, "ComposerBlockUnorderedList");
 
 // static
 ComposerBlock* ComposerBlockUnorderedList::create(Composer* composer,
+                                                  const QString& blockId,
                                                   const QString& prefix,
                                                   const QJsonObject& json) {
   ComposerBlockUnorderedList* block =
-      new ComposerBlockUnorderedList(composer, "ulist");
+      new ComposerBlockUnorderedList(composer, blockId, "ulist");
   if (!block->parseJson(prefix, json)) {
     block->deleteLater();
     return nullptr;
@@ -64,8 +65,9 @@ bool ComposerBlockUnorderedList::parseJson(const QString& prefix,
 }
 
 ComposerBlockUnorderedList::ComposerBlockUnorderedList(Composer* composer,
+                                                       const QString& blockId,
                                                        const QString& type)
-    : ComposerBlock(composer, type) {
+    : ComposerBlock(composer, blockId, type) {
   MVPN_COUNT_CTOR(ComposerBlockUnorderedList);
 }
 
