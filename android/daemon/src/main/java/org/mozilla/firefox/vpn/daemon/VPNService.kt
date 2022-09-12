@@ -22,7 +22,7 @@ import java.util.*
 
 class VPNService : android.net.VpnService() {
     private val tag = "VPNService"
-    private var mBinder: VPNServiceBinder = VPNServiceBinder(this)
+    var mBinder: VPNServiceBinder = VPNServiceBinder(this)
     val mGlean = GleanUtil(this)
     private var mConfig: JSONObject? = null
     private var mConnectionTime: Long = 0

@@ -124,6 +124,9 @@ void AndroidVPNActivity::handleServiceMessage(int code, const QString& data) {
     case ServiceEvents::EVENT_ACTIVATION_ERROR:
       emit eventActivationError(data);
       break;
+    case ServiceEvents::EVENT_SERVER_UNAVAILABLE:
+      emit eventServerUnavailable();
+      break;
     default:
       Q_ASSERT(false);
   }

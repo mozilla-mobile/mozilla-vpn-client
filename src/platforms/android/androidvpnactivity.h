@@ -65,6 +65,10 @@ enum ServiceEvents {
   // An Error happened during activation
   // Contains the error message
   EVENT_ACTIVATION_ERROR = 5,
+  // The daemon's connection health has determined
+  // that neither the server nor the fallback are
+  // available and the connection is broken
+  EVENT_SERVER_UNAVAILABLE = 6,
 };
 typedef enum ServiceEvents ServiceEvents;
 
@@ -87,6 +91,7 @@ class AndroidVPNActivity : public QObject {
   void eventStatisticUpdate(const QString& data);
   void eventBackendLogs(const QString& data);
   void eventActivationError(const QString& data);
+  void eventServerUnavailable();
 
  private:
   AndroidVPNActivity();

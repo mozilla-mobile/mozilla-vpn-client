@@ -119,6 +119,8 @@ void Controller::initialize() {
           &Controller::implInitialized);
   connect(m_impl.get(), &ControllerImpl::statusUpdated, this,
           &Controller::statusUpdated);
+  connect(m_impl.get(), &ControllerImpl::serverUnavailable, this,
+          &Controller::readyToServerUnavailable);
   connect(this, &Controller::stateChanged, this,
           &Controller::maybeEnableDisconnectInConfirming);
 

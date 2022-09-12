@@ -58,6 +58,13 @@ AndroidController::AndroidController() {
                              doc.object()["time"].toVariant().toLongLong()));
       },
       Qt::QueuedConnection);
+  connect(
+      activity, &AndroidVPNActivity::eventServerUnavailable, this,
+      [this]() {
+        this->deactivate(ControllerImpl::ReasonNone);
+        emit serverUnavailable();
+      },
+      Qt::QueuedConnection);
 
   connect(
       activity, &AndroidVPNActivity::eventConnected, this,

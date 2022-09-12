@@ -200,6 +200,10 @@ class ConnectionHealth(service: VPNService) {
             // Nothing we can do here to help.
             Log.e(TAG, "Both Server / Serverfallback seem to be unreachable.")
             taskDone()
+            mService.mainLooper.run {
+                // If the client is alive, tell it something is awfully wrong!
+                mService.mBinder.dispatchEvent(VPNServiceBinder.EVENTS.serverUnavailable, "")
+            }
         }
     }
 }

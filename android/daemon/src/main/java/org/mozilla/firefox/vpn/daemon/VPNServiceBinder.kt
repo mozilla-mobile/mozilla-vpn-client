@@ -198,5 +198,6 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val statisticUpdate = 3
         const val backendLogs = 4
         const val activationError = 5
+        const val serverUnavailable = 6
     }
 }

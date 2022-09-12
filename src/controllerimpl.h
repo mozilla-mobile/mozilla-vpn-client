@@ -90,6 +90,10 @@ class ControllerImpl : public QObject {
   void statusUpdated(const QString& serverIpv4Gateway,
                      const QString& deviceIpv4Address, uint64_t txBytes,
                      uint64_t rxBytes);
+
+  // This should be dispatched if the controller has determined
+  // the current connection is faulty and cannot be recovered.
+  void serverUnavailable();
 };
 
 #endif  // CONTROLLERIMPL_H
