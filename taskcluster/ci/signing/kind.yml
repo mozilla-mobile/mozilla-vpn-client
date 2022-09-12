@@ -25,6 +25,7 @@ only-for-build-types:
     - linux/opt
     - macos/opt
     - windows/opt
+    - addons/opt
 
 job-template:
     description: sign mozillavpn
@@ -39,6 +40,7 @@ job-template:
             linux.*: autograph_debsign
             macos.*: macapp
             windows/opt: autograph_authenticode
+            addons/opt: autograph_rsa
 
     treeherder:
         job-symbol:
@@ -56,3 +58,4 @@ job-template:
                 linux/opt: linux/opt
                 macos/opt: macos/opt
                 windows/opt: windows/x86_64
+                addons/opt: addons/opt
