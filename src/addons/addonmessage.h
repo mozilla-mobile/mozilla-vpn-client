@@ -33,7 +33,7 @@ class AddonMessage final : public Addon {
 
   Q_PROPERTY(Composer* composer READ composer CONSTANT)
   Q_PROPERTY(bool isRead READ isRead NOTIFY stateChanged)
-  Q_PROPERTY(qint64 date MEMBER m_date CONSTANT)
+  Q_PROPERTY(qint64 date MEMBER m_date WRITE setDate NOTIFY dateChanged)
   Q_PROPERTY(
       QString formattedDate READ formattedDate NOTIFY retranslationCompleted)
   Q_PROPERTY(Badge badge MEMBER m_badge WRITE setBadge NOTIFY badgeChanged)
@@ -64,6 +64,7 @@ class AddonMessage final : public Addon {
   Q_INVOKABLE bool containsSearchString(const QString& query) const;
 
   void setBadge(Badge badge);
+  void setDate(qint64 date);
 
   bool isRead() const { return m_state == State::Read; }
 
@@ -82,6 +83,7 @@ class AddonMessage final : public Addon {
  signals:
   void stateChanged(State state);
   void badgeChanged();
+  void dateChanged();
 
  private:
   AddonMessage(QObject* parent, const QString& manifestFileName,
