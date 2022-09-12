@@ -1453,7 +1453,8 @@ void MozillaVPN::requestSettings() {
   logger.debug() << "Settings required";
 
   QmlEngineHolder::instance()->showWindow();
-  Navigator::instance()->requestScreen(Navigator::ScreenSettings, true);
+  Navigator::instance()->requestScreen(Navigator::ScreenSettings,
+                                       Navigator::ForceReload);
 }
 
 void MozillaVPN::requestAbout() {
@@ -1467,7 +1468,7 @@ void MozillaVPN::requestGetHelp() {
   logger.debug() << "Get help menu requested";
 
   QmlEngineHolder::instance()->showWindow();
-  Navigator::instance()->requestScreen(Navigator::ScreenGetHelp, true);
+  Navigator::instance()->requestScreen(Navigator::ScreenGetHelp);
 }
 
 void MozillaVPN::requestViewLogs() {

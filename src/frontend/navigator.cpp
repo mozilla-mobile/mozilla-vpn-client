@@ -182,7 +182,8 @@ ScreenData s_screens[] = {
         QVector<MozillaVPN::State>{MozillaVPN::StateMain},
         [](Navigator::Screen*) -> int8_t { return 0; },
         []() -> bool {
-          Navigator::instance()->requestScreen(Navigator::ScreenHome, true);
+          Navigator::instance()->requestScreen(Navigator::ScreenHome,
+                                               Navigator::ForceReload);
           return true;
         }),
     ScreenData(
@@ -213,7 +214,8 @@ ScreenData s_screens[] = {
         QVector<MozillaVPN::State>{MozillaVPN::StateMain},
         [](Navigator::Screen*) -> int8_t { return 0; },
         []() -> bool {
-          Navigator::instance()->requestScreen(Navigator::ScreenHome, true);
+          Navigator::instance()->requestScreen(Navigator::ScreenHome,
+                                               Navigator::ForceReload);
           return true;
         }),
     ScreenData(
@@ -443,15 +445,15 @@ void Navigator::computeComponent() {
 
   maybeGenerateComponent(this, topPriorityScreen);
   loadScreen(topPriorityScreen->m_screen, topPriorityScreen->m_loadPolicy,
-             topPriorityScreen->m_qmlComponent, true);
+             topPriorityScreen->m_qmlComponent, ForceReloadAll);
 }
 
 void Navigator::requestScreen(Navigator::Screen requestedScreen,
-                              bool forceReload) {
+                              Navigator::LoadingFlags loadingFlags) {
   logger.debug() << "Screen request:" << requestedScreen;
 
-  if (!m_reloaders.isEmpty()) {
-    forceReload = true;
+  if (!m_reloaders.isEmpty() && loadingFlags == NoFlags) {
+    loadingFlags = ForceReload;
   }
 
   QList<ScreenData*> screens = computeScreens(&requestedScreen);
@@ -461,13 +463,14 @@ void Navigator::requestScreen(Navigator::Screen requestedScreen,
     if (screen->m_screen == requestedScreen) {
       maybeGenerateComponent(this, screen);
 
-      if (screen->m_qmlComponent == m_currentComponent && !forceReload) {
+      if (screen->m_qmlComponent == m_currentComponent &&
+          loadingFlags == NoFlags) {
         logger.debug() << "Already in the right screen";
         return;
       }
 
       loadScreen(screen->m_screen, screen->m_loadPolicy, screen->m_qmlComponent,
-                 forceReload);
+                 loadingFlags);
       return;
     }
   }
@@ -488,11 +491,12 @@ void Navigator::requestPreviousScreen() {
 }
 
 void Navigator::loadScreen(Screen screen, LoadPolicy loadPolicy,
-                           QQmlComponent* component, bool forceReload) {
+                           QQmlComponent* component,
+                           LoadingFlags loadingFlags) {
   logger.debug() << "Loading screen" << screen;
 
-  if (!m_reloaders.isEmpty()) {
-    forceReload = true;
+  if (!m_reloaders.isEmpty() && loadingFlags == NoFlags) {
+    loadingFlags = ForceReload;
   }
 
   if (m_screenHistory.isEmpty() || screen != m_currentScreen) {
@@ -502,12 +506,7 @@ void Navigator::loadScreen(Screen screen, LoadPolicy loadPolicy,
 
   m_currentLoadPolicy = loadPolicy;
   m_currentComponent = component;
-
-  Q_ASSERT(m_currentLoadPolicy != ReloadAndLoadPersistently);
-
-  if (forceReload && m_currentLoadPolicy == LoadPersistently) {
-    m_currentLoadPolicy = ReloadAndLoadPersistently;
-  }
+  m_currentLoadingFlags = loadingFlags;
 
   emit currentComponentChanged();
 }

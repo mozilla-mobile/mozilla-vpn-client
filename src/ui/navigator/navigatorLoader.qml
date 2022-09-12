@@ -25,6 +25,12 @@ StackView {
 
       stackView.currentLoadPolicy = VPNNavigator.loadPolicy;
 
+      if (VPNNavigator.loadingFlags === VPNNavigator.ForceReloadAll) {
+        for (let i = 0; i < stackView.screens.length; ++i) {
+          stackView.get(i+1).sourceComponent = null;
+        }
+      }
+
       // Let's hide the initial empty screen.
       stackView.get(0).visible = false;
 
@@ -34,8 +40,7 @@ StackView {
           stackView.get(i+1).visible = false;
         }
 
-        if (stackView.currentLoadPolicy === VPNNavigator.LoadPersistently ||
-          stackView.currentLoadPolicy === VPNNavigator.ReloadAndLoadPersistently) {
+        if (stackView.currentLoadPolicy === VPNNavigator.LoadPersistently) {
           stackView.screens.push(VPNNavigator.screen);
         }
 
@@ -45,8 +50,9 @@ StackView {
         return;
       }
 
-      if (stackView.currentLoadPolicy === VPNNavigator.ReloadAndLoadPersistently) {
-        stackView.get(pos+1).sourceComponent = undefined;
+      if (stackView.get(pos+1).sourceComponent === null ||
+          (VPNNavigator.loadingFlags === VPNNavigator.ForceReload)) {
+        stackView.get(pos+1).sourceComponent = null;
         stackView.get(pos+1).sourceComponent = VPNNavigator.component;
       }
 
