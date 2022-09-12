@@ -16,3 +16,5 @@ python3 scripts/addon/generate_all.py
 cd addons/generated/
 
 zip -r /builds/worker/artifacts/addons.zip addons
+cp addons/*.rcc $TASK_WORKDIR/artifacts
+cp addons/manifest.json $TASK_WORKDIR/artifacts
