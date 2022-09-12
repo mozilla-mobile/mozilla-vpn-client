@@ -144,7 +144,7 @@ Rectangle {
 
     Connections {
         target: VPNConnectionBenchmark
-        onStateChanged: {
+        function onStateChanged() {
             navbar.opacity = VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateInitial ? 1 : 0
         }
     }
