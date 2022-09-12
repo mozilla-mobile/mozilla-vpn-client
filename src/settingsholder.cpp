@@ -80,14 +80,6 @@ void SettingsHolder::clear() {
 #undef SETTING
 }
 
-void SettingsHolder::clearGroup(const QString& group) {
-  logger.debug() << "Clean up the settings for group" << group;
-
-  m_settings.beginGroup(group);
-  m_settings.remove("");
-  m_settings.endGroup();
-}
-
 void SettingsHolder::sync() { m_settings.sync(); }
 
 void SettingsHolder::hardReset() {
@@ -171,6 +163,19 @@ void SettingsHolder::removeEntryServer() {
 
 // Addon specific
 
+void SettingsHolder::clearAddonSettings(const QString& group) {
+  logger.debug() << "Clean up the settings for group" << group;
+
+  const QString groupKey(
+      QString("%1/%2").arg(Constants::ADDON_SETTINGS_GROUP).arg(group));
+
+  m_settings.beginGroup(groupKey);
+  m_settings.remove("");
+  m_settings.endGroup();
+
+  emit addonSettingsChanged();
+}
+
 // static
 QString SettingsHolder::getAddonSettingKey(const AddonSettingQuery& query) {
   return QString("%1/%2/%3/%4")
@@ -180,22 +185,20 @@ QString SettingsHolder::getAddonSettingKey(const AddonSettingQuery& query) {
       .arg(query.m_setting);
 }
 
-bool SettingsHolder::hasAddonSetting(const AddonSettingQuery& query) {
-  QString key = getAddonSettingKey(query);
-  return m_settings.contains(key);
-}
-
 QString SettingsHolder::getAddonSetting(const AddonSettingQuery& query) {
-  if (!hasAddonSetting(query)) return query.m_defaultValue;
-
   QString key = getAddonSettingKey(query);
+
+  if (!m_settings.contains(key)) return query.m_defaultValue;
+
   return m_settings.value(key).toString();
 }
 
 void SettingsHolder::setAddonSetting(const AddonSettingQuery& query,
                                      const QString& value) {
-  if (!!hasAddonSetting(query) || getAddonSetting(query) != value) {
-    QString key = getAddonSettingKey(query);
+  QString key = getAddonSettingKey(query);
+
+  if (m_settings.value(key).toString() != value) {
     m_settings.setValue(key, value);
+    emit addonSettingsChanged();
   }
 }
