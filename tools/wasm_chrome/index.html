@@ -46,7 +46,10 @@
                 let open_btn = document.querySelector("#open_task");
                 
                 branchSelector.addEventListener("change",() =>{
-                    taskclusterFrame.git_sha = branchSelector.value;
+                    taskclusterFrame.target = {
+                        sha: branchSelector.value,
+                        name: branchSelector.name
+                    } 
 
                     const url = new URL(window.location);
                     url.searchParams.set('branch', branchSelector.name);
