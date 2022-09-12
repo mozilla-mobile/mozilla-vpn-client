@@ -135,6 +135,7 @@ windows/split-tunnel/.status
 
 # Rust
 .cargo_home/
+.rustc_info.json
 
 
 # WASM
