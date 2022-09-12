@@ -221,7 +221,9 @@ void Controller::activateInternal(bool forcePort53) {
   logger.debug() << "DNS Set" << exitHop.m_dnsServer.toString();
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
-  if (settingsHolder->protectSelectedApps()) {
+  // Splittunnel-feature could have been disabled due to a driver conflict.
+  if (Feature::get(Feature::Feature_splitTunnel)->isSupported() &&
+      settingsHolder->protectSelectedApps()) {
     exitHop.m_vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
 
