@@ -24,7 +24,10 @@ class BranchSelector extends HTMLElement {
 
   #data = [];
 
+  // SHA of the Head Commit of the selected Branch
   value = "";
+  // Name of the Selected branch
+  name = "";
 
   #firedOnload = false;
 

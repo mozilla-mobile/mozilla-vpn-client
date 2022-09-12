@@ -20,8 +20,11 @@ const TASKCLUSTER_TASK_NAME = "build-wasm/opt";
 class TaskclusterFrame extends HTMLElement {
   /** @type {ShadowRoot} */
   #dom = null;
-  /** @type {String} */
-  #sha = "";
+  /** @type {Object} */
+  #targetInternal = {
+    sha: "",
+    name: "",
+  };
   /** @type {HTMLIFrameElement} */
   #iframe = null;
   /** @type {String} */
@@ -35,11 +38,11 @@ class TaskclusterFrame extends HTMLElement {
     super();
   }
 
-  get git_sha() {
-    return this.#sha;
+  get target() {
+    return this.#targetInternal;
   }
-  set git_sha(value) {
-    this.#sha = value;
+  set target(value) {
+    this.#targetInternal = value;
     this.update();
   }
 
@@ -73,10 +76,14 @@ class TaskclusterFrame extends HTMLElement {
     //this.#iframe.srcdoc="Select Branch :)";
   }
   async update() {
-    if (this.#sha == "") {
+    if (this.#targetInternal == undefined) {
       return;
     }
-    this.taskID = await this.getTaskID(this.#sha);
+    if (this.loadFromIndex(this.#targetInternal.name)) {
+      // Loaded this via target.
+      return;
+    }
+    this.taskID = await this.getTaskID(this.#targetInternal.sha);
     if (this.taskID == "") {
       alert("Unable to find a Task for this branch");
       return;
@@ -85,6 +92,18 @@ class TaskclusterFrame extends HTMLElement {
     this.#iframe.src =
       `${TASKCLUSTER_INSTANCE}api/queue/v1/task/${this.taskID}/artifacts/public/build/index.html`;
     this.dispatchEvent(new CustomEvent("taskChanged", {}));
+  }
+
+  // Tries to load branch $name from the taskcluster index.
+  // Returns false if the build is not on it.
+  async loadFromIndex(name) {
+    if (name === "main") {
+      this.#iframe.src =
+        `https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozilla-vpn-client.branch.main.latest.build.wasm/artifacts/public%2Fbuild%2Findex.html`;
+      return true;
+    }
+    // Todo: use tc namespaces api
+    return false;
   }
 
   async getTaskID(sha) {
