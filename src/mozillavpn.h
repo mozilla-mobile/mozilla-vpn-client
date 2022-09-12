@@ -7,16 +7,15 @@
 
 #include "captiveportal/captiveportal.h"
 #include "captiveportal/captiveportaldetection.h"
-#include "closeeventhandler.h"
 #include "connectionbenchmark/connectionbenchmark.h"
 #include "connectionhealth.h"
 #include "constants.h"
 #include "controller.h"
+#include "env.h"
 #include "errorhandler.h"
 #include "ipaddresslookup.h"
 #include "models/devicemodel.h"
 #include "models/feedbackcategorymodel.h"
-#include "models/helpmodel.h"
 #include "models/keys.h"
 #include "models/licensemodel.h"
 #include "models/servercountrymodel.h"
@@ -24,7 +23,6 @@
 #include "models/subscriptiondata.h"
 #include "models/supportcategorymodel.h"
 #include "models/user.h"
-#include "models/whatsnewmodel.h"
 #include "networkwatcher.h"
 #include "profileflow.h"
 #include "releasemonitor.h"
@@ -39,10 +37,6 @@
 #include <QStandardPaths>
 #include <QTimer>
 #include <QVariant>
-
-#ifdef MVPN_WINDOWS
-#  include "platforms/windows/windowscommons.h"
-#endif
 
 class QTextStream;
 
@@ -114,24 +108,19 @@ class MozillaVPN final : public QObject {
     LinkSubscriptionBlocked,
     LinkSplitTunnelHelp,
     LinkCaptivePortal,
+    LinkRelayPremium,
     LinkSubscriptionIapApple,
     LinkSubscriptionFxa,
     LinkSubscriptionIapGoogle,
+    LinkUpgradeToBundle,
   };
   Q_ENUM(LinkType)
 
  private:
   Q_PROPERTY(State state READ state NOTIFY stateChanged)
   Q_PROPERTY(AlertType alert READ alert NOTIFY alertChanged)
-  Q_PROPERTY(QString versionString READ versionString CONSTANT)
-  Q_PROPERTY(QString buildNumber READ buildNumber CONSTANT)
-  Q_PROPERTY(QString osVersion READ osVersion CONSTANT)
   Q_PROPERTY(QString devVersion READ devVersion CONSTANT)
-  Q_PROPERTY(QString architecture READ architecture CONSTANT)
-  Q_PROPERTY(QString graphicsApi READ graphicsApi CONSTANT)
-  Q_PROPERTY(QString platform READ platform CONSTANT)
-  Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY
-                 updateRecommendedChanged)
+  Q_PROPERTY(const Env* env READ env CONSTANT)
   Q_PROPERTY(UserState userState READ userState NOTIFY userStateChanged)
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
   Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
@@ -173,11 +162,10 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void authenticate();
   Q_INVOKABLE void cancelAuthentication();
   Q_INVOKABLE void openLink(LinkType linkType);
-  Q_INVOKABLE void openLinkUrl(const QString& linkUrl);
+  Q_INVOKABLE void openLinkUrl(const QString& linkUrl) const;
   Q_INVOKABLE void removeDeviceFromPublicKey(const QString& publicKey);
   Q_INVOKABLE void hideAlert() { setAlert(NoAlert); }
   Q_INVOKABLE void setAlert(AlertType alert);
-  Q_INVOKABLE void hideUpdateRecommendedAlert() { setUpdateRecommended(false); }
   Q_INVOKABLE void postAuthenticationCompleted();
   Q_INVOKABLE void telemetryPolicyCompleted();
   Q_INVOKABLE void mainWindowLoaded();
@@ -207,6 +195,7 @@ class MozillaVPN final : public QObject {
 #ifdef MVPN_ANDROID
   Q_INVOKABLE void launchPlayStore();
 #endif
+  Q_INVOKABLE void requestViewLogs();
 
   void authenticateWithType(AuthenticationType authenticationType);
 
@@ -214,9 +203,6 @@ class MozillaVPN final : public QObject {
   CaptivePortal* captivePortal() { return &m_private->m_captivePortal; }
   CaptivePortalDetection* captivePortalDetection() {
     return &m_private->m_captivePortalDetection;
-  }
-  CloseEventHandler* closeEventHandler() {
-    return &m_private->m_closeEventHandler;
   }
   ConnectionBenchmark* connectionBenchmark() {
     return &m_private->m_connectionBenchmark;
@@ -236,7 +222,6 @@ class MozillaVPN final : public QObject {
   }
   Keys* keys() { return &m_private->m_keys; }
   LicenseModel* licenseModel() { return &m_private->m_licenseModel; }
-  HelpModel* helpModel() { return &m_private->m_helpModel; }
   NetworkWatcher* networkWatcher() { return &m_private->m_networkWatcher; }
   ProfileFlow* profileFlow() { return &m_private->m_profileFlow; }
   ReleaseMonitor* releaseMonitor() { return &m_private->m_releaseMonitor; }
@@ -249,7 +234,7 @@ class MozillaVPN final : public QObject {
   }
   Telemetry* telemetry() { return &m_private->m_telemetry; }
   Theme* theme() { return &m_private->m_theme; }
-  WhatsNewModel* whatsNewModel() { return &m_private->m_whatsNewModel; }
+
   User* user() { return &m_private->m_user; }
 
   // Called at the end of the authentication flow. We can continue adding the
@@ -259,7 +244,7 @@ class MozillaVPN final : public QObject {
   void deviceAdded(const QString& deviceName, const QString& publicKey,
                    const QString& privateKey);
 
-  void deviceRemoved(const QString& publicKey);
+  void deviceRemoved(const QString& publicKey, const QString& source);
   void deviceRemovalCompleted(const QString& publicKey);
 
   void setJournalPublicAndPrivateKeys(const QString& publicKey,
@@ -284,25 +269,12 @@ class MozillaVPN final : public QObject {
 
   void silentSwitch();
 
-  static QString versionString() { return Constants::versionString(); }
-  static QString buildNumber() { return Constants::buildNumber(); }
-  static QString osVersion() {
-#ifdef MVPN_WINDOWS
-    return WindowsCommons::WindowsVersion();
-#else
-    return QSysInfo::productVersion();
-#endif
-  }
-  static QString architecture() { return QSysInfo::currentCpuArchitecture(); }
-  static QString platform() { return Constants::PLATFORM_NAME; }
   static QString devVersion();
   static QString graphicsApi();
 
+  const Env* env() const { return &m_env; }
+
   void logout();
-
-  bool updateRecommended() const { return m_updateRecommended; }
-
-  void setUpdateRecommended(bool value);
 
   UserState userState() const;
 
@@ -403,19 +375,15 @@ class MozillaVPN final : public QObject {
  public slots:
   void requestSettings();
   void requestAbout();
-  void requestViewLogs();
-  void requestContactUs();
+  void requestGetHelp();
 
  signals:
   void stateChanged();
   void alertChanged();
-  void updateRecommendedChanged();
   void userStateChanged();
   void deviceRemoving(const QString& publicKey);
-  void settingsNeeded();
   void aboutNeeded();
   void viewLogsNeeded();
-  void contactUsNeeded();
   void updatingChanged();
   void accountDeleted();
 
@@ -443,7 +411,6 @@ class MozillaVPN final : public QObject {
   struct Private {
     CaptivePortal m_captivePortal;
     CaptivePortalDetection m_captivePortalDetection;
-    CloseEventHandler m_closeEventHandler;
     ConnectionBenchmark m_connectionBenchmark;
     ConnectionHealth m_connectionHealth;
     Controller m_controller;
@@ -453,7 +420,6 @@ class MozillaVPN final : public QObject {
     SupportCategoryModel m_supportCategoryModel;
     Keys m_keys;
     LicenseModel m_licenseModel;
-    HelpModel m_helpModel;
     NetworkWatcher m_networkWatcher;
     ReleaseMonitor m_releaseMonitor;
     ServerCountryModel m_serverCountryModel;
@@ -464,9 +430,10 @@ class MozillaVPN final : public QObject {
     Telemetry m_telemetry;
     Theme m_theme;
     WebSocketHandler m_webSocketHandler;
-    WhatsNewModel m_whatsNewModel;
     User m_user;
   };
+
+  Env m_env;
 
   Private* m_private = nullptr;
 
@@ -484,7 +451,6 @@ class MozillaVPN final : public QObject {
   QTimer m_periodicOperationsTimer;
   QTimer m_gleanTimer;
 
-  bool m_updateRecommended = false;
   bool m_startMinimized = false;
   bool m_updating = false;
   bool m_controllerInitialized = false;

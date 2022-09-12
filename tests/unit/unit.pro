@@ -37,15 +37,13 @@ include($$PWD/../../version.pri)
 include($$PWD/../../glean/glean.pri)
 include($$PWD/../../nebula/nebula.pri)
 include($$PWD/../../translations/translations.pri)
-include($$PWD/../../src/qmake/signature.pri)
 
 # Remove resouce files that we intend to mock out
 RESOURCES ~= 's/.*servers.qrc//g'
 
 HEADERS += \
-    ../../src/addonmanager.h \
     ../../src/addons/addon.h \
-    ../../src/addons/addondemo.h \
+    ../../src/addons/addonapi.h \
     ../../src/addons/addonguide.h \
     ../../src/addons/addoni18n.h \
     ../../src/addons/addonmessage.h \
@@ -53,11 +51,16 @@ HEADERS += \
     ../../src/addons/addonpropertylist.h \
     ../../src/addons/addontutorial.h \
     ../../src/addons/conditionwatchers/addonconditionwatcher.h \
+    ../../src/addons/conditionwatchers/addonconditionwatcherfeaturesenabled.h \
     ../../src/addons/conditionwatchers/addonconditionwatchergroup.h \
+    ../../src/addons/conditionwatchers/addonconditionwatcherjavascript.h \
     ../../src/addons/conditionwatchers/addonconditionwatcherlocales.h \
     ../../src/addons/conditionwatchers/addonconditionwatchertimestart.h \
     ../../src/addons/conditionwatchers/addonconditionwatchertimeend.h \
     ../../src/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h \
+    ../../src/addons/manager/addondirectory.h \
+    ../../src/addons/manager/addonindex.h \
+    ../../src/addons/manager/addonmanager.h \
     ../../src/adjust/adjustfiltering.h \
     ../../src/adjust/adjustproxypackagehandler.h \
     ../../src/captiveportal/captiveportal.h \
@@ -66,6 +69,7 @@ HEADERS += \
     ../../src/commandlineparser.h \
     ../../src/composer/composer.h \
     ../../src/composer/composerblock.h \
+    ../../src/composer/composerblockbutton.h \
     ../../src/composer/composerblocktext.h \
     ../../src/composer/composerblocktitle.h \
     ../../src/composer/composerblockorderedlist.h \
@@ -74,8 +78,11 @@ HEADERS += \
     ../../src/controller.h \
     ../../src/curve25519.h \
     ../../src/dnspingsender.h \
+    ../../src/env.h \
     ../../src/errorhandler.h \
     ../../src/externalophandler.h \
+    ../../src/frontend/navigator.h \
+    ../../src/frontend/navigatorreloader.h \
     ../../src/inspector/inspectorhandler.h \
     ../../src/inspector/inspectorutils.h \
     ../../src/ipaddress.h \
@@ -90,7 +97,6 @@ HEADERS += \
     ../../src/models/feature.h \
     ../../src/models/featuremodel.h \
     ../../src/models/feedbackcategorymodel.h \
-    ../../src/models/helpmodel.h \
     ../../src/models/keys.h \
     ../../src/models/licensemodel.h \
     ../../src/models/server.h \
@@ -101,12 +107,12 @@ HEADERS += \
     ../../src/models/subscriptiondata.h \
     ../../src/models/supportcategorymodel.h \
     ../../src/models/user.h \
-    ../../src/models/whatsnewmodel.h \
     ../../src/mozillavpn.h \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \
     ../../src/networkwatcher.h \
     ../../src/networkwatcherimpl.h \
+    ../../src/notificationhandler.h \
     ../../src/pinghelper.h \
     ../../src/pingsender.h \
     ../../src/pingsenderfactory.h \
@@ -125,6 +131,7 @@ HEADERS += \
     ../../src/signature.h \
     ../../src/simplenetworkmanager.h \
     ../../src/statusicon.h \
+    ../../src/systemtraynotificationhandler.h \
     ../../src/task.h \
     ../../src/tasks/account/taskaccount.h \
     ../../src/tasks/adddevice/taskadddevice.h \
@@ -149,10 +156,12 @@ HEADERS += \
     ../../src/websocket/pushmessage.h \
     helper.h \
     testaddon.h \
-    testaddonmanager.h \
+    testaddonapi.h \
+    testaddonindex.h \
     testadjust.h \
     testandroidmigration.h \
     testcommandlineparser.h \
+    testcomposer.h \
     testfeature.h \
     testipaddress.h \
     testipaddresslookup.h \
@@ -169,14 +178,14 @@ HEADERS += \
     testtasks.h \
     testthemes.h \
     testtimersingleshot.h \
+    testurlopener.h \
     websocket/testwebsockethandler.h \
     websocket/testexponentialbackoffstrategy.h \
     websocket/testpushmessage.h
 
 SOURCES += \
-    ../../src/addonmanager.cpp \
     ../../src/addons/addon.cpp \
-    ../../src/addons/addondemo.cpp \
+    ../../src/addons/addonapi.cpp \
     ../../src/addons/addonguide.cpp \
     ../../src/addons/addoni18n.cpp \
     ../../src/addons/addonmessage.cpp \
@@ -184,11 +193,16 @@ SOURCES += \
     ../../src/addons/addonpropertylist.cpp \
     ../../src/addons/addontutorial.cpp \
     ../../src/addons/conditionwatchers/addonconditionwatcher.cpp \
+    ../../src/addons/conditionwatchers/addonconditionwatcherfeaturesenabled.cpp \
     ../../src/addons/conditionwatchers/addonconditionwatchergroup.cpp \
+    ../../src/addons/conditionwatchers/addonconditionwatcherjavascript.cpp \
     ../../src/addons/conditionwatchers/addonconditionwatcherlocales.cpp \
     ../../src/addons/conditionwatchers/addonconditionwatchertimestart.cpp \
     ../../src/addons/conditionwatchers/addonconditionwatchertimeend.cpp \
     ../../src/addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp \
+    ../../src/addons/manager/addondirectory.cpp \
+    ../../src/addons/manager/addonindex.cpp \
+    ../../src/addons/manager/addonmanager.cpp \
     ../../src/adjust/adjustfiltering.cpp \
     ../../src/adjust/adjustproxypackagehandler.cpp \
     ../../src/captiveportal/captiveportal.cpp \
@@ -197,6 +211,7 @@ SOURCES += \
     ../../src/commandlineparser.cpp \
     ../../src/composer/composer.cpp \
     ../../src/composer/composerblock.cpp \
+    ../../src/composer/composerblockbutton.cpp \
     ../../src/composer/composerblocktext.cpp \
     ../../src/composer/composerblocktitle.cpp \
     ../../src/composer/composerblockorderedlist.cpp \
@@ -206,6 +221,8 @@ SOURCES += \
     ../../src/dnspingsender.cpp \
     ../../src/errorhandler.cpp \
     ../../src/externalophandler.cpp \
+    ../../src/frontend/navigator.cpp \
+    ../../src/frontend/navigatorreloader.cpp \
     ../../src/hacl-star/Hacl_Chacha20.c \
     ../../src/hacl-star/Hacl_Chacha20Poly1305_32.c \
     ../../src/hacl-star/Hacl_Curve25519_51.c \
@@ -223,7 +240,6 @@ SOURCES += \
     ../../src/models/feature.cpp \
     ../../src/models/featuremodel.cpp \
     ../../src/models/feedbackcategorymodel.cpp \
-    ../../src/models/helpmodel.cpp \
     ../../src/models/keys.cpp \
     ../../src/models/licensemodel.cpp \
     ../../src/models/server.cpp \
@@ -234,9 +250,9 @@ SOURCES += \
     ../../src/models/subscriptiondata.cpp \
     ../../src/models/supportcategorymodel.cpp \
     ../../src/models/user.cpp \
-    ../../src/models/whatsnewmodel.cpp \
     ../../src/networkmanager.cpp \
     ../../src/networkwatcher.cpp \
+    ../../src/notificationhandler.cpp \
     ../../src/pinghelper.cpp \
     ../../src/pingsenderfactory.cpp \
     ../../src/platforms/android/androiddatamigration.cpp \
@@ -280,11 +296,14 @@ SOURCES += \
     mocinspectorhandler.cpp \
     mocmozillavpn.cpp \
     mocnetworkrequest.cpp \
+    mocsystemtraynotificationhandler.cpp \
     testaddon.cpp \
-    testaddonmanager.cpp \
+    testaddonapi.cpp \
+    testaddonindex.cpp \
     testadjust.cpp \
     testandroidmigration.cpp \
     testcommandlineparser.cpp \
+    testcomposer.cpp \
     testfeature.cpp \
     testipaddress.cpp \
     testipaddresslookup.cpp \
@@ -301,6 +320,7 @@ SOURCES += \
     testtasks.cpp \
     testthemes.cpp \
     testtimersingleshot.cpp \
+    testurlopener.cpp \
     websocket/testwebsockethandler.cpp \
     websocket/testexponentialbackoffstrategy.cpp \
     websocket/testpushmessage.cpp
@@ -346,6 +366,7 @@ MOC_DIR = .moc
 RCC_DIR = .rcc
 UI_DIR = .ui
 
+RESOURCES += addons/addons.qrc
 RESOURCES += servers/servers.qrc
 RESOURCES += ../../src/ui/license.qrc
 RESOURCES += ../../src/resources/public_keys/public_keys.qrc

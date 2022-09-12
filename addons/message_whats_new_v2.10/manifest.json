@@ -1,0 +1,41 @@
+{
+  "api_version": "0.1",
+  "id": "message_whats_new_v2.10",
+  "name": "What's new message",
+  "type": "message",
+  "conditions": {
+    "min_client_version": "2.10.0",
+    "max_client_version": "2.11.0"
+  },  
+  "message": {
+    "id": "message_whats_new_v2.10",
+    "title": "Welcome to Mozilla VPN 2.10",
+    "subtitle": "You’re using the latest version of Mozilla VPN. Take a look at the newest features and updates available in Mozilla VPN 2.10:",
+    "date": 1661021990,
+    "badge": "whats_new",
+    "blocks": [
+      { "id": "c_1",
+        "type": "ulist",
+        "content": [
+          { "id": "l_1",
+            "content": "New message center, where you can learn about important updates (like this one!)" },
+          { "id": "l_2",
+            "content": "Easier-to-use navigation bar" },
+          { "id": "l_3",
+            "content": "New tips and tricks to help you use the app’s features and settings" },
+          { "id": "l_4",
+            "content": "The speed test feature now also tests upload speeds in addition to download speeds" },
+          { "id": "l_5",
+            "content": "Other bug fixes and UI adjustments" },
+          { "id": "l_6",
+            "content": "Improved icons in the Windows and macOS tray to help you quickly assess your connection" }
+        ]
+      },
+      {
+        "id": "c_2",
+        "type": "text",
+        "content": "We’re always working to improve Mozilla VPN; thanks for updating to the latest version!" 
+      }
+    ]  
+  }
+}

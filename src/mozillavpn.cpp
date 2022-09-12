@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozillavpn.h"
-#include "addonmanager.h"
+#include "addons/manager/addonmanager.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "constants.h"
 #include "dnshelper.h"
+#include "frontend/navigator.h"
 #include "iaphandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -139,8 +140,9 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           });
 
   connect(&m_private->m_controller, &Controller::readyToServerUnavailable, this,
-          []() {
-            NotificationHandler::instance()->serverUnavailableNotification();
+          [](bool pingReceived) {
+            NotificationHandler::instance()->serverUnavailableNotification(
+                pingReceived);
           });
 
   connect(&m_private->m_controller, &Controller::stateChanged, this,
@@ -151,6 +153,9 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 
   connect(this, &MozillaVPN::stateChanged, &m_private->m_statusIcon,
           &StatusIcon::stateChanged);
+
+  connect(&m_private->m_connectionHealth, &ConnectionHealth::stabilityChanged,
+          &m_private->m_statusIcon, &StatusIcon::stabilityChanged);
 
   connect(&m_private->m_controller, &Controller::stateChanged,
           &m_private->m_connectionHealth,
@@ -577,6 +582,11 @@ void MozillaVPN::openLink(LinkType linkType) {
                          .first());
       break;
 
+    case LinkRelayPremium:
+      url = Constants::relayUrl();
+      url.append("/premium");
+      break;
+
     case LinkSubscriptionFxa:
       url = Constants::fxaUrl();
       url.append("/subscriptions");
@@ -590,6 +600,12 @@ void MozillaVPN::openLink(LinkType linkType) {
       url = Constants::GOOGLE_SUBSCRIPTIONS_URL;
       break;
 
+    case LinkUpgradeToBundle:
+      url = Constants::inProduction() ? Constants::API_PRODUCTION_URL
+                                      : Constants::API_STAGING_URL;
+      url.append("/r/vpn/upgradeToPrivacyBundle");
+      break;
+
     default:
       qFatal("Unsupported link type!");
       return;
@@ -598,7 +614,7 @@ void MozillaVPN::openLink(LinkType linkType) {
   UrlOpener::open(url, addEmailAddress);
 }
 
-void MozillaVPN::openLinkUrl(const QString& linkUrl) {
+void MozillaVPN::openLinkUrl(const QString& linkUrl) const {
   logger.debug() << "Opening link: " << linkUrl;
   UrlOpener::open(linkUrl);
 }
@@ -731,9 +747,12 @@ void MozillaVPN::deviceAdded(const QString& deviceName,
   settingsHolder->setKeyRegenerationTimeSec(QDateTime::currentSecsSinceEpoch());
 }
 
-void MozillaVPN::deviceRemoved(const QString& publicKey) {
+void MozillaVPN::deviceRemoved(const QString& publicKey,
+                               const QString& source) {
   logger.debug() << "Device removed";
 
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::deviceRemoved, {{"source", source}});
   m_private->m_deviceModel.removeDeviceFromPublicKey(publicKey);
 }
 
@@ -970,7 +989,6 @@ void MozillaVPN::reset(bool forceInitialState) {
   logger.debug() << "Cleaning up all";
 
   TaskScheduler::deleteTasks();
-  m_private->m_closeEventHandler.removeAllStackViews();
 
   SettingsHolder::instance()->clear();
   m_private->m_keys.forgetKeys();
@@ -1200,11 +1218,6 @@ void MozillaVPN::telemetryPolicyCompleted() {
   }
 
   maybeStateMain();
-}
-
-void MozillaVPN::setUpdateRecommended(bool value) {
-  m_updateRecommended = value;
-  emit updateRecommendedChanged();
 }
 
 void MozillaVPN::setUserState(UserState state) {
@@ -1440,7 +1453,7 @@ void MozillaVPN::requestSettings() {
   logger.debug() << "Settings required";
 
   QmlEngineHolder::instance()->showWindow();
-  emit settingsNeeded();
+  Navigator::instance()->requestScreen(Navigator::ScreenSettings, true);
 }
 
 void MozillaVPN::requestAbout() {
@@ -1450,18 +1463,16 @@ void MozillaVPN::requestAbout() {
   emit aboutNeeded();
 }
 
-void MozillaVPN::requestViewLogs() {
-  logger.debug() << "View log requested";
+void MozillaVPN::requestGetHelp() {
+  logger.debug() << "Get help menu requested";
 
   QmlEngineHolder::instance()->showWindow();
-  emit viewLogsNeeded();
+  Navigator::instance()->requestScreen(Navigator::ScreenGetHelp, true);
 }
 
-void MozillaVPN::requestContactUs() {
-  logger.debug() << "Contact us view requested";
-
-  QmlEngineHolder::instance()->showWindow();
-  emit contactUsNeeded();
+void MozillaVPN::requestViewLogs() {
+  logger.debug() << "View log requested";
+  emit viewLogsNeeded();
 }
 
 void MozillaVPN::activate() {

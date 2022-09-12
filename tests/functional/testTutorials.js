@@ -4,21 +4,21 @@
 const assert = require('assert');
 const vpn = require('./helper.js');
 
-describe('Tutorials', function() {
+describe('Tutorials', function () {
   this.timeout(60000);
   this.ctx.authenticationNeeded = true;
 
   async function openHighlightedTutorial() {
-    await vpn.waitForElement('settingsButton');
-    await vpn.clickOnElement('settingsButton');
+    await vpn.waitForElement('navigationLayout/navButton-settings');
+    await vpn.clickOnElement('navigationLayout/navButton-settings');
     await vpn.wait();
 
     await vpn.waitForElement('settingsTipsAndTricks');
     await vpn.clickOnElement('settingsTipsAndTricks');
     await vpn.wait();
 
-    await vpn.waitForElement('highlightedTutorial');
-    await vpn.clickOnElement('highlightedTutorial');
+    await vpn.waitForElement('tutorialList/highlightedTutorial');
+    await vpn.clickOnElement('tutorialList/highlightedTutorial');
     await vpn.wait();
   }
 
@@ -27,7 +27,7 @@ describe('Tutorials', function() {
     await vpn.clickOnElement('tutorialLeave');
   }
 
-  describe('Tutorial tooltip', function() {
+  describe('Tutorial tooltip', function () {
     beforeEach(async () => {
       await openHighlightedTutorial();
     });
@@ -35,8 +35,8 @@ describe('Tutorials', function() {
     it('Has close button', async () => {
       await vpn.waitForElement('tutorialLeave');
       assert(
-          (await vpn.getElementProperty('tutorialLeave', 'visible')) ===
-          'true');
+        (await vpn.getElementProperty('tutorialLeave', 'visible')) ===
+        'true');
     });
 
     it('Clicking close button opens the "Leave tutorial?" modal', async () => {
@@ -45,15 +45,15 @@ describe('Tutorials', function() {
 
       await vpn.wait();
       await vpn.waitForElementProperty(
-          'tutorialPopupPrimaryButton', 'visible', 'true');
+        'tutorialPopupPrimaryButton', 'visible', 'true');
 
       assert(
-          (await vpn.getElementProperty(
-              'tutorialPopupPrimaryButton', 'text')) === 'Resume tutorial');
+        (await vpn.getElementProperty(
+          'tutorialPopupPrimaryButton', 'text')) === 'Resume tutorial');
     });
   });
 
-  describe('"Leave tutorial?" popup', function() {
+  describe('"Leave tutorial?" popup', function () {
     beforeEach(async () => {
       await openHighlightedTutorial();
       await vpn.wait();
@@ -62,71 +62,71 @@ describe('Tutorials', function() {
     });
 
     it('Clicking primary button closes modal and resumes tutorial',
-       async () => {
-         await vpn.waitForElementProperty(
-             'tutorialPopupPrimaryButton', 'visible', 'true');
-         await vpn.clickOnElement('tutorialPopupPrimaryButton');
-         await vpn.wait();
-         assert(
-             (await vpn.getElementProperty(
-                 'tutorialPopupPrimaryButton', 'visible')) === 'false');
+      async () => {
+        await vpn.waitForElementProperty(
+          'tutorialPopupPrimaryButton', 'visible', 'true');
+        await vpn.clickOnElement('tutorialPopupPrimaryButton');
+        await vpn.wait();
+        assert(
+          (await vpn.getElementProperty(
+            'tutorialPopupPrimaryButton', 'visible')) === 'false');
 
-         assert(
-             (await vpn.getElementProperty('tutorialUiRoot', 'visible')) ===
-             'true');
-       });
+        assert(
+          (await vpn.getElementProperty('tutorialUiRoot', 'visible')) ===
+          'true');
+      });
 
     it('Clicking secondary button closes modal and stops tutorial',
-       async () => {
-         await vpn.waitForElementProperty(
-             'tutorialPopupSecondaryButton', 'visible', 'true');
-         await vpn.clickOnElement('tutorialPopupSecondaryButton');
-         await vpn.wait();
+      async () => {
+        await vpn.waitForElementProperty(
+          'tutorialPopupSecondaryButton', 'visible', 'true');
+        await vpn.clickOnElement('tutorialPopupSecondaryButton');
+        await vpn.wait();
 
-         assert(
-             (await vpn.getElementProperty('tutorialUiRoot', 'visible')) ===
-             'false');
-       });
+        assert(
+          (await vpn.getElementProperty('tutorialUiRoot', 'visible')) ===
+          'false');
+      });
   });
 
   describe(
-      'Opening views from system tray menu triggers "Leave tutorial?" popup',
-      function() {
-        beforeEach(async () => {
-          await openHighlightedTutorial();
+    'Opening views from system tray menu triggers "Leave tutorial?" popup',
+    function () {
+      beforeEach(async () => {
+        await openHighlightedTutorial();
+      });
+
+      it('Opening settings from system tray during tutorial triggers "Leave tutorial?" popup',
+        async () => {
+          await vpn.wait();
+          await vpn.openSettings();
+          await vpn.wait();
+          assert(
+            (await vpn.getElementProperty(
+              'tutorialPopupPrimaryButton', 'visible')) === 'true');
         });
 
-        it('Opening settings from system tray during tutorial triggers "Leave tutorial?" popup',
-           async () => {
-             await vpn.wait();
-             await vpn.openSettings();
-             await vpn.wait();
-             assert(
-                 (await vpn.getElementProperty(
-                     'tutorialPopupPrimaryButton', 'visible')) === 'true');
-           });
+      it('Clicking secondary button opens clicked system tray option',
+        async () => {
+          await vpn.wait();
+          await vpn.openSettings();
+          await vpn.wait();
 
-        it('Clicking secondary button opens clicked system tray option',
-           async () => {
-             await vpn.wait();
-             await vpn.openSettings();
-             await vpn.wait();
+          await vpn.waitForElementProperty(
+            'tutorialPopupSecondaryButton', 'visible', 'true');
+          await vpn.clickOnElement('tutorialPopupSecondaryButton');
+          await vpn.wait();
 
-             await vpn.waitForElementProperty(
-                 'tutorialPopupSecondaryButton', 'visible', 'true');
-             await vpn.clickOnElement('tutorialPopupSecondaryButton');
-             await vpn.wait();
+          await vpn.waitForElementProperty(
+            'tutorialUiRoot', 'visible', 'false');
+          assert(
+            (await vpn.getElementProperty('tutorialUiRoot', 'visible')) ===
+            'false');
 
-             await vpn.waitForElementProperty(
-                 'tutorialUiRoot', 'visible', 'false');
-             assert(
-                 (await vpn.getElementProperty('tutorialUiRoot', 'visible')) ===
-                 'false');
-
-             await vpn.waitForElement('settings');
-             assert(
-                 (await vpn.getElementProperty('settings', 'visible')) ===
-                 'true');
-           });
-      });
+          await vpn.waitForElement('settings');
+          assert(
+            (await vpn.getElementProperty('settings', 'visible')) ===
+            'true');
+        });
+    });
 });

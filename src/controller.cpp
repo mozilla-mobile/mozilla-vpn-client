@@ -6,6 +6,7 @@
 #include "controller.h"
 #include "controllerimpl.h"
 #include "dnshelper.h"
+#include "frontend/navigator.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -121,6 +122,12 @@ void Controller::initialize() {
   connect(this, &Controller::stateChanged, this,
           &Controller::maybeEnableDisconnectInConfirming);
 
+  connect(&m_ping_canary, &PingHelper::pingSentAndReceived, [this]() {
+    m_ping_canary.stop();
+    m_ping_received = true;
+    logger.info() << "Canary Ping Succeeded";
+  });
+
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
@@ -169,6 +176,8 @@ bool Controller::activate() {
   if (m_state == StateOff) {
     if (m_portalDetected) {
       emit activationBlockedForCaptivePortal();
+      Navigator::instance()->requestScreen(Navigator::ScreenCaptivePortal);
+
       m_portalDetected = false;
       return true;
     }
@@ -181,7 +190,7 @@ bool Controller::activate() {
   return true;
 }
 
-void Controller::activateInternal() {
+void Controller::activateInternal(bool forcePort53) {
   logger.debug() << "Activation internal";
   Q_ASSERT(m_impl);
 
@@ -212,7 +221,9 @@ void Controller::activateInternal() {
   logger.debug() << "DNS Set" << exitHop.m_dnsServer.toString();
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
-  if (settingsHolder->protectSelectedApps()) {
+  // Splittunnel-feature could have been disabled due to a driver conflict.
+  if (Feature::get(Feature::Feature_splitTunnel)->isSupported() &&
+      settingsHolder->protectSelectedApps()) {
     exitHop.m_vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
 
@@ -223,7 +234,7 @@ void Controller::activateInternal() {
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv6AddrIn());
 
     // If requested, force the use of port 53/DNS.
-    if (settingsHolder->tunnelPort53()) {
+    if (settingsHolder->tunnelPort53() || forcePort53) {
       exitHop.m_server.forcePort(53);
     }
     // For single-hop, they are the same
@@ -241,7 +252,7 @@ void Controller::activateInternal() {
       return;
     }
     // If requested, force the use of port 53/DNS.
-    if (settingsHolder->tunnelPort53()) {
+    if (settingsHolder->tunnelPort53() || forcePort53) {
       hop.m_server.forcePort(53);
     }
 
@@ -271,6 +282,10 @@ void Controller::activateInternal() {
   }
 
   m_activationQueue.append(exitHop);
+  m_ping_received = false;
+  m_ping_canary.start(m_activationQueue.first().m_server.ipv4AddrIn(),
+                      "0.0.0.0/0");
+  logger.info() << "Canary Ping Started";
   activateNext();
 }
 
@@ -332,7 +347,7 @@ bool Controller::deactivate() {
       (m_state == StateConnecting)) {
     setState(StateDisconnecting);
   }
-
+  m_ping_canary.stop();
   m_handshakeTimer.stop();
   m_activationQueue.clear();
   clearConnectedTime();
@@ -354,7 +369,7 @@ void Controller::connected(const QString& pubkey) {
     return;
   }
   m_handshakeTimer.stop();
-
+  m_ping_canary.stop();
   // Start the next connection if there is more work to do.
   m_activationQueue.removeFirst();
   if (!m_activationQueue.isEmpty()) {
@@ -400,6 +415,13 @@ void Controller::handshakeTimeout() {
   emit connectionRetryChanged();
   if (m_connectionRetry < CONNECTION_MAX_RETRY) {
     activateInternal();
+    return;
+  } else if (m_connectionRetry == CONNECTION_MAX_RETRY &&
+             !SettingsHolder::instance()->tunnelPort53()) {
+    logger.info() << "Last Connection Attempt: Using Port 53 Option this time.";
+    // On the last activation, opportunisticly try again using the port 53
+    // option enabled, if that feature is disabled.
+    activateInternal(true);
     return;
   }
 
@@ -586,7 +608,8 @@ bool Controller::processNextStep() {
   }
 
   if (nextStep == ServerUnavailable) {
-    emit readyToServerUnavailable();
+    logger.info() << "Server Unavailable - Ping succeeded: " << m_ping_received;
+    emit readyToServerUnavailable(m_ping_received);
     return true;
   }
 

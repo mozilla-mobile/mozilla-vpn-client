@@ -11,6 +11,8 @@
 class AddonConditionWatcher;
 class QJsonObject;
 
+class AddonApi;
+
 class Addon : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Addon)
@@ -28,10 +30,13 @@ class Addon : public QObject {
 
   const QString& id() const { return m_id; }
   const QString& type() const { return m_type; }
+  const QString& manifestFileName() const { return m_manifestFileName; }
 
   virtual void retranslate();
 
   virtual bool enabled() const;
+
+  AddonApi* api();
 
  signals:
   void conditionChanged(bool enabled);
@@ -55,6 +60,7 @@ class Addon : public QObject {
 
   QTranslator m_translator;
 
+  AddonApi* m_api = nullptr;
   AddonConditionWatcher* m_conditionWatcher = nullptr;
 };
 

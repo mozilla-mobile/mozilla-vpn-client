@@ -33,14 +33,6 @@ VPNAlert {
                 }
             },
             State {
-                name: VPN.updateRecommended
-                PropertyChanges {
-                    target: alertBox
-                    visible: false
-                    alertType: alertTypes.info
-                }
-            },
-            State {
                 name: VPN.AuthenticationFailedAlert
                 PropertyChanges {
                     target: alertBox

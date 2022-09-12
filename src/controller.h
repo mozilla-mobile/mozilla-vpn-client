@@ -7,6 +7,7 @@
 
 #include "models/server.h"
 #include "ipaddress.h"
+#include "pinghelper.h"
 
 #include <QElapsedTimer>
 #include <QHostAddress>
@@ -132,7 +133,7 @@ class Controller final : public QObject {
   void readyToQuit();
   void readyToUpdate();
   void readyToBackendFailure();
-  void readyToServerUnavailable();
+  void readyToServerUnavailable(bool pingReceived);
   void connectionRetryChanged();
   void enableDisconnectInConfirmingChanged();
   void silentSwitchDone();
@@ -148,7 +149,7 @@ class Controller final : public QObject {
   QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
   QStringList getExcludedAddresses(const Server& server);
 
-  void activateInternal();
+  void activateInternal(bool forceDNSPort = false);
   void activateNext();
 
   void clearRetryCounter();
@@ -163,6 +164,9 @@ class Controller final : public QObject {
   bool m_portalDetected = false;
 
   QDateTime m_connectedTimeInUTC;
+
+  PingHelper m_ping_canary;
+  bool m_ping_received = false;
 
   QScopedPointer<ControllerImpl> m_impl;
 

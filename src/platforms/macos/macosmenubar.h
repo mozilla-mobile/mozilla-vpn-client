@@ -8,7 +8,6 @@
 #include <QObject>
 
 class QAction;
-class QMenu;
 class QMenuBar;
 
 class MacOSMenuBar final : public QObject {
@@ -36,7 +35,7 @@ class MacOSMenuBar final : public QObject {
   QAction* m_aboutAction = nullptr;
   QAction* m_preferencesAction = nullptr;
   QAction* m_closeAction = nullptr;
-  QMenu* m_helpMenu = nullptr;
+  QAction* m_helpAction = nullptr;
 };
 
 #endif  // MACOSMENUBAR_H

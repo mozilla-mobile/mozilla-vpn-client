@@ -37,7 +37,9 @@ A block is a JSON object composed of the following properties:
 | id       | Each block must have an id. This is used for the localization                      | String                             | Yes      |
 | content  | The text content of the block it can be a string or an array of objects. See below | String or array of Content objects | Yes      |
 | comment  | An optional comment to describe the meaning of the content                         | String                             | No       |
-| type     | The type of the block. Possible values: text, title, ulist, olist                  | String                             | Yes      |
+| type     | The type of the block. Possible values: text, title, ulist, olist, button                  | String                             | Yes      |
+| style     | The style of the block (only used for buttons right now - options: `primary`, `destructive`, `link`)                  | String                             | No      |
+| javascript     | A javascript file containing a function to be ran (only used for buttons right now)                  | String                             | No      |
 
 ### Content object
 

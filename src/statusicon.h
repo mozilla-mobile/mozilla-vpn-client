@@ -5,6 +5,8 @@
 #ifndef STATUSICON_H
 #define STATUSICON_H
 
+#include "connectionhealth.h"
+
 #include <QIcon>
 #include <QObject>
 #include <QTimer>
@@ -21,25 +23,31 @@ class StatusIcon final : public QObject {
   ~StatusIcon();
 
   QUrl iconUrl() const;
-
-  const QString& iconString() const { return m_icon; }
+  const QString& iconString() const { return m_iconUrl; }
+  const QIcon& icon();
+  const QColor& indicatorColor() const { return m_indicatorColor; }
 
  signals:
-  void iconChanged(const QString& icon);
+  void iconChanged();
+  void indicatorColorChanged();
 
  public slots:
   void stateChanged();
+  void stabilityChanged();
 
  private slots:
   void animateIcon();
 
  private:
   void activateAnimation();
-
-  void setIcon(const QString& icon);
+  QIcon drawStatusIndicator(const QString& iconUrl) const;
+  void setIcon(const QString& iconUrl, bool shouldDrawIndicator);
+  void setIndicatorColor(const QColor& color);
 
  private:
-  QString m_icon;
+  QString m_iconUrl;
+  QIcon m_icon;
+  QColor m_indicatorColor;
 
   // Animated icon.
   QTimer m_animatedIconTimer;

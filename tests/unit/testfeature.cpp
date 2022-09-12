@@ -5,7 +5,6 @@
 #include "testfeature.h"
 #include "../../src/models/feature.h"
 #include "../../src/models/featuremodel.h"
-#include "../../src/models/feature.h"
 #include "../../src/settingsholder.h"
 #include "../../src/adjust/adjustfiltering.h"
 #include "helper.h"
@@ -76,50 +75,32 @@ void TestFeature::flipOnOff() {
 
   FeatureModel* fm = FeatureModel::instance();
 
-  // Flipping on an already-supported feature doesn't produce changes.
-  fm->toggleForcedEnable("testFeatureA");
-  QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureA"));
-  QVERIFY(!settingsHolder.featuresFlippedOff().contains("testFeatureA"));
-  QVERIFY(Feature::get("testFeatureA")->isSupported());
-
-  // Flipping off a feature which was on -> it becomes off
-  fm->toggleForcedDisable("testFeatureA");
+  // On -> On(+flip off)
+  fm->toggle("testFeatureA");
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureA"));
   QVERIFY(settingsHolder.featuresFlippedOff().contains("testFeatureA"));
   QVERIFY(!Feature::get("testFeatureA")->isSupported());
 
-  // Flipping off a feature which was on but disabled -> it becomes on
-  fm->toggleForcedDisable("testFeatureA");
+  // On(+flip off) -> On
+  fm->toggle("testFeatureA");
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureA"));
   QVERIFY(!settingsHolder.featuresFlippedOff().contains("testFeatureA"));
   QVERIFY(Feature::get("testFeatureA")->isSupported());
 
-  // Flipping off an non-supported feature doesn't produce changes.
-  fm->toggleForcedDisable("testFeatureB");
-  QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureB"));
-  QVERIFY(!settingsHolder.featuresFlippedOff().contains("testFeatureB"));
-  QVERIFY(!Feature::get("testFeatureB")->isSupported());
-
-  // Flipping on a feature which was off -> it becomes on
-  fm->toggleForcedEnable("testFeatureB");
+  // Off -> Off(+flip on)
+  fm->toggle("testFeatureB");
   QVERIFY(settingsHolder.featuresFlippedOn().contains("testFeatureB"));
   QVERIFY(!settingsHolder.featuresFlippedOff().contains("testFeatureB"));
   QVERIFY(Feature::get("testFeatureB")->isSupported());
 
-  // Flipping on a feature which was off but enabled -> it becomes off
-  fm->toggleForcedEnable("testFeatureB");
+  // Off(+flip on) -> Off
+  fm->toggle("testFeatureB");
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureB"));
   QVERIFY(!settingsHolder.featuresFlippedOff().contains("testFeatureB"));
   QVERIFY(!Feature::get("testFeatureB")->isSupported());
 
   // Flipping on an unflippable feature doesn't produce changes.
-  fm->toggleForcedEnable("testFeatureC");
-  QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureC"));
-  QVERIFY(!settingsHolder.featuresFlippedOff().contains("testFeatureC"));
-  QVERIFY(!Feature::get("testFeatureC")->isSupported());
-
-  // Flipping on an unflippable feature doesn't produce changes.
-  fm->toggleForcedDisable("testFeatureC");
+  fm->toggle("testFeatureC");
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureC"));
   QVERIFY(!settingsHolder.featuresFlippedOff().contains("testFeatureC"));
   QVERIFY(!Feature::get("testFeatureC")->isSupported());

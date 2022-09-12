@@ -1,2 +1,3 @@
 # Francesco Lodolo as main contact for string changes
+addons/**/manifest.json
 translations/strings.yaml @flodolo

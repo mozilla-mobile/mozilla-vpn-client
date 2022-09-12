@@ -29,6 +29,9 @@ constexpr uint32_t UNSECURED_NETWORK_ALERT_MSEC = 4000;
 // Number of msecs for the server unavailable alert.
 constexpr uint32_t SERVER_UNAVAILABLE_ALERT_MSEC = 4000;
 
+// Number of msecs for the new in app message alert.
+constexpr uint32_t NEW_IN_APP_MESSAGE_ALERT_MSEC = 4000;
+
 // Number of recent connections to retain.
 constexpr int RECENT_CONNECTIONS_MAX_COUNT = 5;
 
@@ -83,6 +86,15 @@ constexpr const char* API_PRODUCTION_URL = "https://vpn.mozilla.org";
 constexpr const char* API_STAGING_URL =
     "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
 
+constexpr const char* ADDON_PRODUCTION_URL =
+    "https://archive.mozilla.org/pub/vpn/addons/releases/latest/";
+constexpr const char* ADDON_PRODUCTION_KEY =
+    ":/addons_signature/production.der";
+
+constexpr const char* ADDON_STAGING_URL =
+    "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/";
+constexpr const char* ADDON_STAGING_KEY = ":/addons_signature/staging.der";
+
 constexpr auto CRASH_PRODUCTION_URL =
     "https://crash-reports.mozilla.com/submit";
 constexpr auto CRASH_STAGING_URL = "https://crash-reports.allizom.org/submit";
@@ -94,6 +106,8 @@ constexpr const char* APPLE_SUBSCRIPTIONS_URL =
 
 constexpr const char* GOOGLE_SUBSCRIPTIONS_URL =
     "https://play.google.com/store/account/subscriptions";
+
+constexpr const char* ADDON_SETTINGS_GROUP = "addons";
 
 PRODBETAEXPR(QString, fxaApiBaseUrl, "https://api.accounts.firefox.com",
              envOrDefault("MVPN_FXA_API_BASE_URL",
@@ -109,15 +123,9 @@ PRODBETAEXPR(
     const char*, balrogRootCertFingerprint,
     "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e",
     "3c01446abe9036cea9a09acaa3a520ac628f20a7ae32ce861cb2efb70fa0c745");
-PRODBETAEXPR(
-    QString, addonSourceUrl,
-    "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/",  // TODO
-    envOrDefault("MVPN_ADDON_URL",
-                 "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/"))
 
-PRODBETAEXPR(const char*, addonPublicKeyFile,
-             ":/addons_signature/production.der",
-             ":/addons_signature/staging.der");
+PRODBETAEXPR(const char*, relayUrl, "https://relay.firefox.com",
+             "https://stage.fxprivaterelay.nonprod.cloudops.mozgcp.net");
 
 PRODBETAEXPR(qint64, keyRegeneratorTimeSec, 604800, 300);
 

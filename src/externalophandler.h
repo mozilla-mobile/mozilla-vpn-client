@@ -16,12 +16,11 @@ class ExternalOpHandler final : public QObject {
     OpAbout,
     OpActivate,
     OpCloseEvent,
-    OpContactUs,
     OpDeactivate,
+    OpGetHelp,
     OpNotificationClicked,
     OpSettings,
     OpQuit,
-    OpViewLogs,
   };
   Q_ENUM(Op);
 
@@ -33,10 +32,6 @@ class ExternalOpHandler final : public QObject {
   static ExternalOpHandler* instance();
 
   void request(Op op);
-  void requestOpActivate() { return request(OpActivate); }
-  void requestOpDeactivate() { return request(OpDeactivate); }
-  void requestOpSettings() { return request(OpSettings); }
-  void requestOpQuit() { return request(OpQuit); }
 
   void registerBlocker(Blocker* blocker);
   void unregisterBlocker(Blocker* blocker);

@@ -10,6 +10,7 @@ class QUrl;
 class UrlOpener final {
  public:
   static void open(QUrl url, bool addEmailAddress = false);
+  static QUrl replaceUrlParams(const QUrl& originalUrl);
 };
 
 #endif  // URLOPENER_H

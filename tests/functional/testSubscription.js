@@ -120,8 +120,9 @@ describe('Subscription view', function() {
           .body = {}
     };
 
-    await vpn.waitForElement('settingsButton');
-    await vpn.clickOnElement('settingsButton');
+    await vpn.waitForElement('navigationLayout/navButton-settings');
+    await vpn.clickOnElement('navigationLayout/navButton-settings');
+    await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
 
     await vpn.waitForElement('settingsUserProfile');
     await vpn.waitForElementProperty('settingsUserProfile', 'visible', 'true');
@@ -143,8 +144,7 @@ describe('Subscription view', function() {
         'settingsUserProfile-manageAccountButton', 'visible', 'true');
     await vpn.clickOnElement('settingsUserProfile-manageAccountButton');
 
-    await vpn.waitForElement('MainStackView');
-    await vpn.waitForElementProperty('MainStackView', 'busy', 'false');
+    await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
 
     await vpn.waitForElement('authSignIn-passwordInput');
     await vpn.waitForElementProperty(
@@ -161,6 +161,7 @@ describe('Subscription view', function() {
           .body = SUBSCRIPTION_DETAILS;
     };
 
+    await vpn.wait();
     await vpn.clickOnElement('authSignIn-button');
 
     await vpn.waitForElement('subscriptionManagmentView');
@@ -177,8 +178,8 @@ describe('Subscription view', function() {
           .body = {}
     };
 
-    await vpn.waitForElement('settingsButton');
-    await vpn.clickOnElement('settingsButton');
+    await vpn.waitForElement('navigationLayout/navButton-settings');
+    await vpn.clickOnElement('navigationLayout/navButton-settings');
 
     await vpn.waitForElement('settingsUserProfile');
     await vpn.waitForElementProperty('settingsUserProfile', 'visible', 'true');
@@ -200,8 +201,7 @@ describe('Subscription view', function() {
         'settingsUserProfile-manageAccountButton', 'visible', 'true');
     await vpn.clickOnElement('settingsUserProfile-manageAccountButton');
 
-    await vpn.waitForElement('MainStackView');
-    await vpn.waitForElementProperty('MainStackView', 'busy', 'false');
+    await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
 
     await vpn.waitForElement('authSignIn-passwordInput');
     await vpn.waitForElementProperty(
@@ -209,6 +209,7 @@ describe('Subscription view', function() {
     await vpn.setElementProperty(
         'authSignIn-passwordInput', 'text', 's', 'P4ass0rd!!');
 
+    await vpn.wait();
     await vpn.waitForElementProperty('authSignIn-button', 'enabled', 'true');
 
     this.ctx.fxaLoginCallback = (req) => {
@@ -220,6 +221,7 @@ describe('Subscription view', function() {
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
     };
 
+    await vpn.wait();
     await vpn.clickOnElement('authSignIn-button');
 
     await vpn.waitForElement('authVerificationSessionByTotpNeeded-textInput');
@@ -245,6 +247,7 @@ describe('Subscription view', function() {
           .body = SUBSCRIPTION_DETAILS;
     };
 
+    await vpn.wait();
     await vpn.clickOnElement('authVerificationSessionByTotpNeeded-button');
 
     await vpn.waitForElement('subscriptionManagmentView');
@@ -719,8 +722,8 @@ describe('Subscription view', function() {
         }
       };
 
-      await vpn.waitForElement('settingsButton');
-      await vpn.clickOnElement('settingsButton');
+      await vpn.waitForElement('navigationLayout/navButton-settings');
+      await vpn.clickOnElement('navigationLayout/navButton-settings');
 
       await vpn.waitForElement('settingsUserProfile');
       await vpn.waitForElementProperty(
@@ -854,7 +857,7 @@ describe('Subscription view', function() {
         await vpn.waitForElementProperty(
             'manageSubscriptionButton', 'visible', 'true');
         await vpn.setElementProperty(
-            'subscriptionManagmentView', 'contentY', 'i',
+            'subscriptionManagmentView-flickable', 'contentY', 'i',
             parseInt(
                 await vpn.getElementProperty('manageSubscriptionButton', 'y')));
         await vpn.clickOnElement('manageSubscriptionButton');
@@ -864,16 +867,17 @@ describe('Subscription view', function() {
         });
       }
 
-      await vpn.waitForElement('settingsBackButton');
-      await vpn.waitForElementProperty('settingsBackButton', 'visible', 'true');
-      await vpn.clickOnElement('settingsBackButton');
+      await vpn.waitForElement('settings-back');
+      await vpn.waitForElementProperty('settings-back', 'visible', 'true');
+      await vpn.clickOnElement('settings-back');
       await vpn.wait();
 
       await vpn.waitForElement('settingsUserProfile');
       await vpn.waitForElementProperty(
           'settingsUserProfile', 'visible', 'true');
 
-      await vpn.clickOnElement('settingsBackButton');
+      await vpn.waitForElement('navigationLayout/navButton-home');
+      await vpn.clickOnElement('navigationLayout/navButton-home');
       await vpn.wait();
 
       await vpn.waitForElement('controllerTitle');
@@ -898,8 +902,8 @@ describe('Subscription view', function() {
           .body = SUBSCRIPTION_DETAILS;
     };
 
-    await vpn.waitForElement('settingsButton');
-    await vpn.clickOnElement('settingsButton');
+    await vpn.waitForElement('navigationLayout/navButton-settings');
+    await vpn.clickOnElement('navigationLayout/navButton-settings');
 
     await vpn.waitForElement('settingsUserProfile');
     await vpn.waitForElementProperty('settingsUserProfile', 'visible', 'true');
@@ -936,14 +940,13 @@ describe('Subscription view', function() {
     await vpn.wait();
 
     await vpn.setElementProperty(
-        'subscriptionManagmentView', 'contentY', 'i',
+        'subscriptionManagmentView-flickable', 'contentY', 'i',
         parseInt(await vpn.getElementProperty('accountDeletionButton', 'y')));
     await vpn.wait();
 
     await vpn.clickOnElement('accountDeletionButton');
 
-    await vpn.waitForElement('MainStackView');
-    await vpn.waitForElementProperty('MainStackView', 'busy', 'false');
+    await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
 
     await vpn.waitForElement('authSignIn-passwordInput');
     await vpn.waitForElementProperty(
@@ -951,6 +954,7 @@ describe('Subscription view', function() {
     await vpn.setElementProperty(
         'authSignIn-passwordInput', 'text', 's', 'P4ass0rd!!');
 
+    await vpn.wait();
     await vpn.waitForElementProperty('authSignIn-button', 'enabled', 'true');
     await vpn.clickOnElement('authSignIn-button');
 
@@ -1080,6 +1084,7 @@ describe('Subscription view', function() {
     assert(await vpn.getElementProperty('learnMoreLink', 'visible') === 'true');
   });
 
+
   it('Account deletion - totp', async () => {
     this.ctx.fxaLoginCallback = (req) => {
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
@@ -1097,8 +1102,8 @@ describe('Subscription view', function() {
           .body = SUBSCRIPTION_DETAILS;
     };
 
-    await vpn.waitForElement('settingsButton');
-    await vpn.clickOnElement('settingsButton');
+    await vpn.waitForElement('navigationLayout/navButton-settings');
+    await vpn.clickOnElement('navigationLayout/navButton-settings');
 
     await vpn.waitForElement('settingsUserProfile');
     await vpn.waitForElementProperty('settingsUserProfile', 'visible', 'true');
@@ -1135,14 +1140,13 @@ describe('Subscription view', function() {
     await vpn.wait();
 
     await vpn.setElementProperty(
-        'subscriptionManagmentView', 'contentY', 'i',
+        'subscriptionManagmentView-flickable', 'contentY', 'i',
         parseInt(await vpn.getElementProperty('accountDeletionButton', 'y')));
     await vpn.wait();
 
     await vpn.clickOnElement('accountDeletionButton');
 
-    await vpn.waitForElement('MainStackView');
-    await vpn.waitForElementProperty('MainStackView', 'busy', 'false');
+    await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
 
     await vpn.waitForElement('authSignIn-passwordInput');
     await vpn.waitForElementProperty(
@@ -1150,6 +1154,7 @@ describe('Subscription view', function() {
     await vpn.setElementProperty(
         'authSignIn-passwordInput', 'text', 's', 'P4ass0rd!!');
 
+    await vpn.wait();
     await vpn.waitForElementProperty('authSignIn-button', 'enabled', 'true');
     await vpn.clickOnElement('authSignIn-button');
 
@@ -1169,6 +1174,7 @@ describe('Subscription view', function() {
       }
     };
 
+    await vpn.wait();
     await vpn.clickOnElement('authVerificationSessionByTotpNeeded-button');
 
     await vpn.waitForElement('deleteAccountForRealButton');
@@ -1296,4 +1302,122 @@ describe('Subscription view', function() {
     assert(await vpn.getElementProperty('getStarted', 'visible') === 'true');
     assert(await vpn.getElementProperty('learnMoreLink', 'visible') === 'true');
   });
+
+  const relayUpsell =
+      'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-relayUpsell-layout';
+
+  async function clickSettingsIcon() {
+    await vpn.waitForElement('navigationLayout/navButton-settings');
+    await vpn.clickOnElement('navigationLayout/navButton-settings');
+  }
+  async function openSubscriptionManagement() {
+    await vpn.waitForElement('settingsUserProfile');
+    await vpn.clickOnElement('settingsUserProfile');
+  }
+
+  it('Correctly shows or hides the VPN / Relay upgrade UI based on locale',
+     async () => {
+       this.ctx.fxaLoginCallback = (req) => {
+         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
+           sessionToken: 'session',
+           verified: true,
+           verificationMethod: ''
+         };
+         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
+       };
+       this.ctx.guardianSubscriptionDetailsCallback = req => {
+         this.ctx.guardianOverrideEndpoints
+             .GETs['/api/v1/vpn/subscriptionDetails']
+             .status = 200;
+         this.ctx.guardianOverrideEndpoints
+             .GETs['/api/v1/vpn/subscriptionDetails']
+             .body = SUBSCRIPTION_DETAILS;
+       };
+
+       if (!(await vpn.isFeatureFlippedOn('bundleUpgrade'))) {
+         await vpn.flipFeatureOn('bundleUpgrade');
+       }
+
+       await clickSettingsIcon();
+       await openSubscriptionManagement();
+
+       await vpn.waitForElement(relayUpsell);
+       await vpn.waitForElementProperty(relayUpsell, 'visible', 'true');
+
+
+       await clickSettingsIcon();
+
+       await vpn.setSetting('language-code', 'de');
+       await openSubscriptionManagement();
+
+       await vpn.waitForElement(relayUpsell);
+       await vpn.waitForElementProperty(relayUpsell, 'visible', 'false');
+     });
+
+  it('Hides Relay upsell if bundleUpgrade feature is not enabled', async () => {
+    await vpn.flipFeatureOff('bundleUpgrade');
+
+    this.ctx.fxaLoginCallback = (req) => {
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
+        sessionToken: 'session',
+        verified: true,
+        verificationMethod: ''
+      };
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
+    };
+    this.ctx.guardianSubscriptionDetailsCallback = req => {
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .status = 200;
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .body = SUBSCRIPTION_DETAILS;
+    };
+
+    await clickSettingsIcon();
+    await openSubscriptionManagement();
+
+    await vpn.waitForElement(relayUpsell);
+    await vpn.waitForElementProperty(relayUpsell, 'visible', 'false');
+  });
+
+
+  it('Hides Relay upsell if  subscription type is not "web"', async () => {
+    await vpn.flipFeatureOn('bundleUpgrade');
+
+    const SUBSCRIPTION_DETAILS_CLONE = Object.assign({}, SUBSCRIPTION_DETAILS);
+    SUBSCRIPTION_DETAILS_CLONE.subscription = {
+      _subscription_type: 'iap_apple',
+      expiry_time_millis: 2147483647,
+      auto_renewing: true,
+    };
+
+    this.ctx.fxaLoginCallback = (req) => {
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
+        sessionToken: 'session',
+        verified: true,
+        verificationMethod: ''
+      };
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
+    };
+    this.ctx.guardianSubscriptionDetailsCallback = req => {
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .status = 200;
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .body = SUBSCRIPTION_DETAILS_CLONE;
+    };
+
+    await clickSettingsIcon();
+    await openSubscriptionManagement();
+
+    await vpn.waitForElement(
+        'subscriptionItem/subscriptionItem-status/subscriptionItem-status-parent/subscriptionItem-status-relayUpsell-layout');
+    assert(
+        await vpn.getElementProperty(
+            'subscriptionItem/subscriptionItem-status/subscriptionItem-status-parent/subscriptionItem-status-relayUpsell-layout',
+            'visible') === 'false');
+  });
+
+  // TODO:
+  // Upgrade button works
+  // Learn more link works
+  
 });

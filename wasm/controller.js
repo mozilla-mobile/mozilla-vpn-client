@@ -106,6 +106,13 @@ class Controller {
         `Command failed: ${json.error}`);
   }
 
+  async backButtonClicked() {
+    const json = await this._writeCommand('back_button_clicked');
+    assert(
+        json.type === 'back_button_clicked' && !('error' in json),
+        `Command failed: ${json.error}`);
+  }
+
   _writeCommand(cmd) {
     return new Promise(resolve => {
       this._waitReadCallback = resolve;

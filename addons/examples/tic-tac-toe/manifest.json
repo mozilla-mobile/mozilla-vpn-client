@@ -1,9 +1,0 @@
-{
-  "id": "tic-tac-toe",
-  "api_version": "0.1",
-  "name": "Tic-Tac-Toe",
-  "type": "demo",
-  "demo": {
-    "qml": "tic-tac-toe.qml"
-  }
-}

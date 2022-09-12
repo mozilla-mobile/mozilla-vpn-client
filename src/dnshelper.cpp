@@ -84,6 +84,7 @@ bool DNSHelper::validateUserDNS(const QString& dns) {
     return false;
   }
 #endif
+
   return true;
 }
 

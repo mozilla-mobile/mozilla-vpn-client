@@ -19,7 +19,6 @@ Window {
 
     signal showServerList
 
-    property bool _fallbackQtQuickRenderer: QT_QUICK_BACKEND == "software" //TODO pending #3398
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
 
     function fullscreenRequired() {
@@ -73,7 +72,7 @@ Window {
             return;
         }
 
-        if (VPNCloseEventHandler.eventHandled()) {
+        if (VPNNavigator.eventHandled()) {
             close.accepted = false;
             return;
         }
@@ -106,153 +105,14 @@ Window {
         anchors.top: parent.top
     }
 
-    VPNStackView {
-        id: mainStackView
-
-        objectName: "MainStackView"
-        initialItem: mainView
-        width: parent.width
-        anchors.top: parent.top
-        anchors.topMargin: iosSafeAreaTopMargin.height
-        height: safeContentHeight
-
-        function getHelpViewNeeded() {
-            mainStackView.push("qrc:/ui/views/ViewGetHelp.qml")
-        }
-    }
-
-    Component {
-        id: mainView
-
-        Item {
-            state: VPN.state
-            states: [
-                State {
-                    name: VPN.StateInitialize
-
-                    PropertyChanges {
-                        target: loader
-                        source: "states/StateInitialize.qml"
-                    }
-
-                },
-                State {
-                    name: VPN.StateAuthenticating
-
-                    PropertyChanges {
-                        target: loader
-                        source: VPNFeatureList.get("inAppAuthentication").isSupported ? "states/StateAuthenticationInApp.qml" : "states/StateAuthenticating.qml"
-                    }
-
-                },
-                State {
-                    name: VPN.StatePostAuthentication
-
-                    PropertyChanges {
-                        target: loader
-                        source: "states/StatePostAuthentication.qml"
-                    }
-
-                },
-                State {
-                    name: VPN.StateTelemetryPolicy
-
-                    PropertyChanges {
-                        target: loader
-                        source: "states/StateTelemetryPolicy.qml"
-                    }
-
-                },
-                State {
-                    name: VPN.StateMain
-
-                    PropertyChanges {
-                        target: loader
-                        source: "states/StateMain.qml"
-                    }
-
-                },
-                State {
-                    name: VPN.StateUpdateRequired
-
-                    PropertyChanges {
-                        target: loader
-                        source: "states/StateUpdateRequired.qml"
-                    }
-
-                },
-                State {
-                    name: VPN.StateSubscriptionNeeded
-
-                    PropertyChanges {
-                        target: loader
-                        source: "states/StateSubscriptionNeeded.qml"
-                    }
-
-                },
-                State {
-                    name: VPN.StateSubscriptionInProgress
-
-                    PropertyChanges {
-                        target: loader
-                        source: "states/StateSubscriptionInProgress.qml"
-                    }
-
-                },
-                State {
-                    name: VPN.StateSubscriptionBlocked
-
-                    PropertyChanges {
-                        target: loader
-                        source: "states/StateSubscriptionBlocked.qml"
-                    }
-
-                },
-                State {
-                    name: VPN.StateDeviceLimit
-
-                    PropertyChanges {
-                        target: loader
-                        source: "states/StateDeviceLimit.qml"
-                    }
-
-                },
-                State {
-                    name: VPN.StateBackendFailure
-
-                    PropertyChanges {
-                        target: loader
-                        source: "states/StateBackendFailure.qml"
-                    }
-
-                },
-                State {
-                    name: VPN.StateBillingNotAvailable
-
-                    PropertyChanges {
-                        target: loader
-                        source: "states/StateBillingNotAvailable.qml"
-                    }
-                },
-                State {
-                    name: VPN.StateSubscriptionNotValidated
-
-                    PropertyChanges {
-                        target: loader
-                        source: "states/StateSubscriptionNotValidated.qml"
-                    }
-                }
-            ]
-
-            Loader {
-                id: loader
-
-                asynchronous: true
-                anchors.fill: parent
-            }
-
-        }
-
+    VPNNavigatorLoader {
+      objectName: "screenLoader"
+      anchors {
+          top: iosSafeAreaTopMargin.bottom
+          left: parent.left
+          right: parent.right
+          bottom: parent.bottom
+      }
     }
 
     Connections {
@@ -264,37 +124,11 @@ Window {
                 }
             }
 
-            // If we can't show logs natively, open the viewer
-            if (mainStackView.currentItem.objectName !== "viewLogs") {
-                mainStackView.push("qrc:/ui/views/ViewLogs.qml");
-            }
-        }
-        function onContactUsNeeded() {
-            // Check if Contact Us view is already in mainStackView
-            const contactUsViewInStack = mainStackView.find((view) => { return view.objectName === "contactUs" });
-            if (contactUsViewInStack) {
-                // Unwind mainStackView back to Contact Us
-                return mainStackView.pop(contactUsViewInStack, StackView.Immediate);
-            }
-            mainStackView.push("qrc:/ui/views/ViewContactUs.qml", StackView.Immediate);
+            VPNNavigator.requestScreen(VPNNavigator.ScreenViewLogs);
         }
 
-        function onSettingsNeeded() {
-            // Check if Settings view is already in mainStackView
-            const settingsViewInMainStack = mainStackView.find((view) => { return view.objectName === "settings" })
-
-            if (settingsViewInMainStack) {
-                // Unwind settingsStackView back to menu
-                settingsViewInMainStack._unwindSettingsStackView();
-
-                // Unwind mainStackView back to Settings
-                return mainStackView.pop(settingsViewInMainStack, StackView.Immediate);
-            }
-            mainStackView.push("qrc:/ui/views/ViewSettings.qml", StackView.Immediate);
-        }
         function onAccountDeleted() {
             VPNController.logout();
-            mainStackView.unwindToInitialItem();
         }
     }
 
@@ -313,11 +147,11 @@ Window {
 
             console.debug("Initializing glean with channel set to:", channel);
             Glean.initialize("mozillavpn", VPNSettings.gleanEnabled, {
-                appBuild: "MozillaVPN/" + VPN.versionString,
-                appDisplayVersion: VPN.versionString,
+                appBuild: "MozillaVPN/" + VPN.env.versionString,
+                appDisplayVersion: VPN.env.versionString,
                 channel: channel,
-                osVersion: VPN.osVersion,
-                architecture: [VPN.architecture, VPN.graphicsApi].join(" ").trim(),
+                osVersion: VPN.env.osVersion,
+                architecture: [VPN.env.architecture, VPN.env.graphicsApi].join(" ").trim(),
             });
         }
 
@@ -342,17 +176,11 @@ Window {
         }
 
         function onAboutToQuit() {
-            console.debug("about to quit, shutdown Glean");
+            console.debug("about to quit, shutdown Glean"); 
+            // Submit the main ping in case there are outstading metrics in storage before shutdown.
+            Pings.main.submit();
             // Use glean's built-in shutdown method - https://mozilla.github.io/glean/book/reference/general/shutdown.html
             Glean.shutdown();
-        }
-    }
-
-    Connections {
-        target: VPNAddonManager
-        function onRunAddon(addon) {
-            console.log("Loading addon", addon.name);
-            mainStackView.push("qrc:/ui/views/ViewAddon.qml", { addon })
         }
     }
 
@@ -363,102 +191,6 @@ Window {
             console.debug("Glean - onGleanEnabledChanged", VPNSettings.gleanEnabled);
             Glean.setUploadEnabled(VPNSettings.gleanEnabled);
         }
-    }
-
-    Connections {
-        target: VPNErrorHandler
-        function onSubscriptionGeneric() {
-            if(VPN.state !== VPN.StateSubscriptionNeeded && VPN.state !== VPN.StateSubscriptionInProgress) {
-                return;
-            }
-
-            mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
-                // Problem confirming subscription...
-                headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
-
-                // Sorry, we were unable to confirm your subscription.
-                // Please try again or contact our support team for help.
-                errorMessage: VPNl18n.RestorePurchaseGenericPurchaseErrorRestorePurchaseGenericPurchaseErrorText,
-
-                // Try again
-                primaryButtonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
-                primaryButtonObjectName: "errorTryAgainButton",
-                primaryButtonOnClick: mainStackView.pop,
-                secondaryButtonIsSignOff: false,
-                getHelpLinkVisible: true
-            });
-        }
-
-        function onNoSubscriptionFound() {
-            if(VPN.state !== VPN.StateSubscriptionNeeded && VPN.state !== VPN.StateSubscriptionInProgress) {
-                return;
-            }
-
-            mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
-                // Problem confirming subscription...
-                headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
-
-                // Sorry, we were unable to confirm your subscription.
-                // Please try again or contact our support team for help.
-                errorMessage: VPNl18n.RestorePurchaseGenericPurchaseErrorRestorePurchaseGenericPurchaseErrorText,
-
-                // Try again
-                primaryButtonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
-                primaryButtonObjectName: "errorTryAgainButton",
-                primaryButtonOnClick: mainStackView.pop,
-                secondaryButtonIsSignOff: true,
-                getHelpLinkVisible: true,
-                popWhenSignOff: true
-            });
-        }
-
-        function onSubscriptionExpired() {
-            if(VPN.state !== VPN.StateSubscriptionNeeded && VPN.state !== VPN.StateSubscriptionInProgress) {
-                return;
-            }
-
-            mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
-                // Problem confirming subscription...
-                headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
-
-                // Sorry we are unable to connect your Firefox Account to a current subscription.
-                // Please try again or contact our support team for further assistance.
-                errorMessage: VPNl18n.RestorePurchaseExpiredErrorRestorePurchaseExpiredErrorText,
-
-                // Try again
-                primaryButtonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
-                primaryButtonObjectName: "errorTryAgainButton",
-                primaryButtonOnClick: mainStackView.pop,
-                secondaryButtonIsSignOff: false,
-                getHelpLinkVisible: true
-            });
-        }
-
-        function onSubscriptionInUse() {
-            if(VPN.state !== VPN.StateSubscriptionNeeded && VPN.state !== VPN.StateSubscriptionInProgress) {
-                return;
-            }
-
-            mainStackView.push("qrc:/ui/views/ViewErrorFullScreen.qml", {
-                // Problem confirming subscription...
-                headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
-
-                // Another Firefox Account has already subscribed using this Apple ID.
-                // Visit our help center below to learn more about how to manage your subscriptions.
-                errorMessage: VPNl18n.RestorePurchaseInUseErrorRestorePurchaseInUseErrorText,
-
-                // Sign out
-                primaryButtonText: qsTrId("vpn.main.signOut2"),
-                primaryButtonObjectName: "errorSignOutButton",
-                primaryButtonOnClick: () => {
-                    VPNController.logout();
-                    mainStackView.pop();
-                },
-                secondaryButtonIsSignOff: false,
-                getHelpLinkVisible: true
-            });
-        }
-
     }
 
     VPNTutorialPopups {
@@ -472,39 +204,16 @@ Window {
         id: serverUnavailablePopup
     }
 
-    function goToServersView() {
-        if (VPN.state !== VPN.StateMain) {
-            return;
-        }
-        if (mainStackView.depth > 1) {
-            mainStackView.unwindToInitialItem();
-        }
-        showServerList();
-    }
-
-    function pushCaptivePortalView() {
-        mainStackView.push("qrc:/ui/views/ViewCaptivePortalInfo.qml", StackView.Immediate);
-    }
-
     Connections {
         target: VPNController
-        function onReadyToServerUnavailable() {
+        function onReadyToServerUnavailable(receivedPing) {
+            serverUnavailablePopup.receivedPing = receivedPing
             serverUnavailablePopup.open();
         }
-        function onActivationBlockedForCaptivePortal() {
-          pushCaptivePortalView();
-        }
-    }
-    Connections{
-        target: VPNCaptivePortal
-        function onCaptivePortalPresent() {
-            pushCaptivePortalView();
-        }
     }
 
-    VPNFeatureTourPopup {
-        id: featureTourPopup
-
-        anchors.centerIn: parent
+    VPNBottomNavigationBar {
+        id: navbar
     }
+
 }

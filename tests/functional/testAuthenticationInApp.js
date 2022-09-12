@@ -392,10 +392,10 @@ describe('User authentication', function() {
           'authStart-textInput', 'visible', 'true');
       await vpn.waitForElement('authStart-getHelpLink');
       await vpn.clickOnElement('authStart-getHelpLink');
-      await vpn.waitForElementProperty('MainStackView', 'busy', 'false');
+      await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
       await vpn.waitForElement('getHelpBack');
       await vpn.clickOnElement('getHelpBack');
-      await vpn.waitForElementProperty('MainStackView', 'busy', 'false');
+      await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
       await vpn.waitForElement('authStart-textInput');
       await vpn.waitForElementProperty(
           'authStart-textInput', 'visible', 'true');
@@ -413,10 +413,10 @@ describe('User authentication', function() {
 
       await vpn.waitForElement('authSignUp-getHelpLink');
       await vpn.clickOnElement('authSignUp-getHelpLink');
-      await vpn.waitForElementProperty('MainStackView', 'busy', 'false');
+      await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
       await vpn.waitForElement('getHelpBack');
       await vpn.clickOnElement('getHelpBack');
-      await vpn.waitForElementProperty('MainStackView', 'busy', 'false');
+      await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
       await vpn.waitForElement('authSignUp-backButton');
       await vpn.waitForElementProperty(
           'authSignUp-backButton', 'visible', 'true');
@@ -440,10 +440,10 @@ describe('User authentication', function() {
 
       await vpn.waitForElement('authSignIn-getHelpLink');
       await vpn.clickOnElement('authSignIn-getHelpLink');
-      await vpn.waitForElementProperty('MainStackView', 'busy', 'false');
+      await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
       await vpn.waitForElement('getHelpBack');
       await vpn.clickOnElement('getHelpBack');
-      await vpn.waitForElementProperty('MainStackView', 'busy', 'false');
+      await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
       await vpn.waitForElement('authSignIn-backButton');
       await vpn.waitForElementProperty(
           'authSignIn-backButton', 'visible', 'true');
@@ -481,10 +481,10 @@ describe('User authentication', function() {
           'authVerificationSessionByEmailNeeded-getHelpLink');
       await vpn.clickOnElement(
           'authVerificationSessionByEmailNeeded-getHelpLink');
-      await vpn.waitForElementProperty('MainStackView', 'busy', 'false');
+      await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
       await vpn.waitForElement('getHelpBack');
       await vpn.clickOnElement('getHelpBack');
-      await vpn.waitForElementProperty('MainStackView', 'busy', 'false');
+      await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
       await vpn.waitForElement(
           'authVerificationSessionByEmailNeeded-backButton');
       await vpn.waitForElementProperty(
@@ -523,10 +523,10 @@ describe('User authentication', function() {
           'authVerificationSessionByTotpNeeded-getHelpLink');
       await vpn.clickOnElement(
           'authVerificationSessionByTotpNeeded-getHelpLink');
-      await vpn.waitForElementProperty('MainStackView', 'busy', 'false');
+      await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
       await vpn.waitForElement('getHelpBack');
       await vpn.clickOnElement('getHelpBack');
-      await vpn.waitForElementProperty('MainStackView', 'busy', 'false');
+      await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
       await vpn.waitForElement(
           'authVerificationSessionByTotpNeeded-backButton');
       await vpn.waitForElementProperty(
@@ -570,10 +570,10 @@ describe('User authentication', function() {
 
       await vpn.waitForElement('authUnblockCodeNeeded-getHelpLink');
       await vpn.clickOnElement('authUnblockCodeNeeded-getHelpLink');
-      await vpn.waitForElementProperty('MainStackView', 'busy', 'false');
+      await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
       await vpn.waitForElement('getHelpBack');
       await vpn.clickOnElement('getHelpBack');
-      await vpn.waitForElementProperty('MainStackView', 'busy', 'false');
+      await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
       await vpn.waitForElement('authUnblockCodeNeeded-backButton');
       await vpn.waitForElementProperty(
           'authUnblockCodeNeeded-backButton', 'visible', 'true');

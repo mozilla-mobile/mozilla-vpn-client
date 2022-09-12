@@ -6,16 +6,12 @@ const assert = require('assert');
 
 
 describe('Contact us view', function() {
-  async function openContactUs() {
-    await vpn.wait();
-    await vpn.openContactUs();
-    await vpn.wait();
-    await vpn.waitForElement('contactUs');
-    return await vpn.waitForElementProperty('contactUs', 'visible', 'true');
-  }
-
   it('VPNUserInfo is not visible to unathenticated users', async () => {
-    await openContactUs();
+    await vpn.clickOnElement('getHelpLink');
+    await vpn.waitForElement('getHelpLinks');
+    await vpn.waitForElementProperty('getHelpLinks', 'visible', 'true');
+
+    await vpn.clickOnElement('inAppSupport');
 
     await vpn.waitForElement('contactUs-userInfo');
     await vpn.waitForElementProperty('contactUs-userInfo', 'visible', 'false');
@@ -25,7 +21,11 @@ describe('Contact us view', function() {
   });
 
   it('Email inputs are visible to unauthenticated user', async () => {
-    await openContactUs();
+    await vpn.clickOnElement('getHelpLink');
+    await vpn.waitForElement('getHelpLinks');
+    await vpn.waitForElementProperty('getHelpLinks', 'visible', 'true');
+
+    await vpn.clickOnElement('inAppSupport');
 
     await vpn.waitForElement('contactUs-unauthedUserInputs');
     await vpn.waitForElementProperty(
@@ -38,8 +38,24 @@ describe('Contact us view', function() {
   describe('Contact us view - authenticated user', function() {
     this.ctx.authenticationNeeded = true;
 
+    async function openContactUsInSettings() {
+      await vpn.waitForElement('navigationLayout/navButton-settings');
+      await vpn.clickOnElement('navigationLayout/navButton-settings');
+      await vpn.wait();
+
+      await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
+
+      await vpn.waitForElement('settingsGetHelp');
+      await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
+      await vpn.clickOnElement('settingsGetHelp');
+
+      await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
+      await vpn.waitForElementProperty('getHelpLinks', 'visible', 'true');
+      await vpn.clickOnElement('inAppSupport');
+    }
+
     it('VPNUserInfo visible to authenticated users', async () => {
-      await openContactUs();
+      await openContactUsInSettings();
 
       await vpn.waitForElement('contactUs-userInfo');
       await vpn.waitForElementProperty('contactUs-userInfo', 'visible', 'true');
@@ -49,7 +65,7 @@ describe('Contact us view', function() {
     });
 
     it('VPNUserInfo is disabled', async () => {
-      await openContactUs();
+      await openContactUsInSettings();
 
       await vpn.waitForElement('contactUs-userInfo');
       await vpn.waitForElementProperty(
@@ -61,7 +77,7 @@ describe('Contact us view', function() {
 
     it('Email inputs are not visible to authenticated user', async () => {
       it('Email inputs are visible to unauthenticated user', async () => {
-        await openContactUs();
+        await openContactUsInSettings();
 
         await vpn.waitForElement('contactUs-unauthedUserInputs');
         await vpn.waitForElementProperty(

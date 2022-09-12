@@ -35,7 +35,7 @@ transforms.add_validate(release_index_schema)
 def resolve_keys(config, tasks):
     for task in tasks:
         resolve_keyed_by(
-            task, "add-index-routes", item_name=task["name"], **task["attributes"]
+            task, "add-index-routes", item_name=task["name"], **task.get("attributes", {})
         )
         yield task
 
@@ -58,7 +58,8 @@ def add_index_routes(config, tasks):
             routes = BRANCH_INDEX_ROUTES
             branch = config.params["head_ref"]
             if branch.startswith(_GIT_REFS_HEADS_PREFIX):
-                branch = branch[len(_GIT_REFS_HEADS_PREFIX) :]
+                branch = branch[len(_GIT_REFS_HEADS_PREFIX):]
+            branch = branch.replace("/",".") # We can't have "/" in the index -> so releases/2.9.0 needs to be releases.2.9.0
             context["branch"] = branch
 
         elif config.params["tasks_for"] == "github-release":

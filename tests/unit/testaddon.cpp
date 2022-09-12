@@ -9,13 +9,18 @@
 #include "../../src/addons/addonproperty.h"
 #include "../../src/addons/addonpropertylist.h"
 #include "../../src/addons/addontutorial.h"
+#include "../../src/addons/conditionwatchers/addonconditionwatcherfeaturesenabled.h"
 #include "../../src/addons/conditionwatchers/addonconditionwatchergroup.h"
 #include "../../src/addons/conditionwatchers/addonconditionwatcherlocales.h"
+#include "../../src/addons/conditionwatchers/addonconditionwatcherjavascript.h"
 #include "../../src/addons/conditionwatchers/addonconditionwatchertimeend.h"
 #include "../../src/addons/conditionwatchers/addonconditionwatchertimestart.h"
 #include "../../src/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h"
 #include "../../src/localizer.h"
+#include "../../src/models/feature.h"
+#include "../../src/models/featuremodel.h"
 #include "../../src/settingsholder.h"
+#include "../../src/systemtraynotificationhandler.h"
 #include "../../src/qmlengineholder.h"
 #include "../../src/tutorial/tutorial.h"
 #include "helper.h"
@@ -56,7 +61,7 @@ void TestAddon::conditions_data() {
   {
     QJsonObject obj;
     obj["enabled_features"] = QJsonArray{"appReview"};
-    QTest::addRow("enabled_features") << obj << false << "" << QVariant();
+    QTest::addRow("enabled_features") << obj << true << "" << QVariant();
   }
 
   {
@@ -209,6 +214,71 @@ void TestAddon::conditions() {
   QCOMPARE(Addon::evaluateConditions(conditions), result);
 }
 
+void TestAddon::conditionWatcher_javascript() {
+  MozillaVPN vpn;
+
+  QQmlApplicationEngine engine;
+  QmlEngineHolder qml(&engine);
+  SettingsHolder settingsHolder;
+
+  QJsonObject content;
+  content["id"] = "foo";
+  content["blocks"] = QJsonArray();
+
+  QJsonObject obj;
+  obj["message"] = content;
+
+  QObject parent;
+  Addon* message = AddonMessage::create(&parent, "foo", "bar", "name", obj);
+
+  QVERIFY(!AddonConditionWatcherJavascript::maybeCreate(message, QString()));
+  QVERIFY(!AddonConditionWatcherJavascript::maybeCreate(message, "foo"));
+  QVERIFY(!AddonConditionWatcherJavascript::maybeCreate(
+      message, ":/addons_test/condition1.js"));
+
+  {
+    AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
+        message, ":/addons_test/condition2.js");
+    QVERIFY(!!a);
+    QVERIFY(!a->conditionApplied());
+  }
+
+  {
+    AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
+        message, ":/addons_test/condition3.js");
+    QVERIFY(!!a);
+    QVERIFY(a->conditionApplied());
+  }
+
+  {
+    AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
+        message, ":/addons_test/condition4.js");
+    QVERIFY(!!a);
+    QVERIFY(!a->conditionApplied());
+
+    QEventLoop loop;
+    bool currentStatus = false;
+    connect(a, &AddonConditionWatcher::conditionChanged, [&](bool status) {
+      currentStatus = status;
+      loop.exit();
+    });
+    loop.exec();
+    QVERIFY(currentStatus);
+    loop.exec();
+    QVERIFY(!currentStatus);
+  }
+
+  {
+    AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
+        message, ":/addons_test/condition5.js");
+    QVERIFY(!!a);
+    QVERIFY(!a->conditionApplied());
+
+    settingsHolder.setStartAtBoot(true);
+    QVERIFY(a->conditionApplied());
+  }
+}
+
 void TestAddon::conditionWatcher_locale() {
   SettingsHolder settingsHolder;
 
@@ -221,6 +291,18 @@ void TestAddon::conditionWatcher_locale() {
       AddonConditionWatcherLocales::maybeCreate(&parent, QStringList{"it"});
   QVERIFY(!!acw);
 
+  QSignalSpy signalSpy(acw, &AddonConditionWatcher::conditionChanged);
+  QCOMPARE(signalSpy.count(), 0);
+  settingsHolder.setLanguageCode("en");
+  QCOMPARE(signalSpy.count(), 0);
+  settingsHolder.setLanguageCode("it_RU");
+  QCOMPARE(signalSpy.count(), 1);
+  settingsHolder.setLanguageCode("it");
+  QCOMPARE(signalSpy.count(), 1);
+  settingsHolder.setLanguageCode("es");
+  QCOMPARE(signalSpy.count(), 2);
+
+  settingsHolder.setLanguageCode("en");
   QVERIFY(!acw->conditionApplied());
 
   settingsHolder.setLanguageCode("it");
@@ -237,15 +319,68 @@ void TestAddon::conditionWatcher_locale() {
 
   settingsHolder.setLanguageCode("it_RU");
   QVERIFY(acw->conditionApplied());
+}
+
+void TestAddon::conditionWatcher_featuresEnabled() {
+  SettingsHolder settingsHolder;
+
+  QObject parent;
+
+  // Empty feature list
+  QVERIFY(!AddonConditionWatcherFeaturesEnabled::maybeCreate(&parent,
+                                                             QStringList()));
+
+  // Invalid feature list
+  QVERIFY(!AddonConditionWatcherFeaturesEnabled::maybeCreate(
+      &parent, QStringList{"invalid"}));
+
+  QVERIFY(!Feature::getOrNull("testFeatureAddon"));
+  Feature feature("testFeatureAddon", "Feature Addon",
+                  false,               // Is Major Feature
+                  L18nStrings::Empty,  // Display name
+                  L18nStrings::Empty,  // Description
+                  L18nStrings::Empty,  // LongDescr
+                  "",                  // ImagePath
+                  "",                  // IconPath
+                  "",                  // link URL
+                  "1.0",               // released
+                  true,                // Can be flipped on
+                  true,                // Can be flipped off
+                  QStringList(),       // feature dependencies
+                  []() -> bool { return false; });
+  QVERIFY(!!Feature::get("testFeatureAddon"));
+  QVERIFY(!Feature::get("testFeatureAddon")->isSupported());
+
+  // A condition not enabled by default
+  AddonConditionWatcher* acw =
+      AddonConditionWatcherFeaturesEnabled::maybeCreate(
+          &parent, QStringList{"testFeatureAddon"});
+  QVERIFY(!!acw);
+  QVERIFY(!acw->conditionApplied());
 
   QSignalSpy signalSpy(acw, &AddonConditionWatcher::conditionChanged);
   QCOMPARE(signalSpy.count(), 0);
-  settingsHolder.setLanguageCode("en");
+
+  FeatureModel* fm = FeatureModel::instance();
+
+  fm->toggle("testFeatureAddon");
+  QVERIFY(Feature::get("testFeatureAddon")->isSupported());
   QCOMPARE(signalSpy.count(), 1);
-  settingsHolder.setLanguageCode("it_RU");
+  QVERIFY(acw->conditionApplied());
+
+  // A condition enabled by default
+  {
+    AddonConditionWatcher* acw2 =
+        AddonConditionWatcherFeaturesEnabled::maybeCreate(
+            &parent, QStringList{"testFeatureAddon"});
+    QVERIFY(!!acw2);
+    QVERIFY(acw2->conditionApplied());
+  }
+
+  fm->toggle("testFeatureAddon");
+  QVERIFY(!Feature::get("testFeatureAddon")->isSupported());
   QCOMPARE(signalSpy.count(), 2);
-  settingsHolder.setLanguageCode("it");
-  QCOMPARE(signalSpy.count(), 2);
+  QVERIFY(!acw->conditionApplied());
 }
 
 void TestAddon::conditionWatcher_group() {
@@ -613,10 +748,6 @@ void TestAddon::tutorial_create() {
   QCOMPARE(tutorial->property("completionMessage").type(), QMetaType::QString);
   QCOMPARE(tutorial->property("image").toString(), "foo.png");
 
-  bool isAdvanced =
-      content["highlighted"].toBool() ? false : content["advanced"].toBool();
-  QCOMPARE(tutorial->property("advanced").toBool(), isAdvanced);
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
@@ -663,6 +794,109 @@ void TestAddon::message_create() {
   }
 
   QCOMPARE(message->property("title").type(), QMetaType::QString);
+}
+
+void TestAddon::message_load_state_data() {
+  QTest::addColumn<AddonMessage::State>("state");
+  QTest::addColumn<QString>("setting");
+
+  QTest::addRow("empty-setting") << AddonMessage::State::Received << "";
+  QTest::addRow("wrong-setting") << AddonMessage::State::Received << "WRONG!";
+
+  QTest::addRow("received") << AddonMessage::State::Received << "Received";
+  QTest::addRow("notified") << AddonMessage::State::Notified << "Notified";
+  QTest::addRow("read") << AddonMessage::State::Read << "Read";
+  QTest::addRow("dismissed") << AddonMessage::State::Dismissed << "Dismissed";
+}
+
+void TestAddon::message_load_state() {
+  QFETCH(AddonMessage::State, state);
+  QFETCH(QString, setting);
+
+  SettingsHolder settingsHolder;
+
+  settingsHolder.setAddonSetting(AddonMessage::StateQuery("foo"), setting);
+  QCOMPARE(AddonMessage::loadMessageState("foo"), state);
+}
+
+void TestAddon::message_notification_data() {
+  SettingsHolder settingsHolder;
+
+  QObject parent;
+  SystemTrayNotificationHandler nh(&parent);
+
+  QTest::addColumn<QString>("title");
+  QTest::addColumn<QString>("message");
+  QTest::addColumn<QString>("actual_title");
+  QTest::addColumn<QString>("actual_message");
+
+  TestHelper::resetLastSystemNotification();
+  // Message is created for the first time, notification should be sent
+  AddonMessage* message = static_cast<AddonMessage*>(
+      Addon::create(&parent, ":/addons_test/message1.json"));
+  QTest::addRow("do-show") << QString("Test Message 1 - Title")
+                           << QString("Test Message 1 - Subtitle")
+                           << TestHelper::lastSystemNotification.title
+                           << TestHelper::lastSystemNotification.message;
+
+  TestHelper::resetLastSystemNotification();
+  // Message is created for the second time, notification should not be sent
+  Addon::create(&parent, ":/addons_test/message1.json");
+  QTest::addRow("do-not-show")
+      << QString() << QString() << TestHelper::lastSystemNotification.title
+      << TestHelper::lastSystemNotification.message;
+
+  TestHelper::resetLastSystemNotification();
+  // Message is marked as read and we re-attempt to send a notification
+  message->markAsRead();
+  message->maybePushNotification();
+  QTest::addRow("message-is-read")
+      << QString() << QString() << TestHelper::lastSystemNotification.title
+      << TestHelper::lastSystemNotification.message;
+
+  TestHelper::resetLastSystemNotification();
+  // Another message is created for the first time
+  AddonMessage* anotherMessage = static_cast<AddonMessage*>(
+      Addon::create(&parent, ":/addons_test/message2.json"));
+  QTest::addRow("do-show-2") << QString("Test Message 2 - Title")
+                             << QString("Test Message 2 - Subtitle")
+                             << TestHelper::lastSystemNotification.title
+                             << TestHelper::lastSystemNotification.message;
+
+  TestHelper::resetLastSystemNotification();
+  // Message is dismissed and we re-attempt to send a notification
+  anotherMessage->dismiss();
+  anotherMessage->maybePushNotification();
+  QTest::addRow("message-dismissed")
+      << QString() << QString() << TestHelper::lastSystemNotification.title
+      << TestHelper::lastSystemNotification.message;
+
+  TestHelper::resetLastSystemNotification();
+  // Message is created but due to it's conditions it's not enabled
+  AddonMessage* disabledMessage = static_cast<AddonMessage*>(
+      Addon::create(&parent, ":/addons_test/message3.json"));
+  QTest::addRow("message-loaded-disabled")
+      << QString() << QString() << TestHelper::lastSystemNotification.title
+      << TestHelper::lastSystemNotification.message;
+
+  TestHelper::resetLastSystemNotification();
+  // Message is later enabled
+  disabledMessage->enable();
+  QTest::addRow("message-enabled")
+      << QString("Test Message 3 - Title")
+      << QString("Test Message 3 - Subtitle")
+      << TestHelper::lastSystemNotification.title
+      << TestHelper::lastSystemNotification.message;
+}
+
+void TestAddon::message_notification() {
+  QFETCH(QString, title);
+  QFETCH(QString, message);
+  QFETCH(QString, actual_title);
+  QFETCH(QString, actual_message);
+
+  QCOMPARE(actual_title, title);
+  QCOMPARE(actual_message, message);
 }
 
 void TestAddon::message_date_data() {
@@ -713,13 +947,39 @@ void TestAddon::message_date_data() {
       << QDateTime(QDate(2000, 1, 1), QTime(21, 0), QTimeZone(0)) << "Yesterday"
       << (qint64)(3 * 3600);
 
-  QTest::addRow("en - more than 24 hours")
+  QTest::addRow("en - yesterday more than 24 hours")
       << "en" << QDateTime(QDate(2000, 1, 2), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 1), QTime(9, 0), QTimeZone(0)) << "1/1/00"
+      << QDateTime(QDate(2000, 1, 1), QTime(9, 0), QTimeZone(0)) << "Yesterday"
       << (qint64)-1;
-  QTest::addRow("it - more than 24 hours")
-      << "it" << QDateTime(QDate(2000, 1, 2), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 1), QTime(9, 0), QTimeZone(0)) << "01/01/00"
+
+  QTest::addRow("en - 2 days ago")
+      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 8), QTime(10, 0), QTimeZone(0)) << "Saturday"
+      << (qint64)-1;
+
+  QTest::addRow("en - 3 days ago")
+      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 7), QTime(10, 0), QTimeZone(0)) << "Friday"
+      << (qint64)-1;
+
+  QTest::addRow("en - 4 days ago")
+      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 6), QTime(10, 0), QTimeZone(0)) << "Thursday"
+      << (qint64)-1;
+
+  QTest::addRow("en - 5 days ago")
+      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 5), QTime(10, 0), QTimeZone(0)) << "Wednesday"
+      << (qint64)-1;
+
+  QTest::addRow("en - 6 days ago")
+      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 4), QTime(10, 0), QTimeZone(0)) << "Tuesday"
+      << (qint64)-1;
+
+  QTest::addRow("en - 7 days ago")
+      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 3), QTime(10, 0), QTimeZone(0)) << "1/3/00"
       << (qint64)-1;
 }
 

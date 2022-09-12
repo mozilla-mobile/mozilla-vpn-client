@@ -12,6 +12,7 @@
 #include "urlopener.h"
 #include "exponentialbackoffstrategy.h"
 #include "pushmessage.h"
+#include "telemetry/gleansample.h"
 
 namespace {
 Logger logger(LOG_MAIN, "WebSocketHandler");
@@ -123,6 +124,9 @@ void WebSocketHandler::onUserStateChanged() {
  * No-op in case the connection is already open.
  */
 void WebSocketHandler::open() {
+  emit MozillaVPN::instance()->recordGleanEvent(
+      GleanSample::websocketConnectionAttempted);
+
   if (m_webSocket.state() != QAbstractSocket::UnconnectedState &&
       m_webSocket.state() != QAbstractSocket::ClosingState) {
     logger.debug()
@@ -146,6 +150,11 @@ void WebSocketHandler::open() {
 void WebSocketHandler::onConnected() {
   logger.debug() << "WebSocket connected";
 
+  m_aboutToClose = false;
+
+  emit MozillaVPN::instance()->recordGleanEvent(
+      GleanSample::websocketConnected);
+
   m_backoffStrategy.reset();
 #ifdef UNIT_TEST
   m_currentBackoffInterval = 0;
@@ -163,7 +172,23 @@ void WebSocketHandler::onConnected() {
  * No-op in case the connection is already closed.
  */
 void WebSocketHandler::close() {
+  emit MozillaVPN::instance()->recordGleanEvent(
+      GleanSample::websocketCloseAttempted);
+
+  // QAbstractSocket may throw a write error when attempting to close the
+  // underlying socket (see:
+  // https://code.woboq.org/qt5/qtwebsockets/src/websockets/qwebsocket_p.cpp.html#357).
+  //
+  // The error then triggers the onError handler, which attempts to close again
+  // causing an infinite loop.
+  if (m_aboutToClose) {
+    logger.debug() << "Attempted to close a WebSocket connection, but it's "
+                      "already closing/closed.";
+    return;
+  }
+
   logger.debug() << "Closing WebSocket";
+  m_aboutToClose = true;
   m_webSocket.close();
 }
 
@@ -176,6 +201,13 @@ void WebSocketHandler::close() {
 void WebSocketHandler::onClose() {
   // https://doc.qt.io/qt-6/qwebsocketprotocol.html#CloseCode-enum
   logger.debug() << "WebSocket closed:" << m_webSocket.closeCode();
+
+  m_aboutToClose = false;
+
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::websocketClosed, {{"reason", m_webSocket.closeCode()}});
+
+  m_pingTimer.stop();
 
   if (isUserAuthenticated()) {
     int nextAttemptIn = m_backoffStrategy.scheduleNextAttempt();
@@ -229,6 +261,10 @@ void WebSocketHandler::onPong(quint64 elapsedTime) {
  */
 void WebSocketHandler::onPingTimeout() {
   logger.debug() << "Timed out waiting for ping response";
+
+  emit MozillaVPN::instance()->recordGleanEvent(
+      GleanSample::websocketPongTimedOut);
+
   close();
 }
 
@@ -240,6 +276,11 @@ void WebSocketHandler::onPingTimeout() {
  */
 void WebSocketHandler::onError(QAbstractSocket::SocketError error) {
   logger.debug() << "WebSocket error:" << error;
+
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::websocketErrored,
+      {{"type", QVariant::fromValue(error).toInt()}});
+
   close();
 }
 
@@ -252,5 +293,9 @@ void WebSocketHandler::onMessageReceived(const QString& message) {
   logger.debug() << "Message received:" << message;
 
   PushMessage parsedMessage(message);
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::pushMessageReceived,
+      {{"type", QVariant::fromValue(parsedMessage.type()).toString()}});
+
   parsedMessage.executeAction();
 }

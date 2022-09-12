@@ -84,8 +84,8 @@ Item {
             compare(spyApplicationId, "mozillavpn")
             compare(spyConfig.appBuild, "MozillaVPN/QMLTest_AppVersion")
             compare(spyConfig.appDisplayVersion, "QMLTest_AppVersion")
-            compare(spyConfig.osVersion, VPN.osVersion)
-            compare(spyConfig.architecture, VPN.architecture)
+            compare(spyConfig.osVersion, VPN.env.osVersion)
+            compare(spyConfig.architecture, VPN.env.architecture)
         }
 
         function test_onInitializeGleanCallsInitializeCorrectUploadEnabled() {

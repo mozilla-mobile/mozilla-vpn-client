@@ -8,12 +8,10 @@ target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 # VPN Client source files
 target_sources(mozillavpn PRIVATE
-    addonmanager.cpp
-    addonmanager.h
     addons/addon.cpp
     addons/addon.h
-    addons/addondemo.cpp
-    addons/addondemo.h
+    addons/addonapi.cpp
+    addons/addonapi.h
     addons/addonguide.cpp
     addons/addonguide.h
     addons/addoni18n.cpp
@@ -28,8 +26,12 @@ target_sources(mozillavpn PRIVATE
     addons/addontutorial.h
     addons/conditionwatchers/addonconditionwatcher.cpp
     addons/conditionwatchers/addonconditionwatcher.h
+    addons/conditionwatchers/addonconditionwatcherfeaturesenabled.cpp
+    addons/conditionwatchers/addonconditionwatcherfeaturesenabled.h
     addons/conditionwatchers/addonconditionwatchergroup.cpp
     addons/conditionwatchers/addonconditionwatchergroup.h
+    addons/conditionwatchers/addonconditionwatcherjavascript.cpp
+    addons/conditionwatchers/addonconditionwatcherjavascript.h
     addons/conditionwatchers/addonconditionwatcherlocales.cpp
     addons/conditionwatchers/addonconditionwatcherlocales.h
     addons/conditionwatchers/addonconditionwatchertimeend.cpp
@@ -38,6 +40,12 @@ target_sources(mozillavpn PRIVATE
     addons/conditionwatchers/addonconditionwatchertimestart.h
     addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp
     addons/conditionwatchers/addonconditionwatchertriggertimesecs.h
+    addons/manager/addondirectory.cpp
+    addons/manager/addondirectory.h
+    addons/manager/addonindex.cpp
+    addons/manager/addonindex.h
+    addons/manager/addonmanager.cpp
+    addons/manager/addonmanager.h
     appimageprovider.h
     applistprovider.h
     apppermission.cpp
@@ -66,8 +74,6 @@ target_sources(mozillavpn PRIVATE
     captiveportal/captiveportalrequest.h
     captiveportal/captiveportalrequesttask.cpp
     captiveportal/captiveportalrequesttask.h
-    closeeventhandler.cpp
-    closeeventhandler.h
     collator.cpp
     collator.h
     command.cpp
@@ -94,6 +100,8 @@ target_sources(mozillavpn PRIVATE
     commands/commandui.h
     composer/composerblock.cpp
     composer/composerblock.h
+    composer/composerblockbutton.cpp
+    composer/composerblockbutton.h
     composer/composerblocktext.cpp
     composer/composerblocktext.h
     composer/composerblocktitle.cpp
@@ -128,6 +136,7 @@ target_sources(mozillavpn PRIVATE
     dnshelper.h
     dnspingsender.cpp
     dnspingsender.h
+    env.h
     errorhandler.cpp
     errorhandler.h
     externalophandler.cpp
@@ -136,6 +145,10 @@ target_sources(mozillavpn PRIVATE
     filterproxymodel.h
     fontloader.cpp
     fontloader.h
+    frontend/navigator.cpp
+    frontend/navigator.h
+    frontend/navigatorreloader.cpp
+    frontend/navigatorreloader.h
     hacl-star/Hacl_Chacha20.c
     hacl-star/Hacl_Chacha20Poly1305_32.c
     hacl-star/Hacl_Curve25519_51.c
@@ -187,8 +200,6 @@ target_sources(mozillavpn PRIVATE
     models/featuremodel.h
     models/feedbackcategorymodel.cpp
     models/feedbackcategorymodel.h
-    models/helpmodel.cpp
-    models/helpmodel.h
     models/keys.cpp
     models/keys.h
     models/licensemodel.cpp
@@ -209,8 +220,6 @@ target_sources(mozillavpn PRIVATE
     models/supportcategorymodel.h
     models/user.cpp
     models/user.h
-    models/whatsnewmodel.cpp
-    models/whatsnewmodel.h
     mozillavpn.cpp
     mozillavpn.h
     networkmanager.cpp

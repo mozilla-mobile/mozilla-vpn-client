@@ -31,9 +31,9 @@ class WireguardUtilsLinux final : public WireguardUtils {
   bool addExclusionRoute(const QHostAddress& address) override;
   bool deleteExclusionRoute(const QHostAddress& address) override;
 
-  QString getDefaultCgroup() const { return m_cgroups; }
-  QString getExcludeCgroup() const;
-  QString getBlockCgroup() const;
+  void excludeCgroup(const QString& cgroup);
+  void resetCgroup(const QString& cgroup);
+  void resetAllCgroups();
 
  private:
   QStringList currentInterfaces();
@@ -44,12 +44,16 @@ class WireguardUtilsLinux final : public WireguardUtils {
                     int hopindex);
   bool rtmSendExclude(int action, int flags, const QHostAddress& address);
   static bool setupCgroupClass(const QString& path, unsigned long classid);
+  static bool moveCgroupProcs(const QString& src, const QString& dest);
   static bool buildAllowedIp(struct wg_allowedip*, const IPAddress& prefix);
 
   int m_nlsock = -1;
   int m_nlseq = 0;
   QSocketNotifier* m_notifier = nullptr;
-  QString m_cgroups;
+
+  int m_cgroupVersion = 0;
+  QString m_cgroupNetClass;
+  QString m_cgroupUnified;
 
  private slots:
   void nlsockReady();

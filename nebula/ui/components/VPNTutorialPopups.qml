@@ -246,9 +246,7 @@ Item {
 
     function openTipsAndTricks() {
         tutorialPopup.close();
-        VPN.settingsNeeded();
-        const settingsViewInMainStack = mainStackView.find((view) => { return view.objectName === "settings" });
-        settingsViewInMainStack._openTipsAndTricks();
+        VPNNavigator.requestScreen(VPNNavigator.ScreenTipsAndTricks);
     }
 
 
@@ -298,7 +296,7 @@ Item {
             if (!targetElement)
                 return
 
-            if (!targetElement.activeFocus && !targetElement.parent.activeFocus && !leaveTutorialBtn.activeFocus && !tutorialPopup.opened) {
+            if (!targetElement.activeFocus && (!targetElement.parent || !targetElement.parent.activeFocus) && !leaveTutorialBtn.activeFocus && !tutorialPopup.opened) {
                 tutorialTooltip.forceActiveFocus();
             }
         }

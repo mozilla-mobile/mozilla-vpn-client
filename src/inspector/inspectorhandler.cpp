@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "inspectorhandler.h"
-#include "addonmanager.h"
+#include "addons/manager/addonmanager.h"
 #include "constants.h"
 #include "controller.h"
 #include "externalophandler.h"
+#include "frontend/navigator.h"
 #include "inspectoritempicker.h"
 #include "inspectorutils.h"
 #include "leakdetector.h"
@@ -697,25 +698,6 @@ static QList<InspectorCommand> s_commands{
                        return obj;
                      }},
 
-    InspectorCommand{
-        "feature_tour_features",
-        "Returns a list of feature id's present in the feature tour", 0,
-        [](InspectorHandler*, const QList<QByteArray>&) {
-          QJsonObject obj;
-
-          WhatsNewModel* whatsNewModel =
-              MozillaVPN::instance()->whatsNewModel();
-          Q_ASSERT(whatsNewModel);
-
-          QJsonArray featureIds;
-          for (const QString& featureId : whatsNewModel->featureIds()) {
-            featureIds.append(featureId);
-          }
-
-          obj["value"] = featureIds;
-          return obj;
-        }},
-
     InspectorCommand{"translate", "Translate a string", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
@@ -877,12 +859,6 @@ static QList<InspectorCommand> s_commands{
                            ExternalOpHandler::OpSettings);
                        return QJsonObject();
                      }},
-    InspectorCommand{"open_contact_us", "Open in-app support form", 0,
-                     [](InspectorHandler*, const QList<QByteArray>&) {
-                       ExternalOpHandler::instance()->request(
-                           ExternalOpHandler::OpContactUs);
-                       return QJsonObject();
-                     }},
     InspectorCommand{"is_feature_flipped_on",
                      "Check if a feature is flipped on", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
@@ -917,8 +893,9 @@ static QList<InspectorCommand> s_commands{
                          return obj;
                        }
 
-                       FeatureModel::instance()->toggleForcedEnable(
-                           arguments[1]);
+                       if (!feature->isSupported()) {
+                         FeatureModel::instance()->toggle(arguments[1]);
+                       }
                        return QJsonObject();
                      }},
 
@@ -932,8 +909,9 @@ static QList<InspectorCommand> s_commands{
                          return obj;
                        }
 
-                       FeatureModel::instance()->toggleForcedDisable(
-                           arguments[1]);
+                       if (feature->isSupported()) {
+                         FeatureModel::instance()->toggle(arguments[1]);
+                       }
                        return QJsonObject();
                      }},
 
@@ -951,6 +929,13 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{"unload_addon", "Unload an add-on", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        AddonManager::instance()->unload(arguments[1]);
+                       return QJsonObject();
+                     }},
+
+    InspectorCommand{"back_button_clicked",
+                     "Simulate an android back-button clicked", 0,
+                     [](InspectorHandler*, const QList<QByteArray>&) {
+                       Navigator::instance()->eventHandled();
                        return QJsonObject();
                      }},
 };

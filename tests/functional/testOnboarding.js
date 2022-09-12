@@ -21,47 +21,41 @@ describe('Initial view and onboarding', function() {
 
   it('Open the help menu', async () => {
     await vpn.clickOnElement('getHelpLink');
-    await vpn.waitForElementProperty('getHelpLink', 'visible', 'false');
-
     await vpn.waitForElement('getHelpBack');
     await vpn.waitForElementProperty('getHelpBack', 'visible', 'true');
   });
 
   it('Open help links', async () => {
     await vpn.clickOnElement('getHelpLink');
-    await vpn.waitForElementProperty('getHelpLink', 'visible', 'false');
-
     await vpn.waitForElement('getHelpLinks');
     await vpn.waitForElementProperty('getHelpLinks', 'visible', 'true');
 
-    await vpn.waitForElement('getHelpLinks/getHelpBackList-0');
-    await vpn.waitForElementProperty(
-        'getHelpLinks/getHelpBackList-0', 'visible', 'true');
+    await vpn.waitForElement('helpCenter');
+    await vpn.waitForElementProperty('helpCenter', 'visible', 'true');
 
-    await vpn.waitForElement('getHelpLinks/getHelpBackList-1');
-    await vpn.waitForElementProperty(
-        'getHelpLinks/getHelpBackList-1', 'visible', 'true');
+    await vpn.waitForElement('inAppSupport');
+    await vpn.waitForElementProperty('inAppSupport', 'visible', 'true');
 
-    await vpn.waitForElement('getHelpLinks/getHelpBackList-2');
-    await vpn.waitForElementProperty(
-        'getHelpLinks/getHelpBackList-2', 'visible', 'true');
+    await vpn.waitForElement('viewLogs');
+    await vpn.waitForElementProperty('viewLogs', 'visible', 'true');
 
-    await vpn.clickOnElement('getHelpLinks/getHelpBackList-2');
+    await vpn.clickOnElement('viewLogs');
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
       return url.startsWith('file://') && url.includes('mozillavpn') &&
           url.endsWith('.txt');
     });
 
-    await vpn.clickOnElement('getHelpLinks/getHelpBackList-0');
+    await vpn.clickOnElement('helpCenter');
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
       return url.endsWith('/r/vpn/support');
     });
 
-    await vpn.clickOnElement('getHelpLinks/getHelpBackList-1');
-    await vpn.waitForElement('supportTicketScreen');
-    await vpn.waitForElementProperty('supportTicketScreen', 'visible', 'true');
+    await vpn.clickOnElement('inAppSupport');
+    await vpn.waitForElement('contactUs-unauthedUserInputs');
+    await vpn.waitForElementProperty(
+        'contactUs-unauthedUserInputs', 'visible', 'true');
   });
 
   it('Complete the onboarding (aborting in each phase)', async () => {
