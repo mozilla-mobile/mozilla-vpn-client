@@ -19,6 +19,8 @@ class Navigator final : public QObject {
       Screen screen MEMBER m_currentScreen NOTIFY currentComponentChanged)
   Q_PROPERTY(LoadPolicy loadPolicy MEMBER m_currentLoadPolicy NOTIFY
                  currentComponentChanged)
+  Q_PROPERTY(LoadingFlags loadingFlags MEMBER m_currentLoadingFlags NOTIFY
+                 currentComponentChanged)
   Q_PROPERTY(QQmlComponent* component MEMBER m_currentComponent NOTIFY
                  currentComponentChanged)
 
@@ -26,9 +28,15 @@ class Navigator final : public QObject {
   enum LoadPolicy {
     LoadPersistently,
     LoadTemporarily,
-    ReloadAndLoadPersistently,
   };
   Q_ENUM(LoadPolicy);
+
+  enum LoadingFlags {
+    NoFlags,
+    ForceReload,
+    ForceReloadAll,
+  };
+  Q_ENUM(LoadingFlags);
 
   enum Screen {
     ScreenAuthenticating,
@@ -63,7 +71,8 @@ class Navigator final : public QObject {
 
   ~Navigator();
 
-  Q_INVOKABLE void requestScreen(Screen screen, bool forceReload = false);
+  Q_INVOKABLE void requestScreen(Screen screen,
+                                 LoadingFlags loadingFlags = NoFlags);
   Q_INVOKABLE void requestPreviousScreen();
 
   Q_INVOKABLE void addStackView(Screen screen, const QVariant& stackView);
@@ -83,13 +92,14 @@ class Navigator final : public QObject {
 
   void computeComponent();
   void loadScreen(Screen screen, LoadPolicy loadPolicy,
-                  QQmlComponent* component, bool forceReload);
+                  QQmlComponent* component, LoadingFlags loadingFlags);
 
   void removeItem(QObject* obj);
 
  private:
   Screen m_currentScreen = ScreenInitialize;
   LoadPolicy m_currentLoadPolicy = LoadTemporarily;
+  LoadingFlags m_currentLoadingFlags = NoFlags;
   QQmlComponent* m_currentComponent = nullptr;
 
   QList<Screen> m_screenHistory;
