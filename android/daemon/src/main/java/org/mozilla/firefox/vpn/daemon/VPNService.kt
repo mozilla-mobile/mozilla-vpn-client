@@ -28,6 +28,7 @@ class VPNService : android.net.VpnService() {
     private var mConnectionTime: Long = 0
     private var mAlreadyInitialised = false
     private val controllerPeriodicStateRecorderMsec: Long = 10800000
+    private val mConnectionHealth = ConnectionHealth(this)
 
     private val mGleanTimer = object : CountDownTimer(
         controllerPeriodicStateRecorderMsec,
@@ -35,7 +36,6 @@ class VPNService : android.net.VpnService() {
     ) {
         override fun onTick(millisUntilFinished: Long) {}
         override fun onFinish() {
-            Log.i(tag, "Timer Done!")
             if (currentTunnelHandle == -1) {
                 mGlean.recordGleanEvent("controllerStateOff")
             } else {
@@ -55,8 +55,7 @@ class VPNService : android.net.VpnService() {
         Log.init(this)
         mGlean.initializeGlean()
         SharedLibraryLoader.loadSharedLibrary(this, "wg-go")
-        Log.i(tag, "loaded lib")
-        Log.e(tag, "Wireguard Version ${wgVersion()}")
+        Log.i(tag, "Initialised Service with Wireguard Version ${wgVersion()}")
         mAlreadyInitialised = true
     }
 
@@ -65,8 +64,17 @@ class VPNService : android.net.VpnService() {
             // If the Qt Client got closed while we were not connected
             // we do not need to stay as a foreground service.
             stopForeground(true)
+            Log.v(tag, "Client Disconnected, VPN is down - Service might shut down soon")
         }
+        Log.v(tag, "Client Disconnected, VPN is up")
         return super.onUnbind(intent)
+    }
+
+    override fun onDestroy() {
+        // Note: This might not get called (depending on how it got invoked)
+        // it for granted all exits will be here.
+        Log.v(tag, "Service got Destroyed")
+        super.onDestroy()
     }
 
     /**
@@ -85,6 +93,7 @@ class VPNService : android.net.VpnService() {
      * or from Booting the device and having "connect on boot" enabled.
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.i(tag, "Service Started by Intent")
         init()
         intent?.let {
             if (intent.getBooleanExtra("startOnly", false)) {
@@ -125,6 +134,7 @@ class VPNService : android.net.VpnService() {
     // Invoked when the application is revoked.
     // At this moment, the VPN interface is already deactivated by the system.
     override fun onRevoke() {
+        Log.i(tag, "OS Revoked VPN permission")
         this.turnOff()
         super.onRevoke()
     }
@@ -140,10 +150,12 @@ class VPNService : android.net.VpnService() {
         }
         private set(value) {
             if (value) {
+                Log.i(tag, "Dispatch Daemon State -> connected")
                 mBinder.dispatchEvent(VPNServiceBinder.EVENTS.connected, "")
                 mConnectionTime = System.currentTimeMillis()
                 return
             }
+            Log.i(tag, "Dispatch Daemon State -> disconnected")
             mBinder.dispatchEvent(VPNServiceBinder.EVENTS.disconnected, "")
             mConnectionTime = 0
         }
@@ -168,25 +180,24 @@ class VPNService : android.net.VpnService() {
         // from the user. So we need to pass this to our main Activity and exit here.
         val intent = prepare(this)
         if (intent == null) {
-            Log.e(tag, "VPN Permission Already Present")
+            Log.i(tag, "VPN Permission Already Present")
             return true
         }
         Log.e(tag, "Requesting VPN Permission")
         return false
     }
 
-    fun turnOn(json: JSONObject) {
+    fun turnOn(json: JSONObject, useFallbackServer: Boolean = false) {
         Log.sensitive(tag, json.toString())
-        val wireguard_conf = buildWireugardConfig(json)
+        val wireguard_conf = buildWireugardConfig(json, useFallbackServer)
 
         if (!checkPermissions()) {
-            Log.e(tag, "turn on was called without no permissions present!")
+            Log.e(tag, "turn on was called without vpn-permission!")
             isUp = false
             return
         }
-        Log.i(tag, "Permission okay")
         if (currentTunnelHandle != -1) {
-            Log.e(tag, "Tunnel already up")
+            Log.i(tag, "Currently have a connection, start switching")
             // Turn the tunnel down because this might be a switch
             wgTurnOff(currentTunnelHandle)
         }
@@ -195,12 +206,15 @@ class VPNService : android.net.VpnService() {
         setupBuilder(wireguard_conf, builder)
         builder.setSession("mvpn0")
         builder.establish().use { tun ->
-            if (tun == null)return
-            Log.i(tag, "Go backend " + wgVersion())
+            if (tun == null) {
+                isUp = false
+                Log.e(tag, "Activation Error: did not get a TUN handle")
+                return
+            }
             currentTunnelHandle = wgTurnOn("mvpn0", tun.detachFd(), wgConfig)
         }
         if (currentTunnelHandle < 0) {
-            Log.e(tag, "Activation Error Code -> $currentTunnelHandle")
+            Log.e(tag, "WActivation Error Wireguard-Error -> $currentTunnelHandle")
             isUp = false
             return
         }
@@ -218,6 +232,35 @@ class VPNService : android.net.VpnService() {
 
         NotificationUtil.get(this)?.show(this) // Go foreground
         mGleanTimer.start()
+
+        if (useFallbackServer) {
+            mConnectionHealth.start(
+                json.getJSONObject("server").getString("ipv4AddrIn"),
+                json.getJSONObject("serverFallback").getString("ipv4Gateway"),
+                json.getJSONObject("serverFallback").getString("ipv4Gateway"),
+                json.getJSONObject("serverFallback").getString("ipv4AddrIn")
+            )
+        } else {
+            mConnectionHealth.start(
+                json.getJSONObject("server").getString("ipv4AddrIn"),
+                json.getJSONObject("server").getString("ipv4Gateway"),
+                json.getString("dns"),
+                json.getJSONObject("serverFallback").getString("ipv4Gateway")
+            )
+        }
+    }
+
+    fun reconnect(forceFallBack: Boolean = false) {
+        if (this.mConfig == null) {
+            Log.e(tag, "Called reconnect without setting any conf first?")
+            return
+        }
+        // Don't reset the connection time,
+        // so the users won't be surprised :)
+        val oldConnectionTime = mConnectionTime
+        Log.v(tag, "Try to reconnect tunnel with same conf")
+        this.turnOn(this.mConfig!!, forceFallBack)
+        mConnectionTime = oldConnectionTime
     }
 
     fun turnOff() {
@@ -227,6 +270,7 @@ class VPNService : android.net.VpnService() {
         stopForeground(false)
         isUp = false
         mGleanTimer.cancel()
+        mConnectionHealth.stop()
     }
 
     /**
@@ -283,9 +327,14 @@ class VPNService : android.net.VpnService() {
      * Create a Wireguard [Config]  from a [json] string -
      * The [json] will be created in AndroidController.cpp
      */
-    private fun buildWireugardConfig(obj: JSONObject): Config {
+    private fun buildWireugardConfig(obj: JSONObject, useFallbackServer: Boolean = false): Config {
         val confBuilder = Config.Builder()
-        val jServer = obj.getJSONObject("server")
+        val jServer: JSONObject = if (useFallbackServer) {
+            obj.getJSONObject("serverFallback")
+        } else {
+            obj.getJSONObject("server")
+        }
+
         val peerBuilder = Peer.Builder()
         val ep =
             InetEndpoint.parse(jServer.getString("ipv4AddrIn") + ":" + jServer.getString("port"))
@@ -313,6 +362,10 @@ class VPNService : android.net.VpnService() {
         ifaceBuilder.addAddress(InetNetwork.parse(jDevice.getString("ipv4Address")))
         ifaceBuilder.addAddress(InetNetwork.parse(jDevice.getString("ipv6Address")))
         ifaceBuilder.addDnsServer(InetNetwork.parse(obj.getString("dns")).address)
+        if (useFallbackServer) {
+            // In case we have to use the fallback, add the default dns as fallback as well.
+            ifaceBuilder.addDnsServer(InetNetwork.parse(jServer.getString("ipv4Gateway")).address)
+        }
         val jExcludedApplication = obj.getJSONArray("excludedApps")
         (0 until jExcludedApplication.length()).toList().forEach {
             val appName = jExcludedApplication.get(it).toString()

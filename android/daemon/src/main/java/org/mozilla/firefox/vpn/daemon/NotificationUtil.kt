@@ -29,6 +29,9 @@ class NotificationUtil {
         updateNotificationChannel(null, null) // Will create the channel, will update
     }
 
+    private var mLastMessage = ""
+    private var mLastHeader = ""
+
     companion object {
         var instance: NotificationUtil? = null
         fun get(ctx: Context?): NotificationUtil? {
@@ -55,13 +58,15 @@ class NotificationUtil {
     /**
      * Updates the current shown notification
      */
-    fun update(heading: String, message: String) {
+    private fun update(heading: String, message: String) {
         val notificationManager: NotificationManager =
-            sCurrentContext?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            sCurrentContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        mNotificationBuilder?.let {
+        mLastHeader = heading
+        mLastMessage = message
+        mNotificationBuilder.let {
             it.setContentTitle(heading)
-                .setContentText(message)
+            it.setContentText(message)
             notificationManager.notify(CONNECTED_NOTIFICATION_ID, it.build())
         }
     }
@@ -98,9 +103,12 @@ class NotificationUtil {
         // In case we do not have gotten a message to show from the Frontend
         // try to populate the notification with a translated Fallback message
         val prefs = Prefs.get(service)
-        val message =
+        val message = mLastMessage.ifEmpty {
             "" + prefs.getString("fallbackNotificationMessage", "Running in the Background")
-        val header = "" + prefs.getString("fallbackNotificationHeader", "Mozilla VPN")
+        }
+        val header = mLastHeader.ifEmpty {
+            "" + prefs.getString("fallbackNotificationHeader", "Mozilla VPN")
+        }
 
         // Create the Intent that Should be Fired if the User Clicks the notification
         val mainActivityName = "org.mozilla.firefox.vpn.qt.VPNActivity"
