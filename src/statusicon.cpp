@@ -107,6 +107,9 @@ const QColor& StatusIcon::indicatorColor() {
 void StatusIcon::stateChanged() {
   logger.debug() << "State changed";
 
+  if (!m_icon.isNull()) {
+    m_icon = QIcon();
+  }
   m_animatedIconTimer.stop();
 
   MozillaVPN* vpn = MozillaVPN::instance();
@@ -114,16 +117,17 @@ void StatusIcon::stateChanged() {
 
   // If we are in a non-main state, we don't need to show special icons.
   if (vpn->state() != MozillaVPN::StateMain) {
-    setIcon(LOGO_GENERIC);
+    m_iconUrl = LOGO_GENERIC;
+    emit iconUpdateNeeded();
     return;
   }
 
   switch (vpn->controller()->state()) {
     case Controller::StateOn:
-      setIcon(LOGO_GENERIC_ON);
+      m_iconUrl = LOGO_GENERIC_ON;
       break;
     case Controller::StateOff:
-      setIcon(LOGO_GENERIC_OFF);
+      m_iconUrl = LOGO_GENERIC_OFF;
       break;
     case Controller::StateSwitching:
       [[fallthrough]];
@@ -135,9 +139,11 @@ void StatusIcon::stateChanged() {
       activateAnimation();
       break;
     default:
-      setIcon(LOGO_GENERIC);
+      m_iconUrl = LOGO_GENERIC;
       break;
   }
+
+  emit iconUpdateNeeded();
 }
 
 QIcon StatusIcon::drawStatusIndicator(const QString& iconUrl) const {
@@ -165,15 +171,4 @@ QIcon StatusIcon::drawStatusIndicator(const QString& iconUrl) const {
   painter.drawEllipse(indicatorDot);
 
   return QIcon(iconPixmap);
-}
-
-void StatusIcon::setIcon(const QString& iconUrl) {
-  logger.debug() << "Set icon" << iconUrl;
-
-  if (!m_icon.isNull()) {
-    m_icon = nullptr;
-  }
-  m_iconUrl = iconUrl;
-
-  emit iconUpdateNeeded();
 }

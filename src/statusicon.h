@@ -37,10 +37,9 @@ class StatusIcon final : public QObject {
   void activateAnimation();
   QIcon drawStatusIndicator(const QString& iconUrl) const;
   void generateIcon();
-  void setIcon(const QString& iconUrl);
 
  private:
-  QIcon m_icon = nullptr;
+  QIcon m_icon;
   QString m_iconUrl;
   QColor m_indicatorColor;
 
