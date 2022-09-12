@@ -20,6 +20,7 @@ Logger logger(LOG_MAIN, "StatusIcon");
 constexpr const QColor GREEN_COLOR = QColor(63, 225, 176, 255);
 constexpr const QColor ORANGE_COLOR = QColor(255, 164, 54, 255);
 constexpr const QColor RED_COLOR = QColor(226, 40, 80, 255);
+constexpr const QColor INVALID_COLOR = QColor();
 
 #if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
 constexpr const std::array<const char*, 4> ANIMATED_LOGO_STEPS = {
@@ -56,8 +57,7 @@ StatusIcon::~StatusIcon() { MVPN_COUNT_DTOR(StatusIcon); }
 
 const QIcon& StatusIcon::icon() {
   if (m_icon.isNull()) {
-    // Inits m_icon according to the current state
-    stateChanged();
+    m_icon = drawStatusIndicator(m_iconUrl);
     Q_ASSERT(!m_icon.isNull());
   }
 
@@ -86,24 +86,19 @@ const QColor& StatusIcon::indicatorColor() {
 
   if (vpn->state() != MozillaVPN::StateMain ||
       vpn->controller()->state() != Controller::StateOn) {
-    m_indicatorColor = QColor();
-    return m_indicatorColor;
+    return INVALID_COLOR;
   }
 
   switch (vpn->connectionHealth()->stability()) {
     case ConnectionHealth::Stable:
-      m_indicatorColor = GREEN_COLOR;
-      break;
+      return GREEN_COLOR;
     case ConnectionHealth::Unstable:
-      m_indicatorColor = ORANGE_COLOR;
-      break;
+      return ORANGE_COLOR;
     case ConnectionHealth::NoSignal:
-      m_indicatorColor = RED_COLOR;
-      break;
+      return RED_COLOR;
     default:
       logger.error() << "Unhandled status indicator for connection stability";
-      m_indicatorColor = QColor();
-      break;
+      return INVALID_COLOR;
   }
 
   return m_indicatorColor;
@@ -175,9 +170,8 @@ QIcon StatusIcon::drawStatusIndicator(const QString& iconUrl) const {
 void StatusIcon::setIcon(const QString& iconUrl) {
   logger.debug() << "Set icon" << iconUrl;
 
-  // Draw the status indicator directly onto the image if needed
   if (!m_icon.isNull()) {
-    m_icon = drawStatusIndicator(m_iconUrl);
+    m_icon = nullptr;
   }
   m_iconUrl = iconUrl;
 

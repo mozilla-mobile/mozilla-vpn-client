@@ -40,7 +40,7 @@ class StatusIcon final : public QObject {
   void setIcon(const QString& iconUrl);
 
  private:
-  QIcon m_icon;
+  QIcon m_icon = nullptr;
   QString m_iconUrl;
   QColor m_indicatorColor;
 
