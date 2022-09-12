@@ -58,36 +58,39 @@ Rectangle {
         border.color: VPNTheme.theme.ink
     }
 
-    Flickable{
-        id: flickable
-        clip: true
-        anchors.fill: root
-        contentWidth: layout.implicitWidth
-        interactive: contentX > 0 || contentWidth > width
 
-        RowLayout {
-            height: flickable.height
-            width: flickable.width
+    RowLayout {
+        id: layout
+        objectName: "navigationLayout"
 
-            RowLayout {
-                id: layout
-                objectName: "navigationLayout"
-                Layout.alignment: Qt.AlignHCenter
-                spacing: flickable.width * .2 // TODO something better here
+        anchors.fill: parent
+        anchors.topMargin: VPNTheme.theme.vSpacingSmall / 2
+        anchors.leftMargin: {
+            let minNumberOfIcons = 3
+            let paddingFactor = 8 //How much we decrease horizontal margins by for each new icon added (for non-tablets)
+            window.width < VPNTheme.theme.tabletMinimumWidth ? VPNTheme.theme.navBarMaxPadding - (paddingFactor * (navButtons.count - minNumberOfIcons)) : VPNTheme.theme.navBarMaxPaddingTablet
+        }
+        anchors.rightMargin: anchors.leftMargin
+        anchors.bottomMargin: VPNTheme.theme.vSpacingSmall / 2
 
-                Repeater {
-                    model: navButtons
-                    delegate: VPNBottomNavigationBarButton {
-                        objectName: navObjectName
-                        _screen: VPNNavigator[screen]
-                        _source: checked ? (_hasNotification ? sourceCheckedNotification : sourceChecked) : (_hasNotification ? sourceUncheckedNotification : sourceUnchecked)
-                        accessibleName: VPNl18n[navAccessibleName]
-                        ButtonGroup.group: navBarButtonGroup
+        spacing: (root.width - anchors.leftMargin - anchors.rightMargin - (VPNTheme.theme.navBarIconSize * navButtons.count)) / (navButtons.count - 1)
 
-                        Component.onCompleted: {
-                            if(objectName === "navButton-messages") root.messagesNavButton = this
-                        }
-                    }
+        Repeater {
+            model: navButtons
+            delegate: VPNBottomNavigationBarButton {
+                objectName: navObjectName
+
+                Layout.preferredHeight: height
+                Layout.preferredWidth: width
+
+                _screen: VPNNavigator[screen]
+                _source: checked ? (_hasNotification ? sourceCheckedNotification : sourceChecked) : (_hasNotification ? sourceUncheckedNotification : sourceUnchecked)
+                ButtonGroup.group: navBarButtonGroup
+
+                accessibleName: VPNl18n[navAccessibleName]
+
+                Component.onCompleted: {
+                    if(objectName === "navButton-messages") root.messagesNavButton = this
                 }
             }
         }
