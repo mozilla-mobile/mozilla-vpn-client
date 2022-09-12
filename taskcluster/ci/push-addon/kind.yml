@@ -11,36 +11,36 @@ transforms:
     - taskgraph.transforms.task:transforms
 
 kind-dependencies:
-    - addons
+    - build
 
 jobs:
-  stage/deploy:
-      description: "Addons Stage Deploy"
-      treeherder:
-          symbol: D
-          kind: build
-          tier: 1
-          platform: addons/all
-      worker-type: b-linux
-      requires-level: 3
-      add-index-routes: addons # Name of the index
-      scopes:
-         - 'secrets:get:project/mozillavpn/tokens'
-      dependencies:
-        build: "addons-bundle"
-      fetches:
-        build:
-            - artifact: addons.zip
-      worker:
-          docker-image: {in-tree: wasm}
-          max-run-time: 3600
-          chain-of-trust: true
-          artifacts:
-              - type: directory
-                name: public/build
-                path: /builds/worker/artifacts
-      run:
-          using: run-task
-          use-caches: true
-          cwd: '{checkout}'
-          command: ./taskcluster/scripts/push-addons/deploy.sh
+    stage/deploy:
+        description: "Addons Stage Deploy"
+        treeherder:
+            symbol: D
+            kind: build
+            tier: 1
+            platform: addons/all
+        worker-type: b-linux
+        requires-level: 3
+        add-index-routes: addons  # Name of the index
+        scopes:
+            - 'secrets:get:project/mozillavpn/tokens'
+        dependencies:
+            build: "build-addons-bundle"
+        fetches:
+            build:
+                - artifact: addons.zip
+        worker:
+            docker-image: {in-tree: wasm}
+            max-run-time: 3600
+            chain-of-trust: true
+            artifacts:
+                - type: directory
+                  name: public/build
+                  path: /builds/worker/artifacts
+        run:
+            using: run-task
+            use-caches: true
+            cwd: '{checkout}'
+            command: ./taskcluster/scripts/push-addons/deploy.sh

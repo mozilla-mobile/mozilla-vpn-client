@@ -35,7 +35,7 @@ def add_release_artifacts(config, tasks):
             yield task
             continue
 
-        release_artifacts = task["attributes"].setdefault("release-artifacts", [])
+        release_artifacts = task.setdefault("attributes", {}).setdefault("release-artifacts", [])
 
         impl, _ = worker_type_implementation(config.graph_config, task["worker-type"])
         if impl == "generic-worker":
