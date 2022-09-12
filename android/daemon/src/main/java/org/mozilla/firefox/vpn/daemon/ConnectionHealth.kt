@@ -179,7 +179,7 @@ class ConnectionHealth(service: VPNService) {
                 it.getByName(fallbackEndpoint).isReachable(PING_TIMEOUT)
             } != null
             if (fallbackServerIsReachable) {
-                Log.i("BASTI", "Switch to fallback VPN server")
+                Log.i(TAG, "Switch to fallback VPN server")
                 // We the server is online but the connection broke up, let's rest it
                 mService.mainLooper.run {
                     // Silent server switch to the same server
