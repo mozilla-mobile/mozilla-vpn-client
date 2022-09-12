@@ -1017,9 +1017,25 @@ void TestAddon::message_dismiss() {
   QVERIFY(!!message);
   QVERIFY(message->enabled());
 
+  QString addonSetting;
+  connect(&settingsHolder, &SettingsHolder::addonSettingsChanged, [&]() {
+    addonSetting =
+        settingsHolder.getAddonSetting(SettingsHolder::AddonSettingQuery(
+            "bar", ADDON_MESSAGE_SETTINGS_GROUP,
+            ADDON_MESSAGE_SETTINGS_STATE_KEY, "?!?"));
+  });
+
+  QCOMPARE(addonSetting, "");
+  QVERIFY(!static_cast<AddonMessage*>(message)->isRead());
+
+  static_cast<AddonMessage*>(message)->markAsRead();
+  QVERIFY(static_cast<AddonMessage*>(message)->isRead());
+  QCOMPARE(addonSetting, "Read");
+
   // After dismissing the message, it becomes inactive.
   static_cast<AddonMessage*>(message)->dismiss();
   QVERIFY(!message->enabled());
+  QCOMPARE(addonSetting, "Dismissed");
 
   // No new messages are loaded for the same ID:
   Addon* message2 = AddonMessage::create(&parent, "foo", "bar", "name", obj);
