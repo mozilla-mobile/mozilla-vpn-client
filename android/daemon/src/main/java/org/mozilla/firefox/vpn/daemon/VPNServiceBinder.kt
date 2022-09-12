@@ -50,12 +50,11 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         when (code) {
             ACTIONS.activate -> {
                 try {
-                    Log.i(tag, "Activiation Requested, parsing Config")
+                    Log.i(tag, "Activation Requested")
                     // [data] is here a json containing the wireguard conf
                     val buffer = data.createByteArray()
                     val json = buffer?.let { String(it) }
                     val config = JSONObject(json)
-                    Log.v(tag, "Stored new Tunnel config in Service")
 
                     if (!mService.checkPermissions()) {
                         mResumeConfig = config
@@ -77,6 +76,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 // [data] is empty
                 // Activate the current tunnel
                 try {
+                    Log.i(tag, "Resume Activation requested")
                     mResumeConfig?.let { this.mService.turnOn(it) }
                 } catch (e: Exception) {
                     Log.e(tag, "An Error occurred while enabling the VPN: ${e.localizedMessage}")
@@ -85,12 +85,14 @@ class VPNServiceBinder(service: VPNService) : Binder() {
             }
 
             ACTIONS.deactivate -> {
+                Log.i(tag, "Deactivation requested")
                 // [data] here is empty
                 this.mService.turnOff()
                 return true
             }
 
             ACTIONS.registerEventListener -> {
+                Log.i(tag, "requested to add an Event Listener")
                 // [data] contains the Binder that we need to dispatch the Events
                 val binder = data.readStrongBinder()
                 mListener = binder
