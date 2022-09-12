@@ -17,14 +17,16 @@ class AddonTutorial final : public Addon {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AddonTutorial)
 
-  ADDON_PROPERTY(title, m_title, retranslationCompleted)
-  ADDON_PROPERTY(subtitle, m_subtitle, retranslationCompleted)
-  ADDON_PROPERTY(completionMessage, m_completionMessage, retranslationCompleted)
+ public:
+  ADDON_PROPERTY(title, m_title, getTitle, setTitle, retranslationCompleted)
+  ADDON_PROPERTY(subtitle, m_subtitle, getSubtitle, setSubtitle,
+                 retranslationCompleted)
+  ADDON_PROPERTY(completionMessage, m_completionMessage, getCompletionMessage,
+                 setCompletionMessage, retranslationCompleted)
 
   Q_PROPERTY(QString image MEMBER m_image CONSTANT)
   Q_PROPERTY(bool highlighted READ highlighted CONSTANT)
 
- public:
   static Addon* create(QObject* parent, const QString& manifestFileName,
                        const QString& id, const QString& name,
                        const QJsonObject& obj);

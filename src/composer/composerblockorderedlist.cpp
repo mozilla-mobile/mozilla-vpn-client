@@ -15,9 +15,11 @@ Logger logger(LOG_MAIN, "ComposerBlockOrderedList");
 
 // static
 ComposerBlock* ComposerBlockOrderedList::create(Composer* composer,
+                                                const QString& blockId,
                                                 const QString& prefix,
                                                 const QJsonObject& json) {
-  ComposerBlockOrderedList* block = new ComposerBlockOrderedList(composer);
+  ComposerBlockOrderedList* block =
+      new ComposerBlockOrderedList(composer, blockId);
   if (!block->parseJson(prefix, json)) {
     block->deleteLater();
     return nullptr;
@@ -26,8 +28,9 @@ ComposerBlock* ComposerBlockOrderedList::create(Composer* composer,
   return block;
 }
 
-ComposerBlockOrderedList::ComposerBlockOrderedList(Composer* composer)
-    : ComposerBlockUnorderedList(composer, "olist") {
+ComposerBlockOrderedList::ComposerBlockOrderedList(Composer* composer,
+                                                   const QString& blockId)
+    : ComposerBlockUnorderedList(composer, blockId, "olist") {
   MVPN_COUNT_CTOR(ComposerBlockOrderedList);
 }
 

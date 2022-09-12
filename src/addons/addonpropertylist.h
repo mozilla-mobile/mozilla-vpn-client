@@ -9,10 +9,28 @@
 #include <QObject>
 #include <QPair>
 
-#define ADDON_PROPERTY_LIST(name, member, signal)                        \
-  Q_PROPERTY(                                                            \
-      QStringList name READ addonPropertyListGetter##name NOTIFY signal) \
-  QStringList addonPropertyListGetter##name() { return member.get(); }
+#define ADDON_PROPERTY_LIST(name, member, getter, setter, inserter, appender, \
+                            remover, signal)                                  \
+  Q_PROPERTY(QStringList name READ getter NOTIFY signal)                      \
+  QStringList getter() { return member.get(); }                               \
+  Q_INVOKABLE void setter(int pos, const QString& id,                         \
+                          const QString& fallback) {                          \
+    return member.set(pos, id, fallback);                                     \
+    emit signal();                                                            \
+  }                                                                           \
+  Q_INVOKABLE void inserter(int pos, const QString& id,                       \
+                            const QString& fallback) {                        \
+    return member.insert(pos, id, fallback);                                  \
+    emit signal();                                                            \
+  }                                                                           \
+  Q_INVOKABLE void appender(const QString& id, const QString& fallback) {     \
+    return member.append(id, fallback);                                       \
+    emit signal();                                                            \
+  }                                                                           \
+  Q_INVOKABLE void remover(int pos) {                                         \
+    return member.remove(pos);                                                \
+    emit signal();                                                            \
+  }
 
 class AddonPropertyList final : public QObject {
   Q_OBJECT
@@ -24,7 +42,10 @@ class AddonPropertyList final : public QObject {
   AddonPropertyList();
   ~AddonPropertyList();
 
+  void set(int pos, const QString& id, const QString& fallback);
+  void insert(int pos, const QString& id, const QString& fallback);
   void append(const QString& id, const QString& fallback);
+  void remove(int pos);
 
   QStringList get() const;
 

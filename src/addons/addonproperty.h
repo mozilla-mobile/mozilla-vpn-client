@@ -7,15 +7,17 @@
 
 #include <QObject>
 
-#define ADDON_PROPERTY(name, member, signal)                            \
-  Q_PROPERTY(QString name READ addonPropertyGetter##name NOTIFY signal) \
-  QString addonPropertyGetter##name() { return member.get(); }
+#define ADDON_PROPERTY(name, member, getter, setter, signal)            \
+  Q_PROPERTY(QString name READ getter NOTIFY signal)                    \
+  QString getter() const { return member.get(); }                       \
+  Q_INVOKABLE void setter(const QString& id, const QString& fallback) { \
+    member.set(id, fallback);                                           \
+    emit signal();                                                      \
+  }
 
 class AddonProperty final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AddonProperty)
-
-  Q_PROPERTY(QString value READ get CONSTANT)
 
  public:
   AddonProperty();
@@ -24,6 +26,7 @@ class AddonProperty final : public QObject {
   void initialize(const QString& id, const QString& fallback);
 
   QString get() const;
+  void set(const QString& id, const QString& fallback);
 
  private:
   bool m_initialized = false;

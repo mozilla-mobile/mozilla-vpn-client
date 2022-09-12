@@ -21,14 +21,9 @@ Logger logger(LOG_MAIN, "ComposerBlockButton");
 
 // static
 ComposerBlock* ComposerBlockButton::create(Composer* composer, Addon* addon,
+                                           const QString& blockId,
                                            const QString& prefix,
                                            const QJsonObject& json) {
-  QString blockId = json["id"].toString();
-  if (blockId.isEmpty()) {
-    logger.error() << "Empty block ID for composer block button";
-    return nullptr;
-  }
-
   QString javascript = json["javascript"].toString();
   if (javascript.isEmpty()) {
     logger.error() << "No javascript property for button" << blockId;
@@ -71,7 +66,7 @@ ComposerBlock* ComposerBlockButton::create(Composer* composer, Addon* addon,
   }
 
   ComposerBlockButton* block =
-      new ComposerBlockButton(composer, addon, style, function);
+      new ComposerBlockButton(composer, addon, blockId, style, function);
 
   block->m_text.initialize(QString("%1.block.%2").arg(prefix).arg(blockId),
                            json["content"].toString());
@@ -80,8 +75,9 @@ ComposerBlock* ComposerBlockButton::create(Composer* composer, Addon* addon,
 }
 
 ComposerBlockButton::ComposerBlockButton(Composer* composer, Addon* addon,
-                                         Style style, const QJSValue& function)
-    : ComposerBlock(composer, "button"),
+                                         const QString& blockId, Style style,
+                                         const QJSValue& function)
+    : ComposerBlock(composer, blockId, "button"),
       m_addon(addon),
       m_style(style),
       m_function(function) {
@@ -105,4 +101,9 @@ void ComposerBlockButton::click() const {
 
 bool ComposerBlockButton::contains(const QString& string) const {
   return m_text.get().contains(string, Qt::CaseInsensitive);
+}
+
+void ComposerBlockButton::setStyle(Style style) {
+  m_style = style;
+  emit styleChanged();
 }
