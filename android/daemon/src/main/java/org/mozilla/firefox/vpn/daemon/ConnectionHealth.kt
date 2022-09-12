@@ -152,10 +152,12 @@ class ConnectionHealth(service: VPNService) {
                 return@Runnable
             }
 
-            if (!canReachGateway)
+            if (!canReachGateway) {
                 Log.e(TAG, "Failed to Reach VPN-Gateway")
-            if (!canReachDNS)
+            }
+            if (!canReachDNS) {
                 Log.e(TAG, "Failed to reach DNS")
+            }
 
             // Step 3: We have found a connection Issue, check if we can ping the wireguard
             // endpoint on any Network, maybe the handoff from WIFI-> GSM did not work correctly

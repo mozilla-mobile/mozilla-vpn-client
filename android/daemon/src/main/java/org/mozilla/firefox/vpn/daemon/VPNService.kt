@@ -238,14 +238,14 @@ class VPNService : android.net.VpnService() {
                 json.getJSONObject("server").getString("ipv4AddrIn"),
                 json.getJSONObject("serverFallback").getString("ipv4Gateway"),
                 json.getJSONObject("serverFallback").getString("ipv4Gateway"),
-                json.getJSONObject("serverFallback").getString("ipv4AddrIn"),
+                json.getJSONObject("serverFallback").getString("ipv4AddrIn")
             )
         } else {
             mConnectionHealth.start(
                 json.getJSONObject("server").getString("ipv4AddrIn"),
                 json.getJSONObject("server").getString("ipv4Gateway"),
                 json.getString("dns"),
-                json.getJSONObject("serverFallback").getString("ipv4Gateway"),
+                json.getJSONObject("serverFallback").getString("ipv4Gateway")
             )
         }
     }
