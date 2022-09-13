@@ -271,7 +271,7 @@ Item {
 
         function onTooltipNeeded(text, targetEl) {
             root.targetElement = targetEl;
-            tutorialTooltip.tooltipText = text.value;
+            tutorialTooltip.tooltipText = text;
             tutorialTooltip.open();
         }
 
