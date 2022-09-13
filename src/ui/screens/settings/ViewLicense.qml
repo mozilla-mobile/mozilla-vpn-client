@@ -23,6 +23,6 @@ VPNViewBase {
         Layout.fillWidth: true
         Layout.leftMargin: VPNTheme.theme.windowMargin
         Layout.rightMargin: VPNTheme.theme.windowMargin
-        onLinkActivated: link => VPN.openLinkUrl(link)
+        onLinkActivated: link => VPNUrlOpener.openUrl(link)
     }
 }

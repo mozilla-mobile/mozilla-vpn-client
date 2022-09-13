@@ -144,7 +144,7 @@ VPNFlickable {
                     labelText: qsTrId("vpn.aboutUs.tos2")
                     Layout.alignment: grid.columns > 1 ? Qt.AlignRight : Qt.AlignHCenter
                     textAlignment: grid.columns > 1 ? Text.AlignRight : Text.AlignHCenter
-                    onClicked: VPN.openLink(VPN.LinkTermsOfService)
+                    onClicked: VPNUrlOpener.openLink(VPNUrlOpener.LinkTermsOfService)
                 }
 
                 Rectangle {
@@ -162,7 +162,7 @@ VPNFlickable {
 
                     // Privacy Notice - string defined in ViewAboutUs.qml
                     labelText: qsTrId("vpn.aboutUs.privacyNotice2")
-                    onClicked: VPN.openLink(VPN.LinkPrivacyNotice)
+                    onClicked: VPNUrlOpener.openLink(VPNUrlOpener.LinkPrivacyNotice)
                     textAlignment: grid.columns > 1 ? Text.AlignLeft : Text.AlignHCenter
                     Layout.alignment: grid.columns > 1 ? Qt.AlignLeft : Qt.AlignHCenter
                 }

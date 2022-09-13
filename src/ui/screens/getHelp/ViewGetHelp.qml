@@ -26,7 +26,7 @@ VPNViewBase {
 
             accessibleName: VPNl18n.GetHelpHelpCenter
             title: VPNl18n.GetHelpHelpCenter
-            onClicked: VPN.openLink(VPN.LinkHelpSupport)
+            onClicked: VPNUrlOpener.openLink(VPNUrlOpener.LinkHelpSupport)
             iconSource: "qrc:/nebula/resources/externalLink.svg"
             backgroundColor: VPNTheme.theme.clickableRowBlue
             width: parent.width - VPNTheme.theme.windowMargin

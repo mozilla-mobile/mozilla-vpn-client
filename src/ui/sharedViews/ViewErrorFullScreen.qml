@@ -117,7 +117,7 @@ VPNFlickable {
                     //% "Check outage updates"
                     labelText: qsTrId("vpn.errors.checkOutageUpdates")
                     Layout.preferredWidth: col.width - (VPNTheme.theme.windowMargin * 3)
-                    onClicked: VPN.openLink("https://status.vpn.mozilla.org")
+                    onClicked: VPNUrlOpener.openUrl("https://status.vpn.mozilla.org")
                     Layout.alignment: Qt.AlignHCenter
                     visible: statusLinkVisible
                 }

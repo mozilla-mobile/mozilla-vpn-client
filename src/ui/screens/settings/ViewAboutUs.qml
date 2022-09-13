@@ -83,7 +83,7 @@ VPNViewBase {
 
                    //% "Terms of service"
                    linkTitle: qsTrId("vpn.aboutUs.tos2")
-                   openUrl: VPN.LinkTermsOfService
+                   openUrl: "terms-of-service"
                    openView: ""
                }
 
@@ -92,7 +92,7 @@ VPNViewBase {
 
                    //% "Privacy notice"
                    linkTitle: qsTrId("vpn.aboutUs.privacyNotice2")
-                   openUrl: VPN.LinkPrivacyNotice
+                   openUrl: "link-privacy-notice"
                    openView: ""
                }
            }
@@ -106,9 +106,14 @@ VPNViewBase {
                Layout.rightMargin: VPNTheme.theme.windowMargin / 2
 
                onClicked: {
-                   if (openUrl) {
-                       VPN.openLink(openUrl)
+                   if (openUrl === "terms-of-service") {
+                       VPNUrlOpener.openLink(VPNUrlOpener.LinkTermsOfService);
                    }
+
+                   if (openUrl === "link-privacy-notice") {
+                       VPNUrlOpener.openLink(VPNUrlOpener.LinkPrivacyNotice);
+                   }
+
                    if (openView) {
                        stackview.push(openView)
                    }

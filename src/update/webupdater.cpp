@@ -8,6 +8,7 @@
 #include "mozillavpn.h"
 #include "task.h"
 #include "telemetry/gleansample.h"
+#include "urlopener.h"
 
 namespace {
 Logger logger(LOG_NETWORKING, "WebUpdater");
@@ -31,6 +32,6 @@ void WebUpdater::start(Task*) {
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(FallbackInBrowser).toString()}});
 
-  vpn->openLink(MozillaVPN::LinkUpdate);
+  UrlOpener::instance()->openLink(UrlOpener::LinkUpdate);
   deleteLater();
 }

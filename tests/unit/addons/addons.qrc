@@ -16,5 +16,6 @@
         <file>api_featurelist.js</file>
         <file>api_navigator.js</file>
         <file>api_settings.js</file>
+        <file>api_urlopener.js</file>
     </qresource>
 </RCC>

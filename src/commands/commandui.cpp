@@ -29,6 +29,7 @@
 #include "theme.h"
 #include "tutorial/tutorial.h"
 #include "update/updater.h"
+#include "urlopener.h"
 
 #include <glean.h>
 #include <lottie.h>
@@ -511,6 +512,14 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNAddonManager",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = AddonManager::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNUrlOpener",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = UrlOpener::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
