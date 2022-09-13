@@ -35,7 +35,7 @@ VPNViewBase {
                         VPNProfileFlow.start();
                     } else {
                         VPN.recordGleanEvent("manageAccountClicked")
-                        VPN.openLink(VPN.LinkAccount);
+                        VPNUrlOpener.openLink(VPNUrlOpener.LinkAccount);
                     }
                 }
                 _loaderVisible: VPNProfileFlow.state === VPNProfileFlow.StateLoading

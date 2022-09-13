@@ -11,6 +11,7 @@
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
+#include "urlopener.h"
 
 #include <QCoreApplication>
 #include <QQmlEngine>
@@ -67,10 +68,6 @@ void AddonApi::connectSignal(QObject* obj, const QString& signalName,
   connect(obj, signal, cw, slot);
 }
 
-void AddonApi::openURL(const QString& url) const {
-  MozillaVPN::instance()->instance()->openLinkUrl(url);
-}
-
 AddonApiCallbackWrapper::AddonApiCallbackWrapper(QObject* parent,
                                                  const QJSValue& callback)
     : QObject(parent), m_callback(callback) {}
@@ -99,6 +96,17 @@ QJSValue AddonApi::navigator() const {
 
   QJSValue value = engine->newQObject(obj);
   value.setPrototype(engine->newQMetaObject(&Navigator::staticMetaObject));
+  return value;
+}
+
+QJSValue AddonApi::urlOpener() const {
+  QJSEngine* engine = QmlEngineHolder::instance()->engine();
+
+  QObject* obj = UrlOpener::instance();
+  QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+
+  QJSValue value = engine->newQObject(obj);
+  value.setPrototype(engine->newQMetaObject(&UrlOpener::staticMetaObject));
   return value;
 }
 

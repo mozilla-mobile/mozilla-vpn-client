@@ -38,7 +38,7 @@ VPNViewBase {
             _iconSource: "qrc:/nebula/resources/open-in-new.svg"
             _buttonOnClicked: () => {
                 VPN.recordGleanEvent("manageAccountClicked");
-                VPN.openLink(VPN.LinkAccount);
+                VPNUrlOpener.openLink(VPNUrlOpener.LinkAccount);
             }
         }
 
@@ -129,16 +129,16 @@ VPNViewBase {
     function handleManageAccountClicked() {
         switch(VPNSubscriptionData.type) {
             case VPNSubscriptionData.SubscriptionWeb:
-                VPN.openLink(VPN.LinkSubscriptionFxa);
+                VPNUrlOpener.openLink(VPNUrlOpener.LinkSubscriptionFxa);
                 break;
             case VPNSubscriptionData.SubscriptionGoogle:
-                VPN.openLink(VPN.LinkSubscriptionIapGoogle);
+                VPNUrlOpener.openLink(VPNUrlOpener.LinkSubscriptionIapGoogle);
                 break;
             case VPNSubscriptionData.SubscriptionApple:
-                VPN.openLink(VPN.LinkSubscriptionIapApple);
+                VPNUrlOpener.openLink(VPNUrlOpener.LinkSubscriptionIapApple);
                 break;
             default:
-                VPN.openLink(VPN.LinkAccount);
+                VPNUrlOpener.openLink(VPNUrlOpener.LinkAccount);
         }
 
         VPN.recordGleanEvent("manageSubscriptionClicked");

@@ -23,9 +23,10 @@ ColumnLayout {
         lineHeightMode: Text.FixedHeight
         lineHeight: VPNTheme.theme.labelLineHeight
         onLinkActivated: {
-            if (link === "terms-of-service")
-                return VPN.openLink(VPN.LinkTermsOfService);
-            VPN.openLink(VPN.LinkPrivacyNotice);
+            if (link === "terms-of-service") {
+                return VPNUrlOpener.openLink(VPNUrlOpener.LinkTermsOfService);
+            }
+            VPNUrlOpener.openLink(VPNUrlOpener.LinkPrivacyNotice);
         }
     }
 }

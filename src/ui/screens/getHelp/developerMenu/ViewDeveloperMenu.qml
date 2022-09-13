@@ -193,7 +193,7 @@ VPNViewBase {
                 iconSource:  "qrc:/nebula/resources/externalLink.svg"
                 backgroundColor: VPNTheme.theme.clickableRowBlue
                 onClicked: {
-                    VPN.openLink(VPN.LinkInspector)
+                    VPNUrlOpener.openLink(VPNUrlOpener.LinkInspector)
                 }
             }
         }
