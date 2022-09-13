@@ -22,7 +22,7 @@ VPNViewBase {
             text: VPNLicenseModel.contentLicense
             textFormat: Text.MarkdownText
             width: parent.width - VPNTheme.theme.windowMargin * 2
-            onLinkActivated: link => VPN.openLinkUrl(link)
+            onLinkActivated: link => VPNUrlOpener.openUrl(link)
         }
 
         VPNVerticalSpacer {

@@ -12,4 +12,5 @@ class TestAddonApi final : public TestHelper {
   void featurelist();
   void navigator();
   void settings();
+  void urlopener();
 };

@@ -225,7 +225,7 @@ ColumnLayout {
 
                 onClicked: {
                     VPN.recordGleanEvent("bundle_upsell_link_clicked");
-                    VPN.openLink(VPN.LinkRelayPremium);
+                    VPNUrlOpener.openLink(VPNUrlOpener.LinkRelayPremium);
                 }
             }
         }
@@ -235,7 +235,7 @@ ColumnLayout {
 
             onClicked: {
                 VPN.recordGleanEvent("bundle_upsell_upgrade_clicked");
-                VPN.openLink(VPN.LinkUpgradeToBundle);
+                VPNUrlOpener.openLink(VPNUrlOpener.LinkUpgradeToBundle);
             }
 
             contentItem: Label {

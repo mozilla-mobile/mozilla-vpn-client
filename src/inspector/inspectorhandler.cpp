@@ -24,6 +24,7 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 #include "task.h"
+#include "urlopener.h"
 
 #include <functional>
 
@@ -481,7 +482,7 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{"lasturl", "Retrieve the last opened URL", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        QJsonObject obj;
-                       obj["value"] = MozillaVPN::instance()->lastUrl();
+                       obj["value"] = UrlOpener::instance()->lastUrl();
                        return obj;
                      }},
 

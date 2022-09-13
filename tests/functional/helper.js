@@ -232,7 +232,7 @@ module.exports = {
   },
 
   async getLastUrl() {
-    return await this.getElementProperty('VPN', 'lastUrl');
+    return await this.getElementProperty('VPNUrlOpener', 'lastUrl');
   },
 
   async waitForCondition(condition) {
@@ -251,7 +251,7 @@ module.exports = {
   async authenticateInBrowser(clickOnPostAuthenticate, acceptTelemetry, wasm) {
     // This method must be called when the client is on the "Get Started" view.
     await this.waitForMainView();
-    await this.setElementProperty('VPN', 'lastUrl', 's', '');
+    await this.setElementProperty('VPNUrlOpener', 'lastUrl', 's', '');
 
     // Click on get started and wait for authenticating view
     await this.clickOnElement('getStarted');

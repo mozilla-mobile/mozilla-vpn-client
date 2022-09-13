@@ -95,27 +95,6 @@ class MozillaVPN final : public QObject {
   };
   Q_ENUM(AlertType)
 
-  enum LinkType {
-    LinkAccount,
-    LinkContact,
-    LinkForgotPassword,
-    LinkLeaveReview,
-    LinkHelpSupport,
-    LinkTermsOfService,
-    LinkPrivacyNotice,
-    LinkUpdate,
-    LinkInspector,
-    LinkSubscriptionBlocked,
-    LinkSplitTunnelHelp,
-    LinkCaptivePortal,
-    LinkRelayPremium,
-    LinkSubscriptionIapApple,
-    LinkSubscriptionFxa,
-    LinkSubscriptionIapGoogle,
-    LinkUpgradeToBundle,
-  };
-  Q_ENUM(LinkType)
-
  private:
   Q_PROPERTY(State state READ state NOTIFY stateChanged)
   Q_PROPERTY(AlertType alert READ alert NOTIFY alertChanged)
@@ -128,8 +107,6 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(bool debugMode READ debugMode CONSTANT)
   Q_PROPERTY(QString currentView READ currentView WRITE setCurrentView NOTIFY
                  currentViewChanged)
-  Q_PROPERTY(
-      QString lastUrl READ lastUrl WRITE setLastUrl NOTIFY lastUrlChanged)
 
  public:
   MozillaVPN();
@@ -161,8 +138,6 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void getStarted();
   Q_INVOKABLE void authenticate();
   Q_INVOKABLE void cancelAuthentication();
-  Q_INVOKABLE void openLink(LinkType linkType);
-  Q_INVOKABLE void openLinkUrl(const QString& linkUrl) const;
   Q_INVOKABLE void removeDeviceFromPublicKey(const QString& publicKey);
   Q_INVOKABLE void hideAlert() { setAlert(NoAlert); }
   Q_INVOKABLE void setAlert(AlertType alert);
@@ -313,12 +288,6 @@ class MozillaVPN final : public QObject {
     emit currentViewChanged();
   }
 
-  const QString& lastUrl() const { return m_lastUrl; }
-  void setLastUrl(const QString& url) {
-    m_lastUrl = url;
-    emit lastUrlChanged();
-  }
-
   void createTicketAnswerRecieved(bool successful) {
     emit ticketCreationAnswer(successful);
   }
@@ -400,7 +369,6 @@ class MozillaVPN final : public QObject {
   void logsReady(const QString& logs);
 
   void currentViewChanged();
-  void lastUrlChanged();
 
   void ticketCreationAnswer(bool successful);
 
@@ -440,7 +408,6 @@ class MozillaVPN final : public QObject {
   State m_state = StateInitialize;
   AlertType m_alert = NoAlert;
   QString m_currentView;
-  QString m_lastUrl;
 
   UserState m_userState = UserNotAuthenticated;
 
