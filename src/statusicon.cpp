@@ -101,13 +101,10 @@ const QString StatusIcon::iconString() {
       return LOGO_GENERIC_OFF;
       break;
     case Controller::StateSwitching:
-      logger.debug() << "lel StateSwitching";
       [[fallthrough]];
     case Controller::StateConnecting:
-      logger.debug() << "lel StateConnectin";
       [[fallthrough]];
     case Controller::StateConfirming:
-      logger.debug() << "lel StateConfirmin";
       [[fallthrough]];
     case Controller::StateDisconnecting:
       if (!m_animatedIconTimer.isActive()) {
@@ -144,8 +141,6 @@ const QColor& StatusIcon::indicatorColor() {
       logger.error() << "Unhandled status indicator for connection stability";
       return INVALID_COLOR;
   }
-
-  return m_indicatorColor;
 }
 
 void StatusIcon::stateChanged() {
@@ -162,24 +157,31 @@ QIcon StatusIcon::drawStatusIndicator() {
 
   // Create pixmap so that we can paint on the original resource.
   QPixmap iconPixmap = QPixmap(iconString());
-  QPainter painter(&iconPixmap);
-  painter.setRenderHint(QPainter::Antialiasing);
-  painter.setPen(Qt::NoPen);
 
-  // Create mask for the indicator.
-  float maskSize = iconPixmap.width() * 0.5;
-  float maskPosition = iconPixmap.width() - maskSize;
-  QRectF indicatorMask(maskPosition, maskPosition, maskSize, maskSize);
-  painter.setBrush(QColor(0, 0, 0, 255));  // black
-  painter.drawEllipse(indicatorMask);
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
 
-  // Add a colored status indicator.
-  float dotPadding = maskSize * 0.2;
-  float dotSize = maskSize - dotPadding;
-  float dotPosition = maskPosition + dotPadding * 0.5;
-  QRectF indicatorDot(dotPosition, dotPosition, dotSize, dotSize);
-  painter.setBrush(m_indicatorColor);
-  painter.drawEllipse(indicatorDot);
+  // Only draw a status indicator if the VPN is connected
+  if (vpn->controller()->state() == Controller::StateOn) {
+    QPainter painter(&iconPixmap);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setPen(Qt::NoPen);
+
+    // Create mask for the indicator.
+    float maskSize = iconPixmap.width() * 0.5;
+    float maskPosition = iconPixmap.width() - maskSize;
+    QRectF indicatorMask(maskPosition, maskPosition, maskSize, maskSize);
+    painter.setBrush(QColor(0, 0, 0, 255));  // black
+    painter.drawEllipse(indicatorMask);
+
+    // Add a colored status indicator.
+    float dotPadding = maskSize * 0.2;
+    float dotSize = maskSize - dotPadding;
+    float dotPosition = maskPosition + dotPadding * 0.5;
+    QRectF indicatorDot(dotPosition, dotPosition, dotSize, dotSize);
+    painter.setBrush(indicatorColor());
+    painter.drawEllipse(indicatorDot);
+  }
 
   return QIcon(iconPixmap);
 }
