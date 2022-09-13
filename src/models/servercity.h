@@ -24,7 +24,6 @@ class ServerCity final : public QObject {
   Q_PROPERTY(double longitude READ longitude CONSTANT)
 
  public:
-
   ServerCity();
   ServerCity(const ServerCity& other);
   ServerCity& operator=(const ServerCity& other);

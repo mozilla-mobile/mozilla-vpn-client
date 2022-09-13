@@ -73,7 +73,7 @@ void WindowsPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
                     &sequence, sizeof(sequence), nullptr, m_buffer,
                     sizeof(m_buffer), 10000);
   }
-  
+
   DWORD status = GetLastError();
   if (status != ERROR_IO_PENDING) {
     QString errmsg = WindowsCommons::getErrorMessage();
