@@ -22,7 +22,7 @@ class StatusIcon final : public QObject {
 
   const QIcon& icon();
   const QString iconString();
-  const QColor& indicatorColor();
+  const QColor indicatorColor() const;
 
  signals:
   void iconUpdateNeeded();

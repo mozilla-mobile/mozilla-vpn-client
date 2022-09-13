@@ -119,7 +119,7 @@ const QString StatusIcon::iconString() {
   }
 }
 
-const QColor& StatusIcon::indicatorColor() {
+const QColor StatusIcon::indicatorColor() const {
   logger.debug() << "Set color";
 
   MozillaVPN* vpn = MozillaVPN::instance();
