@@ -28,7 +28,7 @@ class StatusIcon final : public QObject {
   void iconUpdateNeeded();
 
  public slots:
-  void stateChanged();
+  void refreshNeeded();
 
  private slots:
   void animateIcon();

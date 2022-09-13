@@ -78,7 +78,7 @@ void StatusIcon::animateIcon() {
   if (m_animatedIconIndex == ANIMATED_LOGO_STEPS.size()) {
     m_animatedIconIndex = 0;
   }
-  stateChanged();
+  refreshNeeded();
 }
 
 const QString StatusIcon::iconString() {
@@ -143,8 +143,8 @@ const QColor StatusIcon::indicatorColor() const {
   }
 }
 
-void StatusIcon::stateChanged() {
-  logger.debug() << "State changed";
+void StatusIcon::refreshNeeded() {
+  logger.debug() << "Refresh needed";
 
   if (!m_icon.isNull()) {
     m_icon = QIcon();
