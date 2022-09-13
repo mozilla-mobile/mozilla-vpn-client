@@ -34,7 +34,6 @@ ColumnLayout {
         onTextChanged: hasError = _searchBarHasError
         onLengthChanged: text => model.invalidate()
 
-
         VPNIcon {
             source: "qrc:/nebula/resources/search.svg"
             anchors.verticalCenter: parent.verticalCenter
