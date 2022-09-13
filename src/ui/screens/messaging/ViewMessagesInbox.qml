@@ -12,7 +12,7 @@ import components.forms 0.1
 import Mozilla.VPN.qmlcomponents 1.0
 
 VPNViewBase {
-    id: root
+    id: vpnFlickable
     objectName: "messageInboxView"
 
     property bool isEmptyState
@@ -26,9 +26,9 @@ VPNViewBase {
 
             horizontalPadding: VPNTheme.theme.hSpacing / 5
             enabled: !isEmptyState
-            labelText: !root.isEditing || isEmptyState ? VPNl18n.InAppMessagingEditButton : VPNl18n.InAppSupportWorkflowSupportResponseButton
+            labelText: !vpnFlickable.isEditing || isEmptyState ? VPNl18n.InAppMessagingEditButton : VPNl18n.InAppSupportWorkflowSupportResponseButton
             onClicked: {
-                root.isEditing = !root.isEditing
+                vpnFlickable.isEditing = !vpnFlickable.isEditing
             }
         }
     }
@@ -38,7 +38,7 @@ VPNViewBase {
     onVisibleChanged: if (!visible) resetPage()
 
     function resetPage() {
-        root.isEditing = false
+        vpnFlickable.isEditing = false
         closeAllSwipes()
     }
 
@@ -80,16 +80,16 @@ VPNViewBase {
             Layout.topMargin: VPNTheme.theme.listSpacing
             Layout.leftMargin: VPNTheme.theme.windowMargin * 1.5
             Layout.rightMargin: VPNTheme.theme.windowMargin * 1.5
-            enabled: !root.isEmptyState
+            enabled: !vpnFlickable.isEmptyState
             onEnabledChanged: if (!enabled) clearText()
 
             _searchBarPlaceholderText: VPNl18n.InAppMessagingSearchBarPlaceholderText
-            _searchBarHasError: !root.isEmptyState && listView.count === 0
+            _searchBarHasError: !vpnFlickable.isEmptyState && listView.count === 0
 
             _filterProxySource: VPNAddonManager
             _filterProxyCallback: obj => obj.addon.type === "message" && obj.addon.containsSearchString(getSearchBarText())
             _sortProxyCallback: (obj1, obj2) => obj1.addon.date > obj2.addon.date
-            _editCallback: () => { root.isEditing = false }
+            _editCallback: () => { vpnFlickable.isEditing = false }
         }
 
         Image {
@@ -99,7 +99,7 @@ VPNViewBase {
             source: "qrc:/ui/resources/messages-empty.svg"
             sourceSize.width: 184
             sourceSize.height: 184
-            visible: root.isEmptyState
+            visible: vpnFlickable.isEmptyState
 
         }
 
@@ -110,7 +110,7 @@ VPNViewBase {
             Layout.fillWidth: true
 
             text: VPNl18n.InAppMessagingEmptyStateTitle
-            visible: root.isEmptyState
+            visible: vpnFlickable.isEmptyState
         }
 
         VPNInterLabel {
@@ -120,7 +120,7 @@ VPNViewBase {
             Layout.fillWidth: true
 
             text: VPNl18n.InAppMessagingEmptyStateDescription
-            visible: root.isEmptyState
+            visible: vpnFlickable.isEmptyState
             color: VPNTheme.theme.fontColor
         }
 
@@ -130,7 +130,7 @@ VPNViewBase {
             Layout.preferredHeight: 1
 
             color: VPNTheme.colors.grey10
-            visible: !root.isEmptyState
+            visible: !vpnFlickable.isEmptyState
         }
 
         ListView {
@@ -178,7 +178,7 @@ VPNViewBase {
                 VPNSwipeDelegate {
                     id: swipeDelegate
 
-                    property bool isEditing: root.isEditing
+                    property bool isEditing: vpnFlickable.isEditing
                     property real deleteLabelWidth: 0.0
 
                     //avoids qml warnings when addon messages get disabled via condition
@@ -201,16 +201,16 @@ VPNViewBase {
 
                     onSwipeOpen: () => {
                                      deleteLabelWidth = swipe.leftItem.width
-                                     if (root.allSwipesOpen() && !root.isEditing) root.isEditing = true
+                                     if (vpnFlickable.allSwipesOpen() && !vpnFlickable.isEditing) vpnFlickable.isEditing = true
                                  }
 
                     onSwipeClose: () => {
-                                      if (!root.anySwipesOpen() && root.isEditing) root.isEditing = false
+                                      if (!vpnFlickable.anySwipesOpen() && vpnFlickable.isEditing) vpnFlickable.isEditing = false
 
                                   }
 
                     onClicked: {
-                        if (root.anySwipesOpen()) root.closeAllSwipes()
+                        if (vpnFlickable.anySwipesOpen()) vpnFlickable.closeAllSwipes()
                         else {
                             addon.markAsRead()
                             stackview.push("qrc:/ui/screens/messaging/ViewMessage.qml", {"message": addon})
@@ -243,7 +243,7 @@ VPNViewBase {
                             addon.dismiss()
                             //Since opening up all (even if there is just 1) visible messages swipes turns on edit mode, make sure to turn it off if there are no more visible messages
                             if (searchBar.getProxyModel().rowCount() === 0) {
-                                root.isEditing = false
+                                vpnFlickable.isEditing = false
                             }
                         }
 
@@ -334,7 +334,7 @@ VPNViewBase {
         source: VPNAddonManager
         filterCallback: obj => { return obj.addon.type === "message" }
         Component.onCompleted: {
-            root.isEmptyState = Qt.binding(() => { return messagesModel.count === 0} )
+            vpnFlickable.isEmptyState = Qt.binding(() => { return messagesModel.count === 0} )
         }
     }
 }
