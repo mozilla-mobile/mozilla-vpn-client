@@ -78,6 +78,8 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/update/webupdater.h
     ${MVPN_SOURCE_DIR}/qmlengineholder.cpp
     ${MVPN_SOURCE_DIR}/qmlengineholder.h
+    ${MVPN_SOURCE_DIR}/urlopener.cpp
+    ${MVPN_SOURCE_DIR}/urlopener.h
 )
 
 # VPN Client UI resources

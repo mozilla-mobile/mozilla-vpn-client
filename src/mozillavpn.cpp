@@ -15,7 +15,7 @@
 #include "logoutobserver.h"
 #include "models/device.h"
 #include "models/feature.h"
-#include "networkrequest.h"
+#include "networkmanager.h"
 #include "profileflow.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
@@ -77,18 +77,6 @@
 
 // in seconds, hide alerts
 constexpr const uint32_t HIDE_ALERT_SEC = 4;
-
-#ifdef MVPN_ANDROID
-constexpr const char* GOOGLE_PLAYSTORE_URL =
-    "https://play.google.com/store/apps/details?id=org.mozilla.firefox.vpn";
-#endif
-
-#ifdef MVPN_IOS
-constexpr const char* APPLE_STORE_URL =
-    "https://apps.apple.com/us/app/mozilla-vpn-secure-private/id1489407738";
-constexpr const char* APPLE_STORE_REVIEW_URL =
-    "https://apps.apple.com/app/id1489407738?action=write-review";
-#endif
 
 namespace {
 Logger logger(LOG_MAIN, "MozillaVPN");
@@ -498,125 +486,6 @@ void MozillaVPN::abortAuthentication() {
   setState(StateInitialize);
 
   emit recordGleanEvent(GleanSample::authenticationAborted);
-}
-
-void MozillaVPN::openLink(LinkType linkType) {
-  logger.debug() << "Opening link: " << linkType;
-
-  QString url;
-  bool addEmailAddress = false;
-
-  switch (linkType) {
-    case LinkAccount:
-      url = Constants::fxaUrl();
-      addEmailAddress = true;
-      break;
-
-    case LinkContact:
-      url = NetworkRequest::apiBaseUrl();
-      url.append("/r/vpn/contact");
-      break;
-
-    case LinkForgotPassword:
-      url = Constants::fxaUrl();
-      url.append("/reset_password");
-      break;
-
-    case LinkHelpSupport:
-      url = NetworkRequest::apiBaseUrl();
-      url.append("/r/vpn/support");
-      break;
-
-    case LinkLeaveReview:
-      Q_ASSERT(Feature::get(Feature::Feature_appReview)->isSupported());
-      url =
-#if defined(MVPN_IOS)
-          APPLE_STORE_REVIEW_URL;
-#elif defined(MVPN_ANDROID)
-          GOOGLE_PLAYSTORE_URL;
-#else
-          "";
-#endif
-      break;
-
-    case LinkTermsOfService:
-      url = NetworkRequest::apiBaseUrl();
-      url.append("/r/vpn/terms");
-      break;
-
-    case LinkPrivacyNotice:
-      url = NetworkRequest::apiBaseUrl();
-      url.append("/r/vpn/privacy");
-      break;
-
-    case LinkUpdate:
-#if defined(MVPN_IOS)
-      url = APPLE_STORE_URL;
-#elif defined(MVPN_ANDROID)
-      url = GOOGLE_PLAYSTORE_URL;
-#else
-      url = NetworkRequest::apiBaseUrl();
-      url.append("/r/vpn/update/");
-      url.append(Constants::PLATFORM_NAME);
-#endif
-      break;
-
-    case LinkSubscriptionBlocked:
-      url = NetworkRequest::apiBaseUrl();
-      url.append("/r/vpn/subscriptionBlocked");
-      break;
-    case LinkSplitTunnelHelp:
-      // TODO: This should link to a more helpful article
-      url =
-          "https://support.mozilla.org/kb/"
-          "split-tunneling-use-mozilla-vpn-specific-apps-wind";
-      break;
-    case LinkInspector:
-      Q_ASSERT(!Constants::inProduction());
-      url = "https://mozilla-mobile.github.io/mozilla-vpn-client/inspector/";
-      break;
-    case LinkCaptivePortal:
-      url = QString("http://%1/success.txt")
-                .arg(SettingsHolder::instance()
-                         ->captivePortalIpv4Addresses()
-                         .first());
-      break;
-
-    case LinkRelayPremium:
-      url = Constants::relayUrl();
-      url.append("/premium");
-      break;
-
-    case LinkSubscriptionFxa:
-      url = Constants::fxaUrl();
-      url.append("/subscriptions");
-      break;
-
-    case LinkSubscriptionIapApple:
-      url = Constants::APPLE_SUBSCRIPTIONS_URL;
-      break;
-
-    case LinkSubscriptionIapGoogle:
-      url = Constants::GOOGLE_SUBSCRIPTIONS_URL;
-      break;
-
-    case LinkUpgradeToBundle:
-      url = Constants::inProduction() ? Constants::API_PRODUCTION_URL
-                                      : Constants::API_STAGING_URL;
-      url.append("/r/vpn/upgradeToPrivacyBundle");
-      break;
-
-    default:
-      qFatal("Unsupported link type!");
-      return;
-  }
-
-  UrlOpener::open(url, addEmailAddress);
-}
-
-void MozillaVPN::openLinkUrl(const QString& linkUrl) const {
-  logger.debug() << "Opening link: " << linkUrl;
-  UrlOpener::open(linkUrl);
 }
 
 void MozillaVPN::setToken(const QString& token) {
@@ -1243,7 +1112,7 @@ bool MozillaVPN::writeAndShowLogs(QStandardPaths::StandardLocation location) {
   return writeLogs(location, [](const QString& filename) {
     logger.debug() << "Opening the logFile somehow:" << filename;
     QUrl url = QUrl::fromLocalFile(filename);
-    UrlOpener::open(url);
+    UrlOpener::instance()->open(url);
   });
 }
 
@@ -1751,7 +1620,7 @@ void MozillaVPN::addCurrentDeviceAndRefreshData() {
 
 void MozillaVPN::openAppStoreReviewLink() {
   Q_ASSERT(Feature::get(Feature::Feature_appReview)->isSupported());
-  openLink(LinkType::LinkLeaveReview);
+  UrlOpener::instance()->openLink(UrlOpener::LinkLeaveReview);
 }
 
 bool MozillaVPN::validateUserDNS(const QString& dns) const {

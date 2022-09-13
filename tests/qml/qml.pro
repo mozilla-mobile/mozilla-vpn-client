@@ -65,7 +65,8 @@ SOURCES += \
     ../../src/platforms/dummy/dummypingsender.cpp \
     ../../src/dnspingsender.cpp \
     ../../src/pingsenderfactory.cpp \
-    ../../src/qmlengineholder.cpp
+    ../../src/qmlengineholder.cpp \
+    ../../src/urlopener.cpp
 
 HEADERS += \
     helper.h \
@@ -95,7 +96,8 @@ HEADERS += \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
     ../../src/update/webupdater.h \
-    ../../src/qmlengineholder.h
+    ../../src/qmlengineholder.h \
+    ../../src/urlopener.h
 
 OBJECTS_DIR = .obj
 MOC_DIR = .moc

@@ -26,7 +26,7 @@ VPNViewBase {
        }
 
        function fxaBrowserLink() {
-           VPN.openLink(VPN.LinkHelpSupport);
+           VPNUrlOpener.openLink(VPNUrlOpener.LinkHelpSupport);
            contactUsRoot.tryAgain();
        }
 
@@ -192,7 +192,7 @@ VPNViewBase {
                 VPNLinkButton {
                     labelText: VPNl18n.InAppSupportWorkflowPrivacyNoticeLinkText
                     Layout.alignment: Qt.AlignHCenter
-                    onClicked: VPN.openLink(VPN.LinkPrivacyNotice)
+                    onClicked: VPNUrlOpener.openLink(VPNUrlOpener.LinkPrivacyNotice)
                     width: parent.width
                 }
             }

@@ -102,7 +102,7 @@ VPNFlickable {
                 //% "Mozilla VPN Privacy Notice"
                 labelText: qsTrId("vpn.telemetryPolicy.MozillaVPNPrivacyNotice")
                 Layout.alignment: Qt.AlignHCenter
-                onClicked: VPN.openLink(VPN.LinkPrivacyNotice)
+                onClicked: VPNUrlOpener.openLink(VPNUrlOpener.LinkPrivacyNotice)
             }
 
         }
