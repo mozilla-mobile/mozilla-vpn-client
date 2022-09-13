@@ -13,6 +13,8 @@ import Mozilla.VPN.qmlcomponents 1.0
 VPNViewBase {
     property var message
 
+    Component.onCompleted: VPN.recordGleanEventWithExtraKeys("messageOpened", { "message_id": message.id });
+
     property Component titleComponent: Component {
         RowLayout {
             spacing: 6

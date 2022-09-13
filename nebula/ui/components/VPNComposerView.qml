@@ -148,7 +148,13 @@ ColumnLayout {
                     text: loader.composerBlock.text
                     colorScheme: loader.composerBlock.style === VPNComposerBlockButton.Primary ? VPNTheme.theme.blueButton : VPNTheme.theme.redButton
 
-                    onClicked: loader.composerBlock.click()
+                    onClicked: {
+                        if (addon.type === "message") {
+                            VPN.recordGleanEventWithExtraKeys("messageOpened", { "message_id": addon.id });
+                        }
+
+                        loader.composerBlock.click();
+                    }
                 }
             }
 

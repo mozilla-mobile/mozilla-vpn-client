@@ -611,6 +611,49 @@ sample:
       - amarchesini@mozilla.com
     expires: never
 
+  message_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      In-app message opened
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - interaction
+    extra_keys:
+      message_id:
+        description: Message identifier
+        type: string
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  message_cta_clicked:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      User clicked primary CTA in message
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - interaction
+    extra_keys:
+      message_id:
+        description: Message identifier
+        type: string
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+
   network_settings_view_opened:
     type: event
     lifetime: ping
