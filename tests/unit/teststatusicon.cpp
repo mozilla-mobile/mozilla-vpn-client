@@ -9,36 +9,29 @@
 
 void TestStatusIcon::basic() {
   StatusIcon si;
-#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic.png");
-#else
   QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask.png");
-#endif
+  QCOMPARE(si.indicatorColor().isValid(), false);
 
-  si.stateChanged();
-#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic.png");
-#else
+  si.refreshNeeded();
   QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask.png");
-#endif
+  QCOMPARE(si.indicatorColor().isValid(), false);
 
+  // VPN is on
   TestHelper::vpnState = MozillaVPN::StateMain;
   TestHelper::controllerState = Controller::StateOn;
-  si.stateChanged();
-#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-on.png");
-#else
+  si.refreshNeeded();
+
   QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask-on.png");
-#endif
+  QCOMPARE(si.indicatorColor().isValid(), true);
 
+  // VPN is off
   TestHelper::controllerState = Controller::StateOff;
-  si.stateChanged();
-#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic.png");
-#else
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask-off.png");
-#endif
+  si.refreshNeeded();
 
+  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask-off.png");
+  QCOMPARE(si.indicatorColor().isValid(), false);
+
+  // VPN is switching
   TestHelper::controllerState = Controller::StateSwitching;
 
   int i = 0;
@@ -49,23 +42,15 @@ void TestStatusIcon::basic() {
       loop.exit();
       return;
     }
-#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
+
     QCOMPARE(si.iconString(),
              QString(":/ui/resources/logo-animated%1.png").arg((i % 4) + 1));
-#else
-    QCOMPARE(si.iconString(),
-             QString(":/ui/resources/logo-animated-mask%1.png")
-             .arg((i % 4) + 1));
-#endif
     ++i;
   });
 
-  si.stateChanged();
-#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
+  si.refreshNeeded();
   QCOMPARE(si.iconString(), ":/ui/resources/logo-animated1.png");
-#else
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-animated-mask1.png");
-#endif
+  QCOMPARE(si.indicatorColor().isValid(), false);
   loop.exec();
 }
 
