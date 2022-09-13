@@ -49,6 +49,11 @@ Rectangle {
         cached: true
     }
 
+    MouseArea {
+        anchors.fill: parent
+        hoverEnabled: true
+    }
+
     Rectangle {
         id: outline
         color: VPNTheme.theme.ink
