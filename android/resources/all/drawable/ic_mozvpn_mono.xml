@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<inset
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/ic_launcher_foreground"
+    android:insetTop="2.5dp"
+    android:insetRight="2.5dp"
+    android:insetBottom="2.5dp"
+    android:insetLeft="2.5dp"/>
