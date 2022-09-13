@@ -13,7 +13,7 @@ import components.forms 0.1
 VPNViewBase {
     property var useSystemLanguageEnabled: toggleCard.toggleChecked
 
-    id: root
+    id: vpnFlickable
     objectName: "settingsLanguagesView"
 
     //% "Language"
@@ -93,9 +93,9 @@ VPNViewBase {
                     for (let idx = 0; idx < repeater.count; idx++) {
                         const langItem = repeater.itemAt(idx);
                         if (langItem.isSelectedLanguage) {
-                            const yCenter = root.height / 2;
+                            const yCenter = vpnFlickable.height / 2;
                             const selectedItemYPosition = langItem.y + (languageList.y + repeater.y + VPNTheme.theme.menuHeight + toggleCard.height + langItem.height) - yCenter;
-                            const destinationY = (selectedItemYPosition + root.height >col.implicitHeight) ? col.implicitHeight - root.height / 2: selectedItemYPosition;
+                            const destinationY = (selectedItemYPosition + vpnFlickable.height >col.implicitHeight) ? col.implicitHeight - vpnFlickable.height / 2: selectedItemYPosition;
                             if (destinationY < 0) {
                                 return;
                             }
