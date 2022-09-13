@@ -48,7 +48,6 @@ ColumnLayout {
         Keys.onPressed: event => {
             if (focus && _searchBarHasError && (/[\w\[\]`!@#$%\^&*()={}:;<>+'-]/).test(event.text)) {
                 _editCallback();
-                event.accepted = true;
             }
         }
     }
