@@ -131,6 +131,7 @@ SOURCES += \
         rfc/rfc5735.cpp \
         serveri18n.cpp \
         settingsholder.cpp \
+        sentry/dummy_sentryadapter.cpp \
         signature.cpp \
         simplenetworkmanager.cpp \
         statusicon.cpp \
@@ -299,6 +300,7 @@ HEADERS += \
         rfc/rfc5735.h \
         serveri18n.h \
         settingsholder.h \
+        sentry/sentryadapter.h \
         signature.h \
         simplenetworkmanager.h \
         statusicon.h \
