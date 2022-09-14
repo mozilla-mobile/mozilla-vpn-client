@@ -37,7 +37,7 @@ class TutorialStep final : public QObject {
 
  private:
   TutorialStep(AddonTutorial* parent, const QString& element,
-               const QString& stringId, const QString& fallback,
+               const QString& stepId, const QString& fallback,
                const QJsonObject& conditions,
                const QList<TutorialStepBefore*>& before,
                TutorialStepNext* next);
@@ -46,6 +46,7 @@ class TutorialStep final : public QObject {
 
  private:
   AddonTutorial* m_parent = nullptr;
+  const QString m_stepId;
   const QString m_element;
   AddonProperty m_string;
   const QJsonObject m_conditions;
