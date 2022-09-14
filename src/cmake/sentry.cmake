@@ -15,11 +15,11 @@ include(ExternalProject)
 
 LIST(FIND SENTRY_SUPPORTED_OS MVPN_PLATFORM_NAME IS_SUPPORTED)
 
-if( IS_SUPPORTED==-1 )
+if( IS_SUPPORTED EQUAL -1 )
     # Sentry is not supported on this Plattform, let's
     # only include a dummy client :) 
     target_sources(mozillavpn PRIVATE
-       sentry/moc_sentryadapter.cpp
+       sentry/dummy_sentryadapter.cpp
        sentry/sentryadapter.h
     )
 
