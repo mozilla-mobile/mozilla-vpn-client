@@ -33,6 +33,8 @@ Tutorial::Tutorial(QObject* parent) : QObject(parent) {
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
+  connect(vpn, &MozillaVPN::stateChanged, this, &Tutorial::stop);
+
   connect(vpn->controller(), &Controller::readyToServerUnavailable, this,
           &Tutorial::stop);
 }
