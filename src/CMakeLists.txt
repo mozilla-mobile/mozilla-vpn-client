@@ -49,5 +49,5 @@ add_compile_definitions("$<$<CONFIG:Debug>:MVPN_DEBUG>")
 add_compile_definitions("MVPN_$<UPPER_CASE:${MVPN_PLATFORM_NAME}>")
 include(cmake/${MVPN_PLATFORM_NAME}.cmake)
 
-
+set_target_properties(mozillavpn PROPERTIES LINK_FLAGS "/SUBSYSTEM:CONSOLE")
 qt_finalize_target(mozillavpn)

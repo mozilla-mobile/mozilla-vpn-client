@@ -1069,6 +1069,11 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
     default:
       break;
   }
+  // Report all User visible Error-Banners to Sentry so we can observe and
+  // assess.
+  QMetaEnum metaEnum = QMetaEnum::fromType<ErrorHandler::ErrorType>();
+  QString error_name = metaEnum.valueToKey(error);
+  SentryAdapter::instance()->report("MainError", error_name, true);
 
   setAlert(alert);
 
@@ -1797,6 +1802,13 @@ void MozillaVPN::hardResetAndQuit() {
 
 void MozillaVPN::crashTest() {
   logger.debug() << "Crashing Application";
+
+  unsigned char* test = NULL;
+  test[1000] = 'a';  //<< here it should crash
+
+  // Interestingly this does not cause a "Signal" but a VC runtime exception
+  // and more interestingly, neither breakpad nor crashpad are catchting this on
+  // windows...
   char* text = new char[100];
   delete[] text;
   delete[] text;
