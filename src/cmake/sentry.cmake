@@ -65,13 +65,3 @@ else()
     add_dependencies(mozillavpn sentry)
 endif()
 
-
-    #target_compile_definitions(mozillavpn PRIVATE SENTRY_BUILD_STATIC)
-
-    #target_link_libraries(mozillavpn PUBLIC crashpad_compat.lib)
-    #target_link_libraries(mozillavpn PUBLIC crashpad_getopt.lib)
-    #target_link_libraries(mozillavpn PUBLIC crashpad_handler_lib.lib)
-    #target_link_libraries(mozillavpn PUBLIC crashpad_minidump.lib)
-    #target_link_libraries(mozillavpn PUBLIC crashpad_snapshot.lib)
-    #target_link_libraries(mozillavpn PUBLIC crashpad_util.lib)
-    #target_link_libraries(mozillavpn PUBLIC crashpad_zlib.lib)

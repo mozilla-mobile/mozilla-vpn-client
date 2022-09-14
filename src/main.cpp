@@ -5,13 +5,11 @@
 #include "commandlineparser.h"
 #include "leakdetector.h"
 
-
 int main(int argc, char* argv[]) {
 #ifdef MVPN_DEBUG
   LeakDetector leakDetector;
   Q_UNUSED(leakDetector);
 #endif
-
 
   CommandLineParser clp;
   return clp.parse(argc, argv);

@@ -193,7 +193,7 @@ void LogHandler::addLog(const Log& log, const MutexLocker& proofOfLock) {
     QTextStream out(stderr);
     prettyOutput(out, log);
   }
-  
+
   QByteArray buffer;
   {
     QTextStream out(&buffer);
@@ -201,7 +201,6 @@ void LogHandler::addLog(const Log& log, const MutexLocker& proofOfLock) {
   }
 
   emit logEntryAdded(buffer);
-
 
 #if defined(MVPN_ANDROID) && defined(MVPN_DEBUG)
   const char* str = buffer.constData();
