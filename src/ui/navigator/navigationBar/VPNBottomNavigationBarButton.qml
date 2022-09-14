@@ -23,8 +23,6 @@ VPNIconButton {
     }
 
     onCheckedChanged: if (checked) btn.forceActiveFocus();
-    enabled: root.opacity !== 0
-
 
     width: VPNTheme.theme.navBarIconSize
     height: VPNTheme.theme.navBarIconSize
