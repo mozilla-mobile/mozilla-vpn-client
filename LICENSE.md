@@ -56,6 +56,11 @@ the terms of the MIT Public License (*MIT*), a copy of which is available
 [available here](https://opensource.org/licenses/MIT) and a copy is provided
 below.
 
+The project relies on [sentry-native](https://github.com/getsentry/sentry-native), under
+the terms of the MIT Public License (*MIT*), a copy of which is available
+[available here](https://opensource.org/licenses/MIT) and a copy is provided
+below.
+
 Finally, this project uses EC25519 and CHACHA-POLY implementations from
 [HACL\*](https://hacl-star.github.io/), available under the terms of the MIT
 Public License (*MIT*) and copyright (c) 2016-2020 INRIA, CMU, and Microsoft
