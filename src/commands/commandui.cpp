@@ -62,7 +62,6 @@
 #endif
 
 #ifdef MVPN_WINDOWS
-#  include "crashreporter/crashclient.h"
 #  include "eventlistener.h"
 #  include "platforms/windows/windowsstartatbootwatcher.h"
 #  include "platforms/windows/windowsappimageprovider.h"
@@ -168,9 +167,6 @@ int CommandUI::run(QStringList& tokens) {
       std::cerr.clear();
     }
 #  endif
-
-    CrashClient::instance().start(CommandLineParser::argc(),
-                                  CommandLineParser::argv());
 #endif
 
 #ifdef MVPN_DEBUG

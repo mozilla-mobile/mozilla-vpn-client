@@ -12,10 +12,10 @@ set_target_properties(mozillavpn PROPERTIES
 # Todo: This will force the generation of a .pdb
 # ignoring buildmode. we need to fix the relwithdebug target
 # and then we can remove this :) 
-target_compile_options(mozillavpn
-    PRIVATE 
-    $<$<CONFIG:Release>:/ZI>>
-)
+#target_compile_options(mozillavpn
+#    PRIVATE 
+#    $<$<CONFIG:Release>:/ZI>>
+#)
 
 # Generate the Windows version resource file.
 configure_file(../windows/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
