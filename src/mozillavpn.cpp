@@ -46,8 +46,6 @@
 #include "urlopener.h"
 #include "websocket/websockethandler.h"
 
-
-
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosdatamigration.h"
 #  include "platforms/ios/iosutils.h"

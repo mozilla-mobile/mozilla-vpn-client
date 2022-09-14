@@ -12,7 +12,6 @@ Q_DECL_EXPORT int main(int argc, char* argv[]) {
   Q_UNUSED(leakDetector);
 #endif
 
-
   CommandLineParser clp;
   return clp.parse(argc, argv);
 }

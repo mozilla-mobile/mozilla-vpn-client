@@ -37,6 +37,4 @@ void SentryAdapter::report(const QString& category, const QString& message,
 
 void SentryAdapter::onBeforeShutdown() {}
 
-void SentryAdapter::onLoglineAdded(const QByteArray& line) {
-    Q_UNUSED(line);
-} 
+void SentryAdapter::onLoglineAdded(const QByteArray& line) { Q_UNUSED(line); }

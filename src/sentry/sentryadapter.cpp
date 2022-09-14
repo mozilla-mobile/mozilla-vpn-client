@@ -4,11 +4,6 @@
 
 #include "sentryadapter.h"
 
-#ifdef MVPN_WINDOWS
-// We need to define this otherwise the header will try to link to a dll spec :)
-
-#endif
-#define SENTRY_BUILD_STATIC 1
 #include <sentry.h>
 
 #include "constants.h"

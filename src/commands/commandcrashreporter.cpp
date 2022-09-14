@@ -6,6 +6,7 @@
 #include "commandlineparser.h"
 #include "leakdetector.h"
 
+#include <crashreporter/crashreporterapp.h>
 
 CommandCrashReporter::CommandCrashReporter(QObject* parent)
     : Command(parent, "crashreporter", "Starts the crash reporter.") {
@@ -18,9 +19,8 @@ CommandCrashReporter::~CommandCrashReporter() {
 
 int CommandCrashReporter::run(QStringList& tokens) {
   Q_UNUSED(tokens);
-  // TODO: This is currently not used, find out if we can 
-  // integrate this into the crash flow
-  return 0;
+  return CrashReporterApp::main(CommandLineParser::argc(),
+                                CommandLineParser::argv());
 }
 
 static Command::RegistrationProxy<CommandCrashReporter> s_commandCrashReporter;
