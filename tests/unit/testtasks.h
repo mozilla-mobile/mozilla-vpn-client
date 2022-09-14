@@ -16,5 +16,5 @@ class TestTasks final : public TestHelper {
 
   void function();
 
-  void removeDevice();
+  void deletePolicy();
 };
