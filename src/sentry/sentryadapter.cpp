@@ -47,8 +47,6 @@ void SentryAdapter::init() {
   auto appDatas =
       QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
   auto appLocal = appDatas.first() + "\\sentry";
-  // sentry_options_set_handler_path(options, "C:/Program Files/Mozilla/Mozilla
-  // VPN/crashpad_handler.exe");
   sentry_options_set_dsn(options, Constants::SENTRY_DER);
   sentry_options_set_environment(
       options, Constants::inProduction() ? "production" : "stage");
