@@ -59,6 +59,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     target_link_libraries(mozillavpn PRIVATE crashreporter vpnglean -ldl)
     if (WIN32)
         target_link_libraries(mozillavpn PRIVATE ntdll)
+        set_target_properties(mozillavpn PROPERTIES LINK_FLAGS "/SUBSYSTEM:CONSOLE")
     endif()
 endif()
 

@@ -7,7 +7,7 @@
 
 
 # Defines which OS builds can include sentry. Check src/cmake Lists for all values of MVPN_PLATFORM_NAME
-set(SENTRY_SUPPORTED_OS  windows macos)
+set(SENTRY_SUPPORTED_OS  "windows" "macos")
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 include(ExternalProject)
  
@@ -15,7 +15,7 @@ include(ExternalProject)
 
 LIST(FIND SENTRY_SUPPORTED_OS MVPN_PLATFORM_NAME IS_SUPPORTED)
 
-if( IS_SUPPORTED EQUAL -1 )
+if( $IS_SUPPORTED EQUAL -1 )
     # Sentry is not supported on this Plattform, let's
     # only include a dummy client :) 
     target_sources(mozillavpn PRIVATE
@@ -24,6 +24,7 @@ if( IS_SUPPORTED EQUAL -1 )
     )
 
 else()
+    target_compile_definitions(mozillavpn PRIVATE SENTRY_ENABLED)
     # Sentry support is given
     target_sources(mozillavpn PRIVATE
        sentry/sentryadapter.cpp
@@ -42,10 +43,13 @@ else()
     endif()
     if(WIN32)
         # Compile a dll for windows, as some breakpad imports will fail otherwise >:c
+        SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=false  -D SENTRY_BACKEND=breakpad)
+        # Link against static sentry + breakpad + the stack unwind utils
         target_link_libraries(mozillavpn PUBLIC sentry.lib)
-        SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=true)
-        install(FILES ${EXTERNAL_INSTALL_LOCATION}/bin/sentry.dll DESTINATION .)
-        install(FILES ${EXTERNAL_INSTALL_LOCATION}/bin/crashpad_handler DESTINATION .)
+        target_link_libraries(mozillavpn PUBLIC breakpad_client.lib)
+        target_link_libraries(mozillavpn PUBLIC dbghelp.lib)
+        # Make sure the sentry header does not try to dll-link it :) 
+        target_compile_definitions(mozillavpn PRIVATE SENTRY_BUILD_STATIC)
 
     endif()
 

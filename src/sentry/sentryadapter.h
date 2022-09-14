@@ -8,6 +8,10 @@
 #include <QObject>
 #include <QApplication>
 
+#ifdef SENTRY_ENABLED
+#  include <sentry.h>
+#endif
+
 class SentryAdapter : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(SentryAdapter)
@@ -28,6 +32,13 @@ class SentryAdapter : public QObject {
   // Called when a Line is added, will add this as a breadcrumb
   Q_SLOT void onLoglineAdded(const QByteArray& line);
   // Called before shutdown, will flush pending events.
-  Q_SLOT void onBeforeShutdown();    
+  Q_SLOT void onBeforeShutdown();
+#ifdef SENTRY_ENABLED
+  // Only define Sentry related callbacks if we have the typedefs :)
+  // Called before Sentry will send a crash report
+  static sentry_value_t onCrash(const sentry_ucontext_t* uctx,
+                                sentry_value_t event, void* closure);
+
+#endif
 };
 #endif  // SENTRYADAPTER_H
