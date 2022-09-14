@@ -127,10 +127,6 @@ osx_bundle_files(mozillavpn
     DESTINATION Resources/utils
 )
 
-osx_bundle_files(mozillavpn
-    FILES ${CMAKE_BINARY_DIR}/external/bin/crashpad_handler
-    DESTINATION MacOS
-)
 
 # Install the native messaging extensions into the bundle.
 add_dependencies(mozillavpn mozillavpnnp)

@@ -39,6 +39,7 @@
 #include "tasks/sendfeedback/tasksendfeedback.h"
 #include "tasks/servers/taskservers.h"
 #include "taskscheduler.h"
+#include "sentry/sentryadapter.h"
 #include "telemetry/gleansample.h"
 #include "update/updater.h"
 #include "update/versionapi.h"
@@ -996,6 +997,7 @@ void MozillaVPN::mainWindowLoaded() {
   m_gleanTimer.start(Constants::gleanTimeoutMsec());
   m_gleanTimer.setSingleShot(false);
 #endif
+  SentryAdapter::instance()->init();
 }
 
 void MozillaVPN::telemetryPolicyCompleted() {
@@ -1605,6 +1607,11 @@ void MozillaVPN::exitForUnrecoverableError(const QString& reason) {
 
 void MozillaVPN::crashTest() {
   logger.debug() << "Crashing Application";
+  int x =0; 
+  Controller* garbage = (Controller*)x;
+  garbage->activate();
+
+
   char* text = new char[100];
   delete[] text;
   delete[] text;
