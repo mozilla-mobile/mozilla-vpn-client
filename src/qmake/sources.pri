@@ -135,6 +135,7 @@ SOURCES += \
         serveri18n.cpp \
         serverlatency.cpp \
         settingsholder.cpp \
+        sentry/dummy_sentryadapter.cpp \
         signature.cpp \
         simplenetworkmanager.cpp \
         statusicon.cpp \
@@ -308,6 +309,7 @@ HEADERS += \
         serveri18n.h \
         serverlatency.h \
         settingsholder.h \
+        sentry/sentryadapter.h \
         signature.h \
         simplenetworkmanager.h \
         statusicon.h \
