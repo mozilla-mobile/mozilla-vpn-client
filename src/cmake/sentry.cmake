@@ -42,7 +42,6 @@ else()
         )
     endif()
     if(WIN32)
-        # Compile a dll for windows, as some breakpad imports will fail otherwise >:c
         SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=false  -D SENTRY_BACKEND=breakpad)
         # Link against static sentry + breakpad + the stack unwind utils
         target_link_libraries(mozillavpn PUBLIC sentry.lib)
