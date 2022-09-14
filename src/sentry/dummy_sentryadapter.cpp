@@ -4,10 +4,13 @@
 
 #include "sentryadapter.h"
 
+#include "logger.h"
+
 #include <QObject>
 
 namespace {
 SentryAdapter* s_instance = nullptr;
+Logger logger(LOG_MAIN, "Sentry");
 
 }  // namespace
 SentryAdapter::SentryAdapter() {}
@@ -21,7 +24,9 @@ SentryAdapter* SentryAdapter::instance() {
     return s_instance;
 }
 
-void SentryAdapter::init() {}
+void SentryAdapter::init() {
+    logger.debug() << "Using Dummy Sentry";
+}
 
 void SentryAdapter::report(const QString& category, const QString& message,
                            bool attachStackTrace) {
@@ -29,3 +34,9 @@ void SentryAdapter::report(const QString& category, const QString& message,
   Q_UNUSED(message);
   Q_UNUSED(attachStackTrace);
 }
+
+void SentryAdapter::onBeforeShutdown() {}
+
+void SentryAdapter::onLoglineAdded(const QByteArray& line) {
+    Q_UNUSED(line);
+} 

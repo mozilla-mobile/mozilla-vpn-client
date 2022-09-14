@@ -4,9 +4,7 @@
 
 #include "commandlineparser.h"
 #include "leakdetector.h"
-#include "constants.h"
 
-#include <sentry.h>
 
 int main(int argc, char* argv[]) {
 #ifdef MVPN_DEBUG
@@ -14,11 +12,6 @@ int main(int argc, char* argv[]) {
   Q_UNUSED(leakDetector);
 #endif
 
-  sentry_options_t *options = sentry_options_new();
-  sentry_options_set_dsn(options, "https://6a476c1b57a34773a75c60036236a01d@o1396220.ingest.sentry.io/6719480");
-  sentry_options_set_release(options,  Constants::versionString().toLocal8Bit().constData());
-  //sentry_options_set_debug(options, 1);
-  sentry_init(options);
 
   CommandLineParser clp;
   return clp.parse(argc, argv);

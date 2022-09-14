@@ -44,7 +44,7 @@
 #include "urlopener.h"
 #include "websocket/websockethandler.h"
 
-#include "sentry.h"
+
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosdatamigration.h"
@@ -1797,11 +1797,6 @@ void MozillaVPN::hardResetAndQuit() {
 
 void MozillaVPN::crashTest() {
   logger.debug() << "Crashing Application";
-  int x =0; 
-  Controller* garbage = (Controller*)x;
-  garbage->activate();
-
-
   char* text = new char[100];
   delete[] text;
   delete[] text;

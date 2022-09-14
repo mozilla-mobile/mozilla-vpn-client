@@ -16,8 +16,6 @@
 #include <QString>
 #include <QTextStream>
 
-#include <sentry.h>
-
 #ifdef MVPN_ANDROID
 #  include <android/log.h>
 #endif
@@ -204,27 +202,6 @@ void LogHandler::addLog(const Log& log, const MutexLocker& proofOfLock) {
 
   emit logEntryAdded(buffer);
 
-  sentry_value_t crumb = sentry_value_new_breadcrumb("Logger", buffer.constData());
-  sentry_value_set_by_key(crumb, "category", log.m_fromQT ? sentry_value_new_string("QT"): sentry_value_new_string("CLIENT"));
-  switch (log.m_logLevel)
-  {
-  case LogLevel::Debug:
-    sentry_value_set_by_key(crumb, "level", sentry_value_new_string("Debug"));
-    break;
-  case LogLevel::Error: 
-    sentry_value_set_by_key(crumb, "level", sentry_value_new_string("Error"));
-    break;
-  case LogLevel::Info:
-    sentry_value_set_by_key(crumb, "level", sentry_value_new_string("Info"));
-    break;
-  case LogLevel::Warning:
-    sentry_value_set_by_key(crumb, "level", sentry_value_new_string("Warning"));
-    break;
-  default:
-    sentry_value_set_by_key(crumb, "level", sentry_value_new_string("Unknown"));
-    break;
-  }
-  sentry_add_breadcrumb(crumb);
 
 #if defined(MVPN_ANDROID) && defined(MVPN_DEBUG)
   const char* str = buffer.constData();
