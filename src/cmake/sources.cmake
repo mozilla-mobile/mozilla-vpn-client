@@ -314,6 +314,8 @@ target_sources(mozillavpn PRIVATE
     tasks/sendfeedback/tasksendfeedback.h
     tasks/servers/taskservers.cpp
     tasks/servers/taskservers.h
+    tasks/serverselect/taskserverselect.cpp
+    tasks/serverselect/taskserverselect.h
     telemetry.cpp
     telemetry.h
     theme.cpp

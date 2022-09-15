@@ -33,6 +33,7 @@
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/products/taskproducts.h"
 #include "tasks/removedevice/taskremovedevice.h"
+#include "tasks/serverselect/taskserverselect.h"
 #include "tasks/servers/taskservers.h"
 #include "tasks/sendfeedback/tasksendfeedback.h"
 #include "tasks/getfeaturelist/taskgetfeaturelist.h"
@@ -323,9 +324,7 @@ void MozillaVPN::initialize() {
 
   Q_ASSERT(!m_private->m_serverData.initialized());
   if (!m_private->m_serverData.fromSettings()) {
-    m_private->m_serverCountryModel.pickRandom(m_private->m_serverData);
-    Q_ASSERT(m_private->m_serverData.initialized());
-    m_private->m_serverData.writeSettings();
+    TaskScheduler::scheduleTask(new TaskServerSelect());
   }
 
   QList<Task*> refreshTasks{new TaskAccount(), new TaskServers(),
@@ -646,9 +645,7 @@ void MozillaVPN::serversFetched(const QByteArray& serverData) {
   // The serverData could be unset or invalid with the new server list.
   if (!m_private->m_serverData.initialized() ||
       !m_private->m_serverCountryModel.exists(m_private->m_serverData)) {
-    m_private->m_serverCountryModel.pickRandom(m_private->m_serverData);
-    Q_ASSERT(m_private->m_serverData.initialized());
-    m_private->m_serverData.writeSettings();
+    TaskScheduler::scheduleTask(new TaskServerSelect());
   }
 }
 
