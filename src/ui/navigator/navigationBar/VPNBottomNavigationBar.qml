@@ -183,7 +183,5 @@ Rectangle {
 
     Component.onCompleted: {
         root.getUnreadNotificationStatus();
-
-
     }
 }
