@@ -130,13 +130,30 @@ VPNViewBase {
 
             // Tutorials
             VPNViewBase {
-                _viewContentData: VPNTutorialList {
+                _viewContentData: ColumnLayout {
                     id: layoutTutorial
 
                     Layout.fillWidth: true
                     Layout.leftMargin: VPNTheme.theme.windowMargin
                     Layout.rightMargin: VPNTheme.theme.windowMargin
                     Layout.topMargin: 8
+                    spacing: VPNTheme.theme.vSpacing
+
+                    Repeater {
+                        model: tutorialsSections.count
+
+                        delegate: VPNTipsAndTricksSection {
+                            Layout.fillWidth: true
+
+                            property var section: tutorialsSections.get(index)
+
+                            title: section.title
+                            description: section.description
+
+                            type: "tutorials"
+                            customFilter: section.filter
+                        }
+                    }
 
                     VPNFooterMargin {}
                 }
