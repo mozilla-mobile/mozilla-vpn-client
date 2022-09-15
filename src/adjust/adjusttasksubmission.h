@@ -24,7 +24,7 @@ class AdjustTaskSubmission final : public Task {
 
   void run() override;
 
-  bool deletable() const override { return false; }
+  DeletePolicy deletePolicy() const override { return NonDeletable; }
 
  signals:
   void operationCompleted(const QByteArray& data, int statusCode);

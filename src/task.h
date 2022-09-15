@@ -11,6 +11,19 @@ class Task : public QObject {
   Q_OBJECT
 
  public:
+  enum DeletePolicy {
+    // if TaskScheduler::deleteTasks() is called, this task can be deleted.
+    // This is the default policy.
+    Deletable,
+
+    // When we are about to delete tasks, this must be kept in the queue.
+    NonDeletable,
+
+    // This task can be schedule at any time. Instead of deleting it, it is
+    // rescheduled after a few millisecs.
+    Reschedulable,
+  };
+
   explicit Task(const QString& name) : m_name(name) {}
   virtual ~Task() = default;
 
@@ -21,7 +34,7 @@ class Task : public QObject {
 
   // Overwrite this method if the task should not be deleted before being
   // executed.
-  virtual bool deletable() const { return true; }
+  virtual DeletePolicy deletePolicy() const { return Deletable; }
 
  signals:
   void completed();
