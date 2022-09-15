@@ -56,7 +56,7 @@ Task::DeletePolicy TaskGroup::deletePolicy() const {
   // - if there is at least 1 non-deletable task, the group is non-deletable
   // - if the tasks are all reschedulable, the group is reschedulable
   // - if there are no reschedulable tasks, the group is deletable
-  // - fallback: the task is not deletable
+  // - if there is at least 1 reschedulable task, the group in non-deletable
 
   int reschedulable = 0;
   for (Task* task : m_tasks) {
