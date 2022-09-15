@@ -685,13 +685,15 @@ void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
     return;
   }
 
-  // Let's inform the UI about what is going to happen.
+  // Let's emit a signal to inform the user about the starting of the device
+  // removal.  The front-end code will show a loading icon or something
+  // similar.
   emit deviceRemoving(publicKey);
   TaskScheduler::scheduleTask(new TaskRemoveDevice(publicKey));
 
   if (m_state != StateDeviceLimit) {
-    // To have a faster UI, we inform the device-model that this public key
-    // is going to be removed.
+    // If we are not in the device-limit state, we can run the operation in
+    // background and work aync.
     m_private->m_deviceModel.startDeviceRemovalFromPublicKey(publicKey);
   }
 }
