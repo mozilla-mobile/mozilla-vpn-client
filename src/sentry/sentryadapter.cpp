@@ -6,13 +6,14 @@
 
 #include <sentry.h>
 
+#include <QDir>
+
 #include "constants.h"
+#include "leakdetector.h"
 #include "loghandler.h"
 #include "logger.h"
 #include "settingsholder.h"
 #include "mozillavpn.h"
-
-#include <iostream>
 
 namespace {
 SentryAdapter* s_instance = nullptr;
@@ -26,8 +27,8 @@ SentryAdapter* SentryAdapter::instance() {
   }
   return s_instance;
 }
-SentryAdapter::SentryAdapter(){}
-SentryAdapter::~SentryAdapter(){}
+SentryAdapter::SentryAdapter() { MVPN_COUNT_CTOR(SentryAdapter); }
+SentryAdapter::~SentryAdapter() { MVPN_COUNT_DTOR(SentryAdapter); }
 
 void SentryAdapter::init() {
   if (Constants::inProduction()) {
@@ -37,35 +38,43 @@ void SentryAdapter::init() {
   // Okay so Lets INIT
   auto vpn = MozillaVPN::instance();
   auto log = LogHandler::instance();
-   
-  connect(vpn, &MozillaVPN::aboutToQuit, this, &SentryAdapter::onBeforeShutdown);
-  connect(log, &LogHandler::logEntryAdded, this, &SentryAdapter::onLoglineAdded);
-  logger.info() << "Sentry initialised";
 
-  sentry_options_t *options = sentry_options_new();
-  // The handler is a Crashpad-specific background process
-  auto appDatas =
-      QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
-  auto appLocal = appDatas.first() + "\\sentry";
+  QDir dataDir(
+      QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation));
+  QString sentryFolder = dataDir.absoluteFilePath("sentry");
+
+  connect(vpn, &MozillaVPN::aboutToQuit, this,
+          &SentryAdapter::onBeforeShutdown);
+  connect(log, &LogHandler::logEntryAdded, this,
+          &SentryAdapter::onLoglineAdded);
+
+  sentry_options_t* options = sentry_options_new();
   sentry_options_set_dsn(options, Constants::SENTRY_DER);
   sentry_options_set_environment(
       options, Constants::inProduction() ? "production" : "stage");
-  sentry_options_set_release(options,  Constants::versionString().toLocal8Bit().constData());
-  sentry_options_set_database_path(options, appLocal.toLocal8Bit().constData());
+  sentry_options_set_release(
+      options, Constants::versionString().toLocal8Bit().constData());
+  sentry_options_set_database_path(options,
+                                   sentryFolder.toLocal8Bit().constData());
   sentry_options_set_on_crash(options, &SentryAdapter::onCrash, NULL);
 
   // Leaving this for convinence, be warned, it's spammy to stdout.
   // sentry_options_set_debug(options, 1);
 
-  sentry_init(options);
+  if (sentry_init(options) == -1) {
+    logger.error() << "Sentry failed to init!";
+    return;
+  };
+  logger.info() << "Sentry initialised";
 }
 
 void SentryAdapter::report(const QString& errorType, const QString& message,
                            bool attachStackTrace) {
   sentry_value_t event = sentry_value_new_event();
-  sentry_value_t exc = sentry_value_new_exception(errorType.toLocal8Bit(), message.toLocal8Bit());
+  sentry_value_t exc = sentry_value_new_exception(errorType.toLocal8Bit(),
+                                                  message.toLocal8Bit());
 
-  if(attachStackTrace){
+  if (attachStackTrace) {
     sentry_value_set_stacktrace(exc, NULL, 0);
   }
   sentry_event_add_exception(event, exc);
@@ -73,8 +82,8 @@ void SentryAdapter::report(const QString& errorType, const QString& message,
 }
 
 void SentryAdapter::onBeforeShutdown() {
-    // Flush everything, 
-    sentry_close(); 
+  // Flush everything,
+  sentry_close();
 }
 
 void SentryAdapter::onLoglineAdded(const QByteArray& line) {

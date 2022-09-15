@@ -132,10 +132,10 @@ SOURCES += \
         rfc/rfc4193.cpp \
         rfc/rfc4291.cpp \
         rfc/rfc5735.cpp \
+        sentry/dummysentryadapter.cpp \
         serveri18n.cpp \
         serverlatency.cpp \
         settingsholder.cpp \
-        sentry/dummy_sentryadapter.cpp \
         signature.cpp \
         simplenetworkmanager.cpp \
         statusicon.cpp \
@@ -306,10 +306,10 @@ HEADERS += \
         rfc/rfc4193.h \
         rfc/rfc4291.h \
         rfc/rfc5735.h \
+        sentry/sentryadapter.h \
         serveri18n.h \
         serverlatency.h \
         settingsholder.h \
-        sentry/sentryadapter.h \
         signature.h \
         simplenetworkmanager.h \
         statusicon.h \

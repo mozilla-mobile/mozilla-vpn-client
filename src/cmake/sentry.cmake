@@ -7,28 +7,21 @@
 
 
 # Defines which OS builds can include sentry. Check src/cmake Lists for all values of MVPN_PLATFORM_NAME
-set(SENTRY_SUPPORTED_OS  "windows" "macos")
+set(SENTRY_SUPPORTED_OS  "Windows" "Darwin")
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 include(ExternalProject)
  
 
 
-LIST(FIND SENTRY_SUPPORTED_OS MVPN_PLATFORM_NAME IS_SUPPORTED)
+LIST(FIND SENTRY_SUPPORTED_OS ${CMAKE_SYSTEM_NAME} _SUPPORTED)
 
-if( $IS_SUPPORTED EQUAL -1 )
-    # Sentry is not supported on this Plattform, let's
-    # only include a dummy client :) 
-    target_sources(mozillavpn PRIVATE
-       sentry/dummy_sentryadapter.cpp
-       sentry/sentryadapter.h
-    )
-
-else()
+if( ${_SUPPORTED} GREATER -1 )
+    message("Building sentry for ${CMAKE_SYSTEM_NAME}")
     target_compile_definitions(mozillavpn PRIVATE SENTRY_ENABLED)
     # Sentry support is given
     target_sources(mozillavpn PRIVATE
-       sentry/sentryadapter.cpp
-       sentry/sentryadapter.h
+    sentry/sentryadapter.cpp
+    sentry/sentryadapter.h
     )
 
     # Configure Linking and Compile
@@ -62,5 +55,13 @@ else()
     target_include_directories(mozillavpn PUBLIC ${EXTERNAL_INSTALL_LOCATION}/include)
     target_link_directories( mozillavpn PUBLIC ${EXTERNAL_INSTALL_LOCATION}/lib)
     add_dependencies(mozillavpn sentry)
+else()
+    message("Sentry supported OS -> ${SENTRY_SUPPORTED_OS}")
+    message("Skipping building sentry for ${CMAKE_SYSTEM_NAME}")
+    # Sentry is not supported on this Plattform, let's
+    # only include a dummy client :) 
+    target_sources(mozillavpn PRIVATE
+       sentry/dummysentryadapter.cpp
+       sentry/sentryadapter.h
+    )
 endif()
-
