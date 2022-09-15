@@ -29,7 +29,7 @@ Rectangle {
     radius: height / 2
     color: VPNTheme.theme.ink
 
-    visible: showNavigationBar.includes(VPNNavigator.screen) && VPN.userState === VPN.UserAuthenticated && VPN.state === VPN.StateMain
+    visible: showNavigationBar.includes(VPNNavigator.screen) && VPN.userState === VPN.UserAuthenticated && VPN.state === VPN.StateMain && opacity !== 0
 
     anchors {
         horizontalCenter: parent.horizontalCenter
@@ -49,6 +49,11 @@ Rectangle {
         cached: true
     }
 
+    MouseArea {
+        anchors.fill: parent
+        hoverEnabled: true
+    }
+
     Rectangle {
         id: outline
         color: VPNTheme.theme.ink
@@ -57,7 +62,6 @@ Rectangle {
         border.width: 0
         border.color: VPNTheme.theme.ink
     }
-
 
     RowLayout {
         id: layout
@@ -91,6 +95,14 @@ Rectangle {
 
                 Component.onCompleted: {
                     if(objectName === "navButton-messages") root.messagesNavButton = this
+
+                    // We want to set checked like this, otherwise it will be bound to VPNNavigator.screen.
+                    // and we don't want that because we have more screens than buttons
+                    // and if we move to a screen that doesn't have a button suddenly no buttons are checked.
+                    //
+                    // Also, even if we bound it that would quickly be unbound by
+                    // the code over on onCurrentComponentChanged, so ¯\_(ツ)_/¯.
+                    checked = VPNNavigator.screen === VPNNavigator[screen]
                 }
             }
         }

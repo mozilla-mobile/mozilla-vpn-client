@@ -16,15 +16,11 @@ VPNIconButton {
 
     accessibleName: ""
 
-    checked: VPNNavigator.screen === _screen
-
     onClicked: {
         VPNNavigator.requestScreen(_screen, VPNNavigator.screen === _screen ? VPNNavigator.ForceReload : VPNNavigator.NoFlags);
     }
 
     onCheckedChanged: if (checked) btn.forceActiveFocus();
-    enabled: root.opacity !== 0
-
 
     width: VPNTheme.theme.navBarIconSize
     height: VPNTheme.theme.navBarIconSize

@@ -21,7 +21,7 @@ VPNFlickable {
     property var primaryButtonOnClick
 
     property var secondaryButtonText: ""
-    property var secondaryButtonObjectName
+    property var secondaryButtonObjectName: ""
     property var secondaryButtonOnClick
     property var secondaryButtonIsSignOff: false
     property var popWhenSignOff: false

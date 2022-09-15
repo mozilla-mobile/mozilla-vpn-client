@@ -137,6 +137,7 @@ HEADERS += \
     ../../src/tasks/adddevice/taskadddevice.h \
     ../../src/tasks/addon/taskaddon.h \
     ../../src/tasks/function/taskfunction.h \
+    ../../src/tasks/group/taskgroup.h \
     ../../src/tasks/ipfinder/taskipfinder.h \
     ../../src/tasks/release/taskrelease.h \
     ../../src/tasks/servers/taskservers.h \
@@ -274,6 +275,7 @@ SOURCES += \
     ../../src/tasks/adddevice/taskadddevice.cpp \
     ../../src/tasks/addon/taskaddon.cpp \
     ../../src/tasks/function/taskfunction.cpp \
+    ../../src/tasks/group/taskgroup.cpp \
     ../../src/tasks/release/taskrelease.cpp \
     ../../src/tasks/ipfinder/taskipfinder.cpp \
     ../../src/tasks/servers/taskservers.cpp \
