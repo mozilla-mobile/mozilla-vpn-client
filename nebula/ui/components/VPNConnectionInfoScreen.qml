@@ -195,6 +195,8 @@ Rectangle {
         id: timer
     }
 
+    Component.onDestruction: VPNConnectionBenchmark.reset()
+
     Connections {
       target: VPNNavigator
 
