@@ -63,7 +63,6 @@ Rectangle {
         border.color: VPNTheme.theme.ink
     }
 
-
     RowLayout {
         id: layout
         objectName: "navigationLayout"
@@ -96,6 +95,14 @@ Rectangle {
 
                 Component.onCompleted: {
                     if(objectName === "navButton-messages") root.messagesNavButton = this
+
+                    // We want to set checked like this, otherwise it will be bound to VPNNavigator.screen.
+                    // and we don't want that because we have more screens than buttons
+                    // and if we move to a screen that doesn't have a button suddenly no buttons are checked.
+                    //
+                    // Also, even if we bound it that would quickly be unbound by
+                    // the code over on onCurrentComponentChanged, so ¯\_(ツ)_/¯.
+                    checked = VPNNavigator.screen === VPNNavigator[screen]
                 }
             }
         }
@@ -176,5 +183,7 @@ Rectangle {
 
     Component.onCompleted: {
         root.getUnreadNotificationStatus();
+
+
     }
 }
