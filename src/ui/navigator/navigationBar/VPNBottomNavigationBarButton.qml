@@ -16,8 +16,6 @@ VPNIconButton {
 
     accessibleName: ""
 
-    checked: VPNNavigator.screen === _screen
-
     onClicked: {
         VPNNavigator.requestScreen(_screen, VPNNavigator.screen === _screen ? VPNNavigator.ForceReload : VPNNavigator.NoFlags);
     }
