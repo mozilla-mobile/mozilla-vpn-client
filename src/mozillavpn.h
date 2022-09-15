@@ -118,8 +118,6 @@ class MozillaVPN final : public QObject {
   // MozillaVPN is null. It should be used rarely.
   static MozillaVPN* maybeInstance();
 
-  static bool isUserAuthenticated();
-
   void initialize();
 
   State state() const;
@@ -254,6 +252,11 @@ class MozillaVPN final : public QObject {
   void logout();
 
   UserState userState() const;
+
+  static bool isUserAuthenticated() {
+    MozillaVPN* vpn = MozillaVPN::instance();
+    return vpn->userState() == MozillaVPN::UserAuthenticated;
+  }
 
   bool startMinimized() const { return m_startMinimized; }
 
