@@ -118,6 +118,8 @@ class MozillaVPN final : public QObject {
   // MozillaVPN is null. It should be used rarely.
   static MozillaVPN* maybeInstance();
 
+  static bool isUserAuthenticated();
+
   void initialize();
 
   State state() const;

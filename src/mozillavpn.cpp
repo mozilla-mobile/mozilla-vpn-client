@@ -194,6 +194,12 @@ MozillaVPN::~MozillaVPN() {
   delete m_private;
 }
 
+// static
+bool MozillaVPN::isUserAuthenticated() {
+  MozillaVPN* vpn = MozillaVPN::instance();
+  return vpn->userState() == MozillaVPN::UserAuthenticated;
+}
+
 Controller* MozillaVPN::controller() { return &m_private->m_controller; }
 
 MozillaVPN::State MozillaVPN::state() const { return m_state; }
