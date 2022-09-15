@@ -79,8 +79,6 @@ void TaskScheduler::taskCompleted() {
 }
 
 void TaskScheduler::deleteTasksInternal() {
-  QList<Task*> reschedulableTasks;
-
   QMutableListIterator<Task*> i(m_tasks);
   while (i.hasNext()) {
     Task* task = i.next();
@@ -95,7 +93,8 @@ void TaskScheduler::deleteTasksInternal() {
         break;
 
       case Task::Reschedulable:
-        reschedulableTasks.append(task);
+        QTimer::singleShot(0, this,
+                           [this, task]() { scheduleTaskInternal(task); });
         i.remove();
         break;
     }
@@ -106,13 +105,5 @@ void TaskScheduler::deleteTasksInternal() {
     m_running_task->deleteLater();
     m_running_task->disconnect();
     m_running_task = nullptr;
-  }
-
-  if (!reschedulableTasks.isEmpty()) {
-    QTimer::singleShot(500, this, [this, reschedulableTasks]() {
-      for (Task* task : reschedulableTasks) {
-        scheduleTaskInternal(task);
-      }
-    });
   }
 }

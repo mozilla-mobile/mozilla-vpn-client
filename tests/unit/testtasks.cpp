@@ -7,6 +7,7 @@
 #include "../../src/tasks/account/taskaccount.h"
 #include "../../src/tasks/adddevice/taskadddevice.h"
 #include "../../src/tasks/function/taskfunction.h"
+#include "../../src/tasks/group/taskgroup.h"
 #include "../../src/tasks/servers/taskservers.h"
 #include "../../src/taskscheduler.h"
 
@@ -156,6 +157,45 @@ void TestTasks::deletePolicy() {
   // The 2 reschedulable tasks: t3 and the sentinel.
   QCOMPARE(sequence.at(2), 3);
   QCOMPARE(sequence.at(3), 99);
+}
+
+void TestTasks::deletePolicy_group() {
+  // Deletable group
+  {
+    TaskGroup* g = new TaskGroup(
+        QList<Task*>{new TaskFunction([&]() {}, Task::Deletable),
+                     new TaskFunction([&]() {}, Task::Deletable)});
+    QCOMPARE(g->deletePolicy(), Task::Deletable);
+    delete g;
+  }
+
+  // Not deletable group
+  {
+    TaskGroup* g = new TaskGroup(
+        QList<Task*>{new TaskFunction([&]() {}, Task::Deletable),
+                     new TaskFunction([&]() {}, Task::NonDeletable),
+                     new TaskFunction([&]() {}, Task::Reschedulable)});
+    QCOMPARE(g->deletePolicy(), Task::NonDeletable);
+    delete g;
+  }
+
+  // Reschedulable
+  {
+    TaskGroup* g = new TaskGroup(
+        QList<Task*>{new TaskFunction([&]() {}, Task::Reschedulable),
+                     new TaskFunction([&]() {}, Task::Reschedulable)});
+    QCOMPARE(g->deletePolicy(), Task::Reschedulable);
+    delete g;
+  }
+
+  // Not deletable group if mixed
+  {
+    TaskGroup* g = new TaskGroup(
+        QList<Task*>{new TaskFunction([&]() {}, Task::NonDeletable),
+                     new TaskFunction([&]() {}, Task::Reschedulable)});
+    QCOMPARE(g->deletePolicy(), Task::NonDeletable);
+    delete g;
+  }
 }
 
 static TestTasks s_testTasks;
