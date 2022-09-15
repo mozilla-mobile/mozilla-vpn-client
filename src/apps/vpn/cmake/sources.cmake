@@ -292,6 +292,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/removedevice/taskremovedevice.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/sendfeedback/tasksendfeedback.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/sendfeedback/tasksendfeedback.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/serverselect/taskserverselect.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/serverselect/taskserverselect.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/servers/taskservers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/servers/taskservers.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/telemetry.cpp
