@@ -10,11 +10,9 @@
 void TestStatusIcon::basic() {
   StatusIcon si;
   QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask.png");
-  QCOMPARE(si.indicatorColor().isValid(), false);
 
   si.refreshNeeded();
   QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask.png");
-  QCOMPARE(si.indicatorColor().isValid(), false);
 
   // VPN is on
   TestHelper::vpnState = MozillaVPN::StateMain;
@@ -22,14 +20,11 @@ void TestStatusIcon::basic() {
   si.refreshNeeded();
 
   QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask-on.png");
-  QCOMPARE(si.indicatorColor().isValid(), true);
 
   // VPN is off
   TestHelper::controllerState = Controller::StateOff;
   si.refreshNeeded();
-
   QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask-off.png");
-  QCOMPARE(si.indicatorColor().isValid(), false);
 
   // VPN is switching
   TestHelper::controllerState = Controller::StateSwitching;
@@ -43,14 +38,14 @@ void TestStatusIcon::basic() {
       return;
     }
 
-    QCOMPARE(si.iconString(),
-             QString(":/ui/resources/logo-animated%1.png").arg((i % 4) + 1));
+    QCOMPARE(
+        si.iconString(),
+        QString(":/ui/resources/logo-animated-mask%1.png").arg((i % 4) + 1));
     ++i;
   });
 
   si.refreshNeeded();
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-animated1.png");
-  QCOMPARE(si.indicatorColor().isValid(), false);
+  QCOMPARE(si.iconString(), ":/ui/resources/logo-animated-mask1.png");
   loop.exec();
 }
 

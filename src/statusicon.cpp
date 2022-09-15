@@ -68,11 +68,11 @@ void StatusIcon::activateAnimation() {
   logger.debug() << "Activate animation";
   m_animatedIconIndex = 0;
   m_animatedIconTimer.start(Constants::statusIconAnimationMsec());
-  animateIcon();
 }
 
 void StatusIcon::animateIcon() {
-  logger.debug() << "Animate icon" << m_animatedIconIndex;
+  logger.debug() << "Animate icon";
+
   Q_ASSERT(m_animatedIconIndex < ANIMATED_LOGO_STEPS.size());
   m_animatedIconIndex++;
   if (m_animatedIconIndex == ANIMATED_LOGO_STEPS.size()) {
@@ -82,7 +82,7 @@ void StatusIcon::animateIcon() {
 }
 
 const QString StatusIcon::iconString() {
-  logger.debug() << "Icon string";
+  logger.debug() << "Icon string" << m_animatedIconIndex;
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
@@ -91,6 +91,7 @@ const QString StatusIcon::iconString() {
   if (vpn->state() != MozillaVPN::StateMain) {
     return LOGO_GENERIC;
   }
+
   switch (vpn->controller()->state()) {
     case Controller::StateOn:
       m_animatedIconTimer.stop();
