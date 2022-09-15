@@ -249,7 +249,13 @@ void NotificationHandler::serverUnavailableNotification(bool pingRecieved) {
 
 void NotificationHandler::newInAppMessageNotification(const QString& title,
                                                       const QString& message) {
-  logger.debug() << "New in-app message notification shown";
+  logger.debug() << "New in-app message notification";
+
+  if (!MozillaVPN::isUserAuthenticated()) {
+    logger.debug() << "User not authenticated, will not be notified.";
+    return;
+  }
+
   notifyInternal(NewInAppMessage, title, message,
                  Constants::NEW_IN_APP_MESSAGE_ALERT_MSEC);
 }
