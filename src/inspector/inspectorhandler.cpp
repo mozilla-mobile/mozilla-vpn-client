@@ -25,6 +25,7 @@
 #include "settingsholder.h"
 #include "task.h"
 #include "urlopener.h"
+#include "websocket/pushmessage.h"
 
 #include <functional>
 
@@ -939,6 +940,22 @@ static QList<InspectorCommand> s_commands{
                        Navigator::instance()->eventHandled();
                        return QJsonObject();
                      }},
+
+    InspectorCommand{
+        "send_push_message_device_deleted",
+        "Simulate the receiving of a push-message type device-deleted", 1,
+        [](InspectorHandler*, const QList<QByteArray>& arguments) {
+          QJsonObject payload;
+          payload["publicKey"] = QString(arguments[1]);
+
+          QJsonObject msg;
+          msg["type"] = "DEVICE_DELETED";
+          msg["payload"] = payload;
+
+          PushMessage message(QJsonDocument(msg).toJson());
+          message.executeAction();
+          return QJsonObject();
+        }},
 };
 
 // static

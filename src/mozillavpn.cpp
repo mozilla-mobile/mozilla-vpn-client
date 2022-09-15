@@ -623,6 +623,25 @@ void MozillaVPN::deviceRemoved(const QString& publicKey,
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::deviceRemoved, {{"source", source}});
   m_private->m_deviceModel.removeDeviceFromPublicKey(publicKey);
+
+  if (m_state != StateDeviceLimit) {
+    return;
+  }
+
+  // Let's recover from the device-limit mode.
+  Q_ASSERT(!m_private->m_deviceModel.hasCurrentDevice(keys()));
+
+  // Here we add the current device.
+  addCurrentDeviceAndRefreshData();
+
+  // Finally we are able to activate the client.
+  TaskScheduler::scheduleTask(new TaskFunction([this]() {
+    if (m_state != StateDeviceLimit) {
+      return;
+    }
+
+    maybeStateMain();
+  }));
 }
 
 bool MozillaVPN::setServerList(const QByteArray& serverData) {
@@ -662,36 +681,21 @@ void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
 
   const Device* device =
       m_private->m_deviceModel.deviceFromPublicKey(publicKey);
-  if (device) {
-    // Let's inform the UI about what is going to happen.
-    emit deviceRemoving(publicKey);
-    TaskScheduler::scheduleTask(new TaskRemoveDevice(publicKey));
-
-    if (m_state != StateDeviceLimit) {
-      // To have a faster UI, we inform the device-model that this public key
-      // is going to be removed.
-      m_private->m_deviceModel.startDeviceRemovalFromPublicKey(publicKey);
-    }
-  }
-
-  if (m_state != StateDeviceLimit) {
+  if (!device) {
     return;
   }
 
-  // Let's recover from the device-limit mode.
-  Q_ASSERT(!m_private->m_deviceModel.hasCurrentDevice(keys()));
+  // Let's emit a signal to inform the user about the starting of the device
+  // removal.  The front-end code will show a loading icon or something
+  // similar.
+  emit deviceRemoving(publicKey);
+  TaskScheduler::scheduleTask(new TaskRemoveDevice(publicKey));
 
-  // Here we add the current device.
-  addCurrentDeviceAndRefreshData();
-
-  // Finally we are able to activate the client.
-  TaskScheduler::scheduleTask(new TaskFunction([this]() {
-    if (m_state != StateDeviceLimit) {
-      return;
-    }
-
-    maybeStateMain();
-  }));
+  if (m_state != StateDeviceLimit) {
+    // If we are not in the device-limit state, we can run the operation in
+    // background and work aync.
+    m_private->m_deviceModel.startDeviceRemovalFromPublicKey(publicKey);
+  }
 }
 
 void MozillaVPN::submitFeedback(const QString& feedbackText, const qint8 rating,

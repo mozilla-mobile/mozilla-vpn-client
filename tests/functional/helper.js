@@ -472,6 +472,15 @@ module.exports = {
     return json.value;
   },
 
+  async sendPushMessageDeviceDeleted(key) {
+    const json =
+        await this._writeCommand(`send_push_message_device_deleted ${key}`);
+    assert(
+        json.type === 'send_push_message_device_deleted' && !('error' in json),
+        `Command failed: ${json.error}`);
+    return json.value;
+  },
+
   // Internal methods.
 
   _writeCommand(command) {
