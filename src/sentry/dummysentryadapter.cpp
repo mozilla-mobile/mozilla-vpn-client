@@ -4,6 +4,7 @@
 
 #include "sentryadapter.h"
 
+#include "leakdetector.h"
 #include "logger.h"
 
 #include <QObject>
@@ -13,20 +14,17 @@ SentryAdapter* s_instance = nullptr;
 Logger logger(LOG_MAIN, "Sentry");
 
 }  // namespace
-SentryAdapter::SentryAdapter() {}
+SentryAdapter::SentryAdapter() { MVPN_COUNT_CTOR(SentryAdapter); }
+SentryAdapter::~SentryAdapter() { MVPN_COUNT_DTOR(SentryAdapter); }
 
-SentryAdapter::~SentryAdapter() {}
-
-SentryAdapter* SentryAdapter::instance() { 
-    if (s_instance == nullptr) {
-        s_instance = new SentryAdapter();
-    }
-    return s_instance;
+SentryAdapter* SentryAdapter::instance() {
+  if (s_instance == nullptr) {
+    s_instance = new SentryAdapter();
+  }
+  return s_instance;
 }
 
-void SentryAdapter::init() {
-    logger.debug() << "Using Dummy Sentry";
-}
+void SentryAdapter::init() { logger.debug() << "Using Dummy Sentry"; }
 
 void SentryAdapter::report(const QString& category, const QString& message,
                            bool attachStackTrace) {

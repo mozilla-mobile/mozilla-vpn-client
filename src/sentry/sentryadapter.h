@@ -12,12 +12,11 @@
 #  include <sentry.h>
 #endif
 
-class SentryAdapter : public QObject {
+class SentryAdapter final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(SentryAdapter)
 
  public:
-  SentryAdapter();
   ~SentryAdapter();
   static SentryAdapter* instance();
 
@@ -40,5 +39,8 @@ class SentryAdapter : public QObject {
                                 sentry_value_t event, void* closure);
 
 #endif
+
+ private:
+  SentryAdapter();
 };
 #endif  // SENTRYADAPTER_H
