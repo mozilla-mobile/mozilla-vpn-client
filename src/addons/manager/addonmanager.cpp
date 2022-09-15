@@ -135,7 +135,7 @@ void AddonManager::updateAddonsList(QList<AddonData> addons) {
             m_loadCompleted = true;
             emit loadCompletedChanged();
           },
-          false));
+          Task::Reschedulable));
     } else {
       m_loadCompleted = true;
       emit loadCompletedChanged();
