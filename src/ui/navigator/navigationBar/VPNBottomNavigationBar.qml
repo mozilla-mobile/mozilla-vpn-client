@@ -29,7 +29,7 @@ Rectangle {
     radius: height / 2
     color: VPNTheme.theme.ink
 
-    visible: showNavigationBar.includes(VPNNavigator.screen) && VPN.userState === VPN.UserAuthenticated
+    visible: showNavigationBar.includes(VPNNavigator.screen) && VPN.userState === VPN.UserAuthenticated && opacity !== 0
 
     anchors {
         horizontalCenter: parent.horizontalCenter
@@ -47,6 +47,11 @@ Rectangle {
         radius: parent.radius
         color: VPNTheme.colors.grey60
         cached: true
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        hoverEnabled: true
     }
 
     Rectangle {
