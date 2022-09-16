@@ -7,7 +7,6 @@
   "conditions": {
     "env": "staging",
     "locales": ["en"],
-    "platforms": ["macos", "linux", "windows"],
     "javascript": "EnableBundleUpgrade.js"
   },
   "message": {
