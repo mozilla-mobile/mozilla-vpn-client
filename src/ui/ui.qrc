@@ -88,5 +88,6 @@
         <file>screens/subscriptionNeeded/ViewSubscriptionNeeded.qml</file>
         <file>sharedViews/ViewErrorFullScreen.qml</file>
         <file>sharedViews/ViewUpdate.qml</file>
+        <file>screens/ScreenDeleteAccount.qml</file>
     </qresource>
 </RCC>
