@@ -12,7 +12,6 @@ Item {
 
     property alias objectName: iconButton.objectName
     property alias title: title.text
-    property alias rightTitle: rightTitle.text
     property bool accessibleIgnored: false
     property bool btnDisabled: false
     property alias forceFocus: iconButton.focus
@@ -38,77 +37,51 @@ Item {
         anchors.fill: parent
     }
 
-    RowLayout {
-        id: row
+    VPNIconButton {
+        id: iconButton
 
-        objectName: "menuBar"
-        anchors {
-            fill: parent
-            margins: VPNTheme.theme.windowMargin / 2
+        skipEnsureVisible: true // prevents scrolling of lists when this is focused
+
+        onClicked: _menuOnBackClicked()
+
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: parent.left
+        anchors.leftMargin: VPNTheme.theme.windowMargin / 2
+
+        accessibleName: _menuIconButtonSource.includes("close") ? qsTrId("vpn.connectionInfo.close") : qsTrId("vpn.main.back")
+        Accessible.ignored: accessibleIgnored
+        height: VPNTheme.theme.rowHeight
+        width: VPNTheme.theme.rowHeight
+        enabled: !btnDisabled
+        opacity: enabled ? 1 : .4
+
+        Image {
+            objectName: "menuIcon"
+            source: _menuIconButtonSource
+            sourceSize.width: VPNTheme.theme.iconSize
+            fillMode: Image.PreserveAspectFit
+            anchors.centerIn: iconButton
         }
-        spacing: VPNTheme.theme.windowMargin / 4
+    }
 
-        VPNIconButton {
-            id: iconButton
+    VPNBoldLabel {
+        id: title
 
-            skipEnsureVisible: true // prevents scrolling of lists when this is focused
+        anchors.centerIn: parent
+        width: getTitleWidth()
 
-            onClicked: _menuOnBackClicked()
-            Layout.alignment: Qt.AlignLeft
-
-            accessibleName: _menuIconButtonSource.includes("close") ? qsTrId("vpn.connectionInfo.close") : qsTrId("vpn.main.back")
-            Accessible.ignored: accessibleIgnored
-            Layout.preferredHeight: VPNTheme.theme.rowHeight
-            Layout.preferredWidth: VPNTheme.theme.rowHeight
-            enabled: !btnDisabled
-            opacity: enabled ? 1 : .4
-
-            Image {
-                objectName: "menuIcon"
-                source: _menuIconButtonSource
-                sourceSize.width: VPNTheme.theme.iconSize
-                fillMode: Image.PreserveAspectFit
-                anchors.centerIn: iconButton
-            }
-        }
-
-        // This is a hack to preven the menu title from being thrown off horizontal center by varying 'rightTitle' widths.
-        Rectangle {
-            Layout.preferredWidth: rightTitle.width > VPNTheme.theme.rowHeight ? Math.max(rightTitle.width - VPNTheme.theme.rowHeight - row.spacing, 0) : 0
-            Layout.preferredHeight: parent.height
-            color: VPNTheme.theme.transparent
-        }
-
-        VPNBoldLabel {
-            id: title
-
-            Layout.alignment: Qt.AlignHCenter
-            Layout.fillWidth: true
-            visible: text !== ""
-            elide: Text.ElideRight
-            Accessible.ignored: accessibleIgnored
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-        }
-
-        VPNLightLabel {
-            id: rightTitle
-
-            visible: text !== ""
-            Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
-            Layout.minimumWidth: VPNTheme.theme.rowHeight
-            Layout.maximumWidth: row.width / 3
-            elide: Text.ElideRight
-            Accessible.ignored: accessibleIgnored
-            rightPadding: VPNTheme.theme.windowMargin / 2
-            horizontalAlignment: Text.AlignRight
-        }
+        visible: text !== ""
+        elide: Text.ElideRight
+        Accessible.ignored: accessibleIgnored
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
     }
 
     Loader {
         id: titleLoader
 
         anchors.centerIn: parent
+        width: getTitleWidth()
 
         sourceComponent: menuBar.titleComponent
     }
@@ -121,6 +94,14 @@ Item {
         anchors.rightMargin: VPNTheme.theme.windowMargin
 
         sourceComponent: menuBar.rightButtonComponent
+        onItemChanged: {
+            if (item instanceof Text) {
+                anchors.rightMargin = VPNTheme.theme.windowMargin
+            }
+            else if(item instanceof VPNIconButton) {
+                anchors.rightMargin = VPNTheme.theme.windowMargin / 2
+            }
+        }
     }
 
     Rectangle {
@@ -128,5 +109,10 @@ Item {
         anchors.bottom: parent.bottom
         width: parent.width
         height: 1
+    }
+
+    function getTitleWidth() {
+        return Math.min(parent.width - iconButton.width - rightMenuButtonLoader.width - iconButton.anchors.leftMargin - rightMenuButtonLoader.anchors.rightMargin,
+                        parent.width - (Math.max(rightMenuButtonLoader.width + rightMenuButtonLoader.anchors.rightMargin, iconButton.width + iconButton.anchors.leftMargin)) * 2 - 8)
     }
 }

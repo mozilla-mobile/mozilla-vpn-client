@@ -15,20 +15,32 @@ VPNViewBase {
 
     property Component titleComponent: Component {
         RowLayout {
+            id: row
             spacing: 6
 
+            Item {
+                Layout.fillWidth: true
+            }
+
             VPNIcon {
+                id: logo
                 source: "qrc:/ui/resources/logo.svg"
                 sourceSize.height: 20
                 sourceSize.width: 20
                 antialiasing: true
-                Layout.alignment: Qt.AlignVCenter
             }
 
             VPNBoldLabel {
                 text: qsTrId("MozillaVPN")
                 color: "#000000"
-                Layout.alignment: Qt.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                elide: Text.ElideRight
+                Layout.preferredWidth: Math.min(implicitWidth, row.width - row.spacing - logo.sourceSize.width)
+            }
+
+            Item {
+                Layout.fillWidth: true
             }
         }
     }
@@ -37,6 +49,7 @@ VPNViewBase {
             id: deleteButton
 
             accessibleName: VPNl18n.InAppMessagingDeleteMessage
+            anchors.rightMargin: 32
 
             VPNIcon {
                 id: icon
@@ -44,6 +57,7 @@ VPNViewBase {
                 anchors.centerIn: parent
                 source: "qrc:/nebula/resources/delete-gray.svg"
             }
+
             onClicked: {
                 stackview.pop()
                 message.dismiss()
