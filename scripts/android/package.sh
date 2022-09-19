@@ -127,6 +127,14 @@ rm -rf "android/src/com/adjust" || die "Failed to remove the adjust folder"
 cp -a "3rdparty/adjust-android-sdk/Adjust/sdk-core/src/main/java/com/." "android/src/com/" || die "Failed to copy the adjust codebase"
 git apply --directory="android/src/" "3rdparty/adjust_https_to_http.diff" || die "Failed to apply the adjust http patch"
 
+print Y "Compile Sentry..."
+cmake -B .tmp/sentry_build -S 3rdparty/sentry_native --toolchain ${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake \
+               -DSENTRY_BUILD_SHARED_LIBS=false \
+               -DANDROID_ABI=${ARCH}   
+  
+cmake --build .tmp/sentry_build --parallel
+cmake --install .tmp/sentry_build --prefix .tmp/sentry_install --config RelWithDebInfo 
+
 printn Y "Computing the version... "
 export SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ ) # Export so gradle can pick it up
 export VERSIONCODE=$(date +%s | sed 's/.\{3\}$//' )"0" #Remove the last 3 digits of the timestamp, so we only get every ~16m a new versioncode

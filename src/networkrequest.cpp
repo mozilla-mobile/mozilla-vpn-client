@@ -693,6 +693,20 @@ NetworkRequest* NetworkRequest::createForFxaAuthz(
   return r;
 }
 
+// static
+NetworkRequest* NetworkRequest::createForSentry(Task* parent,
+                                                const QByteArray& envelope) {
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  QUrl url(Constants::SENTRY_ENVELOPE_INGESTION);
+  r->m_request.setUrl(url);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/x-sentry-envelope");
+  r->m_request.setRawHeader("dsn", Constants::SENTRY_DER);
+  r->postRequest(envelope);
+
+  return r;
+}
+
 #ifdef UNIT_TEST
 // static
 NetworkRequest* NetworkRequest::createForFxaTotpCreation(

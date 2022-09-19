@@ -129,7 +129,6 @@ SOURCES += \
         rfc/rfc4193.cpp \
         rfc/rfc4291.cpp \
         rfc/rfc5735.cpp \
-        sentry/dummysentryadapter.cpp \
         serveri18n.cpp \
         settingsholder.cpp \
         signature.cpp \
@@ -154,6 +153,7 @@ SOURCES += \
         tasks/release/taskrelease.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         tasks/sendfeedback/tasksendfeedback.cpp \
+         tasks/sentry/tasksentry.cpp \
         tasks/servers/taskservers.cpp \
         taskscheduler.cpp \
         telemetry.cpp \
@@ -324,6 +324,7 @@ HEADERS += \
         tasks/release/taskrelease.h \
         tasks/removedevice/taskremovedevice.h \
         tasks/sendfeedback/tasksendfeedback.h \
+        tasks/sentry/tasksentry.h \
         tasks/servers/taskservers.h \
         taskscheduler.h \
         telemetry.h \

@@ -115,6 +115,9 @@ class NetworkRequest final : public QObject {
                                            const QString& fxaScope,
                                            const QString& fxaAccessType);
 
+  static NetworkRequest* createForSentry(Task* parent,
+                                         const QByteArray& envelope);
+
 #ifdef UNIT_TEST
   static NetworkRequest* createForFxaTotpCreation(
       Task* parent, const QByteArray& sessionToken);

@@ -14,10 +14,13 @@
 #include "logger.h"
 #include "settingsholder.h"
 #include "mozillavpn.h"
+#include "tasks/sentry/tasksentry.h"
+#include "taskscheduler.h"
 
 namespace {
 SentryAdapter* s_instance = nullptr;
 Logger logger(LOG_MAIN, "Sentry");
+void* transport_state = 0;
 
 }  // namespace
 
@@ -57,6 +60,13 @@ void SentryAdapter::init() {
   sentry_options_set_database_path(options,
                                    sentryFolder.toLocal8Bit().constData());
   sentry_options_set_on_crash(options, &SentryAdapter::onCrash, NULL);
+
+#ifdef SENTRY_TRANSPORT_ENABLED
+  sentry_transport_t* transport =
+      sentry_transport_new(&SentryAdapter::transportEnvelope);
+  sentry_transport_set_state(transport, transport_state);
+  sentry_options_set_transport(options, transport);
+#endif
 
   // Leaving this for convinence, be warned, it's spammy to stdout.
   // sentry_options_set_debug(options, 1);
@@ -99,6 +109,8 @@ sentry_value_t SentryAdapter::onCrash(
     sentry_value_t event,  // used the same way as in `before_send`
     void* closure  // user-data that you can provide at configuration time
 ) {
+  Q_UNUSED(uctx);
+  Q_UNUSED(closure);
   logger.info() << "Sentry ON CRASH";
   // Do contextual clean-up before the crash is sent to sentry's backend
   // infrastructure
@@ -114,4 +126,29 @@ sentry_value_t SentryAdapter::onCrash(
   }
   sentry_value_decref(event);
   return sentry_value_new_null();
+}
+
+// static
+void SentryAdapter::transportEnvelope(sentry_envelope_t* envelope,
+                                      void* state) {
+  /*
+   * Send the event here. If the transport requires state, such as an HTTP
+   * client object or request queue, it can be specified in the `state`
+   * parameter when configuring the transport. It will be passed as second
+   * argument to this function.
+   * The transport takes ownership of the `envelope`, and must free it once it
+   * is done.
+   */
+  Q_UNUSED(state);
+  size_t sentry_buf_size = 0;
+  char* sentry_buf = sentry_envelope_serialize(envelope, &sentry_buf_size);
+
+  // Qt Will copy this.
+  auto qt_owned_buffer = QByteArray(sentry_buf, sentry_buf_size);
+  // We can now free the stuff.
+  sentry_envelope_free(envelope);
+  sentry_free(sentry_buf);
+
+  auto t = new TaskSentry(qt_owned_buffer);
+  TaskScheduler::scheduleTask(t);
 }

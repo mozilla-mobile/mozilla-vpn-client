@@ -37,7 +37,7 @@ class SentryAdapter final : public QObject {
   // Called before Sentry will send a crash report
   static sentry_value_t onCrash(const sentry_ucontext_t* uctx,
                                 sentry_value_t event, void* closure);
-
+  static void transportEnvelope(sentry_envelope_t* envelope, void* state);
 #endif
 
  private:
