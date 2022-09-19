@@ -29,7 +29,7 @@ RUN apt-get -q update &&\
     # install Azul Zulu JDK 11
     apt-get update &&\
     apt-get -y --no-install-recommends install zulu11-jdk unzip \
-               python3-pip wget git rsync ccache make patch &&\
+               python3-pip wget git rsync ccache make patch cmake &&\
     #Install QT
     python3 -m pip install aqtinstall 
 RUN python3 -m aqt install-qt --outputdir /opt linux desktop ${QT_VERSION} gcc_64
