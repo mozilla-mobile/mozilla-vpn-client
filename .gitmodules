@@ -25,3 +25,6 @@
 [submodule "3rdparty/adjust-android-sdk"]
 	path = 3rdparty/adjust-android-sdk
 	url = https://github.com/adjust/android_sdk
+[submodule "3rdparty/sentry_native"]
+	path = 3rdparty/sentry_native
+	url = https://github.com/getsentry/sentry-native
