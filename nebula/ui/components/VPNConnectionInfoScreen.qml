@@ -195,4 +195,16 @@ Rectangle {
         id: timer
     }
 
+    Component.onDestruction: VPNConnectionBenchmark.reset()
+
+    Connections {
+      target: VPNNavigator
+
+      function onCurrentComponentChanged() {
+          // Stop connection speed test when navigating away from ScreenHome
+          if (isOpen) {
+            closeConnectionInfo();
+          }
+       }
+    }
 }
