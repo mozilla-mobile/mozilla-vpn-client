@@ -60,8 +60,9 @@ VPNViewBase {
 
         // TODO: Move to subscription management
         ColumnLayout {
-            Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin
-            Layout.maximumWidth: parent.width - VPNTheme.theme.windowMargin
+            Layout.fillWidth: true
+            Layout.leftMargin: VPNTheme.theme.windowMargin /2
+            Layout.rightMargin: VPNTheme.theme.windowMargin /2
             Layout.alignment: Qt.AlignHCenter
 
             VPNSettingsItem {

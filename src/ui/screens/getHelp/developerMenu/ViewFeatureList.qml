@@ -33,10 +33,9 @@ VPNViewBase {
 
                 RowLayout {
 
-                    Layout.preferredWidth: featureListHolder.width
+                    Layout.fillWidth: true
 
                     ColumnLayout {
-
                         Layout.fillWidth: true
 
                         VPNLightLabel {
@@ -48,6 +47,12 @@ VPNViewBase {
                             text: `id: ${feature.id}`
                             font.pixelSize: VPNTheme.theme.fontSizeSmall
                         }
+                    }
+
+                    Rectangle {
+                        Layout.preferredHeight: 1
+                        Layout.fillWidth: true
+                        color: VPNTheme.theme.transparent
                     }
 
                     VPNSettingsToggle {
@@ -65,7 +70,7 @@ VPNViewBase {
                 }
                 Rectangle {
                     Layout.alignment: Qt.AlignBottom
-                    Layout.preferredWidth: parent.width
+                    Layout.fillWidth: true
                     Layout.preferredHeight: 1
                     color: VPNTheme.colors.grey10
                     visible: index < rep.count - 1
