@@ -131,8 +131,16 @@ ScreenData s_screens[] = {
         Navigator::LoadPolicy::LoadTemporarily,
         "qrc:/ui/screens/ScreenDeleteAccount.qml",
         QVector<MozillaVPN::State>{MozillaVPN::StateMain},
-        [](Navigator::Screen*) -> int8_t { return 0; },
-        []() -> bool { return false; }),
+        [](Navigator::Screen* requestedScreen) -> int8_t {
+          return (requestedScreen &&
+                  *requestedScreen == Navigator::Screen::ScreenDeleteAccount)
+                     ? 99
+                     : -1;
+        },
+        []() -> bool {
+          MozillaVPN::instance()->cancelReauthentication();
+          return false;
+        }),
     ScreenData(
         Navigator::Screen::ScreenDeviceLimit,
         Navigator::LoadPolicy::LoadTemporarily,
