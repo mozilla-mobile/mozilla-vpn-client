@@ -20,6 +20,7 @@
 #include "models/feature.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
+#include "telemetry/gleansample.h"
 #include "update/versionapi.h"
 
 #include <QCoreApplication>
@@ -375,6 +376,25 @@ Addon::~Addon() {
   disable();
 }
 
+void Addon::updateAddonState(State newState) {
+  m_state = newState;
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  QString currentStateSetting =
+      settingsHolder->getAddonSetting(StateQuery(id()));
+
+  QMetaEnum stateMetaEnum = QMetaEnum::fromType<State>();
+  QString newStateSetting = stateMetaEnum.valueToKey(newState);
+
+  if (currentStateSetting == newStateSetting) return;
+
+  settingsHolder->setAddonSetting(StateQuery(id()), newStateSetting);
+
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::addonStateChanged,
+      {{"addon_id", m_id}, {"state", newStateSetting}});
+}
+
 void Addon::retranslate() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
@@ -483,6 +503,7 @@ void Addon::enable() {
     }
   }
 
+  updateAddonState(State::Enabled);
   emit conditionChanged(true);
 }
 
@@ -500,6 +521,8 @@ void Addon::disable() {
                      << output.toString();
     }
   }
+
+  updateAddonState(State::Disabled);
 
   emit conditionChanged(false);
 }

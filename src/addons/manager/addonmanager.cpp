@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "addon.h"
 #include "addondirectory.h"
 #include "addonindex.h"
 #include "addonmanager.h"
@@ -324,6 +325,9 @@ void AddonManager::storeAndLoadAddon(const QByteArray& addonData,
   if (!validateAndLoad(addonId, sha256, false)) {
     logger.warning() << "Unable to load the addon";
   }
+
+  Addon* addon = m_addons[addonId].m_addon;
+  addon->updateAddonState(addon->State::Installed);
 }
 
 QHash<int, QByteArray> AddonManager::roleNames() const {

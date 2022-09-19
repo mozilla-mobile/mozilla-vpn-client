@@ -8,11 +8,15 @@
 #include <QJSValue>
 #include <QObject>
 #include <QTranslator>
+#include "settingsholder.h"
 
 class AddonConditionWatcher;
 class QJsonObject;
 
 class AddonApi;
+constexpr const char* ADDON_SETTINGS_GROUP = "addon";
+constexpr const char* ADDON_DEFAULT_STATE = "Installed";
+constexpr const char* ADDON_SETTINGS_STATE_KEY = "state";
 
 class Addon : public QObject {
   Q_OBJECT
@@ -27,7 +31,11 @@ class Addon : public QObject {
 
   static bool evaluateConditions(const QJsonObject& conditions);
 
+  enum State { Installed, Enabled, Disabled };
+  Q_ENUM(State);
+
   virtual ~Addon();
+  void updateAddonState(State newState);
 
   const QString& id() const { return m_id; }
   const QString& type() const { return m_type; }
@@ -56,6 +64,13 @@ class Addon : public QObject {
   bool evaluateJavascript(const QJsonObject& javascript);
   bool evaluateJavascriptInternal(const QString& javascript, QJSValue* value);
 
+  struct StateQuery final : public SettingsHolder::AddonSettingQuery {
+    explicit StateQuery(const QString& ai)
+        : SettingsHolder::AddonSettingQuery(ai, QString(ADDON_SETTINGS_GROUP),
+                                            QString(ADDON_SETTINGS_STATE_KEY),
+                                            QString(ADDON_DEFAULT_STATE)) {}
+  };
+
  private:
   const QString m_manifestFileName;
   const QString m_id;
@@ -66,6 +81,8 @@ class Addon : public QObject {
 
   AddonApi* m_api = nullptr;
   AddonConditionWatcher* m_conditionWatcher = nullptr;
+
+  State m_state;
 
   QJSValue m_jsEnableFunction;
   QJSValue m_jsDisableFunction;
