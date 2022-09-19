@@ -50,6 +50,8 @@ ColumnLayout {
     Loader {
         id: tipsAndTricksListLoader
 
+        objectName: 'tipsAndTricksSetionLoader'
+
         Layout.topMargin: VPNTheme.theme.vSpacingSmall
         Layout.fillWidth: true
     }
