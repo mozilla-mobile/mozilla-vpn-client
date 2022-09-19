@@ -40,7 +40,7 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
   connect(vpn->controller(), &Controller::stateChanged, this,
           &SystemTrayNotificationHandler::updateContextMenu);
 
-  connect(vpn->statusIcon(), &StatusIcon::iconChanged, this,
+  connect(vpn->statusIcon(), &StatusIcon::iconUpdateNeeded, this,
           &SystemTrayNotificationHandler::updateIcon);
 
   connect(QmlEngineHolder::instance()->window(), &QWindow::visibleChanged, this,

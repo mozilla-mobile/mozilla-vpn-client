@@ -137,13 +137,13 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           &MozillaVPN::controllerStateChanged);
 
   connect(&m_private->m_controller, &Controller::stateChanged,
-          &m_private->m_statusIcon, &StatusIcon::stateChanged);
+          &m_private->m_statusIcon, &StatusIcon::refreshNeeded);
 
   connect(this, &MozillaVPN::stateChanged, &m_private->m_statusIcon,
-          &StatusIcon::stateChanged);
+          &StatusIcon::refreshNeeded);
 
   connect(&m_private->m_connectionHealth, &ConnectionHealth::stabilityChanged,
-          &m_private->m_statusIcon, &StatusIcon::stabilityChanged);
+          &m_private->m_statusIcon, &StatusIcon::refreshNeeded);
 
   connect(&m_private->m_controller, &Controller::stateChanged,
           &m_private->m_connectionHealth,
