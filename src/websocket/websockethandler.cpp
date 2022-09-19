@@ -65,14 +65,6 @@ QString WebSocketHandler::webSocketServerUrl() {
   return httpServerUrl.toLower().replace("http", "ws");
 }
 
-// static
-bool WebSocketHandler::isUserAuthenticated() {
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
-
-  return vpn->userState() == MozillaVPN::UserAuthenticated;
-}
-
 #ifdef UNIT_TEST
 // static
 void WebSocketHandler::testOverrideWebSocketServerUrl(const QString& url) {
@@ -111,7 +103,7 @@ void WebSocketHandler::onUserStateChanged() {
   logger.debug() << "User state change detected:"
                  << MozillaVPN::instance()->userState();
 
-  if (isUserAuthenticated()) {
+  if (MozillaVPN::isUserAuthenticated()) {
     open();
   } else {
     close();
@@ -209,7 +201,7 @@ void WebSocketHandler::onClose() {
 
   m_pingTimer.stop();
 
-  if (isUserAuthenticated()) {
+  if (MozillaVPN::isUserAuthenticated()) {
     int nextAttemptIn = m_backoffStrategy.scheduleNextAttempt();
     logger.debug()
         << "User is authenticated. Will attempt to reopen websocket in:"
