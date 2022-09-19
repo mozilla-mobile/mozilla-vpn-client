@@ -37,7 +37,7 @@ void MacosSystemTrayNotificationHandler::setStatusMenu() {
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
-  connect(vpn->statusIcon(), &StatusIcon::indicatorColorChanged, this,
+  connect(vpn->statusIcon(), &StatusIcon::iconUpdateNeeded, this,
           &MacosSystemTrayNotificationHandler::updateIconIndicator);
 
   m_macOSStatusIcon = new MacOSStatusIcon(this);

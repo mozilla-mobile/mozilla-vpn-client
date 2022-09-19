@@ -50,7 +50,7 @@ WasmWindowController::WasmWindowController() {
     layout->addWidget(m_systemTrayMenuBar);
 
     StatusIcon* statusIcon = MozillaVPN::instance()->statusIcon();
-    connect(statusIcon, &StatusIcon::iconChanged, this,
+    connect(statusIcon, &StatusIcon::iconUpdateNeeded, this,
             &WasmWindowController::iconChanged);
     iconChanged();
 
