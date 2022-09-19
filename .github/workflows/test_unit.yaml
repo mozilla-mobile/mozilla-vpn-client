@@ -37,7 +37,7 @@ jobs:
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git submodule sync --recursive
-          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=2
 
       - name: Cache grcov
         id: cache-grcov
@@ -102,7 +102,7 @@ jobs:
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git submodule sync --recursive
-          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=2
 
       - name: Install Qt6
         shell: bash
@@ -168,7 +168,7 @@ jobs:
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git submodule sync --recursive
-          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=2
 
       - name: Install Qt
         shell: bash
