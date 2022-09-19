@@ -29,7 +29,7 @@ Rectangle {
     radius: height / 2
     color: VPNTheme.theme.ink
 
-    visible: showNavigationBar.includes(VPNNavigator.screen) && VPN.userState === VPN.UserAuthenticated && opacity !== 0
+    visible: showNavigationBar.includes(VPNNavigator.screen) && VPN.userState === VPN.UserAuthenticated && VPN.state === VPN.StateMain && opacity !== 0
 
     anchors {
         horizontalCenter: parent.horizontalCenter
@@ -138,6 +138,7 @@ Rectangle {
                   return;
               }
           }
+          setNavBarOpacity();
        }
     }
 
@@ -150,7 +151,7 @@ Rectangle {
     Connections {
         target: VPNConnectionBenchmark
         function onStateChanged() {
-            navbar.opacity = VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateInitial ? 1 : 0
+            setNavBarOpacity();
         }
     }
 
@@ -162,6 +163,14 @@ Rectangle {
         target: VPNSettings
         function onAddonSettingsChanged() {
             root.getUnreadNotificationStatus()
+        }
+    }
+
+    function setNavBarOpacity() {
+        if (VPNNavigator.screen === VPNNavigator.ScreenHome) {
+            navbar.opacity = VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateInitial ? 1 : 0
+        } else {
+            navbar.opacity = 1;
         }
     }
 
