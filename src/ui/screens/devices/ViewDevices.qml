@@ -10,10 +10,17 @@ import Mozilla.VPN 1.0
 import components 0.1
 
 VPNViewBase {
+    id: vpnFlickable
     property var isModalDialogOpened: removePopup.visible
     property var wasmView
-
-    id: vpnFlickable
+    property string deviceCountLabelText: ""
+    property Component rightMenuButton: Component {
+        VPNLightLabel {
+            text: vpnFlickable.deviceCountLabelText
+            elide: Text.ElideRight
+            horizontalAlignment: Text.AlignRight
+        }
+    }
 
     state: VPN.state !== VPN.StateDeviceLimit ? "active" : "deviceLimit"
 
@@ -113,10 +120,10 @@ VPNViewBase {
             name: "active" // normal mode
 
             PropertyChanges {
-                target: menu
+                target: vpnFlickable
                 //% "%1 of %2"
                 //: Example: You have "x of y" devices in your account, where y is the limit of allowed devices.
-                rightTitle: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices).arg(VPNUser.maxDevices)
+                deviceCountLabelText: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices).arg(VPNUser.maxDevices)
             }
             PropertyChanges {
                 target: col
@@ -131,10 +138,10 @@ VPNViewBase {
             name: "deviceLimit"
 
             PropertyChanges {
-                target: menu
+                target: vpnFlickable
                 //% "%1 of %2"
                 //: Example: You have "x of y" devices in yor account, where y is the limit of allowed devices.
-                rightTitle: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices + 1).arg(VPNUser.maxDevices)
+                deviceCountLabelText: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices + 1).arg(VPNUser.maxDevices)
             }
             PropertyChanges {
                 target: col
