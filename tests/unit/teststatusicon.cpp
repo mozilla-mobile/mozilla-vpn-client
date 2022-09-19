@@ -9,81 +9,43 @@
 
 void TestStatusIcon::basic() {
   StatusIcon si;
-#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
-  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-generic.png");
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic.png");
-#else
-  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-generic-mask.png");
   QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask.png");
-#endif
 
-  si.stateChanged();
-#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
-  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-generic.png");
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic.png");
-#else
-  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-generic-mask.png");
+  si.refreshNeeded();
   QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask.png");
-#endif
 
+  // VPN is on
   TestHelper::vpnState = MozillaVPN::StateMain;
   TestHelper::controllerState = Controller::StateOn;
-  si.stateChanged();
-#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
-  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-on.png");
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-on.png");
-#else
-  QCOMPARE(si.iconUrl().toString(),
-           "qrc:/ui/resources/logo-generic-mask-on.png");
+  si.refreshNeeded();
+
   QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask-on.png");
-#endif
 
+  // VPN is off
   TestHelper::controllerState = Controller::StateOff;
-  si.stateChanged();
-#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
-  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-generic.png");
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic.png");
-#else
-  QCOMPARE(si.iconUrl().toString(),
-           "qrc:/ui/resources/logo-generic-mask-off.png");
+  si.refreshNeeded();
   QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask-off.png");
-#endif
 
+  // VPN is switching
   TestHelper::controllerState = Controller::StateSwitching;
 
   int i = 0;
   QEventLoop loop;
-  connect(&si, &StatusIcon::iconChanged, [&]() {
+  connect(&si, &StatusIcon::iconUpdateNeeded, [&]() {
     if (i > 10) {
       si.disconnect();
       loop.exit();
       return;
     }
-#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
-    QCOMPARE(si.iconUrl().toString(),
-             QString("qrc:/ui/resources/logo-animated%1.png").arg((i % 4) + 1));
-    QCOMPARE(si.iconString(),
-             QString(":/ui/resources/logo-animated%1.png").arg((i % 4) + 1));
-#else
-    QCOMPARE(si.iconUrl().toString(),
-             QString("qrc:/ui/resources/logo-animated-mask%1.png")
-             .arg((i % 4) + 1));
-    QCOMPARE(si.iconString(),
-             QString(":/ui/resources/logo-animated-mask%1.png")
-             .arg((i % 4) + 1));
-#endif
+
+    QCOMPARE(
+        si.iconString(),
+        QString(":/ui/resources/logo-animated-mask%1.png").arg((i % 4) + 1));
     ++i;
   });
 
-  si.stateChanged();
-#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
-  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-animated1.png");
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-animated1.png");
-#else
-  QCOMPARE(si.iconUrl().toString(),
-           "qrc:/ui/resources/logo-animated-mask1.png");
+  si.refreshNeeded();
   QCOMPARE(si.iconString(), ":/ui/resources/logo-animated-mask1.png");
-#endif
   loop.exec();
 }
 
