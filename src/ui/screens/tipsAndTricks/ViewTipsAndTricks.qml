@@ -82,6 +82,7 @@ VPNViewBase {
 
                 _viewContentData: ColumnLayout {
                     id: layoutAll
+                    objectName: 'layoutAll'
 
                     Layout.fillWidth: true
                     Layout.leftMargin: VPNTheme.theme.windowMargin
@@ -96,7 +97,11 @@ VPNViewBase {
                             Layout.fillWidth: true
                             spacing: VPNTheme.theme.vSpacing
 
+                            objectName: 'columnAll'
+
                             VPNTipsAndTricksSection {
+                                objectName: 'tutorialsSectionAll'
+
                                 anchors.right: parent.right
                                 anchors.left: parent.left
 
