@@ -413,15 +413,14 @@ void Controller::handshakeTimeout() {
   // Try again, again if there are sufficient retries left.
   ++m_connectionRetry;
   emit connectionRetryChanged();
-  if (m_connectionRetry < CONNECTION_MAX_RETRY) {
-    activateInternal();
-    return;
-  } else if (m_connectionRetry == CONNECTION_MAX_RETRY &&
-             !SettingsHolder::instance()->tunnelPort53()) {
-    logger.info() << "Last Connection Attempt: Using Port 53 Option this time.";
-    // On the last activation, opportunisticly try again using the port 53
+  if (m_connectionRetry == 1 && !SettingsHolder::instance()->tunnelPort53()) {
+    logger.info() << "Connection Attempt: Using Port 53 Option this time.";
+    // On the first retry, opportunisticly try again using the port 53
     // option enabled, if that feature is disabled.
     activateInternal(true);
+    return;
+  } else if (m_connectionRetry < CONNECTION_MAX_RETRY) {
+    activateInternal();
     return;
   }
 
