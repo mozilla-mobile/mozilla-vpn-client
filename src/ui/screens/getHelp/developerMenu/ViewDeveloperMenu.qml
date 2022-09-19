@@ -16,7 +16,7 @@ VPNViewBase {
         id: root
         property bool vpnIsOff: (VPNController.state === VPNController.StateOff) ||
                                     (VPNController.state === VPNController.StateInitializing)
-
+        Layout.fillWidth: true
 
         spacing: VPNTheme.theme.windowMargin
 
@@ -95,10 +95,10 @@ VPNViewBase {
         VPNTextField {
             id: addonCustomServerInput
 
-            Layout.topMargin: VPNTheme.theme.windowMargin
             Layout.rightMargin: VPNTheme.theme.windowMargin * 2
-            implicitWidth: checkBoxRowStagingServer.labelWidth - VPNTheme.theme.windowMargin
+            Layout.leftMargin: VPNTheme.theme.windowMargin * 3
             Layout.alignment: Qt.AlignRight
+            Layout.fillWidth: true
 
             enabled: VPNSettings.addonCustomServer
             _placeholderText: "Addon Custom Server Address"
@@ -122,7 +122,6 @@ VPNViewBase {
         VPNCheckBoxRow {
             id: checkBoxRowProdKeyInStaging
 
-            Layout.fillWidth: true
             Layout.rightMargin: VPNTheme.theme.windowMargin
             labelText: "Add-on production signature key in staging"
             subLabelText: "Use the add-on production signature key in staging"
@@ -170,7 +169,8 @@ VPNViewBase {
                imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                onClicked: getHelpStackView.push(viewQrc)
-               Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin
+               Layout.leftMargin: VPNTheme.theme.windowMargin / 2
+               Layout.rightMargin: VPNTheme.theme.windowMargin / 2
             }
         }
 
