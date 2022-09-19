@@ -147,6 +147,12 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
     return false;
   }
 
+  // Check if the privacy bundle upgrade is available. For now we use the
+  // currency as a proxy to determine if the upgrade is available for a user.
+  const QStringList bundleUpgradeWhiteList = {"USD", "CAD"};
+  m_bundleUpgradeAvailable = bundleUpgradeWhiteList.contains(m_planCurrency)
+      && m_type == SubscriptionWeb;
+
   // Payment
   QJsonObject paymentData = obj["payment"].toObject();
 
@@ -241,6 +247,7 @@ void SubscriptionData::resetData() {
   m_planBillingInterval = BillingIntervalUnknown;
   m_planAmount = 0;
   m_planCurrency.clear();
+  m_bundleUpgradeAvailable = false;
 
   m_paymentProvider.clear();
   m_creditCardBrand.clear();

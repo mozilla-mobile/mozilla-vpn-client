@@ -25,6 +25,8 @@ class SubscriptionData final : public QObject {
                  m_planBillingInterval CONSTANT)
   Q_PROPERTY(int planAmount MEMBER m_planAmount CONSTANT)
   Q_PROPERTY(QString planCurrency MEMBER m_planCurrency CONSTANT)
+  Q_PROPERTY(bool bundleUpgradeAvailable MEMBER m_bundleUpgradeAvailable
+      CONSTANT)
 
   // Payment
   Q_PROPERTY(QString paymentProvider MEMBER m_paymentProvider CONSTANT)
@@ -83,6 +85,7 @@ class SubscriptionData final : public QObject {
   TypeBillingInterval m_planBillingInterval = BillingIntervalUnknown;
   int m_planAmount = 0;
   QString m_planCurrency;
+  bool m_bundleUpgradeAvailable = false;
 
   QString m_paymentProvider;
   QString m_creditCardBrand;

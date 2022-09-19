@@ -159,7 +159,9 @@ VPNViewBase {
                     VPNSubscriptionData.planCurrency,
                     VPNSubscriptionData.planAmount,
                 ),
-                type: (Qt.locale().name === "en_US" || Qt.locale().name === "en_CA" ) && VPNFeatureList.get("bundleUpgrade").isSupported ? "text-upgrade" : "text",
+                type: VPNSubscriptionData.bundleUpgradeAvailable && VPNFeatureList.get("bundleUpgrade").isSupported
+                    ? "text-upgrade"
+                    : "text",
             });
         }
 
