@@ -70,7 +70,7 @@ VPNViewBase {
             // More tutorials
             Item {
                 property string title: VPNl18n.TipsAndTricksMoreTutorialsTitle
-                property string description: VPNl18n.TipsAndTricksMoreTutorialsDescription
+                property string description: VPNl18n.TipsAndTricksMoreTutorialsDescription2
                 property var filter: (addon) => !addon.highlighted
             }
         }
