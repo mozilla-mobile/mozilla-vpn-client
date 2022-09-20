@@ -218,8 +218,9 @@ void ConnectionHealth::healthCheckup() {
     setStability(Unstable);
   }
   // If recent pings took to long, then mark the connection as unstable.
-  else if (m_pingHelper.maximum() >
-           (PING_TIME_UNSTABLE_SEC * 1000 + m_dnsPingLatency)) {
+  else if (m_dnsPingInitialized &&
+           m_pingHelper.maximum() >
+               (PING_TIME_UNSTABLE_SEC * 1000 + m_dnsPingLatency)) {
     setStability(Unstable);
   }
   // Otherwise, the connection is stable.
