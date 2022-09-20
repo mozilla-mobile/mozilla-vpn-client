@@ -103,18 +103,14 @@ void AddonMessage::updateMessageState(State newState) {
 
   QMetaEnum stateMetaEnum = QMetaEnum::fromType<State>();
   QString newStateSetting = stateMetaEnum.valueToKey(newState);
-  QString oldStateSetting = stateMetaEnum.valueToKey(m_state);
   m_state = newState;
   emit stateChanged(m_state);
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   settingsHolder->setAddonSetting(StateQuery(id()), newStateSetting);
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::addonMessageStateChanged, {{"message_id", id()},
-                                              {"old_state", oldStateSetting},
-                                              {"new_state", newStateSetting}
-
-                                             });
+      GleanSample::addonMessageStateChanged,
+      {{"message_id", id()}, {"message_state", newStateSetting}});
 }
 
 void AddonMessage::dismiss() {

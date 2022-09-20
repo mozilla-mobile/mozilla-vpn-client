@@ -67,13 +67,10 @@ sample:
         description: |
           Addon identifier
         type: string
-      new_state:
+      message_state:
         description: |
           Received, Notified, Read, or Dismissed
         type: string
-      old_state:
-        description: |
-          Received, Notified, Read, or Dismissed
 
 
   addon_message_cta_clicked:
