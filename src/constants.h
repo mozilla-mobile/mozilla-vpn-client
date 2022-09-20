@@ -128,7 +128,7 @@ PRODBETAEXPR(const char*, relayUrl, "https://relay.firefox.com",
              "https://stage.fxprivaterelay.nonprod.cloudops.mozgcp.net");
 
 PRODBETAEXPR(QString, privacyBundleProductId, "prod_MIex7Q079igFZJ",
-             "prod_LcfR3EzYMVJlZQ");
+             "prod_MQ9Zf1cyI81XS2");
 
 PRODBETAEXPR(qint64, keyRegeneratorTimeSec, 604800, 300);
 
