@@ -2,7 +2,6 @@
   "api_version": "0.1",
   "id": "message_privacy_bundle_staging",
   "name": "Privacy Bundle Message - Staging",
-  "translatable": false,
   "type": "message",
   "conditions": {
     "env": "staging",
