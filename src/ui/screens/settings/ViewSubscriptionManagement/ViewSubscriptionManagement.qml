@@ -144,6 +144,24 @@ VPNViewBase {
         VPN.recordGleanEvent("manageSubscriptionClicked");
     }
 
+    // We show the bundle upgrade only supposed to be available to users that
+    // have a VPN web subscription, are located in the US or Cananada and are
+    // not already bundle subscribers.
+    function isBundleUpgradeAvailable() {
+        if (
+            !VPNFeatureList.get("bundleUpgrade").isSupported ||
+            VPNSubscriptionData.type !== VPNSubscriptionData.SubscriptionWeb
+        ) {
+            return false;
+        }
+
+        // We use the currency as a proxy to determine if the upgrade is
+        // available to a user.
+        const bundleUpgradeWhitelist = ["USD", "CAD"];
+        return !VPNSubscriptionData.isPrivacyBundleSubscriber &&
+            bundleUpgradeWhitelist.includes(VPNSubscriptionData.planCurrency);
+    }
+
     function populateListModels() {
         // Subscription info model
         // Subscription plan
@@ -159,7 +177,7 @@ VPNViewBase {
                     VPNSubscriptionData.planCurrency,
                     VPNSubscriptionData.planAmount,
                 ),
-                type: (!VPNSubscriptionData.isPrivacyBundleSubscriber && Qt.locale().name === "en_US" || Qt.locale().name === "en_CA" ) && VPNFeatureList.get("bundleUpgrade").isSupported ? "text-upgrade" : "text",
+                type: isBundleUpgradeAvailable() ? "text-upgrade" : "text",
             });
         }
 
