@@ -35,7 +35,7 @@ if( ${_SUPPORTED} GREATER -1 )
         )
     endif()
     if(WIN32)
-        SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=false  -D SENTRY_BACKEND=breakpad)
+        SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=false  -D SENTRY_BACKEND=breakpad -DCMAKE_BUILD_TYPE=Release)
         # Link against static sentry + breakpad + the stack unwind utils
         target_link_libraries(mozillavpn PUBLIC sentry.lib)
         target_link_libraries(mozillavpn PUBLIC breakpad_client.lib)
