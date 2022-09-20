@@ -19,14 +19,14 @@ class SubscriptionData final : public QObject {
   Q_PROPERTY(quint64 createdAt MEMBER m_createdAt CONSTANT)
   Q_PROPERTY(quint64 expiresOn MEMBER m_expiresOn CONSTANT)
   Q_PROPERTY(bool isCancelled MEMBER m_isCancelled CONSTANT)
+  Q_PROPERTY(bool isPrivacyBundleSubscriber MEMBER m_isPrivacyBundleSubscriber
+                 CONSTANT)
 
   // Plan
   Q_PROPERTY(TypeBillingInterval planBillingInterval MEMBER
                  m_planBillingInterval CONSTANT)
   Q_PROPERTY(int planAmount MEMBER m_planAmount CONSTANT)
   Q_PROPERTY(QString planCurrency MEMBER m_planCurrency CONSTANT)
-  Q_PROPERTY(
-      bool bundleUpgradeAvailable MEMBER m_bundleUpgradeAvailable CONSTANT)
 
   // Payment
   Q_PROPERTY(QString paymentProvider MEMBER m_paymentProvider CONSTANT)
@@ -81,11 +81,11 @@ class SubscriptionData final : public QObject {
   quint64 m_createdAt = 0;
   quint64 m_expiresOn = 0;
   bool m_isCancelled = false;
+  bool m_isPrivacyBundleSubscriber = false;
 
   TypeBillingInterval m_planBillingInterval = BillingIntervalUnknown;
   int m_planAmount = 0;
   QString m_planCurrency;
-  bool m_bundleUpgradeAvailable = false;
 
   QString m_paymentProvider;
   QString m_creditCardBrand;

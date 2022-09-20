@@ -4,13 +4,12 @@
   "name": "Test Message 1",
   "translatable": false,
   "type": "message",
-  "conditions": { },
+  "conditions": {},
   "message": {
     "id": "test_message_1",
     "title": "Test Message 1 - Title",
     "subtitle": "Test Message 1 - Subtitle",
     "date": 1641406997,
-    "blocks": [
-    ]    
+    "blocks": []
   }
 }

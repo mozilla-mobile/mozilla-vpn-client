@@ -10,6 +10,7 @@
 #include "telemetry/gleansample.h"
 
 #include <QDateTime>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
@@ -147,12 +148,6 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
     return false;
   }
 
-  // Check if the privacy bundle upgrade is available. For now we use the
-  // currency as a proxy to determine if the upgrade is available for a user.
-  const QStringList bundleUpgradeWhiteList = {"USD", "CAD"};
-  m_bundleUpgradeAvailable = bundleUpgradeWhiteList.contains(m_planCurrency) &&
-                             m_type == SubscriptionWeb;
-
   // Payment
   QJsonObject paymentData = obj["payment"].toObject();
 
@@ -165,6 +160,15 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
     // We should always get a payment provider if there is payment data
     if (m_paymentProvider.isEmpty()) {
       return false;
+    }
+
+    QJsonArray subscriptionsList = paymentData["subscriptions"].toArray();
+    for (QJsonValue subscriptionValue : subscriptionsList) {
+      QJsonObject subscription = subscriptionValue.toObject();
+      if (subscription["product_id"] == Constants::privacyBundleProductId()) {
+        m_isPrivacyBundleSubscriber = true;
+        break;
+      }
     }
 
     // We show card details only for stripe
@@ -243,11 +247,11 @@ void SubscriptionData::resetData() {
   m_createdAt = 0;
   m_expiresOn = 0;
   m_isCancelled = false;
+  m_isPrivacyBundleSubscriber = false;
 
   m_planBillingInterval = BillingIntervalUnknown;
   m_planAmount = 0;
   m_planCurrency.clear();
-  m_bundleUpgradeAvailable = false;
 
   m_paymentProvider.clear();
   m_creditCardBrand.clear();

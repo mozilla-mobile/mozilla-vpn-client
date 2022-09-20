@@ -42,7 +42,6 @@ class WebSocketHandler final : public QObject {
   void close();
   void sendPing();
   static QString webSocketServerUrl();
-  static bool isUserAuthenticated();
 
   void onUserStateChanged();
   void onConnected();

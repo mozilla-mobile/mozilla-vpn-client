@@ -1,0 +1,15 @@
+{
+  "api_version": "0.1",
+  "id": "test_message_4",
+  "name": "Test Message 4",
+  "translatable": false,
+  "type": "message",
+  "conditions": {},
+  "message": {
+    "id": "test_message_4",
+    "title": "Test Message 4 - Title",
+    "subtitle": "Test Message 4 - Subtitle",
+    "date": 1641406997,
+    "blocks": []
+  }
+}
