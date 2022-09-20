@@ -4,7 +4,6 @@
   "name": "Privacy Bundle Message - Staging",
   "type": "message",
   "conditions": {
-    "env": "staging",
     "locales": ["en"],
     "javascript": "EnableBundleUpgrade.js"
   },
