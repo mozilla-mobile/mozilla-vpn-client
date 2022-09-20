@@ -41,6 +41,7 @@ class SentryAdapter final : public QObject {
 #endif
 
  private:
+  m_initialized = false;
   SentryAdapter();
 };
 #endif  // SENTRYADAPTER_H

@@ -65,11 +65,15 @@ void SentryAdapter::init() {
     logger.error() << "Sentry failed to init!";
     return;
   };
+  m_initialized = true;
   logger.info() << "Sentry initialised";
 }
 
 void SentryAdapter::report(const QString& errorType, const QString& message,
                            bool attachStackTrace) {
+  if (!m_initialized) {
+    return;
+  }
   sentry_value_t event = sentry_value_new_event();
   sentry_value_t exc = sentry_value_new_exception(errorType.toLocal8Bit(),
                                                   message.toLocal8Bit());
@@ -87,6 +91,9 @@ void SentryAdapter::onBeforeShutdown() {
 }
 
 void SentryAdapter::onLoglineAdded(const QByteArray& line) {
+  if (!m_initialized) {
+    return;
+  }
   // Todo: we could certainly catch this more early and format the data ?
   sentry_value_t crumb =
       sentry_value_new_breadcrumb("Logger", line.constData());
