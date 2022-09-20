@@ -112,7 +112,7 @@ VPNViewBase {
 
                 onClicked: {
                     VPN.recordGleanEvent("deleteAccountRequested");
-                    stackview.push("qrc:/ui/deleteAccount/ViewDeleteAccount.qml");
+                    VPNNavigator.requestScreen(VPNNavigator.ScreenDeleteAccount)
                 }
 
                 Layout.alignment: Qt.AlignHCenter
