@@ -28,7 +28,7 @@ constexpr const std::array<const char*, 4> ANIMATED_LOGO_STEPS = {
     ":/ui/resources/logo-animated3.png", ":/ui/resources/logo-animated4.png"};
 
 constexpr const char* LOGO_GENERIC = ":/ui/resources/logo-generic.png";
-constexpr const char* LOGO_GENERIC_OFF = ":/ui/resources/logo-generic.png";
+constexpr const char* LOGO_GENERIC_OFF = ":/ui/resources/logo-generic-off.png";
 constexpr const char* LOGO_GENERIC_ON = LOGO_GENERIC;
 #else
 constexpr const std::array<const char*, 4> ANIMATED_LOGO_STEPS = {
