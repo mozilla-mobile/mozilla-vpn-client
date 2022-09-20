@@ -1538,4 +1538,26 @@ sample:
           The source of the device removal information.
           Either 'TaskRemoveDevice' or 'PushMessage'.
         type: string
-# End of push messages validation metrics
+  # End of push messages validation metrics
+
+  perf_time_to_main_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The time the app took between starting and rendering the main screen
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/4486
+    data_reviews:
+      - TODO
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - sstreich@mozilla.com
+    expires: 2023-12-31
+    extra_keys:
+      duration:
+        description: |
+          The Millisecounds this it took for the App to Load the main screen.
+        type: string

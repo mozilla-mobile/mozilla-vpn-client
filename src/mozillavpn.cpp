@@ -1059,6 +1059,7 @@ void MozillaVPN::postAuthenticationCompleted() {
 
 void MozillaVPN::mainWindowLoaded() {
   logger.debug() << "main window loaded";
+  telemetry()->recordAppLoadedTimeStamp();
 
 #ifndef MVPN_WASM
   // Initialize glean with an async call because at this time, QQmlEngine does

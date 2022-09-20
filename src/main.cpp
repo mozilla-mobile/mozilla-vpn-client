@@ -5,11 +5,14 @@
 #include "commandlineparser.h"
 #include "leakdetector.h"
 
+#include "telemetry.h"
+
 int main(int argc, char* argv[]) {
 #ifdef MVPN_DEBUG
   LeakDetector leakDetector;
   Q_UNUSED(leakDetector);
 #endif
+  Telemetry::recordAppStartTimestamp();
 
   CommandLineParser clp;
   return clp.parse(argc, argv);

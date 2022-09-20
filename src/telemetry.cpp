@@ -13,6 +13,7 @@ constexpr int CONNECTION_STABILITY_MSEC = 45000;
 
 namespace {
 Logger logger(LOG_MAIN, "Telemetry");
+QDateTime s_appStart = QDateTime();
 }
 
 Telemetry::Telemetry() {
@@ -116,3 +117,24 @@ void Telemetry::periodicStateRecorder() {
   }
 }
 #endif
+
+// static
+void Telemetry::recordAppStartTimestamp() {
+  if (s_appStart.isNull()) {
+    s_appStart = QDateTime::currentDateTime();
+  }
+}
+
+// static
+void Telemetry::recordAppLoadedTimeStamp() {
+  if (s_appStart.isNull()) {
+    return;
+  }
+  auto now = QDateTime::currentDateTime();
+  auto loadTime = s_appStart.msecsTo(now);
+
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::perfTimeToMainScreen,
+      {{"duration", QString::number(loadTime)}});
+  logger.info() << "Time to load up the App:" << loadTime << "ms";
+}

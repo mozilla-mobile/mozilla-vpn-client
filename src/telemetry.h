@@ -15,6 +15,9 @@ class Telemetry final : public QObject {
 
   void initialize();
 
+  static void recordAppStartTimestamp();
+  void recordAppLoadedTimeStamp();
+
  private:
   void connectionStabilityEvent();
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS)
