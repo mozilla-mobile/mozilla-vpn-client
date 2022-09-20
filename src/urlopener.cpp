@@ -150,7 +150,10 @@ void UrlOpener::openLink(LinkType linkType) {
     case LinkUpgradeToBundle:
       url = Constants::inProduction() ? Constants::API_PRODUCTION_URL
                                       : Constants::API_STAGING_URL;
-      url.append("/r/vpn/upgradeToPrivacyBundle");
+      url.append(
+          "/r/vpn/"
+          "upgradeToPrivacyBundle?utm_source=subscription-management&utm_"
+          "medium=vpn-client&utm_campaign=bundle-promo");
       break;
 
     default:
