@@ -150,7 +150,8 @@ VPNViewBase {
     function isBundleUpgradeAvailable() {
         if (
             !VPNFeatureList.get("bundleUpgrade").isSupported ||
-            VPNSubscriptionData.type !== VPNSubscriptionData.SubscriptionWeb
+            VPNSubscriptionData.type !== VPNSubscriptionData.SubscriptionWeb ||
+            !(Qt.locale().name === "en_US" || Qt.locale().name === "en_CA")
         ) {
             return false;
         }
