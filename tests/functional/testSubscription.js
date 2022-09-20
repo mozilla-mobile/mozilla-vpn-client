@@ -1379,8 +1379,12 @@ describe('Subscription view', function() {
       await clickSettingsIcon();
       await openSubscriptionManagement();
 
-      await vpn.waitForElement(relayUpsell);
-      await vpn.waitForElementProperty(relayUpsell, 'visible', 'false');
+      await vpn.waitForElement(
+        'subscriptionItem/subscriptionItem-status/subscriptionItem-status-parent/subscriptionItem-status-relayUpsell-layout');
+      assert(
+          await vpn.getElementProperty(
+              'subscriptionItem/subscriptionItem-status/subscriptionItem-status-parent/subscriptionItem-status-relayUpsell-layout',
+              'visible') === 'false');
     });
 
   it('Hides Relay upsell if bundleUpgrade feature is not enabled', async () => {
