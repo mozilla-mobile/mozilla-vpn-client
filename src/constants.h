@@ -124,12 +124,6 @@ PRODBETAEXPR(
     "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e",
     "3c01446abe9036cea9a09acaa3a520ac628f20a7ae32ce861cb2efb70fa0c745");
 
-PRODBETAEXPR(const char*, relayUrl, "https://relay.firefox.com",
-             "https://stage.fxprivaterelay.nonprod.cloudops.mozgcp.net");
-
-PRODBETAEXPR(QString, privacyBundleProductId, "prod_MIex7Q079igFZJ",
-             "prod_LcfR3EzYMVJlZQ");
-
 PRODBETAEXPR(qint64, keyRegeneratorTimeSec, 604800, 300);
 
 #undef PRODBETAEXPR

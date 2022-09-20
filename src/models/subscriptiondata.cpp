@@ -162,15 +162,6 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
       return false;
     }
 
-    QJsonArray subscriptionsList = paymentData["subscriptions"].toArray();
-    for (QJsonValue subscriptionValue : subscriptionsList) {
-      QJsonObject subscription = subscriptionValue.toObject();
-      if (subscription["product_id"] == Constants::privacyBundleProductId()) {
-        m_isPrivacyBundleSubscriber = true;
-        break;
-      }
-    }
-
     // We show card details only for stripe
     if (m_paymentProvider == "stripe") {
       m_creditCardBrand = paymentData["brand"].toString();

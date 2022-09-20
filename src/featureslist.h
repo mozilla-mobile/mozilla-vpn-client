@@ -50,14 +50,6 @@ FEATURE_SIMPLE(appReview,      // Feature ID
                QStringList(),  // feature dependencies
                FeatureCallback_iosOrAndroid)
 
-FEATURE_SIMPLE(bundleUpgrade,     // Feature ID
-               "Bundle Upgrade",  // Feature name
-               "2.10",            // released
-               true,              // Can be flipped on
-               true,              // Can be flipped off
-               QStringList(),     // feature dependencies
-               FeatureCallback_false)
-
 FEATURE_SIMPLE(captivePortal,     // Feature ID
                "Captive Portal",  // Feature name
                "2.1",             // released
