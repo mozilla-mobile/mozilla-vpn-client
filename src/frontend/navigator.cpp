@@ -127,6 +127,21 @@ ScreenData s_screens[] = {
         [](Navigator::Screen*) -> int8_t { return 0; },
         []() -> bool { return false; }),
     ScreenData(
+        Navigator::Screen::ScreenDeleteAccount,
+        Navigator::LoadPolicy::LoadTemporarily,
+        "qrc:/ui/screens/ScreenDeleteAccount.qml",
+        QVector<MozillaVPN::State>{MozillaVPN::StateMain},
+        [](Navigator::Screen* requestedScreen) -> int8_t {
+          return (requestedScreen &&
+                  *requestedScreen == Navigator::Screen::ScreenDeleteAccount)
+                     ? 99
+                     : -1;
+        },
+        []() -> bool {
+          MozillaVPN::instance()->cancelReauthentication();
+          return false;
+        }),
+    ScreenData(
         Navigator::Screen::ScreenDeviceLimit,
         Navigator::LoadPolicy::LoadTemporarily,
         "qrc:/ui/screens/ScreenDeviceLimit.qml",
