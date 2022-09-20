@@ -163,8 +163,8 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
     }
 
     QJsonArray subscriptionsList = paymentData["subscriptions"].toArray();
-    for (int i = 0; i < subscriptionsList.count(); i++) {
-      QJsonObject subscription = subscriptionsList.at(i).toObject();
+    for (QJsonValue subscriptionValue : subscriptionsList) {
+      QJsonObject subscription = subscriptionValue.toObject();
       if (subscription["product_id"] == Constants::privacyBundleProductId()) {
         m_isPrivacyBundleSubscriber = true;
         break;
