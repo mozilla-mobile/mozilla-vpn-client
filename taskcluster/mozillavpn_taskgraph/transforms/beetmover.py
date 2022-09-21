@@ -13,7 +13,6 @@ transforms = TransformSequence()
 @transforms.add
 def add_beetmover_worker_config(config, tasks):
     for task in tasks:
-        app_name = "vpn"
         worker_type = task["worker-type"]
         is_relpro = (
             config.params["level"] == "3"
@@ -23,23 +22,72 @@ def add_beetmover_worker_config(config, tasks):
         build_id = config.params["moz_build_date"]
         build_type = task["attributes"]["build-type"]
         build_os = os.path.dirname(build_type)
-        app_version = config.params["version"]
-        candidates_path = os.path.join(
-            "pub", app_name, "candidates", app_version, build_id, build_os
-        )
-        destination_paths = [candidates_path]
+        shipping_phase = config.params.get("shipping_phase", "")
+
+        if config.params["version"]:
+            app_version = config.params["version"]
+        elif "releases" in config.params["head_ref"]:
+            app_version = config.params["head_ref"].split("/")[-1]
+        else:
+            app_version = ""  # addons are not versioned
+
+        destination_paths = []
+
+        if build_type == "addons/opt":
+            destination_paths.append(
+                os.path.join(
+                    "pub",
+                    "vpn",
+                    "addons",
+                    "releases" if shipping_phase.startswith("ship") else "candidates",
+                    build_id,
+                )
+            )
+        else:
+            destination_paths.append(
+                os.path.join(
+                    "pub",
+                    "vpn",
+                    "candidates",
+                    f"{app_version}-candidates",
+                    f"build{build_id}",
+                    build_os,
+                )
+            )
+
+        if shipping_phase == "ship-addons":
+            destination_paths.append(
+                os.path.join(
+                    "pub",
+                    "vpn",
+                    "addons",
+                    "releases",
+                    "latest",
+                )
+            )
+
         archive_url = (
             "https://ftp.mozilla.org/" if is_relpro else "https://ftp.stage.mozaws.net/"
         )
-        task_description = f"This {worker_type} task will upload a {build_os} release candidate for v{app_version} to {archive_url}{candidates_path}/"
-        branch = config.params["head_ref"]
+
+        if build_type == "addons/opt" and task["name"] == "addons-bundle":
+            addons = set(os.listdir("addons"))
+            addons.remove("examples")
+            for addon in addons:
+                task["attributes"]["release-artifacts"].append(
+                    {
+                        "type": "file",
+                        "name": f"public/build/{addon}.rcc",
+                        "path": f"/builds/worker/artifacts/{addon}.rcc",
+                    }
+                )
 
         upstream_artifacts = []
         for dep in task["dependencies"]:
             upstream_artifacts.append(
                 {
                     "taskId": {"task-reference": f"<{dep}>"},
-                    "taskType": "scriptworker",
+                    "taskType": dep if dep == "build" else "scriptworker",
                     "paths": [
                         release_artifact["name"]
                         for release_artifact in task["attributes"]["release-artifacts"]
@@ -67,18 +115,40 @@ def add_beetmover_worker_config(config, tasks):
                 }
             )
 
+        attributes = {
+            **task["attributes"],
+            "shipping-phase": shipping_phase,
+        }
+
+        if build_type == "addons/opt":
+            task_description = f"This {worker_type} task will upload the {task['name']} to {archive_url}{destination_paths[0]}/"
+        elif shipping_phase == "ship-client":
+            task_description = f"This {worker_type} task will copy build {build_id} from candidates to releases"
+        else:
+            task_description = f"This {worker_type} task will upload a {build_os} release candidate for v{app_version} to {archive_url}{destination_paths[0]}/"
+
+        if not shipping_phase or shipping_phase.startswith("promote"):
+            action = "push-to-candidates"
+        elif shipping_phase == "ship-addons":
+            action = "direct-push-to-bucket"
+        elif shipping_phase == "ship-client":
+            action = "push-to-releases"
+        else:
+            raise Exception(f"Invalid shipping_phase `{shipping_phase}`")
+
         worker = {
             "upstream-artifacts": upstream_artifacts,
             "bucket": bucket,
-            "action": "push-to-candidates",
+            "action": action,
             "release-properties": {
-                "app-name": app_name,
+                "app-name": "vpn",
                 "app-version": app_version,
-                "branch": branch,
+                "branch": config.params["head_ref"],
                 "build-id": build_id,
                 "platform": build_type,
             },
             "artifact-map": artifact_map,
+            "build-number": int(build_id),
         }
         task_def = {
             "name": task["name"],
@@ -86,7 +156,7 @@ def add_beetmover_worker_config(config, tasks):
             "dependencies": task["dependencies"],
             "worker-type": worker_type,
             "worker": worker,
-            "attributes": task["attributes"],
+            "attributes": attributes,
             "run-on-tasks-for": task["run-on-tasks-for"],
         }
         yield task_def

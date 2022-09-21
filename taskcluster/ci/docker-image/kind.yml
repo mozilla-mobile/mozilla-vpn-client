@@ -11,7 +11,7 @@ transforms:
     - taskgraph.transforms.task:transforms
 
 
-jobs:
+tasks:
 #   <image_name>:   Defines the imagename we can use in kind.yml
 #                   Defines the dockerfile folder if not overwritten. i.e /docker/<imagename>/Dockerfile
 #      symbol: I(<sonename>)       This Defines the Symbol seen in treeherder. I is for image
