@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
- const { beforeEach } = require('mocha');
+ const assert = require('assert');
  const vpn = require('./helper.js');
  
  describe('Server list', function() {
@@ -13,7 +13,7 @@
    this.ctx.authenticationNeeded = true;
  
    beforeEach(async () => {
-     await vpn.waitForPropertyAndClickOnElement('serverListButton');
+     await vpn.waitForElementAndClick('serverListButton');
      await vpn.wait();
  
      servers = await vpn.servers();
@@ -35,13 +35,14 @@
          '| Current country code:', currentCountryCode);
    });
 
-   it('Checking multihop for australia', async () => {
+   it('Checking multihop functionality', async () => {
     for(let i=0; i<servers.length; i++){
       // wait for select entry      
-      await vpn.waitForPropertyAndClickOnElement('multiHopSelector/tabMultiHop');
-  
+      await vpn.waitForElementAndClick('multiHopSelector/tabMultiHop');
+      await vpn.wait()    
+       
       // select entry
-      await vpn.waitForPropertyAndClickOnElement('buttonSelectEntry');    
+      await vpn.waitForElementAndClick('buttonSelectEntry');    
       
       // wait for country of choice to be visible    
       const server = servers[i]
@@ -67,12 +68,12 @@
           parseInt(await vpn.getElementProperty(cityOneId, 'y')) +
               parseInt(await vpn.getElementProperty(countryId, 'y')));
       await vpn.wait()         
-      await vpn.waitForPropertyAndClickOnElement(cityOneId);            
+      await vpn.waitForElementAndClick(cityOneId);            
       await vpn.wait()
       
             
       // Back at the main view. select the exit entries     
-      await vpn.waitForPropertyAndClickOnElement('buttonSelectExit');      
+      await vpn.waitForElementAndClick('buttonSelectExit');      
       await vpn.wait();
       
       // set country view        
@@ -93,9 +94,26 @@
       await vpn.wait()
   
       // select city      
-      await vpn.waitForPropertyAndClickOnElement(cityTwoId);
+      await vpn.waitForElementAndClick(cityTwoId);
       await vpn.wait()
-    }    
+      
+      // navigate back to 
+      await vpn.waitForElementAndClick('serverListBackButton');
+      await vpn.wait();
+
+      await vpn.activate();
+
+      await vpn.waitForCondition(async () => {
+        return await vpn.getElementProperty('controllerTitle', 'text') ==
+            'VPN is on';
+      });
+      await vpn.wait();
+
+      assert.strictEqual(vpn.lastNotification().title, 'VPN Connected');
+      await vpn.wait()      
+      
+        // go to server list
+      await vpn.waitForElementAndClick('serverListButton');
+    }
    })  
  });
- 

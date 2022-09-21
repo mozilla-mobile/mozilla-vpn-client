@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 const assert = require('assert');
 const {URL} = require('node:url');
 const http = require('http')
@@ -160,8 +159,8 @@ module.exports = {
         `Command failed: ${json.error}`);
   },
 
-  async waitForPropertyAndClickOnElement(id, property) {    
-    await this.waitForElementProperty(property ? property : id, 'visible', 'true');
+  async waitForElementAndClick(id) {
+    await this.waitForElementAndProperty(id, 'visible', 'true');
     assert(await this.hasElement(id), 'Clicking on an non-existing element?!?');
     const json = await this._writeCommand(`click ${id}`);
     assert(
@@ -206,7 +205,6 @@ module.exports = {
   },
 
   async setElementProperty(id, property, type, value) {
-    await this.waitForElement(id)
     assert(
         await this.hasElement(id),
         'Property checks must be done on existing elements');
@@ -218,6 +216,22 @@ module.exports = {
   },
 
   async waitForElementProperty(id, property, value) {
+    assert(
+        await this.hasElement(id),
+        'Property checks must be done on existing elements');
+    try {
+      return this.waitForCondition(async () => {
+        const real = await this.getElementProperty(id, property);
+        return real === value;
+      });
+    } catch (e) {
+      const real = await this.getElementProperty(id, property);
+      throw new Error(`Timeout for waitForElementProperty - property: ${
+          property} - value: ${real} - expected: ${value}`);
+    }
+  },
+
+  async waitForElementAndProperty(id, property, value) {
     await this.waitForElement(id)
     assert(
         await this.hasElement(id),
