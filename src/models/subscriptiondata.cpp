@@ -238,7 +238,6 @@ void SubscriptionData::resetData() {
   m_createdAt = 0;
   m_expiresOn = 0;
   m_isCancelled = false;
-  m_isPrivacyBundleSubscriber = false;
 
   m_planBillingInterval = BillingIntervalUnknown;
   m_planAmount = 0;
