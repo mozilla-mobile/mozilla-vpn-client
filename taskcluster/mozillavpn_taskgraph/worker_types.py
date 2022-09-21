@@ -126,6 +126,7 @@ def build_push_apk_payload(config, task, task_def):
                 Required("paths"): [str],
             }
         ],
+        Optional("build-number"): int,
     },
 )
 def build_scriptworker_beetmover_payload(config, task, task_def):
@@ -155,10 +156,18 @@ def build_scriptworker_beetmover_payload(config, task, task_def):
             prefix=scope_prefix, action_scope=worker["action"]
         ),
     ]
-    task_def["payload"] = {
-        "maxRunTime": 600,
-        "artifactMap": artifact_map,
-        "releaseProperties": release_properties,
-        "upstreamArtifacts": worker["upstream-artifacts"],
-        "upload_date": int(datetime.now().timestamp()),
-    }
+    if worker["action"] == "push-to-releases":
+        task_def["payload"] = {
+            "maxRunTime": 600,
+            "product": release_properties["appName"],
+            "build_number": worker["build-number"],
+            "version": release_properties["appVersion"],
+        }
+    else:
+        task_def["payload"] = {
+            "maxRunTime": 600,
+            "artifactMap": artifact_map,
+            "releaseProperties": release_properties,
+            "upstreamArtifacts": worker["upstream-artifacts"],
+            "upload_date": int(datetime.now().timestamp()),
+        }

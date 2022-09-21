@@ -12,7 +12,7 @@ transforms:
 kind-dependencies:
     - signing
 
-jobs:
+tasks:
     msi:
         description: repackage mozillavpn msi
         run-on-tasks-for: [github-push, github-release]
