@@ -13,7 +13,7 @@ transforms:
     - taskgraph.transforms.cached_tasks:transforms
     - taskgraph.transforms.task:transforms
 
-job-defaults:
+task-defaults:
     run:
         using: toolchain-script
     treeherder:
@@ -21,5 +21,5 @@ job-defaults:
         platform: toolchains/opt
         tier: 1
 
-jobs-from:
+tasks-from:
     - qt.yml

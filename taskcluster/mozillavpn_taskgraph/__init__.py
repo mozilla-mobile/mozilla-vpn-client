@@ -6,7 +6,7 @@ from importlib import import_module
 
 from taskgraph.util import schema
 
-schema.WHITELISTED_SCHEMA_IDENTIFIERS.append(
+schema.EXCEPTED_SCHEMA_IDENTIFIERS.append(
     lambda path: any(
         exc in path for exc in ("['entitlementsUrl']", "['loginItemsEntitlementsUrl']")
     )
@@ -20,6 +20,7 @@ def register(graph_config):
     """
     _import_modules(
         [
+            "actions.release_promotion",
             "job",
             "parameters",
             "target_tasks",
