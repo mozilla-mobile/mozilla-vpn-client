@@ -1557,7 +1557,11 @@ sample:
       - sstreich@mozilla.com
     expires: 2023-12-31
     extra_keys:
-      duration:
+      start:
         description: |
-          The Millisecounds this it took for the App to Load the main screen.
+          Timestamp of the Start
+        type: string
+      end:
+        description: |
+          Timestamp of the end
         type: string

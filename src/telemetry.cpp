@@ -131,10 +131,13 @@ void Telemetry::recordAppLoadedTimeStamp() {
     return;
   }
   auto now = QDateTime::currentDateTime();
-  auto loadTime = s_appStart.msecsTo(now);
 
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::perfTimeToMainScreen,
-      {{"duration", QString::number(loadTime)}});
-  logger.info() << "Time to load up the App:" << loadTime << "ms";
+      {
+          {"start", QString::number(s_appStart.toMSecsSinceEpoch())},
+          {"end", QString::number(now.toMSecsSinceEpoch())},
+      });
+  logger.info() << "Time to load up the App:" << s_appStart.msecsTo(now)
+                << "ms";
 }
