@@ -15,7 +15,7 @@ class QJsonObject;
 
 class AddonApi;
 constexpr const char* ADDON_SETTINGS_GROUP = "addon";
-constexpr const char* ADDON_DEFAULT_STATE = "Installed";
+constexpr const char* ADDON_DEFAULT_STATE = "Unknown";
 constexpr const char* ADDON_SETTINGS_STATE_KEY = "state";
 
 class Addon : public QObject {
@@ -27,15 +27,14 @@ class Addon : public QObject {
   Q_PROPERTY(QString type READ type CONSTANT)
 
  public:
+  enum State { Unknown, Installed, Enabled, Disabled };
+  Q_ENUM(State);
+
   static Addon* create(QObject* parent, const QString& manifestFileName);
 
   static bool evaluateConditions(const QJsonObject& conditions);
 
-  enum State { Installed, Enabled, Disabled };
-  Q_ENUM(State);
-
   virtual ~Addon();
-  void updateAddonState(State newState);
 
   const QString& id() const { return m_id; }
   const QString& type() const { return m_type; }
@@ -59,6 +58,8 @@ class Addon : public QObject {
   virtual void disable();
 
  private:
+  void updateAddonState(State newState);
+
   void maybeCreateConditionWatchers(const QJsonObject& conditions);
 
   bool evaluateJavascript(const QJsonObject& javascript);
@@ -82,7 +83,7 @@ class Addon : public QObject {
   AddonApi* m_api = nullptr;
   AddonConditionWatcher* m_conditionWatcher = nullptr;
 
-  State m_state;
+  State m_state = Unknown;
 
   QJSValue m_jsEnableFunction;
   QJSValue m_jsDisableFunction;

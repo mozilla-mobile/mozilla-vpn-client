@@ -45,7 +45,6 @@ sample:
           Installed, Enabled, or Disabled
         type: string
 
-
   addon_message_state_changed:
     type: event
     lifetime: ping
@@ -73,13 +72,13 @@ sample:
         type: string
 
 
-  addon_message_cta_clicked:
+  addon_cta_clicked:
     type: event
     lifetime: ping
     send_in_pings:
       - main
     description: |
-      User clicked primary CTA in message
+      User clicked primary CTA in an addon
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
     data_reviews:
@@ -87,13 +86,12 @@ sample:
     data_sensitivity:
       - interaction
     extra_keys:
-      message_id:
-        description: Message identifier
+      addon_id:
+        description: Addon identifier
         type: string
     notification_emails:
       - amarchesini@mozilla.com
     expires: never
-
 
   iap_g_no_sku_details:
     type: event

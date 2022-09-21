@@ -369,6 +369,24 @@ Addon::Addon(QObject* parent, const QString& manifestFileName,
       m_name(name),
       m_type(type) {
   MVPN_COUNT_CTOR(Addon);
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  QString stateSetting = settingsHolder->getAddonSetting(StateQuery(id));
+  QMetaEnum stateMetaEnum = QMetaEnum::fromType<State>();
+
+  bool isValidState = false;
+  int persistedState = stateMetaEnum.keyToValue(
+      stateSetting.toLocal8Bit().constData(), &isValidState);
+
+  if (isValidState) {
+    m_state = static_cast<State>(persistedState);
+  }
+
+  if (m_state == Unknown) {
+    updateAddonState(Installed);
+  }
 }
 
 Addon::~Addon() {
@@ -377,16 +395,19 @@ Addon::~Addon() {
 }
 
 void Addon::updateAddonState(State newState) {
-  m_state = newState;
+  Q_ASSERT(newState != Unknown);
 
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  QString currentStateSetting =
-      settingsHolder->getAddonSetting(StateQuery(id()));
+  if (m_state == newState) {
+    return;
+  }
+
+  m_state = newState;
 
   QMetaEnum stateMetaEnum = QMetaEnum::fromType<State>();
   QString newStateSetting = stateMetaEnum.valueToKey(newState);
 
-  if (currentStateSetting == newStateSetting) return;
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
 
   settingsHolder->setAddonSetting(StateQuery(id()), newStateSetting);
 
@@ -523,7 +544,6 @@ void Addon::disable() {
   }
 
   updateAddonState(State::Disabled);
-
   emit conditionChanged(false);
 }
 

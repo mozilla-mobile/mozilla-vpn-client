@@ -324,9 +324,6 @@ void AddonManager::storeAndLoadAddon(const QByteArray& addonData,
   if (!validateAndLoad(addonId, sha256, false)) {
     logger.warning() << "Unable to load the addon";
   }
-
-  Addon* addon = m_addons[addonId].m_addon;
-  addon->updateAddonState(addon->State::Installed);
 }
 
 QHash<int, QByteArray> AddonManager::roleNames() const {
