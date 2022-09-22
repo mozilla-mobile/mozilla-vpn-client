@@ -47,7 +47,7 @@ class AddonMessage final : public Addon {
 
   ~AddonMessage();
 
-  enum State {
+  enum MessageState {
     // A message has been received
     Received,
     // A notification has been shown to the user i.e it's been enabled
@@ -57,7 +57,7 @@ class AddonMessage final : public Addon {
     // Message has been dismissed
     Dismissed
   };
-  Q_ENUM(State);
+  Q_ENUM(MessageState);
 
   Q_INVOKABLE void dismiss();
   Q_INVOKABLE void markAsRead();
@@ -66,7 +66,7 @@ class AddonMessage final : public Addon {
   void setBadge(Badge badge);
   void setDate(qint64 date);
 
-  bool isRead() const { return m_state == State::Read; }
+  bool isRead() const { return m_state == MessageState::Read; }
 
   QString formattedDate() const;
 
@@ -81,7 +81,7 @@ class AddonMessage final : public Addon {
                                               const QDateTime& messageDateTime);
 
  signals:
-  void stateChanged(State state);
+  void stateChanged(MessageState state);
   void badgeChanged();
   void dateChanged();
 
@@ -89,15 +89,15 @@ class AddonMessage final : public Addon {
   AddonMessage(QObject* parent, const QString& manifestFileName,
                const QString& id, const QString& name);
 
-  struct StateQuery final : public SettingsHolder::AddonSettingQuery {
-    explicit StateQuery(const QString& ai)
+  struct MessageStateQuery final : public SettingsHolder::AddonSettingQuery {
+    explicit MessageStateQuery(const QString& ai)
         : SettingsHolder::AddonSettingQuery(
               ai, QString(ADDON_MESSAGE_SETTINGS_GROUP),
               QString(ADDON_MESSAGE_SETTINGS_STATE_KEY),
               QString(ADDON_MESSAGE_DEFAULT_STATE)) {}
   };
-  static State loadMessageState(const QString& id);
-  void updateMessageState(State newState);
+  static MessageState loadMessageState(const QString& id);
+  void updateMessageState(MessageState newState);
 
   void planDateRetranslation();
   void setBadge(const QString& badge);
@@ -111,7 +111,7 @@ class AddonMessage final : public Addon {
 
   qint64 m_date = 0;
 
-  State m_state = State::Received;
+  MessageState m_state = MessageState::Received;
 
   Badge m_badge;
 

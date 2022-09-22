@@ -796,25 +796,30 @@ void TestAddon::message_create() {
 }
 
 void TestAddon::message_load_state_data() {
-  QTest::addColumn<AddonMessage::State>("state");
+  QTest::addColumn<AddonMessage::MessageState>("state");
   QTest::addColumn<QString>("setting");
 
-  QTest::addRow("empty-setting") << AddonMessage::State::Received << "";
-  QTest::addRow("wrong-setting") << AddonMessage::State::Received << "WRONG!";
+  QTest::addRow("empty-setting") << AddonMessage::MessageState::Received << "";
+  QTest::addRow("wrong-setting")
+      << AddonMessage::MessageState::Received << "WRONG!";
 
-  QTest::addRow("received") << AddonMessage::State::Received << "Received";
-  QTest::addRow("notified") << AddonMessage::State::Notified << "Notified";
-  QTest::addRow("read") << AddonMessage::State::Read << "Read";
-  QTest::addRow("dismissed") << AddonMessage::State::Dismissed << "Dismissed";
+  QTest::addRow("received")
+      << AddonMessage::MessageState::Received << "Received";
+  QTest::addRow("notified")
+      << AddonMessage::MessageState::Notified << "Notified";
+  QTest::addRow("read") << AddonMessage::MessageState::Read << "Read";
+  QTest::addRow("dismissed")
+      << AddonMessage::MessageState::Dismissed << "Dismissed";
 }
 
 void TestAddon::message_load_state() {
-  QFETCH(AddonMessage::State, state);
+  QFETCH(AddonMessage::MessageState, state);
   QFETCH(QString, setting);
 
   SettingsHolder settingsHolder;
 
-  settingsHolder.setAddonSetting(AddonMessage::StateQuery("foo"), setting);
+  settingsHolder.setAddonSetting(AddonMessage::MessageStateQuery("foo"),
+                                 setting);
   QCOMPARE(AddonMessage::loadMessageState("foo"), state);
 }
 
