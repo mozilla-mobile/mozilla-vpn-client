@@ -51,7 +51,7 @@ sample:
     send_in_pings:
       - main
     description: |
-      An addon was disabled
+      The addon message' state changed
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1620
     data_reviews:

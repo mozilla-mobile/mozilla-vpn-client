@@ -27,7 +27,20 @@ class Addon : public QObject {
   Q_PROPERTY(QString type READ type CONSTANT)
 
  public:
-  enum State { Unknown, Installed, Enabled, Disabled };
+  enum State {
+    // Initial state. This should be used only during the loading.
+    Unknown,
+
+    // The add-on has just been installed. This is the first time the device
+    // sees this add-on. The add-on is not enabled yet.
+    Installed,
+
+    // The add-on is enabled.
+    Enabled,
+
+    // The add-on is disabled.
+    Disabled,
+  };
   Q_ENUM(State);
 
   static Addon* create(QObject* parent, const QString& manifestFileName);
