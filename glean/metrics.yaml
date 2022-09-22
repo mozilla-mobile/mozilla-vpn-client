@@ -18,6 +18,81 @@
 $schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
 
 sample:
+
+  addon_state_changed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      An addon's state changed
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1620
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1746457
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+    extra_keys:
+      addon_id:
+        description: |
+          Addon identifier
+        type: string
+      state:
+        description: |
+          Installed, Enabled, or Disabled
+        type: string
+
+  addon_message_state_changed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The addon message' state changed
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1620
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1746457
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+    extra_keys:
+      message_id:
+        description: |
+          Addon identifier
+        type: string
+      message_state:
+        description: |
+          Received, Notified, Read, or Dismissed
+        type: string
+
+
+  addon_cta_clicked:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      User clicked primary CTA in an addon
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - interaction
+    extra_keys:
+      addon_id:
+        description: Addon identifier
+        type: string
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
   iap_g_no_sku_details:
     type: event
     lifetime: ping
