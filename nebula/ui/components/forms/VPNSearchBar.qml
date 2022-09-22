@@ -46,7 +46,7 @@ ColumnLayout {
 
 
         Keys.onPressed: event => {
-            if (focus && _searchBarHasError && (/[\w\[\]`!@#$%\^&*()={}:;<>+'-]/).test(event.text)) {
+            if (focus && ((/[\w\[\]`!@#$%\^&*()={}:;<>+'-]/).test(event.text) || event.key === Qt.Key_Backspace || event.key === Qt.Key_Delete)) {
                 _editCallback();
             }
         }
