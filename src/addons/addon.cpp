@@ -20,6 +20,7 @@
 #include "models/feature.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
+#include "telemetry/gleansample.h"
 #include "update/versionapi.h"
 
 #include <QCoreApplication>
@@ -368,11 +369,51 @@ Addon::Addon(QObject* parent, const QString& manifestFileName,
       m_name(name),
       m_type(type) {
   MVPN_COUNT_CTOR(Addon);
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  QString stateSetting = settingsHolder->getAddonSetting(StateQuery(id));
+  QMetaEnum stateMetaEnum = QMetaEnum::fromType<State>();
+
+  bool isValidState = false;
+  int persistedState = stateMetaEnum.keyToValue(
+      stateSetting.toLocal8Bit().constData(), &isValidState);
+
+  if (isValidState) {
+    m_state = static_cast<State>(persistedState);
+  }
+
+  if (m_state == Unknown) {
+    updateAddonState(Installed);
+  }
 }
 
 Addon::~Addon() {
   MVPN_COUNT_DTOR(Addon);
   disable();
+}
+
+void Addon::updateAddonState(State newState) {
+  Q_ASSERT(newState != Unknown);
+
+  if (m_state == newState) {
+    return;
+  }
+
+  m_state = newState;
+
+  QMetaEnum stateMetaEnum = QMetaEnum::fromType<State>();
+  QString newStateSetting = stateMetaEnum.valueToKey(newState);
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  settingsHolder->setAddonSetting(StateQuery(id()), newStateSetting);
+
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::addonStateChanged,
+      {{"addon_id", m_id}, {"state", newStateSetting}});
 }
 
 void Addon::retranslate() {
@@ -483,6 +524,7 @@ void Addon::enable() {
     }
   }
 
+  updateAddonState(State::Enabled);
   emit conditionChanged(true);
 }
 
@@ -501,6 +543,7 @@ void Addon::disable() {
     }
   }
 
+  updateAddonState(State::Disabled);
   emit conditionChanged(false);
 }
 
