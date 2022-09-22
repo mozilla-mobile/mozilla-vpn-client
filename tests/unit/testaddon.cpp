@@ -796,7 +796,7 @@ void TestAddon::message_create() {
 }
 
 void TestAddon::message_load_state_data() {
-  QTest::addColumn<AddonMessage::State>("state");
+  QTest::addColumn<AddonMessage::MessageState>("state");
   QTest::addColumn<QString>("setting");
 
   QTest::addRow("empty-setting") << AddonMessage::MessageState::Received << "";
