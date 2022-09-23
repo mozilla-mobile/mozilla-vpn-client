@@ -102,10 +102,10 @@ workers:
 release-promotion:
     flavors:
         promote-addons:
-            target-tasks-method: promote-addons
+            target-tasks-method: addons-target-tasks
         ship-addons:
-            target-tasks-method: ship-addons
+            target-tasks-method: addons-target-tasks
         promote-client:
-            target-tasks-method: promote-client
+            target-tasks-method: client-target-tasks
         ship-client:
-            target-tasks-method: ship-client
+            target-tasks-method: client-target-tasks
