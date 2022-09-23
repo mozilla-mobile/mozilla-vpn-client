@@ -26,9 +26,6 @@ tasks:
             use-caches: true
             cwd: '{checkout}'
             command: >-
-                pip3 install -r requirements.txt &&
                 pip3 install -r taskcluster/requirements.txt &&
-                taskgraph full --p taskcluster/test/params/main-push.yml &&
-                taskgraph full --p taskcluster/test/params/pull-request.yml &&
-                taskgraph full --p taskcluster/test/params/release-push.yml &&
+                taskgraph full --p taskcluster/test/params &&
                 taskgraph full
