@@ -20,7 +20,7 @@ tasks:
         worker:
             chain-of-trust: true
             max-run-time: 1800
-        run-on-tasks-for: [github-release, action:release-promotion]
+        run-on-tasks-for: [action:release-promotion]
         release-artifacts: [MozillaVPN.pkg]
         dependencies:
             signing: signing-macos/opt
@@ -37,7 +37,7 @@ tasks:
         worker:
             chain-of-trust: true
             max-run-time: 1800
-        run-on-tasks-for: [github-release, action:release-promotion]
+        run-on-tasks-for: [action:release-promotion]
         release-artifacts: [MozillaVPN.msi]
         dependencies:
             repackage-signing: repackage-signing-msi
