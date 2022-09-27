@@ -97,7 +97,7 @@ PATH the build process is effectively the same on each of the supported platform
 1. Start by creating a build directory and using `cmake` to generate the Makefiles.
 
 ```bash
-mkdir build && cmake -S . -B build
+mkdir build && cmake -S . -B build -DCMAKE_INSTALL_PREFIX=/usr
 ```
 
 This generation step can be augmented by providing variable definitions on the
@@ -209,7 +209,9 @@ Some variables that might be useful when configuring the project:
 cmake --build build
 ```
 
-This will produce the application bundle in `build/src/Mozilla VPN.app`
+This will produce the application bundle in `build/src/Mozilla VPN.app`.
+
+> **Note**: to open the application from the command line, run `open -n build/src/Mozilla\ VPN.app`.
 
 5.  **Optional**: To build the installer package, we can specify the `pkg` target when
 building:
@@ -364,9 +366,15 @@ Read the following pages to know more:
 - https://emscripten.org/docs/getting_started/index.html
 - https://doc.qt.io/qt-6/wasm.html
 
-When you are ready, use this script to generate the build:
+When you are ready, create a build directory and configure the project for
+building using `qt-cmake` + `cmake`:
 ```bash
-scripts/wasm/compile.sh
+mkdir build && qt-cmake cmake -S . -B build
+```
+
+Compile the source code:
+```bash
+cmake --build build -j$(nproc)
 ```
 
 ## Testing

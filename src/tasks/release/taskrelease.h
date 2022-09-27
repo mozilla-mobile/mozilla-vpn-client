@@ -25,11 +25,12 @@ class TaskRelease final : public Task {
   void run() override;
 
   // We do not want to delete update operations, triggered by users.
-  bool deletable() const override { return m_op != Update; }
+  DeletePolicy deletePolicy() const override {
+    return m_op == Update ? NonDeletable : Deletable;
+  }
 
  signals:
   void updateRequired();
-  void updateRecommended();
   void updateRequiredOrRecommended();
   void updateNotAvailable();
 

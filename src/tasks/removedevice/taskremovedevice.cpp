@@ -9,6 +9,7 @@
 #include "models/user.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "telemetry/gleansample.h"
 
 namespace {
 Logger logger(LOG_MAIN, "TaskRemoveDevice");
@@ -41,6 +42,15 @@ void TaskRemoveDevice::run() {
   connect(
       request, &NetworkRequest::requestFailed, this,
       [this](QNetworkReply::NetworkError error, const QByteArray&) {
+        if (error == QNetworkReply::ContentNotFoundError) {
+          logger.error() << "The device has been removed in the meantime. "
+                            "Let's consider it a success";
+          MozillaVPN::instance()->deviceRemoved(m_publicKey,
+                                                "TaskRemoveDevice");
+          emit completed();
+          return;
+        }
+
         logger.error() << "Failed to remove the device" << error;
         MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
         emit completed();
@@ -49,7 +59,9 @@ void TaskRemoveDevice::run() {
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray&) {
             logger.debug() << "Device removed";
-            MozillaVPN::instance()->deviceRemoved(m_publicKey);
+
+            MozillaVPN::instance()->deviceRemoved(m_publicKey,
+                                                  "TaskRemoveDevice");
             emit completed();
           });
 }

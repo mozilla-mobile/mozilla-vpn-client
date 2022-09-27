@@ -1,0 +1,38 @@
+{
+  "api_version": "0.1",
+  "id": "message_survey",
+  "name": "Survey Message",
+  "type": "message",
+  "conditions": {
+    "trigger_time": 2419200
+  },
+  "javascript": {
+    "enable": "setDate.js"
+  },
+  "message": {
+    "id": "message_survey",
+    "title": "Help us improve Mozilla VPN",
+    "subtitle": "Help us meet your privacy and security needs by providing feedback on your experience with Mozilla VPN.",
+    "badge": "survey",
+    "blocks": [
+      { "id": "c_1",
+        "type": "text",
+        "content": "This survey will take 1-2 minutes of your time. All answers and participation are anonymous." 
+      },
+      { "id": "c_2",
+        "type": "text",
+        "content": "We handle your data as described in the Mozilla Privacy Policy." 
+      },
+      { "id": "c_3",
+        "type": "text",
+        "content": "Thank you for your participation!" 
+      },
+      { "id": "c_4",
+        "type": "button",
+        "style": "primary",
+        "content": "Start survey",
+        "javascript": "OpenSurveyURL.js"
+      }
+    ]
+  }
+}

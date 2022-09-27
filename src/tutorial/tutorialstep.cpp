@@ -60,22 +60,25 @@ TutorialStep* TutorialStep::create(AddonTutorial* parent,
     return nullptr;
   }
 
-  return new TutorialStep(parent, element, stepId, conditions, tb, tn);
+  return new TutorialStep(parent, element, stepId, obj["content"].toString(),
+                          conditions, tb, tn);
 }
 
 TutorialStep::TutorialStep(AddonTutorial* parent, const QString& element,
-                           const QString& stringId,
+                           const QString& stepId, const QString& fallback,
                            const QJsonObject& conditions,
                            const QList<TutorialStepBefore*>& before,
                            TutorialStepNext* next)
     : QObject(parent),
       m_parent(parent),
+      m_stepId(stepId),
       m_element(element),
-      m_stringId(stringId),
       m_conditions(conditions),
       m_before(before),
       m_next(next) {
   MVPN_COUNT_CTOR(TutorialStep);
+
+  m_string.initialize(stepId, fallback);
 
   m_timer.setSingleShot(true);
   connect(&m_timer, &QTimer::timeout, this, &TutorialStep::startInternal);
@@ -135,7 +138,7 @@ void TutorialStep::startInternal() {
   Q_ASSERT(tutorial);
 
   tutorial->requireTooltipShown(m_parent, true);
-  tutorial->requireTooltipNeeded(m_parent, m_stringId, element);
+  tutorial->requireTooltipNeeded(m_parent, m_stepId, m_string.get(), element);
 
   connect(m_next, &TutorialStepNext::completed, this, &TutorialStep::completed);
   m_next->start();

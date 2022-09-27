@@ -103,7 +103,7 @@ RowLayout {
             Layout.topMargin: VPNTheme.theme.windowMargin
             Layout.preferredHeight: 1
             Layout.fillWidth: true
-            color: "#E7E7E7"
+            color: VPNTheme.colors.grey10
             visible: showDivider
         }
 

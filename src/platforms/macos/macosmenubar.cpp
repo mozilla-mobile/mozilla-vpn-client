@@ -3,6 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macosmenubar.h"
+#include "externalophandler.h"
+#include "frontend/navigator.h"
+#include "l18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -56,14 +59,16 @@ void MacOSMenuBar::initialize() {
   quit->setMenuRole(QAction::QuitRole);
 
   // Do not use qtTrId here!
-  m_aboutAction =
-      fileMenu->addAction("about.vpn", vpn, &MozillaVPN::requestAbout);
+  m_aboutAction = fileMenu->addAction("about.vpn", []() {
+    ExternalOpHandler::instance()->request(ExternalOpHandler::OpAbout);
+  });
   m_aboutAction->setMenuRole(QAction::AboutRole);
   m_aboutAction->setVisible(vpn->state() == MozillaVPN::StateMain);
 
   // Do not use qtTrId here!
-  m_preferencesAction =
-      fileMenu->addAction("preferences", vpn, &MozillaVPN::requestSettings);
+  m_preferencesAction = fileMenu->addAction("preferences", []() {
+    ExternalOpHandler::instance()->request(ExternalOpHandler::OpSettings);
+  });
   m_preferencesAction->setMenuRole(QAction::PreferencesRole);
   m_preferencesAction->setVisible(vpn->state() == MozillaVPN::StateMain);
 
@@ -75,7 +80,9 @@ void MacOSMenuBar::initialize() {
   });
   m_closeAction->setShortcut(QKeySequence::Close);
 
-  m_helpMenu = m_menuBar->addMenu("");
+  m_helpAction = m_menuBar->addAction("", []() {
+    ExternalOpHandler::instance()->request(ExternalOpHandler::OpGetHelp);
+  });
 
   retranslate();
 };
@@ -92,15 +99,8 @@ void MacOSMenuBar::retranslate() {
   //% "Close"
   m_closeAction->setText(qtTrId("menubar.file.close"));
 
-  //% "Help"
-  m_helpMenu->setTitle(qtTrId("menubar.help.title"));
-  for (QAction* action : m_helpMenu->actions()) {
-    m_helpMenu->removeAction(action);
-  }
+  L18nStrings* l18nStrings = L18nStrings::instance();
+  Q_ASSERT(l18nStrings);
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  vpn->helpModel()->forEach([&](const char* nameId, int id) {
-    m_helpMenu->addAction(qtTrId(nameId),
-                          [help = vpn->helpModel(), id]() { help->open(id); });
-  });
+  m_helpAction->setText(l18nStrings->t(L18nStrings::SystrayHelp));
 }

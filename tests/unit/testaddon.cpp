@@ -5,11 +5,43 @@
 #include "testaddon.h"
 #include "../../src/addons/addon.h"
 #include "../../src/addons/addonguide.h"
+#include "../../src/addons/addonmessage.h"
+#include "../../src/addons/addonproperty.h"
+#include "../../src/addons/addonpropertylist.h"
 #include "../../src/addons/addontutorial.h"
+#include "../../src/addons/conditionwatchers/addonconditionwatcherfeaturesenabled.h"
+#include "../../src/addons/conditionwatchers/addonconditionwatchergroup.h"
+#include "../../src/addons/conditionwatchers/addonconditionwatcherlocales.h"
+#include "../../src/addons/conditionwatchers/addonconditionwatcherjavascript.h"
+#include "../../src/addons/conditionwatchers/addonconditionwatchertimeend.h"
+#include "../../src/addons/conditionwatchers/addonconditionwatchertimestart.h"
+#include "../../src/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h"
+#include "../../src/localizer.h"
+#include "../../src/models/feature.h"
+#include "../../src/models/featuremodel.h"
 #include "../../src/settingsholder.h"
+#include "../../src/systemtraynotificationhandler.h"
 #include "../../src/qmlengineholder.h"
 #include "../../src/tutorial/tutorial.h"
 #include "helper.h"
+
+#include <QQmlApplicationEngine>
+
+void TestAddon::property() {
+  AddonProperty p;
+  p.initialize("foo", "bar");
+  QCOMPARE(p.get(), "bar");
+}
+
+void TestAddon::property_list() {
+  AddonPropertyList p;
+  p.append("a", "foo");
+  p.append("b", "bar");
+
+  QStringList list{"foo", "bar"};
+  QCOMPARE(p.get(), list);
+  QCOMPARE(p.property("value").toStringList(), list);
+}
 
 void TestAddon::conditions_data() {
   QTest::addColumn<QJsonObject>("conditions");
@@ -27,8 +59,8 @@ void TestAddon::conditions_data() {
 
   {
     QJsonObject obj;
-    obj["enabledFeatures"] = QJsonArray{"appReview"};
-    QTest::addRow("enabledFeatures") << obj << false << "" << QVariant();
+    obj["enabled_features"] = QJsonArray{"appReview"};
+    QTest::addRow("enabled_features") << obj << true << "" << QVariant();
   }
 
   {
@@ -106,6 +138,64 @@ void TestAddon::conditions_data() {
     QTest::addRow("op=neq settings - string")
         << obj << true << "foo" << QVariant("woow");
   }
+
+  {
+    QJsonObject obj;
+    obj["min_client_version"] = "2.1";
+    QTest::addRow("min client version ok")
+        << obj << true << "" << QVariant("woow");
+  }
+  {
+    QJsonObject obj;
+    obj["min_client_version"] = "3.0";
+    QTest::addRow("min client version ko")
+        << obj << false << "" << QVariant("woow");
+  }
+  {
+    QJsonObject obj;
+    obj["max_client_version"] = "2.0";
+    QTest::addRow("max client version ko")
+        << obj << false << "" << QVariant("woow");
+  }
+  {
+    QJsonObject obj;
+    obj["max_client_version"] = "3.0";
+    QTest::addRow("max client version ok")
+        << obj << true << "" << QVariant("woow");
+  }
+
+  {
+    QJsonObject obj;
+    obj["trigger_time"] = 1;
+    QTest::addRow("trigger time") << obj << true << "" << QVariant("woow");
+  }
+
+  // All of these conditions are not considered in `evaluteConditions` becaue
+  // they are dynamic.
+  {
+    QJsonObject obj;
+    obj["start_time"] = 1;
+    QTest::addRow("start time (valid)")
+        << obj << true << "" << QVariant("woow");
+  }
+  {
+    QJsonObject obj;
+    obj["start_time"] = QDateTime::currentSecsSinceEpoch() + 1;
+    QTest::addRow("start time (expired)")
+        << obj << true << "" << QVariant("woow");
+  }
+
+  {
+    QJsonObject obj;
+    obj["end_time"] = QDateTime::currentSecsSinceEpoch() + 1;
+    QTest::addRow("end time (valid)") << obj << true << "" << QVariant("woow");
+  }
+  {
+    QJsonObject obj;
+    obj["end_time"] = QDateTime::currentSecsSinceEpoch() - 1;
+    QTest::addRow("end time (expired)")
+        << obj << true << "" << QVariant("woow");
+  }
 }
 
 void TestAddon::conditions() {
@@ -121,6 +211,287 @@ void TestAddon::conditions() {
   }
 
   QCOMPARE(Addon::evaluateConditions(conditions), result);
+}
+
+void TestAddon::conditionWatcher_javascript() {
+  MozillaVPN vpn;
+
+  QQmlApplicationEngine engine;
+  QmlEngineHolder qml(&engine);
+  SettingsHolder settingsHolder;
+
+  QJsonObject content;
+  content["id"] = "foo";
+  content["blocks"] = QJsonArray();
+
+  QJsonObject obj;
+  obj["message"] = content;
+
+  QObject parent;
+  Addon* message = AddonMessage::create(&parent, "foo", "bar", "name", obj);
+
+  QVERIFY(!AddonConditionWatcherJavascript::maybeCreate(message, QString()));
+  QVERIFY(!AddonConditionWatcherJavascript::maybeCreate(message, "foo"));
+  QVERIFY(!AddonConditionWatcherJavascript::maybeCreate(
+      message, ":/addons_test/condition1.js"));
+
+  {
+    AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
+        message, ":/addons_test/condition2.js");
+    QVERIFY(!!a);
+    QVERIFY(!a->conditionApplied());
+  }
+
+  {
+    AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
+        message, ":/addons_test/condition3.js");
+    QVERIFY(!!a);
+    QVERIFY(a->conditionApplied());
+  }
+
+  {
+    AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
+        message, ":/addons_test/condition4.js");
+    QVERIFY(!!a);
+    QVERIFY(!a->conditionApplied());
+
+    QEventLoop loop;
+    bool currentStatus = false;
+    connect(a, &AddonConditionWatcher::conditionChanged, [&](bool status) {
+      currentStatus = status;
+      loop.exit();
+    });
+    loop.exec();
+    QVERIFY(currentStatus);
+    loop.exec();
+    QVERIFY(!currentStatus);
+  }
+
+  {
+    AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
+        message, ":/addons_test/condition5.js");
+    QVERIFY(!!a);
+    QVERIFY(!a->conditionApplied());
+
+    settingsHolder.setStartAtBoot(true);
+    QVERIFY(a->conditionApplied());
+  }
+}
+
+void TestAddon::conditionWatcher_locale() {
+  SettingsHolder settingsHolder;
+
+  QObject parent;
+
+  // No locales -> no watcher.
+  QVERIFY(!AddonConditionWatcherLocales::maybeCreate(&parent, QStringList()));
+
+  AddonConditionWatcher* acw =
+      AddonConditionWatcherLocales::maybeCreate(&parent, QStringList{"it"});
+  QVERIFY(!!acw);
+
+  QSignalSpy signalSpy(acw, &AddonConditionWatcher::conditionChanged);
+  QCOMPARE(signalSpy.count(), 0);
+  settingsHolder.setLanguageCode("en");
+  QCOMPARE(signalSpy.count(), 0);
+  settingsHolder.setLanguageCode("it_RU");
+  QCOMPARE(signalSpy.count(), 1);
+  settingsHolder.setLanguageCode("it");
+  QCOMPARE(signalSpy.count(), 1);
+  settingsHolder.setLanguageCode("es");
+  QCOMPARE(signalSpy.count(), 2);
+
+  settingsHolder.setLanguageCode("en");
+  QVERIFY(!acw->conditionApplied());
+
+  settingsHolder.setLanguageCode("it");
+  QVERIFY(acw->conditionApplied());
+
+  settingsHolder.setLanguageCode("ru");
+  QVERIFY(!acw->conditionApplied());
+
+  settingsHolder.setLanguageCode("it-IT");
+  QVERIFY(acw->conditionApplied());
+
+  settingsHolder.setLanguageCode("en");
+  QVERIFY(!acw->conditionApplied());
+
+  settingsHolder.setLanguageCode("it_RU");
+  QVERIFY(acw->conditionApplied());
+}
+
+void TestAddon::conditionWatcher_featuresEnabled() {
+  SettingsHolder settingsHolder;
+
+  QObject parent;
+
+  // Empty feature list
+  QVERIFY(!AddonConditionWatcherFeaturesEnabled::maybeCreate(&parent,
+                                                             QStringList()));
+
+  // Invalid feature list
+  QVERIFY(!AddonConditionWatcherFeaturesEnabled::maybeCreate(
+      &parent, QStringList{"invalid"}));
+
+  QVERIFY(!Feature::getOrNull("testFeatureAddon"));
+  Feature feature("testFeatureAddon", "Feature Addon",
+                  false,               // Is Major Feature
+                  L18nStrings::Empty,  // Display name
+                  L18nStrings::Empty,  // Description
+                  L18nStrings::Empty,  // LongDescr
+                  "",                  // ImagePath
+                  "",                  // IconPath
+                  "",                  // link URL
+                  "1.0",               // released
+                  true,                // Can be flipped on
+                  true,                // Can be flipped off
+                  QStringList(),       // feature dependencies
+                  []() -> bool { return false; });
+  QVERIFY(!!Feature::get("testFeatureAddon"));
+  QVERIFY(!Feature::get("testFeatureAddon")->isSupported());
+
+  // A condition not enabled by default
+  AddonConditionWatcher* acw =
+      AddonConditionWatcherFeaturesEnabled::maybeCreate(
+          &parent, QStringList{"testFeatureAddon"});
+  QVERIFY(!!acw);
+  QVERIFY(!acw->conditionApplied());
+
+  QSignalSpy signalSpy(acw, &AddonConditionWatcher::conditionChanged);
+  QCOMPARE(signalSpy.count(), 0);
+
+  FeatureModel* fm = FeatureModel::instance();
+
+  fm->toggle("testFeatureAddon");
+  QVERIFY(Feature::get("testFeatureAddon")->isSupported());
+  QCOMPARE(signalSpy.count(), 1);
+  QVERIFY(acw->conditionApplied());
+
+  // A condition enabled by default
+  {
+    AddonConditionWatcher* acw2 =
+        AddonConditionWatcherFeaturesEnabled::maybeCreate(
+            &parent, QStringList{"testFeatureAddon"});
+    QVERIFY(!!acw2);
+    QVERIFY(acw2->conditionApplied());
+  }
+
+  fm->toggle("testFeatureAddon");
+  QVERIFY(!Feature::get("testFeatureAddon")->isSupported());
+  QCOMPARE(signalSpy.count(), 2);
+  QVERIFY(!acw->conditionApplied());
+}
+
+void TestAddon::conditionWatcher_group() {
+  SettingsHolder settingsHolder;
+
+  QObject parent;
+  AddonConditionWatcher* acw1 =
+      AddonConditionWatcherTriggerTimeSecs::maybeCreate(&parent, 1);
+  QVERIFY(!!acw1);
+  QVERIFY(!acw1->conditionApplied());
+
+  AddonConditionWatcher* acw2 =
+      AddonConditionWatcherTriggerTimeSecs::maybeCreate(&parent, 2);
+  QVERIFY(!!acw2);
+  QVERIFY(!acw2->conditionApplied());
+
+  AddonConditionWatcher* acwGroup = new AddonConditionWatcherGroup(
+      &parent, QList<AddonConditionWatcher*>{acw1, acw2});
+  QVERIFY(!acwGroup->conditionApplied());
+
+  QEventLoop loop;
+  bool currentStatus = false;
+  connect(acw1, &AddonConditionWatcher::conditionChanged, [&](bool status) {
+    currentStatus = status;
+    loop.exit();
+  });
+  loop.exec();
+
+  QVERIFY(currentStatus);
+  QVERIFY(acw1->conditionApplied());
+  QVERIFY(!acw2->conditionApplied());
+  QVERIFY(!acwGroup->conditionApplied());
+
+  currentStatus = false;
+  connect(acw2, &AddonConditionWatcher::conditionChanged, [&](bool status) {
+    currentStatus = status;
+    loop.exit();
+  });
+  loop.exec();
+
+  QVERIFY(currentStatus);
+  QVERIFY(acw1->conditionApplied());
+  QVERIFY(acw2->conditionApplied());
+  QVERIFY(acwGroup->conditionApplied());
+}
+
+void TestAddon::conditionWatcher_triggerTime() {
+  SettingsHolder settingsHolder;
+
+  QObject parent;
+  AddonConditionWatcher* acw =
+      AddonConditionWatcherTriggerTimeSecs::maybeCreate(&parent, 1);
+  QVERIFY(!!acw);
+
+  QVERIFY(!acw->conditionApplied());
+
+  QEventLoop loop;
+  bool currentStatus = false;
+  connect(acw, &AddonConditionWatcher::conditionChanged, [&](bool status) {
+    currentStatus = status;
+    loop.exit();
+  });
+  loop.exec();
+
+  QVERIFY(currentStatus);
+  QVERIFY(acw->conditionApplied());
+}
+
+void TestAddon::conditionWatcher_startTime() {
+  SettingsHolder settingsHolder;
+
+  QObject parent;
+  AddonConditionWatcher* acw = new AddonConditionWatcherTimeStart(&parent, 0);
+  QVERIFY(acw->conditionApplied());
+
+  acw = new AddonConditionWatcherTimeStart(
+      &parent, QDateTime::currentSecsSinceEpoch() + 1);
+  QVERIFY(!acw->conditionApplied());
+
+  QEventLoop loop;
+  bool currentStatus = false;
+  connect(acw, &AddonConditionWatcher::conditionChanged, [&](bool status) {
+    currentStatus = status;
+    loop.exit();
+  });
+  loop.exec();
+
+  QVERIFY(currentStatus);
+  QVERIFY(acw->conditionApplied());
+}
+
+void TestAddon::conditionWatcher_endTime() {
+  SettingsHolder settingsHolder;
+
+  QObject parent;
+  AddonConditionWatcher* acw = new AddonConditionWatcherTimeEnd(&parent, 0);
+  QVERIFY(!acw->conditionApplied());
+
+  acw = new AddonConditionWatcherTimeEnd(
+      &parent, QDateTime::currentSecsSinceEpoch() + 1);
+  QVERIFY(acw->conditionApplied());
+
+  QEventLoop loop;
+  bool currentStatus = false;
+  connect(acw, &AddonConditionWatcher::conditionChanged, [&](bool status) {
+    currentStatus = status;
+    loop.exit();
+  });
+  loop.exec();
+
+  QVERIFY(!currentStatus);
+  QVERIFY(!acw->conditionApplied());
 }
 
 void TestAddon::guide_create_data() {
@@ -210,6 +581,12 @@ void TestAddon::guide_create_data() {
   blocks.replace(0, block);
   obj["blocks"] = blocks;
   QTest::addRow("with-block-type-olist-with-subblock") << "foo" << obj << true;
+
+  obj["advanced"] = true;
+  QTest::addRow("advanced") << "foo" << obj << true;
+
+  obj["advanced"] = false;
+  QTest::addRow("not-advanced") << "foo" << obj << true;
 }
 
 void TestAddon::guide_create() {
@@ -222,21 +599,19 @@ void TestAddon::guide_create() {
   QJsonObject obj;
   obj["guide"] = content;
 
-  Addon* guide = AddonGuide::create(nullptr, "foo", "bar", "name", obj);
+  QObject parent;
+  Addon* guide = AddonGuide::create(&parent, "foo", "bar", "name", obj);
   QCOMPARE(!!guide, created);
 
   if (!guide) {
     return;
   }
 
-  QString guideTitleId = guide->property("titleId").toString();
-  QCOMPARE(guideTitleId, QString("guide.%1.title").arg(id));
-  QString guideSubTitleId = guide->property("subtitleId").toString();
-  QCOMPARE(guideSubTitleId, QString("guide.%1.subtitle").arg(id));
+  QCOMPARE(guide->property("title").type(), QMetaType::QString);
+  QCOMPARE(guide->property("subtitle").type(), QMetaType::QString);
 
   QCOMPARE(guide->property("image").toString(), "foo.png");
-
-  delete guide;
+  QCOMPARE(guide->property("advanced").toBool(), content["advanced"].toBool());
 }
 
 void TestAddon::tutorial_create_data() {
@@ -333,6 +708,16 @@ void TestAddon::tutorial_create_data() {
 
   obj["conditions"] = QJsonObject();
   QTest::addRow("with-step-element and conditions") << "foo" << obj << true;
+
+  obj["advanced"] = true;
+  QTest::addRow("advanced") << "foo" << obj << true;
+
+  obj["advanced"] = false;
+  QTest::addRow("not-advanced") << "foo" << obj << true;
+
+  obj["advanced"] = true;
+  obj["highlighted"] = true;
+  QTest::addRow("advanced-and-highlighted") << "foo" << obj << true;
 }
 
 void TestAddon::tutorial_create() {
@@ -345,7 +730,8 @@ void TestAddon::tutorial_create() {
   QJsonObject obj;
   obj["tutorial"] = content;
 
-  Addon* tutorial = AddonTutorial::create(nullptr, "foo", "bar", "name", obj);
+  QObject parent;
+  Addon* tutorial = AddonTutorial::create(&parent, "foo", "bar", "name", obj);
   QCOMPARE(!!tutorial, created);
 
   if (!tutorial) {
@@ -356,20 +742,13 @@ void TestAddon::tutorial_create() {
   QVERIFY(!!tm);
   QVERIFY(!tm->isPlaying());
 
-  QString tutorialTitleId = tutorial->property("titleId").toString();
-  QCOMPARE(tutorialTitleId, QString("tutorial.%1.title").arg(id));
-
-  QString tutorialSubtitleId = tutorial->property("subtitleId").toString();
-  QCOMPARE(tutorialSubtitleId, QString("tutorial.%1.subtitle").arg(id));
-
-  QString tutorialCompletionMessageId =
-      tutorial->property("completionMessageId").toString();
-  QCOMPARE(tutorialCompletionMessageId,
-           QString("tutorial.%1.completion_message").arg(id));
-
+  QCOMPARE(tutorial->property("title").type(), QMetaType::QString);
+  QCOMPARE(tutorial->property("subtitle").type(), QMetaType::QString);
+  QCOMPARE(tutorial->property("completionMessage").type(), QMetaType::QString);
   QCOMPARE(tutorial->property("image").toString(), "foo.png");
 
-  QmlEngineHolder qml;
+  QQmlApplicationEngine engine;
+  QmlEngineHolder qml(&engine);
 
   QSignalSpy signalSpy(tm, &Tutorial::playingChanged);
 
@@ -378,8 +757,330 @@ void TestAddon::tutorial_create() {
 
   tm->stop();
   QCOMPARE(signalSpy.count(), 2);
+}
 
-  delete tutorial;
+void TestAddon::message_create_data() {
+  QTest::addColumn<QString>("id");
+  QTest::addColumn<QJsonObject>("content");
+  QTest::addColumn<bool>("created");
+
+  QTest::addRow("object-without-id") << "" << QJsonObject() << false;
+
+  QJsonObject obj;
+  obj["id"] = "foo";
+  QTest::addRow("no blocks") << "foo" << obj << false;
+
+  obj["blocks"] = QJsonArray();
+  QTest::addRow("good but empty") << "foo" << obj << true;
+}
+
+void TestAddon::message_create() {
+  QFETCH(QString, id);
+  QFETCH(QJsonObject, content);
+  QFETCH(bool, created);
+
+  SettingsHolder settingsHolder;
+
+  QJsonObject obj;
+  obj["message"] = content;
+
+  QObject parent;
+  Addon* message = AddonMessage::create(&parent, "foo", "bar", "name", obj);
+  QCOMPARE(!!message, created);
+
+  if (!message) {
+    return;
+  }
+
+  QCOMPARE(message->property("title").type(), QMetaType::QString);
+}
+
+void TestAddon::message_load_state_data() {
+  QTest::addColumn<AddonMessage::MessageState>("state");
+  QTest::addColumn<QString>("setting");
+
+  QTest::addRow("empty-setting") << AddonMessage::MessageState::Received << "";
+  QTest::addRow("wrong-setting")
+      << AddonMessage::MessageState::Received << "WRONG!";
+
+  QTest::addRow("received")
+      << AddonMessage::MessageState::Received << "Received";
+  QTest::addRow("notified")
+      << AddonMessage::MessageState::Notified << "Notified";
+  QTest::addRow("read") << AddonMessage::MessageState::Read << "Read";
+  QTest::addRow("dismissed")
+      << AddonMessage::MessageState::Dismissed << "Dismissed";
+}
+
+void TestAddon::message_load_state() {
+  QFETCH(AddonMessage::MessageState, state);
+  QFETCH(QString, setting);
+
+  SettingsHolder settingsHolder;
+
+  settingsHolder.setAddonSetting(AddonMessage::MessageStateQuery("foo"),
+                                 setting);
+  QCOMPARE(AddonMessage::loadMessageState("foo"), state);
+}
+
+void TestAddon::message_notification_data() {
+  SettingsHolder settingsHolder;
+
+  QObject parent;
+  SystemTrayNotificationHandler nh(&parent);
+
+  QTest::addColumn<QString>("title");
+  QTest::addColumn<QString>("message");
+  QTest::addColumn<QString>("actual_title");
+  QTest::addColumn<QString>("actual_message");
+
+  TestHelper::resetLastSystemNotification();
+  // Message is created for the first time,
+  // but user is not logged in, no  message sent
+  static_cast<AddonMessage*>(
+      Addon::create(&parent, ":/addons_test/message1.json"));
+  QTest::addRow("not-logged-in")
+      << QString() << QString() << TestHelper::lastSystemNotification.title
+      << TestHelper::lastSystemNotification.message;
+
+  // Message is created for the first time,
+  // user is not logged in and message is disabled, no  message sent
+  AddonMessage* disabledPreLoginMessage = static_cast<AddonMessage*>(
+      Addon::create(&parent, ":/addons_test/message2.json"));
+  QTest::addRow("not-logged-in-disabled")
+      << QString() << QString() << TestHelper::lastSystemNotification.title
+      << TestHelper::lastSystemNotification.message;
+
+  // Mock a user login.
+  TestHelper::resetLastSystemNotification();
+  TestHelper::userState = MozillaVPN::UserAuthenticated;
+  emit MozillaVPN::instance()->userStateChanged();
+  // A login should not trigger any messages either.
+  QTest::addRow("login") << QString() << QString()
+                         << TestHelper::lastSystemNotification.title
+                         << TestHelper::lastSystemNotification.message;
+
+  // Message received pre login is enabled post login, message sent
+  TestHelper::resetLastSystemNotification();
+  // Message is later enabled
+  disabledPreLoginMessage->enable();
+  QTest::addRow("enable-post-login")
+      << QString("Test Message 2 - Title")
+      << QString("Test Message 2 - Subtitle")
+      << TestHelper::lastSystemNotification.title
+      << TestHelper::lastSystemNotification.message;
+
+  TestHelper::resetLastSystemNotification();
+  // Message is created for the first time, notification should be sent
+  AddonMessage* message = static_cast<AddonMessage*>(
+      Addon::create(&parent, ":/addons_test/message3.json"));
+  QTest::addRow("do-show") << QString("Test Message 3 - Title")
+                           << QString("Test Message 3 - Subtitle")
+                           << TestHelper::lastSystemNotification.title
+                           << TestHelper::lastSystemNotification.message;
+
+  TestHelper::resetLastSystemNotification();
+  // Message is created for the second time, notification should not be sent
+  Addon::create(&parent, ":/addons_test/message3.json");
+  QTest::addRow("do-not-show")
+      << QString() << QString() << TestHelper::lastSystemNotification.title
+      << TestHelper::lastSystemNotification.message;
+
+  TestHelper::resetLastSystemNotification();
+  // Message is marked as read and we re-attempt to send a notification
+  message->markAsRead();
+  message->maybePushNotification();
+  QTest::addRow("message-is-read")
+      << QString() << QString() << TestHelper::lastSystemNotification.title
+      << TestHelper::lastSystemNotification.message;
+
+  TestHelper::resetLastSystemNotification();
+  // Another message is created for the first time
+  AddonMessage* anotherMessage = static_cast<AddonMessage*>(
+      Addon::create(&parent, ":/addons_test/message4.json"));
+  QTest::addRow("do-show-2") << QString("Test Message 4 - Title")
+                             << QString("Test Message 4 - Subtitle")
+                             << TestHelper::lastSystemNotification.title
+                             << TestHelper::lastSystemNotification.message;
+
+  TestHelper::resetLastSystemNotification();
+  // Message is dismissed and we re-attempt to send a notification
+  anotherMessage->dismiss();
+  anotherMessage->maybePushNotification();
+  QTest::addRow("message-dismissed")
+      << QString() << QString() << TestHelper::lastSystemNotification.title
+      << TestHelper::lastSystemNotification.message;
+
+  TestHelper::resetLastSystemNotification();
+  // Message is created but due to it's conditions it's not enabled
+  AddonMessage* disabledMessage = static_cast<AddonMessage*>(
+      Addon::create(&parent, ":/addons_test/message5.json"));
+  QTest::addRow("message-loaded-disabled")
+      << QString() << QString() << TestHelper::lastSystemNotification.title
+      << TestHelper::lastSystemNotification.message;
+
+  TestHelper::resetLastSystemNotification();
+  // Message is later enabled
+  disabledMessage->enable();
+  QTest::addRow("message-enabled")
+      << QString("Test Message 5 - Title")
+      << QString("Test Message 5 - Subtitle")
+      << TestHelper::lastSystemNotification.title
+      << TestHelper::lastSystemNotification.message;
+}
+
+void TestAddon::message_notification() {
+  QFETCH(QString, title);
+  QFETCH(QString, message);
+  QFETCH(QString, actual_title);
+  QFETCH(QString, actual_message);
+
+  QCOMPARE(actual_title, title);
+  QCOMPARE(actual_message, message);
+}
+
+void TestAddon::message_date_data() {
+  QTest::addColumn<QString>("languageCode");
+  QTest::addColumn<QDateTime>("now");
+  QTest::addColumn<QDateTime>("date");
+  QTest::addColumn<QString>("result");
+  QTest::addColumn<qint64>("timer");
+
+  QTest::addRow("en - future")
+      << "en" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(11, 0), QTimeZone(0)) << "10:00 AM"
+      << (qint64)(14 * 3600);
+  QTest::addRow("it - future")
+      << "it" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(11, 0), QTimeZone(0)) << "10:00"
+      << (qint64)(14 * 3600);
+
+  QTest::addRow("en - same")
+      << "en" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0)) << "10:00 AM"
+      << (qint64)(14 * 3600);
+  QTest::addRow("it - same")
+      << "it" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0)) << "10:00"
+      << (qint64)(14 * 3600);
+
+  QTest::addRow("en - one hour ago")
+      << "en" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(9, 0), QTimeZone(0)) << "9:00 AM"
+      << (qint64)(15 * 3600);
+  QTest::addRow("it - one hour ago")
+      << "it" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(9, 0), QTimeZone(0)) << "09:00"
+      << (qint64)(15 * 3600);
+
+  QTest::addRow("en - midnight")
+      << "en" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(0, 0), QTimeZone(0)) << "12:00 AM"
+      << (qint64)(24 * 3600);
+  QTest::addRow("it - midnight")
+      << "it" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(0, 0), QTimeZone(0)) << "00:00"
+      << (qint64)(24 * 3600);
+
+  QTest::addRow("en - yesterday but less than 24 hours")
+      << "en" << QDateTime(QDate(2000, 1, 2), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(21, 0), QTimeZone(0)) << "Yesterday"
+      << (qint64)(3 * 3600);
+
+  QTest::addRow("en - yesterday more than 24 hours")
+      << "en" << QDateTime(QDate(2000, 1, 2), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(9, 0), QTimeZone(0)) << "Yesterday"
+      << (qint64)-1;
+
+  QTest::addRow("en - 2 days ago")
+      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 8), QTime(10, 0), QTimeZone(0)) << "Saturday"
+      << (qint64)-1;
+
+  QTest::addRow("en - 3 days ago")
+      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 7), QTime(10, 0), QTimeZone(0)) << "Friday"
+      << (qint64)-1;
+
+  QTest::addRow("en - 4 days ago")
+      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 6), QTime(10, 0), QTimeZone(0)) << "Thursday"
+      << (qint64)-1;
+
+  QTest::addRow("en - 5 days ago")
+      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 5), QTime(10, 0), QTimeZone(0)) << "Wednesday"
+      << (qint64)-1;
+
+  QTest::addRow("en - 6 days ago")
+      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 4), QTime(10, 0), QTimeZone(0)) << "Tuesday"
+      << (qint64)-1;
+
+  QTest::addRow("en - 7 days ago")
+      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 3), QTime(10, 0), QTimeZone(0)) << "1/3/00"
+      << (qint64)-1;
+}
+
+void TestAddon::message_date() {
+  SettingsHolder settingsHolder;
+  Localizer localizer;
+
+  QFETCH(QString, languageCode);
+  localizer.setCode(languageCode);
+
+  QFETCH(QDateTime, now);
+  QVERIFY(now.isValid());
+
+  QFETCH(QDateTime, date);
+  QVERIFY(date.isValid());
+
+  QFETCH(QString, result);
+  QCOMPARE(AddonMessage::dateInternal(now, date), result);
+
+  QFETCH(qint64, timer);
+  QCOMPARE(AddonMessage::planDateRetranslationInternal(now, date), timer);
+}
+
+void TestAddon::message_dismiss() {
+  SettingsHolder settingsHolder;
+
+  QJsonObject messageObj;
+  messageObj["id"] = "foo";
+  messageObj["blocks"] = QJsonArray();
+
+  QJsonObject obj;
+  obj["message"] = messageObj;
+
+  QObject parent;
+  Addon* message = AddonMessage::create(&parent, "foo", "bar", "name", obj);
+  QVERIFY(!!message);
+  QVERIFY(message->enabled());
+
+  QString addonSetting;
+  connect(&settingsHolder, &SettingsHolder::addonSettingsChanged, [&]() {
+    addonSetting =
+        settingsHolder.getAddonSetting(SettingsHolder::AddonSettingQuery(
+            "bar", ADDON_MESSAGE_SETTINGS_GROUP,
+            ADDON_MESSAGE_SETTINGS_STATE_KEY, "?!?"));
+  });
+
+  QCOMPARE(addonSetting, "");
+  QVERIFY(!static_cast<AddonMessage*>(message)->isRead());
+
+  static_cast<AddonMessage*>(message)->markAsRead();
+  QVERIFY(static_cast<AddonMessage*>(message)->isRead());
+  QCOMPARE(addonSetting, "Read");
+
+  // After dismissing the message, it becomes inactive.
+  static_cast<AddonMessage*>(message)->dismiss();
+  QVERIFY(!message->enabled());
+  QCOMPARE(addonSetting, "Dismissed");
+
+  // No new messages are loaded for the same ID:
+  Addon* message2 = AddonMessage::create(&parent, "foo", "bar", "name", obj);
+  QVERIFY(!message2);
 }
 
 static TestAddon s_testAddon;

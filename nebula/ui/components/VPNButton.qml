@@ -56,6 +56,7 @@ VPNButtonBase {
         width: button.width
         font.family: VPNTheme.theme.fontBoldFamily
         font.pixelSize: VPNTheme.theme.fontSize
+        opacity: loaderVisible ? 0 : 1
     }
 
 }

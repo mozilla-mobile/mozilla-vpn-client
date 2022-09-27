@@ -14,7 +14,23 @@ Flickable {
     property var flickContentHeight
     property bool contentExceedsHeight: height < flickContentHeight
     property bool hideScollBarOnStackTransition: false
-    interactive: !VPNTutorial.playing
+    //This property should be true if the flickable appears behind the main navbar
+    interactive: !VPNTutorial.playing && contentHeight > height || contentY > 0
+
+    MouseArea {
+
+        anchors.fill: parent
+        propagateComposedEvents: true
+
+        onPressed: mouse => {
+            if (window.activeFocusItem &&
+                window.activeFocusItem.forceBlurOnOutsidePress &&
+                (Qt.platform.os === "android" || Qt.platform.os === "ios")) {
+                vpnFlickable.focus = true;
+            }
+            mouse.accepted = false;
+        }
+    }
 
     clip: true
 
@@ -107,7 +123,7 @@ Flickable {
         minimumSize: 0
 
         opacity: hideScollBarOnStackTransition && (vpnFlickable.StackView.status !== StackView.Active) ? 0 : 1
-        visible: contentExceedsHeight
+        visible: contentExceedsHeight && vpnFlickable.interactive
 
         Behavior on opacity {
             PropertyAnimation {

@@ -3,7 +3,7 @@
   "id": "tutorial_02_connect_on_startup",
   "name": "Tutorial: Connect on startup",
   "conditions": {
-    "enabledFeatures": ["startOnBoot"]
+    "enabled_features": ["startOnBoot"]
   },
   "type": "tutorial",
   "tutorial": {
@@ -15,12 +15,12 @@
     "steps": [
       {
         "id": "s1",
-        "element": "settingsButton",
+        "element": "navigationLayout/navButton-settings",
         "tooltip": "Select your account settings",
         "next": {
           "op": "signal",
-          "qml_emitter": "settingsButton",
-          "signal": "visibleChanged"
+          "qml_emitter": "navigationLayout/navButton-settings",
+          "signal": "clicked"
         }
       },
       {

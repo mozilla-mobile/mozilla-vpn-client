@@ -4,6 +4,18 @@
 
 cmake_minimum_required(VERSION 3.16)
 
+message("Configuring for ${CMAKE_GENERATOR}")
+if(NOT (DEFINED CMAKE_CONFIGURATION_TYPES OR DEFINED CMAKE_BUILD_TYPE))
+    ## Ensure the build type is set for single-config generators.
+    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "default build type" FORCE)
+    message("Setting build type ${CMAKE_BUILD_TYPE}")
+endif()
+
+project("Mozilla VPN" VERSION 2.11.0 LANGUAGES C CXX
+        DESCRIPTION "A fast, secure and easy to use VPN. Built by the makers of Firefox."
+        HOMEPAGE_URL "https://vpn.mozilla.org"
+)
+
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
     # Include 
@@ -77,22 +89,10 @@ if(APPLE)
     endif()
     set(CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM ${BUILD_OSX_DEVELOPMENT_TEAM})
 
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14 CACHE STRING "OSX minimum supported OS version")
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14)
 endif()
 
 option(BUILD_DUMMY "Build for the dummy platform" OFF)
-
-project("Mozilla VPN" VERSION 2.10.0 LANGUAGES C CXX
-        DESCRIPTION "A fast, secure and easy to use VPN. Built by the makers of Firefox."
-        HOMEPAGE_URL "https://vpn.mozilla.org"
-)
-
-message("Configuring for ${CMAKE_GENERATOR}")
-if(NOT (DEFINED CMAKE_CONFIGURATION_TYPES OR "${CMAKE_BUILD_TYPE}"))
-    ## Ensure the build type is set for single-config generators.
-    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "default build type" FORCE)
-    message("Setting build type ${CMAKE_BUILD_TYPE}")
-endif()
 
 if(NOT DEFINED BUILD_ID)
     string(TIMESTAMP BUILD_ID "${PROJECT_VERSION_MAJOR}.%Y%m%d%H%M")
@@ -122,7 +122,6 @@ find_package(Qt6 COMPONENTS
     Core
     Gui
     Network
-    NetworkAuth
     Qml
     Quick
     QuickControls2
@@ -141,6 +140,12 @@ find_package(Qt6 COMPONENTS
     Widgets
     Xml
 )
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    find_package(Qt6 COMPONENTS
+        NetworkAuth
+        Sql
+    )
+endif()
 message("Using Qt version ${Qt6_VERSION}")
 add_definitions(-DQT_DEPRECATED_WARNINGS)
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0x050F00)
@@ -152,23 +157,24 @@ add_subdirectory(lottie)
 add_subdirectory(nebula)
 add_subdirectory(translations)
 
+# Testing build targets
+option(BUILD_TESTING "Build the testing tree." OFF)
+include(CTest)
+add_custom_target(build_tests)
+set_target_properties(build_tests PROPERTIES
+    EXCLUDE_FROM_ALL $<NOT:$<BOOL:${BUILD_TESTING}>>
+    FOLDER "Tests"
+)
+
 if(NOT CMAKE_CROSSCOMPILING)
-# Web Extension build targets
+    # Web Extension build targets
     add_subdirectory(extension)
 
-    # Testing build targets
-    option(BUILD_TESTING "Build the testing tree." OFF)
-    include(CTest)
-    add_custom_target(build_tests)
-    set_target_properties(build_tests PROPERTIES
-        EXCLUDE_FROM_ALL $<NOT:$<BOOL:${BUILD_TESTING}>>
-        FOLDER "Tests"
-    )
+    # Tests
     add_subdirectory(tests/auth)
     add_subdirectory(tests/nativemessaging)
     add_subdirectory(tests/unit)
     add_subdirectory(tests/qml)
-
 endif()
 
 # Extra platform targets

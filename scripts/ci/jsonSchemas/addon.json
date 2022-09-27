@@ -15,6 +15,10 @@
       "type": "string",
       "description": "The addon version framework"
     },
+    "translatable": {
+      "type": "boolean",
+      "description": "Set it to false to make the addon not translatable. Default: true"
+    },
     "type": {
       "type": "string",
       "description": "The type of the addon: tutorial, guide, i18n"
@@ -28,9 +32,11 @@
     "guide": {
       "$ref": "guide.json#"
     },
-    "qml": {
-      "type": "string",
-      "description": "The QML entry point"
+    "message": {
+      "$ref": "message.json#"
+    },
+    "javascript": {
+      "$ref": "javascript.json#"
     }
   },
   "required": [ "id", "name", "api_version", "type" ]

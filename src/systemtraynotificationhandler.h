@@ -7,8 +7,10 @@
 
 #include "notificationhandler.h"
 
-#include <QMenu>
 #include <QSystemTrayIcon>
+
+class QAction;
+class QMenu;
 
 class SystemTrayNotificationHandler : public NotificationHandler {
  public:
@@ -18,26 +20,31 @@ class SystemTrayNotificationHandler : public NotificationHandler {
   void retranslate() override;
 
 #ifdef MVPN_WASM
-  QMenu* contextMenu() override { return m_systemTrayIcon.contextMenu(); }
+  QMenu* contextMenu() override;
 #endif
 
  protected:
   virtual void notify(Message type, const QString& title,
                       const QString& message, int timerMsec) override;
 
+  virtual void showHideWindow();
+
+  virtual void setStatusMenu();
+
+  virtual void updateIcon();
+
+ protected:
+  QScopedPointer<QMenu> m_menu;
+  QSystemTrayIcon* m_systemTrayIcon;
+
  private:
-  void updateIcon(const QString& icon);
-
-  void updateContextMenu();
-
-  void showHideWindow();
+  void createStatusMenu();
 
   void maybeActivated(QSystemTrayIcon::ActivationReason reason);
 
- private:
-  QMenu m_menu;
-  QSystemTrayIcon m_systemTrayIcon;
+  void updateContextMenu();
 
+ private:
   QAction* m_statusLabel = nullptr;
   QAction* m_lastLocationLabel = nullptr;
   QAction* m_disconnectAction = nullptr;
@@ -45,7 +52,7 @@ class SystemTrayNotificationHandler : public NotificationHandler {
   QAction* m_preferencesAction = nullptr;
   QAction* m_showHideLabel = nullptr;
   QAction* m_quitAction = nullptr;
-  QMenu* m_helpMenu = nullptr;
+  QAction* m_helpAction = nullptr;
 };
 
 #endif  // SYSTEMTRAYNOTIFICATIONHANDLER_H

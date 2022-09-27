@@ -28,13 +28,19 @@ target_link_libraries(qml_tests PRIVATE glean lottie nebula translations)
 
 # VPN Client source files
 target_sources(qml_tests PRIVATE
-    ${MVPN_SOURCE_DIR}/closeeventhandler.cpp
-    ${MVPN_SOURCE_DIR}/closeeventhandler.h
     ${MVPN_SOURCE_DIR}/constants.h
+    ${MVPN_SOURCE_DIR}/controller.h
+    ${MVPN_SOURCE_DIR}/env.h
+    ${MVPN_SOURCE_DIR}/externalophandler.cpp
+    ${MVPN_SOURCE_DIR}/externalophandler.h
+    ${MVPN_SOURCE_DIR}/filterproxymodel.cpp
+    ${MVPN_SOURCE_DIR}/filterproxymodel.h
     ${MVPN_SOURCE_DIR}/hawkauth.cpp
     ${MVPN_SOURCE_DIR}/hawkauth.h
     ${MVPN_SOURCE_DIR}/hkdf.cpp
     ${MVPN_SOURCE_DIR}/hkdf.h
+    ${MVPN_SOURCE_DIR}/ipaddress.cpp
+    ${MVPN_SOURCE_DIR}/ipaddress.h
     ${MVPN_SOURCE_DIR}/inspector/inspectorhandler.h
     ${MVPN_SOURCE_DIR}/logger.cpp
     ${MVPN_SOURCE_DIR}/logger.h
@@ -45,8 +51,6 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/models/featuremodel.cpp
     ${MVPN_SOURCE_DIR}/models/featuremodel.h
     ${MVPN_SOURCE_DIR}/models/server.cpp
-    ${MVPN_SOURCE_DIR}/models/whatsnewmodel.cpp
-    ${MVPN_SOURCE_DIR}/models/whatsnewmodel.h
     ${MVPN_SOURCE_DIR}/mozillavpn.h
     ${MVPN_SOURCE_DIR}/networkmanager.cpp
     ${MVPN_SOURCE_DIR}/networkmanager.h
@@ -56,12 +60,26 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/settingsholder.h
     ${MVPN_SOURCE_DIR}/theme.cpp
     ${MVPN_SOURCE_DIR}/theme.h
+    ${MVPN_SOURCE_DIR}/pinghelper.cpp
+    ${MVPN_SOURCE_DIR}/pinghelper.h
+    ${MVPN_SOURCE_DIR}/pingsender.cpp
+    ${MVPN_SOURCE_DIR}/pingsender.h
+    ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
+    ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.h
+    ${MVPN_SOURCE_DIR}/dnspingsender.cpp
+    ${MVPN_SOURCE_DIR}/dnspingsender.h
+    ${MVPN_SOURCE_DIR}/pingsenderfactory.cpp
+    ${MVPN_SOURCE_DIR}/pingsenderfactory.h
     ${MVPN_SOURCE_DIR}/update/updater.cpp
     ${MVPN_SOURCE_DIR}/update/updater.h
     ${MVPN_SOURCE_DIR}/update/versionapi.cpp
     ${MVPN_SOURCE_DIR}/update/versionapi.h
     ${MVPN_SOURCE_DIR}/update/webupdater.cpp
     ${MVPN_SOURCE_DIR}/update/webupdater.h
+    ${MVPN_SOURCE_DIR}/qmlengineholder.cpp
+    ${MVPN_SOURCE_DIR}/qmlengineholder.h
+    ${MVPN_SOURCE_DIR}/urlopener.cpp
+    ${MVPN_SOURCE_DIR}/urlopener.h
 )
 
 # VPN Client UI resources
@@ -75,6 +93,7 @@ target_sources(qml_tests PRIVATE
     helper.h
     main.cpp
     mocconstants.cpp
+    moccontroller.cpp
     mocmozillavpn.cpp
     ../unit/mocinspectorhandler.cpp
 )
@@ -92,3 +111,8 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     list(APPEND QML_TEST_ARGS -platform offscreen)
 endif()
 add_test(NAME qml_tests COMMAND qml_tests ${QML_TEST_ARGS})
+
+qt6_add_qml_module(qml_tests
+  URI Mozilla.VPN.qmlcomponents
+  VERSION 1.0
+)

@@ -8,6 +8,10 @@
       "description": "The ID of the guide",
       "pattern": "^[A-Za-z0-9_]+"
     },
+    "advanced": {
+      "type": "boolean",
+      "description": "Is this an advanced guide? Defaults to `false`."
+    },
     "title": {
       "type": "string",
       "description": "The title of the guide"
@@ -32,55 +36,7 @@
       "type": "array",
       "description": "The list of text blocks",
       "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "The ID of the block",
-            "pattern": "^[A-Za-z0-9_]+"
-          },
-          "content": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "properties": {
-                    "id": {
-                      "type": "string",
-                      "description": "The ID of the sub block",
-                      "pattern": "^[A-Za-z0-9_]+"
-                    },
-                    "content": {
-                      "type": "string",
-                      "description": "The content of this sub block"
-                    },
-                    "comment": {
-                      "type": "string",
-                      "description": "A comment to describe how to translate this sub block"
-                    }
-                  },
-                  "required": [ "id", "content" ]
-                }
-              }
-            ],
-            "description": "The content of this block"
-          },
-          "comment": {
-            "type": "string",
-            "description": "A comment to describe how to translate this block content"
-          },
-          "type": {
-            "type": "string",
-            "description": "A type for this block: text, title, ulist, olist, etc"
-          }
-        },
-        "required": [ "id", "content", "type" ]
+        "$ref": "composer_block.json"
       }
     }
   },

@@ -33,7 +33,7 @@ Item {
         },
         State {
             name: "emptyHovered"
-            when: itemToTarget.hovered
+            when: itemToTarget.hovered && itemToTarget.enabled
                 && itemToTarget.text === ""
                 && !itemToTarget.activeFocus
                 && !itemToTarget.hasError

@@ -67,6 +67,9 @@ AndroidUtils::AndroidUtils(QObject* parent) : QObject(parent) {
   JNINativeMethod methods[]{
       {"recordGleanEvent", "(Ljava/lang/String;)V",
        reinterpret_cast<void*>(recordGleanEvent)},
+      {"recordGleanEventWithExtraKeys",
+       "(Ljava/lang/String;Ljava/lang/String;)V",
+       reinterpret_cast<void*>(recordGleanEventWithExtraKeys)},
   };
 
   env->RegisterNatives(javaClass, methods,
@@ -137,8 +140,8 @@ QJsonObject AndroidUtils::getQJsonObjectFromJString(JNIEnv* env, jstring data) {
 
 bool AndroidUtils::ShareText(const QString& text) {
   return (bool)QJniObject::callStaticMethod<jboolean>(
-      "org/mozilla/firefox/vpn/qt/VPNUtils", "sharePlainText",
-      "(Ljava/lang/String;)Z", QJniObject::fromString(text).object());
+      UTILS_CLASS, "sharePlainText", "(Ljava/lang/String;)Z",
+      QJniObject::fromString(text).object());
 }
 
 QByteArray AndroidUtils::DeviceId() {
@@ -153,7 +156,7 @@ QByteArray AndroidUtils::DeviceId() {
   QJniEnvironment env;
   QJniObject activity = getActivity();
   QJniObject string = QJniObject::callStaticObjectMethod(
-      "org/mozilla/firefox/vpn/qt/VPNUtils", "getDeviceID",
+      UTILS_CLASS, "getDeviceID",
       "(Landroid/content/Context;)Ljava/lang/String;", activity.object());
   jstring value = (jstring)string.object();
   const char* buffer = env->GetStringUTFChars(value, nullptr);
@@ -168,8 +171,8 @@ QByteArray AndroidUtils::DeviceId() {
 }
 
 void AndroidUtils::openNotificationSettings() {
-  QJniObject::callStaticMethod<void>("org/mozilla/firefox/vpn/qt/VPNUtils",
-                                     "openNotificationSettings", "()V");
+  QJniObject::callStaticMethod<void>(UTILS_CLASS, "openNotificationSettings",
+                                     "()V");
 }
 
 QJniObject AndroidUtils::getActivity() {
@@ -223,4 +226,39 @@ void AndroidUtils::recordGleanEvent(JNIEnv* env, jobject VPNUtils,
   logger.info() << "Glean Event via JNI:" << eventString;
   emit MozillaVPN::instance()->recordGleanEvent(eventString);
   env->ReleaseStringUTFChars(event, buffer);
+}
+
+void AndroidUtils::recordGleanEventWithExtraKeys(JNIEnv* env, jobject VPNUtils,
+                                                 jstring jevent,
+                                                 jstring jextras) {
+  if (!MozillaVPN::instance()) {
+    return;
+  }
+  Q_UNUSED(VPNUtils);
+  auto event = getQStringFromJString(env, jevent);
+  QJsonObject extras = getQJsonObjectFromJString(env, jextras);
+  logger.info() << "Glean Event via JNI:" << event;
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+      event, extras.toVariantMap());
+}
+
+// static
+bool AndroidUtils::verifySignature(const QByteArray& publicKey,
+                                   const QByteArray& content,
+                                   const QByteArray& signature) {
+  QJniEnvironment env;
+  auto out = (bool)QJniObject::callStaticMethod<jboolean>(
+      UTILS_CLASS, "verifyContentSignature", "([B[B[B)Z",
+      tojByteArray(publicKey), tojByteArray(content), tojByteArray(signature));
+  logger.info() << "Android Signature Response" << out;
+  return out;
+}
+// Static
+// Creates a copy of the passed QByteArray in the JVM and passes back a ref
+jbyteArray AndroidUtils::tojByteArray(const QByteArray& data) {
+  QJniEnvironment env;
+  jbyteArray out = env->NewByteArray(data.size());
+  env->SetByteArrayRegion(out, 0, data.size(),
+                          reinterpret_cast<const jbyte*>(data.constData()));
+  return out;
 }

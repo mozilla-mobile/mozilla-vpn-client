@@ -1,0 +1,12 @@
+[Unit]
+Description=MozillaVPN D-Bus service
+Wants=modprobe@xt_cgroup.service
+After=modprobe@xt_cgroup.service
+
+[Service]
+Type=dbus
+BusName=org.mozilla.vpn.dbus
+ExecStart=@CMAKE_INSTALL_FULL_BINDIR@/mozillavpn linuxdaemon
+
+[Install]
+WantedBy=multi-user.target

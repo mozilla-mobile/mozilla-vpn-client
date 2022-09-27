@@ -18,6 +18,8 @@ class TaskRemoveDevice final : public Task {
 
   void run() override;
 
+  DeletePolicy deletePolicy() const override { return NonDeletable; }
+
  private:
   QString m_publicKey;
 };

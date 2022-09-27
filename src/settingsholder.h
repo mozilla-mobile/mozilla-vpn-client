@@ -69,10 +69,33 @@ class SettingsHolder final : public QObject {
 
   QString settingsFileName() const;
 
+  // Addon specific
+
+  struct AddonSettingQuery {
+    QString m_addonId;
+    QString m_addonGroup;
+    QString m_setting;
+    QString m_defaultValue;
+
+    AddonSettingQuery(const QString& ai, const QString& ag, const QString& s,
+                      const QString& dv)
+        : m_addonId(ai), m_addonGroup(ag), m_setting(s), m_defaultValue(dv) {}
+  };
+  QString getAddonSetting(const AddonSettingQuery& query);
+  void setAddonSetting(const AddonSettingQuery& query, const QString& value);
+  void clearAddonSettings(const QString& group);
+
  private:
   explicit SettingsHolder(QObject* parent);
 
   QString placeholderUserDNS() const;
+
+  // Addon specific
+
+  static QString getAddonSettingKey(const AddonSettingQuery& query);
+
+ signals:
+  void addonSettingsChanged();
 
  private:
   QSettings m_settings;

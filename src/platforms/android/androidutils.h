@@ -38,6 +38,8 @@ class AndroidUtils final : public QObject {
 
   static QByteArray getQByteArrayFromJString(JNIEnv* env, jstring data);
 
+  static jbyteArray tojByteArray(const QByteArray& data);
+
   static QString getQStringFromJString(JNIEnv* env, jstring data);
 
   static QJsonObject getQJsonObjectFromJString(JNIEnv* env, jstring data);
@@ -46,7 +48,14 @@ class AndroidUtils final : public QObject {
 
   static void recordGleanEvent(JNIEnv* env, jobject VPNUtils, jstring event);
 
+  static void recordGleanEventWithExtraKeys(JNIEnv* env, jobject VPNUtils,
+                                            jstring event, jstring extras);
+
   static void runOnAndroidThreadSync(const std::function<void()> runnable);
+
+  static bool verifySignature(const QByteArray& publicKey,
+                              const QByteArray& content,
+                              const QByteArray& signature);
 
  private:
   AndroidUtils(QObject* parent);

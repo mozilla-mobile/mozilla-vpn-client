@@ -9,16 +9,18 @@
 
 #include <QList>
 #include <QAbstractListModel>
+#include "addons/addontutorial.h"
 
 class Addon;
-class AddonTutorial;
 class QJsonObject;
 
-class Tutorial final : public QObject {
+class Tutorial final : public QObject, public ExternalOpHandler::Blocker {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Tutorial)
   Q_PROPERTY(bool tooltipShown MEMBER m_tooltipShown NOTIFY tooltipShownChanged)
   Q_PROPERTY(bool playing READ isPlaying NOTIFY playingChanged)
+  Q_PROPERTY(AddonTutorial* currentTutorial MEMBER m_currentTutorial NOTIFY
+                 playingChanged)
 
  public:
   static Tutorial* instance();
@@ -28,25 +30,27 @@ class Tutorial final : public QObject {
   Q_INVOKABLE void play(Addon* tutorial);
   Q_INVOKABLE void stop();
   Q_INVOKABLE void allowItem(const QString& objectName);
+  Q_INVOKABLE void interruptAccepted(ExternalOpHandler::Op op);
 
   bool isPlaying() const { return !!m_currentTutorial; }
 
-  void requireTooltipNeeded(AddonTutorial* tutorial, const QString& tooltipText,
-                            QObject* targetElement);
-  void requireTutorialCompleted(AddonTutorial* tutorial,
-                                const QString& completionMessageText);
+  void requireTooltipNeeded(AddonTutorial* tutorial, const QString& stepId,
+                            const QString& value, QObject* targetElement);
+  void requireTutorialCompleted(AddonTutorial* tutorial);
   void requireTooltipShown(AddonTutorial* tutorial, bool shown);
+
+  // ExternalOpHandler::Blocker
+  bool maybeBlockRequest(ExternalOpHandler::Op op) override;
 
  signals:
   void playingChanged();
-  void tooltipNeeded(const QString& tooltipText, QObject* targetElement);
+  void tooltipNeeded(const QString& value, QObject* targetElement);
   void tooltipShownChanged();
-  void tutorialCompleted(const QString& completionMessageText);
+  void tutorialCompleted(Addon* tutorial);
+  void interruptRequest(ExternalOpHandler::Op op);
 
  private:
   explicit Tutorial(QObject* parent);
-
-  void externalRequestReceived(ExternalOpHandler::Op op);
 
   QStringList m_allowedItems;
   bool m_tooltipShown = false;

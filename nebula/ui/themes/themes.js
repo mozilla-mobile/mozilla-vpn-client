@@ -35,13 +35,19 @@ theme.redHovered = '#E22850';
 theme.redPressed = '#C50042';
 theme.redDisabled = '#FFBDC5';
 theme.redfocusOutline = '#66C50042';
+theme.redBadgeText = "#810220";
+theme.greenBadgeText = '#00736C';
+theme.greenBadgeBackground = '#E3FFF3';
+theme.orangeBadgeText = '#960E18';
+theme.orangeBadgeBackground = '#FFD5B2';
+theme.blueBadgeText  = "#09204D"
+theme.blueBadgeBackground = "#660060DF"
+
 theme.white = '#FFFFFF'
 
 theme.overlayBackground = '#4D000000';
 
 theme.checkBoxWarning = '#C45A27';
-
-theme.errorFocusOutline = '#FFBDC5';
 
 theme.guideCardImageBgColor = "#50134B"
 theme.tutorialCardImageBgColor = "#321C64"
@@ -70,11 +76,28 @@ theme.listSpacing = 8;
 theme.maxTextWidth = 296;
 theme.windowMargin = 16;
 theme.popupMargin = 24;
-theme.desktopAppHeight = 520;
+theme.desktopAppHeight = 626;
 theme.desktopAppWidth = 360;
-theme.tabletMinimumWidth = 600
+theme.tabletMinimumWidth = 600;
 theme.menuHeight = 56;
+
 theme.tutorialCardHeight = 144
+theme.guideCardHeight = 172
+
+theme.tutorialCardHeight = 144;
+theme.navBarHeight = 64;
+theme.navBarMaxWidth = 608;
+theme.navBarTopMargin = 48;
+theme.navBarBottomMargin = Qt.platform.os !== 'ios' ? 16 : 34;
+theme.navBarHeightWithMargins =
+theme.navBarHeight + theme.navBarTopMargin + theme.navBarBottomMargin;
+theme.navBarIconSize = 48
+theme.navBarMaxPaddingTablet = 120
+theme.navBarMaxPadding = 48
+
+theme.swipeDelegateActionWidth = 56;
+theme.badgeHorizontalPadding = 8
+theme.badgeVerticalPadding = 3
 
 theme.darkFocusBorder = theme.fontColor;
 theme.lightFocusBorder = '#d5d3e0';
@@ -262,6 +285,26 @@ theme.input = {
   'focusBgColor': theme.blue,
   'focusOutline': theme.blueFocusOutline,
   'focusBorder': theme.blueFocusBorder,
+};
+
+theme.greenBadge = {
+    'textColor': theme.greenBadgeText,
+    'backgroundColor': theme.greenBadgeBackground
+};
+
+theme.redBadge = {
+    'textColor': theme.redBadgeText,
+    'backgroundColor': theme.redDisabled
+};
+
+theme.orangeBadge = {
+    'textColor': theme.orangeBadgeText,
+    'backgroundColor': theme.orangeBadgeBackground
+};
+
+theme.blueBadge = {
+    'textColor': theme.blueBadgeText,
+    'backgroundColor': theme.blueBadgeBackground
 };
 
 theme;

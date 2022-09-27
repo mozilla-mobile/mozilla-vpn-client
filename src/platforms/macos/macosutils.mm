@@ -4,14 +4,10 @@
 
 #include "macosutils.h"
 #include "logger.h"
-#include "models/helpmodel.h"
 #include "qmlengineholder.h"
 
 #include <objc/message.h>
 #include <objc/objc.h>
-
-#include <QFile>
-#include <QMenuBar>
 
 #import <Cocoa/Cocoa.h>
 #import <ServiceManagement/ServiceManagement.h>
@@ -125,7 +121,6 @@ void MacOSUtils::patchNSStatusBarSetImageForBigSur() {
 }
 
 @interface NSImageScalingHelper : NSObject
-
 /**
  * Create a proportionally scaled image according to the given target size.
  *
@@ -195,11 +190,9 @@ void MacOSUtils::patchNSStatusBarSetImageForBigSur() {
 - (void)setImagePatched:(NSImage*)image {
   NSImage* img = image;
 
-  if (@available(macOS 11.0, *)) {
-    if (image != nil) {
-      int thickness = [[NSStatusBar systemStatusBar] thickness];
-      img = [NSImageScalingHelper imageByScaling:image size:NSMakeSize(thickness, thickness)];
-    }
+  if (image != nil) {
+    int thickness = [[NSStatusBar systemStatusBar] thickness];
+    img = [NSImageScalingHelper imageByScaling:image size:NSMakeSize(thickness, thickness)];
   }
 
   [self setImagePatched:img];

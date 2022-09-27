@@ -9,45 +9,43 @@
 
 void TestStatusIcon::basic() {
   StatusIcon si;
-  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-generic.svg");
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic.svg");
+  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask.png");
 
-  si.stateChanged();
-  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-generic.svg");
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic.svg");
+  si.refreshNeeded();
+  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask.png");
 
+  // VPN is on
   TestHelper::vpnState = MozillaVPN::StateMain;
   TestHelper::controllerState = Controller::StateOn;
-  si.stateChanged();
-  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-on.svg");
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-on.svg");
+  si.refreshNeeded();
 
+  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask-on.png");
+
+  // VPN is off
   TestHelper::controllerState = Controller::StateOff;
-  si.stateChanged();
-  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-generic.svg");
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic.svg");
+  si.refreshNeeded();
+  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask-off.png");
 
+  // VPN is switching
   TestHelper::controllerState = Controller::StateSwitching;
 
   int i = 0;
   QEventLoop loop;
-  connect(&si, &StatusIcon::iconChanged, [&]() {
+  connect(&si, &StatusIcon::iconUpdateNeeded, [&]() {
     if (i > 10) {
       si.disconnect();
       loop.exit();
       return;
     }
 
-    QCOMPARE(si.iconUrl().toString(),
-             QString("qrc:/ui/resources/logo-animated%1.svg").arg((i % 4) + 1));
-    QCOMPARE(si.iconString(),
-             QString(":/ui/resources/logo-animated%1.svg").arg((i % 4) + 1));
+    QCOMPARE(
+        si.iconString(),
+        QString(":/ui/resources/logo-animated-mask%1.png").arg((i % 4) + 1));
     ++i;
   });
 
-  si.stateChanged();
-  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-animated1.svg");
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-animated1.svg");
+  si.refreshNeeded();
+  QCOMPARE(si.iconString(), ":/ui/resources/logo-animated-mask1.png");
   loop.exec();
 }
 

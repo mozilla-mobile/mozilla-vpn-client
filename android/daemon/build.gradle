@@ -44,8 +44,10 @@ android {
     defaultConfig {
         minSdkVersion Config.minSdkVersion
         targetSdkVersion Config.targetSdkVersion
-
+        
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField  "String", "VERSIONCODE" ,  '"' +System.getenv("VERSIONCODE") + '"'
+        buildConfigField  "String", "SHORTVERSION" ,  '"' + System.getenv("SHORTVERSION") +  '"'
     }
     buildFeatures {
         buildConfig = true

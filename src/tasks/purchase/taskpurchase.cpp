@@ -31,6 +31,15 @@ TaskPurchase* TaskPurchase::createForAndroid(const QString& sku,
 }
 #endif
 
+#ifdef MVPN_WASM
+// static
+TaskPurchase* TaskPurchase::createForWasm(const QString& productId) {
+  TaskPurchase* task = new TaskPurchase(Wasm);
+  task->m_productId = productId;
+  return task;
+}
+#endif
+
 TaskPurchase::TaskPurchase(Op op) : Task("TaskPurchase"), m_op(op) {
   MVPN_COUNT_CTOR(TaskPurchase);
 }
@@ -49,6 +58,11 @@ void TaskPurchase::run() {
     case Android:
       request = NetworkRequest::createForAndroidPurchase(this, m_androidSku,
                                                          m_androidToken);
+      break;
+#endif
+#ifdef MVPN_WASM
+    case Wasm:
+      request = NetworkRequest::createForWasmPurchase(this, m_productId);
       break;
 #endif
   }

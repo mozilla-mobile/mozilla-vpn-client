@@ -20,7 +20,7 @@ class WindowsTunnelService final : public QObject {
   WindowsTunnelService(QObject* parent = nullptr);
   ~WindowsTunnelService();
 
-  bool start(const QString& configFile);
+  bool start(const QString& configData);
   void stop();
   bool isRunning();
   QString uapiCommand(const QString& command);

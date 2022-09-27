@@ -34,7 +34,7 @@ class GleanUtil(aParent: Context) {
             "production"
         }
         val conf = Configuration(Configuration.DEFAULT_TELEMETRY_ENDPOINT, channel, 500, HttpURLConnectionUploader())
-        val build = BuildInfo("versionCode", "VersionName", Calendar.getInstance())
+        val build = BuildInfo(BuildConfig.VERSIONCODE, BuildConfig.SHORTVERSION, Calendar.getInstance())
         Glean.registerPings(Pings)
         Glean.initialize(
             applicationContext = mParent.applicationContext,

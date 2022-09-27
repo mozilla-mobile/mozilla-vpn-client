@@ -10,8 +10,16 @@ AddonI18n::AddonI18n(QObject* parent, const QString& manifestFileName,
                      const QString& id, const QString& name)
     : Addon(parent, manifestFileName, id, name, "i18n") {
   MVPN_COUNT_CTOR(AddonI18n);
-
-  emit Localizer::instance()->codeChanged();
 }
 
 AddonI18n::~AddonI18n() { MVPN_COUNT_DTOR(AddonI18n); }
+
+void AddonI18n::enable() {
+  emit Localizer::instance()->codeChanged();
+  Addon::enable();
+}
+
+void AddonI18n::disable() {
+  emit Localizer::instance()->codeChanged();
+  Addon::disable();
+}

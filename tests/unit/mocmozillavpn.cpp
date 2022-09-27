@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "../../src/mozillavpn.h"
+#include "../../src/controller.h"
 #include "helper.h"
 
 // The singleton.
@@ -33,6 +34,8 @@ MozillaVPN::UserState MozillaVPN::userState() const {
 bool MozillaVPN::stagingMode() const { return true; }
 bool MozillaVPN::debugMode() const { return true; }
 
+Controller* MozillaVPN::controller() { return new Controller(); }
+
 void MozillaVPN::initialize() {}
 
 void MozillaVPN::setState(State) {}
@@ -44,16 +47,13 @@ void MozillaVPN::getStarted() {}
 void MozillaVPN::authenticate() {}
 void MozillaVPN::authenticateWithType(MozillaVPN::AuthenticationType) {}
 
-void MozillaVPN::openLink(LinkType) {}
-void MozillaVPN::openLinkUrl(const QString&) {}
-
 void MozillaVPN::setToken(const QString&) {}
 
 void MozillaVPN::authenticationCompleted(const QByteArray&, const QString&) {}
 
 void MozillaVPN::deviceAdded(const QString&, const QString&, const QString&) {}
 
-void MozillaVPN::deviceRemoved(const QString&) {}
+void MozillaVPN::deviceRemoved(const QString&, const QString&) {}
 
 void MozillaVPN::deviceRemovalCompleted(const QString&) {}
 
@@ -84,8 +84,6 @@ void MozillaVPN::mainWindowLoaded() {}
 
 void MozillaVPN::telemetryPolicyCompleted() {}
 
-void MozillaVPN::setUpdateRecommended(bool) {}
-
 void MozillaVPN::setUserState(UserState) {}
 
 void MozillaVPN::startSchedulingPeriodicOperations() {}
@@ -107,11 +105,11 @@ bool MozillaVPN::modelsInitialized() const { return true; }
 
 void MozillaVPN::requestSettings() {}
 
+void MozillaVPN::requestGetHelp() {}
+
 void MozillaVPN::requestAbout() {}
 
 void MozillaVPN::requestViewLogs() {}
-
-void MozillaVPN::requestContactUs() {}
 
 void MozillaVPN::retrieveLogs() {}
 
@@ -171,3 +169,8 @@ void MozillaVPN::requestDeleteAccount() {}
 void MozillaVPN::cancelReauthentication() {}
 
 void MozillaVPN::updateViewShown() {}
+
+void MozillaVPN::setJournalPublicAndPrivateKeys(const QString&,
+                                                const QString&) {}
+void MozillaVPN::resetJournalPublicAndPrivateKeys() {}
+bool MozillaVPN::checkCurrentDevice() { return true; }

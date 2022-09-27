@@ -84,11 +84,15 @@ target_link_libraries(mozillavpn PRIVATE netfilter)
 include(GNUInstallDirs)
 install(TARGETS mozillavpn)
 
-install(FILES ../linux/extra/mozillavpn.desktop
+configure_file(../linux/extra/mozillavpn.desktop.in
+    ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.desktop)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 
-install(FILES ../linux/extra/mozillavpn-startup.desktop
-    DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/xdg/autostart)
+configure_file(../linux/extra/mozillavpn-startup.desktop.in
+    ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn-startup.desktop)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn-startup.desktop
+    DESTINATION /etc/xdg/autostart)
 
 install(FILES ../linux/extra/icons/16x16/mozillavpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/16x16/apps)
@@ -106,19 +110,23 @@ install(FILES ../linux/extra/icons/64x64/mozillavpn.png
 install(FILES ../linux/extra/icons/128x128/mozillavpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/128x128/apps)
 
+pkg_get_variable(POLKIT_POLICY_DIR polkit-gobject-1 policydir)
 install(FILES platforms/linux/daemon/org.mozilla.vpn.policy
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/polkit-1/actions)
+    DESTINATION ${POLKIT_POLICY_DIR})
 
 install(FILES platforms/linux/daemon/org.mozilla.vpn.conf
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/dbus-1/system.d)
+    DESTINATION /usr/share/dbus-1/system.d)
 
 install(FILES platforms/linux/daemon/org.mozilla.vpn.dbus.service
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/dbus-1/system-services)
+    DESTINATION /usr/share/dbus-1/system-services)
 
 pkg_check_modules(SYSTEMD systemd)
 if("${SYSTEMD_FOUND}" EQUAL 1)
     pkg_get_variable(SYSTEMD_UNIT_DIR systemd systemdsystemunitdir)
-    install(FILES ../linux/mozillavpn.service DESTINATION ${SYSTEMD_UNIT_DIR})
 else()
-    install(FILES ../linux/mozillavpn.service DESTINATION /lib/systemd/system)
+    set(SYSTEMD_UNIT_DIR /lib/systemd/system)
 endif()
+configure_file(../linux/mozillavpn.service.in
+    ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.service)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.service
+    DESTINATION ${SYSTEMD_UNIT_DIR})

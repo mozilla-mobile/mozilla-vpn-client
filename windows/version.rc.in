@@ -2,12 +2,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #include <winresrc.h>
+#include "winver.h"
 
 #ifndef DEBUG
 #define VER_DEBUG                   0
 #else
 #define VER_DEBUG                   VS_FF_DEBUG
 #endif
+
+IDI_ICON1       ICON "@CMAKE_SOURCE_DIR@/src/ui/resources/logo.ico"
 
 // See https://docs.microsoft.com/en-us/windows/win32/menurc/versioninfo-resource
 // for a list of all the neat metadata we can set in this file.

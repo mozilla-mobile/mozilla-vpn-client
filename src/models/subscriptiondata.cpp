@@ -3,12 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "subscriptiondata.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "telemetry/gleansample.h"
 
 #include <QDateTime>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
@@ -30,12 +32,52 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
     return true;
   }
 
+  resetData();
+
   QJsonDocument doc = QJsonDocument::fromJson(json);
   if (!doc.isObject()) {
     return false;
   }
 
   QJsonObject obj = doc.object();
+
+  // Subscription
+  QJsonObject subscriptionData = obj["subscription"].toObject();
+
+  QString type = subscriptionData["_subscription_type"].toString();
+  if (type.isEmpty()) {
+    return false;
+  }
+
+  // Parse subscription data depending on subscription platform
+  if (type == "web") {
+    m_type = SubscriptionWeb;
+    if (!parseSubscriptionDataWeb(subscriptionData)) {
+      return false;
+    }
+  } else if (type == "iap_apple") {
+    // TODO: Parse subscription data as soon as FxA includes Apple subscriptions
+    // in their API response.
+    m_type = SubscriptionApple;
+    if (!parseSubscriptionDataIap(subscriptionData)) {
+      return false;
+    }
+
+    // For Apple subscriptions that is all the information we currently have.
+    m_rawJson = json;
+    emit changed();
+    logger.debug() << "Subscription data from JSON ready";
+
+    return true;
+  } else if (type == "iap_google") {
+    m_type = SubscriptionGoogle;
+    if (!parseSubscriptionDataIap(subscriptionData)) {
+      return false;
+    }
+  } else {
+    logger.error() << "No matching subscription type" << type;
+    return false;
+  }
 
   // Plan
   logger.debug() << "Parse plan start";
@@ -54,10 +96,15 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
 
   // Convert `interval` to number of months
   int planIntervalMonths;
-  if (planInterval == "month") {
-    planIntervalMonths = 1;
-  } else if (planInterval == "year") {
+  if (planInterval == "year") {
     planIntervalMonths = 12;
+  } else if (planInterval == "month") {
+    planIntervalMonths = 1;
+  } else if ((planInterval == "week" || planInterval == "day") &&
+             !Constants::inProduction()) {
+    // For testing purposes we support additional intervals
+    // and use a monthly plan as fallback
+    planIntervalMonths = 1;
   } else {
     logger.error() << "Unexpected interval type:" << planInterval;
     emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
@@ -100,7 +147,6 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   if (m_planCurrency.isEmpty()) {
     return false;
   }
-  logger.debug() << "Parse plan ready";
 
   // Payment
   QJsonObject paymentData = obj["payment"].toObject();
@@ -108,7 +154,7 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
   // If we do not receive payment data from FxA we don’t show it instead of
   // throwing an error. There is a known bug with FxA which causes FxA to not
   // show payment info: https://mozilla-hub.atlassian.net/browse/FXA-3856.
-  if (!paymentData.isEmpty()) {
+  if (!paymentData.isEmpty() && m_type == SubscriptionWeb) {
     // Payment provider
     m_paymentProvider = paymentData["payment_provider"].toString();
     // We should always get a payment provider if there is payment data
@@ -116,60 +162,22 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
       return false;
     }
 
-    // Payment type
-    m_paymentType = paymentData["payment_type"].toString();
+    QJsonArray subscriptionsList = paymentData["subscriptions"].toArray();
+    for (QJsonValue subscriptionValue : subscriptionsList) {
+      QJsonObject subscription = subscriptionValue.toObject();
+      if (subscription["product_id"] == Constants::privacyBundleProductId()) {
+        m_isPrivacyBundleSubscriber = true;
+        break;
+      }
+    }
 
-    // For credit cards we also show card details
-    if (m_paymentType == "credit") {
+    // We show card details only for stripe
+    if (m_paymentProvider == "stripe") {
       m_creditCardBrand = paymentData["brand"].toString();
-      if (m_creditCardBrand.isEmpty()) {
-        return false;
-      }
-
       m_creditCardLast4 = paymentData["last4"].toString();
-      if (m_creditCardLast4.isEmpty()) {
-        return false;
-      }
-
       m_creditCardExpMonth = paymentData["exp_month"].toInt();
-      if (!m_creditCardExpMonth) {
-        return false;
-      }
-
       m_creditCardExpYear = paymentData["exp_year"].toInt();
-      if (!m_creditCardExpYear) {
-        return false;
-      }
     }
-  }
-
-  // Subscription
-  QJsonObject subscriptionData = obj["subscription"].toObject();
-
-  QString type = subscriptionData["_subscription_type"].toString();
-  if (type.isEmpty()) {
-    return false;
-  }
-
-  // Parse subscription data depending on subscription platform
-  if (type == "web") {
-    m_type = SubscriptionWeb;
-    if (!parseSubscriptionDataWeb(subscriptionData)) {
-      return false;
-    }
-  } else if (type == "iap_apple") {
-    m_type = SubscriptionApple;
-    if (!parseSubscriptionDataIap(subscriptionData)) {
-      return false;
-    }
-  } else if (type == "iap_google") {
-    m_type = SubscriptionGoogle;
-    if (!parseSubscriptionDataIap(subscriptionData)) {
-      return false;
-    }
-  } else {
-    logger.error() << "No matching subscription type" << type;
-    return false;
   }
 
   m_rawJson = json;
@@ -221,14 +229,33 @@ bool SubscriptionData::parseSubscriptionDataWeb(
     return false;
   }
 
-  if (subscriptionStatus == "active") {
+  if (subscriptionStatus == "active" || subscriptionStatus == "trialing") {
     m_status = Active;
-  } else if (subscriptionStatus == "inactive") {
-    m_status = Inactive;
   } else {
-    logger.error() << "Unexpected subscription status:" << subscriptionStatus;
-    return false;
+    m_status = Inactive;
   }
 
   return true;
+}
+
+void SubscriptionData::resetData() {
+  logger.debug() << "Reset data";
+  m_rawJson.clear();
+
+  m_type = SubscriptionUnknown;
+  m_status = Inactive;
+  m_createdAt = 0;
+  m_expiresOn = 0;
+  m_isCancelled = false;
+  m_isPrivacyBundleSubscriber = false;
+
+  m_planBillingInterval = BillingIntervalUnknown;
+  m_planAmount = 0;
+  m_planCurrency.clear();
+
+  m_paymentProvider.clear();
+  m_creditCardBrand.clear();
+  m_creditCardLast4.clear();
+  m_creditCardExpMonth = 0;
+  m_creditCardExpYear = 0;
 }

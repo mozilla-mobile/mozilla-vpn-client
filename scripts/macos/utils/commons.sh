@@ -25,6 +25,7 @@ _qmake() {
     -spec macx-xcode \
     QTPLUGIN+=qsvg \
     MVPN_MACOS=1 \
+    CONFIG+=DUMMY \
     CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release \
     CONFIG+=sdk_no_version_check \
     QMAKE_CXXFLAGS+=--coverage QMAKE_LFLAGS+=--coverage \
@@ -39,6 +40,8 @@ _compile() {
   xcodebuild build \
     CODE_SIGN_IDENTITY="" \
     CODE_SIGNING_REQUIRED=NO \
+    ONLY_ACTIVE_ARCH=NO \
+    -arch x86_64 \
     -derivedDataPath=/build \
     -resultBundlePath=/tmp \
     -enableCodeCoverage=YES \

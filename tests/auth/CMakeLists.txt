@@ -46,6 +46,7 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/authenticationlistener.h
     ${MVPN_SOURCE_DIR}/constants.cpp
     ${MVPN_SOURCE_DIR}/constants.h
+    ${MVPN_SOURCE_DIR}/env.h
     ${MVPN_SOURCE_DIR}/errorhandler.cpp
     ${MVPN_SOURCE_DIR}/errorhandler.h
     ${MVPN_SOURCE_DIR}/hawkauth.cpp

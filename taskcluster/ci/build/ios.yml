@@ -1,0 +1,26 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+ios/debug:
+    description: "IOS Debug Build"
+    treeherder:
+        symbol: B
+        kind: build
+        tier: 1
+        platform: ios/debug
+    worker-type: b-macos
+    fetches:
+        toolchain:
+            - qt-ios
+    worker:
+        taskcluster-proxy: true
+        chain-of-trust: true
+        max-run-time: 3600
+    release-artifacts:
+        - MozillaVPN.tar.gz
+    run:
+        using: run-task
+        use-caches: false
+        cwd: '{checkout}'
+        command: ./taskcluster/scripts/build/ios_build_no_adjust.sh

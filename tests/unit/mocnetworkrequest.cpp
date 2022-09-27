@@ -14,7 +14,7 @@ namespace {};
 
 NetworkRequest::NetworkRequest(Task* parent, int status,
                                bool setAuthorizationHeader)
-    : QObject(parent), m_status(status) {
+    : QObject(parent), m_expectedStatusCode(status) {
   Q_UNUSED(setAuthorizationHeader);
 
   MVPN_COUNT_CTOR(NetworkRequest);
@@ -110,10 +110,6 @@ NetworkRequest* NetworkRequest::createForIOSPurchase(Task* parent,
 }
 #endif
 
-NetworkRequest* NetworkRequest::createForSurveyData(Task* parent) {
-  return new NetworkRequest(parent, 1234, false);
-}
-
 NetworkRequest* NetworkRequest::createForFeedback(Task* parent,
                                                   const QString& feedbackText,
                                                   const QString& logs,
@@ -148,6 +144,10 @@ void NetworkRequest::replyFinished() { QFAIL("Not called!"); }
 
 void NetworkRequest::timeout() {}
 
+#ifndef QT_NO_SSL
 void NetworkRequest::sslErrors(const QList<QSslError>& errors) {
   Q_UNUSED(errors);
 }
+#endif
+
+void NetworkRequest::disableTimeout() {}

@@ -2,476 +2,121 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "networkrequest.h"
-#include "constants.h"
-#include "leakdetector.h"
+#include "wasmnetworkrequest.h"
 #include "logger.h"
-#include "mozillavpn.h"
-#include "networkmanager.h"
-#include "task.h"
-#include "timersingleshot.h"
+#include "networkrequest.h"
 
-#include <QDir>
-#include <QFile>
+#include <QJsonDocument>
+#include <QJsonObject>
+
+#include <emscripten/bind.h>
+#include <emscripten/emscripten.h>
 
 namespace {
-Logger logger(LOG_NETWORKING, "WASM NetworkRequest");
+Logger logger(LOG_MAIN, "WasmNetworkRequest");
 
-void createDummyRequest(NetworkRequest* r, const QString& resource) {
-  TimerSingleShot::create(r, 200, [r, resource] {
-    QByteArray data;
+QMap<int, NetworkRequest*> s_networkRequestMap;
+int m_networkRequestId = 0;
 
-    if (!resource.isEmpty()) {
-      QFile file(resource);
-      if (!file.open(QFile::ReadOnly | QFile::Text)) {
-        logger.error() << "Failed to open" << resource;
-        return;
-      }
+void processNetworkResponse(int id, const QByteArray& data) {
+  if (!s_networkRequestMap.contains(id)) {
+    logger.debug() << "Network request with ID" << id << "already dismissed";
+    return;
+  }
 
-      data = file.readAll();
-      file.close();
-    }
+  NetworkRequest* request = s_networkRequestMap.take(id);
+  Q_ASSERT(request);
 
-    emit r->requestCompleted(data.replace(
-        "%%PUBLICKEY%%",
-        MozillaVPN::instance()->keys()->publicKey().toLocal8Bit()));
-  });
+  QJsonDocument doc = QJsonDocument::fromJson(data);
+  QJsonObject obj = doc.object();
+
+  int status = obj["status"].toInt();
+  QByteArray body = QByteArray::fromBase64(obj["body"].toString().toUtf8());
+  QNetworkReply::NetworkError error = QNetworkReply::NoError;
+
+  if (status >= 200 && status <= 299) {
+    request->processData(error, QString(), status, body);
+    return;
+  }
+
+  if (status == 401) {
+    request->processData(QNetworkReply::AuthenticationRequiredError,
+                         QString("Unauthorized"), status, body);
+    return;
+  }
+
+  if (status == 403) {
+    request->processData(QNetworkReply::ContentAccessDenied,
+                         QString("Access denied"), status, body);
+    return;
+  }
+
+  if (status == 404) {
+    request->processData(QNetworkReply::ContentNotFoundError,
+                         QString("Not found"), status, body);
+    return;
+  }
+
+  request->processData(QNetworkReply::ConnectionRefusedError,
+                       QString("Invalid JS response"), status, body);
 }
 
-void createDummyRequest(NetworkRequest* r) { createDummyRequest(r, ""); }
+int processNetworkRequest(NetworkRequest* request) {
+  int id = ++m_networkRequestId;
+  s_networkRequestMap.insert(id, request);
+
+  QObject::connect(request, &QObject::destroyed,
+                   [id]() { s_networkRequestMap.remove(id); });
+
+  return id;
+}
 
 }  // namespace
 
-NetworkRequest::NetworkRequest(Task* parent, int status,
-                               bool setAuthorizationHeader)
-    : QObject(parent), m_status(status) {
-  Q_UNUSED(setAuthorizationHeader);
-
-  MVPN_COUNT_CTOR(NetworkRequest);
-
-  logger.debug() << "Network request created";
+EMSCRIPTEN_KEEPALIVE void mvpnNetworkResponse(emscripten::val id,
+                                              emscripten::val input) {
+  std::string str = input.as<std::string>();
+  processNetworkResponse(id.as<int>(), QByteArray(str.c_str(), str.length()));
 }
 
-NetworkRequest::~NetworkRequest() { MVPN_COUNT_DTOR(NetworkRequest); }
-
-void NetworkRequest::abort() {}
-
-// static
-QString NetworkRequest::apiBaseUrl() {
-  if (Constants::inProduction()) {
-    return Constants::API_PRODUCTION_URL;
-  }
-
-  return Constants::getStagingServerAddress();
+EMSCRIPTEN_BINDINGS(MozillaVPNResponse) {
+  emscripten::function("mvpnNetworkResponse", &mvpnNetworkResponse);
 }
 
+EM_JS(void, call_mvpnNetworkRequest,
+      (int id, const char* method, const char* url, const char* body,
+       int bodyLength),
+      {
+        try {
+          mvpnNetworkRequest(id, UTF8ToString(method), UTF8ToString(url),
+                             UTF8ToString(body, bodyLength));
+        } catch (e) {
+          console.log("Failed to process the network request in JS", e);
+        }
+      });
+
 // static
-NetworkRequest* NetworkRequest::createForGetUrl(Task* parent,
-                                                const QString& url,
-                                                int status) {
-  Q_ASSERT(parent);
-  Q_UNUSED(url);
+void WasmNetworkRequest::deleteRequest(NetworkRequest* request) {
+  logger.debug() << "Delete request to JS";
 
-  NetworkRequest* r = new NetworkRequest(parent, status, false);
-
-  if (url.startsWith(Constants::addonSourceUrl())) {
-    r->m_request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
-                              QNetworkRequest::SameOriginRedirectPolicy);
-    r->m_request.setUrl(url);
-    QNetworkAccessManager* manager =
-        NetworkManager::instance()->networkAccessManager();
-    r->handleReply(manager->get(r->m_request));
-    return r;
-  }
-
-  createDummyRequest(r);
-  return r;
+  call_mvpnNetworkRequest(processNetworkRequest(request), "DELETE",
+                          request->url().toString().toUtf8().data(), "", 0);
 }
 
 // static
-NetworkRequest* NetworkRequest::createForGetHostAddress(
-    Task* parent, const QString& url, const QHostAddress& address) {
-  Q_ASSERT(parent);
-  Q_UNUSED(url);
-  Q_UNUSED(address);
+void WasmNetworkRequest::getRequest(NetworkRequest* request) {
+  logger.debug() << "Get request to JS";
 
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
-  return r;
+  call_mvpnNetworkRequest(processNetworkRequest(request), "GET",
+                          request->url().toString().toUtf8().data(), "", 0);
 }
 
 // static
-NetworkRequest* NetworkRequest::createForAuthenticationVerification(
-    Task* parent, const QString&, const QString&) {
-  Q_ASSERT(parent);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-
-  createDummyRequest(r, ":/networkrequests/authentication.json");
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForDeviceCreation(Task* parent,
-                                                        const QString&,
-                                                        const QString&,
-                                                        const QString&) {
-  Q_ASSERT(parent);
-
-  NetworkRequest* r = new NetworkRequest(parent, 201, false);
-  createDummyRequest(r);
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForDeviceRemoval(Task* parent,
-                                                       const QString&) {
-  Q_ASSERT(parent);
-
-  NetworkRequest* r = new NetworkRequest(parent, 204, false);
-  createDummyRequest(r);
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForServers(Task* parent) {
-  Q_ASSERT(parent);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r, ":/networkrequests/servers.json");
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForVersions(Task* parent) {
-  Q_ASSERT(parent);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForAccount(Task* parent) {
-  Q_ASSERT(parent);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r, ":/networkrequests/account.json");
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForGetSubscriptionDetails(Task* parent) {
-  Q_ASSERT(parent);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForIpInfo(Task* parent,
-                                                const QHostAddress&) {
-  Q_ASSERT(parent);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r, ":/networkrequests/ipinfo.json");
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForCaptivePortalDetection(
-    Task* parent, const QUrl&, const QByteArray&) {
-  Q_ASSERT(parent);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForCaptivePortalLookup(Task* parent) {
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForHeartbeat(Task* parent) {
-  Q_ASSERT(parent);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForSurveyData(Task* parent) {
-  Q_ASSERT(parent);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForFeedback(Task* parent,
-                                                  const QString& feedbackText,
-                                                  const QString& logs,
-                                                  const qint8 rating,
-                                                  const QString& category) {
-  Q_UNUSED(feedbackText);
-  Q_UNUSED(logs);
-  Q_UNUSED(rating);
-  Q_UNUSED(category);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForSupportTicket(
-    Task* parent, const QString& email, const QString& subject,
-    const QString& issueText, const QString& logs, const QString& category) {
-  Q_UNUSED(email);
-  Q_UNUSED(subject);
-  Q_UNUSED(issueText);
-  Q_UNUSED(logs);
-  Q_UNUSED(category);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForGetFeatureList(Task* parent) {
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForFxaAccountStatus(
-    Task* parent, const QString& emailAddress) {
-  Q_ASSERT(parent);
-  Q_UNUSED(emailAddress);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForFxaAccountCreation(
-    Task* parent, const QString& email, const QByteArray& authpw,
-    const QString& fxaClientId, const QString& fxaDeviceId,
-    const QString& fxaFlowId, double fxaFlowBeginTime) {
-  Q_ASSERT(parent);
-  Q_UNUSED(email);
-  Q_UNUSED(authpw);
-  Q_UNUSED(fxaClientId);
-  Q_UNUSED(fxaDeviceId);
-  Q_UNUSED(fxaFlowId);
-  Q_UNUSED(fxaFlowBeginTime);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForFxaLogin(
-    Task* parent, const QString& email, const QByteArray& authpw,
-    const QString& originalLoginEmail, const QString& unblockCode,
-    const QString& fxaClientId, const QString& fxaDeviceId,
-    const QString& fxaFlowId, double fxaFlowBeginTime) {
-  Q_ASSERT(parent);
-  Q_UNUSED(email);
-  Q_UNUSED(authpw);
-  Q_UNUSED(originalLoginEmail);
-  Q_UNUSED(unblockCode);
-  Q_UNUSED(fxaClientId);
-  Q_UNUSED(fxaDeviceId);
-  Q_UNUSED(fxaFlowId);
-  Q_UNUSED(fxaFlowBeginTime);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForFxaAttachedClients(
-    Task* parent, const QByteArray& sessionToken) {
-  Q_ASSERT(parent);
-  Q_UNUSED(sessionToken);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForFxaAccountDeletion(
-    Task* parent, const QByteArray& sessionToken, const QString& emailAddress,
-    const QByteArray& authpw) {
-  Q_ASSERT(parent);
-  Q_UNUSED(sessionToken);
-  Q_UNUSED(emailAddress);
-  Q_UNUSED(authpw);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForFxaSendUnblockCode(
-    Task* parent, const QString& emailAddress) {
-  Q_ASSERT(parent);
-  Q_UNUSED(emailAddress);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForFxaSessionVerifyByEmailCode(
-    Task* parent, const QByteArray& sessionToken, const QString& code,
-    const QString& fxaClientId, const QString& fxaScope) {
-  Q_ASSERT(parent);
-  Q_UNUSED(sessionToken);
-  Q_UNUSED(code);
-  Q_UNUSED(fxaClientId);
-  Q_UNUSED(fxaScope);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForFxaSessionVerifyByTotpCode(
-    Task* parent, const QByteArray& sessionToken, const QString& code,
-    const QString& fxaClientId, const QString& fxaScope) {
-  Q_ASSERT(parent);
-  Q_UNUSED(sessionToken);
-  Q_UNUSED(code);
-  Q_UNUSED(fxaClientId);
-  Q_UNUSED(fxaScope);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForFxaSessionResendCode(
-    Task* parent, const QByteArray& sessionToken) {
-  Q_ASSERT(parent);
-  Q_UNUSED(sessionToken);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForFxaAuthz(
-    Task* parent, const QByteArray& sessionToken, const QString& fxaClientId,
-    const QString& fxaState, const QString& fxaScope,
-    const QString& fxaAccessType) {
-  Q_ASSERT(parent);
-  Q_UNUSED(sessionToken);
-  Q_UNUSED(fxaClientId);
-  Q_UNUSED(fxaState);
-  Q_UNUSED(fxaScope);
-  Q_UNUSED(fxaAccessType);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForFxaSessionDestroy(
-    Task* parent, const QByteArray& sessionToken) {
-  Q_ASSERT(parent);
-  Q_UNUSED(sessionToken);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
-  return r;
-}
-
-// static
-NetworkRequest* NetworkRequest::createForProducts(Task* parent) {
-  Q_ASSERT(parent);
-
-  NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  createDummyRequest(r);
-  return r;
-}
-
-void NetworkRequest::replyFinished() {
-  Q_ASSERT(m_reply);
-  Q_ASSERT(m_reply->isFinished());
-
-  int status = statusCode();
-
-  QString expect = m_status ? QString::number(m_status) : "any";
-  logger.debug() << "Network reply received - status:" << status
-                 << "- expected:" << expect;
-
-  QByteArray data = m_reply->readAll();
-
-  if (m_reply->error() != QNetworkReply::NoError) {
-    QUrl::FormattingOptions options = QUrl::RemoveQuery | QUrl::RemoveUserInfo;
-    logger.error() << "Network error:" << m_reply->errorString()
-                   << "status code:" << status
-                   << "- body:" << logger.sensitive(data);
-    logger.error() << "Failed to access:" << m_request.url().toString(options);
-    emit requestFailed(m_reply->error(), data);
-    return;
-  }
-
-  // This is an extra check for succeeded requests (status code 200 vs 201, for
-  // instance). The real network status check is done in the previous if-stmt.
-  if (m_status && status != m_status) {
-    logger.error() << "Status code unexpected - status code:" << status
-                   << "- expected:" << m_status;
-    emit requestFailed(QNetworkReply::ConnectionRefusedError, data);
-    return;
-  }
-
-  emit requestCompleted(data);
-}
-
-void NetworkRequest::timeout() {}
-
-void NetworkRequest::getRequest() {}
-
-void NetworkRequest::deleteRequest() {}
-
-void NetworkRequest::postRequest(const QByteArray&) {}
-
-void NetworkRequest::handleReply(QNetworkReply* reply) {
-  Q_ASSERT(reply);
-  Q_ASSERT(!m_reply);
-
-  m_reply = reply;
-  m_reply->setParent(this);
-
-  connect(m_reply, &QNetworkReply::finished, this,
-          &NetworkRequest::replyFinished);
-  connect(m_reply, &QNetworkReply::finished, this, &QObject::deleteLater);
-}
-
-int NetworkRequest::statusCode() const { return 200; }
-
-void NetworkRequest::sslErrors(const QList<QSslError>& errors) {
-  Q_UNUSED(errors);
+void WasmNetworkRequest::postRequest(NetworkRequest* request,
+                                     const QByteArray& body) {
+  logger.debug() << "Post request to JS";
+
+  call_mvpnNetworkRequest(processNetworkRequest(request), "POST",
+                          request->url().toString().toUtf8().data(),
+                          body.data(), body.length());
 }

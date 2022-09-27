@@ -4,6 +4,7 @@
 
 #include "taskgetsubscriptiondetails.h"
 #include "authenticationlistener.h"
+#include "authenticationinapp/authenticationinapp.h"
 #include "authenticationinapp/authenticationinappsession.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
@@ -76,7 +77,8 @@ void TaskGetSubscriptionDetails::run() {
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
-            logger.debug() << "Get subscription details completed" << data;
+            logger.debug() << "Get subscription details completed"
+                           << logger.sensitive(data);
 
             emit receivedData(data);
 
@@ -135,6 +137,24 @@ void TaskGetSubscriptionDetails::initAuthentication() {
           this, [this](const ErrorHandler::ErrorType error) {
             MozillaVPN::instance()->errorHandle(error);
             m_authenticationInAppSession->terminate();
+          });
+
+  connect(AuthenticationInApp::instance(), &AuthenticationInApp::stateChanged,
+          this, [this] {
+            switch (AuthenticationInApp::instance()->state()) {
+              case AuthenticationInApp::StateSignUp:
+                [[fallthrough]];
+              case AuthenticationInApp::StateFallbackInBrowser:
+                MozillaVPN::instance()->errorHandle(
+                    ErrorHandler::AuthenticationError);
+                emit failed();
+                m_authenticationInAppSession->terminate();
+                break;
+
+              default:
+                // All the other states should be handled by the front-end code.
+                break;
+            }
           });
 
   m_authenticationInAppSession->start(this, pkceCodeChallenge,

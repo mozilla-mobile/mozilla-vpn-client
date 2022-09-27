@@ -33,7 +33,7 @@ include($$PWD/qmake/sources.pri)
 DUMMY {
    include($$PWD/qmake/platforms/dummy.pri)
 } else:linux:!android {
-   include($$PWD/qmake/platforms/linux.pri)
+   error(qmake is not supported for Linux. Please use cmake.)
 } else:android {
    include($$PWD/qmake/platforms/android.pri)
 } else:macos {
@@ -41,9 +41,9 @@ DUMMY {
 } else:ios {
    include($$PWD/qmake/platforms/ios.pri)
 } else:win* {
-   include($$PWD/qmake/platforms/windows.pri)
+   error(qmake is not supported for Windows. Please use cmake.)
 } else:wasm {
-   include($$PWD/qmake/platforms/wasm.pri)
+   error(qmake is not supported for Wasm. Please use cmake.)
 } else {
    error(Unsupported platform)
 }

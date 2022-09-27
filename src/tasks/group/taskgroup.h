@@ -7,20 +7,20 @@
 
 #include "task.h"
 
-#include <initializer_list>
+#include <QList>
 #include <QObject>
 
 class TaskGroup final : public Task {
   Q_DISABLE_COPY_MOVE(TaskGroup)
 
  public:
-  TaskGroup(std::initializer_list<Task*> list);
+  TaskGroup(const QList<Task*>& list);
   ~TaskGroup();
 
   void run() override;
 
   void cancel() override;
-  bool deletable() const override;
+  DeletePolicy deletePolicy() const override;
 
  private:
   void maybeComplete();

@@ -1,9 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>manifest.json</file>
-        <file>script.mjs</file>
-        <file>tic-tac-toe.qml</file>
-        <file>i18n/locale_en.qm</file>
-        <file>i18n/locale_it.qm</file>
-    </qresource>
-</RCC>

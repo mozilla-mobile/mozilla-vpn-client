@@ -79,7 +79,9 @@
                   "description": "The operation type. Each 'op' value has its own properties"
                 }
               },
-              "required": [ "op" ]
+              "required": [
+                "op"
+              ]
             }
           },
           "next": {
@@ -92,12 +94,26 @@
                 "description": "The 'next' operation type. Each 'op' value has its own properties"
               }
             },
-            "required": [ "op" ]
+            "required": [
+              "op"
+            ]
           }
         },
-        "required": [ "id", "element", "tooltip", "next" ]
+        "required": [
+          "id",
+          "element",
+          "tooltip",
+          "next"
+        ]
       }
     }
   },
-  "required": [ "id", "title", "subtitle", "completion_message", "image", "steps" ]
+  "required": [
+    "id",
+    "title",
+    "subtitle",
+    "completion_message",
+    "image",
+    "steps"
+  ]
 }
