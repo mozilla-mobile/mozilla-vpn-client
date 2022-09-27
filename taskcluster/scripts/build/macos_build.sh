@@ -9,6 +9,11 @@ set -x
 
 . $(dirname $0)/../../../scripts/utils/commons.sh
 
+TASK_HOME=$(dirname "${MOZ_FETCHES_DIR}" )
+rm -rf "${TASK_HOME}/artifacts"
+mkdir -p "${TASK_HOME}/artifacts"
+
+
 print N "Taskcluster macOS compilation script"
 print N ""
 
@@ -66,10 +71,14 @@ echo "LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login" >> xcode.xconfig
 echo "GROUP_ID_IOS = group.org.mozilla.ios.Guardian" >> xcode.xconfig
 echo "APP_ID_IOS = org.mozilla.ios.FirefoxVPN" >> xcode.xconfig
 echo "NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
-./scripts/macos/apple_compile.sh macos || die
 
-print Y "Compiling..."
-xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO -project Mozilla\ VPN.xcodeproj || die
+
+mkdir ${MOZ_FETCHES_DIR}/build
+cmake -S . -B ${MOZ_FETCHES_DIR}/build -DCMAKE_INSTALL_PREFIX:PATH=${MOZ_FETCHES_DIR}/artifacts
+cmake --build ${MOZ_FETCHES_DIR}/build
+cmake --install -B ${MOZ_FETCHES_DIR}/build
+
+
 
 print Y "Creating the final package..."
 python3 ./scripts/macos/import_pkg_resources.py || die
@@ -82,10 +91,7 @@ cp -r ./macos/pkg/Distribution tmp || die
 cp -r ./macos/pkg/Resources tmp || die
 cd tmp || die
 
-# From checkout dir to actual task base directory
-TASK_HOME=$(dirname "${MOZ_FETCHES_DIR}" )
-rm -rf "${TASK_HOME}/artifacts"
-mkdir -p "${TASK_HOME}/artifacts"
+
 tar -czvf "${TASK_HOME}/artifacts/MozillaVPN.tar.gz" . || die
 cd .. || die
 rm -rf tmp || die
