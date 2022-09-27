@@ -29,6 +29,11 @@ print Y "Installing rust..."
 curl https://sh.rustup.rs -sSf | sh -s -- -y || die
 export PATH="$HOME/.cargo/bin:$PATH"
 
+mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
+export PATH=$PWD/homebrew/bin:$PATH
+brew install cmake
+brew install ninja
+
 print Y "Installing go..."
 curl -O https://dl.google.com/go/go1.17.6.darwin-amd64.tar.gz
 tar -xzf go1.17.6.darwin-amd64.tar.gz
