@@ -81,7 +81,7 @@ echo "NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xco
 mkdir ${MOZ_FETCHES_DIR}/build
 cmake -S . -B ${MOZ_FETCHES_DIR}/build -DCMAKE_INSTALL_PREFIX:PATH=${MOZ_FETCHES_DIR}/artifacts
 cmake --build ${MOZ_FETCHES_DIR}/build
-cmake --install -B ${MOZ_FETCHES_DIR}/build
+cmake --install ${MOZ_FETCHES_DIR}/build
 
 
 
