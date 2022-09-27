@@ -78,22 +78,22 @@ echo "APP_ID_IOS = org.mozilla.ios.FirefoxVPN" >> xcode.xconfig
 echo "NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
 
 
+mkdir -p tmp || die
 mkdir ${MOZ_FETCHES_DIR}/build
-cmake -S . -B ${MOZ_FETCHES_DIR}/build -DCMAKE_INSTALL_PREFIX:PATH=${MOZ_FETCHES_DIR}/artifacts
+cmake -S . -B ${MOZ_FETCHES_DIR}/build -DCMAKE_INSTALL_PREFIX:PATH=tmp
 cmake --build ${MOZ_FETCHES_DIR}/build
 cmake --install ${MOZ_FETCHES_DIR}/build
 
 
-
-print Y "Creating the final package..."
-python3 ./scripts/macos/import_pkg_resources.py || die
+#print Y "Creating the final package..."
+#python3 ./scripts/macos/import_pkg_resources.py || die
 
 print Y "Exporting the artifact..."
 mkdir -p tmp || die
-cp -r Release/Mozilla\ VPN.app tmp || die
-cp -r ./macos/pkg/scripts tmp || die
-cp -r ./macos/pkg/Distribution tmp || die
-cp -r ./macos/pkg/Resources tmp || die
+#cp -r Release/Mozilla\ VPN.app tmp || die
+#cp -r ./macos/pkg/scripts tmp || die
+#cp -r ./macos/pkg/Distribution tmp || die
+#cp -r ./macos/pkg/Resources tmp || die
 cd tmp || die
 
 
