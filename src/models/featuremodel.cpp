@@ -146,7 +146,7 @@ QVariant FeatureModel::data(const QModelIndex& index, int role) const {
 };
 
 QObject* FeatureModel::get(const QString& feature) {
-  const Feature* f = Feature::get(feature);
+  const Feature* f = Feature::getOrNull(feature);
   auto obj = (QObject*)f;
   QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
   return obj;
