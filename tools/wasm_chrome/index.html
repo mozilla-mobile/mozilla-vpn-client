@@ -23,17 +23,77 @@
                 padding: 0;
             }
             nav{
-                color:white;
-                background: black;
+                color: white;
+                background: #232328;
                 padding: 10px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
             }
+            :root {
+                --max-height: 300px;
+                font-family: sans-serif;
+            }
+
+            .menu-button{
+                position: relative;
+            }
+            .menu{
+                display: none;   
+            }
+            .menu-button:hover .menu{
+                display: block;
+                position: absolute;
+                right: 0px;
+                top: 0;
+                background: #232328;
+                list-style: none;
+                padding: 0px;
+                width: 200px;
+                display: flex;
+                flex-direction: column;
+                justify-content: end;
+                align-items: end;
+
+            }
+            .menu li{
+                padding: 10px 20px;
+            }
+
+            .menu a{
+                color:white;
+                text-decoration: none;
+            }
+            .menu button{
+                color: white;
+                background: transparent;
+                border: none;
+            }
+
         </style>
     </head>
     <body>
         <nav>
             <branch-selector></branch-selector>
-            <button id="copy">Copy Permalink 📋</button>
-            <button id="open_task">Open Task ↗️</a>
+            <span href="#" class="menu-button">
+                More ⬇
+                <ul class="menu">
+                    <li>
+                        <a href="./inspector/">Inspector</a>  
+                    </li>
+                    <li>
+                        <a href="./logviewer/">Logviewer </a>
+                    </li>
+                    <hr>
+                    <li>
+                        <button id="copy">Copy Permalink 📋</button>
+                    </li>
+                    <li>
+                        <button id="open_task">Open Task ↗️</button>
+                    </li>
+                </ul>
+            </span>
+           
         </nav>
         <taskcluster-frame></taskcluster-frame>
         <script type="module" src="branch_selector.mjs"></script>
@@ -67,5 +127,7 @@
                 console.log("ready");
             });
         </script>
+
+
     </body>
 </html>
