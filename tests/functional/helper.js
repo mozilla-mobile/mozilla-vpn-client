@@ -161,11 +161,7 @@ module.exports = {
 
   async waitForElementAndClick(id) {
     await this.waitForElementAndProperty(id, 'visible', 'true');
-    assert(await this.hasElement(id), 'Clicking on an non-existing element?!?');
-    const json = await this._writeCommand(`click ${id}`);
-    assert(
-        json.type === 'click' && !('error' in json),
-        `Command failed: ${json.error}`);
+    await this.clickOnElement(id)
   },
 
   async clickOnNotification() {
@@ -233,19 +229,7 @@ module.exports = {
 
   async waitForElementAndProperty(id, property, value) {
     await this.waitForElement(id)
-    assert(
-        await this.hasElement(id),
-        'Property checks must be done on existing elements');
-    try {
-      return this.waitForCondition(async () => {
-        const real = await this.getElementProperty(id, property);
-        return real === value;
-      });
-    } catch (e) {
-      const real = await this.getElementProperty(id, property);
-      throw new Error(`Timeout for waitForElementProperty - property: ${
-          property} - value: ${real} - expected: ${value}`);
-    }
+    await this.waitForElementProperty(id, property, value)
   },
 
   async setGleanAutomationHeader() {

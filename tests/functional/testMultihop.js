@@ -47,7 +47,7 @@
       // wait for country of choice to be visible    
       const server = servers[i]
       const countryId = 'serverCountryList/serverCountry-' + server.code;
-      const exitCountyId = 'serverCountryList/serverCountry-' + servers[0].code;      
+      const exitCountryId = 'serverCountryList/serverCountry-' + servers[0].code;      
   
       // select the country of choice      
       await vpn.setElementProperty('serverCountryView', 'contentY', 'i', parseInt(await vpn.getElementProperty(countryId, 'y')));
@@ -77,20 +77,20 @@
       await vpn.wait();
       
       // set country view        
-      await vpn.setElementProperty('serverCountryView', 'contentY', 'i', parseInt(await vpn.getElementProperty(exitCountyId, 'y')));
+      await vpn.setElementProperty('serverCountryView', 'contentY', 'i', parseInt(await vpn.getElementProperty(exitCountryId, 'y')));
       await vpn.wait();
   
       // check if country is visible
-      const cityTwoId = exitCountyId + '/serverCityList/serverCity-' + cityTwo.name.replace(/ /g, '_');
-      if (await vpn.getElementProperty(exitCountyId, 'cityListVisible') ===  'false') {
-        await vpn.clickOnElement(exitCountyId);
+      const cityTwoId = exitCountryId + '/serverCityList/serverCity-' + cityTwo.name.replace(/ /g, '_');
+      if (await vpn.getElementProperty(exitCountryId, 'cityListVisible') ===  'false') {
+        await vpn.clickOnElement(exitCountryId);
       }
     
       // set city view      
       await vpn.setElementProperty(
         'serverCountryView', 'contentY', 'i',
         parseInt(await vpn.getElementProperty(cityTwoId, 'y')) +
-            parseInt(await vpn.getElementProperty(exitCountyId, 'y')));
+            parseInt(await vpn.getElementProperty(exitCountryId, 'y')));
       await vpn.wait()
   
       // select city      
@@ -108,12 +108,18 @@
             'VPN is on';
       });
       await vpn.wait();
-
-      assert.strictEqual(vpn.lastNotification().title, 'VPN Connected');
-      await vpn.wait()      
       
-        // go to server list
+      currentCountry = servers[0].localizedName;
+      currentCity = cityTwo.localizedName;
+            
+      assert.strictEqual(vpn.lastNotification().title, 'VPN Connected');
+      assert.strictEqual(vpn.lastNotification().message, `Connected to ${currentCountry}, ${currentCity}`);
+      await vpn.wait()
+      
+        // go back to server list
       await vpn.waitForElementAndClick('serverListButton');
+      await vpn.wait()
     }
-   })  
+    await vpn.deactivate()
+   })
  });
