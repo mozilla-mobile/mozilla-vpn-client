@@ -42,6 +42,14 @@ FEATURE_SIMPLE(appReview,      // Feature ID
                QStringList(),  // feature dependencies
                FeatureCallback_iosOrAndroid)
 
+FEATURE_SIMPLE(benchmarkUpload,           // Feature ID
+               "Benchmark Upload",  // Feature name
+               "2.10.0",            // released
+               true,                // Can be flipped on
+               true,                // Can be flipped off
+               QStringList(),       // feature dependencies
+               FeatureCallback_true)
+
 FEATURE_SIMPLE(captivePortal,     // Feature ID
                "Captive Portal",  // Feature name
                "2.1",             // released

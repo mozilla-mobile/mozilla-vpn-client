@@ -148,6 +148,7 @@ Flickable {
                 color: VPNTheme.colors.white
                 height: 1
                 opacity: 0.2
+                visible: VPNFeatureList.get("benchmarkUpload").isSupported
 
                 Layout.fillWidth: true
             }
@@ -156,6 +157,7 @@ Flickable {
                 title: VPNl18n.ConnectionInfoLabelUpload
                 subtitle: root.getConnectionLabel(VPNConnectionBenchmark.uploadBps)
                 iconPath: "qrc:/nebula/resources/upload.svg"
+                visible: VPNFeatureList.get("benchmarkUpload").isSupported
             }
         }
     }

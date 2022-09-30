@@ -10,6 +10,7 @@
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/feature.h"
 #include "mozillavpn.h"
 #include "taskscheduler.h"
 
@@ -97,18 +98,20 @@ void ConnectionBenchmark::start() {
   TaskScheduler::scheduleTask(downloadTask);
 
   // Create upload benchmark
-  setUploadUrl(Constants::BENCHMARK_UPLOAD_URL);
-  BenchmarkTaskTransfer* uploadTask = new BenchmarkTaskTransfer(
-      "BenchmarkTaskUpload", BenchmarkTaskTransfer::BenchmarkUpload,
-      m_uploadUrl);
-  Q_UNUSED(uploadTask);
+  if (Feature::get(Feature::Feature_benchmarkUpload)->isSupported()) {
+    setUploadUrl(Constants::BENCHMARK_UPLOAD_URL);
+    BenchmarkTaskTransfer* uploadTask = new BenchmarkTaskTransfer(
+        "BenchmarkTaskUpload", BenchmarkTaskTransfer::BenchmarkUpload,
+        m_uploadUrl);
+    Q_UNUSED(uploadTask);
 
-  connect(uploadTask, &BenchmarkTaskTransfer::finished, this,
-          &ConnectionBenchmark::uploadBenchmarked);
-  connect(uploadTask->sentinel(), &BenchmarkTask::destroyed, this,
-          [this, uploadTask]() { m_benchmarkTasks.removeOne(uploadTask); });
-  m_benchmarkTasks.append(uploadTask);
-  TaskScheduler::scheduleTask(uploadTask);
+    connect(uploadTask, &BenchmarkTaskTransfer::finished, this,
+            &ConnectionBenchmark::uploadBenchmarked);
+    connect(uploadTask->sentinel(), &BenchmarkTask::destroyed, this,
+            [this, uploadTask]() { m_benchmarkTasks.removeOne(uploadTask); });
+    m_benchmarkTasks.append(uploadTask);
+    TaskScheduler::scheduleTask(uploadTask);
+  }
 }
 
 void ConnectionBenchmark::stop() {
@@ -150,6 +153,11 @@ void ConnectionBenchmark::downloadBenchmarked(quint64 bitsPerSec,
 
   m_downloadBps = bitsPerSec;
   emit downloadBpsChanged();
+
+  if (!Feature::get(Feature::Feature_benchmarkUpload)->isSupported()) {
+    // All benchmarks ran successfully and we can set the connection speed.
+    setConnectionSpeed();
+  }
 }
 
 void ConnectionBenchmark::pingBenchmarked(quint64 pingLatency) {
@@ -171,8 +179,10 @@ void ConnectionBenchmark::uploadBenchmarked(quint64 bitsPerSec,
   m_uploadBps = bitsPerSec;
   emit uploadBpsChanged();
 
-  // All benchmarks ran successfully and we can set the connection speed.
-  setConnectionSpeed();
+  if (Feature::get(Feature::Feature_benchmarkUpload)->isSupported()) {
+    // All benchmarks ran successfully and we can set the connection speed.
+    setConnectionSpeed();
+  }
 }
 
 void ConnectionBenchmark::handleControllerState() {
