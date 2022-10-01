@@ -143,57 +143,30 @@ VPNFlickable {
                     VPNConnectionInfoItem {
                         //% "Download"
                         title: qsTrId("vpn.connectionInfo.download")
-                        subtitle: root.getConnectionLabel((VPNConnectionBenchmark.downloadBps)
+                        subtitle: root.getConnectionLabel(VPNConnectionBenchmark.downloadBps)
                         iconPath: "qrc:/nebula/resources/download.svg"
+                    }
+
+                    Rectangle {
+                        color: VPNTheme.colors.white
+                        height: 1
+                        opacity: 0.2
+                        visible: VPNFeatureList.get("benchmarkUpload").isSupported
+
+                        Layout.fillWidth: true
+                    }
+
+                    VPNConnectionInfoItem {
+                        title: VPNl18n.ConnectionInfoLabelUpload
+                        subtitle: root.getConnectionLabel(VPNConnectionBenchmark.uploadBps)
+                        iconPath: "qrc:/nebula/resources/upload.svg"
+                        visible: VPNFeatureList.get("benchmarkUpload").isSupported
                     }
                 }
             }
-
-            Rectangle {
-                color: VPNTheme.colors.white
-                height: 1
-                opacity: 0.2
-
-                Layout.fillWidth: true
-            }
-
-            VPNConnectionInfoItem {
-                title: VPNl18n.ConnectionInfoLabelPing
-                subtitle: VPNConnectionBenchmark.pingLatency + " " + VPNl18n.ConnectionInfoUnitPing
-                iconPath: "qrc:/nebula/resources/connection-green.svg"
-            }
-
-            Rectangle {
-                color: VPNTheme.colors.white
-                height: 1
-                opacity: 0.2
-
-                Layout.fillWidth: true
-            }
-
-            VPNConnectionInfoItem {
-                //% "Download"
-                title: qsTrId("vpn.connectionInfo.download")
-                subtitle: root.getConnectionLabel(VPNConnectionBenchmark.downloadBps)
-                iconPath: "qrc:/nebula/resources/download.svg"
-            }
-
-            Rectangle {
-                color: VPNTheme.colors.white
-                height: 1
-                opacity: 0.2
-                visible: VPNFeatureList.get("benchmarkUpload").isSupported
-
-                Layout.fillWidth: true
-            }
-
-            VPNConnectionInfoItem {
-                title: VPNl18n.ConnectionInfoLabelUpload
-                subtitle: root.getConnectionLabel(VPNConnectionBenchmark.uploadBps)
-                iconPath: "qrc:/nebula/resources/upload.svg"
-                visible: VPNFeatureList.get("benchmarkUpload").isSupported
-            }
         }
+    }
+
     function getConnectionLabel(connectionValueBits) {
         return `${computeValue(connectionValueBits)} ${computeRange(connectionValueBits)}`;
     }

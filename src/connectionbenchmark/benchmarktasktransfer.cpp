@@ -45,8 +45,7 @@ void BenchmarkTaskTransfer::handleState(BenchmarkTask::State state) {
   logger.debug() << "Handle state" << state;
 
   if (state == BenchmarkTask::StateActive) {
-#if defined(MVPN_DUMMY) || defined(MVPN_ANDROID) || defined(MVPN_WASM) || defined(MVPN_MACOS)
-    Q_UNUSED(MULLVAD_DEFAULT_DNS);
+#if defined(MVPN_DUMMY) || defined(MVPN_ANDROID) || defined(MVPN_WASM)
     createNetworkRequest();
 #else
     // Start DNS resolution
