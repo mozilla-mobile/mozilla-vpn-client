@@ -8,12 +8,19 @@ class TestAddon final : public TestHelper {
   Q_OBJECT
 
  private slots:
+  void property();
+  void property_list();
+
   void conditions_data();
   void conditions();
 
   void conditionWatcher_locale();
+  void conditionWatcher_featuresEnabled();
   void conditionWatcher_group();
   void conditionWatcher_triggerTime();
+  void conditionWatcher_startTime();
+  void conditionWatcher_endTime();
+  void conditionWatcher_javascript();
 
   void guide_create_data();
   void guide_create();
@@ -23,6 +30,11 @@ class TestAddon final : public TestHelper {
 
   void message_create_data();
   void message_create();
-
+  void message_date_data();
+  void message_date();
+  void message_notification_data();
+  void message_notification();
+  void message_load_state_data();
+  void message_load_state();
   void message_dismiss();
 };

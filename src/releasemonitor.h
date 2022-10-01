@@ -32,7 +32,6 @@ class ReleaseMonitor final : public QObject {
   void schedule();
 
   void updateRequired();
-  void updateRecommended();
 
  private:
   QTimer m_timer;

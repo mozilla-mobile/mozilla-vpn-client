@@ -8,38 +8,54 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 import components 0.1
+import Mozilla.VPN.qmlcomponents 1.0
 import components.forms 0.1
 
-VPNTextField {
-    // TODO Add strings for Accessible.description, Accessible.name
-    property bool hasError: false
+ColumnLayout {
+    property var _filterProxyCallback: () => {}
+    property var _sortProxyCallback: () => {}
+    property var _editCallback: () => {}
+    property alias _filterProxySource: model.source
+    property bool _searchBarHasError: false
+    property alias _searchBarPlaceholderText: searchBar._placeholderText
 
-    id: searchBar
+    spacing: VPNTheme.theme.windowMargin / 2
 
-    background: VPNInputBackground {}
-    leftInset: 48
-    leftPadding: 48
-    onActiveFocusChanged: if (focus && vpnFlickable.ensureVisible) vpnFlickable.ensureVisible(searchBar)
+    VPNTextField {
+        // TODO Add strings for Accessible.description, Accessible.name
 
-    VPNIcon {
-        source: "qrc:/nebula/resources/search.svg"
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.left: parent.left
-        anchors.leftMargin: 20
-        sourceSize.height: VPNTheme.theme.windowMargin
-        sourceSize.width: VPNTheme.theme.windowMargin
-        opacity: parent.focus ? 1 : 0.8
+        id: searchBar
+
+        background: VPNInputBackground {}
+        leftInset: 48
+        leftPadding: 48
+        onActiveFocusChanged: if (focus && vpnFlickable.ensureVisible) vpnFlickable.ensureVisible(searchBar)
+        Layout.fillWidth: true
+        onTextChanged: hasError = _searchBarHasError
+        onLengthChanged: text => model.invalidate()
+
+        VPNIcon {
+            source: "qrc:/nebula/resources/search.svg"
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            anchors.leftMargin: 20
+            sourceSize.height: VPNTheme.theme.windowMargin
+            sourceSize.width: VPNTheme.theme.windowMargin
+            opacity: parent.focus ? 1 : 0.8
+        }
+
+
+        Keys.onPressed: event => {
+            if (focus && _searchBarHasError && (/[\w\[\]`!@#$%\^&*()={}:;<>+'-]/).test(event.text)) {
+                _editCallback();
+            }
+        }
     }
 
     VPNContextualAlerts {
         id: searchWarning
-        anchors {
-            left: parent.left
-            right: parent.right
-            top: searchBar.bottom
-            topMargin: VPNTheme.theme.listSpacing
-        }
-        width: parent.width
+        Layout.fillWidth: true
+        visible: _searchBarHasError
 
         messages: [
             {
@@ -50,9 +66,21 @@ VPNTextField {
         ]
     }
 
-    Keys.onPressed: event => {
-        if (focus && hasError && (/[\w\[\]`!@#$%\^&*()={}:;<>+'-]/).test(event.text)) {
-            event.accepted = true;
-        }
+    VPNFilterProxyModel {
+        id: model
+        filterCallback: _filterProxyCallback
+        sortCallback: _sortProxyCallback
+    }
+
+    function getProxyModel() {
+        return model
+    }
+
+    function getSearchBarText() {
+        return searchBar.text.toLowerCase();
+    }
+
+    function clearText() {
+        searchBar.text = ""
     }
 }

@@ -18,6 +18,8 @@ class TaskAddDevice final : public Task {
 
   void run() override;
 
+  DeletePolicy deletePolicy() const override { return NonDeletable; }
+
  private:
   QString m_deviceName;
   QString m_deviceID;

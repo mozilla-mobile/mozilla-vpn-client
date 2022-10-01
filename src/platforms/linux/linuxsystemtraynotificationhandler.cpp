@@ -57,6 +57,7 @@ void LinuxSystemTrayNotificationHandler::notify(Message type,
   switch (type) {
     case None:
     case ServerUnavailable:
+    case NewInAppMessage:
       break;
 
     case UnsecuredNetwork:

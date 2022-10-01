@@ -16,6 +16,22 @@
       "type": "string",
       "description": "A comment to describe how to translate the title"
     },
+    "subtitle": {
+      "type": "string",
+      "description": "The subtitle of the message"
+    },
+    "subtitle_comment": {
+      "type": "string",
+      "description": "A comment to describe how to translate the subtitle"
+    },
+    "date": {
+      "type": "number",
+      "description": "Epoch time of this message"
+    },
+    "badge": {
+      "type": "string",
+      "description": "The type of this message"
+    },
     "blocks": {
       "type": "array",
       "description": "The list of text blocks",

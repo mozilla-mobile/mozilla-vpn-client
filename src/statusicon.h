@@ -5,6 +5,8 @@
 #ifndef STATUSICON_H
 #define STATUSICON_H
 
+#include "connectionhealth.h"
+
 #include <QIcon>
 #include <QObject>
 #include <QTimer>
@@ -14,32 +16,30 @@ class StatusIcon final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(StatusIcon)
 
-  Q_PROPERTY(QUrl iconUrl READ iconUrl NOTIFY iconChanged)
-
  public:
   StatusIcon();
   ~StatusIcon();
 
-  QUrl iconUrl() const;
-
-  const QString& iconString() const { return m_icon; }
+  const QIcon& icon();
+  const QString iconString();
+  const QColor indicatorColor() const;
 
  signals:
-  void iconChanged(const QString& icon);
+  void iconUpdateNeeded();
 
  public slots:
-  void stateChanged();
+  void refreshNeeded();
 
  private slots:
   void animateIcon();
 
  private:
   void activateAnimation();
-
-  void setIcon(const QString& icon);
+  QIcon drawStatusIndicator();
+  void generateIcon();
 
  private:
-  QString m_icon;
+  QIcon m_icon;
 
   // Animated icon.
   QTimer m_animatedIconTimer;

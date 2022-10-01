@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!-- 
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+-->
+<html>
+    <head> 
+        <title>MozillaVPN Chrome</title>
+        <style>
+            taskcluster-frame{
+                width: 100vw;
+                background: #4a4a55;
+                flex-grow: 1;
+                overflow: hidden;
+            }
+            body{
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                height: 100vh;
+                margin: 0;
+                padding: 0;
+            }
+            nav{
+                color:white;
+                background: black;
+                padding: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <nav>
+            <branch-selector></branch-selector>
+            <button id="copy">Copy Permalink 📋</button>
+            <button id="open_task">Open Task ↗️</a>
+        </nav>
+        <taskcluster-frame></taskcluster-frame>
+        <script type="module" src="branch_selector.mjs"></script>
+        <script type="module" src="taskcluster_frame.mjs"></script>
+        <script>
+            window.addEventListener("load",()=>{
+                let branchSelector = document.querySelector("branch-selector");
+                let taskclusterFrame = document.querySelector("taskcluster-frame");
+                let copy_btn = document.querySelector("#copy");
+                let open_btn = document.querySelector("#open_task");
+                
+                branchSelector.addEventListener("change",() =>{
+                    taskclusterFrame.target = {
+                        sha: branchSelector.value,
+                        name: branchSelector.name
+                    } 
+
+                    const url = new URL(window.location);
+                    url.searchParams.set('branch', branchSelector.name);
+                    window.history.pushState(null, '', url.toString());
+                })
+
+                copy_btn.addEventListener("click",()=>{
+                    navigator.clipboard.writeText(taskclusterFrame.artifact_url);
+                })
+                open_btn.addEventListener("click",()=>{
+                    window.open(`https://firefox-ci-tc.services.mozilla.com/tasks/${taskclusterFrame.taskID}`);
+                });
+
+
+                console.log("ready");
+            });
+        </script>
+    </body>
+</html>

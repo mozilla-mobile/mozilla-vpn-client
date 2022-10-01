@@ -6,7 +6,8 @@
 #define ADDONGUIDE_H
 
 #include "addon.h"
-#include "composer.h"
+#include "addonproperty.h"
+#include "../composer/composer.h"
 
 class QJsonObject;
 
@@ -14,13 +15,15 @@ class AddonGuide final : public Addon {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AddonGuide)
 
-  Q_PROPERTY(QString titleId MEMBER m_titleId CONSTANT)
-  Q_PROPERTY(QString subtitleId MEMBER m_subtitleId CONSTANT)
+ public:
+  ADDON_PROPERTY(title, m_title, getTitle, setTitle, retranslationCompleted)
+  ADDON_PROPERTY(subtitle, m_subtitle, getSubtitle, setSubtitle,
+                 retranslationCompleted)
+
   Q_PROPERTY(QString image MEMBER m_image CONSTANT)
   Q_PROPERTY(Composer* composer MEMBER m_composer CONSTANT)
   Q_PROPERTY(bool advanced MEMBER m_advanced CONSTANT)
 
- public:
   static Addon* create(QObject* parent, const QString& manifestFileName,
                        const QString& id, const QString& name,
                        const QJsonObject& obj);
@@ -32,8 +35,8 @@ class AddonGuide final : public Addon {
              const QString& id, const QString& name);
 
  private:
-  QString m_titleId;
-  QString m_subtitleId;
+  AddonProperty m_title;
+  AddonProperty m_subtitle;
   QString m_image;
   bool m_advanced = false;
 

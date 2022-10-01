@@ -19,7 +19,6 @@ property object with the following properties:
 | -------------------------- | ------------------------------------------------------------------------------------------------------------ | --------------------- | -------- |
 | id                         | Each tutorial must have an id. This is used for the localization                                             | String                | Yes      |
 | highlighted                | Is this tutorial highlighted?                                                                                | Boolean               | No       |
-| advanced                   | Is this an advanced tutorial? Defaults to `false`. This property is ignored in case `highlighted` is `true`. | Boolean               | No       |
 | title                      | The title of the Tutorial                                                                                    | String                | Yes      |
 | title_comment              | An optional comment to describe the meaning of the title                                                     | String                | No       |
 | subtitle                   | The subtitle of the Tutorial                                                                                 | String                | Yes      |

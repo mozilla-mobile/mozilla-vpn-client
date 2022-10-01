@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addontutorial.h"
+#include "frontend/navigatorreloader.h"
 #include "itempicker.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -52,13 +53,15 @@ Addon* AddonTutorial::create(QObject* parent, const QString& manifestFileName,
   auto guard = qScopeGuard([&] { tutorial->deleteLater(); });
 
   tutorial->m_highlighted = tutorialObj["highlighted"].toBool();
-  tutorial->m_advanced =
-      tutorialObj["advanced"].toBool() && !tutorial->m_highlighted;
 
-  tutorial->m_titleId = QString("tutorial.%1.title").arg(tutorialId);
-  tutorial->m_subtitleId = QString("tutorial.%1.subtitle").arg(tutorialId);
-  tutorial->m_completionMessageId =
-      QString("tutorial.%1.completion_message").arg(tutorialId);
+  tutorial->m_title.initialize(QString("tutorial.%1.title").arg(tutorialId),
+                               tutorialObj["title"].toString());
+  tutorial->m_subtitle.initialize(
+      QString("tutorial.%1.subtitle").arg(tutorialId),
+      tutorialObj["subtitle"].toString());
+  tutorial->m_completionMessage.initialize(
+      QString("tutorial.%1.completion_message").arg(tutorialId),
+      tutorialObj["completion_message"].toString());
 
   tutorial->m_image = tutorialObj["image"].toString();
   if (tutorial->m_image.isEmpty()) {
@@ -109,6 +112,12 @@ void AddonTutorial::play(const QStringList& allowedItems) {
   m_allowedItems = allowedItems;
   m_currentStep = 0;
 
+  if (m_navigatorReloader) {
+    m_navigatorReloader->deleteLater();
+  }
+
+  m_navigatorReloader = new NavigatorReloader(this);
+
   m_itemPicker->start();
 
   processNextOp();
@@ -125,26 +134,29 @@ void AddonTutorial::stop() {
 
   m_itemPicker->stop();
   m_currentStep = -1;
+
+  if (m_navigatorReloader) {
+    m_navigatorReloader->deleteLater();
+    m_navigatorReloader = nullptr;
+  }
 }
 
-bool AddonTutorial::maybeStop(bool completed) {
+bool AddonTutorial::maybeStop() {
   if (m_currentStep != m_steps.length()) {
     return false;
   }
 
-  if (completed) {
-    Tutorial* tutorial = Tutorial::instance();
-    Q_ASSERT(tutorial);
+  Tutorial* tutorial = Tutorial::instance();
+  Q_ASSERT(tutorial);
 
-    tutorial->requireTutorialCompleted(this, m_completionMessageId);
-  }
+  tutorial->requireTutorialCompleted(this);
 
   Tutorial::instance()->stop();
   return true;
 }
 
 void AddonTutorial::processNextOp() {
-  if (maybeStop(true)) {
+  if (maybeStop()) {
     return;
   }
 

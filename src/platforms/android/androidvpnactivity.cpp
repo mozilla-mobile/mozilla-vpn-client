@@ -5,6 +5,7 @@
 #include "androidvpnactivity.h"
 #include "androidutils.h"
 #include "constants.h"
+#include "frontend/navigator.h"
 #include "logger.h"
 #include "mozillavpn.h"
 
@@ -52,7 +53,7 @@ void AndroidVPNActivity::maybeInit() {
 bool AndroidVPNActivity::handleBackButton(JNIEnv* env, jobject thiz) {
   Q_UNUSED(env);
   Q_UNUSED(thiz);
-  return MozillaVPN::instance()->closeEventHandler()->eventHandled();
+  return Navigator::instance()->eventHandled();
 }
 
 void AndroidVPNActivity::connectService() {

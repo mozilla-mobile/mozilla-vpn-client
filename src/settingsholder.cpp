@@ -160,3 +160,45 @@ void SettingsHolder::removeEntryServer() {
   m_settings.remove("entryServer/countryCode");
   m_settings.remove("entryServer/city");
 }
+
+// Addon specific
+
+void SettingsHolder::clearAddonSettings(const QString& group) {
+  logger.debug() << "Clean up the settings for group" << group;
+
+  const QString groupKey(
+      QString("%1/%2").arg(Constants::ADDON_SETTINGS_GROUP).arg(group));
+
+  m_settings.beginGroup(groupKey);
+  m_settings.remove("");
+  m_settings.endGroup();
+
+  emit addonSettingsChanged();
+}
+
+// static
+QString SettingsHolder::getAddonSettingKey(const AddonSettingQuery& query) {
+  return QString("%1/%2/%3/%4")
+      .arg(Constants::ADDON_SETTINGS_GROUP)
+      .arg(query.m_addonGroup)
+      .arg(query.m_addonId)
+      .arg(query.m_setting);
+}
+
+QString SettingsHolder::getAddonSetting(const AddonSettingQuery& query) {
+  QString key = getAddonSettingKey(query);
+
+  if (!m_settings.contains(key)) return query.m_defaultValue;
+
+  return m_settings.value(key).toString();
+}
+
+void SettingsHolder::setAddonSetting(const AddonSettingQuery& query,
+                                     const QString& value) {
+  QString key = getAddonSettingKey(query);
+
+  if (m_settings.value(key).toString() != value) {
+    m_settings.setValue(key, value);
+    emit addonSettingsChanged();
+  }
+}

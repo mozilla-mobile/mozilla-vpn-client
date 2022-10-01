@@ -5,13 +5,25 @@
 from taskgraph.target_tasks import _target_task
 
 
-@_target_task("nightly")
-def target_tasks_nightly(full_task_graph, parameters, graph_config):
-    """Select the set of tasks required for a nightly build."""
+@_target_task("addons-target-tasks")
+def addons_target_tasks(full_task_graph, parameters, graph_config):
+    def filter(task):
+        if (
+            task.attributes.get("shipping-phase") == parameters["shipping_phase"]
+            and task.attributes.get("build-type") == "addons/opt"
+        ):
+            return True
 
-    def filter(task, parameters):
-        # TODO: decide what does into nightly
-        return False
-        # return task.attributes.get("nightly", False)
+    return [label for label, task in full_task_graph.tasks.items() if filter(task)]
 
-    return [l for l, t in full_task_graph.tasks.items() if filter(t, parameters)]
+
+@_target_task("client-target-tasks")
+def client_target_tasks(full_task_graph, parameters, graph_config):
+    def filter(task):
+        if (
+            task.attributes.get("shipping-phase") == parameters["shipping_phase"]
+            and task.attributes.get("build-type") != "addons/opt"
+        ):
+            return True
+
+    return [label for label, task in full_task_graph.tasks.items() if filter(task)]

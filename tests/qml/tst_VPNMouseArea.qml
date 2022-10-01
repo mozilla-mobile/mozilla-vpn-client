@@ -31,6 +31,7 @@ TestCase {
 
             VPNMouseArea {
                 id: mouseArea
+                qmlUnitTestWorkaround: true
             }
 
             SignalSpy {

@@ -12,7 +12,6 @@
 #include "addons/addontutorial.h"
 
 class Addon;
-class AddonTutorial;
 class QJsonObject;
 
 class Tutorial final : public QObject, public ExternalOpHandler::Blocker {
@@ -35,10 +34,9 @@ class Tutorial final : public QObject, public ExternalOpHandler::Blocker {
 
   bool isPlaying() const { return !!m_currentTutorial; }
 
-  void requireTooltipNeeded(AddonTutorial* tutorial, const QString& tooltipText,
-                            QObject* targetElement);
-  void requireTutorialCompleted(AddonTutorial* tutorial,
-                                const QString& completionMessageText);
+  void requireTooltipNeeded(AddonTutorial* tutorial, const QString& stepId,
+                            const QString& value, QObject* targetElement);
+  void requireTutorialCompleted(AddonTutorial* tutorial);
   void requireTooltipShown(AddonTutorial* tutorial, bool shown);
 
   // ExternalOpHandler::Blocker
@@ -46,9 +44,9 @@ class Tutorial final : public QObject, public ExternalOpHandler::Blocker {
 
  signals:
   void playingChanged();
-  void tooltipNeeded(const QString& tooltipText, QObject* targetElement);
+  void tooltipNeeded(const QString& value, QObject* targetElement);
   void tooltipShownChanged();
-  void tutorialCompleted(const QString& completionMessageText);
+  void tutorialCompleted(Addon* tutorial);
   void interruptRequest(ExternalOpHandler::Op op);
 
  private:

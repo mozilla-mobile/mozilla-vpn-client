@@ -13,6 +13,11 @@ namespace {
 Logger logger({LOG_WINDOWS, LOG_NETWORKING}, "WindowsPingSender");
 }
 
+static DWORD icmpCleanupHelper(HANDLE h) {
+  IcmpCloseHandle(h);
+  return 0;
+}
+
 WindowsPingSender::WindowsPingSender(const QHostAddress& source,
                                      QObject* parent)
     : PingSender(parent) {
@@ -37,7 +42,14 @@ WindowsPingSender::~WindowsPingSender() {
     CloseHandle(m_event);
   }
   if (m_handle != INVALID_HANDLE_VALUE) {
-    IcmpCloseHandle(m_handle);
+    // Closing the ICMP handle can hang if there are lost ping replies. Moving
+    // the cleanup into a separate thread avoids deadlocking the application.
+    HANDLE h = CreateThread(NULL, 0, icmpCleanupHelper, m_handle, 0, NULL);
+    if (h == NULL) {
+      IcmpCloseHandle(m_handle);
+    } else {
+      CloseHandle(h);
+    }
   }
 }
 

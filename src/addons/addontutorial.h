@@ -6,7 +6,9 @@
 #define ADDONTUTORIAL_H
 
 #include "addon.h"
+#include "addonproperty.h"
 
+class NavigatorReloader;
 class QJsonObject;
 class QQuickItem;
 class TutorialStep;
@@ -15,14 +17,16 @@ class AddonTutorial final : public Addon {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AddonTutorial)
 
-  Q_PROPERTY(QString titleId MEMBER m_titleId CONSTANT)
-  Q_PROPERTY(QString subtitleId MEMBER m_subtitleId CONSTANT)
-  Q_PROPERTY(QString completionMessageId MEMBER m_completionMessageId CONSTANT)
+ public:
+  ADDON_PROPERTY(title, m_title, getTitle, setTitle, retranslationCompleted)
+  ADDON_PROPERTY(subtitle, m_subtitle, getSubtitle, setSubtitle,
+                 retranslationCompleted)
+  ADDON_PROPERTY(completionMessage, m_completionMessage, getCompletionMessage,
+                 setCompletionMessage, retranslationCompleted)
+
   Q_PROPERTY(QString image MEMBER m_image CONSTANT)
   Q_PROPERTY(bool highlighted READ highlighted CONSTANT)
-  Q_PROPERTY(bool advanced MEMBER m_advanced CONSTANT)
 
- public:
   static Addon* create(QObject* parent, const QString& manifestFileName,
                        const QString& id, const QString& name,
                        const QJsonObject& obj);
@@ -45,23 +49,24 @@ class AddonTutorial final : public Addon {
   void processNextOp();
 
   // Return true if there are no operations left.
-  bool maybeStop(bool completed = false);
+  bool maybeStop();
 
  private:
-  QString m_titleId;
-  QString m_subtitleId;
-  QString m_completionMessageId;
+  AddonProperty m_title;
+  AddonProperty m_subtitle;
+  AddonProperty m_completionMessage;
   QString m_image;
 
   QList<TutorialStep*> m_steps;
   int32_t m_currentStep = -1;
   bool m_highlighted = false;
-  bool m_advanced = false;
 
   QStringList m_allowedItems;
 
   class TutorialItemPicker;
   TutorialItemPicker* m_itemPicker = nullptr;
+
+  NavigatorReloader* m_navigatorReloader = nullptr;
 };
 
 #endif  // ADDONTUTORIAL_H

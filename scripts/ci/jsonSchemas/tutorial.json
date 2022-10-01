@@ -12,10 +12,6 @@
       "type": "boolean",
       "description": "Is this tutorial highlighted?"
     },
-    "advanced": {
-      "type": "boolean",
-      "description": "Is this an advanced tutorial? Defaults to `false`. This property is ignored in case `highlighted` is `true`."
-    },
     "title": {
       "type": "string",
       "description": "The title of the tutorial"
@@ -83,7 +79,9 @@
                   "description": "The operation type. Each 'op' value has its own properties"
                 }
               },
-              "required": [ "op" ]
+              "required": [
+                "op"
+              ]
             }
           },
           "next": {
@@ -96,12 +94,26 @@
                 "description": "The 'next' operation type. Each 'op' value has its own properties"
               }
             },
-            "required": [ "op" ]
+            "required": [
+              "op"
+            ]
           }
         },
-        "required": [ "id", "element", "tooltip", "next" ]
+        "required": [
+          "id",
+          "element",
+          "tooltip",
+          "next"
+        ]
       }
     }
   },
-  "required": [ "id", "title", "subtitle", "completion_message", "image", "steps" ]
+  "required": [
+    "id",
+    "title",
+    "subtitle",
+    "completion_message",
+    "image",
+    "steps"
+  ]
 }

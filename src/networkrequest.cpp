@@ -45,10 +45,11 @@ QList<QSslCertificate> s_intervention_certs;
 
 NetworkRequest::NetworkRequest(Task* parent, int status,
                                bool setAuthorizationHeader)
-    : QObject(parent), m_status(status) {
+    : QObject(parent), m_expectedStatusCode(status) {
   MVPN_COUNT_CTOR(NetworkRequest);
   logger.debug() << "Network request created by" << parent->name();
 
+  m_request.setAttribute(QNetworkRequest::Http2AllowedAttribute, false);
   m_request.setRawHeader("User-Agent", NetworkManager::userAgent());
   m_request.setMaximumRedirectsAllowed(REQUEST_MAX_REDIRECTS);
   m_request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
@@ -434,7 +435,7 @@ NetworkRequest* NetworkRequest::createForFeedback(Task* parent,
   QJsonObject obj;
   obj.insert("feedbackText", feedbackText);
   obj.insert("logs", logs);
-  obj.insert("versionString", MozillaVPN::instance()->versionString());
+  obj.insert("versionString", Env::versionString());
   obj.insert("platformVersion", QString(NetworkManager::osVersion()));
   obj.insert("rating", rating);
   obj.insert("category", category);
@@ -470,7 +471,7 @@ NetworkRequest* NetworkRequest::createForSupportTicket(
   QJsonObject obj;
   obj.insert("email", email);
   obj.insert("logs", logs);
-  obj.insert("versionString", MozillaVPN::instance()->versionString());
+  obj.insert("versionString", Env::versionString());
   obj.insert("platformVersion", QString(NetworkManager::osVersion()));
   obj.insert("subject", subject);
   obj.insert("issueText", issueText);
@@ -956,12 +957,10 @@ void NetworkRequest::replyFinished() {
   }
 #endif
 
-  m_completed = true;
-  m_timer.stop();
-
   int status = statusCode();
 
-  QString expect = m_status ? QString::number(m_status) : "any";
+  QString expect =
+      m_expectedStatusCode ? QString::number(m_expectedStatusCode) : "any";
   logger.debug() << "Network reply received - status:" << status
                  << "- expected:" << expect;
 
@@ -972,6 +971,13 @@ void NetworkRequest::replyFinished() {
 void NetworkRequest::processData(QNetworkReply::NetworkError error,
                                  const QString& errorString, int status,
                                  const QByteArray& data) {
+  m_completed = true;
+  m_timer.stop();
+
+#ifdef MVPN_WASM
+  m_finalStatusCode = status;
+#endif
+
   if (error != QNetworkReply::NoError) {
     QUrl::FormattingOptions options = QUrl::RemoveQuery | QUrl::RemoveUserInfo;
     logger.error() << "Network error:" << errorString
@@ -984,9 +990,9 @@ void NetworkRequest::processData(QNetworkReply::NetworkError error,
 
   // This is an extra check for succeeded requests (status code 200 vs 201, for
   // instance). The real network status check is done in the previous if-stmt.
-  if (m_status && status != m_status) {
+  if (m_expectedStatusCode && status != m_expectedStatusCode) {
     logger.error() << "Status code unexpected - status code:" << status
-                   << "- expected:" << m_status;
+                   << "- expected:" << m_expectedStatusCode;
     emit requestFailed(QNetworkReply::ConnectionRefusedError, data);
     return;
   }
@@ -1038,12 +1044,17 @@ void NetworkRequest::handleRedirect(const QUrl& redirectUrl) {
 }
 
 void NetworkRequest::timeout() {
+#ifndef MVPN_WASM
   Q_ASSERT(m_reply);
   Q_ASSERT(!m_reply->isFinished());
+#endif
   Q_ASSERT(!m_completed);
 
   m_completed = true;
-  m_reply->abort();
+
+  if (m_reply) {
+    m_reply->abort();
+  }
 
   logger.error() << "Network request timeout";
   emit requestFailed(QNetworkReply::TimeoutError, QByteArray());
@@ -1124,6 +1135,10 @@ void NetworkRequest::maybeDeleteLater() {
 }
 
 int NetworkRequest::statusCode() const {
+#ifdef MVPN_WASM
+  return m_finalStatusCode;
+#endif
+
   Q_ASSERT(m_reply);
 
   QVariant statusCode =

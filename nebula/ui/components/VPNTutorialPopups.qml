@@ -246,9 +246,7 @@ Item {
 
     function openTipsAndTricks() {
         tutorialPopup.close();
-        VPN.settingsNeeded();
-        const settingsViewInMainStack = mainStackView.find((view) => { return view.objectName === "settings" });
-        settingsViewInMainStack._openTipsAndTricks();
+        VPNNavigator.requestScreen(VPNNavigator.ScreenTipsAndTricks);
     }
 
 
@@ -273,17 +271,17 @@ Item {
 
         function onTooltipNeeded(text, targetEl) {
             root.targetElement = targetEl;
-            tutorialTooltip.tooltipText = qsTrId(text);
+            tutorialTooltip.tooltipText = text;
             tutorialTooltip.open();
         }
 
-        function onTutorialCompleted(tutorialCompletedStringId) {
+        function onTutorialCompleted(tutorial) {
             tutorialPopup.imageSrc = "qrc:/ui/resources/logo-success.svg";
             tutorialPopup.primaryButtonOnClicked = () => openTipsAndTricks();
             tutorialPopup.primaryButtonText = VPNl18n.TutorialPopupTutorialCompletePrimaryButtonLabel;
             tutorialPopup.secondaryButtonOnClicked = () => tutorialPopup.close();
             tutorialPopup.title =  VPNl18n.TutorialPopupTutorialCompleteHeadline;
-            tutorialPopup.description = qsTrId(tutorialCompletedStringId);
+            tutorialPopup.description = tutorial.completionMessage;
             tutorialPopup._onClosed = () => {};
             tutorialPopup.dismissOnStop = false;
             tutorialPopup.open();
@@ -298,7 +296,7 @@ Item {
             if (!targetElement)
                 return
 
-            if (!targetElement.activeFocus && !targetElement.parent.activeFocus && !leaveTutorialBtn.activeFocus && !tutorialPopup.opened) {
+            if (!targetElement.activeFocus && (!targetElement.parent || !targetElement.parent.activeFocus) && !leaveTutorialBtn.activeFocus && !tutorialPopup.opened) {
                 tutorialTooltip.forceActiveFocus();
             }
         }

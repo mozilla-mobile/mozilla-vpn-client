@@ -23,6 +23,8 @@
         <file>resources/connection-green.svg</file>
         <file>resources/download.svg</file>
         <file>resources/delete.svg</file>
+        <file>resources/delete-white.svg</file>
+        <file>resources/delete-gray.svg</file>
         <file>resources/devicesLimit.svg</file>
         <file>resources/devicesRemove.svg</file>
         <file>resources/devices.svg</file>
@@ -31,7 +33,6 @@
         <file>resources/externalLink.svg</file>
         <file>resources/eye-hidden.svg</file>
         <file>resources/eye-visible.svg</file>
-        <file>resources/features/features-tour-hero.png</file>
         <file>resources/animations/globe_animation.json</file>
         <file>resources/animations/lock_animation.json</file>
         <file>resources/animations/speedometer_animation.json</file>
@@ -314,6 +315,9 @@
         <file>resources/server-unavailable.svg</file>
         <file>resources/settings.svg</file>
         <file>resources/settings-white.svg</file>
+        <file>resources/server-latency-strong.svg</file>
+        <file>resources/server-latency-unavailable.svg</file>
+        <file>resources/server-latency-weak.svg</file>
         <file>resources/shaders/baked/animatedRings.frag.qsb</file>
         <file>resources/shaders/src/animatedRings.frag</file>
         <file>resources/shield-off.svg</file>
@@ -333,5 +337,13 @@
         <file>resources/check-green70.svg</file>
         <file>resources/shield-green50.svg</file>
         <file>resources/checkmark-blue50.svg</file>
+        <file>resources/navbar/home.svg</file>
+        <file>resources/navbar/home-selected.svg</file>
+        <file>resources/navbar/messages.svg</file>
+        <file>resources/navbar/messages-selected.svg</file>
+        <file>resources/navbar/settings.svg</file>
+        <file>resources/navbar/settings-selected.svg</file>
+        <file>resources/navbar/messages-notification-selected.svg</file>
+        <file>resources/navbar/messages-notification.svg</file>
     </qresource>
 </RCC>

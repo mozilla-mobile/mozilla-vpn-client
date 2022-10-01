@@ -211,44 +211,6 @@ restorePurchaseExpiredError:
 restorePurchaseInUseError:
   restorePurchaseInUseErrorText: Another Firefox Account has already subscribed using this Apple ID. Please sign out and try again or contact our support team for help.
 
-# v2.5 What’s New? Release notes
-whatsNewReleaseNotes:
-  # tour modal alert on system update
-  tourModalHeader: What’s new in VPN?
-  tourModalBodyText: We’ve added a ton of cool features in this latest release. Take the tour to get a deeper dive into what we’ve added for you!
-  tourModalButtonText: Take the tour
-  multiModalHeader: Multi-hop VPN
-  multiModalBodyText: Multi-hop VPN will route your traffic through a second server for added protection. You can find this feature on the “Select location” screen.
-  supportModalButtonText: Next
-  supportModalHeader: In-app support form
-  supportModalBodyText: The in-app support form will allow you to contact support from within the VPN app. You can find it in the “Get help” section.
-  dnsModalHeader: Custom DNS
-  dnsModalBodyTextNew: Custom DNS servers allow for faster speed using local networks, features like ad-blocking and anti-tracking. You can find this feature in the “Network settings” section.
-  dnsModalButtonText: Done
-  tourPageHeader: What’s new
-  tourSubHeader: Take the tour
-  multiListItemHeader: Multi-hop VPN
-  multiListItemBody: Multi-hop VPN uses multiple VPN servers instead of one for extra security and privacy.
-  supportListItemHeader: In-app support form
-  supportListItemBody: The in-app support form will streamline the process of getting your issues resolved.
-  dnsListItemHeader: Custom DNS
-  dnsListItemBody: Custom DNS settings allow for faster connection using local servers.
-  # system notifications for all platforms
-  tourSystemNotifHeader: What’s new in VPN
-  tourSystemNotifBody: Check out all the new features available in the latest version of Mozilla VPN!
-  tourSystemNotifCTA: Take the tour
-  # Multi-account containers
-  multiAccountContainersHeader: Mozilla VPN in Firefox
-  multiAccountContainersShortDescription:
-    value: Mozilla VPN is now integrated with the Multi-Account Containers add-on for more privacy and security.
-    comment: “Multi-Account Containers” is the name of the add-on and should not be translated.
-  multiAccountContainersDescription: You can now use different Mozilla VPN locations in multiple tabs simultaneously.
-  connectionInfoDisplayName: Test your speed
-  connectionInfoDescription: You can now run speed tests in Mozilla VPN! Select the performance icon in the top left corner of your screen to test your connection speed while using VPN.
-  connectionInfoDescriptionShort: You can now run speed tests within the VPN to check your connection speed.
-  easyProfileDisplayName: Easier-to-use profile
-  easyProfileDescription: Now accessible from the VPN app, users can view their personal information, subscription summary and payment information within the subscription profile page.
-
 # Adding functionality for users selecting custom DNS settings, associated settings nav items, headers, and selectable options. Some is not included in 2.5.
 customDNSSettings:
   dnsInfoAlert: VPN must be off to change these settings
@@ -439,6 +401,7 @@ serverUnavailableModal:
 
 serverUnavailableNotification:
   bodyText: This server location is temporarily unavailable. Please open the app to choose a new location.
+  bodyTextFireWallBlocked: The server has been blocked. Check your firewall settings.
   preferencesLabel: Server unavailable notification
   preferencesSubLabel: Get notified when connecting to a server location failed
 
@@ -594,14 +557,25 @@ freeTrials:
 
 tipsAndTricks:
   settingsEntryLabel: VPN tips and tricks
-  featureTourCardTitle: Tour the VPN
-  featureTourCardDescription: Take a tour of Mozilla VPN to learn how the latest features help you protect your online privacy.
   quickTipsTitle: Quick tips
   quickTipsDescription: Let us help you get the most out of Mozilla VPN
   advancedTipsTitle: Advanced tips
   advancedTipsDescription: Let us help you learn more about Mozilla VPN
+  tutorialsTitle: Getting started
+  tutorialsDescription: Learn the basics of Mozilla VPN
+  moreTutorialsTitle: More tutorials
+  moreTutorialsDescription2: Learn how to use Mozilla VPN’s advanced features
   quickTipsGuideViewTitle: Quick tip
   introModalDescription: Here’s a great list of useful tips and tricks to get the best out of your Mozilla VPN experience. Check it out now or find it anytime in the settings.
+  tabTitleAll:
+    value: All
+    comment: Tab title for the general tab of the Tips & Tricks panels
+  tabTitleTutorials:
+    value: Tutorials
+    comment: Tab title for the tab of the Tips & Tricks panels that only shows tutorials
+  tabTitleTips:
+    value: Tips
+    comment: Tab title for the tab of the Tips & Tricks panels that only shows guides
 
 subscriptionManagement:
   menuTitle:
@@ -657,6 +631,12 @@ subscriptionManagement:
   manageSubscriptionButton:
     value: Manage subscription
     comment: Label for a button that will take the user to a view where they can manage their subscription.
+  upgrade:
+    value: Upgrade
+    comment: Label for a button that will take users into the upgrade to VPN / Relay bundle purchase flow.
+  addFirefoxRelay:
+    value: Add Firefox Relay
+    comment: Block of text appearing above a link to learn more about the VPN / Relay bundle offering.
 
 paymentMethods:
   amex: American Express
@@ -680,6 +660,32 @@ tutorialPopup:
   tutorialLeaveSubtitle: Looks like you haven’t finished the tutorial quite yet. Would you like to continue and finish now or quit and come back later?
   tutorialLeavePrimaryButtonLabel: Resume tutorial
 
+inAppMessaging:
+  menuTitle: Messages
+  editButton: Edit
+  searchBarPlaceholderText: Search messages
+  dateTimeYesterday: Yesterday
+  emptyStateTitle: No messages
+  emptyStateDescription: You’re up to date!
+  deleteMessage:
+    value: Delete message
+    comment: An action to delete a message from the users inbox
+  warningBadge:
+    value: Warning
+    comment: A badge shown in a message signifying that this is a warning message
+  criticalBadge:
+    value: Critical
+    comment: A badge shown in a message signifying that this is an important message
+  newUpdateBadge:
+    value: New update
+    comment: A badge shown in a message signifying an update to the app is available
+  whatsNewBadge:
+    value: What’s new
+    comment: A badge shown in a message signifying that this message contains information about what is new in the product
+  surveyBadge:
+    value: Survey
+    comment: A badge shown in a message signifying that this message contains a survey
+
 global:
   expand:
     value: Expand
@@ -697,3 +703,19 @@ global:
     value: Go back
     comment: Label for button used in intro modals to return to the app.
 
+getHelp:
+  helpCenter: Help Center
+  viewLogs:
+    value: View Logs
+    comment: Label for a clickable item in the Get-Help view
+
+navBar:
+  homeTab:
+    value: Home
+    comment: Label for the tab on the navigation bar that takes the user to the home screen
+  messagesTab:
+    value: Messages
+    comment: Label for the tab on the navigation bar that takes the user to the messages inbox screen
+  settingsTab:
+    value: Settings
+    comment: Label for the tab on the navigation bar that takes the user to the settings screen

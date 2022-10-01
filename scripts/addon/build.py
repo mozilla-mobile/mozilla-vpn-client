@@ -169,6 +169,11 @@ def retrieve_strings_message(manifest, filename):
         "value": message_json["title"],
         "comments": message_json.get("title_comment", "Title for a message view"),
     }
+    subtitle_id = f"message.{message_id}.subtitle"
+    message_strings[subtitle_id] = {
+        "value": message_json["subtitle"],
+        "comments": message_json.get("subtitle_comment", "Subtitle for a message view"),
+    }
 
     return retrieve_strings_blocks(message_json["blocks"], filename, message_strings, f"message.{message_id}")
 
@@ -330,45 +335,50 @@ with open(args.source, "r", encoding="utf-8") as file:
     tmp_path = tempfile.mkdtemp()
     copy_files(os.path.dirname(args.source), tmp_path)
 
-    print("Retrieving strings...")
     strings = {}
-    if manifest["type"] == "tutorial":
-        strings = retrieve_strings_tutorial(manifest, args.source)
-    elif manifest["type"] == "guide":
-        strings = retrieve_strings_guide(manifest, args.source)
-    elif manifest["type"] == "message":
-        strings = retrieve_strings_message(manifest, args.source)
+
+    if "translatable" not in manifest or manifest["translatable"] == True:
+        print("Retrieving strings...")
+        if manifest["type"] == "tutorial":
+            strings = retrieve_strings_tutorial(manifest, args.source)
+        elif manifest["type"] == "guide":
+            strings = retrieve_strings_guide(manifest, args.source)
+        elif manifest["type"] == "message":
+            strings = retrieve_strings_message(manifest, args.source)
+        else:
+            exit(f"Unupported manifest type `{manifest['type']}`")
+
+        print("Create localization file...")
+        os.mkdir(os.path.join(tmp_path, "i18n"))
+        template_ts_file = os.path.join(args.dest, f"{manifest['id']}.ts")
+        write_en_language(template_ts_file, strings)
+
+        # This will be probably replaced by the en locale if it exists
+        en_ts_file = os.path.join(tmp_path, "i18n", "locale_en.ts")
+        shutil.copyfile(template_ts_file, en_ts_file)
+        os.system(f"{lrelease} -idbased {en_ts_file}")
+
+        # Fallback
+        ts_file = os.path.join(tmp_path, "i18n", "locale.ts")
+        shutil.copyfile(template_ts_file, ts_file)
+        os.system(f"{lrelease} -idbased {ts_file}")
+
+        i18n_path = os.path.join(os.path.dirname(script_path), "i18n")
+        for locale in os.listdir(i18n_path):
+            if not os.path.isdir(os.path.join(i18n_path, locale)) or locale.startswith("."):
+                continue
+
+            xliff_path = os.path.join(
+                i18n_path, locale, "addons", manifest["id"], "strings.xliff"
+            )
+
+            if os.path.isfile(xliff_path):
+                locale_file = os.path.join(tmp_path, "i18n", f"locale_{locale}.ts")
+                os.system(f"{lconvert} -if xlf -i {xliff_path} -o {locale_file}")
+                os.system(f"{lrelease} -idbased {locale_file}")
+
     else:
-        exit(f"Unupported manifest type `{manifest['type']}`")
-
-    print("Create localization file...")
-    os.mkdir(os.path.join(tmp_path, "i18n"))
-    template_ts_file = os.path.join(args.dest, f"{manifest['id']}.ts")
-    write_en_language(template_ts_file, strings)
-
-    # This will be probably replaced by the en locale if it exists
-    en_ts_file = os.path.join(tmp_path, "i18n", "locale_en.ts")
-    shutil.copyfile(template_ts_file, en_ts_file)
-    os.system(f"{lrelease} -idbased {en_ts_file}")
-
-    # Fallback
-    ts_file = os.path.join(tmp_path, "i18n", "locale.ts")
-    shutil.copyfile(template_ts_file, ts_file)
-    os.system(f"{lrelease} -idbased {ts_file}")
-
-    i18n_path = os.path.join(os.path.dirname(script_path), "i18n")
-    for locale in os.listdir(i18n_path):
-        if not os.path.isdir(os.path.join(i18n_path, locale)) or locale.startswith("."):
-            continue
-
-        xliff_path = os.path.join(
-            i18n_path, locale, "addons", manifest["id"], "strings.xliff"
-        )
-
-        if os.path.isfile(xliff_path):
-            locale_file = os.path.join(tmp_path, "i18n", f"locale_{locale}.ts")
-            os.system(f"{lconvert} -if xlf -i {xliff_path} -o {locale_file}")
-            os.system(f"{lrelease} -idbased {locale_file}")
+       print("Addon not translatable")
 
     print("Generate the RCC file...")
     files = get_file_list(tmp_path, "")

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "description": "Optional list of javascript scripts",
+  "properties": {
+    "enable": {
+      "type": "string",
+      "description": "The script to execute when the add-on is enabled"
+    },
+    "disable": {
+      "type": "string",
+      "description": "The script to execute when the add-on is disabled"
+    }
+  }
+}

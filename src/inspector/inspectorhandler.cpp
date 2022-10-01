@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "inspectorhandler.h"
-#include "addonmanager.h"
+#include "addons/manager/addonmanager.h"
 #include "constants.h"
 #include "controller.h"
 #include "externalophandler.h"
+#include "frontend/navigator.h"
 #include "inspectoritempicker.h"
 #include "inspectorutils.h"
 #include "leakdetector.h"
@@ -23,6 +24,8 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 #include "task.h"
+#include "urlopener.h"
+#include "websocket/pushmessage.h"
 
 #include <functional>
 
@@ -34,6 +37,7 @@
 #include <QMetaObject>
 #include <QNetworkAccessManager>
 #include <QPixmap>
+#include <QQmlApplicationEngine>
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QScreen>
@@ -479,7 +483,7 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{"lasturl", "Retrieve the last opened URL", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        QJsonObject obj;
-                       obj["value"] = MozillaVPN::instance()->lastUrl();
+                       obj["value"] = UrlOpener::instance()->lastUrl();
                        return obj;
                      }},
 
@@ -696,25 +700,6 @@ static QList<InspectorCommand> s_commands{
                        return obj;
                      }},
 
-    InspectorCommand{
-        "feature_tour_features",
-        "Returns a list of feature id's present in the feature tour", 0,
-        [](InspectorHandler*, const QList<QByteArray>&) {
-          QJsonObject obj;
-
-          WhatsNewModel* whatsNewModel =
-              MozillaVPN::instance()->whatsNewModel();
-          Q_ASSERT(whatsNewModel);
-
-          QJsonArray featureIds;
-          for (const QString& featureId : whatsNewModel->featureIds()) {
-            featureIds.append(featureId);
-          }
-
-          obj["value"] = featureIds;
-          return obj;
-        }},
-
     InspectorCommand{"translate", "Translate a string", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
@@ -856,16 +841,24 @@ static QList<InspectorCommand> s_commands{
           return QJsonObject();
         }},
 
+    InspectorCommand{"public_key",
+                     "Retrieve the public key of the current device", 0,
+                     [](InspectorHandler*, const QList<QByteArray>&) {
+                       MozillaVPN* vpn = MozillaVPN::instance();
+                       Q_ASSERT(vpn);
+
+                       Keys* keys = vpn->keys();
+                       Q_ASSERT(keys);
+
+                       QJsonObject obj;
+                       obj["value"] = keys->publicKey();
+                       return obj;
+                     }},
+
     InspectorCommand{"open_settings", "Open settings menu", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        ExternalOpHandler::instance()->request(
                            ExternalOpHandler::OpSettings);
-                       return QJsonObject();
-                     }},
-    InspectorCommand{"open_contact_us", "Open in-app support form", 0,
-                     [](InspectorHandler*, const QList<QByteArray>&) {
-                       ExternalOpHandler::instance()->request(
-                           ExternalOpHandler::OpContactUs);
                        return QJsonObject();
                      }},
     InspectorCommand{"is_feature_flipped_on",
@@ -902,8 +895,9 @@ static QList<InspectorCommand> s_commands{
                          return obj;
                        }
 
-                       FeatureModel::instance()->toggleForcedEnable(
-                           arguments[1]);
+                       if (!feature->isSupported()) {
+                         FeatureModel::instance()->toggle(arguments[1]);
+                       }
                        return QJsonObject();
                      }},
 
@@ -917,8 +911,9 @@ static QList<InspectorCommand> s_commands{
                          return obj;
                        }
 
-                       FeatureModel::instance()->toggleForcedDisable(
-                           arguments[1]);
+                       if (feature->isSupported()) {
+                         FeatureModel::instance()->toggle(arguments[1]);
+                       }
                        return QJsonObject();
                      }},
 
@@ -938,6 +933,29 @@ static QList<InspectorCommand> s_commands{
                        AddonManager::instance()->unload(arguments[1]);
                        return QJsonObject();
                      }},
+
+    InspectorCommand{"back_button_clicked",
+                     "Simulate an android back-button clicked", 0,
+                     [](InspectorHandler*, const QList<QByteArray>&) {
+                       Navigator::instance()->eventHandled();
+                       return QJsonObject();
+                     }},
+
+    InspectorCommand{
+        "send_push_message_device_deleted",
+        "Simulate the receiving of a push-message type device-deleted", 1,
+        [](InspectorHandler*, const QList<QByteArray>& arguments) {
+          QJsonObject payload;
+          payload["publicKey"] = QString(arguments[1]);
+
+          QJsonObject msg;
+          msg["type"] = "DEVICE_DELETED";
+          msg["payload"] = payload;
+
+          PushMessage message(QJsonDocument(msg).toJson());
+          message.executeAction();
+          return QJsonObject();
+        }},
 };
 
 // static
@@ -1101,7 +1119,12 @@ QJsonObject InspectorHandler::getViewTree() {
   QJsonObject out;
   out["type"] = "qml_tree";
 
-  QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
+  QQmlApplicationEngine* engine = qobject_cast<QQmlApplicationEngine*>(
+      QmlEngineHolder::instance()->engine());
+  if (!engine) {
+    return out;
+  }
+
   QJsonArray viewRoots;
   for (auto& root : engine->rootObjects()) {
     QQuickWindow* window = qobject_cast<QQuickWindow*>(root);

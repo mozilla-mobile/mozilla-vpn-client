@@ -18,6 +18,10 @@ class TaskAddon final : public Task {
 
   void run() override;
 
+  // If we cancel this task, we will not know if the add-ons have been
+  // downloaded and when they are ready to be loaded.
+  DeletePolicy deletePolicy() const override { return Reschedulable; }
+
  private:
   const QString m_addonId;
   const QByteArray m_sha256;

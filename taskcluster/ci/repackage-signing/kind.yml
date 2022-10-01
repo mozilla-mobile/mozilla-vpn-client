@@ -1,0 +1,34 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+loader: mozillavpn_taskgraph.loader.multi_dep:loader
+
+transforms:
+    - mozillavpn_taskgraph.transforms.multi_dep:transforms
+    - mozillavpn_taskgraph.transforms.signing:transforms
+    - mozillavpn_taskgraph.transforms.release_index:transforms
+    - taskgraph.transforms.task:transforms
+
+kind-dependencies:
+    - repackage
+
+primary-dependency: repackage
+
+group-by: build-type
+
+only-for-build-types:
+    - windows/opt
+
+job-template:
+    description: repackage mozillavpn msi
+    run-on-tasks-for: []
+    add-index-routes:
+        name: windows
+        type: build
+    signing-format: autograph_authenticode
+    treeherder:
+        job-symbol: Bs
+        kind: build
+        tier: 1
+        platform: windows/x86_64

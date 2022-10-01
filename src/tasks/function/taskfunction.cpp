@@ -5,8 +5,11 @@
 #include "taskfunction.h"
 #include "leakdetector.h"
 
-TaskFunction::TaskFunction(std::function<void()>&& callback)
-    : Task("TaskFunction"), m_callback(std::move(callback)) {
+TaskFunction::TaskFunction(std::function<void()>&& callback,
+                           Task::DeletePolicy deletePolicy)
+    : Task("TaskFunction"),
+      m_callback(std::move(callback)),
+      m_deletePolicy(deletePolicy) {
   MVPN_COUNT_CTOR(TaskFunction);
 }
 

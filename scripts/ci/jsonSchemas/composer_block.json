@@ -1,7 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
-  "additionalProperties": false,
   "description": "A composer block",
   "properties": {
     "id": {
@@ -9,45 +8,152 @@
       "description": "The ID of the block",
       "pattern": "^[A-Za-z0-9_]+"
     },
-    "content": {
-      "anyOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "id": {
-                "type": "string",
-                "description": "The ID of the sub block",
-                "pattern": "^[A-Za-z0-9_]+"
-              },
-              "content": {
-                "type": "string",
-                "description": "The content of this sub block"
-              },
-              "comment": {
-                "type": "string",
-                "description": "A comment to describe how to translate this sub block"
-              }
-            },
-            "required": [ "id", "content" ]
-          }
-        }
-      ],
-      "description": "The content of this block"
-    },
-    "comment": {
-      "type": "string",
-      "description": "A comment to describe how to translate this block content"
-    },
     "type": {
       "type": "string",
-      "description": "A type for this block: text, title, ulist, olist, etc"
+      "description": "A type for this block: text, title, ulist, olist, etc",
+      "enum": [ "title", "text", "ulist", "olist", "button" ]
     }
   },
-  "required": [ "id", "content", "type" ]
+  "required": [ "id", "type" ],
+
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": { "const": "title" }
+        }
+      },
+      "then": {
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "The content of this title block"
+          },
+          "comment": {
+            "type": "string",
+            "description": "A comment to describe how to translate this title block content"
+          }
+        },
+        "required": ["content" ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": { "const": "text" }
+        }
+      },
+      "then": {
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "The content of this text block"
+          },
+          "comment": {
+            "type": "string",
+            "description": "A comment to describe how to translate this text block content"
+          }
+        },
+        "required": ["content" ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": { "const": "button" }
+        }
+      },
+      "then": {
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "The content of this block"
+          },
+          "comment": {
+            "type": "string",
+            "description": "A comment to describe how to translate this button block content"
+          },
+          "javascript": {
+            "type": "string",
+            "description": "A javascript file that performs an action for this button composer block"
+          },
+          "style": {
+            "type": "string",
+            "description": "A style for this button composer block"
+          }
+        },
+        "required": ["content", "javascript" ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": { "const": "olist" }
+        }
+      },
+      "then": {
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "The ID of the sub block",
+                  "pattern": "^[A-Za-z0-9_]+"
+                },
+                "content": {
+                  "type": "string",
+                  "description": "The content of this sub block"
+                },
+                "comment": {
+                  "type": "string",
+                  "description": "A comment to describe how to translate this sub block"
+                }
+              },
+              "required": [ "id", "content" ]
+            }
+          }
+        },
+        "required": ["content" ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": { "const": "ulist" }
+        }
+      },
+      "then": {
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "The ID of the sub block",
+                  "pattern": "^[A-Za-z0-9_]+"
+                },
+                "content": {
+                  "type": "string",
+                  "description": "The content of this sub block"
+                },
+                "comment": {
+                  "type": "string",
+                  "description": "A comment to describe how to translate this sub block"
+                }
+              },
+              "required": [ "id", "content" ]
+            }
+          }
+        },
+        "required": ["content" ]
+      }
+    }
+  ]
 }

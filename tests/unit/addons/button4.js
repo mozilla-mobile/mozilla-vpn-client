@@ -1,0 +1,3 @@
+(function(vpn) {
+dasdasd;
+})

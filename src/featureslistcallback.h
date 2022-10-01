@@ -9,8 +9,13 @@
 #  include "androidutils.h"
 #endif
 
+#ifdef MVPN_WINDOWS
+#  include "platforms/windows/daemon/windowssplittunnel.h"
+#endif
+
 #ifdef MVPN_LINUX
 #  include <QProcessEnvironment>
+#  include "update/versionapi.h"
 #  include "platforms/linux/linuxdependencies.h"
 #endif
 
@@ -82,16 +87,6 @@ bool FeatureCallback_lanAccess() {
 #endif
 }
 
-bool FeatureCallback_multiAccountContainers() {
-#if defined(MVPN_IOS) || defined(MVPN_ANDROID)
-  // Multi-Account Containers is a Firefox add-on only
-  // released for desktop
-  return false;
-#else
-  return true;
-#endif
-}
-
 bool FeatureCallback_shareLogs() {
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS) || \
     defined(MVPN_IOS) || defined(MVPN_DUMMY)
@@ -105,8 +100,10 @@ bool FeatureCallback_shareLogs() {
 }
 
 bool FeatureCallback_splitTunnel() {
-#if defined(MVPN_ANDROID) || defined(MVPN_WINDOWS) || defined(MVPN_DUMMY)
+#if defined(MVPN_ANDROID) || defined(MVPN_DUMMY)
   return true;
+#elif defined(MVPN_WINDOWS)
+  return !WindowsSplitTunnel::detectConflict();
 #elif defined(MVPN_LINUX)
   static bool initDone = false;
   static bool splitTunnelSupported = false;
@@ -115,9 +112,9 @@ bool FeatureCallback_splitTunnel() {
   }
   initDone = true;
 
-  /* Control groups v1 must be mounted for traffic classification
+  /* Control groups v2 must be mounted for app/traffic classification
    */
-  if (LinuxDependencies::findCgroupPath("net_cls").isNull()) {
+  if (LinuxDependencies::findCgroup2Path().isNull()) {
     return false;
   }
 
@@ -128,8 +125,18 @@ bool FeatureCallback_splitTunnel() {
     return false;
   }
   QStringList desktop = pe.value("XDG_CURRENT_DESKTOP").split(":");
-  if (!desktop.contains("GNOME") && !desktop.contains("MATE") &&
-      !desktop.contains("Unity") && !desktop.contains("X-Cinnamon")) {
+  if (desktop.contains("GNOME")) {
+    QString shellVersion = LinuxDependencies::gnomeShellVersion();
+    if (shellVersion.isNull()) {
+      return false;
+    }
+    if (VersionApi::compareVersions(shellVersion, "3.34") < 0) {
+      return false;
+    }
+  }
+  // TODO: These shells need more testing.
+  else if (!desktop.contains("MATE") && !desktop.contains("Unity") &&
+           !desktop.contains("X-Cinnamon")) {
     return false;
   }
   splitTunnelSupported = true;
