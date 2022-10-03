@@ -52,7 +52,8 @@ class XCodeprojPatcher
 
       config.build_settings['FRAMEWORK_SEARCH_PATHS'] ||= [
         "$(inherited)",
-        "$(PROJECT_DIR)/3rdparty"
+        "$(PROJECT_DIR)/3rdparty",
+        "$(PROJECT_DIR)/3rdparty/wireguard-apple/Sources/WireGuardKitC",
       ]
 
       config.build_settings['PRODUCT_NAME'] = 'Mozilla VPN'
@@ -223,6 +224,10 @@ class XCodeprojPatcher
       config.build_settings['ENABLE_BITCODE'] ||= 'NO'
       config.build_settings['SDKROOT'] = 'iphoneos'
 
+      config.build_settings['FRAMEWORK_SEARCH_PATHS'] ||= [
+        "$(PROJECT_DIR)/ios/gobridge",
+        "$(PROJECT_DIR)/3rdparty/wireguard-apple/Sources/WireGuardKitC",
+      ]
       config.build_settings['OTHER_LDFLAGS'] ||= [
         "-stdlib=libc++",
         "-Wl,-rpath,@executable_path/Frameworks",
