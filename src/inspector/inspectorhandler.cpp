@@ -956,6 +956,14 @@ static QList<InspectorCommand> s_commands{
           message.executeAction();
           return QJsonObject();
         }},
+
+    InspectorCommand{"set_installation_time", "Set the installation time", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       qint64 epoch = arguments[1].toLongLong();
+                       SettingsHolder::instance()->setInstallationTime(
+                           QDateTime::fromSecsSinceEpoch(epoch));
+                       return QJsonObject();
+                     }},
 };
 
 // static
