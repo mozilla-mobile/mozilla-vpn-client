@@ -30,6 +30,8 @@ public class IOSControllerImpl : NSObject {
     private var deviceIpv4Address: String? = nil
     private var deviceIpv6Address: String? = nil
 
+    private var reconnecting: Bool = false
+
     @objc enum ConnectionState: Int { case Error, Connected, Disconnected }
 
     @objc init(bundleID: String, privateKey: Data, deviceIpv4Address: String, deviceIpv6Address: String, closure: @escaping (ConnectionState, Date?) -> Void, callback: @escaping (Bool) -> Void) {
@@ -106,6 +108,17 @@ public class IOSControllerImpl : NSObject {
             return
         }
 
+        if reconnecting && session.status == .disconnected {
+            do {
+                Logger.global?.log(message: "Reconnecting")
+                reconnecting = false
+                try (self.tunnel!.connection as? NETunnelProviderSession)?.startTunnel()
+                return
+            } catch {
+            }
+
+        }
+
         stateChangeCallback?(session.status == .connected)
     }
 
@@ -133,6 +146,7 @@ public class IOSControllerImpl : NSObject {
     }
 
     @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, failureCallback: @escaping () -> Void) {
+
         Logger.global?.log(message: "Connecting")
         assert(tunnel != nil)
 
@@ -211,6 +225,12 @@ public class IOSControllerImpl : NSObject {
                         try (self.tunnel!.connection as? NETunnelProviderSession)?
                                 .sendProviderMessage(settingsData) {_ in return}
                     } else {
+                        if self.tunnel!.connection.status == .connected {
+                            Logger.global?.log(message: "Connectivity issue detected. Let's reconnect")
+                            self.reconnecting = true
+                            (self.tunnel!.connection as? NETunnelProviderSession)?.stopTunnel()
+                            return
+                        }
                         try (self.tunnel!.connection as? NETunnelProviderSession)?.startTunnel()
                     }
                 } catch let error {
@@ -225,6 +245,7 @@ public class IOSControllerImpl : NSObject {
     @objc func disconnect() {
         Logger.global?.log(message: "Disconnecting")
         assert(tunnel != nil)
+        reconnecting = false
         (tunnel!.connection as? NETunnelProviderSession)?.stopTunnel()
     }
 
