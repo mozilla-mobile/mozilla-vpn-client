@@ -95,7 +95,7 @@ export PATH="$QT_BIN:$PATH"
 
 if [[ "$OS" == "ios" ]]; then
   printn Y "Retrieve the wireguard-go version... "
-  (cd ios/gobridge && go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > ios/gobridge/wireguard-go-version.h
+  (cd 3rdparty/wireguard-apple/Sources/WireGuardKitGo/ && go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > 3rdparty/wireguard-apple/Sources/WireGuardKitGo/wireguard-go-version.h
   print G "done."
 fi
 
