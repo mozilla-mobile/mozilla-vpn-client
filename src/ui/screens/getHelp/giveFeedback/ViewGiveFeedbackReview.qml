@@ -49,7 +49,7 @@ VPNViewBase {
                 id: skipLink
 
                 labelText: qsTrId("vpn.feedbackForm.skip")
-                onClicked: getHelpStackView.pop(null, StackView.Immediate);
+                onClicked: getHelpStackView.push("qrc:/ui/screens/getHelp/giveFeedback/ViewGiveFeedbackThankYou.qml");
                 implicitHeight: VPNTheme.theme.rowHeight
                 Layout.alignment: Qt.AlignHCenter
             }
