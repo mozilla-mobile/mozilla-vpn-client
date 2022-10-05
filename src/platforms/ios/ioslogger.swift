@@ -37,8 +37,7 @@ public class Logger {
             appVersion += " (\(appBuild))"
         }
 
-        let goBackendVersion = WIREGUARD_GO_VERSION
-        Logger.global?.log(message: "App version: \(appVersion); Go backend version: \(goBackendVersion)")
+        Logger.global?.log(message: "App version: \(appVersion)")
     }
 }
 
