@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
  const assert = require('assert');
  const vpn = require('./helper.js');
- 
+
  describe('Server list', function() {
    let servers;
    let currentCountryCode;
@@ -37,9 +37,10 @@
 
    it('Checking multihop functionality', async () => {
     for(let i=0; i<servers.length; i++){
+      const idx = Math.floor(Math.random() * 2)
+
       // wait for select entry      
       await vpn.waitForElementAndClick('multiHopSelector/tabMultiHop');
-      await vpn.wait()    
        
       // select entry
       await vpn.waitForElementAndClick('buttonSelectEntry');    
@@ -47,7 +48,8 @@
       // wait for country of choice to be visible    
       const server = servers[i]
       const countryId = 'serverCountryList/serverCountry-' + server.code;
-      const exitCountryId = 'serverCountryList/serverCountry-' + servers[0].code;      
+      const exitCountryId = 'serverCountryList/serverCountry-' + servers[idx].code;
+
   
       // select the country of choice      
       await vpn.setElementProperty('serverCountryView', 'contentY', 'i', parseInt(await vpn.getElementProperty(countryId, 'y')));
@@ -59,24 +61,21 @@
   
       // navigate and select city    
       const cityOne = server.cities[0]
-      const cityTwo = servers[0].cities[1]
+      const cityTwo = servers[idx].cities[0]
       const cityOneId = countryId + '/serverCityList/serverCity-' + cityOne.name.replace(/ /g, '_');
-      
+
       // select city      
       await vpn.setElementProperty(
           'serverCountryView', 'contentY', 'i',
           parseInt(await vpn.getElementProperty(cityOneId, 'y')) +
               parseInt(await vpn.getElementProperty(countryId, 'y')));
       await vpn.wait()         
-      await vpn.waitForElementAndClick(cityOneId);            
-      await vpn.wait()
+      await vpn.waitForElementAndClick(cityOneId);
       
-            
       // Back at the main view. select the exit entries     
-      await vpn.waitForElementAndClick('buttonSelectExit');      
-      await vpn.wait();
+      await vpn.waitForElementAndClick('buttonSelectExit');
       
-      // set country view        
+      // set country view
       await vpn.setElementProperty('serverCountryView', 'contentY', 'i', parseInt(await vpn.getElementProperty(exitCountryId, 'y')));
       await vpn.wait();
   
@@ -93,33 +92,24 @@
             parseInt(await vpn.getElementProperty(exitCountryId, 'y')));
       await vpn.wait()
   
-      // select city      
+      // select city
       await vpn.waitForElementAndClick(cityTwoId);
-      await vpn.wait()
       
       // navigate back to 
       await vpn.waitForElementAndClick('serverListBackButton');
-      await vpn.wait();
 
       await vpn.activate();
-
       await vpn.waitForCondition(async () => {
         return await vpn.getElementProperty('controllerTitle', 'text') ==
             'VPN is on';
-      });
-      await vpn.wait();
-      
-      currentCountry = servers[0].localizedName;
-      currentCity = cityTwo.localizedName;
-            
-      assert.strictEqual(vpn.lastNotification().title, 'VPN Connected');
-      assert.strictEqual(vpn.lastNotification().message, `Connected to ${currentCountry}, ${currentCity}`);
-      await vpn.wait()
-      
-        // go back to server list
+      });            
+
+      // go back to server list
       await vpn.waitForElementAndClick('serverListButton');
-      await vpn.wait()
     }
+
+    await vpn.waitForElementAndClick('multiHopSelector/tabSingleHop');
+    await vpn.waitForElementAndClick('serverListBackButton');
     await vpn.deactivate()
    })
  });

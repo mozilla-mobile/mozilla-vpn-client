@@ -162,6 +162,7 @@ module.exports = {
   async waitForElementAndClick(id) {
     await this.waitForElementAndProperty(id, 'visible', 'true');
     await this.clickOnElement(id)
+    await this.wait()
   },
 
   async clickOnNotification() {
@@ -251,8 +252,8 @@ module.exports = {
     }
   },
 
-  wait() {
-    return new Promise(resolve => setTimeout(resolve, 500));
+  wait(waitTimeInMilliSecs = 1000) {
+    return new Promise(resolve => setTimeout(resolve, waitTimeInMilliSecs));
   },
 
   // TODO - The expected staging urls are hardcoded, we may want to
