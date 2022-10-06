@@ -141,7 +141,10 @@ Window {
             if (VPN.debugMode) {
                 console.debug("Initializing glean with debug mode");
                 Glean.setLogPings(true);
-                Glean.setDebugViewTag("MozillaVPN");
+                // Uncomment for debugging purposes.
+                // See: https://mozilla.github.io/glean/book/reference/debug/debugViewTag.html#debug-view-tag
+                //
+                // Glean.setDebugViewTag("MozillaVPN");
             }
             var channel = VPN.stagingMode ? "staging" : "production";
 
@@ -176,7 +179,7 @@ Window {
         }
 
         function onAboutToQuit() {
-            console.debug("about to quit, shutdown Glean"); 
+            console.debug("about to quit, shutdown Glean");
             // Submit the main ping in case there are outstading metrics in storage before shutdown.
             Pings.main.submit();
             // Use glean's built-in shutdown method - https://mozilla.github.io/glean/book/reference/general/shutdown.html
