@@ -112,12 +112,18 @@ public class IOSControllerImpl : NSObject {
             return
         }
 
+       // This timer is used to workaround a Schrödinger's cat bug: if we check
+       // the connection status immediately when connected, we alter the iOS16
+       // connectivity state and we break the VPN tunnel (intermittently). With
+       // a timer this does not happen.
         _ = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) {_ in
             self.monitorConnection()
         }
     }
 
     private func monitorConnection() -> Void {
+        // Let's call `stateChangeCallback` if connected and if
+        // last_handshake_time_sec is not 0.
         self.checkStatus { _, _, configString in
             if self.tunnel?.connection.status != .connected { return; }
 
