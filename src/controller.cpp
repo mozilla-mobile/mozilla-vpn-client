@@ -608,6 +608,7 @@ bool Controller::processNextStep() {
 
   if (nextStep == ServerUnavailable) {
     logger.info() << "Server Unavailable - Ping succeeded: " << m_ping_received;
+
     emit readyToServerUnavailable(m_ping_received);
     return true;
   }
