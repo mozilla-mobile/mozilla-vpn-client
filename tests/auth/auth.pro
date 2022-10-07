@@ -42,6 +42,8 @@ HEADERS += \
     ../../src/authenticationinapp/incrementaldecoder.h \
     ../../src/authenticationlistener.h \
     ../../src/constants.h \
+    ../../src/controller.h \
+    ../../src/dnspingsender.h \
     ../../src/env.h \
     ../../src/errorhandler.h \
     ../../src/hawkauth.h \
@@ -57,6 +59,10 @@ HEADERS += \
     ../../src/mozillavpn.h \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \
+    ../../src/pinghelper.h \
+    ../../src/pingsender.h \
+    ../../src/pingsenderfactory.h \
+    ../../src/platforms/dummy/dummypingsender.h \
     ../../src/rfc/rfc1918.h \
     ../../src/rfc/rfc4193.h \
     ../../src/rfc/rfc4291.h \
@@ -79,6 +85,7 @@ HEADERS += \
 
 SOURCES += \
     mocmozillavpn.cpp \
+    ../qml/moccontroller.cpp \
     ../unit/mocinspectorhandler.cpp \
     ../../src/authenticationinapp/authenticationinapp.cpp \
     ../../src/authenticationinapp/authenticationinapplistener.cpp \
@@ -86,6 +93,7 @@ SOURCES += \
     ../../src/authenticationinapp/incrementaldecoder.cpp \
     ../../src/authenticationlistener.cpp \
     ../../src/constants.cpp \
+    ../../src/dnspingsender.cpp \
     ../../src/errorhandler.cpp \
     ../../src/hawkauth.cpp \
     ../../src/hkdf.cpp \
@@ -98,6 +106,10 @@ SOURCES += \
     ../../src/models/server.cpp \
     ../../src/networkmanager.cpp \
     ../../src/networkrequest.cpp \
+    ../../src/pinghelper.cpp \
+    ../../src/pingsender.cpp \
+    ../../src/pingsenderfactory.cpp \
+    ../../src/platforms/dummy/dummypingsender.cpp \
     ../../src/rfc/rfc1918.cpp \
     ../../src/rfc/rfc4193.cpp \
     ../../src/rfc/rfc4291.cpp \

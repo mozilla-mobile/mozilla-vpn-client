@@ -207,14 +207,16 @@ int CommandLogin::run(QStringList& tokens) {
           vpn.state() == MozillaVPN::StateMain) {
         loop.exit();
       }
-      if (vpn.alert() == MozillaVPN::AuthenticationFailedAlert) {
+      if (ErrorHandler::instance()->alert() ==
+          ErrorHandler::AuthenticationFailedAlert) {
         loop.exit();
       }
     });
 
     loop.exec();
 
-    if (vpn.alert() == MozillaVPN::AuthenticationFailedAlert) {
+    if (ErrorHandler::instance()->alert() ==
+        ErrorHandler::AuthenticationFailedAlert) {
       QTextStream stream(stdout);
       stream << "Authentication failed" << Qt::endl;
       return 1;

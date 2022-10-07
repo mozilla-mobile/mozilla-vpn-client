@@ -93,7 +93,7 @@ AndroidController::AndroidController() {
           logger.error() << "Service Error while activating the VPN: "
                          << parcelBody;
         }
-        MozillaVPN::instance()->errorHandle(
+        ErrorHandler::instance()->errorHandle(
             ErrorHandler::ConnectionFailureError);
         emit disconnected();
       },
@@ -101,7 +101,7 @@ AndroidController::AndroidController() {
   connect(
       activity, &AndroidVPNActivity::serviceDisconnected, this,
       []() {
-        MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
+        ErrorHandler::instance()->errorHandle(ErrorHandler::ControllerError);
       },
       Qt::QueuedConnection);
 }

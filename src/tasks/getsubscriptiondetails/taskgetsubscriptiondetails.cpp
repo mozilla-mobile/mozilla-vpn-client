@@ -9,7 +9,6 @@
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "networkrequest.h"
 
 namespace {
@@ -53,7 +52,8 @@ void TaskGetSubscriptionDetails::run() {
         if (m_authenticationInAppSession) {
           logger.error() << "Network request failed after authentication";
 
-          MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+          ErrorHandler::instance()->errorHandle(
+              ErrorHandler::toErrorType(error));
           emit failed();
           m_authenticationInAppSession->terminate();
           return;
@@ -66,7 +66,7 @@ void TaskGetSubscriptionDetails::run() {
           return;
         }
 
-        MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+        ErrorHandler::instance()->errorHandle(ErrorHandler::toErrorType(error));
 
         // We need to emit two separate signals here.
         // `failed`: Signal for connected objects that are monitoring this Task
@@ -135,7 +135,7 @@ void TaskGetSubscriptionDetails::initAuthentication() {
 
   connect(m_authenticationInAppSession, &AuthenticationInAppSession::failed,
           this, [this](const ErrorHandler::ErrorType error) {
-            MozillaVPN::instance()->errorHandle(error);
+            ErrorHandler::instance()->errorHandle(error);
             m_authenticationInAppSession->terminate();
           });
 
@@ -145,7 +145,7 @@ void TaskGetSubscriptionDetails::initAuthentication() {
               case AuthenticationInApp::StateSignUp:
                 [[fallthrough]];
               case AuthenticationInApp::StateFallbackInBrowser:
-                MozillaVPN::instance()->errorHandle(
+                ErrorHandler::instance()->errorHandle(
                     ErrorHandler::AuthenticationError);
                 emit failed();
                 m_authenticationInAppSession->terminate();

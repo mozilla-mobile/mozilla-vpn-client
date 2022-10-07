@@ -80,24 +80,8 @@ class MozillaVPN final : public QObject {
   };
   Q_ENUM(UserState);
 
-  enum AlertType {
-    NoAlert,
-    AuthenticationFailedAlert,
-    ConnectionFailedAlert,
-    LogoutAlert,
-    NoConnectionAlert,
-    ControllerErrorAlert,
-    RemoteServiceErrorAlert,
-    SubscriptionFailureAlert,
-    GeoIpRestrictionAlert,
-    UnrecoverableErrorAlert,
-    AuthCodeSentAlert,
-  };
-  Q_ENUM(AlertType)
-
  private:
   Q_PROPERTY(State state READ state NOTIFY stateChanged)
-  Q_PROPERTY(AlertType alert READ alert NOTIFY alertChanged)
   Q_PROPERTY(QString devVersion READ devVersion CONSTANT)
   Q_PROPERTY(const Env* env READ env CONSTANT)
   Q_PROPERTY(UserState userState READ userState NOTIFY userStateChanged)
@@ -121,7 +105,6 @@ class MozillaVPN final : public QObject {
   void initialize();
 
   State state() const;
-  AlertType alert() const { return m_alert; }
 
   const QString& exitServerPublicKey() const { return m_exitServerPublicKey; }
   const QString& entryServerPublicKey() const { return m_entryServerPublicKey; }
@@ -139,8 +122,6 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void authenticate();
   Q_INVOKABLE void cancelAuthentication();
   Q_INVOKABLE void removeDeviceFromPublicKey(const QString& publicKey);
-  Q_INVOKABLE void hideAlert() { setAlert(NoAlert); }
-  Q_INVOKABLE void setAlert(AlertType alert);
   Q_INVOKABLE void postAuthenticationCompleted();
   Q_INVOKABLE void telemetryPolicyCompleted();
   Q_INVOKABLE void mainWindowLoaded();
@@ -182,9 +163,7 @@ class MozillaVPN final : public QObject {
   ConnectionBenchmark* connectionBenchmark() {
     return &m_private->m_connectionBenchmark;
   }
-  ConnectionHealth* connectionHealth() {
-    return &m_private->m_connectionHealth;
-  }
+  ConnectionHealth* connectionHealth();
   Controller* controller();
   ServerData* currentServer() { return &m_private->m_serverData; }
   DeviceModel* deviceModel() { return &m_private->m_deviceModel; }
@@ -233,8 +212,6 @@ class MozillaVPN final : public QObject {
   const QList<Server> exitServers() const;
   const QList<Server> entryServers() const;
   bool multihop() const { return m_private->m_serverData.multihop(); }
-
-  void errorHandle(ErrorHandler::ErrorType error);
 
   void abortAuthentication();
 
@@ -353,7 +330,6 @@ class MozillaVPN final : public QObject {
 
  signals:
   void stateChanged();
-  void alertChanged();
   void userStateChanged();
   void deviceRemoving(const QString& publicKey);
   void aboutNeeded();
@@ -411,7 +387,6 @@ class MozillaVPN final : public QObject {
   Private* m_private = nullptr;
 
   State m_state = StateInitialize;
-  AlertType m_alert = NoAlert;
   QString m_currentView;
 
   UserState m_userState = UserNotAuthenticated;
@@ -419,7 +394,6 @@ class MozillaVPN final : public QObject {
   QString m_exitServerPublicKey;
   QString m_entryServerPublicKey;
 
-  QTimer m_alertTimer;
   QTimer m_periodicOperationsTimer;
   QTimer m_gleanTimer;
 

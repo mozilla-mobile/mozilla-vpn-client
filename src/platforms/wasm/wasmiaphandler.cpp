@@ -6,7 +6,6 @@
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "tasks/purchase/taskpurchase.h"
 #include "taskscheduler.h"
 
@@ -52,7 +51,7 @@ void WasmIAPHandler::nativeStartSubscription(Product* product) {
       purchaseTask, &TaskPurchase::failed, this,
       [this](QNetworkReply::NetworkError error, const QByteArray&) {
         logger.error() << "Purchase validation request to guardian failed";
-        MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+        ErrorHandler::instance()->errorHandle(ErrorHandler::toErrorType(error));
         stopSubscription();
         emit subscriptionNotValidated();
       });
