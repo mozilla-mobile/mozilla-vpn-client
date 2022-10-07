@@ -42,6 +42,9 @@
 #include "update/versionapi.h"
 #include "urlopener.h"
 #include "websocket/websockethandler.h"
+#include "glean/glean.h"
+#include "glean/generated/metrics.h"
+#include "glean/generated/pings.h"
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosdatamigration.h"
@@ -243,6 +246,16 @@ void MozillaVPN::initialize() {
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
+
+  Glean::initialize();
+  mozilla::glean::testing::my_counter.add(10);
+  mozilla::glean::testing::one_event.record(
+      mozilla::glean::testing::OneEventExtra{
+        aFlag : QVariant(false),
+        aNumber : QVariant(42),
+        aString : QVariant("A STRING!!!!"),
+      });
+  mozilla::glean_pings::Main.submit();
 
 #ifdef MVPN_IOS
   if (!settingsHolder->nativeIOSDataMigrated()) {
