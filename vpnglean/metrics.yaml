@@ -1,0 +1,54 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+---
+$schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
+
+testing:
+  my_counter:
+    type: counter
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      A test counter
+    bugs:
+      - N/A
+    data_reviews:
+      - N/A
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - brizental@mozilla.com
+    expires: never
+
+  one_event:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      Encountered an error while processing incoming purchase updates
+    bugs:
+      - N/A
+    data_reviews:
+      - N/A
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - brizental@mozilla.com
+    expires: never
+    extra_keys:
+      a_string:
+        description: |
+          Do strings work?
+        type: string
+      a_number:
+        description: |
+          Do numbers work?
+        type: quantity
+      a_flag:
+        description: |
+          Do flags work?
+        type: boolean

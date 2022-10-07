@@ -25,3 +25,6 @@
 [submodule "3rdparty/adjust-android-sdk"]
 	path = 3rdparty/adjust-android-sdk
 	url = https://github.com/adjust/android_sdk
+[submodule "3rdparty/glean"]
+	path = 3rdparty/glean
+	url = git@github.com:mozilla/glean.git
