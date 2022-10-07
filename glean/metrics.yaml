@@ -1054,7 +1054,7 @@ sample:
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/4589
     data_reviews:
-      - TODO
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4594#issuecomment-1271601927
     data_sensitivity:
       - technical
     notification_emails:
