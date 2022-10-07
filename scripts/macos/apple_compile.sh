@@ -99,6 +99,37 @@ if [[ "$OS" == "ios" ]]; then
   print G "done."
 fi
 
+if [[ "$OS" == "ios" ]]; then
+  printn Y "Glean stuff... \n"
+  
+  # Version MUST be kept in sync with Glean's version. We should probably automate the syncing.
+  cargo install uniffi_bindgen@0.19.6
+  mkdir -p ios/Glean
+  # Generate the FFI stuff for the Glean iOS SDK
+  uniffi-bindgen generate -l swift -o "ios/Glean" "3rdparty/glean/glean-core/src/glean.udl"
+  # Rename the generated file otherwise it will prevent the Glean.swift file from being copied in the next step
+  cp ios/Glean/glean.swift ios/Glean/GeneratedGlean.swift
+  rm ios/Glean/glean.swift
+  # Copy the handwritten Swift that makes up the Glean iOS SDK
+  cp -r "3rdparty/glean/glean-core/ios/Glean" "ios"
+
+  # Generate the internal Glean metrics
+  SOURCE_ROOT="." PROJECT="Mozilla VPN" scripts/macos/glean_sdk_generator.sh \
+    -o "ios/Glean/Generated/Metrics/" \
+    --allow-reserved "3rdparty/glean/glean-core/metrics.yaml" "3rdparty/glean/glean-core/pings.yaml"
+  # Generate the VPN Glean metric files
+  SOURCE_ROOT="." PROJECT="Mozilla VPN" scripts/macos/glean_sdk_generator.sh \
+    -o "ios/Generated/Metrics/" \
+    "vpnglean/metrics.yaml" "vpnglean/pings.yaml"
+  cp ios/Generated/Metrics/Metrics.swift ios/Generated/Metrics/VPNMetrics.swift
+  rm ios/Generated/Metrics/Metrics.swift
+
+  cp vpnglean/target/universal/release/libvpnglean.a Debug-iphoneos/libvpnglean.a
+  cp vpnglean/target/universal/release/libvpnglean.a Debug-iphonesimulator/libvpnglean.a
+
+  print G "done."
+fi
+
 printn Y "Cleaning the existing project... "
 rm -rf mozillavpn.xcodeproj/ || die "Failed to remove things"
 print G "done."

@@ -101,6 +101,16 @@ class XCodeprojPatcher
     [
       'src/platforms/ios/ioscontroller.swift',
       'src/platforms/ios/ioslogger.swift',
+      'src/platforms/ios/iosgleanglue.swift',
+    ].each { |filename|
+      file = group.new_file(filename)
+      @target_main.add_file_references([file])
+    }
+
+    # @target_main + Glean Swift SDK
+    group = @project.main_group.new_group('Telemetry')
+    [
+      'ios/Generated/Metrics/VPNMetrics.swift'
     ].each { |filename|
       file = group.new_file(filename)
       @target_main.add_file_references([file])
@@ -196,6 +206,80 @@ class XCodeprojPatcher
         file_reference = @target_main.add_file_references([file], '-fobjc-arc')
       }
     end
+
+    # @target_main + Glean Swift SDK
+    @target_glean = @project.new_target(:framework, 'Glean', :ios)
+    @target_glean.build_configurations.each do |config|
+      config.base_configuration_reference = @configFile
+
+      config.build_settings['LD_RUNPATH_SEARCH_PATHS'] ||= '"$(inherited) @executable_path/../Frameworks"'
+      # TODO: Why is this even necessary... Figure out how to not need it.
+      config.build_settings['LIBRARY_SEARCH_PATHS'] ||= '"vpnglean/target/universal/release"'
+      config.build_settings['SWIFT_VERSION'] ||= '5.0'
+      config.build_settings['CLANG_ENABLE_MODULES'] ||= 'YES'
+      config.build_settings['SWIFT_OBJC_BRIDGING_HEADER'] = ''
+      config.build_settings['SWIFT_PRECOMPILE_BRIDGING_HEADER'] = 'YES'
+      config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = 'YES'
+      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = 'org.mozilla.ios.FirefoxVPN.Glean'
+
+      config.build_settings['INFOPLIST_FILE'] ||= 'ios/Glean/Info.plist'
+      # TODO: What does this do exactly? It fixed the problem, but I dont get it.
+      config.build_settings['MACH_O_TYPE'] = 'staticlib'
+    end
+
+    group = @project.main_group.new_group('Glean')
+    [
+      'ios/Glean/Generated/Metrics/Metrics.swift',
+      'ios/Glean/Metrics/UuidMetric.swift',
+      'ios/Glean/Metrics/Ping.swift',
+      'ios/Glean/Metrics/StringMetric.swift',
+      'ios/Glean/Metrics/TextMetric.swift',
+      'ios/Glean/Metrics/MemoryDistributionMetric.swift',
+      'ios/Glean/Metrics/TimingDistributionMetric.swift',
+      'ios/Glean/Metrics/CounterMetric.swift',
+      'ios/Glean/Metrics/EventMetric.swift',
+      'ios/Glean/Metrics/StringListMetric.swift',
+      'ios/Glean/Metrics/TimespanMetric.swift',
+      'ios/Glean/Metrics/QuantityMetric.swift',
+      'ios/Glean/Metrics/LabeledMetric.swift',
+      'ios/Glean/Metrics/BooleanMetric.swift',
+      'ios/Glean/Metrics/DatetimeMetric.swift',
+      'ios/Glean/Metrics/RateMetric.swift',
+      'ios/Glean/Metrics/UrlMetric.swift',
+      'ios/Glean/Net/HttpPingUploader.swift',
+      'ios/Glean/GleanMetrics.swift',
+      'ios/Glean/Config/Configuration.swift',
+      'ios/Glean/Dispatchers.swift',
+      'ios/Glean/Scheduler/GleanLifecycleObserver.swift',
+      'ios/Glean/Scheduler/MetricsPingScheduler.swift',
+      'ios/Glean/Utils/Unreachable.swift',
+      'ios/Glean/Utils/Logger.swift',
+      'ios/Glean/Utils/Sysctl.swift',
+      'ios/Glean/Utils/Utils.swift',
+      'ios/Glean/GeneratedGlean.swift',
+      'ios/Glean/Glean.swift',
+      'ios/Glean/Debug/GleanDebugTools.swift'
+    ].each { |filename|
+      file = group.new_file(filename)
+      @target_glean.add_file_references([file])
+    }
+
+    [
+      'ios/Glean/Glean.h',
+      'ios/Glean/gleanFFI.h',
+    ].each { |filename|
+      file = group.new_file(filename)
+      header = @target_glean.headers_build_phase.add_file_reference(file)
+      header.settings = { 'ATTRIBUTES' => ['Public'] }
+    }
+
+    frameworks_group = @project.groups.find { |group| group.display_name == 'Frameworks' }
+    frameworks_build_phase = @target_glean.build_phases.find { |build_phase| build_phase.to_s == 'FrameworksBuildPhase' }
+
+    framework_ref = frameworks_group.new_file('libvpnglean.a')
+    frameworks_build_phase.add_file_reference(framework_ref)
+
+    setup_target_dependency @target_main, @target_glean
   end
 
   def setup_target_extension(shortVersion, fullVersion, configHash)
@@ -207,7 +291,7 @@ class XCodeprojPatcher
       config.build_settings['LD_RUNPATH_SEARCH_PATHS'] ||= '"$(inherited) @executable_path/../Frameworks"'
       config.build_settings['SWIFT_VERSION'] ||= '5.0'
       config.build_settings['CLANG_ENABLE_MODULES'] ||= 'YES'
-      config.build_settings['SWIFT_OBJC_BRIDGING_HEADER'] ||= 'ios/networkextension/WireGuardNetworkExtension-Bridging-Header.h'
+      config.build_settings['SWIFT_OBJC_BRIDGING_HEADER'] = 'ios/networkextension/WireGuardNetworkExtension-Bridging-Header.h'
       config.build_settings['SWIFT_PRECOMPILE_BRIDGING_HEADER'] = 'NO'
       config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = 'YES'
 

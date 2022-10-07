@@ -6,11 +6,18 @@
 #include "glean.h"
 #include "settingsholder.h"
 
+#if defined(MVPN_IOS)
+#  include "platforms/ios/iosgleanglue.h"
+#endif
+
 // static
 void Glean::initialize() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
+#if defined(MVPN_IOS)
+  new IOSGleanGlue(settingsHolder->gleanEnabled());
+#else
   glean_initialize(settingsHolder->gleanEnabled());
 #endif
 }

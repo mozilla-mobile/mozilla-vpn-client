@@ -5,8 +5,8 @@
 import Foundation
 import os.log
 
-public class Logger {
-    static var global: Logger?
+public class IOSLogger {
+    static var global: IOSLogger?
 
     var tag: String
 
@@ -25,11 +25,11 @@ public class Logger {
     }
 
     static func configureGlobal(tagged tag: String, withFilePath filePath: String?) {
-        if Logger.global != nil {
+        if IOSLogger.global != nil {
             return
         }
 
-        Logger.global = Logger(tagged: tag)
+        IOSLogger.global = IOSLogger(tagged: tag)
 
         var appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown version"
 
@@ -37,16 +37,16 @@ public class Logger {
             appVersion += " (\(appBuild))"
         }
 
-        Logger.global?.log(message: "App version: \(appVersion)")
+        IOSLogger.global?.log(message: "App version: \(appVersion)")
     }
 }
 
 func wg_log(_ type: OSLogType, staticMessage msg: StaticString) {
     os_log(msg, log: OSLog.default, type: type)
-    Logger.global?.log(message: "\(msg)")
+    IOSLogger.global?.log(message: "\(msg)")
 }
 
 func wg_log(_ type: OSLogType, message msg: String) {
     os_log("%{public}s", log: OSLog.default, type: type, msg)
-    Logger.global?.log(message: msg)
+    IOSLogger.global?.log(message: msg)
 }
