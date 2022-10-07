@@ -114,4 +114,4 @@ If you want to implement new add-ons, you need to follow these steps:
 7. be sure you are doing all of this using a staging environment
 
 If all has done correctly, you can see the app fetching the manifest.json (and
-not! the manifest.json.sign) resource from the webservice.
+not! the manifest.json.sig) resource from the webservice.
