@@ -11,7 +11,7 @@ Jinja2 template is not. Please file bugs! #}
 #ifndef mozilla_glean_Pings_h
 #define mozilla_glean_Pings_h
 
-#include "mozilla/glean/bindings/Ping.h"
+#include "glean/metrictypes.h"
 
 namespace mozilla::glean_pings {
 
@@ -21,7 +21,7 @@ namespace mozilla::glean_pings {
  *
  * {{ obj.description|wordwrap() | replace('\n', '\n * ') }}
  */
-constexpr glean::impl::Ping {{ obj.name|Camelize }}({{ obj.name|ping_id }});
+constexpr Ping {{ obj.name|Camelize }}({{ obj.name|ping_id }});
 
 {% endfor %}
 

@@ -74,9 +74,9 @@ def extra_type_name(typ: str) -> str:
     if typ == "boolean":
         return "bool"
     elif typ == "string":
-        return "nsCString"
+        return "QString"
     elif typ == "quantity":
-        return "uint32_t"
+        return "int"
     else:
         return "UNSUPPORTED"
 
