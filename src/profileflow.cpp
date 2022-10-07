@@ -26,7 +26,7 @@ void ProfileFlow::setState(State state) {
   logger.debug() << "Set state" << state;
 
   if (state == StateError) {
-    MozillaVPN::instance()->errorHandle(ErrorHandler::RemoteServiceError);
+    ErrorHandler::instance()->errorHandle(ErrorHandler::RemoteServiceError);
   }
 
   m_state = state;

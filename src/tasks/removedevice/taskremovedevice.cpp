@@ -52,7 +52,7 @@ void TaskRemoveDevice::run() {
         }
 
         logger.error() << "Failed to remove the device" << error;
-        MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+        ErrorHandler::instance()->errorHandle(ErrorHandler::toErrorType(error));
         emit completed();
       });
 

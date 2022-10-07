@@ -26,7 +26,7 @@ void TaskAccount::run() {
       request, &NetworkRequest::requestFailed, this,
       [this](QNetworkReply::NetworkError error, const QByteArray&) {
         logger.error() << "Account request failed" << error;
-        MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+        ErrorHandler::instance()->errorHandle(ErrorHandler::toErrorType(error));
         emit completed();
       });
 
