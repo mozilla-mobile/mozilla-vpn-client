@@ -112,7 +112,7 @@ jobs:
           ADDON_PRIVATE_KEY: ${{ secrets.ADDON_PRIVATE_KEY }}
         run: |
           echo -n "$ADDON_PRIVATE_KEY" > addon_private_key.pem
-          openssl dgst -sha256 -sign addon_private_key.pem -out addons/generated/addons/manifest.json.sign addons/generated/addons/manifest.json
+          openssl dgst -sha256 -sign addon_private_key.pem -out addons/generated/addons/manifest.json.sig addons/generated/addons/manifest.json
           rm addon_private_key.pem
 
       - name: Uploading

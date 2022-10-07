@@ -46,7 +46,7 @@ void TaskAddonIndex::run() {
   if (Feature::get(Feature::Feature_addonSignature)->isSupported()) {
     NetworkRequest* request = NetworkRequest::createForGetUrl(
         this,
-        QString("%1manifest.json.sign").arg(AddonManager::addonServerAddress()),
+        QString("%1manifest.json.sig").arg(AddonManager::addonServerAddress()),
         200);
 
     connect(request, &NetworkRequest::requestFailed, this,
