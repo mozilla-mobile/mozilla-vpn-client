@@ -26,7 +26,7 @@ void TaskServers::run() {
       request, &NetworkRequest::requestFailed, this,
       [this](QNetworkReply::NetworkError error, const QByteArray&) {
         logger.error() << "Failed to retrieve servers";
-        MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+        ErrorHandler::instance()->errorHandle(ErrorHandler::toErrorType(error));
         emit completed();
       });
 

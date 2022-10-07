@@ -252,7 +252,7 @@ static QList<InspectorCommand> s_commands{
                        Q_ASSERT(vpn);
 
                        vpn->reset(true);
-                       vpn->hideAlert();
+                       ErrorHandler::instance()->hideAlert();
 
                        SettingsHolder* settingsHolder =
                            SettingsHolder::instance();

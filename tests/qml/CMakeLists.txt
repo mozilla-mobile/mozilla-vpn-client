@@ -30,6 +30,8 @@ target_link_libraries(qml_tests PRIVATE glean lottie nebula translations)
 target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/constants.h
     ${MVPN_SOURCE_DIR}/controller.h
+    ${MVPN_SOURCE_DIR}/dnspingsender.cpp
+    ${MVPN_SOURCE_DIR}/dnspingsender.h
     ${MVPN_SOURCE_DIR}/env.h
     ${MVPN_SOURCE_DIR}/externalophandler.cpp
     ${MVPN_SOURCE_DIR}/externalophandler.h
@@ -64,12 +66,10 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/pinghelper.h
     ${MVPN_SOURCE_DIR}/pingsender.cpp
     ${MVPN_SOURCE_DIR}/pingsender.h
-    ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
-    ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.h
-    ${MVPN_SOURCE_DIR}/dnspingsender.cpp
-    ${MVPN_SOURCE_DIR}/dnspingsender.h
     ${MVPN_SOURCE_DIR}/pingsenderfactory.cpp
     ${MVPN_SOURCE_DIR}/pingsenderfactory.h
+    ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
+    ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.h
     ${MVPN_SOURCE_DIR}/update/updater.cpp
     ${MVPN_SOURCE_DIR}/update/updater.h
     ${MVPN_SOURCE_DIR}/update/versionapi.cpp

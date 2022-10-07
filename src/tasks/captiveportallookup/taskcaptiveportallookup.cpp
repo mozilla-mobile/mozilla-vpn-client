@@ -33,7 +33,7 @@ void TaskCaptivePortalLookup::run() {
           return;
         }
         logger.error() << "Failed to obtain captive portal IPs" << error;
-        MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+        ErrorHandler::instance()->errorHandle(ErrorHandler::toErrorType(error));
         emit completed();
       });
 

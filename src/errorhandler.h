@@ -5,12 +5,15 @@
 #ifndef ERRORHANDLER_H
 #define ERRORHANDLER_H
 
-#include <QObject>
 #include <QNetworkReply>
+#include <QObject>
+#include <QTimer>
 
 class ErrorHandler final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(ErrorHandler)
+
+  Q_PROPERTY(AlertType alert READ alert NOTIFY alertChanged)
 
  private:
   explicit ErrorHandler(QObject* parent);
@@ -30,17 +33,46 @@ class ErrorHandler final : public QObject {
     IgnoredError,
   };
 
+  enum AlertType {
+    NoAlert,
+    AuthenticationFailedAlert,
+    ConnectionFailedAlert,
+    LogoutAlert,
+    NoConnectionAlert,
+    ControllerErrorAlert,
+    RemoteServiceErrorAlert,
+    SubscriptionFailureAlert,
+    GeoIpRestrictionAlert,
+    UnrecoverableErrorAlert,
+    AuthCodeSentAlert,
+  };
+  Q_ENUM(AlertType)
+
   static ErrorType toErrorType(QNetworkReply::NetworkError error);
 
   ~ErrorHandler();
 
   static ErrorHandler* instance();
 
+  AlertType alert() const { return m_alert; }
+
+  void errorHandle(ErrorType error);
+
+  void hideAlert() { setAlert(NoAlert); }
+  Q_INVOKABLE void setAlert(AlertType alert);
+
 #define ERRORSTATE(name) \
   void name##Error();    \
   Q_SIGNAL void name();
 #include "errorlist.h"
 #undef ERRORSTATE
+
+ signals:
+  void alertChanged();
+
+ private:
+  AlertType m_alert = NoAlert;
+  QTimer m_alertTimer;
 };
 
 #endif  // ERRORHANDLER_H
