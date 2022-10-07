@@ -8,6 +8,9 @@
    let servers;
    let currentCountryCode;
    let currentCity;
+   let currentCountry;
+   let prevCurrentCountry
+   let prevCurrentCity
  
    this.timeout(240000);
    this.ctx.authenticationNeeded = true;
@@ -36,32 +39,33 @@
    });
 
    it('Checking multihop functionality', async () => {
-    for(let i=0; i<servers.length; i++){
-      const idx = Math.floor(Math.random() * 2)
+    for(let i=0; i<2; i++){            
+      const idx = getRandomInt()
 
       // wait for select entry      
       await vpn.waitForElementAndClick('multiHopSelector/tabMultiHop');
-       
+             
       // select entry
-      await vpn.waitForElementAndClick('buttonSelectEntry');    
+      await vpn.waitForElementAndClick('buttonSelectEntry');
       
       // wait for country of choice to be visible    
       const server = servers[i]
       const countryId = 'serverCountryList/serverCountry-' + server.code;
       const exitCountryId = 'serverCountryList/serverCountry-' + servers[idx].code;
-
   
       // select the country of choice      
       await vpn.setElementProperty('serverCountryView', 'contentY', 'i', parseInt(await vpn.getElementProperty(countryId, 'y')));
       await vpn.wait();
+
       if (await vpn.getElementProperty(countryId, 'cityListVisible') === 'false') {
         await vpn.clickOnElement(countryId);
-      }      
+      }  
+      
       await vpn.waitForElementProperty(countryId, 'cityListVisible', 'true');
   
       // navigate and select city    
-      const cityOne = server.cities[0]
-      const cityTwo = servers[idx].cities[0]
+      const cityOne = server.cities[getRandomInt(server.cities.length)]
+      const cityTwo = servers[idx].cities[getRandomInt(servers[idx].cities.length)]
       const cityOneId = countryId + '/serverCityList/serverCity-' + cityOne.name.replace(/ /g, '_');
 
       // select city      
@@ -85,31 +89,64 @@
         await vpn.clickOnElement(exitCountryId);
       }
     
-      // set city view      
+      // set city view and select  
       await vpn.setElementProperty(
         'serverCountryView', 'contentY', 'i',
         parseInt(await vpn.getElementProperty(cityTwoId, 'y')) +
             parseInt(await vpn.getElementProperty(exitCountryId, 'y')));
-      await vpn.wait()
-  
-      // select city
+      await vpn.wait()      
       await vpn.waitForElementAndClick(cityTwoId);
       
       // navigate back to 
       await vpn.waitForElementAndClick('serverListBackButton');
 
-      await vpn.activate();
-      await vpn.waitForCondition(async () => {
-        return await vpn.getElementProperty('controllerTitle', 'text') ==
-            'VPN is on';
-      });            
+      currentCountry = servers[idx].localizedName;
+      currentCity = cityTwo.localizedName;      
+
+      if(i < 1){
+        await vpn.activate();
+        await vpn.waitForCondition(async () => {
+          return await vpn.getElementProperty('controllerTitle', 'text') ==
+              'VPN is on';
+        });
+
+        assert.strictEqual(vpn.lastNotification().title, 'VPN Connected');
+        assert.strictEqual(vpn.lastNotification().message, `Connected to ${currentCountry}, ${currentCity}`);
+        
+        prevCurrentCountry = currentCountry
+        prevCurrentCity = currentCity
+      } else {
+
+        await vpn.waitForCondition(async () => {
+          return vpn.lastNotification().title == "VPN Switched Servers"
+        }, 5000)
+        assert.strictEqual(vpn.lastNotification().title, 'VPN Switched Servers');
+        assert.strictEqual(vpn.lastNotification().message, `Switched from ${prevCurrentCountry}, ${prevCurrentCity} to ${currentCountry}, ${currentCity}`);
+
+        if(i !== servers.length - 1){
+          prevCurrentCountry = currentCountry
+          prevCurrentCity = currentCity
+        }
+      }
+
 
       // go back to server list
       await vpn.waitForElementAndClick('serverListButton');
     }
 
+    // Verify switch to single hop
     await vpn.waitForElementAndClick('multiHopSelector/tabSingleHop');
     await vpn.waitForElementAndClick('serverListBackButton');
+
+    await vpn.waitForCondition(async () => {
+      return vpn.lastNotification().title == "VPN Switched Servers"
+    }, 5000)
+    assert.strictEqual(vpn.lastNotification().title, 'VPN Switched Servers');
+  
     await vpn.deactivate()
    })
- });
+});
+
+function getRandomInt(max = 3) {
+  return Math.floor(Math.random() * max);
+}

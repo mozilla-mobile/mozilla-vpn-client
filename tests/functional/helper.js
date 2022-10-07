@@ -245,10 +245,10 @@ module.exports = {
     return await this.getElementProperty('VPN', 'lastUrl');
   },
 
-  async waitForCondition(condition) {
+  async waitForCondition(condition, waitTimeInMilliSecs = 200) {
     while (true) {
       if (await condition()) return;
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise(resolve => setTimeout(resolve, waitTimeInMilliSecs));
     }
   },
 
