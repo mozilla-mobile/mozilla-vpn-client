@@ -16,6 +16,7 @@ def add_addons_release_artifacts(config, tasks):
         if task["attributes"]["build-type"] == "addons/opt" and task["name"] == "addons-bundle":
             addons = set(os.listdir("addons"))
             addons.remove("examples")
+            addons.remove("deprecated")
             for addon in addons:
                 task["attributes"]["release-artifacts"].append(
                     {
