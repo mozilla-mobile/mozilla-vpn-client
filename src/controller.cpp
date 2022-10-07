@@ -369,12 +369,10 @@ void Controller::connected(const QString& pubkey) {
     }
     // Continue anyways if the VPN service was activated externally.
     logger.info() << "Unexpected handshake: external VPN activation.";
-  }
-  else if (m_activationQueue.first().m_server.publicKey() != pubkey) {
+  } else if (m_activationQueue.first().m_server.publicKey() != pubkey) {
     logger.warning() << "Unexpected handshake: public key mismatch.";
     return;
-  }
-  else {
+  } else {
     // Start the next connection if there is more work to do.
     m_activationQueue.removeFirst();
     if (!m_activationQueue.isEmpty()) {
@@ -384,7 +382,6 @@ void Controller::connected(const QString& pubkey) {
   }
   m_handshakeTimer.stop();
   m_ping_canary.stop();
-
 
   // Clear the retry counter after all connections have succeeded.
   m_connectionRetry = 0;
