@@ -16,13 +16,6 @@ VPNAlert {
         id: alertStates
         state: VPNErrorHandler.alert
         states: [
-            State {
-                name: VPNErrorHandler.NoAlert
-                PropertyChanges {
-                    target: alertBox
-                    visible: false
-                }
-            },
             State{
                 name: VPNErrorHandler.AuthCodeSentAlert
                 PropertyChanges {
@@ -58,16 +51,6 @@ VPNAlert {
                 }
             },
             State {
-                name: VPNErrorHandler.NoConnectionAlert
-                PropertyChanges {
-                    target: alertBox
-                    //% "No internet connection"
-                    alertText: qsTrId("vpn.alert.noInternet")
-                    alertActionText: qsTrId("vpn.alert.tryAgain")
-                    visible: true
-                }
-            },
-            State {
                 name: VPNErrorHandler.ControllerErrorAlert
                 PropertyChanges {
                     target: alertBox
@@ -83,14 +66,39 @@ VPNAlert {
                 }
             },
             State {
-                name: VPNErrorHandler.UnrecoverableErrorAlert
+                name: VPNErrorHandler.GeoIpRestrictionAlert
                 PropertyChanges {
                     target: alertBox
-                    alertText: qsTrId("vpn.alert.backendServiceError")
+                    //% "Operation not allowed from current location"
+                    alertText: qsTrId("vpn.alert.getIPRestrictionError")
                     visible: true
-                    onActionPressed: ()=>{
-                        VPN.backendServiceRestore();
-                    }
+                }
+            },
+            State {
+                name: VPNErrorHandler.LogoutAlert
+                PropertyChanges {
+                    target: alertBox
+                    alertType: alertTypes.success
+                    //% "Signed out and device disconnected"
+                    alertText: qsTrId("vpn.alert.deviceDisconnectedAndLogout")
+                    visible: true
+                }
+            },
+            State {
+                name: VPNErrorHandler.NoAlert
+                PropertyChanges {
+                    target: alertBox
+                    visible: false
+                }
+            },
+            State {
+                name: VPNErrorHandler.NoConnectionAlert
+                PropertyChanges {
+                    target: alertBox
+                    //% "No internet connection"
+                    alertText: qsTrId("vpn.alert.noInternet")
+                    alertActionText: qsTrId("vpn.alert.tryAgain")
+                    visible: true
                 }
             },
             State {
@@ -116,24 +124,16 @@ VPNAlert {
                 }
             },
             State {
-                name: VPNErrorHandler.GeoIpRestrictionAlert
+                name: VPNErrorHandler.UnrecoverableErrorAlert
                 PropertyChanges {
                     target: alertBox
-                    //% "Operation not allowed from current location"
-                    alertText: qsTrId("vpn.alert.getIPRestrictionError")
+                    alertText: qsTrId("vpn.alert.backendServiceError")
                     visible: true
+                    onActionPressed: ()=>{
+                        VPN.backendServiceRestore();
+                    }
                 }
             },
-            State {
-                name: VPNErrorHandler.LogoutAlert
-                PropertyChanges {
-                    target: alertBox
-                    alertType: alertTypes.success
-                    //% "Signed out and device disconnected"
-                    alertText: qsTrId("vpn.alert.deviceDisconnectedAndLogout")
-                    visible: true
-                }
-            }
         ]
     }
 }

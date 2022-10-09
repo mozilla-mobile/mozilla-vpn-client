@@ -19,32 +19,33 @@ class ErrorHandler final : public QObject {
   explicit ErrorHandler(QObject* parent);
 
  public:
+  // Important: keep this enum in sync with the `ErrorData s_errors` in
+  // errorhandler.cpp.
   enum ErrorType {
-    NoError,
-    ConnectionFailureError,
-    NoConnectionError,
-    VPNDependentConnectionError,
     AuthenticationError,
+    ConnectionFailureError,
     ControllerError,
+    GeoIpRestrictionError,
+    IgnoredError,
+    NoConnectionError,
+    NoError,
     RemoteServiceError,
     SubscriptionFailureError,
-    GeoIpRestrictionError,
     UnrecoverableError,
-    IgnoredError,
   };
 
   enum AlertType {
-    NoAlert,
+    AuthCodeSentAlert,
     AuthenticationFailedAlert,
     ConnectionFailedAlert,
-    LogoutAlert,
-    NoConnectionAlert,
     ControllerErrorAlert,
+    GeoIpRestrictionAlert,
+    LogoutAlert,
+    NoAlert,
+    NoConnectionAlert,
     RemoteServiceErrorAlert,
     SubscriptionFailureAlert,
-    GeoIpRestrictionAlert,
     UnrecoverableErrorAlert,
-    AuthCodeSentAlert,
   };
   Q_ENUM(AlertType)
 

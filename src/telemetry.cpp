@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "telemetry.h"
+#include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -81,6 +82,20 @@ void Telemetry::initialize() {
     Q_ASSERT(vpn);
 
     emit vpn->recordGleanEvent(GleanSample::serverUnavailableError);
+  });
+
+  connect(ErrorHandler::instance(), &ErrorHandler::alertChanged, this, []() {
+    MozillaVPN* vpn = MozillaVPN::instance();
+    Q_ASSERT(vpn);
+
+    if (vpn->state() == MozillaVPN::StateAuthenticating) {
+      if (ErrorHandler::instance()->alert() ==
+          ErrorHandler::GeoIpRestrictionAlert) {
+        emit vpn->recordGleanEvent(GleanSample::authenticationFailureByGeo);
+      } else {
+        emit vpn->recordGleanEvent(GleanSample::authenticationFailure);
+      }
+    }
   });
 }
 
