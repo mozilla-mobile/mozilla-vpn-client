@@ -27,8 +27,8 @@
 #  include "platforms/windows/golang-msvc-types.h"
 #endif
 
-// Import balrog C/Go library (unless we are building on Windows with qmake)
-#if !(defined(MVPN_WINDOWS) && defined(BUILD_QMAKE))
+// Import balrog C/Go library, except on windows where we need to use a DLL.
+#if !defined(MVPN_WINDOWS)
 extern "C" {
 #  include "balrog-api.h"
 }
@@ -184,7 +184,7 @@ bool Balrog::checkSignature(Task* task, const QByteArray& x5uData,
 bool Balrog::validateSignature(const QByteArray& x5uData,
                                const QByteArray& updateData,
                                const QByteArray& signatureBlob) {
-#if defined(MVPN_WINDOWS) && defined(BUILD_QMAKE)
+#if defined(MVPN_WINDOWS)
   typedef void BalrogSetLogger(GoUintptr func);
   typedef GoUint8 BalrogValidate(GoString x5uData, GoString updateData,
                                  GoString signature, GoString rootHash,

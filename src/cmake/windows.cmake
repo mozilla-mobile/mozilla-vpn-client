@@ -14,7 +14,7 @@ set_target_properties(mozillavpn PROPERTIES
 # and then we can remove this :) 
 target_compile_options(mozillavpn
     PRIVATE 
-    $<$<CONFIG:Release>:/ZI>>
+    $<$<CONFIG:Release>:/ZI>
 )
 
 # Generate the Windows version resource file.
@@ -87,10 +87,24 @@ endif()
 
 include(cmake/golang.cmake)
 
-# Enable Balrog for update support.
+# Build the Balrog library as a DLL
+add_custom_target(balrogdll ALL
+    BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/balrog.dll ${CMAKE_CURRENT_BINARY_DIR}/balrog.h
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/balrog
+    COMMAND ${CMAKE_COMMAND} -E env 
+                GOCACHE=${CMAKE_BINARY_DIR}/go-cache
+                GOOS=windows CGO_ENABLED=1
+                CC=gcc
+                CGO_CFLAGS="-O3 -Wall -Wno-unused-function -Wno-switch -std=gnu11 -DWINVER=0x0601"
+                CGO_LDFLAGS="-Wl,--dynamicbase -Wl,--nxcompat -Wl,--export-all-symbols -Wl,--high-entropy-va"
+            go build -buildmode c-shared -ldflags="-w -s" -trimpath -v -o "${CMAKE_CURRENT_BINARY_DIR}/balrog.dll"
+)
+set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_BINARY_DIR}/go-cache)
+add_dependencies(mozillavpn balrogdll)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/balrog.dll DESTINATION .)
+
+# Use Balrog for update support.
 add_definitions(-DMVPN_BALROG)
-add_go_library(balrog ../balrog/balrog-api.go)
-target_link_libraries(mozillavpn PRIVATE balrog)
 target_sources(mozillavpn PRIVATE
     update/balrog.cpp
     update/balrog.h
