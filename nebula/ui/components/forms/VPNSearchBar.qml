@@ -31,7 +31,12 @@ ColumnLayout {
         leftPadding: 48
         onActiveFocusChanged: if (focus && vpnFlickable.ensureVisible) vpnFlickable.ensureVisible(searchBar)
         Layout.fillWidth: true
-        onTextChanged: hasError = _searchBarHasError
+        onTextChanged: {
+            hasError = _searchBarHasError
+            if (focus) {
+                _editCallback();
+            }
+        }
         onLengthChanged: text => model.invalidate()
 
         VPNIcon {
@@ -42,13 +47,6 @@ ColumnLayout {
             sourceSize.height: VPNTheme.theme.windowMargin
             sourceSize.width: VPNTheme.theme.windowMargin
             opacity: parent.focus ? 1 : 0.8
-        }
-
-
-        Keys.onPressed: event => {
-            if (focus && ((/[\w\[\]`!@#$%\^&*()={}:;<>+'-]/).test(event.text) || event.key === Qt.Key_Backspace || event.key === Qt.Key_Delete)) {
-                _editCallback();
-            }
         }
     }
 

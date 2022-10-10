@@ -33,6 +33,11 @@ VPNViewBase {
         }
     }
 
+    signal editModeChanged
+
+    //Weird workaround to fix VPN-2895
+    onIsEditingChanged: editModeChanged()
+
     _menuTitle: VPNl18n.InAppMessagingMenuTitle
 
     onVisibleChanged: if (!visible) resetPage()
@@ -190,24 +195,14 @@ VPNViewBase {
                     Layout.preferredHeight: content.item.implicitHeight
                     Accessible.name: swipeDelegate.title + ". " + swipeDelegate.formattedDate + ". " +  swipeDelegate.subtitle
 
-                    onIsEditingChanged: {
-                        if(isEditing) {
-                            swipe.open(SwipeDelegate.Left)
-                        }
-                        else {
-                            swipe.close()
-                        }
-                    }
-
                     onSwipeOpen: () => {
                                      deleteLabelWidth = swipe.leftItem.width
                                      if (vpnFlickable.allSwipesOpen() && !vpnFlickable.isEditing) vpnFlickable.isEditing = true
                                  }
 
-                    onSwipeClose: () => {
-                                      if (!vpnFlickable.anySwipesOpen() && vpnFlickable.isEditing) vpnFlickable.isEditing = false
-
-                                  }
+                    onIsSwipeOpenChanged: {
+                        if(!isSwipeOpen && !vpnFlickable.anySwipesOpen() && vpnFlickable.isEditing) vpnFlickable.isEditing = false
+                    }
 
                     onClicked: {
                         if (vpnFlickable.anySwipesOpen()) vpnFlickable.closeAllSwipes()
@@ -230,6 +225,7 @@ VPNViewBase {
 
                         SwipeDelegate.onClicked: {
                             swipeDelegate.swipe.close() // prevents weird iOS animation bug
+                            swipeDelegate.isSwipeOpen = false
                             divider.visible = false
                             if(index === listView.count - 1) {
                                 dismissMessageAnimation.start()
@@ -316,6 +312,19 @@ VPNViewBase {
                             maximumLineCount: 1
                         }
                     }
+
+                    Connections {
+                        target: vpnFlickable
+                        function onEditModeChanged() {
+                            if(isEditing) {
+                                swipeDelegate.swipe.open(SwipeDelegate.Left)
+                            }
+                            else {
+                                swipeDelegate.swipe.close()
+                            }
+                        }
+                    }
+
                 }
 
                 Rectangle {
