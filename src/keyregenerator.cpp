@@ -78,7 +78,7 @@ void KeyRegenerator::stateChanged() {
 
   TaskScheduler::scheduleTask(
       new TaskAddDevice(Device::currentDeviceName(), Device::uniqueDeviceId()));
-  TaskScheduler::scheduleTask(new TaskAccount());
+  TaskScheduler::scheduleTask(new TaskAccount(ErrorHandler::PropagateError));
 
   m_timer.start(Constants::keyRegeneratorTimeSec() * 1000);
 }

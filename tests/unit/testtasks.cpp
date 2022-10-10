@@ -17,7 +17,7 @@ void TestTasks::account() {
     TestHelper::networkConfig.append(TestHelper::NetworkConfig(
         TestHelper::NetworkConfig::Failure, QByteArray()));
 
-    TaskAccount* task = new TaskAccount();
+    TaskAccount* task = new TaskAccount(ErrorHandler::PropagateError);
 
     QEventLoop loop;
     connect(task, &Task::completed, [&]() { loop.exit(); });
@@ -31,7 +31,7 @@ void TestTasks::account() {
     TestHelper::networkConfig.append(TestHelper::NetworkConfig(
         TestHelper::NetworkConfig::Success, QByteArray()));
 
-    TaskAccount* task = new TaskAccount();
+    TaskAccount* task = new TaskAccount(ErrorHandler::DoNotPropagateError);
 
     QEventLoop loop;
     connect(task, &Task::completed, [&]() { loop.exit(); });
@@ -47,7 +47,7 @@ void TestTasks::servers() {
     TestHelper::networkConfig.append(TestHelper::NetworkConfig(
         TestHelper::NetworkConfig::Failure, QByteArray()));
 
-    TaskServers* task = new TaskServers();
+    TaskServers* task = new TaskServers(ErrorHandler::DoNotPropagateError);
 
     QEventLoop loop;
     connect(task, &Task::completed, [&]() { loop.exit(); });
@@ -61,7 +61,7 @@ void TestTasks::servers() {
     TestHelper::networkConfig.append(TestHelper::NetworkConfig(
         TestHelper::NetworkConfig::Success, QByteArray()));
 
-    TaskServers* task = new TaskServers();
+    TaskServers* task = new TaskServers(ErrorHandler::PropagateError);
 
     QEventLoop loop;
     connect(task, &Task::completed, [&]() { loop.exit(); });

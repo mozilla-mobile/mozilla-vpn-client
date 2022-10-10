@@ -5,6 +5,8 @@
 #ifndef UPDATER_H
 #define UPDATER_H
 
+#include "errorhandler.h"
+
 #include <QObject>
 
 class Task;
@@ -27,7 +29,9 @@ class Updater : public QObject {
   };
   Q_ENUM(Step);
 
-  static Updater* create(QObject* parent, bool downloadAndInstall);
+  static Updater* create(
+      QObject* parent, bool downloadAndInstall,
+      ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy);
 
   static void updateViewShown();
 

@@ -55,8 +55,11 @@ void balrogLogger(int level, const char* msg) {
 
 }  // namespace
 
-Balrog::Balrog(QObject* parent, bool downloadAndInstall)
-    : Updater(parent), m_downloadAndInstall(downloadAndInstall) {
+Balrog::Balrog(QObject* parent, bool downloadAndInstall,
+               ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy)
+    : Updater(parent),
+      m_downloadAndInstall(downloadAndInstall),
+      m_errorPropagationPolicy(errorPropagationPolicy) {
   MVPN_COUNT_CTOR(Balrog);
   logger.debug() << "Balrog created";
 }
@@ -510,5 +513,5 @@ void Balrog::propagateError(NetworkRequest* request,
     return;
   }
 
-  ErrorHandler::instance()->errorHandle(ErrorHandler::toErrorType(error));
+  ErrorHandler::networkErrorHandle(error, m_errorPropagationPolicy);
 }
