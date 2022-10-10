@@ -5,6 +5,7 @@
 #ifndef TASKSERVERS_H
 #define TASKSERVERS_H
 
+#include "errorhandler.h"
 #include "task.h"
 
 #include <QObject>
@@ -13,10 +14,14 @@ class TaskServers final : public Task {
   Q_DISABLE_COPY_MOVE(TaskServers)
 
  public:
-  TaskServers();
+  explicit TaskServers(ErrorHandler::ErrorPropagation errorPropagation);
   ~TaskServers();
 
   void run() override;
+
+ private:
+  ErrorHandler::ErrorPropagation m_errorPropagation =
+      ErrorHandler::NoErrorPropagation;
 };
 
 #endif  // TASKSERVERS_H

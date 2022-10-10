@@ -5,6 +5,7 @@
 #ifndef BALROG_H
 #define BALROG_H
 
+#include "errorhandler.h"
 #include "updater.h"
 
 #include <QCryptographicHash>
@@ -17,7 +18,8 @@ class Balrog final : public Updater {
   Q_DISABLE_COPY_MOVE(Balrog)
 
  public:
-  Balrog(QObject* parent, bool downloadAndInstall);
+  Balrog(QObject* parent, bool downloadAndInstall,
+         ErrorHandler::ErrorPropagation errorPropagation);
   ~Balrog();
 
   void start(Task* task) override;
@@ -44,6 +46,8 @@ class Balrog final : public Updater {
  private:
   QTemporaryDir m_tmpDir;
   bool m_downloadAndInstall;
+  ErrorHandler::ErrorPropagation m_errorPropagation =
+      ErrorHandler::NoErrorPropagation;
 };
 
 #endif  // BALROG_H
