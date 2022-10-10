@@ -66,7 +66,7 @@ VPNViewBase {
                                 console.debug("Error:"+ component.errorString() );
 
                         }
-                    var alert = component.createObject(root, {
+                    var alert = component.createObject(vpnFlickable, {
                                                isLayout:false,
                                                visible:true,
                                                alertText: message,
