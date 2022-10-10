@@ -19,7 +19,7 @@ class Balrog final : public Updater {
 
  public:
   Balrog(QObject* parent, bool downloadAndInstall,
-         ErrorHandler::ErrorPropagation errorPropagation);
+         ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy);
   ~Balrog();
 
   void start(Task* task) override;
@@ -46,8 +46,8 @@ class Balrog final : public Updater {
  private:
   QTemporaryDir m_tmpDir;
   bool m_downloadAndInstall;
-  ErrorHandler::ErrorPropagation m_errorPropagation =
-      ErrorHandler::NoErrorPropagation;
+  ErrorHandler::ErrorPropagationPolicy m_errorPropagationPolicy =
+      ErrorHandler::DoNotPropagateError;
 };
 
 #endif  // BALROG_H

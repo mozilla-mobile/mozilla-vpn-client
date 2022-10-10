@@ -18,8 +18,9 @@ class ReleaseMonitor final : public QObject {
   ReleaseMonitor();
   ~ReleaseMonitor();
 
-  Q_INVOKABLE void runSoon(ErrorHandler::ErrorPropagation errorPropagation =
-                               ErrorHandler::PropagateError);
+  Q_INVOKABLE void runSoon(
+      ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy =
+          ErrorHandler::PropagateError);
 
   void updateSoon();
 

@@ -226,3 +226,12 @@ void ErrorHandler::setAlert(AlertType alert) {
   m_alert = alert;
   emit alertChanged();
 }
+
+// static
+void ErrorHandler::networkErrorHandle(
+    QNetworkReply::NetworkError error,
+    ErrorPropagationPolicy errorPropagationPolicy) {
+  if (errorPropagationPolicy == PropagateError) {
+    ErrorHandler::instance()->errorHandle(toErrorType(error));
+  }
+}

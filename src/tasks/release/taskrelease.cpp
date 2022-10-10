@@ -11,8 +11,11 @@ namespace {
 Logger logger(LOG_MAIN, "TaskRelease");
 }
 
-TaskRelease::TaskRelease(Op op, ErrorHandler::ErrorPropagation errorPropagation)
-    : Task("TaskRelease"), m_op(op), m_errorPropagation(errorPropagation) {
+TaskRelease::TaskRelease(
+    Op op, ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy)
+    : Task("TaskRelease"),
+      m_op(op),
+      m_errorPropagationPolicy(errorPropagationPolicy) {
   MVPN_COUNT_CTOR(TaskRelease);
 }
 
@@ -21,7 +24,8 @@ TaskRelease::~TaskRelease() { MVPN_COUNT_DTOR(TaskRelease); }
 void TaskRelease::run() {
   logger.debug() << "Release check started";
 
-  Updater* updater = Updater::create(this, m_op == Update, m_errorPropagation);
+  Updater* updater =
+      Updater::create(this, m_op == Update, m_errorPropagationPolicy);
   Q_ASSERT(updater);
 
   connect(updater, &Updater::updateRequired, this,

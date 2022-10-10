@@ -55,13 +55,12 @@ void TaskAddDevice::run() {
 
   request->disableTimeout();
 
-  connect(
-      request, &NetworkRequest::requestFailed, this,
-      [this](QNetworkReply::NetworkError error, const QByteArray&) {
-        logger.error() << "Failed to add the device" << error;
-        ErrorHandler::instance()->errorHandle(ErrorHandler::toErrorType(error));
-        emit completed();
-      });
+  connect(request, &NetworkRequest::requestFailed, this,
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+            logger.error() << "Failed to add the device" << error;
+            ErrorHandler::networkErrorHandle(error);
+            emit completed();
+          });
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this, publicKey, privateKey](const QByteArray&) {

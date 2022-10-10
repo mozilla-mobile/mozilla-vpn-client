@@ -56,10 +56,10 @@ void balrogLogger(int level, const char* msg) {
 }  // namespace
 
 Balrog::Balrog(QObject* parent, bool downloadAndInstall,
-               ErrorHandler::ErrorPropagation errorPropagation)
+               ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy)
     : Updater(parent),
       m_downloadAndInstall(downloadAndInstall),
-      m_errorPropagation(errorPropagation) {
+      m_errorPropagationPolicy(errorPropagationPolicy) {
   MVPN_COUNT_CTOR(Balrog);
   logger.debug() << "Balrog created";
 }
@@ -506,10 +506,6 @@ void Balrog::propagateError(NetworkRequest* request,
                             QNetworkReply::NetworkError error) {
   Q_ASSERT(request);
 
-  if (m_errorPropagation != ErrorHandler::PropagateError) {
-    return;
-  }
-
   // 451 Unavailable For Legal Reasons
   if (request->statusCode() == 451) {
     logger.debug() << "Geo IP restriction detected";
@@ -517,5 +513,5 @@ void Balrog::propagateError(NetworkRequest* request,
     return;
   }
 
-  ErrorHandler::instance()->errorHandle(ErrorHandler::toErrorType(error));
+  ErrorHandler::networkErrorHandle(error, m_errorPropagationPolicy);
 }

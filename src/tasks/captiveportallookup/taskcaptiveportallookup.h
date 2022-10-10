@@ -15,14 +15,14 @@ class TaskCaptivePortalLookup final : public Task {
 
  public:
   explicit TaskCaptivePortalLookup(
-      ErrorHandler::ErrorPropagation errorPropagation);
+      ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy);
   ~TaskCaptivePortalLookup();
 
   void run() override;
 
  private:
-  ErrorHandler::ErrorPropagation m_errorPropagation =
-      ErrorHandler::NoErrorPropagation;
+  ErrorHandler::ErrorPropagationPolicy m_errorPropagationPolicy =
+      ErrorHandler::DoNotPropagateError;
 };
 
 #endif  // TASKCAPTIVEPORTALLOOKUP_H

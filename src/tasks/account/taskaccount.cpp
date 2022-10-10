@@ -12,8 +12,9 @@ namespace {
 Logger logger(LOG_MAIN, "TaskAccount");
 }
 
-TaskAccount::TaskAccount(ErrorHandler::ErrorPropagation errorPropagation)
-    : Task("TaskAccount"), m_errorPropagation(errorPropagation) {
+TaskAccount::TaskAccount(
+    ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy)
+    : Task("TaskAccount"), m_errorPropagationPolicy(errorPropagationPolicy) {
   MVPN_COUNT_CTOR(TaskAccount);
 }
 
@@ -22,20 +23,12 @@ TaskAccount::~TaskAccount() { MVPN_COUNT_DTOR(TaskAccount); }
 void TaskAccount::run() {
   NetworkRequest* request = NetworkRequest::createForAccount(this);
 
-  connect(
-      request, &NetworkRequest::requestFailed, this,
-      [this](QNetworkReply::NetworkError error, const QByteArray&) {
-        logger.error() << "Account request failed" << error
-                       << "error-propagation:"
-                       << (m_errorPropagation == ErrorHandler::PropagateError
-                               ? "yes"
-                               : "no");
-        if (m_errorPropagation == ErrorHandler::PropagateError) {
-          ErrorHandler::instance()->errorHandle(
-              ErrorHandler::toErrorType(error));
-        }
-        emit completed();
-      });
+  connect(request, &NetworkRequest::requestFailed, this,
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+            logger.error() << "Account request failed" << error;
+            ErrorHandler::networkErrorHandle(error, m_errorPropagationPolicy);
+            emit completed();
+          });
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {

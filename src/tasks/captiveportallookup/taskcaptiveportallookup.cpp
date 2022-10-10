@@ -14,8 +14,9 @@ Logger logger(LOG_NETWORKING, "TaskCaptivePortalLookup");
 }
 
 TaskCaptivePortalLookup::TaskCaptivePortalLookup(
-    ErrorHandler::ErrorPropagation errorPropagation)
-    : Task("TaskCaptivePortalLookup"), m_errorPropagation(errorPropagation) {
+    ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy)
+    : Task("TaskCaptivePortalLookup"),
+      m_errorPropagationPolicy(errorPropagationPolicy) {
   MVPN_COUNT_CTOR(TaskCaptivePortalLookup);
 }
 
@@ -27,25 +28,15 @@ void TaskCaptivePortalLookup::run() {
   logger.debug() << "Resolving the captive portal detector URL";
 
   NetworkRequest* request = NetworkRequest::createForCaptivePortalLookup(this);
-  connect(
-      request, &NetworkRequest::requestFailed, this,
-      [this](QNetworkReply::NetworkError error, const QByteArray&) {
-        if (m_cancelled) {
-          return;
-        }
-        logger.error() << "Failed to obtain captive portal IPs" << error
-                       << "error-propagation:"
-                       << (m_errorPropagation == ErrorHandler::PropagateError
-                               ? "yes"
-                               : "no");
-
-        if (m_errorPropagation == ErrorHandler::PropagateError) {
-          ErrorHandler::instance()->errorHandle(
-              ErrorHandler::toErrorType(error));
-        }
-
-        emit completed();
-      });
+  connect(request, &NetworkRequest::requestFailed, this,
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+            if (m_cancelled) {
+              return;
+            }
+            logger.error() << "Failed to obtain captive portal IPs" << error;
+            ErrorHandler::networkErrorHandle(error, m_errorPropagationPolicy);
+            emit completed();
+          });
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {

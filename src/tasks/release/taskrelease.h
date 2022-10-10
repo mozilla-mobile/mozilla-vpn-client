@@ -20,7 +20,8 @@ class TaskRelease final : public Task {
     Update,
   };
 
-  TaskRelease(Op op, ErrorHandler::ErrorPropagation errorPropagation);
+  TaskRelease(Op op,
+              ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy);
   ~TaskRelease();
 
   void run() override;
@@ -37,8 +38,8 @@ class TaskRelease final : public Task {
 
  private:
   Op m_op = Check;
-  ErrorHandler::ErrorPropagation m_errorPropagation =
-      ErrorHandler::NoErrorPropagation;
+  ErrorHandler::ErrorPropagationPolicy m_errorPropagationPolicy =
+      ErrorHandler::DoNotPropagateError;
 };
 
 #endif  // TASKRELEASE_H

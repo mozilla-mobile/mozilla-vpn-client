@@ -21,17 +21,19 @@ ReleaseMonitor::ReleaseMonitor() {
 
   m_timer.setSingleShot(true);
   connect(&m_timer, &QTimer::timeout, this, [this]() {
-    ReleaseMonitor::runSoon(ErrorHandler::NoErrorPropagation);
+    ReleaseMonitor::runSoon(ErrorHandler::DoNotPropagateError);
   });
 }
 
 ReleaseMonitor::~ReleaseMonitor() { MVPN_COUNT_DTOR(ReleaseMonitor); }
 
-void ReleaseMonitor::runSoon(ErrorHandler::ErrorPropagation errorPropagation) {
+void ReleaseMonitor::runSoon(
+    ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy) {
   logger.debug() << "Scheduling a release-check task";
 
-  TimerSingleShot::create(this, 0, [this, errorPropagation] {
-    TaskRelease* task = new TaskRelease(TaskRelease::Check, errorPropagation);
+  TimerSingleShot::create(this, 0, [this, errorPropagationPolicy] {
+    TaskRelease* task =
+        new TaskRelease(TaskRelease::Check, errorPropagationPolicy);
 
     connect(task, &TaskRelease::updateRequired, this,
             &ReleaseMonitor::updateRequired);

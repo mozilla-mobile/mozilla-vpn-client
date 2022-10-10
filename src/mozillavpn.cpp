@@ -99,9 +99,9 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 
   connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {
     TaskScheduler::scheduleTask(new TaskGroup(
-        {new TaskAccount(ErrorHandler::NoErrorPropagation),
-         new TaskServers(ErrorHandler::NoErrorPropagation),
-         new TaskCaptivePortalLookup(ErrorHandler::NoErrorPropagation),
+        {new TaskAccount(ErrorHandler::DoNotPropagateError),
+         new TaskServers(ErrorHandler::DoNotPropagateError),
+         new TaskCaptivePortalLookup(ErrorHandler::DoNotPropagateError),
          new TaskHeartbeat(), new TaskGetFeatureList(), new TaskAddonIndex()}));
   });
 
@@ -1293,8 +1293,8 @@ void MozillaVPN::refreshDevices() {
 
   if (m_state == StateMain) {
     TaskScheduler::scheduleTask(
-        new TaskGroup({new TaskAccount(ErrorHandler::NoErrorPropagation),
-                       new TaskServers(ErrorHandler::NoErrorPropagation)}));
+        new TaskGroup({new TaskAccount(ErrorHandler::DoNotPropagateError),
+                       new TaskServers(ErrorHandler::DoNotPropagateError)}));
   }
 }
 

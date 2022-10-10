@@ -29,8 +29,9 @@ class Updater : public QObject {
   };
   Q_ENUM(Step);
 
-  static Updater* create(QObject* parent, bool downloadAndInstall,
-                         ErrorHandler::ErrorPropagation errorPropagation);
+  static Updater* create(
+      QObject* parent, bool downloadAndInstall,
+      ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy);
 
   static void updateViewShown();
 

@@ -14,14 +14,15 @@ class TaskAccount final : public Task {
   Q_DISABLE_COPY_MOVE(TaskAccount)
 
  public:
-  explicit TaskAccount(ErrorHandler::ErrorPropagation errorPropagation);
+  explicit TaskAccount(
+      ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy);
   ~TaskAccount();
 
   void run() override;
 
  private:
-  ErrorHandler::ErrorPropagation m_errorPropagation =
-      ErrorHandler::NoErrorPropagation;
+  ErrorHandler::ErrorPropagationPolicy m_errorPropagationPolicy =
+      ErrorHandler::DoNotPropagateError;
 };
 
 #endif  // TASKACCOUNT_H
