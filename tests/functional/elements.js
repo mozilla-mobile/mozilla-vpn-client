@@ -11,7 +11,9 @@ const elements = {
     SERVER_LIST_BUTTON: "serverListButton",
     SERVER_COUNTRY_VIEW: "serverCountryView",
     CONTROLLER_TITLE: "controllerTitle",
-    CITYLIST_VISIBLE: "cityListVisible"
+    CITYLIST_VISIBLE: "cityListVisible",
+    VPN_MULTHOP_CHEVRON: 'vpnCollapsibleCardChevron',
+    VPN_COLLAPSIBLE_CARD: 'vpnCollapsibleCard'
 }
  
 

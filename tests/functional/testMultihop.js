@@ -1,12 +1,13 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
  const assert = require('assert');
  const { actions } = require('./actions.js');
  const elements = require('./elements.js');
  const vpn = require('./helper.js');
 
- describe('Server list', function() {
+describe('Server list', function() {
    let servers;
    let currentCountryCode;
    let currentCity;
@@ -15,7 +16,7 @@
    this.timeout(240000);
    this.ctx.authenticationNeeded = true;
  
-   beforeEach(async () => {
+  beforeEach(async () => {
      await vpn.waitForElementAndClick(elements.SERVER_LIST_BUTTON);
  
      servers = await vpn.servers();
@@ -35,19 +36,23 @@
      console.log(
          'Current city (localized):', currentCity,
          '| Current country code:', currentCountryCode);
-   });
+  });
 
-   it.only('opening the entry and exit server list', async () => {
+  it('opening the entry and exit server list', async () => {
     await vpn.waitForElementAndClick(elements.MULTIHOP_SELECTOR_TAB);
+    assert(await vpn.getElementProperty(elements.VPN_COLLAPSIBLE_CARD, 'expanded') === 'false')
 
     await vpn.waitForElement(elements.SERVER_ENTRY_BUTTON);
     await vpn.waitForElementProperty(elements.SERVER_ENTRY_BUTTON, 'visible', 'true');
 
     await vpn.waitForElement(elements.SERVER_EXIT_BUTTON);
-    await vpn.waitForElementProperty(elements.SERVER_EXIT_BUTTON, 'visible', 'true');    
+    await vpn.waitForElementProperty(elements.SERVER_EXIT_BUTTON, 'visible', 'true'); 
+    
+    await vpn.waitForElementAndClick(elements.VPN_MULTHOP_CHEVRON)
+    assert(await vpn.getElementProperty(elements.VPN_COLLAPSIBLE_CARD, 'expanded'))
   });
 
-   it('check the countries and cities for multihop entries', async () => {
+  it('check the countries and cities for multihop entries', async () => {
     await vpn.waitForElementAndClick(elements.MULTIHOP_SELECTOR_TAB);    
 
     await vpn.waitForElementAndClick(elements.SERVER_ENTRY_BUTTON);
@@ -81,9 +86,9 @@
         await vpn.waitForElementProperty(cityId, 'visible', 'true');
       }
     }
-   })
+  })
 
-   it('check the countries and cities for multihop exits', async () => {
+  it('check the countries and cities for multihop exits', async () => {
     await vpn.waitForElementAndClick(elements.MULTIHOP_SELECTOR_TAB);    
 
     await vpn.waitForElementAndClick(elements.SERVER_EXIT_BUTTON);
@@ -124,9 +129,9 @@
                 'false');
       }
     }
-   })
+  })
 
-   it('Pick cities for entries', async () => {
+  it('Pick cities for entries', async () => {
       let countryId;      
       await vpn.waitForElementAndClick(elements.MULTIHOP_SELECTOR_TAB);
       await vpn.waitForElementAndClick(elements.SERVER_ENTRY_BUTTON);         
@@ -172,9 +177,9 @@
           assert(cityName.includes(city.name))
         }        
       }
-   });
+  });
 
-   it('Pick cities for exits', async () => {
+  it('Pick cities for exits', async () => {
     let countryId;      
     await vpn.waitForElementAndClick(elements.MULTIHOP_SELECTOR_TAB);
     await vpn.waitForElementAndClick(elements.SERVER_EXIT_BUTTON);
@@ -220,9 +225,9 @@
         assert(cityName.includes(city.name))
       }        
     }
-   });
+  });
 
-   it('Server switching', async () => {    
+  it('Server switching', async () => {
     let newCurrentCountry;
     let newCurrentCity;
 
