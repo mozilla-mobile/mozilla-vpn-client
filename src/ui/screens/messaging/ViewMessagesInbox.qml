@@ -183,7 +183,6 @@ VPNViewBase {
                 VPNSwipeDelegate {
                     id: swipeDelegate
 
-                    property bool isEditing: vpnFlickable.isEditing
                     property real deleteLabelWidth: 0.0
 
                     //avoids qml warnings when addon messages get disabled via condition
@@ -316,7 +315,7 @@ VPNViewBase {
                     Connections {
                         target: vpnFlickable
                         function onEditModeChanged() {
-                            if(isEditing) {
+                            if(vpnFlickable.isEditing) {
                                 swipeDelegate.swipe.open(SwipeDelegate.Left)
                             }
                             else {
