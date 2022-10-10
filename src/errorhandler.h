@@ -48,7 +48,22 @@ class ErrorHandler final : public QObject {
   };
   Q_ENUM(AlertType)
 
+  enum ErrorPropagationPolicy {
+    // Do not propagate the error up to the frontend code. The error will be
+    // logged but it will not be shown to the user.
+    DoNotPropagateError,
+
+    // The error needs to be propagated through the frontend code and shown to
+    // the user as an alert or something else.
+    PropagateError,
+  };
+  Q_ENUM(ErrorPropagationPolicy);
+
   static ErrorType toErrorType(QNetworkReply::NetworkError error);
+
+  static void networkErrorHandle(
+      QNetworkReply::NetworkError error,
+      ErrorPropagationPolicy errorPropagationPolicy = PropagateError);
 
   ~ErrorHandler();
 

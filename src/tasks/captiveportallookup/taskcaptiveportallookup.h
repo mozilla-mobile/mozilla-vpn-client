@@ -5,6 +5,7 @@
 #ifndef TASKCAPTIVEPORTALLOOKUP_H
 #define TASKCAPTIVEPORTALLOOKUP_H
 
+#include "errorhandler.h"
 #include "task.h"
 
 #include <QObject>
@@ -13,10 +14,15 @@ class TaskCaptivePortalLookup final : public Task {
   Q_DISABLE_COPY_MOVE(TaskCaptivePortalLookup)
 
  public:
-  TaskCaptivePortalLookup();
+  explicit TaskCaptivePortalLookup(
+      ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy);
   ~TaskCaptivePortalLookup();
 
   void run() override;
+
+ private:
+  ErrorHandler::ErrorPropagationPolicy m_errorPropagationPolicy =
+      ErrorHandler::DoNotPropagateError;
 };
 
 #endif  // TASKCAPTIVEPORTALLOOKUP_H

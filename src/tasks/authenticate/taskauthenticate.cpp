@@ -59,8 +59,7 @@ void TaskAuthenticate::run() {
                     [](QNetworkReply::NetworkError error, const QByteArray&) {
                       logger.error()
                           << "Failed to complete the authentication" << error;
-                      ErrorHandler::instance()->errorHandle(
-                          ErrorHandler::toErrorType(error));
+                      ErrorHandler::networkErrorHandle(error);
                     });
 
             connect(request, &NetworkRequest::requestCompleted, this,

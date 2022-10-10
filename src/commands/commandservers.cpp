@@ -58,7 +58,7 @@ int CommandServers::run(QStringList& tokens) {
     MozillaVPN vpn;
 
     if (!cacheOption.m_set) {
-      TaskServers task;
+      TaskServers task(ErrorHandler::PropagateError);
       task.run();
 
       QEventLoop loop;

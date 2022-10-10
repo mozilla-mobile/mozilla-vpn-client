@@ -47,14 +47,13 @@ void WasmIAPHandler::nativeStartSubscription(Product* product) {
   TaskPurchase* purchaseTask = TaskPurchase::createForWasm(product->m_name);
   Q_ASSERT(purchaseTask);
 
-  connect(
-      purchaseTask, &TaskPurchase::failed, this,
-      [this](QNetworkReply::NetworkError error, const QByteArray&) {
-        logger.error() << "Purchase validation request to guardian failed";
-        ErrorHandler::instance()->errorHandle(ErrorHandler::toErrorType(error));
-        stopSubscription();
-        emit subscriptionNotValidated();
-      });
+  connect(purchaseTask, &TaskPurchase::failed, this,
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+            logger.error() << "Purchase validation request to guardian failed";
+            ErrorHandler::networkErrorHandle(error);
+            stopSubscription();
+            emit subscriptionNotValidated();
+          });
 
   connect(purchaseTask, &TaskPurchase::succeeded, this,
           [this](const QByteArray& data) {

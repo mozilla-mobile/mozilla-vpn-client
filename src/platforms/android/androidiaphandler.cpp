@@ -319,14 +319,13 @@ void AndroidIAPHandler::validatePurchase(QJsonObject purchase) {
   TaskPurchase* purchaseTask = TaskPurchase::createForAndroid(sku, token);
   Q_ASSERT(purchaseTask);
 
-  connect(
-      purchaseTask, &TaskPurchase::failed, this,
-      [this](QNetworkReply::NetworkError error, const QByteArray&) {
-        logger.error() << "Purchase validation request to guardian failed";
-        ErrorHandler::instance()->errorHandle(ErrorHandler::toErrorType(error));
-        stopSubscription();
-        emit subscriptionNotValidated();
-      });
+  connect(purchaseTask, &TaskPurchase::failed, this,
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+            logger.error() << "Purchase validation request to guardian failed";
+            ErrorHandler::networkErrorHandle(error);
+            stopSubscription();
+            emit subscriptionNotValidated();
+          });
 
   connect(purchaseTask, &TaskPurchase::succeeded, this,
           [this, token](const QByteArray& data) {
