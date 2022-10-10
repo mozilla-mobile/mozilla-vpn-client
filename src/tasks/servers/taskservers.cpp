@@ -13,7 +13,8 @@ namespace {
 Logger logger(LOG_MAIN, "TaskServers");
 }
 
-TaskServers::TaskServers() : Task("TaskServers") {
+TaskServers::TaskServers(ErrorHandler::ErrorPropagation errorPropagation)
+    : Task("TaskServers"), m_errorPropagation(errorPropagation) {
   MVPN_COUNT_CTOR(TaskServers);
 }
 
@@ -25,8 +26,16 @@ void TaskServers::run() {
   connect(
       request, &NetworkRequest::requestFailed, this,
       [this](QNetworkReply::NetworkError error, const QByteArray&) {
-        logger.error() << "Failed to retrieve servers";
-        ErrorHandler::instance()->errorHandle(ErrorHandler::toErrorType(error));
+        logger.error() << "Failed to retrieve servers - error-propagation:"
+                       << (m_errorPropagation == ErrorHandler::PropagateError
+                               ? "yes"
+                               : "no");
+
+        if (m_errorPropagation == ErrorHandler::PropagateError) {
+          ErrorHandler::instance()->errorHandle(
+              ErrorHandler::toErrorType(error));
+        }
+
         emit completed();
       });
 

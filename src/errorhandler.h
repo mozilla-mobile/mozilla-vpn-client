@@ -48,6 +48,14 @@ class ErrorHandler final : public QObject {
   };
   Q_ENUM(AlertType)
 
+  // This can be an boolean but it's better to have an enum to improve the
+  // readability of the code.
+  enum ErrorPropagation {
+    NoErrorPropagation,
+    PropagateError,
+  };
+  Q_ENUM(ErrorPropagation);
+
   static ErrorType toErrorType(QNetworkReply::NetworkError error);
 
   ~ErrorHandler();

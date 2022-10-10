@@ -13,8 +13,9 @@ namespace {
 Logger logger(LOG_NETWORKING, "TaskCaptivePortalLookup");
 }
 
-TaskCaptivePortalLookup::TaskCaptivePortalLookup()
-    : Task("TaskCaptivePortalLookup") {
+TaskCaptivePortalLookup::TaskCaptivePortalLookup(
+    ErrorHandler::ErrorPropagation errorPropagation)
+    : Task("TaskCaptivePortalLookup"), m_errorPropagation(errorPropagation) {
   MVPN_COUNT_CTOR(TaskCaptivePortalLookup);
 }
 
@@ -32,8 +33,17 @@ void TaskCaptivePortalLookup::run() {
         if (m_cancelled) {
           return;
         }
-        logger.error() << "Failed to obtain captive portal IPs" << error;
-        ErrorHandler::instance()->errorHandle(ErrorHandler::toErrorType(error));
+        logger.error() << "Failed to obtain captive portal IPs" << error
+                       << "error-propagation:"
+                       << (m_errorPropagation == ErrorHandler::PropagateError
+                               ? "yes"
+                               : "no");
+
+        if (m_errorPropagation == ErrorHandler::PropagateError) {
+          ErrorHandler::instance()->errorHandle(
+              ErrorHandler::toErrorType(error));
+        }
+
         emit completed();
       });
 

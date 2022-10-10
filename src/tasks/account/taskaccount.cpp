@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskaccount.h"
-#include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -13,7 +12,8 @@ namespace {
 Logger logger(LOG_MAIN, "TaskAccount");
 }
 
-TaskAccount::TaskAccount() : Task("TaskAccount") {
+TaskAccount::TaskAccount(ErrorHandler::ErrorPropagation errorPropagation)
+    : Task("TaskAccount"), m_errorPropagation(errorPropagation) {
   MVPN_COUNT_CTOR(TaskAccount);
 }
 
@@ -25,8 +25,15 @@ void TaskAccount::run() {
   connect(
       request, &NetworkRequest::requestFailed, this,
       [this](QNetworkReply::NetworkError error, const QByteArray&) {
-        logger.error() << "Account request failed" << error;
-        ErrorHandler::instance()->errorHandle(ErrorHandler::toErrorType(error));
+        logger.error() << "Account request failed" << error
+                       << "error-propagation:"
+                       << (m_errorPropagation == ErrorHandler::PropagateError
+                               ? "yes"
+                               : "no");
+        if (m_errorPropagation == ErrorHandler::PropagateError) {
+          ErrorHandler::instance()->errorHandle(
+              ErrorHandler::toErrorType(error));
+        }
         emit completed();
       });
 

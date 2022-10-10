@@ -55,8 +55,11 @@ void balrogLogger(int level, const char* msg) {
 
 }  // namespace
 
-Balrog::Balrog(QObject* parent, bool downloadAndInstall)
-    : Updater(parent), m_downloadAndInstall(downloadAndInstall) {
+Balrog::Balrog(QObject* parent, bool downloadAndInstall,
+               ErrorHandler::ErrorPropagation errorPropagation)
+    : Updater(parent),
+      m_downloadAndInstall(downloadAndInstall),
+      m_errorPropagation(errorPropagation) {
   MVPN_COUNT_CTOR(Balrog);
   logger.debug() << "Balrog created";
 }
@@ -502,6 +505,10 @@ bool Balrog::install(const QString& filePath) {
 void Balrog::propagateError(NetworkRequest* request,
                             QNetworkReply::NetworkError error) {
   Q_ASSERT(request);
+
+  if (m_errorPropagation != ErrorHandler::PropagateError) {
+    return;
+  }
 
   // 451 Unavailable For Legal Reasons
   if (request->statusCode() == 451) {

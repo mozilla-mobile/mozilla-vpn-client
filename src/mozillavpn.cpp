@@ -99,7 +99,9 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 
   connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {
     TaskScheduler::scheduleTask(new TaskGroup(
-        {new TaskAccount(), new TaskServers(), new TaskCaptivePortalLookup(),
+        {new TaskAccount(ErrorHandler::NoErrorPropagation),
+         new TaskServers(ErrorHandler::NoErrorPropagation),
+         new TaskCaptivePortalLookup(ErrorHandler::NoErrorPropagation),
          new TaskHeartbeat(), new TaskGetFeatureList(), new TaskAddonIndex()}));
   });
 
@@ -326,8 +328,10 @@ void MozillaVPN::initialize() {
     m_private->m_serverData.writeSettings();
   }
 
-  QList<Task*> refreshTasks{new TaskAccount(), new TaskServers(),
-                            new TaskCaptivePortalLookup()};
+  QList<Task*> refreshTasks{
+      new TaskAccount(ErrorHandler::PropagateError),
+      new TaskServers(ErrorHandler::PropagateError),
+      new TaskCaptivePortalLookup(ErrorHandler::PropagateError)};
 
   if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
     refreshTasks.append(new TaskProducts());
@@ -568,7 +572,8 @@ void MozillaVPN::completeActivation() {
   } else {
     // Let's fetch the account and the servers.
     TaskScheduler::scheduleTask(
-        new TaskGroup({new TaskAccount(), new TaskServers()}));
+        new TaskGroup({new TaskAccount(ErrorHandler::PropagateError),
+                       new TaskServers(ErrorHandler::PropagateError)}));
   }
 
   if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
@@ -1288,7 +1293,8 @@ void MozillaVPN::refreshDevices() {
 
   if (m_state == StateMain) {
     TaskScheduler::scheduleTask(
-        new TaskGroup({new TaskAccount(), new TaskServers()}));
+        new TaskGroup({new TaskAccount(ErrorHandler::NoErrorPropagation),
+                       new TaskServers(ErrorHandler::NoErrorPropagation)}));
   }
 }
 
@@ -1419,7 +1425,8 @@ void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
   }
 
   TaskScheduler::scheduleTask(
-      new TaskGroup({new TaskAccount(), new TaskServers()}));
+      new TaskGroup({new TaskAccount(ErrorHandler::PropagateError),
+                     new TaskServers(ErrorHandler::PropagateError)}));
   TaskScheduler::scheduleTask(new TaskFunction([this]() {
     if (!m_private->m_user.subscriptionNeeded() &&
         m_state == StateSubscriptionNeeded) {
@@ -1522,7 +1529,8 @@ void MozillaVPN::addCurrentDeviceAndRefreshData() {
   TaskScheduler::scheduleTask(
       new TaskAddDevice(Device::currentDeviceName(), Device::uniqueDeviceId()));
   TaskScheduler::scheduleTask(
-      new TaskGroup({new TaskAccount(), new TaskServers()}));
+      new TaskGroup({new TaskAccount(ErrorHandler::PropagateError),
+                     new TaskServers(ErrorHandler::PropagateError)}));
 }
 
 void MozillaVPN::openAppStoreReviewLink() {
