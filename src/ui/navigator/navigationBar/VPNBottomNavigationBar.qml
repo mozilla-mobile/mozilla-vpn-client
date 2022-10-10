@@ -173,6 +173,13 @@ Rectangle {
         }
     }
 
+    Connections {
+        target: VPNAddonManager
+        function onLoadCompletedChanged() {
+            root.getUnreadNotificationStatus()
+        }
+    }
+
     function setNavBarOpacity() {
         if (VPNNavigator.screen === VPNNavigator.ScreenHome) {
             navbar.opacity = VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateInitial ? 1 : 0
