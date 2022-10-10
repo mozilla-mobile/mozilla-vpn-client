@@ -4,6 +4,7 @@
 
 #include "ioscontroller.h"
 #include "Mozilla_VPN-Swift.h"
+#include "controller.h"
 #include "device.h"
 #include "ipaddress.h"
 #include "keys.h"
@@ -81,8 +82,13 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
             return;
           }
           case ConnectionStateDisconnected:
-            // Just in case we are connecting, let's call disconnect.
-            [impl disconnect];
+            Controller* controller = MozillaVPN::instance()->controller();
+            Q_ASSERT(controller);
+            if (controller->state() != Controller::StateInitializing) {
+              // Just in case we are connecting, let's call disconnect.
+              [impl disconnect];
+            }
+
             emit initialized(true, false, QDateTime());
             return;
         }
