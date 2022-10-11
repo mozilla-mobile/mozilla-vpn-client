@@ -160,6 +160,12 @@ module.exports = {
         `Command failed: ${json.error}`);
   },
 
+  async waitForElementAndClick(id) {
+    await this.waitForElementAndProperty(id, 'visible', 'true');
+    await this.clickOnElement(id)
+    await this.wait()
+  },
+
   async clickOnNotification() {
     const json = await this._writeCommand('click_notification');
     assert(
@@ -223,6 +229,11 @@ module.exports = {
     }
   },
 
+  async waitForElementAndProperty(id, property, value) {
+    await this.waitForElement(id)
+    await this.waitForElementProperty(id, property, value)
+  },
+
   async setGleanAutomationHeader() {
     const json = await this._writeCommand('set_glean_source_tags automation');
     assert(
@@ -235,15 +246,15 @@ module.exports = {
     return await this.getElementProperty('VPNUrlOpener', 'lastUrl');
   },
 
-  async waitForCondition(condition) {
+  async waitForCondition(condition, waitTimeInMilliSecs = 200) {
     while (true) {
       if (await condition()) return;
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise(resolve => setTimeout(resolve, waitTimeInMilliSecs));
     }
   },
 
-  wait() {
-    return new Promise(resolve => setTimeout(resolve, 1000));
+  wait(waitTimeInMilliSecs = 1000) {
+    return new Promise(resolve => setTimeout(resolve, waitTimeInMilliSecs));
   },
 
   // TODO - The expected staging urls are hardcoded, we may want to
