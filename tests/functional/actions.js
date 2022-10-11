@@ -5,12 +5,12 @@
 const elements = require('./elements.js');
 const vpn = require('./helper.js');
  
-const connectionChangeNotification = async (status = 'true') => {
-    return await vpn.setSetting('connection-change-notification', status);
+const setConnectionChangeNotification = async (status) => {
+    return await vpn.setSetting('connection-change-notification', status ? "true" : "false");
 }
 
-const serverSwitchNotification = async (status = 'true') => {    
-    return await vpn.setSetting('server-switch-notification', status);
+const setServerSwitchNotification = async (status) => {    
+    return await vpn.setSetting('server-switch-notification', status ? "true" : "false");
 }
 
 const selectCountryFromList = async (countryId) => {
@@ -26,8 +26,8 @@ const selectCityFromList = async (cityId, countryId) => {
 module.exports = {
     actions: {
         settings: {
-            connectionChangeNotification,
-            serverSwitchNotification,
+            setConnectionChangeNotification,
+            setServerSwitchNotification,
         },
         locations: {
             selectCountryFromList,

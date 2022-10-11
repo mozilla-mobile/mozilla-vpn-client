@@ -212,8 +212,8 @@ describe('Server list', function() {
   });  
 
   it('Server switching -- same country different cities', async () => {
-    await actions.settings.serverSwitchNotification()
-    await actions.settings.connectionChangeNotification()
+    await actions.settings.setServerSwitchNotification(true)
+    await actions.settings.setConnectionChangeNotification(true)
 
     let newCurrentCountry;
     let newCurrentCity;
