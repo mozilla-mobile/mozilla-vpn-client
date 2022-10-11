@@ -333,8 +333,8 @@ describe('Server list', function() {
   });
 
   it('Server switching -- different country different cities', async () => {
-    await actions.settings.serverSwitchNotification()
-    await actions.settings.connectionChangeNotification()
+    await actions.settings.setServerSwitchNotification()
+    await actions.settings.setConnectionChangeNotification()
 
     let newCurrentCountry;
     let newCurrentCity;
@@ -444,8 +444,8 @@ describe('Server list', function() {
   });
 
   it('Single and multihop switching', async () => {
-    await actions.settings.serverSwitchNotification()
-    await actions.settings.connectionChangeNotification()
+    await actions.settings.setServerSwitchNotification()
+    await actions.settings.setConnectionChangeNotification()
 
     let currentCountry;
     let currentCity;
