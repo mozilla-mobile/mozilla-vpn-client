@@ -815,6 +815,11 @@ bool MozillaVPN::checkCurrentDevice() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
+  // We are not able to check the device at this stage.
+  if (m_state == StateDeviceLimit) {
+    return false;
+  }
+
   if (m_private->m_deviceModel.hasCurrentDevice(keys())) {
     return true;
   }
