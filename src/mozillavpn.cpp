@@ -352,12 +352,17 @@ void MozillaVPN::setState(State state) {
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::appStep, {{"state", QVariant::fromValue(state).toString()}});
 
-  // If we are activating the app, let's initialize the controller.
-  if (m_state == StateMain) {
-    m_private->m_controller.initialize();
+  // If we have a token, we can start periodic operations.
+  // If the timer is already started, this is a no-op.
+  if (SettingsHolder::instance()->hasToken()) {
     startSchedulingPeriodicOperations();
   } else {
     stopSchedulingPeriodicOperations();
+  }
+
+  // If we are activating the app, let's initialize the controller.
+  if (m_state == StateMain) {
+    m_private->m_controller.initialize();
   }
 }
 
