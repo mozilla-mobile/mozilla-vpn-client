@@ -43,6 +43,10 @@ Window {
         case 2778: // iPhone_12_Pro_Max
         case 2340: // iPhone_12_mini
             return 34;
+        case 2556: // iPhone_14_Pro
+            return 48;
+        case 2796: // iPhone_14_Pro_Max
+            return 48;
         default:
             return 20;
         }
