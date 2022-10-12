@@ -25,11 +25,6 @@ VPNViewBase {
            VPN.createSupportTicket(email, subject, issueText, category);
        }
 
-       function fxaBrowserLink() {
-           VPNUrlOpener.openLink(VPNUrlOpener.LinkHelpSupport);
-           contactUsRoot.tryAgain();
-       }
-
        Connections {
            target: VPN
            function onTicketCreationAnswer(successful) {
@@ -41,12 +36,15 @@ VPNViewBase {
                        headlineText: VPNl18n.InAppSupportWorkflowSupportErrorHeader,
                        errorMessage: VPNl18n.InAppSupportWorkflowSupportErrorText,
                        primaryButtonText: VPNl18n.InAppSupportWorkflowSupportErrorButton,
-                       primaryButtonOnClick: contactUsRoot.tryAgain,
+                       primaryButtonOnClick: () => getHelpStackView.pop(),
                        primaryButtonObjectName: "errorTryAgainButton",
                        secondaryButtonIsSignOff: false,
                        secondaryButtonText: VPNl18n.InAppSupportWorkflowSupportErrorBrowserButton,
                        secondaryButtonObjectName: "errorFxALinkButton",
-                       secondaryButtonOnClick: contactUsRoot.fxaBrowserLink
+                       secondaryButtonOnClick: () => {
+                               VPNUrlOpener.openLink(VPNUrlOpener.LinkHelpSupport);
+                               getHelpStackView.pop();
+                           },
                        }
                    );
                }

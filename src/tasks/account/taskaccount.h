@@ -5,6 +5,7 @@
 #ifndef TASKACCOUNT_H
 #define TASKACCOUNT_H
 
+#include "errorhandler.h"
 #include "task.h"
 
 #include <QObject>
@@ -13,10 +14,15 @@ class TaskAccount final : public Task {
   Q_DISABLE_COPY_MOVE(TaskAccount)
 
  public:
-  TaskAccount();
+  explicit TaskAccount(
+      ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy);
   ~TaskAccount();
 
   void run() override;
+
+ private:
+  ErrorHandler::ErrorPropagationPolicy m_errorPropagationPolicy =
+      ErrorHandler::DoNotPropagateError;
 };
 
 #endif  // TASKACCOUNT_H

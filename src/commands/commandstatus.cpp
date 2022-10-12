@@ -62,7 +62,7 @@ int CommandStatus::run(QStringList& tokens) {
     }
 
     if (!cacheOption.m_set) {
-      TaskAccount task;
+      TaskAccount task(ErrorHandler::PropagateError);
       task.run();
 
       QEventLoop loop;

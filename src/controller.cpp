@@ -144,7 +144,7 @@ void Controller::implInitialized(bool status, bool a_connected,
   Q_ASSERT(m_state == StateInitializing);
 
   if (!status) {
-    MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
+    ErrorHandler::instance()->errorHandle(ErrorHandler::ControllerError);
     setState(StateOff);
     return;
   }
@@ -293,7 +293,7 @@ void Controller::activateNext() {
   MozillaVPN* vpn = MozillaVPN::instance();
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
   if (device == nullptr) {
-    vpn->errorHandle(ErrorHandler::AuthenticationError);
+    ErrorHandler::instance()->errorHandle(ErrorHandler::AuthenticationError);
     vpn->reset(false);
     return;
   }
@@ -361,21 +361,27 @@ bool Controller::deactivate() {
 void Controller::connected(const QString& pubkey) {
   logger.debug() << "handshake completed with:" << logger.keys(pubkey);
   if (m_activationQueue.isEmpty()) {
-    logger.warning() << "Unexpected handshake: no pending connections.";
-    return;
-  }
-  if (m_activationQueue.first().m_server.publicKey() != pubkey) {
+    MozillaVPN* vpn = MozillaVPN::instance();
+    Q_ASSERT(vpn);
+    if (vpn->exitServerPublicKey() != pubkey) {
+      logger.warning() << "Unexpected handshake: no pending connections.";
+      return;
+    }
+    // Continue anyways if the VPN service was activated externally.
+    logger.info() << "Unexpected handshake: external VPN activation.";
+  } else if (m_activationQueue.first().m_server.publicKey() != pubkey) {
     logger.warning() << "Unexpected handshake: public key mismatch.";
     return;
+  } else {
+    // Start the next connection if there is more work to do.
+    m_activationQueue.removeFirst();
+    if (!m_activationQueue.isEmpty()) {
+      activateNext();
+      return;
+    }
   }
   m_handshakeTimer.stop();
   m_ping_canary.stop();
-  // Start the next connection if there is more work to do.
-  m_activationQueue.removeFirst();
-  if (!m_activationQueue.isEmpty()) {
-    activateNext();
-    return;
-  }
 
   // Clear the retry counter after all connections have succeeded.
   m_connectionRetry = 0;
@@ -608,6 +614,7 @@ bool Controller::processNextStep() {
 
   if (nextStep == ServerUnavailable) {
     logger.info() << "Server Unavailable - Ping succeeded: " << m_ping_received;
+
     emit readyToServerUnavailable(m_ping_received);
     return true;
   }

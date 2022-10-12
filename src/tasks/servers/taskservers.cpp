@@ -13,7 +13,9 @@ namespace {
 Logger logger(LOG_MAIN, "TaskServers");
 }
 
-TaskServers::TaskServers() : Task("TaskServers") {
+TaskServers::TaskServers(
+    ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy)
+    : Task("TaskServers"), m_errorPropagationPolicy(errorPropagationPolicy) {
   MVPN_COUNT_CTOR(TaskServers);
 }
 
@@ -22,13 +24,12 @@ TaskServers::~TaskServers() { MVPN_COUNT_DTOR(TaskServers); }
 void TaskServers::run() {
   NetworkRequest* request = NetworkRequest::createForServers(this);
 
-  connect(
-      request, &NetworkRequest::requestFailed, this,
-      [this](QNetworkReply::NetworkError error, const QByteArray&) {
-        logger.error() << "Failed to retrieve servers";
-        MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
-        emit completed();
-      });
+  connect(request, &NetworkRequest::requestFailed, this,
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+            logger.error() << "Failed to retrieve servers";
+            ErrorHandler::networkErrorHandle(error, m_errorPropagationPolicy);
+            emit completed();
+          });
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {

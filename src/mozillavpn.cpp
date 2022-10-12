@@ -75,9 +75,6 @@
 #include <QTimer>
 #include <QUrl>
 
-// in seconds, hide alerts
-constexpr const uint32_t HIDE_ALERT_SEC = 4;
-
 namespace {
 Logger logger(LOG_MAIN, "MozillaVPN");
 MozillaVPN* s_instance = nullptr;
@@ -100,12 +97,11 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   Q_ASSERT(!s_instance);
   s_instance = this;
 
-  connect(&m_alertTimer, &QTimer::timeout, this,
-          [this]() { setAlert(NoAlert); });
-
   connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {
     TaskScheduler::scheduleTask(new TaskGroup(
-        {new TaskAccount(), new TaskServers(), new TaskCaptivePortalLookup(),
+        {new TaskAccount(ErrorHandler::DoNotPropagateError),
+         new TaskServers(ErrorHandler::DoNotPropagateError),
+         new TaskCaptivePortalLookup(ErrorHandler::DoNotPropagateError),
          new TaskHeartbeat(), new TaskGetFeatureList(), new TaskAddonIndex()}));
   });
 
@@ -192,6 +188,10 @@ MozillaVPN::~MozillaVPN() {
   s_instance = nullptr;
 
   delete m_private;
+}
+
+ConnectionHealth* MozillaVPN::connectionHealth() {
+  return &m_private->m_connectionHealth;
 }
 
 Controller* MozillaVPN::controller() { return &m_private->m_controller; }
@@ -328,8 +328,10 @@ void MozillaVPN::initialize() {
     m_private->m_serverData.writeSettings();
   }
 
-  QList<Task*> refreshTasks{new TaskAccount(), new TaskServers(),
-                            new TaskCaptivePortalLookup()};
+  QList<Task*> refreshTasks{
+      new TaskAccount(ErrorHandler::PropagateError),
+      new TaskServers(ErrorHandler::PropagateError),
+      new TaskCaptivePortalLookup(ErrorHandler::PropagateError)};
 
   if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
     refreshTasks.append(new TaskProducts());
@@ -401,7 +403,7 @@ void MozillaVPN::maybeStateMain() {
   if (!modelsInitialized()) {
     logger.warning() << "Models not initialized yet";
     SettingsHolder::instance()->clear();
-    errorHandle(ErrorHandler::RemoteServiceError);
+    ErrorHandler::instance()->errorHandle(ErrorHandler::RemoteServiceError);
     setUserState(UserNotAuthenticated);
     setState(StateInitialize);
     return;
@@ -456,7 +458,7 @@ void MozillaVPN::authenticateWithType(
 
   setState(StateAuthenticating);
 
-  hideAlert();
+  ErrorHandler::instance()->hideAlert();
 
   if (m_userState != UserNotAuthenticated) {
     // If we try to start an authentication flow when already logged in, there
@@ -500,13 +502,13 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
 
   if (!m_private->m_user.fromJson(json)) {
     logger.error() << "Failed to parse the User JSON data";
-    errorHandle(ErrorHandler::RemoteServiceError);
+    ErrorHandler::instance()->errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
 
   if (!m_private->m_deviceModel.fromJson(keys(), json)) {
     logger.error() << "Failed to parse the DeviceModel JSON data";
-    errorHandle(ErrorHandler::RemoteServiceError);
+    ErrorHandler::instance()->errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
 
@@ -570,7 +572,8 @@ void MozillaVPN::completeActivation() {
   } else {
     // Let's fetch the account and the servers.
     TaskScheduler::scheduleTask(
-        new TaskGroup({new TaskAccount(), new TaskServers()}));
+        new TaskGroup({new TaskAccount(ErrorHandler::PropagateError),
+                       new TaskServers(ErrorHandler::PropagateError)}));
   }
 
   if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
@@ -835,7 +838,7 @@ bool MozillaVPN::checkCurrentDevice() {
 void MozillaVPN::logout() {
   logger.debug() << "Logout";
 
-  setAlert(LogoutAlert);
+  ErrorHandler::instance()->setAlert(ErrorHandler::LogoutAlert);
   setUserState(UserLoggingOut);
 
   TaskScheduler::deleteTasks();
@@ -877,102 +880,6 @@ void MozillaVPN::reset(bool forceInitialState) {
 
   if (forceInitialState) {
     setState(StateInitialize);
-  }
-}
-
-void MozillaVPN::setAlert(AlertType alert) {
-  m_alertTimer.stop();
-
-  if (alert != NoAlert) {
-    m_alertTimer.start(1000 * HIDE_ALERT_SEC);
-  }
-
-  m_alert = alert;
-  emit alertChanged();
-}
-
-void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
-  logger.debug() << "Handling error" << error;
-
-  Q_ASSERT(error != ErrorHandler::NoError);
-
-  AlertType alert = NoAlert;
-
-  switch (error) {
-    case ErrorHandler::VPNDependentConnectionError:
-      if (controller()->state() == Controller::State::StateOn ||
-          controller()->state() == Controller::State::StateConfirming) {
-        // connection likely isn't stable yet
-        logger.error() << "Ignore network error probably caused by enabled VPN";
-        return;
-      } else if (controller()->state() == Controller::State::StateOff) {
-        // We are off, so this means a request failed, not the
-        // VPN. Change it to No Connection
-        alert = NoConnectionAlert;
-        break;
-      }
-      [[fallthrough]];
-    case ErrorHandler::ConnectionFailureError:
-      alert = ConnectionFailedAlert;
-      break;
-
-    case ErrorHandler::NoConnectionError:
-      if (connectionHealth()->isUnsettled()) {
-        return;
-      }
-      alert = NoConnectionAlert;
-      break;
-
-    case ErrorHandler::AuthenticationError:
-      alert = AuthenticationFailedAlert;
-      break;
-
-    case ErrorHandler::ControllerError:
-      alert = ControllerErrorAlert;
-      break;
-
-    case ErrorHandler::RemoteServiceError:
-      alert = RemoteServiceErrorAlert;
-      break;
-
-    case ErrorHandler::SubscriptionFailureError:
-      alert = SubscriptionFailureAlert;
-      break;
-
-    case ErrorHandler::GeoIpRestrictionError:
-      alert = GeoIpRestrictionAlert;
-      break;
-
-    case ErrorHandler::UnrecoverableError:
-      alert = UnrecoverableErrorAlert;
-      break;
-
-    default:
-      break;
-  }
-
-  setAlert(alert);
-
-  logger.error() << "Alert:" << alert << "State:" << m_state;
-
-  if (alert == NoAlert) {
-    return;
-  }
-
-  // Any error in authenticating state sends to the Initial state.
-  if (m_state == StateAuthenticating) {
-    if (alert == GeoIpRestrictionAlert) {
-      emit recordGleanEvent(GleanSample::authenticationFailureByGeo);
-    } else {
-      emit recordGleanEvent(GleanSample::authenticationFailure);
-    }
-    reset(true);
-    return;
-  }
-
-  if (alert == AuthenticationFailedAlert) {
-    reset(true);
-    return;
   }
 }
 
@@ -1386,7 +1293,8 @@ void MozillaVPN::refreshDevices() {
 
   if (m_state == StateMain) {
     TaskScheduler::scheduleTask(
-        new TaskGroup({new TaskAccount(), new TaskServers()}));
+        new TaskGroup({new TaskAccount(ErrorHandler::DoNotPropagateError),
+                       new TaskServers(ErrorHandler::DoNotPropagateError)}));
   }
 }
 
@@ -1512,11 +1420,13 @@ void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
   setState(StateSubscriptionNeeded);
 
   if (!canceledByUser) {
-    errorHandle(ErrorHandler::SubscriptionFailureError);
+    ErrorHandler::instance()->errorHandle(
+        ErrorHandler::SubscriptionFailureError);
   }
 
   TaskScheduler::scheduleTask(
-      new TaskGroup({new TaskAccount(), new TaskServers()}));
+      new TaskGroup({new TaskAccount(ErrorHandler::PropagateError),
+                     new TaskServers(ErrorHandler::PropagateError)}));
   TaskScheduler::scheduleTask(new TaskFunction([this]() {
     if (!m_private->m_user.subscriptionNeeded() &&
         m_state == StateSubscriptionNeeded) {
@@ -1619,7 +1529,8 @@ void MozillaVPN::addCurrentDeviceAndRefreshData() {
   TaskScheduler::scheduleTask(
       new TaskAddDevice(Device::currentDeviceName(), Device::uniqueDeviceId()));
   TaskScheduler::scheduleTask(
-      new TaskGroup({new TaskAccount(), new TaskServers()}));
+      new TaskGroup({new TaskAccount(ErrorHandler::PropagateError),
+                     new TaskServers(ErrorHandler::PropagateError)}));
 }
 
 void MozillaVPN::openAppStoreReviewLink() {
@@ -1657,7 +1568,7 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
   TaskScheduler::scheduleTask(new TaskFunction([this]() {
     if (!modelsInitialized()) {
       logger.error() << "Failed to complete the key regeneration";
-      errorHandle(ErrorHandler::RemoteServiceError);
+      ErrorHandler::instance()->errorHandle(ErrorHandler::RemoteServiceError);
       setUserState(UserNotAuthenticated);
       return;
     }

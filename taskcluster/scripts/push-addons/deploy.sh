@@ -16,6 +16,6 @@ echo "Fetching Tokens!"
 ls 
 cd /builds/worker/fetches/
 ls
-openssl dgst -sha256 -sign /builds/worker/checkouts/vcs/addons_key.pem -out addons/manifest.json.sign addons/manifest.json
+openssl dgst -sha256 -sign /builds/worker/checkouts/vcs/addons_key.pem -out addons/manifest.json.sig addons/manifest.json
 
 cp -r /builds/worker/fetches/addons /builds/worker/artifacts

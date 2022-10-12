@@ -54,8 +54,7 @@ void TaskDeleteAccount::run() {
                 [this](QNetworkReply::NetworkError error, const QByteArray&) {
                   logger.error()
                       << "Failed to complete the authentication" << error;
-                  MozillaVPN::instance()->errorHandle(
-                      ErrorHandler::toErrorType(error));
+                  ErrorHandler::networkErrorHandle(error);
                   m_authenticationInAppSession->terminate();
                 });
 
@@ -69,7 +68,7 @@ void TaskDeleteAccount::run() {
 
   connect(m_authenticationInAppSession, &AuthenticationInAppSession::failed,
           this, [this](const ErrorHandler::ErrorType error) {
-            MozillaVPN::instance()->errorHandle(error);
+            ErrorHandler::instance()->errorHandle(error);
             m_authenticationInAppSession->terminate();
           });
 
@@ -86,7 +85,7 @@ void TaskDeleteAccount::run() {
               case AuthenticationInApp::StateSignUp:
                 [[fallthrough]];
               case AuthenticationInApp::StateFallbackInBrowser:
-                MozillaVPN::instance()->errorHandle(
+                ErrorHandler::instance()->errorHandle(
                     ErrorHandler::AuthenticationError);
                 m_authenticationInAppSession->terminate();
                 break;

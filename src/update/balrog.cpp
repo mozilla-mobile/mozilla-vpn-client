@@ -27,8 +27,8 @@
 #  include "platforms/windows/golang-msvc-types.h"
 #endif
 
-// Import balrog C/Go library (unless we are building on Windows with qmake)
-#if !(defined(MVPN_WINDOWS) && defined(BUILD_QMAKE))
+// Import balrog C/Go library, except on windows where we need to use a DLL.
+#if !defined(MVPN_WINDOWS)
 extern "C" {
 #  include "balrog-api.h"
 }
@@ -55,8 +55,11 @@ void balrogLogger(int level, const char* msg) {
 
 }  // namespace
 
-Balrog::Balrog(QObject* parent, bool downloadAndInstall)
-    : Updater(parent), m_downloadAndInstall(downloadAndInstall) {
+Balrog::Balrog(QObject* parent, bool downloadAndInstall,
+               ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy)
+    : Updater(parent),
+      m_downloadAndInstall(downloadAndInstall),
+      m_errorPropagationPolicy(errorPropagationPolicy) {
   MVPN_COUNT_CTOR(Balrog);
   logger.debug() << "Balrog created";
 }
@@ -184,7 +187,7 @@ bool Balrog::checkSignature(Task* task, const QByteArray& x5uData,
 bool Balrog::validateSignature(const QByteArray& x5uData,
                                const QByteArray& updateData,
                                const QByteArray& signatureBlob) {
-#if defined(MVPN_WINDOWS) && defined(BUILD_QMAKE)
+#if defined(MVPN_WINDOWS)
   typedef void BalrogSetLogger(GoUintptr func);
   typedef GoUint8 BalrogValidate(GoString x5uData, GoString updateData,
                                  GoString signature, GoString rootHash,
@@ -503,15 +506,12 @@ void Balrog::propagateError(NetworkRequest* request,
                             QNetworkReply::NetworkError error) {
   Q_ASSERT(request);
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
-
   // 451 Unavailable For Legal Reasons
   if (request->statusCode() == 451) {
     logger.debug() << "Geo IP restriction detected";
-    vpn->errorHandle(ErrorHandler::GeoIpRestrictionError);
+    ErrorHandler::instance()->errorHandle(ErrorHandler::GeoIpRestrictionError);
     return;
   }
 
-  vpn->errorHandle(ErrorHandler::toErrorType(error));
+  ErrorHandler::networkErrorHandle(error, m_errorPropagationPolicy);
 }

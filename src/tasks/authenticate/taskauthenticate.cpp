@@ -59,8 +59,7 @@ void TaskAuthenticate::run() {
                     [](QNetworkReply::NetworkError error, const QByteArray&) {
                       logger.error()
                           << "Failed to complete the authentication" << error;
-                      MozillaVPN::instance()->errorHandle(
-                          ErrorHandler::toErrorType(error));
+                      ErrorHandler::networkErrorHandle(error);
                     });
 
             connect(request, &NetworkRequest::requestCompleted, this,
@@ -72,7 +71,7 @@ void TaskAuthenticate::run() {
 
   connect(m_authenticationListener, &AuthenticationListener::failed, this,
           [this](const ErrorHandler::ErrorType error) {
-            MozillaVPN::instance()->errorHandle(error);
+            ErrorHandler::instance()->errorHandle(error);
             m_authenticationListener->aboutToFinish();
           });
 
@@ -89,19 +88,16 @@ void TaskAuthenticate::run() {
 void TaskAuthenticate::authenticationCompleted(const QByteArray& data) {
   logger.debug() << "Authentication completed";
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
-
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (json.isNull()) {
-    vpn->errorHandle(ErrorHandler::RemoteServiceError);
+    ErrorHandler::instance()->errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
 
   QJsonObject obj = json.object();
   QJsonValue userObj = obj.value("user");
   if (!userObj.isObject()) {
-    vpn->errorHandle(ErrorHandler::RemoteServiceError);
+    ErrorHandler::instance()->errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
 
@@ -111,7 +107,7 @@ void TaskAuthenticate::authenticationCompleted(const QByteArray& data) {
 
   QJsonValue tokenValue = obj.value("token");
   if (!tokenValue.isString()) {
-    vpn->errorHandle(ErrorHandler::RemoteServiceError);
+    ErrorHandler::instance()->errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
 

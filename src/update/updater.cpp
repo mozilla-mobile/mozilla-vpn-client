@@ -21,14 +21,14 @@ Logger logger(LOG_NETWORKING, "Updater");
 }
 
 // static
-Updater* Updater::create(QObject* parent, bool downloadAndInstall) {
+Updater* Updater::create(
+    QObject* parent, bool downloadAndInstall,
+    ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy) {
 #ifdef MVPN_BALROG
-  if (!downloadAndInstall) {
-    return new Balrog(parent, false);
-  }
-
-  return new Balrog(parent, true);
+  return new Balrog(parent, downloadAndInstall, errorPropagationPolicy);
 #endif
+
+  Q_UNUSED(errorPropagationPolicy);
 
   if (!downloadAndInstall) {
     return new VersionApi(parent);

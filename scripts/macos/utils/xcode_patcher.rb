@@ -52,7 +52,9 @@ class XCodeprojPatcher
 
       config.build_settings['FRAMEWORK_SEARCH_PATHS'] ||= [
         "$(inherited)",
-        "$(PROJECT_DIR)/3rdparty"
+        "$(PROJECT_DIR)/3rdparty",
+        "$(PROJECT_DIR)/3rdparty/wireguard-apple/Sources/WireGuardKitC",
+        "$(PROJECT_DIR)/3rdparty/wireguard-apple/Sources/WireGuardKitGo",
       ]
 
       config.build_settings['PRODUCT_NAME'] = 'Mozilla VPN'
@@ -73,7 +75,7 @@ class XCodeprojPatcher
     group = @project.main_group.new_group('WireGuard')
 
     [
-      'ios/gobridge/wireguard-go-version.h',
+      '3rdparty/wireguard-apple/Sources/WireGuardKitGo/wireguard-go-version.h',
       '3rdparty/wireguard-apple/Sources/Shared/Keychain.swift',
       '3rdparty/wireguard-apple/Sources/WireGuardKit/IPAddressRange.swift',
       '3rdparty/wireguard-apple/Sources/WireGuardKit/InterfaceConfiguration.swift',
@@ -197,7 +199,7 @@ class XCodeprojPatcher
   end
 
   def setup_target_extension(shortVersion, fullVersion, configHash)
-    @target_extension = @project.new_target(:app_extension, 'WireGuardNetworkExtension', :ios)
+    @target_extension = @project.new_target(:app_extension, 'MozillaVPNNetworkExtension', :ios)
 
     @target_extension.build_configurations.each do |config|
       config.base_configuration_reference = @configFile
@@ -213,7 +215,7 @@ class XCodeprojPatcher
       config.build_settings['MARKETING_VERSION'] ||= shortVersion
       config.build_settings['CURRENT_PROJECT_VERSION'] ||= fullVersion
       config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= configHash['NETEXT_ID_IOS']
-      config.build_settings['PRODUCT_NAME'] = 'WireGuardNetworkExtension'
+      config.build_settings['PRODUCT_NAME'] = 'MozillaVPNNetworkExtension'
 
       # other configs
       config.build_settings['INFOPLIST_FILE'] ||= 'ios/networkextension/Info.plist'
@@ -223,6 +225,10 @@ class XCodeprojPatcher
       config.build_settings['ENABLE_BITCODE'] ||= 'NO'
       config.build_settings['SDKROOT'] = 'iphoneos'
 
+      config.build_settings['FRAMEWORK_SEARCH_PATHS'] ||= [
+        "$(PROJECT_DIR)/3rdparty/wireguard-apple/Sources/WireGuardKitC",
+        "$(PROJECT_DIR)/3rdparty/wireguard-apple/Sources/WireGuardKitGo",
+      ]
       config.build_settings['OTHER_LDFLAGS'] ||= [
         "-stdlib=libc++",
         "-Wl,-rpath,@executable_path/Frameworks",
@@ -313,7 +319,7 @@ class XCodeprojPatcher
   def setup_target_gobridge
     target_gobridge = legacy_target = @project.new(Xcodeproj::Project::PBXLegacyTarget)
 
-    target_gobridge.build_working_directory = 'ios/gobridge'
+    target_gobridge.build_working_directory = '3rdparty/wireguard-apple/Sources/WireGuardKitGo'
     target_gobridge.build_tool_path = 'make'
     target_gobridge.pass_build_settings_in_environment = '1'
     target_gobridge.build_arguments_string = '$(ACTION)'

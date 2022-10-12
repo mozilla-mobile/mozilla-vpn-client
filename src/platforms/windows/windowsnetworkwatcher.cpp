@@ -11,6 +11,7 @@
 #include <QScopeGuard>
 
 #pragma comment(lib, "Wlanapi.lib")
+#pragma comment(lib, "windowsapp.lib")
 
 #include <winrt/base.h>
 // See
