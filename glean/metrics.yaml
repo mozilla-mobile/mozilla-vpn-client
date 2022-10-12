@@ -26,9 +26,9 @@ sample:
     description: |
       An addon's state changed
     bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1620
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4487
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1746457
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1794825
     data_sensitivity:
       - technical
     notification_emails:
@@ -52,9 +52,9 @@ sample:
     description: |
       The addon message' state changed
     bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1620
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4487
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1746457
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1794825
     data_sensitivity:
       - technical
     notification_emails:
@@ -78,9 +78,9 @@ sample:
     description: |
       User clicked primary CTA in an addon
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4487
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1794825
     data_sensitivity:
       - interaction
     extra_keys:
