@@ -134,7 +134,7 @@ jobs:
       - name: Generating grcov reports
         id: generateGrcov
         continue-on-error: true # Ignore GRCOV parsing errors, see github.com/mozilla/grcov/issues/570
-        timeout-minutes: 1 # Give GRCOV a short timeout in case it hangs after a panic
+        timeout-minutes: 1 # Give GRCOV a short timeout in case it hangs after a panic | also give permission
         run: |
           chmod +x ./build/bin/grcov
           ./build/bin/grcov build/cmake/src/CMakeFiles/mozillavpn.dir \
