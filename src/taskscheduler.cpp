@@ -106,4 +106,6 @@ void TaskScheduler::deleteTasksInternal() {
     m_running_task->disconnect();
     m_running_task = nullptr;
   }
+
+  maybeRunTask();
 }

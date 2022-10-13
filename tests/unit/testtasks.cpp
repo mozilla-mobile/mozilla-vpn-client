@@ -198,4 +198,32 @@ void TestTasks::deletePolicy_group() {
   }
 }
 
+void TestTasks::deletePolicy_async() {
+  QList<int> sequence;
+
+  class TaskAsync final : public Task {
+   public:
+    TaskAsync(Task::DeletePolicy deletePolicy)
+        : Task("TaskAsync"), m_deletePolicy(deletePolicy) {}
+
+    void run() override { QTimer::singleShot(500, this, &Task::completed); }
+
+    DeletePolicy deletePolicy() const override { return m_deletePolicy; }
+
+   private:
+    DeletePolicy m_deletePolicy = Deletable;
+  };
+
+  Task* t1 = new TaskAsync(Task::Deletable);
+  TaskScheduler::scheduleTask(t1);
+
+  Task* t2 = new TaskAsync(Task::NonDeletable);
+  TaskScheduler::scheduleTask(t2);
+
+  QEventLoop loop;
+  connect(t2, &Task::completed, [&]() { loop.exit(); });
+
+  TaskScheduler::deleteTasks();
+  loop.exec();
+}
 static TestTasks s_testTasks;
