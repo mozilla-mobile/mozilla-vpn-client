@@ -15,7 +15,6 @@ Item {
 
    property string _menuTitle: ""
    property var _menuOnBackClicked
-   property var titleComponent
    property alias _viewContentData: viewContent.data
    property alias _interactive: vpnFlickable.interactive
 
