@@ -55,7 +55,7 @@ class Addon : public QObject {
 
   virtual void retranslate();
 
-  virtual bool enabled() const;
+  virtual bool enabled() const { return m_enabled; }
 
   AddonApi* api();
 
@@ -100,6 +100,8 @@ class Addon : public QObject {
 
   QJSValue m_jsEnableFunction;
   QJSValue m_jsDisableFunction;
+
+  bool m_enabled = false;
 };
 
 #endif  // ADDON_H

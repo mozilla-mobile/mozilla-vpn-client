@@ -174,11 +174,9 @@ bool AddonManager::loadManifest(const QString& manifestFileName) {
       }
       if (!enabled) {
         beginRemoveRows(QModelIndex(), pos, pos);
-        removeRow(pos);
         endRemoveRows();
       } else {
         beginInsertRows(QModelIndex(), pos, pos);
-        insertRow(pos);
         endInsertRows();
       }
       break;
