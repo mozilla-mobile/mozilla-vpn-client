@@ -89,6 +89,11 @@ void AddonManager::updateIndex(const QByteArray& index,
 void AddonManager::updateAddonsList(QList<AddonData> addons) {
   logger.debug() << "Updating addons list";
 
+  // Maybe this is not the first time we load the addon list. So, technically,
+  // the addonManager has already complete the first addon loading. No need to
+  // reset m_loadCompleted.
+  bool loadCompleted = false;
+
   // Remove unknown addons
   QStringList addonsToBeRemoved;
   for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
@@ -128,7 +133,7 @@ void AddonManager::updateAddonsList(QList<AddonData> addons) {
     }
   }
 
-  if (!m_loadCompleted) {
+  if (!loadCompleted) {
     if (taskAdded) {
       TaskScheduler::scheduleTask(new TaskFunction(
           [this]() {
