@@ -79,6 +79,7 @@ VPNViewBase {
             // All
             VPNViewBase {
                 objectName: 'allTab'
+                anchors.topMargin: 0
 
                 _viewContentData: ColumnLayout {
                     id: layoutAll
@@ -135,6 +136,8 @@ VPNViewBase {
 
             // Tutorials
             VPNViewBase {
+                anchors.topMargin: 0
+
                 _viewContentData: ColumnLayout {
                     id: layoutTutorial
 
@@ -166,6 +169,8 @@ VPNViewBase {
 
             // Tips
             VPNViewBase {
+                anchors.topMargin: 0
+
                 _viewContentData: ColumnLayout {
                     id: layoutGuide
 
