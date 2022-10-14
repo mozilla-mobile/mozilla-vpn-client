@@ -392,11 +392,22 @@ cmake --build build -j$(nproc)
   [Docs](https://www.selenium.dev/documentation/getting_started/installing_browser_drivers/)
 * Make a .env file with:
  * `MVPN_API_BASE_URL` (where proxy runs, most likely http://localhost:5000)
- * `MVPN_BIN` (location of compiled mvpn binary)
+ * `MVPN_BIN` (location of compiled mvpn binary. This must be a dummy binary, see note below.)
  * `ARTIFACT_DIR` (directory to put screenshots from test failures)
 * (Optional) In one window run `./tests/proxy/wsgi.py --mock-devices`
 * Run a test from the root of the project: `./scripts/tests/functional_tests.sh {test_file}.js`. To run, say, the authentication tests: `./scripts/tests/functional_tests.sh
   tests/functional/testAuthentication.js`.
+  
+> **Note**: Functional tests require a dummy build of the application. 
+> In order to create such a build, on the root folder of this repository run:
+> 
+> ```
+> cmake -S . -B ./dummybuild -DBUILD_DUMMY=ON
+> cmake --build dummybuild -j$(nproc)
+> ```
+>
+> This will create a dummy build under the `dummybuild/` folder. To run the functional tests against this build, 
+> make sure the `MVPN_BIN` environment variable is pointing to the application under the `dummybuild/` folder.
 
 ## Developer Options and staging environment
 
