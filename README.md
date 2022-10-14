@@ -64,10 +64,6 @@ Qt6 can be installed in a number of ways:
 ```bash
 ./scripts/utils/qt6_compile.sh </qt6/source/code/path> </destination/path>
 ```
-   ... or our batch script for windows:
-```bash
-./scripts/Qt5_static_compile.bat
-```
 
 #### Install Python 3
 
