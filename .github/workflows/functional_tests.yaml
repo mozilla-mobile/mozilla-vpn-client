@@ -43,7 +43,7 @@ jobs:
 
           # Download the build and runtime package dependencies.
           sudo apt-get -o "Dir::Cache::archives=$(pwd)/build/archive" install -y \
-               $(./scripts/linux/getdeps.py -a linux/debian/control.qt6)
+               $(./scripts/linux/getdeps.py -a linux/debian/control)
           sudo chown -R $USER:$USER build/archive
 
       - name: Compile test client

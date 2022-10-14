@@ -1610,9 +1610,6 @@ QString MozillaVPN::devVersion() {
 
 // static
 QString MozillaVPN::graphicsApi() {
-#if QT_VERSION < 0x060000
-  return "qt5-angle";
-#else
   QQuickWindow* window =
       qobject_cast<QQuickWindow*>(QmlEngineHolder::instance()->window());
   Q_ASSERT(window);
@@ -1634,7 +1631,6 @@ QString MozillaVPN::graphicsApi() {
     default:
       return "unknown";
   }
-#endif
 }
 
 void MozillaVPN::requestDeleteAccount() {
