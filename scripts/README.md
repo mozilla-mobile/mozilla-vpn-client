@@ -54,7 +54,6 @@ TODO:
 - ./utils/generate_strings.py - process the string.yaml file and generate resources
 - ./utils/import_languages.py - process languages and import them
 - ./utils/inspector.py - send commands to the VPN client inspector
-- ./utils/qt5_compile.sh - compile qt5 for linux and macos
 - ./utils/qt6_compile.sh - compile qt6 for linux and macos
 
 # Clang-format utils

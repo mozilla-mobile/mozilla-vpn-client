@@ -19,9 +19,5 @@ RESOURCES += $$PWD/ui/nebula_resources.qrc
 
 QML_IMPORT_PATH += $$PWD/ui
 
-versionAtLeast(QT_VERSION, 6.0.0) {
-    RESOURCES += $$PWD/ui/compatQt6.qrc
-    RESOURCES += $$PWD/ui/resourcesQt6.qrc
-} else {
-    RESOURCES += $$PWD/ui/compatQt5.qrc
-}
+RESOURCES += $$PWD/ui/compatQt6.qrc
+RESOURCES += $$PWD/ui/resourcesQt6.qrc
