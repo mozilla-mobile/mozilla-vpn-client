@@ -354,7 +354,8 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
 
   addon->maybeCreateConditionWatchers(conditions);
 
-  if (addon->enabled()) {
+  if (!addon->m_conditionWatcher ||
+      addon->m_conditionWatcher->conditionApplied()) {
     addon->enable();
   }
 
@@ -469,10 +470,12 @@ void Addon::maybeCreateConditionWatchers(const QJsonObject& conditions) {
 
   connect(m_conditionWatcher, &AddonConditionWatcher::conditionChanged, this,
           [this](bool enabled) {
-            if (enabled) {
-              enable();
-            } else {
-              disable();
+            if (enabled != m_enabled) {
+              if (enabled) {
+                enable();
+              } else {
+                disable();
+              }
             }
           });
 }
@@ -500,15 +503,9 @@ bool Addon::evaluateConditions(const QJsonObject& conditions) {
   return true;
 }
 
-bool Addon::enabled() const {
-  if (!m_conditionWatcher) {
-    return true;
-  }
-
-  return m_conditionWatcher->conditionApplied();
-}
-
 void Addon::enable() {
+  m_enabled = true;
+
   QCoreApplication::installTranslator(&m_translator);
   retranslate();
 
@@ -529,6 +526,8 @@ void Addon::enable() {
 }
 
 void Addon::disable() {
+  m_enabled = false;
+
   QCoreApplication::removeTranslator(&m_translator);
 
   if (m_jsDisableFunction.isCallable()) {
