@@ -253,7 +253,7 @@ module.exports = {
     }
   },
 
-  wait(waitTimeInMilliSecs = 1000) {
+  wait(waitTimeInMilliSecs = 200) {
     return new Promise(resolve => setTimeout(resolve, waitTimeInMilliSecs));
   },
 

@@ -23,15 +23,74 @@ const selectCityFromList = async (cityId, countryId) => {
   await vpn.wait()
 }
 
+const goToSettings = async () => {
+    await vpn.waitForElement(elements.NAVIGATION_BAR_SETTINGS);
+    await vpn.clickOnElement(elements.NAVIGATION_BAR_SETTINGS);
+}
+
+const activateDeveloperOptions = async () => {
+    await vpn.waitForElement(elements.VPN_BOLD_LABEL);
+    await vpn.clickOnElement(elements.VPN_BOLD_LABEL);
+    await vpn.clickOnElement(elements.VPN_BOLD_LABEL);
+    await vpn.clickOnElement(elements.VPN_BOLD_LABEL);
+    await vpn.clickOnElement(elements.VPN_BOLD_LABEL);
+    await vpn.clickOnElement(elements.VPN_BOLD_LABEL);
+    await vpn.clickOnElement(elements.VPN_BOLD_LABEL);
+    await vpn.waitForCondition(async () => {
+        return  await vpn.getElementProperty('developer', 'visible')
+    }, 200)
+    await vpn.waitForElementAndClick(elements.DEVELOPER_OPTIONS_BUTTON)
+}
+
+const enableCustomAddOns = async () => {
+    await vpn.flipFeatureOn('addonSignature')
+}
+
+const useStagingServers = async () => {
+    if (await vpn.getElementProperty(elements.STAGING_SERVER_ROW, 'isChecked') === "false") {        
+        await vpn.waitForElementAndClick(elements.STAGING_SERVER_CHECKBOX);
+    }
+    await vpn.wait(9000)
+}
+
+const goToGetHelpView = async () => {
+    await vpn.waitForElement(elements.GET_HELP_MENU_BUTTON);
+    await vpn.waitForElementProperty(elements.GET_HELP_MENU_BUTTON, 'visible', 'true');
+    await vpn.clickOnElement(elements.GET_HELP_MENU_BUTTON);
+
+    await vpn.wait();
+    await vpn.waitForElement(elements.GET_HELPMENU_BACK_BUTTON);
+    await vpn.waitForElementProperty(elements.GET_HELPMENU_BACK_BUTTON, 'visible', 'true');
+}
+
+const sendText = async (id, text) => {    
+    await vpn.setElementProperty(id, 'text', 's', text);    
+}
+
+const clickElement = async (id) => {
+    // wait for element
+    // wait for animation if any
+    // click
+}
+
 module.exports = {
     actions: {
         settings: {
             setConnectionChangeNotification,
             setServerSwitchNotification,
+            goToSettings,
+            activateDeveloperOptions,
+            enableCustomAddOns,
+            goToGetHelpView,
+            useStagingServers
         },
         locations: {
             selectCountryFromList,
             selectCityFromList
+        },
+        general: {
+            sendText,
+            clickElement
         }
     }
 }

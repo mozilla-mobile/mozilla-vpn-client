@@ -33,6 +33,7 @@ VPNViewBase {
 
         VPNCheckBoxRow {
             id: checkBoxRowStagingServer
+            objectName: "stagingServerCheckBoxRow"
 
             Layout.fillWidth: true
             Layout.rightMargin: VPNTheme.theme.windowMargin
@@ -76,6 +77,8 @@ VPNViewBase {
         }
 
         VPNCheckBoxRow {
+            objectName: "customAddOnCheckBoxRow"
+
             Layout.fillWidth: true
             Layout.topMargin: VPNTheme.theme.windowMargin
             Layout.rightMargin: VPNTheme.theme.windowMargin
@@ -94,6 +97,7 @@ VPNViewBase {
 
         VPNTextField {
             id: addonCustomServerInput
+            objectName: "customAddOnUrlTextField"
 
             Layout.rightMargin: VPNTheme.theme.windowMargin * 2
             Layout.leftMargin: VPNTheme.theme.windowMargin * 3

@@ -14,6 +14,18 @@ const elements = {
     CITYLIST_VISIBLE: "cityListVisible",
     VPN_MULTHOP_CHEVRON: 'vpnCollapsibleCardChevron',
     VPN_COLLAPSIBLE_CARD: 'vpnCollapsibleCard',
+    NAVIGATION_BAR: 'navigationBar',
+    NAVIGATION_BAR_HOME: 'navigationLayout/navButton-home',
+    NAVIGATION_BAR_MESSAGES: 'navigationLayout/navButton-messages',
+    NAVIGATION_BAR_SETTINGS: 'navigationLayout/navButton-settings',
+    VPN_BOLD_LABEL: 'vpnBoldLabel',
+    DEVELOPER_OPTIONS_BUTTON: 'developer',
+    CUSTOM_ADDON_ROW: 'customAddOnCheckBoxRow',
+    CUSTOM_ADDON_CHECKBOX: 'customAddOnCheckBoxRow/checkbox',
+    STAGING_SERVER_ROW: 'stagingServerCheckBoxRow',
+    STAGING_SERVER_CHECKBOX: 'stagingServerCheckBoxRow/checkbox',
+    GET_HELP_MENU_BUTTON: 'settingsGetHelp',
+    GET_HELPMENU_BACK_BUTTON: 'getHelpBack',
 
     generateCountryId: (serverCode) => {
         return 'serverCountryList/serverCountry-' + serverCode;

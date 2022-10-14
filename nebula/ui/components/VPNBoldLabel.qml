@@ -9,6 +9,8 @@ import Mozilla.VPN 1.0
 
 // VPNBoldLabel
 Label {
+    objectName: "vpnBoldLabel"
+
     font.pixelSize: VPNTheme.theme.fontSize
     font.family: VPNTheme.theme.fontBoldFamily
     color: VPNTheme.theme.fontColorDark
