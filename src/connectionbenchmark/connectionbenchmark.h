@@ -6,6 +6,7 @@
 #define CONNECTIONBENCHMARK_H
 
 #include "benchmarktask.h"
+#include "constants.h"
 
 #include <QList>
 #include <QObject>
@@ -90,8 +91,8 @@ class ConnectionBenchmark final : public QObject {
   void stop();
 
  private:
-  QUrl m_downloadUrl;
-  QUrl m_uploadUrl;
+  QUrl m_downloadUrl = QUrl(Constants::BENCHMARK_DOWNLOAD_URL);
+  QUrl m_uploadUrl = QUrl(Constants::BENCHMARK_UPLOAD_URL);
 
   QList<BenchmarkTask*> m_benchmarkTasks;
 

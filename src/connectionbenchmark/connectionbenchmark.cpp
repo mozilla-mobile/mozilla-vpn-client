@@ -7,7 +7,6 @@
 #include "benchmarktasktransfer.h"
 #include "connectionhealth.h"
 #include "controller.h"
-#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
@@ -86,7 +85,6 @@ void ConnectionBenchmark::start() {
   TaskScheduler::scheduleTask(pingTask);
 
   // Create download benchmark
-  setDownloadUrl(Constants::BENCHMARK_DOWNLOAD_URL);
   BenchmarkTaskTransfer* downloadTask = new BenchmarkTaskTransfer(
       "BenchmarkTaskDownload", BenchmarkTaskTransfer::BenchmarkDownload,
       m_downloadUrl);
@@ -99,7 +97,6 @@ void ConnectionBenchmark::start() {
 
   // Create upload benchmark
   if (Feature::get(Feature::Feature_benchmarkUpload)->isSupported()) {
-    setUploadUrl(Constants::BENCHMARK_UPLOAD_URL);
     BenchmarkTaskTransfer* uploadTask = new BenchmarkTaskTransfer(
         "BenchmarkTaskUpload", BenchmarkTaskTransfer::BenchmarkUpload,
         m_uploadUrl);
