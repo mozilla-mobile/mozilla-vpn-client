@@ -15,8 +15,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build_test_app:
-    name: Build Test Client
+  build_Linux_test_app:
+    name: Build Linux Test Client
     runs-on: ubuntu-20.04
     outputs:
       matrix: ${{ steps.testGen.outputs.tests }}
@@ -46,7 +46,7 @@ jobs:
                $(./scripts/linux/getdeps.py -a linux/debian/control.qt6)
           sudo chown -R $USER:$USER build/archive
 
-      - name: Compile test client
+      - name: Compile linux test client
         shell: bash
         if: steps.cache-build.outputs.cache-hit != 'true'
         run: |
@@ -56,6 +56,7 @@ jobs:
           cmake -S $(pwd) -B build/cmake -DBUILD_DUMMY=ON \
               -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
           cmake --build build/cmake -j$(nproc)
+
       - uses: actions/upload-artifact@v3
         with:
           name: test-client-${{ github.sha }}
@@ -76,16 +77,238 @@ jobs:
         run: |
           echo $TEST_LIST | jq
 
-  functionaltests:
-    name: Functional tests
+  linuxfunctionaltests:
+    name: Linux Functional tests
     needs: 
-      - build_test_app
+      - build_Linux_test_app
     runs-on: ubuntu-20.04
     timeout-minutes: 45
     strategy:
       fail-fast: false # Don't cancel other jobs if a test fails
       matrix:
-        test: ${{ fromJson(needs.build_test_app.outputs.matrix) }}
+        test: ${{ fromJson(needs.build_Linux_test_app.outputs.matrix) }}
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+      - uses: actions/download-artifact@v3
+        with:
+          name: test-client-${{ github.sha }}
+          path: build/
+
+      - name: Install Linux dependecies
+        run: |
+          sudo apt install ./build/archive/*.deb
+          sudo apt install --no-upgrade firefox xvfb -y
+          pip3 install -r requirements.txt
+          npm install
+      
+      - name: Check build
+        shell: bash
+        run: |
+            chmod +x ./build/cmake/src/mozillavpn
+            ./build/cmake/src/mozillavpn -v
+
+      - name: Running ${{matrix.test.name}} Tests
+        id: runTests
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 15
+          max_attempts: 3
+          command: |
+            export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
+            export HEADLESS=yes
+            mkdir -p $ARTIFACT_DIR
+            xvfb-run -a npm run functionalTest -- ${{matrix.test.path}}
+        env:
+          ARTIFACT_DIR: ${{ runner.temp }}/artifacts
+          MVPN_BIN: ./build/cmake/src/mozillavpn
+
+      - name: Generating grcov reports
+        id: generateGrcov
+        continue-on-error: true # Ignore GRCOV parsing errors, see github.com/mozilla/grcov/issues/570
+        timeout-minutes: 1 # Give GRCOV a short timeout in case it hangs after a panic
+        run: |
+          ./build/bin/grcov build/cmake/src/CMakeFiles/mozillavpn.dir \
+              -s src -t lcov --branch --ignore-not-existing \
+              -o ${{runner.temp}}/artifacts/functional_lcov.info
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        if: steps.generateGrcov.outcome == 'success'
+        with:
+          directory: .
+          flags: functional_tests
+          name: codecov-poc
+          files: ${{runner.temp}}/artifacts/functional_lcov.info
+          verbose: true
+
+      - name: Uploading artifacts
+        uses: actions/upload-artifact@v1
+        if: ${{ always() }}
+        with:
+          name: ${{matrix.test.name}} Logs
+          path: ${{ runner.temp }}/artifacts
+
+  build_windows_test_app:
+    name: Build Windows Test Client
+    runs-on: windows-latest
+    outputs:
+      matrix: ${{ steps.testGen.outputs.tests }}
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: Install Qt
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git clone https://github.com/mozilla-mobile/qt_static_windows --depth 1
+          mkdir /c/MozillaVPNBuild
+          cat qt_static_windows/qt6* > qt6_static.tar.bz2
+          tar xf qt6_static.tar.bz2 -C /c/MozillaVPNBuild
+
+      - name: Install glean depedencies
+        shell: bash
+        run: |
+          pip3 install -r requirements.txt
+
+      - name: Adding msbuild to PATH
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Build VPN client
+        shell: bash
+        run: |
+          export PATH=/c/MozillaVPNBuild/bin:$PATH
+          mkdir -p build
+          cmake -S . -B $(pwd)/build
+          cmake --build $(pwd)/build --config ${BUILDCONFIG}
+          cmake --build $(pwd)/build --config ${BUILDCONFIG} --target msi
+
+      - name: Compile windows test client
+        shell: bash
+        if: steps.cache-build.outputs.cache-hit != 'true'
+        run: |
+          pip3 install -r requirements.txt
+
+          mkdir -p build/cmake
+          cmake -S $(pwd) -B build/cmake -DBUILD_DUMMY=ON \
+              -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
+          cmake --build build/cmake -j$(nproc)
+
+      - name: Create the zip package for signature
+        shell: bash
+        run: |
+          mkdir -p unsigned
+          cmake --install $(pwd)/build --prefix $(pwd)/unsigned --config ${BUILDCONFIG}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: test-client-${{ github.sha }}
+          path: build/
+
+      - name: Generate tasklist
+        id: testGen
+        shell: bash
+        run: |
+          echo -n "::set-output name=tests::"
+          for test in $(find tests/functional -name 'test*.js' | sort); do
+            printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
+          done | jq -s -c
+      - name: Check tests
+        shell: bash
+        env:
+          TEST_LIST: ${{ steps.testGen.outputs.tests }}
+        run: |
+          echo $TEST_LIST | jq
+
+  windowsfunctionaltests:
+    name: Functional tests
+    needs: 
+      - build_windows_test_app
+    runs-on: ubuntu-20.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false # Don't cancel other jobs if a test fails
+      matrix:
+        test: ${{ fromJson(needs.build_windows_test_app.outputs.matrix) }}
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+      - uses: actions/download-artifact@v3
+        with:
+          name: test-client-${{ github.sha }}
+          path: build/
+
+      - name: Install dependecies
+        run: |
+          sudo apt install ./build/archive/*.deb
+          sudo apt install --no-upgrade firefox xvfb -y
+          pip3 install -r requirements.txt
+          npm install
+      
+      - name: Check build
+        shell: bash
+        run: |
+            chmod +x ./build/cmake/src/mozillavpn
+            ./build/cmake/src/mozillavpn -v
+
+      - name: Running ${{matrix.test.name}} Tests
+        id: runTests
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 15
+          max_attempts: 3
+          command: |
+            export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
+            export HEADLESS=yes
+            mkdir -p $ARTIFACT_DIR
+            xvfb-run -a npm run functionalTest -- ${{matrix.test.path}}
+        env:
+          ARTIFACT_DIR: ${{ runner.temp }}/artifacts
+          MVPN_BIN: ./build/cmake/src/mozillavpn
+
+      - name: Generating grcov reports
+        id: generateGrcov
+        continue-on-error: true # Ignore GRCOV parsing errors, see github.com/mozilla/grcov/issues/570
+        timeout-minutes: 1 # Give GRCOV a short timeout in case it hangs after a panic
+        run: |
+          ./build/bin/grcov build/cmake/src/CMakeFiles/mozillavpn.dir \
+              -s src -t lcov --branch --ignore-not-existing \
+              -o ${{runner.temp}}/artifacts/functional_lcov.info
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        if: steps.generateGrcov.outcome == 'success'
+        with:
+          directory: .
+          flags: functional_tests
+          name: codecov-poc
+          files: ${{runner.temp}}/artifacts/functional_lcov.info
+          verbose: true
+
+      - name: Uploading artifacts
+        uses: actions/upload-artifact@v1
+        if: ${{ always() }}
+        with:
+          name: ${{matrix.test.name}} Logs
+          path: ${{ runner.temp }}/artifacts
+
+    name: Functional tests
+    needs: 
+      - build_macos_test_app
+    runs-on: ubuntu-20.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false # Don't cancel other jobs if a test fails
+      matrix:
+        test: ${{ fromJson(needs.build_windows_test_app.outputs.matrix) }}
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
