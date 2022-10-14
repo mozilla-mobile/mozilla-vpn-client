@@ -128,18 +128,16 @@ void AddonManager::updateAddonsList(QList<AddonData> addons) {
     }
   }
 
-  if (!m_loadCompleted) {
-    if (taskAdded) {
-      TaskScheduler::scheduleTask(new TaskFunction(
-          [this]() {
-            m_loadCompleted = true;
-            emit loadCompletedChanged();
-          },
-          Task::Reschedulable));
-    } else {
-      m_loadCompleted = true;
-      emit loadCompletedChanged();
-    }
+  if (taskAdded) {
+    TaskScheduler::scheduleTask(new TaskFunction(
+        [this]() {
+          m_loadCompleted = true;
+          emit loadCompletedChanged();
+        },
+        Task::Reschedulable));
+  } else {
+    m_loadCompleted = true;
+    emit loadCompletedChanged();
   }
 }
 
@@ -174,11 +172,9 @@ bool AddonManager::loadManifest(const QString& manifestFileName) {
       }
       if (!enabled) {
         beginRemoveRows(QModelIndex(), pos, pos);
-        removeRow(pos);
         endRemoveRows();
       } else {
         beginInsertRows(QModelIndex(), pos, pos);
-        insertRow(pos);
         endInsertRows();
       }
       break;

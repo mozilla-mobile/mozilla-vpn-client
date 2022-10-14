@@ -26,6 +26,7 @@
 #include "helper.h"
 
 #include <QQmlApplicationEngine>
+#include <QTemporaryFile>
 
 void TestAddon::property() {
   AddonProperty p;
@@ -1052,9 +1053,18 @@ void TestAddon::message_dismiss() {
 
   QJsonObject obj;
   obj["message"] = messageObj;
+  obj["type"] = "message";
+  obj["api_version"] = "0.1";
+  obj["id"] = "bar";
+  obj["name"] = "bar";
+
+  QTemporaryFile file;
+  QVERIFY(file.open());
+  file.write(QJsonDocument(obj).toJson());
+  file.close();
 
   QObject parent;
-  Addon* message = AddonMessage::create(&parent, "foo", "bar", "name", obj);
+  Addon* message = Addon::create(&parent, file.fileName());
   QVERIFY(!!message);
   QVERIFY(message->enabled());
 
