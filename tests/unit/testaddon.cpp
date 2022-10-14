@@ -258,7 +258,7 @@ void TestAddon::conditionWatcher_javascript() {
 
     QEventLoop loop;
     bool currentStatus = false;
-    connect(a, &AddonConditionWatcher::conditionChanged, [&](bool status) {
+    connect(a, &AddonConditionWatcher::conditionChanged, a, [&](bool status) {
       currentStatus = status;
       loop.exit();
     });
@@ -403,10 +403,11 @@ void TestAddon::conditionWatcher_group() {
 
   QEventLoop loop;
   bool currentStatus = false;
-  connect(acw1, &AddonConditionWatcher::conditionChanged, [&](bool status) {
-    currentStatus = status;
-    loop.exit();
-  });
+  connect(acw1, &AddonConditionWatcher::conditionChanged, acw1,
+          [&](bool status) {
+            currentStatus = status;
+            loop.exit();
+          });
   loop.exec();
 
   QVERIFY(currentStatus);
@@ -415,10 +416,11 @@ void TestAddon::conditionWatcher_group() {
   QVERIFY(!acwGroup->conditionApplied());
 
   currentStatus = false;
-  connect(acw2, &AddonConditionWatcher::conditionChanged, [&](bool status) {
-    currentStatus = status;
-    loop.exit();
-  });
+  connect(acw2, &AddonConditionWatcher::conditionChanged, acw2,
+          [&](bool status) {
+            currentStatus = status;
+            loop.exit();
+          });
   loop.exec();
 
   QVERIFY(currentStatus);
@@ -439,7 +441,7 @@ void TestAddon::conditionWatcher_triggerTime() {
 
   QEventLoop loop;
   bool currentStatus = false;
-  connect(acw, &AddonConditionWatcher::conditionChanged, [&](bool status) {
+  connect(acw, &AddonConditionWatcher::conditionChanged, acw, [&](bool status) {
     currentStatus = status;
     loop.exit();
   });
@@ -462,7 +464,7 @@ void TestAddon::conditionWatcher_startTime() {
 
   QEventLoop loop;
   bool currentStatus = false;
-  connect(acw, &AddonConditionWatcher::conditionChanged, [&](bool status) {
+  connect(acw, &AddonConditionWatcher::conditionChanged, acw, [&](bool status) {
     currentStatus = status;
     loop.exit();
   });
@@ -485,7 +487,7 @@ void TestAddon::conditionWatcher_endTime() {
 
   QEventLoop loop;
   bool currentStatus = false;
-  connect(acw, &AddonConditionWatcher::conditionChanged, [&](bool status) {
+  connect(acw, &AddonConditionWatcher::conditionChanged, acw, [&](bool status) {
     currentStatus = status;
     loop.exit();
   });
@@ -601,7 +603,7 @@ void TestAddon::guide_create() {
   obj["guide"] = content;
 
   QObject parent;
-  Addon* guide = AddonGuide::create(&parent, "foo", "bar", "name", obj);
+  Addon* guide = AddonGuide::create(&parent, id, "bar", "name", obj);
   QCOMPARE(!!guide, created);
 
   if (!guide) {
@@ -732,7 +734,7 @@ void TestAddon::tutorial_create() {
   obj["tutorial"] = content;
 
   QObject parent;
-  Addon* tutorial = AddonTutorial::create(&parent, "foo", "bar", "name", obj);
+  Addon* tutorial = AddonTutorial::create(&parent, id, "bar", "name", obj);
   QCOMPARE(!!tutorial, created);
 
   if (!tutorial) {

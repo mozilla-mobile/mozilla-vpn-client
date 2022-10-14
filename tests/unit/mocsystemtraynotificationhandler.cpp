@@ -14,6 +14,8 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
 
 SystemTrayNotificationHandler::~SystemTrayNotificationHandler() {}
 
+void SystemTrayNotificationHandler::initialize() {}
+
 void SystemTrayNotificationHandler::createStatusMenu() {}
 
 void SystemTrayNotificationHandler::setStatusMenu() {}

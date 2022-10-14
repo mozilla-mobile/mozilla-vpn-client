@@ -14,7 +14,7 @@ void TestTimerSingleShot::basic() {
 
     QEventLoop loop;
     QTimer t;
-    connect(&t, &QTimer::timeout, [&] { loop.exit(); });
+    connect(&t, &QTimer::timeout, &t, [&] { loop.exit(); });
     t.start(0);
     loop.exec();
 
@@ -29,7 +29,7 @@ void TestTimerSingleShot::basic() {
 
     QEventLoop loop;
     QTimer t;
-    connect(&t, &QTimer::timeout, [&] { loop.exit(); });
+    connect(&t, &QTimer::timeout, &t, [&] { loop.exit(); });
     t.start(0);
     loop.exec();
 
@@ -46,7 +46,7 @@ void TestTimerSingleShot::basic() {
 
     QEventLoop loop;
     QTimer t;
-    connect(&t, &QTimer::timeout, [&] { loop.exit(); });
+    connect(&t, &QTimer::timeout, &t, [&] { loop.exit(); });
     t.start(0);
     loop.exec();
 

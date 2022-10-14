@@ -34,7 +34,7 @@ bool checkDaemonVersion() {
   bool completed = false;
   bool value = false;
   QObject::connect(
-      watcher, &QDBusPendingCallWatcher::finished,
+      watcher, &QDBusPendingCallWatcher::finished, watcher,
       [completed = &completed, value = &value](QDBusPendingCallWatcher* call) {
         *completed = true;
 

@@ -97,7 +97,7 @@ void DnsUtilsLinux::setLinkDNS(int ifindex,
   QList<DnsResolver> resolverList;
   char ifnamebuf[IF_NAMESIZE];
   const char* ifname = if_indextoname(ifindex, ifnamebuf);
-  for (auto ip : resolvers) {
+  for (const auto& ip : resolvers) {
     resolverList.append(ip);
     if (ifname) {
       logger.debug() << "Adding DNS resolver" << ip.toString() << "via"
@@ -121,7 +121,7 @@ void DnsUtilsLinux::setLinkDomains(int ifindex,
   char ifnamebuf[IF_NAMESIZE];
   const char* ifname = if_indextoname(ifindex, ifnamebuf);
   if (ifname) {
-    for (auto d : domains) {
+    for (const auto& d : domains) {
       // The DNS search domains often winds up revealing user's ISP which
       // can correlate back to their location.
       logger.debug() << "Setting DNS domain:" << logger.sensitive(d.domain)
@@ -181,7 +181,7 @@ void DnsUtilsLinux::dnsDomainsReceived(QDBusPendingCallWatcher* call) {
   m_linkDomains.clear();
   QDBusArgument args = qvariant_cast<QDBusArgument>(reply.value());
   QList<DnsDomain> list = qdbus_cast<QList<DnsDomain>>(args);
-  for (auto d : list) {
+  for (const auto& d : list) {
     if (d.ifindex == 0) {
       continue;
     }

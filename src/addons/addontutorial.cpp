@@ -75,7 +75,8 @@ Addon* AddonTutorial::create(QObject* parent, const QString& manifestFileName,
     return nullptr;
   }
 
-  for (QJsonValue stepValue : stepsArray.toArray()) {
+  const QJsonArray steps = stepsArray.toArray();
+  for (QJsonValue stepValue : steps) {
     if (!stepValue.isObject()) {
       logger.warning() << "Expected JSON tutorialObjects as steps for tutorial";
       return nullptr;

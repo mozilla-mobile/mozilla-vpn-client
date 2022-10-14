@@ -122,7 +122,7 @@ void Controller::initialize() {
   connect(this, &Controller::stateChanged, this,
           &Controller::maybeEnableDisconnectInConfirming);
 
-  connect(&m_ping_canary, &PingHelper::pingSentAndReceived, [this]() {
+  connect(&m_ping_canary, &PingHelper::pingSentAndReceived, this, [this]() {
     m_ping_canary.stop();
     m_ping_received = true;
     logger.info() << "Canary Ping Succeeded";

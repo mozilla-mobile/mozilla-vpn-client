@@ -25,7 +25,7 @@ class EventLoop final : public QEventLoop {
  public:
   void exec() {
     QTimer timer;
-    connect(&timer, &QTimer::timeout, [&]() {
+    connect(&timer, &QTimer::timeout, &timer, [&]() {
       qDebug() << "TIMEOUT!";
       exit();
     });
@@ -56,7 +56,7 @@ void TestSignUpAndIn::signUp() {
   task.run();
 
   EventLoop loop;
-  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+  connect(aia, &AuthenticationInApp::stateChanged, aia, [&]() {
     if (aia->state() == AuthenticationInApp::StateStart) {
       loop.exit();
     }
@@ -73,7 +73,7 @@ void TestSignUpAndIn::signUp() {
   aia->checkAccount(emailAddress);
   QCOMPARE(aia->state(), AuthenticationInApp::StateCheckingAccount);
 
-  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+  connect(aia, &AuthenticationInApp::stateChanged, aia, [&]() {
     QVERIFY(aia->state() != AuthenticationInApp::StateSignIn);
     if (aia->state() == AuthenticationInApp::StateSignUp) {
       loop.exit();
@@ -95,7 +95,7 @@ void TestSignUpAndIn::signUp() {
   aia->signUp();
   QCOMPARE(aia->state(), AuthenticationInApp::StateSigningUp);
 
-  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+  connect(aia, &AuthenticationInApp::stateChanged, aia, [&]() {
     if (aia->state() ==
         AuthenticationInApp::StateVerificationSessionByEmailNeeded) {
       loop.exit();
@@ -111,7 +111,7 @@ void TestSignUpAndIn::signUp() {
   aia->verifySessionEmailCode("000000");
   QCOMPARE(aia->state(), AuthenticationInApp::StateVerifyingSessionEmailCode);
 
-  connect(aia, &AuthenticationInApp::errorOccurred,
+  connect(aia, &AuthenticationInApp::errorOccurred, aia,
           [&](AuthenticationInApp::ErrorType error, uint32_t) {
             if (error ==
                 AuthenticationInApp::ErrorInvalidOrExpiredVerificationCode) {
@@ -130,7 +130,7 @@ void TestSignUpAndIn::signUp() {
   aia->verifySessionEmailCode(code);
   QCOMPARE(aia->state(), AuthenticationInApp::StateVerifyingSessionEmailCode);
 
-  connect(&task, &Task::completed, [&]() { loop.exit(); });
+  connect(&task, &Task::completed, &task, [&]() { loop.exit(); });
 
   if (m_totpCreation) {
     waitForTotpCodes();
@@ -157,7 +157,7 @@ void TestSignUpAndIn::signUpWithError() {
   task.run();
 
   EventLoop loop;
-  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+  connect(aia, &AuthenticationInApp::stateChanged, aia, [&]() {
     if (aia->state() == AuthenticationInApp::StateStart) {
       loop.exit();
     }
@@ -174,7 +174,7 @@ void TestSignUpAndIn::signUpWithError() {
   aia->checkAccount(emailAddress);
   QCOMPARE(aia->state(), AuthenticationInApp::StateCheckingAccount);
 
-  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+  connect(aia, &AuthenticationInApp::stateChanged, aia, [&]() {
     if (aia->state() == AuthenticationInApp::StateSignIn) {
       loop.exit();
     }
@@ -192,7 +192,7 @@ void TestSignUpAndIn::signUpWithError() {
   QCOMPARE(aia->state(), AuthenticationInApp::StateSigningUp);
 
   connect(
-      aia, &AuthenticationInApp::errorOccurred,
+      aia, &AuthenticationInApp::errorOccurred, aia,
       [&](AuthenticationInApp::ErrorType error, uint32_t) {
         if (error == AuthenticationInApp::ErrorAccountAlreadyExists) {
           qDebug() << "The account already exist. Error correctly propagated.";
@@ -216,7 +216,7 @@ void TestSignUpAndIn::signIn() {
   task.run();
 
   EventLoop loop;
-  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+  connect(aia, &AuthenticationInApp::stateChanged, aia, [&]() {
     if (aia->state() == AuthenticationInApp::StateStart) {
       loop.exit();
     }
@@ -237,7 +237,7 @@ void TestSignUpAndIn::signIn() {
   aia->checkAccount(emailAddress);
   QCOMPARE(aia->state(), AuthenticationInApp::StateCheckingAccount);
 
-  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+  connect(aia, &AuthenticationInApp::stateChanged, aia, [&]() {
     if (aia->state() == AuthenticationInApp::StateSignIn) {
       loop.exit();
     }
@@ -253,7 +253,7 @@ void TestSignUpAndIn::signIn() {
     // We run this part only for non-blocked accounts because for them, the
     // password doesn't really matter.
     aia->setPassword("Invalid!");
-    connect(aia, &AuthenticationInApp::errorOccurred,
+    connect(aia, &AuthenticationInApp::errorOccurred, aia,
             [&](AuthenticationInApp::ErrorType error, uint32_t) {
               if (error == AuthenticationInApp::ErrorIncorrectPassword) {
                 qDebug() << "Incorrect password!";
@@ -279,7 +279,7 @@ void TestSignUpAndIn::signIn() {
 
   bool wrongUnblockCodeSent = false;
 
-  connect(aia, &AuthenticationInApp::errorOccurred,
+  connect(aia, &AuthenticationInApp::errorOccurred, aia,
           [this](AuthenticationInApp::ErrorType error, uint32_t) {
             if (error == AuthenticationInApp::ErrorInvalidUnblockCode) {
               qDebug() << "Invalid unblock code. Sending a good one";
@@ -297,7 +297,7 @@ void TestSignUpAndIn::signIn() {
     }
   });
 
-  connect(&task, &Task::completed, [&]() { loop.exit(); });
+  connect(&task, &Task::completed, &task, [&]() { loop.exit(); });
 
   loop.exec();
   disconnect(aia, nullptr, nullptr, nullptr);
@@ -315,7 +315,7 @@ void TestSignUpAndIn::signInWithError() {
   task.run();
 
   EventLoop loop;
-  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+  connect(aia, &AuthenticationInApp::stateChanged, aia, [&]() {
     if (aia->state() == AuthenticationInApp::StateStart) {
       loop.exit();
     }
@@ -332,7 +332,7 @@ void TestSignUpAndIn::signInWithError() {
   aia->checkAccount(emailAddress);
   QCOMPARE(aia->state(), AuthenticationInApp::StateCheckingAccount);
 
-  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+  connect(aia, &AuthenticationInApp::stateChanged, aia, [&]() {
     if (aia->state() == AuthenticationInApp::StateSignUp) {
       loop.exit();
     }
@@ -349,7 +349,7 @@ void TestSignUpAndIn::signInWithError() {
   aia->signIn();
   QCOMPARE(aia->state(), AuthenticationInApp::StateSigningIn);
 
-  connect(aia, &AuthenticationInApp::errorOccurred,
+  connect(aia, &AuthenticationInApp::errorOccurred, aia,
           [&](AuthenticationInApp::ErrorType error, uint32_t) {
             if (error == AuthenticationInApp::ErrorUnknownAccount) {
               qDebug() << "The account does not exist yet";
@@ -374,7 +374,7 @@ void TestSignUpAndIn::deleteAccount() {
   task.run();
 
   EventLoop loop;
-  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+  connect(aia, &AuthenticationInApp::stateChanged, aia, [&]() {
     if (aia->state() == AuthenticationInApp::StateCheckingAccount) {
       loop.exit();
     }
@@ -382,7 +382,7 @@ void TestSignUpAndIn::deleteAccount() {
   loop.exec();
   disconnect(aia, nullptr, nullptr, nullptr);
 
-  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+  connect(aia, &AuthenticationInApp::stateChanged, aia, [&]() {
     if (aia->state() == AuthenticationInApp::StateSignIn) {
       loop.exit();
     }
@@ -403,7 +403,7 @@ void TestSignUpAndIn::deleteAccount() {
     waitForTotpCodes();
   }
 
-  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+  connect(aia, &AuthenticationInApp::stateChanged, aia, [&]() {
     if (aia->state() == AuthenticationInApp::StateUnblockCodeNeeded) {
       fetchAndSendUnblockCode();
     } else if (aia->state() ==
@@ -419,7 +419,7 @@ void TestSignUpAndIn::deleteAccount() {
 
   aia->deleteAccount();
 
-  connect(&task, &Task::completed, [&]() { loop.exit(); });
+  connect(&task, &Task::completed, &task, [&]() { loop.exit(); });
   loop.exec();
   disconnect(aia, nullptr, nullptr, nullptr);
 }
@@ -437,7 +437,7 @@ void TestSignUpAndIn::waitForTotpCodes() {
 
   AuthenticationInApp* aia = AuthenticationInApp::instance();
 
-  connect(aia, &AuthenticationInApp::errorOccurred,
+  connect(aia, &AuthenticationInApp::errorOccurred, aia,
           [this](AuthenticationInApp::ErrorType error, uint32_t) {
             if (error == AuthenticationInApp::ErrorInvalidTotpCode) {
               qDebug() << "Invalid code. Let's send the right one";
@@ -470,7 +470,7 @@ void TestSignUpAndIn::waitForTotpCodes() {
             }
           });
 
-  connect(aia, &AuthenticationInApp::unitTestTotpCodeCreated,
+  connect(aia, &AuthenticationInApp::unitTestTotpCodeCreated, aia,
           [this](const QByteArray& data) {
             qDebug() << "Codes received";
             QJsonDocument json = QJsonDocument::fromJson(data);
@@ -479,7 +479,7 @@ void TestSignUpAndIn::waitForTotpCodes() {
             QVERIFY(!m_totpSecret.isEmpty());
           });
 
-  connect(aia, &AuthenticationInApp::stateChanged, [this]() {
+  connect(aia, &AuthenticationInApp::stateChanged, aia, [this]() {
     AuthenticationInApp* aia = AuthenticationInApp::instance();
     qDebug() << "Send wrong code:" << m_sendWrongTotpCode;
 
@@ -508,15 +508,16 @@ QString TestSignUpAndIn::fetchCode(const QString& code) {
 
     QByteArray jsonData;
     EventLoop loop;
-    connect(nr, &NetworkRequest::requestFailed,
+    connect(nr, &NetworkRequest::requestFailed, nr,
             [&](QNetworkReply::NetworkError, const QByteArray&) {
               qDebug() << "Failed to fetch the restmail.net content";
               loop.exit();
             });
-    connect(nr, &NetworkRequest::requestCompleted, [&](const QByteArray& data) {
-      jsonData = data;
-      loop.exit();
-    });
+    connect(nr, &NetworkRequest::requestCompleted, nr,
+            [&](const QByteArray& data) {
+              jsonData = data;
+              loop.exit();
+            });
     loop.exec();
 
     QJsonDocument doc(QJsonDocument::fromJson(jsonData));
@@ -532,7 +533,7 @@ QString TestSignUpAndIn::fetchCode(const QString& code) {
     qDebug() << "Email not received yet";
 
     QTimer timer;
-    connect(&timer, &QTimer::timeout, [&]() { loop.exit(); });
+    connect(&timer, &QTimer::timeout, &timer, [&]() { loop.exit(); });
     timer.setSingleShot(true);
     timer.start(2000 /* 2 seconds */);
     loop.exec();

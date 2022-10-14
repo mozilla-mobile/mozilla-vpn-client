@@ -79,7 +79,7 @@ bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
   }
 
   QJsonArray countriesArray = countries.toArray();
-  for (QJsonValue countryValue : countriesArray) {
+  for (const QJsonValue& countryValue : countriesArray) {
     if (!countryValue.isObject()) {
       return false;
     }
@@ -101,7 +101,9 @@ bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
     if (!cities.isArray()) {
       return false;
     }
-    for (QJsonValue cityValue : cities.toArray()) {
+
+    QJsonArray cityArray = cities.toArray();
+    for (const QJsonValue& cityValue : cityArray) {
       if (!cityValue.isObject()) {
         return false;
       }
@@ -110,7 +112,9 @@ bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
       if (!servers.isArray()) {
         return false;
       }
-      for (QJsonValue serverValue : servers.toArray()) {
+
+      QJsonArray serverArray = servers.toArray();
+      for (const QJsonValue& serverValue : serverArray) {
         Server server;
         if (!server.fromJson(serverValue.toObject())) {
           return false;
@@ -162,7 +166,7 @@ QVariant ServerCountryModel::data(const QModelIndex& index, int role) const {
       const QList<ServerCity>& cities = country.cities();
       for (const ServerCity& city : cities) {
         int activeServerCount = 0;
-        for (QString pubkey : city.servers()) {
+        for (const QString& pubkey : city.servers()) {
           if (m_servers.value(pubkey).cooldownTimeout() <= now) {
             activeServerCount++;
           }

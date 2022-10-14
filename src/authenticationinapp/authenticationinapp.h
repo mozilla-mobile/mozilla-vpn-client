@@ -162,7 +162,7 @@ class AuthenticationInApp final : public QObject {
  signals:
   void stateChanged();
 
-  void errorOccurred(ErrorType error, uint32_t retryAfter);
+  void errorOccurred(AuthenticationInApp::ErrorType error, uint32_t retryAfter);
 
   void emailAddressChanged();
   void attachedClientsChanged();

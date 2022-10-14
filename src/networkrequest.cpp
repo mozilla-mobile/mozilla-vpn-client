@@ -190,7 +190,7 @@ NetworkRequest* NetworkRequest::createForAdjustProxy(
   r->m_request.setUrl(url);
 
   QJsonObject headersObj;
-  for (QPair<QString, QString> header : headers) {
+  for (const QPair<QString, QString>& header : headers) {
     headersObj.insert(header.first, header.second);
   }
 
@@ -202,7 +202,7 @@ NetworkRequest* NetworkRequest::createForAdjustProxy(
   obj.insert("bodyParameters", bodyParameters);
 
   QJsonArray unknownParametersArray;
-  for (QString unknownParameter : unknownParameters) {
+  for (const QString& unknownParameter : unknownParameters) {
     unknownParametersArray.append(unknownParameter);
   }
   obj.insert("unknownParameters", unknownParametersArray);
@@ -251,7 +251,6 @@ NetworkRequest* NetworkRequest::createForDeviceRemoval(Task* parent,
   url.append("/api/v1/vpn/device/");
   url.append(QUrl::toPercentEncoding(pubKey));
 
-  QUrl u(url);
   r->m_request.setUrl(QUrl(url));
 
 #ifdef MVPN_DEBUG
@@ -1069,7 +1068,7 @@ void NetworkRequest::handleReply(QNetworkReply* reply) {
           &NetworkRequest::maybeDeleteLater);
   connect(m_reply, &QNetworkReply::downloadProgress, this,
           [&](qint64 bytesReceived, qint64 bytesTotal) {
-            requestUpdated(bytesReceived, bytesTotal, m_reply);
+            emit requestUpdated(bytesReceived, bytesTotal, m_reply);
           });
 }
 

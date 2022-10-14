@@ -45,7 +45,7 @@ class NetworkWatcherImpl : public QObject {
   void networkChanged(QString newBSSID);
 
   // Fired when the Device changed the Type of Transport
-  void transportChanged(TransportType transportType);
+  void transportChanged(NetworkWatcherImpl::TransportType transportType);
 
  private:
   bool m_active = false;

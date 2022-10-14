@@ -22,13 +22,17 @@ MacosSystemTrayNotificationHandler::MacosSystemTrayNotificationHandler(
     QObject* parent)
     : SystemTrayNotificationHandler(parent) {
   MVPN_COUNT_CTOR(MacosSystemTrayNotificationHandler);
-
-  setStatusMenu();
-  updateIcon();
 }
 
 MacosSystemTrayNotificationHandler::~MacosSystemTrayNotificationHandler() {
   MVPN_COUNT_DTOR(MacosSystemTrayNotificationHandler);
+}
+
+void MacosSystemTrayNotificationHandler::initialize() {
+  SystemTrayNotificationHandler::initialize();
+
+  setStatusMenu();
+  updateIcon();
 }
 
 void MacosSystemTrayNotificationHandler::setStatusMenu() {

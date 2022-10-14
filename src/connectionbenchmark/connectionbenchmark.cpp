@@ -79,7 +79,7 @@ void ConnectionBenchmark::start() {
   BenchmarkTaskPing* pingTask = new BenchmarkTaskPing();
   connect(pingTask, &BenchmarkTaskPing::finished, this,
           &ConnectionBenchmark::pingBenchmarked);
-  connect(pingTask->sentinel(), &BenchmarkTask::destroyed, this,
+  connect(pingTask->sentinel(), &BenchmarkTaskSentinel::sentinelDestroyed, this,
           [this, pingTask]() { m_benchmarkTasks.removeOne(pingTask); });
   m_benchmarkTasks.append(pingTask);
   TaskScheduler::scheduleTask(pingTask);
@@ -89,7 +89,8 @@ void ConnectionBenchmark::start() {
       new BenchmarkTaskDownload(m_downloadUrl);
   connect(downloadTask, &BenchmarkTaskDownload::finished, this,
           &ConnectionBenchmark::downloadBenchmarked);
-  connect(downloadTask->sentinel(), &BenchmarkTask::destroyed, this,
+  connect(downloadTask->sentinel(), &BenchmarkTaskSentinel::sentinelDestroyed,
+          this,
           [this, downloadTask]() { m_benchmarkTasks.removeOne(downloadTask); });
   m_benchmarkTasks.append(downloadTask);
   TaskScheduler::scheduleTask(downloadTask);

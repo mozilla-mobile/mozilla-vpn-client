@@ -20,7 +20,7 @@ void TestIpAddressLookup::checkIpAddressFailure() {
       TestHelper::NetworkConfig::Failure, QByteArray()));
 
   QEventLoop loop;
-  connect(&ial, &IpAddressLookup::ipAddressChecked, [&] { loop.exit(); });
+  connect(&ial, &IpAddressLookup::ipAddressChecked, &ial, [&] { loop.exit(); });
 
   ial.updateIpAddress();
   loop.exec();
@@ -63,7 +63,7 @@ void TestIpAddressLookup::checkIpAddressSucceess() {
       TestHelper::NetworkConfig(TestHelper::NetworkConfig::Success, json));
 
   QEventLoop loop;
-  connect(&ial, &IpAddressLookup::ipAddressChecked, [&] {
+  connect(&ial, &IpAddressLookup::ipAddressChecked, &ial, [&] {
     QFETCH(QString, ipAddress);
     QCOMPARE(ial.ipv4Address(), ipAddress);
 

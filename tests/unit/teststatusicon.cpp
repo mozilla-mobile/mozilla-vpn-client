@@ -31,7 +31,7 @@ void TestStatusIcon::basic() {
 
   int i = 0;
   QEventLoop loop;
-  connect(&si, &StatusIcon::iconUpdateNeeded, [&]() {
+  connect(&si, &StatusIcon::iconUpdateNeeded, &si, [&]() {
     if (i > 10) {
       si.disconnect();
       loop.exit();

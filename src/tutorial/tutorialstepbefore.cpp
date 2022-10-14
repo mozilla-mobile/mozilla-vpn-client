@@ -235,7 +235,8 @@ QList<TutorialStepBefore*> TutorialStepBefore::create(
     QObject* parent, const QString& elementForTooltip, const QJsonValue& json) {
   QList<TutorialStepBefore*> list;
 
-  for (QJsonValue value : json.toArray()) {
+  QJsonArray array = json.toArray();
+  for (const QJsonValue& value : array) {
     QJsonObject obj = value.toObject();
 
     TutorialStepBefore* tsb = nullptr;

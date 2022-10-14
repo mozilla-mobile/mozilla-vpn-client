@@ -37,6 +37,13 @@ NotificationHandler* s_instance = nullptr;
 
 // static
 NotificationHandler* NotificationHandler::create(QObject* parent) {
+  NotificationHandler* handler = createInternal(parent);
+  handler->initialize();
+  return handler;
+}
+
+// static
+NotificationHandler* NotificationHandler::createInternal(QObject* parent) {
 #if defined(MVPN_IOS)
   return new IOSNotificationHandler(parent);
 #endif
@@ -119,10 +126,9 @@ void NotificationHandler::showNotification() {
         //: Shown as message body in a notification. %1 and %3 are countries, %2
         //: and %4 are cities.
         message = qtTrId("vpn.systray.statusSwtich.message")
-                      .arg(m_switchingLocalizedServerCountry)
-                      .arg(m_switchingLocalizedServerCity)
-                      .arg(localizedCountryName)
-                      .arg(localizedCityName);
+                      .arg(m_switchingLocalizedServerCountry,
+                           m_switchingLocalizedServerCity, localizedCountryName,
+                           localizedCityName);
       } else {
         if (!SettingsHolder::instance()->connectionChangeNotification()) {
           // Notifications for ConnectionChange are disabled
@@ -134,8 +140,7 @@ void NotificationHandler::showNotification() {
         //: Shown as message body in a notification. %1 is the country, %2 is
         //: the city.
         message = qtTrId("vpn.systray.statusConnected.message")
-                      .arg(localizedCountryName)
-                      .arg(localizedCityName);
+                      .arg(localizedCountryName, localizedCityName);
       }
       break;
 
@@ -153,8 +158,7 @@ void NotificationHandler::showNotification() {
         //: Shown as message body in a notification. %1 is the country, %2 is
         //: the city.
         message = qtTrId("vpn.systray.statusDisconnected.message")
-                      .arg(localizedCountryName)
-                      .arg(localizedCityName);
+                      .arg(localizedCountryName, localizedCityName);
       }
       break;
 
