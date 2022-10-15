@@ -31,7 +31,7 @@ describe('Benchmark', function() {
     let state = await vpn.getElementProperty('VPNConnectionBenchmark', 'state');
     let speed = await vpn.getElementProperty('VPNConnectionBenchmark', 'speed');
     let bps = parseInt(
-        await vpn.getElementProperty('VPNConnectionBenchmark', 'bitsPerSec'));
+        await vpn.getElementProperty('VPNConnectionBenchmark', 'downloadBps'));
     assert.strictEqual(state, 'StateReady');
 
     assert.strictEqual(
@@ -133,7 +133,7 @@ describe('Benchmark', function() {
     await vpn.wait();
     let speed = await vpn.getElementProperty('VPNConnectionBenchmark', 'speed');
     let bps = parseInt(
-        await vpn.getElementProperty('VPNConnectionBenchmark', 'bitsPerSec'));
+        await vpn.getElementProperty('VPNConnectionBenchmark', 'downloadBps'));
     assert.strictEqual(
         speed,
         (bps >= 25000000) ? 'SpeedFast' :

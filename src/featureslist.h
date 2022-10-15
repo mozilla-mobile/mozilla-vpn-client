@@ -50,6 +50,14 @@ FEATURE_SIMPLE(appReview,      // Feature ID
                QStringList(),  // feature dependencies
                FeatureCallback_iosOrAndroid)
 
+FEATURE_SIMPLE(benchmarkUpload,     // Feature ID
+               "Benchmark Upload",  // Feature name
+               "2.10",              // released
+               true,                // Can be flipped on
+               true,                // Can be flipped off
+               QStringList(),       // feature dependencies
+               FeatureCallback_false)
+
 FEATURE_SIMPLE(bundleUpgrade,     // Feature ID
                "Bundle Upgrade",  // Feature name
                "2.10",            // released
