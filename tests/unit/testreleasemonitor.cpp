@@ -20,7 +20,7 @@ void TestReleaseMonitor::failure() {
   rm.runSoon();
 
   QEventLoop loop;
-  connect(&rm, &ReleaseMonitor::releaseChecked, [&] { loop.exit(); });
+  connect(&rm, &ReleaseMonitor::releaseChecked, &rm, [&] { loop.exit(); });
   loop.exec();
 }
 
@@ -108,7 +108,7 @@ void TestReleaseMonitor::success() {
       TestHelper::NetworkConfig(TestHelper::NetworkConfig::Success, json));
 
   QEventLoop loop;
-  connect(&rm, &ReleaseMonitor::releaseChecked, [&] { loop.exit(); });
+  connect(&rm, &ReleaseMonitor::releaseChecked, &rm, [&] { loop.exit(); });
   loop.exec();
 }
 

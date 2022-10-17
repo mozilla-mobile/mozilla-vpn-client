@@ -20,7 +20,7 @@ void TestTasks::account() {
     TaskAccount* task = new TaskAccount(ErrorHandler::PropagateError);
 
     QEventLoop loop;
-    connect(task, &Task::completed, [&]() { loop.exit(); });
+    connect(task, &Task::completed, task, [&]() { loop.exit(); });
 
     TaskScheduler::scheduleTask(task);
     loop.exec();
@@ -34,7 +34,7 @@ void TestTasks::account() {
     TaskAccount* task = new TaskAccount(ErrorHandler::DoNotPropagateError);
 
     QEventLoop loop;
-    connect(task, &Task::completed, [&]() { loop.exit(); });
+    connect(task, &Task::completed, task, [&]() { loop.exit(); });
 
     TaskScheduler::scheduleTask(task);
     loop.exec();
@@ -50,7 +50,7 @@ void TestTasks::servers() {
     TaskServers* task = new TaskServers(ErrorHandler::DoNotPropagateError);
 
     QEventLoop loop;
-    connect(task, &Task::completed, [&]() { loop.exit(); });
+    connect(task, &Task::completed, task, [&]() { loop.exit(); });
 
     TaskScheduler::scheduleTask(task);
     loop.exec();
@@ -64,7 +64,7 @@ void TestTasks::servers() {
     TaskServers* task = new TaskServers(ErrorHandler::PropagateError);
 
     QEventLoop loop;
-    connect(task, &Task::completed, [&]() { loop.exit(); });
+    connect(task, &Task::completed, task, [&]() { loop.exit(); });
 
     TaskScheduler::scheduleTask(task);
     loop.exec();
@@ -78,7 +78,7 @@ void TestTasks::addDevice_success() {
   TaskAddDevice* task = new TaskAddDevice("foobar", "id");
 
   QEventLoop loop;
-  connect(task, &Task::completed, [&]() { loop.exit(); });
+  connect(task, &Task::completed, task, [&]() { loop.exit(); });
 
   TaskScheduler::scheduleTask(task);
   loop.exec();
@@ -91,7 +91,7 @@ void TestTasks::addDevice_failure() {
   TaskAddDevice* task = new TaskAddDevice("foobar", "id");
 
   QEventLoop loop;
-  connect(task, &Task::completed, [&]() { loop.exit(); });
+  connect(task, &Task::completed, task, [&]() { loop.exit(); });
 
   TaskScheduler::scheduleTask(task);
   loop.exec();
@@ -140,7 +140,7 @@ void TestTasks::deletePolicy() {
       Task::NonDeletable);
 
   QEventLoop loop;
-  connect(sentinel, &Task::completed, [&]() { loop.exit(); });
+  connect(sentinel, &Task::completed, sentinel, [&]() { loop.exit(); });
 
   TaskScheduler::scheduleTask(task);
   loop.exec();

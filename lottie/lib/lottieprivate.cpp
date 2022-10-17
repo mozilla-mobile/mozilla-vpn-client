@@ -9,6 +9,7 @@
 #include "lottiestatus.h"
 
 #include <QFile>
+#include <QGlobalStatic>
 #include <QJSEngine>
 
 constexpr const char* FILLMODE_STRETCH = "stretch";
@@ -18,7 +19,7 @@ constexpr const char* FILLMODE_PRESERVEASPECTCROP = "preserveAspectCrop";
 
 namespace {
 static QJSEngine* s_engine = nullptr;
-static QString s_userAgent;
+Q_GLOBAL_STATIC(QString, s_userAgent);
 }  // namespace
 
 // static
@@ -30,7 +31,9 @@ void LottiePrivate::initialize(QJSEngine* engine, const QString& userAgent) {
   qmlRegisterModule("vpn.mozilla.lottie", 1, 0);
 
   Q_ASSERT(!userAgent.isEmpty());
-  s_userAgent = userAgent;
+  if (s_userAgent) {
+    *s_userAgent = userAgent;
+  }
 }
 
 // static
@@ -40,7 +43,9 @@ QJSEngine* LottiePrivate::engine() {
 }
 
 // static
-const QString& LottiePrivate::userAgent() { return s_userAgent; }
+const QString LottiePrivate::userAgent() {
+  return s_userAgent ? *s_userAgent : QString();
+}
 
 LottiePrivate::LottiePrivate(QQuickItem* parent)
     : QQuickItem(parent), m_loops(false) {}
@@ -129,8 +134,6 @@ void LottiePrivate::createAnimation() {
     m_status.error(errorMessage);
     return;
   }
-
-  QJSValue containerValue = engine()->toScriptValue(m_container);
 
   QJSValue rendererSettings = engine()->newObject();
   rendererSettings.setProperty("clearCanvas", true);
@@ -279,7 +282,7 @@ void LottiePrivate::clearCanvas() {
   if (ctx.isObject() && ctx.hasProperty("reset")) {
     QJSValue ctxReset = ctx.property("reset");
     Q_ASSERT(ctxReset.isCallable());
-    QJSValue ctx = ctxReset.callWithInstance(canvasValue, QList<QJSValue>());
+    ctxReset.callWithInstance(canvasValue, QList<QJSValue>());
   }
 
   runFunction(canvasValue, "requestPaint", QList<QJSValue>());

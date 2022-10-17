@@ -39,18 +39,17 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
   }
 
   m_appTracker = new AppTracker(this);
-  connect(m_appTracker,
-          SIGNAL(appLaunched(const QString&, const QString&, int)), this,
-          SLOT(appLaunched(const QString&, const QString&, int)));
-  connect(m_appTracker, SIGNAL(appTerminated(const QString&, const QString&)),
-          this, SLOT(appTerminated(const QString&, const QString&)));
+  connect(m_appTracker, SIGNAL(appLaunched(QString, QString, int)), this,
+          SLOT(appLaunched(QString, QString, int)));
+  connect(m_appTracker, SIGNAL(appTerminated(QString, QString)), this,
+          SLOT(appTerminated(QString, QString)));
 
   // Setup to track user login sessions.
   QDBusConnection bus = QDBusConnection::systemBus();
   bus.connect("", DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER, "UserNew", this,
-              SLOT(userCreated(uint, const QDBusObjectPath&)));
+              SLOT(userCreated(uint, QDBusObjectPath)));
   bus.connect("", DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER, "UserRemoved", this,
-              SLOT(userRemoved(uint, const QDBusObjectPath&)));
+              SLOT(userRemoved(uint, QDBusObjectPath)));
 
   QDBusMessage listUsersCall = QDBusMessage::createMethodCall(
       DBUS_LOGIN_SERVICE, DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER, "ListUsers");
@@ -149,7 +148,7 @@ void DBusService::userListCompleted(QDBusPendingCallWatcher* watcher) {
   QDBusPendingReply<UserDataList> reply = *watcher;
   if (reply.isValid()) {
     UserDataList list = reply.value();
-    for (auto user : list) {
+    for (const auto& user : list) {
       m_appTracker->userCreated(user.userid, user.path);
     }
   }

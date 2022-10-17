@@ -27,6 +27,9 @@ class MacosSystemTrayNotificationHandler
   virtual void updateIcon() override;
 
  private:
+  void initialize() override;
+
+ private:
   MacOSStatusIcon* m_macOSStatusIcon = nullptr;
 };
 

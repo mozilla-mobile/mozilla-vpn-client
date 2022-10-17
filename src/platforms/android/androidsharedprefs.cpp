@@ -75,7 +75,6 @@ QVariant AndroidSharedPrefs::GetValue(const QString& fileName,
         stringElementList.at(x);  // <string name="key">value</string>
     auto attribName = stringNode.attributes().namedItem("name");
     if (attribName.nodeValue() == prefKey) {
-      QString val = stringNode.nodeValue();
       auto textNode = stringNode.firstChild();
       if (!textNode.isText()) {
         logger.warning() << "Non TextNode Value? " << textNode.nodeValue();

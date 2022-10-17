@@ -74,7 +74,7 @@ class ErrorHandler final : public QObject {
   void errorHandle(ErrorType error);
 
   void hideAlert() { setAlert(NoAlert); }
-  Q_INVOKABLE void setAlert(AlertType alert);
+  Q_INVOKABLE void setAlert(ErrorHandler::AlertType alert);
 
 #define ERRORSTATE(name) \
   void name##Error();    \

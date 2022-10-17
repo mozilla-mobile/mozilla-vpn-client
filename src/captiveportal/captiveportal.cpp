@@ -33,7 +33,7 @@ bool CaptivePortal::fromJson(const QByteArray& data) {
   QStringList ipv6Addresses;
 
   QJsonArray array = json.array();
-  for (QJsonValue entry : array) {
+  for (const QJsonValue& entry : array) {
     if (!entry.isObject()) {
       logger.error() << "Object expected";
       return false;

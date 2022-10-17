@@ -66,7 +66,7 @@ int CommandStatus::run(QStringList& tokens) {
       task.run();
 
       QEventLoop loop;
-      QObject::connect(&task, &Task::completed, [&] { loop.exit(); });
+      QObject::connect(&task, &Task::completed, &task, [&] { loop.exit(); });
       loop.exec();
     }
 
@@ -112,7 +112,7 @@ int CommandStatus::run(QStringList& tokens) {
     Controller controller;
 
     QEventLoop loop;
-    QObject::connect(&controller, &Controller::stateChanged, [&] {
+    QObject::connect(&controller, &Controller::stateChanged, &controller, [&] {
       if (controller.state() == Controller::StateOff ||
           controller.state() == Controller::StateOn) {
         loop.exit();

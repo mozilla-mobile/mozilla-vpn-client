@@ -18,7 +18,7 @@ ComposerBlock* ComposerBlockText::create(Composer* composer,
                                          const QString& prefix,
                                          const QJsonObject& json) {
   ComposerBlockText* block = new ComposerBlockText(composer, blockId);
-  block->m_text.initialize(QString("%1.block.%2").arg(prefix).arg(blockId),
+  block->m_text.initialize(QString("%1.block.%2").arg(prefix, blockId),
                            json["content"].toString());
   return block;
 }
