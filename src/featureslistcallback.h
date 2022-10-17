@@ -34,6 +34,8 @@ bool FeatureCallback_iosOrAndroid() {
 #endif
 }
 
+bool FeatureCallback_inStaging() { return !Constants::inProduction(); }
+
 // Custom callback functions
 // -------------------------
 
