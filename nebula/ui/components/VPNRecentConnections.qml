@@ -80,13 +80,22 @@ ColumnLayout {
                         let serverCityName = servers[x].slice(0, index).trim();
 
                         connection.push({
-                             countryCode: countryCode,
-                             serverCityName: serverCityName,
-                             localizedCityName: VPNLocalizer.localizedCityName(countryCode, serverCityName)
-                         });
+                            countryCode: countryCode,
+                            serverCityName: serverCityName,
+                            localizedCityName: VPNLocalizer.localizedCityName(countryCode, serverCityName)
+                        });
                     }
 
-                    append({isMultiHop, connection });
+                    const [{ firstCityLocalizedName: localizedCityName }, secondServer] = connection;
+                    const accessibleLabel = secondServer
+                        ? `${firstCityLocalizedName} ${VPNl18n.MultiHopFeatureMultiHopArrowAltText} ${secondServer.localizedCityName}`
+                        : firstCityLocalizedName;
+
+                    repeaterModel.append({
+                        isMultiHop,
+                        connection,
+                        accessibleLabel
+                    });
                 }
             }
         }
@@ -99,8 +108,7 @@ ColumnLayout {
             delegate: VPNClickableRow {
                 id: del
 
-                // MULTIHOP TODO - Use real string
-                accessibleName: "TODO"
+                accessibleName: accessibleLabel
 
                 Layout.fillWidth: true
                 Layout.preferredHeight: VPNTheme.theme.rowHeight
