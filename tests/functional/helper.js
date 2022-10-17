@@ -468,13 +468,24 @@ module.exports = {
     const filePath = process.env.ARTIFACT_DIR + '/base/' + name + '.png';
     const baseDir = process.env.ARTIFACT_DIR + '/base';
     const newDir = process.env.ARTIFACT_DIR + '/new';
+    const diffDir = process.env.ARTIFACT_DIR + '/diff';
     const data = await this.screenCapture();
     const buffer = Buffer.from(data, 'base64');
     const imageName = `${newDir}/${name}.png`;
     
     if (!fs.existsSync(baseDir)) {
       fs.mkdirSync(baseDir);
-      console.log('if dir doesnt exist');
+      console.log('create base snapshots dir');
+    }
+
+    if(!fs.existsSync(newDir)){
+      fs.writeFileSync(newDir);
+      console.log('create new snapshots dir');
+    }
+
+    if(!fs.existsSync(diffDir)){
+      fs.writeFileSync(diffDir);
+      console.log('create diff snapshots dir');
     }
     
     if(!fs.existsSync(filePath)){

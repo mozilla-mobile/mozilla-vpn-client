@@ -72,16 +72,16 @@ describe('Add-ons functionality', function () {
     await vpn.waitForElementAndClick(elements.NAVIGATION_BAR_MESSAGES);
     await vpn.hasElement(elements.MESSAGE_INBOX_VIEW);
     await vpn.wait(4000);
-    await vpn.waitForElementAndClick(elements.MESSAGE_INBOX_VIEW);
+    await vpn.waitForElementAndClick(elements.NAVIGATION_BAR_MESSAGES);
     assert(await vpn.toMatchSnapshot(this.tests[0].title));
    });
 
-   it.only('Verify two add-on message', async () => {    
+   it('Verify two add-on message', async () => {    
     await actions.general.sendText(elements.CUSTOM_ADDON_TEXTFIELD, 'https://bakulf.github.io/vpn-addons-test//messages_2/');
     await vpn.waitForElementAndClick(elements.NAVIGATION_BAR_MESSAGES);
     await vpn.hasElement(elements.MESSAGE_INBOX_VIEW);
     await vpn.wait(4000);
-    await vpn.waitForElementAndClick(elements.MESSAGE_INBOX_VIEW);
+    await vpn.waitForElementAndClick(elements.NAVIGATION_BAR_MESSAGES);
     assert(await vpn.toMatchSnapshot(this.tests[0].title));
    });
 
@@ -90,16 +90,17 @@ describe('Add-ons functionality', function () {
     await vpn.waitForElementAndClick(elements.NAVIGATION_BAR_MESSAGES);
     await vpn.hasElement(elements.MESSAGE_INBOX_VIEW);
     await vpn.wait(4000);
-    await vpn.waitForElementAndClick(elements.MESSAGE_INBOX_VIEW);
+    await vpn.waitForElementAndClick(elements.NAVIGATION_BAR_MESSAGES);
     assert(await vpn.toMatchSnapshot(this.tests[0].title));
    });
 
-   it('Verify four add-on message', async () => {
+   it.only('Verify four add-on message', async () => {
     await actions.general.sendText(elements.CUSTOM_ADDON_TEXTFIELD, 'https://bakulf.github.io/vpn-addons-test//messages_4/');
     await vpn.waitForElementAndClick(elements.NAVIGATION_BAR_MESSAGES);
     await vpn.hasElement(elements.MESSAGE_INBOX_VIEW);
     await vpn.wait(4000);
-    await vpn.waitForElementAndClick(elements.MESSAGE_INBOX_VIEW);
+    await vpn.waitForElementAndClick(elements.NAVIGATION_BAR_MESSAGES);
+    console.log('line 102');
     assert(await vpn.toMatchSnapshot(this.tests[0].title));
    });
 
@@ -116,7 +117,7 @@ describe('Add-ons functionality', function () {
     await vpn.waitForElementAndClick(elements.NAVIGATION_BAR_MESSAGES);
     await vpn.hasElement(elements.MESSAGE_INBOX_VIEW);
     await vpn.wait(4000);
-    await vpn.waitForElementAndClick(elements.MESSAGE_INBOX_VIEW);
+    await vpn.waitForElementAndClick(elements.NAVIGATION_BAR_MESSAGES);
     assert(await vpn.toMatchSnapshot(this.tests[0].title));
    });
 
