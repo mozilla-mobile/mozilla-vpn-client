@@ -15,125 +15,132 @@ describe('Add-ons functionality', function () {
         await actions.settings.goToSettings()
         await actions.settings.goToGetHelpView();
         await actions.settings.activateDeveloperOptions()
-        await actions.settings.enableCustomAddOns() 
         await actions.settings.useStagingServers()
+        await actions.settings.enableCustomAddOns()
    });   
  
    it('Verify empty manifest add-on', async () => {
-    await actions.general.sendText('customAddOnUrlTextField', 'https://bakulf.github.io/vpn-addons-test//empty_manifest/');
+    await actions.general.sendText(elements.CUSTOM_ADDON_TEXTFIELD, 'https://bakulf.github.io/vpn-addons-test//empty_manifest/');
     await vpn.wait(3000)
     await vpn.waitForElement(elements.NAVIGATION_BAR_MESSAGES);
-    await vpn.clickOnElement(elements.NAVIGATION_BAR_MESSAGES);s    
+    await vpn.clickOnElement(elements.NAVIGATION_BAR_MESSAGES);
     await vpn.wait(3000)
    });
    
    it('Verify invalid manifest add-on', async () => {
-    await actions.general.sendText('customAddOnUrlTextField', 'https://bakulf.github.io/vpn-addons-test//broken_manifest/');
+    await actions.general.sendText(elements.CUSTOM_ADDON_TEXTFIELD, 'https://bakulf.github.io/vpn-addons-test//broken_manifest/');
     await vpn.wait(3000)
     await vpn.waitForElement(elements.NAVIGATION_BAR_MESSAGES);
-    await vpn.clickOnElement(elements.NAVIGATION_BAR_MESSAGES);s    
+    await vpn.clickOnElement(elements.NAVIGATION_BAR_MESSAGES);
     await vpn.wait(3000)
    });
 
    it('Verify not found manifest add-on', async () => {
-    await actions.general.sendText('customAddOnUrlTextField', 'https://bakulf.github.io/vpn-addons-test//404_manifest/');
+    await actions.general.sendText(elements.CUSTOM_ADDON_TEXTFIELD, 'https://bakulf.github.io/vpn-addons-test//404_manifest/');
     await vpn.wait(3000)
     await vpn.waitForElement(elements.NAVIGATION_BAR_MESSAGES);
-    await vpn.clickOnElement(elements.NAVIGATION_BAR_MESSAGES);s    
+    await vpn.clickOnElement(elements.NAVIGATION_BAR_MESSAGES);
     await vpn.wait(3000)
    });
 
    it('Verify one-addOn-only manifest add-on', async () => {
-    await actions.general.sendText('customAddOnUrlTextField', 'https://bakulf.github.io/vpn-addons-test//single_manifest/');
+    await actions.general.sendText(elements.CUSTOM_ADDON_TEXTFIELD, 'https://bakulf.github.io/vpn-addons-test//single_manifest/');
     await vpn.wait(3000)
     await vpn.waitForElement(elements.NAVIGATION_BAR_MESSAGES);
-    await vpn.clickOnElement(elements.NAVIGATION_BAR_MESSAGES);s    
+    await vpn.clickOnElement(elements.NAVIGATION_BAR_MESSAGES);
     await vpn.wait(3000)
    });
 
    it('Verify manifest with missing add-on files(1 add-on OK, 1 add-on missing) add-on', async () => {
-    await actions.general.sendText('customAddOnUrlTextField', 'https://bakulf.github.io/vpn-addons-test//missing_addon/');
+    await actions.general.sendText(elements.CUSTOM_ADDON_TEXTFIELD, 'https://bakulf.github.io/vpn-addons-test//missing_addon/');
     await vpn.wait(3000)
     await vpn.waitForElement(elements.NAVIGATION_BAR_MESSAGES);
-    await vpn.clickOnElement(elements.NAVIGATION_BAR_MESSAGES);s    
+    await vpn.clickOnElement(elements.NAVIGATION_BAR_MESSAGES);
     await vpn.wait(3000)
    });
 
    it('Verify invalid hash add-on', async () => {
-    await actions.general.sendText('customAddOnUrlTextField', 'https://bakulf.github.io/vpn-addons-test//broken_addon/');
+    await actions.general.sendText(elements.CUSTOM_ADDON_TEXTFIELD, 'https://bakulf.github.io/vpn-addons-test//broken_addon/');
     await vpn.wait(3000)
     await vpn.waitForElement(elements.NAVIGATION_BAR_MESSAGES);
-    await vpn.clickOnElement(elements.NAVIGATION_BAR_MESSAGES);s    
+    await vpn.clickOnElement(elements.NAVIGATION_BAR_MESSAGES);
     await vpn.wait(3000)
    });
 
-   it.only('Verify one add-on message add-on', async () => {
-    await actions.general.sendText('customAddOnUrlTextField', 'https://bakulf.github.io/vpn-addons-test//messages_1/');
-    await vpn.waitForElementAndClick(elements.NAVIGATION_BAR_MESSAGES)
-    await vpn.wait(3000)
+   it('Verify one add-on message add-on', async () => {    
+    await actions.general.sendText(elements.CUSTOM_ADDON_TEXTFIELD, 'https://bakulf.github.io/vpn-addons-test//messages_1/');
+    await vpn.waitForElementAndClick(elements.NAVIGATION_BAR_MESSAGES);
+    await vpn.hasElement(elements.MESSAGE_INBOX_VIEW);
+    await vpn.wait(4000);
+    await vpn.waitForElementAndClick(elements.MESSAGE_INBOX_VIEW);
+    assert(await vpn.toMatchSnapshot(this.tests[0].title));
    });
 
-   it('Verify two add-on message', async () => {
-    await actions.general.sendText('customAddOnUrlTextField', 'https://bakulf.github.io/vpn-addons-test//messages_2/');
-    await vpn.wait(3000)
-    await vpn.waitForElement(elements.NAVIGATION_BAR_MESSAGES);
-    await vpn.clickOnElement(elements.NAVIGATION_BAR_MESSAGES);s    
-    await vpn.wait(3000)
+   it.only('Verify two add-on message', async () => {    
+    await actions.general.sendText(elements.CUSTOM_ADDON_TEXTFIELD, 'https://bakulf.github.io/vpn-addons-test//messages_2/');
+    await vpn.waitForElementAndClick(elements.NAVIGATION_BAR_MESSAGES);
+    await vpn.hasElement(elements.MESSAGE_INBOX_VIEW);
+    await vpn.wait(4000);
+    await vpn.waitForElementAndClick(elements.MESSAGE_INBOX_VIEW);
+    assert(await vpn.toMatchSnapshot(this.tests[0].title));
    });
 
    it('Verify three add-on message', async () => {
-    await actions.general.sendText('customAddOnUrlTextField', 'https://bakulf.github.io/vpn-addons-test//messages_3/');
-    await vpn.wait(3000)
-    await vpn.waitForElement(elements.NAVIGATION_BAR_MESSAGES);
-    await vpn.clickOnElement(elements.NAVIGATION_BAR_MESSAGES);s    
-    await vpn.wait(3000)
+    await actions.general.sendText(elements.CUSTOM_ADDON_TEXTFIELD, 'https://bakulf.github.io/vpn-addons-test//messages_3/');
+    await vpn.waitForElementAndClick(elements.NAVIGATION_BAR_MESSAGES);
+    await vpn.hasElement(elements.MESSAGE_INBOX_VIEW);
+    await vpn.wait(4000);
+    await vpn.waitForElementAndClick(elements.MESSAGE_INBOX_VIEW);
+    assert(await vpn.toMatchSnapshot(this.tests[0].title));
    });
 
    it('Verify four add-on message', async () => {
-    await actions.general.sendText('customAddOnUrlTextField', 'https://bakulf.github.io/vpn-addons-test//messages_4/');
-    await vpn.wait(3000)
-    await vpn.waitForElement(elements.NAVIGATION_BAR_MESSAGES);
-    await vpn.clickOnElement(elements.NAVIGATION_BAR_MESSAGES);s    
-    await vpn.wait(3000)
+    await actions.general.sendText(elements.CUSTOM_ADDON_TEXTFIELD, 'https://bakulf.github.io/vpn-addons-test//messages_4/');
+    await vpn.waitForElementAndClick(elements.NAVIGATION_BAR_MESSAGES);
+    await vpn.hasElement(elements.MESSAGE_INBOX_VIEW);
+    await vpn.wait(4000);
+    await vpn.waitForElementAndClick(elements.MESSAGE_INBOX_VIEW);
+    assert(await vpn.toMatchSnapshot(this.tests[0].title));
    });
 
    it('Verify messages with locale conditions', async () => {
-    await actions.general.sendText('customAddOnUrlTextField', 'https://bakulf.github.io/vpn-addons-test//messages_locale/');
+    await actions.general.sendText(elements.CUSTOM_ADDON_TEXTFIELD, 'https://bakulf.github.io/vpn-addons-test//messages_locale/');
     await vpn.wait(3000)
     await vpn.waitForElement(elements.NAVIGATION_BAR_MESSAGES);
-    await vpn.clickOnElement(elements.NAVIGATION_BAR_MESSAGES);s    
+    await vpn.clickOnElement(elements.NAVIGATION_BAR_MESSAGES);
     await vpn.wait(3000)
    });
 
    it('Verify messages with dates', async () => {
-    await actions.general.sendText('customAddOnUrlTextField', 'https://bakulf.github.io/vpn-addons-test//messages_dates/');
-    await vpn.wait(3000)
-    await vpn.waitForElement(elements.NAVIGATION_BAR_MESSAGES);
-    await vpn.clickOnElement(elements.NAVIGATION_BAR_MESSAGES);s    
-    await vpn.wait(3000)
+    await actions.general.sendText(elements.CUSTOM_ADDON_TEXTFIELD, 'https://bakulf.github.io/vpn-addons-test//messages_dates/');
+    await vpn.waitForElementAndClick(elements.NAVIGATION_BAR_MESSAGES);
+    await vpn.hasElement(elements.MESSAGE_INBOX_VIEW);
+    await vpn.wait(4000);
+    await vpn.waitForElementAndClick(elements.MESSAGE_INBOX_VIEW);
+    assert(await vpn.toMatchSnapshot(this.tests[0].title));
    });
 
    it('Verify advanced tips and tricks', async () => {
-    await actions.general.sendText('customAddOnUrlTextField', 'https://bakulf.github.io/vpn-addons-test//advanced_tips_and_tricks/');
+    await actions.general.sendText(elements.CUSTOM_ADDON_TEXTFIELD, 'https://bakulf.github.io/vpn-addons-test//advanced_tips_and_tricks/');
     await vpn.wait(3000)
     await vpn.waitForElement(elements.NAVIGATION_BAR_MESSAGES);
-    await vpn.clickOnElement(elements.NAVIGATION_BAR_MESSAGES);s    
+    await vpn.clickOnElement(elements.NAVIGATION_BAR_MESSAGES);
     await vpn.wait(3000)
    });
 
    it('Verify privacy bundle message', async () => {
-    await actions.general.sendText('customAddOnUrlTextField', 'https://bakulf.github.io/vpn-addons-test//messages_bundle/');
+    await actions.general.sendText(elements.CUSTOM_ADDON_TEXTFIELD, 'https://bakulf.github.io/vpn-addons-test//messages_bundle/');
     await vpn.wait(3000)
     await vpn.waitForElement(elements.NAVIGATION_BAR_MESSAGES);
-    await vpn.clickOnElement(elements.NAVIGATION_BAR_MESSAGES);s    
+    await vpn.clickOnElement(elements.NAVIGATION_BAR_MESSAGES);
     await vpn.wait(3000)
    });
 
    it('Verify long title add-on', async () => {
-    await actions.general.sendText('customAddOnUrlTextField', 'https://bakulf.github.io/vpn-addons-test//messages_long/');
+    await actions.general.sendText(elements.CUSTOM_ADDON_TEXTFIELD, 'https://bakulf.github.io/vpn-addons-test//messages_long/');
     await vpn.wait(3000)
     await vpn.waitForElement(elements.NAVIGATION_BAR_MESSAGES);
-    await vpn.clickOnElement(elements.NAVIGATION_BAR_MESSAGES);s    
+    await vpn.clickOnElement(elements.NAVIGATION_BAR_MESSAGES);
     await vpn.wait(3000)
    });
 });

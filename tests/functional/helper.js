@@ -3,8 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const {URL} = require('node:url');
-const http = require('http')
+const { URL } = require('node:url');
+const http = require('http');
+const PNG = require('pngjs').PNG;
+const pixelmatch = require('pixelmatch');
+const fs = require('fs');
 
 let client;
 
@@ -457,6 +460,68 @@ module.exports = {
         json.type === 'screen_capture' && !('error' in json),
         `Command failed: ${json.error}`);
     return json.value;
+  },
+
+  async screenshot(testTitle){
+    const title = testTitle.toLowerCase();
+    const name = title.replace(/[^a-z0-9]/g, '_');
+    const filePath = process.env.ARTIFACT_DIR + '/base/' + name + '.png';
+    const baseDir = process.env.ARTIFACT_DIR + '/base';
+    const newDir = process.env.ARTIFACT_DIR + '/new';
+    const data = await this.screenCapture();
+    const buffer = Buffer.from(data, 'base64');
+    const imageName = `${newDir}/${name}.png`;
+    
+    if (!fs.existsSync(baseDir)) {
+      fs.mkdirSync(baseDir);
+      console.log('if dir doesnt exist');
+    }
+    
+    if(!fs.existsSync(filePath)){
+      fs.writeFileSync(filePath, buffer);
+      console.log('no base snapshot exists');
+    }
+
+    fs.writeFileSync(imageName, buffer);
+    return name;
+  },
+  
+  async toMatchSnapshot(testTitle){
+    const imageName = await this.screenshot(testTitle)
+    if(!imageName){
+      return false;
+    }
+    
+    const baseDir = process.env.ARTIFACT_DIR + '/base/' + imageName + '.png';
+    const newDir = process.env.ARTIFACT_DIR + '/new/' + imageName + '.png';
+    const diffDir = `${process.env.ARTIFACT_DIR}/diff/${imageName}.png`
+    let diff
+
+    try {
+      // define images to be compared
+      const baseSnapshot = PNG.sync.read(fs.readFileSync(baseDir));
+      const newSnapshot = PNG.sync.read(fs.readFileSync(newDir));
+
+      // get width and height from base and diff
+      const {width, height} = baseSnapshot;
+      diff = new PNG({width, height});
+
+      // compare the images with default threshold, create diff image if failure and return true
+      const numbDiffPixels = pixelmatch(baseSnapshot.data, newSnapshot.data, diff.data, width, height, { threshold: 0.1 });
+      
+      // check pixel diff, create diff image and return false if true
+      if(numbDiffPixels > 200){
+        fs.writeFileSync(diffDir, PNG.sync.write(diff));
+        return false
+      } else {
+        return true
+      }
+
+    } catch(err){
+
+      // log error message and false if 
+      console.log('Error during image comparison: ', err)      
+    }    
   },
 
   async openSettings() {

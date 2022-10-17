@@ -24,8 +24,7 @@ const selectCityFromList = async (cityId, countryId) => {
 }
 
 const goToSettings = async () => {
-    await vpn.waitForElement(elements.NAVIGATION_BAR_SETTINGS);
-    await vpn.clickOnElement(elements.NAVIGATION_BAR_SETTINGS);
+    await vpn.openSettings();
 }
 
 const activateDeveloperOptions = async () => {
@@ -43,11 +42,16 @@ const activateDeveloperOptions = async () => {
 }
 
 const enableCustomAddOns = async () => {
-    await vpn.flipFeatureOn('addonSignature')
+    if (await vpn.getElementProperty(elements.CUSTOM_ADDON_ROW, 'isChecked') === "false") {
+        console.log('checking addon checkbox');
+        await vpn.waitForElementAndClick('customAddOnCheckBoxRow/checkbox')
+    }
+    await vpn.wait(7000)
 }
 
 const useStagingServers = async () => {
-    if (await vpn.getElementProperty(elements.STAGING_SERVER_ROW, 'isChecked') === "false") {        
+    if (await vpn.getElementProperty(elements.STAGING_SERVER_ROW, 'isChecked') === "false") {
+        console.log('checking staging server checkbox');
         await vpn.waitForElementAndClick(elements.STAGING_SERVER_CHECKBOX);
     }
     await vpn.wait(9000)
@@ -63,12 +67,13 @@ const goToGetHelpView = async () => {
     await vpn.waitForElementProperty(elements.GET_HELPMENU_BACK_BUTTON, 'visible', 'true');
 }
 
-const sendText = async (id, text) => {    
-    await vpn.setElementProperty(id, 'text', 's', text);    
+const sendText = async (id, text) => {
+    await vpn.waitForElement(id)
+    await vpn.setElementProperty(id, 'text', 's', text);
 }
 
 const clickElement = async (id) => {
-    // wait for element
+    // conditionally wait for element
     // wait for animation if any
     // click
 }
