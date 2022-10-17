@@ -52,7 +52,7 @@ class NotificationHandler : public QObject {
  signals:
   void notificationShown(const QString& title, const QString& message);
 
-  void notificationClicked(Message message);
+  void notificationClicked(NotificationHandler::Message message);
 
  protected:
   explicit NotificationHandler(QObject* parent);
@@ -60,7 +60,11 @@ class NotificationHandler : public QObject {
   virtual void notify(Message type, const QString& title,
                       const QString& message, int timerMsec) = 0;
 
+  virtual void initialize() {}
+
  private:
+  static NotificationHandler* createInternal(QObject* parent);
+
   virtual void notifyInternal(Message type, const QString& title,
                               const QString& message, int timerMsec);
 

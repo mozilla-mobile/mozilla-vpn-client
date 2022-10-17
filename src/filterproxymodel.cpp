@@ -52,17 +52,19 @@ void FilterProxyModel::setSource(QAbstractListModel* sourceModel) {
 
   if (sourceModel) {
     connect(sourceModel, &QAbstractItemModel::rowsInserted, this,
-            &FilterProxyModel::countChanged);
+            &FilterProxyModel::sourceChanged);
     connect(sourceModel, &QAbstractItemModel::rowsRemoved, this,
-            &FilterProxyModel::countChanged);
+            &FilterProxyModel::sourceChanged);
     connect(sourceModel, &QAbstractItemModel::modelReset, this,
-            &FilterProxyModel::countChanged);
+            &FilterProxyModel::sourceChanged);
     connect(sourceModel, &QAbstractItemModel::layoutChanged, this,
-            &FilterProxyModel::countChanged);
+            &FilterProxyModel::sourceChanged);
     m_sourceModelRoleNames = sourceModel->roleNames();
   } else {
     m_sourceModelRoleNames.clear();
   }
+
+  emit sourceChanged();
 }
 
 QVariant FilterProxyModel::get(int pos) const {

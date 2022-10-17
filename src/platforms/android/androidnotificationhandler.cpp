@@ -18,13 +18,16 @@ Logger logger(LOG_ANDROID, "AndroidNotificationHandler");
 AndroidNotificationHandler::AndroidNotificationHandler(QObject* parent)
     : NotificationHandler(parent) {
   MVPN_COUNT_CTOR(AndroidNotificationHandler);
+}
 
+AndroidNotificationHandler::~AndroidNotificationHandler() {
+  MVPN_COUNT_DTOR(AndroidNotificationHandler);
+}
+
+void AndroidNotificationHandler::initialize() {
   connect(AndroidVPNActivity::instance(), &AndroidVPNActivity::serviceConnected,
           this, &AndroidNotificationHandler::applyStrings,
           Qt::QueuedConnection);
-}
-AndroidNotificationHandler::~AndroidNotificationHandler() {
-  MVPN_COUNT_DTOR(AndroidNotificationHandler);
 }
 
 void AndroidNotificationHandler::notify(NotificationHandler::Message type,

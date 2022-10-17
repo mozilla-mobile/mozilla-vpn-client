@@ -82,7 +82,7 @@ int CommandLineParser::parse(int argc, char* argv[]) {
   QVector<Command*> commands = Command::commands(this);
   for (Command* command : commands) {
     if (command->name() == tokens[0]) {
-      tokens[0] = QString("%1 %2").arg(argv[0]).arg(tokens[0]);
+      tokens[0] = QString("%1 %2").arg(argv[0], tokens[0]);
       return command->run(tokens);
     }
   }
@@ -189,7 +189,7 @@ void CommandLineParser::showHelp(QObject* parent, const QString& app,
     stream << Qt::endl;
     stream << "List of options:" << Qt::endl;
     for (const Option* o : options) {
-      QString desc = QString("-%1 | --%2").arg(o->m_short).arg(o->m_long);
+      QString desc = QString("-%1 | --%2").arg(o->m_short, o->m_long);
       stream << "  " << desc << " ";
 
       for (int i = desc.length(); i < 20; ++i) {

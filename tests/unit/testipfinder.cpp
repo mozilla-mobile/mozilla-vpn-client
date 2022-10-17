@@ -55,7 +55,7 @@ void TestIpFinder::ipv4AndIpv6() {
   TaskIPFinder* ipFinder = new TaskIPFinder();
 
   connect(
-      ipFinder, &TaskIPFinder::operationCompleted,
+      ipFinder, &TaskIPFinder::operationCompleted, ipFinder,
       [&](const QString& ipv4, const QString& ipv6, const QString& country) {
         if (ipv4Expected) {
           QVERIFY(ipv4 == "43" || ipv4 == "42");

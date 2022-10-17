@@ -22,12 +22,9 @@ void TestUrlOpener::urlQueryReplacement_data() {
              "d=__"
              "VPN_PLATFORM__&e=__VPN_ARCH__&f=__VPN_GRAPHICSAPI__")
       << QUrl(QString("http://example.com?a=%1&b=%2&c=%3&d=%4&e=%5&f=%6")
-                  .arg(Env::versionString())
-                  .arg(Env::buildNumber())
-                  .arg(Env::osVersion())
-                  .arg(Env::platform())
-                  .arg(Env::architecture())
-                  .arg(MozillaVPN::graphicsApi()));
+                  .arg(Env::versionString(), Env::buildNumber(),
+                       Env::osVersion(), Env::platform(), Env::architecture(),
+                       MozillaVPN::graphicsApi()));
 }
 
 void TestUrlOpener::urlQueryReplacement() {

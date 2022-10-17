@@ -44,7 +44,11 @@
 
 IOSNotificationHandler::IOSNotificationHandler(QObject* parent) : NotificationHandler(parent) {
   MVPN_COUNT_CTOR(IOSNotificationHandler);
+}
 
+IOSNotificationHandler::~IOSNotificationHandler() { MVPN_COUNT_DTOR(IOSNotificationHandler); }
+
+void IOSNotificationHandler::initialize() {
   UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
   [center requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert |
                                            UNAuthorizationOptionBadge)
@@ -55,8 +59,6 @@ IOSNotificationHandler::IOSNotificationHandler(QObject* parent) : NotificationHa
                           }
                         }];
 }
-
-IOSNotificationHandler::~IOSNotificationHandler() { MVPN_COUNT_DTOR(IOSNotificationHandler); }
 
 void IOSNotificationHandler::notify(NotificationHandler::Message type, const QString& title,
                                     const QString& message, int timerMsec) {

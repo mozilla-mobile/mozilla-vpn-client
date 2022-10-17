@@ -48,7 +48,7 @@ bool Keys::fromSettings() {
     }
 
     QJsonArray devicesArray = devices.toArray();
-    for (QJsonValue deviceValue : devicesArray) {
+    for (const QJsonValue& deviceValue : devicesArray) {
       Device device;
       if (!device.fromJson(deviceValue)) {
         return false;

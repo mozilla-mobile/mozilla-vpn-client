@@ -26,7 +26,7 @@ class BenchmarkTask : public Task {
   const BenchmarkTaskSentinel* sentinel() const { return &m_sentinel; }
 
  signals:
-  void stateChanged(State state);
+  void stateChanged(BenchmarkTask::State state);
 
  private:
   void setState(State state);

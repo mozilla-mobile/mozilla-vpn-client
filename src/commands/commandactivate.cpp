@@ -36,7 +36,7 @@ int CommandActivate::run(QStringList& tokens) {
     }
 
     QEventLoop loop;
-    QObject::connect(vpn.controller(), &Controller::stateChanged, [&] {
+    QObject::connect(vpn.controller(), &Controller::stateChanged, &vpn, [&] {
       if (vpn.controller()->state() == Controller::StateOff ||
           vpn.controller()->state() == Controller::StateOn) {
         loop.exit();
@@ -51,7 +51,7 @@ int CommandActivate::run(QStringList& tokens) {
     // completed.
     if (vpn.controller()->state() != Controller::StateOff &&
         vpn.controller()->state() != Controller::StateOn) {
-      QObject::connect(vpn.controller(), &Controller::stateChanged, [&] {
+      QObject::connect(vpn.controller(), &Controller::stateChanged, &vpn, [&] {
         if (vpn.controller()->state() == Controller::StateOff ||
             vpn.controller()->state() == Controller::StateOn) {
           loop.exit();
@@ -67,7 +67,7 @@ int CommandActivate::run(QStringList& tokens) {
       return 0;
     }
 
-    QObject::connect(vpn.controller(), &Controller::stateChanged, [&] {
+    QObject::connect(vpn.controller(), &Controller::stateChanged, &vpn, [&] {
       if (vpn.controller()->state() == Controller::StateOff ||
           vpn.controller()->state() == Controller::StateOn) {
         loop.exit();

@@ -44,7 +44,7 @@ EchoConnection::EchoConnection(QTcpSocket* socket, int fuzzy)
     : m_socket(socket), m_fuzzy(fuzzy) {
   m_timer.setSingleShot(true);
 
-  connect(&m_timer, &QTimer::timeout, [this]() {
+  connect(&m_timer, &QTimer::timeout, &m_timer, [this]() {
     Q_ASSERT(!m_buffer.isEmpty());
     m_socket->write(m_buffer.constData(), 1);
     m_socket->flush();
@@ -52,7 +52,7 @@ EchoConnection::EchoConnection(QTcpSocket* socket, int fuzzy)
     maybeStartTimer();
   });
 
-  connect(m_socket, &QTcpSocket::readyRead, [this]() {
+  connect(m_socket, &QTcpSocket::readyRead, m_socket, [this]() {
     QByteArray buffer = m_socket->readAll();
     if (!m_fuzzy) {
       m_socket->write(buffer);

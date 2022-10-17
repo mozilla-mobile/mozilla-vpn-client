@@ -34,7 +34,7 @@ TutorialStep* TutorialStep::create(AddonTutorial* parent,
     return nullptr;
   }
 
-  stepId = QString("tutorial.%1.step.%2").arg(tutorialId).arg(stepId);
+  stepId = QString("tutorial.%1.step.%2").arg(tutorialId, stepId);
 
   QString element = obj["element"].toString();
   if (element.isEmpty()) {

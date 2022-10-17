@@ -33,9 +33,7 @@ class SystemTrayNotificationHandler : public NotificationHandler {
 
   virtual void updateIcon();
 
- protected:
-  QScopedPointer<QMenu> m_menu;
-  QSystemTrayIcon* m_systemTrayIcon;
+  void initialize() override;
 
  private:
   void createStatusMenu();
@@ -43,6 +41,10 @@ class SystemTrayNotificationHandler : public NotificationHandler {
   void maybeActivated(QSystemTrayIcon::ActivationReason reason);
 
   void updateContextMenu();
+
+ protected:
+  QScopedPointer<QMenu> m_menu;
+  QSystemTrayIcon* m_systemTrayIcon;
 
  private:
   QAction* m_statusLabel = nullptr;

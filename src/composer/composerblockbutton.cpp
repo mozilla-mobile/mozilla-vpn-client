@@ -68,7 +68,7 @@ ComposerBlock* ComposerBlockButton::create(Composer* composer, Addon* addon,
   ComposerBlockButton* block =
       new ComposerBlockButton(composer, addon, blockId, style, function);
 
-  block->m_text.initialize(QString("%1.block.%2").arg(prefix).arg(blockId),
+  block->m_text.initialize(QString("%1.block.%2").arg(prefix, blockId),
                            json["content"].toString());
 
   return block;

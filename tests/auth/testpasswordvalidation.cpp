@@ -16,7 +16,7 @@ class EventLoop final : public QEventLoop {
  public:
   void exec() {
     QTimer timer;
-    connect(&timer, &QTimer::timeout, [&]() {
+    connect(&timer, &QTimer::timeout, &timer, [&]() {
       qDebug() << "TIMEOUT!";
       exit();
     });
@@ -119,7 +119,7 @@ void TestPasswordValidation::emailPassword() {
   task.run();
 
   EventLoop loop;
-  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+  connect(aia, &AuthenticationInApp::stateChanged, aia, [&]() {
     if (aia->state() == AuthenticationInApp::StateStart) {
       loop.exit();
     }
@@ -133,7 +133,7 @@ void TestPasswordValidation::emailPassword() {
 
   // Account
   aia->checkAccount(emailAddress);
-  connect(aia, &AuthenticationInApp::stateChanged, [&]() {
+  connect(aia, &AuthenticationInApp::stateChanged, aia, [&]() {
     QVERIFY(aia->state() != AuthenticationInApp::StateSignIn);
     if (aia->state() == AuthenticationInApp::StateSignUp) {
       loop.exit();

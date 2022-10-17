@@ -32,7 +32,7 @@ void TestBridge::app_ping_success() {
 
   // Let's turn on a "VPN client" (echo-server)...
   QEventLoop loop;
-  connect(&hs, &HelperServer::ready, [&] { loop.exit(); });
+  connect(&hs, &HelperServer::ready, &hs, [&] { loop.exit(); });
   loop.exec();
 
   // let's wait for a client-up message
@@ -80,7 +80,7 @@ void TestBridge::async_disconnection() {
   hs.start();
 
   QEventLoop loop;
-  connect(&hs, &HelperServer::ready, [&] { loop.exit(); });
+  connect(&hs, &HelperServer::ready, &hs, [&] { loop.exit(); });
   loop.exec();
 
   QVERIFY(waitForConnection());
@@ -113,7 +113,7 @@ void TestBridge::fuzzy() {
 
     // Let's turn on a "VPN client" (echo-server)...
     QEventLoop loop;
-    connect(&hs, &HelperServer::ready, [&] { loop.exit(); });
+    connect(&hs, &HelperServer::ready, &hs, [&] { loop.exit(); });
     loop.exec();
 
     // let's wait for a client-up message

@@ -178,38 +178,38 @@ void TestAdjust::stateMachine_data() {
 }
 
 void TestAdjust::stateMachine() {
-  AdjustProxyPackageHandler* packageHandler = new AdjustProxyPackageHandler();
+  AdjustProxyPackageHandler packageHandler;
 
-  QCOMPARE(packageHandler->getProcessingState(),
+  QCOMPARE(packageHandler.getProcessingState(),
            AdjustProxyPackageHandler::ProcessingState::NotStarted);
 
   QFETCH(QByteArray, firstLine);
-  packageHandler->processData(firstLine);
+  packageHandler.processData(firstLine);
 
   QFETCH(QString, method);
   QFETCH(QString, path);
-  QCOMPARE(packageHandler->getMethod(), method);
-  QCOMPARE(packageHandler->getPath(), path);
-  QCOMPARE(packageHandler->getProcessingState(),
+  QCOMPARE(packageHandler.getMethod(), method);
+  QCOMPARE(packageHandler.getPath(), path);
+  QCOMPARE(packageHandler.getProcessingState(),
            AdjustProxyPackageHandler::ProcessingState::FirstLineDone);
 
   QFETCH(QByteArray, headers);
   QFETCH(QByteArray, body);
-  packageHandler->processData(headers);
+  packageHandler.processData(headers);
 
   QFETCH(PairList, parsedHeaders);
-  QCOMPARE(packageHandler->getHeaders(), parsedHeaders);
+  QCOMPARE(packageHandler.getHeaders(), parsedHeaders);
   if (body.isEmpty()) {
-    QCOMPARE(packageHandler->getProcessingState(),
+    QCOMPARE(packageHandler.getProcessingState(),
              AdjustProxyPackageHandler::ProcessingState::ProcessingDone);
     return;
   }
-  QCOMPARE(packageHandler->getProcessingState(),
+  QCOMPARE(packageHandler.getProcessingState(),
            AdjustProxyPackageHandler::ProcessingState::HeadersDone);
 
-  packageHandler->processData(body);
+  packageHandler.processData(body);
 
-  QCOMPARE(packageHandler->getProcessingState(),
+  QCOMPARE(packageHandler.getProcessingState(),
            AdjustProxyPackageHandler::ProcessingState::ProcessingDone);
 }
 

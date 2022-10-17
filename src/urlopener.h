@@ -41,7 +41,7 @@ class UrlOpener final : public QObject {
   static UrlOpener* instance();
   ~UrlOpener();
 
-  Q_INVOKABLE void openLink(LinkType linkType);
+  Q_INVOKABLE void openLink(UrlOpener::LinkType linkType);
   Q_INVOKABLE void openUrl(const QString& linkUrl);
 
   void open(QUrl url, bool addEmailAddress = false);
