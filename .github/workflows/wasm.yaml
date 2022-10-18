@@ -48,7 +48,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Setup emsdk
-        uses: mymindstorm/setup-emsdk@v11
+        uses: mymindstorm/setup-emsdk@v7
 
       - name: Compiling
         shell: bash
