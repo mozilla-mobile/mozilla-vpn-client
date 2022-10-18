@@ -687,12 +687,6 @@ void MozillaVPN::deviceRemovalCompleted(const QString& publicKey) {
 void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
   logger.debug() << "Remove device";
 
-  const Device* device =
-      m_private->m_deviceModel.deviceFromPublicKey(publicKey);
-  if (!device) {
-    return;
-  }
-
   // Let's emit a signal to inform the user about the starting of the device
   // removal.  The front-end code will show a loading icon or something
   // similar.
