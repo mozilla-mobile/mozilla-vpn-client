@@ -48,7 +48,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Setup emsdk
-        uses: mymindstorm/setup-emsdk@v7
+        uses: mymindstorm/setup-emsdk@v11
 
       - name: Compiling
         shell: bash
@@ -81,7 +81,7 @@ jobs:
           echo $TEST_LIST | jq
 
       - name: Uploading
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
             name: WebAssembly Build Qt6
             path: wasm
@@ -102,7 +102,7 @@ jobs:
 
       - name: Cache build
         id: cache-build
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: build/
           key: ${{ github.sha }}
@@ -114,7 +114,7 @@ jobs:
           npm install
 
       - name: Download a Build Artifact
-        uses: actions/download-artifact@v2.0.8
+        uses: actions/download-artifact@v3
         with:
           name: WebAssembly Build Qt6
           # Destination path

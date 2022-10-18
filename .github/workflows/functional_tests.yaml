@@ -132,7 +132,7 @@ jobs:
               -o ${{runner.temp}}/artifacts/functional_lcov.info
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         if: steps.generateGrcov.outcome == 'success'
         with:
           directory: .
@@ -142,7 +142,7 @@ jobs:
           verbose: true
 
       - name: Uploading artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
           name: ${{matrix.test.name}} Logs

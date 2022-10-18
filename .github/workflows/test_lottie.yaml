@@ -33,7 +33,7 @@ jobs:
 
       - name: Cache grcov
         id: cache-grcov
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: grcov-build/
           key: ${{runner.os}}-grcov-v0.8.9
@@ -64,7 +64,7 @@ jobs:
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/lottie_lcov.info
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           directory: .
           flags: lottie_tests
@@ -93,7 +93,7 @@ jobs:
 
       - name: Cache grcov
         id: cache-grcov
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: grcov-build/
           key: ${{runner.os}}-grcov-v0.8.9
@@ -111,7 +111,7 @@ jobs:
           ./scripts/tests/lottie_tests.sh --grcov lottie_lcov.info
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           directory: .
           flags: lottie_tests

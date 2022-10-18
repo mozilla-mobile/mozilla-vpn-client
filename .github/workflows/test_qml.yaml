@@ -61,7 +61,7 @@ jobs:
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/qml_lcov.info
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           directory: .
           flags: qml_tests
@@ -119,7 +119,7 @@ jobs:
           ./scripts/tests/qml_tests.sh --grcov qml_lcov.info
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           directory: .
           flags: qml_tests
