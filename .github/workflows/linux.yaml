@@ -55,7 +55,7 @@ jobs:
       QTPPA: ${{ matrix.config.ppa }}
     steps:
       - name: Download Source Package
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
             name: Sources
 
@@ -94,7 +94,7 @@ jobs:
 
     steps:
       - name: Download Source Package
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
             name: Sources
 
