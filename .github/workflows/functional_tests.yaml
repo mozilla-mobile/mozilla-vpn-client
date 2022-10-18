@@ -127,6 +127,7 @@ jobs:
         continue-on-error: true # Ignore GRCOV parsing errors, see github.com/mozilla/grcov/issues/570
         timeout-minutes: 1 # Give GRCOV a short timeout in case it hangs after a panic
         run: |
+          chmod +x ./build/bin/grcov
           ./build/bin/grcov build/cmake/src/CMakeFiles/mozillavpn.dir \
               -s src -t lcov --branch --ignore-not-existing \
               -o ${{runner.temp}}/artifacts/functional_lcov.info
