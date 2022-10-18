@@ -352,12 +352,17 @@ void MozillaVPN::setState(State state) {
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::appStep, {{"state", QVariant::fromValue(state).toString()}});
 
-  // If we are activating the app, let's initialize the controller.
-  if (m_state == StateMain) {
-    m_private->m_controller.initialize();
+  // If we have a token, we can start periodic operations.
+  // If the timer is already started, this is a no-op.
+  if (SettingsHolder::instance()->hasToken()) {
     startSchedulingPeriodicOperations();
   } else {
     stopSchedulingPeriodicOperations();
+  }
+
+  // If we are activating the app, let's initialize the controller.
+  if (m_state == StateMain) {
+    m_private->m_controller.initialize();
   }
 }
 
@@ -682,12 +687,6 @@ void MozillaVPN::deviceRemovalCompleted(const QString& publicKey) {
 void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
   logger.debug() << "Remove device";
 
-  const Device* device =
-      m_private->m_deviceModel.deviceFromPublicKey(publicKey);
-  if (!device) {
-    return;
-  }
-
   // Let's emit a signal to inform the user about the starting of the device
   // removal.  The front-end code will show a loading icon or something
   // similar.
@@ -809,6 +808,11 @@ void MozillaVPN::cancelAuthentication() {
 bool MozillaVPN::checkCurrentDevice() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
+
+  // We are not able to check the device at this stage.
+  if (m_state == StateDeviceLimit) {
+    return false;
+  }
 
   if (m_private->m_deviceModel.hasCurrentDevice(keys())) {
     return true;
