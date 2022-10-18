@@ -1,3 +1,5 @@
+HA!
+
 # Mozilla VPN
 
 >_One tap to privacy
