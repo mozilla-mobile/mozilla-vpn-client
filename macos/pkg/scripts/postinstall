@@ -4,6 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+echo "A" >> /tmp/LOG.txt
 set -eu
 
 LOG_DIR=/var/log/mozillavpn
@@ -11,10 +12,12 @@ LOG_DIR=/var/log/mozillavpn
 mkdir -p $LOG_DIR
 exec 2>&1 > $LOG_DIR/postinstall.log
 
+echo "B" >> /tmp/LOG.txt
 echo "Running postinstall at $(date)"
 
 DAEMON_PLIST_PATH="/Library/LaunchDaemons/org.mozilla.macos.FirefoxVPN.daemon.plist"
 
+echo "C" >> /tmp/LOG.txt
 DAEMON_PLIST=$(cat <<-EOM
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -45,21 +48,26 @@ DAEMON_PLIST=$(cat <<-EOM
 EOM
 )
 
+echo "D" >> /tmp/LOG.txt
 pkill -x "Mozilla VPN" || echo "Unable to kill GUI, not running?"
 sleep 1
 
+echo "E" >> /tmp/LOG.txt
 UPDATING=
 if [ -f "$DAEMON_PLIST_PATH" ]; then
+echo "F" >> /tmp/LOG.txt
   UPDATING=1
   # Load the daemon
   echo "Update detected - Unloading the Daemon"
   launchctl unload -w $DAEMON_PLIST_PATH
 fi
 
+echo "G" >> /tmp/LOG.txt
 echo "$DAEMON_PLIST" > $DAEMON_PLIST_PATH
 echo "Loading the Daemon at $DAEMON_PLIST_PATH"
 launchctl load -w $DAEMON_PLIST_PATH
 
+echo "H" >> /tmp/LOG.txt
 if [ -f "/Applications/Mozilla VPN.app/Contents/Resources/utils/mozillavpn.json" ]; then
   echo "Install the firefox native messaging manifest"
   mkdir -p "/Library/Application Support/Mozilla/NativeMessagingHosts"
@@ -74,10 +82,13 @@ if [ -f "/Applications/Mozilla VPN.app/Contents/Resources/utils/mozillavpn.json"
   cp -f "/Applications/Mozilla VPN.app/Contents/Resources/utils/mozillavpn.json" "/Library/Application Support/Chromium/NativeMessagingHosts/mozillavpn.json"
 fi
 
+echo "I" >> /tmp/LOG.txt
 echo "Install Complete Run the app"
 if [ "$UPDATING" ]; then
   open -a "/Applications/Mozilla VPN.app" --args ui --updated
 else
   open -a "/Applications/Mozilla VPN.app"
 fi
+echo "L" >> /tmp/LOG.txt
+sleep 120
 exit 0
