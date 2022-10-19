@@ -199,8 +199,6 @@ void TestTasks::deletePolicy_group() {
 }
 
 void TestTasks::deletePolicy_async() {
-  QList<int> sequence;
-
   class TaskAsync final : public Task {
    public:
     TaskAsync(Task::DeletePolicy deletePolicy)
@@ -226,4 +224,99 @@ void TestTasks::deletePolicy_async() {
   TaskScheduler::deleteTasks();
   loop.exec();
 }
+
+void TestTasks::deleteTasks() {
+  QStringList sequence;
+
+  class TaskAsync final : public Task {
+   public:
+    TaskAsync(Task::DeletePolicy deletePolicy, QStringList* sequence,
+              const QString& name)
+        : Task("TaskAsync"),
+          m_deletePolicy(deletePolicy),
+          m_sequence(sequence),
+          m_name(name) {}
+
+    void run() override {
+      QTimer::singleShot(500, this, [this]() {
+        m_sequence->append(m_name);
+        emit completed();
+      });
+    }
+
+    DeletePolicy deletePolicy() const override { return m_deletePolicy; }
+
+   private:
+    DeletePolicy m_deletePolicy = Deletable;
+    QStringList* m_sequence = nullptr;
+    QString m_name;
+  };
+
+  Task* t1 = new TaskAsync(Task::Deletable, &sequence, "t1");
+  TaskScheduler::scheduleTask(t1);
+
+  Task* t2 = new TaskAsync(Task::NonDeletable, &sequence, "t2");
+  TaskScheduler::scheduleTask(t2);
+
+  TaskScheduler::deleteTasks();
+
+  Task* t3 = new TaskAsync(Task::NonDeletable, &sequence, "t3");
+
+  QEventLoop loop;
+  connect(t3, &Task::completed, [&]() { loop.exit(); });
+
+  TaskScheduler::scheduleTask(t3);
+  loop.exec();
+
+  QCOMPARE(sequence.length(), 2);
+  QCOMPARE(sequence.at(0), "t2");
+  QCOMPARE(sequence.at(1), "t3");
+}
+
+void TestTasks::forceDeleteTasks() {
+  QStringList sequence;
+
+  class TaskAsync final : public Task {
+   public:
+    TaskAsync(Task::DeletePolicy deletePolicy, QStringList* sequence,
+              const QString& name)
+        : Task("TaskAsync"),
+          m_deletePolicy(deletePolicy),
+          m_sequence(sequence),
+          m_name(name) {}
+
+    void run() override {
+      QTimer::singleShot(500, this, [this]() {
+        m_sequence->append(m_name);
+        emit completed();
+      });
+    }
+
+    DeletePolicy deletePolicy() const override { return m_deletePolicy; }
+
+   private:
+    DeletePolicy m_deletePolicy = Deletable;
+    QStringList* m_sequence = nullptr;
+    QString m_name;
+  };
+
+  Task* t1 = new TaskAsync(Task::Deletable, &sequence, "t1");
+  TaskScheduler::scheduleTask(t1);
+
+  Task* t2 = new TaskAsync(Task::NonDeletable, &sequence, "t2");
+  TaskScheduler::scheduleTask(t2);
+
+  TaskScheduler::forceDeleteTasks();
+
+  Task* t3 = new TaskAsync(Task::NonDeletable, &sequence, "t3");
+
+  QEventLoop loop;
+  connect(t3, &Task::completed, [&]() { loop.exit(); });
+  TaskScheduler::scheduleTask(t3);
+  loop.exec();
+
+  QCOMPARE(sequence.length(), 1);
+  QCOMPARE(sequence.at(0), "t3");
+}
+
 static TestTasks s_testTasks;
