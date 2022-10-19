@@ -31,8 +31,6 @@ SystemTrayNotificationHandler::~SystemTrayNotificationHandler() {
 }
 
 void SystemTrayNotificationHandler::initialize() {
-  MozillaVPN* vpn = MozillaVPN::instance();
-
   m_menu.reset(new QMenu());
   m_systemTrayIcon = new QSystemTrayIcon(parent());
 
