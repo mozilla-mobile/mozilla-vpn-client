@@ -14,7 +14,7 @@ import compat 0.1
 RadioDelegate {
     property var value
     property alias iconSource: img.source
-    property var heightWidth: 30
+    property var iconSize: 30
     property var uiState: VPNTheme.theme.uiState
 
     id: radio
@@ -23,18 +23,30 @@ RadioDelegate {
     implicitWidth: VPNTheme.theme.rowHeight
     activeFocusOnTab: true
     focus: true
+
     Component.onCompleted: {
         state = uiState.stateDefault
     }
 
-    indicator: VPNIcon {
-        id: img
+    indicator: Item {
         anchors.centerIn: parent
-        antialiasing: true
-        sourceSize.height: heightWidth
-        sourceSize.width: heightWidth
-    }
+        height: iconSize
+        width: iconSize
 
+        VPNIcon {
+            id: img
+            antialiasing: true
+            sourceSize.height: parent.height
+            sourceSize.width: parent.width
+        }
+
+        VPNColorOverlay {
+            anchors.fill: parent
+            source: img
+            color: VPNTheme.colors.blue
+            visible: radio.checked
+        }
+    }
 
     Keys.onPressed: event => {
         if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
@@ -46,28 +58,26 @@ RadioDelegate {
             radio.clicked();
     }
 
-
     background: VPNFocusOutline {
-            opacity: radio.checked || radio.activeFocus ? 1 : 0
-            color: VPNTheme.theme.transparent
-            border.width: 4
-            border.color: VPNTheme.theme.blueFocusOutline
-            anchors.margins: 2
-            radius: height
+        opacity: radio.checked || radio.activeFocus || radio.state === uiState.stateHovered ? 1 : 0
+        color: VPNTheme.theme.transparent
+        border.width: VPNTheme.theme.focusBorderWidth * 2
+        border.color: VPNTheme.theme.blueFocusOutline
+        anchors.margins: VPNTheme.theme.focusBorderWidth 
+        radius: height
 
-            Behavior on opacity {
-                PropertyAnimation {
-                    duration: 100
-                }
+        Behavior on opacity {
+            PropertyAnimation {
+                duration: 100
             }
-        }
-
-    VPNMouseArea {
-        id: mouseArea
-        onPressedChanged: if (pressed) radio.forceActiveFocus()
-        onMouseAreaClicked: function() {
-            radio.checked = !radio.checked;
         }
     }
 
+    VPNMouseArea {
+        id: mouseArea
+        onMouseAreaClicked: function() {
+            radio.forceActiveFocus();
+            radio.checked = !radio.checked;
+        }
+    }
 }
