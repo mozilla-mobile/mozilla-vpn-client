@@ -855,15 +855,8 @@ void MozillaVPN::logout() {
   }
 
   if (m_private->m_deviceModel.hasCurrentDevice(keys())) {
-    TaskScheduler::scheduleTask(new TaskGroup({
-        new TaskRemoveDevice(keys()->publicKey()),
-
-        // The previous task can take a bit of time to complete. In case the
-        // user quits the app in the meantime, we will be in a unpredicable
-        // state where maybe the user is still logged in. Let's remove the token
-        // basically in parallel to the device-removal task.
-        new TaskFunction([this]() { m_private->m_keys.forgetKeys(); }),
-    }));
+    TaskScheduler::scheduleTask(new TaskRemoveDevice(keys()->publicKey()));
+    m_private->m_keys.forgetKeys();
   }
 
   TaskScheduler::scheduleTask(new TaskFunction([this]() { reset(false); }));
