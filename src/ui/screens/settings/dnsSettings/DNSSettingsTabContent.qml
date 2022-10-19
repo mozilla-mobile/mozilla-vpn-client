@@ -20,7 +20,9 @@ VPNFlickable {
     property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
     property alias settingsListModel: repeater.model
 
-    flickContentHeight: col.height
+    anchors.fill: parent
+
+    flickContentHeight: col.height + col.anchors.topMargin
 
     ColumnLayout {
         id: col
@@ -146,6 +148,8 @@ VPNFlickable {
                             right: undefined
                         }
                         Layout.topMargin: VPNTheme.theme.listSpacing
+
+                        visible: ipInput.valueInvalid && ipInput.visible
 
                         messages: [
                             {

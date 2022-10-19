@@ -31,7 +31,7 @@ VPNFlickable {
     id: vpnFlickable
 
     Component.onCompleted: {
-        flickContentHeight = col.childrenRect.height
+        flickContentHeight = col.implicitHeight + col.anchors.topMargin
     }
 
     VPNHeaderLink {

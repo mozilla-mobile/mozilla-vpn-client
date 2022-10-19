@@ -129,8 +129,6 @@ VPNViewBase {
                             }
                         }
                     }
-
-                    VPNFooterMargin {}
                 }
             },
 
@@ -162,8 +160,6 @@ VPNViewBase {
                             customFilter: section.filter
                         }
                     }
-
-                    VPNFooterMargin {}
                 }
             },
 
@@ -195,8 +191,6 @@ VPNViewBase {
                             customFilter: section.filter
                         }
                     }
-
-                    VPNFooterMargin {}
                 }
             }
         ]
