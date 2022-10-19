@@ -860,6 +860,7 @@ void MozillaVPN::logout() {
 
   if (m_private->m_deviceModel.hasCurrentDevice(keys())) {
     TaskScheduler::scheduleTask(new TaskRemoveDevice(keys()->publicKey()));
+    m_private->m_keys.forgetKeys();
   }
 
   TaskScheduler::scheduleTask(new TaskFunction([this]() { reset(false); }));
