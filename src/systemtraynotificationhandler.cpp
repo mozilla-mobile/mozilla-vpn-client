@@ -32,7 +32,6 @@ SystemTrayNotificationHandler::~SystemTrayNotificationHandler() {
 
 void SystemTrayNotificationHandler::initialize() {
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   m_menu.reset(new QMenu());
   m_systemTrayIcon = new QSystemTrayIcon(parent());
@@ -112,7 +111,6 @@ void SystemTrayNotificationHandler::setStatusMenu() {
   logger.debug() << "Set status menu";
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   // TODO: Check if method is called on these devices.
 #if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
@@ -241,7 +239,6 @@ void SystemTrayNotificationHandler::updateIcon() {
   logger.debug() << "Update icon";
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
 #if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
   m_systemTrayIcon->setIcon(vpn->statusIcon()->icon());

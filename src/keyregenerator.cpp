@@ -22,7 +22,6 @@ KeyRegenerator::KeyRegenerator() {
   MVPN_COUNT_CTOR(KeyRegenerator);
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   connect(vpn, &MozillaVPN::stateChanged, this, &KeyRegenerator::stateChanged);
   connect(vpn->controller(), &Controller::stateChanged, this,
@@ -47,7 +46,6 @@ void KeyRegenerator::stateChanged() {
   }
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   if (vpn->state() != MozillaVPN::StateMain ||
       vpn->controller()->state() != Controller::StateOff) {

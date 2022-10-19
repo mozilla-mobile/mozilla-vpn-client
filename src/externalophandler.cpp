@@ -49,7 +49,6 @@ void ExternalOpHandler::request(Op op) {
   logger.debug() << "Op request received";
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   for (Blocker* blocker : m_blockers) {
     if (blocker->maybeBlockRequest(op)) {
