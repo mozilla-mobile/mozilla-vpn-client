@@ -25,8 +25,6 @@ WebUpdater::~WebUpdater() {
 }
 
 void WebUpdater::start(Task*) {
-  MozillaVPN* vpn = MozillaVPN::instance();
-
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(FallbackInBrowser).toString()}});
