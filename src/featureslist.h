@@ -88,7 +88,7 @@ FEATURE_SIMPLE(freeTrial,             // Feature ID
                FeatureCallback_true,  // Can be flipped on
                FeatureCallback_true,  // Can be flipped off
                QStringList(),         // feature dependencies
-               FeatureCallback_iosOrAndroid)
+               FeatureCallback_freeTrial)
 
 FEATURE_SIMPLE(inAppAccountCreate,                  // Feature ID
                "In-app Account Cretion",            // Feature name
