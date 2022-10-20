@@ -389,10 +389,7 @@ Addon::Addon(QObject* parent, const QString& manifestFileName,
   }
 }
 
-Addon::~Addon() {
-  MVPN_COUNT_DTOR(Addon);
-  disable();
-}
+Addon::~Addon() { MVPN_COUNT_DTOR(Addon); }
 
 void Addon::updateAddonState(State newState) {
   Q_ASSERT(newState != Unknown);
