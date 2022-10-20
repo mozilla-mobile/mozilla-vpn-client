@@ -137,6 +137,9 @@ multiHopFeature:
     value: To
     comment: This is alt text for an arrow showing the multi-hop route between servers. e.g. Atlanta TO Copenhagen
   serverSearchResultsError: No results. Try a different search
+  accessibleNameRecentConnection:
+    value: "%1 to %2"
+    comment: Accessible label that is used for recent multi-hop server connections. “%1” reprensents the entry and “%2” the exit server.
 
 inAppSupportWorkflow:
   supportNavLinkText: Contact support

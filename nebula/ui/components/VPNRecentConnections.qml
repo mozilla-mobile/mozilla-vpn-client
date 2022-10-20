@@ -86,9 +86,11 @@ ColumnLayout {
                         });
                     }
 
-                    const [{ firstCityLocalizedName: localizedCityName }, secondServer] = connection;
+                    const [{ localizedCityName: firstCityLocalizedName }, secondServer] = connection;
                     const accessibleLabel = secondServer
-                        ? `${firstCityLocalizedName} ${VPNl18n.MultiHopFeatureMultiHopArrowAltText} ${secondServer.localizedCityName}`
+                        ? VPNl18n.MultiHopFeatureAccessibleNameRecentConnection
+                            .arg(firstCityLocalizedName)
+                            .arg(secondServer.localizedCityName)
                         : firstCityLocalizedName;
 
                     repeaterModel.append({
