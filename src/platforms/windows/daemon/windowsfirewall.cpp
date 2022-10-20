@@ -183,12 +183,13 @@ bool WindowsFirewall::enableKillSwitch(int vpnAdapterIndex) {
   }
 
   logger.info() << "Enabling Killswitch Using Adapter:" << vpnAdapterIndex;
+  QFileInfo appFileInfo(qApp->applicationFilePath());
   FW_OK(allowTrafficOfAdapter(vpnAdapterIndex, MED_WEIGHT,
                               "Allow usage of VPN Adapter"));
   FW_OK(allowDHCPTraffic(MED_WEIGHT, "Allow DHCP Traffic"));
   FW_OK(allowHyperVTraffic(MED_WEIGHT, "Allow Hyper-V Traffic"));
   FW_OK(allowTrafficForAppOnAll(getCurrentPath(), MAX_WEIGHT,
-                                "Allow all for Mozilla VPN.exe"));
+                                "Allow all for MozillaVPN.exe"));
   FW_OK(blockTrafficOnPort(53, MED_WEIGHT, "Block all DNS"));
   FW_OK(
       allowLoopbackTraffic(MED_WEIGHT, "Allow Loopback traffic on device %1"));

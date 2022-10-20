@@ -5,7 +5,7 @@
 add_definitions(-DWIN32_LEAN_AND_MEAN)
 
 set_target_properties(mozillavpn PROPERTIES
-    OUTPUT_NAME "Mozilla VPN"
+    OUTPUT_NAME "MozillaVPN"
     VERSION ${CMAKE_PROJECT_VERSION}
     WIN32_EXECUTABLE ON
 )
