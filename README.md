@@ -54,12 +54,14 @@ In order to build this application, you need to install a few dependencies.
 
 Qt6 can be installed in a number of ways:
 
-- download a binary package or the installer from the official QT website:
+- Download a binary package or the installer from the official QT website:
   https://www.qt.io/download - this is the recommended way for Android and iOS
   builds.
-- use a package manager. For instance, we use
+  - Recommened Qt version is the most recent LTS. 
+  - Be sure to select the `Qt 5 Compatibility Components` and `Qt Network Authorization` optional components.
+- Use a package manager. For instance, we use
   [aqt](https://github.com/miurahr/aqtinstall) for WASM builds.
-- compile Qt6 (dynamically or statically). If you want to choose this path, you
+- Compile Qt6 (dynamically or statically). If you want to choose this path, you
   can use our bash script for macOS and Linux:
 ```bash
 ./scripts/utils/qt6_compile.sh </qt6/source/code/path> </destination/path>
@@ -327,11 +329,15 @@ adb install .tmp/src/android-build/build/outputs/apk/debug/android-build-debug.a
 - perl: http://strawberryperl.com/
 - nasm: https://www.nasm.us/
 - Visual Studio 2019: https://visualstudio.microsoft.com/vs/
+  - Select the `Desktop development with C++` and `Python development` workloads.
 - OpenSSL: https://www.openssl.org/source/
+  - On windows you can choose to bundle OpenSSL when installing python. Skip this step if you have done so.  
 - Go: https://golang.org/dl/
 
 We strongly recommend using CMake version 3.21 or later when building with Visual
 Studio. Earlier versions of CMake have bugs that can cause the build to hang.
+
+It is also recommended to use the `x64 Native Tools Command Prompt for VS 2019` for CLI builds on Windows. 
 
 2. Create a build directory, and configure the project for building using `cmake`.
 ```bash
@@ -348,6 +354,13 @@ when building:
 ```bash
 cmake --build build --config Release --target msi
 ```
+5.  **Optional**: To build and debug through the VS 2019 UI, follow these steps:
+    - Open VS2019
+    - From the top menu, select File -> Open -> CMake
+    - Choose the top-level `CMakeLists.txt` of the VPN project.
+    - Choose `x64-Debug` as the build config
+    - Choose `src/Mozilla VPN.exe` as the startup item.
+    - Click on the green play button to launch the client attached to a debugger.
 
 ### How to build from source code for WASM
 
