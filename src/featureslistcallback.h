@@ -164,4 +164,12 @@ bool FeatureCallback_unsecuredNetworkNotification() {
 #endif
 }
 
+bool FeatureCallback_freeTrial() {
+#if defined(MVPN_IOS)
+  return true;
+#else
+  return false;
+#endif
+}
+
 #endif  // FEATURELISTCALLBACK_H
