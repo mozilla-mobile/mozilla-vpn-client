@@ -13,7 +13,6 @@ StackView {
 
     onCurrentItemChanged: {
         var objString = currentItem.toString().split("(")[0];
-        VPN.currentView = objString.split("_QML")[0];
     }
 
     Component.onCompleted: function(){
