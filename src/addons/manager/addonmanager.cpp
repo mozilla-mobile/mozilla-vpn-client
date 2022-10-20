@@ -206,15 +206,8 @@ void AddonManager::unload(const QString& addonId) {
     return;
   }
 
-  bool addonEnabled = addon->enabled();
-  if (addonEnabled) {
-    beginResetModel();
-  }
-
-  m_addons.remove(addonId);
-
-  if (addonEnabled) {
-    endResetModel();
+  if (addon->enabled()) {
+    addon->disable();
   }
 
   QDir dir;
