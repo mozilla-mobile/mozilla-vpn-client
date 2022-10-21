@@ -188,6 +188,26 @@ jobs:
         shell: bash
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
-          mkdir -p build
-          cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON
-          cmake --build $(pwd)/build --config Release --target qml_tests
+          mkdir -p dummybuild
+          cmake -S . -B $(pwd)/dummybuild -DBUILD_DUMMY=ON
+          cmake --build $(pwd)/dummybuild -j$(nproc)
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: test-client-${{ github.sha }}
+          path: build/
+
+      - name: Generate tasklist
+        id: testGen
+        shell: bash
+        run: |
+          echo -n "::set-output name=tests::"
+          for test in $(find tests/functional -name 'test*.js' | sort); do
+            printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
+          done | jq -s -c
+      - name: Check tests
+        shell: bash
+        env:
+          TEST_LIST: ${{ steps.testGen.outputs.tests }}
+        run: |
+          echo $TEST_LIST | jq
