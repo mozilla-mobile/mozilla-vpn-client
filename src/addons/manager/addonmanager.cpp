@@ -197,23 +197,22 @@ void AddonManager::unload(const QString& addonId) {
 
   Addon* addon = m_addons[addonId].m_addon;
 
-  if (!addon) {
-    m_addons.remove(addonId);
-    return;
+  if (addon) {
+    if (addon->enabled()) {
+      addon->disable();
+    }
+
+    QDir dir;
+    if (m_addonDirectory.getDirectory(&dir)) {
+      QString addonFileName(QString("%1.rcc").arg(addonId));
+      QString addonFilePath(dir.filePath(addonFileName));
+      QResource::unregisterResource(addonFilePath, mountPath(addonId));
+    }
+
+    addon->deleteLater();
   }
 
-  if (addon->enabled()) {
-    addon->disable();
-  }
-
-  QDir dir;
-  if (m_addonDirectory.getDirectory(&dir)) {
-    QString addonFileName(QString("%1.rcc").arg(addonId));
-    QString addonFilePath(dir.filePath(addonFileName));
-    QResource::unregisterResource(addonFilePath, mountPath(addonId));
-  }
-
-  addon->deleteLater();
+  m_addons.remove(addonId);
 }
 
 void AddonManager::retranslate() {
