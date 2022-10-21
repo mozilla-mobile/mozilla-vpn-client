@@ -232,7 +232,7 @@ jobs:
     name: Functional tests
     needs: 
       - build_windows_test_app
-    runs-on: ubuntu-20.04
+    runs-on: windows-latest
     timeout-minutes: 45
     strategy:
       fail-fast: false # Don't cancel other jobs if a test fails
@@ -272,26 +272,7 @@ jobs:
             xvfb-run -a npm run functionalTest -- ${{matrix.test.path}}
         env:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
-          MVPN_BIN: ./build/cmake/src/mozillavpn
-
-      - name: Generating grcov reports
-        id: generateGrcov
-        continue-on-error: true # Ignore GRCOV parsing errors, see github.com/mozilla/grcov/issues/570
-        timeout-minutes: 1 # Give GRCOV a short timeout in case it hangs after a panic
-        run: |
-          ./build/bin/grcov build/cmake/src/CMakeFiles/mozillavpn.dir \
-              -s src -t lcov --branch --ignore-not-existing \
-              -o ${{runner.temp}}/artifacts/functional_lcov.info
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
-        if: steps.generateGrcov.outcome == 'success'
-        with:
-          directory: .
-          flags: functional_tests
-          name: codecov-poc
-          files: ${{runner.temp}}/artifacts/functional_lcov.info
-          verbose: true
+          MVPN_BIN: ./build/cmake/src/mozillavpn      
 
       - name: Uploading artifacts
         uses: actions/upload-artifact@v1
@@ -344,29 +325,3 @@ jobs:
         env:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
           MVPN_BIN: ./build/cmake/src/mozillavpn
-
-      - name: Generating grcov reports
-        id: generateGrcov
-        continue-on-error: true # Ignore GRCOV parsing errors, see github.com/mozilla/grcov/issues/570
-        timeout-minutes: 1 # Give GRCOV a short timeout in case it hangs after a panic
-        run: |
-          ./build/bin/grcov build/cmake/src/CMakeFiles/mozillavpn.dir \
-              -s src -t lcov --branch --ignore-not-existing \
-              -o ${{runner.temp}}/artifacts/functional_lcov.info
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
-        if: steps.generateGrcov.outcome == 'success'
-        with:
-          directory: .
-          flags: functional_tests
-          name: codecov-poc
-          files: ${{runner.temp}}/artifacts/functional_lcov.info
-          verbose: true
-
-      - name: Uploading artifacts
-        uses: actions/upload-artifact@v1
-        if: ${{ always() }}
-        with:
-          name: ${{matrix.test.name}} Logs
-          path: ${{ runner.temp }}/artifacts
