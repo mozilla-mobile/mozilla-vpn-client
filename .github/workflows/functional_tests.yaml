@@ -152,6 +152,8 @@ jobs:
   build_windows_test_app:
     name: Build  windows test client
     runs-on: windows-latest
+    outputs:
+      matrix: ${{ steps.testGen.outputs.tests }}
 
     steps:
       - name: Clone repository
@@ -184,7 +186,7 @@ jobs:
         run: |
           pip3 install -r requirements.txt
 
-      - name: Building tests
+      - name: Compile Windows Test Client
         shell: bash
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
