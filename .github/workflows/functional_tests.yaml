@@ -229,7 +229,7 @@ jobs:
           echo $TEST_LIST | jq
 
   windowsfunctionaltests:
-    name: Functional tests
+    name: Windows Functional tests
     needs: 
       - build_windows_test_app
     runs-on: windows-latest
@@ -279,49 +279,4 @@ jobs:
         if: ${{ always() }}
         with:
           name: ${{matrix.test.name}} Logs
-          path: ${{ runner.temp }}/artifacts
-
-    name: Functional tests
-    needs: 
-      - build_macos_test_app
-    runs-on: ubuntu-20.04
-    timeout-minutes: 45
-    strategy:
-      fail-fast: false # Don't cancel other jobs if a test fails
-      matrix:
-        test: ${{ fromJson(needs.build_windows_test_app.outputs.matrix) }}
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v2
-      - uses: actions/download-artifact@v3
-        with:
-          name: test-client-${{ github.sha }}
-          path: build/
-
-      - name: Install dependecies
-        run: |
-          sudo apt install ./build/archive/*.deb
-          sudo apt install --no-upgrade firefox xvfb -y
-          pip3 install -r requirements.txt
-          npm install
-      
-      - name: Check build
-        shell: bash
-        run: |
-            chmod +x ./build/cmake/src/mozillavpn
-            ./build/cmake/src/mozillavpn -v
-
-      - name: Running ${{matrix.test.name}} Tests
-        id: runTests
-        uses: nick-invision/retry@v2
-        with:
-          timeout_minutes: 15
-          max_attempts: 3
-          command: |
-            export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
-            export HEADLESS=yes
-            mkdir -p $ARTIFACT_DIR
-            xvfb-run -a npm run functionalTest -- ${{matrix.test.path}}
-        env:
-          ARTIFACT_DIR: ${{ runner.temp }}/artifacts
-          MVPN_BIN: ./build/cmake/src/mozillavpn
+          path: ${{ runner.temp }}/artifacts        
