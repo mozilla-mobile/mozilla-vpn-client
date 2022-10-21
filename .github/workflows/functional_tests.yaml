@@ -228,55 +228,58 @@ jobs:
         run: |
           echo $TEST_LIST | jq
 
-  windowsfunctionaltests:
-    name: Windows Functional tests
-    needs: 
-      - build_windows_test_app
+  windows-qml-tests:
+    name: Run QML tests on Windows
     runs-on: windows-latest
-    timeout-minutes: 45
-    strategy:
-      fail-fast: false # Don't cancel other jobs if a test fails
-      matrix:
-        test: ${{ fromJson(needs.build_windows_test_app.outputs.matrix) }}
+
+    timeout-minutes: 60    
+
     steps:
       - name: Clone repository
-        uses: actions/checkout@v2
-      - uses: actions/download-artifact@v3
-        with:
-          name: test-client-${{ github.sha }}
-          path: build/
+        uses: actions/checkout@v3
 
-      - name: Install dependecies
-        run: |
-          sudo apt install ./build/archive/*.deb
-          sudo apt install --no-upgrade firefox xvfb -y
-          pip3 install -r requirements.txt
-          npm install
-      
-      - name: Check build
+      - name: Checkout submodules
         shell: bash
         run: |
-            chmod +x ./build/cmake/src/mozillavpn
-            ./build/cmake/src/mozillavpn -v
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-      - name: Running ${{matrix.test.name}} Tests
-        id: runTests
-        uses: nick-invision/retry@v2
-        with:
-          timeout_minutes: 15
-          max_attempts: 3
-          command: |
-            export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
-            export HEADLESS=yes
-            mkdir -p $ARTIFACT_DIR
-            xvfb-run -a npm run functionalTest -- ${{matrix.test.path}}
-        env:
+      - name: Install Qt
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git clone https://github.com/mozilla-mobile/qt_static_windows --depth 1
+          mkdir /c/MozillaVPNBuild
+          cat qt_static_windows/qt6* > qt6_static.tar.bz2
+          tar xf qt6_static.tar.bz2 -C /c/MozillaVPNBuild
+
+      - name: Add msvc dev commands to PATH
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: Install depedencies
+        shell: bash
+        run: |
+          pip3 install -r requirements.txt
+
+      - name: Building tests
+        shell: bash
+        run: |
+          export PATH=/c/MozillaVPNBuild/bin:$PATH
+          mkdir -p build
+          cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON
+          cmake --build $(pwd)/build --config Release --target qml_tests
+
+      - name: Running tests
+        shell: bash
+        run: |
+          export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
+          export HEADLESS=yes
+          mkdir -p $ARTIFACT_DIR
+          xvfb-run -a npm run functionalTest
+        env: 
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
-          MVPN_BIN: ./build/cmake/src/mozillavpn      
-
-      - name: Uploading artifacts
-        uses: actions/upload-artifact@v1
-        if: ${{ always() }}
-        with:
-          name: ${{matrix.test.name}} Logs
-          path: ${{ runner.temp }}/artifacts        
+          MVPN_BIN: ./build/cmake/src/mozillavpn
