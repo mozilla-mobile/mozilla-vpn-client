@@ -192,7 +192,7 @@ jobs:
           export PATH=/c/MozillaVPNBuild/bin:$PATH
           mkdir -p dummybuild
           cmake -S . -B $(pwd)/dummybuild -DBUILD_DUMMY=ON
-          cmake --build $(pwd)/dummybuild -j$(nproc)
+           cmake --build $(pwd)/build --config Release --target windows_function_tests
 
       - uses: actions/upload-artifact@v3
         with:
