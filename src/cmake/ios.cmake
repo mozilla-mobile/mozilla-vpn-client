@@ -8,9 +8,10 @@ enable_language(Swift)
 
 # Configure the application bundle Info.plist
 set_target_properties(mozillavpn PROPERTIES
-    OUTPUT_NAME "MozillaVPN"
+    OUTPUT_NAME "Mozilla VPN"
     MACOSX_BUNDLE ON
-    MACOSX_BUNDLE_BUNDLE_NAME "MozillaVPN"
+    MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/ios/app/Info.plist.in
+    MACOSX_BUNDLE_BUNDLE_NAME "Mozilla VPN"
     MACOSX_BUNDLE_BUNDLE_VERSION "${BUILD_ID}"
     MACOSX_BUNDLE_COPYRIGHT "MPL-2.0"
     MACOSX_BUNDLE_GUI_IDENTIFIER "${BUILD_OSX_APP_IDENTIFIER}"
