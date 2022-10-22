@@ -191,6 +191,7 @@ jobs:
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
           mkdir -p dummybuild
+          mkdir -p build
           cmake -S . -B $(pwd)/dummybuild -DBUILD_DUMMY=ON
            cmake --build $(pwd)/build --config Release --target windows_function_tests
 
