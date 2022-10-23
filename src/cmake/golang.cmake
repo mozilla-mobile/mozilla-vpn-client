@@ -6,7 +6,7 @@
 function(add_go_library GOTARGET SOURCE)
     cmake_parse_arguments(GOLANG
         ""
-        ""
+        "GOOS;GOARCH"
         "CGO_CFLAGS;CGO_LDFLAGS"
         ${ARGN})
     get_filename_component(SRC_NAME ${SOURCE} NAME)
@@ -14,12 +14,12 @@ function(add_go_library GOTARGET SOURCE)
     get_filename_component(DIR_ABSOLUTE ${DIR_NAME} ABSOLUTE)
 
     file(GLOB_RECURSE SRC_DEPS ${DIR_NAME}/*.go)
-    string(REGEX REPLACE "[.]go$" ".h" HEADER_NAME ${SRC_NAME})
-    string(REGEX REPLACE "[.]go$" ${CMAKE_STATIC_LIBRARY_SUFFIX} ARCHIVE_NAME ${SRC_NAME})
+    set(HEADER_NAME "${GOTARGET}.h")
+    set(ARCHIVE_NAME "${GOTARGET}${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
     set(GOCACHE ${CMAKE_BINARY_DIR}/go-cache)
     set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_BINARY_DIR}/go-cache)
-    set(GOFLAGS -buildmode=c-archive -v)
+    set(GOFLAGS -buildmode=c-archive -trimpath -v)
     if(IS_DIRECTORY ${DIR_NAME}/vendor)
         set(GOFLAGS ${GOFLAGS} -mod vendor)
     endif()
@@ -31,6 +31,12 @@ function(add_go_library GOTARGET SOURCE)
     separate_arguments(DEFAULT_CGO_LDFLAGS NATIVE_COMMAND ${DEFAULT_CGO_LDFLAGS})
     list(PREPEND GOLANG_CGO_CFLAGS ${DEFAULT_CGO_CFLAGS})
     list(PREPEND GOLANG_CGO_LDFLAGS ${DEFAULT_CGO_LDFLAGS})
+    if(NOT GOLANG_GOOS)
+        execute_process(OUTPUT_VARIABLE GOLANG_GOOS OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND go env GOOS)
+    endif()
+    if(NOT GOLANG_GOARCH)
+        execute_process(OUTPUT_VARIABLE GOLANG_GOARCH OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND go env GOARCH)
+    endif()
 
     ## The actual commands that do the building.
     add_custom_target(golang_${GOTARGET}
@@ -42,6 +48,8 @@ function(add_go_library GOTARGET SOURCE)
                     CC=gcc
                     CGO_CFLAGS="${GOLANG_CGO_CFLAGS}"
                     CGO_LDFLAGS="${GOLANG_CGO_LDFLAGS}"
+                    GOOS="${GOLANG_GOOS}"
+                    GOARCH="${GOLANG_GOARCH}"
                 go build ${GOFLAGS} -o ${CMAKE_CURRENT_BINARY_DIR}/${ARCHIVE_NAME} ${SRC_NAME}
     )
 

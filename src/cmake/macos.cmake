@@ -100,7 +100,7 @@ target_sources(mozillavpn PRIVATE
 # Perform codesigning.
 execute_process(
     COMMAND ${CMAKE_SOURCE_DIR}/scripts/utils/make_template.py ${CMAKE_SOURCE_DIR}/macos/app/app.entitlements
-        -k "\$(DEVELOPMENT_TEAM)=${BUILD_OSX_DEVELOPMENT_TEAM}"
+        -k "\$(DEVELOPMENT_TEAM)=${BUILD_VPN_DEVELOPMENT_TEAM}"
         -k "\$(APP_ID_MACOS)=${BUILD_OSX_APP_IDENTIFIER}"
         -o ${CMAKE_CURRENT_BINARY_DIR}/app.entitlements
 )

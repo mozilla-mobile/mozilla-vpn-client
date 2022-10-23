@@ -235,7 +235,7 @@ Some variables that might be useful when configuring the project:
    installer package.
  - `BUILD_OSX_APP_IDENTIFIER=<App Identifier>`: can be set to change the application bundle
    identifier. This defaults to `org.mozilla.macos.FirefoxVPN` if not set.
- - `BUILD_OSX_DEVELOPMENT_TEAM=<Development Team ID>`: can be set to change the development
+ - `BUILD_VPN_DEVELOPMENT_TEAM=<Development Team ID>`: can be set to change the development
    team used for XCode certificates. This defaults to `43AQ936H96` if not set.
 
 4. Compile the source code:

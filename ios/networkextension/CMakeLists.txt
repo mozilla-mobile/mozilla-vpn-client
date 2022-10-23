@@ -6,28 +6,25 @@ enable_language(Swift)
 
 add_executable(networkextension)
 set_target_properties(networkextension PROPERTIES
+    OUTPUT_NAME "MozillaVPNNetworkExtension"
     XCODE_PRODUCT_TYPE com.apple.product-type.app-extension
-    XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${BUILD_OSX_APP_IDENTIFIER}.network-extension"
+    BUNDLE_EXTENSION appex
+    MACOSX_BUNDLE ON
+    MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in
+    MACOSX_BUNDLE_BUNDLE_NAME "MozillaVPNNetworkExtension"
+    MACOSX_BUNDLE_BUNDLE_VERSION "${BUILD_ID}"
+    MACOSX_BUNDLE_COPYRIGHT "MPL-2.0"
+    MACOSX_BUNDLE_GUI_IDENTIFIER "${BUILD_IOS_APP_IDENTIFIER}.network-extension"
+    MACOSX_BUNDLE_INFO_STRING "MozillaVPNNetworkExtension"
+    MACOSX_BUNDLE_LONG_VERSION_STRING "${CMAKE_PROJECT_VERSION}-${BUILD_ID}"
+    MACOSX_BUNDLE_SHORT_VERSION_STRING "${CMAKE_PROJECT_VERSION}"
+    XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${BUILD_IOS_APP_IDENTIFIER}.network-extension"
     XCODE_ATTRIBUTE_SWIFT_VERSION "5.0"
     XCODE_ATTRIBUTE_CLANG_ENABLE_MODULES "YES"
     XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/WireGuardNetworkExtension-Bridging-Header.h"
     XCODE_ATTRIBUTE_SWIFT_PRECOMPILE_BRIDGING_HEADER "NO"
     XCODE_ATTRIBUTE_APPLICATION_EXTENSION_API_ONLY "YES"
     XCODE_ATTRIBUTE_ENABLE_BITCODE "NO"
-)
-
-## Configure the network extension for bundling.
-set_target_properties(networkextension PROPERTIES
-    MACOSX_BUNDLE ON
-    MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in
-    MACOSX_BUNDLE_BUNDLE_NAME "MozillaVPNNetworkExtension"
-    MACOSX_BUNDLE_BUNDLE_VERSION "${BUILD_ID}"
-    MACOSX_BUNDLE_COPYRIGHT "MPL-2.0"
-    MACOSX_BUNDLE_GUI_IDENTIFIER "${BUILD_OSX_APP_IDENTIFIER}.network-extension"
-    ## MACOSX_BUNDLE_ICON_FILE "AppIcon"
-    MACOSX_BUNDLE_INFO_STRING "MozillaVPNNetworkExtension"
-    MACOSX_BUNDLE_LONG_VERSION_STRING "${CMAKE_PROJECT_VERSION}-${BUILD_ID}"
-    MACOSX_BUNDLE_SHORT_VERSION_STRING "${CMAKE_PROJECT_VERSION}"
 )
 
 find_library(FW_ASSETS_LIBRARY AssetsLibrary)
@@ -82,3 +79,14 @@ target_sources(networkextension PRIVATE
 
 target_include_directories(networkextension PRIVATE ${CMAKE_SOURCE_DIR})
 target_include_directories(networkextension PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+
+## Build the wireguard go library
+## TODO: The upstream makefile also makes an attempt to patch the golang runtime
+## to provide the boot-time clock instead of an uptime clock. We should probably
+## make an attempt to do the same, somehow?
+## TODO: Also missing, the -sdkroot flag...
+include(${CMAKE_SOURCE_DIR}/src/cmake/golang.cmake)
+add_go_library(libwg-go ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-apple/Sources/WireGuardKitGo/api-apple.go
+    GOOS "ios"
+    GOARCH "arm64")
+target_link_libraries(networkextension PRIVATE libwg-go)

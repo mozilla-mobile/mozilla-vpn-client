@@ -14,12 +14,12 @@ set_target_properties(mozillavpn PROPERTIES
     MACOSX_BUNDLE_BUNDLE_NAME "Mozilla VPN"
     MACOSX_BUNDLE_BUNDLE_VERSION "${BUILD_ID}"
     MACOSX_BUNDLE_COPYRIGHT "MPL-2.0"
-    MACOSX_BUNDLE_GUI_IDENTIFIER "${BUILD_OSX_APP_IDENTIFIER}"
+    MACOSX_BUNDLE_GUI_IDENTIFIER "${BUILD_IOS_APP_IDENTIFIER}"
     MACOSX_BUNDLE_ICON_FILE "AppIcon"
     MACOSX_BUNDLE_INFO_STRING "Mozilla VPN"
     MACOSX_BUNDLE_LONG_VERSION_STRING "${CMAKE_PROJECT_VERSION}-${BUILD_ID}"
     MACOSX_BUNDLE_SHORT_VERSION_STRING "${CMAKE_PROJECT_VERSION}"
-    XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${BUILD_OSX_APP_IDENTIFIER}"
+    XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${BUILD_IOS_APP_IDENTIFIER}"
 )
 target_include_directories(mozillavpn PRIVATE ${CMAKE_SOURCE_DIR})
 
@@ -129,3 +129,11 @@ configure_file(${CMAKE_SOURCE_DIR}/ios/wireguard-go-version.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go-version.h)
 target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go-version.h)
+
+## Install the Network Exetnsion into the bundle.
+add_dependencies(mozillavpn networkextension)
+add_custom_command(TARGET mozillavpn POST_BUILD
+    COMMENT "Bundling Network Extension"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_BUNDLE_DIR:networkextension>
+        $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/PlugIns/$<TARGET_PROPERTY:networkextension,OUTPUT_NAME>.appex/
+)
