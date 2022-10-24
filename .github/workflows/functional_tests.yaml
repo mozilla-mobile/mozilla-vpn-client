@@ -109,7 +109,7 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
 
-      - name: Install depedencies
+      - name: Install dependencies
         shell: bash
         run: |
           pip3 install -r requirements.txt
