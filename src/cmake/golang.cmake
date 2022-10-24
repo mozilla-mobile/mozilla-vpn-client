@@ -52,6 +52,7 @@ function(add_go_library GOTARGET SOURCE)
                     GOARCH="${GOLANG_GOARCH}"
                 go build ${GOFLAGS} -o ${CMAKE_CURRENT_BINARY_DIR}/${ARCHIVE_NAME} ${SRC_NAME}
     )
+    set_target_properties(golang_${GOTARGET} PROPERTIES FOLDER "Libs")
 
     ## Wrap up the built library as an imported target.
     add_library(${GOTARGET} STATIC IMPORTED GLOBAL)

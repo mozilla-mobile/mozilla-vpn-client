@@ -82,6 +82,9 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set_property(GLOBAL PROPERTY AUTOGEN_TARGETS_FOLDER "Autogen")
+set_property(GLOBAL PROPERTY AUTOMOC_TARGETS_FOLDER "Autogen")
+set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "Autogen")
 
 find_package(Qt6 COMPONENTS
     Core
@@ -147,4 +150,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     add_subdirectory(macos/pkg)
 elseif(IOS)
     add_subdirectory(ios/networkextension)
+    if(BUILD_ADJUST_SDK_TOKEN)
+        add_subdirectory(ios/adjust)
+    endif()
 endif()

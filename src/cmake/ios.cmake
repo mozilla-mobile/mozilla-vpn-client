@@ -66,23 +66,27 @@ target_sources(mozillavpn PRIVATE
 )
 
 # Include the Adjust SDK
-#add_definitions(-DMVPN_ADJUST)
-#target_sources(mozillavpn PRIVATE
-#    adjust/adjustfiltering.cpp
-#    adjust/adjustfiltering.h
-#    adjust/adjusthandler.cpp
-#    adjust/adjusthandler.h
-#    adjust/adjustproxy.cpp
-#    adjust/adjustproxy.h
-#    adjust/adjustproxyconnection.cpp
-#    adjust/adjustproxyconnection.h
-#    adjust/adjustproxypackagehandler.cpp
-#    adjust/adjustproxypackagehandler.h
-#    adjust/adjusttasksubmission.cpp
-#    adjust/adjusttasksubmission.h
-#    platforms/ios/iosadjusthelper.mm
-#    platforms/ios/iosadjusthelper.h
-#)
+if(BUILD_ADJUST_SDK_TOKEN)
+    add_compile_definitions(MVPN_ADJUST)
+    target_compile_options(mozillavpn PRIVATE -DADJUST_SDK_TOKEN=${BUILD_ADJUST_SDK_TOKEN})
+    target_sources(mozillavpn PRIVATE
+        adjust/adjustfiltering.cpp
+        adjust/adjustfiltering.h
+        adjust/adjusthandler.cpp
+        adjust/adjusthandler.h
+        adjust/adjustproxy.cpp
+        adjust/adjustproxy.h
+        adjust/adjustproxyconnection.cpp
+        adjust/adjustproxyconnection.h
+        adjust/adjustproxypackagehandler.cpp
+        adjust/adjustproxypackagehandler.h
+        adjust/adjusttasksubmission.cpp
+        adjust/adjusttasksubmission.h
+        platforms/ios/iosadjusthelper.mm
+        platforms/ios/iosadjusthelper.h
+    )
+    target_link_libraries(mozillavpn PRIVATE adjust)
+endif()
 
 set_target_properties(mozillavpn PROPERTIES
     XCODE_ATTRIBUTE_SWIFT_VERSION "5.0"
