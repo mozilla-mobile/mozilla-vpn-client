@@ -238,9 +238,8 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 void SystemTrayNotificationHandler::updateIcon() {
   logger.debug() << "Update icon";
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-
 #if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
+  MozillaVPN* vpn = MozillaVPN::instance();
   m_systemTrayIcon->setIcon(vpn->statusIcon()->icon());
 #endif
 }
