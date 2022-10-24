@@ -136,7 +136,6 @@ void ErrorHandler::errorHandle(ErrorHandler::ErrorType error) {
   AlertType alert = NoAlert;
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   switch (error) {
     case ErrorHandler::VPNDependentConnectionError:

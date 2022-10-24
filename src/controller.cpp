@@ -129,7 +129,6 @@ void Controller::initialize() {
   });
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
   m_impl->initialize(device, vpn->keys());
@@ -199,7 +198,6 @@ void Controller::activateInternal(bool forcePort53) {
   m_activationQueue.clear();
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   Server exitServer = Server::weightChooser(vpn->exitServers());
   if (!exitServer.initialized()) {
@@ -316,7 +314,6 @@ bool Controller::silentSwitchServers() {
   }
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   // Set a cooldown timer on the current server.
   QList<Server> servers = vpn->exitServers();
@@ -402,7 +399,6 @@ void Controller::handshakeTimeout() {
   logger.debug() << "Timeout while waiting for handshake";
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
   Q_ASSERT(!m_activationQueue.isEmpty());
 
   // Block the offending server and try again.
@@ -441,7 +437,6 @@ void Controller::setCooldownForAllServersInACity(const QString& countryCode,
   Q_ASSERT(!Constants::inProduction());
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   vpn->setCooldownForAllServersInACity(countryCode, cityCode);
 }
@@ -481,7 +476,6 @@ void Controller::changeServer(const QString& countryCode, const QString& city,
   Q_ASSERT(m_state == StateOn || m_state == StateOff);
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   if (vpn->currentServer()->exitCountryCode() == countryCode &&
       vpn->currentServer()->exitCityName() == city &&

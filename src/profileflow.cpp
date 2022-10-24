@@ -51,7 +51,6 @@ void ProfileFlow::start() {
   setState(StateLoading);
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
   User* user = vpn->user();
   Q_ASSERT(user);
 
