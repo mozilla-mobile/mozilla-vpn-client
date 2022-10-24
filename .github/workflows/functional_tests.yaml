@@ -126,6 +126,6 @@ jobs:
 
       - name: Running tests
         shell: bash
-        working-directory: ./build
+        working-directory: . 
         run: |
-          ctest --build-config Release --output-on-failure
+          ./scripts/tests/functional_tests.sh  
