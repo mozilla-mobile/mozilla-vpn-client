@@ -114,7 +114,7 @@ jobs:
         run: |
           pip3 install -r requirements.txt
 
-      - name: Building tests
+      - name: Building tests 2:37
         shell: bash
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
