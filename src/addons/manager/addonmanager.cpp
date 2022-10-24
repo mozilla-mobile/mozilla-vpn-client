@@ -213,6 +213,7 @@ void AddonManager::unload(const QString& addonId) {
   }
 
   m_addons.remove(addonId);
+  emit countChanged();
 }
 
 void AddonManager::retranslate() {
@@ -284,6 +285,7 @@ bool AddonManager::validateAndLoad(const QString& addonId,
     return false;
   }
 
+  emit countChanged();
   return true;
 }
 
@@ -320,7 +322,9 @@ QHash<int, QByteArray> AddonManager::roleNames() const {
   return roles;
 }
 
-int AddonManager::rowCount(const QModelIndex&) const {
+int AddonManager::rowCount(const QModelIndex&) const { return count(); }
+
+int AddonManager::count() const {
   int count = 0;
   for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
        i != m_addons.constEnd(); ++i) {
