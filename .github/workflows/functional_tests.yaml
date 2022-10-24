@@ -129,4 +129,7 @@ jobs:
         working-directory: . 
         run: |
           npm install mocha
-          ./scripts/tests/functional_tests.sh  
+          ./scripts/tests/functional_tests.sh
+        env:
+          ARTIFACT_DIR: tests/artifacts
+          MVPN_BIN: ./build/cmake/src/mozillavpn
