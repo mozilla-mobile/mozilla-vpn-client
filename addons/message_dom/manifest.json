@@ -1,0 +1,29 @@
+{
+  "api_version": "0.1",
+  "id": "message_dom",
+  "name": "DOM",
+  "translatable": false,
+  "type": "message",
+  "conditions": {
+    "env": "staging"
+  },
+  "message": {
+    "id": "message_dom",
+    "title": "✨ DOM ✨",
+    "subtitle": "Hello world",
+    "date": 1661021990,
+    "badge": "new_update",
+    "blocks": [
+      { "id": "a",
+        "type": "text",
+        "content": "Don't click the button"
+      },
+      { "id": "b",
+        "type": "button",
+        "style": "link",
+        "content": "The button",
+        "javascript": "button.js"
+      }
+    ]
+  }
+}

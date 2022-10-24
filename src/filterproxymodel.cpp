@@ -51,6 +51,14 @@ void FilterProxyModel::setSource(QAbstractListModel* sourceModel) {
   setSourceModel(sourceModel);
 
   if (sourceModel) {
+    connect(sourceModel, &QAbstractItemModel::rowsInserted, this,
+            &FilterProxyModel::countChanged);
+    connect(sourceModel, &QAbstractItemModel::rowsRemoved, this,
+            &FilterProxyModel::countChanged);
+    connect(sourceModel, &QAbstractItemModel::modelReset, this,
+            &FilterProxyModel::countChanged);
+    connect(sourceModel, &QAbstractItemModel::layoutChanged, this,
+            &FilterProxyModel::countChanged);
     m_sourceModelRoleNames = sourceModel->roleNames();
   } else {
     m_sourceModelRoleNames.clear();
@@ -92,6 +100,11 @@ bool FilterProxyModel::filterAcceptsRow(
   arguments.append(value);
 
   QJSValue retValue = m_filterCallback.call(arguments);
+  if (retValue.isError()) {
+    logger.debug() << "Execution throws an error:" << retValue.toString();
+    return false;
+  }
+
   return retValue.toBool();
 }
 
@@ -120,6 +133,11 @@ bool FilterProxyModel::lessThan(const QModelIndex& left,
   arguments.append(valueB);
 
   QJSValue retValue = m_sortCallback.call(arguments);
+  if (retValue.isError()) {
+    logger.debug() << "Execution throws an error:" << retValue.toString();
+    return false;
+  }
+
   return retValue.toBool();
 }
 

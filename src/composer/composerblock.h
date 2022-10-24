@@ -7,6 +7,7 @@
 
 #include <QQmlEngine>
 
+class Addon;
 class Composer;
 class QJsonObject;
 
@@ -16,20 +17,30 @@ class ComposerBlock : public QObject {
   QML_NAMED_ELEMENT(VPNComposerBlock)
   QML_UNCREATABLE("")
 
+  Q_PROPERTY(QString id MEMBER m_id CONSTANT)
   Q_PROPERTY(QString type MEMBER m_type CONSTANT)
 
  public:
-  static ComposerBlock* create(Composer* composer, const QString& prefix,
-                               const QJsonObject& json);
+  static ComposerBlock* create(Composer* composer, Addon* addon,
+                               const QString& prefix, const QJsonObject& json);
+  static ComposerBlock* create(Composer* composer, Addon* addon,
+                               const QString& prefix, const QString& blockId,
+                               const QString& type, const QJsonObject& json);
   virtual ~ComposerBlock();
+
+  virtual bool contains(const QString& string) const = 0;
+
+  const QString& id() const { return m_id; }
 
  signals:
   void retranslationCompleted();
 
  protected:
-  explicit ComposerBlock(Composer* composer, const QString& type);
+  explicit ComposerBlock(Composer* composer, const QString& id,
+                         const QString& type);
 
  private:
+  const QString m_id;
   const QString m_type;
 };
 

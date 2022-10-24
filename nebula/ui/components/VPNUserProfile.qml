@@ -18,13 +18,26 @@ VPNClickableRow {
     property bool _loaderVisible: false
     property var _buttonOnClicked
 
+
     Layout.preferredHeight: row.implicitHeight + VPNTheme.theme.windowMargin * 2
     Layout.fillWidth: true
+    Layout.leftMargin: VPNTheme.theme.windowMargin / 2
+    Layout.rightMargin: VPNTheme.theme.windowMargin / 2
     accessibleName: qsTrId("vpn.main.manageAccount")
     objectName: _objNameBase + "-manageAccountButton"
     onClicked: _buttonOnClicked()
-
     height: undefined
+    anchors {
+        left: undefined
+        right: undefined
+    }
+
+    anchors {
+        left: undefined
+        right: undefined
+        leftMargin: undefined
+        rightMargin: undefined
+    }
 
     RowLayout {
         id: row
@@ -81,7 +94,7 @@ VPNClickableRow {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             Layout.preferredHeight: VPNTheme.theme.rowHeight
             Layout.preferredWidth: VPNTheme.theme.rowHeight
-            visible: _iconButtonImageSource !== ""
+            visible: _iconSource !== ""
             color: VPNTheme.theme.transparent
 
             VPNIcon {

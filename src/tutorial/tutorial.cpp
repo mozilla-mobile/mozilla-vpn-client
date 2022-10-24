@@ -33,6 +33,8 @@ Tutorial::Tutorial(QObject* parent) : QObject(parent) {
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
+  connect(vpn, &MozillaVPN::stateChanged, this, &Tutorial::stop);
+
   connect(vpn->controller(), &Controller::readyToServerUnavailable, this,
           &Tutorial::stop);
 }
@@ -79,15 +81,15 @@ void Tutorial::stop() {
 }
 
 void Tutorial::requireTooltipNeeded(AddonTutorial* tutorial,
-                                    AddonProperty* property,
+                                    const QString& stepId, const QString& text,
                                     QObject* targetElement) {
   Q_ASSERT(tutorial);
   Q_ASSERT(tutorial == m_currentTutorial);
-  emit tooltipNeeded(property, targetElement);
+  emit tooltipNeeded(text, targetElement);
 
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::tutorialStepViewed,
-      {{"tutorial_id", m_currentTutorial->id()}, {"step_id", property->get()}});
+      {{"tutorial_id", m_currentTutorial->id()}, {"step_id", stepId}});
 }
 
 void Tutorial::requireTutorialCompleted(AddonTutorial* tutorial) {
@@ -113,7 +115,7 @@ bool Tutorial::maybeBlockRequest(ExternalOpHandler::Op op) {
 
   if (op != ExternalOpHandler::OpActivate &&
       op != ExternalOpHandler::OpDeactivate &&
-      op != ExternalOpHandler::OpCloseEvent &&
+      op != ExternalOpHandler::OpQuit &&
       op != ExternalOpHandler::OpNotificationClicked) {
     emit interruptRequest(op);
     return true;

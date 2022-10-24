@@ -28,10 +28,9 @@ target_link_libraries(qml_tests PRIVATE glean lottie nebula translations)
 
 # VPN Client source files
 target_sources(qml_tests PRIVATE
-    ${MVPN_SOURCE_DIR}/closeeventhandler.cpp
-    ${MVPN_SOURCE_DIR}/closeeventhandler.h
     ${MVPN_SOURCE_DIR}/constants.h
     ${MVPN_SOURCE_DIR}/controller.h
+    ${MVPN_SOURCE_DIR}/env.h
     ${MVPN_SOURCE_DIR}/externalophandler.cpp
     ${MVPN_SOURCE_DIR}/externalophandler.h
     ${MVPN_SOURCE_DIR}/filterproxymodel.cpp
@@ -52,8 +51,6 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/models/featuremodel.cpp
     ${MVPN_SOURCE_DIR}/models/featuremodel.h
     ${MVPN_SOURCE_DIR}/models/server.cpp
-    ${MVPN_SOURCE_DIR}/models/whatsnewmodel.cpp
-    ${MVPN_SOURCE_DIR}/models/whatsnewmodel.h
     ${MVPN_SOURCE_DIR}/mozillavpn.h
     ${MVPN_SOURCE_DIR}/networkmanager.cpp
     ${MVPN_SOURCE_DIR}/networkmanager.h
@@ -63,6 +60,16 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/settingsholder.h
     ${MVPN_SOURCE_DIR}/theme.cpp
     ${MVPN_SOURCE_DIR}/theme.h
+    ${MVPN_SOURCE_DIR}/pinghelper.cpp
+    ${MVPN_SOURCE_DIR}/pinghelper.h
+    ${MVPN_SOURCE_DIR}/pingsender.cpp
+    ${MVPN_SOURCE_DIR}/pingsender.h
+    ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
+    ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.h
+    ${MVPN_SOURCE_DIR}/dnspingsender.cpp
+    ${MVPN_SOURCE_DIR}/dnspingsender.h
+    ${MVPN_SOURCE_DIR}/pingsenderfactory.cpp
+    ${MVPN_SOURCE_DIR}/pingsenderfactory.h
     ${MVPN_SOURCE_DIR}/update/updater.cpp
     ${MVPN_SOURCE_DIR}/update/updater.h
     ${MVPN_SOURCE_DIR}/update/versionapi.cpp
@@ -71,6 +78,8 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/update/webupdater.h
     ${MVPN_SOURCE_DIR}/qmlengineholder.cpp
     ${MVPN_SOURCE_DIR}/qmlengineholder.h
+    ${MVPN_SOURCE_DIR}/urlopener.cpp
+    ${MVPN_SOURCE_DIR}/urlopener.h
 )
 
 # VPN Client UI resources

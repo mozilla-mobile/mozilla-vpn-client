@@ -1,0 +1,29 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+addons-bundle:
+    description: "Addons Build"
+    treeherder:
+        symbol: A
+        kind: build
+        tier: 1
+        platform: addons/all
+    attributes:
+        build-type: addons/opt  # needed by the signing kind
+    worker-type: b-linux
+    worker:
+        docker-image: {in-tree: wasm}
+        max-run-time: 3600
+        chain-of-trust: true
+        artifacts:
+            - type: directory
+              name: public/build
+              path: /builds/worker/artifacts
+    release-artifacts:
+        - manifest.json
+    run:
+        using: run-task
+        use-caches: true
+        cwd: '{checkout}'
+        command: ./taskcluster/scripts/addons/build.sh

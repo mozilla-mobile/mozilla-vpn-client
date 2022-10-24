@@ -4,7 +4,8 @@
 
 #include "addondirectory.h"
 #include "addonindex.h"
-#include "addons/manager/addonmanager.h"
+#include "addonmanager.h"
+#include "addons/addonmessage.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -129,10 +130,12 @@ void AddonManager::updateAddonsList(QList<AddonData> addons) {
 
   if (!m_loadCompleted) {
     if (taskAdded) {
-      TaskScheduler::scheduleTask(new TaskFunction([this]() {
-        m_loadCompleted = true;
-        emit loadCompletedChanged();
-      }));
+      TaskScheduler::scheduleTask(new TaskFunction(
+          [this]() {
+            m_loadCompleted = true;
+            emit loadCompletedChanged();
+          },
+          false));
     } else {
       m_loadCompleted = true;
       emit loadCompletedChanged();
@@ -160,14 +163,26 @@ bool AddonManager::loadManifest(const QString& manifestFileName) {
     endResetModel();
   }
 
-  connect(addon, &Addon::conditionChanged, this, [this](bool) {
-    beginResetModel();
-    // In theory, we could be smart and try to add/remove lines, but the
-    // changing of conditions should happen rarely. Let's refresh the entire
-    // model for now.
-    // In case, with multiple messages, the UI will start flickering, we can do
-    // something better.
-    endResetModel();
+  connect(addon, &Addon::conditionChanged, this, [this, addon](bool enabled) {
+    int pos = 0;
+    for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
+         i != m_addons.constEnd(); ++i) {
+      if (!i.value().m_addon) continue;
+      if (i.value().m_addon != addon) {
+        if (i.value().m_addon->enabled()) ++pos;
+        continue;
+      }
+      if (!enabled) {
+        beginRemoveRows(QModelIndex(), pos, pos);
+        removeRow(pos);
+        endRemoveRows();
+      } else {
+        beginInsertRows(QModelIndex(), pos, pos);
+        insertRow(pos);
+        endInsertRows();
+      }
+      break;
+    }
   });
 
   return true;
@@ -200,6 +215,13 @@ void AddonManager::unload(const QString& addonId) {
 
   if (addonEnabled) {
     endResetModel();
+  }
+
+  QDir dir;
+  if (m_addonDirectory.getDirectory(&dir)) {
+    QString addonFileName(QString("%1.rcc").arg(addonId));
+    QString addonFilePath(dir.filePath(addonFileName));
+    QResource::unregisterResource(addonFilePath, mountPath(addonId));
   }
 
   addon->deleteLater();
@@ -262,15 +284,15 @@ bool AddonManager::validateAndLoad(const QString& addonId,
   }
 
   m_addons[addonId].m_sha256 = sha256;
+  QString addonMountPath = mountPath(addonId);
 
-  if (!QResource::registerResource(addonFilePath,
-                                   QString("/addons/%1").arg(addonId))) {
+  if (!QResource::registerResource(addonFilePath, addonMountPath)) {
     logger.warning() << "Unable to load resource from file" << addonFilePath;
     return false;
   }
 
-  if (!loadManifest(QString(":/addons/%1/manifest.json").arg(addonId))) {
-    QResource::unregisterResource(addonFilePath, "/addons");
+  if (!loadManifest(QString(":%1/manifest.json").arg(addonMountPath))) {
+    QResource::unregisterResource(addonFilePath, addonMountPath);
     return false;
   }
 
@@ -408,6 +430,18 @@ QJSValue AddonManager::reduce(QJSValue callback, QJSValue initialValue) const {
   return reducedValue;
 }
 
+// Undismisses any dismissed messages and marks all messages as unread
+void AddonManager::reinstateMessages() const {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+  settingsHolder->clearAddonSettings(ADDON_MESSAGE_SETTINGS_GROUP);
+}
+
 #ifdef UNIT_TEST
 QStringList AddonManager::addonIds() const { return m_addons.keys(); }
 #endif
+
+// static
+QString AddonManager::mountPath(const QString& addonId) {
+  return QString("/addons/%1").arg(addonId);
+}

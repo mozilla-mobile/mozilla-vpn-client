@@ -3,12 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addonindex.h"
+#include "addondirectory.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "signature.h"
-#include "addondirectory.h"
 #include "models/feature.h"
+#include "settingsholder.h"
+#include "signature.h"
 
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -226,7 +227,13 @@ bool AddonIndex::validateSingleAddonIndex(const QJsonValue& addonValue) {
 // static
 bool AddonIndex::validateIndexSignature(const QByteArray& index,
                                         const QByteArray& indexSignature) {
-  QFile publicKeyFile(Constants::addonPublicKeyFile());
+  QString publicKeyUrl(Constants::ADDON_PRODUCTION_KEY);
+  if (!Constants::inProduction() &&
+      !SettingsHolder::instance()->addonProdKeyInStaging()) {
+    publicKeyUrl = Constants::ADDON_STAGING_KEY;
+  }
+
+  QFile publicKeyFile(publicKeyUrl);
   if (!publicKeyFile.open(QIODevice::ReadOnly)) {
     logger.warning() << "Unable to open the addon public key file";
     return false;

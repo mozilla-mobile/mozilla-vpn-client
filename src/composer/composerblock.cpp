@@ -4,9 +4,10 @@
 
 #include "composerblock.h"
 #include "composer.h"
+#include "composerblockbutton.h"
+#include "composerblockorderedlist.h"
 #include "composerblocktext.h"
 #include "composerblocktitle.h"
-#include "composerblockorderedlist.h"
 #include "composerblockunorderedlist.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -17,8 +18,9 @@ namespace {
 Logger logger(LOG_MAIN, "ComposerBlock");
 }
 
-ComposerBlock::ComposerBlock(Composer* composer, const QString& type)
-    : QObject(composer), m_type(type) {
+ComposerBlock::ComposerBlock(Composer* composer, const QString& id,
+                             const QString& type)
+    : QObject(composer), m_id(id), m_type(type) {
   MVPN_COUNT_CTOR(ComposerBlock);
 
   connect(composer, &Composer::retranslationCompleted, this,
@@ -28,25 +30,48 @@ ComposerBlock::ComposerBlock(Composer* composer, const QString& type)
 ComposerBlock::~ComposerBlock() { MVPN_COUNT_DTOR(ComposerBlock); }
 
 // static
-ComposerBlock* ComposerBlock::create(Composer* composer, const QString& prefix,
+ComposerBlock* ComposerBlock::create(Composer* composer, Addon* addon,
+                                     const QString& prefix,
                                      const QJsonObject& blockObj) {
   Q_ASSERT(composer);
 
+  QString blockId = blockObj["id"].toString();
+  if (blockId.isEmpty()) {
+    logger.error() << "Empty block ID for composer block";
+    return nullptr;
+  }
+
   QString type = blockObj["type"].toString();
+  return create(composer, addon, prefix, blockId, type, blockObj);
+}
+
+// static
+ComposerBlock* ComposerBlock::create(Composer* composer, Addon* addon,
+                                     const QString& prefix,
+                                     const QString& blockId,
+                                     const QString& type,
+                                     const QJsonObject& blockObj) {
   if (type == "title") {
-    return ComposerBlockTitle::create(composer, prefix, blockObj);
+    return ComposerBlockTitle::create(composer, blockId, prefix, blockObj);
+  }
+
+  if (type == "button") {
+    return ComposerBlockButton::create(composer, addon, blockId, prefix,
+                                       blockObj);
   }
 
   if (type == "text") {
-    return ComposerBlockText::create(composer, prefix, blockObj);
+    return ComposerBlockText::create(composer, blockId, prefix, blockObj);
   }
 
   if (type == "olist") {
-    return ComposerBlockOrderedList::create(composer, prefix, blockObj);
+    return ComposerBlockOrderedList::create(composer, blockId, prefix,
+                                            blockObj);
   }
 
   if (type == "ulist") {
-    return ComposerBlockUnorderedList::create(composer, prefix, blockObj);
+    return ComposerBlockUnorderedList::create(composer, blockId, prefix,
+                                              blockObj);
   }
 
   logger.error() << "Invalid type for block for composer";

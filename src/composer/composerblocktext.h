@@ -14,15 +14,17 @@ class ComposerBlockText final : public ComposerBlock {
   QML_NAMED_ELEMENT(VPNComposerBlockText)
   QML_UNCREATABLE("")
 
-  ADDON_PROPERTY(text, m_text, retranslationCompleted)
-
  public:
-  static ComposerBlock* create(Composer* composer, const QString& prefix,
-                               const QJsonObject& json);
+  ADDON_PROPERTY(text, m_text, getText, setText, retranslationCompleted)
+
+  static ComposerBlock* create(Composer* composer, const QString& blockId,
+                               const QString& prefix, const QJsonObject& json);
   virtual ~ComposerBlockText();
 
+  bool contains(const QString& string) const override;
+
  private:
-  explicit ComposerBlockText(Composer* composer);
+  ComposerBlockText(Composer* composer, const QString& blockId);
 
  private:
   AddonProperty m_text;

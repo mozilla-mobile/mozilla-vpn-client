@@ -52,7 +52,8 @@ class XCodeprojPatcher
 
       config.build_settings['FRAMEWORK_SEARCH_PATHS'] ||= [
         "$(inherited)",
-        "$(PROJECT_DIR)/3rdparty"
+        "$(PROJECT_DIR)/3rdparty",
+        "$(PROJECT_DIR)/3rdparty/wireguard-apple/Sources/WireGuardKitC",
       ]
 
       config.build_settings['PRODUCT_NAME'] = 'Mozilla VPN'
@@ -197,7 +198,7 @@ class XCodeprojPatcher
   end
 
   def setup_target_extension(shortVersion, fullVersion, configHash)
-    @target_extension = @project.new_target(:app_extension, 'WireGuardNetworkExtension', :ios)
+    @target_extension = @project.new_target(:app_extension, 'MozillaVPNNetworkExtension', :ios)
 
     @target_extension.build_configurations.each do |config|
       config.base_configuration_reference = @configFile
@@ -213,7 +214,7 @@ class XCodeprojPatcher
       config.build_settings['MARKETING_VERSION'] ||= shortVersion
       config.build_settings['CURRENT_PROJECT_VERSION'] ||= fullVersion
       config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= configHash['NETEXT_ID_IOS']
-      config.build_settings['PRODUCT_NAME'] = 'WireGuardNetworkExtension'
+      config.build_settings['PRODUCT_NAME'] = 'MozillaVPNNetworkExtension'
 
       # other configs
       config.build_settings['INFOPLIST_FILE'] ||= 'ios/networkextension/Info.plist'
@@ -223,6 +224,10 @@ class XCodeprojPatcher
       config.build_settings['ENABLE_BITCODE'] ||= 'NO'
       config.build_settings['SDKROOT'] = 'iphoneos'
 
+      config.build_settings['FRAMEWORK_SEARCH_PATHS'] ||= [
+        "$(PROJECT_DIR)/ios/gobridge",
+        "$(PROJECT_DIR)/3rdparty/wireguard-apple/Sources/WireGuardKitC",
+      ]
       config.build_settings['OTHER_LDFLAGS'] ||= [
         "-stdlib=libc++",
         "-Wl,-rpath,@executable_path/Frameworks",

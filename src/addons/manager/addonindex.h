@@ -17,7 +17,7 @@ class Addon;
 
 constexpr const char* ADDONS_API_VERSION = "0.1";
 constexpr const char* ADDON_INDEX_FILENAME = "manifest.json";
-constexpr const char* ADDON_INDEX_SIGNATURE_FILENAME = "manifest.json.sign";
+constexpr const char* ADDON_INDEX_SIGNATURE_FILENAME = "manifest.json.sig";
 
 // This struct can be partially empty in case the sha does not match, or the
 // addon does not need to be loaded for unmatched conditions.

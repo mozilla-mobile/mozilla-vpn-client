@@ -14,25 +14,25 @@ Logger logger(LOG_MAIN, "ComposerBlockTitle");
 
 // static
 ComposerBlock* ComposerBlockTitle::create(Composer* composer,
+                                          const QString& blockId,
                                           const QString& prefix,
                                           const QJsonObject& json) {
-  QString blockId = json["id"].toString();
-  if (blockId.isEmpty()) {
-    logger.error() << "Empty block ID for composer block title";
-    return nullptr;
-  }
-
-  ComposerBlockTitle* block = new ComposerBlockTitle(composer);
+  ComposerBlockTitle* block = new ComposerBlockTitle(composer, blockId);
   block->m_title.initialize(QString("%1.block.%2").arg(prefix).arg(blockId),
                             json["content"].toString());
   return block;
 }
 
-ComposerBlockTitle::ComposerBlockTitle(Composer* composer)
-    : ComposerBlock(composer, "title") {
+ComposerBlockTitle::ComposerBlockTitle(Composer* composer,
+                                       const QString& blockId)
+    : ComposerBlock(composer, blockId, "title") {
   MVPN_COUNT_CTOR(ComposerBlockTitle);
 }
 
 ComposerBlockTitle::~ComposerBlockTitle() {
   MVPN_COUNT_DTOR(ComposerBlockTitle);
+}
+
+bool ComposerBlockTitle::contains(const QString& string) const {
+  return m_title.get().contains(string, Qt::CaseInsensitive);
 }

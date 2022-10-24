@@ -23,8 +23,7 @@ VPNClickableRow {
 
     Layout.alignment: Qt.AlignHCenter
     Layout.minimumHeight: VPNTheme.theme.rowHeight
-    Layout.preferredWidth: parent.width
-    Layout.maximumWidth: parent.width
+    Layout.fillWidth: true
     canGrowVertical: true
     Layout.preferredHeight: title.lineCount > 1 ? title.implicitHeight + VPNTheme.theme.windowMargin : VPNTheme.theme.rowHeight
 

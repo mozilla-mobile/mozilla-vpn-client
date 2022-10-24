@@ -53,6 +53,8 @@ void TaskAddDevice::run() {
   NetworkRequest* request = NetworkRequest::createForDeviceCreation(
       this, m_deviceName, publicKey, m_deviceID);
 
+  request->disableTimeout();
+
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Failed to add the device" << error;

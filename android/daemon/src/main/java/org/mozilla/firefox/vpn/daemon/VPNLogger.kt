@@ -25,6 +25,7 @@ class Log {
     }
 
     companion object {
+        val prefix = "Daemon-"
         var instance: Log? = null
         fun init(ctx: Context) {
             if (instance == null) {
@@ -34,17 +35,17 @@ class Log {
         fun i(tag: String, message: String) {
             instance?.write("[info] - ($tag) - $message")
             if (!BuildConfig.DEBUG) { return; }
-            nativeLog.i(tag, message)
+            nativeLog.i(prefix + tag, message)
         }
         fun v(tag: String, message: String) {
             instance?.write("($tag) - $message")
             if (!BuildConfig.DEBUG) { return; }
-            nativeLog.v(tag, message)
+            nativeLog.v(prefix + tag, message)
         }
         fun e(tag: String, message: String) {
             instance?.write("[error] - ($tag) - $message")
             if (!BuildConfig.DEBUG) { return; }
-            nativeLog.e(tag, message)
+            nativeLog.e(prefix + tag, message)
         }
         fun stack(tag: String, message: Array<StackTraceElement>) {
             e(tag, "StackTrace:")
@@ -56,7 +57,7 @@ class Log {
         fun sensitive(tag: String, message: String?) {
             if (!BuildConfig.DEBUG) { return; }
             if (message == null) { return; }
-            e(tag, message)
+            e(prefix + tag, message)
         }
 
         fun getContent(): String? {

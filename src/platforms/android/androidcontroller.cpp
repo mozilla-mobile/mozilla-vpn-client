@@ -181,6 +181,27 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
     excludedApps.append(QJsonValue(appID));
   }
 
+  // Find a Server as Fallback in the Same Location in case
+  // the original one becomes unstable / unavailable
+  const QList<Server> serverList = MozillaVPN::instance()->exitServers();
+  Server* fallbackServer = nullptr;
+  foreach (auto item, serverList) {
+    if (item.publicKey() != hop.m_server.publicKey()) {
+      fallbackServer = &item;
+      break;
+    }
+  }
+  QJsonObject jFallbackServer;
+  if (fallbackServer) {
+    jFallbackServer["ipv4AddrIn"] = fallbackServer->ipv4AddrIn();
+    jFallbackServer["ipv4Gateway"] = fallbackServer->ipv4Gateway();
+    jFallbackServer["ipv6AddrIn"] = fallbackServer->ipv6AddrIn();
+    jFallbackServer["ipv6Gateway"] = fallbackServer->ipv6Gateway();
+
+    jFallbackServer["publicKey"] = fallbackServer->publicKey();
+    jFallbackServer["port"] = (double)fallbackServer->choosePort();
+  }
+
   QJsonObject args;
   args["device"] = jDevice;
   args["keys"] = jKeys;
@@ -189,6 +210,9 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
   args["allowedIPs"] = fullAllowedIPs;
   args["excludedApps"] = excludedApps;
   args["dns"] = hop.m_dnsServer.toString();
+  if (fallbackServer) {
+    args["serverFallback"] = jFallbackServer;
+  }
 
   QJsonDocument doc(args);
   QAndroidParcel sendData;

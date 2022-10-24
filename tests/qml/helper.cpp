@@ -9,8 +9,6 @@
 #include <nebula.h>
 
 TestHelper::TestHelper() {
-  m_closeEventHandler = new CloseEventHandler();
-  m_whatsNewModel = new WhatsNewModel();
   m_l18nstrings = L18nStrings::instance();
   m_theme = new Theme();
   m_mozillavpn = MozillaVPN::instance();
@@ -99,21 +97,6 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
         return obj;
       });
 
-  qmlRegisterSingletonType<MozillaVPN>(
-      "Mozilla.VPN", 1, 0, "VPNCloseEventHandler",
-      [this](QQmlEngine*, QJSEngine*) -> QObject* {
-        QObject* obj = m_closeEventHandler;
-        QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-        return obj;
-      });
-
-  qmlRegisterSingletonType<MozillaVPN>(
-      "Mozilla.VPN", 1, 0, "VPNWhatsNewModel",
-      [this](QQmlEngine*, QJSEngine*) -> QObject* {
-        QObject* obj = m_whatsNewModel;
-        QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-        return obj;
-      });
   qmlRegisterSingletonType<MozillaVPN>(
       "Mozilla.VPN", 1, 0, "VPNTheme",
       [this](QQmlEngine*, QJSEngine* engine) -> QObject* {

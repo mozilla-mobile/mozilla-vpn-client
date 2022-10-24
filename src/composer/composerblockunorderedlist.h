@@ -14,15 +14,20 @@ class ComposerBlockUnorderedList : public ComposerBlock {
   QML_NAMED_ELEMENT(VPNComposerBlockUnorderedList)
   QML_UNCREATABLE("")
 
-  ADDON_PROPERTY_LIST(subBlocks, m_subBlocks, retranslationCompleted)
-
  public:
-  static ComposerBlock* create(Composer* composer, const QString& prefix,
-                               const QJsonObject& json);
+  ADDON_PROPERTY_LIST(subBlocks, m_subBlocks, getSubBlocks, setSubBlock,
+                      insertSubBlock, appendSubBlock, removeSubBlock,
+                      retranslationCompleted)
+
+  static ComposerBlock* create(Composer* composer, const QString& blockId,
+                               const QString& prefix, const QJsonObject& json);
   virtual ~ComposerBlockUnorderedList();
 
+  bool contains(const QString& string) const override;
+
  protected:
-  ComposerBlockUnorderedList(Composer* composer, const QString& type);
+  ComposerBlockUnorderedList(Composer* composer, const QString& id,
+                             const QString& type);
 
   bool parseJson(const QString& prefix, const QJsonObject& json);
 

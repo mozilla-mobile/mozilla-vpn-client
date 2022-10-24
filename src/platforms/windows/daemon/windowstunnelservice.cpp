@@ -97,7 +97,7 @@ void WindowsTunnelService::timeout() {
   emit backendFailure();
 }
 
-bool WindowsTunnelService::start(const QString& configFile) {
+bool WindowsTunnelService::start(const QString& configData) {
   logger.debug() << "Starting the tunnel service";
 
   m_logworker = new WindowsTunnelLogger(WindowsCommons::tunnelLogFile());
@@ -127,19 +127,19 @@ bool WindowsTunnelService::start(const QString& configFile) {
     service = nullptr;
   }
 
-  QString servicePath;
+  QString serviceCmdline;
   {
-    QTextStream out(&servicePath);
+    QTextStream out(&serviceCmdline);
     out << "\"" << qApp->applicationFilePath() << "\" tunneldaemon \""
-        << configFile << "\"";
+        << configData << "\"";
   }
 
-  logger.debug() << "Service name:" << servicePath;
+  logger.debug() << "Service:" << qApp->applicationFilePath();
 
   service = CreateService(scm, TUNNEL_SERVICE_NAME, L"Mozilla VPN (tunnel)",
                           SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS,
                           SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
-                          (const wchar_t*)servicePath.utf16(), nullptr, 0,
+                          (const wchar_t*)serviceCmdline.utf16(), nullptr, 0,
                           TEXT("Nsi\0TcpIp\0"), nullptr, nullptr);
   if (!service) {
     WindowsCommons::windowsLog("Failed to create the tunnel service");

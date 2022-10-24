@@ -232,7 +232,7 @@ module.exports = {
   },
 
   async getLastUrl() {
-    return await this.getElementProperty('VPN', 'lastUrl');
+    return await this.getElementProperty('VPNUrlOpener', 'lastUrl');
   },
 
   async waitForCondition(condition) {
@@ -251,7 +251,7 @@ module.exports = {
   async authenticateInBrowser(clickOnPostAuthenticate, acceptTelemetry, wasm) {
     // This method must be called when the client is on the "Get Started" view.
     await this.waitForMainView();
-    await this.setElementProperty('VPN', 'lastUrl', 's', '');
+    await this.setElementProperty('VPNUrlOpener', 'lastUrl', 's', '');
 
     // Click on get started and wait for authenticating view
     await this.clickOnElement('getStarted');
@@ -440,26 +440,10 @@ module.exports = {
     return json.value;
   },
 
-  async featureTourFeatures() {
-    const json = await this._writeCommand('feature_tour_features');
-    assert(
-        json.type === 'feature_tour_features' && !('error' in json),
-        `Command failed: ${json.error}`);
-    return json.value;
-  },
-
   async screenCapture() {
     const json = await this._writeCommand('screen_capture');
     assert(
         json.type === 'screen_capture' && !('error' in json),
-        `Command failed: ${json.error}`);
-    return json.value;
-  },
-
-  async openContactUs() {
-    const json = await this._writeCommand('open_contact_us');
-    assert(
-        json.type === 'open_contact_us' && !('error' in json),
         `Command failed: ${json.error}`);
     return json.value;
   },
@@ -485,6 +469,15 @@ module.exports = {
     assert(
       json.type === 'public_key' && !('error' in json),
       `Command failed: ${json.error}`);
+    return json.value;
+  },
+
+  async sendPushMessageDeviceDeleted(key) {
+    const json =
+        await this._writeCommand(`send_push_message_device_deleted ${key}`);
+    assert(
+        json.type === 'send_push_message_device_deleted' && !('error' in json),
+        `Command failed: ${json.error}`);
     return json.value;
   },
 
