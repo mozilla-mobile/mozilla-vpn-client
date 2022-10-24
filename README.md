@@ -346,6 +346,38 @@ command:
 xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project "Mozilla VPN.xcodeproj"
 ```
 
+### How to build from source for iOS with CMake (Experimental)
+
+We also support building from sources for iOS using CMake. This is a work in progress and these
+instructions may be subject to change as we figure out what works and what doesn't.
+
+1. On iOS, we compile the app using
+[XCode](https://developer.apple.com/xcode/) version 12 or higher and [Qt](https://www.qt.io/download)
+version 6.3.2.
+
+2. We use `qt-cmake` from the Qt installation to configure the XCode project.
+```bash
+/Users/example/Qt/6.3.2/ios/bin/qt-cmake . -B build
+```
+
+Some variables that might be useful when configuring the project:
+ - `BUILD_ADJUST_SDK_TOKEN=<SDK Token>`: can be set to enable the use of the Adjust telemetry
+   and attribution data collection.
+ - `BUILD_IOS_APP_IDENTIFIER=<App Identifier>`: can be set to change the application bundle
+   identifier. This defaults to `org.mozilla.ios.FirefoxVPN` if not set.
+ - `BUILD_VPN_DEVELOPMENT_TEAM=<Development Team ID>`: can be set to change the development
+   team used for XCode certificates. This defaults to `43AQ936H96` if not set.
+
+3. Open the generated XCode project with `open build/Mozilla\ VPN.xcodeproj`
+
+4. Select the `ALL_BUILD` target and `Any iOS Device (arm64)` as the build configuration.
+
+5. Click on the Play button to start building and signing of the Mozilla VPN app.
+
+TODO: Some things that still need figuring out:
+ - How to build for the iOS simulator (eg: `-DCMAKE_OSX_SYSROOT="iphonesimulator"`)
+ - How to embed `xcassets` and `storyboardc` files into the bundle.
+
 ### How to build from source code for Android
 
 1. You need to install go >= v1.16. If you don't have it done already, download
