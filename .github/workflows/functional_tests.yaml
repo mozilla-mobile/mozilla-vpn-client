@@ -191,9 +191,9 @@ jobs:
         if: steps.cache-build.outputs.cache-hit != 'true'
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
-          mkdir -p dummybuild
+          
           mkdir -p build
-          cmake -S . -B $(pwd)/dummybuild -DBUILD_DUMMY=ON
+          cmake -S . -B $(pwd)/build -DBUILD_DUMMY=ON
           cmake --build $(pwd)/build --config Release --target windows_function_tests
 
       - uses: actions/upload-artifact@v3
