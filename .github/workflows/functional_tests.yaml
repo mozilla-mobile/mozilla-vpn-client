@@ -118,6 +118,8 @@ jobs:
         shell: bash
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
+          export PATH=D:/a/mozilla-vpn-client/mozilla-vpn-client/build/bin:$PATH
+
           mkdir -p build
           cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON
           cmake --build $(pwd)/build --config Release --target build_tests
