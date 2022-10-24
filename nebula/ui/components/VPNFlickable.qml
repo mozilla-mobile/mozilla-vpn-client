@@ -65,10 +65,14 @@ Flickable {
     }
 
     function recalculateContentHeight() {
+        //Checks if the flickable AND it's content interferes with the navbar area (bottom 146px for iOS, bottom 128px for other platforms)
+        //If it does, we pad the flickable's contentHeight with whatever bottom padding is needed so that there is always 48px (aka theme.navBarTopMargin)
+        //between the bottom of the flickable's content and the navbar
         if (navbar.visible && mapToItem(window.contentItem, 0, 0).y + height >= window.height - VPNTheme.theme.navBarHeightWithMargins
                 && flickContentHeight + mapToItem(window.contentItem, 0, 0).y >= window.height - VPNTheme.theme.navBarHeightWithMargins) {
             vpnFlickable.contentHeight = flickContentHeight + (flickContentHeight >= height ? VPNTheme.theme.navBarHeightWithMargins : (mapToItem(window.contentItem, 0, 0).y + flickContentHeight) - (window.height - VPNTheme.theme.navBarHeightWithMargins) + (height - flickContentHeight))
         }
+        //If the navbar isn't visible, or the flickable's content does not interfere with the navbar area, don't worry about adding any padding
         else {
             vpnFlickable.contentHeight = flickContentHeight
         }
