@@ -126,10 +126,15 @@ jobs:
 
       - name: Running tests
         shell: bash
-        working-directory: . 
-        run: |
-          npm install mocha
-          ./scripts/tests/functional_tests.sh
+        id: runTests
+        uses: nick-invision/retry@v2
+        working-directory: ./
+        with:
+          timeout_minutes: 15
+          max_attempts: 3
+          command: |
+            npm install mocha
+            ./scripts/tests/functional_tests.sh
         env:
           ARTIFACT_DIR: tests/artifacts
           MVPN_BIN: ./build/cmake/src/mozillavpn
