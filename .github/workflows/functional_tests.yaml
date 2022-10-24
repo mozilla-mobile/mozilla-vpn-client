@@ -128,4 +128,5 @@ jobs:
         shell: bash
         working-directory: . 
         run: |
+          npm install mocha
           ./scripts/tests/functional_tests.sh  
