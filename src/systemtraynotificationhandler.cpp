@@ -110,10 +110,9 @@ void SystemTrayNotificationHandler::createStatusMenu() {
 void SystemTrayNotificationHandler::setStatusMenu() {
   logger.debug() << "Set status menu";
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-
   // TODO: Check if method is called on these devices.
 #if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
+  MozillaVPN* vpn = MozillaVPN::instance();
   m_systemTrayIcon->setToolTip(qtTrId("vpn.main.productName"));
   m_systemTrayIcon->setContextMenu(m_menu.get());
   m_systemTrayIcon->show();
