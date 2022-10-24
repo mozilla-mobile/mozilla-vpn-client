@@ -62,7 +62,7 @@ int CommandServers::run(QStringList& tokens) {
       task.run();
 
       QEventLoop loop;
-      QObject::connect(&task, &Task::completed, [&] { loop.exit(); });
+      QObject::connect(&task, &Task::completed, &task, [&] { loop.exit(); });
       loop.exec();
     } else if (!loadModels()) {
       return 0;

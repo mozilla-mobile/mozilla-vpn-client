@@ -81,7 +81,7 @@ class AddonMessage final : public Addon {
                                               const QDateTime& messageDateTime);
 
  signals:
-  void stateChanged(MessageState state);
+  void stateChanged(AddonMessage::MessageState state);
   void badgeChanged();
   void dateChanged();
 

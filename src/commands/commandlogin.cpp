@@ -78,7 +78,7 @@ int CommandLogin::run(QStringList& tokens) {
     if (passwordOption.m_set) {
       AuthenticationInApp* aia = AuthenticationInApp::instance();
 
-      QObject::connect(aia, &AuthenticationInApp::stateChanged, [&] {
+      QObject::connect(aia, &AuthenticationInApp::stateChanged, aia, [&] {
         switch (AuthenticationInApp::instance()->state()) {
           case AuthenticationInApp::StateInitializing:
             break;
@@ -201,7 +201,7 @@ int CommandLogin::run(QStringList& tokens) {
           });
     }
 
-    QObject::connect(&vpn, &MozillaVPN::stateChanged, [&] {
+    QObject::connect(&vpn, &MozillaVPN::stateChanged, &vpn, [&] {
       if (vpn.state() == MozillaVPN::StatePostAuthentication ||
           vpn.state() == MozillaVPN::StateTelemetryPolicy ||
           vpn.state() == MozillaVPN::StateMain) {

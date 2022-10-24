@@ -53,10 +53,6 @@ if qtbinpath is None:
 if qtbinpath is None:
     qtbinpath = qtquery('qmake6', 'QT_INSTALL_BINS')
 if qtbinpath is None:
-    qtbinpath = qtquery('qmake5', 'QT_INSTALL_BINS')
-if qtbinpath is None:
-    qtbinpath = qtquery('qmake-qt5', 'QT_INSTALL_BINS')
-if qtbinpath is None:
     print('Unable to locate qmake tool.')
     sys.exit(1)
 

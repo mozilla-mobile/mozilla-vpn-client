@@ -60,7 +60,7 @@ bool ServerCity::fromJson(const QJsonObject& obj) {
   QList<QString> servers;
   if (!Constants::inProduction() || !name.toString().contains("BETA")) {
     QJsonArray serversArray = serversValue.toArray();
-    for (QJsonValue serverValue : serversArray) {
+    for (const QJsonValue& serverValue : serversArray) {
       if (!serverValue.isObject()) {
         return false;
       }

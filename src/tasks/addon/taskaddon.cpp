@@ -22,9 +22,7 @@ TaskAddon::~TaskAddon() { MVPN_COUNT_DTOR(TaskAddon); }
 void TaskAddon::run() {
   NetworkRequest* request = NetworkRequest::createForGetUrl(
       this,
-      QString("%1%2.rcc")
-          .arg(AddonManager::addonServerAddress())
-          .arg(m_addonId),
+      QString("%1%2.rcc").arg(AddonManager::addonServerAddress(), m_addonId),
       200);
 
   connect(request, &NetworkRequest::requestFailed, this,

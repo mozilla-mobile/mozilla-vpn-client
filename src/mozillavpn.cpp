@@ -352,12 +352,17 @@ void MozillaVPN::setState(State state) {
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::appStep, {{"state", QVariant::fromValue(state).toString()}});
 
-  // If we are activating the app, let's initialize the controller.
-  if (m_state == StateMain) {
-    m_private->m_controller.initialize();
+  // If we have a token, we can start periodic operations.
+  // If the timer is already started, this is a no-op.
+  if (SettingsHolder::instance()->hasToken()) {
     startSchedulingPeriodicOperations();
   } else {
     stopSchedulingPeriodicOperations();
+  }
+
+  // If we are activating the app, let's initialize the controller.
+  if (m_state == StateMain) {
+    m_private->m_controller.initialize();
   }
 }
 
@@ -682,12 +687,6 @@ void MozillaVPN::deviceRemovalCompleted(const QString& publicKey) {
 void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
   logger.debug() << "Remove device";
 
-  const Device* device =
-      m_private->m_deviceModel.deviceFromPublicKey(publicKey);
-  if (!device) {
-    return;
-  }
-
   // Let's emit a signal to inform the user about the starting of the device
   // removal.  The front-end code will show a loading icon or something
   // similar.
@@ -810,6 +809,11 @@ bool MozillaVPN::checkCurrentDevice() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
+  // We are not able to check the device at this stage.
+  if (m_state == StateDeviceLimit) {
+    return false;
+  }
+
   if (m_private->m_deviceModel.hasCurrentDevice(keys())) {
     return true;
   }
@@ -856,6 +860,7 @@ void MozillaVPN::logout() {
 
   if (m_private->m_deviceModel.hasCurrentDevice(keys())) {
     TaskScheduler::scheduleTask(new TaskRemoveDevice(keys()->publicKey()));
+    m_private->m_keys.forgetKeys();
   }
 
   TaskScheduler::scheduleTask(new TaskFunction([this]() { reset(false); }));
@@ -1300,7 +1305,7 @@ void MozillaVPN::refreshDevices() {
 
 void MozillaVPN::quit() {
   logger.debug() << "quit";
-  TaskScheduler::deleteTasks();
+  TaskScheduler::forceDeleteTasks();
 
 #if QT_VERSION >= 0x060000 && QT_VERSION < 0x060300
   // Qt5Compat.GraphicalEffects makes the app crash on shutdown. Let's do a
@@ -1610,9 +1615,6 @@ QString MozillaVPN::devVersion() {
 
 // static
 QString MozillaVPN::graphicsApi() {
-#if QT_VERSION < 0x060000
-  return "qt5-angle";
-#else
   QQuickWindow* window =
       qobject_cast<QQuickWindow*>(QmlEngineHolder::instance()->window());
   Q_ASSERT(window);
@@ -1634,7 +1636,6 @@ QString MozillaVPN::graphicsApi() {
     default:
       return "unknown";
   }
-#endif
 }
 
 void MozillaVPN::requestDeleteAccount() {

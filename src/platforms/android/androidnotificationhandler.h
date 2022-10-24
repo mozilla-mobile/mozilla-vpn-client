@@ -22,6 +22,8 @@ class AndroidNotificationHandler final : public NotificationHandler {
 
  private:
   void applyStrings();
+
+  void initialize() override;
 };
 
 #endif  // ANDROIDNOTIFICATIONHANDLER_H

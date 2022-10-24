@@ -118,7 +118,7 @@ bool TestHelper::waitForConnection() {
     timer.start(500);
 
     QEventLoop loop;
-    QObject::connect(&timer, &QTimer::timeout, [&] { loop.exit(); });
+    QObject::connect(&timer, &QTimer::timeout, &timer, [&] { loop.exit(); });
     loop.exec();
   }
   return connected;

@@ -217,7 +217,12 @@ int CommandUI::run(QStringList& tokens) {
     L18nStrings::initialize();
 
     MozillaVPN vpn;
-    vpn.setStartMinimized(minimizedOption.m_set);
+
+    bool minimized = minimizedOption.m_set;
+    if (qgetenv("MVPN_MINIMIZED") == "1") {
+      minimized = true;
+    }
+    vpn.setStartMinimized(minimized);
 
 #ifdef MVPN_ANDROID
     AndroidGlean::initialize(engine);

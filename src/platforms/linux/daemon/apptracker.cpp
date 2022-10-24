@@ -39,7 +39,7 @@ AppTracker::~AppTracker() {
   MVPN_COUNT_DTOR(AppTracker);
   logger.debug() << "AppTracker destroyed.";
 
-  for (AppData* data : m_runningApps.values()) {
+  for (AppData* data : m_runningApps) {
     delete data;
   }
   m_runningApps.clear();
@@ -85,8 +85,8 @@ void AppTracker::userCreated(uint userid, const QDBusObjectPath& path) {
     QString userCgroupPath = s_cgroupMount + qv.toString();
     logger.debug() << "Monitoring Control Groups v2 at:" << userCgroupPath;
 
-    connect(&m_cgroupWatcher, SIGNAL(directoryChanged(const QString&)), this,
-            SLOT(cgroupsChanged(const QString&)));
+    connect(&m_cgroupWatcher, SIGNAL(directoryChanged(QString)), this,
+            SLOT(cgroupsChanged(QString)));
 
     m_cgroupWatcher.addPath(userCgroupPath);
     m_cgroupWatcher.addPath(userCgroupPath + "/app.slice");

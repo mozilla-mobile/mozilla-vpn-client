@@ -13,10 +13,10 @@ class BenchmarkTaskSentinel final : public QObject {
 
  public:
   BenchmarkTaskSentinel() = default;
-  ~BenchmarkTaskSentinel() { emit destroyed(); }
+  ~BenchmarkTaskSentinel() { emit sentinelDestroyed(); }
 
  signals:
-  void destroyed();
+  void sentinelDestroyed();
 };
 
 #endif  // BENCHMARKTASKSENTINEL_H

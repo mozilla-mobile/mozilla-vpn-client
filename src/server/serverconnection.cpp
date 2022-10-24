@@ -84,7 +84,6 @@ void serializeServerCountry(ServerCountryModel* model, QJsonObject& obj) {
 
 QJsonObject serializeStatus() {
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
   QJsonObject obj;
 
   obj["authenticated"] = vpn->userState() == MozillaVPN::UserAuthenticated;
@@ -173,7 +172,6 @@ ServerConnection::ServerConnection(QObject* parent, QTcpSocket* connection)
           &ServerConnection::readData);
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   connect(vpn, &MozillaVPN::stateChanged, this, &ServerConnection::writeState);
   connect(vpn->controller(), &Controller::stateChanged, this,

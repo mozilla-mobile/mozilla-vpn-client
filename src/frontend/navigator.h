@@ -72,12 +72,13 @@ class Navigator final : public QObject {
 
   ~Navigator();
 
-  Q_INVOKABLE void requestScreen(Screen screen,
-                                 LoadingFlags loadingFlags = NoFlags);
+  Q_INVOKABLE void requestScreen(
+      Navigator::Screen screen, Navigator::LoadingFlags loadingFlags = NoFlags);
   Q_INVOKABLE void requestPreviousScreen();
 
-  Q_INVOKABLE void addStackView(Screen screen, const QVariant& stackView);
-  Q_INVOKABLE void addView(Screen screen, const QVariant& view);
+  Q_INVOKABLE void addStackView(Navigator::Screen screen,
+                                const QVariant& stackView);
+  Q_INVOKABLE void addView(Navigator::Screen screen, const QVariant& view);
 
   Q_INVOKABLE bool eventHandled();
 

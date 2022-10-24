@@ -52,7 +52,8 @@ struct ConditionCallback {
 QList<ConditionCallback> s_conditionCallbacks{
     {"enabled_features",
      [](const QJsonValue& value) -> bool {
-       for (const QJsonValue& enabledFeature : value.toArray()) {
+       const QJsonArray enabledFeatures = value.toArray();
+       for (const QJsonValue& enabledFeature : enabledFeatures) {
          QString featureName = enabledFeature.toString();
 
          // If the feature doesn't exist, we crash.
@@ -68,7 +69,8 @@ QList<ConditionCallback> s_conditionCallbacks{
      },
      [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
        QStringList features;
-       for (const QJsonValue& v : value.toArray()) {
+       QJsonArray featureArray = value.toArray();
+       for (const QJsonValue& v : featureArray) {
          features.append(v.toString());
        }
 
@@ -79,7 +81,8 @@ QList<ConditionCallback> s_conditionCallbacks{
     {"platforms",
      [](const QJsonValue& value) -> bool {
        QStringList platforms;
-       for (QJsonValue platform : value.toArray()) {
+       QJsonArray platformArray = value.toArray();
+       for (const QJsonValue& platform : platformArray) {
          platforms.append(platform.toString());
        }
 
@@ -96,7 +99,8 @@ QList<ConditionCallback> s_conditionCallbacks{
 
     {"settings",
      [](const QJsonValue& value) -> bool {
-       for (QJsonValue setting : value.toArray()) {
+       QJsonArray settings = value.toArray();
+       for (const QJsonValue& setting : settings) {
          QJsonObject obj = setting.toObject();
 
          QString op = obj["op"].toString();
@@ -216,7 +220,8 @@ QList<ConditionCallback> s_conditionCallbacks{
      },
      [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
        QStringList locales;
-       for (const QJsonValue& v : value.toArray()) {
+       QJsonArray localeArray = value.toArray();
+       for (const QJsonValue& v : localeArray) {
          locales.append(v.toString().toLower());
        }
 
@@ -390,10 +395,7 @@ Addon::Addon(QObject* parent, const QString& manifestFileName,
   }
 }
 
-Addon::~Addon() {
-  MVPN_COUNT_DTOR(Addon);
-  disable();
-}
+Addon::~Addon() { MVPN_COUNT_DTOR(Addon); }
 
 void Addon::updateAddonState(State newState) {
   Q_ASSERT(newState != Unknown);

@@ -87,11 +87,13 @@ void CrashUploader::startRequest(const QString& file) {
   multipart->append(namePart);
   multipart->append(formPart);
 
-  auto urlStr = Constants::inProduction() ? Constants::CRASH_STAGING_URL
-                                          : Constants::CRASH_PRODUCTION_URL;
+  auto urlStr =
 #ifdef MVPN_DEBUG
-  urlStr = Constants::CRASH_STAGING_URL;
-#endif  // MVPN_DEBUG
+      Constants::CRASH_STAGING_URL;
+#else
+      Constants::inProduction() ? Constants::CRASH_STAGING_URL
+                                : Constants::CRASH_PRODUCTION_URL;
+#endif
 
   logger.debug() << "Uploading to : " << urlStr;
   QUrl url(urlStr);
@@ -106,7 +108,7 @@ void CrashUploader::startRequest(const QString& file) {
 
   connect(reply, &QNetworkReply::sslErrors, [](QList<QSslError> errors) {
     logger.error() << "SSL Errors: ";
-    for (auto err : errors) {
+    for (const auto& err : errors) {
       logger.error() << err.errorString();
     }
   });
@@ -136,7 +138,7 @@ void CrashUploader::dumpResponse(QNetworkReply* reply) {
   auto response = reply->readAll();
   auto headers = reply->rawHeaderList();
   logger.debug() << "Reply headers";
-  for (auto header : headers) {
+  for (const auto& header : headers) {
     logger.debug() << "Header: " << QString::fromLocal8Bit(header) << " = "
                    << QString::fromLocal8Bit(reply->rawHeader(header));
   }

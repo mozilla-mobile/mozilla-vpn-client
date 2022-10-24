@@ -30,7 +30,7 @@ class LottiePrivate : public QQuickItem {
 
  public:
   static void initialize(QJSEngine* engine, const QString& userAgent);
-  static const QString& userAgent();
+  static const QString userAgent();
   static QJSEngine* engine();
 
   LottiePrivate(QQuickItem* parent = 0);

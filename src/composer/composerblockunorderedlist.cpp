@@ -42,7 +42,8 @@ bool ComposerBlockUnorderedList::parseJson(const QString& prefix,
     return false;
   }
 
-  for (QJsonValue subBlockValue : subBlockArray.toArray()) {
+  const QJsonArray subBlocks = subBlockArray.toArray();
+  for (const QJsonValue& subBlockValue : subBlocks) {
     if (!subBlockValue.isObject()) {
       logger.error()
           << "Expected JSON object for block content list in composer";
@@ -57,7 +58,7 @@ bool ComposerBlockUnorderedList::parseJson(const QString& prefix,
     }
 
     m_subBlocks.append(
-        QString("%1.block.%2.%3").arg(prefix).arg(blockId).arg(subBlockId),
+        QString("%1.block.%2.%3").arg(prefix, blockId, subBlockId),
         subBlockObj["content"].toString());
   }
 

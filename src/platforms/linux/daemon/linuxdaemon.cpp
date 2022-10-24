@@ -44,7 +44,7 @@ class CommandLinuxDaemon final : public Command {
       }
 
       SignalHandler sh;
-      QObject::connect(&sh, &SignalHandler::quitRequested, [&]() {
+      QObject::connect(&sh, &SignalHandler::quitRequested, &sh, [&]() {
         dbus->deactivate();
         qApp->quit();
       });

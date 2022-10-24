@@ -86,7 +86,7 @@ bool Server::fromJson(const QJsonObject& obj) {
 
   QList<QPair<uint32_t, uint32_t>> prList;
   QJsonArray portRangesArray = portRanges.toArray();
-  for (QJsonValue portRangeValue : portRangesArray) {
+  for (const QJsonValue& portRangeValue : portRangesArray) {
     if (!portRangeValue.isArray()) {
       return false;
     }
@@ -193,6 +193,7 @@ uint32_t Server::choosePort() const {
     length += range.second - range.first + 1;
   }
   Q_ASSERT(length < 65536);
+  Q_ASSERT(length > 0);
 
   // Pick a port at random.
   quint32 r = QRandomGenerator::global()->generate() % length;

@@ -114,7 +114,7 @@ QString SettingsHolder::getReport() const {
   QString buff;
   QTextStream out(&buff);
   auto settingsKeys = m_settings.childKeys();
-  for (auto setting : settingsKeys) {
+  for (const auto& setting : settingsKeys) {
     if (SENSITIVE_SETTINGS.contains(setting)) {
       out << setting << " -> <Sensitive>" << Qt::endl;
       continue;
@@ -167,7 +167,7 @@ void SettingsHolder::clearAddonSettings(const QString& group) {
   logger.debug() << "Clean up the settings for group" << group;
 
   const QString groupKey(
-      QString("%1/%2").arg(Constants::ADDON_SETTINGS_GROUP).arg(group));
+      QString("%1/%2").arg(Constants::ADDON_SETTINGS_GROUP, group));
 
   m_settings.beginGroup(groupKey);
   m_settings.remove("");
@@ -179,10 +179,8 @@ void SettingsHolder::clearAddonSettings(const QString& group) {
 // static
 QString SettingsHolder::getAddonSettingKey(const AddonSettingQuery& query) {
   return QString("%1/%2/%3/%4")
-      .arg(Constants::ADDON_SETTINGS_GROUP)
-      .arg(query.m_addonGroup)
-      .arg(query.m_addonId)
-      .arg(query.m_setting);
+      .arg(Constants::ADDON_SETTINGS_GROUP, query.m_addonGroup, query.m_addonId,
+           query.m_setting);
 }
 
 QString SettingsHolder::getAddonSetting(const AddonSettingQuery& query) {

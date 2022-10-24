@@ -24,7 +24,7 @@ class CaptivePortalRequest final : public QObject {
   void run();
 
  signals:
-  void completed(CaptivePortalResult detected);
+  void completed(CaptivePortalRequest::CaptivePortalResult detected);
 
  private:
   void createRequest(const QUrl& url);

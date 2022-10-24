@@ -491,7 +491,7 @@ static QList<InspectorCommand> s_commands{
                      "Set Glean Source Tags (supply a comma seperated list)", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QStringList tags = QString(arguments[1]).split(',');
-                       MozillaVPN::instance()->setGleanSourceTags(tags);
+                       emit MozillaVPN::instance()->setGleanSourceTags(tags);
                        return QJsonObject();
                      }},
 
@@ -1067,7 +1067,7 @@ void InspectorHandler::networkRequestFinished(QNetworkReply* reply) {
 
   // Serialize the Response
   QJsonObject responseHeader;
-  for (auto headerPair : reply->rawHeaderPairs()) {
+  for (const auto& headerPair : reply->rawHeaderPairs()) {
     responseHeader[QString(headerPair.first)] = QString(headerPair.second);
   }
   response["headers"] = responseHeader;
@@ -1080,7 +1080,7 @@ void InspectorHandler::networkRequestFinished(QNetworkReply* reply) {
   auto qrequest = reply->request();
   // Serialize the Request
   QJsonArray requestHeaders;
-  for (auto header : qrequest.rawHeaderList()) {
+  for (const auto& header : qrequest.rawHeaderList()) {
     requestHeaders.append(QString(header));
   }
   request["headers"] = requestHeaders;
@@ -1158,7 +1158,6 @@ QJsonObject InspectorHandler::serialize(QQuickItem* item) {
   auto metaObject = item->metaObject();
   int propertyCount = metaObject->propertyCount();
   out["__propertyCount__"] = propertyCount;
-  QJsonArray props;
   for (int i = 0; i < metaObject->propertyCount(); i++) {
     auto property = metaObject->property(i);
     if (!property.isValid()) {

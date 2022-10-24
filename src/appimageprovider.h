@@ -8,25 +8,12 @@
 #include <QObject>
 #include <QQuickImageProvider>
 
-// Helper class to support Qt5 and Qt6
-class AppImageProvider : public QQuickImageProvider
-#if QT_VERSION < 0x060000
-    ,
-                         public QObject
-#endif
-{
+class AppImageProvider : public QQuickImageProvider {
  public:
   AppImageProvider(QObject* parent, QQmlImageProviderBase::ImageType type,
                    QQmlImageProviderBase::Flags flags = Flags())
-      : QQuickImageProvider(type, flags)
-#if QT_VERSION < 0x060000
-        ,
-        QObject(parent)
-#endif
-  {
-#if QT_VERSION >= 0x060000
+      : QQuickImageProvider(type, flags) {
     setParent(parent);
-#endif
   }
 
   virtual ~AppImageProvider() = default;

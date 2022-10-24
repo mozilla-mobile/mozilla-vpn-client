@@ -28,7 +28,6 @@ void TestLocalizer::systemLanguage() {
 
   l.setCode("");
   QCOMPARE(l.code(), "");
-  QCOMPARE(l.previousCode(), "en");
 
   l.setCode("en");
   QCOMPARE(l.code(), "en");
