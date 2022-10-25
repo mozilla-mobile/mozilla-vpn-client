@@ -16,8 +16,8 @@ ColumnLayout {
     property var recentConnectionsModel: getRecentConnectionsModel()
 
     function getRecentConnectionsModel() {
-        var maxNumVisibleConnections = 2
-        var recentConnections = []
+        const maxNumVisibleConnections = 2
+        const recentConnections = []
         for (let i=1; i<VPNSettings.recentConnections.length; i++) {
 
             if (recentConnections.length === maxNumVisibleConnections) {
