@@ -123,7 +123,7 @@ ColumnLayout {
                     let args = [];
                     popStack();
 
-                    if (isMultiHop) {
+                    if (modelData.isMultiHop) {
                         return VPNController.changeServer(connection.get(1).countryCode, connection.get(1).serverCityName, connection.get(0).countryCode, connection.get(0).serverCityName)
                     }
 
