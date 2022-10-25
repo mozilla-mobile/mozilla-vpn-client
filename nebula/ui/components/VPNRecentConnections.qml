@@ -19,7 +19,6 @@ ColumnLayout {
         const maxNumVisibleConnections = 2
         const recentConnections = []
         for (let i=1; i<VPNSettings.recentConnections.length; i++) {
-
             if (recentConnections.length === maxNumVisibleConnections) {
                 return recentConnections;
             }
@@ -63,6 +62,7 @@ ColumnLayout {
                 accessibleLabel
             });
         }
+        return recentConnections
     }
 
     function focusItemAt(idx) {
@@ -124,10 +124,10 @@ ColumnLayout {
                     popStack();
 
                     if (modelData.isMultiHop) {
-                        return VPNController.changeServer(connection.get(1).countryCode, connection.get(1).serverCityName, connection.get(0).countryCode, connection.get(0).serverCityName)
+                        return VPNController.changeServer(modelData.connection[1].countryCode, modelData.connection[1].serverCityName, modelData.connection[0].countryCode, modelData.connection[0].serverCityName)
                     }
 
-                    return VPNController.changeServer(connection.get(0).countryCode, connection.get(0).serverCityName)
+                    return VPNController.changeServer(modelData.connection[0].countryCode, modelData.connection[0].serverCityName)
 
                 }
 
