@@ -38,7 +38,7 @@ open class QTConfigurationExtension
     val host: String by lazy {
         val dir = File(project.properties["mozillavpn_qt_host_dir"].toString())
         if (!dir.exists()) {
-            error("$ERROR_MESSAGE_NO_QT_HOST \n Value: ${dir.absolutePath.toString()}")
+            error("$ERROR_MESSAGE_NO_QT_HOST \n Value: ${dir.absolutePath}")
         }
         dir.absolutePath.toString()
     }
@@ -195,12 +195,11 @@ open class QTConfigurationExtension
             }
             process.waitFor()
         }
-        val out = processOutput.toString();
-        try{
+        val out = processOutput.toString()
+        try {
             return JSONArray(out)
-        }catch(e:Exception){
-            error("Got Output of: $out \n ${e.toString()}")
-
+        } catch (e: Exception) {
+            error("Got Output of: $out \n $e")
         }
     }
 
@@ -224,19 +223,16 @@ open class QTConfigurationExtension
     }
 }
 
-
 const val ERROR_MESSAGE_NO_QT_HOST = "mozillavpn_qt_host_dir is not set or does not exist \n " +
-        "Please add it:  \n" +
-        " \t via env MOZILLAVPN_QT_HOST_DIR=<../> \n" +
-        " \t or write mozillavpn_qt_host_dir=~/<some folder> to either \n"+
-        " \t \t  ~/.gradle/gradle.properties \n "+
-        " \t \t  project/android/gradle.properties"
+    "Please add it:  \n" +
+    " \t via env MOZILLAVPN_QT_HOST_DIR=<../> \n" +
+    " \t or write mozillavpn_qt_host_dir=~/<some folder> to either \n" +
+    " \t \t  ~/.gradle/gradle.properties \n " +
+    " \t \t  project/android/gradle.properties"
 
 const val ERROR_MESSAGE_NO_ANDROID_DIR = "mozillavpn_qt_android_dir is not set or does not exist \n " +
-        "Please add it:  \n" +
-        " \t via env MOZILLAVPN_QT_ANDROID_DIR=<../> \n" +
-        " \t or write mozillavpn_qt_android_dir=~/<some folder> to either \n"+
-        " \t \t  ~/.gradle/gradle.properties \n "+
-        " \t \t  project/android/gradle.properties"
-
-
+    "Please add it:  \n" +
+    " \t via env MOZILLAVPN_QT_ANDROID_DIR=<../> \n" +
+    " \t or write mozillavpn_qt_android_dir=~/<some folder> to either \n" +
+    " \t \t  ~/.gradle/gradle.properties \n " +
+    " \t \t  project/android/gradle.properties"

@@ -45,7 +45,7 @@ RUN python3 -m aqt install-qt --outputdir /opt linux android ${QT_VERSION} ${AND
     # :qtBindings:compileDebugAidl requires build-tools;29.0.2
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "build-tools;29.0.2" &&\ 
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "build-tools;30.0.3" &&\
-    echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "cmake;3.10.2.4988404" &&\
+    echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "cmake;3.18.1" &&\
         # Note: Not sure why we need emulator, need to investiage the gradle dependencies
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "emulator" &&\ 
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "patcher;v4" &&\
