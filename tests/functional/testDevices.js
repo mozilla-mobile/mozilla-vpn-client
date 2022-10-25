@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const { navBar, settingsView, initialView, telemetryView, generalElements } = require('./elements.js');
+const { navBar, settingsView, initialView, telemetryView, generalElements, authView } = require('./elements.js');
 const vpn = require('./helper.js');
 
 describe('Devices', function() {
@@ -111,15 +111,15 @@ describe('Devices', function() {
 
       // Click on get started and wait for authenticating view
       await vpn.waitForElementAndClick(initialView.GET_STARTED);
-      await vpn.waitForElement(initialView.AUTH_EMAIL_INPUT);
-      await vpn.setElementProperty(initialView.AUTH_EMAIL_INPUT, 'text', 's', 'test@test');
-      await vpn.waitForElement(initialView.AUTH_START_BUTTON);
-      await vpn.waitForElementAndClick(initialView.AUTH_START_BUTTON);
+      await vpn.waitForElement(authView.EMAIL_INPUT);
+      await vpn.setElementProperty(authView.EMAIL_INPUT, 'text', 's', 'test@test');
+      await vpn.waitForElement(authView.START_BUTTON);
+      await vpn.waitForElementAndClick(authView.START_BUTTON);
 
-      await vpn.waitForElement(initialView.AUTH_PASS_INPUT);
-      await vpn.setElementProperty(initialView.AUTH_PASS_INPUT, 'text', 's', 'password');
+      await vpn.waitForElement(authView.PASS_INPUT);
+      await vpn.setElementProperty(authView.PASS_INPUT, 'text', 's', 'password');
 
-      await vpn.waitForElementAndClick(initialView.AUTH_SIGNIN_BUTTON);
+      await vpn.waitForElementAndClick(authView.SIGNIN_BUTTON);
 
       // Wait for VPN client screen to move from spinning wheel to next screen
       await vpn.waitForElementProperty('VPN', 'userState', 'UserAuthenticated');
@@ -227,14 +227,14 @@ describe('Devices', function() {
 
       // Click on get started and wait for authenticating view
       await vpn.waitForElementAndClick(initialView.GET_STARTED);
-      await vpn.waitForElement(initialView.AUTH_EMAIL_INPUT);
-      await vpn.setElementProperty(initialView.AUTH_EMAIL_INPUT, 'text', 's', 'test@test');
-      await vpn.waitForElement(initialView.AUTH_START_BUTTON);
-      await vpn.waitForElementAndClick(initialView.AUTH_START_BUTTON);
+      await vpn.waitForElement(authView.EMAIL_INPUT);
+      await vpn.setElementProperty(authView.EMAIL_INPUT, 'text', 's', 'test@test');
+      await vpn.waitForElement(authView.START_BUTTON);
+      await vpn.waitForElementAndClick(authView.START_BUTTON);
 
-      await vpn.waitForElement(initialView.AUTH_PASS_INPUT);
-      await vpn.setElementProperty(initialView.AUTH_PASS_INPUT, 'text', 's', 'password');
-      await vpn.waitForElementAndClick(initialView.AUTH_SIGNIN_BUTTON);
+      await vpn.waitForElement(authView.PASS_INPUT);
+      await vpn.setElementProperty(authView.PASS_INPUT, 'text', 's', 'password');
+      await vpn.waitForElementAndClick(authView.SIGNIN_BUTTON);
 
       // Wait for VPN client screen to move from spinning wheel to next screen
       await vpn.waitForElementProperty('VPN', 'userState', 'UserAuthenticated');
@@ -347,14 +347,14 @@ describe('Devices', function() {
 
       // Click on get started and wait for authenticating view
       await vpn.waitForElementAndClick(initialView.GET_STARTED);
-      await vpn.waitForElement(initialView.AUTH_EMAIL_INPUT);
-      await vpn.setElementProperty(initialView.AUTH_EMAIL_INPUT, 'text', 's', 'test@test');
-      await vpn.waitForElement(initialView.AUTH_START_BUTTON);
-      await vpn.waitForElementAndClick(initialView.AUTH_START_BUTTON);
+      await vpn.waitForElement(authView.EMAIL_INPUT);
+      await vpn.setElementProperty(authView.EMAIL_INPUT, 'text', 's', 'test@test');
+      await vpn.waitForElement(authView.START_BUTTON);
+      await vpn.waitForElementAndClick(authView.START_BUTTON);
 
-      await vpn.waitForElement(initialView.AUTH_PASS_INPUT);
-      await vpn.setElementProperty(initialView.AUTH_PASS_INPUT, 'text', 's', 'password');
-      await vpn.waitForElementAndClick(initialView.AUTH_SIGNIN_BUTTON);
+      await vpn.waitForElement(authView.PASS_INPUT);
+      await vpn.setElementProperty(authView.PASS_INPUT, 'text', 's', 'password');
+      await vpn.waitForElementAndClick(authView.SIGNIN_BUTTON);
 
       // Wait for VPN client screen to move from spinning wheel to next screen
       await vpn.waitForElementProperty('VPN', 'userState', 'UserAuthenticated');

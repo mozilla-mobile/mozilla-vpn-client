@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 const assert = require('assert');
-const { settingsScreen, navBar, homeScreen } = require('./elements.js');
+const { navBar, settingsView, homeView } = require('./elements.js');
 const vpn = require('./helper.js');
 
 describe('Tutorials', function () {
@@ -10,22 +10,21 @@ describe('Tutorials', function () {
   this.ctx.authenticationNeeded = true;
 
   async function openHighlightedTutorial() {
-    await vpn.waitForElement(navBar.NAVIGATION_BAR_SETTINGS);
-    await vpn.clickOnElement(navBar.NAVIGATION_BAR_SETTINGS);
+    await vpn.clickOnElement(navBar.SETTINGS);
     await vpn.wait();
 
-    await vpn.waitForElement(settingsScreen.TIP_AND_TRICKS);
-    await vpn.clickOnElement(settingsScreen.TIP_AND_TRICKS);
+    await vpn.waitForElement(settingsView.TIPS_AND_TRICKS);
+    await vpn.clickOnElement(settingsView.TIPS_AND_TRICKS);
     await vpn.wait();
     
-    await vpn.waitForElement(homeScreen.TUTORIAL_LIST_HIGHLIGHT);
-    await vpn.clickOnElement(homeScreen.TUTORIAL_LIST_HIGHLIGHT);
+    await vpn.waitForElement(homeView.TUTORIAL_LIST_HIGHLIGHT);
+    await vpn.clickOnElement(homeView.TUTORIAL_LIST_HIGHLIGHT);
     await vpn.wait();
   }
 
   async function clickTooltipCloseButton() {
-    await vpn.waitForElement(homeScreen.TUTORIAL_LEAVE);
-    await vpn.clickOnElement(homeScreen.TUTORIAL_LEAVE);
+    await vpn.waitForElement(homeView.TUTORIAL_LEAVE);
+    await vpn.clickOnElement(homeView.TUTORIAL_LEAVE);
   }
 
   describe('Tutorial tooltip', function () {
@@ -34,8 +33,8 @@ describe('Tutorials', function () {
     });
 
     it('Has close button', async () => {      
-      await vpn.waitForElement(homeScreen.TUTORIAL_LEAVE);
-      assert((await vpn.getElementProperty(homeScreen.TUTORIAL_LEAVE, 'visible')) === 'true');
+      await vpn.waitForElement(homeView.TUTORIAL_LEAVE);
+      assert((await vpn.getElementProperty(homeView.TUTORIAL_LEAVE, 'visible')) === 'true');
     });
 
     it('Clicking close button opens the "Leave tutorial?" modal', async () => {
@@ -43,12 +42,10 @@ describe('Tutorials', function () {
       await vpn.wait();
 
       await vpn.wait();
-      await vpn.waitForElementProperty(
-        'tutorialPopupPrimaryButton', 'visible', 'true');
+      await vpn.waitForElementProperty(homeView.TUTORIAL_POPUP_PRIMARY_BUTTON, 'visible', 'true');
 
       assert(
-        (await vpn.getElementProperty(
-          'tutorialPopupPrimaryButton', 'text')) === 'Resume tutorial');
+        (await vpn.getElementProperty(homeView.TUTORIAL_POPUP_PRIMARY_BUTTON, 'text')) === 'Resume tutorial');
     });
   });
 
@@ -62,21 +59,21 @@ describe('Tutorials', function () {
 
     it('Clicking primary button closes modal and resumes tutorial',
       async () => {
-        await vpn.waitForElementProperty(homeScreen.TUTORIAL_POPUP_PRIMARY_BUTTON, 'visible', 'true');
-        await vpn.clickOnElement(homeScreen.TUTORIAL_POPUP_PRIMARY_BUTTON);
+        await vpn.waitForElementProperty(homeView.TUTORIAL_POPUP_PRIMARY_BUTTON, 'visible', 'true');
+        await vpn.clickOnElement(homeView.TUTORIAL_POPUP_PRIMARY_BUTTON);
         await vpn.wait();
 
-        assert((await vpn.getElementProperty(homeScreen.TUTORIAL_POPUP_PRIMARY_BUTTON, 'visible')) === 'false');
-        assert((await vpn.getElementProperty(homeScreen.TUTORIAL_UI, 'visible')) === 'true');
+        assert((await vpn.getElementProperty(homeView.TUTORIAL_POPUP_PRIMARY_BUTTON, 'visible')) === 'false');
+        assert((await vpn.getElementProperty(homeView.TUTORIAL_UI, 'visible')) === 'true');
       });
 
     it('Clicking secondary button closes modal and stops tutorial',
       async () => {
-        await vpn.waitForElementProperty(homeScreen.TUTORIAL_POPUP_SECONDARY_BUTTON, 'visible', 'true');
-        await vpn.clickOnElement(homeScreen.TUTORIAL_POPUP_SECONDARY_BUTTON);
+        await vpn.waitForElementProperty(homeView.TUTORIAL_POPUP_SECONDARY_BUTTON, 'visible', 'true');
+        await vpn.clickOnElement(homeView.TUTORIAL_POPUP_SECONDARY_BUTTON);
         await vpn.wait();
 
-        assert((await vpn.getElementProperty(homeScreen.TUTORIAL_UI, 'visible')) === 'false');
+        assert((await vpn.getElementProperty(homeView.TUTORIAL_UI, 'visible')) === 'false');
       });
   });
 
@@ -92,7 +89,7 @@ describe('Tutorials', function () {
           await vpn.wait();
           await vpn.openSettings();
           await vpn.wait();
-          assert((await vpn.getElementProperty(homeScreen.TUTORIAL_POPUP_PRIMARY_BUTTON, 'visible')) === 'true');
+          assert((await vpn.getElementProperty(homeView.TUTORIAL_POPUP_PRIMARY_BUTTON, 'visible')) === 'true');
         });
 
       it('Clicking secondary button opens clicked system tray option',
@@ -101,15 +98,15 @@ describe('Tutorials', function () {
           await vpn.openSettings();
           await vpn.wait();
 
-          await vpn.waitForElementProperty(homeScreen.TUTORIAL_POPUP_SECONDARY_BUTTON, 'visible', 'true');
-          await vpn.clickOnElement(homeScreen.TUTORIAL_POPUP_SECONDARY_BUTTON);
+          await vpn.waitForElementProperty(homeView.TUTORIAL_POPUP_SECONDARY_BUTTON, 'visible', 'true');
+          await vpn.clickOnElement(homeView.TUTORIAL_POPUP_SECONDARY_BUTTON);
           await vpn.wait();
           
-          await vpn.waitForElementProperty(homeScreen.TUTORIAL_UI, 'visible', 'false');
-          assert((await vpn.getElementProperty(homeScreen.TUTORIAL_UI, 'visible')) === 'false');
+          await vpn.waitForElementProperty(homeView.TUTORIAL_UI, 'visible', 'false');
+          assert((await vpn.getElementProperty(homeView.TUTORIAL_UI, 'visible')) === 'false');
 
-          await vpn.waitForElement(settingsScreen.SETTINGS_VIEW);
-          assert((await vpn.getElementProperty(settingsScreen.SETTINGS_VIEW, 'visible')) === 'true');
+          await vpn.waitForElement(settingsView.SCREEN);
+          assert((await vpn.getElementProperty(settingsView.SCREEN, 'visible')) === 'true');
         });
     });
 });
