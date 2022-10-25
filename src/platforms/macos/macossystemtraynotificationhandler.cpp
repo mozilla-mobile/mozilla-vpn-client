@@ -30,9 +30,6 @@ MacosSystemTrayNotificationHandler::~MacosSystemTrayNotificationHandler() {
 
 void MacosSystemTrayNotificationHandler::initialize() {
   SystemTrayNotificationHandler::initialize();
-
-  setStatusMenu();
-  updateIcon();
 }
 
 void MacosSystemTrayNotificationHandler::setStatusMenu() {
