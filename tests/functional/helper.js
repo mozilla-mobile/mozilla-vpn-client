@@ -161,6 +161,7 @@ module.exports = {
   },
 
   async waitForElementAndClick(id) {
+    await this.waitForElement(id);
     await this.waitForElementAndProperty(id, 'visible', 'true');
     await this.clickOnElement(id)
     await this.wait()
@@ -253,7 +254,7 @@ module.exports = {
     }
   },
 
-  wait(waitTimeInMilliSecs = 1000) {
+  wait(waitTimeInMilliSecs = 500) {
     return new Promise(resolve => setTimeout(resolve, waitTimeInMilliSecs));
   },
 

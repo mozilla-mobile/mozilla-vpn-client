@@ -2,7 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const assert = require('assert');
+const assert = require('assert'); // TODO: add asserts to each block
+const { initialView, telemetryView, generalElements, settingsView, authView } = require('./elements.js');
 const vpn = require('./helper.js');
 
 describe('User authentication', function() {
@@ -37,88 +38,79 @@ describe('User authentication', function() {
 
       await vpn.waitForMainView();
 
-      await vpn.clickOnElement('getStarted');
-      await vpn.waitForElement('authStart-textInput');
+      await vpn.clickOnElement(initialView.GET_STARTED);
+      await vpn.waitForElement(authView.EMAIL_INPUT);
       await vpn.waitForElementProperty(
-          'authStart-textInput', 'visible', 'true');
-      await vpn.waitForElementProperty('authStart-button', 'enabled', 'false');
+          authView.EMAIL_INPUT, 'visible', 'true');
+      await vpn.waitForElementProperty(authView.START_BUTTON, 'enabled', 'false');
       await vpn.setElementProperty(
-          'authStart-textInput', 'text', 's', 'test@test');
-      await vpn.waitForElementProperty('authStart-button', 'enabled', 'true');
-      await vpn.waitForElement('authStart-button');
-      await vpn.clickOnElement('authStart-button');
+          authView.EMAIL_INPUT, 'text', 's', 'test@test');
+      await vpn.waitForElementProperty(authView.START_BUTTON, 'enabled', 'true');
+      await vpn.waitForElement(authView.START_BUTTON);
+      await vpn.clickOnElement(authView.START_BUTTON);
 
-      await vpn.waitForElement('authSignUp-passwordInput');
+      await vpn.waitForElement(authView.PASS_INPUT);
       await vpn.waitForElementProperty(
-          'authSignUp-passwordInput', 'visible', 'true');
+          authView.PASS_INPUT, 'visible', 'true');
 
-      await vpn.waitForElement('authSignUp-passwordConditionLength');
+      await vpn.waitForElement(authView.PASS_LENGTH_CONDITION);
       await vpn.waitForElementProperty(
-          'authSignUp-passwordConditionLength', '_passwordConditionIsSatisfied',
+          authView.PASS_LENGTH_CONDITION, '_passwordConditionIsSatisfied',
           'false');
-      await vpn.waitForElement('authSignUp-passwordConditionEmailAddress');
+      await vpn.waitForElement(authView.EMAIL_INPUT_CONDITIOIN);
       await vpn.waitForElementProperty(
-          'authSignUp-passwordConditionEmailAddress',
+          authView.EMAIL_INPUT_CONDITIOIN,
           '_passwordConditionIsSatisfied', 'false');
-      await vpn.waitForElement('authSignUp-passwordConditionCommon');
+      await vpn.waitForElement(authView.PASS_INPUT_CONDITION);
       await vpn.waitForElementProperty(
-          'authSignUp-passwordConditionCommon', '_passwordConditionIsSatisfied',
+          authView.PASS_INPUT_CONDITION, '_passwordConditionIsSatisfied',
           'false');
 
       // Condition 1
       await vpn.setElementProperty(
-          'authSignUp-passwordInput', 'text', 's', '12345');
+          authView.PASS_INPUT, 'text', 's', '12345');
       await vpn.waitForElementProperty(
-          'authSignUp-passwordConditionLength', '_passwordConditionIsSatisfied',
+          authView.PASS_LENGTH_CONDITION, '_passwordConditionIsSatisfied',
           'false');
       await vpn.waitForElementProperty(
-          'authSignUp-passwordConditionEmailAddress',
+          authView.EMAIL_INPUT_CONDITIOIN,
           '_passwordConditionIsSatisfied', 'false');
       await vpn.waitForElementProperty(
-          'authSignUp-passwordConditionCommon', '_passwordConditionIsSatisfied',
+          authView.PASS_INPUT_CONDITION, '_passwordConditionIsSatisfied',
           'false');
 
       // Condition 2
       await vpn.setElementProperty(
-          'authSignUp-passwordInput', 'text', 's', 'test@test');
-      await vpn.waitForElementProperty(
-          'authSignUp-passwordConditionLength', '_passwordConditionIsSatisfied',
+          authView.PASS_INPUT, 'text', 's', 'test@test');
+      await vpn.waitForElementProperty(authView.PASS_LENGTH_CONDITION, '_passwordConditionIsSatisfied',
           'true');
-      await vpn.waitForElementProperty(
-          'authSignUp-passwordConditionEmailAddress',
+      await vpn.waitForElementProperty(authView.EMAIL_INPUT_CONDITIOIN,
           '_passwordConditionIsSatisfied', 'false');
-      await vpn.waitForElementProperty(
-          'authSignUp-passwordConditionCommon', '_passwordConditionIsSatisfied',
+      await vpn.waitForElementProperty(authView.PASS_INPUT_CONDITION, '_passwordConditionIsSatisfied',
           'true');
 
       // Condition 3
       await vpn.setElementProperty(
-          'authSignUp-passwordInput', 'text', 's', '12345678');
-      await vpn.waitForElementProperty(
-          'authSignUp-passwordConditionLength', '_passwordConditionIsSatisfied',
+          authView.PASS_INPUT, 'text', 's', '12345678');
+      await vpn.waitForElementProperty(authView.PASS_LENGTH_CONDITION, '_passwordConditionIsSatisfied',
           'true');
-      await vpn.waitForElementProperty(
-          'authSignUp-passwordConditionEmailAddress',
+      await vpn.waitForElementProperty(authView.EMAIL_INPUT_CONDITIOIN,
           '_passwordConditionIsSatisfied', 'true');
-      await vpn.waitForElementProperty(
-          'authSignUp-passwordConditionCommon', '_passwordConditionIsSatisfied',
+      await vpn.waitForElementProperty(authView.PASS_INPUT_CONDITION, '_passwordConditionIsSatisfied',
           'false');
 
-      await vpn.waitForElementProperty('authSignUp-button', 'enabled', 'false');
+      await vpn.waitForElementProperty(authView.SIGNUP_BUTTON, 'enabled', 'false');
       await vpn.setElementProperty(
-          'authSignUp-passwordInput', 'text', 's', 'P4ass0rd!!');
-      await vpn.waitForElementProperty('authSignUp-button', 'enabled', 'true');
-      await vpn.clickOnElement('authSignUp-button');
+          authView.PASS_INPUT, 'text', 's', 'P4ass0rd!!');
+      await vpn.waitForElementProperty(authView.SIGNUP_BUTTON, 'enabled', 'true');
+      await vpn.clickOnElement(authView.SIGNUP_BUTTON);
 
       await vpn.waitForElementProperty('VPN', 'userState', 'UserAuthenticated');
-      await vpn.waitForElement('postAuthenticationButton');
+      await vpn.waitForElementAndClick(telemetryView.POST_AUTHENTICATION_BUTTON);
 
-      await vpn.clickOnElement('postAuthenticationButton');
-      await vpn.wait();
-
-      await vpn.waitForElement('telemetryPolicyButton');
-      await vpn.clickOnElement('telemetryPolicyButton');
-      await vpn.waitForElement('controllerTitle');
+      await vpn.waitForElement(telemetryView.TELEMETRY_POLICY_BUTTON);
+      await vpn.clickOnElement(telemetryView.TELEMETRY_POLICY_BUTTON);
+      await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
     });
   });
 
@@ -148,64 +140,58 @@ describe('User authentication', function() {
 
       await vpn.waitForMainView();
 
-      await vpn.clickOnElement('getStarted');
-      await vpn.waitForElement('authStart-textInput');
+      await vpn.clickOnElement(initialView.GET_STARTED);
+      await vpn.waitForElement(authView.EMAIL_INPUT);
       await vpn.waitForElementProperty(
-          'authStart-textInput', 'visible', 'true');
+          authView.EMAIL_INPUT, 'visible', 'true');
       await vpn.setElementProperty(
-          'authStart-textInput', 'text', 's', 'test@test');
-      await vpn.waitForElement('authStart-button');
-      await vpn.clickOnElement('authStart-button');
+          authView.EMAIL_INPUT, 'text', 's', 'test@test');
+      await vpn.waitForElement(authView.START_BUTTON);
+      await vpn.clickOnElement(authView.START_BUTTON);
 
-      await vpn.waitForElement('authSignUp-passwordInput');
+      await vpn.waitForElement(authView.PASS_INPUT);
       await vpn.waitForElementProperty(
-          'authSignUp-passwordInput', 'visible', 'true');
+          authView.PASS_INPUT, 'visible', 'true');
 
-      await vpn.waitForElement('authSignUp-passwordConditionLength');
-      await vpn.waitForElementProperty(
-          'authSignUp-passwordConditionLength', '_passwordConditionIsSatisfied',
+      await vpn.waitForElement(authView.PASS_LENGTH_CONDITION);
+      await vpn.waitForElementProperty(authView.PASS_LENGTH_CONDITION, '_passwordConditionIsSatisfied',
           'false');
-      await vpn.waitForElement('authSignUp-passwordConditionEmailAddress');
-      await vpn.waitForElementProperty(
-          'authSignUp-passwordConditionEmailAddress',
+      await vpn.waitForElement(authView.EMAIL_INPUT_CONDITIOIN);
+      await vpn.waitForElementProperty(authView.EMAIL_INPUT_CONDITIOIN,
           '_passwordConditionIsSatisfied', 'false');
-      await vpn.waitForElement('authSignUp-passwordConditionCommon');
+      await vpn.waitForElement(authView.PASS_INPUT_CONDITION);
       await vpn.waitForElementProperty(
-          'authSignUp-passwordConditionCommon', '_passwordConditionIsSatisfied',
+        authView.PASS_INPUT_CONDITION, '_passwordConditionIsSatisfied',
           'false');
 
-      await vpn.setElementProperty(
-          'authSignUp-passwordInput', 'text', 's', 'P4ass0rd!!');
-      await vpn.clickOnElement('authSignUp-button');
+      await vpn.setElementProperty(authView.PASS_INPUT, 'text', 's', 'P4ass0rd!!');
+      await vpn.clickOnElement(authView.SIGNUP_BUTTON);
 
       await vpn.waitForElement(
-          'authVerificationSessionByEmailNeeded-textInput');
+          authView.verificationByEmailView.TEXT_INPUT);
       await vpn.waitForElementProperty(
-          'authVerificationSessionByEmailNeeded-textInput', 'visible', 'true');
+          authView.verificationByEmailView.TEXT_INPUT, 'visible', 'true');
       await vpn.waitForElementProperty(
-          'authVerificationSessionByEmailNeeded-button', 'enabled', 'false');
+          authView.verificationByEmailView.EMAIL_BUTTON, 'enabled', 'false');
       await vpn.setElementProperty(
-          'authVerificationSessionByEmailNeeded-textInput', 'text', 's',
+          authView.verificationByEmailView.TEXT_INPUT, 'text', 's',
           '12345');
       await vpn.waitForElementProperty(
-          'authVerificationSessionByEmailNeeded-button', 'enabled', 'false');
+          authView.verificationByEmailView.EMAIL_BUTTON, 'enabled', 'false');
       await vpn.setElementProperty(
-          'authVerificationSessionByEmailNeeded-textInput', 'text', 's',
+          authView.verificationByEmailView.TEXT_INPUT, 'text', 's',
           '123456');
       await vpn.waitForElementProperty(
-          'authVerificationSessionByEmailNeeded-button', 'enabled', 'true');
-      await vpn.waitForElement('authVerificationSessionByEmailNeeded-button');
-      await vpn.clickOnElement('authVerificationSessionByEmailNeeded-button');
+          authView.verificationByEmailView.EMAIL_BUTTON, 'enabled', 'true');
+      await vpn.waitForElement(authView.verificationByEmailView.EMAIL_BUTTON);
+      await vpn.clickOnElement(authView.verificationByEmailView.EMAIL_BUTTON);
 
       await vpn.waitForElementProperty('VPN', 'userState', 'UserAuthenticated');
-      await vpn.waitForElement('postAuthenticationButton');
+      await vpn.waitForElementAndClick(telemetryView.POST_AUTHENTICATION_BUTTON);
 
-      await vpn.clickOnElement('postAuthenticationButton');
-      await vpn.wait();
-
-      await vpn.waitForElement('telemetryPolicyButton');
-      await vpn.clickOnElement('telemetryPolicyButton');
-      await vpn.waitForElement('controllerTitle');
+      await vpn.waitForElement(telemetryView.TELEMETRY_POLICY_BUTTON);
+      await vpn.clickOnElement(telemetryView.TELEMETRY_POLICY_BUTTON);
+      await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
     });
   });
 
@@ -235,63 +221,55 @@ describe('User authentication', function() {
 
       await vpn.waitForMainView();
 
-      await vpn.clickOnElement('getStarted');
-      await vpn.waitForElement('authStart-textInput');
+      await vpn.clickOnElement(initialView.GET_STARTED);
+      await vpn.waitForElement(authView.EMAIL_INPUT);
       await vpn.waitForElementProperty(
-          'authStart-textInput', 'visible', 'true');
+          authView.EMAIL_INPUT, 'visible', 'true');
       await vpn.setElementProperty(
-          'authStart-textInput', 'text', 's', 'test@test');
-      await vpn.waitForElement('authStart-button');
-      await vpn.clickOnElement('authStart-button');
+          authView.EMAIL_INPUT, 'text', 's', 'test@test');
+      await vpn.waitForElement(authView.START_BUTTON);
+      await vpn.clickOnElement(authView.START_BUTTON);
 
-      await vpn.waitForElement('authSignUp-passwordInput');
-      await vpn.waitForElementProperty(
-          'authSignUp-passwordInput', 'visible', 'true');
+      await vpn.waitForElement(authView.PASS_INPUT);
+      await vpn.waitForElementProperty(authView.PASS_INPUT, 'visible', 'true');
 
-      await vpn.waitForElement('authSignUp-passwordConditionLength');
-      await vpn.waitForElementProperty(
-          'authSignUp-passwordConditionLength', '_passwordConditionIsSatisfied',
+      await vpn.waitForElement(authView.PASS_LENGTH_CONDITION);
+      await vpn.waitForElementProperty(authView.PASS_LENGTH_CONDITION, '_passwordConditionIsSatisfied',
           'false');
-      await vpn.waitForElement('authSignUp-passwordConditionEmailAddress');
-      await vpn.waitForElementProperty(
-          'authSignUp-passwordConditionEmailAddress',
-          '_passwordConditionIsSatisfied', 'false');
-      await vpn.waitForElement('authSignUp-passwordConditionCommon');
-      await vpn.waitForElementProperty(
-          'authSignUp-passwordConditionCommon', '_passwordConditionIsSatisfied',
+      await vpn.waitForElement(authView.EMAIL_INPUT_CONDITIOIN);
+      await vpn.waitForElementProperty(authView.EMAIL_INPUT_CONDITIOIN, '_passwordConditionIsSatisfied', 'false');
+      await vpn.waitForElement(authView.PASS_INPUT_CONDITION);
+      await vpn.waitForElementProperty(authView.PASS_INPUT_CONDITION, '_passwordConditionIsSatisfied',
           'false');
 
-      await vpn.setElementProperty(
-          'authSignUp-passwordInput', 'text', 's', 'P4ass0rd!!');
-      await vpn.clickOnElement('authSignUp-button');
+      await vpn.setElementProperty(authView.PASS_INPUT, 'text', 's', 'P4ass0rd!!');
+      await vpn.clickOnElement(authView.SIGNUP_BUTTON);
 
-      await vpn.waitForElement('authVerificationSessionByTotpNeeded-textInput');
+      await vpn.waitForElement(authView.verificationBySessionTotpView.TEXT_INPUT);
       await vpn.waitForElementProperty(
-          'authVerificationSessionByTotpNeeded-textInput', 'visible', 'true');
+          authView.verificationBySessionTotpView.TEXT_INPUT, 'visible', 'true');
       await vpn.waitForElementProperty(
-          'authVerificationSessionByTotpNeeded-button', 'enabled', 'false');
+          authView.verificationBySessionTotpView.TOTP_NEEDED_BUTTON, 'enabled', 'false');
       await vpn.setElementProperty(
-          'authVerificationSessionByTotpNeeded-textInput', 'text', 's',
+          authView.verificationBySessionTotpView.TEXT_INPUT, 'text', 's',
           '12345');
       await vpn.waitForElementProperty(
-          'authVerificationSessionByTotpNeeded-button', 'enabled', 'false');
+          authView.verificationBySessionTotpView.TOTP_NEEDED_BUTTON, 'enabled', 'false');
       await vpn.setElementProperty(
-          'authVerificationSessionByTotpNeeded-textInput', 'text', 's',
+          authView.verificationBySessionTotpView.TEXT_INPUT, 'text', 's',
           '123456');
       await vpn.waitForElementProperty(
-          'authVerificationSessionByTotpNeeded-button', 'enabled', 'true');
-      await vpn.waitForElement('authVerificationSessionByTotpNeeded-button');
-      await vpn.clickOnElement('authVerificationSessionByTotpNeeded-button');
+          authView.verificationBySessionTotpView.TOTP_NEEDED_BUTTON, 'enabled', 'true');
+      await vpn.waitForElement(authView.verificationBySessionTotpView.TOTP_NEEDED_BUTTON);
+      await vpn.clickOnElement(authView.verificationBySessionTotpView.TOTP_NEEDED_BUTTON);
 
       await vpn.waitForElementProperty('VPN', 'userState', 'UserAuthenticated');
-      await vpn.waitForElement('postAuthenticationButton');
-
-      await vpn.clickOnElement('postAuthenticationButton');
+      await vpn.waitForElementAndClick(telemetryView.POST_AUTHENTICATION_BUTTON);
       await vpn.wait();
 
-      await vpn.waitForElement('telemetryPolicyButton');
-      await vpn.clickOnElement('telemetryPolicyButton');
-      await vpn.waitForElement('controllerTitle');
+      await vpn.waitForElement(telemetryView.TELEMETRY_POLICY_BUTTON);
+      await vpn.clickOnElement(telemetryView.TELEMETRY_POLICY_BUTTON);
+      await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
     });
   });
 
@@ -315,40 +293,35 @@ describe('User authentication', function() {
 
       await vpn.waitForMainView();
 
-      await vpn.clickOnElement('getStarted');
-      await vpn.waitForElement('authStart-textInput');
+      await vpn.clickOnElement(initialView.GET_STARTED);
+      await vpn.waitForElement(authView.EMAIL_INPUT);
       await vpn.waitForElementProperty(
-          'authStart-textInput', 'visible', 'true');
+          authView.EMAIL_INPUT, 'visible', 'true');
       await vpn.setElementProperty(
-          'authStart-textInput', 'text', 's', 'test@test');
-      await vpn.waitForElement('authStart-button');
-      await vpn.clickOnElement('authStart-button');
+          authView.EMAIL_INPUT, 'text', 's', 'test@test');
+      await vpn.waitForElement(authView.START_BUTTON);
+      await vpn.clickOnElement(authView.START_BUTTON);
 
-      await vpn.waitForElement('authUnblockCodeNeeded-textInput');
+      await vpn.waitForElement(authView.authUnblockCodeView.CODE_INPUT);
       await vpn.waitForElementProperty(
-          'authUnblockCodeNeeded-textInput', 'visible', 'true');
+          authView.authUnblockCodeView.CODE_INPUT, 'visible', 'true');
       await vpn.waitForElementProperty(
-          'authUnblockCodeNeeded-button', 'enabled', 'false');
+          authView.authUnblockCodeView.CODE_BUTTON, 'enabled', 'false');
       await vpn.setElementProperty(
-          'authUnblockCodeNeeded-textInput', 'text', 's', '1234567');
+          authView.authUnblockCodeView.CODE_INPUT, 'text', 's', '1234567');
       await vpn.waitForElementProperty(
-          'authUnblockCodeNeeded-button', 'enabled', 'false');
+          authView.authUnblockCodeView.CODE_BUTTON, 'enabled', 'false');
       await vpn.setElementProperty(
-          'authUnblockCodeNeeded-textInput', 'text', 's', '12345678');
+          authView.authUnblockCodeView.CODE_INPUT, 'text', 's', '12345678');
       await vpn.waitForElementProperty(
-          'authUnblockCodeNeeded-button', 'enabled', 'true');
-      await vpn.waitForElement('authUnblockCodeNeeded-button');
-      await vpn.clickOnElement('authUnblockCodeNeeded-button');
+          authView.authUnblockCodeView.CODE_BUTTON, 'enabled', 'true');      
+      await vpn.waitForElementAndClick(authView.authUnblockCodeView.CODE_BUTTON);
 
       await vpn.waitForElementProperty('VPN', 'userState', 'UserAuthenticated');
-      await vpn.waitForElement('postAuthenticationButton');
+      await vpn.waitForElementAndClick(telemetryView.POST_AUTHENTICATION_BUTTON);
 
-      await vpn.clickOnElement('postAuthenticationButton');
-      await vpn.wait();
-
-      await vpn.waitForElement('telemetryPolicyButton');
-      await vpn.clickOnElement('telemetryPolicyButton');
-      await vpn.waitForElement('controllerTitle');
+      await vpn.waitForElementAndClick(telemetryView.TELEMETRY_POLICY_BUTTON);
+      await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
     });
   });
 
@@ -378,27 +351,27 @@ describe('User authentication', function() {
 
       // Step 1: main -> start -> main
       await vpn.waitForMainView();
-      await vpn.clickOnElement('getStarted');
-      await vpn.waitForElement('authStart-backButton');
+      await vpn.clickOnElement(initialView.GET_STARTED);
+      await vpn.waitForElement(authView.START_BUTTON);
       await vpn.waitForElementProperty(
-          'authStart-backButton', 'visible', 'true');
-      await vpn.clickOnElement('authStart-backButton');
+          authView.START_BUTTON, 'visible', 'true');
+      await vpn.clickOnElement(authView.START_BUTTON);
       await vpn.waitForMainView();
 
       // Step 2: main -> start -> help -> start
-      await vpn.clickOnElement('getStarted');
-      await vpn.waitForElement('authStart-textInput');
+      await vpn.clickOnElement(initialView.GET_STARTED);
+      await vpn.waitForElement(authView.EMAIL_INPUT);
       await vpn.waitForElementProperty(
-          'authStart-textInput', 'visible', 'true');
-      await vpn.waitForElement('authStart-getHelpLink');
-      await vpn.clickOnElement('authStart-getHelpLink');
+          authView.EMAIL_INPUT, 'visible', 'true');
+      await vpn.waitForElement(authView.GET_HELP_LINK);
+      await vpn.clickOnElement(authView.GET_HELP_LINK);
       await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
-      await vpn.waitForElement('getHelpBack');
-      await vpn.clickOnElement('getHelpBack');
+      await vpn.waitForElement(settingsView.getHelpView.BACK);
+      await vpn.clickOnElement(settingsView.getHelpView.BACK);
       await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
-      await vpn.waitForElement('authStart-textInput');
+      await vpn.waitForElement(authView.EMAIL_INPUT);
       await vpn.waitForElementProperty(
-          'authStart-textInput', 'visible', 'true');
+          authView.EMAIL_INPUT, 'visible', 'true');
 
       // Step 3: start -> sign-up -> help -> sign-up
       this.ctx.fxaStatusCallback = (req) => {
@@ -407,25 +380,24 @@ describe('User authentication', function() {
         }
       };
       await vpn.setElementProperty(
-          'authStart-textInput', 'text', 's', 'test@test');
-      await vpn.waitForElement('authStart-button');
-      await vpn.clickOnElement('authStart-button');
+          authView.EMAIL_INPUT, 'text', 's', 'test@test');
+      await vpn.waitForElement(authView.START_BUTTON);
+      await vpn.clickOnElement(authView.START_BUTTON);
 
-      await vpn.waitForElement('authSignUp-getHelpLink');
-      await vpn.clickOnElement('authSignUp-getHelpLink');
+      await vpn.waitForElement(authView.GET_HELP_LINK);
+      await vpn.clickOnElement(authView.GET_HELP_LINK);
       await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
-      await vpn.waitForElement('getHelpBack');
-      await vpn.clickOnElement('getHelpBack');
+      await vpn.waitForElement(settingsView.getHelpView.BACK);
+      await vpn.clickOnElement(settingsView.getHelpView.BACK);
       await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
-      await vpn.waitForElement('authSignUp-backButton');
-      await vpn.waitForElementProperty(
-          'authSignUp-backButton', 'visible', 'true');
+      await vpn.waitForElement(authView.SIGNUP_BACK);
+      await vpn.waitForElementProperty(authView.SIGNUP_BACK, 'visible', 'true');
 
       // Step 4: sign-up -> start
-      await vpn.clickOnElement('authSignUp-backButton');
-      await vpn.waitForElement('authStart-textInput');
+      await vpn.clickOnElement(authView.SIGNUP_BACK);
+      await vpn.waitForElement(authView.EMAIL_INPUT);
       await vpn.waitForElementProperty(
-          'authStart-textInput', 'visible', 'true');
+          authView.EMAIL_INPUT, 'visible', 'true');
 
       // Step 5: start -> sign-in -> help -> sign-in
       this.ctx.fxaStatusCallback = (req) => {
@@ -434,25 +406,24 @@ describe('User authentication', function() {
         }
       };
       await vpn.setElementProperty(
-          'authStart-textInput', 'text', 's', 'test@test');
-      await vpn.waitForElement('authStart-button');
-      await vpn.clickOnElement('authStart-button');
+          authView.EMAIL_INPUT, 'text', 's', 'test@test');
+      await vpn.waitForElement(authView.START_BUTTON);
+      await vpn.clickOnElement(authView.START_BUTTON);
 
-      await vpn.waitForElement('authSignIn-getHelpLink');
-      await vpn.clickOnElement('authSignIn-getHelpLink');
+      await vpn.waitForElement(authView.GET_HELP_LINK);
+      await vpn.clickOnElement(authView.GET_HELP_LINK);
       await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
-      await vpn.waitForElement('getHelpBack');
-      await vpn.clickOnElement('getHelpBack');
+      await vpn.waitForElement(settingsView.getHelpView.BACK);
+      await vpn.clickOnElement(settingsView.getHelpView.BACK);
       await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
-      await vpn.waitForElement('authSignIn-backButton');
-      await vpn.waitForElementProperty(
-          'authSignIn-backButton', 'visible', 'true');
+      await vpn.waitForElement(authView.SIGNIN_BACK);
+      await vpn.waitForElementProperty(authView.SIGNIN_BACK, 'visible', 'true');
 
       // Step 6: sign-in -> start
-      await vpn.clickOnElement('authSignIn-backButton');
-      await vpn.waitForElement('authStart-textInput');
+      await vpn.clickOnElement(authView.SIGNIN_BACK);
+      await vpn.waitForElement(authView.EMAIL_INPUT);
       await vpn.waitForElementProperty(
-          'authStart-textInput', 'visible', 'true');
+          authView.EMAIL_INPUT, 'visible', 'true');
 
       // Step 7: start -> sign-in -> email verification -> help -> email
       // verification
@@ -464,38 +435,36 @@ describe('User authentication', function() {
         }
       };
       await vpn.setElementProperty(
-          'authStart-textInput', 'text', 's', 'test@test');
-      await vpn.waitForElement('authStart-button');
-      await vpn.clickOnElement('authStart-button');
+          authView.EMAIL_INPUT, 'text', 's', 'test@test');
+      await vpn.waitForElement(authView.START_BUTTON);
+      await vpn.clickOnElement(authView.START_BUTTON);
 
-      await vpn.waitForElement('authSignIn-passwordInput');
+      await vpn.waitForElement(authView.PASS_INPUT);
       await vpn.waitForElementProperty(
-          'authSignIn-passwordInput', 'visible', 'true');
+          authView.PASS_INPUT, 'visible', 'true');
       await vpn.setElementProperty(
-          'authSignIn-passwordInput', 'text', 's', 'P4ass0rd!!');
+          authView.PASS_INPUT, 'text', 's', 'P4ass0rd!!');
 
-      await vpn.waitForElementProperty('authSignIn-button', 'enabled', 'true');
-      await vpn.clickOnElement('authSignIn-button');
+      await vpn.waitForElementProperty(authView.SIGNIN_BUTTON, 'enabled', 'true');
+      await vpn.clickOnElement(authView.SIGNIN_BUTTON);
 
-      await vpn.waitForElement(
-          'authVerificationSessionByEmailNeeded-getHelpLink');
-      await vpn.clickOnElement(
-          'authVerificationSessionByEmailNeeded-getHelpLink');
+      await vpn.waitForElement(authView.verificationByEmailView.GET_HELP);
+      await vpn.clickOnElement(authView.verificationByEmailView.GET_HELP);
       await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
-      await vpn.waitForElement('getHelpBack');
-      await vpn.clickOnElement('getHelpBack');
+      await vpn.waitForElement(settingsView.getHelpView.BACK);
+      await vpn.clickOnElement(settingsView.getHelpView.BACK);
       await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
       await vpn.waitForElement(
-          'authVerificationSessionByEmailNeeded-backButton');
+          authView.verificationByEmailView.BACK);
       await vpn.waitForElementProperty(
-          'authVerificationSessionByEmailNeeded-backButton', 'visible', 'true');
+          authView.verificationByEmailView.BACK, 'visible', 'true');
 
       // Step 8: email verification -> start
       await vpn.clickOnElement(
-          'authVerificationSessionByEmailNeeded-backButton');
-      await vpn.waitForElement('authStart-textInput');
+          authView.verificationByEmailView.BACK);
+      await vpn.waitForElement(authView.EMAIL_INPUT);
       await vpn.waitForElementProperty(
-          'authStart-textInput', 'visible', 'true');
+          authView.EMAIL_INPUT, 'visible', 'true');
 
       // Step 9: start -> sign-in -> totp -> help -> totp
       this.ctx.fxaLoginCallback = (req) => {
@@ -506,39 +475,32 @@ describe('User authentication', function() {
         }
       };
       await vpn.setElementProperty(
-          'authStart-textInput', 'text', 's', 'test@test');
-      await vpn.waitForElement('authStart-button');
-      await vpn.clickOnElement('authStart-button');
+          authView.EMAIL_INPUT, 'text', 's', 'test@test');
+      await vpn.waitForElement(authView.START_BUTTON);
+      await vpn.clickOnElement(authView.START_BUTTON);
 
-      await vpn.waitForElement('authSignIn-passwordInput');
+      await vpn.waitForElement(authView.PASS_INPUT);
       await vpn.waitForElementProperty(
-          'authSignIn-passwordInput', 'visible', 'true');
+          authView.PASS_INPUT, 'visible', 'true');
       await vpn.setElementProperty(
-          'authSignIn-passwordInput', 'text', 's', 'P4ass0rd!!');
+          authView.PASS_INPUT, 'text', 's', 'P4ass0rd!!');
 
-      await vpn.waitForElementProperty('authSignIn-button', 'enabled', 'true');
-      await vpn.clickOnElement('authSignIn-button');
+      await vpn.waitForElementProperty(authView.SIGNIN_BUTTON, 'enabled', 'true');
+      await vpn.clickOnElement(authView.SIGNIN_BUTTON);
 
-      await vpn.waitForElement(
-          'authVerificationSessionByTotpNeeded-getHelpLink');
-      await vpn.clickOnElement(
-          'authVerificationSessionByTotpNeeded-getHelpLink');
+      await vpn.waitForElement(authView.verificationBySessionTotpView.GET_HELP_LINK);
+      await vpn.clickOnElement(authView.verificationBySessionTotpView.GET_HELP_LINK);
       await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
-      await vpn.waitForElement('getHelpBack');
-      await vpn.clickOnElement('getHelpBack');
+      await vpn.waitForElement(settingsView.getHelpView.BACK);
+      await vpn.clickOnElement(settingsView.getHelpView.BACK);
       await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
-      await vpn.waitForElement(
-          'authVerificationSessionByTotpNeeded-backButton');
-      await vpn.waitForElementProperty(
-          'authVerificationSessionByTotpNeeded-backButton', 'visible', 'true');
+      await vpn.waitForElement(authView.verificationBySessionTotpView.BACK);
+      await vpn.waitForElementProperty(authView.verificationBySessionTotpView.BACK, 'visible', 'true');
 
       // Step 10: totp -> main
-      await vpn.waitForElement(
-          'authVerificationSessionByTotpNeeded-backButton');
-      await vpn.waitForElementProperty(
-          'authVerificationSessionByTotpNeeded-backButton', 'visible', 'true');
-      await vpn.clickOnElement(
-          'authVerificationSessionByTotpNeeded-backButton');
+      await vpn.waitForElement(authView.verificationBySessionTotpView.BACK);
+      await vpn.waitForElementProperty(authView.verificationBySessionTotpView.BACK, 'visible', 'true');
+      await vpn.clickOnElement(authView.verificationBySessionTotpView.BACK);
       await vpn.waitForMainView();
 
       // Step 11: main -> start -> sign-in -> unblock code -> help -> unblock
@@ -550,42 +512,42 @@ describe('User authentication', function() {
         };
         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 400;
       };
-      await vpn.clickOnElement('getStarted');
-      await vpn.waitForElement('authStart-textInput');
+      await vpn.clickOnElement(initialView.GET_STARTED);
+      await vpn.waitForElement(authView.EMAIL_INPUT);
       await vpn.waitForElementProperty(
-          'authStart-textInput', 'visible', 'true');
+          authView.EMAIL_INPUT, 'visible', 'true');
       await vpn.setElementProperty(
-          'authStart-textInput', 'text', 's', 'test@test');
-      await vpn.waitForElement('authStart-button');
-      await vpn.clickOnElement('authStart-button');
+          authView.EMAIL_INPUT, 'text', 's', 'test@test');
+      await vpn.waitForElement(authView.START_BUTTON);
+      await vpn.clickOnElement(authView.START_BUTTON);
 
-      await vpn.waitForElement('authSignIn-passwordInput');
+      await vpn.waitForElement(authView.PASS_INPUT);
       await vpn.waitForElementProperty(
-          'authSignIn-passwordInput', 'visible', 'true');
+          authView.PASS_INPUT, 'visible', 'true');
       await vpn.setElementProperty(
-          'authSignIn-passwordInput', 'text', 's', 'P4ass0rd!!');
+          authView.PASS_INPUT, 'text', 's', 'P4ass0rd!!');
 
-      await vpn.waitForElementProperty('authSignIn-button', 'enabled', 'true');
-      await vpn.clickOnElement('authSignIn-button');
+      await vpn.waitForElementProperty(authView.SIGNIN_BUTTON, 'enabled', 'true');
+      await vpn.clickOnElement(authView.SIGNIN_BUTTON);
 
-      await vpn.waitForElement('authUnblockCodeNeeded-getHelpLink');
-      await vpn.clickOnElement('authUnblockCodeNeeded-getHelpLink');
+      await vpn.waitForElement(authView.authUnblockCodeView.GET_HELP_LINK);
+      await vpn.clickOnElement(authView.authUnblockCodeView.GET_HELP_LINK);
       await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
-      await vpn.waitForElement('getHelpBack');
-      await vpn.clickOnElement('getHelpBack');
+      await vpn.waitForElement(settingsView.getHelpView.BACK);
+      await vpn.clickOnElement(settingsView.getHelpView.BACK);
       await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
-      await vpn.waitForElement('authUnblockCodeNeeded-backButton');
+      await vpn.waitForElement(authView.authUnblockCodeView.BACK);
       await vpn.waitForElementProperty(
-          'authUnblockCodeNeeded-backButton', 'visible', 'true');
+          authView.authUnblockCodeView.BACK, 'visible', 'true');
 
       // Step 12: unblock code -> start
-      await vpn.waitForElement('authUnblockCodeNeeded-backButton');
+      await vpn.waitForElement(authView.authUnblockCodeView.BACK);
       await vpn.waitForElementProperty(
-          'authUnblockCodeNeeded-backButton', 'visible', 'true');
-      await vpn.clickOnElement('authUnblockCodeNeeded-backButton');
-      await vpn.waitForElement('authStart-textInput');
+          authView.authUnblockCodeView.BACK, 'visible', 'true');
+      await vpn.clickOnElement(authView.authUnblockCodeView.BACK);
+      await vpn.waitForElement(authView.EMAIL_INPUT);
       await vpn.waitForElementProperty(
-          'authStart-textInput', 'visible', 'true');
+          authView.EMAIL_INPUT, 'visible', 'true');
     });
   });
 
@@ -623,7 +585,7 @@ describe('User authentication', function() {
         await vpn.flipFeatureOn('inAppAccountCreate');
       }
 
-      await vpn.clickOnElement('getStarted');
+      await vpn.clickOnElement(initialView.GET_STARTED);
 
       // Step 1: start -> popup errors
       for (let errorCode
@@ -643,23 +605,23 @@ describe('User authentication', function() {
               400;
         };
 
-        await vpn.waitForElement('authStart-textInput');
+        await vpn.waitForElement(authView.EMAIL_INPUT);
         await vpn.waitForElementProperty(
-            'authStart-textInput', 'visible', 'true');
+            authView.EMAIL_INPUT, 'visible', 'true');
         await vpn.setElementProperty(
-            'authStart-textInput', 'text', 's', 'test@test-' + errorCode);
-        await vpn.waitForElementProperty('authStart-button', 'enabled', 'true');
-        await vpn.waitForElement('authStart-button');
-        await vpn.clickOnElement('authStart-button');
+            authView.EMAIL_INPUT, 'text', 's', 'test@test-' + errorCode);
+        await vpn.waitForElementProperty(authView.START_BUTTON, 'enabled', 'true');
+        await vpn.waitForElement(authView.START_BUTTON);
+        await vpn.clickOnElement(authView.START_BUTTON);
 
-        await vpn.waitForElement('authErrorPopup-button');
+        await vpn.waitForElement(authView.ERROR_POPUP_BUTTON);
         await vpn.waitForElementProperty(
-            'authErrorPopup-button', 'visible', 'true');
-        await vpn.clickOnElement('authErrorPopup-button');
+            authView.ERROR_POPUP_BUTTON, 'visible', 'true');
+        await vpn.clickOnElement(authView.ERROR_POPUP_BUTTON);
         await vpn.waitForElementProperty(
-            'authErrorPopup-button', 'visible', 'false');
+            authView.ERROR_POPUP_BUTTON, 'visible', 'false');
         await vpn.waitForElementProperty(
-            'authStart-button', 'enabled', 'false');
+            authView.START_BUTTON, 'enabled', 'false');
       }
 
       // Step 2: start -> email error
@@ -671,17 +633,17 @@ describe('User authentication', function() {
         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/status'].status = 400;
       };
 
-      await vpn.waitForElementProperty('authStart-button', 'enabled', 'false');
+      await vpn.waitForElementProperty(authView.START_BUTTON, 'enabled', 'false');
       await vpn.setElementProperty(
-          'authStart-textInput', 'text', 's', 'test@testtest');
-      await vpn.waitForElementProperty('authStart-button', 'enabled', 'true');
+          authView.EMAIL_INPUT, 'text', 's', 'test@testtest');
+      await vpn.waitForElementProperty(authView.START_BUTTON, 'enabled', 'true');
       await vpn.waitForElementProperty(
-          'authStart-textInput', 'hasError', 'false');
-      await vpn.waitForElement('authStart-button');
-      await vpn.clickOnElement('authStart-button');
+          authView.EMAIL_INPUT, 'hasError', 'false');
+      await vpn.waitForElement(authView.START_BUTTON);
+      await vpn.clickOnElement(authView.START_BUTTON);
 
       await vpn.waitForElementProperty(
-          'authStart-textInput', 'hasError', 'true');
+          authView.EMAIL_INPUT, 'hasError', 'true');
 
       // Step 3: start -> 151 error (failed to send email)
       this.ctx.fxaStatusCallback = (req) => {
@@ -698,29 +660,29 @@ describe('User authentication', function() {
         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 400;
       };
 
-      await vpn.waitForElementProperty('authStart-button', 'enabled', 'false');
+      await vpn.waitForElementProperty(authView.START_BUTTON, 'enabled', 'false');
       await vpn.setElementProperty(
-          'authStart-textInput', 'text', 's', 'test@test');
-      await vpn.waitForElementProperty('authStart-button', 'enabled', 'true');
-      await vpn.waitForElement('authStart-button');
-      await vpn.clickOnElement('authStart-button');
+          authView.EMAIL_INPUT, 'text', 's', 'test@test');
+      await vpn.waitForElementProperty(authView.START_BUTTON, 'enabled', 'true');
+      await vpn.waitForElement(authView.START_BUTTON);
+      await vpn.clickOnElement(authView.START_BUTTON);
 
-      await vpn.waitForElement('authSignIn-passwordInput');
+      await vpn.waitForElement(authView.PASS_INPUT);
       await vpn.waitForElementProperty(
-          'authSignIn-passwordInput', 'visible', 'true');
+          authView.PASS_INPUT, 'visible', 'true');
       await vpn.setElementProperty(
-          'authSignIn-passwordInput', 'text', 's', 'P4ass0rd!!');
+          authView.PASS_INPUT, 'text', 's', 'P4ass0rd!!');
 
-      await vpn.waitForElementProperty('authSignIn-button', 'enabled', 'true');
-      await vpn.clickOnElement('authSignIn-button');
+      await vpn.waitForElementProperty(authView.SIGNIN_BUTTON, 'enabled', 'true');
+      await vpn.clickOnElement(authView.SIGNIN_BUTTON);
 
-      await vpn.waitForElement('authErrorPopup-button');
+      await vpn.waitForElement(authView.ERROR_POPUP_BUTTON);
       await vpn.waitForElementProperty(
-          'authErrorPopup-button', 'visible', 'true');
-      await vpn.clickOnElement('authErrorPopup-button');
+          authView.ERROR_POPUP_BUTTON, 'visible', 'true');
+      await vpn.clickOnElement(authView.ERROR_POPUP_BUTTON);
       await vpn.waitForElementProperty(
-          'authErrorPopup-button', 'visible', 'false');
-      await vpn.waitForElementProperty('authSignIn-button', 'enabled', 'false');
+          authView.ERROR_POPUP_BUTTON, 'visible', 'false');
+      await vpn.waitForElementProperty(authView.SIGNIN_BUTTON, 'enabled', 'false');
 
       // Step 4: start -> sign-in -> password invalid
       this.ctx.fxaLoginCallback = (req) => {
@@ -731,13 +693,13 @@ describe('User authentication', function() {
       };
 
       await vpn.setElementProperty(
-          'authSignIn-passwordInput', 'text', 's', 'P4ass0rd!!!');
-      await vpn.waitForElementProperty('authSignIn-button', 'enabled', 'true');
+          authView.PASS_INPUT, 'text', 's', 'P4ass0rd!!!');
+      await vpn.waitForElementProperty(authView.SIGNIN_BUTTON, 'enabled', 'true');
       await vpn.waitForElementProperty(
-          'authSignIn-passwordInput', 'hasError', 'false');
-      await vpn.clickOnElement('authSignIn-button');
+          authView.PASS_INPUT, 'hasError', 'false');
+      await vpn.clickOnElement(authView.SIGNIN_BUTTON);
       await vpn.waitForElementProperty(
-          'authSignIn-passwordInput', 'hasError', 'true');
+          authView.PASS_INPUT, 'hasError', 'true');
 
       // Step 5: sign-in -> email code -> wrong code
       this.ctx.fxaLoginCallback = (req) => {
@@ -748,11 +710,11 @@ describe('User authentication', function() {
         };
         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
       };
-      await vpn.waitForElement('authSignIn-passwordInput');
+      await vpn.waitForElement(authView.PASS_INPUT);
       await vpn.waitForElementProperty(
-          'authSignIn-passwordInput', 'visible', 'true');
+          authView.PASS_INPUT, 'visible', 'true');
       await vpn.setElementProperty(
-          'authSignIn-passwordInput', 'text', 's', 'P4ass0rd!!!!');
+          authView.PASS_INPUT, 'text', 's', 'P4ass0rd!!!!');
 
       this.ctx.fxaEmailCallback = (req) => {
         this.ctx.fxaOverrideEndpoints.POSTs['/v1/session/verify_code'].status =
@@ -763,41 +725,41 @@ describe('User authentication', function() {
         }
       };
 
-      await vpn.waitForElementProperty('authSignIn-button', 'enabled', 'true');
-      await vpn.clickOnElement('authSignIn-button');
+      await vpn.waitForElementProperty(authView.SIGNIN_BUTTON, 'enabled', 'true');
+      await vpn.clickOnElement(authView.SIGNIN_BUTTON);
 
       await vpn.waitForElement(
-          'authVerificationSessionByEmailNeeded-textInput');
+          authView.verificationByEmailView.TEXT_INPUT);
       await vpn.waitForElementProperty(
-          'authVerificationSessionByEmailNeeded-textInput', 'visible', 'true');
+          authView.verificationByEmailView.TEXT_INPUT, 'visible', 'true');
       await vpn.waitForElementProperty(
-          'authVerificationSessionByEmailNeeded-button', 'enabled', 'false');
+          authView.verificationByEmailView.EMAIL_BUTTON, 'enabled', 'false');
       await vpn.setElementProperty(
-          'authVerificationSessionByEmailNeeded-textInput', 'text', 's',
+          authView.verificationByEmailView.TEXT_INPUT, 'text', 's',
           '123456');
       await vpn.waitForElementProperty(
-          'authVerificationSessionByEmailNeeded-button', 'enabled', 'true');
+          authView.verificationByEmailView.EMAIL_BUTTON, 'enabled', 'true');
 
       // Step 6: email code -> back -> start -> totp -> error code
       await vpn.waitForElement(
-          'authVerificationSessionByEmailNeeded-backButton');
+          authView.verificationByEmailView.BACK);
       await vpn.waitForElementProperty(
-          'authVerificationSessionByEmailNeeded-backButton', 'visible', 'true');
+          authView.verificationByEmailView.BACK, 'visible', 'true');
 
       await vpn.clickOnElement(
-          'authVerificationSessionByEmailNeeded-backButton');
-      await vpn.waitForElement('authStart-textInput');
+          authView.verificationByEmailView.BACK);
+      await vpn.waitForElement(authView.EMAIL_INPUT);
       await vpn.setElementProperty(
-          'authStart-textInput', 'text', 's', 'test@test');
-      await vpn.waitForElementProperty('authStart-button', 'enabled', 'true');
-      await vpn.waitForElement('authStart-button');
-      await vpn.clickOnElement('authStart-button');
+          authView.EMAIL_INPUT, 'text', 's', 'test@test');
+      await vpn.waitForElementProperty(authView.START_BUTTON, 'enabled', 'true');
+      await vpn.waitForElement(authView.START_BUTTON);
+      await vpn.clickOnElement(authView.START_BUTTON);
 
-      await vpn.waitForElement('authSignIn-passwordInput');
+      await vpn.waitForElement(authView.PASS_INPUT);
       await vpn.waitForElementProperty(
-          'authSignIn-passwordInput', 'visible', 'true');
+          authView.PASS_INPUT, 'visible', 'true');
       await vpn.setElementProperty(
-          'authSignIn-passwordInput', 'text', 's', 'P4ass0rd!!');
+          authView.PASS_INPUT, 'text', 's', 'P4ass0rd!!');
 
       this.ctx.fxaLoginCallback = (req) => {
         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
@@ -814,33 +776,33 @@ describe('User authentication', function() {
         }
       };
 
-      await vpn.waitForElementProperty('authSignIn-button', 'enabled', 'true');
-      await vpn.clickOnElement('authSignIn-button');
+      await vpn.waitForElementProperty(authView.SIGNIN_BUTTON, 'enabled', 'true');
+      await vpn.clickOnElement(authView.SIGNIN_BUTTON);
 
-      await vpn.waitForElement('authVerificationSessionByTotpNeeded-textInput');
+      await vpn.waitForElement(authView.verificationBySessionTotpView.TEXT_INPUT);
       await vpn.waitForElementProperty(
-          'authVerificationSessionByTotpNeeded-textInput', 'visible', 'true');
+          authView.verificationBySessionTotpView.TEXT_INPUT, 'visible', 'true');
       await vpn.waitForElementProperty(
-          'authVerificationSessionByTotpNeeded-button', 'enabled', 'false');
+          authView.verificationBySessionTotpView.TOTP_NEEDED_BUTTON, 'enabled', 'false');
       await vpn.setElementProperty(
-          'authVerificationSessionByTotpNeeded-textInput', 'text', 's',
+          authView.verificationBySessionTotpView.TEXT_INPUT, 'text', 's',
           '123456');
       await vpn.waitForElementProperty(
-          'authVerificationSessionByTotpNeeded-button', 'enabled', 'true');
+          authView.verificationBySessionTotpView.TOTP_NEEDED_BUTTON, 'enabled', 'true');
 
       await vpn.waitForElementProperty(
-          'authVerificationSessionByTotpNeeded-textInput', 'hasError', 'false');
-      await vpn.waitForElement('authVerificationSessionByTotpNeeded-button');
-      await vpn.clickOnElement('authVerificationSessionByTotpNeeded-button');
+          authView.verificationBySessionTotpView.TEXT_INPUT, 'hasError', 'false');
+      await vpn.waitForElement(authView.verificationBySessionTotpView.TOTP_NEEDED_BUTTON);
+      await vpn.clickOnElement(authView.verificationBySessionTotpView.TOTP_NEEDED_BUTTON);
       await vpn.waitForElementProperty(
-          'authVerificationSessionByTotpNeeded-textInput', 'hasError', 'true');
+          authView.verificationBySessionTotpView.TEXT_INPUT, 'hasError', 'true');
 
       await vpn.waitForElement(
-          'authVerificationSessionByTotpNeeded-backButton');
+          authView.verificationBySessionTotpView.BACK);
       await vpn.waitForElementProperty(
-          'authVerificationSessionByTotpNeeded-backButton', 'visible', 'true');
+          authView.verificationBySessionTotpView.BACK, 'visible', 'true');
       await vpn.clickOnElement(
-          'authVerificationSessionByTotpNeeded-backButton');
+          authView.verificationBySessionTotpView.BACK);
       await vpn.waitForMainView();
 
       // Step 7: main -> sign up -> code -> error
@@ -860,35 +822,35 @@ describe('User authentication', function() {
         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 400;
       };
 
-      await vpn.clickOnElement('getStarted');
-      await vpn.waitForElement('authStart-textInput');
+      await vpn.clickOnElement(initialView.GET_STARTED);
+      await vpn.waitForElement(authView.EMAIL_INPUT);
       await vpn.waitForElementProperty(
-          'authStart-textInput', 'visible', 'true');
+          authView.EMAIL_INPUT, 'visible', 'true');
       await vpn.setElementProperty(
-          'authStart-textInput', 'text', 's', 'test@test');
-      await vpn.waitForElement('authStart-button');
-      await vpn.clickOnElement('authStart-button');
+          authView.EMAIL_INPUT, 'text', 's', 'test@test');
+      await vpn.waitForElement(authView.START_BUTTON);
+      await vpn.clickOnElement(authView.START_BUTTON);
 
-      await vpn.waitForElement('authSignIn-passwordInput');
+      await vpn.waitForElement(authView.PASS_INPUT);
       await vpn.waitForElementProperty(
-          'authSignIn-passwordInput', 'visible', 'true');
+          authView.PASS_INPUT, 'visible', 'true');
       await vpn.setElementProperty(
-          'authSignIn-passwordInput', 'text', 's', 'P4ass0rd!!');
+          authView.PASS_INPUT, 'text', 's', 'P4ass0rd!!');
 
-      await vpn.waitForElementProperty('authSignIn-button', 'enabled', 'true');
-      await vpn.clickOnElement('authSignIn-button');
+      await vpn.waitForElementProperty(authView.SIGNIN_BUTTON, 'enabled', 'true');
+      await vpn.clickOnElement(authView.SIGNIN_BUTTON);
 
-      await vpn.waitForElement('authUnblockCodeNeeded-textInput');
+      await vpn.waitForElement(authView.authUnblockCodeView.CODE_INPUT);
       await vpn.waitForElementProperty(
-          'authUnblockCodeNeeded-textInput', 'visible', 'true');
+          authView.authUnblockCodeView.CODE_INPUT, 'visible', 'true');
       await vpn.setElementProperty(
-          'authUnblockCodeNeeded-textInput', 'text', 's', '12345678');
+          authView.authUnblockCodeView.CODE_INPUT, 'text', 's', '12345678');
       await vpn.waitForElementProperty(
-          'authUnblockCodeNeeded-textInput', 'hasError', 'false');
-      await vpn.waitForElement('authUnblockCodeNeeded-button');
-      await vpn.clickOnElement('authUnblockCodeNeeded-button');
+          authView.authUnblockCodeView.CODE_INPUT, 'hasError', 'false');
+      await vpn.waitForElement(authView.authUnblockCodeView.CODE_BUTTON);
+      await vpn.clickOnElement(authView.authUnblockCodeView.CODE_BUTTON);
       await vpn.waitForElementProperty(
-          'authUnblockCodeNeeded-textInput', 'hasError', 'true');
+          authView.authUnblockCodeView.CODE_INPUT, 'hasError', 'true');
     });
   });
 });
