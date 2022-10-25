@@ -48,6 +48,7 @@ jobs:
             - { name: "Bionic", dist: bionic, ppa: "ppa:okirby/qt6-backports" }
             - { name: "Focal", dist: focal, ppa: "ppa:okirby/qt6-backports" }
             - { name: "Jammy", dist: jammy, ppa: "" }
+            - { name: "Kinetic", dist: kinetic, ppa: "" }
 
     runs-on: ubuntu-latest
     env:

@@ -31,7 +31,6 @@ Tutorial::Tutorial(QObject* parent) : QObject(parent) {
   MVPN_COUNT_CTOR(Tutorial);
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   connect(vpn, &MozillaVPN::stateChanged, this, &Tutorial::stop);
 

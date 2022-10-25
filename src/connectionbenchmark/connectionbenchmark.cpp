@@ -27,7 +27,6 @@ ConnectionBenchmark::~ConnectionBenchmark() {
 
 void ConnectionBenchmark::initialize() {
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   Controller* controller = vpn->controller();
   Q_ASSERT(controller);
@@ -67,7 +66,6 @@ void ConnectionBenchmark::start() {
   Q_ASSERT(m_state != StateRunning);
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   Controller* controller = vpn->controller();
   Controller::State controllerState = controller->state();
