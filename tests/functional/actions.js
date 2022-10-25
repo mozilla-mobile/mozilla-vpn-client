@@ -18,7 +18,7 @@ const settings = {
 const serverList = {
     selectCityFromList: async (cityId, countryId) => {
         await vpn.wait()
-        await vpn.setElementProperty(elementsState.COUNTRY_VIEW, 'contentY', 'i', parseInt(await vpn.getElementProperty(cityId, 'y')) + parseInt(await vpn.getElementProperty(countryId, 'y')));
+        await vpn.setElementProperty(elementState.COUNTRY_VIEW, 'contentY', 'i', parseInt(await vpn.getElementProperty(cityId, 'y')) + parseInt(await vpn.getElementProperty(countryId, 'y')));
         await vpn.wait()
     },
 

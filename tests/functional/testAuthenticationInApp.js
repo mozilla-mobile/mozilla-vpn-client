@@ -30,7 +30,7 @@ describe('User authentication', function() {
       DELETEs: {},
     };
 
-    it('Account creation', async () => {
+    it.only('Account creation', async () => {
       if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
         await vpn.flipFeatureOn('inAppAuthentication');
         await vpn.flipFeatureOn('inAppAccountCreate');
@@ -42,13 +42,14 @@ describe('User authentication', function() {
       await vpn.waitForElement(authView.EMAIL_INPUT);
       await vpn.waitForElementProperty(
           authView.EMAIL_INPUT, 'visible', 'true');
-      await vpn.waitForElementProperty(authView.START_BUTTON, 'enabled', 'false');
-      await vpn.setElementProperty(
-          authView.EMAIL_INPUT, 'text', 's', 'test@test');
+      await vpn.waitForElementProperty(authView.START_BUTTON, 'enabled', 'false');            
+      await vpn.setElementProperty(authView.EMAIL_INPUT, 'text', 's', 'test@test');
       await vpn.waitForElementProperty(authView.START_BUTTON, 'enabled', 'true');
       await vpn.waitForElement(authView.START_BUTTON);
       await vpn.clickOnElement(authView.START_BUTTON);
 
+      console.log('wait for pass: ');
+      await vpn.wait(6000)
       await vpn.waitForElement(authView.PASS_INPUT);
       await vpn.waitForElementProperty(
           authView.PASS_INPUT, 'visible', 'true');

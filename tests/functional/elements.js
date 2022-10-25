@@ -192,11 +192,11 @@ const mobileOnBoardingView = {
 }
 
 const serverListView = {
-    generateCountryId: (serverCode) => {
+    generateCountryId: async (serverCode) => {
         return 'serverCountryList/serverCountry-' + serverCode;
     },
 
-    generateCityId: (countryId, cityName) => {
+    generateCityId: async (countryId, cityName) => {
         return countryId + '/serverCityList/serverCity-' + cityName.replace(/ /g, '_');
     }
 }
