@@ -2,14 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-buildCache {
-    local {
-        // mozilla-vpn-client/.gradle_cache
-        directory = new File(rootDir.getParentFile().getParentFile().getParentFile(),'.gradle_cache')
-        removeUnusedEntriesAfterDays = 30
-    }
-}
-
+rootProject.name = 'Mozilla_VPN'
 include ':adjust'
 include ':daemon'
 include ':qtBindings'

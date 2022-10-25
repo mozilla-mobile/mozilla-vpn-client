@@ -40,7 +40,7 @@ apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
 
 android {
     compileSdkVersion Config.compileSdkVersion
-    ndkVersion '24.0.8215888'
+    ndkVersion Config.ndkVersion
     defaultConfig {
         minSdkVersion Config.minSdkVersion
         targetSdkVersion Config.targetSdkVersion

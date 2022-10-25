@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.CopySpec
@@ -12,8 +16,6 @@ import javax.inject.Inject
 // This Plugin will help in finding the right paths for QT.
 //
 class QtConfig : Plugin<Project> {
-    private val qtAndroidDir = "~/Qt/6.2.4" // Just a dummy, will be overwritten hopefully
-
     override fun apply(project: Project) {
         if (!project.hasProperty("mozillavpn_qt_android_dir")) {
             error(
@@ -22,10 +24,7 @@ class QtConfig : Plugin<Project> {
             )
         }
         if (!project.hasProperty("mozillavpn_qt_host_dir")) {
-            error(
-                "mozillavpn_qt_host_dir is not set as gradle property \n " +
-                    "Please add it to gradle.properties or set is as env"
-            )
+            error(ERROR_MESSAGE_NO_QT_HOST)
         }
         project.extensions.create("QtConfiguration", QTConfigurationExtension::class.java, project)
     }
@@ -39,7 +38,7 @@ open class QTConfigurationExtension
     val host: String by lazy {
         val dir = File(project.properties["mozillavpn_qt_host_dir"].toString())
         if (!dir.exists()) {
-            error("You need to define a QT host dir")
+            error("$ERROR_MESSAGE_NO_QT_HOST \n Value: ${dir.absolutePath.toString()}")
         }
         dir.absolutePath.toString()
     }
@@ -224,3 +223,20 @@ open class QTConfigurationExtension
         )
     }
 }
+
+
+const val ERROR_MESSAGE_NO_QT_HOST = "mozillavpn_qt_host_dir is not set or does not exist \n " +
+        "Please add it:  \n" +
+        " \t via env MOZILLAVPN_QT_HOST_DIR=<../> \n" +
+        " \t or write mozillavpn_qt_host_dir=~/<some folder> to either \n"+
+        " \t \t  ~/.gradle/gradle.properties \n "+
+        " \t \t  project/android/gradle.properties"
+
+const val ERROR_MESSAGE_NO_ANDROID_DIR = "mozillavpn_qt_android_dir is not set or does not exist \n " +
+        "Please add it:  \n" +
+        " \t via env MOZILLAVPN_QT_ANDROID_DIR=<../> \n" +
+        " \t or write mozillavpn_qt_android_dir=~/<some folder> to either \n"+
+        " \t \t  ~/.gradle/gradle.properties \n "+
+        " \t \t  project/android/gradle.properties"
+
+

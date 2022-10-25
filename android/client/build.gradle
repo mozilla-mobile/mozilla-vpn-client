@@ -50,6 +50,7 @@ android {
                 abiFilters QtConfiguration.abis.split(",") // We can't pass lists, so lets split it here :)
                 // Passes optional arguments to CMake.
                 arguments "-DANDROID_QT_DIR=${QtConfiguration.qtAndroidRootDir}",
+                          "-DQT_HOST_PATH=${QtConfiguration.host}",
                           "-DQT_HOST_PATH_CMAKE_DIR=${QtConfiguration.host}/lib/cmake",
                           "-DANDROID_STL=c++_shared",
                           "--target mozillavpn"

@@ -35,7 +35,7 @@ DUMMY {
 } else:linux:!android {
    error(qmake is not supported for Linux. Please use cmake.)
 } else:android {
-   include($$PWD/qmake/platforms/android.pri)
+   error(qmake is not supported for Android. Please use cmake.)
 } else:macos {
    include($$PWD/qmake/platforms/macos.pri)
 } else:ios {

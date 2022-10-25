@@ -24,13 +24,16 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
     if("${ANDROID_QT_DIR}" STREQUAL "")
         message(FATAL_ERROR "ANDROID_QT_DIR was not provided")
     endif()
+    if("${QT_HOST_PATH}" STREQUAL "")
+        message(FATAL_ERROR "ANDROID_QT_DIR was not provided")
+    endif()
 
     # ANDROID HACKS
     message("Using QT Provided in ${ANDROID_QT_DIR}")
     # Otherwise the NDK Toolchain wont find qt
     set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE NEVER)
 
-    set(QT_HOST_PATH "~/Code/Qt/6.2.4/macos")
+    #set(QT_HOST_PATH "~/Code/Qt/6.2.4/macos")
     # We need to have a diffrent qt-installation per arch
     # Select the right one based of the ndk arch
     if(${CMAKE_ANDROID_ARCH_ABI} STREQUAL "arm64-v8a")
