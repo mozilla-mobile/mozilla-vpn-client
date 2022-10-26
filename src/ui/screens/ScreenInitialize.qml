@@ -12,9 +12,9 @@ VPNStackView {
     id: stackview
     objectName: "initialStackView"
     anchors.fill: parent
-    initialItem: "qrc:/ui/screens/initialize/ViewInitialize.qml"
 
     Component.onCompleted: function() {
+        stackview.push("qrc:/ui/screens/initialize/ViewInitialize.qml")
         VPNNavigator.addStackView(VPNNavigator.ScreenInitialize, stackview)
     }
 }
