@@ -40,7 +40,8 @@ describe('Benchmark', function() {
                             ((bps >= 10000000) ? 'SpeedMedium' : 'SpeedSlow'));
 
     // Exit the benchmark
-    await vpn.waitForElementAndClick(homeView.CONNECTION_INFO_TOGGLE);
+    await vpn.waitForElement(homeView.CONNECTION_INFO_TOGGLE);
+    await vpn.clickOnElement(homeView.CONNECTION_INFO_TOGGLE);
   });
 
   it('Failed benchmark on HTTP error', async () => {
