@@ -2,17 +2,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "vpnglean.h"
 #include "glean/glean.h"
-#include "settingsholder.h"
-#include "mozillavpn.h"
+#include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
+#include "settingsholder.h"
+#include "vpnglean.h"
 
 #include <QDir>
 #include <QStandardPaths>
 
 namespace {
 Logger logger(LOG_MAIN, "Glean");
+Glean* s_instance = nullptr;
 
 QString rootAppFolder() {
 #if defined(UNIT_TEST)
@@ -22,6 +24,15 @@ QString rootAppFolder() {
 #endif
 }
 }  // namespace
+
+Glean::Glean() {
+  MVPN_COUNT_CTOR(Glean);
+
+  connect(SettingsHolder::instance(), &SettingsHolder::gleanEnabledChanged,
+          this, &setUploadEnabled);
+}
+
+Glean::~Glean() { MVPN_COUNT_DTOR(Glean); }
 
 // static
 void Glean::initialize() {
@@ -40,6 +51,8 @@ void Glean::initialize() {
     return;
   }
 
+  s_instance = new Glean();
+
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   MozillaVPN* vpn = MozillaVPN::instance();
 
@@ -52,4 +65,11 @@ void Glean::initialize() {
                  << "appChannel:" << appChannel << "dataPath:" << dataPath;
 
   glean_initialize(uploadEnabled, dataPath.toLocal8Bit(), appChannel);
+}
+
+// static
+void Glean::setUploadEnabled(bool isTelemetryEnabled) {
+  logger.debug() << "Changing Glean upload status to" << isTelemetryEnabled;
+
+  glean_set_upload_enabled(isTelemetryEnabled);
 }

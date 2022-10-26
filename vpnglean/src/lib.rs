@@ -44,3 +44,8 @@ pub extern "C" fn glean_initialize(is_telemetry_enabled: bool, data_path: FfiStr
 
     glean::initialize(cfg, client_info);
 }
+
+#[no_mangle]
+pub extern "C" fn glean_set_upload_enabled(is_telemetry_enabled: bool) {
+    glean::set_upload_enabled(is_telemetry_enabled);
+}

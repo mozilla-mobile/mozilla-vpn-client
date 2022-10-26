@@ -5,10 +5,21 @@
 #ifndef GLEAN_H
 #define GLEAN_H
 
+#include <QObject>
+
 constexpr const char* GLEAN_DATA_DIRECTORY = "glean";
 
-class Glean final {
+class Glean final : public QObject {
+  Q_OBJECT
+
+ private:
+  Glean();
+
+  static void setUploadEnabled(bool isTelemetryEnabled);
+
  public:
+  ~Glean();
+
   static void initialize();
 };
 
