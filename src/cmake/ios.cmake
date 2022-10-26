@@ -122,18 +122,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-apple/Sources/WireGuardKit/PrivateKey.swift
 )
 
-## Build wireguard-go-version.h
-execute_process(
-    COMMAND go list -m golang.zx2c4.com/wireguard
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-apple/Sources/WireGuardKitGo
-    OUTPUT_VARIABLE WG_VERSION_FULL
-)
-string(REGEX REPLACE ".*v\([0-9.]*\).*" "\\1" WG_VERSION_STRING ${WG_VERSION_FULL})
-configure_file(${CMAKE_SOURCE_DIR}/ios/wireguard-go-version.h.in
-               ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go-version.h)
-target_sources(mozillavpn PRIVATE
-    ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go-version.h)
-
 ## Install the Network Exetnsion into the bundle.
 add_dependencies(mozillavpn networkextension)
 add_custom_command(TARGET mozillavpn POST_BUILD

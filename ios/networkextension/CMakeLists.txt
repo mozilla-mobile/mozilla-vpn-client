@@ -72,7 +72,7 @@ execute_process(
     OUTPUT_VARIABLE WG_VERSION_FULL
 )
 string(REGEX REPLACE ".*v\([0-9.]*\).*" "\\1" WG_VERSION_STRING ${WG_VERSION_FULL})
-configure_file(${CMAKE_SOURCE_DIR}/ios/wireguard-go-version.h.in
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/wireguard-go-version.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go-version.h)
 target_sources(networkextension PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go-version.h)
