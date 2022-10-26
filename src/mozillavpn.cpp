@@ -1592,6 +1592,12 @@ void MozillaVPN::hardResetAndQuit() {
   quit();
 }
 
+void MozillaVPN::exitForUnrecoverableError(const QString& reason) {
+  Q_ASSERT(!reason.isEmpty());
+  logger.error() << "Unrecoverable error detected: " << reason;
+  quit();
+}
+
 void MozillaVPN::crashTest() {
   logger.debug() << "Crashing Application";
   char* text = new char[100];
