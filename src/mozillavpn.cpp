@@ -234,7 +234,9 @@ void MozillaVPN::initialize() {
 
   AddonManager::instance();
 
-  Glean::initialize();
+  if (Feature::get(Feature::Feature_gleanRust)->isSupported()) {
+    Glean::initialize();
+  }
 
   QList<Task*> initTasks{new TaskAddonIndex(), new TaskGetFeatureList()};
 
