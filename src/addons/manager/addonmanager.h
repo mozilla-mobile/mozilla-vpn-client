@@ -18,6 +18,7 @@ class AddonManager final : public QAbstractListModel {
 
   Q_PROPERTY(
       bool loadCompleted MEMBER m_loadCompleted NOTIFY loadCompletedChanged)
+  Q_PROPERTY(int count READ count NOTIFY countChanged)
 
  public:
   static QString addonServerAddress();
@@ -53,6 +54,8 @@ class AddonManager final : public QAbstractListModel {
   QStringList addonIds() const;
 #endif
 
+  int count() const;
+
  private:
   explicit AddonManager(QObject* parent);
 
@@ -76,6 +79,7 @@ class AddonManager final : public QAbstractListModel {
 
  signals:
   void loadCompletedChanged();
+  void countChanged();
 
  private:
   QMap<QString, AddonData> m_addons;

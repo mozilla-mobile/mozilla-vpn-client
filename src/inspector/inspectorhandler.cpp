@@ -217,6 +217,25 @@ static QList<InspectorSettingCommand> s_settingCommands{
                      ? "true"
                      : "false";
         }},
+
+    InspectorSettingCommand{
+        "addon/customServer", InspectorSettingCommand::Boolean,
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setAddonCustomServer(value == "true");
+        },
+        []() {
+          return SettingsHolder::instance()->addonCustomServer() ? "true"
+                                                                 : "false";
+        }},
+
+    InspectorSettingCommand{
+        "addon/customServerAddress", InspectorSettingCommand::String,
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setAddonCustomServerAddress(value);
+        },
+        []() {
+          return SettingsHolder::instance()->addonCustomServerAddress();
+        }},
 };
 
 struct InspectorCommand {

@@ -136,6 +136,9 @@ int CommandUI::run(QStringList& tokens) {
       Constants::setStaging();
     }
 
+    logger.info() << "MozillaVPN" << Constants::versionString();
+    logger.info() << "User-Agent:" << NetworkManager::userAgent();
+
     logger.debug() << "UI starting";
 
     if (startAtBootOption.m_set) {
