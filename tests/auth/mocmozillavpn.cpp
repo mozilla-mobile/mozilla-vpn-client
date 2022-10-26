@@ -157,6 +157,8 @@ void MozillaVPN::hardReset() {}
 
 void MozillaVPN::crashTest() {}
 
+void MozillaVPN::exitForUnrecoverableError(const QString& reason) {}
+
 QString MozillaVPN::devVersion() { return qVersion(); }
 
 QString MozillaVPN::graphicsApi() { return ""; }

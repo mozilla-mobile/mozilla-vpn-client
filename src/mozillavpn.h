@@ -164,6 +164,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE bool validateUserDNS(const QString& dns) const;
   Q_INVOKABLE void hardResetAndQuit();
   Q_INVOKABLE void crashTest();
+  Q_INVOKABLE void exitForUnrecoverableError(const QString& reason);
   Q_INVOKABLE void requestDeleteAccount();
   Q_INVOKABLE void cancelReauthentication();
   Q_INVOKABLE void updateViewShown();
