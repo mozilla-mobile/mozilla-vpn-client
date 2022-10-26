@@ -3,71 +3,71 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const { initialView, settingsView, mobileOnBoardingView } = require('./elements.js');
+const { initialScreen, mobileOnBoardingScreen } = require('./elements.js');
 const vpn = require('./helper.js');
 
 
 describe('Mobile Onboarding', function() {
   beforeEach(async () => {
-    await vpn.waitForElement(initialView.SCREEN);
+    await vpn.waitForElement(initialScreen.SCREEN);
     await vpn.flipFeatureOn('mobileOnboarding');
   });
 
   it('Navigating to and from the help menu is possible', async () => {
-    await vpn.waitForElementAndClick(initialView.GET_HELP_LINK);
-    await vpn.waitForElementAndClick(settingsView.getHelpView.BACK);
+    await vpn.waitForElementAndClick(initialScreen.GET_HELP_LINK);
+    await vpn.waitForElementAndClick(getHelpScreen.BACK);
     
-    await vpn.waitForElement(mobileOnBoardingView.SWIPE_VIEW);
-    assert(await vpn.getElementProperty(mobileOnBoardingView.SWIPE_VIEW, 'visible') === 'true')
+    await vpn.waitForElement(mobileOnBoardingScreen.SWIPE_VIEW);
+    assert(await vpn.getElementProperty(mobileOnBoardingScreen.SWIPE_VIEW, 'visible') === 'true')
   });
 
   it('SwipeView is visible', async () => {    
-    await vpn.waitForElement(mobileOnBoardingView.SWIPE_VIEW);
-    assert(await vpn.getElementProperty(mobileOnBoardingView.SWIPE_VIEW, 'visible') === 'true')
+    await vpn.waitForElement(mobileOnBoardingScreen.SWIPE_VIEW);
+    assert(await vpn.getElementProperty(mobileOnBoardingScreen.SWIPE_VIEW, 'visible') === 'true')
   });
 
   it('Sign up button is visible', async () => {
-    await vpn.waitForElement(mobileOnBoardingView.SIGNUP_BUTTON);
-    assert(await vpn.getElementProperty(mobileOnBoardingView.SIGNUP_BUTTON, 'visible') === 'true')
+    await vpn.waitForElement(mobileOnBoardingScreen.SIGNUP_BUTTON);
+    assert(await vpn.getElementProperty(mobileOnBoardingScreen.SIGNUP_BUTTON, 'visible') === 'true')
   });
 
   it('Already a subscriber button is visible', async () => {    
-    await vpn.waitForElement(mobileOnBoardingView.ALREADY_SUBBED_LINK);
-    assert(await vpn.getElementProperty(mobileOnBoardingView.ALREADY_SUBBED_LINK, 'visible') === 'true')
+    await vpn.waitForElement(mobileOnBoardingScreen.ALREADY_SUBBED_LINK);
+    assert(await vpn.getElementProperty(mobileOnBoardingScreen.ALREADY_SUBBED_LINK, 'visible') === 'true')
   });
 
   it('Panel title is set correctly based on StackView currentIndex',
      async () => {
-       await vpn.waitForElement(mobileOnBoardingView.SWIPE_VIEW);
-       await vpn.setElementProperty(mobileOnBoardingView.SWIPE_VIEW, 'currentIndex', 'i', 0);
+       await vpn.waitForElement(mobileOnBoardingScreen.SWIPE_VIEW);
+       await vpn.setElementProperty(mobileOnBoardingScreen.SWIPE_VIEW, 'currentIndex', 'i', 0);
        await vpn.wait();
-       await vpn.waitForElement(mobileOnBoardingView.PANEL_TITLE);
-       assert(await vpn.getElementProperty(mobileOnBoardingView.PANEL_TITLE, 'text') === 'Mozilla VPN');
+       await vpn.waitForElement(mobileOnBoardingScreen.PANEL_TITLE);
+       assert(await vpn.getElementProperty(mobileOnBoardingScreen.PANEL_TITLE, 'text') === 'Mozilla VPN');
      });
 
   it('Panel description is set correctly based on StackView currentIndex',
      async () => {
-       await vpn.waitForElement(mobileOnBoardingView.SWIPE_VIEW);
-       await vpn.setElementProperty(mobileOnBoardingView.SWIPE_VIEW, 'currentIndex', 'i', 0);
+       await vpn.waitForElement(mobileOnBoardingScreen.SWIPE_VIEW);
+       await vpn.setElementProperty(mobileOnBoardingScreen.SWIPE_VIEW, 'currentIndex', 'i', 0);
        await vpn.wait();
-       const descriptionText = await vpn.getElementProperty(mobileOnBoardingView.PANEL_DESCRIPTION, 'text');
+       const descriptionText = await vpn.getElementProperty(mobileOnBoardingScreen.PANEL_DESCRIPTION, 'text');
        assert(descriptionText.includes('Firefox'));
      });
 
   it('Panel title and description are updated when SwipeView currentIndex changes',
      async () => {       
-       await vpn.waitForElement(mobileOnBoardingView.SWIPE_VIEW);
-       await vpn.setElementProperty(mobileOnBoardingView.SWIPE_VIEW, 'currentIndex', 'i', '2');
+       await vpn.waitForElement(mobileOnBoardingScreen.SWIPE_VIEW);
+       await vpn.setElementProperty(mobileOnBoardingScreen.SWIPE_VIEW, 'currentIndex', 'i', '2');
        await vpn.wait();
-       assert(await vpn.getElementProperty(mobileOnBoardingView.PANEL_TITLE, 'text') === 'Protect your privacy');
-       const descriptionText = await vpn.getElementProperty(mobileOnBoardingView.PANEL_DESCRIPTION, 'text');
+       assert(await vpn.getElementProperty(mobileOnBoardingScreen.PANEL_TITLE, 'text') === 'Protect your privacy');
+       const descriptionText = await vpn.getElementProperty(mobileOnBoardingScreen.PANEL_DESCRIPTION, 'text');
        assert(descriptionText.includes('Route your activity and location'));
      });
 
   it('Sign up button opens auth flow', async () => {
     await vpn.wait();
-    await vpn.waitForElement(mobileOnBoardingView.SIGNUP_BUTTON);
-    await vpn.clickOnElement(mobileOnBoardingView.SIGNUP_BUTTON);
+    await vpn.waitForElement(mobileOnBoardingScreen.SIGNUP_BUTTON);
+    await vpn.clickOnElement(mobileOnBoardingScreen.SIGNUP_BUTTON);
     await vpn.wait();
 
     if (!this.ctx.wasm) {
@@ -77,12 +77,12 @@ describe('Mobile Onboarding', function() {
       });
     }
 
-    await vpn.waitForElement(initialView.AUTHENTICATE_VIEW);
-    await vpn.waitForElementProperty(initialView.AUTHENTICATE_VIEW, 'visible', 'true');
+    await vpn.waitForElement(initialScreen.AUTHENTICATE_VIEW);
+    await vpn.waitForElementProperty(initialScreen.AUTHENTICATE_VIEW, 'visible', 'true');
   });
 
   it('Already a subscriber? opens auth flow', async () => {
-    await vpn.waitForElementAndClick(mobileOnBoardingView.ALREADY_SUBBED_LINK);
+    await vpn.waitForElementAndClick(mobileOnBoardingScreen.ALREADY_SUBBED_LINK);
 
     if (!this.ctx.wasm) {
       await vpn.waitForCondition(async () => {
@@ -91,7 +91,7 @@ describe('Mobile Onboarding', function() {
       });
     }
 
-    await vpn.waitForElement(initialView.AUTHENTICATE_VIEW);
-    await vpn.waitForElementProperty(initialView.AUTHENTICATE_VIEW, 'visible', 'true');
+    await vpn.waitForElement(initialScreen.AUTHENTICATE_VIEW);
+    await vpn.waitForElementProperty(initialScreen.AUTHENTICATE_VIEW, 'visible', 'true');
   });
 });

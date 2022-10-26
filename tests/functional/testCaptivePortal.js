@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 const assert = require('assert');
-const { initialView, telemetryView, generalElements } = require('./elements.js');
+const { initialScreen, telemetryScreen, generalElements } = require('./elements.js');
 const vpn = require('./helper.js');
 
 describe('Captive portal', function() {
@@ -37,7 +37,7 @@ describe('Captive portal', function() {
     await vpn.waitForMainView();
 
     await vpn.flipFeatureOff('inAppAuthentication');
-    await vpn.waitForElementAndClick(initialView.GET_STARTED);
+    await vpn.waitForElementAndClick(initialScreen.GET_STARTED);
 
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
@@ -46,8 +46,8 @@ describe('Captive portal', function() {
 
     await vpn.wait();
 
-    await vpn.waitForElement(initialView.AUTHENTICATE_VIEW);
-    await vpn.waitForElementProperty(initialView.AUTHENTICATE_VIEW, 'visible', 'true');
+    await vpn.waitForElement(initialScreen.AUTHENTICATE_VIEW);
+    await vpn.waitForElementProperty(initialScreen.AUTHENTICATE_VIEW, 'visible', 'true');
 
     await vpn.forceCaptivePortalDetection();
     await vpn.wait();
@@ -71,7 +71,7 @@ describe('Captive portal', function() {
     await vpn.authenticateInApp(true, false);
     // Setup - end
 
-    await vpn.waitForElement(telemetryView.TELEMETRY_POLICY_BUTTON);
+    await vpn.waitForElement(telemetryScreen.TELEMETRY_POLICY_BUTTON);
     await vpn.forceCaptivePortalDetection();
     await vpn.wait();
 
@@ -141,10 +141,10 @@ describe('Captive portal', function() {
       await vpn.wait();
 
       await vpn.waitForCondition(() => {
-        return vpn.hasElement(initialView.CAP_PORTAL_BUTTON);
+        return vpn.hasElement(initialScreen.CAP_PORTAL_BUTTON);
       });
       // Clicking on the alert should disable the vpn
-      await vpn.clickOnElement(initialView.CAP_PORTAL_BUTTON);
+      await vpn.clickOnElement(initialScreen.CAP_PORTAL_BUTTON);
 
       await vpn.waitForCondition(async () => {
         let connectingMsg =
@@ -181,7 +181,7 @@ describe('Captive portal', function() {
          await vpn.forceCaptivePortalDetection();
 
          await vpn.activate();
-         await vpn.waitForElement(initialView.CAP_PORTAL_BUTTON)
+         await vpn.waitForElement(initialScreen.CAP_PORTAL_BUTTON)
          assert(true);
        });
 
@@ -196,7 +196,7 @@ describe('Captive portal', function() {
          await vpn.wait();
          await vpn.forceCaptivePortalDetection();
          await vpn.wait();
-         await vpn.waitForElement(initialView.CAP_PORTAL_BUTTON)
+         await vpn.waitForElement(initialScreen.CAP_PORTAL_BUTTON)
          assert(true);
        });
   });

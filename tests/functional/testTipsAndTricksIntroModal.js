@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const { homeView } = require('./elements.js');
+const { homeScreen } = require('./elements.js');
 const vpn = require('./helper.js');
 
 describe('Tips and tricks intro modal', function () {
@@ -16,36 +16,36 @@ describe('Tips and tricks intro modal', function () {
 
   it('Access and navigate tips and tricks via intro modal', async () => {
     await vpn.wait();
-    await vpn.waitForElementProperty(homeView.TIPS_AND_TRICKS_POPUP_LOADER, 'active', 'true');
-    await vpn.waitForElement(homeView.TIPS_AND_TRICKS_POPUP_DISCOVER);
-    await vpn.clickOnElement(homeView.TIPS_AND_TRICKS_POPUP_DISCOVER);
+    await vpn.waitForElementProperty(homeScreen.TIPS_AND_TRICKS_POPUP_LOADER, 'active', 'true');
+    await vpn.waitForElement(homeScreen.TIPS_AND_TRICKS_POPUP_DISCOVER);
+    await vpn.clickOnElement(homeScreen.TIPS_AND_TRICKS_POPUP_DISCOVER);
 
     await vpn.wait();
-    await vpn.waitForElement(homeView.TIPS_AND_TRICKS_VIEW);
-    await vpn.waitForElement(homeView.HOME_SCREEN_BACK);
-    await vpn.clickOnElement(homeView.HOME_SCREEN_BACK);    
+    await vpn.waitForElement(homeScreen.TIPS_AND_TRICKS_VIEW);
+    await vpn.waitForElement(homeScreen.HOME_SCREEN_BACK);
+    await vpn.clickOnElement(homeScreen.HOME_SCREEN_BACK);    
 
     await vpn.wait();
-    await vpn.waitForElement(homeView.HOME_SCREEN);
+    await vpn.waitForElement(homeScreen.HOME_SCREEN);
   });
 
   it('Closing modal with close button', async () => {
     await vpn.wait();
-    await vpn.waitForElementProperty(homeView.TIPS_AND_TRICKS_POPUP_LOADER, 'active', 'true');
-    await vpn.waitForElement(homeView.TIPS_AND_TRICKS_POPUP_CLOSE);
-    await vpn.clickOnElement(homeView.TIPS_AND_TRICKS_POPUP_CLOSE);
+    await vpn.waitForElementProperty(homeScreen.TIPS_AND_TRICKS_POPUP_LOADER, 'active', 'true');
+    await vpn.waitForElement(homeScreen.TIPS_AND_TRICKS_POPUP_CLOSE);
+    await vpn.clickOnElement(homeScreen.TIPS_AND_TRICKS_POPUP_CLOSE);
 
     await vpn.wait();
-    await vpn.waitForElementProperty(homeView.TIPS_AND_TRICKS_POPUP_LOADER, 'active', 'false');
+    await vpn.waitForElementProperty(homeScreen.TIPS_AND_TRICKS_POPUP_LOADER, 'active', 'false');
   });
 
   it('Closing modal with go back button', async () => {
     await vpn.wait();
-    await vpn.waitForElementProperty(homeView.TIPS_AND_TRICKS_POPUP_LOADER, 'active', 'true');
-    await vpn.waitForElement(homeView.TIPS_AND_TRICKS_POPUP_BACK);
-    await vpn.clickOnElement(homeView.TIPS_AND_TRICKS_POPUP_BACK);
+    await vpn.waitForElementProperty(homeScreen.TIPS_AND_TRICKS_POPUP_LOADER, 'active', 'true');
+    await vpn.waitForElement(homeScreen.TIPS_AND_TRICKS_POPUP_BACK);
+    await vpn.clickOnElement(homeScreen.TIPS_AND_TRICKS_POPUP_BACK);
 
     await vpn.wait();
-    await vpn.waitForElementProperty(homeView.TIPS_AND_TRICKS_POPUP_LOADER, 'active', 'false');
+    await vpn.waitForElementProperty(homeScreen.TIPS_AND_TRICKS_POPUP_LOADER, 'active', 'false');
   });
 })

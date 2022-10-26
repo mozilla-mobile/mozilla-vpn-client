@@ -3,34 +3,34 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 const vpn = require('./helper.js');
 const assert = require('assert');
-const { initialView, settingsView, navBar } = require('./elements.js');
+const { initialScreen, settingsScreen, navBar, getHelpScreen } = require('./elements.js');
 
 
 describe('Contact us view', function() {
   it('VPNUserInfo is not visible to unathenticated users', async () => {
-    await vpn.waitForElementAndClick(initialView.GET_HELP_LINK);
-    await vpn.waitForElement(settingsView.getHelpView.LINKS);
-    await vpn.waitForElementProperty(settingsView.getHelpView.LINKS, 'visible', 'true');
+    await vpn.waitForElementAndClick(initialScreen.GET_HELP_LINK);
+    await vpn.waitForElement(getHelpScreen.LINKS);
+    await vpn.waitForElementProperty(getHelpScreen.LINKS, 'visible', 'true');
 
-    await vpn.waitForElementAndClick(settingsView.getHelpView.SUPPORT);
+    await vpn.waitForElementAndClick(getHelpScreen.SUPPORT);
 
-    await vpn.waitForElement(settingsView.getHelpView.contactSupportView.USER_INFO);
-    await vpn.waitForElementProperty(settingsView.getHelpView.contactSupportView.USER_INFO, 'visible', 'false');
+    await vpn.waitForElement(getHelpScreen.contactSupportView.USER_INFO);
+    await vpn.waitForElementProperty(getHelpScreen.contactSupportView.USER_INFO, 'visible', 'false');
     assert(
-        await vpn.getElementProperty(settingsView.getHelpView.contactSupportView.USER_INFO, 'visible') ===
+        await vpn.getElementProperty(getHelpScreen.contactSupportView.USER_INFO, 'visible') ===
         'false');
   });
 
   it('Email inputs are visible to unauthenticated user', async () => {
-    await vpn.waitForElementAndClick(initialView.GET_HELP_LINK);
-    await vpn.waitForElement(settingsView.getHelpView.LINKS);
-    await vpn.waitForElementProperty(settingsView.getHelpView.LINKS, 'visible', 'true');
+    await vpn.waitForElementAndClick(initialScreen.GET_HELP_LINK);
+    await vpn.waitForElement(getHelpScreen.LINKS);
+    await vpn.waitForElementProperty(getHelpScreen.LINKS, 'visible', 'true');
 
-    await vpn.waitForElementAndClick(settingsView.getHelpView.SUPPORT);
+    await vpn.waitForElementAndClick(getHelpScreen.SUPPORT);
 
-    await vpn.waitForElement(settingsView.getHelpView.contactSupportView.UNAUTH_USER_INPUTS);
-    await vpn.waitForElementProperty(settingsView.getHelpView.contactSupportView.UNAUTH_USER_INPUTS, 'visible', 'true');
-    assert(await vpn.getElementProperty(settingsView.getHelpView.contactSupportView.UNAUTH_USER_INPUTS, 'visible') === 'true');
+    await vpn.waitForElement(getHelpScreen.contactSupportView.UNAUTH_USER_INPUTS);
+    await vpn.waitForElementProperty(getHelpScreen.contactSupportView.UNAUTH_USER_INPUTS, 'visible', 'true');
+    assert(await vpn.getElementProperty(getHelpScreen.contactSupportView.UNAUTH_USER_INPUTS, 'visible') === 'true');
   });
 
   describe('Contact us view - authenticated user', function() {
@@ -41,31 +41,31 @@ describe('Contact us view', function() {
 
       await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
 
-      await vpn.waitForElement(settingsView.GET_HELP);
-      await vpn.waitForElementProperty(settingsView.GET_HELP, 'visible', 'true');
-      await vpn.clickOnElement(settingsView.GET_HELP);
+      await vpn.waitForElement(settingsScreen.GET_HELP);
+      await vpn.waitForElementProperty(settingsScreen.GET_HELP, 'visible', 'true');
+      await vpn.clickOnElement(settingsScreen.GET_HELP);
 
       await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
-      await vpn.waitForElementProperty(settingsView.getHelpView.LINKS, 'visible', 'true');
-      await vpn.waitForElementAndClick(settingsView.getHelpView.SUPPORT);
+      await vpn.waitForElementProperty(getHelpScreen.LINKS, 'visible', 'true');
+      await vpn.waitForElementAndClick(getHelpScreen.SUPPORT);
     }
 
     it('VPNUserInfo visible to authenticated users', async () => {
       await openContactUsInSettings();
 
-      await vpn.waitForElement(settingsView.getHelpView.contactSupportView.USER_INFO);
-      await vpn.waitForElementProperty(settingsView.getHelpView.contactSupportView.USER_INFO, 'visible', 'true');
-      assert(await vpn.getElementProperty(settingsView.getHelpView.contactSupportView.USER_INFO, 'visible') === 'true');
+      await vpn.waitForElement(getHelpScreen.contactSupportView.USER_INFO);
+      await vpn.waitForElementProperty(getHelpScreen.contactSupportView.USER_INFO, 'visible', 'true');
+      assert(await vpn.getElementProperty(getHelpScreen.contactSupportView.USER_INFO, 'visible') === 'true');
     });
 
     it('VPNUserInfo is disabled', async () => {
       await openContactUsInSettings();
 
-      await vpn.waitForElement(settingsView.getHelpView.contactSupportView.USER_INFO);
+      await vpn.waitForElement(getHelpScreen.contactSupportView.USER_INFO);
       await vpn.waitForElementProperty(
-          settingsView.getHelpView.contactSupportView.USER_INFO, 'enabled', 'false');
+          getHelpScreen.contactSupportView.USER_INFO, 'enabled', 'false');
       assert(
-          await vpn.getElementProperty(settingsView.getHelpView.contactSupportView.USER_INFO, 'enabled') ===
+          await vpn.getElementProperty(getHelpScreen.contactSupportView.USER_INFO, 'enabled') ===
           'false');
     });
 
@@ -73,9 +73,9 @@ describe('Contact us view', function() {
       it('Email inputs are visible to unauthenticated user', async () => {
         await openContactUsInSettings();
 
-        await vpn.waitForElement(settingsView.getHelpView.contactSupportView.UNAUTH_USER_INPUTS);
-        await vpn.waitForElementProperty(settingsView.getHelpView.contactSupportView.UNAUTH_USER_INPUTS, 'visible', 'false');
-        assert(await vpn.getElementProperty(settingsView.getHelpView.contactSupportView.UNAUTH_USER_INPUTS, 'visible') === 'false');
+        await vpn.waitForElement(getHelpScreen.contactSupportView.UNAUTH_USER_INPUTS);
+        await vpn.waitForElementProperty(getHelpScreen.contactSupportView.UNAUTH_USER_INPUTS, 'visible', 'false');
+        assert(await vpn.getElementProperty(getHelpScreen.contactSupportView.UNAUTH_USER_INPUTS, 'visible') === 'false');
       });
     });
   });

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
- const generalElements = {     
+const generalElements = {
     CONTROLLER_TITLE: "controllerTitle",
     CONTROLLER_SUBTITLE: 'controllerSubTitle',
     CONTROLLER_TOGGLE: 'controllerToggle'
@@ -10,7 +10,7 @@
 
 const elementState = {
     COUNTRY_VIEW: "serverCountryView",
-    CITYLIST_VISIBLE: "cityListVisible",   
+    CITYLIST_VISIBLE: "cityListVisible",
 }
 
 const navBar = {
@@ -20,17 +20,17 @@ const navBar = {
     SETTINGS: 'navigationLayout/navButton-settings',
 }
 
-const telemetryView = {    
+const telemetryScreen = {
     TELEMETRY_POLICY_BUTTON: 'telemetryPolicyButton',
     DECLINE_TELEMETRY: 'declineTelemetryLink',
-    POST_AUTHENTICATION_BUTTON: 'postAuthenticationButton'    
+    POST_AUTHENTICATION_BUTTON: 'postAuthenticationButton'
 }
 
 /*
     Settings screen and related screens
 */
-const settingsView = {
-    SETTINGS: 'settingsView',    
+const settingsScreen = {
+    SETTINGS: 'settingsView',
     SCREEN: 'settingsView-flickable', // or SETTINGS_VIEW: 'settingsView',
     USER_PROFILE: 'settingsUserProfile-manageAccountButton',
     TIPS_AND_TRICKS: 'settingsTipsAndTricks',
@@ -41,12 +41,6 @@ const settingsView = {
     ABOUT_US: 'settingsAboutUs',
     SIGN_OUT: 'settingsLogout',
     BACK: 'settings-back',
-
-
-    // GET HELP VIEW
-    getHelpView: {
-        BACK: 'getHelpBack'
-    },
 
     tipsAndTricksView: {
         SCREEN: 'settingsTipsAndTricksPage',
@@ -79,38 +73,38 @@ const settingsView = {
         DEVICE_LIST: 'deviceListView',
         DEVICE_LIMIT_HEADER: 'deviceLimitHeader',
         CONFIRM_REMOVAL_BUTTON: 'confirmRemoveDeviceButton'
+    }
+}
+
+const getHelpScreen = {
+    BACK: 'getHelpBack',
+    LINKS: 'getHelpLinks',
+    HELP_CENTER: 'helpCenter',
+    SUPPORT: 'inAppSupport',
+    LOGS: 'viewLogs',
+    FEEDBACK: 'settingsGiveFeedback',
+
+    giveFeedbackView: {
+        SCREEN: 'giveFeedbackView'
     },
 
-    getHelpView: {
-        BACK: 'getHelpBack',
-        LINKS: 'getHelpLinks',
-        HELP_CENTER: 'helpCenter',
-        SUPPORT: 'inAppSupport',
-        LOGS: 'viewLogs',
-        FEEDBACK: 'settingsGiveFeedback',
-
-        giveFeedbackView: {
-            SCREEN: 'giveFeedbackView'
-        },
-
-        contactSupportView: {
-            USER_INFO: 'contactUs-userInfo',
-            UNAUTH_USER_INPUTS: 'contactUs-unauthedUserInputs'
-        }
+    contactSupportView: {
+        USER_INFO: 'contactUs-userInfo',
+        UNAUTH_USER_INPUTS: 'contactUs-unauthedUserInputs'
     }
 }
 
 /*
     In-app messaging screen and related screens
 */
-const inAppMessagingView = {
+const inAppMessagingScreen = {
     SCREEN: 'messageInboxView'
 }
 
 /*
     Home related screens
 */
-const homeView = {
+const homeScreen = {
     HOME_SCREEN: 'screenHome',
     SERVER_LIST_BUTTON: "serverListButton",
     HOME_SCREEN_BACK: 'screenHome-back',
@@ -133,9 +127,31 @@ const homeView = {
     TUTORIAL_LEAVE: 'tutorialLeave',
     TUTORIAL_LIST_HIGHLIGHT: 'layoutAll/columnAll/tutorialsSectionAll/tipsAndTricksSetionLoader/tutorialList/highlightedTutorial',
 
+    selectSingleHopServerView: {
+        BACK_BUTTON: "serverListBackButton",
+        MULTIHOP_SELECTOR_TAB: "multiHopSelector/tabMultiHop",
+        SINGLEHOP_SELECTOR_TAB: "multiHopSelector/tabSingleHop",
+    },
+    
+    selectMultiHopServerView: {
+        VPN_MULTHOP_CHEVRON: 'vpnCollapsibleCardChevron',
+        VPN_COLLAPSIBLE_CARD: 'vpnCollapsibleCard',
+        ENTRY_BUTTON: "buttonSelectEntry",
+        EXIT_BUTTON: "buttonSelectExit",
+    },
+
+    serverListView: {
+        generateCountryId: async (serverCode) => {
+            return 'serverCountryList/serverCountry-' + serverCode;
+        },
+    
+        generateCityId: async (countryId, cityName) => {
+            return countryId + '/serverCityList/serverCity-' + cityName.replace(/ /g, '_');
+        }
+    }
 }
 
-const initialView = {
+const initialScreen = {
     SCREEN: 'initialStackView',
     GET_HELP_LINK: 'getHelpLink',
     GET_STARTED: 'getStarted',
@@ -146,7 +162,7 @@ const initialView = {
     CAP_PORTAL_BUTTON: 'captivePortalAlertActionButton',
 }
 
-const authView = {
+const authScreen = {
     EMAIL_INPUT: 'authStart-textInput',
     EMAIL_INPUT_CONDITIOIN: 'authSignUp-passwordConditionEmailAddress',
     START_BUTTON: 'authStart-button',
@@ -170,7 +186,7 @@ const authView = {
         GET_HELP: 'authVerificationSessionByEmailNeeded-getHelpLink',
         EMAIL_BUTTON: 'authVerificationSessionByEmailNeeded-button',
     },
-        
+
     verificationBySessionTotpView: {
         GET_HELP_LINK: 'authVerificationSessionByTotpNeeded-getHelpLink',
         BACK: 'authVerificationSessionByTotpNeeded-backButton',
@@ -186,7 +202,7 @@ const authView = {
     }
 }
 
-const mobileOnBoardingView = {
+const mobileOnBoardingScreen = {
     SCREEN: 'mobileOnboarding',
     SWIPE_VIEW: 'swipeView',
     SIGNUP_BUTTON: 'signUpButton',
@@ -195,41 +211,16 @@ const mobileOnBoardingView = {
     PANEL_DESCRIPTION: 'panelDescription'
 }
 
-const serverListView = {
-    generateCountryId: async (serverCode) => {
-        return 'serverCountryList/serverCountry-' + serverCode;
-    },
-
-    generateCityId: async (countryId, cityName) => {
-        return countryId + '/serverCityList/serverCity-' + cityName.replace(/ /g, '_');
-    }
-}
-
-const selectSingleHopServerView = {    
-    BACK_BUTTON: "serverListBackButton",
-    MULTIHOP_SELECTOR_TAB: "multiHopSelector/tabMultiHop",
-    SINGLEHOP_SELECTOR_TAB: "multiHopSelector/tabSingleHop",
-}
-
-const selectMultiHopServerView = {
-    VPN_MULTHOP_CHEVRON: 'vpnCollapsibleCardChevron',
-    VPN_COLLAPSIBLE_CARD: 'vpnCollapsibleCard',
-    ENTRY_BUTTON: "buttonSelectEntry",
-    EXIT_BUTTON: "buttonSelectExit",
-}
-
 module.exports = {
-    mobileOnBoardingView,
-    initialView,
+    mobileOnBoardingScreen,
+    initialScreen,
     generalElements,
     navBar,
     elementState,
-    telemetryView,
-    authView,
-    settingsView,
-    inAppMessagingView,
-    homeView,
-    serverListView,
-    selectSingleHopServerView,
-    selectMultiHopServerView
+    telemetryScreen,
+    authScreen,
+    settingsScreen,
+    getHelpScreen,
+    inAppMessagingScreen,
+    homeScreen,    
 }

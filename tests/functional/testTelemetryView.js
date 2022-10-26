@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 const assert = require('assert');
-const { telemetryView } = require('./elements.js');
+const { telemetryScreen } = require('./elements.js');
 const vpn = require('./helper.js');
 
 describe('Telemetry view', function() {
@@ -12,19 +12,19 @@ describe('Telemetry view', function() {
 
   async function _getToTelemetryPage() {
     await vpn.authenticateInApp();
-    await vpn.clickOnElement(telemetryView.POST_AUTHENTICATION_BUTTON);
+    await vpn.clickOnElement(telemetryScreen.POST_AUTHENTICATION_BUTTON);
     await vpn.wait();
-    await vpn.waitForElement(telemetryView.TELEMETRY_POLICY_BUTTON);
-    await vpn.waitForElementProperty(telemetryView.TELEMETRY_POLICY_BUTTON, 'visible', 'true');
-    await vpn.waitForElement(telemetryView.DECLINE_TELEMETRY);
-    await vpn.waitForElementProperty(telemetryView.DECLINE_TELEMETRY, 'visible', 'true');
+    await vpn.waitForElement(telemetryScreen.TELEMETRY_POLICY_BUTTON);
+    await vpn.waitForElementProperty(telemetryScreen.TELEMETRY_POLICY_BUTTON, 'visible', 'true');
+    await vpn.waitForElement(telemetryScreen.DECLINE_TELEMETRY);
+    await vpn.waitForElementProperty(telemetryScreen.DECLINE_TELEMETRY, 'visible', 'true');
   }
 
   it('Accept telemetry', async () => {
     assert(await vpn.getSetting('telemetry-policy-shown') === 'false');
     assert(await vpn.getSetting('glean-enabled') === 'true');
     await _getToTelemetryPage();
-    await vpn.clickOnElement(telemetryView.TELEMETRY_POLICY_BUTTON);
+    await vpn.clickOnElement(telemetryScreen.TELEMETRY_POLICY_BUTTON);
     await vpn.wait();
     assert(await vpn.getSetting('telemetry-policy-shown') === 'true');
     assert(await vpn.getSetting('glean-enabled') === 'true');
@@ -34,7 +34,7 @@ describe('Telemetry view', function() {
     assert(await vpn.getSetting('telemetry-policy-shown') === 'false');
     assert(await vpn.getSetting('glean-enabled') === 'true');
     await _getToTelemetryPage();
-    await vpn.clickOnElement(telemetryView.DECLINE_TELEMETRY);
+    await vpn.clickOnElement(telemetryScreen.DECLINE_TELEMETRY);
     await vpn.wait();
     assert(await vpn.getSetting('telemetry-policy-shown') === 'true');
     assert(await vpn.getSetting('glean-enabled') === 'false');

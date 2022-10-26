@@ -17,15 +17,11 @@ const settings = {
 
 const serverList = {
     selectCityFromList: async (cityId, countryId) => {
-        await vpn.wait()
-        await vpn.setElementProperty(elementState.COUNTRY_VIEW, 'contentY', 'i', parseInt(await vpn.getElementProperty(cityId, 'y')) + parseInt(await vpn.getElementProperty(countryId, 'y')));
-        await vpn.wait()
+        await vpn.setElementProperty(elementState.COUNTRY_VIEW, 'contentY', 'i', parseInt(await vpn.getElementProperty(cityId, 'y')) + parseInt(await vpn.getElementProperty(countryId, 'y')));        
     },
 
     selectCountryFromList: async (countryId) => {
-        await vpn.wait()
         await vpn.setElementProperty(elementState.COUNTRY_VIEW, 'contentY', 'i', parseInt(await vpn.getElementProperty(countryId, 'y')));
-        await vpn.wait()
       }
 }
 

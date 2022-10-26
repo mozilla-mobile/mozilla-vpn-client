@@ -161,7 +161,6 @@ module.exports = {
   },
 
   async waitForElementAndClick(id) {
-    await this.waitForElement(id);
     await this.waitForElementAndProperty(id, 'visible', 'true');
     await this.clickOnElement(id)
     await this.wait()
