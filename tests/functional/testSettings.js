@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const { navBar, settingsScreen, generalElements } = require('./elements.js');
+const { navBar, settingsScreen, generalElements, getHelpScreen } = require('./elements.js');
 const vpn = require('./helper.js');
 
 describe('Settings', function () {
@@ -131,7 +131,7 @@ describe('Settings', function () {
     await vpn.waitForElement(settingsScreen.NETWORK_SETTINGS);
     await vpn.waitForElementProperty(settingsScreen.NETWORK_SETTINGS, 'visible', 'true');
 
-    await vpn.setElementProperty(settingsScreen.networksettingsScreen.SCREEN, 'contentY', 'i',
+    await vpn.setElementProperty(settingsScreen.networkSettingsView.SCREEN, 'contentY', 'i',
       parseInt(await vpn.getElementProperty(settingsScreen.NETWORK_SETTINGS, 'y')));
     await vpn.wait();
 
@@ -162,15 +162,15 @@ describe('Settings', function () {
     await vpn.clickOnElement(settingsScreen.systemPreferenceView.LANGUAGE);
     await vpn.wait();
   
-    await vpn.waitForElement(settingsScreen.systemPreferenceView.languagesettingsScreen.systemLanguageToggle);
+    await vpn.waitForElement(settingsScreen.systemPreferenceView.languageSettingsView.systemLanguageToggle);
     await vpn.waitForElementProperty(
-      settingsScreen.systemPreferenceView.languagesettingsScreen.systemLanguageToggle, 'visible', 'true');
+      settingsScreen.systemPreferenceView.languageSettingsView.systemLanguageToggle, 'visible', 'true');
     await vpn.waitForElementProperty(
-      settingsScreen.systemPreferenceView.languagesettingsScreen.systemLanguageToggle, 'checked', 'true');
+      settingsScreen.systemPreferenceView.languageSettingsView.systemLanguageToggle, 'checked', 'true');
 
-    await vpn.clickOnElement(settingsScreen.systemPreferenceView.languagesettingsScreen.systemLanguageToggle);
+    await vpn.clickOnElement(settingsScreen.systemPreferenceView.languageSettingsView.systemLanguageToggle);
     await vpn.waitForElementProperty(
-      settingsScreen.systemPreferenceView.languagesettingsScreen.systemLanguageToggle, 'checked', 'false');
+      settingsScreen.systemPreferenceView.languageSettingsView.systemLanguageToggle, 'checked', 'false');
 
     await vpn.getElementProperty(
       'languageList/language-column-it/language-it', 'y');
@@ -211,7 +211,7 @@ describe('Settings', function () {
     await vpn.waitForElement(settingsScreen.BACK);
     await vpn.waitForElementProperty(settingsScreen.BACK, 'visible', 'true');
     await vpn.waitForElementProperty(
-      settingsScreen.systemPreferenceView.languagesettingsScreen.systemLanguageToggle, 'checked', 'false');
+      settingsScreen.systemPreferenceView.languageSettingsView.systemLanguageToggle, 'checked', 'false');
 
     await vpn.setElementProperty(
       'settingsLanguagesView-flickable', 'contentY', 'i',
@@ -254,11 +254,11 @@ describe('Settings', function () {
 
     await vpn.waitForElementProperty(settingsScreen.BACK, 'visible', 'true');
     await vpn.waitForElementProperty(
-      settingsScreen.systemPreferenceView.languagesettingsScreen.systemLanguageToggle, 'checked', 'false');
+      settingsScreen.systemPreferenceView.languageSettingsView.systemLanguageToggle, 'checked', 'false');
 
-    await vpn.clickOnElement(settingsScreen.systemPreferenceView.languagesettingsScreen.systemLanguageToggle);
+    await vpn.clickOnElement(settingsScreen.systemPreferenceView.languageSettingsView.systemLanguageToggle);
     await vpn.waitForElementProperty(
-      settingsScreen.systemPreferenceView.languagesettingsScreen.systemLanguageToggle, 'checked', 'true');
+      settingsScreen.systemPreferenceView.languageSettingsView.systemLanguageToggle, 'checked', 'true');
 
     await vpn.clickOnElement(settingsScreen.BACK);
     await vpn.wait();

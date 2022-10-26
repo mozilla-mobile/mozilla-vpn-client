@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const { initialScreen, mobileOnBoardingScreen } = require('./elements.js');
+const { initialScreen, mobileOnBoardingScreen, getHelpScreen } = require('./elements.js');
 const vpn = require('./helper.js');
 
 
@@ -16,7 +16,7 @@ describe('Mobile Onboarding', function() {
   it('Navigating to and from the help menu is possible', async () => {
     await vpn.waitForElementAndClick(initialScreen.GET_HELP_LINK);
     await vpn.waitForElementAndClick(getHelpScreen.BACK);
-    
+       
     await vpn.waitForElement(mobileOnBoardingScreen.SWIPE_VIEW);
     assert(await vpn.getElementProperty(mobileOnBoardingScreen.SWIPE_VIEW, 'visible') === 'true')
   });

@@ -116,8 +116,8 @@ describe('Devices', function() {
       await vpn.waitForElement(authScreen.START_BUTTON);
       await vpn.waitForElementAndClick(authScreen.START_BUTTON);
 
-      await vpn.waitForElement(authScreen.PASS_INPUT);
-      await vpn.setElementProperty(authScreen.PASS_INPUT, 'text', 's', 'password');
+      await vpn.waitForElement(authScreen.SIGNIN_PASS_INPUT);
+      await vpn.setElementProperty(authScreen.SIGNIN_PASS_INPUT, 'text', 's', 'password');
 
       await vpn.waitForElementAndClick(authScreen.SIGNIN_BUTTON);
 
@@ -232,8 +232,8 @@ describe('Devices', function() {
       await vpn.waitForElement(authScreen.START_BUTTON);
       await vpn.waitForElementAndClick(authScreen.START_BUTTON);
 
-      await vpn.waitForElement(authScreen.PASS_INPUT);
-      await vpn.setElementProperty(authScreen.PASS_INPUT, 'text', 's', 'password');
+      await vpn.waitForElement(authScreen.SIGNIN_PASS_INPUT);
+      await vpn.setElementProperty(authScreen.SIGNIN_PASS_INPUT, 'text', 's', 'password');
       await vpn.waitForElementAndClick(authScreen.SIGNIN_BUTTON);
 
       // Wait for VPN client screen to move from spinning wheel to next screen
@@ -352,8 +352,9 @@ describe('Devices', function() {
       await vpn.waitForElement(authScreen.START_BUTTON);
       await vpn.waitForElementAndClick(authScreen.START_BUTTON);
 
-      await vpn.waitForElement(authScreen.PASS_INPUT);
-      await vpn.setElementProperty(authScreen.PASS_INPUT, 'text', 's', 'password');
+      await vpn.wait()
+      await vpn.waitForElement(authScreen.SIGNIN_PASS_INPUT);
+      await vpn.setElementProperty(authScreen.SIGNIN_PASS_INPUT, 'text', 's', 'password');
       await vpn.waitForElementAndClick(authScreen.SIGNIN_BUTTON);
 
       // Wait for VPN client screen to move from spinning wheel to next screen
