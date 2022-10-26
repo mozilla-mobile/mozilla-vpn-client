@@ -7,10 +7,10 @@
 
 #include "errorhandler.h"
 #include "updater.h"
+#include "temporarydir.h"
 
 #include <QCryptographicHash>
 #include <QNetworkReply>
-#include <QTemporaryDir>
 
 class NetworkRequest;
 
@@ -44,7 +44,7 @@ class Balrog final : public Updater {
                       QNetworkReply::NetworkError error);
 
  private:
-  QTemporaryDir m_tmpDir;
+  TemporaryDir m_tmpDir;
   bool m_downloadAndInstall;
   ErrorHandler::ErrorPropagationPolicy m_errorPropagationPolicy =
       ErrorHandler::DoNotPropagateError;

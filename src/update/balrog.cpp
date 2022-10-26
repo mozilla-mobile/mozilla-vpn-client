@@ -18,7 +18,6 @@
 #include <QScopeGuard>
 #include <QSslCertificate>
 #include <QSslKey>
-#include <QTemporaryDir>
 
 // Terrible hacking for Windows
 #if defined(MVPN_WINDOWS)

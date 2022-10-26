@@ -157,6 +157,7 @@ SOURCES += \
         tasks/servers/taskservers.cpp \
         taskscheduler.cpp \
         telemetry.cpp \
+        temporarydir.cpp \
         theme.cpp \
         timersingleshot.cpp \
         tutorial/tutorial.cpp \
@@ -328,6 +329,7 @@ HEADERS += \
         tasks/servers/taskservers.h \
         taskscheduler.h \
         telemetry.h \
+        temporarydir.h \
         theme.h \
         tutorial/tutorial.h \
         tutorial/tutorialstep.h \

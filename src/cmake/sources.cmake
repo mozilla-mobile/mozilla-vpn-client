@@ -318,6 +318,8 @@ target_sources(mozillavpn PRIVATE
     tasks/servers/taskservers.h
     telemetry.cpp
     telemetry.h
+    temporarydir.cpp
+    temporarydir.h
     theme.cpp
     theme.h
     timersingleshot.cpp

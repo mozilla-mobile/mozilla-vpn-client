@@ -26,6 +26,7 @@
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
+#include "temporarydir.h"
 #include "theme.h"
 #include "tutorial/tutorial.h"
 #include "update/updater.h"
@@ -215,6 +216,9 @@ int CommandUI::run(QStringList& tokens) {
     Lottie::initialize(engine, QString(NetworkManager::userAgent()));
     Nebula::Initialize(engine);
     L18nStrings::initialize();
+
+    // Cleanup previous temporary files.
+    TemporaryDir::cleanupAll();
 
     MozillaVPN vpn;
 

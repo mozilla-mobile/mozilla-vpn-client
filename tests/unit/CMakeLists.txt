@@ -231,6 +231,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/tasks/servers/taskservers.h
     ${MVPN_SOURCE_DIR}/taskscheduler.cpp
     ${MVPN_SOURCE_DIR}/taskscheduler.h
+    ${MVPN_SOURCE_DIR}/temporarydir.cpp
+    ${MVPN_SOURCE_DIR}/temporarydir.h
     ${MVPN_SOURCE_DIR}/theme.cpp
     ${MVPN_SOURCE_DIR}/theme.h
     ${MVPN_SOURCE_DIR}/timersingleshot.cpp
@@ -316,6 +318,8 @@ target_sources(unit_tests PRIVATE
     teststatusicon.h
     testtasks.cpp
     testtasks.h
+    testtemporarydir.cpp
+    testtemporarydir.h
     testthemes.cpp
     testthemes.h
     testtimersingleshot.cpp
