@@ -47,7 +47,10 @@ describe('Addons', function() {
     await vpn.setSetting(
         'addon/customServerAddress',
         'https://archive.mozilla.org/pub/vpn/addons/releases/latest/');
-    await vpn.wait();
-    await vpn.wait();
+
+    // Now we need to wait. Unfortunately there is not an easy way to know when
+    // the loading of the new addons happen. In case we will add a signal, or
+    // something, we can do better than this.
+    await vpn.wait(5000);
   });
 });
