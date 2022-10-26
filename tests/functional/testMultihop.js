@@ -51,7 +51,7 @@ describe('Server list', function() {
     assert(await vpn.getElementProperty(homeScreen.selectMultiHopServerView.VPN_COLLAPSIBLE_CARD, 'expanded'))
   });
   
-  it('check the countries and cities for multihop entries', async () => {
+  it.only('check the countries and cities for multihop entries', async () => {
     await vpn.waitForElementAndClick(homeScreen.selectSingleHopServerView.MULTIHOP_SELECTOR_TAB);
     await vpn.waitForElementAndClick(homeScreen.selectMultiHopServerView.ENTRY_BUTTON);
 
@@ -60,15 +60,11 @@ describe('Server list', function() {
       await vpn.waitForElement(countryId);
       await vpn.waitForElementProperty(countryId, 'visible', 'true');
 
-      await vpn.setElementProperty(
-          'serverCountryView', 'contentY', 'i',
-          parseInt(await vpn.getElementProperty(countryId, 'y')));
+      await actions.serverList.selectCountryFromList(countryId)
       await vpn.wait();
 
       if (currentCountryCode === server.code) {
-        assert(
-            await vpn.getElementProperty(countryId, 'cityListVisible') ===
-            'true');
+        assert(await vpn.getElementProperty(countryId, 'cityListVisible') === 'true');
       }
 
       if (await vpn.getElementProperty(countryId, 'cityListVisible') ===
@@ -137,7 +133,7 @@ describe('Server list', function() {
       await vpn.waitForElementAndClick(homeScreen.selectMultiHopServerView.ENTRY_BUTTON);         
       
       for (let server of servers) {        
-        countryId = await homeScreen.serverListView.generateCountryId(server.code);
+        countryId = homeScreen.serverListView.generateCountryId(server.code);
         await vpn.waitForElement(countryId);
 
         await actions.serverList.selectCountryFromList(countryId);

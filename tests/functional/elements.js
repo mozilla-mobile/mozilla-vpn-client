@@ -141,11 +141,11 @@ const homeScreen = {
     },
 
     serverListView: {
-        generateCountryId: async (serverCode) => {
+        generateCountryId: (serverCode) => {
             return 'serverCountryList/serverCountry-' + serverCode;
         },
     
-        generateCityId: async (countryId, cityName) => {
+        generateCityId: (countryId, cityName) => {
             return countryId + '/serverCityList/serverCity-' + cityName.replace(/ /g, '_');
         }
     }
