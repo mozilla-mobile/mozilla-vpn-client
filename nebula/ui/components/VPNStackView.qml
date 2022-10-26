@@ -12,8 +12,15 @@ StackView {
     id: stackView
 
     Component.onCompleted: function(){
-        if(!currentItem && typeof initialItem === "number" ){
+        if(!currentItem && initialItem) {
+            // We don't show anything right now and inital item is set, 
+            // On android if initialItem is anything But a component
+            // it will totaly parse that into garbage values and fail
+            // 
+            // See https://github.com/mozilla-mobile/mozilla-vpn-client/pull/2638
             console.error("Failed to parse initialItem, try Component.OnComplete:push(someURI)");
+            VPN.exitForUnrecoverableError("Setting initialItem on a StackView is illegal, dont do that.");
+
         }
 
     }
