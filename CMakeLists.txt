@@ -99,7 +99,10 @@ add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0x050F00)
 
 # VPN Client build targets
 add_subdirectory(src)
+# Glean.js
 add_subdirectory(glean)
+# Glean.rs
+add_subdirectory(vpnglean)
 add_subdirectory(lottie)
 add_subdirectory(nebula)
 add_subdirectory(translations)

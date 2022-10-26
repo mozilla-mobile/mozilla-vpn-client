@@ -25,7 +25,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     )
 endif()
 
-target_link_libraries(mozillavpn PRIVATE glean lottie nebula translations)
+target_link_libraries(mozillavpn PRIVATE glean vpnglean lottie nebula translations)
 
 include(cmake/sources.cmake)
 

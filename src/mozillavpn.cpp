@@ -42,6 +42,7 @@
 #include "update/versionapi.h"
 #include "urlopener.h"
 #include "websocket/websockethandler.h"
+#include "glean/glean.h"
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosdatamigration.h"
@@ -232,6 +233,8 @@ void MozillaVPN::initialize() {
   }
 
   AddonManager::instance();
+
+  Glean::initialize();
 
   QList<Task*> initTasks{new TaskAddonIndex(), new TaskGetFeatureList()};
 
