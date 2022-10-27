@@ -206,10 +206,9 @@ vpn.
 ### How to build from source code on macOS
 
 There are two ways to build the project on macOS - Through the terminal or with Xcode.
-For both, you must install a version of the VPN application in the main macOS Applications 
+For both, you must install a copy of the VPN application in the main macOS Applications 
 folder so that the daemon is available for the debug build. Unless major changes were recently made, 
-you can likely use either the [latest release version](https://www.mozilla.org/en-US/products/vpn/download/) 
-or the [latest `main` branch build](https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozilla-vpn-client.branch.main.latest.build.macos/artifacts/public%2Fbuild%2FMozillaVPN.pkg).
+you can use the [latest release version](https://www.mozilla.org/en-US/products/vpn/download/).
 
 #### Building from terminal
 
