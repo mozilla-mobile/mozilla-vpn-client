@@ -23,8 +23,8 @@ buildscript {
     }
 
     dependencies {
-        classpath Dependencies.com_android_tools_build_gradle
-        classpath Dependencies.org_mozilla_components_tooling_glean_gradle
+        classpath SharedDependencies.com_android_tools_build_gradle
+        classpath "org.mozilla.components:tooling-glean-gradle:107.0.2"
     }
 }
 
@@ -102,17 +102,11 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
-    implementation Dependencies.androidx_core
-    implementation Dependencies.android_installreferrer
-    implementation Dependencies.android_billingclient
-    implementation Dependencies.androidx_lifecycle
-    implementation Dependencies.androidx_security_security_crypto
-    implementation Dependencies.androidx_security_security_identity_credential
-    implementation Dependencies.com_google_android_gms_play_services_ads_identifier
-    implementation Dependencies.org_jetbrains_kotlinx_kotlinx_serialization_json
-    implementation Dependencies.org_mozilla_telemetry_glean
-    coreLibraryDesugaring Dependencies.com_android_tools_desugar_jdk_libs
-    implementation "org.jetbrains.kotlin:kotlin-reflect:1.6.10"
+    implementation SharedDependencies.androidx_core
+    implementation "androidx.security:security-crypto:1.1.0-alpha03"
+    implementation "androidx.security:security-identity-credential:1.0.0-alpha03"
+    implementation "org.mozilla.telemetry:glean:51.6.0"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.6.20"
 }
 
 ext.gleanNamespace = "mozilla.telemetry.glean"
