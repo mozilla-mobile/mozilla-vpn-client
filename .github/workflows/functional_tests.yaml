@@ -85,7 +85,7 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Checkout submodules
         shell: bash
@@ -124,17 +124,46 @@ jobs:
           cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON
           cmake --build $(pwd)/build --config Release --target build_tests
 
-      - name: Running tests
+      - name: Generate tasklist
+        id: testGen
         shell: bash
+        run: |
+          echo -n "::set-output name=tests::"
+          for test in $(find tests/functional -name 'test*.js' | sort); do
+            printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
+          done | jq -s -c
+
+  windowsfunctionaltests:
+    name: Windows functional tests
+    needs:
+      - build_windows_test_app
+    runs-on: windows-latest
+    timeout-minutes: 45
+
+    strategy:
+      fail-fast: false
+      matrix:
+        test: ${{ fromJson(needs.build_windows_test_app.outputs.matrix) }}
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+      - uses: actions/download-artifact@v3
+        with:
+          name: test-client-${{ github.sha }}
+          path: build/
+
+      - name: Running ${{matrix.test.name}} Tests
         id: runTests
         uses: nick-invision/retry@v2
-        working-directory: ./
-        env:
-          ARTIFACT_DIR: tests/artifacts
-          MVPN_BIN: ./build/cmake/src/mozillavpn
         with:
           timeout_minutes: 15
           max_attempts: 3
           command: |
-            npm install mocha
-            ./scripts/tests/functional_tests.sh
+            export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
+            export HEADLESS=yes
+            mkdir -p $ARTIFACT_DIR
+            xvfb-run -a npm run functionalTest -- ${{matrix.test.path}}
+        env:
+          ARTIFACT_DIR: ${{ runner.temp }}/artifacts
+          MVPN_BIN: ./build/cmake/src/mozillavpn
