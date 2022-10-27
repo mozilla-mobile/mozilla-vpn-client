@@ -14,7 +14,7 @@ endif()
 
 set(CARGO_BUILD_ENV
     BUILD_ID=${BUILD_ID}
-    APP_VERSION=${APP_VERSION}
+    APP_VERSION=${CMAKE_PROJECT_VERSION}
     CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR}
     OPENSSL_STATIC=yes
     OPENSSL_LIB_DIR=${OPENSSL_LIB_DIR}
@@ -28,14 +28,9 @@ else ()
     set(TARGET_DIR "release")
 endif ()
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    set(LIBNAME "vpnglean.lib")
-else()
-    set(LIBNAME "libvpnglean.a")
-endif()
-
-get_filename_component(GENERATED_DIR ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_DIR} ABSOLUTE)
 set (HEADER_FILE vpnglean.h)
+set(LIBNAME ${CMAKE_STATIC_LIBRARY_PREFIX}vpnglean${CMAKE_STATIC_LIBRARY_SUFFIX})
+get_filename_component(GENERATED_DIR ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_DIR} ABSOLUTE)
 
 add_custom_target(vpnglean_ffi
     BYPRODUCTS ${GENERATED_DIR}/${LIBNAME} ${CMAKE_CURRENT_BINARY_DIR}/${HEADER_FILE}
