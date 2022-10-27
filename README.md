@@ -265,18 +265,18 @@ extra components such as the wireguard, the browser bridge and so on. We patch
 the XCode project using [xcodeproj](https://github.com/CocoaPods/Xcodeproj). To
 install it:
 ```
-gem install xcodeproj # probably you want to run this command wityh `sudo`
+gem install xcodeproj # probably you want to run this command with `sudo`
 ```
 
 3. You also need to install go >= v1.16. If you don't have it done already,
 download go from the [official website](https://golang.org/dl/).
 
-4. Copy `xcode.config.template` to `xcode.config`
+4. Copy `xcode.xconfig.template` to `xcode.xconfig`
 ```bash
-cp xcode.config.template xcode.config
+cp xcode.xconfig.template xcode.xconfig
 ```
 
-5. Modify the xcode.config to something like:
+5. Modify the xcode.xconfig to something like:
 ```
 # MacOS configuration
 APP_ID_MACOS = org.mozilla.macos.FirefoxVPN
@@ -292,9 +292,13 @@ NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 ```bash
 ./scripts/macos/apple_compile.sh ios [--adjust <adjust_token>]
 ```
+(If you get an error like `Step 7: Generate translation resources... 
+sh: /Users/[username]/Qt/6.2.4/ios/bin/lconvert: No such file or directory`
+you may need to provide the macOS Qt bin folder through the -q flag:
+`./scripts/macos/apple_compile.sh ios -q ~/Qt/6.2.4/macos/bin`)
 
 7. Xcode should automatically open. You can then run/test/archive/ship the app.
-If you prefer to compile the appa in command-line mode, use the following
+If you prefer to compile the app in command-line mode, use the following
 command:
 ```bash
 xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project "Mozilla VPN.xcodeproj"
