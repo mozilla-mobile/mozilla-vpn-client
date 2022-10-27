@@ -115,12 +115,12 @@ Item {
                 if (exceedsCharLimit) {
                     const textInputLength = updatedTextLength - textLength;
                     // Remember cursor position
-                    const prevCursorPosition = textArea.cursorPosition - textArea.textInputLength;
+                    const prevCursorPosition = textArea.cursorPosition - textInputLength;
                     // Strip overflowing chars
                     const strippedString = removeCharsInRange(
                         text,
                         prevCursorPosition,
-                        prevCursorPosition + textArea.textInputLength
+                        prevCursorPosition + textInputLength
                     );
                     textArea.text = strippedString;
                     // Restore previous cursor position
