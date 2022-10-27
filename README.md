@@ -207,8 +207,10 @@ vpn.
 
 There are two ways to build the project on macOS - Through the terminal or with Xcode.
 For both, you must install a copy of the VPN application in the main macOS Applications 
-folder so that the daemon is available for the debug build. Unless major changes were recently made, 
-you can use the [latest release version](https://www.mozilla.org/en-US/products/vpn/download/).
+folder so that the daemon is available for your debug build. 
+[Any recent build](https://archive.mozilla.org/pub/vpn/releases/) should suffice.  
+(If major changes were made to the daemon since the last release, you may need to use 
+a copy of the debug build for the macOS Applications folder.)
 
 #### Building from terminal
 
