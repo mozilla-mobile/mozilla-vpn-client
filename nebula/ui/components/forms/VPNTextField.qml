@@ -21,6 +21,7 @@ TextField {
 
     Accessible.name: _accessibleName
     Accessible.description: _accessibleDescription
+    Accessible.focused: textField.focus
     Layout.alignment: Qt.AlignVCenter
     Layout.preferredHeight: VPNTheme.theme.rowHeight
 
@@ -44,6 +45,14 @@ TextField {
 
     onActiveFocusChanged: if (focus && typeof(vpnFlickable) !== "undefined" && vpnFlickable.ensureVisible) {
         vpnFlickable.ensureVisible(textField);
+    }
+    // This is a workaround to make VoiceOver on macOS work.
+    // After gaining initial focus or typing in TextField the screen reader
+    // fails to narrae any accessible content and action. After regaining active
+    // focus the screen reader keeps working as expected.
+    onTextChanged: {
+        textField.focus = false;
+        textField.forceActiveFocus();
     }
 
     Text {
