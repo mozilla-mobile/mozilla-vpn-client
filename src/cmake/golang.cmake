@@ -2,6 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+## Find the absolute path to the go build tool.
+find_program(GOLANG_BUILD_TOOL NAMES go REQUIRED)
+
 ## Create a library target built from a golang c-archive.
 function(add_go_library GOTARGET SOURCE)
     cmake_parse_arguments(GOLANG
@@ -25,17 +28,17 @@ function(add_go_library GOTARGET SOURCE)
     endif()
 
     ## Add extras to the CGO compiler and linker flags.
-    execute_process(OUTPUT_VARIABLE DEFAULT_CGO_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND go env CGO_CFLAGS)
-    execute_process(OUTPUT_VARIABLE DEFAULT_CGO_LDFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND go env CGO_LDFLAGS)
+    execute_process(OUTPUT_VARIABLE DEFAULT_CGO_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND ${GOLANG_BUILD_TOOL} env CGO_CFLAGS)
+    execute_process(OUTPUT_VARIABLE DEFAULT_CGO_LDFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND ${GOLANG_BUILD_TOOL} env CGO_LDFLAGS)
     separate_arguments(DEFAULT_CGO_CFLAGS NATIVE_COMMAND ${DEFAULT_CGO_CFLAGS})
     separate_arguments(DEFAULT_CGO_LDFLAGS NATIVE_COMMAND ${DEFAULT_CGO_LDFLAGS})
     list(PREPEND GOLANG_CGO_CFLAGS ${DEFAULT_CGO_CFLAGS})
     list(PREPEND GOLANG_CGO_LDFLAGS ${DEFAULT_CGO_LDFLAGS})
     if(NOT GOLANG_GOOS)
-        execute_process(OUTPUT_VARIABLE GOLANG_GOOS OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND go env GOOS)
+        execute_process(OUTPUT_VARIABLE GOLANG_GOOS OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND ${GOLANG_BUILD_TOOL} env GOOS)
     endif()
     if(NOT GOLANG_GOARCH)
-        execute_process(OUTPUT_VARIABLE GOLANG_GOARCH OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND go env GOARCH)
+        execute_process(OUTPUT_VARIABLE GOLANG_GOARCH OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND ${GOLANG_BUILD_TOOL} env GOARCH)
     endif()
 
     ## The actual commands that do the building.
@@ -50,7 +53,7 @@ function(add_go_library GOTARGET SOURCE)
                     CGO_LDFLAGS="${GOLANG_CGO_LDFLAGS}"
                     GOOS="${GOLANG_GOOS}"
                     GOARCH="${GOLANG_GOARCH}"
-                go build ${GOFLAGS} -o ${CMAKE_CURRENT_BINARY_DIR}/${ARCHIVE_NAME} ${SRC_NAME}
+                ${GOLANG_BUILD_TOOL} build ${GOFLAGS} -o ${CMAKE_CURRENT_BINARY_DIR}/${ARCHIVE_NAME} ${SRC_NAME}
     )
     set_target_properties(golang_${GOTARGET} PROPERTIES FOLDER "Libs")
 
