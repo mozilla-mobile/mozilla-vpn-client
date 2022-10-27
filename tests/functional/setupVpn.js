@@ -149,7 +149,6 @@ exports.mochaHooks = {
     vpnProcess.kill();
     // Give each test 2 seconds to chill!
     // Seems to help with tests that are slow to close vpn app at end.
-    await vpn.wait();
-    await vpn.wait();
+    await vpn.wait(2000);    
   },
 }

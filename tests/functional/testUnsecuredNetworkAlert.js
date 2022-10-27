@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const { generalElements, telemetryScreen, initialScreen } = require('./elements.js');
+const { generalElements, telemetryScreen, initialScreen, homeScreen } = require('./elements.js');
 const vpn = require('./helper.js');
 
 describe('Unsecured network alert', function() {
@@ -21,8 +21,8 @@ describe('Unsecured network alert', function() {
     it('Unsecured network alert during the main view', async () => {
       assert(await vpn.getLastUrl() === '');
 
-      await vpn.waitForElement('getHelpLink');
-      await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
+      await vpn.waitForElement(initialScreen.GET_HELP_LINK);
+      await vpn.waitForElementProperty(initialScreen.GET_HELP_LINK, 'visible', 'true');
 
       await vpn.forceUnsecuredNetworkAlert();
       await vpn.wait();
@@ -37,8 +37,8 @@ describe('Unsecured network alert', function() {
         return;
       }
 
-      await vpn.waitForElement('getHelpLink');
-      await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
+      await vpn.waitForElement(initialScreen.GET_HELP_LINK);
+      await vpn.waitForElementProperty(initialScreen.GET_HELP_LINK, 'visible', 'true');
 
       await vpn.clickOnElement(initialScreen.GET_STARTED);
 
@@ -49,8 +49,8 @@ describe('Unsecured network alert', function() {
 
       await vpn.wait();
 
-      await vpn.waitForElement('authenticatingView');
-      await vpn.waitForElementProperty('authenticatingView', 'visible', 'true');
+      await vpn.waitForElement(initialScreen.AUTHENTICATE_VIEW);
+      await vpn.waitForElementProperty(initialScreen.AUTHENTICATE_VIEW, 'visible', 'true');
 
       await vpn.forceUnsecuredNetworkAlert();
       await vpn.wait();
@@ -58,10 +58,10 @@ describe('Unsecured network alert', function() {
       // No notifications during the main view.
       assert(vpn.lastNotification().title === null);
 
-      await vpn.waitForElement('cancelFooterLink');
-      await vpn.waitForElementProperty('cancelFooterLink', 'visible', 'true');
+      await vpn.waitForElement(homeScreen.CANCEL_FOOTER_LINK);
+      await vpn.waitForElementProperty(homeScreen.CANCEL_FOOTER_LINK, 'visible', 'true');
 
-      await vpn.clickOnElement('cancelFooterLink');
+      await vpn.clickOnElement(homeScreen.CANCEL_FOOTER_LINK);
       await vpn.wait();
 
       await vpn.waitForElement(initialScreen.GET_STARTED);
@@ -141,7 +141,7 @@ describe('Unsecured network alert', function() {
       });
 
       assert(
-          await vpn.getElementProperty('controllerSubTitle', 'text') ===
+          await vpn.getElementProperty(generalElements.CONTROLLER_SUBTITLE, 'text') ===
           'Masking connection and location');
 
       await vpn.forceUnsecuredNetworkAlert();
