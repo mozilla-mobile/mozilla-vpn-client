@@ -31,6 +31,7 @@ class ServerLatency final : public QObject {
     QString publicKey;
     quint64 timestamp;
     quint16 sequence;
+    int retries;
   };
   quint16 m_sequence = 0;
   PingSender* m_pingSender = nullptr;

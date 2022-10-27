@@ -19,6 +19,8 @@ constexpr const uint32_t SERVER_LATENCY_REFRESH_MSEC = 1800000;
 
 constexpr const int SERVER_LATENCY_MAX_PARALLEL = 8;
 
+constexpr const int SERVER_LATENCY_MAX_RETRIES = 2;
+
 namespace {
 Logger logger(LOG_MAIN, "ServerLatency");
 }
@@ -94,9 +96,22 @@ void ServerLatency::maybeSendPings() {
     if ((record.timestamp + SERVER_LATENCY_TIMEOUT_MSEC) > now) {
       break;
     }
+    logger.debug() << "Server" << logger.keys(record.publicKey) << "timeout"
+                   << record.retries;
 
-    // TODO: Retries? Mark the server unavailable?
-    logger.debug() << "Server" << logger.keys(record.publicKey) << "timeout";
+    // Send a retry.
+    if (record.retries < SERVER_LATENCY_MAX_RETRIES) {
+      ServerPingRecord retry = record;
+      retry.retries++;
+      retry.sequence = m_sequence++;
+      retry.timestamp = now;
+      m_pingReplyList.append(retry);
+
+      Server server = scm->server(retry.publicKey);
+      m_pingSender->sendPing(QHostAddress(server.ipv4AddrIn()), retry.sequence);
+    }
+
+    // TODO: Mark the server unavailable?
     m_pingReplyList.removeFirst();
   }
 
@@ -110,6 +125,7 @@ void ServerLatency::maybeSendPings() {
     record.publicKey = m_pingSendQueue.takeFirst();
     record.sequence = m_sequence++;
     record.timestamp = now;
+    record.retries = 0;
     m_pingReplyList.append(record);
 
     Server server = scm->server(record.publicKey);
@@ -162,8 +178,6 @@ void ServerLatency::recvPing(quint16 sequence) {
 
     ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
     quint64 latency = QDateTime::currentMSecsSinceEpoch() - record.timestamp;
-    logger.debug() << "Server" << logger.keys(record.publicKey) << "latency"
-                   << latency << "msec";
     scm->setServerLatency(record.publicKey, latency);
 
     m_pingReplyList.erase(i);
