@@ -40,11 +40,6 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
-  -A | --arch)
-    ARCH="$2"
-    shift
-    shift
-    ;;
   -j | --jobs)
     JOBS="$2"
     shift
@@ -114,11 +109,11 @@ if [[ "$RELEASE" ]]; then
   android/gradlew assemble $GRADLE_ARGS || die
 
   print G "Done 🎉"
-  print G "Your Release APK is under .tmp/src/android-build/build/outputs/apk/release/"
+  print G "Your Release APK is under android/build/outputs/apk/release/"
 else
   print Y "Generating Debug APK..."
   android/gradlew compileDebugSources $GRADLE_ARGS
   android/gradlew assembleDebug  $GRADLE_ARGS || die
   print G "Done 🎉"
-  print G "Your Debug APK is under .tmp/src/android-build/build/outputs/apk/debug/"
+  print G "Your Debug APK is under android/build/outputs/apk/debug/"
 fi
