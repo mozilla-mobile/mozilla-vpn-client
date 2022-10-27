@@ -99,7 +99,7 @@ RadioDelegate {
     }
     onPressed: {
         if (radioDelegate.checked) {
-            return VPNIAP.subscribe(subscriptionOptions.checkedButton.productId);
+            return VPNIAP.subscribe();
         }
     }
 

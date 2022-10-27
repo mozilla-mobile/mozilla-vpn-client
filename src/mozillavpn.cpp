@@ -871,10 +871,14 @@ void MozillaVPN::reset(bool forceInitialState) {
 
   TaskScheduler::deleteTasks();
 
-  SettingsHolder::instance()->clear();
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  QString email = settingsHolder->userEmail();
+  settingsHolder->clear();
   m_private->m_keys.forgetKeys();
   m_private->m_serverData.forget();
-
+  settingsHolder->setUserEmail(email);
   if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
     IAPHandler* iap = IAPHandler::instance();
     iap->stopSubscription();

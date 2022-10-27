@@ -123,7 +123,7 @@ VPNFlickable {
                 Layout.rightMargin: VPNTheme.theme.windowMargin
                 Layout.fillWidth: true
                 Layout.maximumWidth: VPNTheme.theme.maxHorizontalContentWidth
-                onClicked: VPNIAP.subscribe(subscriptionOptions.checkedButton.productId)
+                onClicked: VPNIAP.subscribe()
             }
             GridLayout {
                 id: grid

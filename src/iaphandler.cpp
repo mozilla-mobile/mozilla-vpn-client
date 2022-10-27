@@ -8,6 +8,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
+#include "mozillavpn.h"
 
 #include <QCoreApplication>
 #include <QJsonArray>
@@ -221,10 +222,13 @@ void IAPHandler::stopProductsRegistration() {
   emit productsRegistrationStopped();
 }
 
-void IAPHandler::subscribe(const QString& productIdentifier) {
+void IAPHandler::subscribe() {
   logger.debug() << "Subscription required";
-  m_currentSKU = productIdentifier;
-  emit subscriptionStarted(productIdentifier);
+  MozillaVPN::instance()->logout();
+  MozillaVPN::instance()->authenticateWithType(
+      MozillaVPN::AuthenticationType::AuthenticationInBrowser);
+  // m_currentSKU = productIdentifier;
+  // emit subscriptionStarted(productIdentifier);
 }
 
 void IAPHandler::restore() {

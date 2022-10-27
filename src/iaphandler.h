@@ -43,7 +43,7 @@ class IAPHandler : public QAbstractListModel {
   // subscription flow.
   const QString& currentSKU() const { return m_currentSKU; }
 
-  Q_INVOKABLE void subscribe(const QString& productIdentifier);
+  Q_INVOKABLE void subscribe();
   Q_INVOKABLE void restore();
 
   void registerProducts(const QByteArray& data);
