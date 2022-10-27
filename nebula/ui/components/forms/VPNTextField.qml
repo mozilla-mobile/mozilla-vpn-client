@@ -48,8 +48,8 @@ TextField {
     }
     // This is a workaround to make VoiceOver on macOS work.
     // After gaining initial focus or typing in TextField the screen reader
-    // fails to narrae any accessible content and action. After regaining active
-    // focus the screen reader keeps working as expected.
+    // fails to narrate any accessible content and action. After regaining
+    // active focus the screen reader keeps working as expected.
     onTextChanged: {
         textField.focus = false;
         textField.forceActiveFocus();
