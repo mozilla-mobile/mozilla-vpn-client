@@ -30,4 +30,3 @@ else
     runTest "$i"
   done
 fi
-
