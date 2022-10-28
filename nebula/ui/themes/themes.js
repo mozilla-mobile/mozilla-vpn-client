@@ -203,6 +203,15 @@ theme.redButton = {
   'focusBorder': theme.redPressed,
 };
 
+theme.redLinkButton = {
+  'defaultColor': theme.redHovered,
+  'buttonHovered': theme.redPressed,
+  'buttonPressed': theme.redPressed,
+  'buttonDisabled': theme.redDisabled,
+  'focusOutline': theme.redfocusOutline,
+  'focusBorder': theme.redPressed,
+};
+
 theme.removeDeviceBtn = {
   'defaultColor': theme.bgColorTransparent,
   'buttonHovered': '#FFDFE7',
