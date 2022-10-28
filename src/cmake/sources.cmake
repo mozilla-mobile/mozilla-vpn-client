@@ -151,7 +151,6 @@ target_sources(mozillavpn PRIVATE
     frontend/navigator.h
     frontend/navigatorreloader.cpp
     frontend/navigatorreloader.h
-    glean/glean.cpp
     glean/glean.h
     hacl-star/Hacl_Chacha20.c
     hacl-star/Hacl_Chacha20Poly1305_32.c
@@ -363,6 +362,12 @@ if(UNIX)
         signalhandler.cpp
         signalhandler.h
     )
+endif()
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    target_sources(mozillavpn PRIVATE glean/gleannoop.cpp)
+else()
+    target_sources(mozillavpn PRIVATE glean/glean.cpp)
 endif()
 
 # Sources for desktop platforms.

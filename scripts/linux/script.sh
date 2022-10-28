@@ -132,6 +132,7 @@ print Y "Update the submodules..."
 git submodule init || die "Failed"
 git submodule update --remote --depth 1 i18n || die "Failed"
 git submodule update --remote --depth 1 3rdparty/wireguard-tools || die "Failed"
+git submodule update --remote --depth 1 3rdparty/glean || die "Failed"
 print G "done."
 
 print G "Creating the orig tarball"

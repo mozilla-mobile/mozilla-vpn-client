@@ -25,7 +25,11 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     )
 endif()
 
-target_link_libraries(mozillavpn PRIVATE glean vpnglean lottie nebula translations)
+target_include_directories(mozillavpn PUBLIC
+                           $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+                           $<INSTALL_INTERFACE:include>)
+target_link_libraries(mozillavpn PUBLIC ${CMAKE_DL_LIBS})
+target_link_libraries(mozillavpn PRIVATE glean lottie nebula translations)
 
 include(cmake/sources.cmake)
 
@@ -51,7 +55,7 @@ include(cmake/${MVPN_PLATFORM_NAME}.cmake)
 
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     add_subdirectory(crashreporter)
-    target_link_libraries(mozillavpn PRIVATE crashreporter)
+    target_link_libraries(mozillavpn PRIVATE crashreporter vpnglean -ldl)
 endif()
 
 qt_finalize_target(mozillavpn)

@@ -101,8 +101,10 @@ add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0x050F00)
 add_subdirectory(src)
 # Glean.js
 add_subdirectory(glean)
-# Glean.rs
-add_subdirectory(vpnglean)
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    # Glean.rs
+    add_subdirectory(vpnglean)
+endif()
 add_subdirectory(lottie)
 add_subdirectory(nebula)
 add_subdirectory(translations)
