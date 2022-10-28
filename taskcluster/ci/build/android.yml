@@ -17,13 +17,11 @@ task-defaults:
           use-caches: true
           cwd: '{checkout}'
 
-android-qt-next:
+android-qt-next/debug:
         description: "Android Next QT Build (arm64-v8a)"
         treeherder:
-            symbol: Android
-            kind: build
-            tier: 1
-            platform: QT-Next
+            platform: android/arm64-v8a
+            symbol: NEXT
         worker:
             docker-image: {in-tree: android-qt-next}
         run:
