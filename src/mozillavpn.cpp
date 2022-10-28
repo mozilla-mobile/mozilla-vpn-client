@@ -2,12 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "mozillavpn.h"
 #include "addons/manager/addonmanager.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "constants.h"
 #include "dnshelper.h"
 #include "frontend/navigator.h"
+#include "glean/glean.h"
 #include "iaphandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -15,6 +15,7 @@
 #include "logoutobserver.h"
 #include "models/device.h"
 #include "models/feature.h"
+#include "mozillavpn.h"
 #include "networkmanager.h"
 #include "profileflow.h"
 #include "qmlengineholder.h"
@@ -29,20 +30,19 @@
 #include "tasks/deleteaccount/taskdeleteaccount.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/getfeaturelist/taskgetfeaturelist.h"
+#include "tasks/getfeaturelist/taskgetfeaturelist.h"
 #include "tasks/group/taskgroup.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/products/taskproducts.h"
 #include "tasks/removedevice/taskremovedevice.h"
-#include "tasks/servers/taskservers.h"
 #include "tasks/sendfeedback/tasksendfeedback.h"
-#include "tasks/getfeaturelist/taskgetfeaturelist.h"
+#include "tasks/servers/taskservers.h"
 #include "taskscheduler.h"
 #include "telemetry/gleansample.h"
 #include "update/updater.h"
 #include "update/versionapi.h"
 #include "urlopener.h"
 #include "websocket/websockethandler.h"
-#include "glean/glean.h"
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosdatamigration.h"
@@ -234,9 +234,7 @@ void MozillaVPN::initialize() {
 
   AddonManager::instance();
 
-  if (Feature::get(Feature::Feature_gleanRust)->isSupported()) {
-    Glean::initialize();
-  }
+  Glean::initialize();
 
   QList<Task*> initTasks{new TaskAddonIndex(), new TaskGetFeatureList()};
 

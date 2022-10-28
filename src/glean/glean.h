@@ -11,6 +11,7 @@ constexpr const char* GLEAN_DATA_DIRECTORY = "glean";
 
 class Glean final : public QObject {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(Glean)
 
  private:
   Glean();

@@ -5,6 +5,7 @@
 #include "glean/glean.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/feature.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #include "vpnglean.h"
@@ -25,46 +26,45 @@ QString rootAppFolder() {
 }
 }  // namespace
 
-Glean::Glean() {
-  MVPN_COUNT_CTOR(Glean);
-
-  connect(SettingsHolder::instance(), &SettingsHolder::gleanEnabledChanged,
-          this, &setUploadEnabled);
-}
+Glean::Glean() { MVPN_COUNT_CTOR(Glean); }
 
 Glean::~Glean() { MVPN_COUNT_DTOR(Glean); }
-
 // static
 void Glean::initialize() {
   logger.debug() << "Initializing Glean";
 
-  QDir gleanDirectory(rootAppFolder());
-  if (!gleanDirectory.exists(GLEAN_DATA_DIRECTORY) &&
-      !gleanDirectory.mkpath(GLEAN_DATA_DIRECTORY)) {
-    logger.error() << "Unable to create the Glean data directory. Terminating."
-                   << rootAppFolder();
-    return;
+  if (Feature::get(Feature::Feature_gleanRust)->isSupported()) {
+    QDir gleanDirectory(rootAppFolder());
+    if (!gleanDirectory.exists(GLEAN_DATA_DIRECTORY) &&
+        !gleanDirectory.mkpath(GLEAN_DATA_DIRECTORY)) {
+      logger.error()
+          << "Unable to create the Glean data directory. Terminating."
+          << rootAppFolder();
+      return;
+    }
+
+    if (!gleanDirectory.cd(GLEAN_DATA_DIRECTORY)) {
+      logger.error() << "Unable to open the Glean data directory. Terminating.";
+      return;
+    }
+
+    s_instance = new Glean();
+    connect(SettingsHolder::instance(), &SettingsHolder::gleanEnabledChanged,
+            s_instance, &setUploadEnabled);
+
+    SettingsHolder* settingsHolder = SettingsHolder::instance();
+    MozillaVPN* vpn = MozillaVPN::instance();
+
+    auto uploadEnabled = settingsHolder->gleanEnabled();
+    auto appChannel = vpn->stagingMode() ? "staging" : "production";
+    auto dataPath = gleanDirectory.absolutePath();
+
+    logger.debug() << "Glean config -"
+                   << "uploadEnabled:" << uploadEnabled
+                   << "appChannel:" << appChannel << "dataPath:" << dataPath;
+
+    glean_initialize(uploadEnabled, dataPath.toLocal8Bit(), appChannel);
   }
-
-  if (!gleanDirectory.cd(GLEAN_DATA_DIRECTORY)) {
-    logger.error() << "Unable to open the Glean data directory. Terminating.";
-    return;
-  }
-
-  s_instance = new Glean();
-
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  MozillaVPN* vpn = MozillaVPN::instance();
-
-  auto uploadEnabled = settingsHolder->gleanEnabled();
-  auto appChannel = vpn->stagingMode() ? "staging" : "production";
-  auto dataPath = gleanDirectory.absolutePath();
-
-  logger.debug() << "Glean config -"
-                 << "uploadEnabled:" << uploadEnabled
-                 << "appChannel:" << appChannel << "dataPath:" << dataPath;
-
-  glean_initialize(uploadEnabled, dataPath.toLocal8Bit(), appChannel);
 }
 
 // static
