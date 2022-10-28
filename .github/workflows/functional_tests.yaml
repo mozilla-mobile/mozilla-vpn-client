@@ -134,8 +134,6 @@ jobs:
           done | jq -s -c
 
       - name: Running ${{matrix.test.name}} Tests
-        matrix:
-          test: ${{ fromJson(needs.build_windows_test_app.outputs.matrix) }}
         id: runTests
         uses: nick-invision/retry@v2
         with:
