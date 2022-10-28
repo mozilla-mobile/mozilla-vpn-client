@@ -25,6 +25,7 @@ set_target_properties(networkextension PROPERTIES
     XCODE_ATTRIBUTE_SWIFT_PRECOMPILE_BRIDGING_HEADER "NO"
     XCODE_ATTRIBUTE_APPLICATION_EXTENSION_API_ONLY "YES"
     XCODE_ATTRIBUTE_ENABLE_BITCODE "NO"
+    XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS ${CMAKE_CURRENT_SOURCE_DIR}/MozillaVPNNetworkExtension.entitlements
 )
 
 find_library(FW_ASSETS_LIBRARY AssetsLibrary)
@@ -35,7 +36,7 @@ target_link_libraries(networkextension PRIVATE ${FW_ASSETS_LIBRARY})
 target_link_libraries(networkextension PRIVATE ${FW_MOBILE_CORE})
 target_link_libraries(networkextension PRIVATE ${FW_UI_KIT})
 
-target_compile_options(networkextension PRIVATE -DGROUP_ID=\"group.org.mozilla.ios.Guardian\")
+target_compile_options(networkextension PRIVATE -DGROUP_ID=\"${BUILD_IOS_GROUP_IDENTIFIER}\")
 target_compile_options(networkextension PRIVATE -DNETWORK_EXTENSION=1)
 
 set(WG_APPLE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-apple/Sources)

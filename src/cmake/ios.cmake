@@ -20,6 +20,7 @@ set_target_properties(mozillavpn PROPERTIES
     MACOSX_BUNDLE_LONG_VERSION_STRING "${CMAKE_PROJECT_VERSION}-${BUILD_ID}"
     MACOSX_BUNDLE_SHORT_VERSION_STRING "${CMAKE_PROJECT_VERSION}"
     XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${BUILD_IOS_APP_IDENTIFIER}"
+    XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${CMAKE_SOURCE_DIR}/ios/app/main.entitlements"
 )
 target_include_directories(mozillavpn PRIVATE ${CMAKE_SOURCE_DIR})
 
@@ -97,8 +98,8 @@ set_target_properties(mozillavpn PROPERTIES
     XCODE_ATTRIBUTE_SWIFT_OBJC_INTERFACE_HEADER_NAME "Mozilla_VPN-Swift.h"
 )
 target_compile_options(mozillavpn PRIVATE
-    -DGROUP_ID=\"group.org.mozilla.ios.Guardian\"
-    -DVPN_NE_BUNDLEID=\"${BUILD_OSX_APP_IDENTIFIER}.network-extension\"
+    -DGROUP_ID=\"${BUILD_IOS_GROUP_IDENTIFIER}\"
+    -DVPN_NE_BUNDLEID=\"${BUILD_IOS_APP_IDENTIFIER}.network-extension\"
 )
 target_sources(mozillavpn PRIVATE
     platforms/ios/ioscontroller.swift
@@ -124,8 +125,4 @@ target_sources(mozillavpn PRIVATE
 
 ## Install the Network Exetnsion into the bundle.
 add_dependencies(mozillavpn networkextension)
-add_custom_command(TARGET mozillavpn POST_BUILD
-    COMMENT "Bundling Network Extension"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_BUNDLE_DIR:networkextension>
-        $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/PlugIns/$<TARGET_PROPERTY:networkextension,OUTPUT_NAME>.appex/
-)
+set_target_properties(mozillavpn PROPERTIES XCODE_EMBED_APP_EXTENSIONS networkextension)
