@@ -15,6 +15,7 @@ class TaskScheduler final : public QObject {
  public:
   static void scheduleTask(Task* task);
   static void deleteTasks();
+  static void forceDeleteTasks();
 
   // This method should never been used! It's used only when we are 100% sure
   // that the current tasks do not conflict with this one.
@@ -27,7 +28,7 @@ class TaskScheduler final : public QObject {
   static TaskScheduler* maybeCreate();
 
   void scheduleTaskInternal(Task* task);
-  void deleteTasksInternal();
+  void deleteTasksInternal(bool forced);
 
   void maybeRunTask();
 

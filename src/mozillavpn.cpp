@@ -860,6 +860,7 @@ void MozillaVPN::logout() {
 
   if (m_private->m_deviceModel.hasCurrentDevice(keys())) {
     TaskScheduler::scheduleTask(new TaskRemoveDevice(keys()->publicKey()));
+    m_private->m_keys.forgetKeys();
   }
 
   TaskScheduler::scheduleTask(new TaskFunction([this]() { reset(false); }));
@@ -1304,7 +1305,7 @@ void MozillaVPN::refreshDevices() {
 
 void MozillaVPN::quit() {
   logger.debug() << "quit";
-  TaskScheduler::deleteTasks();
+  TaskScheduler::forceDeleteTasks();
 
 #if QT_VERSION >= 0x060000 && QT_VERSION < 0x060300
   // Qt5Compat.GraphicalEffects makes the app crash on shutdown. Let's do a

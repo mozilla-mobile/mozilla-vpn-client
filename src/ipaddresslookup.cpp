@@ -32,7 +32,6 @@ IpAddressLookup::~IpAddressLookup() { MVPN_COUNT_DTOR(IpAddressLookup); }
 
 void IpAddressLookup::initialize() {
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   connect(vpn, &MozillaVPN::stateChanged, this, &IpAddressLookup::stateChanged);
 

@@ -54,12 +54,14 @@ In order to build this application, you need to install a few dependencies.
 
 Qt6 can be installed in a number of ways:
 
-- download a binary package or the installer from the official QT website:
+- Download a binary package or the installer from the official QT website:
   https://www.qt.io/download - this is the recommended way for Android and iOS
   builds.
-- use a package manager. For instance, we use
+  - Recommened Qt version is the most recent LTS. 
+  - Be sure to select the `Qt 5 Compatibility Components` and `Qt Network Authorization` optional components.
+- Use a package manager. For instance, we use
   [aqt](https://github.com/miurahr/aqtinstall) for WASM builds.
-- compile Qt6 (dynamically or statically). If you want to choose this path, you
+- Compile Qt6 (dynamically or statically). If you want to choose this path, you
   can use our bash script for macOS and Linux:
 ```bash
 ./scripts/utils/qt6_compile.sh </qt6/source/code/path> </destination/path>
@@ -295,7 +297,7 @@ NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 If you prefer to compile the appa in command-line mode, use the following
 command:
 ```bash
-xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project "Mozilla VPN.xcodeproj" 
+xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project "Mozilla VPN.xcodeproj"
 ```
 
 ### How to build from source code for Android
@@ -327,11 +329,15 @@ adb install .tmp/src/android-build/build/outputs/apk/debug/android-build-debug.a
 - perl: http://strawberryperl.com/
 - nasm: https://www.nasm.us/
 - Visual Studio 2019: https://visualstudio.microsoft.com/vs/
+  - Select the `Desktop development with C++` and `Python development` workloads.
 - OpenSSL: https://www.openssl.org/source/
+  - On windows you can choose to bundle OpenSSL when installing python. Skip this step if you have done so.  
 - Go: https://golang.org/dl/
 
 We strongly recommend using CMake version 3.21 or later when building with Visual
 Studio. Earlier versions of CMake have bugs that can cause the build to hang.
+
+It is also recommended to use the `x64 Native Tools Command Prompt for VS 2019` for CLI builds on Windows. 
 
 2. Create a build directory, and configure the project for building using `cmake`.
 ```bash
@@ -348,6 +354,13 @@ when building:
 ```bash
 cmake --build build --config Release --target msi
 ```
+5.  **Optional**: To build and debug through the VS 2019 UI, follow these steps:
+    - Open VS2019
+    - From the top menu, select File -> Open -> CMake
+    - Choose the top-level `CMakeLists.txt` of the VPN project.
+    - Choose `x64-Debug` as the build config
+    - Choose `src/Mozilla VPN.exe` as the startup item.
+    - Click on the green play button to launch the client attached to a debugger.
 
 ### How to build from source code for WASM
 
@@ -393,16 +406,16 @@ cmake --build build -j$(nproc)
 * (Optional) In one window run `./tests/proxy/wsgi.py --mock-devices`
 * Run a test from the root of the project: `./scripts/tests/functional_tests.sh {test_file}.js`. To run, say, the authentication tests: `./scripts/tests/functional_tests.sh
   tests/functional/testAuthentication.js`.
-  
-> **Note**: Functional tests require a dummy build of the application. 
+
+> **Note**: Functional tests require a dummy build of the application.
 > In order to create such a build, on the root folder of this repository run:
-> 
+>
 > ```
 > cmake -S . -B ./dummybuild -DBUILD_DUMMY=ON
 > cmake --build dummybuild -j$(nproc)
 > ```
 >
-> This will create a dummy build under the `dummybuild/` folder. To run the functional tests against this build, 
+> This will create a dummy build under the `dummybuild/` folder. To run the functional tests against this build,
 > make sure the `MVPN_BIN` environment variable is pointing to the application under the `dummybuild/` folder.
 
 ## Developer Options and staging environment
@@ -426,73 +439,58 @@ From the inspector, type `help` to see the list of available commands.
 ## Glean
 
 [Glean](https://docs.telemetry.mozilla.org/concepts/glean/glean.html) is a
-Mozilla new product analytics & telemetry solution that provides a consistent
+Mozilla analytics & telemetry solution that provides a consistent
 experience and behavior across all of Mozilla products.
 
-When the client is built in debug mode, pings will have the applicationId
-`MozillaVPN-debug`. Additionally, ping contents will be logged to the client
-logs and will also be sent to the
-[glean debug
-viewer](https://debug-ping-preview.firebaseapp.com/pings/MozillaVPN) (login
-required) where they are retained for 3 weeks.
-
-More info on debug view in [glean
-docs](https://mozilla.github.io/glean/book/user/debugging/index.html).
+When the client is built in debug mode, pings will have the [app channel](app-channel) set to
+`debug`. Additionally, ping contents will be logged to the client
+logs.
 
 When the client is in staging mode, but not debug mode, pings will have the
-applicationId `MozillaVPN-staging` which allows for filtering between staging
-and production pings.
+[app channel](app-channel) set to `staging` which allows for filtering between staging
+and production pings through the `client_info.app_channel` metric present in all pings.
 
-### A note on glean embedding
+[app-channel]: https://mozilla.github.io/glean/book/reference/general/initializing.html?highlight=app%20channel#gleaninitializeconfiguration
+
+### A note on Glean embedding
 
 Qt only accepts `major.minor` versions for importing. So if, for example,
 you're embedding glean v0.21.2 then it will still, for Qt's purpose, be v0.21.
 
-### Working on tickets with new glean events
+### Working on tickets with new Glean instrumentation
 
-If you are responsible for a piece of work that adds new glean events you will need to do a data review for the new events. This is the recommended process along with some pointers on doing that.
+If you are responsible for a piece of work that adds new Glean instrumentation you will need to do a data review.
+Follwoing is the recommended process along with some pointers.
+
+> The data review process is also described here: https://wiki.mozilla.org/Data_Collection
 
 The basic process is this:
-* work on your PR that adds glean events including updating glean/metrics.yaml (necessary for your code to compile)
-* in your metrics.yaml:
-  * include a link to the *github* bug that describes the work
-  * put TBD in the `data_reviews` entry
-  * think about whether the data you are collecting is technical or interaction, sometimes it's both. in that case pick interaction which is a higher category of data. (more details https://wiki.mozilla.org/Data_Collection)
-* open a **draft** PR on github
-* file a bugzilla ticket for the data review (more info below)
-* update your PR with the id of the bugzilla bug in data `data_reviews` entry
-* once you have an r+ from data review, move your PR out of draft state.
 
-It is **ok** for a reviewer to review and approve your code while you're waiting for data review.
+* Implement the new instrumentation. Refer to [the Glean book](https://mozilla.github.io/glean/book/user/metrics/adding-new-metrics.html) on how to do that.
+* When adding or updating new metrics or pings, the [Glean YAML files](https://github.com/mozilla-mobile/mozilla-vpn-client/tree/main/glean) might need to be updated.
+  When that is the case a new data-review must be requested and added to the list of data-reviews for the updated/added instrumentation.
+  When updating data-review links on the YAML files, these are the things to keep in mind:
+  * Include a link to the *github* bug that describes the work, this must be a public link;
+  * Put "TBD" in the `data_reviews` entry, that needs to be updated *before* releasing the new instrumentation and ideally before merging it;
+  * Think about whether the data you are collecting is technical or interaction, sometimes it's both. In that case pick interaction which is a higher category of data. (See more details on https://wiki.mozilla.org/Data_Collection);
+* Open a **draft** PR on GitHub;
+* Fill out the data-review[^1] form and request a data-review from one of the [Mozilla Data Stewards](https://wiki.mozilla.org/Data_Collection)[^2].
+  That can be done by opening a Bugzilla ticket or more easily by attaching the questionaire as a comment on the PR that implements the instrumentation changes.
+  For Bugzilla, there is a special Bugzilla datareview request option and for GitHub it's enough to add the chosen data steward as a reviwer for the PR.
+* The data-review questionaire will result in a data review response. The link to that response is what should be added to the `data_review` entry on the Glean YAML files.
+  It must be a public link.
 
-It is **not** ok to merge a PR that contains a change to metrics.yaml without a datareview r+
+> Note:
+> - It is **ok** for a reviewer to review and approve your code while you're waiting for data review.
+> - It is **not** ok to release code that contains instrumentation changes without a datareview r+. It is good practice not to merge code that does not have a datareview r+.
 
-#### Filing a bugzilla ticket for data review
-
-The data review process is described here: https://wiki.mozilla.org/Data_Collection
-
-In brief, specifically for VPN:
-
-* You need a bugzilla account. This is not an ldap service, but do use your ldap email address to sign-up for an account.
-* Make a new bug in Product: Mozilla, Component: General. Or clone an old data review bug e.g. https://bugzilla.mozilla.org/show_bug.cgi?id=1770530
-* See the above bug, the ticket can be simple just a link to a bug and a PR and the attachment with the data review details (see below).
-* The trick to flagging this for data review is adding the attachment and setting the flag (data review ?), as described under "Step 1: Submit Request" on https://wiki.mozilla.org/Data_Collection
-* We usually use `chutten` for VPN data reviews
-* If you cannot see the flags in the attachment area (screenshot below) make sure "Show Advanced Fields" is checked
-
-![](attachment_flag_for_datareview.png)
-
-Filling out the data review details:
-
-* The data review questionnaire is here: https://github.com/mozilla/data-review/blob/main/request.md
-* It can seem quite intimidating, but don't panic. First, look at an old bug such as the one linked above. Many questions will always be the same for VPN data review bugs. There are four questions that require your attention and thought:
-  - 1. What questions will you answer with this data?
-  - 2. Why does Mozilla need to answer these questions?  Are there benefits for users? Do we need this information to address product or business requirements?
-  - 3. What alternative methods did you consider to answer these questions? Why were they not sufficient?
-  - 4. Please provide a general description of how you will analyze this data.
-* If you don't know the answers to these questions, reach out to Sarah Bird or the product manager so you can answer these with full confidence.
-
-
+[^1]: The data-review questionaire can be found at https://github.com/mozilla/data-review/blob/main/request.md. That can be copy pasted and filled out manually. However,
+since the VPN application uses Glean for data collection developers can also use the [`glean_parser data-review`](https://mozilla.github.io/glean_parser/) command,
+which generates a mostly filled out data-review questionaire for Glean users. The questionaire can seem quite intimidating, but don't panic.
+First, look at an old data-review such as https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4594.
+Questions 1, 2, 3 an 10 are the ones that require most of your attention and thought.
+If you don't know the answers to these questions, reach out to Sarah Bird or the product manager so you can answer these with full confidence.
+[^2]: Feel free to ping any of the data-stewards. If the collection is time sensitive consider pinging all data-stewards directly on the [data-stewards](https://matrix.to/#/#data-stewards:mozilla.org) matrix channel.
 
 ## Status
 
