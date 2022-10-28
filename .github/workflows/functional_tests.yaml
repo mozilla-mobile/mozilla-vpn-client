@@ -117,10 +117,9 @@ jobs:
       - name: Building tests 2:37
         shell: bash
         run: |
-          export PATH=/c/MozillaVPNBuild/bin:$PATH
-          export PATH=D:/a/mozilla-vpn-client/mozilla-vpn-client/build/bin:$PATH
+          set PATH=%PATH%;C:\MozillaVPNBuild\bin;D:\a\mozilla-vpn-client\mozilla-vpn-client\build\bin          
 
-          mkdir -p build˜
+          mkdir -p build
           cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON
           cmake --build $(pwd)/build --config Release --target build_tests
 
@@ -140,8 +139,8 @@ jobs:
           timeout_minutes: 15
           max_attempts: 3
           command: |
-            export PATH=${GECKOWEBDRIVER}:$(npm bin):$PATH
-            export HEADLESS=yes
+            set PATH=%PATH%;%GECKOWEBDRIVER%:$(npm bin)
+            set HEADLESS=yes
             mkdir -p $ARTIFACT_DIR
             xvfb-run -a npm run functionalTest -- ${{matrix.test.path}}
         env:
