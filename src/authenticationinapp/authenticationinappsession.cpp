@@ -749,7 +749,14 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
     }
 
     case 114:  // Client has sent too many requests
-      aia->requestState(AuthenticationInApp::StateStart, this);
+      if (m_typeAuthentication == TypeDefault) {
+        aia->requestState(AuthenticationInApp::StateStart, this);
+      } else {
+        // For non-default authentication flows, we go back to the password
+        // request, because the email request step is implicit.
+        aia->requestState(AuthenticationInApp::StateSignIn, this);
+      }
+
       aia->requestErrorPropagation(this,
                                    AuthenticationInApp::ErrorTooManyRequests,
                                    obj["retryAfter"].toInt());
