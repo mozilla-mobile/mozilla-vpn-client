@@ -8,8 +8,8 @@ int main()
 {
   if (@available(macOS 10.15, *)) {
     // When an app is sandboxed, the configuration.arguments array is ignored. Let's use env
-    // variables to minimize the app.
-    NSDictionary* env = @{@"MVPN_MINIMIZED" : @"1"};
+    // variables to pass startup flags.
+    NSDictionary* env = @{@"MVPN_MINIMIZED" : @"1", @"MVPN_STARTATBOOT" : @"1"};
 
     NSWorkspaceOpenConfiguration* configuration = [NSWorkspaceOpenConfiguration new];
     [configuration setEnvironment:env];
