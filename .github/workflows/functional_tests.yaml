@@ -133,20 +133,9 @@ jobs:
             printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
           done | jq -s -c
 
-  windowsfunctionaltests:
-    name: Windows functional tests
-    needs:
-      - build_windows_test_app
-    runs-on: windows-latest
-    timeout-minutes: 45
-
-    strategy:
-      fail-fast: false
-      matrix:
-        test: ${{ fromJson(needs.build_windows_test_app.outputs.matrix) }}
-
-    steps:
       - name: Running ${{matrix.test.name}} Tests
+        matrix:
+          test: ${{ fromJson(needs.build_windows_test_app.outputs.matrix) }}
         id: runTests
         uses: nick-invision/retry@v2
         with:
@@ -159,4 +148,4 @@ jobs:
             xvfb-run -a npm run functionalTest -- ${{matrix.test.path}}
         env:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
-          MVPN_BIN: ./build/cmake/src/mozillavpn
+          MVPN_BIN: ./build/cmake/src/mozillavpn      
