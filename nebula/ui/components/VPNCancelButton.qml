@@ -12,5 +12,5 @@ import components 0.1
 VPNLinkButton {
     labelText: VPNl18n.InAppSupportWorkflowSupportSecondaryActionText // "Cancel"
     fontName: VPNTheme.theme.fontBoldFamily
-    linkColor: VPNTheme.theme.redButton
+    linkColor: VPNTheme.theme.redLinkButton
 }
