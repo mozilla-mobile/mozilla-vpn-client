@@ -12,6 +12,10 @@ if(NOT (IS_MULTI_CONFIG OR DEFINED CMAKE_BUILD_TYPE))
     message("Setting build type ${CMAKE_BUILD_TYPE}")
 endif()
 
+if(XCODE)
+    set(CMAKE_XCODE_GENERATE_SCHEME FALSE)
+endif()
+
 project("Mozilla VPN" VERSION 2.13.0 LANGUAGES C CXX
         DESCRIPTION "A fast, secure and easy to use VPN. Built by the makers of Firefox."
         HOMEPAGE_URL "https://vpn.mozilla.org"
