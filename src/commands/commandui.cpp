@@ -199,8 +199,8 @@ int CommandUI::run(QStringList& tokens) {
     // https://bugreports.qt.io/browse/QTBUG-82617
     // Currently there is a crash happening on exit with Huawei devices.
     // Until this is fixed, setting this variable is the "official" workaround.
-    // We certainly should look at this once 6.4 is out.
-#  if QT_VERSION >= 0x060400
+    // We certainly should look at this once 6.6 is out.
+#  if QT_VERSION >= 0x060600
 #    error We have forgotten to remove this Huawei hack!
 #  endif
     if (AndroidUtils::GetManufacturer() == "Huawei") {
