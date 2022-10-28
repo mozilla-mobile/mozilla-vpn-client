@@ -120,12 +120,10 @@ PRODBETAEXPR(const char*, fxaUrl, "https://accounts.firefox.com",
 PRODBETAEXPR(
     const char*, balrogUrl,
     "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release/update.json",
-    "https://stage.balrog.nonprod.cloudops.mozgcp.net/json/1/FirefoxVPN/%1/%2/"
-    "release-cdntest/update.json");
-PRODBETAEXPR(
-    const char*, balrogRootCertFingerprint,
-    "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e",
-    "3c01446abe9036cea9a09acaa3a520ac628f20a7ae32ce861cb2efb70fa0c745");
+    "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release-cdntest/"
+    "update.json");
+constexpr const char* AUTOGRAPH_ROOT_CERT_FINGERPRINT =
+    "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e";
 
 PRODBETAEXPR(const char*, relayUrl, "https://relay.firefox.com",
              "https://stage.fxprivaterelay.nonprod.cloudops.mozgcp.net");
