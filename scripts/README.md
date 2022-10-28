@@ -32,10 +32,8 @@ TODO: unify build.sh and script.sh (or remove build.sh)
 - ./macos/utils/xcode_patcher.rb - tool to patch xcode project
 - ./macos/utils/commons.sh - common functions for cross-platform scrips
 - ./macos/import_pkg_resources.py - configure resources for the PKG generation
-- ./macos/scope_only_change.sh - runs tests when needed
 
 TODO:
-1. scope_only_change.sh should be croll-platform! Do we actually use it?
 2. remove/merge/move macos_build.sh
 
 # Windows-specific scripts
