@@ -114,7 +114,7 @@ jobs:
         run: |
           pip3 install -r requirements.txt
 
-      - name: Building tests 2:37
+      - name: Building tests 12:24
         shell: bash
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
@@ -124,6 +124,11 @@ jobs:
           
           cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON
           cmake --build $(pwd)/build --config Release --target build_tests
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: test-client-${{ github.sha }}
+          path: build/
 
       - name: Generate tasklist
         id: testGen
@@ -158,7 +163,6 @@ jobs:
           mkdir -p tests/artifacts
           apt install ./build/archive/*.deb
           apt install --no-upgrade firefox xvfb -y
-          pip3 install -r requirements.txt
           npm install
 
       - name: Running ${{matrix.test.name}} Tests
