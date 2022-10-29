@@ -117,7 +117,8 @@ jobs:
       - name: Building tests 2:37
         shell: bash
         run: |
-          set PATH=%PATH%;C:\MozillaVPNBuild\bin;D:\a\mozilla-vpn-client\mozilla-vpn-client\build\bin          
+          export PATH=/c/MozillaVPNBuild/bin:$PATH
+          export PATH=D:/a/mozilla-vpn-client/mozilla-vpn-client/build/bin:$PATH
 
           mkdir -p build
           cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON
