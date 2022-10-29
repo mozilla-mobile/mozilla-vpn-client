@@ -15,7 +15,6 @@ set_target_properties(mozillavpn PROPERTIES
     MACOSX_BUNDLE_BUNDLE_VERSION "${BUILD_ID}"
     MACOSX_BUNDLE_COPYRIGHT "MPL-2.0"
     MACOSX_BUNDLE_GUI_IDENTIFIER "${BUILD_OSX_APP_IDENTIFIER}"
-    MACOSX_BUNDLE_ICON_FILE "AppIcon"
     MACOSX_BUNDLE_INFO_STRING "Mozilla VPN"
     MACOSX_BUNDLE_LONG_VERSION_STRING "${CMAKE_PROJECT_VERSION}-${BUILD_ID}"
     MACOSX_BUNDLE_SHORT_VERSION_STRING "${CMAKE_PROJECT_VERSION}"
@@ -168,28 +167,7 @@ add_custom_command(TARGET mozillavpn POST_BUILD
 )
 
 ## Compile and install the asset catalog into the bundle.
-add_custom_command(
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Assets.car
-           ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns
-    BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/ac_generated_info.plist
-    MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets/Contents.json
-    COMMAND actool --output-format human-readable-text --notices --warnings
-                --target-device mac --platform macosx --minimum-deployment-target ${CMAKE_OSX_DEPLOYMENT_TARGET}
-                --app-icon AppIcon --output-partial-info-plist ${CMAKE_CURRENT_BINARY_DIR}/ac_generated_info.plist
-                --development-region en --enable-on-demand-resources NO
-                --compile ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets
-)
-target_sources(mozillavpn PRIVATE
-    ${CMAKE_CURRENT_BINARY_DIR}/Assets.car
-    ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns
-)
-set_source_files_properties(
-    ${CMAKE_CURRENT_BINARY_DIR}/Assets.car
-    ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns
-    PROPERTIES
-    HEADER_FILE_ONLY TRUE
-    MACOSX_PACKAGE_LOCATION Resources
-)
+osx_bundle_assetcatalog(mozillavpn CATALOG ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets)
 
 #LD_RUNPATH_SEARCH_PATHS.name = "LD_RUNPATH_SEARCH_PATHS"
 #LD_RUNPATH_SEARCH_PATHS.value = '"$(inherited) @executable_path/../Frameworks"'

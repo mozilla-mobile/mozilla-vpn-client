@@ -6,6 +6,8 @@ enable_language(OBJC)
 enable_language(OBJCXX)
 enable_language(Swift)
 
+include(cmake/osxtools.cmake)
+
 # Configure the application bundle Info.plist
 set_target_properties(mozillavpn PROPERTIES
     OUTPUT_NAME "Mozilla VPN"
@@ -15,7 +17,6 @@ set_target_properties(mozillavpn PROPERTIES
     MACOSX_BUNDLE_BUNDLE_VERSION "${BUILD_ID}"
     MACOSX_BUNDLE_COPYRIGHT "MPL-2.0"
     MACOSX_BUNDLE_GUI_IDENTIFIER "${BUILD_IOS_APP_IDENTIFIER}"
-    MACOSX_BUNDLE_ICON_FILE "AppIcon"
     MACOSX_BUNDLE_INFO_STRING "Mozilla VPN"
     MACOSX_BUNDLE_LONG_VERSION_STRING "${CMAKE_PROJECT_VERSION}-${BUILD_ID}"
     MACOSX_BUNDLE_SHORT_VERSION_STRING "${CMAKE_PROJECT_VERSION}"
@@ -89,6 +90,19 @@ if(BUILD_ADJUST_SDK_TOKEN)
     )
     target_link_libraries(mozillavpn PRIVATE adjust)
 endif()
+
+target_sources(mozillavpn PRIVATE
+    ${CMAKE_SOURCE_DIR}/ios/app/launch.png
+    ${CMAKE_SOURCE_DIR}/ios/app/MozillaVPNLaunchScreen.storyboard)
+set_source_files_properties(
+    ${CMAKE_SOURCE_DIR}/ios/app/launch.png
+    ${CMAKE_SOURCE_DIR}/ios/app/MozillaVPNLaunchScreen.storyboard
+    PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+
+## Compile and install the asset catalog into the bundle.
+osx_bundle_assetcatalog(mozillavpn
+    DEVICES iphone ipad
+    CATALOG ${CMAKE_SOURCE_DIR}/ios/app/Images.xcassets)
 
 set_target_properties(mozillavpn PROPERTIES
     XCODE_ATTRIBUTE_SWIFT_VERSION "5.0"
