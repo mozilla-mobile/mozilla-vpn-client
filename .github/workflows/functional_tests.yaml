@@ -143,12 +143,22 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        test: ${{ fromJson(needs.build_Linux_test_app.outputs.matrix) }}
+        test: ${{ fromJson(needs.build_windows_test_app.outputs.matrix) }}
 
     steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: test-client-${{ github.sha }}
+          path: build/
+
       - name: Install Windows Dependencies
         run: |
           mkdir -p tests/artifacts
+          apt install ./build/archive/*.deb
+          apt install --no-upgrade firefox xvfb -y
+          pip3 install -r requirements.txt
           npm install
 
       - name: Running ${{matrix.test.name}} Tests
