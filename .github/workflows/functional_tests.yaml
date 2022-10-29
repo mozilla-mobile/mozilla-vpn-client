@@ -109,9 +109,9 @@ jobs:
           npm install
       
       - name: Running ${{matrix.test.name}} Tests
+        shell: bash
         id: runTests
         uses: nick-invision/retry@v2
-        shell: bash
         with:
           timeout_minutes: 15
           max_attempts: 3
