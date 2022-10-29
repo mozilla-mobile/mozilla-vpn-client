@@ -140,7 +140,6 @@ jobs:
           timeout_minutes: 15
           max_attempts: 3
           command: |
-            set PATH=%PATH%;%GECKOWEBDRIVER%:$(npm bin)
             set HEADLESS=yes
             mkdir -p $ARTIFACT_DIR
             xvfb-run -a npm run functionalTest -- ${{matrix.test.path}}
