@@ -161,8 +161,6 @@ jobs:
       - name: Install Windows Dependencies
         run: |
           mkdir -p tests/artifacts
-          apt install ./build/archive/*.deb
-          apt install --no-upgrade firefox xvfb -y
           npm install
 
       - name: Running ${{matrix.test.name}} Tests
