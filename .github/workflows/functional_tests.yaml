@@ -141,8 +141,8 @@ jobs:
           max_attempts: 3
           command: |
             set HEADLESS=yes
-            mkdir -p $ARTIFACT_DIR
-            xvfb-run -a npm run functionalTest -- ${{matrix.test.path}}
+            mkdir -p tests/artifacts
+            npm run functionalTest -- ${{matrix.test.path}}
         env:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
           MVPN_BIN: ./build/cmake/src/mozillavpn      
