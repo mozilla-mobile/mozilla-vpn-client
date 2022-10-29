@@ -15,68 +15,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build_Linux_test_app:
-    name: Build Linux Test Client
-    runs-on: ubuntu-20.04
-    outputs:
-      matrix: ${{ steps.testGen.outputs.tests }}
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v2
-
-      - name: Checkout submodules
-        shell: bash
-        run: |
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git submodule sync --recursive
-          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
-      - name: Install dependecies
-        if: steps.cache-build.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p build/archive
-
-          # Install grcov into the build directory, to reduce downstream compilation times.
-          cargo install --root $(pwd)/build grcov 
-
-          # Add external PPA for Qt6 support on Ubuntu 20.04
-          sudo add-apt-repository ppa:okirby/qt6-backports
-
-          # Download the build and runtime package dependencies.
-          sudo apt-get -o "Dir::Cache::archives=$(pwd)/build/archive" install -y \
-               $(./scripts/linux/getdeps.py -a linux/debian/control.qt6)
-          sudo chown -R $USER:$USER build/archive
-
-      - name: Compile linux test client
-        shell: bash
-        if: steps.cache-build.outputs.cache-hit != 'true'
-        run: |
-          pip3 install -r requirements.txt
-
-          mkdir -p build/cmake
-          cmake -S $(pwd) -B build/cmake -DBUILD_DUMMY=ON \
-              -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
-          cmake --build build/cmake -j$(nproc)
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: test-client-${{ github.sha }}
-          path: build/
-
-      - name: Generate tasklist
-        id: testGen
-        shell: bash
-        run: |
-          echo -n "::set-output name=tests::"
-          for test in $(find tests/functional -name 'test*.js' | sort); do
-            printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
-          done | jq -s -c
-      - name: Check tests
-        shell: bash
-        env:
-          TEST_LIST: ${{ steps.testGen.outputs.tests }}
-        run: |
-          echo $TEST_LIST | jq  
-
   build_windows_test_app:
     name: Build  windows test client
     runs-on: windows-latest
@@ -114,7 +52,7 @@ jobs:
         run: |
           pip3 install -r requirements.txt
 
-      - name: Building tests 12:24
+      - name: Compile windows code
         shell: bash
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
@@ -163,16 +101,26 @@ jobs:
           mkdir -p tests/artifacts
           npm install
 
+      - name: Build test client
+        shell: bash
+        if: steps.cache-build.outputs.cache-hit != 'true'
+        run: |
+          cmake -S . -B ./dummybuild -DBUILD_DUMMY=ON
+          cmake --build dummybuild -j$(nproc)
+
       - name: Running ${{matrix.test.name}} Tests
         id: runTests
         uses: nick-invision/retry@v2
+        shell: bash
         with:
           timeout_minutes: 15
           max_attempts: 3
           command: |
             set HEADLESS=yes
+            export ARTIFACT_DIR=/c/MozillaVPNBuild/bin:$PATH
+            export MVPN_BIN=/c/MozillaVPNBuild/bin:$PATH
             
             npm run functionalTest -- ${{matrix.test.path}}
         env:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
-          MVPN_BIN: ./build/cmake/src/mozillavpn      
+          MVPN_BIN: ./dummybuild/cmake/src/mozillavpn      
