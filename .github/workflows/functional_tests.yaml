@@ -142,6 +142,7 @@ jobs:
           command: |
             set HEADLESS=yes
             mkdir -p tests/artifacts
+            npm install mocha
             npm run functionalTest -- ${{matrix.test.path}}
         env:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
