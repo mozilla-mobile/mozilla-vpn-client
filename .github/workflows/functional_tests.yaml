@@ -52,28 +52,22 @@ jobs:
         run: |
           pip3 install -r requirements.txt
 
-      - name: Compile windows code
+      - name: Compile windows test client
         shell: bash
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
           export PATH=D:/a/mozilla-vpn-client/mozilla-vpn-client/build/bin:$PATH
 
           mkdir -p build
+          mkdir -p build/cmake
           
-          cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON
-          cmake --build $(pwd)/build --config Release --target build_tests
-
-      - name: Build test client
-        shell: bash
-        if: steps.cache-build.outputs.cache-hit != 'true'
-        run: |
-          cmake -S . -B ./dummybuild -DBUILD_DUMMY=ON
-          cmake --build dummybuild -j$(nproc)
+          cmake -S $(pwd) -B build/cmake -DBUILD_DUMMY=ON
+          cmake --build build/cmake -j$(nproc)
 
       - uses: actions/upload-artifact@v3
         with:
           name: test-client-${{ github.sha }}
-          path: dummybuild/
+          path: build/
 
       - name: Generate tasklist
         id: testGen
@@ -101,21 +95,23 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: test-client-${{ github.sha }}
-          path: dummybuild/
+          path: build/
 
       - name: Install Windows Dependencies
         run: |
           mkdir -p tests/artifacts
+          pip3 install -r requirements.txt
           npm install
       
       - name: Running ${{matrix.test.name}} Tests
-        uses: nick-invision/retry@v2
         id: runTests
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
           max_attempts: 3
           command: |
-            set HEADLESS=yes            
+            set HEADLESS=yes
+            MKDIR -P tests/artifact
             npm run functionalTest -- ${{matrix.test.path}}
         env:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
