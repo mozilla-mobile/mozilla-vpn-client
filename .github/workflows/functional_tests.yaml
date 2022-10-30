@@ -110,8 +110,8 @@ jobs:
           max_attempts: 3
           command: |
             set HEADLESS=yes
-            mkdir -P tests/artifact
+            mkdir -p tests/artifact
             npm run functionalTest -- ${{matrix.test.path}}
         env:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
-          MVPN_BIN: ./dummybuild/cmake/src/mozillavpn      
+          MVPN_BIN: ./build/cmake/src/mozillavpn      
