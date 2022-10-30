@@ -110,16 +110,12 @@ jobs:
       
       - name: Running ${{matrix.test.name}} Tests
         uses: nick-invision/retry@v2
-        shell: bash
         id: runTests
         with:
           timeout_minutes: 15
           max_attempts: 3
           command: |
-            set HEADLESS=yes
-            export ARTIFACT_DIR=/c/MozillaVPNBuild/bin:$PATH
-            export MVPN_BIN=/c/MozillaVPNBuild/bin:$PATH
-            
+            set HEADLESS=yes            
             npm run functionalTest -- ${{matrix.test.path}}
         env:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
