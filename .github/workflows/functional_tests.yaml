@@ -51,12 +51,12 @@ jobs:
         shell: bash
         run: |
           pip3 install -r requirements.txt
-          
+
           mkdir -p build/cmake
           
           export PATH=/c/MozillaVPNBuild/bin:$PATH          
 
-          cmake -S . -B $(pwd)/build/cmake -DBUILD_DUMMY=ON
+          cmake -S . -B $(pwd)/build/cmake -DBUILD_TESTING=ON
           cmake --build $(pwd)/build/cmake --config Release
 
       - uses: actions/upload-artifact@v3
