@@ -110,4 +110,4 @@ jobs:
             npm run functionalTest -- ${{matrix.test.path}}
         env:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
-          MVPN_BIN: ./build/cmake/src/mozillavpn
+          MVPN_BIN: ./build/build/cmake/src/mozillavpn
