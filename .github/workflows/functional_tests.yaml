@@ -62,7 +62,7 @@ jobs:
           mkdir -p build/cmake
           
           cmake -S $(pwd) -B build/cmake -DBUILD_DUMMY=ON
-          cmake --build build/cmake -j$(nproc)
+          cmake --build build/cmake
 
       - uses: actions/upload-artifact@v3
         with:
