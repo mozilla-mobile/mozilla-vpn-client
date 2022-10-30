@@ -55,14 +55,13 @@ jobs:
       - name: Compile windows test client
         shell: bash
         run: |
-          export PATH=/c/MozillaVPNBuild/bin:$PATH
-          export PATH=D:/a/mozilla-vpn-client/mozilla-vpn-client/build/bin:$PATH
-
           mkdir -p build
           mkdir -p build/cmake
           
-          cmake -S $(pwd) -B build/cmake -DBUILD_DUMMY=ON
-          cmake --build build/cmake
+          export PATH=/c/MozillaVPNBuild/bin:$PATH          
+
+          cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON
+          cmake --build $(pwd)/build --config Release
 
       - uses: actions/upload-artifact@v3
         with:
@@ -111,7 +110,7 @@ jobs:
           max_attempts: 3
           command: |
             set HEADLESS=yes
-            MKDIR -P tests/artifact
+            mkdir -P tests/artifact
             npm run functionalTest -- ${{matrix.test.path}}
         env:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
