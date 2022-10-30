@@ -98,6 +98,14 @@ jobs:
           pip3 install -r requirements.txt
           npm install
       
+      - name: create env vars file
+        run:  SET > output.txt
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: env-output-txt
+          path: envoutput.txt
+      
       - name: Running ${{matrix.test.name}} Tests
         id: runTests
         uses: nick-invision/retry@v2
@@ -110,4 +118,4 @@ jobs:
             npm run functionalTest -- ${{matrix.test.path}}
         env:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
-          MVPN_BIN: ./build/build/cmake/src/mozillavpn
+          MVPN_BIN: ./build/cmake/src/Release/Mozilla\ VPN.exe
