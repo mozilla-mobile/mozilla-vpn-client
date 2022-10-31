@@ -163,7 +163,6 @@ exports.mochaHooks = {
     while (waitTimeForProcess < 11) {
       if (processEnded) return;
       await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('process has not been killed', processEnded);
       waitTimeForProcess++
     }
 
