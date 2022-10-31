@@ -21,7 +21,7 @@ ARG ANDROID_ARCH=android_armv7
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -q update &&\
-    apt-get -yq install --no-install-recommends gnupg curl ca-certificates libglib2.0-dev cmake &&\
+    apt-get -yq install --no-install-recommends gnupg curl ca-certificates libglib2.0-dev &&\
     # add zulu-jdk to the 
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9 &&\
     curl -O https://cdn.azul.com/zulu/bin/zulu-repo_1.0.0-3_all.deb &&\
@@ -47,6 +47,8 @@ RUN python3 -m aqt install-qt --outputdir /opt linux android ${QT_VERSION} ${AND
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "build-tools;29.0.2" &&\ 
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "build-tools;30.0.3" &&\
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "build-tools;31.0.0" &&\
+    # Todo: Dedupe cmake deps
+    echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "cmake;3.10.2.4988404" &&\ 
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "cmake;${CMAKE_VERSION}" &&\
         # Note: Not sure why we need emulator, need to investiage the gradle dependencies
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "emulator" &&\ 
@@ -66,7 +68,7 @@ ENV ANDROID_NDK_ROOT="/opt/NDK/${NDK_VERSION}"
 ENV ANDROID_NDK_HOME="/opt/NDK/${NDK_VERSION}"
 ENV QT_HOST_PATH=/opt/${QT_VERSION}/gcc_64
 
-ENV PATH="/opt/${QT_VERSION}/gcc_64/bin:${QTPATH}/bin:/opt/cmdline-tools/bin:${PATH}:/opt/android/sdk/cmake/${CMAKE_VERSION}/bin"
+ENV PATH="/opt/${QT_VERSION}/gcc_64/bin:${QTPATH}/bin:/opt/cmdline-tools/bin:/opt/android/sdk/cmake/${CMAKE_VERSION}/bin:${PATH}"
 ENV XDG_CACHE_HOME ="/opt/"
 
 VOLUME /builds/worker/checkouts
