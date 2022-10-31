@@ -16,7 +16,7 @@ RUN mkdir -p /builds/worker/.cache/go-build &&\
 ARG NDK_VERSION=android-ndk-r23b
 ARG NDK_FILE=${NDK_VERSION}-linux.zip
 ARG QT_VERSION=6.2.1
-ARG CMAKE_VERSION=3.18.1
+ARG CMAKE_VERSION=3.22.1
 ARG ANDROID_ARCH=android_armv7
 ENV DEBIAN_FRONTEND=noninteractive
 
