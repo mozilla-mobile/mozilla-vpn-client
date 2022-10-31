@@ -233,10 +233,10 @@
      "en": "São Paulo",
      "en_CA": "São Paulo",
      "en_GB": "São Paulo",
-     "es_AR": "San Pablo",
-     "es_CL": "San Pablo",
-     "es_ES": "San Pablo",
-     "es_MX": "San Pablo",
+     "es_AR": "São Paulo",
+     "es_CL": "São Paulo",
+     "es_ES": "São Paulo",
+     "es_MX": "São Paulo",
      "fi": "São Paulo",
      "fr": "São Paulo",
      "fy_NL": "São Paulo",
@@ -969,7 +969,7 @@
   "countryCode": "it",
   "languages": {
    "co": "Italia",
-   "cy": "Yr Eidal",
+   "cy": "yr Eidal",
    "de": "Italien",
    "dsb": "Italska",
    "el": "Ιταλία",
@@ -1396,7 +1396,7 @@
      "ru": "Окленд",
      "sq": "Okland",
      "uk": "Окленд",
-     "zh_CN": "奧克蘭都會區",
+     "zh_CN": "奧克蘭",
      "zh_TW": "奧克蘭"
     },
     "wikiDataID": "Q37100"
