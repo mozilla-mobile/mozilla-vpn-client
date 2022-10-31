@@ -25,6 +25,7 @@ const guardian = require('./servers/guardian.js');
 const addonServer = require('./servers/addon.js');
 
 const app = process.env.MVPN_BIN;
+let processEnded = false;
 let vpnProcess = null;
 let stdErr = '';
 
@@ -34,6 +35,7 @@ async function startAndConnect() {
   vpnProcess.stderr.on('data', (data) => {
     stdErr += data;
   });
+
   // Connect to VPN
   await vpn.connect(vpnWS, {hostname: '127.0.0.1'});
 }
@@ -155,8 +157,18 @@ exports.mochaHooks = {
     }
     vpn.disconnect();
     vpnProcess.kill();
-    // Give each test 3 seconds to chill!
-    // Seems to help with tests that are slow to close vpn app at end.
-    await vpn.wait(3000);    
+
+    // Wait for process to close for ests that are slow to close vpn app at end.
+    let waitTimeForProcess = 0; // up to 10 sec wait
+    while (waitTimeForProcess < 11) {
+      if (processEnded) return;
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('process has not been killed', processEnded);
+      waitTimeForProcess++
+    }
+
+    if(waitTimeForProcess === 10){
+      throw new Error('Error clsoing child process')
+    }
   },
 }
