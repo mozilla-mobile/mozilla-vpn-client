@@ -20,7 +20,7 @@ ARG ANDROID_ARCH=android_armv7
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -q update &&\
-    apt-get -yq install --no-install-recommends gnupg curl ca-certificates libglib2.0-dev &&\
+    apt-get -yq install --no-install-recommends gnupg curl ca-certificates libglib2.0-dev cmake &&\
     # add zulu-jdk to the 
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9 &&\
     curl -O https://cdn.azul.com/zulu/bin/zulu-repo_1.0.0-3_all.deb &&\
