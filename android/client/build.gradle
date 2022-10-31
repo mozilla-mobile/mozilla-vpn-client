@@ -16,7 +16,7 @@ dependencies {
 
 
 android {
-    ndkVersion '24.0.8215888'
+    ndkVersion "23.1.7779620"
     compileSdkVersion Config.compileSdkVersion
     defaultConfig {
         minSdkVersion Config.minSdkVersion
@@ -40,7 +40,7 @@ android {
 
     externalNativeBuild {
         cmake {
-            version "3.18.1"
+            version Config.cmakeVersion
             path '../../CMakeLists.txt'
         }
     }
@@ -51,6 +51,7 @@ android {
                 // Passes optional arguments to CMake.
                 arguments "-DANDROID_QT_DIR=${QtConfiguration.qtAndroidRootDir}",
                           "-DQT_HOST_PATH=${QtConfiguration.host}",
+                          "-DQT_NO_WARN_BUILD_TREE_APK_DEPS=ON",
                           "-DQT_HOST_PATH_CMAKE_DIR=${QtConfiguration.host}/lib/cmake",
                           "-DANDROID_STL=c++_shared",
                           "--target mozillavpn"
@@ -105,13 +106,3 @@ task importOpenSSL(type: Copy) {
     into("build/ssl")
 }
 preBuild.dependsOn importOpenSSL
-
-tasks.whenTaskAdded {
-    theTask ->
-        if (theTask.name.contains('externalNativeBuild')) {
-            theTask.doLast{
-                println "[*] begin to copy file."
-            }
-        }
-        println theTask.name
-}

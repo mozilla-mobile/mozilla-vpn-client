@@ -57,4 +57,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     target_link_libraries(mozillavpn PRIVATE crashreporter)
 endif()
 
-qt_finalize_target(mozillavpn)
+
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Android")
+    qt_finalize_target(mozillavpn)
+endif()

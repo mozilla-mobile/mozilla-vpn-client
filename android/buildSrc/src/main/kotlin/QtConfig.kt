@@ -171,10 +171,15 @@ open class QTConfigurationExtension
         if (abi.isEmpty()) {
             return JSONArray()
         }
-        val importScanner = File("$host/libexec/qmlimportscanner")
-        if (!importScanner.exists()) {
-            error("Did not found qmlimportscanner in $host/libexec/qmlimportscanner")
-        }
+        val importScannerList = arrayOf(
+            File("$host/libexec/qmlimportscanner"),
+            File("$host/bin/qmlimportscanner"),
+            File("$host/bin/qmlimportscanner.exe"),
+        )
+        val importScanner = importScannerList.firstOrNull{it.exists()}
+            ?: {
+                error("Did not found qmlimportscanner in ${importScannerList}")
+            }
         val repo_path = project.rootProject.projectDir.parent
         val qmlPath = File("$repo_path/src/ui")
         val qtQMLPath = File("$abi/qml")
