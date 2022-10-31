@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
+const { initialScreen, telemetryScreen, generalElements } = require('./elements.js');
 const vpn = require('./helper.js');
 
 describe('Backend failure', function() {
@@ -10,30 +11,22 @@ describe('Backend failure', function() {
 
   async function backendFailureAndRestore() {
     await vpn.forceHeartbeatFailure();
-
-    await vpn.waitForElement('heartbeatTryButton');
-    await vpn.waitForElementProperty('heartbeatTryButton', 'visible', 'true');
-
-    await vpn.wait();
-
-    await vpn.clickOnElement('heartbeatTryButton');
-    await vpn.wait();
+    await vpn.waitForElementAndClick('heartbeatTryButton');
   }
 
   it('Backend failure during the main view', async () => {
     await vpn.waitForMainView();
     await backendFailureAndRestore();
 
-    await vpn.waitForElement('getHelpLink');
-    await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
-    await vpn.wait();
+    await vpn.waitForElement(initialScreen.GET_HELP_LINK);
+    await vpn.waitForElementProperty(initialScreen.GET_HELP_LINK, 'visible', 'true');
   });
 
-  /* TODO
+  /* TODO:
     it('Backend failure in the help menu', async () => {
-      await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
-      await vpn.clickOnElement('getHelpLink');
-      await vpn.waitForElementProperty('getHelpLink', 'visible', 'false');
+      await vpn.waitForElementProperty(initialScreen.GET_HELP_LINK, 'visible', 'true');
+      await vpn.clickOnElement(initialScreen.GET_HELP_LINK);
+      await vpn.waitForElementProperty(initialScreen.GET_HELP_LINK, 'visible', 'false');
 
       await vpn.waitForElement('getHelpBack');
       await vpn.waitForElementProperty('getHelpBack', 'visible', 'true');
@@ -42,40 +35,37 @@ describe('Backend failure', function() {
     });
   */
 
+    // TODO: check fix
   it('Backend failure in the onboarding (aborting in each phase)', async () => {
     let onboardingView = 0;
     let onboarding = true;
     while (onboarding) {
-      assert(
-          await vpn.getElementProperty('learnMoreLink', 'visible') === 'true');
-      await vpn.clickOnElement('learnMoreLink');
+      await vpn.waitForElement(initialScreen.LEARN_MORE_LINK)
+      assert(await vpn.getElementProperty(initialScreen.LEARN_MORE_LINK, 'visible') === 'true');
+      await vpn.waitForElementAndClick(initialScreen.LEARN_MORE_LINK);
 
-      await vpn.waitForElement('skipOnboarding');
-      await vpn.waitForElementProperty('skipOnboarding', 'visible', 'true');
+      await vpn.waitForElement(initialScreen.SKIP_ONBOARDING);
+      await vpn.waitForElementProperty(initialScreen.SKIP_ONBOARDING, 'visible', 'true');
 
       await vpn.wait();
 
       for (let i = 0; i < onboardingView; ++i) {
-        assert(await vpn.hasElement('onboardingNext'));
-        assert(
-            await vpn.getElementProperty('onboardingNext', 'visible') ===
-            'true');
-        await vpn.clickOnElement('onboardingNext');
+        assert(await vpn.hasElement(initialScreen.ONBOARDING_NEXT));
+        assert(await vpn.getElementProperty(initialScreen.ONBOARDING_NEXT, 'visible') === 'true');
+        await vpn.clickOnElement(initialScreen.ONBOARDING_NEXT);
 
         await vpn.wait();
       }
 
-      assert(
-          await vpn.getElementProperty('onboardingNext', 'visible') === 'true');
+      assert(await vpn.getElementProperty(initialScreen.ONBOARDING_NEXT, 'visible') === 'true');
+      onboarding = await vpn.getElementProperty(initialScreen.ONBOARDING_NEXT, 'text') === 'Next';
 
-      onboarding =
-          await vpn.getElementProperty('onboardingNext', 'text') === 'Next';
-
+      console.log('right before failure');
       await backendFailureAndRestore();
-      await vpn.waitForElement('getHelpLink');
-      await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
-
-      await vpn.wait();
+      console.log('line 63');
+      await vpn.waitForElement(initialScreen.GET_HELP_LINK);
+      await vpn.waitForElementProperty(initialScreen.GET_HELP_LINK, 'visible', 'true');
+      await vpn.wait()
 
       ++onboardingView;
     }
@@ -88,7 +78,7 @@ describe('Backend failure', function() {
     }
 
     await vpn.waitForMainView();
-    await vpn.clickOnElement('getStarted');
+    await vpn.waitForElementAndClick(initialScreen.GET_STARTED);
 
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
@@ -96,45 +86,44 @@ describe('Backend failure', function() {
     });
 
     await vpn.wait();
-
-    await vpn.waitForElement('authenticatingView');
-    await vpn.waitForElementProperty('authenticatingView', 'visible', 'true');
+    await vpn.waitForElement(initialScreen.AUTHENTICATE_VIEW);
+    await vpn.waitForElementProperty(initialScreen.AUTHENTICATE_VIEW, 'visible', 'true');
 
     await backendFailureAndRestore();
-    await vpn.waitForElement('getHelpLink');
-    await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
+    await vpn.waitForElement(initialScreen.GET_HELP_LINK);
+    await vpn.waitForElementProperty(initialScreen.GET_HELP_LINK, 'visible', 'true');
   });
 
   it('BackendFailure in the Post authentication view', async () => {
     await vpn.authenticateInApp();
-    await vpn.waitForElement('postAuthenticationButton');
+    await vpn.waitForElement(telemetryScreen.POST_AUTHENTICATION_BUTTON);
     await backendFailureAndRestore();
-    await vpn.waitForElement('postAuthenticationButton');
+    await vpn.waitForElement(telemetryScreen.POST_AUTHENTICATION_BUTTON);
   });
 
   it('BackendFailure in the Telemetry policy view', async () => {
     await vpn.authenticateInApp(true, false);
-    await vpn.waitForElement('telemetryPolicyButton');
+    await vpn.waitForElement(telemetryScreen.TELEMETRY_POLICY_BUTTON);
     await backendFailureAndRestore();
-    await vpn.waitForElement('telemetryPolicyButton');
+    await vpn.waitForElement(telemetryScreen.TELEMETRY_POLICY_BUTTON);
   });
 
   describe('Post-auth tests', function() {
     this.ctx.authenticationNeeded = true;
 
     it('BackendFailure in the Controller view', async () => {
-      await vpn.waitForElement('controllerTitle');
-      await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
+      await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
+      await vpn.waitForElementProperty(generalElements.CONTROLLER_TITLE, 'visible', 'true');
       assert(
-          await vpn.getElementProperty('controllerTitle', 'text') ===
+          await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text') ===
           'VPN is off');
 
       await backendFailureAndRestore();
 
-      await vpn.waitForElement('controllerTitle');
-      await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
+      await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
+      await vpn.waitForElementProperty(generalElements.CONTROLLER_TITLE, 'visible', 'true');
       assert(
-          await vpn.getElementProperty('controllerTitle', 'text') ===
+          await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text') ===
           'VPN is off');
     });
 
@@ -143,7 +132,7 @@ describe('Backend failure', function() {
 
       await vpn.waitForCondition(async () => {
         let connectingMsg =
-            await vpn.getElementProperty('controllerTitle', 'text');
+            await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text');
         return connectingMsg === 'Connecting…';
       });
 
@@ -153,26 +142,24 @@ describe('Backend failure', function() {
 
       await backendFailureAndRestore();
 
-      await vpn.waitForElement('controllerTitle');
-      await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
-      assert(
-          await vpn.getElementProperty('controllerTitle', 'text') ===
-          'VPN is off');
+      await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
+      await vpn.waitForElementProperty(generalElements.CONTROLLER_TITLE, 'visible', 'true');
+      assert(await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text') === 'VPN is off');
     });
 
     it('BackendFailure when connected', async () => {
       await vpn.activate();
       await vpn.waitForCondition(async () => {
-        return await vpn.getElementProperty('controllerTitle', 'text') ===
+        return await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text') ===
             'VPN is on';
       });
 
       await backendFailureAndRestore();
 
-      await vpn.waitForElement('controllerTitle');
-      await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
+      await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
+      await vpn.waitForElementProperty(generalElements.CONTROLLER_TITLE, 'visible', 'true');
       assert(
-          await vpn.getElementProperty('controllerTitle', 'text') ===
+          await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text') ===
           'VPN is off');
     });
 
@@ -185,16 +172,16 @@ describe('Backend failure', function() {
       await vpn.deactivate();
 
       await vpn.waitForCondition(async () => {
-        const msg = await vpn.getElementProperty('controllerTitle', 'text');
+        const msg = await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text');
         return msg === 'Disconnecting…' || msg === 'VPN is off';
       });
 
       await backendFailureAndRestore();
 
-      await vpn.waitForElement('controllerTitle');
-      await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
+      await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
+      await vpn.waitForElementProperty(generalElements.CONTROLLER_TITLE, 'visible', 'true');
       assert(
-          await vpn.getElementProperty('controllerTitle', 'text') ===
+          await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text') ===
           'VPN is off');
     });
   });

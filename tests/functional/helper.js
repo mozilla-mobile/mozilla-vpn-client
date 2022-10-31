@@ -246,14 +246,14 @@ module.exports = {
     return await this.getElementProperty('VPNUrlOpener', 'lastUrl');
   },
 
-  async waitForCondition(condition, waitTimeInMilliSecs = 200) {
+  async waitForCondition(condition, waitTimeInMilliSecs = 500) {
     while (true) {
       if (await condition()) return;
       await new Promise(resolve => setTimeout(resolve, waitTimeInMilliSecs));
     }
   },
 
-  wait(waitTimeInMilliSecs = 1000) {
+  wait(waitTimeInMilliSecs = 500) {
     return new Promise(resolve => setTimeout(resolve, waitTimeInMilliSecs));
   },
 

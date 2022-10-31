@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
+const { initialScreen, homeScreen, navBar, settingsScreen } = require('./elements.js');
 const vpn = require('./helper.js');
 
 describe('User authentication in browser', function() {
@@ -15,7 +16,7 @@ describe('User authentication in browser', function() {
   it('returns to main view on canceling authentication', async () => {
     await vpn.waitForMainView();
 
-    await vpn.clickOnElement('getStarted');
+    await vpn.waitForElementAndClick(initialScreen.GET_STARTED);
 
     if (!this.ctx.wasm) {
       await vpn.waitForCondition(async () => {
@@ -24,40 +25,34 @@ describe('User authentication in browser', function() {
       });
     }
 
-    await vpn.waitForElement('authenticatingView');
-    await vpn.waitForElementProperty('authenticatingView', 'visible', 'true');
+    await vpn.waitForElement(initialScreen.AUTHENTICATE_VIEW);
+    await vpn.waitForElementProperty(initialScreen.AUTHENTICATE_VIEW, 'visible', 'true');
+    await vpn.waitForElementAndClick(homeScreen.CANCEL_FOOTER_LINK);
 
-    await vpn.waitForElement('cancelFooterLink');
-    await vpn.waitForElementProperty('cancelFooterLink', 'visible', 'true');
-
-    await vpn.clickOnElement('cancelFooterLink');
-
-    await vpn.waitForElement('getStarted');
-    await vpn.waitForElementProperty('getStarted', 'visible', 'true');
+    await vpn.waitForElement(initialScreen.GET_STARTED);
+    await vpn.waitForElementProperty(initialScreen.GET_STARTED, 'visible', 'true');
   });
 
   it('Starts authentication at end of onboarding view', async () => {
     await vpn.waitForMainView();
 
-    assert(await vpn.getElementProperty('learnMoreLink', 'visible') === 'true');
-    await vpn.clickOnElement('learnMoreLink');
+    assert(await vpn.getElementProperty(initialScreen.LEARN_MORE_LINK, 'visible') === 'true');
+    await vpn.waitForElementAndClick(initialScreen.LEARN_MORE_LINK);
 
-    await vpn.waitForElement('skipOnboarding');
-    await vpn.waitForElementProperty('skipOnboarding', 'visible', 'true');
+    await vpn.waitForElement(initialScreen.SKIP_ONBOARDING);
+    await vpn.waitForElementProperty(initialScreen.SKIP_ONBOARDING, 'visible', 'true');
 
     // This is needed just for humans. The UI is already in the other state
     // before completing the animation.
     await vpn.wait();
 
     while (true) {
-      assert(await vpn.hasElement('onboardingNext'));
-      assert(
-          await vpn.getElementProperty('onboardingNext', 'visible') === 'true');
+      assert(await vpn.hasElement(initialScreen.ONBOARDING_NEXT));
+      assert(await vpn.getElementProperty(initialScreen.ONBOARDING_NEXT, 'visible') === 'true');
 
-      assert(
-          await vpn.getElementProperty('onboardingNext', 'visible') === 'true');
-      if (await vpn.getElementProperty('onboardingNext', 'text') === 'Next') {
-        await vpn.clickOnElement('onboardingNext');
+      assert(await vpn.getElementProperty(initialScreen.ONBOARDING_NEXT, 'visible') === 'true');
+      if (await vpn.getElementProperty(initialScreen.ONBOARDING_NEXT, 'text') === 'Next') {
+        await vpn.clickOnElement(initialScreen.ONBOARDING_NEXT);
         // This is needed just for humans. The UI is already in the other state
         // before completing the animation.
         await vpn.wait();
@@ -66,7 +61,7 @@ describe('User authentication in browser', function() {
 
       break;
     }
-    await vpn.clickOnElement('onboardingNext');
+    await vpn.clickOnElement(initialScreen.ONBOARDING_NEXT);
 
     if (!this.ctx.wasm) {
       await vpn.waitForCondition(async () => {
@@ -75,8 +70,8 @@ describe('User authentication in browser', function() {
       });
     }
 
-    await vpn.waitForElement('authenticatingView');
-    await vpn.waitForElementProperty('authenticatingView', 'visible', 'true');
+    await vpn.waitForElement(initialScreen.AUTHENTICATE_VIEW);
+    await vpn.waitForElementProperty(initialScreen.AUTHENTICATE_VIEW, 'visible', 'true');
   });
 
   it('Completes authentication', async () => {
@@ -84,14 +79,12 @@ describe('User authentication in browser', function() {
   });
 
   it('Completes authentication after logout', async () => {
-    await vpn.authenticateInBrowser(true, true, this.ctx.wasm);
+    await vpn.authenticateInBrowser(true, true, this.ctx.wasm);    
+    await vpn.waitForElementAndClick(navBar.SETTINGS);
 
-    await vpn.waitForElement('navigationLayout/navButton-settings');
-    await vpn.clickOnElement('navigationLayout/navButton-settings');
-
-    await vpn.waitForElement('settingsLogout');
-    await vpn.scrollToElement('settingsView-flickable', 'settingsLogout');
-    await vpn.clickOnElement('settingsLogout');
+    await vpn.waitForElement(settingsScreen.SIGN_OUT);
+    await vpn.scrollToElement(settingsScreen.SCREEN, settingsScreen.SIGN_OUT);
+    await vpn.waitForElementAndClick(settingsScreen.SIGN_OUT);
     await vpn.waitForMainView();
 
     await vpn.authenticateInBrowser(false, false, this.ctx.wasm);
