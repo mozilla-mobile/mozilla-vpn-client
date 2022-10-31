@@ -397,7 +397,7 @@ SETTING_BOOL(tunnelPort53,     // getter
              hasTunnelPort53,  // has
              "tunnelPort53",   // key
              false,            // default value
-             true              // remove when reset
+             false             // remove when reset
 )
 
 SETTING_BOOL(unsecuredNetworkAlert,     // getter
