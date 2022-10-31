@@ -136,7 +136,14 @@ The following variables may be of use:
 - `BUILD_ID=<string>`: sets the build identifier that will be embedded into the project. If
   left unset, this will generate a timestamp when configuring the Makefiles.
 
-2. Once the makefiles have been generated, the next step is to compile the source code:
+2. Once the makefiles have been generated, the next step is to generate glean
+samples:
+
+```bash
+./scripts/utils/generate_glean.py
+```
+
+3. And finally compile the source code:
 ```bash
 cmake --build build
 ```
