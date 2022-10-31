@@ -34,6 +34,8 @@ class Localizer final : public QAbstractListModel {
     CodeRole,
   };
 
+  static QString systemLanguageCode();
+
   static Localizer* instance();
 
   Localizer();

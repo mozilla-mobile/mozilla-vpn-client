@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "collator.h"
+#include "localizer.h"
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosutils.h"
@@ -30,7 +31,7 @@ int Collator::compare(const QString& a, const QString& b) {
   // strings.
   QString languageCode = SettingsHolder::instance()->languageCode();
   if (languageCode.isEmpty()) {
-    languageCode = QLocale::system().bcp47Name();
+    languageCode = Localizer::systemLanguageCode();
   }
 
   return vpnWasmCompareString(a.toLocal8Bit().constData(),
