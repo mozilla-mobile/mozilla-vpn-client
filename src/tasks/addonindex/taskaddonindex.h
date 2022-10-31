@@ -18,6 +18,9 @@ class TaskAddonIndex final : public Task {
 
   void run() override;
 
+  // If we cancel this task, we have to wait 1 hour before the next fetch.
+  DeletePolicy deletePolicy() const override { return Reschedulable; }
+
  private:
   void maybeComplete();
 
