@@ -36,6 +36,16 @@ async function startAndConnect() {
     stdErr += data;
   });
 
+  if(vpnProcess){        
+    vpnProcess.on('close', () => {      
+      processEnded = true
+    });
+  
+    vpnProcess.on('spawn', () => {      
+      processEnded = false
+    });    
+  }
+
   // Connect to VPN
   await vpn.connect(vpnWS, {hostname: '127.0.0.1'});
 }
