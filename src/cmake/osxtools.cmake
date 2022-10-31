@@ -105,10 +105,15 @@ endfunction()
 
 ## A helper to code-sign an executable.
 function(osx_codesign_target TARGET)
+    ## Xcode should perform automatic code-signing for us.
+    if(XCODE)
+        return()
+    endif()
+
     if(CODE_SIGN_IDENTITY)
         cmake_parse_arguments(CODESIGN
             "FORCE"
-            "ENTITLEMENTS"
+            ""
             "OPTIONS;FILES"
             ${ARGN})
 
@@ -120,8 +125,19 @@ function(osx_codesign_target TARGET)
             list(JOIN CODESIGN_OPTIONS , CODESIGN_OPTIONS_JOINED)
             list(APPEND CODESIGN_ARGS "--option=${CODESIGN_OPTIONS_JOINED}")
         endif()
+
+        ## Process the entitlements as though Xcode has done variable expansion.
+        ## This only supports the PRODUCT_BUNDLE_IDENTIFIER and DEVELOPMENT_TEAM
+        ## for now.
+        get_target_property(CODESIGN_ENTITLEMENTS ${TARGET} XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS)
         if(CODESIGN_ENTITLEMENTS)
-            list(APPEND CODESIGN_ARGS --entitlements ${CODESIGN_ENTITLEMENTS})
+            add_custom_command(TARGET ${TARGET} POST_BUILD
+                COMMAND ${CMAKE_SOURCE_DIR}/scripts/utils/make_template.py ${CODESIGN_ENTITLEMENTS}
+                    -k PRODUCT_BUNDLE_IDENTIFIER=$<TARGET_PROPERTY:${TARGET},XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER>
+                    -k DEVELOPMENT_TEAM=$<TARGET_PROPERTY:${TARGET},XCODE_ATTRIBUTE_DEVELOPMENT_TEAM>
+                    -o ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}_codesign.entitlements
+            )
+            list(APPEND CODESIGN_ARGS --entitlements ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}_codesign.entitlements)
         endif()
 
         ## If no files were specified, sign the target itself.
