@@ -22,7 +22,7 @@ only-for-build-types:
     - android-x86/release
     - android-arm64/release
     - android-armv7/release
-    - linux/opt
+    # - linux/opt
     - macos/opt
     - windows/opt
     - addons/opt
