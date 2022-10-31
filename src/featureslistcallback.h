@@ -6,7 +6,7 @@
 #define FEATURELISTCALLBACK_H
 
 #ifdef MVPN_ANDROID
-#  include "androidutils.h"
+# include "platforms/android/androidutils.h"
 #endif
 
 #ifdef MVPN_WINDOWS
