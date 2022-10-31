@@ -39,14 +39,18 @@ LinuxSystemTrayNotificationHandler::LinuxSystemTrayNotificationHandler(
     QObject* parent)
     : SystemTrayNotificationHandler(parent) {
   MVPN_COUNT_CTOR(LinuxSystemTrayNotificationHandler);
-
-  QDBusConnection::sessionBus().connect(DBUS_ITEM, DBUS_PATH, DBUS_INTERFACE,
-                                        "ActionInvoked", this,
-                                        SLOT(actionInvoked(uint, QString)));
 }
 
 LinuxSystemTrayNotificationHandler::~LinuxSystemTrayNotificationHandler() {
   MVPN_COUNT_DTOR(LinuxSystemTrayNotificationHandler);
+}
+
+void LinuxSystemTrayNotificationHandler::initialize() {
+  SystemTrayNotificationHandler::initialize();
+
+  QDBusConnection::sessionBus().connect(DBUS_ITEM, DBUS_PATH, DBUS_INTERFACE,
+                                        "ActionInvoked", this,
+                                        SLOT(actionInvoked(uint, QString)));
 }
 
 void LinuxSystemTrayNotificationHandler::notify(Message type,

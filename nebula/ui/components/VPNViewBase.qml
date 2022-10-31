@@ -20,7 +20,7 @@ Item {
 
    anchors {
        top: if (parent) parent.top
-       topMargin:  _menuTitle !== "" || titleComponent || rightMenuButton ? VPNTheme.theme.menuHeight : 0
+       topMargin: menu.visible ? VPNTheme.theme.menuHeight : 0
    }
 
    Rectangle {

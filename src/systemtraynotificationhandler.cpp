@@ -24,12 +24,17 @@ Logger logger(LOG_MAIN, "SystemTrayNotificationHandler");
 SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
     : NotificationHandler(parent) {
   MVPN_COUNT_CTOR(SystemTrayNotificationHandler);
+}
+
+SystemTrayNotificationHandler::~SystemTrayNotificationHandler() {
+  MVPN_COUNT_DTOR(SystemTrayNotificationHandler);
+}
+
+void SystemTrayNotificationHandler::initialize() {
+  m_menu.reset(new QMenu());
+  m_systemTrayIcon = new QSystemTrayIcon(parent());
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
-
-  m_menu.reset(new QMenu());
-  m_systemTrayIcon = new QSystemTrayIcon(parent);
 
   connect(vpn, &MozillaVPN::stateChanged, this,
           &SystemTrayNotificationHandler::updateContextMenu);
@@ -57,10 +62,6 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
   setStatusMenu();
   retranslate();
   updateIcon();
-}
-
-SystemTrayNotificationHandler::~SystemTrayNotificationHandler() {
-  MVPN_COUNT_DTOR(SystemTrayNotificationHandler);
 }
 
 #ifdef MVPN_WASM
@@ -109,11 +110,9 @@ void SystemTrayNotificationHandler::createStatusMenu() {
 void SystemTrayNotificationHandler::setStatusMenu() {
   logger.debug() << "Set status menu";
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
-
   // TODO: Check if method is called on these devices.
 #if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
+  MozillaVPN* vpn = MozillaVPN::instance();
   m_systemTrayIcon->setToolTip(qtTrId("vpn.main.productName"));
   m_systemTrayIcon->setContextMenu(m_menu.get());
   m_systemTrayIcon->show();
@@ -228,9 +227,9 @@ void SystemTrayNotificationHandler::updateContextMenu() {
       vpn->serverCountryModel()->localizedCountryName(countryCode);
 
   m_lastLocationLabel->setIcon(flagIcon);
-  m_lastLocationLabel->setText(l18nStrings->t(L18nStrings::SystrayLocation2)
-                                   .arg(localizedCountryName)
-                                   .arg(localizedCityName));
+  m_lastLocationLabel->setText(
+      l18nStrings->t(L18nStrings::SystrayLocation2)
+          .arg(localizedCountryName, localizedCityName));
   m_lastLocationLabel->setEnabled(vpn->controller()->state() ==
                                   Controller::StateOff);
 }
@@ -238,10 +237,8 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 void SystemTrayNotificationHandler::updateIcon() {
   logger.debug() << "Update icon";
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
-
 #if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
+  MozillaVPN* vpn = MozillaVPN::instance();
   m_systemTrayIcon->setIcon(vpn->statusIcon()->icon());
 #endif
 }

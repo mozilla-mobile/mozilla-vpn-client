@@ -137,7 +137,6 @@ bool PushMessage::handleDeviceDeleted(const QJsonObject& payload) {
   }
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
   if (vpn->keys()->publicKey() == publicKey) {
     logger.info() << "Current device has been deleted from this subscription.";
     vpn->reset(true);

@@ -151,9 +151,6 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
   // Ensure that external styling hints are disabled.
   qunsetenv("QT_STYLE_OVERRIDE");
 
-  logger.info() << "MozillaVPN" << Constants::versionString();
-  logger.info() << "User-Agent:" << NetworkManager::userAgent();
-
 #ifdef MVPN_WINDOWS
   SetProcessDPIAware();
 #endif

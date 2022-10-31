@@ -26,6 +26,7 @@
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
+#include "temporarydir.h"
 #include "theme.h"
 #include "tutorial/tutorial.h"
 #include "update/updater.h"
@@ -136,6 +137,9 @@ int CommandUI::run(QStringList& tokens) {
       Constants::setStaging();
     }
 
+    logger.info() << "MozillaVPN" << Constants::versionString();
+    logger.info() << "User-Agent:" << NetworkManager::userAgent();
+
     logger.debug() << "UI starting";
 
     if (startAtBootOption.m_set) {
@@ -195,8 +199,8 @@ int CommandUI::run(QStringList& tokens) {
     // https://bugreports.qt.io/browse/QTBUG-82617
     // Currently there is a crash happening on exit with Huawei devices.
     // Until this is fixed, setting this variable is the "official" workaround.
-    // We certainly should look at this once 6.4 is out.
-#  if QT_VERSION >= 0x060400
+    // We certainly should look at this once 6.6 is out.
+#  if QT_VERSION >= 0x060600
 #    error We have forgotten to remove this Huawei hack!
 #  endif
     if (AndroidUtils::GetManufacturer() == "Huawei") {
@@ -216,8 +220,16 @@ int CommandUI::run(QStringList& tokens) {
     Nebula::Initialize(engine);
     L18nStrings::initialize();
 
+    // Cleanup previous temporary files.
+    TemporaryDir::cleanupAll();
+
     MozillaVPN vpn;
-    vpn.setStartMinimized(minimizedOption.m_set);
+
+    bool minimized = minimizedOption.m_set;
+    if (qgetenv("MVPN_MINIMIZED") == "1") {
+      minimized = true;
+    }
+    vpn.setStartMinimized(minimized);
 
 #ifdef MVPN_ANDROID
     AndroidGlean::initialize(engine);

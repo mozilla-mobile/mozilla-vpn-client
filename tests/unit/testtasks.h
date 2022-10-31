@@ -18,4 +18,8 @@ class TestTasks final : public TestHelper {
 
   void deletePolicy();
   void deletePolicy_group();
+  void deletePolicy_async();
+
+  void deleteTasks();
+  void forceDeleteTasks();
 };

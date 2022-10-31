@@ -6,6 +6,7 @@
 #define CONNECTIONBENCHMARK_H
 
 #include "benchmarktask.h"
+#include "constants.h"
 
 #include <QList>
 #include <QObject>
@@ -19,10 +20,13 @@ class ConnectionBenchmark final : public QObject {
 
   Q_PROPERTY(QString downloadUrl READ downloadUrl WRITE setDownloadUrl NOTIFY
                  downloadUrlChanged)
+  Q_PROPERTY(QString uploadUrl READ uploadUrl WRITE setUploadUrl NOTIFY
+                 uploadUrlChanged)
   Q_PROPERTY(State state READ state NOTIFY stateChanged);
   Q_PROPERTY(Speed speed READ speed NOTIFY speedChanged);
-  Q_PROPERTY(quint64 bitsPerSec READ bitsPerSec NOTIFY bitsPerSecChanged);
+  Q_PROPERTY(quint64 downloadBps READ downloadBps NOTIFY downloadBpsChanged);
   Q_PROPERTY(quint16 pingLatency READ pingLatency NOTIFY pingLatencyChanged);
+  Q_PROPERTY(quint64 uploadBps READ uploadBps NOTIFY uploadBpsChanged);
 
  public:
   ConnectionBenchmark();
@@ -51,7 +55,8 @@ class ConnectionBenchmark final : public QObject {
   State state() const { return m_state; }
   Speed speed() const { return m_speed; }
   quint16 pingLatency() const { return m_pingLatency; }
-  quint64 bitsPerSec() const { return m_bitsPerSec; }
+  quint64 downloadBps() const { return m_downloadBps; }
+  quint64 uploadBps() const { return m_uploadBps; }
 
   QString downloadUrl() const { return m_downloadUrl.toString(); }
   void setDownloadUrl(QString url) {
@@ -59,16 +64,25 @@ class ConnectionBenchmark final : public QObject {
     emit downloadUrlChanged();
   }
 
+  QString uploadUrl() const { return m_uploadUrl.toString(); }
+  void setUploadUrl(QString url) {
+    m_uploadUrl.setUrl(url);
+    emit uploadUrlChanged();
+  }
+
  signals:
-  void bitsPerSecChanged();
+  void downloadBpsChanged();
   void pingLatencyChanged();
+  void uploadBpsChanged();
   void speedChanged();
   void stateChanged();
   void downloadUrlChanged();
+  void uploadUrlChanged();
 
  private:
   void downloadBenchmarked(quint64 bitsPerSec, bool hasUnexpectedError);
   void pingBenchmarked(quint64 pingLatencyLatency);
+  void uploadBenchmarked(quint64 bitsPerSec, bool hasUnexpectedError);
 
   void handleControllerState();
   void handleStabilityChange();
@@ -77,15 +91,17 @@ class ConnectionBenchmark final : public QObject {
   void stop();
 
  private:
-  QUrl m_downloadUrl;
+  QUrl m_downloadUrl = QUrl(Constants::BENCHMARK_DOWNLOAD_URL);
+  QUrl m_uploadUrl = QUrl(Constants::BENCHMARK_UPLOAD_URL);
 
   QList<BenchmarkTask*> m_benchmarkTasks;
 
   State m_state = StateInitial;
   Speed m_speed = SpeedSlow;
 
-  quint64 m_bitsPerSec = 0;
+  quint64 m_downloadBps = 0;
   quint16 m_pingLatency = 0;
+  quint64 m_uploadBps = 0;
 };
 
 #endif  // CONNECTIONBENCHMARK_H

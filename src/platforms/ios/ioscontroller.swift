@@ -106,7 +106,40 @@ public class IOSControllerImpl : NSObject {
             return
         }
 
-        stateChangeCallback?(session.status == .connected)
+        // If disconnected, we know for sure that this is true
+        if (session.status == .disconnected) {
+            stateChangeCallback?(false)
+            return
+        }
+
+       // This timer is used to workaround a Schrödinger's cat bug: if we check
+       // the connection status immediately when connected, we alter the iOS16
+       // connectivity state and we break the VPN tunnel (intermittently). With
+       // a timer this does not happen.
+        _ = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) {_ in
+            self.monitorConnection()
+        }
+    }
+
+    private func monitorConnection() -> Void {
+        // Let's call `stateChangeCallback` if connected and if
+        // last_handshake_time_sec is not 0.
+        self.checkStatus { _, _, configString in
+            if self.tunnel?.connection.status != .connected { return; }
+
+            let lines = configString.splitToArray(separator: "\n")
+            if let line = lines.first(where: { $0.starts(with: "last_handshake_time_sec") }) {
+                let parts = line.splitToArray(separator: "=")
+                if parts.count > 1 && Int(parts[1]) ?? 0 > 0 {
+                    self.stateChangeCallback?(true)
+                    return
+                }
+            }
+
+            _ = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+                self.monitorConnection()
+            }
+        }
     }
 
     private static func isOurManager(_ manager: NETunnelProviderManager) -> Bool {

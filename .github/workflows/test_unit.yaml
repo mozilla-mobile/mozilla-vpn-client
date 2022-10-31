@@ -22,7 +22,7 @@ jobs:
     name: Run Unit tests on Linux
     steps:
       - name: Clone repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install dependences
         run: |
@@ -41,7 +41,7 @@ jobs:
 
       - name: Cache grcov
         id: cache-grcov
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: grcov-build/
           key: ${{runner.os}}-grcov-v0.8.9
@@ -81,7 +81,7 @@ jobs:
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           directory: .
           flags: unit_tests
@@ -95,7 +95,7 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Checkout submodules
         shell: bash
@@ -129,7 +129,7 @@ jobs:
 
       - name: Cache grcov
         id: cache-grcov
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: grcov-build/
           key: ${{runner.os}}-grcov-v0.8.9
@@ -147,7 +147,7 @@ jobs:
           ./scripts/tests/unit_tests.sh --grcov unit_lcov.info
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           directory: .
           flags: unit_tests
@@ -161,7 +161,7 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Checkout submodules
         shell: bash

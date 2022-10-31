@@ -16,39 +16,44 @@ ColumnLayout {
     property var _sortProxyCallback: () => {}
     property var _editCallback: () => {}
     property alias _filterProxySource: model.source
-    property bool _searchBarHasError: false
     property alias _searchBarPlaceholderText: searchBar._placeholderText
+    property bool _searchBarHasError: false
 
     spacing: VPNTheme.theme.windowMargin / 2
 
     VPNTextField {
-        // TODO Add strings for Accessible.description, Accessible.name
-
         id: searchBar
 
-        background: VPNInputBackground {}
-        leftInset: 48
-        leftPadding: 48
-        onActiveFocusChanged: if (focus && vpnFlickable.ensureVisible) vpnFlickable.ensureVisible(searchBar)
+        Accessible.editable: false
+        Accessible.searchEdit: true
         Layout.fillWidth: true
-        onTextChanged: hasError = _searchBarHasError
+
+        _accessibleName: _placeholderText
+        background: VPNInputBackground {}
+        leftInset: VPNTheme.theme.windowMargin * 3
+        leftPadding: VPNTheme.theme.windowMargin * 3
+
+        onActiveFocusChanged: if (focus && vpnFlickable.ensureVisible) {
+            vpnFlickable.ensureVisible(searchBar);
+        }
         onLengthChanged: text => model.invalidate()
+        onTextChanged: {
+            hasError = _searchBarHasError;
+            if (focus) {
+                _editCallback();
+            }
+        }
 
         VPNIcon {
+            anchors {
+                left: parent.left
+                leftMargin: VPNTheme.theme.hSpacing
+                verticalCenter: parent.verticalCenter
+            }
             source: "qrc:/nebula/resources/search.svg"
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.left: parent.left
-            anchors.leftMargin: 20
             sourceSize.height: VPNTheme.theme.windowMargin
             sourceSize.width: VPNTheme.theme.windowMargin
             opacity: parent.focus ? 1 : 0.8
-        }
-
-
-        Keys.onPressed: event => {
-            if (focus && _searchBarHasError && (/[\w\[\]`!@#$%\^&*()={}:;<>+'-]/).test(event.text)) {
-                _editCallback();
-            }
         }
     }
 
@@ -73,7 +78,7 @@ ColumnLayout {
     }
 
     function getProxyModel() {
-        return model
+        return model;
     }
 
     function getSearchBarText() {
@@ -81,6 +86,6 @@ ColumnLayout {
     }
 
     function clearText() {
-        searchBar.text = ""
+        searchBar.text = "";
     }
 }

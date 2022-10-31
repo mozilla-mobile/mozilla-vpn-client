@@ -7,7 +7,6 @@
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
 
@@ -102,7 +101,7 @@ void TaskIPFinder::createRequest(const QHostAddress& address, bool ipv6) {
             ErrorHandler::ErrorType errorType =
                 ErrorHandler::toErrorType(error);
             if (errorType == ErrorHandler::AuthenticationError) {
-              MozillaVPN::instance()->errorHandle(errorType);
+              ErrorHandler::instance()->errorHandle(errorType);
             }
 
             m_requestCount = 0;

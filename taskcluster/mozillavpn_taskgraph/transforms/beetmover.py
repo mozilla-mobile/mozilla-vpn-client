@@ -16,6 +16,7 @@ def add_addons_release_artifacts(config, tasks):
         if task["attributes"]["build-type"] == "addons/opt" and task["name"] == "addons-bundle":
             addons = set(os.listdir("addons"))
             addons.remove("examples")
+            addons.remove("deprecated")
             for addon in addons:
                 task["attributes"]["release-artifacts"].append(
                     {
@@ -38,7 +39,11 @@ def add_beetmover_worker_config(config, tasks):
         bucket = "release" if is_relpro else "dep"
         build_id = config.params["moz_build_date"]
         build_type = task["attributes"]["build-type"]
-        build_os = os.path.dirname(build_type)
+        build_type_os = {
+            'macos/opt': 'mac',
+            'windows/opt': 'windows',
+        }
+        build_os = build_type_os.get(build_type)
         shipping_phase = config.params.get("shipping_phase", "")
 
         if config.params["version"]:

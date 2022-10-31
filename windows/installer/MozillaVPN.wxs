@@ -54,7 +54,7 @@
       AllowDowngrades="no"
       AllowSameVersionUpgrades="yes"
       DowngradeErrorMessage="A newer version of [ProductName] is already installed."
-      Schedule="afterInstallExecute" />
+      Schedule="afterInstallValidate" />
 
     <!--
       Folders
@@ -165,7 +165,7 @@
     <!--
       Force application closed
     -->
-    <Property Id="QtExecCmdLine" Value='"[#SystemFolder]taskkill.exe" /F /IM MozillaVPN.exe'/>
+    <Property Id="QtExecCmdLine" Value='"[#SystemFolder]taskkill.exe" /F /IM "Mozilla VPN.exe" /IM "MozillaVPN.exe"'/>
     <CustomAction Id="CloseApplication" BinaryKey="WixCA" DllEntry="CAQuietExec" Execute="immediate" Return="ignore"/>
     <InstallExecuteSequence>
       <Custom Action="CloseApplication" After="StopServices" />

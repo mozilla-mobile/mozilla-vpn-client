@@ -43,6 +43,7 @@ SOURCES += \
     moccontroller.cpp \
     mocmozillavpn.cpp \
     ../unit/mocinspectorhandler.cpp \
+    ../../src/dnspingsender.cpp \
     ../../src/externalophandler.cpp \
     ../../src/filterproxymodel.cpp \
     ../../src/hawkauth.cpp \
@@ -60,11 +61,10 @@ SOURCES += \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
     ../../src/update/webupdater.cpp \
-    ../../src/pinghelper.cpp \ 
+    ../../src/pinghelper.cpp \
     ../../src/pingsender.cpp \
-    ../../src/platforms/dummy/dummypingsender.cpp \
-    ../../src/dnspingsender.cpp \
     ../../src/pingsenderfactory.cpp \
+    ../../src/platforms/dummy/dummypingsender.cpp \
     ../../src/qmlengineholder.cpp \
     ../../src/urlopener.cpp
 
@@ -87,7 +87,7 @@ HEADERS += \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \
     ../../src/settingsholder.h \
-    ../../src/pinghelper.h \ 
+    ../../src/pinghelper.h \
     ../../src/pingsender.h \
     ../../src/platforms/dummy/dummypingsender.h \
     ../../src/dnspingsender.h \

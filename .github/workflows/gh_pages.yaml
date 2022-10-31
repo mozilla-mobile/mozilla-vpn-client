@@ -24,8 +24,8 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Clone repository
-        uses: actions/checkout@v2
-      - uses: denoland/setup-deno@v1.0.0
+        uses: actions/checkout@v3
+      - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x # Run with latest stable Deno.
       - name: Generate Dynamic Files
@@ -33,7 +33,7 @@ jobs:
          cd tools/wasm_chrome
          deno run --allow-all generate_branch_file.ts -T ${{ secrets.GITHUB_TOKEN }}
       - name: Uploading
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
             name: Wasm-Chrome
             path: tools/wasm_chrome
@@ -43,9 +43,9 @@ jobs:
       runs-on: ubuntu-20.04
       steps:
         - name: Clone repository
-          uses: actions/checkout@v2
+          uses: actions/checkout@v3
         - name: Uploading
-          uses: actions/upload-artifact@v1
+          uses: actions/upload-artifact@v3
           with:
               name: Logviewer
               path: tools/logviewer
@@ -55,11 +55,11 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Clone repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: '16'
 
       - name: Building
         shell: bash
@@ -69,7 +69,7 @@ jobs:
           npm run build
 
       - name: Uploading
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
             name: Inspector Build
             path: tools/inspector/dist
@@ -80,7 +80,7 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Checkout submodules
         shell: bash
@@ -112,11 +112,11 @@ jobs:
           ADDON_PRIVATE_KEY: ${{ secrets.ADDON_PRIVATE_KEY }}
         run: |
           echo -n "$ADDON_PRIVATE_KEY" > addon_private_key.pem
-          openssl dgst -sha256 -sign addon_private_key.pem -out addons/generated/addons/manifest.json.sign addons/generated/addons/manifest.json
+          openssl dgst -sha256 -sign addon_private_key.pem -out addons/generated/addons/manifest.json.sig addons/generated/addons/manifest.json
           rm addon_private_key.pem
 
       - name: Uploading
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
             name: Addons
             path: addons/generated/addons
@@ -129,25 +129,25 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Download Wasm-chrome
-        uses: actions/download-artifact@v2.0.8
+        uses: actions/download-artifact@v3
         with:
           name: Wasm-Chrome
           # Destination path
           path: _site
 
       - name: Download a Addons Artifact
-        uses: actions/download-artifact@v2.0.8
+        uses: actions/download-artifact@v3
         with:
           name: Addons
           path: _site/addons
       - name: Download the Logviewer Artifact
-        uses: actions/download-artifact@v2.0.8
+        uses: actions/download-artifact@v3
         with:
           name: Logviewer
           path: _site/logviewer
 
       - name: Download a Inspector Artifact
-        uses: actions/download-artifact@v2.0.8
+        uses: actions/download-artifact@v3
         with:
           name: Inspector Build
           path: _site/inspector

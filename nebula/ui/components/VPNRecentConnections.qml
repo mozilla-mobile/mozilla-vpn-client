@@ -13,6 +13,57 @@ ColumnLayout {
     property bool hasVisibleConnections: false
     property bool showMultiHopRecentConnections: true
     property real numVisibleConnections: recentConnectionsRepeater.count
+    property var recentConnectionsModel: getRecentConnectionsModel()
+
+    function getRecentConnectionsModel() {
+        const maxNumVisibleConnections = 2
+        const recentConnections = []
+        for (let i=1; i<VPNSettings.recentConnections.length; i++) {
+            if (recentConnections.length === maxNumVisibleConnections) {
+                return recentConnections;
+            }
+
+            const recentConnection = VPNSettings.recentConnections[i];
+            const servers = recentConnection.split(" -> ");
+            const isMultiHop = servers.length > 1;
+
+            if (isMultiHop !== showMultiHopRecentConnections) {
+                return recentConnections;
+            }
+
+            const connection = [];
+
+            for(let x = 0; x < servers.length; x++) {
+                let index = servers[x].lastIndexOf(",");
+                if (index <= 0) {
+                    console.log("Unable to parse server from " + servers[x]);
+                    continue;
+                }
+                let countryCode = servers[x].slice(index+1).trim();
+                let serverCityName = servers[x].slice(0, index).trim();
+
+                connection.push({
+                     countryCode: countryCode,
+                     serverCityName: serverCityName,
+                     localizedCityName: VPNLocalizer.localizedCityName(countryCode, serverCityName)
+                 });
+            }
+
+            const [{ localizedCityName: firstCityLocalizedName }, secondServer] = connection;
+            const accessibleLabel = secondServer
+                ? VPNl18n.MultiHopFeatureAccessibleNameRecentConnection
+                    .arg(firstCityLocalizedName)
+                    .arg(secondServer.localizedCityName)
+                : firstCityLocalizedName;
+
+            recentConnections.push({
+                isMultiHop,
+                connection,
+                accessibleLabel
+            });
+        }
+        return recentConnections
+    }
 
     function focusItemAt(idx) {
         if (!visible) {
@@ -26,7 +77,7 @@ ColumnLayout {
     id: root
 
     spacing: VPNTheme.theme.windowMargin / 2
-    visible: repeaterModel.count > 0
+    visible: root.recentConnectionsModel.length > 0
 
     function popStack() {
         stackview.pop()
@@ -38,7 +89,7 @@ ColumnLayout {
         Layout.leftMargin: VPNTheme.theme.windowMargin
         Layout.minimumHeight: VPNTheme.theme.vSpacing
         verticalAlignment: Text.AlignVCenter
-        visible: repeaterModel.count > 0
+        visible: root.recentConnectionsModel.length > 0
 
     }
 
@@ -48,59 +99,15 @@ ColumnLayout {
         spacing: VPNTheme.theme.windowMargin / 2
         Layout.fillWidth: true
 
-        ListModel {
-            property real maxNumVisibleConnections: 2
-            id: repeaterModel
-
-            Component.onCompleted: {
-                // don't show the first/current entry
-                for (let i=1; i<VPNSettings.recentConnections.length; i++) {
-
-                    if (repeaterModel.count === maxNumVisibleConnections) {
-                        return;
-                    }
-
-                    const recentConnection = VPNSettings.recentConnections[i];
-                    const servers = recentConnection.split(" -> ");
-                    const isMultiHop = servers.length > 1;
-
-                    if (isMultiHop !== showMultiHopRecentConnections) {
-                        return;
-                    }
-
-                    const connection = [];
-
-                    for(let x = 0; x < servers.length; x++) {
-                        let index = servers[x].lastIndexOf(",");
-                        if (index <= 0) {
-                            console.log("Unable to parse server from " + servers[x]);
-                            continue;
-                        }
-                        let countryCode = servers[x].slice(index+1).trim();
-                        let serverCityName = servers[x].slice(0, index).trim();
-
-                        connection.push({
-                             countryCode: countryCode,
-                             serverCityName: serverCityName,
-                             localizedCityName: VPNLocalizer.localizedCityName(countryCode, serverCityName)
-                         });
-                    }
-
-                    append({isMultiHop, connection });
-                }
-            }
-        }
-
         Repeater {
             property real maxVisibleConnections: 2
             property real visibleConnections: 0
             id: recentConnectionsRepeater
-            model: repeaterModel
+            model: root.recentConnectionsModel
             delegate: VPNClickableRow {
                 id: del
 
-                // MULTIHOP TODO - Use real string
-                accessibleName: "TODO"
+                accessibleName: modelData.accessibleLabel
 
                 Layout.fillWidth: true
                 Layout.preferredHeight: VPNTheme.theme.rowHeight
@@ -116,11 +123,11 @@ ColumnLayout {
                     let args = [];
                     popStack();
 
-                    if (isMultiHop) {
-                        return VPNController.changeServer(connection.get(1).countryCode, connection.get(1).serverCityName, connection.get(0).countryCode, connection.get(0).serverCityName)
+                    if (modelData.isMultiHop) {
+                        return VPNController.changeServer(modelData.connection[1].countryCode, modelData.connection[1].serverCityName, modelData.connection[0].countryCode, modelData.connection[0].serverCityName)
                     }
 
-                    return VPNController.changeServer(connection.get(0).countryCode, connection.get(0).serverCityName)
+                    return VPNController.changeServer(modelData.connection[0].countryCode, modelData.connection[0].serverCityName)
 
                 }
 
@@ -135,7 +142,7 @@ ColumnLayout {
                         id: serverLabel
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                        serversList: connection
+                        serversList: modelData.connection
                     }
                 }
             }
@@ -147,7 +154,7 @@ ColumnLayout {
         Layout.preferredHeight: 1
         Layout.alignment: Qt.AlignHCenter
         color: VPNTheme.colors.grey10
-        visible: repeaterModel.count > 0
+        visible: root.recentConnectionsModel.length > 0
     }
 
 }

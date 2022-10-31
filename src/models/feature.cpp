@@ -43,7 +43,8 @@ Feature::Feature(const QString& id, const QString& name, bool isMajor,
                  L18nStrings::String shortDesc_id, L18nStrings::String desc_id,
                  const QString& imgPath, const QString& iconPath,
                  const QString& linkUrl, const QString& aReleaseVersion,
-                 bool flippableOn, bool flippableOff,
+                 std::function<bool()>&& flippableOn,
+                 std::function<bool()>&& flippableOff,
                  const QStringList& featureDependencies,
                  std::function<bool()>&& callback)
     : QObject(qApp),
@@ -57,10 +58,10 @@ Feature::Feature(const QString& id, const QString& name, bool isMajor,
       m_iconPath(iconPath),
       m_linkUrl(linkUrl),
       m_releaseVersion(aReleaseVersion),
-      m_flippableOn(flippableOn),
-      m_flippableOff(flippableOff),
+      m_flippableOn(std::move(flippableOn)),
+      m_flippableOff(std::move(flippableOff)),
       m_featureDependencies(featureDependencies),
-      m_callback(callback) {
+      m_callback(std::move(callback)) {
   logger.debug() << "Initializing feature" << id;
 
   Q_ASSERT(s_featuresHashtable);
@@ -89,7 +90,7 @@ Feature::Feature(const QString& id, const QString& name, bool isMajor,
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  if (m_flippableOn) {
+  if (m_flippableOn()) {
     if (settingsHolder->featuresFlippedOn().contains(m_id)) {
       m_state = FlippedOn;
     }
@@ -98,7 +99,7 @@ Feature::Feature(const QString& id, const QString& name, bool isMajor,
             &Feature::maybeFlipOnOrOff);
   }
 
-  if (m_flippableOff) {
+  if (m_flippableOff()) {
     if (m_state == DefaultValue &&
         settingsHolder->featuresFlippedOff().contains(m_id)) {
       m_state = FlippedOff;
@@ -142,7 +143,7 @@ const Feature* Feature::get(const QString& featureID) {
 }
 
 bool Feature::isFlippedOn(bool ignoreCache) const {
-  if (!m_flippableOn) {
+  if (!m_flippableOn()) {
     return false;
   }
 
@@ -154,7 +155,7 @@ bool Feature::isFlippedOn(bool ignoreCache) const {
 }
 
 bool Feature::isFlippedOff(bool ignoreCache) const {
-  if (!m_flippableOff) {
+  if (!m_flippableOff()) {
     return false;
   }
 
@@ -258,7 +259,7 @@ void Feature::maybeFlipOnOrOff() {
 
     if (feature->isSupported(true)) continue;
 
-    if (!feature->m_flippableOn) {
+    if (!feature->m_flippableOn()) {
       logger.debug() << "Unable to activate feature" << id()
                      << "because feature" << feature->id()
                      << "cannot be enabled in dev mode";
@@ -297,11 +298,11 @@ void Feature::maybeFlipOnOrOff() {
 
 bool Feature::isToggleable() const {
   bool isOnByDefault = isSupportedIgnoringFlip();
-  if (isOnByDefault && m_flippableOff) {
+  if (isOnByDefault && m_flippableOff()) {
     return true;
   }
 
-  if (!isOnByDefault && m_flippableOn) {
+  if (!isOnByDefault && m_flippableOn()) {
     return true;
   }
 

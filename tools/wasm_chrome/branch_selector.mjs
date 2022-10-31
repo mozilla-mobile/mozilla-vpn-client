@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import "./fluent_components.mjs";
 import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
 const octokit = new Octokit({});
 
@@ -106,27 +107,33 @@ class BranchSelector extends HTMLElement {
       this.update();
     }
     this.#dom.innerHTML = `
-            <select id="selector">
-                    <option value="">Select a VPN</option>
-            </select>
-        `;
+    <style>
+        :root {
+          --max-height: 300px;
+      }
+    </style>
+    <fluent-combobox id="selector" autocomplete="both" placeholder="Select a branch"></fluent-combobox>`;
     const selector = this.#dom.querySelector("#selector");
     selector.addEventListener("change", (e) => {
       // Forward the event to the parent element;
-      this.value = selector.value;
-      this.name = selector.options[selector.selectedIndex].text;
+      this.name = selector.value;
+      const option = Array.from(selector.querySelectorAll(`fluent-option`))
+        .find(
+          (e) => e.innerText == this.name,
+        );
+      this.value = option.value;
       this.dispatchEvent(new CustomEvent("change", e));
     });
   }
   update() {
     const selector = this.#dom.querySelector("#selector");
     selector.innerHTML = `
-            <option value="">Select a VPN-Branch</option>
+            <fluent-option value="">Select a VPN-Branch</fluent-option>
             ${
       this.#data.map((e) => {
-        return `<option value="${e.commit.sha}">${e.name}</option>`;
-      })
-    };
+        return `<fluent-option value="${e.commit.sha}">${e.name}</fluent-option>`;
+      }).join("")
+    }
         `;
 
     if (!this.#firedOnload) {
@@ -136,9 +143,10 @@ class BranchSelector extends HTMLElement {
         if (!name) {
           name = "main";
         }
-        const option = Array.from(selector.querySelectorAll(`option`)).find(
-          (e) => e.text == name,
-        );
+        const option = Array.from(selector.querySelectorAll(`fluent-option`))
+          .find(
+            (e) => e.innerText == name,
+          );
         if (option) {
           option.selected = true;
           this.value = option.value;

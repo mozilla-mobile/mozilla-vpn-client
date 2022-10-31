@@ -21,7 +21,6 @@ Logger logger(LOG_IOS, "IOSDataMigration");
 
 void migrateUserDefaultData() {
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   NSUserDefaults* sud = [NSUserDefaults standardUserDefaults];
   if (!sud) {

@@ -38,7 +38,10 @@ void AndroidAppListProvider::getApplicationList() {
   QStringList keys = listObj.keys();
 
   QMap<QString, QString> out;
-  foreach (auto key, keys) { out[key] = listObj[key].toString(); }
+  foreach (auto key, keys) {
+    // This comment is to make linter happy.
+    out[key] = listObj[key].toString();
+  }
 
   emit newAppList(out);
 }

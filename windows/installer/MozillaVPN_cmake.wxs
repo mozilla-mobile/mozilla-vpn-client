@@ -25,6 +25,11 @@
       Description="Mozilla VPN"
       ReadOnly="yes" />
 
+    <Condition Message="This application is only supported on Windows 10 or higher.">
+      <![CDATA[Installed OR (VersionNT >= 603)]]>
+    </Condition>
+    <Condition Message="This application is only supported on 64 bit x86 platforms."> %PROCESSOR_ARCHITECTURE="AMD64" </Condition>
+
     <Upgrade Id="$(var.UpgradeCode)">
       <UpgradeVersion OnlyDetect='no' Property='PREVIOUSFOUND'
         Minimum='0.0.0.0' IncludeMinimum='yes'
@@ -50,7 +55,7 @@
       AllowDowngrades="no"
       AllowSameVersionUpgrades="yes"
       DowngradeErrorMessage="A newer version of [ProductName] is already installed."
-      Schedule="afterInstallExecute" />
+      Schedule="afterInstallValidate" />
 
     <!--
       Folders
@@ -72,6 +77,7 @@
         <File Id="MozillaVPNExecutable" Source="Mozilla VPN.exe" KeyPath="yes">
           <Shortcut Id="MozillaVPNShortcut" Directory="ProgramMenuFolder" Name="Mozilla VPN" Description="A fast, secure and easy to use VPN. Built by the makers of Firefox." WorkingDirectory="MozillaVPNFolder" Advertise="yes" />
         </File>
+        <File Source="balrog.dll" />
         <File Source="tunnel.dll" />
         <File Source="wintun.dll" />
         <File Source="mullvad-split-tunnel.cat" />
@@ -122,7 +128,7 @@
         <RegistryKey Root="HKLM" Key="Software\Google\Chrome\NativeMessagingHosts\mozillavpn">
           <RegistryValue Type="string" Value="[MozillaVPNFolder]\mozillavpn.json"/>
         </RegistryKey>
-        <RegistryKey Root="HKLM" Key="SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\Mozilla VPN.exe">
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\MozillaVPN.exe">
           <RegistryValue Type="string" Name="DumpFolder" Value="[LocalAppDataFolder]MozillaVPN\dumps" />
           <RegistryValue Type="integer" Name="DumpCount" Value="3" />
           <RegistryValue Type="integer" Name="DumpType" Value="1" />
@@ -146,9 +152,11 @@
     <!--
       Launch after setup complete
     -->
-    <CustomAction Id="LaunchVPN" Impersonate="yes" FileKey="MozillaVPNExecutable" ExeCommand="" Return="asyncNoWait" />
+    <CustomAction Id="LaunchVPNFirstExecution" Impersonate="yes" FileKey="MozillaVPNExecutable" ExeCommand="" Return="asyncNoWait" />
+    <CustomAction Id="LaunchVPNAfterUpdate" Impersonate="yes" FileKey="MozillaVPNExecutable" ExeCommand="ui --updated" Return="asyncNoWait" />
     <InstallExecuteSequence>
-      <Custom Action="LaunchVPN" After="InstallFinalize">NOT Installed OR WIX_UPGRADE_DETECTED</Custom>
+       <Custom Action="LaunchVPNFirstExecution" After="InstallFinalize">NOT WIX_UPGRADE_DETECTED</Custom>
+       <Custom Action="LaunchVPNAfterUpdate" After="InstallFinalize">WIX_UPGRADE_DETECTED</Custom>
     </InstallExecuteSequence>
 
     <!--

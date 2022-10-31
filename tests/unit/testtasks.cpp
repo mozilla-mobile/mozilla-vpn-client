@@ -17,10 +17,10 @@ void TestTasks::account() {
     TestHelper::networkConfig.append(TestHelper::NetworkConfig(
         TestHelper::NetworkConfig::Failure, QByteArray()));
 
-    TaskAccount* task = new TaskAccount();
+    TaskAccount* task = new TaskAccount(ErrorHandler::PropagateError);
 
     QEventLoop loop;
-    connect(task, &Task::completed, [&]() { loop.exit(); });
+    connect(task, &Task::completed, task, [&]() { loop.exit(); });
 
     TaskScheduler::scheduleTask(task);
     loop.exec();
@@ -31,10 +31,10 @@ void TestTasks::account() {
     TestHelper::networkConfig.append(TestHelper::NetworkConfig(
         TestHelper::NetworkConfig::Success, QByteArray()));
 
-    TaskAccount* task = new TaskAccount();
+    TaskAccount* task = new TaskAccount(ErrorHandler::DoNotPropagateError);
 
     QEventLoop loop;
-    connect(task, &Task::completed, [&]() { loop.exit(); });
+    connect(task, &Task::completed, task, [&]() { loop.exit(); });
 
     TaskScheduler::scheduleTask(task);
     loop.exec();
@@ -47,10 +47,10 @@ void TestTasks::servers() {
     TestHelper::networkConfig.append(TestHelper::NetworkConfig(
         TestHelper::NetworkConfig::Failure, QByteArray()));
 
-    TaskServers* task = new TaskServers();
+    TaskServers* task = new TaskServers(ErrorHandler::DoNotPropagateError);
 
     QEventLoop loop;
-    connect(task, &Task::completed, [&]() { loop.exit(); });
+    connect(task, &Task::completed, task, [&]() { loop.exit(); });
 
     TaskScheduler::scheduleTask(task);
     loop.exec();
@@ -61,10 +61,10 @@ void TestTasks::servers() {
     TestHelper::networkConfig.append(TestHelper::NetworkConfig(
         TestHelper::NetworkConfig::Success, QByteArray()));
 
-    TaskServers* task = new TaskServers();
+    TaskServers* task = new TaskServers(ErrorHandler::PropagateError);
 
     QEventLoop loop;
-    connect(task, &Task::completed, [&]() { loop.exit(); });
+    connect(task, &Task::completed, task, [&]() { loop.exit(); });
 
     TaskScheduler::scheduleTask(task);
     loop.exec();
@@ -78,7 +78,7 @@ void TestTasks::addDevice_success() {
   TaskAddDevice* task = new TaskAddDevice("foobar", "id");
 
   QEventLoop loop;
-  connect(task, &Task::completed, [&]() { loop.exit(); });
+  connect(task, &Task::completed, task, [&]() { loop.exit(); });
 
   TaskScheduler::scheduleTask(task);
   loop.exec();
@@ -91,7 +91,7 @@ void TestTasks::addDevice_failure() {
   TaskAddDevice* task = new TaskAddDevice("foobar", "id");
 
   QEventLoop loop;
-  connect(task, &Task::completed, [&]() { loop.exit(); });
+  connect(task, &Task::completed, task, [&]() { loop.exit(); });
 
   TaskScheduler::scheduleTask(task);
   loop.exec();
@@ -140,7 +140,7 @@ void TestTasks::deletePolicy() {
       Task::NonDeletable);
 
   QEventLoop loop;
-  connect(sentinel, &Task::completed, [&]() { loop.exit(); });
+  connect(sentinel, &Task::completed, sentinel, [&]() { loop.exit(); });
 
   TaskScheduler::scheduleTask(task);
   loop.exec();
@@ -196,6 +196,127 @@ void TestTasks::deletePolicy_group() {
     QCOMPARE(g->deletePolicy(), Task::NonDeletable);
     delete g;
   }
+}
+
+void TestTasks::deletePolicy_async() {
+  class TaskAsync final : public Task {
+   public:
+    TaskAsync(Task::DeletePolicy deletePolicy)
+        : Task("TaskAsync"), m_deletePolicy(deletePolicy) {}
+
+    void run() override { QTimer::singleShot(500, this, &Task::completed); }
+
+    DeletePolicy deletePolicy() const override { return m_deletePolicy; }
+
+   private:
+    DeletePolicy m_deletePolicy = Deletable;
+  };
+
+  Task* t1 = new TaskAsync(Task::Deletable);
+  TaskScheduler::scheduleTask(t1);
+
+  Task* t2 = new TaskAsync(Task::NonDeletable);
+  TaskScheduler::scheduleTask(t2);
+
+  QEventLoop loop;
+  connect(t2, &Task::completed, [&]() { loop.exit(); });
+
+  TaskScheduler::deleteTasks();
+  loop.exec();
+}
+
+void TestTasks::deleteTasks() {
+  QStringList sequence;
+
+  class TaskAsync final : public Task {
+   public:
+    TaskAsync(Task::DeletePolicy deletePolicy, QStringList* sequence,
+              const QString& name)
+        : Task("TaskAsync"),
+          m_deletePolicy(deletePolicy),
+          m_sequence(sequence),
+          m_name(name) {}
+
+    void run() override {
+      QTimer::singleShot(500, this, [this]() {
+        m_sequence->append(m_name);
+        emit completed();
+      });
+    }
+
+    DeletePolicy deletePolicy() const override { return m_deletePolicy; }
+
+   private:
+    DeletePolicy m_deletePolicy = Deletable;
+    QStringList* m_sequence = nullptr;
+    QString m_name;
+  };
+
+  Task* t1 = new TaskAsync(Task::Deletable, &sequence, "t1");
+  TaskScheduler::scheduleTask(t1);
+
+  Task* t2 = new TaskAsync(Task::NonDeletable, &sequence, "t2");
+  TaskScheduler::scheduleTask(t2);
+
+  TaskScheduler::deleteTasks();
+
+  Task* t3 = new TaskAsync(Task::NonDeletable, &sequence, "t3");
+
+  QEventLoop loop;
+  connect(t3, &Task::completed, [&]() { loop.exit(); });
+
+  TaskScheduler::scheduleTask(t3);
+  loop.exec();
+
+  QCOMPARE(sequence.length(), 2);
+  QCOMPARE(sequence.at(0), "t2");
+  QCOMPARE(sequence.at(1), "t3");
+}
+
+void TestTasks::forceDeleteTasks() {
+  QStringList sequence;
+
+  class TaskAsync final : public Task {
+   public:
+    TaskAsync(Task::DeletePolicy deletePolicy, QStringList* sequence,
+              const QString& name)
+        : Task("TaskAsync"),
+          m_deletePolicy(deletePolicy),
+          m_sequence(sequence),
+          m_name(name) {}
+
+    void run() override {
+      QTimer::singleShot(500, this, [this]() {
+        m_sequence->append(m_name);
+        emit completed();
+      });
+    }
+
+    DeletePolicy deletePolicy() const override { return m_deletePolicy; }
+
+   private:
+    DeletePolicy m_deletePolicy = Deletable;
+    QStringList* m_sequence = nullptr;
+    QString m_name;
+  };
+
+  Task* t1 = new TaskAsync(Task::Deletable, &sequence, "t1");
+  TaskScheduler::scheduleTask(t1);
+
+  Task* t2 = new TaskAsync(Task::NonDeletable, &sequence, "t2");
+  TaskScheduler::scheduleTask(t2);
+
+  TaskScheduler::forceDeleteTasks();
+
+  Task* t3 = new TaskAsync(Task::NonDeletable, &sequence, "t3");
+
+  QEventLoop loop;
+  connect(t3, &Task::completed, [&]() { loop.exit(); });
+  TaskScheduler::scheduleTask(t3);
+  loop.exec();
+
+  QCOMPARE(sequence.length(), 1);
+  QCOMPARE(sequence.at(0), "t3");
 }
 
 static TestTasks s_testTasks;

@@ -96,7 +96,7 @@ class TaskclusterFrame extends HTMLElement {
 
   // Tries to load branch $name from the taskcluster index.
   // Returns false if the build is not on it.
-  async loadFromIndex(name) {
+  loadFromIndex(name) {
     if (name === "main") {
       this.#iframe.src =
         `https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozilla-vpn-client.branch.main.latest.build.wasm/artifacts/public%2Fbuild%2Findex.html`;

@@ -66,6 +66,10 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
   message->setBadge(messageObj["badge"].toString());
 
   guard.dismiss();
+
+  connect(message, &Addon::retranslationCompleted, message->m_composer,
+          &Composer::retranslationCompleted);
+
   return message;
 }
 
@@ -73,9 +77,6 @@ AddonMessage::AddonMessage(QObject* parent, const QString& manifestFileName,
                            const QString& id, const QString& name)
     : Addon(parent, manifestFileName, id, name, "message") {
   MVPN_COUNT_CTOR(AddonMessage);
-
-  connect(this, &Addon::retranslationCompleted, m_composer,
-          &Composer::retranslationCompleted);
 }
 
 AddonMessage::~AddonMessage() { MVPN_COUNT_DTOR(AddonMessage); }

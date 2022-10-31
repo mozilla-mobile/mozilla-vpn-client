@@ -5,8 +5,13 @@
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
+#include "telemetry/gleansample.h"
 
 #include <QApplication>
+
+// in seconds, hide alerts
+constexpr const uint32_t HIDE_ALERT_SEC = 4;
 
 namespace {
 ErrorHandler* s_instance = nullptr;
@@ -23,6 +28,9 @@ ErrorHandler* ErrorHandler::instance() {
 
 ErrorHandler::ErrorHandler(QObject* parent) : QObject(parent) {
   MVPN_COUNT_CTOR(ErrorHandler);
+
+  connect(&m_alertTimer, &QTimer::timeout, this,
+          [this]() { setAlert(NoAlert); });
 }
 
 ErrorHandler::~ErrorHandler() { MVPN_COUNT_DTOR(ErrorHandler); }
@@ -118,4 +126,111 @@ ErrorHandler::ErrorType ErrorHandler::toErrorType(
   }
 
   return IgnoredError;
+}
+
+void ErrorHandler::errorHandle(ErrorHandler::ErrorType error) {
+  logger.debug() << "Handling error" << error;
+
+  Q_ASSERT(error != ErrorHandler::NoError);
+
+  AlertType alert = NoAlert;
+
+  MozillaVPN* vpn = MozillaVPN::instance();
+
+  switch (error) {
+    case ErrorHandler::VPNDependentConnectionError:
+      if (vpn->controller()->state() == Controller::State::StateOn ||
+          vpn->controller()->state() == Controller::State::StateConfirming) {
+        // connection likely isn't stable yet
+        logger.error() << "Ignore network error probably caused by enabled VPN";
+        return;
+      } else if (vpn->controller()->state() == Controller::State::StateOff) {
+        // We are off, so this means a request failed, not the
+        // VPN. Change it to No Connection
+        alert = NoConnectionAlert;
+        break;
+      }
+      [[fallthrough]];
+    case ErrorHandler::ConnectionFailureError:
+      alert = ConnectionFailedAlert;
+      break;
+
+    case ErrorHandler::NoConnectionError:
+      if (vpn->connectionHealth() && vpn->connectionHealth()->isUnsettled()) {
+        return;
+      }
+      alert = NoConnectionAlert;
+      break;
+
+    case ErrorHandler::AuthenticationError:
+      alert = AuthenticationFailedAlert;
+      break;
+
+    case ErrorHandler::ControllerError:
+      alert = ControllerErrorAlert;
+      break;
+
+    case ErrorHandler::RemoteServiceError:
+      alert = RemoteServiceErrorAlert;
+      break;
+
+    case ErrorHandler::SubscriptionFailureError:
+      alert = SubscriptionFailureAlert;
+      break;
+
+    case ErrorHandler::GeoIpRestrictionError:
+      alert = GeoIpRestrictionAlert;
+      break;
+
+    case ErrorHandler::UnrecoverableError:
+      alert = UnrecoverableErrorAlert;
+      break;
+
+    default:
+      break;
+  }
+
+  setAlert(alert);
+
+  logger.error() << "Alert:" << alert << "State:" << vpn->state();
+
+  if (alert == NoAlert) {
+    return;
+  }
+
+  // Any error in authenticating state sends to the Initial state.
+  if (vpn->state() == MozillaVPN::StateAuthenticating) {
+    if (alert == GeoIpRestrictionAlert) {
+      emit vpn->recordGleanEvent(GleanSample::authenticationFailureByGeo);
+    } else {
+      emit vpn->recordGleanEvent(GleanSample::authenticationFailure);
+    }
+    vpn->reset(true);
+    return;
+  }
+
+  if (alert == AuthenticationFailedAlert) {
+    vpn->reset(true);
+    return;
+  }
+}
+
+void ErrorHandler::setAlert(AlertType alert) {
+  m_alertTimer.stop();
+
+  if (alert != NoAlert) {
+    m_alertTimer.start(1000 * HIDE_ALERT_SEC);
+  }
+
+  m_alert = alert;
+  emit alertChanged();
+}
+
+// static
+void ErrorHandler::networkErrorHandle(
+    QNetworkReply::NetworkError error,
+    ErrorPropagationPolicy errorPropagationPolicy) {
+  if (errorPropagationPolicy == PropagateError) {
+    ErrorHandler::instance()->errorHandle(toErrorType(error));
+  }
 }

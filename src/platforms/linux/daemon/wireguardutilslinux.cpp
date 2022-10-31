@@ -240,6 +240,11 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
     }
   }
 
+  // Update the firewall to mark inbound traffic from the server.
+  GoString goAddress = {.p = qPrintable(config.m_serverIpv4AddrIn),
+                        .n = (ptrdiff_t)config.m_serverIpv4AddrIn.length()};
+  NetfilterMarkInbound(goAddress, config.m_serverPort);
+
   // Set/update peer
   strncpy(device->name, WG_INTERFACE, IFNAMSIZ);
   device->flags = (wg_device_flags)0;
@@ -275,6 +280,11 @@ bool WireguardUtilsLinux::deletePeer(const InterfaceConfig& config) {
   // Public Key
   peer->flags = (wg_peer_flags)(WGPEER_HAS_PUBLIC_KEY | WGPEER_REMOVE_ME);
   wg_key_from_base64(peer->public_key, qPrintable(config.m_serverPublicKey));
+
+  // Clear firewall settings for this server.
+  GoString goAddress = {.p = qPrintable(config.m_serverIpv4AddrIn),
+                        .n = (ptrdiff_t)config.m_serverIpv4AddrIn.length()};
+  NetfilterClearInbound(goAddress);
 
   // Set/update device
   strncpy(device->name, WG_INTERFACE, IFNAMSIZ);

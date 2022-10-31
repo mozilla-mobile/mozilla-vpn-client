@@ -22,20 +22,20 @@ MacosSystemTrayNotificationHandler::MacosSystemTrayNotificationHandler(
     QObject* parent)
     : SystemTrayNotificationHandler(parent) {
   MVPN_COUNT_CTOR(MacosSystemTrayNotificationHandler);
-
-  setStatusMenu();
-  updateIcon();
 }
 
 MacosSystemTrayNotificationHandler::~MacosSystemTrayNotificationHandler() {
   MVPN_COUNT_DTOR(MacosSystemTrayNotificationHandler);
 }
 
+void MacosSystemTrayNotificationHandler::initialize() {
+  SystemTrayNotificationHandler::initialize();
+}
+
 void MacosSystemTrayNotificationHandler::setStatusMenu() {
   logger.debug() << "Set status menu";
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   connect(vpn->statusIcon(), &StatusIcon::iconUpdateNeeded, this,
           &MacosSystemTrayNotificationHandler::updateIconIndicator);
@@ -62,7 +62,6 @@ void MacosSystemTrayNotificationHandler::updateIcon() {
   logger.debug() << "Update icon";
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
   m_macOSStatusIcon->setIcon(vpn->statusIcon()->iconString());
 }
 
@@ -70,6 +69,5 @@ void MacosSystemTrayNotificationHandler::updateIconIndicator() {
   logger.debug() << "Update icon indicator";
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
   m_macOSStatusIcon->setIndicatorColor(vpn->statusIcon()->indicatorColor());
 }

@@ -102,7 +102,7 @@ VPNInAppAuthenticationBase {
             fontName: VPNTheme.theme.fontBoldFamily
             // Cancel
             labelText: VPNl18n.InAppSupportWorkflowSupportSecondaryActionText
-            linkColor: VPNTheme.theme.redButton
+            linkColor: VPNTheme.theme.redLinkButton
             onClicked: {
                 cancelAuthenticationFlow();
             }

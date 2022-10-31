@@ -15,6 +15,14 @@ VPNTextField {
     property alias placeholder: passwordInput._placeholderText
 
     id: passwordInput
+
+    Accessible.ignored: charactersMasked
+    Accessible.passwordEdit: charactersMasked
+    // In order for screen readers to respect the `Accessible.ignored` property
+    // `Accessible.role` has to be set to `EditableText`. For more infos see
+    // QTBUG-82433: https://bugreports.qt.io/browse/QTBUG-82433.
+    Accessible.role: Accessible.EditableText
+
     echoMode: charactersMasked ? TextInput.Password : TextInput.Normal
     hasError: !isValid
     height: VPNTheme.theme.rowHeight

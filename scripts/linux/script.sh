@@ -4,12 +4,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+set -e
+
 . $(dirname $0)/../utils/commons.sh
 
 REVISION=1
 RELEASE=
 GITREF=
-QTVERSION="qt6"
 SOURCEONLY=N
 PPA_URL=
 DPKG_SIGN="--no-sign"
@@ -27,9 +28,6 @@ helpFunction() {
   print N "  -r, --release DIST     Build packages for distribution DIST"
   print N "  -g, --gitref REF       Generated version suffix from REF"
   print N "  -v, --version REV      Set package revision to REV"
-  print N "      --beineri          Build using Stephan Binner's Qt5.15 PPA"
-  print N "      --qt5              Build using Qt5 packages"
-  print N "      --qt6              Build using Qt6 packages (default)"
   print N "      --source           Build source packages only (no binary)"
   print N "      --ppa URL          Upload source packages to PPA at URL (implies: --source)"
   print N ""
@@ -66,20 +64,8 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
-  --beineri)
-    QTVERSION="beineri"
-    shift
-    ;;
-  --qt5)
-    QTVERSION="qt5"
-    shift
-    ;;
-  --qt6)
-    QTVERSION="qt6"
-    shift
-    ;;
   --source)
-    RELEASE="bionic focal jammy fedora"
+    RELEASE="bionic focal jammy fedora kinetic"
     SOURCEONLY=Y
     shift
     ;;
@@ -207,11 +193,6 @@ build_deb_source() {
   print Y "Building sources for $distro ($buildtype)..."
   rm -rf $WORKDIR/debian || die "Failed"
   cp -r ../linux/debian $WORKDIR || die "Failed"
-
-  mv $WORKDIR/debian/rules.$QTVERSION $WORKDIR/debian/rules
-  mv $WORKDIR/debian/control.$QTVERSION $WORKDIR/debian/control
-  rm $WORKDIR/debian/control.*
-  rm $WORKDIR/debian/rules.*
 
   mv $WORKDIR/debian/changelog.template $WORKDIR/debian/changelog || die "Failed"
   sed -i -e "s/SHORTVERSION/$SHORTVERSION/g" $WORKDIR/debian/changelog || die "Failed"

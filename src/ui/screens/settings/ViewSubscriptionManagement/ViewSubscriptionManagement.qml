@@ -107,7 +107,7 @@ VPNViewBase {
                 objectName: "accountDeletionButton"
                 fontName: VPNTheme.theme.fontBoldFamily
                 labelText: VPNl18n.DeleteAccountButtonLabel
-                linkColor: VPNTheme.theme.redButton
+                linkColor: VPNTheme.theme.redLinkButton
                 visible: VPNFeatureList.get("accountDeletion").isSupported
 
                 onClicked: {

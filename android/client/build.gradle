@@ -16,7 +16,7 @@ dependencies {
 
 
 android {
-    ndkVersion "23.1.7779620"
+    ndkVersion Config.ndkVersion
     compileSdkVersion Config.compileSdkVersion
     defaultConfig {
         minSdkVersion Config.minSdkVersion

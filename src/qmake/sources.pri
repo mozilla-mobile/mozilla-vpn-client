@@ -55,9 +55,10 @@ SOURCES += \
         composer/composerblockorderedlist.cpp \
         composer/composerblockunorderedlist.cpp \
         connectionbenchmark/benchmarktask.cpp \
-        connectionbenchmark/benchmarktaskdownload.cpp \
         connectionbenchmark/benchmarktaskping.cpp \
+        connectionbenchmark/benchmarktasktransfer.cpp \
         connectionbenchmark/connectionbenchmark.cpp \
+        connectionbenchmark/uploaddatagenerator.cpp \
         connectionhealth.cpp \
         constants.cpp \
         controller.cpp \
@@ -156,6 +157,7 @@ SOURCES += \
         tasks/servers/taskservers.cpp \
         taskscheduler.cpp \
         telemetry.cpp \
+        temporarydir.cpp \
         theme.cpp \
         timersingleshot.cpp \
         tutorial/tutorial.cpp \
@@ -225,10 +227,11 @@ HEADERS += \
         composer/composerblockorderedlist.h \
         composer/composerblockunorderedlist.h \
         connectionbenchmark/benchmarktask.h \
-        connectionbenchmark/benchmarktaskdownload.h \
         connectionbenchmark/benchmarktaskping.h \
         connectionbenchmark/benchmarktasksentinel.h \
+        connectionbenchmark/benchmarktasktransfer.h \
         connectionbenchmark/connectionbenchmark.h \
+        connectionbenchmark/uploaddatagenerator.h \
         connectionhealth.h \
         constants.h \
         controller.h \
@@ -326,6 +329,7 @@ HEADERS += \
         tasks/servers/taskservers.h \
         taskscheduler.h \
         telemetry.h \
+        temporarydir.h \
         theme.h \
         tutorial/tutorial.h \
         tutorial/tutorialstep.h \

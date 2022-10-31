@@ -18,7 +18,7 @@ ComposerBlock* ComposerBlockTitle::create(Composer* composer,
                                           const QString& prefix,
                                           const QJsonObject& json) {
   ComposerBlockTitle* block = new ComposerBlockTitle(composer, blockId);
-  block->m_title.initialize(QString("%1.block.%2").arg(prefix).arg(blockId),
+  block->m_title.initialize(QString("%1.block.%2").arg(prefix, blockId),
                             json["content"].toString());
   return block;
 }

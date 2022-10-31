@@ -34,6 +34,8 @@ bool FeatureCallback_iosOrAndroid() {
 #endif
 }
 
+bool FeatureCallback_inStaging() { return !Constants::inProduction(); }
+
 // Custom callback functions
 // -------------------------
 
@@ -158,6 +160,14 @@ bool FeatureCallback_startOnBoot() {
 bool FeatureCallback_unsecuredNetworkNotification() {
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS) || \
     defined(MVPN_WASM) || defined(MVPN_DUMMY)
+  return true;
+#else
+  return false;
+#endif
+}
+
+bool FeatureCallback_freeTrial() {
+#if defined(MVPN_IOS)
   return true;
 #else
   return false;

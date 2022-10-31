@@ -69,7 +69,7 @@ int CommandDevice::run(QStringList& tokens) {
     task.run();
 
     QEventLoop loop;
-    QObject::connect(&task, &Task::completed, [&] { loop.exit(); });
+    QObject::connect(&task, &Task::completed, &task, [&] { loop.exit(); });
     loop.exec();
 
     return 0;

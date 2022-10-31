@@ -217,6 +217,25 @@ static QList<InspectorSettingCommand> s_settingCommands{
                      ? "true"
                      : "false";
         }},
+
+    InspectorSettingCommand{
+        "addon/customServer", InspectorSettingCommand::Boolean,
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setAddonCustomServer(value == "true");
+        },
+        []() {
+          return SettingsHolder::instance()->addonCustomServer() ? "true"
+                                                                 : "false";
+        }},
+
+    InspectorSettingCommand{
+        "addon/customServerAddress", InspectorSettingCommand::String,
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setAddonCustomServerAddress(value);
+        },
+        []() {
+          return SettingsHolder::instance()->addonCustomServerAddress();
+        }},
 };
 
 struct InspectorCommand {
@@ -252,7 +271,7 @@ static QList<InspectorCommand> s_commands{
                        Q_ASSERT(vpn);
 
                        vpn->reset(true);
-                       vpn->hideAlert();
+                       ErrorHandler::instance()->hideAlert();
 
                        SettingsHolder* settingsHolder =
                            SettingsHolder::instance();
@@ -491,7 +510,7 @@ static QList<InspectorCommand> s_commands{
                      "Set Glean Source Tags (supply a comma seperated list)", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QStringList tags = QString(arguments[1]).split(',');
-                       MozillaVPN::instance()->setGleanSourceTags(tags);
+                       emit MozillaVPN::instance()->setGleanSourceTags(tags);
                        return QJsonObject();
                      }},
 
@@ -956,6 +975,14 @@ static QList<InspectorCommand> s_commands{
           message.executeAction();
           return QJsonObject();
         }},
+
+    InspectorCommand{"set_installation_time", "Set the installation time", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       qint64 epoch = arguments[1].toLongLong();
+                       SettingsHolder::instance()->setInstallationTime(
+                           QDateTime::fromSecsSinceEpoch(epoch));
+                       return QJsonObject();
+                     }},
 };
 
 // static
@@ -1059,7 +1086,7 @@ void InspectorHandler::networkRequestFinished(QNetworkReply* reply) {
 
   // Serialize the Response
   QJsonObject responseHeader;
-  for (auto headerPair : reply->rawHeaderPairs()) {
+  for (const auto& headerPair : reply->rawHeaderPairs()) {
     responseHeader[QString(headerPair.first)] = QString(headerPair.second);
   }
   response["headers"] = responseHeader;
@@ -1072,7 +1099,7 @@ void InspectorHandler::networkRequestFinished(QNetworkReply* reply) {
   auto qrequest = reply->request();
   // Serialize the Request
   QJsonArray requestHeaders;
-  for (auto header : qrequest.rawHeaderList()) {
+  for (const auto& header : qrequest.rawHeaderList()) {
     requestHeaders.append(QString(header));
   }
   request["headers"] = requestHeaders;
@@ -1150,7 +1177,6 @@ QJsonObject InspectorHandler::serialize(QQuickItem* item) {
   auto metaObject = item->metaObject();
   int propertyCount = metaObject->propertyCount();
   out["__propertyCount__"] = propertyCount;
-  QJsonArray props;
   for (int i = 0; i < metaObject->propertyCount(); i++) {
     auto property = metaObject->property(i);
     if (!property.isValid()) {

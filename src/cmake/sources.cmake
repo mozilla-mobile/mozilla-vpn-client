@@ -114,13 +114,15 @@ target_sources(mozillavpn PRIVATE
     composer/composer.h
     connectionbenchmark/benchmarktask.cpp
     connectionbenchmark/benchmarktask.h
-    connectionbenchmark/benchmarktaskdownload.cpp
-    connectionbenchmark/benchmarktaskdownload.h
     connectionbenchmark/benchmarktaskping.cpp
     connectionbenchmark/benchmarktaskping.h
     connectionbenchmark/benchmarktasksentinel.h
+    connectionbenchmark/benchmarktasktransfer.cpp
+    connectionbenchmark/benchmarktasktransfer.h
     connectionbenchmark/connectionbenchmark.cpp
     connectionbenchmark/connectionbenchmark.h
+    connectionbenchmark/uploaddatagenerator.cpp
+    connectionbenchmark/uploaddatagenerator.h
     connectionhealth.cpp
     connectionhealth.h
     constants.cpp
@@ -316,6 +318,8 @@ target_sources(mozillavpn PRIVATE
     tasks/servers/taskservers.h
     telemetry.cpp
     telemetry.h
+    temporarydir.cpp
+    temporarydir.h
     theme.cpp
     theme.h
     timersingleshot.cpp

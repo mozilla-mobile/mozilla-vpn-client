@@ -75,13 +75,19 @@ void Telemetry::initialize() {
       emit vpn->recordGleanEvent(GleanSample::controllerStateOff);
     }
   });
+
+  connect(controller, &Controller::readyToServerUnavailable, this, []() {
+    MozillaVPN* vpn = MozillaVPN::instance();
+    Q_ASSERT(vpn);
+
+    emit vpn->recordGleanEvent(GleanSample::serverUnavailableError);
+  });
 }
 
 void Telemetry::connectionStabilityEvent() {
   logger.info() << "Send a connection stability event";
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   Controller* controller = vpn->controller();
   Q_ASSERT(controller);
@@ -100,7 +106,6 @@ void Telemetry::connectionStabilityEvent() {
 void Telemetry::periodicStateRecorder() {
   // On mobile this is handled seperately in a background process
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
   Controller* controller = vpn->controller();
   Q_ASSERT(controller);
 

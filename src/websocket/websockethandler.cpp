@@ -84,7 +84,6 @@ void WebSocketHandler::initialize() {
   logger.debug() << "Initialize";
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   connect(vpn, &MozillaVPN::userStateChanged, this,
           &WebSocketHandler::onUserStateChanged);

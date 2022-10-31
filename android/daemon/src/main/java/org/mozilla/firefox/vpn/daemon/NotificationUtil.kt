@@ -114,7 +114,7 @@ class NotificationUtil {
         val mainActivityName = "org.mozilla.firefox.vpn.qt.VPNActivity"
         val activity = Class.forName(mainActivityName)
         val intent = Intent(service, activity)
-        val pendingIntent = PendingIntent.getActivity(service, 0, intent, 0)
+        val pendingIntent = PendingIntent.getActivity(service, 0, intent, PendingIntent.FLAG_IMMUTABLE)
         // Build our notification
         mNotificationBuilder
             .setSmallIcon(R.drawable.icon_mozillavpn_notifiaction)

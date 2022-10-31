@@ -9,7 +9,6 @@
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "networkrequest.h"
 
 namespace {
@@ -44,36 +43,36 @@ void TaskGetSubscriptionDetails::run() {
   NetworkRequest* request =
       NetworkRequest::createForGetSubscriptionDetails(this);
 
-  connect(
-      request, &NetworkRequest::requestFailed, this,
-      [this](QNetworkReply::NetworkError error, const QByteArray&) {
-        logger.error() << "Get subscription details failed" << error;
+  connect(request, &NetworkRequest::requestFailed, this,
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+            logger.error() << "Get subscription details failed" << error;
 
-        // Network request failed after authentication for a second time
-        if (m_authenticationInAppSession) {
-          logger.error() << "Network request failed after authentication";
+            // Network request failed after authentication for a second time
+            if (m_authenticationInAppSession) {
+              logger.error() << "Network request failed after authentication";
 
-          MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
-          emit failed();
-          m_authenticationInAppSession->terminate();
-          return;
-        }
+              ErrorHandler::networkErrorHandle(error);
+              emit failed();
+              m_authenticationInAppSession->terminate();
+              return;
+            }
 
-        // User needs to (re)authenticate
-        if (error == QNetworkReply::AuthenticationRequiredError) {
-          logger.error() << "Needs authentication";
-          initAuthentication();
-          return;
-        }
+            // User needs to (re)authenticate
+            if (error == QNetworkReply::AuthenticationRequiredError) {
+              logger.error() << "Needs authentication";
+              initAuthentication();
+              return;
+            }
 
-        MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+            ErrorHandler::networkErrorHandle(error);
 
-        // We need to emit two separate signals here.
-        // `failed`: Signal for connected objects that are monitoring this Task
-        // `completed`: Notify `TaskScheduler` that this Task can be deleted
-        emit failed();
-        emit completed();
-      });
+            // We need to emit two separate signals here.
+            // `failed`: Signal for connected objects that are monitoring this
+            // Task `completed`: Notify `TaskScheduler` that this Task can be
+            // deleted
+            emit failed();
+            emit completed();
+          });
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
@@ -135,7 +134,7 @@ void TaskGetSubscriptionDetails::initAuthentication() {
 
   connect(m_authenticationInAppSession, &AuthenticationInAppSession::failed,
           this, [this](const ErrorHandler::ErrorType error) {
-            MozillaVPN::instance()->errorHandle(error);
+            ErrorHandler::instance()->errorHandle(error);
             m_authenticationInAppSession->terminate();
           });
 
@@ -145,7 +144,7 @@ void TaskGetSubscriptionDetails::initAuthentication() {
               case AuthenticationInApp::StateSignUp:
                 [[fallthrough]];
               case AuthenticationInApp::StateFallbackInBrowser:
-                MozillaVPN::instance()->errorHandle(
+                ErrorHandler::instance()->errorHandle(
                     ErrorHandler::AuthenticationError);
                 emit failed();
                 m_authenticationInAppSession->terminate();

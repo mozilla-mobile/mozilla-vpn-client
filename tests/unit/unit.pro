@@ -142,6 +142,7 @@ HEADERS += \
     ../../src/tasks/release/taskrelease.h \
     ../../src/tasks/servers/taskservers.h \
     ../../src/taskscheduler.h \
+    ../../src/temporarydir.h \
     ../../src/theme.h \
     ../../src/timersingleshot.h \
     ../../src/tutorial/tutorial.h \
@@ -177,6 +178,7 @@ HEADERS += \
     testserveri18n.h \
     teststatusicon.h \
     testtasks.h \
+    testtemporarydir.h \
     testthemes.h \
     testtimersingleshot.h \
     testurlopener.h \
@@ -280,6 +282,7 @@ SOURCES += \
     ../../src/tasks/ipfinder/taskipfinder.cpp \
     ../../src/tasks/servers/taskservers.cpp \
     ../../src/taskscheduler.cpp \
+    ../../src/temporarydir.cpp \
     ../../src/theme.cpp \
     ../../src/timersingleshot.cpp \
     ../../src/tutorial/tutorial.cpp \
@@ -320,6 +323,7 @@ SOURCES += \
     testserveri18n.cpp \
     teststatusicon.cpp \
     testtasks.cpp \
+    testtemporarydir.cpp \
     testthemes.cpp \
     testtimersingleshot.cpp \
     testurlopener.cpp \

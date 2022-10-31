@@ -32,10 +32,8 @@ TODO: unify build.sh and script.sh (or remove build.sh)
 - ./macos/utils/xcode_patcher.rb - tool to patch xcode project
 - ./macos/utils/commons.sh - common functions for cross-platform scrips
 - ./macos/import_pkg_resources.py - configure resources for the PKG generation
-- ./macos/scope_only_change.sh - runs tests when needed
 
 TODO:
-1. scope_only_change.sh should be croll-platform! Do we actually use it?
 2. remove/merge/move macos_build.sh
 
 # Windows-specific scripts
@@ -54,7 +52,6 @@ TODO:
 - ./utils/generate_strings.py - process the string.yaml file and generate resources
 - ./utils/import_languages.py - process languages and import them
 - ./utils/inspector.py - send commands to the VPN client inspector
-- ./utils/qt5_compile.sh - compile qt5 for linux and macos
 - ./utils/qt6_compile.sh - compile qt6 for linux and macos
 
 # Clang-format utils

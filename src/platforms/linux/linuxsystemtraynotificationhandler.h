@@ -21,6 +21,8 @@ class LinuxSystemTrayNotificationHandler final
   ~LinuxSystemTrayNotificationHandler();
 
  private:
+  void initialize() override;
+
   void notify(Message type, const QString& title, const QString& message,
               int timerMsec) override;
 
