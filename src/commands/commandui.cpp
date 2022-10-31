@@ -142,11 +142,16 @@ int CommandUI::run(QStringList& tokens) {
 
     logger.debug() << "UI starting";
 
-    if (startAtBootOption.m_set) {
+    if (startAtBootOption.m_set || qgetenv("MVPN_STARTATBOOT") == "1") {
       logger.debug() << "Maybe start at boot";
 
       if (!SettingsHolder::instance()->startAtBoot()) {
         logger.debug() << "We don't need to start at boot.";
+        return 0;
+      }
+
+      if (SettingsHolder::instance()->token().isEmpty()) {
+        logger.debug() << "The user is not logged in.";
         return 0;
       }
     }
@@ -225,11 +230,8 @@ int CommandUI::run(QStringList& tokens) {
 
     MozillaVPN vpn;
 
-    bool minimized = minimizedOption.m_set;
-    if (qgetenv("MVPN_MINIMIZED") == "1") {
-      minimized = true;
-    }
-    vpn.setStartMinimized(minimized);
+    vpn.setStartMinimized(minimizedOption.m_set ||
+                          (qgetenv("MVPN_MINIMIZED") == "1"));
 
 #ifdef MVPN_ANDROID
     AndroidGlean::initialize(engine);
