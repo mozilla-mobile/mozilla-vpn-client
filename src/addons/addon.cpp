@@ -16,6 +16,7 @@
 #include "conditionwatchers/addonconditionwatchertimestart.h"
 #include "conditionwatchers/addonconditionwatchertimeend.h"
 #include "leakdetector.h"
+#include "localizer.h"
 #include "logger.h"
 #include "models/feature.h"
 #include "mozillavpn.h"
@@ -427,7 +428,7 @@ void Addon::retranslate() {
 
   QLocale locale = QLocale(code);
   if (code.isEmpty()) {
-    locale = QLocale(QLocale::system().bcp47Name());
+    locale = QLocale(Localizer::systemLanguageCode());
   }
 
   if (!m_translator.load(

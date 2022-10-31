@@ -41,7 +41,7 @@ AddonConditionWatcherLocales::~AddonConditionWatcherLocales() {
 bool AddonConditionWatcherLocales::conditionApplied() const {
   QString code = SettingsHolder::instance()->languageCode();
   if (code.isEmpty()) {
-    code = QLocale::system().bcp47Name();
+    code = Localizer::systemLanguageCode();
     if (code.isEmpty()) {
       code = "en";
     }

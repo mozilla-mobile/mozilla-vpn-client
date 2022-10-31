@@ -39,6 +39,22 @@ QMap<QString, StaticLanguage> s_languageMap{
 }  // namespace
 
 // static
+QString Localizer::systemLanguageCode() {
+  QStringList uiLanguages = QLocale::system().uiLanguages();
+  if (uiLanguages.isEmpty()) {
+    return QLocale::system().bcp47Name();
+  }
+
+  for (const QString& language : uiLanguages) {
+    if (language.count("-") < 2) {
+      return language;
+    }
+  }
+
+  return QLocale::system().bcp47Name();
+}
+
+// static
 Localizer* Localizer::instance() {
   Q_ASSERT(s_instance);
   return s_instance;
@@ -64,7 +80,7 @@ Localizer::~Localizer() {
 }
 
 void Localizer::initialize() {
-  QString systemCode = QLocale::system().bcp47Name();
+  QString systemCode = systemLanguageCode();
 
   // In previous versions, we did not have the support for the system language.
   // If this is the first time we are here, we need to check if the current
@@ -139,7 +155,7 @@ bool Localizer::loadLanguageInternal(const QString& code) {
     // QLocale::system() directly because it would load the 'en' language
     // instead of the system one. Let's recreate a new QLocale object using the
     // bcp47 code.
-    locale = QLocale(QLocale::system().bcp47Name());
+    locale = QLocale(systemLanguageCode());
   }
 
   QLocale::setDefault(locale);
@@ -308,7 +324,7 @@ QString Localizer::localizeCurrency(double value,
                                     const QString& currencyIso4217) {
   QString code = SettingsHolder::instance()->languageCode();
   if (code.isEmpty()) {
-    code = QLocale::system().bcp47Name();
+    code = systemLanguageCode();
   }
 
   QLocale locale(code);
