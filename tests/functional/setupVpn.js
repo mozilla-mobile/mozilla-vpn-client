@@ -40,16 +40,20 @@ async function startAndConnect() {
 exports.mochaHooks = {
   async beforeAll() {
     // Check VPN app exists. If not, bail.
-    // try {
-    //   // const stdout = execSync(`"${app}" --version`);
-    //   console.log(`VPN Version is: ${stdout}`);
-    // } catch (error) {
-    //   console.error(`Could not run "${app}".`);
-    //   console.error('Have you set MVPN_BIN in .env or environment?');
-    //   console.error(`stdout: ${stdout}`);
-    //   console.error(`stderr: ${stderr}`);
-    //   process.exit(1);
-    // }
+    try {
+      const stdoutExists = fs.fstatSync(app).isFile();
+      console.log(`VPN Version is: ${stdout}`);
+
+      if(!stdoutExists){
+        throw new Error(`stdour does not exist try again`)
+      }
+    } catch (error) {
+      console.error(`Could not run "${app}".`);
+      console.error('Have you set MVPN_BIN in .env or environment?');
+      console.error(`stdout: ${stdout}`);
+      console.error(`stderr: ${stderr}`);
+      process.exit(1);
+    }  
 
     process.env['MVPN_API_BASE_URL'] = `http://localhost:${guardian.start()}`;
     process.env['MVPN_FXA_API_BASE_URL'] = `http://localhost:${fxa.start()}`;
