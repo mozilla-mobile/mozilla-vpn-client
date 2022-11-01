@@ -491,8 +491,8 @@ describe('Subscription view', function() {
             status: 'inactive'
           },
           expected: {
-            activated: '10/2/70',
-            cancelled: '1/19/38',
+            activated: '10/1/70',
+            cancelled: '1/18/38',
             label: 'Next billed',
             status: 'Inactive'
           }
@@ -511,8 +511,8 @@ describe('Subscription view', function() {
             status: 'inactive'
           },
           expected: {
-            activated: '10/2/70',
-            cancelled: '1/19/38',
+            activated: '10/1/70',
+            cancelled: '1/18/38',
             label: 'Expires',
             status: 'Inactive'
           }
@@ -531,8 +531,8 @@ describe('Subscription view', function() {
             status: 'active'
           },
           expected: {
-            activated: '10/2/70',
-            cancelled: '1/19/38',
+            activated: '10/1/70',
+            cancelled: '1/18/38',
             label: 'Expires',
             status: 'Active'
           }
@@ -551,8 +551,8 @@ describe('Subscription view', function() {
             status: 'inactive'
           },
           expected: {
-            activated: '10/2/70',
-            cancelled: '1/19/38',
+            activated: '10/1/70',
+            cancelled: '1/18/38',
             label: 'Expires',
             status: 'Inactive'
           }
@@ -571,8 +571,8 @@ describe('Subscription view', function() {
             status: 'trailing'
           },
           expected: {
-            activated: '10/2/70',
-            cancelled: '1/19/38',
+            activated: '10/1/70',
+            cancelled: '1/18/38',
             label: 'Expires',
             status: 'Inactive'
           }
@@ -614,7 +614,7 @@ describe('Subscription view', function() {
             auto_renewing: true,
           },
           expected:
-              {cancelled: '1/19/38', label: 'Next billed', status: 'Active'}
+              {cancelled: '1/18/38', label: 'Next billed', status: 'Active'}
         },
         manageSubscriptionLink:
             'https://play.google.com/store/account/subscriptions',
@@ -627,7 +627,7 @@ describe('Subscription view', function() {
             expiry_time_millis: 2147483647000,
             auto_renewing: false,
           },
-          expected: {cancelled: '1/19/38', label: 'Expires', status: 'Active'}
+          expected: {cancelled: '1/18/38', label: 'Expires', status: 'Active'}
         },
         manageSubscriptionLink:
             'https://play.google.com/store/account/subscriptions',
@@ -700,8 +700,8 @@ describe('Subscription view', function() {
             status: 'active'
           },
           expected: {
-            activated: '1/1/70',
-            cancelled: '1/1/70',
+            activated: '12/31/69',
+            cancelled: '12/31/69',
             label: 'Expires',
             status: 'Active'
           }
@@ -765,31 +765,32 @@ describe('Subscription view', function() {
         await vpn.waitForElementProperty(
             'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText',
             'visible', 'true');
-        assert(
+        assert.equal(
           await vpn.getElementProperty(
               'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText',
-              'text') === data.plan.expected);
+              'text'), data.plan.expected);
       }
 
       if (data.subscription.expected.activated) {
         await vpn.waitForElement(
             'subscriptionItem/subscriptionItem-activated/subscriptionItem-activated-parent/subscriptionItem-activated-container/subscriptionItem-activated-valueText');
-        assert(
+        assert.equal(
             await vpn.getElementProperty(
                 'subscriptionItem/subscriptionItem-activated/subscriptionItem-activated-parent/subscriptionItem-activated-container/subscriptionItem-activated-valueText',
-                'text') === data.subscription.expected.activated);
+                'text'), data.subscription.expected.activated);
       }
-
+      
       await vpn.waitForElement(
           'subscriptionItem/subscriptionItem-cancelled/subscriptionItem-cancelled-parent/subscriptionItem-cancelled-container/subscriptionItem-cancelled-valueText');
-      assert(
+      assert.equal(
           await vpn.getElementProperty(
               'subscriptionItem/subscriptionItem-cancelled/subscriptionItem-cancelled-parent/subscriptionItem-cancelled-container/subscriptionItem-cancelled-valueText',
-              'text') === data.subscription.expected.cancelled);
-      assert(
+              'text'), data.subscription.expected.cancelled);
+
+      assert.equal(
           await vpn.getElementProperty(
               'subscriptionItem/subscriptionItem-cancelled/subscriptionItem-cancelled-parent/subscriptionItem-cancelled-container/subscriptionItem-cancelled-labelText',
-              'text') === data.subscription.expected.label);
+              'text'), data.subscription.expected.label);
 
       if (data.subscription.value._subscription_type == "web") {
         if (data.payment.expected.card) {

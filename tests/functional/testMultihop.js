@@ -51,7 +51,7 @@ describe('Server list', function() {
     assert(await vpn.getElementProperty(homeScreen.selectMultiHopServerView.VPN_COLLAPSIBLE_CARD, 'expanded'))
   });
   
-  it.only('check the countries and cities for multihop entries', async () => {
+  it.skip('check the countries and cities for multihop entries', async () => {
     await vpn.waitForElementAndClick(homeScreen.selectSingleHopServerView.MULTIHOP_SELECTOR_TAB);
     await vpn.waitForElementAndClick(homeScreen.selectMultiHopServerView.ENTRY_BUTTON);
 
@@ -60,19 +60,25 @@ describe('Server list', function() {
       await vpn.waitForElement(countryId);
       await vpn.waitForElementProperty(countryId, 'visible', 'true');
 
-      await actions.serverList.selectCountryFromList(countryId)
+      await vpn.setElementProperty(
+        'serverCountryView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty(countryId, 'y')));
       await vpn.wait();
 
-      if (currentCountryCode === server.code) {
-        assert(await vpn.getElementProperty(countryId, 'cityListVisible') === 'true');
-      }
+      console.log('right after select country from list');
+      // await vpn.wait(5000)
+      // if (currentCountryCode === server.code) {
+      //   assert(await vpn.getElementProperty(countryId, 'cityListVisible') === 'true');
+      // }
 
       if (await vpn.getElementProperty(countryId, 'cityListVisible') ===
           'false') {
         await vpn.clickOnElement(countryId);
       }
 
+      console.log('line 80');
       for (let city of server.cities) {
+        console.log('line 82');
         const cityId = homeScreen.serverListView.generateCityId(countryId, city.name);
         console.log('  Waiting for cityId:', cityId);
         await vpn.waitForElement(cityId);
@@ -334,7 +340,7 @@ describe('Server list', function() {
             newCurrentCountry}, ${newCurrentCity}`);
   });
 
-  it('Server switching -- different country different cities', async () => {
+  it.skip('Server switching -- different country different cities', async () => {
     await actions.settings.setServerSwitchNotification(true)
     await actions.settings.setConnectionChangeNotification(true)
 
@@ -445,7 +451,7 @@ describe('Server list', function() {
             newCurrentCountry}, ${newCurrentCity}`);
   });
 
-  it('Single and multihop switching', async () => {
+  it.skip('Single and multihop switching', async () => {
     await actions.settings.setServerSwitchNotification(true)
     await actions.settings.setConnectionChangeNotification(true)
 
