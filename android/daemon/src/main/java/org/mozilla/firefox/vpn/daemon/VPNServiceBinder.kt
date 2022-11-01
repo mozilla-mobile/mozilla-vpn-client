@@ -95,9 +95,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 // [data] is empty
                 // Activate the tunnel with the last config
                 try {
-                    val prefs = Prefs.get(this.mService)
-                    val lastConfString = prefs.getString("lastConf", "")
-                    this.mService.turnOn(JSONObject(lastConfString))
+                    this.mService.reconnect()
                 } catch (e: Exception) {
                     Log.e(tag, "An Error occurred while enabling the VPN: ${e.localizedMessage}")
                 }
