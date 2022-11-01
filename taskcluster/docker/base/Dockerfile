@@ -37,6 +37,7 @@ RUN apt-get update -qq \
                           wget \
                           zip \
                           cargo \
+                          rpm \
     && apt-get clean
 
 RUN pip install --upgrade pip
