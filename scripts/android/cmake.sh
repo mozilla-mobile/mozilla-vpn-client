@@ -132,13 +132,13 @@ fi
 
 if [[ "$RELEASE" ]]; then
   printn Y "Use release config"
-  die "Adjust Not yet"
   $QTPATH/bin/qt-cmake \
     -DQT_HOST_PATH=$QT_HOST_PATH \
     -DQT_ANDROID_BUILD_ALL_ABIS=TRUE \
     -DANDROID_NDK_ROOT=$ANDROID_NDK_ROOT \
     -DANDROID_SDK_ROOT=$ANDROID_SDK_ROOT \
     -DCMAKE_BUILD_TYPE=Release \
+    -DADJUST_TOKEN=$ADJUST_SDK_TOKEN \
     -S . -B .tmp/
 else
   printn Y "Use debug config \n"
