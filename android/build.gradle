@@ -72,7 +72,7 @@ android {
             manifest.srcFile 'AndroidManifest.xml'
             renderscript.srcDirs = ['src']
             assets.srcDirs = ['assets']
-            jniLibs.srcDirs = ['libs']
+            jniLibs.srcDirs = ['libs','build/ssl']
        }
         debug{
             try {
@@ -212,3 +212,26 @@ task ktlintFormat(type: JavaExec, group: "formatting") {
     main = "com.pinterest.ktlint.Main"
     args "-F", "src/**/*.kt", "!**/build/**/*.kt", "buildSrc/**/*.kt",  "daemon/**/*.kt", "**/*.kts"
 }
+
+
+// Tasks to Import the Platform plugins
+task importOpenSSL(type: Copy) {
+    with(copySpec(){
+        from("../../../3rdparty/openSSL/latest/arm")
+        into("armeabi-v7a")
+    })
+    with(copySpec(){
+        from("../../../3rdparty/openSSL/latest/arm64")
+        into("arm64-v8a")
+    })
+    with(copySpec(){
+        from("../../../3rdparty/openSSL/latest/x86")
+        into("x86")
+    })
+    with(copySpec(){
+        from("../../../3rdparty/openSSL/latest/x86_64")
+        into("x86_64")
+    })
+    into("build/ssl")
+}
+preBuild.dependsOn importOpenSSL

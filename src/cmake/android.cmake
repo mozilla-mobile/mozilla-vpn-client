@@ -8,6 +8,7 @@ set_property(TARGET mozillavpn APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 )
 
 target_link_libraries(mozillavpn PRIVATE
+    Qt6::Test
     Qt6::Xml)
 
 
