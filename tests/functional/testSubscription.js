@@ -765,10 +765,10 @@ describe('Subscription view', function() {
         await vpn.waitForElementProperty(
             'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText',
             'visible', 'true');
-        assert.equal(
+        assert(
           await vpn.getElementProperty(
               'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText',
-              'text'), data.plan.expected);
+              'text') === data.plan.expected);
       }
 
       if (data.subscription.expected.activated) {
