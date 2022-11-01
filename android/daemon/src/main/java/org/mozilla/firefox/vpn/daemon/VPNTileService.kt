@@ -2,15 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.firefox.vpn
+package org.mozilla.firefox.vpn.daemon
 
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.*
 import android.service.quicksettings.Tile
-import android.service.quicksettings.TileService
-import com.wireguard.config.*
 import org.json.JSONObject
 
 class VPNTileService : android.service.quicksettings.TileService() {

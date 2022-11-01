@@ -122,7 +122,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 obj.put("connected", mService.isUp)
                 obj.put("time", mService.connectionTime)
                 obj.put("city", mService.cityname)
-                dispatchEvent(EVENTS.init, obj.toString(), binder)
+                dispatchEvent(EVENTS.init, obj.toString())
                 return true
             }
 
@@ -233,8 +233,10 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 deadBinders.add(it)
             }
         }
-        mListeners.removeAll(deadBinders)
-        Log.i(tag, "Removed ${deadBinders.size} dead Binders")
+        if(deadBinders.size >0){
+            mListeners.removeAll(deadBinders)
+            Log.i(tag, "Removed ${deadBinders.size} dead Binders")
+        }
     }
 
     /**

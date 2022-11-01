@@ -65,9 +65,10 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
         </activity>
         <service
-            android:name=".VPNTileService"
+            android:name=".daemon.VPNTileService"
             android:label="@string/product_name"
             android:icon="@drawable/ic_mozvpn_round"
+            android:exported="true"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
