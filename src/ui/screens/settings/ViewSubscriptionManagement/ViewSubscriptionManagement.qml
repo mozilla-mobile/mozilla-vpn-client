@@ -118,11 +118,6 @@ VPNViewBase {
                 Layout.alignment: Qt.AlignHCenter
                 Layout.topMargin: VPNTheme.theme.vSpacing
             }
-
-            VPNVerticalSpacer {
-                Layout.fillWidth: true
-                Layout.minimumHeight: VPNTheme.theme.rowHeight
-            }
         }
     }
 

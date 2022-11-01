@@ -10,40 +10,42 @@ import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 
-VPNViewBase {
-    property string _emailAddress: ""
+ColumnLayout {
     id: base
+    property string _emailAddress: ""
 
-    _viewContentData: ColumnLayout {
-        Layout.minimumHeight: base.height
+    spacing: 24
 
-        ColumnLayout {
-            Layout.alignment: Qt.AlignVCenter
-            Layout.preferredWidth: Math.min(VPNTheme.theme.maxHorizontalContentWidth, parent.width - VPNTheme.theme.windowMargin * 4)
-            spacing: VPNTheme.theme.vSpacing
+    VPNPanel {
+        anchors.horizontalCenter: undefined
+        Layout.topMargin: base.height * (window.fullscreenRequired() ? 0.3 :  0.2)
+        Layout.preferredHeight: height
+        Layout.preferredWidth: width
 
-            VPNPanel {
-                id: panel
-                logo: "qrc:/ui/resources/heart-check.svg"
-                logoTitle: VPNl18n.InAppSupportWorkflowSupportResponseHeader
-                logoSubtitle: VPNl18n.InAppSupportWorkflowSupportResponseBody.arg(base._emailAddress)
-                anchors.horizontalCenter: undefined
-                Layout.fillWidth: true
-            }
+        logo: "qrc:/ui/resources/heart-check.svg"
+        logoTitle: VPNl18n.InAppSupportWorkflowSupportResponseHeader
+        logoSubtitle: VPNl18n.InAppSupportWorkflowSupportResponseBody.arg(base._emailAddress)
+    }
 
-            VPNButton {
-                text: VPNl18n.InAppSupportWorkflowSupportResponseButton
-                Layout.alignment: Qt.AlignHCenter
-                onClicked: {
-                    getHelpStackView.pop();
-                    getHelpStackView.pop();
-                }
-            }
+    Item {
+        Layout.fillHeight: window.fullscreenRequired()
+    }
 
-            VPNVerticalSpacer {
-                Layout.preferredHeight: VPNTheme.theme.rowHeight
-                Layout.fillWidth: true
-            }
+    VPNButton {
+        Layout.fillWidth: true
+        Layout.leftMargin: VPNTheme.theme.windowMargin * 2
+        Layout.rightMargin: VPNTheme.theme.windowMargin * 2
+        Layout.bottomMargin: navbar.visible ? VPNTheme.theme.navBarHeightWithMargins : 34
+
+        text: VPNl18n.InAppSupportWorkflowSupportResponseButton
+
+        onClicked: {
+            getHelpStackView.pop();
+            getHelpStackView.pop();
         }
+    }
+
+    Item {
+        Layout.fillHeight: !window.fullscreenRequired()
     }
 }
