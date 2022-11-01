@@ -128,7 +128,7 @@ IAPHandler::Product* IAPHandler::findProduct(const QString& productIdentifier) {
   return nullptr;
 }
 
-void IAPHandler::addProduct(const QJsonValue& value) {
+void IAPHandler::addProduct(const QJsonValue value) {
   if (!value.isObject()) {
     logger.debug() << "Object expected for the single product";
     return;

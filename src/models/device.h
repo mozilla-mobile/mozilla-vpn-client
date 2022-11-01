@@ -24,7 +24,7 @@ class Device final {
 
   static QString uniqueDeviceId();
 
-  [[nodiscard]] bool fromJson(const QJsonValue& json);
+  [[nodiscard]] bool fromJson(const QJsonValue json);
 
   const QString& name() const { return m_deviceName; }
 

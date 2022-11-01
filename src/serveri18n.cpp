@@ -24,7 +24,7 @@ QString itemKey(const QString& languageCode, const QString& countryCode,
   return QString("%1^%2^%3").arg(languageCode, countryCode, city);
 }
 
-void addCity(const QString& countryCode, const QJsonValue& value) {
+void addCity(const QString& countryCode, const QJsonValue value) {
   if (!value.isObject()) {
     return;
   }
@@ -50,7 +50,7 @@ void addCity(const QString& countryCode, const QJsonValue& value) {
   }
 }
 
-void addCountry(const QJsonValue& value) {
+void addCountry(const QJsonValue value) {
   if (!value.isObject()) {
     return;
   }
@@ -82,7 +82,7 @@ void addCountry(const QJsonValue& value) {
   }
 
   QJsonArray cityArray = cities.toArray();
-  for (const QJsonValue& city : cityArray) {
+  for (const QJsonValue city : cityArray) {
     addCity(countryCode, city);
   }
 }
@@ -107,7 +107,7 @@ void maybeInitialize() {
   }
 
   QJsonArray array = json.array();
-  for (const QJsonValue& country : array) {
+  for (const QJsonValue country : array) {
     addCountry(country);
   }
 }

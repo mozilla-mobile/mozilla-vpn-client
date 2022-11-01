@@ -13,7 +13,7 @@ class TutorialStepNext final : public QObject {
   Q_OBJECT
 
  public:
-  static TutorialStepNext* create(QObject* parent, const QJsonValue& json);
+  static TutorialStepNext* create(QObject* parent, const QJsonValue json);
 
   ~TutorialStepNext();
 

@@ -86,7 +86,7 @@ bool Server::fromJson(const QJsonObject& obj) {
 
   QList<QPair<uint32_t, uint32_t>> prList;
   QJsonArray portRangesArray = portRanges.toArray();
-  for (const QJsonValue& portRangeValue : portRangesArray) {
+  for (const QJsonValue portRangeValue : portRangesArray) {
     if (!portRangeValue.isArray()) {
       return false;
     }

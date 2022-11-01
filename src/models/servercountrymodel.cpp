@@ -79,7 +79,7 @@ bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
   }
 
   QJsonArray countriesArray = countries.toArray();
-  for (const QJsonValue& countryValue : countriesArray) {
+  for (const QJsonValue countryValue : countriesArray) {
     if (!countryValue.isObject()) {
       return false;
     }
@@ -103,7 +103,7 @@ bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
     }
 
     QJsonArray cityArray = cities.toArray();
-    for (const QJsonValue& cityValue : cityArray) {
+    for (const QJsonValue cityValue : cityArray) {
       if (!cityValue.isObject()) {
         return false;
       }
@@ -114,7 +114,7 @@ bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
       }
 
       QJsonArray serverArray = servers.toArray();
-      for (const QJsonValue& serverValue : serverArray) {
+      for (const QJsonValue serverValue : serverArray) {
         Server server;
         if (!server.fromJson(serverValue.toObject())) {
           return false;

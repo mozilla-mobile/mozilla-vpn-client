@@ -110,7 +110,7 @@ class IAPHandler : public QAbstractListModel {
     eInactive,
   } m_subscriptionState = eInactive;
 
-  void addProduct(const QJsonValue& value);
+  void addProduct(const QJsonValue value);
   void computeSavings();
   void sortPlans();
   static ProductType productTypeToEnum(const QString& type);

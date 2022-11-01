@@ -187,7 +187,7 @@ bool AddonIndex::validateIndex(const QByteArray& index, QJsonObject* indexObj) {
   }
 
   const QJsonArray addons = obj["addons"].toArray();
-  for (const QJsonValue& item : addons) {
+  for (const QJsonValue item : addons) {
     if (!validateSingleAddonIndex(item)) {
       return false;
     }
@@ -198,7 +198,7 @@ bool AddonIndex::validateIndex(const QByteArray& index, QJsonObject* indexObj) {
 }
 
 // static
-bool AddonIndex::validateSingleAddonIndex(const QJsonValue& addonValue) {
+bool AddonIndex::validateSingleAddonIndex(const QJsonValue addonValue) {
   if (!addonValue.isObject()) {
     logger.warning() << "Addon item is not a JSON object";
     return false;
@@ -254,7 +254,7 @@ QList<AddonData> AddonIndex::extractAddonsFromIndex(
     const QJsonObject& indexObj) {
   QList<AddonData> addons;
   const QJsonArray addonArray = indexObj["addons"].toArray();
-  for (const QJsonValue& item : addonArray) {
+  for (const QJsonValue item : addonArray) {
     QJsonObject addon = item.toObject();
     addons.append(
         {QByteArray::fromHex(addon["sha256"].toString().toLocal8Bit()),

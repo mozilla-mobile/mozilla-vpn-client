@@ -167,7 +167,7 @@ bool Daemon::parseStringList(const QJsonObject& obj, const QString& name,
       return false;
     }
     QJsonArray array = value.toArray();
-    for (const QJsonValue& i : array) {
+    for (const QJsonValue i : array) {
       if (!i.isString()) {
         logger.error() << name << "must contain only strings";
         return false;
@@ -248,7 +248,7 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
     }
 
     QJsonArray array = value.toArray();
-    for (const QJsonValue& i : array) {
+    for (const QJsonValue i : array) {
       if (!i.isObject()) {
         logger.error() << JSON_ALLOWEDIPADDRESSRANGES
                        << "must contain only objects";

@@ -45,16 +45,16 @@ bool evaluateConditionsSettingsOp(const QString& op, bool result) {
 
 struct ConditionCallback {
   QString m_key;
-  std::function<bool(const QJsonValue&)> m_staticCallback;
-  std::function<AddonConditionWatcher*(Addon*, const QJsonValue&)>
+  std::function<bool(const QJsonValue)> m_staticCallback;
+  std::function<AddonConditionWatcher*(Addon*, const QJsonValue)>
       m_dynamicCallback;
 };
 
 QList<ConditionCallback> s_conditionCallbacks{
     {"enabled_features",
-     [](const QJsonValue& value) -> bool {
+     [](const QJsonValue value) -> bool {
        const QJsonArray enabledFeatures = value.toArray();
-       for (const QJsonValue& enabledFeature : enabledFeatures) {
+       for (const QJsonValue enabledFeature : enabledFeatures) {
          QString featureName = enabledFeature.toString();
 
          // If the feature doesn't exist, we crash.
@@ -68,10 +68,10 @@ QList<ConditionCallback> s_conditionCallbacks{
        // dynamic condition
        return true;
      },
-     [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
+     [](Addon* addon, const QJsonValue value) -> AddonConditionWatcher* {
        QStringList features;
        QJsonArray featureArray = value.toArray();
-       for (const QJsonValue& v : featureArray) {
+       for (const QJsonValue v : featureArray) {
          features.append(v.toString());
        }
 
@@ -80,10 +80,10 @@ QList<ConditionCallback> s_conditionCallbacks{
      }},
 
     {"platforms",
-     [](const QJsonValue& value) -> bool {
+     [](const QJsonValue value) -> bool {
        QStringList platforms;
        QJsonArray platformArray = value.toArray();
-       for (const QJsonValue& platform : platformArray) {
+       for (const QJsonValue platform : platformArray) {
          platforms.append(platform.toString());
        }
 
@@ -94,14 +94,14 @@ QList<ConditionCallback> s_conditionCallbacks{
 
        return true;
      },
-     [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
+     [](QObject*, const QJsonValue) -> AddonConditionWatcher* {
        return nullptr;
      }},
 
     {"settings",
-     [](const QJsonValue& value) -> bool {
+     [](const QJsonValue value) -> bool {
        QJsonArray settings = value.toArray();
-       for (const QJsonValue& setting : settings) {
+       for (const QJsonValue setting : settings) {
          QJsonObject obj = setting.toObject();
 
          QString op = obj["op"].toString();
@@ -151,12 +151,12 @@ QList<ConditionCallback> s_conditionCallbacks{
 
        return true;
      },
-     [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
+     [](QObject*, const QJsonValue) -> AddonConditionWatcher* {
        return nullptr;
      }},
 
     {"env",
-     [](const QJsonValue& value) -> bool {
+     [](const QJsonValue value) -> bool {
        QString env = value.toString();
 
        if (env.isEmpty()) {
@@ -174,12 +174,12 @@ QList<ConditionCallback> s_conditionCallbacks{
        logger.info() << "Unknown env value:" << env;
        return false;
      },
-     [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
+     [](QObject*, const QJsonValue) -> AddonConditionWatcher* {
        return nullptr;
      }},
 
     {"min_client_version",
-     [](const QJsonValue& value) -> bool {
+     [](const QJsonValue value) -> bool {
        QString min = value.toString();
        QString currentVersion = Constants::versionString();
 
@@ -192,12 +192,12 @@ QList<ConditionCallback> s_conditionCallbacks{
 
        return true;
      },
-     [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
+     [](QObject*, const QJsonValue) -> AddonConditionWatcher* {
        return nullptr;
      }},
 
     {"max_client_version",
-     [](const QJsonValue& value) -> bool {
+     [](const QJsonValue value) -> bool {
        QString max = value.toString();
        QString currentVersion = Constants::versionString();
 
@@ -210,19 +210,19 @@ QList<ConditionCallback> s_conditionCallbacks{
 
        return true;
      },
-     [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
+     [](QObject*, const QJsonValue) -> AddonConditionWatcher* {
        return nullptr;
      }},
 
     {"locales",
-     [](const QJsonValue&) -> bool {
+     [](const QJsonValue) -> bool {
        // dynamic condition
        return true;
      },
-     [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
+     [](Addon* addon, const QJsonValue value) -> AddonConditionWatcher* {
        QStringList locales;
        QJsonArray localeArray = value.toArray();
-       for (const QJsonValue& v : localeArray) {
+       for (const QJsonValue v : localeArray) {
          locales.append(v.toString().toLower());
        }
 
@@ -230,39 +230,39 @@ QList<ConditionCallback> s_conditionCallbacks{
      }},
 
     {"trigger_time",
-     [](const QJsonValue&) -> bool {
+     [](const QJsonValue) -> bool {
        // dynamic condition
        return true;
      },
-     [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
+     [](Addon* addon, const QJsonValue value) -> AddonConditionWatcher* {
        return AddonConditionWatcherTriggerTimeSecs::maybeCreate(
            addon, value.toInteger());
      }},
 
     {"start_time",
-     [](const QJsonValue&) -> bool {
+     [](const QJsonValue) -> bool {
        // dynamic condition
        return true;
      },
-     [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
+     [](Addon* addon, const QJsonValue value) -> AddonConditionWatcher* {
        return new AddonConditionWatcherTimeStart(addon, value.toInteger());
      }},
 
     {"end_time",
-     [](const QJsonValue&) -> bool {
+     [](const QJsonValue) -> bool {
        // dynamic condition
        return true;
      },
-     [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
+     [](Addon* addon, const QJsonValue value) -> AddonConditionWatcher* {
        return new AddonConditionWatcherTimeEnd(addon, value.toInteger());
      }},
 
     {"javascript",
-     [](const QJsonValue&) -> bool {
+     [](const QJsonValue) -> bool {
        // dynamic condition
        return true;
      },
-     [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
+     [](Addon* addon, const QJsonValue value) -> AddonConditionWatcher* {
        return AddonConditionWatcherJavascript::maybeCreate(addon,
                                                            value.toString());
      }},

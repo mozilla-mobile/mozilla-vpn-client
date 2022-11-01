@@ -113,7 +113,7 @@ Device& Device::operator=(const Device& other) {
 
 Device::~Device() { MVPN_COUNT_DTOR(Device); }
 
-bool Device::fromJson(const QJsonValue& json) {
+bool Device::fromJson(const QJsonValue json) {
   if (!json.isObject()) {
     return false;
   }

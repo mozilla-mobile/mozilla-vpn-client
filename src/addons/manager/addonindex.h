@@ -48,7 +48,7 @@ class AddonIndex final : public QObject {
 
   // Helpers
   static bool validateIndex(const QByteArray& index, QJsonObject* indexObj);
-  static bool validateSingleAddonIndex(const QJsonValue& addonValue);
+  static bool validateSingleAddonIndex(const QJsonValue addonValue);
   static bool validateIndexSignature(const QByteArray& index,
                                      const QByteArray& indexSignature);
 

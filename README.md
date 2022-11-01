@@ -52,6 +52,9 @@ In order to build this application, you need to install a few dependencies.
 
 #### Install Qt6
 
+Note: Currently the build requires 6.2.4. When you run the online installer, select
+6.2.4 version.
+
 Qt6 can be installed in a number of ways:
 
 - Download a binary package or the installer from the official QT website:

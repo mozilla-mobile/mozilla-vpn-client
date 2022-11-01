@@ -35,7 +35,7 @@ QMetaMethod signalByName(const QMetaObject* metaObject, const QString& name) {
 
 // static
 TutorialStepNext* TutorialStepNext::create(QObject* parent,
-                                           const QJsonValue& json) {
+                                           const QJsonValue json) {
   QJsonObject obj = json.toObject();
   if (obj["op"] != "signal") {
     logger.warning() << "Only 'signal' tutorial next are supported";

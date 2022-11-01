@@ -522,7 +522,7 @@ void AuthenticationInAppSession::startAccountDeletionFlow() {
             }
 
             const QJsonArray clientArray = json.array();
-            for (const QJsonValue& clientValue : clientArray) {
+            for (const QJsonValue clientValue : clientArray) {
               if (!clientValue.isObject()) {
                 logger.error() << "Attach clients: no client object found";
                 emit failed(ErrorHandler::AuthenticationError);
@@ -708,7 +708,7 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
       QJsonObject objValidation = obj["validation"].toObject();
       const QJsonArray keyArray = objValidation["keys"].toArray();
       QStringList keys;
-      for (const QJsonValue& key : keyArray) {
+      for (const QJsonValue key : keyArray) {
         if (key.isString()) {
           keys.append(key.toString());
         }

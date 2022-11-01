@@ -102,7 +102,7 @@ bool DeviceModel::fromJsonInternal(const Keys* keys, const QByteArray& json) {
   }
 
   const QJsonArray devicesArray = devices.toArray();
-  for (const QJsonValue& deviceValue : devicesArray) {
+  for (const QJsonValue deviceValue : devicesArray) {
     Device device;
     if (!device.fromJson(deviceValue)) {
       return false;

@@ -23,7 +23,7 @@ class TutorialStep final : public QObject {
 
  public:
   static TutorialStep* create(AddonTutorial* parent, const QString& tutorialId,
-                              const QJsonValue& json);
+                              const QJsonValue json);
 
   ~TutorialStep();
 

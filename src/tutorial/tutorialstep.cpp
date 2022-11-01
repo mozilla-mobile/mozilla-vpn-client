@@ -25,7 +25,7 @@ constexpr int TIMEOUT_ITEM_TIMER_MSEC = 300;
 // static
 TutorialStep* TutorialStep::create(AddonTutorial* parent,
                                    const QString& tutorialId,
-                                   const QJsonValue& json) {
+                                   const QJsonValue json) {
   QJsonObject obj = json.toObject();
 
   QString stepId = obj["id"].toString();

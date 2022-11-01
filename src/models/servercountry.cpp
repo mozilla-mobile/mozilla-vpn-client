@@ -50,7 +50,7 @@ bool ServerCountry::fromJson(const QJsonObject& countryObj) {
 
   QList<ServerCity> scList;
   QJsonArray citiesArray = cities.toArray();
-  for (const QJsonValue& cityValue : citiesArray) {
+  for (const QJsonValue cityValue : citiesArray) {
     if (!cityValue.isObject()) {
       return false;
     }

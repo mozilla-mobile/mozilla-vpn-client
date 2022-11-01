@@ -38,7 +38,7 @@ Composer* Composer::create(Addon* addon, const QString& prefix,
   }
 
   const QJsonArray blocks = blocksArray.toArray();
-  for (const QJsonValue& blockValue : blocks) {
+  for (const QJsonValue blockValue : blocks) {
     if (!blockValue.isObject()) {
       logger.warning() << "Expected JSON objects as blocks for composer";
       return nullptr;

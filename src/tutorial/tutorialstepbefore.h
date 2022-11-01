@@ -17,7 +17,7 @@ class TutorialStepBefore : public QObject {
  public:
   static QList<TutorialStepBefore*> create(QObject* parent,
                                            const QString& elementForTooltip,
-                                           const QJsonValue& json);
+                                           const QJsonValue json);
 
   virtual ~TutorialStepBefore();
 

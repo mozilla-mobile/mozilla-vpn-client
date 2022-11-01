@@ -223,7 +223,7 @@ void FeatureModel::updateFeatureList(const QByteArray& data) {
   }
 
   QJsonArray allowParametersArray = allowParameterValue.toArray();
-  for (const QJsonValue& param : allowParametersArray) {
+  for (const QJsonValue param : allowParametersArray) {
     if (!param.isString()) {
       logger.error()
           << "Error in the json format; allowlist parameter is not a string";

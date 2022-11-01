@@ -232,11 +232,11 @@ class TutorialStepBeforeVpnOff final : public TutorialStepBefore {
 
 // static
 QList<TutorialStepBefore*> TutorialStepBefore::create(
-    QObject* parent, const QString& elementForTooltip, const QJsonValue& json) {
+    QObject* parent, const QString& elementForTooltip, const QJsonValue json) {
   QList<TutorialStepBefore*> list;
 
   QJsonArray array = json.toArray();
-  for (const QJsonValue& value : array) {
+  for (const QJsonValue value : array) {
     QJsonObject obj = value.toObject();
 
     TutorialStepBefore* tsb = nullptr;
