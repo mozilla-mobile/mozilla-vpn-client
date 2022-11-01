@@ -10,6 +10,7 @@ if [ -f .env ]; then
   . .env
 fi
 
+
 JOBS=8
 QTPATH=
 RELEASE=1
@@ -30,7 +31,8 @@ helpFunction() {
 }
 
 print N "This script compiles MozillaVPN for Android"
-print N ""
+echo $QT_HOST_PATH
+
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -81,9 +83,6 @@ else
   print G "debug"
 fi
 
-if ! [ -d "src" ] || ! [ -d "linux" ]; then
-  die "This script must be executed at the root of the repository."
-fi
 
 if [ -d "$QTPATH/android/bin/" ]; then
   QTPATH=$QTPATH/android
@@ -109,7 +108,6 @@ fi
 
 
 printn Y "Cleaning the folder... "
-make distclean &>/dev/null;
 print G "done."
 
 rm -rf .tmp || die "Failed to remove the temporary directory"
@@ -145,6 +143,7 @@ if [[ "$RELEASE" ]]; then
   printn Y "Use release config"
   die "Adjust Not yet"
   $QTPATH/bin/qt-cmake \
+    -DQT_HOST_PATH=$QT_HOST_PATH \
     -DQT_ANDROID_BUILD_ALL_ABIS=TRUE \
     -DANDROID_NDK_ROOT=$ANDROID_NDK_ROOT \
     -DANDROID_SDK_ROOT=$ANDROID_SDK_ROOT \
@@ -154,7 +153,7 @@ else
   printn Y "Use debug config \n"
   $QTPATH/bin/qt-cmake \
     -DQT_HOST_PATH=$QT_HOST_PATH \
-    -DQT_ANDROID_BUILD_ALL_ABIS=TRUE \
+    -DQT_ANDROID_BUILD_ALL_ABIS=FALSE \
     -DANDROID_NDK_ROOT=$ANDROID_NDK_ROOT \
     -DANDROID_SDK_ROOT=$ANDROID_SDK_ROOT \
     -DCMAKE_BUILD_TYPE=Debug \
@@ -164,14 +163,12 @@ fi
 
 print Y "Compiling apk_install_target in .tmp/"
 # This compiles the client and generates a mozillavpn.so
-cmake --build .tmp/ --target mozillavpn_prepare_apk_dir -j$JOBS
+cmake --build .tmp -j$JOBS
 
 # Generate a valid gradle project and pre-compile it.
 print Y "Generate Android Project"
-## Debug:: Test why that is invalid?
-cat .tmp/src/android-mozillavpn-deployment-settings.json
 
-androiddeployqt --input .tmp/src/android-mozillavpn-deployment-settings.json --output .tmp/src/android-build || die
+#androiddeployqt --input .tmp/src/android-mozillavpn-deployment-settings.json --output .tmp/src/android-build || die
 
 
 cd .tmp/src/android-build/
