@@ -31,6 +31,7 @@ class AndroidController final : public ControllerImpl {
   void cleanupBackendLogs() override;
 
  private:
+  bool m_init=false; 
   QString m_serverPublicKey;
   Device m_device;
   std::function<void(const QString&)> m_logCallback;
