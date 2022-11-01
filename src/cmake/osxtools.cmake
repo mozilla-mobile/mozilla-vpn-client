@@ -86,8 +86,7 @@ function(osx_bundle_assetcatalog TARGET)
     add_custom_command(TARGET ${TARGET} POST_BUILD
         COMMENT "Bundling asset catalog"
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_BINARY_DIR}/xcassets $<TARGET_BUNDLE_CONTENT_DIR:${TARGET}>/${XCASSETS_RESOURCE_DIR}
-        COMMAND /usr/libexec/PlistBuddy -c "Merge ${XCASSETS_GEN_PLIST}" $<TARGET_BUNDLE_CONTENT_DIR:${TARGET}>/Info.plist
-        COMMAND plutil -convert binary1 $<TARGET_BUNDLE_CONTENT_DIR:${TARGET}>/Info.plist
+        COMMAND ${CMAKE_SOURCE_DIR}/scripts/macos/merge_plist.py ${XCASSETS_GEN_PLIST} -o $<TARGET_BUNDLE_CONTENT_DIR:${TARGET}>/Info.plist
     )
 
     target_sources(${TARGET} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/xcassets/Assets.car)
