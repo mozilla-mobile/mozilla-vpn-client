@@ -65,20 +65,16 @@ describe('Server list', function() {
         parseInt(await vpn.getElementProperty(countryId, 'y')));
       await vpn.wait();
 
-      console.log('right after select country from list');
-      // await vpn.wait(5000)
-      // if (currentCountryCode === server.code) {
-      //   assert(await vpn.getElementProperty(countryId, 'cityListVisible') === 'true');
-      // }
+      if (currentCountryCode === server.code) {
+        assert(await vpn.getElementProperty(countryId, 'cityListVisible') === 'true');
+      }
 
       if (await vpn.getElementProperty(countryId, 'cityListVisible') ===
           'false') {
         await vpn.clickOnElement(countryId);
       }
-
-      console.log('line 80');
-      for (let city of server.cities) {
-        console.log('line 82');
+      
+      for (let city of server.cities) {        
         const cityId = homeScreen.serverListView.generateCityId(countryId, city.name);
         console.log('  Waiting for cityId:', cityId);
         await vpn.waitForElement(cityId);
