@@ -319,7 +319,6 @@ class MozillaVPN final : public QObject {
  public slots:
   void requestSettings();
   void requestAbout();
-  void requestGetHelp();
 
  signals:
   void stateChanged();

@@ -1259,13 +1259,6 @@ void MozillaVPN::requestAbout() {
   emit aboutNeeded();
 }
 
-void MozillaVPN::requestGetHelp() {
-  logger.debug() << "Get help menu requested";
-
-  QmlEngineHolder::instance()->showWindow();
-  Navigator::instance()->requestScreen(Navigator::ScreenGetHelp);
-}
-
 void MozillaVPN::requestViewLogs() {
   logger.debug() << "View log requested";
   emit viewLogsNeeded();

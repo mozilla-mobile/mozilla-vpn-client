@@ -51,10 +51,8 @@ class SystemTrayNotificationHandler : public NotificationHandler {
   QAction* m_lastLocationLabel = nullptr;
   QAction* m_disconnectAction = nullptr;
   QAction* m_separator = nullptr;
-  QAction* m_preferencesAction = nullptr;
   QAction* m_showHideLabel = nullptr;
   QAction* m_quitAction = nullptr;
-  QAction* m_helpAction = nullptr;
 };
 
 #endif  // SYSTEMTRAYNOTIFICATIONHANDLER_H
