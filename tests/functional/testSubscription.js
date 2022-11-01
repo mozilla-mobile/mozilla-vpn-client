@@ -752,10 +752,10 @@ describe('Subscription view', function() {
       await vpn.wait();
 
       if (data.subscription.expected.status) {
-        assert(
+        assert.equal(
           await vpn.getElementProperty(
               'subscriptionItem/subscriptionItem-status/subscriptionItem-status-parent/subscriptionItem-status-container/subscriptionItem-status-pillWrapper/subscriptionItem-status-pill',
-              'text') === data.subscription.expected.status);
+              'text'), data.subscription.expected.status);
       }
 
       if (data.plan.expected &&
@@ -796,34 +796,34 @@ describe('Subscription view', function() {
         if (data.payment.expected.card) {
           await vpn.waitForElement(
               'subscriptionItem/subscriptionItem-brand/subscriptionItem-brand-parent/subscriptionItem-brand-container/subscriptionItem-brand-valueText');
-          assert(
+          assert.equal(
               await vpn.getElementProperty(
                   'subscriptionItem/subscriptionItem-brand/subscriptionItem-brand-parent/subscriptionItem-brand-container/subscriptionItem-brand-valueText',
-                  'text') === data.payment.expected.card);
+                  'text'), data.payment.expected.card);
         }
         if (data.payment.expected.expires) {
           await vpn.waitForElement(
               'subscriptionItem/subscriptionItem-expires/subscriptionItem-expires-parent/subscriptionItem-expires-container/subscriptionItem-expires-valueText');
-          assert(
+          assert.equal(
               await vpn.getElementProperty(
                   'subscriptionItem/subscriptionItem-expires/subscriptionItem-expires-parent/subscriptionItem-expires-container/subscriptionItem-expires-valueText',
-                  'text') === data.payment.expected.expires);
+                  'text'), data.payment.expected.expires);
         }
         if (data.payment.expected.brand) {
           await vpn.waitForElement(
               'subscriptionItem/subscriptionItem-brand/subscriptionItem-brand-parent/subscriptionItem-brand-container/subscriptionItem-brand-paymentMethod/paymentLabel');
-          assert(
+          assert.equal(
               await vpn.getElementProperty(
                   'subscriptionItem/subscriptionItem-brand/subscriptionItem-brand-parent/subscriptionItem-brand-container/subscriptionItem-brand-paymentMethod/paymentLabel',
-                  'text') === data.payment.expected.brand);
+                  'text'), data.payment.expected.brand);
         }
         if (data.payment.expected.payment) {
           await vpn.waitForElement(
               'subscriptionItem/subscriptionItem-payment/subscriptionItem-payment-parent/subscriptionItem-payment-container/subscriptionItem-payment-paymentMethod/paymentLabel');
-          assert(
+          assert.equal(
               await vpn.getElementProperty(
                   'subscriptionItem/subscriptionItem-payment/subscriptionItem-payment-parent/subscriptionItem-payment-container/subscriptionItem-payment-paymentMethod/paymentLabel',
-                  'text') === data.payment.expected.payment);
+                  'text'), data.payment.expected.payment);
         }
       }
 
