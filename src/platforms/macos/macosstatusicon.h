@@ -21,6 +21,7 @@ class MacOSStatusIcon final : public QObject {
   void setIndicatorColor(const QColor& indicatorColor);
   void setMenu(NSMenu* statusBarMenu);
   void setToolTip(const QString& tooltip);
+  void showMessage(const QString& title, const QString& message, int timerMsec);
 };
 
 #endif  // MACOSSTATUSICON_H
