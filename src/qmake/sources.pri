@@ -72,6 +72,7 @@ SOURCES += \
         fontloader.cpp \
         frontend/navigator.cpp \
         frontend/navigatorreloader.cpp \
+        glean/gleannoop.cpp \
         hacl-star/Hacl_Chacha20.c \
         hacl-star/Hacl_Chacha20Poly1305_32.c \
         hacl-star/Hacl_Curve25519_51.c \
@@ -247,6 +248,7 @@ HEADERS += \
         fontloader.h \
         frontend/navigator.h \
         frontend/navigatorreloader.h \
+        glean/glean.h \
         hawkauth.h \
         keyregenerator.h \
         hkdf.h \

@@ -50,8 +50,6 @@ target_sources(mozillavpn PRIVATE
     applistprovider.h
     apppermission.cpp
     apppermission.h
-    authenticationlistener.cpp
-    authenticationlistener.h
     authenticationinapp/authenticationinapp.cpp
     authenticationinapp/authenticationinapp.h
     authenticationinapp/authenticationinapplistener.cpp
@@ -60,6 +58,8 @@ target_sources(mozillavpn PRIVATE
     authenticationinapp/authenticationinappsession.h
     authenticationinapp/incrementaldecoder.cpp
     authenticationinapp/incrementaldecoder.h
+    authenticationlistener.cpp
+    authenticationlistener.h
     captiveportal/captiveportal.cpp
     captiveportal/captiveportal.h
     captiveportal/captiveportaldetection.cpp
@@ -98,20 +98,20 @@ target_sources(mozillavpn PRIVATE
     commands/commandstatus.h
     commands/commandui.cpp
     commands/commandui.h
+    composer/composer.cpp
+    composer/composer.h
     composer/composerblock.cpp
     composer/composerblock.h
     composer/composerblockbutton.cpp
     composer/composerblockbutton.h
+    composer/composerblockorderedlist.cpp
+    composer/composerblockorderedlist.h
     composer/composerblocktext.cpp
     composer/composerblocktext.h
     composer/composerblocktitle.cpp
     composer/composerblocktitle.h
-    composer/composerblockorderedlist.cpp
-    composer/composerblockorderedlist.h
     composer/composerblockunorderedlist.cpp
     composer/composerblockunorderedlist.h
-    composer/composer.cpp
-    composer/composer.h
     connectionbenchmark/benchmarktask.cpp
     connectionbenchmark/benchmarktask.h
     connectionbenchmark/benchmarktaskping.cpp
@@ -151,6 +151,7 @@ target_sources(mozillavpn PRIVATE
     frontend/navigator.h
     frontend/navigatorreloader.cpp
     frontend/navigatorreloader.h
+    glean/glean.h
     hacl-star/Hacl_Chacha20.c
     hacl-star/Hacl_Chacha20Poly1305_32.c
     hacl-star/Hacl_Curve25519_51.c
@@ -247,8 +248,8 @@ target_sources(mozillavpn PRIVATE
     platforms/dummy/dummynetworkwatcher.h
     platforms/dummy/dummypingsender.cpp
     platforms/dummy/dummypingsender.h
-    profileflow.h
     profileflow.cpp
+    profileflow.h
     qmlengineholder.cpp
     qmlengineholder.h
     releasemonitor.cpp
@@ -267,15 +268,13 @@ target_sources(mozillavpn PRIVATE
     serveri18n.h
     settingsholder.cpp
     settingsholder.h
-    signature.h
     signature.cpp
+    signature.h
     simplenetworkmanager.cpp
     simplenetworkmanager.h
     statusicon.cpp
     statusicon.h
     task.h
-    taskscheduler.cpp
-    taskscheduler.h
     tasks/account/taskaccount.cpp
     tasks/account/taskaccount.h
     tasks/adddevice/taskadddevice.cpp
@@ -288,18 +287,18 @@ target_sources(mozillavpn PRIVATE
     tasks/authenticate/taskauthenticate.h
     tasks/captiveportallookup/taskcaptiveportallookup.cpp
     tasks/captiveportallookup/taskcaptiveportallookup.h
-    tasks/deleteaccount/taskdeleteaccount.cpp
-    tasks/deleteaccount/taskdeleteaccount.h
-    tasks/getfeaturelist/taskgetfeaturelist.cpp
-    tasks/getfeaturelist/taskgetfeaturelist.h
-    tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp
-    tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h
     tasks/controlleraction/taskcontrolleraction.cpp
     tasks/controlleraction/taskcontrolleraction.h
     tasks/createsupportticket/taskcreatesupportticket.cpp
     tasks/createsupportticket/taskcreatesupportticket.h
+    tasks/deleteaccount/taskdeleteaccount.cpp
+    tasks/deleteaccount/taskdeleteaccount.h
     tasks/function/taskfunction.cpp
     tasks/function/taskfunction.h
+    tasks/getfeaturelist/taskgetfeaturelist.cpp
+    tasks/getfeaturelist/taskgetfeaturelist.h
+    tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp
+    tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h
     tasks/group/taskgroup.cpp
     tasks/group/taskgroup.h
     tasks/heartbeat/taskheartbeat.cpp
@@ -316,6 +315,8 @@ target_sources(mozillavpn PRIVATE
     tasks/sendfeedback/tasksendfeedback.h
     tasks/servers/taskservers.cpp
     tasks/servers/taskservers.h
+    taskscheduler.cpp
+    taskscheduler.h
     telemetry.cpp
     telemetry.h
     temporarydir.cpp
@@ -324,14 +325,14 @@ target_sources(mozillavpn PRIVATE
     theme.h
     timersingleshot.cpp
     timersingleshot.h
+    tutorial/tutorial.cpp
+    tutorial/tutorial.h
     tutorial/tutorialstep.cpp
     tutorial/tutorialstep.h
     tutorial/tutorialstepbefore.cpp
     tutorial/tutorialstepbefore.h
     tutorial/tutorialstepnext.cpp
     tutorial/tutorialstepnext.h
-    tutorial/tutorial.cpp
-    tutorial/tutorial.h
     update/updater.cpp
     update/updater.h
     update/versionapi.cpp
@@ -363,6 +364,12 @@ if(UNIX)
         signalhandler.cpp
         signalhandler.h
     )
+endif()
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    target_sources(mozillavpn PRIVATE glean/gleannoop.cpp)
+else()
+    target_sources(mozillavpn PRIVATE glean/glean.cpp)
 endif()
 
 # Sources for desktop platforms.

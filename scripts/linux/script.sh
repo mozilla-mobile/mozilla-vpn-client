@@ -34,7 +34,7 @@ helpFunction() {
   print N "Signing options:"
   print N "      --sign             Enable package signing (default: disabled)"
   print N "  -k, --sign-key KEYID   Enable package using using GPG key of KEYID"
-  print N "      --no-sign          Disable package signing" 
+  print N "      --no-sign          Disable package signing"
   print N ""
   print N "By default, the release is 'focal'"
   print N "The default version is 1, but you can recreate packages using the same code version changing the version id."
@@ -134,6 +134,7 @@ print Y "Update the submodules..."
 git submodule init || die "Failed"
 git submodule update --remote --depth 1 i18n || die "Failed"
 git submodule update --remote --depth 1 3rdparty/wireguard-tools || die "Failed"
+git submodule update --remote --depth 1 3rdparty/glean || die "Failed"
 print G "done."
 
 print G "Creating the orig tarball"
@@ -162,6 +163,10 @@ print G "done."
 
 printn Y "Downloading Rust dependencies (signature)..."
 (cd $WORKDIR/signature && mkdir -p .cargo && cargo vendor > .cargo/config.toml)
+print G "done."
+
+printn Y "Downloading Rust dependencies (vpnglean)..."
+(cd $WORKDIR/vpnglean && mkdir -p .cargo && cargo vendor > .cargo/config.toml)
 print G "done."
 
 printn Y "Removing the packaging templates... "
