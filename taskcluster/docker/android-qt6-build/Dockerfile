@@ -16,6 +16,7 @@ RUN mkdir -p /builds/worker/.cache/go-build &&\
 ARG NDK_VERSION=android-ndk-r23b
 ARG NDK_FILE=${NDK_VERSION}-linux.zip
 ARG QT_VERSION=6.2.1
+ARG CMAKE_VERSION=3.22.1
 ARG ANDROID_ARCH=android_armv7
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -46,7 +47,9 @@ RUN python3 -m aqt install-qt --outputdir /opt linux android ${QT_VERSION} ${AND
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "build-tools;29.0.2" &&\ 
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "build-tools;30.0.3" &&\
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "build-tools;31.0.0" &&\
-    echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "cmake;3.10.2.4988404" &&\
+    # Todo: Dedupe cmake deps
+    echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "cmake;3.10.2.4988404" &&\ 
+    echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "cmake;${CMAKE_VERSION}" &&\
         # Note: Not sure why we need emulator, need to investiage the gradle dependencies
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "emulator" &&\ 
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "patcher;v4" &&\
@@ -63,8 +66,9 @@ ENV QTPATH=/opt/${QT_VERSION}/${ANDROID_ARCH}
 ENV ANDROID_SDK_ROOT="/opt/android/sdk"
 ENV ANDROID_NDK_ROOT="/opt/NDK/${NDK_VERSION}"
 ENV ANDROID_NDK_HOME="/opt/NDK/${NDK_VERSION}"
+ENV QT_HOST_PATH=/opt/${QT_VERSION}/gcc_64
 
-ENV PATH="/opt/${QT_VERSION}/gcc_64/bin:${QTPATH}/bin:/opt/cmdline-tools/bin:${PATH}"
+ENV PATH="/opt/${QT_VERSION}/gcc_64/bin:${QTPATH}/bin:/opt/cmdline-tools/bin:/opt/android/sdk/cmake/${CMAKE_VERSION}/bin:${PATH}"
 ENV XDG_CACHE_HOME ="/opt/"
 
 VOLUME /builds/worker/checkouts
