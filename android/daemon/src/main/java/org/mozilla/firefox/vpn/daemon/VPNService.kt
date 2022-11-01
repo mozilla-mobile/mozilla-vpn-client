@@ -199,7 +199,7 @@ class VPNService : android.net.VpnService() {
 
     fun turnOn(json: JSONObject, useFallbackServer: Boolean = false) {
         Log.sensitive(tag, json.toString())
-        val wireguard_conf = buildWireugardConfig(json,useFallbackServer)
+        val wireguard_conf = buildWireugardConfig(json, useFallbackServer)
         mCityname = json.getString("city")
 
         if (checkPermissions() != null) {

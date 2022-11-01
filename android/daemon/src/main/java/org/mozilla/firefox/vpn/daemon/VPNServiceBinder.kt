@@ -233,7 +233,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 deadBinders.add(it)
             }
         }
-        if(deadBinders.size >0){
+        if (deadBinders.size > 0) {
             mListeners.removeAll(deadBinders)
             Log.i(tag, "Removed ${deadBinders.size} dead Binders")
         }
