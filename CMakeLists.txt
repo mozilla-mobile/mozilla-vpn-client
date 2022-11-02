@@ -79,6 +79,7 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.17)
     cmake_policy(SET CMP0099 OLD)
 endif()
 
+find_program(PYTHON_EXECUTABLE NAMES python3)
 if(MSVC)
     include(src/cmake/msvc.cmake)
 endif()

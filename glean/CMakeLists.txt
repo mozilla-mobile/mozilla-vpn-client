@@ -35,7 +35,7 @@ add_custom_command(
         telemetry/telemetry.qrc
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     DEPENDS metrics.yaml pings.yaml
-    COMMAND python3 ${MVPN_SCRIPT_DIR}/utils/generate_glean.py
+    COMMAND ${PYTHON_EXECUTABLE} ${MVPN_SCRIPT_DIR}/utils/generate_glean.py
 )
 set_source_files_properties(
     telemetry/gleansample.h
