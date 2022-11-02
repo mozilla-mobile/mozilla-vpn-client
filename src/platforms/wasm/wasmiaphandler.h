@@ -5,9 +5,9 @@
 #ifndef WASMIAPHANDLER_H
 #define WASMIAPHANDLER_H
 
-#include "iaphandler.h"
+#include "purchasehandler.h"
 
-class WasmIAPHandler final : public IAPHandler {
+class WasmIAPHandler final : public PurchaseHandler {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(WasmIAPHandler)
 

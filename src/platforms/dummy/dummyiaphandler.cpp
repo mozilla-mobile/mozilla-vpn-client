@@ -12,7 +12,7 @@ namespace {
 Logger logger(LOG_IAP, "DummyIAPHandler");
 }  // namespace
 
-DummyIAPHandler::DummyIAPHandler(QObject* parent) : IAPHandler(parent) {
+DummyIAPHandler::DummyIAPHandler(QObject* parent) : PurchaseHandler(parent) {
   MVPN_COUNT_CTOR(DummyIAPHandler);
 }
 

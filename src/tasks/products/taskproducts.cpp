@@ -4,7 +4,7 @@
 
 #include "taskproducts.h"
 #include "errorhandler.h"
-#include "iaphandler.h"
+#include "purchasehandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
@@ -33,13 +33,13 @@ void TaskProducts::run() {
           [this](const QByteArray& data) {
             logger.debug() << "Products request to guardian completed" << data;
 
-            IAPHandler* iapHandler = IAPHandler::instance();
+            PurchaseHandler* iapHandler = PurchaseHandler::instance();
             Q_ASSERT(iapHandler);
 
-            connect(iapHandler, &IAPHandler::productsRegistered, this,
+            connect(iapHandler, &PurchaseHandler::productsRegistered, this,
                     &TaskProducts::completed);
-            connect(iapHandler, &IAPHandler::productsRegistrationStopped, this,
-                    &TaskProducts::completed);
+            connect(iapHandler, &PurchaseHandler::productsRegistrationStopped,
+                    this, &TaskProducts::completed);
             iapHandler->registerProducts(data);
           });
 }

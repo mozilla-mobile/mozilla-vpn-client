@@ -10,9 +10,9 @@
 
 class QJsonValue;
 
-class IAPHandler : public QAbstractListModel {
+class PurchaseHandler : public QAbstractListModel {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(IAPHandler)
+  Q_DISABLE_COPY_MOVE(PurchaseHandler)
 
  public:
   enum ProductType {
@@ -32,8 +32,8 @@ class IAPHandler : public QAbstractListModel {
     ProductTrialDaysRole,
   };
 
-  static IAPHandler* createInstance();
-  static IAPHandler* instance();
+  static PurchaseHandler* createInstance();
+  static PurchaseHandler* instance();
   bool hasProductsRegistered() const {
     return m_productsRegistrationState == eRegistered;
   }
@@ -76,8 +76,8 @@ class IAPHandler : public QAbstractListModel {
   void stopProductsRegistration();
 
  protected:
-  IAPHandler(QObject* parent);
-  ~IAPHandler();
+  PurchaseHandler(QObject* parent);
+  ~PurchaseHandler();
 
   struct Product {
     QString m_name;
@@ -87,7 +87,7 @@ class IAPHandler : public QAbstractListModel {
     // This is not exposed and it's not localized. It's used to compute the
     // saving %.
     double m_nonLocalizedMonthlyPrice = 0;
-    ProductType m_type = IAPHandler::ProductMonthly;
+    ProductType m_type = PurchaseHandler::ProductMonthly;
     bool m_featuredProduct = false;
     // This is the % compared with the montly subscription.
     uint32_t m_savings = 0;

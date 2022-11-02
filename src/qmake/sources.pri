@@ -80,7 +80,7 @@ SOURCES += \
         hawkauth.cpp \
         keyregenerator.cpp \
         hkdf.cpp \
-        iaphandler.cpp \
+        purchasehandler.cpp \
         imageproviderfactory.cpp \
         inspector/inspectorhandler.cpp \
         inspector/inspectoritempicker.cpp \
@@ -252,7 +252,7 @@ HEADERS += \
         hawkauth.h \
         keyregenerator.h \
         hkdf.h \
-        iaphandler.h \
+        purchasehandler.h \
         imageproviderfactory.h \
         inspector/inspectorhandler.h \
         inspector/inspectoritempicker.h \

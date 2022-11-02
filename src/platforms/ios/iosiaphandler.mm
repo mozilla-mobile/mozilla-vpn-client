@@ -198,7 +198,7 @@ bool s_transactionsProcessed = false;
 
 @end
 
-IOSIAPHandler::IOSIAPHandler(QObject* parent) : IAPHandler(parent) {
+IOSIAPHandler::IOSIAPHandler(QObject* parent) : PurchaseHandler(parent) {
   MVPN_COUNT_CTOR(IOSIAPHandler);
 
   m_delegate = [[IOSIAPHandlerDelegate alloc] initWithObject:this];
@@ -380,7 +380,7 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
     QStringList transactions = settingsHolder->subscriptionTransactions();
     transactions.append(ids);
     settingsHolder->setSubscriptionTransactions(transactions);
-    
+
     stopSubscription();
     emit subscriptionCompleted();
   });

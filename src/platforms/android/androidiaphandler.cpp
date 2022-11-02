@@ -23,7 +23,8 @@ Logger logger(LOG_IAP, "AndroidIAPHandler");
 constexpr auto CLASSNAME = "org.mozilla.firefox.vpn.InAppPurchase";
 }  // namespace
 
-AndroidIAPHandler::AndroidIAPHandler(QObject* parent) : IAPHandler(parent) {
+AndroidIAPHandler::AndroidIAPHandler(QObject* parent)
+    : PurchaseHandler(parent) {
   MVPN_COUNT_CTOR(AndroidIAPHandler);
   maybeInit();
 }
@@ -139,7 +140,7 @@ void AndroidIAPHandler::onPurchaseAcknowledged(JNIEnv* env, jobject thiz) {
   Q_UNUSED(env)
   Q_UNUSED(thiz);
   logger.debug() << "Purchase successfully acknowledged";
-  IAPHandler* iap = IAPHandler::instance();
+  PurchaseHandler* iap = PurchaseHandler::instance();
   iap->stopSubscription();
   emit iap->subscriptionCompleted();
 }
@@ -165,7 +166,7 @@ void AndroidIAPHandler::onPurchaseUpdated(JNIEnv* env, jobject thiz,
                  << logger.sensitive(QJsonDocument(purchase).toJson());
 
   AndroidUtils::dispatchToMainThread([purchase] {
-    IAPHandler* iap = IAPHandler::instance();
+    PurchaseHandler* iap = PurchaseHandler::instance();
     Q_ASSERT(iap);
     static_cast<AndroidIAPHandler*>(iap)->processPurchase(purchase);
   });
@@ -182,7 +183,7 @@ void AndroidIAPHandler::onSkuDetailsReceived(JNIEnv* env, jobject thiz,
     return;
   }
   QJsonArray products = obj["products"].toArray();
-  IAPHandler* iap = IAPHandler::instance();
+  PurchaseHandler* iap = PurchaseHandler::instance();
   if (products.isEmpty()) {
     logger.error() << "onSkuDetailsRecieved - no products found.";
     iap->stopProductsRegistration();
@@ -203,7 +204,7 @@ void AndroidIAPHandler::onBillingNotAvailable(JNIEnv* env, jobject thiz,
   logger.info()
       << "onBillingNotAvailable event occured"
       << QJsonDocument(billingResponse).toJson(QJsonDocument::Compact);
-  IAPHandler* iap = IAPHandler::instance();
+  PurchaseHandler* iap = PurchaseHandler::instance();
   if (billingResponse["code"].toInt() == -99) {
     // The billing service was disconnected.
     // Lets try a reset if we need a subscription.
@@ -229,7 +230,7 @@ void AndroidIAPHandler::onPurchaseAcknowledgeFailed(JNIEnv* env, jobject thiz,
   QJsonObject json = AndroidUtils::getQJsonObjectFromJString(env, data);
   logger.error() << "onPurchaseAcknowledgeFailed"
                  << QJsonDocument(json).toJson(QJsonDocument::Compact);
-  IAPHandler* iap = IAPHandler::instance();
+  PurchaseHandler* iap = PurchaseHandler::instance();
   iap->stopSubscription();
   emit iap->subscriptionNotValidated();
 }
@@ -241,7 +242,7 @@ void AndroidIAPHandler::onSkuDetailsFailed(JNIEnv* env, jobject thiz,
   QJsonObject json = AndroidUtils::getQJsonObjectFromJString(env, data);
   logger.error() << "onSkuDetailsFailed"
                  << QJsonDocument(json).toJson(QJsonDocument::Compact);
-  IAPHandler* iap = IAPHandler::instance();
+  PurchaseHandler* iap = PurchaseHandler::instance();
   iap->stopProductsRegistration();
 }
 
@@ -252,7 +253,7 @@ void AndroidIAPHandler::onSubscriptionFailed(JNIEnv* env, jobject thiz,
   QJsonObject json = AndroidUtils::getQJsonObjectFromJString(env, data);
   logger.error() << "onSubscriptionFailed"
                  << QJsonDocument(json).toJson(QJsonDocument::Compact);
-  IAPHandler* iap = IAPHandler::instance();
+  PurchaseHandler* iap = PurchaseHandler::instance();
   iap->stopSubscription();
   emit iap->subscriptionFailed();
 }

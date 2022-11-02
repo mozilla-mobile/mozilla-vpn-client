@@ -5,9 +5,9 @@
 #ifndef DUMMYIAPHANDLER_H
 #define DUMMYIAPHANDLER_H
 
-#include "iaphandler.h"
+#include "purchasehandler.h"
 
-class DummyIAPHandler final : public IAPHandler {
+class DummyIAPHandler final : public PurchaseHandler {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(DummyIAPHandler)
 

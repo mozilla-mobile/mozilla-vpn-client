@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "iaphandler.h"
+#include "purchasehandler.h"
 #include "constants.h"
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
@@ -27,12 +27,12 @@
 #endif
 
 namespace {
-Logger logger(LOG_IAP, "IAPHandler");
-IAPHandler* s_instance = nullptr;
+Logger logger(LOG_IAP, "PurchaseHandler");
+PurchaseHandler* s_instance = nullptr;
 }  // namespace
 
 // static
-IAPHandler* IAPHandler::createInstance() {
+PurchaseHandler* PurchaseHandler::createInstance() {
   Q_ASSERT(!s_instance);
 #ifdef MVPN_IOS
   new IOSIAPHandler(qApp);
@@ -48,26 +48,26 @@ IAPHandler* IAPHandler::createInstance() {
 }
 
 // static
-IAPHandler* IAPHandler::instance() {
+PurchaseHandler* PurchaseHandler::instance() {
   Q_ASSERT(s_instance);
   return s_instance;
 }
 
-IAPHandler::IAPHandler(QObject* parent) : QAbstractListModel(parent) {
-  MVPN_COUNT_CTOR(IAPHandler);
+PurchaseHandler::PurchaseHandler(QObject* parent) : QAbstractListModel(parent) {
+  MVPN_COUNT_CTOR(PurchaseHandler);
 
   Q_ASSERT(!s_instance);
   s_instance = this;
 }
 
-IAPHandler::~IAPHandler() {
-  MVPN_COUNT_DTOR(IAPHandler);
+PurchaseHandler::~PurchaseHandler() {
+  MVPN_COUNT_DTOR(PurchaseHandler);
 
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;
 }
 
-void IAPHandler::registerProducts(const QByteArray& data) {
+void PurchaseHandler::registerProducts(const QByteArray& data) {
   logger.debug() << "Maybe register products";
 
   Q_ASSERT(m_productsRegistrationState == eRegistered ||
@@ -119,7 +119,8 @@ void IAPHandler::registerProducts(const QByteArray& data) {
   guard.dismiss();
 }
 
-IAPHandler::Product* IAPHandler::findProduct(const QString& productIdentifier) {
+PurchaseHandler::Product* PurchaseHandler::findProduct(
+    const QString& productIdentifier) {
   for (Product& p : m_products) {
     if (p.m_name == productIdentifier) {
       return &p;
@@ -128,7 +129,7 @@ IAPHandler::Product* IAPHandler::findProduct(const QString& productIdentifier) {
   return nullptr;
 }
 
-void IAPHandler::addProduct(const QJsonValue& value) {
+void PurchaseHandler::addProduct(const QJsonValue& value) {
   if (!value.isObject()) {
     logger.debug() << "Object expected for the single product";
     return;
@@ -155,7 +156,7 @@ void IAPHandler::addProduct(const QJsonValue& value) {
   m_products.append(product);
 }
 
-void IAPHandler::startSubscription(const QString& productIdentifier) {
+void PurchaseHandler::startSubscription(const QString& productIdentifier) {
   Q_ASSERT(m_productsRegistrationState == eRegistered);
 
   Product* product = findProduct(productIdentifier);
@@ -170,7 +171,7 @@ void IAPHandler::startSubscription(const QString& productIdentifier) {
   nativeStartSubscription(product);
 }
 
-void IAPHandler::startRestoreSubscription() {
+void PurchaseHandler::startRestoreSubscription() {
   logger.debug() << "Starting the restore of the subscription";
 
 #ifdef MVPN_IOS
@@ -181,12 +182,12 @@ void IAPHandler::startRestoreSubscription() {
 #endif
 }
 
-void IAPHandler::stopSubscription() {
+void PurchaseHandler::stopSubscription() {
   logger.debug() << "Stop subscription";
   m_subscriptionState = eInactive;
 }
 
-void IAPHandler::unknownProductRegistered(const QString& identifier) {
+void PurchaseHandler::unknownProductRegistered(const QString& identifier) {
   Q_ASSERT(m_productsRegistrationState == eRegistering);
 
   logger.error() << "Product registration failed:" << identifier;
@@ -202,7 +203,7 @@ void IAPHandler::unknownProductRegistered(const QString& identifier) {
   }
 }
 
-void IAPHandler::productsRegistrationCompleted() {
+void PurchaseHandler::productsRegistrationCompleted() {
   logger.debug() << "All the products has been registered";
   beginResetModel();
   computeSavings();
@@ -212,7 +213,7 @@ void IAPHandler::productsRegistrationCompleted() {
   emit productsRegistered();
 }
 
-void IAPHandler::stopProductsRegistration() {
+void PurchaseHandler::stopProductsRegistration() {
   logger.debug() << "Stop products registration";
   beginResetModel();
   m_products.clear();
@@ -221,18 +222,18 @@ void IAPHandler::stopProductsRegistration() {
   emit productsRegistrationStopped();
 }
 
-void IAPHandler::subscribe(const QString& productIdentifier) {
+void PurchaseHandler::subscribe(const QString& productIdentifier) {
   logger.debug() << "Subscription required";
   m_currentSKU = productIdentifier;
   emit subscriptionStarted(productIdentifier);
 }
 
-void IAPHandler::restore() {
+void PurchaseHandler::restore() {
   logger.debug() << "Restore purchase";
   emit restoreSubscriptionStarted();
 }
 
-QHash<int, QByteArray> IAPHandler::roleNames() const {
+QHash<int, QByteArray> PurchaseHandler::roleNames() const {
   QHash<int, QByteArray> roles;
   roles[ProductIdentifierRole] = "productIdentifier";
   roles[ProductPriceRole] = "productPrice";
@@ -244,7 +245,7 @@ QHash<int, QByteArray> IAPHandler::roleNames() const {
   return roles;
 }
 
-int IAPHandler::rowCount(const QModelIndex&) const {
+int PurchaseHandler::rowCount(const QModelIndex&) const {
   if (m_productsRegistrationState != eRegistered) {
     return 0;
   }
@@ -252,7 +253,7 @@ int IAPHandler::rowCount(const QModelIndex&) const {
   return m_products.count();
 }
 
-QVariant IAPHandler::data(const QModelIndex& index, int role) const {
+QVariant PurchaseHandler::data(const QModelIndex& index, int role) const {
   if (m_productsRegistrationState != eRegistered || !index.isValid()) {
     return QVariant();
   }
@@ -291,7 +292,7 @@ QVariant IAPHandler::data(const QModelIndex& index, int role) const {
   }
 }
 
-void IAPHandler::computeSavings() {
+void PurchaseHandler::computeSavings() {
   double monthlyPrice = 0;
   // Let's find the price for the monthly payment.
   for (const Product& product : m_products) {
@@ -321,7 +322,8 @@ void IAPHandler::computeSavings() {
 }
 
 // static
-IAPHandler::ProductType IAPHandler::productTypeToEnum(const QString& type) {
+PurchaseHandler::ProductType PurchaseHandler::productTypeToEnum(
+    const QString& type) {
   if (type == "yearly") return ProductYearly;
   if (type == "half-yearly") return ProductHalfYearly;
   if (type == "monthly") return ProductMonthly;
@@ -329,7 +331,7 @@ IAPHandler::ProductType IAPHandler::productTypeToEnum(const QString& type) {
 }
 
 // static
-uint32_t IAPHandler::productTypeToMonthCount(ProductType type) {
+uint32_t PurchaseHandler::productTypeToMonthCount(ProductType type) {
   switch (type) {
     case ProductYearly:
       return 12;
@@ -343,7 +345,7 @@ uint32_t IAPHandler::productTypeToMonthCount(ProductType type) {
   }
 }
 
-void IAPHandler::sortPlans() {
+void PurchaseHandler::sortPlans() {
   std::sort(m_products.begin(), m_products.end(),
             [](const Product& a, const Product& b) {
               return a.m_trialDays > b.m_trialDays;

@@ -160,8 +160,8 @@ target_sources(mozillavpn PRIVATE
     hawkauth.h
     hkdf.cpp
     hkdf.h
-    iaphandler.cpp
-    iaphandler.h
+    purchasehandler.cpp
+    purchasehandler.h
     imageproviderfactory.cpp
     imageproviderfactory.h
     inspector/inspectorhandler.cpp

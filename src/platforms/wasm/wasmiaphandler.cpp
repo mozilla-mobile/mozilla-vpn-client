@@ -20,7 +20,7 @@ namespace {
 Logger logger(LOG_IAP, "WasmIAPHandler");
 }  // namespace
 
-WasmIAPHandler::WasmIAPHandler(QObject* parent) : IAPHandler(parent) {
+WasmIAPHandler::WasmIAPHandler(QObject* parent) : PurchaseHandler(parent) {
   MVPN_COUNT_CTOR(WasmIAPHandler);
 }
 
