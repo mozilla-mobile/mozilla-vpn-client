@@ -11,5 +11,13 @@
                 <action android:name="android.net.VpnService"/>
             </intent-filter>
         </service>
+        <receiver android:name=".BootReceiver"
+            android:exported="true">
+            <intent-filter
+                android:priority="2147483647">
+                <!-- Wow this is a horrible hack to ge up the priority-->
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

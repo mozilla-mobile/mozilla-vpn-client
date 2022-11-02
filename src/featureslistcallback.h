@@ -150,7 +150,7 @@ bool FeatureCallback_splitTunnel() {
 
 bool FeatureCallback_startOnBoot() {
 #if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS) || \
-    defined(MVPN_DUMMY) || defined(MVPN_WASM)
+    defined(MVPN_DUMMY) || defined(MVPN_WASM)  || defined(MVPN_ANDROID)
   return true;
 #else
   return false;
