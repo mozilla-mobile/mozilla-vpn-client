@@ -36,6 +36,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     find_package(OpenSSL REQUIRED)
     set_target_properties(vpnglean PROPERTIES
         IMPORTED_LINK_INTERFACE_LIBRARIES OpenSSL::SSL
+    )
 endif()
 
 target_include_directories(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
