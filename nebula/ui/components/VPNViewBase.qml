@@ -18,7 +18,7 @@ Item {
    property alias _viewContentData: viewContent.data
    property alias _interactive: vpnFlickable.interactive
 
-   height: menu.visible ? parent.implicitHeight - menu.visible : parent.implicitHeight
+   height: parent.implicitHeight
 
    anchors {
        top: if (parent) parent.top

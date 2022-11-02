@@ -21,6 +21,7 @@ ColumnLayout {
         Layout.topMargin: base.height * (window.fullscreenRequired() ? 0.3 :  0.2)
         Layout.preferredHeight: height
         Layout.preferredWidth: width
+        Layout.alignment: Qt.AlignHCenter
 
         logo: "qrc:/ui/resources/heart-check.svg"
         logoTitle: VPNl18n.InAppSupportWorkflowSupportResponseHeader

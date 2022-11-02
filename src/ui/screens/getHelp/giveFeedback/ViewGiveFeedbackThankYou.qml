@@ -20,7 +20,7 @@ ColumnLayout {
         Layout.topMargin: layout.height * (window.fullscreenRequired() ? 0.3 :  0.2)
         Layout.preferredHeight: height
         Layout.preferredWidth: width
-
+        Layout.alignment: Qt.AlignHCenter
 
         logo: "qrc:/ui/resources/heart-check.svg"
         //% "Thank you!"
