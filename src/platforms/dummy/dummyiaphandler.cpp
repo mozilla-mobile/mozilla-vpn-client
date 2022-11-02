@@ -27,7 +27,8 @@ void DummyIAPHandler::nativeRegisterProducts() {
 
 void DummyIAPHandler::nativeStartSubscription(Product* product) {
   Q_ASSERT(product->m_name == "web");
-  MozillaVPN::instance()->logout();
+  // This is a hack. Should we make a new state?
+  MozillaVPN::instance()->setUserState(MozillaVPN::UserNotAuthenticated);
   MozillaVPN::instance()->authenticateWithType(
       MozillaVPN::AuthenticationType::AuthenticationInBrowser);
 }

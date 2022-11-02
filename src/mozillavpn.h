@@ -268,13 +268,12 @@ class MozillaVPN final : public QObject {
   }
 
   void hardReset();
+  void setUserState(UserState userState);
 
  private:
   void setState(State state);
 
   void maybeStateMain();
-
-  void setUserState(UserState userState);
 
   void startSchedulingPeriodicOperations();
 

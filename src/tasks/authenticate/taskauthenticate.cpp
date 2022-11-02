@@ -10,6 +10,7 @@
 #include "models/user.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "settingsholder.h"
 
 #include <QJSValue>
 #include <QJsonDocument>
@@ -81,8 +82,12 @@ void TaskAuthenticate::run() {
             m_authenticationListener->aboutToFinish();
           });
 
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+  QString email = settingsHolder->userEmail();
+
   m_authenticationListener->start(this, pkceCodeChallenge,
-                                  CODE_CHALLENGE_METHOD);
+                                  CODE_CHALLENGE_METHOD, email);
 }
 
 void TaskAuthenticate::authenticationCompleted(const QByteArray& data) {
