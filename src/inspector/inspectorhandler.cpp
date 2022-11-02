@@ -874,12 +874,6 @@ static QList<InspectorCommand> s_commands{
                        return obj;
                      }},
 
-    InspectorCommand{"open_settings", "Open settings menu", 0,
-                     [](InspectorHandler*, const QList<QByteArray>&) {
-                       ExternalOpHandler::instance()->request(
-                           ExternalOpHandler::OpSettings);
-                       return QJsonObject();
-                     }},
     InspectorCommand{"is_feature_flipped_on",
                      "Check if a feature is flipped on", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {

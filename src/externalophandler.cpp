@@ -67,12 +67,6 @@ void ExternalOpHandler::request(Op op) {
     case OpDeactivate:
       vpn->controller()->deactivate();
       break;
-    case OpGetHelp:
-      vpn->requestGetHelp();
-      break;
-    case OpSettings:
-      vpn->requestSettings();
-      break;
     case OpQuit:
       vpn->controller()->quit();
       break;

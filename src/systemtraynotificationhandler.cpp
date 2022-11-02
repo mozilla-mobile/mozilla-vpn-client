@@ -92,16 +92,6 @@ void SystemTrayNotificationHandler::createStatusMenu() {
 
   m_menu->addSeparator();
 
-  m_helpAction = m_menu->addAction("", []() {
-    ExternalOpHandler::instance()->request(ExternalOpHandler::OpGetHelp);
-  });
-
-  m_preferencesAction = m_menu->addAction("", []() {
-    ExternalOpHandler::instance()->request(ExternalOpHandler::OpSettings);
-  });
-
-  m_menu->addSeparator();
-
   m_quitAction = m_menu->addAction("", []() {
     ExternalOpHandler::instance()->request(ExternalOpHandler::OpQuit);
   });
@@ -136,8 +126,6 @@ void SystemTrayNotificationHandler::retranslate() {
   Q_ASSERT(l18nStrings);
 
   m_disconnectAction->setText(l18nStrings->t(L18nStrings::SystrayDisconnect));
-  m_helpAction->setText(l18nStrings->t(L18nStrings::SystrayHelp));
-  m_preferencesAction->setText(l18nStrings->t(L18nStrings::SystrayPreferences));
   m_quitAction->setText(l18nStrings->t(L18nStrings::SystrayQuit));
 
   updateContextMenu();
@@ -158,7 +146,6 @@ void SystemTrayNotificationHandler::updateContextMenu() {
   MozillaVPN* vpn = MozillaVPN::instance();
 
   bool isStateMain = vpn->state() == MozillaVPN::StateMain;
-  m_preferencesAction->setVisible(isStateMain);
 
   m_disconnectAction->setVisible(isStateMain && vpn->controller()->state() ==
                                                     Controller::StateOn);

@@ -65,13 +65,6 @@ void MacOSMenuBar::initialize() {
   m_aboutAction->setMenuRole(QAction::AboutRole);
   m_aboutAction->setVisible(vpn->state() == MozillaVPN::StateMain);
 
-  // Do not use qtTrId here!
-  m_preferencesAction = fileMenu->addAction("preferences", []() {
-    ExternalOpHandler::instance()->request(ExternalOpHandler::OpSettings);
-  });
-  m_preferencesAction->setMenuRole(QAction::PreferencesRole);
-  m_preferencesAction->setVisible(vpn->state() == MozillaVPN::StateMain);
-
   m_closeAction = fileMenu->addAction("close", []() {
     QmlEngineHolder::instance()->hideWindow();
 #ifdef MVPN_MACOS
@@ -80,16 +73,11 @@ void MacOSMenuBar::initialize() {
   });
   m_closeAction->setShortcut(QKeySequence::Close);
 
-  m_helpAction = m_menuBar->addAction("", []() {
-    ExternalOpHandler::instance()->request(ExternalOpHandler::OpGetHelp);
-  });
-
   retranslate();
 };
 
 void MacOSMenuBar::controllerStateChanged() {
   MozillaVPN* vpn = MozillaVPN::instance();
-  m_preferencesAction->setVisible(vpn->state() == MozillaVPN::StateMain);
   m_aboutAction->setVisible(vpn->state() == MozillaVPN::StateMain);
 }
 
@@ -98,9 +86,4 @@ void MacOSMenuBar::retranslate() {
 
   //% "Close"
   m_closeAction->setText(qtTrId("menubar.file.close"));
-
-  L18nStrings* l18nStrings = L18nStrings::instance();
-  Q_ASSERT(l18nStrings);
-
-  m_helpAction->setText(l18nStrings->t(L18nStrings::SystrayHelp));
 }
