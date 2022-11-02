@@ -32,11 +32,15 @@ set_target_properties(vpnglean PROPERTIES
 
 ## TODO: It's not clear if we will also need this on other platforms, or
 ## if we just don't notice it due to statically linked Qt.
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     find_package(OpenSSL REQUIRED)
-    set_target_properties(vpnglean PROPERTIES
-        IMPORTED_LINK_INTERFACE_LIBRARIES OpenSSL::SSL
+    set_property(TARGET vpnglean APPEND PROPERTY
+        INTERFACE_LINK_LIBRARIES OpenSSL::SSL
     )
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    ## Windows seems to miss some system libraries when importing static OpenSSL
+    set_property(TARGET vpnglean APPEND PROPERTY
+        INTERFACE_LINK_LIBRARIES crypt32 Secur32)
 endif()
 
 target_include_directories(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
