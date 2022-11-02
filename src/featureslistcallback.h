@@ -69,6 +69,14 @@ bool FeatureCallback_captivePortal() {
 #endif
 }
 
+bool FeatureCallback_inAppProductSelection() {
+#if defined(MVPN_IOS) || defined(MVPN_ANDROID) || defined(MVPN_WASM)
+  return true;
+#else
+  return false;
+#endif
+}
+
 bool FeatureCallback_lanAccess() {
 #if defined(MVPN_IOS)
   // managed by the OS automatically. No need to

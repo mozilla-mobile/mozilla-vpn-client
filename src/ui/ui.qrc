@@ -62,6 +62,7 @@
         <file>screens/ScreenSubscriptionInProgress.qml</file>
         <file>screens/ScreenSubscriptionInUseError.qml</file>
         <file>screens/ScreenSubscriptionNeeded.qml</file>
+        <file>screens/ScreenSubscriptionNeededWeb.qml</file>
         <file>screens/ScreenSubscriptionNotValidated.qml</file>
         <file>screens/ScreenTelemetryPolicy.qml</file>
         <file>screens/ScreenTipsAndTricks.qml</file>

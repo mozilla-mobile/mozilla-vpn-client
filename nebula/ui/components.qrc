@@ -87,7 +87,6 @@
         <file>components/VPNSignOut.qml</file>
         <file>components/VPNSimplePopup.qml</file>
         <file>components/VPNStackView.qml</file>
-        <file>components/VPNSubscriptionOption.qml</file>
         <file>components/VPNSubtitle.qml</file>
         <file>components/VPNSystemAlert.qml</file>
         <file>components/VPNTabNavigation.qml</file>

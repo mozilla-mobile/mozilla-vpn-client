@@ -55,6 +55,7 @@ class Navigator final : public QObject {
     ScreenSettings,
     ScreenSubscriptionBlocked,
     ScreenSubscriptionNeeded,
+    ScreenSubscriptionNeededWeb,
     ScreenSubscriptionExpiredError,
     ScreenSubscriptionGenericError,
     ScreenSubscriptionInProgress,

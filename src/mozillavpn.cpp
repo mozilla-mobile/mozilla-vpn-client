@@ -282,7 +282,9 @@ void MozillaVPN::initialize() {
   if (m_private->m_user.subscriptionNeeded()) {
     setUserState(UserAuthenticated);
     setState(StateAuthenticating);
-    TaskScheduler::scheduleTask(new TaskProducts());
+    if (Feature::get(Feature::Feature_inAppProductSelection)->isSupported()) {
+      TaskScheduler::scheduleTask(new TaskProducts());
+    }
     TaskScheduler::scheduleTask(
         new TaskFunction([this]() { maybeStateMain(); }));
     return;
@@ -332,7 +334,9 @@ void MozillaVPN::initialize() {
       new TaskServers(ErrorHandler::PropagateError),
       new TaskCaptivePortalLookup(ErrorHandler::PropagateError)};
 
-  refreshTasks.append(new TaskProducts());
+  if (Feature::get(Feature::Feature_inAppProductSelection)->isSupported()) {
+    refreshTasks.append(new TaskProducts());
+  }
 
   TaskScheduler::scheduleTask(new TaskGroup(refreshTasks));
 
@@ -520,7 +524,9 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
   setUserState(UserAuthenticated);
 
   if (m_private->m_user.subscriptionNeeded()) {
-    TaskScheduler::scheduleTask(new TaskProducts());
+    if (Feature::get(Feature::Feature_inAppProductSelection)->isSupported()) {
+      TaskScheduler::scheduleTask(new TaskProducts());
+    }
     TaskScheduler::scheduleTask(
         new TaskFunction([this]() { maybeStateMain(); }));
     return;
@@ -575,7 +581,9 @@ void MozillaVPN::completeActivation() {
                        new TaskServers(ErrorHandler::PropagateError)}));
   }
 
-  TaskScheduler::scheduleTask(new TaskProducts());
+  if (Feature::get(Feature::Feature_inAppProductSelection)->isSupported()) {
+    TaskScheduler::scheduleTask(new TaskProducts());
+  }
 
   // Finally we are able to activate the client.
   TaskScheduler::scheduleTask(new TaskFunction([this]() { maybeStateMain(); }));
@@ -1308,26 +1316,29 @@ void MozillaVPN::quit() {
 }
 
 void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
-  logger.debug() << "Subscription started" << productIdentifier;
+  // ToDo - Need to think about this from the web perspective
+  if (Feature::get(Feature::Feature_inAppProductSelection)->isSupported()) {
+    logger.debug() << "Subscription started" << productIdentifier;
 
-  setState(StateSubscriptionInProgress);
+    setState(StateSubscriptionInProgress);
 
-  PurchaseHandler* iap = PurchaseHandler::instance();
+    PurchaseHandler* iap = PurchaseHandler::instance();
 
-  // If IAP is not ready (race condition), register the products again.
-  if (!iap->hasProductsRegistered()) {
-    TaskScheduler::scheduleTask(new TaskProducts());
-    TaskScheduler::scheduleTask(new TaskFunction([this, productIdentifier]() {
-      subscriptionStarted(productIdentifier);
-    }));
+    // If IAP is not ready (race condition), register the products again.
+    if (!iap->hasProductsRegistered()) {
+      TaskScheduler::scheduleTask(new TaskProducts());
+      TaskScheduler::scheduleTask(new TaskFunction([this, productIdentifier]() {
+        subscriptionStarted(productIdentifier);
+      }));
 
-    return;
+      return;
+    }
+
+    iap->startSubscription(productIdentifier);
+
+    emit recordGleanEventWithExtraKeys(GleanSample::iapSubscriptionStarted,
+                                       {{"sku", productIdentifier}});
   }
-
-  iap->startSubscription(productIdentifier);
-
-  emit recordGleanEventWithExtraKeys(GleanSample::iapSubscriptionStarted,
-                                     {{"sku", productIdentifier}});
 }
 
 void MozillaVPN::restoreSubscriptionStarted() {

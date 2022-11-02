@@ -245,7 +245,24 @@ ScreenData s_screens[] = {
         Navigator::LoadPolicy::LoadTemporarily,
         "qrc:/ui/screens/ScreenSubscriptionNeeded.qml",
         QVector<MozillaVPN::State>{MozillaVPN::StateSubscriptionNeeded},
-        [](Navigator::Screen*) -> int8_t { return 0; },
+        [](Navigator::Screen*) -> int8_t {
+          return Feature::get(Feature::Feature_inAppProductSelection)
+                         ->isSupported()
+                     ? -1
+                     : 99;
+        },
+        []() -> bool { return false; }),
+    ScreenData(
+        Navigator::Screen::ScreenSubscriptionNeededWeb,
+        Navigator::LoadPolicy::LoadTemporarily,
+        "qrc:/ui/screens/ScreenSubscriptionNeededWeb.qml",
+        QVector<MozillaVPN::State>{MozillaVPN::StateSubscriptionNeeded},
+        [](Navigator::Screen*) -> int8_t {
+          return Feature::get(Feature::Feature_inAppProductSelection)
+                         ->isSupported()
+                     ? 99
+                     : -1;
+        },
         []() -> bool { return false; }),
     ScreenData(
         Navigator::Screen::ScreenSubscriptionExpiredError,
