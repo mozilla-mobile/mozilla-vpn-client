@@ -89,7 +89,6 @@ find_package(Qt6 COMPONENTS
 )
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     find_package(Qt6 COMPONENTS
-        NetworkAuth
         Sql
     )
 endif()

@@ -19,11 +19,6 @@ target_link_libraries(mozillavpn PRIVATE
     Qt6::Widgets
 )
 
-if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
-    target_link_libraries(mozillavpn PRIVATE
-        Qt6::NetworkAuth
-    )
-endif()
 
 target_include_directories(mozillavpn PUBLIC
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
