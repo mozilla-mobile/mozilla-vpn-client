@@ -93,18 +93,18 @@ FEATURE_SIMPLE(freeTrial,             // Feature ID
 FEATURE_SIMPLE(inAppAccountCreate,                  // Feature ID
                "In-app Account Cretion",            // Feature name
                "2.6",                               // released
-               FeatureCallback_true,                // Can be flipped on
+               FeatureCallback_false,               // Can be flipped on
                FeatureCallback_false,               // Can be flipped off
                QStringList{"inAppAuthentication"},  // feature dependencies
-               FeatureCallback_iosOrAndroid)
+               FeatureCallback_true)
 
 FEATURE_SIMPLE(inAppAuthentication,      // Feature ID
                "In-app Authentication",  // Feature name
                "2.4",                    // released
-               FeatureCallback_true,     // Can be flipped on
+               FeatureCallback_false,    // Can be flipped on
                FeatureCallback_false,    // Can be flipped off
                QStringList(),            // feature dependencies
-               FeatureCallback_iosOrAndroid)
+               FeatureCallback_true)
 
 FEATURE_SIMPLE(inAppPurchase,          // Feature ID
                "In app Purchase",      // Feature name
@@ -112,7 +112,7 @@ FEATURE_SIMPLE(inAppPurchase,          // Feature ID
                FeatureCallback_false,  // Can be flipped on
                FeatureCallback_false,  // Can be flipped off
                QStringList(),          // feature dependencies
-               FeatureCallback_inAppPurchase)
+               FeatureCallback_true)
 
 FEATURE_SIMPLE(keyRegeneration,       // Feature ID
                "Key Regeneration",    // Feature name
@@ -131,13 +131,13 @@ FEATURE_SIMPLE(lanAccess,                    // Feature ID
                QStringList(),                // feature dependencies
                FeatureCallback_lanAccess)
 
-FEATURE_SIMPLE(mobileOnboarding,       // Feature ID
-               "Mobile Onboarding",    // Feature name
-               "2.8",                  // released
-               FeatureCallback_true,   // Can be flipped on
-               FeatureCallback_false,  // Can be flipped off
-               QStringList(),          // feature dependencies
-               FeatureCallback_iosOrAndroid)
+FEATURE_SIMPLE(mobileOnboarding,      // Feature ID
+               "Mobile Onboarding",   // Feature name
+               "2.8",                 // released
+               FeatureCallback_true,  // Can be flipped on
+               FeatureCallback_true,  // Can be flipped off
+               QStringList(),         // feature dependencies
+               FeatureCallback_true)
 
 #if defined(MVPN_ANDROID) || defined(MVPN_IOS)
 #  define MULTIHOP_RELEASE "2.7"
