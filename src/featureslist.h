@@ -106,14 +106,6 @@ FEATURE_SIMPLE(inAppAuthentication,      // Feature ID
                QStringList(),            // feature dependencies
                FeatureCallback_iosOrAndroid)
 
-FEATURE_SIMPLE(inAppPurchase,          // Feature ID
-               "In app Purchase",      // Feature name
-               "2.4",                  // released
-               FeatureCallback_false,  // Can be flipped on
-               FeatureCallback_false,  // Can be flipped off
-               QStringList(),          // feature dependencies
-               FeatureCallback_inAppPurchase)
-
 FEATURE_SIMPLE(keyRegeneration,       // Feature ID
                "Key Regeneration",    // Feature name
                "2.10.0",              // released

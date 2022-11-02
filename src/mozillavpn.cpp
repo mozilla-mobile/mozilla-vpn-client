@@ -159,25 +159,23 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           &m_private->m_captivePortalDetection,
           &CaptivePortalDetection::settingsChanged);
 
-  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-    IAPHandler* iap = IAPHandler::createInstance();
-    connect(iap, &IAPHandler::subscriptionStarted, this,
-            &MozillaVPN::subscriptionStarted);
-    connect(iap, &IAPHandler::restoreSubscriptionStarted, this,
-            &MozillaVPN::restoreSubscriptionStarted);
-    connect(iap, &IAPHandler::subscriptionFailed, this,
-            &MozillaVPN::subscriptionFailed);
-    connect(iap, &IAPHandler::subscriptionCanceled, this,
-            &MozillaVPN::subscriptionCanceled);
-    connect(iap, &IAPHandler::subscriptionCompleted, this,
-            &MozillaVPN::subscriptionCompleted);
-    connect(iap, &IAPHandler::alreadySubscribed, this,
-            &MozillaVPN::alreadySubscribed);
-    connect(iap, &IAPHandler::billingNotAvailable, this,
-            &MozillaVPN::billingNotAvailable);
-    connect(iap, &IAPHandler::subscriptionNotValidated, this,
-            &MozillaVPN::subscriptionNotValidated);
-  }
+  IAPHandler* iap = IAPHandler::createInstance();
+  connect(iap, &IAPHandler::subscriptionStarted, this,
+          &MozillaVPN::subscriptionStarted);
+  connect(iap, &IAPHandler::restoreSubscriptionStarted, this,
+          &MozillaVPN::restoreSubscriptionStarted);
+  connect(iap, &IAPHandler::subscriptionFailed, this,
+          &MozillaVPN::subscriptionFailed);
+  connect(iap, &IAPHandler::subscriptionCanceled, this,
+          &MozillaVPN::subscriptionCanceled);
+  connect(iap, &IAPHandler::subscriptionCompleted, this,
+          &MozillaVPN::subscriptionCompleted);
+  connect(iap, &IAPHandler::alreadySubscribed, this,
+          &MozillaVPN::alreadySubscribed);
+  connect(iap, &IAPHandler::billingNotAvailable, this,
+          &MozillaVPN::billingNotAvailable);
+  connect(iap, &IAPHandler::subscriptionNotValidated, this,
+          &MozillaVPN::subscriptionNotValidated);
 }
 
 MozillaVPN::~MozillaVPN() {
@@ -281,15 +279,13 @@ void MozillaVPN::initialize() {
   // subscription. This will fix some of the edge cases for iOS IAP. We do this
   // here as after this point only settings are checked that are set after a
   // successfull subscription.
-  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-    if (m_private->m_user.subscriptionNeeded()) {
-      setUserState(UserAuthenticated);
-      setState(StateAuthenticating);
-      TaskScheduler::scheduleTask(new TaskProducts());
-      TaskScheduler::scheduleTask(
-          new TaskFunction([this]() { maybeStateMain(); }));
-      return;
-    }
+  if (m_private->m_user.subscriptionNeeded()) {
+    setUserState(UserAuthenticated);
+    setState(StateAuthenticating);
+    TaskScheduler::scheduleTask(new TaskProducts());
+    TaskScheduler::scheduleTask(
+        new TaskFunction([this]() { maybeStateMain(); }));
+    return;
   }
 
   if (!m_private->m_keys.fromSettings()) {
@@ -336,9 +332,7 @@ void MozillaVPN::initialize() {
       new TaskServers(ErrorHandler::PropagateError),
       new TaskCaptivePortalLookup(ErrorHandler::PropagateError)};
 
-  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-    refreshTasks.append(new TaskProducts());
-  }
+  refreshTasks.append(new TaskProducts());
 
   TaskScheduler::scheduleTask(new TaskGroup(refreshTasks));
 
@@ -372,8 +366,7 @@ void MozillaVPN::setState(State state) {
 void MozillaVPN::maybeStateMain() {
   logger.debug() << "Maybe state main";
 
-  if (m_private->m_user.initialized() &&
-      Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
+  if (m_private->m_user.initialized()) {
     if (m_state != StateSubscriptionBlocked &&
         m_private->m_user.subscriptionNeeded()) {
       logger.info() << "Subscription needed";
@@ -526,13 +519,11 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
   setToken(token);
   setUserState(UserAuthenticated);
 
-  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-    if (m_private->m_user.subscriptionNeeded()) {
-      TaskScheduler::scheduleTask(new TaskProducts());
-      TaskScheduler::scheduleTask(
-          new TaskFunction([this]() { maybeStateMain(); }));
-      return;
-    }
+  if (m_private->m_user.subscriptionNeeded()) {
+    TaskScheduler::scheduleTask(new TaskProducts());
+    TaskScheduler::scheduleTask(
+        new TaskFunction([this]() { maybeStateMain(); }));
+    return;
   }
 
   completeActivation();
@@ -584,9 +575,7 @@ void MozillaVPN::completeActivation() {
                        new TaskServers(ErrorHandler::PropagateError)}));
   }
 
-  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-    TaskScheduler::scheduleTask(new TaskProducts());
-  }
+  TaskScheduler::scheduleTask(new TaskProducts());
 
   // Finally we are able to activate the client.
   TaskScheduler::scheduleTask(new TaskFunction([this]() { maybeStateMain(); }));
@@ -784,11 +773,9 @@ void MozillaVPN::accountChecked(const QByteArray& json) {
   m_private->m_user.writeSettings();
   m_private->m_deviceModel.writeSettings();
 
-  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-    if (m_private->m_user.subscriptionNeeded() && m_state == StateMain) {
-      maybeStateMain();
-      return;
-    }
+  if (m_private->m_user.subscriptionNeeded() && m_state == StateMain) {
+    maybeStateMain();
+    return;
   }
 
   // To test the subscription needed view, comment out this line:
@@ -850,11 +837,9 @@ void MozillaVPN::logout() {
 
   TaskScheduler::deleteTasks();
 
-  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-    IAPHandler* iap = IAPHandler::instance();
-    iap->stopSubscription();
-    iap->stopProductsRegistration();
-  }
+  IAPHandler* iap = IAPHandler::instance();
+  iap->stopSubscription();
+  iap->stopProductsRegistration();
 
   // update-required state is the only one we want to keep when logging out.
   if (m_state != StateUpdateRequired) {
@@ -888,11 +873,9 @@ void MozillaVPN::reset(bool forceInitialState) {
   m_private->m_keys.forgetKeys();
   m_private->m_serverData.forget();
 
-  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-    IAPHandler* iap = IAPHandler::instance();
-    iap->stopSubscription();
-    iap->stopProductsRegistration();
-  }
+  IAPHandler* iap = IAPHandler::instance();
+  iap->stopSubscription();
+  iap->stopProductsRegistration();
 
   setUserState(UserNotAuthenticated);
 
