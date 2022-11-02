@@ -106,12 +106,19 @@ void IAPHandler::registerProducts(const QByteArray& data) {
   }
 
   if (m_products.isEmpty()) {
+#if defined(MVPN_ANDROID) or defined(MVPN_IOS)
+    logger.error() << "No pending products (nothing has been registered). "
+                      "Unable to recover from "
+                      "this scenario.";
+    return;
+#else
     // Add a "web" product placeholder
     Product product;
     product.m_name = "web";
     product.m_type = ProductUnknown;
     product.m_featuredProduct = true;
     m_products.append(product);
+#endif
   }
 
   nativeRegisterProducts();
