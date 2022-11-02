@@ -36,15 +36,13 @@ async function startAndConnect() {
     stdErr += data;
   });
 
-  if(vpnProcess){        
-    vpnProcess.on('close', () => {      
-      processEnded = true
-    });
-  
-    vpnProcess.on('spawn', () => {      
-      processEnded = false
-    });    
-  }
+  vpnProcess.on('close', () => {
+    processEnded = true
+  });
+
+  vpnProcess.on('spawn', () => {
+    processEnded = false
+  });
 
   // Connect to VPN
   await vpn.connect(vpnWS, {hostname: '127.0.0.1'});
@@ -169,15 +167,9 @@ exports.mochaHooks = {
     vpnProcess.kill();
 
     // Wait for process to close for ests that are slow to close vpn app at end.
-    let waitTimeForProcess = 0; // up to 10 sec wait
-    while (waitTimeForProcess < 11) {
+    while (true) {
       if (processEnded) return;
       await new Promise(resolve => setTimeout(resolve, 1000));
-      waitTimeForProcess++
-    }
-
-    if(waitTimeForProcess === 10){
-      throw new Error('Error clsoing child process')
     }
   },
 }
