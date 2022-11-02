@@ -6,29 +6,19 @@ add_library(vpnglean STATIC IMPORTED GLOBAL)
 
 set_target_properties(vpnglean PROPERTIES FOLDER "Libs")
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    set(OPENSSL_USE_STATIC_LIBS TRUE)
-    find_package(OpenSSL REQUIRED)
-    get_filename_component(OPENSSL_LIB_DIR ${OPENSSL_SSL_LIBRARY} DIRECTORY)
-endif()
-
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(CARGO_CMD cargo build)
-    set(TARGET_DIR "debug")
-else ()
-    set(CARGO_CMD cargo build --release)
-    set(TARGET_DIR "release")
-endif ()
-
-set (HEADER_FILE vpnglean.h)
+set(HEADER_FILE vpnglean.h)
 set(LIBNAME ${CMAKE_STATIC_LIBRARY_PREFIX}vpnglean${CMAKE_STATIC_LIBRARY_SUFFIX})
-get_filename_component(GENERATED_DIR ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_DIR} ABSOLUTE)
 
-set(VPNGLEAN_ENV BUILD_ID=${BUILD_ID} APP_VERSION=${CMAKE_PROJECT_VERSION} CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR})
-set(OPENSSL_ENV OPENSSL_STATIC=yes OPENSSL_LIB_DIR=${OPENSSL_LIB_DIR} OPENSSL_INCLUDE_DIR=${OPENSSL_INCLUDE_DIR})
 add_custom_target(vpnglean_ffi
-    BYPRODUCTS ${GENERATED_DIR}/${LIBNAME} ${CMAKE_CURRENT_BINARY_DIR}/${HEADER_FILE}
-    COMMAND ${CMAKE_COMMAND} -E env ${VPNGLEAN_ENV} ${OPENSSL_ENV} ${CARGO_CMD}
+    BYPRODUCTS
+        ${CMAKE_CURRENT_BINARY_DIR}/debug/${LIBNAME}
+        ${CMAKE_CURRENT_BINARY_DIR}/release/${LIBNAME}
+        ${CMAKE_CURRENT_BINARY_DIR}/${HEADER_FILE}
+    COMMAND ${CMAKE_COMMAND} -E env
+                BUILD_ID=${BUILD_ID}
+                APP_VERSION=${CMAKE_PROJECT_VERSION}
+                CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR}
+            cargo build $<IF:$<CONFIG:Debug>,,--release>
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 set_target_properties(vpnglean_ffi PROPERTIES FOLDER "Libs")
@@ -36,7 +26,16 @@ set_target_properties(vpnglean_ffi PROPERTIES FOLDER "Libs")
 add_dependencies(vpnglean vpnglean_ffi)
 add_dependencies(mozillavpn vpnglean)
 set_target_properties(vpnglean PROPERTIES
-    IMPORTED_LOCATION ${GENERATED_DIR}/${LIBNAME}
+    IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/release/${LIBNAME}
+    IMPORTED_LOCATION_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/debug/${LIBNAME}
 )
+
+## TODO: It's not clear if we will also need this on other platforms, or
+## if we just don't notice it due to statically linked Qt.
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    find_package(OpenSSL REQUIRED)
+    set_target_properties(vpnglean PROPERTIES
+        IMPORTED_LINK_INTERFACE_LIBRARIES OpenSSL::SSL
+endif()
 
 target_include_directories(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
