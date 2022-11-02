@@ -35,7 +35,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val gleanUploadEnabledChanged = 12
         const val controllerInit = 13
         const val gleanSetSourceTags = 14
-        const val setStartOnBoot= 15
+        const val setStartOnBoot = 15
     }
 
     /**
@@ -157,8 +157,8 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 val json = buffer?.let { String(it) }
                 val args = JSONObject(json)
                 val value = args.getBoolean("startOnBoot")
-                Prefs.get(mService).edit().apply(){
-                    putBoolean(BootReceiver.START_ON_BOOT,value)
+                Prefs.get(mService).edit().apply() {
+                    putBoolean(BootReceiver.START_ON_BOOT, value)
                 }.apply()
             }
 

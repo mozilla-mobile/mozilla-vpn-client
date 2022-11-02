@@ -47,7 +47,7 @@ enum ServiceAction {
   ACTION_CONTROLLER_INIT = 13,
   // Set Glean Source tags
   ACTION_GLEAN_SET_SOURCE_TAGS = 14,
-  // Set startOnBoot pref 
+  // Set startOnBoot pref
   ACTION_SET_START_ON_BOOT = 15,
 };
 typedef enum ServiceAction ServiceAction;

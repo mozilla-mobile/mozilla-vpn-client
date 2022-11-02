@@ -44,10 +44,10 @@ AndroidVPNActivity::AndroidVPNActivity() {
 
     logger.debug() << "Registered native methods";
   });
-  
+
   QObject::connect(SettingsHolder::instance(),
-                     &SettingsHolder::startAtBootChanged, this,
-                     &AndroidVPNActivity::startAtBootChanged);
+                   &SettingsHolder::startAtBootChanged, this,
+                   &AndroidVPNActivity::startAtBootChanged);
 }
 
 void AndroidVPNActivity::maybeInit() {
@@ -153,6 +153,5 @@ void AndroidVPNActivity::startAtBootChanged(const bool& startAtBoot) {
   QJsonObject args;
   args["startOnBoot"] = startAtBoot;
   QJsonDocument doc(args);
-  sendToService(ServiceAction::ACTION_SET_START_ON_BOOT,
-                                    doc.toJson());
+  sendToService(ServiceAction::ACTION_SET_START_ON_BOOT, doc.toJson());
 }
