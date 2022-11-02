@@ -60,14 +60,86 @@ FocusScope {
         id: radioButtonGroup
     }
 
-    // All servers tab content
+    // Tab content: Recommended servers
+    Component {
+        id: listServersRecommended
+
+        VPNFlickable {
+            objectName: "serverCountryViewRecommend"
+            id: vpnFlickableRecommended
+
+            flickContentHeight: serverListRecommended.implicitHeight + listOffset
+            anchors.fill: parent
+
+            Column {
+                id: serverListRecommended
+                spacing: 14
+                width: parent.width
+
+                ListModel {
+                    id: testRecommendedModel
+
+                    ListElement {
+                        name: "Toronto"
+                        // flag: "qrc:/nebula/resources/flags/CA.png"
+                    }
+                    ListElement {
+                        name: "Montreal"
+                        // flag: "qrc:/nebula/resources/flags/CA.png"
+                    }
+                    ListElement {
+                        name: "Vancouver"
+                        // flag: "qrc:/nebula/resources/flags/CA.png"
+                    }
+                    ListElement {
+                        name: "New York City"
+                        // flag: "qrc:/nebula/resources/flags/US.png"
+                    }
+                    ListElement {
+                        name: "Chicago"
+                        // flag: "qrc:/nebula/resources/flags/US.png"
+                    }
+                }
+
+                anchors {
+                    top: parent.top
+                    topMargin: VPNTheme.theme.vSpacingSmall
+                    left: parent.left
+                    leftMargin: VPNTheme.theme.windowMargin
+                    right: parent.right
+                    rightMargin: VPNTheme.theme.windowMargin
+                }
+
+                VPNCollapsibleCard {
+                    title: "Why are these locations recommended?"
+
+                    iconSrc: "qrc:/ui/resources/tip.svg"
+                    contentItem: VPNTextBlock {
+                        text: "These locations are sorted by expected performance."
+                        textFormat: Text.StyledText
+                        Layout.fillWidth: true
+                    }
+                }
+
+                Repeater {
+                    id: recommendedRepeater
+                    model: testRecommendedModel
+                    delegate: Text {
+                        text: name
+                    }
+                }
+            }
+        }
+    }
+
+    // Tab content: All servers
     Component {
         id: listServersAll
 
         VPNFlickable {
-            id: vpnFlickable
-            property alias countries: countriesRepeater
             objectName: "serverCountryView"
+            property alias countries: countriesRepeater
+            id: vpnFlickable
 
             flickContentHeight: serverList.implicitHeight + listOffset
             anchors.fill: parent
@@ -140,52 +212,6 @@ FocusScope {
         }
     }
 
-    // Recommended servers tab content
-    Component {
-        id: listServersRecommended
-
-        VPNFlickable {
-            id: vpnFlickableRecommended
-            objectName: "serverCountryViewRecommend"
-
-            flickContentHeight: serverListRecommended.implicitHeight + listOffset
-            anchors.fill: parent
-
-            Column {
-                id: serverListRecommended
-                spacing: 14
-                width: parent.width
-
-                anchors {
-                    top: parent.top
-                    topMargin: VPNTheme.theme.vSpacingSmall
-                    left: parent.left
-                    leftMargin: VPNTheme.theme.windowMargin
-                    right: parent.right
-                    rightMargin: VPNTheme.theme.windowMargin
-                }
-
-                VPNCollapsibleCard {
-                    title: "Why are these locations recommended?"
-
-                    iconSrc: "qrc:/ui/resources/tip.svg"
-                    contentItem: VPNTextBlock {
-                        text: "These locations are sorted by expected performance."
-                        textFormat: Text.StyledText
-                        Layout.fillWidth: true
-                    }
-                }
-
-                Repeater {
-                    id: countriesRepeater
-                    model: VPNServerCountryModel
-                    delegate: VPNServerCountry {}
-                }
-            }
-
-        }
-    }
-
     VPNTabNavigation {
         id: serverTabs
 
@@ -194,27 +220,29 @@ FocusScope {
 
         tabList: ListModel {
             id: tabButtonList
-            ListElement {
-                tabLabelStringId: "ServersViewTabAll"
-                tabButtonId: "tabAllServers"
-            }
+
             ListElement {
                 tabLabelStringId: "ServersViewTabRecommended"
                 tabButtonId: "tabRecommendedServers"
+            }
+
+            ListElement {
+                tabLabelStringId: "ServersViewTabAll"
+                tabButtonId: "tabAllServers"
             }
         }
 
         stackContent: [
             Loader {
+                sourceComponent: listServersRecommended
+            },
+            Loader {
                 id: loader
                 sourceComponent: listServersAll
 
                 onStatusChanged: if (loader.status === Loader.Ready) {
-                    centerActiveServer(loader.item);
+                    // centerActiveServer(loader.item);
                 }
-            },
-            Loader {
-                sourceComponent: listServersRecommended
             }
         ]
     }
