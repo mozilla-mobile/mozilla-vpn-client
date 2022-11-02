@@ -85,7 +85,6 @@ target_include_directories(networkextension PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 ## TODO: The upstream makefile also makes an attempt to patch the golang runtime
 ## to provide the boot-time clock instead of an uptime clock. We should probably
 ## make an attempt to do the same, somehow?
-## TODO: Also missing, the -sdkroot flag...
 include(${CMAKE_SOURCE_DIR}/src/cmake/golang.cmake)
 add_go_library(libwg-go ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-apple/Sources/WireGuardKitGo/api-apple.go
     GOOS "ios"

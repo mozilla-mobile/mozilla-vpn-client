@@ -39,6 +39,15 @@ function(add_go_library GOTARGET SOURCE)
     endif()
     if(NOT GOLANG_GOARCH)
         execute_process(OUTPUT_VARIABLE GOLANG_GOARCH OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND ${GOLANG_BUILD_TOOL} env GOARCH)
+    else()
+        list(APPEND GOLANG_CGO_CFLAGS -arch ${GOLANG_GOARCH})
+        list(APPEND GOLANG_CGO_LDFLAGS -arch ${GOLANG_GOARCH})
+    endif()
+
+    if(APPLE AND CMAKE_OSX_SYSROOT)
+        execute_process(OUTPUT_VARIABLE SDKROOT OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND xcrun --sdk ${CMAKE_OSX_SYSROOT} --show-sdk-path)
+        list(APPEND GOLANG_CGO_CFLAGS -isysroot ${SDKROOT})
+        list(APPEND GOLANG_CGO_LDFLAGS -isysroot ${SDKROOT})
     endif()
 
     ## The actual commands that do the building.
@@ -48,7 +57,6 @@ function(add_go_library GOTARGET SOURCE)
         SOURCES ${SRC_DEPS} ${DIR_NAME}/go.mod
         COMMAND ${CMAKE_COMMAND} -E env GOCACHE=${GOCACHE}
                     CGO_ENABLED=1
-                    CC=gcc
                     CGO_CFLAGS="${GOLANG_CGO_CFLAGS}"
                     CGO_LDFLAGS="${GOLANG_CGO_LDFLAGS}"
                     GOOS="${GOLANG_GOOS}"
