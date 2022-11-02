@@ -106,10 +106,12 @@ void IAPHandler::registerProducts(const QByteArray& data) {
   }
 
   if (m_products.isEmpty()) {
-    logger.error() << "No pending products (nothing has been registered). "
-                      "Unable to recover from "
-                      "this scenario.";
-    return;
+    // Add a "web" product placeholder
+    Product product;
+    product.m_name = "web";
+    product.m_type = ProductUnknown;
+    product.m_featuredProduct = true;
+    m_products.append(product);
   }
 
   nativeRegisterProducts();

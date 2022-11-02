@@ -5,8 +5,10 @@
 #include "platforms/dummy/dummyiaphandler.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
 
 #include <QCoreApplication>
+#include <QTimer>
 
 namespace {
 Logger logger(LOG_IAP, "DummyIAPHandler");
@@ -18,10 +20,16 @@ DummyIAPHandler::DummyIAPHandler(QObject* parent) : IAPHandler(parent) {
 
 DummyIAPHandler::~DummyIAPHandler() { MVPN_COUNT_DTOR(DummyIAPHandler); }
 
-void DummyIAPHandler::nativeRegisterProducts() {}
+void DummyIAPHandler::nativeRegisterProducts() {
+  QTimer::singleShot(200, this,
+                     [this]() { emit productsRegistrationCompleted(); });
+}
 
 void DummyIAPHandler::nativeStartSubscription(Product* product) {
-  Q_UNUSED(product)
+  Q_ASSERT(product->m_name == "web");
+  MozillaVPN::instance()->logout();
+  MozillaVPN::instance()->authenticateWithType(
+      MozillaVPN::AuthenticationType::AuthenticationInBrowser);
 }
 
 void DummyIAPHandler::nativeRestoreSubscription() {}
