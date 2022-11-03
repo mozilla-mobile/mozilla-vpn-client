@@ -299,6 +299,11 @@ This step needs to be executed each time XCode updates.
 
 ### How to build from source code for iOS
 
+There are two ways to build the project on iOS, using the legacy Qt build system `qmake`
+and we have also added experimental support for `cmake`.
+
+#### Building with QMake
+
 1. On iOS, we compile the app using
 [XCode](https://developer.apple.com/xcode/) version 12 or higher.
 
@@ -346,7 +351,7 @@ command:
 xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project "Mozilla VPN.xcodeproj"
 ```
 
-### How to build from source for iOS with CMake (Experimental)
+#### Building with CMake (Experimental)
 
 We also support building from sources for iOS using CMake. This is a work in progress and these
 instructions may be subject to change as we figure out what works and what doesn't.
@@ -357,7 +362,7 @@ version 6.3.2.
 
 2. We use `qt-cmake` from the Qt installation to configure the XCode project.
 ```bash
-/Users/example/Qt/6.3.2/ios/bin/qt-cmake . -B build
+/Users/example/Qt/6.3.2/ios/bin/qt-cmake . -B build -GXcode
 ```
 
 Some variables that might be useful when configuring the project:

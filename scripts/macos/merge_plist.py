@@ -10,7 +10,7 @@ import shutil
 import subprocess
 
 # Parse arguments to determine what to do.
-parser = argparse.ArgumentParser(description='Merge two more plist files')
+parser = argparse.ArgumentParser(description='Merge two more or more plist files')
 parser.add_argument('input', metavar='INFILE', type=str, nargs='+',
     help='Template file to process')
 parser.add_argument('-o', '--output', metavar='DST', type=str, action='store',

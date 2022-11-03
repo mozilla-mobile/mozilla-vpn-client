@@ -28,7 +28,6 @@ set_target_properties(mozillavpn PROPERTIES
 target_include_directories(mozillavpn PRIVATE ${CMAKE_SOURCE_DIR})
 
 get_target_property(QML_GENERATED_IMPORT_DIR mozillavpn QT_QML_MODULE_OUTPUT_DIRECTORY)
-message("QML Imports generated at ${QML_GENERATED_IMPORT_DIR}")
 file(MAKE_DIRECTORY ${QML_GENERATED_IMPORT_DIR})
 qt6_import_qml_plugins(mozillavpn)
 
@@ -139,6 +138,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-apple/Sources/WireGuardKit/PrivateKey.swift
 )
 
-## Install the Network Exetnsion into the bundle.
+## Install the Network Extension into the bundle.
 add_dependencies(mozillavpn networkextension)
 set_target_properties(mozillavpn PROPERTIES XCODE_EMBED_APP_EXTENSIONS networkextension)
