@@ -110,7 +110,10 @@ endif()
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     list(APPEND QML_TEST_ARGS -platform offscreen)
 endif()
-add_test(NAME qml_tests COMMAND qml_tests ${QML_TEST_ARGS})
+file(GLOB QML_TEST_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "tst_*.qml")
+foreach(QML_SOURCE ${QML_TEST_SOURCES})
+    add_test(NAME ${QML_SOURCE} COMMAND qml_tests ${QML_TEST_ARGS} -input ${CMAKE_CURRENT_SOURCE_DIR}/${QML_SOURCE})
+endforeach()
 
 qt6_add_qml_module(qml_tests
   URI Mozilla.VPN.qmlcomponents

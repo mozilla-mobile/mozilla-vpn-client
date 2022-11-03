@@ -13,6 +13,7 @@ Item {
 
     TestCase {
         name: "MainTestsGleanMocks"
+        when: windowShown
 
         property var spyApplicationId
         property var spyUploadEnabledInitialize
