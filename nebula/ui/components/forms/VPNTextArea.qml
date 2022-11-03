@@ -74,8 +74,10 @@ Item {
                 // After gaining initial focus or typing in TextArea the screen reader
                 // fails to narrate any accessible content and action. After regaining
                 // active focus the screen reader keeps working as expected.
-                textArea.focus = false;
-                textArea.forceActiveFocus();
+                if (Qt.platform.os === "osx") {
+                    textArea.focus = false;
+                    textArea.forceActiveFocus();
+                }
             }
 
             VPNTextBlock {

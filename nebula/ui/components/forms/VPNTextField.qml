@@ -51,8 +51,10 @@ TextField {
     // fails to narrate any accessible content and action. After regaining
     // active focus the screen reader keeps working as expected.
     onTextChanged: {
-        textField.focus = false;
-        textField.forceActiveFocus();
+        if (Qt.platform.os === "osx") {
+            textField.focus = false;
+            textField.forceActiveFocus();
+        }
     }
 
     Text {
