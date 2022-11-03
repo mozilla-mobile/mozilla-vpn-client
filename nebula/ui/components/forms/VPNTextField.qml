@@ -46,13 +46,15 @@ TextField {
     onActiveFocusChanged: if (focus && typeof(vpnFlickable) !== "undefined" && vpnFlickable.ensureVisible) {
         vpnFlickable.ensureVisible(textField);
     }
-    // This is a workaround to make VoiceOver on macOS work.
+    // This is a workaround for VoiceOver on macOS: https://bugreports.qt.io/browse/QTBUG-108189
     // After gaining initial focus or typing in TextField the screen reader
     // fails to narrate any accessible content and action. After regaining
     // active focus the screen reader keeps working as expected.
     onTextChanged: {
-        textField.focus = false;
-        textField.forceActiveFocus();
+        if (Qt.platform.os === "osx") {
+            textField.focus = false;
+            textField.forceActiveFocus();
+        }
     }
 
     Text {
