@@ -21,6 +21,9 @@ Window {
 
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
 
+    LayoutMirroring.enabled: VPNLocalizer.isRightToLeft
+    LayoutMirroring.childrenInherit: true
+
     function fullscreenRequired() {
         return Qt.platform.os === "android" ||
                 Qt.platform.os === "ios" ||
