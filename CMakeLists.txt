@@ -58,6 +58,13 @@ if(APPLE)
     set(CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM ${BUILD_VPN_DEVELOPMENT_TEAM})
     set(CMAKE_XCODE_ATTRIBUTE_GROUP_ID_IOS ${BUILD_IOS_GROUP_IDENTIFIER})
 
+    ## HACK: Force iphone simulator builds to target for x86_64 instead of the native
+    ## arch. This is due to buggy behaviour in Qt which uses the target architecture
+    ## to detect simulator builds, and leads to breakage on M1/M2 macbooks.
+    if(CMAKE_OSX_SYSROOT STREQUAL "iphonesimulator")
+        set(CMAKE_OSX_ARCHITECTURES x86_64)
+    endif()
+
     if(IOS)
         set(CMAKE_OSX_DEPLOYMENT_TARGET 13.0)
     else()

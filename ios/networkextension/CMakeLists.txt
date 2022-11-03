@@ -81,12 +81,29 @@ target_sources(networkextension PRIVATE
 target_include_directories(networkextension PRIVATE ${CMAKE_SOURCE_DIR})
 target_include_directories(networkextension PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
+## HACK: Build only the first architecture, this will break universal builds
+## for now, but they are already broken for mobile, which uses the arch to
+## determine iOS vs. simulator builds :)
+if(NOT CMAKE_OSX_ARCHITECTURES)
+    set(OSXARCH arm64)
+else()
+    list(GET CMAKE_OSX_ARCHITECTURES 0 OSXARCH)
+endif()
+
 ## Build the wireguard go library
 ## TODO: The upstream makefile also makes an attempt to patch the golang runtime
 ## to provide the boot-time clock instead of an uptime clock. We should probably
 ## make an attempt to do the same, somehow?
 include(${CMAKE_SOURCE_DIR}/src/cmake/golang.cmake)
+if(OSXARCH STREQUAL "x86_64")
+    set(GOARCH amd64)
+else()
+    set(GOARCH ${FIRST_OSX_ARCHITECTURE})
+endif()
 add_go_library(libwg-go ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-apple/Sources/WireGuardKitGo/api-apple.go
-    GOOS "ios"
-    GOARCH "arm64")
+    GOOS ios
+    GOARCH ${GOARCH}
+    CGO_CFLAGS -arch ${OSXARCH}
+    CGO_LDFLAGS -arch ${OSXARCH}
+)
 target_link_libraries(networkextension PRIVATE libwg-go)

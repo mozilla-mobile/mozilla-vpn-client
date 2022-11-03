@@ -367,15 +367,13 @@ Some variables that might be useful when configuring the project:
    identifier. This defaults to `org.mozilla.ios.FirefoxVPN` if not set.
  - `BUILD_VPN_DEVELOPMENT_TEAM=<Development Team ID>`: can be set to change the development
    team used for XCode certificates. This defaults to `43AQ936H96` if not set.
+ - `CMAKE_OSX_SYSROOT="iphonesimulator"` to build for the iOS simulator.
 
 3. Open the generated XCode project with `open build/Mozilla\ VPN.xcodeproj`
 
 4. Select the `mozillavpn` target and `Any iOS Device (arm64)` as the build configuration.
 
 5. Click on the Play button to start building and signing of the Mozilla VPN app.
-
-TODO: Some things that still need figuring out:
- - How to build for the iOS simulator (eg: `-DCMAKE_OSX_SYSROOT="iphonesimulator"`)
 
 ### How to build from source code for Android
 
