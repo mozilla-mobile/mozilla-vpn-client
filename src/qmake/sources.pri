@@ -120,7 +120,6 @@ SOURCES += \
         pingsender.cpp \
         pingsenderfactory.cpp \
         platforms/dummy/dummyapplistprovider.cpp \
-        platforms/dummy/dummyiaphandler.cpp \
         platforms/dummy/dummynetworkwatcher.cpp \
         platforms/dummy/dummypingsender.cpp \
         profileflow.cpp \
@@ -169,6 +168,7 @@ SOURCES += \
         update/versionapi.cpp \
         urlopener.cpp \
         update/webupdater.cpp \
+        webpurchasehandler.cpp \
         websocket/exponentialbackoffstrategy.cpp \
         websocket/pushmessage.cpp \
         websocket/websockethandler.cpp
@@ -292,7 +292,6 @@ HEADERS += \
         pingsender.h \
         pingsenderfactory.h \
         platforms/dummy/dummyapplistprovider.h \
-        platforms/dummy/dummyiaphandler.h \
         platforms/dummy/dummynetworkwatcher.h \
         platforms/dummy/dummypingsender.h \
         profileflow.h \
@@ -342,6 +341,7 @@ HEADERS += \
         update/versionapi.h \
         update/webupdater.h \
         urlopener.h \
+        webpurchasehandler.h \
         websocket/exponentialbackoffstrategy.h \
         websocket/pushmessage.h \
         websocket/websockethandler.h

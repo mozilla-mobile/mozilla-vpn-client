@@ -248,8 +248,8 @@ ScreenData s_screens[] = {
         [](Navigator::Screen*) -> int8_t {
           return Feature::get(Feature::Feature_inAppProductSelection)
                          ->isSupported()
-                     ? -1
-                     : 99;
+                     ? 99
+                     : -1;
         },
         []() -> bool { return false; }),
     ScreenData(
@@ -260,8 +260,8 @@ ScreenData s_screens[] = {
         [](Navigator::Screen*) -> int8_t {
           return Feature::get(Feature::Feature_inAppProductSelection)
                          ->isSupported()
-                     ? 99
-                     : -1;
+                     ? -1
+                     : 99;
         },
         []() -> bool { return false; }),
     ScreenData(

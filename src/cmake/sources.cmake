@@ -242,8 +242,6 @@ target_sources(mozillavpn PRIVATE
     pingsenderfactory.h
     platforms/dummy/dummyapplistprovider.cpp
     platforms/dummy/dummyapplistprovider.h
-    platforms/dummy/dummyiaphandler.cpp
-    platforms/dummy/dummyiaphandler.h
     platforms/dummy/dummynetworkwatcher.cpp
     platforms/dummy/dummynetworkwatcher.h
     platforms/dummy/dummypingsender.cpp
@@ -341,6 +339,8 @@ target_sources(mozillavpn PRIVATE
     update/webupdater.h
     urlopener.cpp
     urlopener.h
+    webpurchasehandler.cpp
+    webpurchasehandler.h
     websocket/exponentialbackoffstrategy.cpp
     websocket/exponentialbackoffstrategy.h
     websocket/pushmessage.cpp

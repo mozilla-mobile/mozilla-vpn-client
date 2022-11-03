@@ -1316,29 +1316,24 @@ void MozillaVPN::quit() {
 }
 
 void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
-  // ToDo - Need to think about this from the web perspective
+  logger.debug() << "Subscription started" << productIdentifier;
+  setState(StateSubscriptionInProgress);
+  PurchaseHandler* iap = PurchaseHandler::instance();
+
   if (Feature::get(Feature::Feature_inAppProductSelection)->isSupported()) {
-    logger.debug() << "Subscription started" << productIdentifier;
-
-    setState(StateSubscriptionInProgress);
-
-    PurchaseHandler* iap = PurchaseHandler::instance();
-
     // If IAP is not ready (race condition), register the products again.
     if (!iap->hasProductsRegistered()) {
       TaskScheduler::scheduleTask(new TaskProducts());
       TaskScheduler::scheduleTask(new TaskFunction([this, productIdentifier]() {
         subscriptionStarted(productIdentifier);
       }));
-
       return;
     }
-
-    iap->startSubscription(productIdentifier);
-
-    emit recordGleanEventWithExtraKeys(GleanSample::iapSubscriptionStarted,
-                                       {{"sku", productIdentifier}});
   }
+
+  iap->startSubscription(productIdentifier);
+  emit recordGleanEventWithExtraKeys(GleanSample::iapSubscriptionStarted,
+                                     {{"sku", productIdentifier}});
 }
 
 void MozillaVPN::restoreSubscriptionStarted() {
