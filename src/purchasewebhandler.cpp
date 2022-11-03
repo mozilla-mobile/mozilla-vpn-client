@@ -18,20 +18,18 @@ Logger logger(LOG_IAP, "PurchaseWebHandler");
 PurchaseWebHandler::PurchaseWebHandler(QObject* parent)
     : PurchaseHandler(parent) {
   MVPN_COUNT_CTOR(PurchaseWebHandler);
-  emit productsRegistered();
 }
 
 PurchaseWebHandler::~PurchaseWebHandler() {
   MVPN_COUNT_DTOR(PurchaseWebHandler);
 }
 
-void PurchaseWebHandler::startSubscription(const QString& productIdentifier) {
-  if (productIdentifier != "web") {
-    logger.error() << "Wrong productIdentifier requested, cannot recover from "
-                      "this scenario."
-                   << productIdentifier;
-    return;
-  }
+void PurchaseWebHandler::subscribe(const QString& productIdentifier) {
+  logger.debug() << "Subscription initiated.";
+  emit subscriptionStarted(productIdentifier);
+}
+
+void PurchaseWebHandler::startSubscription() {
   m_subscriptionState = eActive;
   logger.debug() << "Starting subscription on web.";
   // Although we are already logged in, the mechanism on guardian for getting to
@@ -43,8 +41,7 @@ void PurchaseWebHandler::startSubscription(const QString& productIdentifier) {
       MozillaVPN::AuthenticationType::AuthenticationInBrowser));
 }
 
-void PurchaseWebHandler::nativeRestoreSubscription() {}
-void PurchaseWebHandler::nativeRegisterProducts() {}
-void PurchaseWebHandler::nativeStartSubscription(Product* product) {
-  Q_UNUSED(product);
+void PurchaseWebHandler::stopSubscription() {
+  logger.debug() << "Stop subscription";
+  m_subscriptionState = eInactive;
 }

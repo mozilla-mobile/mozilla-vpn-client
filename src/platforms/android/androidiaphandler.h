@@ -5,10 +5,10 @@
 #ifndef ANDROIDIAPHANDLER_H
 #define ANDROIDIAPHANDLER_H
 
-#include "purchasehandler.h"
+#include "purchaseiaphandler.h"
 #include "jni.h"
 
-class AndroidIAPHandler final : public PurchaseHandler {
+class AndroidIAPHandler final : public PurchaseIAPHandler {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AndroidIAPHandler)
 

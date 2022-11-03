@@ -246,8 +246,7 @@ ScreenData s_screens[] = {
         "qrc:/ui/screens/ScreenSubscriptionNeeded.qml",
         QVector<MozillaVPN::State>{MozillaVPN::StateSubscriptionNeeded},
         [](Navigator::Screen*) -> int8_t {
-          return Feature::get(Feature::Feature_inAppProductSelection)
-                         ->isSupported()
+          return Feature::get(Feature::Feature_inAppPurchase)->isSupported()
                      ? 99
                      : -1;
         },
@@ -258,8 +257,7 @@ ScreenData s_screens[] = {
         "qrc:/ui/screens/ScreenSubscriptionNeededWeb.qml",
         QVector<MozillaVPN::State>{MozillaVPN::StateSubscriptionNeeded},
         [](Navigator::Screen*) -> int8_t {
-          return Feature::get(Feature::Feature_inAppProductSelection)
-                         ->isSupported()
+          return Feature::get(Feature::Feature_inAppPurchase)->isSupported()
                      ? -1
                      : 99;
         },

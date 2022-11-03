@@ -2,53 +2,22 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef IAPHANDLER_H
-#define IAPHANDLER_H
+#ifndef PURCHASEHANDLER_H
+#define PURCHASEHANDLER_H
 
 #include <QAbstractListModel>
-#include <QList>
-
-class QJsonValue;
+#include <QObject>
 
 class PurchaseHandler : public QAbstractListModel {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(PurchaseHandler)
 
  public:
-  enum ProductType {
-    ProductMonthly,
-    ProductHalfYearly,
-    ProductYearly,
-    ProductUnknown = -1
-  };
-  Q_ENUM(ProductType);
-  enum ModelRoles {
-    ProductIdentifierRole = Qt::UserRole + 1,
-    ProductPriceRole,
-    ProductMonthlyPriceRole,
-    ProductTypeRole,
-    ProductFeaturedRole,
-    ProductSavingsRole,
-    ProductTrialDaysRole,
-  };
-
   static PurchaseHandler* createInstance();
   static PurchaseHandler* instance();
-  bool hasProductsRegistered() const {
-    return m_productsRegistrationState == eRegistered;
-  }
 
-  // Returns the latest SKU the started to Subcribe.
-  // Is empty if the user already had a subscription or never started the
-  // subscription flow.
-  const QString& currentSKU() const { return m_currentSKU; }
-
-  Q_INVOKABLE void subscribe(const QString& productIdentifier);
-  Q_INVOKABLE void restore();
-
-  void registerProducts(const QByteArray& data);
-  void startSubscription(const QString& productIdentifier);
-  void startRestoreSubscription();
+  Q_INVOKABLE virtual void subscribe(
+      const QString& productIdentifier = QString());
 
   // QAbstractListModel methods
   QHash<int, QByteArray> roleNames() const override;
@@ -56,68 +25,20 @@ class PurchaseHandler : public QAbstractListModel {
   QVariant data(const QModelIndex& index, int role) const override;
 
  signals:
-  void productsRegistered();
-  void productsRegistrationStopped();
-
-  void subscriptionStarted(const QString& productIdentifier);
-  void restoreSubscriptionStarted();
-  void subscriptionFailed();
-  void subscriptionCanceled();
-  void subscriptionCompleted();
-  void alreadySubscribed();
-  void billingNotAvailable();
-  void subscriptionNotValidated();
+  virtual void subscriptionStarted(const QString& productIdentifier);
 
  public slots:
-  void stopSubscription();
-  // Called by the native code delegate
-  void unknownProductRegistered(const QString& identifier);
-  void productsRegistrationCompleted();
-  void stopProductsRegistration();
+  virtual void stopSubscription();
+  virtual void startSubscription();
 
  protected:
   PurchaseHandler(QObject* parent);
   ~PurchaseHandler();
 
-  struct Product {
-    QString m_name;
-    QString m_price;
-    QString m_monthlyPrice;
-    int m_trialDays = 0;
-    // This is not exposed and it's not localized. It's used to compute the
-    // saving %.
-    double m_nonLocalizedMonthlyPrice = 0;
-    ProductType m_type = PurchaseHandler::ProductMonthly;
-    bool m_featuredProduct = false;
-    // This is the % compared with the montly subscription.
-    uint32_t m_savings = 0;
-    // Used by individual implementations to store extra pieces they need
-    void* m_extra = nullptr;
-  };
-
-  virtual void nativeRegisterProducts() = 0;
-  virtual void nativeStartSubscription(Product* product) = 0;
-  virtual void nativeRestoreSubscription() = 0;
-
-  enum {
-    eNotRegistered,
-    eRegistering,
-    eRegistered,
-  } m_productsRegistrationState = eNotRegistered;
-
   enum State {
     eActive,
     eInactive,
   } m_subscriptionState = eInactive;
-
-  void addProduct(const QJsonValue& value);
-  void computeSavings();
-  void sortPlans();
-  static ProductType productTypeToEnum(const QString& type);
-  static uint32_t productTypeToMonthCount(ProductType type);
-  Product* findProduct(const QString& productIdentifier);
-  QList<Product> m_products;
-  QString m_currentSKU;
 };
 
-#endif  // IAPHANDLER_H
+#endif  // PURCHASEHANDLER_H

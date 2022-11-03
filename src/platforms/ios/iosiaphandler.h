@@ -5,9 +5,9 @@
 #ifndef IOSIAPHANDLER_H
 #define IOSIAPHANDLER_H
 
-#include "purchasehandler.h"
+#include "purchaseiaphandler.h"
 
-class IOSIAPHandler final : public PurchaseHandler {
+class IOSIAPHandler final : public PurchaseIAPHandler {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(IOSIAPHandler)
 

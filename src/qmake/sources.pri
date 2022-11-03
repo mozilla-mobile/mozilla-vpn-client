@@ -80,7 +80,6 @@ SOURCES += \
         hawkauth.cpp \
         keyregenerator.cpp \
         hkdf.cpp \
-        purchasehandler.cpp \
         imageproviderfactory.cpp \
         inspector/inspectorhandler.cpp \
         inspector/inspectoritempicker.cpp \
@@ -123,6 +122,9 @@ SOURCES += \
         platforms/dummy/dummynetworkwatcher.cpp \
         platforms/dummy/dummypingsender.cpp \
         profileflow.cpp \
+        purchasehandler.cpp \
+        purchaseiaphandler.cpp \
+        purchasewebhandler.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
         rfc/rfc1112.cpp \
@@ -168,7 +170,6 @@ SOURCES += \
         update/versionapi.cpp \
         urlopener.cpp \
         update/webupdater.cpp \
-        webpurchasehandler.cpp \
         websocket/exponentialbackoffstrategy.cpp \
         websocket/pushmessage.cpp \
         websocket/websockethandler.cpp
@@ -252,7 +253,6 @@ HEADERS += \
         hawkauth.h \
         keyregenerator.h \
         hkdf.h \
-        purchasehandler.h \
         imageproviderfactory.h \
         inspector/inspectorhandler.h \
         inspector/inspectoritempicker.h \
@@ -295,6 +295,9 @@ HEADERS += \
         platforms/dummy/dummynetworkwatcher.h \
         platforms/dummy/dummypingsender.h \
         profileflow.h \
+        purchasehandler.h \
+        purchaseiaphandler.h \
+        purchasewebhandler.h \
         qmlengineholder.h \
         releasemonitor.h \
         rfc/rfc1112.h \
@@ -341,7 +344,6 @@ HEADERS += \
         update/versionapi.h \
         update/webupdater.h \
         urlopener.h \
-        webpurchasehandler.h \
         websocket/exponentialbackoffstrategy.h \
         websocket/pushmessage.h \
         websocket/websockethandler.h

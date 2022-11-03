@@ -339,8 +339,8 @@ target_sources(mozillavpn PRIVATE
     update/webupdater.h
     urlopener.cpp
     urlopener.h
-    webpurchasehandler.cpp
-    webpurchasehandler.h
+    purchasewebhandler.cpp
+    purchasewebhandler.h
     websocket/exponentialbackoffstrategy.cpp
     websocket/exponentialbackoffstrategy.h
     websocket/pushmessage.cpp
