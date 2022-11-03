@@ -6,7 +6,6 @@
 #include "collator.h"
 #include "constants.h"
 #include "inspector/inspectorhandler.h"
-#include "l18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "serveri18n.h"
