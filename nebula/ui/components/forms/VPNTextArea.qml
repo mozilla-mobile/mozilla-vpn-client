@@ -70,7 +70,7 @@ Item {
             onTextChanged: {
                 handleOnTextChanged(textArea.text);
 
-                // This is a workaround to make VoiceOver on macOS work.
+                // This is a workaround for VoiceOver on macOS: https://bugreports.qt.io/browse/QTBUG-108189
                 // After gaining initial focus or typing in TextArea the screen reader
                 // fails to narrate any accessible content and action. After regaining
                 // active focus the screen reader keeps working as expected.
