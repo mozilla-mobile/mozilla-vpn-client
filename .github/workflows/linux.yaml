@@ -101,21 +101,6 @@ jobs:
 
       - name: Install Build Dependencies
         run: |
-          # Install and build OpenSSL from scratch.
-          #
-          # Using `yum install openssl` doesn't seem to make cmake happy,
-          # so we have to do it the hard way.
-          yum -y install perl git
-          git clone https://github.com/openssl/openssl.git
-          cd openssl
-          ./Configure
-          make
-          # I think the issue with `yum install` is that it will install the package
-          # in a folder Cmake is not expecting, while this command always users /usr/local
-          make install
-          cd ..
-
-          # Install the other (not picky) build deps.
           yum -y install rpm-build rpmdevtools yum-utils
           yum-builddep -y mozillavpn.spec
 

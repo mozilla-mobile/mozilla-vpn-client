@@ -19,7 +19,7 @@ BuildRequires: golang >= 1.13
 BuildRequires: polkit-devel
 BuildRequires: python3-yaml
 BuildRequires: cargo
-BuildRequires: openssl
+BuildRequires: openssl-devel
 BuildRequires: qt6-qtbase-devel >= 6.0
 BuildRequires: qt6-qtnetworkauth-devel >= 6.0
 BuildRequires: qt6-qtdeclarative-devel >= 6.0
