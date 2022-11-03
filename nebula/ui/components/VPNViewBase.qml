@@ -45,7 +45,7 @@ Item {
                 left: parent.left
                 right: parent.right
                 topMargin: VPNTheme.theme.windowMargin
-                bottomMargin: navbar.visible ? 0 : 40
+                bottomMargin: navbar.visible ? 0 : VPNTheme.theme.rowHeight
             }
         }
     }

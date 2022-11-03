@@ -13,11 +13,15 @@ import components.forms 0.1
 ColumnLayout {
     id: layout
 
-    spacing: 24
+    spacing: VPNTheme.theme.vSpacing
+
+    Item {
+        Layout.fillHeight: window.fullscreenRequired()
+    }
 
     VPNPanel {
         anchors.horizontalCenter: undefined
-        Layout.topMargin: layout.height * (window.fullscreenRequired() ? 0.3 :  0.2)
+        Layout.topMargin: window.fullscreenRequired() ? 0 : layout.height * 0.2
         Layout.preferredHeight: height
         Layout.preferredWidth: width
         Layout.alignment: Qt.AlignHCenter

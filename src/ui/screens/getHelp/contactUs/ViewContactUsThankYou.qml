@@ -14,11 +14,15 @@ ColumnLayout {
     id: base
     property string _emailAddress: ""
 
-    spacing: 24
+    spacing: VPNTheme.theme.vSpacing
+
+    Item {
+        Layout.fillHeight: window.fullscreenRequired()
+    }
 
     VPNPanel {
         anchors.horizontalCenter: undefined
-        Layout.topMargin: base.height * (window.fullscreenRequired() ? 0.3 :  0.2)
+        Layout.topMargin: window.fullscreenRequired() ? 0 : base.height * 0.2
         Layout.preferredHeight: height
         Layout.preferredWidth: width
         Layout.alignment: Qt.AlignHCenter
