@@ -5,6 +5,8 @@
 #include "localizer.h"
 #include "collator.h"
 #include "constants.h"
+#include "inspector/inspectorhandler.h"
+#include "l18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "serveri18n.h"
@@ -408,4 +410,9 @@ QString Localizer::majorLanguageCode(const QString& aCode) {
   }
 
   return code;
+}
+
+bool Localizer::isRightToLeft() const {
+  return InspectorHandler::forceRTL() ||
+         m_locale.textDirection() == Qt::RightToLeft;
 }
