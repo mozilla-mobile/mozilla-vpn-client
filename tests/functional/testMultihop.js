@@ -51,7 +51,7 @@ describe('Server list', function() {
     assert(await vpn.getElementProperty(homeScreen.selectMultiHopServerView.VPN_COLLAPSIBLE_CARD, 'expanded'))
   });
   
-  it.skip('check the countries and cities for multihop entries', async () => {
+  it('check the countries and cities for multihop entries', async () => {
     await vpn.waitForElementAndClick(homeScreen.selectSingleHopServerView.MULTIHOP_SELECTOR_TAB);
     await vpn.waitForElementAndClick(homeScreen.selectMultiHopServerView.ENTRY_BUTTON);
 
@@ -73,8 +73,8 @@ describe('Server list', function() {
           'false') {
         await vpn.clickOnElement(countryId);
       }
-      
-      for (let city of server.cities) {        
+
+      for (let city of server.cities) {
         const cityId = homeScreen.serverListView.generateCityId(countryId, city.name);
         console.log('  Waiting for cityId:', cityId);
         await vpn.waitForElement(cityId);
@@ -336,7 +336,7 @@ describe('Server list', function() {
             newCurrentCountry}, ${newCurrentCity}`);
   });
 
-  it.skip('Server switching -- different country different cities', async () => {
+  it('Server switching -- different country different cities', async () => {
     await actions.settings.setServerSwitchNotification(true)
     await actions.settings.setConnectionChangeNotification(true)
 
@@ -447,7 +447,7 @@ describe('Server list', function() {
             newCurrentCountry}, ${newCurrentCity}`);
   });
 
-  it.skip('Single and multihop switching', async () => {
+  it('Single and multihop switching', async () => {
     await actions.settings.setServerSwitchNotification(true)
     await actions.settings.setConnectionChangeNotification(true)
 
