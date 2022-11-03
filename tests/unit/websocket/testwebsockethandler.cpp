@@ -38,13 +38,12 @@ void MockServer::open() {
             &MockServer::onNewConnection);
     m_port = m_pWebSocketServer->serverPort();
   } else {
-    qWarning() << "Failed to open websockets:" << m_pWebSocketServer->errorString();
+    qWarning() << "Failed to open websockets:"
+               << m_pWebSocketServer->errorString();
   }
 }
 
-QString MockServer::url() {
-  return QString("ws://localhost:%1").arg(m_port);
-}
+QString MockServer::url() { return QString("ws://localhost:%1").arg(m_port); }
 
 /**
  * @brief Ackowledges a new client has connected to the server.
