@@ -55,7 +55,7 @@ add_custom_target(vpnglean_ffi
         ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/debug/${LIBNAME}
         ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/release/${LIBNAME}
         ${CMAKE_CURRENT_BINARY_DIR}/${HEADER_FILE}
-    COMMAND rustup target add ${RUST_ARCH}
+    COMMAND ${CMAKE_COMMAND} -E env rustup target add ${RUST_ARCH}
     COMMAND ${CMAKE_COMMAND} -E env
                 BUILD_ID=${BUILD_ID}
                 APP_VERSION=${CMAKE_PROJECT_VERSION}
