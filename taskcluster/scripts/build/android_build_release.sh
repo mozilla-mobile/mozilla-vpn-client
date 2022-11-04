@@ -13,12 +13,6 @@ git submodule update
 echo "Importing translations"
 ./scripts/utils/import_languages.py
 
-# Install Rust
-curl https://sh.rustup.rs -sSf | sh -s -- -y
-export PATH="$HOME/.cargo/bin:$PATH"
-# Install Rust Android targets
-rustup target add x86_64-linux-android i686-linux-android armv7-linux-androideabi aarch64-linux-android
-
 # Get Secrets for building
 echo "Fetching Tokens!"
 ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k adjust -f adjust_token

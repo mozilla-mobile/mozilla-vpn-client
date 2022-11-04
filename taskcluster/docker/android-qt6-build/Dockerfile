@@ -33,6 +33,8 @@ RUN apt-get -q update &&\
                python3-pip wget git rsync ccache make patch &&\
     #Install QT
     python3 -m pip install aqtinstall
+RUN wget https://sh.rustup.rs && sh index.html -y &&\
+    ~/.cargo/bin/rustup target add x86_64-linux-android i686-linux-android armv7-linux-androideabi aarch64-linux-android
 RUN python3 -m aqt install-qt --outputdir /opt linux desktop ${QT_VERSION} gcc_64
 RUN python3 -m aqt install-qt --outputdir /opt linux android ${QT_VERSION} ${ANDROID_ARCH} -m all &&\
     #Download Additional stuff that is not in a repo
@@ -68,7 +70,7 @@ ENV ANDROID_NDK_ROOT="/opt/NDK/${NDK_VERSION}"
 ENV ANDROID_NDK_HOME="/opt/NDK/${NDK_VERSION}"
 ENV QT_HOST_PATH=/opt/${QT_VERSION}/gcc_64
 
-ENV PATH="/opt/${QT_VERSION}/gcc_64/bin:${QTPATH}/bin:/opt/cmdline-tools/bin:/opt/android/sdk/cmake/${CMAKE_VERSION}/bin:${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin:${PATH}"
+ENV PATH="/opt/${QT_VERSION}/gcc_64/bin:${QTPATH}/bin:/opt/cmdline-tools/bin:/opt/android/sdk/cmake/${CMAKE_VERSION}/bin:${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin:~/.cargo/bin:${PATH}"
 ENV XDG_CACHE_HOME ="/opt/"
 
 VOLUME /builds/worker/checkouts
