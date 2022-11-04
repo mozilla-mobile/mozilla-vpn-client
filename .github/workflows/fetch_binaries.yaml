@@ -1,0 +1,37 @@
+name: Publish Binaries to GH releases
+
+# This task will on every created release automaticly look
+# at archive.mozilla.org and upload files under the 
+# GH-Release tab. 
+#
+
+on:
+  release:
+    types: [published] 
+
+jobs:
+  upload_bin_archive:
+    name: ${{matrix.archive_folders.filename}} - Upload from archive.mozilla.org
+    strategy:
+        matrix:
+          # Folders from archive that should be forwarded
+          archive_folders: [
+            { folder: "windows",filename: "MozillaVPN.msi"},
+            { folder: "macos", filename: "MozillaVPN.pkg"}
+          ]
+    runs-on: ubuntu-latest
+    steps:
+        - name: Clone repository
+          uses: actions/checkout@v2
+        - name: Get File
+          run: | 
+            TAG=${{github.ref_name}}
+            VERSION=${TAG:1}
+            URL="https://archive.mozilla.org/pub/vpn/releases/${VERSION}/${{matrix.archive_folders.folder}}/${{matrix.archive_folders.filename}}"
+            curl $URL -o ${{matrix.archive_folders.filename}}
+        - name: Publish ${{matrix.archive_folders.filename}}
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          run: | 
+            gh release upload ${{github.ref_name}} ${{matrix.archive_folders.filename}}
+          
