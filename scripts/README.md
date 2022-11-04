@@ -22,16 +22,8 @@ TODO: unify build.sh and script.sh (or remove build.sh)
 
 # MacOS-specific scripts
 
-- ./macos/apple_compile.sh - compile the client for iOS or macOS. See the main README.md file.
-- ./macos/utils/xcode_patcher.rb - tool to patch xcode project
-- ./macos/import_pkg_resources.py - configure resources for the PKG generation
-
-TODO:
-2. remove/merge/move macos_build.sh
-
-# Windows-specific scripts
-
-- ./windows/compile.bat - compile the client
+- ./macos/apple_compile.sh - compile the client for iOS. See the main README.md file.
+- ./macos/xcode_patcher.rb - tool to patch xcode project
 
 # CI tools
 

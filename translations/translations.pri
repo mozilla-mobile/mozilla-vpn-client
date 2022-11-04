@@ -9,9 +9,6 @@ exists($$PWD/generated/translations.qrc) {
 } else {
     error("No translations.qrc! Have you imported the languages with ./scripts/utils/import_languages.py?")
 }
-macos {
-   include($$PWD/generated/macos.pri)
-}
 
 INCLUDEPATH += $$PWD/generated
 RESOURCES += $$PWD/servers.qrc

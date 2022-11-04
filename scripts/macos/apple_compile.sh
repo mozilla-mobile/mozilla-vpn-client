@@ -163,7 +163,7 @@ PROJECT="Mozilla VPN.xcodeproj"
 [[ "$OS" = "ios" ]] && PROJECT="MozillaVPN.xcodeproj"
 
 print Y "Patching the xcode project..."
-ruby scripts/macos/utils/xcode_patcher.rb "$PROJECT" "$SHORTVERSION" "$FULLVERSION" "$OSRUBY" "$ADJUST_SDK_TOKEN" || die "Failed to merge xcode with wireguard"
+ruby scripts/macos/xcode_patcher.rb "$PROJECT" "$SHORTVERSION" "$FULLVERSION" "$OSRUBY" "$ADJUST_SDK_TOKEN" || die "Failed to merge xcode with wireguard"
 print G "done."
 
 
