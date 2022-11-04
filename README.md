@@ -434,10 +434,14 @@ cmake --build build -j$(nproc)
 
 ## Testing
 
-* Run the unit tests with `./scripts/tests/unit_tests.sh`
-* Run the qml tests with `./scripts/tests/qml_tests.sh`
-* Run the lottie tests with `./scripts/tests/lottie_tests.sh`
-* Run the funcional tests (See below)
+When built for any one of the desktop platforms, this project will also generate
+a suite of unit tests. The tests are built my manually specifying the
+`build_tests` target. Once built, you can run them with `ctest` as follows:
+
+```bash
+cmake --build build --target build_tests
+ctest --test-dir build
+```
 
 ### Running the functional tests
 
