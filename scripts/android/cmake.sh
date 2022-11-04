@@ -29,9 +29,30 @@ helpFunction() {
   print N ""
   exit 0
 }
-
 print N "This script compiles MozillaVPN for Android"
 echo $QT_HOST_PATH
+
+case $ARCH in
+  "armeabi-v7a")
+    rustup target add armv7-linux-androideabi
+    ;;
+
+  "arm64-v8a")
+    rustup target add aarch64-linux-android
+    ;;
+
+  "x86")
+    rustup target add i686-linux-android
+    ;;
+
+  "x86_64")
+    rustup target add x86_64-linux-android
+    ;;
+
+  *)
+    die "Unknown architecture $ARCH"
+esac
+
 
 
 while [[ $# -gt 0 ]]; do
@@ -158,7 +179,7 @@ else
     -DANDROID_SDK_ROOT=$ANDROID_SDK_ROOT \
     -DCMAKE_BUILD_TYPE=Debug \
     -S . -B .tmp/
-    
+
 fi
 
 print Y "Compiling apk_install_target in .tmp/"
