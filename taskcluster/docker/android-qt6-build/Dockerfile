@@ -34,7 +34,8 @@ RUN apt-get -q update &&\
     #Install QT
     python3 -m pip install aqtinstall
 RUN wget https://sh.rustup.rs && sh index.html -y &&\
-    ~/.cargo/bin/rustup target add x86_64-linux-android i686-linux-android armv7-linux-androideabi aarch64-linux-android
+    ~/.cargo/bin/rustup target add x86_64-linux-android i686-linux-android armv7-linux-androideabi aarch64-linux-android &&\
+    chmod -R 777 ~/.cargo
 RUN python3 -m aqt install-qt --outputdir /opt linux desktop ${QT_VERSION} gcc_64
 RUN python3 -m aqt install-qt --outputdir /opt linux android ${QT_VERSION} ${ANDROID_ARCH} -m all &&\
     #Download Additional stuff that is not in a repo
