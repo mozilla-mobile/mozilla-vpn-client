@@ -20,6 +20,9 @@ echo "Fetching Tokens!"
 # Artifacts should be placed here!
 mkdir -p /builds/worker/artifacts/
 
+# Install Rust Android targets
+rustup target add x86_64-linux-android i686-linux-android armv7-linux-androideabi aarch64-linux-android
+
 # $1 should be the qmake arch.
 # Note this is different from what aqt expects as arch:
 #

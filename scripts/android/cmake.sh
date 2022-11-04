@@ -69,27 +69,6 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-case $ARCH in
-  "armeabi-v7a")
-    rustup target add armv7-linux-androideabi
-    ;;
-
-  "arm64-v8a")
-    rustup target add aarch64-linux-android
-    ;;
-
-  "x86")
-    rustup target add i686-linux-android
-    ;;
-
-  "x86_64")
-    rustup target add x86_64-linux-android
-    ;;
-
-  *)
-    die "Unknown architecture $ARCH"
-esac
-
 if ! [[ "$QTPATH" ]]; then
   helpFunction
 fi
