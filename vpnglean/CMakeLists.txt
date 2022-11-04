@@ -19,10 +19,6 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     endif()
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     set(RUST_ARCH "x86_64-unknown-linux-gnu")
-
-    set(OPENSSL_USE_STATIC_LIBS TRUE)
-    find_package(OpenSSL REQUIRED)
-    get_filename_component(OPENSSL_LIB_DIR ${OPENSSL_SSL_LIBRARY} DIRECTORY)
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
     if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64")
         set(RUST_ARCH "aarch64-linux-android")
@@ -37,22 +33,19 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
         set(RUST_ARCH "x86_64-linux-android")
         set(OPENSSL_ARCH "x86_64")
     endif()
-
-    set(OPENSSL_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/openSSL/static/lib/${OPENSSL_ARCH})
-    set(OPENSSL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/openSSL/static/include)
 endif()
 
 if (RUST_ARCH STREQUAL "")
     message(FATAL_ERROR "Unable to determine Rust target for ${CMAKE_SYSTEM_NAME} (${CMAKE_SYSTEM_PROCESSOR}).")
 endif()
 
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+if(CMAKE_SYSTEM_NAME STREQUAL "Android")
+    set(OPENSSL_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/openSSL/static/lib/${OPENSSL_ARCH})
+    set(OPENSSL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/openSSL/static/include)
+    set(CARGO_CMD OPENSSL_LIB_DIR=${OPENSSL_LIB_DIR} OPENSSL_INCLUDE_DIR=${OPENSSL_INCLUDE_DIR} cargo build)
+else()
     set(CARGO_CMD cargo build)
-    set(TARGET_DIR "debug")
-else ()
-    set(CARGO_CMD cargo build --release)
-    set(TARGET_DIR "release")
-endif ()
+endif()
 
 set(HEADER_FILE vpnglean.h)
 set(LIBNAME ${CMAKE_STATIC_LIBRARY_PREFIX}vpnglean${CMAKE_STATIC_LIBRARY_SUFFIX})
@@ -66,7 +59,7 @@ add_custom_target(vpnglean_ffi
                 BUILD_ID=${BUILD_ID}
                 APP_VERSION=${CMAKE_PROJECT_VERSION}
                 CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR}
-            cargo build $<IF:$<CONFIG:Debug>,,--release> --target ${RUST_ARCH}
+            ${CARGO_CMD} $<IF:$<CONFIG:Debug>,,--release> --target ${RUST_ARCH}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 set_target_properties(vpnglean_ffi PROPERTIES FOLDER "Libs")
