@@ -77,9 +77,9 @@ cmake --build ${MOZ_FETCHES_DIR}/build --target pkg
 print Y "Exporting the build artifacts..."
 mkdir -p tmp || die
 cp -r ${MOZ_FETCHES_DIR}/build/src/Mozilla\ VPN.app tmp || die
+cp -r ${MOZ_FETCHES_DIR}/build/macos/pkg/Resources tmp || die
 cp -r ./macos/pkg/scripts tmp || die
 cp -r ./macos/pkg/Distribution tmp || die
-cp -r ${MOZ_FETCHES_DIR}/macos/pkg/Resources tmp || die
 
 print Y "Compressing the build artifacts..."
 tar -C tmp -czvf "${TASK_HOME}/artifacts/MozillaVPN.tar.gz" . || die
