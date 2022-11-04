@@ -64,16 +64,17 @@ class xliff_language:
             strip_trid = strip_trid - 1
             trid = trid[index+1:]
 
+        target = trdata['target']
         if format == 'env':
-            escsstring = trdata['source'].replace('"', '\\"')
-            return f"{trid.upper().replace('.', '_')}=\"{escsstring}\""
+            escstring = target.replace('"', '\\"')
+            return f"{trid.upper().replace('.', '_')}=\"{escstring}\""
         elif format == 'macos':
-            escsstring = trdata['source'].replace('\'', '\\\'')
-            return f"'{trid.lower().replace('.', '_')}' = '{escsstring}';"
+            escstring = target.replace('\'', '\\\'')
+            return f"'{trid.lower().replace('.', '_')}' = '{escstring}';"
         elif format == 'text':
-            return f"{trid}: {trdata['source']}"
+            return f"{trid}: {target}"
         else:
-            return string
+            return target
     
     # Perform variable substitution and return the transformed text.
     def transform(self, text):
