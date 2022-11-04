@@ -91,8 +91,7 @@ void NetworkWatcher::initialize() {
           &NetworkWatcher::settingsChanged);
 }
 
-void NetworkWatcher::settingsChanged(const bool& active) {
-  Q_UNUSED(active);
+void NetworkWatcher::settingsChanged() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   m_active = settingsHolder->unsecuredNetworkAlert() ||
              settingsHolder->captivePortalAlert();

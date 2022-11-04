@@ -12,10 +12,11 @@ class WindowsStartAtBootWatcher final : public QObject {
   Q_DISABLE_COPY_MOVE(WindowsStartAtBootWatcher)
 
  public:
-  explicit WindowsStartAtBootWatcher(bool startAtBoot);
+  explicit WindowsStartAtBootWatcher();
   ~WindowsStartAtBootWatcher();
 
-  void startAtBootChanged(const bool& startAtBoot);
+ private:
+  void startAtBootChanged();
 };
 
 #endif  // WINDOWSSTARTATBOOTWATCHER_H

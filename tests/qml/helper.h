@@ -24,9 +24,9 @@ class TestHelper final : public QObject {
   Q_INVOKABLE void triggerRecordGleanEvent(const QString& event) const;
   Q_INVOKABLE void triggerSendGleanPings() const;
   Q_INVOKABLE void triggerSetGleanSourceTags(const QStringList& tags) const;
-  Q_PROPERTY(bool mainWindowLoadedCalled READ mainWindowLoadedCalled CONSTANT)
-  Q_PROPERTY(bool stagingMode READ stagingMode WRITE setStagingMode CONSTANT)
-  Q_PROPERTY(bool debugMode READ debugMode WRITE setDebugMode CONSTANT)
+  Q_PROPERTY(bool mainWindowLoadedCalled READ mainWindowLoadedCalled)
+  Q_PROPERTY(bool stagingMode READ stagingMode WRITE setStagingMode)
+  Q_PROPERTY(bool debugMode READ debugMode WRITE setDebugMode)
 
   bool mainWindowLoadedCalled() const;
   void setMainWindowLoadedCalled(bool val);

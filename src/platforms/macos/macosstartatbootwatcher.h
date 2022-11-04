@@ -12,10 +12,11 @@ class MacOSStartAtBootWatcher final : public QObject {
   Q_DISABLE_COPY_MOVE(MacOSStartAtBootWatcher)
 
  public:
-  explicit MacOSStartAtBootWatcher(bool startAtBoot);
+  explicit MacOSStartAtBootWatcher();
   ~MacOSStartAtBootWatcher();
 
-  void startAtBootChanged(const bool& startAtBoot);
+ private:
+  void startAtBootChanged();
 };
 
 #endif  // MACOSSTARTATBOOTWATCHER_H

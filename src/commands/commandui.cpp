@@ -257,22 +257,12 @@ int CommandUI::run(QStringList& tokens) {
     vpn.initialize();
 
 #ifdef MVPN_MACOS
-    MacOSStartAtBootWatcher startAtBootWatcher(
-        SettingsHolder::instance()->startAtBoot());
-    QObject::connect(SettingsHolder::instance(),
-                     &SettingsHolder::startAtBootChanged, &startAtBootWatcher,
-                     &MacOSStartAtBootWatcher::startAtBootChanged);
-
+    MacOSStartAtBootWatcher startAtBootWatcher();
     MacOSUtils::setDockClickHandler();
 #endif
 
 #ifdef MVPN_WINDOWS
-    WindowsStartAtBootWatcher startAtBootWatcher(
-        SettingsHolder::instance()->startAtBoot());
-
-    QObject::connect(SettingsHolder::instance(),
-                     &SettingsHolder::startAtBootChanged, &startAtBootWatcher,
-                     &WindowsStartAtBootWatcher::startAtBootChanged);
+    WindowsStartAtBootWatcher startAtBootWatcher();
 #endif
 
 #ifdef MVPN_LINUX

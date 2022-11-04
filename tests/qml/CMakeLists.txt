@@ -10,6 +10,9 @@ get_filename_component(MVPN_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src ABSOLUTE)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${MVPN_SOURCE_DIR})
+include_directories(${MVPN_SOURCE_DIR}/hacl-star)
+include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin)
+include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin/minimal)
 
 qt_add_executable(qml_tests EXCLUDE_FROM_ALL)
 set_target_properties(qml_tests PROPERTIES FOLDER "Tests")
@@ -30,6 +33,8 @@ target_link_libraries(qml_tests PRIVATE glean lottie nebula translations)
 target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/constants.h
     ${MVPN_SOURCE_DIR}/controller.h
+    ${MVPN_SOURCE_DIR}/cryptosettings.cpp
+    ${MVPN_SOURCE_DIR}/cryptosettings.h
     ${MVPN_SOURCE_DIR}/dnspingsender.cpp
     ${MVPN_SOURCE_DIR}/dnspingsender.h
     ${MVPN_SOURCE_DIR}/env.h
@@ -39,6 +44,10 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/filterproxymodel.h
     ${MVPN_SOURCE_DIR}/hawkauth.cpp
     ${MVPN_SOURCE_DIR}/hawkauth.h
+    ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Chacha20.c
+    ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Chacha20Poly1305_32.c
+    ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Curve25519_51.c
+    ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Poly1305_32.c
     ${MVPN_SOURCE_DIR}/hkdf.cpp
     ${MVPN_SOURCE_DIR}/hkdf.h
     ${MVPN_SOURCE_DIR}/ipaddress.cpp
@@ -68,6 +77,7 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/pingsender.h
     ${MVPN_SOURCE_DIR}/pingsenderfactory.cpp
     ${MVPN_SOURCE_DIR}/pingsenderfactory.h
+    ${MVPN_SOURCE_DIR}/platforms/dummy/dummycryptosettings.cpp
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.h
     ${MVPN_SOURCE_DIR}/update/updater.cpp

@@ -10,7 +10,10 @@
 #include "logger.h"
 #include "models/feature.h"
 
+#include <QDir>
+#include <QFile>
 #include <QSettings>
+#include <QStandardPaths>
 
 namespace {
 
@@ -24,6 +27,9 @@ QVector<QString> SENSITIVE_SETTINGS({
 
 SettingsHolder* s_instance = nullptr;
 
+const QSettings::Format MozFormat = QSettings::registerFormat(
+    "moz", CryptoSettings::readFile, CryptoSettings::writeFile);
+
 }  // namespace
 
 // static
@@ -32,20 +38,36 @@ SettingsHolder* SettingsHolder::instance() {
   return s_instance;
 }
 
-#ifndef UNIT_TEST
-const QSettings::Format MozFormat = QSettings::registerFormat(
-    "moz", CryptoSettings::readFile, CryptoSettings::writeFile);
-#endif
-
 SettingsHolder::SettingsHolder()
-    :
+    : m_settings(MozFormat, QSettings::UserScope,
 #ifndef UNIT_TEST
-      m_settings(MozFormat, QSettings::UserScope, "mozilla", "vpn")
+                 "mozilla",
 #else
-      m_settings("mozilla_testing", "vpn")
+                 "mozilla_testing",
 #endif
-{
+                 "vpn") {
   MVPN_COUNT_CTOR(SettingsHolder);
+
+  if (QFile::exists(journalSettingFileName())) {
+    QString journalSettingFile(journalSettingFileName());
+    logger.warning() << "journal file exists" << journalSettingFile;
+
+    // We cannot simply rename the journal settings file because the main
+    // QSettings could be not a file on some platforms (windows, for instance).
+    {
+      QSettings journalSettings(journalSettingFile, MozFormat);
+      for (const QString& key : journalSettings.allKeys()) {
+        m_settings.setValue(key, journalSettings.value(key));
+      }
+    }
+
+    if (!QFile::remove(journalSettingFile)) {
+      logger.warning() << "Unable to remove the journal settings file"
+                       << journalSettingFile;
+    }
+
+    logger.warning() << "Recovering completed";
+  }
 
   Q_ASSERT(!s_instance);
   s_instance = this;
@@ -69,7 +91,9 @@ SettingsHolder::~SettingsHolder() {
   s_instance = nullptr;
 
 #ifdef UNIT_TEST
-  m_settings.clear();
+  if (!m_doNotClearOnDTOR) {
+    m_settings.clear();
+  }
 #endif
 }
 
@@ -77,10 +101,10 @@ void SettingsHolder::clear() {
   logger.debug() << "Clean up the settings";
 
 #define SETTING(type, toType, getter, setter, has, key, defvalue, \
-                removeWhenReset)                                  \
+                userSettings, removeWhenReset)                    \
   if (removeWhenReset) {                                          \
     m_settings.remove(key);                                       \
-    emit getter##Changed(defvalue);                               \
+    emit getter##Changed();                                       \
   }
 
 #include "settingslist.h"
@@ -93,9 +117,7 @@ void SettingsHolder::hardReset() {
   logger.debug() << "Hard reset";
   m_settings.clear();
 
-#define SETTING(type, toType, getter, setter, has, key, defvalue, \
-                removeWhenReset)                                  \
-  emit getter##Changed(defvalue);
+#define SETTING(type, toType, getter, ...) emit getter##Changed();
 
 #include "settingslist.h"
 #undef SETTING
@@ -141,7 +163,8 @@ QString SettingsHolder::getReport() const {
   return buff;
 }
 
-#define SETTING(type, toType, getter, setter, has, key, defvalue, ...)  \
+#define SETTING(type, toType, getter, setter, has, key, defvalue,       \
+                userSettings, ...)                                      \
   bool SettingsHolder::has() const { return m_settings.contains(key); } \
   type SettingsHolder::getter() const {                                 \
     if (!has()) {                                                       \
@@ -151,8 +174,10 @@ QString SettingsHolder::getReport() const {
   }                                                                     \
   void SettingsHolder::setter(const type& value) {                      \
     if (!has() || getter() != value) {                                  \
+      maybeSaveInTransaction(key, getter(), value, #getter "Changed",   \
+                             userSettings);                             \
       m_settings.setValue(key, value);                                  \
-      emit getter##Changed(value);                                      \
+      emit getter##Changed();                                           \
     }                                                                   \
   }
 
@@ -205,5 +230,103 @@ void SettingsHolder::setAddonSetting(const AddonSettingQuery& query,
   if (m_settings.value(key).toString() != value) {
     m_settings.setValue(key, value);
     emit addonSettingsChanged();
+  }
+}
+
+QString SettingsHolder::journalSettingFileName() const {
+  return QDir(
+#ifdef MVPN_WASM
+             // https://wiki.qt.io/Qt_for_WebAssembly#Files_and_local_file_system_access
+             "/"
+#elif defined(UNIT_TEST)
+             QStandardPaths::writableLocation(QStandardPaths::TempLocation)
+#else
+             QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)
+#endif
+             )
+      .filePath("settings-journal");
+}
+
+bool SettingsHolder::beginTransaction() {
+  if (m_settingsJournal) {
+    logger.warning() << "Nested transactions are not supported";
+    return false;
+  }
+
+  sync();
+
+  if (!QFile::copy(m_settings.fileName(), journalSettingFileName())) {
+    logger.warning() << "Unable to generate a setting journal file"
+                     << journalSettingFileName();
+    return false;
+  }
+
+  m_settingsJournal =
+      new QSettings(journalSettingFileName(), m_settings.format(), this);
+  return true;
+}
+
+bool SettingsHolder::commitTransaction() {
+  if (!m_settingsJournal) {
+    logger.warning() << "We are not in a transaction";
+    return false;
+  }
+
+  return finalizeTransaction();
+}
+
+bool SettingsHolder::rollbackTransaction() {
+  if (!m_settingsJournal) {
+    logger.warning() << "We are not in a transaction";
+    return false;
+  }
+
+  QMap<QString, QPair<const char*, QVariant>> transactionChanges(
+      m_transactionChanges);
+
+  if (!finalizeTransaction()) {
+    return false;
+  }
+
+  QMapIterator<QString, QPair<const char*, QVariant>> i(transactionChanges);
+  while (i.hasNext()) {
+    i.next();
+    m_settings.setValue(i.key(), i.value().second);
+    QMetaObject::invokeMethod(this, i.value().first, Qt::DirectConnection);
+  }
+
+  return true;
+}
+
+bool SettingsHolder::finalizeTransaction() {
+  m_transactionChanges.clear();
+  delete m_settingsJournal;
+  m_settingsJournal = nullptr;
+
+  if (!QFile::remove(journalSettingFileName())) {
+    logger.warning() << "Unable to remove the setting journal file"
+                     << journalSettingFileName();
+    return false;
+  }
+
+  return true;
+}
+
+void SettingsHolder::maybeSaveInTransaction(const QString& key,
+                                            const QVariant& oldValue,
+                                            const QVariant& newValue,
+                                            const char* signalName,
+                                            bool userSettings) {
+  if (!m_settingsJournal) {
+    return;
+  }
+
+  if (!userSettings) {
+    m_settingsJournal->setValue(key, newValue);
+    return;
+  }
+
+  if (!m_transactionChanges.contains(key)) {
+    m_transactionChanges.insert(key, {signalName, oldValue});
   }
 }

@@ -14,18 +14,24 @@ namespace {
 Logger logger(LOG_WINDOWS, "WindowsStartAtBootWatcher");
 }
 
-WindowsStartAtBootWatcher::WindowsStartAtBootWatcher(bool startAtBoot) {
+WindowsStartAtBootWatcher::WindowsStartAtBootWatcher() {
   MVPN_COUNT_CTOR(WindowsStartAtBootWatcher);
 
   logger.debug() << "StartAtBoot watcher";
-  startAtBootChanged(startAtBoot);
+
+  connect(SettingsHolder::instance(), &SettingsHolder::startAtBootChanged, this,
+          &WindowsStartAtBootWatcher::startAtBootChanged);
+
+  startAtBootChanged();
 }
 
 WindowsStartAtBootWatcher::~WindowsStartAtBootWatcher() {
   MVPN_COUNT_DTOR(WindowsStartAtBootWatcher);
 }
 
-void WindowsStartAtBootWatcher::startAtBootChanged(const bool& startAtBoot) {
+void WindowsStartAtBootWatcher::startAtBootChanged() {
+  bool startAtBoot = SettingsHolder::instance()->startAtBoot();
+
   logger.debug() << "StartAtBoot changed:" << startAtBoot;
   QSettings settings(
       "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
