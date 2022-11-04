@@ -105,7 +105,7 @@ Item {
         width: parent.width
         currentIndex: bar.currentIndex
         anchors.top: bar.bottom
-        height: root.height - bar.contentHeight
+        height: root.height
         clip: true
 
 

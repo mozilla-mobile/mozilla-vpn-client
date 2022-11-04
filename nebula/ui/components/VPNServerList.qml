@@ -66,7 +66,7 @@ FocusScope {
         id: vpnFlickable
         objectName: "serverCountryView"
 
-        flickContentHeight: serverList.implicitHeight + listOffset
+        flickContentHeight: serverList.implicitHeight + verticalSpacer.height
         anchors.fill: parent
 
         Rectangle {

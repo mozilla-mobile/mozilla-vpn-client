@@ -97,9 +97,7 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            contentHeight: layout.implicitHeight + layout.anchors.topMargin
-            flickContentHeight: contentHeight
-            interactive: contentHeight > height
+            flickContentHeight: layout.implicitHeight + layout.anchors.topMargin
 
             Column {
                 id: layout
@@ -157,10 +155,6 @@ Item {
                     VPNComposerView {
                         addon: guide
                         view: VPNComposerView.View.Guide
-                    }
-
-                    //padding for the bottom of the flickable
-                    VPNFooterMargin {
                     }
                 }
             }

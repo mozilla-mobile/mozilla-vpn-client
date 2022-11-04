@@ -66,7 +66,9 @@ VPNViewBase {
             opacity: useSystemLanguageEnabled ? .5 : 1
             spacing: VPNTheme.theme.hSpacing
             Layout.fillWidth: true
-            Layout.margins: VPNTheme.theme.windowMargin * 1.5
+            Layout.topMargin: VPNTheme.theme.windowMargin * 1.5
+            Layout.leftMargin: VPNTheme.theme.windowMargin * 1.5
+            Layout.rightMargin: VPNTheme.theme.windowMargin * 1.5
 
             VPNSearchBar {
                 id: searchBar
