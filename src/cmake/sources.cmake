@@ -373,15 +373,10 @@ if(UNIX)
     )
 endif()
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
-    target_sources(mozillavpn PRIVATE glean/gleannoop.cpp)
-else()
-    target_sources(mozillavpn PRIVATE glean/glean.cpp)
-endif()
-
 # Sources for desktop platforms.
 if(NOT CMAKE_CROSSCOMPILING)
     target_sources(mozillavpn PRIVATE
+        glean/glean.cpp
         systemtraynotificationhandler.cpp
         systemtraynotificationhandler.h
         tasks/authenticate/desktopauthenticationlistener.cpp
@@ -393,6 +388,10 @@ if(NOT CMAKE_CROSSCOMPILING)
     )
 
     add_compile_definitions(MVPN_WEBEXTENSION)
+else()
+    target_sources(mozillavpn PRIVATE
+        glean/gleannoop.cpp
+    )
 endif()
 
 qt6_add_qml_module(mozillavpn

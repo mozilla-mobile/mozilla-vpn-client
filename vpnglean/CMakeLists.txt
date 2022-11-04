@@ -93,8 +93,9 @@ set_target_properties(vpnglean PROPERTIES
     IMPORTED_LOCATION_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/debug/${LIBNAME}
 )
 
-## TODO: It's not clear if we will also need this on other platforms, or
-## if we just don't notice it due to statically linked Qt.
+## Fixup any missing link dependencies to pass to the vpnglean consumer
+set_property(TARGET vpnglean APPEND PROPERTY
+        INTERFACE_LINK_LIBRARIES -ldl)
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     find_package(OpenSSL REQUIRED)
     set_property(TARGET vpnglean APPEND PROPERTY
@@ -103,7 +104,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     ## Windows seems to miss some system libraries when importing static OpenSSL
     set_property(TARGET vpnglean APPEND PROPERTY
-        INTERFACE_LINK_LIBRARIES crypt32 Secur32)
+        INTERFACE_LINK_LIBRARIES crypt32 Secur32 ntdll)
 endif()
 
 target_include_directories(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR})

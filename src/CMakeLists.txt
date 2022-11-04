@@ -34,6 +34,9 @@ target_include_directories(mozillavpn PUBLIC
                            $<INSTALL_INTERFACE:include>)
 target_link_libraries(mozillavpn PUBLIC ${CMAKE_DL_LIBS})
 target_link_libraries(mozillavpn PRIVATE glean lottie nebula translations)
+if(NOT CMAKE_CROSSCOMPILING)
+    target_link_libraries(mozillavpn PRIVATE vpnglean)
+endif()
 
 include(cmake/sources.cmake)
 include(cmake/sentry.cmake)
@@ -60,10 +63,7 @@ include(cmake/${MVPN_PLATFORM_NAME}.cmake)
 
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     add_subdirectory(crashreporter)
-    target_link_libraries(mozillavpn PRIVATE crashreporter vpnglean -ldl)
-    if (WIN32)
-        target_link_libraries(mozillavpn PRIVATE ntdll)
-    endif()
+    target_link_libraries(mozillavpn PRIVATE crashreporter)
 endif()
 
 qt_finalize_target(mozillavpn)
