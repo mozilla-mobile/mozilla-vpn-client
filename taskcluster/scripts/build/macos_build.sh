@@ -46,7 +46,7 @@ git submodule update || die
 
 print Y "Configuring the build..."
 mkdir ${MOZ_FETCHES_DIR}/build
-cmake -S . -B ${MOZ_FETCHES_DIR}/build -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake
+cmake -S . -B ${MOZ_FETCHES_DIR}/build -GNinja -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake
 
 print Y "Building the client..."
 cmake --build ${MOZ_FETCHES_DIR}/build
