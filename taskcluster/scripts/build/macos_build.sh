@@ -20,11 +20,6 @@ print N ""
 export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
 
-print Y "Installing ruby dependencies..."
-# use --user-install for permissions
-gem install xcodeproj --user-install || die
-export PATH="$HOME/.gem/ruby/2.6.0/bin:$PATH"
-
 print Y "Installing rust..."
 curl https://sh.rustup.rs -sSf | sh -s -- -y || die
 export PATH="$HOME/.cargo/bin:$PATH"
@@ -44,21 +39,6 @@ print Y "Installing python dependencies..."
 python3 -m pip install -r requirements.txt --user
 export PYTHONIOENCODING="UTF-8"
 
-
-print Y "Installing QT..."
-PROJECT_HOME=`pwd`
-cd ../../fetches/qt_dist || die
-export QT_MACOS_BIN=`pwd`/bin
-export PATH=$QT_MACOS_BIN:$PATH
-
-cat > bin/qt.conf << EOF
-[Paths]
-Prefix=`pwd`
-EOF
-cp bin/qt.conf libexec || die
-cd $PROJECT_HOME
-
-
 print Y "Updating submodules..."
 # should already be done by XCode cloud cloning but just to make sure
 git submodule init || die
@@ -66,7 +46,7 @@ git submodule update || die
 
 print Y "Configuring the build..."
 mkdir ${MOZ_FETCHES_DIR}/build
-cmake -S . -B ${MOZ_FETCHES_DIR}/build
+cmake -S . -B ${MOZ_FETCHES_DIR}/build -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake
 
 print Y "Building the client..."
 cmake --build ${MOZ_FETCHES_DIR}/build
