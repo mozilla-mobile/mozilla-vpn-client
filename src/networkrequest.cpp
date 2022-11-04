@@ -66,6 +66,11 @@ NetworkRequest::NetworkRequest(Task* parent, int status,
   m_request.setOriginatingObject(parent);
 
   if (setAuthorizationHeader) {
+    if (SettingsHolder::instance()->token().isEmpty()) {
+      logger.error() << "INVALID TOKEN! This network request is going to fail.";
+      Q_ASSERT(false);
+    }
+
     QByteArray authorizationHeader = "Bearer ";
     authorizationHeader.append(
         SettingsHolder::instance()->token().toLocal8Bit());
