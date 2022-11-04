@@ -27,8 +27,15 @@ target_sources(glean PRIVATE
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/telemetry)
 add_custom_command(
+    OUTPUT telemetry/gleansample.h
+    DEPENDS metrics.yaml
+    COMMAND ${PYTHON_EXECUTABLE} ${MVPN_SCRIPT_DIR}/utils/generate_gleandefs.py
+                -o ${CMAKE_CURRENT_BINARY_DIR}/telemetry/gleansample.h
+                ${CMAKE_CURRENT_SOURCE_DIR}/metrics.yaml
+)
+
+add_custom_command(
     OUTPUT
-        telemetry/gleansample.h
         telemetry/qmldir
         telemetry/pings.js
         telemetry/sample.js

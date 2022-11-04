@@ -23,11 +23,11 @@ args = parser.parse_args()
 plutil = shutil.which('plutil')
 if plutil is None:
     print(f'Failed to locate plutil tool', file=sys.stderr)
-    os.exit(1)
+    sys.exit(1)
 plbuddy = shutil.which('PlistBuddy', path='/usr/libexec')
 if plbuddy is None:
     print(f'Failed to locate PlistBuddy tool', file=sys.stderr)
-    os.exit(1)
+    sys.exit(1)
 
 # Extract the top level keys from a .plist file.
 def extractkeys(filename):
