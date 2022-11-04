@@ -459,14 +459,6 @@ module.exports = {
     return json.value;
   },
 
-  async openSettings() {
-    const json = await this._writeCommand('open_settings');
-    assert(
-        json.type === 'open_settings' && !('error' in json),
-        `Command failed: ${json.error}`);
-    return json.value;
-  },
-
   async getDevices() {
     const json = await this._writeCommand('devices');
     assert(
