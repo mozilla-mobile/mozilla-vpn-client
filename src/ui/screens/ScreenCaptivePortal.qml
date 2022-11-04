@@ -12,7 +12,9 @@ import components 0.1
 VPNFlickable {
     id: vpnFlickable
 
-    flickContentHeight: content.height
+    readonly property bool isMobile: window.fullScreenRequired()
+
+    flickContentHeight: content.implicitHeight
 
     state: (VPNController.state == VPNController.StateOff) ? "pre-activation" : "post-activation"
     states: [
@@ -44,13 +46,15 @@ VPNFlickable {
     ColumnLayout {
         id: content
 
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
+        height: vpnFlickable.height
         width: Math.min(vpnFlickable.width, VPNTheme.theme.maxHorizontalContentWidth)
+        spacing: 0
 
         VPNPanel {
             id: vpnPanel
-            property var childRectHeight: vpnPanel.childrenRect.height
+
+            anchors.horizontalCenter: undefined
+            Layout.topMargin: isMobile ? parent.height * 0.20 : parent.height * 0.12
 
             logo: "qrc:/ui/resources/globe-warning.svg"
             logoSize: 80
@@ -58,9 +62,6 @@ VPNFlickable {
             logoTitle: VPNl18n.CaptivePortalAlertTitle
             width: parent.width
 
-            anchors.horizontalCenter: undefined
-            Layout.alignment: Qt.AlignHCenter
-            Layout.fillWidth: true
         }
 
         VPNSubtitle {
@@ -69,22 +70,22 @@ VPNFlickable {
             color: VPNTheme.theme.fontColor
             font.pixelSize: VPNTheme.theme.fontSizeSmall
             font.family: VPNTheme.theme.fontBoldFamily
-            text: VPNl18n.CaptivePortalAlertPreActivation
             width: openPortalButton.width
 
-            Layout.alignment: Qt.AlignHCenter
             Layout.fillWidth: true
-            Layout.bottomMargin: VPNTheme.theme.vSpacingSmall
             Layout.topMargin: VPNTheme.theme.vSpacingSmall
             Layout.leftMargin: VPNTheme.theme.windowMargin * 2
             Layout.rightMargin: VPNTheme.theme.windowMargin * 2
+        }
+
+        Item {
+            Layout.fillHeight: isMobile
         }
 
         VPNButton {
             id: openPortalButton
 
             objectName: "captivePortalAlertActionButton"
-            text: VPNl18n.CaptivePortalAlertPreActivation
             radius: 4
             onClicked: {
                 if(vpnFlickable.state === "pre-activation"){
@@ -97,8 +98,14 @@ VPNFlickable {
             }
 
             Layout.fillWidth: true
+            Layout.topMargin: VPNTheme.theme.vSpacing
             Layout.leftMargin: VPNTheme.theme.windowMargin * 2
             Layout.rightMargin: VPNTheme.theme.windowMargin * 2
+            Layout.bottomMargin: 58
+        }
+
+        Item {
+            Layout.fillHeight: !isMobile
         }
     }
 }

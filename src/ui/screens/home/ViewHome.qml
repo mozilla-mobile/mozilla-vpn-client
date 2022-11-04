@@ -16,7 +16,7 @@ VPNFlickable {
 
     objectName: "viewMainFlickable"
 
-    flickContentHeight: col.height + VPNTheme.theme.windowMargin / 2
+    flickContentHeight: col.height + col.anchors.topMargin
     anchors.left: parent.left
     anchors.right: parent.right
 
