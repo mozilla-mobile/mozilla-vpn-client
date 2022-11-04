@@ -65,40 +65,24 @@ git submodule init || die
 git submodule update || die
 
 print Y "Configuring the build..."
-SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
-FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
-echo "$SHORTVERSION - $FULLVERSION"
-echo "DEVELOPMENT_TEAM = 43AQ936H96" >> xcode.xconfig
-echo "GROUP_ID_MACOS = group.org.mozilla.macos.Guardian" >> xcode.xconfig
-echo "APP_ID_MACOS = org.mozilla.macos.FirefoxVPN" >> xcode.xconfig
-echo "NETEXT_ID_MACOS = org.mozilla.macos.FirefoxVPN.network-extension" >> xcode.xconfig
-echo "LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item" >> xcode.xconfig
-echo "GROUP_ID_IOS = group.org.mozilla.ios.Guardian" >> xcode.xconfig
-echo "APP_ID_IOS = org.mozilla.ios.FirefoxVPN" >> xcode.xconfig
-echo "NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
-
-
-mkdir -p tmp || die
 mkdir ${MOZ_FETCHES_DIR}/build
-cmake -S . -B ${MOZ_FETCHES_DIR}/build -DCMAKE_INSTALL_PREFIX:PATH=tmp
+cmake -S . -B ${MOZ_FETCHES_DIR}/build
+
+print Y "Building the client..."
 cmake --build ${MOZ_FETCHES_DIR}/build
-cmake --install ${MOZ_FETCHES_DIR}/build
 
+print Y "Building the installer..."
+cmake --build ${MOZ_FETCHES_DIR}/build --target pkg
 
-#print Y "Creating the final package..."
-#python3 ./scripts/macos/import_pkg_resources.py || die
-
-print Y "Exporting the artifact..."
+print Y "Exporting the build artifacts..."
 mkdir -p tmp || die
-#cp -r Release/Mozilla\ VPN.app tmp || die
-#cp -r ./macos/pkg/scripts tmp || die
-#cp -r ./macos/pkg/Distribution tmp || die
-#cp -r ./macos/pkg/Resources tmp || die
-cd tmp || die
+cp -r ${MOZ_FETCHES_DIR}/build/src/Mozilla\ VPN.app tmp || die
+cp -r ./macos/pkg/scripts tmp || die
+cp -r ./macos/pkg/Distribution tmp || die
+cp -r ${MOZ_FETCHES_DIR}/macos/pkg/Resources tmp || die
 
-
-tar -czvf "${TASK_HOME}/artifacts/MozillaVPN.tar.gz" . || die
-cd .. || die
+print Y "Compressing the build artifacts..."
+tar -C tmp -czvf "${TASK_HOME}/artifacts/MozillaVPN.tar.gz" . || die
 rm -rf tmp || die
 
 print G "Done!"
