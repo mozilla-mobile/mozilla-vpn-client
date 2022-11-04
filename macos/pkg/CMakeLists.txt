@@ -28,20 +28,19 @@ foreach(LOCALE ${I18N_LOCALES})
         continue()
     endif()
  
-    string(REPLACE "_" "-" LOCDIR ${LOCALE})
     add_custom_target(pkg_resources_${LOCALE}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Resources
         SOURCES
             ${CMAKE_SOURCE_DIR}/i18n/${LOCALE}/mozillavpn.xliff
             ${CMAKE_CURRENT_SOURCE_DIR}/welcome.html.in
             ${CMAKE_CURRENT_SOURCE_DIR}/conclusion.html.in
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${LOCDIR}.lproj
-        COMMAND ${XLIFFTOOL} -x ${CMAKE_CURRENT_SOURCE_DIR}/welcome.html.in -o ${LOCDIR}.lproj/welcome.html 
-        COMMAND ${XLIFFTOOL} -x ${CMAKE_CURRENT_SOURCE_DIR}/conclusion.html.in -o ${LOCDIR}.lproj/conclusion.html
-        COMMAND ${XLIFFTOOL} -g macosinstaller --strip 1 -f macos -o ${LOCDIR}.lproj/Localizable.strings
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${LOCALE}.lproj
+        COMMAND ${XLIFFTOOL} -x ${CMAKE_CURRENT_SOURCE_DIR}/welcome.html.in -o ${LOCALE}.lproj/welcome.html 
+        COMMAND ${XLIFFTOOL} -x ${CMAKE_CURRENT_SOURCE_DIR}/conclusion.html.in -o ${LOCALE}.lproj/conclusion.html
+        COMMAND ${XLIFFTOOL} -g macosinstaller --strip 1 -f macos -o ${LOCALE}.lproj/Localizable.strings
     )
     add_dependencies(pkg_resources pkg_resources_${LOCALE})
-    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/Resources/${LOCDIR}.lproj)
+    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/Resources/${LOCALE}.lproj)
     set_target_properties(pkg_resources_${LOCALE} PROPERTIES FOLDER "Installer")
 endforeach()
 

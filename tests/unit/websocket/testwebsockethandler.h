@@ -6,8 +6,6 @@
 
 class QWebSocketServer;
 
-constexpr const char* MOCK_SERVER_ADDRESS = "ws://localhost:5000";
-
 // Adapted from:
 // https://code.woboq.org/qt5/qtwebsockets/tests/auto/websockets/qwebsocket/tst_qwebsocket.cpp.html#EchoServer
 class MockServer : public QObject {
@@ -20,6 +18,7 @@ class MockServer : public QObject {
   void closeEach();
   void close();
   void open();
+  QString url();
 
  signals:
   void newConnection(QNetworkRequest request);
@@ -32,6 +31,7 @@ class MockServer : public QObject {
  private:
   QWebSocketServer* m_pWebSocketServer;
   QList<QWebSocket*> m_clients;
+  quint16 m_port = 0;
 };
 
 class TestWebSocketHandler : public TestHelper {

@@ -434,10 +434,14 @@ cmake --build build -j$(nproc)
 
 ## Testing
 
-* Run the unit tests with `./scripts/tests/unit_tests.sh`
-* Run the qml tests with `./scripts/tests/qml_tests.sh`
-* Run the lottie tests with `./scripts/tests/lottie_tests.sh`
-* Run the funcional tests (See below)
+When built for any one of the desktop platforms, this project will also generate
+a suite of unit tests. The tests are built my manually specifying the
+`build_tests` target. Once built, you can run them with `ctest` as follows:
+
+```bash
+cmake --build build --target build_tests
+ctest --test-dir build
+```
 
 ### Running the functional tests
 
@@ -541,7 +545,6 @@ If you don't know the answers to these questions, reach out to Sarah Bird or the
 ## Status
 
 [![Unit Tests](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/test_unit.yaml/badge.svg)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/test_unit.yaml)
-[![QML Tests](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/test_qml.yaml/badge.svg)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/test_qml.yaml)
 [![Lottie Tests](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/test_lottie.yaml/badge.svg)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/test_lottie.yaml)
 [![Linters (clang, l10n)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/linters.yaml/badge.svg)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/linters.yaml)
 [![Linux Packages](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/linux.yaml/badge.svg)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/linux.yaml)
