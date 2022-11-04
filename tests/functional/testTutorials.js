@@ -49,7 +49,7 @@ describe('Tutorials', function () {
     });
   });
 
-  describe('"Leave tutorial?" popup', function () {
+  describe('"Leave tutorial?" popup', function() {
     beforeEach(async () => {
       await openHighlightedTutorial();
       await vpn.wait();
@@ -76,37 +76,4 @@ describe('Tutorials', function () {
         assert((await vpn.getElementProperty(homeScreen.TUTORIAL_UI, 'visible')) === 'false');
       });
   });
-
-  describe(
-    'Opening views from system tray menu triggers "Leave tutorial?" popup',
-    function () {
-      beforeEach(async () => {
-        await openHighlightedTutorial();
-      });
-
-      it('Opening settings from system tray during tutorial triggers "Leave tutorial?" popup',
-        async () => {
-          await vpn.wait();
-          await vpn.openSettings();
-          await vpn.wait();
-          assert((await vpn.getElementProperty(homeScreen.TUTORIAL_POPUP_PRIMARY_BUTTON, 'visible')) === 'true');
-        });
-
-      it('Clicking secondary button opens clicked system tray option',
-        async () => {          
-          await vpn.wait();
-          await vpn.openSettings();
-          await vpn.wait();
-
-          await vpn.waitForElementProperty(homeScreen.TUTORIAL_POPUP_SECONDARY_BUTTON, 'visible', 'true');
-          await vpn.clickOnElement(homeScreen.TUTORIAL_POPUP_SECONDARY_BUTTON);
-          await vpn.wait();
-          
-          await vpn.waitForElementProperty(homeScreen.TUTORIAL_UI, 'visible', 'false');
-          assert((await vpn.getElementProperty(homeScreen.TUTORIAL_UI, 'visible')) === 'false');
-
-          await vpn.waitForElement(settingsScreen.SCREEN);
-          assert((await vpn.getElementProperty(settingsScreen.SCREEN, 'visible')) === 'true');
-        });
-    });
 });
