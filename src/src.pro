@@ -27,9 +27,7 @@ unix {
 include($$PWD/qmake/sources.pri)
 
 # Platform-specific entries:
-DUMMY {
-   include($$PWD/qmake/platforms/dummy.pri)
-} else:android {
+android {
    include($$PWD/qmake/platforms/android.pri)
 } else:ios {
    include($$PWD/qmake/platforms/ios.pri)
