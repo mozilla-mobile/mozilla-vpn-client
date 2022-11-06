@@ -19,9 +19,8 @@ DummyIAPHandler::DummyIAPHandler(QObject* parent) : IAPHandler(parent) {
 DummyIAPHandler::~DummyIAPHandler() { MVPN_COUNT_DTOR(DummyIAPHandler); }
 
 void DummyIAPHandler::nativeRegisterProducts() {}
-
-void DummyIAPHandler::nativeStartSubscription(Product* product) {
+void DummyIAPHandler::nativeStartSubscription(
+    ProductsHandler::Product* product) {
   Q_UNUSED(product)
 }
-
 void DummyIAPHandler::nativeRestoreSubscription() {}

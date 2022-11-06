@@ -123,6 +123,7 @@ SOURCES += \
         platforms/dummy/dummyiaphandler.cpp \
         platforms/dummy/dummynetworkwatcher.cpp \
         platforms/dummy/dummypingsender.cpp \
+        productshandler.cpp \
         profileflow.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
@@ -295,6 +296,7 @@ HEADERS += \
         platforms/dummy/dummyiaphandler.h \
         platforms/dummy/dummynetworkwatcher.h \
         platforms/dummy/dummypingsender.h \
+        productshandler.h \
         profileflow.h \
         qmlengineholder.h \
         releasemonitor.h \

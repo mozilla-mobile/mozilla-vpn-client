@@ -103,7 +103,7 @@ VPNFlickable {
 
             Repeater {
                 id: productList
-                model: VPNIAP
+                model: VPNProducts
                 delegate: VPNSubscriptionOption {}
             }
         }
