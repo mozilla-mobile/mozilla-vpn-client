@@ -232,7 +232,7 @@ void IOSIAPHandler::nativeRegisterProducts() {
   [productsRequest start];
 }
 
-void IOSIAPHandler::nativeStartSubscription(Product* product) {
+void IOSIAPHandler::nativeStartSubscription(ProductsHandler::Product* product) {
   Q_ASSERT(product->m_extra);
   SKProduct* skProduct = static_cast<SKProduct*>(product->m_extra);
   SKPayment* payment = [SKPayment paymentWithProduct:skProduct];
@@ -380,7 +380,7 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
     QStringList transactions = settingsHolder->subscriptionTransactions();
     transactions.append(ids);
     settingsHolder->setSubscriptionTransactions(transactions);
-    
+
     stopSubscription();
     emit subscriptionCompleted();
   });

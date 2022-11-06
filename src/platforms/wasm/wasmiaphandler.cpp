@@ -43,7 +43,8 @@ void WasmIAPHandler::nativeRegisterProducts() {
                      [this]() { emit productsRegistrationCompleted(); });
 }
 
-void WasmIAPHandler::nativeStartSubscription(Product* product) {
+void WasmIAPHandler::nativeStartSubscription(
+    ProductsHandler::Product* product) {
   TaskPurchase* purchaseTask = TaskPurchase::createForWasm(product->m_name);
   Q_ASSERT(purchaseTask);
 

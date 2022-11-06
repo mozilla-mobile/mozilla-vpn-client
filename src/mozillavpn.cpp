@@ -18,6 +18,7 @@
 #include "mozillavpn.h"
 #include "networkmanager.h"
 #include "profileflow.h"
+#include "productshandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "tasks/account/taskaccount.h"
@@ -849,9 +850,8 @@ void MozillaVPN::logout() {
   TaskScheduler::deleteTasks();
 
   if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-    IAPHandler* iap = IAPHandler::instance();
-    iap->stopSubscription();
-    iap->stopProductsRegistration();
+    IAPHandler::instance()->stopSubscription();
+    ProductsHandler::instance()->stopProductsRegistration();
   }
 
   // update-required state is the only one we want to keep when logging out.
@@ -887,9 +887,8 @@ void MozillaVPN::reset(bool forceInitialState) {
   m_private->m_serverData.forget();
 
   if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-    IAPHandler* iap = IAPHandler::instance();
-    iap->stopSubscription();
-    iap->stopProductsRegistration();
+    IAPHandler::instance()->stopSubscription();
+    ProductsHandler::instance()->stopProductsRegistration();
   }
 
   setUserState(UserNotAuthenticated);
@@ -1327,10 +1326,10 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
 
   setState(StateSubscriptionInProgress);
 
-  IAPHandler* iap = IAPHandler::instance();
+  ProductsHandler* products = ProductsHandler::instance();
 
   // If IAP is not ready (race condition), register the products again.
-  if (!iap->hasProductsRegistered()) {
+  if (!products->hasProductsRegistered()) {
     TaskScheduler::scheduleTask(new TaskProducts());
     TaskScheduler::scheduleTask(new TaskFunction([this, productIdentifier]() {
       subscriptionStarted(productIdentifier);
@@ -1339,8 +1338,7 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
     return;
   }
 
-  iap->startSubscription(productIdentifier);
-
+  IAPHandler::instance()->startSubscription(productIdentifier);
   emit recordGleanEventWithExtraKeys(GleanSample::iapSubscriptionStarted,
                                      {{"sku", productIdentifier}});
 }

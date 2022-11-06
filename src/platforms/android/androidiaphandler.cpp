@@ -107,7 +107,8 @@ void AndroidIAPHandler::nativeRegisterProducts() {
       "(Ljava/lang/String;)V", jniString.object());
 }
 
-void AndroidIAPHandler::nativeStartSubscription(Product* product) {
+void AndroidIAPHandler::nativeStartSubscription(
+    ProductsHandler::Product* product) {
   maybeInit();
   Q_ASSERT(m_init);
   auto jniString = QJniObject::fromString(product->m_name);

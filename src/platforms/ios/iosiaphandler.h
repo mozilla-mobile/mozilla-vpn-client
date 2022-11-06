@@ -22,8 +22,8 @@ class IOSIAPHandler final : public IAPHandler {
 
  protected:
   void nativeRegisterProducts() override;
-  void nativeStartSubscription(Product* product) override;
-  void nativeRestoreSubscription() override;
+  void nativeStartSubscription(ProductsHandler::Product* product) override;
+  void nativeRestoreSubscription();
 
  private:
   void* m_delegate = nullptr;
