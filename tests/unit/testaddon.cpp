@@ -622,112 +622,127 @@ void TestAddon::tutorial_create_data() {
   QTest::addColumn<QString>("id");
   QTest::addColumn<QJsonObject>("content");
   QTest::addColumn<bool>("created");
+  QTest::addColumn<bool>("highlighted");
+  QTest::addColumn<bool>("transaction");
 
-  QTest::addRow("object-without-id") << "" << QJsonObject() << false;
+  QTest::addRow("object-without-id")
+      << "" << QJsonObject() << false << false << false;
 
   QJsonObject obj;
   obj["id"] = "foo";
-  QTest::addRow("invalid-id") << "foo" << obj << false;
-  QTest::addRow("no-image") << "foo" << obj << false;
+  QTest::addRow("invalid-id") << "foo" << obj << false << false << false;
+  QTest::addRow("no-image") << "foo" << obj << false << false << false;
 
   obj["image"] = "foo.png";
-  QTest::addRow("no-steps") << "foo" << obj << false;
+  QTest::addRow("no-steps") << "foo" << obj << false << false << false;
 
   QJsonArray steps;
   obj["steps"] = steps;
-  QTest::addRow("with-steps") << "foo" << obj << false;
+  QTest::addRow("with-steps") << "foo" << obj << false << false << false;
 
   steps.append("");
   obj["steps"] = steps;
-  QTest::addRow("with-invalid-step") << "foo" << obj << false;
+  QTest::addRow("with-invalid-step") << "foo" << obj << false << false << false;
 
   QJsonObject step;
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-without-id") << "foo" << obj << false;
+  QTest::addRow("with-step-without-id")
+      << "foo" << obj << false << false << false;
 
   step["id"] = "s1";
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-without-element") << "foo" << obj << false;
+  QTest::addRow("with-step-without-element")
+      << "foo" << obj << false << false << false;
 
   step["element"] = "wow";
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-without-next") << "foo" << obj << false;
+  QTest::addRow("with-step-without-next")
+      << "foo" << obj << false << false << false;
 
   step["next"] = "wow";
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-with-invalid-next") << "foo" << obj << false;
+  QTest::addRow("with-step-with-invalid-next")
+      << "foo" << obj << false << false << false;
 
   QJsonObject nextObj;
 
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-with-invalid-next-1") << "foo" << obj << false;
+  QTest::addRow("with-step-with-invalid-next-1")
+      << "foo" << obj << false << false << false;
 
   nextObj["op"] = "wow";
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-with-invalid-next-2") << "foo" << obj << false;
+  QTest::addRow("with-step-with-invalid-next-2")
+      << "foo" << obj << false << false << false;
 
   nextObj["op"] = "signal";
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-with-invalid-next-3") << "foo" << obj << false;
+  QTest::addRow("with-step-with-invalid-next-3")
+      << "foo" << obj << false << false << false;
 
   nextObj["signal"] = "a";
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-with-invalid-next-4") << "foo" << obj << false;
+  QTest::addRow("with-step-with-invalid-next-4")
+      << "foo" << obj << false << false << false;
 
   nextObj["qml_emitter"] = "a";
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-with-invalid-next-5") << "foo" << obj << true;
+  QTest::addRow("with-step-with-invalid-next-5")
+      << "foo" << obj << true << false << false;
 
   nextObj["vpn_emitter"] = "a";
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-with-invalid-next-6") << "foo" << obj << false;
+  QTest::addRow("with-step-with-invalid-next-6")
+      << "foo" << obj << false << false << false;
 
   nextObj.remove("qml_emitter");
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-with-invalid-next-7") << "foo" << obj << false;
+  QTest::addRow("with-step-with-invalid-next-7")
+      << "foo" << obj << false << false << false;
 
   nextObj["vpn_emitter"] = "settingsHolder";
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-with-invalid-next-8") << "foo" << obj << true;
+  QTest::addRow("with-step-with-invalid-next-8")
+      << "foo" << obj << true << false << false;
 
   obj["conditions"] = QJsonObject();
-  QTest::addRow("with-step-element and conditions") << "foo" << obj << true;
+  QTest::addRow("with-step-element and conditions")
+      << "foo" << obj << true << false << false;
 
-  obj["advanced"] = true;
-  QTest::addRow("advanced") << "foo" << obj << true;
-
-  obj["advanced"] = false;
-  QTest::addRow("not-advanced") << "foo" << obj << true;
-
-  obj["advanced"] = true;
   obj["highlighted"] = true;
-  QTest::addRow("advanced-and-highlighted") << "foo" << obj << true;
+  QTest::addRow("highlighted") << "foo" << obj << true << true << false;
+
+  obj["settings_rollback_needed"] = true;
+  QTest::addRow("advanced-and-highlighted")
+      << "foo" << obj << true << true << true;
 }
 
 void TestAddon::tutorial_create() {
   QFETCH(QString, id);
   QFETCH(QJsonObject, content);
   QFETCH(bool, created);
+  QFETCH(bool, highlighted);
+  QFETCH(bool, transaction);
 
   SettingsHolder settingsHolder;
 
@@ -750,17 +765,25 @@ void TestAddon::tutorial_create() {
   QCOMPARE(tutorial->property("subtitle").type(), QMetaType::QString);
   QCOMPARE(tutorial->property("completionMessage").type(), QMetaType::QString);
   QCOMPARE(tutorial->property("image").toString(), "foo.png");
+  QCOMPARE(tutorial->property("highlighted").toBool(), highlighted);
+  QCOMPARE(tutorial->property("settingsRollbackNeeded").toBool(), transaction);
 
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
   QSignalSpy signalSpy(tm, &Tutorial::playingChanged);
 
+  QVERIFY(!settingsHolder.inTransaction());
+
   tm->play(tutorial);
   QCOMPARE(signalSpy.count(), 1);
 
+  QCOMPARE(settingsHolder.inTransaction(), transaction);
+
   tm->stop();
   QCOMPARE(signalSpy.count(), 2);
+
+  QVERIFY(!settingsHolder.inTransaction());
 }
 
 void TestAddon::message_create_data() {

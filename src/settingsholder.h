@@ -46,6 +46,10 @@ class SettingsHolder final : public QObject {
   Q_INVOKABLE bool commitTransaction();
   Q_INVOKABLE bool rollbackTransaction();
 
+#ifdef UNIT_TEST
+  bool inTransaction() const { return m_settingsJournal; }
+#endif
+
   // Don't use this directly!
   QVariant rawSetting(const QString& key) const;
 
@@ -111,6 +115,7 @@ class SettingsHolder final : public QObject {
 
  signals:
   void addonSettingsChanged();
+  void inTransactionChanged();
 
  private:
   QSettings m_settings;

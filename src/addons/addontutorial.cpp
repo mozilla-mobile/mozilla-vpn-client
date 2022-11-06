@@ -53,6 +53,8 @@ Addon* AddonTutorial::create(QObject* parent, const QString& manifestFileName,
   auto guard = qScopeGuard([&] { tutorial->deleteLater(); });
 
   tutorial->m_highlighted = tutorialObj["highlighted"].toBool();
+  tutorial->m_settingsRollbackNeeded =
+      tutorialObj["settings_rollback_needed"].toBool();
 
   tutorial->m_title.initialize(QString("tutorial.%1.title").arg(tutorialId),
                                tutorialObj["title"].toString());
@@ -112,12 +114,20 @@ AddonTutorial::~AddonTutorial() { MVPN_COUNT_DTOR(AddonTutorial); }
 void AddonTutorial::play(const QStringList& allowedItems) {
   m_allowedItems = allowedItems;
   m_currentStep = 0;
+  m_activeTransaction = false;
 
   if (m_navigatorReloader) {
     m_navigatorReloader->deleteLater();
   }
 
   m_navigatorReloader = new NavigatorReloader(this);
+
+  if (settingsRollbackNeeded()) {
+    m_activeTransaction = SettingsHolder::instance()->beginTransaction();
+    if (!m_activeTransaction) {
+      logger.warning() << "Unable to start a setting transaction";
+    }
+  }
 
   m_itemPicker->start();
 
@@ -133,8 +143,14 @@ void AddonTutorial::stop() {
     m_steps[m_currentStep]->stop();
   }
 
+  if (m_activeTransaction &&
+      !SettingsHolder::instance()->rollbackTransaction()) {
+    logger.warning() << "Unable to rollback a setting transaction";
+  }
+
   m_itemPicker->stop();
   m_currentStep = -1;
+  m_activeTransaction = false;
 
   if (m_navigatorReloader) {
     m_navigatorReloader->deleteLater();
