@@ -52,8 +52,13 @@ class ProductsHandler : public QAbstractListModel {
   bool hasProductsRegistered() const {
     return m_productsRegistrationState == eRegistered;
   }
+  bool isRegistering() const {
+    return m_productsRegistrationState == eRegistering;
+  }
   Product* findProduct(const QString& productIdentifier);
   void registerProducts(const QByteArray& data);
+  QList<Product> products() { return m_products; }
+  static uint32_t productTypeToMonthCount(ProductType type);
 
   // QAbstractListModel methods
   QHash<int, QByteArray> roleNames() const override;
@@ -84,7 +89,6 @@ class ProductsHandler : public QAbstractListModel {
   void computeSavings();
   void sortPlans();
   static ProductType productTypeToEnum(const QString& type);
-  static uint32_t productTypeToMonthCount(ProductType type);
   QList<Product> m_products;
 };
 
