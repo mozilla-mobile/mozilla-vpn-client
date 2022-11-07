@@ -48,7 +48,7 @@ QString Localizer::systemLanguageCode() {
 
   for (const QString& language : uiLanguages) {
     if (language.count("-") < 2) {
-      return language;
+      return language == "C" ? "en" : language;
     }
   }
 

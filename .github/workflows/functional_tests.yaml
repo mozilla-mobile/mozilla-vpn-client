@@ -116,6 +116,7 @@ jobs:
           command: |
             export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
             export HEADLESS=yes
+            export TZ=Europe/London
             mkdir -p $ARTIFACT_DIR
             xvfb-run -a npm run functionalTest -- ${{matrix.test.path}}
         env:
