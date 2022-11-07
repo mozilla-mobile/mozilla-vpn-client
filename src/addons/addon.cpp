@@ -358,7 +358,21 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
     return nullptr;
   }
 
-  addon->maybeCreateConditionWatchers(conditions);
+  addon->m_conditionWatcher =
+      Addon::maybeCreateConditionWatchers(addon, conditions);
+
+  if (addon->m_conditionWatcher) {
+    connect(addon->m_conditionWatcher, &AddonConditionWatcher::conditionChanged,
+            addon, [addon](bool enabled) {
+              if (enabled != addon->m_enabled) {
+                if (enabled) {
+                  addon->enable();
+                } else {
+                  addon->disable();
+                }
+              }
+            });
+  }
 
   if (!addon->m_conditionWatcher ||
       addon->m_conditionWatcher->conditionApplied()) {
@@ -440,14 +454,15 @@ void Addon::retranslate() {
   emit retranslationCompleted();
 }
 
-void Addon::maybeCreateConditionWatchers(const QJsonObject& conditions) {
+AddonConditionWatcher* Addon::maybeCreateConditionWatchers(
+    Addon* addon, const QJsonObject& conditions) {
   QList<AddonConditionWatcher*> watcherList;
 
   for (const QString& key : conditions.keys()) {
     for (const ConditionCallback& condition : s_conditionCallbacks) {
       if (condition.m_key == key) {
         AddonConditionWatcher* conditionWatcher =
-            condition.m_dynamicCallback(this, conditions[key]);
+            condition.m_dynamicCallback(addon, conditions[key]);
         if (conditionWatcher) {
           watcherList.append(conditionWatcher);
         }
@@ -458,29 +473,14 @@ void Addon::maybeCreateConditionWatchers(const QJsonObject& conditions) {
 
   switch (watcherList.length()) {
     case 0:
-      return;
+      return nullptr;
 
     case 1:
-      m_conditionWatcher = watcherList.at(0);
-      break;
+      return watcherList.at(0);
 
     default:
-      m_conditionWatcher = new AddonConditionWatcherGroup(this, watcherList);
-      break;
+      return new AddonConditionWatcherGroup(addon, watcherList);
   }
-
-  Q_ASSERT(m_conditionWatcher);
-
-  connect(m_conditionWatcher, &AddonConditionWatcher::conditionChanged, this,
-          [this](bool enabled) {
-            if (enabled != m_enabled) {
-              if (enabled) {
-                enable();
-              } else {
-                disable();
-              }
-            }
-          });
 }
 
 // static
