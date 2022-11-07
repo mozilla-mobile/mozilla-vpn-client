@@ -29,10 +29,8 @@ helpFunction() {
   print N ""
   exit 0
 }
-
 print N "This script compiles MozillaVPN for Android"
 echo $QT_HOST_PATH
-
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -70,7 +68,6 @@ while [[ $# -gt 0 ]]; do
     ;;
   esac
 done
-
 
 if ! [[ "$QTPATH" ]]; then
   helpFunction
@@ -158,7 +155,7 @@ else
     -DANDROID_SDK_ROOT=$ANDROID_SDK_ROOT \
     -DCMAKE_BUILD_TYPE=Debug \
     -S . -B .tmp/
-    
+
 fi
 
 print Y "Compiling apk_install_target in .tmp/"
