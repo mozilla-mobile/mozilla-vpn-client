@@ -23,6 +23,14 @@ ProductsHandler* s_instance = nullptr;
 }  // namespace
 
 // static
+ProductsHandler* ProductsHandler::createInstance() {
+  Q_ASSERT(!s_instance);
+  new ProductsHandler(qApp);
+  Q_ASSERT(s_instance);
+  return instance();
+}
+
+// static
 ProductsHandler* ProductsHandler::instance() {
   Q_ASSERT(s_instance);
   return s_instance;

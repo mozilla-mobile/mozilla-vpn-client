@@ -48,7 +48,9 @@ class ProductsHandler : public QAbstractListModel {
     void* m_extra = nullptr;
   };
 
+  static ProductsHandler* createInstance();
   static ProductsHandler* instance();
+
   bool hasProductsRegistered() const {
     return m_productsRegistrationState == eRegistered;
   }

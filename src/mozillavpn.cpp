@@ -161,6 +161,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           &CaptivePortalDetection::settingsChanged);
 
   if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
+    ProductsHandler::createInstance();
     IAPHandler* iap = IAPHandler::createInstance();
     connect(iap, &IAPHandler::subscriptionStarted, this,
             &MozillaVPN::subscriptionStarted);
