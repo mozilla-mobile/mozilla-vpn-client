@@ -27,10 +27,13 @@ WasmIAPHandler::WasmIAPHandler(QObject* parent) : IAPHandler(parent) {
 WasmIAPHandler::~WasmIAPHandler() { MVPN_COUNT_DTOR(WasmIAPHandler); }
 
 void WasmIAPHandler::nativeRegisterProducts() {
+  ProductsHandler* productsHandler = ProductsHandler::instance();
+  logger.info() << "Looked for a productsHandler";
+  Q_ASSERT(productsHandler);
+  logger.info() << "Got a productsHandler";
   // Let's use the trialDays to sort the products in the wasm client
   int trialDays = 100;
-  for (ProductsHandler::Product& product :
-       ProductsHandler::instance()->products()) {
+  for (ProductsHandler::Product& product : productsHandler->products()) {
     product.m_price = QString("%1 Dupondius")
                           .arg(QRandomGenerator::system()->bounded(1, 100));
     product.m_monthlyPrice =
@@ -41,7 +44,7 @@ void WasmIAPHandler::nativeRegisterProducts() {
   }
 
   QTimer::singleShot(200, this, [this]() {
-    emit ProductsHandler::instance()->productsRegistrationCompleted();
+    emit productsHandler->productsRegistrationCompleted();
   });
 }
 
