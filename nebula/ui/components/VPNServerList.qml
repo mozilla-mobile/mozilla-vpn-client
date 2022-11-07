@@ -102,7 +102,7 @@ FocusScope {
         id: radioButtonGroup
     }
 
-    // Tab content: Recommended servers
+    // Recommended servers component
     Component {
         id: listServersRecommended
 
@@ -171,7 +171,7 @@ FocusScope {
         }
     }
 
-    // Tab content: All servers
+    // All servers component
     Component {
         id: listServersAll
 
@@ -251,44 +251,60 @@ FocusScope {
         }
     }
 
-    VPNTabNavigation {
-        id: serverTabs
+    Component {
+        id: serverTabsComponent
 
-        anchors.fill: parent
-        z: 1
+        VPNTabNavigation {
+            id: serverTabs
 
-        handleTabClick: (tabButton) => {
-            if (tabButton.objectName === "tabAllServers") {
-                centerActiveServer(loaderServersAll.item);
-            }
-        }
+            anchors.fill: parent
+            z: 1
 
-        tabList: ListModel {
-            id: tabButtonList
-
-            ListElement {
-                tabLabelStringId: "ServersViewTabRecommended"
-                tabButtonId: "tabRecommendedServers"
-            }
-            ListElement {
-                tabLabelStringId: "ServersViewTabAll"
-                tabButtonId: "tabAllServers"
-            }
-        }
-
-        stackContent: [
-            Loader {
-                id: loaderServersRecommended
-                sourceComponent: listServersRecommended
-            },
-            Loader {
-                id: loaderServersAll
-                sourceComponent: listServersAll
-
-                onStatusChanged: if (loaderServersAll.status === Loader.Ready) {
+            handleTabClick: (tabButton) => {
+                if (tabButton.objectName === "tabAllServers") {
                     centerActiveServer(loaderServersAll.item);
                 }
             }
-        ]
+
+            tabList: ListModel {
+                id: tabButtonList
+
+                ListElement {
+                    tabLabelStringId: "ServersViewTabRecommended"
+                    tabButtonId: "tabRecommendedServers"
+                }
+
+                ListElement {
+                    tabLabelStringId: "ServersViewTabAll"
+                    tabButtonId: "tabAllServers"
+                }
+            }
+
+            stackContent: [
+                Loader {
+                    id: loaderServersRecommended
+                    sourceComponent: listServersRecommended
+                },
+                Loader {
+                    id: loaderServersAll
+                    sourceComponent: listServersAll
+                }
+            ]
+        }
+    }
+
+    Loader {
+        id: serverListLoader
+
+        anchors.fill: parent
+        sourceComponent: showRecentConnections
+            ? serverTabsComponent
+            : listServersAll
+        onStatusChanged: if (
+            serverListLoader.status === Loader.Ready
+            && showRecentConnections
+        ) {
+            centerActiveServer(serverListLoader.item);
+        }
     }
 }
