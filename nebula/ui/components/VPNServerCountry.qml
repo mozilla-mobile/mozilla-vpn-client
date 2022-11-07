@@ -188,13 +188,7 @@ VPNClickableRow {
                         return;
                     }
 
-                    if (currentServer.whichHop === "singleHopServer") {
-                        VPNController.changeServer(code, del._cityName);
-                        return stackview.pop();
-                    }
-
-                    segmentedNav[currentServer.whichHop] = [del._countryCode,  del._cityName, del._localizedCityName]; // [countryCode, cityName, localizedCityName]
-                    multiHopStackView.pop();
+                    focusScope.setSelectedServer(del._countryCode, del._cityName,del._localizedCityName);
                 }
                 height: itemHeight
                 checked: del._countryCode === focusScope.currentServer.countryCode && del._cityName === focusScope.currentServer.cityName

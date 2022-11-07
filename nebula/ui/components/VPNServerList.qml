@@ -18,6 +18,47 @@ FocusScope {
     property bool showRecentConnections: false
     property var currentServer
 
+    ListModel {
+        id: testRecommendedModel
+
+        ListElement {
+            countryCode: "ca"
+            cityName: "Toronto"
+            localizedCityName: "Toronto"
+        }
+        ListElement {
+            countryCode: "ca"
+            cityName: "Montreal"
+            localizedCityName: "Montreal"
+        }
+        ListElement {
+            countryCode: "ca"
+            cityName: "Vancouver"
+            localizedCityName: "Vancouver"
+        }
+        ListElement {
+            countryCode: "us"
+            cityName: "New York City"
+            localizedCityName: "New York City"
+        }
+        ListElement {
+            countryCode: "us"
+            cityName: "Chicago"
+            localizedCityName: "Chicago"
+        }
+    }
+
+    function setSelectedServer(countryCode, cityName, localizedCityName) {
+        if (currentServer.whichHop === "singleHopServer") {
+            VPNController.changeServer(countryCode, cityName);
+            stackview.pop();
+            return;
+        }
+
+        segmentedNav[currentServer.whichHop] = [countryCode, cityName, localizedCityName];
+        multiHopStackView.pop();
+    }
+
     function centerActiveServer(serverListFlickable) {
         // Scroll vpnFlickable so that the current server city is
         // vertically centered in the view
@@ -29,10 +70,9 @@ FocusScope {
             if (
                 // Country does not host current active server
                 countryItem._countryCode !== currentServer.countryCode ||
-
                 // Country is already above the vertical center
                 countryItem.y < serverListYCenter
-                ) {
+            ) {
                 continue;
             }
 
@@ -76,42 +116,17 @@ FocusScope {
                 spacing: 14
                 width: parent.width
 
-                ListModel {
-                    id: testRecommendedModel
-
-                    ListElement {
-                        name: "Toronto"
-                        // flag: "qrc:/nebula/resources/flags/CA.png"
-                    }
-                    ListElement {
-                        name: "Montreal"
-                        // flag: "qrc:/nebula/resources/flags/CA.png"
-                    }
-                    ListElement {
-                        name: "Vancouver"
-                        // flag: "qrc:/nebula/resources/flags/CA.png"
-                    }
-                    ListElement {
-                        name: "New York City"
-                        // flag: "qrc:/nebula/resources/flags/US.png"
-                    }
-                    ListElement {
-                        name: "Chicago"
-                        // flag: "qrc:/nebula/resources/flags/US.png"
-                    }
-                }
-
                 anchors {
                     top: parent.top
                     topMargin: VPNTheme.theme.vSpacingSmall
                     left: parent.left
-                    leftMargin: VPNTheme.theme.windowMargin
                     right: parent.right
-                    rightMargin: VPNTheme.theme.windowMargin
                 }
 
                 VPNCollapsibleCard {
                     title: "Why are these locations recommended?"
+
+                    anchors.horizontalCenter: parent.horizontalCenter
 
                     iconSrc: "qrc:/ui/resources/tip.svg"
                     contentItem: VPNTextBlock {
@@ -119,13 +134,35 @@ FocusScope {
                         textFormat: Text.StyledText
                         Layout.fillWidth: true
                     }
+                    width: parent.width - VPNTheme.theme.windowMargin * 2
                 }
 
                 Repeater {
                     id: recommendedRepeater
                     model: testRecommendedModel
-                    delegate: Text {
-                        text: name
+                    delegate: VPNClickableRow {
+                        onClicked: {
+                            focusScope.setSelectedServer(countryCode, cityName, localizedCityName);
+                        }
+
+                        RowLayout {
+                            anchors {
+                                centerIn: parent
+                                left: parent.left
+                                right: parent.right
+                            }
+                            width: parent.width - VPNTheme.theme.windowMargin * 2
+                            height: parent.height
+
+                            VPNServerLabel {
+                                id: recommendedServer
+                                serversList: [{
+                                    countryCode,
+                                    cityName,
+                                    localizedCityName
+                                }]
+                            }
+                        }
                     }
                 }
             }
@@ -218,6 +255,12 @@ FocusScope {
         anchors.fill: parent
         z: 1
 
+        handleTabClick: (tabButton) => {
+            if (tabButton.objectName === "tabAllServers") {
+                centerActiveServer(loaderServersAll.item);
+            }
+        }
+
         tabList: ListModel {
             id: tabButtonList
 
@@ -225,7 +268,6 @@ FocusScope {
                 tabLabelStringId: "ServersViewTabRecommended"
                 tabButtonId: "tabRecommendedServers"
             }
-
             ListElement {
                 tabLabelStringId: "ServersViewTabAll"
                 tabButtonId: "tabAllServers"
@@ -234,14 +276,15 @@ FocusScope {
 
         stackContent: [
             Loader {
+                id: loaderServersRecommended
                 sourceComponent: listServersRecommended
             },
             Loader {
-                id: loader
+                id: loaderServersAll
                 sourceComponent: listServersAll
 
-                onStatusChanged: if (loader.status === Loader.Ready) {
-                    // centerActiveServer(loader.item);
+                onStatusChanged: if (loaderServersAll.status === Loader.Ready) {
+                    centerActiveServer(loaderServersAll.item);
                 }
             }
         ]
