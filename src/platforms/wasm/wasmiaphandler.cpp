@@ -28,9 +28,6 @@ WasmIAPHandler::~WasmIAPHandler() { MVPN_COUNT_DTOR(WasmIAPHandler); }
 
 void WasmIAPHandler::nativeRegisterProducts() {
   ProductsHandler* productsHandler = ProductsHandler::instance();
-  logger.info() << "Looked for a productsHandler";
-  Q_ASSERT(productsHandler);
-  logger.info() << "Got a productsHandler";
   // Let's use the trialDays to sort the products in the wasm client
   int trialDays = 100;
   for (ProductsHandler::Product& product : productsHandler->products()) {
