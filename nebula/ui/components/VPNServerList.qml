@@ -77,7 +77,9 @@ FocusScope {
             }
 
             // Get distance to the current server city and scroll
-            const currentCityYPosition = countryItem.y + (54 * countryItem.currentCityIndex) - serverListYCenter;
+            const currentCityYPosition = countryItem.y
+                + VPNTheme.theme.cityListTopMargin * 3 * countryItem.currentCityIndex
+                - serverListYCenter;
             const destinationY = (currentCityYPosition + serverListFlickable.height > serverListFlickable.contentHeight)
                 ? serverListFlickable.contentHeight - serverListFlickable.height
                 : currentCityYPosition;
@@ -113,7 +115,7 @@ FocusScope {
 
             Column {
                 id: serverListRecommended
-                spacing: 14
+                spacing: VPNTheme.theme.listSpacing * 1.75
                 width: parent.width
 
                 anchors {
@@ -200,7 +202,7 @@ FocusScope {
                 id: serverList
                 objectName: "serverCountryList"
 
-                spacing: 14
+                spacing: VPNTheme.theme.listSpacing * 1.75
                 width: parent.width
                 anchors.top: verticalSpacer.bottom
 
