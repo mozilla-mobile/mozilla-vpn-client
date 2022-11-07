@@ -51,13 +51,15 @@ bool s_transactionsProcessed = false;
      didReceiveResponse:(nonnull SKProductsResponse*)response {
   logger.debug() << "Registration completed";
 
+  ProductsHandler* productsHandler = ProductsHandler::instance();
+    
   if (response.invalidProductIdentifiers) {
     NSArray<NSString*>* products = response.invalidProductIdentifiers;
     logger.error() << "Registration failure" << [products count];
 
     for (unsigned long i = 0, count = [products count]; i < count; ++i) {
       NSString* identifier = [products objectAtIndex:i];
-      QMetaObject::invokeMethod(m_handler, "unknownProductRegistered", Qt::QueuedConnection,
+      QMetaObject::invokeMethod(productsHandler, "unknownProductRegistered", Qt::QueuedConnection,
                                 Q_ARG(QString, QString::fromNSString(identifier)));
     }
   }
@@ -68,12 +70,12 @@ bool s_transactionsProcessed = false;
 
     for (unsigned long i = 0, count = [products count]; i < count; ++i) {
       SKProduct* product = [[products objectAtIndex:i] retain];
-      QMetaObject::invokeMethod(m_handler, "productRegistered", Qt::QueuedConnection,
+      QMetaObject::invokeMethod(productsHandler, "productRegistered", Qt::QueuedConnection,
                                 Q_ARG(void*, product));
     }
   }
 
-  QMetaObject::invokeMethod(m_handler, "productsRegistrationCompleted", Qt::QueuedConnection);
+  QMetaObject::invokeMethod(productsHandler, "productsRegistrationCompleted", Qt::QueuedConnection);
 
   [request release];
 }
@@ -218,7 +220,7 @@ IOSIAPHandler::~IOSIAPHandler() {
 
 void IOSIAPHandler::nativeRegisterProducts() {
   NSSet<NSString*>* productIdentifiers = [NSSet<NSString*> set];
-  for (const Product& product : m_products) {
+  for (const ProductsHandler::Product& product : ProductsHandler::instance()->products()) {
     productIdentifiers = [productIdentifiers setByAddingObject:product.m_name.toNSString()];
   }
 
@@ -247,14 +249,16 @@ void IOSIAPHandler::nativeRestoreSubscription() {
 void IOSIAPHandler::productRegistered(void* a_product) {
   SKProduct* product = static_cast<SKProduct*>(a_product);
 
-  Q_ASSERT(m_productsRegistrationState == eRegistering);
+  ProductsHandler* productsHandler = ProductsHandler::instance();
+  
+  Q_ASSERT(productsHandler->isRegistering());
 
   logger.debug() << "Product registered";
 
   NSString* nsProductIdentifier = [product productIdentifier];
   QString productIdentifier = QString::fromNSString(nsProductIdentifier);
 
-  Product* productData = findProduct(productIdentifier);
+  ProductsHandler::Product* productData = productsHandler->findProduct(productIdentifier);
   Q_ASSERT(productData);
 
   logger.debug() << "Id:" << productIdentifier;
@@ -283,7 +287,7 @@ void IOSIAPHandler::productRegistered(void* a_product) {
     [numberFormatter setNumberStyle:(NSNumberFormatterStyle)NSNumberFormatterCurrencyStyle];
     [numberFormatter setLocale:product.priceLocale];
 
-    int32_t mounthCount = productTypeToMonthCount(productData->m_type);
+    int32_t mounthCount = productsHandler->productTypeToMonthCount(productData->m_type);
     Q_ASSERT(mounthCount >= 1);
 
     if (mounthCount == 1) {
