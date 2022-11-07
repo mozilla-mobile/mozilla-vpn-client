@@ -7,9 +7,16 @@ import android.os.Binder
 import android.os.Parcel
 import org.mozilla.firefox.vpn.qt.VPNActivity
 
+const val permissionRequired = 6
+
 class VPNClientBinder() : Binder() {
 
     override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {
+        if (code == permissionRequired) {
+            VPNActivity.getInstance().onPermissionRequest(code, data)
+            return true
+        }
+
         val buffer = data.createByteArray()
         val stringData = buffer?.let { String(it) }
         VPNActivity.getInstance().onServiceMessage(code, stringData)

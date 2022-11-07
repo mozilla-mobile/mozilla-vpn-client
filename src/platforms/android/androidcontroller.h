@@ -8,10 +8,6 @@
 #include "controllerimpl.h"
 #include "models/device.h"
 
-// We need this private header for startActivityForResult
-// As there is no polyfill yet.
-#include <QtCore/private/qandroidextras_p.h>
-
 class AndroidController final : public ControllerImpl {
   Q_DISABLE_COPY_MOVE(AndroidController)
 
@@ -26,8 +22,6 @@ class AndroidController final : public ControllerImpl {
   void activate(const HopConnection& hop, const Device* device,
                 const Keys* keys, Reason Reason) override;
 
-  void resume_activate();
-
   void deactivate(Reason reason) override;
 
   void checkStatus() override;
@@ -40,9 +34,6 @@ class AndroidController final : public ControllerImpl {
   QString m_serverPublicKey;
   Device m_device;
   std::function<void(const QString&)> m_logCallback;
-
-  static void startActivityForResult(JNIEnv* env, jobject /*thiz*/,
-                                     jobject intent);
 };
 
 #endif  // ANDROIDCONTROLLER_H

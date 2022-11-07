@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 package org.mozilla.firefox.vpn.daemon
+import android.content.Intent
 import android.os.Binder
 import android.os.DeadObjectException
 import android.os.IBinder
@@ -55,9 +56,12 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                     val buffer = data.createByteArray()
                     val json = buffer?.let { String(it) }
                     val config = JSONObject(json)
-
-                    if (!mService.checkPermissions()) {
+                    val permissionIntent: Intent? = mService.checkPermissions()
+                    if (permissionIntent != null) {
                         mResumeConfig = config
+                        val permissionParcel = Parcel.obtain()
+                        permissionIntent.writeToParcel(permissionParcel, 0)
+                        dispatchEvent(EVENTS.permissionRequired, permissionParcel)
                         // The Permission prompt was already
                         // send, in case it's accepted we will
                         // receive ACTIONS.resumeActivate
@@ -174,11 +178,14 @@ class VPNServiceBinder(service: VPNService) : Binder() {
      * [ACTIONS.registerEventListener]
      */
     fun dispatchEvent(code: Int, payload: String?) {
+        val data = Parcel.obtain()
+        data.writeByteArray(payload?.toByteArray(charset("UTF-8")))
+        dispatchEvent(code, data)
+    }
+    fun dispatchEvent(code: Int, data: Parcel) {
         try {
             mListener?.let {
                 if (it.isBinderAlive) {
-                    val data = Parcel.obtain()
-                    data.writeByteArray(payload?.toByteArray(charset("UTF-8")))
                     it.transact(code, data, Parcel.obtain(), 0)
                 }
             }
@@ -198,5 +205,6 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val statisticUpdate = 3
         const val backendLogs = 4
         const val activationError = 5
+        const val permissionRequired = 6
     }
 }

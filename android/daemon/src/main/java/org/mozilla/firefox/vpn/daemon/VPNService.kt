@@ -174,24 +174,19 @@ class VPNService : android.net.VpnService() {
       * If the permission is given, returns true
       * Requests permission and returns false if not.
       */
-    fun checkPermissions(): Boolean {
+    fun checkPermissions(): Intent? {
         // See https://developer.android.com/guide/topics/connectivity/vpn#connect_a_service
         // Call Prepare, if we get an Intent back, we dont have the VPN Permission
         // from the user. So we need to pass this to our main Activity and exit here.
         val intent = prepare(this)
-        if (intent == null) {
-            Log.i(tag, "VPN Permission Already Present")
-            return true
-        }
-        Log.e(tag, "Requesting VPN Permission")
-        return false
+        return intent
     }
 
     fun turnOn(json: JSONObject, useFallbackServer: Boolean = false) {
         Log.sensitive(tag, json.toString())
         val wireguard_conf = buildWireugardConfig(json, useFallbackServer)
 
-        if (!checkPermissions()) {
+        if (checkPermissions() != null) {
             Log.e(tag, "turn on was called without vpn-permission!")
             isUp = false
             return
