@@ -2,14 +2,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-FROM ubuntu:22.04
+FROM $DOCKER_IMAGE_PARENT
 
 MAINTAINER Sebastian Streich <sstreich@mozilla.com>
 
 # The build will be run as worker, which has no access
 # thus we should prep the folders
 RUN mkdir -p /builds/worker/.cache/go-build &&\
-    # chown -R worker:worker /builds/worker/.cache/ &&\
+    chown -R worker:worker /builds/worker/.cache/ &&\
     chmod -R 777 /builds/worker/
 
 #NDK Version:
