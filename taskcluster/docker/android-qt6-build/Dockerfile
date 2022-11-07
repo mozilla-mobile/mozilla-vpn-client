@@ -2,14 +2,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-FROM $DOCKER_IMAGE_PARENT
+FROM ubuntu:22.04
 
 MAINTAINER Sebastian Streich <sstreich@mozilla.com>
 
 # The build will be run as worker, which has no access
 # thus we should prep the folders
 RUN mkdir -p /builds/worker/.cache/go-build &&\
-    chown -R worker:worker /builds/worker/.cache/ &&\
+    # chown -R worker:worker /builds/worker/.cache/ &&\
     chmod -R 777 /builds/worker/
 
 #NDK Version:
@@ -34,7 +34,8 @@ RUN apt-get -q update &&\
     #Install QT
     python3 -m pip install aqtinstall
 RUN wget https://sh.rustup.rs && sh index.html -y &&\
-    chmod -R 777 ~/.cargo
+    chmod -R 777 ~/.cargo &&\
+    ~/.cargo/bin/rustup target add x86_64-linux-android i686-linux-android armv7-linux-androideabi aarch64-linux-android
 RUN python3 -m aqt install-qt --outputdir /opt linux desktop ${QT_VERSION} gcc_64
 RUN python3 -m aqt install-qt --outputdir /opt linux android ${QT_VERSION} ${ANDROID_ARCH} -m all &&\
     #Download Additional stuff that is not in a repo
