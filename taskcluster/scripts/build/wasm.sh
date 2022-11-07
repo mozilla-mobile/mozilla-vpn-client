@@ -6,17 +6,10 @@ set -e
 
 source /opt/emsdk/emsdk_env.sh
 
-which qmake 
-qmake --version
-
 git submodule init
 git submodule update
 
 pip3 install -r requirements.txt
-# glean
-python3 ./scripts/utils/generate_glean.py
-# translations
-python3 ./scripts/utils/import_languages.py
 
 export PATH="$QTPATH/wasm_32/bin:$PATH"
 mkdir build
