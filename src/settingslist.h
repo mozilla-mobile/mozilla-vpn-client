@@ -205,6 +205,14 @@ SETTING_DATETIME(installationTime,     // getter
                  false                 // remove when reset
 )
 
+SETTING_STRING(installedVersion,     // getter
+               setInstalledVersion,  // setter
+               hasInstalledVersion,  // has
+               "installedVersion",   // key
+               "",                   // default value
+               false                 // remove when reset
+)
+
 SETTING_INT64(keyRegenerationTimeSec,     // getter
               setKeyRegenerationTimeSec,  // setter
               hasKeyRegenerationTimeSec,  // has
@@ -407,6 +415,14 @@ SETTING_BOOL(unsecuredNetworkAlert,     // getter
              Feature::get(Feature::Feature_unsecuredNetworkNotification)
                  ->isSupported(),  // default value
              false                 // remove when reset
+)
+
+SETTING_DATETIME(updateTime,     // getter
+                 setUpdateTime,  // setter
+                 hasUpdateTime,  // has
+                 "updateTime",   // key
+                 QDateTime(),    // default value
+                 false           // remove when reset
 )
 
 SETTING_STRING(userAvatar,     // getter
