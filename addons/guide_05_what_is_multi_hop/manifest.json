@@ -17,7 +17,7 @@
             {
                 "id": "c_3",
                 "type": "text",
-                "content": "There’s a small tradeoff for this extra security — this may also slow down your connection a bit. You can reduce this effect by choosing servers that are both close to each other as well as to your own location."
+                "content": "There’s a small trade-off for this extra security — this may also slow down your connection a bit. You can reduce this effect by choosing servers that are both close to each other as well as to your own location."
             }
         ]
     }
