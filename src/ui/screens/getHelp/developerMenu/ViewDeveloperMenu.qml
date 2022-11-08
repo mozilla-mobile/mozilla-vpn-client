@@ -275,13 +275,34 @@ VPNViewBase {
         }
 
         VPNTextBlock {
-            id: qtVersionText
-
             Layout.leftMargin: 31
             Layout.rightMargin: 3
             Layout.fillWidth: true
 
             text: VPN.devVersion
+        }
+
+        ColumnLayout {
+            Layout.leftMargin: 31
+            Layout.rightMargin: 31
+
+            VPNTextBlock {
+                Layout.fillWidth: true
+
+                text: VPN.devVersion
+            }
+
+            VPNTextBlock {
+                Layout.fillWidth: true
+
+                text: "Installation time: " + VPNSettings.installationTime
+            }
+
+            VPNTextBlock {
+                Layout.fillWidth: true
+
+                text: "Update time: " + VPNSettings.updateTime
+            }
         }
     }
 }
