@@ -51,6 +51,9 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
   Q_ASSERT(!impl);
   Q_UNUSED(device);
 
+  QObject::connect(SettingsHolder::instance(), &SettingsHolder::startAtBootChanged, this,
+                   &IOSController::onStartAtBootChanged);
+
   logger.debug() << "Initializing Swift Controller";
 
   static bool creating = false;
@@ -73,13 +76,13 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
             [impl dealloc];
             impl = nullptr;
             emit initialized(false, false, QDateTime());
-            return;
+            break;
           }
           case ConnectionStateConnected: {
             Q_ASSERT(date);
             QDateTime qtDate(QDateTime::fromNSDate(date));
             emit initialized(true, true, qtDate);
-            return;
+            break;
           }
           case ConnectionStateDisconnected:
             Controller* controller = MozillaVPN::instance()->controller();
@@ -90,7 +93,13 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
             }
 
             emit initialized(true, false, QDateTime());
-            return;
+            break;
+        }
+        // Check if the tunnel has a diffrent value for "startOnBoot" // onDemand
+        // then we recorded for the last time, if that's the case, update our local value.
+        bool userSetStartOnBoot = [impl getStartOnBoot];
+        if (SettingsHolder::instance()->startAtBoot() != userSetStartOnBoot) {
+          SettingsHolder::instance()->setStartAtBoot(userSetStartOnBoot);
         }
       }
       callback:^(BOOL a_connected) {
@@ -114,7 +123,6 @@ void IOSController::activate(const HopConnection& hop, const Device* device, con
   Q_ASSERT(hop.m_vpnDisabledApps.isEmpty());
 
   logger.debug() << "IOSController activating" << hop.m_server.hostname();
-
   if (!impl) {
     logger.error() << "Controller not correctly initialized";
     emit disconnected();
@@ -241,4 +249,12 @@ void IOSController::cleanupBackendLogs() {
 
   QFile file(QString::fromNSString([path path]));
   file.remove();
+}
+
+void IOSController::onStartAtBootChanged() {
+  if (!impl) {
+    return;
+  }
+  bool value = SettingsHolder::instance()->startAtBoot();
+  [impl setStartOnBootWithSetEnabled:value];
 }

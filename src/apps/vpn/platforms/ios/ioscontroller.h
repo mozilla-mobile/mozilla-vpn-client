@@ -29,6 +29,8 @@ class IOSController final : public ControllerImpl {
 
   void cleanupBackendLogs() override;
 
+  void onStartAtBootChanged();
+
  private:
   bool m_checkingStatus = false;
   QString m_serverPublicKey;

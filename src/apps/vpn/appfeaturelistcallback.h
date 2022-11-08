@@ -144,11 +144,8 @@ bool FeatureCallback_splitTunnel() {
 
 bool FeatureCallback_startOnBoot() {
 #if defined(MZ_LINUX) || defined(MZ_MACOS) || defined(MZ_WINDOWS) || \
-    defined(MZ_DUMMY) || defined(MZ_WASM) || defined(MZ_ANDROID)
+    defined(MZ_DUMMY) || defined(MZ_WASM) || defined(MZ_IOS)
   return true;
-#else
-  return false;
-#endif
 }
 
 bool FeatureCallback_unsecuredNetworkNotification() {
