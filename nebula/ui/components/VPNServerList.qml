@@ -77,9 +77,9 @@ FocusScope {
             }
 
             // Get distance to the current server city and scroll
-            const currentCityYPosition = countryItem.y
+            const currentCityYPosition = (countryItem.y
                 + VPNTheme.theme.cityListTopMargin * 3 * countryItem.currentCityIndex
-                - serverListYCenter;
+                - serverListYCenter);
             const destinationY = (currentCityYPosition + serverListFlickable.height > serverListFlickable.contentHeight)
                 ? serverListFlickable.contentHeight - serverListFlickable.height
                 : currentCityYPosition;
@@ -115,7 +115,7 @@ FocusScope {
 
             Column {
                 id: serverListRecommended
-                spacing: VPNTheme.theme.listSpacing * 1.75
+                spacing: VPNTheme.theme.listSpacing
                 width: parent.width
 
                 anchors {
@@ -126,13 +126,13 @@ FocusScope {
                 }
 
                 VPNCollapsibleCard {
-                    title: "Why are these locations recommended?"
+                    title: VPNl18n.ServersViewRecommendedCardTitle
 
                     anchors.horizontalCenter: parent.horizontalCenter
 
                     iconSrc: "qrc:/ui/resources/tip.svg"
                     contentItem: VPNTextBlock {
-                        text: "These locations are sorted by expected performance."
+                        text: VPNl18n.ServersViewRecommendedCardBody
                         textFormat: Text.StyledText
                         Layout.fillWidth: true
                     }
@@ -202,7 +202,7 @@ FocusScope {
                 id: serverList
                 objectName: "serverCountryList"
 
-                spacing: VPNTheme.theme.listSpacing * 1.75
+                spacing: VPNTheme.theme.listSpacing
                 width: parent.width
                 anchors.top: verticalSpacer.bottom
 
@@ -270,13 +270,13 @@ FocusScope {
                 id: tabButtonList
 
                 ListElement {
-                    tabLabelStringId: "ServersViewTabRecommended"
-                    tabButtonId: "tabRecommendedServers"
+                    tabLabelStringId: "ServersViewTabRecommendedLabel"
+                    tabButtonId: "tabRecommendedServer"
                 }
 
                 ListElement {
-                    tabLabelStringId: "ServersViewTabAll"
-                    tabButtonId: "tabAllServers"
+                    tabLabelStringId: "ServersViewTabAllLabel"
+                    tabButtonId: "tabAllServer"
                 }
             }
 
