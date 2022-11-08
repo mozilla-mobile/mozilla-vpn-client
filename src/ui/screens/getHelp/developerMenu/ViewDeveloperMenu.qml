@@ -282,20 +282,27 @@ VPNViewBase {
             text: VPN.devVersion
         }
 
-        VPNTextBlock {
+        ColumnLayout {
             Layout.leftMargin: 31
-            Layout.rightMargin: 3
-            Layout.fillWidth: true
+            Layout.rightMargin: 31
 
-            text: "Installation time:" + VPNSettings.installationTime
-        }
+            VPNTextBlock {
+                Layout.fillWidth: true
 
-        VPNTextBlock {
-            Layout.leftMargin: 31
-            Layout.rightMargin: 3
-            Layout.fillWidth: true
+                text: VPN.devVersion
+            }
 
-            text: "Update time:" + VPNSettings.updateTime
+            VPNTextBlock {
+                Layout.fillWidth: true
+
+                text: "Installation time: " + VPNSettings.installationTime
+            }
+
+            VPNTextBlock {
+                Layout.fillWidth: true
+
+                text: "Update time: " + VPNSettings.updateTime
+            }
         }
     }
 }
