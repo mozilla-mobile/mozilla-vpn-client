@@ -83,7 +83,7 @@ FEATURE_SIMPLE(freeTrial,      // Feature ID
                FeatureCallback_iosOrAndroid)
 
 FEATURE_SIMPLE(inAppAccountCreate,                  // Feature ID
-               "In-app Account Cretion",            // Feature name
+               "In-app Account Creation",           // Feature name
                "2.6",                               // released
                true,                                // Can be flipped on
                false,                               // Can be flipped off
@@ -152,6 +152,14 @@ FEATURE_SIMPLE(notificationControl,     // Feature ID
                false,                   // Can be flipped off
                QStringList(),           // feature dependencies
                FeatureCallback_true)
+
+FEATURE_SIMPLE(recommendedServers,     // Feature ID
+               "Recommended servers",  // Feature name
+               "2.12",                 // released
+               true,                   // Can be flipped on
+               true,                   // Can be flipped off
+               QStringList(),          // feature dependencies
+               FeatureCallback_false)
 
 FEATURE_SIMPLE(serverUnavailableNotification,      // Feature ID
                "Server unavailable notification",  // Feature name

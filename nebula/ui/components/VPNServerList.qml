@@ -297,7 +297,7 @@ FocusScope {
         id: serverListLoader
 
         anchors.fill: parent
-        sourceComponent: showRecentConnections
+        sourceComponent: VPNFeatureList.get("recommendedServers").isSupported && showRecentConnections
             ? serverTabsComponent
             : listServersAll
         onStatusChanged: if (
