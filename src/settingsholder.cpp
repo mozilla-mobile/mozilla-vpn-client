@@ -9,6 +9,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
+#include "telemetry/gleansample.h"
 
 #include <QDir>
 #include <QFile>

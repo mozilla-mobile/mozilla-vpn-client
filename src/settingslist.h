@@ -530,7 +530,7 @@ SETTING_STRINGLIST(vpnDisabledApps,     // getter
                    hasVpnDisabledApps,  // has
                    "vpnDisabledApps",   // key
                    QStringList(),       // default value
-                   false,               // user setting
+                   true,                // user setting
                    false                // remove when reset
 )
 

@@ -67,6 +67,9 @@ void TestSettings::transactionRollback() {
 }
 
 void TestSettings::transactionRollbackStartup() {
+  // This test simulates a rollback at startup from a journal file.
+
+  // Step 1: let's add some entries in the settings
   {
     SettingsHolder settingsHolder;
     settingsHolder.doNotClearOnDTOR();
@@ -77,6 +80,7 @@ void TestSettings::transactionRollbackStartup() {
     QCOMPARE(settingsHolder.token(), "TOKEN 1");
   }
 
+  // Step 2: let's start a transaction without finalizing it
   {
     SettingsHolder settingsHolder;
     settingsHolder.doNotClearOnDTOR();
@@ -91,6 +95,8 @@ void TestSettings::transactionRollbackStartup() {
     QCOMPARE(settingsHolder.token(), "TOKEN 2");
   }
 
+  // Step 3: a new SettingsHolder object will rollback the changes using the
+  // journal file.
   {
     SettingsHolder settingsHolder;
     QCOMPARE(settingsHolder.theme(), "AAA");
