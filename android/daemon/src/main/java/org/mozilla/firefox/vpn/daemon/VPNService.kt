@@ -95,6 +95,11 @@ class VPNService : android.net.VpnService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.i(tag, "Service Started by Intent")
         init()
+        if (isUp) {
+            // In case a user has "always-on" and "start-on-boot" enabled, we might
+            // get this multiple times.
+            return START_NOT_STICKY
+        }
         intent?.let {
             if (intent.getBooleanExtra("startOnly", false)) {
                 Log.i(tag, "Start only!")
