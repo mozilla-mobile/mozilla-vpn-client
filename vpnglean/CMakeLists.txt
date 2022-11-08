@@ -99,10 +99,13 @@ set_target_properties(vpnglean_telemetry PROPERTIES FOLDER "Libs")
 ## Define depedencies
 add_dependencies(vpnglean_ffi vpnglean_telemetry)
 add_dependencies(vpnglean vpnglean_ffi)
-add_dependencies(mozillavpn vpnglean)
 set_target_properties(vpnglean PROPERTIES
     IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/release/${LIBNAME}
     IMPORTED_LOCATION_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/debug/${LIBNAME}
+)
+set_property(TARGET vpnglean APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/generated
 )
 
 ## Fixup any missing link dependencies to pass to the vpnglean consumer
@@ -118,6 +121,3 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set_property(TARGET vpnglean APPEND PROPERTY
         INTERFACE_LINK_LIBRARIES crypt32 Secur32 ntdll)
 endif()
-
-target_include_directories(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-target_include_directories(mozillavpn PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/generated)
