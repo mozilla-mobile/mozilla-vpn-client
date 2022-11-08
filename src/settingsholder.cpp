@@ -50,10 +50,8 @@ SettingsHolder::SettingsHolder()
 
   if (QFile::exists(journalSettingFileName())) {
     QString journalSettingFile(journalSettingFileName());
-    logger.warning() << "journal file exists" << journalSettingFile;
+    logger.info() << "journal file exists" << journalSettingFile;
 
-    // We cannot simply rename the journal settings file because the main
-    // QSettings could be not a file on some platforms (windows, for instance).
     {
       QSettings journalSettings(journalSettingFile, MozFormat);
       for (const QString& key : journalSettings.allKeys()) {
@@ -66,7 +64,7 @@ SettingsHolder::SettingsHolder()
                        << journalSettingFile;
     }
 
-    logger.warning() << "Recovering completed";
+    logger.info() << "Recovering completed";
   }
 
   Q_ASSERT(!s_instance);
