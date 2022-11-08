@@ -26,7 +26,7 @@ ColumnLayout {
     }
 
     function disableActiveInput() {
-        return activeInput().enabled = false;
+        activeInput().enabled = false;
     }
 
     Component.onCompleted: if (typeof(authError) === "undefined" || !authError.visible) activeInput().forceActiveFocus();
