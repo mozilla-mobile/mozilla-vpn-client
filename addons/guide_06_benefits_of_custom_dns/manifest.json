@@ -1,7 +1,7 @@
 {
     "api_version": "0.1",
     "id": "guide_06_benefits_of_custom_dns",
-    "name": "Guide: what is multi-hop vpn",
+    "name": "Guide: benefits of custom dns",
     "type": "guide",
     "guide": {
         "id": "benefits_of_custom_dns",

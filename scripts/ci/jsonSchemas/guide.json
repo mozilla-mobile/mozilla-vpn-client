@@ -40,5 +40,5 @@
       }
     }
   },
-  "required": [ "id", "title", "subtitle", "image", "blocks" ]
+  "required": [ "id", "title", "image", "blocks" ]
 }

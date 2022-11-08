@@ -1,7 +1,7 @@
 {
     "api_version": "0.1",
     "id": "guide_05_what_is_multi_hop",
-    "name": "Guide: what is multi-hop vpn",
+    "name": "Guide: what is multi-hop VPN",
     "type": "guide",
     "guide": {
         "id": "what_is_multi_hop",

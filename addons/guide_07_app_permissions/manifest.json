@@ -1,7 +1,7 @@
 {
     "api_version": "0.1",
     "id": "guide_07_app_permissions",
-    "name": "Guide: what is multi-hop vpn",
+    "name": "Guide: app permissions",
     "type": "guide",
     "conditions": {
         "enabled_features": ["splitTunnel"]
