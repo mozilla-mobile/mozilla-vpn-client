@@ -7,6 +7,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "frontend/navigator.h"
 #include "telemetry/gleansample.h"
 
 #include <QCoreApplication>
@@ -44,6 +45,18 @@ void Tutorial::allowItem(const QString& objectName) {
   m_allowedItems.append(objectName);
 }
 
+void Tutorial::showWarning(Addon* tutorial) {
+    Q_ASSERT(tutorial);
+    Q_ASSERT(tutorial->type() == "tutorial");
+
+    m_currentTutorial = qobject_cast<AddonTutorial*>(tutorial);
+    ExternalOpHandler::instance()->registerBlocker(this);
+
+    if(m_currentTutorial->showWarning()) {
+        emit showWarningNeeded(tutorial);
+    }
+}
+
 void Tutorial::play(Addon* tutorial) {
   Q_ASSERT(tutorial);
   Q_ASSERT(tutorial->type() == "tutorial");
@@ -51,6 +64,7 @@ void Tutorial::play(Addon* tutorial) {
   stop();
 
   m_currentTutorial = qobject_cast<AddonTutorial*>(tutorial);
+
   if (!m_currentTutorial) {
     logger.error() << "Tutorial::play works only with AddonTutorial";
     return;

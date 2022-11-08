@@ -45,6 +45,7 @@ Add-ons can enable and disable themselves using the `conditions` key in the mani
 | max_client_version | The max client version | String | No | No |
 | platforms | An array of platforms to be checked | Array of string | No | No |
 | settings | An array of Condition Setting object. See below | Array of Condition Setting object | No | No |
+| qml_properties | An array of Condition QML Property objects. See below | Array of Condition Setting objects | No | No | 
 | trigger_time | A number identifying the number of seconds from the first execution of the client | Integer |  No | Yes |
 | start_time | The epoch time that activates the current add-on | Integer | No | Yes |
 | end_time | The epoch time that deactivates the current add-on | Integer | No | Yes |
@@ -65,6 +66,17 @@ When a setting must be checked as a condition, the JSON object must contain the 
 | op | The compare operator: eq or neq | String | Yes |
 
 The list of setting keys can be found here: https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/src/settingslist.h
+
+### Condition QML Property object
+
+When a QML Property must be checked as a condition, the JSON object must contain the following properties:
+
+| Property | Description | Type | Required |
+| --- | --- | --- | --- |
+| element | The name of the qml element | String | Yes |
+| property | The name of the qml element's property | String | Yes |
+| op | The compare operator: eq or neq | String | Yes |
+| value | The value of the setting key | String/Bool/Double | Yes |
 
 ### Javascript conditions
 

@@ -69,5 +69,6 @@
         <file>resources/logo-success.svg</file>
         <file>resources/logo-error.svg</file>
         <file>resources/messages-empty.svg</file>
+        <file>resources/logo-warning.svg</file>
     </qresource>
 </RCC>

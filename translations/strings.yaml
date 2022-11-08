@@ -664,6 +664,10 @@ tutorialPopup:
   tutorialLeaveSubtitle: Looks like you haven’t finished the tutorial quite yet. Would you like to continue and finish now or quit and come back later?
   tutorialLeavePrimaryButtonLabel: Resume tutorial
 
+  tutorialWarningTitle: Continue tutorial?
+  tutorialWarningDescription: By continuing this tutorial, you will be changing your VPN settings. These settings will revert to their original state upon completion or quitting of the tutorial.
+
+
 inAppMessaging:
   menuTitle: Messages
   editButton: Edit
@@ -706,6 +710,12 @@ global:
   goBack:
     value: Go back
     comment: Label for button used in intro modals to return to the app.
+  continue:
+    value: Continue
+    comment: Label for button used to proceed with an action
+  noThanks:
+    value: No thanks
+    comment: Label for button used to not proceed with an action
 
 getHelp:
   helpCenter: Help Center

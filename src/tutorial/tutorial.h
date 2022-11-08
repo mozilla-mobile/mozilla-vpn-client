@@ -28,6 +28,7 @@ class Tutorial final : public QObject, public ExternalOpHandler::Blocker {
   ~Tutorial();
 
   Q_INVOKABLE void play(Addon* tutorial);
+  Q_INVOKABLE void showWarning(Addon* tutorial);
   Q_INVOKABLE void stop();
   Q_INVOKABLE void allowItem(const QString& objectName);
   Q_INVOKABLE void interruptAccepted(ExternalOpHandler::Op op);
@@ -48,6 +49,7 @@ class Tutorial final : public QObject, public ExternalOpHandler::Blocker {
   void tooltipShownChanged();
   void tutorialCompleted(Addon* tutorial);
   void interruptRequest(ExternalOpHandler::Op op);
+  void showWarningNeeded(Addon* tutorial);
 
  private:
   explicit Tutorial(QObject* parent);

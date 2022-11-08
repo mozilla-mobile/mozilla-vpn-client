@@ -45,8 +45,13 @@ GridLayout {
             title: addon.title
             description: addon.subtitle
             onClicked: {
-                VPNTutorial.play(addon);
-                VPNNavigator.requestScreen(VPNNavigator.ScreenHome)
+                if (addon.showWarning) {
+                    VPNTutorial.showWarning(addon)
+                }
+                else {
+                    VPNTutorial.play(addon);
+                    VPNNavigator.requestScreen(VPNNavigator.ScreenHome)
+                }
             }
         }
     }

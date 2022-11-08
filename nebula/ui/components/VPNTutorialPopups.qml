@@ -36,13 +36,23 @@ Item {
     // targetElement is set to `parent` here to get around `Cannot call method ... of undefined` warnings
     // and is reset before the tutorial is opened in onTooltipNeeded()
     property var targetElement: parent
-    onTargetElementChanged: pushFocusToTargetElement()
 
     id: root
     objectName: "tutorialUiRoot"
 
     anchors.fill: parent
     visible: tutorialTooltip.visible || tutorialPopup.opened
+
+    onTargetElementChanged: tooltipRepositionTimer.start()
+
+    //Bandaid fix to position *ALL* tutorial tooltips in the correct position
+    Timer {
+        id: tooltipRepositionTimer
+        interval: 1
+        onTriggered: {
+            tutorialTooltip.changeY()
+        }
+    }
 
     Popup {
         property alias tooltipText: tooltipText.text
@@ -55,20 +65,22 @@ Item {
         onClipChanged: VPNTutorial.stop();
         verticalPadding: VPNTheme.theme.windowMargin
         horizontalPadding: VPNTheme.theme.windowMargin
-        focus: true
 
-        y: {
+        function changeY() {
+            pushFocusToTargetElement()
             if (targetElement) {
                const windowHeight = window.height;
                const targetElementDistanceFromTop = targetElement.mapToItem(window.contentItem, 0, 0).y
 
                if (targetElementDistanceFromTop + targetElement.height + tutorialTooltip.implicitHeight > windowHeight) {
                    tooltipPositionedAboveTargetElement = true;
-                   return targetElementDistanceFromTop - targetElement.height - notchHeight * 2.5;
+                   y = targetElementDistanceFromTop - targetElement.height - notchHeight * 2.5;
+                   return
                }
 
                tooltipPositionedAboveTargetElement = false;
-               return targetElementDistanceFromTop + targetElement.height + notchHeight;
+               y = targetElementDistanceFromTop + targetElement.height + notchHeight;
+               return
            }
         }
 
@@ -182,6 +194,7 @@ Item {
         property alias primaryButtonText: primaryButton.text
         property var primaryButtonOnClicked: () => {}
         property var secondaryButtonOnClicked: () => {}
+        property alias secondaryButtonText: secondaryButton.labelText
         property var _onClosed: () => {}
         property var dismissOnStop: true
         closeButtonObjectName: "vpnPopupCloseButton"
@@ -213,7 +226,6 @@ Item {
             VPNLinkButton {
                 id: secondaryButton
                 objectName: "tutorialPopupSecondaryButton"
-                labelText: VPNl18n.TutorialPopupSecondaryButtonLabel
                 Layout.alignment: Qt.AlignHCenter
                 onClicked: tutorialPopup.secondaryButtonOnClicked()
             }
@@ -238,6 +250,7 @@ Item {
         }
 
         tutorialPopup.primaryButtonText = VPNl18n.TutorialPopupTutorialLeavePrimaryButtonLabel;
+        tutorialPopup.secondaryButtonText = VPNl18n.TutorialPopupSecondaryButtonLabel;
         tutorialPopup.title = VPNl18n.TutorialPopupTutorialLeaveHeadline;
         tutorialPopup.description = VPNl18n.TutorialPopupTutorialLeaveSubtitle;
         tutorialPopup.open();
@@ -280,8 +293,26 @@ Item {
             tutorialPopup.primaryButtonOnClicked = () => openTipsAndTricks();
             tutorialPopup.primaryButtonText = VPNl18n.TutorialPopupTutorialCompletePrimaryButtonLabel;
             tutorialPopup.secondaryButtonOnClicked = () => tutorialPopup.close();
+            tutorialPopup.secondaryButtonText = VPNl18n.TutorialPopupSecondaryButtonLabel
             tutorialPopup.title =  VPNl18n.TutorialPopupTutorialCompleteHeadline;
             tutorialPopup.description = tutorial.completionMessage;
+            tutorialPopup._onClosed = () => {};
+            tutorialPopup.dismissOnStop = false;
+            tutorialPopup.open();
+        }
+
+        function onShowWarningNeeded(tutorial) {
+            tutorialPopup.imageSrc = "qrc:/ui/resources/logo-warning.svg";
+            tutorialPopup.primaryButtonOnClicked = () => {
+                                                           tutorialPopup.close()
+                                                           VPNTutorial.play(tutorial);
+                                                           VPNNavigator.requestScreen(VPNNavigator.ScreenHome)
+                                                         }
+            tutorialPopup.primaryButtonText = VPNl18n.GlobalContinue
+            tutorialPopup.secondaryButtonOnClicked = () => tutorialPopup.close();
+            tutorialPopup.secondaryButtonText = VPNl18n.GlobalNoThanks
+            tutorialPopup.title = VPNl18n.TutorialPopupTutorialWarningTitle;
+            tutorialPopup.description = VPNl18n.TutorialPopupTutorialWarningDescription
             tutorialPopup._onClosed = () => {};
             tutorialPopup.dismissOnStop = false;
             tutorialPopup.open();
