@@ -126,14 +126,13 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
     }
   };
 
-  private final int VPN_SERVICE_REGISTERBINDER = 3;
   private boolean registerBinder(){
       VPNClientBinder binder = new VPNClientBinder();
       Parcel out = Parcel.obtain();
       out.writeStrongBinder(binder);
       try {
         // Register our IBinder Listener
-        vpnService.transact(VPN_SERVICE_REGISTERBINDER,out,Parcel.obtain(),0);
+        vpnService.transact(ACTION_REGISTER_LISTENER,out,Parcel.obtain(),0);
         return true;
       } catch (DeadObjectException e) {
             bound = false;
@@ -154,6 +153,38 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
     bindService(new Intent(this, VPNService.class), mConnection,
             Context.BIND_AUTO_CREATE);
   }
+  // TODO: Move all ipc codes into a shared lib.
+  // this is getting out of hand. 
+  private final int PERMISSION_TRANSACTION = 1337;
+  private final int ACTION_REGISTER_LISTENER = 3;
+  private final int ACTION_RESUME_ACTIVATE = 7;
+  private final int EVENT_PERMISSION_REQURED = 6;
+  private final int EVENT_DISCONNECTED = 2;
 
 
+
+  public void onPermissionRequest(int code, Parcel data) {
+    if(code != EVENT_PERMISSION_REQURED){
+      return;
+    }
+    Intent x = new Intent();
+    x.readFromParcel(data);
+    startActivityForResult(x,PERMISSION_TRANSACTION);
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if(requestCode == PERMISSION_TRANSACTION){
+      // THATS US!
+      if( resultCode == RESULT_OK ){
+        // Prompt accepted, tell service to retry.
+        dispatchParcel(ACTION_RESUME_ACTIVATE,"");
+      }else{
+        // Tell the Client we've disconnected
+        onServiceMessage(EVENT_DISCONNECTED,"");
+      }
+      return;
+    }
+    super.onActivityResult(requestCode, resultCode, data);
+  }
 }
