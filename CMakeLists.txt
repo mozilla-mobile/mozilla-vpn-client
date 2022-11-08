@@ -111,12 +111,15 @@ find_package(Qt6 COMPONENTS
     Widgets
     Xml
 )
+
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND 
    NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Android")
     find_package(Qt6 COMPONENTS
         NetworkAuth
         Sql
     )
+    # Glean.rs
+    add_subdirectory(vpnglean)   
 endif()
 message("Using Qt version ${Qt6_VERSION}")
 add_definitions(-DQT_DEPRECATED_WARNINGS)
@@ -133,7 +136,6 @@ add_subdirectory(translations)
 if(NOT CMAKE_CROSSCOMPILING)
     # Extra rustlang libraries
     add_subdirectory(extension)
-    add_subdirectory(vpnglean)
 
     # Enable testing
     include(CTest)

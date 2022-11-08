@@ -2,6 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+## Find the absolute path cargo.
+## Mostly necessary for iOS builds, 
+## because XCode will attempt to use it's own installation of cargo, 
+## which we don't want.
+find_program(CARGO_EXECUTABLE NAMES cargo REQUIRED)
+
 add_library(vpnglean STATIC IMPORTED GLOBAL)
 
 set_target_properties(vpnglean PROPERTIES FOLDER "Libs")
@@ -30,6 +36,12 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
         set(RUST_ARCH "x86_64-linux-android")
         set(OPENSSL_ARCH "x86_64")
     endif()
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
+    if(${CMAKE_OSX_SYSROOT} STREQUAL "iphonesimulator")
+        set(RUST_ARCH "x86_64-apple-ios")
+    elseif()
+        set(RUST_ARCH "aarch64-apple-ios")
+    endif()
 endif()
 
 if(NOT RUST_ARCH)
@@ -39,9 +51,9 @@ endif()
 if(CMAKE_SYSTEM_NAME STREQUAL "Android")
     set(OPENSSL_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/openSSL/static/lib/${OPENSSL_ARCH})
     set(OPENSSL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/openSSL/static/include)
-    set(CARGO_CMD OPENSSL_LIB_DIR=${OPENSSL_LIB_DIR} OPENSSL_INCLUDE_DIR=${OPENSSL_INCLUDE_DIR} AR=llvm-ar cargo build)
+    set(CARGO_CMD OPENSSL_LIB_DIR=${OPENSSL_LIB_DIR} OPENSSL_INCLUDE_DIR=${OPENSSL_INCLUDE_DIR} AR=llvm-ar ${CARGO_EXECUTABLE} build)
 else()
-    set(CARGO_CMD cargo build)
+    set(CARGO_CMD ${CARGO_EXECUTABLE} build)
 endif()
 
 set(HEADER_FILE vpnglean.h)

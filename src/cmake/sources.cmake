@@ -388,10 +388,12 @@ if(NOT CMAKE_CROSSCOMPILING)
     )
 
     add_compile_definitions(MVPN_WEBEXTENSION)
+endif()
+
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    target_sources(mozillavpn PRIVATE glean/glean.cpp)
 else()
-    target_sources(mozillavpn PRIVATE
-        glean/gleannoop.cpp
-    )
+    target_sources(mozillavpn PRIVATE glean/gleannoop.cpp)
 endif()
 
 qt6_add_qml_module(mozillavpn
