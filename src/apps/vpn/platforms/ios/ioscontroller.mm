@@ -71,18 +71,25 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
         logger.debug() << "Creation completed with connection state:" << state;
         creating = false;
 
+          // Check if the tunnel has a diffrent value for "startOnBoot" // onDemand
+          // then we recorded for the last time, if that's the case, update our local value.
+          bool userSetStartOnBoot = [impl getStartOnBoot];
+          if (SettingsHolder::instance()->startAtBoot() != userSetStartOnBoot) {
+            SettingsHolder::instance()->setStartAtBoot(userSetStartOnBoot);
+          }
+
         switch (state) {
           case ConnectionStateError: {
             [impl dealloc];
             impl = nullptr;
             emit initialized(false, false, QDateTime());
-            break;
+            return;
           }
           case ConnectionStateConnected: {
             Q_ASSERT(date);
             QDateTime qtDate(QDateTime::fromNSDate(date));
             emit initialized(true, true, qtDate);
-            break;
+            return;
           }
           case ConnectionStateDisconnected:
             Controller* controller = MozillaVPN::instance()->controller();
@@ -93,13 +100,7 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
             }
 
             emit initialized(true, false, QDateTime());
-            break;
-        }
-        // Check if the tunnel has a diffrent value for "startOnBoot" // onDemand
-        // then we recorded for the last time, if that's the case, update our local value.
-        bool userSetStartOnBoot = [impl getStartOnBoot];
-        if (SettingsHolder::instance()->startAtBoot() != userSetStartOnBoot) {
-          SettingsHolder::instance()->setStartAtBoot(userSetStartOnBoot);
+            return;
         }
       }
       callback:^(BOOL a_connected) {
