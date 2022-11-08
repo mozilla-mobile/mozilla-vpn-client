@@ -92,7 +92,7 @@ class AndroidVPNActivity : public QObject {
 
  private:
   AndroidVPNActivity();
-  void startAtBootChanged(const bool& startAtBoot);
+  void startAtBootChanged();
 
   static void onServiceMessage(JNIEnv* env, jobject thiz, jint messageType,
                                jstring body);
