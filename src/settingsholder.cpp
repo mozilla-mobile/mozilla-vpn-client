@@ -5,6 +5,7 @@
 #include "settingsholder.h"
 #include "constants.h"
 #include "cryptosettings.h"
+#include "env.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
@@ -52,6 +53,12 @@ SettingsHolder::SettingsHolder()
   if (!hasInstallationTime()) {
     m_firstExecution = true;
     setInstallationTime(QDateTime::currentDateTime());
+  }
+
+  if (!hasUpdateTime() || !hasInstalledVersion() ||
+      installedVersion() != Env::versionString()) {
+    setUpdateTime(QDateTime::currentDateTime());
+    setInstalledVersion(Env::versionString());
   }
 }
 
