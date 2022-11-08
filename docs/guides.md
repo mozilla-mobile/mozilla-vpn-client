@@ -21,7 +21,7 @@ property object with the following properties:
 | advanced         | Is this an advanced guide? Defaults to `false`.               | Boolean                | No       |
 | title            | The title of the Guide                                        | String                 | Yes      |
 | title_comment    | An optional comment to describe the meaning of the title      | String                 | No       |
-| subtitle         | The subtitle of the Guide                                     | String                 | Yes      |
+| subtitle         | The subtitle of the Guide                                     | String                 | No       |
 | subtitle_comment | An optional comment to describe the meaning of the subtitle   | String                 | No       |
 | image            | The URL (qrc:) of the image                                   | String                 | Yes      |
 | blocks           | An array of graphical blocks. See below                       | Array of Block objects | Yes      |

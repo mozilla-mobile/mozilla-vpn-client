@@ -62,3 +62,5 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 endif()
 
 qt_finalize_target(mozillavpn)
+
+set(QML_DISABLE_DISK_CACHE "1")
