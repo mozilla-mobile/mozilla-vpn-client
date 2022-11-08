@@ -26,6 +26,7 @@
 #include "networkwatcher.h"
 #include "profileflow.h"
 #include "releasemonitor.h"
+#include "serverlatency.h"
 #include "statusicon.h"
 #include "telemetry.h"
 #include "theme.h"
@@ -363,6 +364,7 @@ class MozillaVPN final : public QObject {
     ReleaseMonitor m_releaseMonitor;
     ServerCountryModel m_serverCountryModel;
     ServerData m_serverData;
+    ServerLatency m_serverLatency;
     StatusIcon m_statusIcon;
     SubscriptionData m_subscriptionData;
     ProfileFlow m_profileFlow;

@@ -58,7 +58,7 @@ bool ServerCountry::fromJson(const QJsonObject& countryObj) {
     QJsonObject cityObject = cityValue.toObject();
 
     ServerCity serverCity;
-    if (!serverCity.fromJson(cityObject)) {
+    if (!serverCity.fromJson(cityObject, countryCode.toString())) {
       return false;
     }
 

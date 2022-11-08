@@ -132,6 +132,7 @@ SOURCES += \
         rfc/rfc4291.cpp \
         rfc/rfc5735.cpp \
         serveri18n.cpp \
+        serverlatency.cpp \
         settingsholder.cpp \
         signature.cpp \
         simplenetworkmanager.cpp \
@@ -304,6 +305,7 @@ HEADERS += \
         rfc/rfc4291.h \
         rfc/rfc5735.h \
         serveri18n.h \
+        serverlatency.h \
         settingsholder.h \
         signature.h \
         simplenetworkmanager.h \

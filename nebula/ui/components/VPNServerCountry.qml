@@ -166,11 +166,11 @@ VPNClickableRow {
             model: cities
 
             delegate: VPNRadioDelegate {
-                property string _cityName: modelData[0]
-                property string _localizedCityName: modelData[1]
-                property string _activeServerCount: modelData[2]
+                property string _cityName: modelData.name
                 property string _countryCode: code
-                property bool isAvailable: _activeServerCount > 0
+                property string _localizedCityName: modelData.localizedName
+                property string locationScore: VPNServerCountryModel.cityConnectionScore(code, modelData.code)
+                property bool isAvailable: locationScore >= 0
                 property int itemHeight: 54
 
                 id: del
@@ -179,8 +179,8 @@ VPNClickableRow {
                 Keys.onDownPressed: if (citiesRepeater.itemAt(index + 1)) citiesRepeater.itemAt(index + 1).forceActiveFocus()
                 Keys.onUpPressed: if (citiesRepeater.itemAt(index - 1)) citiesRepeater.itemAt(index - 1).forceActiveFocus()
                 onActiveFocusChanged: vpnFlickable.ensureVisible(del)
-                radioButtonLabelText: modelData[1]
-                accessibleName: modelData[1]
+                radioButtonLabelText: _localizedCityName
+                accessibleName: _localizedCityName
                 implicitWidth: parent.width
 
                 onClicked: {
@@ -216,12 +216,13 @@ VPNClickableRow {
                         top: del.top
                         verticalCenter: del.verticalCenter
                     }
-                    source: "qrc:/nebula/resources/warning.svg"
+                    source: del.locationScore < 0 ? "qrc:/nebula/resources/warning.svg" :
+                        "qrc:/nebula/resources/wifi-" + del.locationScore + ".svg"
                     sourceSize {
                         height: VPNTheme.theme.iconSizeSmall
                         width: VPNTheme.theme.iconSizeSmall
                     }
-                    visible: !del.isAvailable
+                    visible: del.locationScore != 0
                 }
 
             }

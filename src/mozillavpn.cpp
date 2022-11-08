@@ -228,6 +228,8 @@ void MozillaVPN::initialize() {
 
   m_private->m_ipAddressLookup.initialize();
 
+  m_private->m_serverLatency.initialize();
+
   if (Feature::get(Feature::Feature_websocket)->isSupported()) {
     m_private->m_webSocketHandler.initialize();
   }

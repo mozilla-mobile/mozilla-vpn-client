@@ -75,7 +75,10 @@ LinuxPingSender::LinuxPingSender(const QHostAddress& source, QObject* parent)
     return;
   }
 
-  quint32 ipv4addr = source.toIPv4Address();
+  quint32 ipv4addr = INADDR_ANY;
+  if (!source.isNull()) {
+    ipv4addr = source.toIPv4Address();
+  }
   struct sockaddr_in addr;
   memset(&addr, 0, sizeof addr);
   addr.sin_family = AF_INET;

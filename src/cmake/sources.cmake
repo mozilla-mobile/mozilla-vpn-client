@@ -266,6 +266,8 @@ target_sources(mozillavpn PRIVATE
     rfc/rfc5735.h
     serveri18n.cpp
     serveri18n.h
+    serverlatency.cpp
+    serverlatency.h
     settingsholder.cpp
     settingsholder.h
     signature.cpp

@@ -42,6 +42,9 @@ class Server final {
   qint64 cooldownTimeout() const { return m_cooldownTimeout; }
   void setCooldownTimeout(qint64 timeout);
 
+  uint32_t latency() const { return m_latency; }
+  void setLatency(uint32_t msec) { m_latency = msec; }
+
   uint32_t weight() const { return m_weight; }
 
   uint32_t choosePort() const;
@@ -71,6 +74,7 @@ class Server final {
   uint32_t m_weight = 0;
   uint32_t m_multihopPort = 0;
   qint64 m_cooldownTimeout = 0;
+  uint32_t m_latency = 0;
 };
 
 #endif  // SERVER_H
