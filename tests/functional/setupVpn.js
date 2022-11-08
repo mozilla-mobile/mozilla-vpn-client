@@ -168,7 +168,7 @@ exports.mochaHooks = {
 
     // Wait for process to close for ests that are slow to close vpn app at end.
     while (true) {
-      if (processEnded) return;
+      if (processEnded) break;
       await new Promise(resolve => setTimeout(resolve, 500));
     }
   },
