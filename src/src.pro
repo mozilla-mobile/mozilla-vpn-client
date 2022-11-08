@@ -27,8 +27,14 @@ unix {
 include($$PWD/qmake/sources.pri)
 
 # Platform-specific entries:
-android {
-   include($$PWD/qmake/platforms/android.pri)
+DUMMY {
+   include($$PWD/qmake/platforms/dummy.pri)
+} else:linux:!android {
+   error(qmake is not supported for Linux. Please use cmake.)
+} else:android {
+   error(qmake is not supported for Android. Please use cmake.)
+} else:macos {
+   include($$PWD/qmake/platforms/macos.pri)
 } else:ios {
    include($$PWD/qmake/platforms/ios.pri)
 } else:linux {

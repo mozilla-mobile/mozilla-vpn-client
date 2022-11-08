@@ -45,3 +45,28 @@ target_sources(mozillavpn PRIVATE
     platforms/linux/linuxcryptosettings.cpp
     platforms/linux/linuxpingsender.h
 )
+
+if(ADJUST_TOKEN)
+    message(Adjust SDK enabled)
+    # SDK Token present, let's enable that.
+    add_compile_definitions("MVPN_ADJUST")
+    target_sources(mozillavpn PRIVATE
+        adjust/adjustfiltering.cpp
+        adjust/adjusthandler.cpp
+        adjust/adjustproxy.cpp
+        adjust/adjustproxyconnection.cpp
+        adjust/adjustproxypackagehandler.cpp
+        adjust/adjusttasksubmission.cpp
+        adjust/adjustfiltering.h
+        adjust/adjusthandler.h
+        adjust/adjustproxy.h
+        adjust/adjustproxyconnection.h
+        adjust/adjustproxypackagehandler.h
+        adjust/adjusttasksubmission.h
+    )
+else()
+    if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
+        message(${CMAKE_BUILD_TYPE})
+        message( FATAL_ERROR "Adjust token cannot be empty for release builds")
+    endif()
+endif()
