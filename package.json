@@ -1,9 +1,11 @@
 {
   "scripts": {
-    "functionalTest": "mocha --require ./tests/functional/setupVpn.js --timeout 30000 --retries 3",
+    "allure-report": "allure generate ./allure-results -c && allure open",
+    "functionalTest": "mocha --require ./tests/functional/setupVpn.js --timeout 30000 --reporter allure-mocha --retries 3",
     "functionalTestWasm": "mocha --require ./tests/functional/setupWasm.js --timeout 30000 --retries 3"
   },
   "devDependencies": {
+    "allure-mocha": "^2.0.0-beta.19",
     "body-parser": "^1.20.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
