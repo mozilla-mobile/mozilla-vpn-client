@@ -17,30 +17,16 @@ class PurchaseHandler : public QObject {
   static PurchaseHandler* createInstance();
   static PurchaseHandler* instance();
 
-  // Returns the latest SKU the started to Subcribe.
-  // Is empty if the user already had a subscription or never started the
-  // subscription flow.
-  const QString& currentSKU() const { return m_currentSKU; }
-
   Q_INVOKABLE void subscribe(const QString& productIdentifier);
   Q_INVOKABLE void restore();
 
   void startSubscription(const QString& productIdentifier);
-  void startRestoreSubscription();
-
-  // The nativeRegisterProducts method is currently here (not in
-  // productshandler) for simplicity of the native implementation.
-  virtual void nativeRegisterProducts() = 0;
 
  signals:
   void subscriptionStarted(const QString& productIdentifier);
-  void restoreSubscriptionStarted();
   void subscriptionFailed();
   void subscriptionCanceled();
   void subscriptionCompleted();
-  void alreadySubscribed();
-  void billingNotAvailable();
-  void subscriptionNotValidated();
 
  public slots:
   void stopSubscription();
@@ -49,15 +35,10 @@ class PurchaseHandler : public QObject {
   PurchaseHandler(QObject* parent);
   ~PurchaseHandler();
 
-  virtual void nativeStartSubscription(ProductsHandler::Product* product) = 0;
-  virtual void nativeRestoreSubscription() = 0;
-
   enum State {
     eActive,
     eInactive,
   } m_subscriptionState = eInactive;
-
-  QString m_currentSKU;
 };
 
 #endif  // PURCHASEHANDLER_H

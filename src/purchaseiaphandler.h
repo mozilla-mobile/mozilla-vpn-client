@@ -2,20 +2,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef PURCHASEHANDLER_H
-#define PURCHASEHANDLER_H
+#ifndef PURCHASEIAPHANDLER_H
+#define PURCHASEIAPHANDLER_H
 
-#include "productshandler.h"
+#include "purchasehandler.h";
 
 #include <QObject>
 
-class PurchaseHandler : public QObject {
+class PurchaseIAPHandler : public PurchaseHandler {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(PurchaseHandler)
+  Q_DISABLE_COPY_MOVE(PurchaseIAPHandler)
 
  public:
-  static PurchaseHandler* createInstance();
-  static PurchaseHandler* instance();
+  static PurchaseIAPHandler* createInstance();
+  static PurchaseIAPHandler* instance();
 
   // Returns the latest SKU the started to Subcribe.
   // Is empty if the user already had a subscription or never started the
@@ -33,31 +33,19 @@ class PurchaseHandler : public QObject {
   virtual void nativeRegisterProducts() = 0;
 
  signals:
-  void subscriptionStarted(const QString& productIdentifier);
   void restoreSubscriptionStarted();
-  void subscriptionFailed();
-  void subscriptionCanceled();
-  void subscriptionCompleted();
   void alreadySubscribed();
   void billingNotAvailable();
   void subscriptionNotValidated();
 
- public slots:
-  void stopSubscription();
-
  protected:
-  PurchaseHandler(QObject* parent);
-  ~PurchaseHandler();
+  PurchaseIAPHandler(QObject* parent);
+  ~PurchaseIAPHandler();
 
   virtual void nativeStartSubscription(ProductsHandler::Product* product) = 0;
   virtual void nativeRestoreSubscription() = 0;
 
-  enum State {
-    eActive,
-    eInactive,
-  } m_subscriptionState = eInactive;
-
   QString m_currentSKU;
 };
 
-#endif  // PURCHASEHANDLER_H
+#endif  // PURCHASEIAPHANDLER_H
