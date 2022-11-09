@@ -1,0 +1,24 @@
+{
+    "api_version": "0.1",
+    "id": "guide_05_what_is_multi_hop",
+    "name": "Guide: what is multi-hop VPN",
+    "type": "guide",
+    "guide": {
+        "id": "what_is_multi_hop",
+        "title": "What is multi-hop VPN?",
+        "advanced": true,
+        "image": "qrc:/addons/guide_05_what_is_multi_hop/image.svg",
+        "blocks": [
+            {
+                "id": "c_2",
+                "type": "text",
+                "content": "Multi-hop VPN routes your traffic through two servers instead of one for extra security and privacy. Your browsing experience will be affected by your “exit” server location."
+            },
+            {
+                "id": "c_3",
+                "type": "text",
+                "content": "There’s a small trade-off for this extra security — this may also slow down your connection a bit. You can reduce this effect by choosing servers that are both close to each other as well as to your own location."
+            }
+        ]
+    }
+}

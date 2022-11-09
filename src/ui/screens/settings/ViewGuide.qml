@@ -117,7 +117,7 @@ Item {
                     VPNBoldInterLabel {
                         Layout.fillWidth: true
 
-                        text: VPNl18n.TipsAndTricksQuickTipsGuideViewTitle
+                        text: guide.advanced ? VPNl18n.TipsAndTricksAdvancedTipsGuideViewTitle : VPNl18n.TipsAndTricksQuickTipsGuideViewTitle
                         font.pixelSize: VPNTheme.theme.fontSize
                         lineHeight: VPNTheme.theme.labelLineHeight
                         color: VPNTheme.theme.fontColor
@@ -138,6 +138,8 @@ Item {
                         Layout.topMargin: VPNTheme.theme.listSpacing
                         Layout.fillWidth: true
 
+                        visible: guide.subtitle
+
                         text: guide.subtitle
                         font.pixelSize: VPNTheme.theme.fontSizeSmall
                         color: VPNTheme.theme.fontColor
@@ -148,6 +150,8 @@ Item {
                         Layout.topMargin: VPNTheme.theme.vSpacingSmall
                         Layout.fillWidth: true
                         Layout.preferredHeight: 1
+
+                        visible: guide.subtitle
 
                         color: VPNTheme.colors.grey10
                     }
