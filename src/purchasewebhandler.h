@@ -2,23 +2,22 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef DUMMYIAPHANDLER_H
-#define DUMMYIAPHANDLER_H
+#ifndef PURCHASEWEBHANDLER_H
+#define PURCHASEWEBHANDLER_H
 
 #include "purchasehandler.h"
 
-class DummyIAPHandler final : public IAPHandler {
+class PurchaseWebHandler final : public PurchaseHandler {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(DummyIAPHandler)
+  Q_DISABLE_COPY_MOVE(PurchaseWebHandler)
 
  public:
-  explicit DummyIAPHandler(QObject* parent);
-  ~DummyIAPHandler();
+  explicit PurchaseWebHandler(QObject* parent);
+  ~PurchaseWebHandler();
 
  protected:
-  void nativeRegisterProducts() override;
   void nativeStartSubscription(ProductsHandler::Product* product) override;
   void nativeRestoreSubscription() override;
 };
 
-#endif  // DUMMYIAPHANDLER_H
+#endif  // PURCHASEWEBHANDLER_H

@@ -23,7 +23,7 @@
 #elif MVPN_WASM
 #  include "platforms/wasm/wasmiaphandler.h"
 #else
-#  include "platforms/dummy/dummyiaphandler.h"
+#  include "purchasewebhandler.h"
 #endif
 
 namespace {
@@ -41,7 +41,7 @@ PurchaseHandler* PurchaseHandler::createInstance() {
 #elif MVPN_WASM
   new WasmPurchaseHandler(qApp);
 #else
-  new DummyPurchaseHandler(qApp);
+  new PurchaseWebHandler(qApp);
 #endif
   Q_ASSERT(s_instance);
   return instance();

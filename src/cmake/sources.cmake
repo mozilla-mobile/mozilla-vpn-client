@@ -242,8 +242,8 @@ target_sources(mozillavpn PRIVATE
     pingsenderfactory.h
     platforms/dummy/dummyapplistprovider.cpp
     platforms/dummy/dummyapplistprovider.h
-    platforms/dummy/dummyiaphandler.cpp
-    platforms/dummy/dummyiaphandler.h
+    platforms/dummy/purchasewebhandler.cpp
+    platforms/dummy/purchasewebhandler.h
     platforms/dummy/dummynetworkwatcher.cpp
     platforms/dummy/dummynetworkwatcher.h
     platforms/dummy/dummypingsender.cpp

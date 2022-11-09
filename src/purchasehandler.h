@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef IAPHANDLER_H
-#define IAPHANDLER_H
+#ifndef PURCHASEHANDLER_H
+#define PURCHASEHANDLER_H
 
 #include "productshandler.h"
 
@@ -60,4 +60,4 @@ class PurchaseHandler : public QObject {
   QString m_currentSKU;
 };
 
-#endif  // IAPHANDLER_H
+#endif  // PURCHASEHANDLER_H
