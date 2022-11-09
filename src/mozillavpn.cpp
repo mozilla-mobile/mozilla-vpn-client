@@ -1329,7 +1329,7 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
 
   ProductsHandler* products = ProductsHandler::instance();
 
-  // If IAP is not ready (race condition), register the products again.
+  // If products are not ready (race condition), register the products again.
   if (!products->hasProductsRegistered()) {
     TaskScheduler::scheduleTask(new TaskProducts());
     TaskScheduler::scheduleTask(new TaskFunction([this, productIdentifier]() {
