@@ -14,7 +14,7 @@ else()
     error("Failed to find rustc host arch")
 endif()
 
-if(NOT CROSS_COMPILING)
+if(NOT CMAKE_CROSSCOMPILING)
     set(RUST_ARCH ${RUSTC_HOST_ARCH})
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
     if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64")
