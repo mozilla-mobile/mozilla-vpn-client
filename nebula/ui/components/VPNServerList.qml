@@ -8,13 +8,14 @@ import QtQuick.Layouts 1.14
 import QtQml.Models 2.2
 
 import Mozilla.VPN 1.0
+import compat 0.1
 import components 0.1
 import components.forms 0.1
 
 FocusScope {
     id: focusScope
 
-    property real listOffset: (VPNTheme.theme.menuHeight * 2)
+    property real listOffset: (VPNTheme.theme.menuHeight * 0.5)
     property bool showRecentConnections: false
     property var currentServer
 
@@ -62,7 +63,7 @@ FocusScope {
     function centerActiveServer(serverListFlickable) {
         // Scroll vpnFlickable so that the current server city is
         // vertically centered in the view
-        const serverListYCenter = serverListFlickable.height / 2 - listOffset
+        const serverListYCenter = serverListFlickable.height * 0.5 - listOffset
 
         for (let idx = 0; idx < serverListFlickable.countries.count; idx++) {
             const countryItem = serverListFlickable.countries.itemAt(idx);
@@ -102,7 +103,7 @@ FocusScope {
         id: radioButtonGroup
     }
 
-    // Recommended servers component
+    // Recommended servers list
     Component {
         id: listServersRecommended
 
@@ -139,6 +140,75 @@ FocusScope {
                     width: parent.width - VPNTheme.theme.windowMargin * 2
                 }
 
+                // Status component
+                VPNClickableRow {
+                    id: statusComponent
+
+                    anchors {
+                        leftMargin: VPNTheme.theme.windowMargin * 0.5
+                        rightMargin: VPNTheme.theme.windowMargin * 0.5
+                    }
+                    canGrowVertical: true
+                    height: statusTitle.implicitHeight + VPNTheme.theme.vSpacingSmall
+
+                    onClicked: {}
+
+                    RowLayout {
+                        anchors {
+                            fill: parent
+                            leftMargin: VPNTheme.theme.listSpacing
+                            rightMargin: VPNTheme.theme.listSpacing
+                        }
+                        spacing: VPNTheme.theme.listSpacing * 0.5
+
+                        VPNIcon {
+                            source: "qrc:/nebula/resources/clock.svg"
+
+                            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                            Layout.topMargin: VPNTheme.theme.listSpacing
+                        }
+
+                        VPNInterLabel {
+                            id: statusTitle
+
+                            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                            Layout.fillWidth: true
+                            Layout.preferredWidth: parent.width
+                            Layout.maximumWidth: parent.width
+
+                            color: VPNTheme.theme.fontColor
+                            text: VPNController.state === VPNController.StateOff
+                                ? "Last updated 5m ago."
+                                : "Last updated 5m ago. To update this list please first disconnect from the VPN."
+                            horizontalAlignment: Text.AlignLeft
+                            wrapMode: Text.WordWrap
+                        }
+
+                        Item {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+
+                            height: VPNTheme.theme.iconSize * 1.5
+                            width: VPNTheme.theme.iconSize * 1.5
+
+                            VPNIcon {
+                                id: refreshIcon
+                                source: "qrc:/nebula/resources/refresh.svg"
+                                sourceSize {
+                                    height: parent.height
+                                    width: parent.width
+                                }
+                            }
+
+                            VPNColorOverlay {
+                                anchors.fill: parent
+
+                                color: VPNTheme.colors.blue
+                                source: refreshIcon
+                            }
+                        }
+                    }
+                }
+
                 Repeater {
                     id: recommendedRepeater
                     model: testRecommendedModel
@@ -153,7 +223,7 @@ FocusScope {
                                 left: parent.left
                                 right: parent.right
                             }
-                            width: parent.width - VPNTheme.theme.windowMargin * 2
+                            width: parent.width - VPNTheme.theme.windowMargin * 1.5
                             height: parent.height
 
                             VPNServerLabel {
@@ -171,7 +241,7 @@ FocusScope {
         }
     }
 
-    // All servers component
+    // All servers list
     Component {
         id: listServersAll
 
@@ -235,7 +305,7 @@ FocusScope {
                     id: recentConnections
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    anchors.rightMargin: VPNTheme.theme.windowMargin / 2
+                    anchors.rightMargin: VPNTheme.theme.windowMargin * 0.5
                     anchors.leftMargin: anchors.rightMargin
                     visible: showRecentConnections && searchBar.getSearchBarText().length === 0
                     showMultiHopRecentConnections: false
@@ -271,12 +341,12 @@ FocusScope {
 
                 ListElement {
                     tabLabelStringId: "ServersViewTabRecommendedLabel"
-                    tabButtonId: "tabRecommendedServer"
+                    tabButtonId: "tabRecommendedServers"
                 }
 
                 ListElement {
                     tabLabelStringId: "ServersViewTabAllLabel"
-                    tabButtonId: "tabAllServer"
+                    tabButtonId: "tabAllServers"
                 }
             }
 
