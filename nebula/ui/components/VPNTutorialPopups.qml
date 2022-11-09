@@ -50,7 +50,8 @@ Item {
         id: tooltipRepositionTimer
         interval: 1
         onTriggered: {
-            tutorialTooltip.changeY()
+            tutorialTooltip.repositionTooltip()
+            notch.repositionNotch()
         }
     }
 
@@ -66,7 +67,7 @@ Item {
         verticalPadding: VPNTheme.theme.windowMargin
         horizontalPadding: VPNTheme.theme.windowMargin
 
-        function changeY() {
+        function repositionTooltip() {
             pushFocusToTargetElement()
             if (targetElement) {
                const windowHeight = window.height;
@@ -145,7 +146,12 @@ Item {
                 y: tutorialTooltip.tooltipPositionedAboveTargetElement ? tutorialTooltip.height - (tutorialTooltip.notchHeight - tooltipOffset) : tooltipOffset * -1
                 rotation: 45
                 anchors.left: parent.left
-                anchors.leftMargin: if (targetElement && typeof(targetElement) !== undefined) { (targetElement.mapToItem(window.contentItem, 0, 0).x + (targetElement.width / 2)) - tutorialTooltip.x - tutorialTooltip.notchHeight/2 }
+
+                function repositionNotch() {
+                    if (targetElement && typeof(targetElement) !== undefined) {
+                        anchors.leftMargin = (targetElement.mapToItem(window.contentItem, 0, 0).x + (targetElement.width / 2)) - tutorialTooltip.x - tutorialTooltip.notchHeight/2
+                    }
+                }
             }
         }
 
