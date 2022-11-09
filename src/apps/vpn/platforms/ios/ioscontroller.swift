@@ -165,7 +165,7 @@ public class IOSControllerImpl : NSObject {
         return true
     }
 
-    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, failureCallback: @escaping () -> Void) {
+    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int,enableAlwaysOn:Bool, failureCallback: @escaping () -> Void) {
         Logger.global?.log(message: "Connecting")
         assert(tunnel != nil)
 
@@ -201,10 +201,10 @@ public class IOSControllerImpl : NSObject {
 
         let config = TunnelConfiguration(name: vpnName, interface: interface, peers: peerConfigurations)
 
-        self.configureTunnel(config: config, reason: reason, serverName: serverIpv4AddrIn + ":\(serverPort )", failureCallback: failureCallback)
+        self.configureTunnel(config: config, reason: reason, serverName: serverIpv4AddrIn + ":\(serverPort )",enableAlwaysOn:enableAlwaysOn, failureCallback: failureCallback)
     }
 
-    func configureTunnel(config: TunnelConfiguration, reason: Int, serverName: String, failureCallback: @escaping () -> Void) {
+    func configureTunnel(config: TunnelConfiguration, reason: Int, serverName: String,enableAlwaysOn:Bool, failureCallback: @escaping () -> Void) {
         let proto = NETunnelProviderProtocol(tunnelConfiguration: config)
         proto!.providerBundleIdentifier = vpnBundleID
         proto!.disconnectOnSleep = false
@@ -218,6 +218,8 @@ public class IOSControllerImpl : NSObject {
         tunnel!.protocolConfiguration = proto
         tunnel!.localizedDescription = vpnName
         tunnel!.isEnabled = true
+        
+        setAlwaysOn(setEnabled: enableAlwaysOn)
         
         tunnel!.saveToPreferences { [unowned self] saveError in
             if let error = saveError {
@@ -254,26 +256,48 @@ public class IOSControllerImpl : NSObject {
             }
         }
     }
-    
-    @objc func setStartOnBoot(setEnabled: Bool){
-        if(!setEnabled){
-            return;
-        }
-        let alwaysConnect = NEOnDemandRuleConnect()
-        alwaysConnect.interfaceTypeMatch = .any
-        tunnel!.isOnDemandEnabled = true
-        tunnel!.onDemandRules = [alwaysConnect]
+    @objc func setAlwaysOn(setEnabled: Bool){
+            if(!setEnabled){
+                tunnel!.isOnDemandEnabled = false;
+                tunnel!.onDemandRules = []
+                return;
+            }
+            let alwaysConnect = NEOnDemandRuleConnect()
+            alwaysConnect.interfaceTypeMatch = .any
+            tunnel!.isOnDemandEnabled = true
+            tunnel!.onDemandRules = [alwaysConnect]
     }
     
-    @objc func getStartOnBoot() -> Bool{
+    @objc func getAlwaysOn() -> Bool{
         return tunnel!.isOnDemandEnabled;
     }
+    // Only if the onDemand rules is set
+    // and contains our "always on rule"
+    // the use would have had the option
+    // to make a choise
+    @objc func hasAlwaysOn() -> Bool{
+        let rules = tunnel!.onDemandRules;
+        if( rules == nil){
+            return false;
+        }
+        return !(rules!.isEmpty)
+    }
+
     
 
     @objc func disconnect() {
         Logger.global?.log(message: "Disconnecting")
         assert(tunnel != nil)
-        (tunnel!.connection as? NETunnelProviderSession)?.stopTunnel()
+        // Turn off always-on, as this would
+        // oterwise imediatly trigger a reconnect from the OS
+        setAlwaysOn(setEnabled: false)
+        tunnel!.saveToPreferences { [unowned self] saveError in
+            if saveError != nil {
+                Logger.global?.log(message: "Save Error")
+            }
+            (tunnel!.connection as? NETunnelProviderSession)?.stopTunnel()
+        }
+        
     }
 
     @objc func checkStatus(callback: @escaping (String, String, String) -> Void) {

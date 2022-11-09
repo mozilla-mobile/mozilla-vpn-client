@@ -51,8 +51,6 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
   Q_ASSERT(!impl);
   Q_UNUSED(device);
 
-  QObject::connect(SettingsHolder::instance(), &SettingsHolder::startAtBootChanged, this,
-                   &IOSController::onStartAtBootChanged);
 
   logger.debug() << "Initializing Swift Controller";
 
@@ -71,12 +69,18 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
         logger.debug() << "Creation completed with connection state:" << state;
         creating = false;
 
-          // Check if the tunnel has a diffrent value for "startOnBoot" // onDemand
-          // then we recorded for the last time, if that's the case, update our local value.
-          bool userSetStartOnBoot = [impl getStartOnBoot];
-          if (SettingsHolder::instance()->startAtBoot() != userSetStartOnBoot) {
-            SettingsHolder::instance()->setStartAtBoot(userSetStartOnBoot);
-          }
+        // After init, check if the network exentsion has info about always on
+        // we might not if this is frist execution or the user removed our vpn permission
+        bool alwaysOnRulePresent = [impl hasAlwaysOn];
+        if(alwaysOnRulePresent){
+            // If we have info about that, make sure that the value in the system settings is
+            // is matching what we have - if not, the user changed that and we should update our side.
+            bool userSetAlwaysOn = [impl getAlwaysOn];
+            if (SettingsHolder::instance()->startAtBoot() != userSetAlwaysOn) {
+                SettingsHolder::instance()->setStartAtBoot(userSetAlwaysOn);
+            }
+        }
+              
 
         switch (state) {
           case ConnectionStateError: {
@@ -141,7 +145,7 @@ void IOSController::activate(const HopConnection& hop, const Device* device, con
                                             isIpv6:i.type() == QAbstractSocket::IPv6Protocol];
     [allowedIPAddressRangesNS addObject:[range autorelease]];
   }
-
+    auto enableAlwaysOn = SettingsHolder::instance()->startAtBoot();
   [impl connectWithDnsServer:hop.m_dnsServer.toString().toNSString()
            serverIpv6Gateway:hop.m_server.ipv6Gateway().toNSString()
              serverPublicKey:hop.m_server.publicKey().toNSString()
@@ -149,6 +153,7 @@ void IOSController::activate(const HopConnection& hop, const Device* device, con
                   serverPort:hop.m_server.choosePort()
       allowedIPAddressRanges:allowedIPAddressRangesNS
                       reason:reason
+             enableAlwaysOn: enableAlwaysOn
              failureCallback:^() {
                logger.error() << "IOSSWiftController - connection failed";
                emit disconnected();
@@ -250,12 +255,4 @@ void IOSController::cleanupBackendLogs() {
 
   QFile file(QString::fromNSString([path path]));
   file.remove();
-}
-
-void IOSController::onStartAtBootChanged() {
-  if (!impl) {
-    return;
-  }
-  bool value = SettingsHolder::instance()->startAtBoot();
-  [impl setStartOnBootWithSetEnabled:value];
 }
