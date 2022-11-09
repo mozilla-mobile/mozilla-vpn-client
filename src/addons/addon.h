@@ -47,6 +47,9 @@ class Addon : public QObject {
 
   static bool evaluateConditions(const QJsonObject& conditions);
 
+  static AddonConditionWatcher* maybeCreateConditionWatchers(
+      Addon* addon, const QJsonObject& conditions);
+
   virtual ~Addon();
 
   const QString& id() const { return m_id; }
@@ -72,8 +75,6 @@ class Addon : public QObject {
 
  private:
   void updateAddonState(State newState);
-
-  void maybeCreateConditionWatchers(const QJsonObject& conditions);
 
   bool evaluateJavascript(const QJsonObject& javascript);
   bool evaluateJavascriptInternal(const QString& javascript, QJSValue* value);
