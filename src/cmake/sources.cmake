@@ -160,8 +160,6 @@ target_sources(mozillavpn PRIVATE
     hawkauth.h
     hkdf.cpp
     hkdf.h
-    iaphandler.cpp
-    purchasehandler.h
     imageproviderfactory.cpp
     imageproviderfactory.h
     inspector/inspectorhandler.cpp
@@ -242,8 +240,6 @@ target_sources(mozillavpn PRIVATE
     pingsenderfactory.h
     platforms/dummy/dummyapplistprovider.cpp
     platforms/dummy/dummyapplistprovider.h
-    platforms/dummy/purchasewebhandler.cpp
-    platforms/dummy/purchasewebhandler.h
     platforms/dummy/dummynetworkwatcher.cpp
     platforms/dummy/dummynetworkwatcher.h
     platforms/dummy/dummypingsender.cpp
@@ -252,6 +248,12 @@ target_sources(mozillavpn PRIVATE
     productshandler.h
     profileflow.cpp
     profileflow.h
+    purchasehandler.h
+    purchasehandler.cpp
+    purchaseiaphandler.cpp
+    purchaseiaphandler.h
+    purchasewebhandler.h
+    purchasewebhandler.cpp
     qmlengineholder.cpp
     qmlengineholder.h
     releasemonitor.cpp

@@ -80,7 +80,6 @@ SOURCES += \
         hawkauth.cpp \
         keyregenerator.cpp \
         hkdf.cpp \
-        iaphandler.cpp \
         imageproviderfactory.cpp \
         inspector/inspectorhandler.cpp \
         inspector/inspectoritempicker.cpp \
@@ -120,10 +119,12 @@ SOURCES += \
         pingsender.cpp \
         pingsenderfactory.cpp \
         platforms/dummy/dummyapplistprovider.cpp \
-        platforms/dummy/purchasewebhandler.cpp \
         platforms/dummy/dummynetworkwatcher.cpp \
         platforms/dummy/dummypingsender.cpp \
         productshandler.cpp \
+        purchasehandler.cpp \
+        purchaseiaphandler.cpp \
+        purchasewebhandler.cpp \
         profileflow.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
@@ -253,7 +254,6 @@ HEADERS += \
         hawkauth.h \
         keyregenerator.h \
         hkdf.h \
-        purchasehandler.h \
         imageproviderfactory.h \
         inspector/inspectorhandler.h \
         inspector/inspectoritempicker.h \
@@ -293,11 +293,13 @@ HEADERS += \
         pingsender.h \
         pingsenderfactory.h \
         platforms/dummy/dummyapplistprovider.h \
-        platforms/dummy/purchasewebhandler.h \
         platforms/dummy/dummynetworkwatcher.h \
         platforms/dummy/dummypingsender.h \
         productshandler.h \
         profileflow.h \
+        purchasehandler.h \
+        purchaseiaphandler.h \
+        purchasewebhandler.h \
         qmlengineholder.h \
         releasemonitor.h \
         rfc/rfc1112.h \
