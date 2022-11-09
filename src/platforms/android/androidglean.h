@@ -17,7 +17,7 @@ class AndroidGlean final : public QObject {
   // For Glean
   void sendGleanMainPings();
   void recordGleanEvent(const QString& gleanSampleName);
-  void gleanUploadEnabledChanged(bool enabled);
+  void gleanUploadEnabledChanged();
   void recordGleanEventWithExtraKeys(const QString& gleanSampleName,
                                      const QVariantMap& extraKeys);
   void setGleanSourceTags(const QStringList& tags);
