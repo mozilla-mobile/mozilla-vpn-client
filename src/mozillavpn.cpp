@@ -160,26 +160,26 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           &m_private->m_captivePortalDetection,
           &CaptivePortalDetection::settingsChanged);
 
-  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
+  if (Feature::get(Feature::Feature_inAppProducts)->isSupported()) {
     ProductsHandler::createInstance();
-    PurchaseHandler* iap = PurchaseHandler::createInstance();
-    connect(iap, &PurchaseHandler::subscriptionStarted, this,
-            &MozillaVPN::subscriptionStarted);
-    connect(iap, &PurchaseHandler::restoreSubscriptionStarted, this,
-            &MozillaVPN::restoreSubscriptionStarted);
-    connect(iap, &PurchaseHandler::subscriptionFailed, this,
-            &MozillaVPN::subscriptionFailed);
-    connect(iap, &PurchaseHandler::subscriptionCanceled, this,
-            &MozillaVPN::subscriptionCanceled);
-    connect(iap, &PurchaseHandler::subscriptionCompleted, this,
-            &MozillaVPN::subscriptionCompleted);
-    connect(iap, &PurchaseHandler::alreadySubscribed, this,
-            &MozillaVPN::alreadySubscribed);
-    connect(iap, &PurchaseHandler::billingNotAvailable, this,
-            &MozillaVPN::billingNotAvailable);
-    connect(iap, &PurchaseHandler::subscriptionNotValidated, this,
-            &MozillaVPN::subscriptionNotValidated);
   }
+  PurchaseHandler* iap = PurchaseHandler::createInstance();
+  connect(iap, &PurchaseHandler::subscriptionStarted, this,
+          &MozillaVPN::subscriptionStarted);
+  connect(iap, &PurchaseHandler::subscriptionFailed, this,
+          &MozillaVPN::subscriptionFailed);
+  connect(iap, &PurchaseHandler::subscriptionCanceled, this,
+          &MozillaVPN::subscriptionCanceled);
+  connect(iap, &PurchaseHandler::subscriptionCompleted, this,
+          &MozillaVPN::subscriptionCompleted);
+  connect(iap, &PurchaseHandler::restoreSubscriptionStarted, this,
+          &MozillaVPN::restoreSubscriptionStarted);
+  connect(iap, &PurchaseHandler::alreadySubscribed, this,
+          &MozillaVPN::alreadySubscribed);
+  connect(iap, &PurchaseHandler::billingNotAvailable, this,
+          &MozillaVPN::billingNotAvailable);
+  connect(iap, &PurchaseHandler::subscriptionNotValidated, this,
+          &MozillaVPN::subscriptionNotValidated);
 }
 
 MozillaVPN::~MozillaVPN() {
@@ -1344,11 +1344,8 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
 
 void MozillaVPN::restoreSubscriptionStarted() {
   logger.debug() << "Restore subscription started";
-
   setState(StateSubscriptionInProgress);
-
   PurchaseHandler::instance()->startRestoreSubscription();
-
   emit recordGleanEvent(GleanSample::iapRestoreSubStarted);
 }
 

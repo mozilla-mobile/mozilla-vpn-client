@@ -21,8 +21,23 @@ PurchaseWebHandler::~PurchaseWebHandler() {
   MVPN_COUNT_DTOR(PurchaseWebHandler);
 }
 
-void PurchaseWebHandler::nativeStartSubscription(
-    ProductsHandler::Product* product) {
-  Q_UNUSED(product)
+void PurchaseWebHandler::startSubscription(const QString& productIdentifier) {
+  ProductsHandler* productsHandler = ProductsHandler::instance();
+  Q_ASSERT(productsHandler->hasProductsRegistered());
+
+  ProductsHandler::Product* product =
+      productsHandler->findProduct(productIdentifier);
+  Q_ASSERT(product);
+
+  if (m_subscriptionState != eInactive) {
+    logger.warning() << "We're already subscribing.";
+    return;
+  }
+  m_subscriptionState = eActive;
+  logger.debug() << "Starting the subscription";
 }
-void PurchaseWebHandler::nativeRestoreSubscription() {}
+
+void PurchaseWebHandler::startRestoreSubscription() {
+  logger.error() << "Restore not implemented!";
+  emit subscriptionFailed();
+}

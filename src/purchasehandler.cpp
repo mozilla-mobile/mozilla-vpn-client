@@ -67,43 +67,15 @@ PurchaseHandler::~PurchaseHandler() {
   s_instance = nullptr;
 }
 
-void PurchaseHandler::startSubscription(const QString& productIdentifier) {
-  ProductsHandler* productsHandler = ProductsHandler::instance();
-  Q_ASSERT(productsHandler->hasProductsRegistered());
-
-  ProductsHandler::Product* product =
-      productsHandler->findProduct(productIdentifier);
-  Q_ASSERT(product);
-
-  if (m_subscriptionState != eInactive) {
-    logger.warning() << "No multiple IAP!";
-    return;
-  }
-  m_subscriptionState = eActive;
-  logger.debug() << "Starting the subscription";
-  nativeStartSubscription(product);
-}
-
-void PurchaseHandler::startRestoreSubscription() {
-  logger.debug() << "Starting the restore of the subscription";
-
-#ifdef MVPN_IOS
-  nativeRestoreSubscription();
-#else
-  logger.error() << "Restore not implemented!";
-  emit subscriptionFailed();
-#endif
+void PurchaseHandler::subscribe(const QString& productIdentifier) {
+  logger.debug() << "Subscription required";
+  m_currentSKU = productIdentifier;
+  emit subscriptionStarted(productIdentifier);
 }
 
 void PurchaseHandler::stopSubscription() {
   logger.debug() << "Stop subscription";
   m_subscriptionState = eInactive;
-}
-
-void PurchaseHandler::subscribe(const QString& productIdentifier) {
-  logger.debug() << "Subscription required";
-  m_currentSKU = productIdentifier;
-  emit subscriptionStarted(productIdentifier);
 }
 
 void PurchaseHandler::restore() {

@@ -5,7 +5,7 @@
 #ifndef PURCHASEIAPHANDLER_H
 #define PURCHASEIAPHANDLER_H
 
-#include "purchasehandler.h";
+#include "purchasehandler.h"
 
 #include <QObject>
 
@@ -14,38 +14,19 @@ class PurchaseIAPHandler : public PurchaseHandler {
   Q_DISABLE_COPY_MOVE(PurchaseIAPHandler)
 
  public:
-  static PurchaseIAPHandler* createInstance();
-  static PurchaseIAPHandler* instance();
-
-  // Returns the latest SKU the started to Subcribe.
-  // Is empty if the user already had a subscription or never started the
-  // subscription flow.
-  const QString& currentSKU() const { return m_currentSKU; }
-
-  Q_INVOKABLE void subscribe(const QString& productIdentifier);
-  Q_INVOKABLE void restore();
-
-  void startSubscription(const QString& productIdentifier);
-  void startRestoreSubscription();
-
-  // The nativeRegisterProducts method is currently here (not in
-  // productshandler) for simplicity of the native implementation.
-  virtual void nativeRegisterProducts() = 0;
-
- signals:
-  void restoreSubscriptionStarted();
-  void alreadySubscribed();
-  void billingNotAvailable();
-  void subscriptionNotValidated();
-
- protected:
   PurchaseIAPHandler(QObject* parent);
   ~PurchaseIAPHandler();
 
+  void startSubscription(const QString& productIdentifier) override;
+  void startRestoreSubscription() override;
+
+ protected:
   virtual void nativeStartSubscription(ProductsHandler::Product* product) = 0;
   virtual void nativeRestoreSubscription() = 0;
 
-  QString m_currentSKU;
+  bool m_hasRestore = true;
+  bool m_hasAlreadySubscribed = true;
+  bool m_hasBillingMethods = true;
 };
 
 #endif  // PURCHASEIAPHANDLER_H

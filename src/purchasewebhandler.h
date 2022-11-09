@@ -12,12 +12,11 @@ class PurchaseWebHandler final : public PurchaseHandler {
   Q_DISABLE_COPY_MOVE(PurchaseWebHandler)
 
  public:
-  explicit PurchaseWebHandler(QObject* parent);
+  PurchaseWebHandler(QObject* parent);
   ~PurchaseWebHandler();
 
- protected:
-  void nativeStartSubscription(ProductsHandler::Product* product) override;
-  void nativeRestoreSubscription() override;
+  void startSubscription(const QString& productIdentifier) override;
+  void startRestoreSubscription() override;
 };
 
 #endif  // PURCHASEWEBHANDLER_H

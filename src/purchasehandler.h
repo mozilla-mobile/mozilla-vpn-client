@@ -19,14 +19,26 @@ class PurchaseHandler : public QObject {
 
   Q_INVOKABLE void subscribe(const QString& productIdentifier);
   Q_INVOKABLE void restore();
+  virtual void startSubscription(const QString& productIdentifier) = 0;
+  virtual void startRestoreSubscription() = 0;
 
-  void startSubscription(const QString& productIdentifier);
+  const QString& currentSKU() const { return m_currentSKU; }
+
+  // The nativeRegisterProducts method is currently here (not in
+  // ProductsHandler) for simplicity of the native implementation.
+  // TODO - Clean this up and properly separate native products implementations.
+  void nativeRegisterProducts(){};
 
  signals:
+  // Not all sub-classes will use all these signals.
   void subscriptionStarted(const QString& productIdentifier);
   void subscriptionFailed();
   void subscriptionCanceled();
   void subscriptionCompleted();
+  void restoreSubscriptionStarted();
+  void alreadySubscribed();
+  void billingNotAvailable();
+  void subscriptionNotValidated();
 
  public slots:
   void stopSubscription();
@@ -39,6 +51,8 @@ class PurchaseHandler : public QObject {
     eActive,
     eInactive,
   } m_subscriptionState = eInactive;
+
+  QString m_currentSKU = QString();
 };
 
 #endif  // PURCHASEHANDLER_H

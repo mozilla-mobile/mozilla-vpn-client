@@ -63,14 +63,3 @@ void PurchaseIAPHandler::startRestoreSubscription() {
   emit subscriptionFailed();
 #endif
 }
-
-void PurchaseIAPHandler::subscribe(const QString& productIdentifier) {
-  logger.debug() << "Subscription required";
-  m_currentSKU = productIdentifier;
-  emit subscriptionStarted(productIdentifier);
-}
-
-void PurchaseIAPHandler::restore() {
-  logger.debug() << "Restore purchase";
-  emit restoreSubscriptionStarted();
-}
