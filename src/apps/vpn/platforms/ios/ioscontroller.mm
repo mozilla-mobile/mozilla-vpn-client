@@ -51,7 +51,6 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
   Q_ASSERT(!impl);
   Q_UNUSED(device);
 
-
   logger.debug() << "Initializing Swift Controller";
 
   static bool creating = false;
@@ -69,12 +68,12 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
         logger.debug() << "Creation completed with connection state:" << state;
         creating = false;
 
-        // After init, check if the network exentsion has info about always on
-        // we might not if this is frist execution or the user removed our vpn permission
+        // After init, check if the network exentsion has info about always on;
+        // We might not if this is the first execution or the user removed our vpn permission
         bool alwaysOnRulePresent = [impl hasAlwaysOn];
         if(alwaysOnRulePresent){
-            // If we have info about that, make sure that the value in the system settings is
-            // is matching what we have - if not, the user changed that and we should update our side.
+            // Make sure that the value in the system settings is
+            // is matching what we have. If not, the user changed that and we should update our side.
             bool userSetAlwaysOn = [impl getAlwaysOn];
             if (SettingsHolder::instance()->startAtBoot() != userSetAlwaysOn) {
                 SettingsHolder::instance()->setStartAtBoot(userSetAlwaysOn);

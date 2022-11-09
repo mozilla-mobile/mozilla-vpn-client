@@ -257,24 +257,21 @@ public class IOSControllerImpl : NSObject {
         }
     }
     @objc func setAlwaysOn(setEnabled: Bool){
-            if(!setEnabled){
-                tunnel!.isOnDemandEnabled = false;
-                tunnel!.onDemandRules = []
-                return;
-            }
-            let alwaysConnect = NEOnDemandRuleConnect()
-            alwaysConnect.interfaceTypeMatch = .any
-            tunnel!.isOnDemandEnabled = true
-            tunnel!.onDemandRules = [alwaysConnect]
+        if(!setEnabled){
+            tunnel!.isOnDemandEnabled = false;
+            tunnel!.onDemandRules = []
+            return;
+        }
+        let alwaysConnect = NEOnDemandRuleConnect()
+        alwaysConnect.interfaceTypeMatch = .any
+        tunnel!.isOnDemandEnabled = true
+        tunnel!.onDemandRules = [alwaysConnect]
     }
     
     @objc func getAlwaysOn() -> Bool{
         return tunnel!.isOnDemandEnabled;
     }
-    // Only if the onDemand rules is set
-    // and contains our "always on rule"
-    // the use would have had the option
-    // to make a choise
+    
     @objc func hasAlwaysOn() -> Bool{
         let rules = tunnel!.onDemandRules;
         if( rules == nil){
@@ -288,8 +285,8 @@ public class IOSControllerImpl : NSObject {
     @objc func disconnect() {
         Logger.global?.log(message: "Disconnecting")
         assert(tunnel != nil)
-        // Turn off always-on, as this would
-        // oterwise imediatly trigger a reconnect from the OS
+        // Turn off "always-on", as this rule would
+        // trigger a reconnect from the OS
         setAlwaysOn(setEnabled: false)
         tunnel!.saveToPreferences { [unowned self] saveError in
             if saveError != nil {
