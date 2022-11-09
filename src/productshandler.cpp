@@ -4,7 +4,7 @@
 
 #include "productshandler.h"
 #include "constants.h"
-#include "iaphandler.h"
+#include "purchasehandler.h"
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"

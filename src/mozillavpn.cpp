@@ -8,7 +8,7 @@
 #include "dnshelper.h"
 #include "frontend/navigator.h"
 #include "glean/glean.h"
-#include "iaphandler.h"
+#include "purchasehandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"

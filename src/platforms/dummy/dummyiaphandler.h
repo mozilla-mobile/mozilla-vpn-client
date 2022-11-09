@@ -5,7 +5,7 @@
 #ifndef DUMMYIAPHANDLER_H
 #define DUMMYIAPHANDLER_H
 
-#include "iaphandler.h"
+#include "purchasehandler.h"
 
 class DummyIAPHandler final : public IAPHandler {
   Q_OBJECT

@@ -161,7 +161,7 @@ target_sources(mozillavpn PRIVATE
     hkdf.cpp
     hkdf.h
     iaphandler.cpp
-    iaphandler.h
+    purchasehandler.h
     imageproviderfactory.cpp
     imageproviderfactory.h
     inspector/inspectorhandler.cpp

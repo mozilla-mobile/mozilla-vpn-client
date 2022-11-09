@@ -253,7 +253,7 @@ HEADERS += \
         hawkauth.h \
         keyregenerator.h \
         hkdf.h \
-        iaphandler.h \
+        purchasehandler.h \
         imageproviderfactory.h \
         inspector/inspectorhandler.h \
         inspector/inspectoritempicker.h \

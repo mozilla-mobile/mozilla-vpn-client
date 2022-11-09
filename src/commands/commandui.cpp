@@ -11,7 +11,7 @@
 #include "constants.h"
 #include "fontloader.h"
 #include "frontend/navigator.h"
-#include "iaphandler.h"
+#include "purchasehandler.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
 #include "keyregenerator.h"
