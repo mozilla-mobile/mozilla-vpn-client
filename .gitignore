@@ -20,7 +20,6 @@ balrog/balrog-api.h
 balrog/vendor/
 dummybuild
 allure-results
-allure-report
 qrc_qml.cpp
 .qmake.stash
 dbus_adaptor.*
