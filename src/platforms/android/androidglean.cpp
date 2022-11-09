@@ -125,7 +125,7 @@ void AndroidGlean::gleanUploadEnabledChanged() {
 
 void AndroidGlean::daemonConnected() {
   // Daemon is now ready
-  gleanUploadEnabledChanged(SettingsHolder::instance()->gleanEnabled());
+  gleanUploadEnabledChanged();
 }
 
 void AndroidGlean::applicationStateChanged(Qt::ApplicationState state) {
