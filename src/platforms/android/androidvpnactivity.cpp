@@ -149,9 +149,9 @@ void AndroidVPNActivity::onServiceDisconnected(JNIEnv* env, jobject thiz) {
   logger.debug() << "service disconnected";
   emit AndroidVPNActivity::instance()->serviceDisconnected();
 }
-void AndroidVPNActivity::startAtBootChanged(const bool& startAtBoot) {
+void AndroidVPNActivity::startAtBootChanged() {
   QJsonObject args;
-  args["startOnBoot"] = startAtBoot;
+  args["startOnBoot"] = SettingsHolder::instance()->startAtBoot();
   QJsonDocument doc(args);
   sendToService(ServiceAction::ACTION_SET_START_ON_BOOT, doc.toJson());
 }

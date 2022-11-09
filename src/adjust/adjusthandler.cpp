@@ -63,15 +63,13 @@ void AdjustHandler::initialize() {
     return;
   }
 
-  QObject::connect(settingsHolder, &SettingsHolder::gleanEnabledChanged,
-                   [](const bool& gleanEnabled) {
-                     if (!gleanEnabled) {
-                       forget();
-                       // Let's keep the proxy on. Maybe Adjust needs to send
-                       // requests to remove data on their servers.
-                       return;
-                     }
-                   });
+  QObject::connect(settingsHolder, &SettingsHolder::gleanEnabledChanged, []() {
+    if (!SettingsHolder::instance()->gleanEnabled()) {
+      forget();
+      // Let's keep the proxy on. Maybe Adjust needs to send
+      // requests to remove data on their servers.
+    }
+  });
 
   s_adjustProxy = new AdjustProxy(vpn);
   QObject::connect(vpn->controller(), &Controller::readyToQuit, s_adjustProxy,

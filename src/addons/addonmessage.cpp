@@ -165,9 +165,6 @@ QString AddonMessage::formattedDate() const {
 // static
 QString AddonMessage::dateInternal(const QDateTime& nowDateTime,
                                    const QDateTime& messageDateTime) {
-  logger.debug() << "Now" << nowDateTime.toString() << "date"
-                 << messageDateTime.toString();
-
   qint64 diff = messageDateTime.secsTo(nowDateTime);
   if (diff < 0) {
     // The addon has a date set in the future...?

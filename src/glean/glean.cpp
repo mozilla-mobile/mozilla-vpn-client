@@ -50,7 +50,10 @@ void Glean::initialize() {
 
     s_instance = new Glean();
     connect(SettingsHolder::instance(), &SettingsHolder::gleanEnabledChanged,
-            s_instance, &setUploadEnabled);
+            s_instance, []() {
+              s_instance->setUploadEnabled(
+                  SettingsHolder::instance()->gleanEnabled());
+            });
 
     SettingsHolder* settingsHolder = SettingsHolder::instance();
     MozillaVPN* vpn = MozillaVPN::instance();

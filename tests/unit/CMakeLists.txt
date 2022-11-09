@@ -103,6 +103,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/constants.cpp
     ${MVPN_SOURCE_DIR}/constants.h
     ${MVPN_SOURCE_DIR}/controller.h
+    ${MVPN_SOURCE_DIR}/cryptosettings.cpp
+    ${MVPN_SOURCE_DIR}/cryptosettings.h
     ${MVPN_SOURCE_DIR}/curve25519.cpp
     ${MVPN_SOURCE_DIR}/curve25519.h
     ${MVPN_SOURCE_DIR}/dnspingsender.cpp
@@ -185,6 +187,7 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/platforms/android/androiddatamigration.h
     ${MVPN_SOURCE_DIR}/platforms/android/androidsharedprefs.cpp
     ${MVPN_SOURCE_DIR}/platforms/android/androidsharedprefs.h
+    ${MVPN_SOURCE_DIR}/platforms/dummy/dummycryptosettings.cpp
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.cpp
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.h
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
@@ -314,6 +317,8 @@ target_sources(unit_tests PRIVATE
     testreleasemonitor.h
     testserveri18n.cpp
     testserveri18n.h
+    testsettings.cpp
+    testsettings.h
     teststatusicon.cpp
     teststatusicon.h
     testtasks.cpp
