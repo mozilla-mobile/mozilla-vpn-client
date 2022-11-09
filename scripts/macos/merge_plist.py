@@ -4,6 +4,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import argparse
+import json
 import os
 import sys
 import shutil
@@ -31,9 +32,15 @@ if plbuddy is None:
 
 # Extract the top level keys from a .plist file.
 def extractkeys(filename):
-    result = subprocess.run([plutil, '-convert', 'raw', '-o', '-', filename],
+    result = subprocess.run([plutil, '-convert', 'json', '-o', '-', filename],
                             stdout=subprocess.PIPE, check=True)
-    return result.stdout.decode('utf-8').splitlines()
+
+    js = json.loads(result.stdout)
+    if not isinstance(js, dict):
+        print(f'Failed to parse input plist from {filename}', file=sys.stderr)
+        os.exit(1)
+
+    return list(js.keys())
 
 print(f'Merging content into {args.output}')
 topkeys = []
@@ -53,6 +60,7 @@ for infile in args.input:
     # Drop duplicate keys and update topkeys.
     print(f'Merging content from {infile}')
     for keyname in extractkeys(infile):
+        print(f'Replacing key: {keyname}')
         if keyname in topkeys:
             print(f'Delete :{keyname}', file=proc.stdin)
         else:
