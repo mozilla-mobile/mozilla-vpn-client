@@ -43,15 +43,15 @@ AddonManager* AddonManager::instance() {
 
 // static
 QString AddonManager::addonServerAddress() {
-  if (Constants::inProduction()) {
-    return Constants::ADDON_PRODUCTION_URL;
-  }
-
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
   if (settingsHolder->addonCustomServer()) {
     return settingsHolder->addonCustomServerAddress();
+  }
+
+  if (Constants::inProduction()) {
+    return Constants::ADDON_PRODUCTION_URL;
   }
 
   return Constants::ADDON_STAGING_URL;
