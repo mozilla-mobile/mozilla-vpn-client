@@ -27,47 +27,47 @@
 #endif
 
 namespace {
-Logger logger(LOG_IAP, "IAPHandler");
-IAPHandler* s_instance = nullptr;
+Logger logger(LOG_IAP, "PurchaseHandler");
+PurchaseHandler* s_instance = nullptr;
 }  // namespace
 
 // static
-IAPHandler* IAPHandler::createInstance() {
+PurchaseHandler* PurchaseHandler::createInstance() {
   Q_ASSERT(!s_instance);
 #ifdef MVPN_IOS
-  new IOSIAPHandler(qApp);
+  new IOSPurchaseHandler(qApp);
 #elif MVPN_ANDROID
-  new AndroidIAPHandler(qApp);
+  new AndroidPurchaseHandler(qApp);
 #elif MVPN_WASM
-  new WasmIAPHandler(qApp);
+  new WasmPurchaseHandler(qApp);
 #else
-  new DummyIAPHandler(qApp);
+  new DummyPurchaseHandler(qApp);
 #endif
   Q_ASSERT(s_instance);
   return instance();
 }
 
 // static
-IAPHandler* IAPHandler::instance() {
+PurchaseHandler* PurchaseHandler::instance() {
   Q_ASSERT(s_instance);
   return s_instance;
 }
 
-IAPHandler::IAPHandler(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(IAPHandler);
+PurchaseHandler::PurchaseHandler(QObject* parent) : QObject(parent) {
+  MVPN_COUNT_CTOR(PurchaseHandler);
 
   Q_ASSERT(!s_instance);
   s_instance = this;
 }
 
-IAPHandler::~IAPHandler() {
-  MVPN_COUNT_DTOR(IAPHandler);
+PurchaseHandler::~PurchaseHandler() {
+  MVPN_COUNT_DTOR(PurchaseHandler);
 
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;
 }
 
-void IAPHandler::startSubscription(const QString& productIdentifier) {
+void PurchaseHandler::startSubscription(const QString& productIdentifier) {
   ProductsHandler* productsHandler = ProductsHandler::instance();
   Q_ASSERT(productsHandler->hasProductsRegistered());
 
@@ -84,7 +84,7 @@ void IAPHandler::startSubscription(const QString& productIdentifier) {
   nativeStartSubscription(product);
 }
 
-void IAPHandler::startRestoreSubscription() {
+void PurchaseHandler::startRestoreSubscription() {
   logger.debug() << "Starting the restore of the subscription";
 
 #ifdef MVPN_IOS
@@ -95,18 +95,18 @@ void IAPHandler::startRestoreSubscription() {
 #endif
 }
 
-void IAPHandler::stopSubscription() {
+void PurchaseHandler::stopSubscription() {
   logger.debug() << "Stop subscription";
   m_subscriptionState = eInactive;
 }
 
-void IAPHandler::subscribe(const QString& productIdentifier) {
+void PurchaseHandler::subscribe(const QString& productIdentifier) {
   logger.debug() << "Subscription required";
   m_currentSKU = productIdentifier;
   emit subscriptionStarted(productIdentifier);
 }
 
-void IAPHandler::restore() {
+void PurchaseHandler::restore() {
   logger.debug() << "Restore purchase";
   emit restoreSubscriptionStarted();
 }

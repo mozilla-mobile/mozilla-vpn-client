@@ -485,7 +485,7 @@ int CommandUI::run(QStringList& tokens) {
       qmlRegisterSingletonType<MozillaVPN>(
           "Mozilla.VPN", 1, 0, "VPNIAP",
           [](QQmlEngine*, QJSEngine*) -> QObject* {
-            QObject* obj = IAPHandler::instance();
+            QObject* obj = PurchaseHandler::instance();
             QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
             return obj;
           });

@@ -93,7 +93,7 @@ void ProductsHandler::registerProducts(const QByteArray& data) {
     return;
   }
 
-  IAPHandler::instance()->nativeRegisterProducts();
+  PurchaseHandler::instance()->nativeRegisterProducts();
 
   logger.debug() << "Waiting for the products registration";
 

@@ -9,13 +9,13 @@
 
 #include <QObject>
 
-class IAPHandler : public QObject {
+class PurchaseHandler : public QObject {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(IAPHandler)
+  Q_DISABLE_COPY_MOVE(PurchaseHandler)
 
  public:
-  static IAPHandler* createInstance();
-  static IAPHandler* instance();
+  static PurchaseHandler* createInstance();
+  static PurchaseHandler* instance();
 
   // Returns the latest SKU the started to Subcribe.
   // Is empty if the user already had a subscription or never started the
@@ -46,8 +46,8 @@ class IAPHandler : public QObject {
   void stopSubscription();
 
  protected:
-  IAPHandler(QObject* parent);
-  ~IAPHandler();
+  PurchaseHandler(QObject* parent);
+  ~PurchaseHandler();
 
   virtual void nativeStartSubscription(ProductsHandler::Product* product) = 0;
   virtual void nativeRestoreSubscription() = 0;
