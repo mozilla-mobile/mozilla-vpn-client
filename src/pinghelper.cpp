@@ -8,7 +8,6 @@
 #include "logger.h"
 #include "pingsender.h"
 #include "pingsenderfactory.h"
-#include "timersingleshot.h"
 
 #include <QDateTime>
 

@@ -6,7 +6,8 @@
 #include "linuxnetworkwatcherworker.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "timersingleshot.h"
+
+#include <QTimer>
 
 namespace {
 Logger logger(LOG_LINUX, "LinuxNetworkWatcher");
@@ -43,7 +44,7 @@ void LinuxNetworkWatcher::initialize() {
   // This is not strictly needed, but it's better for user experience because
   // it makes the UI faster to appear, plus it gives a bit of delay between the
   // UI to appear and the first notification.
-  TimerSingleShot::create(this, 2000, [this]() {
+  QTimer::singleShot(2000, this, [this]() {
     QMetaObject::invokeMethod(m_worker, "initialize", Qt::QueuedConnection);
   });
 }

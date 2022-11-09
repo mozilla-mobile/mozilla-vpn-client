@@ -161,7 +161,6 @@ SOURCES += \
         telemetry.cpp \
         temporarydir.cpp \
         theme.cpp \
-        timersingleshot.cpp \
         tutorial/tutorial.cpp \
         tutorial/tutorialstep.cpp \
         tutorial/tutorialstepbefore.cpp \
@@ -339,7 +338,6 @@ HEADERS += \
         tutorial/tutorialstep.h \
         tutorial/tutorialstepbefore.h \
         tutorial/tutorialstepnext.h \
-        timersingleshot.h \
         update/updater.h \
         update/versionapi.h \
         update/webupdater.h \

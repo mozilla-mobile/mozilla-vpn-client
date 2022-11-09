@@ -10,8 +10,9 @@
 #include "logger.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
-#include "timersingleshot.h"
 #include "networkmanager.h"
+
+#include <QTimer>
 
 namespace {
 Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalRequestTask");
@@ -29,7 +30,7 @@ CaptivePortalRequestTask::~CaptivePortalRequestTask() {
 void CaptivePortalRequestTask::run() {
   // If we can't confirm in 30s that we are not behind
   // a captive-portal, handle this like no portal exists
-  TimerSingleShot::create(this, 30 * 1000, [this]() {
+  QTimer::singleShot(30 * 1000, this, [this]() {
     logger.error() << "CaptivePortal max timeout reached, exiting detection";
     onResult(CaptivePortalRequest::CaptivePortalResult::NoPortal);
   });
@@ -56,7 +57,7 @@ void CaptivePortalRequestTask::onResult(
   if (portalDetected == CaptivePortalRequest::CaptivePortalResult::Failure &&
       m_retryOnFailure) {
     logger.warning() << "Captive portal detect failed, retry!";
-    TimerSingleShot::create(this, 500, [this]() { createRequest(); });
+    QTimer::singleShot(500, this, [this]() { createRequest(); });
     return;
   }
   m_completed = true;

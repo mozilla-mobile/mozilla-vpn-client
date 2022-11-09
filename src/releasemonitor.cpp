@@ -9,7 +9,6 @@
 #include "mozillavpn.h"
 #include "tasks/release/taskrelease.h"
 #include "taskscheduler.h"
-#include "timersingleshot.h"
 #include "update/updater.h"
 
 namespace {
@@ -31,7 +30,7 @@ void ReleaseMonitor::runSoon(
     ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy) {
   logger.debug() << "Scheduling a release-check task";
 
-  TimerSingleShot::create(this, 0, [this, errorPropagationPolicy] {
+  QTimer::singleShot(0, this, [this, errorPropagationPolicy] {
     TaskRelease* task =
         new TaskRelease(TaskRelease::Check, errorPropagationPolicy);
 
@@ -61,7 +60,7 @@ void ReleaseMonitor::updateRequired() {
 void ReleaseMonitor::updateSoon() {
   logger.debug() << "Scheduling a release-update task";
 
-  TimerSingleShot::create(this, 0, [] {
+  QTimer::singleShot(0, this, [] {
     TaskRelease* task =
         new TaskRelease(TaskRelease::Update, ErrorHandler::PropagateError);
     // The updater, in download mode, is not destroyed. So, if this happens,

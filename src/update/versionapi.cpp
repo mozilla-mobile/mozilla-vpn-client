@@ -137,11 +137,11 @@ int VersionApi::compareVersions(const QString& a, const QString& b) {
   static QRegularExpression re("[^0-9a-z.]");
 
   QStringList aParts;
-  int aMatchLength = a.indexOf(re);
+  qsizetype aMatchLength = a.indexOf(re);
   aParts = (aMatchLength < 0) ? a.split(".") : a.left(aMatchLength).split(".");
 
   QStringList bParts;
-  int bMatchLength = b.indexOf(re);
+  qsizetype bMatchLength = b.indexOf(re);
   bParts = (bMatchLength < 0) ? b.split(".") : b.left(bMatchLength).split(".");
 
   // Normalize by appending zeros as necessary.
@@ -166,7 +166,7 @@ QString VersionApi::stripMinor(const QString& a) {
 
   if (!a.isEmpty()) {
     static QRegularExpression re("[^0-9a-z.]");
-    int matchLength = a.indexOf(re);
+    qsizetype matchLength = a.indexOf(re);
     aParts = (matchLength < 0) ? a.split(".") : a.left(matchLength).split(".");
   }
 

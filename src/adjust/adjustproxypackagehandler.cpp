@@ -63,7 +63,7 @@ bool AdjustProxyPackageHandler::processFirstLine() {
     return false;
   }
 
-  int pos = m_buffer.indexOf("\n");
+  qsizetype pos = m_buffer.indexOf("\n");
   if (pos == -1) {
     return false;
   }
@@ -95,7 +95,7 @@ bool AdjustProxyPackageHandler::processHeaders() {
   }
 
   while (true) {
-    int pos = m_buffer.indexOf("\n");
+    qsizetype pos = m_buffer.indexOf("\n");
     if (pos == -1) {
       return false;
     }
@@ -148,7 +148,7 @@ bool AdjustProxyPackageHandler::processHeaders() {
 bool AdjustProxyPackageHandler::processParameters() {
   logger.debug() << "Processing parameters";
 
-  uint32_t bodyLength = m_buffer.trimmed().length();
+  qsizetype bodyLength = m_buffer.trimmed().length();
 
   if (bodyLength > m_contentLength) {
     logger.error() << "Buffer longer than the declared Contend-Length; "

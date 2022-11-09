@@ -325,8 +325,6 @@ target_sources(mozillavpn PRIVATE
     temporarydir.h
     theme.cpp
     theme.h
-    timersingleshot.cpp
-    timersingleshot.h
     tutorial/tutorial.cpp
     tutorial/tutorial.h
     tutorial/tutorialstep.cpp
