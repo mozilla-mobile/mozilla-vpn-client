@@ -231,6 +231,7 @@ SETTING_STRING(installedVersion,     // getter
                hasInstalledVersion,  // has
                "installedVersion",   // key
                "",                   // default value
+               false,                // user setting
                false                 // remove when reset
 )
 
@@ -468,6 +469,7 @@ SETTING_DATETIME(updateTime,     // getter
                  hasUpdateTime,  // has
                  "updateTime",   // key
                  QDateTime(),    // default value
+                 false,          // user setting
                  false           // remove when reset
 )
 
