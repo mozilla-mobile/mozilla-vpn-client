@@ -21,7 +21,6 @@
 #include "settingsholder.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "telemetry/gleansample.h"
-#include "timersingleshot.h"
 
 #if defined(MVPN_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
@@ -43,11 +42,13 @@ constexpr const int CONNECTION_MAX_RETRY = 9;
 constexpr const uint32_t CONFIRMING_TIMOUT_SEC = 10;
 constexpr const uint32_t HANDSHAKE_TIMEOUT_SEC = 15;
 
+#ifndef MVPN_IOS
 // The Mullvad proxy services are located at internal IPv4 addresses in the
 // 10.124.0.0/20 address range, which is a subset of the 10.0.0.0/8 Class-A
 // private address range.
 constexpr const char* MULLVAD_PROXY_RANGE = "10.124.0.0";
 constexpr const int MULLVAD_PROXY_RANGE_LENGTH = 20;
+#endif
 
 namespace {
 Logger logger(LOG_CONTROLLER, "Controller");
@@ -728,6 +729,8 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   QList<IPAddress> list;
 
 #ifdef MVPN_IOS
+  Q_UNUSED(exitServer);
+
   logger.debug() << "Catch all IPv4";
   list.append(IPAddress("0.0.0.0/0"));
 

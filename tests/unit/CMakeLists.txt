@@ -238,8 +238,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/temporarydir.h
     ${MVPN_SOURCE_DIR}/theme.cpp
     ${MVPN_SOURCE_DIR}/theme.h
-    ${MVPN_SOURCE_DIR}/timersingleshot.cpp
-    ${MVPN_SOURCE_DIR}/timersingleshot.h
     ${MVPN_SOURCE_DIR}/tutorial/tutorial.cpp
     ${MVPN_SOURCE_DIR}/tutorial/tutorial.h
     ${MVPN_SOURCE_DIR}/tutorial/tutorialstep.cpp
@@ -327,8 +325,6 @@ target_sources(unit_tests PRIVATE
     testtemporarydir.h
     testthemes.cpp
     testthemes.h
-    testtimersingleshot.cpp
-    testtimersingleshot.h
     testurlopener.cpp
     testurlopener.h
     websocket/testexponentialbackoffstrategy.cpp

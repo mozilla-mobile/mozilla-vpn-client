@@ -12,7 +12,6 @@
 #include "notificationhandler.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
-#include "timersingleshot.h"
 
 #include <QJsonObject>
 #include <QMetaEnum>
@@ -212,7 +211,7 @@ void AddonMessage::planDateRetranslation() {
     return;
   }
 
-  TimerSingleShot::create(this, (1 + time) * 1000, [this]() {
+  QTimer::singleShot((1 + time) * 1000, this, [this]() {
     emit retranslationCompleted();
     planDateRetranslation();
   });

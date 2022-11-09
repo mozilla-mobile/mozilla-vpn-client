@@ -125,7 +125,7 @@ QString translateItemWithLanguage(const QString& languageCode,
   // if the language code contains the 'region' part too, we check if we have
   // translations for the whole 'primary language'. Ex: 'de-AT' vs 'de'.
   bool trimmed = false;
-  int pos = languageCodeCopy.indexOf("-");
+  qsizetype pos = languageCodeCopy.indexOf("-");
   if (pos > 0) {
     languageCodeCopy = languageCodeCopy.left(pos);
     trimmed = true;

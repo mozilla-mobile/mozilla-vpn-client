@@ -39,7 +39,7 @@ bool ServerData::fromString(const QString& data) {
   QStringList serverList = data.split("->");
 
   QString exit = serverList.last();
-  int index = exit.lastIndexOf(',');
+  qsizetype index = exit.lastIndexOf(',');
   if (index < 0) {
     return false;
   }
