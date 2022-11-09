@@ -45,7 +45,7 @@ GridLayout {
             title: addon.title
             description: addon.subtitle
             onClicked: {
-                if (addon.showWarning) {
+                if (addon.settingsRollbackNeeded) {
                     VPNTutorial.showWarning(addon)
                 }
                 else {

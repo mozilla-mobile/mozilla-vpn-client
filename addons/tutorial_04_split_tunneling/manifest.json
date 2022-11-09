@@ -8,7 +8,6 @@
   "type": "tutorial",
   "tutorial": {
     "id": "04_split_tunneling",
-    "showWarning": true,
     "settings_rollback_needed": true,
     "image": "qrc:/addons/tutorial_04_split_tunneling/image.svg",
     "title": "How to exclude apps from VPN protection",
@@ -49,12 +48,6 @@
         "id": "s4",
         "element": "settingsAppPermissionsToggle",
         "tooltip": "Toggle off to view apps",
-        "before": [{
-          "op": "property_set",
-          "element": "settingsAppPermissionsToggle",
-          "property": "toggleChecked",
-          "value": true
-        }],
         "next": {
           "op": "signal",
           "qml_emitter": "settingsAppPermissionsToggle",
@@ -64,14 +57,6 @@
         "id": "s5",
         "element": "appPermissionList/app0/checkbox",
         "tooltip": "Select an app to exclude it from VPN protections",
-        "conditions": {
-          "qml_properties": [{
-            "element": "appPermissionList/app0/checkbox",
-            "property": "checked",
-            "op": "eq",
-            "value": false
-          }]
-        },
         "next": {
           "op": "signal",
           "qml_emitter": "appPermissionList/app0/checkbox",

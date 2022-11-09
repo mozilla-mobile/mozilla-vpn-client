@@ -56,8 +56,6 @@ Addon* AddonTutorial::create(QObject* parent, const QString& manifestFileName,
   tutorial->m_settingsRollbackNeeded =
       tutorialObj["settings_rollback_needed"].toBool();
 
-  tutorial->m_showWarning = tutorialObj["showWarning"].toBool();
-
   tutorial->m_title.initialize(QString("tutorial.%1.title").arg(tutorialId),
                                tutorialObj["title"].toString());
   tutorial->m_subtitle.initialize(
