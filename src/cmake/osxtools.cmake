@@ -67,14 +67,12 @@ function(osx_bundle_assetcatalog TARGET)
     add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/xcassets/Assets.car ${XCASSETS_GEN_PLIST}
         MAIN_DEPENDENCY ${XCASSETS_CATALOG}/Contents.json
-        DEPFILE ${CMAKE_CURRENT_BINARY_DIR}/xcassets_generated_deps.d
         COMMENT "Building asset catalog"
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/xcassets
         COMMAND actool --output-format human-readable-text --notices --warnings
                     ${XCASSETS_TARGET_ARGS}
                     --app-icon AppIcon 
                     --output-partial-info-plist ${XCASSETS_GEN_PLIST}
-                    --export-dependency-info ${CMAKE_CURRENT_BINARY_DIR}/xcassets_generated_deps.d
                     --development-region en --enable-on-demand-resources NO
                     --compile ${CMAKE_CURRENT_BINARY_DIR}/xcassets ${XCASSETS_CATALOG}
     )
