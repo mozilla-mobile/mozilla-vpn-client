@@ -23,7 +23,8 @@ Logger logger(LOG_IAP, "AndroidIAPHandler");
 constexpr auto CLASSNAME = "org.mozilla.firefox.vpn.InAppPurchase";
 }  // namespace
 
-AndroidIAPHandler::AndroidIAPHandler(QObject* parent) : IAPHandler(parent) {
+AndroidIAPHandler::AndroidIAPHandler(QObject* parent)
+    : PurchaseIAPHandler(parent) {
   MVPN_COUNT_CTOR(AndroidIAPHandler);
   maybeInit();
 }

@@ -5,7 +5,7 @@
 #ifndef WASMIAPHANDLER_H
 #define WASMIAPHANDLER_H
 
-#include "iaphandler.h"
+#include "purchasehandler.h"
 
 class WasmIAPHandler final : public IAPHandler {
   Q_OBJECT

@@ -11,7 +11,7 @@
 #include "constants.h"
 #include "fontloader.h"
 #include "frontend/navigator.h"
-#include "iaphandler.h"
+#include "purchasehandler.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
 #include "keyregenerator.h"
@@ -475,7 +475,7 @@ int CommandUI::run(QStringList& tokens) {
       qmlRegisterSingletonType<MozillaVPN>(
           "Mozilla.VPN", 1, 0, "VPNIAP",
           [](QQmlEngine*, QJSEngine*) -> QObject* {
-            QObject* obj = IAPHandler::instance();
+            QObject* obj = PurchaseHandler::instance();
             QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
             return obj;
           });

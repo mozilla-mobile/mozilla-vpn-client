@@ -5,7 +5,7 @@
 #ifndef ANDROIDIAPHANDLER_H
 #define ANDROIDIAPHANDLER_H
 
-#include "iaphandler.h"
+#include "purchaseiaphandler.h"
 #include "jni.h"
 
 class AndroidIAPHandler final : public IAPHandler {
