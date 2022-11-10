@@ -14,6 +14,9 @@
 #if not(defined(MVPN_WASM) || defined(BUILD_QMAKE))
 #  include "vpnglean.h"
 #endif
+#if defined(MVPN_IOS)
+#  include "platforms/ios/iosgleanbridge.h"
+#endif
 
 #include <QCoreApplication>
 #include <QDir>
@@ -84,6 +87,8 @@ void VPNGlean::initialize() {
 
 #if defined(UNIT_TEST)
     glean_test_reset_glean(uploadEnabled, dataPath.toLocal8Bit());
+#elif defined(MVPN_IOS)
+    new IOSGleanBridge(uploadEnabled, QString(appChannel).toNSString());
 #elif not(defined(MVPN_WASM) || defined(BUILD_QMAKE))
     glean_initialize(uploadEnabled, dataPath.toLocal8Bit(), appChannel);
 #endif
