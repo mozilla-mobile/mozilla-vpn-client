@@ -86,7 +86,7 @@ serversView:
     value: "Last updated %1 ago. To update this list please first disconnect from the VPN."
     comment:
       - Time passed since the last update to the recommended server list and additional info.
-      - %1 is the time value and unit since the list was updated.
+      - "%1 is the time value and unit since the list was updated."
       - This text is shown if the VPN is turned on.
   recommendedRefreshLabel:
     value: Refresh list

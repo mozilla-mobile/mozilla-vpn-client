@@ -172,8 +172,8 @@ FEATURE_SIMPLE(notificationControl,     // Feature ID
 FEATURE_SIMPLE(recommendedServers,     // Feature ID
                "Recommended servers",  // Feature name
                "2.12",                 // released
-               true,                   // Can be flipped on
-               true,                   // Can be flipped off
+               FeatureCallback_true,   // Can be flipped on
+               FeatureCallback_true,   // Can be flipped off
                QStringList(),          // feature dependencies
                FeatureCallback_false)
 

@@ -17,6 +17,8 @@ FocusScope {
 
     property real listOffset: (VPNTheme.theme.menuHeight * 2)
     property bool showRecentConnections: false
+    property bool showRecommendedConnections: (showRecentConnections
+        && VPNFeatureList.get("recommendedServers").isSupported)
     property var currentServer
 
     ListModel {
@@ -130,9 +132,7 @@ FocusScope {
             id: vpnFlickableRecommended
 
             anchors.fill: parent
-            flickContentHeight: serverList.implicitHeight + verticalSpacer.height
             flickContentHeight: serverListRecommended.implicitHeight + listOffset
-            anchors.fill: parent
 
             Column {
                 id: serverListRecommended
@@ -353,7 +353,8 @@ FocusScope {
         VPNTabNavigation {
             id: serverTabs
 
-            anchors.fill: parent
+            height: parent.height - VPNTheme.theme.menuHeight
+            width: parent.width
             z: 1
 
             handleTabClick: (tabButton) => {
@@ -393,7 +394,7 @@ FocusScope {
         id: serverListLoader
 
         anchors.fill: parent
-        sourceComponent: VPNFeatureList.get("recommendedServers").isSupported && showRecentConnections
+        sourceComponent: showRecommendedConnections
             ? serverTabsComponent
             : listServersAll
         onStatusChanged: if (
