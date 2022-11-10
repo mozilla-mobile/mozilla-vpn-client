@@ -5,24 +5,12 @@
 #ifndef WINDOWSPINGSENDER_H
 #define WINDOWSPINGSENDER_H
 
-#pragma comment(lib, "Ws2_32")
-
 #include "pingsender.h"
 
 #include <QMap>
 #include <QWinEventNotifier>
 
-#include <WS2tcpip.h>
-#include <Windows.h>
-#include <iphlpapi.h>
-#include <IcmpAPI.h>
-
-constexpr WORD WindowsPingPayloadSize = sizeof(quint16);
-
-struct WindowsPingContext {
-  HANDLE event;
-  quint16 sequence;
-};
+struct WindowsPingSenderPrivate;
 
 class WindowsPingSender final : public PingSender {
   Q_OBJECT
@@ -39,11 +27,8 @@ class WindowsPingSender final : public PingSender {
 
  private:
   QHostAddress m_source;
-  HANDLE m_handle = INVALID_HANDLE_VALUE;
-  HANDLE m_event = INVALID_HANDLE_VALUE;
   QWinEventNotifier* m_notifier = nullptr;
-
-  unsigned char m_buffer[sizeof(ICMP_ECHO_REPLY) + WindowsPingPayloadSize + 8];
+  struct WindowsPingSenderPrivate* m_private = nullptr;
 };
 
 #endif  // WINDOWSPINGSENDER_H
