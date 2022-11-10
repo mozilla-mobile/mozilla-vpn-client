@@ -170,7 +170,7 @@ bool AddonManager::loadManifest(const QString& manifestFileName) {
         if (i.value().m_addon->enabled()) ++pos;
         continue;
       }
-      if (!enabled) {
+      if (!enabled && pos < count()) {
         beginRemoveRows(QModelIndex(), pos, pos);
         endRemoveRows();
       } else {
