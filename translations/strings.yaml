@@ -73,20 +73,32 @@
 #
 
 serversView:
-  searchPlaceholder: Search countries
-  searchNoResultsLabel: No results. Try a different search
-  tabAllLabel:
-    value: All
-    comment: Label for the “all” servers tab
-  tabRecommendedLabel:
-    value: Recommended
-    comment: Label for the “recommended” servers tab
   recommendedCardTitle:
     value: Why are these locations recommended?
     comment: Title of an expandable info card on the recommended servers list.
   recommendedCardBody:
     value: These locations are sorted by expected performance.
     comment: Body text of an expandable info card on the recommended servers list.
+  recommendedTextStatus:
+    value: "Last updated %1 ago."
+    comment: Time passed since the last update to the recommended server list. %1 is the time value and unit.
+  recommendedTextStatusWithInfo:
+    value: "Last updated %1 ago. To update this list please first disconnect from the VPN."
+    comment:
+      - Time passed since the last update to the recommended server list and additional info.
+      - %1 is the time value and unit since the list was updated.
+      - This text is shown if the VPN is turned on.
+  recommendedRefreshLabel:
+    value: Refresh list
+    comment: Accessible label for the button that triggers a refresh of the recommended servers list.
+  tabAllLabel:
+    value: All
+    comment: Label for the “all” servers tab
+  tabRecommendedLabel:
+    value: Recommended
+    comment: Label for the “recommended” servers tab
+  searchPlaceholder: Search countries
+  searchNoResultsLabel: No results. Try a different search
 
 languageView:
   searchPlaceholder:

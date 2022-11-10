@@ -21,32 +21,50 @@ FocusScope {
 
     ListModel {
         id: testRecommendedModel
+    }
 
-        ListElement {
-            countryCode: "ca"
-            cityName: "Toronto"
-            localizedCityName: "Toronto"
-        }
-        ListElement {
-            countryCode: "ca"
-            cityName: "Montreal"
-            localizedCityName: "Montreal"
-        }
-        ListElement {
-            countryCode: "ca"
-            cityName: "Vancouver"
-            localizedCityName: "Vancouver"
-        }
-        ListElement {
-            countryCode: "us"
-            cityName: "New York City"
-            localizedCityName: "New York City"
-        }
-        ListElement {
-            countryCode: "us"
-            cityName: "Chicago"
-            localizedCityName: "Chicago"
-        }
+    // TODO: Replace dummy data with recommended servers list
+    function updateServerData() {
+        testRecommendedModel.clear();
+
+        const data = [
+            {
+                countryCode: "ca",
+                cityName: "Toronto",
+                localizedCityName: "Toronto"
+            },
+            {
+                countryCode: "ca",
+                cityName: "Montreal",
+                localizedCityName: "Montreal"
+            },
+            {
+                countryCode: "ca",
+                cityName: "Vancouver",
+                localizedCityName: "Vancouver"
+            },
+            {
+                countryCode: "us",
+                cityName: "New York City",
+                localizedCityName: "New York City"
+            },
+            {
+                countryCode: "us",
+                cityName: "Chicago",
+                localizedCityName: "Chicago"
+            }
+        ];
+        const shuffledData = data.sort((a, b) => 0.5 - Math.random());
+
+        shuffledData.forEach((d) => {
+            testRecommendedModel.append(d);
+        });
+        testRecommendedModel.sync();
+    }
+
+    Component.onCompleted: {
+        // TODO: Get initial list
+        focusScope.updateServerData();
     }
 
     function setSelectedServer(countryCode, cityName, localizedCityName) {
@@ -116,7 +134,7 @@ FocusScope {
 
             Column {
                 id: serverListRecommended
-                spacing: VPNTheme.theme.listSpacing
+                spacing: VPNTheme.theme.listSpacing * 1.75
                 width: parent.width
 
                 anchors {
@@ -141,6 +159,7 @@ FocusScope {
                 }
 
                 // Status component
+                // TODO: Refresh server list and handle states
                 VPNClickableRow {
                     id: statusComponent
 
@@ -151,7 +170,9 @@ FocusScope {
                     canGrowVertical: true
                     height: statusTitle.implicitHeight + VPNTheme.theme.vSpacingSmall
 
-                    onClicked: {}
+                    onClicked: {
+                        focusScope.updateServerData();
+                    }
 
                     RowLayout {
                         anchors {
@@ -177,9 +198,10 @@ FocusScope {
                             Layout.maximumWidth: parent.width
 
                             color: VPNTheme.theme.fontColor
+                            // TODO: Replace string arg with the actual formatted date
                             text: VPNController.state === VPNController.StateOff
-                                ? "Last updated 5m ago."
-                                : "Last updated 5m ago. To update this list please first disconnect from the VPN."
+                                ? VPNl18n.ServersViewRecommendedTextStatus.arg("5m")
+                                : VPNl18n.ServersViewRecommendedTextStatusWithInfo.arg("5m")
                             horizontalAlignment: Text.AlignLeft
                             wrapMode: Text.WordWrap
                         }
@@ -192,6 +214,8 @@ FocusScope {
 
                             VPNIcon {
                                 id: refreshIcon
+
+                                Accessible.name: VPNl18n.ServersViewRecommendedTextInfo
                                 source: "qrc:/nebula/resources/refresh.svg"
                                 sourceSize {
                                     height: parent.height
@@ -272,7 +296,7 @@ FocusScope {
                 id: serverList
                 objectName: "serverCountryList"
 
-                spacing: VPNTheme.theme.listSpacing
+                spacing: VPNTheme.theme.listSpacing * 1.75
                 width: parent.width
                 anchors.top: verticalSpacer.bottom
 
