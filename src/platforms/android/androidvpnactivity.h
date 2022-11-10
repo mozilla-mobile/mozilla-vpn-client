@@ -47,6 +47,8 @@ enum ServiceAction {
   ACTION_CONTROLLER_INIT = 13,
   // Set Glean Source tags
   ACTION_GLEAN_SET_SOURCE_TAGS = 14,
+  // Set startOnBoot pref
+  ACTION_SET_START_ON_BOOT = 15,
 };
 typedef enum ServiceAction ServiceAction;
 // Event Types that will be Dispatched after registration
@@ -90,6 +92,7 @@ class AndroidVPNActivity : public QObject {
 
  private:
   AndroidVPNActivity();
+  void startAtBootChanged();
 
   static void onServiceMessage(JNIEnv* env, jobject thiz, jint messageType,
                                jstring body);

@@ -6,7 +6,7 @@
 #define FEATURELISTCALLBACK_H
 
 #ifdef MVPN_ANDROID
-#  include "androidutils.h"
+#  include "platforms/android/androidutils.h"
 #endif
 
 #ifdef MVPN_WINDOWS
@@ -33,6 +33,8 @@ bool FeatureCallback_iosOrAndroid() {
   return false;
 #endif
 }
+
+bool FeatureCallback_inStaging() { return !Constants::inProduction(); }
 
 // Custom callback functions
 // -------------------------
@@ -148,7 +150,7 @@ bool FeatureCallback_splitTunnel() {
 
 bool FeatureCallback_startOnBoot() {
 #if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS) || \
-    defined(MVPN_DUMMY) || defined(MVPN_WASM)
+    defined(MVPN_DUMMY) || defined(MVPN_WASM) || defined(MVPN_ANDROID)
   return true;
 #else
   return false;
@@ -158,6 +160,14 @@ bool FeatureCallback_startOnBoot() {
 bool FeatureCallback_unsecuredNetworkNotification() {
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS) || \
     defined(MVPN_WASM) || defined(MVPN_DUMMY)
+  return true;
+#else
+  return false;
+#endif
+}
+
+bool FeatureCallback_freeTrial() {
+#if defined(MVPN_IOS)
   return true;
 #else
   return false;

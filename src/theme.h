@@ -49,7 +49,7 @@ class Theme final : public QAbstractListModel {
     StatusBarTextColorDark,
   };
   Q_ENUM(StatusBarTextColor)
-  Q_INVOKABLE void setStatusBarTextColor(StatusBarTextColor color);
+  Q_INVOKABLE void setStatusBarTextColor(Theme::StatusBarTextColor color);
 
  private:
   void parseTheme(QJSEngine* engine, const QString& themeName);

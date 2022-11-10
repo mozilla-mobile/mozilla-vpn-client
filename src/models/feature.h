@@ -46,7 +46,8 @@ class Feature : public QObject {
           L18nStrings::String displayName_id, L18nStrings::String shortDesc_id,
           L18nStrings::String desc_id, const QString& imgPath,
           const QString& iconPath, const QString& linkUrl,
-          const QString& releaseVersion, bool flippableOn, bool flippableOff,
+          const QString& releaseVersion, std::function<bool()>&& flippableOn,
+          std::function<bool()>&& flippableOff,
           const QStringList& otherFeatureDependencies,
           std::function<bool()>&& callback);
   ~Feature();
@@ -70,8 +71,8 @@ class Feature : public QObject {
   // Checks if the feature is released ignoring the flip on/off
   bool isSupportedIgnoringFlip() const;
 
-  bool isFlippableOn() const { return m_flippableOn; }
-  bool isFlippableOff() const { return m_flippableOff; }
+  bool isFlippableOn() const { return m_flippableOn(); }
+  bool isFlippableOff() const { return m_flippableOff(); }
 
   bool isToggleable() const;
 
@@ -133,10 +134,10 @@ class Feature : public QObject {
   // Version that the feature was released in
   const QString m_releaseVersion;
 
-  // If true, the feature can be enabled.
-  const bool m_flippableOn;
-  // If true, the feature can be disabled.
-  const bool m_flippableOff;
+  // If this callback returns true, the feature can be enabled.
+  std::function<bool()> m_flippableOn;
+  // If this callback returns true, the feature can be disabled.
+  std::function<bool()> m_flippableOff;
 
   // List of other features to be supported in order to support this one.
   const QStringList m_featureDependencies;

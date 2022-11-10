@@ -6,9 +6,10 @@
 #define SETTINGSHOLDER_H
 
 #include <QDateTime>
-#include <QStringList>
+#include <QMap>
 #include <QObject>
 #include <QSettings>
+#include <QStringList>
 
 class SettingsHolder final : public QObject {
   Q_OBJECT
@@ -17,7 +18,7 @@ class SettingsHolder final : public QObject {
  public:
 #define SETTING(type, toType, getter, setter, ...)                        \
   Q_PROPERTY(type getter READ getter WRITE setter NOTIFY getter##Changed) \
-  Q_SIGNAL void getter##Changed(const type& value);
+  Q_SIGNAL void getter##Changed();
 
 #include "settingslist.h"
 #undef SETTING
@@ -40,11 +41,22 @@ class SettingsHolder final : public QObject {
   };
   Q_ENUM(DnsProvider)
 
+  // These 3 methods can be used to store/restore/rollback settings.
+  Q_INVOKABLE bool beginTransaction();
+  Q_INVOKABLE bool commitTransaction();
+  Q_INVOKABLE bool rollbackTransaction();
+
+#ifdef UNIT_TEST
+  bool inTransaction() const { return m_settingsJournal; }
+  bool recoveredFromJournal() const { return m_recoverFromJournal; }
+#endif
+
   // Don't use this directly!
   QVariant rawSetting(const QString& key) const;
 
 #ifdef UNIT_TEST
   void setRawSetting(const QString& key, const QVariant& value);
+  void doNotClearOnDTOR() { m_doNotClearOnDTOR = true; }
 #endif
 
   QString getReport() const;
@@ -90,16 +102,34 @@ class SettingsHolder final : public QObject {
 
   QString placeholderUserDNS() const;
 
+  bool finalizeTransaction();
+
+  QString journalSettingFileName() const;
+
+  void maybeSaveInTransaction(const QString& key, const QVariant& oldValue,
+                              const QVariant& newValue, const char* signalName,
+                              bool userSettings);
+
   // Addon specific
 
   static QString getAddonSettingKey(const AddonSettingQuery& query);
 
  signals:
   void addonSettingsChanged();
+  void inTransactionChanged();
 
  private:
   QSettings m_settings;
+
   bool m_firstExecution = false;
+
+  QSettings* m_settingsJournal = nullptr;
+  QMap<QString, QPair<const char*, QVariant>> m_transactionChanges;
+
+#ifdef UNIT_TEST
+  bool m_doNotClearOnDTOR = false;
+  bool m_recoverFromJournal = false;
+#endif
 };
 
 #endif  // SETTINGSHOLDER_H

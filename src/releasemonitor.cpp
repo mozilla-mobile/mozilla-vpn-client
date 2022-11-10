@@ -9,7 +9,6 @@
 #include "mozillavpn.h"
 #include "tasks/release/taskrelease.h"
 #include "taskscheduler.h"
-#include "timersingleshot.h"
 #include "update/updater.h"
 
 namespace {
@@ -20,16 +19,20 @@ ReleaseMonitor::ReleaseMonitor() {
   MVPN_COUNT_CTOR(ReleaseMonitor);
 
   m_timer.setSingleShot(true);
-  connect(&m_timer, &QTimer::timeout, this, &ReleaseMonitor::runSoon);
+  connect(&m_timer, &QTimer::timeout, this, [this]() {
+    ReleaseMonitor::runSoon(ErrorHandler::DoNotPropagateError);
+  });
 }
 
 ReleaseMonitor::~ReleaseMonitor() { MVPN_COUNT_DTOR(ReleaseMonitor); }
 
-void ReleaseMonitor::runSoon() {
+void ReleaseMonitor::runSoon(
+    ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy) {
   logger.debug() << "Scheduling a release-check task";
 
-  TimerSingleShot::create(this, 0, [this] {
-    TaskRelease* task = new TaskRelease(TaskRelease::Check);
+  QTimer::singleShot(0, this, [this, errorPropagationPolicy] {
+    TaskRelease* task =
+        new TaskRelease(TaskRelease::Check, errorPropagationPolicy);
 
     connect(task, &TaskRelease::updateRequired, this,
             &ReleaseMonitor::updateRequired);
@@ -57,11 +60,12 @@ void ReleaseMonitor::updateRequired() {
 void ReleaseMonitor::updateSoon() {
   logger.debug() << "Scheduling a release-update task";
 
-  TimerSingleShot::create(this, 0, [] {
-    TaskRelease* task = new TaskRelease(TaskRelease::Update);
+  QTimer::singleShot(0, this, [] {
+    TaskRelease* task =
+        new TaskRelease(TaskRelease::Update, ErrorHandler::PropagateError);
     // The updater, in download mode, is not destroyed. So, if this happens,
     // probably something went wrong.
-    connect(task, &Task::completed, [] {
+    connect(task, &Task::completed, task, [] {
       MozillaVPN* vpn = MozillaVPN::instance();
       Q_ASSERT(vpn);
       vpn->setUpdating(false);

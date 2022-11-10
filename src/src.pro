@@ -9,12 +9,9 @@
 
 TEMPLATE = app
 
-include($$PWD/qmake/balrog.pri)
 include($$PWD/qmake/debug.pri)
 include($$PWD/qmake/includes_and_defines.pri)
 include($$PWD/qmake/qt.pri)
-include($$PWD/qmake/signature.pri)
-include($$PWD/qmake/webextension.pri)
 include($$PWD/../glean/glean.pri)
 include($$PWD/../nebula/nebula.pri)
 include($$PWD/../lottie/lottie.pri)
@@ -35,11 +32,15 @@ DUMMY {
 } else:linux:!android {
    error(qmake is not supported for Linux. Please use cmake.)
 } else:android {
-   include($$PWD/qmake/platforms/android.pri)
+   error(qmake is not supported for Android. Please use cmake.)
 } else:macos {
    include($$PWD/qmake/platforms/macos.pri)
 } else:ios {
    include($$PWD/qmake/platforms/ios.pri)
+} else:linux {
+   error(qmake is not supported for Linux. Please use cmake.)
+} else:macos {
+   error(qmake is not supported for MacOS. Please use cmake.)
 } else:win* {
    error(qmake is not supported for Windows. Please use cmake.)
 } else:wasm {

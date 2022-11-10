@@ -10,6 +10,7 @@ import Mozilla.VPN 1.0
 
 Rectangle {
     id: root
+    objectName: "vpnCollapsibleCard"
 
     property int animationDuration: 150
     property bool expanded: false
@@ -128,6 +129,7 @@ Rectangle {
 
             VPNIconButton {
                 id: stateIndicator
+                objectName: "vpnCollapsibleCardChevron"
 
                 onClicked: {
                     handleToggleCard();

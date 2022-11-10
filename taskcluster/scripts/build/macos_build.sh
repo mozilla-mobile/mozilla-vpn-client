@@ -9,20 +9,25 @@ set -x
 
 . $(dirname $0)/../../../scripts/utils/commons.sh
 
+TASK_HOME=$(dirname "${MOZ_FETCHES_DIR}" )
+rm -rf "${TASK_HOME}/artifacts"
+mkdir -p "${TASK_HOME}/artifacts"
+
+
 print N "Taskcluster macOS compilation script"
 print N ""
 
 export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
 
-print Y "Installing ruby dependencies..."
-# use --user-install for permissions
-gem install xcodeproj --user-install || die
-export PATH="$HOME/.gem/ruby/2.6.0/bin:$PATH"
-
 print Y "Installing rust..."
 curl https://sh.rustup.rs -sSf | sh -s -- -y || die
 export PATH="$HOME/.cargo/bin:$PATH"
+
+mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
+export PATH=$PWD/homebrew/bin:$PATH
+brew install cmake
+brew install ninja
 
 print Y "Installing go..."
 curl -O https://dl.google.com/go/go1.17.6.darwin-amd64.tar.gz
@@ -34,60 +39,32 @@ print Y "Installing python dependencies..."
 python3 -m pip install -r requirements.txt --user
 export PYTHONIOENCODING="UTF-8"
 
-
-print Y "Installing QT..."
-PROJECT_HOME=`pwd`
-cd ../../fetches/qt_dist || die
-export QT_MACOS_BIN=`pwd`/bin
-export PATH=$QT_MACOS_BIN:$PATH
-
-cat > bin/qt.conf << EOF
-[Paths]
-Prefix=`pwd`
-EOF
-cp bin/qt.conf libexec || die
-cd $PROJECT_HOME
-
-
 print Y "Updating submodules..."
 # should already be done by XCode cloud cloning but just to make sure
 git submodule init || die
 git submodule update || die
 
 print Y "Configuring the build..."
-SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
-FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
-echo "$SHORTVERSION - $FULLVERSION"
-echo "DEVELOPMENT_TEAM = 43AQ936H96" >> xcode.xconfig
-echo "GROUP_ID_MACOS = group.org.mozilla.macos.Guardian" >> xcode.xconfig
-echo "APP_ID_MACOS = org.mozilla.macos.FirefoxVPN" >> xcode.xconfig
-echo "NETEXT_ID_MACOS = org.mozilla.macos.FirefoxVPN.network-extension" >> xcode.xconfig
-echo "LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login" >> xcode.xconfig
-echo "GROUP_ID_IOS = group.org.mozilla.ios.Guardian" >> xcode.xconfig
-echo "APP_ID_IOS = org.mozilla.ios.FirefoxVPN" >> xcode.xconfig
-echo "NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
-./scripts/macos/apple_compile.sh macos || die
+mkdir ${MOZ_FETCHES_DIR}/build
+cmake -S . -B ${MOZ_FETCHES_DIR}/build -GNinja \
+    -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake \
+    -DCMAKE_BUILD_TYPE=Release
 
-print Y "Compiling..."
-xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO -project Mozilla\ VPN.xcodeproj || die
+print Y "Building the client..."
+cmake --build ${MOZ_FETCHES_DIR}/build
 
-print Y "Creating the final package..."
-python3 ./scripts/macos/import_pkg_resources.py || die
+print Y "Building the installer..."
+cmake --build ${MOZ_FETCHES_DIR}/build --target pkg
 
-print Y "Exporting the artifact..."
+print Y "Exporting the build artifacts..."
 mkdir -p tmp || die
-cp -r Release/Mozilla\ VPN.app tmp || die
+cp -r ${MOZ_FETCHES_DIR}/build/src/Mozilla\ VPN.app tmp || die
+cp -r ${MOZ_FETCHES_DIR}/build/macos/pkg/Resources tmp || die
 cp -r ./macos/pkg/scripts tmp || die
 cp -r ./macos/pkg/Distribution tmp || die
-cp -r ./macos/pkg/Resources tmp || die
-cd tmp || die
 
-# From checkout dir to actual task base directory
-TASK_HOME=$(dirname "${MOZ_FETCHES_DIR}" )
-rm -rf "${TASK_HOME}/artifacts"
-mkdir -p "${TASK_HOME}/artifacts"
-tar -czvf "${TASK_HOME}/artifacts/MozillaVPN.tar.gz" . || die
-cd .. || die
+print Y "Compressing the build artifacts..."
+tar -C tmp -czvf "${TASK_HOME}/artifacts/MozillaVPN.tar.gz" . || die
 rm -rf tmp || die
 
 print G "Done!"

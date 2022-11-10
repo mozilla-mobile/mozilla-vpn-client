@@ -5,11 +5,12 @@
 #ifndef BALROG_H
 #define BALROG_H
 
+#include "errorhandler.h"
 #include "updater.h"
+#include "temporarydir.h"
 
 #include <QCryptographicHash>
 #include <QNetworkReply>
-#include <QTemporaryDir>
 
 class NetworkRequest;
 
@@ -17,7 +18,8 @@ class Balrog final : public Updater {
   Q_DISABLE_COPY_MOVE(Balrog)
 
  public:
-  Balrog(QObject* parent, bool downloadAndInstall);
+  Balrog(QObject* parent, bool downloadAndInstall,
+         ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy);
   ~Balrog();
 
   void start(Task* task) override;
@@ -42,8 +44,10 @@ class Balrog final : public Updater {
                       QNetworkReply::NetworkError error);
 
  private:
-  QTemporaryDir m_tmpDir;
+  TemporaryDir m_tmpDir;
   bool m_downloadAndInstall;
+  ErrorHandler::ErrorPropagationPolicy m_errorPropagationPolicy =
+      ErrorHandler::DoNotPropagateError;
 };
 
 #endif  // BALROG_H

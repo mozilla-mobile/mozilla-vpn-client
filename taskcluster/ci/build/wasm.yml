@@ -4,6 +4,7 @@
 ---
 wasm/opt:
     description: "Wasm Build"
+    add-index-routes: "build"
     treeherder:
         symbol: B
         kind: build

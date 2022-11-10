@@ -21,10 +21,10 @@ VPNInAppAuthenticationBase {
 
     _inputs: VPNInAppAuthenticationInputs {
         objectName: "authStart"
-        _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateStart && activeInput().text.length !== 0 && !activeInput().hasError
+        _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateStart && activeInput().text.length !== 0 && !activeInput().hasError && VPNAuthInApp.validateEmailAddress(activeInput().text)
         _buttonOnClicked: (inputText) => { VPNAuthInApp.checkAccount(inputText); }
         _buttonText: qsTrId("vpn.postAuthentication.continue")
-        _inputMethodHints: Qt.ImhEmailCharactersOnly | Qt.ImhNoAutoUppercase | Qt.ImhSensitiveData
+        _inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhEmailCharactersOnly | Qt.ImhNoAutoUppercase | Qt.ImhSensitiveData
         _inputPlaceholderText: VPNl18n.InAppSupportWorkflowSupportEmailFieldPlaceholder
     }
 

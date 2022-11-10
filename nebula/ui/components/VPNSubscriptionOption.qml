@@ -200,11 +200,11 @@ RadioDelegate {
 
             function getSubscriptionDuration(product) {
                 switch (product) {
-                    case VPNIAP.ProductMonthly:
+                    case VPNProducts.ProductMonthly:
                         return 1;
-                    case VPNIAP.ProductHalfYearly:
+                    case VPNProducts.ProductHalfYearly:
                         return 6;
-                    case VPNIAP.ProductYearly:
+                    case VPNProducts.ProductYearly:
                         return 12;
                     default:
                         return -1;

@@ -10,51 +10,63 @@ import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 
+ColumnLayout {
+    id: layout
 
-VPNViewBase {
-    id: root
-    _viewContentData: ColumnLayout {
+    spacing: 0
 
-        Layout.minimumHeight: root.height
+    Item {
+        Layout.fillHeight: window.fullscreenRequired()
+    }
+
+    VPNPanel {
+        anchors.horizontalCenter: undefined
+        Layout.topMargin: window.fullscreenRequired() ? 0 : layout.height * 0.2
+        Layout.preferredHeight: height
+        Layout.preferredWidth: width
+        Layout.alignment: Qt.AlignHCenter
+
+        logo: "qrc:/ui/resources/app-rating.svg"
+        logoTitle: VPNl18n.FeedbackFormReviewHeader
+        logoSubtitle: VPNl18n.FeedbackFormReviewBody
+    }
+
+    Item {
+        Layout.fillHeight: window.fullscreenRequired()
+    }
+
+    VPNButton {
+        id: leaveReviewBtn
+
+        Layout.fillWidth: true
+        Layout.topMargin: VPNTheme.theme.vSpacing
         Layout.leftMargin: VPNTheme.theme.windowMargin * 2
         Layout.rightMargin: VPNTheme.theme.windowMargin * 2
 
-        ColumnLayout {
-            spacing: VPNTheme.theme.vSpacing
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            Layout.fillWidth: true
-            Layout.bottomMargin: VPNTheme.theme.rowHeight * 2
-
-            Column {
-                Layout.fillWidth: true
-                VPNPanel {
-                    id: panel
-                    logo: "qrc:/ui/resources/app-rating.svg"
-                    logoTitle: VPNl18n.FeedbackFormReviewHeader
-                    logoSubtitle: VPNl18n.FeedbackFormReviewBody
-                }
-            }
-
-            VPNButton {
-                text: VPNl18n.FeedbackFormLeaveReviewButton
-                width: undefined
-                Layout.fillWidth: true
-                onClicked: {
-                    VPN.openAppStoreReviewLink();
-                    getHelpStackView.push("qrc:/ui/screens/getHelp/giveFeedback/ViewGiveFeedbackThankYou.qml");
-               }
-            }
-
-            VPNLinkButton {
-                id: skipLink
-
-                labelText: qsTrId("vpn.feedbackForm.skip")
-                onClicked: getHelpStackView.pop(null, StackView.Immediate);
-                implicitHeight: VPNTheme.theme.rowHeight
-                Layout.alignment: Qt.AlignHCenter
-            }
+        text: VPNl18n.FeedbackFormLeaveReviewButton
+        onClicked: {
+            VPN.openAppStoreReviewLink();
+            getHelpStackView.push("qrc:/ui/screens/getHelp/giveFeedback/ViewGiveFeedbackThankYou.qml");
         }
+    }
 
+    VPNLinkButton {
+        id: skipLink
+
+        Layout.fillWidth: true
+        Layout.topMargin: VPNTheme.theme.vSpacingSmall
+        Layout.leftMargin: VPNTheme.theme.windowMargin * 2
+        Layout.rightMargin: VPNTheme.theme.windowMargin * 2
+        Layout.bottomMargin: navbar.visible ? VPNTheme.theme.navBarHeightWithMargins : 34
+
+        labelText: qsTrId("vpn.feedbackForm.skip")
+        onClicked: getHelpStackView.push("qrc:/ui/screens/getHelp/giveFeedback/ViewGiveFeedbackThankYou.qml");
+        implicitHeight: VPNTheme.theme.rowHeight
+    }
+
+    Item {
+        Layout.fillHeight: !window.fullscreenRequired()
     }
 }
+
 

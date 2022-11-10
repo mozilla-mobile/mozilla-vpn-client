@@ -23,9 +23,11 @@
 #include "models/featuremodel.h"
 #include "mozillavpn.h"
 #include "notificationhandler.h"
+#include "productshandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
+#include "temporarydir.h"
 #include "theme.h"
 #include "tutorial/tutorial.h"
 #include "update/updater.h"
@@ -136,13 +138,21 @@ int CommandUI::run(QStringList& tokens) {
       Constants::setStaging();
     }
 
+    logger.info() << "MozillaVPN" << Constants::versionString();
+    logger.info() << "User-Agent:" << NetworkManager::userAgent();
+
     logger.debug() << "UI starting";
 
-    if (startAtBootOption.m_set) {
+    if (startAtBootOption.m_set || qgetenv("MVPN_STARTATBOOT") == "1") {
       logger.debug() << "Maybe start at boot";
 
       if (!SettingsHolder::instance()->startAtBoot()) {
         logger.debug() << "We don't need to start at boot.";
+        return 0;
+      }
+
+      if (SettingsHolder::instance()->token().isEmpty()) {
+        logger.debug() << "The user is not logged in.";
         return 0;
       }
     }
@@ -195,8 +205,8 @@ int CommandUI::run(QStringList& tokens) {
     // https://bugreports.qt.io/browse/QTBUG-82617
     // Currently there is a crash happening on exit with Huawei devices.
     // Until this is fixed, setting this variable is the "official" workaround.
-    // We certainly should look at this once 6.4 is out.
-#  if QT_VERSION >= 0x060400
+    // We certainly should look at this once 6.6 is out.
+#  if QT_VERSION >= 0x060600
 #    error We have forgotten to remove this Huawei hack!
 #  endif
     if (AndroidUtils::GetManufacturer() == "Huawei") {
@@ -216,8 +226,13 @@ int CommandUI::run(QStringList& tokens) {
     Nebula::Initialize(engine);
     L18nStrings::initialize();
 
+    // Cleanup previous temporary files.
+    TemporaryDir::cleanupAll();
+
     MozillaVPN vpn;
-    vpn.setStartMinimized(minimizedOption.m_set);
+
+    vpn.setStartMinimized(minimizedOption.m_set ||
+                          (qgetenv("MVPN_MINIMIZED") == "1"));
 
 #ifdef MVPN_ANDROID
     AndroidGlean::initialize(engine);
@@ -243,22 +258,12 @@ int CommandUI::run(QStringList& tokens) {
     vpn.initialize();
 
 #ifdef MVPN_MACOS
-    MacOSStartAtBootWatcher startAtBootWatcher(
-        SettingsHolder::instance()->startAtBoot());
-    QObject::connect(SettingsHolder::instance(),
-                     &SettingsHolder::startAtBootChanged, &startAtBootWatcher,
-                     &MacOSStartAtBootWatcher::startAtBootChanged);
-
+    MacOSStartAtBootWatcher startAtBootWatcher();
     MacOSUtils::setDockClickHandler();
 #endif
 
 #ifdef MVPN_WINDOWS
-    WindowsStartAtBootWatcher startAtBootWatcher(
-        SettingsHolder::instance()->startAtBoot());
-
-    QObject::connect(SettingsHolder::instance(),
-                     &SettingsHolder::startAtBootChanged, &startAtBootWatcher,
-                     &WindowsStartAtBootWatcher::startAtBootChanged);
+    WindowsStartAtBootWatcher startAtBootWatcher();
 #endif
 
 #ifdef MVPN_LINUX
@@ -471,6 +476,16 @@ int CommandUI::run(QStringList& tokens) {
           "Mozilla.VPN", 1, 0, "VPNIAP",
           [](QQmlEngine*, QJSEngine*) -> QObject* {
             QObject* obj = IAPHandler::instance();
+            QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+            return obj;
+          });
+    }
+
+    if (Feature::get(Feature::Feature_inAppProducts)->isSupported()) {
+      qmlRegisterSingletonType<MozillaVPN>(
+          "Mozilla.VPN", 1, 0, "VPNProducts",
+          [](QQmlEngine*, QJSEngine*) -> QObject* {
+            QObject* obj = ProductsHandler::instance();
             QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
             return obj;
           });

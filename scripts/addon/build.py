@@ -132,8 +132,6 @@ def retrieve_strings_guide(manifest, filename):
         exit(f"Guide {filename} does not have an id")
     if "title" not in guide_json:
         exit(f"Guide {filename} does not have a title")
-    if "subtitle" not in guide_json:
-        exit(f"Guide {filename} does not have a subtitle")
     if "blocks" not in guide_json:
         exit(f"Guide {filename} does not have a blocks")
 
@@ -143,11 +141,13 @@ def retrieve_strings_guide(manifest, filename):
         "value": guide_json["title"],
         "comments": guide_json.get("title_comment", "Title for a guide view"),
     }
-    subtitle_id = f"guide.{guide_id}.subtitle"
-    guide_strings[subtitle_id] = {
-        "value": guide_json["subtitle"],
-        "comments": guide_json.get("subtitle_comment", "Subtitle for a guide view"),
-    }
+
+    if guide_json.get("subtitle"):
+        subtitle_id = f"guide.{guide_id}.subtitle"
+        guide_strings[subtitle_id] = {
+            "value": guide_json["subtitle"],
+            "comments": guide_json.get("subtitle_comment", "Subtitle for a guide view"),
+        }
 
     return retrieve_strings_blocks(guide_json["blocks"], filename, guide_strings, f"guide.{guide_id}")
 

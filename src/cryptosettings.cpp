@@ -91,9 +91,10 @@ bool CryptoSettings::readEncryptedChachaPolyV1File(
   QByteArray version(1, EncryptionChachaPolyV1);
   QByteArray content(ciphertext.length(), 0x00);
   uint32_t result = Hacl_Chacha20Poly1305_32_aead_decrypt(
-      key, (uint8_t*)nonce.data(), version.length(), (uint8_t*)version.data(),
-      ciphertext.length(), (uint8_t*)content.data(),
-      (uint8_t*)ciphertext.data(), (uint8_t*)mac.data());
+      key, (uint8_t*)nonce.data(), static_cast<uint32_t>(version.length()),
+      (uint8_t*)version.data(), static_cast<uint32_t>(ciphertext.length()),
+      (uint8_t*)content.data(), (uint8_t*)ciphertext.data(),
+      (uint8_t*)mac.data());
   if (result != 0) {
     return false;
   }
@@ -205,8 +206,9 @@ bool CryptoSettings::writeEncryptedChachaPolyV1File(
   QByteArray mac(MAC_SIZE, 0x00);
 
   Hacl_Chacha20Poly1305_32_aead_encrypt(
-      key, (uint8_t*)nonce.data(), version.length(), (uint8_t*)version.data(),
-      content.length(), (uint8_t*)content.data(), (uint8_t*)ciphertext.data(),
+      key, (uint8_t*)nonce.data(), static_cast<uint32_t>(version.length()),
+      (uint8_t*)version.data(), static_cast<uint32_t>(content.length()),
+      (uint8_t*)content.data(), (uint8_t*)ciphertext.data(),
       (uint8_t*)mac.data());
 
   if (device.write(nonce) != nonce.length()) {

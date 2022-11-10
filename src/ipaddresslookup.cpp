@@ -9,7 +9,6 @@
 #include "mozillavpn.h"
 #include "tasks/ipfinder/taskipfinder.h"
 #include "taskscheduler.h"
-#include "timersingleshot.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -32,7 +31,6 @@ IpAddressLookup::~IpAddressLookup() { MVPN_COUNT_DTOR(IpAddressLookup); }
 
 void IpAddressLookup::initialize() {
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   connect(vpn, &MozillaVPN::stateChanged, this, &IpAddressLookup::stateChanged);
 
@@ -81,7 +79,7 @@ void IpAddressLookup::updateIpAddress() {
           // In case the country-we're reported in does not match the
           // connected server we may retry only once.
           logger.warning() << "Reported ip not in the right country, retry!";
-          TimerSingleShot::create(this, 3000, [this]() { updateIpAddress(); });
+          QTimer::singleShot(3000, this, [this]() { updateIpAddress(); });
         }
 #endif
 

@@ -18,9 +18,11 @@ Item {
    property alias _viewContentData: viewContent.data
    property alias _interactive: vpnFlickable.interactive
 
+   height: parent.implicitHeight
+
    anchors {
        top: if (parent) parent.top
-       topMargin:  _menuTitle !== "" || titleComponent || rightMenuButton ? VPNTheme.theme.menuHeight : 0
+       topMargin: menu.visible ? VPNTheme.theme.menuHeight : 0
    }
 
    Rectangle {
@@ -28,30 +30,24 @@ Item {
        color: VPNTheme.theme.bgColor
    }
 
-
     VPNFlickable {
         id: vpnFlickable
         objectName: parent.objectName + "-flickable"
 
         anchors.fill: root
-        flickContentHeight: viewContent.implicitHeight +
-                            navigationBarClearance.height +
-                            root.anchors.topMargin
+        flickContentHeight: viewContent.implicitHeight + viewContent.anchors.topMargin + viewContent.anchors.bottomMargin
 
         ColumnLayout {
             id: viewContent
             spacing: VPNTheme.theme.windowMargin
             anchors {
                 top: parent.top
-                topMargin: VPNTheme.theme.windowMargin
                 left: parent.left
                 right: parent.right
+                topMargin: VPNTheme.theme.windowMargin
+                bottomMargin: navbar.visible ? 0 : VPNTheme.theme.rowHeight
             }
         }
-    }
-
-    VPNFooterMargin {
-        id: navigationBarClearance
     }
 
     function ensureVisible(itm) {

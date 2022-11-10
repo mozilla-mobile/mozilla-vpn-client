@@ -26,6 +26,7 @@
 #include "networkwatcher.h"
 #include "profileflow.h"
 #include "releasemonitor.h"
+#include "serverlatency.h"
 #include "statusicon.h"
 #include "telemetry.h"
 #include "theme.h"
@@ -80,24 +81,8 @@ class MozillaVPN final : public QObject {
   };
   Q_ENUM(UserState);
 
-  enum AlertType {
-    NoAlert,
-    AuthenticationFailedAlert,
-    ConnectionFailedAlert,
-    LogoutAlert,
-    NoConnectionAlert,
-    ControllerErrorAlert,
-    RemoteServiceErrorAlert,
-    SubscriptionFailureAlert,
-    GeoIpRestrictionAlert,
-    UnrecoverableErrorAlert,
-    AuthCodeSentAlert,
-  };
-  Q_ENUM(AlertType)
-
  private:
   Q_PROPERTY(State state READ state NOTIFY stateChanged)
-  Q_PROPERTY(AlertType alert READ alert NOTIFY alertChanged)
   Q_PROPERTY(QString devVersion READ devVersion CONSTANT)
   Q_PROPERTY(const Env* env READ env CONSTANT)
   Q_PROPERTY(UserState userState READ userState NOTIFY userStateChanged)
@@ -105,8 +90,6 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
   Q_PROPERTY(bool stagingMode READ stagingMode CONSTANT)
   Q_PROPERTY(bool debugMode READ debugMode CONSTANT)
-  Q_PROPERTY(QString currentView READ currentView WRITE setCurrentView NOTIFY
-                 currentViewChanged)
 
  public:
   MozillaVPN();
@@ -121,7 +104,6 @@ class MozillaVPN final : public QObject {
   void initialize();
 
   State state() const;
-  AlertType alert() const { return m_alert; }
 
   const QString& exitServerPublicKey() const { return m_exitServerPublicKey; }
   const QString& entryServerPublicKey() const { return m_entryServerPublicKey; }
@@ -139,8 +121,6 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void authenticate();
   Q_INVOKABLE void cancelAuthentication();
   Q_INVOKABLE void removeDeviceFromPublicKey(const QString& publicKey);
-  Q_INVOKABLE void hideAlert() { setAlert(NoAlert); }
-  Q_INVOKABLE void setAlert(AlertType alert);
   Q_INVOKABLE void postAuthenticationCompleted();
   Q_INVOKABLE void telemetryPolicyCompleted();
   Q_INVOKABLE void mainWindowLoaded();
@@ -164,6 +144,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE bool validateUserDNS(const QString& dns) const;
   Q_INVOKABLE void hardResetAndQuit();
   Q_INVOKABLE void crashTest();
+  Q_INVOKABLE void exitForUnrecoverableError(const QString& reason);
   Q_INVOKABLE void requestDeleteAccount();
   Q_INVOKABLE void cancelReauthentication();
   Q_INVOKABLE void updateViewShown();
@@ -182,9 +163,7 @@ class MozillaVPN final : public QObject {
   ConnectionBenchmark* connectionBenchmark() {
     return &m_private->m_connectionBenchmark;
   }
-  ConnectionHealth* connectionHealth() {
-    return &m_private->m_connectionHealth;
-  }
+  ConnectionHealth* connectionHealth();
   Controller* controller();
   ServerData* currentServer() { return &m_private->m_serverData; }
   DeviceModel* deviceModel() { return &m_private->m_deviceModel; }
@@ -233,8 +212,6 @@ class MozillaVPN final : public QObject {
   const QList<Server> exitServers() const;
   const QList<Server> entryServers() const;
   bool multihop() const { return m_private->m_serverData.multihop(); }
-
-  void errorHandle(ErrorHandler::ErrorType error);
 
   void abortAuthentication();
 
@@ -286,12 +263,6 @@ class MozillaVPN final : public QObject {
                                        const QString& cityCode);
 
   void addCurrentDeviceAndRefreshData();
-
-  const QString& currentView() const { return m_currentView; }
-  void setCurrentView(const QString& name) {
-    m_currentView = name;
-    emit currentViewChanged();
-  }
 
   void createTicketAnswerRecieved(bool successful) {
     emit ticketCreationAnswer(successful);
@@ -349,11 +320,9 @@ class MozillaVPN final : public QObject {
  public slots:
   void requestSettings();
   void requestAbout();
-  void requestGetHelp();
 
  signals:
   void stateChanged();
-  void alertChanged();
   void userStateChanged();
   void deviceRemoving(const QString& publicKey);
   void aboutNeeded();
@@ -372,8 +341,6 @@ class MozillaVPN final : public QObject {
   void aboutToQuit();
 
   void logsReady(const QString& logs);
-
-  void currentViewChanged();
 
   void ticketCreationAnswer(bool successful);
 
@@ -397,6 +364,7 @@ class MozillaVPN final : public QObject {
     ReleaseMonitor m_releaseMonitor;
     ServerCountryModel m_serverCountryModel;
     ServerData m_serverData;
+    ServerLatency m_serverLatency;
     StatusIcon m_statusIcon;
     SubscriptionData m_subscriptionData;
     ProfileFlow m_profileFlow;
@@ -411,15 +379,12 @@ class MozillaVPN final : public QObject {
   Private* m_private = nullptr;
 
   State m_state = StateInitialize;
-  AlertType m_alert = NoAlert;
-  QString m_currentView;
 
   UserState m_userState = UserNotAuthenticated;
 
   QString m_exitServerPublicKey;
   QString m_entryServerPublicKey;
 
-  QTimer m_alertTimer;
   QTimer m_periodicOperationsTimer;
   QTimer m_gleanTimer;
 

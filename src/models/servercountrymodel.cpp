@@ -6,6 +6,7 @@
 #include "collator.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/feature.h"
 #include "servercountry.h"
 #include "serverdata.h"
 #include "serveri18n.h"
@@ -56,6 +57,7 @@ bool ServerCountryModel::fromJson(const QByteArray& s) {
   }
 
   m_rawJson = s;
+  emit changed();
   return true;
 }
 
@@ -79,7 +81,7 @@ bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
   }
 
   QJsonArray countriesArray = countries.toArray();
-  for (QJsonValue countryValue : countriesArray) {
+  for (const QJsonValue& countryValue : countriesArray) {
     if (!countryValue.isObject()) {
       return false;
     }
@@ -101,7 +103,9 @@ bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
     if (!cities.isArray()) {
       return false;
     }
-    for (QJsonValue cityValue : cities.toArray()) {
+
+    QJsonArray cityArray = cities.toArray();
+    for (const QJsonValue& cityValue : cityArray) {
       if (!cityValue.isObject()) {
         return false;
       }
@@ -110,7 +114,9 @@ bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
       if (!servers.isArray()) {
         return false;
       }
-      for (QJsonValue serverValue : servers.toArray()) {
+
+      QJsonArray serverArray = servers.toArray();
+      for (const QJsonValue& serverValue : serverArray) {
         Server server;
         if (!server.fromJson(serverValue.toObject())) {
           return false;
@@ -156,23 +162,10 @@ QVariant ServerCountryModel::data(const QModelIndex& index, int role) const {
 
     case CitiesRole: {
       const ServerCountry& country = m_countries.at(index.row());
-      qint64 now = QDateTime::currentSecsSinceEpoch();
 
       QList<QVariant> list;
-      const QList<ServerCity>& cities = country.cities();
-      for (const ServerCity& city : cities) {
-        int activeServerCount = 0;
-        for (QString pubkey : city.servers()) {
-          if (m_servers.value(pubkey).cooldownTimeout() <= now) {
-            activeServerCount++;
-          }
-        }
-
-        QStringList names{
-            city.name(),
-            ServerI18N::translateCityName(country.code(), city.name()),
-            QString::number(activeServerCount)};
-        list.append(QVariant(names));
+      for (const ServerCity& city : country.cities()) {
+        list.append(QVariant::fromValue(&city));
       }
 
       return QVariant(list);
@@ -181,6 +174,73 @@ QVariant ServerCountryModel::data(const QModelIndex& index, int role) const {
     default:
       return QVariant();
   }
+}
+
+int ServerCountryModel::cityConnectionScore(const QString& countryCode,
+                                            const QString& cityCode) const {
+  for (const ServerCountry& country : m_countries) {
+    if (country.code() != countryCode) {
+      continue;
+    }
+
+    for (const ServerCity& city : country.cities()) {
+      if (city.code() != cityCode) {
+        continue;
+      }
+
+      return cityConnectionScore(city);
+    }
+
+    // No such city was found.
+    return NoData;
+  }
+
+  // No such country was found.
+  return NoData;
+}
+
+int ServerCountryModel::cityConnectionScore(const ServerCity& city) const {
+  qint64 now = QDateTime::currentSecsSinceEpoch();
+  int score = Poor;
+  int activeServerCount = 0;
+  uint32_t sumLatencyMsec = 0;
+  for (const QString& pubkey : city.servers()) {
+    const Server& server = m_servers[pubkey];
+    if (server.cooldownTimeout() <= now) {
+      sumLatencyMsec += server.latency();
+      activeServerCount++;
+    }
+  }
+
+  // Ensure there is at least one reachable server.
+  if (activeServerCount == 0) {
+    return Unavailable;
+  }
+
+  // If the feature is disabled, we have no data to return.
+  if (!Feature::get(Feature::Feature_serverConnectionScore)->isSupported()) {
+    return NoData;
+  }
+  // In the unlikely event that the sum of the latencies is zero, then we
+  // haven't actually measured anything and have nothing to report.
+  if (sumLatencyMsec == 0) {
+    return NoData;
+  }
+
+  // Increase the score if the location has less than 100ms of latency.
+  if ((sumLatencyMsec / activeServerCount) < 100) {
+    score++;
+  }
+
+  // Increase the score if the location has 6 or more servers.
+  if (activeServerCount >= 6) {
+    score++;
+  }
+
+  if (score > Good) {
+    score = Good;
+  }
+  return score;
 }
 
 bool ServerCountryModel::pickIfExists(const QString& countryCode,
@@ -319,6 +379,13 @@ void ServerCountryModel::retranslate() {
   beginResetModel();
   sortCountries();
   endResetModel();
+}
+
+void ServerCountryModel::setServerLatency(const QString& publicKey,
+                                          unsigned int msec) {
+  if (m_servers.contains(publicKey)) {
+    m_servers[publicKey].setLatency(msec);
+  }
 }
 
 void ServerCountryModel::setServerCooldown(const QString& publicKey,

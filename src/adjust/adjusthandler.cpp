@@ -42,7 +42,6 @@ void AdjustHandler::initialize() {
   }
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   // If the app has not started yet, let's wait.
   if (vpn->state() == MozillaVPN::StateInitialize) {
@@ -64,15 +63,13 @@ void AdjustHandler::initialize() {
     return;
   }
 
-  QObject::connect(settingsHolder, &SettingsHolder::gleanEnabledChanged,
-                   [](const bool& gleanEnabled) {
-                     if (!gleanEnabled) {
-                       forget();
-                       // Let's keep the proxy on. Maybe Adjust needs to send
-                       // requests to remove data on their servers.
-                       return;
-                     }
-                   });
+  QObject::connect(settingsHolder, &SettingsHolder::gleanEnabledChanged, []() {
+    if (!SettingsHolder::instance()->gleanEnabled()) {
+      forget();
+      // Let's keep the proxy on. Maybe Adjust needs to send
+      // requests to remove data on their servers.
+    }
+  });
 
   s_adjustProxy = new AdjustProxy(vpn);
   QObject::connect(vpn->controller(), &Controller::readyToQuit, s_adjustProxy,

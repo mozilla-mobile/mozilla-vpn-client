@@ -25,6 +25,8 @@ MozillaVPN::MozillaVPN() {}
 
 MozillaVPN::~MozillaVPN() {}
 
+ConnectionHealth* MozillaVPN::connectionHealth() { return nullptr; }
+
 Controller* MozillaVPN::controller() { return new Controller(); }
 
 MozillaVPN::State MozillaVPN::state() const { return StateInitialize; }
@@ -68,10 +70,6 @@ void MozillaVPN::cancelAuthentication() {}
 
 void MozillaVPN::logout() {}
 
-void MozillaVPN::setAlert(AlertType) {}
-
-void MozillaVPN::errorHandle(ErrorHandler::ErrorType) {}
-
 const QList<Server> MozillaVPN::exitServers() const { return QList<Server>(); }
 
 const QList<Server> MozillaVPN::entryServers() const { return QList<Server>(); }
@@ -107,8 +105,6 @@ bool MozillaVPN::viewLogs() { return true; }
 bool MozillaVPN::modelsInitialized() const { return true; }
 
 void MozillaVPN::requestSettings() {}
-
-void MozillaVPN::requestGetHelp() {}
 
 void MozillaVPN::requestAbout() {}
 
@@ -162,6 +158,8 @@ void MozillaVPN::maybeRegenerateDeviceKey() {}
 void MozillaVPN::hardResetAndQuit() {}
 
 void MozillaVPN::hardReset() {}
+
+void MozillaVPN::exitForUnrecoverableError(const QString& reason) {}
 
 void MozillaVPN::crashTest() {}
 

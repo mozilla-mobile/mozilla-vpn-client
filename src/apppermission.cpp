@@ -107,7 +107,7 @@ void AppPermission::flip(const QString& appID) {
   settingsHolder->setVpnDisabledApps(applist);
 
   int index = m_applist.indexOf(AppDescription(appID));
-  dataChanged(createIndex(index, 0), createIndex(index, 0));
+  emit dataChanged(createIndex(index, 0), createIndex(index, 0));
 }
 
 void AppPermission::requestApplist() {
@@ -173,7 +173,7 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
   beginResetModel();
   logger.debug() << "Recived new Applist -- Entrys: " << applistCopy.size();
   m_applist.clear();
-  for (auto id : keys) {
+  for (const auto& id : keys) {
     m_applist.append(AppDescription(id, applistCopy[id]));
   }
   std::sort(m_applist.begin(), m_applist.end());
@@ -196,18 +196,18 @@ void AppPermission::protectAll() {
   logger.debug() << "Protected all";
 
   SettingsHolder::instance()->setVpnDisabledApps(QStringList());
-  dataChanged(createIndex(0, 0), createIndex(m_applist.size(), 0));
+  emit dataChanged(createIndex(0, 0), createIndex(m_applist.size(), 0));
 };
 
 void AppPermission::unprotectAll() {
   logger.debug() << "Unprotected all";
 
   QStringList allAppIds;
-  for (auto app : m_applist) {
+  for (const auto& app : m_applist) {
     allAppIds.append(app.id);
   }
   SettingsHolder::instance()->setVpnDisabledApps(allAppIds);
-  dataChanged(createIndex(0, 0), createIndex(m_applist.size(), 0));
+  emit dataChanged(createIndex(0, 0), createIndex(m_applist.size(), 0));
 }
 
 void AppPermission::openFilePicker() {

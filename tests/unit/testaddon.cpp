@@ -26,6 +26,7 @@
 #include "helper.h"
 
 #include <QQmlApplicationEngine>
+#include <QTemporaryFile>
 
 void TestAddon::property() {
   AddonProperty p;
@@ -257,7 +258,7 @@ void TestAddon::conditionWatcher_javascript() {
 
     QEventLoop loop;
     bool currentStatus = false;
-    connect(a, &AddonConditionWatcher::conditionChanged, [&](bool status) {
+    connect(a, &AddonConditionWatcher::conditionChanged, a, [&](bool status) {
       currentStatus = status;
       loop.exit();
     });
@@ -334,19 +335,20 @@ void TestAddon::conditionWatcher_featuresEnabled() {
       &parent, QStringList{"invalid"}));
 
   QVERIFY(!Feature::getOrNull("testFeatureAddon"));
-  Feature feature("testFeatureAddon", "Feature Addon",
-                  false,               // Is Major Feature
-                  L18nStrings::Empty,  // Display name
-                  L18nStrings::Empty,  // Description
-                  L18nStrings::Empty,  // LongDescr
-                  "",                  // ImagePath
-                  "",                  // IconPath
-                  "",                  // link URL
-                  "1.0",               // released
-                  true,                // Can be flipped on
-                  true,                // Can be flipped off
-                  QStringList(),       // feature dependencies
-                  []() -> bool { return false; });
+  Feature feature(
+      "testFeatureAddon", "Feature Addon",
+      false,                          // Is Major Feature
+      L18nStrings::Empty,             // Display name
+      L18nStrings::Empty,             // Description
+      L18nStrings::Empty,             // LongDescr
+      "",                             // ImagePath
+      "",                             // IconPath
+      "",                             // link URL
+      "1.0",                          // released
+      []() -> bool { return true; },  // Can be flipped on
+      []() -> bool { return true; },  // Can be flipped off
+      QStringList(),                  // feature dependencies
+      []() -> bool { return false; });
   QVERIFY(!!Feature::get("testFeatureAddon"));
   QVERIFY(!Feature::get("testFeatureAddon")->isSupported());
 
@@ -402,10 +404,11 @@ void TestAddon::conditionWatcher_group() {
 
   QEventLoop loop;
   bool currentStatus = false;
-  connect(acw1, &AddonConditionWatcher::conditionChanged, [&](bool status) {
-    currentStatus = status;
-    loop.exit();
-  });
+  connect(acw1, &AddonConditionWatcher::conditionChanged, acw1,
+          [&](bool status) {
+            currentStatus = status;
+            loop.exit();
+          });
   loop.exec();
 
   QVERIFY(currentStatus);
@@ -414,10 +417,11 @@ void TestAddon::conditionWatcher_group() {
   QVERIFY(!acwGroup->conditionApplied());
 
   currentStatus = false;
-  connect(acw2, &AddonConditionWatcher::conditionChanged, [&](bool status) {
-    currentStatus = status;
-    loop.exit();
-  });
+  connect(acw2, &AddonConditionWatcher::conditionChanged, acw2,
+          [&](bool status) {
+            currentStatus = status;
+            loop.exit();
+          });
   loop.exec();
 
   QVERIFY(currentStatus);
@@ -438,7 +442,7 @@ void TestAddon::conditionWatcher_triggerTime() {
 
   QEventLoop loop;
   bool currentStatus = false;
-  connect(acw, &AddonConditionWatcher::conditionChanged, [&](bool status) {
+  connect(acw, &AddonConditionWatcher::conditionChanged, acw, [&](bool status) {
     currentStatus = status;
     loop.exit();
   });
@@ -461,7 +465,7 @@ void TestAddon::conditionWatcher_startTime() {
 
   QEventLoop loop;
   bool currentStatus = false;
-  connect(acw, &AddonConditionWatcher::conditionChanged, [&](bool status) {
+  connect(acw, &AddonConditionWatcher::conditionChanged, acw, [&](bool status) {
     currentStatus = status;
     loop.exit();
   });
@@ -484,7 +488,7 @@ void TestAddon::conditionWatcher_endTime() {
 
   QEventLoop loop;
   bool currentStatus = false;
-  connect(acw, &AddonConditionWatcher::conditionChanged, [&](bool status) {
+  connect(acw, &AddonConditionWatcher::conditionChanged, acw, [&](bool status) {
     currentStatus = status;
     loop.exit();
   });
@@ -600,7 +604,7 @@ void TestAddon::guide_create() {
   obj["guide"] = content;
 
   QObject parent;
-  Addon* guide = AddonGuide::create(&parent, "foo", "bar", "name", obj);
+  Addon* guide = AddonGuide::create(&parent, id, "bar", "name", obj);
   QCOMPARE(!!guide, created);
 
   if (!guide) {
@@ -618,112 +622,127 @@ void TestAddon::tutorial_create_data() {
   QTest::addColumn<QString>("id");
   QTest::addColumn<QJsonObject>("content");
   QTest::addColumn<bool>("created");
+  QTest::addColumn<bool>("highlighted");
+  QTest::addColumn<bool>("transaction");
 
-  QTest::addRow("object-without-id") << "" << QJsonObject() << false;
+  QTest::addRow("object-without-id")
+      << "" << QJsonObject() << false << false << false;
 
   QJsonObject obj;
   obj["id"] = "foo";
-  QTest::addRow("invalid-id") << "foo" << obj << false;
-  QTest::addRow("no-image") << "foo" << obj << false;
+  QTest::addRow("invalid-id") << "foo" << obj << false << false << false;
+  QTest::addRow("no-image") << "foo" << obj << false << false << false;
 
   obj["image"] = "foo.png";
-  QTest::addRow("no-steps") << "foo" << obj << false;
+  QTest::addRow("no-steps") << "foo" << obj << false << false << false;
 
   QJsonArray steps;
   obj["steps"] = steps;
-  QTest::addRow("with-steps") << "foo" << obj << false;
+  QTest::addRow("with-steps") << "foo" << obj << false << false << false;
 
   steps.append("");
   obj["steps"] = steps;
-  QTest::addRow("with-invalid-step") << "foo" << obj << false;
+  QTest::addRow("with-invalid-step") << "foo" << obj << false << false << false;
 
   QJsonObject step;
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-without-id") << "foo" << obj << false;
+  QTest::addRow("with-step-without-id")
+      << "foo" << obj << false << false << false;
 
   step["id"] = "s1";
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-without-element") << "foo" << obj << false;
+  QTest::addRow("with-step-without-element")
+      << "foo" << obj << false << false << false;
 
   step["element"] = "wow";
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-without-next") << "foo" << obj << false;
+  QTest::addRow("with-step-without-next")
+      << "foo" << obj << false << false << false;
 
   step["next"] = "wow";
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-with-invalid-next") << "foo" << obj << false;
+  QTest::addRow("with-step-with-invalid-next")
+      << "foo" << obj << false << false << false;
 
   QJsonObject nextObj;
 
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-with-invalid-next-1") << "foo" << obj << false;
+  QTest::addRow("with-step-with-invalid-next-1")
+      << "foo" << obj << false << false << false;
 
   nextObj["op"] = "wow";
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-with-invalid-next-2") << "foo" << obj << false;
+  QTest::addRow("with-step-with-invalid-next-2")
+      << "foo" << obj << false << false << false;
 
   nextObj["op"] = "signal";
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-with-invalid-next-3") << "foo" << obj << false;
+  QTest::addRow("with-step-with-invalid-next-3")
+      << "foo" << obj << false << false << false;
 
   nextObj["signal"] = "a";
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-with-invalid-next-4") << "foo" << obj << false;
+  QTest::addRow("with-step-with-invalid-next-4")
+      << "foo" << obj << false << false << false;
 
   nextObj["qml_emitter"] = "a";
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-with-invalid-next-5") << "foo" << obj << true;
+  QTest::addRow("with-step-with-invalid-next-5")
+      << "foo" << obj << true << false << false;
 
   nextObj["vpn_emitter"] = "a";
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-with-invalid-next-6") << "foo" << obj << false;
+  QTest::addRow("with-step-with-invalid-next-6")
+      << "foo" << obj << false << false << false;
 
   nextObj.remove("qml_emitter");
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-with-invalid-next-7") << "foo" << obj << false;
+  QTest::addRow("with-step-with-invalid-next-7")
+      << "foo" << obj << false << false << false;
 
   nextObj["vpn_emitter"] = "settingsHolder";
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-with-invalid-next-8") << "foo" << obj << true;
+  QTest::addRow("with-step-with-invalid-next-8")
+      << "foo" << obj << true << false << false;
 
   obj["conditions"] = QJsonObject();
-  QTest::addRow("with-step-element and conditions") << "foo" << obj << true;
+  QTest::addRow("with-step-element and conditions")
+      << "foo" << obj << true << false << false;
 
-  obj["advanced"] = true;
-  QTest::addRow("advanced") << "foo" << obj << true;
-
-  obj["advanced"] = false;
-  QTest::addRow("not-advanced") << "foo" << obj << true;
-
-  obj["advanced"] = true;
   obj["highlighted"] = true;
-  QTest::addRow("advanced-and-highlighted") << "foo" << obj << true;
+  QTest::addRow("highlighted") << "foo" << obj << true << true << false;
+
+  obj["settings_rollback_needed"] = true;
+  QTest::addRow("advanced-and-highlighted")
+      << "foo" << obj << true << true << true;
 }
 
 void TestAddon::tutorial_create() {
   QFETCH(QString, id);
   QFETCH(QJsonObject, content);
   QFETCH(bool, created);
+  QFETCH(bool, highlighted);
+  QFETCH(bool, transaction);
 
   SettingsHolder settingsHolder;
 
@@ -731,7 +750,7 @@ void TestAddon::tutorial_create() {
   obj["tutorial"] = content;
 
   QObject parent;
-  Addon* tutorial = AddonTutorial::create(&parent, "foo", "bar", "name", obj);
+  Addon* tutorial = AddonTutorial::create(&parent, id, "bar", "name", obj);
   QCOMPARE(!!tutorial, created);
 
   if (!tutorial) {
@@ -746,17 +765,25 @@ void TestAddon::tutorial_create() {
   QCOMPARE(tutorial->property("subtitle").type(), QMetaType::QString);
   QCOMPARE(tutorial->property("completionMessage").type(), QMetaType::QString);
   QCOMPARE(tutorial->property("image").toString(), "foo.png");
+  QCOMPARE(tutorial->property("highlighted").toBool(), highlighted);
+  QCOMPARE(tutorial->property("settingsRollbackNeeded").toBool(), transaction);
 
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
   QSignalSpy signalSpy(tm, &Tutorial::playingChanged);
 
+  QVERIFY(!settingsHolder.inTransaction());
+
   tm->play(tutorial);
   QCOMPARE(signalSpy.count(), 1);
 
+  QCOMPARE(settingsHolder.inTransaction(), transaction);
+
   tm->stop();
   QCOMPARE(signalSpy.count(), 2);
+
+  QVERIFY(!settingsHolder.inTransaction());
 }
 
 void TestAddon::message_create_data() {
@@ -1052,9 +1079,18 @@ void TestAddon::message_dismiss() {
 
   QJsonObject obj;
   obj["message"] = messageObj;
+  obj["type"] = "message";
+  obj["api_version"] = "0.1";
+  obj["id"] = "bar";
+  obj["name"] = "bar";
+
+  QTemporaryFile file;
+  QVERIFY(file.open());
+  file.write(QJsonDocument(obj).toJson());
+  file.close();
 
   QObject parent;
-  Addon* message = AddonMessage::create(&parent, "foo", "bar", "name", obj);
+  Addon* message = Addon::create(&parent, file.fileName());
   QVERIFY(!!message);
   QVERIFY(message->enabled());
 

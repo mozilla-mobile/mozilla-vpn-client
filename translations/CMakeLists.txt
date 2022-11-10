@@ -12,6 +12,14 @@ get_filename_component(GENERATED_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated ABSOL
 file(MAKE_DIRECTORY ${GENERATED_DIR})
 target_include_directories(translations PUBLIC ${GENERATED_DIR})
 
+# Special language threadshold for wasm where we want to have all the languages
+# for debugging.
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    set(LANGUAGE_THRESHOLD "0.0")
+else()
+    set(LANGUAGE_THRESHOLD "0.7")
+endif()
+
 target_sources(translations PRIVATE
     ${GENERATED_DIR}/l18nstrings_p.cpp
     ${GENERATED_DIR}/l18nstrings.h
@@ -80,7 +88,7 @@ file(WRITE ${GENERATED_DIR}/translations.qrc "<RCC>\n    <qresource prefix=\"/i1
 foreach(LOCALE ${I18N_LOCALES})
     execute_process(
         RESULT_VARIABLE I18N_CHECK_RESULT
-        COMMAND python3 ${MVPN_SCRIPT_DIR}/utils/xlifftool.py -c --locale=${LOCALE} ${I18N_DIR}/${LOCALE}/mozillavpn.xliff
+        COMMAND python3 ${MVPN_SCRIPT_DIR}/utils/xlifftool.py -c --locale=${LOCALE} ${I18N_DIR}/${LOCALE}/mozillavpn.xliff -t ${LANGUAGE_THRESHOLD}
     )
     if(I18N_CHECK_RESULT EQUAL 0)
         file(APPEND ${GENERATED_DIR}/translations.qrc "        <file>mozillavpn_${LOCALE}.qm</file>\n")

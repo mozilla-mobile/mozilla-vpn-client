@@ -9,12 +9,34 @@
 
 #include <QtEndian>
 
+#include <WS2tcpip.h>
+#include <Windows.h>
+#include <iphlpapi.h>
+#include <IcmpAPI.h>
+
+#pragma comment(lib, "Ws2_32")
+
+constexpr WORD WindowsPingPayloadSize = sizeof(quint16);
+
+struct WindowsPingSenderPrivate {
+  HANDLE m_handle;
+  HANDLE m_event;
+  unsigned char m_buffer[sizeof(ICMP_ECHO_REPLY) + WindowsPingPayloadSize + 8];
+};
+
 namespace {
 Logger logger({LOG_WINDOWS, LOG_NETWORKING}, "WindowsPingSender");
 }
 
-static DWORD icmpCleanupHelper(HANDLE h) {
-  IcmpCloseHandle(h);
+static DWORD icmpCleanupHelper(LPVOID data) {
+  struct WindowsPingSenderPrivate* p = (struct WindowsPingSenderPrivate*)data;
+  if (p->m_event != INVALID_HANDLE_VALUE) {
+    CloseHandle(p->m_event);
+  }
+  if (p->m_handle != INVALID_HANDLE_VALUE) {
+    IcmpCloseHandle(p->m_handle);
+  }
+  delete p;
   return 0;
 }
 
@@ -23,14 +45,15 @@ WindowsPingSender::WindowsPingSender(const QHostAddress& source,
     : PingSender(parent) {
   MVPN_COUNT_CTOR(WindowsPingSender);
   m_source = source;
-  m_handle = IcmpCreateFile();
-  m_event = CreateEventA(NULL, FALSE, FALSE, NULL);
+  m_private = new struct WindowsPingSenderPrivate;
+  m_private->m_handle = IcmpCreateFile();
+  m_private->m_event = CreateEventA(NULL, FALSE, FALSE, NULL);
 
-  m_notifier = new QWinEventNotifier(m_event, this);
+  m_notifier = new QWinEventNotifier(m_private->m_event, this);
   QObject::connect(m_notifier, &QWinEventNotifier::activated, this,
                    &WindowsPingSender::pingEventReady);
 
-  memset(m_buffer, 0, sizeof(m_buffer));
+  memset(m_private->m_buffer, 0, sizeof(m_private->m_buffer));
 }
 
 WindowsPingSender::~WindowsPingSender() {
@@ -38,35 +61,37 @@ WindowsPingSender::~WindowsPingSender() {
   if (m_notifier) {
     delete m_notifier;
   }
-  if (m_event != INVALID_HANDLE_VALUE) {
-    CloseHandle(m_event);
-  }
-  if (m_handle != INVALID_HANDLE_VALUE) {
-    // Closing the ICMP handle can hang if there are lost ping replies. Moving
-    // the cleanup into a separate thread avoids deadlocking the application.
-    HANDLE h = CreateThread(NULL, 0, icmpCleanupHelper, m_handle, 0, NULL);
-    if (h == NULL) {
-      IcmpCloseHandle(m_handle);
-    } else {
-      CloseHandle(h);
-    }
+  // Closing the ICMP handle can hang if there are lost ping replies. Moving
+  // the cleanup into a separate thread avoids deadlocking the application.
+  HANDLE h = CreateThread(NULL, 0, icmpCleanupHelper, m_private, 0, NULL);
+  if (h == NULL) {
+    icmpCleanupHelper(m_private);
+  } else {
+    CloseHandle(h);
   }
 }
 
 void WindowsPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
-  if (m_handle == INVALID_HANDLE_VALUE) {
+  if (m_private->m_handle == INVALID_HANDLE_VALUE) {
     return;
   }
-  if (m_event == INVALID_HANDLE_VALUE) {
+  if (m_private->m_event == INVALID_HANDLE_VALUE) {
     return;
   }
 
-  quint32 v4src = m_source.toIPv4Address();
   quint32 v4dst = dest.toIPv4Address();
-  IcmpSendEcho2Ex(m_handle, m_event, nullptr, nullptr,
-                  qToBigEndian<quint32>(v4src), qToBigEndian<quint32>(v4dst),
-                  &sequence, sizeof(sequence), nullptr, m_buffer,
-                  sizeof(m_buffer), 10000);
+  if (m_source.isNull()) {
+    IcmpSendEcho2(m_private->m_handle, m_private->m_event, nullptr, nullptr,
+                  qToBigEndian<quint32>(v4dst), &sequence, sizeof(sequence),
+                  nullptr, m_private->m_buffer, sizeof(m_private->m_buffer),
+                  10000);
+  } else {
+    quint32 v4src = m_source.toIPv4Address();
+    IcmpSendEcho2Ex(m_private->m_handle, m_private->m_event, nullptr, nullptr,
+                    qToBigEndian<quint32>(v4src), qToBigEndian<quint32>(v4dst),
+                    &sequence, sizeof(sequence), nullptr, m_private->m_buffer,
+                    sizeof(m_private->m_buffer), 10000);
+  }
 
   DWORD status = GetLastError();
   if (status != ERROR_IO_PENDING) {
@@ -78,7 +103,8 @@ void WindowsPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
 }
 
 void WindowsPingSender::pingEventReady() {
-  DWORD replyCount = IcmpParseReplies(m_buffer, sizeof(m_buffer));
+  DWORD replyCount =
+      IcmpParseReplies(m_private->m_buffer, sizeof(m_private->m_buffer));
   if (replyCount == 0) {
     DWORD error = GetLastError();
     if (error == IP_REQ_TIMED_OUT) {
@@ -89,7 +115,7 @@ void WindowsPingSender::pingEventReady() {
     return;
   }
 
-  const ICMP_ECHO_REPLY* replies = (const ICMP_ECHO_REPLY*)m_buffer;
+  const ICMP_ECHO_REPLY* replies = (const ICMP_ECHO_REPLY*)m_private->m_buffer;
   for (DWORD i = 0; i < replyCount; i++) {
     if (replies[i].DataSize < sizeof(quint16)) {
       continue;

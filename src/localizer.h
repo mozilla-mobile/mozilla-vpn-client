@@ -20,6 +20,7 @@ class Localizer final : public QAbstractListModel {
   Q_PROPERTY(QString previousCode READ previousCode NOTIFY previousCodeChanged)
   Q_PROPERTY(bool hasLanguages READ hasLanguages CONSTANT)
   Q_PROPERTY(QLocale locale READ locale NOTIFY localeChanged)
+  Q_PROPERTY(bool isRightToLeft READ isRightToLeft NOTIFY codeChanged)
 
   struct Language {
     QString m_code;
@@ -33,6 +34,8 @@ class Localizer final : public QAbstractListModel {
     LocalizedLanguageRole,
     CodeRole,
   };
+
+  static QString systemLanguageCode();
 
   static Localizer* instance();
 
@@ -71,6 +74,8 @@ class Localizer final : public QAbstractListModel {
   static QString majorLanguageCode(const QString& code);
 
   QLocale locale() const { return m_locale; }
+
+  bool isRightToLeft() const;
 
  signals:
   void codeChanged();

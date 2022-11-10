@@ -29,7 +29,14 @@ void TaskScheduler::scheduleTaskNow(Task* task) {
 }
 
 // static
-void TaskScheduler::deleteTasks() { maybeCreate()->deleteTasksInternal(); }
+void TaskScheduler::deleteTasks() {
+  maybeCreate()->deleteTasksInternal(/* forced */ false);
+}
+
+// static
+void TaskScheduler::forceDeleteTasks() {
+  maybeCreate()->deleteTasksInternal(/* forced */ true);
+}
 
 // static
 TaskScheduler* TaskScheduler::maybeCreate() {
@@ -78,20 +85,43 @@ void TaskScheduler::taskCompleted() {
   maybeRunTask();
 }
 
-void TaskScheduler::deleteTasksInternal() {
+void TaskScheduler::deleteTasksInternal(bool forced) {
   QMutableListIterator<Task*> i(m_tasks);
   while (i.hasNext()) {
     Task* task = i.next();
-    if (task->deletable()) {
+
+    if (forced) {
       task->deleteLater();
       i.remove();
+      continue;
+    }
+
+    switch (task->deletePolicy()) {
+      case Task::Deletable:
+        task->deleteLater();
+        i.remove();
+        break;
+
+      case Task::NonDeletable:
+        // Nothing to do.
+        break;
+
+      case Task::Reschedulable:
+        QTimer::singleShot(0, this,
+                           [this, task]() { scheduleTaskInternal(task); });
+        i.remove();
+        break;
     }
   }
 
-  if (m_running_task && m_running_task->deletable()) {
-    m_running_task->cancel();
-    m_running_task->deleteLater();
-    m_running_task->disconnect();
-    m_running_task = nullptr;
+  if (m_running_task) {
+    if (forced || m_running_task->deletePolicy() == Task::Deletable) {
+      m_running_task->cancel();
+      m_running_task->deleteLater();
+      m_running_task->disconnect();
+      m_running_task = nullptr;
+    }
   }
+
+  maybeRunTask();
 }

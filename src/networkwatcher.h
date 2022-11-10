@@ -32,7 +32,7 @@ class NetworkWatcher final : public QObject {
   void networkChange();
 
  private:
-  void settingsChanged(const bool& value);
+  void settingsChanged();
 
   void notificationClicked(NotificationHandler::Message message);
 

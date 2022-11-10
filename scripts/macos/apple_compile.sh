@@ -95,7 +95,7 @@ export PATH="$QT_BIN:$PATH"
 
 if [[ "$OS" == "ios" ]]; then
   printn Y "Retrieve the wireguard-go version... "
-  (cd ios/gobridge && go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > ios/gobridge/wireguard-go-version.h
+  (cd 3rdparty/wireguard-apple/Sources/WireGuardKitGo/ && go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > 3rdparty/wireguard-apple/Sources/WireGuardKitGo/wireguard-go-version.h
   print G "done."
 fi
 
@@ -163,7 +163,7 @@ PROJECT="Mozilla VPN.xcodeproj"
 [[ "$OS" = "ios" ]] && PROJECT="MozillaVPN.xcodeproj"
 
 print Y "Patching the xcode project..."
-ruby scripts/macos/utils/xcode_patcher.rb "$PROJECT" "$SHORTVERSION" "$FULLVERSION" "$OSRUBY" "$ADJUST_SDK_TOKEN" || die "Failed to merge xcode with wireguard"
+ruby scripts/macos/xcode_patcher.rb "$PROJECT" "$SHORTVERSION" "$FULLVERSION" "$OSRUBY" "$ADJUST_SDK_TOKEN" || die "Failed to merge xcode with wireguard"
 print G "done."
 
 

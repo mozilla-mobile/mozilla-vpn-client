@@ -55,9 +55,10 @@ SOURCES += \
         composer/composerblockorderedlist.cpp \
         composer/composerblockunorderedlist.cpp \
         connectionbenchmark/benchmarktask.cpp \
-        connectionbenchmark/benchmarktaskdownload.cpp \
         connectionbenchmark/benchmarktaskping.cpp \
+        connectionbenchmark/benchmarktasktransfer.cpp \
         connectionbenchmark/connectionbenchmark.cpp \
+        connectionbenchmark/uploaddatagenerator.cpp \
         connectionhealth.cpp \
         constants.cpp \
         controller.cpp \
@@ -71,6 +72,7 @@ SOURCES += \
         fontloader.cpp \
         frontend/navigator.cpp \
         frontend/navigatorreloader.cpp \
+        glean/gleannoop.cpp \
         hacl-star/Hacl_Chacha20.c \
         hacl-star/Hacl_Chacha20Poly1305_32.c \
         hacl-star/Hacl_Curve25519_51.c \
@@ -121,6 +123,7 @@ SOURCES += \
         platforms/dummy/dummyiaphandler.cpp \
         platforms/dummy/dummynetworkwatcher.cpp \
         platforms/dummy/dummypingsender.cpp \
+        productshandler.cpp \
         profileflow.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
@@ -130,6 +133,7 @@ SOURCES += \
         rfc/rfc4291.cpp \
         rfc/rfc5735.cpp \
         serveri18n.cpp \
+        serverlatency.cpp \
         settingsholder.cpp \
         signature.cpp \
         simplenetworkmanager.cpp \
@@ -156,8 +160,8 @@ SOURCES += \
         tasks/servers/taskservers.cpp \
         taskscheduler.cpp \
         telemetry.cpp \
+        temporarydir.cpp \
         theme.cpp \
-        timersingleshot.cpp \
         tutorial/tutorial.cpp \
         tutorial/tutorialstep.cpp \
         tutorial/tutorialstepbefore.cpp \
@@ -225,10 +229,11 @@ HEADERS += \
         composer/composerblockorderedlist.h \
         composer/composerblockunorderedlist.h \
         connectionbenchmark/benchmarktask.h \
-        connectionbenchmark/benchmarktaskdownload.h \
         connectionbenchmark/benchmarktaskping.h \
         connectionbenchmark/benchmarktasksentinel.h \
+        connectionbenchmark/benchmarktasktransfer.h \
         connectionbenchmark/connectionbenchmark.h \
+        connectionbenchmark/uploaddatagenerator.h \
         connectionhealth.h \
         constants.h \
         controller.h \
@@ -244,6 +249,7 @@ HEADERS += \
         fontloader.h \
         frontend/navigator.h \
         frontend/navigatorreloader.h \
+        glean/glean.h \
         hawkauth.h \
         keyregenerator.h \
         hkdf.h \
@@ -290,6 +296,7 @@ HEADERS += \
         platforms/dummy/dummyiaphandler.h \
         platforms/dummy/dummynetworkwatcher.h \
         platforms/dummy/dummypingsender.h \
+        productshandler.h \
         profileflow.h \
         qmlengineholder.h \
         releasemonitor.h \
@@ -299,6 +306,7 @@ HEADERS += \
         rfc/rfc4291.h \
         rfc/rfc5735.h \
         serveri18n.h \
+        serverlatency.h \
         settingsholder.h \
         signature.h \
         simplenetworkmanager.h \
@@ -326,12 +334,12 @@ HEADERS += \
         tasks/servers/taskservers.h \
         taskscheduler.h \
         telemetry.h \
+        temporarydir.h \
         theme.h \
         tutorial/tutorial.h \
         tutorial/tutorialstep.h \
         tutorial/tutorialstepbefore.h \
         tutorial/tutorialstepnext.h \
-        timersingleshot.h \
         update/updater.h \
         update/versionapi.h \
         update/webupdater.h \

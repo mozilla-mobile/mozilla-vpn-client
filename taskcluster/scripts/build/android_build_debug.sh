@@ -12,14 +12,14 @@ git submodule update
 # translations
 ./scripts/utils/import_languages.py
 
-# $1 should be the qmake arch. 
-# Note this is different from what aqt expects as arch: 
+# $1 should be the qmake arch.
+# Note this is different from what aqt expects as arch:
 #
 # aqt-name "armv7"       -> qmake-name: "armeabi-v7a"
 # aqt-name "arm64_v8a"   -> qmake-name: "arm64-v8a"
 # aqt-name "x86"         -> qmake-name: "x86"
 # aqt-name "x86_64"      -> qmake-name: "x86_64"
-./scripts/android/package.sh -d $QTPATH -A $1
+./scripts/android/cmake.sh -d $QTPATH -A $1
 
 # Artifacts should be placed here!
 mkdir -p /builds/worker/artifacts/
@@ -30,8 +30,6 @@ mv /builds/worker/artifacts/android-build-x86_64-debug.apk /builds/worker/artifa
 mv /builds/worker/artifacts/android-build-arm64-v8a-debug.apk /builds/worker/artifacts/mozillavpn-arm64-v8a-debug.apk
 mv /builds/worker/artifacts/android-build-armeabi-v7a-debug.apk /builds/worker/artifacts/mozillavpn-armeabi-v7a-debug.apk
 mv /builds/worker/artifacts/android-build-x86-debug.apk /builds/worker/artifacts//mozillavpn-x86-debug.apk
-
-
 
 ls /builds/worker/artifacts/
 

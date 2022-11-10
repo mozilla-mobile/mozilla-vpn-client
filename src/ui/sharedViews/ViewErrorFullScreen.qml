@@ -12,6 +12,8 @@ import org.mozilla.Glean 0.30
 import telemetry 0.30
 
 VPNFlickable {
+    id: vpnFlickable
+
     property var headlineText
     property var errorMessage: ""
     property var errorMessage2: ""
@@ -28,11 +30,8 @@ VPNFlickable {
 
     property var getHelpLinkVisible: false
     property var statusLinkVisible: false
-    id: vpnFlickable
 
-    Component.onCompleted: {
-        flickContentHeight = col.childrenRect.height
-    }
+    flickContentHeight: col.height
 
     VPNHeaderLink {
         id: headerLink
@@ -45,16 +44,11 @@ VPNFlickable {
 
     ColumnLayout {
         id: col
-        width: Math.min(VPNTheme.theme.maxHorizontalContentWidth, vpnFlickable.width)
-        anchors.top: parent.top
-        anchors.topMargin: headerLink.height + vpnFlickable.height * 0.08
-        anchors.bottom: parent.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
-        spacing: 32
-
-        Component.onCompleted: {
-            height = Math.max(window.height, childrenRect.height)
-        }
+        anchors.fill: parent
+        anchors.leftMargin: VPNTheme.theme.windowMargin
+        anchors.rightMargin: VPNTheme.theme.windowMargin
+        anchors.bottomMargin: navbar.visible ? VPNTheme.theme.navBarHeightWithMargins : 34
+        spacing: 0
 
         VPNHeadline {
             id: headline
@@ -63,11 +57,13 @@ VPNFlickable {
             Layout.preferredHeight: paintedHeight
             Layout.preferredWidth: col.width - (VPNTheme.theme.windowMargin * 2)
             Layout.maximumWidth: 500
+            Layout.topMargin: headerLink.height + vpnFlickable.height * (window.fullscreenRequired() ? 0.20 :  0.08)
         }
 
         ColumnLayout {
-            spacing: 24
+            Layout.topMargin: VPNTheme.theme.vSpacing
             Layout.alignment: Qt.AlignHCenter
+            spacing: 0
 
             Rectangle {
                 id: warningIconWrapper
@@ -88,8 +84,11 @@ VPNFlickable {
             }
 
             ColumnLayout {
-                spacing: VPNTheme.theme.windowMargin
+                Layout.topMargin: VPNTheme.theme.vSpacing
                 Layout.alignment: Qt.AlignHCenter
+
+                spacing: 0
+
                 VPNTextBlock {
                     id: copyBlock1
                     Layout.preferredWidth: col.width - (VPNTheme.theme.windowMargin * 3)
@@ -124,12 +123,16 @@ VPNFlickable {
             }
         }
 
+        Item {
+            Layout.fillHeight: window.fullscreenRequired()
+        }
+
         ColumnLayout {
-            spacing: VPNTheme.theme.windowMargin
             Layout.fillWidth: true
             Layout.preferredWidth: parent.width
             Layout.alignment: Qt.AlignHCenter
 
+            spacing: VPNTheme.theme.vSpacingSmall
 
             VPNButton {
                 id: primaryButton
@@ -169,9 +172,8 @@ VPNFlickable {
             }
         }
 
-
-        VPNVerticalSpacer {
-            Layout.preferredHeight: fullscreenRequired() ? VPNTheme.theme.windowMargin : 1
+        Item {
+            Layout.fillHeight: !window.fullscreenRequired()
         }
     }
 }

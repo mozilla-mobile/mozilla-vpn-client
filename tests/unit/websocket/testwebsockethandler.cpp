@@ -33,11 +33,17 @@ void MockServer::close() {
 }
 
 void MockServer::open() {
-  if (m_pWebSocketServer->listen(QHostAddress::Any, 5000)) {
+  if (m_pWebSocketServer->listen(QHostAddress::LocalHost, m_port)) {
     connect(m_pWebSocketServer, &QWebSocketServer::newConnection, this,
             &MockServer::onNewConnection);
+    m_port = m_pWebSocketServer->serverPort();
+  } else {
+    qWarning() << "Failed to open websockets:"
+               << m_pWebSocketServer->errorString();
   }
 }
+
+QString MockServer::url() { return QString("ws://localhost:%1").arg(m_port); }
 
 /**
  * @brief Ackowledges a new client has connected to the server.
@@ -79,12 +85,12 @@ void MockServer::closeEach() {
 
 void TestWebSocketHandler::tst_connectionIsTiedToUserState() {
   SettingsHolder settingsHolder;
-  WebSocketHandler::testOverrideWebSocketServerUrl(MOCK_SERVER_ADDRESS);
 
   MockServer server;
   QSignalSpy newConnectionSpy(&server, SIGNAL(newConnection(QNetworkRequest)));
   QSignalSpy socketDisconnectedSpy(&server, SIGNAL(socketDisconnected()));
 
+  WebSocketHandler::testOverrideWebSocketServerUrl(server.url());
   WebSocketHandler handler;
   handler.initialize();
 
@@ -119,12 +125,12 @@ void TestWebSocketHandler::tst_connectionIsTiedToUserState() {
 
 void TestWebSocketHandler::tst_connectionRequestContainsRequiredHeaders() {
   SettingsHolder settingsHolder;
-  WebSocketHandler::testOverrideWebSocketServerUrl(MOCK_SERVER_ADDRESS);
 
   MockServer server;
   QSignalSpy newConnectionSpy(&server, SIGNAL(newConnection(QNetworkRequest)));
   QSignalSpy socketDisconnectedSpy(&server, SIGNAL(socketDisconnected()));
 
+  WebSocketHandler::testOverrideWebSocketServerUrl(server.url());
   WebSocketHandler handler;
   handler.initialize();
 
@@ -142,11 +148,11 @@ void TestWebSocketHandler::tst_connectionRequestContainsRequiredHeaders() {
 
 void TestWebSocketHandler::tst_reconnectionAttemptsAfterUnexpectedClose() {
   SettingsHolder settingsHolder;
-  WebSocketHandler::testOverrideWebSocketServerUrl(MOCK_SERVER_ADDRESS);
 
   MockServer server;
   QSignalSpy newConnectionSpy(&server, SIGNAL(newConnection(QNetworkRequest)));
 
+  WebSocketHandler::testOverrideWebSocketServerUrl(server.url());
   WebSocketHandler handler;
   handler.testOverrideBaseRetryInterval(100);
   handler.initialize();
@@ -173,11 +179,11 @@ void TestWebSocketHandler::tst_reconnectionAttemptsAfterUnexpectedClose() {
 void TestWebSocketHandler::
     tst_reconnectionBackoffIsResetOnSuccessfullConnection() {
   SettingsHolder settingsHolder;
-  WebSocketHandler::testOverrideWebSocketServerUrl(MOCK_SERVER_ADDRESS);
 
   MockServer server;
   QSignalSpy newConnectionSpy(&server, SIGNAL(newConnection(QNetworkRequest)));
 
+  WebSocketHandler::testOverrideWebSocketServerUrl(server.url());
   WebSocketHandler handler;
   // We don't want too high of a interval here, because intervals are
   // exponentially increasing.
@@ -223,12 +229,12 @@ void TestWebSocketHandler::
 
 void TestWebSocketHandler::tst_reconnectionAttemptsOnPingTimeout() {
   SettingsHolder settingsHolder;
-  WebSocketHandler::testOverrideWebSocketServerUrl(MOCK_SERVER_ADDRESS);
 
   MockServer server;
   QSignalSpy newConnectionSpy(&server, SIGNAL(newConnection(QNetworkRequest)));
   QSignalSpy socketDisconnectedSpy(&server, SIGNAL(socketDisconnected()));
 
+  WebSocketHandler::testOverrideWebSocketServerUrl(server.url());
   WebSocketHandler handler;
   handler.testOverrideBaseRetryInterval(100);
   // By setting an extremely low ping interval,

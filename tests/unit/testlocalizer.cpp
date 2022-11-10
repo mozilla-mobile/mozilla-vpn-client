@@ -24,19 +24,22 @@ void TestLocalizer::basic() {
 
 void TestLocalizer::systemLanguage() {
   SettingsHolder settings;
+  settings.hardReset();
+
   Localizer l;
 
   l.setCode("");
   QCOMPARE(l.code(), "");
-  QCOMPARE(l.previousCode(), "en");
 
   l.setCode("en");
   QCOMPARE(l.code(), "en");
-  QCOMPARE(l.previousCode(), "en");
+  QVERIFY(!l.previousCode().isEmpty());
 
   l.setCode("");
   QCOMPARE(l.code(), "");
   QCOMPARE(l.previousCode(), "en");
+
+  QVERIFY(!Localizer::systemLanguageCode().isEmpty());
 }
 
 void TestLocalizer::localizeCurrency() {

@@ -10,50 +10,71 @@ import Mozilla.VPN 1.0
 import components 0.1
 
 TextField {
-    // TODO Add strings for Accessible.description, Accessible.name
     property bool hasError: false
     property bool showInteractionStates: true
     property bool forceBlurOnOutsidePress: true
     property alias _placeholderText: centeredPlaceholderText.text
+    property string _accessibleName: _placeholderText
+    property string _accessibleDescription: ""
 
     id: textField
+
+    Accessible.name: _accessibleName
+    Accessible.description: _accessibleDescription
+    Accessible.focused: textField.focus
+    Layout.alignment: Qt.AlignVCenter
+    Layout.preferredHeight: VPNTheme.theme.rowHeight
 
     background: VPNInputBackground {
         id: textFieldBackground
     }
-
-    font.pixelSize: VPNTheme.theme.fontSizeSmall
-    font.family: VPNTheme.theme.fontInterFamily
-    color: VPNTheme.colors.input.default.text
-    echoMode: TextInput.Normal
-    inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
-    onActiveFocusChanged: if (focus && typeof(vpnFlickable) !== "undefined" && vpnFlickable.ensureVisible) vpnFlickable.ensureVisible(textField)
-    selectByMouse: true
-    Layout.preferredHeight: VPNTheme.theme.rowHeight
-    Layout.alignment: Qt.AlignVCenter
-    verticalAlignment: TextInput.AlignVCenter
-    placeholderTextColor: VPNTheme.colors.grey40
-    leftPadding: VPNTheme.theme.windowMargin
-    rightPadding: VPNTheme.theme.windowMargin
-    topPadding: VPNTheme.theme.windowMargin / 2
     bottomPadding: VPNTheme.theme.windowMargin / 2
-    focus: true
+    color: VPNTheme.colors.input.default.text
     cursorDelegate: VPNCursorDelegate {}
+    echoMode: TextInput.Normal
+    focus: true
+    font.family: VPNTheme.theme.fontInterFamily
+    font.pixelSize: VPNTheme.theme.fontSizeSmall
+    inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
+    leftPadding: VPNTheme.theme.windowMargin
+    placeholderTextColor: VPNTheme.colors.grey40
+    rightPadding: VPNTheme.theme.windowMargin
+    selectByMouse: true
+    topPadding: VPNTheme.theme.windowMargin / 2
+    verticalAlignment: TextInput.AlignVCenter
+
+    onActiveFocusChanged: if (focus && typeof(vpnFlickable) !== "undefined" && vpnFlickable.ensureVisible) {
+        vpnFlickable.ensureVisible(textField);
+    }
+    // This is a workaround for VoiceOver on macOS: https://bugreports.qt.io/browse/QTBUG-108189
+    // After gaining initial focus or typing in TextField the screen reader
+    // fails to narrate any accessible content and action. After regaining
+    // active focus the screen reader keeps working as expected.
+    onTextChanged: {
+        if (Qt.platform.os === "osx") {
+            textField.focus = false;
+            textField.forceActiveFocus();
+        }
+    }
 
     Text {
         id: centeredPlaceholderText
-        verticalAlignment: Text.AlignVCenter
-        width: textField.width - (textField.leftPadding + textField.rightPadding)
-        height: VPNTheme.theme.rowHeight
-        elide: Text.ElideRight
-        x: textField.leftPadding
-        visible: !textField.length && !textField.preeditText
-        font: textField.font
+
+        Accessible.ignored: true
+
         color: textField.placeholderTextColor
+        elide: Text.ElideRight
+        font: textField.font
+        height: VPNTheme.theme.rowHeight
+        verticalAlignment: Text.AlignVCenter
+        visible: !textField.length && !textField.preeditText
+        width: textField.width - (textField.leftPadding + textField.rightPadding)
+        x: textField.leftPadding
     }
 
     VPNInputStates {
         id: textFieldState
+
         itemToTarget: textField
     }
 

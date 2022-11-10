@@ -1,2 +1,8 @@
 # Francesco Lodolo as main contact for string changes
+addons/**/manifest.json @flodolo
 translations/strings.yaml @flodolo
+
+# Beatriz Rizental as main contact for addon related changes
+/addons/ @brizental
+/src/addons/ @brizental
+/signature/ @brizental

@@ -85,7 +85,6 @@ const QString StatusIcon::iconString() {
   logger.debug() << "Icon string" << m_animatedIconIndex;
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   // If we are in a non-main state, we don't need to show special icons.
   if (vpn->state() != MozillaVPN::StateMain) {
@@ -124,7 +123,6 @@ const QColor StatusIcon::indicatorColor() const {
   logger.debug() << "Set color";
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   if (vpn->state() != MozillaVPN::StateMain ||
       vpn->controller()->state() != Controller::StateOn) {
@@ -160,7 +158,6 @@ QIcon StatusIcon::drawStatusIndicator() {
   QPixmap iconPixmap = QPixmap(iconString());
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   // Only draw a status indicator if the VPN is connected
   if (vpn->controller()->state() == Controller::StateOn) {

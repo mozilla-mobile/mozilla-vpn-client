@@ -10,6 +10,9 @@ get_filename_component(MVPN_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src ABSOLUTE)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${MVPN_SOURCE_DIR})
+include_directories(${MVPN_SOURCE_DIR}/hacl-star)
+include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin)
+include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin/minimal)
 
 qt_add_executable(qml_tests EXCLUDE_FROM_ALL)
 set_target_properties(qml_tests PROPERTIES FOLDER "Tests")
@@ -30,6 +33,10 @@ target_link_libraries(qml_tests PRIVATE glean lottie nebula translations)
 target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/constants.h
     ${MVPN_SOURCE_DIR}/controller.h
+    ${MVPN_SOURCE_DIR}/cryptosettings.cpp
+    ${MVPN_SOURCE_DIR}/cryptosettings.h
+    ${MVPN_SOURCE_DIR}/dnspingsender.cpp
+    ${MVPN_SOURCE_DIR}/dnspingsender.h
     ${MVPN_SOURCE_DIR}/env.h
     ${MVPN_SOURCE_DIR}/externalophandler.cpp
     ${MVPN_SOURCE_DIR}/externalophandler.h
@@ -37,6 +44,10 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/filterproxymodel.h
     ${MVPN_SOURCE_DIR}/hawkauth.cpp
     ${MVPN_SOURCE_DIR}/hawkauth.h
+    ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Chacha20.c
+    ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Chacha20Poly1305_32.c
+    ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Curve25519_51.c
+    ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Poly1305_32.c
     ${MVPN_SOURCE_DIR}/hkdf.cpp
     ${MVPN_SOURCE_DIR}/hkdf.h
     ${MVPN_SOURCE_DIR}/ipaddress.cpp
@@ -64,12 +75,11 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/pinghelper.h
     ${MVPN_SOURCE_DIR}/pingsender.cpp
     ${MVPN_SOURCE_DIR}/pingsender.h
-    ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
-    ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.h
-    ${MVPN_SOURCE_DIR}/dnspingsender.cpp
-    ${MVPN_SOURCE_DIR}/dnspingsender.h
     ${MVPN_SOURCE_DIR}/pingsenderfactory.cpp
     ${MVPN_SOURCE_DIR}/pingsenderfactory.h
+    ${MVPN_SOURCE_DIR}/platforms/dummy/dummycryptosettings.cpp
+    ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
+    ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.h
     ${MVPN_SOURCE_DIR}/update/updater.cpp
     ${MVPN_SOURCE_DIR}/update/updater.h
     ${MVPN_SOURCE_DIR}/update/versionapi.cpp
@@ -110,7 +120,10 @@ endif()
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     list(APPEND QML_TEST_ARGS -platform offscreen)
 endif()
-add_test(NAME qml_tests COMMAND qml_tests ${QML_TEST_ARGS})
+file(GLOB QML_TEST_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "tst_*.qml")
+foreach(QML_SOURCE ${QML_TEST_SOURCES})
+    add_test(NAME ${QML_SOURCE} COMMAND qml_tests ${QML_TEST_ARGS} -input ${CMAKE_CURRENT_SOURCE_DIR}/${QML_SOURCE})
+endforeach()
 
 qt6_add_qml_module(qml_tests
   URI Mozilla.VPN.qmlcomponents

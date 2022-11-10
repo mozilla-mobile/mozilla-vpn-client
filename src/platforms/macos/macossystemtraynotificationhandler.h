@@ -26,6 +26,12 @@ class MacosSystemTrayNotificationHandler
 
   virtual void updateIcon() override;
 
+  virtual void notify(Message type, const QString& title,
+                      const QString& message, int timerMsec) override;
+
+ private:
+  void initialize() override;
+
  private:
   MacOSStatusIcon* m_macOSStatusIcon = nullptr;
 };

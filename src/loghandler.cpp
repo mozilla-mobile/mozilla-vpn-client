@@ -130,7 +130,7 @@ void LogHandler::prettyOutput(QTextStream& out, const LogHandler::Log& log) {
       out << " (";
 
       if (!log.m_file.isEmpty()) {
-        int pos = log.m_file.lastIndexOf("/");
+        qsizetype pos = log.m_file.lastIndexOf("/");
         out << log.m_file.right(log.m_file.length() - pos - 1);
 
         if (log.m_line >= 0) {

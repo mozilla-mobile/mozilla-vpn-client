@@ -46,9 +46,18 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/authenticationlistener.h
     ${MVPN_SOURCE_DIR}/constants.cpp
     ${MVPN_SOURCE_DIR}/constants.h
+    ${MVPN_SOURCE_DIR}/controller.h
+    ${MVPN_SOURCE_DIR}/cryptosettings.cpp
+    ${MVPN_SOURCE_DIR}/cryptosettings.h
+    ${MVPN_SOURCE_DIR}/dnspingsender.cpp
+    ${MVPN_SOURCE_DIR}/dnspingsender.h
     ${MVPN_SOURCE_DIR}/env.h
     ${MVPN_SOURCE_DIR}/errorhandler.cpp
     ${MVPN_SOURCE_DIR}/errorhandler.h
+    ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Chacha20.c
+    ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Chacha20Poly1305_32.c
+    ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Curve25519_51.c
+    ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Poly1305_32.c
     ${MVPN_SOURCE_DIR}/hawkauth.cpp
     ${MVPN_SOURCE_DIR}/hawkauth.h
     ${MVPN_SOURCE_DIR}/hkdf.cpp
@@ -73,6 +82,15 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/networkmanager.h
     ${MVPN_SOURCE_DIR}/networkrequest.cpp
     ${MVPN_SOURCE_DIR}/networkrequest.h
+    ${MVPN_SOURCE_DIR}/pinghelper.cpp
+    ${MVPN_SOURCE_DIR}/pinghelper.h
+    ${MVPN_SOURCE_DIR}/pingsender.cpp
+    ${MVPN_SOURCE_DIR}/pingsender.h
+    ${MVPN_SOURCE_DIR}/pingsenderfactory.cpp
+    ${MVPN_SOURCE_DIR}/pingsenderfactory.h
+    ${MVPN_SOURCE_DIR}/platforms/dummy/dummycryptosettings.cpp
+    ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
+    ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.h
     ${MVPN_SOURCE_DIR}/rfc/rfc1918.cpp
     ${MVPN_SOURCE_DIR}/rfc/rfc1918.h
     ${MVPN_SOURCE_DIR}/rfc/rfc4193.cpp
@@ -126,6 +144,7 @@ target_sources(auth_tests PRIVATE
     testsignupandin.cpp
     testsignupandin.h
     mocmozillavpn.cpp
+    ../qml/moccontroller.cpp
     ../unit/mocinspectorhandler.cpp
 )
 

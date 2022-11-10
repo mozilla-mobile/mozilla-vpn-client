@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 const assert = require('assert');
+const { homeScreen, generalElements } = require('./elements.js');
 const vpn = require('./helper.js');
 
 describe('Server list', function() {
@@ -13,9 +14,9 @@ describe('Server list', function() {
   this.ctx.authenticationNeeded = true;
 
   beforeEach(async () => {
-    await vpn.waitForElement('serverListButton');
-    await vpn.waitForElementProperty('serverListButton', 'visible', 'true');
-    await vpn.clickOnElement('serverListButton');
+    await vpn.waitForElement(homeScreen.SERVER_LIST_BUTTON);
+    await vpn.waitForElementProperty(homeScreen.SERVER_LIST_BUTTON, 'visible', 'true');
+    await vpn.clickOnElement(homeScreen.SERVER_LIST_BUTTON);
     await vpn.wait();
 
     servers = await vpn.servers();
@@ -38,18 +39,18 @@ describe('Server list', function() {
   });
 
   it('opening the server list', async () => {
-    await vpn.waitForElement('serverListBackButton');
-    await vpn.waitForElementProperty('serverListBackButton', 'visible', 'true');
-    await vpn.clickOnElement('serverListBackButton');
+    await vpn.waitForElement(homeScreen.selectSingleHopServerView.BACK_BUTTON);
+    await vpn.waitForElementProperty(homeScreen.selectSingleHopServerView.BACK_BUTTON, 'visible', 'true');
+    await vpn.clickOnElement(homeScreen.selectSingleHopServerView.BACK_BUTTON);
     await vpn.wait();
 
-    await vpn.waitForElement('serverListButton');
-    await vpn.waitForElementProperty('serverListButton', 'visible', 'true');
+    await vpn.waitForElement(homeScreen.SERVER_LIST_BUTTON);
+    await vpn.waitForElementProperty(homeScreen.SERVER_LIST_BUTTON, 'visible', 'true');
   });
 
   it('check the countries and cities', async () => {
     for (let server of servers) {
-      const countryId = 'serverCountryList/serverCountry-' + server.code;
+      const countryId = homeScreen.serverListView.generateCountryId(server.code);
       await vpn.waitForElement(countryId);
       await vpn.waitForElementProperty(countryId, 'visible', 'true');
 
@@ -70,8 +71,7 @@ describe('Server list', function() {
       }
 
       for (let city of server.cities) {
-        const cityId = countryId + '/serverCityList/serverCity-' +
-            city.name.replace(/ /g, '_');
+        const cityId = homeScreen.serverListView.generateCityId(countryId, city.name);
         console.log('  Waiting for cityId:', cityId);
         await vpn.waitForElement(cityId);
         await vpn.waitForElementProperty(cityId, 'visible', 'true');
@@ -127,12 +127,12 @@ describe('Server list', function() {
 
         // Back to the main view.
 
-        await vpn.waitForElement('serverListButton');
-        await vpn.waitForElementProperty('serverListButton', 'visible', 'true');
+        await vpn.waitForElement(homeScreen.SERVER_LIST_BUTTON);
+        await vpn.waitForElementProperty(homeScreen.SERVER_LIST_BUTTON, 'visible', 'true');
         await vpn.waitForElementProperty(
-            'serverListButton', 'subtitleText', cityName);
+            homeScreen.SERVER_LIST_BUTTON, 'subtitleText', cityName);
 
-        await vpn.clickOnElement('serverListButton');
+        await vpn.clickOnElement(homeScreen.SERVER_LIST_BUTTON);
         await vpn.wait();
 
         // One selected
@@ -145,19 +145,19 @@ describe('Server list', function() {
   it('Server switching', async () => {
     await vpn.setSetting('server-switch-notification', 'true');
     await vpn.setSetting('connection-change-notification', 'true');
-    await vpn.waitForElement('serverListBackButton');
-    await vpn.waitForElementProperty('serverListBackButton', 'visible', 'true');
-    await vpn.clickOnElement('serverListBackButton');
+    await vpn.waitForElement(homeScreen.selectSingleHopServerView.BACK_BUTTON);
+    await vpn.waitForElementProperty(homeScreen.selectSingleHopServerView.BACK_BUTTON, 'visible', 'true');
+    await vpn.clickOnElement(homeScreen.selectSingleHopServerView.BACK_BUTTON);
     await vpn.wait();
 
-    await vpn.waitForElement('serverListButton');
-    await vpn.waitForElementProperty('serverListButton', 'visible', 'true');
+    await vpn.waitForElement(homeScreen.SERVER_LIST_BUTTON);
+    await vpn.waitForElementProperty(homeScreen.SERVER_LIST_BUTTON, 'visible', 'true');
     await vpn.wait();
 
     await vpn.activate();
 
     await vpn.waitForCondition(async () => {
-      return await vpn.getElementProperty('controllerTitle', 'text') ==
+      return await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text') ==
           'VPN is on';
     });
 
@@ -176,7 +176,7 @@ describe('Server list', function() {
         vpn.lastNotification().message,
         `Connected to ${currentCountry}, ${currentCity}`);
 
-    await vpn.clickOnElement('serverListButton');
+    await vpn.clickOnElement(homeScreen.SERVER_LIST_BUTTON);
     await vpn.wait();
 
     let server;
@@ -185,7 +185,7 @@ describe('Server list', function() {
       if (server.code != currentCountryCode) break;
     }
 
-    const countryId = 'serverCountryList/serverCountry-' + server.code;
+    const countryId = homeScreen.serverListView.generateCountryId(server.code);
     await vpn.waitForElement(countryId);
 
     await vpn.setElementProperty(
@@ -195,8 +195,7 @@ describe('Server list', function() {
     await vpn.clickOnElement(countryId);
 
     let city = server.cities[Math.floor(Math.random() * server.cities.length)];
-    const cityId = countryId + '/serverCityList/serverCity-' +
-        city.name.replace(/ /g, '_');
+    const cityId = homeScreen.serverListView.generateCityId(countryId, city.name);
     await vpn.waitForElement(cityId);
 
     await vpn.setElementProperty(
@@ -204,7 +203,6 @@ describe('Server list', function() {
         parseInt(await vpn.getElementProperty(cityId, 'y')) +
             parseInt(await vpn.getElementProperty(countryId, 'y')));
     await vpn.wait();
-
     await vpn.clickOnElement(cityId);
 
     const previousCountry = currentCountry;
@@ -214,12 +212,12 @@ describe('Server list', function() {
     currentCountry = server.localizedName;
     currentCity = city.localizedName;
 
-    await vpn.waitForElement('controllerTitle');
-    await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
+    await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
+    await vpn.waitForElementProperty(generalElements.CONTROLLER_TITLE, 'visible', 'true');
 
     await vpn.waitForCondition(async () => {
       let connectingMsg =
-          await vpn.getElementProperty('controllerTitle', 'text');
+          await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text');
       return connectingMsg === 'Switching…' || connectingMsg === 'VPN is on';
     });
 
@@ -227,7 +225,7 @@ describe('Server list', function() {
     // visible. Let's keep this test.
 
     await vpn.waitForCondition(async () => {
-      return await vpn.getElementProperty('controllerTitle', 'text') ==
+      return await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text') ==
           'VPN is on';
     });
 
@@ -239,6 +237,5 @@ describe('Server list', function() {
   });
 
   // TODO: server list disabled when reached the device limit
-  // TODO: multi-hop?
 
 });

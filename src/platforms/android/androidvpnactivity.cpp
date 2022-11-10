@@ -8,11 +8,14 @@
 #include "frontend/navigator.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "settingsholder.h"
 
 #include "jni.h"
 #include <QApplication>
 #include <QJniObject>
 #include <QJniEnvironment>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 namespace {
 AndroidVPNActivity* s_instance = nullptr;
@@ -41,6 +44,10 @@ AndroidVPNActivity::AndroidVPNActivity() {
 
     logger.debug() << "Registered native methods";
   });
+
+  QObject::connect(SettingsHolder::instance(),
+                   &SettingsHolder::startAtBootChanged, this,
+                   &AndroidVPNActivity::startAtBootChanged);
 }
 
 void AndroidVPNActivity::maybeInit() {
@@ -141,4 +148,10 @@ void AndroidVPNActivity::onServiceDisconnected(JNIEnv* env, jobject thiz) {
   Q_UNUSED(thiz);
   logger.debug() << "service disconnected";
   emit AndroidVPNActivity::instance()->serviceDisconnected();
+}
+void AndroidVPNActivity::startAtBootChanged() {
+  QJsonObject args;
+  args["startOnBoot"] = SettingsHolder::instance()->startAtBoot();
+  QJsonDocument doc(args);
+  sendToService(ServiceAction::ACTION_SET_START_ON_BOOT, doc.toJson());
 }

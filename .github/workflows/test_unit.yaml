@@ -22,7 +22,7 @@ jobs:
     name: Run Unit tests on Linux
     steps:
       - name: Clone repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install dependences
         run: |
@@ -41,7 +41,7 @@ jobs:
 
       - name: Cache grcov
         id: cache-grcov
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: grcov-build/
           key: ${{runner.os}}-grcov-v0.8.9
@@ -81,7 +81,7 @@ jobs:
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           directory: .
           flags: unit_tests
@@ -95,7 +95,7 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Checkout submodules
         shell: bash
@@ -103,6 +103,11 @@ jobs:
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: Install python dependencies
+        shell: bash
+        run: |
+          pip3 install -r requirements.txt
 
       - name: Install Qt6
         shell: bash
@@ -115,21 +120,9 @@ jobs:
           sudo mv qt6 /opt
           cd ..
 
-      - name: Generating glean samples
-        shell: bash
-        run: |
-          pip3 install -r requirements.txt
-          python3 scripts/utils/generate_glean.py
-
-      - name: Importing translation files
-        shell: bash
-        run: |
-          export PATH=/opt/qt6/bin:$PATH
-          python3 scripts/utils/import_languages.py -m
-
       - name: Cache grcov
         id: cache-grcov
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: grcov-build/
           key: ${{runner.os}}-grcov-v0.8.9
@@ -140,14 +133,36 @@ jobs:
         run: |
           cargo install grcov --root ${{github.workspace}}/grcov-build --version 0.8.9
 
-      - name: Running tests
+      - name: Building tests
         shell: bash
         run: |
           export PATH=/opt/qt6/bin:${{github.workspace}}/grcov-build/bin:$PATH
-          ./scripts/tests/unit_tests.sh --grcov unit_lcov.info
+          mkdir -p build
+          cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON \
+            -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
+          cmake --build $(pwd)/build --target build_tests
+
+      - name: Running tests
+        shell: bash
+        working-directory: ./build
+        run: |
+          export PATH=/opt/qt6/bin:${{github.workspace}}/grcov-build/bin:$PATH
+          ctest --output-on-failure
+
+          grcov $(pwd)/tests/auth/CMakeFiles/auth_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/auth_lcov.info
+
+          grcov $(pwd)/tests/nativemessaging/CMakeFiles/nativemessaging_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/nativemessaging_lcov.info
+
+          grcov $(pwd)/tests/qml/CMakeFiles/qml_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/qml_lcov.info
+
+          grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           directory: .
           flags: unit_tests
@@ -161,7 +176,7 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Checkout submodules
         shell: bash

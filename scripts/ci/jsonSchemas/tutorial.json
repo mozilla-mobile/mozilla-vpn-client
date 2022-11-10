@@ -40,6 +40,10 @@
       "type": "string",
       "description": "The image of the tutorial"
     },
+    "settings_rollback_needed": {
+      "type": "boolean",
+      "description": "Do we need to revert all the settings changes at the end of the tutorial?"
+    },
     "steps": {
       "type": "array",
       "description": "The list of text steps",

@@ -38,12 +38,12 @@ workers:
             provisioner: 'mozillavpn-{level}'
             implementation: docker-worker
             os: linux
-            worker-type: b-linux
+            worker-type: b-linux-gcp
         b-linux-large:
             provisioner: 'mozillavpn-{level}'
             implementation: docker-worker
             os: linux
-            worker-type: b-linux-large
+            worker-type: b-linux-large-gcp
         b-win2012:
             provisioner: 'mozillavpn-{level}'
             implementation: generic-worker
@@ -61,7 +61,7 @@ workers:
             provisioner: 'mozillavpn-{level}'
             implementation: docker-worker
             os: linux
-            worker-type: 'images'
+            worker-type: 'images-gcp'
         dep-signing:
             provisioner: scriptworker-k8s
             implementation: scriptworker-signing

@@ -12,13 +12,14 @@ Requires:  qt6-qtbase >= 6.0
 Requires:  qt6-qtnetworkauth >= 6.0
 Requires:  qt6-qtquickcontrols2 >= 6.0
 Requires:  qt6-qtsvg >= 6.0
-REquires:  qt6-qt5compat >= 6.0
+Requires:  qt6-qt5compat >= 6.0
 Requires:  wireguard-tools
 
 BuildRequires: golang >= 1.13
 BuildRequires: polkit-devel
 BuildRequires: python3-yaml
 BuildRequires: cargo
+BuildRequires: openssl-devel
 BuildRequires: qt6-qtbase-devel >= 6.0
 BuildRequires: qt6-qtnetworkauth-devel >= 6.0
 BuildRequires: qt6-qtdeclarative-devel >= 6.0
@@ -38,7 +39,7 @@ Read more on https://vpn.mozilla.org
 
 %build
 %define _vpath_srcdir %{_srcdir}
-%cmake -DWEBEXT_INSTALL_LIBDIR=/usr/lib -DCMAKE_INSTALL_SYSCONFDIR=/etc
+%cmake -DWEBEXT_INSTALL_LIBDIR=/usr/lib -DCMAKE_INSTALL_SYSCONFDIR=/etc -DBUILD_TESTING=OFF
 %cmake_build
 
 %install

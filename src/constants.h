@@ -39,12 +39,15 @@ constexpr int RECENT_CONNECTIONS_MAX_COUNT = 5;
 constexpr uint32_t SERVER_UNRESPONSIVE_COOLDOWN_SEC = 300;
 
 // Number of msecs for max runtime of the connection benchmarks.
+constexpr uint32_t BENCHMARK_MAX_BITS_UPLOAD = 80000000;  // 10 Megabyte
 constexpr uint32_t BENCHMARK_MAX_DURATION_PING = 3000;
-constexpr uint32_t BENCHMARK_MAX_DURATION_DOWNLOAD = 15000;
+constexpr uint32_t BENCHMARK_MAX_DURATION_TRANSFER = 15000;
 constexpr uint32_t BENCHMARK_THRESHOLD_SPEED_FAST = 25000000;    // 25 Megabit
 constexpr uint32_t BENCHMARK_THRESHOLD_SPEED_MEDIUM = 10000000;  // 10 Megabit
 constexpr const char* BENCHMARK_DOWNLOAD_URL =
     "https://archive.mozilla.org/pub/vpn/speedtest/50m.data";
+// TODO: Add url for upload benchmark
+constexpr const char* BENCHMARK_UPLOAD_URL = "";
 
 #if defined(UNIT_TEST)
 #  define CONSTEXPR(type, functionName, releaseValue, debugValue, \
@@ -63,7 +66,7 @@ CONSTEXPR(uint32_t, releaseMonitorMsec, 21600000, 4000, 0)
 
 // in milliseconds, how often we should fetch the server list, the account and
 // so on.
-CONSTEXPR(uint32_t, schedulePeriodicTaskTimerMsec, 3600000, 4000, 0)
+CONSTEXPR(uint32_t, schedulePeriodicTaskTimerMsec, 3600000, 30000, 0)
 
 // how often we check the captive portal when the VPN is on.
 CONSTEXPR(uint32_t, captivePortalRequestTimeoutMsec, 10000, 4000, 0)
@@ -117,12 +120,10 @@ PRODBETAEXPR(const char*, fxaUrl, "https://accounts.firefox.com",
 PRODBETAEXPR(
     const char*, balrogUrl,
     "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release/update.json",
-    "https://stage.balrog.nonprod.cloudops.mozgcp.net/json/1/FirefoxVPN/%1/%2/"
-    "release-cdntest/update.json");
-PRODBETAEXPR(
-    const char*, balrogRootCertFingerprint,
-    "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e",
-    "3c01446abe9036cea9a09acaa3a520ac628f20a7ae32ce861cb2efb70fa0c745");
+    "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release-cdntest/"
+    "update.json");
+constexpr const char* AUTOGRAPH_ROOT_CERT_FINGERPRINT =
+    "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e";
 
 PRODBETAEXPR(const char*, relayUrl, "https://relay.firefox.com",
              "https://stage.fxprivaterelay.nonprod.cloudops.mozgcp.net");

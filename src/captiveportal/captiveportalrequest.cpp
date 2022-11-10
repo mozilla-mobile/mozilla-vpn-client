@@ -10,7 +10,6 @@
 #include "networkrequest.h"
 #include "settingsholder.h"
 #include "task.h"
-#include "timersingleshot.h"
 
 namespace {
 Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalRequest");

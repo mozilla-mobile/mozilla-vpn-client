@@ -802,10 +802,11 @@ void TestModels::serverCityFromJson() {
   QFETCH(bool, result);
 
   ServerCity sc;
-  QCOMPARE(sc.fromJson(json), result);
+  QCOMPARE(sc.fromJson(json, "test"), result);
   if (!result) {
     QCOMPARE(sc.name(), "");
     QCOMPARE(sc.code(), "");
+    QCOMPARE(sc.country(), "");
     QVERIFY(sc.servers().isEmpty());
     return;
   }
@@ -1009,8 +1010,8 @@ void TestModels::serverCountryModelFromJson_data() {
   QTest::addRow("good with one city")
       << QJsonDocument(obj).toJson() << true << 1
       << QVariant("serverCountryName") << QVariant("serverCountryCode")
-      << QVariant(QList<QVariant>{
-             QStringList{"serverCityName", "serverCityName", "1"}});
+      << QVariant(
+             QList<QVariant>{QStringList{"serverCityName", "serverCityName"}});
 
   cities.append(city);
   d.insert("cities", cities);
@@ -1019,8 +1020,8 @@ void TestModels::serverCountryModelFromJson_data() {
   QTest::addRow("good with two cities")
       << QJsonDocument(obj).toJson() << true << 2
       << QVariant("serverCountryName") << QVariant("serverCountryCode")
-      << QVariant(QList<QVariant>{
-             QStringList{"serverCityName", "serverCityName", "1"}});
+      << QVariant(
+             QList<QVariant>{QStringList{"serverCityName", "serverCityName"}});
 }
 
 void TestModels::serverCountryModelFromJson() {
@@ -1062,8 +1063,12 @@ void TestModels::serverCountryModelFromJson() {
         QVariant cityData = m.data(index, ServerCountryModel::CitiesRole);
         QCOMPARE(cityData.typeId(), QVariant::List);
         QCOMPARE(cities.toList().length(), cityData.toList().length());
-        if (!cities.toList().isEmpty()) {
-          QCOMPARE(m.data(index, ServerCountryModel::CitiesRole), cities);
+        for (int i = 0; i < cities.toList().length(); i++) {
+          QVERIFY(cityData.toList().at(0).canConvert<ServerCity*>());
+          ServerCity* cityObj = cityData.toList().at(i).value<ServerCity*>();
+          QStringList cityList = cities.toList().at(i).toStringList();
+          QCOMPARE(cityObj->name(), cityList.at(0));
+          QCOMPARE(cityObj->localizedName(), cityList.at(1));
         }
 
         QCOMPARE(m.countryName(code.toString()), name.toString());
@@ -1107,7 +1112,16 @@ void TestModels::serverCountryModelFromJson() {
         QCOMPARE(m.data(index, ServerCountryModel::CodeRole), code);
 
         QFETCH(QVariant, cities);
-        QCOMPARE(m.data(index, ServerCountryModel::CitiesRole), cities);
+        QVariant cityData = m.data(index, ServerCountryModel::CitiesRole);
+        QCOMPARE(cityData.typeId(), QVariant::List);
+        QCOMPARE(cities.toList().length(), cityData.toList().length());
+        for (int i = 0; i < cities.toList().length(); i++) {
+          QVERIFY(cityData.toList().at(0).canConvert<ServerCity*>());
+          ServerCity* cityObj = cityData.toList().at(i).value<ServerCity*>();
+          QStringList cityList = cities.toList().at(i).toStringList();
+          QCOMPARE(cityObj->name(), cityList.at(0));
+          QCOMPARE(cityObj->localizedName(), cityList.at(1));
+        }
 
         QCOMPARE(m.data(index, ServerCountryModel::CitiesRole + 1), QVariant());
 
@@ -1229,7 +1243,7 @@ void TestModels::serverDataBasic() {
     cityObj.insert("servers", QJsonArray());
 
     ServerCity city;
-    QVERIFY(city.fromJson(cityObj));
+    QVERIFY(city.fromJson(cityObj, "serverCountryCode"));
 
     sd.update(country.code(), city.name());
     QCOMPARE(spy.count(), 1);

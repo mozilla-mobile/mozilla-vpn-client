@@ -5,7 +5,7 @@
 #include "commandlineparser.h"
 #include "leakdetector.h"
 
-int main(int argc, char* argv[]) {
+Q_DECL_EXPORT int main(int argc, char* argv[]) {
 #ifdef MVPN_DEBUG
   LeakDetector leakDetector;
   Q_UNUSED(leakDetector);

@@ -36,6 +36,7 @@ SETTING_BOOL(addonCustomServer,     // getter
              hasAddonCustomServer,  // has
              "addon/customServer",  // key
              false,                 // default value
+             false,                 // user setting
              false                  // remove when reset
 )
 
@@ -46,6 +47,7 @@ SETTING_STRING(
     "addon/customServerAddress",  // key
     Constants::envOrDefault("MVPN_ADDON_URL",
                             Constants::ADDON_STAGING_URL),  // default value
+    false,                                                  // user setting
     false                                                   // remove when reset
 )
 
@@ -54,6 +56,7 @@ SETTING_BOOL(addonProdKeyInStaging,     // getter
              hasAddonProdKeyInStaging,  // has
              "addon/prodKeyInStaging",  // key
              false,                     // default value
+             false,                     // user setting
              false                      // remove when reset
 )
 
@@ -63,6 +66,7 @@ SETTING_BOOL(captivePortalAlert,     // getter
              "captivePortalAlert",   // key
              Feature::get(Feature::Feature_captivePortal)
                  ->isSupported(),  // default value
+             true,                 // user setting
              false                 // remove when reset
 )
 
@@ -71,6 +75,7 @@ SETTING_STRINGLIST(captivePortalIpv4Addresses,     // getter
                    hasCaptivePortalIpv4Addresses,  // has
                    "captivePortal/ipv4Addresses",  // key
                    QStringList(),                  // default value
+                   false,                          // user setting
                    false                           // remove when reset
 )
 
@@ -79,6 +84,7 @@ SETTING_STRINGLIST(captivePortalIpv6Addresses,     // getter
                    hasCaptivePortalIpv6Addresses,  // has
                    "captivePortal/ipv6Addresses",  // key
                    QStringList(),                  // default value
+                   false,                          // user setting
                    false                           // remove when reset
 )
 
@@ -87,6 +93,7 @@ SETTING_BOOL(connectionChangeNotification,     // getter
              hasConnectionChangeNotification,  // has
              "connectionChangeNotification",   // key
              true,                             // default value
+             true,                             // user setting
              false                             // remove when reset
 )
 
@@ -95,6 +102,7 @@ SETTING_STRING(currentServerCity,     // getter
                hasCurrentServerCity,  // has
                "currentServer/city",  // key
                "",                    // default value
+               true,                  // user setting
                true                   // remove when reset
 )
 
@@ -103,6 +111,7 @@ SETTING_STRING(currentServerCountryCode,     // getter
                hasCurrentServerCountryCode,  // has
                "currentServer/countryCode",  // key
                "",                           // default value
+               true,                         // user setting
                true                          // remove when reset
 )
 
@@ -111,6 +120,7 @@ SETTING_BOOL(developerUnlock,     // getter
              hasDeveloperUnlock,  // has
              "developerUnlock",   // key
              false,               // default value
+             false,               // user setting
              false                // remove when reset
 )
 
@@ -119,6 +129,7 @@ SETTING_STRING(deviceKeyVersion,     // getter
                hasDeviceKeyVersion,  // has
                "deviceKeyVersion",   // key
                "",                   // default value
+               false,                // user setting
                true                  // remove when reset
 )
 
@@ -127,6 +138,7 @@ SETTING_BYTEARRAY(devices,     // getter
                   hasDevices,  // has
                   "devices",   // key
                   "",          // default value
+                  false,       // user setting
                   true         // remove when reset
 )
 
@@ -135,6 +147,7 @@ SETTING_INT(dnsProvider,                           // getter
             hasDNSProvider,                        // has
             "dnsProvider",                         // key
             SettingsHolder::DnsProvider::Gateway,  // default value
+            true,                                  // user setting
             false                                  // remove when reset
 )
 
@@ -143,6 +156,7 @@ SETTING_STRING(entryServerCity,     // getter
                hasEntryServerCity,  // has
                "entryServer/city",  // key
                nullptr,             // default value
+               true,                // user setting
                true                 // remove when reset
 )
 
@@ -151,6 +165,7 @@ SETTING_STRING(entryServerCountryCode,     // getter
                hasEntryServerCountryCode,  // has
                "entryServer/countryCode",  // key
                nullptr,                    // default value
+               true,                       // user setting
                true                        // remove when reset
 )
 
@@ -159,6 +174,7 @@ SETTING_STRINGLIST(featuresFlippedOff,     // getter
                    hasFeaturesFlippedOff,  // has
                    "featuresFlippedOff",   // key
                    QStringList(),          // default value
+                   false,                  // user setting
                    false                   // remove when reset
 )
 
@@ -167,6 +183,7 @@ SETTING_STRINGLIST(featuresFlippedOn,     // getter
                    hasFeaturesFlippedOn,  // has
                    "featuresFlippedOn",   // key
                    QStringList(),         // default value
+                   false,                 // user setting
                    false                  // remove when reset
 )
 
@@ -175,6 +192,7 @@ SETTING_BOOL(featuresTourShown,     // getter
              hasFeaturesTourShown,  // has
              "featuresTourShown",   // key
              false,                 // default value
+             false,                 // user setting
              false                  // remove when reset
 )
 
@@ -186,6 +204,7 @@ SETTING_BOOL(gleanEnabled,     // getter
              hasGleanEnabled,  // has
              "gleanEnabled",   // key
              true,             // default value
+             true,             // user setting
              false             // remove when reset
 )
 
@@ -194,6 +213,7 @@ SETTING_STRINGLIST(iapProducts,     // getter
                    hasIapProducts,  // has
                    "iapProducts",   // key
                    QStringList(),   // default value
+                   false,           // user setting
                    true             // remove when reset
 )
 
@@ -202,7 +222,17 @@ SETTING_DATETIME(installationTime,     // getter
                  hasInstallationTime,  // has
                  "installationTime",   // key
                  QDateTime(),          // default value
+                 false,                // user setting
                  false                 // remove when reset
+)
+
+SETTING_STRING(installedVersion,     // getter
+               setInstalledVersion,  // setter
+               hasInstalledVersion,  // has
+               "installedVersion",   // key
+               "",                   // default value
+               false,                // user setting
+               false                 // remove when reset
 )
 
 SETTING_INT64(keyRegenerationTimeSec,     // getter
@@ -210,6 +240,7 @@ SETTING_INT64(keyRegenerationTimeSec,     // getter
               hasKeyRegenerationTimeSec,  // has
               "keyRegenerationTimeSec",   // key
               0,                          // default value
+              false,                      // user setting
               true                        // remove when reset
 )
 
@@ -218,6 +249,7 @@ SETTING_STRING(languageCode,     // getter
                hasLanguageCode,  // has
                "languageCode",   // key
                "",               // default value
+               true,             // user setting
                false             // remove when reset
 )
 
@@ -226,6 +258,7 @@ SETTING_BOOL(localNetworkAccess,     // getter
              hasLocalNetworkAccess,  // has
              "localNetworkAccess",   // key
              false,                  // default value
+             true,                   // user setting
              false                   // remove when reset
 )
 
@@ -234,6 +267,7 @@ SETTING_STRINGLIST(missingApps,     // getter
                    hasMissingApps,  // has
                    "MissingApps",   // key
                    QStringList(),   // default value
+                   true,            // user setting
                    false            // remove when reset
 )
 
@@ -242,6 +276,7 @@ SETTING_BOOL(postAuthenticationShown,     // getter
              hasPostAuthenticationShown,  // has
              "postAuthenticationShown",   // key
              false,                       // default value
+             true,                        // user setting
              true                         // remove when reset
 )
 
@@ -250,6 +285,7 @@ SETTING_STRING(previousLanguageCode,     // getter
                hasPreviousLanguageCode,  // has
                "previousLanguageCode",   // key
                "",                       // default value
+               true,                     // user setting
                false                     // remove when reset
 )
 
@@ -258,6 +294,7 @@ SETTING_STRING(privateKey,     // getter
                hasPrivateKey,  // has
                "privateKey",   // key
                "",             // default value
+               false,          // user setting
                true            // remove when reset
 )
 
@@ -266,6 +303,7 @@ SETTING_STRING(privateKeyJournal,     // getter
                hasPrivateKeyJournal,  // has
                "privateKeyJournal",   // key
                "",                    // default value
+               false,                 // user setting
                true                   // remove when reset
 )
 
@@ -274,6 +312,7 @@ SETTING_BOOL(protectSelectedApps,     // getter
              hasProtectSelectedApps,  // has
              "protectSelectedApps",   // key
              false,                   // default value
+             true,                    // user setting
              false                    // remove when reset
 )
 
@@ -282,6 +321,7 @@ SETTING_STRING(publicKey,     // getter
                hasPublicKey,  // has
                "publicKey",   // key
                "",            // default value
+               false,         // user setting
                true           // remove when reset
 )
 
@@ -290,6 +330,7 @@ SETTING_STRING(publicKeyJournal,     // getter
                hasPublicKeyJournal,  // has
                "publicKeyJournal",   // key
                "",                   // default value
+               false,                // user setting
                true                  // remove when reset
 )
 
@@ -298,6 +339,7 @@ SETTING_STRINGLIST(recentConnections,     // getter
                    hasRecentConnections,  // has
                    "recentConnections",   // key
                    QStringList(),         // default value
+                   true,                  // user setting
                    true                   // remove when reset
 )
 
@@ -306,6 +348,7 @@ SETTING_STRINGLIST(seenFeatures,     // getter
                    hasSeenFeatures,  // has
                    "seenFeatures",   // key
                    QStringList(),    // default value
+                   false,            // user setting
                    false             // remove when reset
 )
 
@@ -314,6 +357,7 @@ SETTING_BYTEARRAY(servers,     // getter
                   hasServers,  // has
                   "servers",   // key
                   "",          // default value
+                  false,       // user setting
                   true         // remove when reset
 )
 
@@ -322,6 +366,7 @@ SETTING_BOOL(serverSwitchNotification,     // getter
              hasServerSwitchNotification,  // has
              "serverSwitchNotification",   // key
              true,                         // default value
+             true,                         // user setting
              false                         // remove when reset
 )
 
@@ -331,6 +376,7 @@ SETTING_BOOL(serverUnavailableNotification,     // getter
              "serverUnavailableNotification",   // key
              Feature::get(Feature::Feature_serverUnavailableNotification)
                  ->isSupported(),  // default value
+             true,                 // user setting
              false                 // remove when reset
 )
 
@@ -341,6 +387,7 @@ SETTING_STRING(
     "stagingServerAddress",   // key
     Constants::envOrDefault("MVPN_API_BASE_URL",
                             Constants::API_STAGING_URL),  // default value
+    false,                                                // user setting
     false                                                 // remove when reset
 )
 
@@ -349,6 +396,7 @@ SETTING_BOOL(stagingServer,     // getter
              hasStagingServer,  // has
              "stagingServer",   // key
              false,             // default value
+             false,             // user setting
              false              // remove when reset
 )
 
@@ -357,6 +405,7 @@ SETTING_BOOL(startAtBoot,     // getter
              hasStartAtBoot,  // has
              "startAtBoot",   // key
              false,           // default value
+             true,            // user setting
              false            // remove when reset
 )
 
@@ -365,6 +414,7 @@ SETTING_BOOL(systemLanguageCodeMigrated,     // getter
              hasSystemLanguageCodeMigrated,  // has
              "systemLanguageCodeMigrated",   // key
              false,                          // default value
+             false,                          // user setting
              true                            // remove when reset
 )
 
@@ -373,6 +423,7 @@ SETTING_BOOL(telemetryPolicyShown,     // getter
              hasTelemetryPolicyShown,  // has
              "telemetryPolicyShown",   // key
              false,                    // default value
+             false,                    // user setting
              false                     // remove when reset
 )
 
@@ -381,6 +432,7 @@ SETTING_BOOL(tipsAndTricksIntroShown,     // getter
              hasTipsAndTricksIntroShown,  // has
              "tipsAndTricksIntroShown",   // key
              false,                       // default value
+             false,                       // user setting
              false                        // remove when reset
 )
 
@@ -389,6 +441,7 @@ SETTING_STRING(token,     // getter
                hasToken,  // has
                "token",   // key
                "",        // default value
+               false,     // user setting
                true       // remove when reset
 )
 
@@ -397,7 +450,8 @@ SETTING_BOOL(tunnelPort53,     // getter
              hasTunnelPort53,  // has
              "tunnelPort53",   // key
              false,            // default value
-             true              // remove when reset
+             true,             // user setting
+             false             // remove when reset
 )
 
 SETTING_BOOL(unsecuredNetworkAlert,     // getter
@@ -406,7 +460,17 @@ SETTING_BOOL(unsecuredNetworkAlert,     // getter
              "unsecuredNetworkAlert",   // key
              Feature::get(Feature::Feature_unsecuredNetworkNotification)
                  ->isSupported(),  // default value
+             true,                 // user setting
              false                 // remove when reset
+)
+
+SETTING_DATETIME(updateTime,     // getter
+                 setUpdateTime,  // setter
+                 hasUpdateTime,  // has
+                 "updateTime",   // key
+                 QDateTime(),    // default value
+                 false,          // user setting
+                 false           // remove when reset
 )
 
 SETTING_STRING(userAvatar,     // getter
@@ -414,6 +478,7 @@ SETTING_STRING(userAvatar,     // getter
                hasUserAvatar,  // has
                "user/avatar",  // key
                "",             // default value
+               false,          // user setting
                true            // remove when reset
 )
 
@@ -422,6 +487,7 @@ SETTING_STRING(userDisplayName,     // getter
                hasUserDisplayName,  // has
                "user/displayName",  // key
                "",                  // default value
+               false,               // user setting
                true                 // remove when reset
 )
 
@@ -430,6 +496,7 @@ SETTING_STRING(userDNS,     // getter
                hasUserDNS,  // has
                "userDNS",   // key
                "",          // default value
+               true,        // user setting
                false        // remove when reset
 )
 
@@ -438,6 +505,7 @@ SETTING_STRING(userEmail,     // getter
                hasUserEmail,  // has
                "user/email",  // key
                "",            // default value
+               false,         // user setting
                true           // remove when reset
 )
 
@@ -446,6 +514,7 @@ SETTING_INT(userMaxDevices,     // getter
             hasUserMaxDevices,  // has
             "user/maxDevices",  // key
             0,                  // default value
+            false,              // user setting
             true                // remove when reset
 )
 
@@ -454,6 +523,7 @@ SETTING_BOOL(userSubscriptionNeeded,     // getter
              hasUserSubscriptionNeeded,  // has
              "user/subscriptionNeeded",  // key
              false,                      // default value
+             false,                      // user setting
              true                        // remove when reset
 )
 
@@ -462,6 +532,7 @@ SETTING_STRINGLIST(vpnDisabledApps,     // getter
                    hasVpnDisabledApps,  // has
                    "vpnDisabledApps",   // key
                    QStringList(),       // default value
+                   true,                // user setting
                    false                // remove when reset
 )
 
@@ -471,6 +542,7 @@ SETTING_BOOL(adjustActivatable,     // getter
              hasAdjustActivatable,  // has
              "adjustActivatable",   // key
              false,                 // default value
+             false,                 // user setting
              false                  // remove when reset
 )
 #endif
@@ -481,6 +553,7 @@ SETTING_BOOL(nativeAndroidDataMigrated,     // getter
              hasNativeAndroidDataMigrated,  // has
              "nativeAndroidDataMigrated",   // key
              false,                         // default value
+             false,                         // user setting
              false                          // remove when reset
 )
 #endif
@@ -491,6 +564,7 @@ SETTING_BOOL(nativeIOSDataMigrated,     // getter
              hasNativeIOSDataMigrated,  // has
              "nativeIOSDataMigrated",   // key
              false,                     // default value
+             false,                     // user setting
              false                      // remove when reset
 )
 
@@ -499,6 +573,7 @@ SETTING_STRINGLIST(subscriptionTransactions,     // getter
                    hasSubscriptionTransactions,  // has
                    "subscriptionTransactions",   // key
                    QStringList(),                // efault value
+                   false,                        // user setting
                    false                         // remove when reset
 )
 #endif
@@ -510,5 +585,6 @@ SETTING_STRING(theme,          // getter
                hasTheme,       // has
                "theme",        // key
                DEFAULT_THEME,  // default value
+               true,           // user setting
                true            // remove when reset
 )

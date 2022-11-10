@@ -44,7 +44,8 @@ RadioDelegate {
             anchors.fill: parent
             source: img
             color: VPNTheme.colors.blue
-            visible: radio.checked
+            visible: radio.checked || radio.state === uiState.stateHovered
+                || radio.state === uiState.statePressed
         }
     }
 
@@ -59,11 +60,12 @@ RadioDelegate {
     }
 
     background: VPNFocusOutline {
-        opacity: radio.checked || radio.activeFocus || radio.state === uiState.stateHovered ? 1 : 0
-        color: VPNTheme.theme.transparent
-        border.width: VPNTheme.theme.focusBorderWidth * 2
+        anchors.margins: VPNTheme.theme.focusBorderWidth
+
         border.color: VPNTheme.theme.blueFocusOutline
-        anchors.margins: VPNTheme.theme.focusBorderWidth 
+        border.width: VPNTheme.theme.focusBorderWidth * 2
+        color: VPNTheme.theme.transparent
+        opacity: radio.checked || radio.activeFocus ? 1 : 0
         radius: height
 
         Behavior on opacity {

@@ -47,7 +47,7 @@ void BenchmarkTaskDownload::handleState(BenchmarkTask::State state) {
     m_dnsLookup.setNameserver(QHostAddress(MULLVAD_DEFAULT_DNS));
 #endif
 
-#if QT_VERSION >= 0x060400
+#if QT_VERSION >= 0x060500
 #  error Check if QT added support for QDnsLookup::lookup() on Android
 #endif
 

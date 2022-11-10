@@ -186,7 +186,8 @@ bool AddonIndex::validateIndex(const QByteArray& index, QJsonObject* indexObj) {
     return false;
   }
 
-  for (const QJsonValue item : obj["addons"].toArray()) {
+  const QJsonArray addons = obj["addons"].toArray();
+  for (const QJsonValue& item : addons) {
     if (!validateSingleAddonIndex(item)) {
       return false;
     }
@@ -252,7 +253,8 @@ bool AddonIndex::validateIndexSignature(const QByteArray& index,
 QList<AddonData> AddonIndex::extractAddonsFromIndex(
     const QJsonObject& indexObj) {
   QList<AddonData> addons;
-  for (const QJsonValue item : indexObj["addons"].toArray()) {
+  const QJsonArray addonArray = indexObj["addons"].toArray();
+  for (const QJsonValue& item : addonArray) {
     QJsonObject addon = item.toObject();
     addons.append(
         {QByteArray::fromHex(addon["sha256"].toString().toLocal8Bit()),

@@ -16,6 +16,7 @@
 #include "conditionwatchers/addonconditionwatchertimestart.h"
 #include "conditionwatchers/addonconditionwatchertimeend.h"
 #include "leakdetector.h"
+#include "localizer.h"
 #include "logger.h"
 #include "models/feature.h"
 #include "mozillavpn.h"
@@ -52,7 +53,8 @@ struct ConditionCallback {
 QList<ConditionCallback> s_conditionCallbacks{
     {"enabled_features",
      [](const QJsonValue& value) -> bool {
-       for (const QJsonValue& enabledFeature : value.toArray()) {
+       const QJsonArray enabledFeatures = value.toArray();
+       for (const QJsonValue& enabledFeature : enabledFeatures) {
          QString featureName = enabledFeature.toString();
 
          // If the feature doesn't exist, we crash.
@@ -68,7 +70,8 @@ QList<ConditionCallback> s_conditionCallbacks{
      },
      [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
        QStringList features;
-       for (const QJsonValue& v : value.toArray()) {
+       QJsonArray featureArray = value.toArray();
+       for (const QJsonValue& v : featureArray) {
          features.append(v.toString());
        }
 
@@ -79,7 +82,8 @@ QList<ConditionCallback> s_conditionCallbacks{
     {"platforms",
      [](const QJsonValue& value) -> bool {
        QStringList platforms;
-       for (QJsonValue platform : value.toArray()) {
+       QJsonArray platformArray = value.toArray();
+       for (const QJsonValue& platform : platformArray) {
          platforms.append(platform.toString());
        }
 
@@ -96,7 +100,8 @@ QList<ConditionCallback> s_conditionCallbacks{
 
     {"settings",
      [](const QJsonValue& value) -> bool {
-       for (QJsonValue setting : value.toArray()) {
+       QJsonArray settings = value.toArray();
+       for (const QJsonValue& setting : settings) {
          QJsonObject obj = setting.toObject();
 
          QString op = obj["op"].toString();
@@ -216,7 +221,8 @@ QList<ConditionCallback> s_conditionCallbacks{
      },
      [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
        QStringList locales;
-       for (const QJsonValue& v : value.toArray()) {
+       QJsonArray localeArray = value.toArray();
+       for (const QJsonValue& v : localeArray) {
          locales.append(v.toString().toLower());
        }
 
@@ -352,9 +358,24 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
     return nullptr;
   }
 
-  addon->maybeCreateConditionWatchers(conditions);
+  addon->m_conditionWatcher =
+      Addon::maybeCreateConditionWatchers(addon, conditions);
 
-  if (addon->enabled()) {
+  if (addon->m_conditionWatcher) {
+    connect(addon->m_conditionWatcher, &AddonConditionWatcher::conditionChanged,
+            addon, [addon](bool enabled) {
+              if (enabled != addon->m_enabled) {
+                if (enabled) {
+                  addon->enable();
+                } else {
+                  addon->disable();
+                }
+              }
+            });
+  }
+
+  if (!addon->m_conditionWatcher ||
+      addon->m_conditionWatcher->conditionApplied()) {
     addon->enable();
   }
 
@@ -389,10 +410,7 @@ Addon::Addon(QObject* parent, const QString& manifestFileName,
   }
 }
 
-Addon::~Addon() {
-  MVPN_COUNT_DTOR(Addon);
-  disable();
-}
+Addon::~Addon() { MVPN_COUNT_DTOR(Addon); }
 
 void Addon::updateAddonState(State newState) {
   Q_ASSERT(newState != Unknown);
@@ -424,7 +442,7 @@ void Addon::retranslate() {
 
   QLocale locale = QLocale(code);
   if (code.isEmpty()) {
-    locale = QLocale(QLocale::system().bcp47Name());
+    locale = QLocale(Localizer::systemLanguageCode());
   }
 
   if (!m_translator.load(
@@ -436,14 +454,15 @@ void Addon::retranslate() {
   emit retranslationCompleted();
 }
 
-void Addon::maybeCreateConditionWatchers(const QJsonObject& conditions) {
+AddonConditionWatcher* Addon::maybeCreateConditionWatchers(
+    Addon* addon, const QJsonObject& conditions) {
   QList<AddonConditionWatcher*> watcherList;
 
   for (const QString& key : conditions.keys()) {
     for (const ConditionCallback& condition : s_conditionCallbacks) {
       if (condition.m_key == key) {
         AddonConditionWatcher* conditionWatcher =
-            condition.m_dynamicCallback(this, conditions[key]);
+            condition.m_dynamicCallback(addon, conditions[key]);
         if (conditionWatcher) {
           watcherList.append(conditionWatcher);
         }
@@ -454,27 +473,14 @@ void Addon::maybeCreateConditionWatchers(const QJsonObject& conditions) {
 
   switch (watcherList.length()) {
     case 0:
-      return;
+      return nullptr;
 
     case 1:
-      m_conditionWatcher = watcherList.at(0);
-      break;
+      return watcherList.at(0);
 
     default:
-      m_conditionWatcher = new AddonConditionWatcherGroup(this, watcherList);
-      break;
+      return new AddonConditionWatcherGroup(addon, watcherList);
   }
-
-  Q_ASSERT(m_conditionWatcher);
-
-  connect(m_conditionWatcher, &AddonConditionWatcher::conditionChanged, this,
-          [this](bool enabled) {
-            if (enabled) {
-              enable();
-            } else {
-              disable();
-            }
-          });
 }
 
 // static
@@ -500,15 +506,9 @@ bool Addon::evaluateConditions(const QJsonObject& conditions) {
   return true;
 }
 
-bool Addon::enabled() const {
-  if (!m_conditionWatcher) {
-    return true;
-  }
-
-  return m_conditionWatcher->conditionApplied();
-}
-
 void Addon::enable() {
+  m_enabled = true;
+
   QCoreApplication::installTranslator(&m_translator);
   retranslate();
 
@@ -529,6 +529,8 @@ void Addon::enable() {
 }
 
 void Addon::disable() {
+  m_enabled = false;
+
   QCoreApplication::removeTranslator(&m_translator);
 
   if (m_jsDisableFunction.isCallable()) {

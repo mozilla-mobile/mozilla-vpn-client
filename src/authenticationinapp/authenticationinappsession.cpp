@@ -521,7 +521,8 @@ void AuthenticationInAppSession::startAccountDeletionFlow() {
               return;
             }
 
-            for (QJsonValue clientValue : json.array()) {
+            const QJsonArray clientArray = json.array();
+            for (const QJsonValue& clientValue : clientArray) {
               if (!clientValue.isObject()) {
                 logger.error() << "Attach clients: no client object found";
                 emit failed(ErrorHandler::AuthenticationError);
@@ -705,8 +706,9 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
 
     case 107: {  // Invalid parameter in request body
       QJsonObject objValidation = obj["validation"].toObject();
+      const QJsonArray keyArray = objValidation["keys"].toArray();
       QStringList keys;
-      for (QJsonValue key : objValidation["keys"].toArray()) {
+      for (const QJsonValue& key : keyArray) {
         if (key.isString()) {
           keys.append(key.toString());
         }
@@ -747,7 +749,14 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
     }
 
     case 114:  // Client has sent too many requests
-      aia->requestState(AuthenticationInApp::StateStart, this);
+      if (m_typeAuthentication == TypeDefault) {
+        aia->requestState(AuthenticationInApp::StateStart, this);
+      } else {
+        // For non-default authentication flows, we go back to the password
+        // request, because the email request step is implicit.
+        aia->requestState(AuthenticationInApp::StateSignIn, this);
+      }
+
       aia->requestErrorPropagation(this,
                                    AuthenticationInApp::ErrorTooManyRequests,
                                    obj["retryAfter"].toInt());

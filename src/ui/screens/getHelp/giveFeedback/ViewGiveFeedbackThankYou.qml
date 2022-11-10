@@ -10,40 +10,46 @@ import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 
-VPNViewBase {
-    id: root
-    _viewContentData: ColumnLayout {
+ColumnLayout {
+    id: layout
 
-        Layout.minimumHeight: root.height
+    spacing: VPNTheme.theme.vSpacing
+
+    Item {
+        Layout.fillHeight: window.fullscreenRequired()
+    }
+
+    VPNPanel {
+        anchors.horizontalCenter: undefined
+        Layout.topMargin: window.fullscreenRequired() ? 0 : layout.height * 0.2
+        Layout.preferredHeight: height
+        Layout.preferredWidth: width
+        Layout.alignment: Qt.AlignHCenter
+
+        logo: "qrc:/ui/resources/heart-check.svg"
+        //% "Thank you!"
+        logoTitle: qsTrId("vpn.feedbackForm.thankyou")
+        //% "We appreciate your feedback. You’re helping us improve Mozilla VPN."
+        logoSubtitle: qsTrId("vpn.feedbackForm.thankyouSubtitle")
+    }
+
+    Item {
+        Layout.fillHeight: window.fullscreenRequired()
+    }
+
+    VPNButton {
+        Layout.fillWidth: true
         Layout.leftMargin: VPNTheme.theme.windowMargin * 2
         Layout.rightMargin: VPNTheme.theme.windowMargin * 2
+        Layout.bottomMargin: navbar.visible ? VPNTheme.theme.navBarHeightWithMargins : 34
 
+        //% "Done"
+        text: qsTrId("vpn.feedbackform.done")
+        onClicked: getHelpStackView.pop(null, StackView.Immediate)
 
-        ColumnLayout {
-            spacing: VPNTheme.theme.vSpacing
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            Layout.fillWidth: true
-            Layout.bottomMargin: VPNTheme.theme.rowHeight * 2
+    }
 
-            Column {
-                Layout.fillWidth: true
-                VPNPanel {
-                    id: panel
-                    logo: "qrc:/ui/resources/heart-check.svg"
-                    //% "Thank you!"
-                    logoTitle: qsTrId("vpn.feedbackForm.thankyou")
-                    //% "We appreciate your feedback. You’re helping us improve Mozilla VPN."
-                    logoSubtitle: qsTrId("vpn.feedbackForm.thankyouSubtitle")
-                }
-            }
-            VPNButton {
-                //% "Done"
-                text: qsTrId("vpn.feedbackform.done")
-                width: undefined
-                Layout.fillWidth: true
-                onClicked: getHelpStackView.pop(null, StackView.Immediate)
-            }
-        }
+    Item {
+        Layout.fillHeight: !window.fullscreenRequired()
     }
 }
-

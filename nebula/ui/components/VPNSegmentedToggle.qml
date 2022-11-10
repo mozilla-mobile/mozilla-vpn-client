@@ -74,6 +74,7 @@ Rectangle {
 
     RowLayout {
 
+        objectName: "multiHopSelector"
         anchors {
             fill: parent
             topMargin: 8

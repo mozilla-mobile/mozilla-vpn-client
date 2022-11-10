@@ -63,6 +63,7 @@ type nftCtx struct {
   conntrack   *nftables.Chain
   preroute    *nftables.Chain
   preroute_v6 *nftables.Chain
+  addrset     *nftables.Set
   fwmark      uint32
   conn        nftables.Conn
 }
@@ -120,43 +121,56 @@ func (ctx* nftCtx) nftIfup(ifname string) {
     },
   })
 
-  // Inbound packets from outside the tunnel should be marked for RPF
+  // Inbound packets from wireguard servers should be marked for RPF
   // and moved into the external conntrack zone.
   ctx.conn.AddRule(&nftables.Rule{
     Table: ctx.table_inet,
     Chain: ctx.preroute,
     Exprs: []expr.Any{
-      // Match packets arriving from outside the tunnel
-			&expr.Meta{
-        Key:      expr.MetaKeyIIFNAME,
-        Register: 1,
+      // For now, we only support IPv4 in this check.
+      // TODO: Support IPv6.
+      &expr.Meta{
+        Key:            expr.MetaKeyPROTOCOL,
+        Register:       1,
       },
       &expr.Cmp{
-        Op:       expr.CmpOpNeq,
-        Register: 1,
-        Data:     nftIfname(ifname),
+        Op:             expr.CmpOpEq,
+        Register:       1,
+        Data:           binaryutil.BigEndian.PutUint16(linux.ETH_P_IP),
       },
-      // Match packets arriving on non-localhost.
-			&expr.Meta{
-        Key:      expr.MetaKeyIIFTYPE,
-        Register: 1,
+      // Match UDP packets
+      &expr.Meta{
+        Key:            expr.MetaKeyL4PROTO,
+        Register:       1,
       },
       &expr.Cmp{
-        Op:       expr.CmpOpNeq,
-        Register: 1,
-        Data:     binaryutil.NativeEndian.PutUint16(linux.ARPHRD_LOOPBACK),
+        Op:             expr.CmpOpEq,
+        Register:       1,
+	Data:           []byte{linux.IPPROTO_UDP},
       },
-      // Set the firewall mark for the packets
+      // Lookup the IPv4 source address.
+      &expr.Payload{
+        DestRegister:   1,
+	Base:           expr.PayloadBaseNetworkHeader,
+        Offset:         uint32(12),
+        Len:            uint32(4),
+      },
+      &expr.Lookup{
+        SourceRegister: 1,
+        SetName:        ctx.addrset.Name,
+        SetID:          ctx.addrset.ID,
+      },
+      // Set the firewall mark.
       &expr.Immediate{
-        Register:   1,
-        Data:       binaryutil.NativeEndian.PutUint32(ctx.fwmark),
+        Register:       1,
+        Data:           binaryutil.NativeEndian.PutUint32(ctx.fwmark),
       },
       &expr.Meta{
-        Key:        expr.MetaKeyMARK,
-        Register:   1,
+        Key:            expr.MetaKeyMARK,
+        Register:       1,
         SourceRegister: true,
       },
-      // Set the conntrack zone
+      // Set the conntrack zone.
       &immctzone,
       &setctzone,
     },
@@ -413,6 +427,13 @@ func NetfilterCreateTables() int32 {
     Priority:   nftables.ChainPriorityRaw,
   })
 
+  mozvpn_ctx.addrset = &nftables.Set{
+    Table:      mozvpn_ctx.table_inet,
+    Name:       "mozvpn-addrset",
+    KeyType:    nftables.TypeIPAddr,
+  }
+  mozvpn_ctx.conn.AddSet(mozvpn_ctx.addrset, nil)
+
   log.Println("Creating netfilter tables")
   return mozvpn_ctx.nftCommit()
 }
@@ -434,6 +455,7 @@ func NetfilterClearTables() int32 {
   mozvpn_ctx.conn.FlushChain(mozvpn_ctx.conntrack)
   mozvpn_ctx.conn.FlushChain(mozvpn_ctx.preroute)
   mozvpn_ctx.conn.FlushChain(mozvpn_ctx.preroute_v6)
+  mozvpn_ctx.conn.FlushSet(mozvpn_ctx.addrset)
 
   log.Println("Clearing netfilter tables")
   return mozvpn_ctx.nftCommit()
@@ -450,6 +472,29 @@ func NetfilterIfup(ifname string, fwmark uint32) int32 {
   return mozvpn_ctx.nftCommit()
 }
 
+//export NetfilterMarkInbound
+func NetfilterMarkInbound(ipaddr string, port uint32) int32 {
+  element := []nftables.SetElement{
+    { Key: net.ParseIP(ipaddr).To4(), },
+  }
+ 
+  mozvpn_ctx.conn.SetAddElements(mozvpn_ctx.addrset, element)
+
+  log.Println("Marking inbound traffic from server")
+  return mozvpn_ctx.nftCommit()
+}
+
+//export NetfilterClearInbound
+func NetfilterClearInbound(ipaddr string) int32 {
+  element := []nftables.SetElement{
+    { Key: net.ParseIP(ipaddr).To4(), },
+  }
+
+  mozvpn_ctx.conn.SetDeleteElements(mozvpn_ctx.addrset, element)
+  log.Println("Clearing traffic marks for server")
+  return mozvpn_ctx.nftCommit()
+}
+
 //export NetfilterIsolateIpv6
 func NetfilterIsolateIpv6(ifname string, ipv6addr string) int32 {
   // Inbound packets from any interface other than the tunnel should
@@ -459,7 +504,7 @@ func NetfilterIsolateIpv6(ifname string, ipv6addr string) int32 {
     Chain: mozvpn_ctx.preroute_v6,
     Exprs: []expr.Any{
       // Match packets arriving from outside the tunnel
-			&expr.Meta{
+      &expr.Meta{
         Key:      expr.MetaKeyIIFNAME,
         Register: 1,
       },

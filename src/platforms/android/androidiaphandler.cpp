@@ -87,13 +87,15 @@ void AndroidIAPHandler::maybeInit() {
 void AndroidIAPHandler::nativeRegisterProducts() {
   maybeInit();
   Q_ASSERT(m_init);
+  ProductsHandler* productsHandler = ProductsHandler::instance();
   // Convert products to JSON
   QJsonArray jsonProducts;
-  for (auto p : m_products) {
+  for (auto p : productsHandler->products()) {
     QJsonObject jsonProduct;
     jsonProduct["id"] = p.m_name;
     jsonProduct["monthCount"] =
-        QVariant::fromValue(productTypeToMonthCount(p.m_type)).toInt();
+        QVariant::fromValue(productsHandler->productTypeToMonthCount(p.m_type))
+            .toInt();
     jsonProducts.append(jsonProduct);
   }
   QJsonObject root;
@@ -107,7 +109,8 @@ void AndroidIAPHandler::nativeRegisterProducts() {
       "(Ljava/lang/String;)V", jniString.object());
 }
 
-void AndroidIAPHandler::nativeStartSubscription(Product* product) {
+void AndroidIAPHandler::nativeStartSubscription(
+    ProductsHandler::Product* product) {
   maybeInit();
   Q_ASSERT(m_init);
   auto jniString = QJniObject::fromString(product->m_name);
@@ -183,13 +186,14 @@ void AndroidIAPHandler::onSkuDetailsReceived(JNIEnv* env, jobject thiz,
   }
   QJsonArray products = obj["products"].toArray();
   IAPHandler* iap = IAPHandler::instance();
+  ProductsHandler* productsHandler = ProductsHandler::instance();
   if (products.isEmpty()) {
     logger.error() << "onSkuDetailsRecieved - no products found.";
-    iap->stopProductsRegistration();
+    productsHandler->stopProductsRegistration();
     return;
   }
   static_cast<AndroidIAPHandler*>(iap)->updateProductsInfo(products);
-  iap->productsRegistrationCompleted();
+  productsHandler->productsRegistrationCompleted();
 }
 
 // Call backs from JNI - Failures
@@ -218,7 +222,7 @@ void AndroidIAPHandler::onBillingNotAvailable(JNIEnv* env, jobject thiz,
     }
   }
   iap->stopSubscription();
-  iap->stopProductsRegistration();
+  ProductsHandler::instance()->stopProductsRegistration();
   emit iap->billingNotAvailable();
 }
 
@@ -241,8 +245,7 @@ void AndroidIAPHandler::onSkuDetailsFailed(JNIEnv* env, jobject thiz,
   QJsonObject json = AndroidUtils::getQJsonObjectFromJString(env, data);
   logger.error() << "onSkuDetailsFailed"
                  << QJsonDocument(json).toJson(QJsonDocument::Compact);
-  IAPHandler* iap = IAPHandler::instance();
-  iap->stopProductsRegistration();
+  ProductsHandler::instance()->stopProductsRegistration();
 }
 
 // static
@@ -260,12 +263,14 @@ void AndroidIAPHandler::onSubscriptionFailed(JNIEnv* env, jobject thiz,
 // The rest - instance methods
 
 void AndroidIAPHandler::updateProductsInfo(const QJsonArray& returnedProducts) {
-  Q_ASSERT(m_productsRegistrationState == eRegistering);
-
+  ProductsHandler* productsHandler = ProductsHandler::instance();
+  Q_ASSERT(productsHandler->isRegistering());
   QStringList productsUpdated;
+
   for (auto product : returnedProducts) {
     QString productIdentifier = product[QString("sku")].toString();
-    Product* productData = findProduct(productIdentifier);
+    ProductsHandler::Product* productData =
+        productsHandler->findProduct(productIdentifier);
     Q_ASSERT(productData);
     productData->m_trialDays = product[QString("trialDays")].toInt();
     productData->m_price = product[QString("totalPriceString")].toString();
@@ -278,9 +283,9 @@ void AndroidIAPHandler::updateProductsInfo(const QJsonArray& returnedProducts) {
   }
   // Remove products from m_products if we didn't get info back from google
   // about them.
-  for (auto product : m_products) {
+  for (auto product : productsHandler->products()) {
     if (!productsUpdated.contains(product.m_name)) {
-      unknownProductRegistered(product.m_name);
+      productsHandler->unknownProductRegistered(product.m_name);
     }
   }
 }
@@ -311,7 +316,8 @@ void AndroidIAPHandler::processPurchase(QJsonObject purchase) {
 
 void AndroidIAPHandler::validatePurchase(QJsonObject purchase) {
   QString sku = purchase["productId"].toString();
-  Product* productData = findProduct(sku);
+  ProductsHandler::Product* productData =
+      ProductsHandler::instance()->findProduct(sku);
   Q_ASSERT(productData);
   QString token = purchase["purchaseToken"].toString();
   Q_ASSERT(!token.isEmpty());
@@ -319,14 +325,13 @@ void AndroidIAPHandler::validatePurchase(QJsonObject purchase) {
   TaskPurchase* purchaseTask = TaskPurchase::createForAndroid(sku, token);
   Q_ASSERT(purchaseTask);
 
-  connect(
-      purchaseTask, &TaskPurchase::failed, this,
-      [this](QNetworkReply::NetworkError error, const QByteArray&) {
-        logger.error() << "Purchase validation request to guardian failed";
-        MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
-        stopSubscription();
-        emit subscriptionNotValidated();
-      });
+  connect(purchaseTask, &TaskPurchase::failed, this,
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+            logger.error() << "Purchase validation request to guardian failed";
+            ErrorHandler::networkErrorHandle(error);
+            stopSubscription();
+            emit subscriptionNotValidated();
+          });
 
   connect(purchaseTask, &TaskPurchase::succeeded, this,
           [this, token](const QByteArray& data) {

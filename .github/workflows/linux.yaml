@@ -3,11 +3,11 @@ on:
   push:
     branches:
       - main
-      - 'releases/**'
+      - "releases/**"
   pull_request:
     branches:
       - main
-      - 'releases/**'
+      - "releases/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install source dependencies
         shell: bash
@@ -34,10 +34,10 @@ jobs:
         run: ./scripts/linux/script.sh --source --gitref ${GITREF}
 
       - name: Upload source bundle
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-            name: Sources
-            path: .tmp
+          name: Sources
+          path: .tmp
 
   ubuntu-pbuilder:
     name: Ubuntu Packages
@@ -45,9 +45,10 @@ jobs:
     strategy:
       matrix:
         config:
-            - { name: "Bionic", dist: bionic, ppa: "ppa:okirby/qt6-backports" }
-            - { name: "Focal", dist: focal, ppa: "ppa:okirby/qt6-backports" }
-            - { name: "Jammy", dist: jammy, ppa: "" }
+          - { name: "Bionic", dist: bionic, ppa: "ppa:okirby/qt6-backports" }
+          - { name: "Focal", dist: focal, ppa: "ppa:okirby/qt6-backports" }
+          - { name: "Jammy", dist: jammy, ppa: "" }
+          - { name: "Kinetic", dist: kinetic, ppa: "" }
 
     runs-on: ubuntu-latest
     env:
@@ -55,9 +56,9 @@ jobs:
       QTPPA: ${{ matrix.config.ppa }}
     steps:
       - name: Download Source Package
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
-            name: Sources
+          name: Sources
 
       - name: Create base ${{ matrix.config.dist }} image
         run: |
@@ -80,10 +81,10 @@ jobs:
           sudo pbuilder build --basetgz $BASETGZ --buildresult $(pwd)/packages mozillavpn_*-${{matrix.config.dist}}[0-9].dsc
 
       - name: Uploading
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
-            name: ${{matrix.config.name}} Build
-            path: packages
+          name: ${{matrix.config.name}} Build
+          path: packages
 
   rpmbuild:
     name: RPM Packages
@@ -94,9 +95,9 @@ jobs:
 
     steps:
       - name: Download Source Package
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
-            name: Sources
+          name: Sources
 
       - name: Install Build Dependencies
         run: |
@@ -104,13 +105,13 @@ jobs:
           yum-builddep -y mozillavpn.spec
 
       - name: Building package
-        shell: bash 
+        shell: bash
         run: rpmbuild -D "_topdir $(pwd)" -D "_sourcedir $(pwd)" -ba mozillavpn.spec
 
       - name: Uploading
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-            name: RPM Build
-            path: |
-              RPMS/
-              SRPMS/
+          name: RPM Build
+          path: |
+            RPMS/
+            SRPMS/

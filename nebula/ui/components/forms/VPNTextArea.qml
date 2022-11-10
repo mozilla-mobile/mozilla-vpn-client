@@ -17,20 +17,22 @@ Item {
 
     id: root
 
-    Layout.preferredHeight: VPNTheme.theme.rowHeight * 3
-    Layout.preferredWidth: parent.width
     Layout.maximumHeight: VPNTheme.theme.rowHeight * 3
     Layout.minimumHeight: VPNTheme.theme.rowHeight * 3
+    Layout.preferredHeight: VPNTheme.theme.rowHeight * 3
+    Layout.preferredWidth: parent.width
 
     Flickable {
         id: flickable
 
         anchors.fill: parent
-        contentWidth: width
         contentHeight: textArea.implicitHeight
+        contentWidth: width
 
         ScrollBar.vertical: ScrollBar {
-            policy: flickable.contentHeight > root.height ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
+            policy: flickable.contentHeight > root.height
+                ? ScrollBar.AlwaysOn
+                : ScrollBar.AlwaysOff
             Accessible.ignored: true
         }
 
@@ -42,36 +44,54 @@ Item {
             property bool showInteractionStates: true
 
             id: textArea
-            clip: true
-            textFormat: Text.PlainText
-            font.pixelSize: VPNTheme.theme.fontSizeSmall
-            font.family: VPNTheme.theme.fontInterFamily
-            color: VPNTheme.colors.input.default.text
-            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-            leftPadding: VPNTheme.theme.windowMargin
-            rightPadding: VPNTheme.theme.windowMargin
-            bottomPadding: VPNTheme.theme.windowMargin
-            topPadding: VPNTheme.theme.windowMargin
-            Keys.onTabPressed: nextItemInFocusChain().forceActiveFocus(Qt.TabFocusReason)
-            onTextChanged: handleOnTextChanged(text)
-            selectByMouse: true
-            selectionColor: VPNTheme.theme.input.highlight
-            inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
-            enabled: root.enabled
+
+            Accessible.focused: textArea.focus
             background: VPNInputBackground {
                 itemToFocus: textArea
                 z: -1
             }
-
+            bottomPadding: VPNTheme.theme.windowMargin
+            clip: true
+            color: VPNTheme.colors.input.default.text
             cursorDelegate: VPNCursorDelegate {}
+            enabled: root.enabled
+            font.family: VPNTheme.theme.fontInterFamily
+            font.pixelSize: VPNTheme.theme.fontSizeSmall
+            inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
+            leftPadding: VPNTheme.theme.windowMargin
+            rightPadding: VPNTheme.theme.windowMargin
+            selectByMouse: true
+            selectionColor: VPNTheme.theme.input.highlight
+            textFormat: Text.PlainText
+            topPadding: VPNTheme.theme.windowMargin
+            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+
+            Keys.onTabPressed: nextItemInFocusChain().forceActiveFocus(Qt.TabFocusReason)
+            onTextChanged: {
+                handleOnTextChanged(textArea.text);
+
+                // This is a workaround for VoiceOver on macOS: https://bugreports.qt.io/browse/QTBUG-108189
+                // After gaining initial focus or typing in TextArea the screen reader
+                // fails to narrate any accessible content and action. After regaining
+                // active focus the screen reader keeps working as expected.
+                if (Qt.platform.os === "osx") {
+                    textArea.focus = false;
+                    textArea.forceActiveFocus();
+                }
+            }
 
             VPNTextBlock {
                 id: formattedPlaceholderText
-                anchors.fill: textArea
-                anchors.leftMargin: VPNTheme.theme.windowMargin
-                anchors.rightMargin: VPNTheme.theme.windowMargin
-                anchors.topMargin: VPNTheme.theme.windowMargin
-                color: textAreaStates.state === "emptyHovered" ? VPNTheme.colors.input.hover.placeholder : VPNTheme.colors.input.default.placeholder
+
+                anchors {
+                    fill: textArea
+                    leftMargin: VPNTheme.theme.windowMargin
+                    rightMargin: VPNTheme.theme.windowMargin
+                    topMargin: VPNTheme.theme.windowMargin
+                }
+                color: textAreaStates.state === "emptyHovered"
+                    ? VPNTheme.colors.input.hover.placeholder
+                    : VPNTheme.colors.input.default.placeholder
                 visible: textArea.text.length < 1
 
                 PropertyAnimation on opacity {
@@ -99,7 +119,11 @@ Item {
                     // Remember cursor position
                     const prevCursorPosition = textArea.cursorPosition - textInputLength;
                     // Strip overflowing chars
-                    const strippedString = removeCharsInRange(text, prevCursorPosition, prevCursorPosition + textInputLength);
+                    const strippedString = removeCharsInRange(
+                        text,
+                        prevCursorPosition,
+                        prevCursorPosition + textInputLength
+                    );
                     textArea.text = strippedString;
                     // Restore previous cursor position
                     textArea.cursorPosition = prevCursorPosition;
@@ -109,13 +133,15 @@ Item {
     }
 
     Text {
-        anchors.top: parent.bottom
-        anchors.topMargin: 10
-        text: textArea.length + " / " + textArea.maxCharacterCount
-        font.pixelSize: 13
-        anchors.rightMargin: 8
-        anchors.right: parent.right
+        anchors {
+            top: parent.bottom
+            topMargin: VPNTheme.theme.listSpacing * 1.25
+            right: parent.right
+            rightMargin: VPNTheme.theme.listSpacing
+        }
         color: VPNTheme.theme.fontColor
+        font.pixelSize: VPNTheme.theme.fontSizeSmall
+        text: textArea.length + " / " + textArea.maxCharacterCount
     }
 
 }

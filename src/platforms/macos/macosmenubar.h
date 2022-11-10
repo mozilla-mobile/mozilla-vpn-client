@@ -33,9 +33,7 @@ class MacOSMenuBar final : public QObject {
   QMenuBar* m_menuBar = nullptr;
 
   QAction* m_aboutAction = nullptr;
-  QAction* m_preferencesAction = nullptr;
   QAction* m_closeAction = nullptr;
-  QAction* m_helpAction = nullptr;
 };
 
 #endif  // MACOSMENUBAR_H

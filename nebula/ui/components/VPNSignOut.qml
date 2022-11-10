@@ -11,7 +11,7 @@ VPNFooterLink {
     //% "Sign out"
     labelText: qsTrId("vpn.main.signOut2")
     fontName: VPNTheme.theme.fontBoldFamily
-    linkColor: VPNTheme.theme.redButton
+    linkColor: VPNTheme.theme.redLinkButton
     onClicked: () => {
                    VPNController.logout();
                }

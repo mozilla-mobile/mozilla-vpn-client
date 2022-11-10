@@ -167,7 +167,7 @@ bool Daemon::parseStringList(const QJsonObject& obj, const QString& name,
       return false;
     }
     QJsonArray array = value.toArray();
-    for (QJsonValue i : array) {
+    for (const QJsonValue& i : array) {
       if (!i.isString()) {
         logger.error() << name << "must contain only strings";
         return false;
@@ -248,7 +248,7 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
     }
 
     QJsonArray array = value.toArray();
-    for (QJsonValue i : array) {
+    for (const QJsonValue& i : array) {
       if (!i.isObject()) {
         logger.error() << JSON_ALLOWEDIPADDRESSRANGES
                        << "must contain only objects";
@@ -325,7 +325,7 @@ bool Daemon::deactivate(bool emitSignals) {
   }
 
   // Cleanup peers and routing
-  for (const ConnectionState& state : m_connections.values()) {
+  for (const ConnectionState& state : m_connections) {
     const InterfaceConfig& config = state.m_config;
     logger.debug() << "Deleting routes for hop" << config.m_hopindex;
     for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
@@ -448,7 +448,7 @@ QJsonObject Daemon::getStatus() {
 
   const ConnectionState& connection = m_connections.value(0);
   QList<WireguardUtils::PeerStatus> peers = wgutils()->getPeerStatus();
-  for (WireguardUtils::PeerStatus status : peers) {
+  for (const WireguardUtils::PeerStatus& status : peers) {
     if (status.m_pubkey != connection.m_config.m_serverPublicKey) {
       continue;
     }

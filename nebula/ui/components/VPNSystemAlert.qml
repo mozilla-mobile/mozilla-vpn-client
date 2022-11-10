@@ -14,17 +14,17 @@ VPNAlert {
 
     Item {
         id: alertStates
-        state: VPN.alert
+        state: VPNErrorHandler.alert
         states: [
             State {
-                name: VPN.NoAlert
+                name: VPNErrorHandler.NoAlert
                 PropertyChanges {
                     target: alertBox
                     visible: false
                 }
             },
             State{
-                name: VPN.AuthCodeSentAlert
+                name: VPNErrorHandler.AuthCodeSentAlert
                 PropertyChanges {
                     target: alertBox
                     alertType: alertTypes.success
@@ -33,7 +33,7 @@ VPNAlert {
                 }
             },
             State {
-                name: VPN.AuthenticationFailedAlert
+                name: VPNErrorHandler.AuthenticationFailedAlert
                 PropertyChanges {
                     target: alertBox
                     //% "Authentication error"
@@ -48,7 +48,7 @@ VPNAlert {
                 }
             },
             State {
-                name: VPN.ConnectionFailedAlert
+                name: VPNErrorHandler.ConnectionFailedAlert
                 PropertyChanges {
                     target: alertBox
                     //% "Unable to connect"
@@ -58,7 +58,7 @@ VPNAlert {
                 }
             },
             State {
-                name: VPN.NoConnectionAlert
+                name: VPNErrorHandler.NoConnectionAlert
                 PropertyChanges {
                     target: alertBox
                     //% "No internet connection"
@@ -68,7 +68,7 @@ VPNAlert {
                 }
             },
             State {
-                name: VPN.ControllerErrorAlert
+                name: VPNErrorHandler.ControllerErrorAlert
                 PropertyChanges {
                     target: alertBox
                     //% "Background service error"
@@ -83,7 +83,7 @@ VPNAlert {
                 }
             },
             State {
-                name: VPN.UnrecoverableErrorAlert
+                name: VPNErrorHandler.UnrecoverableErrorAlert
                 PropertyChanges {
                     target: alertBox
                     alertText: qsTrId("vpn.alert.backendServiceError")
@@ -94,7 +94,7 @@ VPNAlert {
                 }
             },
             State {
-                name: VPN.RemoteServiceErrorAlert
+                name: VPNErrorHandler.RemoteServiceErrorAlert
                 PropertyChanges {
                     target: alertBox
                     //% "Remote service error"
@@ -106,7 +106,7 @@ VPNAlert {
                 }
             },
             State {
-                name: VPN.SubscriptionFailureAlert
+                name: VPNErrorHandler.SubscriptionFailureAlert
                 PropertyChanges {
                     target: alertBox
                     //% "Subscription failed"
@@ -116,7 +116,7 @@ VPNAlert {
                 }
             },
             State {
-                name: VPN.GeoIpRestrictionAlert
+                name: VPNErrorHandler.GeoIpRestrictionAlert
                 PropertyChanges {
                     target: alertBox
                     //% "Operation not allowed from current location"
@@ -125,7 +125,7 @@ VPNAlert {
                 }
             },
             State {
-                name: VPN.LogoutAlert
+                name: VPNErrorHandler.LogoutAlert
                 PropertyChanges {
                     target: alertBox
                     alertType: alertTypes.success

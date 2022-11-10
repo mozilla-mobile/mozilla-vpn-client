@@ -20,7 +20,7 @@ class TaskGroup final : public Task {
   void run() override;
 
   void cancel() override;
-  bool deletable() const override;
+  DeletePolicy deletePolicy() const override;
 
  private:
   void maybeComplete();

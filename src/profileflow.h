@@ -36,7 +36,7 @@ class ProfileFlow final : public QObject {
   void setForceReauthFlow(const bool forceReauthFlow);
 
  signals:
-  void stateChanged(State state);
+  void stateChanged(ProfileFlow::State state);
 
  private:
   void setState(State state);

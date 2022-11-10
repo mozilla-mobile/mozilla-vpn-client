@@ -10,7 +10,6 @@
 #include "models/device.h"
 #include "models/keys.h"
 #include "models/server.h"
-#include "mozillavpn.h"
 #include "settingsholder.h"
 
 #include <QDir>
@@ -67,7 +66,7 @@ void LocalSocketController::errorOccurred(
     emit initialized(false, false, QDateTime());
   }
 
-  MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
+  ErrorHandler::instance()->errorHandle(ErrorHandler::ControllerError);
   disconnectInternal();
 }
 
@@ -360,7 +359,7 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   }
 
   if (type == "backendFailure") {
-    MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
+    ErrorHandler::instance()->errorHandle(ErrorHandler::ControllerError);
     return;
   }
 

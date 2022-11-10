@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
+const { generalElements, telemetryScreen, initialScreen, homeScreen } = require('./elements.js');
 const vpn = require('./helper.js');
 
 describe('Unsecured network alert', function() {
@@ -20,8 +21,8 @@ describe('Unsecured network alert', function() {
     it('Unsecured network alert during the main view', async () => {
       assert(await vpn.getLastUrl() === '');
 
-      await vpn.waitForElement('getHelpLink');
-      await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
+      await vpn.waitForElement(initialScreen.GET_HELP_LINK);
+      await vpn.waitForElementProperty(initialScreen.GET_HELP_LINK, 'visible', 'true');
 
       await vpn.forceUnsecuredNetworkAlert();
       await vpn.wait();
@@ -36,10 +37,10 @@ describe('Unsecured network alert', function() {
         return;
       }
 
-      await vpn.waitForElement('getHelpLink');
-      await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
+      await vpn.waitForElement(initialScreen.GET_HELP_LINK);
+      await vpn.waitForElementProperty(initialScreen.GET_HELP_LINK, 'visible', 'true');
 
-      await vpn.clickOnElement('getStarted');
+      await vpn.clickOnElement(initialScreen.GET_STARTED);
 
       await vpn.waitForCondition(async () => {
         const url = await vpn.getLastUrl();
@@ -48,8 +49,8 @@ describe('Unsecured network alert', function() {
 
       await vpn.wait();
 
-      await vpn.waitForElement('authenticatingView');
-      await vpn.waitForElementProperty('authenticatingView', 'visible', 'true');
+      await vpn.waitForElement(initialScreen.AUTHENTICATE_VIEW);
+      await vpn.waitForElementProperty(initialScreen.AUTHENTICATE_VIEW, 'visible', 'true');
 
       await vpn.forceUnsecuredNetworkAlert();
       await vpn.wait();
@@ -57,19 +58,19 @@ describe('Unsecured network alert', function() {
       // No notifications during the main view.
       assert(vpn.lastNotification().title === null);
 
-      await vpn.waitForElement('cancelFooterLink');
-      await vpn.waitForElementProperty('cancelFooterLink', 'visible', 'true');
+      await vpn.waitForElement(homeScreen.CANCEL_FOOTER_LINK);
+      await vpn.waitForElementProperty(homeScreen.CANCEL_FOOTER_LINK, 'visible', 'true');
 
-      await vpn.clickOnElement('cancelFooterLink');
+      await vpn.clickOnElement(homeScreen.CANCEL_FOOTER_LINK);
       await vpn.wait();
 
-      await vpn.waitForElement('getStarted');
-      await vpn.waitForElementProperty('getStarted', 'visible', 'true');
+      await vpn.waitForElement(initialScreen.GET_STARTED);
+      await vpn.waitForElementProperty(initialScreen.GET_STARTED, 'visible', 'true');
     });
 
     it('Unsecured network alert in the Post authentication view', async () => {
       await vpn.authenticateInApp(false, false);
-      await vpn.waitForElement('postAuthenticationButton');
+      await vpn.waitForElement(telemetryScreen.POST_AUTHENTICATION_BUTTON);
 
       await vpn.forceUnsecuredNetworkAlert();
       await vpn.wait();
@@ -77,13 +78,13 @@ describe('Unsecured network alert', function() {
       // Notifications are not OK yet.
       assert(vpn.lastNotification().title === null);
 
-      await vpn.clickOnElement('postAuthenticationButton');
+      await vpn.clickOnElement(telemetryScreen.POST_AUTHENTICATION_BUTTON);
       await vpn.wait();
     });
 
     it('Unsecured network alert in the Telemetry policy view', async () => {
       await vpn.authenticateInApp(true, false);
-      await vpn.waitForElement('telemetryPolicyButton');
+      await vpn.waitForElement(telemetryScreen.TELEMETRY_POLICY_BUTTON);
 
       await vpn.forceUnsecuredNetworkAlert();
       await vpn.wait();
@@ -91,16 +92,16 @@ describe('Unsecured network alert', function() {
       // Notifications are not OK yet.
       assert(vpn.lastNotification().title === null);
 
-      await vpn.clickOnElement('telemetryPolicyButton');
+      await vpn.clickOnElement(telemetryScreen.TELEMETRY_POLICY_BUTTON);
       await vpn.wait();
     });
 
     it('Unsecured network alert in the Controller view', async () => {
       await vpn.authenticateInApp(true, true);
-      await vpn.waitForElement('controllerTitle');
-      await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
+      await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
+      await vpn.waitForElementProperty(generalElements.CONTROLLER_TITLE, 'visible', 'true');
       assert(
-          await vpn.getElementProperty('controllerTitle', 'text') ===
+          await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text') ===
           'VPN is off');
 
       await vpn.forceUnsecuredNetworkAlert();
@@ -112,10 +113,10 @@ describe('Unsecured network alert', function() {
       vpn.resetLastNotification();
       assert(vpn.lastNotification().title === null);
 
-      await vpn.waitForElement('controllerTitle');
-      await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
+      await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
+      await vpn.waitForElementProperty(generalElements.CONTROLLER_TITLE, 'visible', 'true');
       assert(
-          await vpn.getElementProperty('controllerTitle', 'text') ===
+          await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text') ===
           'VPN is off');
     });
   });
@@ -135,12 +136,12 @@ describe('Unsecured network alert', function() {
 
       await vpn.waitForCondition(async () => {
         let connectingMsg =
-            await vpn.getElementProperty('controllerTitle', 'text');
+            await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text');
         return connectingMsg === 'Connecting…';
       });
 
       assert(
-          await vpn.getElementProperty('controllerSubTitle', 'text') ===
+          await vpn.getElementProperty(generalElements.CONTROLLER_SUBTITLE, 'text') ===
           'Masking connection and location');
 
       await vpn.forceUnsecuredNetworkAlert();
@@ -157,7 +158,7 @@ describe('Unsecured network alert', function() {
     it('Unsecured network alert should not show when connected', async () => {
       await vpn.activate();
       await vpn.waitForCondition(async () => {
-        return await vpn.getElementProperty('controllerTitle', 'text') ===
+        return await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text') ===
             'VPN is on';
       });
 
@@ -177,13 +178,13 @@ describe('Unsecured network alert', function() {
     it('After disconnecting unsecured network alert should show', async () => {
       await vpn.activate();
       await vpn.waitForCondition(async () => {
-        return await vpn.getElementProperty('controllerTitle', 'text') ===
+        return await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text') ===
             'VPN is on';
       });
       await vpn.deactivate();
 
       await vpn.waitForCondition(async () => {
-        const msg = await vpn.getElementProperty('controllerTitle', 'text');
+        const msg = await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text');
         return msg === 'Disconnecting…' || msg === 'VPN is off';
       });
 

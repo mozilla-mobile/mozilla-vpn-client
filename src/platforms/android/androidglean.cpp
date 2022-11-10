@@ -111,11 +111,13 @@ void AndroidGlean::setGleanSourceTags(const QStringList& tags) {
       ServiceAction::ACTION_GLEAN_SET_SOURCE_TAGS, tags.join(","));
 }
 
-void AndroidGlean::gleanUploadEnabledChanged(bool enabled) {
+void AndroidGlean::gleanUploadEnabledChanged() {
+  bool enabled = SettingsHolder::instance()->gleanEnabled();
+  logger.debug() << " gleanEnabledChanged" << enabled;
+
   QJsonObject args;
   args["enabled"] = enabled;
   QJsonDocument doc(args);
-  logger.debug() << " gleanEnabledChanged" << enabled;
   AndroidVPNActivity::instance()->sendToService(
       ServiceAction::ACTION_GLEAN_ENABLED_CHANGED,
       doc.toJson(QJsonDocument::Compact));
@@ -123,7 +125,7 @@ void AndroidGlean::gleanUploadEnabledChanged(bool enabled) {
 
 void AndroidGlean::daemonConnected() {
   // Daemon is now ready
-  gleanUploadEnabledChanged(SettingsHolder::instance()->gleanEnabled());
+  gleanUploadEnabledChanged();
 }
 
 void AndroidGlean::applicationStateChanged(Qt::ApplicationState state) {

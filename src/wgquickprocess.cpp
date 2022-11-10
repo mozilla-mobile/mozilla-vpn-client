@@ -6,7 +6,6 @@
 #include "../../src/logger.h"
 
 #include <QCoreApplication>
-#include <QTemporaryDir>
 #include <QProcess>
 
 namespace {

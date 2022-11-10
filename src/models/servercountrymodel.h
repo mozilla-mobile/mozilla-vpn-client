@@ -25,6 +25,15 @@ class ServerCountryModel final : public QAbstractListModel {
     CitiesRole,
   };
 
+  enum ServerConnectionScores {
+    Unavailable = -1,
+    NoData = 0,
+    Poor = 1,
+    Moderate = 2,
+    Good = 3,
+  };
+  Q_ENUM(ServerConnectionScores);
+
   ServerCountryModel();
   ~ServerCountryModel();
 
@@ -59,10 +68,14 @@ class ServerCountryModel final : public QAbstractListModel {
   const QList<ServerCountry>& countries() const { return m_countries; }
 
   void retranslate();
+  void setServerLatency(const QString& publicKey, unsigned int msec);
   void setServerCooldown(const QString& publicKey, unsigned int duration);
   void setCooldownForAllServersInACity(const QString& countryCode,
                                        const QString& cityCode,
                                        unsigned int duration);
+
+  Q_INVOKABLE int cityConnectionScore(const QString& countryCode,
+                                      const QString& cityCode) const;
 
   // QAbstractListModel methods
 
@@ -74,10 +87,14 @@ class ServerCountryModel final : public QAbstractListModel {
 
   QVariant data(const QModelIndex& index, int role) const override;
 
+ signals:
+  void changed();
+
  private:
   [[nodiscard]] bool fromJsonInternal(const QByteArray& data);
 
   void sortCountries();
+  int cityConnectionScore(const ServerCity& city) const;
 
  private:
   QByteArray m_rawJson;

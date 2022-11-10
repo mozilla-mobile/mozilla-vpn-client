@@ -13,13 +13,13 @@ Item {
 
     TestCase {
         name: "MainTestsGleanMocks"
+        when: windowShown
 
         property var spyApplicationId
         property var spyUploadEnabledInitialize
         property var spyConfig
         property var spyTags
         property var spyLogPings
-        property var spySetDebugViewTag
         property var spyShutdownCalled: false
         property var spyUploadEnabled
 
@@ -40,10 +40,6 @@ Item {
                 spyLogPings = flag
             }
             Glean.setLogPings = mockGleanSetLogPings;
-            function mockGleanSetDebugViewTag(tag) {
-                spySetDebugViewTag = tag
-            }
-            Glean.setDebugViewTag = mockGleanSetDebugViewTag;
             function mockGleanShutdown() {
                 // Should be false before setting it to true in this function.
                 // Helps protect us from bad testing state.
@@ -112,22 +108,20 @@ Item {
             TestHelper.debugMode = false
             TestHelper.triggerInitializeGlean()
             compare(spyLogPings, undefined)
-            compare(spySetDebugViewTag, undefined)
 
             TestHelper.debugMode = true
             TestHelper.triggerInitializeGlean()
             compare(spyLogPings, true)
-            compare(spySetDebugViewTag, "MozillaVPN")
         }
 
         /*
-         * TODO - We should also have a companion unit test for the 
+         * TODO - We should also have a companion unit test for the
          * mozillavpn method mainWindowLoaded that checks that:
          * a) mainWindowLoaded calls initializeGlean
          * b) sets up a timer
          *
          * But we don't have a way to test mozillavpn.cpp functions yet.
-         * I have added to the integration test cases to cover our bases 
+         * I have added to the integration test cases to cover our bases
          * on these test cases.
         */
     }

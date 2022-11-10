@@ -42,7 +42,7 @@ EventListener::EventListener() {
     return;
   }
 
-  connect(&m_server, &QLocalServer::newConnection, [&] {
+  connect(&m_server, &QLocalServer::newConnection, &m_server, [&] {
     logger.debug() << "New connection received";
 
     if (!m_server.hasPendingConnections()) {
@@ -52,7 +52,7 @@ EventListener::EventListener() {
     QLocalSocket* socket = m_server.nextPendingConnection();
     Q_ASSERT(socket);
 
-    connect(socket, &QLocalSocket::readyRead, [socket]() {
+    connect(socket, &QLocalSocket::readyRead, socket, [socket]() {
       QByteArray input = socket->readAll();
       input = input.trimmed();
 

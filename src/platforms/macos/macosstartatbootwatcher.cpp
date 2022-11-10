@@ -6,23 +6,30 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "macosutils.h"
+#include "settingsholder.h"
 
 namespace {
 Logger logger(LOG_MACOS, "MacOSStartAtBootWatcher");
 }
 
-MacOSStartAtBootWatcher::MacOSStartAtBootWatcher(bool startAtBoot) {
+MacOSStartAtBootWatcher::MacOSStartAtBootWatcher() {
   MVPN_COUNT_CTOR(MacOSStartAtBootWatcher);
 
   logger.debug() << "StartAtBoot watcher";
-  MacOSUtils::enableLoginItem(startAtBoot);
+
+  connect(SettingsHolder::instance(), &SettingsHolder::startAtBootChanged, this,
+          &MacOSStartAtBootWatcher::startAtBootChanged);
+
+  startAtBootChanged();
 }
 
 MacOSStartAtBootWatcher::~MacOSStartAtBootWatcher() {
   MVPN_COUNT_DTOR(MacOSStartAtBootWatcher);
 }
 
-void MacOSStartAtBootWatcher::startAtBootChanged(const bool& startAtBoot) {
+void MacOSStartAtBootWatcher::startAtBootChanged() {
+  bool startAtBoot = SettingsHolder::instance()->startAtBoot();
+
   logger.debug() << "StartAtBoot changed:" << startAtBoot;
   MacOSUtils::enableLoginItem(startAtBoot);
 }

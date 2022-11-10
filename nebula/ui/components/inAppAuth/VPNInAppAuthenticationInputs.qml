@@ -25,13 +25,21 @@ ColumnLayout {
         return _isSignUpOrIn ? passwordInput : textInput
     }
 
+    function disableActiveInput() {
+        activeInput().enabled = false;
+    }
+
     Component.onCompleted: if (typeof(authError) === "undefined" || !authError.visible) activeInput().forceActiveFocus();
 
     spacing: VPNTheme.theme.vSpacing - VPNTheme.theme.listSpacing
 
     ColumnLayout {
         function submitInfo(input) {
-            if (!input.hasError && input.text.length > 0 && btn.enabled) btn.clicked();
+            if (!input.hasError && input.text.length > 0 && btn.enabled)
+            {
+                disableActiveInput();
+                btn.clicked();
+            }
         }
 
         id: col
@@ -186,7 +194,10 @@ ColumnLayout {
                         VPNAuthInApp.state === VPNAuthInApp.StateSigningUp ||
                         VPNAuthInApp.state === VPNAuthInApp.StateVerifyingSessionEmailCode ||
                         VPNAuthInApp.state === VPNAuthInApp.StateVerifyingSessionTotpCode
-        onClicked: _buttonOnClicked(activeInput().text)
+        onClicked: {
+            disableActiveInput();
+            _buttonOnClicked(activeInput().text);
+        }
         width: undefined
 
     }
@@ -221,12 +232,14 @@ ColumnLayout {
             case VPNAuthInApp.ErrorConnectionTimeout:
                 // In case of a timeout we want to exit here 
                 // to skip setting hasError - so the user can retry instantly
+                activeInput().enabled = true;
                 return;
             }
 
             if (!authError.visible)
                 activeInput().forceActiveFocus();
             activeInput().hasError = true;
+            activeInput().enabled = true;
         }
     }
 }

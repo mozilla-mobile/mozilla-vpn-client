@@ -34,7 +34,6 @@ VPNFlickable {
     ColumnLayout {
         id: col
         anchors.top: parent.top
-        height: Math.max(parent.height, col.implicitHeight)
         anchors.left: parent.left
         anchors.right: parent.right
 
@@ -174,12 +173,9 @@ VPNFlickable {
             Layout.minimumWidth: col.width - VPNTheme.theme.vSpacing * 2
             Layout.leftMargin: VPNTheme.theme.vSpacing
             Layout.rightMargin: VPNTheme.theme.vSpacing
+            Layout.bottomMargin: navbar.visible ? 0 : 34
 
-        }
 
-        VPNVerticalSpacer {
-            Layout.minimumHeight: VPNTheme.theme.vSpacing * 2
-            Layout.fillWidth: true
         }
     }
 

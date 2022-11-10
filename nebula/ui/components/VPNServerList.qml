@@ -15,7 +15,7 @@ import components.forms 0.1
 FocusScope {
     id: focusScope
 
-    property real listOffset: (VPNTheme.theme.menuHeight * 0.5)
+    property real listOffset: (VPNTheme.theme.menuHeight * 2)
     property bool showRecentConnections: false
     property var currentServer
 
@@ -129,6 +129,8 @@ FocusScope {
             objectName: "serverCountryViewRecommend"
             id: vpnFlickableRecommended
 
+            anchors.fill: parent
+            flickContentHeight: serverList.implicitHeight + verticalSpacer.height
             flickContentHeight: serverListRecommended.implicitHeight + listOffset
             anchors.fill: parent
 

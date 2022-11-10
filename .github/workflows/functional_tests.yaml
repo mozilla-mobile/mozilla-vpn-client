@@ -22,7 +22,7 @@ jobs:
       matrix: ${{ steps.testGen.outputs.tests }}
     steps:
       - name: Clone repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Checkout submodules
         shell: bash
@@ -43,7 +43,7 @@ jobs:
 
           # Download the build and runtime package dependencies.
           sudo apt-get -o "Dir::Cache::archives=$(pwd)/build/archive" install -y \
-               $(./scripts/linux/getdeps.py -a linux/debian/control.qt6)
+               $(./scripts/linux/getdeps.py -a linux/debian/control)
           sudo chown -R $USER:$USER build/archive
 
       - name: Compile test client
@@ -88,7 +88,7 @@ jobs:
         test: ${{ fromJson(needs.build_test_app.outputs.matrix) }}
     steps:
       - name: Clone repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
         with:
           name: test-client-${{ github.sha }}
@@ -116,6 +116,7 @@ jobs:
           command: |
             export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
             export HEADLESS=yes
+            export TZ=Europe/London
             mkdir -p $ARTIFACT_DIR
             xvfb-run -a npm run functionalTest -- ${{matrix.test.path}}
         env:
@@ -127,12 +128,13 @@ jobs:
         continue-on-error: true # Ignore GRCOV parsing errors, see github.com/mozilla/grcov/issues/570
         timeout-minutes: 1 # Give GRCOV a short timeout in case it hangs after a panic
         run: |
+          chmod +x ./build/bin/grcov
           ./build/bin/grcov build/cmake/src/CMakeFiles/mozillavpn.dir \
               -s src -t lcov --branch --ignore-not-existing \
               -o ${{runner.temp}}/artifacts/functional_lcov.info
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         if: steps.generateGrcov.outcome == 'success'
         with:
           directory: .
@@ -142,7 +144,7 @@ jobs:
           verbose: true
 
       - name: Uploading artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
           name: ${{matrix.test.name}} Logs

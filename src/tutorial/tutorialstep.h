@@ -12,6 +12,7 @@
 #include <QJsonObject>
 #include <QTimer>
 
+class AddonConditionWatcher;
 class AddonTutorial;
 class QJsonValue;
 class QQuickItem;
@@ -46,16 +47,25 @@ class TutorialStep final : public QObject {
 
  private:
   AddonTutorial* m_parent = nullptr;
+  AddonConditionWatcher* m_conditionWatcher = nullptr;
+
   const QString m_stepId;
   const QString m_element;
   AddonProperty m_string;
-  const QJsonObject m_conditions;
   const QList<TutorialStepBefore*> m_before;
   TutorialStepNext* m_next = nullptr;
 
   QTimer m_timer;
-  bool m_started = false;
   int m_currentBeforeStep = 0;
+
+  bool m_enabled = false;
+
+  enum {
+    StateConditionCheck,
+    StateBeforeRun,
+    StateTooltip,
+    StateStopped,
+  } m_state = StateStopped;
 };
 
 #endif  // TUTORIALSTEP_H

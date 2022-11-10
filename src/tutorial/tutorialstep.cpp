@@ -4,6 +4,7 @@
 
 #include "tutorialstep.h"
 #include "addons/addontutorial.h"
+#include "addons/conditionwatchers/addonconditionwatcher.h"
 #include "inspector/inspectorutils.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -34,7 +35,7 @@ TutorialStep* TutorialStep::create(AddonTutorial* parent,
     return nullptr;
   }
 
-  stepId = QString("tutorial.%1.step.%2").arg(tutorialId).arg(stepId);
+  stepId = QString("tutorial.%1.step.%2").arg(tutorialId, stepId);
 
   QString element = obj["element"].toString();
   if (element.isEmpty()) {
@@ -73,22 +74,35 @@ TutorialStep::TutorialStep(AddonTutorial* parent, const QString& element,
       m_parent(parent),
       m_stepId(stepId),
       m_element(element),
-      m_conditions(conditions),
       m_before(before),
-      m_next(next) {
+      m_next(next),
+      m_enabled(Addon::evaluateConditions(conditions)) {
   MVPN_COUNT_CTOR(TutorialStep);
 
   m_string.initialize(stepId, fallback);
 
   m_timer.setSingleShot(true);
   connect(&m_timer, &QTimer::timeout, this, &TutorialStep::startInternal);
+
+  m_conditionWatcher = Addon::maybeCreateConditionWatchers(parent, conditions);
+
+  if (m_conditionWatcher) {
+    connect(m_conditionWatcher, &AddonConditionWatcher::conditionChanged, this,
+            [this](bool enabled) {
+              if (enabled) {
+                if (enabled && m_state == StateConditionCheck) {
+                  startInternal();
+                }
+              }
+            });
+  }
 }
 
 TutorialStep::~TutorialStep() { MVPN_COUNT_DTOR(TutorialStep); }
 
 void TutorialStep::stop() {
-  Q_ASSERT(m_started);
-  m_started = false;
+  Q_ASSERT(m_state != StateStopped);
+  m_state = StateStopped;
 
   m_timer.stop();
 
@@ -99,49 +113,74 @@ void TutorialStep::stop() {
 }
 
 void TutorialStep::start() {
-  Q_ASSERT(!m_started);
-  m_started = true;
+  Q_ASSERT(m_state == StateStopped);
+  m_state = StateConditionCheck;
+
   m_currentBeforeStep = 0;
 
   startInternal();
 }
 
 void TutorialStep::startInternal() {
-  Q_ASSERT(m_started);
+  Q_ASSERT(m_state != StateStopped);
 
-  if (!Addon::evaluateConditions(m_conditions)) {
-    logger.info()
-        << "Exclude the tutorial step because conditions do not match";
-    emit completed();
-    return;
-  }
+  switch (m_state) {
+    case StateConditionCheck: {
+      if (!m_enabled) {
+        logger.info()
+            << "Exclude the tutorial step because conditions do not match";
+        emit completed();
+        return;
+      }
 
-  while (m_currentBeforeStep < m_before.length()) {
-    if (!m_before[m_currentBeforeStep]->run()) {
-      m_timer.start(TIMEOUT_ITEM_TIMER_MSEC);
-      return;
+      if (m_conditionWatcher && !m_conditionWatcher->conditionApplied()) {
+        return;
+      }
+
+      m_state = StateBeforeRun;
+      [[fallthrough]];
     }
 
-    ++m_currentBeforeStep;
+    case StateBeforeRun: {
+      while (m_currentBeforeStep < m_before.length()) {
+        if (!m_before[m_currentBeforeStep]->run()) {
+          m_timer.start(TIMEOUT_ITEM_TIMER_MSEC);
+          return;
+        }
+
+        ++m_currentBeforeStep;
+      }
+
+      m_state = StateTooltip;
+      [[fallthrough]];
+    }
+
+    case StateTooltip: {
+      QObject* element = InspectorUtils::findObject(m_element);
+      if (!element) {
+        m_timer.start(TIMEOUT_ITEM_TIMER_MSEC);
+        return;
+      }
+
+      QQuickItem* item = qobject_cast<QQuickItem*>(element);
+      Q_ASSERT(item);
+
+      Tutorial* tutorial = Tutorial::instance();
+      Q_ASSERT(tutorial);
+
+      tutorial->requireTooltipShown(m_parent, true);
+      tutorial->requireTooltipNeeded(m_parent, m_stepId, m_string.get(),
+                                     element);
+
+      connect(m_next, &TutorialStepNext::completed, this,
+              &TutorialStep::completed);
+      m_next->start();
+      break;
+    }
+
+    default:
+      Q_ASSERT(false);
   }
-
-  QObject* element = InspectorUtils::findObject(m_element);
-  if (!element) {
-    m_timer.start(TIMEOUT_ITEM_TIMER_MSEC);
-    return;
-  }
-
-  QQuickItem* item = qobject_cast<QQuickItem*>(element);
-  Q_ASSERT(item);
-
-  Tutorial* tutorial = Tutorial::instance();
-  Q_ASSERT(tutorial);
-
-  tutorial->requireTooltipShown(m_parent, true);
-  tutorial->requireTooltipNeeded(m_parent, m_stepId, m_string.get(), element);
-
-  connect(m_next, &TutorialStepNext::completed, this, &TutorialStep::completed);
-  m_next->start();
 }
 
 bool TutorialStep::itemPicked(const QList<QQuickItem*>& list) {

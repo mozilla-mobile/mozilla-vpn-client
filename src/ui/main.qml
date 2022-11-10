@@ -21,6 +21,9 @@ Window {
 
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
 
+    LayoutMirroring.enabled: VPNLocalizer.isRightToLeft
+    LayoutMirroring.childrenInherit: true
+
     function fullscreenRequired() {
         return Qt.platform.os === "android" ||
                 Qt.platform.os === "ios" ||
@@ -43,6 +46,10 @@ Window {
         case 2778: // iPhone_12_Pro_Max
         case 2340: // iPhone_12_mini
             return 34;
+        case 2556: // iPhone_14_Pro
+            return 48;
+        case 2796: // iPhone_14_Pro_Max
+            return 48;
         default:
             return 20;
         }
@@ -141,7 +148,10 @@ Window {
             if (VPN.debugMode) {
                 console.debug("Initializing glean with debug mode");
                 Glean.setLogPings(true);
-                Glean.setDebugViewTag("MozillaVPN");
+                // Uncomment for debugging purposes.
+                // See: https://mozilla.github.io/glean/book/reference/debug/debugViewTag.html#debug-view-tag
+                //
+                // Glean.setDebugViewTag("MozillaVPN");
             }
             var channel = VPN.stagingMode ? "staging" : "production";
 
@@ -176,7 +186,7 @@ Window {
         }
 
         function onAboutToQuit() {
-            console.debug("about to quit, shutdown Glean"); 
+            console.debug("about to quit, shutdown Glean");
             // Submit the main ping in case there are outstading metrics in storage before shutdown.
             Pings.main.submit();
             // Use glean's built-in shutdown method - https://mozilla.github.io/glean/book/reference/general/shutdown.html

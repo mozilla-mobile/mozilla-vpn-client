@@ -5,6 +5,7 @@
 #ifndef TASKRELEASE_H
 #define TASKRELEASE_H
 
+#include "errorhandler.h"
 #include "task.h"
 
 #include <QObject>
@@ -19,13 +20,16 @@ class TaskRelease final : public Task {
     Update,
   };
 
-  explicit TaskRelease(Op op);
+  TaskRelease(Op op,
+              ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy);
   ~TaskRelease();
 
   void run() override;
 
   // We do not want to delete update operations, triggered by users.
-  bool deletable() const override { return m_op != Update; }
+  DeletePolicy deletePolicy() const override {
+    return m_op == Update ? NonDeletable : Deletable;
+  }
 
  signals:
   void updateRequired();
@@ -33,7 +37,9 @@ class TaskRelease final : public Task {
   void updateNotAvailable();
 
  private:
-  Op m_op;
+  Op m_op = Check;
+  ErrorHandler::ErrorPropagationPolicy m_errorPropagationPolicy =
+      ErrorHandler::DoNotPropagateError;
 };
 
 #endif  // TASKRELEASE_H

@@ -21,7 +21,6 @@
 #include "settingsholder.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "telemetry/gleansample.h"
-#include "timersingleshot.h"
 
 #if defined(MVPN_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
@@ -43,11 +42,13 @@ constexpr const int CONNECTION_MAX_RETRY = 9;
 constexpr const uint32_t CONFIRMING_TIMOUT_SEC = 10;
 constexpr const uint32_t HANDSHAKE_TIMEOUT_SEC = 15;
 
+#ifndef MVPN_IOS
 // The Mullvad proxy services are located at internal IPv4 addresses in the
 // 10.124.0.0/20 address range, which is a subset of the 10.0.0.0/8 Class-A
 // private address range.
 constexpr const char* MULLVAD_PROXY_RANGE = "10.124.0.0";
 constexpr const int MULLVAD_PROXY_RANGE_LENGTH = 20;
+#endif
 
 namespace {
 Logger logger(LOG_CONTROLLER, "Controller");
@@ -122,14 +123,13 @@ void Controller::initialize() {
   connect(this, &Controller::stateChanged, this,
           &Controller::maybeEnableDisconnectInConfirming);
 
-  connect(&m_ping_canary, &PingHelper::pingSentAndReceived, [this]() {
+  connect(&m_ping_canary, &PingHelper::pingSentAndReceived, this, [this]() {
     m_ping_canary.stop();
     m_ping_received = true;
     logger.info() << "Canary Ping Succeeded";
   });
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
   m_impl->initialize(device, vpn->keys());
@@ -144,7 +144,7 @@ void Controller::implInitialized(bool status, bool a_connected,
   Q_ASSERT(m_state == StateInitializing);
 
   if (!status) {
-    MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
+    ErrorHandler::instance()->errorHandle(ErrorHandler::ControllerError);
     setState(StateOff);
     return;
   }
@@ -199,7 +199,6 @@ void Controller::activateInternal(bool forcePort53) {
   m_activationQueue.clear();
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   Server exitServer = Server::weightChooser(vpn->exitServers());
   if (!exitServer.initialized()) {
@@ -293,7 +292,7 @@ void Controller::activateNext() {
   MozillaVPN* vpn = MozillaVPN::instance();
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
   if (device == nullptr) {
-    vpn->errorHandle(ErrorHandler::AuthenticationError);
+    ErrorHandler::instance()->errorHandle(ErrorHandler::AuthenticationError);
     vpn->reset(false);
     return;
   }
@@ -316,7 +315,6 @@ bool Controller::silentSwitchServers() {
   }
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   // Set a cooldown timer on the current server.
   QList<Server> servers = vpn->exitServers();
@@ -402,7 +400,6 @@ void Controller::handshakeTimeout() {
   logger.debug() << "Timeout while waiting for handshake";
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
   Q_ASSERT(!m_activationQueue.isEmpty());
 
   // Block the offending server and try again.
@@ -441,7 +438,6 @@ void Controller::setCooldownForAllServersInACity(const QString& countryCode,
   Q_ASSERT(!Constants::inProduction());
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   vpn->setCooldownForAllServersInACity(countryCode, cityCode);
 }
@@ -481,7 +477,6 @@ void Controller::changeServer(const QString& countryCode, const QString& city,
   Q_ASSERT(m_state == StateOn || m_state == StateOff);
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   if (vpn->currentServer()->exitCountryCode() == countryCode &&
       vpn->currentServer()->exitCityName() == city &&
@@ -734,6 +729,8 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   QList<IPAddress> list;
 
 #ifdef MVPN_IOS
+  Q_UNUSED(exitServer);
+
   logger.debug() << "Catch all IPv4";
   list.append(IPAddress("0.0.0.0/0"));
 

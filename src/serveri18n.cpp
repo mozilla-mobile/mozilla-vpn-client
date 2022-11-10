@@ -21,7 +21,7 @@ QHash<QString, QString> s_items;
 
 QString itemKey(const QString& languageCode, const QString& countryCode,
                 const QString& city = QString()) {
-  return QString("%1^%2^%3").arg(languageCode).arg(countryCode).arg(city);
+  return QString("%1^%2^%3").arg(languageCode, countryCode, city);
 }
 
 void addCity(const QString& countryCode, const QJsonValue& value) {
@@ -82,7 +82,7 @@ void addCountry(const QJsonValue& value) {
   }
 
   QJsonArray cityArray = cities.toArray();
-  for (const QJsonValue city : cityArray) {
+  for (const QJsonValue& city : cityArray) {
     addCity(countryCode, city);
   }
 }
@@ -107,7 +107,7 @@ void maybeInitialize() {
   }
 
   QJsonArray array = json.array();
-  for (const QJsonValue country : array) {
+  for (const QJsonValue& country : array) {
     addCountry(country);
   }
 }
@@ -125,7 +125,7 @@ QString translateItemWithLanguage(const QString& languageCode,
   // if the language code contains the 'region' part too, we check if we have
   // translations for the whole 'primary language'. Ex: 'de-AT' vs 'de'.
   bool trimmed = false;
-  int pos = languageCodeCopy.indexOf("-");
+  qsizetype pos = languageCodeCopy.indexOf("-");
   if (pos > 0) {
     languageCodeCopy = languageCodeCopy.left(pos);
     trimmed = true;

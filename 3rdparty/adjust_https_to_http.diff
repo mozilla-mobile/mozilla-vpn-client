@@ -115,7 +115,7 @@ index 668fa208..2317e3cd 100644
  
          return convertedUrl;
 diff --git a/com/adjust/sdk/Constants.java b/com/adjust/sdk/Constants.java
-index c8f1a0ec..2f07c2e3 100644
+index ae50eefe..3d79c99f 100644
 --- a/com/adjust/sdk/Constants.java
 +++ b/com/adjust/sdk/Constants.java
 @@ -27,7 +27,7 @@ public interface Constants {
@@ -125,10 +125,10 @@ index c8f1a0ec..2f07c2e3 100644
 -    String SCHEME = "https";
 +    String SCHEME = "http";
      String AUTHORITY = "app.adjust.com";
-     String CLIENT_SDK = "android4.28.5";
+     String CLIENT_SDK = "android4.32.0";
      String LOGTAG = "Adjust";
 diff --git a/com/adjust/sdk/network/ActivityPackageSender.java b/com/adjust/sdk/network/ActivityPackageSender.java
-index 297c9eaa..a4597fc8 100644
+index 25b8f4b4..d08c475e 100644
 --- a/com/adjust/sdk/network/ActivityPackageSender.java
 +++ b/com/adjust/sdk/network/ActivityPackageSender.java
 @@ -13,7 +13,7 @@ import com.adjust.sdk.TrackingState;
@@ -243,7 +243,7 @@ index 3f297792..3c3447e2 100644
 -        void applyConnectionOptions(HttpsURLConnection connection, String clientSdk);
 +        void applyConnectionOptions(HttpURLConnection connection, String clientSdk);
      }
-
+ 
      public static IConnectionOptions createDefaultConnectionOptions() {
          return new IConnectionOptions() {
              @Override

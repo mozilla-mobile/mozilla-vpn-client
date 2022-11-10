@@ -11,7 +11,7 @@ if(NOT (DEFINED CMAKE_CONFIGURATION_TYPES OR DEFINED CMAKE_BUILD_TYPE))
     message("Setting build type ${CMAKE_BUILD_TYPE}")
 endif()
 
-project("Mozilla VPN" VERSION 2.10.0 LANGUAGES C CXX
+project("Mozilla VPN" VERSION 2.12.0 LANGUAGES C CXX
         DESCRIPTION "A fast, secure and easy to use VPN. Built by the makers of Firefox."
         HOMEPAGE_URL "https://vpn.mozilla.org"
 )
@@ -99,29 +99,33 @@ add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0x050F00)
 
 # VPN Client build targets
 add_subdirectory(src)
+# Glean.js
 add_subdirectory(glean)
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    # Glean.rs
+    add_subdirectory(vpnglean)
+endif()
 add_subdirectory(lottie)
 add_subdirectory(nebula)
 add_subdirectory(translations)
-
-# Testing build targets
-option(BUILD_TESTING "Build the testing tree." OFF)
-include(CTest)
-add_custom_target(build_tests)
-set_target_properties(build_tests PROPERTIES
-    EXCLUDE_FROM_ALL $<NOT:$<BOOL:${BUILD_TESTING}>>
-    FOLDER "Tests"
-)
 
 if(NOT CMAKE_CROSSCOMPILING)
     # Web Extension build targets
     add_subdirectory(extension)
 
-    # Tests
-    add_subdirectory(tests/auth)
-    add_subdirectory(tests/nativemessaging)
-    add_subdirectory(tests/unit)
-    add_subdirectory(tests/qml)
+    # Enable testing
+    include(CTest)
+    add_custom_target(build_tests)
+    set_target_properties(build_tests PROPERTIES
+        EXCLUDE_FROM_ALL TRUE
+        FOLDER "Tests"
+    )
+
+    # Unit Tests
+    add_subdirectory(tests/auth EXCLUDE_FROM_ALL)
+    add_subdirectory(tests/nativemessaging EXCLUDE_FROM_ALL)
+    add_subdirectory(tests/unit EXCLUDE_FROM_ALL)
+    add_subdirectory(tests/qml EXCLUDE_FROM_ALL)
 endif()
 
 # Extra platform targets

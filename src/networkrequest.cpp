@@ -66,6 +66,11 @@ NetworkRequest::NetworkRequest(Task* parent, int status,
   m_request.setOriginatingObject(parent);
 
   if (setAuthorizationHeader) {
+    if (SettingsHolder::instance()->token().isEmpty()) {
+      logger.error() << "INVALID TOKEN! This network request is going to fail.";
+      Q_ASSERT(false);
+    }
+
     QByteArray authorizationHeader = "Bearer ";
     authorizationHeader.append(
         SettingsHolder::instance()->token().toLocal8Bit());
@@ -148,6 +153,50 @@ NetworkRequest* NetworkRequest::createForGetHostAddress(
 }
 
 // static
+NetworkRequest* NetworkRequest::createForUploadData(Task* parent,
+                                                    const QString& url,
+                                                    QIODevice* uploadData) {
+  Q_ASSERT(parent);
+  Q_ASSERT(uploadData);
+  QUrl requestUrl(url);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/x-www-form-urlencoded");
+  r->m_request.setUrl(url);
+
+  r->uploadDataRequest(uploadData);
+  return r;
+}
+
+// static
+NetworkRequest* NetworkRequest::createForUploadDataHostAddress(
+    Task* parent, const QString& url, QIODevice* uploadData,
+    const QHostAddress& address) {
+  Q_ASSERT(parent);
+  Q_ASSERT(uploadData);
+  QUrl requestUrl(url);
+  QString hostname = requestUrl.host();
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/x-www-form-urlencoded");
+
+  // Rewrite the request URL to use an explicit host address.
+  if (address.protocol() == QAbstractSocket::IPv6Protocol) {
+    requestUrl.setHost("[" + address.toString() + "]");
+  } else {
+    requestUrl.setHost(address.toString());
+  }
+  r->m_request.setUrl(requestUrl);
+  r->m_request.setRawHeader("Host", hostname.toLocal8Bit());
+  r->m_request.setPeerVerifyName(hostname);
+
+  r->uploadDataRequest(uploadData);
+  return r;
+}
+
+// static
 NetworkRequest* NetworkRequest::createForAuthenticationVerification(
     Task* parent, const QString& pkceCodeSuccess,
     const QString& pkceCodeVerifier) {
@@ -190,7 +239,7 @@ NetworkRequest* NetworkRequest::createForAdjustProxy(
   r->m_request.setUrl(url);
 
   QJsonObject headersObj;
-  for (QPair<QString, QString> header : headers) {
+  for (const QPair<QString, QString>& header : headers) {
     headersObj.insert(header.first, header.second);
   }
 
@@ -202,7 +251,7 @@ NetworkRequest* NetworkRequest::createForAdjustProxy(
   obj.insert("bodyParameters", bodyParameters);
 
   QJsonArray unknownParametersArray;
-  for (QString unknownParameter : unknownParameters) {
+  for (const QString& unknownParameter : unknownParameters) {
     unknownParametersArray.append(unknownParameter);
   }
   obj.insert("unknownParameters", unknownParametersArray);
@@ -251,7 +300,6 @@ NetworkRequest* NetworkRequest::createForDeviceRemoval(Task* parent,
   url.append("/api/v1/vpn/device/");
   url.append(QUrl::toPercentEncoding(pubKey));
 
-  QUrl u(url);
   r->m_request.setUrl(QUrl(url));
 
 #ifdef MVPN_DEBUG
@@ -1049,6 +1097,13 @@ void NetworkRequest::postRequest(const QByteArray& body) {
   m_timer.start(REQUEST_TIMEOUT_MSEC);
 }
 
+void NetworkRequest::uploadDataRequest(QIODevice* data) {
+  QNetworkAccessManager* manager =
+      NetworkManager::instance()->networkAccessManager();
+  handleReply(manager->post(m_request, data));
+  m_timer.start(REQUEST_TIMEOUT_MSEC);
+}
+
 void NetworkRequest::handleReply(QNetworkReply* reply) {
   Q_ASSERT(reply);
   Q_ASSERT(!m_reply);
@@ -1069,7 +1124,11 @@ void NetworkRequest::handleReply(QNetworkReply* reply) {
           &NetworkRequest::maybeDeleteLater);
   connect(m_reply, &QNetworkReply::downloadProgress, this,
           [&](qint64 bytesReceived, qint64 bytesTotal) {
-            requestUpdated(bytesReceived, bytesTotal, m_reply);
+            emit requestUpdated(bytesReceived, bytesTotal, m_reply);
+          });
+  connect(m_reply, &QNetworkReply::uploadProgress, this,
+          [&](qint64 bytesSent, qint64 bytesTotal) {
+            uploadProgressed(bytesSent, bytesTotal, m_reply);
           });
 }
 

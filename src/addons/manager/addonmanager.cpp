@@ -43,15 +43,15 @@ AddonManager* AddonManager::instance() {
 
 // static
 QString AddonManager::addonServerAddress() {
-  if (Constants::inProduction()) {
-    return Constants::ADDON_PRODUCTION_URL;
-  }
-
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
   if (settingsHolder->addonCustomServer()) {
     return settingsHolder->addonCustomServerAddress();
+  }
+
+  if (Constants::inProduction()) {
+    return Constants::ADDON_PRODUCTION_URL;
   }
 
   return Constants::ADDON_STAGING_URL;
@@ -128,18 +128,16 @@ void AddonManager::updateAddonsList(QList<AddonData> addons) {
     }
   }
 
-  if (!m_loadCompleted) {
-    if (taskAdded) {
-      TaskScheduler::scheduleTask(new TaskFunction(
-          [this]() {
-            m_loadCompleted = true;
-            emit loadCompletedChanged();
-          },
-          false));
-    } else {
-      m_loadCompleted = true;
-      emit loadCompletedChanged();
-    }
+  if (taskAdded) {
+    TaskScheduler::scheduleTask(new TaskFunction(
+        [this]() {
+          m_loadCompleted = true;
+          emit loadCompletedChanged();
+        },
+        Task::Reschedulable));
+  } else {
+    m_loadCompleted = true;
+    emit loadCompletedChanged();
   }
 }
 
@@ -174,11 +172,9 @@ bool AddonManager::loadManifest(const QString& manifestFileName) {
       }
       if (!enabled) {
         beginRemoveRows(QModelIndex(), pos, pos);
-        removeRow(pos);
         endRemoveRows();
       } else {
         beginInsertRows(QModelIndex(), pos, pos);
-        insertRow(pos);
         endInsertRows();
       }
       break;
@@ -201,30 +197,23 @@ void AddonManager::unload(const QString& addonId) {
 
   Addon* addon = m_addons[addonId].m_addon;
 
-  if (!addon) {
-    m_addons.remove(addonId);
-    return;
-  }
+  if (addon) {
+    if (addon->enabled()) {
+      addon->disable();
+    }
 
-  bool addonEnabled = addon->enabled();
-  if (addonEnabled) {
-    beginResetModel();
+    QDir dir;
+    if (m_addonDirectory.getDirectory(&dir)) {
+      QString addonFileName(QString("%1.rcc").arg(addonId));
+      QString addonFilePath(dir.filePath(addonFileName));
+      QResource::unregisterResource(addonFilePath, mountPath(addonId));
+    }
+
+    addon->deleteLater();
   }
 
   m_addons.remove(addonId);
-
-  if (addonEnabled) {
-    endResetModel();
-  }
-
-  QDir dir;
-  if (m_addonDirectory.getDirectory(&dir)) {
-    QString addonFileName(QString("%1.rcc").arg(addonId));
-    QString addonFilePath(dir.filePath(addonFileName));
-    QResource::unregisterResource(addonFilePath, mountPath(addonId));
-  }
-
-  addon->deleteLater();
+  emit countChanged();
 }
 
 void AddonManager::retranslate() {
@@ -296,6 +285,7 @@ bool AddonManager::validateAndLoad(const QString& addonId,
     return false;
   }
 
+  emit countChanged();
   return true;
 }
 
@@ -332,7 +322,9 @@ QHash<int, QByteArray> AddonManager::roleNames() const {
   return roles;
 }
 
-int AddonManager::rowCount(const QModelIndex&) const {
+int AddonManager::rowCount(const QModelIndex&) const { return count(); }
+
+int AddonManager::count() const {
   int count = 0;
   for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
        i != m_addons.constEnd(); ++i) {

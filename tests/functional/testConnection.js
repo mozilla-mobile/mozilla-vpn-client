@@ -3,28 +3,29 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
+const { generalElements } = require('./elements.js');
 const vpn = require('./helper.js');
 
 describe('Connectivity', function() {
   this.ctx.authenticationNeeded = true;
 
   it('check the ui', async () => {
-    await vpn.waitForElement('controllerTitle');
-    await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
+    await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
+    await vpn.waitForElementProperty(generalElements.CONTROLLER_TITLE, 'visible', 'true');
     assert(
-        await vpn.getElementProperty('controllerTitle', 'text') ===
+        await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text') ===
         'VPN is off');
 
-    await vpn.waitForElementProperty('controllerSubTitle', 'visible', 'true');
+    await vpn.waitForElementProperty(generalElements.CONTROLLER_SUBTITLE, 'visible', 'true');
     assert(
-        await vpn.getElementProperty('controllerSubTitle', 'text') ===
+        await vpn.getElementProperty(generalElements.CONTROLLER_SUBTITLE, 'text') ===
         'Turn on to protect your privacy');
 
-    await vpn.waitForElementProperty('controllerToggle', 'visible', 'true');
+    await vpn.waitForElementProperty(generalElements.CONTROLLER_TOGGLE, 'visible', 'true');
   });
 
   it('Connect to VPN', async () => {
-    await vpn.waitForElement('controllerTitle');
+    await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
 
     await vpn.setSetting('connection-change-notification', 'true');
     // TODO: investigate why the click doesn't work on github.
@@ -33,16 +34,16 @@ describe('Connectivity', function() {
 
     await vpn.waitForCondition(async () => {
       let connectingMsg =
-          await vpn.getElementProperty('controllerTitle', 'text');
+          await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text');
       return connectingMsg === 'Connecting…';
     });
 
     assert(
-        await vpn.getElementProperty('controllerSubTitle', 'text') ===
+        await vpn.getElementProperty(generalElements.CONTROLLER_SUBTITLE, 'text') ===
         'Masking connection and location');
 
     await vpn.waitForCondition(async () => {
-      return await vpn.getElementProperty('controllerTitle', 'text') ==
+      return await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text') ==
           'VPN is on';
     });
 
@@ -58,12 +59,12 @@ describe('Connectivity', function() {
   });
 
   it('Disconnecting and disconnected', async () => {
-    await vpn.waitForElement('controllerTitle');
+    await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
 
     await vpn.setSetting('connection-change-notification', 'true');
     await vpn.activate();
     await vpn.waitForCondition(async () => {
-      return await vpn.getElementProperty('controllerTitle', 'text') ==
+      return await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text') ==
           'VPN is on';
     });
     await vpn.deactivate();
@@ -71,12 +72,12 @@ describe('Connectivity', function() {
     // No test for disconnecting because often it's too fast to be tracked.
 
     await vpn.waitForCondition(async () => {
-      return await vpn.getElementProperty('controllerTitle', 'text') ===
+      return await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text') ===
           'VPN is off';
     });
 
     assert(
-        await vpn.getElementProperty('controllerSubTitle', 'text') ===
+        await vpn.getElementProperty(generalElements.CONTROLLER_SUBTITLE, 'text') ===
         'Turn on to protect your privacy');
 
     await vpn.waitForCondition(() => {

@@ -36,7 +36,6 @@ void CaptivePortalDetection::initialize() {
 
 void CaptivePortalDetection::networkChanged() {
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   // The captive portal background monitor is looking
   // wheter a portal on the current network is gone.
@@ -64,7 +63,6 @@ void CaptivePortalDetection::stateChanged() {
   }
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
   Controller::State state = vpn->controller()->state();
 
   if (state == Controller::StateOff) {
@@ -111,7 +109,6 @@ void CaptivePortalDetection::detectCaptivePortal() {
   captivePortalMonitor()->stop();
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   // This method is called by the inspector too. Let's check the status of the
   // VPN.
@@ -178,7 +175,6 @@ void CaptivePortalDetection::captivePortalDetected() {
   Navigator::instance()->requestScreen(Navigator::ScreenCaptivePortal);
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn);
 
   if (vpn->controller()->state() == Controller::StateOn) {
     captivePortalNotifier()->notifyCaptivePortalBlock();

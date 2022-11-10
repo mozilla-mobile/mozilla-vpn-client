@@ -17,6 +17,19 @@ task-defaults:
           use-caches: true
           cwd: '{checkout}'
 
+android-qt-next/debug:
+        description: "Android Next QT Build (arm64-v8a)"
+        treeherder:
+            platform: android/arm64-v8a
+            symbol: NEXT
+        worker:
+            docker-image: {in-tree: android-qt-next}
+        run:
+            command: ./taskcluster/scripts/build/android_build_debug.sh arm64-v8a
+        release-artifacts:
+            # APK Artifacts expects file to be in /builds/worker/artifacts/
+            - mozillavpn-arm64-v8a-debug.apk
+
 # Debug Builds:
 android-arm64/debug:
         description: "Android Debug (arm64-v8a)"

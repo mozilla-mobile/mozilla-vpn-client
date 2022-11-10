@@ -5,6 +5,7 @@
 #include "servercity.h"
 #include "constants.h"
 #include "leakdetector.h"
+#include "serveri18n.h"
 
 #include <QJsonArray>
 #include <QJsonObject>
@@ -22,6 +23,7 @@ ServerCity& ServerCity::operator=(const ServerCity& other) {
 
   m_name = other.m_name;
   m_code = other.m_code;
+  m_country = other.m_country;
   m_latitude = other.m_latitude;
   m_longitude = other.m_longitude;
   m_servers = other.m_servers;
@@ -31,7 +33,7 @@ ServerCity& ServerCity::operator=(const ServerCity& other) {
 
 ServerCity::~ServerCity() { MVPN_COUNT_DTOR(ServerCity); }
 
-bool ServerCity::fromJson(const QJsonObject& obj) {
+bool ServerCity::fromJson(const QJsonObject& obj, const QString& country) {
   QJsonValue name = obj.value("name");
   if (!name.isString()) {
     return false;
@@ -60,7 +62,7 @@ bool ServerCity::fromJson(const QJsonObject& obj) {
   QList<QString> servers;
   if (!Constants::inProduction() || !name.toString().contains("BETA")) {
     QJsonArray serversArray = serversValue.toArray();
-    for (QJsonValue serverValue : serversArray) {
+    for (const QJsonValue& serverValue : serversArray) {
       if (!serverValue.isObject()) {
         return false;
       }
@@ -77,9 +79,14 @@ bool ServerCity::fromJson(const QJsonObject& obj) {
 
   m_name = name.toString();
   m_code = code.toString();
+  m_country = country;
   m_latitude = latitude.toDouble();
   m_longitude = longitude.toDouble();
   m_servers.swap(servers);
 
   return true;
+}
+
+const QString ServerCity::localizedName() const {
+  return ServerI18N::translateCityName(m_country, m_name);
 }

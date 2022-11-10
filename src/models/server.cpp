@@ -32,6 +32,7 @@ Server& Server::operator=(const Server& other) {
   m_socksName = other.m_socksName;
   m_multihopPort = other.m_multihopPort;
   m_cooldownTimeout = other.m_cooldownTimeout;
+  m_latency = other.m_latency;
 
   return *this;
 }
@@ -86,7 +87,7 @@ bool Server::fromJson(const QJsonObject& obj) {
 
   QList<QPair<uint32_t, uint32_t>> prList;
   QJsonArray portRangesArray = portRanges.toArray();
-  for (QJsonValue portRangeValue : portRangesArray) {
+  for (const QJsonValue& portRangeValue : portRangesArray) {
     if (!portRangeValue.isArray()) {
       return false;
     }
@@ -120,6 +121,7 @@ bool Server::fromJson(const QJsonObject& obj) {
   m_socksName = socks5_name.toString();
   m_multihopPort = multihop_port.toInt();
   m_cooldownTimeout = 0;
+  m_latency = 0;
 
   return true;
 }
@@ -132,6 +134,7 @@ bool Server::fromMultihop(const Server& exit, const Server& entry) {
   m_socksName = exit.m_socksName;
   m_multihopPort = exit.m_multihopPort;
   m_cooldownTimeout = exit.m_cooldownTimeout;
+  m_latency = exit.m_latency;
 
   m_ipv4AddrIn = entry.m_ipv4AddrIn;
   m_ipv6AddrIn = entry.m_ipv6AddrIn;
@@ -193,6 +196,7 @@ uint32_t Server::choosePort() const {
     length += range.second - range.first + 1;
   }
   Q_ASSERT(length < 65536);
+  Q_ASSERT(length > 0);
 
   // Pick a port at random.
   quint32 r = QRandomGenerator::global()->generate() % length;

@@ -54,6 +54,8 @@ Item {
             top: menu.buttom
         }
 
+        implicitHeight: parent.height - menu.height
+
         Component.onCompleted: function() {
             VPNNavigator.addStackView(VPNNavigator.ScreenGetHelp, getHelpStackView)
             getHelpStackView.push("qrc:/ui/screens/getHelp/ViewGetHelp.qml")

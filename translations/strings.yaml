@@ -161,6 +161,9 @@ multiHopFeature:
     value: To
     comment: This is alt text for an arrow showing the multi-hop route between servers. e.g. Atlanta TO Copenhagen
   serverSearchResultsError: No results. Try a different search
+  accessibleNameRecentConnection:
+    value: "%1 to %2"
+    comment: Accessible label that is used for recent multi-hop server connections. “%1” represents the entry server and “%2” the exit server.
 
 inAppSupportWorkflow:
   supportNavLinkText: Contact support
@@ -352,6 +355,9 @@ connectionInfo:
   labelPing:
     value: Ping
     comment: Latency of the connection
+  labelUpload:
+    value: Upload
+    comment: Label for the upload benchmark shown in the speed test view.
   unitPing:
     value: ms
     commnent: milliseconds
@@ -587,6 +593,7 @@ tipsAndTricks:
   moreTutorialsTitle: More tutorials
   moreTutorialsDescription2: Learn how to use Mozilla VPN’s advanced features
   quickTipsGuideViewTitle: Quick tip
+  advancedTipsGuideViewTitle: Advanced tip
   introModalDescription: Here’s a great list of useful tips and tricks to get the best out of your Mozilla VPN experience. Check it out now or find it anytime in the settings.
   tabTitleAll:
     value: All

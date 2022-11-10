@@ -12,7 +12,6 @@
 #include "notificationhandler.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
-#include "timersingleshot.h"
 
 #include <QJsonObject>
 #include <QMetaEnum>
@@ -165,9 +164,6 @@ QString AddonMessage::formattedDate() const {
 // static
 QString AddonMessage::dateInternal(const QDateTime& nowDateTime,
                                    const QDateTime& messageDateTime) {
-  logger.debug() << "Now" << nowDateTime.toString() << "date"
-                 << messageDateTime.toString();
-
   qint64 diff = messageDateTime.secsTo(nowDateTime);
   if (diff < 0) {
     // The addon has a date set in the future...?
@@ -215,7 +211,7 @@ void AddonMessage::planDateRetranslation() {
     return;
   }
 
-  TimerSingleShot::create(this, (1 + time) * 1000, [this]() {
+  QTimer::singleShot((1 + time) * 1000, this, [this]() {
     emit retranslationCompleted();
     planDateRetranslation();
   });

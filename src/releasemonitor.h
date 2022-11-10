@@ -5,6 +5,8 @@
 #ifndef RELEASEMONITOR_H
 #define RELEASEMONITOR_H
 
+#include "errorhandler.h"
+
 #include <QObject>
 #include <QTimer>
 
@@ -16,7 +18,9 @@ class ReleaseMonitor final : public QObject {
   ReleaseMonitor();
   ~ReleaseMonitor();
 
-  Q_INVOKABLE void runSoon();
+  Q_INVOKABLE void runSoon(
+      ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy =
+          ErrorHandler::PropagateError);
 
   void updateSoon();
 

@@ -12,7 +12,7 @@ Flickable {
     id: vpnFlickable
 
     property var flickContentHeight
-    property bool contentExceedsHeight: height < flickContentHeight
+    property bool contentExceedsHeight: height < contentHeight
     property bool hideScollBarOnStackTransition: false
     //This property should be true if the flickable appears behind the main navbar
     interactive: !VPNTutorial.playing && contentHeight > height || contentY > 0
@@ -64,7 +64,33 @@ Flickable {
         ensureVisAnimation.start();
     }
 
-    contentHeight: Math.max(window.safeContentHeight, flickContentHeight)
+    function recalculateContentHeight() {
+        //Absolute y coordinate position of the scroll view
+        const absoluteYPosition = mapToItem(window.contentItem, 0, 0).y
+        //Portion of the screen that a view's contents can reside without interfering with the navbar
+        const contentSpace = window.height - VPNTheme.theme.navBarHeightWithMargins
+
+        //Checks if the flickable AND it's content interferes with the navbar area (bottom 146px for iOS, bottom 128px for other platforms)
+        //If it does, we pad the flickable's contentHeight with whatever bottom padding is needed so that there is always 48px (aka theme.navBarTopMargin)
+        //between the bottom of the flickable's content and the navbar
+        if (navbar.visible && absoluteYPosition + height >= contentSpace
+                && flickContentHeight + absoluteYPosition >= contentSpace) {
+            vpnFlickable.contentHeight = flickContentHeight + (flickContentHeight >= height ? VPNTheme.theme.navBarHeightWithMargins : (absoluteYPosition + flickContentHeight) - contentSpace + (height - flickContentHeight))
+        }
+        //If the navbar isn't visible, or the flickable's content does not interfere with the navbar area, don't worry about adding any padding
+        else {
+            vpnFlickable.contentHeight = flickContentHeight
+        }
+    }
+
+    onFlickContentHeightChanged: {
+        recalculateContentHeight()
+    }
+
+    onHeightChanged: {
+        recalculateContentHeight()
+    }
+
     boundsBehavior: Flickable.StopAtBounds
     opacity: 0
 

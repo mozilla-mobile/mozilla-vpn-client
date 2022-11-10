@@ -3,14 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "../../src/leakdetector.h"
-#include "../../src/timersingleshot.h"
 #include "helper.h"
 #include "networkrequest.h"
 #include "constants.h"
 #include "settingsholder.h"
 #include "task.h"
-
-namespace {};
 
 NetworkRequest::NetworkRequest(Task* parent, int status,
                                bool setAuthorizationHeader)
@@ -22,7 +19,7 @@ NetworkRequest::NetworkRequest(Task* parent, int status,
   Q_ASSERT(!TestHelper::networkConfig.isEmpty());
   TestHelper::NetworkConfig nc = TestHelper::networkConfig.takeFirst();
 
-  TimerSingleShot::create(this, 0, [this, nc]() {
+  QTimer::singleShot(0, this, [this, nc]() {
     deleteLater();
 
     if (nc.m_status == TestHelper::NetworkConfig::Failure) {
