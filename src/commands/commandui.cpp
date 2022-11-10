@@ -471,7 +471,7 @@ int CommandUI::run(QStringList& tokens) {
         });
 #endif
 
-    if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
+    if (Feature::get(Feature::Feature_inAppProducts)->isSupported()) {
       qmlRegisterSingletonType<MozillaVPN>(
           "Mozilla.VPN", 1, 0, "VPNIAP",
           [](QQmlEngine*, QJSEngine*) -> QObject* {

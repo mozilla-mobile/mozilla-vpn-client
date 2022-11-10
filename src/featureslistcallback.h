@@ -69,7 +69,7 @@ bool FeatureCallback_captivePortal() {
 #endif
 }
 
-bool FeatureCallback_inAppPurchase() {
+bool FeatureCallback_inAppProducts() {
 #if defined(MVPN_IOS) || defined(MVPN_ANDROID) || defined(MVPN_WASM)
   return true;
 #else

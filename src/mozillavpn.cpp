@@ -285,15 +285,15 @@ void MozillaVPN::initialize() {
   // subscription. This will fix some of the edge cases for iOS IAP. We do this
   // here as after this point only settings are checked that are set after a
   // successfull subscription.
-  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-    if (m_private->m_user.subscriptionNeeded()) {
-      setUserState(UserAuthenticated);
-      setState(StateAuthenticating);
+  if (m_private->m_user.subscriptionNeeded()) {
+    setUserState(UserAuthenticated);
+    setState(StateAuthenticating);
+    if (Feature::get(Feature::Feature_inAppProducts)->isSupported()) {
       TaskScheduler::scheduleTask(new TaskProducts());
-      TaskScheduler::scheduleTask(
-          new TaskFunction([this]() { maybeStateMain(); }));
-      return;
     }
+    TaskScheduler::scheduleTask(
+        new TaskFunction([this]() { maybeStateMain(); }));
+    return;
   }
 
   if (!m_private->m_keys.fromSettings()) {
@@ -340,7 +340,7 @@ void MozillaVPN::initialize() {
       new TaskServers(ErrorHandler::PropagateError),
       new TaskCaptivePortalLookup(ErrorHandler::PropagateError)};
 
-  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
+  if (Feature::get(Feature::Feature_inAppProducts)->isSupported()) {
     refreshTasks.append(new TaskProducts());
   }
 
@@ -372,8 +372,7 @@ void MozillaVPN::setState(State state) {
 void MozillaVPN::maybeStateMain() {
   logger.debug() << "Maybe state main";
 
-  if (m_private->m_user.initialized() &&
-      Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
+  if (m_private->m_user.initialized()) {
     if (m_state != StateSubscriptionBlocked &&
         m_private->m_user.subscriptionNeeded()) {
       logger.info() << "Subscription needed";
@@ -526,13 +525,13 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
   setToken(token);
   setUserState(UserAuthenticated);
 
-  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-    if (m_private->m_user.subscriptionNeeded()) {
+  if (m_private->m_user.subscriptionNeeded()) {
+    if (Feature::get(Feature::Feature_inAppProducts)->isSupported()) {
       TaskScheduler::scheduleTask(new TaskProducts());
-      TaskScheduler::scheduleTask(
-          new TaskFunction([this]() { maybeStateMain(); }));
-      return;
     }
+    TaskScheduler::scheduleTask(
+        new TaskFunction([this]() { maybeStateMain(); }));
+    return;
   }
 
   completeActivation();
@@ -584,7 +583,7 @@ void MozillaVPN::completeActivation() {
                        new TaskServers(ErrorHandler::PropagateError)}));
   }
 
-  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
+  if (Feature::get(Feature::Feature_inAppProducts)->isSupported()) {
     TaskScheduler::scheduleTask(new TaskProducts());
   }
 
@@ -784,11 +783,9 @@ void MozillaVPN::accountChecked(const QByteArray& json) {
   m_private->m_user.writeSettings();
   m_private->m_deviceModel.writeSettings();
 
-  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-    if (m_private->m_user.subscriptionNeeded() && m_state == StateMain) {
-      maybeStateMain();
-      return;
-    }
+  if (m_private->m_user.subscriptionNeeded() && m_state == StateMain) {
+    maybeStateMain();
+    return;
   }
 
   // To test the subscription needed view, comment out this line:
@@ -850,8 +847,8 @@ void MozillaVPN::logout() {
 
   TaskScheduler::deleteTasks();
 
-  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-    PurchaseHandler::instance()->stopSubscription();
+  PurchaseHandler::instance()->stopSubscription();
+  if (Feature::get(Feature::Feature_inAppProducts)->isSupported()) {
     ProductsHandler::instance()->stopProductsRegistration();
   }
 
@@ -887,8 +884,8 @@ void MozillaVPN::reset(bool forceInitialState) {
   m_private->m_keys.forgetKeys();
   m_private->m_serverData.forget();
 
-  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-    PurchaseHandler::instance()->stopSubscription();
+  PurchaseHandler::instance()->stopSubscription();
+  if (Feature::get(Feature::Feature_inAppProducts)->isSupported()) {
     ProductsHandler::instance()->stopProductsRegistration();
   }
 
