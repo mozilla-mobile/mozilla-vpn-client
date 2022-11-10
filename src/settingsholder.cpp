@@ -49,8 +49,24 @@ SettingsHolder::SettingsHolder()
                  "vpn") {
   MVPN_COUNT_CTOR(SettingsHolder);
 
-  if (QFile::exists(journalSettingFileName())) {
-    QString journalSettingFile(journalSettingFileName());
+  // The location changes after the initialization of the app. Let's store the
+  // journal file-name in the CTOR to avoid race-conditions.
+  m_settingsJournalFileName =
+      QDir(
+#ifdef MVPN_WASM
+          // https://wiki.qt.io/Qt_for_WebAssembly#Files_and_local_file_system_access
+          "/"
+#elif defined(UNIT_TEST)
+          QStandardPaths::writableLocation(QStandardPaths::TempLocation)
+#else
+          QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)
+#endif
+          )
+          .filePath(
+              QString("%1.moz-journal").arg(m_settings.organizationName()));
+
+  if (QFile::exists(m_settingsJournalFileName)) {
+    QString journalSettingFile(m_settingsJournalFileName);
     logger.info() << "journal file exists" << journalSettingFile;
 
     {
@@ -236,20 +252,6 @@ void SettingsHolder::setAddonSetting(const AddonSettingQuery& query,
   }
 }
 
-QString SettingsHolder::journalSettingFileName() const {
-  return QDir(
-#ifdef MVPN_WASM
-             // https://wiki.qt.io/Qt_for_WebAssembly#Files_and_local_file_system_access
-             "/"
-#elif defined(UNIT_TEST)
-             QStandardPaths::writableLocation(QStandardPaths::TempLocation)
-#else
-             QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)
-#endif
-             )
-      .filePath("settings-journal");
-}
-
 bool SettingsHolder::beginTransaction() {
   if (m_settingsJournal) {
     logger.warning() << "Nested transactions are not supported";
@@ -258,14 +260,14 @@ bool SettingsHolder::beginTransaction() {
 
   sync();
 
-  if (!QFile::copy(m_settings.fileName(), journalSettingFileName())) {
+  if (!QFile::copy(m_settings.fileName(), m_settingsJournalFileName)) {
     logger.warning() << "Unable to generate a setting journal file"
-                     << journalSettingFileName();
+                     << m_settingsJournalFileName;
     return false;
   }
 
   m_settingsJournal =
-      new QSettings(journalSettingFileName(), m_settings.format(), this);
+      new QSettings(m_settingsJournalFileName, m_settings.format(), this);
   return true;
 }
 
@@ -306,9 +308,9 @@ bool SettingsHolder::finalizeTransaction() {
   delete m_settingsJournal;
   m_settingsJournal = nullptr;
 
-  if (!QFile::remove(journalSettingFileName())) {
+  if (!QFile::remove(m_settingsJournalFileName)) {
     logger.warning() << "Unable to remove the setting journal file"
-                     << journalSettingFileName();
+                     << m_settingsJournalFileName;
     return false;
   }
 

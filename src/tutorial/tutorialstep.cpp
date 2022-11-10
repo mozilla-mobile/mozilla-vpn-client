@@ -85,17 +85,6 @@ TutorialStep::TutorialStep(AddonTutorial* parent, const QString& element,
   connect(&m_timer, &QTimer::timeout, this, &TutorialStep::startInternal);
 
   m_conditionWatcher = Addon::maybeCreateConditionWatchers(parent, conditions);
-
-  if (m_conditionWatcher) {
-    connect(m_conditionWatcher, &AddonConditionWatcher::conditionChanged, this,
-            [this](bool enabled) {
-              if (enabled) {
-                if (enabled && m_state == StateConditionCheck) {
-                  startInternal();
-                }
-              }
-            });
-  }
 }
 
 TutorialStep::~TutorialStep() { MVPN_COUNT_DTOR(TutorialStep); }
@@ -134,6 +123,9 @@ void TutorialStep::startInternal() {
       }
 
       if (m_conditionWatcher && !m_conditionWatcher->conditionApplied()) {
+        logger.info() << "Exclude the tutorial step because dynamic conditions "
+                         "do not match";
+        emit completed();
         return;
       }
 

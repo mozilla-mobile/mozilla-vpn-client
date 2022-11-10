@@ -104,8 +104,6 @@ class SettingsHolder final : public QObject {
 
   bool finalizeTransaction();
 
-  QString journalSettingFileName() const;
-
   void maybeSaveInTransaction(const QString& key, const QVariant& oldValue,
                               const QVariant& newValue, const char* signalName,
                               bool userSettings);
@@ -120,6 +118,7 @@ class SettingsHolder final : public QObject {
 
  private:
   QSettings m_settings;
+  QString m_settingsJournalFileName;
 
   bool m_firstExecution = false;
 

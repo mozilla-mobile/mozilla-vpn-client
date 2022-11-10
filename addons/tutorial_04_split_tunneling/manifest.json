@@ -3,9 +3,11 @@
   "id": "tutorial_04_split_tunneling",
   "name": "Tutorial: Split tunneling",
   "conditions": {
-    "enabled_features": ["splitTunnel"]
+    "enabled_features": ["splitTunnel"],
+    "javascript": "splitTunnelingOff.js"
   },
   "type": "tutorial",
+  "translatable": false,
   "tutorial": {
     "id": "04_split_tunneling",
     "settings_rollback_needed": true,
@@ -15,21 +17,30 @@
     "completion_message": "You’ve learned how to exclude apps from VPN protection. Would you like to learn more tips and tricks?",
     "steps": [
       {
+        "id": "s0",
+        "element": "controllerToggle",
+        "tooltip": "Toggle this switch to deactivate the VPN",
+        "conditions": {
+           "javascript": "vpnIsOn.js"
+        },
+        "next": {
+          "op": "signal",
+          "vpn_emitter": "controller",
+          "signal": "stateChanged"
+        }
+      }, {
         "id": "s1",
         "element": "navigationLayout/navButton-settings",
-        "tooltip": "Select your account settings",
-        "before": [{
-          "op": "vpn_off"
-        }],
+        "tooltip": "TODO TODO",
         "next": {
           "op": "signal",
           "qml_emitter": "navigationLayout/navButton-settings",
           "signal": "clicked"
         }
-      },{
+      }, {
         "id": "s2",
         "element": "settingsNetworking",
-        "tooltip": "Select “Network settings",
+        "tooltip": "Select “Network settings”",
         "next": {
           "op": "signal",
           "qml_emitter": "settingsNetworking",
@@ -38,7 +49,7 @@
       },{
         "id": "s3",
         "element": "appPermissions",
-        "tooltip": "Select “App permissions",
+        "tooltip": "Select “App permissions”",
         "next": {
           "op": "signal",
           "qml_emitter": "appPermissions",
@@ -49,7 +60,7 @@
         "element": "settingsAppPermissionsToggle",
         "tooltip": "Toggle off to view apps",
         "conditions": {
-          "javascript": "protect.js"
+          "javascript": "resetAppPermissions.js"
         },
         "next": {
           "op": "signal",
@@ -64,6 +75,18 @@
           "op": "signal",
           "qml_emitter": "appPermissionList/app0/checkbox",
           "signal": "checkedChanged"
+        }
+      },{
+        "id": "s6",
+        "element": "controllerToggle",
+        "tooltip": "Toggle this switch to activate the VPN",
+        "conditions": {
+           "javascript": "vpnWasOn.js"
+        },
+        "next": {
+          "op": "signal",
+          "vpn_emitter": "controller",
+          "signal": "stateChanged"
         }
       }
     ]

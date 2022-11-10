@@ -15,7 +15,6 @@
 #include "conditionwatchers/addonconditionwatchertriggertimesecs.h"
 #include "conditionwatchers/addonconditionwatchertimestart.h"
 #include "conditionwatchers/addonconditionwatchertimeend.h"
-#include "inspector/inspectorutils.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
@@ -146,70 +145,6 @@ QList<ConditionCallback> s_conditionCallbacks{
            default:
              logger.warning()
                  << "Unsupported setting value type for key" << key;
-             return false;
-         }
-       }
-
-       return true;
-     },
-     [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
-       return nullptr;
-     }},
-
-    {"qml_properties",
-     [](const QJsonValue& value) -> bool {
-       QJsonArray qmlProperties = value.toArray();
-       for (const QJsonValue& qmlProperty : qmlProperties) {
-         QJsonObject obj = qmlProperty.toObject();
-
-         QString op = obj["op"].toString();
-         QString elementName = obj["element"].toString();
-         QString propertyName = obj["property"].toString();
-
-         QObject* element = InspectorUtils::findObject(elementName);
-         if (!element) {
-             return false;
-         }
-
-         QVariant property = element->property(qPrintable(propertyName));
-         if (!property.isValid()) {
-             logger.warning() << "Invalid property" << propertyName << " for element"
-                              << elementName;
-             return false;
-         }
-
-         QJsonValue valueB = obj["value"];
-         switch (valueB.type()) {
-           case QJsonValue::Bool:
-             if (!evaluateConditionsSettingsOp(
-                     op, property.toBool() == valueB.toBool())) {
-               logger.info() << "Property value doesn't match for element:" << elementName << "property:" << propertyName << "OP:" << op << "Expected:" << (valueB.toBool() == 0 ? "false" : "true") << "Actual:" << property.toString();
-               return false;
-             }
-
-             break;
-
-           case QJsonValue::Double:
-             if (!evaluateConditionsSettingsOp(
-                     op, property.toDouble() == valueB.toDouble())) {
-                 logger.info() << "Property value doesn't match for element:" << elementName << "property:" << propertyName << "OP:" << op << "Expected:" << valueB.toString() << "Actual:" << property.toString();
-               return false;
-             }
-
-             break;
-
-           case QJsonValue::String:
-             if (!evaluateConditionsSettingsOp(
-                     op, property.toString() == valueB.toString())) {
-                 logger.info() << "Property value doesn't match for element:" << elementName << "property:" << propertyName << "OP:" << op << "Expected:" << valueB.toString() << "Actual:" << property.toString();
-               return false;
-             }
-
-             break;
-
-           default:
-             logger.warning()
-                 << "Unsupported property value type for property" << propertyName;
              return false;
          }
        }

@@ -46,15 +46,15 @@ void Tutorial::allowItem(const QString& objectName) {
 }
 
 void Tutorial::showWarning(Addon* tutorial) {
-    Q_ASSERT(tutorial);
-    Q_ASSERT(tutorial->type() == "tutorial");
+  Q_ASSERT(tutorial);
+  Q_ASSERT(tutorial->type() == "tutorial");
 
-    m_currentTutorial = qobject_cast<AddonTutorial*>(tutorial);
-    ExternalOpHandler::instance()->registerBlocker(this);
+  m_currentTutorial = qobject_cast<AddonTutorial*>(tutorial);
+  ExternalOpHandler::instance()->registerBlocker(this);
 
-    if(m_currentTutorial->settingsRollbackNeeded()) {
-        emit showWarningNeeded(tutorial);
-    }
+  if (m_currentTutorial->settingsRollbackNeeded()) {
+    emit showWarningNeeded(tutorial);
+  }
 }
 
 void Tutorial::play(Addon* tutorial) {
