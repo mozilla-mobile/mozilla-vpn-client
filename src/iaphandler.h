@@ -5,38 +5,17 @@
 #ifndef IAPHANDLER_H
 #define IAPHANDLER_H
 
-#include <QAbstractListModel>
-#include <QList>
+#include "productshandler.h"
 
-class QJsonValue;
+#include <QObject>
 
-class IAPHandler : public QAbstractListModel {
+class IAPHandler : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(IAPHandler)
 
  public:
-  enum ProductType {
-    ProductMonthly,
-    ProductHalfYearly,
-    ProductYearly,
-    ProductUnknown = -1
-  };
-  Q_ENUM(ProductType);
-  enum ModelRoles {
-    ProductIdentifierRole = Qt::UserRole + 1,
-    ProductPriceRole,
-    ProductMonthlyPriceRole,
-    ProductTypeRole,
-    ProductFeaturedRole,
-    ProductSavingsRole,
-    ProductTrialDaysRole,
-  };
-
   static IAPHandler* createInstance();
   static IAPHandler* instance();
-  bool hasProductsRegistered() const {
-    return m_productsRegistrationState == eRegistered;
-  }
 
   // Returns the latest SKU the started to Subcribe.
   // Is empty if the user already had a subscription or never started the
@@ -46,19 +25,14 @@ class IAPHandler : public QAbstractListModel {
   Q_INVOKABLE void subscribe(const QString& productIdentifier);
   Q_INVOKABLE void restore();
 
-  void registerProducts(const QByteArray& data);
   void startSubscription(const QString& productIdentifier);
   void startRestoreSubscription();
 
-  // QAbstractListModel methods
-  QHash<int, QByteArray> roleNames() const override;
-  int rowCount(const QModelIndex&) const override;
-  QVariant data(const QModelIndex& index, int role) const override;
+  // The nativeRegisterProducts method is currently here (not in
+  // productshandler) for simplicity of the native implementation.
+  virtual void nativeRegisterProducts() = 0;
 
  signals:
-  void productsRegistered();
-  void productsRegistrationStopped();
-
   void subscriptionStarted(const QString& productIdentifier);
   void restoreSubscriptionStarted();
   void subscriptionFailed();
@@ -70,53 +44,19 @@ class IAPHandler : public QAbstractListModel {
 
  public slots:
   void stopSubscription();
-  // Called by the native code delegate
-  void unknownProductRegistered(const QString& identifier);
-  void productsRegistrationCompleted();
-  void stopProductsRegistration();
 
  protected:
   IAPHandler(QObject* parent);
   ~IAPHandler();
 
-  struct Product {
-    QString m_name;
-    QString m_price;
-    QString m_monthlyPrice;
-    int m_trialDays = 0;
-    // This is not exposed and it's not localized. It's used to compute the
-    // saving %.
-    double m_nonLocalizedMonthlyPrice = 0;
-    ProductType m_type = IAPHandler::ProductMonthly;
-    bool m_featuredProduct = false;
-    // This is the % compared with the montly subscription.
-    uint32_t m_savings = 0;
-    // Used by individual implementations to store extra pieces they need
-    void* m_extra = nullptr;
-  };
-
-  virtual void nativeRegisterProducts() = 0;
-  virtual void nativeStartSubscription(Product* product) = 0;
+  virtual void nativeStartSubscription(ProductsHandler::Product* product) = 0;
   virtual void nativeRestoreSubscription() = 0;
-
-  enum {
-    eNotRegistered,
-    eRegistering,
-    eRegistered,
-  } m_productsRegistrationState = eNotRegistered;
 
   enum State {
     eActive,
     eInactive,
   } m_subscriptionState = eInactive;
 
-  void addProduct(const QJsonValue& value);
-  void computeSavings();
-  void sortPlans();
-  static ProductType productTypeToEnum(const QString& type);
-  static uint32_t productTypeToMonthCount(ProductType type);
-  Product* findProduct(const QString& productIdentifier);
-  QList<Product> m_products;
   QString m_currentSKU;
 };
 

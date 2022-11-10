@@ -29,7 +29,8 @@ WasmIAPHandler::~WasmIAPHandler() { MVPN_COUNT_DTOR(WasmIAPHandler); }
 void WasmIAPHandler::nativeRegisterProducts() {
   // Let's use the trialDays to sort the products in the wasm client
   int trialDays = 100;
-  for (Product& product : m_products) {
+  for (ProductsHandler::Product& product :
+       ProductsHandler::instance()->products()) {
     product.m_price = QString("%1 Dupondius")
                           .arg(QRandomGenerator::system()->bounded(1, 100));
     product.m_monthlyPrice =
@@ -39,11 +40,13 @@ void WasmIAPHandler::nativeRegisterProducts() {
     product.m_nonLocalizedMonthlyPrice = 123;
   }
 
-  QTimer::singleShot(200, this,
-                     [this]() { emit productsRegistrationCompleted(); });
+  QTimer::singleShot(200, this, [this]() {
+    emit ProductsHandler::instance()->productsRegistrationCompleted();
+  });
 }
 
-void WasmIAPHandler::nativeStartSubscription(Product* product) {
+void WasmIAPHandler::nativeStartSubscription(
+    ProductsHandler::Product* product) {
   TaskPurchase* purchaseTask = TaskPurchase::createForWasm(product->m_name);
   Q_ASSERT(purchaseTask);
 

@@ -91,7 +91,7 @@ FEATURE_SIMPLE(freeTrial,             // Feature ID
                FeatureCallback_freeTrial)
 
 FEATURE_SIMPLE(inAppAccountCreate,                  // Feature ID
-               "In-app Account Cretion",            // Feature name
+               "In-app Account Creation",           // Feature name
                "2.6",                               // released
                FeatureCallback_true,                // Can be flipped on
                FeatureCallback_false,               // Can be flipped off
@@ -106,12 +106,20 @@ FEATURE_SIMPLE(inAppAuthentication,      // Feature ID
                QStringList(),            // feature dependencies
                FeatureCallback_iosOrAndroid)
 
-FEATURE_SIMPLE(inAppPurchase,          // Feature ID
-               "In app Purchase",      // Feature name
-               "2.4",                  // released
+FEATURE_SIMPLE(inAppProducts,          // Feature ID
+               "In-app Products",      // Feature name
+               "2.12",                 // released
                FeatureCallback_false,  // Can be flipped on
                FeatureCallback_false,  // Can be flipped off
                QStringList(),          // feature dependencies
+               FeatureCallback_inAppPurchase)
+
+FEATURE_SIMPLE(inAppPurchase,                 // Feature ID
+               "In-app Purchase",             // Feature name
+               "2.4",                         // released
+               FeatureCallback_false,         // Can be flipped on
+               FeatureCallback_false,         // Can be flipped off
+               QStringList{"inAppProducts"},  // feature dependencies
                FeatureCallback_inAppPurchase)
 
 FEATURE_SIMPLE(keyRegeneration,       // Feature ID

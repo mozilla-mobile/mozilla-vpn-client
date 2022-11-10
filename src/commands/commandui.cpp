@@ -23,6 +23,7 @@
 #include "models/featuremodel.h"
 #include "mozillavpn.h"
 #include "notificationhandler.h"
+#include "productshandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
@@ -475,6 +476,16 @@ int CommandUI::run(QStringList& tokens) {
           "Mozilla.VPN", 1, 0, "VPNIAP",
           [](QQmlEngine*, QJSEngine*) -> QObject* {
             QObject* obj = IAPHandler::instance();
+            QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+            return obj;
+          });
+    }
+
+    if (Feature::get(Feature::Feature_inAppProducts)->isSupported()) {
+      qmlRegisterSingletonType<MozillaVPN>(
+          "Mozilla.VPN", 1, 0, "VPNProducts",
+          [](QQmlEngine*, QJSEngine*) -> QObject* {
+            QObject* obj = ProductsHandler::instance();
             QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
             return obj;
           });
