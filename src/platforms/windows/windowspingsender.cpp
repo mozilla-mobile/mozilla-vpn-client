@@ -29,8 +29,7 @@ Logger logger({LOG_WINDOWS, LOG_NETWORKING}, "WindowsPingSender");
 }
 
 static DWORD icmpCleanupHelper(LPVOID data) {
-  struct WindowsPingSenderPrivate* p =
-      (struct WindowsPingSenderPrivate*)data;
+  struct WindowsPingSenderPrivate* p = (struct WindowsPingSenderPrivate*)data;
   if (p->m_event != INVALID_HANDLE_VALUE) {
     CloseHandle(p->m_event);
   }
@@ -104,8 +103,8 @@ void WindowsPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
 }
 
 void WindowsPingSender::pingEventReady() {
-  DWORD replyCount = IcmpParseReplies(m_private->m_buffer,
-                                      sizeof(m_private->m_buffer));
+  DWORD replyCount =
+      IcmpParseReplies(m_private->m_buffer, sizeof(m_private->m_buffer));
   if (replyCount == 0) {
     DWORD error = GetLastError();
     if (error == IP_REQ_TIMED_OUT) {
