@@ -110,6 +110,17 @@ QJSValue AddonApi::urlOpener() const {
   return value;
 }
 
+QJSValue AddonApi::controller() const {
+  QJSEngine* engine = QmlEngineHolder::instance()->engine();
+
+  QObject* obj = MozillaVPN::instance()->controller();
+  QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+
+  QJSValue value = engine->newQObject(obj);
+  value.setPrototype(engine->newQMetaObject(&Controller::staticMetaObject));
+  return value;
+}
+
 QJSValue AddonApi::featureList() const {
   QJSEngine* engine = QmlEngineHolder::instance()->engine();
 
