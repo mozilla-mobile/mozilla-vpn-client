@@ -74,6 +74,7 @@ void TestSettings::transactionRollbackStartup() {
     SettingsHolder settingsHolder;
     settingsHolder.doNotClearOnDTOR();
 
+    QVERIFY(!settingsHolder.recoveredFromJournal());
     settingsHolder.setTheme("AAA");
     QCOMPARE(settingsHolder.theme(), "AAA");
     settingsHolder.setToken("TOKEN 1");
@@ -85,6 +86,7 @@ void TestSettings::transactionRollbackStartup() {
     SettingsHolder settingsHolder;
     settingsHolder.doNotClearOnDTOR();
 
+    QVERIFY(!settingsHolder.recoveredFromJournal());
     QCOMPARE(settingsHolder.theme(), "AAA");
     QCOMPARE(settingsHolder.token(), "TOKEN 1");
 
@@ -99,8 +101,23 @@ void TestSettings::transactionRollbackStartup() {
   // journal file.
   {
     SettingsHolder settingsHolder;
+    settingsHolder.doNotClearOnDTOR();
+
+    QVERIFY(settingsHolder.recoveredFromJournal());
     QCOMPARE(settingsHolder.theme(), "AAA");
     QCOMPARE(settingsHolder.token(), "TOKEN 2");
+
+    settingsHolder.setTheme("BBB");
+  }
+
+  // Step 4: we do not use the journal file at the next restart
+  {
+    SettingsHolder settingsHolder;
+    QVERIFY(!settingsHolder.recoveredFromJournal());
+    QCOMPARE(settingsHolder.theme(), "BBB");
+    QCOMPARE(settingsHolder.token(), "TOKEN 2");
+
+    settingsHolder.setTheme("BBB");
   }
 }
 
