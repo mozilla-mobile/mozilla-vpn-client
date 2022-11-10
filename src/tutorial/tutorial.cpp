@@ -52,7 +52,7 @@ void Tutorial::showWarning(Addon* tutorial) {
     m_currentTutorial = qobject_cast<AddonTutorial*>(tutorial);
     ExternalOpHandler::instance()->registerBlocker(this);
 
-    if(m_currentTutorial->showWarning()) {
+    if(m_currentTutorial->settingsRollbackNeeded()) {
         emit showWarningNeeded(tutorial);
     }
 }

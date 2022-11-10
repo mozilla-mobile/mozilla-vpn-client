@@ -48,6 +48,9 @@
         "id": "s4",
         "element": "settingsAppPermissionsToggle",
         "tooltip": "Toggle off to view apps",
+        "conditions": {
+          "javascript": "protect.js"
+        },
         "next": {
           "op": "signal",
           "qml_emitter": "settingsAppPermissionsToggle",
