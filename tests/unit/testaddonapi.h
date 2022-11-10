@@ -13,5 +13,6 @@ class TestAddonApi final : public TestHelper {
   void featurelist();
   void navigator();
   void settings();
+  void subscriptionData();
   void urlopener();
 };

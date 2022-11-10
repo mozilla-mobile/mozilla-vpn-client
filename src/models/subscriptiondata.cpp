@@ -7,6 +7,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "settingsholder.h"
 #include "telemetry/gleansample.h"
 
 #include <QDateTime>
@@ -32,6 +33,31 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
     return true;
   }
 
+  if (!fromJsonInternal(json)) {
+    return false;
+  }
+
+  m_rawJson = json;
+  emit changed();
+  return true;
+}
+
+bool SubscriptionData::fromSettings() {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  logger.debug() << "Reading the subscription data from settings";
+
+  const QByteArray& json = settingsHolder->devices();
+  if (json.isEmpty() || !fromJsonInternal(json)) {
+    return false;
+  }
+
+  m_rawJson = json;
+  return true;
+}
+
+bool SubscriptionData::fromJsonInternal(const QByteArray& json) {
   resetData();
 
   QJsonDocument doc = QJsonDocument::fromJson(json);
@@ -64,10 +90,7 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
     }
 
     // For Apple subscriptions that is all the information we currently have.
-    m_rawJson = json;
-    emit changed();
     logger.debug() << "Subscription data from JSON ready";
-
     return true;
   } else if (type == "iap_google") {
     m_type = SubscriptionGoogle;
@@ -180,11 +203,12 @@ bool SubscriptionData::fromJson(const QByteArray& json) {
     }
   }
 
-  m_rawJson = json;
-  emit changed();
   logger.debug() << "Subscription data from JSON ready";
-
   return true;
+}
+
+void SubscriptionData::writeSettings() {
+  SettingsHolder::instance()->setSubscriptionData(m_rawJson);
 }
 
 bool SubscriptionData::parseSubscriptionDataIap(

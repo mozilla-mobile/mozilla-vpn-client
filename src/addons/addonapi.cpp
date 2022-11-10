@@ -8,6 +8,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/featuremodel.h"
+#include "models/subscriptiondata.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
@@ -139,5 +140,17 @@ QJSValue AddonApi::addon() const {
 
   QJSValue value = engine->newQObject(m_addon);
   value.setPrototype(engine->newQMetaObject(&Addon::staticMetaObject));
+  return value;
+}
+
+QJSValue AddonApi::subscriptionData() const {
+  QJSEngine* engine = QmlEngineHolder::instance()->engine();
+
+  QObject* obj = MozillaVPN::instance()->subscriptionData();
+  QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+
+  QJSValue value = engine->newQObject(obj);
+  value.setPrototype(
+      engine->newQMetaObject(&SubscriptionData::staticMetaObject));
   return value;
 }

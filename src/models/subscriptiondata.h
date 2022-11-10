@@ -63,12 +63,20 @@ class SubscriptionData final : public QObject {
 
   [[nodiscard]] bool fromJson(const QByteArray& json);
 
+  [[nodiscard]] bool fromSettings();
+
   bool initialized() const { return !m_rawJson.isEmpty(); }
+
+  void reset() { m_rawJson.clear(); }
+
+  void writeSettings();
 
  signals:
   void changed();
 
  private:
+  bool fromJsonInternal(const QByteArray& json);
+
   bool parseSubscriptionDataIap(const QJsonObject& subscriptionData);
   bool parseSubscriptionDataWeb(const QJsonObject& subscriptionData);
   void resetData();

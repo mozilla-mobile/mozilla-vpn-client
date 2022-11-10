@@ -27,6 +27,7 @@ class AddonApi final : public QObject {
   Q_PROPERTY(QJSValue featureList READ featureList CONSTANT)
   Q_PROPERTY(QJSValue navigator READ navigator CONSTANT)
   Q_PROPERTY(QJSValue settings READ settings CONSTANT)
+  Q_PROPERTY(QJSValue subscriptionData READ subscriptionData CONSTANT)
   Q_PROPERTY(QJSValue urlOpener READ urlOpener CONSTANT)
 
  public:
@@ -42,8 +43,9 @@ class AddonApi final : public QObject {
   const Env* env() const { return &m_env; }
   QJSValue featureList() const;
   QJSValue navigator() const;
-  QJSValue urlOpener() const;
   QJSValue settings() const;
+  QJSValue subscriptionData() const;
+  QJSValue urlOpener() const;
 
  private:
   Addon* m_addon = nullptr;

@@ -33,14 +33,13 @@ class ProfileFlow final : public QObject {
 
   State state() const { return m_state; }
 
-  void setForceReauthFlow(const bool forceReauthFlow);
+  void setForceReauthFlow(bool forceReauthFlow);
 
  signals:
   void stateChanged(ProfileFlow::State state);
 
  private:
   void setState(State state);
-  void subscriptionDetailsFetched(const QByteArray& subscriptionData);
 
  private:
   State m_state = StateInitial;
