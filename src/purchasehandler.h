@@ -27,7 +27,7 @@ class PurchaseHandler : public QObject {
   // The nativeRegisterProducts method is currently here (not in
   // ProductsHandler) for simplicity of the native implementation.
   // TODO - Clean this up and properly separate native products implementations.
-  void nativeRegisterProducts(){};
+  virtual void nativeRegisterProducts() = 0;
 
  signals:
   // Not all sub-classes will use all these signals.

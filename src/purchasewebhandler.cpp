@@ -41,3 +41,9 @@ void PurchaseWebHandler::startRestoreSubscription() {
   logger.error() << "Restore not implemented!";
   emit subscriptionFailed();
 }
+
+void PurchaseWebHandler::nativeRegisterProducts() {
+  logger.error()
+      << "nativeRegisterProducts should not be called for PurchaseWebHandler";
+  Q_ASSERT(false);
+}

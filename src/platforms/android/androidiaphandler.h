@@ -8,7 +8,7 @@
 #include "purchaseiaphandler.h"
 #include "jni.h"
 
-class AndroidIAPHandler final : public IAPHandler {
+class AndroidIAPHandler final : public PurchaseIAPHandler {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AndroidIAPHandler)
 
@@ -16,9 +16,9 @@ class AndroidIAPHandler final : public IAPHandler {
   explicit AndroidIAPHandler(QObject* parent);
   ~AndroidIAPHandler();
   void launchPlayStore();
+  void nativeRegisterProducts() override;
 
  protected:
-  void nativeRegisterProducts() override;
   void nativeStartSubscription(ProductsHandler::Product* product) override;
   void nativeRestoreSubscription() override;
 

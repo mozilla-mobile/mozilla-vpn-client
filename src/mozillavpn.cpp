@@ -757,7 +757,7 @@ void MozillaVPN::createSupportTicket(const QString& email,
 void MozillaVPN::launchPlayStore() {
   logger.debug() << "Launch Play Store";
   PurchaseHandler* iap = PurchaseHandler::instance();
-  static_cast<AndroidPurchaseHandler*>(iap)->launchPlayStore();
+  static_cast<AndroidIAPHandler*>(iap)->launchPlayStore();
 }
 #endif
 

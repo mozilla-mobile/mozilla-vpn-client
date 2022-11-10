@@ -21,6 +21,12 @@ Logger logger(LOG_IAP, "PurchaseIAPHandler");
 PurchaseIAPHandler* s_instance = nullptr;
 }  // namespace
 
+// static
+PurchaseIAPHandler* PurchaseIAPHandler::instance() {
+  Q_ASSERT(s_instance);
+  return s_instance;
+}
+
 PurchaseIAPHandler::PurchaseIAPHandler(QObject* parent)
     : PurchaseHandler(parent) {
   MVPN_COUNT_CTOR(PurchaseIAPHandler);

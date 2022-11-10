@@ -5,15 +5,16 @@
 #ifndef IOSIAPHANDLER_H
 #define IOSIAPHANDLER_H
 
-#include "purchasehandler.h"
+#include "purchaseiaphandler.h"
 
-class IOSIAPHandler final : public IAPHandler {
+class IOSIAPHandler final : public PurchaseIAPHandler {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(IOSIAPHandler)
 
  public:
   explicit IOSIAPHandler(QObject* parent);
   ~IOSIAPHandler();
+  void nativeRegisterProducts() override;
 
  public slots:
   void productRegistered(void* product);
@@ -21,7 +22,6 @@ class IOSIAPHandler final : public IAPHandler {
   void noSubscriptionFoundError();
 
  protected:
-  void nativeRegisterProducts() override;
   void nativeStartSubscription(ProductsHandler::Product* product) override;
   void nativeRestoreSubscription();
 

@@ -16,6 +16,7 @@ class PurchaseIAPHandler : public PurchaseHandler {
  public:
   PurchaseIAPHandler(QObject* parent);
   ~PurchaseIAPHandler();
+  static PurchaseIAPHandler* instance();
 
   void startSubscription(const QString& productIdentifier) override;
   void startRestoreSubscription() override;

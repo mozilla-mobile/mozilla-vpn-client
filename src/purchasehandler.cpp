@@ -35,11 +35,11 @@ PurchaseHandler* s_instance = nullptr;
 PurchaseHandler* PurchaseHandler::createInstance() {
   Q_ASSERT(!s_instance);
 #ifdef MVPN_IOS
-  new IOSPurchaseHandler(qApp);
+  new IOSIAPHandler(qApp);
 #elif MVPN_ANDROID
-  new AndroidPurchaseHandler(qApp);
+  new AndroidIAPHandler(qApp);
 #elif MVPN_WASM
-  new WasmPurchaseHandler(qApp);
+  new WasmIAPHandler(qApp);
 #else
   new PurchaseWebHandler(qApp);
 #endif
