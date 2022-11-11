@@ -13,9 +13,9 @@
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "tasks/addon/taskaddon.h"
+#include "tasks/addonindex/taskaddonindex.h"
 #include "tasks/function/taskfunction.h"
 #include "taskscheduler.h"
-#include "tasks/addonindex/taskaddonindex.h"
 
 #include <QCoreApplication>
 #include <QCryptographicHash>
