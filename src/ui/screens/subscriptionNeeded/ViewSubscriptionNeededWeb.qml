@@ -53,19 +53,16 @@ VPNFlickable {
         anchors.top: headline.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        spacing: 24
+        anchors.verticalCenter: parent.verticalCenter
 
         ColumnLayout {
             spacing: VPNTheme.theme.windowMargin
             Layout.maximumWidth: VPNTheme.theme.maxHorizontalContentWidth
-            Layout.topMargin: 24
 
             VPNTextBlock {
                 Layout.fillWidth: true
-                Layout.bottomMargin: VPNTheme.theme.vSpacingSmall
                 Layout.leftMargin: VPNTheme.theme.vSpacingSmall
                 Layout.rightMargin: VPNTheme.theme.windowMargin
-                Layout.topMargin: VPNTheme.theme.windowMargin
 
                 color: VPNTheme.theme.fontColor
                 horizontalAlignment: Text.AlignHCenter
