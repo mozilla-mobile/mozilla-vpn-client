@@ -11,7 +11,7 @@
 #endif
 
 // Restore button
-ERRORSTATE(subscriptionGeneric)
-ERRORSTATE(noSubscriptionFound)
-ERRORSTATE(subscriptionExpired)
-ERRORSTATE(subscriptionInUse)
+ERRORSTATE(subscriptionGeneric)  // iOS only
+ERRORSTATE(noSubscriptionFound)  // iOS only
+ERRORSTATE(subscriptionExpired)  // iOS only
+ERRORSTATE(subscriptionInUse)    // iOS only

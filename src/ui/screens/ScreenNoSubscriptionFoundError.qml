@@ -22,7 +22,7 @@ VPNStackView {
            // Please try again or contact our support team for help.
            errorMessage: VPNl18n.RestorePurchaseGenericPurchaseErrorRestorePurchaseGenericPurchaseErrorText,
 
-           // Try again
+           // Try again (Error NoSubscriptionFound only happens on iOS, so ok to point to ScreenSubscriptionNeededIAP)
            primaryButtonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
            primaryButtonObjectName: "errorTryAgainButton",
            primaryButtonOnClick: () => { VPNNavigator.requestScreen(VPNNavigator.ScreenSubscriptionNeededIAP) },

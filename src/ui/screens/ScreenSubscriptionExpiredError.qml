@@ -22,7 +22,7 @@ VPNStackView {
            // Please try again or contact our support team for further assistance.
            errorMessage: VPNl18n.RestorePurchaseExpiredErrorRestorePurchaseExpiredErrorText,
 
-           // Try again
+           // Try again (Error SubscriptionExpiredError only happens on iOS, so ok to point to ScreenSubscriptionNeededIAP)
            primaryButtonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
            primaryButtonObjectName: "errorTryAgainButton",
            primaryButtonOnClick: () => { VPNNavigator.requestScreen(VPNNavigator.ScreenSubscriptionNeededIAP) },
