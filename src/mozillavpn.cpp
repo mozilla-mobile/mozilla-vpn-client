@@ -160,7 +160,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           &m_private->m_captivePortalDetection,
           &CaptivePortalDetection::settingsChanged);
 
-  if (Feature::get(Feature::Feature_inAppProducts)->isSupported()) {
+  if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
     ProductsHandler::createInstance();
   }
   PurchaseHandler* iap = PurchaseHandler::createInstance();
@@ -288,7 +288,7 @@ void MozillaVPN::initialize() {
   if (m_private->m_user.subscriptionNeeded()) {
     setUserState(UserAuthenticated);
     setState(StateAuthenticating);
-    if (Feature::get(Feature::Feature_inAppProducts)->isSupported()) {
+    if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
       TaskScheduler::scheduleTask(new TaskProducts());
     }
     TaskScheduler::scheduleTask(
@@ -340,7 +340,7 @@ void MozillaVPN::initialize() {
       new TaskServers(ErrorHandler::PropagateError),
       new TaskCaptivePortalLookup(ErrorHandler::PropagateError)};
 
-  if (Feature::get(Feature::Feature_inAppProducts)->isSupported()) {
+  if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
     refreshTasks.append(new TaskProducts());
   }
 
@@ -526,7 +526,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
   setUserState(UserAuthenticated);
 
   if (m_private->m_user.subscriptionNeeded()) {
-    if (Feature::get(Feature::Feature_inAppProducts)->isSupported()) {
+    if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
       TaskScheduler::scheduleTask(new TaskProducts());
     }
     TaskScheduler::scheduleTask(
@@ -583,7 +583,7 @@ void MozillaVPN::completeActivation() {
                        new TaskServers(ErrorHandler::PropagateError)}));
   }
 
-  if (Feature::get(Feature::Feature_inAppProducts)->isSupported()) {
+  if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
     TaskScheduler::scheduleTask(new TaskProducts());
   }
 
@@ -848,7 +848,7 @@ void MozillaVPN::logout() {
   TaskScheduler::deleteTasks();
 
   PurchaseHandler::instance()->stopSubscription();
-  if (Feature::get(Feature::Feature_inAppProducts)->isSupported()) {
+  if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
     ProductsHandler::instance()->stopProductsRegistration();
   }
 
@@ -885,7 +885,7 @@ void MozillaVPN::reset(bool forceInitialState) {
   m_private->m_serverData.forget();
 
   PurchaseHandler::instance()->stopSubscription();
-  if (Feature::get(Feature::Feature_inAppProducts)->isSupported()) {
+  if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
     ProductsHandler::instance()->stopProductsRegistration();
   }
 
@@ -1324,7 +1324,7 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
 
   setState(StateSubscriptionInProgress);
 
-  if (Feature::get(Feature::Feature_inAppProducts)->isSupported()) {
+  if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
     ProductsHandler* products = ProductsHandler::instance();
 
     // If products are not ready (race condition), register the products again.

@@ -246,9 +246,8 @@ ScreenData s_screens[] = {
         "qrc:/ui/screens/ScreenSubscriptionNeededIAP.qml",
         QVector<MozillaVPN::State>{MozillaVPN::StateSubscriptionNeeded},
         [](Navigator::Screen*) -> int8_t {
-          return Feature::get(Feature::Feature_inAppProducts)->isSupported()
-                     ? 99
-                     : -1;
+          return Feature::get(Feature::Feature_webPurchase)->isSupported() ? -1
+                                                                           : 99;
         },
         []() -> bool { return false; }),
     ScreenData(
@@ -257,9 +256,8 @@ ScreenData s_screens[] = {
         "qrc:/ui/screens/ScreenSubscriptionNeededWeb.qml",
         QVector<MozillaVPN::State>{MozillaVPN::StateSubscriptionNeeded},
         [](Navigator::Screen*) -> int8_t {
-          return Feature::get(Feature::Feature_inAppProducts)->isSupported()
-                     ? -1
-                     : 99;
+          return Feature::get(Feature::Feature_webPurchase)->isSupported() ? 99
+                                                                           : -1;
         },
         []() -> bool { return false; }),
     ScreenData(
@@ -291,11 +289,24 @@ ScreenData s_screens[] = {
         },
         []() -> bool { return false; }),
     ScreenData(
-        Navigator::Screen::ScreenSubscriptionInProgress,
+        Navigator::Screen::ScreenSubscriptionInProgressIAP,
         Navigator::LoadPolicy::LoadTemporarily,
-        "qrc:/ui/screens/ScreenSubscriptionInProgress.qml",
+        "qrc:/ui/screens/ScreenSubscriptionInProgressIAP.qml",
         QVector<MozillaVPN::State>{MozillaVPN::StateSubscriptionInProgress},
-        [](Navigator::Screen*) -> int8_t { return 0; },
+        [](Navigator::Screen*) -> int8_t {
+          return Feature::get(Feature::Feature_webPurchase)->isSupported() ? -1
+                                                                           : 99;
+        },
+        []() -> bool { return false; }),
+    ScreenData(
+        Navigator::Screen::ScreenSubscriptionInProgressWeb,
+        Navigator::LoadPolicy::LoadTemporarily,
+        "qrc:/ui/screens/ScreenSubscriptionInProgressWeb.qml",
+        QVector<MozillaVPN::State>{MozillaVPN::StateSubscriptionInProgress},
+        [](Navigator::Screen*) -> int8_t {
+          return Feature::get(Feature::Feature_webPurchase)->isSupported() ? 99
+                                                                           : -1;
+        },
         []() -> bool { return false; }),
     ScreenData(
         Navigator::Screen::ScreenSubscriptionInUseError,

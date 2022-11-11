@@ -106,13 +106,13 @@ FEATURE_SIMPLE(inAppAuthentication,      // Feature ID
                QStringList(),            // feature dependencies
                FeatureCallback_true)
 
-FEATURE_SIMPLE(inAppProducts,         // Feature ID
-               "In-app Products",     // Feature name
+FEATURE_SIMPLE(webPurchase,           // Feature ID
+               "Web Purchase",        // Feature name
                "2.12",                // released
                FeatureCallback_true,  // Can be flipped on
                FeatureCallback_true,  // Can be flipped off
                QStringList(),         // feature dependencies
-               FeatureCallback_inAppProducts)
+               FeatureCallback_webPurchase)
 
 FEATURE_SIMPLE(keyRegeneration,       // Feature ID
                "Key Regeneration",    // Feature name

@@ -20,6 +20,7 @@ class PurchaseIAPHandler : public PurchaseHandler {
 
   void startSubscription(const QString& productIdentifier) override;
   void startRestoreSubscription() override;
+  void cancelSubscription() override{};
 
  protected:
   virtual void nativeStartSubscription(ProductsHandler::Product* product) = 0;

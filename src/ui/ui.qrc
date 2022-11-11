@@ -59,7 +59,8 @@
         <file>screens/ScreenSubscriptionBlocked.qml</file>
         <file>screens/ScreenSubscriptionGenericError.qml</file>
         <file>screens/ScreenSubscriptionExpiredError.qml</file>
-        <file>screens/ScreenSubscriptionInProgress.qml</file>
+        <file>screens/ScreenSubscriptionInProgressIAP.qml</file>
+        <file>screens/ScreenSubscriptionInProgressWeb.qml</file>
         <file>screens/ScreenSubscriptionInUseError.qml</file>
         <file>screens/ScreenSubscriptionNeededIAP.qml</file>
         <file>screens/ScreenSubscriptionNeededWeb.qml</file>

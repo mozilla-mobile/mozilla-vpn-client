@@ -40,6 +40,16 @@ void PurchaseWebHandler::startSubscription(const QString& productIdentifier) {
       MozillaVPN::AuthenticationType::AuthenticationInBrowser));
 }
 
+void PurchaseWebHandler::cancelSubscription() {
+  logger.debug() << "Cancel subscription";
+  m_subscriptionState = eInactive;
+  // We delete all tasks so that we clean-up the authentication task we started
+  // above.
+  // TODO - Do we have a mechanism to just clean-up the one task?
+  TaskScheduler::deleteTasks();
+  emit subscriptionCanceled();
+}
+
 void PurchaseWebHandler::startRestoreSubscription() {
   logger.error() << "Restore not implemented!";
   emit subscriptionFailed();

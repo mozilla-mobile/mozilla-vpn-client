@@ -19,6 +19,7 @@ class PurchaseHandler : public QObject {
 
   Q_INVOKABLE void subscribe(const QString& productIdentifier);
   Q_INVOKABLE void restore();
+  Q_INVOKABLE virtual void cancelSubscription() = 0;
   virtual void startSubscription(const QString& productIdentifier) = 0;
   virtual void startRestoreSubscription() = 0;
 
@@ -41,7 +42,7 @@ class PurchaseHandler : public QObject {
   void subscriptionNotValidated();
 
  public slots:
-  void stopSubscription();
+  Q_INVOKABLE void stopSubscription();
 
  protected:
   PurchaseHandler(QObject* parent);

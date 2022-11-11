@@ -15,6 +15,7 @@ class PurchaseWebHandler final : public PurchaseHandler {
   PurchaseWebHandler(QObject* parent);
   ~PurchaseWebHandler();
 
+  void cancelSubscription() override;
   void nativeRegisterProducts() override;
   void startSubscription(const QString& productIdentifier) override;
   void startRestoreSubscription() override;
