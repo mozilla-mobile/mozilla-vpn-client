@@ -79,8 +79,7 @@ FocusScope {
         multiHopStackView.pop();
     }
 
-    function centerActiveServer() {
-        const serverListFlickable = serverListLoader.item;
+    function scrollToActiveServer(serverListFlickable) {
         if (!(serverListFlickable && serverListFlickable.countries)) {
             return;
         }
@@ -115,6 +114,10 @@ FocusScope {
 
             return;
         }
+    }
+
+    function centerActiveServer() {
+        scrollToActiveServer(serverListLoader.item);
     }
 
     Layout.fillWidth: true
@@ -220,6 +223,7 @@ FocusScope {
                         }
 
                         Item {
+                            Accessible.name: VPNl18n.ServersViewRecommendedTextInfo
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
 
                             height: VPNTheme.theme.iconSize * 1.5
@@ -228,8 +232,6 @@ FocusScope {
 
                             VPNIcon {
                                 id: refreshIcon
-
-                                Accessible.name: VPNl18n.ServersViewRecommendedTextInfo
                                 source: "qrc:/nebula/resources/refresh.svg"
                                 sourceSize {
                                     height: parent.height
@@ -281,7 +283,7 @@ FocusScope {
                             }
 
                             VPNServerLatencyIndicator {
-                                Layout.alignment: QtAlignRight | Qt.AlignVCenter
+                                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                                 score: recommendedServer.locationScore
                             }
                         }
@@ -387,7 +389,7 @@ FocusScope {
 
             handleTabClick: (tabButton) => {
                 if (tabButton.objectName === "tabAllServers") {
-                    centerActiveServer();
+                    scrollToActiveServer(loaderServersAll.item);
                 }
             }
 
