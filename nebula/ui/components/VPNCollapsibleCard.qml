@@ -114,12 +114,14 @@ Rectangle {
                 Layout.preferredWidth: cardWrapper.width
                 Layout.maximumWidth: cardWrapper.width
 
+                bottomPadding: VPNTheme.theme.listSpacing
                 color: VPNTheme.colors.grey50
                 font.family: VPNTheme.theme.fontBoldFamily
                 font.pixelSize: VPNTheme.theme.fontSize
                 lineHeight: VPNTheme.theme.labelLineHeight
                 lineHeightMode: Text.FixedHeight
                 text: root.title
+                topPadding: VPNTheme.theme.listSpacing
                 verticalAlignment: Text.AlignVCenter
                 wrapMode: Text.Wrap
 

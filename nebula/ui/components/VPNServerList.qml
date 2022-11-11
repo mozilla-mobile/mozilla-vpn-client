@@ -140,7 +140,7 @@ FocusScope {
 
             Column {
                 id: serverListRecommended
-                spacing: VPNTheme.theme.listSpacing * 1.75
+                spacing: VPNTheme.theme.listSpacing * 1.5
                 width: parent.width
 
                 anchors {
@@ -151,8 +151,6 @@ FocusScope {
                 }
 
                 VPNCollapsibleCard {
-                    title: VPNl18n.ServersViewRecommendedCardTitle
-
                     anchors.horizontalCenter: parent.horizontalCenter
 
                     iconSrc: "qrc:/ui/resources/tip.svg"
@@ -161,6 +159,7 @@ FocusScope {
                         textFormat: Text.StyledText
                         Layout.fillWidth: true
                     }
+                    title: VPNl18n.ServersViewRecommendedCardTitle
                     width: parent.width - VPNTheme.theme.windowMargin * 2
                 }
 
@@ -186,7 +185,7 @@ FocusScope {
                             leftMargin: VPNTheme.theme.listSpacing
                             rightMargin: VPNTheme.theme.listSpacing
                         }
-                        spacing: VPNTheme.theme.listSpacing * 0.5
+                        spacing: VPNTheme.theme.listSpacing
 
                         VPNIcon {
                             source: "qrc:/nebula/resources/clock.svg"
@@ -204,11 +203,11 @@ FocusScope {
                             Layout.maximumWidth: parent.width
 
                             color: VPNTheme.theme.fontColor
+                            horizontalAlignment: Text.AlignLeft
                             // TODO: Replace string arg with the actual formatted date
                             text: VPNController.state === VPNController.StateOff
                                 ? VPNl18n.ServersViewRecommendedTextStatus.arg("5m")
                                 : VPNl18n.ServersViewRecommendedTextStatusWithInfo.arg("5m")
-                            horizontalAlignment: Text.AlignLeft
                             wrapMode: Text.WordWrap
                         }
 
@@ -255,16 +254,16 @@ FocusScope {
                         }
 
                         RowLayout {
-                            anchors {
-                                centerIn: parent
-                                left: parent.left
-                                right: parent.right
-                            }
-                            width: parent.width - VPNTheme.theme.windowMargin * 1.5
+                            anchors.centerIn: parent;
                             height: parent.height
+                            width: parent.width - VPNTheme.theme.windowMargin
 
                             VPNServerLabel {
                                 id: recommendedServerLabel
+
+                                Layout.leftMargin: VPNTheme.theme.listSpacing * 0.5
+                                fontColor: VPNTheme.theme.fontColorDark
+                                narrowStyle: false
                                 serversList: [{
                                     countryCode,
                                     cityName,
@@ -336,22 +335,26 @@ FocusScope {
                     _searchBarHasError: () => { return countriesRepeater.count === 0 }
                     _searchBarPlaceholderText: VPNl18n.ServersViewSearchPlaceholder
 
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.leftMargin: VPNTheme.theme.vSpacing
-                    anchors.rightMargin: VPNTheme.theme.vSpacing
+                    anchors {
+                        left: parent.left
+                        leftMargin: VPNTheme.theme.vSpacing
+                        right: parent.right
+                        rightMargin: VPNTheme.theme.vSpacing
+                    }
                 }
 
 
                 VPNRecentConnections {
                     id: recentConnections
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.rightMargin: VPNTheme.theme.windowMargin * 0.5
-                    anchors.leftMargin: anchors.rightMargin
-                    visible: showRecentConnections && searchBar.getSearchBarText().length === 0
-                    showMultiHopRecentConnections: false
+                    anchors {
+                        left: parent.left
+                        leftMargin: anchors.rightMargin
+                        right: parent.right
+                        rightMargin: VPNTheme.theme.windowMargin * 0.5
+                    }
                     height: showRecentConnections ? implicitHeight : 0
+                    showMultiHopRecentConnections: false
+                    visible: showRecentConnections && searchBar.getSearchBarText().length === 0
                 }
 
                 Repeater {
