@@ -7,10 +7,15 @@ use std::env;
 use ffi_support::FfiStr;
 use glean::{ClientInfoMetrics, Configuration};
 
-use crate::ffi_string_ext::FallibleToString;
-use crate::uploader::VPNPingUploader;
+use ffi::ffi_string_ext::FallibleToString;
+use metrics::__generated_pings::register_pings;
+use uploader::VPNPingUploader;
 
-mod ffi_string_ext;
+// Make internal Glean symbols public for mobile SDK consumption.
+pub use glean_core;
+
+mod ffi;
+mod metrics;
 mod uploader;
 
 #[no_mangle]
@@ -42,6 +47,7 @@ pub extern "C" fn glean_initialize(is_telemetry_enabled: bool, data_path: FfiStr
         channel: channel.to_string_fallible().ok(),
     };
 
+    register_pings();
     glean::initialize(cfg, client_info);
 }
 
