@@ -25,7 +25,7 @@ VPNStackView {
            // Try again
            primaryButtonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
            primaryButtonObjectName: "errorTryAgainButton",
-           primaryButtonOnClick: () => { VPNNavigator.requestScreen(VPNNavigator.ScreenSubscriptionNeeded) },
+           primaryButtonOnClick: () => { VPNNavigator.requestScreen(VPNNavigator.ScreenSubscriptionNeededIAP) },
            secondaryButtonIsSignOff: false,
            getHelpLinkVisible: true
        });

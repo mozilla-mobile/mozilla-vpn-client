@@ -471,15 +471,13 @@ int CommandUI::run(QStringList& tokens) {
         });
 #endif
 
-    if (Feature::get(Feature::Feature_inAppProducts)->isSupported()) {
-      qmlRegisterSingletonType<MozillaVPN>(
-          "Mozilla.VPN", 1, 0, "VPNIAP",
-          [](QQmlEngine*, QJSEngine*) -> QObject* {
-            QObject* obj = PurchaseHandler::instance();
-            QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-            return obj;
-          });
-    }
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNPurchase",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = PurchaseHandler::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
 
     if (Feature::get(Feature::Feature_inAppProducts)->isSupported()) {
       qmlRegisterSingletonType<MozillaVPN>(
