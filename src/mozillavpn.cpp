@@ -534,6 +534,13 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
     return;
   }
 
+  if (Feature::get(Feature::Feature_webPurchase)->isSupported()) {
+    // Note that if web purchase gets split up so that it is not linked
+    // to a fresh authentication task then this can be removed from here
+    // as the end of that flow should call subscriptionCompleted.
+    PurchaseHandler::instance()->stopSubscription();
+  }
+
   completeActivation();
 }
 

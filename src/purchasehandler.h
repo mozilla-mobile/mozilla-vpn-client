@@ -42,7 +42,7 @@ class PurchaseHandler : public QObject {
   void subscriptionNotValidated();
 
  public slots:
-  Q_INVOKABLE void stopSubscription();
+  void stopSubscription();
 
  protected:
   PurchaseHandler(QObject* parent);
