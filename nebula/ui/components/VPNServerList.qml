@@ -33,27 +33,32 @@ FocusScope {
             {
                 countryCode: "ca",
                 cityName: "Toronto",
-                localizedCityName: "Toronto"
+                localizedCityName: "Toronto",
+                code: "tor"
             },
             {
                 countryCode: "ca",
                 cityName: "Montreal",
-                localizedCityName: "Montreal"
+                localizedCityName: "Montreal",
+                code: "mtr"
             },
             {
                 countryCode: "ca",
                 cityName: "Vancouver",
-                localizedCityName: "Vancouver"
+                localizedCityName: "Vancouver",
+                code: "van"
             },
             {
                 countryCode: "us",
                 cityName: "New York City",
-                localizedCityName: "New York City"
+                localizedCityName: "New York City",
+                code: "nyc"
             },
             {
                 countryCode: "us",
                 cityName: "Chicago",
-                localizedCityName: "Chicago"
+                localizedCityName: "Chicago",
+                code: "chi"
             }
         ];
         const shuffledData = data.sort((a, b) => 0.5 - Math.random());
@@ -61,7 +66,6 @@ FocusScope {
         shuffledData.forEach((d) => {
             testRecommendedModel.append(d);
         });
-        testRecommendedModel.sync();
     }
 
     Component.onCompleted: {
@@ -239,7 +243,14 @@ FocusScope {
                     id: recommendedRepeater
                     model: testRecommendedModel
                     delegate: VPNClickableRow {
+                        property string locationScore: VPNServerCountryModel.cityConnectionScore(countryCode, code)
+                        property bool isAvailable: locationScore >= 0
+                        id: recommendedServer
+
                         onClicked: {
+                            if (!isAvailable) {
+                                return;
+                            }
                             focusScope.setSelectedServer(countryCode, cityName, localizedCityName);
                         }
 
@@ -253,12 +264,17 @@ FocusScope {
                             height: parent.height
 
                             VPNServerLabel {
-                                id: recommendedServer
+                                id: recommendedServerLabel
                                 serversList: [{
                                     countryCode,
                                     cityName,
                                     localizedCityName
                                 }]
+                            }
+
+                            VPNServerLatencyIndicator {
+                                Layout.alignment: QtAlignRight | Qt.AlignVCenter
+                                score: recommendedServer.locationScore
                             }
                         }
                     }
@@ -341,7 +357,7 @@ FocusScope {
                 Repeater {
                     id: countriesRepeater
                     model: searchBar.getProxyModel()
-                    delegate: VPNServerCountry{}
+                    delegate: VPNServerCountry {}
                 }
             }
         }

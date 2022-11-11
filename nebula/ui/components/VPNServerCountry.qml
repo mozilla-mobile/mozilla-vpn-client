@@ -201,24 +201,15 @@ VPNClickableRow {
                     }
                 }
 
-                VPNIcon {
-                    id: availabilityIndicator
-
+                VPNServerLatencyIndicator {
                     anchors {
-                        right: del.right
+                        right: parent.right
                         rightMargin: VPNTheme.theme.hSpacing
-                        top: del.top
-                        verticalCenter: del.verticalCenter
+                        top: parent.top
+                        verticalCenter: parent.verticalCenter
                     }
-                    source: del.locationScore < 0 ? "qrc:/nebula/resources/warning.svg" :
-                        "qrc:/nebula/resources/wifi-" + del.locationScore + ".svg"
-                    sourceSize {
-                        height: VPNTheme.theme.iconSizeSmall
-                        width: VPNTheme.theme.iconSizeSmall
-                    }
-                    visible: del.locationScore != 0
+                    score: del.locationScore
                 }
-
             }
         }
 
