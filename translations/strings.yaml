@@ -217,7 +217,7 @@ restorePurchaseInUseError:
 purchaseWeb:
   title: Subscribe to Mozilla VPN
   message:
-    value: "We couldn't find a subscription for %1. Subscribe now to protect your connection."
+    value: We couldn’t find a subscription for %1. Subscribe now to protect your connection.
     comment: The %1 is the user's email address.
   inProgress: Please complete your subscription in your web browser.
 
