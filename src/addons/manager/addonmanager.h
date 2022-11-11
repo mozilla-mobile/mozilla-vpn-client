@@ -62,6 +62,8 @@ class AddonManager final : public QAbstractListModel {
   void initialize();
 
   void updateAddonsList(QList<AddonData> addons);
+  void refreshAddons();
+  
   bool validateAndLoad(const QString& addonId, const QByteArray& sha256,
                        bool checkSha256 = true);
 
