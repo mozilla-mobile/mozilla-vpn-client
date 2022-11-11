@@ -1430,9 +1430,6 @@ void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
         ErrorHandler::SubscriptionFailureError);
   }
 
-  TaskScheduler::scheduleTask(
-      new TaskGroup({new TaskAccount(ErrorHandler::PropagateError),
-                     new TaskServers(ErrorHandler::PropagateError)}));
   TaskScheduler::scheduleTask(new TaskFunction([this]() {
     if (!m_private->m_user.subscriptionNeeded() &&
         m_state == StateSubscriptionNeeded) {
