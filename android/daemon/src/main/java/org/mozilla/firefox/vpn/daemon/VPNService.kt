@@ -45,11 +45,29 @@ class VPNService : android.net.VpnService() {
             }
         }
     }
-
-    private var currentTunnelHandle = -1
-
     private var mCityname = ""
 
+
+        
+    private var currentTunnelHandle = -1
+        set(value:Int){
+            field=value;
+            if (value > -1) {
+                Log.i(tag, "Dispatch Daemon State -> connected")
+                mBinder.dispatchEvent(
+                    VPNServiceBinder.EVENTS.connected,
+                    JSONObject().apply {
+                        put("city", mCityname)
+                    }.toString()
+                )
+                mConnectionTime = System.currentTimeMillis()
+                return
+            }
+            Log.i(tag, "Dispatch Daemon State -> disconnected")
+            mBinder.dispatchEvent(VPNServiceBinder.EVENTS.disconnected, "")
+            mConnectionTime = 0
+        }
+    
     fun init() {
         if (mAlreadyInitialised) {
             return
@@ -67,6 +85,7 @@ class VPNService : android.net.VpnService() {
             // we do not need to stay as a foreground service.
             stopForeground(true)
             Log.v(tag, "Client Disconnected, VPN is down - Service might shut down soon")
+            return true;
         }
         Log.v(tag, "Client Disconnected, VPN is up")
         return super.onUnbind(intent)
@@ -155,24 +174,9 @@ class VPNService : android.net.VpnService() {
             return mCityname
         }
 
-    var isUp: Boolean
+    var isUp: Boolean = false
         get() {
             return currentTunnelHandle >= 0
-        }
-        private set(value) {
-            if (value) {
-                mBinder.dispatchEvent(
-                    VPNServiceBinder.EVENTS.connected,
-                    JSONObject().apply {
-                        put("city", mCityname)
-                    }.toString()
-                )
-                mConnectionTime = System.currentTimeMillis()
-                return
-            }
-            Log.i(tag, "Dispatch Daemon State -> disconnected")
-            mBinder.dispatchEvent(VPNServiceBinder.EVENTS.disconnected, "")
-            mConnectionTime = 0
         }
     val status: JSONObject
         get() {
@@ -203,8 +207,7 @@ class VPNService : android.net.VpnService() {
         mCityname = json.getString("city")
 
         if (checkPermissions() != null) {
-            Log.e(tag, "turn on was called without vpn-permission!")
-            isUp = false
+            throw Error("turn on was called without vpn-permission!")
             return
         }
         if (currentTunnelHandle != -1) {
@@ -218,22 +221,18 @@ class VPNService : android.net.VpnService() {
         builder.setSession("mvpn0")
         builder.establish().use { tun ->
             if (tun == null) {
-                isUp = false
                 Log.e(tag, "Activation Error: did not get a TUN handle")
                 return
             }
             currentTunnelHandle = wgTurnOn("mvpn0", tun.detachFd(), wgConfig)
         }
         if (currentTunnelHandle < 0) {
-            Log.e(tag, "WActivation Error Wireguard-Error -> $currentTunnelHandle")
-            isUp = false
+            throw Error("Activation Error Wireguard-Error -> $currentTunnelHandle")
             return
         }
         protect(wgGetSocketV4(currentTunnelHandle))
         protect(wgGetSocketV6(currentTunnelHandle))
         mConfig = json
-        isUp = true
-
         // Store the config in case the service gets
         // asked boot vpn from the OS
         val prefs = Prefs.get(this)
@@ -283,7 +282,6 @@ class VPNService : android.net.VpnService() {
         wgTurnOff(currentTunnelHandle)
         currentTunnelHandle = -1
         stopForeground(false)
-        isUp = false
         mGleanTimer.cancel()
         mConnectionHealth.stop()
     }

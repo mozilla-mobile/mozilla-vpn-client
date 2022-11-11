@@ -87,6 +87,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                     mResumeConfig?.let { this.mService.turnOn(it) }
                 } catch (e: Exception) {
                     Log.e(tag, "An Error occurred while enabling the VPN: ${e.localizedMessage}")
+                    dispatchEvent(EVENTS.activationError, e.localizedMessage)
                 }
                 return true
             }
