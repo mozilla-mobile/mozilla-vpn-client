@@ -68,7 +68,7 @@ PurchaseHandler::~PurchaseHandler() {
 }
 
 void PurchaseHandler::subscribe(const QString& productIdentifier) {
-  logger.debug() << "Subscription required";
+  logger.debug() << "Subscription required" << productIdentifier;
   m_currentSKU = productIdentifier;
   emit subscriptionStarted(productIdentifier);
 }

@@ -1324,16 +1324,18 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
 
   setState(StateSubscriptionInProgress);
 
-  ProductsHandler* products = ProductsHandler::instance();
+  if (Feature::get(Feature::Feature_inAppProducts)->isSupported()) {
+    ProductsHandler* products = ProductsHandler::instance();
 
-  // If products are not ready (race condition), register the products again.
-  if (!products->hasProductsRegistered()) {
-    TaskScheduler::scheduleTask(new TaskProducts());
-    TaskScheduler::scheduleTask(new TaskFunction([this, productIdentifier]() {
-      subscriptionStarted(productIdentifier);
-    }));
+    // If products are not ready (race condition), register the products again.
+    if (!products->hasProductsRegistered()) {
+      TaskScheduler::scheduleTask(new TaskProducts());
+      TaskScheduler::scheduleTask(new TaskFunction([this, productIdentifier]() {
+        subscriptionStarted(productIdentifier);
+      }));
 
-    return;
+      return;
+    }
   }
 
   PurchaseHandler::instance()->startSubscription(productIdentifier);

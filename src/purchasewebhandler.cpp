@@ -5,6 +5,8 @@
 #include "purchasewebhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "tasks/authenticate/taskauthenticate.h"
+#include "taskscheduler.h"
 
 #include <QCoreApplication>
 
@@ -22,19 +24,20 @@ PurchaseWebHandler::~PurchaseWebHandler() {
 }
 
 void PurchaseWebHandler::startSubscription(const QString& productIdentifier) {
-  ProductsHandler* productsHandler = ProductsHandler::instance();
-  Q_ASSERT(productsHandler->hasProductsRegistered());
-
-  ProductsHandler::Product* product =
-      productsHandler->findProduct(productIdentifier);
-  Q_ASSERT(product);
-
   if (m_subscriptionState != eInactive) {
     logger.warning() << "We're already subscribing.";
     return;
   }
   m_subscriptionState = eActive;
   logger.debug() << "Starting the subscription";
+
+  // Although we are already logged in, the mechanism on guardian for getting to
+  // a web subscription is via the login endpoint. Additionally, we need the
+  // user to login on the browser (rather than the client) in order to complete
+  // the subscription platform flow elegantly. If/when guardian adds endpoints
+  // that seperate these concerns we can use them.
+  TaskScheduler::scheduleTask(new TaskAuthenticate(
+      MozillaVPN::AuthenticationType::AuthenticationInBrowser));
 }
 
 void PurchaseWebHandler::startRestoreSubscription() {
