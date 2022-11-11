@@ -68,11 +68,6 @@ FocusScope {
         });
     }
 
-    Component.onCompleted: {
-        // TODO: Get initial list
-        focusScope.updateServerData();
-    }
-
     function setSelectedServer(countryCode, cityName, localizedCityName) {
         if (currentServer.whichHop === "singleHopServer") {
             VPNController.changeServer(countryCode, cityName);
@@ -85,6 +80,9 @@ FocusScope {
     }
 
     function centerActiveServer(serverListFlickable) {
+        if (!(serverListFlickable && serverListFlickable.countries)) {
+            return;
+        }
         // Scroll vpnFlickable so that the current server city is
         // vertically centered in the view
         const serverListYCenter = serverListFlickable.height * 0.5 - listOffset
@@ -125,6 +123,12 @@ FocusScope {
 
     ButtonGroup {
         id: radioButtonGroup
+    }
+
+    Component.onCompleted: {
+        if (showRecommendedConnections) {
+            focusScope.updateServerData();
+        }
     }
 
     // Recommended servers list
@@ -416,10 +420,7 @@ FocusScope {
         sourceComponent: showRecommendedConnections
             ? serverTabsComponent
             : listServersAll
-        onStatusChanged: if (
-            serverListLoader.status === Loader.Ready
-            && showRecentConnections
-        ) {
+        onStatusChanged: if (serverListLoader.status === Loader.Ready) {
             centerActiveServer(serverListLoader.item);
         }
     }
