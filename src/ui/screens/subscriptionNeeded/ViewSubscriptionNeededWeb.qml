@@ -30,10 +30,8 @@ VPNFlickable {
 
     Image {
         id: logo
-        sourceSize.height: 48
-        sourceSize.width: 48
         smooth: true
-        source: "qrc:/ui/resources/logo.svg"
+        source: "qrc:/ui/resources/logo-connecting.svg"
         anchors.horizontalCenter: parent.horizontalCenter
         antialiasing: true
         anchors.top: headerLink.bottom
