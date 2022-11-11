@@ -79,7 +79,8 @@ FocusScope {
         multiHopStackView.pop();
     }
 
-    function centerActiveServer(serverListFlickable) {
+    function centerActiveServer() {
+        const serverListFlickable = serverListLoader.item;
         if (!(serverListFlickable && serverListFlickable.countries)) {
             return;
         }
@@ -129,6 +130,8 @@ FocusScope {
         if (showRecommendedConnections) {
             focusScope.updateServerData();
         }
+
+        centerActiveServer();
     }
 
     // Recommended servers list
@@ -178,6 +181,7 @@ FocusScope {
                     }
                     canGrowVertical: true
                     height: statusTitle.implicitHeight + VPNTheme.theme.vSpacingSmall
+                    rowShouldBeDisabled: !(VPNController.state === VPNController.StateOff)
 
                     onClicked: {
                         focusScope.updateServerData();
@@ -209,7 +213,7 @@ FocusScope {
                             color: VPNTheme.theme.fontColor
                             horizontalAlignment: Text.AlignLeft
                             // TODO: Replace string arg with the actual formatted date
-                            text: VPNController.state === VPNController.StateOff
+                            text: !statusComponent.rowShouldBeDisabled
                                 ? VPNl18n.ServersViewRecommendedTextStatus.arg("5m")
                                 : VPNl18n.ServersViewRecommendedTextStatusWithInfo.arg("5m")
                             wrapMode: Text.WordWrap
@@ -219,6 +223,7 @@ FocusScope {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
 
                             height: VPNTheme.theme.iconSize * 1.5
+                            visible: !statusComponent.rowShouldBeDisabled
                             width: VPNTheme.theme.iconSize * 1.5
 
                             VPNIcon {
@@ -382,7 +387,7 @@ FocusScope {
 
             handleTabClick: (tabButton) => {
                 if (tabButton.objectName === "tabAllServers") {
-                    centerActiveServer(loaderServersAll.item);
+                    centerActiveServer();
                 }
             }
 
@@ -421,7 +426,7 @@ FocusScope {
             ? serverTabsComponent
             : listServersAll
         onStatusChanged: if (serverListLoader.status === Loader.Ready) {
-            centerActiveServer(serverListLoader.item);
+            centerActiveServer();
         }
     }
 }

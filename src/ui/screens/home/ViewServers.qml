@@ -94,6 +94,7 @@ Item {
                             if (segment.objectName === "tabSingleHop") {
                                 // Do single hop things
                                 menu.title = menu.defaultMenuTitle;
+                                singleHopServerList.centerActiveServer();
                                 return;
                             }
                             else if (multiHopEntryServer[0] === "") {
