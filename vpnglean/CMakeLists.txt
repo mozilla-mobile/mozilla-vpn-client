@@ -47,6 +47,7 @@ endif()
 set(HEADER_FILE vpnglean.h)
 set(LIBNAME ${CMAKE_STATIC_LIBRARY_PREFIX}vpnglean${CMAKE_STATIC_LIBRARY_SUFFIX})
 
+## Build the vpnglean Rust library
 add_custom_target(vpnglean_ffi
     BYPRODUCTS
         ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/debug/${LIBNAME}
@@ -61,6 +62,32 @@ add_custom_target(vpnglean_ffi
 )
 set_target_properties(vpnglean_ffi PROPERTIES FOLDER "Libs")
 
+## Generate metrics and pings files
+set(GLEAN_PARSER_CMD python3 ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py)
+set(GLEAN_YAML_FILES_PATH ${CMAKE_SOURCE_DIR}/glean/)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/telemetry)
+add_custom_target(vpnglean_telemetry
+    BYPRODUCTS
+        ${CMAKE_CURRENT_BINARY_DIR}/metrics.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pings.h
+        # Rust files need to stay the Rust project folder otherwise Rust doesn't find them easily
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.rs
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.rs
+    MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py
+    DEPENDS
+        ${GLEAN_YAML_FILES_PATH}/pings.yaml
+        ${GLEAN_YAML_FILES_PATH}/metrics.yaml
+    ## C++
+    COMMAND ${GLEAN_PARSER_CMD} cpp ${CMAKE_CURRENT_BINARY_DIR}/pings.h ${GLEAN_YAML_FILES_PATH}/pings.yaml
+    COMMAND ${GLEAN_PARSER_CMD} cpp ${CMAKE_CURRENT_BINARY_DIR}/metrics.h ${GLEAN_YAML_FILES_PATH}/metrics.yaml
+    ## Rust
+    COMMAND ${GLEAN_PARSER_CMD} rust ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.rs ${GLEAN_YAML_FILES_PATH}/pings.yaml
+    COMMAND ${GLEAN_PARSER_CMD} rust ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.rs ${GLEAN_YAML_FILES_PATH}/metrics.yaml
+)
+set_target_properties(vpnglean_telemetry PROPERTIES FOLDER "Libs")
+
+## Define depedencies
+add_dependencies(vpnglean_ffi vpnglean_telemetry)
 add_dependencies(vpnglean vpnglean_ffi)
 add_dependencies(mozillavpn vpnglean)
 set_target_properties(vpnglean PROPERTIES
