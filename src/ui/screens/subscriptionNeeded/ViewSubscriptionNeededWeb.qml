@@ -14,7 +14,9 @@ VPNFlickable {
 
     property var wasmView: false
 
-    flickContentHeight: col.y + col.height
+    flickContentHeight: Math.max(parent.height, headerLink.height + content.implicitHeight)
+    height: parent.height
+    interactive: flickContentHeight > height
 
     Rectangle {
         color: VPNTheme.theme.bgColor
@@ -28,125 +30,124 @@ VPNFlickable {
         onClicked: VPNNavigator.requestScreen(VPNNavigator.ScreenGetHelp)
     }
 
-    Image {
-        id: logo
-        smooth: true
-        source: "qrc:/ui/resources/logo-connecting.svg"
-        anchors.horizontalCenter: parent.horizontalCenter
-        antialiasing: true
-        anchors.top: headerLink.bottom
-        anchors.topMargin: 20
-    }
-
-    VPNHeadline {
-        id: headline
-        text: VPNl18n.PurchaseWebTitle
-        anchors.top: logo.bottom
-        anchors.topMargin: VPNTheme.theme.windowMargin
-        anchors.horizontalCenter: parent.horizontalCenter
-    }
-
     ColumnLayout {
-        id: col
-        anchors.top: headline.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
+        id: content
+
         anchors.verticalCenter: parent.verticalCenter
+        width: parent.width
 
-        ColumnLayout {
-            spacing: VPNTheme.theme.windowMargin
-            Layout.maximumWidth: VPNTheme.theme.maxHorizontalContentWidth
+        Image {
+            id: logo
+            antialiasing: true
+            smooth: true
+            source: "qrc:/ui/resources/logo-connecting.svg"
 
-            VPNTextBlock {
-                Layout.fillWidth: true
-                Layout.leftMargin: VPNTheme.theme.vSpacingSmall
-                Layout.rightMargin: VPNTheme.theme.windowMargin
+            Layout.alignment: Qt.AlignHCenter
+            Layout.topMargin: VPNTheme.theme.vSpacing
+        }
 
-                color: VPNTheme.theme.fontColor
-                horizontalAlignment: Text.AlignHCenter
-                textFormat: Text.RichText
-                text: VPNl18n.PurchaseWebMessage
-                    .arg("<b style='color:" + VPNTheme.theme.fontColorDark + ";'>"
-                        + VPNUser.email + "</b>")
-                wrapMode: Text.WordWrap
-                width: parent.width < VPNTheme.theme.maxTextWidth
-                    ? parent.width
-                    : VPNTheme.theme.maxTextWidth
+        VPNHeadline {
+            id: headline
+            text: VPNl18n.PurchaseWebTitle
+
+            Layout.bottomMargin: VPNTheme.theme.listSpacing
+            Layout.topMargin: VPNTheme.theme.vSpacingSmall
+        }
+
+        VPNTextBlock {
+            color: VPNTheme.theme.fontColor
+            font.pixelSize: VPNTheme.theme.fontSize
+            horizontalAlignment: Text.AlignHCenter
+            textFormat: Text.RichText
+            text: VPNl18n.PurchaseWebMessage
+                .arg("<b style='color:" + VPNTheme.theme.fontColorDark + ";'>"
+                    + VPNUser.email + "</b>")
+            wrapMode: Text.WordWrap
+            width: Math.max(parent.width, VPNTheme.theme.maxTextWidth)
+
+            Layout.bottomMargin: VPNTheme.theme.vSpacing * 2
+            Layout.fillWidth: true
+            Layout.leftMargin: VPNTheme.theme.vSpacingSmall
+            Layout.rightMargin: VPNTheme.theme.windowMargin
+        }
+
+        VPNButton {
+            id: subscribeNow
+            //% "Subscribe now"
+            text: qsTrId("vpn.updates.subscribeNow")
+
+            onClicked: VPNPurchase.subscribe("web")
+
+            Layout.bottomMargin: VPNTheme.theme.vSpacingSmall
+            Layout.fillWidth: true
+            Layout.leftMargin: VPNTheme.theme.windowMargin
+            Layout.rightMargin: VPNTheme.theme.windowMargin
+            Layout.topMargin: VPNTheme.theme.windowMargin * 0.75
+        }
+
+        GridLayout {
+            id: grid
+
+            columnSpacing: 0
+            columns: 3
+
+            Layout.alignment: Qt.AlignHCenter
+            Layout.fillWidth: true
+
+            Component.onCompleted: {
+                if (implicitWidth > window.width) {
+                    flow = Grid.TopToBottom
+                }
             }
 
-            VPNButton {
-                id: subscribeNow
+            VPNGreyLink {
+                id: termsOfService
 
-                //% "Subscribe now"
-                text: qsTrId("vpn.updates.subscribeNow")
+                // Terms of Service - string defined in ViewAboutUs.qml
+                labelText: qsTrId("vpn.aboutUs.tos2")
+                textAlignment: grid.columns > 1 ? Text.AlignRight : Text.AlignHCenter
 
-                Layout.topMargin: VPNTheme.theme.windowMargin
-                Layout.leftMargin: VPNTheme.theme.windowMargin
-                Layout.rightMargin: VPNTheme.theme.windowMargin
-                Layout.fillWidth: true
-                Layout.maximumWidth: VPNTheme.theme.maxHorizontalContentWidth
-                onClicked: VPNPurchase.subscribe("web")
+                onClicked: VPNUrlOpener.openLink(VPNUrlOpener.LinkTermsOfService)
+
+                Layout.alignment: grid.columns > 1 ? Qt.AlignRight : Qt.AlignHCenter
+            }
+
+            Rectangle {
+                color: VPNTheme.theme.greyLink.defaultColor
+                height: VPNTheme.theme.focusBorderWidth * 2
+                Layout.alignment: Qt.AlignHCenter
+                opacity: 0.8
+                radius: VPNTheme.theme.focusBorderWidth
+                visible: parent.flow !== Grid.TopToBottom
+                width: height
+            }
+
+            VPNGreyLink {
+                id: privacyNotice
+                // Privacy Notice - string defined in ViewAboutUs.qml
+                labelText: qsTrId("vpn.aboutUs.privacyNotice2")
+                textAlignment: grid.columns > 1 ? Text.AlignLeft : Text.AlignHCenter
+
+                onClicked: VPNUrlOpener.openLink(VPNUrlOpener.LinkPrivacyNotice)
+
+                Layout.alignment: grid.columns > 1 ? Qt.AlignLeft : Qt.AlignHCenter
             }
         }
 
-        ColumnLayout {
-            id: footerInfo
-            spacing: VPNTheme.theme.windowMargin
-            GridLayout {
-                id: grid
-                Layout.alignment: Qt.AlignHCenter
-                Layout.fillWidth: true
-                columnSpacing: 0
-                columns: 3
-                Component.onCompleted: {
-                    if (implicitWidth > window.width) {
-                        flow = Grid.TopToBottom
-                    }
-                }
-
-                VPNGreyLink {
-                    id: termsOfService
-
-                    // Terms of Service - string defined in ViewAboutUs.qml
-                    labelText: qsTrId("vpn.aboutUs.tos2")
-                    Layout.alignment: grid.columns > 1 ? Qt.AlignRight : Qt.AlignHCenter
-                    textAlignment: grid.columns > 1 ? Text.AlignRight : Text.AlignHCenter
-                    onClicked: VPNUrlOpener.openLink(VPNUrlOpener.LinkTermsOfService)
-                }
-
-                Rectangle {
-                    width: 4
-                    height: 4
-                    radius: 2
-                    Layout.alignment: Qt.AlignHCenter
-                    color: VPNTheme.theme.greyLink.defaultColor
-                    visible: parent.flow != Grid.TopToBottom
-                    opacity: .8
-                }
-
-                VPNGreyLink {
-                    id: privacyNotice
-
-                    // Privacy Notice - string defined in ViewAboutUs.qml
-                    labelText: qsTrId("vpn.aboutUs.privacyNotice2")
-                    onClicked: VPNUrlOpener.openLink(VPNUrlOpener.LinkPrivacyNotice)
-                    textAlignment: grid.columns > 1 ? Text.AlignLeft : Text.AlignHCenter
-                    Layout.alignment: grid.columns > 1 ? Qt.AlignLeft : Qt.AlignHCenter
-                }
+        VPNSignOut {
+            anchors {
+                bottom: undefined
+                bottomMargin: undefined
+                horizontalCenter: undefined
             }
+            Layout.alignment: Qt.AlignHCenter
+            Layout.preferredHeight: VPNTheme.theme.rowHeight
+            Layout.topMargin: VPNTheme.theme.vSpacing
+        }
 
-            VPNSignOut {
-                anchors.bottom: undefined
-                anchors.bottomMargin: undefined
-                anchors.horizontalCenter: undefined
-                Layout.alignment: Qt.AlignHCenter
-                Layout.preferredHeight: VPNTheme.theme.rowHeight
-            }
-
-            VPNVerticalSpacer {
-                Layout.preferredHeight: 10
-                Layout.fillWidth: true
-            }
+        VPNVerticalSpacer {
+            Layout.preferredHeight: VPNTheme.theme.vSpacingSmall
+            Layout.fillWidth: true
         }
     }
 }

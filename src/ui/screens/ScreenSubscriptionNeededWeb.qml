@@ -14,4 +14,6 @@ StackView {
         VPNNavigator.addStackView(VPNNavigator.ScreenSubscriptionNeededWeb, stackview)
         stackview.push("qrc:/ui/screens/subscriptionNeeded/ViewSubscriptionNeededWeb.qml")
     }
+
+    anchors.fill: parent
 }
