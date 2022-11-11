@@ -8,8 +8,6 @@
 #include "tasks/authenticate/taskauthenticate.h"
 #include "taskscheduler.h"
 
-#include <QCoreApplication>
-
 namespace {
 Logger logger(LOG_IAP, "PurchaseWebHandler");
 }  // namespace

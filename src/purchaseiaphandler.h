@@ -15,7 +15,7 @@ class PurchaseIAPHandler : public PurchaseHandler {
 
  public:
   PurchaseIAPHandler(QObject* parent);
-  ~PurchaseIAPHandler();
+  virtual ~PurchaseIAPHandler();
   static PurchaseIAPHandler* instance();
 
   void startSubscription(const QString& productIdentifier) override;
@@ -25,10 +25,6 @@ class PurchaseIAPHandler : public PurchaseHandler {
  protected:
   virtual void nativeStartSubscription(ProductsHandler::Product* product) = 0;
   virtual void nativeRestoreSubscription() = 0;
-
-  bool m_hasRestore = true;
-  bool m_hasAlreadySubscribed = true;
-  bool m_hasBillingMethods = true;
 };
 
 #endif  // PURCHASEIAPHANDLER_H

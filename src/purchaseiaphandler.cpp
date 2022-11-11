@@ -9,13 +9,6 @@
 #include "logger.h"
 #include "models/feature.h"
 
-#include <QCoreApplication>
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonValue>
-#include <QScopeGuard>
-
 namespace {
 Logger logger(LOG_IAP, "PurchaseIAPHandler");
 PurchaseIAPHandler* s_instance = nullptr;

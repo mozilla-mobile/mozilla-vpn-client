@@ -46,14 +46,14 @@ class PurchaseHandler : public QObject {
 
  protected:
   PurchaseHandler(QObject* parent);
-  ~PurchaseHandler();
+  virtual ~PurchaseHandler();
 
   enum State {
     eActive,
     eInactive,
   } m_subscriptionState = eInactive;
 
-  QString m_currentSKU = QString();
+  QString m_currentSKU;
 };
 
 #endif  // PURCHASEHANDLER_H
