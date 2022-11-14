@@ -46,11 +46,11 @@ AndroidController::AndroidController() {
       activity, &AndroidVPNActivity::eventInitialized, this,
       [this](const QString& parcelBody) {
         // We might get multiple Init events as widgets, or fragments
-        // might query this. 
-        if(m_init){
+        // might query this.
+        if (m_init) {
           return;
         }
-        m_init=true;
+        m_init = true;
         auto doc = QJsonDocument::fromJson(parcelBody.toUtf8());
         emit initialized(true, doc.object()["connected"].toBool(),
                          QDateTime::fromMSecsSinceEpoch(
