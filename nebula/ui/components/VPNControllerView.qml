@@ -610,7 +610,6 @@ Item {
         enabled: !connectionInfoScreenVisible
     }
 
-    // Component ip info - start
     Rectangle {
         property bool isOpen: false
 
@@ -625,13 +624,11 @@ Item {
 
         // IP Adresses
         ColumnLayout {
-            id: ipInfoContent
-
             anchors {
                 left: parent.left
-                leftMargin: VPNTheme.theme.windowMargin
+                leftMargin: VPNTheme.theme.windowMargin * 1.5
                 right: parent.right
-                rightMargin: VPNTheme.theme.windowMargin
+                rightMargin: VPNTheme.theme.windowMargin * 1.5
                 top: parent.top
                 topMargin: VPNTheme.theme.windowMargin * 3
             }
@@ -639,7 +636,7 @@ Item {
 
             VPNBoldLabel {
                 color: VPNTheme.colors.white
-                text: "Connection information"
+                text: VPNl18n.ConnectionInfoMetricsTitle
                 wrapMode: Text.WordWrap
 
                 Accessible.role: Accessible.StaticText
@@ -651,14 +648,11 @@ Item {
             VPNIPAddress {
                 id: ipv4Address
 
-                //% "IPv4:"
-                //: The abbreviation for Internet Protocol. This is followed by the user’s IPv4 address.
-                property var ipv4label: qsTrId("vpn.connectionInfo.ipv4")
-                //% "IP:"
-                //: The abbreviation for Internet Protocol. This is followed by the user’s IP address.
-                property var iplabel: qsTrId("vpn.connectionInfo.ip2")
-
-                ipVersionText: "Exit " + (VPNIPAddressLookup.ipv6Address === "" ? iplabel : ipv4label)
+                ipVersionText: VPNIPAddressLookup.ipv6Address === ""
+                    // Exit IP:
+                    ? VPNl18n.ConnectionInfoExitServerLabelIp
+                    // Exit IPv4:
+                    : VPNl18n.ConnectionInfoExitServerLabelIpv4
                 ipAddressText: VPNIPAddressLookup.ipv4Address
                 visible: VPNIPAddressLookup.ipv4Address !== ""
             }
@@ -673,10 +667,8 @@ Item {
 
             VPNIPAddress {
                 id: ipv6Address
-
-                //% "IPv6:"
-                //: The abbreviation for Internet Procol version 6. This is followed by the user’s IPv6 address.
-                ipVersionText: "Exit " + qsTrId("vpn.connectionInfo.ipv6")
+                // Exit IPv6:
+                ipVersionText: VPNl18n.ConnectionInfoExitServerLabelIpv6
                 ipAddressText: VPNIPAddressLookup.ipv6Address
                 visible: VPNIPAddressLookup.ipv6Address !== ""
             }
@@ -736,7 +728,6 @@ Item {
             }
         }
     }
-    // Component ip info - end
 
     VPNConnectionInfoScreen {
         id: connectionInfoScreen

@@ -55,7 +55,7 @@ VPNFlickable {
                 Item {
                     Layout.alignment: Qt.AlignHCenter
                     Layout.fillWidth: true
-                    Layout.preferredHeight:  root.height * 0.35
+                    Layout.preferredHeight: root.height * 0.25
 
                     VPNLottieAnimation {
                         id: speedometerAnimation
@@ -78,26 +78,44 @@ VPNFlickable {
                     Layout.rightMargin: VPNTheme.theme.windowMargin
                 }
 
+                VPNCallout {
+                    calloutCopy: VPNl18n.ConnectionInfoMultiHopCallout
+                    calloutImage: "qrc:/nebula/resources/connection-info.svg"
+                    color: VPNTheme.theme.white
+                    fontPixelSize: VPNTheme.theme.fontSizeSmall
+                    iconSize: VPNTheme.theme.iconSize * 1.25
+                    spacing: VPNTheme.theme.listSpacing * 0.5
+                    visible: serverLocations.isMultipHop
+
+                    Layout.bottomMargin: VPNTheme.theme.windowMargin
+                    Layout.leftMargin: VPNTheme.theme.windowMargin
+                }
+
                 ColumnLayout {
+                    property bool isMultipHop: (typeof(VPNCurrentServer.entryCountryCode) !== undefined
+                        && VPNCurrentServer.entryCountryCode !== "")
+                    id: serverLocations
+
                     spacing: 0
 
+                    Layout.fillWidth: true
                     Layout.leftMargin: VPNTheme.theme.windowMargin
                     Layout.rightMargin: VPNTheme.theme.windowMargin
 
                     RowLayout {
                         VPNConnectionInfoItem {
                             id: entryServerLabel
-                            title: VPNCurrentServer.entryCountryCode
+                            title: serverLocations.isMultipHop
                                 ? VPNServerCountryModel.getLocalizedCountryName(VPNCurrentServer.entryCountryCode)
                                 : ""
                             subtitle: ""
-                            iconPath: VPNCurrentServer.entryCountryCode
+                            iconPath: serverLocations.isMultipHop
                                 ? "qrc:/nebula/resources/flags/"
                                     + VPNCurrentServer.entryCountryCode.toUpperCase()
                                     + ".png"
                                 : ""
                             isFlagIcon: true
-                            visible: title !== ""
+                            visible: serverLocations.isMultipHop
                         }
 
                         VPNIcon {
@@ -107,7 +125,8 @@ VPNFlickable {
                                 height: VPNTheme.theme.iconSize * 1.25
                                 width: VPNTheme.theme.iconSize * 1.25
                             }
-                            visible: entryServerLabel.visible
+                            visible: serverLocations.isMultipHop
+                            Layout.fillWidth: true
                             Layout.leftMargin: VPNTheme.theme.listSpacing
                             Layout.rightMargin: VPNTheme.theme.listSpacing
                         }
@@ -116,7 +135,7 @@ VPNFlickable {
                             title: VPNServerCountryModel.getLocalizedCountryName(
                                 VPNCurrentServer.exitCountryCode
                             )
-                            subtitle: entryServerLabel.visible
+                            subtitle: serverLocations.isMultipHop
                                 ? ""
                                 : VPNCurrentServer.localizedCityName
                             iconPath: "qrc:/nebula/resources/flags/"
