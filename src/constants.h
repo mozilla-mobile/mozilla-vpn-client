@@ -32,6 +32,9 @@ constexpr uint32_t SERVER_UNAVAILABLE_ALERT_MSEC = 4000;
 // Number of msecs for the new in app message alert.
 constexpr uint32_t NEW_IN_APP_MESSAGE_ALERT_MSEC = 4000;
 
+// Default number of msecs for OS notifications.
+constexpr uint32_t DEFAULT_OS_NOTIFICATION_MSEC = 4000;
+
 // Number of recent connections to retain.
 constexpr int RECENT_CONNECTIONS_MAX_COUNT = 5;
 
