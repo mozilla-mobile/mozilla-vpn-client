@@ -5,6 +5,7 @@
 #ifndef TASKGETSUBSCRIPTIONDETAILS_H
 #define TASKGETSUBSCRIPTIONDETAILS_H
 
+#include "errorhandler.h"
 #include "task.h"
 
 class AuthenticationInAppSession;
@@ -14,24 +15,34 @@ class TaskGetSubscriptionDetails final : public Task {
   Q_DISABLE_COPY_MOVE(TaskGetSubscriptionDetails)
 
  public:
-  explicit TaskGetSubscriptionDetails(const QString& emailAddress,
-                                      const bool forceReauth);
+  enum AuthenticationPolicy {
+    RunAuthenticationFlowIfNeeded,
+    ForceAuthenticationFlow,
+    NoAuthenticationFlow,
+  };
+
+  explicit TaskGetSubscriptionDetails(
+      AuthenticationPolicy authenticationPolicy,
+      ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy);
   ~TaskGetSubscriptionDetails();
 
   void run() override;
 
  signals:
-  void receivedData(const QByteArray& data);
-  void failed();
+  void operationCompleted(bool status);
   void needsAuthentication();
 
  private:
   void initAuthentication();
+  void runInternal();
+  void maybeComplete(bool status);
 
  private:
   AuthenticationInAppSession* m_authenticationInAppSession = nullptr;
-  const QString m_emailAddress;
-  bool m_forceReauth;
+
+  AuthenticationPolicy m_authenticationPolicy = RunAuthenticationFlowIfNeeded;
+  ErrorHandler::ErrorPropagationPolicy m_errorPropagationPolicy =
+      ErrorHandler::DoNotPropagateError;
 };
 
 #endif  // TASKGETSUBSCRIPTIONDETAILS_H

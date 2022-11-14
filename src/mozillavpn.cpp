@@ -31,7 +31,7 @@
 #include "tasks/deleteaccount/taskdeleteaccount.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/getfeaturelist/taskgetfeaturelist.h"
-#include "tasks/getfeaturelist/taskgetfeaturelist.h"
+#include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
 #include "tasks/group/taskgroup.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/products/taskproducts.h"
@@ -104,7 +104,10 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
         {new TaskAccount(ErrorHandler::DoNotPropagateError),
          new TaskServers(ErrorHandler::DoNotPropagateError),
          new TaskCaptivePortalLookup(ErrorHandler::DoNotPropagateError),
-         new TaskHeartbeat(), new TaskGetFeatureList(), new TaskAddonIndex()}));
+         new TaskHeartbeat(), new TaskGetFeatureList(), new TaskAddonIndex(),
+         new TaskGetSubscriptionDetails(
+             TaskGetSubscriptionDetails::NoAuthenticationFlow,
+             ErrorHandler::PropagateError)}));
   });
 
   connect(this, &MozillaVPN::stateChanged, [this]() {
@@ -198,6 +201,10 @@ ConnectionHealth* MozillaVPN::connectionHealth() {
 }
 
 Controller* MozillaVPN::controller() { return &m_private->m_controller; }
+
+SubscriptionData* MozillaVPN::subscriptionData() {
+  return &m_private->m_subscriptionData;
+}
 
 MozillaVPN::State MozillaVPN::state() const { return m_state; }
 
@@ -322,6 +329,10 @@ void MozillaVPN::initialize() {
     // We do not care about CaptivePortal settings.
   }
 
+  if (!m_private->m_subscriptionData.fromSettings()) {
+    // We do not care about SubscriptionData settings.
+  }
+
   if (!modelsInitialized()) {
     logger.error() << "Models not initialized yet";
     settingsHolder->clear();
@@ -335,17 +346,7 @@ void MozillaVPN::initialize() {
     m_private->m_serverData.writeSettings();
   }
 
-  QList<Task*> refreshTasks{
-      new TaskAccount(ErrorHandler::PropagateError),
-      new TaskServers(ErrorHandler::PropagateError),
-      new TaskCaptivePortalLookup(ErrorHandler::PropagateError)};
-
-  if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
-    refreshTasks.append(new TaskProducts());
-  }
-
-  TaskScheduler::scheduleTask(new TaskGroup(refreshTasks));
-
+  scheduleRefreshDataTasks(true);
   setUserState(UserAuthenticated);
   maybeStateMain();
 }
@@ -582,16 +583,10 @@ void MozillaVPN::completeActivation() {
 
   // Here we add the current device.
   if (option != DeviceStillValid) {
-    addCurrentDeviceAndRefreshData();
+    addCurrentDeviceAndRefreshData(true);
   } else {
-    // Let's fetch the account and the servers.
-    TaskScheduler::scheduleTask(
-        new TaskGroup({new TaskAccount(ErrorHandler::PropagateError),
-                       new TaskServers(ErrorHandler::PropagateError)}));
-  }
-
-  if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
-    TaskScheduler::scheduleTask(new TaskProducts());
+    // Let's fetch user and server data.
+    scheduleRefreshDataTasks(true);
   }
 
   // Finally we are able to activate the client.
@@ -649,7 +644,7 @@ void MozillaVPN::deviceRemoved(const QString& publicKey,
   Q_ASSERT(!m_private->m_deviceModel.hasCurrentDevice(keys()));
 
   // Here we add the current device.
-  addCurrentDeviceAndRefreshData();
+  addCurrentDeviceAndRefreshData(false);
 
   // Finally we are able to activate the client.
   TaskScheduler::scheduleTask(new TaskFunction([this]() {
@@ -1306,8 +1301,7 @@ void MozillaVPN::refreshDevices() {
 
   if (m_state == StateMain) {
     TaskScheduler::scheduleTask(
-        new TaskGroup({new TaskAccount(ErrorHandler::DoNotPropagateError),
-                       new TaskServers(ErrorHandler::DoNotPropagateError)}));
+        new TaskAccount(ErrorHandler::DoNotPropagateError));
   }
 }
 
@@ -1535,12 +1529,10 @@ void MozillaVPN::triggerHeartbeat() {
   TaskScheduler::scheduleTask(new TaskHeartbeat());
 }
 
-void MozillaVPN::addCurrentDeviceAndRefreshData() {
+void MozillaVPN::addCurrentDeviceAndRefreshData(bool refreshProducts) {
   TaskScheduler::scheduleTask(
       new TaskAddDevice(Device::currentDeviceName(), Device::uniqueDeviceId()));
-  TaskScheduler::scheduleTask(
-      new TaskGroup({new TaskAccount(ErrorHandler::PropagateError),
-                     new TaskServers(ErrorHandler::PropagateError)}));
+  scheduleRefreshDataTasks(refreshProducts);
 }
 
 void MozillaVPN::openAppStoreReviewLink() {
@@ -1574,7 +1566,7 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
 
   // We do not need to remove the current device! guardian-website "overwrites"
   // the current device key when we submit a new one.
-  addCurrentDeviceAndRefreshData();
+  addCurrentDeviceAndRefreshData(true);
   TaskScheduler::scheduleTask(new TaskFunction([this]() {
     if (!modelsInitialized()) {
       logger.error() << "Failed to complete the key regeneration";
@@ -1665,4 +1657,20 @@ void MozillaVPN::cancelReauthentication() {
 void MozillaVPN::updateViewShown() {
   logger.debug() << "Update view shown";
   Updater::updateViewShown();
+}
+
+void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {
+  QList<Task*> refreshTasks{
+      new TaskAccount(ErrorHandler::PropagateError),
+      new TaskServers(ErrorHandler::PropagateError),
+      new TaskCaptivePortalLookup(ErrorHandler::PropagateError),
+      new TaskGetSubscriptionDetails(
+          TaskGetSubscriptionDetails::NoAuthenticationFlow,
+          ErrorHandler::PropagateError)};
+
+  if (refreshProducts) {
+    refreshTasks.append(new TaskProducts());
+  }
+
+  TaskScheduler::scheduleTask(new TaskGroup(refreshTasks));
 }

@@ -409,6 +409,15 @@ SETTING_BOOL(startAtBoot,     // getter
              false            // remove when reset
 )
 
+SETTING_BYTEARRAY(subscriptionData,     // getter
+                  setSubscriptionData,  // setter
+                  hasSubscriptionData,  // has
+                  "subscriptionData",   // key
+                  "",                   // default value
+                  false,                // user setting
+                  true                  // remove when reset
+)
+
 SETTING_BOOL(systemLanguageCodeMigrated,     // getter
              setSystemLanguageCodeMigrated,  // setter
              hasSystemLanguageCodeMigrated,  // has

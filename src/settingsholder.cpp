@@ -65,6 +65,10 @@ SettingsHolder::SettingsHolder()
                        << journalSettingFile;
     }
 
+#ifdef UNIT_TEST
+    m_recoverFromJournal = true;
+#endif
+
     logger.info() << "Recovering completed";
   }
 

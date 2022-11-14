@@ -48,6 +48,7 @@ class SettingsHolder final : public QObject {
 
 #ifdef UNIT_TEST
   bool inTransaction() const { return m_settingsJournal; }
+  bool recoveredFromJournal() const { return m_recoverFromJournal; }
 #endif
 
   // Don't use this directly!
@@ -127,6 +128,7 @@ class SettingsHolder final : public QObject {
 
 #ifdef UNIT_TEST
   bool m_doNotClearOnDTOR = false;
+  bool m_recoverFromJournal = false;
 #endif
 };
 

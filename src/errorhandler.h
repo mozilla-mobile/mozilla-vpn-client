@@ -32,6 +32,7 @@ class ErrorHandler final : public QObject {
     UnrecoverableError,
     IgnoredError,
   };
+  Q_ENUM(ErrorType)
 
   enum AlertType {
     NoAlert,
