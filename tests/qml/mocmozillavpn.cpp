@@ -29,6 +29,10 @@ ConnectionHealth* MozillaVPN::connectionHealth() { return nullptr; }
 
 Controller* MozillaVPN::controller() { return new Controller(); }
 
+SubscriptionData* MozillaVPN::subscriptionData() {
+  return new SubscriptionData();
+}
+
 MozillaVPN::State MozillaVPN::state() const { return StateInitialize; }
 MozillaVPN::UserState MozillaVPN::userState() const {
   return UserNotAuthenticated;
@@ -172,3 +176,5 @@ void MozillaVPN::requestDeleteAccount() {}
 void MozillaVPN::cancelReauthentication() {}
 
 void MozillaVPN::updateViewShown() {}
+
+void MozillaVPN::scheduleRefreshDataTasks() {}

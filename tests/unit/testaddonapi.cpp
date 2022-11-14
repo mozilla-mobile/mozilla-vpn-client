@@ -159,6 +159,31 @@ void TestAddonApi::settings() {
   QVERIFY(settingsHolder.postAuthenticationShown());
 }
 
+void TestAddonApi::subscriptionData() {
+  MozillaVPN vpn;
+
+  QQmlApplicationEngine engine;
+  QmlEngineHolder qml(&engine);
+
+  SettingsHolder settingsHolder;
+
+  QJsonObject content;
+  content["id"] = "foo";
+  content["blocks"] = QJsonArray();
+
+  QJsonObject obj;
+  obj["message"] = content;
+
+  QObject parent;
+  Addon* message = AddonMessage::create(&parent, "foo", "bar", "name", obj);
+  QVERIFY(!!message);
+
+  AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
+      message, ":/addons_test/api_subscriptionData.js");
+  QVERIFY(!!a);
+  QVERIFY(a->conditionApplied());
+}
+
 void TestAddonApi::urlopener() {
   MozillaVPN vpn;
 

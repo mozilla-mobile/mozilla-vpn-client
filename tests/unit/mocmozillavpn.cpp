@@ -38,6 +38,10 @@ ConnectionHealth* MozillaVPN::connectionHealth() { return nullptr; }
 
 Controller* MozillaVPN::controller() { return new Controller(); }
 
+SubscriptionData* MozillaVPN::subscriptionData() {
+  return new SubscriptionData();
+}
+
 void MozillaVPN::initialize() {}
 
 void MozillaVPN::setState(State) {}
@@ -172,3 +176,5 @@ void MozillaVPN::setJournalPublicAndPrivateKeys(const QString&,
                                                 const QString&) {}
 void MozillaVPN::resetJournalPublicAndPrivateKeys() {}
 bool MozillaVPN::checkCurrentDevice() { return true; }
+
+void MozillaVPN::scheduleRefreshDataTasks() {}

@@ -38,7 +38,7 @@ void ProfileFlow::setState(State state) {
 }
 
 // Only used for testing and debugging the re-authentication flow
-void ProfileFlow::setForceReauthFlow(const bool forceReauthFlow) {
+void ProfileFlow::setForceReauthFlow(bool forceReauthFlow) {
   logger.debug() << "Set force re-authentication:" << forceReauthFlow;
   m_forceReauthFlow = forceReauthFlow;
 }
@@ -50,20 +50,12 @@ void ProfileFlow::start() {
 
   setState(StateLoading);
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  User* user = vpn->user();
-  Q_ASSERT(user);
+  TaskGetSubscriptionDetails* task = new TaskGetSubscriptionDetails(
+      m_forceReauthFlow
+          ? TaskGetSubscriptionDetails::ForceAuthenticationFlow
+          : TaskGetSubscriptionDetails::RunAuthenticationFlowIfNeeded,
+      ErrorHandler::PropagateError);
 
-  TaskGetSubscriptionDetails* task =
-      new TaskGetSubscriptionDetails(user->email(), m_forceReauthFlow);
-
-  connect(task, &TaskGetSubscriptionDetails::receivedData, this,
-          [this, task](const QByteArray& data) {
-            if (task == m_currentTask) {
-              m_currentTask = nullptr;
-              subscriptionDetailsFetched(data);
-            }
-          });
   connect(task, &TaskGetSubscriptionDetails::needsAuthentication, this,
           [this, task] {
             if (task == m_currentTask || m_forceReauthFlow) {
@@ -74,14 +66,18 @@ void ProfileFlow::start() {
               setForceReauthFlow(false);
             }
           });
-  connect(task, &TaskGetSubscriptionDetails::failed, this, [this, task]() {
-    if (task == m_currentTask) {
-      logger.debug() << "Task failed";
-      m_currentTask = nullptr;
-      setState(StateError);
-    }
-  });
-  connect(vpn, &MozillaVPN::stateChanged, this, [this]() {
+
+  connect(task, &TaskGetSubscriptionDetails::operationCompleted, this,
+          [this, task](bool status) {
+            if (task != m_currentTask) {
+              return;
+            }
+
+            m_currentTask = nullptr;
+            setState(status ? StateReady : StateError);
+          });
+
+  connect(MozillaVPN::instance(), &MozillaVPN::stateChanged, this, [this]() {
     MozillaVPN* vpn = MozillaVPN::instance();
     Q_ASSERT(vpn);
     if (vpn->state() != MozillaVPN::StateMain) {
@@ -104,17 +100,4 @@ void ProfileFlow::reset() {
     m_currentTask = nullptr;
     setState(StateInitial);
   }
-}
-
-void ProfileFlow::subscriptionDetailsFetched(
-    const QByteArray& subscriptionData) {
-  logger.debug() << "Subscription details data fetched";
-
-  if (!MozillaVPN::instance()->subscriptionData()->fromJson(subscriptionData)) {
-    logger.error() << "Failed to parse the Subscription JSON data";
-    setState(StateError);
-    return;
-  }
-
-  setState(StateReady);
 }

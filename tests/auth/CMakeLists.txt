@@ -77,6 +77,8 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/models/featuremodel.h
     ${MVPN_SOURCE_DIR}/models/server.cpp
     ${MVPN_SOURCE_DIR}/models/server.h
+    ${MVPN_SOURCE_DIR}/models/subscriptiondata.cpp
+    ${MVPN_SOURCE_DIR}/models/subscriptiondata.h
     ${MVPN_SOURCE_DIR}/mozillavpn.h
     ${MVPN_SOURCE_DIR}/networkmanager.cpp
     ${MVPN_SOURCE_DIR}/networkmanager.h
