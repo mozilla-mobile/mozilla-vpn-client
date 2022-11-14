@@ -129,7 +129,7 @@ const homeScreen = {
 
     selectSingleHopServerView: {
         BACK_BUTTON: "serverListBackButton",
-        MULTIHOP_SELECTOR_TAB: "multiHopSelector/tabMultiHop",
+        MULTIHOP_SELECTOR_TAB: "segmentedNavToggle/segmentedToggleBtnLayout/tabMultiHop",
         SINGLEHOP_SELECTOR_TAB: "multiHopSelector/tabSingleHop",
     },
     
