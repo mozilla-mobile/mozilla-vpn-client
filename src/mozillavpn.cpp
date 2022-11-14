@@ -166,22 +166,22 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
     ProductsHandler::createInstance();
   }
-  PurchaseHandler* iap = PurchaseHandler::createInstance();
-  connect(iap, &PurchaseHandler::subscriptionStarted, this,
+  PurchaseHandler* purchaseHandler = PurchaseHandler::createInstance();
+  connect(purchaseHandler, &PurchaseHandler::subscriptionStarted, this,
           &MozillaVPN::subscriptionStarted);
-  connect(iap, &PurchaseHandler::subscriptionFailed, this,
+  connect(purchaseHandler, &PurchaseHandler::subscriptionFailed, this,
           &MozillaVPN::subscriptionFailed);
-  connect(iap, &PurchaseHandler::subscriptionCanceled, this,
+  connect(purchaseHandler, &PurchaseHandler::subscriptionCanceled, this,
           &MozillaVPN::subscriptionCanceled);
-  connect(iap, &PurchaseHandler::subscriptionCompleted, this,
+  connect(purchaseHandler, &PurchaseHandler::subscriptionCompleted, this,
           &MozillaVPN::subscriptionCompleted);
-  connect(iap, &PurchaseHandler::restoreSubscriptionStarted, this,
+  connect(purchaseHandler, &PurchaseHandler::restoreSubscriptionStarted, this,
           &MozillaVPN::restoreSubscriptionStarted);
-  connect(iap, &PurchaseHandler::alreadySubscribed, this,
+  connect(purchaseHandler, &PurchaseHandler::alreadySubscribed, this,
           &MozillaVPN::alreadySubscribed);
-  connect(iap, &PurchaseHandler::billingNotAvailable, this,
+  connect(purchaseHandler, &PurchaseHandler::billingNotAvailable, this,
           &MozillaVPN::billingNotAvailable);
-  connect(iap, &PurchaseHandler::subscriptionNotValidated, this,
+  connect(purchaseHandler, &PurchaseHandler::subscriptionNotValidated, this,
           &MozillaVPN::subscriptionNotValidated);
 }
 
@@ -758,8 +758,8 @@ void MozillaVPN::createSupportTicket(const QString& email,
 #ifdef MVPN_ANDROID
 void MozillaVPN::launchPlayStore() {
   logger.debug() << "Launch Play Store";
-  PurchaseHandler* iap = PurchaseHandler::instance();
-  static_cast<AndroidIAPHandler*>(iap)->launchPlayStore();
+  PurchaseHandler* purchaseHandler = PurchaseHandler::instance();
+  static_cast<AndroidIAPHandler*>(purchaseHandler)->launchPlayStore();
 }
 #endif
 
