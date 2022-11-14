@@ -78,10 +78,13 @@ void AddonManager::initialize() {
   }
 
   // Listen for updates in the addons list
-  connect(&m_addonIndex, &AddonIndex::indexUpdated, this,
+  connect(&m_addonIndex, &AddonIndex::indexUpdated, this, 
           &AddonManager::updateAddonsList);
-  connect(SettingsHolder::instance(), &SettingsHolder::addonCustomServerChanged, this, &AddonManager::refreshAddons);
-  connect(SettingsHolder::instance(), &SettingsHolder::addonCustomServerAddressChanged, this, &AddonManager::refreshAddons);
+  connect(SettingsHolder::instance(), &SettingsHolder::addonCustomServerChanged, 
+          this, &AddonManager::refreshAddons);
+  connect(SettingsHolder::instance(), 
+          &SettingsHolder::addonCustomServerAddressChanged, this, 
+          &AddonManager::refreshAddons);
 }
 
 void AddonManager::updateIndex(const QByteArray& index,
