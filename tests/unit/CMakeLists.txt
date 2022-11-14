@@ -220,7 +220,7 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/tasks/account/taskaccount.h
     ${MVPN_SOURCE_DIR}/tasks/adddevice/taskadddevice.cpp
     ${MVPN_SOURCE_DIR}/tasks/adddevice/taskadddevice.h
-    ${MVPN_SOURCE_DIR}/tasks/addonindex/taskAddonIndex.cpp
+    ${MVPN_SOURCE_DIR}/tasks/addonindex/taskAddonindex.cpp
     ${MVPN_SOURCE_DIR}/tasks/addonindex/taskAddonIndex.h
     ${MVPN_SOURCE_DIR}/tasks/addon/taskaddon.cpp
     ${MVPN_SOURCE_DIR}/tasks/addon/taskaddon.h
