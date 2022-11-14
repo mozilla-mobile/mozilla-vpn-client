@@ -45,6 +45,8 @@ lottie/liblottie.a
 nebula/nebula_autogen/
 nebula/libnebula.a
 src/mozillavpn_autogen/
+/build-*/
+/build/
 
 # Node (for functional tests)
 node_modules
