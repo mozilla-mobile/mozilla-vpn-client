@@ -50,31 +50,6 @@ VPNFlickable {
                 Layout.alignment: Qt.AlignVCenter
                 Layout.preferredWidth: parent.width
                 spacing: VPNTheme.theme.listSpacing * 0.5
-                // IP Adresses
-                VPNIPAddress {
-                    //% "IPv4:"
-                    //: The abbreviation for Internet Protocol. This is followed by the user’s IPv4 address.
-                    property var ipv4label: qsTrId("vpn.connectionInfo.ipv4")
-                    //% "IP:"
-                    //: The abbreviation for Internet Protocol. This is followed by the user’s IP address.
-                    property var iplabel: qsTrId("vpn.connectionInfo.ip2")
-
-                    ipVersionText: VPNIPAddressLookup.ipv6Address === "" ? iplabel : ipv4label;
-                    ipAddressText: VPNIPAddressLookup.ipv4Address
-                    visible: VPNIPAddressLookup.ipv4Address !== ""
-
-                    Layout.alignment: Qt.AlignHCenter
-                    Layout.topMargin: VPNTheme.theme.windowMargin * 1.5
-                }
-
-                VPNIPAddress {
-                    visible: VPNIPAddressLookup.ipv6Address !== ""
-                    //% "IPv6:"
-                    //: The abbreviation for Internet Procol version 6. This is followed by the user’s IPv6 address.
-                    ipVersionText: qsTrId("vpn.connectionInfo.ipv6")
-                    ipAddressText: VPNIPAddressLookup.ipv6Address
-                    Layout.alignment: Qt.AlignHCenter
-                }
 
                 // Lottie animation
                 Item {
