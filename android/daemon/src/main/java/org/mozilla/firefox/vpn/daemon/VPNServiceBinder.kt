@@ -15,7 +15,6 @@ class VPNServiceBinder(service: VPNService) : Binder() {
 
     private val mService = service
     private val tag = "VPNServiceBinder"
-    private var mListener: IBinder? = null // TODO: This now might be more then one!
 
     private val mListeners = ArrayList<IBinder>()
     private var mResumeConfig: JSONObject? = null
@@ -39,7 +38,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val controllerInit = 13
         const val gleanSetSourceTags = 14
         const val setStartOnBoot = 15
-        const val reactivate =16
+        const val reactivate = 16
     }
 
     /**
@@ -204,10 +203,10 @@ class VPNServiceBinder(service: VPNService) : Binder() {
      * When [targetBinder] is Provided, it will only dispatch
      * the event to it.
      */
-    fun dispatchEvent(code: Int, payload: String?,targetBinder: IBinder? = null) {
+    fun dispatchEvent(code: Int, payload: String?, targetBinder: IBinder? = null) {
         val data = Parcel.obtain()
         data.writeByteArray(payload?.toByteArray(charset("UTF-8")))
-        dispatchEvent(code, data,targetBinder)
+        dispatchEvent(code, data, targetBinder)
     }
     fun dispatchEvent(code: Int, data: Parcel, targetBinder: IBinder? = null) {
         targetBinder?.let {
