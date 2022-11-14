@@ -5,6 +5,7 @@
 api.connectSignal(api.addon, 'playingChanged', () => {
   if (api.addon.playing) {
     api.settings.vpnDisabledApps = [];
+    api.settings.protectSelectedApps = false;
   }
 });
 

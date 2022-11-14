@@ -3,8 +3,7 @@
   "id": "tutorial_04_split_tunneling",
   "name": "Tutorial: Split tunneling",
   "conditions": {
-    "enabled_features": ["splitTunnel"],
-    "javascript": "splitTunnelingOff.js"
+    "enabled_features": ["splitTunnel"]
   },
   "type": "tutorial",
   "translatable": false,
@@ -78,6 +77,15 @@
         }
       },{
         "id": "s6",
+        "element": "navigationLayout/navButton-home",
+        "tooltip": "TODO TODO TODO",
+        "next": {
+          "op": "signal",
+          "qml_emitter": "navigationLayout/navButton-home",
+          "signal": "clicked"
+        }
+      },{
+        "id": "s7",
         "element": "controllerToggle",
         "tooltip": "Toggle this switch to activate the VPN",
         "conditions": {
