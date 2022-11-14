@@ -97,6 +97,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                     this.mService.reconnect()
                 } catch (e: Exception) {
                     Log.e(tag, "An Error occurred while enabling the VPN: ${e.localizedMessage}")
+                    dispatchEvent(EVENTS.activationError, e.localizedMessage)
                 }
                 return true
             }

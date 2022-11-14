@@ -16,7 +16,6 @@ class VPNTileService : android.service.quicksettings.TileService() {
         Unknown, Connected, Disconnected, Error
     }
     var mState: State = State.Unknown
-    var mCriticalError = false
     var mCity = ""
     private val mServiceBinder = object : Binder() {
         override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {
@@ -35,6 +34,9 @@ class VPNTileService : android.service.quicksettings.TileService() {
                     val config = JSONObject(json)
                     mState = if (config.getBoolean("connected")) State.Connected else State.Disconnected
                     mCity = config.getString("city")
+                }
+                VPNServiceBinder.EVENTS.activationError -> {
+                    mState = State.Error
                 }
             }
             updateTile()
