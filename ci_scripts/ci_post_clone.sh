@@ -9,7 +9,7 @@
 cd /Volumes/workspace/repository
 
 # make sure submodules are up to date
-# should already be done by XCode cloud cloning but just to make sure
+# should already be done by Xcode cloud cloning but just to make sure
 git submodule init
 git submodule update
 

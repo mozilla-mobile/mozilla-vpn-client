@@ -4,7 +4,7 @@
 
 ## Find the absolute path cargo.
 ## Mostly necessary for iOS builds, 
-## because XCode will attempt to use it's own installation of cargo, 
+## because Xcode will attempt to use it's own installation of cargo, 
 ## which we don't want.
 find_program(CARGO_EXECUTABLE NAMES cargo REQUIRED)
 
