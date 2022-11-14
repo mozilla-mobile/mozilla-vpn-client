@@ -26,8 +26,10 @@ if( ${_SUPPORTED} GREATER -1 )
 
     # Configure Linking and Compile
     if(APPLE)
+        include(cmake/osxtools.cmake)
         # Compile Static for apple and link to libsentry.a
         target_link_libraries(mozillavpn PUBLIC libsentry.a)
+        # Force compiling for all architectures so i can sleep at night.
         SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=false)
         osx_bundle_files(mozillavpn
             FILES ${CMAKE_BINARY_DIR}/external/bin/crashpad_handler
@@ -47,6 +49,7 @@ if( ${_SUPPORTED} GREATER -1 )
 
     include(ExternalProject)
     ExternalProject_Add(sentry
+        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}../../3rdparty/sentry
         GIT_REPOSITORY https://github.com/getsentry/sentry-native/
         GIT_TAG 0.5.0
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} ${SENTRY_ARGS}
