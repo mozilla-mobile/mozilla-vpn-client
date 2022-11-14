@@ -46,7 +46,6 @@
 #include "websocket/websockethandler.h"
 
 #ifdef MVPN_IOS
-#  include "platforms/ios/iosdatamigration.h"
 #  include "platforms/ios/iosutils.h"
 #endif
 
@@ -56,7 +55,6 @@
 #endif
 
 #ifdef MVPN_ANDROID
-#  include "platforms/android/androiddatamigration.h"
 #  include "platforms/android/androidvpnactivity.h"
 #  include "platforms/android/androidutils.h"
 #endif
@@ -258,18 +256,7 @@ void MozillaVPN::initialize() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-#ifdef MVPN_IOS
-  if (!settingsHolder->nativeIOSDataMigrated()) {
-    IOSDataMigration::migrate();
-    settingsHolder->setNativeIOSDataMigrated(true);
-  }
-#endif
-
 #ifdef MVPN_ANDROID
-  if (!settingsHolder->nativeAndroidDataMigrated()) {
-    AndroidDataMigration::migrate();
-    settingsHolder->setNativeAndroidDataMigrated(true);
-  }
   AndroidVPNActivity::maybeInit();
   AndroidUtils::instance();
 #endif

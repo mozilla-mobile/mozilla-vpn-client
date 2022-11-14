@@ -556,27 +556,7 @@ SETTING_BOOL(adjustActivatable,     // getter
 )
 #endif
 
-#if defined(MVPN_ANDROID)
-SETTING_BOOL(nativeAndroidDataMigrated,     // getter
-             setNativeAndroidDataMigrated,  // setter
-             hasNativeAndroidDataMigrated,  // has
-             "nativeAndroidDataMigrated",   // key
-             false,                         // default value
-             false,                         // user setting
-             false                          // remove when reset
-)
-#endif
-
 #if defined(MVPN_IOS)
-SETTING_BOOL(nativeIOSDataMigrated,     // getter
-             setNativeIOSDataMigrated,  // setter
-             hasNativeIOSDataMigrated,  // has
-             "nativeIOSDataMigrated",   // key
-             false,                     // default value
-             false,                     // user setting
-             false                      // remove when reset
-)
-
 SETTING_STRINGLIST(subscriptionTransactions,     // getter
                    setSubscriptionTransactions,  // setter
                    hasSubscriptionTransactions,  // has

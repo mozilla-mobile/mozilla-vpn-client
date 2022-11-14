@@ -24,10 +24,8 @@ target_sources(mozillavpn PRIVATE
     platforms/android/androidnotificationhandler.cpp
     platforms/android/androidutils.cpp
     platforms/android/androidvpnactivity.cpp
-    platforms/android/androiddatamigration.cpp
     platforms/android/androidappimageprovider.cpp
     platforms/android/androidapplistprovider.cpp
-    platforms/android/androidsharedprefs.cpp
     tasks/purchase/taskpurchase.cpp
     platforms/android/androidcontroller.h
     platforms/android/androidglean.h
@@ -36,10 +34,8 @@ target_sources(mozillavpn PRIVATE
     platforms/android/androidnotificationhandler.h
     platforms/android/androidutils.h
     platforms/android/androidvpnactivity.h
-    platforms/android/androiddatamigration.h
     platforms/android/androidappimageprovider.h
     platforms/android/androidapplistprovider.h
-    platforms/android/androidsharedprefs.h
     tasks/purchase/taskpurchase.h
     platforms/linux/linuxpingsender.cpp 
     platforms/linux/linuxcryptosettings.cpp

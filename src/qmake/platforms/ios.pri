@@ -63,7 +63,6 @@ SOURCES += \
 OBJECTIVE_SOURCES += \
     platforms/ios/iosiaphandler.mm \
     platforms/ios/ioscontroller.mm \
-    platforms/ios/iosdatamigration.mm \
     platforms/ios/iosglue.mm \
     platforms/ios/iosnetworkwatcher.mm \
     platforms/ios/iosnotificationhandler.mm \
@@ -77,7 +76,6 @@ HEADERS += \
 OBJECTIVE_HEADERS += \
     platforms/ios/iosiaphandler.h \
     platforms/ios/ioscontroller.h \
-    platforms/ios/iosdatamigration.h \
     platforms/ios/iosnetworkwatcher.h \
     platforms/ios/iosnotificationhandler.h \
     platforms/ios/iosutils.h
