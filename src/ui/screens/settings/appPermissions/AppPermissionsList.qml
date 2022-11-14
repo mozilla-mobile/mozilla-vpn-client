@@ -122,6 +122,8 @@ ColumnLayout {
 
     ColumnLayout {
         id: col2
+        objectName: "appPermissionList"
+
         spacing: VPNTheme.theme.windowMargin
         Layout.fillHeight: false
         Layout.topMargin: VPNTheme.theme.windowMargin / 2
@@ -133,6 +135,8 @@ ColumnLayout {
             Layout.fillHeight: false
             visible: count > 0
             delegate: VPNCheckBoxRow {
+                objectName: "app" + index
+
                 showDivider: false
                 labelText: appName
                 subLabelText: appID

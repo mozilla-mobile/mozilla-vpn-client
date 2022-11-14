@@ -26,6 +26,8 @@ ColumnLayout {
     VPNSegmentedToggle {
         id: segmentedToggle
 
+        objectName: "segmentedNavToggle"
+
         Layout.leftMargin: VPNTheme.theme.windowMargin
         Layout.rightMargin: VPNTheme.theme.windowMargin
         Layout.fillWidth: true

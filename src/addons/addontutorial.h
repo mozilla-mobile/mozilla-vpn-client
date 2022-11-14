@@ -28,6 +28,8 @@ class AddonTutorial final : public Addon {
   Q_PROPERTY(bool highlighted READ highlighted CONSTANT)
   Q_PROPERTY(bool settingsRollbackNeeded READ settingsRollbackNeeded CONSTANT)
 
+  Q_PROPERTY(bool playing READ isPlaying NOTIFY playingChanged)
+
   static Addon* create(QObject* parent, const QString& manifestFileName,
                        const QString& id, const QString& name,
                        const QJsonObject& obj);
@@ -36,6 +38,8 @@ class AddonTutorial final : public Addon {
 
   void play(const QStringList& allowedItems);
   void stop();
+
+  bool isPlaying() const { return m_currentStep != -1; }
 
   const QStringList& allowedItems() const { return m_allowedItems; }
 
@@ -53,6 +57,9 @@ class AddonTutorial final : public Addon {
 
   // Return true if there are no operations left.
   bool maybeStop();
+
+ signals:
+  void playingChanged();
 
  private:
   AddonProperty m_title;
