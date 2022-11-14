@@ -118,7 +118,8 @@ VPNClickableRow {
 
         spacing: 0
         height: VPNTheme.theme.rowHeight
-        width: parent.width
+        anchors.left: parent.left
+
 
         VPNServerListToggle {
             id: serverListToggle

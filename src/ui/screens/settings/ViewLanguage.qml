@@ -111,6 +111,7 @@ VPNViewBase {
                     id: del
                     spacing: 0
                     objectName: "language-column-" + code
+                    width: parent.width
 
                     function pushFocusToRadio() {
                         delRadio.forceActiveFocus();
@@ -125,6 +126,8 @@ VPNViewBase {
                         onClicked: {
                             VPNLocalizer.code = code;
                         }
+
+                        Layout.alignment: Qt.AlignLeft
 
                         //% "%1 %2"
                         //: This string is read by accessibility tools.
@@ -143,6 +146,7 @@ VPNViewBase {
                         Layout.topMargin: 4
                         Layout.fillWidth: true
                         text: language
+                        Layout.alignment: Qt.AlignLeft
                     }
                 }
             }
