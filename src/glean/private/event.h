@@ -6,6 +6,11 @@
 #define EVENT_METRIC_H
 
 #include "vpnglean.h"
+#if defined(UNIT_TEST)
+#  include "glean/glean.h"
+#  include <QJsonArray>
+#  include <QJsonDocument>
+#endif
 
 template <class T>
 class EventMetric final {
@@ -21,8 +26,35 @@ class EventMetric final {
     glean_event_record(m_id, ffiExtras.keys, ffiExtras.values, ffiExtras.count);
   }
 
+#if defined(UNIT_TEST)
+  int32_t testGetNumRecordedErrors(Glean::ErrorType errorType) const {
+    return glean_event_test_get_num_recorded_errors(
+        m_id, static_cast<int32_t>(errorType));
+  }
+
+  QJsonArray testGetValue() const { return testGetValueInternal(QString()); }
+
+  QJsonArray testGetValue(const QString& pingName) const {
+    return testGetValueInternal(pingName);
+  }
+#endif
+
  private:
   int m_id;
+
+#if defined(UNIT_TEST)
+  QJsonArray testGetValueInternal(const QString& pingName) const {
+    auto value = glean_event_test_get_value(m_id, pingName.toLocal8Bit());
+    QJsonArray recordedEvents = QJsonDocument::fromJson(value).array();
+    if (!recordedEvents.isEmpty()) {
+      for (const QJsonValue& recordedEvent : recordedEvents) {
+        Q_ASSERT(recordedEvent.isObject());
+      }
+    }
+
+    return recordedEvents;
+  }
+#endif
 };
 
 #endif  // EVENT_METRIC_H

@@ -22,6 +22,21 @@ class Glean final : public QObject {
   ~Glean();
 
   static void initialize();
+
+  // Needs to be kept in sync with
+  // https://github.com/mozilla/glean/blob/c272f2d716ec35d0e3357ec4b02a09d18b4a587f/glean-core/src/error_recording.rs#L31
+  enum ErrorType {
+    /// For when the value to be recorded does not match the metric-specific
+    /// restrictions
+    InvalidValue,
+    /// For when the label of a labeled metric does not match the restrictions
+    InvalidLabel,
+    /// For when the metric caught an invalid state while recording
+    InvalidState,
+    /// For when the value to be recorded overflows the metric-specific upper
+    /// range
+    InvalidOverflow,
+  };
 };
 
 #endif  // GLEAN_H

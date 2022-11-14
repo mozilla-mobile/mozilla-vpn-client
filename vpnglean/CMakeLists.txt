@@ -65,7 +65,7 @@ set_target_properties(vpnglean_ffi PROPERTIES FOLDER "Libs")
 ## Generate metrics and pings files
 set(GLEAN_PARSER_CMD python3 ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py)
 set(GLEAN_YAML_FILES_PATH ${CMAKE_SOURCE_DIR}/glean/)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/telemetry)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/generated)
 add_custom_target(vpnglean_telemetry
     BYPRODUCTS
         ${CMAKE_CURRENT_BINARY_DIR}/metrics.h

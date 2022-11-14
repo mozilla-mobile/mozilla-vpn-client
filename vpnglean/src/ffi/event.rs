@@ -2,9 +2,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use std::ffi::{c_char, CString};
+
+use ffi_support::FfiStr;
 use glean::traits::EventRecordingError;
 
-use crate::ffi::raw_string_array::{from_raw_string_array, RawStringArray};
+use crate::ffi::helpers::{from_raw_string_array, FallibleToString, RawStringArray};
 use crate::metrics::__generated_metrics as metric_maps;
 
 #[no_mangle]
@@ -33,4 +36,35 @@ pub extern "C" fn glean_event_record(
             // TODO: Record an error. bug 1704504.
         }
     }
+}
+
+#[no_mangle]
+pub extern "C" fn glean_event_test_get_num_recorded_errors(id: u32, error_type: i32) -> i32 {
+    metric_maps::event_test_get_num_recorded_errors(
+        id,
+        glean::ErrorType::try_from(error_type).expect("Invalid error type."),
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn glean_event_test_get_value(id: u32, ping_name: FfiStr) -> *mut c_char {
+    let ping_name = if let Ok(name) = ping_name.to_string_fallible() {
+        if name.is_empty() {
+            None
+        } else {
+            Some(name)
+        }
+    } else {
+        None
+    };
+
+    let value_as_json = if let Some(value) = metric_maps::event_test_get_value(id, ping_name) {
+        serde_json::to_string(&value).expect("Unable to serialize recorded value")
+    } else {
+        "".into()
+    };
+
+    CString::new(value_as_json)
+        .expect("Unable to create CString.")
+        .into_raw()
 }
