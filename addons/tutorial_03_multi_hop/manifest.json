@@ -1,0 +1,98 @@
+{
+  "api_version": "0.1",
+  "id": "tutorial_03_multi_hop",
+  "name": "Tutorial: Using multi-hop VPN",
+  "conditions": {
+    "enabled_features": ["multiHop"]
+  },
+  "type": "tutorial",
+  "tutorial": {
+    "id": "03_multi_hop",
+    "image": "qrc:/addons/tutorial_03_multi_hop/image.svg",
+    "title": "Using multi-hop VPN",
+    "subtitle": "Follow this walkthrough to learn how to use multi-hop VPN.",
+    "completion_message": "You’ve turned on multi-hop VPN and changed your exit location. Would you like to see more tips and tricks?",
+    "steps": [
+      {
+        "id": "s1",
+        "element": "serverListButton-btn",
+        "tooltip": "Select to choose server locations",
+        "before": [{
+          "op": "vpn_off"
+        },{
+          "op": "vpn_location_set",
+          "exitCountryCode": "at",
+          "exitCity": "Vienna",
+          "entryCountryCode": "",
+          "entryCity": ""
+        }],
+        "next": {
+          "op": "signal",
+          "qml_emitter": "serverListButton-btn",
+          "signal": "clicked"
+        }
+      },
+      {
+        "id": "s2",
+        "element": "segmentedNavToggle/segmentedToggleBtnLayout/tabMultiHop",
+        "tooltip": "Select “Multi-hop” to activate",
+        "next": {
+          "op": "signal",
+          "qml_emitter": "segmentedNavToggle",
+          "signal": "selectedIndexChanged"
+        }
+      },
+      {
+        "id": "s3",
+        "element": "buttonSelectExit-btn",
+        "tooltip": "Select to choose an exit location",
+        "next": {
+          "op": "signal",
+          "qml_emitter": "buttonSelectExit-btn",
+          "signal": "clicked"
+        }
+      },
+      {
+        "id": "s4",
+        "element": "serverCountryList/serverCountry-au/serverCityList/serverCity-Melbourne/radioIndicator",
+        "tooltip": "Select a new exit location",
+        "before": [{
+          "op": "property_set",
+          "element": "serverCountryView",
+          "property": "contentY",
+          "value": 0
+        },{
+          "op": "property_set",
+          "element": "serverCountryList/serverCountry-au",
+          "property": "cityListVisible",
+          "value": true
+        }],
+        "next": {
+          "op": "signal",
+          "qml_emitter": "serverCountryList/serverCountry-au/serverCityList/serverCity-Melbourne/radioIndicator",
+          "signal": "visibleChanged"
+        }
+      },
+      {
+        "id": "s5",
+        "element": "serverListBackButton",
+        "tooltip": "Select to go back to main screen",
+        "next": {
+          "op": "signal",
+          "qml_emitter": "serverListBackButton",
+          "signal": "clicked"
+        }
+      },
+      {
+        "id": "s6",
+        "element": "controllerToggle",
+        "tooltip": "Toggle this switch to activate or deactivate the VPN",
+        "next": {
+          "op": "signal",
+          "vpn_emitter": "controller",
+          "signal": "stateChanged"
+        }
+      }
+    ]
+  }
+}

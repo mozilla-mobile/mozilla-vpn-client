@@ -93,6 +93,7 @@ StackView {
                     }
 
                     objectName: "buttonSelectExit"
+                    btnObjectName: "buttonSelectExit-btn"
                     titleText: VPNl18n.MultiHopFeatureMultiHopExitLocationHeader
                     descriptionText: titleText
                     contentChildren: [

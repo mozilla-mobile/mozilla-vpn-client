@@ -16,32 +16,31 @@ Rectangle {
     property int selectedIndex: 0
     property QtObject selectedSegment
     property var handleSegmentClick: (() => {});
-
-    Keys.onLeftPressed: {
-        if(root.selectedIndex !== 0) {
-            root.selectedIndex--
-            root.handleSegmentClick(options.itemAt(root.selectedIndex))
-        }
-    }
-
-    Keys.onRightPressed: {
-        if(root.selectedIndex !== options.count - 1) {
-            root.selectedIndex++
-            root.handleSegmentClick(options.itemAt(root.selectedIndex))
-        }
-    }
+    property bool focusedViaClick: false //To hide focusOutline when not using keyboard navigation
 
     implicitHeight: VPNTheme.theme.rowHeight
     activeFocusOnTab: true
     color: VPNTheme.theme.input.highlight
     radius: 24
 
+    onFocusChanged: if(focus) options.itemAt(selectedIndex).focus = true
+
     onSelectedIndexChanged: {
         selectedSegment = options.itemAt(selectedIndex)
+        options.itemAt(root.selectedIndex).focus = true
     }
 
     Component.onCompleted: {
         selectedSegment = options.itemAt(selectedIndex)
+    }
+
+    function anySegmentFocused() {
+        for(let i = 0; i < options.count; i++) {
+            if(options.itemAt(i).focus === true) {
+                return true
+            }
+        }
+        return false
     }
 
     Rectangle {
@@ -66,15 +65,25 @@ Rectangle {
             }
         }
 
-        VPNFocusOutline {
-            visible: root.activeFocus
-            focusedComponent: root
+        Rectangle {
+            id: focusOutline
+
+            color: VPNTheme.theme.blueButton.focusOutline
+            anchors.fill: parent
+            anchors.margins: -3
+            radius: parent.radius + anchors.margins
+            z: -1
+
+            visible: {
+                if (VPNTutorial.playing || root.focusedViaClick) return false
+                return root.anySegmentFocused()
+            }
         }
     }
 
     RowLayout {
+        objectName: "segmentedToggleBtnLayout"
 
-        objectName: "multiHopSelector"
         anchors {
             fill: parent
             topMargin: 8
@@ -97,9 +106,40 @@ Rectangle {
                 objectName: segmentButtonId
 
                 focusPolicy: Qt.NoFocus
+                activeFocusOnTab: true
 
-                Accessible.description: VPNl18n.AccessibilityCurrentIndexFocusedOfTotalItemsInGroup.arg(index + 1).arg(options.count) //`${index + 1} ${VPNl18n.AccessiblityOf} ${options.count}`
-                Accessible.name: root.selectedIndex === index ? VPNl18n.AccessibilitySelectedAndItemName.arg(label.text) : label.text
+                Accessible.name: (root.selectedIndex === index ? VPNl18n.AccessibilitySelectedAndItemName.arg(label.text) : label.text) + VPNl18n.AccessibilityCurrentIndexFocusedOfTotalItemsInGroup.arg(index + 1).arg(options.count)
+
+                Rectangle {
+                    anchors.fill: parent
+                    border.width: VPNTheme.theme.focusBorderWidth
+                    border.color: "black"
+                    color: VPNTheme.theme.transparent
+                    visible: VPNTutorial.playing && parent.focus
+                    radius: root.radius
+                }
+
+                onFocusChanged: {
+                    if(!root.anySegmentFocused()) root.focusedViaClick = false
+                }
+
+                Keys.onLeftPressed: {
+                    if(root.selectedIndex !== 0) {
+                        root.focusedViaClick = false
+                        options.itemAt(root.selectedIndex).focus = true
+                        root.selectedIndex--
+                        root.handleSegmentClick(options.itemAt(root.selectedIndex))
+                    }
+                }
+
+                Keys.onRightPressed: {
+                    if(root.selectedIndex !== options.count - 1) {
+                        root.focusedViaClick = false
+                        options.itemAt(root.selectedIndex).focus = true
+                        root.selectedIndex++
+                        root.handleSegmentClick(options.itemAt(root.selectedIndex))
+                    }
+                }
 
                 contentItem: Text {
                     id: label
@@ -136,6 +176,7 @@ Rectangle {
 
                 onClicked: {
                     if(root.selectedIndex !== index) {
+                        root.focusedViaClick = true
                         root.selectedIndex = index
                         root.handleSegmentClick(segment)
                     }

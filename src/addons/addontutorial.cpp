@@ -116,6 +116,8 @@ void AddonTutorial::play(const QStringList& allowedItems) {
   m_currentStep = 0;
   m_activeTransaction = false;
 
+  emit playingChanged();
+
   if (m_navigatorReloader) {
     m_navigatorReloader->deleteLater();
   }
@@ -156,6 +158,8 @@ void AddonTutorial::stop() {
     m_navigatorReloader->deleteLater();
     m_navigatorReloader = nullptr;
   }
+
+  emit playingChanged();
 }
 
 bool AddonTutorial::maybeStop() {

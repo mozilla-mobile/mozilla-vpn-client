@@ -108,6 +108,9 @@ void AppPermission::flip(const QString& appID) {
 
   int index = m_applist.indexOf(AppDescription(appID));
   emit dataChanged(createIndex(index, 0), createIndex(index, 0));
+
+  beginResetModel();
+  endResetModel();
 }
 
 void AppPermission::requestApplist() {

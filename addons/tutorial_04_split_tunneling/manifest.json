@@ -1,0 +1,105 @@
+{
+  "api_version": "0.1",
+  "id": "tutorial_04_split_tunneling",
+  "name": "Tutorial: Split tunneling",
+  "conditions": {
+    "enabled_features": ["splitTunnel"]
+  },
+  "type": "tutorial",
+  "translatable": false,
+  "tutorial": {
+    "id": "04_split_tunneling",
+    "settings_rollback_needed": true,
+    "image": "qrc:/addons/tutorial_04_split_tunneling/image.svg",
+    "title": "How to exclude apps from VPN protection",
+    "subtitle": "Follow this walkthrough to learn how to exclude apps from VPN.",
+    "completion_message": "You’ve learned how to exclude apps from VPN protection. Would you like to learn more tips and tricks?",
+    "steps": [
+      {
+        "id": "s0",
+        "element": "controllerToggle",
+        "tooltip": "Toggle this switch to deactivate the VPN",
+        "conditions": {
+           "javascript": "vpnIsOn.js"
+        },
+        "next": {
+          "op": "signal",
+          "vpn_emitter": "controller",
+          "signal": "stateChanged"
+        }
+      }, {
+        "id": "s1",
+        "element": "navigationLayout/navButton-settings",
+        "tooltip": "TODO TODO",
+        "next": {
+          "op": "signal",
+          "qml_emitter": "navigationLayout/navButton-settings",
+          "signal": "clicked"
+        }
+      }, {
+        "id": "s2",
+        "element": "settingsNetworking",
+        "tooltip": "Select “Network settings”",
+        "next": {
+          "op": "signal",
+          "qml_emitter": "settingsNetworking",
+          "signal": "clicked"
+        }
+      },{
+        "id": "s3",
+        "element": "appPermissions",
+        "tooltip": "Select “App permissions”",
+        "next": {
+          "op": "signal",
+          "qml_emitter": "appPermissions",
+          "signal": "clicked"
+        }
+      },{
+        "id": "s4",
+        "element": "settingsAppPermissionsToggle",
+        "tooltip": "Toggle off to view apps",
+        "conditions": {
+          "javascript": "resetAppPermissions.js"
+        },
+        "next": {
+          "op": "signal",
+          "qml_emitter": "settingsAppPermissionsToggle",
+          "signal": "clicked"
+        }
+      },{
+        "id": "s5",
+        "element": "appPermissionList/app0/checkbox",
+        "tooltip": "Select an app to exclude it from VPN protections",
+        "next": {
+          "op": "signal",
+          "qml_emitter": "appPermissionList/app0/checkbox",
+          "signal": "checkedChanged"
+        }
+      },{
+        "id": "s6",
+        "element": "navigationLayout/navButton-home",
+        "tooltip": "TODO TODO TODO",
+        "conditions": {
+          "javascript": "vpnWasOn.js"
+       },
+        "next": {
+          "op": "signal",
+          "qml_emitter": "navigationLayout/navButton-home",
+          "signal": "clicked"
+        }
+      },{
+        "id": "s7",
+        "element": "controllerToggle",
+        "tooltip": "Toggle this switch to activate the VPN",
+        "conditions": {
+           "javascript": "vpnWasOn.js"
+        },
+        "next": {
+          "op": "signal",
+          "vpn_emitter": "controller",
+          "signal": "stateChanged"
+        }
+      }
+    ]
+  }
+}
