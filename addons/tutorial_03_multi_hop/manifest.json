@@ -8,7 +8,6 @@
   "type": "tutorial",
   "tutorial": {
     "id": "03_multi_hop",
-    "settings_rollback_needed": true,
     "image": "qrc:/addons/tutorial_03_multi_hop/image.svg",
     "title": "Using multi-hop VPN",
     "subtitle": "Follow this walkthrough to learn how to use multi-hop VPN.",
