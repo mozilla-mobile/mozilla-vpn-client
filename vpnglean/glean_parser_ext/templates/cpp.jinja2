@@ -11,11 +11,9 @@ Jinja2 template is not. Please file bugs! #}
 #ifndef mozilla_Metrics_h
 #define mozilla_Metrics_h
 
-#include "mozilla/glean/bindings/MetricTypes.h"
-#include "mozilla/Tuple.h"
-#include "mozilla/Maybe.h"
-#include "nsTArray.h"
-#include "nsPrintfCString.h"
+#include "glean/metrictypes.h"
+
+#include <QString>
 
 namespace mozilla::glean {
 
@@ -36,32 +34,44 @@ namespace mozilla::glean {
 {%- macro extra_keys_with_types(obj, name, suffix) -%}
 struct {{ obj.name|Camelize }}{{ suffix }} {
   {% for item, type in obj|attr(name) %}
-  mozilla::Maybe<{{type|extra_type_name}}> {{ item|camelize }};
+  QVariant _{{ item|camelize }} = QVariant();
   {% endfor %}
 
-  Tuple<nsTArray<nsCString>, nsTArray<nsCString>> ToFfiExtra() const {
-    nsTArray<nsCString> extraKeys;
-    nsTArray<nsCString> extraValues;
+  FfiExtra ToFfiExtra() const {
+    QVector<const char*> extraKeys;
+    QVector<const char*> extraValues;
     {% for item, type in obj|attr(name) %}
-    if ({{item|camelize}}) {
-      extraKeys.AppendElement()->AssignASCII("{{item}}");
+    if (_{{item|camelize}}.canConvert<{{type|extra_type_name}}>()) {
+      extraKeys.append("{{item}}");
       {% if type == "string" %}
-      extraValues.EmplaceBack({{item|camelize}}.value());
+      extraValues.append(_{{item|camelize}}.toString().toUtf8().constData());
       {% elif type == "boolean" %}
-      extraValues.AppendElement()->AssignASCII({{item|camelize}}.value() ? "true" : "false");
+      extraValues.append(_{{item|camelize}}.toBool() ? "true" : "false");
       {% elif type == "quantity" %}
-      extraValues.EmplaceBack(nsPrintfCString("%d", {{item|camelize}}.value()));
+      std::string s = std::to_string(_{{item|camelize}}.toInt());
+      extraValues.append(s.c_str());
       {% else %}
 #error "Glean: Invalid extra key type for metric {{obj.category}}.{{obj.name}}, defined in: {{obj.defined_in['filepath']}}:{{obj.defined_in['line']}})"
       {% endif %}
     }
     {% endfor %}
-    return MakeTuple(std::move(extraKeys), std::move(extraValues));
-  }
+
+    FfiExtra extras;
+    extras.keys = std::move(extraKeys.begin());
+    extras.values = std::move(extraValues.begin());
+    extras.count = extraValues.count();
+    return extras;
+  };
 };
 {%- endmacro %}
 
 struct NoExtraKeys;
+
+struct FfiExtra {
+  const char* const* keys;
+  const char* const* values;
+  int count;
+};
 
 {% for category_name, objs in all_objs.items() %}
 namespace {{ category_name|snake_case }} {
@@ -75,7 +85,7 @@ namespace {{ category_name|snake_case }} {
     /**
      * {{ obj.description|wordwrap() | replace('\n', '\n     * ') }}
      */
-    constexpr impl::{{ obj|type_name }} {{obj.name|snake_case }}({{obj|metric_id}});
+    constexpr {{ obj|type_name }} {{obj.name|snake_case }}({{obj|metric_id}});
 
     {% endfor %}
 }

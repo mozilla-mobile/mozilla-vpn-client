@@ -8,11 +8,11 @@
 Outputter to generate C++ code for metrics.
 """
 
-import jinja2
 import json
 
-from util import generate_metric_ids, generate_ping_ids, get_metrics
+import jinja2
 from glean_parser import util
+from util import generate_metric_ids, generate_ping_ids, get_metrics
 
 
 def cpp_datatypes_filter(value):
@@ -74,9 +74,9 @@ def extra_type_name(typ: str) -> str:
     if typ == "boolean":
         return "bool"
     elif typ == "string":
-        return "nsCString"
+        return "QString"
     elif typ == "quantity":
-        return "uint32_t"
+        return "int"
     else:
         return "UNSUPPORTED"
 
