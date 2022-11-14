@@ -84,15 +84,46 @@ VPNFlickable {
                     Layout.leftMargin: VPNTheme.theme.windowMargin
                     Layout.rightMargin: VPNTheme.theme.windowMargin
 
-                    VPNConnectionInfoItem {
-                        title: VPNServerCountryModel.getLocalizedCountryName(
-                            VPNCurrentServer.exitCountryCode
-                        )
-                        subtitle: VPNCurrentServer.localizedCityName
-                        iconPath: "qrc:/nebula/resources/flags/"
-                            + VPNCurrentServer.exitCountryCode.toUpperCase()
-                            + ".png"
-                        isFlagIcon: true
+                    RowLayout {
+                        VPNConnectionInfoItem {
+                            id: entryServerLabel
+                            title: VPNCurrentServer.entryCountryCode
+                                ? VPNServerCountryModel.getLocalizedCountryName(VPNCurrentServer.entryCountryCode)
+                                : ""
+                            subtitle: ""
+                            iconPath: VPNCurrentServer.entryCountryCode
+                                ? "qrc:/nebula/resources/flags/"
+                                    + VPNCurrentServer.entryCountryCode.toUpperCase()
+                                    + ".png"
+                                : ""
+                            isFlagIcon: true
+                            visible: title !== ""
+                        }
+
+                        VPNIcon {
+                            id: arrowIcon
+                            source: "qrc:/nebula/resources/arrow-forward-white.svg"
+                            sourceSize {
+                                height: VPNTheme.theme.iconSize * 1.25
+                                width: VPNTheme.theme.iconSize * 1.25
+                            }
+                            visible: entryServerLabel.visible
+                            Layout.leftMargin: VPNTheme.theme.listSpacing
+                            Layout.rightMargin: VPNTheme.theme.listSpacing
+                        }
+
+                        VPNConnectionInfoItem {
+                            title: VPNServerCountryModel.getLocalizedCountryName(
+                                VPNCurrentServer.exitCountryCode
+                            )
+                            subtitle: entryServerLabel.visible
+                                ? ""
+                                : VPNCurrentServer.localizedCityName
+                            iconPath: "qrc:/nebula/resources/flags/"
+                                + VPNCurrentServer.exitCountryCode.toUpperCase()
+                                + ".png"
+                            isFlagIcon: true
+                        }
                     }
 
                     Rectangle {

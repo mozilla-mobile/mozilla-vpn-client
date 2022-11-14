@@ -57,6 +57,7 @@ RowLayout {
         color: VPNTheme.colors.white
         text: infoStatusItem.subtitle
         horizontalAlignment: Text.AlignRight
+        visible: itemValue.text !== ""
         
         Layout.alignment: Qt.AlignRight | Qt. AlignVCenter
     }
