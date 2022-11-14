@@ -213,14 +213,15 @@ class VPNServiceBinder(service: VPNService) : Binder() {
             try {
                 it.transact(code, data, Parcel.obtain(), 0)
             } catch (e: DeadObjectException) {
+                // The binder is not alive, so we can remove it
+                // from the listeners list, if present.
+                mListeners.remove(it)
             }
             return
         }
         val deadBinders = ArrayList<IBinder>()
         mListeners.forEach {
             if (it.isBinderAlive) {
-                val data = Parcel.obtain()
-                data.writeByteArray(payload?.toByteArray(charset("UTF-8")))
                 try {
                     it.transact(code, data, Parcel.obtain(), 0)
                 } catch (e: DeadObjectException) {

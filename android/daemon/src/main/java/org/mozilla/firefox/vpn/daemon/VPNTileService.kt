@@ -98,39 +98,38 @@ class VPNTileService : android.service.quicksettings.TileService() {
     }
 
     private fun updateTile() {
-        qsTile.apply {
-            when (mState) {
-                State.Error -> {
-                    state = Tile.STATE_UNAVAILABLE
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        stateDescription = "Error communicating with service"
-                    }
-                }
-                State.Unknown -> {
-                    state = Tile.STATE_UNAVAILABLE
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        stateDescription = "Not Connected With Service"
-                    }
-                }
-                State.Connected -> {
-                    state = Tile.STATE_ACTIVE
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        stateDescription = "Connected with VPN"
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            subtitle = mCity
-                        }
-                    }
-                }
-                State.Disconnected -> {
-                    state = Tile.STATE_INACTIVE
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        subtitle = "Disconnected"
-                    }
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        stateDescription = "Not Connected with VPN"
-                    }
-                }
+        var tile_state = Tile.STATE_UNAVAILABLE
+        var tile_subtitle = ""
+        var tile_state_description = ""
+
+        when (mState) {
+            State.Error -> {
+                tile_state = Tile.STATE_UNAVAILABLE
+                tile_state_description = "Error communicating with service"
             }
+            State.Unknown -> {
+                tile_state = Tile.STATE_UNAVAILABLE
+                tile_state_description = "Not Connected With Service"
+                tile_subtitle = "Disconnected"
+            }
+            State.Connected -> {
+                tile_state = Tile.STATE_ACTIVE
+                tile_state_description = "Connected with VPN"
+                tile_subtitle = mCity
+            }
+            State.Disconnected -> {
+                tile_state = Tile.STATE_INACTIVE
+            }
+        }
+
+        qsTile.apply {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                subtitle = tile_subtitle
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                stateDescription = tile_state_description
+            }
+            state = tile_state
         }
         qsTile.updateTile()
     }
