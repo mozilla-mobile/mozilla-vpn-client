@@ -103,7 +103,7 @@ class VPNTileService : android.service.quicksettings.TileService() {
                 State.Error -> {
                     state = Tile.STATE_UNAVAILABLE
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        stateDescription = "Error CommuniCating with service"
+                        stateDescription = "Error communicating with service"
                     }
                 }
                 State.Unknown -> {
