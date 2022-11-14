@@ -79,6 +79,9 @@
         "id": "s6",
         "element": "navigationLayout/navButton-home",
         "tooltip": "TODO TODO TODO",
+        "conditions": {
+          "javascript": "vpnWasOn.js"
+       },
         "next": {
           "op": "signal",
           "qml_emitter": "navigationLayout/navButton-home",
