@@ -241,6 +241,18 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         }
     }
 
+    val isClientAttached: Boolean
+        get() {
+            try {
+                mListener?.let {
+                    return it.isBinderAlive
+                }
+                return false
+            } catch (e: DeadObjectException) {
+                return false
+            }
+        }
+
     /**
      *  The codes we Are Using in case of [dispatchEvent]
      */

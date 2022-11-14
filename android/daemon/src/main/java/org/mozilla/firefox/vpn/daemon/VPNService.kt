@@ -36,7 +36,7 @@ class VPNService : android.net.VpnService() {
     ) {
         override fun onTick(millisUntilFinished: Long) {}
         override fun onFinish() {
-            if (currentTunnelHandle == -1) {
+            if (!isUp) {
                 mGlean.recordGleanEvent("controllerStateOff")
             } else {
                 // When we're stil connected, rescheudle.
@@ -50,8 +50,8 @@ class VPNService : android.net.VpnService() {
 
         
     private var currentTunnelHandle = -1
-        set(value:Int){
-            field=value;
+        set(value: Int) {
+            field = value
             if (value > -1) {
                 Log.i(tag, "Dispatch Daemon State -> connected")
                 mBinder.dispatchEvent(
@@ -67,7 +67,7 @@ class VPNService : android.net.VpnService() {
             mBinder.dispatchEvent(VPNServiceBinder.EVENTS.disconnected, "")
             mConnectionTime = 0
         }
-    
+
     fun init() {
         if (mAlreadyInitialised) {
             return
@@ -81,11 +81,8 @@ class VPNService : android.net.VpnService() {
 
     override fun onUnbind(intent: Intent?): Boolean {
         if (!isUp) {
-            // If the Qt Client got closed while we were not connected
-            // we do not need to stay as a foreground service.
-            stopForeground(true)
             Log.v(tag, "Client Disconnected, VPN is down - Service might shut down soon")
-            return true;
+            return super.onUnbind(intent)
         }
         Log.v(tag, "Client Disconnected, VPN is up")
         return super.onUnbind(intent)
@@ -281,7 +278,11 @@ class VPNService : android.net.VpnService() {
         Log.v(tag, "Try to disable tunnel")
         wgTurnOff(currentTunnelHandle)
         currentTunnelHandle = -1
-        stopForeground(false)
+        // If the client is "dead", on a disconnect the
+        // message won't be updated to 'you disconnected from X'
+        // so we should get rid of it. :)
+        val shouldClearNotification = !mBinder.isClientAttached
+        stopForeground(shouldClearNotification)
         mGleanTimer.cancel()
         mConnectionHealth.stop()
     }
