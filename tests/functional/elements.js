@@ -208,7 +208,7 @@ const mobileOnBoardingScreen = {
   PANEL_DESCRIPTION: 'panelDescription'
 }
 
-                               module.exports = {
+module.exports = {
   mobileOnBoardingScreen,
   initialScreen,
   generalElements,
