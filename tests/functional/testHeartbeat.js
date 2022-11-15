@@ -7,7 +7,7 @@ const { initialScreen, telemetryScreen, generalElements } = require('./elements.
 const vpn = require('./helper.js');
 
 describe('Backend failure', function() {
-  this.timeout(10000);
+  this.timeout(300000);
 
   async function backendFailureAndRestore() {
     await vpn.forceHeartbeatFailure();
