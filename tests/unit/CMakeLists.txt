@@ -183,10 +183,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/pingsender.h
     ${MVPN_SOURCE_DIR}/pingsenderfactory.cpp
     ${MVPN_SOURCE_DIR}/pingsenderfactory.h
-    ${MVPN_SOURCE_DIR}/platforms/android/androiddatamigration.cpp
-    ${MVPN_SOURCE_DIR}/platforms/android/androiddatamigration.h
-    ${MVPN_SOURCE_DIR}/platforms/android/androidsharedprefs.cpp
-    ${MVPN_SOURCE_DIR}/platforms/android/androidsharedprefs.h
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummycryptosettings.cpp
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.cpp
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.h
@@ -285,8 +281,6 @@ target_sources(unit_tests PRIVATE
     testaddonindex.h
     testadjust.cpp
     testadjust.h
-    testandroidmigration.cpp
-    testandroidmigration.h
     testcommandlineparser.cpp
     testcommandlineparser.h
     testcomposer.cpp
