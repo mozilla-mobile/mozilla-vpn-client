@@ -463,8 +463,7 @@ ctest --test-dir build
  * `MVPN_BIN` (location of compiled mvpn binary. This must be a dummy binary, see note below.)
  * `ARTIFACT_DIR` (directory to put screenshots from test failures)
 * (Optional) In one window run `./tests/proxy/wsgi.py --mock-devices`
-* Run a test from the root of the project: `./scripts/tests/functional_tests.sh {test_file}.js`. To run, say, the authentication tests: `./scripts/tests/functional_tests.sh
-  tests/functional/testAuthentication.js`.
+* Run a test from the root of the project: `npm run functionalTest path/to/testFile.js`. To run, say, the authentication tests: `npm run functionalTest tests/functional/testAuthentication.js`.
 
 > **Note**: Functional tests require a dummy build of the application.
 > In order to create such a build, on the root folder of this repository run:
