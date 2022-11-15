@@ -10,6 +10,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin/minimal)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
+# For CMake versions prior to 3.19, we may need to perform manual
+# finalization in order to pick up QML dependencies when built
+# statically.
 qt_add_executable(mozillavpn MANUAL_FINALIZATION)
 
 target_link_libraries(mozillavpn PRIVATE
