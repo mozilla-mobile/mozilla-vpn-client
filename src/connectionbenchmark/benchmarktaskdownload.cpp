@@ -48,9 +48,9 @@ void BenchmarkTaskDownload::handleState(BenchmarkTask::State state) {
 #endif
 
 #if defined(MVPN_ANDROID) || defined(MVPN_WASM)
-# if QT_VERSION >= 0x060500
-#  error Check if QT added support for QDnsLookup::lookup() on Android
-# endif
+#  if QT_VERSION >= 0x060500
+#    error Check if QT added support for QDnsLookup::lookup() on Android
+#  endif
 
     NetworkRequest* request =
         NetworkRequest::createForGetUrl(this, m_fileUrl.toString());
