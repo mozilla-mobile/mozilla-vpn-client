@@ -27,10 +27,6 @@ set_target_properties(mozillavpn PROPERTIES
 )
 target_include_directories(mozillavpn PRIVATE ${CMAKE_SOURCE_DIR})
 
-get_target_property(QML_GENERATED_IMPORT_DIR mozillavpn QT_QML_MODULE_OUTPUT_DIRECTORY)
-file(MAKE_DIRECTORY ${QML_GENERATED_IMPORT_DIR})
-qt6_import_qml_plugins(mozillavpn)
-
 find_library(FW_UI_KIT UIKit)
 find_library(FW_FOUNDATION Foundation)
 find_library(FW_STORE_KIT StoreKit)
