@@ -11,7 +11,6 @@
 #include "constants.h"
 #include "fontloader.h"
 #include "frontend/navigator.h"
-#include "iaphandler.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
 #include "keyregenerator.h"
@@ -24,6 +23,7 @@
 #include "mozillavpn.h"
 #include "notificationhandler.h"
 #include "productshandler.h"
+#include "purchasehandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
@@ -471,17 +471,15 @@ int CommandUI::run(QStringList& tokens) {
         });
 #endif
 
-    if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-      qmlRegisterSingletonType<MozillaVPN>(
-          "Mozilla.VPN", 1, 0, "VPNIAP",
-          [](QQmlEngine*, QJSEngine*) -> QObject* {
-            QObject* obj = IAPHandler::instance();
-            QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-            return obj;
-          });
-    }
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNPurchase",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = PurchaseHandler::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
 
-    if (Feature::get(Feature::Feature_inAppProducts)->isSupported()) {
+    if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
       qmlRegisterSingletonType<MozillaVPN>(
           "Mozilla.VPN", 1, 0, "VPNProducts",
           [](QQmlEngine*, QJSEngine*) -> QObject* {

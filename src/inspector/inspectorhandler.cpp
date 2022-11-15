@@ -855,7 +855,7 @@ static QList<InspectorCommand> s_commands{
           }
 
           if (!hasCurrentOne) {
-            vpn->addCurrentDeviceAndRefreshData();
+            vpn->addCurrentDeviceAndRefreshData(false);
           }
 
           return QJsonObject();

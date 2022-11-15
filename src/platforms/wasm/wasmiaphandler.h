@@ -5,18 +5,18 @@
 #ifndef WASMIAPHANDLER_H
 #define WASMIAPHANDLER_H
 
-#include "iaphandler.h"
+#include "purchaseiaphandler.h"
 
-class WasmIAPHandler final : public IAPHandler {
+class WasmIAPHandler final : public PurchaseIAPHandler {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(WasmIAPHandler)
 
  public:
   explicit WasmIAPHandler(QObject* parent);
   ~WasmIAPHandler();
+  void nativeRegisterProducts() override;
 
  protected:
-  void nativeRegisterProducts() override;
   void nativeStartSubscription(ProductsHandler::Product* product) override;
   void nativeRestoreSubscription() override;
 };

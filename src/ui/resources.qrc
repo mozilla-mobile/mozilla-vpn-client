@@ -22,15 +22,22 @@
         <file>resources/logo-animated-mask3.png</file>
         <file>resources/logo-animated4.png</file>
         <file>resources/logo-animated-mask4.png</file>
+        <file>resources/logo-connecting.svg</file>
+        <file>resources/logo-error.svg</file>
         <file>resources/logo-generic.png</file>
         <file>resources/logo-generic-mask.png</file>
         <file>resources/logo-generic-mask-off.png</file>
         <file>resources/logo-generic-mask-on.png</file>
         <file>resources/logo-generic-off.png</file>
+        <file>resources/logo-sparkles.svg</file>
+        <file>resources/logo-success.svg</file>
+        <file>resources/logo-warning.svg</file>
         <file>resources/logo.ico</file>
         <file>resources/logo.svg</file>
-        <file>resources/logo-sparkles.svg</file>
         <file>resources/magic-purple.svg</file>
+        <file>resources/main-img-vpn-off.svg</file>
+        <file>resources/main-img-vpn-on.svg</file>
+        <file>resources/messages-empty.svg</file>
         <file>resources/onboarding/onboarding1.svg</file>
         <file>resources/onboarding/onboarding2.svg</file>
         <file>resources/onboarding/onboarding3.svg</file>
@@ -64,11 +71,5 @@
         <file>resources/updateRecommended.svg</file>
         <file>resources/updateRequired.svg</file>
         <file>resources/warning-white.svg</file>
-        <file>resources/main-img-vpn-off.svg</file>
-        <file>resources/main-img-vpn-on.svg</file>
-        <file>resources/logo-success.svg</file>
-        <file>resources/logo-error.svg</file>
-        <file>resources/messages-empty.svg</file>
-        <file>resources/logo-warning.svg</file>
     </qresource>
 </RCC>
