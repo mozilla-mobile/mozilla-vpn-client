@@ -34,8 +34,6 @@ target_link_libraries(mozillavpn PRIVATE ${FW_SECURITY})
 target_link_libraries(mozillavpn PRIVATE ${FW_COREWLAN})
 target_link_libraries(mozillavpn PRIVATE ${FW_NETWORK})
 
-qt6_import_qml_plugins(mozillavpn)
-
 # MacOS platform source files
 target_sources(mozillavpn PRIVATE
     daemon/daemon.cpp
