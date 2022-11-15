@@ -71,11 +71,13 @@ describe('Backend failure', function() {
     }
   });
 
-  it('BackendFailure during the authentication', async () => {
+  it('BackendFailure during browser authentication', async () => {
     if (this.ctx.wasm) {
       // Ignore this test in wasm
       return;
     }
+
+    await vpn.flipFeatureOff('inAppAuthentication');
 
     await vpn.waitForMainView();
     await vpn.waitForElementAndClick(initialScreen.GET_STARTED);
