@@ -70,8 +70,7 @@ bool FeatureCallback_captivePortal() {
 }
 
 bool FeatureCallback_webPurchase() {
-#if defined(MVPN_IOS) || defined(MVPN_ANDROID) || defined(MVPN_WASM) || \
-    defined(MVPN_DUMMY)
+#if defined(MVPN_IOS) || defined(MVPN_ANDROID) || defined(MVPN_WASM)
   return false;
 #else
   return true;

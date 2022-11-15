@@ -1669,7 +1669,9 @@ void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {
           ErrorHandler::PropagateError)};
 
   if (refreshProducts) {
-    refreshTasks.append(new TaskProducts());
+    if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
+      refreshTasks.append(new TaskProducts());
+    }
   }
 
   TaskScheduler::scheduleTask(new TaskGroup(refreshTasks));
