@@ -87,6 +87,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                     mResumeConfig?.let { this.mService.turnOn(it) }
                 } catch (e: Exception) {
                     Log.e(tag, "An Error occurred while enabling the VPN: ${e.localizedMessage}")
+                    dispatchEvent(EVENTS.activationError, e.localizedMessage)
                 }
                 return true
             }
@@ -239,6 +240,17 @@ class VPNServiceBinder(service: VPNService) : Binder() {
             Log.i(tag, "Removed ${deadBinders.size} dead Binders")
         }
     }
+
+    val isClientAttached: Boolean
+        get() {
+            return try {
+                mListeners.any {
+                    it.isBinderAlive
+                }
+            } catch (e: DeadObjectException) {
+                false
+            }
+        }
 
     /**
      *  The codes we Are Using in case of [dispatchEvent]
