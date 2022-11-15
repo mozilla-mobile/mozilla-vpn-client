@@ -243,13 +243,12 @@ class VPNServiceBinder(service: VPNService) : Binder() {
 
     val isClientAttached: Boolean
         get() {
-            try {
-                mListener?.let {
-                    return it.isBinderAlive
+            return try {
+                mListeners.any {
+                    it.isBinderAlive
                 }
-                return false
             } catch (e: DeadObjectException) {
-                return false
+                false
             }
         }
 

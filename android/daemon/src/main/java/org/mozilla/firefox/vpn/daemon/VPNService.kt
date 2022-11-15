@@ -47,8 +47,6 @@ class VPNService : android.net.VpnService() {
     }
     private var mCityname = ""
 
-
-        
     private var currentTunnelHandle = -1
         set(value: Int) {
             field = value
