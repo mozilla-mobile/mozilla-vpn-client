@@ -31,12 +31,13 @@ describe('Unsecured network alert', function() {
       assert(vpn.lastNotification().title === null);
     });
 
-    it('Unsecured network alert during the authentication', async () => {
+    it('Unsecured network alert during the browser authentication', async () => {
       if (this.ctx.wasm) {
         // In wasm, the auth is fake and we cannot cancel the auth flow
         return;
       }
 
+      await vpn.flipFeatureOff('inAppAuthentication');
       await vpn.waitForElement(initialScreen.GET_HELP_LINK);
       await vpn.waitForElementProperty(initialScreen.GET_HELP_LINK, 'visible', 'true');
 

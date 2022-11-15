@@ -260,7 +260,7 @@ class MozillaVPN final : public QObject {
   void setCooldownForAllServersInACity(const QString& countryCode,
                                        const QString& cityCode);
 
-  void addCurrentDeviceAndRefreshData();
+  void addCurrentDeviceAndRefreshData(bool refreshProducts);
 
   void createTicketAnswerRecieved(bool successful) {
     emit ticketCreationAnswer(successful);
@@ -319,7 +319,7 @@ class MozillaVPN final : public QObject {
   void requestSettings();
   void requestAbout();
 
-  void scheduleRefreshDataTasks();
+  void scheduleRefreshDataTasks(bool refreshProducts);
 
  signals:
   void stateChanged();

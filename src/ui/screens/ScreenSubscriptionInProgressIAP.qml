@@ -5,6 +5,8 @@
 import components 0.1
 
 VPNLoader {
+    objectName: "subscriptionInProgressIAP"
+
     //% "Please wait…"
     headlineText: qsTrId("vpn.subscription.pleaseWait")
     footerLinkIsVisible: false

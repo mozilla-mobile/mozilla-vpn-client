@@ -52,7 +52,7 @@ bool s_transactionsProcessed = false;
   logger.debug() << "Registration completed";
 
   ProductsHandler* productsHandler = ProductsHandler::instance();
-    
+
   if (response.invalidProductIdentifiers) {
     NSArray<NSString*>* products = response.invalidProductIdentifiers;
     logger.error() << "Registration failure" << [products count];
@@ -200,7 +200,7 @@ bool s_transactionsProcessed = false;
 
 @end
 
-IOSIAPHandler::IOSIAPHandler(QObject* parent) : IAPHandler(parent) {
+IOSIAPHandler::IOSIAPHandler(QObject* parent) : PurchaseIAPHandler(parent) {
   MVPN_COUNT_CTOR(IOSIAPHandler);
 
   m_delegate = [[IOSIAPHandlerDelegate alloc] initWithObject:this];
@@ -250,7 +250,7 @@ void IOSIAPHandler::productRegistered(void* a_product) {
   SKProduct* product = static_cast<SKProduct*>(a_product);
 
   ProductsHandler* productsHandler = ProductsHandler::instance();
-  
+
   Q_ASSERT(productsHandler->isRegistering());
 
   logger.debug() << "Product registered";

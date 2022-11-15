@@ -123,7 +123,7 @@ VPNFlickable {
                 Layout.rightMargin: VPNTheme.theme.windowMargin
                 Layout.fillWidth: true
                 Layout.maximumWidth: VPNTheme.theme.maxHorizontalContentWidth
-                onClicked: VPNIAP.subscribe(subscriptionOptions.checkedButton.productId)
+                onClicked: VPNPurchase.subscribe(subscriptionOptions.checkedButton.productId)
             }
             GridLayout {
                 id: grid
@@ -175,7 +175,7 @@ VPNFlickable {
                 // Already a subscriber?
                 labelText: VPNl18n.RestorePurchaseRestorePurchaseButton
                 Layout.alignment: Qt.AlignHCenter
-                onClicked: VPNIAP.restore()
+                onClicked: VPNPurchase.restore()
             }
 
             VPNSignOut {

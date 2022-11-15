@@ -30,13 +30,14 @@ describe('Navigation bar', async function() {
   });
 
 
-  it('Is not visible over desktop onboarding', async () => {    
+  it('Is not visible over desktop onboarding', async () => {
     await vpn.waitForElementAndClick(initialScreen.LEARN_MORE_LINK);
     assert(await navigationBarVisible() === 'false');
   });
 
 
-  it('Is not visible during browser authentication', async () => {    
+  it('Is not visible during browser authentication', async () => {
+    await vpn.flipFeatureOff('inAppAuthentication');
     await vpn.waitForMainView();
     await vpn.clickOnElement(initialScreen.GET_STARTED);
 
@@ -46,7 +47,7 @@ describe('Navigation bar', async function() {
         return url.includes('/api/v2/vpn/login');
       });
     }
-    
+
     await vpn.waitForElement(initialScreen.AUTHENTICATE_VIEW);
     await vpn.waitForElementProperty(initialScreen.AUTHENTICATE_VIEW, 'visible', 'true');
     assert(await navigationBarVisible() === 'false');

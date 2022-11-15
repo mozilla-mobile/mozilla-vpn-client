@@ -144,7 +144,7 @@ void MozillaVPN::submitFeedback(const QString&, const qint8, const QString&) {}
 void MozillaVPN::createSupportTicket(const QString&, const QString&,
                                      const QString&, const QString&) {}
 
-void MozillaVPN::addCurrentDeviceAndRefreshData() {}
+void MozillaVPN::addCurrentDeviceAndRefreshData(bool refreshProducts) {}
 
 void MozillaVPN::openAppStoreReviewLink() {}
 
@@ -177,4 +177,4 @@ void MozillaVPN::setJournalPublicAndPrivateKeys(const QString&,
 void MozillaVPN::resetJournalPublicAndPrivateKeys() {}
 bool MozillaVPN::checkCurrentDevice() { return true; }
 
-void MozillaVPN::scheduleRefreshDataTasks() {}
+void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {}

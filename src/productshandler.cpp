@@ -4,7 +4,7 @@
 
 #include "productshandler.h"
 #include "constants.h"
-#include "iaphandler.h"
+#include "purchasehandler.h"
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -93,7 +93,7 @@ void ProductsHandler::registerProducts(const QByteArray& data) {
     return;
   }
 
-  IAPHandler::instance()->nativeRegisterProducts();
+  PurchaseHandler::instance()->nativeRegisterProducts();
 
   logger.debug() << "Waiting for the products registration";
 

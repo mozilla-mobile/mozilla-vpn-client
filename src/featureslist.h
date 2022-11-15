@@ -94,33 +94,25 @@ FEATURE_SIMPLE(inAppAccountCreate,                  // Feature ID
                "In-app Account Creation",           // Feature name
                "2.6",                               // released
                FeatureCallback_true,                // Can be flipped on
-               FeatureCallback_false,               // Can be flipped off
+               FeatureCallback_true,                // Can be flipped off
                QStringList{"inAppAuthentication"},  // feature dependencies
-               FeatureCallback_iosOrAndroid)
+               FeatureCallback_true)
 
 FEATURE_SIMPLE(inAppAuthentication,      // Feature ID
                "In-app Authentication",  // Feature name
                "2.4",                    // released
                FeatureCallback_true,     // Can be flipped on
-               FeatureCallback_false,    // Can be flipped off
+               FeatureCallback_true,     // Can be flipped off
                QStringList(),            // feature dependencies
-               FeatureCallback_iosOrAndroid)
+               FeatureCallback_true)
 
-FEATURE_SIMPLE(inAppProducts,          // Feature ID
-               "In-app Products",      // Feature name
-               "2.12",                 // released
-               FeatureCallback_false,  // Can be flipped on
-               FeatureCallback_false,  // Can be flipped off
-               QStringList(),          // feature dependencies
-               FeatureCallback_inAppPurchase)
-
-FEATURE_SIMPLE(inAppPurchase,                 // Feature ID
-               "In-app Purchase",             // Feature name
-               "2.4",                         // released
-               FeatureCallback_false,         // Can be flipped on
-               FeatureCallback_false,         // Can be flipped off
-               QStringList{"inAppProducts"},  // feature dependencies
-               FeatureCallback_inAppPurchase)
+FEATURE_SIMPLE(webPurchase,           // Feature ID
+               "Web Purchase",        // Feature name
+               "2.12",                // released
+               FeatureCallback_true,  // Can be flipped on
+               FeatureCallback_true,  // Can be flipped off
+               QStringList(),         // feature dependencies
+               FeatureCallback_webPurchase)
 
 FEATURE_SIMPLE(keyRegeneration,       // Feature ID
                "Key Regeneration",    // Feature name

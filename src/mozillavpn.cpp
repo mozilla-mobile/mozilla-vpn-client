@@ -8,7 +8,6 @@
 #include "dnshelper.h"
 #include "frontend/navigator.h"
 #include "glean/glean.h"
-#include "iaphandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
@@ -19,6 +18,7 @@
 #include "networkmanager.h"
 #include "profileflow.h"
 #include "productshandler.h"
+#include "purchasehandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "tasks/account/taskaccount.h"
@@ -163,26 +163,26 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           &m_private->m_captivePortalDetection,
           &CaptivePortalDetection::settingsChanged);
 
-  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
+  if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
     ProductsHandler::createInstance();
-    IAPHandler* iap = IAPHandler::createInstance();
-    connect(iap, &IAPHandler::subscriptionStarted, this,
-            &MozillaVPN::subscriptionStarted);
-    connect(iap, &IAPHandler::restoreSubscriptionStarted, this,
-            &MozillaVPN::restoreSubscriptionStarted);
-    connect(iap, &IAPHandler::subscriptionFailed, this,
-            &MozillaVPN::subscriptionFailed);
-    connect(iap, &IAPHandler::subscriptionCanceled, this,
-            &MozillaVPN::subscriptionCanceled);
-    connect(iap, &IAPHandler::subscriptionCompleted, this,
-            &MozillaVPN::subscriptionCompleted);
-    connect(iap, &IAPHandler::alreadySubscribed, this,
-            &MozillaVPN::alreadySubscribed);
-    connect(iap, &IAPHandler::billingNotAvailable, this,
-            &MozillaVPN::billingNotAvailable);
-    connect(iap, &IAPHandler::subscriptionNotValidated, this,
-            &MozillaVPN::subscriptionNotValidated);
   }
+  PurchaseHandler* purchaseHandler = PurchaseHandler::createInstance();
+  connect(purchaseHandler, &PurchaseHandler::subscriptionStarted, this,
+          &MozillaVPN::subscriptionStarted);
+  connect(purchaseHandler, &PurchaseHandler::subscriptionFailed, this,
+          &MozillaVPN::subscriptionFailed);
+  connect(purchaseHandler, &PurchaseHandler::subscriptionCanceled, this,
+          &MozillaVPN::subscriptionCanceled);
+  connect(purchaseHandler, &PurchaseHandler::subscriptionCompleted, this,
+          &MozillaVPN::subscriptionCompleted);
+  connect(purchaseHandler, &PurchaseHandler::restoreSubscriptionStarted, this,
+          &MozillaVPN::restoreSubscriptionStarted);
+  connect(purchaseHandler, &PurchaseHandler::alreadySubscribed, this,
+          &MozillaVPN::alreadySubscribed);
+  connect(purchaseHandler, &PurchaseHandler::billingNotAvailable, this,
+          &MozillaVPN::billingNotAvailable);
+  connect(purchaseHandler, &PurchaseHandler::subscriptionNotValidated, this,
+          &MozillaVPN::subscriptionNotValidated);
 }
 
 MozillaVPN::~MozillaVPN() {
@@ -292,15 +292,15 @@ void MozillaVPN::initialize() {
   // subscription. This will fix some of the edge cases for iOS IAP. We do this
   // here as after this point only settings are checked that are set after a
   // successfull subscription.
-  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-    if (m_private->m_user.subscriptionNeeded()) {
-      setUserState(UserAuthenticated);
-      setState(StateAuthenticating);
+  if (m_private->m_user.subscriptionNeeded()) {
+    setUserState(UserAuthenticated);
+    setState(StateAuthenticating);
+    if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
       TaskScheduler::scheduleTask(new TaskProducts());
-      TaskScheduler::scheduleTask(
-          new TaskFunction([this]() { maybeStateMain(); }));
-      return;
     }
+    TaskScheduler::scheduleTask(
+        new TaskFunction([this]() { maybeStateMain(); }));
+    return;
   }
 
   if (!m_private->m_keys.fromSettings()) {
@@ -346,8 +346,7 @@ void MozillaVPN::initialize() {
     m_private->m_serverData.writeSettings();
   }
 
-  scheduleRefreshDataTasks();
-
+  scheduleRefreshDataTasks(true);
   setUserState(UserAuthenticated);
   maybeStateMain();
 }
@@ -374,8 +373,7 @@ void MozillaVPN::setState(State state) {
 void MozillaVPN::maybeStateMain() {
   logger.debug() << "Maybe state main";
 
-  if (m_private->m_user.initialized() &&
-      Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
+  if (m_private->m_user.initialized()) {
     if (m_state != StateSubscriptionBlocked &&
         m_private->m_user.subscriptionNeeded()) {
       logger.info() << "Subscription needed";
@@ -528,13 +526,20 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
   setToken(token);
   setUserState(UserAuthenticated);
 
-  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-    if (m_private->m_user.subscriptionNeeded()) {
+  if (m_private->m_user.subscriptionNeeded()) {
+    if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
       TaskScheduler::scheduleTask(new TaskProducts());
-      TaskScheduler::scheduleTask(
-          new TaskFunction([this]() { maybeStateMain(); }));
-      return;
     }
+    TaskScheduler::scheduleTask(
+        new TaskFunction([this]() { maybeStateMain(); }));
+    return;
+  }
+
+  if (Feature::get(Feature::Feature_webPurchase)->isSupported()) {
+    // Note that if web purchase gets split up so that it is not linked
+    // to a fresh authentication task then this can be removed from here
+    // as the end of that flow should call subscriptionCompleted.
+    PurchaseHandler::instance()->stopSubscription();
   }
 
   completeActivation();
@@ -578,14 +583,10 @@ void MozillaVPN::completeActivation() {
 
   // Here we add the current device.
   if (option != DeviceStillValid) {
-    addCurrentDeviceAndRefreshData();
-
-    if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-      TaskScheduler::scheduleTask(new TaskProducts());
-    }
+    addCurrentDeviceAndRefreshData(true);
   } else {
     // Let's fetch user and server data.
-    scheduleRefreshDataTasks();
+    scheduleRefreshDataTasks(true);
   }
 
   // Finally we are able to activate the client.
@@ -643,7 +644,7 @@ void MozillaVPN::deviceRemoved(const QString& publicKey,
   Q_ASSERT(!m_private->m_deviceModel.hasCurrentDevice(keys()));
 
   // Here we add the current device.
-  addCurrentDeviceAndRefreshData();
+  addCurrentDeviceAndRefreshData(false);
 
   // Finally we are able to activate the client.
   TaskScheduler::scheduleTask(new TaskFunction([this]() {
@@ -757,8 +758,8 @@ void MozillaVPN::createSupportTicket(const QString& email,
 #ifdef MVPN_ANDROID
 void MozillaVPN::launchPlayStore() {
   logger.debug() << "Launch Play Store";
-  IAPHandler* iap = IAPHandler::instance();
-  static_cast<AndroidIAPHandler*>(iap)->launchPlayStore();
+  PurchaseHandler* purchaseHandler = PurchaseHandler::instance();
+  static_cast<AndroidIAPHandler*>(purchaseHandler)->launchPlayStore();
 }
 #endif
 
@@ -784,11 +785,9 @@ void MozillaVPN::accountChecked(const QByteArray& json) {
   m_private->m_user.writeSettings();
   m_private->m_deviceModel.writeSettings();
 
-  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-    if (m_private->m_user.subscriptionNeeded() && m_state == StateMain) {
-      maybeStateMain();
-      return;
-    }
+  if (m_private->m_user.subscriptionNeeded() && m_state == StateMain) {
+    maybeStateMain();
+    return;
   }
 
   // To test the subscription needed view, comment out this line:
@@ -850,8 +849,8 @@ void MozillaVPN::logout() {
 
   TaskScheduler::deleteTasks();
 
-  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-    IAPHandler::instance()->stopSubscription();
+  PurchaseHandler::instance()->stopSubscription();
+  if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
     ProductsHandler::instance()->stopProductsRegistration();
   }
 
@@ -887,8 +886,8 @@ void MozillaVPN::reset(bool forceInitialState) {
   m_private->m_keys.forgetKeys();
   m_private->m_serverData.forget();
 
-  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-    IAPHandler::instance()->stopSubscription();
+  PurchaseHandler::instance()->stopSubscription();
+  if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
     ProductsHandler::instance()->stopProductsRegistration();
   }
 
@@ -1301,7 +1300,8 @@ void MozillaVPN::refreshDevices() {
   logger.debug() << "Refresh devices";
 
   if (m_state == StateMain) {
-    scheduleRefreshDataTasks();
+    TaskScheduler::scheduleTask(
+        new TaskAccount(ErrorHandler::DoNotPropagateError));
   }
 }
 
@@ -1325,30 +1325,29 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
 
   setState(StateSubscriptionInProgress);
 
-  ProductsHandler* products = ProductsHandler::instance();
+  if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
+    ProductsHandler* products = ProductsHandler::instance();
 
-  // If products are not ready (race condition), register the products again.
-  if (!products->hasProductsRegistered()) {
-    TaskScheduler::scheduleTask(new TaskProducts());
-    TaskScheduler::scheduleTask(new TaskFunction([this, productIdentifier]() {
-      subscriptionStarted(productIdentifier);
-    }));
+    // If products are not ready (race condition), register the products again.
+    if (!products->hasProductsRegistered()) {
+      TaskScheduler::scheduleTask(new TaskProducts());
+      TaskScheduler::scheduleTask(new TaskFunction([this, productIdentifier]() {
+        subscriptionStarted(productIdentifier);
+      }));
 
-    return;
+      return;
+    }
   }
 
-  IAPHandler::instance()->startSubscription(productIdentifier);
+  PurchaseHandler::instance()->startSubscription(productIdentifier);
   emit recordGleanEventWithExtraKeys(GleanSample::iapSubscriptionStarted,
                                      {{"sku", productIdentifier}});
 }
 
 void MozillaVPN::restoreSubscriptionStarted() {
   logger.debug() << "Restore subscription started";
-
   setState(StateSubscriptionInProgress);
-
-  IAPHandler::instance()->startRestoreSubscription();
-
+  PurchaseHandler::instance()->startRestoreSubscription();
   emit recordGleanEvent(GleanSample::iapRestoreSubStarted);
 }
 
@@ -1374,7 +1373,7 @@ void MozillaVPN::subscriptionCompleted() {
 
   emit recordGleanEventWithExtraKeys(
       GleanSample::iapSubscriptionCompleted,
-      {{"sku", IAPHandler::instance()->currentSKU()}});
+      {{"sku", PurchaseHandler::instance()->currentSKU()}});
 
   completeActivation();
 }
@@ -1392,21 +1391,23 @@ void MozillaVPN::subscriptionNotValidated() {
   emit recordGleanEventWithExtraKeys(
       GleanSample::iapSubscriptionFailed,
       {{"error", "not-validated"},
-       {"sku", IAPHandler::instance()->currentSKU()}});
+       {"sku", PurchaseHandler::instance()->currentSKU()}});
 }
 
 void MozillaVPN::subscriptionFailed() {
   subscriptionFailedInternal(false /* canceled by user */);
   emit recordGleanEventWithExtraKeys(
       GleanSample::iapSubscriptionFailed,
-      {{"error", "failed"}, {"sku", IAPHandler::instance()->currentSKU()}});
+      {{"error", "failed"},
+       {"sku", PurchaseHandler::instance()->currentSKU()}});
 }
 
 void MozillaVPN::subscriptionCanceled() {
   subscriptionFailedInternal(true /* canceled by user */);
   emit recordGleanEventWithExtraKeys(
       GleanSample::iapSubscriptionFailed,
-      {{"error", "canceled"}, {"sku", IAPHandler::instance()->currentSKU()}});
+      {{"error", "canceled"},
+       {"sku", PurchaseHandler::instance()->currentSKU()}});
 }
 
 void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
@@ -1429,8 +1430,6 @@ void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
     ErrorHandler::instance()->errorHandle(
         ErrorHandler::SubscriptionFailureError);
   }
-
-  scheduleRefreshDataTasks();
 
   TaskScheduler::scheduleTask(new TaskFunction([this]() {
     if (!m_private->m_user.subscriptionNeeded() &&
@@ -1530,10 +1529,10 @@ void MozillaVPN::triggerHeartbeat() {
   TaskScheduler::scheduleTask(new TaskHeartbeat());
 }
 
-void MozillaVPN::addCurrentDeviceAndRefreshData() {
+void MozillaVPN::addCurrentDeviceAndRefreshData(bool refreshProducts) {
   TaskScheduler::scheduleTask(
       new TaskAddDevice(Device::currentDeviceName(), Device::uniqueDeviceId()));
-  scheduleRefreshDataTasks();
+  scheduleRefreshDataTasks(refreshProducts);
 }
 
 void MozillaVPN::openAppStoreReviewLink() {
@@ -1567,7 +1566,7 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
 
   // We do not need to remove the current device! guardian-website "overwrites"
   // the current device key when we submit a new one.
-  addCurrentDeviceAndRefreshData();
+  addCurrentDeviceAndRefreshData(true);
   TaskScheduler::scheduleTask(new TaskFunction([this]() {
     if (!modelsInitialized()) {
       logger.error() << "Failed to complete the key regeneration";
@@ -1660,7 +1659,7 @@ void MozillaVPN::updateViewShown() {
   Updater::updateViewShown();
 }
 
-void MozillaVPN::scheduleRefreshDataTasks() {
+void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {
   QList<Task*> refreshTasks{
       new TaskAccount(ErrorHandler::PropagateError),
       new TaskServers(ErrorHandler::PropagateError),
@@ -1669,8 +1668,10 @@ void MozillaVPN::scheduleRefreshDataTasks() {
           TaskGetSubscriptionDetails::NoAuthenticationFlow,
           ErrorHandler::PropagateError)};
 
-  if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-    refreshTasks.append(new TaskProducts());
+  if (refreshProducts) {
+    if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
+      refreshTasks.append(new TaskProducts());
+    }
   }
 
   TaskScheduler::scheduleTask(new TaskGroup(refreshTasks));

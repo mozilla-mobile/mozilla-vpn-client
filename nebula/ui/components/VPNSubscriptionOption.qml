@@ -13,7 +13,7 @@ import compat 0.1
 RadioDelegate {
     id: radioDelegate
 
-    // used by the `Subscribe Now` to pass productIdentifier to VPNIAP.subscribe()
+    // used by the `Subscribe Now` to pass productIdentifier to VPNPurchase.subscribe()
     property var productId: productIdentifier
 
     activeFocusOnTab: true
@@ -99,7 +99,7 @@ RadioDelegate {
     }
     onPressed: {
         if (radioDelegate.checked) {
-            return VPNIAP.subscribe(subscriptionOptions.checkedButton.productId);
+            return VPNPurchase.subscribe(subscriptionOptions.checkedButton.productId);
         }
     }
 

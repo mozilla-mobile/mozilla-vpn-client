@@ -67,10 +67,7 @@ QByteArray NetworkManager::userAgent() {
   {
     QStringList flags;
     flags.append(QString("sys:") + NetworkManager::osVersion());
-
-    if (Feature::get(Feature::Feature_inAppPurchase)->isSupported()) {
-      flags.append("iap:true");
-    }
+    flags.append("iap:true");
 
 #ifdef MVPN_EXTRA_USERAGENT
     flags.append(MVPN_EXTRA_USERAGENT);

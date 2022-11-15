@@ -260,6 +260,10 @@ module.exports = {
   // TODO - The expected staging urls are hardcoded, we may want to
   // move these hardcoded urls out if testing in alternate environments.
   async authenticateInBrowser(clickOnPostAuthenticate, acceptTelemetry, wasm) {
+    if (await this.isFeatureFlippedOn('inAppAuthentication')) {
+      await this.flipFeatureOff('inAppAuthentication');
+    }
+
     // This method must be called when the client is on the "Get Started" view.
     await this.waitForMainView();
     await this.setElementProperty('VPNUrlOpener', 'lastUrl', 's', '');
@@ -318,10 +322,6 @@ module.exports = {
 
   async authenticateInApp(
       clickOnPostAuthenticate = false, acceptTelemetry = false) {
-    if (!(await this.isFeatureFlippedOn('inAppAuthentication'))) {
-      await this.flipFeatureOn('inAppAuthentication');
-    }
-
     // This method must be called when the client is on the "Get Started" view.
     await this.waitForMainView();
 

@@ -214,6 +214,13 @@ restorePurchaseExpiredError:
 restorePurchaseInUseError:
   restorePurchaseInUseErrorText: Another Firefox Account has already subscribed using this Apple ID. Please sign out and try again or contact our support team for help.
 
+purchaseWeb:
+  title: Subscribe to Mozilla VPN
+  message:
+    value: We couldn’t find a subscription for %1. Subscribe now to protect your connection.
+    comment: "%1 is the user’s email address."
+  inProgress: Please complete your subscription in your web browser.
+
 # Adding functionality for users selecting custom DNS settings, associated settings nav items, headers, and selectable options. Some is not included in 2.5.
 customDNSSettings:
   dnsInfoAlert: VPN must be off to change these settings
