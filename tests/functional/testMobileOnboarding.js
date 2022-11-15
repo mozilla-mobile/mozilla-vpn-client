@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const { initialScreen, mobileOnBoardingScreen, getHelpScreen } = require('./elements.js');
+const { authScreen, initialScreen, mobileOnBoardingScreen, getHelpScreen } = require('./elements.js');
 const vpn = require('./helper.js');
 
 
@@ -16,12 +16,12 @@ describe('Mobile Onboarding', function() {
   it('Navigating to and from the help menu is possible', async () => {
     await vpn.waitForElementAndClick(initialScreen.GET_HELP_LINK);
     await vpn.waitForElementAndClick(getHelpScreen.BACK);
-       
+
     await vpn.waitForElement(mobileOnBoardingScreen.SWIPE_VIEW);
     assert(await vpn.getElementProperty(mobileOnBoardingScreen.SWIPE_VIEW, 'visible') === 'true')
   });
 
-  it('SwipeView is visible', async () => {    
+  it('SwipeView is visible', async () => {
     await vpn.waitForElement(mobileOnBoardingScreen.SWIPE_VIEW);
     assert(await vpn.getElementProperty(mobileOnBoardingScreen.SWIPE_VIEW, 'visible') === 'true')
   });
@@ -31,7 +31,7 @@ describe('Mobile Onboarding', function() {
     assert(await vpn.getElementProperty(mobileOnBoardingScreen.SIGNUP_BUTTON, 'visible') === 'true')
   });
 
-  it('Already a subscriber button is visible', async () => {    
+  it('Already a subscriber button is visible', async () => {
     await vpn.waitForElement(mobileOnBoardingScreen.ALREADY_SUBBED_LINK);
     assert(await vpn.getElementProperty(mobileOnBoardingScreen.ALREADY_SUBBED_LINK, 'visible') === 'true')
   });
@@ -55,7 +55,7 @@ describe('Mobile Onboarding', function() {
      });
 
   it('Panel title and description are updated when SwipeView currentIndex changes',
-     async () => {       
+     async () => {
        await vpn.waitForElement(mobileOnBoardingScreen.SWIPE_VIEW);
        await vpn.setElementProperty(mobileOnBoardingScreen.SWIPE_VIEW, 'currentIndex', 'i', '2');
        await vpn.wait();
@@ -65,33 +65,12 @@ describe('Mobile Onboarding', function() {
      });
 
   it('Sign up button opens auth flow', async () => {
-    await vpn.wait();
-    await vpn.waitForElement(mobileOnBoardingScreen.SIGNUP_BUTTON);
-    await vpn.clickOnElement(mobileOnBoardingScreen.SIGNUP_BUTTON);
-    await vpn.wait();
-
-    if (!this.ctx.wasm) {
-      await vpn.waitForCondition(async () => {
-        const url = await vpn.getLastUrl();
-        return url.includes('/api/v2/vpn/login');
-      });
-    }
-
-    await vpn.waitForElement(initialScreen.AUTHENTICATE_VIEW);
-    await vpn.waitForElementProperty(initialScreen.AUTHENTICATE_VIEW, 'visible', 'true');
+    await vpn.waitForElementAndClick(mobileOnBoardingScreen.SIGNUP_BUTTON);
+    await vpn.waitForElement(authScreen.EMAIL_INPUT)
   });
 
   it('Already a subscriber? opens auth flow', async () => {
     await vpn.waitForElementAndClick(mobileOnBoardingScreen.ALREADY_SUBBED_LINK);
-
-    if (!this.ctx.wasm) {
-      await vpn.waitForCondition(async () => {
-        const url = await vpn.getLastUrl();
-        return url.includes('/api/v2/vpn/login');
-      });
-    }
-
-    await vpn.waitForElement(initialScreen.AUTHENTICATE_VIEW);
-    await vpn.waitForElementProperty(initialScreen.AUTHENTICATE_VIEW, 'visible', 'true');
+    await vpn.waitForElement(authScreen.EMAIL_INPUT)
   });
 });
