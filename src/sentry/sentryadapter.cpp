@@ -20,7 +20,6 @@
 namespace {
 SentryAdapter* s_instance = nullptr;
 Logger logger(LOG_MAIN, "Sentry");
-void* transport_state = 0;
 
 }  // namespace
 
@@ -64,7 +63,7 @@ void SentryAdapter::init() {
 #ifdef SENTRY_NONE_TRANSPORT
   sentry_transport_t* transport =
       sentry_transport_new(&SentryAdapter::transportEnvelope);
-  sentry_transport_set_state(transport, transport_state);
+  sentry_transport_set_state(transport, nullptr);
   sentry_options_set_transport(options, transport);
 #endif
 
