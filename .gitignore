@@ -12,6 +12,7 @@ src/mozillavpn.app
 src/mozillavpn.framework
 src/version.h
 mozillavpn_wg
+dummybuild
 mozillavpn.qmltypes
 mozillavpn_metatypes.json
 mozillavpn_qmltyperegistrations.cpp
