@@ -46,6 +46,7 @@ class ErrorHandler final : public QObject {
     GeoIpRestrictionAlert,
     UnrecoverableErrorAlert,
     AuthCodeSentAlert,
+    CopiedToClipboardConfirmationAlert,
   };
   Q_ENUM(AlertType)
 

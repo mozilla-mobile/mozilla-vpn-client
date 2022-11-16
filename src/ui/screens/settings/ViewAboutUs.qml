@@ -42,28 +42,56 @@ VPNViewBase {
                     text: qsTrId("vpn.main.productDescription")
                 }
             }
-            ColumnLayout {
-                spacing: VPNTheme.theme.windowMargin / 2
-                VPNBoldLabel {
-                    //% "Release version"
-                    //: Refers to the installed version. For example: "Release Version: 1.23"
-                    text: qsTrId("vpn.aboutUs.releaseVersion2")
-                    Layout.fillWidth: true
+            VPNBoldLabel {
+                //% "Release version"
+                //: Refers to the installed version. For example: "Release Version: 1.23"
+                text: qsTrId("vpn.aboutUs.releaseVersion2")
+                Accessible.role: Accessible.StaticText
+            }
+            VPNClickableRow {
+                property int marginOffset: VPNTheme.theme.windowMargin / 2
+
+                id: copyVersionNumber
+
+                Accessible.name: VPNl18n.AboutUsCopyVersionNumber.arg(releaseVersion.text)
+                Layout.leftMargin: -marginOffset
+                Layout.rightMargin: -marginOffset
+                Layout.topMargin: -VPNTheme.theme.windowMargin
+                anchors {
+                    left: undefined
+                    right: undefined
+                    rightMargin: undefined
+                    leftMargin: undefined
                 }
-                TextEdit {
-                    id: releaseVersion
-                    text: VPN.env.buildNumber === "" ? VPN.env.versionString : (VPN.env.versionString + " (" + VPN.env.buildNumber + ")")
-                    readOnly: true
-                    wrapMode: Text.WordWrap
-                    selectByMouse: true
 
-                    color: VPNTheme.theme.fontColor
-                    font.family: VPNTheme.theme.fontInterFamily
-                    font.pixelSize: VPNTheme.theme.fontSizeSmall
-                    Layout.fillWidth: true
+                Layout.fillWidth: true
+                Layout.preferredHeight: VPNTheme.theme.rowHeight
+                onClicked: {
+                    VPN.storeInClipboard(releaseVersion.text)
+                    VPNErrorHandler.setAlert(VPNErrorHandler.CopiedToClipboardConfirmationAlert);
+                }
 
-                    Accessible.role: Accessible.StaticText
-                    Accessible.name: text
+                RowLayout {
+                    id: versionRow
+                    anchors.left: parent.left
+                    anchors.leftMargin: parent.marginOffset
+                    anchors.right: parent.right
+                    anchors.verticalCenter: copyVersionNumber.verticalCenter
+                    spacing: parent.marginOffset
+
+                    VPNTextBlock {
+                        id: releaseVersion
+                        text: VPN.env.buildNumber === "" ? VPN.env.versionString : (VPN.env.versionString + " (" + VPN.env.buildNumber + ")")
+                        width: undefined
+                        Layout.alignment: Qt.AlignVCenter
+                    }
+                    Image {
+                        objectName: "copyVersionNumberIcon"
+                        source: "qrc:/nebula/resources/copy.svg"
+                        fillMode: Image.PreserveAspectFit
+                        Layout.rightMargin: copyVersionNumber.marginOffset
+                        Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+                    }
                 }
             }
             Rectangle {

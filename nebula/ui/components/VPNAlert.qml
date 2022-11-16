@@ -133,7 +133,7 @@ Rectangle {
             }
 
             PropertyChanges {
-                target: style;
+                target: style
                 alertColor: VPNTheme.theme.orange
                 alertHoverColor: VPNTheme.theme.orangeHovered
                 alertClickColor: VPNTheme.theme.orangePressed
@@ -262,10 +262,8 @@ Rectangle {
             state: parent.state
             opacity: alertBox.opacity === 1 ? 1 : 0
 
-            Behavior on color {
-                ColorAnimation {
-                    duration: 100
-                }
+            transitions: Transition {
+                    ColorAnimation { property: "color"; duration: 100 }
             }
             states: [
                 State {
@@ -353,6 +351,7 @@ Rectangle {
     }
 
     function remove() {
+        VPNErrorHandler.setAlert(VPNErrorHandler.NoAlert)
         if (alertBox.destructive){
             alertBox.destroy(100)
         }
