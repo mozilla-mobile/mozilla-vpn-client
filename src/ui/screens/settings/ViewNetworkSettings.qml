@@ -70,27 +70,6 @@ VPNViewBase {
             }
         }
 
-        VPNCheckBoxRow {
-            id: tunnelPort53
-            objectName: "settingTunnelPort53"
-            anchors {
-                right: parent.right
-                left: parent.left
-                rightMargin: VPNTheme.theme.windowMargin
-            }
-            showDivider: true
-
-            labelText: VPNl18n.SettingsTunnelPort53
-            subLabelText: VPNl18n.SettingsTunnelPort53Description
-            isChecked: (VPNSettings.tunnelPort53)
-            isEnabled: vpnFlickable.vpnIsOff
-            onClicked: {
-                if (vpnFlickable.vpnIsOff) {
-                    VPNSettings.tunnelPort53 = !VPNSettings.tunnelPort53
-                }
-            }
-        }
-
         Column {
             width: parent.width
             spacing: VPNTheme.theme.windowMargin  /2

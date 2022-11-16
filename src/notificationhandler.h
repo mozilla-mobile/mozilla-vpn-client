@@ -21,6 +21,7 @@ class NotificationHandler : public QObject {
     CaptivePortalUnblock,
     ServerUnavailable,
     NewInAppMessage,
+    SubscriptionNotFound,
   };
 
   static NotificationHandler* create(QObject* parent);
@@ -38,6 +39,8 @@ class NotificationHandler : public QObject {
 
   void newInAppMessageNotification(const QString& title,
                                    const QString& message);
+
+  void subscriptionNotFoundNotification();
 
   void showNotification();
 

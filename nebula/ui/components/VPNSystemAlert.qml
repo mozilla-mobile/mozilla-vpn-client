@@ -133,6 +133,15 @@ VPNAlert {
                     alertText: qsTrId("vpn.alert.deviceDisconnectedAndLogout")
                     visible: true
                 }
+            },
+            State {
+                name: VPNErrorHandler.CopiedToClipboardConfirmationAlert
+                PropertyChanges {
+                    target: alertBox
+                    alertType: alertTypes.success
+                    alertText: VPNl18n.GlobalCopied
+                    visible: true
+                }
             }
         ]
     }

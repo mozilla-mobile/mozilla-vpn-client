@@ -32,6 +32,9 @@ constexpr uint32_t SERVER_UNAVAILABLE_ALERT_MSEC = 4000;
 // Number of msecs for the new in app message alert.
 constexpr uint32_t NEW_IN_APP_MESSAGE_ALERT_MSEC = 4000;
 
+// Default number of msecs for OS notifications.
+constexpr uint32_t DEFAULT_OS_NOTIFICATION_MSEC = 4000;
+
 // Number of recent connections to retain.
 constexpr int RECENT_CONNECTIONS_MAX_COUNT = 5;
 
@@ -46,8 +49,6 @@ constexpr uint32_t BENCHMARK_THRESHOLD_SPEED_FAST = 25000000;    // 25 Megabit
 constexpr uint32_t BENCHMARK_THRESHOLD_SPEED_MEDIUM = 10000000;  // 10 Megabit
 constexpr const char* BENCHMARK_DOWNLOAD_URL =
     "https://archive.mozilla.org/pub/vpn/speedtest/50m.data";
-// TODO: Add url for upload benchmark
-constexpr const char* BENCHMARK_UPLOAD_URL = "";
 
 #if defined(UNIT_TEST)
 #  define CONSTEXPR(type, functionName, releaseValue, debugValue, \
@@ -111,6 +112,10 @@ constexpr const char* GOOGLE_SUBSCRIPTIONS_URL =
     "https://play.google.com/store/account/subscriptions";
 
 constexpr const char* ADDON_SETTINGS_GROUP = "addons";
+
+PRODBETAEXPR(
+    const char*, benchmarkUploadUrl, "https://benchmark.vpn.mozilla.org/upload",
+    "https://dev.vpn-network-benchmark.nonprod.webservices.mozgcp.net/upload");
 
 PRODBETAEXPR(QString, fxaApiBaseUrl, "https://api.accounts.firefox.com",
              envOrDefault("MVPN_FXA_API_BASE_URL",

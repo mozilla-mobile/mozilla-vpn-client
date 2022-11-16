@@ -257,6 +257,7 @@ notifications:
   captivePortalBlockMessage2: The guest Wi-Fi network you’re connected to requires action. Click to turn off VPN to see the portal.
   captivePortalUnblockTitle: Guest Wi-Fi portal detected
   captivePortalUnblockMessage2: The guest Wi-Fi network you’re connected to may not be secure. Click to turn on VPN to secure your device.
+  subscriptionNotFound: Your Mozilla VPN subscription cannot be found. Please open the app to resolve this subscription issue.
   unsecuredNetworkTitle: Unsecured Wi-Fi network detected
   unsecuredNetworkMessage:
     value: "%1 is not secure. Click here to turn on VPN and secure your device."
@@ -295,6 +296,9 @@ settings:
 
 aboutUs:
   licenses: Licenses
+  copyVersionNumber:
+    value: Copy %1
+    comment: "Accessible name for a button. %1 is the version number of the VPN client."
 
 AndroidNotifications:
   GeneralNotifications:
@@ -723,6 +727,9 @@ global:
   noThanks:
     value: No thanks
     comment: Label for button used to not proceed with an action
+  copied:
+    value: Copied!
+    comment: Confirmation banner displayed after clicking a button to copy something.
 
 getHelp:
   helpCenter: Help Center
