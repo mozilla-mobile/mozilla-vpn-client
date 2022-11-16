@@ -296,6 +296,9 @@ settings:
 
 aboutUs:
   licenses: Licenses
+  copyVersionNumber:
+    value: Copy %1
+    comment: "Accessible name for a button. %1 is the version number of the VPN client."
 
 AndroidNotifications:
   GeneralNotifications:
@@ -724,6 +727,9 @@ global:
   noThanks:
     value: No thanks
     comment: Label for button used to not proceed with an action
+  copied:
+    value: Copied!
+    comment: Confirmation banner displayed after clicking a button to copy something.
 
 getHelp:
   helpCenter: Help Center
