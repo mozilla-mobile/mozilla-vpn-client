@@ -204,7 +204,9 @@ void BenchmarkTaskTransfer::transferProgressed(qint64 bytesSent,
     }
     case BenchmarkUpload: {
       Q_UNUSED(reply);
-      m_bytesTransferred += bytesSent;
+      if (bytesSent > 0) {
+        m_bytesTransferred = bytesSent;
+      }
       break;
     }
     default: {
