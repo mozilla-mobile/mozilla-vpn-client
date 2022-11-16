@@ -10,7 +10,7 @@ finish-args:
   - "--share=ipc"
   - "--share=network"
   - "--socket=x11"
-  - "--system-talk-name=org.mozilla.vpn"
+  - "--env=QML2_IMPORT_PATH=/app/lib64/qml:/app/lib/qml:/app/qml"
 build-options:
   append-path: "/usr/lib/sdk/golang/bin:/usr/lib/sdk/rust-stable/bin"
   env:
@@ -20,6 +20,12 @@ build-options:
 
 modules:
   - flatpak-pyyaml.yaml
+  - name: qt5compat
+    buildsystem: cmake
+    sources:
+      - type: git
+        tag: v6.2.4
+        url: https://github.com/qt/qt5compat
   - name: mozillavpn
     buildsystem: cmake
     config-opts:
