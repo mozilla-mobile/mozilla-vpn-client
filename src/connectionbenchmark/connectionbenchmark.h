@@ -92,7 +92,7 @@ class ConnectionBenchmark final : public QObject {
 
  private:
   QUrl m_downloadUrl = QUrl(Constants::BENCHMARK_DOWNLOAD_URL);
-  QUrl m_uploadUrl = QUrl(Constants::BENCHMARK_UPLOAD_URL);
+  QUrl m_uploadUrl = QUrl(Constants::benchmarkUploadUrl());
 
   QList<BenchmarkTask*> m_benchmarkTasks;
 
