@@ -1,0 +1,4043 @@
+[
+    {
+    },
+    {
+        "classes": [
+            {
+                "className": "Controller",
+                "enums": [
+                    {
+                        "isClass": false,
+                        "isFlag": false,
+                        "name": "State",
+                        "values": [
+                            "StateInitializing",
+                            "StateOff",
+                            "StateConnecting",
+                            "StateConfirming",
+                            "StateOn",
+                            "StateDisconnecting",
+                            "StateSwitching"
+                        ]
+                    }
+                ],
+                "methods": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "countryCode",
+                                "type": "QString"
+                            },
+                            {
+                                "name": "city",
+                                "type": "QString"
+                            },
+                            {
+                                "name": "entryCountryCode",
+                                "type": "QString"
+                            },
+                            {
+                                "name": "entryCity",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "changeServer",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "countryCode",
+                                "type": "QString"
+                            },
+                            {
+                                "name": "city",
+                                "type": "QString"
+                            },
+                            {
+                                "name": "entryCountryCode",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "changeServer",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "countryCode",
+                                "type": "QString"
+                            },
+                            {
+                                "name": "city",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "changeServer",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "logout",
+                        "returnType": "void"
+                    }
+                ],
+                "object": true,
+                "properties": [
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 0,
+                        "name": "state",
+                        "notify": "stateChanged",
+                        "read": "state",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "State",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 1,
+                        "name": "time",
+                        "notify": "timeChanged",
+                        "read": "time",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "qint64",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 2,
+                        "name": "currentLocalizedCityName",
+                        "notify": "stateChanged",
+                        "read": "currentLocalizedCityName",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 3,
+                        "name": "switchingLocalizedCityName",
+                        "notify": "stateChanged",
+                        "read": "switchingLocalizedCityName",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 4,
+                        "name": "connectionRetry",
+                        "notify": "connectionRetryChanged",
+                        "read": "connectionRetry",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "int",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 5,
+                        "name": "enableDisconnectInConfirming",
+                        "notify": "enableDisconnectInConfirmingChanged",
+                        "read": "enableDisconnectInConfirming",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false
+                    }
+                ],
+                "qualifiedClassName": "Controller",
+                "signals": [
+                    {
+                        "access": "public",
+                        "name": "stateChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "timeChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "readyToQuit",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "readyToUpdate",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "readyToBackendFailure",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "pingReceived",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "readyToServerUnavailable",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "connectionRetryChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "enableDisconnectInConfirmingChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "silentSwitchDone",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "activationBlockedForCaptivePortal",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "serverHostname",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "handshakeFailed",
+                        "returnType": "void"
+                    }
+                ],
+                "slots": [
+                    {
+                        "access": "public",
+                        "name": "activate",
+                        "returnType": "bool"
+                    },
+                    {
+                        "access": "public",
+                        "name": "deactivate",
+                        "returnType": "bool"
+                    },
+                    {
+                        "access": "public",
+                        "name": "quit",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "private",
+                        "arguments": [
+                            {
+                                "name": "pubkey",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "connected",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "private",
+                        "name": "disconnected",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "private",
+                        "name": "timerTimeout",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "private",
+                        "arguments": [
+                            {
+                                "name": "status",
+                                "type": "bool"
+                            },
+                            {
+                                "name": "connected",
+                                "type": "bool"
+                            },
+                            {
+                                "name": "connectionDate",
+                                "type": "QDateTime"
+                            }
+                        ],
+                        "name": "implInitialized",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "private",
+                        "arguments": [
+                            {
+                                "name": "serverIpv4Gateway",
+                                "type": "QString"
+                            },
+                            {
+                                "name": "deviceIpv4Address",
+                                "type": "QString"
+                            },
+                            {
+                                "name": "txBytes",
+                                "type": "uint64_t"
+                            },
+                            {
+                                "name": "rxBytes",
+                                "type": "uint64_t"
+                            }
+                        ],
+                        "name": "statusUpdated",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "private",
+                        "name": "handshakeTimeout",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "controller.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "DnsPingSender",
+                "object": true,
+                "qualifiedClassName": "DnsPingSender",
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "PingSender"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "dnspingsender.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "DummyPingSender",
+                "object": true,
+                "qualifiedClassName": "DummyPingSender",
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "PingSender"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "dummypingsender.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "Env",
+                "object": true,
+                "properties": [
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 0,
+                        "name": "inProduction",
+                        "read": "inProduction",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 1,
+                        "name": "versionString",
+                        "read": "versionString",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 2,
+                        "name": "buildNumber",
+                        "read": "buildNumber",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 3,
+                        "name": "osVersion",
+                        "read": "osVersion",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 4,
+                        "name": "architecture",
+                        "read": "architecture",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 5,
+                        "name": "platform",
+                        "read": "platform",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false
+                    }
+                ],
+                "qualifiedClassName": "Env",
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "env.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "ExternalOpHandler",
+                "enums": [
+                    {
+                        "isClass": false,
+                        "isFlag": false,
+                        "name": "Op",
+                        "values": [
+                            "OpAbout",
+                            "OpActivate",
+                            "OpCloseEvent",
+                            "OpDeactivate",
+                            "OpGetHelp",
+                            "OpNotificationClicked",
+                            "OpSettings",
+                            "OpQuit"
+                        ]
+                    }
+                ],
+                "object": true,
+                "qualifiedClassName": "ExternalOpHandler",
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "externalophandler.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "Feature",
+                "object": true,
+                "properties": [
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 0,
+                        "member": "m_id",
+                        "name": "id",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 1,
+                        "member": "m_name",
+                        "name": "name",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 2,
+                        "name": "isMajor",
+                        "read": "isMajor",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 3,
+                        "name": "displayName",
+                        "read": "displayName",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 4,
+                        "name": "shortDescription",
+                        "read": "shortDescription",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 5,
+                        "name": "description",
+                        "read": "description",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 6,
+                        "name": "imagePath",
+                        "read": "imagePath",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 7,
+                        "name": "iconPath",
+                        "read": "iconPath",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 8,
+                        "name": "linkUrl",
+                        "read": "linkUrl",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 9,
+                        "name": "releaseVersion",
+                        "read": "releaseVersion",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 10,
+                        "member": "m_released",
+                        "name": "isReleased",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 11,
+                        "name": "isNew",
+                        "read": "isNew",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 12,
+                        "name": "isToggleable",
+                        "read": "isToggleable",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 13,
+                        "name": "isSupported",
+                        "notify": "supportedChanged",
+                        "read": "isSupported",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false
+                    }
+                ],
+                "qualifiedClassName": "Feature",
+                "signals": [
+                    {
+                        "access": "public",
+                        "name": "supportedChanged",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "feature.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "FeatureModel",
+                "methods": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "feature",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "toggle",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "feature",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "get",
+                        "returnType": "QObject*"
+                    }
+                ],
+                "object": true,
+                "qualifiedClassName": "FeatureModel",
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QAbstractListModel"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "featuremodel.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "classInfos": [
+                    {
+                        "name": "QML.Element",
+                        "value": "VPNFilterProxyModel"
+                    }
+                ],
+                "className": "FilterProxyModel",
+                "interfaces": [
+                    [
+                        {
+                            "className": "QQmlParserStatus",
+                            "id": "\"org.qt-project.Qt.QQmlParserStatus\""
+                        }
+                    ]
+                ],
+                "methods": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "pos",
+                                "type": "int"
+                            }
+                        ],
+                        "name": "get",
+                        "returnType": "QVariant"
+                    }
+                ],
+                "object": true,
+                "properties": [
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 0,
+                        "name": "filterCallback",
+                        "notify": "filterCallbackChanged",
+                        "read": "filterCallback",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QJSValue",
+                        "user": false,
+                        "write": "setFilterCallback"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 1,
+                        "name": "sortCallback",
+                        "notify": "sortCallbackChanged",
+                        "read": "sortCallback",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QJSValue",
+                        "user": false,
+                        "write": "setSortCallback"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 2,
+                        "name": "source",
+                        "notify": "sourceChanged",
+                        "read": "source",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QAbstractListModel*",
+                        "user": false,
+                        "write": "setSource"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 3,
+                        "name": "count",
+                        "notify": "sourceChanged",
+                        "read": "count",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "int",
+                        "user": false
+                    }
+                ],
+                "qualifiedClassName": "FilterProxyModel",
+                "signals": [
+                    {
+                        "access": "public",
+                        "name": "filterCallbackChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "sortCallbackChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "sourceChanged",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QSortFilterProxyModel"
+                    },
+                    {
+                        "access": "public",
+                        "name": "QQmlParserStatus"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "filterproxymodel.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "TestHelper",
+                "methods": [
+                    {
+                        "access": "public",
+                        "name": "triggerAboutToQuit",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "triggerInitializeGlean",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "event",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "triggerRecordGleanEvent",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "triggerSendGleanPings",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "tags",
+                                "type": "QStringList"
+                            }
+                        ],
+                        "name": "triggerSetGleanSourceTags",
+                        "returnType": "void"
+                    }
+                ],
+                "object": true,
+                "properties": [
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 0,
+                        "name": "mainWindowLoadedCalled",
+                        "read": "mainWindowLoadedCalled",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 1,
+                        "name": "stagingMode",
+                        "read": "stagingMode",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setStagingMode"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 2,
+                        "name": "debugMode",
+                        "read": "debugMode",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setDebugMode"
+                    }
+                ],
+                "qualifiedClassName": "TestHelper",
+                "slots": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "engine",
+                                "type": "QQmlEngine*"
+                            }
+                        ],
+                        "name": "qmlEngineAvailable",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "helper.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "InspectorHandler",
+                "object": true,
+                "qualifiedClassName": "InspectorHandler",
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "inspectorhandler.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "L18nStrings",
+                "object": true,
+                "qualifiedClassName": "L18nStrings",
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QQmlPropertyMap"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "l18nstrings.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "LogHandler",
+                "object": true,
+                "qualifiedClassName": "LogHandler",
+                "signals": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "log",
+                                "type": "QByteArray"
+                            }
+                        ],
+                        "name": "logEntryAdded",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "loghandler.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "classInfos": [
+                    {
+                        "name": "QML.Element",
+                        "value": "auto"
+                    }
+                ],
+                "className": "LottiePrivate",
+                "methods": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "canvas",
+                                "type": "QQuickItem*"
+                            },
+                            {
+                                "name": "container",
+                                "type": "QQuickItem*"
+                            }
+                        ],
+                        "name": "setCanvasAndContainer",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "clearAndResize",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "destroyAndRecreate",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "play",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "pause",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "stop",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "eventPlayingCompleted",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "eventLoopCompleted",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QJSValue"
+                            }
+                        ],
+                        "name": "eventEnterFrame",
+                        "returnType": "void"
+                    }
+                ],
+                "object": true,
+                "properties": [
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 0,
+                        "name": "source",
+                        "notify": "sourceChanged",
+                        "read": "source",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setSource"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 1,
+                        "name": "readyToPlay",
+                        "notify": "readyToPlayChanged",
+                        "read": "readyToPlay",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setReadyToPlay"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 2,
+                        "name": "speed",
+                        "notify": "speedChanged",
+                        "read": "speed",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "qreal",
+                        "user": false,
+                        "write": "setSpeed"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 3,
+                        "name": "loops",
+                        "notify": "loopsChanged",
+                        "read": "loops",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QJSValue",
+                        "user": false,
+                        "write": "setLoops"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 4,
+                        "name": "reverse",
+                        "notify": "reverseChanged",
+                        "read": "reverse",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setReverse"
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 5,
+                        "name": "status",
+                        "read": "status",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QJSValue",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 6,
+                        "name": "autoPlay",
+                        "notify": "autoPlayChanged",
+                        "read": "autoPlay",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setAutoPlay"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 7,
+                        "name": "fillMode",
+                        "notify": "fillModeChanged",
+                        "read": "fillMode",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setFillMode"
+                    }
+                ],
+                "qualifiedClassName": "LottiePrivate",
+                "signals": [
+                    {
+                        "access": "public",
+                        "name": "sourceChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "readyToPlayChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "speedChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "loopsChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "reverseChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "autoPlayChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "fillModeChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "loopCompleted",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QQuickItem"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "lottieprivate.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "LottiePrivateDocument",
+                "methods": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "type",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "createElement",
+                        "returnType": "QJSValue"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "tagName",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "getElementsByTagName",
+                        "returnType": "QJSValue"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "className",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "getElementsByClassName",
+                        "returnType": "QJSValue"
+                    }
+                ],
+                "object": true,
+                "properties": [
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 0,
+                        "name": "readyState",
+                        "read": "readyState",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false
+                    }
+                ],
+                "qualifiedClassName": "LottiePrivateDocument",
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "lottieprivatedocument.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "LottiePrivateNavigator",
+                "object": true,
+                "properties": [
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 0,
+                        "name": "userAgent",
+                        "read": "userAgent",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false
+                    }
+                ],
+                "qualifiedClassName": "LottiePrivateNavigator",
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "lottieprivatenavigator.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "LottiePrivateWindow",
+                "methods": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "callback",
+                                "type": "QJSValue"
+                            },
+                            {
+                                "name": "interval",
+                                "type": "int"
+                            }
+                        ],
+                        "name": "setInterval",
+                        "returnType": "int"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "id",
+                                "type": "int"
+                            }
+                        ],
+                        "name": "clearInterval",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "callback",
+                                "type": "QJSValue"
+                            },
+                            {
+                                "name": "interval",
+                                "type": "int"
+                            }
+                        ],
+                        "name": "setTimeout",
+                        "returnType": "int"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "id",
+                                "type": "int"
+                            }
+                        ],
+                        "name": "clearTimeout",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "callback",
+                                "type": "QJSValue"
+                            }
+                        ],
+                        "name": "requestAnimationFrame",
+                        "returnType": "QJSValue"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "id",
+                                "type": "int"
+                            }
+                        ],
+                        "name": "cancelAnimationFrame",
+                        "returnType": "QJSValue"
+                    }
+                ],
+                "object": true,
+                "properties": [
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 0,
+                        "name": "lottie",
+                        "notify": "lottieChanged",
+                        "read": "lottie",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QJSValue",
+                        "user": false,
+                        "write": "setLottie"
+                    }
+                ],
+                "qualifiedClassName": "LottiePrivateWindow",
+                "signals": [
+                    {
+                        "access": "public",
+                        "name": "lottieChanged",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "lottieprivatewindow.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "LottieStatus",
+                "object": true,
+                "properties": [
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 0,
+                        "member": "m_playing",
+                        "name": "playing",
+                        "notify": "changed",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 1,
+                        "member": "m_currentTime",
+                        "name": "currentTime",
+                        "notify": "changed",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "double",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 2,
+                        "member": "m_totalTime",
+                        "name": "totalTime",
+                        "notify": "changed",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "int",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 3,
+                        "member": "m_error",
+                        "name": "error",
+                        "notify": "changed",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 4,
+                        "member": "m_errorString",
+                        "name": "errorString",
+                        "notify": "changed",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false
+                    }
+                ],
+                "qualifiedClassName": "LottieStatus",
+                "signals": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "playing",
+                                "type": "bool"
+                            },
+                            {
+                                "name": "currentTime",
+                                "type": "double"
+                            },
+                            {
+                                "name": "totalTime",
+                                "type": "int"
+                            },
+                            {
+                                "name": "error",
+                                "type": "bool"
+                            },
+                            {
+                                "name": "errorString",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "changed",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "lottiestatus.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "MozillaVPN",
+                "enums": [
+                    {
+                        "isClass": false,
+                        "isFlag": false,
+                        "name": "State",
+                        "values": [
+                            "StateAuthenticating",
+                            "StateBackendFailure",
+                            "StateBillingNotAvailable",
+                            "StateDeviceLimit",
+                            "StateInitialize",
+                            "StateMain",
+                            "StatePostAuthentication",
+                            "StateSubscriptionBlocked",
+                            "StateSubscriptionNeeded",
+                            "StateSubscriptionInProgress",
+                            "StateSubscriptionNotValidated",
+                            "StateTelemetryPolicy",
+                            "StateUpdateRequired"
+                        ]
+                    },
+                    {
+                        "isClass": false,
+                        "isFlag": false,
+                        "name": "UserState",
+                        "values": [
+                            "UserNotAuthenticated",
+                            "UserAuthenticated",
+                            "UserLoggingOut"
+                        ]
+                    }
+                ],
+                "methods": [
+                    {
+                        "access": "public",
+                        "name": "getStarted",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "authenticate",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "cancelAuthentication",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "publicKey",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "removeDeviceFromPublicKey",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "postAuthenticationCompleted",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "telemetryPolicyCompleted",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "mainWindowLoaded",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "viewLogs",
+                        "returnType": "bool"
+                    },
+                    {
+                        "access": "public",
+                        "name": "retrieveLogs",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "cleanupLogs",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "text",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "storeInClipboard",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "activate",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "deactivate",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "refreshDevices",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "update",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "backendServiceRestore",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "triggerHeartbeat",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "feedbackText",
+                                "type": "QString"
+                            },
+                            {
+                                "name": "rating",
+                                "type": "qint8"
+                            },
+                            {
+                                "name": "category",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "submitFeedback",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "openAppStoreReviewLink",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "email",
+                                "type": "QString"
+                            },
+                            {
+                                "name": "subject",
+                                "type": "QString"
+                            },
+                            {
+                                "name": "issueText",
+                                "type": "QString"
+                            },
+                            {
+                                "name": "category",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "createSupportTicket",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "dns",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "validateUserDNS",
+                        "returnType": "bool"
+                    },
+                    {
+                        "access": "public",
+                        "name": "hardResetAndQuit",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "crashTest",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "reason",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "exitForUnrecoverableError",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "requestDeleteAccount",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "cancelReauthentication",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "updateViewShown",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "requestViewLogs",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "forceInitialState",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "reset",
+                        "returnType": "void"
+                    }
+                ],
+                "object": true,
+                "properties": [
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 0,
+                        "name": "state",
+                        "notify": "stateChanged",
+                        "read": "state",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "State",
+                        "user": false
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 1,
+                        "name": "devVersion",
+                        "read": "devVersion",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 2,
+                        "name": "env",
+                        "read": "env",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "const Env*",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 3,
+                        "name": "userState",
+                        "notify": "userStateChanged",
+                        "read": "userState",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "UserState",
+                        "user": false
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 4,
+                        "name": "startMinimized",
+                        "read": "startMinimized",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 5,
+                        "name": "updating",
+                        "notify": "updatingChanged",
+                        "read": "updating",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 6,
+                        "name": "stagingMode",
+                        "read": "stagingMode",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 7,
+                        "name": "debugMode",
+                        "read": "debugMode",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false
+                    }
+                ],
+                "qualifiedClassName": "MozillaVPN",
+                "signals": [
+                    {
+                        "access": "public",
+                        "name": "stateChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "userStateChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "publicKey",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "deviceRemoving",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "aboutNeeded",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "viewLogsNeeded",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "updatingChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "accountDeleted",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "initializeGlean",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "sendGleanPings",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "gleanSampleName",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "recordGleanEvent",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "gleanSampleName",
+                                "type": "QString"
+                            },
+                            {
+                                "name": "extraKeys",
+                                "type": "QVariantMap"
+                            }
+                        ],
+                        "name": "recordGleanEventWithExtraKeys",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "tags",
+                                "type": "QStringList"
+                            }
+                        ],
+                        "name": "setGleanSourceTags",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "aboutToQuit",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "logs",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "logsReady",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "successful",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "ticketCreationAnswer",
+                        "returnType": "void"
+                    }
+                ],
+                "slots": [
+                    {
+                        "access": "public",
+                        "name": "requestSettings",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "requestAbout",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "requestGetHelp",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "mozillavpn.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "NetworkManager",
+                "object": true,
+                "qualifiedClassName": "NetworkManager",
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "networkmanager.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "NetworkRequest",
+                "object": true,
+                "qualifiedClassName": "NetworkRequest",
+                "signals": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "request",
+                                "type": "NetworkRequest*"
+                            }
+                        ],
+                        "name": "requestHeaderReceived",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "error",
+                                "type": "QNetworkReply::NetworkError"
+                            },
+                            {
+                                "name": "data",
+                                "type": "QByteArray"
+                            }
+                        ],
+                        "name": "requestFailed",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "request",
+                                "type": "NetworkRequest*"
+                            },
+                            {
+                                "name": "url",
+                                "type": "QUrl"
+                            }
+                        ],
+                        "name": "requestRedirected",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "data",
+                                "type": "QByteArray"
+                            }
+                        ],
+                        "name": "requestCompleted",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "bytesReceived",
+                                "type": "qint64"
+                            },
+                            {
+                                "name": "bytesTotal",
+                                "type": "qint64"
+                            },
+                            {
+                                "name": "reply",
+                                "type": "QNetworkReply*"
+                            }
+                        ],
+                        "name": "requestUpdated",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "bytesReceived",
+                                "type": "qint64"
+                            },
+                            {
+                                "name": "bytesTotal",
+                                "type": "qint64"
+                            },
+                            {
+                                "name": "reply",
+                                "type": "QNetworkReply*"
+                            }
+                        ],
+                        "name": "uploadProgressed",
+                        "returnType": "void"
+                    }
+                ],
+                "slots": [
+                    {
+                        "access": "private",
+                        "name": "replyFinished",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "private",
+                        "name": "timeout",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "private",
+                        "arguments": [
+                            {
+                                "name": "errors",
+                                "type": "QList<QSslError>"
+                            }
+                        ],
+                        "name": "sslErrors",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "networkrequest.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "PingHelper",
+                "object": true,
+                "qualifiedClassName": "PingHelper",
+                "signals": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "msec",
+                                "type": "qint64"
+                            }
+                        ],
+                        "name": "pingSentAndReceived",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "pinghelper.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "PingSender",
+                "object": true,
+                "qualifiedClassName": "PingSender",
+                "signals": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "sequence",
+                                "type": "quint16"
+                            }
+                        ],
+                        "name": "recvPing",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "criticalPingError",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "pingsender.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "SettingsHolder",
+                "enums": [
+                    {
+                        "isClass": false,
+                        "isFlag": false,
+                        "name": "DnsProvider",
+                        "values": [
+                            "Gateway",
+                            "BlockAll",
+                            "BlockAds",
+                            "BlockTracking",
+                            "Custom"
+                        ]
+                    }
+                ],
+                "object": true,
+                "properties": [
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 0,
+                        "name": "addonCustomServer",
+                        "notify": "addonCustomServerChanged",
+                        "read": "addonCustomServer",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setAddonCustomServer"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 1,
+                        "name": "addonCustomServerAddress",
+                        "notify": "addonCustomServerAddressChanged",
+                        "read": "addonCustomServerAddress",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setAddonCustomServerAddress"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 2,
+                        "name": "addonProdKeyInStaging",
+                        "notify": "addonProdKeyInStagingChanged",
+                        "read": "addonProdKeyInStaging",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setAddonProdKeyInStaging"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 3,
+                        "name": "captivePortalAlert",
+                        "notify": "captivePortalAlertChanged",
+                        "read": "captivePortalAlert",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setCaptivePortalAlert"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 4,
+                        "name": "captivePortalIpv4Addresses",
+                        "notify": "captivePortalIpv4AddressesChanged",
+                        "read": "captivePortalIpv4Addresses",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QStringList",
+                        "user": false,
+                        "write": "setCaptivePortalIpv4Addresses"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 5,
+                        "name": "captivePortalIpv6Addresses",
+                        "notify": "captivePortalIpv6AddressesChanged",
+                        "read": "captivePortalIpv6Addresses",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QStringList",
+                        "user": false,
+                        "write": "setCaptivePortalIpv6Addresses"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 6,
+                        "name": "connectionChangeNotification",
+                        "notify": "connectionChangeNotificationChanged",
+                        "read": "connectionChangeNotification",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setConnectionChangeNotification"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 7,
+                        "name": "currentServerCity",
+                        "notify": "currentServerCityChanged",
+                        "read": "currentServerCity",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setCurrentServerCity"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 8,
+                        "name": "currentServerCountryCode",
+                        "notify": "currentServerCountryCodeChanged",
+                        "read": "currentServerCountryCode",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setCurrentServerCountryCode"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 9,
+                        "name": "developerUnlock",
+                        "notify": "developerUnlockChanged",
+                        "read": "developerUnlock",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setDeveloperUnlock"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 10,
+                        "name": "deviceKeyVersion",
+                        "notify": "deviceKeyVersionChanged",
+                        "read": "deviceKeyVersion",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setDeviceKeyVersion"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 11,
+                        "name": "devices",
+                        "notify": "devicesChanged",
+                        "read": "devices",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QByteArray",
+                        "user": false,
+                        "write": "setDevices"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 12,
+                        "name": "dnsProvider",
+                        "notify": "dnsProviderChanged",
+                        "read": "dnsProvider",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "int",
+                        "user": false,
+                        "write": "setDNSProvider"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 13,
+                        "name": "entryServerCity",
+                        "notify": "entryServerCityChanged",
+                        "read": "entryServerCity",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setEntryServerCity"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 14,
+                        "name": "entryServerCountryCode",
+                        "notify": "entryServerCountryCodeChanged",
+                        "read": "entryServerCountryCode",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setEntryServerCountryCode"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 15,
+                        "name": "featuresFlippedOff",
+                        "notify": "featuresFlippedOffChanged",
+                        "read": "featuresFlippedOff",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QStringList",
+                        "user": false,
+                        "write": "setFeaturesFlippedOff"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 16,
+                        "name": "featuresFlippedOn",
+                        "notify": "featuresFlippedOnChanged",
+                        "read": "featuresFlippedOn",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QStringList",
+                        "user": false,
+                        "write": "setFeaturesFlippedOn"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 17,
+                        "name": "featuresTourShown",
+                        "notify": "featuresTourShownChanged",
+                        "read": "featuresTourShown",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setFeaturesTourShown"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 18,
+                        "name": "gleanEnabled",
+                        "notify": "gleanEnabledChanged",
+                        "read": "gleanEnabled",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setGleanEnabled"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 19,
+                        "name": "iapProducts",
+                        "notify": "iapProductsChanged",
+                        "read": "iapProducts",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QStringList",
+                        "user": false,
+                        "write": "setIapProducts"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 20,
+                        "name": "installationTime",
+                        "notify": "installationTimeChanged",
+                        "read": "installationTime",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QDateTime",
+                        "user": false,
+                        "write": "setInstallationTime"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 21,
+                        "name": "keyRegenerationTimeSec",
+                        "notify": "keyRegenerationTimeSecChanged",
+                        "read": "keyRegenerationTimeSec",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "qint64",
+                        "user": false,
+                        "write": "setKeyRegenerationTimeSec"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 22,
+                        "name": "languageCode",
+                        "notify": "languageCodeChanged",
+                        "read": "languageCode",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setLanguageCode"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 23,
+                        "name": "localNetworkAccess",
+                        "notify": "localNetworkAccessChanged",
+                        "read": "localNetworkAccess",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setLocalNetworkAccess"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 24,
+                        "name": "missingApps",
+                        "notify": "missingAppsChanged",
+                        "read": "missingApps",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QStringList",
+                        "user": false,
+                        "write": "setMissingApps"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 25,
+                        "name": "postAuthenticationShown",
+                        "notify": "postAuthenticationShownChanged",
+                        "read": "postAuthenticationShown",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setPostAuthenticationShown"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 26,
+                        "name": "previousLanguageCode",
+                        "notify": "previousLanguageCodeChanged",
+                        "read": "previousLanguageCode",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setPreviousLanguageCode"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 27,
+                        "name": "privateKey",
+                        "notify": "privateKeyChanged",
+                        "read": "privateKey",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setPrivateKey"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 28,
+                        "name": "privateKeyJournal",
+                        "notify": "privateKeyJournalChanged",
+                        "read": "privateKeyJournal",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setPrivateKeyJournal"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 29,
+                        "name": "protectSelectedApps",
+                        "notify": "protectSelectedAppsChanged",
+                        "read": "protectSelectedApps",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setProtectSelectedApps"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 30,
+                        "name": "publicKey",
+                        "notify": "publicKeyChanged",
+                        "read": "publicKey",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setPublicKey"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 31,
+                        "name": "publicKeyJournal",
+                        "notify": "publicKeyJournalChanged",
+                        "read": "publicKeyJournal",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setPublicKeyJournal"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 32,
+                        "name": "recentConnections",
+                        "notify": "recentConnectionsChanged",
+                        "read": "recentConnections",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QStringList",
+                        "user": false,
+                        "write": "setRecentConnections"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 33,
+                        "name": "seenFeatures",
+                        "notify": "seenFeaturesChanged",
+                        "read": "seenFeatures",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QStringList",
+                        "user": false,
+                        "write": "setSeenFeatures"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 34,
+                        "name": "servers",
+                        "notify": "serversChanged",
+                        "read": "servers",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QByteArray",
+                        "user": false,
+                        "write": "setServers"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 35,
+                        "name": "serverSwitchNotification",
+                        "notify": "serverSwitchNotificationChanged",
+                        "read": "serverSwitchNotification",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setServerSwitchNotification"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 36,
+                        "name": "serverUnavailableNotification",
+                        "notify": "serverUnavailableNotificationChanged",
+                        "read": "serverUnavailableNotification",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setServerUnavailableNotification"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 37,
+                        "name": "stagingServerAddress",
+                        "notify": "stagingServerAddressChanged",
+                        "read": "stagingServerAddress",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setStagingServerAddress"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 38,
+                        "name": "stagingServer",
+                        "notify": "stagingServerChanged",
+                        "read": "stagingServer",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setStagingServer"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 39,
+                        "name": "startAtBoot",
+                        "notify": "startAtBootChanged",
+                        "read": "startAtBoot",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setStartAtBoot"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 40,
+                        "name": "systemLanguageCodeMigrated",
+                        "notify": "systemLanguageCodeMigratedChanged",
+                        "read": "systemLanguageCodeMigrated",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setSystemLanguageCodeMigrated"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 41,
+                        "name": "telemetryPolicyShown",
+                        "notify": "telemetryPolicyShownChanged",
+                        "read": "telemetryPolicyShown",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setTelemetryPolicyShown"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 42,
+                        "name": "tipsAndTricksIntroShown",
+                        "notify": "tipsAndTricksIntroShownChanged",
+                        "read": "tipsAndTricksIntroShown",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setTipsAndTricksIntroShown"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 43,
+                        "name": "token",
+                        "notify": "tokenChanged",
+                        "read": "token",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setToken"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 44,
+                        "name": "tunnelPort53",
+                        "notify": "tunnelPort53Changed",
+                        "read": "tunnelPort53",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setTunnelPort53"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 45,
+                        "name": "unsecuredNetworkAlert",
+                        "notify": "unsecuredNetworkAlertChanged",
+                        "read": "unsecuredNetworkAlert",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setUnsecuredNetworkAlert"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 46,
+                        "name": "userAvatar",
+                        "notify": "userAvatarChanged",
+                        "read": "userAvatar",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setUserAvatar"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 47,
+                        "name": "userDisplayName",
+                        "notify": "userDisplayNameChanged",
+                        "read": "userDisplayName",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setUserDisplayName"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 48,
+                        "name": "userDNS",
+                        "notify": "userDNSChanged",
+                        "read": "userDNS",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setUserDNS"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 49,
+                        "name": "userEmail",
+                        "notify": "userEmailChanged",
+                        "read": "userEmail",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setUserEmail"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 50,
+                        "name": "userMaxDevices",
+                        "notify": "userMaxDevicesChanged",
+                        "read": "userMaxDevices",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "int",
+                        "user": false,
+                        "write": "setUserMaxDevices"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 51,
+                        "name": "userSubscriptionNeeded",
+                        "notify": "userSubscriptionNeededChanged",
+                        "read": "userSubscriptionNeeded",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false,
+                        "write": "setUserSubscriptionNeeded"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 52,
+                        "name": "vpnDisabledApps",
+                        "notify": "vpnDisabledAppsChanged",
+                        "read": "vpnDisabledApps",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QStringList",
+                        "user": false,
+                        "write": "setVpnDisabledApps"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 53,
+                        "name": "theme",
+                        "notify": "themeChanged",
+                        "read": "theme",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setTheme"
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 54,
+                        "name": "placeholderUserDNS",
+                        "read": "placeholderUserDNS",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false
+                    }
+                ],
+                "qualifiedClassName": "SettingsHolder",
+                "signals": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "addonCustomServerChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "addonCustomServerAddressChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "addonProdKeyInStagingChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "captivePortalAlertChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QStringList"
+                            }
+                        ],
+                        "name": "captivePortalIpv4AddressesChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QStringList"
+                            }
+                        ],
+                        "name": "captivePortalIpv6AddressesChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "connectionChangeNotificationChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "currentServerCityChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "currentServerCountryCodeChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "developerUnlockChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "deviceKeyVersionChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QByteArray"
+                            }
+                        ],
+                        "name": "devicesChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "int"
+                            }
+                        ],
+                        "name": "dnsProviderChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "entryServerCityChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "entryServerCountryCodeChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QStringList"
+                            }
+                        ],
+                        "name": "featuresFlippedOffChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QStringList"
+                            }
+                        ],
+                        "name": "featuresFlippedOnChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "featuresTourShownChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "gleanEnabledChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QStringList"
+                            }
+                        ],
+                        "name": "iapProductsChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QDateTime"
+                            }
+                        ],
+                        "name": "installationTimeChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "qint64"
+                            }
+                        ],
+                        "name": "keyRegenerationTimeSecChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "languageCodeChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "localNetworkAccessChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QStringList"
+                            }
+                        ],
+                        "name": "missingAppsChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "postAuthenticationShownChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "previousLanguageCodeChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "privateKeyChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "privateKeyJournalChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "protectSelectedAppsChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "publicKeyChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "publicKeyJournalChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QStringList"
+                            }
+                        ],
+                        "name": "recentConnectionsChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QStringList"
+                            }
+                        ],
+                        "name": "seenFeaturesChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QByteArray"
+                            }
+                        ],
+                        "name": "serversChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "serverSwitchNotificationChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "serverUnavailableNotificationChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "stagingServerAddressChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "stagingServerChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "startAtBootChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "systemLanguageCodeMigratedChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "telemetryPolicyShownChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "tipsAndTricksIntroShownChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "tokenChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "tunnelPort53Changed",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "unsecuredNetworkAlertChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "userAvatarChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "userDisplayNameChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "userDNSChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "userEmailChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "int"
+                            }
+                        ],
+                        "name": "userMaxDevicesChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "userSubscriptionNeededChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QStringList"
+                            }
+                        ],
+                        "name": "vpnDisabledAppsChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "value",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "themeChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "addonSettingsChanged",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "settingsholder.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "Theme",
+                "enums": [
+                    {
+                        "isClass": false,
+                        "isFlag": false,
+                        "name": "StatusBarTextColor",
+                        "values": [
+                            "StatusBarTextColorLight",
+                            "StatusBarTextColorDark"
+                        ]
+                    }
+                ],
+                "methods": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "color",
+                                "type": "Theme::StatusBarTextColor"
+                            }
+                        ],
+                        "name": "setStatusBarTextColor",
+                        "returnType": "void"
+                    }
+                ],
+                "object": true,
+                "properties": [
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 0,
+                        "name": "theme",
+                        "notify": "changed",
+                        "read": "readTheme",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QJSValue",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 1,
+                        "name": "colors",
+                        "notify": "changed",
+                        "read": "readColors",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QJSValue",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 2,
+                        "name": "currentTheme",
+                        "notify": "changed",
+                        "read": "currentTheme",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setCurrentTheme"
+                    }
+                ],
+                "qualifiedClassName": "Theme",
+                "signals": [
+                    {
+                        "access": "public",
+                        "name": "changed",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QAbstractListModel"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "theme.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "Updater",
+                "enums": [
+                    {
+                        "isClass": false,
+                        "isFlag": false,
+                        "name": "Step",
+                        "values": [
+                            "RecommendedUpdateAvailable",
+                            "RequiredUpdateAvailable",
+                            "UpdateViewShown",
+                            "UpdateProcessStarted",
+                            "FallbackInBrowser",
+                            "BalrogValidationCompleted",
+                            "BalrogFileSaved",
+                            "InstallationProcessExecuted",
+                            "ApplicationRestartedAfterUpdate"
+                        ]
+                    }
+                ],
+                "object": true,
+                "qualifiedClassName": "Updater",
+                "signals": [
+                    {
+                        "access": "public",
+                        "name": "updateRequired",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "updateRecommended",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "updater.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "UrlOpener",
+                "enums": [
+                    {
+                        "isClass": false,
+                        "isFlag": false,
+                        "name": "LinkType",
+                        "values": [
+                            "LinkAccount",
+                            "LinkContact",
+                            "LinkForgotPassword",
+                            "LinkLeaveReview",
+                            "LinkHelpSupport",
+                            "LinkTermsOfService",
+                            "LinkPrivacyNotice",
+                            "LinkUpdate",
+                            "LinkInspector",
+                            "LinkSubscriptionBlocked",
+                            "LinkSplitTunnelHelp",
+                            "LinkCaptivePortal",
+                            "LinkRelayPremium",
+                            "LinkSubscriptionIapApple",
+                            "LinkSubscriptionFxa",
+                            "LinkSubscriptionIapGoogle",
+                            "LinkUpgradeToBundle"
+                        ]
+                    }
+                ],
+                "methods": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "linkType",
+                                "type": "UrlOpener::LinkType"
+                            }
+                        ],
+                        "name": "openLink",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "linkUrl",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "openUrl",
+                        "returnType": "void"
+                    }
+                ],
+                "object": true,
+                "properties": [
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 0,
+                        "name": "lastUrl",
+                        "notify": "lastUrlChanged",
+                        "read": "lastUrl",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setLastUrl"
+                    }
+                ],
+                "qualifiedClassName": "UrlOpener",
+                "signals": [
+                    {
+                        "access": "public",
+                        "name": "lastUrlChanged",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "urlopener.h",
+        "outputRevision": 68
+    }
+]
