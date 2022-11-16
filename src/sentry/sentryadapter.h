@@ -8,9 +8,7 @@
 #include <QObject>
 #include <QApplication>
 
-#ifdef SENTRY_ENABLED
-#  include <sentry.h>
-#endif
+#include <sentry.h>
 
 class SentryAdapter final : public QObject {
   Q_OBJECT
@@ -32,7 +30,7 @@ class SentryAdapter final : public QObject {
   Q_SLOT void onLoglineAdded(const QByteArray& line);
   // Called before shutdown, will flush pending events.
   Q_SLOT void onBeforeShutdown();
-#ifdef SENTRY_ENABLED
+
   // Only define Sentry related callbacks if we have the typedefs :)
   // Called before Sentry will send a crash report
   static sentry_value_t onCrash(const sentry_ucontext_t* uctx,
@@ -43,7 +41,6 @@ class SentryAdapter final : public QObject {
   // report to send to Sentry.
   static void transportEnvelope(sentry_envelope_t* envelope, void* state);
 
-#endif
 
  private:
   bool m_initialized = false;

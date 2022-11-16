@@ -39,12 +39,15 @@
 #include "tasks/sendfeedback/tasksendfeedback.h"
 #include "tasks/servers/taskservers.h"
 #include "taskscheduler.h"
-#include "sentry/sentryadapter.h"
 #include "telemetry/gleansample.h"
 #include "update/updater.h"
 #include "update/versionapi.h"
 #include "urlopener.h"
 #include "websocket/websockethandler.h"
+
+#ifdef SENTRY_ENABLED
+  #include "sentry/sentryadapter.h"
+#endif
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosdatamigration.h"
@@ -995,7 +998,9 @@ void MozillaVPN::mainWindowLoaded() {
   m_gleanTimer.start(Constants::gleanTimeoutMsec());
   m_gleanTimer.setSingleShot(false);
 #endif
+#ifdef SENTRY_ENABLED
   SentryAdapter::instance()->init();
+#endif
 }
 
 void MozillaVPN::telemetryPolicyCompleted() {

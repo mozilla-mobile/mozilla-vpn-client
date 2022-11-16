@@ -78,16 +78,10 @@ if( ${_SUPPORTED} GREATER -1 )
     target_link_directories( mozillavpn PUBLIC ${EXTERNAL_INSTALL_LOCATION}/lib)
     add_dependencies(mozillavpn sentry)
 else()
+    # Sentry is not supported on this Plattform.
     message("Sentry supported OS -> ${SENTRY_SUPPORTED_OS}")
-    message("Skipping building sentry for ${CMAKE_SYSTEM_NAME}")
-    # Sentry is not supported on this Plattform, let's
-    # only include a dummy client :) 
-    target_sources(mozillavpn PRIVATE
-       sentry/dummysentryadapter.cpp
-       sentry/sentryadapter.h
-    )
+    message("Cannot build sentry for ${CMAKE_SYSTEM_NAME}")
 endif()
-
 
 # Add Sources that will be required anyway
 target_sources(mozillavpn PRIVATE
