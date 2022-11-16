@@ -264,6 +264,21 @@ void NotificationHandler::newInAppMessageNotification(const QString& title,
                  Constants::NEW_IN_APP_MESSAGE_ALERT_MSEC);
 }
 
+void NotificationHandler::subscriptionNotFoundNotification() {
+  logger.debug() << "Subscription not found notification";
+
+  L18nStrings* l18nStrings = L18nStrings::instance();
+  Q_ASSERT(l18nStrings);
+
+  QString notificationTitle =
+      l18nStrings->t(L18nStrings::MobileOnboardingPanelOneTitle);
+  QString notificationBody =
+      l18nStrings->t(L18nStrings::NotificationsSubscriptionNotFound);
+
+  notifyInternal(SubscriptionNotFound, notificationTitle, notificationBody,
+                 Constants::DEFAULT_OS_NOTIFICATION_MSEC);
+}
+
 void NotificationHandler::notifyInternal(Message type, const QString& title,
                                          const QString& message,
                                          int timerMsec) {
