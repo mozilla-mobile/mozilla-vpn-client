@@ -27,24 +27,26 @@ if( ${_SUPPORTED} GREATER -1 )
     # Configure Linking and Compile
     if(APPLE)
         include(cmake/osxtools.cmake)
+        # Let sentry.h know we are using a static build
+        target_compile_definitions(mozillavpn PRIVATE SENTRY_BUILD_STATIC)
+        # Let mozilla-vpn know we need to provide the upload client
+        target_compile_definitions(mozillavpn PRIVATE SENTRY_NONE_TRANSPORT)
         # Compile Static for apple and link to libsentry.a
         target_link_libraries(mozillavpn PUBLIC libsentry.a)
-        # Force compiling for all architectures so i can sleep at night.
-        SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=false)
-        osx_bundle_files(mozillavpn
-            FILES ${CMAKE_BINARY_DIR}/external/bin/crashpad_handler
-            DESTINATION MacOS
-        )
+        target_link_libraries(mozillavpn PUBLIC breakpad_client.a)
+        # We are using breakpad as a backend - in process stackwalking is never the best option ... however!
+        # this is super easy to link against and we do not need another binary shipped with the client.
+        SET(SENTRY_ARGS -DSENTRY_BACKEND=breakpad -DSENTRY_BUILD_SHARED_LIBS=false -DSENTRY_TRANSPORT=none)
     endif()
     if(WIN32)
-        SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=false  -D SENTRY_BACKEND=breakpad -DCMAKE_BUILD_TYPE=Release)
+        # Let sentry.h know we are using a static build
+        target_compile_definitions(mozillavpn PRIVATE SENTRY_BUILD_STATIC)
         # Link against static sentry + breakpad + the stack unwind utils
         target_link_libraries(mozillavpn PUBLIC sentry.lib)
         target_link_libraries(mozillavpn PUBLIC breakpad_client.lib)
         target_link_libraries(mozillavpn PUBLIC dbghelp.lib)
-        # Make sure the sentry header does not try to dll-link it :) 
-        target_compile_definitions(mozillavpn PRIVATE SENTRY_BUILD_STATIC)
-
+        # Windows will use the winhttp transport btw
+        SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=false -DSENTRY_BACKEND=breakpad -DCMAKE_BUILD_TYPE=Release)
     endif()
 
     include(ExternalProject)
