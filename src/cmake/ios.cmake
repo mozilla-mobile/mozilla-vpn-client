@@ -52,8 +52,6 @@ target_sources(mozillavpn PRIVATE
     platforms/ios/iosiaphandler.h
     platforms/ios/ioscontroller.mm
     platforms/ios/ioscontroller.h
-    platforms/ios/iosdatamigration.mm
-    platforms/ios/iosdatamigration.h
     platforms/ios/iosglue.mm
     platforms/ios/iosnetworkwatcher.mm
     platforms/ios/iosnetworkwatcher.h
