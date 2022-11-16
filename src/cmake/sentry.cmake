@@ -50,11 +50,8 @@ if( ${_SUPPORTED} GREATER -1 )
     endif()
 
     if(ANDROID)
-        # Let sentry.h know we are using a static build
-        #target_compile_definitions(mozillavpn PRIVATE SENTRY_BUILD_STATIC)
         # Let mozilla-vpn know we need to provide the upload client
         target_compile_definitions(mozillavpn PRIVATE SENTRY_NONE_TRANSPORT)
-        # Due to ndk 
         
         target_link_libraries(mozillavpn PUBLIC libsentry.a)
         target_link_libraries(mozillavpn PUBLIC libunwindstack.a)

@@ -141,8 +141,6 @@ class NetworkRequest final : public QObject {
   static NetworkRequest* createForSentry(Task* parent,
                                         const QByteArray& envelope);
 
-
-
   static NetworkRequest* createForProducts(Task* parent);
 
 #ifdef MVPN_IOS
