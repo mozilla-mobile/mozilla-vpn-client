@@ -39,7 +39,7 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
     if(${CMAKE_OSX_SYSROOT} STREQUAL "iphonesimulator")
         set(RUST_ARCH "x86_64-apple-ios")
-    elseif()
+    else()
         set(RUST_ARCH "aarch64-apple-ios")
     endif()
 endif()
@@ -69,6 +69,7 @@ add_custom_target(vpnglean_ffi
                 BUILD_ID=${BUILD_ID}
                 APP_VERSION=${CMAKE_PROJECT_VERSION}
                 CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR}
+                PATH=$ENV{PATH}
             ${CARGO_CMD} $<IF:$<CONFIG:Debug>,,--release> --target ${RUST_ARCH}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
