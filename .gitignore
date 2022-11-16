@@ -19,6 +19,8 @@ balrog/balrog-api.a
 balrog/balrog-api.h
 balrog/vendor/
 dummybuild
+allure-report/
+allure-results/
 allure-results
 qrc_qml.cpp
 .qmake.stash
