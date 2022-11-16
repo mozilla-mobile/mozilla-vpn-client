@@ -28,7 +28,9 @@
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "taskscheduler.h"
 
-#if defined(MZ_LINUX)
+#if defined(MZ_FLATPAK)
+#  include "platforms/linux/linuxnmcontroller.h"
+#elif defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
 #elif defined(MZ_MACOS) || defined(MZ_WINDOWS)
 #  include "localsocketcontroller.h"
@@ -110,7 +112,9 @@ void Controller::initialize() {
   m_serverData = *MozillaVPN::instance()->serverData();
   m_nextServerData = *MozillaVPN::instance()->serverData();
 
-#if defined(MZ_LINUX)
+#if defined(MZ_FLATPAK)
+  m_impl.reset(new LinuxNMController());
+#elif defined(MZ_LINUX)
   m_impl.reset(new LinuxController());
 #elif defined(MZ_MACOS) || defined(MZ_WINDOWS)
   m_impl.reset(new LocalSocketController());

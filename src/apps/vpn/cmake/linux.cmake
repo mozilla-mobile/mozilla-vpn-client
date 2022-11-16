@@ -103,7 +103,15 @@ install(FILES ../linux/extra/icons/128x128/mozillavpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/128x128/apps)
 
 if(${BUILD_FLATPAK})
-  add_compile_definitions(MVPN_FLATPAK)
+  add_compile_definitions(MZ_FLATPAK)
+
+  # Network Manager controller - experimental  
+  pkg_check_modules(libnm REQUIRED IMPORTED_TARGET libnm)
+  target_link_libraries(mozillavpn PRIVATE PkgConfig::libnm)
+  target_sources(mozillavpn PRIVATE
+      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxnmcontroller.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxnmcontroller.h
+  )
 else()
   pkg_check_modules(polkit REQUIRED IMPORTED_TARGET polkit-gobject-1)
   target_link_libraries(mozillavpn PRIVATE PkgConfig::polkit)
