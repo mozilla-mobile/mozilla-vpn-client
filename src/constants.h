@@ -111,8 +111,7 @@ constexpr const char* GOOGLE_SUBSCRIPTIONS_URL =
 constexpr const char* ADDON_SETTINGS_GROUP = "addons";
 
 PRODBETAEXPR(
-    const char*, benchmarkUploadUrl,
-    "https://benchmark.vpn.mozilla.org/upload",
+    const char*, benchmarkUploadUrl, "https://benchmark.vpn.mozilla.org/upload",
     "https://dev.vpn-network-benchmark.nonprod.webservices.mozgcp.net/upload");
 
 PRODBETAEXPR(QString, fxaApiBaseUrl, "https://api.accounts.firefox.com",
