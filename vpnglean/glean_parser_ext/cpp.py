@@ -4,6 +4,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# !IMPORTANT!
+#
+# This file is copy-pasted from https://searchfox.org/mozilla-central/source/toolkit/components/glean/build_scripts/glean_parser_ext/cpp.py
+# with minimal changes for the `extra_type_name` function to return Qt types instead of mozilla-central types.
+
 """
 Outputter to generate C++ code for metrics.
 """
@@ -68,7 +73,7 @@ def type_name(obj):
 
 def extra_type_name(typ: str) -> str:
     """
-    Returns the corresponding Rust type for event's extra key types.
+    Returns the corresponding C++ type for event's extra key types.
     """
 
     if typ == "boolean":
@@ -78,6 +83,8 @@ def extra_type_name(typ: str) -> str:
     elif typ == "quantity":
         return "int"
     else:
+        # Note: glean_parser will error before we ever get to this line
+        # in an unsupported extra key type is used.
         return "UNSUPPORTED"
 
 

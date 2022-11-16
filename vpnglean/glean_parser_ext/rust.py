@@ -4,6 +4,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# !IMPORTANT!
+#
+# This file is copy-pasted from https://searchfox.org/mozilla-central/source/toolkit/components/glean/build_scripts/glean_parser_ext/rust.py.
+
 """
 Outputter to generate Rust code for metrics.
 """
@@ -16,9 +20,6 @@ import jinja2
 from util import generate_metric_ids, generate_ping_ids, get_metrics
 from glean_parser import util
 from glean_parser.metrics import Rate
-
-ID_BITS = 27  # Includes ID_SIGNAL_BITS
-ID_SIGNAL_BITS = 2
 
 # The list of all args to CommonMetricData.
 # No particular order is required, but I have these in common_metric_data.rs
@@ -54,23 +55,36 @@ def rust_datatypes_filter(value):
             elif isinstance(value, enum.Enum):
                 yield (value.__class__.__name__ + "::" + util.Camelize(value.name))
             elif isinstance(value, set):
-                yield "vec!["
-                first = True
-                for subvalue in sorted(list(value)):
-                    if not first:
-                        yield ", "
-                    yield from self.iterencode(subvalue)
-                    first = False
-                yield "]"
+                yield from self.iterencode(sorted(list(value)))
             elif isinstance(value, list):
-                yield "vec!["
-                first = True
-                for subvalue in list(value):
-                    if not first:
-                        yield ", "
-                    yield from self.iterencode(subvalue)
-                    first = False
-                yield "]"
+                if len(value) > 8 and all(isinstance(v, str) for v in value):
+                    # For large enough sets and lists of strings, we use a single string
+                    # with an array of lengths and convert to a Vec at runtime. This yields
+                    # smaller code, data, and relocations than using vec![].
+                    yield "{"
+                    yield f"""const S: &'static str = "{"".join(value)}";"""
+                    lengths = [len(v) for v in value]
+                    largest = max(lengths)
+                    # Use a type adequate for the largest string.
+                    # In most cases, this will be u8.
+                    len_type = f"u{((largest.bit_length() + 7) // 8) * 8}"
+                    yield f"const LENGTHS: [{len_type}; {len(lengths)}] = {lengths};"
+                    yield "let mut offset = 0;"
+                    yield "LENGTHS.iter().map(|len| {"
+                    yield "  let start = offset;"
+                    yield "  offset += *len as usize;"
+                    yield "  S[start..offset].into()"
+                    yield "}).collect()"
+                    yield "}"
+                else:
+                    yield "vec!["
+                    first = True
+                    for subvalue in list(value):
+                        if not first:
+                            yield ", "
+                        yield from self.iterencode(subvalue)
+                        first = False
+                    yield "]"
             elif value is None:
                 yield "None"
             elif isinstance(value, str):
@@ -253,7 +267,6 @@ def output_rust(objs, output_fd, options={}):
             metric_by_type=objs_by_type,
             extra_args=util.extra_args,
             events_by_id=events_by_id,
-            submetric_bit=ID_BITS - ID_SIGNAL_BITS,
         )
     )
     output_fd.write("\n")

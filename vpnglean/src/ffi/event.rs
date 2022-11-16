@@ -16,7 +16,7 @@ pub extern "C" fn glean_event_record_no_extra(id: u32) {
         Ok(()) => {}
         Err(EventRecordingError::InvalidId) => panic!("No event for id {}", id),
         Err(EventRecordingError::InvalidExtraKey) => {
-            // TODO: Record an error. bug 1704504.
+            // TODO: Record an error.
         }
     }
 }
@@ -33,7 +33,7 @@ pub extern "C" fn glean_event_record(
         Ok(()) => {}
         Err(EventRecordingError::InvalidId) => panic!("No event for id {}", id),
         Err(EventRecordingError::InvalidExtraKey) => {
-            // TODO: Record an error. bug 1704504.
+            // TODO: Record an error.
         }
     }
 }
