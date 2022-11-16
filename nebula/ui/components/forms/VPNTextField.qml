@@ -42,6 +42,7 @@ TextField {
     selectByMouse: true
     topPadding: VPNTheme.theme.windowMargin / 2
     verticalAlignment: TextInput.AlignVCenter
+    horizontalAlignment: TextInput.AlignLeft
 
     onActiveFocusChanged: if (focus && typeof(vpnFlickable) !== "undefined" && vpnFlickable.ensureVisible) {
         vpnFlickable.ensureVisible(textField);
@@ -67,6 +68,7 @@ TextField {
         font: textField.font
         height: VPNTheme.theme.rowHeight
         verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignLeft
         visible: !textField.length && !textField.preeditText
         width: textField.width - (textField.leftPadding + textField.rightPadding)
         x: textField.leftPadding

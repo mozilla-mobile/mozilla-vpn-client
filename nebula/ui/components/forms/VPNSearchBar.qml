@@ -32,6 +32,8 @@ ColumnLayout {
         background: VPNInputBackground {}
         leftInset: VPNTheme.theme.windowMargin * 3
         leftPadding: VPNTheme.theme.windowMargin * 3
+        rightPadding: VPNTheme.theme.windowMargin * 3
+        rightInset: VPNTheme.theme.windowMargin * 3
 
         onActiveFocusChanged: if (focus && vpnFlickable.ensureVisible) {
             vpnFlickable.ensureVisible(searchBar);

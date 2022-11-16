@@ -12,4 +12,5 @@ Label {
     font.pixelSize: VPNTheme.theme.fontSize
     font.family: VPNTheme.theme.fontBoldFamily
     color: VPNTheme.theme.fontColorDark
+    horizontalAlignment: Qt.AlignLeft
 }
