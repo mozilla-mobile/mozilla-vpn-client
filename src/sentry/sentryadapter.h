@@ -38,6 +38,11 @@ class SentryAdapter final : public QObject {
   static sentry_value_t onCrash(const sentry_ucontext_t* uctx,
                                 sentry_value_t event, void* closure);
 
+  // Will be used if NONE_TRANSPORT is enabled
+  // in that case this will be called if the client has a
+  // report to send to Sentry.
+  static void transportEnvelope(sentry_envelope_t* envelope, void* state);
+
 #endif
 
  private:

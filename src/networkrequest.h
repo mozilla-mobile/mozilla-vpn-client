@@ -137,6 +137,11 @@ class NetworkRequest final : public QObject {
 
   static NetworkRequest* createForFxaSessionDestroy(
       Task* parent, const QByteArray& sessionToken);
+  
+  static NetworkRequest* createForSentry(Task* parent,
+                                        const QByteArray& envelope);
+
+
 
   static NetworkRequest* createForProducts(Task* parent);
 

@@ -7,7 +7,7 @@
 
 
 # Defines which OS builds can include sentry. Check src/cmake Lists for all values of MVPN_PLATFORM_NAME
-set(SENTRY_SUPPORTED_OS  "Windows" "Darwin")
+set(SENTRY_SUPPORTED_OS  "Windows" "Darwin" "Android")
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 include(ExternalProject)
  
@@ -20,8 +20,8 @@ if( ${_SUPPORTED} GREATER -1 )
     target_compile_definitions(mozillavpn PRIVATE SENTRY_ENABLED)
     # Sentry support is given
     target_sources(mozillavpn PRIVATE
-    sentry/sentryadapter.cpp
-    sentry/sentryadapter.h
+        sentry/sentryadapter.cpp
+        sentry/sentryadapter.h     
     )
 
     # Configure Linking and Compile
@@ -49,6 +49,26 @@ if( ${_SUPPORTED} GREATER -1 )
         SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=false -DSENTRY_BACKEND=breakpad -DCMAKE_BUILD_TYPE=Release)
     endif()
 
+    if(ANDROID)
+        # Let sentry.h know we are using a static build
+        #target_compile_definitions(mozillavpn PRIVATE SENTRY_BUILD_STATIC)
+        # Let mozilla-vpn know we need to provide the upload client
+        target_compile_definitions(mozillavpn PRIVATE SENTRY_NONE_TRANSPORT)
+        # Due to ndk 
+        
+        target_link_libraries(mozillavpn PUBLIC libsentry.a)
+        target_link_libraries(mozillavpn PUBLIC libunwindstack.a)
+        # We can only use inproc as crash backend.
+        SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=false 
+                        -DANDROID_PLATFORM=21 
+                        -DCMAKE_SYSTEM_NAME=Android 
+                        -DANDROID_ABI=${ANDROID_ABI} 
+                        -DCMAKE_ANDROID_NDK=${ANDROID_NDK_ROOT} 
+                        -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake  
+                        -DSENTRY_BACKEND=inproc
+            )
+    endif()
+
     include(ExternalProject)
     ExternalProject_Add(sentry
         SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}../../3rdparty/sentry
@@ -70,3 +90,10 @@ else()
        sentry/sentryadapter.h
     )
 endif()
+
+
+# Add Sources that will be required anyway
+target_sources(mozillavpn PRIVATE
+    tasks/sentry/tasksentry.cpp
+    tasks/sentry/tasksentry.h
+)
