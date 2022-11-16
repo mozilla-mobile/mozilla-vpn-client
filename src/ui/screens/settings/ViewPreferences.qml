@@ -30,10 +30,13 @@ VPNViewBase {
             isChecked: VPNSettings.startAtBoot
             isEnabled: true
             showDivider: false
-            width: parent.width - VPNTheme.theme.windowMargin
             onClicked: VPNSettings.startAtBoot = !VPNSettings.startAtBoot
             visible: VPNFeatureList.get("startOnBoot").isSupported
-            anchors.rightMargin: VPNTheme.theme.windowMargin
+            anchors {
+                right: parent.right
+                left: parent.left
+                rightMargin: VPNTheme.theme.windowMargin
+            }
         }
 
         VPNVerticalSpacer {
@@ -45,9 +48,11 @@ VPNViewBase {
             id: dataCollection
             objectName: "dataCollection"
             width: parent.width - VPNTheme.theme.windowMargin
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.rightMargin: VPNTheme.theme.windowMargin
+            anchors {
+                right: parent.right
+                left: parent.left
+                rightMargin: VPNTheme.theme.windowMargin
+            }
 
             //% "Data collection and use"
             labelText: qsTrId("vpn.settings.dataCollection")

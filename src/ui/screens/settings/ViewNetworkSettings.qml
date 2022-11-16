@@ -49,7 +49,12 @@ VPNViewBase {
             id: localNetwork
             objectName: "settingLocalNetworkAccess"
             visible: VPNFeatureList.get("lanAccess").isSupported
-            width: parent.width - VPNTheme.theme.windowMargin
+            anchors {
+                right: parent.right
+                left: parent.left
+                rightMargin: VPNTheme.theme.windowMargin
+            }
+
             showDivider: true
 
             //% "Local network access"
