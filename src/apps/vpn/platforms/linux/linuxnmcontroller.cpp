@@ -205,21 +205,30 @@ void LinuxNMController::activate(const HopConnection& hop, const Device* device,
     g_error_free(err);
   }
   nm_setting_wireguard_set_peer(m_wireguard, peer, hop.m_hopindex);
-
-  // Update the connection settings.
   g_object_ref(m_wireguard);
   nm_connection_add_setting(NM_CONNECTION(m_remote), NM_SETTING(m_wireguard));
+
+  // Update DNS when configuring the exit server.
+  if (hop.m_hopindex == 0) {
+    NMSettingIPConfig* ipcfg;
+    if (hop.m_dnsServer.protocol() == QAbstractSocket::IPv6Protocol) {
+      ipcfg = nm_connection_get_setting_ip6_config(NM_CONNECTION(m_remote));
+    } else {
+      ipcfg = nm_connection_get_setting_ip4_config(NM_CONNECTION(m_remote));
+    }
+
+    const char* dnsServerList[] = {qPrintable(hop.m_dnsServer.toString()), nullptr};
+    const char* dnsSearchList[] = {".", nullptr};
+    g_object_set(ipcfg, NM_SETTING_IP_CONFIG_DNS, dnsServerList,
+                 NM_SETTING_IP_CONFIG_DNS_SEARCH, dnsSearchList,
+                 NM_SETTING_IP_CONFIG_DNS_PRIORITY, 10, NULL);
+    nm_connection_add_setting(NM_CONNECTION(m_remote), NM_SETTING(ipcfg));
+  }
+
+  // Update the connection settings.
   nm_remote_connection_commit_changes_async(
       m_remote, false, m_cancellable,
       LAMBDA_ASYNC_WRAPPER("peerConfigCompleted"), this);
-
-#if 0
-  if (hop.m_hopindex == 0) {
-    json.insert("serverIpv4Gateway", QJsonValue(hop.m_server.ipv4Gateway()));
-    json.insert("serverIpv6Gateway", QJsonValue(hop.m_server.ipv6Gateway()));
-    json.insert("dnsServer", QJsonValue(hop.m_dnsServer.toString()));
-  }
-#endif
 }
 
 void LinuxNMController::peerConfigCompleted(void* result) {
