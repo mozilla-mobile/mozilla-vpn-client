@@ -4,6 +4,7 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
+import QtQuick.Layouts 1.15
 
 import Mozilla.VPN 1.0
 import components 0.1
@@ -14,13 +15,6 @@ Item {
     Rectangle {
         anchors.fill: parent
         color: window.color
-    }
-
-    VPNMenu {
-        id: menu
-        objectName: "getHelpBack"
-        _menuOnBackClicked: () => VPNNavigator.requestPreviousScreen()
-        _menuIconButtonSource: getHelpStackView.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
     }
 
     VPNMouseArea {
@@ -39,32 +33,42 @@ Item {
         }
     }
 
-    Timer {
-        id: unlockTimeout
-        repeat: false
-        running: false
-        interval: 10000
-        onTriggered: unlockCounter = 0
-    }
+    ColumnLayout {
+        anchors.fill: parent
 
-    VPNStackView {
-        id: getHelpStackView
+        spacing: 0
 
-        anchors {
-            top: menu.buttom
+        VPNMenu {
+            id: menu
+            objectName: "getHelpBack"
+            _menuOnBackClicked: () => VPNNavigator.requestPreviousScreen()
+            _menuIconButtonSource: getHelpStackView.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
         }
 
-        implicitHeight: parent.height - menu.height
-
-        Component.onCompleted: function() {
-            VPNNavigator.addStackView(VPNNavigator.ScreenGetHelp, getHelpStackView)
-            getHelpStackView.push("qrc:/ui/screens/getHelp/ViewGetHelp.qml")
+        Timer {
+            id: unlockTimeout
+            repeat: false
+            running: false
+            interval: 10000
+            onTriggered: unlockCounter = 0
         }
 
-        onCurrentItemChanged: {
-            menu.title = Qt.binding(() => currentItem._menuTitle || "");
-            menu.visible = Qt.binding(() => menu.title !== "");
-            menu._menuOnBackClicked = currentItem._menuOnBackClicked ? currentItem._menuOnBackClicked : () => getHelpStackView.pop()
+        VPNStackView {
+            id: getHelpStackView
+
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+
+            Component.onCompleted: function() {
+                VPNNavigator.addStackView(VPNNavigator.ScreenGetHelp, getHelpStackView)
+                getHelpStackView.push("qrc:/ui/screens/getHelp/ViewGetHelp.qml")
+            }
+
+            onCurrentItemChanged: {
+                menu.title = Qt.binding(() => currentItem._menuTitle || "");
+                menu.visible = Qt.binding(() => menu.title !== "");
+                menu._menuOnBackClicked = currentItem._menuOnBackClicked ? currentItem._menuOnBackClicked : () => getHelpStackView.pop()
+            }
         }
     }
 }

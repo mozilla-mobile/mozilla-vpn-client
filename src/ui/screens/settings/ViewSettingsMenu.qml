@@ -128,11 +128,6 @@ VPNViewBase {
                 onClicked: stackview.push("qrc:/ui/screens/settings/ViewAboutUs.qml")
             }
 
-            VPNVerticalSpacer {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-            }
-
             VPNSignOut {
                 id: signOutLink
 
@@ -143,12 +138,9 @@ VPNViewBase {
                     bottomMargin: undefined
                 }
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
+                Layout.topMargin: VPNTheme.theme.vSpacingSmall - parent.spacing
             }
 
-            VPNVerticalSpacer {
-                Layout.fillWidth: true
-                Layout.minimumHeight: VPNTheme.theme.rowHeight
-            }
         }
     }
 
