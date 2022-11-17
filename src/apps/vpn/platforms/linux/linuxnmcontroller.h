@@ -39,10 +39,10 @@ class LinuxNMController final : public ControllerImpl {
   void cleanupBackendLogs() override;
 
  private slots:
-  void initializeCompleted(void *);
-  void peerConfigCompleted(void *);
-  void activateCompleted(void *);
-  void deactivateCompleted(void *);
+  void initializeCompleted(void*);
+  void peerConfigCompleted(void*);
+  void activateCompleted(void*);
+  void deactivateCompleted(void*);
 
  private:
   struct _GCancellable* m_cancellable;
@@ -50,7 +50,7 @@ class LinuxNMController final : public ControllerImpl {
   struct _NMSettingWireGuard* m_wireguard = nullptr;
   struct _NMRemoteConnection* m_remote = nullptr;
   struct _NMActiveConnection* m_active = nullptr;
-  
+
   QString m_serverPublicKey;
 };
 
