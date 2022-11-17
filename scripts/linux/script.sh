@@ -185,8 +185,10 @@ EOF
 
 ## Update the flatpak manifest to use the source tarball.
 build_flatpak_manifest() {
-cp $WORKDIR/linux/flatpak-pyyaml.yaml flatpak-pyyaml.yaml
-sed -e '1,/[[:space:]]\+sources:/!d' $WORKDIR/linux/org.mozilla.vpn.yml > org.mozilla.vpn.yml
+cp $WORKDIR/linux/flatpak-*.yaml .
+
+FINALSRCLINE=$(grep -n 'sources:' $WORKDIR/linux/org.mozilla.vpn.yml | tail -1 | cut -d: -f1)
+head -${FINALSRCLINE} $WORKDIR/linux/org.mozilla.vpn.yml > org.mozilla.vpn.yml
 cat << EOF >> org.mozilla.vpn.yml
       - type: archive
         path: mozillavpn_$SHORTVERSION.orig.tar.gz
