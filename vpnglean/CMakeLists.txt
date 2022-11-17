@@ -7,6 +7,7 @@
 ## because Xcode will attempt to use it's own installation of cargo, 
 ## which we don't want.
 find_program(CARGO_EXECUTABLE NAMES cargo REQUIRED)
+find_program(RUSTC_EXECUTABLE NAMES rustc REQUIRED)
 
 add_library(vpnglean STATIC IMPORTED GLOBAL)
 
@@ -48,12 +49,25 @@ if(NOT RUST_ARCH)
     message(FATAL_ERROR "Unable to determine Rust target for ${CMAKE_SYSTEM_NAME} (${CMAKE_SYSTEM_PROCESSOR}).")
 endif()
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Android")
-    set(OPENSSL_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/openSSL/static/lib/${OPENSSL_ARCH})
-    set(OPENSSL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/openSSL/static/include)
-    set(CARGO_CMD OPENSSL_LIB_DIR=${OPENSSL_LIB_DIR} OPENSSL_INCLUDE_DIR=${OPENSSL_INCLUDE_DIR} AR=llvm-ar ${CARGO_EXECUTABLE} build)
-else()
-    set(CARGO_CMD ${CARGO_EXECUTABLE} build)
+list(APPEND CARGO_ENV BUILD_ID=${BUILD_ID})
+list(APPEND CARGO_ENV APP_VERSION=${CMAKE_PROJECT_VERSION})
+list(APPEND CARGO_ENV CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR})
+
+if(ANDROID)
+    list(APPEND CARGO_ENV
+        OPENSSL_LIB_DIR=${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/openSSL/static/lib/${OPENSSL_ARCH}
+        OPENSSL_INCLUDE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/openSSL/static/include
+        AR=llvm-ar)
+elseif(APPLE AND XCODE)
+    ## Don't trust Xcode to provide us with a usable linker.
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh "#!/bin/sh\n")
+    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh "${RUSTC_EXECUTABLE} -C linker=/usr/bin/cc \$@\n")
+    file(CHMOD ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh FILE_PERMISSIONS
+        OWNER_READ OWNER_WRITE OWNER_EXECUTE
+        GROUP_READ GROUP_WRITE GROUP_EXECUTE
+        WORLD_READ WORLD_EXECUTE
+    )
+    list(APPEND CARGO_ENV RUSTC=${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh)
 endif()
 
 set(HEADER_FILE vpnglean.h)
@@ -65,12 +79,8 @@ add_custom_target(vpnglean_ffi
         ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/debug/${LIBNAME}
         ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/release/${LIBNAME}
         ${CMAKE_CURRENT_BINARY_DIR}/${HEADER_FILE}
-    COMMAND ${CMAKE_COMMAND} -E env
-                BUILD_ID=${BUILD_ID}
-                APP_VERSION=${CMAKE_PROJECT_VERSION}
-                CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR}
-                PATH="$<SHELL_PATH:$ENV{PATH}>"
-            ${CARGO_CMD} $<IF:$<CONFIG:Debug>,,--release> --target ${RUST_ARCH}
+    COMMAND ${CMAKE_COMMAND} -E env ${CARGO_ENV}
+            ${CARGO_EXECUTABLE} build $<IF:$<CONFIG:Debug>,,--release> --target ${RUST_ARCH}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 set_target_properties(vpnglean_ffi PROPERTIES FOLDER "Libs")
