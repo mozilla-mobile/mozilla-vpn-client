@@ -92,7 +92,6 @@ constexpr const char* SENTRY_DER =
 constexpr const char* SENTRY_ENVELOPE_INGESTION =
     "https://o1396220.ingest.sentry.io/api/6719480/envelope/";
 
-
 constexpr const char* API_PRODUCTION_URL = "https://vpn.mozilla.org";
 constexpr const char* API_STAGING_URL =
     "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";

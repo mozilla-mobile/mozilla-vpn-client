@@ -9,6 +9,7 @@
 #include <QDir>
 
 #include "constants.h"
+#include "models/feature.h"
 #include "leakdetector.h"
 #include "loghandler.h"
 #include "logger.h"
@@ -33,11 +34,9 @@ SentryAdapter::SentryAdapter() { MVPN_COUNT_CTOR(SentryAdapter); }
 SentryAdapter::~SentryAdapter() { MVPN_COUNT_DTOR(SentryAdapter); }
 
 void SentryAdapter::init() {
-  if (Constants::inProduction()) {
-    // If we're not in Production let's just not enable this :)
+  if (!Feature::get(Feature::Feature_sentry)->isSupported()) {
     return;
   }
-  // Okay so Lets INIT
   auto vpn = MozillaVPN::instance();
   auto log = LogHandler::instance();
 
@@ -67,7 +66,8 @@ void SentryAdapter::init() {
   sentry_options_set_transport(options, transport);
 #endif
 
-  // Leaving this for convinence, be warned, it's spammy to stdout.
+  // Uncomment the following line for debugging purposes.
+  // Be warned, it's spammy to stdout.
   // sentry_options_set_debug(options, 1);
 
   if (sentry_init(options) == -1) {
@@ -75,7 +75,7 @@ void SentryAdapter::init() {
     return;
   };
   m_initialized = true;
-  logger.info() << "Sentry initialised";
+  logger.info() << "Sentry initialized";
 }
 
 void SentryAdapter::report(const QString& errorType, const QString& message,
@@ -94,35 +94,31 @@ void SentryAdapter::report(const QString& errorType, const QString& message,
   sentry_capture_event(event);
 }
 
-void SentryAdapter::onBeforeShutdown() {
-  // Flush everything,
-  sentry_close();
-}
+void SentryAdapter::onBeforeShutdown() { sentry_close(); }
 
 void SentryAdapter::onLoglineAdded(const QByteArray& line) {
   if (!m_initialized) {
     return;
   }
   // Todo: we could certainly catch this more early and format the data ?
+  // (VPN-3276)
   sentry_value_t crumb =
       sentry_value_new_breadcrumb("Logger", line.constData());
   sentry_add_breadcrumb(crumb);
 }
 
-sentry_value_t SentryAdapter::onCrash(
-    const sentry_ucontext_t*
-        uctx,              // provides the user-space context of the crash
-    sentry_value_t event,  // used the same way as in `before_send`
-    void* closure  // user-data that you can provide at configuration time
-) {
+sentry_value_t SentryAdapter::onCrash(const sentry_ucontext_t* uctx,
+                                      sentry_value_t event, void* closure) {
   logger.info() << "Sentry ON CRASH";
   // Do contextual clean-up before the crash is sent to sentry's backend
   // infrastructure
   bool shouldSend = true;
   // Todo: We can use this callback to make sure
   // we only send data with user consent.
+  // Tracked in: VPN-3158
   // We could:
   //  -> Maybe start a new Process for the Crash-Report UI ask for consent
+  //  (VPN-2823)
   //  -> Check if a setting "upload crashes" is present.
   // If we should not send it, we can discard the crash data here :)
   if (shouldSend) {
@@ -135,21 +131,13 @@ sentry_value_t SentryAdapter::onCrash(
 // static
 void SentryAdapter::transportEnvelope(sentry_envelope_t* envelope,
                                       void* state) {
-  /*
-   * Send the event here. If the transport requires state, such as an HTTP
-   * client object or request queue, it can be specified in the `state`
-   * parameter when configuring the transport. It will be passed as second
-   * argument to this function.
-   * The transport takes ownership of the `envelope`, and must free it once it
-   * is done.
-   */
   Q_UNUSED(state);
   size_t sentry_buf_size = 0;
   char* sentry_buf = sentry_envelope_serialize(envelope, &sentry_buf_size);
 
   // Qt Will copy this.
   auto qt_owned_buffer = QByteArray(sentry_buf, sentry_buf_size);
-  // We can now free the stuff.
+  // We can now free the envelope.
   sentry_envelope_free(envelope);
   sentry_free(sentry_buf);
 
