@@ -65,7 +65,8 @@ RadioDelegate {
         border.color: VPNTheme.theme.blueFocusOutline
         border.width: VPNTheme.theme.focusBorderWidth * 2
         color: VPNTheme.theme.transparent
-        opacity: radio.checked || radio.activeFocus ? 1 : 0
+        //OS Check to prevent multi-touch issue
+        opacity: radio.checked || ((Qt.platform.os !== "android" && Qt.platform.os !== "ios") && radio.activeFocus) ? 1 : 0
         radius: height
 
         Behavior on opacity {
