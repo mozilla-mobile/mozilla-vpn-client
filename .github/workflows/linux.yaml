@@ -76,7 +76,7 @@ jobs:
       - name: Uploading
         uses: actions/upload-artifact@v3
         with:
-          name: ${{matrix.config.name}} Build
+          name: Flatpak Build
           path: mozillavpn.flatpak
 
   rpmbuild:
