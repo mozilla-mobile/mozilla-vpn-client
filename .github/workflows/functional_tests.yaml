@@ -152,7 +152,20 @@ jobs:
           name: ${{matrix.test.name}} Logs
           path: ${{ runner.temp }}/artifacts
 
-    publishfunctionaltests:
+      - name: Uploading allure-results
+        uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: allure-res
+          path: allure-results
+
+  publishfunctionaltests:
+    name: generate report
+    needs: 
+      - functionaltests
+    runs-on: ubuntu-20.04
+    timeout-minutes: 45
+    steps:
       - name: generate allure report
         run: npm run allure-report
 
