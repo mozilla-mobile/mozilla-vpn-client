@@ -46,7 +46,7 @@
 #include "websocket/websockethandler.h"
 
 #ifdef SENTRY_ENABLED
-  #include "sentry/sentryadapter.h"
+#  include "sentry/sentryadapter.h"
 #endif
 
 #ifdef MVPN_IOS
