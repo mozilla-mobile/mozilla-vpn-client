@@ -12,20 +12,15 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(libsecret REQUIRED IMPORTED_TARGET libsecret-1)
 target_link_libraries(mozillavpn PRIVATE PkgConfig::libsecret)
 
-# Linux platform source files
+# Linux common source files
 target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/backendlogsobserver.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/backendlogsobserver.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/dbusclient.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/dbusclient.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxappimageprovider.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxappimageprovider.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxapplistprovider.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxapplistprovider.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxcontroller.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxcontroller.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxdependencies.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxdependencies.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxcryptosettings.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxnetworkwatcher.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxnetworkwatcher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxnetworkwatcherworker.cpp
@@ -36,47 +31,72 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxsystemtraynotificationhandler.h
 )
 
-# Linux daemon source files
-target_sources(mozillavpn PRIVATE
-   ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c
-   ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemon.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemon.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/dnsutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/interfaceconfig.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/iputils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/wireguardutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/apptracker.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/apptracker.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/dbusservice.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/dbusservice.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/dbustypeslinux.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/dnsutilslinux.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/dnsutilslinux.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/iputilslinux.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/iputilslinux.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/linuxdaemon.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/pidtracker.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/pidtracker.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/wireguardutilslinux.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/wireguardutilslinux.h
-)
+if(NOT BUILD_FLATPAK)
+    # Linux daemon source files
+    target_sources(mozillavpn PRIVATE
+        ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c
+        ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemon.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemon.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/dnsutils.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/interfaceconfig.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/iputils.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/wireguardutils.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/dbusclient.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/dbusclient.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxcontroller.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxcontroller.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxdependencies.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxdependencies.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/apptracker.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/apptracker.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/dbusservice.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/dbusservice.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/dbustypeslinux.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/dnsutilslinux.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/dnsutilslinux.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/iputilslinux.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/iputilslinux.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/linuxdaemon.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/pidtracker.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/pidtracker.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/polkithelper.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/polkithelper.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/wireguardutilslinux.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/wireguardutilslinux.h
+    )
 
-add_definitions(-DPROTOCOL_VERSION=\"1\")
+    set(DBUS_GENERATED_SOURCES)
+    qt_add_dbus_interface(
+        DBUS_GENERATED_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/org.mozilla.vpn.dbus.xml
+        dbus_interface
+    )
+    qt_add_dbus_adaptor(
+        DBUS_GENERATED_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/org.mozilla.vpn.dbus.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/dbusservice.h
+        ""
+        dbus_adaptor
+    )
+    target_sources(mozillavpn PRIVATE ${DBUS_GENERATED_SOURCES})
+    target_compile_definitions(mozillavpn PRIVATE -DPROTOCOL_VERSION=\"1\")
 
-set(DBUS_GENERATED_SOURCES)
-qt_add_dbus_interface(DBUS_GENERATED_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/org.mozilla.vpn.dbus.xml dbus_interface)
-qt_add_dbus_adaptor(DBUS_GENERATED_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/org.mozilla.vpn.dbus.xml
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/dbusservice.h
-    ""
-    dbus_adaptor)
-target_sources(mozillavpn PRIVATE ${DBUS_GENERATED_SOURCES})
+    include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
+    add_go_library(netfilter ../linux/netfilter/netfilter.go)
+    target_link_libraries(mozillavpn PRIVATE netfilter)
+else()
+    # Linux source files for sandboxed builds
+    target_compile_definitions(mozillavpn PRIVATE MZ_FLATPAK)
 
-include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
-add_go_library(netfilter ../linux/netfilter/netfilter.go)
-target_link_libraries(mozillavpn PRIVATE netfilter)
+    # Network Manager controller - experimental  
+    pkg_check_modules(libnm REQUIRED IMPORTED_TARGET libnm)
+    target_link_libraries(mozillavpn PRIVATE PkgConfig::libnm)
+    target_sources(mozillavpn PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxnmcontroller.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxnmcontroller.h
+    )
+endif()
 
 include(GNUInstallDirs)
 install(TARGETS mozillavpn)
@@ -102,23 +122,9 @@ install(FILES ../linux/extra/icons/64x64/mozillavpn.png
 install(FILES ../linux/extra/icons/128x128/mozillavpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/128x128/apps)
 
-if(${BUILD_FLATPAK})
-  add_compile_definitions(MZ_FLATPAK)
-
-  # Network Manager controller - experimental  
-  pkg_check_modules(libnm REQUIRED IMPORTED_TARGET libnm)
-  target_link_libraries(mozillavpn PRIVATE PkgConfig::libnm)
-  target_sources(mozillavpn PRIVATE
-      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxnmcontroller.cpp
-      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxnmcontroller.h
-  )
-else()
+if(NOT BUILD_FLATPAK)
   pkg_check_modules(polkit REQUIRED IMPORTED_TARGET polkit-gobject-1)
   target_link_libraries(mozillavpn PRIVATE PkgConfig::polkit)
-  target_sources(mozillavpn PRIVATE
-      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/polkithelper.cpp
-      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/polkithelper.h
-  )
 
   pkg_get_variable(POLKIT_POLICY_DIR polkit-gobject-1 policydir)
   install(FILES apps/vpn/platforms/linux/daemon/org.mozilla.vpn.policy

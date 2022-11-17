@@ -100,13 +100,11 @@ QString DBusService::version() {
 bool DBusService::activate(const QString& jsonConfig) {
   logger.debug() << "Activate";
 
-#ifndef MVPN_FLATPAK
   if (!PolkitHelper::instance()->checkAuthorization(
           "org.mozilla.vpn.activate")) {
     logger.error() << "Polkit rejected";
     return false;
   }
-#endif
 
   QJsonDocument json = QJsonDocument::fromJson(jsonConfig.toLocal8Bit());
   if (!json.isObject()) {

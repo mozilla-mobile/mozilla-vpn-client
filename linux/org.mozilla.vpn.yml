@@ -3,7 +3,6 @@ runtime: org.kde.Platform
 runtime-version: '6.2'
 sdk: org.kde.Sdk
 sdk-extensions:
-  - org.freedesktop.Sdk.Extension.golang
   - org.freedesktop.Sdk.Extension.rust-stable
 command: mozillavpn
 finish-args:
@@ -12,10 +11,8 @@ finish-args:
   - "--socket=x11"
   - "--env=QML2_IMPORT_PATH=/app/lib64/qml:/app/lib/qml:/app/qml"
 build-options:
-  append-path: "/usr/lib/sdk/golang/bin:/usr/lib/sdk/rust-stable/bin"
+  append-path: "/usr/lib/sdk/rust-stable/bin"
   env:
-    - GOBIN=/app/bin
-    - GOROOT=/usr/lib/sdk/golang
     - CARGO_HOME=/run/build/rust-flatpak/cargo
 
 modules:

@@ -12,7 +12,7 @@
 #  include "platforms/windows/daemon/windowssplittunnel.h"
 #endif
 
-#ifdef MZ_LINUX
+#if defined(MZ_LINUX) && !defined(MZ_FLATPAK)
 #  include <QProcessEnvironment>
 
 #  include "platforms/linux/linuxdependencies.h"
@@ -88,6 +88,8 @@ bool FeatureCallback_splitTunnel() {
   return true;
 #elif defined(MZ_WINDOWS)
   return !WindowsSplitTunnel::detectConflict();
+#elif defined(MZ_FLATPAK)
+  return false;
 #elif defined(MZ_LINUX)
   static bool initDone = false;
   static bool splitTunnelSupported = false;

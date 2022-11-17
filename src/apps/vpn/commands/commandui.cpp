@@ -294,7 +294,7 @@ int CommandUI::run(QStringList& tokens) {
     WindowsStartAtBootWatcher startAtBootWatcher;
 #endif
 
-#ifdef MZ_LINUX
+#if defined(MZ_LINUX) && !defined(MZ_FLATPAK)
     // Dependencies - so far, only for linux.
     if (!LinuxDependencies::checkDependencies()) {
       return 1;
