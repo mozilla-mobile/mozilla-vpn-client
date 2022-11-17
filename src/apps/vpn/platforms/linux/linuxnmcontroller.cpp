@@ -26,6 +26,7 @@ extern "C" {
 
 constexpr uint32_t WG_FIREWALL_MARK = 0xca6c;
 constexpr const char* WG_INTERFACE_NAME = "wg0";
+constexpr uint16_t WG_KEEPALIVE_PERIOD = 60;
 
 namespace {
 Logger logger({LOG_LINUX, LOG_CONTROLLER}, "LinuxNMController");
@@ -40,8 +41,10 @@ LinuxNMController::LinuxNMController() {
     logger.info() << "NetworkManager version:" << nm_client_get_version(m_client);
   } else {
     logger.error() << "Failed to create NetworkManager client:" << err->message;
+    g_error_free(err);
   }
 
+  m_wireguard = NM_SETTING_WIREGUARD(nm_setting_wireguard_new());
   m_cancellable = g_cancellable_new();
 }
 
@@ -49,35 +52,45 @@ LinuxNMController::~LinuxNMController() {
   MVPN_COUNT_DTOR(LinuxNMController);
   logger.debug() << "Destroying LinuxNMController";
 
-  if (m_connection) {
-    nm_remote_connection_delete_async(m_connection, nullptr,
+  if (m_remote) {
+    nm_remote_connection_delete_async(m_remote, nullptr,
         [](GObject* obj, GAsyncResult *res, gpointer data){
           Q_UNUSED(obj);
           GError *err = nullptr;
           if (!nm_remote_connection_delete_finish(NM_REMOTE_CONNECTION(data),
                                                   res, &err)) {
             logger.error() << "Connection deletion failed:" << err->message;
+            g_error_free(err);
           }
-        }, m_connection);
+        }, m_remote);
   }
 
   g_cancellable_cancel(m_cancellable);
   g_object_unref(m_cancellable);
+  g_object_unref(m_wireguard);
   g_object_unref(m_client);
 }
 
-void LinuxNMController::initializeCompleted(GObject* obj, GAsyncResult* res, void *data) {
-  LinuxNMController* controller = static_cast<LinuxNMController*>(data);
-  GError *err = nullptr;
-  GVariant *gv;
-
-  controller->m_connection =
-      nm_client_add_connection2_finish(controller->m_client, res, &gv, &err);
-  if(!controller->m_connection) {
-    logger.error() << "connection creation failed:" << err->message;
+// GAsyncCallback helper function, takes a reference to the async result
+// and queues it for consumption by the controller class.
+static void asyncResultWrapper(GAsyncResult* result, const char* name) {
+  LinuxNMController* controller =
+      static_cast<LinuxNMController*>(g_async_result_get_user_data(result));
+  GAsyncResult* reference = g_object_ref(result);
+  bool invoked = QMetaObject::invokeMethod(controller, name,
+                                           Qt::QueuedConnection,
+                                           Q_ARG(void *, reference));
+  if (!invoked) {
+    logger.error() << "Failed to invoke" << name;
+    g_object_unref(reference);
   }
 }
 
+// A macro to ensure the function signature matches a GAsyncCallback
+#define LAMBDA_ASYNC_WRAPPER(__name__) \
+    [](GObject* obj, GAsyncResult* result, gpointer data) { asyncResultWrapper(result, __name__); }
+
+// Helper function to parse an IP prefix into an NMIPAddress
 static NMIPAddress* parseAddress(const QString& addr) {
   uint prefix = -1;
   int slash = addr.indexOf('/');
@@ -109,6 +122,8 @@ void LinuxNMController::initialize(const Device* device, const Keys* keys) {
                NM_SETTING_WIREGUARD_SETTING_NAME,
                NM_SETTING_CONNECTION_INTERFACE_NAME,
                WG_INTERFACE_NAME,
+               NM_SETTING_CONNECTION_AUTOCONNECT,
+               false,
                NULL);
 
   // Address settings
@@ -129,51 +144,149 @@ void LinuxNMController::initialize(const Device* device, const Keys* keys) {
   nm_setting_ip_config_add_address(ipv6, parseAddress(device->ipv6Address()));
 
   // Wireguard connection settings.
-  NMSettingWireGuard* wg = NM_SETTING_WIREGUARD(nm_setting_wireguard_new());
-  nm_connection_add_setting(wg_connection, NM_SETTING(wg));
-  g_object_set(wg,
+  g_object_ref(m_wireguard);
+  g_object_set(m_wireguard,
                NM_SETTING_WIREGUARD_PRIVATE_KEY,
                qPrintable(keys->privateKey()),
                NM_SETTING_WIREGUARD_FWMARK,
                WG_FIREWALL_MARK,
                NULL);
+  nm_connection_add_setting(wg_connection, NM_SETTING(m_wireguard));
 
-  // Add the connection
+  // Create the connection
   logger.info() << "Creating connection";
   nm_client_add_connection2(
     m_client,
     nm_connection_to_dbus(wg_connection, NM_CONNECTION_SERIALIZE_ALL),
-    NM_SETTINGS_ADD_CONNECTION2_FLAG_IN_MEMORY,
-    nullptr,
-    false,
-    m_cancellable,
-    &LinuxNMController::initializeCompleted,
-    this
-  );
+    NM_SETTINGS_ADD_CONNECTION2_FLAG_IN_MEMORY, nullptr, false, m_cancellable,
+    LAMBDA_ASYNC_WRAPPER("initializeCompleted"), this);
+}
+
+void LinuxNMController::initializeCompleted(void* result) {
+  GError *err = nullptr;
+  GVariant *gv;
+
+  m_remote = nm_client_add_connection2_finish(m_client, G_ASYNC_RESULT(result), &gv, &err);
+  if(!m_remote) {
+    logger.error() << "connection creation failed:" << err->message;
+    g_error_free(err);
+  } else {
+    logger.debug() << "connection created:"
+                   << nm_connection_get_interface_name(NM_CONNECTION(m_remote));
+  }
+  g_object_unref(result);
+
+  emit initialized(m_remote != nullptr, false, QDateTime());
 }
 
 void LinuxNMController::activate(const HopConnection& hop, const Device* device,
                                const Keys* keys, Reason reason) {
-  Q_UNUSED(device);
-  Q_UNUSED(keys);
-  Q_UNUSED(reason);
+  NMWireGuardPeer* peer = nm_wireguard_peer_new();
 
-  logger.debug() << "LinuxNMController activated" << hop.m_server.hostname();
-  logger.debug() << "LinuxNMController DNS" << hop.m_dnsServer.toString();
+  // Store the server's public key for later.
+  m_serverPublicKey = hop.m_server.publicKey();
 
-  //m_connected = true;
-  //m_publicKey = hop.m_server.publicKey();
-  //m_delayTimer.start(DUMMY_CONNECTION_DELAY_MSEC);
+  // TODO: Support IPv6 endpoints too, or hop.m_server.hostname()?
+  uint32_t serverPort = hop.m_server.choosePort();
+  QString endpoint = QString("%1:%2").arg(hop.m_server.ipv4AddrIn(),
+                                          QString::number(serverPort));
+
+  nm_wireguard_peer_set_endpoint(peer, qPrintable(endpoint), true);
+  nm_wireguard_peer_set_persistent_keepalive(peer, WG_KEEPALIVE_PERIOD);
+  nm_wireguard_peer_set_public_key(peer, qPrintable(m_serverPublicKey), true);
+  for (const IPAddress& i : hop.m_allowedIPAddressRanges) {
+    nm_wireguard_peer_append_allowed_ip(peer, qPrintable(i.toString()), false);
+  }
+
+  // Update the wireguard peer configuration.
+  GError *err = nullptr;
+  if(!nm_wireguard_peer_is_valid(peer, true, true, &err)) {
+    logger.error() << "Invalid peer configuration:" << err->message;
+    g_error_free(err);
+  }
+  nm_setting_wireguard_set_peer(m_wireguard, peer, hop.m_hopindex);
+
+  // Update the connection settings.
+  g_object_ref(m_wireguard);
+  nm_connection_add_setting(NM_CONNECTION(m_remote), NM_SETTING(m_wireguard));
+  nm_remote_connection_commit_changes_async(
+      m_remote, false, m_cancellable,
+      LAMBDA_ASYNC_WRAPPER("peerConfigCompleted"), this);
+
+#if 0
+  if (hop.m_hopindex == 0) {
+    json.insert("serverIpv4Gateway", QJsonValue(hop.m_server.ipv4Gateway()));
+    json.insert("serverIpv6Gateway", QJsonValue(hop.m_server.ipv6Gateway()));
+    json.insert("dnsServer", QJsonValue(hop.m_dnsServer.toString()));
+  }
+#endif
+}
+
+void LinuxNMController::peerConfigCompleted(void* result) {
+  GError* err = nullptr;
+  gboolean okay = nm_remote_connection_commit_changes_finish(
+      m_remote, G_ASYNC_RESULT(result), &err);
+  g_object_unref(result);
+
+  if(!okay) {
+    logger.error() << "peer configuration failed:" << err->message;
+    g_error_free(err);
+  } else if (m_active != nullptr) {
+    logger.debug() << "device already connected";
+    emit connected(m_serverPublicKey);
+  } else {
+    NMConnection* conn = NM_CONNECTION(m_remote);
+    const char* ifname = nm_connection_get_interface_name(conn);
+    NMDevice* device = nm_client_get_device_by_iface(m_client, ifname);
+    logger.debug() << "activating connection:" << ifname;
+
+    nm_client_activate_connection_async(
+        m_client, conn, device, nullptr, m_cancellable,
+        LAMBDA_ASYNC_WRAPPER("activateCompleted"), this);
+  }
+}
+
+void LinuxNMController::activateCompleted(void *result) {
+  GError* err = nullptr;
+  m_active = nm_client_activate_connection_finish(m_client,
+                                                      G_ASYNC_RESULT(result),
+                                                      &err);
+
+  if(!m_active) {
+    logger.error() << "peer activation failed:" << err->message;
+    g_error_free(err);
+  } else {
+    emit connected(m_serverPublicKey);
+  }
+
+  g_object_unref(result);
 }
 
 void LinuxNMController::deactivate(Reason reason) {
   Q_UNUSED(reason);
+  if (m_active == nullptr) {
+    logger.warning() << "Client already disconnected";
+    emit disconnected();
+    return;
+  }
 
-  logger.debug() << "LinuxNMController deactivated";
+  Q_ASSERT(m_client);
+  nm_client_deactivate_connection_async(
+      m_client, m_active, nullptr, LAMBDA_ASYNC_WRAPPER("deactivateCompleted"),
+      this);
+}
 
-  //m_connected = false;
-  //m_publicKey.clear();
-  //m_delayTimer.start(DUMMY_CONNECTION_DELAY_MSEC);
+void LinuxNMController::deactivateCompleted(void *result) {
+  GError* err = nullptr;
+  if (!nm_client_deactivate_connection_finish(m_client, G_ASYNC_RESULT(result),
+                                             &err)) {
+    logger.error() << "Connection deactivation failed:" << err->message;
+    g_error_free(err);
+  }
+  g_object_unref(result);
+
+  m_active = nullptr; // TODO: What's the right way to refcount this?
+  emit disconnected();
 }
 
 // TODO: Implement Me!

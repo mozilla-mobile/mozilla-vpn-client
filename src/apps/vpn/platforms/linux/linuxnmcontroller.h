@@ -12,12 +12,14 @@
 struct _GAsyncResult;
 struct _GObject;
 struct _GCancellable;
+struct _NMActiveConnection;
 struct _NMCLient;
 struct _NMRemoteConnection;
 struct _NMSettingWireGuard;
 
 class LinuxNMController final : public ControllerImpl {
   Q_DISABLE_COPY_MOVE(LinuxNMController)
+  Q_OBJECT
 
  public:
   LinuxNMController();
@@ -36,16 +38,20 @@ class LinuxNMController final : public ControllerImpl {
 
   void cleanupBackendLogs() override;
 
+ private slots:
+  void initializeCompleted(void *);
+  void peerConfigCompleted(void *);
+  void activateCompleted(void *);
+  void deactivateCompleted(void *);
+
  private:
   struct _GCancellable* m_cancellable;
   struct _NMClient* m_client = nullptr;
-  struct _NMRemoteConnection* m_connection = nullptr;
-  struct _NMSettingWireGuard* m_setting = nullptr;
-
- private:
-  static void initializeCompleted(struct _GObject* obj,
-                                  struct _GAsyncResult* res,
-                                  void* user_data);
+  struct _NMSettingWireGuard* m_wireguard = nullptr;
+  struct _NMRemoteConnection* m_remote = nullptr;
+  struct _NMActiveConnection* m_active = nullptr;
+  
+  QString m_serverPublicKey;
 };
 
 #endif  // LINUXNMCONTROLLER_H
