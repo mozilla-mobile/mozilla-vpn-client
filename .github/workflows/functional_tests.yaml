@@ -169,9 +169,11 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
 
-      - name: Install dependecies
+      - name: Install dependecies         
         run: |
           npm install
+          npm i -D allure-playwright
+          npm i -D allure-commandline
 
       - uses: actions/download-artifact@v3
         with:
