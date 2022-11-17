@@ -46,15 +46,15 @@ void BenchmarkTaskTransfer::handleState(BenchmarkTask::State state) {
 
   if (state == BenchmarkTask::StateActive) {
 #if defined(MVPN_DUMMY) || defined(MVPN_ANDROID) || defined(MVPN_WASM)
+#  if QT_VERSION >= 0x060500
+#    error Check if QT added support for QDnsLookup::lookup() on Android
+#  endif
+
     createNetworkRequest();
 #else
     // Start DNS resolution
     m_dnsLookup.setNameserver(QHostAddress(MULLVAD_DEFAULT_DNS));
     m_dnsLookup.lookup();
-#endif
-
-#if QT_VERSION >= 0x060500
-#  error Check if QT added support for QDnsLookup::lookup() on Android
 #endif
 
     m_elapsedTimer.start();
