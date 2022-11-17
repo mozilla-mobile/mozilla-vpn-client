@@ -171,13 +171,13 @@ jobs:
 
       - name: Install dependecies
         run: |
-          npm ci
+          npm install
 
       - uses: actions/download-artifact@v3
         with:
           name: allure-results
           path: allure-results
-          
+
       - name: generate allure report
         run: npm run allure-report
 
