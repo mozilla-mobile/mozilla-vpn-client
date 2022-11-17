@@ -13,6 +13,7 @@
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "tasks/addon/taskaddon.h"
+#include "tasks/addonindex/taskaddonindex.h"
 #include "tasks/function/taskfunction.h"
 #include "taskscheduler.h"
 
@@ -79,6 +80,11 @@ void AddonManager::initialize() {
   // Listen for updates in the addons list
   connect(&m_addonIndex, &AddonIndex::indexUpdated, this,
           &AddonManager::updateAddonsList);
+  connect(SettingsHolder::instance(), &SettingsHolder::addonCustomServerChanged,
+          this, &AddonManager::refreshAddons);
+  connect(SettingsHolder::instance(),
+          &SettingsHolder::addonCustomServerAddressChanged, this,
+          &AddonManager::refreshAddons);
 }
 
 void AddonManager::updateIndex(const QByteArray& index,
@@ -436,4 +442,8 @@ QStringList AddonManager::addonIds() const { return m_addons.keys(); }
 // static
 QString AddonManager::mountPath(const QString& addonId) {
   return QString("/addons/%1").arg(addonId);
+}
+
+void AddonManager::refreshAddons() {
+  TaskScheduler::scheduleTask(new TaskAddonIndex());
 }
