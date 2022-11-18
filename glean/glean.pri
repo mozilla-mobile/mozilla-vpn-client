@@ -23,12 +23,15 @@ HEADERS += $$PWD/glean.h
 }
 
 PYTHON_BIN = $$system(which python3)
-isEmpty(PYTHON_BIN): PYTHON_BIN = python3
+isEmpty(PYTHON_BIN) {
+    PYTHON_BIN = python3
+}
+message(Using python: $$PYTHON_BIN)
 
 gleandefs.input = GLEAN_METRICS
 gleandefs.output = $$PWD/telemetry/gleansample.h
 gleandefs.commands = @echo Generating gleansample.h from ${QMAKE_FILE_IN} \
-    && ${PYTHON_BIN} $$PWD/../scripts/utils/generate_gleandefs.py \
+    && $$PYTHON_BIN $$PWD/../scripts/utils/generate_gleandefs.py \
         -o ${QMAKE_FILE_OUT} ${QMAKE_FILE_IN} -f cpp
 gleandefs.variable_out = HEADERS
 
