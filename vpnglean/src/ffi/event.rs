@@ -2,7 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use std::ffi::{c_char, CString};
+use std::ffi::CString;
+use std::os::raw::c_char;
 
 use ffi_support::FfiStr;
 use glean::traits::EventRecordingError;
