@@ -153,6 +153,9 @@ cd .tmp
 print Y "Generating glean samples..."
 (cd $WORKDIR && python3 scripts/utils/generate_glean.py) || die "Failed to generate glean samples"
 
+print Y "Generating Glean (vpnglean) files..."
+(cd $WORKDIR && scripts/utils/generate_vpnglean_files.sh) || die "Failed to generate Glean (vpnglean) files"
+
 printn Y "Downloading Go dependencies..."
 (cd $WORKDIR/linux/netfilter && go mod vendor)
 print G "done."

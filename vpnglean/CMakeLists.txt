@@ -62,27 +62,25 @@ add_custom_target(vpnglean_ffi
 )
 set_target_properties(vpnglean_ffi PROPERTIES FOLDER "Libs")
 
+# This options should be used if the glean_parser command needs to be run on some sort of pre-build script.
+if(NOT SKIP_GLEAN_PARSER)
+    set(GENERATE_GLEAN_CMD ${CMAKE_SOURCE_DIR}/scripts/utils/generate_vpnglean_files.sh)
+else()
+    set(GENERATE_GLEAN_CMD echo "Skipping glean_parser step.")
+endif()
+
 ## Generate metrics and pings files
-set(GLEAN_PARSER_CMD python3 ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py)
-set(GLEAN_YAML_FILES_PATH ${CMAKE_SOURCE_DIR}/glean/)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/generated)
 add_custom_target(vpnglean_telemetry
     BYPRODUCTS
-        ${CMAKE_CURRENT_BINARY_DIR}/metrics.h
-        ${CMAKE_CURRENT_BINARY_DIR}/pings.h
-        # Rust files need to stay the Rust project folder otherwise Rust doesn't find them easily
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.h
         ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.rs
         ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.rs
-    MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py
     DEPENDS
-        ${GLEAN_YAML_FILES_PATH}/pings.yaml
-        ${GLEAN_YAML_FILES_PATH}/metrics.yaml
-    ## C++
-    COMMAND ${GLEAN_PARSER_CMD} cpp ${CMAKE_CURRENT_BINARY_DIR}/pings.h ${GLEAN_YAML_FILES_PATH}/pings.yaml
-    COMMAND ${GLEAN_PARSER_CMD} cpp ${CMAKE_CURRENT_BINARY_DIR}/metrics.h ${GLEAN_YAML_FILES_PATH}/metrics.yaml
-    ## Rust
-    COMMAND ${GLEAN_PARSER_CMD} rust ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.rs ${GLEAN_YAML_FILES_PATH}/pings.yaml
-    COMMAND ${GLEAN_PARSER_CMD} rust ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.rs ${GLEAN_YAML_FILES_PATH}/metrics.yaml
+        ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py
+        ${CMAKE_SOURCE_DIR}/glean/pings.yaml
+        ${CMAKE_SOURCE_DIR}/glean/metrics.yaml
+    COMMAND ${GENERATE_GLEAN_CMD}
 )
 set_target_properties(vpnglean_telemetry PROPERTIES FOLDER "Libs")
 
@@ -109,3 +107,4 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 endif()
 
 target_include_directories(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(mozillavpn PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/generated)
