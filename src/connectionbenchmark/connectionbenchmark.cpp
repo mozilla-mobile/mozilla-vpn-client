@@ -40,20 +40,9 @@ void ConnectionBenchmark::initialize() {
 void ConnectionBenchmark::setConnectionSpeed() {
   logger.debug() << "Set connection speed";
 
-  bool uploadIsAvailable =
-      Feature::get(Feature::Feature_benchmarkUpload)->isSupported();
-
-  if (m_downloadBps >= Constants::BENCHMARK_THRESHOLD_DOWN_FAST &&
-      !uploadIsAvailable) {
+  if (m_downloadBps >= Constants::BENCHMARK_THRESHOLD_DOWN_FAST) {
     m_speed = SpeedFast;
-  } else if (m_downloadBps >= Constants::BENCHMARK_THRESHOLD_DOWN_MEDIUM &&
-             !uploadIsAvailable) {
-    m_speed = SpeedMedium;
-  } else if (m_downloadBps >= Constants::BENCHMARK_THRESHOLD_DOWN_FAST &&
-             m_uploadBps >= Constants::BENCHMARK_THRESHOLD_UP_FAST) {
-    m_speed = SpeedFast;
-  } else if (m_downloadBps >= Constants::BENCHMARK_THRESHOLD_DOWN_MEDIUM &&
-             m_uploadBps >= Constants::BENCHMARK_THRESHOLD_UP_MEDIUM) {
+  } else if (m_downloadBps >= Constants::BENCHMARK_THRESHOLD_DOWN_MEDIUM) {
     m_speed = SpeedMedium;
   } else {
     m_speed = SpeedSlow;

@@ -47,8 +47,6 @@ constexpr uint32_t BENCHMARK_MAX_DURATION_PING = 3000;
 constexpr uint32_t BENCHMARK_MAX_DURATION_TRANSFER = 15000;
 constexpr uint32_t BENCHMARK_THRESHOLD_DOWN_FAST = 25000000;    // 25 Megabit
 constexpr uint32_t BENCHMARK_THRESHOLD_DOWN_MEDIUM = 10000000;  // 10 Megabit
-constexpr uint32_t BENCHMARK_THRESHOLD_UP_FAST = 5000000;       // 5 Megabit
-constexpr uint32_t BENCHMARK_THRESHOLD_UP_MEDIUM = 2500000;     // 2.5 Megabit
 constexpr const char* BENCHMARK_DOWNLOAD_URL =
     "https://archive.mozilla.org/pub/vpn/speedtest/50m.data";
 

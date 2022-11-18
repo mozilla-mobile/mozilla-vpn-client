@@ -40,9 +40,9 @@ describe('Benchmark', function() {
 
     assert.strictEqual(
         speed,
-        (downloadBps >= 25000000 && uploadBps >= 5000000) ?
+        (downloadBps >= 25000000 && uploadBps > 0) ?
             'SpeedFast' :
-            ((downloadBps >= 10000000 && uploadBps >= 2500000) ? 'SpeedMedium' :
+            ((downloadBps >= 10000000 && uploadBps > 0) ? 'SpeedMedium' :
                                                                  'SpeedSlow'));
 
     // Exit the benchmark
@@ -142,9 +142,9 @@ describe('Benchmark', function() {
         homeScreen.CONNECTION_BENCHMARK, 'uploadBps'));
     assert.strictEqual(
         speed,
-        (downloadBps >= 25000000 && uploadBps >= 5000000) ?
+        (downloadBps >= 25000000 && uploadBps > 0) ?
             'SpeedFast' :
-            ((downloadBps >= 10000000 && uploadBps >= 2500000) ? 'SpeedMedium' :
+            ((downloadBps >= 10000000 && uploadBps > 0) ? 'SpeedMedium' :
                                                                  'SpeedSlow'));
 
     // Exit the benchmark
