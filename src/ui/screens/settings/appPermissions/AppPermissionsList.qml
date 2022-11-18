@@ -143,7 +143,7 @@ ColumnLayout {
                 showAppImage: true
                 onClicked: VPNAppPermissions.flip(appID)
                 isChecked: !appIsEnabled
-                isEnabled: vpnIsOff && VPNSettings.protectSelectedApps
+                enabled: vpnIsOff && VPNSettings.protectSelectedApps
                 Layout.minimumHeight: VPNTheme.theme.rowHeight * 1.5
             }
         }

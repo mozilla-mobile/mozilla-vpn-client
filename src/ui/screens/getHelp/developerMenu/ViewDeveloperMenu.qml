@@ -41,7 +41,7 @@ VPNViewBase {
             labelText: VPNl18n.SettingsDevUseStagingTitle
             subLabelText: VPNl18n.SettingsDevUseStagingSubtitle
             isChecked: VPNSettings.stagingServer
-            isEnabled: root.vpnIsOff
+            enabled: root.vpnIsOff
             showDivider: false
             onClicked: {
                 if (root.vpnIsOff) {

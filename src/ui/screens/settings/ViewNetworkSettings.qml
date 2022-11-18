@@ -62,7 +62,7 @@ VPNViewBase {
             //% "Access printers, streaming sticks and all other devices on your local network"
             subLabelText: qsTrId("vpn.settings.lanAccess.description")
             isChecked: (VPNSettings.localNetworkAccess)
-            isEnabled: vpnFlickable.vpnIsOff
+            enabled: vpnFlickable.vpnIsOff
             onClicked: {
                 if (vpnFlickable.vpnIsOff) {
                     VPNSettings.localNetworkAccess = !VPNSettings.localNetworkAccess

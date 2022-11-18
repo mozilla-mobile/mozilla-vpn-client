@@ -28,7 +28,6 @@ VPNViewBase {
             labelText: _startAtBootTitle
             subLabelText: VPNl18n.SettingsStartAtBootSubtitle
             isChecked: VPNSettings.startAtBoot
-            isEnabled: true
             showDivider: false
             onClicked: VPNSettings.startAtBoot = !VPNSettings.startAtBoot
             visible: VPNFeatureList.get("startOnBoot").isSupported
