@@ -74,7 +74,7 @@ VPNViewBase {
             subLabelText: qsTrId("vpn.settings.unsecuredNetworkAlert.description")
             isChecked: (VPNSettings.unsecuredNetworkAlert)
             enabled: vpnFlickable.vpnIsOff
-            showDivider: enabled
+            showDivider: !enabled
             onClicked: {
                 if (vpnFlickable.vpnIsOff) {
                     VPNSettings.unsecuredNetworkAlert = !VPNSettings.unsecuredNetworkAlert
