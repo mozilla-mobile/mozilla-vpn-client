@@ -183,7 +183,7 @@ FEATURE_SIMPLE(serverConnectionScore,      // Feature ID
                FeatureCallback_true,       // Can be flipped on
                FeatureCallback_true,       // Can be flipped off
                QStringList(),              // feature dependencies
-               FeatureCallback_true)
+               FeatureCallback_false)
 
 FEATURE_SIMPLE(shareLogs,              // Feature ID
                "Share Logs",           // Feature name
