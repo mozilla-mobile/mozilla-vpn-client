@@ -40,9 +40,9 @@ void ConnectionBenchmark::initialize() {
 void ConnectionBenchmark::setConnectionSpeed() {
   logger.debug() << "Set connection speed";
 
-  if (m_downloadBps >= Constants::BENCHMARK_THRESHOLD_DOWN_FAST) {
+  if (m_downloadBps >= Constants::BENCHMARK_THRESHOLD_SPEED_FAST) {
     m_speed = SpeedFast;
-  } else if (m_downloadBps >= Constants::BENCHMARK_THRESHOLD_DOWN_MEDIUM) {
+  } else if (m_downloadBps >= Constants::BENCHMARK_THRESHOLD_SPEED_MEDIUM) {
     m_speed = SpeedMedium;
   } else {
     m_speed = SpeedSlow;

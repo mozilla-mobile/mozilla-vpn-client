@@ -90,6 +90,7 @@ describe('Benchmark', function() {
 
     let downloadUrl = await vpn.getElementProperty(
         homeScreen.CONNECTION_BENCHMARK, 'downloadUrl');
+    await vpn.wait();
 
     // Re-Configure the benchmark to use a URL that generates an HTTP error.
     await vpn.setElementProperty(
@@ -131,7 +132,6 @@ describe('Benchmark', function() {
           homeScreen.CONNECTION_BENCHMARK, 'state');
       return state != 'StateRunning';
     });
-
     // This time we expect the benchmark to succeed.
     await vpn.wait();
     let speed =
@@ -146,7 +146,6 @@ describe('Benchmark', function() {
             'SpeedFast' :
             ((downloadBps >= 10000000 && uploadBps > 0) ? 'SpeedMedium' :
                                                                  'SpeedSlow'));
-
     // Exit the benchmark
     await vpn.waitForElementAndClick(homeScreen.CONNECTION_INFO_TOGGLE);
   });
