@@ -283,6 +283,8 @@ target_sources(unit_tests PRIVATE
     testaddonindex.h
     testadjust.cpp
     testadjust.h
+    testcheckedint.h
+    testcheckedint.cpp
     testcommandlineparser.cpp
     testcommandlineparser.h
     testcomposer.cpp
