@@ -24,21 +24,21 @@
 // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=82274
 // Also disabled for clang before version 7 (resp. Xcode clang 10.0.1): while
 // clang 5 and 6 have a working __builtin_add_overflow, it is not constexpr.
-#  if defined(__has_builtin) &&                                        \
-      (!defined(__clang_major__) ||                                    \
-       (!defined(__apple_build_version__) && __clang_major__ >= 7) ||  \
-       (defined(__apple_build_version__) &&                            \
-        MOZILLA_CHECKEDINT_COMPARABLE_VERSION(                         \
-            __clang_major__, __clang_minor__, __clang_patchlevel__) >= \
-            MOZILLA_CHECKEDINT_COMPARABLE_VERSION(10, 0, 1)))
-#    define MOZ_HAS_BUILTIN_OP_OVERFLOW (__has_builtin(__builtin_add_overflow))
-#  elif defined(__GNUC__)
+#if defined(__has_builtin) &&                                                 \
+    (!defined(__clang_major__) ||                                             \
+     (!defined(__apple_build_version__) && __clang_major__ >= 7) ||           \
+     (defined(__apple_build_version__) &&                                     \
+      MOZILLA_CHECKEDINT_COMPARABLE_VERSION(__clang_major__, __clang_minor__, \
+                                            __clang_patchlevel__) >=          \
+          MOZILLA_CHECKEDINT_COMPARABLE_VERSION(10, 0, 1)))
+#  define MOZ_HAS_BUILTIN_OP_OVERFLOW (__has_builtin(__builtin_add_overflow))
+#elif defined(__GNUC__)
 // (clang also defines __GNUC__ but it supports __has_builtin since at least
 //  v3.1 (released in 2012) so it won't get here.)
-#    define MOZ_HAS_BUILTIN_OP_OVERFLOW (__GNUC__ >= 5)
-#  else
-#    define MOZ_HAS_BUILTIN_OP_OVERFLOW (0)
-#  endif
+#  define MOZ_HAS_BUILTIN_OP_OVERFLOW (__GNUC__ >= 5)
+#else
+#  define MOZ_HAS_BUILTIN_OP_OVERFLOW (0)
+#endif
 
 #undef MOZILLA_CHECKEDINT_COMPARABLE_VERSION
 
@@ -553,7 +553,9 @@ class CheckedInt {
 
   /** @returns the actual value */
   constexpr T value() const {
-    Q_ASSERT_X(mIsValid, "invalid", "Invalid checked integer (division by zero or integer overflow)");
+    Q_ASSERT_X(
+        mIsValid, "invalid",
+        "Invalid checked integer (division by zero or integer overflow)");
     return mValue;
   }
 
