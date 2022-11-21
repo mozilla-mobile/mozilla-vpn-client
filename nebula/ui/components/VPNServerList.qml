@@ -257,6 +257,7 @@ FocusScope {
                         property bool isAvailable: locationScore >= 0
                         id: recommendedServer
 
+                        accessibleName: localizedCityName
                         onClicked: {
                             if (!isAvailable) {
                                 return;
