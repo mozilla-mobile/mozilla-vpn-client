@@ -73,7 +73,8 @@ void KeyRegenerator::stateChanged() {
     CheckedInt<int> value(static_cast<int>(diff));
     value *= 1000;
 
-    m_timer.start(value.value());
+    m_timer.start(value.isValid() ? value.value()
+                                  : std::numeric_limits<int>::max());
     return;
   }
 
@@ -86,5 +87,6 @@ void KeyRegenerator::stateChanged() {
   CheckedInt<int> value(Constants::keyRegeneratorTimeSec());
   value *= 1000;
 
-  m_timer.start(value.value());
+  m_timer.start(value.isValid() ? value.value()
+                                : std::numeric_limits<int>::max());
 }

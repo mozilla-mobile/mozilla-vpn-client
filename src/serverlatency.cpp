@@ -175,6 +175,8 @@ void ServerLatency::stateChanged() {
 }
 
 void ServerLatency::recvPing(quint16 sequence) {
+  qint64 now(QDateTime::currentMSecsSinceEpoch());
+
   for (auto i = m_pingReplyList.begin(); i != m_pingReplyList.end(); i++) {
     const ServerPingRecord& record = *i;
     if (record.sequence != sequence) {
@@ -183,10 +185,10 @@ void ServerLatency::recvPing(quint16 sequence) {
 
     ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
 
-    CheckedInt<uint> latency(QDateTime::currentMSecsSinceEpoch());
-    latency -= record.timestamp;
-
-    scm->setServerLatency(record.publicKey, latency.value());
+    qint64 latency(now - record.timestamp);
+    if (latency <= std::numeric_limits<uint>::max()) {
+      scm->setServerLatency(record.publicKey, static_cast<uint>(latency));
+    }
 
     m_pingReplyList.erase(i);
     maybeSendPings();

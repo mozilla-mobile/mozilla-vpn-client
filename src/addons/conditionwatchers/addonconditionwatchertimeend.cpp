@@ -11,21 +11,17 @@
 
 AddonConditionWatcherTimeEnd::AddonConditionWatcherTimeEnd(QObject* parent,
                                                            qint64 time)
-    : AddonConditionWatcher(parent) {
+    : AddonConditionWatcher(parent), m_time(time) {
   MVPN_COUNT_CTOR(AddonConditionWatcherTimeEnd);
 
-  qint64 currentTime = QDateTime::currentSecsSinceEpoch();
-  if (time > currentTime) {
-    m_timer.setSingleShot(true);
+  m_timer.setSingleShot(true);
+  connect(&m_timer, &QTimer::timeout, this, [this]() {
+    if (maybeStartTimer()) {
+      emit conditionChanged(false);
+    }
+  });
 
-    CheckedInt<int> value(static_cast<int>(time - currentTime));
-    value *= 1000;
-
-    m_timer.start(value.value());
-
-    connect(&m_timer, &QTimer::timeout, this,
-            [this]() { emit conditionChanged(false); });
-  }
+  maybeStartTimer();
 }
 
 AddonConditionWatcherTimeEnd::~AddonConditionWatcherTimeEnd() {
@@ -34,4 +30,19 @@ AddonConditionWatcherTimeEnd::~AddonConditionWatcherTimeEnd() {
 
 bool AddonConditionWatcherTimeEnd::conditionApplied() const {
   return m_timer.isActive();
+}
+
+bool AddonConditionWatcherTimeEnd::maybeStartTimer() {
+  qint64 currentTime = QDateTime::currentSecsSinceEpoch();
+  if (m_time <= currentTime) {
+    return true;
+  }
+
+  CheckedInt<int> value(static_cast<int>(m_time - currentTime));
+  value *= 1000;
+
+  m_timer.start(value.isValid() ? value.value()
+                                : std::numeric_limits<int>::max());
+
+  return false;
 }

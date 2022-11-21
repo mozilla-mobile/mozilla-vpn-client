@@ -21,23 +21,17 @@ AddonConditionWatcher* AddonConditionWatcherTriggerTimeSecs::maybeCreate(
 
 AddonConditionWatcherTriggerTimeSecs::AddonConditionWatcherTriggerTimeSecs(
     QObject* parent, qint64 triggerTimeSecs)
-    : AddonConditionWatcher(parent) {
+    : AddonConditionWatcher(parent), m_triggerTimeSecs(triggerTimeSecs) {
   MVPN_COUNT_CTOR(AddonConditionWatcherTriggerTimeSecs);
 
-  QDateTime now = QDateTime::currentDateTime();
-  QDateTime installation = SettingsHolder::instance()->installationTime();
+  m_timer.setSingleShot(true);
+  connect(&m_timer, &QTimer::timeout, this, [this]() {
+    if (maybeStartTimer()) {
+      emit conditionChanged(true);
+    }
+  });
 
-  // Note: triggerTimeSecs is seconds!
-  CheckedInt<int> secs =
-      static_cast<int>(triggerTimeSecs - installation.secsTo(now));
-  if (secs.value() > 0) {
-    m_timer.setSingleShot(true);
-    secs *= 1000;
-    m_timer.start(secs.value());
-
-    connect(&m_timer, &QTimer::timeout, this,
-            [this]() { emit conditionChanged(true); });
-  }
+  maybeStartTimer();
 }
 
 AddonConditionWatcherTriggerTimeSecs::~AddonConditionWatcherTriggerTimeSecs() {
@@ -46,4 +40,23 @@ AddonConditionWatcherTriggerTimeSecs::~AddonConditionWatcherTriggerTimeSecs() {
 
 bool AddonConditionWatcherTriggerTimeSecs::conditionApplied() const {
   return !m_timer.isActive();
+}
+
+bool AddonConditionWatcherTriggerTimeSecs::maybeStartTimer() {
+  QDateTime now = QDateTime::currentDateTime();
+  QDateTime installation = SettingsHolder::instance()->installationTime();
+
+  // Note: triggerTimeSecs is seconds!
+  CheckedInt<int> secs =
+      static_cast<int>(m_triggerTimeSecs - installation.secsTo(now));
+  if (secs.value() <= 0) {
+    return true;
+  }
+
+  m_timer.setSingleShot(true);
+  secs *= 1000;
+  m_timer.start(secs.isValid() ? secs.value()
+                               : std::numeric_limits<int>::max());
+
+  return false;
 }
