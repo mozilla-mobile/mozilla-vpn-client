@@ -19,6 +19,7 @@ Item {
     property alias _iconButtonAccessibleName: iconButton.accessibleName
     property var _menuOnBackClicked: () => {}
     property alias _menuIconVisibility: iconButton.visible
+    property var titleClicked: () => {}
     property Component titleComponent
     property Component rightButtonComponent
 
@@ -75,6 +76,12 @@ Item {
         Accessible.ignored: accessibleIgnored
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
+
+        MouseArea {
+            anchors.fill: parent
+            cursorShape: Qt.ArrowCursor
+            onClicked: titleClicked()
+        }
     }
 
     Loader {

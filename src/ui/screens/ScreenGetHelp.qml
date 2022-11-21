@@ -10,27 +10,9 @@ import Mozilla.VPN 1.0
 import components 0.1
 
 Item {
-    property int unlockCounter: 0
-
     Rectangle {
         anchors.fill: parent
         color: window.color
-    }
-
-    VPNMouseArea {
-        anchors.fill: menu
-        hoverEnabled: getHelpStackView.depth === 1
-        cursorShape: Qt.ArrowCursor
-        onMouseAreaClicked: function() {
-            if (unlockCounter >= 5) {
-                unlockCounter = 0
-                VPNSettings.developerUnlock = true
-            }
-            else if (!VPNSettings.developerUnlock) {
-                unlockTimeout.restart()
-                unlockCounter = unlockCounter + 1
-            }
-        }
     }
 
     ColumnLayout {
@@ -40,17 +22,30 @@ Item {
 
         VPNMenu {
             id: menu
+
+            property int unlockCounter: 0
+
             objectName: "getHelpBack"
             _menuOnBackClicked: () => VPNNavigator.requestPreviousScreen()
             _menuIconButtonSource: getHelpStackView.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
-        }
+            titleClicked: () => {
+                            if (unlockCounter >= 5) {
+                                unlockCounter = 0
+                                VPNSettings.developerUnlock = true
+                            }
+                            else if (!VPNSettings.developerUnlock) {
+                                unlockTimeout.restart()
+                                unlockCounter = unlockCounter + 1
+                            }
+                        }
 
-        Timer {
-            id: unlockTimeout
-            repeat: false
-            running: false
-            interval: 10000
-            onTriggered: unlockCounter = 0
+            Timer {
+                id: unlockTimeout
+                repeat: false
+                running: false
+                interval: 10000
+                onTriggered: menu.unlockCounter = 0
+            }
         }
 
         VPNStackView {
