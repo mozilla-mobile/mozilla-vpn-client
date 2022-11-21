@@ -64,7 +64,7 @@ set_target_properties(vpnglean_ffi PROPERTIES FOLDER "Libs")
 
 # This options should be used if the glean_parser command needs to be run on some sort of pre-build script.
 if(NOT SKIP_GLEAN_PARSER)
-    set(GENERATE_GLEAN_CMD ${CMAKE_SOURCE_DIR}/scripts/utils/generate_vpnglean_files.sh)
+    set(GENERATE_GLEAN_CMD python3 ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py)
 else()
     set(GENERATE_GLEAN_CMD echo "Skipping glean_parser step.")
 endif()

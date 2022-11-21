@@ -5,6 +5,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import sys
+import os
 from pathlib import Path
 
 import cpp
@@ -69,8 +70,47 @@ def cpp_metrics(output_fd, *args):
 
 
 if __name__ == "__main__":
-    lang = sys.argv[1]
-    file_path = sys.argv[2]
-    fn = rust_metrics if lang == "rust" else cpp_metrics
-    with open(file_path, 'w+') as f:
-        fn(f, *sys.argv[3:])
+    if len(sys.argv) == 1:
+        print("Generating Mozilla VPN Glean files.")
+
+        workspace_root = Path(os.path.dirname(os.path.realpath(__file__))).parent.parent
+
+        yaml_files_path = os.path.join(workspace_root, "glean")
+        generated_files_path = os.path.join(workspace_root, "vpnglean", "src", "generated")
+
+        try:
+            os.mkdir(generated_files_path)
+        except FileExistsError:
+            # This error can be ignored.
+            print("Glean files directory exists.")
+        except:
+            raise Exception("Error generating Glean files directory.")
+
+        # Generate C++ files
+        for [ output, input ] in [
+            [os.path.join(generated_files_path, "pings.h"), os.path.join(yaml_files_path, "pings.yaml")],
+            [os.path.join(generated_files_path, "metrics.h"), os.path.join(yaml_files_path, "pings.yaml")],
+        ]:
+            print("Generating {} from {}".format(output, input))
+            with open(output, 'w+', encoding='utf-8') as f:
+                cpp_metrics(f, input)
+
+        # Generate Rust files
+        for [ output, input ] in [
+            [os.path.join(generated_files_path, "pings.rs"), os.path.join(yaml_files_path, "pings.yaml")],
+            [os.path.join(generated_files_path, "metrics.rs"), os.path.join(yaml_files_path, "metrics.yaml")],
+        ]:
+            print("Generating {} from {}".format(output, input))
+            with open(output, 'w+', encoding='utf-8') as f:
+                rust_metrics(f, input)
+    else:
+        lang = sys.argv[1]
+        file_path = sys.argv[2]
+        glean_parser_args = sys.argv[3:]
+
+        print("Generating Glean files for '{}' on '{}' with arguments '{}'.".format(lang, file_path, glean_parser_args))
+
+        fn = rust_metrics if lang == "rust" else cpp_metrics
+        with open(file_path, 'w+', encoding='utf-8') as f:
+            print("Generating {} with args {}".format(filepath, glean_parser_args))
+            fn(f, *glean_parser_args)

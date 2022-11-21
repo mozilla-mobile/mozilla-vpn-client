@@ -35,6 +35,10 @@ target_link_libraries(unit_tests PRIVATE glean lottie nebula translations)
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     target_link_libraries(unit_tests PRIVATE vpnglean -ldl)
     add_dependencies(unit_tests vpnglean)
+
+    if (WIN32)
+        target_link_libraries(unit_tests PRIVATE ntdll)
+    endif()
 endif()
 
 # VPN Client source files
