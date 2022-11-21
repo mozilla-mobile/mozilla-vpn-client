@@ -145,7 +145,6 @@ FocusScope {
             objectName: "serverCountryViewRecommend"
             id: vpnFlickableRecommended
 
-            Accessible.name: VPNl18n.ServersViewRecommendedRecommendedRefreshLabel
             anchors.fill: parent
             flickContentHeight: serverListRecommended.implicitHeight + listOffset
 
@@ -183,6 +182,7 @@ FocusScope {
                         leftMargin: VPNTheme.theme.windowMargin * 0.5
                         rightMargin: VPNTheme.theme.windowMargin * 0.5
                     }
+                    accessibleName: VPNl18n.ServersViewRecommendedRefreshLabel
                     canGrowVertical: true
                     height: statusTitle.implicitHeight + VPNTheme.theme.vSpacingSmall
                     rowShouldBeDisabled: !(VPNController.state === VPNController.StateOff)
@@ -216,10 +216,11 @@ FocusScope {
 
                             color: VPNTheme.theme.fontColor
                             horizontalAlignment: Text.AlignLeft
-                            // TODO: Replace string arg with the actual formatted date
+                            // TODO: Replace placeholder strings and generate
+                            // values that will be set instead of `%1`
                             text: !statusComponent.rowShouldBeDisabled
-                                ? VPNl18n.ServersViewRecommendedTextStatus.arg("5m")
-                                : VPNl18n.ServersViewRecommendedTextStatusWithInfo.arg("5m")
+                                ? "Last updated %1 ago."
+                                : "Last updated %1 ago. To update this list please first disconnect from the VPN."
                             wrapMode: Text.WordWrap
                         }
 
