@@ -45,8 +45,8 @@ ColumnLayout {
 
         text: VPNl18n.FeedbackFormLeaveReviewButton
         onClicked: {
+            getHelpStackView.push("qrc:/ui/screens/getHelp/giveFeedback/ViewGiveFeedbackThankYou.qml", StackView.Immediate);
             VPN.openAppStoreReviewLink();
-            getHelpStackView.push("qrc:/ui/screens/getHelp/giveFeedback/ViewGiveFeedbackThankYou.qml");
         }
     }
 
