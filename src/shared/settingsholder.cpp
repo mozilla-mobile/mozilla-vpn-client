@@ -52,6 +52,8 @@ SettingsHolder::SettingsHolder()
           "/"
 #elif defined(UNIT_TEST)
           QStandardPaths::writableLocation(QStandardPaths::TempLocation)
+#elif defined(MVPN_FLATPAK)
+          QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
 #else
           QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)
 #endif
