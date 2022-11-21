@@ -47,7 +47,6 @@ Item {
                 id: btn
                 objectName: tabButtonId
                 height: bar.contentHeight
-                width: stack.children.length > 0 ? (bar.width / stack.children.length) : bar.width
                 onClicked: handleTabClick(btn)
 
                 background: Rectangle {
@@ -59,7 +58,7 @@ Item {
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
                         color: VPNTheme.colors.purple70
-                        opacity: btn.activeFocus ? 1 : 0
+                        opacity: btn.checked || btn.activeFocus ? 1 : 0
                         Behavior on opacity {
                             PropertyAnimation {
                                 duration: 100
@@ -81,21 +80,6 @@ Item {
                         }
                     }
                 }
-            }
-        }
-    }
-
-    Rectangle {
-        objectName: "activeTabIndicator"
-        width: (bar.visible && bar.currentItem) ? bar.currentItem.width : 0
-        height: 2
-        color: VPNTheme.colors.purple70
-        anchors.bottom: bar.bottom
-        x: (bar.visible && bar.currentItem) ? bar.currentItem.x : 0
-        visible: stack.children.length > 1
-        Behavior on x {
-            PropertyAnimation {
-                duration: 100
             }
         }
     }
