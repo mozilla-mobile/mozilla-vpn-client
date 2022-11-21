@@ -15,6 +15,7 @@
         <file>resources/checkmark-green.svg</file>
         <file>resources/chevron-right-dark.svg</file>
         <file>resources/chevron.svg</file>
+        <file>resources/clock.svg</file>
         <file>resources/close-darker.svg</file>
         <file>resources/close-dark.svg</file>
         <file>resources/close-white.svg</file>
@@ -337,10 +338,6 @@
         <file>resources/check-green70.svg</file>
         <file>resources/shield-green50.svg</file>
         <file>resources/checkmark-blue50.svg</file>
-        <file>resources/wifi-0.svg</file>
-        <file>resources/wifi-1.svg</file>
-        <file>resources/wifi-2.svg</file>
-        <file>resources/wifi-3.svg</file>
         <file>resources/navbar/home.svg</file>
         <file>resources/navbar/home-selected.svg</file>
         <file>resources/navbar/messages.svg</file>

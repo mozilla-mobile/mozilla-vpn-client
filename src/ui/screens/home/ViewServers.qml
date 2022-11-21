@@ -81,7 +81,6 @@ Item {
                     "whichHop": "singleHopServer"
                 }
                 showRecentConnections: true
-
             }
         ]
 

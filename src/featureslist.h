@@ -161,6 +161,14 @@ FEATURE_SIMPLE(notificationControl,     // Feature ID
                QStringList(),           // feature dependencies
                FeatureCallback_true)
 
+FEATURE_SIMPLE(recommendedServers,     // Feature ID
+               "Recommended servers",  // Feature name
+               "2.12",                 // released
+               FeatureCallback_true,   // Can be flipped on
+               FeatureCallback_true,   // Can be flipped off
+               QStringList(),          // feature dependencies
+               FeatureCallback_false)
+
 FEATURE_SIMPLE(serverUnavailableNotification,      // Feature ID
                "Server unavailable notification",  // Feature name
                "2.7",                              // released

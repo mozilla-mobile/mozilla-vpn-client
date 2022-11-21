@@ -7,45 +7,54 @@ import QtQuick 2.5
 import Mozilla.VPN 1.0
 
 VPNIcon {
+    property int score: VPNServerCountryModel.NoData
+
     id: latencyIndicator
 
     states: [
         // Low latency
         State {
-            when: VPNServerLatency.status === VPNServerLatency.StrongSignal
+            when: score === VPNServerCountryModel.Good
             PropertyChanges {
-                target: icon
+                target: latencyIndicator
                 source: "qrc:/nebula/resources/server-latency-strong.svg"
+                visible: true
             }
         },
-        // High latency
+        // Moderate latency
         State {
-            when: VPNServerLatency.status === VPNServerLatency.WeakSignal
+            when: (score === VPNServerCountryModel.Moderate ||
+                score === VPNServerCountryModel.Poor)
             PropertyChanges {
-                target: icon
+                target: latencyIndicator
                 source: "qrc:/nebula/resources/server-latency-weak.svg"
+                visible: true
             }
         },
         // Very high latency or server unavailable
         State {
-            when: VPNServerLatency.status === VPNServerLatency.NoSignal
+            when: score === VPNServerCountryModel.Unavailable
             PropertyChanges {
-                target: icon
+                target: latencyIndicator
                 source: "qrc:/nebula/resources/server-latency-unavailable.svg"
+                visible: true
+            }
+        },
+        // No data
+        State {
+            when: score === VPNServerCountryModel.NoData
+            PropertyChanges {
+                target: latencyIndicator
+                source: ""
+                visible: false
             }
         }
     ]
 
-    anchors {
-        right: parent.right
-        rightMargin: VPNTheme.theme.hSpacing
-        top: parent.top
-        verticalCenter: parent.verticalCenter
-    }
-    height: VPNTheme.theme.iconSizeSmall
+    height: VPNTheme.theme.iconSize * 1.5
     sourceSize {
-        height: VPNTheme.theme.iconSizeSmall
-        width: VPNTheme.theme.iconSizeSmall
+        height: VPNTheme.theme.iconSize * 1.5
+        width: VPNTheme.theme.iconSize * 1.5
     }
-    width: VPNTheme.theme.iconSizeSmall
+    width: VPNTheme.theme.iconSize * 1.5
 }

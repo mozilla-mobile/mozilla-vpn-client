@@ -120,7 +120,6 @@ ColumnLayout {
                 Keys.onUpPressed: recentConnectionsRepeater.itemAt(index - 1) ? recentConnectionsRepeater.itemAt(index - 1).forceActiveFocus() : serverSearchInput.forceActiveFocus()
 
                 onClicked: {
-                    let args = [];
                     popStack();
 
                     if (modelData.isMultiHop) {
