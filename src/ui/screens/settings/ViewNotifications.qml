@@ -53,7 +53,7 @@ VPNViewBase {
             //% "Get notified if a guest Wi-Fi portal is blocked due to VPN connection"
             subLabelText: qsTrId("vpn.settings.guestWifiAlert.description")
             isChecked: (VPNSettings.captivePortalAlert)
-            isEnabled: vpnFlickable.vpnIsOff
+            enabled: vpnFlickable.vpnIsOff
             showDivider: false
             onClicked: {
                 if (vpnFlickable.vpnIsOff) {
@@ -73,8 +73,8 @@ VPNViewBase {
             //% "Get notified if you connect to an unsecured Wi-Fi network"
             subLabelText: qsTrId("vpn.settings.unsecuredNetworkAlert.description")
             isChecked: (VPNSettings.unsecuredNetworkAlert)
-            isEnabled: vpnFlickable.vpnIsOff
-            showDivider: !isEnabled
+            enabled: vpnFlickable.vpnIsOff
+            showDivider: !enabled
             onClicked: {
                 if (vpnFlickable.vpnIsOff) {
                     VPNSettings.unsecuredNetworkAlert = !VPNSettings.unsecuredNetworkAlert
