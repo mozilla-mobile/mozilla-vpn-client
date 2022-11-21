@@ -145,6 +145,7 @@ FocusScope {
             objectName: "serverCountryViewRecommend"
             id: vpnFlickableRecommended
 
+            Accessible.name: VPNl18n.ServersViewRecommendedRecommendedRefreshLabel
             anchors.fill: parent
             flickContentHeight: serverListRecommended.implicitHeight + listOffset
 
@@ -223,7 +224,6 @@ FocusScope {
                         }
 
                         Item {
-                            Accessible.name: VPNl18n.ServersViewRecommendedTextInfo
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
 
                             height: VPNTheme.theme.iconSize * 1.5

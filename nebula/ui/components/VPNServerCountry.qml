@@ -205,7 +205,6 @@ VPNClickableRow {
                     anchors {
                         right: parent.right
                         rightMargin: VPNTheme.theme.hSpacing
-                        top: parent.top
                         verticalCenter: parent.verticalCenter
                     }
                     score: del.locationScore
