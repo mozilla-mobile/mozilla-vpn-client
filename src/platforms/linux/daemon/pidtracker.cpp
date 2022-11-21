@@ -218,8 +218,9 @@ bool ProcessGroup::moveToCgroup(const QString& name) {
     return false;
   }
 
-  for (auto pid : kthreads.keys()) {
-    fprintf(fp, "%d\n", pid);
+  for (auto iterator = kthreads.constBegin(); iterator != kthreads.constEnd();
+       ++iterator) {
+    fprintf(fp, "%d\n", iterator.key());
     fflush(fp);
   }
   fclose(fp);

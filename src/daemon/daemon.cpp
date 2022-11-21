@@ -335,8 +335,9 @@ bool Daemon::deactivate(bool emitSignals) {
   }
 
   // Cleanup routing for excluded addresses.
-  for (const QHostAddress& address : m_excludedAddrSet.keys()) {
-    wgutils()->deleteExclusionRoute(address);
+  for (auto iterator = m_excludedAddrSet.constBegin();
+       iterator != m_excludedAddrSet.constEnd(); ++iterator) {
+    wgutils()->deleteExclusionRoute(iterator.key());
   }
   m_excludedAddrSet.clear();
 
