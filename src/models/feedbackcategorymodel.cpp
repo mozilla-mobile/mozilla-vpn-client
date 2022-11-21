@@ -70,7 +70,7 @@ QHash<int, QByteArray> FeedbackCategoryModel::roleNames() const {
 }
 
 int FeedbackCategoryModel::rowCount(const QModelIndex&) const {
-  return s_feedbackCategories.count();
+  return static_cast<int>(s_feedbackCategories.count());
 }
 
 QVariant FeedbackCategoryModel::data(const QModelIndex& index, int role) const {

@@ -383,7 +383,7 @@ constexpr bool IsModValid(T aX, T aY) {
 
 template <typename T>
 struct IsModValidImpl<T, false> {
-  static constexpr bool run(T aX, T aY) { return aY >= 1; }
+  static constexpr bool run(T, T aY) { return aY >= 1; }
 };
 
 template <typename T>

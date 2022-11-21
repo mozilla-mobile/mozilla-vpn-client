@@ -4,6 +4,7 @@
 
 #include "addonconditionwatchertimestart.h"
 #include "leakdetector.h"
+#include "mfbt/checkedint.h"
 #include "settingsholder.h"
 
 #include <QDateTime>
@@ -16,7 +17,11 @@ AddonConditionWatcherTimeStart::AddonConditionWatcherTimeStart(QObject* parent,
   qint64 currentTime = QDateTime::currentSecsSinceEpoch();
   if (time > currentTime) {
     m_timer.setSingleShot(true);
-    m_timer.start((time - currentTime) * 1000);
+
+    CheckedInt<int> value(static_cast<int>(time - currentTime));
+    value *= 1000;
+
+    m_timer.start(value.value());
 
     connect(&m_timer, &QTimer::timeout, this,
             [this]() { emit conditionChanged(true); });

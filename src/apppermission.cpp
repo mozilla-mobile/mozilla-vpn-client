@@ -70,7 +70,7 @@ QHash<int, QByteArray> AppPermission::roleNames() const {
   return roles;
 }
 int AppPermission::rowCount(const QModelIndex&) const {
-  return m_applist.size();
+  return static_cast<int>(m_applist.size());
 }
 QVariant AppPermission::data(const QModelIndex& index, int role) const {
   if (!index.isValid()) {
@@ -106,7 +106,7 @@ void AppPermission::flip(const QString& appID) {
   }
   settingsHolder->setVpnDisabledApps(applist);
 
-  int index = m_applist.indexOf(AppDescription(appID));
+  int index = static_cast<int>(m_applist.indexOf(AppDescription(appID)));
   emit dataChanged(createIndex(index, 0), createIndex(index, 0));
 
   beginResetModel();
@@ -199,7 +199,8 @@ void AppPermission::protectAll() {
   logger.debug() << "Protected all";
 
   SettingsHolder::instance()->setVpnDisabledApps(QStringList());
-  emit dataChanged(createIndex(0, 0), createIndex(m_applist.size(), 0));
+  emit dataChanged(createIndex(0, 0),
+                   createIndex(static_cast<int>(m_applist.size()), 0));
 };
 
 void AppPermission::unprotectAll() {
@@ -210,7 +211,8 @@ void AppPermission::unprotectAll() {
     allAppIds.append(app.id);
   }
   SettingsHolder::instance()->setVpnDisabledApps(allAppIds);
-  emit dataChanged(createIndex(0, 0), createIndex(m_applist.size(), 0));
+  emit dataChanged(createIndex(0, 0),
+                   createIndex(static_cast<int>(m_applist.size()), 0));
 }
 
 void AppPermission::openFilePicker() {

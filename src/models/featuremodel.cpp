@@ -94,15 +94,17 @@ void FeatureModel::toggle(const QString& feature) {
       }
 
       featureToggleOff(feature, true);
-      emit dataChanged(createIndex(0, 0),
-                       createIndex(Feature::getAll().size(), 0));
+      emit dataChanged(
+          createIndex(0, 0),
+          createIndex(static_cast<int>(Feature::getAll().size()), 0));
       return;
     }
 
     // Off(+flipped-on) -> Off
     featureToggleOn(feature, false);
-    emit dataChanged(createIndex(0, 0),
-                     createIndex(Feature::getAll().size(), 0));
+    emit dataChanged(
+        createIndex(0, 0),
+        createIndex(static_cast<int>(Feature::getAll().size()), 0));
     return;
   }
 
@@ -115,14 +117,16 @@ void FeatureModel::toggle(const QString& feature) {
     }
 
     featureToggleOn(feature, true);
-    emit dataChanged(createIndex(0, 0),
-                     createIndex(Feature::getAll().size(), 0));
+    emit dataChanged(
+        createIndex(0, 0),
+        createIndex(static_cast<int>(Feature::getAll().size()), 0));
     return;
   }
 
   // On(+flipped-off) -> On
   featureToggleOff(feature, false);
-  emit dataChanged(createIndex(0, 0), createIndex(Feature::getAll().size(), 0));
+  emit dataChanged(createIndex(0, 0),
+                   createIndex(static_cast<int>(Feature::getAll().size()), 0));
   return;
 }
 
@@ -133,7 +137,7 @@ QHash<int, QByteArray> FeatureModel::roleNames() const {
 }
 
 int FeatureModel::rowCount(const QModelIndex&) const {
-  return Feature::getAll().size();
+  return static_cast<int>(Feature::getAll().size());
 }
 
 QVariant FeatureModel::data(const QModelIndex& index, int role) const {

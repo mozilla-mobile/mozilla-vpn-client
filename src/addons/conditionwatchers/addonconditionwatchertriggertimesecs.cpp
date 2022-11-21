@@ -4,6 +4,7 @@
 
 #include "addonconditionwatchertriggertimesecs.h"
 #include "leakdetector.h"
+#include "mfbt/checkedint.h"
 #include "settingsholder.h"
 
 #include <QDateTime>
@@ -27,10 +28,12 @@ AddonConditionWatcherTriggerTimeSecs::AddonConditionWatcherTriggerTimeSecs(
   QDateTime installation = SettingsHolder::instance()->installationTime();
 
   // Note: triggerTimeSecs is seconds!
-  qint64 secs = triggerTimeSecs - installation.secsTo(now);
-  if (secs > 0) {
+  CheckedInt<int> secs =
+      static_cast<int>(triggerTimeSecs - installation.secsTo(now));
+  if (secs.value() > 0) {
     m_timer.setSingleShot(true);
-    m_timer.start(secs * 1000);
+    secs *= 1000;
+    m_timer.start(secs.value());
 
     connect(&m_timer, &QTimer::timeout, this,
             [this]() { emit conditionChanged(true); });
