@@ -15,24 +15,11 @@ include(ExternalProject)
 
 LIST(FIND SENTRY_SUPPORTED_OS ${CMAKE_SYSTEM_NAME} _SUPPORTED)
 
-## _SUPPORTED Now is either -1 if the OS is not in the
-## Let's make sure 
-if( ${_SUPPORTED} GREATER -1 
-    AND ${CMAKE_BUILD_TYPE} STREQUAL "Release")
-    if(NOT SENTRY_DSN )
-        message( FATAL_ERROR "SENTRY_DSN  cannot be empty for release builds")
-    endif()
-    if(NOT SENTRY_ENVELOPE_ENDPOINT)
-        message( FATAL_ERROR "SENTRY_ENVELOPE_ENDPOINT  cannot be empty for release builds")
-    endif()
-else() 
-    # If we're not in release mode
-    # and one of them is not defined, force disable it.
-    if(NOT SENTRY_DSN OR NOT SENTRY_ENVELOPE_ENDPOINT)
-        message( "Disabling Sentry, as params are not given")
-        set( _SUPPORTED -1)
-    endif()
+if(NOT SENTRY_DSN OR NOT SENTRY_ENVELOPE_ENDPOINT)
+message( "Disabling Sentry, as params are not given")
+set( _SUPPORTED -1)
 endif()
+
 
 
 ## Remove support for android 32bit. 
@@ -43,10 +30,7 @@ elseif( CMAKE_ANDROID_ARCH STREQUAL "arm" )
     set( _SUPPORTED -1)
 endif()
 
-
-
 if( ${_SUPPORTED} GREATER -1 )
-
     message("Building sentry for ${CMAKE_SYSTEM_NAME}")
     target_compile_definitions(mozillavpn PRIVATE SENTRY_ENVELOPE_ENDPOINT="${SENTRY_ENVELOPE_ENDPOINT}")
     target_compile_definitions(mozillavpn PRIVATE SENTRY_DSN="${SENTRY_DSN}")
