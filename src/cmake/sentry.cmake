@@ -15,6 +15,26 @@ include(ExternalProject)
 
 LIST(FIND SENTRY_SUPPORTED_OS ${CMAKE_SYSTEM_NAME} _SUPPORTED)
 
+## _SUPPORTED Now is either -1 if the OS is not in the
+## Let's make sure 
+if( ${_SUPPORTED} GREATER -1 
+    AND ${CMAKE_BUILD_TYPE} STREQUAL "Release")
+    if(NOT SENTRY_DSN )
+        message( FATAL_ERROR "SENTRY_DSN  cannot be empty for release builds")
+    endif()
+    if(NOT SENTRY_ENVELOPE_ENDPOINT)
+        message( FATAL_ERROR "SENTRY_ENVELOPE_ENDPOINT  cannot be empty for release builds")
+    endif()
+else() 
+    # If we're not in release mode
+    # and one of them is not defined, force disable it.
+    if(NOT SENTRY_DSN OR NOT SENTRY_ENVELOPE_ENDPOINT)
+        message( "Disabling Sentry, as params are not given")
+        set( _SUPPORTED -1)
+    endif()
+endif()
+
+
 ## Remove support for android 32bit. 
 ## It's  currently broken. see: VPN-3332
 if( CMAKE_ANDROID_ARCH STREQUAL "x86" )
@@ -23,8 +43,13 @@ elseif( CMAKE_ANDROID_ARCH STREQUAL "arm" )
     set( _SUPPORTED -1)
 endif()
 
+
+
 if( ${_SUPPORTED} GREATER -1 )
+
     message("Building sentry for ${CMAKE_SYSTEM_NAME}")
+    target_compile_definitions(mozillavpn PRIVATE SENTRY_ENVELOPE_ENDPOINT="${SENTRY_ENVELOPE_ENDPOINT}")
+    target_compile_definitions(mozillavpn PRIVATE SENTRY_DSN="${SENTRY_DSN}")
     target_compile_definitions(mozillavpn PRIVATE SENTRY_ENABLED)
     # Sentry support is given
     target_sources(mozillavpn PRIVATE
@@ -44,7 +69,7 @@ if( ${_SUPPORTED} GREATER -1 )
         target_link_libraries(mozillavpn PUBLIC breakpad_client.a)
         # We are using breakpad as a backend - in process stackwalking is never the best option ... however!
         # this is super easy to link against and we do not need another binary shipped with the client.
-        SET(SENTRY_ARGS -DSENTRY_BACKEND=breakpad -DSENTRY_BUILD_SHARED_LIBS=false -DSENTRY_TRANSPORT=none)
+        SET(SENTRY_ARGS -DSENTRY_BACKEND=breakpad -DSENTRY_BUILD_SHARED_LIBS=false -DSENTRY_TRANSPORT=none -DSENTRY_BUILD_TESTS=off -DSENTRY_BUILD_EXAMPLES=off)
     endif()
     if(WIN32)
         # Let sentry.h know we are using a static build
