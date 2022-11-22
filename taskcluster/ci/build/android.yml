@@ -41,7 +41,7 @@ android-qt-next-armv7/debug:
             command: ./taskcluster/scripts/build/android_build_debug.sh armeabi-v7a
         release-artifacts:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
-            - mozillavpn-armv7-debug.apk
+            - mozillavpn-armeabi-v7a-debug.apk
 
 # Debug Builds:
 android-arm64/debug:
