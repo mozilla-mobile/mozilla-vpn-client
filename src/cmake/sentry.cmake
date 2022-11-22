@@ -15,6 +15,14 @@ include(ExternalProject)
 
 LIST(FIND SENTRY_SUPPORTED_OS ${CMAKE_SYSTEM_NAME} _SUPPORTED)
 
+## Remove support for android 32bit. 
+## It's  currently broken. see: VPN-3332
+if( CMAKE_ANDROID_ARCH STREQUAL "x86" )
+    set( _SUPPORTED -1)
+elseif( CMAKE_ANDROID_ARCH STREQUAL "arm" )
+    set( _SUPPORTED -1)
+endif()
+
 if( ${_SUPPORTED} GREATER -1 )
     message("Building sentry for ${CMAKE_SYSTEM_NAME}")
     target_compile_definitions(mozillavpn PRIVATE SENTRY_ENABLED)
