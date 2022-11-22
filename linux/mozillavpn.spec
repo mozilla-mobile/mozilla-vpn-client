@@ -5,7 +5,7 @@ Name:      mozillavpn
 Version:   %{_version}
 Release:   1~git%(git log -1 --format=%h)%{?dist}
 Summary:   Mozilla VPN
-License:   MPLv2.0
+License:   MPL-2.0
 URL:       https://vpn.mozilla.org
 Packager:  Owen Kirby
 Requires:  qt6-qtbase >= 6.0
