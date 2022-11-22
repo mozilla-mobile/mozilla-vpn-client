@@ -353,16 +353,30 @@ xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project "Mozill
 
 #### Building with CMake (Experimental)
 
-We also support building from sources for iOS using CMake. This is a work in progress and these
-instructions may be subject to change as we figure out what works and what doesn't.
+We also support building from sources for iOS using CMake.
 
 1. On iOS, we compile the app using
 [Xcode](https://developer.apple.com/xcode/) version 12 or higher and [Qt](https://www.qt.io/download)
 version 6.3.2.
 
+2. Ensure rust targets for iOS development are installed.
+```bash
+rustup target add x86_64-apple-ios aarch64-apple-ios
+```
+
 2. We use `qt-cmake` from the Qt installation to configure the Xcode project.
 ```bash
-/Users/example/Qt/6.3.2/ios/bin/qt-cmake . -B build -GXcode
+mkdir build-ios
+/Users/example/Qt/6.3.2/ios/bin/qt-cmake . -B build-ios -GXcode
+```
+
+However, due to limitations in cmake, you cannot switch between iOS and simulator builds
+without re-generating the Xcode project. To make it easier to develop, it's recommend
+build into a different project for simulation. This can be achieved with:
+```bash
+mkdir build-ios-sim
+/Users/example/Qt/6.3.2/ios/bin/qt-cmake . -B build-ios-sim -GXcode
+    -DCMAKE_OSX_SYSROOT="iphonesimulator"
 ```
 
 Some variables that might be useful when configuring the project:
@@ -374,9 +388,11 @@ Some variables that might be useful when configuring the project:
    team used for Xcode certificates. This defaults to `43AQ936H96` if not set.
  - `CMAKE_OSX_SYSROOT="iphonesimulator"` to build for the iOS simulator.
 
-3. Open the generated Xcode project with `open build/Mozilla\ VPN.xcodeproj`
+3. Open the generated Xcode project for iOS devices with `open build-ios/Mozilla\ VPN.xcodeproj`
+or `open build-ios-sim/Mozilla\ VPN.xcodeproj` for simulation.
 
-4. Select the `mozillavpn` target and `Any iOS Device (arm64)` as the build configuration.
+4. Select the `mozillavpn` target and `Any iOS Device (arm64)` as the build configuration
+for iOS devices, or select any of the simulation targets when building for the simulator.
 
 5. Click on the Play button to start building and signing of the Mozilla VPN app.
 
