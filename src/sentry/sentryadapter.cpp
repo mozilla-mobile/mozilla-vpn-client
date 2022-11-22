@@ -37,7 +37,8 @@ void SentryAdapter::init() {
   if (!Feature::get(Feature::Feature_sentry)->isSupported()) {
     return;
   }
-  if ( QString(Constants::SENTRY_DSN_ENDPOINT).isEmpty() || QString(Constants::SENTRY_ENVELOPE_INGESTION).isEmpty() ){
+  if (QString(Constants::SENTRY_DSN_ENDPOINT).isEmpty() ||
+      QString(Constants::SENTRY_ENVELOPE_INGESTION).isEmpty()) {
     logger.error() << "Sentry failed to init, no sentry config present";
     return;
   }
