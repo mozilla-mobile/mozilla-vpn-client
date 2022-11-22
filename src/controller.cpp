@@ -144,7 +144,7 @@ void Controller::implInitialized(bool status, bool a_connected,
   Q_ASSERT(m_state == StateInitializing);
 
   if (!status) {
-    ErrorHandler::instance()->errorHandle(ErrorHandler::ControllerError);
+    REPORTERROR(ErrorHandler::ControllerError, "controller");
     setState(StateOff);
     return;
   }
@@ -292,7 +292,7 @@ void Controller::activateNext() {
   MozillaVPN* vpn = MozillaVPN::instance();
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
   if (device == nullptr) {
-    ErrorHandler::instance()->errorHandle(ErrorHandler::AuthenticationError);
+    REPORTERROR(ErrorHandler::AuthenticationError, "controller");
     vpn->reset(false);
     return;
   }

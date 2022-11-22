@@ -34,7 +34,7 @@ void TaskCaptivePortalLookup::run() {
               return;
             }
             logger.error() << "Failed to obtain captive portal IPs" << error;
-            ErrorHandler::networkErrorHandle(error, m_errorPropagationPolicy);
+            REPORTNETWORKERROR(error, m_errorPropagationPolicy, name());
             emit completed();
           });
 

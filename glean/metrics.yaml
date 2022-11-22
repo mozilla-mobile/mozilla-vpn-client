@@ -1627,4 +1627,33 @@ sample:
           The source of the device removal information.
           Either 'TaskRemoveDevice' or 'PushMessage'.
         type: string
-# End of push messages validation metrics
+  # End of push messages validation metrics
+
+  error_alert_shown:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      A generic error alet is shown.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-3320
+    data_reviews:
+      - TODO
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+    extra_keys:
+      task:
+        description: The name of the task that has generated this error.
+        type: string
+      filename:
+        description: |
+          The filename that has triggered the error
+        type: string
+      linenumber:
+        description: |
+          The line number where the error has been triggered
+        type: quantity

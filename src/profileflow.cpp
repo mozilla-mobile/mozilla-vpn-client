@@ -26,7 +26,7 @@ void ProfileFlow::setState(State state) {
   logger.debug() << "Set state" << state;
 
   if (state == StateError) {
-    ErrorHandler::instance()->errorHandle(ErrorHandler::RemoteServiceError);
+    REPORTERROR(ErrorHandler::RemoteServiceError, "profileflow");
   }
 
   m_state = state;

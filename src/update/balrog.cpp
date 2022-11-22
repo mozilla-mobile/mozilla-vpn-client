@@ -508,9 +508,9 @@ void Balrog::propagateError(NetworkRequest* request,
   // 451 Unavailable For Legal Reasons
   if (request->statusCode() == 451) {
     logger.debug() << "Geo IP restriction detected";
-    ErrorHandler::instance()->errorHandle(ErrorHandler::GeoIpRestrictionError);
+    REPORTERROR(ErrorHandler::GeoIpRestrictionError, "balrog");
     return;
   }
 
-  ErrorHandler::networkErrorHandle(error, m_errorPropagationPolicy);
+  REPORTNETWORKERROR(error, m_errorPropagationPolicy, "balrog");
 }
