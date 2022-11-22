@@ -839,7 +839,7 @@ NetworkRequest* NetworkRequest::createForSentry(Task* parent,
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/x-sentry-envelope");
-  r->m_request.setRawHeader("dsn", Constants::SENTRY_DER);
+  r->m_request.setRawHeader("dsn", Constants::SENTRY_DSN_ENDPOINT);
   r->postRequest(envelope);
   return r;
 }

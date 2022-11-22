@@ -85,12 +85,14 @@ CONSTEXPR(uint32_t, controllerPeriodicStateRecorderMsec, 10800000, 60000, 0)
 #define PRODBETAEXPR(type, functionName, prod, beta) \
   inline type functionName() { return inProduction() ? prod : beta; }
 
-// TODO: Get a mozilla one - this is bastis project :)
-constexpr const char* SENTRY_DER =
-    "https://6a476c1b57a34773a75c60036236a01d@o1396220.ingest.sentry.io/"
-    "6719480";
-constexpr const char* SENTRY_ENVELOPE_INGESTION =
-    "https://o1396220.ingest.sentry.io/api/6719480/envelope/";
+#ifdef SENTRY_ENABLED
+    constexpr const char* SENTRY_DSN_ENDPOINT = SENTRY_DSN;
+    constexpr const char* SENTRY_ENVELOPE_INGESTION = SENTRY_ENVELOPE_ENDPOINT;
+#else 
+    constexpr const char* SENTRY_DSN_ENDPOINT = "";
+    constexpr const char* SENTRY_ENVELOPE_INGESTION = "";
+#endif
+
 
 constexpr const char* API_PRODUCTION_URL = "https://vpn.mozilla.org";
 constexpr const char* API_STAGING_URL =

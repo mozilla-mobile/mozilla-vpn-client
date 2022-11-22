@@ -37,6 +37,11 @@ void SentryAdapter::init() {
   if (!Feature::get(Feature::Feature_sentry)->isSupported()) {
     return;
   }
+  if ( QString(Constants::SENTRY_DSN_ENDPOINT).isEmpty() || QString(Constants::SENTRY_ENVELOPE_INGESTION).isEmpty() ){
+    logger.error() << "Sentry failed to init, no sentry config present";
+    return;
+  }
+
   auto vpn = MozillaVPN::instance();
   auto log = LogHandler::instance();
 
@@ -50,7 +55,7 @@ void SentryAdapter::init() {
           &SentryAdapter::onLoglineAdded);
 
   sentry_options_t* options = sentry_options_new();
-  sentry_options_set_dsn(options, Constants::SENTRY_DER);
+  sentry_options_set_dsn(options, Constants::SENTRY_DSN_ENDPOINT);
   sentry_options_set_environment(
       options, Constants::inProduction() ? "production" : "stage");
   sentry_options_set_release(
