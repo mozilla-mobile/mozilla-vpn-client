@@ -17,8 +17,6 @@ class EventMetric final {
  public:
   constexpr explicit EventMetric(int aId) : m_id(aId) {}
 
-  // Coudn't figure out how to have these declaredi n a cpp file and still have
-  // access to T.
   void record() const { glean_event_record_no_extra(m_id); }
 
   void record(T extras) const {

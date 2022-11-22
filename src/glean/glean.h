@@ -23,8 +23,8 @@ class Glean final : public QObject {
 
   static void initialize();
 
-  // Needs to be kept in sync with
-  // https://github.com/mozilla/glean/blob/c272f2d716ec35d0e3357ec4b02a09d18b4a587f/glean-core/src/error_recording.rs#L31
+  // TODO: Just use the glean_core type once
+  // https://github.com/mozilla/glean/pull/2283 lands.
   enum ErrorType {
     /// For when the value to be recorded does not match the metric-specific
     /// restrictions
