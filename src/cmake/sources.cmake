@@ -34,9 +34,9 @@ target_sources(mozillavpn PRIVATE
     addons/conditionwatchers/addonconditionwatcherjavascript.h
     addons/conditionwatchers/addonconditionwatcherlocales.cpp
     addons/conditionwatchers/addonconditionwatcherlocales.h
-    addons/conditionwatchers/addonconditionwatchertimeend.cpp
+    addons/conditionwatchers/addonconditionwatchertime.cpp
+    addons/conditionwatchers/addonconditionwatchertime.h
     addons/conditionwatchers/addonconditionwatchertimeend.h
-    addons/conditionwatchers/addonconditionwatchertimestart.cpp
     addons/conditionwatchers/addonconditionwatchertimestart.h
     addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp
     addons/conditionwatchers/addonconditionwatchertriggertimesecs.h
