@@ -30,6 +30,19 @@ android-qt-next/debug:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
             - mozillavpn-arm64-v8a-debug.apk
 
+android-qt-next-armv7/debug:
+        description: "Android Next QT Build (armv7)"
+        treeherder:
+            platform: android/armv7
+            symbol: NEXT
+        worker:
+            docker-image: {in-tree: android-qt-next-armv7}
+        run:
+            command: ./taskcluster/scripts/build/android_build_debug.sh armeabi-v7a
+        release-artifacts:
+            # APK Artifacts expects file to be in /builds/worker/artifacts/
+            - mozillavpn-armeabi-v7a-debug.apk
+
 # Debug Builds:
 android-arm64/debug:
         description: "Android Debug (arm64-v8a)"
