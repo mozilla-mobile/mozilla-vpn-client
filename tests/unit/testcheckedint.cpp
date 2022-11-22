@@ -6,6 +6,9 @@
 #include "../../src/mfbt/checkedint.h"
 #include "helper.h"
 
+// This file is mainly a copy from
+// https://searchfox.org/mozilla-central/source/mfbt/tests/TestCheckedInt.cpp
+
 namespace {
 
 #define VERIFY_IS_VALID(x) QVERIFY((x).isValid())

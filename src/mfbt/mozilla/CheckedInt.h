@@ -4,6 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+// This file is a copy from
+// https://searchfox.org/mozilla-central/source/mfbt/CheckedInt.h
+
 /* Provides checked integers, detecting integer overflow and divide-by-0. */
 
 #ifndef mozilla_CheckedInt_h
