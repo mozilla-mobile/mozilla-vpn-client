@@ -42,7 +42,7 @@ class DeviceModel final : public QAbstractListModel {
 
   void removeDeviceFromPublicKey(const QString& publicKey);
 
-  int activeDevices() const { return m_devices.count(); }
+  int activeDevices() const { return static_cast<int>(m_devices.count()); }
 
   const QList<Device>& devices() const { return m_devices; }
 

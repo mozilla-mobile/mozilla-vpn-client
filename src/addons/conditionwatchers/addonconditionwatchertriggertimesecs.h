@@ -24,7 +24,12 @@ class AddonConditionWatcherTriggerTimeSecs final
  private:
   AddonConditionWatcherTriggerTimeSecs(QObject* parent, qint64 time);
 
+  // Return true if the timer does not need to run because the condition
+  // matches already.
+  bool maybeStartTimer();
+
  private:
+  qint64 m_triggerTimeSecs = 0;
   QTimer m_timer;
 };
 

@@ -20,6 +20,12 @@ class AddonConditionWatcherTimeEnd final : public AddonConditionWatcher {
   bool conditionApplied() const override;
 
  private:
+  // Return true if the timer does not need to run because the condition
+  // matches already.
+  bool maybeStartTimer();
+
+ private:
+  qint64 m_time = 0;
   QTimer m_timer;
 };
 

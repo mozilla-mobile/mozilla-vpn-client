@@ -157,8 +157,9 @@ uint PingHelper::maximum() const {
     if (data.latency < 0) {
       continue;
     }
-    if (data.latency > maxRtt) {
-      maxRtt = data.latency;
+    if (data.latency > maxRtt &&
+        data.latency < std::numeric_limits<uint>::max()) {
+      maxRtt = static_cast<uint>(data.latency);
     }
   }
   return maxRtt;

@@ -130,7 +130,9 @@ QHash<int, QByteArray> Theme::roleNames() const {
   return roles;
 }
 
-int Theme::rowCount(const QModelIndex&) const { return m_themes.count(); }
+int Theme::rowCount(const QModelIndex&) const {
+  return static_cast<int>(m_themes.count());
+}
 
 QVariant Theme::data(const QModelIndex& index, int role) const {
   if (!index.isValid()) {

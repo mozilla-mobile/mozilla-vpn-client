@@ -5,6 +5,7 @@
 #include "serverlatency.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mfbt/checkedint.h"
 #include "models/feature.h"
 #include "mozillavpn.h"
 #include "pingsenderfactory.h"
@@ -139,7 +140,11 @@ void ServerLatency::maybeSendPings() {
     // Otherwise, the list should be sorted by transmit time. Schedule a timer
     // to cleanup anything that experiences a timeout.
     const ServerPingRecord& record = m_pingReplyList.first();
-    m_pingTimeout.start(SERVER_LATENCY_TIMEOUT_MSEC - (now - record.timestamp));
+
+    CheckedInt<int> value(SERVER_LATENCY_TIMEOUT_MSEC);
+    value -= static_cast<int>(now - record.timestamp);
+
+    m_pingTimeout.start(value.value());
   }
 }
 
@@ -170,6 +175,8 @@ void ServerLatency::stateChanged() {
 }
 
 void ServerLatency::recvPing(quint16 sequence) {
+  qint64 now(QDateTime::currentMSecsSinceEpoch());
+
   for (auto i = m_pingReplyList.begin(); i != m_pingReplyList.end(); i++) {
     const ServerPingRecord& record = *i;
     if (record.sequence != sequence) {
@@ -177,8 +184,11 @@ void ServerLatency::recvPing(quint16 sequence) {
     }
 
     ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
-    quint64 latency = QDateTime::currentMSecsSinceEpoch() - record.timestamp;
-    scm->setServerLatency(record.publicKey, latency);
+
+    qint64 latency(now - record.timestamp);
+    if (latency <= std::numeric_limits<uint>::max()) {
+      scm->setServerLatency(record.publicKey, static_cast<uint>(latency));
+    }
 
     m_pingReplyList.erase(i);
     maybeSendPings();
