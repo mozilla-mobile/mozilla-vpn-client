@@ -22,7 +22,8 @@ target_link_libraries(mozillavpn PRIVATE
     Qt6::Widgets
 )
 
-if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" 
+   AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Android" )
     target_link_libraries(mozillavpn PRIVATE
         Qt6::NetworkAuth
     )
