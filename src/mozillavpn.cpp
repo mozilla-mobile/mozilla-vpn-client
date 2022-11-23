@@ -402,7 +402,8 @@ void MozillaVPN::maybeStateMain() {
   if (!modelsInitialized()) {
     logger.warning() << "Models not initialized yet";
     SettingsHolder::instance()->clear();
-    ErrorHandler::instance()->errorHandle(ErrorHandler::RemoteServiceError);
+    REPORTERROR(ErrorHandler::RemoteServiceError, "vpn");
+
     setUserState(UserNotAuthenticated);
     setState(StateInitialize);
     return;
@@ -501,13 +502,13 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
 
   if (!m_private->m_user.fromJson(json)) {
     logger.error() << "Failed to parse the User JSON data";
-    ErrorHandler::instance()->errorHandle(ErrorHandler::RemoteServiceError);
+    REPORTERROR(ErrorHandler::RemoteServiceError, "vpn");
     return;
   }
 
   if (!m_private->m_deviceModel.fromJson(keys(), json)) {
     logger.error() << "Failed to parse the DeviceModel JSON data";
-    ErrorHandler::instance()->errorHandle(ErrorHandler::RemoteServiceError);
+    REPORTERROR(ErrorHandler::RemoteServiceError, "vpn");
     return;
   }
 
@@ -836,7 +837,7 @@ bool MozillaVPN::checkCurrentDevice() {
 void MozillaVPN::logout() {
   logger.debug() << "Logout";
 
-  ErrorHandler::instance()->setAlert(ErrorHandler::LogoutAlert);
+  ErrorHandler::instance()->requestAlert(ErrorHandler::LogoutAlert);
   setUserState(UserLoggingOut);
 
   TaskScheduler::deleteTasks();
@@ -1422,8 +1423,7 @@ void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
   setState(StateSubscriptionNeeded);
 
   if (!canceledByUser) {
-    ErrorHandler::instance()->errorHandle(
-        ErrorHandler::SubscriptionFailureError);
+    REPORTERROR(ErrorHandler::SubscriptionFailureError, "vpn");
   }
 
   TaskScheduler::scheduleTask(new TaskFunction([this]() {
@@ -1565,7 +1565,7 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
   TaskScheduler::scheduleTask(new TaskFunction([this]() {
     if (!modelsInitialized()) {
       logger.error() << "Failed to complete the key regeneration";
-      ErrorHandler::instance()->errorHandle(ErrorHandler::RemoteServiceError);
+      REPORTERROR(ErrorHandler::RemoteServiceError, "vpn");
       setUserState(UserNotAuthenticated);
       return;
     }

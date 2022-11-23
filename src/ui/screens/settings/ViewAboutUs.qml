@@ -68,7 +68,7 @@ VPNViewBase {
                 Layout.preferredHeight: VPNTheme.theme.rowHeight
                 onClicked: {
                     VPN.storeInClipboard(releaseVersion.text)
-                    VPNErrorHandler.setAlert(VPNErrorHandler.CopiedToClipboardConfirmationAlert);
+                    VPNErrorHandler.requestAlert(VPNErrorHandler.CopiedToClipboardConfirmationAlert);
                 }
 
                 RowLayout {

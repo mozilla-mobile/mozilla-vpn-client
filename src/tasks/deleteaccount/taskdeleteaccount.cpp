@@ -54,7 +54,8 @@ void TaskDeleteAccount::run() {
                 [this](QNetworkReply::NetworkError error, const QByteArray&) {
                   logger.error()
                       << "Failed to complete the authentication" << error;
-                  ErrorHandler::networkErrorHandle(error);
+                  REPORTNETWORKERROR(error, ErrorHandler::PropagateError,
+                                     name());
                   m_authenticationInAppSession->terminate();
                 });
 
@@ -68,7 +69,7 @@ void TaskDeleteAccount::run() {
 
   connect(m_authenticationInAppSession, &AuthenticationInAppSession::failed,
           this, [this](const ErrorHandler::ErrorType error) {
-            ErrorHandler::instance()->errorHandle(error);
+            REPORTERROR(error, name());
             m_authenticationInAppSession->terminate();
           });
 
@@ -85,8 +86,7 @@ void TaskDeleteAccount::run() {
               case AuthenticationInApp::StateSignUp:
                 [[fallthrough]];
               case AuthenticationInApp::StateFallbackInBrowser:
-                ErrorHandler::instance()->errorHandle(
-                    ErrorHandler::AuthenticationError);
+                REPORTERROR(ErrorHandler::AuthenticationError, name());
                 m_authenticationInAppSession->terminate();
                 break;
 
