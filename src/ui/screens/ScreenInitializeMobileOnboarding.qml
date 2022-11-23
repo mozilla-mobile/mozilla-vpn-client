@@ -10,7 +10,7 @@ import components 0.1
 
 VPNStackView {
     id: stackview
-    objectName: "initialStackView"
+    objectName: "initialMobileStackView"
     anchors.fill: parent
 
     Component.onCompleted: function() {
