@@ -22,6 +22,8 @@ class Localizer final : public QAbstractListModel {
 
   struct Language {
     QString m_code;
+    QString m_languageCode;
+    QString m_countryCode;
     QString m_name;
     QString m_localizedName;
   };
@@ -33,8 +35,6 @@ class Localizer final : public QAbstractListModel {
     CodeRole,
   };
 
-  static QString systemLanguageCode();
-
   static Localizer* instance();
 
   Localizer();
@@ -42,7 +42,11 @@ class Localizer final : public QAbstractListModel {
 
   void initialize();
 
-  bool hasLanguages() const { return m_languages.length() > 1; }
+  bool hasLanguages() const { return !m_languages.isEmpty(); }
+
+  // This returns the language code from the settings, and, if it's null, it
+  // returns the system language code.
+  QString languageCodeOrSystem() const;
 
   QStringList languages() const;
 
@@ -56,6 +60,11 @@ class Localizer final : public QAbstractListModel {
   QLocale locale() const { return m_locale; }
 
   bool isRightToLeft() const;
+
+  static QList<QPair<QString, QString>> parseBCP47Languages(
+      const QStringList& languages);
+  static QList<QPair<QString, QString>> parseIOSLanguages(
+      const QStringList& languages);
 
   // QAbstractListModel methods
 
@@ -74,7 +83,12 @@ class Localizer final : public QAbstractListModel {
   static bool languageSort(const Language& a, const Language& b,
                            Collator* collator);
 
+  QString systemLanguageCode() const;
+
+  void loadLanguagesFromI18n();
   bool loadLanguage(const QString& code);
+  QString findLanguageCode(const QString& languageCode,
+                           const QString& countryCode) const;
 
   // This method is not used. It exists just to add the installer strings into
   // the QT language files.

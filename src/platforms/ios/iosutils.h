@@ -25,6 +25,8 @@ class IOSUtils final {
 
   static bool verifySignature(const QByteArray& publicKey, const QByteArray& content,
                               const QByteArray& signature);
+
+  static QStringList systemLanguageCodes();
 };
 
 #endif  // IOSUTILS_H

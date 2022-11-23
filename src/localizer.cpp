@@ -11,6 +11,10 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 
+#ifdef MVPN_IOS
+#  include "platforms/ios/iosutils.h"
+#endif
+
 #include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
@@ -40,16 +44,73 @@ QMap<QString, StaticLanguage> s_languageMap{
 }  // namespace
 
 // static
-QString Localizer::systemLanguageCode() {
-  QStringList uiLanguages = QLocale::system().uiLanguages();
+QList<QPair<QString, QString>> Localizer::parseBCP47Languages(
+    const QStringList& languages) {
+  QList<QPair<QString, QString>> codes;
 
-  for (const QString& language : uiLanguages) {
-    if (language.count("-") < 2) {
-      return language == "C" ? "en" : language;
+  for (const QString& language : languages) {
+    QStringList parts = language.split('-');
+    if (parts.length() == 1) {
+      codes.append(QPair<QString, QString>{parts[0], QString()});
+      continue;
+    }
+
+    QString country = parts.last();
+    if (country.length() == 2) {
+      codes.append(QPair<QString, QString>{parts[0], country});
+      continue;
+    }
+
+    // Let's ignore all the other language extensions.
+    codes.append(QPair<QString, QString>{parts[0], QString()});
+  }
+
+  return codes;
+}
+
+// static
+QList<QPair<QString, QString>> Localizer::parseIOSLanguages(
+    const QStringList& languages) {
+  QList<QPair<QString, QString>> codes;
+
+  for (const QString& language : languages) {
+    // By documentation, the language code should be in the format
+    // <language>-<script>_<country>. And we don't care about the script.
+    QString countryCode;
+
+    QStringList parts = language.split('_');
+    if (parts.length() > 1) {
+      countryCode = parts[1];
+    }
+
+    codes.append(QPair<QString, QString>{parts[0].split('-')[0], countryCode});
+  }
+
+  return codes;
+}
+
+QString Localizer::systemLanguageCode() const {
+#ifdef MVPN_IOS
+  // iOS (or Qt?) is buggy and QLocale::system().uiLanguages() does not return
+  // the list of languages in the preferable order. For some languages (es-GB),
+  // en-US is always the preferable one even when it should not be. Let's use
+  // custom code here.
+  QList<QPair<QString, QString>> uiLanguages =
+      parseIOSLanguages(IOSUtils::systemLanguageCodes());
+#else
+  QList<QPair<QString, QString>> uiLanguages =
+      parseBCP47Languages(QLocale::system().uiLanguages());
+#endif
+
+  for (const QPair<QString, QString>& language : uiLanguages) {
+    QString selectedLanguage =
+        findLanguageCode(language.first, language.second);
+    if (!selectedLanguage.isEmpty()) {
+      return selectedLanguage;
     }
   }
 
-  return QLocale::system().bcp47Name();
+  return "en";
 }
 
 // static
@@ -75,6 +136,9 @@ Localizer::~Localizer() {
 }
 
 void Localizer::initialize() {
+  loadLanguagesFromI18n();
+  logger.debug() << "Supported languages:" << languages();
+
   logger.debug() << "System language codes:" << QLocale::system().uiLanguages();
 
   QString systemCode = systemLanguageCode();
@@ -103,6 +167,9 @@ void Localizer::initialize() {
   settingsChanged();
 
   QCoreApplication::installTranslator(&m_translator);
+}
+
+void Localizer::loadLanguagesFromI18n() {
   QDir dir(":/i18n");
   QStringList files = dir.entryList();
   for (const QString& file : files) {
@@ -114,16 +181,13 @@ void Localizer::initialize() {
     Q_ASSERT(parts.length() == 2);
 
     QString code = parts[0].remove(0, 11);
+    QStringList codeParts = code.split("_");
 
-    Language language{code, languageName(code), localizedLanguageName(code)};
+    Language language{code, codeParts[0],
+                      codeParts.length() > 1 ? codeParts[1] : QString(),
+                      languageName(code), localizedLanguageName(code)};
     m_languages.append(language);
   }
-
-  // Sorting languages.
-  Collator collator;
-  std::sort(m_languages.begin(), m_languages.end(),
-            std::bind(languageSort, std::placeholders::_1,
-                      std::placeholders::_2, &collator));
 }
 
 void Localizer::settingsChanged() {
@@ -159,6 +223,14 @@ bool Localizer::loadLanguage(const QString& code) {
 
   m_locale = locale;
   emit localeChanged();
+
+  // Sorting languages.
+  beginResetModel();
+  Collator collator;
+  std::sort(m_languages.begin(), m_languages.end(),
+            std::bind(languageSort, std::placeholders::_1,
+                      std::placeholders::_2, &collator));
+  endResetModel();
 
   return true;
 }
@@ -304,14 +376,18 @@ void Localizer::macOSInstallerStrings() {
   qtTrId("macosinstaller.conclusion.message3");
 }
 
-QString Localizer::localizeCurrency(double value,
-                                    const QString& currencyIso4217) {
+QString Localizer::languageCodeOrSystem() const {
   QString code = SettingsHolder::instance()->languageCode();
-  if (code.isEmpty()) {
-    code = systemLanguageCode();
+  if (!code.isEmpty()) {
+    return code;
   }
 
-  QLocale locale(code);
+  return systemLanguageCode();
+}
+
+QString Localizer::localizeCurrency(double value,
+                                    const QString& currencyIso4217) {
+  QLocale locale(languageCodeOrSystem());
 
   if (currencyIso4217.length() != 3) {
     logger.warning() << "Invalid currency iso 4217 value:" << currencyIso4217;
@@ -397,4 +473,28 @@ QString Localizer::majorLanguageCode(const QString& aCode) {
 bool Localizer::isRightToLeft() const {
   return InspectorHandler::forceRTL() ||
          m_locale.textDirection() == Qt::RightToLeft;
+}
+
+QString Localizer::findLanguageCode(const QString& languageCode,
+                                    const QString& countryCode) const {
+  QString languageCodeWithoutCountry;
+
+  for (const Language& language : m_languages) {
+    if (language.m_languageCode != languageCode) {
+      continue;
+    }
+
+    if (language.m_countryCode == countryCode) {
+      return language.m_code;
+    }
+
+    if (languageCodeWithoutCountry.isEmpty() ||
+        language.m_countryCode.isEmpty() ||
+        language.m_languageCode.compare(language.m_countryCode,
+                                        Qt::CaseInsensitive) == 0) {
+      languageCodeWithoutCountry = language.m_code;
+    }
+  }
+
+  return languageCodeWithoutCountry;
 }
