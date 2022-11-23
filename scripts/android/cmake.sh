@@ -20,7 +20,7 @@ export ARCH="arm64-v8a"
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <path to QT> [-d|--debug] [-j|--jobs <jobs>] [-a|--adjusttoken <adjust_token>]  [-A | --arch] architectures to build"
+  print N "\t$0 <path to QT> [-d|--debug] [-j|--jobs <jobs>] [-a|--adjusttoken <adjust_token>]  [-A | --arch <architectures to build>] [--sentrydsn <dsn>] [--sentryendpoint <endpoint>]"
   print N ""
   print N "By default, the android build is compiled in release mode. Use -d or --debug for a debug build."
   print N ""
@@ -53,6 +53,16 @@ while [[ $# -gt 0 ]]; do
     ;;
   -d | --debug)
     RELEASE=
+    shift
+    ;;
+  --sentrydsn)
+    SENTRY_DSN="$2"
+    shift
+    shift
+    ;;
+  --sentryendpoint)
+    SENTRY_ENVELOPE_ENDPOINT="$2"
+    shift
     shift
     ;;
   -h | --help)
