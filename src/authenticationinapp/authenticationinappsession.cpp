@@ -732,6 +732,18 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
 
       if (keys.contains("code")) {
         AuthenticationInApp* aia = AuthenticationInApp::instance();
+        // Code invalid can be received both in totp and in email verification
+        // steps. We need to check the current step in order to send the correct
+        // message.
+        if (aia->state() ==
+            AuthenticationInApp::StateVerifyingSessionTotpCode) {
+          aia->requestState(
+              AuthenticationInApp::StateVerificationSessionByTotpNeeded, this);
+          aia->requestErrorPropagation(
+              this, AuthenticationInApp::ErrorInvalidTotpCode);
+          return;
+        }
+
         aia->requestState(
             AuthenticationInApp::StateVerificationSessionByEmailNeeded, this);
         aia->requestErrorPropagation(
