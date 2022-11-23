@@ -8,6 +8,7 @@ add_definitions(-DMVPN_ADJUST)
 get_filename_component(MVPN_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src ABSOLUTE)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${CMAKE_BINARY_DIR}/vpnglean)
 include_directories(${MVPN_SOURCE_DIR})
 include_directories(${MVPN_SOURCE_DIR}/composer)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star)
@@ -18,7 +19,6 @@ include_directories(${CMAKE_SOURCE_DIR}/tests/unit)
 qt_add_executable(unit_tests EXCLUDE_FROM_ALL)
 set_target_properties(unit_tests PROPERTIES FOLDER "Tests")
 add_dependencies(build_tests unit_tests)
-
 target_link_libraries(unit_tests PRIVATE
     Qt6::Core
     Qt6::Xml
@@ -32,6 +32,14 @@ target_link_libraries(unit_tests PRIVATE
 )
 
 target_link_libraries(unit_tests PRIVATE glean lottie nebula translations)
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    target_link_libraries(unit_tests PRIVATE vpnglean -ldl)
+    add_dependencies(unit_tests vpnglean)
+
+    if (WIN32)
+        target_link_libraries(unit_tests PRIVATE ntdll)
+    endif()
+endif()
 
 # VPN Client source files
 target_sources(unit_tests PRIVATE
@@ -118,6 +126,11 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/frontend/navigator.h
     ${MVPN_SOURCE_DIR}/frontend/navigatorreloader.cpp
     ${MVPN_SOURCE_DIR}/frontend/navigatorreloader.h
+    ${MVPN_SOURCE_DIR}/glean/glean.h
+    ${MVPN_SOURCE_DIR}/glean/glean.cpp
+    ${MVPN_SOURCE_DIR}/glean/private/event.h
+    ${MVPN_SOURCE_DIR}/glean/private/ping.h
+    ${MVPN_SOURCE_DIR}/glean/metrictypes.h
     ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Chacha20.c
     ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Chacha20Poly1305_32.c
     ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Curve25519_51.c
