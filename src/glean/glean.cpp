@@ -38,6 +38,7 @@ void Glean::initialize() {
     QDir gleanDirectory(rootAppFolder());
 #if defined(UNIT_TEST)
     // Clean the directory so test state doesn't leak
+    // See https://bugzilla.mozilla.org/show_bug.cgi?id=1800901
     gleanDirectory.removeRecursively();
 #endif
 

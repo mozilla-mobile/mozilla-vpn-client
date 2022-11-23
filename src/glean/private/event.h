@@ -30,18 +30,7 @@ class EventMetric final {
         m_id, static_cast<int32_t>(errorType));
   }
 
-  QJsonArray testGetValue() const { return testGetValueInternal(QString()); }
-
-  QJsonArray testGetValue(const QString& pingName) const {
-    return testGetValueInternal(pingName);
-  }
-#endif
-
- private:
-  int m_id;
-
-#if defined(UNIT_TEST)
-  QJsonArray testGetValueInternal(const QString& pingName) const {
+  QJsonArray testGetValue(const QString& pingName = QString()) const {
     auto value = glean_event_test_get_value(m_id, pingName.toLocal8Bit());
     QJsonArray recordedEvents = QJsonDocument::fromJson(value).array();
     if (!recordedEvents.isEmpty()) {
@@ -53,6 +42,9 @@ class EventMetric final {
     return recordedEvents;
   }
 #endif
+
+ private:
+  int m_id;
 };
 
 #endif  // EVENT_METRIC_H
