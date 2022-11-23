@@ -45,6 +45,10 @@
 #include "urlopener.h"
 #include "websocket/websockethandler.h"
 
+#ifdef SENTRY_ENABLED
+#  include "sentry/sentryadapter.h"
+#endif
+
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosutils.h"
 #endif
@@ -981,6 +985,9 @@ void MozillaVPN::mainWindowLoaded() {
   m_gleanTimer.start(Constants::gleanTimeoutMsec());
   m_gleanTimer.setSingleShot(false);
 #endif
+#ifdef SENTRY_ENABLED
+  SentryAdapter::instance()->init();
+#endif
 }
 
 void MozillaVPN::telemetryPolicyCompleted() {
@@ -1585,6 +1592,13 @@ void MozillaVPN::exitForUnrecoverableError(const QString& reason) {
 
 void MozillaVPN::crashTest() {
   logger.debug() << "Crashing Application";
+
+  unsigned char* test = NULL;
+  test[1000] = 'a';  //<< here it should crash
+
+  // Interestingly this does not cause a "Signal" but a VC runtime exception
+  // and more interestingly, neither breakpad nor crashpad are catchting this on
+  // windows...
   char* text = new char[100];
   delete[] text;
   delete[] text;

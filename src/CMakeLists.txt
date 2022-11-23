@@ -36,6 +36,7 @@ target_link_libraries(mozillavpn PUBLIC ${CMAKE_DL_LIBS})
 target_link_libraries(mozillavpn PRIVATE glean lottie nebula translations)
 
 include(cmake/sources.cmake)
+include(cmake/sentry.cmake)
 
 if(${BUILD_DUMMY})
     set(MVPN_PLATFORM_NAME "dummy")

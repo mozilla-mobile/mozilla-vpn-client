@@ -107,6 +107,8 @@ vscode-cpptools/*
 *.xcodeproj/
 MozillaVPN.vcxproj*
 *.autosave
+# Visual Studio stuff.
+CMakeSettings.json
 
 # Qt Creator
 CMakeLists.txt.user
