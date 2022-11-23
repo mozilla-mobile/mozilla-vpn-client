@@ -16,6 +16,7 @@ constexpr const char* ADDON_FOLDER = "addons";
 class AddonDirectory final {
  public:
   AddonDirectory();
+  ~AddonDirectory();
 
   bool getDirectory(QDir* dir) const;
 
