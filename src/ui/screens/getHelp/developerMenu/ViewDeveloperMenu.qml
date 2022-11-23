@@ -170,6 +170,7 @@ VPNViewBase {
                settingTitle:  title
                imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+               imageRightMirror: VPNLocalizer.isRightToLeft
                onClicked: getHelpStackView.push(viewQrc)
                Layout.leftMargin: VPNTheme.theme.windowMargin / 2
                Layout.rightMargin: VPNTheme.theme.windowMargin / 2
