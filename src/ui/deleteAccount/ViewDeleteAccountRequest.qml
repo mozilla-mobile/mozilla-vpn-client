@@ -42,6 +42,7 @@ VPNInAppAuthenticationBase {
     _viewObjectName: "authDeleteAccountRequest"
     _menuButtonAccessibleName: qsTrId("vpn.main.back")
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
+    _menuButtonImageMirror: VPNLocalizer.isRightToLeft
     _menuButtonOnClick: () => {
         cancelAuthenticationFlow();
     }

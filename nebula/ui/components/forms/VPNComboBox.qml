@@ -29,6 +29,7 @@ ComboBox {
         anchors.right: combo.right
         anchors.rightMargin: VPNTheme.theme.windowMargin / 2
         source: "qrc:/nebula/resources/chevron.svg"
+        mirror: VPNLocalizer.isRightToLeft
         opacity: comboPopup.visible || combo.focus ? 1 : .7
         rotation: 90
         Behavior on opacity {

@@ -83,6 +83,7 @@ VPNViewBase {
                 settingTitle: qsTrId("vpn.settings.networking.advancedDNSSettings")
                 imageLeftSrc: "qrc:/ui/resources/settings-dark.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                imageRightMirror: VPNLocalizer.isRightToLeft
                 onClicked: stackview.push("qrc:/ui/screens/settings/dnsSettings/ViewAdvancedDNSSettings.qml")
                 visible: VPNFeatureList.get("customDNS").isSupported
             }
@@ -95,6 +96,7 @@ VPNViewBase {
                 settingTitle: _appPermissionsTitle
                 imageLeftSrc: "qrc:/ui/resources/settings/apps.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                imageRightMirror: VPNLocalizer.isRightToLeft
                 onClicked: stackview.push("qrc:/ui/screens/settings/appPermissions/ViewAppPermissions.qml")
                 visible: VPNFeatureList.get("splitTunnel").isSupported
             }

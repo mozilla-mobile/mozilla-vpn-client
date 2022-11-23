@@ -147,6 +147,7 @@ VPNViewBase {
                    }
                }
                iconSource: openUrl ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"
+               iconMirror: !openUrl && VPNLocalizer.isRightToLeft
                anchors.left: undefined
                anchors.right: undefined
            }
