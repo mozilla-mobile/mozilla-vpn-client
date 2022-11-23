@@ -51,35 +51,49 @@ describe('Benchmark', function() {
   });
 
   it('Failed benchmark on HTTP error', async () => {
+    console.log("failed", 1);
     await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
+    console.log("failed", 2);
     await vpn.activate(true);
+    console.log("failed", 3);
 
     // Re-Configure the benchmark to use a URL that generates an HTTP error.
     await vpn.setElementProperty(
         homeScreen.CONNECTION_BENCHMARK, 'downloadUrl', 's',
         'http://httpstat.us/500?sleep=2000');
+    console.log("failed", 4);
 
     // Start the connection benchmark and wait for it to finish.
     await vpn.waitForElementAndClick(homeScreen.CONNECTION_INFO_TOGGLE);
+    console.log("failed", 5);
     await vpn.waitForCondition(async () => {
+      console.log("failed", 6);
       let state = await vpn.getElementProperty(
           homeScreen.CONNECTION_BENCHMARK, 'state');
+      console.log("failed", 7);
       return state == 'StateRunning';
     });
+    console.log("failed", 8);
     await vpn.waitForCondition(async () => {
+      console.log("failed", 9);
       let state = await vpn.getElementProperty(
           homeScreen.CONNECTION_BENCHMARK, 'state');
+      console.log("failed", 10);
       return state != 'StateRunning';
     });
+    console.log("failed", 11);
 
     // We expect the benchmark to fail.
     await vpn.wait(3000);
+    console.log("failed", 12);
     assert.strictEqual(
         await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state'),
         'StateError');
+    console.log("failed", 13);
     assert.strictEqual(
         await vpn.getElementProperty('connectionInfoError', 'visible'), 'true');
 
+    console.log("failed", 14);
     // Exit the benchmark
     await vpn.waitForElementAndClick(homeScreen.CONNECTION_INFO_TOGGLE);
   });
