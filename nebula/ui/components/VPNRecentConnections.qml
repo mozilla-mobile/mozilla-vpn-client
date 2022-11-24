@@ -123,10 +123,10 @@ ColumnLayout {
                     popStack();
 
                     if (modelData.isMultiHop) {
-                        return VPNController.changeServer(modelData.connection[1].countryCode, modelData.connection[1].serverCityName, modelData.connection[0].countryCode, modelData.connection[0].serverCityName)
+                        return VPNCurrentServer.changeServer(modelData.connection[1].countryCode, modelData.connection[1].serverCityName, modelData.connection[0].countryCode, modelData.connection[0].serverCityName)
                     }
 
-                    return VPNController.changeServer(modelData.connection[0].countryCode, modelData.connection[0].serverCityName)
+                    return VPNCurrentServer.changeServer(modelData.connection[0].countryCode, modelData.connection[0].serverCityName)
 
                 }
 

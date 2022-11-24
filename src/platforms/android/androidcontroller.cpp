@@ -161,7 +161,8 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
 
   // Find a Server as Fallback in the Same Location in case
   // the original one becomes unstable / unavailable
-  const QList<Server> serverList = MozillaVPN::instance()->exitServers();
+  const QList<Server> serverList =
+      MozillaVPN::instance()->currentServer()->exitServers();
   Server* fallbackServer = nullptr;
   foreach (auto item, serverList) {
     if (item.publicKey() != hop.m_server.publicKey()) {

@@ -4,6 +4,7 @@
 
 #include "servercountrymodel.h"
 #include "collator.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
@@ -243,27 +244,6 @@ int ServerCountryModel::cityConnectionScore(const ServerCity& city) const {
   return score;
 }
 
-bool ServerCountryModel::pickIfExists(const QString& countryCode,
-                                      const QString& cityCode,
-                                      ServerData& data) const {
-  logger.debug() << "Checking if a server exists"
-                 << logger.sensitive(countryCode) << logger.sensitive(cityCode);
-
-  for (const ServerCountry& country : m_countries) {
-    if (country.code() == countryCode) {
-      for (const ServerCity& city : country.cities()) {
-        if (city.code() == cityCode) {
-          data.update(country.code(), city.name());
-          return true;
-        }
-      }
-      break;
-    }
-  }
-
-  return false;
-}
-
 QStringList ServerCountryModel::pickRandom() {
   logger.debug() << "Choosing a random server";
 
@@ -284,48 +264,14 @@ QStringList ServerCountryModel::pickRandom() {
   return serverTuple;
 }
 
-void ServerCountryModel::pickRandom(ServerData& data) const {
-  logger.debug() << "Choosing a random server";
-
-  quint32 countryId =
-      QRandomGenerator::global()->generate() % m_countries.length();
-  const ServerCountry& country = m_countries[countryId];
-
-  quint32 cityId =
-      QRandomGenerator::global()->generate() % country.cities().length();
-  const ServerCity& city = country.cities().at(cityId);
-
-  data.update(country.code(), city.name());
-}
-
-bool ServerCountryModel::pickByIPv4Address(const QString& ipv4Address,
-                                           ServerData& data) const {
-  logger.debug() << "Choosing a server with addres:"
-                 << logger.sensitive(ipv4Address);
-
-  for (const ServerCountry& country : m_countries) {
-    for (const ServerCity& city : country.cities()) {
-      for (const QString& pubkey : city.servers()) {
-        const Server server = m_servers.value(pubkey);
-        if (server.ipv4AddrIn() == ipv4Address) {
-          data.update(country.code(), city.name());
-          return true;
-        }
-      }
-    }
-  }
-
-  return false;
-}
-
-bool ServerCountryModel::exists(ServerData& data) const {
+bool ServerCountryModel::exists(const QString& countryCode,
+                                const QString& cityName) const {
   logger.debug() << "Check if the server is still valid.";
-  Q_ASSERT(data.initialized());
 
   for (const ServerCountry& country : m_countries) {
-    if (country.code() == data.exitCountryCode()) {
+    if (country.code() == countryCode) {
       for (const ServerCity& city : country.cities()) {
-        if (data.exitCityName() == city.name()) {
+        if (cityName == city.name()) {
           return true;
         }
       }
@@ -337,12 +283,13 @@ bool ServerCountryModel::exists(ServerData& data) const {
   return false;
 }
 
-const QList<Server> ServerCountryModel::servers(const ServerData& data) const {
+const QList<Server> ServerCountryModel::servers(const QString& countryCode,
+                                                const QString& cityName) const {
   QList<Server> results;
 
   for (const ServerCountry& country : m_countries) {
-    if (country.code() == data.exitCountryCode()) {
-      for (const QString& pubkey : country.servers(data)) {
+    if (country.code() == countryCode) {
+      for (const QString& pubkey : country.serversFromCityName(cityName)) {
         if (m_servers.contains(pubkey)) {
           results.append(m_servers.value(pubkey));
         }
@@ -388,16 +335,15 @@ void ServerCountryModel::setServerLatency(const QString& publicKey,
   }
 }
 
-void ServerCountryModel::setServerCooldown(const QString& publicKey,
-                                           unsigned int duration) {
+void ServerCountryModel::setServerCooldown(const QString& publicKey) {
   if (m_servers.contains(publicKey)) {
-    m_servers[publicKey].setCooldownTimeout(duration);
+    m_servers[publicKey].setCooldownTimeout(
+        Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
   }
 }
 
 void ServerCountryModel::setCooldownForAllServersInACity(
-    const QString& countryCode, const QString& cityCode,
-    unsigned int duration) {
+    const QString& countryCode, const QString& cityCode) {
   logger.debug() << "Set cooldown for all servers for: "
                  << logger.sensitive(countryCode) << logger.sensitive(cityCode);
 
@@ -406,7 +352,7 @@ void ServerCountryModel::setCooldownForAllServersInACity(
       for (const ServerCity& city : country.cities()) {
         if (city.code() == cityCode) {
           for (const QString& pubkey : city.servers()) {
-            setServerCooldown(pubkey, duration);
+            setServerCooldown(pubkey);
           }
           break;
         }
