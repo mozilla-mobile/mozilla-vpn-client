@@ -2,10 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-add_definitions(-DUNIT_TEST)
-add_definitions(-DMVPN_DEBUG)
-add_definitions(-DMVPN_DUMMY)
-
 get_filename_component(MVPN_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src ABSOLUTE)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -29,8 +25,11 @@ target_link_libraries(auth_tests PRIVATE
     Qt6::Qml
     Qt6::Quick
 )
-
 target_link_libraries(auth_tests PRIVATE glean translations)
+
+target_compile_definitions(auth_tests PRIVATE UNIT_TEST)
+target_compile_definitions(auth_tests PRIVATE MVPN_DEBUG)
+target_compile_definitions(auth_tests PRIVATE MVPN_DUMMY)
 
 # VPN Client source files
 target_sources(auth_tests PRIVATE

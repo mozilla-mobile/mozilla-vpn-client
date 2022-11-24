@@ -16,7 +16,7 @@ target_sources(lottie_qmltest PRIVATE
     qml.qrc
 )
 
-add_definitions(-DQUICK_TEST_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
+target_compile_definitions(lottie_qmltest PRIVATE QUICK_TEST_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     list(APPEND QML_TEST_ARGS -platform offscreen)

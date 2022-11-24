@@ -30,4 +30,4 @@ target_sources(mozillavpn PRIVATE
 target_link_libraries(mozillavpn PRIVATE ${GENERATED_DIR}/${LIBNAME})
 target_link_libraries(mozillavpn PUBLIC ${CMAKE_DL_LIBS})
 
-add_definitions(-DMVPN_SIGNATURE)
+target_compile_definitions(mozillavpn PRIVATE MVPN_SIGNATURE)

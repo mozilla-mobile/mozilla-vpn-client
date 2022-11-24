@@ -26,9 +26,7 @@ include(cmake/sentry.cmake)
 
 target_link_libraries(mozillavpn PRIVATE mozillavpn-sources glean lottie nebula translations)
 
-if(${BUILD_DUMMY})
-    set(MVPN_PLATFORM_NAME "dummy")
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     set(MVPN_PLATFORM_NAME "linux")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     set(MVPN_PLATFORM_NAME "windows")
@@ -42,8 +40,8 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     set(MVPN_PLATFORM_NAME "wasm")
 endif()
 
-add_compile_definitions("$<$<CONFIG:Debug>:MVPN_DEBUG>")
-add_compile_definitions("MVPN_$<UPPER_CASE:${MVPN_PLATFORM_NAME}>")
+target_compile_definitions(mozillavpn PRIVATE "$<$<CONFIG:Debug>:MVPN_DEBUG>")
+target_compile_definitions(mozillavpn PRIVATE "MVPN_$<UPPER_CASE:${MVPN_PLATFORM_NAME}>")
 include(cmake/${MVPN_PLATFORM_NAME}.cmake)
 
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")

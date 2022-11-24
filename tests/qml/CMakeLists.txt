@@ -2,10 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-add_definitions(-DQUICK_TEST_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
-add_definitions(-DUNIT_TEST)
-add_definitions(-DMVPN_DUMMY)
-
 get_filename_component(MVPN_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src ABSOLUTE)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
@@ -28,6 +24,10 @@ target_link_libraries(qml_tests PRIVATE
 )
 
 target_link_libraries(qml_tests PRIVATE glean lottie nebula translations)
+
+target_compile_definitions(qml_tests PRIVATE QUICK_TEST_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
+target_compile_definitions(qml_tests PRIVATE UNIT_TEST)
+target_compile_definitions(qml_tests PRIVATE MVPN_DUMMY)
 
 # VPN Client source files
 target_sources(qml_tests PRIVATE
