@@ -40,6 +40,7 @@ void ConnectionBenchmark::initialize() {
 void ConnectionBenchmark::setConnectionSpeed() {
   logger.debug() << "Set connection speed";
 
+  // TODO: Take uploadBps for calculating speed into account
   if (m_downloadBps >= Constants::BENCHMARK_THRESHOLD_SPEED_FAST) {
     m_speed = SpeedFast;
   } else if (m_downloadBps >= Constants::BENCHMARK_THRESHOLD_SPEED_MEDIUM) {
