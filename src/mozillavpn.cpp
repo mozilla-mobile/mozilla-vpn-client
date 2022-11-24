@@ -434,16 +434,6 @@ void MozillaVPN::maybeStateMain() {
 #endif
 }
 
-void MozillaVPN::setEntryServerPublicKey(const QString& publicKey) {
-  logger.debug() << "Set entry-server public key:" << logger.keys(publicKey);
-  m_entryServerPublicKey = publicKey;
-}
-
-void MozillaVPN::setExitServerPublicKey(const QString& publicKey) {
-  logger.debug() << "Set exit-server public key:" << logger.keys(publicKey);
-  m_exitServerPublicKey = publicKey;
-}
-
 void MozillaVPN::getStarted() {
   logger.debug() << "Get started";
   authenticate();
@@ -897,45 +887,6 @@ void MozillaVPN::reset(bool forceInitialState) {
   if (forceInitialState) {
     setState(StateInitialize);
   }
-}
-
-void MozillaVPN::setServerCooldown(const QString& publicKey) {
-  m_private->m_serverCountryModel.setServerCooldown(
-      publicKey, Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
-}
-
-void MozillaVPN::setCooldownForAllServersInACity(const QString& countryCode,
-                                                 const QString& cityCode) {
-  m_private->m_serverCountryModel.setCooldownForAllServersInACity(
-      countryCode, cityCode, Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
-}
-
-QList<Server> MozillaVPN::filterServerList(const QList<Server>& servers) const {
-  QList<Server> results;
-  qint64 now = QDateTime::currentSecsSinceEpoch();
-
-  for (const Server& server : servers) {
-    if (server.cooldownTimeout() <= now) {
-      results.append(server);
-    }
-  }
-
-  return results;
-}
-
-const QList<Server> MozillaVPN::exitServers() const {
-  return filterServerList(m_private->m_serverCountryModel.servers(
-      m_private->m_serverData.exitCountryCode(),
-      m_private->m_serverData.exitCityName()));
-}
-
-const QList<Server> MozillaVPN::entryServers() const {
-  if (!m_private->m_serverData.multihop()) {
-    return exitServers();
-  }
-  return filterServerList(m_private->m_serverCountryModel.servers(
-      m_private->m_serverData.entryCountryCode(),
-      m_private->m_serverData.entryCityName()));
 }
 
 void MozillaVPN::postAuthenticationCompleted() {

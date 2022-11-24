@@ -203,14 +203,15 @@ void Controller::activateInternal(bool forcePort53) {
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
-  Server exitServer = Server::weightChooser(vpn->exitServers());
+  Server exitServer =
+      Server::weightChooser(vpn->currentServer()->exitServers());
   if (!exitServer.initialized()) {
     logger.error() << "Empty exit server list in state" << m_state;
     serverUnavailable();
     return;
   }
 
-  vpn->setExitServerPublicKey(exitServer.publicKey());
+  vpn->currentServer()->setExitServerPublicKey(exitServer.publicKey());
 
   // Prepare the exit server's connection data.
   HopConnection exitHop;
@@ -240,14 +241,14 @@ void Controller::activateInternal(bool forcePort53) {
       exitHop.m_server.forcePort(53);
     }
     // For single-hop, they are the same
-    vpn->setEntryServerPublicKey(exitServer.publicKey());
+    vpn->currentServer()->setEntryServerPublicKey(exitServer.publicKey());
   }
   // For controllers that support multiple hops, create a queue of connections.
   // The entry server should start first, followed by the exit server.
   else if (m_impl->multihopSupported()) {
     HopConnection hop;
-    hop.m_server = Server::weightChooser(vpn->entryServers());
-    vpn->setEntryServerPublicKey(hop.m_server.publicKey());
+    hop.m_server = Server::weightChooser(vpn->currentServer()->entryServers());
+    vpn->currentServer()->setEntryServerPublicKey(hop.m_server.publicKey());
     if (!hop.m_server.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
       serverUnavailable();
@@ -268,8 +269,9 @@ void Controller::activateInternal(bool forcePort53) {
   // Otherwise, we can approximate multihop support by redirecting the
   // connection to the exit server via the multihop port.
   else {
-    Server entryServer = Server::weightChooser(vpn->entryServers());
-    vpn->setEntryServerPublicKey(entryServer.publicKey());
+    Server entryServer =
+        Server::weightChooser(vpn->currentServer()->entryServers());
+    vpn->currentServer()->setEntryServerPublicKey(entryServer.publicKey());
     if (!entryServer.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
       serverUnavailable();
@@ -320,7 +322,7 @@ bool Controller::silentSwitchServers() {
   MozillaVPN* vpn = MozillaVPN::instance();
 
   // Set a cooldown timer on the current server.
-  QList<Server> servers = vpn->exitServers();
+  QList<Server> servers = vpn->currentServer()->exitServers();
   Q_ASSERT(!servers.isEmpty());
 
   if (servers.length() <= 1) {
@@ -328,7 +330,8 @@ bool Controller::silentSwitchServers() {
         << "Cannot silent switch servers because there is only one available";
     return false;
   }
-  vpn->setServerCooldown(vpn->exitServerPublicKey());
+  vpn->serverCountryModel()->setServerCooldown(
+      vpn->currentServer()->exitServerPublicKey());
 
   // Activate the first connection to kick off the server switch.
   activateInternal();
@@ -364,7 +367,7 @@ void Controller::connected(const QString& pubkey) {
   if (m_activationQueue.isEmpty()) {
     MozillaVPN* vpn = MozillaVPN::instance();
     Q_ASSERT(vpn);
-    if (vpn->exitServerPublicKey() != pubkey) {
+    if (vpn->currentServer()->exitServerPublicKey() != pubkey) {
       logger.warning() << "Unexpected handshake: no pending connections.";
       return;
     }
@@ -407,7 +410,7 @@ void Controller::handshakeTimeout() {
 
   // Block the offending server and try again.
   HopConnection& hop = m_activationQueue.first();
-  vpn->setServerCooldown(hop.m_server.publicKey());
+  vpn->serverCountryModel()->setServerCooldown(hop.m_server.publicKey());
 
   emit handshakeFailed(hop.m_server.publicKey());
 
@@ -433,16 +436,6 @@ void Controller::handshakeTimeout() {
   // Otherwise, the give up and report the location as unavailable.
   logger.error() << "Connection retries exhausted, giving up";
   serverUnavailable();
-}
-
-void Controller::setCooldownForAllServersInACity(const QString& countryCode,
-                                                 const QString& cityCode) {
-  logger.debug() << "Set cooldown for all servers in a city";
-  Q_ASSERT(!Constants::inProduction());
-
-  MozillaVPN* vpn = MozillaVPN::instance();
-
-  vpn->setCooldownForAllServersInACity(countryCode, cityCode);
 }
 
 void Controller::disconnected() {

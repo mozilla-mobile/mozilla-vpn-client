@@ -113,8 +113,15 @@ void NotificationHandler::showNotification() {
           // Dont show notification if it's turned off.
           return;
         }
-        if ((m_switchingLocalizedServerCountry == localizedCountryName) &&
-            (m_switchingLocalizedServerCity == localizedCityName)) {
+
+        QString localizedPreviousExitCountryName =
+            vpn->serverCountryModel()->localizedCountryName(
+                vpn->currentServer()->previousExitCountryCode());
+        QString localizedPreviousExitCityName =
+            vpn->currentServer()->localizedPreviousExitCityName();
+
+        if ((localizedPreviousExitCountryName == localizedCountryName) &&
+            (localizedPreviousExitCityName == localizedCityName)) {
           // Don't show notifications unless the exit server changed, see:
           // https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1719
           return;
@@ -126,8 +133,8 @@ void NotificationHandler::showNotification() {
         //: Shown as message body in a notification. %1 and %3 are countries, %2
         //: and %4 are cities.
         message = qtTrId("vpn.systray.statusSwtich.message")
-                      .arg(m_switchingLocalizedServerCountry,
-                           m_switchingLocalizedServerCity, localizedCountryName,
+                      .arg(localizedPreviousExitCountryName,
+                           localizedPreviousExitCityName, localizedCountryName,
                            localizedCityName);
       } else {
         if (!SettingsHolder::instance()->connectionChangeNotification()) {
@@ -164,10 +171,7 @@ void NotificationHandler::showNotification() {
 
     case Controller::StateSwitching:
       m_connected = true;
-
       m_switching = true;
-      m_switchingLocalizedServerCountry = localizedCountryName;
-      m_switchingLocalizedServerCity = localizedCityName;
       break;
 
     default:

@@ -6,6 +6,7 @@
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
 #include "servercountrymodel.h"
 #include "serveri18n.h"
 #include "settingsholder.h"
@@ -20,7 +21,21 @@ constexpr const char* ENTER_CITY_NAME = "enter_city_name";
 
 namespace {
 Logger logger(LOG_MODEL, "ServerData");
+
+QList<Server> filterServerList(const QList<Server>& servers) {
+  QList<Server> results;
+  qint64 now = QDateTime::currentSecsSinceEpoch();
+
+  for (const Server& server : servers) {
+    if (server.cooldownTimeout() <= now) {
+      results.append(server);
+    }
+  }
+
+  return results;
 }
+
+}  // namespace
 
 ServerData::ServerData() { MVPN_COUNT_CTOR(ServerData); }
 
@@ -180,4 +195,28 @@ void ServerData::forget() {
   m_entryCityName.clear();
   m_previousExitCountryCode.clear();
   m_previousExitCityName.clear();
+}
+
+const QList<Server> ServerData::exitServers() const {
+  return filterServerList(MozillaVPN::instance()->serverCountryModel()->servers(
+      m_exitCountryCode, m_exitCityName));
+}
+
+const QList<Server> ServerData::entryServers() const {
+  if (!multihop()) {
+    return exitServers();
+  }
+
+  return filterServerList(MozillaVPN::instance()->serverCountryModel()->servers(
+      m_entryCountryCode, m_entryCityName));
+}
+
+void ServerData::setEntryServerPublicKey(const QString& publicKey) {
+  logger.debug() << "Set entry-server public key:" << logger.keys(publicKey);
+  m_entryServerPublicKey = publicKey;
+}
+
+void ServerData::setExitServerPublicKey(const QString& publicKey) {
+  logger.debug() << "Set exit-server public key:" << logger.keys(publicKey);
+  m_exitServerPublicKey = publicKey;
 }

@@ -4,6 +4,7 @@
 
 #include "servercountrymodel.h"
 #include "collator.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
@@ -334,16 +335,15 @@ void ServerCountryModel::setServerLatency(const QString& publicKey,
   }
 }
 
-void ServerCountryModel::setServerCooldown(const QString& publicKey,
-                                           unsigned int duration) {
+void ServerCountryModel::setServerCooldown(const QString& publicKey) {
   if (m_servers.contains(publicKey)) {
-    m_servers[publicKey].setCooldownTimeout(duration);
+    m_servers[publicKey].setCooldownTimeout(
+        Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
   }
 }
 
 void ServerCountryModel::setCooldownForAllServersInACity(
-    const QString& countryCode, const QString& cityCode,
-    unsigned int duration) {
+    const QString& countryCode, const QString& cityCode) {
   logger.debug() << "Set cooldown for all servers for: "
                  << logger.sensitive(countryCode) << logger.sensitive(cityCode);
 
@@ -352,7 +352,7 @@ void ServerCountryModel::setCooldownForAllServersInACity(
       for (const ServerCity& city : country.cities()) {
         if (city.code() == cityCode) {
           for (const QString& pubkey : city.servers()) {
-            setServerCooldown(pubkey, duration);
+            setServerCooldown(pubkey);
           }
           break;
         }

@@ -72,9 +72,3 @@ void Controller::captivePortalPresent() {}
 void Controller::captivePortalGone() {}
 
 void Controller::handshakeTimeout() {}
-
-void Controller::setCooldownForAllServersInACity(const QString& countryCode,
-                                                 const QString& cityCode) {
-  Q_UNUSED(countryCode);
-  Q_UNUSED(cityCode);
-}

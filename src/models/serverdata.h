@@ -48,6 +48,9 @@ class ServerData final : public QObject {
                                 const QString& entryCityName = QString());
   bool hasServerData() const { return !m_exitCountryCode.isEmpty(); }
 
+  const QList<Server> exitServers() const;
+  const QList<Server> entryServers() const;
+
   const QString& exitCountryCode() const { return m_exitCountryCode; }
   const QString& exitCityName() const { return m_exitCityName; }
   QString localizedCityName() const;
@@ -76,6 +79,12 @@ class ServerData final : public QObject {
 
   void retranslate() { emit changed(); }
 
+  void setEntryServerPublicKey(const QString& publicKey);
+  void setExitServerPublicKey(const QString& publicKey);
+
+  const QString& exitServerPublicKey() const { return m_exitServerPublicKey; }
+  const QString& entryServerPublicKey() const { return m_entryServerPublicKey; }
+
  signals:
   void changed();
 
@@ -93,6 +102,9 @@ class ServerData final : public QObject {
 
   QString m_previousExitCountryCode;
   QString m_previousExitCityName;
+
+  QString m_exitServerPublicKey;
+  QString m_entryServerPublicKey;
 };
 
 #endif  // SERVERDATA_H

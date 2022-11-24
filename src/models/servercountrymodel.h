@@ -60,10 +60,9 @@ class ServerCountryModel final : public QAbstractListModel {
 
   void retranslate();
   void setServerLatency(const QString& publicKey, unsigned int msec);
-  void setServerCooldown(const QString& publicKey, unsigned int duration);
+  void setServerCooldown(const QString& publicKey);
   void setCooldownForAllServersInACity(const QString& countryCode,
-                                       const QString& cityCode,
-                                       unsigned int duration);
+                                       const QString& cityCode);
 
   Q_INVOKABLE int cityConnectionScore(const QString& countryCode,
                                       const QString& cityCode) const;
