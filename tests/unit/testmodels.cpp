@@ -1322,16 +1322,82 @@ void TestModels::serverDataBasic() {
   QVERIFY(sd.multihop());
   QCOMPARE(sd.entryCountryCode(), "entry Country Code");
   QCOMPARE(sd.entryCityName(), "entry City");
+}
 
-  sd.forget();
-  QVERIFY(sd.fromString("Eureka, CA, us -> McMurdo Station, aq"));
-  QVERIFY(sd.initialized());
-  QCOMPARE(sd.exitCountryCode(), "aq");
-  QCOMPARE(sd.exitCityName(), "McMurdo Station");
-  QVERIFY(sd.multihop());
-  QCOMPARE(sd.entryCountryCode(), "us");
-  QCOMPARE(sd.entryCityName(), "Eureka, CA");
-  QCOMPARE(sd.toString(), "Eureka, CA, us -> McMurdo Station, aq");
+void TestModels::serverDataMigrate() {
+  {
+    SettingsHolder settingsHolder;
+    settingsHolder.setCurrentServerCountryCodeDeprecated("foo");
+    settingsHolder.setCurrentServerCityDeprecated("bar");
+
+    ServerData sd;
+    QVERIFY(sd.fromSettings());
+
+    QCOMPARE(sd.exitCountryCode(), "foo");
+    QCOMPARE(sd.exitCityName(), "bar");
+    QVERIFY(!sd.multihop());
+    QCOMPARE(sd.entryCountryCode(), "");
+    QCOMPARE(sd.entryCityName(), "");
+
+    QVERIFY(settingsHolder.hasServerData());
+    QVERIFY(!settingsHolder.hasCurrentServerCountryCodeDeprecated());
+    QVERIFY(!settingsHolder.hasCurrentServerCityDeprecated());
+    QVERIFY(!settingsHolder.hasEntryServerCountryCodeDeprecated());
+    QVERIFY(!settingsHolder.hasEntryServerCityDeprecated());
+
+    ServerData sd2;
+    QVERIFY(sd2.fromSettings());
+
+    QCOMPARE(sd2.exitCountryCode(), "foo");
+    QCOMPARE(sd2.exitCityName(), "bar");
+    QVERIFY(!sd2.multihop());
+    QCOMPARE(sd2.entryCountryCode(), "");
+    QCOMPARE(sd2.entryCityName(), "");
+
+    QVERIFY(settingsHolder.hasServerData());
+    QVERIFY(!settingsHolder.hasCurrentServerCountryCodeDeprecated());
+    QVERIFY(!settingsHolder.hasCurrentServerCityDeprecated());
+    QVERIFY(!settingsHolder.hasEntryServerCountryCodeDeprecated());
+    QVERIFY(!settingsHolder.hasEntryServerCityDeprecated());
+  }
+
+  {
+    SettingsHolder settingsHolder;
+    settingsHolder.setCurrentServerCountryCodeDeprecated("foo");
+    settingsHolder.setCurrentServerCityDeprecated("bar");
+    settingsHolder.setEntryServerCountryCodeDeprecated("aa");
+    settingsHolder.setEntryServerCityDeprecated("bb");
+
+    ServerData sd;
+    QVERIFY(sd.fromSettings());
+
+    QCOMPARE(sd.exitCountryCode(), "foo");
+    QCOMPARE(sd.exitCityName(), "bar");
+    QVERIFY(sd.multihop());
+    QCOMPARE(sd.entryCountryCode(), "aa");
+    QCOMPARE(sd.entryCityName(), "bb");
+
+    QVERIFY(settingsHolder.hasServerData());
+    QVERIFY(!settingsHolder.hasCurrentServerCountryCodeDeprecated());
+    QVERIFY(!settingsHolder.hasCurrentServerCityDeprecated());
+    QVERIFY(!settingsHolder.hasEntryServerCountryCodeDeprecated());
+    QVERIFY(!settingsHolder.hasEntryServerCityDeprecated());
+
+    ServerData sd2;
+    QVERIFY(sd2.fromSettings());
+
+    QCOMPARE(sd2.exitCountryCode(), "foo");
+    QCOMPARE(sd2.exitCityName(), "bar");
+    QVERIFY(sd2.multihop());
+    QCOMPARE(sd2.entryCountryCode(), "aa");
+    QCOMPARE(sd2.entryCityName(), "bb");
+
+    QVERIFY(settingsHolder.hasServerData());
+    QVERIFY(!settingsHolder.hasCurrentServerCountryCodeDeprecated());
+    QVERIFY(!settingsHolder.hasCurrentServerCityDeprecated());
+    QVERIFY(!settingsHolder.hasEntryServerCountryCodeDeprecated());
+    QVERIFY(!settingsHolder.hasEntryServerCityDeprecated());
+  }
 }
 
 // User

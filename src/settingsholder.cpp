@@ -119,11 +119,11 @@ SettingsHolder::~SettingsHolder() {
 void SettingsHolder::clear() {
   logger.debug() << "Clean up the settings";
 
-#define SETTING(type, toType, getter, setter, has, key, defvalue, \
-                userSettings, removeWhenReset)                    \
-  if (removeWhenReset) {                                          \
-    m_settings.remove(key);                                       \
-    emit getter##Changed();                                       \
+#define SETTING(type, toType, getter, setter, remover, has, key, defvalue, \
+                userSettings, removeWhenReset)                             \
+  if (removeWhenReset) {                                                   \
+    m_settings.remove(key);                                                \
+    emit getter##Changed();                                                \
   }
 
 #include "settingslist.h"
@@ -182,22 +182,26 @@ QString SettingsHolder::getReport() const {
   return buff;
 }
 
-#define SETTING(type, toType, getter, setter, has, key, defvalue,       \
-                userSettings, ...)                                      \
-  bool SettingsHolder::has() const { return m_settings.contains(key); } \
-  type SettingsHolder::getter() const {                                 \
-    if (!has()) {                                                       \
-      return defvalue;                                                  \
-    }                                                                   \
-    return m_settings.value(key).toType();                              \
-  }                                                                     \
-  void SettingsHolder::setter(const type& value) {                      \
-    if (!has() || getter() != value) {                                  \
-      maybeSaveInTransaction(key, getter(), value, #getter "Changed",   \
-                             userSettings);                             \
-      m_settings.setValue(key, value);                                  \
-      emit getter##Changed();                                           \
-    }                                                                   \
+#define SETTING(type, toType, getter, setter, remover, has, key, defvalue, \
+                userSettings, ...)                                         \
+  bool SettingsHolder::has() const { return m_settings.contains(key); }    \
+  type SettingsHolder::getter() const {                                    \
+    if (!has()) {                                                          \
+      return defvalue;                                                     \
+    }                                                                      \
+    return m_settings.value(key).toType();                                 \
+  }                                                                        \
+  void SettingsHolder::setter(const type& value) {                         \
+    if (!has() || getter() != value) {                                     \
+      maybeSaveInTransaction(key, getter(), value, #getter "Changed",      \
+                             userSettings);                                \
+      m_settings.setValue(key, value);                                     \
+      emit getter##Changed();                                              \
+    }                                                                      \
+  }                                                                        \
+  void SettingsHolder::remover() {                                         \
+    m_settings.remove(key);                                                \
+    emit getter##Changed();                                                \
   }
 
 #include "settingslist.h"

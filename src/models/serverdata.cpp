@@ -9,6 +9,14 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 
+#include <QJsonDocument>
+#include <QJsonObject>
+
+constexpr const char* EXIT_COUNTRY_CODE = "exit_country_code";
+constexpr const char* EXIT_CITY_NAME = "exit_city_name";
+constexpr const char* ENTER_COUNTRY_CODE = "enter_country_code";
+constexpr const char* ENTER_CITY_NAME = "enter_city_name";
+
 namespace {
 Logger logger(LOG_MODEL, "ServerData");
 }
@@ -21,33 +29,58 @@ bool ServerData::fromSettings() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  if (!settingsHolder->hasCurrentServerCountryCode() ||
-      !settingsHolder->hasCurrentServerCity()) {
+  // Let's migrate data from a pre v2.13.
+  if (settingsHolder->hasCurrentServerCountryCodeDeprecated() &&
+      settingsHolder->hasCurrentServerCityDeprecated()) {
+    initializeInternal(settingsHolder->currentServerCountryCodeDeprecated(),
+                       settingsHolder->currentServerCityDeprecated(),
+                       settingsHolder->entryServerCountryCodeDeprecated(),
+                       settingsHolder->entryServerCityDeprecated());
+
+    writeSettings();
+    Q_ASSERT(settingsHolder->hasServerData());
+
+    settingsHolder->removeCurrentServerCountryCodeDeprecated();
+    settingsHolder->removeCurrentServerCityDeprecated();
+    settingsHolder->removeEntryServerCountryCodeDeprecated();
+    settingsHolder->removeEntryServerCityDeprecated();
+
+    return true;
+  }
+
+  if (!settingsHolder->hasServerData()) {
     return false;
   }
 
-  initializeInternal(settingsHolder->currentServerCountryCode(),
-                     settingsHolder->currentServerCity(),
-                     settingsHolder->entryServerCountryCode(),
-                     settingsHolder->entryServerCity());
+  QJsonDocument json = QJsonDocument::fromJson(settingsHolder->serverData());
+  if (!json.isObject()) {
+    return false;
+  }
+
+  QJsonObject obj = json.object();
+
+  initializeInternal(
+      obj[EXIT_COUNTRY_CODE].toString(), obj[EXIT_CITY_NAME].toString(),
+      obj[ENTER_COUNTRY_CODE].toString(), obj[ENTER_CITY_NAME].toString());
 
   logger.debug() << toString();
   return true;
 }
 
 void ServerData::writeSettings() {
+  QJsonObject obj;
+  obj[EXIT_COUNTRY_CODE] = m_exitCountryCode;
+  obj[EXIT_CITY_NAME] = m_exitCityName;
+
+  if (multihop()) {
+    obj[ENTER_COUNTRY_CODE] = m_entryCountryCode;
+    obj[ENTER_CITY_NAME] = m_entryCityName;
+  }
+
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  settingsHolder->setCurrentServerCountryCode(m_exitCountryCode);
-  settingsHolder->setCurrentServerCity(m_exitCityName);
-
-  if (multihop()) {
-    settingsHolder->setEntryServerCountryCode(m_entryCountryCode);
-    settingsHolder->setEntryServerCity(m_entryCityName);
-  } else {
-    settingsHolder->removeEntryServer();
-  }
+  settingsHolder->setServerData(QJsonDocument(obj).toJson());
 }
 
 void ServerData::update(const QString& countryCode, const QString& cityName,
