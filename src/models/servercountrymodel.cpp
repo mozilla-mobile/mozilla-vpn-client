@@ -260,9 +260,8 @@ QStringList ServerCountryModel::pickRandom() {
       } else {
         // We found our selection.
         QStringList serverChoice = {
-          country->code(), city->name(),
-          ServerI18N::translateCityName(country->code(), city->name())
-        };
+            country->code(), city->name(),
+            ServerI18N::translateCityName(country->code(), city->name())};
         return serverChoice;
       }
     }
