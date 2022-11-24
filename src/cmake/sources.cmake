@@ -34,9 +34,9 @@ target_sources(mozillavpn PRIVATE
     addons/conditionwatchers/addonconditionwatcherjavascript.h
     addons/conditionwatchers/addonconditionwatcherlocales.cpp
     addons/conditionwatchers/addonconditionwatcherlocales.h
-    addons/conditionwatchers/addonconditionwatchertimeend.cpp
+    addons/conditionwatchers/addonconditionwatchertime.cpp
+    addons/conditionwatchers/addonconditionwatchertime.h
     addons/conditionwatchers/addonconditionwatchertimeend.h
-    addons/conditionwatchers/addonconditionwatchertimestart.cpp
     addons/conditionwatchers/addonconditionwatchertimestart.h
     addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp
     addons/conditionwatchers/addonconditionwatchertriggertimesecs.h
@@ -152,6 +152,9 @@ target_sources(mozillavpn PRIVATE
     frontend/navigatorreloader.cpp
     frontend/navigatorreloader.h
     glean/glean.h
+    glean/metrictypes.h
+    glean/private/event.h
+    glean/private/ping.h
     hacl-star/Hacl_Chacha20.c
     hacl-star/Hacl_Chacha20Poly1305_32.c
     hacl-star/Hacl_Curve25519_51.c

@@ -139,7 +139,7 @@ QHash<int, QByteArray> DeviceModel::roleNames() const {
 }
 
 int DeviceModel::rowCount(const QModelIndex&) const {
-  return m_devices.count();
+  return static_cast<int>(m_devices.count());
 }
 
 QVariant DeviceModel::data(const QModelIndex& index, int role) const {

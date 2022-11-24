@@ -38,6 +38,8 @@ AddonDirectory::AddonDirectory() {
   }
 }
 
+AddonDirectory::~AddonDirectory() { MVPN_COUNT_DTOR(AddonDirectory); }
+
 bool AddonDirectory::getDirectory(QDir* dir) const {
   QDir addonDirectory(rootAppFolder());
   if (!addonDirectory.exists(ADDON_FOLDER)) {

@@ -82,7 +82,7 @@ class ServerCountryModel final : public QAbstractListModel {
   QHash<int, QByteArray> roleNames() const override;
 
   int rowCount(const QModelIndex&) const override {
-    return m_countries.length();
+    return static_cast<int>(m_countries.length());
   }
 
   QVariant data(const QModelIndex& index, int role) const override;

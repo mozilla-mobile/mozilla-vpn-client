@@ -19,6 +19,7 @@ class ErrorHandler final : public QObject {
   explicit ErrorHandler(QObject* parent);
 
  public:
+  // Note: Keep this in sync with ErrorTypeData in the cpp file.
   enum ErrorType {
     NoError,
     ConnectionFailureError,
@@ -61,11 +62,20 @@ class ErrorHandler final : public QObject {
   };
   Q_ENUM(ErrorPropagationPolicy);
 
+#define REPORTERROR(e, t) \
+  ErrorHandler::instance()->errorHandle(e, t, __FILE__, __LINE__);
+
+#define REPORTNETWORKERROR(e, p, t) \
+  ErrorHandler::instance()->networkErrorHandle(e, p, t, __FILE__, __LINE__);
+
   static ErrorType toErrorType(QNetworkReply::NetworkError error);
 
-  static void networkErrorHandle(
-      QNetworkReply::NetworkError error,
-      ErrorPropagationPolicy errorPropagationPolicy = PropagateError);
+  // Note: don't use this method directly. Use REPORTNETWORKERROR() instead.
+  static void networkErrorHandle(QNetworkReply::NetworkError error,
+                                 ErrorPropagationPolicy errorPropagationPolicy,
+                                 const QString& taskName = QString(),
+                                 const QString& fileName = QString(),
+                                 int lineNumber = 0);
 
   ~ErrorHandler();
 
@@ -73,10 +83,12 @@ class ErrorHandler final : public QObject {
 
   AlertType alert() const { return m_alert; }
 
-  void errorHandle(ErrorType error);
+  // Note: don't use this method directly. Use REPORTERROR() instead.
+  void errorHandle(ErrorType error, const QString& taskName = QString(),
+                   const QString& fileName = QString(), int lineNumber = 0);
 
-  void hideAlert() { setAlert(NoAlert); }
-  Q_INVOKABLE void setAlert(ErrorHandler::AlertType alert);
+  Q_INVOKABLE void hideAlert() { setAlert(NoAlert); }
+  Q_INVOKABLE void requestAlert(ErrorHandler::AlertType alert);
 
 #define ERRORSTATE(name) \
   void name##Error();    \
@@ -86,6 +98,9 @@ class ErrorHandler final : public QObject {
 
  signals:
   void alertChanged();
+
+ private:
+  void setAlert(ErrorHandler::AlertType alert);
 
  private:
   AlertType m_alert = NoAlert;

@@ -5,22 +5,15 @@
 #ifndef ADDONCONDITIONWATCHERTIMEEND_H
 #define ADDONCONDITIONWATCHERTIMEEND_H
 
-#include "addonconditionwatcher.h"
+#include "addonconditionwatchertime.h"
 
 #include <QTimer>
 
-class AddonConditionWatcherTimeEnd final : public AddonConditionWatcher {
-  Q_OBJECT
-  Q_DISABLE_COPY_MOVE(AddonConditionWatcherTimeEnd)
-
+class AddonConditionWatcherTimeEnd final : public AddonConditionWatcherTime {
  public:
-  AddonConditionWatcherTimeEnd(QObject* parent, qint64 time);
-  ~AddonConditionWatcherTimeEnd();
-
-  bool conditionApplied() const override;
-
- private:
-  QTimer m_timer;
+  AddonConditionWatcherTimeEnd(QObject* parent, qint64 time)
+      : AddonConditionWatcherTime(parent, time, false) {}
+  ~AddonConditionWatcherTimeEnd() = default;
 };
 
 #endif  // ADDONCONDITIONWATCHERTIMEEND_H

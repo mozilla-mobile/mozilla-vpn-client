@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 const vpn = require('./helper.js');
 const assert = require('assert');
-const {homeScreen, generalElements} = require('./elements.js');
+const { homeScreen, generalElements } = require('./elements.js');
 
 describe('Benchmark', function() {
   this.timeout(120000);
@@ -16,13 +16,13 @@ describe('Benchmark', function() {
     // Start the connection benchmark.
     await vpn.waitForElementAndClick(homeScreen.CONNECTION_INFO_TOGGLE);
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getElementProperty(
-          homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state =
+          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
       return state == 'StateRunning';
     });
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getElementProperty(
-          homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state =
+          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
       return state != 'StateRunning';
     });
 
@@ -61,13 +61,13 @@ describe('Benchmark', function() {
     // Start the connection benchmark and wait for it to finish.
     await vpn.waitForElementAndClick(homeScreen.CONNECTION_INFO_TOGGLE);
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getElementProperty(
-          homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state =
+          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
       return state == 'StateRunning';
     });
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getElementProperty(
-          homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state =
+          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
       return state != 'StateRunning';
     });
 
@@ -93,16 +93,16 @@ describe('Benchmark', function() {
         homeScreen.CONNECTION_BENCHMARK, 'downloadUrl', 's',
         'http://httpstat.us/404?sleep=2000');
 
-    // Start the connection benchmark and wait for it to finish.
+    // Start the connection benchmark and wait for it to finish.    
     await vpn.waitForElementAndClick(homeScreen.CONNECTION_INFO_TOGGLE);
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getElementProperty(
-          homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state =
+          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
       return state == 'StateRunning';
     });
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getElementProperty(
-          homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state =
+          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
       return state != 'StateRunning';
     });
 
@@ -118,13 +118,13 @@ describe('Benchmark', function() {
         homeScreen.CONNECTION_BENCHMARK, 'downloadUrl', 's', downloadUrl);
     await vpn.waitForElementAndClick(homeScreen.CONNECTION_INFO_RETRY);
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getElementProperty(
-          homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state =
+          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
       return state == 'StateRunning';
     });
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getElementProperty(
-          homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state =
+          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
       return state != 'StateRunning';
     });
 
@@ -158,19 +158,20 @@ describe('Benchmark', function() {
     await vpn.setElementProperty(
         homeScreen.CONNECTION_BENCHMARK, 'downloadUrl', 's',
         'http://httpstat.us/204?sleep=10000');
+
     // Start the connection benchmark.
     await vpn.waitForElementAndClick(homeScreen.CONNECTION_INFO_TOGGLE);
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getElementProperty(
-          homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state =
+          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
       return state == 'StateRunning';
     });
 
     // Disconnect the VPN, this should trigger an error.
     await vpn.deactivate();
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getElementProperty(
-          homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state =
+          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
       return state != 'StateRunning';
     });
 
@@ -182,7 +183,7 @@ describe('Benchmark', function() {
       return await vpn.getElementProperty('connectionInfoError', 'visible');
     });
 
-    // Exit the benchmark
+    // Exit the benchmark    
     await vpn.waitForElementAndClick(homeScreen.CONNECTION_INFO_TOGGLE);
   });
 });

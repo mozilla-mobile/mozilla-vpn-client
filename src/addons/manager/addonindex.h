@@ -33,6 +33,7 @@ class AddonIndex final : public QObject {
 
  public:
   explicit AddonIndex(AddonDirectory* dir);
+  ~AddonIndex();
 
   bool getOnDiskAddonsList(QList<AddonData>* addonsList);
   void update(const QByteArray& index, const QByteArray& indexSignature);

@@ -16,8 +16,7 @@ SOURCES += \
         addons/conditionwatchers/addonconditionwatchergroup.cpp \
         addons/conditionwatchers/addonconditionwatcherjavascript.cpp \
         addons/conditionwatchers/addonconditionwatcherlocales.cpp \
-        addons/conditionwatchers/addonconditionwatchertimeend.cpp \
-        addons/conditionwatchers/addonconditionwatchertimestart.cpp \
+        addons/conditionwatchers/addonconditionwatchertime.cpp \
         addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp \
         addons/manager/addondirectory.cpp \
         addons/manager/addonindex.cpp \
@@ -189,6 +188,7 @@ HEADERS += \
         addons/conditionwatchers/addonconditionwatchergroup.h \
         addons/conditionwatchers/addonconditionwatcherjavascript.h \
         addons/conditionwatchers/addonconditionwatcherlocales.h \
+        addons/conditionwatchers/addonconditionwatchertime.h \
         addons/conditionwatchers/addonconditionwatchertimeend.h \
         addons/conditionwatchers/addonconditionwatchertimestart.h \
         addons/conditionwatchers/addonconditionwatchertriggertimesecs.h \

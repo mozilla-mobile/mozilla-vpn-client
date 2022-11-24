@@ -58,7 +58,7 @@ void TaskAddDevice::run() {
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Failed to add the device" << error;
-            ErrorHandler::networkErrorHandle(error);
+            REPORTNETWORKERROR(error, ErrorHandler::PropagateError, name());
             emit completed();
           });
 

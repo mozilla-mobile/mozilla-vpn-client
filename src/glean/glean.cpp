@@ -29,12 +29,19 @@ QString rootAppFolder() {
 Glean::Glean() { MVPN_COUNT_CTOR(Glean); }
 
 Glean::~Glean() { MVPN_COUNT_DTOR(Glean); }
+
 // static
 void Glean::initialize() {
   logger.debug() << "Initializing Glean";
 
   if (Feature::get(Feature::Feature_gleanRust)->isSupported()) {
     QDir gleanDirectory(rootAppFolder());
+#if defined(UNIT_TEST)
+    // Clean the directory so test state doesn't leak
+    // See https://bugzilla.mozilla.org/show_bug.cgi?id=1800901
+    gleanDirectory.removeRecursively();
+#endif
+
     if (!gleanDirectory.exists(GLEAN_DATA_DIRECTORY) &&
         !gleanDirectory.mkpath(GLEAN_DATA_DIRECTORY)) {
       logger.error()
@@ -62,11 +69,11 @@ void Glean::initialize() {
     auto appChannel = vpn->stagingMode() ? "staging" : "production";
     auto dataPath = gleanDirectory.absolutePath();
 
-    logger.debug() << "Glean config -"
-                   << "uploadEnabled:" << uploadEnabled
-                   << "appChannel:" << appChannel << "dataPath:" << dataPath;
-
+#if defined(UNIT_TEST)
+    glean_test_reset_glean(uploadEnabled, dataPath.toLocal8Bit());
+#else
     glean_initialize(uploadEnabled, dataPath.toLocal8Bit(), appChannel);
+#endif
   }
 }
 

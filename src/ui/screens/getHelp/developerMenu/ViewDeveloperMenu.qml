@@ -170,6 +170,7 @@ VPNViewBase {
                settingTitle:  title
                imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+               imageRightMirror: VPNLocalizer.isRightToLeft
                onClicked: getHelpStackView.push(viewQrc)
                Layout.leftMargin: VPNTheme.theme.windowMargin / 2
                Layout.rightMargin: VPNTheme.theme.windowMargin / 2
@@ -262,7 +263,7 @@ VPNViewBase {
             id: resetAndQuit
             property int clickNeeded: 5
 
-           text: "Reset and Quit"
+            text: "Reset and Quit"
             onClicked: {
                 if (clickNeeded) {
                     text = "Reset and Quit (" + clickNeeded + ")";
@@ -274,17 +275,11 @@ VPNViewBase {
             }
         }
 
-        VPNTextBlock {
-            Layout.leftMargin: 31
-            Layout.rightMargin: 3
-            Layout.fillWidth: true
-
-            text: VPN.devVersion
-        }
-
         ColumnLayout {
-            Layout.leftMargin: 31
-            Layout.rightMargin: 31
+            Layout.alignment: Qt.AlignHCenter
+            Layout.fillWidth: true
+            Layout.maximumWidth: resetAndQuit.width
+            Layout.topMargin: VPNTheme.theme.vSpacingSmall
 
             VPNTextBlock {
                 Layout.fillWidth: true

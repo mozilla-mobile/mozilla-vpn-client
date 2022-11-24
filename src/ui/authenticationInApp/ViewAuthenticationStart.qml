@@ -13,6 +13,7 @@ VPNInAppAuthenticationBase {
     _viewObjectName: "authStart"
     _menuButtonOnClick: () => { VPN.cancelAuthentication() }
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
+    _menuButtonImageMirror: VPNLocalizer.isRightToLeft
     _menuButtonAccessibleName:  qsTrId("vpn.main.back")
     _headlineText: "Mozilla VPN"
     _subtitleText: VPNl18n.InAppAuthEnterEmailAddressDescription

@@ -39,6 +39,7 @@ VPNViewBase {
             title: VPNl18n.InAppSupportWorkflowSupportNavLinkText
             onClicked: getHelpStackView.push("qrc:/ui/screens/getHelp/contactUs/ViewContactUsForm.qml");
             iconSource: "qrc:/nebula/resources/chevron.svg"
+            iconMirror: VPNLocalizer.isRightToLeft
             backgroundColor: VPNTheme.theme.iconButtonLightBackground
             width: parent.width - VPNTheme.theme.windowMargin
         }
@@ -50,6 +51,7 @@ VPNViewBase {
             title: VPNl18n.GetHelpViewLogs
             onClicked: VPN.requestViewLogs()
             iconSource: VPNFeatureList.get("shareLogs").isSupported ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"
+            iconMirror: !VPNFeatureList.get("shareLogs").isSupported && VPNLocalizer.isRightToLeft
             backgroundColor: VPNFeatureList.get("shareLogs").isSupported ?VPNTheme.theme.clickableRowBlue : VPNTheme.theme.iconButtonLightBackground
             width: parent.width - VPNTheme.theme.windowMargin
         }
@@ -61,6 +63,7 @@ VPNViewBase {
             title: qsTrId("vpn.settings.giveFeedback")
             onClicked: getHelpStackView.push("qrc:/ui/screens/getHelp/giveFeedback/ViewGiveFeedback.qml")
             iconSource: "qrc:/nebula/resources/chevron.svg"
+            iconMirror: VPNLocalizer.isRightToLeft
             backgroundColor: VPNTheme.theme.iconButtonLightBackground
             width: parent.width - VPNTheme.theme.windowMargin
             visible: VPN.userState === VPN.UserAuthenticated
@@ -77,6 +80,7 @@ VPNViewBase {
             settingTitle: qsTrId("vpn.settings.developer")
             imageLeftSrc: "qrc:/ui/resources/developer.svg"
             imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+            imageRightMirror: VPNLocalizer.isRightToLeft
             visible: VPNSettings.developerUnlock
             onClicked: getHelpStackView.push("qrc:/ui/screens/getHelp/developerMenu/ViewDeveloperMenu.qml")
         }

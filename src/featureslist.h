@@ -183,7 +183,7 @@ FEATURE_SIMPLE(serverConnectionScore,      // Feature ID
                FeatureCallback_true,       // Can be flipped on
                FeatureCallback_true,       // Can be flipped off
                QStringList(),              // feature dependencies
-               FeatureCallback_true)
+               FeatureCallback_false)
 
 FEATURE_SIMPLE(shareLogs,              // Feature ID
                "Share Logs",           // Feature name
@@ -240,3 +240,11 @@ FEATURE_SIMPLE(gleanRust,             // Feature ID
                FeatureCallback_true,  // Can be flipped off
                QStringList(),         // feature dependencies
                FeatureCallback_false)
+
+FEATURE_SIMPLE(sentry,                     // Feature ID
+               "Sentry Crash Report SDK",  // Feature name
+               "2.12.0",                   // released
+               FeatureCallback_true,       // Can be flipped on
+               FeatureCallback_true,       // Can be flipped off
+               QStringList(),              // feature dependencies
+               FeatureCallback_inStaging)

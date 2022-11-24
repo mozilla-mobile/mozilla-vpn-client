@@ -92,16 +92,13 @@ AndroidController::AndroidController() {
           logger.error() << "Service Error while activating the VPN: "
                          << parcelBody;
         }
-        ErrorHandler::instance()->errorHandle(
-            ErrorHandler::ConnectionFailureError);
+        REPORTERROR(ErrorHandler::ConnectionFailureError, "controller");
         emit disconnected();
       },
       Qt::QueuedConnection);
   connect(
       activity, &AndroidVPNActivity::serviceDisconnected, this,
-      []() {
-        ErrorHandler::instance()->errorHandle(ErrorHandler::ControllerError);
-      },
+      []() { REPORTERROR(ErrorHandler::ControllerError, "controller"); },
       Qt::QueuedConnection);
 }
 AndroidController::~AndroidController() { MVPN_COUNT_DTOR(AndroidController); }
