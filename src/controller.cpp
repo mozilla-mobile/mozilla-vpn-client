@@ -133,6 +133,9 @@ void Controller::initialize() {
 
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
   m_impl->initialize(device, vpn->keys());
+
+  connect(SettingsHolder::instance(), &SettingsHolder::serverDataChanged, this,
+          &Controller::serverDataChanged);
 }
 
 void Controller::implInitialized(bool status, bool a_connected,
@@ -456,9 +459,6 @@ void Controller::disconnected() {
   }
 
   if (nextStep == None && m_state == StateSwitching) {
-    MozillaVPN* vpn = MozillaVPN::instance();
-    vpn->changeServer(m_switchingExitCountry, m_switchingExitCity,
-                      m_switchingEntryCountry, m_switchingEntryCity);
     activate();
     return;
   }
@@ -469,44 +469,6 @@ void Controller::disconnected() {
 void Controller::timerTimeout() {
   Q_ASSERT(m_state == StateOn);
   emit timeChanged();
-}
-
-void Controller::changeServer(const QString& countryCode, const QString& city,
-                              const QString& entryCountryCode,
-                              const QString& entryCity) {
-  Q_ASSERT(m_state == StateOn || m_state == StateOff);
-
-  MozillaVPN* vpn = MozillaVPN::instance();
-
-  if (vpn->currentServer()->exitCountryCode() == countryCode &&
-      vpn->currentServer()->exitCityName() == city &&
-      vpn->currentServer()->entryCountryCode() == entryCountryCode &&
-      vpn->currentServer()->entryCityName() == entryCity) {
-    logger.debug() << "No server change needed";
-    return;
-  }
-
-  if (m_state == StateOff) {
-    logger.debug() << "Change server";
-    vpn->changeServer(countryCode, city, entryCountryCode, entryCity);
-    return;
-  }
-
-  clearConnectedTime();
-  clearRetryCounter();
-
-  logger.debug() << "Switching to a different server";
-
-  m_currentCity = vpn->currentServer()->exitCityName();
-  m_currentCountryCode = vpn->currentServer()->exitCountryCode();
-  m_switchingExitCountry = countryCode;
-  m_switchingExitCity = city;
-  m_switchingEntryCountry = entryCountryCode;
-  m_switchingEntryCity = entryCity;
-
-  setState(StateSwitching);
-
-  deactivate();
 }
 
 void Controller::quit() {
@@ -804,23 +766,30 @@ void Controller::resetConnectedTime() {
   m_timer.start(TIMER_MSEC);
 }
 
-QString Controller::currentLocalizedCityName() const {
-  return ServerI18N::translateCityName(m_currentCountryCode, m_currentCity);
-}
-
-QString Controller::switchingLocalizedCityName() const {
-  return ServerI18N::translateCityName(m_switchingExitCountry,
-                                       m_switchingExitCity);
-}
-
 void Controller::captivePortalGone() {
   m_portalDetected = false;
   logger.info() << "Captive-Portal Gone, next activation will not show prompt";
 }
+
 void Controller::captivePortalPresent() {
   if (m_portalDetected) {
     return;
   }
   m_portalDetected = true;
   logger.info() << "Captive-Portal Present, next activation will show prompt";
+}
+
+void Controller::serverDataChanged() {
+  if (m_state == StateOff) {
+    logger.debug() << "Server data changed but we are off";
+    return;
+  }
+
+  clearConnectedTime();
+  clearRetryCounter();
+
+  logger.debug() << "Switching to a different server";
+
+  setState(StateSwitching);
+  deactivate();
 }

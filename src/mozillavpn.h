@@ -213,10 +213,6 @@ class MozillaVPN final : public QObject {
 
   void abortAuthentication();
 
-  void changeServer(const QString& countryCode, const QString& city,
-                    const QString& entryCountryCode = QString(),
-                    const QString& entryCity = QString());
-
   void silentSwitch();
 
   static QString devVersion();

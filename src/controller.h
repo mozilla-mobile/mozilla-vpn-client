@@ -52,10 +52,6 @@ class Controller final : public QObject {
  private:
   Q_PROPERTY(State state READ state NOTIFY stateChanged)
   Q_PROPERTY(qint64 time READ time NOTIFY timeChanged)
-  Q_PROPERTY(QString currentLocalizedCityName READ currentLocalizedCityName
-                 NOTIFY stateChanged)
-  Q_PROPERTY(QString switchingLocalizedCityName READ switchingLocalizedCityName
-                 NOTIFY stateChanged)
   Q_PROPERTY(
       int connectionRetry READ connectionRetry NOTIFY connectionRetryChanged);
   Q_PROPERTY(bool enableDisconnectInConfirming READ enableDisconnectInConfirming
@@ -69,17 +65,9 @@ class Controller final : public QObject {
 
   State state() const;
 
-  Q_INVOKABLE void changeServer(const QString& countryCode, const QString& city,
-                                const QString& entryCountryCode = QString(),
-                                const QString& entryCity = QString());
-
   Q_INVOKABLE void logout();
 
   qint64 time() const;
-
-  QString currentLocalizedCityName() const;
-
-  QString switchingLocalizedCityName() const;
 
   bool silentSwitchServers();
 
@@ -156,6 +144,8 @@ class Controller final : public QObject {
   void clearConnectedTime();
   void resetConnectedTime();
 
+  void serverDataChanged();
+
  private:
   State m_state = StateInitializing;
 
@@ -169,14 +159,6 @@ class Controller final : public QObject {
   bool m_ping_received = false;
 
   QScopedPointer<ControllerImpl> m_impl;
-
-  QString m_currentCountryCode;
-  QString m_currentCity;
-
-  QString m_switchingExitCountry;
-  QString m_switchingExitCity;
-  QString m_switchingEntryCountry;
-  QString m_switchingEntryCity;
 
   QTimer m_connectingTimer;
   QTimer m_handshakeTimer;

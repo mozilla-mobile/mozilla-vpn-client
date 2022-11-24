@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "serverdata.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "servercountrymodel.h"
@@ -86,6 +87,9 @@ void ServerData::writeSettings() {
 void ServerData::update(const QString& countryCode, const QString& cityName,
                         const QString& entryCountryCode,
                         const QString& entryCityName) {
+  m_previousExitCountryCode = m_exitCountryCode;
+  m_previousExitCityName = m_exitCityName;
+
   initializeInternal(countryCode, cityName, entryCountryCode, entryCityName);
   emit changed();
 }
@@ -109,6 +113,11 @@ QString ServerData::localizedEntryCity() const {
   return ServerI18N::translateCityName(m_entryCountryCode, m_entryCityName);
 }
 
+QString ServerData::localizedPreviousExitCityName() const {
+  return ServerI18N::translateCityName(m_previousExitCountryCode,
+                                       m_previousExitCityName);
+}
+
 QString ServerData::toString() const {
   if (!m_initialized) {
     return QString();
@@ -121,4 +130,38 @@ QString ServerData::toString() const {
 
   result += m_exitCityName + ", " + m_exitCountryCode;
   return result;
+}
+
+void ServerData::changeServer(const QString& countryCode,
+                              const QString& cityName,
+                              const QString& entryCountryCode,
+                              const QString& entryCityName) {
+  if (m_exitCountryCode == countryCode && m_exitCityName == cityName &&
+      m_entryCountryCode == entryCountryCode &&
+      m_entryCityName == entryCityName) {
+    logger.debug() << "No server change needed";
+    return;
+  }
+
+  update(countryCode, cityName, entryCountryCode, entryCityName);
+  writeSettings();
+
+  // Update the list of recent connections.
+  QString description = toString();
+  QStringList recent = SettingsHolder::instance()->recentConnections();
+  qsizetype index = recent.indexOf(description);
+  if (index == 0) {
+    // This is already the most-recent connection.
+    return;
+  }
+
+  if (index > 0) {
+    recent.removeAt(index);
+  } else {
+    while (recent.count() >= Constants::RECENT_CONNECTIONS_MAX_COUNT) {
+      recent.removeLast();
+    }
+  }
+  recent.prepend(description);
+  SettingsHolder::instance()->setRecentConnections(recent);
 }

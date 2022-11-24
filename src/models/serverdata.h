@@ -21,9 +21,17 @@ class ServerData final : public QObject {
   Q_PROPERTY(QString localizedCityName READ localizedCityName NOTIFY changed)
 
   Q_PROPERTY(bool multihop READ multihop NOTIFY changed)
+
   Q_PROPERTY(QString entryCountryCode READ entryCountryCode NOTIFY changed)
   Q_PROPERTY(QString entryCityName READ entryCityName NOTIFY changed)
   Q_PROPERTY(QString localizedEntryCity READ localizedEntryCity NOTIFY changed)
+
+  Q_PROPERTY(QString previousExitCountryCode READ previousExitCountryCode NOTIFY
+                 changed)
+  Q_PROPERTY(
+      QString previousExitCityName READ previousExitCityName NOTIFY changed)
+  Q_PROPERTY(QString localizedPreviousExitCityName READ
+                 localizedPreviousExitCityName NOTIFY changed)
 
  public:
   ServerData();
@@ -31,14 +39,17 @@ class ServerData final : public QObject {
 
   [[nodiscard]] bool fromSettings();
 
+  Q_INVOKABLE void changeServer(const QString& countryCode,
+                                const QString& cityName,
+                                const QString& entryCountryCode = QString(),
+                                const QString& entryCityName = QString());
+
   void writeSettings();
 
   bool initialized() const { return m_initialized; }
 
   const QString& exitCountryCode() const { return m_exitCountryCode; }
-
   const QString& exitCityName() const { return m_exitCityName; }
-
   QString localizedCityName() const;
 
   bool multihop() const {
@@ -46,10 +57,14 @@ class ServerData final : public QObject {
   }
 
   const QString& entryCountryCode() const { return m_entryCountryCode; }
-
   const QString& entryCityName() const { return m_entryCityName; }
-
   QString localizedEntryCity() const;
+
+  const QString& previousExitCountryCode() const {
+    return m_previousExitCountryCode;
+  }
+  const QString& previousExitCityName() const { return m_previousExitCityName; }
+  QString localizedPreviousExitCityName() const;
 
   void forget() { m_initialized = false; }
 
@@ -78,6 +93,9 @@ class ServerData final : public QObject {
 
   QString m_entryCountryCode;
   QString m_entryCityName;
+
+  QString m_previousExitCountryCode;
+  QString m_previousExitCityName;
 };
 
 #endif  // SERVERDATA_H

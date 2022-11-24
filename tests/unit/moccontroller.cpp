@@ -28,9 +28,6 @@ void Controller::disconnected() {}
 
 void Controller::timerTimeout() {}
 
-void Controller::changeServer(const QString&, const QString&, const QString&,
-                              const QString&) {}
-
 void Controller::logout() {}
 
 bool Controller::processNextStep() { return false; }
@@ -73,10 +70,6 @@ void Controller::backendFailure() {}
 void Controller::captivePortalPresent() {}
 
 void Controller::captivePortalGone() {}
-
-QString Controller::currentLocalizedCityName() const { return ""; }
-
-QString Controller::switchingLocalizedCityName() const { return ""; }
 
 void Controller::handshakeTimeout() {}
 

@@ -1254,6 +1254,8 @@ void TestModels::serverDataBasic() {
     QVERIFY(!sd.multihop());
     QCOMPARE(sd.entryCountryCode(), "");
     QCOMPARE(sd.entryCityName(), "");
+    QCOMPARE(sd.previousExitCountryCode(), "");
+    QCOMPARE(sd.previousExitCityName(), "");
     QCOMPARE(sd.toString(), "serverCityName, serverCountryCode");
 
     {
@@ -1269,6 +1271,8 @@ void TestModels::serverDataBasic() {
       QVERIFY(!sd2.multihop());
       QCOMPARE(sd2.entryCountryCode(), "");
       QCOMPARE(sd2.entryCityName(), "");
+      QCOMPARE(sd2.previousExitCountryCode(), "");
+      QCOMPARE(sd2.previousExitCityName(), "");
       QCOMPARE(sd2.toString(), "serverCityName, serverCountryCode");
 
       QCOMPARE(spy.count(), 1);
@@ -1284,6 +1288,8 @@ void TestModels::serverDataBasic() {
   QVERIFY(!sd.multihop());
   QCOMPARE(sd.entryCountryCode(), "");
   QCOMPARE(sd.entryCityName(), "");
+  QCOMPARE(sd.previousExitCountryCode(), "serverCountryCode");
+  QCOMPARE(sd.previousExitCityName(), "serverCityName");
   QCOMPARE(sd.toString(), "new City, new Country Code");
 
   sd.forget();
@@ -1295,6 +1301,8 @@ void TestModels::serverDataBasic() {
   QVERIFY(!sd.multihop());
   QCOMPARE(sd.entryCountryCode(), "");
   QCOMPARE(sd.entryCityName(), "");
+  QCOMPARE(sd.previousExitCountryCode(), "serverCountryCode");
+  QCOMPARE(sd.previousExitCityName(), "serverCityName");
   QCOMPARE(sd.toString(), "");
 
   {
@@ -1310,6 +1318,8 @@ void TestModels::serverDataBasic() {
   QVERIFY(sd.multihop());
   QCOMPARE(sd.entryCountryCode(), "entry Country Code");
   QCOMPARE(sd.entryCityName(), "entry City");
+  QCOMPARE(sd.previousExitCountryCode(), "new Country Code");
+  QCOMPARE(sd.previousExitCityName(), "new City");
   QCOMPARE(sd.toString(),
            "entry City, entry Country Code -> new City, new Country Code");
 
@@ -1322,6 +1332,8 @@ void TestModels::serverDataBasic() {
   QVERIFY(sd.multihop());
   QCOMPARE(sd.entryCountryCode(), "entry Country Code");
   QCOMPARE(sd.entryCityName(), "entry City");
+  QCOMPARE(sd.previousExitCountryCode(), "new Country Code");
+  QCOMPARE(sd.previousExitCityName(), "new City");
 }
 
 void TestModels::serverDataMigrate() {
