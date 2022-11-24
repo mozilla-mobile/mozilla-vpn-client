@@ -27,11 +27,15 @@ ServerData::ServerData() { MVPN_COUNT_CTOR(ServerData); }
 ServerData::~ServerData() { MVPN_COUNT_DTOR(ServerData); }
 
 void ServerData::initialize() {
+  m_initialized = true;
+
   connect(SettingsHolder::instance(), &SettingsHolder::serverDataChanged, this,
           &ServerData::settingsChanged);
 }
 
 bool ServerData::fromSettings() {
+  Q_ASSERT(m_initialized);
+
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
@@ -60,6 +64,8 @@ void ServerData::update(const QString& exitCountryCode,
                         const QString& exitCityName,
                         const QString& entryCountryCode,
                         const QString& entryCityName) {
+  Q_ASSERT(m_initialized);
+
   m_previousExitCountryCode = m_exitCountryCode;
   m_previousExitCityName = m_exitCityName;
 
@@ -77,6 +83,8 @@ void ServerData::update(const QString& exitCountryCode,
 }
 
 bool ServerData::settingsChanged() {
+  Q_ASSERT(m_initialized);
+
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
@@ -101,20 +109,23 @@ bool ServerData::settingsChanged() {
 }
 
 QString ServerData::localizedCityName() const {
+  Q_ASSERT(m_initialized);
   return ServerI18N::translateCityName(m_exitCountryCode, m_exitCityName);
 }
 
 QString ServerData::localizedEntryCityName() const {
+  Q_ASSERT(m_initialized);
   return ServerI18N::translateCityName(m_entryCountryCode, m_entryCityName);
 }
 
 QString ServerData::localizedPreviousExitCityName() const {
+  Q_ASSERT(m_initialized);
   return ServerI18N::translateCityName(m_previousExitCountryCode,
                                        m_previousExitCityName);
 }
 
 QString ServerData::toString() const {
-  if (!initialized()) {
+  if (!hasServerData()) {
     return QString();
   }
 
@@ -158,4 +169,15 @@ void ServerData::changeServer(const QString& countryCode,
   }
   recent.prepend(description);
   SettingsHolder::instance()->setRecentConnections(recent);
+}
+
+void ServerData::forget() {
+  Q_ASSERT(m_initialized);
+
+  m_exitCountryCode.clear();
+  m_exitCityName.clear();
+  m_entryCountryCode.clear();
+  m_entryCityName.clear();
+  m_previousExitCountryCode.clear();
+  m_previousExitCityName.clear();
 }

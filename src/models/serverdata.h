@@ -46,8 +46,7 @@ class ServerData final : public QObject {
                                 const QString& cityName,
                                 const QString& entryCountryCode = QString(),
                                 const QString& entryCityName = QString());
-
-  bool initialized() const { return !m_exitCountryCode.isEmpty(); }
+  bool hasServerData() const { return !m_exitCountryCode.isEmpty(); }
 
   const QString& exitCountryCode() const { return m_exitCountryCode; }
   const QString& exitCityName() const { return m_exitCityName; }
@@ -67,7 +66,7 @@ class ServerData final : public QObject {
   const QString& previousExitCityName() const { return m_previousExitCityName; }
   QString localizedPreviousExitCityName() const;
 
-  void forget() { m_exitCountryCode.clear(); }
+  void forget();
 
   void update(const QString& exitCountryCode, const QString& exitCityName,
               const QString& entryCountryCode = QString(),
@@ -84,6 +83,8 @@ class ServerData final : public QObject {
   bool settingsChanged();
 
  private:
+  bool m_initialized = false;
+
   QString m_exitCountryCode;
   QString m_exitCityName;
 
