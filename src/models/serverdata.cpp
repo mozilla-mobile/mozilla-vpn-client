@@ -109,7 +109,7 @@ QString ServerData::localizedCityName() const {
   return ServerI18N::translateCityName(m_exitCountryCode, m_exitCityName);
 }
 
-QString ServerData::localizedEntryCity() const {
+QString ServerData::localizedEntryCityName() const {
   return ServerI18N::translateCityName(m_entryCountryCode, m_entryCityName);
 }
 

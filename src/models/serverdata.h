@@ -24,7 +24,8 @@ class ServerData final : public QObject {
 
   Q_PROPERTY(QString entryCountryCode READ entryCountryCode NOTIFY changed)
   Q_PROPERTY(QString entryCityName READ entryCityName NOTIFY changed)
-  Q_PROPERTY(QString localizedEntryCity READ localizedEntryCity NOTIFY changed)
+  Q_PROPERTY(
+      QString localizedEntryCityName READ localizedEntryCityName NOTIFY changed)
 
   Q_PROPERTY(QString previousExitCountryCode READ previousExitCountryCode NOTIFY
                  changed)
@@ -58,7 +59,7 @@ class ServerData final : public QObject {
 
   const QString& entryCountryCode() const { return m_entryCountryCode; }
   const QString& entryCityName() const { return m_entryCityName; }
-  QString localizedEntryCity() const;
+  QString localizedEntryCityName() const;
 
   const QString& previousExitCountryCode() const {
     return m_previousExitCountryCode;
