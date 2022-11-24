@@ -246,22 +246,31 @@ int ServerCountryModel::cityConnectionScore(const ServerCity& city) const {
 
 QStringList ServerCountryModel::pickRandom() {
   logger.debug() << "Choosing a random server";
+  qsizetype index = QRandomGenerator::global()->generate() % m_servers.count();
 
-  QStringList serverTuple;
+  // Iterate to find the selected country and city. This winds up weighting the
+  // choice of city proportional to the number of servers hosted there.
+  for (auto country = m_countries.cbegin(); country != m_countries.cend();
+       country++) {
+    for (auto city = country->cities().cbegin();
+         city != country->cities().cend(); city++) {
+      if (index >= city->servers().count()) {
+        // Keep searching.
+        index -= city->servers().count();
+      } else {
+        // We found our selection.
+        QStringList serverChoice = {
+          country->code(), city->name(),
+          ServerI18N::translateCityName(country->code(), city->name())
+        };
+        return serverChoice;
+      }
+    }
+  }
 
-  quint32 countryId =
-      QRandomGenerator::global()->generate() % m_countries.length();
-  const ServerCountry& country = m_countries[countryId];
-
-  quint32 cityId =
-      QRandomGenerator::global()->generate() % country.cities().length();
-  const ServerCity& city = country.cities().at(cityId);
-
-  serverTuple.append(country.code());
-  serverTuple.append(city.name());
-  serverTuple.append(
-      ServerI18N::translateCityName(country.code(), city.name()));
-  return serverTuple;
+  // We should not get here, unless the model has more entries in m_servers()
+  // than actually exist in the country and city lists.
+  Q_ASSERT(false);
 }
 
 bool ServerCountryModel::exists(const QString& countryCode,
