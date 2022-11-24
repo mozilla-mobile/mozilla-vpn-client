@@ -66,7 +66,7 @@ void LocalSocketController::errorOccurred(
     emit initialized(false, false, QDateTime());
   }
 
-  ErrorHandler::instance()->errorHandle(ErrorHandler::ControllerError);
+  REPORTERROR(ErrorHandler::ControllerError, "controller");
   disconnectInternal();
 }
 
@@ -359,7 +359,7 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   }
 
   if (type == "backendFailure") {
-    ErrorHandler::instance()->errorHandle(ErrorHandler::ControllerError);
+    REPORTERROR(ErrorHandler::ControllerError, "controller");
     return;
   }
 

@@ -155,6 +155,7 @@ ColumnLayout {
         width: undefined
         onClicked: VPNAppPermissions.openFilePicker()
         visible: Qt.platform.os === "windows"
+        enabled: vpnIsOff
         contentItem: Text {
             // for accessibility
             text: addApplication

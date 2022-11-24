@@ -16,6 +16,91 @@ constexpr const uint32_t HIDE_ALERT_SEC = 4;
 namespace {
 ErrorHandler* s_instance = nullptr;
 Logger logger(LOG_MAIN, "ErrorHandler");
+
+struct ErrorTypeData {
+  ErrorTypeData(ErrorHandler::ErrorType errorType,
+                bool supportPolicyPropagation,
+                ErrorHandler::AlertType (*getAlert)())
+      : m_errorType(errorType),
+        m_supportPolicyPropagation(supportPolicyPropagation),
+        m_getAlert(getAlert) {}
+
+  ErrorHandler::ErrorType m_errorType = ErrorHandler::NoError;
+  bool m_supportPolicyPropagation = false;
+
+  ErrorHandler::AlertType (*m_getAlert)() = nullptr;
+};
+
+ErrorTypeData s_errorData[] = {
+    ErrorTypeData(ErrorHandler::NoError, true,
+                  []() { return ErrorHandler::NoAlert; }),
+
+    ErrorTypeData(ErrorHandler::ConnectionFailureError, true,
+                  []() { return ErrorHandler::ConnectionFailedAlert; }),
+
+    ErrorTypeData(ErrorHandler::NoConnectionError, true,
+                  []() {
+                    MozillaVPN* vpn = MozillaVPN::instance();
+                    return vpn->connectionHealth() &&
+                                   vpn->connectionHealth()->isUnsettled()
+                               ? ErrorHandler::NoAlert
+                               : ErrorHandler::NoConnectionAlert;
+                  }),
+
+    ErrorTypeData(
+        ErrorHandler::VPNDependentConnectionError, true,
+        []() {
+          MozillaVPN* vpn = MozillaVPN::instance();
+          if (vpn->controller()->state() == Controller::State::StateOn ||
+              vpn->controller()->state() ==
+                  Controller::State::StateConfirming) {
+            // connection likely isn't stable yet
+            logger.error()
+                << "Ignore network error probably caused by enabled VPN";
+            return ErrorHandler::NoAlert;
+          }
+
+          if (vpn->controller()->state() == Controller::State::StateOff) {
+            // We are off, so this means a request failed, not the
+            // VPN. Change it to No Connection
+            return ErrorHandler::NoConnectionAlert;
+          }
+
+          return ErrorHandler::ConnectionFailedAlert;
+        }),
+
+    ErrorTypeData(ErrorHandler::AuthenticationError, false,
+                  []() { return ErrorHandler::AuthenticationFailedAlert; }),
+
+    ErrorTypeData(ErrorHandler::ControllerError, true,
+                  []() { return ErrorHandler::ControllerErrorAlert; }),
+
+    ErrorTypeData(ErrorHandler::RemoteServiceError, true,
+                  []() { return ErrorHandler::RemoteServiceErrorAlert; }),
+
+    ErrorTypeData(ErrorHandler::SubscriptionFailureError, false,
+                  []() { return ErrorHandler::SubscriptionFailureAlert; }),
+
+    ErrorTypeData(ErrorHandler::GeoIpRestrictionError, false,
+                  []() { return ErrorHandler::GeoIpRestrictionAlert; }),
+
+    ErrorTypeData(ErrorHandler::UnrecoverableError, true,
+                  []() { return ErrorHandler::UnrecoverableErrorAlert; }),
+
+    ErrorTypeData(ErrorHandler::IgnoredError, true,
+                  []() { return ErrorHandler::NoAlert; }),
+};
+
+const ErrorTypeData* findError(ErrorHandler::ErrorType error) {
+  for (const ErrorTypeData& errorData : s_errorData) {
+    if (errorData.m_errorType == error) {
+      return &errorData;
+    }
+  }
+  Q_ASSERT(false);
+  return nullptr;
+}
+
 }  // namespace
 
 // static
@@ -128,75 +213,40 @@ ErrorHandler::ErrorType ErrorHandler::toErrorType(
   return IgnoredError;
 }
 
-void ErrorHandler::errorHandle(ErrorHandler::ErrorType error) {
+void ErrorHandler::errorHandle(ErrorHandler::ErrorType error,
+                               const QString& taskName, const QString& fileName,
+                               int lineNumber) {
   logger.debug() << "Handling error" << error;
 
-  Q_ASSERT(error != ErrorHandler::NoError);
+  const ErrorTypeData* errorData = findError(error);
+  Q_ASSERT(errorData);
 
-  AlertType alert = NoAlert;
-
-  MozillaVPN* vpn = MozillaVPN::instance();
-
-  switch (error) {
-    case ErrorHandler::VPNDependentConnectionError:
-      if (vpn->controller()->state() == Controller::State::StateOn ||
-          vpn->controller()->state() == Controller::State::StateConfirming) {
-        // connection likely isn't stable yet
-        logger.error() << "Ignore network error probably caused by enabled VPN";
-        return;
-      } else if (vpn->controller()->state() == Controller::State::StateOff) {
-        // We are off, so this means a request failed, not the
-        // VPN. Change it to No Connection
-        alert = NoConnectionAlert;
-        break;
-      }
-      [[fallthrough]];
-    case ErrorHandler::ConnectionFailureError:
-      alert = ConnectionFailedAlert;
-      break;
-
-    case ErrorHandler::NoConnectionError:
-      if (vpn->connectionHealth() && vpn->connectionHealth()->isUnsettled()) {
-        return;
-      }
-      alert = NoConnectionAlert;
-      break;
-
-    case ErrorHandler::AuthenticationError:
-      alert = AuthenticationFailedAlert;
-      break;
-
-    case ErrorHandler::ControllerError:
-      alert = ControllerErrorAlert;
-      break;
-
-    case ErrorHandler::RemoteServiceError:
-      alert = RemoteServiceErrorAlert;
-      break;
-
-    case ErrorHandler::SubscriptionFailureError:
-      alert = SubscriptionFailureAlert;
-      break;
-
-    case ErrorHandler::GeoIpRestrictionError:
-      alert = GeoIpRestrictionAlert;
-      break;
-
-    case ErrorHandler::UnrecoverableError:
-      alert = UnrecoverableErrorAlert;
-      break;
-
-    default:
-      break;
-  }
-
-  setAlert(alert);
-
-  logger.error() << "Alert:" << alert << "State:" << vpn->state();
+  AlertType alert = errorData->m_getAlert();
+  logger.error() << "Alert:" << alert;
 
   if (alert == NoAlert) {
     return;
   }
+
+  setAlert(alert);
+
+  MozillaVPN* vpn = MozillaVPN::instance();
+
+  QVariantMap extraKeys;
+
+  if (!taskName.isEmpty()) {
+    extraKeys["task"] = taskName;
+  }
+
+  if (!fileName.isEmpty()) {
+    extraKeys["filename"] = fileName;
+  }
+
+  if (lineNumber >= 0) {
+    extraKeys["linenumber"] = lineNumber;
+  }
+
+  vpn->recordGleanEventWithExtraKeys(GleanSample::errorAlertShown, extraKeys);
 
   // Any error in authenticating state sends to the Initial state.
   if (vpn->state() == MozillaVPN::StateAuthenticating) {
@@ -215,6 +265,11 @@ void ErrorHandler::errorHandle(ErrorHandler::ErrorType error) {
   }
 }
 
+void ErrorHandler::requestAlert(AlertType alert) {
+  // For now, let's keep it simple. In the future we can apply filters here.
+  setAlert(alert);
+}
+
 void ErrorHandler::setAlert(AlertType alert) {
   m_alertTimer.stop();
 
@@ -229,8 +284,16 @@ void ErrorHandler::setAlert(AlertType alert) {
 // static
 void ErrorHandler::networkErrorHandle(
     QNetworkReply::NetworkError error,
-    ErrorPropagationPolicy errorPropagationPolicy) {
-  if (errorPropagationPolicy == PropagateError) {
-    ErrorHandler::instance()->errorHandle(toErrorType(error));
+    ErrorPropagationPolicy errorPropagationPolicy, const QString& taskName,
+    const QString& fileName, int lineNumber) {
+  ErrorHandler::ErrorType errorType = toErrorType(error);
+
+  const ErrorTypeData* errorData = findError(errorType);
+  Q_ASSERT(errorData);
+
+  if (!errorData->m_supportPolicyPropagation ||
+      errorPropagationPolicy == PropagateError) {
+    ErrorHandler::instance()->errorHandle(errorType, taskName, fileName,
+                                          lineNumber);
   }
 }

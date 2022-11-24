@@ -47,7 +47,7 @@ QHash<int, QByteArray> SupportCategoryModel::roleNames() const {
 }
 
 int SupportCategoryModel::rowCount(const QModelIndex&) const {
-  return s_supportCategories.count();
+  return static_cast<int>(s_supportCategories.count());
 }
 
 QVariant SupportCategoryModel::data(const QModelIndex& index, int role) const {

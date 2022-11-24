@@ -97,7 +97,7 @@ void LinuxController::operationCompleted(QDBusPendingCallWatcher* call) {
   QDBusPendingReply<bool> reply = *call;
   if (reply.isError()) {
     logger.error() << "Error received from the DBus service";
-    ErrorHandler::instance()->errorHandle(ErrorHandler::ControllerError);
+    REPORTERROR(ErrorHandler::ControllerError, "controller");
     emit disconnected();
     return;
   }
@@ -110,7 +110,7 @@ void LinuxController::operationCompleted(QDBusPendingCallWatcher* call) {
   }
 
   logger.error() << "DBus service says: error.";
-  ErrorHandler::instance()->errorHandle(ErrorHandler::ControllerError);
+  REPORTERROR(ErrorHandler::ControllerError, "controller");
   emit disconnected();
 }
 

@@ -30,6 +30,7 @@ VPNViewBase {
                 _iconSource: subscriptionManagementEnabled
                     ? "qrc:/nebula/resources/chevron.svg"
                     : "qrc:/nebula/resources/open-in-new.svg"
+                _iconMirror: subscriptionManagementEnabled && VPNLocalizer.isRightToLeft
                 _buttonOnClicked: () => {
                     if (subscriptionManagementEnabled) {
                         VPNProfileFlow.start();
@@ -70,6 +71,7 @@ VPNViewBase {
                 settingTitle: VPNl18n.TipsAndTricksSettingsEntryLabel
                 imageLeftSrc: "qrc:/nebula/resources/sparkles.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                imageRightMirror: VPNLocalizer.isRightToLeft
                 onClicked: VPNNavigator.requestScreen(VPNNavigator.ScreenTipsAndTricks);
             }
 
@@ -78,6 +80,7 @@ VPNViewBase {
                 settingTitle: qsTrId("vpn.settings.networking")
                 imageLeftSrc: "qrc:/ui/resources/settings/networkSettings.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                imageRightMirror: VPNLocalizer.isRightToLeft
                 onClicked: stackview.push("qrc:/ui/screens/settings/ViewNetworkSettings.qml", {
                                                       //% "App permissions"
                                                       _appPermissionsTitle: Qt.binding(() => qsTrId("vpn.settings.appPermissions2"))
@@ -90,6 +93,7 @@ VPNViewBase {
                 settingTitle: VPNl18n.SettingsSystemPreferences
                 imageLeftSrc: "qrc:/ui/resources/settings/preferences.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                imageRightMirror: VPNLocalizer.isRightToLeft
                 onClicked: stackview.push("qrc:/ui/screens/settings/ViewPreferences.qml", {
                                                     _startAtBootTitle: Qt.binding(() => VPNl18n.SettingsStartAtBootTitle),
                                                     _languageTitle:  Qt.binding(() => qsTrId("vpn.settings.language")),
@@ -104,6 +108,7 @@ VPNViewBase {
                 settingTitle: qsTrId("vpn.devices.myDevices")
                 imageLeftSrc: "qrc:/nebula/resources/devices.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                imageRightMirror: VPNLocalizer.isRightToLeft
                 onClicked: stackview.push("qrc:/ui/screens/devices/ViewDevices.qml")
             }
 
@@ -114,6 +119,7 @@ VPNViewBase {
                 settingTitle: qsTrId("vpn.main.getHelp2")
                 imageLeftSrc: "qrc:/ui/resources/settings/questionMark.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                imageRightMirror: VPNLocalizer.isRightToLeft
                 onClicked: {
                     VPN.recordGleanEvent("getHelpClickedViewSettings");
                     VPNNavigator.requestScreen(VPNNavigator.ScreenGetHelp);
@@ -125,6 +131,7 @@ VPNViewBase {
                 settingTitle: qsTrId("vpn.settings.aboutUs")
                 imageLeftSrc: "qrc:/ui/resources/settings/aboutUs.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                imageRightMirror: VPNLocalizer.isRightToLeft
                 onClicked: stackview.push("qrc:/ui/screens/settings/ViewAboutUs.qml")
             }
 

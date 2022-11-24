@@ -1,13 +1,56 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 const vpn = require('./helper.js');
 const assert = require('assert');
-const {homeScreen, generalElements} = require('./elements.js');
+const { homeScreen, generalElements } = require('./elements.js');
+const constants = require('./constants.js');
+const Server = require('./server.js');
+
+// Mock server for VPN Network Benchmark:
+// https://github.com/mozilla-services/vpn-network-benchmark
+let server = null;
+const networkBenchmark = {
+  start() {
+    server = new Server(
+      'VPN Network Benchmark',
+      constants.UPLOAD_BENCHMARK_PORT,
+      {
+        POSTs: {
+          '/': { status: 200 },
+        },
+      }
+    );
+    return constants.UPLOAD_BENCHMARK_PORT;
+  },
+
+  stop() {
+    server.stop();
+  },
+
+  throwExceptionsIfAny() {
+    server.throwExceptionsIfAny();
+  },
+};
 
 describe('Benchmark', function() {
   this.timeout(120000);
   this.ctx.authenticationNeeded = true;
+
+  before(function() {
+    try {
+      process.env['MVPN_BENCHMARK_URL'] =
+          `http://localhost:${networkBenchmark.start()}`;
+    } catch (error) {
+      console.log(`Network Benchmark error: ${error}`);
+    }
+  });
+
+  after(function() {
+    networkBenchmark.stop();
+    networkBenchmark.throwExceptionsIfAny();
+  });
 
   it('Successful benchmark', async () => {
     await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
@@ -16,26 +59,25 @@ describe('Benchmark', function() {
     // Start the connection benchmark.
     await vpn.waitForElementAndClick(homeScreen.CONNECTION_INFO_TOGGLE);
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getElementProperty(
-          homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state =
+          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
       return state == 'StateRunning';
     });
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getElementProperty(
-          homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state =
+          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
       return state != 'StateRunning';
     });
 
     // We expect the benchmark to succeed.
-    await vpn.wait(3000);
-    let state =
-        await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
     let speed =
         await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'speed');
     let downloadBps = parseInt(await vpn.getElementProperty(
         homeScreen.CONNECTION_BENCHMARK, 'downloadBps'));
     let uploadBps = parseInt(await vpn.getElementProperty(
         homeScreen.CONNECTION_BENCHMARK, 'uploadBps'));
+    let state =
+        await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
     assert.strictEqual(state, 'StateReady');
 
     assert.strictEqual(
@@ -43,7 +85,7 @@ describe('Benchmark', function() {
         (downloadBps >= 25000000 && uploadBps > 0) ?
             'SpeedFast' :
             ((downloadBps >= 10000000 && uploadBps > 0) ? 'SpeedMedium' :
-                                                                 'SpeedSlow'));
+                                                          'SpeedSlow'));
 
     // Exit the benchmark
     await vpn.waitForElement(homeScreen.CONNECTION_INFO_TOGGLE);
@@ -51,49 +93,34 @@ describe('Benchmark', function() {
   });
 
   it('Failed benchmark on HTTP error', async () => {
-    console.log("failed", 1);
     await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
-    console.log("failed", 2);
     await vpn.activate(true);
-    console.log("failed", 3);
 
     // Re-Configure the benchmark to use a URL that generates an HTTP error.
     await vpn.setElementProperty(
         homeScreen.CONNECTION_BENCHMARK, 'downloadUrl', 's',
         'http://httpstat.us/500?sleep=2000');
-    console.log("failed", 4);
 
     // Start the connection benchmark and wait for it to finish.
     await vpn.waitForElementAndClick(homeScreen.CONNECTION_INFO_TOGGLE);
-    console.log("failed", 5);
     await vpn.waitForCondition(async () => {
-      console.log("failed", 6);
-      let state = await vpn.getElementProperty(
-          homeScreen.CONNECTION_BENCHMARK, 'state');
-      console.log("failed", 7);
+      let state =
+          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
       return state == 'StateRunning';
     });
-    console.log("failed", 8);
     await vpn.waitForCondition(async () => {
-      console.log("failed", 9);
-      let state = await vpn.getElementProperty(
-          homeScreen.CONNECTION_BENCHMARK, 'state');
-      console.log("failed", 10);
+      let state =
+          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
       return state != 'StateRunning';
     });
-    console.log("failed", 11);
 
     // We expect the benchmark to fail.
-    await vpn.wait(3000);
-    console.log("failed", 12);
     assert.strictEqual(
         await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state'),
         'StateError');
-    console.log("failed", 13);
     assert.strictEqual(
         await vpn.getElementProperty('connectionInfoError', 'visible'), 'true');
 
-    console.log("failed", 14);
     // Exit the benchmark
     await vpn.waitForElementAndClick(homeScreen.CONNECTION_INFO_TOGGLE);
   });
@@ -101,31 +128,28 @@ describe('Benchmark', function() {
   it('Retry failed benchmark', async () => {
     await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
     await vpn.activate(true);
-
     let downloadUrl = await vpn.getElementProperty(
         homeScreen.CONNECTION_BENCHMARK, 'downloadUrl');
-    await vpn.wait();
 
     // Re-Configure the benchmark to use a URL that generates an HTTP error.
     await vpn.setElementProperty(
         homeScreen.CONNECTION_BENCHMARK, 'downloadUrl', 's',
         'http://httpstat.us/404?sleep=2000');
 
-    // Start the connection benchmark and wait for it to finish.
+    // Start the connection benchmark and wait for it to finish.    
     await vpn.waitForElementAndClick(homeScreen.CONNECTION_INFO_TOGGLE);
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getElementProperty(
-          homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state =
+          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
       return state == 'StateRunning';
     });
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getElementProperty(
-          homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state =
+          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
       return state != 'StateRunning';
     });
 
     // We expect the benchmark to fail.
-    await vpn.wait(3000);
     assert.strictEqual(
         await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state'),
         'StateError');
@@ -137,29 +161,34 @@ describe('Benchmark', function() {
         homeScreen.CONNECTION_BENCHMARK, 'downloadUrl', 's', downloadUrl);
     await vpn.waitForElementAndClick(homeScreen.CONNECTION_INFO_RETRY);
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getElementProperty(
-          homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state =
+          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
       return state == 'StateRunning';
     });
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getElementProperty(
-          homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state =
+          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
       return state != 'StateRunning';
     });
+
     // This time we expect the benchmark to succeed.
-    await vpn.wait();
     let speed =
         await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'speed');
     let downloadBps = parseInt(await vpn.getElementProperty(
         homeScreen.CONNECTION_BENCHMARK, 'downloadBps'));
     let uploadBps = parseInt(await vpn.getElementProperty(
         homeScreen.CONNECTION_BENCHMARK, 'uploadBps'));
+    let state =
+        await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
+    assert.strictEqual(state, 'StateReady');
+
     assert.strictEqual(
         speed,
         (downloadBps >= 25000000 && uploadBps > 0) ?
             'SpeedFast' :
             ((downloadBps >= 10000000 && uploadBps > 0) ? 'SpeedMedium' :
-                                                                 'SpeedSlow'));
+                                                          'SpeedSlow'));
+
     // Exit the benchmark
     await vpn.waitForElementAndClick(homeScreen.CONNECTION_INFO_TOGGLE);
   });
@@ -176,29 +205,28 @@ describe('Benchmark', function() {
     // Start the connection benchmark.
     await vpn.waitForElementAndClick(homeScreen.CONNECTION_INFO_TOGGLE);
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getElementProperty(
-          homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state =
+          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
       return state == 'StateRunning';
     });
 
     // Disconnect the VPN, this should trigger an error.
-    await vpn.wait(1000);
     await vpn.deactivate();
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getElementProperty(
-          homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state =
+          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
       return state != 'StateRunning';
     });
 
     // We expect the benchmark to fail.
-    await vpn.wait(5000);
     assert.strictEqual(
         await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state'),
         'StateError');
-    assert.strictEqual(
-        await vpn.getElementProperty('connectionInfoError', 'visible'), 'true');
+    await vpn.waitForCondition(async () => {
+      return await vpn.getElementProperty('connectionInfoError', 'visible');
+    });
 
-    // Exit the benchmark
+    // Exit the benchmark    
     await vpn.waitForElementAndClick(homeScreen.CONNECTION_INFO_TOGGLE);
   });
 });

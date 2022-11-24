@@ -230,7 +230,7 @@ QHash<int, QByteArray> Localizer::roleNames() const {
 }
 
 int Localizer::rowCount(const QModelIndex&) const {
-  return m_languages.count();
+  return static_cast<int>(m_languages.count());
 }
 
 QVariant Localizer::data(const QModelIndex& index, int role) const {

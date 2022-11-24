@@ -3,8 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 module.exports = {
-  GUARDIAN_URL : 'http://localhost:3000',
-  GUARDIAN_PORT : 3000,
-  FXA_PORT : 3001,
-  WASM_PORT : 3002,
+  GUARDIAN_URL: 'http://localhost:3000',
+  GUARDIAN_PORT: 3000,
+  FXA_PORT: 3001,
+  WASM_PORT: 3002,
+  UPLOAD_BENCHMARK_PORT: 3003,
 };

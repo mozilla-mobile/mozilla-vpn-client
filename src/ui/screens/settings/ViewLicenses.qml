@@ -36,6 +36,7 @@ VPNViewBase {
                 accessibleName: licenseTitle
                 title: licenseTitle
                 iconSource: "qrc:/nebula/resources/chevron.svg"
+                iconMirror: VPNLocalizer.isRightToLeft
                 onClicked: stackview.push("qrc:/ui/screens/settings/ViewLicense.qml", { _menuTitle: licenseTitle, licenseContent })
             }
         }

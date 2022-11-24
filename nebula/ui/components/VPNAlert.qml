@@ -351,7 +351,7 @@ Rectangle {
     }
 
     function remove() {
-        VPNErrorHandler.setAlert(VPNErrorHandler.NoAlert)
+        VPNErrorHandler.hideAlert();
         if (alertBox.destructive){
             alertBox.destroy(100)
         }

@@ -56,12 +56,14 @@ void TaskAuthenticate::run() {
                 NetworkRequest::createForAuthenticationVerification(
                     this, pkceCodeSucces, pkceCodeVerifier);
 
-            connect(request, &NetworkRequest::requestFailed, this,
-                    [](QNetworkReply::NetworkError error, const QByteArray&) {
-                      logger.error()
-                          << "Failed to complete the authentication" << error;
-                      ErrorHandler::networkErrorHandle(error);
-                    });
+            connect(
+                request, &NetworkRequest::requestFailed, this,
+                [this](QNetworkReply::NetworkError error, const QByteArray&) {
+                  logger.error()
+                      << "Failed to complete the authentication" << error;
+                  REPORTNETWORKERROR(error, ErrorHandler::PropagateError,
+                                     name());
+                });
 
             connect(request, &NetworkRequest::requestCompleted, this,
                     [this](const QByteArray& data) {
@@ -72,7 +74,7 @@ void TaskAuthenticate::run() {
 
   connect(m_authenticationListener, &AuthenticationListener::failed, this,
           [this](const ErrorHandler::ErrorType error) {
-            ErrorHandler::instance()->errorHandle(error);
+            REPORTERROR(error, name());
             m_authenticationListener->aboutToFinish();
           });
 
@@ -92,14 +94,14 @@ void TaskAuthenticate::authenticationCompleted(const QByteArray& data) {
 
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (json.isNull()) {
-    ErrorHandler::instance()->errorHandle(ErrorHandler::RemoteServiceError);
+    REPORTERROR(ErrorHandler::RemoteServiceError, name());
     return;
   }
 
   QJsonObject obj = json.object();
   QJsonValue userObj = obj.value("user");
   if (!userObj.isObject()) {
-    ErrorHandler::instance()->errorHandle(ErrorHandler::RemoteServiceError);
+    REPORTERROR(ErrorHandler::RemoteServiceError, name());
     return;
   }
 
@@ -109,7 +111,7 @@ void TaskAuthenticate::authenticationCompleted(const QByteArray& data) {
 
   QJsonValue tokenValue = obj.value("token");
   if (!tokenValue.isString()) {
-    ErrorHandler::instance()->errorHandle(ErrorHandler::RemoteServiceError);
+    REPORTERROR(ErrorHandler::RemoteServiceError, name());
     return;
   }
 

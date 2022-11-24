@@ -47,6 +47,7 @@ endif()
 set(HEADER_FILE vpnglean.h)
 set(LIBNAME ${CMAKE_STATIC_LIBRARY_PREFIX}vpnglean${CMAKE_STATIC_LIBRARY_SUFFIX})
 
+## Build the vpnglean Rust library
 add_custom_target(vpnglean_ffi
     BYPRODUCTS
         ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/debug/${LIBNAME}
@@ -61,6 +62,30 @@ add_custom_target(vpnglean_ffi
 )
 set_target_properties(vpnglean_ffi PROPERTIES FOLDER "Libs")
 
+# This options should be used if the glean_parser command needs to be run on some sort of pre-build script.
+if(NOT SKIP_GLEAN_PARSER)
+    set(GENERATE_GLEAN_CMD python3 ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py)
+else()
+    set(GENERATE_GLEAN_CMD echo "Skipping glean_parser step.")
+endif()
+
+## Generate metrics and pings files
+add_custom_target(vpnglean_telemetry
+    BYPRODUCTS
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.rs
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.rs
+    DEPENDS
+        ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py
+        ${CMAKE_SOURCE_DIR}/glean/pings.yaml
+        ${CMAKE_SOURCE_DIR}/glean/metrics.yaml
+    COMMAND ${GENERATE_GLEAN_CMD}
+)
+set_target_properties(vpnglean_telemetry PROPERTIES FOLDER "Libs")
+
+## Define depedencies
+add_dependencies(vpnglean_ffi vpnglean_telemetry)
 add_dependencies(vpnglean vpnglean_ffi)
 add_dependencies(mozillavpn vpnglean)
 set_target_properties(vpnglean PROPERTIES
@@ -82,3 +107,4 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 endif()
 
 target_include_directories(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(mozillavpn PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/generated)

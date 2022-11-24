@@ -18,6 +18,7 @@ ARG NDK_FILE=${NDK_VERSION}-linux.zip
 ARG QT_VERSION=6.2.1
 ARG CMAKE_VERSION=3.22.1
 ARG ANDROID_ARCH=android_armv7
+ARG SENTRY_CLI_VERSION="2.9.0"
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -q update &&\
@@ -35,6 +36,7 @@ RUN apt-get -q update &&\
     python3 -m pip install aqtinstall
 RUN wget https://sh.rustup.rs && CARGO_HOME=/opt/.cargo sh index.html -y &&\
     /opt/.cargo/bin/rustup target add x86_64-linux-android i686-linux-android armv7-linux-androideabi aarch64-linux-android
+RUN curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION=${SENTRY_CLI_VERSION} bash
 RUN python3 -m aqt install-qt --outputdir /opt linux desktop ${QT_VERSION} gcc_64
 RUN python3 -m aqt install-qt --outputdir /opt linux android ${QT_VERSION} ${ANDROID_ARCH} -m all &&\
     #Download Additional stuff that is not in a repo
