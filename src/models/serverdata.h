@@ -30,7 +30,6 @@ class ServerData final : public QObject {
   ~ServerData();
 
   [[nodiscard]] bool fromSettings();
-  [[nodiscard]] bool fromString(const QString& data);
 
   void writeSettings();
 

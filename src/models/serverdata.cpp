@@ -35,35 +35,6 @@ bool ServerData::fromSettings() {
   return true;
 }
 
-bool ServerData::fromString(const QString& data) {
-  QStringList serverList = data.split("->");
-
-  QString exit = serverList.last();
-  qsizetype index = exit.lastIndexOf(',');
-  if (index < 0) {
-    return false;
-  }
-  QString exitCountryCode = exit.mid(index + 1).trimmed();
-  QString exitCityName = exit.left(index).trimmed();
-  QString entryCountryCode;
-  QString entryCityName;
-
-  if (serverList.count() > 1) {
-    QString entry = serverList.first();
-    index = entry.lastIndexOf(',');
-    if (index > 0) {
-      entryCityName = entry.left(index).trimmed();
-      entryCountryCode = entry.mid(index + 1).trimmed();
-    }
-  }
-
-  initializeInternal(exitCountryCode, exitCityName, entryCountryCode,
-                     entryCityName);
-
-  logger.debug() << toString();
-  return true;
-}
-
 void ServerData::writeSettings() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
