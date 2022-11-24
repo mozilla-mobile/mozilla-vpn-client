@@ -241,6 +241,8 @@ void MozillaVPN::initialize() {
 
   m_private->m_serverLatency.initialize();
 
+  m_private->m_serverData.initialize();
+
   if (Feature::get(Feature::Feature_websocket)->isSupported()) {
     m_private->m_webSocketHandler.initialize();
   }
@@ -332,9 +334,11 @@ void MozillaVPN::initialize() {
 
   Q_ASSERT(!m_private->m_serverData.initialized());
   if (!m_private->m_serverData.fromSettings()) {
-    m_private->m_serverCountryModel.pickRandom(m_private->m_serverData);
+    QStringList list = m_private->m_serverCountryModel.pickRandom();
+    Q_ASSERT(list.length() >= 2);
+
+    m_private->m_serverData.update(list[0], list[1]);
     Q_ASSERT(m_private->m_serverData.initialized());
-    m_private->m_serverData.writeSettings();
   }
 
   scheduleRefreshDataTasks(true);
@@ -668,10 +672,14 @@ void MozillaVPN::serversFetched(const QByteArray& serverData) {
 
   // The serverData could be unset or invalid with the new server list.
   if (!m_private->m_serverData.initialized() ||
-      !m_private->m_serverCountryModel.exists(m_private->m_serverData)) {
-    m_private->m_serverCountryModel.pickRandom(m_private->m_serverData);
+      !m_private->m_serverCountryModel.exists(
+          m_private->m_serverData.exitCountryCode(),
+          m_private->m_serverData.exitCityName())) {
+    QStringList list = m_private->m_serverCountryModel.pickRandom();
+    Q_ASSERT(list.length() >= 2);
+
+    m_private->m_serverData.update(list[0], list[1]);
     Q_ASSERT(m_private->m_serverData.initialized());
-    m_private->m_serverData.writeSettings();
   }
 }
 
@@ -916,18 +924,18 @@ QList<Server> MozillaVPN::filterServerList(const QList<Server>& servers) const {
 }
 
 const QList<Server> MozillaVPN::exitServers() const {
-  return filterServerList(
-      m_private->m_serverCountryModel.servers(m_private->m_serverData));
+  return filterServerList(m_private->m_serverCountryModel.servers(
+      m_private->m_serverData.exitCountryCode(),
+      m_private->m_serverData.exitCityName()));
 }
 
 const QList<Server> MozillaVPN::entryServers() const {
   if (!m_private->m_serverData.multihop()) {
     return exitServers();
   }
-  ServerData sd;
-  sd.update(m_private->m_serverData.entryCountryCode(),
-            m_private->m_serverData.entryCityName());
-  return filterServerList(m_private->m_serverCountryModel.servers(sd));
+  return filterServerList(m_private->m_serverCountryModel.servers(
+      m_private->m_serverData.entryCountryCode(),
+      m_private->m_serverData.entryCityName()));
 }
 
 void MozillaVPN::postAuthenticationCompleted() {

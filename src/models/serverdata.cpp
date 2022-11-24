@@ -26,6 +26,11 @@ ServerData::ServerData() { MVPN_COUNT_CTOR(ServerData); }
 
 ServerData::~ServerData() { MVPN_COUNT_DTOR(ServerData); }
 
+void ServerData::initialize() {
+  connect(SettingsHolder::instance(), &SettingsHolder::serverDataChanged, this,
+          &ServerData::settingsChanged);
+}
+
 bool ServerData::fromSettings() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
@@ -33,12 +38,11 @@ bool ServerData::fromSettings() {
   // Let's migrate data from a pre v2.13.
   if (settingsHolder->hasCurrentServerCountryCodeDeprecated() &&
       settingsHolder->hasCurrentServerCityDeprecated()) {
-    initializeInternal(settingsHolder->currentServerCountryCodeDeprecated(),
-                       settingsHolder->currentServerCityDeprecated(),
-                       settingsHolder->entryServerCountryCodeDeprecated(),
-                       settingsHolder->entryServerCityDeprecated());
+    update(settingsHolder->currentServerCountryCodeDeprecated(),
+           settingsHolder->currentServerCityDeprecated(),
+           settingsHolder->entryServerCountryCodeDeprecated(),
+           settingsHolder->entryServerCityDeprecated());
 
-    writeSettings();
     Q_ASSERT(settingsHolder->hasServerData());
 
     settingsHolder->removeCurrentServerCountryCodeDeprecated();
@@ -48,6 +52,33 @@ bool ServerData::fromSettings() {
 
     return true;
   }
+
+  return settingsChanged();
+}
+
+void ServerData::update(const QString& exitCountryCode,
+                        const QString& exitCityName,
+                        const QString& entryCountryCode,
+                        const QString& entryCityName) {
+  m_previousExitCountryCode = m_exitCountryCode;
+  m_previousExitCityName = m_exitCityName;
+
+  QJsonObject obj;
+  obj[EXIT_COUNTRY_CODE] = exitCountryCode;
+  obj[EXIT_CITY_NAME] = exitCityName;
+
+  obj[ENTER_COUNTRY_CODE] = entryCountryCode;
+  obj[ENTER_CITY_NAME] = entryCityName;
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  settingsHolder->setServerData(QJsonDocument(obj).toJson());
+}
+
+bool ServerData::settingsChanged() {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
 
   if (!settingsHolder->hasServerData()) {
     return false;
@@ -60,49 +91,13 @@ bool ServerData::fromSettings() {
 
   QJsonObject obj = json.object();
 
-  initializeInternal(
-      obj[EXIT_COUNTRY_CODE].toString(), obj[EXIT_CITY_NAME].toString(),
-      obj[ENTER_COUNTRY_CODE].toString(), obj[ENTER_CITY_NAME].toString());
+  m_exitCountryCode = obj[EXIT_COUNTRY_CODE].toString();
+  m_exitCityName = obj[EXIT_CITY_NAME].toString();
+  m_entryCountryCode = obj[ENTER_COUNTRY_CODE].toString();
+  m_entryCityName = obj[ENTER_CITY_NAME].toString();
 
-  logger.debug() << toString();
-  return true;
-}
-
-void ServerData::writeSettings() {
-  QJsonObject obj;
-  obj[EXIT_COUNTRY_CODE] = m_exitCountryCode;
-  obj[EXIT_CITY_NAME] = m_exitCityName;
-
-  if (multihop()) {
-    obj[ENTER_COUNTRY_CODE] = m_entryCountryCode;
-    obj[ENTER_CITY_NAME] = m_entryCityName;
-  }
-
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
-
-  settingsHolder->setServerData(QJsonDocument(obj).toJson());
-}
-
-void ServerData::update(const QString& countryCode, const QString& cityName,
-                        const QString& entryCountryCode,
-                        const QString& entryCityName) {
-  m_previousExitCountryCode = m_exitCountryCode;
-  m_previousExitCityName = m_exitCityName;
-
-  initializeInternal(countryCode, cityName, entryCountryCode, entryCityName);
   emit changed();
-}
-
-void ServerData::initializeInternal(const QString& exitCountryCode,
-                                    const QString& exitCityName,
-                                    const QString& entryCountryCode,
-                                    const QString& entryCityName) {
-  m_initialized = true;
-  m_exitCountryCode = exitCountryCode;
-  m_exitCityName = exitCityName;
-  m_entryCountryCode = entryCountryCode;
-  m_entryCityName = entryCityName;
+  return true;
 }
 
 QString ServerData::localizedCityName() const {
@@ -119,7 +114,7 @@ QString ServerData::localizedPreviousExitCityName() const {
 }
 
 QString ServerData::toString() const {
-  if (!m_initialized) {
+  if (!initialized()) {
     return QString();
   }
 
@@ -144,7 +139,6 @@ void ServerData::changeServer(const QString& countryCode,
   }
 
   update(countryCode, cityName, entryCountryCode, entryCityName);
-  writeSettings();
 
   // Update the list of recent connections.
   QString description = toString();

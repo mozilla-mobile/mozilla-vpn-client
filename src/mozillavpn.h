@@ -209,7 +209,6 @@ class MozillaVPN final : public QObject {
 
   const QList<Server> exitServers() const;
   const QList<Server> entryServers() const;
-  bool multihop() const { return m_private->m_serverData.multihop(); }
 
   void abortAuthentication();
 

@@ -231,7 +231,7 @@ void Controller::activateInternal(bool forcePort53) {
 
   // For single-hop connections, exclude the entry server
   if (!Feature::get(Feature::Feature_multiHop)->isSupported() ||
-      !vpn->multihop()) {
+      !vpn->currentServer()->multihop()) {
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv4AddrIn());
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv6AddrIn());
 

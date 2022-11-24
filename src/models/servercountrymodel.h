@@ -11,8 +11,6 @@
 #include <QByteArray>
 #include <QObject>
 
-class ServerData;
-
 class ServerCountryModel final : public QAbstractListModel {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(ServerCountryModel)
@@ -45,17 +43,10 @@ class ServerCountryModel final : public QAbstractListModel {
 
   Q_INVOKABLE QStringList pickRandom();
 
-  void pickRandom(ServerData& data) const;
+  bool exists(const QString& countryCode, const QString& cityName) const;
 
-  bool pickIfExists(const QString& countryCode, const QString& cityCode,
-                    ServerData& data) const;
-
-  // For windows data migration.
-  bool pickByIPv4Address(const QString& ipv4Address, ServerData& data) const;
-
-  bool exists(ServerData& data) const;
-
-  const QList<Server> servers(const ServerData& data) const;
+  const QList<Server> servers(const QString& countryCode,
+                              const QString& cityName) const;
   const QList<Server> servers() const { return m_servers.values(); };
   Server server(const QString& pubkey) const { return m_servers.value(pubkey); }
 
