@@ -17,6 +17,7 @@ class EventListener final : public QObject {
   ~EventListener();
 
   static bool checkOtherInstances();
+  static QString pipeLocation();
 
  private:
   QLocalServer m_server;

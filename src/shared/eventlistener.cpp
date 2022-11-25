@@ -13,8 +13,8 @@
 
 #if defined(MZ_WINDOWS)
 #  include <windows.h>
-
-#  include "platforms/windows/windowsutils.h"
+#elif defined(MZ_LINUX)
+#  include <QFileInfo>
 #endif
 
 namespace {
@@ -26,15 +26,15 @@ EventListener::EventListener() {
 
   m_server.setSocketOptions(QLocalServer::UserAccessOption);
 
-  logger.debug() << "Server path:" << AppConstants::UI_PIPE;
+  logger.debug() << "Server path:" << pipeLocation();
 
 #ifdef MZ_LINUX
-  if (QFileInfo::exists(AppConstants::UI_PIPE)) {
-    QFile::remove(AppConstants::UI_PIPE);
+  if (QFileInfo::exists(pipeLocation())) {
+    QFile::remove(pipeLocation());
   }
 #endif
 
-  if (!m_server.listen(AppConstants::UI_PIPE)) {
+  if (!m_server.listen(pipeLocation())) {
     logger.error() << "Failed to listen the daemon path";
     return;
   }
@@ -72,8 +72,8 @@ EventListener::~EventListener() {
   m_server.close();
 
 #ifdef MZ_LINUX
-  if (QFileInfo::exists(AppConstants::UI_PIPE)) {
-    QFile::remove(AppConstants::UI_PIPE);
+  if (QFileInfo::exists(pipeLocation())) {
+    QFile::remove(pipeLocation());
   }
 #endif
 }
@@ -90,7 +90,7 @@ bool EventListener::checkOtherInstances() {
     return true;
   }
 #else
-  if (!QFileInfo::exists(AppConstants::UI_PIPE)) {
+  if (!QFileInfo::exists(pipeLocation())) {
     logger.warning() << "No other instances found - no unix socket";
     return true;
   }
@@ -99,7 +99,7 @@ bool EventListener::checkOtherInstances() {
   logger.debug() << "Try to communicate with the existing instance";
 
   QLocalSocket socket;
-  socket.connectToServer(AppConstants::UI_PIPE);
+  socket.connectToServer(pipeLocation());
   if (!socket.waitForConnected(1000)) {
     logger.error() << "Connection failed.";
     return true;
@@ -116,4 +116,21 @@ bool EventListener::checkOtherInstances() {
 
   logger.debug() << "Terminating the current process";
   return false;
+}
+
+QString EventListener::pipeLocation() {
+  QString appName = qApp->applicationName().toLower();
+  QString appNameSimple = appName.remove(QRegularExpression("[^a-z]"));
+
+#if defined(MVPN_WINDOWS)
+  return QString("\\\\.\\pipe\\%1.ui").arg(appNameSimple);
+#else
+  static QString path;
+  if (path.isEmpty()) {
+    QDir dir(QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation));
+    path = dir.filePath(QString("%1.ui.sock").arg(appNameSimple));
+  }
+
+  return path;
+#endif
 }

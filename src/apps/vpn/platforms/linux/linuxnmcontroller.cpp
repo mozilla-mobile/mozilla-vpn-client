@@ -233,9 +233,10 @@ void LinuxNMController::activate(const HopConnection& hop, const Device* device,
     NMSettingIPConfig* ipcfg;
     GError* err = nullptr;
 
-    if(dst.contains(':')) {
+    if (dst.contains(':')) {
       // Probably IPv6
-      route = nm_ip_route_new(AF_INET6, qPrintable(dst), 128, nullptr, -1, &err);
+      route =
+          nm_ip_route_new(AF_INET6, qPrintable(dst), 128, nullptr, -1, &err);
       ipcfg = m_ipv6config;
     } else {
       // Probably IPv4
