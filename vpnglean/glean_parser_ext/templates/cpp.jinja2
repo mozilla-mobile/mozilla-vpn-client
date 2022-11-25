@@ -38,28 +38,31 @@ struct {{ obj.name|Camelize }}{{ suffix }} {
   {% endfor %}
 
   FfiExtra ToFfiExtra() const {
-    QVector<const char*> extraKeys;
-    QVector<const char*> extraValues;
+    const char* extraKeys[{{ obj|attr(name)|length }} + 1];
+    const char* extraValues[{{ obj|attr(name)|length }} + 1];
+    int count = 0;
     {% for item, type in obj|attr(name) %}
     if (_{{item|camelize}}.canConvert<{{type|extra_type_name}}>()) {
-      extraKeys.append("{{item}}");
+      extraKeys[count] = "{{item}}";
       {% if type == "string" %}
-      extraValues.append(_{{item|camelize}}.toString().toUtf8().constData());
+      extraValues[count] = _{{item|camelize}}.toString().toUtf8().constData();
       {% elif type == "boolean" %}
-      extraValues.append(_{{item|camelize}}.toBool() ? "true" : "false");
+      extraValues[count] = _{{item|camelize}}.toBool() ? "true" : "false";
       {% elif type == "quantity" %}
       std::string s = std::to_string(_{{item|camelize}}.toInt());
-      extraValues.append(s.c_str());
+      extraValues[count] = s.c_str();
       {% else %}
 #error "Glean: Invalid extra key type for metric {{obj.category}}.{{obj.name}}, defined in: {{obj.defined_in['filepath']}}:{{obj.defined_in['line']}})"
       {% endif %}
+
+      count++;
     }
     {% endfor %}
 
     FfiExtra extras;
-    extras.keys = std::move(extraKeys.begin());
-    extras.values = std::move(extraValues.begin());
-    extras.count = extraValues.count();
+    extras.keys = std::move(extraKeys);
+    extras.values = std::move(extraValues);
+    extras.count = count;
     return extras;
   };
 };
