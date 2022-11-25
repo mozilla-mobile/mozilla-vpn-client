@@ -28,13 +28,9 @@ describe('Tutorials', function () {
     await vpn.clickOnElement(homeScreen.TUTORIAL_LEAVE);
   }
 
-  async function loadAddons() {
-    await vpn.resetAddons('04_tutorials_basic');
-  }
-
   describe('Tutorial tooltip', function() {
     beforeEach(async () => {
-      await loadAddons();
+      await vpn.resetAddons('04_tutorials_basic');
       await openHighlightedTutorial();
     });
 
@@ -57,7 +53,7 @@ describe('Tutorials', function () {
 
   describe('"Leave tutorial?" popup', function() {
     beforeEach(async () => {
-      await loadAddons();
+      await vpn.resetAddons('04_tutorials_basic');
       await openHighlightedTutorial();
       await vpn.wait();
       await clickTooltipCloseButton();

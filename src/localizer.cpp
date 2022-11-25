@@ -64,9 +64,6 @@ Localizer::Localizer() {
   Q_ASSERT(!s_instance);
   s_instance = this;
 
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  m_code = settingsHolder->languageCode();
-
   initialize();
 }
 
@@ -101,7 +98,9 @@ void Localizer::initialize() {
     settingsHolder->setPreviousLanguageCode(systemCode);
   }
 
-  loadLanguage(m_code);
+  connect(settingsHolder, &SettingsHolder::languageCodeChanged, this,
+          &Localizer::settingsChanged);
+  settingsChanged();
 
   QCoreApplication::installTranslator(&m_translator);
   QDir dir(":/i18n");
@@ -128,25 +127,25 @@ void Localizer::initialize() {
 }
 
 void Localizer::loadLanguage(const QString& code) {
+  SettingsHolder::instance()->setLanguageCode(code);
+}
+
+void Localizer::settingsChanged() {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+
+  QString code = settingsHolder->languageCode();
   logger.debug() << "Loading language:" << code;
+
   if (!loadLanguageInternal(code)) {
     logger.debug() << "Loading default language (fallback)";
     loadLanguageInternal("en");
   }
 
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  if (code.isEmpty() && settingsHolder->hasLanguageCode()) {
-    QString previousCode = settingsHolder->languageCode();
-    if (!previousCode.isEmpty()) {
-      settingsHolder->setPreviousLanguageCode(previousCode);
-      emit previousCodeChanged();
-    }
+  if (!m_code.isEmpty()) {
+    settingsHolder->setPreviousLanguageCode(m_code);
   }
 
-  SettingsHolder::instance()->setLanguageCode(code);
-
   m_code = code;
-  emit codeChanged();
 }
 
 bool Localizer::loadLanguageInternal(const QString& code) {
@@ -266,10 +265,6 @@ bool Localizer::languageSort(const Localizer::Language& a,
                              const Localizer::Language& b, Collator* collator) {
   Q_ASSERT(collator);
   return collator->compare(a.m_localizedName, b.m_localizedName) < 0;
-}
-
-QString Localizer::previousCode() const {
-  return SettingsHolder::instance()->previousLanguageCode();
 }
 
 QString Localizer::localizedCityName(const QString& code, const QString& city) {

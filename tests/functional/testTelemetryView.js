@@ -21,23 +21,23 @@ describe('Telemetry view', function() {
   }
 
   it('Accept telemetry', async () => {
-    assert(await vpn.getSetting('telemetry-policy-shown') === 'false');
-    assert(await vpn.getSetting('glean-enabled') === 'true');
+    assert(await vpn.getSetting('telemetryPolicyShown') === false);
+    assert(await vpn.getSetting('gleanEnabled') === true);
     await _getToTelemetryPage();
     await vpn.clickOnElement(telemetryScreen.TELEMETRY_POLICY_BUTTON);
     await vpn.wait();
-    assert(await vpn.getSetting('telemetry-policy-shown') === 'true');
-    assert(await vpn.getSetting('glean-enabled') === 'true');
+    assert(await vpn.getSetting('telemetryPolicyShown') === true);
+    assert(await vpn.getSetting('gleanEnabled') === true);
   });
 
   it('Deny telemetry', async () => {
-    assert(await vpn.getSetting('telemetry-policy-shown') === 'false');
-    assert(await vpn.getSetting('glean-enabled') === 'true');
+    assert(await vpn.getSetting('telemetryPolicyShown') === false);
+    assert(await vpn.getSetting('gleanEnabled') === true);
     await _getToTelemetryPage();
     await vpn.clickOnElement(telemetryScreen.DECLINE_TELEMETRY);
     await vpn.wait();
-    assert(await vpn.getSetting('telemetry-policy-shown') === 'true');
-    assert(await vpn.getSetting('glean-enabled') === 'false');
+    assert(await vpn.getSetting('telemetryPolicyShown') === true);
+    assert(await vpn.getSetting('gleanEnabled') === false);
   });
 
 });
