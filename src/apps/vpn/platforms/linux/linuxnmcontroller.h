@@ -15,6 +15,7 @@ struct _GCancellable;
 struct _NMActiveConnection;
 struct _NMCLient;
 struct _NMRemoteConnection;
+struct _NMSettingIPConfig;
 struct _NMSettingWireGuard;
 
 class LinuxNMController final : public ControllerImpl {
@@ -50,6 +51,8 @@ class LinuxNMController final : public ControllerImpl {
   struct _NMSettingWireGuard* m_wireguard = nullptr;
   struct _NMRemoteConnection* m_remote = nullptr;
   struct _NMActiveConnection* m_active = nullptr;
+  struct _NMSettingIPConfig* m_ipv4config = nullptr;
+  struct _NMSettingIPConfig* m_ipv6config = nullptr;
 
   QString m_serverPublicKey;
 };

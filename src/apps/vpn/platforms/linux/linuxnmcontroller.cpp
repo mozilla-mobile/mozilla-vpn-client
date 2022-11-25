@@ -15,6 +15,8 @@ extern "C" {
 #endif
 
 #include <glib.h>
+#include <linux/netlink.h>
+#include <linux/rtnetlink.h>
 
 #undef signals
 #include <NetworkManager.h>
@@ -27,6 +29,7 @@ extern "C" {
 constexpr uint32_t WG_FIREWALL_MARK = 0xca6c;
 constexpr const char* WG_INTERFACE_NAME = "wg0";
 constexpr uint16_t WG_KEEPALIVE_PERIOD = 60;
+constexpr uint16_t WG_EXCLUDE_RULE_PRIO = 100;
 
 namespace {
 Logger logger({LOG_LINUX, LOG_CONTROLLER}, "LinuxNMController");
@@ -45,6 +48,8 @@ LinuxNMController::LinuxNMController() {
     g_error_free(err);
   }
 
+  m_ipv4config = NM_SETTING_IP_CONFIG(nm_setting_ip4_config_new());
+  m_ipv6config = NM_SETTING_IP_CONFIG(nm_setting_ip6_config_new());
   m_wireguard = NM_SETTING_WIREGUARD(nm_setting_wireguard_new());
   m_cancellable = g_cancellable_new();
 }
@@ -71,6 +76,8 @@ LinuxNMController::~LinuxNMController() {
   g_cancellable_cancel(m_cancellable);
   g_object_unref(m_cancellable);
   g_object_unref(m_wireguard);
+  g_object_unref(m_ipv6config);
+  g_object_unref(m_ipv4config);
   g_object_unref(m_client);
 }
 
@@ -126,17 +133,19 @@ void LinuxNMController::initialize(const Device* device, const Keys* keys) {
                NM_SETTING_CONNECTION_AUTOCONNECT, false, NULL);
 
   // Address settings
-  NMSettingIPConfig* ipv4 = NM_SETTING_IP_CONFIG(nm_setting_ip4_config_new());
-  g_object_set(ipv4, NM_SETTING_IP_CONFIG_METHOD,
+  g_object_ref(m_ipv4config);
+  g_object_set(m_ipv4config, NM_SETTING_IP_CONFIG_METHOD,
                NM_SETTING_IP4_CONFIG_METHOD_MANUAL, NULL);
-  nm_connection_add_setting(wg_connection, NM_SETTING(ipv4));
-  nm_setting_ip_config_add_address(ipv4, parseAddress(device->ipv4Address()));
+  nm_connection_add_setting(wg_connection, NM_SETTING(m_ipv4config));
+  nm_setting_ip_config_add_address(m_ipv4config,
+                                   parseAddress(device->ipv4Address()));
 
-  NMSettingIPConfig* ipv6 = NM_SETTING_IP_CONFIG(nm_setting_ip6_config_new());
-  g_object_set(ipv6, NM_SETTING_IP_CONFIG_METHOD,
+  g_object_ref(m_ipv6config);
+  g_object_set(m_ipv6config, NM_SETTING_IP_CONFIG_METHOD,
                NM_SETTING_IP6_CONFIG_METHOD_MANUAL, NULL);
-  nm_connection_add_setting(wg_connection, NM_SETTING(ipv6));
-  nm_setting_ip_config_add_address(ipv6, parseAddress(device->ipv6Address()));
+  nm_connection_add_setting(wg_connection, NM_SETTING(m_ipv6config));
+  nm_setting_ip_config_add_address(m_ipv6config,
+                                   parseAddress(device->ipv6Address()));
 
   // Wireguard connection settings.
   g_object_ref(m_wireguard);
@@ -205,9 +214,9 @@ void LinuxNMController::activate(const HopConnection& hop, const Device* device,
   if (hop.m_hopindex == 0) {
     NMSettingIPConfig* ipcfg;
     if (hop.m_dnsServer.protocol() == QAbstractSocket::IPv6Protocol) {
-      ipcfg = nm_connection_get_setting_ip6_config(NM_CONNECTION(m_remote));
+      ipcfg = m_ipv6config;
     } else {
-      ipcfg = nm_connection_get_setting_ip4_config(NM_CONNECTION(m_remote));
+      ipcfg = m_ipv4config;
     }
 
     const char* dnsServerList[] = {qPrintable(hop.m_dnsServer.toString()),
@@ -216,8 +225,33 @@ void LinuxNMController::activate(const HopConnection& hop, const Device* device,
     g_object_set(ipcfg, NM_SETTING_IP_CONFIG_DNS, dnsServerList,
                  NM_SETTING_IP_CONFIG_DNS_SEARCH, dnsSearchList,
                  NM_SETTING_IP_CONFIG_DNS_PRIORITY, 10, NULL);
-    nm_connection_add_setting(NM_CONNECTION(m_remote), NM_SETTING(ipcfg));
   }
+
+  // Update excluded addresses.
+  for (const QString& dst : hop.m_excludedAddresses) {
+    NMIPRoutingRule* rule;
+    if(dst.contains(':')) {
+      // Probably IPv6
+      rule = nm_ip_routing_rule_new(AF_INET6);
+      nm_ip_routing_rule_set_to(rule, qPrintable(dst), 128);
+      nm_ip_routing_rule_set_table(rule, RT_TABLE_MAIN);
+      nm_ip_routing_rule_set_priority(rule, WG_EXCLUDE_RULE_PRIO);
+      nm_setting_ip_config_add_routing_rule(m_ipv6config, rule);
+    } else {
+      // Probably IPv4
+      rule = nm_ip_routing_rule_new(AF_INET);
+      nm_ip_routing_rule_set_to(rule, qPrintable(dst), 32);
+      nm_ip_routing_rule_set_table(rule, RT_TABLE_MAIN);
+      nm_ip_routing_rule_set_priority(rule, WG_EXCLUDE_RULE_PRIO);
+      nm_setting_ip_config_add_routing_rule(m_ipv4config, rule);
+    }
+    nm_ip_routing_rule_unref(rule);
+  }
+
+  g_object_ref(m_ipv4config);
+  g_object_ref(m_ipv6config);
+  nm_connection_add_setting(NM_CONNECTION(m_remote), NM_SETTING(m_ipv4config));
+  nm_connection_add_setting(NM_CONNECTION(m_remote), NM_SETTING(m_ipv6config));
 
   // Update the connection settings.
   nm_remote_connection_commit_changes_async(
