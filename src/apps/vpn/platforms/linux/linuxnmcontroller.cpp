@@ -229,23 +229,31 @@ void LinuxNMController::activate(const HopConnection& hop, const Device* device,
 
   // Update excluded addresses.
   for (const QString& dst : hop.m_excludedAddresses) {
-    NMIPRoutingRule* rule;
+    NMIPRoute* route;
+    NMSettingIPConfig* ipcfg;
+    GError* err = nullptr;
+
     if(dst.contains(':')) {
       // Probably IPv6
-      rule = nm_ip_routing_rule_new(AF_INET6);
-      nm_ip_routing_rule_set_to(rule, qPrintable(dst), 128);
-      nm_ip_routing_rule_set_table(rule, RT_TABLE_MAIN);
-      nm_ip_routing_rule_set_priority(rule, WG_EXCLUDE_RULE_PRIO);
-      nm_setting_ip_config_add_routing_rule(m_ipv6config, rule);
+      route = nm_ip_route_new(AF_INET6, qPrintable(dst), 128, nullptr, -1, &err);
+      ipcfg = m_ipv6config;
     } else {
       // Probably IPv4
-      rule = nm_ip_routing_rule_new(AF_INET);
-      nm_ip_routing_rule_set_to(rule, qPrintable(dst), 32);
-      nm_ip_routing_rule_set_table(rule, RT_TABLE_MAIN);
-      nm_ip_routing_rule_set_priority(rule, WG_EXCLUDE_RULE_PRIO);
-      nm_setting_ip_config_add_routing_rule(m_ipv4config, rule);
+      route = nm_ip_route_new(AF_INET, qPrintable(dst), 32, nullptr, -1, &err);
+      ipcfg = m_ipv4config;
     }
-    nm_ip_routing_rule_unref(rule);
+    if (route == nullptr) {
+      logger.error() << "Failed to create route:" << err->message;
+      g_error_free(err);
+      continue;
+    }
+
+    nm_ip_route_set_attribute(route, NM_IP_ROUTE_ATTRIBUTE_TABLE,
+                              g_variant_new_uint32(WG_FIREWALL_MARK));
+    nm_ip_route_set_attribute(route, NM_IP_ROUTE_ATTRIBUTE_TYPE,
+                              g_variant_new_string("throw"));
+    nm_setting_ip_config_add_route(ipcfg, route);
+    nm_ip_route_unref(route);
   }
 
   g_object_ref(m_ipv4config);
