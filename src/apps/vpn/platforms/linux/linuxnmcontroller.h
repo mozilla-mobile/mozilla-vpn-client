@@ -15,8 +15,7 @@ struct _GCancellable;
 struct _NMActiveConnection;
 struct _NMCLient;
 struct _NMRemoteConnection;
-struct _NMSettingIPConfig;
-struct _NMSettingWireGuard;
+struct _NMSetting;
 
 class LinuxNMController final : public ControllerImpl {
   Q_DISABLE_COPY_MOVE(LinuxNMController)
@@ -46,15 +45,19 @@ class LinuxNMController final : public ControllerImpl {
   void deactivateCompleted(void*);
 
  private:
+  struct _NMActiveConnection* getActiveConnection() const;
+
+ private:
   struct _GCancellable* m_cancellable;
   struct _NMClient* m_client = nullptr;
-  struct _NMSettingWireGuard* m_wireguard = nullptr;
+  struct _NMSetting* m_wireguard = nullptr;
+  struct _NMSetting* m_ipv4config = nullptr;
+  struct _NMSetting* m_ipv6config = nullptr;
   struct _NMRemoteConnection* m_remote = nullptr;
   struct _NMActiveConnection* m_active = nullptr;
-  struct _NMSettingIPConfig* m_ipv4config = nullptr;
-  struct _NMSettingIPConfig* m_ipv6config = nullptr;
 
   QString m_serverPublicKey;
+  QString m_tunnelUuid;
 };
 
 #endif  // LINUXNMCONTROLLER_H

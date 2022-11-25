@@ -508,9 +508,20 @@ SETTING_STRINGLIST(subscriptionTransactions,        // getter
                    removeSubscriptionTransactions,  // remover
                    hasSubscriptionTransactions,     // has
                    "subscriptionTransactions",      // key
-                   QStringList(),                   // efault value
+                   QStringList(),                   // default value
                    false,                           // user setting
                    false,                           // remove when reset
                    true                             // sensitive (do not log)
 )
+#endif
+
+#if defined(MZ_FLATPAK)
+SETTING_STRING(tunnelUuid,        // getter
+               setTunnelUuid,     // setter
+               removeTunnelUuid,  // remover
+               hasTunnelUuid,     // has
+               "tunnelUuid",      // key
+               "",                // default value
+               false,             // user setting
+               false)             // remove when reset
 #endif

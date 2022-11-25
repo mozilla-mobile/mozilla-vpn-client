@@ -7,8 +7,10 @@
 #include "logger.h"
 #include "models/device.h"
 #include "models/keys.h"
+#include "settingsholder.h"
 
 #include <QScopeGuard>
+#include <QUuid>
 
 #if defined(__cplusplus)
 extern "C" {
@@ -48,15 +50,14 @@ LinuxNMController::LinuxNMController() {
     g_error_free(err);
   }
 
-  m_ipv4config = NM_SETTING_IP_CONFIG(nm_setting_ip4_config_new());
-  m_ipv6config = NM_SETTING_IP_CONFIG(nm_setting_ip6_config_new());
-  m_wireguard = NM_SETTING_WIREGUARD(nm_setting_wireguard_new());
+  m_wireguard = nm_setting_wireguard_new();
   m_cancellable = g_cancellable_new();
 }
 
 LinuxNMController::~LinuxNMController() {
   MVPN_COUNT_DTOR(LinuxNMController);
   logger.debug() << "Destroying LinuxNMController";
+  g_cancellable_cancel(m_cancellable);
 
   if (m_remote) {
     nm_remote_connection_delete_async(
@@ -73,11 +74,14 @@ LinuxNMController::~LinuxNMController() {
         m_remote);
   }
 
-  g_cancellable_cancel(m_cancellable);
+  if (m_ipv6config != nullptr) {
+    g_object_unref(m_ipv6config);
+  }
+  if (m_ipv4config != nullptr) {
+    g_object_unref(m_ipv4config);
+  }
   g_object_unref(m_cancellable);
   g_object_unref(m_wireguard);
-  g_object_unref(m_ipv6config);
-  g_object_unref(m_ipv4config);
   g_object_unref(m_client);
 }
 
@@ -120,15 +124,70 @@ static NMIPAddress* parseAddress(const QString& addr) {
   }
 }
 
+// Lookup the active connection handle, or null if the connection is down.
+NMActiveConnection* LinuxNMController::getActiveConnection() const {
+  if (m_client == nullptr) {
+    return nullptr;
+  }
+
+  const GPtrArray* active = nm_client_get_active_connections(m_client);
+  for (int i = 0; i < active->len; i++) {
+    NMActiveConnection* conn = NM_ACTIVE_CONNECTION(active->pdata[i]);
+    if (m_tunnelUuid == nm_active_connection_get_uuid(conn)) {
+      return conn;
+    }
+  }
+
+  return nullptr;
+}
+
 void LinuxNMController::initialize(const Device* device, const Keys* keys) {
   NMConnection* wg_connection = nm_simple_connection_new();
 
+  // Ensure we use a consistent UUID for the wireguard interface.
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+  QUuid uuid(settingsHolder->tunnelUuid());
+  if (uuid.isNull()) {
+    uuid = QUuid::createUuid();
+    settingsHolder->setTunnelUuid(uuid.toString(QUuid::WithoutBraces));
+  }
+  m_tunnelUuid = uuid.toString(QUuid::WithoutBraces);
+
+  // Whether the connection exists or not, we will always overwrite
+  // the wireguard settings with our own.
+  g_object_set(m_wireguard, NM_SETTING_WIREGUARD_PRIVATE_KEY,
+               qPrintable(keys->privateKey()), NM_SETTING_WIREGUARD_FWMARK,
+               WG_FIREWALL_MARK, NULL);
+
+  // Check if the connection already exists.
+  NMRemoteConnection* remote =
+      nm_client_get_connection_by_uuid(m_client, qPrintable(m_tunnelUuid));
+  if (remote) {
+    logger.info() << "Connection" << m_tunnelUuid << "already exists";
+    m_remote = remote;
+
+    NMSettingIPConfig* ipv4config = 
+        nm_connection_get_setting_ip4_config(NM_CONNECTION(remote));
+    m_ipv4config = nm_setting_duplicate(NM_SETTING(ipv4config));
+
+    NMSettingIPConfig* ipv6config =
+        nm_connection_get_setting_ip6_config(NM_CONNECTION(remote));
+    m_ipv6config = nm_setting_duplicate(NM_SETTING(ipv6config));
+
+    emit initialized(true, getActiveConnection() != nullptr, QDateTime());
+    return;
+  }
+
+  m_ipv4config = nm_setting_ip4_config_new();
+  m_ipv6config = nm_setting_ip6_config_new();
+
   // Generic connection settings.
-  NMSettingConnection* scon =
-      NM_SETTING_CONNECTION(nm_setting_connection_new());
-  nm_connection_add_setting(wg_connection, NM_SETTING(scon));
+  NMSetting* scon = nm_setting_connection_new();
+  nm_connection_add_setting(wg_connection, scon);
   g_object_set(scon, NM_SETTING_CONNECTION_ID, WG_INTERFACE_NAME,
                NM_SETTING_CONNECTION_TYPE, NM_SETTING_WIREGUARD_SETTING_NAME,
+               NM_SETTING_CONNECTION_UUID, qPrintable(m_tunnelUuid),
                NM_SETTING_CONNECTION_INTERFACE_NAME, WG_INTERFACE_NAME,
                NM_SETTING_CONNECTION_AUTOCONNECT, false, NULL);
 
@@ -136,26 +195,23 @@ void LinuxNMController::initialize(const Device* device, const Keys* keys) {
   g_object_ref(m_ipv4config);
   g_object_set(m_ipv4config, NM_SETTING_IP_CONFIG_METHOD,
                NM_SETTING_IP4_CONFIG_METHOD_MANUAL, NULL);
-  nm_connection_add_setting(wg_connection, NM_SETTING(m_ipv4config));
-  nm_setting_ip_config_add_address(m_ipv4config,
+  nm_connection_add_setting(wg_connection, m_ipv4config);
+  nm_setting_ip_config_add_address(NM_SETTING_IP_CONFIG(m_ipv4config),
                                    parseAddress(device->ipv4Address()));
 
   g_object_ref(m_ipv6config);
   g_object_set(m_ipv6config, NM_SETTING_IP_CONFIG_METHOD,
                NM_SETTING_IP6_CONFIG_METHOD_MANUAL, NULL);
-  nm_connection_add_setting(wg_connection, NM_SETTING(m_ipv6config));
-  nm_setting_ip_config_add_address(m_ipv6config,
+  nm_connection_add_setting(wg_connection, m_ipv6config);
+  nm_setting_ip_config_add_address(NM_SETTING_IP_CONFIG(m_ipv6config),
                                    parseAddress(device->ipv6Address()));
 
   // Wireguard connection settings.
   g_object_ref(m_wireguard);
-  g_object_set(m_wireguard, NM_SETTING_WIREGUARD_PRIVATE_KEY,
-               qPrintable(keys->privateKey()), NM_SETTING_WIREGUARD_FWMARK,
-               WG_FIREWALL_MARK, NULL);
-  nm_connection_add_setting(wg_connection, NM_SETTING(m_wireguard));
+  nm_connection_add_setting(wg_connection, m_wireguard);
 
   // Create the connection
-  logger.info() << "Creating connection";
+  logger.info() << "Creating connection:" << m_tunnelUuid;
   nm_client_add_connection2(
       m_client,
       nm_connection_to_dbus(wg_connection, NM_CONNECTION_SERIALIZE_ALL),
@@ -206,17 +262,18 @@ void LinuxNMController::activate(const HopConnection& hop, const Device* device,
     logger.error() << "Invalid peer configuration:" << err->message;
     g_error_free(err);
   }
-  nm_setting_wireguard_set_peer(m_wireguard, peer, hop.m_hopindex);
+  nm_setting_wireguard_set_peer(NM_SETTING_WIREGUARD(m_wireguard), peer,
+                                hop.m_hopindex);
   g_object_ref(m_wireguard);
-  nm_connection_add_setting(NM_CONNECTION(m_remote), NM_SETTING(m_wireguard));
+  nm_connection_add_setting(NM_CONNECTION(m_remote), m_wireguard);
 
   // Update DNS when configuring the exit server.
   if (hop.m_hopindex == 0) {
     NMSettingIPConfig* ipcfg;
     if (hop.m_dnsServer.protocol() == QAbstractSocket::IPv6Protocol) {
-      ipcfg = m_ipv6config;
+      ipcfg = NM_SETTING_IP_CONFIG(m_ipv6config);
     } else {
-      ipcfg = m_ipv4config;
+      ipcfg = NM_SETTING_IP_CONFIG(m_ipv4config);
     }
 
     const char* dnsServerList[] = {qPrintable(hop.m_dnsServer.toString()),
@@ -237,11 +294,11 @@ void LinuxNMController::activate(const HopConnection& hop, const Device* device,
       // Probably IPv6
       route =
           nm_ip_route_new(AF_INET6, qPrintable(dst), 128, nullptr, -1, &err);
-      ipcfg = m_ipv6config;
+      ipcfg = NM_SETTING_IP_CONFIG(m_ipv6config);
     } else {
       // Probably IPv4
       route = nm_ip_route_new(AF_INET, qPrintable(dst), 32, nullptr, -1, &err);
-      ipcfg = m_ipv4config;
+      ipcfg = NM_SETTING_IP_CONFIG(m_ipv4config);
     }
     if (route == nullptr) {
       logger.error() << "Failed to create route:" << err->message;
@@ -259,8 +316,8 @@ void LinuxNMController::activate(const HopConnection& hop, const Device* device,
 
   g_object_ref(m_ipv4config);
   g_object_ref(m_ipv6config);
-  nm_connection_add_setting(NM_CONNECTION(m_remote), NM_SETTING(m_ipv4config));
-  nm_connection_add_setting(NM_CONNECTION(m_remote), NM_SETTING(m_ipv6config));
+  nm_connection_add_setting(NM_CONNECTION(m_remote), m_ipv4config);
+  nm_connection_add_setting(NM_CONNECTION(m_remote), m_ipv6config);
 
   // Update the connection settings.
   nm_remote_connection_commit_changes_async(
@@ -277,7 +334,7 @@ void LinuxNMController::peerConfigCompleted(void* result) {
   if (!okay) {
     logger.error() << "peer configuration failed:" << err->message;
     g_error_free(err);
-  } else if (m_active != nullptr) {
+  } else if (getActiveConnection() != nullptr) {
     logger.debug() << "device already connected";
     emit connected(m_serverPublicKey);
   } else {
@@ -294,22 +351,25 @@ void LinuxNMController::peerConfigCompleted(void* result) {
 
 void LinuxNMController::activateCompleted(void* result) {
   GError* err = nullptr;
-  m_active = nm_client_activate_connection_finish(m_client,
-                                                  G_ASYNC_RESULT(result), &err);
+  NMActiveConnection* conn = nm_client_activate_connection_finish(
+      m_client, G_ASYNC_RESULT(result), &err);
 
-  if (!m_active) {
+  if (!conn) {
     logger.error() << "peer activation failed:" << err->message;
     g_error_free(err);
   } else {
     emit connected(m_serverPublicKey);
   }
 
+  g_object_unref(conn);
   g_object_unref(result);
 }
 
 void LinuxNMController::deactivate(Reason reason) {
   Q_UNUSED(reason);
-  if (m_active == nullptr) {
+  NMActiveConnection* conn = getActiveConnection();
+
+  if (conn == nullptr) {
     logger.warning() << "Client already disconnected";
     emit disconnected();
     return;
@@ -317,7 +377,7 @@ void LinuxNMController::deactivate(Reason reason) {
 
   Q_ASSERT(m_client);
   nm_client_deactivate_connection_async(
-      m_client, m_active, nullptr, LAMBDA_ASYNC_WRAPPER("deactivateCompleted"),
+      m_client, conn, nullptr, LAMBDA_ASYNC_WRAPPER("deactivateCompleted"),
       this);
 }
 
@@ -330,7 +390,6 @@ void LinuxNMController::deactivateCompleted(void* result) {
   }
   g_object_unref(result);
 
-  m_active = nullptr;  // TODO: What's the right way to refcount this?
   emit disconnected();
 }
 
