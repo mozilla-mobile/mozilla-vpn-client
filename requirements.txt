@@ -2,8 +2,7 @@ appdirs
 attrs
 click
 diskcache
-flask
-glean_parser
+glean_parser<5.1.0
 Jinja2
 jsonschema
 MarkupSafe

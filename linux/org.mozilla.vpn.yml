@@ -17,7 +17,7 @@ build-options:
     - CARGO_HOME=/run/build/rust-flatpak/cargo
 
 modules:
-  - flatpak-pyyaml.yaml
+  - flatpak-pydeps.yaml
   - flatpak-libnm.yaml
 
   - name: qt5compat
