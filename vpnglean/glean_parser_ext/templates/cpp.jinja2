@@ -45,11 +45,12 @@ struct {{ obj.name|Camelize }}{{ suffix }} {
     QVector<QByteArray> _keepStringsAlive;
     {% for item, type in obj|attr(name) %}
     if (_{{item|camelize}}.canConvert<{{type|extra_type_name}}>()) {
-      extraKeys[count] = "{{item}}";
       {% if type == "string" %}
       _keepStringsAlive.append(_{{item|camelize}}.toString().toUtf8());
       extraValues[count] = _keepStringsAlive[count].constData();
       {% elif type == "boolean" %}
+      // We don't need to actually keep these alive since they are literal strings.
+      // However we want to keep the indexes of keepStringsAlive in sync with the indexes of extraValues, so we keep this.
       _keepStringsAlive.append(_{{item|camelize}}.toBool() ? "true" : "false");
       extraValues[count] = _keepStringsAlive[count];
       {% elif type == "quantity" %}
@@ -58,6 +59,7 @@ struct {{ obj.name|Camelize }}{{ suffix }} {
       {% else %}
 #error "Glean: Invalid extra key type for metric {{obj.category}}.{{obj.name}}, defined in: {{obj.defined_in['filepath']}}:{{obj.defined_in['line']}})"
       {% endif %}
+      extraKeys[count] = "{{item}}";
       count++;
     }
     {% endfor %}
