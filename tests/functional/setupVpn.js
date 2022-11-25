@@ -22,6 +22,7 @@ const vpnWS = require('./helperWS.js');
 
 const fxa = require('./fxa.js');
 const guardian = require('./guardian.js');
+const networkBenchmark = require('./networkBenchmark.js');
 
 const app = process.env.MVPN_BIN;
 let vpnProcess = null;
@@ -53,14 +54,18 @@ exports.mochaHooks = {
 
     process.env['MVPN_API_BASE_URL'] = `http://localhost:${guardian.start()}`;
     process.env['MVPN_FXA_API_BASE_URL'] = `http://localhost:${fxa.start()}`;
+    process.env['MVPN_BENCHMARK_URL'] =
+        `http://localhost:${networkBenchmark.start()}`;
   },
 
   async afterAll() {
     guardian.stop();
     fxa.stop();
+    networkBenchmark.stop();
 
     guardian.throwExceptionsIfAny();
     fxa.throwExceptionsIfAny();
+    networkBenchmark.throwExceptionsIfAny();
   },
 
   async beforeEach() {

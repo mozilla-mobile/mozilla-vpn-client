@@ -18,6 +18,7 @@ const vpnWasm = require('./helperWasm.js');
 
 const fxa = require('./fxa.js');
 const guardian = require('./guardian.js');
+const networkBenchmark = require('./networkBenchmark.js');
 const wasm = require('./wasm.js');
 
 const {Builder, By, Key, until} = require('selenium-webdriver');
@@ -34,6 +35,8 @@ exports.mochaHooks = {
     const u = new URL(`http://localhost:${wasm.start()}/test.html`);
     u.searchParams.set('guardian', `http://localhost:${guardian.start()}`);
     u.searchParams.set('fxa', `http://localhost:${fxa.start()}`);
+    u.searchParams.set('benchmark',
+        `http://localhost:${networkBenchmark.start()}`);
 
     process.env['MVPN_WASM_URL'] = u.toString();
     driver = await new Builder().forBrowser('firefox').build();
@@ -42,10 +45,12 @@ exports.mochaHooks = {
   async afterAll() {
     guardian.stop();
     fxa.stop();
+    networkBenchmark.stop();
     wasm.stop();
 
     guardian.throwExceptionsIfAny();
     fxa.throwExceptionsIfAny();
+    networkBenchmark.throwExceptionsIfAny();
 
     await driver.quit();
   },

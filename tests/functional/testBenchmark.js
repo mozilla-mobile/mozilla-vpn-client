@@ -5,52 +5,10 @@
 const vpn = require('./helper.js');
 const assert = require('assert');
 const { homeScreen, generalElements } = require('./elements.js');
-const constants = require('./constants.js');
-const Server = require('./server.js');
-
-// Mock server for VPN Network Benchmark:
-// https://github.com/mozilla-services/vpn-network-benchmark
-let server = null;
-const networkBenchmark = {
-  start() {
-    server = new Server(
-      'VPN Network Benchmark',
-      constants.UPLOAD_BENCHMARK_PORT,
-      {
-        POSTs: {
-          '/': { status: 200 },
-        },
-      }
-    );
-    return constants.UPLOAD_BENCHMARK_PORT;
-  },
-
-  stop() {
-    server.stop();
-  },
-
-  throwExceptionsIfAny() {
-    server.throwExceptionsIfAny();
-  },
-};
 
 describe('Benchmark', function() {
   this.timeout(120000);
   this.ctx.authenticationNeeded = true;
-
-  before(function() {
-    try {
-      process.env['MVPN_BENCHMARK_URL'] =
-          `http://localhost:${networkBenchmark.start()}`;
-    } catch (error) {
-      console.log(`Network Benchmark error: ${error}`);
-    }
-  });
-
-  after(function() {
-    networkBenchmark.stop();
-    networkBenchmark.throwExceptionsIfAny();
-  });
 
   it('Successful benchmark', async () => {
     await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
