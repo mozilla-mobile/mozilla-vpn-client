@@ -41,16 +41,14 @@ SETTING_BOOL(addonCustomServer,        // getter
              false                     // remove when reset
 )
 
-SETTING_STRING(
-    addonCustomServerAddress,        // getter
-    setAddonCustomServerAddress,     // setter
-    removeAddonCustomServerAddress,  // remover
-    hasAddonCustomServerAddress,     // has
-    "addon/customServerAddress",     // key
-    Constants::envOrDefault("MVPN_ADDON_URL",
-                            Constants::ADDON_STAGING_URL),  // default value
-    false,                                                  // user setting
-    false                                                   // remove when reset
+SETTING_STRING(addonCustomServerAddress,        // getter
+               setAddonCustomServerAddress,     // setter
+               removeAddonCustomServerAddress,  // remover
+               hasAddonCustomServerAddress,     // has
+               "addon/customServerAddress",     // key
+               Constants::addonBaseUrl(),       // default value
+               false,                           // user setting
+               false                            // remove when reset
 )
 
 SETTING_BOOL(addonProdKeyInStaging,        // getter

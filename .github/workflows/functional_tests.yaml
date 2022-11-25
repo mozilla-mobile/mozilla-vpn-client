@@ -51,6 +51,7 @@ jobs:
           cmake -S $(pwd) -B build/cmake -DBUILD_DUMMY=ON \
               -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
           cmake --build build/cmake -j$(nproc)
+
       - uses: actions/upload-artifact@v3
         with:
           name: test-client-${{ github.sha }}
@@ -101,6 +102,16 @@ jobs:
         run: |
             chmod +x ./build/cmake/src/mozillavpn
             ./build/cmake/src/mozillavpn -v
+
+      - name: Build addons
+        shell: bash
+        if: steps.cache-build.outputs.cache-hit != 'true'
+        run: |
+           for i in tests/functional/addons/*; do
+             if ! [ -f $i/manifest.json ]; then
+               ./scripts/addon/generate_all.py -p $i
+             fi
+           done
 
       - name: Running ${{matrix.test.name}} Tests
         id: runTests

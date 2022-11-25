@@ -98,13 +98,8 @@ constexpr const char* API_PRODUCTION_URL = "https://vpn.mozilla.org";
 constexpr const char* API_STAGING_URL =
     "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
 
-constexpr const char* ADDON_PRODUCTION_URL =
-    "https://archive.mozilla.org/pub/vpn/addons/releases/latest/";
 constexpr const char* ADDON_PRODUCTION_KEY =
     ":/addons_signature/production.der";
-
-constexpr const char* ADDON_STAGING_URL =
-    "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/";
 constexpr const char* ADDON_STAGING_KEY = ":/addons_signature/staging.der";
 
 constexpr auto CRASH_PRODUCTION_URL =
@@ -128,8 +123,16 @@ PRODBETAEXPR(
 PRODBETAEXPR(QString, fxaApiBaseUrl, "https://api.accounts.firefox.com",
              envOrDefault("MVPN_FXA_API_BASE_URL",
                           "https://api-accounts.stage.mozaws.net"))
+
 PRODBETAEXPR(const char*, fxaUrl, "https://accounts.firefox.com",
              "https://accounts.stage.mozaws.net")
+
+PRODBETAEXPR(
+    QString, addonBaseUrl,
+    "https://archive.mozilla.org/pub/vpn/addons/releases/latest/",
+    envOrDefault("MVPN_ADDON_URL",
+                 "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/"))
+
 PRODBETAEXPR(
     const char*, balrogUrl,
     "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release/update.json",

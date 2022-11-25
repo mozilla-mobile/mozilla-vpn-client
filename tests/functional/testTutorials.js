@@ -1,6 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 const assert = require('assert');
 const { navBar, settingsScreen, homeScreen } = require('./elements.js');
 const vpn = require('./helper.js');
@@ -27,8 +28,13 @@ describe('Tutorials', function () {
     await vpn.clickOnElement(homeScreen.TUTORIAL_LEAVE);
   }
 
-  describe('Tutorial tooltip', function () {
+  async function loadAddons() {
+    await vpn.resetAddons('04_tutorials_basic');
+  }
+
+  describe('Tutorial tooltip', function() {
     beforeEach(async () => {
+      await loadAddons();
       await openHighlightedTutorial();
     });
 
@@ -51,6 +57,7 @@ describe('Tutorials', function () {
 
   describe('"Leave tutorial?" popup', function() {
     beforeEach(async () => {
+      await loadAddons();
       await openHighlightedTutorial();
       await vpn.wait();
       await clickTooltipCloseButton();
