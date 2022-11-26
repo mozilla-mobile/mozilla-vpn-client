@@ -440,33 +440,8 @@ void TestSignUpAndIn::waitForTotpCodes() {
   connect(aia, &AuthenticationInApp::errorOccurred, aia,
           [this](AuthenticationInApp::ErrorType error, uint32_t) {
             if (error == AuthenticationInApp::ErrorInvalidTotpCode) {
-              qDebug() << "Invalid code. Let's send the right one";
-
-              AuthenticationInApp* aia = AuthenticationInApp::instance();
-              QCOMPARE(
-                  aia->state(),
-                  AuthenticationInApp::StateVerificationSessionByTotpNeeded);
-
-              QString otp;
-              {
-                QProcess process;
-                process.start("python3",
-                              QStringList{"-m", "oathtool", m_totpSecret});
-                QVERIFY(process.waitForStarted());
-
-                process.closeWriteChannel();
-                QVERIFY(process.waitForFinished());
-                QCOMPARE(process.exitStatus(), QProcess::NormalExit);
-                QCOMPARE(process.exitCode(), 0);
-
-                otp = process.readAll().trimmed();
-              }
-
-              qDebug() << "Code:" << otp;
-              aia->verifySessionTotpCode(otp);
-              QCOMPARE(aia->state(),
-                       AuthenticationInApp::StateVerifyingSessionTotpCode);
-              m_sendWrongTotpCode = true;
+              qDebug() << "Invalid code. Current state:" << m_sendTotpCodeState;
+              sendNextTotpCode();
             }
           });
 
@@ -481,18 +456,69 @@ void TestSignUpAndIn::waitForTotpCodes() {
 
   connect(aia, &AuthenticationInApp::stateChanged, aia, [this]() {
     AuthenticationInApp* aia = AuthenticationInApp::instance();
-    qDebug() << "Send wrong code:" << m_sendWrongTotpCode;
+    qDebug() << "Send wrong code:" << m_sendTotpCodeState;
 
-    if (m_sendWrongTotpCode &&
+    if (m_sendTotpCodeState == NoCodeSent &&
         aia->state() ==
             AuthenticationInApp::StateVerificationSessionByTotpNeeded) {
-      m_sendWrongTotpCode = false;
-      qDebug() << "Code required. Let's write a wrong code first.";
-      aia->verifySessionTotpCode("123456");
-      QCOMPARE(aia->state(),
-               AuthenticationInApp::StateVerifyingSessionTotpCode);
+      sendNextTotpCode();
     }
   });
+}
+
+void TestSignUpAndIn::sendNextTotpCode() {
+  AuthenticationInApp* aia = AuthenticationInApp::instance();
+  QCOMPARE(aia->state(),
+           AuthenticationInApp::StateVerificationSessionByTotpNeeded);
+
+  Q_ASSERT(m_sendTotpCodeState < GoodTotpCode);
+  m_sendTotpCodeState = static_cast<SendTotpCodeState>(m_sendTotpCodeState + 1);
+  switch (m_sendTotpCodeState) {
+    case SendWrongTotpCodeNumber:
+      qDebug() << "Code required. Let's write a wrong code first (numeric).";
+      aia->verifySessionTotpCode("123456");
+      break;
+
+    case SendWrongTotpCodeString:
+      qDebug() << "Code required. Let's write a wrong code first (string).";
+      aia->verifySessionTotpCode("aabbcc");
+      break;
+
+    case SendWrongTotpCodeAlphaNumeric:
+      qDebug()
+          << "Code required. Let's write a wrong code first (alphanmeric).";
+      aia->verifySessionTotpCode("12345a");
+      break;
+
+    case GoodTotpCode: {
+      QString otp;
+      {
+        QProcess process;
+        process.start("python3", QStringList{"-m", "oathtool", m_totpSecret});
+        QVERIFY(process.waitForStarted());
+
+        process.closeWriteChannel();
+        QVERIFY(process.waitForFinished());
+        QCOMPARE(process.exitStatus(), QProcess::NormalExit);
+        QCOMPARE(process.exitCode(), 0);
+
+        otp = process.readAll().trimmed();
+      }
+
+      qDebug() << "Code required. Let's write a good code:" << otp;
+      aia->verifySessionTotpCode(otp);
+    }
+
+      // Let's reset the state for the next cycle.
+      m_sendTotpCodeState = NoCodeSent;
+      break;
+
+    default:
+      Q_ASSERT(false);
+      break;
+  }
+
+  QCOMPARE(aia->state(), AuthenticationInApp::StateVerifyingSessionTotpCode);
 }
 
 QString TestSignUpAndIn::fetchCode(const QString& code) {
