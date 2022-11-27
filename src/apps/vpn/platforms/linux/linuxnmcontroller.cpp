@@ -158,7 +158,7 @@ void LinuxNMController::initialize(const Device* device, const Keys* keys) {
   // the wireguard settings with our own.
   g_object_set(m_wireguard, NM_SETTING_WIREGUARD_PRIVATE_KEY,
                qPrintable(keys->privateKey()), NM_SETTING_WIREGUARD_FWMARK,
-               WG_FIREWALL_MARK, NULL);
+               WG_FIREWALL_MARK, NM_SETTING_WIREGUARD_PEER_ROUTES, false, NULL);
 
   // Check if the connection already exists.
   NMRemoteConnection* remote =
@@ -253,6 +253,32 @@ void LinuxNMController::activate(const HopConnection& hop, const Device* device,
   nm_wireguard_peer_set_persistent_keepalive(peer, WG_KEEPALIVE_PERIOD);
   nm_wireguard_peer_set_public_key(peer, qPrintable(m_serverPublicKey), true);
   for (const IPAddress& i : hop.m_allowedIPAddressRanges) {
+    int family;
+    NMSettingIPConfig* ipcfg;
+    if (i.address().protocol() == QAbstractSocket::IPv6Protocol) {
+      family = AF_INET6;
+      ipcfg = NM_SETTING_IP_CONFIG(m_ipv6config);
+    } else {
+      family = AF_INET;
+      ipcfg = NM_SETTING_IP_CONFIG(m_ipv4config);
+    }
+
+    // Add routes manually so we can place them in the wireguard table.
+    NMIPRoute* route;
+    GError* err = nullptr;
+    route = nm_ip_route_new(family, qPrintable(i.address().toString()),
+                            i.prefixLength(), nullptr, -1, &err);
+    if (route == nullptr) {
+      logger.error() << "Failed to create route:" << err->message;
+      g_error_free(err);
+      continue;
+    }
+    nm_ip_route_set_attribute(route, NM_IP_ROUTE_ATTRIBUTE_TABLE,
+                              g_variant_new_uint32(WG_FIREWALL_MARK));
+    nm_setting_ip_config_add_route(ipcfg, route);
+    nm_ip_route_unref(route);
+
+    // Add the allowed IP to the wireguard peer.
     nm_wireguard_peer_append_allowed_ip(peer, qPrintable(i.toString()), false);
   }
 
@@ -267,8 +293,8 @@ void LinuxNMController::activate(const HopConnection& hop, const Device* device,
   g_object_ref(m_wireguard);
   nm_connection_add_setting(NM_CONNECTION(m_remote), m_wireguard);
 
-  // Update DNS when configuring the exit server.
   if (hop.m_hopindex == 0) {
+    // Update DNS when configuring the exit server.
     NMSettingIPConfig* ipcfg;
     if (hop.m_dnsServer.protocol() == QAbstractSocket::IPv6Protocol) {
       ipcfg = NM_SETTING_IP_CONFIG(m_ipv6config);
@@ -282,6 +308,9 @@ void LinuxNMController::activate(const HopConnection& hop, const Device* device,
     g_object_set(ipcfg, NM_SETTING_IP_CONFIG_DNS, dnsServerList,
                  NM_SETTING_IP_CONFIG_DNS_SEARCH, dnsSearchList,
                  NM_SETTING_IP_CONFIG_DNS_PRIORITY, 10, NULL);
+    
+    // Keep the IPv4 gateway for later.
+    m_serverIpv4Gateway = hop.m_server.ipv4Gateway();
   }
 
   // Update excluded addresses.
@@ -395,7 +424,40 @@ void LinuxNMController::deactivateCompleted(void* result) {
 
 // TODO: Implement Me!
 void LinuxNMController::checkStatus() {
-  emit statusUpdated("127.0.0.1", "127.0.0.1", 1234500, 6789000);
+  NMActiveConnection* conn = getActiveConnection();
+  if (conn == nullptr) {
+    return;
+  }
+
+  // At this point, we probably need to go off-script to try and pull
+  // the statistics directly using the D-Bus API, since there doesn't
+  // appear to be a way to do this directly.
+  //
+  // TLDR: To get the interface throughput, we need to enable refresh
+  // in the statistics interface by setting the RefreshRateMs property
+  // and then we can read RxBytes and TxBytes for the data sent and
+  // recieved.
+  //
+  // An ever harder nut to crack without real netlink access. When
+  // did the handshake complete? If we can access that data point then
+  // we could probably do multihop too.
+  const char* objpath = nm_object_get_path(NM_OBJECT(conn));
+  logger.debug() << "Checking status of object:" << objpath;
+
+  NMIPConfig* ipv4cfg = nm_active_connection_get_ip4_config(conn);
+  if (ipv4cfg == nullptr) {
+    return;
+  }
+  GPtrArray* addrcfg = nm_ip_config_get_addresses(ipv4cfg);
+  if (addrcfg->len < 1) {
+    return;
+  }
+
+  QString deviceAddress(
+      nm_ip_address_get_address((NMIPAddress *)(addrcfg->pdata[0])));
+
+  logger.info() << "Status:" << deviceAddress;
+  emit statusUpdated(m_serverIpv4Gateway, deviceAddress, 1234500, 6789000);
 }
 
 void LinuxNMController::getBackendLogs(

@@ -57,6 +57,7 @@ class LinuxNMController final : public ControllerImpl {
   struct _NMActiveConnection* m_active = nullptr;
 
   QString m_serverPublicKey;
+  QString m_serverIpv4Gateway;
   QString m_tunnelUuid;
 };
 
