@@ -93,6 +93,7 @@ else()
 endif()
 
 ## Generate metrics and pings files
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/generated)
 add_custom_target(vpnglean_telemetry
     BYPRODUCTS
         ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.h
