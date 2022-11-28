@@ -42,7 +42,6 @@ mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar 
 export PATH=$PWD/homebrew/bin:$PATH
 brew install cmake
 brew install ninja
-brew install getsentry/tools/sentry-cli
 
 print Y "Installing go..."
 curl -O https://dl.google.com/go/go1.17.6.darwin-amd64.tar.gz
@@ -67,6 +66,8 @@ if [[ "$RELEASE" ]]; then
     ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
     export SENTRY_ENVELOPE_ENDPOINT=$(cat sentry_envelope_endpoint)
     export SENTRY_DSN=$(cat sentry_dsn)
+    #Install Sentry CLI:
+    curl -sL https://sentry.io/get-cli/ | bash
     sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
 fi
 
