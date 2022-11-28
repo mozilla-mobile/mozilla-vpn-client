@@ -4,6 +4,10 @@
 
 set_target_properties(mozillavpn PROPERTIES OUTPUT_NAME "Mozilla VPN")
 
+# Force llvm to add DWARF info on Release builds
+SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g")
+
+
 # Configure the application bundle Info.plist
 set_target_properties(mozillavpn PROPERTIES
     MACOSX_BUNDLE ON
