@@ -42,6 +42,7 @@ mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar 
 export PATH=$PWD/homebrew/bin:$PATH
 brew install cmake
 brew install ninja
+brew install getsentry/tools/sentry-cli
 
 print Y "Installing go..."
 curl -O https://dl.google.com/go/go1.17.6.darwin-amd64.tar.gz
@@ -63,8 +64,10 @@ if [[ "$RELEASE" ]]; then
     # Only on a release build we have access to those secrects. 
     ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_dsn -f sentry_dsn
     ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_envelope_endpoint -f sentry_envelope_endpoint
+    ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
     export SENTRY_ENVELOPE_ENDPOINT=$(cat sentry_envelope_endpoint)
     export SENTRY_DSN=$(cat sentry_dsn)
+    sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
 fi
 
 print Y "Configuring the build..."
@@ -90,6 +93,14 @@ cmake --build ${MOZ_FETCHES_DIR}/build --target pkg
 
 print Y "Exporting the build artifacts..."
 mkdir -p tmp || die
+
+if [[ "$RELEASE" ]]; then
+    print Y "Extracting the Symbols..."
+    dsymutil ${MOZ_FETCHES_DIR}/build/src/Mozilla\ VPN.app/Contents/MacOS/Mozilla\ VPN  -o tmp/vpn.dsym
+    print Y "Uploading the Symbols..."    
+    sentry-cli debug-files upload --org mozilla -p vpn-client tmp/vpn.dsym/Contents/Resources/DWARF/*
+fi
+
 cp -r ${MOZ_FETCHES_DIR}/build/src/Mozilla\ VPN.app tmp || die
 cp -r ${MOZ_FETCHES_DIR}/build/macos/pkg/Resources tmp || die
 cp -r ./macos/pkg/scripts tmp || die
