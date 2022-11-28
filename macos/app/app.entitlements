@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>com.apple.application-identifier</key>
-	<string>$(DEVELOPMENT_TEAM).$(APP_ID_MACOS)</string>
+	<string>$(DEVELOPMENT_TEAM).$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 
 	<key>keychain-access-groups</key>
 	<array>
