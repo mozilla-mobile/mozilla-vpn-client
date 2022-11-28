@@ -118,8 +118,6 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND
         NetworkAuth
         Sql
     )
-    # Glean.rs
-    add_subdirectory(vpnglean)   
 endif()
 message("Using Qt version ${Qt6_VERSION}")
 add_definitions(-DQT_DEPRECATED_WARNINGS)
@@ -129,6 +127,10 @@ add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0x050F00)
 add_subdirectory(src)
 # Glean.js
 add_subdirectory(glean)
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    # Glean.rs
+    add_subdirectory(vpnglean)
+endif()
 add_subdirectory(lottie)
 add_subdirectory(nebula)
 add_subdirectory(translations)
