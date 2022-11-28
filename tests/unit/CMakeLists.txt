@@ -128,6 +128,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/frontend/navigatorreloader.h
     ${MVPN_SOURCE_DIR}/glean/glean.h
     ${MVPN_SOURCE_DIR}/glean/glean.cpp
+    ${MVPN_SOURCE_DIR}/glean/private/event.h
+    ${MVPN_SOURCE_DIR}/glean/private/event.cpp
     ${MVPN_SOURCE_DIR}/glean/private/ping.h
     ${MVPN_SOURCE_DIR}/glean/private/ping.cpp
     ${MVPN_SOURCE_DIR}/glean/metrictypes.h

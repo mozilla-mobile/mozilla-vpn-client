@@ -18,11 +18,13 @@
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
+#include "metrics.h"
 #include "models/feature.h"
 #include "models/featuremodel.h"
 #include "models/recentconnections.h"
 #include "mozillavpn.h"
 #include "notificationhandler.h"
+#include "pings.h"
 #include "productshandler.h"
 #include "purchasehandler.h"
 #include "qmlengineholder.h"
@@ -33,7 +35,6 @@
 #include "tutorial/tutorial.h"
 #include "update/updater.h"
 #include "urlopener.h"
-#include "pings.h"
 
 #include <glean.h>
 #include <lottie.h>
@@ -547,6 +548,13 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "GleanPings",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = __DONOTUSE__GleanPings::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "Glean", [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = __DONOTUSE__GleanMetrics::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

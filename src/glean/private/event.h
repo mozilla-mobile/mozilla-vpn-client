@@ -6,45 +6,56 @@
 #define EVENT_METRIC_H
 
 #include "vpnglean.h"
-#if defined(UNIT_TEST)
-#  include "glean/glean.h"
-#  include <QJsonArray>
-#  include <QJsonDocument>
-#endif
+#include "glean/glean.h"
 
-template <class T>
+#include <QObject>
+#include <QJsonObject>
+#include <QJsonArray>
+
+struct FfiExtra {
+  const char* const* keys;
+  const char* const* values;
+  int count;
+};
+
+struct EventMetricExtra {
+  virtual FfiExtra ToFfiExtra() {
+    Q_ASSERT(false);
+
+    // This function is meant to be overriden by the Glean generated code.
+  }
+};
+
 class EventMetric final {
+  Q_GADGET
+
  public:
-  constexpr explicit EventMetric(int aId) : m_id(aId) {}
+  EventMetric(int aId);
+  ~EventMetric() = default;
 
-  void record() const { glean_event_record_no_extra(m_id); }
+  Q_INVOKABLE void record() const;
 
-  void record(T extras) const {
-    auto ffiExtras = extras.ToFfiExtra();
-    glean_event_record(m_id, ffiExtras.keys, ffiExtras.values, ffiExtras.count);
-  }
+  // This function should only be used from QML,
+  // on C++ the variant that receives the FFI extra struct is preferred.
+  //
+  // Note: template classes cannot be used on methods exposed to QML.
+  Q_INVOKABLE void record(QJsonObject extras);
+
+  void record(EventMetricExtra extras) const;
 
 #if defined(UNIT_TEST)
-  int32_t testGetNumRecordedErrors(Glean::ErrorType errorType) const {
-    return glean_event_test_get_num_recorded_errors(
-        m_id, static_cast<int32_t>(errorType));
-  }
+  Q_INVOKABLE int32_t
+  testGetNumRecordedErrors(Glean::ErrorType errorType) const;
 
-  QJsonArray testGetValue(const QString& pingName = QString()) const {
-    auto value = glean_event_test_get_value(m_id, pingName.toLocal8Bit());
-    QJsonArray recordedEvents = QJsonDocument::fromJson(value).array();
-    if (!recordedEvents.isEmpty()) {
-      for (const QJsonValue& recordedEvent : recordedEvents) {
-        Q_ASSERT(recordedEvent.isObject());
-      }
-    }
-
-    return recordedEvents;
-  }
+  Q_INVOKABLE QJsonArray testGetValue(const QString& pingName) const;
 #endif
 
  private:
   int m_id;
+
+  // Helper vector to extend the lifetime of the strings
+  // that hold the extra key values until they are used.
+  QVector<QPair<QByteArray, QByteArray>> m_keepQMLStringsAlive;
 };
 
 #endif  // EVENT_METRIC_H

@@ -14,6 +14,67 @@ Jinja2 template is not. Please file bugs! #}
 #include "glean/metrictypes.h"
 
 #include <QString>
+#include <QObject>
+
+{% for category_name, objs in all_objs.items() %}
+class __DONOTUSE__{{ category_name|Camelize }} final {
+  Q_GADGET
+
+{% for obj in objs.values() %}
+  Q_PROPERTY({{ obj|type_name }} {{obj.name|camelize }} READ {{ obj.name|camelize }} CONSTANT);
+{% endfor %}
+
+  public:
+    {% for obj in objs.values() %}
+    {{ obj|type_name }} {{obj.name|camelize }} () const { return m_{{obj.name|camelize }}; };
+    {% endfor %}
+
+  private:
+    {% for obj in objs.values() %}
+    {{ obj|type_name }} m_{{obj.name|camelize }} = {{ obj|type_name }}({{obj|metric_id}});
+    {% endfor %}
+};
+{% endfor %}
+
+// This class is not meant to be used directly.
+// It is exposed as a singleton to QML.
+//
+// The reason for this is to keep consistency with the Glean API on m-c.
+// On JavaScript pings are accessed through GleanMetrics.<MyPing> and
+// on C++ they are accessed through mozilla::glean_pings::<MyPing>.
+class __DONOTUSE__GleanMetrics final : public QObject {
+    Q_OBJECT
+    Q_DISABLE_COPY_MOVE(__DONOTUSE__GleanMetrics)
+
+    {% for category_name, _ in all_objs.items() %}
+    Q_PROPERTY(__DONOTUSE__{{ category_name|Camelize }} {{ category_name|camelize }} READ {{ category_name|camelize }} CONSTANT);
+    {% endfor %}
+
+    private:
+        __DONOTUSE__GleanMetrics() = default;
+
+    public:
+        ~__DONOTUSE__GleanMetrics() = default;
+
+        static __DONOTUSE__GleanMetrics* instance() {
+            if (!s_instance) {
+                s_instance = new __DONOTUSE__GleanMetrics();
+            }
+
+            return s_instance;
+        }
+
+        {% for category_name, _ in all_objs.items() %}
+        __DONOTUSE__{{ category_name|Camelize }} {{ category_name|camelize }} () const { return m_{{ category_name|camelize }}; };
+        {% endfor %}
+
+    private:
+        {% for category_name, _ in all_objs.items() %}
+        __DONOTUSE__{{ category_name|Camelize }} m_{{ category_name|camelize }} = __DONOTUSE__{{ category_name|Camelize }}() ;
+        {% endfor %}
+
+        inline static __DONOTUSE__GleanMetrics* s_instance = nullptr;
+};
 
 namespace mozilla::glean {
 
@@ -32,12 +93,12 @@ namespace mozilla::glean {
 {%- endmacro -%}
 
 {%- macro extra_keys_with_types(obj, name, suffix) -%}
-struct {{ obj.name|Camelize }}{{ suffix }} {
+struct {{ obj.name|Camelize }}{{ suffix }} : EventMetricExtra {
   {% for item, type in obj|attr(name) %}
   QVariant _{{ item|camelize }} = QVariant();
   {% endfor %}
 
-  FfiExtra ToFfiExtra() const {
+  virtual FfiExtra ToFfiExtra() override {
     m_keepStringsAlive.clear();
 
     const char* extraKeys[{{ obj|attr(name)|length }} + 1];
@@ -77,14 +138,6 @@ struct {{ obj.name|Camelize }}{{ suffix }} {
 };
 {%- endmacro %}
 
-struct NoExtraKeys;
-
-struct FfiExtra {
-  const char* const* keys;
-  const char* const* values;
-  int count;
-};
-
 {% for category_name, objs in all_objs.items() %}
 namespace {{ category_name|snake_case }} {
     {% for obj in objs.values() %}
@@ -97,7 +150,7 @@ namespace {{ category_name|snake_case }} {
     /**
      * {{ obj.description|wordwrap() | replace('\n', '\n     * ') }}
      */
-    constexpr {{ obj|type_name }} {{obj.name|snake_case }}({{obj|metric_id}});
+    {{ obj|type_name }} {{obj.name|snake_case }} = __DONOTUSE__GleanMetrics::instance()->{{ category_name|camelize }}().{{ obj.name|camelize }}();
 
     {% endfor %}
 }
