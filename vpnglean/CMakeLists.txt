@@ -108,6 +108,18 @@ add_custom_target(vpnglean_telemetry
 )
 set_target_properties(vpnglean_telemetry PROPERTIES FOLDER "Libs")
 
+target_sources(mozillavpn PRIVATE
+    ${CMAKE_CURRENT_BINARY_DIR}/${HEADER_FILE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.h
+)
+set_source_files_properties(
+    ${CMAKE_CURRENT_BINARY_DIR}/${HEADER_FILE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.h
+    PROPERTIES GENERATED TRUE
+)
+
 ## Define depedencies
 add_dependencies(vpnglean_ffi vpnglean_telemetry)
 add_dependencies(vpnglean vpnglean_ffi)

@@ -153,7 +153,7 @@ target_sources(mozillavpn PRIVATE
     frontend/navigatorreloader.h
     glean/glean.h
     glean/metrictypes.h
-    glean/private/event.h
+    glean/private/ping.cpp
     glean/private/ping.h
     hacl-star/Hacl_Chacha20.c
     hacl-star/Hacl_Chacha20Poly1305_32.c

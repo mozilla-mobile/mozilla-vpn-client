@@ -2,22 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef PING_H
-#define PING_H
+#include "glean/private/ping.h"
+#include "vpnglean.h"
 
-#include <QObject>
+Ping::Ping(int aId) : m_id(aId) {}
 
-class Ping final {
-  Q_GADGET
-
- public:
-  Ping(int aId);
-  ~Ping() = default;
-
-  Q_INVOKABLE void submit() const;
-
- private:
-  int m_id;
-};
-
-#endif  // PING_H
+void Ping::submit() const { glean_submit_ping_by_id(m_id); }
