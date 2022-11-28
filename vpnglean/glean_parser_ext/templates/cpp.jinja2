@@ -38,19 +38,20 @@ struct {{ obj.name|Camelize }}{{ suffix }} {
   {% endfor %}
 
   FfiExtra ToFfiExtra() const {
+    m_keepStringsAlive.clear();
+
     const char* extraKeys[{{ obj|attr(name)|length }} + 1];
     const char* extraValues[{{ obj|attr(name)|length }} + 1];
     int count = 0;
 
-    QVector<QByteArray> _keepStringsAlive;
     {% for item, type in obj|attr(name) %}
     if (_{{item|camelize}}.canConvert<{{type|extra_type_name}}>()) {
       {% if type == "string" %}
       QByteArray s = _{{item|camelize}}.toString().toUtf8();
-      _keepStringsAlive.append(s);
+      m_keepStringsAlive.append(s);
       extraValues[count] = s.constData();
       {% elif type == "boolean" %}
-      extraValues[count] = _keepStringsAlive[count];
+      extraValues[count] = m_keepStringsAlive[count];
       {% elif type == "quantity" %}
       QByteArray s = QString::number(_{{item|camelize}}.toInt()).toUtf8();
       extraValues[count] = s.constData();
@@ -68,6 +69,11 @@ struct {{ obj.name|Camelize }}{{ suffix }} {
     extras.count = count;
     return extras;
   };
+
+  private:
+    // Helper vector to extend the lifetime of the strings
+    // that hold the extra key values until they are used.
+    QVector<QByteArray> m_keepStringsAlive;
 };
 {%- endmacro %}
 
