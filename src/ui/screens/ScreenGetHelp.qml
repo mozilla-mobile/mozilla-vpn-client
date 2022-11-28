@@ -25,6 +25,7 @@ Item {
 
             property int unlockCounter: 0
 
+            Layout.fillWidth: true
             objectName: "getHelpBack"
             _menuOnBackClicked: () => VPNNavigator.requestPreviousScreen()
             _menuIconButtonSource: getHelpStackView.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
