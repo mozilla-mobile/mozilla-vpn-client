@@ -10,6 +10,7 @@ task-defaults:
             tier: 1
             platform: macos/x86_64
     requires-level: 1
+    worker-type: b-macos
     fetches:
         toolchain:
             - qt-mac
