@@ -6,7 +6,7 @@
     <key>LprojCompatibleVersion</key>
     <string>123</string>
     <key>LprojLocale</key>
-    <string>__LOCALE__</string>
+    <string>${LOCALE}</string>
     <key>LprojRevisionLevel</key>
     <string>1</string>
     <key>LprojVersion</key>

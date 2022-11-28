@@ -5,14 +5,14 @@
 #include "ioscontroller.h"
 #include "Mozilla_VPN-Swift.h"
 #include "controller.h"
-#include "device.h"
 #include "ipaddress.h"
-#include "keys.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/device.h"
+#include "models/keys.h"
 #include "models/feature.h"
+#include "models/server.h"
 #include "mozillavpn.h"
-#include "server.h"
 #include "settingsholder.h"
 
 #include <QByteArray>

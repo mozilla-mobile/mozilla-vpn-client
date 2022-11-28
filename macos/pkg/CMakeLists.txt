@@ -82,4 +82,7 @@ if(INSTALLER_SIGN_IDENTITY)
 else()
     add_custom_target(pkg DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/MozillaVPN-unsigned.pkg)
 endif()
-set_target_properties(pkg PROPERTIES FOLDER "Installer")
+set_target_properties(pkg PROPERTIES
+    FOLDER "Installer"
+    XCODE_GENERATE_SCHEME TRUE
+)
