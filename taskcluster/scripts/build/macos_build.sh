@@ -78,6 +78,8 @@ if [[ "$RELEASE" ]]; then
     ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
     export SENTRY_ENVELOPE_ENDPOINT=$(cat sentry_envelope_endpoint)
     export SENTRY_DSN=$(cat sentry_dsn)
+    #Install Sentry CLI:
+    curl -sL https://sentry.io/get-cli/ | bash
     sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
 fi
 
