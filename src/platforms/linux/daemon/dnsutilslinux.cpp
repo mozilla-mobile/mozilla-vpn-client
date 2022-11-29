@@ -33,10 +33,11 @@ DnsUtilsLinux::DnsUtilsLinux(QObject* parent) : DnsUtils(parent) {
 DnsUtilsLinux::~DnsUtilsLinux() {
   MVPN_COUNT_DTOR(DnsUtilsLinux);
 
-  for (int ifindex : m_linkDomains.keys()) {
+  for (auto iterator = m_linkDomains.constBegin();
+       iterator != m_linkDomains.constEnd(); ++iterator) {
     QList<QVariant> argumentList;
-    argumentList << QVariant::fromValue(ifindex);
-    argumentList << QVariant::fromValue(m_linkDomains[ifindex]);
+    argumentList << QVariant::fromValue(iterator.key());
+    argumentList << QVariant::fromValue(iterator.value());
     m_resolver->asyncCallWithArgumentList(QStringLiteral("SetLinkDomains"),
                                           argumentList);
   }
@@ -63,8 +64,9 @@ bool DnsUtilsLinux::updateResolvers(const QString& ifname,
 }
 
 bool DnsUtilsLinux::restoreResolvers() {
-  for (auto ifindex : m_linkDomains.keys()) {
-    setLinkDomains(ifindex, m_linkDomains[ifindex]);
+  for (auto iterator = m_linkDomains.constBegin();
+       iterator != m_linkDomains.constEnd(); ++iterator) {
+    setLinkDomains(iterator.key(), iterator.value());
   }
   m_linkDomains.clear();
 
@@ -190,13 +192,14 @@ void DnsUtilsLinux::dnsDomainsReceived(QDBusPendingCallWatcher* call) {
 
   /* Drop any competing root search domains. */
   DnsLinkDomain root = DnsLinkDomain(".", true);
-  for (auto ifindex : m_linkDomains.keys()) {
-    if (!m_linkDomains[ifindex].contains(root)) {
+  for (auto iterator = m_linkDomains.constBegin();
+       iterator != m_linkDomains.constEnd(); ++iterator) {
+    if (!iterator.value().contains(root)) {
       continue;
     }
-    QList<DnsLinkDomain> newlist = m_linkDomains[ifindex];
+    QList<DnsLinkDomain> newlist = iterator.value();
     newlist.removeAll(root);
-    setLinkDomains(ifindex, newlist);
+    setLinkDomains(iterator.key(), newlist);
   }
 
   /* Add a root search domain for the new interface. */

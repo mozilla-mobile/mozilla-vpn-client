@@ -25,7 +25,7 @@ QHash<int, QByteArray> LicenseModel::roleNames() const {
 
 int LicenseModel::rowCount(const QModelIndex&) const {
   // The first license is shown differently.
-  return m_licenses.isEmpty() ? 0 : m_licenses.count() - 1;
+  return m_licenses.isEmpty() ? 0 : static_cast<int>(m_licenses.count()) - 1;
 }
 
 QVariant LicenseModel::data(const QModelIndex& index, int role) const {
@@ -60,8 +60,8 @@ void LicenseModel::initialize() {
 
   beginResetModel();
 
-  for (uint32_t i = 0, length = content.length(); i < length; ++i) {
-    int32_t lineLength = content[i].length();
+  for (qsizetype i = 0, length = content.length(); i < length; ++i) {
+    qsizetype lineLength = content[i].length();
     if (i < length - 1 && lineLength > 0 &&
         lineLength == content[i + 1].length() &&
         content[i + 1].startsWith("===")) {

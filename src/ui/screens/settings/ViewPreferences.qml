@@ -28,7 +28,6 @@ VPNViewBase {
             labelText: _startAtBootTitle
             subLabelText: VPNl18n.SettingsStartAtBootSubtitle
             isChecked: VPNSettings.startAtBoot
-            isEnabled: true
             showDivider: false
             onClicked: VPNSettings.startAtBoot = !VPNSettings.startAtBoot
             visible: VPNFeatureList.get("startOnBoot").isSupported
@@ -74,6 +73,7 @@ VPNViewBase {
                 settingTitle: _notificationsTitle
                 imageLeftSrc: "qrc:/ui/resources/settings/notifications.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                imageRightMirror: VPNLocalizer.isRightToLeft
                 onClicked: {
                     if(Qt.platform.os === "android"){
                         VPNAndroidUtils.openNotificationSettings();
@@ -94,6 +94,7 @@ VPNViewBase {
                 settingTitle: _languageTitle
                 imageLeftSrc: "qrc:/ui/resources/settings/language.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                imageRightMirror: VPNLocalizer.isRightToLeft
                 onClicked: stackview.push("qrc:/ui/screens/settings/ViewLanguage.qml")
                 visible: VPNLocalizer.hasLanguages
                 width: parent.width - VPNTheme.theme.windowMargin

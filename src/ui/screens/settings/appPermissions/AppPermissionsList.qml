@@ -143,7 +143,7 @@ ColumnLayout {
                 showAppImage: true
                 onClicked: VPNAppPermissions.flip(appID)
                 isChecked: !appIsEnabled
-                isEnabled: vpnIsOff && VPNSettings.protectSelectedApps
+                enabled: vpnIsOff && VPNSettings.protectSelectedApps
                 Layout.minimumHeight: VPNTheme.theme.rowHeight * 1.5
             }
         }
@@ -155,6 +155,7 @@ ColumnLayout {
         width: undefined
         onClicked: VPNAppPermissions.openFilePicker()
         visible: Qt.platform.os === "windows"
+        enabled: vpnIsOff
         contentItem: Text {
             // for accessibility
             text: addApplication

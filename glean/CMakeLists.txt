@@ -7,7 +7,8 @@ add_library(glean STATIC)
 set_target_properties(glean PROPERTIES FOLDER "Libs")
 target_link_libraries(glean PRIVATE Qt6::Core Qt6::Qml)
 
-if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+if( NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND 
+    NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Android" )
     target_link_libraries(glean PRIVATE Qt6::Sql)
 endif()
 

@@ -98,6 +98,11 @@ workers:
             implementation: scriptworker-beetmover
             os: scriptworker
             worker-type: 'mozillavpn-{level}-beetmover'
+        succeed:
+            provisioner: built-in
+            implementation: succeed
+            os: none
+            worker-type: succeed
 
 release-promotion:
     flavors:

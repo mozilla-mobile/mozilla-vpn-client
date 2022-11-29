@@ -27,7 +27,7 @@ void TaskServers::run() {
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Failed to retrieve servers";
-            ErrorHandler::networkErrorHandle(error, m_errorPropagationPolicy);
+            REPORTNETWORKERROR(error, m_errorPropagationPolicy, name());
             emit completed();
           });
 

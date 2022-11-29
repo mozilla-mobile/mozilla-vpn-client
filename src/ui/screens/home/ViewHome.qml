@@ -112,7 +112,7 @@ VPNFlickable {
                     serversList: [
                         {
                             countryCode: typeof(VPNCurrentServer.entryCountryCode) !== 'undefined' ? VPNCurrentServer.entryCountryCode : "" ,
-                            localizedCityName: typeof(VPNCurrentServer.localizedEntryCity) !== 'undefined' ? VPNCurrentServer.localizedEntryCity : "",
+                            localizedCityName: typeof(VPNCurrentServer.localizedEntryCityName) !== 'undefined' ? VPNCurrentServer.localizedEntryCityName : "",
                             cityName: typeof(VPNCurrentServer.entryCityName) !== "undefined" ? VPNCurrentServer.entryCityName : ""
                         },
                         {

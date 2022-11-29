@@ -15,6 +15,7 @@ VPNInAppAuthenticationBase {
     _changeEmailLinkVisible: true
     _viewObjectName: "authSignUp"
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
+    _menuButtonImageMirror: VPNLocalizer.isRightToLeft
     _menuButtonOnClick: () => {
         VPNAuthInApp.reset();
     }

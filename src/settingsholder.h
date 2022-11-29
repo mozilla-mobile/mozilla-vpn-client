@@ -65,10 +65,11 @@ class SettingsHolder final : public QObject {
 
   void sync();
 
-#define SETTING(type, toType, getter, setter, has, ...) \
-  bool has() const;                                     \
-  type getter() const;                                  \
-  void setter(const type& value);
+#define SETTING(type, toType, getter, setter, remover, has, ...) \
+  bool has() const;                                              \
+  type getter() const;                                           \
+  void setter(const type& value);                                \
+  void remover();
 
 #include "settingslist.h"
 #undef SETTING

@@ -189,7 +189,7 @@ int ProductsHandler::rowCount(const QModelIndex&) const {
     return 0;
   }
 
-  return m_products.count();
+  return static_cast<int>(m_products.count());
 }
 
 QVariant ProductsHandler::data(const QModelIndex& index, int role) const {
