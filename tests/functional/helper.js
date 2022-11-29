@@ -427,14 +427,6 @@ module.exports = {
     _lastNotification.message = null;
   },
 
-  lastAddonLoadingCompleted() {
-    return _lastAddonLoadingCompleted;
-  },
-
-  resetLastAddonLoadingCompleted() {
-    _lastAddonLoadingCompleted = false;
-  },
-
   async settingsFileName() {
     const json = await this._writeCommand('settings_filename');
     assert(
@@ -504,7 +496,8 @@ module.exports = {
     await this.waitForElementProperty(
         'VPNAddonManager', 'loadCompleted', 'true');
 
-    this.resetLastAddonLoadingCompleted();
+    _lastAddonLoadingCompleted = false;
+
     await this.setSetting(
         'addon/customServerAddress', `${constants.ADDON_URL}/${addonPath}/`);
     await this.setSetting('addon/customServer', 'true');
@@ -514,14 +507,15 @@ module.exports = {
         json.type === 'reset_addons' && !('error' in json),
         `Command failed: ${json.error}`);
 
-    await this.waitForCondition(async () => this.lastAddonLoadingCompleted());
+    await this.waitForCondition(() => _lastAddonLoadingCompleted);
   },
 
   async fetchAddons(addonPath) {
     await this.waitForElementProperty(
         'VPNAddonManager', 'loadCompleted', 'true');
 
-    this.resetLastAddonLoadingCompleted();
+    _lastAddonLoadingCompleted = false;
+
     await this.setSetting(
         'addon/customServerAddress', `${constants.ADDON_URL}/${addonPath}/`);
     await this.setSetting('addon/customServer', 'true');
@@ -531,7 +525,7 @@ module.exports = {
         json.type === 'fetch_addons' && !('error' in json),
         `Command failed: ${json.error}`);
 
-    await this.waitForCondition(async () => this.lastAddonLoadingCompleted());
+    await this.waitForCondition(() => _lastAddonLoadingCompleted);
   },
 
   // Internal methods.
