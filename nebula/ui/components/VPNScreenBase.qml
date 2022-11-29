@@ -12,6 +12,7 @@ import telemetry 0.30
 
 
 Item {
+    id: root
     property alias _menuOnBackClicked: menu._menuOnBackClicked
     property alias _menuIconButtonSource: menu._menuIconButtonSource
     property alias _menuIconVisibility: menu._menuIconVisibility
@@ -29,7 +30,7 @@ Item {
 
         VPNMenu {
             id: menu
-            objectName: parent.objectName + "-back"
+            objectName: root.objectName + "-back"
 
             Layout.preferredWidth: parent.width
             Layout.preferredHeight: VPNTheme.theme.menuHeight
