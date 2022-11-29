@@ -215,7 +215,7 @@ a copy of the debug build for the macOS Applications folder.)
 #### Building from terminal
 
 1. On macOS, we compile the app using
-[Xcode](https://developer.apple.com/xcode/) version 12 or higher.
+[XCode](https://developer.apple.com/xcode/) version 12 or higher.
 
 2. You also need to install go >= v1.16. If you don't have it done already,
 download go from the [official website](https://golang.org/dl/).
@@ -235,8 +235,8 @@ Some variables that might be useful when configuring the project:
    installer package.
  - `BUILD_OSX_APP_IDENTIFIER=<App Identifier>`: can be set to change the application bundle
    identifier. This defaults to `org.mozilla.macos.FirefoxVPN` if not set.
- - `BUILD_VPN_DEVELOPMENT_TEAM=<Development Team ID>`: can be set to change the development
-   team used for Xcode certificates. This defaults to `43AQ936H96` if not set.
+ - `BUILD_OSX_DEVELOPMENT_TEAM=<Development Team ID>`: can be set to change the development
+   team used for XCode certificates. This defaults to `43AQ936H96` if not set.
 
 4. Compile the source code:
 ```bash
@@ -258,9 +258,9 @@ and a signed installer at `build/macos/pkg/MozillaVPN-signed.pkg` if a valid ins
 signing identity was provided in the `INSTALLER_SIGN_IDENTITIY` variable at configuration
 time.
 
-#### Building with Xcode
+#### Building with XCode
 
-In some circumstances, you may wish to use Xcode to build the Mozilla VPN in order to
+In some circumstances, you may wish to use XCode to build the Mozilla VPN in order to
 access cloud-managed signing certificates. In such circumstances, this can be enabled
 by using the `-GXcode` command line option:
 
@@ -268,21 +268,21 @@ by using the `-GXcode` command line option:
 mkdir build && cmake -S . -B build -GXcode
 ```
 
-This will generate an Xcode project file at `build/Mozilla VPN.xcodeproj` which can be opened
+This will generate an XCode project file at `build/Mozilla VPN.xcodeproj` which can be opened
 by Xcode:
 
 ```bash
 open build/Mozilla\ VPN.xcodeproj
 ```
 
-Once Xcode has opened the project, building is as simple as selecting the `mozillavpn` target
+Once XCode has opened the project, building is as simple as selecting the `mozillavpn` target
 and starting the build from the `Product->Build For->Testing` menu.
 
-*Note*: some developers have experienced that Xcode reports that `go` isn't
-available and so you can't build the app and dependencies in Xcode. (This may show up as build
+*Note*: some developers have experienced that XCode reports that `go` isn't
+available and so you can't build the app and dependencies in XCode. (This may show up as build
 errors like `Run custom shell script ‘Generate extension/CMakeFiles/cargo_mozillavpnnp’ \ No
 such file or directory \ Command PhaseScriptExecution failed with a nonzero exit code`) In this
-case, a workaround is to symlink `go` into Xcode directory as follows:
+case, a workaround is to symlink `go` into XCode directory as follows:
 
 * Make sure go is 1.16+: `go version`
 * Find the location of go binary `which go` example output `/usr/local/go/bin/go`
@@ -295,21 +295,16 @@ sudo ln -s $(which cargo)
 sudo ln -s $(which rustc)
 ```
 
-This step needs to be executed each time Xcode updates.
+This step needs to be executed each time XCode updates.
 
 ### How to build from source code for iOS
 
-There are two ways to build the project on iOS, using the legacy Qt build system `qmake`
-and we have also added experimental support for `cmake`.
-
-#### Building with QMake
-
 1. On iOS, we compile the app using
-[Xcode](https://developer.apple.com/xcode/) version 12 or higher.
+[XCode](https://developer.apple.com/xcode/) version 12 or higher.
 
-2. We use `qmake` to generate the Xcode project and then we "patch" it to add
+2. We use `qmake` to generate the XCode project and then we "patch" it to add
 extra components such as the wireguard, the browser bridge and so on. We patch
-the Xcode project using [xcodeproj](https://github.com/CocoaPods/Xcodeproj). To
+the XCode project using [xcodeproj](https://github.com/CocoaPods/Xcodeproj). To
 install it:
 ```
 gem install xcodeproj # probably you want to run this command with `sudo`
@@ -335,7 +330,7 @@ APP_ID_IOS = org.mozilla.ios.FirefoxVPN
 NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 ```
 
-6. Generate the Xcode project using our script (and an optional adjust token):
+6. Generate the XCode project using our script (and an optional adjust token):
 ```bash
 ./scripts/macos/apple_compile.sh ios [--adjust <adjust_token>]
 ```
@@ -350,51 +345,6 @@ command:
 ```bash
 xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project "Mozilla VPN.xcodeproj"
 ```
-
-#### Building with CMake (Experimental)
-
-We also support building from sources for iOS using CMake.
-
-1. On iOS, we compile the app using
-[Xcode](https://developer.apple.com/xcode/) version 12 or higher and [Qt](https://www.qt.io/download)
-version 6.3.2.
-
-2. Ensure rust targets for iOS development are installed.
-```bash
-rustup target add x86_64-apple-ios aarch64-apple-ios
-```
-
-2. We use `qt-cmake` from the Qt installation to configure the Xcode project.
-```bash
-mkdir build-ios
-/Users/example/Qt/6.3.2/ios/bin/qt-cmake . -B build-ios -GXcode
-```
-
-However, due to limitations in cmake, you cannot switch between iOS and simulator builds
-without re-generating the Xcode project. To make it easier to develop, it's recommend
-build into a different project for simulation. This can be achieved with:
-```bash
-mkdir build-ios-sim
-/Users/example/Qt/6.3.2/ios/bin/qt-cmake . -B build-ios-sim -GXcode
-    -DCMAKE_OSX_SYSROOT="iphonesimulator"
-```
-
-Some variables that might be useful when configuring the project:
- - `BUILD_ADJUST_SDK_TOKEN=<SDK Token>`: can be set to enable the use of the Adjust telemetry
-   and attribution data collection.
- - `BUILD_IOS_APP_IDENTIFIER=<App Identifier>`: can be set to change the application bundle
-   identifier. This defaults to `org.mozilla.ios.FirefoxVPN` if not set.
- - `BUILD_VPN_DEVELOPMENT_TEAM=<Development Team ID>`: can be set to change the development
-   team used for Xcode certificates. This defaults to `43AQ936H96` if not set.
- - `CMAKE_OSX_SYSROOT="iphonesimulator"` to build for the iOS simulator.
-
-3. Open the generated Xcode project for iOS devices with `open build-ios/Mozilla\ VPN.xcodeproj`
-or `open build-ios-sim/Mozilla\ VPN.xcodeproj` for simulation.
-
-4. Select the `mozillavpn` target and `Any iOS Device (arm64)` as the build configuration
-for iOS devices, or select any of the simulation targets when building for the simulator.
-
-5. Click on the Play button to start building and signing of the Mozilla VPN app.
 
 ### How to build from source code for Android
 

@@ -367,7 +367,7 @@ foreach(filename ${UTEST_SOURCES})
         OUTPUT_VARIABLE UTEST_CLASS_LIST
         OUTPUT_STRIP_TRAILING_WHITESPACE
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/tests/list_test_classes.py -p TestHelper ${filename}
+        COMMAND python3 ${CMAKE_SOURCE_DIR}/scripts/tests/list_test_classes.py -p TestHelper ${filename}
     )
 
     foreach(UTEST_CLASS ${UTEST_CLASS_LIST})

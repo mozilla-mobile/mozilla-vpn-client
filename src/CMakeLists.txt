@@ -60,7 +60,10 @@ include(cmake/${MVPN_PLATFORM_NAME}.cmake)
 
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     add_subdirectory(crashreporter)
-    target_link_libraries(mozillavpn PRIVATE crashreporter vpnglean)
+    target_link_libraries(mozillavpn PRIVATE crashreporter vpnglean -ldl)
+    if (WIN32)
+        target_link_libraries(mozillavpn PRIVATE ntdll)
+    endif()
 endif()
 
 qt_finalize_target(mozillavpn)
