@@ -8,49 +8,51 @@ const vpn = require('./helper.js');
 describe('Addons', function() {
   this.ctx.authenticationNeeded = true;
 
-  it('Addons are loaded', async () => {
-    if (!(await vpn.isFeatureFlippedOff('addonSignature'))) {
-      await vpn.flipFeatureOff('addonSignature');
-      assert(await vpn.isFeatureFlippedOff('addonSignature'));
-    }
-
-    await vpn.setSetting('addon/customServer', 'false');
-
-    await vpn.waitForElementProperty(
-        'VPNAddonManager', 'loadCompleted', 'true');
-
-    let count = 0;
+  it('Empty addon index', async () => {
+    await vpn.resetAddons('01_empty_manifest');
     await vpn.waitForCondition(async () => {
-      count = parseInt(
-          await vpn.getElementProperty('VPNAddonManager', 'count'), 10);
-      return count > 0;
+      return parseInt(
+                 await vpn.getElementProperty('VPNAddonManager', 'count'),
+                 10) === 0;
+    });
+  });
+
+  it('Broken addon index', async () => {
+    await vpn.resetAddons('03_single_addon');
+    await vpn.waitForCondition(async () => {
+      return parseInt(
+                 await vpn.getElementProperty('VPNAddonManager', 'count'),
+                 10) === 1;
     });
 
-    await vpn.setSetting('addon/customServer', 'true');
-    await vpn.setSetting(
-        'addon/customServerAddress',
-        'https://bakulf.github.io/vpn-addons-test/empty_manifest/');
+    await vpn.fetchAddons('02_broken_manifest');
+    await vpn.waitForCondition(async () => {
+      return parseInt(
+                 await vpn.getElementProperty('VPNAddonManager', 'count'),
+                 10) === 1;
+    });
+  });
+
+  it('Addons are loaded', async () => {
+    await vpn.resetAddons('03_single_addon');
+    await vpn.waitForCondition(async () => {
+      return parseInt(
+                 await vpn.getElementProperty('VPNAddonManager', 'count'),
+                 10) === 1;
+    });
+
+    await vpn.fetchAddons('01_empty_manifest');
     await vpn.waitForCondition(async () => {
       return parseInt(
                  await vpn.getElementProperty('VPNAddonManager', 'count'),
                  10) === 0;
     });
 
-    await vpn.setSetting('addon/customServer', 'false');
+    await vpn.fetchAddons('03_single_addon');
     await vpn.waitForCondition(async () => {
       return parseInt(
                  await vpn.getElementProperty('VPNAddonManager', 'count'),
-                 10) === count;
+                 10) === 1;
     });
-
-    await vpn.setSetting('addon/customServer', 'true');
-    await vpn.setSetting(
-        'addon/customServerAddress',
-        'https://archive.mozilla.org/pub/vpn/addons/releases/latest/');
-
-    // Now we need to wait. Unfortunately there is not an easy way to know when
-    // the loading of the new addons happen. In case we will add a signal, or
-    // something, we can do better than this.
-    await vpn.wait(5000);
   });
 });

@@ -23,6 +23,20 @@ class AddonManager final : public QAbstractListModel {
  public:
   static QString addonServerAddress();
 
+  static bool signatureVerificationNeeded();
+
+  /**
+   * This is mainly for testing. All the addons are unloaded and the cache is
+   * reset.
+   */
+  void reset();
+
+  /**
+   * Force a fetch of the addon index manifest instead of waiting for the
+   * normal scheduling.
+   */
+  void fetch() { refreshAddons(); }
+
   Q_INVOKABLE Addon* pick(QJSValue filterCallback) const;
 
   Q_INVOKABLE QJSValue reduce(QJSValue callback, QJSValue initialValue) const;
@@ -40,19 +54,17 @@ class AddonManager final : public QAbstractListModel {
   void storeAndLoadAddon(const QByteArray& addonData, const QString& addonId,
                          const QByteArray& sha256);
 
-  bool loadManifest(const QString& addonManifestFileName);
-
-  void unload(const QString& addonId);
-
   void retranslate();
 
   void forEach(std::function<void(Addon* addon)>&& callback);
 
-  void updateIndex(const QByteArray& index, const QByteArray& indexSignature);
-
-#ifdef UNIT_TEST
-  QStringList addonIds() const;
-#endif
+  /**
+   * The operation of updating the index is completed. `status` indicates the
+   * result of the operation. If `status` is true, the operation succeeded and
+   * `index` and `indexSignature` can be used.
+   */
+  void updateIndex(bool status, const QByteArray& index = QByteArray(),
+                   const QByteArray& indexSignature = QByteArray());
 
   int count() const;
 
@@ -61,7 +73,8 @@ class AddonManager final : public QAbstractListModel {
 
   void initialize();
 
-  void updateAddonsList(QList<AddonData> addons);
+  void updateAddonsList(bool status, QList<AddonData> addons);
+
   void refreshAddons();
 
   bool validateAndLoad(const QString& addonId, const QByteArray& sha256,
@@ -70,6 +83,12 @@ class AddonManager final : public QAbstractListModel {
   static void removeAddon(const QString& addonId);
 
   static QString mountPath(const QString& addonId);
+
+  bool loadManifest(const QString& addonManifestFileName);
+
+  void loadCompleted();
+
+  void unload(const QString& addonId);
 
   // QAbstractListModel methods
 

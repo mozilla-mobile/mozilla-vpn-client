@@ -931,23 +931,6 @@ static QList<InspectorCommand> s_commands{
                        return QJsonObject();
                      }},
 
-    InspectorCommand{"load_addon_manifest", "Load an add-on", 1,
-                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
-                       QJsonObject obj;
-                       // This is a debugging method. We don't need to compute
-                       // the hash of the addon because we will not be able to
-                       // find it in the addon index.
-                       obj["value"] =
-                           AddonManager::instance()->loadManifest(arguments[1]);
-                       return obj;
-                     }},
-
-    InspectorCommand{"unload_addon", "Unload an add-on", 1,
-                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
-                       AddonManager::instance()->unload(arguments[1]);
-                       return QJsonObject();
-                     }},
-
     InspectorCommand{"back_button_clicked",
                      "Simulate an android back-button clicked", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
@@ -985,6 +968,20 @@ static QList<InspectorCommand> s_commands{
                        emit Localizer::instance()->codeChanged();
                        return QJsonObject();
                      }},
+
+    InspectorCommand{"reset_addons",
+                     "Reset all the addons cleaning up the cache", 0,
+                     [](InspectorHandler*, const QList<QByteArray>&) {
+                       AddonManager::instance()->reset();
+                       return QJsonObject();
+                     }},
+
+    InspectorCommand{"fetch_addons", "Force a fetch of the addon list manifest",
+                     0,
+                     [](InspectorHandler*, const QList<QByteArray>&) {
+                       AddonManager::instance()->fetch();
+                       return QJsonObject();
+                     }},
 };
 
 // static
@@ -1014,6 +1011,8 @@ InspectorHandler::InspectorHandler(QObject* parent) : QObject(parent) {
   connect(NetworkManager::instance()->networkAccessManager(),
           &QNetworkAccessManager::finished, this,
           &InspectorHandler::networkRequestFinished);
+  connect(AddonManager::instance(), &AddonManager::loadCompletedChanged, this,
+          &InspectorHandler::addonLoadCompleted);
 }
 
 InspectorHandler::~InspectorHandler() { MVPN_COUNT_DTOR(InspectorHandler); }
@@ -1060,6 +1059,12 @@ void InspectorHandler::logEntryAdded(const QByteArray& log) {
   QJsonObject obj;
   obj["type"] = "log";
   obj["value"] = QString(log).trimmed();
+  send(QJsonDocument(obj).toJson(QJsonDocument::Compact));
+}
+
+void InspectorHandler::addonLoadCompleted() {
+  QJsonObject obj;
+  obj["type"] = "addon_load_completed";
   send(QJsonDocument(obj).toJson(QJsonDocument::Compact));
 }
 
