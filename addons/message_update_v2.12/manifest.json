@@ -3,6 +3,7 @@
   "id": "message_update_v2.12",
   "name": "Update to Mozilla VPN 2.12",
   "type": "message",
+  "translatable": false,
   "conditions": {
     "max_client_version": "2.11.9"
   },
