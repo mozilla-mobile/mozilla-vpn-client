@@ -16,8 +16,8 @@ function createScenario(scenario, addonPath) {
   if (!fs.existsSync(generatedPath)) {
     const manifestPath = path.join(addonPath, 'manifest.json');
     if (!fs.existsSync(manifestPath)) {
-      throw new Error(
-          `No generated and not manifest file! ${manifestPath} should exist!`);
+      throw new Error(`No generated and not manifest file! ${
+          manifestPath} should exist! Have you executed \`./scripts/addon/generate_all_tests.py'?`);
     }
 
     const obj = {};
