@@ -25,6 +25,7 @@ jobs:
         uses: actions/checkout@v3
         with: 
           submodules: 'true'
+
       - name: Install dependecies
         if: steps.cache-build.outputs.cache-hit != 'true'
         run: |
@@ -61,10 +62,11 @@ jobs:
         id: testGen
         shell: bash
         run: |
-          echo -n "::set-output name=tests::"
+          echo -n "tests=" >> $GITHUB_OUTPUT
           for test in $(find tests/functional -name 'test*.js' | sort); do
             printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
-          done | jq -s -c
+          done | jq -s -c >> $GITHUB_OUTPUT
+
       - name: Check tests
         shell: bash
         env:
