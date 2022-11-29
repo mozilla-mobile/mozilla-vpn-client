@@ -256,6 +256,17 @@ public class IOSControllerImpl : NSObject {
             }
         }
     }
+    
+    /**
+    * @brief Enables / Disables the Always-On Rule on the runnel
+    * This is used for the "start-on-boot" feature. 
+    * We are setting a rule matching * any network change
+    * which will cause the phone to start the VPN after the phone boots.
+    *
+    * Note: For the Setting to be applied to the iOS settings: 
+    *       tunnel!.saveToPreferences needs to be called.  
+    * @param setEnabled: bool If the rule should be added or removed.
+    **/
     @objc func setAlwaysOn(setEnabled: Bool){
         if(!setEnabled){
             tunnel!.isOnDemandEnabled = false;
