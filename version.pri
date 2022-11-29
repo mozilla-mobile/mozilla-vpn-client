@@ -20,4 +20,5 @@ DBUS_PROTOCOL_VERSION = 1
 message("Generating version.h")
 system(python3 $$PWD/scripts/utils/make_template.py \
          $$PWD/src/version.h.in -o $$PWD/src/version.h \
-         -k @CMAKE_PROJECT_VERSION@="$${VERSION}" -k @BUILD_ID@="$${BUILD_ID}")
+         -k CMAKE_PROJECT_VERSION="$${VERSION}" \
+         -k BUILD_ID="$${BUILD_ID}")

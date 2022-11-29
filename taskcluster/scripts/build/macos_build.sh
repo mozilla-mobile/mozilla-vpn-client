@@ -40,7 +40,7 @@ python3 -m pip install -r requirements.txt --user
 export PYTHONIOENCODING="UTF-8"
 
 print Y "Updating submodules..."
-# should already be done by XCode cloud cloning but just to make sure
+# should already be done by Xcode cloud cloning but just to make sure
 git submodule init || die
 git submodule update || die
 
