@@ -270,6 +270,7 @@ QStringList ServerCountryModel::pickRandom() {
   // We should not get here, unless the model has more entries in m_servers()
   // than actually exist in the country and city lists.
   Q_ASSERT(false);
+  return QStringList();
 }
 
 bool ServerCountryModel::exists(const QString& countryCode,

@@ -63,4 +63,5 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     target_link_libraries(mozillavpn PRIVATE crashreporter vpnglean)
 endif()
 
+set_target_properties(mozillavpn PROPERTIES COMPILE_WARNING_AS_ERROR ON )
 qt_finalize_target(mozillavpn)
