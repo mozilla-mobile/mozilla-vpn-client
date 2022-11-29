@@ -280,7 +280,7 @@ SETTING_BOOL(localNetworkAccess,        // getter
              removeLocalNetworkAccess,  // remover
              hasLocalNetworkAccess,     // has
              "localNetworkAccess",      // key
-             false,                     // default value
+             true,                     // default value
              true,                      // user setting
              false                      // remove when reset
 )
