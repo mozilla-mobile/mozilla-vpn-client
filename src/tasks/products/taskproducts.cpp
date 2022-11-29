@@ -25,7 +25,7 @@ void TaskProducts::run() {
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Products request to guardian failed" << error;
-            ErrorHandler::networkErrorHandle(error);
+            REPORTNETWORKERROR(error, ErrorHandler::PropagateError, name());
             emit completed();
           });
 

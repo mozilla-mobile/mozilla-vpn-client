@@ -116,6 +116,13 @@ void AddonTutorial::play(const QStringList& allowedItems) {
   m_currentStep = 0;
   m_activeTransaction = false;
 
+  if (settingsRollbackNeeded()) {
+    m_activeTransaction = SettingsHolder::instance()->beginTransaction();
+    if (!m_activeTransaction) {
+      logger.warning() << "Unable to start a setting transaction";
+    }
+  }
+
   emit playingChanged();
 
   if (m_navigatorReloader) {
@@ -123,13 +130,6 @@ void AddonTutorial::play(const QStringList& allowedItems) {
   }
 
   m_navigatorReloader = new NavigatorReloader(this);
-
-  if (settingsRollbackNeeded()) {
-    m_activeTransaction = SettingsHolder::instance()->beginTransaction();
-    if (!m_activeTransaction) {
-      logger.warning() << "Unable to start a setting transaction";
-    }
-  }
 
   m_itemPicker->start();
 

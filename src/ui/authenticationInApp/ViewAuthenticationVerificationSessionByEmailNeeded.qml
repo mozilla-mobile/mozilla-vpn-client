@@ -45,7 +45,7 @@ VPNInAppAuthenticationBase {
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
                 VPNAuthInApp.resendVerificationSessionCodeEmail();
-                VPNErrorHandler.setAlert(VPNErrorHandler.AuthCodeSentAlert);
+                VPNErrorHandler.requestAlert(VPNErrorHandler.AuthCodeSentAlert);
             }
         }
 

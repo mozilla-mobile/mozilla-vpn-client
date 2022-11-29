@@ -45,6 +45,10 @@
 #include "urlopener.h"
 #include "websocket/websockethandler.h"
 
+#ifdef SENTRY_ENABLED
+#  include "sentry/sentryadapter.h"
+#endif
+
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosutils.h"
 #endif
@@ -237,6 +241,8 @@ void MozillaVPN::initialize() {
 
   m_private->m_serverLatency.initialize();
 
+  m_private->m_serverData.initialize();
+
   if (Feature::get(Feature::Feature_websocket)->isSupported()) {
     m_private->m_webSocketHandler.initialize();
   }
@@ -326,11 +332,13 @@ void MozillaVPN::initialize() {
     return;
   }
 
-  Q_ASSERT(!m_private->m_serverData.initialized());
+  Q_ASSERT(!m_private->m_serverData.hasServerData());
   if (!m_private->m_serverData.fromSettings()) {
-    m_private->m_serverCountryModel.pickRandom(m_private->m_serverData);
-    Q_ASSERT(m_private->m_serverData.initialized());
-    m_private->m_serverData.writeSettings();
+    QStringList list = m_private->m_serverCountryModel.pickRandom();
+    Q_ASSERT(list.length() >= 2);
+
+    m_private->m_serverData.update(list[0], list[1]);
+    Q_ASSERT(m_private->m_serverData.hasServerData());
   }
 
   scheduleRefreshDataTasks(true);
@@ -398,13 +406,14 @@ void MozillaVPN::maybeStateMain() {
   if (!modelsInitialized()) {
     logger.warning() << "Models not initialized yet";
     SettingsHolder::instance()->clear();
-    ErrorHandler::instance()->errorHandle(ErrorHandler::RemoteServiceError);
+    REPORTERROR(ErrorHandler::RemoteServiceError, "vpn");
+
     setUserState(UserNotAuthenticated);
     setState(StateInitialize);
     return;
   }
 
-  Q_ASSERT(m_private->m_serverData.initialized());
+  Q_ASSERT(m_private->m_serverData.hasServerData());
 
   // For 2.5 we need to regenerate the device key to allow the the custom DNS
   // feature. We can do it in background when the main view is shown.
@@ -423,16 +432,6 @@ void MozillaVPN::maybeStateMain() {
     settingsHolder->setAdjustActivatable(false);
   }
 #endif
-}
-
-void MozillaVPN::setEntryServerPublicKey(const QString& publicKey) {
-  logger.debug() << "Set entry-server public key:" << logger.keys(publicKey);
-  m_entryServerPublicKey = publicKey;
-}
-
-void MozillaVPN::setExitServerPublicKey(const QString& publicKey) {
-  logger.debug() << "Set exit-server public key:" << logger.keys(publicKey);
-  m_exitServerPublicKey = publicKey;
 }
 
 void MozillaVPN::getStarted() {
@@ -497,13 +496,13 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
 
   if (!m_private->m_user.fromJson(json)) {
     logger.error() << "Failed to parse the User JSON data";
-    ErrorHandler::instance()->errorHandle(ErrorHandler::RemoteServiceError);
+    REPORTERROR(ErrorHandler::RemoteServiceError, "vpn");
     return;
   }
 
   if (!m_private->m_deviceModel.fromJson(keys(), json)) {
     logger.error() << "Failed to parse the DeviceModel JSON data";
-    ErrorHandler::instance()->errorHandle(ErrorHandler::RemoteServiceError);
+    REPORTERROR(ErrorHandler::RemoteServiceError, "vpn");
     return;
   }
 
@@ -662,11 +661,15 @@ void MozillaVPN::serversFetched(const QByteArray& serverData) {
   }
 
   // The serverData could be unset or invalid with the new server list.
-  if (!m_private->m_serverData.initialized() ||
-      !m_private->m_serverCountryModel.exists(m_private->m_serverData)) {
-    m_private->m_serverCountryModel.pickRandom(m_private->m_serverData);
-    Q_ASSERT(m_private->m_serverData.initialized());
-    m_private->m_serverData.writeSettings();
+  if (!m_private->m_serverData.hasServerData() ||
+      !m_private->m_serverCountryModel.exists(
+          m_private->m_serverData.exitCountryCode(),
+          m_private->m_serverData.exitCityName())) {
+    QStringList list = m_private->m_serverCountryModel.pickRandom();
+    Q_ASSERT(list.length() >= 2);
+
+    m_private->m_serverData.update(list[0], list[1]);
+    Q_ASSERT(m_private->m_serverData.hasServerData());
   }
 }
 
@@ -832,7 +835,7 @@ bool MozillaVPN::checkCurrentDevice() {
 void MozillaVPN::logout() {
   logger.debug() << "Logout";
 
-  ErrorHandler::instance()->setAlert(ErrorHandler::LogoutAlert);
+  ErrorHandler::instance()->requestAlert(ErrorHandler::LogoutAlert);
   setUserState(UserLoggingOut);
 
   TaskScheduler::deleteTasks();
@@ -886,72 +889,6 @@ void MozillaVPN::reset(bool forceInitialState) {
   }
 }
 
-void MozillaVPN::setServerCooldown(const QString& publicKey) {
-  m_private->m_serverCountryModel.setServerCooldown(
-      publicKey, Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
-}
-
-void MozillaVPN::setCooldownForAllServersInACity(const QString& countryCode,
-                                                 const QString& cityCode) {
-  m_private->m_serverCountryModel.setCooldownForAllServersInACity(
-      countryCode, cityCode, Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
-}
-
-QList<Server> MozillaVPN::filterServerList(const QList<Server>& servers) const {
-  QList<Server> results;
-  qint64 now = QDateTime::currentSecsSinceEpoch();
-
-  for (const Server& server : servers) {
-    if (server.cooldownTimeout() <= now) {
-      results.append(server);
-    }
-  }
-
-  return results;
-}
-
-const QList<Server> MozillaVPN::exitServers() const {
-  return filterServerList(
-      m_private->m_serverCountryModel.servers(m_private->m_serverData));
-}
-
-const QList<Server> MozillaVPN::entryServers() const {
-  if (!m_private->m_serverData.multihop()) {
-    return exitServers();
-  }
-  ServerData sd;
-  sd.update(m_private->m_serverData.entryCountryCode(),
-            m_private->m_serverData.entryCityName());
-  return filterServerList(m_private->m_serverCountryModel.servers(sd));
-}
-
-void MozillaVPN::changeServer(const QString& countryCode, const QString& city,
-                              const QString& entryCountryCode,
-                              const QString& entryCity) {
-  m_private->m_serverData.update(countryCode, city, entryCountryCode,
-                                 entryCity);
-  m_private->m_serverData.writeSettings();
-
-  // Update the list of recent connections.
-  QString description = m_private->m_serverData.toString();
-  QStringList recent = SettingsHolder::instance()->recentConnections();
-  qsizetype index = recent.indexOf(description);
-  if (index == 0) {
-    // This is already the most-recent connection.
-    return;
-  }
-
-  if (index > 0) {
-    recent.removeAt(index);
-  } else {
-    while (recent.count() >= Constants::RECENT_CONNECTIONS_MAX_COUNT) {
-      recent.removeLast();
-    }
-  }
-  recent.prepend(description);
-  SettingsHolder::instance()->setRecentConnections(recent);
-}
-
 void MozillaVPN::postAuthenticationCompleted() {
   logger.debug() << "Post authentication completed";
 
@@ -980,6 +917,9 @@ void MozillaVPN::mainWindowLoaded() {
   connect(&m_gleanTimer, &QTimer::timeout, this, &MozillaVPN::sendGleanPings);
   m_gleanTimer.start(Constants::gleanTimeoutMsec());
   m_gleanTimer.setSingleShot(false);
+#endif
+#ifdef SENTRY_ENABLED
+  SentryAdapter::instance()->init();
 #endif
 }
 
@@ -1415,8 +1355,7 @@ void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
   setState(StateSubscriptionNeeded);
 
   if (!canceledByUser) {
-    ErrorHandler::instance()->errorHandle(
-        ErrorHandler::SubscriptionFailureError);
+    REPORTERROR(ErrorHandler::SubscriptionFailureError, "vpn");
   }
 
   TaskScheduler::scheduleTask(new TaskFunction([this]() {
@@ -1558,7 +1497,7 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
   TaskScheduler::scheduleTask(new TaskFunction([this]() {
     if (!modelsInitialized()) {
       logger.error() << "Failed to complete the key regeneration";
-      ErrorHandler::instance()->errorHandle(ErrorHandler::RemoteServiceError);
+      REPORTERROR(ErrorHandler::RemoteServiceError, "vpn");
       setUserState(UserNotAuthenticated);
       return;
     }
@@ -1585,6 +1524,13 @@ void MozillaVPN::exitForUnrecoverableError(const QString& reason) {
 
 void MozillaVPN::crashTest() {
   logger.debug() << "Crashing Application";
+
+  unsigned char* test = NULL;
+  test[1000] = 'a';  //<< here it should crash
+
+  // Interestingly this does not cause a "Signal" but a VC runtime exception
+  // and more interestingly, neither breakpad nor crashpad are catchting this on
+  // windows...
   char* text = new char[100];
   delete[] text;
   delete[] text;

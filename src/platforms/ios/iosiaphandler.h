@@ -23,7 +23,7 @@ class IOSIAPHandler final : public PurchaseIAPHandler {
 
  protected:
   void nativeStartSubscription(ProductsHandler::Product* product) override;
-  void nativeRestoreSubscription();
+  void nativeRestoreSubscription() override;
 
  private:
   void* m_delegate = nullptr;

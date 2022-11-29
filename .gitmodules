@@ -29,3 +29,6 @@
 	path = 3rdparty/glean
 	url = https://github.com/mozilla/glean.git
 	branch = main
+[submodule "3rdparty/sentry"]
+	path = 3rdparty/sentry
+	url = https://github.com/getsentry/sentry-native/

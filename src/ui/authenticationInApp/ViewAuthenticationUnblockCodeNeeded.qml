@@ -49,7 +49,7 @@ VPNInAppAuthenticationBase {
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
                 VPNAuthInApp.resendUnblockCodeEmail();
-                VPNErrorHandler.setAlert(VPNErrorHandler.AuthCodeSentAlert);
+                VPNErrorHandler.requestAlert(VPNErrorHandler.AuthCodeSentAlert);
             
             }
         }

@@ -36,6 +36,7 @@ Item {
             Layout.preferredHeight: VPNTheme.theme.menuHeight
 
             _menuIconButtonSource: stackview.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
+            _menuIconButtonMirror:  stackview.depth !== 1 && VPNLocalizer.isRightToLeft
             _iconButtonAccessibleName: stackview.depth === 1 ? qsTrId("vpn.connectionInfo.close") : qsTrId("vpn.main.back")
             _menuOnBackClicked: () => maybeRequestPreviousScreen()
             titleComponent: stackview.currentItem.titleComponent ? stackview.currentItem.titleComponent : null
@@ -49,7 +50,6 @@ Item {
                 }
                 VPNNavigator.requestPreviousScreen();
             }
-
         }
 
         VPNStackView {

@@ -61,7 +61,7 @@ TutorialStep* TutorialStep::create(AddonTutorial* parent,
     return nullptr;
   }
 
-  return new TutorialStep(parent, element, stepId, obj["content"].toString(),
+  return new TutorialStep(parent, element, stepId, obj["tooltip"].toString(),
                           conditions, tb, tn);
 }
 

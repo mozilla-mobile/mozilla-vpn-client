@@ -7,8 +7,6 @@
 
 #include "command.h"
 
-class ServerData;
-
 class CommandSelect final : public Command {
  public:
   explicit CommandSelect(QObject* parent);

@@ -39,6 +39,8 @@ AddonIndex::AddonIndex(AddonDirectory* addonDirectory) {
   m_addonDirectory = addonDirectory;
 }
 
+AddonIndex::~AddonIndex() { MVPN_COUNT_DTOR(AddonIndex); }
+
 /**
  * @brief Gets the on disk addon list from the addons file, if any.
  *

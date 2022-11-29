@@ -92,16 +92,13 @@ AndroidController::AndroidController() {
           logger.error() << "Service Error while activating the VPN: "
                          << parcelBody;
         }
-        ErrorHandler::instance()->errorHandle(
-            ErrorHandler::ConnectionFailureError);
+        REPORTERROR(ErrorHandler::ConnectionFailureError, "controller");
         emit disconnected();
       },
       Qt::QueuedConnection);
   connect(
       activity, &AndroidVPNActivity::serviceDisconnected, this,
-      []() {
-        ErrorHandler::instance()->errorHandle(ErrorHandler::ControllerError);
-      },
+      []() { REPORTERROR(ErrorHandler::ControllerError, "controller"); },
       Qt::QueuedConnection);
 }
 AndroidController::~AndroidController() { MVPN_COUNT_DTOR(AndroidController); }
@@ -164,7 +161,8 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
 
   // Find a Server as Fallback in the Same Location in case
   // the original one becomes unstable / unavailable
-  const QList<Server> serverList = MozillaVPN::instance()->exitServers();
+  const QList<Server> serverList =
+      MozillaVPN::instance()->currentServer()->exitServers();
   Server* fallbackServer = nullptr;
   foreach (auto item, serverList) {
     if (item.publicKey() != hop.m_server.publicKey()) {

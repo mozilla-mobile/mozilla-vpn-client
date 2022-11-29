@@ -10,7 +10,7 @@ def addons_target_tasks(full_task_graph, parameters, graph_config):
     def filter(task):
         if (
             task.attributes.get("shipping-phase") == parameters["shipping_phase"]
-            and task.attributes.get("build-type") == "addons/opt"
+            and task.attributes.get("build-type") in ("addons/opt", None)
         ):
             return True
 

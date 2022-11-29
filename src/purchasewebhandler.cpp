@@ -21,7 +21,7 @@ PurchaseWebHandler::~PurchaseWebHandler() {
   MVPN_COUNT_DTOR(PurchaseWebHandler);
 }
 
-void PurchaseWebHandler::startSubscription(const QString& productIdentifier) {
+void PurchaseWebHandler::startSubscription(const QString&) {
   if (m_subscriptionState != eInactive) {
     logger.warning() << "We're already subscribing.";
     return;

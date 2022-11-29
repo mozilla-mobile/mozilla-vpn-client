@@ -90,7 +90,7 @@ void Logger::Log::addMetaEnum(quint64 value, const QMetaObject* meta,
     ts << scope << "::";
   }
 
-  const char* key = me.valueToKey(value);
+  const char* key = me.valueToKey(static_cast<int>(value));
   const bool scoped = me.isScoped();
   if (scoped || !key) {
     ts << me.enumName() << (!key ? "(" : "::");

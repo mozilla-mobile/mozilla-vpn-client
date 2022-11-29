@@ -105,9 +105,6 @@ class MozillaVPN final : public QObject {
 
   State state() const;
 
-  const QString& exitServerPublicKey() const { return m_exitServerPublicKey; }
-  const QString& entryServerPublicKey() const { return m_entryServerPublicKey; }
-
   bool stagingMode() const;
   bool debugMode() const;
 
@@ -207,15 +204,7 @@ class MozillaVPN final : public QObject {
 
   void accountChecked(const QByteArray& json);
 
-  const QList<Server> exitServers() const;
-  const QList<Server> entryServers() const;
-  bool multihop() const { return m_private->m_serverData.multihop(); }
-
   void abortAuthentication();
-
-  void changeServer(const QString& countryCode, const QString& city,
-                    const QString& entryCountryCode = QString(),
-                    const QString& entryCity = QString());
 
   void silentSwitch();
 
@@ -253,12 +242,6 @@ class MozillaVPN final : public QObject {
   void setUpdating(bool updating);
 
   void heartbeatCompleted(bool success);
-
-  void setEntryServerPublicKey(const QString& publicKey);
-  void setExitServerPublicKey(const QString& publicKey);
-  void setServerCooldown(const QString& publicKey);
-  void setCooldownForAllServersInACity(const QString& countryCode,
-                                       const QString& cityCode);
 
   void addCurrentDeviceAndRefreshData(bool refreshProducts);
 
@@ -310,8 +293,6 @@ class MozillaVPN final : public QObject {
   void controllerStateChanged();
 
   void maybeRegenerateDeviceKey();
-
-  QList<Server> filterServerList(const QList<Server>& servers) const;
 
   bool checkCurrentDevice();
 
@@ -381,9 +362,6 @@ class MozillaVPN final : public QObject {
   State m_state = StateInitialize;
 
   UserState m_userState = UserNotAuthenticated;
-
-  QString m_exitServerPublicKey;
-  QString m_entryServerPublicKey;
 
   QTimer m_periodicOperationsTimer;
   QTimer m_gleanTimer;

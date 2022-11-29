@@ -25,10 +25,13 @@ Item {
 
             property int unlockCounter: 0
 
-            Layout.fillWidth: true
             objectName: "getHelpBack"
+
+            Layout.fillWidth: true
+            
             _menuOnBackClicked: () => VPNNavigator.requestPreviousScreen()
             _menuIconButtonSource: getHelpStackView.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
+            _menuIconButtonMirror: getHelpStackView.depth !== 1 && VPNLocalizer.isRightToLeft
             titleClicked: () => {
                             if (unlockCounter >= 5) {
                                 unlockCounter = 0

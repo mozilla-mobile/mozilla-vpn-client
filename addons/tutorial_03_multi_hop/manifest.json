@@ -10,6 +10,7 @@
     "id": "03_multi_hop",
     "image": "qrc:/addons/tutorial_03_multi_hop/image.svg",
     "title": "Using multi-hop VPN",
+    "settings_rollback_needed": true,
     "subtitle": "Follow this walkthrough to learn how to use multi-hop VPN.",
     "completion_message": "You’ve turned on multi-hop VPN and changed your exit location. Would you like to see more tips and tricks?",
     "steps": [

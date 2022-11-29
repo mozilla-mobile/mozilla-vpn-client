@@ -192,7 +192,7 @@ void CommandLineParser::showHelp(QObject* parent, const QString& app,
       QString desc = QString("-%1 | --%2").arg(o->m_short, o->m_long);
       stream << "  " << desc << " ";
 
-      for (int i = desc.length(); i < 20; ++i) {
+      for (qsizetype i = desc.length(); i < 20; ++i) {
         stream << " ";
       }
 
@@ -211,7 +211,7 @@ void CommandLineParser::showHelp(QObject* parent, const QString& app,
   for (Command* command : commands) {
     stream << "  " << command->name() << " ";
 
-    for (int i = command->name().length(); i < 20; ++i) {
+    for (qsizetype i = command->name().length(); i < 20; ++i) {
       stream << " ";
     }
 

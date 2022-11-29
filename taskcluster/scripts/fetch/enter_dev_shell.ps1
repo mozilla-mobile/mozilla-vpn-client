@@ -28,8 +28,8 @@ ForEach-Object -InputObject $INCLUDE_ADDS {
 }
 
 $LIB_ADDS = `
-    "$W10_SDK_PATH\lib\$W10_SDK_VERSION\ucrt\x64;" ,`
-    "$W10_SDK_PATH\lib\$W10_SDK_VERSION\um\x64;" ,`
+    "$W10_SDK_PATH\Lib\$W10_SDK_VERSION\ucrt\x64;" ,`
+    "$W10_SDK_PATH\Lib\$W10_SDK_VERSION\um\x64;" ,`
     "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\ATLMFC\lib\x64;" ,`
     "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\lib\x64;" ,`
     "$VS_STUDIO_LOCATION\DIA SDK\lib\amd64;"

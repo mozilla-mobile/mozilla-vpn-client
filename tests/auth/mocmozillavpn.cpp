@@ -68,13 +68,6 @@ void MozillaVPN::cancelAuthentication() {}
 
 void MozillaVPN::logout() {}
 
-const QList<Server> MozillaVPN::exitServers() const { return QList<Server>(); }
-
-const QList<Server> MozillaVPN::entryServers() const { return QList<Server>(); }
-
-void MozillaVPN::changeServer(const QString&, const QString&, const QString&,
-                              const QString&) {}
-
 void MozillaVPN::postAuthenticationCompleted() {}
 
 void MozillaVPN::mainWindowLoaded() {}

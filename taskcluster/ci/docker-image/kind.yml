@@ -69,3 +69,10 @@ tasks:
         args:
             ANDROID_ARCH: android_arm64_v8a
             QT_VERSION: 6.4.0
+    android-qt-next-armv7:
+        parent: base
+        symbol: I(android_armv7_next)
+        definition: android-qt6-build
+        args:
+            ANDROID_ARCH: android_armv7
+            QT_VERSION: 6.4.0

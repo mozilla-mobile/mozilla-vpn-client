@@ -20,7 +20,7 @@ extend_parameters_schema(
         Required("pull_request_number"): Any(All(int, Range(min=1)), None),
         Required("version"): str,
     },
-    defaults_fn=get_defaults
+    defaults_fn=get_defaults,
 )
 
 

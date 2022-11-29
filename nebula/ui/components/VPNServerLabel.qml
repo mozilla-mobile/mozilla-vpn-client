@@ -9,6 +9,8 @@ import Mozilla.VPN 1.0
 
 RowLayout {
     property var serversList
+    property bool narrowStyle: true
+    property string fontColor: VPNTheme.theme.fontColor
     id: root
 
     Flow {
@@ -21,7 +23,9 @@ RowLayout {
             id: serverRepeater
             model: serversList
             delegate: RowLayout {
-                spacing: VPNTheme.theme.listSpacing
+                spacing: narrowStyle
+                    ? VPNTheme.theme.listSpacing
+                    : VPNTheme.theme.listSpacing * 1.5
 
                 Image {
                     id: flag
@@ -47,6 +51,7 @@ RowLayout {
 
                 VPNLightLabel {
                     id: serverLocation
+                    color: root.fontColor
                     text: {
                         if (typeof(localizedCityName) !== "undefined") {
                              return localizedCityName

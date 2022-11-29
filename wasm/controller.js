@@ -71,6 +71,8 @@ class Controller {
   }
 
   async waitForMainView() {
+    await this.flipFeatureOff('inAppAuthentication');
+
     await this.waitForElement('getHelpLink');
     await this.waitForElementProperty('getHelpLink', 'visible', 'true');
     assert(await this.getElementProperty('getStarted', 'visible') === 'true');
@@ -89,6 +91,13 @@ class Controller {
     const json = await this._writeCommand('reset');
     assert(
         json.type === 'reset' && !('error' in json),
+        `Command failed: ${json.error}`);
+  }
+
+  async flipFeatureOff(key) {
+    const json = await this._writeCommand(`flip_off_feature ${key}`);
+    assert(
+        json.type === 'flip_off_feature' && !('error' in json),
         `Command failed: ${json.error}`);
   }
 

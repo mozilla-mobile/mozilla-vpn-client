@@ -559,7 +559,7 @@ static QList<InspectorCommand> s_commands{
           QJsonObject obj;
           if (QString(arguments[1]) != "" && QString(arguments[2]) != "") {
             MozillaVPN::instance()
-                ->controller()
+                ->serverCountryModel()
                 ->setCooldownForAllServersInACity(QString(arguments[1]),
                                                   QString(arguments[2]));
           } else {

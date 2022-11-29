@@ -6,6 +6,7 @@
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mfbt/checkedint.h"
 #include "models/device.h"
 #include "models/feature.h"
 #include "mozillavpn.h"
@@ -68,7 +69,12 @@ void KeyRegenerator::stateChanged() {
                  settingsHolder->keyRegenerationTimeSec());
   if (diff > 0) {
     logger.debug() << "Key regeneration in" << diff << "secs";
-    m_timer.start(diff * 1000);
+
+    CheckedInt<int> value(static_cast<int>(diff));
+    value *= 1000;
+
+    m_timer.start(value.isValid() ? value.value()
+                                  : std::numeric_limits<int>::max());
     return;
   }
 
@@ -78,5 +84,9 @@ void KeyRegenerator::stateChanged() {
       new TaskAddDevice(Device::currentDeviceName(), Device::uniqueDeviceId()));
   TaskScheduler::scheduleTask(new TaskAccount(ErrorHandler::PropagateError));
 
-  m_timer.start(Constants::keyRegeneratorTimeSec() * 1000);
+  CheckedInt<int> value(Constants::keyRegeneratorTimeSec());
+  value *= 1000;
+
+  m_timer.start(value.isValid() ? value.value()
+                                : std::numeric_limits<int>::max());
 }
