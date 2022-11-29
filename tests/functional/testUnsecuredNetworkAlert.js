@@ -25,7 +25,6 @@ describe('Unsecured network alert', function() {
       await vpn.waitForElementProperty(initialScreen.GET_HELP_LINK, 'visible', 'true');
 
       await vpn.forceUnsecuredNetworkAlert();
-      await vpn.wait();
 
       // No notifications during the main view.
       assert(vpn.lastNotification().title === null);
@@ -46,15 +45,12 @@ describe('Unsecured network alert', function() {
       await vpn.waitForCondition(async () => {
         const url = await vpn.getLastUrl();
         return url.includes('/api/v2/vpn/login');
-      });
-
-      await vpn.wait();
+      });      
 
       await vpn.waitForElement(initialScreen.AUTHENTICATE_VIEW);
       await vpn.waitForElementProperty(initialScreen.AUTHENTICATE_VIEW, 'visible', 'true');
 
       await vpn.forceUnsecuredNetworkAlert();
-      await vpn.wait();
 
       // No notifications during the main view.
       assert(vpn.lastNotification().title === null);
@@ -63,7 +59,6 @@ describe('Unsecured network alert', function() {
       await vpn.waitForElementProperty(homeScreen.CANCEL_FOOTER_LINK, 'visible', 'true');
 
       await vpn.clickOnElement(homeScreen.CANCEL_FOOTER_LINK);
-      await vpn.wait();
 
       await vpn.waitForElement(initialScreen.GET_STARTED);
       await vpn.waitForElementProperty(initialScreen.GET_STARTED, 'visible', 'true');
@@ -74,13 +69,11 @@ describe('Unsecured network alert', function() {
       await vpn.waitForElement(telemetryScreen.POST_AUTHENTICATION_BUTTON);
 
       await vpn.forceUnsecuredNetworkAlert();
-      await vpn.wait();
 
       // Notifications are not OK yet.
       assert(vpn.lastNotification().title === null);
 
       await vpn.clickOnElement(telemetryScreen.POST_AUTHENTICATION_BUTTON);
-      await vpn.wait();
     });
 
     it('Unsecured network alert in the Telemetry policy view', async () => {
@@ -88,13 +81,11 @@ describe('Unsecured network alert', function() {
       await vpn.waitForElement(telemetryScreen.TELEMETRY_POLICY_BUTTON);
 
       await vpn.forceUnsecuredNetworkAlert();
-      await vpn.wait();
 
       // Notifications are not OK yet.
       assert(vpn.lastNotification().title === null);
 
       await vpn.clickOnElement(telemetryScreen.TELEMETRY_POLICY_BUTTON);
-      await vpn.wait();
     });
 
     it('Unsecured network alert in the Controller view', async () => {
@@ -106,7 +97,6 @@ describe('Unsecured network alert', function() {
           'VPN is off');
 
       await vpn.forceUnsecuredNetworkAlert();
-      await vpn.wait();
 
       // Notifications are OK now.
       assert(
@@ -127,7 +117,7 @@ describe('Unsecured network alert', function() {
 
     it('Clicking the notification activates the VPN', async () => {
       await vpn.forceUnsecuredNetworkAlert();
-      await vpn.wait();
+
       assert(
           vpn.lastNotification().title === 'Unsecured Wi-Fi network detected');
       vpn.resetLastNotification();
@@ -146,7 +136,6 @@ describe('Unsecured network alert', function() {
           'Masking connection and location');
 
       await vpn.forceUnsecuredNetworkAlert();
-      await vpn.wait();
 
       // Notifications are not OK when connecting, but because the connection
       // is so fast recently, often at this point we are already in the connect
@@ -170,7 +159,6 @@ describe('Unsecured network alert', function() {
       vpn.resetLastNotification();
 
       await vpn.forceUnsecuredNetworkAlert();
-      await vpn.wait();
 
       // Notifications are not OK when connected.
       assert(vpn.lastNotification().title === null);
@@ -197,7 +185,6 @@ describe('Unsecured network alert', function() {
       assert(vpn.lastNotification().title === null);
 
       await vpn.forceUnsecuredNetworkAlert();
-      await vpn.wait();
 
       // Notifications are OK when disconnected.
       assert(

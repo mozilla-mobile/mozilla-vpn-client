@@ -16,38 +16,28 @@ describe('Tips and tricks intro modal', function () {
     await vpn.authenticateInApp(true, true);
   });
 
-  it('Access and navigate tips and tricks via intro modal', async () => {
-    await vpn.wait();
-    await vpn.waitForElementProperty(homeScreen.TIPS_AND_TRICKS_POPUP_LOADER, 'active', 'true');
-    await vpn.waitForElement(homeScreen.TIPS_AND_TRICKS_POPUP_DISCOVER);
-    await vpn.clickOnElement(homeScreen.TIPS_AND_TRICKS_POPUP_DISCOVER);
+  it('Access and navigate tips and tricks via intro modal', async () => {    
+    await vpn.waitForElementAndProperty(homeScreen.TIPS_AND_TRICKS_POPUP_LOADER, 'active', 'true');
+    await vpn.waitForElementAndClick(homeScreen.TIPS_AND_TRICKS_POPUP_DISCOVER);
 
-    await vpn.wait();
     await vpn.waitForElement(homeScreen.TIPS_AND_TRICKS_VIEW);
     await vpn.waitForElement(homeScreen.HOME_SCREEN_BACK);
-    await vpn.clickOnElement(homeScreen.HOME_SCREEN_BACK);    
-
-    await vpn.wait();
+    await vpn.clickOnElement(homeScreen.HOME_SCREEN_BACK); 
+    
     await vpn.waitForElement(homeScreen.HOME_SCREEN);
   });
 
-  it('Closing modal with close button', async () => {
-    await vpn.wait();
+  it('Closing modal with close button', async () => {    
     await vpn.waitForElementProperty(homeScreen.TIPS_AND_TRICKS_POPUP_LOADER, 'active', 'true');
-    await vpn.waitForElement(homeScreen.TIPS_AND_TRICKS_POPUP_CLOSE);
-    await vpn.clickOnElement(homeScreen.TIPS_AND_TRICKS_POPUP_CLOSE);
-
-    await vpn.wait();
+    await vpn.waitForElementAndClick(homeScreen.TIPS_AND_TRICKS_POPUP_CLOSE);
+    
     await vpn.waitForElementProperty(homeScreen.TIPS_AND_TRICKS_POPUP_LOADER, 'active', 'false');
   });
 
-  it('Closing modal with go back button', async () => {
-    await vpn.wait();
+  it('Closing modal with go back button', async () => {    
     await vpn.waitForElementProperty(homeScreen.TIPS_AND_TRICKS_POPUP_LOADER, 'active', 'true');
-    await vpn.waitForElement(homeScreen.TIPS_AND_TRICKS_POPUP_BACK);
-    await vpn.clickOnElement(homeScreen.TIPS_AND_TRICKS_POPUP_BACK);
-
-    await vpn.wait();
+    await vpn.waitForElementAndClick(homeScreen.TIPS_AND_TRICKS_POPUP_BACK);
+    
     await vpn.waitForElementProperty(homeScreen.TIPS_AND_TRICKS_POPUP_LOADER, 'active', 'false');
   });
 })

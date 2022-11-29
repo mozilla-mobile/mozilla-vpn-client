@@ -1084,7 +1084,6 @@ describe('Subscription view', function() {
     assert(await vpn.getElementProperty('learnMoreLink', 'visible') === 'true');
   });
 
-
   it('Account deletion - totp', async () => {
     this.ctx.fxaLoginCallback = (req) => {
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {

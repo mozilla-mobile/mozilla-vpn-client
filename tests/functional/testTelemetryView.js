@@ -12,8 +12,8 @@ describe('Telemetry view', function() {
 
   async function _getToTelemetryPage() {
     await vpn.authenticateInApp();
-    await vpn.clickOnElement(telemetryScreen.POST_AUTHENTICATION_BUTTON);
-    await vpn.wait();
+    await vpn.waitForElementAndClick(telemetryScreen.POST_AUTHENTICATION_BUTTON);
+    
     await vpn.waitForElement(telemetryScreen.TELEMETRY_POLICY_BUTTON);
     await vpn.waitForElementProperty(telemetryScreen.TELEMETRY_POLICY_BUTTON, 'visible', 'true');
     await vpn.waitForElement(telemetryScreen.DECLINE_TELEMETRY);
@@ -24,8 +24,8 @@ describe('Telemetry view', function() {
     assert(await vpn.getSetting('telemetry-policy-shown') === 'false');
     assert(await vpn.getSetting('glean-enabled') === 'true');
     await _getToTelemetryPage();
-    await vpn.clickOnElement(telemetryScreen.TELEMETRY_POLICY_BUTTON);
-    await vpn.wait();
+    await vpn.waitForElementAndClick(telemetryScreen.TELEMETRY_POLICY_BUTTON);
+
     assert(await vpn.getSetting('telemetry-policy-shown') === 'true');
     assert(await vpn.getSetting('glean-enabled') === 'true');
   });
@@ -34,8 +34,8 @@ describe('Telemetry view', function() {
     assert(await vpn.getSetting('telemetry-policy-shown') === 'false');
     assert(await vpn.getSetting('glean-enabled') === 'true');
     await _getToTelemetryPage();
-    await vpn.clickOnElement(telemetryScreen.DECLINE_TELEMETRY);
-    await vpn.wait();
+    await vpn.waitForElementAndClick(telemetryScreen.DECLINE_TELEMETRY);
+    
     assert(await vpn.getSetting('telemetry-policy-shown') === 'true');
     assert(await vpn.getSetting('glean-enabled') === 'false');
   });
