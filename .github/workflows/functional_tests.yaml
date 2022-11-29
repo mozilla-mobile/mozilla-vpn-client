@@ -26,16 +26,10 @@ jobs:
         with: 
           submodules: 'true'
 
-      - name: Install dependecies
-        if: steps.cache-build.outputs.cache-hit != 'true'
+      - name: Install build dependecies
         run: |
-          mkdir -p build/archive
-
-          # Download the build and runtime package dependencies.
           sudo apt-get update
-          sudo apt-get -o "Dir::Cache::archives=$(pwd)/build/archive" install -y \
-               $(./scripts/linux/getdeps.py -a linux/debian/control)
-          sudo chown -R $USER:$USER build/archive
+          sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
 
       - name: Cache grcov
         id: cache-grcov
@@ -110,13 +104,14 @@ jobs:
           name: test-client-${{ github.sha }}
           path: build/
 
-      - name: Install dependecies
+      - name: Install runtime dependecies
         run: |
-          sudo apt install ./build/archive/*.deb
+          sudo apt-get update
+          sudo apt-get install -y $(./scripts/linux/getdeps.py -r linux/debian/control)
           sudo apt install --no-upgrade firefox xvfb -y
           pip3 install -r requirements.txt
           npm install
-      
+
       - name: Cache grcov
         id: cache-grcov
         uses: actions/cache@v3
