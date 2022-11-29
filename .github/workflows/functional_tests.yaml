@@ -57,14 +57,23 @@ jobs:
           pip3 install -r requirements.txt
 
           mkdir -p build/cmake
+          mkdir -p build/profile
           cmake -S $(pwd) -B build/cmake -DBUILD_DUMMY=ON \
-              -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
+              -DCMAKE_CXX_FLAGS="--coverage $(pwd)/build/profile" \
+              -DCMAKE_EXE_LINKER_FLAGS="--coverage $(pwd)/build/profile"
           cmake --build build/cmake -j$(nproc)
+
+          mkdir -p build/profile
+          rsync -a --include '*/' --include '*.gcno' --exclude '*' \
+              build/cmake/src/CMakeFiles/mozillavpn.dir/ build/profile/
+          cp ./build/cmake/src/mozillavpn build/
 
       - uses: actions/upload-artifact@v3
         with:
           name: test-client-${{ github.sha }}
-          path: build/
+          path: |
+            build/
+            !build/cmake/
 
       - name: Generate tasklist
         id: testGen
@@ -95,6 +104,7 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
+
       - uses: actions/download-artifact@v3
         with:
           name: test-client-${{ github.sha }}
@@ -117,8 +127,8 @@ jobs:
       - name: Check build
         shell: bash
         run: |
-            chmod +x ./build/cmake/src/mozillavpn
-            ./build/cmake/src/mozillavpn -v
+            chmod +x ./build/mozillavpn
+            ./build/mozillavpn -v
 
             chmod +x ${{github.workspace}}/grcov-build/bin/grcov
             ${{github.workspace}}/grcov-build/bin/grcov --version
@@ -147,7 +157,7 @@ jobs:
             xvfb-run -a npm run functionalTest -- ${{matrix.test.path}}
         env:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
-          MVPN_BIN: ./build/cmake/src/mozillavpn
+          MVPN_BIN: ./build//mozillavpn
 
       - name: Generating grcov reports
         id: generateGrcov
@@ -155,7 +165,7 @@ jobs:
         timeout-minutes: 1 # Give GRCOV a short timeout in case it hangs after a panic
         run: |
           export PATH=${{github.workspace}}/grcov-build/bin:$PATH
-          grcov build/cmake/src/CMakeFiles/mozillavpn.dir \
+          grcov build/profile \
               -s src -t lcov --branch --ignore-not-existing \
               -o ${{runner.temp}}/artifacts/functional_lcov.info
 
