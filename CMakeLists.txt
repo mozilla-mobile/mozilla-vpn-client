@@ -5,8 +5,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 message("Configuring for ${CMAKE_GENERATOR}")
-get_property(IS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
-if(NOT (IS_MULTI_CONFIG OR DEFINED CMAKE_BUILD_TYPE))
+if(NOT (DEFINED CMAKE_CONFIGURATION_TYPES OR DEFINED CMAKE_BUILD_TYPE))
     ## Ensure the build type is set for single-config generators.
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "default build type" FORCE)
     message("Setting build type ${CMAKE_BUILD_TYPE}")
@@ -42,31 +41,12 @@ if(APPLE)
     if(NOT BUILD_OSX_APP_IDENTIFIER)
         set(BUILD_OSX_APP_IDENTIFIER org.mozilla.macos.FirefoxVPN CACHE STRING "OSX Application identifier")
     endif()
-    if(NOT BUILD_IOS_APP_IDENTIFIER)
-        set(BUILD_IOS_APP_IDENTIFIER org.mozilla.ios.FirefoxVPN CACHE STRING "iOS Application identifier")
+    if(NOT BUILD_OSX_DEVELOPMENT_TEAM)
+        set(BUILD_OSX_DEVELOPMENT_TEAM 43AQ936H96 CACHE STRING "OSX Development Team")
     endif()
-    if(NOT BUILD_IOS_GROUP_IDENTIFIER)
-        set(BUILD_IOS_GROUP_IDENTIFIER group.org.mozilla.ios.Guardian CACHE STRING "iOS Group identifier")
-    endif()
-    if(NOT BUILD_VPN_DEVELOPMENT_TEAM)
-        set(BUILD_VPN_DEVELOPMENT_TEAM 43AQ936H96 CACHE STRING "Mozilla VPN Development Team")
-    endif()
-    set(CMAKE_XCODE_GENERATE_SCHEME FALSE)
-    set(CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM ${BUILD_VPN_DEVELOPMENT_TEAM})
-    set(CMAKE_XCODE_ATTRIBUTE_GROUP_ID_IOS ${BUILD_IOS_GROUP_IDENTIFIER})
+    set(CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM ${BUILD_OSX_DEVELOPMENT_TEAM})
 
-    ## HACK: Force iphone simulator builds to target for x86_64 instead of the native
-    ## arch. This is due to buggy behaviour in Qt which uses the target architecture
-    ## to detect simulator builds, and leads to breakage on M1/M2 macbooks.
-    if(CMAKE_OSX_SYSROOT STREQUAL "iphonesimulator")
-        set(CMAKE_OSX_ARCHITECTURES x86_64)
-    endif()
-
-    if(IOS)
-        set(CMAKE_OSX_DEPLOYMENT_TARGET 13.0)
-    else()
-        set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14)
-    endif()
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14)
 endif()
 
 option(BUILD_DUMMY "Build for the dummy platform" OFF)
@@ -83,7 +63,6 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.17)
     cmake_policy(SET CMP0099 OLD)
 endif()
 
-find_program(PYTHON_EXECUTABLE NAMES python3)
 if(MSVC)
     include(src/cmake/msvc.cmake)
 endif()
@@ -95,9 +74,6 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set_property(GLOBAL PROPERTY AUTOGEN_TARGETS_FOLDER "Autogen")
-set_property(GLOBAL PROPERTY AUTOMOC_TARGETS_FOLDER "Autogen")
-set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "Autogen")
 
 find_package(Qt6 COMPONENTS
     Core
@@ -111,7 +87,6 @@ find_package(Qt6 COMPONENTS
     Widgets
     Xml
 )
-
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND 
    NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Android")
     find_package(Qt6 COMPONENTS
@@ -136,7 +111,7 @@ add_subdirectory(nebula)
 add_subdirectory(translations)
 
 if(NOT CMAKE_CROSSCOMPILING)
-    # Extra rustlang libraries
+    # Web Extension build targets
     add_subdirectory(extension)
 
     # Enable testing
@@ -162,9 +137,4 @@ if(WIN32)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     add_subdirectory(macos/loginitem)
     add_subdirectory(macos/pkg)
-elseif(IOS)
-    add_subdirectory(ios/networkextension)
-    if(BUILD_ADJUST_SDK_TOKEN)
-        add_subdirectory(ios/adjust)
-    endif()
 endif()
