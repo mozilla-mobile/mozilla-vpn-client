@@ -258,12 +258,12 @@ int CommandUI::run(QStringList& tokens) {
     vpn.initialize();
 
 #ifdef MVPN_MACOS
-    MacOSStartAtBootWatcher startAtBootWatcher();
+    MacOSStartAtBootWatcher startAtBootWatcher;
     MacOSUtils::setDockClickHandler();
 #endif
 
 #ifdef MVPN_WINDOWS
-    WindowsStartAtBootWatcher startAtBootWatcher();
+    WindowsStartAtBootWatcher startAtBootWatcher;
 #endif
 
 #ifdef MVPN_LINUX
