@@ -16,9 +16,7 @@ concurrency:
 
 jobs:
   linux-unit-tests:
-    runs-on: ubuntu-20.04
-    env:
-      QTVERSION: 6.2.4
+    runs-on: ubuntu-22.04
     name: Run Unit tests on Linux
     steps:
       - name: Clone repository
@@ -28,11 +26,9 @@ jobs:
 
       - name: Install dependences
         run: |
-          sudo apt update
-          sudo apt install git libgl-dev libegl-dev libpolkit-gobject-1-dev clang-10 liboath-dev python3 -y
-          python3 -m pip install -r requirements.txt
-          python3 -m pip install aqtinstall
-          aqt install-qt --outputdir /opt linux desktop $QTVERSION gcc_64 -m all
+          sudo apt-get update
+          sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
+          pip3 install -r requirements.txt
 
       - name: Cache grcov
         id: cache-grcov
@@ -51,8 +47,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p build
-          cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON \
-            -DCMAKE_PREFIX_PATH=/opt/$QTVERSION/gcc_64/lib/cmake/ \
+          cmake -S . -B $(pwd)/build \
             -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
           cmake --build $(pwd)/build --target build_tests -j$(nproc)
 
