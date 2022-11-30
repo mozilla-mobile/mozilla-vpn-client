@@ -43,7 +43,7 @@ describe('User authentication', function() {
       await vpn.waitForElementProperty(
           authScreen.EMAIL_INPUT, 'visible', 'true');
       await vpn.waitForElementProperty(authScreen.START_BUTTON, 'enabled', 'false');            
-      await vpn.setElementProperty(authScreen.EMAIL_INPUT, 'text', 's', 'test@test');
+      await vpn.setElementProperty(authScreen.EMAIL_INPUT, 'text', 's', 'test@test.com');
       await vpn.waitForElementProperty(authScreen.START_BUTTON, 'enabled', 'true');
       await vpn.waitForElement(authScreen.START_BUTTON);
       await vpn.clickOnElement(authScreen.START_BUTTON);
@@ -77,7 +77,7 @@ describe('User authentication', function() {
 
       // Condition 2      
       await vpn.setElementProperty(
-          authScreen.SIGNUP_PASS_INPUT, 'text', 's', 'test@test');
+          authScreen.SIGNUP_PASS_INPUT, 'text', 's', 'test@test.com');
       await vpn.waitForElementProperty(authScreen.PASS_LENGTH_CONDITION, '_passwordConditionIsSatisfied',
           'true');
       await vpn.waitForElementProperty(authScreen.EMAIL_INPUT_CONDITIOIN,
@@ -141,7 +141,7 @@ describe('User authentication', function() {
       await vpn.waitForElementProperty(
           authScreen.EMAIL_INPUT, 'visible', 'true');
       await vpn.setElementProperty(
-          authScreen.EMAIL_INPUT, 'text', 's', 'test@test');
+          authScreen.EMAIL_INPUT, 'text', 's', 'test@test.com');
       await vpn.waitForElement(authScreen.START_BUTTON);
       await vpn.clickOnElement(authScreen.START_BUTTON);
 
@@ -222,7 +222,7 @@ describe('User authentication', function() {
       await vpn.waitForElementProperty(
           authScreen.EMAIL_INPUT, 'visible', 'true');
       await vpn.setElementProperty(
-          authScreen.EMAIL_INPUT, 'text', 's', 'test@test');
+          authScreen.EMAIL_INPUT, 'text', 's', 'test@test.com');
       await vpn.waitForElement(authScreen.START_BUTTON);
       await vpn.clickOnElement(authScreen.START_BUTTON);
 
@@ -293,7 +293,7 @@ describe('User authentication', function() {
       await vpn.waitForElementProperty(
           authScreen.EMAIL_INPUT, 'visible', 'true');
       await vpn.setElementProperty(
-          authScreen.EMAIL_INPUT, 'text', 's', 'test@test');
+          authScreen.EMAIL_INPUT, 'text', 's', 'test@test.com');
       await vpn.waitForElement(authScreen.START_BUTTON);
       await vpn.clickOnElement(authScreen.START_BUTTON);
 
@@ -375,7 +375,7 @@ describe('User authentication', function() {
         }
       };
       await vpn.setElementProperty(
-          authScreen.EMAIL_INPUT, 'text', 's', 'test@test');
+          authScreen.EMAIL_INPUT, 'text', 's', 'test@test.com');
       await vpn.waitForElement(authScreen.START_BUTTON);
       await vpn.clickOnElement(authScreen.START_BUTTON);
 
@@ -402,7 +402,7 @@ describe('User authentication', function() {
         }
       };
       await vpn.setElementProperty(
-          authScreen.EMAIL_INPUT, 'text', 's', 'test@test');
+          authScreen.EMAIL_INPUT, 'text', 's', 'test@test.com');
       await vpn.waitForElement(authScreen.START_BUTTON);
       await vpn.clickOnElement(authScreen.START_BUTTON);
 
@@ -432,7 +432,7 @@ describe('User authentication', function() {
         }
       };
       await vpn.setElementProperty(
-          authScreen.EMAIL_INPUT, 'text', 's', 'test@test');
+          authScreen.EMAIL_INPUT, 'text', 's', 'test@test.com');
       await vpn.waitForElement(authScreen.START_BUTTON);
       await vpn.clickOnElement(authScreen.START_BUTTON);
 
@@ -474,7 +474,7 @@ describe('User authentication', function() {
         }
       };
       await vpn.setElementProperty(
-          authScreen.EMAIL_INPUT, 'text', 's', 'test@test');
+          authScreen.EMAIL_INPUT, 'text', 's', 'test@test.com');
       await vpn.waitForElement(authScreen.START_BUTTON);
       await vpn.clickOnElement(authScreen.START_BUTTON);
 
@@ -523,7 +523,7 @@ describe('User authentication', function() {
       await vpn.waitForElementProperty(
           authScreen.EMAIL_INPUT, 'visible', 'true');
       await vpn.setElementProperty(
-          authScreen.EMAIL_INPUT, 'text', 's', 'test@test');
+          authScreen.EMAIL_INPUT, 'text', 's', 'test@test.com');
       await vpn.waitForElement(authScreen.START_BUTTON);
       await vpn.clickOnElement(authScreen.START_BUTTON);
 
@@ -615,7 +615,7 @@ describe('User authentication', function() {
         await vpn.waitForElementProperty(
             authScreen.EMAIL_INPUT, 'visible', 'true');
         await vpn.setElementProperty(
-            authScreen.EMAIL_INPUT, 'text', 's', 'test@test-' + errorCode);
+            authScreen.EMAIL_INPUT, 'text', 's', 'test@test.com-' + errorCode);
         await vpn.waitForElementProperty(authScreen.START_BUTTON, 'enabled', 'true');
         await vpn.waitForElement(authScreen.START_BUTTON);
         await vpn.clickOnElement(authScreen.START_BUTTON);
@@ -665,7 +665,7 @@ describe('User authentication', function() {
 
       await vpn.waitForElementProperty(authScreen.START_BUTTON, 'enabled', 'false');
       await vpn.setElementProperty(
-          authScreen.EMAIL_INPUT, 'text', 's', 'test@test');
+          authScreen.EMAIL_INPUT, 'text', 's', 'test@test.com');
       await vpn.waitForElementProperty(authScreen.START_BUTTON, 'enabled', 'true');
       await vpn.waitForElement(authScreen.START_BUTTON);
       await vpn.clickOnElement(authScreen.START_BUTTON);
@@ -753,7 +753,7 @@ describe('User authentication', function() {
           authScreen.verificationByEmailView.BACK);
       await vpn.waitForElement(authScreen.EMAIL_INPUT);
       await vpn.setElementProperty(
-          authScreen.EMAIL_INPUT, 'text', 's', 'test@test');
+          authScreen.EMAIL_INPUT, 'text', 's', 'test@test.com');
       await vpn.waitForElementProperty(authScreen.START_BUTTON, 'enabled', 'true');
       await vpn.waitForElement(authScreen.START_BUTTON);
       await vpn.clickOnElement(authScreen.START_BUTTON);
@@ -830,7 +830,7 @@ describe('User authentication', function() {
       await vpn.waitForElementProperty(
           authScreen.EMAIL_INPUT, 'visible', 'true');
       await vpn.setElementProperty(
-          authScreen.EMAIL_INPUT, 'text', 's', 'test@test');
+          authScreen.EMAIL_INPUT, 'text', 's', 'test@test.com');
       await vpn.waitForElement(authScreen.START_BUTTON);
       await vpn.clickOnElement(authScreen.START_BUTTON);
 

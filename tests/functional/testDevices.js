@@ -112,7 +112,7 @@ describe('Devices', function() {
       // Click on get started and wait for authenticating view
       await vpn.waitForElementAndClick(initialScreen.GET_STARTED);
       await vpn.waitForElement(authScreen.EMAIL_INPUT);
-      await vpn.setElementProperty(authScreen.EMAIL_INPUT, 'text', 's', 'test@test');
+      await vpn.setElementProperty(authScreen.EMAIL_INPUT, 'text', 's', 'test@test.com');
       await vpn.waitForElement(authScreen.START_BUTTON);
       await vpn.waitForElementAndClick(authScreen.START_BUTTON);
 
@@ -228,7 +228,7 @@ describe('Devices', function() {
       // Click on get started and wait for authenticating view
       await vpn.waitForElementAndClick(initialScreen.GET_STARTED);
       await vpn.waitForElement(authScreen.EMAIL_INPUT);
-      await vpn.setElementProperty(authScreen.EMAIL_INPUT, 'text', 's', 'test@test');
+      await vpn.setElementProperty(authScreen.EMAIL_INPUT, 'text', 's', 'test@test.com');
       await vpn.waitForElement(authScreen.START_BUTTON);
       await vpn.waitForElementAndClick(authScreen.START_BUTTON);
 
@@ -348,7 +348,7 @@ describe('Devices', function() {
       // Click on get started and wait for authenticating view
       await vpn.waitForElementAndClick(initialScreen.GET_STARTED);
       await vpn.waitForElement(authScreen.EMAIL_INPUT);
-      await vpn.setElementProperty(authScreen.EMAIL_INPUT, 'text', 's', 'test@test');
+      await vpn.setElementProperty(authScreen.EMAIL_INPUT, 'text', 's', 'test@test.com');
       await vpn.waitForElement(authScreen.START_BUTTON);
       await vpn.waitForElementAndClick(authScreen.START_BUTTON);
 

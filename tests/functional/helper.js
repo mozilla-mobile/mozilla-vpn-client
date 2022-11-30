@@ -337,7 +337,7 @@ module.exports = {
     await this.clickOnElement('getStarted');
     await this.waitForElement('authStart-textInput');
     await this.setElementProperty(
-        'authStart-textInput', 'text', 's', 'test@test');
+        'authStart-textInput', 'text', 's', 'test@test.com');
     await this.waitForElement('authStart-button');
     await this.clickOnElement('authStart-button');
 
