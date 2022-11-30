@@ -93,10 +93,12 @@ jobs:
         uses: actions/checkout@v3
         with: 
           submodules: 'true'
-      - name: Install python dependencies
+
+      - name: Install dependencies
         shell: bash
         run: |
           pip3 install -r requirements.txt
+          brew install ninja
 
       - name: Install Qt6
         shell: bash
@@ -127,7 +129,7 @@ jobs:
         run: |
           export PATH=/opt/qt6/bin:${{github.workspace}}/grcov-build/bin:$PATH
           mkdir -p build
-          cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON \
+          cmake -S . -B $(pwd)/build -GNinja \
             -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
           cmake --build $(pwd)/build --target build_tests
 
