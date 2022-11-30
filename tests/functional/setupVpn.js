@@ -80,7 +80,7 @@ exports.mochaHooks = {
 
       await startAndConnect();
       await vpn.reset();
-      await vpn.setSetting('tips-and-tricks-intro-shown', 'true');
+      await vpn.setSetting('tipsAndTricksIntroShown', 'true');
       await vpn.flipFeatureOn('websocket');
       await vpn.authenticateInApp(true, true);
 
@@ -112,7 +112,7 @@ exports.mochaHooks = {
 
       await startAndConnect();
       await vpn.reset();
-      await vpn.setSetting('tips-and-tricks-intro-shown', 'true')
+      await vpn.setSetting('tipsAndTricksIntroShown', 'true')
     }
 
     await vpn.setGleanAutomationHeader();

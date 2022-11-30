@@ -499,8 +499,8 @@ module.exports = {
     _lastAddonLoadingCompleted = false;
 
     await this.setSetting(
-        'addon/customServerAddress', `${constants.ADDON_URL}/${addonPath}/`);
-    await this.setSetting('addon/customServer', 'true');
+        'addonCustomServerAddress', `${constants.ADDON_URL}/${addonPath}/`);
+    await this.setSetting('addonCustomServer', 'true');
 
     const json = await this._writeCommand('reset_addons');
     assert(
@@ -517,8 +517,8 @@ module.exports = {
     _lastAddonLoadingCompleted = false;
 
     await this.setSetting(
-        'addon/customServerAddress', `${constants.ADDON_URL}/${addonPath}/`);
-    await this.setSetting('addon/customServer', 'true');
+        'addonCustomServerAddress', `${constants.ADDON_URL}/${addonPath}/`);
+    await this.setSetting('addonCustomServer', 'true');
 
     const json = await this._writeCommand('fetch_addons');
     assert(
