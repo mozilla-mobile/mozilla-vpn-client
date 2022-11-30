@@ -506,14 +506,11 @@ ctest --test-dir build
 
 * Install node (if needed) and then `npm install` to install the testing
   dependencies
-* Install geckodriver and ensure it's on your path.
-  [Docs](https://www.selenium.dev/documentation/getting_started/installing_browser_drivers/)
+* Compile the testing addons: ./scripts/addon/generate_all_tests.py
 * Make a .env file with:
- * `MVPN_API_BASE_URL` (where proxy runs, most likely http://localhost:5000)
  * `MVPN_BIN` (location of compiled mvpn binary. This must be a dummy binary, see note below.)
- * `ARTIFACT_DIR` (directory to put screenshots from test failures)
-* (Optional) In one window run `./tests/proxy/wsgi.py --mock-devices`
-* Run a test from the root of the project: `npm run functionalTest path/to/testFile.js`. To run, say, the authentication tests: `npm run functionalTest tests/functional/testAuthentication.js`.
+ * `ARTIFACT_DIR` - optional (directory to put screenshots from test failures)
+* Run a test from the root of the project: `npm run functionalTest path/to/testFile.js`. To run, say, the authentication tests: `npm run functionalTest tests/functional/testAuthenticationInApp.js`.
 
 > **Note**: Functional tests require a dummy build of the application.
 > In order to create such a build, on the root folder of this repository run:
