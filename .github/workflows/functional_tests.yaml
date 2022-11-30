@@ -105,9 +105,6 @@ jobs:
             chmod +x ./build/mozillavpn
             ./build/mozillavpn -v
 
-            chmod +x ${{github.workspace}}/grcov-build/bin/grcov
-            ${{github.workspace}}/grcov-build/bin/grcov --version
-
       - name: Build addons
         shell: bash
         if: steps.cache-build.outputs.cache-hit != 'true'
