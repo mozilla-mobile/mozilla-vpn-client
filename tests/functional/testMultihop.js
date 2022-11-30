@@ -63,8 +63,6 @@
       await vpn.waitForElementProperty(countryId, 'visible', 'true');
 
       await actions.serverList.selectCountryFromList(countryId)
-      await vpn.wait();
-
       if (currentCountryCode === server.code) {
         assert(await vpn.getElementProperty(countryId, 'cityListVisible') === 'true');
       }
@@ -100,8 +98,6 @@
       await vpn.waitForElementProperty(countryId, 'visible', 'true');
 
       await actions.serverList.selectCountryFromList(countryId);
-      await vpn.wait();
-
       if (currentCountryCode === server.code) {
         assert(
             await vpn.getElementProperty(countryId, elementState.CITYLIST_VISIBLE) ===
@@ -138,9 +134,7 @@
         countryId = homeScreen.serverListView.generateCountryId(server.code);
         await vpn.waitForElement(countryId);
 
-        await actions.serverList.selectCountryFromList(countryId);
-        await vpn.wait();
-        
+        await actions.serverList.selectCountryFromList(countryId);                
         if (await vpn.getElementProperty(countryId, elementState.CITYLIST_VISIBLE) === 'false') {
           await vpn.clickOnElement(countryId);
         }
