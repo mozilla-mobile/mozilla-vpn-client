@@ -20,11 +20,11 @@
         "type": "ulist",
         "content": [
           { "id": "l_1",
-            "content": "On Android, you are now able to opt-in to start and connect the VPN automatically upon boot." },
+            "content": "On Android, you are now able to opt in to start and connect the VPN automatically upon boot." },
           { "id": "l_2",
             "content": "On desktop, you can now log in directly on the app, without needing to open the browser." },
           { "id": "l_3",
-            "content": "Released new guides on Multi-Hop, Custom DNS and App Permissions, to help you master the Mozilla VPN app." },
+            "content": "Released new guides on Multi-hop, Custom DNS and App Permissions, to help you master the Mozilla VPN app." },
           { "id": "l_4",
             "content": "We’ve also made bug fixes, UI adjustments and other performance improvements to make Mozilla VPN even better." }
         ]
