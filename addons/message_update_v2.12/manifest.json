@@ -19,8 +19,6 @@
       { "id": "c_1",
         "type": "ulist",
         "content": [
-          { "id": "l_1",
-            "content": "On Android, you are now able to opt in to start and connect the VPN automatically upon boot." },
           { "id": "l_2",
             "content": "On desktop, you can now log in directly on the app, without needing to open the browser." },
           { "id": "l_3",
