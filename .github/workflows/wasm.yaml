@@ -63,10 +63,10 @@ jobs:
         id: testGen
         shell: bash
         run: |
-          echo -n "::set-output name=tests::"
+          echo -n "tests=" >> $GITHUB_OUTPUT
           for test in $(find tests/functional -name 'test*.js' | sort); do
             grep "$(basename ${test%.js})" tests/functional/wasm-test-ignore &>/dev/null || printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
-          done | jq -s -c
+          done | jq -s -c >> $GITHUB_OUTPUT
 
       - name: Check tests
         shell: bash
