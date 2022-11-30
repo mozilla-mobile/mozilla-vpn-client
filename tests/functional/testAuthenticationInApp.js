@@ -260,11 +260,10 @@ describe('User authentication', function() {
       await vpn.clickOnElement(authScreen.verificationBySessionTotpView.TOTP_NEEDED_BUTTON);
 
       await vpn.waitForElementProperty('VPN', 'userState', 'UserAuthenticated');
-      await vpn.waitForElementAndClick(telemetryScreen.POST_AUTHENTICATION_BUTTON);
-      await vpn.wait();
+      await vpn.waitForElementAndClick(
+          telemetryScreen.POST_AUTHENTICATION_BUTTON);
 
-      await vpn.waitForElement(telemetryScreen.TELEMETRY_POLICY_BUTTON);
-      await vpn.clickOnElement(telemetryScreen.TELEMETRY_POLICY_BUTTON);
+      await vpn.waitForElementAndClick(telemetryScreen.TELEMETRY_POLICY_BUTTON);
       await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
     });
   });
@@ -620,11 +619,8 @@ describe('User authentication', function() {
         await vpn.waitForElementProperty(authScreen.START_BUTTON, 'enabled', 'true');
         await vpn.waitForElement(authScreen.START_BUTTON);
         await vpn.clickOnElement(authScreen.START_BUTTON);
-        
-        await vpn.waitForElement(authScreen.ERROR_POPUP_BUTTON);
-        await vpn.waitForElementProperty(authScreen.ERROR_POPUP_BUTTON, 'visible', 'true');
-        await vpn.wait()
-        await vpn.clickOnElement(authScreen.ERROR_POPUP_BUTTON);
+
+        await vpn.waitForElementAndClick(authScreen.ERROR_POPUP_BUTTON);
         await vpn.waitForElementProperty(
             authScreen.ERROR_POPUP_BUTTON, 'visible', 'false');
         await vpn.waitForElementProperty(
