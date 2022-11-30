@@ -75,8 +75,6 @@ class ServerData final : public QObject {
               const QString& entryCountryCode = QString(),
               const QString& entryCityName = QString());
 
-  QString toString() const;
-
   void retranslate() { emit changed(); }
 
   void setEntryServerPublicKey(const QString& publicKey);

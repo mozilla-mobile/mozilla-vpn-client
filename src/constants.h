@@ -36,7 +36,7 @@ constexpr uint32_t NEW_IN_APP_MESSAGE_ALERT_MSEC = 4000;
 constexpr uint32_t DEFAULT_OS_NOTIFICATION_MSEC = 4000;
 
 // Number of recent connections to retain.
-constexpr int RECENT_CONNECTIONS_MAX_COUNT = 5;
+constexpr int RECENT_CONNECTIONS_MAX_COUNT = 2;
 
 // Cooldown period for unresponsive servers
 constexpr uint32_t SERVER_UNRESPONSIVE_COOLDOWN_SEC = 300;

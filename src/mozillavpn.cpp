@@ -14,6 +14,7 @@
 #include "logoutobserver.h"
 #include "models/device.h"
 #include "models/feature.h"
+#include "models/recentconnections.h"
 #include "mozillavpn.h"
 #include "networkmanager.h"
 #include "profileflow.h"
@@ -204,6 +205,8 @@ ConnectionHealth* MozillaVPN::connectionHealth() {
 
 Controller* MozillaVPN::controller() { return &m_private->m_controller; }
 
+ServerData* MozillaVPN::currentServer() { return &m_private->m_serverData; }
+
 SubscriptionData* MozillaVPN::subscriptionData() {
   return &m_private->m_subscriptionData;
 }
@@ -250,6 +253,8 @@ void MozillaVPN::initialize() {
   AddonManager::instance();
 
   Glean::initialize();
+
+  RecentConnections::instance()->initialize();
 
   QList<Task*> initTasks{new TaskAddonIndex(), new TaskGetFeatureList()};
 

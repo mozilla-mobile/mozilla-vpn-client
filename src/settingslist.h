@@ -365,14 +365,24 @@ SETTING_STRING(publicKeyJournal,        // getter
                true                     // remove when reset
 )
 
-SETTING_STRINGLIST(recentConnections,        // getter
-                   setRecentConnections,     // setter
-                   removeRecentConnections,  // remover
-                   hasRecentConnections,     // has
-                   "recentConnections",      // key
-                   QStringList(),            // default value
-                   true,                     // user setting
-                   true                      // remove when reset
+SETTING_BYTEARRAY(recentConnections,        // getter
+                  setRecentConnections,     // setter
+                  removeRecentConnections,  // remover
+                  hasRecentConnections,     // has
+                  "recentConnections2",     // key
+                  "",                       // default value
+                  true,                     // user setting
+                  true                      // remove when reset
+)
+
+SETTING_STRINGLIST(recentConnectionsDeprecated,        // getter
+                   setRecentConnectionsDeprecated,     // setter
+                   removeRecentConnectionsDeprecated,  // remover
+                   hasRecentConnectionsDeprecated,     // has
+                   "recentConnections",                // key
+                   QStringList(),                      // default value
+                   true,                               // user setting
+                   true                                // remove when reset
 )
 
 SETTING_STRINGLIST(seenFeatures,        // getter

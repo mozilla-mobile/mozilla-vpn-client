@@ -20,6 +20,7 @@
 #include "logger.h"
 #include "models/feature.h"
 #include "models/featuremodel.h"
+#include "models/recentconnections.h"
 #include "mozillavpn.h"
 #include "notificationhandler.h"
 #include "productshandler.h"
@@ -332,6 +333,14 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNLicenseModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance()->licenseModel();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNRecentConnections",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = RecentConnections::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

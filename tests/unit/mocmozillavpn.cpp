@@ -38,6 +38,11 @@ ConnectionHealth* MozillaVPN::connectionHealth() { return nullptr; }
 
 Controller* MozillaVPN::controller() { return new Controller(); }
 
+ServerData* MozillaVPN::currentServer() {
+  static ServerData* data = new ServerData();
+  return data;
+}
+
 SubscriptionData* MozillaVPN::subscriptionData() {
   return new SubscriptionData();
 }
