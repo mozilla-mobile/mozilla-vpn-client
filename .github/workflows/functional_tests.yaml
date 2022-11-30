@@ -192,8 +192,8 @@ jobs:
           TESTJSON: ${{ needs.build_test_app.outputs.matrix }}
         run: |          
           export PATH=${{github.workspace}}/grcov-build/bin:$PATH
-          export TESTNAMES=$(echo ${TESTJSON} | jq -r '.[] | .name')
-          grcov $(echo $TESTNAMES | xargs -I name echo name-Results/profile | tr '\n' ' ') \
+          export TESTDIRS=$(echo ${TESTJSON} | jq -r '.[] | .name' | xargs -I name echo name-Results/profile)
+          grcov ${TESTDIRS} \
               -s checkout/src -t lcov --branch --ignore-not-existing \
               -o ${{runner.temp}}/functional_lcov.info
 
