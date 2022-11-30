@@ -128,13 +128,7 @@ jobs:
 
       - name: Build addons
         shell: bash
-        if: steps.cache-build.outputs.cache-hit != 'true'
-        run: |
-           for i in tests/functional/addons/*; do
-             if ! [ -f $i/manifest.json ]; then
-               ./scripts/addon/generate_all.py -p $i -q /opt/$QTVERSION/gcc_64/bin
-             fi
-           done
+        run: ./scripts/addon/generate_all_tests.py -q /opt/$QTVERSION/gcc_64/bin
 
       - name: Running ${{matrix.test.name}} Tests
         id: runTests
