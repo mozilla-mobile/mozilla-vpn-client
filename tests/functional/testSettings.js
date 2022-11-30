@@ -133,8 +133,6 @@ describe('Settings', function () {
     await vpn.clickOnElement(settingsScreen.NETWORK_SETTINGS);
     await vpn.wait();
 
-    await checkSetting('settingLocalNetworkAccess', 'localNetworkAccess');
-
     await vpn.waitForElement(settingsScreen.BACK);
     await vpn.waitForElementProperty(settingsScreen.BACK, 'visible', 'true');
     await vpn.clickOnElement(settingsScreen.BACK);

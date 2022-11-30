@@ -127,13 +127,5 @@ bool DNSHelper::shouldExcludeDNS() {
     return false;
   }
 
-  if (isLocalDNS && settings->localNetworkAccess()) {
-    // DNS is lan, but we already excluded local-ip's, all good.
-    return false;
-  }
-
-  if (!isLocalDNS) {
-    return false;
-  }
   return true;
 }
