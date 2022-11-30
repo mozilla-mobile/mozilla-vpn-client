@@ -85,7 +85,7 @@ jobs:
         run: |
           echo $TEST_LIST | jq
 
-  functionaltests:
+  functional_tests:
     name: Functional tests
     needs: 
       - build_test_app
@@ -150,9 +150,13 @@ jobs:
             export TZ=Europe/London
             mkdir -p $ARTIFACT_DIR
             xvfb-run -a npm run functionalTest -- ${{matrix.test.path}}
+
+            mkdir -p $ARTIFACT_DIR/profile
+            rsync -a --include '*/' --include '*.gcda' --exclude '*' \
+                build/profile/ $ARTIFACT_DIR/profile/
         env:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
-          MVPN_BIN: ./build//mozillavpn
+          MVPN_BIN: ./build/mozillavpn
 
       - name: Generating grcov reports
         id: generateGrcov
@@ -174,9 +178,38 @@ jobs:
           files: ${{runner.temp}}/artifacts/functional_lcov.info
           verbose: true
 
-      - name: Uploading artifacts
+      - name: Uploading results
         uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
-          name: ${{matrix.test.name}} Logs
+          name: ${{matrix.test.name}} Results
           path: ${{ runner.temp }}/artifacts
+
+  gen_coverage:
+    name: Generate coverage report
+    needs: [build_test_app, functional_tests]
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+      
+      - name: Cache grcov
+        id: cache-grcov
+        uses: actions/cache@v3
+        with:
+          path: grcov-build/
+          key: ${{runner.os}}-grcov-v0.8.13
+
+      - name: Check build
+        shell: bash
+        run: |
+          ls -al $(pwd)
+
+          chmod +x ./build/mozillavpn
+          ./build/mozillavpn -v
+
+          chmod +x ${{github.workspace}}/grcov-build/bin/grcov
+          ${{github.workspace}}/grcov-build/bin/grcov --version
