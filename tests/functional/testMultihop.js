@@ -216,9 +216,6 @@
   });  
 
   it('Server switching -- same country different cities', async () => {
-    await vpn.setSetting('server-switch-notification', "true");
-    await vpn.setSetting('connection-change-notification', "true");
-
     let newCurrentCountry;
     let newCurrentCity;
     let currentCountry;
@@ -337,9 +334,6 @@
   });
 
   it('Server switching -- different country different cities', async () => {
-    await vpn.setSetting('server-switch-notification', "true");
-    await vpn.setSetting('connection-change-notification', "true");
-
     let newCurrentCountry;
     let newCurrentCity;
     let currentCountry;
@@ -448,9 +442,6 @@
   });
 
   it('Single and multihop switching', async () => {
-    await vpn.setSetting('server-switch-notification', "true");
-    await vpn.setSetting('connection-change-notification', "true");
-
     let currentCountry;
     let currentCity;
     
