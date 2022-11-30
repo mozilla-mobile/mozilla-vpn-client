@@ -444,7 +444,7 @@
             newCurrentCountry}, ${newCurrentCity}`);
   });
 
-  it.only('Single and multihop switching', async () => {
+  it('Single and multihop switching', async () => {
     await actions.settings.setServerSwitchNotification(true)
     await actions.settings.setConnectionChangeNotification(true)
 
