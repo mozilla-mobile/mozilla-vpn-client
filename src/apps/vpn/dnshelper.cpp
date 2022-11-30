@@ -121,9 +121,8 @@ bool DNSHelper::shouldExcludeDNS() {
 
   bool isLocalDNS =
       RFC1918::contains(dnsAddress) || RFC4193::contains(dnsAddress);
-  if (!Feature::get(Feature::Feature_lanAccess)->isSupported() && isLocalDNS) {
-    // In case we cant use lan access, we must exclude it (the platform already
-    // does the magic for us).
+  if (isLocalDNS) {
+    // DNS is lan, but we already excluded local-ip's, all good.
     return false;
   }
 
