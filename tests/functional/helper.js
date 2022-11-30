@@ -128,7 +128,8 @@ module.exports = {
     const json = await this._writeCommand(
         'force_subscription_management_reauthentication');
     assert(
-        json.type === 'force_subscription_management_reauthentication' && !('error' in json),
+        json.type === 'force_subscription_management_reauthentication' &&
+            !('error' in json),
         `Command failed: ${json.error}`);
   },
 
@@ -170,8 +171,8 @@ module.exports = {
 
   async waitForElementAndClick(id) {
     await this.waitForElementAndProperty(id, 'visible', 'true');
-    await this.clickOnElement(id)
-    await this.wait()
+    await this.clickOnElement(id);
+    await this.wait();
   },
 
   async clickOnNotification() {
@@ -239,7 +240,7 @@ module.exports = {
 
   async waitForElementAndProperty(id, property, value) {
     await this.waitForElement(id)
-    await this.waitForElementProperty(id, property, value)
+        await this.waitForElementProperty(id, property, value)
   },
 
   async setGleanAutomationHeader() {
@@ -470,16 +471,16 @@ module.exports = {
   async getDevices() {
     const json = await this._writeCommand('devices');
     assert(
-      json.type === 'devices' && !('error' in json),
-      `Command failed: ${json.error}`);
+        json.type === 'devices' && !('error' in json),
+        `Command failed: ${json.error}`);
     return json.value;
   },
 
   async getPublicKey() {
     const json = await this._writeCommand('public_key');
     assert(
-      json.type === 'public_key' && !('error' in json),
-      `Command failed: ${json.error}`);
+        json.type === 'public_key' && !('error' in json),
+        `Command failed: ${json.error}`);
     return json.value;
   },
 
