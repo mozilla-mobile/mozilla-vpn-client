@@ -164,7 +164,7 @@ jobs:
 
       - name: Download artifacts
         uses: actions/download-artifact@v3
-      
+
       - name: Cache grcov
         id: cache-grcov
         uses: actions/cache@v3
