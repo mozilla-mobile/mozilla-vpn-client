@@ -38,8 +38,7 @@ AndroidController::AndroidController() {
   connect(
       activity, &AndroidVPNActivity::serviceConnected, this,
       []() {
-        AndroidVPNActivity::sendToService(ServiceAction::ACTION_CONTROLLER_INIT,
-                                          "");
+        AndroidVPNActivity::sendToService(ServiceAction::ACTION_GET_STATUS, "");
       },
       Qt::QueuedConnection);
   connect(

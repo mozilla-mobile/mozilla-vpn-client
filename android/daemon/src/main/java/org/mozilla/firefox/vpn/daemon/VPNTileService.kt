@@ -50,7 +50,9 @@ class VPNTileService : android.service.quicksettings.TileService() {
             out.writeStrongBinder(mServiceBinder)
             try {
                 // Register our IBinder Listener
-                vpnService?.transact(3, out, Parcel.obtain(), 0)
+                vpnService?.transact(VPNServiceBinder.ACTIONS.registerEventListener, out, Parcel.obtain(), 0)
+                // Ask the VPN Service for the current status
+                vpnService?.transact(VPNServiceBinder.ACTIONS.getStatus, out, Parcel.obtain(), 0)
                 mService = vpnService
             } catch (e: DeadObjectException) {
                 mService = null
