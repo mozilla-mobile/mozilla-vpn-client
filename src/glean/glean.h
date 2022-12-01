@@ -2,24 +2,24 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef GLEAN_H
-#define GLEAN_H
+#ifndef NEW_GLEAN_H
+#define NEW_GLEAN_H
 
 #include <QObject>
 
 constexpr const char* GLEAN_DATA_DIRECTORY = "glean";
 
-class Glean final : public QObject {
+class VPNGlean final : public QObject {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(Glean)
+  Q_DISABLE_COPY_MOVE(VPNGlean)
 
  private:
-  Glean();
+  VPNGlean();
 
   static void setUploadEnabled(bool isTelemetryEnabled);
 
  public:
-  ~Glean();
+  ~VPNGlean();
 
   static void initialize();
 
@@ -39,4 +39,4 @@ class Glean final : public QObject {
   };
 };
 
-#endif  // GLEAN_H
+#endif  // NEW_GLEAN_H

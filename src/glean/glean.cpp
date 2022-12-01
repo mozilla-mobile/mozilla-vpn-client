@@ -15,7 +15,7 @@
 
 namespace {
 Logger logger(LOG_MAIN, "Glean");
-Glean* s_instance = nullptr;
+VPNGlean* s_instance = nullptr;
 
 QString rootAppFolder() {
 #if defined(UNIT_TEST)
@@ -26,13 +26,13 @@ QString rootAppFolder() {
 }
 }  // namespace
 
-Glean::Glean() { MVPN_COUNT_CTOR(Glean); }
+VPNGlean::VPNGlean() { MVPN_COUNT_CTOR(VPNGlean); }
 
-Glean::~Glean() { MVPN_COUNT_DTOR(Glean); }
+VPNGlean::~VPNGlean() { MVPN_COUNT_DTOR(VPNGlean); }
 
 // static
-void Glean::initialize() {
-  logger.debug() << "Initializing Glean";
+void VPNGlean::initialize() {
+  logger.debug() << "Initializing VPNGlean";
 
   if (Feature::get(Feature::Feature_gleanRust)->isSupported()) {
     QDir gleanDirectory(rootAppFolder());
@@ -45,17 +45,18 @@ void Glean::initialize() {
     if (!gleanDirectory.exists(GLEAN_DATA_DIRECTORY) &&
         !gleanDirectory.mkpath(GLEAN_DATA_DIRECTORY)) {
       logger.error()
-          << "Unable to create the Glean data directory. Terminating."
+          << "Unable to create the VPNGlean data directory. Terminating."
           << rootAppFolder();
       return;
     }
 
     if (!gleanDirectory.cd(GLEAN_DATA_DIRECTORY)) {
-      logger.error() << "Unable to open the Glean data directory. Terminating.";
+      logger.error()
+          << "Unable to open the VPNGlean data directory. Terminating.";
       return;
     }
 
-    s_instance = new Glean();
+    s_instance = new VPNGlean();
     connect(SettingsHolder::instance(), &SettingsHolder::gleanEnabledChanged,
             s_instance, []() {
               s_instance->setUploadEnabled(
@@ -78,8 +79,8 @@ void Glean::initialize() {
 }
 
 // static
-void Glean::setUploadEnabled(bool isTelemetryEnabled) {
-  logger.debug() << "Changing Glean upload status to" << isTelemetryEnabled;
+void VPNGlean::setUploadEnabled(bool isTelemetryEnabled) {
+  logger.debug() << "Changing VPNGlean upload status to" << isTelemetryEnabled;
 
   glean_set_upload_enabled(isTelemetryEnabled);
 }

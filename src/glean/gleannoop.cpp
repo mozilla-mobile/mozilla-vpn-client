@@ -10,14 +10,14 @@ namespace {
 Logger logger(LOG_MAIN, "Glean-noop");
 }
 
-Glean::Glean() { MVPN_COUNT_CTOR(Glean); }
+VPNGlean::VPNGlean() { MVPN_COUNT_CTOR(VPNGlean); }
 
-Glean::~Glean() { MVPN_COUNT_DTOR(Glean); }
-
-// static
-void Glean::initialize() { logger.debug() << "Initializing Glean"; }
+VPNGlean::~VPNGlean() { MVPN_COUNT_DTOR(VPNGlean); }
 
 // static
-void Glean::setUploadEnabled(bool isTelemetryEnabled) {
-  logger.debug() << "Changing Glean upload status to" << isTelemetryEnabled;
+void VPNGlean::initialize() { logger.debug() << "Initializing VPNGlean"; }
+
+// static
+void VPNGlean::setUploadEnabled(bool isTelemetryEnabled) {
+  logger.debug() << "Changing VPNGlean upload status to" << isTelemetryEnabled;
 }
