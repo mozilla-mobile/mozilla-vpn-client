@@ -11,7 +11,7 @@ class Ping final {
   Q_GADGET
 
  public:
-  Ping(int aId);
+  explicit Ping(int aId);
   ~Ping() = default;
 
   Q_INVOKABLE void submit() const;

@@ -3,6 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "glean/glean.h"
+#include "glean/generated/metrics.h"
+#include "glean/generated/pings.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
@@ -12,6 +14,8 @@
 
 #include <QDir>
 #include <QStandardPaths>
+#include <QQmlApplicationEngine>
+#include <QQmlContext>
 
 namespace {
 Logger logger(LOG_MAIN, "Glean");
@@ -33,6 +37,7 @@ VPNGlean::~VPNGlean() { MVPN_COUNT_DTOR(VPNGlean); }
 // static
 void VPNGlean::initialize() {
   logger.debug() << "Initializing VPNGlean";
+  registerQMLSingletons();
 
   if (Feature::get(Feature::Feature_gleanRust)->isSupported()) {
     QDir gleanDirectory(rootAppFolder());
@@ -83,4 +88,22 @@ void VPNGlean::setUploadEnabled(bool isTelemetryEnabled) {
   logger.debug() << "Changing VPNGlean upload status to" << isTelemetryEnabled;
 
   glean_set_upload_enabled(isTelemetryEnabled);
+}
+
+// static
+void VPNGlean::registerQMLSingletons() {
+  qmlRegisterSingletonType<MozillaVPN>(
+      "Mozilla.VPN", 1, 0, "GleanPings",
+      [](QQmlEngine*, QJSEngine*) -> QObject* {
+        QObject* obj = __DONOTUSE__GleanPings::instance();
+        QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+        return obj;
+      });
+
+  qmlRegisterSingletonType<MozillaVPN>(
+      "Mozilla.VPN", 1, 0, "Glean", [](QQmlEngine*, QJSEngine*) -> QObject* {
+        QObject* obj = __DONOTUSE__GleanMetrics::instance();
+        QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+        return obj;
+      });
 }

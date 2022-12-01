@@ -11,8 +11,6 @@
 #include "constants.h"
 #include "fontloader.h"
 #include "frontend/navigator.h"
-#include "glean/generated/metrics.h"
-#include "glean/generated/pings.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
 #include "keyregenerator.h"
@@ -540,21 +538,6 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNUrlOpener",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = UrlOpener::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "GleanPings",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = __DONOTUSE__GleanPings::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "Glean", [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = __DONOTUSE__GleanMetrics::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
