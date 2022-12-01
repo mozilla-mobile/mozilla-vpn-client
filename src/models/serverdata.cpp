@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "serverdata.h"
-#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -94,7 +93,8 @@ void ServerData::update(const QString& exitCountryCode,
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  settingsHolder->setServerData(QJsonDocument(obj).toJson());
+  settingsHolder->setServerData(
+      QJsonDocument(obj).toJson(QJsonDocument::Compact));
 }
 
 bool ServerData::settingsChanged() {
@@ -139,20 +139,6 @@ QString ServerData::localizedPreviousExitCityName() const {
                                        m_previousExitCityName);
 }
 
-QString ServerData::toString() const {
-  if (!hasServerData()) {
-    return QString();
-  }
-
-  QString result = "";
-  if (multihop()) {
-    result += m_entryCityName + ", " + m_entryCountryCode + " -> ";
-  }
-
-  result += m_exitCityName + ", " + m_exitCountryCode;
-  return result;
-}
-
 void ServerData::changeServer(const QString& countryCode,
                               const QString& cityName,
                               const QString& entryCountryCode,
@@ -165,25 +151,6 @@ void ServerData::changeServer(const QString& countryCode,
   }
 
   update(countryCode, cityName, entryCountryCode, entryCityName);
-
-  // Update the list of recent connections.
-  QString description = toString();
-  QStringList recent = SettingsHolder::instance()->recentConnections();
-  qsizetype index = recent.indexOf(description);
-  if (index == 0) {
-    // This is already the most-recent connection.
-    return;
-  }
-
-  if (index > 0) {
-    recent.removeAt(index);
-  } else {
-    while (recent.count() >= Constants::RECENT_CONNECTIONS_MAX_COUNT) {
-      recent.removeLast();
-    }
-  }
-  recent.prepend(description);
-  SettingsHolder::instance()->setRecentConnections(recent);
 }
 
 void ServerData::forget() {

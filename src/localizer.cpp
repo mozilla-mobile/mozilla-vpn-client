@@ -267,10 +267,6 @@ bool Localizer::languageSort(const Localizer::Language& a,
   return collator->compare(a.m_localizedName, b.m_localizedName) < 0;
 }
 
-QString Localizer::localizedCityName(const QString& code, const QString& city) {
-  return ServerI18N::translateCityName(code, city);
-}
-
 // static
 void Localizer::macOSInstallerStrings() {
   //% "Mozilla VPN for macOS"

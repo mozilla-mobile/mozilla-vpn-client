@@ -101,6 +101,7 @@ SOURCES += \
         models/feedbackcategorymodel.cpp \
         models/keys.cpp \
         models/licensemodel.cpp \
+        models/recentconnections.cpp \
         models/server.cpp \
         models/servercity.cpp \
         models/servercountry.cpp \
@@ -275,6 +276,7 @@ HEADERS += \
         models/feedbackcategorymodel.h \
         models/keys.h \
         models/licensemodel.h \
+        models/recentconnections.h \
         models/server.h \
         models/servercity.h \
         models/servercountry.h \

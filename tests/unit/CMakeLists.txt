@@ -166,6 +166,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/models/keys.h
     ${MVPN_SOURCE_DIR}/models/licensemodel.cpp
     ${MVPN_SOURCE_DIR}/models/licensemodel.h
+    ${MVPN_SOURCE_DIR}/models/recentconnections.cpp
+    ${MVPN_SOURCE_DIR}/models/recentconnections.h
     ${MVPN_SOURCE_DIR}/models/server.cpp
     ${MVPN_SOURCE_DIR}/models/server.h
     ${MVPN_SOURCE_DIR}/models/servercity.cpp

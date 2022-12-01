@@ -22,6 +22,11 @@ class TestModels final : public TestHelper {
 
   void keysBasic();
 
+  void recentConnectionBasic();
+  void recentConnectionMigration_data();
+  void recentConnectionMigration();
+  void recentConnectionSaveAndRestore();
+
   void serverBasic();
   void serverFromJson_data();
   void serverFromJson();

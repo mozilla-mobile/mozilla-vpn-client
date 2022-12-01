@@ -84,10 +84,16 @@ void serializeServerCountry(ServerCountryModel* model, QJsonObject& obj) {
 
 QJsonObject serializeStatus() {
   MozillaVPN* vpn = MozillaVPN::instance();
-  QJsonObject obj;
 
+  QJsonObject locationObj;
+  locationObj["exit_country_code"] = vpn->currentServer()->exitCountryCode();
+  locationObj["exit_city_name"] = vpn->currentServer()->exitCityName();
+  locationObj["entry_country_code"] = vpn->currentServer()->entryCountryCode();
+  locationObj["entry_city_name"] = vpn->currentServer()->entryCityName();
+
+  QJsonObject obj;
   obj["authenticated"] = vpn->userState() == MozillaVPN::UserAuthenticated;
-  obj["location"] = vpn->currentServer()->toString();
+  obj["location"] = locationObj;
 
   {
     MozillaVPN::State state = vpn->state();

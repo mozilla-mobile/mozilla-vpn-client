@@ -48,17 +48,6 @@ class Localizer final : public QAbstractListModel {
 
   QStringList languages() const;
 
-  // QAbstractListModel methods
-
-  QHash<int, QByteArray> roleNames() const override;
-
-  int rowCount(const QModelIndex&) const override;
-
-  QVariant data(const QModelIndex& index, int role) const override;
-
-  Q_INVOKABLE QString localizedCityName(const QString& code,
-                                        const QString& city);
-
   Q_INVOKABLE QString localizeCurrency(double value,
                                        const QString& currencyIso4217);
 
@@ -69,6 +58,14 @@ class Localizer final : public QAbstractListModel {
   QLocale locale() const { return m_locale; }
 
   bool isRightToLeft() const;
+
+  // QAbstractListModel methods
+
+  QHash<int, QByteArray> roleNames() const override;
+
+  int rowCount(const QModelIndex&) const override;
+
+  QVariant data(const QModelIndex& index, int role) const override;
 
  signals:
   void localeChanged();
