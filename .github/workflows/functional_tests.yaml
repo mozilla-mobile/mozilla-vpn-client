@@ -193,7 +193,7 @@ jobs:
         run: |          
           export PATH=${{github.workspace}}/grcov-build/bin:$PATH
           export TESTDIRS=$(echo ${TESTJSON} | jq -r '.[] | .name' | xargs -I name echo name-Results/profile)
-          grcov ${TESTDIRS} \
+          grcov ${TESTDIRS} test-client-${{ github.sha }}/profile \
               -s checkout/src -t lcov --branch --ignore-not-existing \
               -o ${{runner.temp}}/functional_lcov.info
 
