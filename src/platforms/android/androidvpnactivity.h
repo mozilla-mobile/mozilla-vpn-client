@@ -43,8 +43,8 @@ enum ServiceAction {
   ACTION_SEND_GLEAN_MAIN_PING = 11,
   // Upload Enabled Changed
   ACTION_GLEAN_ENABLED_CHANGED = 12,
-  // Action Controller Init
-  ACTION_CONTROLLER_INIT = 13,
+  // Get's current status
+  ACTION_GET_STATUS = 13,
   // Set Glean Source tags
   ACTION_GLEAN_SET_SOURCE_TAGS = 14,
   // Set startOnBoot pref
