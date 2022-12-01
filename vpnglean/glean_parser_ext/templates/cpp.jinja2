@@ -100,7 +100,7 @@ struct {{ obj.name|Camelize }}{{ suffix }} {
 
   int __PRIVATE__id = {{ id }};
 
-  FfiExtra ToFfiExtra(QList<QPair<QByteArray, QByteArray>>& keepStringsAlive) {
+  FfiExtra ToFfiExtra(QList<QByteArray>& keepStringsAlive) {
     const char* extraKeys[{{ obj|attr(name)|length }}];
     const char* extraValues[{{ obj|attr(name)|length }}];
     int count = 0;
@@ -111,12 +111,13 @@ struct {{ obj.name|Camelize }}{{ suffix }} {
     if (_{{item|camelize}}.canConvert<{{type|extra_type_name}}>()) {
       {% if type == "string" %}
       QByteArray s = _{{item|camelize}}.toString().toUtf8();
-      keepStringsAlive.append(QPair<QByteArray, QByteArray>(QByteArray(), s));
+      keepStringsAlive.append(s);
       extraValues[count] = s.constData();
       {% elif type == "boolean" %}
       extraValues[count] = _{{item|camelize}} ? "true" : "false";
       {% elif type == "quantity" %}
       QByteArray s = QString::number(_{{item|camelize}}.toInt()).toUtf8();
+      keepStringsAlive.append(s);
       extraValues[count] = s.constData();
       {% else %}
 #error "Glean: Invalid extra key type for metric {{obj.category}}.{{obj.name}}, defined in: {{obj.defined_in['filepath']}}:{{obj.defined_in['line']}})"

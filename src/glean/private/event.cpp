@@ -30,32 +30,46 @@ void EventMetric::record(const QJsonObject& extras) {
   m_keepStringsAlive.clear();
 
   foreach (const QString& key, extras.keys()) {
-    auto value = extras.value(key).toString();
-    if (!value.isNull()) {
-      QByteArray k = key.toUtf8();
-      QByteArray v = value.toUtf8();
-      m_keepStringsAlive.append(QPair<QByteArray, QByteArray>(k, v));
+    auto rawValue = extras.value(key);
 
-      extraValues[count] = v.constData();
-      extraKeys[count] = k.constData();
-      count++;
+    if (rawValue.isString()) {
+      QByteArray value = rawValue.toString().toUtf8();
+      m_keepStringsAlive.append(value);
+      extraValues[count] = value.constData();
+    } else if (rawValue.isBool()) {
+      extraValues[count] = rawValue.toBool() ? "true" : "false";
+    } else if (rawValue.isDouble()) {
+      QByteArray value = QString::number(rawValue.toDouble()).toUtf8();
+      extraValues[count] = value.constData();
+    } else {
+      Q_ASSERT(false);
+      // TODO: Record error.
+      continue;
     }
+
+    QByteArray k = key.toUtf8();
+    m_keepStringsAlive.append(k);
+    extraKeys[count] = k.constData();
+
+    count++;
   }
 
   glean_event_record(m_id, extraKeys, extraValues, count);
 }
 
-void EventMetric::record(std::any extras) {
-  EventMetricExtra parsedExtras = std::any_cast<EventMetricExtra>(extras);
-  Q_ASSERT(parsedExtras.__PRIVATE__id == m_extrasId);
+void EventMetric::record(EventMetricExtra extras) {
+  // When calling record the specific extra will be statically cast to the
+  // EventMetricExtra. We assert that the id is the same to be sure the correct
+  // extra was used.
+  Q_ASSERT(extras.__PRIVATE__id == m_extrasId);
 
-  FfiExtra ffiExtras = parsedExtras.ToFfiExtra(m_keepStringsAlive);
+  FfiExtra ffiExtras = extras.ToFfiExtra(m_keepStringsAlive);
   glean_event_record(m_id, ffiExtras.keys, ffiExtras.values, ffiExtras.count);
 }
 
 #if defined(UNIT_TEST)
 int32_t EventMetric::testGetNumRecordedErrors(
-    Glean::ErrorType errorType) const {
+    VPNGlean::ErrorType errorType) const {
   return glean_event_test_get_num_recorded_errors(
       m_id, static_cast<int32_t>(errorType));
 }

@@ -12,8 +12,6 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
-#include <any>
-
 struct FfiExtra {
   const char* const* keys;
   const char* const* values;
@@ -38,8 +36,7 @@ struct EventMetricExtra {
   // value initialization in this case since all extras are optional.
   int __PRIVATE__id;
 
-  virtual FfiExtra ToFfiExtra(
-      QList<QPair<QByteArray, QByteArray>>& keepStringsAlive) {
+  virtual FfiExtra ToFfiExtra(QList<QByteArray>& keepStringsAlive) {
     Q_ASSERT(false);
 
     // This function is meant to be overriden by the Glean generated code.
@@ -59,13 +56,11 @@ class EventMetric final {
   // on C++ the variant that receives the FFI extra struct is preferred.
   Q_INVOKABLE void record(const QJsonObject& extras);
 
-  // For those wondering why on earth use std::any when we can just use a
-  // template class: template classes cannot be used on classes exposed to QML.
-  void record(std::any extras);
+  void record(EventMetricExtra extras);
 
 #if defined(UNIT_TEST)
   Q_INVOKABLE int32_t
-  testGetNumRecordedErrors(Glean::ErrorType errorType) const;
+  testGetNumRecordedErrors(VPNGlean::ErrorType errorType) const;
 
   Q_INVOKABLE QJsonArray testGetValue(const QString& pingName = "") const;
 #endif
@@ -76,7 +71,7 @@ class EventMetric final {
 
   // Helper vector to extend the lifetime of the strings
   // that hold the extra key values until they are used.
-  QList<QPair<QByteArray, QByteArray>> m_keepStringsAlive;
+  QList<QByteArray> m_keepStringsAlive;
 };
 
 #endif  // EVENT_METRIC_H
