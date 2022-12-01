@@ -100,25 +100,3 @@ def type_ids_and_categories(objs) -> Tuple[Dict[str, Tuple[int, List[str]]], Lis
                 metric_type_ids[metric.type] = {"id": type_id, "args": args}
 
     return (metric_type_ids, categories)
-
-class EventExtraIdGenerator:
-    """
-    Generator for EventExtra struct ids.
-    """
-
-    _id = 0;
-
-    def get_next(self):
-        """
-        Each event extra has a unique id so that it can be statically cast to an EventExtra in C++.
-
-        This function will return the next unique id.
-        """
-
-        # Struct ID 0 is reserved (but unused) right now.
-        self._id += 1
-        return self._id
-
-
-    def reset(self):
-        self._id = 0

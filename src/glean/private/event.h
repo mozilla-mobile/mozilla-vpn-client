@@ -22,8 +22,9 @@ struct EventMetricExtra {
   // This id is meant to be used to validate
   // a static cast of a specific extra struct into an `EventMetricExtra` struct.
   //
-  // The extra structs cannot simply inherit `EventMetricExtra`,
-  // because that prevents them from being initialized as an aggregate.
+  // We need to static cast, because template classes cannot be annotated with
+  // Q_GADGET or Q_OBJECT like the EventMetric class needs to be, so we have to
+  // have this generic class to use as an argument for `record()`.
   //
   // Aggregate initialization is also not available for structs with private
   // fields, so we stick to this ugly __PRIVATE__ prefix.
@@ -34,12 +35,21 @@ struct EventMetricExtra {
   // Glean APIs to be exactly the same as the Firefox Desktop Glean APIs. Also
   // and probably most importantly, it's also just looks better to have a key
   // value initialization in this case since all extras are optional.
-  int __PRIVATE__id;
+  int __PRIVATE__id = 0;
+};
 
-  virtual FfiExtra ToFfiExtra(QList<QByteArray>& keepStringsAlive) {
+struct EventMetricExtraParser {
+  virtual FfiExtra fromJsonObject(const QJsonObject& extras, QList<QByteArray>& keepStringsAlive) {
     Q_ASSERT(false);
+    // This function should be overriden.
 
-    // This function is meant to be overriden by the Glean generated code.
+    return FfiExtra();
+  };
+  virtual FfiExtra fromStruct(EventMetricExtra& extras, QList<QByteArray>& keepStringsAlive) {
+    Q_ASSERT(false);
+    // This function should be overriden.
+
+    return FfiExtra();
   }
 };
 
@@ -47,7 +57,7 @@ class EventMetric final {
   Q_GADGET
 
  public:
-  EventMetric(int aId, int extrasId = 0);
+  explicit EventMetric(int aId, EventMetricExtraParser parser = EventMetricExtraParser());
   ~EventMetric() = default;
 
   Q_INVOKABLE void record() const;
@@ -67,7 +77,7 @@ class EventMetric final {
 
  private:
   int m_id;
-  int m_extrasId;
+  EventMetricExtraParser m_parser;
 
   // Helper vector to extend the lifetime of the strings
   // that hold the extra key values until they are used.

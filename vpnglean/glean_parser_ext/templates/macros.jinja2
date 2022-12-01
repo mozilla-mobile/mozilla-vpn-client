@@ -1,0 +1,93 @@
+{%- macro generate_extra_keys(obj, id) -%}
+{% if obj|attr("allowed_extra_keys_with_types")|length > 0 %}
+struct {{ obj.name|Camelize }}Extra : EventMetricExtra {
+  {% for item, type in obj|attr("allowed_extra_keys_with_types") %}
+    QVariant _{{ item|camelize }} = QVariant();
+  {% endfor %}
+
+    int __PRIVATE__id = {{ id }};
+  };
+{% endif %}
+{%- endmacro -%}
+
+{%- macro generate_extra_keys_parser(obj, category_name) -%}
+{% if obj|attr("allowed_extra_keys_with_types")|length > 0 %}
+struct {{ obj.name|Camelize }}ExtraParser : public EventMetricExtraParser {
+  FfiExtra fromJsonObject(const QJsonObject& extras, QList<QByteArray>& keepStringsAlive) {
+    const char* extraKeys[{{ obj|attr("allowed_extra_keys_with_types")|length }}];
+    const char* extraValues[{{ obj|attr("allowed_extra_keys_with_types")|length }}];
+    int count = 0;
+
+    keepStringsAlive.clear();
+
+    foreach (const QString& key, extras.keys()) {
+      auto rawValue = extras.value(key);
+
+      if (rawValue.isString()) {
+        QByteArray value = rawValue.toString().toUtf8();
+        keepStringsAlive.append(value);
+        extraValues[count] = value.constData();
+      } else if (rawValue.isBool()) {
+        extraValues[count] = rawValue.toBool() ? "true" : "false";
+      } else if (rawValue.isDouble()) {
+        QByteArray value = QString::number(rawValue.toDouble()).toUtf8();
+        keepStringsAlive.append(value);
+        extraValues[count] = value.constData();
+      } else {
+        Q_ASSERT(false);
+        // TODO: Record error.
+        continue;
+      }
+
+      QByteArray k = key.toUtf8();
+      keepStringsAlive.append(k);
+      extraKeys[count] = k.constData();
+
+      count++;
+    }
+
+    FfiExtra ffiExtras;
+    ffiExtras.keys = std::move(extraKeys);
+    ffiExtras.values = std::move(extraValues);
+    ffiExtras.count = count;
+    return ffiExtras;
+  }
+
+  FfiExtra fromStruct(EventMetricExtra& extras, QList<QByteArray>& keepStringsAlive) {
+    auto parsedExtras = static_cast<mozilla::glean::{{ category_name|snake_case }}::{{ obj.name|Camelize }}Extra&>(extras);
+
+    const char* extraKeys[{{ obj|attr("allowed_extra_keys_with_types")|length }}];
+    const char* extraValues[{{ obj|attr("allowed_extra_keys_with_types")|length }}];
+    int count = 0;
+
+    keepStringsAlive.clear();
+
+    {% for item, type in obj|attr("allowed_extra_keys_with_types") %}
+    if (parsedExtras._{{item|camelize}}.canConvert<{{type|extra_type_name}}>()) {
+      {% if type == "string" %}
+      QByteArray s = parsedExtras._{{item|camelize}}.toString().toUtf8();
+      keepStringsAlive.append(s);
+      extraValues[count] = s.constData();
+      {% elif type == "boolean" %}
+      extraValues[count] = parsedExtras._{{item|camelize}} ? "true" : "false";
+      {% elif type == "quantity" %}
+      QByteArray s = QString::number(parsedExtras._{{item|camelize}}.toInt()).toUtf8();
+      keepStringsAlive.append(s);
+      extraValues[count] = s.constData();
+      {% else %}
+#error "Glean: Invalid extra key type for metric {{obj.category}}.{{obj.name}}, defined in: {{obj.defined_in['filepath']}}:{{obj.defined_in['line']}})"
+      {% endif %}
+      extraKeys[count] = "{{item}}";
+      count++;
+    }
+    {% endfor %}
+
+    FfiExtra ffiExtras;
+    ffiExtras.keys = std::move(extraKeys);
+    ffiExtras.values = std::move(extraValues);
+    ffiExtras.count = count;
+    return ffiExtras;
+  }
+};
+{% endif %}
+{%- endmacro -%}
