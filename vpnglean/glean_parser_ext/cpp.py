@@ -17,7 +17,7 @@ import json
 
 import jinja2
 from glean_parser import util
-from util import generate_metric_ids, generate_ping_ids, get_metrics
+from util import EventExtraIdGenerator, generate_metric_ids, generate_ping_ids, get_metrics
 
 
 def cpp_datatypes_filter(value):
@@ -126,6 +126,10 @@ def output_cpp(objs, output_fd, options={}):
             ("Camelize", util.Camelize),
         ),
     )
+
+    extra_id_generator = EventExtraIdGenerator()
+    template.globals['get_next_event_extra_id'] = extra_id_generator.get_next
+    template.globals['reset_event_extra_id_generator'] = extra_id_generator.reset
 
     output_fd.write(template.render(all_objs=objs))
     output_fd.write("\n")

@@ -3,8 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 ## Find the absolute path cargo.
-## Mostly necessary for iOS builds, 
-## because Xcode will attempt to use it's own installation of cargo, 
+## Mostly necessary for iOS builds,
+## because Xcode will attempt to use it's own installation of cargo,
 ## which we don't want.
 find_program(CARGO_EXECUTABLE NAMES cargo REQUIRED)
 find_program(RUSTC_EXECUTABLE NAMES rustc REQUIRED)
@@ -88,16 +88,34 @@ set_target_properties(vpnglean_ffi PROPERTIES FOLDER "Libs")
 # This options should be used if the glean_parser command needs to be run on some sort of pre-build script.
 if(NOT SKIP_GLEAN_PARSER)
     set(GENERATE_GLEAN_CMD python3 ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py)
+
+    # Prepare for generating Glean metrics and pings files
+    # Note: the next steps are not required by run_glean_parser, but by CMake quirks.
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/generated)
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../src/glean/generated)
+    # 1. Because both the metrics.h and pings.h files have class declarations
+    # of objects that extend QObject, these files need to be in the main MozillaVPN
+    # target otherwise we run into linker issues e.g. undefined reference to `vtable for __DONOTUSE__GleanPings'.
+    # See: https://github.com/bincrafters/community/issues/466#issuecomment-426329142
+    #      and https://gitlab.cern.ch/-/snippets/2128
+    # 2. Cmake is simply ignoring or being weird about adding these files as
+    # sources to the main target and marking them as GENERATED TRUE.
+    # See: https://gitlab.kitware.com/cmake/cmake/-/issues/18399
+    #
+    # The solution is to generate empty files at build setup time so that we can
+    # add them as sources to other target and still not have Cmake freak out.
+    # Actual generation happen when the `run_glean_parser` command is executed.
+    file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/../src/glean/generated/metrics.h)
+    file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/../src/glean/generated/pings.h)
 else()
     set(GENERATE_GLEAN_CMD echo "Skipping glean_parser step.")
 endif()
 
 ## Generate metrics and pings files
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/generated)
 add_custom_target(vpnglean_telemetry
     BYPRODUCTS
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src/glean/generated/metrics.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src/glean/generated/pings.h
         ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.rs
         ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.rs
     DEPENDS
@@ -108,18 +126,6 @@ add_custom_target(vpnglean_telemetry
 )
 set_target_properties(vpnglean_telemetry PROPERTIES FOLDER "Libs")
 
-target_sources(mozillavpn PRIVATE
-    ${CMAKE_CURRENT_BINARY_DIR}/${HEADER_FILE}
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.h
-)
-set_source_files_properties(
-    ${CMAKE_CURRENT_BINARY_DIR}/${HEADER_FILE}
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.h
-    PROPERTIES GENERATED TRUE
-)
-
 ## Define depedencies
 add_dependencies(vpnglean_ffi vpnglean_telemetry)
 add_dependencies(vpnglean vpnglean_ffi)
@@ -129,7 +135,6 @@ set_target_properties(vpnglean PROPERTIES
 )
 set_property(TARGET vpnglean APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_BINARY_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/generated
 )
 
 ## Fixup any missing link dependencies to pass to the vpnglean consumer

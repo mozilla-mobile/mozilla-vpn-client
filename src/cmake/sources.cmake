@@ -153,6 +153,8 @@ target_sources(mozillavpn PRIVATE
     frontend/navigatorreloader.h
     glean/glean.h
     glean/metrictypes.h
+    glean/generated/metrics.h
+    glean/generated/pings.h
     glean/private/event.cpp
     glean/private/event.h
     glean/private/ping.cpp

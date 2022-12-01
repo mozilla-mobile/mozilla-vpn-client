@@ -31,7 +31,7 @@ class __DONOTUSE__{{ category_name|Camelize }} final {
 
   private:
     {% for obj in objs.values() %}
-    {{ obj|type_name }} m_{{obj.name|camelize }} = {{ obj|type_name }}({{obj|metric_id}});
+    {{ obj|type_name }} m_{{obj.name|camelize }} = {{ obj|type_name }}({{obj|metric_id}}{% if obj|attr("_generate_enums") %}, {{ get_next_event_extra_id() }}{% endif %});
     {% endfor %}
 };
 {% endfor %}
@@ -40,8 +40,8 @@ class __DONOTUSE__{{ category_name|Camelize }} final {
 // It is exposed as a singleton to QML.
 //
 // The reason for this is to keep consistency with the Glean API on m-c.
-// On JavaScript pings are accessed through GleanMetrics.<MyPing> and
-// on C++ they are accessed through mozilla::glean_pings::<MyPing>.
+// On JavaScript pings are accessed through GleanMetrics.<MyMetric> and
+// on C++ they are accessed through mozilla::glean_pings::<my_metric>.
 class __DONOTUSE__GleanMetrics final : public QObject {
     Q_OBJECT
     Q_DISABLE_COPY_MOVE(__DONOTUSE__GleanMetrics)
@@ -78,13 +78,13 @@ class __DONOTUSE__GleanMetrics final : public QObject {
 
 namespace mozilla::glean {
 
-{%- macro generate_extra_keys(obj) -%}
+{%- macro generate_extra_keys(obj, id) -%}
 {% for name, suffix in obj["_generate_enums"] %}
 {# we always use the `extra` suffix, because we only expose the new event API #}
 {% set suffix = "Extra" %}
 {% if obj|attr(name)|length %}
     {% if obj.has_extra_types %}
-    {{ extra_keys_with_types(obj, name, suffix)|indent }}
+    {{ extra_keys_with_types(obj, name, suffix, id)|indent }}
     {% else %}
 #error "Untyped event extras not supported. Please annotate event extras with a type. See documentation for details. (Metric: {{obj.category}}.{{obj.name}}, defined in: {{obj.defined_in['filepath']}}:{{obj.defined_in['line']}})"
     {% endif %}
@@ -92,27 +92,29 @@ namespace mozilla::glean {
 {% endfor %}
 {%- endmacro -%}
 
-{%- macro extra_keys_with_types(obj, name, suffix) -%}
-struct {{ obj.name|Camelize }}{{ suffix }} : EventMetricExtra {
+{%- macro extra_keys_with_types(obj, name, suffix, id) -%}
+struct {{ obj.name|Camelize }}{{ suffix }} {
   {% for item, type in obj|attr(name) %}
   QVariant _{{ item|camelize }} = QVariant();
   {% endfor %}
 
-  virtual FfiExtra ToFfiExtra() override {
-    m_keepStringsAlive.clear();
+  int __PRIVATE__id = {{ id }};
 
-    const char* extraKeys[{{ obj|attr(name)|length }} + 1];
-    const char* extraValues[{{ obj|attr(name)|length }} + 1];
+  FfiExtra ToFfiExtra(QList<QPair<QByteArray, QByteArray>>& keepStringsAlive) {
+    const char* extraKeys[{{ obj|attr(name)|length }}];
+    const char* extraValues[{{ obj|attr(name)|length }}];
     int count = 0;
+
+    keepStringsAlive.clear();
 
     {% for item, type in obj|attr(name) %}
     if (_{{item|camelize}}.canConvert<{{type|extra_type_name}}>()) {
       {% if type == "string" %}
       QByteArray s = _{{item|camelize}}.toString().toUtf8();
-      m_keepStringsAlive.append(s);
+      keepStringsAlive.append(QPair<QByteArray, QByteArray>(QByteArray(), s));
       extraValues[count] = s.constData();
       {% elif type == "boolean" %}
-      extraValues[count] = m_keepStringsAlive[count];
+      extraValues[count] = _{{item|camelize}} ? "true" : "false";
       {% elif type == "quantity" %}
       QByteArray s = QString::number(_{{item|camelize}}.toInt()).toUtf8();
       extraValues[count] = s.constData();
@@ -130,13 +132,10 @@ struct {{ obj.name|Camelize }}{{ suffix }} : EventMetricExtra {
     extras.count = count;
     return extras;
   };
-
-  private:
-    // Helper vector to extend the lifetime of the strings
-    // that hold the extra key values until they are used.
-    QVector<QByteArray> m_keepStringsAlive;
 };
 {%- endmacro %}
+
+{{ reset_event_extra_id_generator()|default("", True) }}
 
 {% for category_name, objs in all_objs.items() %}
 namespace {{ category_name|snake_case }} {
@@ -145,12 +144,12 @@ namespace {{ category_name|snake_case }} {
      * generated from {{ category_name }}.{{ obj.name }}
      */
     {% if obj|attr("_generate_enums") %}
-{{ generate_extra_keys(obj) }}
+{{ generate_extra_keys(obj, get_next_event_extra_id()) }}
     {%- endif %}
     /**
      * {{ obj.description|wordwrap() | replace('\n', '\n     * ') }}
      */
-    {{ obj|type_name }} {{obj.name|snake_case }} = __DONOTUSE__GleanMetrics::instance()->{{ category_name|camelize }}().{{ obj.name|camelize }}();
+    inline {{ obj|type_name }} {{obj.name|snake_case }} = __DONOTUSE__GleanMetrics::instance()->{{ category_name|camelize }}().{{ obj.name|camelize }}();
 
     {% endfor %}
 }

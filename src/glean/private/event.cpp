@@ -15,23 +15,26 @@
 #  include <QJsonDocument>
 #endif
 
-EventMetric::EventMetric(int aId) : m_id(aId) {}
+#include <any>
+
+EventMetric::EventMetric(int aId, int extrasId)
+    : m_id(aId), m_extrasId(extrasId) {}
 
 void EventMetric::record() const { glean_event_record_no_extra(m_id); }
 
-void EventMetric::record(QJsonObject extras) {
-  const char* extraValues[extras.size() + 1];
-  const char* extraKeys[extras.size() + 1];
+void EventMetric::record(const QJsonObject& extras) {
+  const char* extraValues[extras.size()];
+  const char* extraKeys[extras.size()];
   int count = 0;
 
-  m_keepQMLStringsAlive.clear();
+  m_keepStringsAlive.clear();
 
   foreach (const QString& key, extras.keys()) {
     auto value = extras.value(key).toString();
     if (!value.isNull()) {
       QByteArray k = key.toUtf8();
       QByteArray v = value.toUtf8();
-      m_keepQMLStringsAlive.append(QPair(k, v));
+      m_keepStringsAlive.append(QPair(k, v));
 
       extraValues[count] = v.constData();
       extraKeys[count] = k.constData();
@@ -42,8 +45,11 @@ void EventMetric::record(QJsonObject extras) {
   glean_event_record(m_id, extraKeys, extraValues, count);
 }
 
-void EventMetric::record(EventMetricExtra extras) const {
-  auto ffiExtras = extras.ToFfiExtra();
+void EventMetric::record(std::any extras) {
+  EventMetricExtra parsedExtras = std::any_cast<EventMetricExtra>(extras);
+  Q_ASSERT(parsedExtras.__PRIVATE__id == m_extrasId);
+
+  FfiExtra ffiExtras = parsedExtras.ToFfiExtra(m_keepStringsAlive);
   glean_event_record(m_id, ffiExtras.keys, ffiExtras.values, ffiExtras.count);
 }
 
@@ -54,8 +60,7 @@ int32_t EventMetric::testGetNumRecordedErrors(
       m_id, static_cast<int32_t>(errorType));
 }
 
-QJsonArray EventMetric::testGetValue(
-    const QString& pingName = QString()) const {
+QJsonArray EventMetric::testGetValue(const QString& pingName) const {
   auto value = glean_event_test_get_value(m_id, pingName.toLocal8Bit());
   QJsonArray recordedEvents = QJsonDocument::fromJson(value).array();
   if (!recordedEvents.isEmpty()) {
