@@ -1,8 +1,82 @@
-# Beatriz Rizental as main contact for addon related changes
-/addons/ @brizental
-/src/addons/ @brizental
-/signature/ @brizental
+# These owners will be the default owners for each directory
+# in the repo.
 
-# Francesco Lodolo as main contact for string changes
+/addons/ @brizental @bakulf @MattLichtenstein
 addons/**/manifest.json @flodolo
+
+/3rdparty/adjust-android-sdk/ @bakulf @birdsarah
+/3rdparty/adjust-ios-sdk/ @bakulf @birdsarah
+/3rdparty/glean/ @brizental
+/3rdparty/openSSL/ @strseb
+/3rdparty/sentry/ @strseb
+/3rdparty/wireguard-apple/ @bakulf @birdsarah @mcleinman
+/3rdparty/wireguard-go/ @bakulf @oskirby
+/3rdparty/wireguard-tools/ @bakulf @oskirby
+
+/android/ @strseb
+/balrog/ @bakulf @birdsarah
+/ci_scripts/ @birdsarah
+/docs/ @birdsarah
+/extension/ @bakulf @birdsarah
+/glean/ @brizental
+/i18n @ 82b6178/ @flodolo
+/ios/ @bakulf @birdsarah @mcleinman
+/lottie/ @bakulf @birdsarah
+/macos/ @bakulf @birdsarah
+/nebula/ @MattLichtenstein @lesleyjanenorton @flozia
+/scripts/ @bakulf @oskirby
+/signature/ @bakulf @birdsarah @brizental
+
+/src/ @birdsarah
+/src/addons/ @brizental @bakulf
+/src/adjust/ @bakulf @birdsarah
+/src/authenticationinapp/ @bakulf @birdsarah
+/src/captiveportal/ @birdsarah
+/src/cmake/ @oskirby
+/src/commands/ @bakulf @birdsarah
+/src/composer/ @bakulf @brizental
+/src/connectionbenchmark/ @bakulf @flozia
+/src/crashreporter/ @strseb
+/src/daemon @birdsarah
+/src/frontend/ @lesleyjanenorton @MattLichtenstein @flozia
+src/glean/ @brizental
+/src/hacl-star/ @bakulf @birdsarah
+/src/inspector/ @bakulf @oskirby @strseb
+/src/mfbt/ @bakulf @birdsarah
+/src/models/ @bakulf @birdsarah
+/src/platforms/android/ @strseb
+src/platforms/dummy/ @bakulf @birdsarah
+/src/platforms/linux/ @oskirby
+/src/platforms/ios/ @bakulf @birdsarah @mcleinman
+src/platforms/macos/ @bakulf @birdsarah
+src/platforms/windows/ @oskirby @bakulf
+/src/qmake/ @bakulf @oskirby
+/src/resources/ @birdsarah
+src/rfc/ @oskirby
+/src/sentry/ @strseb
+/src/server/ @birdsarah
+src/tasks/ @bakulf @birdsarah
+/src/tutorial/ @bakulf @brizental
+/src/ui/ @lesleyjanenorton @MattLichtenstein @flozia
+/src/update/ @bakulf @birdsarah
+/src/websocket/ @brizental
+
+/taskcluster/ @mozrokafor @strseb
+/tests/auth/ @bakulf @birdsarah
+/tests/functional/ @bakulf @mozrokafor
+/tests/nativemessaging/ @bakulf @birdsarah @mozrokafor
+/tests/qml/ @birdsarah @mozrokafor
+/tests/unit/ @bakulf @birdsarah @mozrokafor
+/tools/inspector/ @strseb
+/tools/logviewer/ @bakulf @birdsarah
+/ools/serverlocalizer/ @bakulf @birdsarah
+/tools/wasm_chrome/ @strseb
+/translations/ @flodolo
 translations/strings.yaml @flodolo
+
+/vpnglean/ @brizental
+/wasm/ @bakulf @strseb
+/windows/ @bakulf @oskirby
+
+
+
