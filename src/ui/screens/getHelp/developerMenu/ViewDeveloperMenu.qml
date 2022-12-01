@@ -11,8 +11,6 @@ import components 0.1
 import components.forms 0.1
 
 VPNViewBase {
-    anchors.bottom: parent.bottom
-
     _menuTitle: VPNl18n.SettingsDevTitle
     _viewContentData: ColumnLayout {
         id: root

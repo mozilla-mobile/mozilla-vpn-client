@@ -11,11 +11,11 @@ describe('Unsecured network alert', function() {
     it('Enable unsecured-network-alert feature', async () => {
       vpn.resetLastNotification();
 
-      await vpn.setSetting('unsecured-network-alert', 'false');
-      assert(await vpn.getSetting('unsecured-network-alert') === 'false');
+      await vpn.setSetting('unsecuredNetworkAlert', 'false');
+      assert(await vpn.getSetting('unsecuredNetworkAlert') === false);
 
-      await vpn.setSetting('unsecured-network-alert', 'true');
-      assert(await vpn.getSetting('unsecured-network-alert') === 'true');
+      await vpn.setSetting('unsecuredNetworkAlert', 'true');
+      assert(await vpn.getSetting('unsecuredNetworkAlert') === true);
     });
 
     it('Unsecured network alert during the main view', async () => {

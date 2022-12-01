@@ -32,8 +32,9 @@ VPNTextField {
     VPNIconButton {
         id: toggleButton
 
-        // TODO: Add accesibleName string
-        accessibleName: ""
+        accessibleName: passwordInput.charactersMasked
+                        ? VPNl18n.InAppAuthShowPassword
+                        : VPNl18n.InAppAuthHidePassword
         anchors {
             right: parent.right
             rightMargin: VPNTheme.theme.listSpacing / 2

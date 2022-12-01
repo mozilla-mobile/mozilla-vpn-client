@@ -89,7 +89,7 @@ if __name__ == "__main__":
         # Generate C++ files
         for [ output, input ] in [
             [os.path.join(generated_files_path, "pings.h"), os.path.join(yaml_files_path, "pings.yaml")],
-            [os.path.join(generated_files_path, "metrics.h"), os.path.join(yaml_files_path, "pings.yaml")],
+            [os.path.join(generated_files_path, "metrics.h"), os.path.join(yaml_files_path, "metrics.yaml")],
         ]:
             print("Generating {} from {}".format(output, input))
             with open(output, 'w+', encoding='utf-8') as f:

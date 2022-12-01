@@ -12,11 +12,11 @@ describe('Captive portal', function() {
     vpn.resetLastNotification();
 
     //Enable captive-portal-alert feature
-    await vpn.setSetting('captive-portal-alert', 'false');
-    assert(await vpn.getSetting('captive-portal-alert') === 'false');
+    await vpn.setSetting('captivePortalAlert', 'false');
+    assert(await vpn.getSetting('captivePortalAlert') === false);
 
-    await vpn.setSetting('captive-portal-alert', 'true');
-    assert(await vpn.getSetting('captive-portal-alert') === 'true');
+    await vpn.setSetting('captivePortalAlert', 'true');
+    assert(await vpn.getSetting('captivePortalAlert') === true);
   });
 
   it('Captive portal during the main view', async () => {
@@ -177,7 +177,7 @@ describe('Captive portal', function() {
 
     it('Shows the prompt Before activation when a portal is detected before the activation',
        async () => {
-         await vpn.setSetting('captive-portal-alert', 'true');
+         await vpn.setSetting('captivePortalAlert', 'true');
          await vpn.forceCaptivePortalDetection();
 
          await vpn.activate();
@@ -187,7 +187,7 @@ describe('Captive portal', function() {
 
     it('Shows the Captive Portal Info prompt when a portal is detected and the client is connected',
        async () => {
-         await vpn.setSetting('captive-portal-alert', 'true');
+         await vpn.setSetting('captivePortalAlert', 'true');
 
          await vpn.activate();
          await vpn.waitForCondition(() => {

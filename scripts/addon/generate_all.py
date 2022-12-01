@@ -18,6 +18,13 @@ parser.add_argument(
     dest="qtpath",
     help="The QT binary path. If not set, we try to guess.",
 )
+parser.add_argument(
+    "-p",
+    "--addon_path",
+    default=None,
+    dest="addonpath",
+    help="The path of the addons. If not set, we use `./addons/`.",
+)
 args = parser.parse_args()
 
 lang_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "utils", "import_languages.py")
@@ -26,6 +33,9 @@ addons_path = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))),
     "addons",
 )
+
+if args.addonpath:
+    addons_path = args.addonpath
 
 lang_cmd = [sys.executable, lang_path]
 if args.qtpath:

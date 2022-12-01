@@ -10,7 +10,6 @@
 #include <QList>
 #include <QString>
 
-class ServerData;
 class QJsonObject;
 
 class ServerCountry final {
@@ -28,7 +27,7 @@ class ServerCountry final {
 
   const QList<ServerCity>& cities() const { return m_cities; }
 
-  const QList<QString> servers(const ServerData& data) const;
+  const QList<QString> serversFromCityName(const QString& cityName) const;
 
   void sortCities();
 

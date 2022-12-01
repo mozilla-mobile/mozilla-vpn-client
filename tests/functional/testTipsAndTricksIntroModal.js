@@ -10,7 +10,8 @@ describe('Tips and tricks intro modal', function () {
   this.timeout(60000);
 
   beforeEach(async () => {
-    await vpn.setSetting('tips-and-tricks-intro-shown', 'false');
+    await vpn.resetAddons('04_tutorials_basic');
+    await vpn.setSetting('tipsAndTricksIntroShown', 'false');
     await vpn.authenticateInApp(true, true);
   });
 

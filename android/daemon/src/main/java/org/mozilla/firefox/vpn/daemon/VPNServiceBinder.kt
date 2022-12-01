@@ -35,7 +35,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val recordEvent = 10
         const val sendGleanPings = 11
         const val gleanUploadEnabledChanged = 12
-        const val controllerInit = 13
+        const val getStatus = 13
         const val gleanSetSourceTags = 14
         const val setStartOnBoot = 15
         const val reactivate = 16
@@ -118,7 +118,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 Log.i(tag, "Registered binder now: ${mListeners.size} Binders")
                 return true
             }
-            ACTIONS.controllerInit -> {
+            ACTIONS.getStatus -> {
                 val obj = JSONObject()
                 obj.put("connected", mService.isUp)
                 obj.put("time", mService.connectionTime)

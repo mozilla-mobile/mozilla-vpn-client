@@ -4,7 +4,7 @@
 
 #include "addoni18n.h"
 #include "leakdetector.h"
-#include "localizer.h"
+#include "settingsholder.h"
 
 AddonI18n::AddonI18n(QObject* parent, const QString& manifestFileName,
                      const QString& id, const QString& name)
@@ -15,11 +15,11 @@ AddonI18n::AddonI18n(QObject* parent, const QString& manifestFileName,
 AddonI18n::~AddonI18n() { MVPN_COUNT_DTOR(AddonI18n); }
 
 void AddonI18n::enable() {
-  emit Localizer::instance()->codeChanged();
+  emit SettingsHolder::instance()->languageCodeChanged();
   Addon::enable();
 }
 
 void AddonI18n::disable() {
-  emit Localizer::instance()->codeChanged();
+  emit SettingsHolder::instance()->languageCodeChanged();
   Addon::disable();
 }

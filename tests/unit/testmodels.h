@@ -41,6 +41,7 @@ class TestModels final : public TestHelper {
   void serverCountryModelPick();
 
   void serverDataBasic();
+  void serverDataMigrate();
 
   void userBasic();
   void userFromJson_data();

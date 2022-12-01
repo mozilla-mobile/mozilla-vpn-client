@@ -18,8 +18,8 @@ cmake --build build -j8
 cp build/src/mozillavpn.wasm wasm
 cp build/src/mozillavpn.js wasm
 cp build/src/qtloader.js wasm
-cp tests/functional/fxa_endpoints.js wasm
-cp tests/functional/guardian_endpoints.js wasm
+cp tests/functional/servers/fxa_endpoints.js wasm
+cp tests/functional/servers/guardian_endpoints.js wasm
 cp -r tools/logviewer wasm
 
 # Artifacts should be placed here!

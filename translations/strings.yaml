@@ -467,6 +467,12 @@ inAppAuth:
   passwordHintCommonPassword:
     value: Must not be a common password
     comment: This is a hint for the user - password they provide must not be a common password. Ex. password.
+  showPassword:
+    value: Show password
+    comment: Tooltip label for the eye icon in password input
+  hidePassword:
+    value: Hide password
+    comment: Tooltip label for the eye icon in password input
   productUpdateOptInDescription:
     value: I’d like to receive product update emails from Firefox.
     comment: Checkbox label for users to opt in, when creating an account, to receive product update emails from Firefox.

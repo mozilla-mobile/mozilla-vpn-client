@@ -352,8 +352,8 @@ describe('Devices', function() {
       await vpn.waitForElement(authScreen.START_BUTTON);
       await vpn.waitForElementAndClick(authScreen.START_BUTTON);
 
-      await vpn.wait()
-      await vpn.waitForElement(authScreen.SIGNIN_PASS_INPUT);
+      await vpn.waitForElementAndProperty(
+          authScreen.SIGNIN_PASS_INPUT, 'visible', 'true');
       await vpn.setElementProperty(authScreen.SIGNIN_PASS_INPUT, 'text', 's', 'password');
       await vpn.waitForElementAndClick(authScreen.SIGNIN_BUTTON);
 

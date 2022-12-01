@@ -16,11 +16,9 @@ class Localizer final : public QAbstractListModel {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Localizer)
 
-  Q_PROPERTY(QString code READ code WRITE setCode NOTIFY codeChanged)
-  Q_PROPERTY(QString previousCode READ previousCode NOTIFY previousCodeChanged)
   Q_PROPERTY(bool hasLanguages READ hasLanguages CONSTANT)
   Q_PROPERTY(QLocale locale READ locale NOTIFY localeChanged)
-  Q_PROPERTY(bool isRightToLeft READ isRightToLeft NOTIFY codeChanged)
+  Q_PROPERTY(bool isRightToLeft READ isRightToLeft NOTIFY localeChanged)
 
   struct Language {
     QString m_code;
@@ -48,11 +46,6 @@ class Localizer final : public QAbstractListModel {
 
   bool hasLanguages() const { return m_languages.length() > 1; }
 
-  const QString& code() const { return m_code; }
-  void setCode(const QString& code) { loadLanguage(code); }
-
-  QString previousCode() const;
-
   QStringList languages() const;
 
   // QAbstractListModel methods
@@ -78,8 +71,6 @@ class Localizer final : public QAbstractListModel {
   bool isRightToLeft() const;
 
  signals:
-  void codeChanged();
-  void previousCodeChanged();
   void localeChanged();
 
  private:
@@ -96,6 +87,8 @@ class Localizer final : public QAbstractListModel {
 
   static QString retrieveCurrencySymbolFallback(const QString& currencyIso4217,
                                                 const QLocale& currentLocale);
+
+  void settingsChanged();
 
  private:
   QTranslator m_translator;
