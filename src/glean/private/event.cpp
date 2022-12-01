@@ -34,7 +34,7 @@ void EventMetric::record(const QJsonObject& extras) {
     if (!value.isNull()) {
       QByteArray k = key.toUtf8();
       QByteArray v = value.toUtf8();
-      m_keepStringsAlive.append(QPair(k, v));
+      m_keepStringsAlive.append(QPair<QByteArray, QByteArray>(k, v));
 
       extraValues[count] = v.constData();
       extraKeys[count] = k.constData();
