@@ -19,7 +19,7 @@ addons/**/manifest.json @flodolo
 /docs/ @birdsarah
 /extension/ @bakulf @birdsarah
 /glean/ @brizental
-/i18n @ 82b6178/ @flodolo
+/i18n\ *\ 82b6178/ @flodolo
 /ios/ @bakulf @birdsarah @mcleinman
 /lottie/ @bakulf @birdsarah
 /macos/ @bakulf @birdsarah
