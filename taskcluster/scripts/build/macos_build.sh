@@ -81,7 +81,7 @@ if [[ "$RELEASE" ]]; then
 else 
     cmake -S . -B ${MOZ_FETCHES_DIR}/build -GNinja \
         -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake \
-        -DCMAKE_BUILD_TYPE=Debug
+        -DCMAKE_BUILD_TYPE=Release
 fi 
 
 print Y "Building the client..."
