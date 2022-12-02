@@ -374,7 +374,7 @@ Item {
                                               "panel_idx": swipeView.currentIndex.toString(),
                                               "panel_cta": ctaObjectName
             });
-            VPN.getStarted();
+            VPN.authenticate();
         }
     }
 }

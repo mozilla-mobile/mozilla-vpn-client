@@ -42,7 +42,7 @@ Item {
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         radius: 5
-        onClicked: VPN.getStarted()
+        onClicked: VPN.authenticate()
 
     }
 
