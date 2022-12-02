@@ -74,9 +74,6 @@ if [[ "$RELEASE" ]]; then
     curl -sL https://sentry.io/get-cli/ | bash
     sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
 
-    export SENTRY_ENVELOPE_ENDPOINT=$(cat sentry_envelope_endpoint)
-    export SENTRY_DSN=$(cat sentry_dsn)
-
 fi
 
 print Y "Configuring the build..."
@@ -92,7 +89,6 @@ else
     cmake -S . -B ${MOZ_FETCHES_DIR}/build -GNinja \
         -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake \
         -DCMAKE_BUILD_TYPE=Release
-
 fi 
 
 print Y "Building the client..."
