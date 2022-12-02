@@ -14,6 +14,7 @@
 #include "logoutobserver.h"
 #include "models/device.h"
 #include "models/feature.h"
+#include "models/recentconnections.h"
 #include "mozillavpn.h"
 #include "networkmanager.h"
 #include "profileflow.h"
@@ -204,6 +205,8 @@ ConnectionHealth* MozillaVPN::connectionHealth() {
 
 Controller* MozillaVPN::controller() { return &m_private->m_controller; }
 
+ServerData* MozillaVPN::currentServer() { return &m_private->m_serverData; }
+
 SubscriptionData* MozillaVPN::subscriptionData() {
   return &m_private->m_subscriptionData;
 }
@@ -241,6 +244,8 @@ void MozillaVPN::initialize() {
 
   m_private->m_serverLatency.initialize();
 
+  m_private->m_serverData.initialize();
+
   if (Feature::get(Feature::Feature_websocket)->isSupported()) {
     m_private->m_webSocketHandler.initialize();
   }
@@ -248,6 +253,8 @@ void MozillaVPN::initialize() {
   AddonManager::instance();
 
   Glean::initialize();
+
+  RecentConnections::instance()->initialize();
 
   QList<Task*> initTasks{new TaskAddonIndex(), new TaskGetFeatureList()};
 
@@ -330,11 +337,13 @@ void MozillaVPN::initialize() {
     return;
   }
 
-  Q_ASSERT(!m_private->m_serverData.initialized());
+  Q_ASSERT(!m_private->m_serverData.hasServerData());
   if (!m_private->m_serverData.fromSettings()) {
-    m_private->m_serverCountryModel.pickRandom(m_private->m_serverData);
-    Q_ASSERT(m_private->m_serverData.initialized());
-    m_private->m_serverData.writeSettings();
+    QStringList list = m_private->m_serverCountryModel.pickRandom();
+    Q_ASSERT(list.length() >= 2);
+
+    m_private->m_serverData.update(list[0], list[1]);
+    Q_ASSERT(m_private->m_serverData.hasServerData());
   }
 
   scheduleRefreshDataTasks(true);
@@ -409,7 +418,7 @@ void MozillaVPN::maybeStateMain() {
     return;
   }
 
-  Q_ASSERT(m_private->m_serverData.initialized());
+  Q_ASSERT(m_private->m_serverData.hasServerData());
 
   // For 2.5 we need to regenerate the device key to allow the the custom DNS
   // feature. We can do it in background when the main view is shown.
@@ -428,16 +437,6 @@ void MozillaVPN::maybeStateMain() {
     settingsHolder->setAdjustActivatable(false);
   }
 #endif
-}
-
-void MozillaVPN::setEntryServerPublicKey(const QString& publicKey) {
-  logger.debug() << "Set entry-server public key:" << logger.keys(publicKey);
-  m_entryServerPublicKey = publicKey;
-}
-
-void MozillaVPN::setExitServerPublicKey(const QString& publicKey) {
-  logger.debug() << "Set exit-server public key:" << logger.keys(publicKey);
-  m_exitServerPublicKey = publicKey;
 }
 
 void MozillaVPN::getStarted() {
@@ -667,11 +666,15 @@ void MozillaVPN::serversFetched(const QByteArray& serverData) {
   }
 
   // The serverData could be unset or invalid with the new server list.
-  if (!m_private->m_serverData.initialized() ||
-      !m_private->m_serverCountryModel.exists(m_private->m_serverData)) {
-    m_private->m_serverCountryModel.pickRandom(m_private->m_serverData);
-    Q_ASSERT(m_private->m_serverData.initialized());
-    m_private->m_serverData.writeSettings();
+  if (!m_private->m_serverData.hasServerData() ||
+      !m_private->m_serverCountryModel.exists(
+          m_private->m_serverData.exitCountryCode(),
+          m_private->m_serverData.exitCityName())) {
+    QStringList list = m_private->m_serverCountryModel.pickRandom();
+    Q_ASSERT(list.length() >= 2);
+
+    m_private->m_serverData.update(list[0], list[1]);
+    Q_ASSERT(m_private->m_serverData.hasServerData());
   }
 }
 
@@ -889,72 +892,6 @@ void MozillaVPN::reset(bool forceInitialState) {
   if (forceInitialState) {
     setState(StateInitialize);
   }
-}
-
-void MozillaVPN::setServerCooldown(const QString& publicKey) {
-  m_private->m_serverCountryModel.setServerCooldown(
-      publicKey, Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
-}
-
-void MozillaVPN::setCooldownForAllServersInACity(const QString& countryCode,
-                                                 const QString& cityCode) {
-  m_private->m_serverCountryModel.setCooldownForAllServersInACity(
-      countryCode, cityCode, Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
-}
-
-QList<Server> MozillaVPN::filterServerList(const QList<Server>& servers) const {
-  QList<Server> results;
-  qint64 now = QDateTime::currentSecsSinceEpoch();
-
-  for (const Server& server : servers) {
-    if (server.cooldownTimeout() <= now) {
-      results.append(server);
-    }
-  }
-
-  return results;
-}
-
-const QList<Server> MozillaVPN::exitServers() const {
-  return filterServerList(
-      m_private->m_serverCountryModel.servers(m_private->m_serverData));
-}
-
-const QList<Server> MozillaVPN::entryServers() const {
-  if (!m_private->m_serverData.multihop()) {
-    return exitServers();
-  }
-  ServerData sd;
-  sd.update(m_private->m_serverData.entryCountryCode(),
-            m_private->m_serverData.entryCityName());
-  return filterServerList(m_private->m_serverCountryModel.servers(sd));
-}
-
-void MozillaVPN::changeServer(const QString& countryCode, const QString& city,
-                              const QString& entryCountryCode,
-                              const QString& entryCity) {
-  m_private->m_serverData.update(countryCode, city, entryCountryCode,
-                                 entryCity);
-  m_private->m_serverData.writeSettings();
-
-  // Update the list of recent connections.
-  QString description = m_private->m_serverData.toString();
-  QStringList recent = SettingsHolder::instance()->recentConnections();
-  qsizetype index = recent.indexOf(description);
-  if (index == 0) {
-    // This is already the most-recent connection.
-    return;
-  }
-
-  if (index > 0) {
-    recent.removeAt(index);
-  } else {
-    while (recent.count() >= Constants::RECENT_CONNECTIONS_MAX_COUNT) {
-      recent.removeLast();
-    }
-  }
-  recent.prepend(description);
-  SettingsHolder::instance()->setRecentConnections(recent);
 }
 
 void MozillaVPN::postAuthenticationCompleted() {

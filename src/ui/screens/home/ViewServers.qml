@@ -34,12 +34,12 @@ Item {
 
             if (segmentedNav.selectedSegment.objectName === "tabMultiHop" && multiHopStackView.depth === 1) {
                 // User clicked back button from the Multi-hop tab main view
-                VPNController.changeServer(...segmentedNav.multiHopExitServer.slice(0,2), ...segmentedNav.multiHopEntryServer.slice(0,2));
+                VPNCurrentServer.changeServer(...segmentedNav.multiHopExitServer.slice(0,2), ...segmentedNav.multiHopEntryServer.slice(0,2));
             }
 
             if (segmentedNav.selectedSegment.objectName === "tabSingleHop") {
                 // User clicked back button from the Single-hop tab view but didn't select a new server
-                VPNController.changeServer(VPNCurrentServer.exitCountryCode, VPNCurrentServer.exitCityName)
+                VPNCurrentServer.changeServer(VPNCurrentServer.exitCountryCode, VPNCurrentServer.exitCityName)
             }
 
             return stackview.pop()
@@ -49,7 +49,7 @@ Item {
     VPNSegmentedNavigation {
         id: segmentedNav
 
-        property var multiHopEntryServer: [VPNCurrentServer.entryCountryCode, VPNCurrentServer.entryCityName, VPNCurrentServer.localizedEntryCity]
+        property var multiHopEntryServer: [VPNCurrentServer.entryCountryCode, VPNCurrentServer.entryCityName, VPNCurrentServer.localizedEntryCityName]
         property var multiHopExitServer: [VPNCurrentServer.exitCountryCode, VPNCurrentServer.exitCityName, VPNCurrentServer.localizedCityName]
 
         anchors {

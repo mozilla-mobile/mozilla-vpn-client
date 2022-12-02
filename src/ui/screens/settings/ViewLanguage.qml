@@ -49,13 +49,13 @@ VPNViewBase {
                 return qsTrId("vpn.settings.systemLanguageTitle");
             }
 
-            toggleChecked: VPNLocalizer.code === ""
+            toggleChecked: VPNSettings.languageCode === ""
             function handleClick() {
                 toggleChecked = !toggleChecked
                 if (toggleChecked) {
-                    VPNLocalizer.code = "";
+                    VPNSettings.languageCode = "";
                 } else {
-                    VPNLocalizer.code = VPNLocalizer.previousCode;
+                    VPNSettings.languageCode = VPNSettings.previousLanguageCode;
                 }
             }
         }
@@ -122,9 +122,9 @@ VPNViewBase {
                         objectName: "language-" + code
                         enabled: !useSystemLanguageEnabled
                         radioButtonLabelText: localizedLanguage
-                        checked: VPNLocalizer.code === code && !useSystemLanguageEnabled
+                        checked: VPNSettings.languageCode === code && !useSystemLanguageEnabled
                         onClicked: {
-                            VPNLocalizer.code = code;
+                            VPNSettings.languageCode = code;
                         }
 
                         Layout.alignment: Qt.AlignLeft

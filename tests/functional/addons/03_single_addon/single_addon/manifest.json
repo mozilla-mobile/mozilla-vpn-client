@@ -1,0 +1,17 @@
+{
+  "api_version": "0.1",
+  "id": "single_addon",
+  "name": "Guide: dummy addon",
+  "type": "guide",
+  "guide": {
+    "id": "a",
+    "title": "This is a title",
+    "subtitle": "This is a subtitle",
+    "image": "qrc:/addons/single_addon/image.svg",
+    "blocks": [
+      { "id": "c_1",
+        "type": "title",
+        "content": "This is the real title" }
+    ]
+  }
+}

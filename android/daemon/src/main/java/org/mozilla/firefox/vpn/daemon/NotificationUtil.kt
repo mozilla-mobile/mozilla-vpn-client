@@ -84,14 +84,13 @@ class NotificationUtil {
         val prefs = Prefs.get(context)
         prefs.edit()
             .putString("fallbackNotificationHeader", content.getString("productName"))
-            .putString("fallbackNotificationMessage", content.getString("idleText"))
+            .putString("fallbackNotificationMessage", content.getString("connectedText"))
+            .putString("fallbackHideNotificationMessage", content.getString("disconnectedText"))
             .apply()
 
         val channelName = content.getString("notification_group_name")
         val channelDescription = ""
         updateNotificationChannel(channelName, channelDescription)
-
-        Log.v(tag, "Saved new fallback message -> ${content.getString("title")}")
     }
 
     /*
@@ -104,7 +103,7 @@ class NotificationUtil {
         // try to populate the notification with a translated Fallback message
         val prefs = Prefs.get(service)
         val message = mLastMessage.ifEmpty {
-            "" + prefs.getString("fallbackNotificationMessage", "Running in the Background")
+            "" + prefs.getString("fallbackNotificationMessage", "Connected")
         }
         val header = mLastHeader.ifEmpty {
             "" + prefs.getString("fallbackNotificationHeader", "Mozilla VPN")
@@ -126,6 +125,24 @@ class NotificationUtil {
 
         service.startForeground(CONNECTED_NOTIFICATION_ID, mNotificationBuilder.build())
     }
+
+    /*
+     * Should be called whenever a session is ended.
+     */
+    @SuppressLint("NewApi")
+    fun onHide(service: VPNService) {
+        // Switch the notification to "Disconnected" / or translated version
+        // If the VPN-Client is alive, it will override this instantly
+        // If not, this fallback is shown.
+        val prefs = Prefs.get(service)
+        prefs.getString("fallbackHideNotificationMessage", "Disconnected")
+            ?.let { update(it, "") }
+        // Clear the last message, so that we get the default "Connected" when we go back
+        // into foreground.
+        mLastHeader = ""
+        mLastMessage = ""
+    }
+
     private fun updateNotificationChannel(aTitle: String?, aDescription: String?) {
         // From Oreo on we need to have a "notification channel" to post to.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {

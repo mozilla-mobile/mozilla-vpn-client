@@ -52,6 +52,7 @@ bool s_transactionsProcessed = false;
   logger.debug() << "Registration completed";
 
   ProductsHandler* productsHandler = ProductsHandler::instance();
+  PurchaseIAPHandler* purchaseHandler = IOSIAPHandler::instance();
 
   if (response.invalidProductIdentifiers) {
     NSArray<NSString*>* products = response.invalidProductIdentifiers;
@@ -70,7 +71,7 @@ bool s_transactionsProcessed = false;
 
     for (unsigned long i = 0, count = [products count]; i < count; ++i) {
       SKProduct* product = [[products objectAtIndex:i] retain];
-      QMetaObject::invokeMethod(productsHandler, "productRegistered", Qt::QueuedConnection,
+      QMetaObject::invokeMethod(purchaseHandler, "productRegistered", Qt::QueuedConnection,
                                 Q_ARG(void*, product));
     }
   }

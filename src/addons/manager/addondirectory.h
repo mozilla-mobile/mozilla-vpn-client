@@ -18,15 +18,13 @@ class AddonDirectory final {
   AddonDirectory();
   ~AddonDirectory();
 
-  bool getDirectory(QDir* dir) const;
+  static bool getDirectory(QDir* dir);
 
-  bool readFile(const QString& fileName, QByteArray* contents) const;
-  bool writeToFile(const QString& fileName, const QByteArray& contents) const;
-  bool deleteFile(const QString& fileName) const;
+  static bool readFile(const QString& fileName, QByteArray* contents);
+  static bool writeToFile(const QString& fileName, const QByteArray& contents);
+  static bool deleteFile(const QString& fileName);
 
-#ifdef UNIT_TEST
-  void testReset();
-#endif
+  static void reset();
 };
 
 #endif  // ADDONDIRECTORY_H

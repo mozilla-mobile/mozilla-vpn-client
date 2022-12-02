@@ -6,8 +6,7 @@
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-exists($$PWD/telemetry/gleansample.h) {
-    HEADERS += $$PWD/telemetry/gleansample.h
+exists($$PWD/telemetry/telemetry.qrc) {
     RESOURCES += $$PWD/telemetry/telemetry.qrc
 }
 else{
@@ -22,6 +21,22 @@ HEADERS += $$PWD/glean.h
     message(Include QSQlite plugin)
     QTPLUGIN += qsqlite
 }
+
+PYTHON_BIN = $$system(which python3)
+isEmpty(PYTHON_BIN) {
+    PYTHON_BIN = python3
+}
+message(Using python: $$PYTHON_BIN)
+
+gleandefs.input = GLEAN_METRICS
+gleandefs.output = $$PWD/telemetry/gleansample.h
+gleandefs.commands = @echo Generating gleansample.h from ${QMAKE_FILE_IN} \
+    && $$PYTHON_BIN $$PWD/../scripts/utils/generate_gleandefs.py \
+        -o ${QMAKE_FILE_OUT} ${QMAKE_FILE_IN} -f cpp
+gleandefs.variable_out = HEADERS
+
+GLEAN_METRICS = $$PWD/metrics.yaml
+QMAKE_EXTRA_COMPILERS += gleandefs
 
 QML_IMPORT_PATH += $$PWD
 RESOURCES += $$PWD/glean.qrc

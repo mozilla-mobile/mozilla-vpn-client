@@ -2,6 +2,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+## Find the absolute path cargo.
+## Mostly necessary for iOS builds, 
+## because Xcode will attempt to use it's own installation of cargo, 
+## which we don't want.
+find_program(CARGO_EXECUTABLE NAMES cargo REQUIRED)
+find_program(RUSTC_EXECUTABLE NAMES rustc REQUIRED)
+
 add_library(vpnglean STATIC IMPORTED GLOBAL)
 
 set_target_properties(vpnglean PROPERTIES FOLDER "Libs")
@@ -30,18 +37,37 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
         set(RUST_ARCH "x86_64-linux-android")
         set(OPENSSL_ARCH "x86_64")
     endif()
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
+    if(${CMAKE_OSX_SYSROOT} STREQUAL "iphonesimulator")
+        set(RUST_ARCH "x86_64-apple-ios")
+    else()
+        set(RUST_ARCH "aarch64-apple-ios")
+    endif()
 endif()
 
 if(NOT RUST_ARCH)
     message(FATAL_ERROR "Unable to determine Rust target for ${CMAKE_SYSTEM_NAME} (${CMAKE_SYSTEM_PROCESSOR}).")
 endif()
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Android")
-    set(OPENSSL_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/openSSL/static/lib/${OPENSSL_ARCH})
-    set(OPENSSL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/openSSL/static/include)
-    set(CARGO_CMD OPENSSL_LIB_DIR=${OPENSSL_LIB_DIR} OPENSSL_INCLUDE_DIR=${OPENSSL_INCLUDE_DIR} AR=llvm-ar cargo build)
-else()
-    set(CARGO_CMD cargo build)
+list(APPEND CARGO_ENV BUILD_ID=${BUILD_ID})
+list(APPEND CARGO_ENV APP_VERSION=${CMAKE_PROJECT_VERSION})
+list(APPEND CARGO_ENV CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR})
+
+if(ANDROID)
+    list(APPEND CARGO_ENV
+        OPENSSL_LIB_DIR=${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/openSSL/static/lib/${OPENSSL_ARCH}
+        OPENSSL_INCLUDE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/openSSL/static/include
+        AR=llvm-ar)
+elseif(APPLE AND XCODE)
+    ## Don't trust Xcode to provide us with a usable linker.
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh "#!/bin/sh\n")
+    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh "${RUSTC_EXECUTABLE} -C linker=/usr/bin/cc \$@\n")
+    file(CHMOD ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh FILE_PERMISSIONS
+        OWNER_READ OWNER_WRITE OWNER_EXECUTE
+        GROUP_READ GROUP_WRITE GROUP_EXECUTE
+        WORLD_READ WORLD_EXECUTE
+    )
+    list(APPEND CARGO_ENV RUSTC=${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh)
 endif()
 
 set(HEADER_FILE vpnglean.h)
@@ -53,11 +79,8 @@ add_custom_target(vpnglean_ffi
         ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/debug/${LIBNAME}
         ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/release/${LIBNAME}
         ${CMAKE_CURRENT_BINARY_DIR}/${HEADER_FILE}
-    COMMAND ${CMAKE_COMMAND} -E env
-                BUILD_ID=${BUILD_ID}
-                APP_VERSION=${CMAKE_PROJECT_VERSION}
-                CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR}
-            ${CARGO_CMD} $<IF:$<CONFIG:Debug>,,--release> --target ${RUST_ARCH}
+    COMMAND ${CMAKE_COMMAND} -E env ${CARGO_ENV}
+            ${CARGO_EXECUTABLE} build $<IF:$<CONFIG:Debug>,,--release> --target ${RUST_ARCH}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 set_target_properties(vpnglean_ffi PROPERTIES FOLDER "Libs")
@@ -70,6 +93,7 @@ else()
 endif()
 
 ## Generate metrics and pings files
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/generated)
 add_custom_target(vpnglean_telemetry
     BYPRODUCTS
         ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.h
@@ -87,14 +111,18 @@ set_target_properties(vpnglean_telemetry PROPERTIES FOLDER "Libs")
 ## Define depedencies
 add_dependencies(vpnglean_ffi vpnglean_telemetry)
 add_dependencies(vpnglean vpnglean_ffi)
-add_dependencies(mozillavpn vpnglean)
 set_target_properties(vpnglean PROPERTIES
     IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/release/${LIBNAME}
     IMPORTED_LOCATION_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/debug/${LIBNAME}
 )
+set_property(TARGET vpnglean APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/generated
+)
 
-## TODO: It's not clear if we will also need this on other platforms, or
-## if we just don't notice it due to statically linked Qt.
+## Fixup any missing link dependencies to pass to the vpnglean consumer
+set_property(TARGET vpnglean APPEND PROPERTY
+        INTERFACE_LINK_LIBRARIES -ldl)
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     find_package(OpenSSL REQUIRED)
     set_property(TARGET vpnglean APPEND PROPERTY
@@ -103,8 +131,5 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     ## Windows seems to miss some system libraries when importing static OpenSSL
     set_property(TARGET vpnglean APPEND PROPERTY
-        INTERFACE_LINK_LIBRARIES crypt32 Secur32)
+        INTERFACE_LINK_LIBRARIES crypt32 Secur32 ntdll)
 endif()
-
-target_include_directories(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-target_include_directories(mozillavpn PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/generated)

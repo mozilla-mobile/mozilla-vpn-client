@@ -21,25 +21,38 @@ class ServerData final : public QObject {
   Q_PROPERTY(QString localizedCityName READ localizedCityName NOTIFY changed)
 
   Q_PROPERTY(bool multihop READ multihop NOTIFY changed)
+
   Q_PROPERTY(QString entryCountryCode READ entryCountryCode NOTIFY changed)
   Q_PROPERTY(QString entryCityName READ entryCityName NOTIFY changed)
-  Q_PROPERTY(QString localizedEntryCity READ localizedEntryCity NOTIFY changed)
+  Q_PROPERTY(
+      QString localizedEntryCityName READ localizedEntryCityName NOTIFY changed)
+
+  Q_PROPERTY(QString previousExitCountryCode READ previousExitCountryCode NOTIFY
+                 changed)
+  Q_PROPERTY(
+      QString previousExitCityName READ previousExitCityName NOTIFY changed)
+  Q_PROPERTY(QString localizedPreviousExitCityName READ
+                 localizedPreviousExitCityName NOTIFY changed)
 
  public:
   ServerData();
   ~ServerData();
 
+  void initialize();
+
   [[nodiscard]] bool fromSettings();
-  [[nodiscard]] bool fromString(const QString& data);
 
-  void writeSettings();
+  Q_INVOKABLE void changeServer(const QString& countryCode,
+                                const QString& cityName,
+                                const QString& entryCountryCode = QString(),
+                                const QString& entryCityName = QString());
+  bool hasServerData() const { return !m_exitCountryCode.isEmpty(); }
 
-  bool initialized() const { return m_initialized; }
+  const QList<Server> exitServers() const;
+  const QList<Server> entryServers() const;
 
   const QString& exitCountryCode() const { return m_exitCountryCode; }
-
   const QString& exitCityName() const { return m_exitCityName; }
-
   QString localizedCityName() const;
 
   bool multihop() const {
@@ -47,29 +60,34 @@ class ServerData final : public QObject {
   }
 
   const QString& entryCountryCode() const { return m_entryCountryCode; }
-
   const QString& entryCityName() const { return m_entryCityName; }
+  QString localizedEntryCityName() const;
 
-  QString localizedEntryCity() const;
+  const QString& previousExitCountryCode() const {
+    return m_previousExitCountryCode;
+  }
+  const QString& previousExitCityName() const { return m_previousExitCityName; }
+  QString localizedPreviousExitCityName() const;
 
-  void forget() { m_initialized = false; }
+  void forget();
 
   void update(const QString& exitCountryCode, const QString& exitCityName,
               const QString& entryCountryCode = QString(),
               const QString& entryCityName = QString());
 
-  QString toString() const;
-
   void retranslate() { emit changed(); }
+
+  void setEntryServerPublicKey(const QString& publicKey);
+  void setExitServerPublicKey(const QString& publicKey);
+
+  const QString& exitServerPublicKey() const { return m_exitServerPublicKey; }
+  const QString& entryServerPublicKey() const { return m_entryServerPublicKey; }
 
  signals:
   void changed();
 
  private:
-  void initializeInternal(const QString& exitCountryCode,
-                          const QString& exitCityName,
-                          const QString& entryCountryCode,
-                          const QString& entryCityName);
+  bool settingsChanged();
 
  private:
   bool m_initialized = false;
@@ -79,6 +97,12 @@ class ServerData final : public QObject {
 
   QString m_entryCountryCode;
   QString m_entryCityName;
+
+  QString m_previousExitCountryCode;
+  QString m_previousExitCityName;
+
+  QString m_exitServerPublicKey;
+  QString m_entryServerPublicKey;
 };
 
 #endif  // SERVERDATA_H

@@ -25,8 +25,6 @@ StackView {
 
     }
 
-    anchors.fill: parent
-
     Connections {
         target: VPNNavigator
         function onGoBack(item) {

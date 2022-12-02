@@ -166,6 +166,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/models/keys.h
     ${MVPN_SOURCE_DIR}/models/licensemodel.cpp
     ${MVPN_SOURCE_DIR}/models/licensemodel.h
+    ${MVPN_SOURCE_DIR}/models/recentconnections.cpp
+    ${MVPN_SOURCE_DIR}/models/recentconnections.h
     ${MVPN_SOURCE_DIR}/models/server.cpp
     ${MVPN_SOURCE_DIR}/models/server.h
     ${MVPN_SOURCE_DIR}/models/servercity.cpp
@@ -367,7 +369,7 @@ foreach(filename ${UTEST_SOURCES})
         OUTPUT_VARIABLE UTEST_CLASS_LIST
         OUTPUT_STRIP_TRAILING_WHITESPACE
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMAND python3 ${CMAKE_SOURCE_DIR}/scripts/tests/list_test_classes.py -p TestHelper ${filename}
+        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/tests/list_test_classes.py -p TestHelper ${filename}
     )
 
     foreach(UTEST_CLASS ${UTEST_CLASS_LIST})

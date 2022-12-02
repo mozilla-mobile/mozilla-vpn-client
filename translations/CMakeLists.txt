@@ -32,8 +32,7 @@ target_sources(translations PRIVATE
 add_custom_command(
     OUTPUT ${GENERATED_DIR}/l18nstrings_p.cpp ${GENERATED_DIR}/l18nstrings.h
     MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/strings.yaml
-    COMMAND python3 ${MVPN_SCRIPT_DIR}/utils/generate_strings.py -o ${GENERATED_DIR}
-                ${CMAKE_CURRENT_SOURCE_DIR}/strings.yaml
+    COMMAND ${PYTHON_EXECUTABLE} ${MVPN_SCRIPT_DIR}/utils/generate_strings.py -o ${GENERATED_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/strings.yaml
 )
 
 ## Lookup the path to the Qt linguist tools
@@ -88,7 +87,7 @@ file(WRITE ${GENERATED_DIR}/translations.qrc "<RCC>\n    <qresource prefix=\"/i1
 foreach(LOCALE ${I18N_LOCALES})
     execute_process(
         RESULT_VARIABLE I18N_CHECK_RESULT
-        COMMAND python3 ${MVPN_SCRIPT_DIR}/utils/xlifftool.py -c --locale=${LOCALE} ${I18N_DIR}/${LOCALE}/mozillavpn.xliff -t ${LANGUAGE_THRESHOLD}
+        COMMAND ${PYTHON_EXECUTABLE} ${MVPN_SCRIPT_DIR}/utils/xlifftool.py -c --locale=${LOCALE} ${I18N_DIR}/${LOCALE}/mozillavpn.xliff -t ${LANGUAGE_THRESHOLD}
     )
     if(I18N_CHECK_RESULT EQUAL 0)
         file(APPEND ${GENERATED_DIR}/translations.qrc "        <file>mozillavpn_${LOCALE}.qm</file>\n")

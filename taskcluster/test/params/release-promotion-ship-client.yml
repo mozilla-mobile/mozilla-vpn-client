@@ -1,0 +1,69 @@
+base_ref: main
+base_repository: https://github.com/mozilla-mobile/mozilla-vpn-client
+base_rev: 0c34800e0cf4e86235f72e9161f6f1f15ac8a420
+build_date: 1666349220
+build_number: 1
+do_not_optimize: []
+existing_tasks:
+  build-addons-bundle: GVJKQgj3Q_259pFBIyJrcQ
+  build-android-arm64/debug: Fl1MY2nJSvi7Tf9YclLZBQ
+  build-android-arm64/release: eEBNd5u2S4GuOeLae2Vu2Q
+  build-android-armv7/debug: F4raL_sYRmq8l10O_XIHQA
+  build-android-armv7/release: EjD9Q-TDSqimDsfgdIVHCw
+  build-android-x64/debug: BmjKYbQGRsmNE5lzbc3geA
+  build-android-x64/release: JuJq8mgzRSuxUXRHk6PYWQ
+  build-android-x86/debug: MLOhP3nEQrWEIIyzPaOhcw
+  build-android-x86/release: cNixs-DKSRaUGYB0J7WQTQ
+  build-docker-image-android-build-arm64: NTfpR7NHQsK46Yk5cCDclQ
+  build-docker-image-android-build-armv7: NZxWTUUtS1m_f3pzceCKGg
+  build-docker-image-android-build-x64: ANaVe1ZQR8abL0pd7llZcw
+  build-docker-image-android-build-x86: C6dV18LKTMCCwWlpLztc1w
+  build-docker-image-base: DmhX43CwTfyB1nbvkiwbBg
+  build-docker-image-build: OiiIOA8BQPmzMeqF-_FuBw
+  build-docker-image-lint: ANCUUUyNR2W7mKRsgL5Q9w
+  build-docker-image-wasm: fFfeWVUQTY-m1bbJGwhtqw
+  build-ios/debug: Tvqat7mqT4-JsthTCaSVpA
+  build-linux/opt: EHhfiDzVSMaVh8tnVMGezA
+  build-macos/opt: YsDBZowUSvKTh2G9pkaYig
+  build-wasm/opt: JqlM_tFGTcm_plxOMTd3bQ
+  build-windows/opt: NdU9bEA_TCSYBz5jNgpEcQ
+  fetch-win-dev-env: fLQik_MPQPqVeAOA_B46IA
+  fetch-win-go: aVfhCuu4SVqLmpvz4bAgnQ
+  fetch-win-perl: KlpgRvHESp-9hiReWnJnvw
+  fetch-win-rustup: RwOTt66NRfyxKIXDF6VBEQ
+  push-addon-stage/deploy: U3i6UyFNS4inu8o3hP3rPw
+  repackage-msi: R3xnFH4UQuSYh_h-3ZharQ
+  repackage-signing-msi: XIKTWi5iQp6SfdyuFPIINQ
+  signing-addons-bundle: E567QN_MTNOkdp1wO_0kzw
+  signing-android-arm64/release: Vlfi-qwZQnG-9HPOZ9Buxw
+  signing-android-armv7/release: foeX12E5TS6hY3XU6m9oKQ
+  signing-android-x64/release: f4Lijxm6SNi-SeCQM5RCig
+  signing-android-x86/release: CKVdRCcITRiOZFG5k2Lynw
+  signing-linux/opt: UBdcGduyToibUCay3wc9zg
+  signing-macos/opt: RUqoZ6rCQ_68QQzRhcWm0Q
+  signing-windows/opt: dMuIg-2dSjmICd8cti80WA
+  test-taskgraph-definition: EMtIyKY7TxCqFbyB7jiFdA
+  toolchain-openssl-win: P_D5Ht0qT-mQLUmBh_Alxg
+  toolchain-qt-ios: Pyw_bgMXRSidDQUOHypXug
+  toolchain-qt-mac: ZXY0C1bQQ82jE3fa2f51xg
+  toolchain-qt-win: f_3Sw3GiQVOeuaom6G_8Dg
+filters:
+- target_tasks_method
+head_ref: refs/heads/releases/2.10.0
+head_repository: https://github.com/mozilla-mobile/mozilla-vpn-client
+head_rev: 2df92f118cff556555d32c2a343da9f73ae88afa
+head_tag: ''
+level: '3'
+moz_build_date: '20221021104700'
+next_version: null
+optimize_target_tasks: true
+owner: user@example.com
+project: mozilla-vpn-client
+pull_request_number: null
+pushdate: 0
+pushlog_id: '0'
+repository_type: git
+shipping_phase: ship-client
+target_tasks_method: client-target-tasks
+tasks_for: action
+version: ''

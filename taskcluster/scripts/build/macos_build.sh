@@ -54,6 +54,9 @@ python3 -m pip install -r requirements.txt --user
 export PYTHONIOENCODING="UTF-8"
 
 print Y "Updating submodules..."
+
+
+# should already be done by Xcode cloud cloning but just to make sure
 git submodule init || die
 git submodule update || die
 
@@ -63,12 +66,17 @@ if [[ "$RELEASE" ]]; then
     # Only on a release build we have access to those secrects. 
     ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_dsn -f sentry_dsn
     ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_envelope_endpoint -f sentry_envelope_endpoint
+
     ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
     export SENTRY_ENVELOPE_ENDPOINT=$(cat sentry_envelope_endpoint)
     export SENTRY_DSN=$(cat sentry_dsn)
     #Install Sentry CLI:
     curl -sL https://sentry.io/get-cli/ | bash
     sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
+
+    export SENTRY_ENVELOPE_ENDPOINT=$(cat sentry_envelope_endpoint)
+    export SENTRY_DSN=$(cat sentry_dsn)
+
 fi
 
 print Y "Configuring the build..."
@@ -83,7 +91,8 @@ if [[ "$RELEASE" ]]; then
 else 
     cmake -S . -B ${MOZ_FETCHES_DIR}/build -GNinja \
         -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake \
-        -DCMAKE_BUILD_TYPE=Debug
+        -DCMAKE_BUILD_TYPE=Release
+
 fi 
 
 print Y "Building the client..."
