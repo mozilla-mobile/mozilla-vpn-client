@@ -42,8 +42,6 @@ class Localizer final : public QAbstractListModel {
 
   void initialize();
 
-  void loadLanguage(const QString& code);
-
   bool hasLanguages() const { return m_languages.length() > 1; }
 
   QStringList languages() const;
@@ -76,7 +74,7 @@ class Localizer final : public QAbstractListModel {
   static bool languageSort(const Language& a, const Language& b,
                            Collator* collator);
 
-  bool loadLanguageInternal(const QString& code);
+  bool loadLanguage(const QString& code);
 
   // This method is not used. It exists just to add the installer strings into
   // the QT language files.
