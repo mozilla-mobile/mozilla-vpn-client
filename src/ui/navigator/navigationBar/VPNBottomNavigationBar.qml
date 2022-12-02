@@ -156,7 +156,7 @@ Rectangle {
     }
 
     Connections {
-        target: VPNConnectionBenchmark
+        target: MZModules["vpn"].connectionBenchmark
         function onStateChanged() {
             setNavBarOpacity();
         }
@@ -182,7 +182,7 @@ Rectangle {
 
     function setNavBarOpacity() {
         if (VPNNavigator.screen === VPNNavigator.ScreenHome) {
-            navbar.opacity = VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateInitial ? 1 : 0
+            navbar.opacity = MZModules["vpn"].connectionBenchmark.state === MZModules["vpn"].connectionBenchmark.StateInitial ? 1 : 0
         } else {
             navbar.opacity = 1;
         }

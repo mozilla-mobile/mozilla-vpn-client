@@ -53,11 +53,6 @@ SOURCES += \
         composer/composerblocktitle.cpp \
         composer/composerblockorderedlist.cpp \
         composer/composerblockunorderedlist.cpp \
-        connectionbenchmark/benchmarktask.cpp \
-        connectionbenchmark/benchmarktaskping.cpp \
-        connectionbenchmark/benchmarktasktransfer.cpp \
-        connectionbenchmark/connectionbenchmark.cpp \
-        connectionbenchmark/uploaddatagenerator.cpp \
         constants.cpp \
         cryptosettings.cpp \
         curve25519.cpp \
@@ -113,6 +108,11 @@ SOURCES += \
         module.cpp \
         moduleholder.cpp \
         modules/modulevpn.cpp \
+        modules/modulevpn/connectionbenchmark/benchmarktask.cpp \
+        modules/modulevpn/connectionbenchmark/benchmarktaskping.cpp \
+        modules/modulevpn/connectionbenchmark/benchmarktasktransfer.cpp \
+        modules/modulevpn/connectionbenchmark/connectionbenchmark.cpp \
+        modules/modulevpn/connectionbenchmark/uploaddatagenerator.cpp \
         modules/modulevpn/connectionhealth.cpp \
         modules/modulevpn/controller.cpp \
         mozillavpn.cpp \
@@ -235,12 +235,6 @@ HEADERS += \
         composer/composerblocktitle.h \
         composer/composerblockorderedlist.h \
         composer/composerblockunorderedlist.h \
-        connectionbenchmark/benchmarktask.h \
-        connectionbenchmark/benchmarktaskping.h \
-        connectionbenchmark/benchmarktasksentinel.h \
-        connectionbenchmark/benchmarktasktransfer.h \
-        connectionbenchmark/connectionbenchmark.h \
-        connectionbenchmark/uploaddatagenerator.h \
         constants.h \
         cryptosettings.h \
         curve25519.h \
@@ -295,6 +289,12 @@ HEADERS += \
         moduleholder.h \
         modulelist.h \
         modules/modulevpn.h \
+        modules/modulevpn/connectionbenchmark/benchmarktask.h \
+        modules/modulevpn/connectionbenchmark/benchmarktaskping.h \
+        modules/modulevpn/connectionbenchmark/benchmarktasksentinel.h \
+        modules/modulevpn/connectionbenchmark/benchmarktasktransfer.h \
+        modules/modulevpn/connectionbenchmark/connectionbenchmark.h \
+        modules/modulevpn/connectionbenchmark/uploaddatagenerator.h \
         modules/modulevpn/connectionhealth.h \
         modules/modulevpn/controller.h \
         modules/modulevpn/controllerimpl.h \

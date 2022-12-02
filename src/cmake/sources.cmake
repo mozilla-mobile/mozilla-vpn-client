@@ -127,17 +127,6 @@ target_sources(mozillavpn-sources INTERFACE
     composer/composerblocktitle.h
     composer/composerblockunorderedlist.cpp
     composer/composerblockunorderedlist.h
-    connectionbenchmark/benchmarktask.cpp
-    connectionbenchmark/benchmarktask.h
-    connectionbenchmark/benchmarktaskping.cpp
-    connectionbenchmark/benchmarktaskping.h
-    connectionbenchmark/benchmarktasksentinel.h
-    connectionbenchmark/benchmarktasktransfer.cpp
-    connectionbenchmark/benchmarktasktransfer.h
-    connectionbenchmark/connectionbenchmark.cpp
-    connectionbenchmark/connectionbenchmark.h
-    connectionbenchmark/uploaddatagenerator.cpp
-    connectionbenchmark/uploaddatagenerator.h
     constants.cpp
     constants.h
     cryptosettings.cpp
@@ -248,6 +237,17 @@ target_sources(mozillavpn-sources INTERFACE
     modulelist.h
     modules/modulevpn.cpp
     modules/modulevpn.h
+    modules/modulevpn/connectionbenchmark/benchmarktask.cpp
+    modules/modulevpn/connectionbenchmark/benchmarktask.h
+    modules/modulevpn/connectionbenchmark/benchmarktaskping.cpp
+    modules/modulevpn/connectionbenchmark/benchmarktaskping.h
+    modules/modulevpn/connectionbenchmark/benchmarktasksentinel.h
+    modules/modulevpn/connectionbenchmark/benchmarktasktransfer.cpp
+    modules/modulevpn/connectionbenchmark/benchmarktasktransfer.h
+    modules/modulevpn/connectionbenchmark/connectionbenchmark.cpp
+    modules/modulevpn/connectionbenchmark/connectionbenchmark.h
+    modules/modulevpn/connectionbenchmark/uploaddatagenerator.cpp
+    modules/modulevpn/connectionbenchmark/uploaddatagenerator.h
     modules/modulevpn/connectionhealth.cpp
     modules/modulevpn/connectionhealth.h
     modules/modulevpn/controller.cpp

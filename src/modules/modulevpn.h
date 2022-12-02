@@ -6,6 +6,7 @@
 #define MODULEVPN_H
 
 #include "module.h"
+#include "modules/modulevpn/connectionbenchmark/connectionbenchmark.h"
 #include "modules/modulevpn/connectionhealth.h"
 #include "modules/modulevpn/controller.h"
 
@@ -15,6 +16,8 @@ class ModuleVPN final : public Module {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(ModuleVPN)
 
+  Q_PROPERTY(
+      QJSValue connectionBenchmark READ connectionBenchmarkValue CONSTANT)
   Q_PROPERTY(QJSValue connectionHealth READ connectionHealthValue CONSTANT)
   Q_PROPERTY(QJSValue controller READ controllerValue CONSTANT)
 
@@ -24,6 +27,9 @@ class ModuleVPN final : public Module {
 
   static ModuleVPN* instance();
 
+  ConnectionBenchmark* connectionBenchmark() { return &m_connectionBenchmark; }
+  QJSValue connectionBenchmarkValue();
+
   ConnectionHealth* connectionHealth() { return &m_connectionHealth; }
   QJSValue connectionHealthValue();
 
@@ -31,8 +37,9 @@ class ModuleVPN final : public Module {
   QJSValue controllerValue();
 
  private:
-  Controller m_controller;
+  ConnectionBenchmark m_connectionBenchmark;
   ConnectionHealth m_connectionHealth;
+  Controller m_controller;
 };
 
 #endif  // MODULEVPN_H

@@ -92,7 +92,7 @@ VPNFlickable {
                 VPNCheckmarkList {
                     id: checkmarkList
 
-                    listHeader: VPNConnectionBenchmark.speed === VPNConnectionBenchmark.SpeedSlow
+                    listHeader: MZModules["vpn"].connectionBenchmark.speed === MZModules["vpn"].connectionBenchmark.SpeedSlow
                         ? VPNl18n.ConnectionInfoListHeaderSlow
                         : VPNl18n.ConnectionInfoListHeaderDefault
                     listModel: checkmarkListModel
@@ -129,7 +129,7 @@ VPNFlickable {
 
                     VPNConnectionInfoItem {
                         title: VPNl18n.ConnectionInfoLabelPing
-                        subtitle: VPNConnectionBenchmark.pingLatency + " " + VPNl18n.ConnectionInfoUnitPing
+                        subtitle: MZModules["vpn"].connectionBenchmark.pingLatency + " " + VPNl18n.ConnectionInfoUnitPing
                         iconPath: "qrc:/nebula/resources/connection-green.svg"
                     }
 
@@ -143,7 +143,7 @@ VPNFlickable {
                     VPNConnectionInfoItem {
                         //% "Download"
                         title: qsTrId("vpn.connectionInfo.download")
-                        subtitle: root.getConnectionLabel(VPNConnectionBenchmark.downloadBps)
+                        subtitle: root.getConnectionLabel(MZModules["vpn"].connectionBenchmark.downloadBps)
                         iconPath: "qrc:/nebula/resources/download.svg"
                     }
 
@@ -158,7 +158,7 @@ VPNFlickable {
 
                     VPNConnectionInfoItem {
                         title: VPNl18n.ConnectionInfoLabelUpload
-                        subtitle: root.getConnectionLabel(VPNConnectionBenchmark.uploadBps)
+                        subtitle: root.getConnectionLabel(MZModules["vpn"].connectionBenchmark.uploadBps)
                         iconPath: "qrc:/nebula/resources/upload.svg"
                         visible: VPNFeatureList.get("benchmarkUpload").isSupported
                     }
@@ -218,7 +218,7 @@ VPNFlickable {
 
     function populateCheckmarkListModel() {
         // Fast connection threshold
-        if (VPNConnectionBenchmark.speed === VPNConnectionBenchmark.SpeedFast) {
+        if (MZModules["vpn"].connectionBenchmark.speed === MZModules["vpn"].connectionBenchmark.SpeedFast) {
             checkmarkListModel.append({
                 title: VPNl18n.ConnectionInfoHighBulletOne,
                 type: "checkmark"
@@ -231,7 +231,7 @@ VPNFlickable {
                 title: VPNl18n.ConnectionInfoHighBulletThree,
                 type: "checkmark"
             });
-        } else if (VPNConnectionBenchmark.speed === VPNConnectionBenchmark.SpeedMedium) {
+        } else if (MZModules["vpn"].connectionBenchmark.speed === MZModules["vpn"].connectionBenchmark.SpeedMedium) {
             // Medium connection threshold
             checkmarkListModel.append({
                 title: VPNl18n.ConnectionInfoMediumBulletOne,

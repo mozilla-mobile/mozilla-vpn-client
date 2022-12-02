@@ -56,7 +56,7 @@ ColumnLayout {
         // Try again
         text: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton
         onClicked: {
-            VPNConnectionBenchmark.start();
+            MZModules["vpn"].connectionBenchmark.start();
         }
     }
 }

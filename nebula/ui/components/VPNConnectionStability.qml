@@ -28,7 +28,7 @@ Item {
         columns: 3
         layoutDirection: Qt.LeftToRight
         anchors.horizontalCenter: parent.horizontalCenter
-        state: MZModules.vpn.connectionHealth.stability
+        state: MZModules["vpn"].connectionHealth.stability
         onStateChanged: stability.setColumns()
 
         Component.onCompleted: {
@@ -37,7 +37,7 @@ Item {
 
         states: [
             State {
-                name: MZModules.vpn.connectionHealth.Stable
+                name: MZModules["vpn"].connectionHealth.Stable
                 PropertyChanges {
                     target: stability
                     visible: false
@@ -49,7 +49,7 @@ Item {
                 }
             },
             State {
-                name: MZModules.vpn.connectionHealth.Unstable
+                name: MZModules["vpn"].connectionHealth.Unstable
 
                 PropertyChanges {
                     target: stability
@@ -70,8 +70,8 @@ Item {
                 }
             },
             State {
-                name: MZModules.vpn.connectionHealth.NoSignal
-                extend: MZModules.vpn.connectionHealth.Unstable
+                name: MZModules["vpn"].connectionHealth.NoSignal
+                extend: MZModules["vpn"].connectionHealth.Unstable
                 PropertyChanges {
                     target: stabilityLabel
                     color: VPNTheme.theme.red
@@ -117,8 +117,8 @@ Item {
                 id: stabilityLabel
                 lineHeight: VPNTheme.theme.controllerInterLineHeight
                 onPaintedWidthChanged: stability.setColumns()
-                text: MZModules.vpn.connectionHealth.stability
-                      === MZModules.vpn.connectionHealth.Unstable ? textUnstable : textNoSignal
+                text: MZModules["vpn"].connectionHealth.stability
+                      === MZModules["vpn"].connectionHealth.Unstable ? textUnstable : textNoSignal
                 horizontalAlignment: Text.AlignLeft
             }
         }
