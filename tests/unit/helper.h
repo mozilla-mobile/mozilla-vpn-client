@@ -6,6 +6,7 @@
 #define HELPER_H
 
 #include "../../src/mozillavpn.h"
+#include "../../src/notificationhandler.h"
 #include "../../src/modules/modulevpn/controller.h"
 
 #include <QObject>

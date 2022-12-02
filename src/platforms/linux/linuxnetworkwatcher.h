@@ -5,9 +5,10 @@
 #ifndef LINUXNETWORKWATCHER_H
 #define LINUXNETWORKWATCHER_H
 
+
 #include <QThread>
 
-#include "networkwatcherimpl.h"
+#include "modules/modulevpn/networkwatcherimpl.h"
 
 class LinuxNetworkWatcherWorker;
 

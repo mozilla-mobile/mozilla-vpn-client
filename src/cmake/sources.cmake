@@ -253,15 +253,17 @@ target_sources(mozillavpn-sources INTERFACE
     modules/modulevpn/controller.cpp
     modules/modulevpn/controller.h
     modules/modulevpn/controllerimpl.h
+    modules/modulevpn/networkwatcher.cpp
+    modules/modulevpn/networkwatcher.h
+    modules/modulevpn/networkwatcherimpl.h
+    modules/modulevpn/serverlatency.cpp
+    modules/modulevpn/serverlatency.h
     mozillavpn.cpp
     mozillavpn.h
     networkmanager.cpp
     networkmanager.h
     networkrequest.cpp
     networkrequest.h
-    networkwatcher.cpp
-    networkwatcher.h
-    networkwatcherimpl.h
     notificationhandler.cpp
     notificationhandler.h
     pinghelper.cpp
@@ -302,8 +304,6 @@ target_sources(mozillavpn-sources INTERFACE
     rfc/rfc5735.h
     serveri18n.cpp
     serveri18n.h
-    serverlatency.cpp
-    serverlatency.h
     settingsholder.cpp
     settingsholder.h
     signature.cpp

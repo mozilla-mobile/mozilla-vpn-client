@@ -115,14 +115,16 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionhealth.cpp
     ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionhealth.h
     ${MVPN_SOURCE_DIR}/modules/modulevpn/controller.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/networkwatcher.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/networkwatcher.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/networkwatcherimpl.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/serverlatency.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/serverlatency.h
     ${MVPN_SOURCE_DIR}/mozillavpn.h
     ${MVPN_SOURCE_DIR}/networkmanager.cpp
     ${MVPN_SOURCE_DIR}/networkmanager.h
     ${MVPN_SOURCE_DIR}/networkrequest.cpp
     ${MVPN_SOURCE_DIR}/networkrequest.h
-    ${MVPN_SOURCE_DIR}/networkwatcher.cpp
-    ${MVPN_SOURCE_DIR}/networkwatcher.h
-    ${MVPN_SOURCE_DIR}/networkwatcherimpl.h
     ${MVPN_SOURCE_DIR}/notificationhandler.cpp
     ${MVPN_SOURCE_DIR}/notificationhandler.h
     ${MVPN_SOURCE_DIR}/serveri18n.cpp

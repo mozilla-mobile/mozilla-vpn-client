@@ -25,10 +25,8 @@
 #include "models/subscriptiondata.h"
 #include "models/supportcategorymodel.h"
 #include "models/user.h"
-#include "networkwatcher.h"
 #include "profileflow.h"
 #include "releasemonitor.h"
-#include "serverlatency.h"
 #include "statusicon.h"
 #include "telemetry.h"
 #include "theme.h"
@@ -158,7 +156,6 @@ class MozillaVPN final : public QObject {
   }
   Keys* keys() { return &m_private->m_keys; }
   LicenseModel* licenseModel() { return &m_private->m_licenseModel; }
-  NetworkWatcher* networkWatcher() { return &m_private->m_networkWatcher; }
   ProfileFlow* profileFlow() { return &m_private->m_profileFlow; }
   ReleaseMonitor* releaseMonitor() { return &m_private->m_releaseMonitor; }
   ServerCountryModel* serverCountryModel() {
@@ -321,11 +318,9 @@ class MozillaVPN final : public QObject {
     SupportCategoryModel m_supportCategoryModel;
     Keys m_keys;
     LicenseModel m_licenseModel;
-    NetworkWatcher m_networkWatcher;
     ReleaseMonitor m_releaseMonitor;
     ServerCountryModel m_serverCountryModel;
     ServerData m_serverData;
-    ServerLatency m_serverLatency;
     StatusIcon m_statusIcon;
     SubscriptionData m_subscriptionData;
     ProfileFlow m_profileFlow;

@@ -5,6 +5,12 @@
 #ifndef MACOSNETWORKWATCHER_H
 #define MACOSNETWORKWATCHER_H
 
+<<<<<<< HEAD
+=======
+#include "modules/modulevpn/networkwatcherimpl.h"
+#include "../ios/iosnetworkwatcher.h"
+
+>>>>>>> 60d661ef (Move WgQuickProcess and NetworkWatcherImpl)
 #import <Network/Network.h>
 
 #include "../ios/iosnetworkwatcher.h"

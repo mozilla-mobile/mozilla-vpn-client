@@ -5,7 +5,7 @@
 #ifndef DUMMYNETWORKWATCHER_H
 #define DUMMYNETWORKWATCHER_H
 
-#include "networkwatcherimpl.h"
+#include "modules/modulevpn/networkwatcherimpl.h"
 
 class DummyNetworkWatcher final : public NetworkWatcherImpl {
  public:

@@ -50,6 +50,8 @@ target_sources(mozillavpn PRIVATE
     daemon/wireguardutils.h
     modules/modulevpn/localsocketcontroller.cpp
     modules/modulevpn/localsocketcontroller.h
+    modules/modulevpn/wgquickprocess.cpp
+    modules/modulevpn/wgquickprocess.h
     platforms/macos/daemon/dnsutilsmacos.cpp
     platforms/macos/daemon/dnsutilsmacos.h
     platforms/macos/daemon/iputilsmacos.cpp
@@ -72,8 +74,6 @@ target_sources(mozillavpn PRIVATE
     platforms/macos/macosstartatbootwatcher.h
     platforms/macos/macossystemtraynotificationhandler.cpp
     platforms/macos/macossystemtraynotificationhandler.h
-    wgquickprocess.cpp
-    wgquickprocess.h
     platforms/macos/macoscryptosettings.mm
     platforms/macos/macosnetworkwatcher.mm
     platforms/macos/macosnetworkwatcher.h

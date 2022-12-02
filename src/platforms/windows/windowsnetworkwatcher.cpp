@@ -3,13 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "windowsnetworkwatcher.h"
-
-#include <QScopeGuard>
-
 #include "leakdetector.h"
 #include "logger.h"
-#include "networkwatcherimpl.h"
+#include "modules/modulevpn/networkwatcherimpl.h"
 #include "windowscommons.h"
+
+#include <QScopeGuard>
 
 #pragma comment(lib, "Wlanapi.lib")
 #pragma comment(lib, "windowsapp.lib")

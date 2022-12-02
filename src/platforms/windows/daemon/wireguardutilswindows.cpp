@@ -10,14 +10,14 @@
 #include <winsock2.h>
 #include <ws2ipdef.h>
 
-#include <QFileInfo>
-
 #include "leakdetector.h"
 #include "logger.h"
+#include "modules/modulevpn/wgquickprocess.h"
 #include "platforms/windows/windowscommons.h"
-#include "wgquickprocess.h"
 #include "windowsdaemon.h"
 #include "windowsfirewall.h"
+
+#include <QFileInfo>
 
 #pragma comment(lib, "iphlpapi.lib")
 

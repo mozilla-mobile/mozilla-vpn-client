@@ -5,7 +5,7 @@
 #ifndef WASMNETWORKWATCHER_H
 #define WASMNETWORKWATCHER_H
 
-#include "networkwatcherimpl.h"
+#include "modules/modulevpn/networkwatcherimpl.h"
 
 class WasmNetworkWatcher final : public NetworkWatcherImpl {
   Q_OBJECT

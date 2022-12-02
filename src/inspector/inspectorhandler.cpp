@@ -363,8 +363,8 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{
         "force_unsecured_network", "Force an unsecured network detection", 0,
         [](InspectorHandler*, const QList<QByteArray>&) {
-          MozillaVPN::instance()->networkWatcher()->unsecuredNetwork("Dummy",
-                                                                     "Dummy");
+          ModuleVPN::instance()->networkWatcher()->unsecuredNetwork("Dummy",
+                                                                    "Dummy");
           return QJsonObject();
         }},
 

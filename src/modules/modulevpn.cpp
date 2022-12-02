@@ -24,6 +24,8 @@ ModuleVPN::ModuleVPN(QObject* parent) : Module(parent) {
   m_connectionBenchmark.initialize();
 
   m_connectionHealth.initialize();
+
+  m_networkWatcher.initialize();
 }
 
 ModuleVPN::~ModuleVPN() {

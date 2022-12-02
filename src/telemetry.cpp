@@ -47,7 +47,7 @@ void Telemetry::initialize() {
             emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
                 GleanSample::connectivityHandshakeTimeout,
                 {{"server", publicKey},
-                 {"transport", MozillaVPN::instance()
+                 {"transport", ModuleVPN::instance()
                                    ->networkWatcher()
                                    ->getCurrentTransport()}});
           });
@@ -102,7 +102,8 @@ void Telemetry::connectionStabilityEvent() {
         QString::number(ModuleVPN::instance()->connectionHealth()->loss())},
        {"stddev",
         QString::number(ModuleVPN::instance()->connectionHealth()->stddev())},
-       {"transport", vpn->networkWatcher()->getCurrentTransport()}});
+       {"transport",
+        ModuleVPN::instance()->networkWatcher()->getCurrentTransport()}});
 }
 
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS)

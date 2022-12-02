@@ -39,6 +39,8 @@ target_sources(mozillavpn PRIVATE
     eventlistener.h
     modules/modulevpn/localsocketcontroller.cpp
     modules/modulevpn/localsocketcontroller.h
+    modules/modulevpn/wgquickprocess.cpp
+    modules/modulevpn/wgquickprocess.h
     platforms/windows/windowsapplistprovider.cpp 
     platforms/windows/windowsapplistprovider.h
     platforms/windows/windowsappimageprovider.cpp
@@ -74,8 +76,6 @@ target_sources(mozillavpn PRIVATE
     platforms/windows/windowspingsender.h
     platforms/windows/windowsstartatbootwatcher.cpp
     platforms/windows/windowsstartatbootwatcher.h
-    wgquickprocess.cpp
-    wgquickprocess.h
 )
 
 # Windows Qt6 UI workaround resources

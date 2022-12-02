@@ -10,8 +10,8 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "modules/modulevpn.h"
+#include "modules/modulevpn/networkwatcherimpl.h"
 #include "mozillavpn.h"
-#include "networkwatcherimpl.h"
 #include "platforms/dummy/dummynetworkwatcher.h"
 #include "settingsholder.h"
 

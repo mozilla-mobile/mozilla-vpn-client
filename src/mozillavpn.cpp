@@ -251,8 +251,6 @@ void MozillaVPN::initialize() {
   AndroidUtils::instance();
 #endif
 
-  m_private->m_networkWatcher.initialize();
-
   if (!settingsHolder->hasToken()) {
     return;
   }

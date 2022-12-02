@@ -11,6 +11,8 @@
 #include "modules/modulevpn/connectionbenchmark/connectionbenchmark.h"
 #include "modules/modulevpn/connectionhealth.h"
 #include "modules/modulevpn/controller.h"
+#include "modules/modulevpn/networkwatcher.h"
+#include "modules/modulevpn/serverlatency.h"
 
 #include <QJSValue>
 
@@ -45,12 +47,16 @@ class ModuleVPN final : public Module {
   Controller* controller() { return &m_controller; }
   QJSValue controllerValue();
 
+  NetworkWatcher* networkWatcher() { return &m_networkWatcher; }
+
  private:
   CaptivePortal m_captivePortal;
   CaptivePortalDetection m_captivePortalDetection;
   ConnectionBenchmark m_connectionBenchmark;
   ConnectionHealth m_connectionHealth;
   Controller m_controller;
+  NetworkWatcher m_networkWatcher;
+  ServerLatency m_serverLatency;
 };
 
 #endif  // MODULEVPN_H

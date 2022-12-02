@@ -17,7 +17,7 @@
 
 #include "leakdetector.h"
 #include "logger.h"
-#include "wgquickprocess.h"
+#include "modules/modulevpn/wgquickprocess.h"
 
 namespace {
 Logger logger("MacOSDaemon");

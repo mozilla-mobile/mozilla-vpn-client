@@ -115,10 +115,11 @@ SOURCES += \
         modules/modulevpn/connectionbenchmark/uploaddatagenerator.cpp \
         modules/modulevpn/connectionhealth.cpp \
         modules/modulevpn/controller.cpp \
+        modules/modulevpn/networkwatcher.cpp \
+        modules/modulevpn/serverlatency.cpp \
         mozillavpn.cpp \
         networkmanager.cpp \
         networkrequest.cpp \
-        networkwatcher.cpp \
         notificationhandler.cpp \
         pinghelper.cpp \
         pingsender.cpp \
@@ -139,7 +140,6 @@ SOURCES += \
         rfc/rfc4291.cpp \
         rfc/rfc5735.cpp \
         serveri18n.cpp \
-        serverlatency.cpp \
         settingsholder.cpp \
         signature.cpp \
         simplenetworkmanager.cpp \
@@ -298,11 +298,12 @@ HEADERS += \
         modules/modulevpn/connectionhealth.h \
         modules/modulevpn/controller.h \
         modules/modulevpn/controllerimpl.h \
+        modules/modulevpn/networkwatcher.h \
+        modules/modulevpn/networkwatcherimpl.h \
+        modules/modulevpn/serverlatency.h \
         mozillavpn.h \
         networkmanager.h \
         networkrequest.h \
-        networkwatcher.h \
-        networkwatcherimpl.h \
         notificationhandler.h \
         pinghelper.h \
         pingsender.h \
@@ -323,7 +324,6 @@ HEADERS += \
         rfc/rfc4291.h \
         rfc/rfc5735.h \
         serveri18n.h \
-        serverlatency.h \
         settingsholder.h \
         signature.h \
         simplenetworkmanager.h \

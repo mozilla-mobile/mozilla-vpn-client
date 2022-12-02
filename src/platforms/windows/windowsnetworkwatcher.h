@@ -8,7 +8,7 @@
 #include <windows.h>
 #include <wlanapi.h>
 
-#include "networkwatcherimpl.h"
+#include "modules/modulevpn/networkwatcherimpl.h"
 
 class WindowsNetworkWatcher final : public NetworkWatcherImpl {
  public:

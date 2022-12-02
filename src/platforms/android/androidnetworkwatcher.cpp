@@ -4,6 +4,13 @@
 
 #include "androidnetworkwatcher.h"
 
+#include "logger.h"
+#include "leakdetector.h"
+#include "modules/modulevpn/networkwatcherimpl.h"
+#include "platforms/android/androidutils.h"
+
+#include <QJniObject>
+#include <QJniEnvironment>
 #include <QApplication>
 #include <QJniEnvironment>
 #include <QJniObject>
