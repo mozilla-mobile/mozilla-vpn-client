@@ -31,7 +31,6 @@
 #include "tasks/addonindex/taskaddonindex.h"
 #include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/captiveportallookup/taskcaptiveportallookup.h"
-#include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/createsupportticket/taskcreatesupportticket.h"
 #include "tasks/deleteaccount/taskdeleteaccount.h"
 #include "tasks/function/taskfunction.h"
@@ -117,15 +116,6 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
          new TaskGetSubscriptionDetails(
              TaskGetSubscriptionDetails::NoAuthenticationFlow,
              ErrorHandler::PropagateError)}));
-  });
-
-  connect(this, &MozillaVPN::stateChanged, [this]() {
-    if (m_state != StateMain) {
-      // We don't call deactivate() because that is meant to be used for
-      // UI interactions only and it deletes all the pending tasks.
-      TaskScheduler::scheduleTask(
-          new TaskControllerAction(TaskControllerAction::eDeactivate));
-    }
   });
 
   connect(ModuleVPN::instance()->controller(), &Controller::readyToUpdate, this,
@@ -342,7 +332,6 @@ void MozillaVPN::setState(State state) {
   // If we are activating the app, let's initialize the controller and the
   // periodic tasks.
   if (m_state == StateMain) {
-    ModuleVPN::instance()->controller()->initialize();
     startSchedulingPeriodicOperations();
   } else {
     stopSchedulingPeriodicOperations();
@@ -1168,38 +1157,6 @@ void MozillaVPN::requestViewLogs() {
   emit viewLogsNeeded();
 }
 
-void MozillaVPN::activate() {
-  logger.debug() << "VPN tunnel activation";
-
-  TaskScheduler::deleteTasks();
-
-  // We are about to connect. If the device key needs to be regenerated, this
-  // is the right time to do it.
-  maybeRegenerateDeviceKey();
-
-  TaskScheduler::scheduleTask(
-      new TaskControllerAction(TaskControllerAction::eActivate));
-}
-
-void MozillaVPN::deactivate() {
-  logger.debug() << "VPN tunnel deactivation";
-
-  TaskScheduler::deleteTasks();
-  TaskScheduler::scheduleTask(
-      new TaskControllerAction(TaskControllerAction::eDeactivate));
-}
-
-void MozillaVPN::silentSwitch() {
-  logger.debug() << "VPN tunnel silent server switch";
-
-  // Let's delete all the tasks before running the silent-switch op. If we are
-  // here, the connection does not work and we don't want to wait for timeouts
-  // to run the silenct-switch.
-  TaskScheduler::deleteTasks();
-  TaskScheduler::scheduleTask(
-      new TaskControllerAction(TaskControllerAction::eSilentSwitch));
-}
-
 void MozillaVPN::refreshDevices() {
   logger.debug() << "Refresh devices";
 
@@ -1372,7 +1329,7 @@ void MozillaVPN::update() {
   if (ModuleVPN::instance()->controller()->state() != Controller::StateOff &&
       ModuleVPN::instance()->controller()->state() !=
           Controller::StateInitializing) {
-    deactivate();
+    ModuleVPN::instance()->deactivate();
     return;
   }
 #endif
@@ -1387,15 +1344,6 @@ void MozillaVPN::setUpdating(bool updating) {
 
 void MozillaVPN::controllerStateChanged() {
   logger.debug() << "Controller state changed";
-
-  if (!m_controllerInitialized) {
-    m_controllerInitialized = true;
-
-    if (SettingsHolder::instance()->startAtBoot()) {
-      logger.debug() << "Start on boot";
-      activate();
-    }
-  }
 
   if (m_updating &&
       ModuleVPN::instance()->controller()->state() == Controller::StateOff) {

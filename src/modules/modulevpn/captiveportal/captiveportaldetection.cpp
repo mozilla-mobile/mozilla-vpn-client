@@ -203,7 +203,7 @@ void CaptivePortalDetection::deactivationRequired() {
   logger.debug() << "The user wants to deactivate the vpn";
 
   if (ModuleVPN::instance()->controller()->state() != Controller::StateOff) {
-    MozillaVPN::instance()->deactivate();
+    ModuleVPN::instance()->deactivate();
     captivePortalMonitor()->start();
   }
 }
@@ -215,7 +215,7 @@ void CaptivePortalDetection::activationRequired() {
   if (vpn->state() == MozillaVPN::StateMain &&
       ModuleVPN::instance()->controller()->state() == Controller::StateOff) {
     ModuleVPN::instance()->controller()->captivePortalGone();
-    vpn->activate();
+    ModuleVPN::instance()->activate();
   }
 }
 

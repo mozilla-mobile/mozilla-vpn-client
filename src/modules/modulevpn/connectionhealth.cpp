@@ -139,7 +139,7 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
   logger.debug() << "Stability changed:" << stability;
 
   if (stability == Unstable) {
-    MozillaVPN::instance()->silentSwitch();
+    ModuleVPN::instance()->silentSwitch();
 
     emit MozillaVPN::instance()->recordGleanEvent(
         GleanSample::connectionHealthUnstable);

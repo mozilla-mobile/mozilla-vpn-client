@@ -246,6 +246,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/modules/modulevpn/networkwatcherimpl.h
     ${MVPN_SOURCE_DIR}/modules/modulevpn/serverlatency.cpp
     ${MVPN_SOURCE_DIR}/modules/modulevpn/serverlatency.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/taskcontrolleraction.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/taskcontrolleraction.h
     ${MVPN_SOURCE_DIR}/mozillavpn.h
     ${MVPN_SOURCE_DIR}/mozillavpn.cpp
     ${MVPN_SOURCE_DIR}/networkmanager.cpp
@@ -309,8 +311,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/tasks/authenticate/taskauthenticate.h
     ${MVPN_SOURCE_DIR}/tasks/captiveportallookup/taskcaptiveportallookup.cpp
     ${MVPN_SOURCE_DIR}/tasks/captiveportallookup/taskcaptiveportallookup.h
-    ${MVPN_SOURCE_DIR}/tasks/controlleraction/taskcontrolleraction.cpp
-    ${MVPN_SOURCE_DIR}/tasks/controlleraction/taskcontrolleraction.h
     ${MVPN_SOURCE_DIR}/tasks/createsupportticket/taskcreatesupportticket.cpp
     ${MVPN_SOURCE_DIR}/tasks/createsupportticket/taskcreatesupportticket.h
     ${MVPN_SOURCE_DIR}/tasks/deleteaccount/taskdeleteaccount.cpp

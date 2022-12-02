@@ -117,13 +117,13 @@ QJsonObject serializeStatus() {
 static QList<RequestType> s_types{
     RequestType{"activate",
                 [](const QJsonObject&) {
-                  MozillaVPN::instance()->activate();
+                  ModuleVPN::instance()->activate();
                   return QJsonObject();
                 }},
 
     RequestType{"deactivate",
                 [](const QJsonObject&) {
-                  MozillaVPN::instance()->deactivate();
+                  ModuleVPN::instance()->deactivate();
                   return QJsonObject();
                 }},
 

@@ -122,8 +122,6 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void retrieveLogs();
   Q_INVOKABLE void cleanupLogs();
   Q_INVOKABLE void storeInClipboard(const QString& text);
-  Q_INVOKABLE void activate();
-  Q_INVOKABLE void deactivate();
   Q_INVOKABLE void refreshDevices();
   Q_INVOKABLE void update();
   Q_INVOKABLE void backendServiceRestore();
@@ -193,8 +191,6 @@ class MozillaVPN final : public QObject {
 
   void abortAuthentication();
 
-  void silentSwitch();
-
   static QString devVersion();
   static QString graphicsApi();
 
@@ -242,6 +238,8 @@ class MozillaVPN final : public QObject {
   void forceUserState(UserState userState) { setUserState(userState); }
 #endif
 
+  void maybeRegenerateDeviceKey();
+
  private:
   void setState(State state);
 
@@ -282,8 +280,6 @@ class MozillaVPN final : public QObject {
   RemovalDeviceOption maybeRemoveCurrentDevice();
 
   void controllerStateChanged();
-
-  void maybeRegenerateDeviceKey();
 
   bool checkCurrentDevice();
 
@@ -352,7 +348,6 @@ class MozillaVPN final : public QObject {
 
   bool m_startMinimized = false;
   bool m_updating = false;
-  bool m_controllerInitialized = false;
 };
 
 #endif  // MOZILLAVPN_H

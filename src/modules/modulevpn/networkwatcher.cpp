@@ -163,7 +163,7 @@ void NetworkWatcher::notificationClicked(NotificationHandler::Message message) {
   logger.debug() << "Notification clicked";
 
   if (message == NotificationHandler::UnsecuredNetwork) {
-    MozillaVPN::instance()->activate();
+    ModuleVPN::instance()->activate();
   }
 }
 

@@ -69,3 +69,5 @@ void Controller::captivePortalPresent() {}
 void Controller::captivePortalGone() {}
 
 void Controller::handshakeTimeout() {}
+
+bool Controller::silentSwitchServers() { return true; }

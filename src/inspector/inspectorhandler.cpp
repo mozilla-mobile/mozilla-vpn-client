@@ -399,13 +399,13 @@ static QList<InspectorCommand> s_commands{
 
     InspectorCommand{"activate", "Activate the VPN", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
-                       MozillaVPN::instance()->activate();
+                       ModuleVPN::instance()->activate();
                        return QJsonObject();
                      }},
 
     InspectorCommand{"deactivate", "Deactivate the VPN", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
-                       MozillaVPN::instance()->deactivate();
+                       ModuleVPN::instance()->deactivate();
                        return QJsonObject();
                      }},
 

@@ -258,6 +258,8 @@ target_sources(mozillavpn-sources INTERFACE
     modules/modulevpn/networkwatcherimpl.h
     modules/modulevpn/serverlatency.cpp
     modules/modulevpn/serverlatency.h
+    modules/modulevpn/taskcontrolleraction.cpp
+    modules/modulevpn/taskcontrolleraction.h
     mozillavpn.cpp
     mozillavpn.h
     networkmanager.cpp
@@ -325,8 +327,6 @@ target_sources(mozillavpn-sources INTERFACE
     tasks/authenticate/taskauthenticate.h
     tasks/captiveportallookup/taskcaptiveportallookup.cpp
     tasks/captiveportallookup/taskcaptiveportallookup.h
-    tasks/controlleraction/taskcontrolleraction.cpp
-    tasks/controlleraction/taskcontrolleraction.h
     tasks/createsupportticket/taskcreatesupportticket.cpp
     tasks/createsupportticket/taskcreatesupportticket.h
     tasks/deleteaccount/taskdeleteaccount.cpp

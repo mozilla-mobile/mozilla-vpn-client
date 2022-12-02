@@ -117,6 +117,7 @@ SOURCES += \
         modules/modulevpn/controller.cpp \
         modules/modulevpn/networkwatcher.cpp \
         modules/modulevpn/serverlatency.cpp \
+        modules/modulevpn/taskcontrolleraction.cpp \
         mozillavpn.cpp \
         networkmanager.cpp \
         networkrequest.cpp \
@@ -153,7 +154,6 @@ SOURCES += \
         tasks/deleteaccount/taskdeleteaccount.cpp \
         tasks/getfeaturelist/taskgetfeaturelist.cpp \
         tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp \
-        tasks/controlleraction/taskcontrolleraction.cpp \
         tasks/createsupportticket/taskcreatesupportticket.cpp \
         tasks/function/taskfunction.cpp \
         tasks/group/taskgroup.cpp \
@@ -301,6 +301,7 @@ HEADERS += \
         modules/modulevpn/networkwatcher.h \
         modules/modulevpn/networkwatcherimpl.h \
         modules/modulevpn/serverlatency.h \
+        modules/modulevpn/taskcontrolleraction.h \
         mozillavpn.h \
         networkmanager.h \
         networkrequest.h \
@@ -338,7 +339,6 @@ HEADERS += \
         tasks/deleteaccount/taskdeleteaccount.h \
         tasks/getfeaturelist/taskgetfeaturelist.h \
         tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h \
-        tasks/controlleraction/taskcontrolleraction.h \
         tasks/createsupportticket/taskcreatesupportticket.h \
         tasks/function/taskfunction.h \
         tasks/group/taskgroup.h \

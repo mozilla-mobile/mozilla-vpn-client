@@ -536,7 +536,7 @@ int CommandUI::run(QStringList& tokens) {
 #if QT_VERSION < 0x060000
           qApp->setFallbackSessionManagementEnabled(false);
 #endif
-          MozillaVPN::instance()->deactivate();
+          ModuleVPN::instance()->deactivate();
         },
         Qt::DirectConnection);
 

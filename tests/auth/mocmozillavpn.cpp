@@ -101,10 +101,6 @@ void MozillaVPN::cleanupLogs() {}
 
 void MozillaVPN::serializeLogs(QTextStream*, std::function<void()>&&) {}
 
-void MozillaVPN::activate() {}
-
-void MozillaVPN::deactivate() {}
-
 void MozillaVPN::refreshDevices() {}
 
 void MozillaVPN::quit() {}
@@ -157,8 +153,6 @@ void MozillaVPN::cancelReauthentication() {}
 void MozillaVPN::updateViewShown() {}
 
 void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {}
-
-void MozillaVPN::silentSwitch() {}
 
 ServerData* MozillaVPN::currentServer() {
   static ServerData* data = new ServerData();

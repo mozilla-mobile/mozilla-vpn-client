@@ -4,13 +4,18 @@
 
 #include "modulevpn.h"
 #include "leakdetector.h"
+#include "logger.h"
+#include "modules/modulevpn/taskcontrolleraction.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
+#include "settingsholder.h"
+#include "taskscheduler.h"
 
 #include <QQmlEngine>
 
 namespace {
 ModuleVPN* s_instance = nullptr;
+Logger logger(LOG_MAIN, "ModuleVPN");
 }
 
 ModuleVPN::ModuleVPN(QObject* parent) : Module(parent) {
@@ -34,6 +39,20 @@ ModuleVPN* ModuleVPN::instance() {
 }
 
 void ModuleVPN::initialize() {
+  connect(&m_controller, &Controller::stateChanged, this,
+          &ModuleVPN::controllerStateChanged);
+
+  connect(MozillaVPN::instance(), &MozillaVPN::stateChanged, this, []() {
+    if (MozillaVPN::instance()->state() != MozillaVPN::StateMain) {
+      // We don't call deactivate() because that is meant to be used for
+      // UI interactions only and it deletes all the pending tasks.
+      TaskScheduler::scheduleTask(
+          new TaskControllerAction(TaskControllerAction::eDeactivate));
+    } else {
+      ModuleVPN::instance()->controller()->initialize();
+    }
+  });
+
   m_captivePortalDetection.initialize();
 
   m_connectionBenchmark.initialize();
@@ -90,4 +109,49 @@ QJSValue ModuleVPN::controllerValue() {
   QJSValue value = engine->newQObject(obj);
   value.setPrototype(engine->newQMetaObject(&Controller::staticMetaObject));
   return value;
+}
+
+void ModuleVPN::activate() {
+  logger.debug() << "VPN tunnel activation";
+
+  TaskScheduler::deleteTasks();
+
+  // We are about to connect. If the device key needs to be regenerated, this
+  // is the right time to do it.
+  MozillaVPN::instance()->maybeRegenerateDeviceKey();
+
+  TaskScheduler::scheduleTask(
+      new TaskControllerAction(TaskControllerAction::eActivate));
+}
+
+void ModuleVPN::deactivate() {
+  logger.debug() << "VPN tunnel deactivation";
+
+  TaskScheduler::deleteTasks();
+  TaskScheduler::scheduleTask(
+      new TaskControllerAction(TaskControllerAction::eDeactivate));
+}
+
+void ModuleVPN::silentSwitch() {
+  logger.debug() << "VPN tunnel silent server switch";
+
+  // Let's delete all the tasks before running the silent-switch op. If we are
+  // here, the connection does not work and we don't want to wait for timeouts
+  // to run the silenct-switch.
+  TaskScheduler::deleteTasks();
+  TaskScheduler::scheduleTask(
+      new TaskControllerAction(TaskControllerAction::eSilentSwitch));
+}
+
+void ModuleVPN::controllerStateChanged() {
+  logger.debug() << "Controller state changed";
+
+  if (!m_controllerInitialized) {
+    m_controllerInitialized = true;
+
+    if (SettingsHolder::instance()->startAtBoot()) {
+      logger.debug() << "Start on boot";
+      activate();
+    }
+  }
 }
