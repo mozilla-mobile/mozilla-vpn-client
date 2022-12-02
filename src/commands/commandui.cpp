@@ -256,6 +256,7 @@ int CommandUI::run(QStringList& tokens) {
     FontLoader::loadFonts();
 
     vpn.initialize();
+    vpn.start();
 
 #ifdef MVPN_MACOS
     MacOSStartAtBootWatcher startAtBootWatcher;

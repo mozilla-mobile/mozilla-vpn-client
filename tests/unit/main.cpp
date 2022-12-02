@@ -37,6 +37,9 @@ int main(int argc, char* argv[]) {
   {
     SettingsHolder settingsHolder;
     Constants::setStaging();
+
+    MozillaVPN* vpn = new MozillaVPN();
+    vpn->initialize();
   }
 
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
@@ -76,5 +79,6 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  delete MozillaVPN::instance();
   return failures;
 }

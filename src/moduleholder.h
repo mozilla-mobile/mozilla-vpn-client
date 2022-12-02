@@ -23,6 +23,8 @@ class ModuleHolder final : public QQmlPropertyMap {
 
   ~ModuleHolder();
 
+  void initialize();
+
   void registerModule(const QString& moduleName, Module* moduleObj);
 
  private:

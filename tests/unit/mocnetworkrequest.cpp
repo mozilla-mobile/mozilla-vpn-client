@@ -181,3 +181,143 @@ NetworkRequest* NetworkRequest::createForUploadData(Task* parent,
 void NetworkRequest::abort() {}
 
 int NetworkRequest::statusCode() const { return 200; }
+
+// static
+NetworkRequest* NetworkRequest::createForFxaSessionDestroy(
+    Task* parent, const QByteArray& sessionToken) {
+  Q_ASSERT(parent);
+  Q_UNUSED(sessionToken);
+  return new NetworkRequest(parent, 1234, false);
+}
+
+// static
+NetworkRequest* NetworkRequest::createForFxaAccountStatus(
+    Task* parent, const QString& emailAddress) {
+  Q_ASSERT(parent);
+  Q_UNUSED(emailAddress);
+  return new NetworkRequest(parent, 1234, false);
+}
+
+// static
+NetworkRequest* NetworkRequest::createForFxaLogin(
+    Task* parent, const QString& email, const QByteArray& authpw,
+    const QString& originalLoginEmail, const QString& unblockCode,
+    const QString& fxaClientId, const QString& fxaDeviceId,
+    const QString& fxaFlowId, double fxaFlowBeginTime) {
+  Q_UNUSED(email);
+  Q_UNUSED(authpw);
+  Q_UNUSED(originalLoginEmail);
+  Q_UNUSED(unblockCode);
+  Q_UNUSED(fxaClientId);
+  Q_UNUSED(fxaDeviceId);
+  Q_UNUSED(fxaFlowId);
+  Q_UNUSED(fxaFlowBeginTime);
+  return new NetworkRequest(parent, 1234, false);
+}
+
+// static
+NetworkRequest* NetworkRequest::createForFxaAccountCreation(
+    Task* parent, const QString& email, const QByteArray& authpw,
+    const QString& fxaClientId, const QString& fxaDeviceId,
+    const QString& fxaFlowId, double fxaFlowBeginTime) {
+  Q_UNUSED(email);
+  Q_UNUSED(authpw);
+  Q_UNUSED(fxaClientId);
+  Q_UNUSED(fxaDeviceId);
+  Q_UNUSED(fxaFlowId);
+  Q_UNUSED(fxaFlowBeginTime);
+  return new NetworkRequest(parent, 1234, false);
+}
+
+// static
+NetworkRequest* NetworkRequest::createForFxaSendUnblockCode(
+    Task* parent, const QString& emailAddress) {
+  Q_UNUSED(emailAddress);
+  return new NetworkRequest(parent, 1234, false);
+}
+
+// static
+NetworkRequest* NetworkRequest::createForFxaSessionVerifyByEmailCode(
+    Task* parent, const QByteArray& sessionToken, const QString& code,
+    const QString& fxaClientId, const QString& fxaScope) {
+  Q_UNUSED(sessionToken);
+  Q_UNUSED(code);
+  Q_UNUSED(fxaClientId);
+  Q_UNUSED(fxaScope);
+  return new NetworkRequest(parent, 1234, false);
+}
+
+// static
+NetworkRequest* NetworkRequest::createForFxaSessionResendCode(
+    Task* parent, const QByteArray& sessionToken) {
+  Q_UNUSED(sessionToken);
+  return new NetworkRequest(parent, 1234, false);
+}
+
+// static
+NetworkRequest* NetworkRequest::createForFxaSessionVerifyByTotpCode(
+    Task* parent, const QByteArray& sessionToken, const QString& code,
+    const QString& fxaClientId, const QString& fxaScope) {
+  Q_UNUSED(sessionToken);
+  Q_UNUSED(code);
+  Q_UNUSED(fxaClientId);
+  Q_UNUSED(fxaScope);
+  return new NetworkRequest(parent, 1234, false);
+}
+
+// static
+NetworkRequest* NetworkRequest::createForFxaTotpCreation(
+    Task* parent, const QByteArray& sessionToken) {
+  Q_UNUSED(sessionToken);
+  return new NetworkRequest(parent, 1234, false);
+}
+
+// static
+NetworkRequest* NetworkRequest::createForFxaAttachedClients(
+    Task* parent, const QByteArray& sessionToken) {
+  Q_UNUSED(sessionToken);
+  return new NetworkRequest(parent, 1234, false);
+}
+
+// static
+NetworkRequest* NetworkRequest::createForFxaAccountDeletion(
+    Task* parent, const QByteArray& sessionToken, const QString& emailAddress,
+    const QByteArray& authpw) {
+  Q_UNUSED(sessionToken);
+  Q_UNUSED(emailAddress);
+  Q_UNUSED(authpw);
+  return new NetworkRequest(parent, 1234, false);
+}
+
+// static
+NetworkRequest* NetworkRequest::createForFxaAuthz(
+    Task* parent, const QByteArray& sessionToken, const QString& fxaClientId,
+    const QString& fxaState, const QString& fxaScope,
+    const QString& fxaAccessType) {
+  Q_UNUSED(sessionToken);
+  Q_UNUSED(fxaClientId);
+  Q_UNUSED(fxaState);
+  Q_UNUSED(fxaScope);
+  Q_UNUSED(fxaAccessType);
+  return new NetworkRequest(parent, 1234, false);
+}
+
+// static
+NetworkRequest* NetworkRequest::createForHeartbeat(Task* parent) {
+  return new NetworkRequest(parent, 1234, false);
+}
+
+// static
+NetworkRequest* NetworkRequest::createForAdjustProxy(
+    Task* parent, const QString& method, const QString& path,
+    const QList<QPair<QString, QString>>& headers,
+    const QString& queryParameters, const QString& bodyParameters,
+    const QList<QString>& unknownParameters) {
+  Q_UNUSED(method);
+  Q_UNUSED(path);
+  Q_UNUSED(headers);
+  Q_UNUSED(queryParameters);
+  Q_UNUSED(bodyParameters);
+  Q_UNUSED(unknownParameters);
+  return new NetworkRequest(parent, 1234, false);
+}

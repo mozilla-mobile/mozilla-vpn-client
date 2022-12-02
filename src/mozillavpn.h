@@ -94,7 +94,12 @@ class MozillaVPN final : public QObject {
   // MozillaVPN is null. It should be used rarely.
   static MozillaVPN* maybeInstance();
 
+  // This method initializes all the sub-objects.
   void initialize();
+
+  // This method starts the scheduling of tasks, the reading of the settings
+  // and the activation of the state machine.
+  void start();
 
   State state() const;
 

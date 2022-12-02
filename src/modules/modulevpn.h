@@ -29,6 +29,8 @@ class ModuleVPN final : public Module {
   explicit ModuleVPN(QObject* parent);
   ~ModuleVPN();
 
+  void initialize() override;
+
   static ModuleVPN* instance();
 
   CaptivePortal* captivePortal() { return &m_captivePortal; }

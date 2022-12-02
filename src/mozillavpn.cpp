@@ -18,6 +18,7 @@
 #include "models/feature.h"
 #include "models/recentconnections.h"
 #include "module.h"
+#include "moduleholder.h"
 #include "modules/modulevpn.h"
 #include "networkmanager.h"
 #include "productshandler.h"
@@ -105,7 +106,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   Q_ASSERT(!s_instance);
   s_instance = this;
 
-  Module::initialize();
+  Module::load(this);
 
   connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {
     TaskScheduler::scheduleTask(new TaskGroup(
@@ -213,15 +214,13 @@ void MozillaVPN::initialize() {
   // This is our first state.
   Q_ASSERT(m_state == StateInitialize);
 
-  m_private->m_statusIcon.initialize();
+  ModuleHolder::instance()->initialize();
 
-  m_private->m_releaseMonitor.runSoon();
+  m_private->m_statusIcon.initialize();
 
   m_private->m_telemetry.initialize();
 
   m_private->m_ipAddressLookup.initialize();
-
-  m_private->m_serverLatency.initialize();
 
   m_private->m_serverData.initialize();
 
@@ -229,11 +228,20 @@ void MozillaVPN::initialize() {
     m_private->m_webSocketHandler.initialize();
   }
 
-  AddonManager::instance();
-
   VPNGlean::initialize();
 
   RecentConnections::instance()->initialize();
+
+#ifdef MVPN_ANDROID
+  AndroidVPNActivity::maybeInit();
+  AndroidUtils::instance();
+#endif
+}
+
+void MozillaVPN::start() {
+  AddonManager::instance();
+
+  m_private->m_releaseMonitor.runSoon();
 
   QList<Task*> initTasks{new TaskAddonIndex(), new TaskGetFeatureList()};
 
@@ -245,11 +253,6 @@ void MozillaVPN::initialize() {
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
-
-#ifdef MVPN_ANDROID
-  AndroidVPNActivity::maybeInit();
-  AndroidUtils::instance();
-#endif
 
   if (!settingsHolder->hasToken()) {
     return;

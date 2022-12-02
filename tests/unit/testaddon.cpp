@@ -25,6 +25,7 @@
 #include "../../src/models/featuremodel.h"
 #include "../../src/qmlengineholder.h"
 #include "../../src/module.h"
+#include "../../src/moduleholder.h"
 #include "../../src/settingsholder.h"
 #include "../../src/systemtraynotificationhandler.h"
 #include "../../src/tutorial/tutorial.h"
@@ -217,8 +218,6 @@ void TestAddon::conditions() {
 }
 
 void TestAddon::conditionWatcher_javascript() {
-  MozillaVPN vpn;
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
   SettingsHolder settingsHolder;
@@ -602,7 +601,6 @@ void TestAddon::guide_create() {
   QFETCH(bool, created);
 
   SettingsHolder settingsHolder;
-  Module::initialize();
 
   QJsonObject obj;
   obj["guide"] = content;

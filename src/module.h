@@ -12,10 +12,12 @@ class Module : public QObject {
   Q_DISABLE_COPY_MOVE(Module)
 
  public:
-  static void initialize();
+  static void load(QObject* parent);
 
   explicit Module(QObject* parent);
   virtual ~Module();
+
+  virtual void initialize() = 0;
 };
 
 #endif  // MODULE_H

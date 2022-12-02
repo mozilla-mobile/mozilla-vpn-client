@@ -72,3 +72,7 @@ void Controller::captivePortalPresent() {}
 void Controller::captivePortalGone() {}
 
 void Controller::handshakeTimeout() {}
+
+void Controller::cleanupBackendLogs() {}
+
+bool Controller::silentSwitchServers() { return true; }

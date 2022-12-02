@@ -29,3 +29,10 @@ void ModuleHolder::registerModule(const QString& moduleName,
   m_modules.insert(moduleName, moduleObj);
   insert(moduleName, QVariant::fromValue(moduleObj));
 }
+
+void ModuleHolder::initialize() {
+  for (QMap<QString, Module*>::iterator i = m_modules.begin();
+       i != m_modules.end(); ++i) {
+    i.value()->initialize();
+  }
+}

@@ -14,9 +14,9 @@
 #undef MODULE
 
 // static
-void Module::initialize() {
+void Module::load(QObject* parent) {
 #define MODULE(key, obj) \
-  ModuleHolder::instance()->registerModule(#key, new obj(qApp));
+  ModuleHolder::instance()->registerModule(#key, new obj(parent));
 #include "modulelist.h"
 #undef MODULE
 }

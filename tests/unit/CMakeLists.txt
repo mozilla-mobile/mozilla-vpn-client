@@ -20,6 +20,7 @@ target_link_libraries(unit_tests PRIVATE
     Qt6::Core
     Qt6::Xml
     Qt6::Network
+    Qt6::NetworkAuth
     Qt6::Test
     Qt6::WebSockets
     Qt6::Widgets
@@ -79,8 +80,26 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/addons/manager/addonmanager.h
     ${MVPN_SOURCE_DIR}/adjust/adjustfiltering.cpp
     ${MVPN_SOURCE_DIR}/adjust/adjustfiltering.h
+    ${MVPN_SOURCE_DIR}/adjust/adjusthandler.cpp
+    ${MVPN_SOURCE_DIR}/adjust/adjusthandler.h
+    ${MVPN_SOURCE_DIR}/adjust/adjustproxy.cpp
+    ${MVPN_SOURCE_DIR}/adjust/adjustproxy.h
+    ${MVPN_SOURCE_DIR}/adjust/adjustproxyconnection.cpp
+    ${MVPN_SOURCE_DIR}/adjust/adjustproxyconnection.h
     ${MVPN_SOURCE_DIR}/adjust/adjustproxypackagehandler.cpp
     ${MVPN_SOURCE_DIR}/adjust/adjustproxypackagehandler.h
+    ${MVPN_SOURCE_DIR}/adjust/adjusttasksubmission.cpp
+    ${MVPN_SOURCE_DIR}/adjust/adjusttasksubmission.h
+    ${MVPN_SOURCE_DIR}/authenticationinapp/authenticationinapp.cpp
+    ${MVPN_SOURCE_DIR}/authenticationinapp/authenticationinapp.h
+    ${MVPN_SOURCE_DIR}/authenticationinapp/authenticationinapplistener.cpp
+    ${MVPN_SOURCE_DIR}/authenticationinapp/authenticationinapplistener.h
+    ${MVPN_SOURCE_DIR}/authenticationinapp/authenticationinappsession.cpp
+    ${MVPN_SOURCE_DIR}/authenticationinapp/authenticationinappsession.h
+    ${MVPN_SOURCE_DIR}/authenticationinapp/incrementaldecoder.cpp
+    ${MVPN_SOURCE_DIR}/authenticationinapp/incrementaldecoder.h
+    ${MVPN_SOURCE_DIR}/authenticationlistener.cpp
+    ${MVPN_SOURCE_DIR}/authenticationlistener.h
     ${MVPN_SOURCE_DIR}/collator.cpp
     ${MVPN_SOURCE_DIR}/collator.h
     ${MVPN_SOURCE_DIR}/command.cpp
@@ -107,6 +126,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/cryptosettings.h
     ${MVPN_SOURCE_DIR}/curve25519.cpp
     ${MVPN_SOURCE_DIR}/curve25519.h
+    ${MVPN_SOURCE_DIR}/dnshelper.cpp
+    ${MVPN_SOURCE_DIR}/dnshelper.h
     ${MVPN_SOURCE_DIR}/dnspingsender.cpp
     ${MVPN_SOURCE_DIR}/dnspingsender.h
     ${MVPN_SOURCE_DIR}/env.h
@@ -131,6 +152,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Chacha20Poly1305_32.c
     ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Curve25519_51.c
     ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Poly1305_32.c
+    ${MVPN_SOURCE_DIR}/hkdf.cpp
+    ${MVPN_SOURCE_DIR}/hkdf.h
     ${MVPN_SOURCE_DIR}/inspector/inspectorhandler.h
     ${MVPN_SOURCE_DIR}/inspector/inspectorutils.cpp
     ${MVPN_SOURCE_DIR}/inspector/inspectorutils.h
@@ -148,6 +171,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/logger.h
     ${MVPN_SOURCE_DIR}/loghandler.cpp
     ${MVPN_SOURCE_DIR}/loghandler.h
+    ${MVPN_SOURCE_DIR}/logoutobserver.cpp
+    ${MVPN_SOURCE_DIR}/logoutobserver.h
     ${MVPN_SOURCE_DIR}/models/device.cpp
     ${MVPN_SOURCE_DIR}/models/device.h
     ${MVPN_SOURCE_DIR}/models/devicemodel.cpp
@@ -222,6 +247,7 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/modules/modulevpn/serverlatency.cpp
     ${MVPN_SOURCE_DIR}/modules/modulevpn/serverlatency.h
     ${MVPN_SOURCE_DIR}/mozillavpn.h
+    ${MVPN_SOURCE_DIR}/mozillavpn.cpp
     ${MVPN_SOURCE_DIR}/networkmanager.cpp
     ${MVPN_SOURCE_DIR}/networkmanager.h
     ${MVPN_SOURCE_DIR}/networkrequest.h
@@ -237,6 +263,14 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.h
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.h
+    ${MVPN_SOURCE_DIR}/productshandler.cpp
+    ${MVPN_SOURCE_DIR}/productshandler.h
+    ${MVPN_SOURCE_DIR}/profileflow.cpp
+    ${MVPN_SOURCE_DIR}/profileflow.h
+    ${MVPN_SOURCE_DIR}/purchasehandler.h
+    ${MVPN_SOURCE_DIR}/purchasehandler.cpp
+    ${MVPN_SOURCE_DIR}/purchasewebhandler.h
+    ${MVPN_SOURCE_DIR}/purchasewebhandler.cpp
     ${MVPN_SOURCE_DIR}/qmlengineholder.cpp
     ${MVPN_SOURCE_DIR}/qmlengineholder.h
     ${MVPN_SOURCE_DIR}/releasemonitor.cpp
@@ -269,18 +303,44 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/tasks/addon/taskaddon.h
     ${MVPN_SOURCE_DIR}/tasks/addonindex/taskaddonindex.cpp
     ${MVPN_SOURCE_DIR}/tasks/addonindex/taskaddonindex.h
+    ${MVPN_SOURCE_DIR}/tasks/authenticate/desktopauthenticationlistener.cpp
+    ${MVPN_SOURCE_DIR}/tasks/authenticate/desktopauthenticationlistener.h
+    ${MVPN_SOURCE_DIR}/tasks/authenticate/taskauthenticate.cpp
+    ${MVPN_SOURCE_DIR}/tasks/authenticate/taskauthenticate.h
+    ${MVPN_SOURCE_DIR}/tasks/captiveportallookup/taskcaptiveportallookup.cpp
+    ${MVPN_SOURCE_DIR}/tasks/captiveportallookup/taskcaptiveportallookup.h
+    ${MVPN_SOURCE_DIR}/tasks/controlleraction/taskcontrolleraction.cpp
+    ${MVPN_SOURCE_DIR}/tasks/controlleraction/taskcontrolleraction.h
+    ${MVPN_SOURCE_DIR}/tasks/createsupportticket/taskcreatesupportticket.cpp
+    ${MVPN_SOURCE_DIR}/tasks/createsupportticket/taskcreatesupportticket.h
+    ${MVPN_SOURCE_DIR}/tasks/deleteaccount/taskdeleteaccount.cpp
+    ${MVPN_SOURCE_DIR}/tasks/deleteaccount/taskdeleteaccount.h
     ${MVPN_SOURCE_DIR}/tasks/function/taskfunction.cpp
     ${MVPN_SOURCE_DIR}/tasks/function/taskfunction.h
+    ${MVPN_SOURCE_DIR}/tasks/getfeaturelist/taskgetfeaturelist.cpp
+    ${MVPN_SOURCE_DIR}/tasks/getfeaturelist/taskgetfeaturelist.h
+    ${MVPN_SOURCE_DIR}/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp
+    ${MVPN_SOURCE_DIR}/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h
     ${MVPN_SOURCE_DIR}/tasks/group/taskgroup.cpp
     ${MVPN_SOURCE_DIR}/tasks/group/taskgroup.h
+    ${MVPN_SOURCE_DIR}/tasks/heartbeat/taskheartbeat.cpp
+    ${MVPN_SOURCE_DIR}/tasks/heartbeat/taskheartbeat.h
     ${MVPN_SOURCE_DIR}/tasks/ipfinder/taskipfinder.cpp
     ${MVPN_SOURCE_DIR}/tasks/ipfinder/taskipfinder.h
+    ${MVPN_SOURCE_DIR}/tasks/products/taskproducts.cpp
+    ${MVPN_SOURCE_DIR}/tasks/products/taskproducts.h
     ${MVPN_SOURCE_DIR}/tasks/release/taskrelease.cpp
     ${MVPN_SOURCE_DIR}/tasks/release/taskrelease.h
+    ${MVPN_SOURCE_DIR}/tasks/removedevice/taskremovedevice.cpp
+    ${MVPN_SOURCE_DIR}/tasks/removedevice/taskremovedevice.h
+    ${MVPN_SOURCE_DIR}/tasks/sendfeedback/tasksendfeedback.cpp
+    ${MVPN_SOURCE_DIR}/tasks/sendfeedback/tasksendfeedback.h
     ${MVPN_SOURCE_DIR}/tasks/servers/taskservers.cpp
     ${MVPN_SOURCE_DIR}/tasks/servers/taskservers.h
     ${MVPN_SOURCE_DIR}/taskscheduler.cpp
     ${MVPN_SOURCE_DIR}/taskscheduler.h
+    ${MVPN_SOURCE_DIR}/telemetry.cpp
+    ${MVPN_SOURCE_DIR}/telemetry.h
     ${MVPN_SOURCE_DIR}/temporarydir.cpp
     ${MVPN_SOURCE_DIR}/temporarydir.h
     ${MVPN_SOURCE_DIR}/theme.cpp
@@ -320,7 +380,6 @@ target_sources(unit_tests PRIVATE
     main.cpp
     moccontroller.cpp
     mocinspectorhandler.cpp
-    mocmozillavpn.cpp
     mocnetworkrequest.cpp
     mocsystemtraynotificationhandler.cpp
     helper.h
