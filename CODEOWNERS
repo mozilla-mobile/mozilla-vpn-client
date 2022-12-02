@@ -19,7 +19,6 @@ addons/**/manifest.json @flodolo
 /docs/ @birdsarah
 /extension/ @bakulf @birdsarah
 /glean/ @brizental
-/i18n\ *\ 82b6178/ @flodolo
 /ios/ @bakulf @birdsarah @mcleinman
 /lottie/ @bakulf @birdsarah
 /macos/ @bakulf @birdsarah
@@ -39,20 +38,20 @@ addons/**/manifest.json @flodolo
 /src/crashreporter/ @strseb
 /src/daemon @birdsarah
 /src/frontend/ @lesleyjanenorton @MattLichtenstein @flozia
-src/glean/ @brizental
+/src/glean/ @brizental
 /src/hacl-star/ @bakulf @birdsarah
 /src/inspector/ @bakulf @oskirby @strseb
 /src/mfbt/ @bakulf @birdsarah
 /src/models/ @bakulf @birdsarah
 /src/platforms/android/ @strseb
-src/platforms/dummy/ @bakulf @birdsarah
+/src/platforms/dummy/ @bakulf @birdsarah
 /src/platforms/linux/ @oskirby
 /src/platforms/ios/ @bakulf @birdsarah @mcleinman
-src/platforms/macos/ @bakulf @birdsarah
-src/platforms/windows/ @oskirby @bakulf
+/src/platforms/macos/ @bakulf @birdsarah
+/src/platforms/windows/ @oskirby @bakulf
 /src/qmake/ @bakulf @oskirby
 /src/resources/ @birdsarah
-src/rfc/ @oskirby
+/src/rfc/ @oskirby
 /src/sentry/ @strseb
 /src/server/ @birdsarah
 src/tasks/ @bakulf @birdsarah
@@ -63,7 +62,7 @@ src/tasks/ @bakulf @birdsarah
 
 /taskcluster/ @mozrokafor @strseb
 /tests/auth/ @bakulf @birdsarah
-/tests/functional/ @bakulf @mozrokafor
+/tests/functional/ @bakulf @mozrokafor @birdsarah 
 /tests/nativemessaging/ @bakulf @birdsarah @mozrokafor
 /tests/qml/ @birdsarah @mozrokafor
 /tests/unit/ @bakulf @birdsarah @mozrokafor
@@ -71,8 +70,8 @@ src/tasks/ @bakulf @birdsarah
 /tools/logviewer/ @bakulf @birdsarah
 /ools/serverlocalizer/ @bakulf @birdsarah
 /tools/wasm_chrome/ @strseb
-/translations/ @flodolo
-translations/strings.yaml @flodolo
+/translations/ @bakulf @birdsarah
+/translations/strings.yaml @flodolo
 
 /vpnglean/ @brizental
 /wasm/ @bakulf @strseb
