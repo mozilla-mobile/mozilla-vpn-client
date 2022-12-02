@@ -8,7 +8,7 @@ class TestAddonApi final : public TestHelper {
   Q_OBJECT
 
  private slots:
-  void controller();
+  void modules();
   void env();
   void featurelist();
   void navigator();

@@ -14,8 +14,7 @@
 #include "../../src/settingsholder.h"
 #include "helper.h"
 
-void TestAddonApi::controller() {
-  MozillaVPN vpn;
+void TestAddonApi::modules() {
   SettingsHolder settingsHolder;
 
   QQmlApplicationEngine engine;
@@ -33,13 +32,12 @@ void TestAddonApi::controller() {
   QVERIFY(!!message);
 
   AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
-      message, ":/addons_test/api_controller.js");
+      message, ":/addons_test/api_modules.js");
   QVERIFY(!!a);
   QVERIFY(a->conditionApplied());
 }
 
 void TestAddonApi::env() {
-  MozillaVPN vpn;
   SettingsHolder settingsHolder;
 
   QQmlApplicationEngine engine;
@@ -63,7 +61,6 @@ void TestAddonApi::env() {
 }
 
 void TestAddonApi::featurelist() {
-  MozillaVPN vpn;
   SettingsHolder settingsHolder;
 
   QQmlApplicationEngine engine;
@@ -107,8 +104,6 @@ void TestAddonApi::featurelist() {
 }
 
 void TestAddonApi::navigator() {
-  MozillaVPN vpn;
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
@@ -132,8 +127,6 @@ void TestAddonApi::navigator() {
 }
 
 void TestAddonApi::settings() {
-  MozillaVPN vpn;
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
@@ -161,8 +154,6 @@ void TestAddonApi::settings() {
 }
 
 void TestAddonApi::subscriptionData() {
-  MozillaVPN vpn;
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
@@ -186,8 +177,6 @@ void TestAddonApi::subscriptionData() {
 }
 
 void TestAddonApi::urlopener() {
-  MozillaVPN vpn;
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 

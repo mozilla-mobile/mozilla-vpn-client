@@ -103,7 +103,7 @@ void WebSocketHandler::onUserStateChanged() {
   logger.debug() << "User state change detected:"
                  << MozillaVPN::instance()->userState();
 
-  if (MozillaVPN::isUserAuthenticated()) {
+  if (MozillaVPN::instance()->isUserAuthenticated()) {
     open();
   } else {
     close();
@@ -201,7 +201,7 @@ void WebSocketHandler::onClose() {
 
   m_pingTimer.stop();
 
-  if (MozillaVPN::isUserAuthenticated()) {
+  if (MozillaVPN::instance()->isUserAuthenticated()) {
     int nextAttemptIn = m_backoffStrategy.scheduleNextAttempt();
     logger.debug()
         << "User is authenticated. Will attempt to reopen websocket in:"

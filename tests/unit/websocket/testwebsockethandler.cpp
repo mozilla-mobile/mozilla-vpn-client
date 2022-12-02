@@ -96,16 +96,14 @@ void TestWebSocketHandler::tst_connectionIsTiedToUserState() {
   handler.initialize();
 
   // Mock a user log in, this should prompt a new websocket connection.
-  TestHelper::userState = MozillaVPN::UserAuthenticated;
-  emit MozillaVPN::instance()->userStateChanged();
+  MozillaVPN::instance()->forceUserState(MozillaVPN::UserAuthenticated);
 
   QVERIFY(newConnectionSpy.wait());
   QCOMPARE(newConnectionSpy.count(), 1);
 
   // Mock start a user log out, this should prompt the connected websocket to
   // disconnect.
-  TestHelper::userState = MozillaVPN::UserLoggingOut;
-  emit MozillaVPN::instance()->userStateChanged();
+  MozillaVPN::instance()->forceUserState(MozillaVPN::UserLoggingOut);
 
   QVERIFY(socketDisconnectedSpy.wait());
   QCOMPARE(socketDisconnectedSpy.count(), 1);
@@ -115,8 +113,7 @@ void TestWebSocketHandler::tst_connectionIsTiedToUserState() {
   socketDisconnectedSpy.clear();
 
   // Mock finish the user log out.
-  TestHelper::userState = MozillaVPN::UserNotAuthenticated;
-  emit MozillaVPN::instance()->userStateChanged();
+  MozillaVPN::instance()->forceUserState(MozillaVPN::UserNotAuthenticated);
 
   // Check that the last userStateChange signal did not trigger any connections
   // or disconnections.
@@ -136,8 +133,7 @@ void TestWebSocketHandler::tst_connectionRequestContainsRequiredHeaders() {
   handler.initialize();
 
   // Mock a user log in, this should prompt a new websocket connection.
-  TestHelper::userState = MozillaVPN::UserAuthenticated;
-  emit MozillaVPN::instance()->userStateChanged();
+  MozillaVPN::instance()->forceUserState(MozillaVPN::UserAuthenticated);
 
   QVERIFY(newConnectionSpy.wait());
   QCOMPARE(newConnectionSpy.count(), 1);
@@ -159,8 +155,7 @@ void TestWebSocketHandler::tst_reconnectionAttemptsAfterUnexpectedClose() {
   handler.initialize();
 
   // Mock a user log in, this should prompt a new websocket connection.
-  TestHelper::userState = MozillaVPN::UserAuthenticated;
-  emit MozillaVPN::instance()->userStateChanged();
+  MozillaVPN::instance()->forceUserState(MozillaVPN::UserAuthenticated);
 
   QVERIFY(newConnectionSpy.wait());
   QCOMPARE(newConnectionSpy.count(), 1);
@@ -193,8 +188,7 @@ void TestWebSocketHandler::
   handler.initialize();
 
   // Mock a user log in, this should prompt a new websocket connection.
-  TestHelper::userState = MozillaVPN::UserAuthenticated;
-  emit MozillaVPN::instance()->userStateChanged();
+  MozillaVPN::instance()->forceUserState(MozillaVPN::UserAuthenticated);
 
   QVERIFY(newConnectionSpy.wait());
   QCOMPARE(newConnectionSpy.count(), 1);
@@ -248,8 +242,7 @@ void TestWebSocketHandler::tst_reconnectionAttemptsOnPingTimeout() {
   handler.initialize();
 
   // Mock a user log in, this should prompt a new websocket connection.
-  TestHelper::userState = MozillaVPN::UserAuthenticated;
-  emit MozillaVPN::instance()->userStateChanged();
+  MozillaVPN::instance()->forceUserState(MozillaVPN::UserAuthenticated);
 
   // Wait for connection.
   QVERIFY(newConnectionSpy.wait());
@@ -269,8 +262,7 @@ void TestWebSocketHandler::tst_reconnectionAttemptsOnPingTimeout() {
   QCOMPARE(newConnectionSpy.count(), 2);
 
   // Mock a user log out, so that we stop sending so many pings ASAP.
-  TestHelper::userState = MozillaVPN::UserLoggingOut;
-  emit MozillaVPN::instance()->userStateChanged();
+  MozillaVPN::instance()->forceUserState(MozillaVPN::UserLoggingOut);
 }
 
 static TestWebSocketHandler s_testWebSocketHandler;

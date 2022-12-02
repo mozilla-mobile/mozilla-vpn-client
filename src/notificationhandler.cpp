@@ -261,7 +261,7 @@ void NotificationHandler::newInAppMessageNotification(const QString& title,
                                                       const QString& message) {
   logger.debug() << "New in-app message notification";
 
-  if (!MozillaVPN::isUserAuthenticated()) {
+  if (!MozillaVPN::instance()->isUserAuthenticated()) {
     logger.debug() << "User not authenticated, will not be notified.";
     return;
   }

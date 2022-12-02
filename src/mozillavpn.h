@@ -204,9 +204,8 @@ class MozillaVPN final : public QObject {
 
   UserState userState() const;
 
-  static bool isUserAuthenticated() {
-    MozillaVPN* vpn = MozillaVPN::instance();
-    return vpn->userState() == MozillaVPN::UserAuthenticated;
+  bool isUserAuthenticated() const {
+    return userState() == MozillaVPN::UserAuthenticated;
   }
 
   bool startMinimized() const { return m_startMinimized; }
@@ -237,6 +236,11 @@ class MozillaVPN final : public QObject {
   }
 
   void hardReset();
+
+#ifdef UNIT_TEST
+  void forceState(State state) { setState(state); }
+  void forceUserState(UserState userState) { setUserState(userState); }
+#endif
 
  private:
   void setState(State state);
