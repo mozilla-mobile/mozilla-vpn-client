@@ -213,6 +213,8 @@ jobs:
           export PATH=${{github.workspace}}/grcov-build/bin:$PATH
           export TESTDIRS=$(echo ${TESTJSON} | jq -r '.[] | .name' | xargs -I name echo name-Results/profile)
           echo $TESTDIRS
+          echo checkout/src
+          echo ${{runner.temp}}/artifacts
           
           grcov ${TESTDIRS} \
               -s checkout/src -t lcov --llvm --branch --ignore-not-existing \
