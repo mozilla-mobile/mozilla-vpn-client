@@ -439,11 +439,6 @@ void MozillaVPN::maybeStateMain() {
 #endif
 }
 
-void MozillaVPN::getStarted() {
-  logger.debug() << "Get started";
-  authenticate();
-}
-
 void MozillaVPN::authenticate() {
   return authenticateWithType(
       Feature::get(Feature::Feature_inAppAuthentication)->isSupported()

@@ -117,7 +117,7 @@ Item {
         anchors.bottom: progressIndicator.top
         anchors.bottomMargin: 28
         radius: VPNTheme.theme.cornerRadius
-        onClicked: swipeView.currentIndex < swipeView.count - 1 ? swipeView.currentIndex++ : VPN.getStarted()
+        onClicked: swipeView.currentIndex < swipeView.count - 1 ? swipeView.currentIndex++ : VPN.authenticate()
     }
 
     PageIndicator {

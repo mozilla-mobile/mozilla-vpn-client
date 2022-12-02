@@ -114,7 +114,6 @@ class MozillaVPN final : public QObject {
   };
 
   // Exposed QML methods:
-  Q_INVOKABLE void getStarted();
   Q_INVOKABLE void authenticate();
   Q_INVOKABLE void cancelAuthentication();
   Q_INVOKABLE void removeDeviceFromPublicKey(const QString& publicKey);

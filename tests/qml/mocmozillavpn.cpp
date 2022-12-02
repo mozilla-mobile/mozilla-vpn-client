@@ -49,8 +49,6 @@ void MozillaVPN::initialize() {}
 
 void MozillaVPN::setState(State) {}
 
-void MozillaVPN::getStarted() {}
-
 void MozillaVPN::authenticate() {}
 void MozillaVPN::authenticateWithType(MozillaVPN::AuthenticationType) {}
 
