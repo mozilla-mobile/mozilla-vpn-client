@@ -13,6 +13,7 @@
 #include "logger.h"
 #include "models/featuremodel.h"
 #include "models/subscriptiondata.h"
+#include "moduleholder.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
@@ -112,14 +113,14 @@ QJSValue AddonApi::urlOpener() const {
   return value;
 }
 
-QJSValue AddonApi::controller() const {
+QJSValue AddonApi::modules() const {
   QJSEngine* engine = QmlEngineHolder::instance()->engine();
 
-  QObject* obj = MozillaVPN::instance()->controller();
+  QObject* obj = ModuleHolder::instance();
   QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
 
   QJSValue value = engine->newQObject(obj);
-  value.setPrototype(engine->newQMetaObject(&Controller::staticMetaObject));
+  value.setPrototype(engine->newQMetaObject(&ModuleHolder::staticMetaObject));
   return value;
 }
 

@@ -3,16 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "tutorialstepbefore.h"
+#include "inspector/inspectorutils.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "modules/modulevpn.h"
+#include "mozillavpn.h"
 
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QMetaMethod>
-
-#include "inspector/inspectorutils.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "mozillavpn.h"
 
 namespace {
 Logger logger("TutorialStepBefore");
@@ -216,7 +216,7 @@ class TutorialStepBeforeVpnOff final : public TutorialStepBefore {
   ~TutorialStepBeforeVpnOff() { MVPN_COUNT_DTOR(TutorialStepBeforeVpnOff); }
 
   bool run() override {
-    Controller* controller = MozillaVPN::instance()->controller();
+    Controller* controller = ModuleVPN::instance()->controller();
     Q_ASSERT(controller);
 
     if (controller->state() == Controller::StateOff) {

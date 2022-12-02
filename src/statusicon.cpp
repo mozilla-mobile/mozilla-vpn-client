@@ -3,17 +3,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "statusicon.h"
+#include "constants.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "modules/modulevpn.h"
+#include "mozillavpn.h"
 
 #include <QBitmap>
 #include <QFileInfo>
 #include <QPainter>
 #include <QPixmap>
 #include <array>
-
-#include "constants.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "mozillavpn.h"
 
 namespace {
 Logger logger("StatusIcon");
@@ -92,7 +92,7 @@ const QString StatusIcon::iconString() {
     return LOGO_GENERIC;
   }
 
-  switch (vpn->controller()->state()) {
+  switch (ModuleVPN::instance()->controller()->state()) {
     case Controller::StateOn:
       m_animatedIconTimer.stop();
       return LOGO_GENERIC_ON;
@@ -126,7 +126,7 @@ const QColor StatusIcon::indicatorColor() const {
   MozillaVPN* vpn = MozillaVPN::instance();
 
   if (vpn->state() != MozillaVPN::StateMain ||
-      vpn->controller()->state() != Controller::StateOn) {
+      ModuleVPN::instance()->controller()->state() != Controller::StateOn) {
     return INVALID_COLOR;
   }
 
@@ -158,10 +158,8 @@ QIcon StatusIcon::drawStatusIndicator() {
   // Create pixmap so that we can paint on the original resource.
   QPixmap iconPixmap = QPixmap(iconString());
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-
   // Only draw a status indicator if the VPN is connected
-  if (vpn->controller()->state() == Controller::StateOn) {
+  if (ModuleVPN::instance()->controller()->state() == Controller::StateOn) {
     QPainter painter(&iconPixmap);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);

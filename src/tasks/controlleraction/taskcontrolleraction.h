@@ -8,8 +8,8 @@
 #include <QObject>
 #include <QTimer>
 
-#include "controller.h"
 #include "task.h"
+#include "modules/modulevpn/controller.h"
 
 // The purpose of this task is to block any other task when
 // activating/deactivating the VPN. It doesn't relay on the Controller state,

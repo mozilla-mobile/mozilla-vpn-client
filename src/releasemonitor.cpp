@@ -7,6 +7,7 @@
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "modules/modulevpn.h"
 #include "mozillavpn.h"
 #include "tasks/release/taskrelease.h"
 #include "taskscheduler.h"
@@ -55,7 +56,7 @@ void ReleaseMonitor::schedule() {
 
 void ReleaseMonitor::updateRequired() {
   logger.warning() << "update required";
-  MozillaVPN::instance()->controller()->updateRequired();
+  ModuleVPN::instance()->controller()->updateRequired();
 }
 
 void ReleaseMonitor::updateSoon() {

@@ -9,6 +9,7 @@
 
 #include "commandlineparser.h"
 #include "leakdetector.h"
+#include "modules/modulevpn.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"
@@ -110,20 +111,20 @@ int CommandStatus::run(QStringList& tokens) {
            << Qt::endl;
     stream << "Server city: " << sd->exitCityName() << Qt::endl;
 
-    Controller controller;
+    Controller* controller = ModuleVPN::instance()->controller();
 
     QEventLoop loop;
-    QObject::connect(&controller, &Controller::stateChanged, &controller, [&] {
-      if (controller.state() == Controller::StateOff ||
-          controller.state() == Controller::StateOn) {
+    QObject::connect(controller, &Controller::stateChanged, controller, [&] {
+      if (controller->state() == Controller::StateOff ||
+          controller->state() == Controller::StateOn) {
         loop.exit();
       }
     });
-    controller.initialize();
+    controller->initialize();
     loop.exec();
 
     stream << "VPN state: ";
-    switch (controller.state()) {
+    switch (controller->state()) {
       case Controller::StateInitializing:
         stream << "initializing";
         break;

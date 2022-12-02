@@ -8,7 +8,7 @@
 #include <QDateTime>
 #include <QObject>
 
-#include "controllerimpl.h"
+#include "modules/modulevpn/controllerimpl.h"
 
 class DummyController final : public ControllerImpl {
   Q_DISABLE_COPY_MOVE(DummyController)

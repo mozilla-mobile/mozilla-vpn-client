@@ -22,7 +22,7 @@ class AddonApi final : public QObject {
   Q_DISABLE_COPY_MOVE(AddonApi)
 
   Q_PROPERTY(QJSValue addon READ addon CONSTANT)
-  Q_PROPERTY(QJSValue controller READ controller CONSTANT)
+  Q_PROPERTY(QJSValue modules READ modules CONSTANT)
   Q_PROPERTY(const Env* env READ env CONSTANT)
   Q_PROPERTY(QJSValue featureList READ featureList CONSTANT)
   Q_PROPERTY(QJSValue navigator READ navigator CONSTANT)
@@ -39,7 +39,7 @@ class AddonApi final : public QObject {
 
  private:
   QJSValue addon() const;
-  QJSValue controller() const;
+  QJSValue modules() const;
   const Env* env() const { return &m_env; }
   QJSValue featureList() const;
   QJSValue navigator() const;

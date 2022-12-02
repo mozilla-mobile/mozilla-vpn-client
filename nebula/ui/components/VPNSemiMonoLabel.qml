@@ -28,7 +28,7 @@ RowLayout {
     }
 
     Repeater {
-        model: formatTime(VPNController.time).split("")
+        model: formatTime(MZModules["vpn"].controller.time).split("")
 
         Text {
             id: digit

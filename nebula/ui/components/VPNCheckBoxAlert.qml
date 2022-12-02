@@ -14,7 +14,7 @@ RowLayout {
 
     id: turnVPNOffAlert
 
-    visible: (VPNController.state !== VPNController.StateOff)
+    visible: (MZModules["vpn"].controller.state !== MZModules["vpn"].controller.StateOff)
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.rightMargin: VPNTheme.theme.windowMargin

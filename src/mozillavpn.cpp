@@ -18,6 +18,7 @@
 #include "models/feature.h"
 #include "models/recentconnections.h"
 #include "module.h"
+#include "modules/modulevpn.h"
 #include "networkmanager.h"
 #include "productshandler.h"
 #include "profileflow.h"
@@ -104,6 +105,8 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   Q_ASSERT(!s_instance);
   s_instance = this;
 
+  Module::initialize();
+
   connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {
     TaskScheduler::scheduleTask(new TaskGroup(
         {new TaskAccount(ErrorHandler::DoNotPropagateError),
@@ -124,25 +127,25 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
     }
   });
 
-  connect(&m_private->m_controller, &Controller::readyToUpdate, this,
+  connect(ModuleVPN::instance()->controller(), &Controller::readyToUpdate, this,
           [this]() { setState(StateUpdateRequired); });
 
-  connect(&m_private->m_controller, &Controller::readyToBackendFailure, this,
-          [this]() {
+  connect(ModuleVPN::instance()->controller(),
+          &Controller::readyToBackendFailure, this, [this]() {
             TaskScheduler::deleteTasks();
             setState(StateBackendFailure);
           });
 
-  connect(&m_private->m_controller, &Controller::readyToServerUnavailable, this,
-          [](bool pingReceived) {
+  connect(ModuleVPN::instance()->controller(),
+          &Controller::readyToServerUnavailable, this, [](bool pingReceived) {
             NotificationHandler::instance()->serverUnavailableNotification(
                 pingReceived);
           });
 
-  connect(&m_private->m_controller, &Controller::stateChanged, this,
+  connect(ModuleVPN::instance()->controller(), &Controller::stateChanged, this,
           &MozillaVPN::controllerStateChanged);
 
-  connect(&m_private->m_controller, &Controller::stateChanged,
+  connect(ModuleVPN::instance()->controller(), &Controller::stateChanged,
           &m_private->m_statusIcon, &StatusIcon::refreshNeeded);
 
   connect(this, &MozillaVPN::stateChanged, &m_private->m_statusIcon,
@@ -151,11 +154,11 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   connect(&m_private->m_connectionHealth, &ConnectionHealth::stabilityChanged,
           &m_private->m_statusIcon, &StatusIcon::refreshNeeded);
 
-  connect(&m_private->m_controller, &Controller::stateChanged,
+  connect(ModuleVPN::instance()->controller(), &Controller::stateChanged,
           &m_private->m_connectionHealth,
           &ConnectionHealth::connectionStateChanged);
 
-  connect(&m_private->m_controller, &Controller::stateChanged,
+  connect(ModuleVPN::instance()->controller(), &Controller::stateChanged,
           &m_private->m_captivePortalDetection,
           &CaptivePortalDetection::stateChanged);
 
@@ -205,8 +208,6 @@ ConnectionHealth* MozillaVPN::connectionHealth() {
   return &m_private->m_connectionHealth;
 }
 
-Controller* MozillaVPN::controller() { return &m_private->m_controller; }
-
 ServerData* MozillaVPN::currentServer() { return &m_private->m_serverData; }
 
 SubscriptionData* MozillaVPN::subscriptionData() {
@@ -235,8 +236,6 @@ void MozillaVPN::initialize() {
 
   // This is our first state.
   Q_ASSERT(m_state == StateInitialize);
-
-  Module::initialize();
 
   m_private->m_releaseMonitor.runSoon();
 
@@ -367,7 +366,7 @@ void MozillaVPN::setState(State state) {
   // If we are activating the app, let's initialize the controller and the
   // periodic tasks.
   if (m_state == StateMain) {
-    m_private->m_controller.initialize();
+    ModuleVPN::instance()->controller()->initialize();
     startSchedulingPeriodicOperations();
   } else {
     stopSchedulingPeriodicOperations();
@@ -784,9 +783,6 @@ void MozillaVPN::accountChecked(const QByteArray& json) {
     maybeStateMain();
     return;
   }
-
-  // To test the subscription needed view, comment out this line:
-  // m_private->m_controller.subscriptionNeeded();
 }
 
 void MozillaVPN::cancelAuthentication() {
@@ -1042,7 +1038,7 @@ void MozillaVPN::serializeLogs(QTextStream* out,
 
   LogHandler::writeLogs(*out);
 
-  MozillaVPN::instance()->controller()->getBackendLogs(
+  ModuleVPN::instance()->controller()->getBackendLogs(
       [out,
        finalizeCallback = std::move(finalizeCallback)](const QString& logs) {
         logger.debug() << "Logs from the backend service received";
@@ -1143,7 +1139,7 @@ void MozillaVPN::storeInClipboard(const QString& text) {
 void MozillaVPN::cleanupLogs() {
   logger.debug() << "Cleanup logs";
   LogHandler::instance()->cleanupLogs();
-  MozillaVPN::instance()->controller()->cleanupBackendLogs();
+  ModuleVPN::instance()->controller()->cleanupBackendLogs();
 }
 
 bool MozillaVPN::modelsInitialized() const {
@@ -1397,8 +1393,9 @@ void MozillaVPN::update() {
   // The windows installer will stop the client and daemon before installation
   // so it's not necessary to disable the VPN to perform an upgrade.
 #ifndef MVPN_WINDOWS
-  if (m_private->m_controller.state() != Controller::StateOff &&
-      m_private->m_controller.state() != Controller::StateInitializing) {
+  if (ModuleVPN::instance()->controller()->state() != Controller::StateOff &&
+      ModuleVPN::instance()->controller()->state() !=
+          Controller::StateInitializing) {
     deactivate();
     return;
   }
@@ -1424,7 +1421,8 @@ void MozillaVPN::controllerStateChanged() {
     }
   }
 
-  if (m_updating && m_private->m_controller.state() == Controller::StateOff) {
+  if (m_updating &&
+      ModuleVPN::instance()->controller()->state() == Controller::StateOff) {
     update();
   }
 
@@ -1440,7 +1438,7 @@ void MozillaVPN::heartbeatCompleted(bool success) {
   logger.debug() << "Server-side check done:" << success;
 
   if (!success) {
-    m_private->m_controller.backendFailure();
+    ModuleVPN::instance()->controller()->backendFailure();
     return;
   }
 

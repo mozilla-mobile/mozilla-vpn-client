@@ -12,7 +12,7 @@ import components.forms 0.1
 
 
 VPNViewBase {
-    property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
+    property bool vpnIsOff: (MZModules["vpn"].controller.state === MZModules["vpn"].controller.StateOff)
 
     id: vpnFlickable
     objectName: "settingsNotifications"

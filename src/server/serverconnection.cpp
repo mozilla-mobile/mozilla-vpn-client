@@ -3,6 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "serverconnection.h"
+#include "settingsholder.h"
+#include "leakdetector.h"
+#include "localizer.h"
+#include "logger.h"
+#include "modules/modulevpn.h"
+#include "mozillavpn.h"
+
+#include <functional>
 
 #include <QHostAddress>
 #include <QJsonArray>
@@ -11,12 +19,6 @@
 #include <QMetaEnum>
 #include <QTcpSocket>
 #include <functional>
-
-#include "leakdetector.h"
-#include "localizer.h"
-#include "logger.h"
-#include "mozillavpn.h"
-#include "settingsholder.h"
 
 constexpr uint32_t MAX_MSG_SIZE = 1024 * 1024;
 
@@ -103,7 +105,7 @@ QJsonObject serializeStatus() {
   }
 
   {
-    Controller::State state = vpn->controller()->state();
+    Controller::State state = ModuleVPN::instance()->controller()->state();
     const QMetaObject* meta = qt_getEnumMetaObject(state);
     int index = meta->indexOfEnumerator(qt_getEnumName(state));
     obj["vpn"] = meta->enumerator(index).valueToKey(state);
@@ -180,7 +182,7 @@ ServerConnection::ServerConnection(QObject* parent, QTcpSocket* connection)
   MozillaVPN* vpn = MozillaVPN::instance();
 
   connect(vpn, &MozillaVPN::stateChanged, this, &ServerConnection::writeState);
-  connect(vpn->controller(), &Controller::stateChanged, this,
+  connect(ModuleVPN::instance()->controller(), &Controller::stateChanged, this,
           &ServerConnection::writeState);
 }
 

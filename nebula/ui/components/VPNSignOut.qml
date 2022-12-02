@@ -13,6 +13,6 @@ VPNFooterLink {
     fontName: VPNTheme.theme.fontBoldFamily
     linkColor: VPNTheme.theme.redLinkButton
     onClicked: () => {
-                   VPNController.logout();
+                   MZModules["vpn"].controller.logout();
                }
 }

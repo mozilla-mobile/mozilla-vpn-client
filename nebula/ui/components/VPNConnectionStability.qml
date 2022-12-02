@@ -45,7 +45,7 @@ Item {
                 }
                 PropertyChanges {
                     target: logoSubtitleOn
-                    visible: VPNController.state === VPNController.StateOn
+                    visible: MZModules["vpn"].controller.state === MZModules["vpn"].controller.StateOn
                 }
             },
             State {

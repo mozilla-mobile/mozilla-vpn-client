@@ -14,8 +14,8 @@ VPNViewBase {
     _menuTitle: VPNl18n.SettingsDevTitle
     _viewContentData: ColumnLayout {
         id: root
-        property bool vpnIsOff: (VPNController.state === VPNController.StateOff) ||
-                                    (VPNController.state === VPNController.StateInitializing)
+        property bool vpnIsOff: (MZModules["vpn"].controller.state === MZModules["vpn"].controller.StateOff) ||
+                                    (MZModules["vpn"].controller.state === MZModules["vpn"].controller.StateInitializing)
         Layout.fillWidth: true
 
         spacing: VPNTheme.theme.windowMargin

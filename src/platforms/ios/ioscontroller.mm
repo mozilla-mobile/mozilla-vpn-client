@@ -4,7 +4,6 @@
 
 #include "ioscontroller.h"
 #include "Mozilla_VPN-Swift.h"
-#include "controller.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -12,6 +11,7 @@
 #include "models/keys.h"
 #include "models/feature.h"
 #include "models/server.h"
+#include "modules/modulevpn/controller.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 

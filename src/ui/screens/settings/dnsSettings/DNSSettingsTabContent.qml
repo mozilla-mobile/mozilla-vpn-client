@@ -17,7 +17,7 @@ import telemetry 0.30
 VPNFlickable {
 
     id: vpnFlickable
-    property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
+    property bool vpnIsOff: (MZModules["vpn"].controller.state === MZModules["vpn"].controller.StateOff)
     property alias settingsListModel: repeater.model
 
     anchors.fill: parent

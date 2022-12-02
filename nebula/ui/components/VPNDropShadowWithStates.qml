@@ -15,46 +15,46 @@ VPNDropShadow {
     radius: 5.5
     color: "#0C0C0D"
     opacity: .1
-    state: VPNController.state
+    state: MZModules["vpn"].controller.state
 
     states: [
         State {
-            name: VPNController.StateConnecting
+            name: MZModules["vpn"].controller.StateConnecting
             PropertyChanges {
                 target: dropShadow
                 opacity: .3
             }
         },
         State {
-            name: VPNController.StateConfirming
+            name: MZModules["vpn"].controller.StateConfirming
             PropertyChanges {
                 target: dropShadow
                 opacity: .3
             }
         },
         State {
-            name: VPNController.StateOn
+            name: MZModules["vpn"].controller.StateOn
             PropertyChanges {
                 target: dropShadow
                 opacity: .3
             }
         },
         State {
-            name: VPNController.StateSwitching
+            name: MZModules["vpn"].controller.StateSwitching
             PropertyChanges {
                 target: dropShadow
                 opacity: .3
             }
         },
         State {
-            name: VPNController.StateDisconnecting
+            name: MZModules["vpn"].controller.StateDisconnecting
             PropertyChanges {
                 target:dropShadow
                 opacity: .1
             }
         },
         State {
-            name: VPNController.StateOff
+            name: MZModules["vpn"].controller.StateOff
             PropertyChanges {
                 target: dropShadow
                 opacity: .1

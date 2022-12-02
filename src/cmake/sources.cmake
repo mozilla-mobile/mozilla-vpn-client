@@ -142,9 +142,6 @@ target_sources(mozillavpn-sources INTERFACE
     connectionhealth.h
     constants.cpp
     constants.h
-    controller.cpp
-    controller.h
-    controllerimpl.h
     cryptosettings.cpp
     cryptosettings.h
     curve25519.cpp
@@ -250,8 +247,12 @@ target_sources(mozillavpn-sources INTERFACE
     module.h
     moduleholder.cpp
     moduleholder.h
+    modulelist.h
     modules/modulevpn.cpp
     modules/modulevpn.h
+    modules/modulevpn/controller.cpp
+    modules/modulevpn/controller.h
+    modules/modulevpn/controllerimpl.h
     mozillavpn.cpp
     mozillavpn.h
     networkmanager.cpp

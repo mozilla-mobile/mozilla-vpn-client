@@ -9,7 +9,9 @@ api.connectSignal(api.addon, 'playingChanged', () => {
     return;
   }
 
-  if (api.controller.state === api.controller.StateOff) {
+  const controller =
+      'controller' in api ? api.controller : api.modules.vpn.controller;
+  if (controller.state === controller.StateOff) {
     condition.disable();
     splitTunnelTutorialVpnWasOn = false;
   } else {

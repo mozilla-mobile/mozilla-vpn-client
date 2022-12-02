@@ -9,6 +9,7 @@
 #include "frontend/navigator.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "modules/modulevpn.h"
 #include "mozillavpn.h"
 
 namespace {
@@ -63,13 +64,13 @@ void ExternalOpHandler::request(Op op) {
       vpn->requestAbout();
       break;
     case OpActivate:
-      vpn->controller()->activate();
+      ModuleVPN::instance()->controller()->activate();
       break;
     case OpDeactivate:
-      vpn->controller()->deactivate();
+      ModuleVPN::instance()->controller()->deactivate();
       break;
     case OpQuit:
-      vpn->controller()->quit();
+      ModuleVPN::instance()->controller()->quit();
       break;
 
     // List of no-op requests:

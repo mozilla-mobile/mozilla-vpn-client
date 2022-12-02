@@ -18,7 +18,7 @@ Item {
         box.connectionInfoScreenVisible = false;
     }
 
-    state: VPNController.state
+    state: MZModules["vpn"].controller.state
     Layout.preferredHeight: 318
     Layout.fillWidth: true
     Layout.leftMargin: 8
@@ -64,7 +64,7 @@ Item {
 
     states: [
         State {
-            name: VPNController.StateInitializing
+            name: MZModules["vpn"].controller.StateInitializing
 
             PropertyChanges {
                 target: boxBackground
@@ -108,7 +108,7 @@ Item {
 
         },
         State {
-            name: VPNController.StateOff
+            name: MZModules["vpn"].controller.StateOff
 
             PropertyChanges {
                 target: boxBackground
@@ -151,7 +151,7 @@ Item {
 
         },
         State {
-            name: VPNController.StateConnecting
+            name: MZModules["vpn"].controller.StateConnecting
 
             PropertyChanges {
                 target: boxBackground
@@ -196,7 +196,7 @@ Item {
 
         },
         State {
-            name: VPNController.StateConfirming
+            name: MZModules["vpn"].controller.StateConfirming
 
             PropertyChanges {
                 target: boxBackground
@@ -211,7 +211,7 @@ Item {
 
             PropertyChanges {
                 target: logoSubtitle
-                text: VPNController.connectionRetry > 1 ?
+                text: MZModules["vpn"].controller.connectionRetry > 1 ?
                           //% "Attempting to confirm connection"
                           qsTrId("vpn.controller.attemptingToConfirm") :
                           qsTrId("vpn.controller.activating")
@@ -242,7 +242,7 @@ Item {
 
         },
         State {
-            name: VPNController.StateOn
+            name: MZModules["vpn"].controller.StateOn
 
             PropertyChanges {
                 target: boxBackground
@@ -280,7 +280,7 @@ Item {
 
         },
         State {
-            name: VPNController.StateDisconnecting
+            name: MZModules["vpn"].controller.StateDisconnecting
 
             PropertyChanges {
                 target: boxBackground
@@ -325,7 +325,7 @@ Item {
 
         },
         State {
-            name: VPNController.StateSwitching
+            name: MZModules["vpn"].controller.StateSwitching
 
             PropertyChanges {
                 target: boxBackground
@@ -375,7 +375,7 @@ Item {
     ]
     transitions: [
         Transition {
-            to: VPNController.StateConnecting
+            to: MZModules["vpn"].controller.StateConnecting
 
             ColorAnimation {
                 target: boxBackground
@@ -397,7 +397,7 @@ Item {
 
         },
         Transition {
-            to: VPNController.StateDisconnecting
+            to: MZModules["vpn"].controller.StateDisconnecting
 
             ColorAnimation {
                 target: boxBackground

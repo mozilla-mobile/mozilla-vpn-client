@@ -26,7 +26,7 @@ VPNStackView {
            primaryButtonText: qsTrId("vpn.main.signOut2"),
            primaryButtonObjectName: "errorSignOutButton",
            primaryButtonOnClick: () => {
-               VPNController.logout();
+               MZModules["vpn"].controller.logout();
                stackView.pop();
            },
            secondaryButtonIsSignOff: false,

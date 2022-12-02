@@ -10,6 +10,7 @@
 #include "mfbt/checkedint.h"
 #include "models/device.h"
 #include "models/feature.h"
+#include "modules/modulevpn.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #include "tasks/account/taskaccount.h"
@@ -26,7 +27,7 @@ KeyRegenerator::KeyRegenerator() {
   MozillaVPN* vpn = MozillaVPN::instance();
 
   connect(vpn, &MozillaVPN::stateChanged, this, &KeyRegenerator::stateChanged);
-  connect(vpn->controller(), &Controller::stateChanged, this,
+  connect(ModuleVPN::instance()->controller(), &Controller::stateChanged, this,
           &KeyRegenerator::stateChanged);
   connect(&m_timer, &QTimer::timeout, this, &KeyRegenerator::stateChanged);
   connect(Feature::get(Feature::Feature_keyRegeneration),
@@ -50,7 +51,7 @@ void KeyRegenerator::stateChanged() {
   MozillaVPN* vpn = MozillaVPN::instance();
 
   if (vpn->state() != MozillaVPN::StateMain ||
-      vpn->controller()->state() != Controller::StateOff) {
+      ModuleVPN::instance()->controller()->state() != Controller::StateOff) {
     logger.debug() << "Wrong state";
     return;
   }

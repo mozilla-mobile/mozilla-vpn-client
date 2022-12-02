@@ -11,6 +11,7 @@
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "modules/modulevpn.h"
 #include "mozillavpn.h"
 #include "tasks/ipfinder/taskipfinder.h"
 #include "taskscheduler.h"
@@ -31,11 +32,10 @@ IpAddressLookup::IpAddressLookup() {
 IpAddressLookup::~IpAddressLookup() { MVPN_COUNT_DTOR(IpAddressLookup); }
 
 void IpAddressLookup::initialize() {
-  MozillaVPN* vpn = MozillaVPN::instance();
+  connect(MozillaVPN::instance(), &MozillaVPN::stateChanged, this,
+          &IpAddressLookup::stateChanged);
 
-  connect(vpn, &MozillaVPN::stateChanged, this, &IpAddressLookup::stateChanged);
-
-  connect(vpn->controller(), &Controller::stateChanged, this,
+  connect(ModuleVPN::instance()->controller(), &Controller::stateChanged, this,
           &IpAddressLookup::stateChanged);
 }
 
@@ -112,7 +112,7 @@ void IpAddressLookup::stateChanged() {
   MozillaVPN* vpn = MozillaVPN::instance();
 
   if (vpn->state() != MozillaVPN::StateMain ||
-      vpn->controller()->state() != Controller::StateOn) {
+      ModuleVPN::instance()->controller()->state() != Controller::StateOn) {
     reset();
     return;
   }

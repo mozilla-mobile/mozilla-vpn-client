@@ -32,7 +32,6 @@ target_compile_definitions(qml_tests PRIVATE MVPN_DUMMY)
 # VPN Client source files
 target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/constants.h
-    ${MVPN_SOURCE_DIR}/controller.h
     ${MVPN_SOURCE_DIR}/cryptosettings.cpp
     ${MVPN_SOURCE_DIR}/cryptosettings.h
     ${MVPN_SOURCE_DIR}/dnspingsender.cpp
@@ -65,6 +64,14 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/models/server.h
     ${MVPN_SOURCE_DIR}/models/subscriptiondata.cpp
     ${MVPN_SOURCE_DIR}/models/subscriptiondata.h
+    ${MVPN_SOURCE_DIR}/module.cpp
+    ${MVPN_SOURCE_DIR}/module.h
+    ${MVPN_SOURCE_DIR}/moduleholder.cpp
+    ${MVPN_SOURCE_DIR}/moduleholder.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/controller.h
     ${MVPN_SOURCE_DIR}/mozillavpn.h
     ${MVPN_SOURCE_DIR}/networkmanager.cpp
     ${MVPN_SOURCE_DIR}/networkmanager.h
@@ -83,6 +90,8 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummycryptosettings.cpp
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.h
+    ${MVPN_SOURCE_DIR}/qmlengineholder.cpp
+    ${MVPN_SOURCE_DIR}/qmlengineholder.h
     ${MVPN_SOURCE_DIR}/update/updater.cpp
     ${MVPN_SOURCE_DIR}/update/updater.h
     ${MVPN_SOURCE_DIR}/update/versionapi.cpp

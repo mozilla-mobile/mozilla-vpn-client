@@ -9,14 +9,18 @@
 
 #include <QCoreApplication>
 
+#define MODULE(key, obj)
+#include "modulelist.h"
+#undef MODULE
+
 // static
 void Module::initialize() {
-  ModuleHolder::instance()->registerModule(new ModuleVPN(qApp));
+#define MODULE(key, obj) \
+  ModuleHolder::instance()->registerModule(#key, new obj(qApp));
+#include "modulelist.h"
+#undef MODULE
 }
 
-Module::Module(QObject* parent, const QString& name)
-    : QObject(parent), m_name(name) {
-  MVPN_COUNT_CTOR(Module);
-}
+Module::Module(QObject* parent) : QObject(parent) { MVPN_COUNT_CTOR(Module); }
 
 Module::~Module() { MVPN_COUNT_DTOR(Module); }

@@ -6,14 +6,27 @@
 #define MODULEVPN_H
 
 #include "module.h"
+#include "modules/modulevpn/controller.h"
+
+#include <QJSValue>
 
 class ModuleVPN final : public Module {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(ModuleVPN)
 
+  Q_PROPERTY(QJSValue controller READ controllerValue CONSTANT)
+
  public:
   explicit ModuleVPN(QObject* parent);
   ~ModuleVPN();
+
+  static ModuleVPN* instance();
+
+  Controller* controller() { return &m_controller; }
+  QJSValue controllerValue();
+
+ private:
+  Controller m_controller;
 };
 
 #endif  // MODULEVPN_H

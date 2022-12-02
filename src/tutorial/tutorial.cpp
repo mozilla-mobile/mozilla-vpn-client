@@ -3,16 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "tutorial.h"
-
-#include <QCoreApplication>
-#include <QDir>
-
 #include "addons/addontutorial.h"
 #include "frontend/navigator.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "telemetry/gleansample.h"
+#include "modules/modulevpn.h"
+#include "mozillavpn.h"
+
+#include <QCoreApplication>
+#include <QDir>
 
 namespace {
 Tutorial* s_instance = nullptr;
@@ -36,8 +36,8 @@ Tutorial::Tutorial(QObject* parent) : QObject(parent) {
 
   connect(vpn, &MozillaVPN::stateChanged, this, &Tutorial::stop);
 
-  connect(vpn->controller(), &Controller::readyToServerUnavailable, this,
-          &Tutorial::stop);
+  connect(ModuleVPN::instance()->controller(),
+          &Controller::readyToServerUnavailable, this, &Tutorial::stop);
 }
 
 Tutorial::~Tutorial() { MVPN_COUNT_DTOR(Tutorial); }

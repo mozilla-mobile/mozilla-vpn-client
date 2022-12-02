@@ -185,7 +185,7 @@ FocusScope {
                     accessibleName: VPNl18n.ServersViewRecommendedRefreshLabel
                     canGrowVertical: true
                     height: statusTitle.implicitHeight + VPNTheme.theme.vSpacingSmall
-                    rowShouldBeDisabled: !(VPNController.state === VPNController.StateOff)
+                    rowShouldBeDisabled: !(MZModules["vpn"].controller.state === MZModules["vpn"].controller.StateOff)
 
                     onClicked: {
                         focusScope.updateServerData();

@@ -4,9 +4,41 @@
 
 #include "modulevpn.h"
 #include "leakdetector.h"
+#include "qmlengineholder.h"
 
-ModuleVPN::ModuleVPN(QObject* parent) : Module(parent, "vpn") {
-  MVPN_COUNT_CTOR(ModuleVPN);
+#include <QQmlEngine>
+
+namespace {
+ModuleVPN* s_instance = nullptr;
 }
 
-ModuleVPN::~ModuleVPN() { MVPN_COUNT_DTOR(ModuleVPN); }
+ModuleVPN::ModuleVPN(QObject* parent) : Module(parent) {
+  MVPN_COUNT_CTOR(ModuleVPN);
+
+  Q_ASSERT(!s_instance);
+  s_instance = this;
+}
+
+ModuleVPN::~ModuleVPN() {
+  MVPN_COUNT_DTOR(ModuleVPN);
+
+  Q_ASSERT(s_instance == this);
+  s_instance = nullptr;
+}
+
+// static
+ModuleVPN* ModuleVPN::instance() {
+  Q_ASSERT(s_instance);
+  return s_instance;
+}
+
+QJSValue ModuleVPN::controllerValue() {
+  QJSEngine* engine = QmlEngineHolder::instance()->engine();
+
+  QObject* obj = &m_controller;
+  QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+
+  QJSValue value = engine->newQObject(obj);
+  value.setPrototype(engine->newQMetaObject(&Controller::staticMetaObject));
+  return value;
+}

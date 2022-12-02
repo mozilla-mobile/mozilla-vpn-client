@@ -11,15 +11,15 @@ import components 0.1
 VPNButtonBase {
     id: toggleButton
 
-    property var connectionRetryOverX: VPNController.connectionRetry > 1
-    property var enableDisconnectInConfirming: VPNController.enableDisconnectInConfirming
+    property var connectionRetryOverX: MZModules["vpn"].controller.connectionRetry > 1
+    property var enableDisconnectInConfirming: MZModules["vpn"].controller.enableDisconnectInConfirming
     property var toggleColor: VPNTheme.theme.vpnToggleDisconnected
     property var toolTipTitle: ""
     Accessible.name: toolTipTitle
 
     function handleClick() {
         toolTip.close();
-        if (VPNController.state !== VPNController.StateOff) {
+        if (MZModules["vpn"].controller.state !== MZModules["vpn"].controller.StateOff) {
             return VPN.deactivate();
         }
 
@@ -30,7 +30,7 @@ VPNButtonBase {
 
     // property in VPNButtonBase {}
     visualStateItem: toggle
-    state: VPNController.state
+    state: MZModules["vpn"].controller.state
     height: 32
     width: 60
     radius: 16
@@ -44,7 +44,7 @@ VPNButtonBase {
 
     states: [
         State {
-            name: VPNController.StateInitializing
+            name: MZModules["vpn"].controller.StateInitializing
 
             PropertyChanges {
                 target: cursor
@@ -64,7 +64,7 @@ VPNButtonBase {
 
         },
         State {
-            name: VPNController.StateOff
+            name: MZModules["vpn"].controller.StateOff
 
             PropertyChanges {
                 target: cursor
@@ -85,7 +85,7 @@ VPNButtonBase {
 
         },
         State {
-            name: VPNController.StateConnecting
+            name: MZModules["vpn"].controller.StateConnecting
 
             PropertyChanges {
                 target: cursor
@@ -108,7 +108,7 @@ VPNButtonBase {
 
         },
         State {
-            name: VPNController.StateConfirming
+            name: MZModules["vpn"].controller.StateConfirming
 
             PropertyChanges {
                 target: cursor
@@ -131,7 +131,7 @@ VPNButtonBase {
 
         },
         State {
-            name: VPNController.StateOn
+            name: MZModules["vpn"].controller.StateOn
 
             PropertyChanges {
                 target: cursor
@@ -152,7 +152,7 @@ VPNButtonBase {
 
         },
         State {
-            name: VPNController.StateDisconnecting
+            name: MZModules["vpn"].controller.StateDisconnecting
 
             PropertyChanges {
                 target: cursor
@@ -173,7 +173,7 @@ VPNButtonBase {
 
         },
         State {
-            name: VPNController.StateSwitching
+            name: MZModules["vpn"].controller.StateSwitching
 
             PropertyChanges {
                 target: cursor
@@ -222,7 +222,7 @@ VPNButtonBase {
         radius: height / 2
         border.color: toggleColor.focusBorder
         color: VPNTheme.theme.transparent
-        opacity: toggleButton.activeFocus && (VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateOff) ? 1 : 0
+        opacity: toggleButton.activeFocus && (MZModules["vpn"].controller.state === MZModules["vpn"].controller.StateOn || MZModules["vpn"].controller.state === MZModules["vpn"].controller.StateOff) ? 1 : 0
 
         VPNFocusOutline {
             id: vpnFocusOutline
@@ -267,9 +267,9 @@ VPNButtonBase {
 
     function toggleClickable() {
         return VPN.state === VPN.StateMain &&
-               (VPNController.state === VPNController.StateOn ||
-                VPNController.state === VPNController.StateOff ||
-                (VPNController.state === VPNController.StateConfirming &&
+               (MZModules["vpn"].controller.state === MZModules["vpn"].controller.StateOn ||
+                MZModules["vpn"].controller.state === MZModules["vpn"].controller.StateOff ||
+                (MZModules["vpn"].controller.state === MZModules["vpn"].controller.StateConfirming &&
                  (connectionRetryOverX || enableDisconnectInConfirming)));
     }
 

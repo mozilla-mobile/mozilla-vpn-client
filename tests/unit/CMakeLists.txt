@@ -105,7 +105,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/composer/composerblockunorderedlist.h
     ${MVPN_SOURCE_DIR}/constants.cpp
     ${MVPN_SOURCE_DIR}/constants.h
-    ${MVPN_SOURCE_DIR}/controller.h
     ${MVPN_SOURCE_DIR}/cryptosettings.cpp
     ${MVPN_SOURCE_DIR}/cryptosettings.h
     ${MVPN_SOURCE_DIR}/curve25519.cpp
@@ -183,6 +182,13 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/models/supportcategorymodel.h
     ${MVPN_SOURCE_DIR}/models/user.cpp
     ${MVPN_SOURCE_DIR}/models/user.h
+    ${MVPN_SOURCE_DIR}/module.cpp
+    ${MVPN_SOURCE_DIR}/module.h
+    ${MVPN_SOURCE_DIR}/moduleholder.cpp
+    ${MVPN_SOURCE_DIR}/moduleholder.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/controller.h
     ${MVPN_SOURCE_DIR}/mozillavpn.h
     ${MVPN_SOURCE_DIR}/networkmanager.cpp
     ${MVPN_SOURCE_DIR}/networkmanager.h

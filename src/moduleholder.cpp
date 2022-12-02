@@ -23,8 +23,9 @@ ModuleHolder::ModuleHolder(QObject* parent) : QQmlPropertyMap(parent) {
 
 ModuleHolder::~ModuleHolder() { MVPN_COUNT_DTOR(ModuleHolder); }
 
-void ModuleHolder::registerModule(Module* module) {
-  Q_ASSERT(!m_modules.contains(module->name()));
-  m_modules.insert(module->name(), module);
-  insert(module->name(), QVariant::fromValue(module));
+void ModuleHolder::registerModule(const QString& moduleName,
+                                  Module* moduleObj) {
+  Q_ASSERT(!m_modules.contains(moduleName));
+  m_modules.insert(moduleName, moduleObj);
+  insert(moduleName, QVariant::fromValue(moduleObj));
 }

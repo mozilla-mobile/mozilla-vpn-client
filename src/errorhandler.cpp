@@ -8,6 +8,7 @@
 
 #include "leakdetector.h"
 #include "logger.h"
+#include "modules/modulevpn.h"
 #include "mozillavpn.h"
 #include "telemetry/gleansample.h"
 
@@ -51,7 +52,7 @@ ErrorTypeData s_errorData[] = {
     ErrorTypeData(
         ErrorHandler::VPNDependentConnectionError, true,
         []() {
-          MozillaVPN* vpn = MozillaVPN::instance();
+          ModuleVPN* vpn = ModuleVPN::instance();
           if (vpn->controller()->state() == Controller::State::StateOn ||
               vpn->controller()->state() ==
                   Controller::State::StateConfirming) {

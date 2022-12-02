@@ -60,7 +60,6 @@ SOURCES += \
         connectionbenchmark/uploaddatagenerator.cpp \
         connectionhealth.cpp \
         constants.cpp \
-        controller.cpp \
         cryptosettings.cpp \
         curve25519.cpp \
         dnshelper.cpp \
@@ -115,6 +114,7 @@ SOURCES += \
         module.cpp \
         moduleholder.cpp \
         modules/modulevpn.cpp \
+        modules/modulevpn/controller.cpp \
         mozillavpn.cpp \
         networkmanager.cpp \
         networkrequest.cpp \
@@ -243,8 +243,6 @@ HEADERS += \
         connectionbenchmark/uploaddatagenerator.h \
         connectionhealth.h \
         constants.h \
-        controller.h \
-        controllerimpl.h \
         cryptosettings.h \
         curve25519.h \
         dnshelper.h \
@@ -296,7 +294,10 @@ HEADERS += \
         models/user.h \
         module.h \
         moduleholder.h \
+        modulelist.h \
         modules/modulevpn.h \
+        modules/modulevpn/controller.h \
+        modules/modulevpn/controllerimpl.h \
         mozillavpn.h \
         networkmanager.h \
         networkrequest.h \

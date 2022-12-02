@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "../../src/controller.h"
 #include "../../src/mozillavpn.h"
+#include "../../src/modules/modulevpn/controller.h"
 #include "helper.h"
 
 // The singleton.
@@ -35,8 +35,6 @@ bool MozillaVPN::stagingMode() const { return true; }
 bool MozillaVPN::debugMode() const { return true; }
 
 ConnectionHealth* MozillaVPN::connectionHealth() { return nullptr; }
-
-Controller* MozillaVPN::controller() { return new Controller(); }
 
 ServerData* MozillaVPN::currentServer() {
   static ServerData* data = new ServerData();

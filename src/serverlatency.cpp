@@ -10,6 +10,7 @@
 #include "logger.h"
 #include "mfbt/checkedint.h"
 #include "models/feature.h"
+#include "modules/modulevpn.h"
 #include "mozillavpn.h"
 #include "pingsenderfactory.h"
 
@@ -32,12 +33,10 @@ ServerLatency::ServerLatency() { MVPN_COUNT_CTOR(ServerLatency); }
 ServerLatency::~ServerLatency() { MVPN_COUNT_DTOR(ServerLatency); }
 
 void ServerLatency::initialize() {
-  MozillaVPN* vpn = MozillaVPN::instance();
+  connect(MozillaVPN::instance()->serverCountryModel(),
+          &ServerCountryModel::changed, this, &ServerLatency::start);
 
-  connect(vpn->serverCountryModel(), &ServerCountryModel::changed, this,
-          &ServerLatency::start);
-
-  connect(vpn->controller(), &Controller::stateChanged, this,
+  connect(ModuleVPN::instance()->controller(), &Controller::stateChanged, this,
           &ServerLatency::stateChanged);
 
   connect(&m_pingTimeout, &QTimer::timeout, this,
@@ -53,8 +52,7 @@ void ServerLatency::start() {
     return;
   }
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  if (vpn->controller()->state() != Controller::StateOff) {
+  if (ModuleVPN::instance()->controller()->state() != Controller::StateOff) {
     // Don't attempt to refresh latency when the VPN is active, or
     // we could get misleading results.
     m_wantRefresh = true;
@@ -68,7 +66,7 @@ void ServerLatency::start() {
   m_sequence = 0;
   m_wantRefresh = false;
   m_pingSender = PingSenderFactory::create(QHostAddress(), this);
-  ServerCountryModel* scm = vpn->serverCountryModel();
+  ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
 
   connect(m_pingSender, SIGNAL(recvPing(quint16)), this,
           SLOT(recvPing(quint16)));
@@ -165,7 +163,7 @@ void ServerLatency::stop() {
 }
 
 void ServerLatency::stateChanged() {
-  Controller::State state = MozillaVPN::instance()->controller()->state();
+  Controller::State state = ModuleVPN::instance()->controller()->state();
   if (state != Controller::StateOff) {
     // If the VPN is active, then do not attempt to measure the server latency.
     stop();

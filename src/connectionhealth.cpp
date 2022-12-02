@@ -11,6 +11,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/server.h"
+#include "modules/modulevpn.h"
 #include "mozillavpn.h"
 #include "telemetry/gleansample.h"
 
@@ -94,7 +95,7 @@ void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
   logger.debug() << "ConnectionHealth started";
 
   if (m_suspended || serverIpv4Gateway.isEmpty() ||
-      MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
+      ModuleVPN::instance()->controller()->state() != Controller::StateOn) {
     return;
   }
 
@@ -147,7 +148,7 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
 }
 
 void ConnectionHealth::connectionStateChanged() {
-  Controller::State state = MozillaVPN::instance()->controller()->state();
+  Controller::State state = ModuleVPN::instance()->controller()->state();
   logger.debug() << "Connection state changed to" << state;
 
   if (state != Controller::StateInitializing) {
@@ -156,7 +157,7 @@ void ConnectionHealth::connectionStateChanged() {
 
   switch (state) {
     case Controller::StateOn:
-      MozillaVPN::instance()->controller()->getStatus(
+      ModuleVPN::instance()->controller()->getStatus(
           [this](const QString& serverIpv4Gateway,
                  const QString& deviceIpv4Address, uint64_t txBytes,
                  uint64_t rxBytes) {

@@ -17,7 +17,7 @@ VPNViewBase {
     objectName: "settingsNetworkingBackButton"
 
     property string _appPermissionsTitle
-    property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
+    property bool vpnIsOff: (MZModules["vpn"].controller.state === MZModules["vpn"].controller.StateOff)
 
     //% "Network settings"
     _menuTitle: qsTrId("vpn.settings.networking")
@@ -40,7 +40,7 @@ VPNViewBase {
                     //% "VPN must be off to edit these settings"
                     //: Associated to a group of settings that require the VPN to be disconnected to change
                     message: qsTrId("vpn.settings.vpnMustBeOff"),
-                    visible: VPNController.state !== VPNController.StateOff
+                    visible: MZModules["vpn"].controller.state !== MZModules["vpn"].controller.StateOff
                 }
             ]
         }

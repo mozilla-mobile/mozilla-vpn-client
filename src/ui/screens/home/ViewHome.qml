@@ -101,8 +101,8 @@ VPNFlickable {
             descriptionText: qsTrId("vpn.servers.currentLocation").arg(
                                  VPNCurrentServer.localizedCityName)
 
-            disableRowWhen: (VPNController.state !== VPNController.StateOn
-                             && VPNController.state !== VPNController.StateOff)
+            disableRowWhen: (MZModules["vpn"].controller.state !== MZModules["vpn"].controller.StateOn
+                             && MZModules["vpn"].controller.state !== MZModules["vpn"].controller.StateOff)
                             || box.connectionInfoScreenVisible
             Layout.topMargin: 12
             contentChildren: [

@@ -11,18 +11,11 @@ class Module : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Module)
 
-  Q_PROPERTY(QString name READ name CONSTANT)
-
  public:
   static void initialize();
 
-  Module(QObject* parent, const QString& name);
+  explicit Module(QObject* parent);
   virtual ~Module();
-
-  const QString& name() const { return m_name; }
-
- private:
-  QString m_name;
 };
 
 #endif  // MODULE_H

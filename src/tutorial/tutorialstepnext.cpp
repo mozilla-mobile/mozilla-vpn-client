@@ -11,6 +11,7 @@
 #include "inspector/inspectorutils.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "modules/modulevpn.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 
@@ -93,7 +94,7 @@ void TutorialStepNext::startOrStop(bool start) {
       obj = ::SettingsHolder::instance();
       break;
     case Controller:
-      obj = MozillaVPN::instance()->controller();
+      obj = ModuleVPN::instance()->controller();
       break;
     case QML:
       obj = InspectorUtils::findObject(m_emitter);

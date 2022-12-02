@@ -6,6 +6,7 @@
 
 #include "leakdetector.h"
 #include "logger.h"
+#include "modules/modulevpn.h"
 #include "mozillavpn.h"
 #include "telemetry/gleansample.h"
 
@@ -36,7 +37,7 @@ Telemetry::~Telemetry() { MVPN_COUNT_DTOR(Telemetry); }
 void Telemetry::initialize() {
   logger.debug() << "Initialize";
 
-  Controller* controller = MozillaVPN::instance()->controller();
+  Controller* controller = ModuleVPN::instance()->controller();
   Q_ASSERT(controller);
 
   connect(controller, &Controller::handshakeFailed, this,
@@ -52,9 +53,7 @@ void Telemetry::initialize() {
           });
 
   connect(controller, &Controller::stateChanged, this, [this]() {
-    MozillaVPN* vpn = MozillaVPN::instance();
-    Q_ASSERT(vpn);
-    Controller* controller = vpn->controller();
+    Controller* controller = ModuleVPN::instance()->controller();
     Q_ASSERT(controller);
     Controller::State state = controller->state();
 
@@ -64,6 +63,8 @@ void Telemetry::initialize() {
       m_connectionStabilityTimer.start(CONNECTION_STABILITY_MSEC);
     }
 
+    MozillaVPN* vpn = MozillaVPN::instance();
+    Q_ASSERT(vpn);
     emit vpn->recordGleanEventWithExtraKeys(
         GleanSample::controllerStep,
         {{"state", QVariant::fromValue(state).toString()}});
@@ -87,12 +88,11 @@ void Telemetry::initialize() {
 void Telemetry::connectionStabilityEvent() {
   logger.info() << "Send a connection stability event";
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-
-  Controller* controller = vpn->controller();
+  Controller* controller = ModuleVPN::instance()->controller();
   Q_ASSERT(controller);
   Q_ASSERT(controller->state() == Controller::StateOn);
 
+  MozillaVPN* vpn = MozillaVPN::instance();
   emit vpn->recordGleanEventWithExtraKeys(
       GleanSample::connectivityStable,
       {{"server", vpn->currentServer()->exitServerPublicKey()},
@@ -105,8 +105,7 @@ void Telemetry::connectionStabilityEvent() {
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS)
 void Telemetry::periodicStateRecorder() {
   // On mobile this is handled seperately in a background process
-  MozillaVPN* vpn = MozillaVPN::instance();
-  Controller* controller = vpn->controller();
+  Controller* controller = ModuleVPN::instance()->controller();
   Q_ASSERT(controller);
 
   Controller::State controllerState = controller->state();

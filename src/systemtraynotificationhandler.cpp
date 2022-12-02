@@ -3,20 +3,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "systemtraynotificationhandler.h"
+#include "constants.h"
+#include "externalophandler.h"
+#include "frontend/navigator.h"
+#include "leakdetector.h"
+#include "l18nstrings.h"
+#include "logger.h"
+#include "modules/modulevpn.h"
+#include "mozillavpn.h"
+#include "qmlengineholder.h"
 
 #include <QIcon>
 #include <QMenu>
 #include <QSystemTrayIcon>
 #include <QWindow>
-
-#include "constants.h"
-#include "externalophandler.h"
-#include "frontend/navigator.h"
-#include "l18nstrings.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "mozillavpn.h"
-#include "qmlengineholder.h"
 
 namespace {
 Logger logger("SystemTrayNotificationHandler");
@@ -43,7 +43,7 @@ void SystemTrayNotificationHandler::initialize() {
   connect(vpn->currentServer(), &ServerData::changed, this,
           &SystemTrayNotificationHandler::updateContextMenu);
 
-  connect(vpn->controller(), &Controller::stateChanged, this,
+  connect(ModuleVPN::instance()->controller(), &Controller::stateChanged, this,
           &SystemTrayNotificationHandler::updateContextMenu);
 
   connect(vpn->statusIcon(), &StatusIcon::iconUpdateNeeded, this,
@@ -148,8 +148,9 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 
   bool isStateMain = vpn->state() == MozillaVPN::StateMain;
 
-  m_disconnectAction->setVisible(isStateMain && vpn->controller()->state() ==
-                                                    Controller::StateOn);
+  m_disconnectAction->setVisible(isStateMain &&
+                                 ModuleVPN::instance()->controller()->state() ==
+                                     Controller::StateOn);
 
   m_statusLabel->setVisible(isStateMain);
   m_lastLocationLabel->setVisible(isStateMain);
@@ -172,7 +173,7 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 
   QString statusLabel;
 
-  switch (vpn->controller()->state()) {
+  switch (ModuleVPN::instance()->controller()->state()) {
     case Controller::StateOn:
       statusLabel = l18nStrings->t(L18nStrings::SystrayStatusConnectedTo);
       break;
@@ -218,8 +219,8 @@ void SystemTrayNotificationHandler::updateContextMenu() {
   m_lastLocationLabel->setText(
       l18nStrings->t(L18nStrings::SystrayLocation2)
           .arg(localizedCountryName, localizedCityName));
-  m_lastLocationLabel->setEnabled(vpn->controller()->state() ==
-                                  Controller::StateOff);
+  m_lastLocationLabel->setEnabled(
+      ModuleVPN::instance()->controller()->state() == Controller::StateOff);
 }
 
 void SystemTrayNotificationHandler::updateIcon() {

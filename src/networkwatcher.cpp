@@ -9,6 +9,7 @@
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "modules/modulevpn.h"
 #include "mozillavpn.h"
 #include "networkwatcherimpl.h"
 #include "platforms/dummy/dummynetworkwatcher.h"
@@ -127,7 +128,7 @@ void NetworkWatcher::unsecuredNetwork(const QString& networkName,
     return;
   }
 
-  Controller::State state = vpn->controller()->state();
+  Controller::State state = ModuleVPN::instance()->controller()->state();
   if (state == Controller::StateOn || state == Controller::StateConnecting ||
       state == Controller::StateSwitching) {
     logger.debug() << "VPN on. Ignoring unsecured network";

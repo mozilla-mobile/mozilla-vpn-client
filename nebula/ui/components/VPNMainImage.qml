@@ -16,7 +16,7 @@ Rectangle {
     states: [
         State {
             name: "stateConnecting"
-            when: VPNController.state === VPNController.StateConnecting
+            when: MZModules["vpn"].controller.state === MZModules["vpn"].controller.StateConnecting
 
             PropertyChanges {
                 target: logo
@@ -35,7 +35,7 @@ Rectangle {
         },
         State {
             name: "stateConfirming"
-            when: VPNController.state === VPNController.StateConfirming
+            when: MZModules["vpn"].controller.state === MZModules["vpn"].controller.StateConfirming
 
             PropertyChanges {
                 target: logo
@@ -55,7 +55,7 @@ Rectangle {
         },
         State {
             name: "stateDisconnecting"
-            when: VPNController.state === VPNController.StateDisconnecting
+            when: MZModules["vpn"].controller.state === MZModules["vpn"].controller.StateDisconnecting
 
             PropertyChanges {
                 target: logo
@@ -76,7 +76,7 @@ Rectangle {
         },
         State {
             name: "stateSwitching"
-            when: VPNController.state === VPNController.StateSwitching
+            when: MZModules["vpn"].controller.state === MZModules["vpn"].controller.StateSwitching
 
             PropertyChanges {
                 target: logo
@@ -98,7 +98,7 @@ Rectangle {
         },
         State {
             name: "stateOff"
-            when: VPNController.state === VPNController.StateOff
+            when: MZModules["vpn"].controller.state === MZModules["vpn"].controller.StateOff
 
             PropertyChanges {
                 target: insetCircle
@@ -113,7 +113,7 @@ Rectangle {
         },
         State {
             name: "stateInitializing"
-            when: VPNController.state === VPNController.StateInitializing
+            when: MZModules["vpn"].controller.state === MZModules["vpn"].controller.StateInitializing
 
             PropertyChanges {
                 target: logo
@@ -132,7 +132,7 @@ Rectangle {
         },
         State {
             name: "stateOn"
-            when: VPNController.state === VPNController.StateOn &&
+            when: MZModules["vpn"].controller.state === MZModules["vpn"].controller.StateOn &&
                 VPNConnectionHealth.stability === VPNConnectionHealth.Stable
 
             PropertyChanges {
@@ -151,7 +151,7 @@ Rectangle {
         },
         State {
             name: "unstableOn"
-            when: VPNController.state === VPNController.StateOn &&
+            when: MZModules["vpn"].controller.state === MZModules["vpn"].controller.StateOn &&
                 VPNConnectionHealth.stability === VPNConnectionHealth.Unstable
 
             PropertyChanges {
@@ -171,7 +171,7 @@ Rectangle {
         },
         State {
             name: "noSignalOn"
-            when: VPNController.state === VPNController.StateOn &&
+            when: MZModules["vpn"].controller.state === MZModules["vpn"].controller.StateOn &&
                 VPNConnectionHealth.stability === VPNConnectionHealth.NoSignal
 
             PropertyChanges {
@@ -192,7 +192,7 @@ Rectangle {
     ]
     transitions: [
         Transition {
-            to: VPNController.StateConnecting
+            to: MZModules["vpn"].controller.StateConnecting
             ParallelAnimation {
                 PropertyAnimation {
                     target: insetCircle
@@ -216,7 +216,7 @@ Rectangle {
             }
         },
         Transition {
-            to: VPNController.StateConfirming
+            to: MZModules["vpn"].controller.StateConfirming
             ParallelAnimation {
 
                 PropertyAnimation {
@@ -228,7 +228,7 @@ Rectangle {
 
         },
         Transition {
-            to: VPNController.StateDisconnecting
+            to: MZModules["vpn"].controller.StateDisconnecting
             ParallelAnimation {
                 PropertyAnimation {
                     target: insetCircle
@@ -251,7 +251,7 @@ Rectangle {
             }
         },
         Transition {
-            to: VPNController.StateOff
+            to: MZModules["vpn"].controller.StateOff
 
             ParallelAnimation {
                 PropertyAnimation {
@@ -270,7 +270,7 @@ Rectangle {
             }
         },
         Transition {
-            to: VPNController.StateSwitching
+            to: MZModules["vpn"].controller.StateSwitching
             ParallelAnimation {
                 PropertyAnimation {
                     target: insetCircle

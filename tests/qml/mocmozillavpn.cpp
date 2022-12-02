@@ -27,8 +27,6 @@ MozillaVPN::~MozillaVPN() {}
 
 ConnectionHealth* MozillaVPN::connectionHealth() { return nullptr; }
 
-Controller* MozillaVPN::controller() { return new Controller(); }
-
 SubscriptionData* MozillaVPN::subscriptionData() {
   return new SubscriptionData();
 }

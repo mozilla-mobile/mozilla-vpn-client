@@ -7,10 +7,11 @@
 #include "benchmarktaskping.h"
 #include "benchmarktasktransfer.h"
 #include "connectionhealth.h"
-#include "controller.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
+#include "modules/modulevpn.h"
+#include "modules/modulevpn/controller.h"
 #include "mozillavpn.h"
 #include "taskscheduler.h"
 
@@ -27,14 +28,13 @@ ConnectionBenchmark::~ConnectionBenchmark() {
 }
 
 void ConnectionBenchmark::initialize() {
-  MozillaVPN* vpn = MozillaVPN::instance();
-
-  Controller* controller = vpn->controller();
+  Controller* controller = ModuleVPN::instance()->controller();
   Q_ASSERT(controller);
 
   connect(controller, &Controller::stateChanged, this,
           &ConnectionBenchmark::handleControllerState);
-  connect(vpn->connectionHealth(), &ConnectionHealth::stabilityChanged, this,
+  connect(MozillaVPN::instance()->connectionHealth(),
+          &ConnectionHealth::stabilityChanged, this,
           &ConnectionBenchmark::handleStabilityChange);
 }
 
@@ -66,9 +66,7 @@ void ConnectionBenchmark::start() {
 
   Q_ASSERT(m_state != StateRunning);
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-
-  Controller* controller = vpn->controller();
+  Controller* controller = ModuleVPN::instance()->controller();
   Controller::State controllerState = controller->state();
   Q_ASSERT(controllerState == Controller::StateOn);
 
@@ -188,7 +186,7 @@ void ConnectionBenchmark::handleControllerState() {
   }
 
   Controller::State controllerState =
-      MozillaVPN::instance()->controller()->state();
+      ModuleVPN::instance()->controller()->state();
   logger.debug() << "Handle controller state" << controllerState;
 
   if (controllerState != Controller::StateOn) {

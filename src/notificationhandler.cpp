@@ -9,6 +9,7 @@
 #include "l18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "modules/modulevpn.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 
@@ -92,7 +93,7 @@ void NotificationHandler::showNotification() {
       // on StateInitialize, in case the user was connected during a log-out
       // Otherwise existing notifications showing "connected" would update
       !(vpn->state() == MozillaVPN::StateInitialize &&
-        vpn->controller()->state() == Controller::StateOff)) {
+        ModuleVPN::instance()->controller()->state() == Controller::StateOff)) {
     return;
   }
 
@@ -103,7 +104,7 @@ void NotificationHandler::showNotification() {
   QString localizedCountryName =
       vpn->serverCountryModel()->localizedCountryName(countryCode);
 
-  switch (vpn->controller()->state()) {
+  switch (ModuleVPN::instance()->controller()->state()) {
     case Controller::StateOn:
       m_connected = true;
 
