@@ -205,6 +205,8 @@ jobs:
 
       - name: Generate grcov report
         shell: bash
+        continue-on-error: true
+        timeout-minutes: 1
         env:
           TESTJSON: ${{ needs.build_test_app.outputs.matrix }}
         run: |          
@@ -213,7 +215,7 @@ jobs:
           echo $TESTDIRS
           
           grcov ${TESTDIRS} \
-              -s checkout/src -t lcov --branch --ignore-not-existing \
+              -s checkout/src -t lcov --llvm --branch --ignore-not-existing \
               -o ${{runner.temp}}/artifacts/functional_lcov.info   
 
       - name: Upload coverage to Codecov
