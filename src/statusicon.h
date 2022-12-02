@@ -8,7 +8,6 @@
 #include <QIcon>
 #include <QObject>
 #include <QTimer>
-#include <QUrl>
 
 #include "connectionhealth.h"
 

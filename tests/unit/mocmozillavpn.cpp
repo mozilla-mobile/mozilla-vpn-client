@@ -34,8 +34,6 @@ MozillaVPN::UserState MozillaVPN::userState() const {
 bool MozillaVPN::stagingMode() const { return true; }
 bool MozillaVPN::debugMode() const { return true; }
 
-ConnectionHealth* MozillaVPN::connectionHealth() { return nullptr; }
-
 ServerData* MozillaVPN::currentServer() {
   static ServerData* data = new ServerData();
   return data;

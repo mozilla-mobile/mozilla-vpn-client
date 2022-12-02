@@ -6,13 +6,12 @@
 
 #include "benchmarktaskping.h"
 #include "benchmarktasktransfer.h"
-#include "connectionhealth.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
 #include "modules/modulevpn.h"
+#include "modules/modulevpn/connectionhealth.h"
 #include "modules/modulevpn/controller.h"
-#include "mozillavpn.h"
 #include "taskscheduler.h"
 
 namespace {
@@ -33,7 +32,7 @@ void ConnectionBenchmark::initialize() {
 
   connect(controller, &Controller::stateChanged, this,
           &ConnectionBenchmark::handleControllerState);
-  connect(MozillaVPN::instance()->connectionHealth(),
+  connect(ModuleVPN::instance()->connectionHealth(),
           &ConnectionHealth::stabilityChanged, this,
           &ConnectionBenchmark::handleStabilityChange);
 }
@@ -201,7 +200,7 @@ void ConnectionBenchmark::handleStabilityChange() {
   }
 
   ConnectionHealth::ConnectionStability stability =
-      MozillaVPN::instance()->connectionHealth()->stability();
+      ModuleVPN::instance()->connectionHealth()->stability();
   logger.debug() << "Handle stability change" << stability;
 
   if (stability == ConnectionHealth::NoSignal) {

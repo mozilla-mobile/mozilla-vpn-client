@@ -138,8 +138,6 @@ target_sources(mozillavpn-sources INTERFACE
     connectionbenchmark/connectionbenchmark.h
     connectionbenchmark/uploaddatagenerator.cpp
     connectionbenchmark/uploaddatagenerator.h
-    connectionhealth.cpp
-    connectionhealth.h
     constants.cpp
     constants.h
     cryptosettings.cpp
@@ -250,6 +248,8 @@ target_sources(mozillavpn-sources INTERFACE
     modulelist.h
     modules/modulevpn.cpp
     modules/modulevpn.h
+    modules/modulevpn/connectionhealth.cpp
+    modules/modulevpn/connectionhealth.h
     modules/modulevpn/controller.cpp
     modules/modulevpn/controller.h
     modules/modulevpn/controllerimpl.h

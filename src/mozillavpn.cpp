@@ -151,21 +151,6 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   connect(this, &MozillaVPN::stateChanged, &m_private->m_statusIcon,
           &StatusIcon::refreshNeeded);
 
-  connect(&m_private->m_connectionHealth, &ConnectionHealth::stabilityChanged,
-          &m_private->m_statusIcon, &StatusIcon::refreshNeeded);
-
-  connect(ModuleVPN::instance()->controller(), &Controller::stateChanged,
-          &m_private->m_connectionHealth,
-          &ConnectionHealth::connectionStateChanged);
-
-  connect(ModuleVPN::instance()->controller(), &Controller::stateChanged,
-          &m_private->m_captivePortalDetection,
-          &CaptivePortalDetection::stateChanged);
-
-  connect(&m_private->m_connectionHealth, &ConnectionHealth::stabilityChanged,
-          &m_private->m_captivePortalDetection,
-          &CaptivePortalDetection::stateChanged);
-
   connect(SettingsHolder::instance(),
           &SettingsHolder::captivePortalAlertChanged,
           &m_private->m_captivePortalDetection,
@@ -202,10 +187,6 @@ MozillaVPN::~MozillaVPN() {
   s_instance = nullptr;
 
   delete m_private;
-}
-
-ConnectionHealth* MozillaVPN::connectionHealth() {
-  return &m_private->m_connectionHealth;
 }
 
 ServerData* MozillaVPN::currentServer() { return &m_private->m_serverData; }

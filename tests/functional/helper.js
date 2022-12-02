@@ -67,8 +67,8 @@ module.exports = {
     if (awaitConnectionOkay) {
       await this.waitForCondition(async () => {
         let title = await this.getElementProperty('controllerTitle', 'text');
-        let unsettled =
-            await this.getElementProperty('VPNConnectionHealth', 'unsettled');
+        let unsettled = await this.getElementProperty(
+            'MZModules.vpn.connectionHealth', 'unsettled');
         return (title == 'VPN is on') && (unsettled == 'false');
       });
     }

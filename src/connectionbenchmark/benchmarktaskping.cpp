@@ -7,7 +7,7 @@
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
+#include "modules/modulevpn.h"
 
 namespace {
 Logger logger("BenchmarkTaskPing");
@@ -28,7 +28,7 @@ void BenchmarkTaskPing::handleState(BenchmarkTask::State state) {
   logger.debug() << "Handle state" << state;
 
   if (state == BenchmarkTask::StateActive) {
-    connect(MozillaVPN::instance()->connectionHealth(),
+    connect(ModuleVPN::instance()->connectionHealth(),
             &ConnectionHealth::pingReceived, this, [&] {
               logger.debug() << "Ping received";
               pingReady();
@@ -39,6 +39,6 @@ void BenchmarkTaskPing::handleState(BenchmarkTask::State state) {
 }
 
 void BenchmarkTaskPing::pingReady() {
-  emit finished(MozillaVPN::instance()->connectionHealth()->latency());
+  emit finished(ModuleVPN::instance()->connectionHealth()->latency());
   emit completed();
 }

@@ -58,7 +58,6 @@ SOURCES += \
         connectionbenchmark/benchmarktasktransfer.cpp \
         connectionbenchmark/connectionbenchmark.cpp \
         connectionbenchmark/uploaddatagenerator.cpp \
-        connectionhealth.cpp \
         constants.cpp \
         cryptosettings.cpp \
         curve25519.cpp \
@@ -114,6 +113,7 @@ SOURCES += \
         module.cpp \
         moduleholder.cpp \
         modules/modulevpn.cpp \
+        modules/modulevpn/connectionhealth.cpp \
         modules/modulevpn/controller.cpp \
         mozillavpn.cpp \
         networkmanager.cpp \
@@ -241,7 +241,6 @@ HEADERS += \
         connectionbenchmark/benchmarktasktransfer.h \
         connectionbenchmark/connectionbenchmark.h \
         connectionbenchmark/uploaddatagenerator.h \
-        connectionhealth.h \
         constants.h \
         cryptosettings.h \
         curve25519.h \
@@ -296,6 +295,7 @@ HEADERS += \
         moduleholder.h \
         modulelist.h \
         modules/modulevpn.h \
+        modules/modulevpn/connectionhealth.h \
         modules/modulevpn/controller.h \
         modules/modulevpn/controllerimpl.h \
         mozillavpn.h \

@@ -96,9 +96,12 @@ void Telemetry::connectionStabilityEvent() {
   emit vpn->recordGleanEventWithExtraKeys(
       GleanSample::connectivityStable,
       {{"server", vpn->currentServer()->exitServerPublicKey()},
-       {"latency", QString::number(vpn->connectionHealth()->latency())},
-       {"loss", QString::number(vpn->connectionHealth()->loss())},
-       {"stddev", QString::number(vpn->connectionHealth()->stddev())},
+       {"latency",
+        QString::number(ModuleVPN::instance()->connectionHealth()->latency())},
+       {"loss",
+        QString::number(ModuleVPN::instance()->connectionHealth()->loss())},
+       {"stddev",
+        QString::number(ModuleVPN::instance()->connectionHealth()->stddev())},
        {"transport", vpn->networkWatcher()->getCurrentTransport()}});
 }
 

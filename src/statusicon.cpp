@@ -130,7 +130,7 @@ const QColor StatusIcon::indicatorColor() const {
     return INVALID_COLOR;
   }
 
-  switch (vpn->connectionHealth()->stability()) {
+  switch (ModuleVPN::instance()->connectionHealth()->stability()) {
     case ConnectionHealth::Stable:
       return GREEN_COLOR;
     case ConnectionHealth::Unstable:

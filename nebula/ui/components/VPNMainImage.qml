@@ -133,7 +133,7 @@ Rectangle {
         State {
             name: "stateOn"
             when: MZModules["vpn"].controller.state === MZModules["vpn"].controller.StateOn &&
-                VPNConnectionHealth.stability === VPNConnectionHealth.Stable
+                MZModules.vpn.connectionHealth.stability === MZModules.vpn.connectionHealth.Stable
 
             PropertyChanges {
                 target: logo
@@ -152,7 +152,7 @@ Rectangle {
         State {
             name: "unstableOn"
             when: MZModules["vpn"].controller.state === MZModules["vpn"].controller.StateOn &&
-                VPNConnectionHealth.stability === VPNConnectionHealth.Unstable
+                MZModules.vpn.connectionHealth.stability === MZModules.vpn.connectionHealth.Unstable
 
             PropertyChanges {
                 target: logo
@@ -172,7 +172,7 @@ Rectangle {
         State {
             name: "noSignalOn"
             when: MZModules["vpn"].controller.state === MZModules["vpn"].controller.StateOn &&
-                VPNConnectionHealth.stability === VPNConnectionHealth.NoSignal
+                MZModules.vpn.connectionHealth.stability === MZModules.vpn.connectionHealth.NoSignal
 
             PropertyChanges {
                 target: logo

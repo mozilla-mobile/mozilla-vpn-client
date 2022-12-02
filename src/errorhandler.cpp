@@ -42,7 +42,7 @@ ErrorTypeData s_errorData[] = {
 
     ErrorTypeData(ErrorHandler::NoConnectionError, true,
                   []() {
-                    MozillaVPN* vpn = MozillaVPN::instance();
+                    ModuleVPN* vpn = ModuleVPN::instance();
                     return vpn->connectionHealth() &&
                                    vpn->connectionHealth()->isUnsettled()
                                ? ErrorHandler::NoAlert

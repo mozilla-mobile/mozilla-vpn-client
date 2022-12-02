@@ -64,7 +64,6 @@ void CaptivePortalDetection::stateChanged() {
     return;
   }
 
-  MozillaVPN* vpn = MozillaVPN::instance();
   Controller::State state = ModuleVPN::instance()->controller()->state();
 
   if (state == Controller::StateOff) {
@@ -78,7 +77,8 @@ void CaptivePortalDetection::stateChanged() {
   captivePortalBackgroundMonitor()->stop();
 
   if ((state != Controller::StateOn ||
-       vpn->connectionHealth()->stability() == ConnectionHealth::Stable) &&
+       ModuleVPN::instance()->connectionHealth()->stability() ==
+           ConnectionHealth::Stable) &&
       state != Controller::StateConnecting &&
       state != Controller::StateConfirming) {
     logger.warning() << "No captive portal detection required";
@@ -109,8 +109,6 @@ void CaptivePortalDetection::detectCaptivePortal() {
 
   // The monitor must be off when detecting the captive portal.
   captivePortalMonitor()->stop();
-
-  MozillaVPN* vpn = MozillaVPN::instance();
 
   // This method is called by the inspector too. Let's check the status of the
   // VPN.

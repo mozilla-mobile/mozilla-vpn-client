@@ -15,7 +15,6 @@
 #include "captiveportal/captiveportal.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "connectionbenchmark/connectionbenchmark.h"
-#include "connectionhealth.h"
 #include "constants.h"
 #include "env.h"
 #include "errorhandler.h"
@@ -158,7 +157,6 @@ class MozillaVPN final : public QObject {
   ConnectionBenchmark* connectionBenchmark() {
     return &m_private->m_connectionBenchmark;
   }
-  ConnectionHealth* connectionHealth();
   ServerData* currentServer();
   DeviceModel* deviceModel() { return &m_private->m_deviceModel; }
   FeedbackCategoryModel* feedbackCategoryModel() {
@@ -330,7 +328,6 @@ class MozillaVPN final : public QObject {
     CaptivePortal m_captivePortal;
     CaptivePortalDetection m_captivePortalDetection;
     ConnectionBenchmark m_connectionBenchmark;
-    ConnectionHealth m_connectionHealth;
     DeviceModel m_deviceModel;
     FeedbackCategoryModel m_feedbackCategoryModel;
     IpAddressLookup m_ipAddressLookup;

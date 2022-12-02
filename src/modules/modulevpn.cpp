@@ -4,6 +4,7 @@
 
 #include "modulevpn.h"
 #include "leakdetector.h"
+#include "mozillavpn.h"
 #include "qmlengineholder.h"
 
 #include <QQmlEngine>
@@ -17,6 +18,20 @@ ModuleVPN::ModuleVPN(QObject* parent) : Module(parent) {
 
   Q_ASSERT(!s_instance);
   s_instance = this;
+
+  connect(&m_controller, &Controller::stateChanged,
+          MozillaVPN::instance()->captivePortalDetection(),
+          &CaptivePortalDetection::stateChanged);
+
+  connect(&m_controller, &Controller::stateChanged, &m_connectionHealth,
+          &ConnectionHealth::connectionStateChanged);
+
+  connect(&m_connectionHealth, &ConnectionHealth::stabilityChanged,
+          MozillaVPN::instance()->statusIcon(), &StatusIcon::refreshNeeded);
+
+  connect(&m_connectionHealth, &ConnectionHealth::stabilityChanged,
+          MozillaVPN::instance()->captivePortalDetection(),
+          &CaptivePortalDetection::stateChanged);
 }
 
 ModuleVPN::~ModuleVPN() {
@@ -30,6 +45,18 @@ ModuleVPN::~ModuleVPN() {
 ModuleVPN* ModuleVPN::instance() {
   Q_ASSERT(s_instance);
   return s_instance;
+}
+
+QJSValue ModuleVPN::connectionHealthValue() {
+  QJSEngine* engine = QmlEngineHolder::instance()->engine();
+
+  QObject* obj = &m_connectionHealth;
+  QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+
+  QJSValue value = engine->newQObject(obj);
+  value.setPrototype(
+      engine->newQMetaObject(&ConnectionHealth::staticMetaObject));
+  return value;
 }
 
 QJSValue ModuleVPN::controllerValue() {
