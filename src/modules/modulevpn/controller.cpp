@@ -13,6 +13,7 @@
 #include "logger.h"
 #include "models/feature.h"
 #include "models/server.h"
+#include "modules/modulevpn.h"
 #include "mozillavpn.h"
 #include "rfc/rfc1112.h"
 #include "rfc/rfc1918.h"
@@ -726,7 +727,7 @@ QStringList Controller::getExcludedAddresses(const Server& exitServer) {
   // filtering out the captive portal endpoint
   if (Feature::get(Feature::Feature_captivePortal)->isSupported() &&
       SettingsHolder::instance()->captivePortalAlert()) {
-    CaptivePortal* captivePortal = MozillaVPN::instance()->captivePortal();
+    CaptivePortal* captivePortal = ModuleVPN::instance()->captivePortal();
 
     for (const QString& address : captivePortal->ipv4Addresses()) {
       logger.debug() << "Filtering out the captive portal address:" << address;

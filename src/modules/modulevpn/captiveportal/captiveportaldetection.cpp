@@ -13,7 +13,6 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "modules/modulevpn.h"
-#include "modules/modulevpn/controller.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 
@@ -30,6 +29,17 @@ CaptivePortalDetection::~CaptivePortalDetection() {
 }
 
 void CaptivePortalDetection::initialize() {
+  connect(ModuleVPN::instance()->controller(), &Controller::stateChanged, this,
+          &CaptivePortalDetection::stateChanged);
+
+  connect(ModuleVPN::instance()->connectionHealth(),
+          &ConnectionHealth::stabilityChanged, this,
+          &CaptivePortalDetection::stateChanged);
+
+  connect(SettingsHolder::instance(),
+          &SettingsHolder::captivePortalAlertChanged, this,
+          &CaptivePortalDetection::settingsChanged);
+
   m_active = SettingsHolder::instance()->captivePortalAlert();
   const auto networkWatcher = MozillaVPN::instance()->networkWatcher();
   connect(networkWatcher, &NetworkWatcher::networkChange, this,

@@ -75,20 +75,6 @@ target_sources(mozillavpn-sources INTERFACE
     authenticationinapp/incrementaldecoder.h
     authenticationlistener.cpp
     authenticationlistener.h
-    captiveportal/captiveportal.cpp
-    captiveportal/captiveportal.h
-    captiveportal/captiveportaldetection.cpp
-    captiveportal/captiveportaldetection.h
-    captiveportal/captiveportaldetectionimpl.cpp
-    captiveportal/captiveportaldetectionimpl.h
-    captiveportal/captiveportalmonitor.cpp
-    captiveportal/captiveportalmonitor.h
-    captiveportal/captiveportalnotifier.cpp
-    captiveportal/captiveportalnotifier.h
-    captiveportal/captiveportalrequest.cpp
-    captiveportal/captiveportalrequest.h
-    captiveportal/captiveportalrequesttask.cpp
-    captiveportal/captiveportalrequesttask.h
     collator.cpp
     collator.h
     command.cpp
@@ -237,6 +223,20 @@ target_sources(mozillavpn-sources INTERFACE
     modulelist.h
     modules/modulevpn.cpp
     modules/modulevpn.h
+    modules/modulevpn/captiveportal/captiveportal.cpp
+    modules/modulevpn/captiveportal/captiveportal.h
+    modules/modulevpn/captiveportal/captiveportaldetection.cpp
+    modules/modulevpn/captiveportal/captiveportaldetection.h
+    modules/modulevpn/captiveportal/captiveportaldetectionimpl.cpp
+    modules/modulevpn/captiveportal/captiveportaldetectionimpl.h
+    modules/modulevpn/captiveportal/captiveportalmonitor.cpp
+    modules/modulevpn/captiveportal/captiveportalmonitor.h
+    modules/modulevpn/captiveportal/captiveportalnotifier.cpp
+    modules/modulevpn/captiveportal/captiveportalnotifier.h
+    modules/modulevpn/captiveportal/captiveportalrequest.cpp
+    modules/modulevpn/captiveportal/captiveportalrequest.h
+    modules/modulevpn/captiveportal/captiveportalrequesttask.cpp
+    modules/modulevpn/captiveportal/captiveportalrequesttask.h
     modules/modulevpn/connectionbenchmark/benchmarktask.cpp
     modules/modulevpn/connectionbenchmark/benchmarktask.h
     modules/modulevpn/connectionbenchmark/benchmarktaskping.cpp

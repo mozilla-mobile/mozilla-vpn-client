@@ -81,8 +81,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/adjust/adjustfiltering.h
     ${MVPN_SOURCE_DIR}/adjust/adjustproxypackagehandler.cpp
     ${MVPN_SOURCE_DIR}/adjust/adjustproxypackagehandler.h
-    ${MVPN_SOURCE_DIR}/captiveportal/captiveportal.cpp
-    ${MVPN_SOURCE_DIR}/captiveportal/captiveportal.h
     ${MVPN_SOURCE_DIR}/collator.cpp
     ${MVPN_SOURCE_DIR}/collator.h
     ${MVPN_SOURCE_DIR}/command.cpp
@@ -188,6 +186,35 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/moduleholder.h
     ${MVPN_SOURCE_DIR}/modules/modulevpn.cpp
     ${MVPN_SOURCE_DIR}/modules/modulevpn.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportal.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportal.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportaldetection.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportaldetection.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportaldetectionimpl.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportaldetectionimpl.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportalmonitor.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportalmonitor.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportalnotifier.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportalnotifier.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportalrequest.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportalrequest.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportalrequesttask.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportalrequesttask.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionbenchmark/benchmarktask.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionbenchmark/benchmarktask.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionbenchmark/benchmarktaskping.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionbenchmark/benchmarktaskping.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionbenchmark/benchmarktasksentinel.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionbenchmark/benchmarktasktransfer.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionbenchmark/benchmarktasktransfer.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionbenchmark/connectionbenchmark.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionbenchmark/connectionbenchmark.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionbenchmark/uploaddatagenerator.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionbenchmark/uploaddatagenerator.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionhealth.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionhealth.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportal.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportal.h
     ${MVPN_SOURCE_DIR}/modules/modulevpn/controller.h
     ${MVPN_SOURCE_DIR}/mozillavpn.h
     ${MVPN_SOURCE_DIR}/networkmanager.cpp

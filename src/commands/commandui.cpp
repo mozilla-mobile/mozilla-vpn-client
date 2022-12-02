@@ -14,7 +14,6 @@
 #include "addons/manager/addonmanager.h"
 #include "apppermission.h"
 #include "authenticationinapp/authenticationinapp.h"
-#include "captiveportal/captiveportaldetection.h"
 #include "commandlineparser.h"
 #include "constants.h"
 #include "fontloader.h"
@@ -289,14 +288,6 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNFeatureList",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = FeatureModel::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNCaptivePortal",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->captivePortalDetection();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

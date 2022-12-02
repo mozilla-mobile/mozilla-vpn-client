@@ -92,7 +92,7 @@ VPNFlickable {
                     VPNUrlOpener.openLink(VPNUrlOpener.LinkCaptivePortal);
                 }
                 if(vpnFlickable.state === "post-activation"){
-                    VPNCaptivePortal.deactivationRequired();
+                    MZModules["vpn"].captivePortalDetection.deactivationRequired();
                 }
                 VPNNavigator.requestScreen(VPNNavigator.ScreenHome);
             }

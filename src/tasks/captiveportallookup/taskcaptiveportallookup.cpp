@@ -4,10 +4,9 @@
 
 #include "taskcaptiveportallookup.h"
 
-#include "captiveportal/captiveportal.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
+#include "modules/modulevpn.h"
 #include "networkrequest.h"
 
 namespace {
@@ -43,7 +42,7 @@ void TaskCaptivePortalLookup::run() {
           [this](const QByteArray& data) {
             logger.debug() << "Lookup completed";
 
-            MozillaVPN* vpn = MozillaVPN::instance();
+            ModuleVPN* vpn = ModuleVPN::instance();
             if (vpn->captivePortal()->fromJson(data)) {
               vpn->captivePortal()->writeSettings();
             }

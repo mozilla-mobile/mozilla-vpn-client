@@ -12,8 +12,6 @@
 #include <QTimer>
 #include <QVariant>
 
-#include "captiveportal/captiveportal.h"
-#include "captiveportal/captiveportaldetection.h"
 #include "constants.h"
 #include "env.h"
 #include "errorhandler.h"
@@ -149,10 +147,6 @@ class MozillaVPN final : public QObject {
   void authenticateWithType(AuthenticationType authenticationType);
 
   // Internal object getters:
-  CaptivePortal* captivePortal() { return &m_private->m_captivePortal; }
-  CaptivePortalDetection* captivePortalDetection() {
-    return &m_private->m_captivePortalDetection;
-  }
   ServerData* currentServer();
   DeviceModel* deviceModel() { return &m_private->m_deviceModel; }
   FeedbackCategoryModel* feedbackCategoryModel() {
@@ -321,8 +315,6 @@ class MozillaVPN final : public QObject {
 
   // Internal objects.
   struct Private {
-    CaptivePortal m_captivePortal;
-    CaptivePortalDetection m_captivePortalDetection;
     DeviceModel m_deviceModel;
     FeedbackCategoryModel m_feedbackCategoryModel;
     IpAddressLookup m_ipAddressLookup;

@@ -31,16 +31,24 @@ target_compile_definitions(qml_tests PRIVATE MVPN_DUMMY)
 
 # VPN Client source files
 target_sources(qml_tests PRIVATE
+    ${MVPN_SOURCE_DIR}/collator.cpp
+    ${MVPN_SOURCE_DIR}/collator.h
     ${MVPN_SOURCE_DIR}/constants.h
     ${MVPN_SOURCE_DIR}/cryptosettings.cpp
     ${MVPN_SOURCE_DIR}/cryptosettings.h
     ${MVPN_SOURCE_DIR}/dnspingsender.cpp
     ${MVPN_SOURCE_DIR}/dnspingsender.h
     ${MVPN_SOURCE_DIR}/env.h
+    ${MVPN_SOURCE_DIR}/errorhandler.cpp
+    ${MVPN_SOURCE_DIR}/errorhandler.h
     ${MVPN_SOURCE_DIR}/externalophandler.cpp
     ${MVPN_SOURCE_DIR}/externalophandler.h
     ${MVPN_SOURCE_DIR}/filterproxymodel.cpp
     ${MVPN_SOURCE_DIR}/filterproxymodel.h
+    ${MVPN_SOURCE_DIR}/frontend/navigator.cpp
+    ${MVPN_SOURCE_DIR}/frontend/navigator.h
+    ${MVPN_SOURCE_DIR}/frontend/navigatorreloader.cpp
+    ${MVPN_SOURCE_DIR}/frontend/navigatorreloader.h
     ${MVPN_SOURCE_DIR}/hawkauth.cpp
     ${MVPN_SOURCE_DIR}/hawkauth.h
     ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Chacha20.c
@@ -62,6 +70,14 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/models/featuremodel.h
     ${MVPN_SOURCE_DIR}/models/server.cpp
     ${MVPN_SOURCE_DIR}/models/server.h
+    ${MVPN_SOURCE_DIR}/models/servercity.cpp
+    ${MVPN_SOURCE_DIR}/models/servercity.h
+    ${MVPN_SOURCE_DIR}/models/servercountry.cpp
+    ${MVPN_SOURCE_DIR}/models/servercountry.h
+    ${MVPN_SOURCE_DIR}/models/servercountrymodel.cpp
+    ${MVPN_SOURCE_DIR}/models/servercountrymodel.h
+    ${MVPN_SOURCE_DIR}/models/serverdata.cpp
+    ${MVPN_SOURCE_DIR}/models/serverdata.h
     ${MVPN_SOURCE_DIR}/models/subscriptiondata.cpp
     ${MVPN_SOURCE_DIR}/models/subscriptiondata.h
     ${MVPN_SOURCE_DIR}/module.cpp
@@ -71,14 +87,49 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/modules/modulevpn.h
     ${MVPN_SOURCE_DIR}/modules/modulevpn.cpp
     ${MVPN_SOURCE_DIR}/modules/modulevpn.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportal.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportal.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportaldetection.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportaldetection.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportaldetectionimpl.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportaldetectionimpl.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportalmonitor.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportalmonitor.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportalnotifier.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportalnotifier.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportalrequest.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportalrequest.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportalrequesttask.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/captiveportal/captiveportalrequesttask.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionbenchmark/benchmarktask.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionbenchmark/benchmarktask.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionbenchmark/benchmarktaskping.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionbenchmark/benchmarktaskping.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionbenchmark/benchmarktasksentinel.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionbenchmark/benchmarktasktransfer.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionbenchmark/benchmarktasktransfer.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionbenchmark/connectionbenchmark.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionbenchmark/connectionbenchmark.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionbenchmark/uploaddatagenerator.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionbenchmark/uploaddatagenerator.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionhealth.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionhealth.h
     ${MVPN_SOURCE_DIR}/modules/modulevpn/controller.h
     ${MVPN_SOURCE_DIR}/mozillavpn.h
     ${MVPN_SOURCE_DIR}/networkmanager.cpp
     ${MVPN_SOURCE_DIR}/networkmanager.h
     ${MVPN_SOURCE_DIR}/networkrequest.cpp
     ${MVPN_SOURCE_DIR}/networkrequest.h
+    ${MVPN_SOURCE_DIR}/networkwatcher.cpp
+    ${MVPN_SOURCE_DIR}/networkwatcher.h
+    ${MVPN_SOURCE_DIR}/networkwatcherimpl.h
+    ${MVPN_SOURCE_DIR}/notificationhandler.cpp
+    ${MVPN_SOURCE_DIR}/notificationhandler.h
+    ${MVPN_SOURCE_DIR}/serveri18n.cpp
+    ${MVPN_SOURCE_DIR}/serveri18n.h
     ${MVPN_SOURCE_DIR}/settingsholder.cpp
     ${MVPN_SOURCE_DIR}/settingsholder.h
+    ${MVPN_SOURCE_DIR}/systemtraynotificationhandler.h
     ${MVPN_SOURCE_DIR}/theme.cpp
     ${MVPN_SOURCE_DIR}/theme.h
     ${MVPN_SOURCE_DIR}/pinghelper.cpp
@@ -88,6 +139,8 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/pingsenderfactory.cpp
     ${MVPN_SOURCE_DIR}/pingsenderfactory.h
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummycryptosettings.cpp
+    ${MVPN_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.cpp
+    ${MVPN_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.h
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.h
     ${MVPN_SOURCE_DIR}/qmlengineholder.cpp
@@ -100,6 +153,9 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/update/webupdater.h
     ${MVPN_SOURCE_DIR}/qmlengineholder.cpp
     ${MVPN_SOURCE_DIR}/qmlengineholder.h
+    ${MVPN_SOURCE_DIR}/task.h
+    ${MVPN_SOURCE_DIR}/taskscheduler.cpp
+    ${MVPN_SOURCE_DIR}/taskscheduler.h
     ${MVPN_SOURCE_DIR}/urlopener.cpp
     ${MVPN_SOURCE_DIR}/urlopener.h
 )
@@ -116,6 +172,7 @@ target_sources(qml_tests PRIVATE
     main.cpp
     mocconstants.cpp
     moccontroller.cpp
+    mocsystemtraynotificationhandler.cpp
     mocmozillavpn.cpp
     ../unit/mocinspectorhandler.cpp
 )

@@ -79,6 +79,11 @@ ConnectionHealth::ConnectionHealth() : m_dnsPingSender(QHostAddress()) {
 
 ConnectionHealth::~ConnectionHealth() { MVPN_COUNT_DTOR(ConnectionHealth); }
 
+void ConnectionHealth::initialize() {
+  connect(ModuleVPN::instance()->controller(), &Controller::stateChanged, this,
+          &ConnectionHealth::connectionStateChanged);
+}
+
 void ConnectionHealth::stop() {
   logger.debug() << "ConnectionHealth deactivated";
 

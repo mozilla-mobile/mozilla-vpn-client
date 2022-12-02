@@ -27,13 +27,6 @@ SOURCES += \
         authenticationinapp/authenticationinapplistener.cpp \
         authenticationinapp/authenticationinappsession.cpp \
         authenticationinapp/incrementaldecoder.cpp \
-        captiveportal/captiveportal.cpp \
-        captiveportal/captiveportaldetection.cpp \
-        captiveportal/captiveportaldetectionimpl.cpp \
-        captiveportal/captiveportalmonitor.cpp \
-        captiveportal/captiveportalnotifier.cpp \
-        captiveportal/captiveportalrequest.cpp \
-        captiveportal/captiveportalrequesttask.cpp \
         collator.cpp \
         command.cpp \
         commandlineparser.cpp \
@@ -108,6 +101,13 @@ SOURCES += \
         module.cpp \
         moduleholder.cpp \
         modules/modulevpn.cpp \
+        modules/modulevpn/captiveportal/captiveportal.cpp \
+        modules/modulevpn/captiveportal/captiveportaldetection.cpp \
+        modules/modulevpn/captiveportal/captiveportaldetectionimpl.cpp \
+        modules/modulevpn/captiveportal/captiveportalmonitor.cpp \
+        modules/modulevpn/captiveportal/captiveportalnotifier.cpp \
+        modules/modulevpn/captiveportal/captiveportalrequest.cpp \
+        modules/modulevpn/captiveportal/captiveportalrequesttask.cpp \
         modules/modulevpn/connectionbenchmark/benchmarktask.cpp \
         modules/modulevpn/connectionbenchmark/benchmarktaskping.cpp \
         modules/modulevpn/connectionbenchmark/benchmarktasktransfer.cpp \
@@ -209,13 +209,6 @@ HEADERS += \
         authenticationinapp/authenticationinapplistener.h \
         authenticationinapp/authenticationinappsession.h \
         authenticationinapp/incrementaldecoder.h \
-        captiveportal/captiveportal.h \
-        captiveportal/captiveportaldetection.h \
-        captiveportal/captiveportaldetectionimpl.h \
-        captiveportal/captiveportalmonitor.h \
-        captiveportal/captiveportalnotifier.h \
-        captiveportal/captiveportalrequest.h \
-        captiveportal/captiveportalrequesttask.h \
         collator.h \
         command.h \
         commandlineparser.h \
@@ -289,6 +282,13 @@ HEADERS += \
         moduleholder.h \
         modulelist.h \
         modules/modulevpn.h \
+        modules/modulevpn/captiveportal/captiveportal.h \
+        modules/modulevpn/captiveportal/captiveportaldetection.h \
+        modules/modulevpn/captiveportal/captiveportaldetectionimpl.h \
+        modules/modulevpn/captiveportal/captiveportalmonitor.h \
+        modules/modulevpn/captiveportal/captiveportalnotifier.h \
+        modules/modulevpn/captiveportal/captiveportalrequest.h \
+        modules/modulevpn/captiveportal/captiveportalrequesttask.h \
         modules/modulevpn/connectionbenchmark/benchmarktask.h \
         modules/modulevpn/connectionbenchmark/benchmarktaskping.h \
         modules/modulevpn/connectionbenchmark/benchmarktasksentinel.h \

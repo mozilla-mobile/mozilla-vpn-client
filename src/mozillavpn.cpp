@@ -151,11 +151,6 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   connect(this, &MozillaVPN::stateChanged, &m_private->m_statusIcon,
           &StatusIcon::refreshNeeded);
 
-  connect(SettingsHolder::instance(),
-          &SettingsHolder::captivePortalAlertChanged,
-          &m_private->m_captivePortalDetection,
-          &CaptivePortalDetection::settingsChanged);
-
   if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
     ProductsHandler::createInstance();
   }
@@ -218,6 +213,8 @@ void MozillaVPN::initialize() {
   // This is our first state.
   Q_ASSERT(m_state == StateInitialize);
 
+  m_private->m_statusIcon.initialize();
+
   m_private->m_releaseMonitor.runSoon();
 
   m_private->m_telemetry.initialize();
@@ -254,7 +251,6 @@ void MozillaVPN::initialize() {
   AndroidUtils::instance();
 #endif
 
-  m_private->m_captivePortalDetection.initialize();
   m_private->m_networkWatcher.initialize();
 
   if (!settingsHolder->hasToken()) {
@@ -305,7 +301,7 @@ void MozillaVPN::initialize() {
     return;
   }
 
-  if (!m_private->m_captivePortal.fromSettings()) {
+  if (!ModuleVPN::instance()->captivePortal()->fromSettings()) {
     // We do not care about CaptivePortal settings.
   }
 

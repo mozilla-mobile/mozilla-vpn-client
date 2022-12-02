@@ -19,21 +19,11 @@ ModuleVPN::ModuleVPN(QObject* parent) : Module(parent) {
   Q_ASSERT(!s_instance);
   s_instance = this;
 
-  connect(&m_controller, &Controller::stateChanged,
-          MozillaVPN::instance()->captivePortalDetection(),
-          &CaptivePortalDetection::stateChanged);
-
-  connect(&m_controller, &Controller::stateChanged, &m_connectionHealth,
-          &ConnectionHealth::connectionStateChanged);
-
-  connect(&m_connectionHealth, &ConnectionHealth::stabilityChanged,
-          MozillaVPN::instance()->statusIcon(), &StatusIcon::refreshNeeded);
-
-  connect(&m_connectionHealth, &ConnectionHealth::stabilityChanged,
-          MozillaVPN::instance()->captivePortalDetection(),
-          &CaptivePortalDetection::stateChanged);
+  m_captivePortalDetection.initialize();
 
   m_connectionBenchmark.initialize();
+
+  m_connectionHealth.initialize();
 }
 
 ModuleVPN::~ModuleVPN() {
@@ -47,6 +37,18 @@ ModuleVPN::~ModuleVPN() {
 ModuleVPN* ModuleVPN::instance() {
   Q_ASSERT(s_instance);
   return s_instance;
+}
+
+QJSValue ModuleVPN::captivePortalDetectionValue() {
+  QJSEngine* engine = QmlEngineHolder::instance()->engine();
+
+  QObject* obj = &m_captivePortalDetection;
+  QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+
+  QJSValue value = engine->newQObject(obj);
+  value.setPrototype(
+      engine->newQMetaObject(&CaptivePortalDetection::staticMetaObject));
+  return value;
 }
 
 QJSValue ModuleVPN::connectionBenchmarkValue() {

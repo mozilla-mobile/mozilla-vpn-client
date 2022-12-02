@@ -343,7 +343,7 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{"force_captive_portal_check",
                      "Force a captive portal check", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
-                       MozillaVPN::instance()
+                       ModuleVPN::instance()
                            ->captivePortalDetection()
                            ->detectCaptivePortal();
                        return QJsonObject();
@@ -353,7 +353,7 @@ static QList<InspectorCommand> s_commands{
         "force_captive_portal_detection", "Simulate a captive portal detection",
         0,
         [](InspectorHandler*, const QList<QByteArray>&) {
-          MozillaVPN::instance()
+          ModuleVPN::instance()
               ->captivePortalDetection()
               ->captivePortalDetected();
           ModuleVPN::instance()->controller()->captivePortalPresent();

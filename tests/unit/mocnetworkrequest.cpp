@@ -148,3 +148,36 @@ void NetworkRequest::sslErrors(const QList<QSslError>& errors) {
 #endif
 
 void NetworkRequest::disableTimeout() {}
+
+// static
+NetworkRequest* NetworkRequest::createForUploadDataHostAddress(
+    Task* parent, const QString& url, QIODevice* uploadData,
+    const QHostAddress& address) {
+  Q_UNUSED(url);
+  Q_UNUSED(uploadData);
+  Q_UNUSED(address);
+  return new NetworkRequest(parent, 1234, false);
+}
+
+// static
+NetworkRequest* NetworkRequest::createForGetHostAddress(
+    Task* parent, const QString& url, const QHostAddress& address) {
+  Q_ASSERT(parent);
+  Q_UNUSED(url);
+  Q_UNUSED(address);
+  return new NetworkRequest(parent, 1234, false);
+}
+
+// static
+NetworkRequest* NetworkRequest::createForUploadData(Task* parent,
+                                                    const QString& url,
+                                                    QIODevice* uploadData) {
+  Q_ASSERT(parent);
+  Q_UNUSED(url);
+  Q_UNUSED(uploadData);
+  return new NetworkRequest(parent, 1234, false);
+}
+
+void NetworkRequest::abort() {}
+
+int NetworkRequest::statusCode() const { return 200; }

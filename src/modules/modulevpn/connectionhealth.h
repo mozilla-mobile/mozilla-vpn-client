@@ -31,6 +31,8 @@ class ConnectionHealth final : public QObject {
   ConnectionHealth();
   ~ConnectionHealth();
 
+  void initialize();
+
   ConnectionStability stability() const { return m_stability; }
 
   uint latency() const { return m_pingHelper.latency(); }

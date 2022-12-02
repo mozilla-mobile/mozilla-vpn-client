@@ -24,6 +24,7 @@
 #include "../../src/models/feature.h"
 #include "../../src/models/featuremodel.h"
 #include "../../src/qmlengineholder.h"
+#include "../../src/module.h"
 #include "../../src/settingsholder.h"
 #include "../../src/systemtraynotificationhandler.h"
 #include "../../src/tutorial/tutorial.h"
@@ -601,6 +602,7 @@ void TestAddon::guide_create() {
   QFETCH(bool, created);
 
   SettingsHolder settingsHolder;
+  Module::initialize();
 
   QJsonObject obj;
   obj["guide"] = content;

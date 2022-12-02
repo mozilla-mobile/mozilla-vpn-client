@@ -6,6 +6,8 @@
 #define MODULEVPN_H
 
 #include "module.h"
+#include "modules/modulevpn/captiveportal/captiveportal.h"
+#include "modules/modulevpn/captiveportal/captiveportaldetection.h"
 #include "modules/modulevpn/connectionbenchmark/connectionbenchmark.h"
 #include "modules/modulevpn/connectionhealth.h"
 #include "modules/modulevpn/controller.h"
@@ -27,6 +29,13 @@ class ModuleVPN final : public Module {
 
   static ModuleVPN* instance();
 
+  CaptivePortal* captivePortal() { return &m_captivePortal; }
+
+  CaptivePortalDetection* captivePortalDetection() {
+    return &m_captivePortalDetection;
+  }
+  QJSValue captivePortalDetectionValue();
+
   ConnectionBenchmark* connectionBenchmark() { return &m_connectionBenchmark; }
   QJSValue connectionBenchmarkValue();
 
@@ -37,6 +46,8 @@ class ModuleVPN final : public Module {
   QJSValue controllerValue();
 
  private:
+  CaptivePortal m_captivePortal;
+  CaptivePortalDetection m_captivePortalDetection;
   ConnectionBenchmark m_connectionBenchmark;
   ConnectionHealth m_connectionHealth;
   Controller m_controller;

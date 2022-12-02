@@ -47,14 +47,18 @@ constexpr const char* LOGO_GENERIC_ON =
 
 }  // namespace
 
-StatusIcon::StatusIcon() {
-  MVPN_COUNT_CTOR(StatusIcon);
-
-  connect(&m_animatedIconTimer, &QTimer::timeout, this,
-          &StatusIcon::animateIcon);
-}
+StatusIcon::StatusIcon() { MVPN_COUNT_CTOR(StatusIcon); }
 
 StatusIcon::~StatusIcon() { MVPN_COUNT_DTOR(StatusIcon); }
+
+void StatusIcon::initialize() {
+  connect(&m_animatedIconTimer, &QTimer::timeout, this,
+          &StatusIcon::animateIcon);
+
+  connect(ModuleVPN::instance()->connectionHealth(),
+          &ConnectionHealth::stabilityChanged, this,
+          &StatusIcon::refreshNeeded);
+}
 
 const QIcon& StatusIcon::icon() {
   if (m_icon.isNull()) {

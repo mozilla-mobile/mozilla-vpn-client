@@ -157,3 +157,10 @@ void MozillaVPN::cancelReauthentication() {}
 void MozillaVPN::updateViewShown() {}
 
 void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {}
+
+void MozillaVPN::silentSwitch() {}
+
+ServerData* MozillaVPN::currentServer() {
+  static ServerData* data = new ServerData();
+  return data;
+}

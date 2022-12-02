@@ -170,3 +170,5 @@ void MozillaVPN::resetJournalPublicAndPrivateKeys() {}
 bool MozillaVPN::checkCurrentDevice() { return true; }
 
 void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {}
+
+void MozillaVPN::silentSwitch() {}
