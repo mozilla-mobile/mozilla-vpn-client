@@ -112,6 +112,9 @@ SOURCES += \
         models/subscriptiondata.cpp \
         models/supportcategorymodel.cpp \
         models/user.cpp \
+        module.cpp \
+        moduleholder.cpp \
+        modules/modulevpn.cpp \
         mozillavpn.cpp \
         networkmanager.cpp \
         networkrequest.cpp \
@@ -291,6 +294,9 @@ HEADERS += \
         models/subscriptiondata.h \
         models/supportcategorymodel.h \
         models/user.h \
+        module.h \
+        moduleholder.h \
+        modules/modulevpn.h \
         mozillavpn.h \
         networkmanager.h \
         networkrequest.h \

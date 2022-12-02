@@ -17,6 +17,7 @@
 #include "models/device.h"
 #include "models/feature.h"
 #include "models/recentconnections.h"
+#include "module.h"
 #include "networkmanager.h"
 #include "productshandler.h"
 #include "profileflow.h"
@@ -234,6 +235,8 @@ void MozillaVPN::initialize() {
 
   // This is our first state.
   Q_ASSERT(m_state == StateInitialize);
+
+  Module::initialize();
 
   m_private->m_releaseMonitor.runSoon();
 

@@ -246,6 +246,12 @@ target_sources(mozillavpn-sources INTERFACE
     models/supportcategorymodel.h
     models/user.cpp
     models/user.h
+    module.cpp
+    module.h
+    moduleholder.cpp
+    moduleholder.h
+    modules/modulevpn.cpp
+    modules/modulevpn.h
     mozillavpn.cpp
     mozillavpn.h
     networkmanager.cpp
