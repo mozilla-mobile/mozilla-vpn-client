@@ -126,19 +126,15 @@ void Localizer::initialize() {
                       std::placeholders::_2, &collator));
 }
 
-void Localizer::loadLanguage(const QString& code) {
-  SettingsHolder::instance()->setLanguageCode(code);
-}
-
 void Localizer::settingsChanged() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
   QString code = settingsHolder->languageCode();
   logger.debug() << "Loading language:" << code;
 
-  if (!loadLanguageInternal(code)) {
+  if (!loadLanguage(code)) {
     logger.debug() << "Loading default language (fallback)";
-    loadLanguageInternal("en");
+    loadLanguage("en");
   }
 
   if (!m_code.isEmpty()) {
@@ -148,7 +144,7 @@ void Localizer::settingsChanged() {
   m_code = code;
 }
 
-bool Localizer::loadLanguageInternal(const QString& code) {
+bool Localizer::loadLanguage(const QString& code) {
   QLocale locale = QLocale(code);
   if (code.isEmpty()) {
     locale = QLocale(systemLanguageCode());
