@@ -673,7 +673,7 @@ describe('User authentication', function() {
       await vpn.waitForElementProperty(
           authScreen.START_BUTTON, 'enabled', 'false');
       await vpn.setElementProperty(
-          authScreen.EMAIL_INPUT, 'text', 's', 'test@testtest');
+          authScreen.EMAIL_INPUT, 'text', 's', 'test@testtest.com');
       await vpn.waitForElementProperty(
           authScreen.START_BUTTON, 'enabled', 'true');
       await vpn.waitForElementProperty(
