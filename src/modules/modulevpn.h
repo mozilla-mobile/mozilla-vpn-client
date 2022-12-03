@@ -11,6 +11,7 @@
 #include "modules/modulevpn/connectionbenchmark/connectionbenchmark.h"
 #include "modules/modulevpn/connectionhealth.h"
 #include "modules/modulevpn/controller.h"
+#include "modules/modulevpn/dnshelper.h"
 #include "modules/modulevpn/networkwatcher.h"
 #include "modules/modulevpn/serverlatency.h"
 #include "modules/modulevpn/telemetry.h"
@@ -36,6 +37,8 @@ class ModuleVPN final : public Module {
 
   Q_INVOKABLE void activate();
   Q_INVOKABLE void deactivate();
+
+  Q_INVOKABLE bool validateUserDNS(const QString& dns) const;
 
   CaptivePortal* captivePortal() { return &m_captivePortal; }
 

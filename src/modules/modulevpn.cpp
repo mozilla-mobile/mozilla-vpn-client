@@ -157,3 +157,7 @@ void ModuleVPN::controllerStateChanged() {
     }
   }
 }
+
+bool ModuleVPN::validateUserDNS(const QString& dns) const {
+  return DNSHelper::validateUserDNS(dns);
+}

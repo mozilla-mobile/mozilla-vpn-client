@@ -7,7 +7,6 @@
 #include "addons/manager/addonmanager.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "constants.h"
-#include "dnshelper.h"
 #include "frontend/navigator.h"
 #include "glean/glean.h"
 #include "leakdetector.h"
@@ -1389,10 +1388,6 @@ void MozillaVPN::addCurrentDeviceAndRefreshData(bool refreshProducts) {
 void MozillaVPN::openAppStoreReviewLink() {
   Q_ASSERT(Feature::get(Feature::Feature_appReview)->isSupported());
   UrlOpener::instance()->openLink(UrlOpener::LinkLeaveReview);
-}
-
-bool MozillaVPN::validateUserDNS(const QString& dns) const {
-  return DNSHelper::validateUserDNS(dns);
 }
 
 void MozillaVPN::maybeRegenerateDeviceKey() {

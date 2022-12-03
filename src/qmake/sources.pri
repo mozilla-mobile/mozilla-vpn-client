@@ -49,8 +49,6 @@ SOURCES += \
         constants.cpp \
         cryptosettings.cpp \
         curve25519.cpp \
-        dnshelper.cpp \
-        dnspingsender.cpp \
         errorhandler.cpp \
         externalophandler.cpp \
         filterproxymodel.cpp \
@@ -115,6 +113,8 @@ SOURCES += \
         modules/modulevpn/connectionbenchmark/uploaddatagenerator.cpp \
         modules/modulevpn/connectionhealth.cpp \
         modules/modulevpn/controller.cpp \
+        modules/modulevpn/dnshelper.cpp \
+        modules/modulevpn/dnspingsender.cpp \
         modules/modulevpn/networkwatcher.cpp \
         modules/modulevpn/serverlatency.cpp \
         modules/modulevpn/taskcontrolleraction.cpp \
@@ -231,8 +231,6 @@ HEADERS += \
         constants.h \
         cryptosettings.h \
         curve25519.h \
-        dnshelper.h \
-        dnspingsender.h \
         env.h \
         errorhandler.h \
         externalophandler.h \
@@ -298,6 +296,8 @@ HEADERS += \
         modules/modulevpn/connectionhealth.h \
         modules/modulevpn/controller.h \
         modules/modulevpn/controllerimpl.h \
+        modules/modulevpn/dnshelper.h \
+        modules/modulevpn/dnspingsender.h \
         modules/modulevpn/networkwatcher.h \
         modules/modulevpn/networkwatcherimpl.h \
         modules/modulevpn/serverlatency.h \

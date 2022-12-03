@@ -119,10 +119,6 @@ target_sources(mozillavpn-sources INTERFACE
     cryptosettings.h
     curve25519.cpp
     curve25519.h
-    dnshelper.cpp
-    dnshelper.h
-    dnspingsender.cpp
-    dnspingsender.h
     env.h
     errorhandler.cpp
     errorhandler.h
@@ -253,6 +249,10 @@ target_sources(mozillavpn-sources INTERFACE
     modules/modulevpn/controller.cpp
     modules/modulevpn/controller.h
     modules/modulevpn/controllerimpl.h
+    modules/modulevpn/dnshelper.cpp
+    modules/modulevpn/dnshelper.h
+    modules/modulevpn/dnspingsender.cpp
+    modules/modulevpn/dnspingsender.h
     modules/modulevpn/networkwatcher.cpp
     modules/modulevpn/networkwatcher.h
     modules/modulevpn/networkwatcherimpl.h

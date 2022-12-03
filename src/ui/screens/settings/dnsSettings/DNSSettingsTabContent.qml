@@ -130,7 +130,7 @@ VPNFlickable {
                                 VPNSettings.userDNS = ipInput.text
                                 return;
                             }
-                            if (VPN.validateUserDNS(ipInput.text)) {
+                            if (MZModules["vpn"].validateUserDNS(ipInput.text)) {
                                 ipInput.valueInvalid = false;
                                 VPNSettings.userDNS = ipInput.text
                             } else {

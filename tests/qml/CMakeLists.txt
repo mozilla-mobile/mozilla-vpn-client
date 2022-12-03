@@ -36,8 +36,6 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/constants.h
     ${MVPN_SOURCE_DIR}/cryptosettings.cpp
     ${MVPN_SOURCE_DIR}/cryptosettings.h
-    ${MVPN_SOURCE_DIR}/dnspingsender.cpp
-    ${MVPN_SOURCE_DIR}/dnspingsender.h
     ${MVPN_SOURCE_DIR}/env.h
     ${MVPN_SOURCE_DIR}/errorhandler.cpp
     ${MVPN_SOURCE_DIR}/errorhandler.h
@@ -115,6 +113,10 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionhealth.cpp
     ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionhealth.h
     ${MVPN_SOURCE_DIR}/modules/modulevpn/controller.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/dnshelper.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/dnshelper.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/dnspingsender.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/dnspingsender.h
     ${MVPN_SOURCE_DIR}/modules/modulevpn/networkwatcher.cpp
     ${MVPN_SOURCE_DIR}/modules/modulevpn/networkwatcher.h
     ${MVPN_SOURCE_DIR}/modules/modulevpn/networkwatcherimpl.h
@@ -131,6 +133,14 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/networkrequest.h
     ${MVPN_SOURCE_DIR}/notificationhandler.cpp
     ${MVPN_SOURCE_DIR}/notificationhandler.h
+    ${MVPN_SOURCE_DIR}/rfc/rfc1918.cpp
+    ${MVPN_SOURCE_DIR}/rfc/rfc1918.h
+    ${MVPN_SOURCE_DIR}/rfc/rfc4193.cpp
+    ${MVPN_SOURCE_DIR}/rfc/rfc4193.h
+    ${MVPN_SOURCE_DIR}/rfc/rfc4291.cpp
+    ${MVPN_SOURCE_DIR}/rfc/rfc4291.h
+    ${MVPN_SOURCE_DIR}/rfc/rfc5735.cpp
+    ${MVPN_SOURCE_DIR}/rfc/rfc5735.h
     ${MVPN_SOURCE_DIR}/serveri18n.cpp
     ${MVPN_SOURCE_DIR}/serveri18n.h
     ${MVPN_SOURCE_DIR}/settingsholder.cpp

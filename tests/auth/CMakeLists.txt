@@ -49,8 +49,6 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/constants.h
     ${MVPN_SOURCE_DIR}/cryptosettings.cpp
     ${MVPN_SOURCE_DIR}/cryptosettings.h
-    ${MVPN_SOURCE_DIR}/dnspingsender.cpp
-    ${MVPN_SOURCE_DIR}/dnspingsender.h
     ${MVPN_SOURCE_DIR}/env.h
     ${MVPN_SOURCE_DIR}/errorhandler.cpp
     ${MVPN_SOURCE_DIR}/errorhandler.h
@@ -127,6 +125,10 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionhealth.cpp
     ${MVPN_SOURCE_DIR}/modules/modulevpn/connectionhealth.h
     ${MVPN_SOURCE_DIR}/modules/modulevpn/controller.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/dnshelper.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/dnshelper.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/dnspingsender.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/dnspingsender.h
     ${MVPN_SOURCE_DIR}/modules/modulevpn/networkwatcher.cpp
     ${MVPN_SOURCE_DIR}/modules/modulevpn/networkwatcher.h
     ${MVPN_SOURCE_DIR}/modules/modulevpn/networkwatcherimpl.h
