@@ -118,6 +118,7 @@ SOURCES += \
         modules/modulevpn/networkwatcher.cpp \
         modules/modulevpn/serverlatency.cpp \
         modules/modulevpn/taskcontrolleraction.cpp \
+        modules/modulevpn/telemetry.cpp \
         mozillavpn.cpp \
         networkmanager.cpp \
         networkrequest.cpp \
@@ -165,7 +166,6 @@ SOURCES += \
         tasks/sendfeedback/tasksendfeedback.cpp \
         tasks/servers/taskservers.cpp \
         taskscheduler.cpp \
-        telemetry.cpp \
         temporarydir.cpp \
         theme.cpp \
         tutorial/tutorial.cpp \
@@ -302,6 +302,7 @@ HEADERS += \
         modules/modulevpn/networkwatcherimpl.h \
         modules/modulevpn/serverlatency.h \
         modules/modulevpn/taskcontrolleraction.h \
+        modules/modulevpn/telemetry.h \
         mozillavpn.h \
         networkmanager.h \
         networkrequest.h \
@@ -350,7 +351,6 @@ HEADERS += \
         tasks/sendfeedback/tasksendfeedback.h \
         tasks/servers/taskservers.h \
         taskscheduler.h \
-        telemetry.h \
         temporarydir.h \
         theme.h \
         tutorial/tutorial.h \

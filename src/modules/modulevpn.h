@@ -13,6 +13,7 @@
 #include "modules/modulevpn/controller.h"
 #include "modules/modulevpn/networkwatcher.h"
 #include "modules/modulevpn/serverlatency.h"
+#include "modules/modulevpn/telemetry.h"
 
 #include <QJSValue>
 
@@ -67,6 +68,7 @@ class ModuleVPN final : public Module {
   Controller m_controller;
   NetworkWatcher m_networkWatcher;
   ServerLatency m_serverLatency;
+  Telemetry m_telemetry;
 
   bool m_controllerInitialized = false;
 };

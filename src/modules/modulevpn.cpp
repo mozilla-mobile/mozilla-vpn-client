@@ -62,6 +62,8 @@ void ModuleVPN::initialize() {
   m_networkWatcher.initialize();
 
   m_serverLatency.initialize();
+
+  m_telemetry.initialize();
 }
 
 QJSValue ModuleVPN::captivePortalDetectionValue() {

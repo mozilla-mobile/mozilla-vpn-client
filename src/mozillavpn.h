@@ -28,7 +28,6 @@
 #include "profileflow.h"
 #include "releasemonitor.h"
 #include "statusicon.h"
-#include "telemetry.h"
 #include "theme.h"
 #include "websocket/websockethandler.h"
 
@@ -166,7 +165,6 @@ class MozillaVPN final : public QObject {
   }
   StatusIcon* statusIcon() { return &m_private->m_statusIcon; }
   SubscriptionData* subscriptionData();
-  Telemetry* telemetry() { return &m_private->m_telemetry; }
   Theme* theme() { return &m_private->m_theme; }
 
   User* user() { return &m_private->m_user; }
@@ -329,7 +327,6 @@ class MozillaVPN final : public QObject {
     StatusIcon m_statusIcon;
     SubscriptionData m_subscriptionData;
     ProfileFlow m_profileFlow;
-    Telemetry m_telemetry;
     Theme m_theme;
     WebSocketHandler m_webSocketHandler;
     User m_user;

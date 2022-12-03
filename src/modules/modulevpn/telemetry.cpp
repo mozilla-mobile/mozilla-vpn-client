@@ -63,25 +63,23 @@ void Telemetry::initialize() {
       m_connectionStabilityTimer.start(CONNECTION_STABILITY_MSEC);
     }
 
-    MozillaVPN* vpn = MozillaVPN::instance();
-    Q_ASSERT(vpn);
-    emit vpn->recordGleanEventWithExtraKeys(
+    emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
         GleanSample::controllerStep,
         {{"state", QVariant::fromValue(state).toString()}});
     // Specific events for on and off state to aid with analysis
     if (state == Controller::StateOn) {
-      emit vpn->recordGleanEvent(GleanSample::controllerStateOn);
+      emit MozillaVPN::instance()->recordGleanEvent(
+          GleanSample::controllerStateOn);
     }
     if (state == Controller::StateOff) {
-      emit vpn->recordGleanEvent(GleanSample::controllerStateOff);
+      emit MozillaVPN::instance()->recordGleanEvent(
+          GleanSample::controllerStateOff);
     }
   });
 
   connect(controller, &Controller::readyToServerUnavailable, this, []() {
-    MozillaVPN* vpn = MozillaVPN::instance();
-    Q_ASSERT(vpn);
-
-    emit vpn->recordGleanEvent(GleanSample::serverUnavailableError);
+    emit MozillaVPN::instance()->recordGleanEvent(
+        GleanSample::serverUnavailableError);
   });
 }
 
@@ -92,10 +90,10 @@ void Telemetry::connectionStabilityEvent() {
   Q_ASSERT(controller);
   Q_ASSERT(controller->state() == Controller::StateOn);
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-  emit vpn->recordGleanEventWithExtraKeys(
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::connectivityStable,
-      {{"server", vpn->currentServer()->exitServerPublicKey()},
+      {{"server",
+        MozillaVPN::instance()->currentServer()->exitServerPublicKey()},
        {"latency",
         QString::number(ModuleVPN::instance()->connectionHealth()->latency())},
        {"loss",

@@ -134,6 +134,8 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/modules/modulevpn/serverlatency.h
     ${MVPN_SOURCE_DIR}/modules/modulevpn/taskcontrolleraction.cpp
     ${MVPN_SOURCE_DIR}/modules/modulevpn/taskcontrolleraction.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/telemetry.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/telemetry.h
     ${MVPN_SOURCE_DIR}/mozillavpn.h
     ${MVPN_SOURCE_DIR}/networkmanager.cpp
     ${MVPN_SOURCE_DIR}/networkmanager.h

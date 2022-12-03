@@ -260,6 +260,8 @@ target_sources(mozillavpn-sources INTERFACE
     modules/modulevpn/serverlatency.h
     modules/modulevpn/taskcontrolleraction.cpp
     modules/modulevpn/taskcontrolleraction.h
+    modules/modulevpn/telemetry.cpp
+    modules/modulevpn/telemetry.h
     mozillavpn.cpp
     mozillavpn.h
     networkmanager.cpp
@@ -355,8 +357,6 @@ target_sources(mozillavpn-sources INTERFACE
     tasks/servers/taskservers.h
     taskscheduler.cpp
     taskscheduler.h
-    telemetry.cpp
-    telemetry.h
     temporarydir.cpp
     temporarydir.h
     theme.cpp
