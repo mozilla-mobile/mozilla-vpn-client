@@ -15,7 +15,7 @@ addons/**/manifest.json @flodolo
 
 /android/ @strseb
 /balrog/ @bakulf @birdsarah
-/ci_scripts/ @birdsarah @bakulf
+/ci_scripts/ @birdsarah @bakulf @oskirby @strseb
 /extension/ @bakulf @birdsarah
 /glean/ @brizental
 /ios/ @bakulf @birdsarah @mcleinman
