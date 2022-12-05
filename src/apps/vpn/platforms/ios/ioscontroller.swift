@@ -165,7 +165,7 @@ public class IOSControllerImpl : NSObject {
         return true
     }
 
-    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int,enableAlwaysOn:Bool, failureCallback: @escaping () -> Void) {
+    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, enableAlwaysOn: Bool, failureCallback: @escaping () -> Void) {
         Logger.global?.log(message: "Connecting")
         assert(tunnel != nil)
 
