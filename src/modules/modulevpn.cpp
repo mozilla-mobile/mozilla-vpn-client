@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "modulevpn.h"
+#include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "modules/modulevpn/taskcontrolleraction.h"
@@ -11,6 +12,7 @@
 #include "settingsholder.h"
 #include "taskscheduler.h"
 
+#include <QJsonObject>
 #include <QQmlEngine>
 
 namespace {
@@ -64,6 +66,8 @@ void ModuleVPN::initialize() {
   m_serverLatency.initialize();
 
   m_telemetry.initialize();
+
+  registerInspectorCommands();
 }
 
 QJSValue ModuleVPN::captivePortalDetectionValue() {
@@ -160,4 +164,75 @@ void ModuleVPN::controllerStateChanged() {
 
 bool ModuleVPN::validateUserDNS(const QString& dns) const {
   return DNSHelper::validateUserDNS(dns);
+}
+
+void ModuleVPN::registerInspectorCommands() {
+  InspectorHandler::registerCommand(InspectorHandler::InspectorCommand{
+      "force_captive_portal_check", "Force a captive portal check", 0,
+      [](InspectorHandler*, const QList<QByteArray>&) {
+        ModuleVPN::instance()->captivePortalDetection()->detectCaptivePortal();
+        return QJsonObject();
+      }});
+
+  InspectorHandler::registerCommand(InspectorHandler::InspectorCommand{
+      "force_captive_portal_detection", "Simulate a captive portal detection",
+      0, [](InspectorHandler*, const QList<QByteArray>&) {
+        ModuleVPN::instance()
+            ->captivePortalDetection()
+            ->captivePortalDetected();
+        ModuleVPN::instance()->controller()->captivePortalPresent();
+        return QJsonObject();
+      }});
+
+  InspectorHandler::registerCommand(InspectorHandler::InspectorCommand{
+      "force_unsecured_network", "Force an unsecured network detection", 0,
+      [](InspectorHandler*, const QList<QByteArray>&) {
+        ModuleVPN::instance()->networkWatcher()->unsecuredNetwork("Dummy",
+                                                                  "Dummy");
+        return QJsonObject();
+      }});
+
+  InspectorHandler::registerCommand(InspectorHandler::InspectorCommand{
+      "activate", "Activate the VPN", 0,
+      [](InspectorHandler*, const QList<QByteArray>&) {
+        ModuleVPN::instance()->activate();
+        return QJsonObject();
+      }});
+
+  InspectorHandler::registerCommand(InspectorHandler::InspectorCommand{
+      "deactivate", "Deactivate the VPN", 0,
+      [](InspectorHandler*, const QList<QByteArray>&) {
+        ModuleVPN::instance()->deactivate();
+        return QJsonObject();
+      }});
+
+  InspectorHandler::registerCommand(InspectorHandler::InspectorCommand{
+      "connection_health_unsettled",
+      "Retrieve the unsettled status of the connection health", 0,
+      [](InspectorHandler*, const QList<QByteArray>&) {
+        QJsonObject obj;
+        obj["value"] = ModuleVPN::instance()->connectionHealth()->isUnsettled();
+        return obj;
+      }});
+
+  InspectorHandler::registerCommand(InspectorHandler::InspectorCommand{
+      "connection_benchmark_property",
+      "Retrieve a property value from the connection benchmark object", 1,
+      [](InspectorHandler*, const QList<QByteArray>& arguments) {
+        QJsonObject obj;
+        obj["value"] = ModuleVPN::instance()
+                           ->connectionBenchmark()
+                           ->property(arguments[1])
+                           .toString();
+        return obj;
+      }});
+
+  InspectorHandler::registerCommand(InspectorHandler::InspectorCommand{
+      "connection_benchmark_url",
+      "Set the URL for the next connection benchmark test", 1,
+      [](InspectorHandler*, const QList<QByteArray>& arguments) {
+        ModuleVPN::instance()->connectionBenchmark()->setDownloadUrl(
+            arguments[1]);
+        return QJsonObject();
+      }});
 }

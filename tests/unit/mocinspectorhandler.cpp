@@ -15,3 +15,8 @@ QString InspectorHandler::appVersionForUpdate() { return "42"; }
 bool InspectorHandler::forceRTL() { return false; }
 
 bool InspectorHandler::mockFreeTrial() { return false; }
+
+void InspectorHandler::registerCommand(
+    const InspectorHandler::InspectorCommand& command) {
+  Q_UNUSED(command);
+}

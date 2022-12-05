@@ -67,9 +67,13 @@ module.exports = {
     if (awaitConnectionOkay) {
       await this.waitForCondition(async () => {
         let title = await this.getElementProperty('controllerTitle', 'text');
-        let unsettled = await this.getElementProperty(
-            'MZModules["vpn"].connectionHealth', 'unsettled');
-        return (title == 'VPN is on') && (unsettled == 'false');
+
+        const json = await this._writeCommand('connection_health_unsettled');
+        assert(
+            json.type === 'connection_health_unsettled' && !('error' in json),
+            `Command failed: ${json.error}`);
+
+        return (title === 'VPN is on') && (json.value === false);
       });
     }
   },
@@ -527,6 +531,23 @@ module.exports = {
         `Command failed: ${json.error}`);
 
     await this.waitForCondition(() => _lastAddonLoadingCompleted);
+  },
+
+  async connectionBenchmarkProperty(property) {
+    const json =
+        await this._writeCommand(`connection_benchmark_property ${property}`);
+    assert(
+        json.type === 'connection_benchmark_property' && !('error' in json),
+        `Command failed: ${json.error}`);
+    return json.value;
+  },
+
+  async connectionBenchmarkUrl(url) {
+    const json = await this._writeCommand(`connection_benchmark_url ${url}`);
+    assert(
+        json.type === 'connection_benchmark_url' && !('error' in json),
+        `Command failed: ${json.error}`);
+    return json.value;
   },
 
   // Internal methods.

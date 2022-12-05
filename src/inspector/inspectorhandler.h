@@ -31,6 +31,16 @@ class InspectorHandler : public QObject {
   void recv(const QByteArray& buffer);
   virtual void send(const QByteArray& buffer) = 0;
 
+  struct InspectorCommand {
+    QString m_commandName;
+    QString m_commandDescription;
+    int32_t m_arguments;
+    std::function<QJsonObject(InspectorHandler*, const QList<QByteArray>&)>
+        m_callback;
+  };
+
+  static void registerCommand(const InspectorCommand& command);
+
  protected:
   explicit InspectorHandler(QObject* parent);
   virtual ~InspectorHandler();

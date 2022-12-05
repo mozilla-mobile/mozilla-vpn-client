@@ -16,22 +16,19 @@ describe('Benchmark', function() {
     // Start the connection benchmark.
     await vpn.waitForElementAndClick(homeScreen.CONNECTION_INFO_TOGGLE);
     await vpn.waitForCondition(async () => {
-      let state =
-          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state = await vpn.connectionBenchmarkProperty('state');
       return state == 'StateRunning';
     });
     await vpn.waitForCondition(async () => {
-      let state =
-          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state = await vpn.connectionBenchmarkProperty('state');
       return state != 'StateRunning';
     });
 
     // We expect the benchmark to succeed.
     await vpn.wait(3000);
-    let state = await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
-    let speed = await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'speed');
-    let bps = parseInt(
-        await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'downloadBps'));
+    let state = await vpn.connectionBenchmarkProperty('state');
+    let speed = await vpn.connectionBenchmarkProperty('speed');
+    let bps = parseInt(await vpn.connectionBenchmarkProperty('downloadBps'));
     assert.strictEqual(state, 'StateReady');
 
     assert.strictEqual(
@@ -49,28 +46,23 @@ describe('Benchmark', function() {
     await vpn.activate(true);
 
     // Re-Configure the benchmark to use a URL that generates an HTTP error.
-    await vpn.setElementProperty(
-        homeScreen.CONNECTION_BENCHMARK, 'downloadUrl', 's',
-        'http://httpstat.us/500?sleep=2000');
+    await vpn.connectionBenchmarkUrl('http://httpstat.us/500?sleep=2000');
 
     // Start the connection benchmark and wait for it to finish.
     await vpn.waitForElementAndClick(homeScreen.CONNECTION_INFO_TOGGLE);
     await vpn.waitForCondition(async () => {
-      let state =
-          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state = await vpn.connectionBenchmarkProperty('state');
       return state == 'StateRunning';
     });
     await vpn.waitForCondition(async () => {
-      let state =
-          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state = await vpn.connectionBenchmarkProperty('state');
       return state != 'StateRunning';
     });
 
     // We expect the benchmark to fail.
     await vpn.wait(3000);
     assert.strictEqual(
-        await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state'),
-        'StateError');
+        await vpn.connectionBenchmarkProperty('state'), 'StateError');
     assert.strictEqual(
         await vpn.getElementProperty('connectionInfoError', 'visible'), 'true');
 
@@ -82,55 +74,45 @@ describe('Benchmark', function() {
     await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
     await vpn.activate(true);
 
-    let downloadUrl =
-        await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'downloadUrl');
+    let downloadUrl = await vpn.connectionBenchmarkProperty('downloadUrl');
 
     // Re-Configure the benchmark to use a URL that generates an HTTP error.
-    await vpn.setElementProperty(
-        homeScreen.CONNECTION_BENCHMARK, 'downloadUrl', 's',
-        'http://httpstat.us/404?sleep=2000');
+    await vpn.connectionBenchmarkUrl('http://httpstat.us/404?sleep=2000');
 
     // Start the connection benchmark and wait for it to finish.    
     await vpn.waitForElementAndClick(homeScreen.CONNECTION_INFO_TOGGLE);
     await vpn.waitForCondition(async () => {
-      let state =
-          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state = await vpn.connectionBenchmarkProperty('state');
       return state == 'StateRunning';
     });
     await vpn.waitForCondition(async () => {
-      let state =
-          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state = await vpn.connectionBenchmarkProperty('state');
       return state != 'StateRunning';
     });
 
     // We expect the benchmark to fail.
     await vpn.wait(3000);
     assert.strictEqual(
-        await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state'),
-        'StateError');
+        await vpn.connectionBenchmarkProperty('state'), 'StateError');
     assert.strictEqual(
         await vpn.getElementProperty('connectionInfoError', 'visible'), 'true');
 
     // Restore the original download URL and retry the benchmark.
-    await vpn.setElementProperty(
-        homeScreen.CONNECTION_BENCHMARK, 'downloadUrl', 's', downloadUrl);
+    await vpn.connectionBenchmarkUrl(downloadUrl);
     await vpn.waitForElementAndClick(homeScreen.CONNECTION_INFO_RETRY);
     await vpn.waitForCondition(async () => {
-      let state =
-          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state = await vpn.connectionBenchmarkProperty('state');
       return state == 'StateRunning';
     });
     await vpn.waitForCondition(async () => {
-      let state =
-          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state = await vpn.connectionBenchmarkProperty('state');
       return state != 'StateRunning';
     });
 
     // This time we expect the benchmark to succeed.
     await vpn.wait();
-    let speed = await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'speed');
-    let bps = parseInt(
-        await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'downloadBps'));
+    let speed = await vpn.connectionBenchmarkProperty('speed');
+    let bps = parseInt(await vpn.connectionBenchmarkProperty('downloadBps'));
     assert.strictEqual(
         speed,
         (bps >= 25000000) ? 'SpeedFast' :
@@ -145,15 +127,12 @@ describe('Benchmark', function() {
     await vpn.activate(true);
 
     // Re-Configure the benchmark to use a URL that will hang for a while.
-    await vpn.setElementProperty(
-        homeScreen.CONNECTION_BENCHMARK, 'downloadUrl', 's',
-        'http://httpstat.us/204?sleep=10000');
+    await vpn.connectionBenchmarkUrl('http://httpstat.us/204?sleep=10000');
 
     // Start the connection benchmark.    
     await vpn.waitForElementAndClick(homeScreen.CONNECTION_INFO_TOGGLE);
     await vpn.waitForCondition(async () => {
-      let state =
-          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state = await vpn.connectionBenchmarkProperty('state');
       return state == 'StateRunning';
     });
 
@@ -161,16 +140,14 @@ describe('Benchmark', function() {
     await vpn.wait(1000);
     await vpn.deactivate();
     await vpn.waitForCondition(async () => {
-      let state =
-          await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state');
+      let state = await vpn.connectionBenchmarkProperty('state');
       return state != 'StateRunning';
     });
 
     // We expect the benchmark to fail.
     await vpn.wait(5000);
     assert.strictEqual(
-        await vpn.getElementProperty(homeScreen.CONNECTION_BENCHMARK, 'state'),
-        'StateError');
+        await vpn.connectionBenchmarkProperty('state'), 'StateError');
     assert.strictEqual(
         await vpn.getElementProperty('connectionInfoError', 'visible'), 'true');
 

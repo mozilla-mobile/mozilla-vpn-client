@@ -20,10 +20,10 @@ VPNButtonBase {
     function handleClick() {
         toolTip.close();
         if (MZModules["vpn"].controller.state !== MZModules["vpn"].controller.StateOff) {
-            return VPN.deactivate();
+            return MZModules["vpn"].deactivate();
         }
 
-        return VPN.activate();
+        return MZModules["vpn"].activate();
     }
 
     onClicked: handleClick()

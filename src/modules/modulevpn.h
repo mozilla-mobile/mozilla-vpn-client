@@ -63,6 +63,8 @@ class ModuleVPN final : public Module {
  private:
   void controllerStateChanged();
 
+  void registerInspectorCommands();
+
  private:
   CaptivePortal m_captivePortal;
   CaptivePortalDetection m_captivePortalDetection;
