@@ -51,6 +51,7 @@ export PATH="`pwd`/go/bin:$PATH"
 print Y "Installing python dependencies..."
 # use --user for permissions
 python3 -m pip install -r requirements.txt --user
+python3 -m pip install -r taskcluster/requirements.txt --user
 export PYTHONIOENCODING="UTF-8"
 
 print Y "Updating submodules..."
