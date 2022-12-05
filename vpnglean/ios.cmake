@@ -70,7 +70,7 @@ target_sources(iosglean PUBLIC
 # Build gleanFFI.h and glean.swift files using UniFFI
 # and build the internal Glean metrics file
 execute_process(
-    COMMAND 
+    COMMAND ${CMAKE_COMMAND} -E env
         ${CARGO_EXECUTABLE} run --manifest-path ${GLEAN_VENDORED_PATH}/tools/embedded-uniffi-bindgen/Cargo.toml 
             -- generate -l swift -o ${CMAKE_CURRENT_BINARY_DIR}/glean
             ${GLEAN_VENDORED_PATH}/glean-core/src/glean.udl
