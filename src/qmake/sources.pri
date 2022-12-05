@@ -72,6 +72,8 @@ SOURCES += \
         frontend/navigator.cpp \
         frontend/navigatorreloader.cpp \
         glean/glean.cpp \
+        glean/private/event.cpp \
+        glean/private/ping.cpp \
         hacl-star/Hacl_Chacha20.c \
         hacl-star/Hacl_Chacha20Poly1305_32.c \
         hacl-star/Hacl_Curve25519_51.c \
@@ -252,6 +254,10 @@ HEADERS += \
         frontend/navigator.h \
         frontend/navigatorreloader.h \
         glean/glean.h \
+        glean/private/event.h \
+        glean/private/ping.h \
+        glean/generated/metrics.h \
+        glean/generated/pings.h \
         hawkauth.h \
         keyregenerator.h \
         hkdf.h \

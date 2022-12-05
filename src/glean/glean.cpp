@@ -10,7 +10,7 @@
 #include "models/feature.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
-#if not defined(MVPN_WASM)
+#if not(defined(MVPN_WASM) || defined(BUILD_QMAKE))
 #  include "vpnglean.h"
 #endif
 
@@ -80,7 +80,7 @@ void VPNGlean::initialize() {
 
 #if defined(UNIT_TEST)
     glean_test_reset_glean(uploadEnabled, dataPath.toLocal8Bit());
-#elif not defined(MVPN_WASM)
+#elif not(defined(MVPN_WASM) || defined(BUILD_QMAKE))
     glean_initialize(uploadEnabled, dataPath.toLocal8Bit(), appChannel);
 #endif
   }
@@ -90,7 +90,7 @@ void VPNGlean::initialize() {
 void VPNGlean::setUploadEnabled(bool isTelemetryEnabled) {
   logger.debug() << "Changing VPNGlean upload status to" << isTelemetryEnabled;
 
-#if not defined(MVPN_WASM)
+#if not(defined(MVPN_WASM) || defined(BUILD_QMAKE))
   glean_set_upload_enabled(isTelemetryEnabled);
 #endif
 }
