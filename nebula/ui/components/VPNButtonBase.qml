@@ -38,6 +38,7 @@ RoundButton {
     }
 
     onClicked: {
+        window.removeFocus()
         if (typeof(toolTip) !== "undefined" && toolTip.opened) {
             toolTip.close();
         }

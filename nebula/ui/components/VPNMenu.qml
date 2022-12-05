@@ -81,10 +81,11 @@ Item {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
 
-        MouseArea {
+        VPNMouseArea {
             anchors.fill: parent
             cursorShape: Qt.ArrowCursor
             onClicked: titleClicked()
+            propagateClickToParent: false
         }
     }
 

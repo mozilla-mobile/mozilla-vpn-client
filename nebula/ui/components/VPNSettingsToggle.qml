@@ -15,7 +15,11 @@ CheckBox {
     property alias forceFocus: vpnSettingsToggle.focus
     property var toolTipTitle
 
-    onClicked: toolTip.hide()
+    onClicked: {
+        toolTip.hide()
+        window.removeFocus()
+    }
+
     onActiveFocusChanged: if (focus && typeof(ensureVisible) !== "undefined") ensureVisible(vpnSettingsToggle)
 
     height: VPNTheme.theme.vSpacing
