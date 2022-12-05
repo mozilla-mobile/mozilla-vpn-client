@@ -5,8 +5,10 @@
 #ifndef EVENT_METRIC_H
 #define EVENT_METRIC_H
 
-#include "vpnglean.h"
 #include "glean/glean.h"
+#if not defined(MVPN_WASM)
+#  include "vpnglean.h"
+#endif
 
 #include <QObject>
 #include <QJsonObject>
@@ -39,13 +41,15 @@ struct EventMetricExtra {
 };
 
 struct EventMetricExtraParser {
-  virtual FfiExtra fromJsonObject(const QJsonObject& extras, QList<QByteArray>& keepStringsAlive) {
+  virtual FfiExtra fromJsonObject(const QJsonObject& extras,
+                                  QList<QByteArray>& keepStringsAlive) {
     Q_ASSERT(false);
     // This function should be overriden.
 
     return FfiExtra();
   };
-  virtual FfiExtra fromStruct(EventMetricExtra& extras, QList<QByteArray>& keepStringsAlive) {
+  virtual FfiExtra fromStruct(EventMetricExtra& extras,
+                              QList<QByteArray>& keepStringsAlive) {
     Q_ASSERT(false);
     // This function should be overriden.
 
@@ -57,7 +61,8 @@ class EventMetric final {
   Q_GADGET
 
  public:
-  explicit EventMetric(int aId, EventMetricExtraParser parser = EventMetricExtraParser());
+  explicit EventMetric(
+      int aId, EventMetricExtraParser parser = EventMetricExtraParser());
   ~EventMetric() = default;
 
   Q_INVOKABLE void record() const;

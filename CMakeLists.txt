@@ -112,7 +112,7 @@ find_package(Qt6 COMPONENTS
     Xml
 )
 
-if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND 
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND
    NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Android")
     find_package(Qt6 COMPONENTS
         NetworkAuth
@@ -127,10 +127,8 @@ add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0x050F00)
 add_subdirectory(src)
 # Glean.js
 add_subdirectory(glean)
-if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
-    # Glean.rs
-    add_subdirectory(vpnglean)
-endif()
+# Glean.rs
+add_subdirectory(vpnglean)
 add_subdirectory(lottie)
 add_subdirectory(nebula)
 add_subdirectory(translations)

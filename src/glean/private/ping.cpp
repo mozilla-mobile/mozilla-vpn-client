@@ -3,8 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "glean/private/ping.h"
-#include "vpnglean.h"
+#if not defined(MVPN_WASM)
+#  include "vpnglean.h"
+#endif
 
 Ping::Ping(int aId) : m_id(aId) {}
 
-void Ping::submit() const { glean_submit_ping_by_id(m_id); }
+void Ping::submit() const {
+#if not defined(MVPN_WASM)
+  glean_submit_ping_by_id(m_id);
+#endif
+}

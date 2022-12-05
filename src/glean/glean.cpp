@@ -10,7 +10,9 @@
 #include "models/feature.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
-#include "vpnglean.h"
+#if not defined(MVPN_WASM)
+#  include "vpnglean.h"
+#endif
 
 #include <QDir>
 #include <QStandardPaths>
@@ -37,6 +39,7 @@ VPNGlean::~VPNGlean() { MVPN_COUNT_DTOR(VPNGlean); }
 // static
 void VPNGlean::initialize() {
   logger.debug() << "Initializing VPNGlean";
+
   registerQMLSingletons();
 
   if (Feature::get(Feature::Feature_gleanRust)->isSupported()) {
@@ -77,7 +80,7 @@ void VPNGlean::initialize() {
 
 #if defined(UNIT_TEST)
     glean_test_reset_glean(uploadEnabled, dataPath.toLocal8Bit());
-#else
+#elif not defined(MVPN_WASM)
     glean_initialize(uploadEnabled, dataPath.toLocal8Bit(), appChannel);
 #endif
   }
@@ -87,7 +90,9 @@ void VPNGlean::initialize() {
 void VPNGlean::setUploadEnabled(bool isTelemetryEnabled) {
   logger.debug() << "Changing VPNGlean upload status to" << isTelemetryEnabled;
 
+#if not defined(MVPN_WASM)
   glean_set_upload_enabled(isTelemetryEnabled);
+#endif
 }
 
 // static

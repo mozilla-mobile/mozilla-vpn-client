@@ -13,77 +13,89 @@ add_library(vpnglean STATIC IMPORTED GLOBAL)
 
 set_target_properties(vpnglean PROPERTIES FOLDER "Libs")
 
-# Figure out Rust's host architecture
-execute_process(OUTPUT_VARIABLE RUSTC_VERSION_RAW COMMAND rustc --version --verbose)
-if(RUSTC_VERSION_RAW MATCHES "host: ([^\n]+)")
-    set(RUSTC_HOST_ARCH ${CMAKE_MATCH_1})
-else()
-    error("Failed to find rustc host arch")
-endif()
-
-if(NOT CMAKE_CROSSCOMPILING)
-    set(RUST_ARCH ${RUSTC_HOST_ARCH})
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
-    if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64")
-        set(RUST_ARCH "aarch64-linux-android")
-        set(OPENSSL_ARCH "arm64")
-    elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7-a")
-        set(RUST_ARCH "armv7-linux-androideabi")
-        set(OPENSSL_ARCH "arm")
-    elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i686")
-        set(RUST_ARCH "i686-linux-android")
-        set(OPENSSL_ARCH "x86")
-    elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
-        set(RUST_ARCH "x86_64-linux-android")
-        set(OPENSSL_ARCH "x86_64")
-    endif()
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
-    if(${CMAKE_OSX_SYSROOT} STREQUAL "iphonesimulator")
-        set(RUST_ARCH "x86_64-apple-ios")
+# glean-core cannot be compiled to WASM
+# See: https://blog.mozilla.org/data/2020/09/25/this-week-in-glean-glean-core-to-wasm-experiment/
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    # Figure out Rust's host architecture
+    execute_process(OUTPUT_VARIABLE RUSTC_VERSION_RAW COMMAND rustc --version --verbose)
+    if(RUSTC_VERSION_RAW MATCHES "host: ([^\n]+)")
+        set(RUSTC_HOST_ARCH ${CMAKE_MATCH_1})
     else()
-        set(RUST_ARCH "aarch64-apple-ios")
+        error("Failed to find rustc host arch")
     endif()
-endif()
 
-if(NOT RUST_ARCH)
-    message(FATAL_ERROR "Unable to determine Rust target for ${CMAKE_SYSTEM_NAME} (${CMAKE_SYSTEM_PROCESSOR}).")
-endif()
+    if(NOT CMAKE_CROSSCOMPILING)
+        set(RUST_ARCH ${RUSTC_HOST_ARCH})
+    elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
+        if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64")
+            set(RUST_ARCH "aarch64-linux-android")
+            set(OPENSSL_ARCH "arm64")
+        elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7-a")
+            set(RUST_ARCH "armv7-linux-androideabi")
+            set(OPENSSL_ARCH "arm")
+        elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i686")
+            set(RUST_ARCH "i686-linux-android")
+            set(OPENSSL_ARCH "x86")
+        elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
+            set(RUST_ARCH "x86_64-linux-android")
+            set(OPENSSL_ARCH "x86_64")
+        endif()
+    elseif(${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
+        if(${CMAKE_OSX_SYSROOT} STREQUAL "iphonesimulator")
+            set(RUST_ARCH "x86_64-apple-ios")
+        else()
+            set(RUST_ARCH "aarch64-apple-ios")
+        endif()
+    endif()
 
-list(APPEND CARGO_ENV BUILD_ID=${BUILD_ID})
-list(APPEND CARGO_ENV APP_VERSION=${CMAKE_PROJECT_VERSION})
-list(APPEND CARGO_ENV CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR})
+    if(NOT RUST_ARCH)
+        message(FATAL_ERROR "Unable to determine Rust target for ${CMAKE_SYSTEM_NAME} (${CMAKE_SYSTEM_PROCESSOR}).")
+    endif()
 
-if(ANDROID)
-    list(APPEND CARGO_ENV
-        OPENSSL_LIB_DIR=${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/openSSL/static/lib/${OPENSSL_ARCH}
-        OPENSSL_INCLUDE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/openSSL/static/include
-        AR=llvm-ar)
-elseif(APPLE AND XCODE)
-    ## Don't trust Xcode to provide us with a usable linker.
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh "#!/bin/sh\n")
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh "${RUSTC_EXECUTABLE} -C linker=/usr/bin/cc \$@\n")
-    file(CHMOD ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh FILE_PERMISSIONS
-        OWNER_READ OWNER_WRITE OWNER_EXECUTE
-        GROUP_READ GROUP_WRITE GROUP_EXECUTE
-        WORLD_READ WORLD_EXECUTE
+    list(APPEND CARGO_ENV BUILD_ID=${BUILD_ID})
+    list(APPEND CARGO_ENV APP_VERSION=${CMAKE_PROJECT_VERSION})
+    list(APPEND CARGO_ENV CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR})
+
+    if(ANDROID)
+        list(APPEND CARGO_ENV
+            OPENSSL_LIB_DIR=${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/openSSL/static/lib/${OPENSSL_ARCH}
+            OPENSSL_INCLUDE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/openSSL/static/include
+            AR=llvm-ar)
+    elseif(APPLE AND XCODE)
+        ## Don't trust Xcode to provide us with a usable linker.
+        file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh "#!/bin/sh\n")
+        file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh "${RUSTC_EXECUTABLE} -C linker=/usr/bin/cc \$@\n")
+        file(CHMOD ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh FILE_PERMISSIONS
+            OWNER_READ OWNER_WRITE OWNER_EXECUTE
+            GROUP_READ GROUP_WRITE GROUP_EXECUTE
+            WORLD_READ WORLD_EXECUTE
+        )
+        list(APPEND CARGO_ENV RUSTC=${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh)
+    endif()
+
+    set(HEADER_FILE vpnglean.h)
+    set(LIBNAME ${CMAKE_STATIC_LIBRARY_PREFIX}vpnglean${CMAKE_STATIC_LIBRARY_SUFFIX})
+
+    ## Build the vpnglean Rust library
+    add_custom_target(vpnglean_ffi
+        BYPRODUCTS
+            ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/debug/${LIBNAME}
+            ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/release/${LIBNAME}
+            ${CMAKE_CURRENT_BINARY_DIR}/${HEADER_FILE}
+        COMMAND ${CMAKE_COMMAND} -E env ${CARGO_ENV}
+                ${CARGO_EXECUTABLE} build $<IF:$<CONFIG:Debug>,,--release> --target ${RUST_ARCH}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
-    list(APPEND CARGO_ENV RUSTC=${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh)
+    set_target_properties(vpnglean_ffi PROPERTIES FOLDER "Libs")
+
+    add_dependencies(vpnglean_ffi vpnglean_telemetry)
+    add_dependencies(vpnglean vpnglean_ffi)
+else()
+    message("Cannot build vpnglean Rust library build for WASM. Skipping.")
+    # Since the metric recording code is sprinkled throughout the code,
+    # it's easier to just generate the APIs and have them be noop.
+    add_dependencies(mozillavpn vpnglean_telemetry)
 endif()
-
-set(HEADER_FILE vpnglean.h)
-set(LIBNAME ${CMAKE_STATIC_LIBRARY_PREFIX}vpnglean${CMAKE_STATIC_LIBRARY_SUFFIX})
-
-## Build the vpnglean Rust library
-add_custom_target(vpnglean_ffi
-    BYPRODUCTS
-        ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/debug/${LIBNAME}
-        ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/release/${LIBNAME}
-        ${CMAKE_CURRENT_BINARY_DIR}/${HEADER_FILE}
-    COMMAND ${CMAKE_COMMAND} -E env ${CARGO_ENV}
-            ${CARGO_EXECUTABLE} build $<IF:$<CONFIG:Debug>,,--release> --target ${RUST_ARCH}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
-set_target_properties(vpnglean_ffi PROPERTIES FOLDER "Libs")
 
 # This options should be used if the glean_parser command needs to be run on some sort of pre-build script.
 if(NOT SKIP_GLEAN_PARSER)
@@ -126,9 +138,6 @@ add_custom_target(vpnglean_telemetry
 )
 set_target_properties(vpnglean_telemetry PROPERTIES FOLDER "Libs")
 
-## Define depedencies
-add_dependencies(vpnglean_ffi vpnglean_telemetry)
-add_dependencies(vpnglean vpnglean_ffi)
 set_target_properties(vpnglean PROPERTIES
     IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/release/${LIBNAME}
     IMPORTED_LOCATION_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/debug/${LIBNAME}
