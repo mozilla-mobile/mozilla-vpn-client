@@ -30,6 +30,13 @@ class IOSController final : public ControllerImpl {
   void cleanupBackendLogs() override;
 
  private:
+  /**
+   * @brief Checks if the System's always On setting exists and syncs the client
+   * value to that.
+   *
+   */
+  void importAlwaysOnSetting();
+
   bool m_checkingStatus = false;
   QString m_serverPublicKey;
 };

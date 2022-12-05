@@ -15,6 +15,7 @@
 #include "mozillavpn.h"
 #include "settingsholder.h"
 
+#include <QApplication>
 #include <QByteArray>
 #include <QFile>
 #include <QHostAddress>
@@ -52,6 +53,13 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
   Q_UNUSED(device);
 
   logger.debug() << "Initializing Swift Controller";
+  // Whenever the app goes from background -> foreground make sure the always-on-setting is in sync.
+  connect(qApp, &QApplication::applicationStateChanged, this, [this](Qt::ApplicationState state) {
+    if (state != Qt::ApplicationState::ApplicationActive) {
+      return;
+    }
+    importAlwaysOnSetting();
+  });
 
   static bool creating = false;
   // No nested creation!
@@ -68,18 +76,7 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
         logger.debug() << "Creation completed with connection state:" << state;
         creating = false;
 
-        // After init, check if the network exentsion has info about always on;
-        // We might not if this is the first execution or the user removed our vpn permission
-        bool alwaysOnRulePresent = [impl hasAlwaysOn];
-        if(alwaysOnRulePresent){
-            // Make sure that the value in the system settings is
-            // is matching what we have. If not, the user changed that and we should update our side.
-            bool userSetAlwaysOn = [impl getAlwaysOn];
-            if (SettingsHolder::instance()->startAtBoot() != userSetAlwaysOn) {
-                SettingsHolder::instance()->setStartAtBoot(userSetAlwaysOn);
-            }
-        }
-              
+        importAlwaysOnSetting();
 
         switch (state) {
           case ConnectionStateError: {
@@ -144,7 +141,7 @@ void IOSController::activate(const HopConnection& hop, const Device* device, con
                                             isIpv6:i.type() == QAbstractSocket::IPv6Protocol];
     [allowedIPAddressRangesNS addObject:[range autorelease]];
   }
-    auto enableAlwaysOn = SettingsHolder::instance()->startAtBoot();
+  auto enableAlwaysOn = SettingsHolder::instance()->startAtBoot();
   [impl connectWithDnsServer:hop.m_dnsServer.toString().toNSString()
            serverIpv6Gateway:hop.m_server.ipv6Gateway().toNSString()
              serverPublicKey:hop.m_server.publicKey().toNSString()
@@ -152,7 +149,7 @@ void IOSController::activate(const HopConnection& hop, const Device* device, con
                   serverPort:hop.m_server.choosePort()
       allowedIPAddressRanges:allowedIPAddressRangesNS
                       reason:reason
-             enableAlwaysOn: enableAlwaysOn
+              enableAlwaysOn:enableAlwaysOn
              failureCallback:^() {
                logger.error() << "IOSSWiftController - connection failed";
                emit disconnected();
@@ -254,4 +251,18 @@ void IOSController::cleanupBackendLogs() {
 
   QFile file(QString::fromNSString([path path]));
   file.remove();
+}
+
+void IOSController::importAlwaysOnSetting() {
+  // Check if the network exentsion has info about always on;
+  // We might not if this is the first execution or the user removed our vpn permission
+  bool alwaysOnRulePresent = [impl hasAlwaysOn];
+  if (alwaysOnRulePresent) {
+    // Make sure that the value in the system settings is
+    // is matching what we have. If not, the user changed that and we should update our side.
+    bool userSetAlwaysOn = [impl getAlwaysOn];
+    if (SettingsHolder::instance()->startAtBoot() != userSetAlwaysOn) {
+      SettingsHolder::instance()->setStartAtBoot(userSetAlwaysOn);
+    }
+  }
 }

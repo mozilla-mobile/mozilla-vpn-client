@@ -284,11 +284,10 @@ public class IOSControllerImpl : NSObject {
     }
     
     @objc func hasAlwaysOn() -> Bool{
-        let rules = tunnel!.onDemandRules;
-        if( rules == nil){
+       guard let rules = tunnel?.onDemandRules else {
             return false;
         }
-        return !(rules!.isEmpty)
+        return !(rules.isEmpty)
     }
 
     
@@ -297,11 +296,11 @@ public class IOSControllerImpl : NSObject {
         Logger.global?.log(message: "Disconnecting")
         assert(tunnel != nil)
         // Turn off "always-on", as this rule would
-        // trigger a reconnect from the OS
+        // trigger an immediate reconnect from the OS
         setAlwaysOn(setEnabled: false)
         tunnel!.saveToPreferences { [unowned self] saveError in
-            if saveError != nil {
-                Logger.global?.log(message: "Save Error")
+            if let error = saveError {
+                Logger.global?.log(message: "Tunnel Save Error: \(error)")
             }
             (tunnel!.connection as? NETunnelProviderSession)?.stopTunnel()
         }
