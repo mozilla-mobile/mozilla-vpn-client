@@ -18,6 +18,7 @@ Window {
     id: window
 
     signal showServerList
+    signal removeFocus
 
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
 
@@ -30,6 +31,10 @@ Window {
                 Qt.platform.os === "tvos";
     }
 
+    MouseArea {
+        anchors.fill: parent
+        onPressed: window.removeFocus()
+    }
 
     function safeAreaHeightByDevice() {
         if (Qt.platform.os !== "ios") {

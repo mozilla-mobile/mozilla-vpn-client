@@ -204,4 +204,11 @@ ComboBox {
             }
         }
     ]
+
+    Connections {
+         target: window
+         function onRemoveFocus() {
+             combo.focus = false
+         }
+     }
 }

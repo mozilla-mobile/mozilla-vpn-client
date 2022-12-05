@@ -19,7 +19,6 @@ VPNButtonBase {
     property var textAlignment: Text.AlignHCenter
     property var buttonPadding: VPNTheme.theme.hSpacing
 
-
     radius: 4
 
     Keys.onReleased: event => {

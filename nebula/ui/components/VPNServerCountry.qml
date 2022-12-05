@@ -38,7 +38,7 @@ VPNClickableRow {
     }
 
     onActiveFocusChanged: vpnFlickable.ensureVisible(serverCountry)
-    handleMouseClick: openCityList
+    onClicked: openCityList()
     handleKeyClick: openCityList
     clip: true
 
