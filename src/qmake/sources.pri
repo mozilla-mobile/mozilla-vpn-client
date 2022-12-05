@@ -106,6 +106,7 @@ SOURCES += \
         modules/modulevpn/captiveportal/captiveportalnotifier.cpp \
         modules/modulevpn/captiveportal/captiveportalrequest.cpp \
         modules/modulevpn/captiveportal/captiveportalrequesttask.cpp \
+        modules/modulevpn/captiveportal/taskcaptiveportallookup.cpp \
         modules/modulevpn/connectionbenchmark/benchmarktask.cpp \
         modules/modulevpn/connectionbenchmark/benchmarktaskping.cpp \
         modules/modulevpn/connectionbenchmark/benchmarktasktransfer.cpp \
@@ -116,6 +117,9 @@ SOURCES += \
         modules/modulevpn/dnshelper.cpp \
         modules/modulevpn/dnspingsender.cpp \
         modules/modulevpn/networkwatcher.cpp \
+        modules/modulevpn/pinghelper.cpp \
+        modules/modulevpn/pingsender.cpp \
+        modules/modulevpn/pingsenderfactory.cpp \
         modules/modulevpn/serverlatency.cpp \
         modules/modulevpn/taskcontrolleraction.cpp \
         modules/modulevpn/telemetry.cpp \
@@ -123,9 +127,6 @@ SOURCES += \
         networkmanager.cpp \
         networkrequest.cpp \
         notificationhandler.cpp \
-        pinghelper.cpp \
-        pingsender.cpp \
-        pingsenderfactory.cpp \
         platforms/dummy/dummyapplistprovider.cpp \
         platforms/dummy/dummynetworkwatcher.cpp \
         platforms/dummy/dummypingsender.cpp \
@@ -151,7 +152,6 @@ SOURCES += \
         tasks/addon/taskaddon.cpp \
         tasks/addonindex/taskaddonindex.cpp \
         tasks/authenticate/taskauthenticate.cpp \
-        tasks/captiveportallookup/taskcaptiveportallookup.cpp \
         tasks/deleteaccount/taskdeleteaccount.cpp \
         tasks/getfeaturelist/taskgetfeaturelist.cpp \
         tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp \
@@ -287,6 +287,7 @@ HEADERS += \
         modules/modulevpn/captiveportal/captiveportalnotifier.h \
         modules/modulevpn/captiveportal/captiveportalrequest.h \
         modules/modulevpn/captiveportal/captiveportalrequesttask.h \
+        modules/modulevpn/captiveportal/taskcaptiveportallookup.h \
         modules/modulevpn/connectionbenchmark/benchmarktask.h \
         modules/modulevpn/connectionbenchmark/benchmarktaskping.h \
         modules/modulevpn/connectionbenchmark/benchmarktasksentinel.h \
@@ -300,6 +301,9 @@ HEADERS += \
         modules/modulevpn/dnspingsender.h \
         modules/modulevpn/networkwatcher.h \
         modules/modulevpn/networkwatcherimpl.h \
+        modules/modulevpn/pinghelper.h \
+        modules/modulevpn/pingsender.h \
+        modules/modulevpn/pingsenderfactory.h \
         modules/modulevpn/serverlatency.h \
         modules/modulevpn/taskcontrolleraction.h \
         modules/modulevpn/telemetry.h \
@@ -307,9 +311,6 @@ HEADERS += \
         networkmanager.h \
         networkrequest.h \
         notificationhandler.h \
-        pinghelper.h \
-        pingsender.h \
-        pingsenderfactory.h \
         platforms/dummy/dummyapplistprovider.h \
         platforms/dummy/dummynetworkwatcher.h \
         platforms/dummy/dummypingsender.h \
@@ -336,7 +337,6 @@ HEADERS += \
         tasks/addon/taskaddon.h \
         tasks/addonindex/taskaddonindex.h \
         tasks/authenticate/taskauthenticate.h \
-        tasks/captiveportallookup/taskcaptiveportallookup.h \
         tasks/deleteaccount/taskdeleteaccount.h \
         tasks/getfeaturelist/taskgetfeaturelist.h \
         tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h \

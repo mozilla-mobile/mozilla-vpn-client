@@ -5,10 +5,10 @@
 #ifndef WINDOWSPINGSENDER_H
 #define WINDOWSPINGSENDER_H
 
+#include "modules/modulevpn/pingsender.h"
+
 #include <QMap>
 #include <QWinEventNotifier>
-
-#include "pingsender.h"
 
 struct WindowsPingSenderPrivate;
 

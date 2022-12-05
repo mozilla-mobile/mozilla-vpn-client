@@ -132,6 +132,12 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/modules/modulevpn/networkwatcher.cpp
     ${MVPN_SOURCE_DIR}/modules/modulevpn/networkwatcher.h
     ${MVPN_SOURCE_DIR}/modules/modulevpn/networkwatcherimpl.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/pinghelper.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/pinghelper.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/pingsender.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/pingsender.h
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/pingsenderfactory.cpp
+    ${MVPN_SOURCE_DIR}/modules/modulevpn/pingsenderfactory.h
     ${MVPN_SOURCE_DIR}/modules/modulevpn/serverlatency.cpp
     ${MVPN_SOURCE_DIR}/modules/modulevpn/serverlatency.h
     ${MVPN_SOURCE_DIR}/modules/modulevpn/taskcontrolleraction.cpp
@@ -145,12 +151,6 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/networkrequest.h
     ${MVPN_SOURCE_DIR}/notificationhandler.cpp
     ${MVPN_SOURCE_DIR}/notificationhandler.h
-    ${MVPN_SOURCE_DIR}/pinghelper.cpp
-    ${MVPN_SOURCE_DIR}/pinghelper.h
-    ${MVPN_SOURCE_DIR}/pingsender.cpp
-    ${MVPN_SOURCE_DIR}/pingsender.h
-    ${MVPN_SOURCE_DIR}/pingsenderfactory.cpp
-    ${MVPN_SOURCE_DIR}/pingsenderfactory.h
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummycryptosettings.cpp
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.cpp
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.h

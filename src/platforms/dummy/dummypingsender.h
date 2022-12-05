@@ -5,7 +5,7 @@
 #ifndef DUMMYPINGSENDER_H
 #define DUMMYPINGSENDER_H
 
-#include "pingsender.h"
+#include "modules/modulevpn/pingsender.h"
 
 class DummyPingSender final : public PingSender {
   Q_OBJECT

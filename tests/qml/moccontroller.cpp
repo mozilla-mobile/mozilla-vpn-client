@@ -5,7 +5,7 @@
 #include "../../src/modules/modulevpn/controllerimpl.h"
 #include "../../src/ipaddress.h"
 #include "../../src/mozillavpn.h"
-#include "../../src/pinghelper.h"
+#include "../../src/modules/modulevpn/pinghelper.h"
 
 Controller::Controller() {}
 

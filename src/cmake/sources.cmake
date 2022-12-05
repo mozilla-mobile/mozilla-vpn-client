@@ -233,6 +233,8 @@ target_sources(mozillavpn-sources INTERFACE
     modules/modulevpn/captiveportal/captiveportalrequest.h
     modules/modulevpn/captiveportal/captiveportalrequesttask.cpp
     modules/modulevpn/captiveportal/captiveportalrequesttask.h
+    modules/modulevpn/captiveportal/taskcaptiveportallookup.cpp
+    modules/modulevpn/captiveportal/taskcaptiveportallookup.h
     modules/modulevpn/connectionbenchmark/benchmarktask.cpp
     modules/modulevpn/connectionbenchmark/benchmarktask.h
     modules/modulevpn/connectionbenchmark/benchmarktaskping.cpp
@@ -256,6 +258,12 @@ target_sources(mozillavpn-sources INTERFACE
     modules/modulevpn/networkwatcher.cpp
     modules/modulevpn/networkwatcher.h
     modules/modulevpn/networkwatcherimpl.h
+    modules/modulevpn/pinghelper.cpp
+    modules/modulevpn/pinghelper.h
+    modules/modulevpn/pingsender.cpp
+    modules/modulevpn/pingsender.h
+    modules/modulevpn/pingsenderfactory.cpp
+    modules/modulevpn/pingsenderfactory.h
     modules/modulevpn/serverlatency.cpp
     modules/modulevpn/serverlatency.h
     modules/modulevpn/taskcontrolleraction.cpp
@@ -270,12 +278,6 @@ target_sources(mozillavpn-sources INTERFACE
     networkrequest.h
     notificationhandler.cpp
     notificationhandler.h
-    pinghelper.cpp
-    pinghelper.h
-    pingsender.cpp
-    pingsender.h
-    pingsenderfactory.cpp
-    pingsenderfactory.h
     platforms/dummy/dummyapplistprovider.cpp
     platforms/dummy/dummyapplistprovider.h
     platforms/dummy/dummynetworkwatcher.cpp
@@ -327,8 +329,6 @@ target_sources(mozillavpn-sources INTERFACE
     tasks/addonindex/taskaddonindex.h
     tasks/authenticate/taskauthenticate.cpp
     tasks/authenticate/taskauthenticate.h
-    tasks/captiveportallookup/taskcaptiveportallookup.cpp
-    tasks/captiveportallookup/taskcaptiveportallookup.h
     tasks/createsupportticket/taskcreatesupportticket.cpp
     tasks/createsupportticket/taskcreatesupportticket.h
     tasks/deleteaccount/taskdeleteaccount.cpp

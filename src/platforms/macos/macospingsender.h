@@ -5,7 +5,7 @@
 #ifndef MACOSPINGSENDER_H
 #define MACOSPINGSENDER_H
 
-#include "pingsender.h"
+#include "modules/modulevpn/pingsender.h"
 
 class QSocketNotifier;
 
