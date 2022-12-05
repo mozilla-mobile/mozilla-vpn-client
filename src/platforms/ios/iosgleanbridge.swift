@@ -6,11 +6,11 @@ import Glean
 
 public class IOSGleanBridgeImpl : NSObject {
   @objc init(telemetryEnabled isTelemetryEnabled: Bool, channel appChannel: String) {
-      Glean.shared.registerPings(GleanMetrics.Pings.self)
-      Glean.shared.initialize(
-        uploadEnabled: isTelemetryEnabled,
-        configuration: Configuration.init(channel: appChannel),
-        buildInfo: GleanMetrics.GleanBuild.info
+    Glean.shared.registerPings(GleanMetrics.Pings.self)
+    Glean.shared.initialize(
+      uploadEnabled: isTelemetryEnabled,
+      configuration: Configuration.init(channel: appChannel),
+      buildInfo: GleanMetrics.GleanBuild.info
       )
   }
 }

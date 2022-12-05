@@ -13,7 +13,7 @@ class IOSGleanBridge {
   Q_DISABLE_COPY_MOVE(IOSGleanBridge)
 
  public:
-  IOSGleanBridge(bool isTelemetryEnabled, NSString* appChannel);
+  IOSGleanBridge(bool isTelemetryEnabled, const QString& appChannel);
   ~IOSGleanBridge();
 };
 

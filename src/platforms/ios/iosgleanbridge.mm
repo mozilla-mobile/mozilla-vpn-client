@@ -6,6 +6,8 @@
 #include "leakdetector.h"
 #include "Mozilla_VPN-Swift.h"
 
+#include <QString>
+
 namespace {
 
 // Our Swift singleton.
@@ -13,10 +15,11 @@ IOSGleanBridgeImpl* impl = nullptr;
 
 }  // namespace
 
-IOSGleanBridge::IOSGleanBridge(bool isTelemetryEnabled, NSString* channel) {
+IOSGleanBridge::IOSGleanBridge(bool isTelemetryEnabled, const QString& channel) {
   MVPN_COUNT_CTOR(IOSGleanBridge);
 
-  impl = [[IOSGleanBridgeImpl alloc] initWithTelemetryEnabled:isTelemetryEnabled channel:channel];
+  impl = [[IOSGleanBridgeImpl alloc] initWithTelemetryEnabled:isTelemetryEnabled
+                                                      channel:channel.toNSString()];
   Q_ASSERT(impl);
 }
 
