@@ -52,7 +52,7 @@ void TaskGetSubscriptionDetails::runInternal() {
         logger.error() << "Get subscription details failed" << error;
 
         if (error != QNetworkReply::AuthenticationRequiredError) {
-          ErrorHandler::networkErrorHandle(error, m_errorPropagationPolicy);
+          REPORTNETWORKERROR(error, m_errorPropagationPolicy, name());
         } else {
           switch (m_authenticationPolicy) {
             case RunAuthenticationFlowIfNeeded:
@@ -160,7 +160,7 @@ void TaskGetSubscriptionDetails::initAuthentication() {
 
   connect(m_authenticationInAppSession, &AuthenticationInAppSession::failed,
           this, [this](const ErrorHandler::ErrorType error) {
-            ErrorHandler::instance()->errorHandle(error);
+            REPORTERROR(error, name());
             maybeComplete(false);
           });
 
@@ -170,8 +170,7 @@ void TaskGetSubscriptionDetails::initAuthentication() {
               case AuthenticationInApp::StateSignUp:
                 [[fallthrough]];
               case AuthenticationInApp::StateFallbackInBrowser:
-                ErrorHandler::instance()->errorHandle(
-                    ErrorHandler::AuthenticationError);
+                REPORTERROR(ErrorHandler::AuthenticationError, name());
                 maybeComplete(false);
                 break;
 

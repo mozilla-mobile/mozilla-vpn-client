@@ -22,7 +22,8 @@ target_link_libraries(mozillavpn PRIVATE
     Qt6::Widgets
 )
 
-if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" 
+   AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Android" )
     target_link_libraries(mozillavpn PRIVATE
         Qt6::NetworkAuth
     )
@@ -35,6 +36,7 @@ target_link_libraries(mozillavpn PUBLIC ${CMAKE_DL_LIBS})
 target_link_libraries(mozillavpn PRIVATE glean lottie nebula translations)
 
 include(cmake/sources.cmake)
+include(cmake/sentry.cmake)
 
 if(${BUILD_DUMMY})
     set(MVPN_PLATFORM_NAME "dummy")
@@ -58,10 +60,7 @@ include(cmake/${MVPN_PLATFORM_NAME}.cmake)
 
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     add_subdirectory(crashreporter)
-    target_link_libraries(mozillavpn PRIVATE crashreporter vpnglean -ldl)
-    if (WIN32)
-        target_link_libraries(mozillavpn PRIVATE ntdll)
-    endif()
+    target_link_libraries(mozillavpn PRIVATE crashreporter vpnglean)
 endif()
 
 qt_finalize_target(mozillavpn)

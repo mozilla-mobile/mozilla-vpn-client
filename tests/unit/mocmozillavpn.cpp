@@ -38,6 +38,11 @@ ConnectionHealth* MozillaVPN::connectionHealth() { return nullptr; }
 
 Controller* MozillaVPN::controller() { return new Controller(); }
 
+ServerData* MozillaVPN::currentServer() {
+  static ServerData* data = new ServerData();
+  return data;
+}
+
 SubscriptionData* MozillaVPN::subscriptionData() {
   return new SubscriptionData();
 }
@@ -47,8 +52,6 @@ void MozillaVPN::initialize() {}
 void MozillaVPN::setState(State) {}
 
 bool MozillaVPN::setServerList(QByteArray const&) { return true; }
-
-void MozillaVPN::getStarted() {}
 
 void MozillaVPN::authenticate() {}
 void MozillaVPN::authenticateWithType(MozillaVPN::AuthenticationType) {}
@@ -72,13 +75,6 @@ void MozillaVPN::accountChecked(const QByteArray&) {}
 void MozillaVPN::cancelAuthentication() {}
 
 void MozillaVPN::logout() {}
-
-const QList<Server> MozillaVPN::exitServers() const { return QList<Server>(); }
-
-const QList<Server> MozillaVPN::entryServers() const { return QList<Server>(); }
-
-void MozillaVPN::changeServer(const QString&, const QString&, const QString&,
-                              const QString&) {}
 
 void MozillaVPN::postAuthenticationCompleted() {}
 

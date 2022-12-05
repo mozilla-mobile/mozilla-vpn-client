@@ -64,9 +64,6 @@ Localizer::Localizer() {
   Q_ASSERT(!s_instance);
   s_instance = this;
 
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  m_code = settingsHolder->languageCode();
-
   initialize();
 }
 
@@ -101,7 +98,9 @@ void Localizer::initialize() {
     settingsHolder->setPreviousLanguageCode(systemCode);
   }
 
-  loadLanguage(m_code);
+  connect(settingsHolder, &SettingsHolder::languageCodeChanged, this,
+          &Localizer::settingsChanged);
+  settingsChanged();
 
   QCoreApplication::installTranslator(&m_translator);
   QDir dir(":/i18n");
@@ -127,29 +126,25 @@ void Localizer::initialize() {
                       std::placeholders::_2, &collator));
 }
 
-void Localizer::loadLanguage(const QString& code) {
-  logger.debug() << "Loading language:" << code;
-  if (!loadLanguageInternal(code)) {
-    logger.debug() << "Loading default language (fallback)";
-    loadLanguageInternal("en");
-  }
-
+void Localizer::settingsChanged() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
-  if (code.isEmpty() && settingsHolder->hasLanguageCode()) {
-    QString previousCode = settingsHolder->languageCode();
-    if (!previousCode.isEmpty()) {
-      settingsHolder->setPreviousLanguageCode(previousCode);
-      emit previousCodeChanged();
-    }
+
+  QString code = settingsHolder->languageCode();
+  logger.debug() << "Loading language:" << code;
+
+  if (!loadLanguage(code)) {
+    logger.debug() << "Loading default language (fallback)";
+    loadLanguage("en");
   }
 
-  SettingsHolder::instance()->setLanguageCode(code);
+  if (!m_code.isEmpty()) {
+    settingsHolder->setPreviousLanguageCode(m_code);
+  }
 
   m_code = code;
-  emit codeChanged();
 }
 
-bool Localizer::loadLanguageInternal(const QString& code) {
+bool Localizer::loadLanguage(const QString& code) {
   QLocale locale = QLocale(code);
   if (code.isEmpty()) {
     locale = QLocale(systemLanguageCode());
@@ -266,14 +261,6 @@ bool Localizer::languageSort(const Localizer::Language& a,
                              const Localizer::Language& b, Collator* collator) {
   Q_ASSERT(collator);
   return collator->compare(a.m_localizedName, b.m_localizedName) < 0;
-}
-
-QString Localizer::previousCode() const {
-  return SettingsHolder::instance()->previousLanguageCode();
-}
-
-QString Localizer::localizedCityName(const QString& code, const QString& city) {
-  return ServerI18N::translateCityName(code, city);
 }
 
 // static

@@ -21,14 +21,12 @@ describe('Initial view and onboarding', function() {
   });
 
   it('Open the help menu', async () => {
-    await vpn.wait()
     await vpn.clickOnElement(initialScreen.GET_HELP_LINK);
     await vpn.waitForElement(getHelpScreen.BACK);
     await vpn.waitForElementProperty(getHelpScreen.BACK, 'visible', 'true');
   });
 
   it('Open help links', async () => {
-    await vpn.wait()
     await vpn.clickOnElement(initialScreen.GET_HELP_LINK);
     await vpn.waitForElement(getHelpScreen.LINKS);
     await vpn.waitForElementProperty(getHelpScreen.LINKS, 'visible', 'true');
@@ -64,25 +62,19 @@ describe('Initial view and onboarding', function() {
     let onboardingView = 0;
 
     while (true) {
-      await vpn.wait()
       assert(await vpn.getElementProperty(initialScreen.LEARN_MORE_LINK, 'visible') === 'true');
       await vpn.clickOnElement(initialScreen.LEARN_MORE_LINK);
 
       await vpn.waitForElement(initialScreen.SKIP_ONBOARDING);
       await vpn.waitForElementProperty(initialScreen.SKIP_ONBOARDING, 'visible', 'true');
 
-      // This is needed just for humans. The UI is already in the other state
-      // before completing the animation.
-      await vpn.wait();
+      await vpn.waitForElementProperty('initialStackView', 'busy', 'false');
 
       for (let i = 0; i < onboardingView; ++i) {
         assert(await vpn.hasElement(initialScreen.ONBOARDING_NEXT));
         assert(await vpn.getElementProperty(initialScreen.ONBOARDING_NEXT, 'visible') === 'true');
         await vpn.clickOnElement(initialScreen.ONBOARDING_NEXT);
-
-        // This is needed just for humans. The UI is already in the other state
-        // before completing the animation.
-        await vpn.wait();
+        await vpn.waitForElementProperty('initialStackView', 'busy', 'false');
       }
 
       assert(await vpn.getElementProperty(initialScreen.ONBOARDING_NEXT, 'visible') === 'true');
@@ -95,9 +87,8 @@ describe('Initial view and onboarding', function() {
       await vpn.waitForElement(initialScreen.GET_HELP_LINK);
       await vpn.waitForElementProperty(initialScreen.GET_HELP_LINK, 'visible', 'true');
 
-      // This is needed just for humans. The UI is already in the other state
-      // before completing the animation.
-      await vpn.wait();
+      await vpn.waitForElementProperty('initialStackView', 'busy', 'false');
+      await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
 
       ++onboardingView;
     }

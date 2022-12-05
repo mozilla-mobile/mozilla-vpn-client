@@ -24,9 +24,13 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QFileInfo>
+#include <QProcessEnvironment>
 #include <QResource>
 #include <QQmlEngine>
 #include <QSaveFile>
+
+constexpr const char* MVPN_ENV_SKIP_ADDON_SIGNATURE =
+    "MVPN_SKIP_ADDON_SIGNATURE";
 
 namespace {
 Logger logger(LOG_MAIN, "AddonManager");
@@ -51,11 +55,7 @@ QString AddonManager::addonServerAddress() {
     return settingsHolder->addonCustomServerAddress();
   }
 
-  if (Constants::inProduction()) {
-    return Constants::ADDON_PRODUCTION_URL;
-  }
-
-  return Constants::ADDON_STAGING_URL;
+  return Constants::addonBaseUrl();
 }
 
 AddonManager::AddonManager(QObject* parent)
@@ -74,26 +74,34 @@ void AddonManager::initialize() {
   // Load on disk addons, doing this will initialize the addons directory
   QList<AddonData> addons;
   if (m_addonIndex.getOnDiskAddonsList(&addons)) {
-    updateAddonsList(addons);
+    updateAddonsList(true, addons);
   }
 
   // Listen for updates in the addons list
   connect(&m_addonIndex, &AddonIndex::indexUpdated, this,
           &AddonManager::updateAddonsList);
-  connect(SettingsHolder::instance(), &SettingsHolder::addonCustomServerChanged,
-          this, &AddonManager::refreshAddons);
-  connect(SettingsHolder::instance(),
-          &SettingsHolder::addonCustomServerAddressChanged, this,
-          &AddonManager::refreshAddons);
 }
 
-void AddonManager::updateIndex(const QByteArray& index,
+void AddonManager::updateIndex(bool status, const QByteArray& index,
                                const QByteArray& indexSignature) {
+  if (!status) {
+    logger.debug() << "Failed to update index.";
+    loadCompleted();
+    return;
+  }
+
   m_addonIndex.update(index, indexSignature);
 }
 
-void AddonManager::updateAddonsList(QList<AddonData> addons) {
-  logger.debug() << "Updating addons list";
+void AddonManager::updateAddonsList(bool status, QList<AddonData> addons) {
+  logger.debug() << "Updating addons list. Status:" << status
+                 << "Addons:" << addons.count();
+
+  if (!status) {
+    logger.debug() << "Failed to update the addons list";
+    loadCompleted();
+    return;
+  }
 
   // Remove unknown addons
   QStringList addonsToBeRemoved;
@@ -135,15 +143,10 @@ void AddonManager::updateAddonsList(QList<AddonData> addons) {
   }
 
   if (taskAdded) {
-    TaskScheduler::scheduleTask(new TaskFunction(
-        [this]() {
-          m_loadCompleted = true;
-          emit loadCompletedChanged();
-        },
-        Task::Reschedulable));
+    TaskScheduler::scheduleTask(
+        new TaskFunction([this]() { loadCompleted(); }, Task::Reschedulable));
   } else {
-    m_loadCompleted = true;
-    emit loadCompletedChanged();
+    loadCompleted();
   }
 }
 
@@ -435,15 +438,49 @@ void AddonManager::reinstateMessages() const {
   settingsHolder->clearAddonSettings(ADDON_MESSAGE_SETTINGS_GROUP);
 }
 
-#ifdef UNIT_TEST
-QStringList AddonManager::addonIds() const { return m_addons.keys(); }
-#endif
-
 // static
 QString AddonManager::mountPath(const QString& addonId) {
   return QString("/addons/%1").arg(addonId);
 }
 
 void AddonManager::refreshAddons() {
+  logger.debug() << "Force an addon refresh";
   TaskScheduler::scheduleTask(new TaskAddonIndex());
+}
+
+void AddonManager::reset() {
+  m_addonDirectory.reset();
+
+  QStringList addonIds;
+  for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
+       i != m_addons.constEnd(); ++i) {
+    addonIds.append(i.key());
+  }
+
+  for (const QString& addonId : addonIds) {
+    unload(addonId);
+    removeAddon(addonId);
+  }
+
+  refreshAddons();
+}
+
+// static
+bool AddonManager::signatureVerificationNeeded() {
+  if (Constants::inProduction()) {
+    return true;
+  }
+
+  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+  if (pe.contains(MVPN_ENV_SKIP_ADDON_SIGNATURE) &&
+      !pe.value(MVPN_ENV_SKIP_ADDON_SIGNATURE).isEmpty()) {
+    return false;
+  }
+
+  return Feature::get(Feature::Feature_addonSignature)->isSupported();
+}
+
+void AddonManager::loadCompleted() {
+  m_loadCompleted = true;
+  emit loadCompletedChanged();
 }

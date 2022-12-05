@@ -85,6 +85,11 @@ class Server {
     if (responseData.callback) responseData.callback(req);
 
     res.status(responseData.status);
+    if ('bodyRaw' in responseData) {
+      res.send(responseData.bodyRaw);
+      return;
+    }
+
     res.json(responseData.body);
   }
 

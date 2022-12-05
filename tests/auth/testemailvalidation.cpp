@@ -22,6 +22,8 @@ void TestEmailValidation::basic_data() {
 
   QTest::addRow("invalid part 0") << ",@a" << false;
   QTest::addRow("invalid part 1") << "a@^" << false;
+  QTest::addRow("missing dot and domain") << "a@b" << false;
+  QTest::addRow("missing domain") << "a@b." << false;
 
   QTest::addRow("all good") << "a@b.c" << true;
 }

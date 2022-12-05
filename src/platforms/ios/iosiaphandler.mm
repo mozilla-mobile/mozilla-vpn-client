@@ -52,6 +52,7 @@ bool s_transactionsProcessed = false;
   logger.debug() << "Registration completed";
 
   ProductsHandler* productsHandler = ProductsHandler::instance();
+  PurchaseIAPHandler* purchaseHandler = IOSIAPHandler::instance();
 
   if (response.invalidProductIdentifiers) {
     NSArray<NSString*>* products = response.invalidProductIdentifiers;
@@ -70,7 +71,7 @@ bool s_transactionsProcessed = false;
 
     for (unsigned long i = 0, count = [products count]; i < count; ++i) {
       SKProduct* product = [[products objectAtIndex:i] retain];
-      QMetaObject::invokeMethod(productsHandler, "productRegistered", Qt::QueuedConnection,
+      QMetaObject::invokeMethod(purchaseHandler, "productRegistered", Qt::QueuedConnection,
                                 Q_ARG(void*, product));
     }
   }
@@ -335,46 +336,47 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
   TaskPurchase* purchase = TaskPurchase::createForIOS(receipt);
   Q_ASSERT(purchase);
 
-  connect(purchase, &TaskPurchase::failed, this,
-          [this](QNetworkReply::NetworkError error, const QByteArray& data) {
-            logger.error() << "Purchase request failed" << error;
+  connect(
+      purchase, &TaskPurchase::failed, this,
+      [purchase, this](QNetworkReply::NetworkError error, const QByteArray& data) {
+        logger.error() << "Purchase request failed" << error;
 
-            stopSubscription();
+        stopSubscription();
 
-            QJsonDocument json = QJsonDocument::fromJson(data);
-            if (!json.isObject()) {
-              ErrorHandler::networkErrorHandle(error);
-              emit subscriptionFailed();
-              ErrorHandler::instance()->subscriptionGenericError();
-              return;
-            }
+        QJsonDocument json = QJsonDocument::fromJson(data);
+        if (!json.isObject()) {
+          REPORTNETWORKERROR(error, ErrorHandler::PropagateError, purchase->name());
+          emit subscriptionFailed();
+          ErrorHandler::instance()->subscriptionGenericError();
+          return;
+        }
 
-            QJsonObject obj = json.object();
-            QJsonValue errorValue = obj.value("errno");
-            if (!errorValue.isDouble()) {
-              ErrorHandler::networkErrorHandle(error);
-              emit subscriptionFailed();
-              ErrorHandler::instance()->subscriptionGenericError();
-              return;
-            }
+        QJsonObject obj = json.object();
+        QJsonValue errorValue = obj.value("errno");
+        if (!errorValue.isDouble()) {
+          REPORTNETWORKERROR(error, ErrorHandler::PropagateError, purchase->name());
+          emit subscriptionFailed();
+          ErrorHandler::instance()->subscriptionGenericError();
+          return;
+        }
 
-            int errorNumber = errorValue.toInt();
-            if (errorNumber == GUARDIAN_ERROR_RECEIPT_NOT_VALID) {
-              ErrorHandler::networkErrorHandle(error);
-              emit subscriptionFailed();
-              ErrorHandler::instance()->subscriptionExpiredError();
-              return;
-            }
+        int errorNumber = errorValue.toInt();
+        if (errorNumber == GUARDIAN_ERROR_RECEIPT_NOT_VALID) {
+          REPORTNETWORKERROR(error, ErrorHandler::PropagateError, purchase->name());
+          emit subscriptionFailed();
+          ErrorHandler::instance()->subscriptionExpiredError();
+          return;
+        }
 
-            if (errorNumber == GUARDIAN_ERROR_RECEIPT_IN_USE) {
-              ErrorHandler::networkErrorHandle(error);
-              emit subscriptionFailed();
-              ErrorHandler::instance()->subscriptionInUseError();
-              return;
-            }
+        if (errorNumber == GUARDIAN_ERROR_RECEIPT_IN_USE) {
+          REPORTNETWORKERROR(error, ErrorHandler::PropagateError, purchase->name());
+          emit subscriptionFailed();
+          ErrorHandler::instance()->subscriptionInUseError();
+          return;
+        }
 
-            emit alreadySubscribed();
-          });
+        emit alreadySubscribed();
+      });
 
   connect(purchase, &TaskPurchase::succeeded, this, [this, ids](const QByteArray&) {
     logger.debug() << "Purchase request completed";

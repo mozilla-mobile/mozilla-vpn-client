@@ -28,16 +28,16 @@ void TestLocalizer::systemLanguage() {
 
   Localizer l;
 
-  l.setCode("");
-  QCOMPARE(l.code(), "");
+  settings.setLanguageCode("");
+  QCOMPARE(settings.languageCode(), "");
 
-  l.setCode("en");
-  QCOMPARE(l.code(), "en");
-  QVERIFY(!l.previousCode().isEmpty());
+  settings.setLanguageCode("en");
+  QCOMPARE(settings.languageCode(), "en");
+  QVERIFY(!settings.previousLanguageCode().isEmpty());
 
-  l.setCode("");
-  QCOMPARE(l.code(), "");
-  QCOMPARE(l.previousCode(), "en");
+  settings.setLanguageCode("");
+  QCOMPARE(settings.languageCode(), "");
+  QCOMPARE(settings.previousLanguageCode(), "en");
 
   QVERIFY(!Localizer::systemLanguageCode().isEmpty());
 }
@@ -45,7 +45,7 @@ void TestLocalizer::systemLanguage() {
 void TestLocalizer::localizeCurrency() {
   SettingsHolder settings;
   Localizer l;
-  l.setCode("en_GB");
+  settings.setLanguageCode("en_GB");
 
   // Invalid iso4217 values
   QCOMPARE(l.localizeCurrency(123.123, "FOOBAR"), "FOOBAR123.12");

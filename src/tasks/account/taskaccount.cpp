@@ -26,7 +26,7 @@ void TaskAccount::run() {
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Account request failed" << error;
-            ErrorHandler::networkErrorHandle(error, m_errorPropagationPolicy);
+            REPORTNETWORKERROR(error, m_errorPropagationPolicy, name());
             emit completed();
           });
 

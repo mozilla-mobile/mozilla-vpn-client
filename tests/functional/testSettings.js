@@ -24,26 +24,21 @@ describe('Settings', function () {
     await vpn.waitForElement(objectName);
     await vpn.waitForElementProperty(objectName, 'visible', 'true');
     assert(
-      await vpn.getElementProperty(objectName, 'isChecked') ===
-      await vpn.getSetting(settingKey));
+        (await vpn.getElementProperty(objectName, 'isChecked') === 'true') ===
+        await vpn.getSetting(settingKey));
 
     await vpn.setSetting(settingKey, true);
-    assert((await vpn.getSetting(settingKey)) === 'true');
+    assert((await vpn.getSetting(settingKey)) === true);
     assert((await vpn.getElementProperty(objectName, 'isChecked')) === 'true');
-    await vpn.wait();
 
     await vpn.setSetting(settingKey, false);
-    assert((await vpn.getSetting(settingKey)) === 'false');
+    assert((await vpn.getSetting(settingKey)) === false);
     assert((await vpn.getElementProperty(objectName, 'isChecked')) === 'false');
-    await vpn.wait();
   }
 
   async function getToGetHelpView() {
-    await vpn.waitForElement(settingsScreen.GET_HELP);
-    await vpn.waitForElementProperty(settingsScreen.GET_HELP, 'visible', 'true');
-    await vpn.clickOnElement(settingsScreen.GET_HELP);
+    await vpn.waitForElementAndClick(settingsScreen.GET_HELP);
 
-    await vpn.wait();
     await vpn.waitForElement(getHelpScreen.BACK);
     await vpn.waitForElementProperty(getHelpScreen.BACK, 'visible', 'true');
   }
@@ -138,7 +133,7 @@ describe('Settings', function () {
     await vpn.clickOnElement(settingsScreen.NETWORK_SETTINGS);
     await vpn.wait();
 
-    await checkSetting('settingLocalNetworkAccess', 'local-network-access');
+    await checkSetting('settingLocalNetworkAccess', 'localNetworkAccess');
 
     await vpn.waitForElement(settingsScreen.BACK);
     await vpn.waitForElementProperty(settingsScreen.BACK, 'visible', 'true');
@@ -150,7 +145,7 @@ describe('Settings', function () {
   });
 
   it('Checking the languages settings', async () => {
-    await vpn.setSetting('language-code', '');
+    await vpn.setSetting('languageCode', '');
 
     await vpn.waitForElement(settingsScreen.SYSTEM_PREFERENCE);
     await vpn.waitForElementProperty(settingsScreen.SYSTEM_PREFERENCE, 'visible', 'true');
@@ -444,7 +439,7 @@ describe('Settings', function () {
     await vpn.clickOnElement(settingsScreen.SYSTEM_PREFERENCE);
     await vpn.wait();
 
-    await checkSetting('dataCollection', 'glean-enabled');
+    await checkSetting('dataCollection', 'gleanEnabled');
 
     await vpn.clickOnElement(settingsScreen.BACK);
     await vpn.wait();
@@ -470,13 +465,12 @@ describe('Settings', function () {
     await vpn.clickOnElement(settingsScreen.systemPreferenceView.NOTIFICATIONS);
     await vpn.wait();
 
-    /* TODO: captive-portal disabled
-        await checkSetting('settingCaptivePortalAlert', 'captive-portal-alert');
-        await checkSetting(
-            'settingUnsecuredNetworkAlert', 'unsecured-network-alert');
-    */
-    await checkSetting('switchServersAlert', 'server-switch-notification');
-    await checkSetting('connectionChangeAlert', 'connection-change-notification');
+    await checkSetting('settingCaptivePortalAlert', 'captivePortalAlert');
+    await checkSetting('settingUnsecuredNetworkAlert', 'unsecuredNetworkAlert');
+    await checkSetting('switchServersAlert', 'serverSwitchNotification');
+    await checkSetting('connectionChangeAlert', 'connectionChangeNotification');
+    await checkSetting(
+        'serverUnavailableNotification', 'serverUnavailableNotification');
 
     await vpn.clickOnElement(settingsScreen.BACK);
     await vpn.wait();

@@ -5,7 +5,6 @@
 #include "addons/manager/addonmanager.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/feature.h"
 #include "networkrequest.h"
 #include "taskaddonindex.h"
 
@@ -22,14 +21,17 @@ TaskAddonIndex::~TaskAddonIndex() { MVPN_COUNT_DTOR(TaskAddonIndex); }
 void TaskAddonIndex::run() {
   // Index file
   {
-    NetworkRequest* request = NetworkRequest::createForGetUrl(
-        this,
-        QString("%1manifest.json").arg(AddonManager::addonServerAddress()),
-        200);
+    QString manifestUrl =
+        QString("%1manifest.json").arg(AddonManager::addonServerAddress());
+    logger.debug() << "Download manifest URL:" << manifestUrl;
+
+    NetworkRequest* request =
+        NetworkRequest::createForGetUrl(this, manifestUrl, 200);
 
     connect(request, &NetworkRequest::requestFailed, this,
             [this](QNetworkReply::NetworkError error, const QByteArray&) {
               logger.error() << "Get addon index failed" << error;
+              AddonManager::instance()->updateIndex(false);
               emit completed();
             });
 
@@ -43,15 +45,18 @@ void TaskAddonIndex::run() {
   }
 
   // Index file signature
-  if (Feature::get(Feature::Feature_addonSignature)->isSupported()) {
-    NetworkRequest* request = NetworkRequest::createForGetUrl(
-        this,
-        QString("%1manifest.json.sig").arg(AddonManager::addonServerAddress()),
-        200);
+  if (AddonManager::signatureVerificationNeeded()) {
+    QString manifestSigUrl =
+        QString("%1manifest.json.sig").arg(AddonManager::addonServerAddress());
+    logger.debug() << "Download manifest signature URL:" << manifestSigUrl;
+
+    NetworkRequest* request =
+        NetworkRequest::createForGetUrl(this, manifestSigUrl, 200);
 
     connect(request, &NetworkRequest::requestFailed, this,
             [this](QNetworkReply::NetworkError error, const QByteArray&) {
               logger.error() << "Get addon index signature failed" << error;
+              AddonManager::instance()->updateIndex(false);
               emit completed();
             });
 
@@ -70,11 +75,11 @@ void TaskAddonIndex::maybeComplete() {
     return;
   }
 
-  if (Feature::get(Feature::Feature_addonSignature)->isSupported() &&
+  if (AddonManager::signatureVerificationNeeded() &&
       m_indexSignData.isEmpty()) {
     return;
   }
 
-  AddonManager::instance()->updateIndex(m_indexData, m_indexSignData);
+  AddonManager::instance()->updateIndex(true, m_indexData, m_indexSignData);
   emit completed();
 }

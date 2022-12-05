@@ -36,7 +36,7 @@ constexpr uint32_t NEW_IN_APP_MESSAGE_ALERT_MSEC = 4000;
 constexpr uint32_t DEFAULT_OS_NOTIFICATION_MSEC = 4000;
 
 // Number of recent connections to retain.
-constexpr int RECENT_CONNECTIONS_MAX_COUNT = 5;
+constexpr int RECENT_CONNECTIONS_MAX_COUNT = 2;
 
 // Cooldown period for unresponsive servers
 constexpr uint32_t SERVER_UNRESPONSIVE_COOLDOWN_SEC = 300;
@@ -86,17 +86,20 @@ CONSTEXPR(uint32_t, controllerPeriodicStateRecorderMsec, 10800000, 60000, 0)
 #define PRODBETAEXPR(type, functionName, prod, beta) \
   inline type functionName() { return inProduction() ? prod : beta; }
 
+#ifdef SENTRY_ENABLED
+constexpr const char* SENTRY_DSN_ENDPOINT = SENTRY_DSN;
+constexpr const char* SENTRY_ENVELOPE_INGESTION = SENTRY_ENVELOPE_ENDPOINT;
+#else
+constexpr const char* SENTRY_DSN_ENDPOINT = "";
+constexpr const char* SENTRY_ENVELOPE_INGESTION = "";
+#endif
+
 constexpr const char* API_PRODUCTION_URL = "https://vpn.mozilla.org";
 constexpr const char* API_STAGING_URL =
     "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
 
-constexpr const char* ADDON_PRODUCTION_URL =
-    "https://archive.mozilla.org/pub/vpn/addons/releases/latest/";
 constexpr const char* ADDON_PRODUCTION_KEY =
     ":/addons_signature/production.der";
-
-constexpr const char* ADDON_STAGING_URL =
-    "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/";
 constexpr const char* ADDON_STAGING_KEY = ":/addons_signature/staging.der";
 
 constexpr auto CRASH_PRODUCTION_URL =
@@ -120,8 +123,16 @@ PRODBETAEXPR(
 PRODBETAEXPR(QString, fxaApiBaseUrl, "https://api.accounts.firefox.com",
              envOrDefault("MVPN_FXA_API_BASE_URL",
                           "https://api-accounts.stage.mozaws.net"))
+
 PRODBETAEXPR(const char*, fxaUrl, "https://accounts.firefox.com",
              "https://accounts.stage.mozaws.net")
+
+PRODBETAEXPR(
+    QString, addonBaseUrl,
+    "https://archive.mozilla.org/pub/vpn/addons/releases/latest/",
+    envOrDefault("MVPN_ADDON_URL",
+                 "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/"))
+
 PRODBETAEXPR(
     const char*, balrogUrl,
     "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release/update.json",

@@ -81,6 +81,7 @@ tests/nativemessaging/tests
 tests/qml/qml_tests
 tests/qml/qml_tests_autogen/
 tests/qml/target_wrapper.sh
+tests/functional/addons/*/generated
 build
 !taskcluster/ci/build
 !taskcluster/scripts/build
@@ -107,6 +108,8 @@ vscode-cpptools/*
 *.xcodeproj/
 MozillaVPN.vcxproj*
 *.autosave
+# Visual Studio stuff.
+CMakeSettings.json
 
 # Qt Creator
 CMakeLists.txt.user
@@ -158,6 +161,7 @@ mozillavpnnp.vcxproj*
 /glean/telemetry/*
 !/glean/telemetry/.keepme
 android/src/org/mozilla/firefox/vpn/glean/GleanEvents.kt
+vpnglean/src/generated
 
 # For users compiling QT per the README
 /qt/

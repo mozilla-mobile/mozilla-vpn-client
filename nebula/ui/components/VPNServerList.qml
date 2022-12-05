@@ -70,7 +70,7 @@ FocusScope {
 
     function setSelectedServer(countryCode, cityName, localizedCityName) {
         if (currentServer.whichHop === "singleHopServer") {
-            VPNController.changeServer(countryCode, cityName);
+            VPNCurrentServer.changeServer(countryCode, cityName);
             stackview.pop();
             return;
         }

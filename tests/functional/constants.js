@@ -7,4 +7,6 @@ module.exports = {
   GUARDIAN_PORT : 3000,
   FXA_PORT : 3001,
   WASM_PORT : 3002,
+  ADDON_PORT : 3003,
+  ADDON_URL : 'http://localhost:3003',
 };

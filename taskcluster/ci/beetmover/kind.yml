@@ -5,6 +5,7 @@
 loader: taskgraph.loader.transform:loader
 
 transforms:
+    - mozillavpn_taskgraph.transforms.requires_level:transforms
     - mozillavpn_taskgraph.transforms.release_artifacts:transforms
     - mozillavpn_taskgraph.transforms.beetmover:transforms
     - taskgraph.transforms.task:transforms
@@ -16,6 +17,7 @@ kind-dependencies:
 
 tasks:
     macos:
+        requires-level: 3 
         worker-type: beetmover
         worker:
             chain-of-trust: true

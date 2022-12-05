@@ -4,10 +4,10 @@
 
 #include "addonindex.h"
 #include "addondirectory.h"
+#include "addonmanager.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/feature.h"
 #include "settingsholder.h"
 #include "signature.h"
 
@@ -38,6 +38,8 @@ AddonIndex::AddonIndex(AddonDirectory* addonDirectory) {
   Q_ASSERT(addonDirectory);
   m_addonDirectory = addonDirectory;
 }
+
+AddonIndex::~AddonIndex() { MVPN_COUNT_DTOR(AddonIndex); }
 
 /**
  * @brief Gets the on disk addon list from the addons file, if any.
@@ -77,7 +79,7 @@ bool AddonIndex::read(QByteArray& index, QByteArray& indexSignature) {
     return false;
   }
 
-  if (Feature::get(Feature::Feature_addonSignature)->isSupported() &&
+  if (AddonManager::signatureVerificationNeeded() &&
       !m_addonDirectory->readFile(ADDON_INDEX_SIGNATURE_FILENAME,
                                   &indexSignature)) {
     return false;
@@ -100,7 +102,7 @@ bool AddonIndex::write(const QByteArray& index,
     return false;
   }
 
-  if (Feature::get(Feature::Feature_addonSignature)->isSupported() &&
+  if (AddonManager::signatureVerificationNeeded() &&
       !m_addonDirectory->writeToFile(ADDON_INDEX_SIGNATURE_FILENAME,
                                      indexSignature)) {
     return false;
@@ -129,22 +131,25 @@ void AddonIndex::update(const QByteArray& index,
   if (read(currentIndex, currentIndexSignature) && currentIndex == index &&
       currentIndexSignature == indexSignature) {
     logger.debug() << "The index has not changed";
+    emit indexUpdated(false, QList<AddonData>());
     return;
   }
 
   QJsonObject indexObj;
   if (!validate(index, indexSignature, &indexObj)) {
     logger.debug() << "Unable to validate the index";
+    emit indexUpdated(false, QList<AddonData>());
     return;
   }
 
   if (!write(index, indexSignature)) {
     logger.debug() << "Unable to write to index file";
+    emit indexUpdated(false, QList<AddonData>());
     return;
   }
 
   QList<AddonData> addons = extractAddonsFromIndex(indexObj);
-  emit indexUpdated(addons);
+  emit indexUpdated(true, addons);
 }
 
 /**
@@ -165,7 +170,7 @@ bool AddonIndex::validate(const QByteArray& index,
     return false;
   }
 
-  if (Feature::get(Feature::Feature_addonSignature)->isSupported() &&
+  if (AddonManager::signatureVerificationNeeded() &&
       !validateIndexSignature(index, indexSignature)) {
     return false;
   }

@@ -51,7 +51,7 @@ void TaskRemoveDevice::run() {
             }
 
             logger.error() << "Failed to remove the device" << error;
-            ErrorHandler::networkErrorHandle(error);
+            REPORTNETWORKERROR(error, ErrorHandler::PropagateError, name());
             emit completed();
           });
 

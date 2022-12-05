@@ -82,163 +82,6 @@ struct InspectorSettingCommand {
   std::function<QJsonValue()> m_get;
 };
 
-// The list of settings exposed to the inspector.
-static QList<InspectorSettingCommand> s_settingCommands{
-    // Unsecured-network-alert
-    InspectorSettingCommand{
-        "unsecured-network-alert", InspectorSettingCommand::Boolean,
-        [](const QByteArray& value) {
-          SettingsHolder::instance()->setUnsecuredNetworkAlert(value == "true");
-        },
-        []() {
-          return SettingsHolder::instance()->unsecuredNetworkAlert() ? "true"
-                                                                     : "false";
-        }},
-
-    // Captive portal
-    InspectorSettingCommand{
-        "captive-portal-alert", InspectorSettingCommand::Boolean,
-        [](const QByteArray& value) {
-          SettingsHolder::instance()->setCaptivePortalAlert(value == "true");
-        },
-        []() {
-          return SettingsHolder::instance()->captivePortalAlert() ? "true"
-                                                                  : "false";
-        }},
-
-    // start at boot
-    InspectorSettingCommand{
-        "start-at-boot", InspectorSettingCommand::Boolean,
-        [](const QByteArray& value) {
-          SettingsHolder::instance()->setStartAtBoot(value == "true");
-        },
-        []() {
-          return SettingsHolder::instance()->startAtBoot() ? "true" : "false";
-        }},
-
-    // local area network access
-    InspectorSettingCommand{
-        "local-network-access", InspectorSettingCommand::Boolean,
-        [](const QByteArray& value) {
-          SettingsHolder::instance()->setLocalNetworkAccess(value == "true");
-        },
-        []() {
-          return SettingsHolder::instance()->localNetworkAccess() ? "true"
-                                                                  : "false";
-        }},
-    // server-switch-notification
-    InspectorSettingCommand{
-        "server-switch-notification", InspectorSettingCommand::Boolean,
-        [](const QByteArray& value) {
-          SettingsHolder::instance()->setServerSwitchNotification(value ==
-                                                                  "true");
-        },
-        []() {
-          return SettingsHolder::instance()->serverSwitchNotification()
-                     ? "true"
-                     : "false";
-        }},
-    // connection-change-notification
-    InspectorSettingCommand{
-        "connection-change-notification", InspectorSettingCommand::Boolean,
-        [](const QByteArray& value) {
-          SettingsHolder::instance()->setConnectionChangeNotification(value ==
-                                                                      "true");
-        },
-        []() {
-          return SettingsHolder::instance()->connectionChangeNotification()
-                     ? "true"
-                     : "false";
-        }},
-    // server-unavailable-notification
-    InspectorSettingCommand{
-        "server-unavailable-notification", InspectorSettingCommand::Boolean,
-        [](const QByteArray& value) {
-          SettingsHolder::instance()->setServerUnavailableNotification(value ==
-                                                                       "true");
-        },
-        []() {
-          return SettingsHolder::instance()->serverUnavailableNotification()
-                     ? "true"
-                     : "false";
-        }},
-
-    // language
-    InspectorSettingCommand{
-        "language-code", InspectorSettingCommand::String,
-        [](const QByteArray& value) {
-          Localizer::instance()->setCode(QString(value));
-        },
-        []() { return SettingsHolder::instance()->languageCode(); }},
-
-    // server country
-    InspectorSettingCommand{
-        "current-server-country-code", InspectorSettingCommand::String, nullptr,
-        []() {
-          return MozillaVPN::instance()->currentServer()->exitCountryCode();
-        }},
-
-    // server city
-    InspectorSettingCommand{
-        "current-server-city", InspectorSettingCommand::String, nullptr,
-        []() {
-          return MozillaVPN::instance()->currentServer()->exitCityName();
-        }},
-
-    // glean-enabled
-    InspectorSettingCommand{
-        "glean-enabled", InspectorSettingCommand::Boolean,
-        [](const QByteArray& value) {
-          SettingsHolder::instance()->setGleanEnabled(value == "true");
-        },
-        []() {
-          return SettingsHolder::instance()->gleanEnabled() ? "true" : "false";
-        }},
-
-    // telemetry-policy-shown
-    InspectorSettingCommand{
-        "telemetry-policy-shown", InspectorSettingCommand::Boolean,
-        [](const QByteArray& value) {
-          SettingsHolder::instance()->setTelemetryPolicyShown(value == "true");
-        },
-        []() {
-          return SettingsHolder::instance()->telemetryPolicyShown() ? "true"
-                                                                    : "false";
-        }},
-
-    // tips-and-tricks-intro-shown
-    InspectorSettingCommand{
-        "tips-and-tricks-intro-shown", InspectorSettingCommand::Boolean,
-        [](const QByteArray& value) {
-          SettingsHolder::instance()->setTipsAndTricksIntroShown(value ==
-                                                                 "true");
-        },
-        []() {
-          return SettingsHolder::instance()->tipsAndTricksIntroShown()
-                     ? "true"
-                     : "false";
-        }},
-
-    InspectorSettingCommand{
-        "addon/customServer", InspectorSettingCommand::Boolean,
-        [](const QByteArray& value) {
-          SettingsHolder::instance()->setAddonCustomServer(value == "true");
-        },
-        []() {
-          return SettingsHolder::instance()->addonCustomServer() ? "true"
-                                                                 : "false";
-        }},
-
-    InspectorSettingCommand{
-        "addon/customServerAddress", InspectorSettingCommand::String,
-        [](const QByteArray& value) {
-          SettingsHolder::instance()->setAddonCustomServerAddress(value);
-        },
-        []() {
-          return SettingsHolder::instance()->addonCustomServerAddress();
-        }},
-};
-
 struct InspectorCommand {
   QString m_commandName;
   QString m_commandDescription;
@@ -455,31 +298,6 @@ static QList<InspectorCommand> s_commands{
                                          Qt::NoModifier, point);
                        return obj;
                      }},
-    InspectorCommand{
-        "pushViewTo", "Push a QML View to a StackView", 2,
-        [](InspectorHandler*, const QList<QByteArray>& arguments) {
-          QJsonObject obj;
-          QString stackViewName(arguments[1]);
-          QUrl qrcPath(arguments[2]);
-          if (!qrcPath.isValid()) {
-            obj["error"] = " Not a valid URL!";
-            logger.error() << "Not a valid URL!";
-          }
-
-          QObject* qmlobj = InspectorUtils::findObject(stackViewName);
-          if (qmlobj == nullptr) {
-            obj["error"] = "Cant find, stackview :" + stackViewName;
-          }
-
-          QVariant arg = QVariant::fromValue(qrcPath.toString());
-
-          bool ok = QMetaObject::invokeMethod(qmlobj, "debugPush",
-                                              QGenericReturnArgument(),
-                                              Q_ARG(QVariant, arg));
-          logger.info() << "WAS OK ->" << ok;
-          return obj;
-        }},
-
     InspectorCommand{"click_notification", "Click on a notification", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        NotificationHandler::instance()->messageClickHandle();
@@ -559,7 +377,7 @@ static QList<InspectorCommand> s_commands{
           QJsonObject obj;
           if (QString(arguments[1]) != "" && QString(arguments[2]) != "") {
             MozillaVPN::instance()
-                ->controller()
+                ->serverCountryModel()
                 ->setCooldownForAllServersInACity(QString(arguments[1]),
                                                   QString(arguments[2]));
           } else {
@@ -610,49 +428,32 @@ static QList<InspectorCommand> s_commands{
                      }},
 
     InspectorCommand{
-        "set_setting", "Set a setting", 2,
+        "set_setting", "Set a setting (setting, value)", 2,
         [](InspectorHandler*, const QList<QByteArray>& arguments) {
           QJsonObject obj;
 
-          for (const InspectorSettingCommand& setting : s_settingCommands) {
-            if (arguments[1] == setting.m_settingName) {
-              switch (setting.m_type) {
-                case InspectorSettingCommand::Boolean:
-                  if (arguments[2] != "true" && arguments[2] != "false") {
-                    obj["error"] =
-                        QString("Expected boolean (true/false) for settings %1")
-                            .arg(QString(arguments[1]));
-                    return obj;
-                  }
+          SettingsHolder* settingsHolder = SettingsHolder::instance();
+          const QMetaObject* metaObject = settingsHolder->metaObject();
+          int propertyId = metaObject->indexOfProperty(arguments[1]);
 
-                  break;
-
-                case InspectorSettingCommand::String:
-                  // Nothing to do for strings.
-                  break;
-
-                default:
-                  Q_ASSERT(false);
-              }
-
-              if (!setting.m_set) {
-                obj["error"] =
-                    QString("Read-only settings %1").arg(QString(arguments[1]));
-                return obj;
-              }
-
-              setting.m_set(arguments[2]);
-              return obj;
-            }
+          if (propertyId < 0) {
+            obj["error"] =
+                QString("Property %1 is not exposed by SettingsHolder")
+                    .arg(QString(arguments[1]));
+            return obj;
           }
 
-          QStringList settings;
-          for (const InspectorSettingCommand& setting : s_settingCommands) {
-            settings.append(setting.m_settingName);
+          QMetaProperty property = metaObject->property(propertyId);
+          Q_ASSERT(property.isValid());
+
+          QVariant value = QVariant::fromValue(arguments[2]);
+          if (value.canConvert(property.type())) {
+            property.write(settingsHolder, value);
+            return obj;
           }
 
-          obj["error"] = QString("Invalid settings. The options are: %1")
-                             .arg(settings.join(", "));
+          obj["error"] = QString("Property %1 has a non-supported type: %2")
+                             .arg(arguments[1], property.type());
           return obj;
         }},
 
@@ -661,20 +462,38 @@ static QList<InspectorCommand> s_commands{
         [](InspectorHandler*, const QList<QByteArray>& arguments) {
           QJsonObject obj;
 
-          for (const InspectorSettingCommand& setting : s_settingCommands) {
-            if (arguments[1] == setting.m_settingName) {
-              obj["value"] = setting.m_get();
-              return obj;
-            }
+          SettingsHolder* settingsHolder = SettingsHolder::instance();
+          const QMetaObject* metaObject = settingsHolder->metaObject();
+          int propertyId = metaObject->indexOfProperty(arguments[1]);
+
+          if (propertyId < 0) {
+            obj["error"] =
+                QString("Property %1 is not exposed by SettingsHolder")
+                    .arg(QString(arguments[1]));
+            return obj;
           }
 
-          QStringList settings;
-          for (const InspectorSettingCommand& setting : s_settingCommands) {
-            settings.append(setting.m_settingName);
+          QMetaProperty property = metaObject->property(propertyId);
+          Q_ASSERT(property.isValid());
+
+          QVariant prop_value = property.read(settingsHolder);
+          if (prop_value.canConvert<QJsonValue>()) {
+            obj["value"] = prop_value.toJsonValue();
+            return obj;
           }
 
-          obj["error"] = QString("Invalid settings. The options are: %1")
-                             .arg(settings.join(", "));
+          if (prop_value.canConvert<QDateTime>()) {
+            obj["value"] = prop_value.toDateTime().toString();
+            return obj;
+          }
+
+          if (prop_value.canConvert<QByteArray>()) {
+            obj["value"] = prop_value.toByteArray().data();
+            return obj;
+          }
+
+          obj["error"] = QString("Property %1 has a non-supported type: %2")
+                             .arg(arguments[1], property.type());
           return obj;
         }},
 
@@ -931,23 +750,6 @@ static QList<InspectorCommand> s_commands{
                        return QJsonObject();
                      }},
 
-    InspectorCommand{"load_addon_manifest", "Load an add-on", 1,
-                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
-                       QJsonObject obj;
-                       // This is a debugging method. We don't need to compute
-                       // the hash of the addon because we will not be able to
-                       // find it in the addon index.
-                       obj["value"] =
-                           AddonManager::instance()->loadManifest(arguments[1]);
-                       return obj;
-                     }},
-
-    InspectorCommand{"unload_addon", "Unload an add-on", 1,
-                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
-                       AddonManager::instance()->unload(arguments[1]);
-                       return QJsonObject();
-                     }},
-
     InspectorCommand{"back_button_clicked",
                      "Simulate an android back-button clicked", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
@@ -982,7 +784,21 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{"force_rtl", "Force RTL layout", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        s_forceRTL = true;
-                       emit Localizer::instance()->codeChanged();
+                       emit SettingsHolder::instance()->languageCodeChanged();
+                       return QJsonObject();
+                     }},
+
+    InspectorCommand{"reset_addons",
+                     "Reset all the addons cleaning up the cache", 0,
+                     [](InspectorHandler*, const QList<QByteArray>&) {
+                       AddonManager::instance()->reset();
+                       return QJsonObject();
+                     }},
+
+    InspectorCommand{"fetch_addons", "Force a fetch of the addon list manifest",
+                     0,
+                     [](InspectorHandler*, const QList<QByteArray>&) {
+                       AddonManager::instance()->fetch();
                        return QJsonObject();
                      }},
 };
@@ -1014,6 +830,8 @@ InspectorHandler::InspectorHandler(QObject* parent) : QObject(parent) {
   connect(NetworkManager::instance()->networkAccessManager(),
           &QNetworkAccessManager::finished, this,
           &InspectorHandler::networkRequestFinished);
+  connect(AddonManager::instance(), &AddonManager::loadCompletedChanged, this,
+          &InspectorHandler::addonLoadCompleted);
 }
 
 InspectorHandler::~InspectorHandler() { MVPN_COUNT_DTOR(InspectorHandler); }
@@ -1060,6 +878,12 @@ void InspectorHandler::logEntryAdded(const QByteArray& log) {
   QJsonObject obj;
   obj["type"] = "log";
   obj["value"] = QString(log).trimmed();
+  send(QJsonDocument(obj).toJson(QJsonDocument::Compact));
+}
+
+void InspectorHandler::addonLoadCompleted() {
+  QJsonObject obj;
+  obj["type"] = "addon_load_completed";
   send(QJsonDocument(obj).toJson(QJsonDocument::Compact));
 }
 

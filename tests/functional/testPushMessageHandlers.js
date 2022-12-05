@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const vpn = require('./helper.js');
-const guardian = require('./guardian.js');
+const guardian = require('./servers/guardian.js');
 const assert = require('node:assert/strict');
 
 describe('PushMessage.handlers', function() {

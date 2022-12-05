@@ -52,12 +52,11 @@ VPNViewBase {
        }
 
         spacing: VPNTheme.theme.windowMargin
-        Layout.leftMargin: VPNTheme.theme.windowMargin
-        Layout.rightMargin: VPNTheme.theme.windowMargin
+        Layout.leftMargin: VPNTheme.theme.windowMargin * 2
+        Layout.rightMargin: VPNTheme.theme.windowMargin * 2
 
         ColumnLayout {
             Layout.alignment: Qt.AlignTop
-            Layout.preferredWidth: parent.width
 
             spacing: 24
 
@@ -66,8 +65,6 @@ VPNViewBase {
                 spacing: 24
                 visible: VPN.userState !== VPN.UserAuthenticated
                 Layout.alignment: Qt.AlignHCenter
-                Layout.fillWidth: true
-                Layout.maximumWidth: parent.width - VPNTheme.theme.windowMargin
 
                 ColumnLayout {
                     spacing: 10
@@ -97,7 +94,6 @@ VPNViewBase {
                 VPNTextField {
                     id: confirmEmailInput
 
-                    width: parent.width
                     verticalAlignment: Text.AlignVCenter
                     Layout.fillWidth: true
                     hasError: !VPNAuthInApp.validateEmailAddress(confirmEmailInput.text) || emailInput.text != confirmEmailInput.text
@@ -108,20 +104,16 @@ VPNViewBase {
             VPNUserProfile {
                 objectName: "contactUs-userInfo"
                 enabled: false
-                Layout.preferredWidth: parent.width
+                Layout.fillWidth: true
                 visible: VPN.userState === VPN.UserAuthenticated
                 Layout.topMargin: -VPNTheme.theme.windowMargin / 2
                 Layout.bottomMargin: -VPNTheme.theme.windowMargin / 2
-                anchors {
-                    left: undefined
-                    right: undefined
-                }
+                Layout.leftMargin: undefined
+                Layout.rightMargin: undefined
             }
 
             ColumnLayout {
                 Layout.fillWidth: true
-                Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin
-                Layout.maximumWidth: parent.width - VPNTheme.theme.windowMargin
                 Layout.alignment: Qt.AlignHCenter
                 spacing: 10
 
@@ -133,7 +125,7 @@ VPNViewBase {
                     lineHeightMode: Text.FixedHeight
                     wrapMode: Text.WordWrap
                     verticalAlignment: Text.AlignVCenter
-                    Layout.preferredWidth: parent.width
+                    Layout.fillWidth: true
                     width: undefined
                 }
 
@@ -141,7 +133,8 @@ VPNViewBase {
                     id: dropDown
                     placeholderText: VPNl18n.InAppSupportWorkflowDropdownLabel
                     model: VPNSupportCategoryModel
-                    Layout.preferredWidth: parent.width
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: undefined
                 }
             }
 
@@ -150,7 +143,7 @@ VPNViewBase {
 
                 verticalAlignment: Text.AlignVCenter
                 Layout.alignment: Qt.AlignHCenter
-                Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin
+                Layout.fillWidth: true
                 _placeholderText: VPNl18n.InAppSupportWorkflowSubjectFieldPlaceholder
             }
 
@@ -158,12 +151,12 @@ VPNViewBase {
                 id: textArea
                 placeholderText: VPNl18n.InAppSupportWorkflowIssueFieldPlaceholder
                 Layout.alignment: Qt.AlignHCenter
-                Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin
+                Layout.fillWidth: true
             }
         }
 
         ColumnLayout {
-            Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin * 2
+            Layout.fillWidth: true
             Layout.alignment: Qt.AlignHCenter
             Layout.fillHeight: true
             spacing: 24
@@ -178,20 +171,19 @@ VPNViewBase {
                 spacing: 0
                 Layout.fillWidth: true
 
-
                 VPNTextBlock {
                     font.pixelSize: VPNTheme.theme.fontSize
                     horizontalAlignment: Text.AlignHCenter
                     text: VPNl18n.InAppSupportWorkflowDisclaimerText
-                    width:parent.width
+                    anchors.left: parent.left
+                    anchors.right: parent.right
 
                 }
 
                 VPNLinkButton {
+                    anchors.horizontalCenter: parent.horizontalCenter
                     labelText: VPNl18n.InAppSupportWorkflowPrivacyNoticeLinkText
-                    Layout.alignment: Qt.AlignHCenter
                     onClicked: VPNUrlOpener.openLink(VPNUrlOpener.LinkPrivacyNotice)
-                    width: parent.width
                 }
             }
 
@@ -222,7 +214,8 @@ VPNViewBase {
 
                 VPNCancelButton {
                     Layout.minimumHeight: VPNTheme.theme.rowHeight
-                    Layout.fillWidth: true
+                    Layout.preferredWidth: width
+                    Layout.alignment: Qt.AlignHCenter
                     onClicked: getHelpStackView.pop()
                 }
             }

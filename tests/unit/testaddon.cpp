@@ -1055,7 +1055,7 @@ void TestAddon::message_date() {
   Localizer localizer;
 
   QFETCH(QString, languageCode);
-  localizer.setCode(languageCode);
+  settingsHolder.setLanguageCode(languageCode);
 
   QFETCH(QDateTime, now);
   QVERIFY(now.isValid());

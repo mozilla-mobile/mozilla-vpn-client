@@ -261,8 +261,8 @@ bool AuthenticationInApp::validateEmailAddress(const QString& emailAddress) {
 
   QByteArray domainAce = QUrl::toAce(parts[1]);
   static QRegularExpression domainRE(
-      "^[A-Z0-9](?:[A-Z0-9-]{0,253}[A-Z0-9])?(?:.[A-Z0-9](?:[A-Z0-9-]{0,253}[A-"
-      "Z0-9])?)+$",
+      "^[A-Z0-9](?:[A-Z0-9-]{0,253}[A-Z0-9])?(?:\\.[A-Z0-9](?:[A-Z0-9-]{0,253}["
+      "A-Z0-9])?)+$",
       QRegularExpression::CaseInsensitiveOption);
   if (!domainRE.match(domainAce).hasMatch()) {
     return false;

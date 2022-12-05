@@ -260,16 +260,29 @@ class VPNService : android.net.VpnService() {
     }
 
     fun reconnect(forceFallBack: Boolean = false) {
+        // Save the current timestamp - so that a silent switch won't
+        // reset the timer in the app.
+        var currentConnectionTime = mConnectionTime
+
         if (this.mConfig == null) {
-            Log.e(tag, "Called reconnect without setting any conf first?")
-            return
+            // If we don't have a saved conf, retrieve the last connection from the Storage
+            val prefs = Prefs.get(this)
+            val lastConfString = prefs.getString("lastConf", "")
+            if (lastConfString.isNullOrEmpty()) {
+                // We have nothing to connect to -> Exit
+                Log.e(
+                    tag,
+                    "VPN service was triggered without defining a Server or having a tunnel"
+                )
+                return
+            }
+            // In case we do not have a config, currentConnectionTime needs to be now.
+            currentConnectionTime = System.currentTimeMillis()
+            this.mConfig = JSONObject(lastConfString)
         }
-        // Don't reset the connection time,
-        // so the users won't be surprised :)
-        val oldConnectionTime = mConnectionTime
         Log.v(tag, "Try to reconnect tunnel with same conf")
         this.turnOn(this.mConfig!!, forceFallBack)
-        mConnectionTime = oldConnectionTime
+        mConnectionTime = currentConnectionTime
     }
 
     fun turnOff() {
@@ -283,6 +296,9 @@ class VPNService : android.net.VpnService() {
         stopForeground(shouldClearNotification)
         mGleanTimer.cancel()
         mConnectionHealth.stop()
+        // Clear the notification message, so the content
+        // is not "disconnected" in case we connect from a non-client.
+        NotificationUtil.get(this)?.onHide(this)
     }
 
     /**
