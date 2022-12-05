@@ -10,6 +10,8 @@
 
 void TestStatusIcon::basic() {
   StatusIcon si;
+  si.initialize();
+
   QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask.png");
 
   si.refreshNeeded();

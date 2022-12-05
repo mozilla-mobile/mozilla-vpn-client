@@ -9,6 +9,7 @@
 #include "l18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "modules/modulevpn.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
 #ifdef MVPN_MACOS
@@ -47,16 +48,14 @@ MacOSMenuBar* MacOSMenuBar::instance() {
 void MacOSMenuBar::initialize() {
   logger.debug() << "Creating menubar";
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-
   m_menuBar = new QMenuBar(nullptr);
 
   //% "File"
   QMenu* fileMenu = m_menuBar->addMenu(qtTrId("menubar.file.title"));
 
   // Do not use qtTrId here!
-  QAction* quit =
-      fileMenu->addAction("quit", vpn->controller(), &Controller::quit);
+  QAction* quit = fileMenu->addAction(
+      "quit", ModuleVPN::instance()->controller(), &Controller::quit);
   quit->setMenuRole(QAction::QuitRole);
 
   // Do not use qtTrId here!
@@ -64,7 +63,8 @@ void MacOSMenuBar::initialize() {
     ExternalOpHandler::instance()->request(ExternalOpHandler::OpAbout);
   });
   m_aboutAction->setMenuRole(QAction::AboutRole);
-  m_aboutAction->setVisible(vpn->state() == MozillaVPN::StateMain);
+  m_aboutAction->setVisible(MozillaVPN::instance()->state() ==
+                            MozillaVPN::StateMain);
 
   m_closeAction = fileMenu->addAction("close", []() {
     QmlEngineHolder::instance()->hideWindow();

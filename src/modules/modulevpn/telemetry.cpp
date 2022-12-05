@@ -40,17 +40,17 @@ void Telemetry::initialize() {
   Controller* controller = ModuleVPN::instance()->controller();
   Q_ASSERT(controller);
 
-  connect(controller, &Controller::handshakeFailed, this,
-          [](const QString& publicKey) {
-            logger.info() << "Send a handshake failure event";
+  connect(
+      controller, &Controller::handshakeFailed, this,
+      [](const QString& publicKey) {
+        logger.info() << "Send a handshake failure event";
 
-            emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
-                GleanSample::connectivityHandshakeTimeout,
-                {{"server", publicKey},
-                 {"transport", ModuleVPN::instance()
-                                   ->networkWatcher()
-                                   ->getCurrentTransport()}});
-          });
+        emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+            GleanSample::connectivityHandshakeTimeout,
+            {{"server", publicKey},
+             {"transport",
+              ModuleVPN::instance()->networkWatcher()->getCurrentTransport()}});
+      });
 
   connect(controller, &Controller::stateChanged, this, [this]() {
     Controller* controller = ModuleVPN::instance()->controller();

@@ -106,6 +106,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 
   Module::load(this);
 
+#ifndef UNIT_TEST
   connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {
     TaskScheduler::scheduleTask(new TaskGroup(
         {new TaskAccount(ErrorHandler::DoNotPropagateError),
@@ -116,6 +117,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
              TaskGetSubscriptionDetails::NoAuthenticationFlow,
              ErrorHandler::PropagateError)}));
   });
+#endif
 
   connect(ModuleVPN::instance()->controller(), &Controller::readyToUpdate, this,
           [this]() { setState(StateUpdateRequired); });
@@ -1471,6 +1473,11 @@ QString MozillaVPN::devVersion() {
 
 // static
 QString MozillaVPN::graphicsApi() {
+#ifdef UNIT_TEST
+  // We don't have QQmlEngine in unit-tests
+  return "graphicsApi";
+#endif
+
   QQuickWindow* window =
       qobject_cast<QQuickWindow*>(QmlEngineHolder::instance()->window());
   Q_ASSERT(window);

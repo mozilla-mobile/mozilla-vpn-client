@@ -16,7 +16,7 @@
 namespace {
 ModuleVPN* s_instance = nullptr;
 Logger logger(LOG_MAIN, "ModuleVPN");
-}
+}  // namespace
 
 ModuleVPN::ModuleVPN(QObject* parent) : Module(parent) {
   MVPN_COUNT_CTOR(ModuleVPN);

@@ -5,6 +5,7 @@
 #include "testtasks.h"
 
 #include "../../src/mozillavpn.h"
+#include "../../src/settingsholder.h"
 #include "../../src/tasks/account/taskaccount.h"
 #include "../../src/tasks/adddevice/taskadddevice.h"
 #include "../../src/tasks/function/taskfunction.h"
@@ -31,6 +32,8 @@ void TestTasks::account() {
   {
     TestHelper::networkConfig.append(TestHelper::NetworkConfig(
         TestHelper::NetworkConfig::Success, QByteArray()));
+
+    SettingsHolder settingsHolder;
 
     TaskAccount* task = new TaskAccount(ErrorHandler::DoNotPropagateError);
 
@@ -73,6 +76,8 @@ void TestTasks::servers() {
 }
 
 void TestTasks::addDevice_success() {
+  SettingsHolder settingsHolder;
+
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Success, QByteArray()));
 
@@ -86,6 +91,8 @@ void TestTasks::addDevice_success() {
 }
 
 void TestTasks::addDevice_failure() {
+  SettingsHolder settingsHolder;
+
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Failure, QByteArray()));
 
