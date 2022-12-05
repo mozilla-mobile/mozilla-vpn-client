@@ -34,12 +34,12 @@ void IOSNetworkWatcher::initialize() {
   });
   nw_path_monitor_start(m_networkMonitor);
 
-  connect(MozillaVPN::instance()->controller(), &Controller::stateChanged, this,
+  connect(ModuleVPN::instance()->controller(), &Controller::stateChanged, this,
           &IOSNetworkWatcher::controllerStateChanged);
 }
 
 NetworkWatcherImpl::TransportType IOSNetworkWatcher::getTransportType() {
-  if (MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
+  if (ModuleVPN::instance()->controller()->state() != Controller::StateOn) {
     // If we're not in stateON, the result from the Observer is fine, as
     // the default-route-transport  is not the vpn-tunnel
     return m_currentDefaultTransport;
@@ -79,7 +79,7 @@ NetworkWatcherImpl::TransportType IOSNetworkWatcher::toTransportType(nw_path_t p
 }
 
 void IOSNetworkWatcher::controllerStateChanged() {
-  if (MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
+  if (ModuleVPN::instance()->controller()->state() != Controller::StateOn) {
     if (m_observableConnection != nil) {
       nw_connection_cancel(m_observableConnection);
       nw_release(m_observableConnection);
