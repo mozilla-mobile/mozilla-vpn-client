@@ -12,6 +12,7 @@
 #include "settingsholder.h"
 #include "taskscheduler.h"
 
+#include <QGuiApplication>
 #include <QJsonObject>
 #include <QQmlEngine>
 
@@ -41,8 +42,24 @@ ModuleVPN* ModuleVPN::instance() {
 }
 
 void ModuleVPN::initialize() {
+  connect(
+      qApp, &QGuiApplication::commitDataRequest, this,
+      [this]() {
+#if QT_VERSION < 0x060000
+        qApp->setFallbackSessionManagementEnabled(false);
+#endif
+        deactivate();
+      },
+      Qt::DirectConnection);
+
   connect(&m_controller, &Controller::stateChanged, this,
           &ModuleVPN::controllerStateChanged);
+
+  connect(&m_controller, &Controller::readyToUpdate, this,
+          &ModuleVPN::readyToUpdate);
+
+  connect(&m_controller, &Controller::readyToQuit, this,
+          &ModuleVPN::readyToQuit, Qt::QueuedConnection);
 
   connect(MozillaVPN::instance(), &MozillaVPN::stateChanged, this, []() {
     if (MozillaVPN::instance()->state() != MozillaVPN::StateMain) {
@@ -236,3 +253,7 @@ void ModuleVPN::registerInspectorCommands() {
         return QJsonObject();
       }});
 }
+
+void ModuleVPN::updateRequired() { m_controller.updateRequired(); }
+
+void ModuleVPN::quit() { m_controller.quit(); }

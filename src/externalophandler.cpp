@@ -70,7 +70,7 @@ void ExternalOpHandler::request(Op op) {
       ModuleVPN::instance()->controller()->deactivate();
       break;
     case OpQuit:
-      ModuleVPN::instance()->controller()->quit();
+      vpn->quit();
       break;
 
     // List of no-op requests:

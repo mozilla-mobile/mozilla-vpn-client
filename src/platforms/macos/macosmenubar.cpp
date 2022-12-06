@@ -9,7 +9,6 @@
 #include "l18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "modules/modulevpn.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
 #ifdef MVPN_MACOS
@@ -54,8 +53,8 @@ void MacOSMenuBar::initialize() {
   QMenu* fileMenu = m_menuBar->addMenu(qtTrId("menubar.file.title"));
 
   // Do not use qtTrId here!
-  QAction* quit = fileMenu->addAction(
-      "quit", ModuleVPN::instance()->controller(), &Controller::quit);
+  QAction* quit =
+      fileMenu->addAction("quit", MozillaVPN::instance(), &MozillaVPN::quit);
   quit->setMenuRole(QAction::QuitRole);
 
   // Do not use qtTrId here!

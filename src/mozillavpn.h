@@ -193,6 +193,8 @@ class MozillaVPN final : public QObject {
 
   const Env* env() const { return &m_env; }
 
+  void updateRequired();
+
   void logout();
 
   UserState userState() const;
@@ -279,6 +281,8 @@ class MozillaVPN final : public QObject {
   void controllerStateChanged();
 
   bool checkCurrentDevice();
+
+  void terminate();
 
  public slots:
   void requestSettings();

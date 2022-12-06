@@ -279,6 +279,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/purchasewebhandler.cpp
     ${MVPN_SOURCE_DIR}/qmlengineholder.cpp
     ${MVPN_SOURCE_DIR}/qmlengineholder.h
+    ${MVPN_SOURCE_DIR}/quitwatcher.cpp
+    ${MVPN_SOURCE_DIR}/quitwatcher.h
     ${MVPN_SOURCE_DIR}/releasemonitor.cpp
     ${MVPN_SOURCE_DIR}/releasemonitor.h
     ${MVPN_SOURCE_DIR}/rfc/rfc1918.cpp
@@ -359,6 +361,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/update/versionapi.h
     ${MVPN_SOURCE_DIR}/update/webupdater.cpp
     ${MVPN_SOURCE_DIR}/update/webupdater.h
+    ${MVPN_SOURCE_DIR}/updaterequiredwatcher.cpp
+    ${MVPN_SOURCE_DIR}/updaterequiredwatcher.h
     ${MVPN_SOURCE_DIR}/urlopener.cpp
     ${MVPN_SOURCE_DIR}/urlopener.h
     ${MVPN_SOURCE_DIR}/websocket/exponentialbackoffstrategy.cpp

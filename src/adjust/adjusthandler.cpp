@@ -7,7 +7,6 @@
 #include "adjustproxy.h"
 #include "constants.h"
 #include "logger.h"
-#include "modules/modulevpn.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 
@@ -75,8 +74,7 @@ void AdjustHandler::initialize() {
   });
 
   s_adjustProxy = new AdjustProxy(vpn);
-  QObject::connect(ModuleVPN::instance()->controller(),
-                   &Controller::readyToQuit, s_adjustProxy,
+  QObject::connect(vpn, &MozillaVPN::aboutToQuit, s_adjustProxy,
                    &AdjustProxy::close);
   QObject::connect(s_adjustProxy, &AdjustProxy::acceptError,
                    [](QAbstractSocket::SocketError socketError) {

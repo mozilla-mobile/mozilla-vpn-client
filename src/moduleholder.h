@@ -27,6 +27,11 @@ class ModuleHolder final : public QQmlPropertyMap {
 
   void registerModule(const QString& moduleName, Module* moduleObj);
 
+  bool hasModules() const { return !m_modules.isEmpty(); }
+
+  void forEach(
+      std::function<void(const QString& name, Module* module)>&& callback);
+
  private:
   explicit ModuleHolder(QObject* parent);
 

@@ -31,8 +31,6 @@
 #include "loghandler.h"
 #include "models/feature.h"
 #include "models/featuremodel.h"
-#include "modules/modulevpn.h"
-#include "modules/modulevpn/controller.h"
 #include "mozillavpn.h"
 #include "networkmanager.h"
 #include "notificationhandler.h"
@@ -124,7 +122,7 @@ static QList<InspectorHandler::InspectorCommand> s_commands{
     InspectorHandler::InspectorCommand{
         "quit", "Quit the app", 0,
         [](InspectorHandler*, const QList<QByteArray>&) {
-          ModuleVPN::instance()->controller()->quit();
+          MozillaVPN::instance()->quit();
           return QJsonObject();
         }},
 
@@ -774,9 +772,8 @@ void InspectorHandler::initialize() {
   if (!Constants::inProduction()) {
     InspectorWebSocketServer* inspectWebSocketServer =
         new InspectorWebSocketServer(qApp);
-    QObject::connect(ModuleVPN::instance()->controller(),
-                     &Controller::readyToQuit, inspectWebSocketServer,
-                     &InspectorWebSocketServer::close);
+    QObject::connect(MozillaVPN::instance(), &MozillaVPN::aboutToQuit,
+                     inspectWebSocketServer, &InspectorWebSocketServer::close);
   }
 #endif
 }

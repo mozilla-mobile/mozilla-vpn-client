@@ -25,6 +25,7 @@
 #include "profileflow.h"
 #include "purchasehandler.h"
 #include "qmlengineholder.h"
+#include "quitwatcher.h"
 #include "settingsholder.h"
 #include "tasks/account/taskaccount.h"
 #include "tasks/adddevice/taskadddevice.h"
@@ -45,6 +46,7 @@
 #include "telemetry/gleansample.h"
 #include "update/updater.h"
 #include "update/versionapi.h"
+#include "updaterequiredwatcher.h"
 #include "urlopener.h"
 #include "websocket/websockethandler.h"
 
@@ -118,9 +120,6 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
              ErrorHandler::PropagateError)}));
   });
 #endif
-
-  connect(ModuleVPN::instance()->controller(), &Controller::readyToUpdate, this,
-          [this]() { setState(StateUpdateRequired); });
 
   connect(ModuleVPN::instance()->controller(),
           &Controller::readyToBackendFailure, this, [this]() {
@@ -1166,6 +1165,11 @@ void MozillaVPN::refreshDevices() {
 }
 
 void MozillaVPN::quit() {
+  QuitWatcher* urw = new QuitWatcher(this);
+  connect(urw, &QuitWatcher::readyToQuit, this, &MozillaVPN::terminate);
+}
+
+void MozillaVPN::terminate() {
   logger.debug() << "quit";
   TaskScheduler::forceDeleteTasks();
 
@@ -1434,13 +1438,13 @@ void MozillaVPN::hardReset() {
 void MozillaVPN::hardResetAndQuit() {
   logger.debug() << "Hard reset and quit";
   hardReset();
-  quit();
+  terminate();
 }
 
 void MozillaVPN::exitForUnrecoverableError(const QString& reason) {
   Q_ASSERT(!reason.isEmpty());
   logger.error() << "Unrecoverable error detected: " << reason;
-  quit();
+  terminate();
 }
 
 void MozillaVPN::crashTest() {
@@ -1535,4 +1539,10 @@ void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {
   }
 
   TaskScheduler::scheduleTask(new TaskGroup(refreshTasks));
+}
+
+void MozillaVPN::updateRequired() {
+  UpdateRequiredWatcher* urw = new UpdateRequiredWatcher(this);
+  connect(urw, &UpdateRequiredWatcher::readyToUpdate, this,
+          [this]() { setState(StateUpdateRequired); });
 }

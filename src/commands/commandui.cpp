@@ -249,7 +249,7 @@ int CommandUI::run(QStringList& tokens) {
     // Signal handling for a proper shutdown.
     SignalHandler sh;
     QObject::connect(&sh, &SignalHandler::quitRequested,
-                     []() { ModuleVPN::instance()->controller()->quit(); });
+                     []() { MozillaVPN::instance()->quit(); });
 #endif
 
     // Font loader
@@ -524,25 +524,11 @@ int CommandUI::run(QStringList& tokens) {
 
 #if MVPN_IOS && QT_VERSION >= 0x060000 && QT_VERSION < 0x060300
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
-                     &MozillaVPN::quit);
+                     &MozillaVPN::terminate);
 #else
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
                      &MozillaVPN::aboutToQuit);
 #endif
-
-    QObject::connect(
-        qApp, &QGuiApplication::commitDataRequest, &vpn,
-        []() {
-#if QT_VERSION < 0x060000
-          qApp->setFallbackSessionManagementEnabled(false);
-#endif
-          ModuleVPN::instance()->deactivate();
-        },
-        Qt::DirectConnection);
-
-    QObject::connect(ModuleVPN::instance()->controller(),
-                     &Controller::readyToQuit, &vpn, &MozillaVPN::quit,
-                     Qt::QueuedConnection);
 
     // Here is the main QML file.
     const QUrl url(QStringLiteral("qrc:/ui/main.qml"));
@@ -605,9 +591,8 @@ int CommandUI::run(QStringList& tokens) {
 
 #ifdef MVPN_WEBEXTENSION
     ServerHandler serverHandler;
-    QObject::connect(ModuleVPN::instance()->controller(),
-                     &Controller::readyToQuit, &serverHandler,
-                     &ServerHandler::close);
+    QObject::connect(MozillaVPN::instance(), &MozillaVPN::aboutToQuit,
+                     &serverHandler, &ServerHandler::close);
 #endif
 
     KeyRegenerator keyRegenerator;

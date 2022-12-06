@@ -36,3 +36,11 @@ void ModuleHolder::initialize() {
     i.value()->initialize();
   }
 }
+
+void ModuleHolder::forEach(
+    std::function<void(const QString& name, Module* module)>&& callback) {
+  for (QMap<QString, Module*>::iterator i = m_modules.begin();
+       i != m_modules.end(); ++i) {
+    callback(i.key(), i.value());
+  }
+}

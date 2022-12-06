@@ -136,6 +136,7 @@ SOURCES += \
         purchasewebhandler.cpp \
         profileflow.cpp \
         qmlengineholder.cpp \
+        quitwatcher.cpp \
         releasemonitor.cpp \
         rfc/rfc1112.cpp \
         rfc/rfc1918.cpp \
@@ -174,6 +175,7 @@ SOURCES += \
         tutorial/tutorialstepnext.cpp \
         update/updater.cpp \
         update/versionapi.cpp \
+        updaterequiredwatcher.cpp \
         urlopener.cpp \
         update/webupdater.cpp \
         websocket/exponentialbackoffstrategy.cpp \
@@ -320,6 +322,7 @@ HEADERS += \
         purchaseiaphandler.h \
         purchasewebhandler.h \
         qmlengineholder.h \
+        quitwatcher.h \
         releasemonitor.h \
         rfc/rfc1112.h \
         rfc/rfc1918.h \
@@ -360,6 +363,7 @@ HEADERS += \
         update/updater.h \
         update/versionapi.h \
         update/webupdater.h \
+        updaterequiredwatcher.h \
         urlopener.h \
         websocket/exponentialbackoffstrategy.h \
         websocket/pushmessage.h \

@@ -35,6 +35,10 @@ class ModuleVPN final : public Module {
 
   void initialize() override;
 
+  void updateRequired() override;
+
+  void quit() override;
+
   static ModuleVPN* instance();
 
   Q_INVOKABLE void activate();

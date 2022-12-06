@@ -296,6 +296,8 @@ target_sources(mozillavpn-sources INTERFACE
     purchasewebhandler.cpp
     qmlengineholder.cpp
     qmlengineholder.h
+    quitwatcher.cpp
+    quitwatcher.h
     releasemonitor.cpp
     releasemonitor.h
     rfc/rfc1112.cpp
@@ -375,6 +377,8 @@ target_sources(mozillavpn-sources INTERFACE
     update/versionapi.h
     update/webupdater.cpp
     update/webupdater.h
+    updaterequiredwatcher.cpp
+    updaterequiredwatcher.h
     urlopener.cpp
     urlopener.h
     websocket/exponentialbackoffstrategy.cpp

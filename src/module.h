@@ -18,6 +18,16 @@ class Module : public QObject {
   virtual ~Module();
 
   virtual void initialize() = 0;
+
+  // This method needs to trigger the signal `readyToUpdate`.
+  virtual void updateRequired() = 0;
+
+  // This method needs to trigger the signal `readyToQuit`.
+  virtual void quit() = 0;
+
+ signals:
+  void readyToUpdate();
+  void readyToQuit();
 };
 
 #endif  // MODULE_H
