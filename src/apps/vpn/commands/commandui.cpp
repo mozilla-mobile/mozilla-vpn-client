@@ -76,6 +76,15 @@
 #  include "sentry/sentryadapter.h"
 #endif
 
+#ifdef MVPN_WINDOWS
+#  include "eventlistener.h"
+#  include "platforms/windows/windowsstartatbootwatcher.h"
+#  include "platforms/windows/windowsappimageprovider.h"
+
+#  include <iostream>
+#  include <windows.h>
+#endif
+
 #ifdef MZ_WINDOWS
 #  include <windows.h>
 

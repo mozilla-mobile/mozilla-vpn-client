@@ -9,6 +9,13 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "sentry/sentryadapter.h"
+#include "settingsholder.h"
+
+#include <QStringList>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
 
 namespace {
 Logger logger("TaskServers");
