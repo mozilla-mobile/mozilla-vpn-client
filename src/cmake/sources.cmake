@@ -181,6 +181,8 @@ target_sources(mozillavpn-sources INTERFACE
     loghandler.h
     logoutobserver.cpp
     logoutobserver.h
+    logserializewatcher.cpp
+    logserializewatcher.h
     main.cpp
     models/device.cpp
     models/device.h

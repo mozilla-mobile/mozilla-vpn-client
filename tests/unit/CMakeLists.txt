@@ -171,6 +171,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/loghandler.h
     ${MVPN_SOURCE_DIR}/logoutobserver.cpp
     ${MVPN_SOURCE_DIR}/logoutobserver.h
+    ${MVPN_SOURCE_DIR}/logserializewatcher.cpp
+    ${MVPN_SOURCE_DIR}/logserializewatcher.h
     ${MVPN_SOURCE_DIR}/models/device.cpp
     ${MVPN_SOURCE_DIR}/models/device.h
     ${MVPN_SOURCE_DIR}/models/devicemodel.cpp

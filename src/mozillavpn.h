@@ -278,8 +278,6 @@ class MozillaVPN final : public QObject {
 
   RemovalDeviceOption maybeRemoveCurrentDevice();
 
-  void controllerStateChanged();
-
   bool checkCurrentDevice();
 
   void terminate();

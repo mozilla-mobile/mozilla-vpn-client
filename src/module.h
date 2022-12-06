@@ -7,6 +7,8 @@
 
 #include <QObject>
 
+class QTextStream;
+
 class Module : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Module)
@@ -27,6 +29,12 @@ class Module : public QObject {
 
   // This method needs to trigger the signal `readyToBackendFailure`.
   virtual void backendFailure() = 0;
+
+  // Retrieve extra logs for this module.
+  virtual void serializeLogs(QTextStream* out,
+                             std::function<void()>&& a_finalizeCallback) = 0;
+
+  virtual void cleanupLogs() = 0;
 
  signals:
   void readyToUpdate();

@@ -41,6 +41,11 @@ class ModuleVPN final : public Module {
 
   void backendFailure() override;
 
+  void serializeLogs(QTextStream* out,
+                     std::function<void()>&& a_finalizeCallback) override;
+
+  void cleanupLogs() override;
+
   static ModuleVPN* instance();
 
   Q_INVOKABLE void activate();

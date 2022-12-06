@@ -517,7 +517,7 @@ void Controller::serverUnavailable() {
 void Controller::updateRequired() {
   logger.warning() << "Update required";
 
-  if (m_state == StateOff) {
+  if (m_state == StateInitializing || m_state == StateOff) {
     emit readyToUpdate();
     return;
   }

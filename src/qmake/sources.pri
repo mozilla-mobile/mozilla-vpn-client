@@ -80,6 +80,7 @@ SOURCES += \
         logger.cpp \
         loghandler.cpp \
         logoutobserver.cpp \
+        logserializewatcher.cpp \
         main.cpp \
         models/device.cpp \
         models/devicemodel.cpp \
@@ -264,6 +265,7 @@ HEADERS += \
         logger.h \
         loghandler.h \
         logoutobserver.h \
+        logserializewatcher.h \
         models/device.h \
         models/devicemodel.h \
         models/feature.h \

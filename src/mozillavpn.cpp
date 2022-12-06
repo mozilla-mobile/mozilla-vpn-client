@@ -14,6 +14,7 @@
 #include "logger.h"
 #include "loghandler.h"
 #include "logoutobserver.h"
+#include "logserializewatcher.h"
 #include "models/device.h"
 #include "models/feature.h"
 #include "models/recentconnections.h"
@@ -121,9 +122,6 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
              ErrorHandler::PropagateError)}));
   });
 #endif
-
-  connect(ModuleVPN::instance()->controller(), &Controller::stateChanged, this,
-          &MozillaVPN::controllerStateChanged);
 
   connect(ModuleVPN::instance()->controller(), &Controller::stateChanged,
           &m_private->m_statusIcon, &StatusIcon::refreshNeeded);
@@ -990,31 +988,11 @@ void MozillaVPN::serializeLogs(QTextStream* out,
 
   LogHandler::writeLogs(*out);
 
-  ModuleVPN::instance()->controller()->getBackendLogs(
-      [out,
-       finalizeCallback = std::move(finalizeCallback)](const QString& logs) {
-        logger.debug() << "Logs from the backend service received";
-
-        *out << Qt::endl
-             << Qt::endl
-             << "Mozilla VPN backend logs" << Qt::endl
-             << "========================" << Qt::endl
-             << Qt::endl;
-
-        if (!logs.isEmpty()) {
-          *out << logs;
-        } else {
-          *out << "No logs from the backend.";
-        }
-        *out << Qt::endl;
-        *out << "==== SETTINGS ====" << Qt::endl;
-        *out << SettingsHolder::instance()->getReport();
-        *out << "==== DEVICE ====" << Qt::endl;
-        *out << Device::currentDeviceReport();
-        *out << Qt::endl;
-
-        finalizeCallback();
-      });
+  LogSerializeWatcher* slw = new LogSerializeWatcher(this, out);
+  connect(slw, &LogSerializeWatcher::logsReady, this,
+          [finalizeCallback = std::move(finalizeCallback)]() {
+            finalizeCallback();
+          });
 }
 
 bool MozillaVPN::viewLogs() {
@@ -1091,7 +1069,8 @@ void MozillaVPN::storeInClipboard(const QString& text) {
 void MozillaVPN::cleanupLogs() {
   logger.debug() << "Cleanup logs";
   LogHandler::instance()->cleanupLogs();
-  ModuleVPN::instance()->controller()->cleanupBackendLogs();
+  ModuleHolder::instance()->forEach(
+      [](const QString&, Module* module) { module->cleanupLogs(); });
 }
 
 bool MozillaVPN::modelsInitialized() const {
@@ -1315,34 +1294,14 @@ void MozillaVPN::update() {
 
   setUpdating(true);
 
-  // The windows installer will stop the client and daemon before installation
-  // so it's not necessary to disable the VPN to perform an upgrade.
-#ifndef MVPN_WINDOWS
-  if (ModuleVPN::instance()->controller()->state() != Controller::StateOff &&
-      ModuleVPN::instance()->controller()->state() !=
-          Controller::StateInitializing) {
-    ModuleVPN::instance()->deactivate();
-    return;
-  }
-#endif
-
-  m_private->m_releaseMonitor.updateSoon();
+  UpdateRequiredWatcher* urw = new UpdateRequiredWatcher(this);
+  connect(urw, &UpdateRequiredWatcher::readyToUpdate, this,
+          [this]() { m_private->m_releaseMonitor.updateSoon(); });
 }
 
 void MozillaVPN::setUpdating(bool updating) {
   m_updating = updating;
   emit updatingChanged();
-}
-
-void MozillaVPN::controllerStateChanged() {
-  logger.debug() << "Controller state changed";
-
-  if (m_updating &&
-      ModuleVPN::instance()->controller()->state() == Controller::StateOff) {
-    update();
-  }
-
-  NetworkManager::instance()->clearCache();
 }
 
 void MozillaVPN::backendServiceRestore() {

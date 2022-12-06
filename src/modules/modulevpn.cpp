@@ -56,6 +56,9 @@ void ModuleVPN::initialize() {
   connect(&m_controller, &Controller::stateChanged, this,
           &ModuleVPN::controllerStateChanged);
 
+  connect(&m_controller, &Controller::stateChanged, NetworkManager::instance(),
+          &NetworkManager::clearCache);
+
   connect(&m_controller, &Controller::readyToUpdate, this,
           &ModuleVPN::readyToUpdate);
 
@@ -269,3 +272,36 @@ void ModuleVPN::updateRequired() { m_controller.updateRequired(); }
 void ModuleVPN::quit() { m_controller.quit(); }
 
 void ModuleVPN::backendFailure() { m_controller.backendFailure(); }
+
+void ModuleVPN::serializeLogs(QTextStream* out,
+                              std::function<void()>&& a_finalizeCallback) {
+  std::function<void()> finalizeCallback = std::move(a_finalizeCallback);
+
+  m_controller.getBackendLogs(
+      [out,
+       finalizeCallback = std::move(finalizeCallback)](const QString& logs) {
+        logger.debug() << "Logs from the backend service received";
+
+        *out << Qt::endl
+             << Qt::endl
+             << "Mozilla VPN backend logs" << Qt::endl
+             << "========================" << Qt::endl
+             << Qt::endl;
+
+        if (!logs.isEmpty()) {
+          *out << logs;
+        } else {
+          *out << "No logs from the backend.";
+        }
+        *out << Qt::endl;
+        *out << "==== SETTINGS ====" << Qt::endl;
+        *out << SettingsHolder::instance()->getReport();
+        *out << "==== DEVICE ====" << Qt::endl;
+        *out << Device::currentDeviceReport();
+        *out << Qt::endl;
+
+        finalizeCallback();
+      });
+}
+
+void ModuleVPN::cleanupLogs() { m_controller.cleanupBackendLogs(); }

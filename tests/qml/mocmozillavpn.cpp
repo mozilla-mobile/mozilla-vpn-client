@@ -113,11 +113,11 @@ void MozillaVPN::refreshDevices() {}
 
 void MozillaVPN::quit() {}
 
+void MozillaVPN::terminate() {}
+
 void MozillaVPN::update() {}
 
 void MozillaVPN::setUpdating(bool) {}
-
-void MozillaVPN::controllerStateChanged() {}
 
 void MozillaVPN::backendServiceRestore() {}
 
