@@ -27,7 +27,7 @@
 #include "../../src/module.h"
 #include "../../src/moduleholder.h"
 #include "../../src/settingsholder.h"
-#include "../../src/systemtraynotificationhandler.h"
+#include "../../src/qmlengineholder.h"
 #include "../../src/tutorial/tutorial.h"
 #include "helper.h"
 
@@ -857,7 +857,6 @@ void TestAddon::message_notification_data() {
   Localizer l;
 
   QObject parent;
-  SystemTrayNotificationHandler nh(&parent);
 
   QTest::addColumn<QString>("title");
   QTest::addColumn<QString>("message");

@@ -110,10 +110,9 @@ void SystemTrayNotificationHandler::setStatusMenu() {
 #endif
 }
 
-void SystemTrayNotificationHandler::notify(NotificationHandler::Message type,
-                                           const QString& title,
-                                           const QString& message,
-                                           int timerMsec) {
+void SystemTrayNotificationHandler::notifyInternal(
+    NotificationHandler::Message type, const QString& title,
+    const QString& message, int timerMsec) {
   Q_UNUSED(type);
 
   QIcon icon(Constants::LOGO_URL);

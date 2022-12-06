@@ -5,6 +5,8 @@
 #ifndef MODULE_H
 #define MODULE_H
 
+#include "notificationhandler.h"
+
 #include <QObject>
 
 class QTextStream;
@@ -40,6 +42,10 @@ class Module : public QObject {
   void readyToUpdate();
   void readyToQuit();
   void readyToBackendFailure();
+
+  void notificationNeeded(NotificationHandler::Message type,
+                          const QString& title, const QString& message,
+                          int timerMsec);
 };
 
 #endif  // MODULE_H

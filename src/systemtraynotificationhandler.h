@@ -24,8 +24,8 @@ class SystemTrayNotificationHandler : public NotificationHandler {
 #endif
 
  protected:
-  virtual void notify(Message type, const QString& title,
-                      const QString& message, int timerMsec) override;
+  virtual void notifyInternal(Message type, const QString& title,
+                              const QString& message, int timerMsec) override;
 
   virtual void showHideWindow();
 

@@ -54,10 +54,10 @@ void LinuxSystemTrayNotificationHandler::initialize() {
                                         SLOT(actionInvoked(uint, QString)));
 }
 
-void LinuxSystemTrayNotificationHandler::notify(Message type,
-                                                const QString& title,
-                                                const QString& message,
-                                                int timerMsec) {
+void LinuxSystemTrayNotificationHandler::notifyInternal(Message type,
+                                                        const QString& title,
+                                                        const QString& message,
+                                                        int timerMsec) {
   QStringList actions;
   switch (type) {
     case None:

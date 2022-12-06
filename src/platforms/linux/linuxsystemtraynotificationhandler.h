@@ -23,8 +23,8 @@ class LinuxSystemTrayNotificationHandler final
  private:
   void initialize() override;
 
-  void notify(Message type, const QString& title, const QString& message,
-              int timerMsec) override;
+  void notifyInternal(Message type, const QString& title,
+                      const QString& message, int timerMsec) override;
 
  private slots:
   void actionInvoked(uint actionId, QString action);

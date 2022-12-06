@@ -60,8 +60,8 @@ void IOSNotificationHandler::initialize() {
                         }];
 }
 
-void IOSNotificationHandler::notify(NotificationHandler::Message type, const QString& title,
-                                    const QString& message, int timerMsec) {
+void IOSNotificationHandler::notifyInternal(NotificationHandler::Message type, const QString& title,
+                                            const QString& message, int timerMsec) {
   Q_UNUSED(type);
 
   if (!m_delegate) {

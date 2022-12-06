@@ -190,6 +190,8 @@ void ModuleVPN::controllerStateChanged() {
       activate();
     }
   }
+
+  maybeShowNotification();
 }
 
 bool ModuleVPN::validateUserDNS(const QString& dns) const {
@@ -305,3 +307,106 @@ void ModuleVPN::serializeLogs(QTextStream* out,
 }
 
 void ModuleVPN::cleanupLogs() { m_controller.cleanupBackendLogs(); }
+
+void ModuleVPN::maybeShowNotification() {
+  logger.debug() << "Maybe show notification";
+
+  MozillaVPN* vpn = MozillaVPN::instance();
+  if (vpn->state() != MozillaVPN::StateMain &&
+      // The Disconnected notification should be triggerable
+      // on StateInitialize, in case the user was connected during a log-out
+      // Otherwise existing notifications showing "connected" would update
+      !(vpn->state() == MozillaVPN::StateInitialize &&
+        ModuleVPN::instance()->controller()->state() == Controller::StateOff)) {
+    return;
+  }
+
+  QString title;
+  QString message;
+  QString countryCode = vpn->currentServer()->exitCountryCode();
+  QString localizedCityName = vpn->currentServer()->localizedCityName();
+  QString localizedCountryName =
+      vpn->serverCountryModel()->localizedCountryName(countryCode);
+
+  switch (ModuleVPN::instance()->controller()->state()) {
+    case Controller::StateOn:
+      m_connected = true;
+
+      if (m_switching) {
+        m_switching = false;
+
+        if (!SettingsHolder::instance()->serverSwitchNotification()) {
+          // Dont show notification if it's turned off.
+          return;
+        }
+
+        QString localizedPreviousExitCountryName =
+            vpn->serverCountryModel()->localizedCountryName(
+                vpn->currentServer()->previousExitCountryCode());
+        QString localizedPreviousExitCityName =
+            vpn->currentServer()->localizedPreviousExitCityName();
+
+        if ((localizedPreviousExitCountryName == localizedCountryName) &&
+            (localizedPreviousExitCityName == localizedCityName)) {
+          // Don't show notifications unless the exit server changed, see:
+          // https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1719
+          return;
+        }
+
+        //% "VPN Switched Servers"
+        title = qtTrId("vpn.systray.statusSwitch.title");
+        //% "Switched from %1, %2 to %3, %4"
+        //: Shown as message body in a notification. %1 and %3 are countries, %2
+        //: and %4 are cities.
+        message = qtTrId("vpn.systray.statusSwtich.message")
+                      .arg(localizedPreviousExitCountryName,
+                           localizedPreviousExitCityName, localizedCountryName,
+                           localizedCityName);
+      } else {
+        if (!SettingsHolder::instance()->connectionChangeNotification()) {
+          // Notifications for ConnectionChange are disabled
+          return;
+        }
+        //% "VPN Connected"
+        title = qtTrId("vpn.systray.statusConnected.title");
+        //% "Connected to %1, %2"
+        //: Shown as message body in a notification. %1 is the country, %2 is
+        //: the city.
+        message = qtTrId("vpn.systray.statusConnected.message")
+                      .arg(localizedCountryName, localizedCityName);
+      }
+      break;
+
+    case Controller::StateOff:
+      if (m_connected) {
+        m_connected = false;
+        if (!SettingsHolder::instance()->connectionChangeNotification()) {
+          // Notifications for ConnectionChange are disabled
+          return;
+        }
+
+        //% "VPN Disconnected"
+        title = qtTrId("vpn.systray.statusDisconnected.title");
+        //% "Disconnected from %1, %2"
+        //: Shown as message body in a notification. %1 is the country, %2 is
+        //: the city.
+        message = qtTrId("vpn.systray.statusDisconnected.message")
+                      .arg(localizedCountryName, localizedCityName);
+      }
+      break;
+
+    case Controller::StateSwitching:
+      m_connected = true;
+      m_switching = true;
+      break;
+
+    default:
+      break;
+  }
+
+  Q_ASSERT(title.isEmpty() == message.isEmpty());
+
+  if (!title.isEmpty()) {
+    emit notificationNeeded(NotificationHandler::None, title, message, 2000);
+  }
+}

@@ -5,6 +5,8 @@
 #include "../../src/leakdetector.h"
 #include "../../src/loghandler.h"
 #include "../../src/settingsholder.h"
+#include "../../src/simplenetworkmanager.h"
+#include "../../src/systemtraynotificationhandler.h"
 #include "constants.h"
 #include "helper.h"
 #include "l18nstrings.h"
@@ -37,6 +39,10 @@ int main(int argc, char* argv[]) {
     Constants::setStaging();
 
     MozillaVPN* vpn = new MozillaVPN();
+
+    NotificationHandler::create(vpn);
+    SimpleNetworkManager snm;
+
     vpn->initialize();
   }
 

@@ -62,6 +62,8 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/logger.h
     ${MVPN_SOURCE_DIR}/loghandler.cpp
     ${MVPN_SOURCE_DIR}/loghandler.h
+    ${MVPN_SOURCE_DIR}/models/device.cpp
+    ${MVPN_SOURCE_DIR}/models/device.h
     ${MVPN_SOURCE_DIR}/models/feature.cpp
     ${MVPN_SOURCE_DIR}/models/feature.h
     ${MVPN_SOURCE_DIR}/models/featuremodel.cpp

@@ -546,10 +546,6 @@ int CommandUI::run(QStringList& tokens) {
     NotificationHandler* notificationHandler =
         NotificationHandler::create(&engineHolder);
 
-    QObject::connect(ModuleVPN::instance()->controller(),
-                     &Controller::stateChanged, notificationHandler,
-                     &NotificationHandler::showNotification);
-
 #ifdef MVPN_MACOS
     MacOSMenuBar menuBar;
     menuBar.initialize();

@@ -17,8 +17,8 @@ class IOSNotificationHandler final : public NotificationHandler {
   ~IOSNotificationHandler();
 
  protected:
-  void notify(Message type, const QString& title, const QString& message,
-              int timerMsec) override;
+  void notifyInternal(Message type, const QString& title,
+                      const QString& message, int timerMsec) override;
 
  private:
   void initialize() override;

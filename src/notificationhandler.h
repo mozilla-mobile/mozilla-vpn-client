@@ -42,8 +42,6 @@ class NotificationHandler : public QObject {
 
   void subscriptionNotFoundNotification();
 
-  void showNotification();
-
   void messageClickHandle();
 
   virtual void retranslate() {}
@@ -51,6 +49,9 @@ class NotificationHandler : public QObject {
 #ifdef MVPN_WASM
   virtual QMenu* contextMenu() { return nullptr; }
 #endif
+
+  void notify(Message type, const QString& title, const QString& message,
+              int timerMsec);
 
  signals:
   void notificationShown(const QString& title, const QString& message);
@@ -60,26 +61,16 @@ class NotificationHandler : public QObject {
  protected:
   explicit NotificationHandler(QObject* parent);
 
-  virtual void notify(Message type, const QString& title,
-                      const QString& message, int timerMsec) = 0;
-
   virtual void initialize() {}
+
+  virtual void notifyInternal(Message type, const QString& title,
+                              const QString& message, int timerMsec) = 0;
 
  private:
   static NotificationHandler* createInternal(QObject* parent);
 
-  virtual void notifyInternal(Message type, const QString& title,
-                              const QString& message, int timerMsec);
-
  protected:
   Message m_lastMessage = None;
-
- private:
-  bool m_switching = false;
-
-  // We want to show a 'disconnected' notification only if we were actually
-  // connected.
-  bool m_connected = false;
 };
 
 #endif  // NOTIFICATIONHANDLER_H

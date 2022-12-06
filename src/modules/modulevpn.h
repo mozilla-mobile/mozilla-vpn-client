@@ -78,6 +78,8 @@ class ModuleVPN final : public Module {
 
   void registerInspectorCommands();
 
+  void maybeShowNotification();
+
  private:
   CaptivePortal m_captivePortal;
   CaptivePortalDetection m_captivePortalDetection;
@@ -89,6 +91,11 @@ class ModuleVPN final : public Module {
   Telemetry m_telemetry;
 
   bool m_controllerInitialized = false;
+
+  // We want to show a 'disconnected' notification only if we were actually
+  // connected.
+  bool m_connected = false;
+  bool m_switching = false;
 };
 
 #endif  // MODULEVPN_H

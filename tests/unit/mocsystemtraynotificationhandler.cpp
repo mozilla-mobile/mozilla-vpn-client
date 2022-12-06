@@ -20,10 +20,9 @@ void SystemTrayNotificationHandler::createStatusMenu() {}
 
 void SystemTrayNotificationHandler::setStatusMenu() {}
 
-void SystemTrayNotificationHandler::notify(NotificationHandler::Message type,
-                                           const QString& title,
-                                           const QString& message,
-                                           int timerMsec) {
+void SystemTrayNotificationHandler::notifyInternal(
+    NotificationHandler::Message type, const QString& title,
+    const QString& message, int timerMsec) {
   TestHelper::SystemNotification notification;
   notification.type = type;
   notification.title = title;

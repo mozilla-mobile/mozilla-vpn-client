@@ -19,10 +19,9 @@ void SystemTrayNotificationHandler::createStatusMenu() {}
 
 void SystemTrayNotificationHandler::setStatusMenu() {}
 
-void SystemTrayNotificationHandler::notify(NotificationHandler::Message type,
-                                           const QString& title,
-                                           const QString& message,
-                                           int timerMsec) {
+void SystemTrayNotificationHandler::notifyInternal(
+    NotificationHandler::Message type, const QString& title,
+    const QString& message, int timerMsec) {
   Q_UNUSED(type);
   Q_UNUSED(title);
   Q_UNUSED(message);
