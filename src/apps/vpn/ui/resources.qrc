@@ -71,5 +71,6 @@
         <file>resources/updateRecommended.svg</file>
         <file>resources/updateRequired.svg</file>
         <file>resources/warning-white.svg</file>
+        <file>resources/warning-crash.svg</file>
     </qresource>
 </RCC>

@@ -129,6 +129,13 @@ ScreenData s_screens[] = {
         [](Navigator::Screen*) -> int8_t { return 0; },
         []() -> bool { return false; }),
     ScreenData(
+        Navigator::Screen::ScreenCrashReporting,
+        Navigator::LoadPolicy::LoadTemporarily,
+        "qrc:/ui/screens/ScreenCrashReporting.qml",
+        QVector<MozillaVPN::State>{},
+        [](Navigator::Screen*) -> int8_t { return 0; },
+        []() -> bool { return false; }),
+    ScreenData(
         Navigator::Screen::ScreenDeleteAccount,
         Navigator::LoadPolicy::LoadTemporarily,
         "qrc:/ui/screens/ScreenDeleteAccount.qml",

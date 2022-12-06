@@ -90,8 +90,43 @@ class SentryAdapter final : public QObject {
    */
   static void transportEnvelope(sentry_envelope_t* envelope, void* state);
 
+  enum UserConsentResult {
+    Pending = -1,   // The User has to be asked
+    Forbidden = 0,  // The User not given consent
+    Allowed = 1     // The User gave consent
+  };
+  Q_ENUM(UserConsentResult)
+
+  /**
+   * @brief Checks if the user gave consent to upload crashes
+   *
+   * @return UserConsentResult - Allowed/Forbidden in case we have gotten
+   * consent Can return "Pending", in which case a prompt has been fired to the
+   * UI to ask the user.
+   * - listen for userConsentChanged to be notified when that is done
+   */
+  UserConsentResult hasCrashUploadConsent();
+
+  /**
+   * @brief Signal that is fired whenever the consent changed, note: can sill be
+   * Pending.
+   *
+   * @return bool
+   */
+  Q_SIGNAL void userConsentChanged();
+
+  /**
+   * @brief Allows Crash Reporting for this Session
+   */
+  Q_INVOKABLE void allowCrashReporting();
+  /**
+   * @brief Disables Crash Reporting for this Session
+   */
+  Q_INVOKABLE void declineCrashReporting();
+
  private:
   bool m_initialized = false;
+  UserConsentResult m_userConsent = UserConsentResult::Pending;
   SentryAdapter();
 };
 #endif  // SENTRYADAPTER_H

@@ -21,7 +21,28 @@ class TaskSentry final : public Task {
   void run() override;
 
  private:
+  /**
+   * @brief Creates a network request to send the envelope
+   *
+   */
+  void sendRequest();
+
+  /**
+   * @brief Checks if the data contains a crash report
+   *
+   */
+  bool isCrashReport();
+
+  /**
+   * Reads mEnvelope and fills interal fields,
+   * might be costly.
+   */
+  void parseEnvelope();
+
   QByteArray m_envelope;
+  bool m_checkedContent = false;
+  bool m_isCrashReport = false;
+  QString m_eventID;
 };
 
 #endif  // TASKSENTRY_H
