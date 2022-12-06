@@ -23,6 +23,8 @@ class ModuleVPN final : public Module {
   Q_DISABLE_COPY_MOVE(ModuleVPN)
 
   Q_PROPERTY(
+      QJSValue captivePortalDetection READ captivePortalDetectionValue CONSTANT)
+  Q_PROPERTY(
       QJSValue connectionBenchmark READ connectionBenchmarkValue CONSTANT)
   Q_PROPERTY(QJSValue connectionHealth READ connectionHealthValue CONSTANT)
   Q_PROPERTY(QJSValue controller READ controllerValue CONSTANT)
