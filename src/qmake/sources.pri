@@ -27,6 +27,7 @@ SOURCES += \
         authenticationinapp/authenticationinapplistener.cpp \
         authenticationinapp/authenticationinappsession.cpp \
         authenticationinapp/incrementaldecoder.cpp \
+        backendfailurewatcher.cpp \
         collator.cpp \
         command.cpp \
         commandlineparser.cpp \
@@ -211,6 +212,7 @@ HEADERS += \
         authenticationinapp/authenticationinapplistener.h \
         authenticationinapp/authenticationinappsession.h \
         authenticationinapp/incrementaldecoder.h \
+        backendfailurewatcher.h \
         collator.h \
         command.h \
         commandlineparser.h \

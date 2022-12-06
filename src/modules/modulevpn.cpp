@@ -8,6 +8,7 @@
 #include "logger.h"
 #include "modules/modulevpn/taskcontrolleraction.h"
 #include "mozillavpn.h"
+#include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "taskscheduler.h"
@@ -60,6 +61,15 @@ void ModuleVPN::initialize() {
 
   connect(&m_controller, &Controller::readyToQuit, this,
           &ModuleVPN::readyToQuit, Qt::QueuedConnection);
+
+  connect(&m_controller, &Controller::readyToBackendFailure, this,
+          &ModuleVPN::readyToBackendFailure);
+
+  connect(&m_controller, &Controller::readyToServerUnavailable, this,
+          [](bool pingReceived) {
+            NotificationHandler::instance()->serverUnavailableNotification(
+                pingReceived);
+          });
 
   connect(MozillaVPN::instance(), &MozillaVPN::stateChanged, this, []() {
     if (MozillaVPN::instance()->state() != MozillaVPN::StateMain) {
@@ -257,3 +267,5 @@ void ModuleVPN::registerInspectorCommands() {
 void ModuleVPN::updateRequired() { m_controller.updateRequired(); }
 
 void ModuleVPN::quit() { m_controller.quit(); }
+
+void ModuleVPN::backendFailure() { m_controller.backendFailure(); }

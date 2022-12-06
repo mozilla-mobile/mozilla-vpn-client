@@ -25,9 +25,13 @@ class Module : public QObject {
   // This method needs to trigger the signal `readyToQuit`.
   virtual void quit() = 0;
 
+  // This method needs to trigger the signal `readyToBackendFailure`.
+  virtual void backendFailure() = 0;
+
  signals:
   void readyToUpdate();
   void readyToQuit();
+  void readyToBackendFailure();
 };
 
 #endif  // MODULE_H

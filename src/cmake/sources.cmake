@@ -75,6 +75,8 @@ target_sources(mozillavpn-sources INTERFACE
     authenticationinapp/incrementaldecoder.h
     authenticationlistener.cpp
     authenticationlistener.h
+    backendfailurewatcher.cpp
+    backendfailurewatcher.h
     collator.cpp
     collator.h
     command.cpp

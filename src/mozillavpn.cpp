@@ -6,6 +6,7 @@
 
 #include "addons/manager/addonmanager.h"
 #include "authenticationinapp/authenticationinapp.h"
+#include "backendfailurewatcher.h"
 #include "constants.h"
 #include "frontend/navigator.h"
 #include "glean/glean.h"
@@ -120,18 +121,6 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
              ErrorHandler::PropagateError)}));
   });
 #endif
-
-  connect(ModuleVPN::instance()->controller(),
-          &Controller::readyToBackendFailure, this, [this]() {
-            TaskScheduler::deleteTasks();
-            setState(StateBackendFailure);
-          });
-
-  connect(ModuleVPN::instance()->controller(),
-          &Controller::readyToServerUnavailable, this, [](bool pingReceived) {
-            NotificationHandler::instance()->serverUnavailableNotification(
-                pingReceived);
-          });
 
   connect(ModuleVPN::instance()->controller(), &Controller::stateChanged, this,
           &MozillaVPN::controllerStateChanged);
@@ -1165,8 +1154,8 @@ void MozillaVPN::refreshDevices() {
 }
 
 void MozillaVPN::quit() {
-  QuitWatcher* urw = new QuitWatcher(this);
-  connect(urw, &QuitWatcher::readyToQuit, this, &MozillaVPN::terminate);
+  QuitWatcher* qw = new QuitWatcher(this);
+  connect(qw, &QuitWatcher::readyToQuit, this, &MozillaVPN::terminate);
 }
 
 void MozillaVPN::terminate() {
@@ -1365,7 +1354,11 @@ void MozillaVPN::heartbeatCompleted(bool success) {
   logger.debug() << "Server-side check done:" << success;
 
   if (!success) {
-    ModuleVPN::instance()->controller()->backendFailure();
+    BackendFailureWatcher* bfw = new BackendFailureWatcher(this);
+    connect(bfw, &BackendFailureWatcher::readyToBackendFailure, this, [this]() {
+      TaskScheduler::deleteTasks();
+      setState(StateBackendFailure);
+    });
     return;
   }
 

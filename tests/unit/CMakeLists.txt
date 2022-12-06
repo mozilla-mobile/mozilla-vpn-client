@@ -100,6 +100,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/authenticationinapp/incrementaldecoder.h
     ${MVPN_SOURCE_DIR}/authenticationlistener.cpp
     ${MVPN_SOURCE_DIR}/authenticationlistener.h
+    ${MVPN_SOURCE_DIR}/backendfailurewatcher.cpp
+    ${MVPN_SOURCE_DIR}/backendfailurewatcher.h
     ${MVPN_SOURCE_DIR}/collator.cpp
     ${MVPN_SOURCE_DIR}/collator.h
     ${MVPN_SOURCE_DIR}/command.cpp
