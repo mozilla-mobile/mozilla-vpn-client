@@ -187,7 +187,19 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
   if (fallbackServer) {
     args["serverFallback"] = jFallbackServer;
   }
-  args["city"] = MozillaVPN::instance()->currentServer()->exitCityName();
+  auto cityName = MozillaVPN::instance()->currentServer()->localizedCityName();
+  args["city"] = cityName;
+
+
+  QJsonObject localisedMessages;
+    localisedMessages["productName"] = qtTrId("vpn.main.productName");
+    localisedMessages["connectedText"] =
+        qtTrId("vpn.systray.statusConnectedTo").arg(cityName);  // Connected to: CityName
+  localisedMessages["disconnectedText"] =
+      qtTrId("vpn.systray.statusDisconnected.title");  // Disconnected
+  args["messages"] = localisedMessages;
+  
+
 
   QJsonDocument doc(args);
   AndroidVPNActivity::sendToService(ServiceAction::ACTION_ACTIVATE,
