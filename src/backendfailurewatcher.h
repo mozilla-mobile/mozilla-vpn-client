@@ -15,6 +15,8 @@ class BackendFailureWatcher final : public QObject {
   explicit BackendFailureWatcher(QObject* parent);
   ~BackendFailureWatcher();
 
+  void run();
+
  private:
   void maybeReadyToBackendFailure();
 

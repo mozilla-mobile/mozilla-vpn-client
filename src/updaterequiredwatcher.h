@@ -15,6 +15,8 @@ class UpdateRequiredWatcher final : public QObject {
   explicit UpdateRequiredWatcher(QObject* parent);
   ~UpdateRequiredWatcher();
 
+  void run();
+
  private:
   void maybeReadyToUpdate();
 

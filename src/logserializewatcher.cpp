@@ -13,22 +13,9 @@ Logger logger(LOG_MAIN, "LogSerializeWatcher");
 }
 
 LogSerializeWatcher::LogSerializeWatcher(QObject* parent, QTextStream* out)
-    : QObject(parent) {
+    : QObject(parent), m_out(out) {
   MVPN_COUNT_CTOR(LogSerializeWatcher);
-
-  if (!ModuleHolder::instance()->hasModules()) {
-    logger.debug() << "We don't have modules. We can send logs.";
-    QTimer::singleShot(0, this, &LogSerializeWatcher::logsReady);
-    return;
-  }
-
-  ModuleHolder::instance()->forEach(
-      [out, this](const QString&, Module* module) {
-        m_count++;
-        module->serializeLogs(out, [this]() { maybeLogsReady(); });
-      });
-
-  logger.debug() << "created with modules:" << m_count;
+  connect(this, &LogSerializeWatcher::logsReady, this, &QObject::deleteLater);
 }
 
 LogSerializeWatcher::~LogSerializeWatcher() {
@@ -41,6 +28,20 @@ void LogSerializeWatcher::maybeLogsReady() {
 
   if (m_count == 0) {
     emit logsReady();
-    deleteLater();
   }
+}
+
+void LogSerializeWatcher::run() {
+  if (!ModuleHolder::instance()->hasModules()) {
+    logger.debug() << "We don't have modules. We can send logs.";
+    emit logsReady();
+    return;
+  }
+
+  ModuleHolder::instance()->forEach([this](const QString&, Module* module) {
+    m_count++;
+    module->serializeLogs(m_out, [this]() { maybeLogsReady(); });
+  });
+
+  logger.debug() << "created with modules:" << m_count;
 }

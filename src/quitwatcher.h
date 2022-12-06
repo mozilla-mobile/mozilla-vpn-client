@@ -15,6 +15,8 @@ class QuitWatcher final : public QObject {
   explicit QuitWatcher(QObject* parent);
   ~QuitWatcher();
 
+  void run();
+
  private:
   void maybeReadyToQuit();
 

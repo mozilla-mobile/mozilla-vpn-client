@@ -17,6 +17,8 @@ class LogSerializeWatcher final : public QObject {
   LogSerializeWatcher(QObject* parent, QTextStream* output);
   ~LogSerializeWatcher();
 
+  void run();
+
  private:
   void maybeLogsReady();
 
@@ -24,6 +26,7 @@ class LogSerializeWatcher final : public QObject {
   void logsReady();
 
  private:
+  QTextStream* m_out = nullptr;
   int m_count = 0;
 };
 

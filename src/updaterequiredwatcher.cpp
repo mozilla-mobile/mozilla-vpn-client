@@ -15,21 +15,8 @@ Logger logger(LOG_MAIN, "UpdateRequiredWatcher");
 UpdateRequiredWatcher::UpdateRequiredWatcher(QObject* parent)
     : QObject(parent) {
   MVPN_COUNT_CTOR(UpdateRequiredWatcher);
-
-  if (!ModuleHolder::instance()->hasModules()) {
-    logger.debug() << "We don't have modules. We can update.";
-    QTimer::singleShot(0, this, &UpdateRequiredWatcher::readyToUpdate);
-    return;
-  }
-
-  ModuleHolder::instance()->forEach([this](const QString&, Module* module) {
-    m_count++;
-    connect(module, &Module::readyToUpdate, this,
-            &UpdateRequiredWatcher::maybeReadyToUpdate);
-    module->updateRequired();
-  });
-
-  logger.debug() << "created with modules:" << m_count;
+  connect(this, &UpdateRequiredWatcher::readyToUpdate, this,
+          &QObject::deleteLater);
 }
 
 UpdateRequiredWatcher::~UpdateRequiredWatcher() {
@@ -42,6 +29,22 @@ void UpdateRequiredWatcher::maybeReadyToUpdate() {
 
   if (m_count == 0) {
     emit readyToUpdate();
-    deleteLater();
   }
+}
+
+void UpdateRequiredWatcher::run() {
+  if (!ModuleHolder::instance()->hasModules()) {
+    logger.debug() << "We don't have modules. We can update.";
+    emit readyToUpdate();
+    return;
+  }
+
+  ModuleHolder::instance()->forEach([this](const QString&, Module* module) {
+    m_count++;
+    connect(module, &Module::readyToUpdate, this,
+            &UpdateRequiredWatcher::maybeReadyToUpdate);
+    module->updateRequired();
+  });
+
+  logger.debug() << "created with modules:" << m_count;
 }

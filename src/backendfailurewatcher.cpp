@@ -15,22 +15,8 @@ Logger logger(LOG_MAIN, "BackendFailureWatcher");
 BackendFailureWatcher::BackendFailureWatcher(QObject* parent)
     : QObject(parent) {
   MVPN_COUNT_CTOR(BackendFailureWatcher);
-
-  if (!ModuleHolder::instance()->hasModules()) {
-    logger.debug()
-        << "We don't have modules. We can propagate the backend failure.";
-    QTimer::singleShot(0, this, &BackendFailureWatcher::readyToBackendFailure);
-    return;
-  }
-
-  ModuleHolder::instance()->forEach([this](const QString&, Module* module) {
-    m_count++;
-    connect(module, &Module::readyToBackendFailure, this,
-            &BackendFailureWatcher::maybeReadyToBackendFailure);
-    module->backendFailure();
-  });
-
-  logger.debug() << "created with modules:" << m_count;
+  connect(this, &BackendFailureWatcher::readyToBackendFailure, this,
+          &QObject::deleteLater);
 }
 
 BackendFailureWatcher::~BackendFailureWatcher() {
@@ -43,6 +29,23 @@ void BackendFailureWatcher::maybeReadyToBackendFailure() {
 
   if (m_count == 0) {
     emit readyToBackendFailure();
-    deleteLater();
   }
+}
+
+void BackendFailureWatcher::run() {
+  if (!ModuleHolder::instance()->hasModules()) {
+    logger.debug()
+        << "We don't have modules. We can propagate the backend failure.";
+    emit readyToBackendFailure();
+    return;
+  }
+
+  ModuleHolder::instance()->forEach([this](const QString&, Module* module) {
+    m_count++;
+    connect(module, &Module::readyToBackendFailure, this,
+            &BackendFailureWatcher::maybeReadyToBackendFailure);
+    module->backendFailure();
+  });
+
+  logger.debug() << "created with modules:" << m_count;
 }

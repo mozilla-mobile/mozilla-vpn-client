@@ -993,6 +993,7 @@ void MozillaVPN::serializeLogs(QTextStream* out,
           [finalizeCallback = std::move(finalizeCallback)]() {
             finalizeCallback();
           });
+  slw->run();
 }
 
 bool MozillaVPN::viewLogs() {
@@ -1135,6 +1136,7 @@ void MozillaVPN::refreshDevices() {
 void MozillaVPN::quit() {
   QuitWatcher* qw = new QuitWatcher(this);
   connect(qw, &QuitWatcher::readyToQuit, this, &MozillaVPN::terminate);
+  qw->run();
 }
 
 void MozillaVPN::terminate() {
@@ -1297,6 +1299,7 @@ void MozillaVPN::update() {
   UpdateRequiredWatcher* urw = new UpdateRequiredWatcher(this);
   connect(urw, &UpdateRequiredWatcher::readyToUpdate, this,
           [this]() { m_private->m_releaseMonitor.updateSoon(); });
+  urw->run();
 }
 
 void MozillaVPN::setUpdating(bool updating) {
@@ -1318,6 +1321,7 @@ void MozillaVPN::heartbeatCompleted(bool success) {
       TaskScheduler::deleteTasks();
       setState(StateBackendFailure);
     });
+    bfw->run();
     return;
   }
 
@@ -1497,4 +1501,5 @@ void MozillaVPN::updateRequired() {
   UpdateRequiredWatcher* urw = new UpdateRequiredWatcher(this);
   connect(urw, &UpdateRequiredWatcher::readyToUpdate, this,
           [this]() { setState(StateUpdateRequired); });
+  urw->run();
 }

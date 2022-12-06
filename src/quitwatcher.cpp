@@ -14,20 +14,7 @@ Logger logger(LOG_MAIN, "QuitWatcher");
 
 QuitWatcher::QuitWatcher(QObject* parent) : QObject(parent) {
   MVPN_COUNT_CTOR(QuitWatcher);
-
-  if (!ModuleHolder::instance()->hasModules()) {
-    logger.debug() << "We don't have modules. We can quit.";
-    QTimer::singleShot(0, this, &QuitWatcher::readyToQuit);
-    return;
-  }
-
-  ModuleHolder::instance()->forEach([this](const QString&, Module* module) {
-    m_count++;
-    connect(module, &Module::readyToQuit, this, &QuitWatcher::maybeReadyToQuit);
-    module->quit();
-  });
-
-  logger.debug() << "created with modules:" << m_count;
+  connect(this, &QuitWatcher::readyToQuit, this, &QObject::deleteLater);
 }
 
 QuitWatcher::~QuitWatcher() { MVPN_COUNT_DTOR(QuitWatcher); }
@@ -38,6 +25,21 @@ void QuitWatcher::maybeReadyToQuit() {
 
   if (m_count == 0) {
     emit readyToQuit();
-    deleteLater();
   }
+}
+
+void QuitWatcher::run() {
+  if (!ModuleHolder::instance()->hasModules()) {
+    logger.debug() << "We don't have modules. We can quit.";
+    emit readyToQuit();
+    return;
+  }
+
+  ModuleHolder::instance()->forEach([this](const QString&, Module* module) {
+    m_count++;
+    connect(module, &Module::readyToQuit, this, &QuitWatcher::maybeReadyToQuit);
+    module->quit();
+  });
+
+  logger.debug() << "created with modules:" << m_count;
 }
