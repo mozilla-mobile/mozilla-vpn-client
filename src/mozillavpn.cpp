@@ -252,7 +252,7 @@ void MozillaVPN::initialize() {
 
   AddonManager::instance();
 
-  Glean::initialize();
+  VPNGlean::initialize();
 
   RecentConnections::instance()->initialize();
 

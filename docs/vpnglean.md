@@ -2,8 +2,12 @@
 
 This section of documentation deep dives into how [Glean](the-glean-book) is integrated
 on the Mozilla VPN application. It is aimed at developers working on the Mozilla VPN.
+
 However, this is not a guide on how to add new data collection to the Mozilla VPN.
 For a step-by-step guide on that refer to ["Working on tickets with Glean instrumentation"](readme-glean).
+[The Glean book](the-glean-book) is also the source of truth for Glean API reference documentation.
+The Mozilla VPN follows the mozilla-central Glean integration implementation, so when looking at
+Glean API docs on the book, choose the "Firefox Desktop" examples tab. The API will be the same.
 
 > **Note**: An understanding of the fundamentals of Glean such as metrics, pings and glean_parser is assumed.
 

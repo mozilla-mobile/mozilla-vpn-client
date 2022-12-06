@@ -5,13 +5,16 @@
 #ifndef PING_H
 #define PING_H
 
-#include "vpnglean.h"
+#include <QObject>
 
 class Ping final {
- public:
-  constexpr explicit Ping(int aId) : m_id(aId) {}
+  Q_GADGET
 
-  void submit() const { glean_submit_ping_by_id(m_id); };
+ public:
+  explicit Ping(int aId);
+  ~Ping() = default;
+
+  Q_INVOKABLE void submit() const;
 
  private:
   int m_id;
