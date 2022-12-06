@@ -37,7 +37,7 @@ struct EventMetricExtra {
   // Glean APIs to be exactly the same as the Firefox Desktop Glean APIs. Also
   // and probably most importantly, it's also just looks better to have a key
   // value initialization in this case since all extras are optional.
-  int __PRIVATE__id = 0;
+  int __PRIVATE__id;
 };
 
 struct EventMetricExtraParser {
@@ -48,8 +48,8 @@ struct EventMetricExtraParser {
 
     return FfiExtra();
   };
-  virtual FfiExtra fromStruct(EventMetricExtra& extras,
-                              QList<QByteArray>& keepStringsAlive) {
+  virtual FfiExtra fromStruct(EventMetricExtra* extras,
+                              QList<QByteArray>& keepStringsAlive, int id) {
     Q_ASSERT(false);
     // This function should be overriden.
 
@@ -62,7 +62,7 @@ class EventMetric final {
 
  public:
   explicit EventMetric(
-      int id, EventMetricExtraParser parser = EventMetricExtraParser());
+      int id, EventMetricExtraParser* parser = new EventMetricExtraParser());
   ~EventMetric() = default;
 
   Q_INVOKABLE void record() const;
@@ -71,7 +71,7 @@ class EventMetric final {
   // on C++ the variant that receives the FFI extra struct is preferred.
   Q_INVOKABLE void record(const QJsonObject& extras);
 
-  void record(EventMetricExtra extras);
+  void record(EventMetricExtra* extras);
 
 #if defined(UNIT_TEST)
   Q_INVOKABLE int32_t
@@ -82,7 +82,7 @@ class EventMetric final {
 
  private:
   int m_id;
-  EventMetricExtraParser m_parser;
+  EventMetricExtraParser* m_parser;
 };
 
 #endif  // EVENT_METRIC_H

@@ -14,10 +14,8 @@
 #  include <QJsonDocument>
 #endif
 
-#include <any>
-
-EventMetric::EventMetric(int id, EventMetricExtraParser aParser)
-    : m_id(id), m_parser(aParser) {}
+EventMetric::EventMetric(int id, EventMetricExtraParser* parser)
+    : m_id(id), m_parser(parser) {}
 
 void EventMetric::record() const {
 #if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
@@ -29,7 +27,7 @@ void EventMetric::record(const QJsonObject& extras) {
   // Helper vector to extend the lifetime of the strings
   // that hold the extra key values until they are used.
   QList<QByteArray> keepStringsAlive;
-  FfiExtra ffiExtras = m_parser.fromJsonObject(extras, keepStringsAlive);
+  FfiExtra ffiExtras = m_parser->fromJsonObject(extras, keepStringsAlive);
 
   if (ffiExtras.count > 0) {
 #if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
@@ -38,13 +36,11 @@ void EventMetric::record(const QJsonObject& extras) {
   }
 }
 
-void EventMetric::record(EventMetricExtra extras) {
-  Q_ASSERT(extras.__PRIVATE__id == m_id);
-
+void EventMetric::record(EventMetricExtra* extras) {
   // Helper vector to extend the lifetime of the strings
   // that hold the extra key values until they are used.
   QList<QByteArray> keepStringsAlive;
-  FfiExtra ffiExtras = m_parser.fromStruct(extras, keepStringsAlive);
+  FfiExtra ffiExtras = m_parser->fromStruct(extras, keepStringsAlive, m_id);
 
   if (ffiExtras.count > 0) {
 #if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
