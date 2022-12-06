@@ -45,10 +45,6 @@ target_compile_definitions(mozillavpn PRIVATE "$<$<CONFIG:Debug>:MZ_DEBUG>")
 target_compile_definitions(mozillavpn PRIVATE "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
 include(apps/vpn/cmake/${MZ_PLATFORM_NAME}.cmake)
 
-if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
-    add_subdirectory(apps/vpn/crashreporter)
-    target_link_libraries(mozillavpn PRIVATE crashreporter)
-endif()
 
 if(NOT CMAKE_CROSSCOMPILING)
     target_compile_definitions(mozillavpn PUBLIC MVPN_WEBEXTENSION)
