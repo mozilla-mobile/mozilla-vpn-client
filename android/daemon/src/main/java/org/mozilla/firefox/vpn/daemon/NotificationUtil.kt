@@ -22,24 +22,20 @@ class NotificationUtil
     private val CONNECTED_NOTIFICATION_ID = 1337
 
     private val context: Service = ctx
-    private val mNotificationBuilder: NotificationCompat.Builder
-    private val mNotificationManager: NotificationManager
-    private val mainActivityName = "org.mozilla.firefox.vpn.qt.VPNActivity"
-
-    init {
-        mNotificationManager = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        mNotificationBuilder = NotificationCompat.Builder(ctx, NOTIFICATION_CHANNEL_ID)
-        updateNotificationChannel()
+    private val mNotificationBuilder: NotificationCompat.Builder by lazy {
+        NotificationCompat.Builder(ctx, NOTIFICATION_CHANNEL_ID)
     }
+    private val mNotificationManager: NotificationManager by lazy {
+        ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    }
+    private val mainActivityName = "org.mozilla.firefox.vpn.qt.VPNActivity"
 
     /**
      * Creates a new Notification using the {CannedNotification}
      * Will bring the service into the foreground using that.
      */
     fun show(message: CannedNotification) {
-        // In case we do not have gotten a message to show from the Frontend
-        // try to populate the notification with a translated Fallback message
-
+        updateNotificationChannel()
         // Create the Intent that Should be Fired if the User Clicks the notification
         val activity = Class.forName(mainActivityName)
         val intent = Intent(context, activity)

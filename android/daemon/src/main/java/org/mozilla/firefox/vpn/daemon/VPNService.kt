@@ -24,8 +24,9 @@ import org.mozilla.firefox.vpn.daemon.GleanMetrics.Sample
 class VPNService : android.net.VpnService() {
     private val tag = "VPNService"
     private var mBinder: VPNServiceBinder = VPNServiceBinder(this)
-
-    val mNotificationHandler = NotificationUtil(this)
+    val mNotificationHandler by lazy{
+        NotificationUtil(this)
+    }
     private var mConfig: JSONObject? = null
     private var mConnectionTime: Long = 0
     private var mAlreadyInitialised = false
