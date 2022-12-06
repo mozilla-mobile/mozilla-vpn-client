@@ -10,7 +10,7 @@
     "enable": "enable.js"
   },
   "message": {
-    "date": 1668020390,
+    "date": 1671066000,
     "id": "message_update_v2.12",
     "title": "Update to Mozilla VPN 2.12",
     "subtitle": "We’ve released an updated version of Mozilla VPN! Update to the latest version to get the newest features and bug fixes:",
@@ -33,6 +33,11 @@
         "content": "Be sure to update the app to make it even easier to protect your devices and your activity online!"
       },
       {
+        "id": "c_2b",
+        "type": "text",
+        "content": "Be sure to get the latest version to make it even easier to protect your devices and your activity online!"
+      },
+      {
         "id": "c_3",
         "type": "button",
         "style": "primary",
@@ -51,6 +56,14 @@
         "style": "link",
         "content": "Get help",
         "javascript": "getHelp.js"
+      },
+      { "id": "extra_1",
+        "type": "text",
+        "content": "Download Mozilla VPN 2.12"
+      },
+      { "id": "extra_2",
+        "type": "text",
+        "content": "We’ve released an updated version of Mozilla VPN! Download it today to get the newest features and bug fixes:"
       }
     ]
   }
