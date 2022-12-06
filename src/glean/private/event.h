@@ -62,7 +62,7 @@ class EventMetric final {
 
  public:
   explicit EventMetric(
-      int aId, EventMetricExtraParser parser = EventMetricExtraParser());
+      int id, EventMetricExtraParser parser = EventMetricExtraParser());
   ~EventMetric() = default;
 
   Q_INVOKABLE void record() const;
@@ -83,10 +83,6 @@ class EventMetric final {
  private:
   int m_id;
   EventMetricExtraParser m_parser;
-
-  // Helper vector to extend the lifetime of the strings
-  // that hold the extra key values until they are used.
-  QList<QByteArray> m_keepStringsAlive;
 };
 
 #endif  // EVENT_METRIC_H

@@ -18,8 +18,6 @@ struct {{ obj.name|Camelize }}ExtraParser : public EventMetricExtraParser {
     const char* extraValues[{{ obj|attr("allowed_extra_keys_with_types")|length }}];
     int count = 0;
 
-    keepStringsAlive.clear();
-
     foreach (const QString& key, extras.keys()) {
       auto rawValue = extras.value(key);
 
@@ -59,8 +57,6 @@ struct {{ obj.name|Camelize }}ExtraParser : public EventMetricExtraParser {
     const char* extraKeys[{{ obj|attr("allowed_extra_keys_with_types")|length }}];
     const char* extraValues[{{ obj|attr("allowed_extra_keys_with_types")|length }}];
     int count = 0;
-
-    keepStringsAlive.clear();
 
     {% for item, type in obj|attr("allowed_extra_keys_with_types") %}
     if (parsedExtras._{{item|camelize}}.canConvert<{{type|extra_type_name}}>()) {
