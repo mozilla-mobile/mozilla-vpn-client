@@ -47,8 +47,8 @@ void TaskSentry::run() {
   auto consent = SentryAdapter::instance()->hasCrashUploadConsent();
 
   if (consent == SentryAdapter::UserConsentResult::Pending) {
-    // We as it's unknown - The consent screen was now triggered
-    // exit here and connect to re-run once that changed.
+    // The consent screen was now triggered; 
+    // exit here and connect to the change event to re-run.
     connect(SentryAdapter::instance(), &SentryAdapter::userConsentChanged, this,
             &TaskSentry::run);
     logger.info() << "Halting Sentry-Report: No Consent";
@@ -76,6 +76,8 @@ void TaskSentry::sendRequest() {
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
             Q_UNUSED(data);
+            // Let's note the event id in the logs, so we can 
+            // connect customer support logs with sentry :) 
             logger.debug() << "Sentry sent event (" << m_eventID << ")";
             emit completed();
           });
@@ -83,7 +85,7 @@ void TaskSentry::sendRequest() {
 
 bool TaskSentry::isCrashReport() {
   if (m_checkedContent) {
-    // We already checked this envelope, no need 2 do that twice.
+    // We already checked this envelope, no need to do that twice.
     return m_isCrashReport;
   }
   parseEnvelope();
@@ -100,23 +102,31 @@ void TaskSentry::parseEnvelope() {
   if (objects.empty()) {
     Q_UNREACHABLE();  // This really should not happen.
   }
-  // If the header does not already have an event-id
-  // there is not going to be an event in the body.
-  // We can shortcut here, as nothing else interests us rn.
+  // The fist line is always the header: 
+  // a json object, containing the DSN and an event ID 
   auto header = objects.takeFirst();
   if (!header.contains("\"event_id\":")) {
+    // if there is no event-id, there will be no event following that
+    // therefore this can't be a crashreport. 
+    // So we can stop parsing this blob. c:
     return;
   } else {
+    // We have an event, let's keep the ID for logging. 
     auto doc = QJsonDocument::fromJson(header.toUtf8());
     m_eventID = doc["event_id"].toString();
   }
-  // Each of those is a json string
+  // Each Line here is it's own json object. 
+  // Usually in the form of 
+  // {{ headerObject type,len }} \n
+  // {{ bodyObject meta}}
   foreach (auto content, objects) {
     auto doc = QJsonDocument::fromJson(content.toUtf8());
     if (!doc.isObject()) {
       logger.error() << "Invalid content read from the JSON file";
       continue;
     }
+    // The only thing right now, we don't want to send 
+    // crash-data, so we will only check for that. 
     QJsonObject obj = doc.object();
     QJsonValue metadata = obj["debug_meta"];
     if (metadata.isUndefined() || metadata.isNull()) {
