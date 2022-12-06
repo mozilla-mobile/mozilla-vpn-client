@@ -332,6 +332,7 @@ FocusScope {
 
                 VPNSearchBar {
                     id: searchBar
+                    objectName: "countrySearchBar"
 
                     _filterProxySource: VPNServerCountryModel
                     _filterProxyCallback: country => {

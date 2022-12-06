@@ -23,6 +23,7 @@ ColumnLayout {
 
     VPNTextField {
         id: searchBar
+        objectName: "searchBarTextField"
 
         Accessible.editable: false
         Accessible.searchEdit: true
@@ -61,6 +62,7 @@ ColumnLayout {
 
     VPNContextualAlerts {
         id: searchWarning
+        objectName: "searchBarError"
         Layout.fillWidth: true
         visible: _searchBarHasError
 
