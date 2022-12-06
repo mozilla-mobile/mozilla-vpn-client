@@ -13,8 +13,6 @@ class DNSHelper final {
 
   static bool validateUserDNS(const QString& dns);
 
-  static bool shouldExcludeDNS();
-
  private:
   static bool isMullvadDNS(const QString& address);
 };

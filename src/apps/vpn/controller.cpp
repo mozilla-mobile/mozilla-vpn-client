@@ -737,13 +737,6 @@ QStringList Controller::getExcludedAddresses(const Server& exitServer) {
     }
   }
 
-  // Filter out the Custom DNS Server, if the user has set one.
-  if (DNSHelper::shouldExcludeDNS()) {
-    auto dns = DNSHelper::getDNS(exitServer.ipv4Gateway());
-    logger.debug() << "Filtering out the DNS address:" << dns;
-    list.append(dns);
-  }
-
   return list;
 }
 
