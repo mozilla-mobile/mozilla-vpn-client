@@ -364,7 +364,7 @@ version 6.3.2.
 rustup target add x86_64-apple-ios aarch64-apple-ios
 ```
 
-2. We use `qt-cmake` from the Qt installation to configure the Xcode project.
+3. We use `qt-cmake` from the Qt installation to configure the Xcode project.
 ```bash
 mkdir build-ios
 /Users/example/Qt/6.3.2/ios/bin/qt-cmake . -B build-ios -GXcode
@@ -388,13 +388,15 @@ Some variables that might be useful when configuring the project:
    team used for Xcode certificates. This defaults to `43AQ936H96` if not set.
  - `CMAKE_OSX_SYSROOT="iphonesimulator"` to build for the iOS simulator.
 
-3. Open the generated Xcode project for iOS devices with `open build-ios/Mozilla\ VPN.xcodeproj`
+4. Open the generated Xcode project for iOS devices with `open build-ios/Mozilla\ VPN.xcodeproj`
 or `open build-ios-sim/Mozilla\ VPN.xcodeproj` for simulation.
 
-4. Select the `mozillavpn` target and `Any iOS Device (arm64)` as the build configuration
+5. Select the `mozillavpn` target and `Any iOS Device (arm64)` as the build configuration
 for iOS devices, or select any of the simulation targets when building for the simulator.
 
-5. Click on the Play button to start building and signing of the Mozilla VPN app.
+6. Click on the Play button to start building and signing of the Mozilla VPN app. (If this step
+results in an error, ensure the app was built with Qt 6.3.2. If it was not, the build folder must 
+be completely deleted and the app must be re-built.)
 
 ### How to build from source code for Android
 
@@ -504,14 +506,6 @@ ctest --test-dir build
 
 ### Running the functional tests
 
-* Install node (if needed) and then `npm install` to install the testing
-  dependencies
-* Compile the testing addons: ./scripts/addon/generate_all_tests.py
-* Make a .env file with:
- * `MVPN_BIN` (location of compiled mvpn binary. This must be a dummy binary, see note below.)
- * `ARTIFACT_DIR` - optional (directory to put screenshots from test failures)
-* Run a test from the root of the project: `npm run functionalTest path/to/testFile.js`. To run, say, the authentication tests: `npm run functionalTest tests/functional/testAuthenticationInApp.js`.
-
 > **Note**: Functional tests require a dummy build of the application.
 > In order to create such a build, on the root folder of this repository run:
 >
@@ -522,6 +516,22 @@ ctest --test-dir build
 >
 > This will create a dummy build under the `dummybuild/` folder. To run the functional tests against this build,
 > make sure the `MVPN_BIN` environment variable is pointing to the application under the `dummybuild/` folder.
+
+* Install node (if needed) and then `npm install` to install the testing
+  dependencies
+* Compile the testing addons: ./scripts/addon/generate_all_tests.py
+* Make a .env file and place it in the root folder for the repo. It should include:
+ * `MVPN_BIN` (location of compiled mvpn binary. This must be a dummy binary, see note above.)
+ * `ARTIFACT_DIR` - optional (directory to put screenshots from test failures)
+ * Sample .env file:
+  ```
+  export PATH=$PATH:~/Qt/6.2.4/macos/bin:$PATH
+  export QT_MACOS_BIN=~/Qt/6.2.4/macos/bin
+  MVPN_API_BASE_URL=http://localhost:5000
+  MVPN_BIN=dummybuild/src/mozillavpn
+  ARTIFACT_DIR=tests/artifact
+  ```
+* Run a test from the root of the project: `npm run functionalTest path/to/testFile.js`. To run, say, the authentication tests: `npm run functionalTest tests/functional/testAuthenticationInApp.js`.
 
 ## Developer Options and staging environment
 
