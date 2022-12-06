@@ -47,7 +47,7 @@ void TaskSentry::run() {
   auto consent = SentryAdapter::instance()->hasCrashUploadConsent();
 
   if (consent == SentryAdapter::UserConsentResult::Pending) {
-    // The consent screen was now triggered; 
+    // The consent screen was now triggered;
     // exit here and connect to the change event to re-run.
     connect(SentryAdapter::instance(), &SentryAdapter::userConsentChanged, this,
             &TaskSentry::run);
@@ -76,8 +76,8 @@ void TaskSentry::sendRequest() {
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
             Q_UNUSED(data);
-            // Let's note the event id in the logs, so we can 
-            // connect customer support logs with sentry :) 
+            // Let's note the event id in the logs, so we can
+            // connect customer support logs with sentry :)
             logger.debug() << "Sentry sent event (" << m_eventID << ")";
             emit completed();
           });
@@ -102,21 +102,21 @@ void TaskSentry::parseEnvelope() {
   if (objects.empty()) {
     Q_UNREACHABLE();  // This really should not happen.
   }
-  // The fist line is always the header: 
-  // a json object, containing the DSN and an event ID 
+  // The fist line is always the header:
+  // a json object, containing the DSN and an event ID
   auto header = objects.takeFirst();
   if (!header.contains("\"event_id\":")) {
     // if there is no event-id, there will be no event following that
-    // therefore this can't be a crashreport. 
+    // therefore this can't be a crashreport.
     // So we can stop parsing this blob. c:
     return;
   } else {
-    // We have an event, let's keep the ID for logging. 
+    // We have an event, let's keep the ID for logging.
     auto doc = QJsonDocument::fromJson(header.toUtf8());
     m_eventID = doc["event_id"].toString();
   }
-  // Each Line here is it's own json object. 
-  // Usually in the form of 
+  // Each Line here is it's own json object.
+  // Usually in the form of
   // {{ headerObject type,len }} \n
   // {{ bodyObject meta}}
   foreach (auto content, objects) {
@@ -125,8 +125,8 @@ void TaskSentry::parseEnvelope() {
       logger.error() << "Invalid content read from the JSON file";
       continue;
     }
-    // The only thing right now, we don't want to send 
-    // crash-data, so we will only check for that. 
+    // The only thing right now, we don't want to send
+    // crash-data, so we will only check for that.
     QJsonObject obj = doc.object();
     QJsonValue metadata = obj["debug_meta"];
     if (metadata.isUndefined() || metadata.isNull()) {
