@@ -70,19 +70,19 @@ Item {
         function repositionTooltip() {
             pushFocusToTargetElement()
             if (targetElement) {
-               const windowHeight = window.height;
-               const targetElementDistanceFromTop = targetElement.mapToItem(window.contentItem, 0, 0).y
+                const windowHeight = window.height;
+                const targetElementDistanceFromTop = targetElement.mapToItem(window.contentItem, 0, 0).y
 
-               if (targetElementDistanceFromTop + targetElement.height + tutorialTooltip.implicitHeight > windowHeight) {
-                   tooltipPositionedAboveTargetElement = true;
-                   y = targetElementDistanceFromTop - targetElement.height - notchHeight * 2.5;
-                   return
-               }
+                if (targetElementDistanceFromTop + targetElement.height + tutorialTooltip.implicitHeight > windowHeight) {
+                    tooltipPositionedAboveTargetElement = true;
+                    y = targetElementDistanceFromTop - targetElement.height - notchHeight * 2.5;
+                    return
+                }
 
-               tooltipPositionedAboveTargetElement = false;
-               y = targetElementDistanceFromTop + targetElement.height + notchHeight;
-               return
-           }
+                tooltipPositionedAboveTargetElement = false;
+                y = targetElementDistanceFromTop + targetElement.height + notchHeight;
+                return
+            }
         }
 
         width: root.width - VPNTheme.theme.windowMargin * 2
@@ -156,10 +156,10 @@ Item {
         }
 
         contentItem: RowLayout {
-           id: content
-           spacing: VPNTheme.theme.windowMargin / 2
+            id: content
+            spacing: VPNTheme.theme.windowMargin / 2
 
-           VPNTextBlock {
+            VPNTextBlock {
                 id: tooltipText
                 text: ""
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
@@ -279,7 +279,7 @@ Item {
         target: VPNTutorial
 
         function onInterruptRequest(op) {
-          openLeaveTutorialPopup(op)
+            openLeaveTutorialPopup(op)
         }
 
         function onPlayingChanged() {
@@ -310,16 +310,16 @@ Item {
         function onShowWarningNeeded(tutorial) {
             tutorialPopup.imageSrc = "qrc:/ui/resources/logo-warning.svg";
             tutorialPopup.primaryButtonOnClicked = () => {
-                                                           tutorialPopup.close()
-                                                           VPNTutorial.play(tutorial);
-                                                           VPNNavigator.requestScreen(VPNNavigator.ScreenHome)
-                                                         }
+                tutorialPopup.close()
+                VPNTutorial.play(tutorial);
+                VPNNavigator.requestScreen(VPNNavigator.ScreenHome)
+            }
             tutorialPopup.primaryButtonText = VPNl18n.GlobalContinue
             tutorialPopup.secondaryButtonOnClicked = () => tutorialPopup.close();
             tutorialPopup.secondaryButtonText = VPNl18n.GlobalNoThanks
             tutorialPopup.title = VPNl18n.TutorialPopupTutorialWarningTitle;
             tutorialPopup.description = VPNl18n.TutorialPopupTutorialWarningDescription
-            tutorialPopup._onClosed = () => {};
+            tutorialPopup._onClosed = () => VPNTutorial.stop()
             tutorialPopup.dismissOnStop = false;
             tutorialPopup.open();
         }
