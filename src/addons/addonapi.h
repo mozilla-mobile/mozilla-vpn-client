@@ -30,12 +30,18 @@ class AddonApi final : public QObject {
   Q_PROPERTY(QJSValue subscriptionData READ subscriptionData CONSTANT)
   Q_PROPERTY(QJSValue urlOpener READ urlOpener CONSTANT)
 
+  Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
+
  public:
   explicit AddonApi(Addon* addon);
   ~AddonApi();
 
   Q_INVOKABLE void connectSignal(QObject* obj, const QString& signalName,
                                  const QJSValue& callback);
+  Q_INVOKABLE void updateVPN();                               
+
+signals:
+  void updatingChanged();
 
  private:
   QJSValue addon() const;
@@ -47,9 +53,13 @@ class AddonApi final : public QObject {
   QJSValue subscriptionData() const;
   QJSValue urlOpener() const;
 
+  void setUpdating(bool updating);
+  bool updating() const;
+
  private:
   Addon* m_addon = nullptr;
   Env m_env;
+  bool m_updating = false;
 };
 
 class AddonApiCallbackWrapper final : public QObject {

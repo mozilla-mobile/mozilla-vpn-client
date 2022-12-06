@@ -13,9 +13,12 @@
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "urlopener.h"
+// #include "mozillavpn.h"
 
 #include <QCoreApplication>
 #include <QQmlEngine>
+
+#include <iostream>
 
 namespace {
 Logger logger(LOG_MAIN, "AddonApi");
@@ -68,6 +71,22 @@ void AddonApi::connectSignal(QObject* obj, const QString& signalName,
 
   connect(obj, signal, cw, slot);
 }
+
+void AddonApi::updateVPN()
+{
+  logger.debug() << "Update";
+  std::cout << "Gela: Updated initiated";
+
+  setUpdating(true);
+
+}
+
+void AddonApi::setUpdating(bool updating) {
+  m_updating = updating;
+  emit updatingChanged();
+}
+
+bool AddonApi::updating() const { return m_updating; }
 
 AddonApiCallbackWrapper::AddonApiCallbackWrapper(QObject* parent,
                                                  const QJSValue& callback)
