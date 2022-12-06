@@ -13,6 +13,7 @@
 #include "models/server.h"
 #include "mozillavpn.h"
 #include "telemetry/gleansample.h"
+#include "glean/generated/metrics.h"
 
 // In seconds, the time between pings while the VPN is deactivated.
 constexpr uint32_t PING_INTERVAL_IDLE_SEC = 15;
@@ -135,9 +136,11 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
   if (stability == Unstable) {
     MozillaVPN::instance()->silentSwitch();
 
+    mozilla::glean::sample::connection_health_unstable.record();
     emit MozillaVPN::instance()->recordGleanEvent(
         GleanSample::connectionHealthUnstable);
   } else if (stability == NoSignal) {
+    mozilla::glean::sample::connection_health_no_signal.record();
     emit MozillaVPN::instance()->recordGleanEvent(
         GleanSample::connectionHealthNoSignal);
   }

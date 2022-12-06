@@ -13,6 +13,7 @@
 #include "authenticationinapp.h"
 #include "authenticationlistener.h"
 #include "feature.h"
+#include "glean/generated/metrics.h"
 #include "hkdf.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -570,6 +571,7 @@ void AuthenticationInAppSession::deleteAccount() {
             emit accountDeleted();
           });
 
+  mozilla::glean::sample::delete_account_clicked.record();
   emit MozillaVPN::instance()->recordGleanEvent(
       GleanSample::deleteAccountClicked);
 }
@@ -751,6 +753,11 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
         break;
       }
 
+      auto extras = mozilla::glean::sample::AuthenticationInappErrorExtra{
+        _errno : "107",
+        _validation : QJsonDocument(objValidation).toJson()
+      };
+      mozilla::glean::sample::authentication_inapp_error.record(&extras);
       emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
           GleanSample::authenticationInappError,
           {{"errno", "107"},
@@ -781,6 +788,11 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
         break;
       }
 
+      auto extras = mozilla::glean::sample::AuthenticationInappErrorExtra{
+        _errno : "125",
+        _verificationmethod : verificationMethod
+      };
+      mozilla::glean::sample::authentication_inapp_error.record(&extras);
       emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
           GleanSample::authenticationInappError,
           {{"errno", "125"}, {"verificationmethod", verificationMethod}});
@@ -950,6 +962,12 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
     case 998:  // An internal validation check failed.
       [[fallthrough]];
     default:
+      auto extras = mozilla::glean::sample::AuthenticationInappErrorExtra{
+        _errno : QString::number(errorCode),
+        _error : obj["error"].toString(),
+        _message : obj["message"].toString()
+      };
+      mozilla::glean::sample::authentication_inapp_error.record(&extras);
       emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
           GleanSample::authenticationInappError,
           {{"errno", QString::number(errorCode)},

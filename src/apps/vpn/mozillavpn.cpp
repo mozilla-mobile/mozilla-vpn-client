@@ -42,6 +42,7 @@
 #include "tasks/servers/taskservers.h"
 #include "taskscheduler.h"
 #include "telemetry/gleansample.h"
+#include "glean/generated/metrics.h"
 #include "update/updater.h"
 #include "urlopener.h"
 #include "versionutils.h"
@@ -358,6 +359,9 @@ void MozillaVPN::setState(State state) {
   m_state = state;
   emit stateChanged();
 
+  auto extras = mozilla::glean::sample::
+  AppStepExtra{_state : QVariant::fromValue(state).toString()};
+  mozilla::glean::sample::app_step.record(&extras);
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::appStep, {{"state", QVariant::fromValue(state).toString()}});
 
@@ -404,6 +408,7 @@ void MozillaVPN::maybeStateMain() {
   if (!m_private->m_deviceModel.hasCurrentDevice(keys())) {
     Q_ASSERT(m_private->m_deviceModel.activeDevices() ==
              m_private->m_user.maxDevices());
+    mozilla::glean::sample::max_device_reached.record();
     emit recordGleanEvent(GleanSample::maxDeviceReached);
     setState(StateDeviceLimit);
     return;
@@ -471,6 +476,7 @@ void MozillaVPN::authenticateWithType(
     return;
   }
 
+  mozilla::glean::sample::authentication_started.record();
   emit recordGleanEvent(GleanSample::authenticationStarted);
 
   TaskScheduler::scheduleTask(new TaskHeartbeat());
@@ -482,6 +488,7 @@ void MozillaVPN::abortAuthentication() {
   Q_ASSERT(m_state == StateAuthenticating);
   setState(StateInitialize);
 
+  mozilla::glean::sample::authentication_aborted.record();
   emit recordGleanEvent(GleanSample::authenticationAborted);
 }
 
@@ -493,6 +500,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
                                          const QString& token) {
   logger.debug() << "Authentication completed";
 
+  mozilla::glean::sample::authentication_completed.record();
   emit recordGleanEvent(GleanSample::authenticationCompleted);
 
   if (!m_private->m_user.fromJson(json)) {
@@ -619,6 +627,8 @@ void MozillaVPN::deviceRemoved(const QString& publicKey,
                                const QString& source) {
   logger.debug() << "Device removed";
 
+  auto extras = mozilla::glean::sample::DeviceRemovedExtra{_source : source};
+  mozilla::glean::sample::device_removed.record(&extras);
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::deviceRemoved, {{"source", source}});
   m_private->m_deviceModel.removeDeviceFromPublicKey(publicKey);
@@ -794,6 +804,7 @@ void MozillaVPN::cancelAuthentication() {
     return;
   }
 
+  mozilla::glean::sample::authentication_aborted.record();
   emit recordGleanEvent(GleanSample::authenticationAborted);
 
   reset(true);
@@ -1262,6 +1273,10 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
   }
 
   PurchaseHandler::instance()->startSubscription(productIdentifier);
+
+  auto extras = mozilla::glean::sample::
+  IapSubscriptionStartedExtra{_sku : productIdentifier};
+  mozilla::glean::sample::iap_subscription_started.record(&extras);
   emit recordGleanEventWithExtraKeys(GleanSample::iapSubscriptionStarted,
                                      {{"sku", productIdentifier}});
 }
@@ -1270,6 +1285,8 @@ void MozillaVPN::restoreSubscriptionStarted() {
   logger.debug() << "Restore subscription started";
   setState(StateSubscriptionInProgress);
   PurchaseHandler::instance()->startRestoreSubscription();
+
+  mozilla::glean::sample::iap_restore_sub_started.record();
   emit recordGleanEvent(GleanSample::iapRestoreSubStarted);
 }
 
@@ -1292,7 +1309,10 @@ void MozillaVPN::subscriptionCompleted() {
 #ifdef MVPN_ADJUST
   AdjustHandler::trackEvent(AppConstants::ADJUST_SUBSCRIPTION_COMPLETED);
 #endif
-
+  auto extras = mozilla::glean::sample::IapSubscriptionCompletedExtra{
+    _sku : PurchaseHandler::instance()->currentSKU()
+  };
+  mozilla::glean::sample::iap_subscription_completed.record(&extras);
   emit recordGleanEventWithExtraKeys(
       GleanSample::iapSubscriptionCompleted,
       {{"sku", PurchaseHandler::instance()->currentSKU()}});
@@ -1310,6 +1330,12 @@ void MozillaVPN::billingNotAvailable() {
 
 void MozillaVPN::subscriptionNotValidated() {
   setState(StateSubscriptionNotValidated);
+
+  auto extras = mozilla::glean::sample::IapSubscriptionFailedExtra{
+    _error : "not-validated",
+    _sku : PurchaseHandler::instance()->currentSKU()
+  };
+  mozilla::glean::sample::iap_subscription_failed.record(&extras);
   emit recordGleanEventWithExtraKeys(
       GleanSample::iapSubscriptionFailed,
       {{"error", "not-validated"},
@@ -1318,6 +1344,12 @@ void MozillaVPN::subscriptionNotValidated() {
 
 void MozillaVPN::subscriptionFailed() {
   subscriptionFailedInternal(false /* canceled by user */);
+
+  auto extras = mozilla::glean::sample::IapSubscriptionFailedExtra{
+    _error : "failed",
+    _sku : PurchaseHandler::instance()->currentSKU()
+  };
+  mozilla::glean::sample::iap_subscription_failed.record(&extras);
   emit recordGleanEventWithExtraKeys(
       GleanSample::iapSubscriptionFailed,
       {{"error", "failed"},
@@ -1326,6 +1358,12 @@ void MozillaVPN::subscriptionFailed() {
 
 void MozillaVPN::subscriptionCanceled() {
   subscriptionFailedInternal(true /* canceled by user */);
+
+  auto extras = mozilla::glean::sample::IapSubscriptionFailedExtra{
+    _error : "canceled",
+    _sku : PurchaseHandler::instance()->currentSKU()
+  };
+  mozilla::glean::sample::iap_subscription_failed.record(&extras);
   emit recordGleanEventWithExtraKeys(
       GleanSample::iapSubscriptionFailed,
       {{"error", "canceled"},
@@ -1375,6 +1413,10 @@ void MozillaVPN::alreadySubscribed() {
   logger.info() << "Setting state: Subscription Blocked";
   setState(StateSubscriptionBlocked);
 
+  auto extras = mozilla::glean::sample::IapSubscriptionFailedExtra{
+    _error : "alrady-subscribed",
+  };
+  mozilla::glean::sample::iap_subscription_failed.record(&extras);
   emit recordGleanEventWithExtraKeys(GleanSample::iapSubscriptionFailed,
                                      {{"error", "alrady-subscribed"}});
 }

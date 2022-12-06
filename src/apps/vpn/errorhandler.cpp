@@ -10,6 +10,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "telemetry/gleansample.h"
+#include "glean/generated/metrics.h"
 
 // in seconds, hide alerts
 constexpr const uint32_t HIDE_ALERT_SEC = 4;
@@ -234,26 +235,33 @@ void ErrorHandler::errorHandle(ErrorHandler::ErrorType error,
   MozillaVPN* vpn = MozillaVPN::instance();
 
   QVariantMap extraKeys;
+  mozilla::glean::sample::ErrorAlertShownExtra extras;
 
   if (!taskName.isEmpty()) {
     extraKeys["task"] = taskName;
+    extras._task = taskName;
   }
 
   if (!fileName.isEmpty()) {
     extraKeys["filename"] = fileName;
+    extras._filename = fileName;
   }
 
   if (lineNumber >= 0) {
     extraKeys["linenumber"] = lineNumber;
+    extras._linenumber = lineNumber;
   }
 
+  mozilla::glean::sample::error_alert_shown.record(&extras);
   vpn->recordGleanEventWithExtraKeys(GleanSample::errorAlertShown, extraKeys);
 
   // Any error in authenticating state sends to the Initial state.
   if (vpn->state() == MozillaVPN::StateAuthenticating) {
     if (alert == GeoIpRestrictionAlert) {
+      mozilla::glean::sample::authentication_failure_by_geo.record();
       emit vpn->recordGleanEvent(GleanSample::authenticationFailureByGeo);
     } else {
+      mozilla::glean::sample::authentication_failure.record();
       emit vpn->recordGleanEvent(GleanSample::authenticationFailure);
     }
     vpn->reset(true);

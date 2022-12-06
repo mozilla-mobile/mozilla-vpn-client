@@ -14,6 +14,7 @@
 
 #include "appconstants.h"
 #include "errorhandler.h"
+#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -82,6 +83,10 @@ QString Balrog::userAgent() {
 
 void Balrog::start(Task* task) {
   if (m_downloadAndInstall) {
+    auto extras = mozilla::glean::sample::UpdateStepExtra{
+      _state : QVariant::fromValue(UpdateProcessStarted).toString()
+    };
+    mozilla::glean::sample::update_step.record(&extras);
     emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
         GleanSample::updateStep,
         {{"state", QVariant::fromValue(UpdateProcessStarted).toString()}});
@@ -376,6 +381,10 @@ bool Balrog::computeHash(const QString& url, const QByteArray& data,
     return false;
   }
 
+  auto extras = mozilla::glean::sample::UpdateStepExtra{
+    _state : QVariant::fromValue(BalrogValidationCompleted).toString()
+  };
+  mozilla::glean::sample::update_step.record(&extras);
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(BalrogValidationCompleted).toString()}});
@@ -418,6 +427,9 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
 
   file.close();
 
+  auto extras = mozilla::glean::sample::
+  UpdateStepExtra{_state : QVariant::fromValue(BalrogFileSaved).toString()};
+  mozilla::glean::sample::update_step.record(&extras);
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(BalrogFileSaved).toString()}});
@@ -495,6 +507,10 @@ bool Balrog::install(const QString& filePath) {
       });
 #endif
 
+  auto extras = mozilla::glean::sample::UpdateStepExtra{
+    _state : QVariant::fromValue(InstallationProcessExecuted).toString()
+  };
+  mozilla::glean::sample::update_step.record(&extras);
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(InstallationProcessExecuted).toString()}});

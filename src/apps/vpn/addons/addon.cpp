@@ -32,6 +32,7 @@
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
 #include "versionutils.h"
+#include "glean/generated/metrics.h"
 
 namespace {
 Logger logger("Addon");
@@ -431,6 +432,11 @@ void Addon::updateAddonState(State newState) {
 
   settingsHolder->setAddonSetting(StateQuery(id()), newStateSetting);
 
+  auto extras = mozilla::glean::sample::AddonStateChangedExtra{
+    _addonId : m_id,
+    _state : newStateSetting,
+  };
+  mozilla::glean::sample::addon_state_changed.record(&extras);
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::addonStateChanged,
       {{"addon_id", m_id}, {"state", newStateSetting}});

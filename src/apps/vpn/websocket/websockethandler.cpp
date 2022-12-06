@@ -6,6 +6,7 @@
 
 #include "appconstants.h"
 #include "exponentialbackoffstrategy.h"
+#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -116,6 +117,7 @@ void WebSocketHandler::onUserStateChanged() {
  * No-op in case the connection is already open.
  */
 void WebSocketHandler::open() {
+  mozilla::glean::sample::websocket_connection_attempted.record();
   emit MozillaVPN::instance()->recordGleanEvent(
       GleanSample::websocketConnectionAttempted);
 
@@ -144,6 +146,7 @@ void WebSocketHandler::onConnected() {
 
   m_aboutToClose = false;
 
+  mozilla::glean::sample::websocket_connected.record();
   emit MozillaVPN::instance()->recordGleanEvent(
       GleanSample::websocketConnected);
 
@@ -164,6 +167,7 @@ void WebSocketHandler::onConnected() {
  * No-op in case the connection is already closed.
  */
 void WebSocketHandler::close() {
+  mozilla::glean::sample::websocket_close_attempted.record();
   emit MozillaVPN::instance()->recordGleanEvent(
       GleanSample::websocketCloseAttempted);
 
@@ -196,6 +200,9 @@ void WebSocketHandler::onClose() {
 
   m_aboutToClose = false;
 
+  auto extras = mozilla::glean::sample::
+  WebsocketClosedExtra{_reason : m_webSocket.closeCode()};
+  mozilla::glean::sample::websocket_closed.record(&extras);
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::websocketClosed, {{"reason", m_webSocket.closeCode()}});
 
@@ -254,6 +261,7 @@ void WebSocketHandler::onPong(quint64 elapsedTime) {
 void WebSocketHandler::onPingTimeout() {
   logger.debug() << "Timed out waiting for ping response";
 
+  mozilla::glean::sample::websocket_pong_timed_out.record();
   emit MozillaVPN::instance()->recordGleanEvent(
       GleanSample::websocketPongTimedOut);
 
@@ -269,6 +277,9 @@ void WebSocketHandler::onPingTimeout() {
 void WebSocketHandler::onError(QAbstractSocket::SocketError error) {
   logger.debug() << "WebSocket error:" << error;
 
+  auto extras = mozilla::glean::sample::
+  WebsocketErroredExtra{_type : QVariant::fromValue(error).toInt()};
+  mozilla::glean::sample::websocket_errored.record(&extras);
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::websocketErrored,
       {{"type", QVariant::fromValue(error).toInt()}});
@@ -285,6 +296,11 @@ void WebSocketHandler::onMessageReceived(const QString& message) {
   logger.debug() << "Message received:" << message;
 
   PushMessage parsedMessage(message);
+
+  auto extras = mozilla::glean::sample::PushMessageReceivedExtra{
+    _type : QVariant::fromValue(parsedMessage.type()).toString()
+  };
+  mozilla::glean::sample::push_message_received.record(&extras);
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::pushMessageReceived,
       {{"type", QVariant::fromValue(parsedMessage.type()).toString()}});

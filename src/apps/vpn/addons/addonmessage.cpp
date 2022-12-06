@@ -15,6 +15,7 @@
 #include "notificationhandler.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
+#include "glean/generated/metrics.h"
 
 namespace {
 Logger logger("AddonMessage");
@@ -111,6 +112,12 @@ void AddonMessage::updateMessageState(MessageState newState) {
   Q_ASSERT(settingsHolder);
 
   settingsHolder->setAddonSetting(MessageStateQuery(id()), newStateSetting);
+
+  auto extras = mozilla::glean::sample::AddonMessageStateChangedExtra{
+    _messageId : id(),
+    _messageState : newStateSetting,
+  };
+  mozilla::glean::sample::addon_message_state_changed.record(&extras);
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::addonMessageStateChanged,
       {{"message_id", id()}, {"message_state", newStateSetting}});

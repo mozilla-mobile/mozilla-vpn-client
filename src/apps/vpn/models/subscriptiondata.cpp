@@ -12,6 +12,7 @@
 #include <QMetaEnum>
 
 #include "appconstants.h"
+#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -131,6 +132,10 @@ bool SubscriptionData::fromJsonInternal(const QByteArray& json) {
     planIntervalMonths = 1;
   } else {
     logger.error() << "Unexpected interval type:" << planInterval;
+
+    auto extras = mozilla::glean::sample::
+    UnhandledSubPlanIntervalExtra{_interval : planInterval};
+    mozilla::glean::sample::unhandled_sub_plan_interval.record(&extras);
     emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
         GleanSample::unhandledSubPlanInterval, {{"interval", planInterval}});
     return false;
@@ -158,6 +163,12 @@ bool SubscriptionData::fromJsonInternal(const QByteArray& json) {
     default:
       logger.error() << "Unexpected billing interval:"
                      << planIntervalMonthsTotal;
+
+      auto extras = mozilla::glean::sample::UnhandledSubPlanIntervalExtra{
+        _interval : planInterval,
+        _intervalCount : planIntervalCount
+      };
+      mozilla::glean::sample::unhandled_sub_plan_interval.record(&extras);
       emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
           GleanSample::unhandledSubPlanInterval,
           {{"interval", planInterval}, {"interval_count", planIntervalCount}});

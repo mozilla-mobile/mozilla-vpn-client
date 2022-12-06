@@ -9,6 +9,7 @@
 #include "mozillavpn.h"
 #include "task.h"
 #include "telemetry/gleansample.h"
+#include "glean/generated/metrics.h"
 #include "urlopener.h"
 
 namespace {
@@ -26,6 +27,9 @@ WebUpdater::~WebUpdater() {
 }
 
 void WebUpdater::start(Task*) {
+  auto extras = mozilla::glean::sample::
+  UpdateStepExtra{_state : QVariant::fromValue(FallbackInBrowser).toString()};
+  mozilla::glean::sample::update_step.record(&extras);
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(FallbackInBrowser).toString()}});

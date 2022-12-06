@@ -36,6 +36,7 @@
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
+#include "glean/generated/metrics.h"
 #include "temporarydir.h"
 #include "theme.h"
 #include "tutorial/tutorial.h"
@@ -237,6 +238,11 @@ int CommandUI::run(QStringList& tokens) {
     AndroidGlean::initialize(engine);
 #endif
     if (updateOption.m_set) {
+      auto extras = mozilla::glean::sample::UpdateStepExtra{
+        _state : QVariant::fromValue(Updater::ApplicationRestartedAfterUpdate)
+            .toString()
+      };
+      mozilla::glean::sample::update_step.record(&extras);
       emit vpn.recordGleanEventWithExtraKeys(
           GleanSample::updateStep,
           {{"state",

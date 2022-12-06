@@ -9,6 +9,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "telemetry/gleansample.h"
+#include "glean/generated/metrics.h"
 
 constexpr int CONNECTION_STABILITY_MSEC = 45000;
 
@@ -40,17 +41,25 @@ void Telemetry::initialize() {
   Controller* controller = MozillaVPN::instance()->controller();
   Q_ASSERT(controller);
 
-  connect(controller, &Controller::handshakeFailed, this,
-          [](const QString& publicKey) {
-            logger.info() << "Send a handshake failure event";
+  connect(
+      controller, &Controller::handshakeFailed, this,
+      [](const QString& publicKey) {
+        logger.info() << "Send a handshake failure event";
 
-            emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
-                GleanSample::connectivityHandshakeTimeout,
-                {{"server", publicKey},
-                 {"transport", MozillaVPN::instance()
-                                   ->networkWatcher()
-                                   ->getCurrentTransport()}});
-          });
+        auto extras = mozilla::glean::sample::ConnectivityHandshakeTimeoutExtra{
+          _server : publicKey,
+          _transport : MozillaVPN::instance()
+              ->networkWatcher()
+              ->getCurrentTransport()
+        };
+        mozilla::glean::sample::connectivity_handshake_timeout.record(&extras);
+        emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+            GleanSample::connectivityHandshakeTimeout,
+            {{"server", publicKey},
+             {"transport", MozillaVPN::instance()
+                               ->networkWatcher()
+                               ->getCurrentTransport()}});
+      });
 
   connect(controller, &Controller::stateChanged, this, [this]() {
     MozillaVPN* vpn = MozillaVPN::instance();
@@ -65,14 +74,19 @@ void Telemetry::initialize() {
       m_connectionStabilityTimer.start(CONNECTION_STABILITY_MSEC);
     }
 
+    auto extras = mozilla::glean::sample::
+    ControllerStepExtra{_state : QVariant::fromValue(state).toString()};
+    mozilla::glean::sample::controller_step.record(&extras);
     emit vpn->recordGleanEventWithExtraKeys(
         GleanSample::controllerStep,
         {{"state", QVariant::fromValue(state).toString()}});
     // Specific events for on and off state to aid with analysis
     if (state == Controller::StateOn) {
+      mozilla::glean::sample::controller_state_on.record();
       emit vpn->recordGleanEvent(GleanSample::controllerStateOn);
     }
     if (state == Controller::StateOff) {
+      mozilla::glean::sample::controller_state_off.record();
       emit vpn->recordGleanEvent(GleanSample::controllerStateOff);
     }
   });
@@ -81,6 +95,7 @@ void Telemetry::initialize() {
     MozillaVPN* vpn = MozillaVPN::instance();
     Q_ASSERT(vpn);
 
+    mozilla::glean::sample::server_unavailable_error.record();
     emit vpn->recordGleanEvent(GleanSample::serverUnavailableError);
   });
 }
@@ -94,6 +109,14 @@ void Telemetry::connectionStabilityEvent() {
   Q_ASSERT(controller);
   Q_ASSERT(controller->state() == Controller::StateOn);
 
+  auto extras = mozilla::glean::sample::ConnectivityStableExtra{
+    _latency : QString::number(vpn->connectionHealth()->latency()),
+    _loss : QString::number(vpn->connectionHealth()->loss()),
+    _server : vpn->currentServer()->exitServerPublicKey(),
+    _stddev : QString::number(vpn->connectionHealth()->stddev()),
+    _transport : vpn->networkWatcher()->getCurrentTransport()
+  };
+  mozilla::glean::sample::connectivity_stable.record(&extras);
   emit vpn->recordGleanEventWithExtraKeys(
       GleanSample::connectivityStable,
       {{"server", vpn->currentServer()->exitServerPublicKey()},
@@ -113,10 +136,12 @@ void Telemetry::periodicStateRecorder() {
   Controller::State controllerState = controller->state();
 
   if (controllerState == Controller::StateOn) {
+    mozilla::glean::sample::controller_state_on.record();
     emit MozillaVPN::instance()->recordGleanEvent(
         GleanSample::controllerStateOn);
   }
   if (controllerState == Controller::StateOff) {
+    mozilla::glean::sample::controller_state_off.record();
     emit MozillaVPN::instance()->recordGleanEvent(
         GleanSample::controllerStateOff);
   }
