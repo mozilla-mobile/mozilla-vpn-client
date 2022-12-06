@@ -3,12 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "teststatusicon.h"
-
-#include <QEventLoop>
-
+#include "../../src/qmlengineholder.h"
 #include "../../src/statusicon.h"
 
+#include <QEventLoop>
+#include <QQmlApplicationEngine>
+
 void TestStatusIcon::basic() {
+  QQmlApplicationEngine engine;
+  QmlEngineHolder qml(&engine);
+
   StatusIcon si;
   si.initialize();
 

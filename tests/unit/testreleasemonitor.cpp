@@ -3,16 +3,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testreleasemonitor.h"
+#include "../../src/releasemonitor.h"
+#include "../../src/settingsholder.h"
+#include "../../src/update/versionapi.h"
+#include "helper.h"
 
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "../../src/releasemonitor.h"
-#include "../../src/update/versionapi.h"
-#include "helper.h"
-
 void TestReleaseMonitor::failure() {
+  SettingsHolder settingsHolder;
+
   qDebug() << "SET";
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Failure, QByteArray()));
@@ -101,6 +103,8 @@ void TestReleaseMonitor::success_data() {
 }
 
 void TestReleaseMonitor::success() {
+  SettingsHolder settingsHolder;
+
   ReleaseMonitor rm;
   rm.runSoon();
 

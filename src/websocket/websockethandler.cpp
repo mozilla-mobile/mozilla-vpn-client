@@ -19,8 +19,19 @@ namespace {
 Logger logger("WebSocketHandler");
 }  // namespace
 
-WebSocketHandler::WebSocketHandler() {
+WebSocketHandler::WebSocketHandler(const QUrl& url) : m_url(url) {
   MVPN_COUNT_CTOR(WebSocketHandler);
+
+  if (!m_url.isValid()) {
+    QString httpServerUrl;
+    if (Constants::inProduction()) {
+      httpServerUrl = Constants::API_PRODUCTION_URL;
+    } else {
+      httpServerUrl = Constants::getStagingServerAddress();
+    }
+
+    m_url = QUrl(httpServerUrl.toLower().replace("http", "ws"));
+  }
 
   connect(&m_webSocket, &QWebSocket::connected, this,
           &WebSocketHandler::onConnected);
@@ -47,31 +58,7 @@ WebSocketHandler::~WebSocketHandler() {
   m_pingTimer.disconnect();
 }
 
-// static
-QString WebSocketHandler::s_customWebSocketServerUrl = "";
-
-// static
-QString WebSocketHandler::webSocketServerUrl() {
-  if (!s_customWebSocketServerUrl.isEmpty()) {
-    return s_customWebSocketServerUrl;
-  }
-
-  QString httpServerUrl;
-  if (Constants::inProduction()) {
-    httpServerUrl = Constants::API_PRODUCTION_URL;
-  } else {
-    httpServerUrl = Constants::getStagingServerAddress();
-  }
-
-  return httpServerUrl.toLower().replace("http", "ws");
-}
-
 #ifdef UNIT_TEST
-// static
-void WebSocketHandler::testOverrideWebSocketServerUrl(const QString& url) {
-  WebSocketHandler::s_customWebSocketServerUrl = url;
-}
-
 void WebSocketHandler::testOverridePingInterval(int newInterval) {
   m_pingInterval = newInterval;
 }
@@ -127,12 +114,12 @@ void WebSocketHandler::open() {
   }
 
   logger.debug() << "Attempting to open WebSocket connection."
-                 << webSocketServerUrl();
+                 << m_url.toString();
 
   QNetworkRequest request;
   request.setRawHeader("Authorization",
                        SettingsHolder::instance()->token().toLocal8Bit());
-  request.setUrl(QUrl(webSocketServerUrl()));
+  request.setUrl(m_url);
   m_webSocket.open(request);
 }
 

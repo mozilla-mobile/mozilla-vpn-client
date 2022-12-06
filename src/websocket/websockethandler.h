@@ -5,10 +5,11 @@
 #ifndef WEBSOCKETHANDLER_H
 #define WEBSOCKETHANDLER_H
 
-#include <QTimer>
-#include <QWebSocket>
-
 #include "exponentialbackoffstrategy.h"
+
+#include <QTimer>
+#include <QUrl>
+#include <QWebSocket>
 
 constexpr const int WEBSOCKET_PING_INTERVAL_MSEC = 30 * 1000;  // 30s
 
@@ -17,13 +18,12 @@ class ExponentialBackoffStrategy;
 class WebSocketHandler final : public QObject {
   Q_OBJECT
  public:
-  WebSocketHandler();
+  explicit WebSocketHandler(const QUrl& url = QUrl());
   ~WebSocketHandler();
 
   void initialize();
 
 #ifdef UNIT_TEST
-  static void testOverrideWebSocketServerUrl(const QString& url);
   void testOverridePingInterval(int newInterval);
   void testOverrideBaseRetryInterval(int newInterval);
 
@@ -41,7 +41,6 @@ class WebSocketHandler final : public QObject {
   void open();
   void close();
   void sendPing();
-  static QString webSocketServerUrl();
 
   void onUserStateChanged();
   void onConnected();
@@ -52,16 +51,14 @@ class WebSocketHandler final : public QObject {
   void onPingTimeout();
 
  private:
-  QWebSocket m_webSocket;
   QUrl m_url;
+  QWebSocket m_webSocket;
   QTimer m_pingTimer;
 
   int m_pingInterval = WEBSOCKET_PING_INTERVAL_MSEC;
   ExponentialBackoffStrategy m_backoffStrategy;
 
   bool m_aboutToClose = false;
-
-  static QString s_customWebSocketServerUrl;
 };
 
 #endif  // WEBSOCKETHANDLER_H

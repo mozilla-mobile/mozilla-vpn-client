@@ -46,6 +46,8 @@ void TestTasks::account() {
 }
 
 void TestTasks::servers() {
+  SettingsHolder settingsHolder;
+
   // Failure
   {
     TestHelper::networkConfig.append(TestHelper::NetworkConfig(
@@ -114,6 +116,8 @@ void TestTasks::function() {
 }
 
 void TestTasks::deletePolicy() {
+  SettingsHolder settingsHolder;
+
   QList<int> sequence;
 
   TaskFunction* sentinel =
@@ -168,6 +172,8 @@ void TestTasks::deletePolicy() {
 }
 
 void TestTasks::deletePolicy_group() {
+  SettingsHolder settingsHolder;
+
   // Deletable group
   {
     TaskGroup* g = new TaskGroup(
@@ -207,6 +213,8 @@ void TestTasks::deletePolicy_group() {
 }
 
 void TestTasks::deletePolicy_async() {
+  SettingsHolder settingsHolder;
+
   class TaskAsync final : public Task {
    public:
     TaskAsync(Task::DeletePolicy deletePolicy)
@@ -234,6 +242,8 @@ void TestTasks::deletePolicy_async() {
 }
 
 void TestTasks::deleteTasks() {
+  SettingsHolder settingsHolder;
+
   QStringList sequence;
 
   class TaskAsync final : public Task {

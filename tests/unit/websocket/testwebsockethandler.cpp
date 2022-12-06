@@ -91,8 +91,7 @@ void TestWebSocketHandler::tst_connectionIsTiedToUserState() {
   QSignalSpy newConnectionSpy(&server, SIGNAL(newConnection(QNetworkRequest)));
   QSignalSpy socketDisconnectedSpy(&server, SIGNAL(socketDisconnected()));
 
-  WebSocketHandler::testOverrideWebSocketServerUrl(server.url());
-  WebSocketHandler handler;
+  WebSocketHandler handler(server.url());
   handler.initialize();
 
   // Mock a user log in, this should prompt a new websocket connection.
@@ -128,12 +127,14 @@ void TestWebSocketHandler::tst_connectionRequestContainsRequiredHeaders() {
   QSignalSpy newConnectionSpy(&server, SIGNAL(newConnection(QNetworkRequest)));
   QSignalSpy socketDisconnectedSpy(&server, SIGNAL(socketDisconnected()));
 
-  WebSocketHandler::testOverrideWebSocketServerUrl(server.url());
-  WebSocketHandler handler;
+  WebSocketHandler handler(server.url());
   handler.initialize();
 
   // Mock a user log in, this should prompt a new websocket connection.
   MozillaVPN::instance()->forceUserState(MozillaVPN::UserAuthenticated);
+  auto guard = qScopeGuard([&] {
+    MozillaVPN::instance()->forceUserState(MozillaVPN::UserNotAuthenticated);
+  });
 
   QVERIFY(newConnectionSpy.wait());
   QCOMPARE(newConnectionSpy.count(), 1);
@@ -149,13 +150,15 @@ void TestWebSocketHandler::tst_reconnectionAttemptsAfterUnexpectedClose() {
   MockServer server;
   QSignalSpy newConnectionSpy(&server, SIGNAL(newConnection(QNetworkRequest)));
 
-  WebSocketHandler::testOverrideWebSocketServerUrl(server.url());
-  WebSocketHandler handler;
+  WebSocketHandler handler(server.url());
   handler.testOverrideBaseRetryInterval(100);
   handler.initialize();
 
   // Mock a user log in, this should prompt a new websocket connection.
   MozillaVPN::instance()->forceUserState(MozillaVPN::UserAuthenticated);
+  auto guard = qScopeGuard([&] {
+    MozillaVPN::instance()->forceUserState(MozillaVPN::UserNotAuthenticated);
+  });
 
   QVERIFY(newConnectionSpy.wait());
   QCOMPARE(newConnectionSpy.count(), 1);
@@ -179,8 +182,7 @@ void TestWebSocketHandler::
   MockServer server;
   QSignalSpy newConnectionSpy(&server, SIGNAL(newConnection(QNetworkRequest)));
 
-  WebSocketHandler::testOverrideWebSocketServerUrl(server.url());
-  WebSocketHandler handler;
+  WebSocketHandler handler(server.url());
   // We don't want too high of a interval here, because intervals are
   // exponentially increasing.
   int testBaseRetryInterval = 5;
@@ -189,6 +191,9 @@ void TestWebSocketHandler::
 
   // Mock a user log in, this should prompt a new websocket connection.
   MozillaVPN::instance()->forceUserState(MozillaVPN::UserAuthenticated);
+  auto guard = qScopeGuard([&] {
+    MozillaVPN::instance()->forceUserState(MozillaVPN::UserNotAuthenticated);
+  });
 
   QVERIFY(newConnectionSpy.wait());
   QCOMPARE(newConnectionSpy.count(), 1);
@@ -229,8 +234,7 @@ void TestWebSocketHandler::tst_reconnectionAttemptsOnPingTimeout() {
   QSignalSpy newConnectionSpy(&server, SIGNAL(newConnection(QNetworkRequest)));
   QSignalSpy socketDisconnectedSpy(&server, SIGNAL(socketDisconnected()));
 
-  WebSocketHandler::testOverrideWebSocketServerUrl(server.url());
-  WebSocketHandler handler;
+  WebSocketHandler handler(server.url());
   handler.testOverrideBaseRetryInterval(100);
   // By setting an extremely low ping interval,
   // we are guaranteed to have the ping timer timeout before we get a ping
