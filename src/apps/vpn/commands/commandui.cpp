@@ -20,6 +20,9 @@
 #include "feature.h"
 #include "fontloader.h"
 #include "frontend/navigator.h"
+#include "glean/generated/metrics.h"
+#include "glean/generated/pings.h"
+#include "glean/glean.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
 #include "keyregenerator.h"
@@ -36,7 +39,6 @@
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
-#include "glean/generated/metrics.h"
 #include "temporarydir.h"
 #include "theme.h"
 #include "tutorial/tutorial.h"
@@ -546,8 +548,16 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
                      &MozillaVPN::quit);
 #else
-    QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
-                     &MozillaVPN::aboutToQuit);
+    QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn, [] {
+      // Submit the main ping one last time.
+      mozilla::glean_pings::Main.submit();
+      // During shutdown Glean will attempt to finish all tasks
+      // and submit all enqueued pings (including the one we
+      // just sent).
+      VPNGlean::shutdown();
+
+      emit MozillaVPN::instance()->aboutToQuit();
+    });
 #endif
 
     QObject::connect(

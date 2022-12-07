@@ -108,6 +108,13 @@ void VPNGlean::setUploadEnabled(bool isTelemetryEnabled) {
 }
 
 // static
+void VPNGlean::shutdown() {
+#if not(defined(MVPN_WASM) || defined(BUILD_QMAKE))
+  glean_shutdown();
+#endif
+}
+
+// static
 void VPNGlean::registerQMLSingletons() {
   qmlRegisterSingletonType<MozillaVPN>(
       "Mozilla.VPN", 1, 0, "GleanPings",

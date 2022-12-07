@@ -10,6 +10,8 @@
 #include "dnshelper.h"
 #include "feature.h"
 #include "frontend/navigator.h"
+#include "glean/generated/metrics.h"
+#include "glean/generated/pings.h"
 #include "glean/glean.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -42,7 +44,6 @@
 #include "tasks/servers/taskservers.h"
 #include "taskscheduler.h"
 #include "telemetry/gleansample.h"
-#include "glean/generated/metrics.h"
 #include "update/updater.h"
 #include "urlopener.h"
 #include "versionutils.h"
@@ -926,7 +927,10 @@ void MozillaVPN::mainWindowLoaded() {
   QTimer::singleShot(0, this, &MozillaVPN::initializeGlean);
 
   // Setup regular glean ping sending
-  connect(&m_gleanTimer, &QTimer::timeout, this, &MozillaVPN::sendGleanPings);
+  connect(&m_gleanTimer, &QTimer::timeout, this, [this] {
+    mozilla::glean_pings::Main.submit();
+    emit MozillaVPN::sendGleanPings();
+  });
   m_gleanTimer.start(AppConstants::gleanTimeoutMsec());
   m_gleanTimer.setSingleShot(false);
 #endif

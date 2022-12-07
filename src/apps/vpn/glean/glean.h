@@ -23,6 +23,7 @@ class VPNGlean final : public QObject {
   ~VPNGlean();
 
   static void initialize();
+  static void shutdown();
 
   // TODO: Just use the glean_core type once
   // https://github.com/mozilla/glean/pull/2283 lands.
