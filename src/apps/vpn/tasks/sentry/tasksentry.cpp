@@ -29,7 +29,17 @@ TaskSentry::TaskSentry(const QByteArray& envelope) : Task("TaskSentry") {
 TaskSentry::~TaskSentry() { MZ_COUNT_DTOR(TaskSentry); }
 
 void TaskSentry::run() {
-  if (!isCrashReport()) {
+  // If it's unknown, try to parse it.
+  if (m_Type == ContentType::Unknown) {
+    m_Type = parseEnvelope();
+  }
+  // If it's still unknown, parsing failed. abort.
+  if (m_Type == ContentType::Unknown) {
+    emit completed();
+    return;
+  }
+
+  if (m_Type == ContentType::Ping) {
     // This is not a crash report, but a ping
     if (SettingsHolder::instance()->gleanEnabled()) {
       // In case telemetry is enabled, send the request
@@ -42,6 +52,7 @@ void TaskSentry::run() {
     }
     return;
   }
+  Q_ASSERT(m_Type == ContentType::CrashReport);
 
   // This is a crash report - Make sure we have consent, or ask the user for it
   auto consent = SentryAdapter::instance()->hasCrashUploadConsent();
@@ -83,61 +94,83 @@ void TaskSentry::sendRequest() {
           });
 }
 
-bool TaskSentry::isCrashReport() {
-  if (m_checkedContent) {
-    // We already checked this envelope, no need to do that twice.
-    return m_isCrashReport;
-  }
-  parseEnvelope();
-  m_checkedContent = true;
-  return m_isCrashReport;
-}
-
-void TaskSentry::parseEnvelope() {
+TaskSentry::ContentType TaskSentry::parseEnvelope() {
   auto envelope = QString::fromUtf8(m_envelope);
 
   // The Sentry Envelope is a basic format
   // It is a series of JSON objects splited by lines.
   QStringList objects = envelope.split("\n");
   if (objects.empty()) {
-    Q_UNREACHABLE();  // This really should not happen.
+    // This really should not happen.
+    return ContentType::Unknown;
   }
   // The fist line is always the header:
   // a json object, containing the DSN and an event ID
-  auto header = objects.takeFirst();
-  if (!header.contains("\"event_id\":")) {
-    // if there is no event-id, there will be no event following that
-    // therefore this can't be a crashreport.
-    // So we can stop parsing this blob. c:
-    return;
-  } else {
-    // We have an event, let's keep the ID for logging.
-    auto doc = QJsonDocument::fromJson(header.toUtf8());
-    m_eventID = doc["event_id"].toString();
+  auto header = QJsonDocument::fromJson(objects.at(0).toUtf8());
+  if (!header.isObject()) {
+    return ContentType::Unknown;
   }
-  // Each Line here is it's own json object.
+
+  // Each Line here is a json object.
   // Usually in the form of
-  // {{ headerObject type,len }} \n
-  // {{ bodyObject meta}}
+  // { headerObject type } \n
+  // { {bodyObject} || raw bytes} \n
+
   foreach (auto content, objects) {
     auto doc = QJsonDocument::fromJson(content.toUtf8());
     if (!doc.isObject()) {
-      logger.error() << "Invalid content read from the JSON file";
+      // This might be an attachment body.
+      // Sniff for minidump bytes, otherwise this is
+      // fine :)
+      if (content.startsWith("MDMP")) {
+        return ContentType::CrashReport;
+      }
+      // This is an attachment, fine to skip
       continue;
     }
     // The only thing right now, we don't want to send
     // crash-data, so we will only check for that.
     QJsonObject obj = doc.object();
-    QJsonValue metadata = obj["debug_meta"];
-    if (metadata.isUndefined() || metadata.isNull()) {
-      continue;  // Does not contain crash metadata
+    if (obj.contains("event_id")) {
+      m_eventID = obj["event_id"].toString();
     }
-    if (!metadata.isObject()) {
-      continue;  // Probably malformed?
-    }
-    if (metadata.toObject().contains("images")) {
-      // 100% a crashreport
-      m_isCrashReport = true;
+    if (isCrashReportHeader(obj)) {
+      return ContentType::CrashReport;
     }
   }
+  return ContentType::Ping;
+}
+
+// static
+bool TaskSentry::isCrashReportHeader(const QJsonObject& obj) {
+  // Check 1: Test if this might be a dump attachment
+  if (obj.contains("type")) {
+    auto type = obj["type"].toString();
+    // It's type minidump:
+    if (type == "minidump") {
+      return true;
+    }
+    if (type == "attachment") {
+      // It's an attachment to an event.
+      // If it's not a generic one
+      // it needs to set 'attachment_type'
+      if (!obj.contains("attachment_type")) {
+        // This is a generic one
+        return false;
+      }
+      auto type = obj["attachment_type"].toString();
+      if (type == "event.minidump" || type == "event.applecrashreport") {
+        // The attachment is a dump.
+        return true;
+      }
+    }
+    return false;
+  }
+  // Check 2: Check if this is a report for a crash
+  if (obj.contains("level")) {
+    // We might not send a minidump but still report a crash here :)
+    auto level = obj["level"].toString();
+    return level == "fatal";
+  }
+  return false;
 }

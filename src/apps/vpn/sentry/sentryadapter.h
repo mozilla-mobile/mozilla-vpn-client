@@ -5,7 +5,14 @@
 #ifndef SENTRYADAPTER_H
 #define SENTRYADAPTER_H
 
-#include <sentry.h>
+#ifdef SENTRY_ENABLED
+#  include <sentry.h>
+#else
+// Define those types for testing.
+typedef void* sentry_ucontext_t;
+typedef void* sentry_value_t;
+typedef void* sentry_envelope_t;
+#endif
 
 #include <QApplication>
 #include <QObject>
@@ -105,15 +112,7 @@ class SentryAdapter final : public QObject {
    * UI to ask the user.
    * - listen for userConsentChanged to be notified when that is done
    */
-  UserConsentResult hasCrashUploadConsent();
-
-  /**
-   * @brief Signal that is fired whenever the consent changed, note: can sill be
-   * Pending.
-   *
-   * @return bool
-   */
-  Q_SIGNAL void userConsentChanged();
+  UserConsentResult hasCrashUploadConsent() const;
 
   /**
    * @brief Allows Crash Reporting for this Session
@@ -123,6 +122,15 @@ class SentryAdapter final : public QObject {
    * @brief Disables Crash Reporting for this Session
    */
   Q_INVOKABLE void declineCrashReporting();
+
+ signals:
+  /**
+   * @brief Signal that is fired whenever the consent changed, note: can sill be
+   * Pending.
+   *
+   * @return bool
+   */
+  void userConsentChanged();
 
  private:
   bool m_initialized = false;

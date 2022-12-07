@@ -133,7 +133,12 @@ ScreenData s_screens[] = {
         Navigator::LoadPolicy::LoadTemporarily,
         "qrc:/ui/screens/ScreenCrashReporting.qml",
         QVector<MozillaVPN::State>{},
-        [](Navigator::Screen*) -> int8_t { return 0; },
+        [](Navigator::Screen* requestedScreen) -> int8_t {
+          return (requestedScreen &&
+                  *requestedScreen == Navigator::Screen::ScreenCrashReporting)
+                     ? 99
+                     : -1;
+        },
         []() -> bool { return false; }),
     ScreenData(
         Navigator::Screen::ScreenDeleteAccount,

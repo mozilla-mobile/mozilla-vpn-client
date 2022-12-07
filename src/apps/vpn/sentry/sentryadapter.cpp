@@ -9,6 +9,7 @@
 #include <QDir>
 
 #include "appconstants.h"
+#include "frontend/navigator.h"
 #include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -19,7 +20,6 @@
 #include "taskscheduler.h"
 
 #include "mozillavpn.h"
-#include "frontend/navigator.h"
 
 namespace {
 SentryAdapter* s_instance = nullptr;
@@ -154,7 +154,8 @@ void SentryAdapter::transportEnvelope(sentry_envelope_t* envelope,
   TaskScheduler::scheduleTask(t);
 }
 
-SentryAdapter::UserConsentResult SentryAdapter::hasCrashUploadConsent() {
+SentryAdapter::UserConsentResult SentryAdapter::hasCrashUploadConsent() const {
+  Q_ASSERT(m_initialized);
   // We have not yet asked the user - let's do that.
   if (m_userConsent == UserConsentResult::Pending) {
     Navigator::instance()->requestScreen(Navigator::ScreenCrashReporting);
