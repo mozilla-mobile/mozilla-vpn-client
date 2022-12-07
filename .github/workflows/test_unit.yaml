@@ -64,9 +64,6 @@ jobs:
           grcov $(pwd)/tests/nativemessaging/CMakeFiles/nativemessaging_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/nativemessaging_lcov.info
 
-          grcov $(pwd)/tests/qml/CMakeFiles/qml_tests.dir -s ${{github.workspace}} \
-              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/qml_lcov.info
-
           grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
 
@@ -76,7 +73,7 @@ jobs:
           directory: .
           flags: unit_tests
           name: codecov-poc
-          files: auth_lcov.info,nativemessaging_lcov.info,qml_lcov.info,unit_lcov.info
+          files: auth_lcov.info,nativemessaging_lcov.info,unit_lcov.info
           verbose: true
 
   macos-unit-tests:
@@ -140,9 +137,6 @@ jobs:
 
           grcov $(pwd)/tests/nativemessaging/CMakeFiles/nativemessaging_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/nativemessaging_lcov.info
-
-          grcov $(pwd)/tests/qml/CMakeFiles/qml_tests.dir -s ${{github.workspace}} \
-              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/qml_lcov.info
 
           grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
