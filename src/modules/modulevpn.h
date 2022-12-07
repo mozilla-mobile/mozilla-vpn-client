@@ -50,32 +50,61 @@ class ModuleVPN final : public Module {
 
   static ModuleVPN* instance();
 
+  /**
+   * @brief activate the VPN
+   */
   Q_INVOKABLE void activate();
+
+  /**
+   * @brief deactivate the VPN
+   */
   Q_INVOKABLE void deactivate();
 
+  /**
+   * @brief Validate a user-input DNS entry
+   */
   Q_INVOKABLE bool validateUserDNS(const QString& dns) const;
 
+  /**
+   * @brief Getter for the CaptivePortal object
+   */
   CaptivePortal* captivePortal() { return &m_captivePortal; }
 
+  /**
+   * @brief Getter for the CaptivePortalDetection
+   */
   CaptivePortalDetection* captivePortalDetection() {
     return &m_captivePortalDetection;
   }
-  QJSValue captivePortalDetectionValue();
 
+  /**
+   * @brief Getter for the ConnectionBenchmark object
+   */
   ConnectionBenchmark* connectionBenchmark() { return &m_connectionBenchmark; }
-  QJSValue connectionBenchmarkValue();
 
+  /**
+   * @brief Getter for the ConnectionHealth object
+   */
   ConnectionHealth* connectionHealth() { return &m_connectionHealth; }
-  QJSValue connectionHealthValue();
 
+  /**
+   * @brief Getter for the VPN Controller object
+   */
   Controller* controller() { return &m_controller; }
-  QJSValue controllerValue();
 
+  /**
+   * @brief getter for the NetworkWatcher object
+   */
   NetworkWatcher* networkWatcher() { return &m_networkWatcher; }
 
   void silentSwitch();
 
  private:
+  QJSValue captivePortalDetectionValue();
+  QJSValue connectionBenchmarkValue();
+  QJSValue connectionHealthValue();
+  QJSValue controllerValue();
+
   void controllerStateChanged();
 
   void registerInspectorCommands();

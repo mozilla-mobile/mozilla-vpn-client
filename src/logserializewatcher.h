@@ -17,6 +17,11 @@ class LogSerializeWatcher final : public QObject {
   LogSerializeWatcher(QObject* parent, QTextStream* output);
   ~LogSerializeWatcher();
 
+  /**
+   * @brief retrieves logs from all the modules.
+   *
+   * When all the logs are collected, the signal `logsReady` is emitted.
+   */
   void run();
 
  private:

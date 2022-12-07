@@ -15,6 +15,11 @@ class QuitWatcher final : public QObject {
   explicit QuitWatcher(QObject* parent);
   ~QuitWatcher();
 
+  /**
+   * @brief notify all the modules that the app is about to quit.
+   *
+   * When all the modules are ready, the signal `readyToQuit` will be emitted.
+   */
   void run();
 
  private:

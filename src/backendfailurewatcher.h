@@ -15,6 +15,12 @@ class BackendFailureWatcher final : public QObject {
   explicit BackendFailureWatcher(QObject* parent);
   ~BackendFailureWatcher();
 
+  /**
+   * @brief notify all the modules that the was a backend failure.
+   *
+   * When all the modules are ready, the signal `readyToBackendFailure` will be
+   * emitted.
+   */
   void run();
 
  private:

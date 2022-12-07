@@ -96,8 +96,12 @@ class MozillaVPN final : public QObject {
   // This method initializes all the sub-objects.
   void initialize();
 
-  // This method starts the scheduling of tasks, the reading of the settings
-  // and the activation of the state machine.
+  /**
+   * @brief Activates the main task scheduling
+   *
+   * This method starts the scheduling of tasks, the reading of the settings
+   * and the activation of the state machine.
+   */
   void start();
 
   State state() const;

@@ -21,23 +21,46 @@ class Module : public QObject {
   explicit Module(QObject* parent);
   virtual ~Module();
 
+  /**
+   * @brief Initialize the module
+   */
   virtual void initialize() = 0;
 
+  /**
+   * @brief Inform the module that it's the right time to read from settings
+   */
   virtual void settingsAvailable() {}
 
-  // This method needs to trigger the signal `readyToUpdate`.
+  /**
+   * @brief the client needs to update.
+   *
+   * This method needs to trigger the signal `readyToUpdate`.
+   */
   virtual void updateRequired() = 0;
 
-  // This method needs to trigger the signal `readyToQuit`.
+  /**
+   * @brief The client needs to quit.
+   *
+   * This method needs to trigger the signal `readyToQuit`.
+   */
   virtual void quit() = 0;
 
-  // This method needs to trigger the signal `readyToBackendFailure`.
+  /**
+   * @brief The is a backend failure
+   *
+   * This method needs to trigger the signal `readyToBackendFailure`.
+   */
   virtual void backendFailure() = 0;
 
-  // Retrieve extra logs for this module.
+  /**
+   * @brief Retrieve extra logs for this module.
+   */
   virtual void serializeLogs(QTextStream* out,
                              std::function<void()>&& a_finalizeCallback) = 0;
 
+  /**
+   * @brief Clean up all the log entries
+   */
   virtual void cleanupLogs() = 0;
 
  signals:

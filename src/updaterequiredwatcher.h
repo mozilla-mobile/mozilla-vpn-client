@@ -15,6 +15,11 @@ class UpdateRequiredWatcher final : public QObject {
   explicit UpdateRequiredWatcher(QObject* parent);
   ~UpdateRequiredWatcher();
 
+  /**
+   * @brief propagates the update-required notification to all the modules.
+   *
+   * When all the modules are ready, the signal `readyToUpdate` will be emitted.
+   */
   void run();
 
  private:

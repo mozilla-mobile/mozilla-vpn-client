@@ -19,14 +19,29 @@ class ModuleHolder final : public QQmlPropertyMap {
   Q_DISABLE_COPY_MOVE(ModuleHolder)
 
  public:
+  /**
+   * @brief Retrieves the ModuleHolder singleton
+   */
   static ModuleHolder* instance();
 
   ~ModuleHolder();
 
+  /**
+   * @brief Register a new module
+   *
+   * @param moduleName - The name of the module
+   * @param moduleObj - The module object
+   */
   void registerModule(const QString& moduleName, Module* moduleObj);
 
+  /**
+   * @brief Return true if there are some modules registered
+   */
   bool hasModules() const { return !m_modules.isEmpty(); }
 
+  /**
+   * @brief Run a function for each module
+   */
   void forEach(
       std::function<void(const QString& name, Module* module)>&& callback);
 
