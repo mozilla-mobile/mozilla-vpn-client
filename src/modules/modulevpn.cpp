@@ -410,3 +410,9 @@ void ModuleVPN::maybeShowNotification() {
     emit notificationNeeded(NotificationHandler::None, title, message, 2000);
   }
 }
+
+void ModuleVPN::settingsAvailable() {
+  if (!m_captivePortal.fromSettings()) {
+    // We do not care about these settings.
+  }
+}

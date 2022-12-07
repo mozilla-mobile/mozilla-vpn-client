@@ -278,13 +278,12 @@ void MozillaVPN::start() {
     return;
   }
 
-  if (!ModuleVPN::instance()->captivePortal()->fromSettings()) {
-    // We do not care about CaptivePortal settings.
-  }
-
   if (!m_private->m_subscriptionData.fromSettings()) {
     // We do not care about SubscriptionData settings.
   }
+
+  ModuleHolder::instance()->forEach(
+      [](const QString&, Module* module) { module->settingsAvailable(); });
 
   if (!modelsInitialized()) {
     logger.error() << "Models not initialized yet";

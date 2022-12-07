@@ -23,6 +23,8 @@ class Module : public QObject {
 
   virtual void initialize() = 0;
 
+  virtual void settingsAvailable() {}
+
   // This method needs to trigger the signal `readyToUpdate`.
   virtual void updateRequired() = 0;
 

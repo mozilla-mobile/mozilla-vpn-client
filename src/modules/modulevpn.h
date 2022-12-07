@@ -35,6 +35,8 @@ class ModuleVPN final : public Module {
 
   void initialize() override;
 
+  void settingsAvailable() override;
+
   void updateRequired() override;
 
   void quit() override;

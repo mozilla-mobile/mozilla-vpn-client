@@ -10,7 +10,7 @@
 #include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
-#include "modules/modulevpn.h"
+#include "moduleholder.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"
@@ -75,9 +75,8 @@ bool Command::loadModels() {
     return false;
   }
 
-  if (!ModuleVPN::instance()->captivePortal()->fromSettings()) {
-    // We do not care about these settings.
-  }
+  ModuleHolder::instance()->forEach(
+      [](const QString&, Module* module) { module->settingsAvailable(); });
 
   return true;
 }
