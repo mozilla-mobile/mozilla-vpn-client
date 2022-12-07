@@ -33,10 +33,7 @@ target_link_libraries(unit_tests PRIVATE
 target_compile_definitions(unit_tests PRIVATE UNIT_TEST)
 target_compile_definitions(unit_tests PRIVATE MVPN_ADJUST)
 
-target_link_libraries(unit_tests PRIVATE glean lottie nebula translations)
-if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
-    target_link_libraries(unit_tests PRIVATE vpnglean)
-endif()
+target_link_libraries(unit_tests PRIVATE glean vpnglean lottie nebula translations)
 
 # VPN Client source files
 target_sources(unit_tests PRIVATE
