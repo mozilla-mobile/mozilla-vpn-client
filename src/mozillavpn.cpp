@@ -191,7 +191,8 @@ void MozillaVPN::initialize() {
   // This is our first state.
   Q_ASSERT(m_state == StateInitialize);
 
-  ModuleHolder::instance()->initialize();
+  ModuleHolder::instance()->forEach(
+      [](const QString&, Module* module) { module->initialize(); });
 
   m_private->m_statusIcon.initialize();
 

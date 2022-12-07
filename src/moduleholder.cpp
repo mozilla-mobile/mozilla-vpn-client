@@ -30,13 +30,6 @@ void ModuleHolder::registerModule(const QString& moduleName,
   insert(moduleName, QVariant::fromValue(moduleObj));
 }
 
-void ModuleHolder::initialize() {
-  for (QMap<QString, Module*>::iterator i = m_modules.begin();
-       i != m_modules.end(); ++i) {
-    i.value()->initialize();
-  }
-}
-
 void ModuleHolder::forEach(
     std::function<void(const QString& name, Module* module)>&& callback) {
   for (QMap<QString, Module*>::iterator i = m_modules.begin();

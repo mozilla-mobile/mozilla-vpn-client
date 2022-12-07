@@ -23,8 +23,6 @@ class ModuleHolder final : public QQmlPropertyMap {
 
   ~ModuleHolder();
 
-  void initialize();
-
   void registerModule(const QString& moduleName, Module* moduleObj);
 
   bool hasModules() const { return !m_modules.isEmpty(); }
