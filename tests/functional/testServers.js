@@ -238,6 +238,29 @@ describe('Server list', function() {
             currentCountry}, ${currentCity}`);
   });
 
+  it('ensuring search message appears appropriately', async () => {
+    // open it up
+    await vpn.clickOnElement(homeScreen.serverListView.SERVER_SEARCH_BAR);
+    // ensure no message visible
+    await vpn.waitForElementProperty(homeScreen.serverListView.SEARCH_BAR_ERROR, 'visible', 'false');
+    // search down to one item - need to modify text within it
+    await vpn.setElementProperty(homeScreen.serverListView.SEARCH_BAR_TEXT_FIELD, 'text', 's', 'Austra');
+    // ensure no message visible
+    await vpn.waitForElementProperty(homeScreen.serverListView.SEARCH_BAR_ERROR, 'visible', 'false');
+    // search to zero items
+    await vpn.setElementProperty(homeScreen.serverListView.SEARCH_BAR_TEXT_FIELD, 'text', 's', 'Austraz');
+    // ensure message is visible
+    await vpn.waitForElementProperty(homeScreen.serverListView.SEARCH_BAR_ERROR, 'visible', 'true');
+    // add another character
+    await vpn.setElementProperty(homeScreen.serverListView.SEARCH_BAR_TEXT_FIELD, 'text', 's', 'Austrazz');
+    // ensure message
+    await vpn.waitForElementProperty(homeScreen.serverListView.SEARCH_BAR_ERROR, 'visible', 'true');
+    // delete a couple characters
+    await vpn.setElementProperty(homeScreen.serverListView.SEARCH_BAR_TEXT_FIELD, 'text', 's', 'Austra');
+    // ensure message disappears
+    await vpn.waitForElementProperty(homeScreen.serverListView.SEARCH_BAR_ERROR, 'visible', 'false');
+  });
+
   // TODO: server list disabled when reached the device limit
 
 });
