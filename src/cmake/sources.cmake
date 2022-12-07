@@ -83,22 +83,12 @@ target_sources(mozillavpn-sources INTERFACE
     command.h
     commandlineparser.cpp
     commandlineparser.h
-    commands/commandactivate.cpp
-    commands/commandactivate.h
-    commands/commanddeactivate.cpp
-    commands/commanddeactivate.h
     commands/commanddevice.cpp
     commands/commanddevice.h
     commands/commandlogin.cpp
     commands/commandlogin.h
     commands/commandlogout.cpp
     commands/commandlogout.h
-    commands/commandselect.cpp
-    commands/commandselect.h
-    commands/commandservers.cpp
-    commands/commandservers.h
-    commands/commandstatus.cpp
-    commands/commandstatus.h
     commands/commandui.cpp
     commands/commandui.h
     composer/composer.cpp
@@ -239,6 +229,16 @@ target_sources(mozillavpn-sources INTERFACE
     modules/modulevpn/captiveportal/captiveportalrequesttask.h
     modules/modulevpn/captiveportal/taskcaptiveportallookup.cpp
     modules/modulevpn/captiveportal/taskcaptiveportallookup.h
+    modules/modulevpn/commands/commandactivate.cpp
+    modules/modulevpn/commands/commandactivate.h
+    modules/modulevpn/commands/commanddeactivate.cpp
+    modules/modulevpn/commands/commanddeactivate.h
+    modules/modulevpn/commands/commandselect.cpp
+    modules/modulevpn/commands/commandselect.h
+    modules/modulevpn/commands/commandservers.cpp
+    modules/modulevpn/commands/commandservers.h
+    modules/modulevpn/commands/commandstatus.cpp
+    modules/modulevpn/commands/commandstatus.h
     modules/modulevpn/connectionbenchmark/benchmarktask.cpp
     modules/modulevpn/connectionbenchmark/benchmarktask.h
     modules/modulevpn/connectionbenchmark/benchmarktaskping.cpp

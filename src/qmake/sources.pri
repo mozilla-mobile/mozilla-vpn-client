@@ -31,14 +31,9 @@ SOURCES += \
         collator.cpp \
         command.cpp \
         commandlineparser.cpp \
-        commands/commandactivate.cpp \
-        commands/commanddeactivate.cpp \
         commands/commanddevice.cpp \
         commands/commandlogin.cpp \
         commands/commandlogout.cpp \
-        commands/commandselect.cpp \
-        commands/commandservers.cpp \
-        commands/commandstatus.cpp \
         commands/commandui.cpp \
         composer/composer.cpp \
         composer/composerblock.cpp \
@@ -109,6 +104,11 @@ SOURCES += \
         modules/modulevpn/captiveportal/captiveportalrequest.cpp \
         modules/modulevpn/captiveportal/captiveportalrequesttask.cpp \
         modules/modulevpn/captiveportal/taskcaptiveportallookup.cpp \
+        modules/modulevpn/commands/commandactivate.cpp \
+        modules/modulevpn/commands/commanddeactivate.cpp \
+        modules/modulevpn/commands/commandselect.cpp \
+        modules/modulevpn/commands/commandservers.cpp \
+        modules/modulevpn/commands/commandstatus.cpp \
         modules/modulevpn/connectionbenchmark/benchmarktask.cpp \
         modules/modulevpn/connectionbenchmark/benchmarktaskping.cpp \
         modules/modulevpn/connectionbenchmark/benchmarktasktransfer.cpp \
@@ -217,14 +217,9 @@ HEADERS += \
         collator.h \
         command.h \
         commandlineparser.h \
-        commands/commandactivate.h \
-        commands/commanddeactivate.h \
         commands/commanddevice.h \
         commands/commandlogin.h \
         commands/commandlogout.h \
-        commands/commandselect.h \
-        commands/commandservers.h \
-        commands/commandstatus.h \
         commands/commandui.h \
         composer/composer.h \
         composer/composerblock.h \
@@ -294,6 +289,11 @@ HEADERS += \
         modules/modulevpn/captiveportal/captiveportalrequest.h \
         modules/modulevpn/captiveportal/captiveportalrequesttask.h \
         modules/modulevpn/captiveportal/taskcaptiveportallookup.h \
+        modules/modulevpn/commands/commandactivate.h \
+        modules/modulevpn/commands/commanddeactivate.h \
+        modules/modulevpn/commands/commandselect.h \
+        modules/modulevpn/commands/commandservers.h \
+        modules/modulevpn/commands/commandstatus.h \
         modules/modulevpn/connectionbenchmark/benchmarktask.h \
         modules/modulevpn/connectionbenchmark/benchmarktaskping.h \
         modules/modulevpn/connectionbenchmark/benchmarktasksentinel.h \
