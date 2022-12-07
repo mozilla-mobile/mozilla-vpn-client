@@ -10,7 +10,7 @@
 #include "logger.h"
 #include "mfbt/checkedint.h"
 #include "models/feature.h"
-#include "modules/modulevpn.h"
+#include "modules/vpn.h"
 #include "mozillavpn.h"
 #include "pingsenderfactory.h"
 

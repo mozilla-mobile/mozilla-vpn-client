@@ -5,7 +5,7 @@
 #ifndef IOSNETWORKWATCHER_H
 #define IOSNETWORKWATCHER_H
 
-#include "modules/modulevpn/networkwatcherimpl.h"
+#include "modules/vpn/networkwatcherimpl.h"
 
 #include <Network/Network.h>
 

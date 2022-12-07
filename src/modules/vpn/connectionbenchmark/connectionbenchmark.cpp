@@ -9,9 +9,9 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
-#include "modules/modulevpn.h"
-#include "modules/modulevpn/connectionhealth.h"
-#include "modules/modulevpn/controller.h"
+#include "modules/vpn.h"
+#include "modules/vpn/connectionhealth.h"
+#include "modules/vpn/controller.h"
 #include "taskscheduler.h"
 
 namespace {

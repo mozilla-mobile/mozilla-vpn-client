@@ -5,7 +5,7 @@
 #ifndef ANDROIDNETWORKWATCHER_H
 #define ANDROIDNETWORKWATCHER_H
 
-#include "modules/modulevpn/networkwatcherimpl.h"
+#include "modules/vpn/networkwatcherimpl.h"
 
 class AndroidNetworkWatcher final : public NetworkWatcherImpl {
  public:

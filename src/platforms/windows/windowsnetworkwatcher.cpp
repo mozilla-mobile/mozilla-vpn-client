@@ -5,7 +5,7 @@
 #include "windowsnetworkwatcher.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "modules/modulevpn/networkwatcherimpl.h"
+#include "modules/vpn/networkwatcherimpl.h"
 #include "windowscommons.h"
 
 #include <QScopeGuard>

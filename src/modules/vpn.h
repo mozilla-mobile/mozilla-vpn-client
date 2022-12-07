@@ -6,15 +6,15 @@
 #define MODULEVPN_H
 
 #include "module.h"
-#include "modules/modulevpn/captiveportal/captiveportal.h"
-#include "modules/modulevpn/captiveportal/captiveportaldetection.h"
-#include "modules/modulevpn/connectionbenchmark/connectionbenchmark.h"
-#include "modules/modulevpn/connectionhealth.h"
-#include "modules/modulevpn/controller.h"
-#include "modules/modulevpn/dnshelper.h"
-#include "modules/modulevpn/networkwatcher.h"
-#include "modules/modulevpn/serverlatency.h"
-#include "modules/modulevpn/telemetry.h"
+#include "modules/vpn/captiveportal/captiveportal.h"
+#include "modules/vpn/captiveportal/captiveportaldetection.h"
+#include "modules/vpn/connectionbenchmark/connectionbenchmark.h"
+#include "modules/vpn/connectionhealth.h"
+#include "modules/vpn/controller.h"
+#include "modules/vpn/dnshelper.h"
+#include "modules/vpn/networkwatcher.h"
+#include "modules/vpn/serverlatency.h"
+#include "modules/vpn/telemetry.h"
 
 #include <QJSValue>
 

@@ -9,7 +9,7 @@
 #include "leakdetector.h"
 #include "l18nstrings.h"
 #include "logger.h"
-#include "modules/modulevpn.h"
+#include "modules/vpn.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
 

@@ -10,7 +10,7 @@
 #include "dnsutilswindows.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "modules/modulevpn/wgquickprocess.h"
+#include "modules/vpn/wgquickprocess.h"
 #include "platforms/windows/windowscommons.h"
 #include "platforms/windows/windowsservicemanager.h"
 #include "windowsfirewall.h"

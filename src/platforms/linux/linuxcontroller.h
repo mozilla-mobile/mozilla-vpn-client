@@ -9,7 +9,7 @@
 #include <QHostAddress>
 #include <QObject>
 
-#include "modules/modulevpn/controllerimpl.h"
+#include "modules/vpn/controllerimpl.h"
 
 class DBusClient;
 class QDBusPendingCallWatcher;

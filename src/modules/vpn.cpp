@@ -2,11 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "modulevpn.h"
+#include "vpn.h"
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "modules/modulevpn/taskcontrolleraction.h"
+#include "modules/vpn/taskcontrolleraction.h"
 #include "mozillavpn.h"
 #include "notificationhandler.h"
 #include "qmlengineholder.h"

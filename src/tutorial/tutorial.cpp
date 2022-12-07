@@ -8,7 +8,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "telemetry/gleansample.h"
-#include "modules/modulevpn.h"
+#include "modules/vpn.h"
 #include "mozillavpn.h"
 
 #include <QCoreApplication>

@@ -3,6 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macosdaemon.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "modules/vpn/wgquickprocess.h"
 
 #include <QCoreApplication>
 #include <QDir>
@@ -14,10 +17,6 @@
 #include <QSettings>
 #include <QTextStream>
 #include <QtGlobal>
-
-#include "leakdetector.h"
-#include "logger.h"
-#include "modules/modulevpn/wgquickprocess.h"
 
 namespace {
 Logger logger("MacOSDaemon");

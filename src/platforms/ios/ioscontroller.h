@@ -7,7 +7,7 @@
 
 #include <QObject>
 
-#include "modules/modulevpn/controllerimpl.h"
+#include "modules/vpn/controllerimpl.h"
 
 class IOSController final : public ControllerImpl {
   Q_DISABLE_COPY_MOVE(IOSController)

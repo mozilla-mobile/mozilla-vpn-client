@@ -13,7 +13,7 @@
 #include "logger.h"
 #include "models/feature.h"
 #include "models/server.h"
-#include "modules/modulevpn.h"
+#include "modules/vpn.h"
 #include "mozillavpn.h"
 #include "rfc/rfc1112.h"
 #include "rfc/rfc1918.h"

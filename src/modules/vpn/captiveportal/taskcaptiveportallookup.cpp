@@ -6,7 +6,7 @@
 
 #include "leakdetector.h"
 #include "logger.h"
-#include "modules/modulevpn.h"
+#include "modules/vpn.h"
 #include "networkrequest.h"
 
 namespace {

@@ -37,10 +37,10 @@ target_sources(mozillavpn PRIVATE
     daemon/wireguardutils.h
     eventlistener.cpp
     eventlistener.h
-    modules/modulevpn/localsocketcontroller.cpp
-    modules/modulevpn/localsocketcontroller.h
-    modules/modulevpn/wgquickprocess.cpp
-    modules/modulevpn/wgquickprocess.h
+    modules/vpn/localsocketcontroller.cpp
+    modules/vpn/localsocketcontroller.h
+    modules/vpn/wgquickprocess.cpp
+    modules/vpn/wgquickprocess.h
     platforms/windows/windowsapplistprovider.cpp 
     platforms/windows/windowsapplistprovider.h
     platforms/windows/windowsappimageprovider.cpp

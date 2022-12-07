@@ -5,7 +5,7 @@
 #ifndef LINUXPINGSENDER_H
 #define LINUXPINGSENDER_H
 
-#include "modules/modulevpn/pingsender.h"
+#include "modules/vpn/pingsender.h"
 
 #include <QObject>
 

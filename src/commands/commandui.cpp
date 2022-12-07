@@ -29,7 +29,7 @@
 #include "models/featuremodel.h"
 #include "models/recentconnections.h"
 #include "moduleholder.h"
-#include "modules/modulevpn.h"
+#include "modules/vpn.h"
 #include "mozillavpn.h"
 #include "notificationhandler.h"
 #include "productshandler.h"

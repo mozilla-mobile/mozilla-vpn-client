@@ -12,7 +12,7 @@
 #include "frontend/navigator.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "modules/modulevpn.h"
+#include "modules/vpn.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 

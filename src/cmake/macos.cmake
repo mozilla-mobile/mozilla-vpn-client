@@ -48,10 +48,10 @@ target_sources(mozillavpn PRIVATE
     daemon/interfaceconfig.h
     daemon/iputils.h
     daemon/wireguardutils.h
-    modules/modulevpn/localsocketcontroller.cpp
-    modules/modulevpn/localsocketcontroller.h
-    modules/modulevpn/wgquickprocess.cpp
-    modules/modulevpn/wgquickprocess.h
+    modules/vpn/localsocketcontroller.cpp
+    modules/vpn/localsocketcontroller.h
+    modules/vpn/wgquickprocess.cpp
+    modules/vpn/wgquickprocess.h
     platforms/macos/daemon/dnsutilsmacos.cpp
     platforms/macos/daemon/dnsutilsmacos.h
     platforms/macos/daemon/iputilsmacos.cpp

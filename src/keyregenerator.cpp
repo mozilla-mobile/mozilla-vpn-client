@@ -10,7 +10,7 @@
 #include "mfbt/checkedint.h"
 #include "models/device.h"
 #include "models/feature.h"
-#include "modules/modulevpn.h"
+#include "modules/vpn.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #include "tasks/account/taskaccount.h"

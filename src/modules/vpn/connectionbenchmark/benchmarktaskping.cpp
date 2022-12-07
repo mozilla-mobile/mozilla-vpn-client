@@ -7,7 +7,7 @@
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "modules/modulevpn.h"
+#include "modules/vpn.h"
 
 namespace {
 Logger logger("BenchmarkTaskPing");

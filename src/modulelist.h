@@ -6,7 +6,7 @@
 // 2. include this file
 // 3. undefine the MODULE macro
 
-#include "modules/modulevpn.h"
+#include "modules/vpn.h"
 
 #if defined(_MSVC_TRADITIONAL) && _MSVC_TRADITIONAL
 #  error No supported

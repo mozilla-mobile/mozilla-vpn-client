@@ -5,7 +5,7 @@
 #include "module.h"
 #include "leakdetector.h"
 #include "moduleholder.h"
-#include "modules/modulevpn.h"
+#include "modules/vpn.h"
 
 #include <QCoreApplication>
 

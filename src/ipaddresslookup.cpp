@@ -11,7 +11,7 @@
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "modules/modulevpn.h"
+#include "modules/vpn.h"
 #include "mozillavpn.h"
 #include "tasks/ipfinder/taskipfinder.h"
 #include "taskscheduler.h"

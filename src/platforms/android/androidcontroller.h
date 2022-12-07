@@ -5,7 +5,7 @@
 #ifndef ANDROIDCONTROLLER_H
 #define ANDROIDCONTROLLER_H
 
-#include "modules/modulevpn/controllerimpl.h"
+#include "modules/vpn/controllerimpl.h"
 #include "models/device.h"
 
 class AndroidController final : public ControllerImpl {

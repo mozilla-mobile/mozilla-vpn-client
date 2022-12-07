@@ -7,7 +7,7 @@
 
 #include "../../src/mozillavpn.h"
 #include "../../src/notificationhandler.h"
-#include "../../src/modules/modulevpn/controller.h"
+#include "../../src/modules/vpn/controller.h"
 
 #include <QObject>
 #include <QVector>

@@ -12,7 +12,7 @@
 
 #include "leakdetector.h"
 #include "logger.h"
-#include "modules/modulevpn/wgquickprocess.h"
+#include "modules/vpn/wgquickprocess.h"
 #include "platforms/windows/windowscommons.h"
 #include "windowsdaemon.h"
 #include "windowsfirewall.h"

@@ -6,7 +6,7 @@
 
 #include "leakdetector.h"
 #include "logger.h"
-#include "modules/modulevpn.h"
+#include "modules/vpn.h"
 
 constexpr uint32_t TASKCONTROLLER_TIMER_MSEC = 3000;
 

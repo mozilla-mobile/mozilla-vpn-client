@@ -11,7 +11,7 @@
 #include "models/keys.h"
 #include "models/feature.h"
 #include "models/server.h"
-#include "modules/modulevpn/controller.h"
+#include "modules/vpn/controller.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 

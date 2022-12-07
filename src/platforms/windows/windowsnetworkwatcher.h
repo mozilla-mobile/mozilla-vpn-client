@@ -5,10 +5,10 @@
 #ifndef WINDOWSNETWORKWATCHER_H
 #define WINDOWSNETWORKWATCHER_H
 
+#include "modules/vpn/networkwatcherimpl.h"
+
 #include <windows.h>
 #include <wlanapi.h>
-
-#include "modules/modulevpn/networkwatcherimpl.h"
 
 class WindowsNetworkWatcher final : public NetworkWatcherImpl {
  public:
