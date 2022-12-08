@@ -4,6 +4,7 @@
 
 #include "testipaddresslookup.h"
 
+#include "../../src/modules/vpn/ipaddresslookup.h"
 #include "../../src/constants.h"
 #include "../../src/ipaddresslookup.h"
 #include "../../src/settingsholder.h"

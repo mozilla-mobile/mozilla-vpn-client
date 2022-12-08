@@ -44,7 +44,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/addons/addonapi.cpp
     ${MVPN_SOURCE_DIR}/addons/addonapi.h
     ${MVPN_SOURCE_DIR}/addons/addonguide.cpp
-    ${MVPN_SOURCE_DIR}/addons/addonguide.cpp
     ${MVPN_SOURCE_DIR}/addons/addonguide.h
     ${MVPN_SOURCE_DIR}/addons/addoni18n.cpp
     ${MVPN_SOURCE_DIR}/addons/addoni18n.h
@@ -157,8 +156,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/inspector/inspectorutils.h
     ${MVPN_SOURCE_DIR}/ipaddress.cpp
     ${MVPN_SOURCE_DIR}/ipaddress.h
-    ${MVPN_SOURCE_DIR}/ipaddresslookup.cpp
-    ${MVPN_SOURCE_DIR}/ipaddresslookup.h
     ${MVPN_SOURCE_DIR}/itempicker.cpp
     ${MVPN_SOURCE_DIR}/itempicker.h
     ${MVPN_SOURCE_DIR}/leakdetector.cpp
@@ -247,6 +244,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/modules/vpn/dnshelper.h
     ${MVPN_SOURCE_DIR}/modules/vpn/dnspingsender.cpp
     ${MVPN_SOURCE_DIR}/modules/vpn/dnspingsender.h
+    ${MVPN_SOURCE_DIR}/modules/vpn/ipaddresslookup.cpp
+    ${MVPN_SOURCE_DIR}/modules/vpn/ipaddresslookup.h
     ${MVPN_SOURCE_DIR}/modules/vpn/keyregenerator.cpp
     ${MVPN_SOURCE_DIR}/modules/vpn/keyregenerator.h
     ${MVPN_SOURCE_DIR}/modules/vpn/networkwatcher.cpp
@@ -299,6 +298,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/rfc/rfc5735.h
     ${MVPN_SOURCE_DIR}/serveri18n.cpp
     ${MVPN_SOURCE_DIR}/serveri18n.h
+    ${MVPN_SOURCE_DIR}/server/serverconnection.cpp
+    ${MVPN_SOURCE_DIR}/server/serverconnection.h
     ${MVPN_SOURCE_DIR}/settingsholder.cpp
     ${MVPN_SOURCE_DIR}/settingsholder.h
     ${MVPN_SOURCE_DIR}/signature.cpp

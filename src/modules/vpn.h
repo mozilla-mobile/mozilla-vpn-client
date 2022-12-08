@@ -12,6 +12,7 @@
 #include "modules/vpn/connectionhealth.h"
 #include "modules/vpn/controller.h"
 #include "modules/vpn/dnshelper.h"
+#include "modules/vpn/ipaddresslookup.h"
 #include "modules/vpn/keyregenerator.h"
 #include "modules/vpn/networkwatcher.h"
 #include "modules/vpn/serverlatency.h"
@@ -29,6 +30,7 @@ class ModuleVPN final : public Module {
       QJSValue connectionBenchmark READ connectionBenchmarkValue CONSTANT)
   Q_PROPERTY(QJSValue connectionHealth READ connectionHealthValue CONSTANT)
   Q_PROPERTY(QJSValue controller READ controllerValue CONSTANT)
+  Q_PROPERTY(QJSValue ipAddressLookup READ ipAddressLookupValue CONSTANT)
 
  public:
   explicit ModuleVPN(QObject* parent);
@@ -94,6 +96,11 @@ class ModuleVPN final : public Module {
   Controller* controller() { return &m_controller; }
 
   /**
+   * @brief getter for the IpAddressLookup
+   */
+  IpAddressLookup* ipAddressLookup() { return &m_ipAddressLookup; }
+
+  /**
    * @brief getter for the NetworkWatcher object
    */
   NetworkWatcher* networkWatcher() { return &m_networkWatcher; }
@@ -105,6 +112,7 @@ class ModuleVPN final : public Module {
   QJSValue connectionBenchmarkValue();
   QJSValue connectionHealthValue();
   QJSValue controllerValue();
+  QJSValue ipAddressLookupValue();
 
   void controllerStateChanged();
 
@@ -121,6 +129,7 @@ class ModuleVPN final : public Module {
   ConnectionBenchmark m_connectionBenchmark;
   ConnectionHealth m_connectionHealth;
   Controller m_controller;
+  IpAddressLookup m_ipAddressLookup;
   KeyRegenerator m_keyRegenerator;
   NetworkWatcher m_networkWatcher;
   ServerLatency m_serverLatency;

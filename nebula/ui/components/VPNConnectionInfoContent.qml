@@ -59,9 +59,9 @@ VPNFlickable {
                     //: The abbreviation for Internet Protocol. This is followed by the user’s IP address.
                     property var iplabel: qsTrId("vpn.connectionInfo.ip2")
 
-                    ipVersionText: VPNIPAddressLookup.ipv6Address === "" ? iplabel : ipv4label;
-                    ipAddressText: VPNIPAddressLookup.ipv4Address
-                    visible: VPNIPAddressLookup.ipv4Address !== ""
+                    ipVersionText: MZModules["vpn"].ipAddressLookup.ipv6Address === "" ? iplabel : ipv4label;
+                    ipAddressText: MZModules["vpn"].ipIPAddressLookup.ipv4Address
+                    visible: MZModules["vpn"].ipAddressLookup.ipv4Address !== ""
 
                     Layout.alignment: Qt.AlignHCenter
                     Layout.topMargin: VPNTheme.theme.windowMargin * 1.5

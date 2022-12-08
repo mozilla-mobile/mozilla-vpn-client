@@ -13,6 +13,7 @@
 #include "server/serverconnection.h"
 #include "settingsholder.h"
 #include "taskscheduler.h"
+#include "tutorial/tutorial.h"
 
 #include <QGuiApplication>
 #include <QJsonArray>
@@ -176,11 +177,16 @@ void ModuleVPN::initialize() {
   connect(&m_controller, &Controller::stateChanged, this,
           &ModuleVPN::serverConnectionStateUpdate);
 
+  connect(&m_controller, &Controller::readyToServerUnavailable,
+          Tutorial::instance(), &Tutorial::stop);
+
   m_captivePortalDetection.initialize();
 
   m_connectionBenchmark.initialize();
 
   m_connectionHealth.initialize();
+
+  m_ipAddressLookup.initialize();
 
   m_keyRegenerator.initialize();
 
@@ -238,6 +244,18 @@ QJSValue ModuleVPN::controllerValue() {
 
   QJSValue value = engine->newQObject(obj);
   value.setPrototype(engine->newQMetaObject(&Controller::staticMetaObject));
+  return value;
+}
+
+QJSValue ModuleVPN::ipAddressLookupValue() {
+  QJSEngine* engine = QmlEngineHolder::instance()->engine();
+
+  QObject* obj = &m_ipAddressLookup;
+  QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+
+  QJSValue value = engine->newQObject(obj);
+  value.setPrototype(
+      engine->newQMetaObject(&IpAddressLookup::staticMetaObject));
   return value;
 }
 

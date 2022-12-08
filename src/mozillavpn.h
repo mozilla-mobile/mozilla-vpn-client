@@ -15,7 +15,6 @@
 #include "constants.h"
 #include "env.h"
 #include "errorhandler.h"
-#include "ipaddresslookup.h"
 #include "models/devicemodel.h"
 #include "models/feedbackcategorymodel.h"
 #include "models/keys.h"
@@ -155,7 +154,6 @@ class MozillaVPN final : public QObject {
   FeedbackCategoryModel* feedbackCategoryModel() {
     return &m_private->m_feedbackCategoryModel;
   }
-  IpAddressLookup* ipAddressLookup() { return &m_private->m_ipAddressLookup; }
   SupportCategoryModel* supportCategoryModel() {
     return &m_private->m_supportCategoryModel;
   }
@@ -330,7 +328,6 @@ class MozillaVPN final : public QObject {
   struct Private {
     DeviceModel m_deviceModel;
     FeedbackCategoryModel m_feedbackCategoryModel;
-    IpAddressLookup m_ipAddressLookup;
     SupportCategoryModel m_supportCategoryModel;
     Keys m_keys;
     LicenseModel m_licenseModel;

@@ -192,8 +192,6 @@ void MozillaVPN::initialize() {
 
   m_private->m_statusIcon.initialize();
 
-  m_private->m_ipAddressLookup.initialize();
-
   m_private->m_serverData.initialize();
 
   if (Feature::get(Feature::Feature_websocket)->isSupported()) {

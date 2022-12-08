@@ -67,7 +67,6 @@ SOURCES += \
         inspector/inspectorwebsocketconnection.cpp \
         inspector/inspectorwebsocketserver.cpp \
         ipaddress.cpp \
-        ipaddresslookup.cpp \
         itempicker.cpp \
         leakdetector.cpp \
         localizer.cpp \
@@ -117,6 +116,7 @@ SOURCES += \
         modules/vpn/controller.cpp \
         modules/vpn/dnshelper.cpp \
         modules/vpn/dnspingsender.cpp \
+        modules/vpn/ipaddresslookup.cpp \
         modules/vpn/keyregenerator.cpp \
         modules/vpn/networkwatcher.cpp \
         modules/vpn/pinghelper.cpp \
@@ -252,7 +252,6 @@ HEADERS += \
         inspector/inspectorwebsocketconnection.h \
         inspector/inspectorwebsocketserver.h \
         ipaddress.h \
-        ipaddresslookup.h \
         itempicker.h \
         leakdetector.h \
         localizer.h \
@@ -304,6 +303,7 @@ HEADERS += \
         modules/vpn/controllerimpl.h \
         modules/vpn/dnshelper.h \
         modules/vpn/dnspingsender.h \
+        modules/vpn/ipaddresslookup.h \
         modules/vpn/keyregenerator.h \
         modules/vpn/networkwatcher.h \
         modules/vpn/networkwatcherimpl.h \

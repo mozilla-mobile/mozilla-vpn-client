@@ -8,7 +8,6 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "telemetry/gleansample.h"
-#include "modules/vpn.h"
 #include "mozillavpn.h"
 
 #include <QCoreApplication>
@@ -35,9 +34,6 @@ Tutorial::Tutorial(QObject* parent) : QObject(parent) {
   MozillaVPN* vpn = MozillaVPN::instance();
 
   connect(vpn, &MozillaVPN::stateChanged, this, &Tutorial::stop);
-
-  connect(ModuleVPN::instance()->controller(),
-          &Controller::readyToServerUnavailable, this, &Tutorial::stop);
 }
 
 Tutorial::~Tutorial() { MVPN_COUNT_DTOR(Tutorial); }

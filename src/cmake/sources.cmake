@@ -155,8 +155,6 @@ target_sources(mozillavpn-sources INTERFACE
     inspector/inspectorwebsocketserver.h
     ipaddress.cpp
     ipaddress.h
-    ipaddresslookup.cpp
-    ipaddresslookup.h
     itempicker.cpp
     itempicker.h
     leakdetector.cpp
@@ -257,6 +255,8 @@ target_sources(mozillavpn-sources INTERFACE
     modules/vpn/dnshelper.h
     modules/vpn/dnspingsender.cpp
     modules/vpn/dnspingsender.h
+    modules/vpn/ipaddresslookup.cpp
+    modules/vpn/ipaddresslookup.h
     modules/vpn/keyregenerator.cpp
     modules/vpn/keyregenerator.h
     modules/vpn/networkwatcher.cpp

@@ -6,6 +6,8 @@ get_filename_component(MVPN_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src ABSOLUTE)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${MVPN_SOURCE_DIR})
+include_directories(${MVPN_SOURCE_DIR}/addons)
+include_directories(${MVPN_SOURCE_DIR}/composer)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin/minimal)
@@ -31,8 +33,54 @@ target_compile_definitions(qml_tests PRIVATE MVPN_DUMMY)
 
 # VPN Client source files
 target_sources(qml_tests PRIVATE
+    ${MVPN_SOURCE_DIR}/addons/addon.cpp
+    ${MVPN_SOURCE_DIR}/addons/addon.h
+    ${MVPN_SOURCE_DIR}/addons/addonapi.cpp
+    ${MVPN_SOURCE_DIR}/addons/addonapi.h
+    ${MVPN_SOURCE_DIR}/addons/addonguide.cpp
+    ${MVPN_SOURCE_DIR}/addons/addonguide.h
+    ${MVPN_SOURCE_DIR}/addons/addoni18n.cpp
+    ${MVPN_SOURCE_DIR}/addons/addoni18n.h
+    ${MVPN_SOURCE_DIR}/addons/addonmessage.cpp
+    ${MVPN_SOURCE_DIR}/addons/addonmessage.h
+    ${MVPN_SOURCE_DIR}/addons/addonproperty.cpp
+    ${MVPN_SOURCE_DIR}/addons/addonproperty.h
+    ${MVPN_SOURCE_DIR}/addons/addonpropertylist.cpp
+    ${MVPN_SOURCE_DIR}/addons/addonpropertylist.h
+    ${MVPN_SOURCE_DIR}/addons/addontutorial.cpp
+    ${MVPN_SOURCE_DIR}/addons/addontutorial.h
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcher.cpp
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcher.h
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherfeaturesenabled.cpp
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherfeaturesenabled.h
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchergroup.cpp
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchergroup.h
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherjavascript.cpp
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherjavascript.h
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherlocales.cpp
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherlocales.h
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertime.cpp
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertime.h
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertimeend.h
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertimestart.h
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp
+    ${MVPN_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h
     ${MVPN_SOURCE_DIR}/collator.cpp
     ${MVPN_SOURCE_DIR}/collator.h
+    ${MVPN_SOURCE_DIR}/composer/composer.cpp
+    ${MVPN_SOURCE_DIR}/composer/composer.h
+    ${MVPN_SOURCE_DIR}/composer/composerblock.cpp
+    ${MVPN_SOURCE_DIR}/composer/composerblock.h
+    ${MVPN_SOURCE_DIR}/composer/composerblockbutton.cpp
+    ${MVPN_SOURCE_DIR}/composer/composerblockbutton.h
+    ${MVPN_SOURCE_DIR}/composer/composerblockorderedlist.cpp
+    ${MVPN_SOURCE_DIR}/composer/composerblockorderedlist.h
+    ${MVPN_SOURCE_DIR}/composer/composerblocktext.cpp
+    ${MVPN_SOURCE_DIR}/composer/composerblocktext.h
+    ${MVPN_SOURCE_DIR}/composer/composerblocktitle.cpp
+    ${MVPN_SOURCE_DIR}/composer/composerblocktitle.h
+    ${MVPN_SOURCE_DIR}/composer/composerblockunorderedlist.cpp
+    ${MVPN_SOURCE_DIR}/composer/composerblockunorderedlist.h
     ${MVPN_SOURCE_DIR}/constants.h
     ${MVPN_SOURCE_DIR}/cryptosettings.cpp
     ${MVPN_SOURCE_DIR}/cryptosettings.h
@@ -57,9 +105,15 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Poly1305_32.c
     ${MVPN_SOURCE_DIR}/hkdf.cpp
     ${MVPN_SOURCE_DIR}/hkdf.h
+    ${MVPN_SOURCE_DIR}/inspector/inspectorhandler.h
+    ${MVPN_SOURCE_DIR}/inspector/inspectorutils.cpp
+    ${MVPN_SOURCE_DIR}/inspector/inspectorutils.h
     ${MVPN_SOURCE_DIR}/ipaddress.cpp
     ${MVPN_SOURCE_DIR}/ipaddress.h
-    ${MVPN_SOURCE_DIR}/inspector/inspectorhandler.h
+    ${MVPN_SOURCE_DIR}/itempicker.cpp
+    ${MVPN_SOURCE_DIR}/itempicker.h
+    ${MVPN_SOURCE_DIR}/localizer.cpp
+    ${MVPN_SOURCE_DIR}/localizer.h
     ${MVPN_SOURCE_DIR}/logger.cpp
     ${MVPN_SOURCE_DIR}/logger.h
     ${MVPN_SOURCE_DIR}/loghandler.cpp
@@ -121,6 +175,8 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/modules/vpn/dnshelper.h
     ${MVPN_SOURCE_DIR}/modules/vpn/dnspingsender.cpp
     ${MVPN_SOURCE_DIR}/modules/vpn/dnspingsender.h
+    ${MVPN_SOURCE_DIR}/modules/vpn/ipaddresslookup.cpp
+    ${MVPN_SOURCE_DIR}/modules/vpn/ipaddresslookup.h
     ${MVPN_SOURCE_DIR}/modules/vpn/keyregenerator.cpp
     ${MVPN_SOURCE_DIR}/modules/vpn/keyregenerator.h
     ${MVPN_SOURCE_DIR}/modules/vpn/networkwatcher.cpp
@@ -155,6 +211,8 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/rfc/rfc5735.h
     ${MVPN_SOURCE_DIR}/serveri18n.cpp
     ${MVPN_SOURCE_DIR}/serveri18n.h
+    ${MVPN_SOURCE_DIR}/server/serverconnection.cpp
+    ${MVPN_SOURCE_DIR}/server/serverconnection.h
     ${MVPN_SOURCE_DIR}/settingsholder.cpp
     ${MVPN_SOURCE_DIR}/settingsholder.h
     ${MVPN_SOURCE_DIR}/systemtraynotificationhandler.h
@@ -180,8 +238,18 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/tasks/account/taskaccount.h
     ${MVPN_SOURCE_DIR}/tasks/adddevice/taskadddevice.cpp
     ${MVPN_SOURCE_DIR}/tasks/adddevice/taskadddevice.h
+    ${MVPN_SOURCE_DIR}/tasks/ipfinder/taskipfinder.cpp
+    ${MVPN_SOURCE_DIR}/tasks/ipfinder/taskipfinder.h
     ${MVPN_SOURCE_DIR}/taskscheduler.cpp
     ${MVPN_SOURCE_DIR}/taskscheduler.h
+    ${MVPN_SOURCE_DIR}/tutorial/tutorial.cpp
+    ${MVPN_SOURCE_DIR}/tutorial/tutorial.h
+    ${MVPN_SOURCE_DIR}/tutorial/tutorialstep.cpp
+    ${MVPN_SOURCE_DIR}/tutorial/tutorialstep.h
+    ${MVPN_SOURCE_DIR}/tutorial/tutorialstepbefore.cpp
+    ${MVPN_SOURCE_DIR}/tutorial/tutorialstepbefore.h
+    ${MVPN_SOURCE_DIR}/tutorial/tutorialstepnext.cpp
+    ${MVPN_SOURCE_DIR}/tutorial/tutorialstepnext.h
     ${MVPN_SOURCE_DIR}/urlopener.cpp
     ${MVPN_SOURCE_DIR}/urlopener.h
 )
