@@ -2,9 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-add_definitions(-DUNIT_TEST)
-add_definitions(-DMVPN_ADJUST)
-
 get_filename_component(MVPN_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src ABSOLUTE)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -31,14 +28,12 @@ target_link_libraries(unit_tests PRIVATE
     Qt6::Quick
 )
 
+target_compile_definitions(unit_tests PRIVATE UNIT_TEST)
+target_compile_definitions(unit_tests PRIVATE MVPN_ADJUST)
+
 target_link_libraries(unit_tests PRIVATE glean lottie nebula translations)
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
-    target_link_libraries(unit_tests PRIVATE vpnglean -ldl)
-    add_dependencies(unit_tests vpnglean)
-
-    if (WIN32)
-        target_link_libraries(unit_tests PRIVATE ntdll)
-    endif()
+    target_link_libraries(unit_tests PRIVATE vpnglean)
 endif()
 
 # VPN Client source files

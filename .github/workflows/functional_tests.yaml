@@ -52,15 +52,15 @@ jobs:
 
           mkdir -p build/cmake
           mkdir -p build/profile
-          cmake -S $(pwd) -B build/cmake -DBUILD_DUMMY=ON \
+          cmake -S $(pwd) -B build/cmake \
               -DCMAKE_CXX_FLAGS="--coverage -fprofile-generate=$(pwd)/build/profile" \
               -DCMAKE_EXE_LINKER_FLAGS="--coverage -fprofile-generate=$(pwd)/build/profile"
-          cmake --build build/cmake -j$(nproc)
+          cmake --build build/cmake -j$(nproc) --target dummyvpn
 
           mkdir -p build/profile
           rsync -a --include '*/' --include '*.gcno' --exclude '*' \
-              build/cmake/src/CMakeFiles/mozillavpn.dir/ build/profile/
-          cp ./build/cmake/src/mozillavpn build/
+              build/cmake/tests/dummyvpn/CMakeFiles/dummyvpn.dir/ build/profile/
+          cp ./build/cmake/tests/dummyvpn/dummyvpn build/
 
       - uses: actions/upload-artifact@v3
         with:
@@ -122,8 +122,8 @@ jobs:
       - name: Check build
         shell: bash
         run: |
-            chmod +x ./build/mozillavpn
-            ./build/mozillavpn -v
+            chmod +x ./build/dummyvpn
+            ./build/dummyvpn -v
 
             chmod +x ${{github.workspace}}/grcov-build/bin/grcov
             ${{github.workspace}}/grcov-build/bin/grcov --version
@@ -146,7 +146,7 @@ jobs:
             xvfb-run -a npm run functionalTest -- ${{matrix.test.path}}
         env:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
-          MVPN_BIN: ./build//mozillavpn
+          MVPN_BIN: ./build/dummyvpn
 
       - name: Generating grcov reports
         id: generateGrcov
