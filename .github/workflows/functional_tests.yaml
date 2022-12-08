@@ -162,6 +162,7 @@ jobs:
         uses: codecov/codecov-action@v3
         if: steps.generateGrcov.outcome == 'success'
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           directory: .
           flags: functional_tests
           name: codecov-poc

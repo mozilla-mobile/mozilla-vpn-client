@@ -73,6 +73,7 @@ jobs:
       - name: Upload coverage for linux unit tests to Codecov
         uses: codecov/codecov-action@v3
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           directory: .
           flags: linux_unit_tests
           name: codecov-poc
@@ -150,6 +151,7 @@ jobs:
       - name: Upload coverage for macos unit tests to Codecov
         uses: codecov/codecov-action@v3
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           directory: .
           flags: macos_unit_tests
           name: codecov-poc
