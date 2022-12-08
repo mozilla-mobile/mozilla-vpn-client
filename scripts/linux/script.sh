@@ -118,9 +118,7 @@ if [[ "$GITREF" =~ ^refs/pull/([0-9]+)/merge ]]; then
 elif [[ "$GITREF" =~ ^refs/tags/v([0-9a-z.]+) ]]; then
   SHORTVERSION=${BASH_REMATCH[1]}
 elif [[ "$GITREF" =~ ^refs/heads/releases/([0-9][^/]*) ]]; then
-  git fetch $([ $(git rev-parse --is-shallow-repository) = 'false' ] && echo --unshallow)
-  RCVERSION="~rc$(git rev-list --count --first-parent origin/main..HEAD)"
-  SHORTVERSION="${BASH_REMATCH[1]}${RCVERSION}"
+  SHORTVERSION="${BASH_REMATCH[1]}~rc$(date +%Y%m%d%H%M%S)"
 elif [[ "$GITREF" == "refs/heads/main" ]]; then
   SHORTVERSION="${SHORTVERSION}~nightly$(date +%Y%m%d)"
 fi
