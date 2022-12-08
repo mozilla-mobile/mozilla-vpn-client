@@ -514,11 +514,15 @@ ctest --test-dir build
 
 > **Note**: Functional tests require a dummy build of the application, which is not
 > built by default. Ensure the `dummyvpn` target is built, by running:
-> `cmake --build build -j$(nproc) --target dummyvpn`
+> ```
+> cmake --build build -j$(nproc) --target dummyvpn
+> ```
 >
 > This will create a dummy build under the `tests/dummyvpn` folder. To run the functional
 > tests against this build, make sure the `MVPN_BIN` environment variable is set:
-> `export MVPN_BIN=$(pwd)/build/tests/dummyvpn/dummyvpn`
+> ```
+> export MVPN_BIN=$(pwd)/build/tests/dummyvpn/dummyvpn
+> ```
 
 ## Developer Options and staging environment
 
