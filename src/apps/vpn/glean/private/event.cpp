@@ -63,16 +63,18 @@ int32_t EventMetric::testGetNumRecordedErrors(
 QJsonArray EventMetric::testGetValue(const QString& pingName) const {
 #  if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
   auto value = glean_event_test_get_value(m_id, pingName.toLocal8Bit());
-  QJsonArray recordedEvents = QJsonDocument::fromJson(value).array();
+  auto recordedEvents = QJsonDocument::fromJson(value).array();
+  QList<QJsonObject> result;
   if (!recordedEvents.isEmpty()) {
     for (const QJsonValue& recordedEvent : recordedEvents) {
       Q_ASSERT(recordedEvent.isObject());
+      result.append(recordedEvent.toObject());
     }
   }
 
-  return recordedEvents;
+  return result;
 #  else
-  return QJsonArray();
+  return QList();
 #  endif
 }
 #endif

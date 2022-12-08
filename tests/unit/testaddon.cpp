@@ -21,6 +21,8 @@
 #include "addons/conditionwatchers/addonconditionwatchertimestart.h"
 #include "addons/conditionwatchers/addonconditionwatchertriggertimesecs.h"
 #include "feature.h"
+#include "glean/generated/metrics.h"
+#include "glean/glean.h"
 #include "helper.h"
 #include "localizer.h"
 #include "models/featuremodel.h"
@@ -28,6 +30,23 @@
 #include "settingsholder.h"
 #include "systemtraynotificationhandler.h"
 #include "tutorial/tutorial.h"
+
+void TestAddon::init() {
+  m_settingsHolder = new SettingsHolder();
+
+  // Glean needs to be initialized for every test because this test suite
+  // includes telemetry tests.
+  //
+  // Glean operations are queued and applied once Glean is initialized.
+  // If we only initialize it in the test that actually tests telemetry all
+  // of the Glean operations from previous tests will be applied and mess with
+  // the state of the test that actually is testing telemetry.
+  //
+  // Note: on tests Glean::initialize clears Glean's storage.
+  VPNGlean::initialize();
+}
+
+void TestAddon::cleanup() { delete m_settingsHolder; }
 
 void TestAddon::property() {
   AddonProperty p;
@@ -201,15 +220,13 @@ void TestAddon::conditions_data() {
 }
 
 void TestAddon::conditions() {
-  SettingsHolder settingsHolder;
-
   QFETCH(QJsonObject, conditions);
   QFETCH(bool, result);
   QFETCH(QString, settingKey);
   QFETCH(QVariant, settingValue);
 
   if (!settingKey.isEmpty()) {
-    settingsHolder.setRawSetting(settingKey, settingValue);
+    SettingsHolder::instance()->setRawSetting(settingKey, settingValue);
   }
 
   QCOMPARE(Addon::evaluateConditions(conditions), result);
@@ -220,7 +237,6 @@ void TestAddon::conditionWatcher_javascript() {
 
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
-  SettingsHolder settingsHolder;
 
   QJsonObject content;
   content["id"] = "foo";
@@ -275,13 +291,12 @@ void TestAddon::conditionWatcher_javascript() {
     QVERIFY(!!a);
     QVERIFY(!a->conditionApplied());
 
-    settingsHolder.setStartAtBoot(true);
+    SettingsHolder::instance()->setStartAtBoot(true);
     QVERIFY(a->conditionApplied());
   }
 }
 
 void TestAddon::conditionWatcher_locale() {
-  SettingsHolder settingsHolder;
   Localizer l;
 
   QObject parent;
@@ -295,37 +310,35 @@ void TestAddon::conditionWatcher_locale() {
 
   QSignalSpy signalSpy(acw, &AddonConditionWatcher::conditionChanged);
   QCOMPARE(signalSpy.count(), 0);
-  settingsHolder.setLanguageCode("en");
+  SettingsHolder::instance()->setLanguageCode("en");
   QCOMPARE(signalSpy.count(), 0);
-  settingsHolder.setLanguageCode("it_RU");
+  SettingsHolder::instance()->setLanguageCode("it_RU");
   QCOMPARE(signalSpy.count(), 1);
-  settingsHolder.setLanguageCode("it");
+  SettingsHolder::instance()->setLanguageCode("it");
   QCOMPARE(signalSpy.count(), 1);
-  settingsHolder.setLanguageCode("es");
+  SettingsHolder::instance()->setLanguageCode("es");
   QCOMPARE(signalSpy.count(), 2);
 
-  settingsHolder.setLanguageCode("en");
+  SettingsHolder::instance()->setLanguageCode("en");
   QVERIFY(!acw->conditionApplied());
 
-  settingsHolder.setLanguageCode("it");
+  SettingsHolder::instance()->setLanguageCode("it");
   QVERIFY(acw->conditionApplied());
 
-  settingsHolder.setLanguageCode("ru");
+  SettingsHolder::instance()->setLanguageCode("ru");
   QVERIFY(!acw->conditionApplied());
 
-  settingsHolder.setLanguageCode("it-IT");
+  SettingsHolder::instance()->setLanguageCode("it-IT");
   QVERIFY(acw->conditionApplied());
 
-  settingsHolder.setLanguageCode("en");
+  SettingsHolder::instance()->setLanguageCode("en");
   QVERIFY(!acw->conditionApplied());
 
-  settingsHolder.setLanguageCode("it_RU");
+  SettingsHolder::instance()->setLanguageCode("it_RU");
   QVERIFY(acw->conditionApplied());
 }
 
 void TestAddon::conditionWatcher_featuresEnabled() {
-  SettingsHolder settingsHolder;
-
   QObject parent;
 
   // Empty feature list
@@ -387,8 +400,6 @@ void TestAddon::conditionWatcher_featuresEnabled() {
 }
 
 void TestAddon::conditionWatcher_group() {
-  SettingsHolder settingsHolder;
-
   QObject parent;
   AddonConditionWatcher* acw1 =
       AddonConditionWatcherTriggerTimeSecs::maybeCreate(&parent, 1);
@@ -433,8 +444,6 @@ void TestAddon::conditionWatcher_group() {
 }
 
 void TestAddon::conditionWatcher_triggerTime() {
-  SettingsHolder settingsHolder;
-
   QObject parent;
   AddonConditionWatcher* acw =
       AddonConditionWatcherTriggerTimeSecs::maybeCreate(&parent, 1);
@@ -455,8 +464,6 @@ void TestAddon::conditionWatcher_triggerTime() {
 }
 
 void TestAddon::conditionWatcher_startTime() {
-  SettingsHolder settingsHolder;
-
   QObject parent;
   AddonConditionWatcher* acw = new AddonConditionWatcherTimeStart(&parent, 0);
   QVERIFY(acw->conditionApplied());
@@ -478,8 +485,6 @@ void TestAddon::conditionWatcher_startTime() {
 }
 
 void TestAddon::conditionWatcher_endTime() {
-  SettingsHolder settingsHolder;
-
   QObject parent;
   AddonConditionWatcher* acw = new AddonConditionWatcherTimeEnd(&parent, 0);
   QVERIFY(!acw->conditionApplied());
@@ -599,8 +604,6 @@ void TestAddon::guide_create() {
   QFETCH(QString, id);
   QFETCH(QJsonObject, content);
   QFETCH(bool, created);
-
-  SettingsHolder settingsHolder;
 
   QJsonObject obj;
   obj["guide"] = content;
@@ -746,8 +749,6 @@ void TestAddon::tutorial_create() {
   QFETCH(bool, highlighted);
   QFETCH(bool, transaction);
 
-  SettingsHolder settingsHolder;
-
   QJsonObject obj;
   obj["tutorial"] = content;
 
@@ -775,17 +776,17 @@ void TestAddon::tutorial_create() {
 
   QSignalSpy signalSpy(tm, &Tutorial::playingChanged);
 
-  QVERIFY(!settingsHolder.inTransaction());
+  QVERIFY(!SettingsHolder::instance()->inTransaction());
 
   tm->play(tutorial);
   QCOMPARE(signalSpy.count(), 1);
 
-  QCOMPARE(settingsHolder.inTransaction(), transaction);
+  QCOMPARE(SettingsHolder::instance()->inTransaction(), transaction);
 
   tm->stop();
   QCOMPARE(signalSpy.count(), 2);
 
-  QVERIFY(!settingsHolder.inTransaction());
+  QVERIFY(!SettingsHolder::instance()->inTransaction());
 }
 
 void TestAddon::message_create_data() {
@@ -807,8 +808,6 @@ void TestAddon::message_create() {
   QFETCH(QString, id);
   QFETCH(QJsonObject, content);
   QFETCH(bool, created);
-
-  SettingsHolder settingsHolder;
 
   QJsonObject obj;
   obj["message"] = content;
@@ -845,10 +844,8 @@ void TestAddon::message_load_state() {
   QFETCH(AddonMessage::MessageState, state);
   QFETCH(QString, setting);
 
-  SettingsHolder settingsHolder;
-
-  settingsHolder.setAddonSetting(AddonMessage::MessageStateQuery("foo"),
-                                 setting);
+  SettingsHolder::instance()->setAddonSetting(
+      AddonMessage::MessageStateQuery("foo"), setting);
   QCOMPARE(AddonMessage::loadMessageState("foo"), state);
 }
 
@@ -942,7 +939,7 @@ void TestAddon::message_notification_data() {
       << TestHelper::lastSystemNotification.message;
 
   TestHelper::resetLastSystemNotification();
-  // Message is created but due to it's conditions it's not enabled
+  // Message is created but due to it"s conditions it"s not enabled
   AddonMessage* disabledMessage = static_cast<AddonMessage*>(
       Addon::create(&parent, ":/addons_test/message5.json"));
   QTest::addRow("message-loaded-disabled")
@@ -1054,11 +1051,10 @@ void TestAddon::message_date_data() {
 }
 
 void TestAddon::message_date() {
-  SettingsHolder settingsHolder;
   Localizer localizer;
 
   QFETCH(QString, languageCode);
-  settingsHolder.setLanguageCode(languageCode);
+  SettingsHolder::instance()->setLanguageCode(languageCode);
 
   QFETCH(QDateTime, now);
   QVERIFY(now.isValid());
@@ -1074,7 +1070,6 @@ void TestAddon::message_date() {
 }
 
 void TestAddon::message_dismiss() {
-  SettingsHolder settingsHolder;
   Localizer l;
 
   QJsonObject messageObj;
@@ -1099,12 +1094,13 @@ void TestAddon::message_dismiss() {
   QVERIFY(message->enabled());
 
   QString addonSetting;
-  connect(&settingsHolder, &SettingsHolder::addonSettingsChanged, [&]() {
-    addonSetting =
-        settingsHolder.getAddonSetting(SettingsHolder::AddonSettingQuery(
-            "bar", ADDON_MESSAGE_SETTINGS_GROUP,
-            ADDON_MESSAGE_SETTINGS_STATE_KEY, "?!?"));
-  });
+  connect(SettingsHolder::instance(), &SettingsHolder::addonSettingsChanged,
+          [&]() {
+            addonSetting = SettingsHolder::instance()->getAddonSetting(
+                SettingsHolder::AddonSettingQuery(
+                    "bar", ADDON_MESSAGE_SETTINGS_GROUP,
+                    ADDON_MESSAGE_SETTINGS_STATE_KEY, "?!?"));
+          });
 
   QCOMPARE(addonSetting, "");
   QVERIFY(!static_cast<AddonMessage*>(message)->isRead());
@@ -1121,6 +1117,87 @@ void TestAddon::message_dismiss() {
   // No new messages are loaded for the same ID:
   Addon* message2 = AddonMessage::create(&parent, "foo", "bar", "name", obj);
   QVERIFY(!message2);
+}
+
+void TestAddon::telemetry_state_change() {
+  Localizer localizer;
+
+  QJsonObject content;
+  content["id"] = "foo";
+  content["image"] = "foo.png";
+  content["blocks"] = QJsonArray();
+
+  QJsonObject obj;
+  obj["guide"] = content;
+  obj["type"] = "guide";
+  obj["api_version"] = "0.1";
+  obj["id"] = "id";
+  obj["name"] = "name";
+
+  QTemporaryFile file;
+  QVERIFY(file.open());
+  file.write(QJsonDocument(obj).toJson());
+  file.close();
+
+  QObject parent;
+  // The type of the addon, for the purposes of this test, is irrelevant.
+  Addon* guide = Addon::create(&parent, file.fileName());
+
+  // Check no errors were recorded for this metric.
+  // Event metrics can only record InvalidValue or InvalidOverflow errors
+  // https://mozilla.github.io/glean/book/reference/metrics/event.html#recorded-errors
+
+  QCOMPARE(mozilla::glean::sample::addon_state_changed.testGetNumRecordedErrors(
+               VPNGlean::InvalidValue),
+           0);
+  QCOMPARE(mozilla::glean::sample::addon_state_changed.testGetNumRecordedErrors(
+               VPNGlean::InvalidOverflow),
+           0);
+
+  // Upon creating the addon we expect two events to be recorded:
+  // Installed and then Enabled/Disabled. In this case the addon is enabled.
+  // So we expect an Enabled state event to be recorded.
+
+  auto initialValues =
+      mozilla::glean::sample::addon_state_changed.testGetValue();
+
+  QCOMPARE(initialValues.length(), 2);
+
+  auto installedEventExtras = initialValues[0]["extra"].toObject();
+  QCOMPARE(installedEventExtras["addon_id"].toString(), "id");
+  QCOMPARE(installedEventExtras["state"].toString(), "Installed");
+
+  auto enabledEventExtras = initialValues[1]["extra"].toObject();
+  QCOMPARE(enabledEventExtras["addon_id"].toString(), "id");
+  QCOMPARE(enabledEventExtras["state"].toString(), "Enabled");
+
+  guide->disable();
+
+  // After disabling we expect a disabled state event to be recorded.
+
+  QCOMPARE(mozilla::glean::sample::addon_state_changed.testGetNumRecordedErrors(
+               VPNGlean::InvalidValue),
+           0);
+  QCOMPARE(mozilla::glean::sample::addon_state_changed.testGetNumRecordedErrors(
+               VPNGlean::InvalidOverflow),
+           0);
+
+  auto postDisableValues =
+      mozilla::glean::sample::addon_state_changed.testGetValue();
+
+  QCOMPARE(postDisableValues.length(), 3);
+
+  auto disabledEventExtras = postDisableValues[2]["extra"].toObject();
+  QCOMPARE(disabledEventExtras["addon_id"].toString(), "id");
+  QCOMPARE(disabledEventExtras["state"].toString(), "Disabled");
+
+  // Lastly, let's check nothing is recorded if an addon creation fails.
+
+  Addon::create(&parent, "does_not_exist.json");
+  auto postFailedCreationValues =
+      mozilla::glean::sample::addon_state_changed.testGetValue();
+
+  QCOMPARE(postDisableValues.length(), 3);
 }
 
 static TestAddon s_testAddon;

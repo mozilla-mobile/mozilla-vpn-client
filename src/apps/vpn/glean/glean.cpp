@@ -53,8 +53,19 @@ void VPNGlean::initialize() {
   registerQMLSingletons();
 
   if (Feature::get(Feature::Feature_gleanRust)->isSupported()) {
+    if (!s_instance) {
+      s_instance = new VPNGlean(qApp);
+
+      connect(SettingsHolder::instance(), &SettingsHolder::gleanEnabledChanged,
+              s_instance, []() {
+                s_instance->setUploadEnabled(
+                    SettingsHolder::instance()->gleanEnabled());
+              });
+    }
+
     QDir gleanDirectory(rootAppFolder());
 #if defined(UNIT_TEST)
+    logger.debug() << "Cleaning Glean directory for testing";
     // Clean the directory so test state doesn't leak
     // See https://bugzilla.mozilla.org/show_bug.cgi?id=1800901
     gleanDirectory.removeRecursively();
@@ -74,18 +85,9 @@ void VPNGlean::initialize() {
       return;
     }
 
-    s_instance = new VPNGlean(qApp);
-    connect(SettingsHolder::instance(), &SettingsHolder::gleanEnabledChanged,
-            s_instance, []() {
-              s_instance->setUploadEnabled(
-                  SettingsHolder::instance()->gleanEnabled());
-            });
-
-    SettingsHolder* settingsHolder = SettingsHolder::instance();
-    MozillaVPN* vpn = MozillaVPN::instance();
-
-    auto uploadEnabled = settingsHolder->gleanEnabled();
-    auto appChannel = vpn->stagingMode() ? "staging" : "production";
+    auto uploadEnabled = SettingsHolder::instance()->gleanEnabled();
+    auto appChannel =
+        MozillaVPN::instance()->stagingMode() ? "staging" : "production";
     auto dataPath = gleanDirectory.absolutePath();
 
 #if defined(UNIT_TEST)
