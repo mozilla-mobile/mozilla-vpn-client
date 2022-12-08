@@ -149,3 +149,14 @@ bool IOSUtils::verifySignature(const QByteArray& publicKey, const QByteArray& co
   logger.warning() << "Signature verification failed";
   return false;
 }
+
+// static
+QStringList IOSUtils::systemLanguageCodes() {
+  NSArray<NSString*>* languages = [NSLocale preferredLanguages];
+
+  QStringList codes;
+  for (NSString* language in languages) {
+    codes.append(QString::fromNSString(language));
+  }
+  return codes;
+}
