@@ -11,8 +11,7 @@
 #include "models/keys.h"
 #include "models/feature.h"
 #include "models/server.h"
-#include "modules/vpn/controller.h"
-#include "mozillavpn.h"
+#include "modules/vpn.h"
 #include "settingsholder.h"
 
 #include <QByteArray>
@@ -82,7 +81,7 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
             return;
           }
           case ConnectionStateDisconnected:
-            Controller* controller = MozillaVPN::instance()->controller();
+            Controller* controller = ModuleVPN::instance()->controller();
             Q_ASSERT(controller);
             if (controller->state() != Controller::StateInitializing) {
               // Just in case we are connecting, let's call disconnect.

@@ -30,7 +30,8 @@ WebSocketHandler::WebSocketHandler(const QUrl& url) : m_url(url) {
       httpServerUrl = Constants::getStagingServerAddress();
     }
 
-    m_url = QUrl(httpServerUrl.toLower().replace("http", "ws"));
+    m_url = QUrl(httpServerUrl.toLower());
+    m_url.setScheme("ws");
   }
 
   connect(&m_webSocket, &QWebSocket::connected, this,

@@ -3,6 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidutils.h"
+#include "androidvpnactivity.h"
+#include "constants.h"
+#include "inspector/inspectorhandler.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "mozillavpn.h"
+#include "networkrequest.h"
+#include "settingsholder.h"
+#include "qmlengineholder.h"
+#include "jni.h"
 
 #include <QApplication>
 #include <QJniEnvironment>
@@ -11,15 +21,6 @@
 #include <QJsonObject>
 #include <QNetworkCookieJar>
 #include <QUrlQuery>
-
-#include "constants.h"
-#include "jni.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "mozillavpn.h"
-#include "networkrequest.h"
-#include "qmlengineholder.h"
-#include "settingsholder.h"
 
 namespace {
 AndroidUtils* s_instance = nullptr;
@@ -75,6 +76,19 @@ AndroidUtils::AndroidUtils(QObject* parent) : QObject(parent) {
 
   env->RegisterNatives(javaClass, methods,
                        sizeof(methods) / sizeof(methods[0]));
+
+  InspectorHandler::registerCommand(InspectorHandler::InspectorCommand{
+      "android_daemon", "Send a request to the Daemon {type} {args}", 2,
+      [](InspectorHandler*, const QList<QByteArray>& arguments) {
+        auto activity = AndroidVPNActivity::instance();
+        Q_ASSERT(activity);
+        auto type = QString(arguments[1]);
+        auto json = QString(arguments[2]);
+
+        ServiceAction a = (ServiceAction)type.toInt();
+        AndroidVPNActivity::sendToService(a, json);
+        return QJsonObject();
+      }});
 }
 
 AndroidUtils::~AndroidUtils() {

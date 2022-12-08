@@ -25,7 +25,9 @@ UpdateRequiredWatcher::~UpdateRequiredWatcher() {
 
 void UpdateRequiredWatcher::maybeReadyToUpdate() {
   Q_ASSERT(m_count > 0);
-  logger.debug() << "Pending modules:" << --m_count;
+  --m_count;
+
+  logger.debug() << "Pending modules:" << m_count;
 
   if (m_count == 0) {
     emit readyToUpdate();

@@ -50,10 +50,6 @@
 #  include "inspectorwebsocketserver.h"
 #endif
 
-#ifdef MVPN_ANDROID
-#  include "platforms/android/androidvpnactivity.h"
-#endif
-
 namespace {
 Logger logger("InspectorHandler");
 
@@ -300,7 +296,7 @@ static QList<InspectorHandler::InspectorCommand> s_commands{
           return QJsonObject();
         }},
     InspectorHandler::InspectorCommand{
-        "mockFreeTrial", "Force the UI to show 7 day trial on 1 year plan", 0,
+        "mock_free_trial", "Force the UI to show 7 day trial on 1 year plan", 0,
         [](InspectorHandler*, const QList<QByteArray>&) {
           s_mockFreeTrial = true;
           return QJsonObject();
@@ -572,20 +568,6 @@ static QList<InspectorHandler::InspectorCommand> s_commands{
           obj["value"] = countryArray;
           return obj;
         }},
-#ifdef MVPN_ANDROID
-    InspectorHandler::InspectorCommand{
-        "android_daemon", "Send a request to the Daemon {type} {args}", 2,
-        [](InspectorHandler*, const QList<QByteArray>& arguments) {
-          auto activity = AndroidVPNActivity::instance();
-          Q_ASSERT(activity);
-          auto type = QString(arguments[1]);
-          auto json = QString(arguments[2]);
-
-          ServiceAction a = (ServiceAction)type.toInt();
-          AndroidVPNActivity::sendToService(a, json);
-          return QJsonObject();
-        }},
-#endif
 
     InspectorHandler::InspectorCommand{
         "devices", "Retrieve the list of devices", 0,

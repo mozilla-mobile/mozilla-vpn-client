@@ -12,6 +12,9 @@ Rectangle {
     property bool isTransitioning: false
     property int transitionDuration: 750
 
+    // Just to avoid using MZModules[] all the time.
+    property var connectionBenchmark: MZModules["vpn"].connectionBenchmark
+
     id: root
 
     clip: true
@@ -51,9 +54,9 @@ Rectangle {
         },
         State {
             name: "open-loading"
-            when: (MZModules["vpn"].connectionBenchmark.state !== MZModules["vpn"].connectionBenchmark.StateInitial
-                && MZModules["vpn"].connectionBenchmark.state !== MZModules["vpn"].connectionBenchmark.StateReady
-                && MZModules["vpn"].connectionBenchmark.state !== MZModules["vpn"].connectionBenchmark.StateError)
+            when: (connectionBenchmark.state !== connectionBenchmark.StateInitial
+                && connectionBenchmark.state !== connectionBenchmark.StateReady
+                && connectionBenchmark.state !== connectionBenchmark.StateError)
                 && isOpen
                 && !isTransitioning
 
@@ -65,7 +68,7 @@ Rectangle {
         },
         State {
             name: "open-ready"
-            when: MZModules["vpn"].connectionBenchmark.state === MZModules["vpn"].connectionBenchmark.StateReady
+            when: connectionBenchmark.state === connectionBenchmark.StateReady
                 && isOpen
                 && !isTransitioning
 
@@ -77,7 +80,7 @@ Rectangle {
         },
         State {
             name: "open-error"
-            when: MZModules["vpn"].connectionBenchmark.state === MZModules["vpn"].connectionBenchmark.StateError
+            when: connectionBenchmark.state === connectionBenchmark.StateError
                 && isOpen
                 && !isTransitioning
 
@@ -94,10 +97,10 @@ Rectangle {
         // Start opening/closing transition
         isTransitioning = true;
 
-        if (MZModules["vpn"].connectionBenchmark.state === MZModules["vpn"].connectionBenchmark.StateInitial) {
-            MZModules["vpn"].connectionBenchmark.start();
+        if (connectionBenchmark.state === connectionBenchmark.StateInitial) {
+            connectionBenchmark.start();
         } else {
-            MZModules["vpn"].connectionBenchmark.reset();
+            connectionBenchmark.reset();
         }
 
         timer.setTimeout(function() {
@@ -156,8 +159,8 @@ Rectangle {
         z: 1
 
         onClicked: {
-            if (MZModules["vpn"].connectionBenchmark.state !== MZModules["vpn"].connectionBenchmark.StateRunning) {
-                MZModules["vpn"].connectionBenchmark.start();
+            if (connectionBenchmark.state !== connectionBenchmark.StateRunning) {
+                connectionBenchmark.start();
             }
         }
 
@@ -195,7 +198,7 @@ Rectangle {
         id: timer
     }
 
-    Component.onDestruction: MZModules["vpn"].connectionBenchmark.reset()
+    Component.onDestruction: connectionBenchmark.reset()
 
     Connections {
       target: VPNNavigator

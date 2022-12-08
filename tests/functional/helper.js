@@ -533,7 +533,7 @@ module.exports = {
     await this.waitForCondition(() => _lastAddonLoadingCompleted);
   },
 
-  async connectionBenchmarkProperty(property) {
+  async getConnectionBenchmarkProperty(property) {
     const json =
         await this._writeCommand(`connection_benchmark_property ${property}`);
     assert(
@@ -542,7 +542,7 @@ module.exports = {
     return json.value;
   },
 
-  async connectionBenchmarkUrl(url) {
+  async setConnectionBenchmarkUrl(url) {
     const json = await this._writeCommand(`connection_benchmark_url ${url}`);
     assert(
         json.type === 'connection_benchmark_url' && !('error' in json),

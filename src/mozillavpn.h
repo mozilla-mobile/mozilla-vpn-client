@@ -221,7 +221,17 @@ class MozillaVPN final : public QObject {
 
   bool modelsInitialized() const;
 
+  /**
+   * @brief starts the quitting steps
+   */
   void quit();
+
+  /**
+   * @brief terminates the app right now
+   *
+   * Do not use this method directly! Use quit()
+   */
+  void terminate();
 
   bool updating() const { return m_updating; }
   void setUpdating(bool updating);
@@ -283,8 +293,6 @@ class MozillaVPN final : public QObject {
   RemovalDeviceOption maybeRemoveCurrentDevice();
 
   bool checkCurrentDevice();
-
-  void terminate();
 
  public slots:
   void requestSettings();
