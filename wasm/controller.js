@@ -139,6 +139,7 @@ class Controller {
     if (obj.type === 'log') return;
     if (obj.type === 'network') return;
     if (obj.type === 'notification') return;
+    if (json.type === 'addon_load_completed') return;
 
     assert(this._waitReadCallback, 'No waiting callback?');
     const wr = this._waitReadCallback;
