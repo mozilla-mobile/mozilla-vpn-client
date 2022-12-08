@@ -30,7 +30,6 @@ task-defaults:
         command: ./taskcluster/scripts/build/macos_build.sh
 
 
-
 macos/pr:
     description: "Mac Build"
     treeherder:

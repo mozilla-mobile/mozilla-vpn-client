@@ -138,7 +138,7 @@ The following variables may be of use:
 
 2. Once the makefiles have been generated, the next step is to compile the source code:
 ```bash
-cmake --build build
+cmake --build build -j$(nproc)
 ```
 
 The following sections go into further detail for each of the supported platforms.
@@ -240,7 +240,7 @@ Some variables that might be useful when configuring the project:
 
 4. Compile the source code:
 ```bash
-cmake --build build
+cmake --build build -j$(nproc)
 ```
 
 This will produce the application bundle in `build/src/Mozilla VPN.app`.
