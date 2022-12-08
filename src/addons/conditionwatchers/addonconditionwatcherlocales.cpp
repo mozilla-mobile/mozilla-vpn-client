@@ -39,13 +39,8 @@ AddonConditionWatcherLocales::~AddonConditionWatcherLocales() {
 }
 
 bool AddonConditionWatcherLocales::conditionApplied() const {
-  QString code = SettingsHolder::instance()->languageCode();
-  if (code.isEmpty()) {
-    code = Localizer::systemLanguageCode();
-    if (code.isEmpty()) {
-      code = "en";
-    }
-  }
+  QString code = Localizer::instance()->languageCodeOrSystem();
+  Q_ASSERT(!code.isEmpty());
 
   code = Localizer::majorLanguageCode(code);
   return m_locales.contains(code.toLower());

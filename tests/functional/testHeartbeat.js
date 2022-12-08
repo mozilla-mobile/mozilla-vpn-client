@@ -59,10 +59,8 @@ describe('Backend failure', function() {
 
       assert(await vpn.getElementProperty(initialScreen.ONBOARDING_NEXT, 'visible') === 'true');
       onboarding = await vpn.getElementProperty(initialScreen.ONBOARDING_NEXT, 'text') === 'Next';
-
-      console.log('right before failure');
-      await backendFailureAndRestore();
-      console.log('line 63');
+      
+      await backendFailureAndRestore();      
       await vpn.waitForElement(initialScreen.GET_HELP_LINK);
       await vpn.waitForElementProperty(initialScreen.GET_HELP_LINK, 'visible', 'true');
       await vpn.wait()

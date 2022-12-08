@@ -281,6 +281,7 @@ void TestAddon::conditionWatcher_javascript() {
 
 void TestAddon::conditionWatcher_locale() {
   SettingsHolder settingsHolder;
+  Localizer l;
 
   QObject parent;
 
@@ -852,6 +853,7 @@ void TestAddon::message_load_state() {
 
 void TestAddon::message_notification_data() {
   SettingsHolder settingsHolder;
+  Localizer l;
 
   QObject parent;
   SystemTrayNotificationHandler nh(&parent);
@@ -1072,6 +1074,7 @@ void TestAddon::message_date() {
 
 void TestAddon::message_dismiss() {
   SettingsHolder settingsHolder;
+  Localizer l;
 
   QJsonObject messageObj;
   messageObj["id"] = "foo";

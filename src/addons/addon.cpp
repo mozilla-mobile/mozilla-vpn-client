@@ -438,17 +438,12 @@ void Addon::retranslate() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  QString code = settingsHolder->languageCode();
-
-  QLocale locale = QLocale(code);
-  if (code.isEmpty()) {
-    locale = QLocale(Localizer::systemLanguageCode());
-  }
+  QLocale locale = Localizer::instance()->locale();
 
   if (!m_translator.load(
           locale, "locale", "_",
           QFileInfo(m_manifestFileName).dir().filePath("i18n"))) {
-    logger.error() << "Loading the locale failed. - code:" << code;
+    logger.error() << "Loading the locale failed.";
   }
 
   emit retranslationCompleted();

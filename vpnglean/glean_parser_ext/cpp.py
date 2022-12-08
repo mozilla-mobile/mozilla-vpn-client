@@ -56,18 +56,6 @@ def type_name(obj):
     if getattr(obj, "labeled", False):
         class_name = util.Camelize(obj.type[8:])  # strips "labeled_" off the front.
         return "Labeled<impl::{}Metric>".format(class_name)
-    generate_enums = getattr(obj, "_generate_enums", [])  # Extra Keys? Reasons?
-    if len(generate_enums):
-        for name, suffix in generate_enums:
-            if not len(getattr(obj, name)) and suffix == "Keys":
-                return util.Camelize(obj.type) + "Metric<NoExtraKeys>"
-            else:
-                # we always use the `extra` suffix,
-                # because we only expose the new event API
-                suffix = "Extra"
-                return "{}Metric<{}>".format(
-                    util.Camelize(obj.type), util.Camelize(obj.name) + suffix
-                )
     return util.Camelize(obj.type) + "Metric"
 
 

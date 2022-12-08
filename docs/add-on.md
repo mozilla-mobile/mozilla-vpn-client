@@ -107,11 +107,14 @@ If you want to implement new add-ons, you need to follow these steps:
 
 1. create a manifest in a separate folder in the `addons` directory of the mozilla VPN repository.
 2. read and follow the documentation for the add-on type you want to implement.
-3. use the `./scripts/addons/generate_all.py` script to build all the addons.
-4. expose the `addons/generated/addons` folder through a webservice (ex: python3 -m http.server)
-5. open the dev-menu from the get-help view and set a custom add-on URL: `http://localhost:8000/`
-6. disable the signature-addon feature from the dev-menu, list of features
-7. be sure you are doing all of this using a staging environment
+3. use the `./scripts/addons/generate_all.py` script to build all the addons and expose the `addons/generated/addons` folder through a webservice.
+
+      ```
+      ./scripts/addon/generate_all.py && (cd addons/generated/addons && python3 -m http.server)
+      ```
+4. open the dev-menu from the get-help view and set a custom add-on URL: `http://localhost:8000/`
+5. scroll down and disable the signature-addon feature from the dev-menu, list of features
+6. be sure you are doing all of this using a staging environment
 
 If all has done correctly, you can see the app fetching the manifest.json (and
 not! the manifest.json.sig) resource from the webservice.

@@ -30,16 +30,17 @@ void TestLocalizer::systemLanguage() {
 
   settings.setLanguageCode("");
   QCOMPARE(settings.languageCode(), "");
+  QCOMPARE(l.languageCodeOrSystem(), "en");
 
   settings.setLanguageCode("en");
   QCOMPARE(settings.languageCode(), "en");
   QVERIFY(!settings.previousLanguageCode().isEmpty());
+  QCOMPARE(l.languageCodeOrSystem(), "en");
 
   settings.setLanguageCode("");
   QCOMPARE(settings.languageCode(), "");
   QCOMPARE(settings.previousLanguageCode(), "en");
-
-  QVERIFY(!Localizer::systemLanguageCode().isEmpty());
+  QCOMPARE(l.languageCodeOrSystem(), "en");
 }
 
 void TestLocalizer::localizeCurrency() {
@@ -66,6 +67,104 @@ void TestLocalizer::majorLanguageCode() {
   QCOMPARE(Localizer::majorLanguageCode("fo"), "fo");
   QCOMPARE(Localizer::majorLanguageCode("fo-BA"), "fo");
   QCOMPARE(Localizer::majorLanguageCode("fo_BA"), "fo");
+}
+
+// QFETCH fails with double templates. Let's use a typedef to make it happy.
+typedef QList<QPair<QString, QString>> LanguageList;
+
+void TestLocalizer::parseBCP47Languages_data() {
+  QTest::addColumn<QStringList>("input");
+  QTest::addColumn<LanguageList>("output");
+
+  QTest::addRow("empty") << QStringList() << QList<QPair<QString, QString>>();
+
+  {
+    LanguageList a;
+    a.append(QPair<QString, QString>{"aa", ""});
+    QTest::addRow("simple") << QStringList("aa") << a;
+  }
+
+  {
+    LanguageList a;
+    a.append(QPair<QString, QString>{"aa", "bb"});
+    QTest::addRow("language-country") << QStringList("aa-bb") << a;
+  }
+  {
+    LanguageList a;
+    a.append(QPair<QString, QString>{"aa", ""});
+    QTest::addRow("language-extension") << QStringList("aa-ccc") << a;
+  }
+  {
+    LanguageList a;
+    a.append(QPair<QString, QString>{"aa", "bb"});
+    QTest::addRow("language-extension-country")
+        << QStringList("aa-ccc-bb") << a;
+  }
+  {
+    LanguageList a;
+    a.append(QPair<QString, QString>{"aa", "bb"});
+    QTest::addRow("language-extension2-country")
+        << QStringList("aa-ccc--dd-bb") << a;
+  }
+}
+
+void TestLocalizer::parseBCP47Languages() {
+  QFETCH(QStringList, input);
+  QFETCH(LanguageList, output);
+
+  QList<QPair<QString, QString>> list = Localizer::parseBCP47Languages(input);
+  QCOMPARE(list.length(), output.length());
+
+  for (int i = 0; i < list.length(); ++i) {
+    const QPair<QString, QString>& a = list[i];
+    const QPair<QString, QString>& b = output[i];
+    QCOMPARE(a.first, b.first);
+    QCOMPARE(a.second, b.second);
+  }
+}
+
+void TestLocalizer::parseIOSLanguages_data() {
+  QTest::addColumn<QStringList>("input");
+  QTest::addColumn<LanguageList>("output");
+
+  QTest::addRow("empty") << QStringList() << QList<QPair<QString, QString>>();
+
+  {
+    LanguageList a;
+    a.append(QPair<QString, QString>{"aa", ""});
+    QTest::addRow("simple") << QStringList("aa") << a;
+  }
+
+  {
+    LanguageList a;
+    a.append(QPair<QString, QString>{"aa", "bb"});
+    QTest::addRow("language_country") << QStringList("aa_bb") << a;
+  }
+  {
+    LanguageList a;
+    a.append(QPair<QString, QString>{"aa", ""});
+    QTest::addRow("language-script") << QStringList("aa-cc") << a;
+  }
+  {
+    LanguageList a;
+    a.append(QPair<QString, QString>{"aa", "bb"});
+    QTest::addRow("language-script_country") << QStringList("aa-cc_bb") << a;
+  }
+}
+
+void TestLocalizer::parseIOSLanguages() {
+  QFETCH(QStringList, input);
+  QFETCH(LanguageList, output);
+
+  QList<QPair<QString, QString>> list = Localizer::parseIOSLanguages(input);
+  QCOMPARE(list.length(), output.length());
+
+  for (int i = 0; i < list.length(); ++i) {
+    const QPair<QString, QString>& a = list[i];
+    const QPair<QString, QString>& b = output[i];
+    QCOMPARE(a.first, b.first);
+    QCOMPARE(a.second, b.second);
+  }
 }
 
 static TestLocalizer s_testLocalizer;
