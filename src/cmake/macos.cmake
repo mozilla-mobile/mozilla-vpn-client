@@ -90,7 +90,7 @@ include(cmake/golang.cmake)
 include(cmake/signature.cmake)
 
 # Enable Balrog for update support.
-add_definitions(-DMVPN_BALROG)
+target_compile_definitions(mozillavpn PRIVATE MVPN_BALROG)
 add_go_library(balrog-api ../balrog/balrog-api.go
     CGO_CFLAGS -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET})
 target_link_libraries(mozillavpn PRIVATE balrog-api)

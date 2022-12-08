@@ -2,12 +2,27 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# Group the core client sources together into an interface library.
+# This allows us to pull them into multiple builds like the dummy client.
+add_library(mozillavpn-sources INTERFACE)
+
+# VPN client include paths
+set_property(TARGET mozillavpn-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons
+    ${CMAKE_CURRENT_SOURCE_DIR}/composer
+    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star
+    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin
+    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin/minimal
+    ${CMAKE_CURRENT_BINARY_DIR}
+)
+
 # Generated version header file
 configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
-target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
+target_sources(mozillavpn-sources INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 # VPN Client source files
-target_sources(mozillavpn PRIVATE
+target_sources(mozillavpn-sources INTERFACE
     addons/addon.cpp
     addons/addon.h
     addons/addonapi.cpp
@@ -364,7 +379,7 @@ target_sources(mozillavpn PRIVATE
 )
 
 # VPN Client UI resources
-target_sources(mozillavpn PRIVATE
+target_sources(mozillavpn-sources INTERFACE
     ui/license.qrc
     ui/resources.qrc
     ui/ui.qrc
@@ -374,7 +389,7 @@ target_sources(mozillavpn PRIVATE
 
 # Signal handling for unix platforms
 if(UNIX)
-    target_sources(mozillavpn PRIVATE
+    target_sources(mozillavpn-sources INTERFACE
         signalhandler.cpp
         signalhandler.h
     )
@@ -382,7 +397,7 @@ endif()
 
 # Sources for desktop platforms.
 if(NOT CMAKE_CROSSCOMPILING)
-    target_sources(mozillavpn PRIVATE
+    target_sources(mozillavpn-sources INTERFACE
         systemtraynotificationhandler.cpp
         systemtraynotificationhandler.h
         tasks/authenticate/desktopauthenticationlistener.cpp
@@ -392,11 +407,4 @@ if(NOT CMAKE_CROSSCOMPILING)
         server/serverhandler.cpp
         server/serverhandler.h
     )
-
-    add_compile_definitions(MVPN_WEBEXTENSION)
 endif()
-
-qt6_add_qml_module(mozillavpn
-  URI Mozilla.VPN.qmlcomponents
-  VERSION 1.0
-)

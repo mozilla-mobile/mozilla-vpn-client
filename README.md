@@ -512,16 +512,17 @@ ctest --test-dir build
  * `ARTIFACT_DIR` - optional (directory to put screenshots from test failures)
 * Run a test from the root of the project: `npm run functionalTest path/to/testFile.js`. To run, say, the authentication tests: `npm run functionalTest tests/functional/testAuthenticationInApp.js`.
 
-> **Note**: Functional tests require a dummy build of the application.
-> In order to create such a build, on the root folder of this repository run:
->
+> **Note**: Functional tests require a dummy build of the application, which is not
+> built by default. Ensure the `dummyvpn` target is built, by running:
 > ```
-> cmake -S . -B ./dummybuild -DBUILD_DUMMY=ON
-> cmake --build dummybuild -j$(nproc)
+> cmake --build build -j$(nproc) --target dummyvpn
 > ```
 >
-> This will create a dummy build under the `dummybuild/` folder. To run the functional tests against this build,
-> make sure the `MVPN_BIN` environment variable is pointing to the application under the `dummybuild/` folder.
+> This will create a dummy build under the `tests/dummyvpn` folder. To run the functional
+> tests against this build, make sure the `MVPN_BIN` environment variable is set:
+> ```
+> export MVPN_BIN=$(pwd)/build/tests/dummyvpn/dummyvpn
+> ```
 
 ## Developer Options and staging environment
 

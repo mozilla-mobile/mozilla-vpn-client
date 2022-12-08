@@ -69,8 +69,6 @@ if(APPLE)
     endif()
 endif()
 
-option(BUILD_DUMMY "Build for the dummy platform" OFF)
-
 if(NOT DEFINED BUILD_ID)
     string(TIMESTAMP BUILD_ID "${PROJECT_VERSION_MAJOR}.%Y%m%d%H%M")
     message("Generated BUILD_ID: ${BUILD_ID}")
@@ -150,6 +148,9 @@ if(NOT CMAKE_CROSSCOMPILING)
     add_subdirectory(tests/nativemessaging EXCLUDE_FROM_ALL)
     add_subdirectory(tests/unit EXCLUDE_FROM_ALL)
     add_subdirectory(tests/qml EXCLUDE_FROM_ALL)
+
+    # Dummy Testing Client
+    add_subdirectory(tests/dummyvpn EXCLUDE_FROM_ALL)
 endif()
 
 # Extra platform targets

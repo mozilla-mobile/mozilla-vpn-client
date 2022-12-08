@@ -147,8 +147,7 @@ set_property(TARGET vpnglean APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
 )
 
 ## Fixup any missing link dependencies to pass to the vpnglean consumer
-set_property(TARGET vpnglean APPEND PROPERTY
-        INTERFACE_LINK_LIBRARIES -ldl)
+set_property(TARGET vpnglean APPEND PROPERTY INTERFACE_LINK_LIBRARIES ${CMAKE_DL_LIBS})
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     find_package(OpenSSL REQUIRED)
     set_property(TARGET vpnglean APPEND PROPERTY
