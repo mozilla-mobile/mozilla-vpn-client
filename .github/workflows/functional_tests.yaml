@@ -62,6 +62,14 @@ jobs:
               build/cmake/tests/dummyvpn/CMakeFiles/dummyvpn.dir/ build/profile/
           cp ./build/cmake/tests/dummyvpn/dummyvpn build/
 
+      - name: Build addons
+        shell: bash
+        run: |
+          ./scripts/addon/generate_all_tests.py
+
+          mkdir -p build/addons
+          rsync -a tests/functional/addons/ build/addons/
+
       - uses: actions/upload-artifact@v3
         with:
           name: test-client-${{ github.sha }}
@@ -107,10 +115,13 @@ jobs:
       - name: Install test dependecies
         run: |
           sudo apt-get update
-          sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
+          sudo apt-get install -y $(./scripts/linux/getdeps.py -r linux/debian/control)
           sudo apt install --no-upgrade firefox xvfb -y
           pip3 install -r requirements.txt
           npm install
+
+          mkdir -p tests/functional/addons
+          rsync -a build/addons/ tests/functional/addons/ 
 
       - name: Cache grcov
         id: cache-grcov
@@ -127,10 +138,6 @@ jobs:
 
             chmod +x ${{github.workspace}}/grcov-build/bin/grcov
             ${{github.workspace}}/grcov-build/bin/grcov --version
-
-      - name: Build addons
-        shell: bash
-        run: ./scripts/addon/generate_all_tests.py
 
       - name: Running ${{matrix.test.name}} Tests
         id: runTests

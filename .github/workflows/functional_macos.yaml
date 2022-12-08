@@ -57,6 +57,14 @@ jobs:
               build/cmake/tests/dummyvpn/CMakeFiles/dummyvpn.dir/ build/profile/
           cp ./build/cmake/tests/dummyvpn/dummyvpn build/
 
+      - name: Build addons
+        shell: bash
+        run: |
+          ./scripts/addon/generate_all_tests.py -q $(pwd)/3rdparty/qt_static_macos/bin
+
+          mkdir -p build/addons
+          rsync -a tests/functional/addons/ build/addons/
+
       - uses: actions/upload-artifact@v3
         with:
           name: test-client-${{ github.sha }}
@@ -104,6 +112,9 @@ jobs:
         run: |
           pip3 install -r requirements.txt
           npm install
+
+          mkdir -p tests/functional/addons
+          rsync -a build/addons/ tests/functional/addons/ 
 
       - name: Check build
         shell: bash
