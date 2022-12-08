@@ -27,6 +27,7 @@ jobs:
           submodules: 'true'
 
       - name: Clone Qt6 repository
+        uses: actions/checkout@v3
         with:
           path: 3rdparty/qt_static_macos
       
@@ -108,10 +109,6 @@ jobs:
         run: |
             chmod +x ./build/dummyvpn
             ./build/dummyvpn -v
-
-      - name: Build addons
-        shell: bash
-        run: ./scripts/addon/generate_all_tests.py
 
       - name: Running ${{matrix.test.name}} Tests
         id: runTests
