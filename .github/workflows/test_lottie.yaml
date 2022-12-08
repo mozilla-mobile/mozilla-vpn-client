@@ -62,6 +62,8 @@ jobs:
 
           grcov $(pwd)/tests/unit/CMakeFiles/lottie_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/lottie_lcov.info
+        ignore:
+          - "tests/*"
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -122,6 +124,8 @@ jobs:
 
           grcov $(pwd)/tests/unit/CMakeFiles/lottie_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/lottie_lcov.info
+        ignore:
+          - "tests/*"
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3

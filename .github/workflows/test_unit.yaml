@@ -66,6 +66,9 @@ jobs:
 
           grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
+        
+        ignore:
+          - "tests/*"
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -140,6 +143,9 @@ jobs:
 
           grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
+
+        ignore:
+          - "tests/*"
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
