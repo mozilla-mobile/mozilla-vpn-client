@@ -225,7 +225,7 @@ FEATURE_SIMPLE(gleanRust,             // Feature ID
                FeatureCallback_true,  // Can be flipped on
                FeatureCallback_true,  // Can be flipped off
                QStringList(),         // feature dependencies
-               FeatureCallback_false)
+               FeatureCallback_true)
 
 FEATURE_SIMPLE(sentry,                     // Feature ID
                "Sentry Crash Report SDK",  // Feature name
