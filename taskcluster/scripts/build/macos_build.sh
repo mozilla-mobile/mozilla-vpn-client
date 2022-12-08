@@ -51,7 +51,6 @@ export PATH="`pwd`/go/bin:$PATH"
 print Y "Installing python dependencies..."
 # use --user for permissions
 python3 -m pip install -r requirements.txt --user
-python3 -m pip install -r taskcluster/scripts/requirements.txt --user
 export PYTHONIOENCODING="UTF-8"
 
 print Y "Updating submodules..."
@@ -62,6 +61,8 @@ git submodule update || die
 
 
 if [[ "$RELEASE" ]]; then
+    # Install dependendy got get-secret.py 
+    python3 -m pip install -r taskcluster/scripts/requirements.txt --user
     print Y "Fetching tokens..."
     # Only on a release build we have access to those secrects. 
     ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_dsn -f sentry_dsn
