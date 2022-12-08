@@ -33,15 +33,14 @@ jobs:
       - name: Uploading artifacts
         uses: actions/upload-artifact@v3
         with:
-          path: *.info # Only codecov files.
-
+          path: ./**.info
   upload_coverage:
     runs-on: ubuntu-20.04
     steps:
       - name: Download All Fetched Artifacts
         uses: actions/download-artifact@v3
       - name: Upload coverage to Codecov
-        shell: powerpowershell
+        shell: powershell
         run: |
           curl https://uploader.codecov.io/verification.gpg | gpg --no-default-keyring --keyring trustedkeys.gpg --import # One-time step
           curl -Os https://uploader.codecov.io/latest/linux/codecov
