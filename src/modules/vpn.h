@@ -12,6 +12,7 @@
 #include "modules/vpn/connectionhealth.h"
 #include "modules/vpn/controller.h"
 #include "modules/vpn/dnshelper.h"
+#include "modules/vpn/keyregenerator.h"
 #include "modules/vpn/networkwatcher.h"
 #include "modules/vpn/serverlatency.h"
 #include "modules/vpn/telemetry.h"
@@ -117,6 +118,7 @@ class ModuleVPN final : public Module {
   ConnectionBenchmark m_connectionBenchmark;
   ConnectionHealth m_connectionHealth;
   Controller m_controller;
+  KeyRegenerator m_keyRegenerator;
   NetworkWatcher m_networkWatcher;
   ServerLatency m_serverLatency;
   Telemetry m_telemetry;

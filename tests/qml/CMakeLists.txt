@@ -36,6 +36,8 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/constants.h
     ${MVPN_SOURCE_DIR}/cryptosettings.cpp
     ${MVPN_SOURCE_DIR}/cryptosettings.h
+    ${MVPN_SOURCE_DIR}/curve25519.cpp
+    ${MVPN_SOURCE_DIR}/curve25519.h
     ${MVPN_SOURCE_DIR}/env.h
     ${MVPN_SOURCE_DIR}/errorhandler.cpp
     ${MVPN_SOURCE_DIR}/errorhandler.h
@@ -119,6 +121,8 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/modules/vpn/dnshelper.h
     ${MVPN_SOURCE_DIR}/modules/vpn/dnspingsender.cpp
     ${MVPN_SOURCE_DIR}/modules/vpn/dnspingsender.h
+    ${MVPN_SOURCE_DIR}/modules/vpn/keyregenerator.cpp
+    ${MVPN_SOURCE_DIR}/modules/vpn/keyregenerator.h
     ${MVPN_SOURCE_DIR}/modules/vpn/networkwatcher.cpp
     ${MVPN_SOURCE_DIR}/modules/vpn/networkwatcher.h
     ${MVPN_SOURCE_DIR}/modules/vpn/networkwatcherimpl.h
@@ -172,6 +176,10 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/qmlengineholder.cpp
     ${MVPN_SOURCE_DIR}/qmlengineholder.h
     ${MVPN_SOURCE_DIR}/task.h
+    ${MVPN_SOURCE_DIR}/tasks/account/taskaccount.cpp
+    ${MVPN_SOURCE_DIR}/tasks/account/taskaccount.h
+    ${MVPN_SOURCE_DIR}/tasks/adddevice/taskadddevice.cpp
+    ${MVPN_SOURCE_DIR}/tasks/adddevice/taskadddevice.h
     ${MVPN_SOURCE_DIR}/taskscheduler.cpp
     ${MVPN_SOURCE_DIR}/taskscheduler.h
     ${MVPN_SOURCE_DIR}/urlopener.cpp

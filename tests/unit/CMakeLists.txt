@@ -247,6 +247,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/modules/vpn/dnshelper.h
     ${MVPN_SOURCE_DIR}/modules/vpn/dnspingsender.cpp
     ${MVPN_SOURCE_DIR}/modules/vpn/dnspingsender.h
+    ${MVPN_SOURCE_DIR}/modules/vpn/keyregenerator.cpp
+    ${MVPN_SOURCE_DIR}/modules/vpn/keyregenerator.h
     ${MVPN_SOURCE_DIR}/modules/vpn/networkwatcher.cpp
     ${MVPN_SOURCE_DIR}/modules/vpn/networkwatcher.h
     ${MVPN_SOURCE_DIR}/modules/vpn/networkwatcherimpl.h

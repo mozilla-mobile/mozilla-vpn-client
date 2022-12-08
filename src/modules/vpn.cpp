@@ -91,6 +91,8 @@ void ModuleVPN::initialize() {
 
   m_connectionHealth.initialize();
 
+  m_keyRegenerator.initialize();
+
   m_networkWatcher.initialize();
 
   m_serverLatency.initialize();

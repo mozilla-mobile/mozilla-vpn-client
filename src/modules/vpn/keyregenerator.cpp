@@ -21,9 +21,11 @@ namespace {
 Logger logger("KeyRegenerator");
 }
 
-KeyRegenerator::KeyRegenerator() {
-  MVPN_COUNT_CTOR(KeyRegenerator);
+KeyRegenerator::KeyRegenerator() { MVPN_COUNT_CTOR(KeyRegenerator); }
 
+KeyRegenerator::~KeyRegenerator() { MVPN_COUNT_DTOR(KeyRegenerator); }
+
+void KeyRegenerator::initialize() {
   MozillaVPN* vpn = MozillaVPN::instance();
 
   connect(vpn, &MozillaVPN::stateChanged, this, &KeyRegenerator::stateChanged);
@@ -35,8 +37,6 @@ KeyRegenerator::KeyRegenerator() {
 
   stateChanged();
 }
-
-KeyRegenerator::~KeyRegenerator() { MVPN_COUNT_DTOR(KeyRegenerator); }
 
 void KeyRegenerator::stateChanged() {
   logger.debug() << "Let's check if the key has to be regenerated";

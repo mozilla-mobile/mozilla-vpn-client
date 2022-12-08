@@ -164,3 +164,8 @@ ServerData* MozillaVPN::currentServer() {
   static ServerData* data = new ServerData();
   return data;
 }
+
+void MozillaVPN::setJournalPublicAndPrivateKeys(const QString&,
+                                                const QString&) {}
+
+void MozillaVPN::resetJournalPublicAndPrivateKeys() {}

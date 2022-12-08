@@ -49,6 +49,8 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/constants.h
     ${MVPN_SOURCE_DIR}/cryptosettings.cpp
     ${MVPN_SOURCE_DIR}/cryptosettings.h
+    ${MVPN_SOURCE_DIR}/curve25519.cpp
+    ${MVPN_SOURCE_DIR}/curve25519.h
     ${MVPN_SOURCE_DIR}/env.h
     ${MVPN_SOURCE_DIR}/errorhandler.cpp
     ${MVPN_SOURCE_DIR}/errorhandler.h
@@ -131,6 +133,8 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/modules/vpn/dnshelper.h
     ${MVPN_SOURCE_DIR}/modules/vpn/dnspingsender.cpp
     ${MVPN_SOURCE_DIR}/modules/vpn/dnspingsender.h
+    ${MVPN_SOURCE_DIR}/modules/vpn/keyregenerator.cpp
+    ${MVPN_SOURCE_DIR}/modules/vpn/keyregenerator.h
     ${MVPN_SOURCE_DIR}/modules/vpn/networkwatcher.cpp
     ${MVPN_SOURCE_DIR}/modules/vpn/networkwatcher.h
     ${MVPN_SOURCE_DIR}/modules/vpn/networkwatcherimpl.h
@@ -176,6 +180,10 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/simplenetworkmanager.h
     ${MVPN_SOURCE_DIR}/systemtraynotificationhandler.h
     ${MVPN_SOURCE_DIR}/task.h
+    ${MVPN_SOURCE_DIR}/tasks/account/taskaccount.cpp
+    ${MVPN_SOURCE_DIR}/tasks/account/taskaccount.h
+    ${MVPN_SOURCE_DIR}/tasks/adddevice/taskadddevice.cpp
+    ${MVPN_SOURCE_DIR}/tasks/adddevice/taskadddevice.h
     ${MVPN_SOURCE_DIR}/tasks/authenticate/desktopauthenticationlistener.cpp
     ${MVPN_SOURCE_DIR}/tasks/authenticate/desktopauthenticationlistener.h
     ${MVPN_SOURCE_DIR}/tasks/authenticate/taskauthenticate.cpp

@@ -16,6 +16,8 @@ class KeyRegenerator final : public QObject {
   KeyRegenerator();
   ~KeyRegenerator();
 
+  void initialize();
+
  private:
   void stateChanged();
 

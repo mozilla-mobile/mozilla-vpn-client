@@ -59,7 +59,6 @@ SOURCES += \
         hacl-star/Hacl_Curve25519_51.c \
         hacl-star/Hacl_Poly1305_32.c \
         hawkauth.cpp \
-        keyregenerator.cpp \
         hkdf.cpp \
         imageproviderfactory.cpp \
         inspector/inspectorhandler.cpp \
@@ -118,6 +117,7 @@ SOURCES += \
         modules/vpn/controller.cpp \
         modules/vpn/dnshelper.cpp \
         modules/vpn/dnspingsender.cpp \
+        modules/vpn/keyregenerator.cpp \
         modules/vpn/networkwatcher.cpp \
         modules/vpn/pinghelper.cpp \
         modules/vpn/pingsender.cpp \
@@ -244,7 +244,6 @@ HEADERS += \
         glean/generated/metrics.h \
         glean/generated/pings.h \
         hawkauth.h \
-        keyregenerator.h \
         hkdf.h \
         imageproviderfactory.h \
         inspector/inspectorhandler.h \
@@ -305,6 +304,7 @@ HEADERS += \
         modules/vpn/controllerimpl.h \
         modules/vpn/dnshelper.h \
         modules/vpn/dnspingsender.h \
+        modules/vpn/keyregenerator.h \
         modules/vpn/networkwatcher.h \
         modules/vpn/networkwatcherimpl.h \
         modules/vpn/pinghelper.h \

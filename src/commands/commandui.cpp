@@ -20,7 +20,6 @@
 #include "frontend/navigator.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
-#include "keyregenerator.h"
 #include "l18nstrings.h"
 #include "leakdetector.h"
 #include "localizer.h"
@@ -590,8 +589,6 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(MozillaVPN::instance(), &MozillaVPN::aboutToQuit,
                      &serverHandler, &ServerHandler::close);
 #endif
-
-    KeyRegenerator keyRegenerator;
 
     // Let's go.
     return qApp->exec();
