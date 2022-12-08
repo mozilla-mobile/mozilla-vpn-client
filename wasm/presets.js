@@ -118,6 +118,8 @@ const MVPNPresets = [
   {
     name: 'Main view',
     callback: async function() {
+      await controller.flipFeatureOff('inAppAuthentication');
+
       await controller.waitForMainView();
 
       await controller.waitForElementProperty(
@@ -153,6 +155,7 @@ const MVPNPresets = [
   {
     name: 'Authentication in app',
     callback: async function() {
+      await controller.flipFeatureOn('inAppAuthentication');
       await controller.flipFeatureOn('inAppAccountCreate');
 
       await controller.waitForMainView();
@@ -284,6 +287,8 @@ const MVPNPresets = [
   {
     name: 'Device limit reached',
     callback: async function() {
+      await controller.flipFeatureOff('inAppAuthentication');
+
       await controller.waitForMainView();
 
       await controller.wait();
@@ -340,6 +345,8 @@ const MVPNPresets = [
   {
     name: 'Update required',
     callback: async function() {
+      await controller.flipFeatureOff('inAppAuthentication');
+
       await controller.waitForMainView();
 
       await controller.wait();
@@ -401,6 +408,8 @@ const MVPNPresets = [
           .guardianOverrideEndpoints.GETs['/api/v1/vpn/account']
           .body = SubscriptionNeededUserData;
 
+      await controller.flipFeatureOff('inAppAuthentication');
+
       await controller.waitForMainView();
 
       await controller.wait();
@@ -435,6 +444,8 @@ const MVPNPresets = [
   {
     name: 'Backend failure',
     callback: async function() {
+      await controller.flipFeatureOff('inAppAuthentication');
+
       await controller.waitForMainView();
 
       await controller.wait();

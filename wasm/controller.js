@@ -71,8 +71,6 @@ class Controller {
   }
 
   async waitForMainView() {
-    await this.flipFeatureOff('inAppAuthentication');
-
     await this.waitForElement('getHelpLink');
     await this.waitForElementProperty('getHelpLink', 'visible', 'true');
     assert(await this.getElementProperty('getStarted', 'visible') === 'true');
@@ -139,7 +137,7 @@ class Controller {
     if (obj.type === 'log') return;
     if (obj.type === 'network') return;
     if (obj.type === 'notification') return;
-    if (json.type === 'addon_load_completed') return;
+    if (obj.type === 'addon_load_completed') return;
 
     assert(this._waitReadCallback, 'No waiting callback?');
     const wr = this._waitReadCallback;
