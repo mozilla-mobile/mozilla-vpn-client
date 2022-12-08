@@ -118,7 +118,10 @@ if [[ "$GITREF" =~ ^refs/pull/([0-9]+)/merge ]]; then
 elif [[ "$GITREF" =~ ^refs/tags/v([0-9a-z.]+) ]]; then
   SHORTVERSION=${BASH_REMATCH[1]}
 elif [[ "$GITREF" =~ ^refs/heads/releases/([0-9][^/]*) ]]; then
-  [[ $(git rev-parse --is-shallow-repository) == "true" ]] && git fetch --unshallow
+  if [[ $(git rev-parse --is-shallow-repository) == "true" ]]; then
+    git fetch --unshallow             # Unshallow the release branch
+    git fetch origin main:origin/main # Fetch the main branch
+  fi
   RCVERSION="~rc$(git rev-list --count --first-parent origin/main..HEAD)"
   SHORTVERSION="${BASH_REMATCH[1]}${RCVERSION}"
 elif [[ "$GITREF" == "refs/heads/main" ]]; then
