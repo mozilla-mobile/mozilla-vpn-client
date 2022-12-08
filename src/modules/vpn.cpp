@@ -10,16 +10,102 @@
 #include "mozillavpn.h"
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
+#include "server/serverconnection.h"
 #include "settingsholder.h"
 #include "taskscheduler.h"
 
 #include <QGuiApplication>
+#include <QJsonArray>
 #include <QJsonObject>
 #include <QQmlEngine>
 
 namespace {
 ModuleVPN* s_instance = nullptr;
 Logger logger(LOG_MAIN, "ModuleVPN");
+
+void serializeServerCountry(ServerCountryModel* model, QJsonObject& obj) {
+  QJsonArray countries;
+
+  for (const ServerCountry& country : model->countries()) {
+    QJsonObject countryObj;
+    countryObj["name"] = country.name();
+    countryObj["code"] = country.code();
+
+    QJsonArray cities;
+    for (const ServerCity& city : country.cities()) {
+      QJsonObject cityObj;
+      cityObj["name"] = city.name();
+      cityObj["code"] = city.code();
+      cityObj["latitude"] = city.latitude();
+      cityObj["longitude"] = city.longitude();
+
+      QJsonArray servers;
+      for (const QString& pubkey : city.servers()) {
+        const Server server = model->server(pubkey);
+        if (!server.initialized()) {
+          continue;
+        }
+
+        QJsonObject serverObj;
+        serverObj["hostname"] = server.hostname();
+        serverObj["ipv4_gateway"] = server.ipv4Gateway();
+        serverObj["ipv6_gateway"] = server.ipv6Gateway();
+        serverObj["weight"] = (double)server.weight();
+
+        const QString& socksName = server.socksName();
+        if (!socksName.isEmpty()) {
+          serverObj["socksName"] = socksName;
+        }
+
+        uint32_t multihopPort = server.multihopPort();
+        if (multihopPort) {
+          serverObj["multihopPort"] = (double)multihopPort;
+        }
+
+        servers.append(serverObj);
+      }
+
+      cityObj["servers"] = servers;
+      cities.append(cityObj);
+    }
+
+    countryObj["cities"] = cities;
+    countries.append(countryObj);
+  }
+
+  obj["countries"] = countries;
+}
+
+QJsonObject serializeStatus() {
+  MozillaVPN* vpn = MozillaVPN::instance();
+
+  QJsonObject locationObj;
+  locationObj["exit_country_code"] = vpn->currentServer()->exitCountryCode();
+  locationObj["exit_city_name"] = vpn->currentServer()->exitCityName();
+  locationObj["entry_country_code"] = vpn->currentServer()->entryCountryCode();
+  locationObj["entry_city_name"] = vpn->currentServer()->entryCityName();
+
+  QJsonObject obj;
+  obj["authenticated"] = vpn->userState() == MozillaVPN::UserAuthenticated;
+  obj["location"] = locationObj;
+
+  {
+    MozillaVPN::State state = vpn->state();
+    const QMetaObject* meta = qt_getEnumMetaObject(state);
+    int index = meta->indexOfEnumerator(qt_getEnumName(state));
+    obj["app"] = meta->enumerator(index).valueToKey(state);
+  }
+
+  {
+    Controller::State state = ModuleVPN::instance()->controller()->state();
+    const QMetaObject* meta = qt_getEnumMetaObject(state);
+    int index = meta->indexOfEnumerator(qt_getEnumName(state));
+    obj["vpn"] = meta->enumerator(index).valueToKey(state);
+  }
+
+  return obj;
+}
+
 }  // namespace
 
 ModuleVPN::ModuleVPN(QObject* parent) : Module(parent) {
@@ -85,6 +171,11 @@ void ModuleVPN::initialize() {
     }
   });
 
+  connect(MozillaVPN::instance(), &MozillaVPN::stateChanged, this,
+          &ModuleVPN::serverConnectionStateUpdate);
+  connect(&m_controller, &Controller::stateChanged, this,
+          &ModuleVPN::serverConnectionStateUpdate);
+
   m_captivePortalDetection.initialize();
 
   m_connectionBenchmark.initialize();
@@ -99,7 +190,8 @@ void ModuleVPN::initialize() {
 
   m_telemetry.initialize();
 
-  registerInspectorCommands();
+  registerInspectorHandlerCommands();
+  registerServerConnectionRequestTypes();
 }
 
 QJSValue ModuleVPN::captivePortalDetectionValue() {
@@ -200,7 +292,7 @@ bool ModuleVPN::validateUserDNS(const QString& dns) const {
   return DNSHelper::validateUserDNS(dns);
 }
 
-void ModuleVPN::registerInspectorCommands() {
+void ModuleVPN::registerInspectorHandlerCommands() {
   InspectorHandler::registerCommand(InspectorHandler::InspectorCommand{
       "force_captive_portal_check", "Force a captive portal check", 0,
       [](InspectorHandler*, const QList<QByteArray>&) {
@@ -269,6 +361,51 @@ void ModuleVPN::registerInspectorCommands() {
             arguments[1]);
         return QJsonObject();
       }});
+}
+
+void ModuleVPN::registerServerConnectionRequestTypes() {
+  ServerConnection::registerRequestType(
+      ServerConnection::RequestType{"activate", [](const QJsonObject&) {
+                                      ModuleVPN::instance()->activate();
+                                      return QJsonObject();
+                                    }});
+
+  ServerConnection::registerRequestType(
+      ServerConnection::RequestType{"deactivate", [](const QJsonObject&) {
+                                      ModuleVPN::instance()->deactivate();
+                                      return QJsonObject();
+                                    }});
+
+  ServerConnection::registerRequestType(ServerConnection::RequestType{
+      "servers", [](const QJsonObject&) {
+        QJsonObject servers;
+        serializeServerCountry(MozillaVPN::instance()->serverCountryModel(),
+                               servers);
+
+        QJsonObject obj;
+        obj["servers"] = servers;
+        return obj;
+      }});
+
+  ServerConnection::registerRequestType(ServerConnection::RequestType{
+      "disabled_apps", [](const QJsonObject&) {
+        QJsonArray apps;
+        for (const QString& app :
+             SettingsHolder::instance()->vpnDisabledApps()) {
+          apps.append(app);
+        }
+
+        QJsonObject obj;
+        obj["disabled_apps"] = apps;
+        return obj;
+      }});
+
+  ServerConnection::registerRequestType(
+      ServerConnection::RequestType{"status", [](const QJsonObject&) {
+                                      QJsonObject obj;
+                                      obj["status"] = serializeStatus();
+                                      return obj;
+                                    }});
 }
 
 void ModuleVPN::updateRequired() { m_controller.updateRequired(); }
@@ -417,4 +554,10 @@ void ModuleVPN::settingsAvailable() {
   if (!m_captivePortal.fromSettings()) {
     // We do not care about these settings.
   }
+}
+
+void ModuleVPN::serverConnectionStateUpdate() {
+  QJsonObject obj = serializeStatus();
+  obj["t"] = "status";
+  emit serverConnectionMessage(obj);
 }

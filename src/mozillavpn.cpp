@@ -20,7 +20,6 @@
 #include "models/recentconnections.h"
 #include "module.h"
 #include "moduleholder.h"
-#include "modules/vpn.h"
 #include "modules/vpn/captiveportal/taskcaptiveportallookup.h"
 #include "networkmanager.h"
 #include "productshandler.h"
@@ -122,9 +121,6 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
              ErrorHandler::PropagateError)}));
   });
 #endif
-
-  connect(ModuleVPN::instance()->controller(), &Controller::stateChanged,
-          &m_private->m_statusIcon, &StatusIcon::refreshNeeded);
 
   connect(this, &MozillaVPN::stateChanged, &m_private->m_statusIcon,
           &StatusIcon::refreshNeeded);

@@ -58,6 +58,9 @@ void StatusIcon::initialize() {
   connect(ModuleVPN::instance()->connectionHealth(),
           &ConnectionHealth::stabilityChanged, this,
           &StatusIcon::refreshNeeded);
+
+  connect(ModuleVPN::instance()->controller(), &Controller::stateChanged, this,
+          &StatusIcon::refreshNeeded);
 }
 
 const QIcon& StatusIcon::icon() {

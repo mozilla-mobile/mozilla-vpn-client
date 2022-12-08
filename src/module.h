@@ -8,6 +8,7 @@
 #include "notificationhandler.h"
 
 #include <QObject>
+#include <QJsonObject>
 
 class QTextStream;
 
@@ -71,6 +72,8 @@ class Module : public QObject {
   void notificationNeeded(NotificationHandler::Message type,
                           const QString& title, const QString& message,
                           int timerMsec);
+
+  void serverConnectionMessage(const QJsonObject& obj);
 };
 
 #endif  // MODULE_H

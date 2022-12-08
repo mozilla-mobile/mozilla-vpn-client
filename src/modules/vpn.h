@@ -108,9 +108,12 @@ class ModuleVPN final : public Module {
 
   void controllerStateChanged();
 
-  void registerInspectorCommands();
+  void registerInspectorHandlerCommands();
+  void registerServerConnectionRequestTypes();
 
   void maybeShowNotification();
+
+  void serverConnectionStateUpdate();
 
  private:
   CaptivePortal m_captivePortal;

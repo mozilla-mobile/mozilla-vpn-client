@@ -8,6 +8,7 @@
 #include <QByteArray>
 #include <QObject>
 
+class QJsonObject;
 class QTcpSocket;
 
 class ServerConnection final : public QObject {
@@ -18,11 +19,17 @@ class ServerConnection final : public QObject {
   ServerConnection(QObject* parent, QTcpSocket* connection);
   ~ServerConnection();
 
+  struct RequestType {
+    QString m_name;
+    std::function<QJsonObject(const QJsonObject&)> m_callback;
+  };
+
+  static void registerRequestType(const RequestType& requestType);
+
  private:
   void readData();
   void writeData(const QByteArray& data);
 
-  void writeState();
   void writeInvalidRequest();
 
   void processMessage(const QByteArray& message);

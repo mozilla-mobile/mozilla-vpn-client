@@ -7,7 +7,7 @@
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
-#include "modules/vpn.h"
+#include "moduleholder.h"
 #include "mozillavpn.h"
 
 #include <functional>
@@ -26,138 +26,7 @@ namespace {
 
 Logger logger("ServerConnection");
 
-struct RequestType {
-  QString m_name;
-  std::function<QJsonObject(const QJsonObject&)> m_callback;
-};
-
-void serializeServerCountry(ServerCountryModel* model, QJsonObject& obj) {
-  QJsonArray countries;
-
-  for (const ServerCountry& country : model->countries()) {
-    QJsonObject countryObj;
-    countryObj["name"] = country.name();
-    countryObj["code"] = country.code();
-
-    QJsonArray cities;
-    for (const ServerCity& city : country.cities()) {
-      QJsonObject cityObj;
-      cityObj["name"] = city.name();
-      cityObj["code"] = city.code();
-      cityObj["latitude"] = city.latitude();
-      cityObj["longitude"] = city.longitude();
-
-      QJsonArray servers;
-      for (const QString& pubkey : city.servers()) {
-        const Server server = model->server(pubkey);
-        if (!server.initialized()) {
-          continue;
-        }
-
-        QJsonObject serverObj;
-        serverObj["hostname"] = server.hostname();
-        serverObj["ipv4_gateway"] = server.ipv4Gateway();
-        serverObj["ipv6_gateway"] = server.ipv6Gateway();
-        serverObj["weight"] = (double)server.weight();
-
-        const QString& socksName = server.socksName();
-        if (!socksName.isEmpty()) {
-          serverObj["socksName"] = socksName;
-        }
-
-        uint32_t multihopPort = server.multihopPort();
-        if (multihopPort) {
-          serverObj["multihopPort"] = (double)multihopPort;
-        }
-
-        servers.append(serverObj);
-      }
-
-      cityObj["servers"] = servers;
-      cities.append(cityObj);
-    }
-
-    countryObj["cities"] = cities;
-    countries.append(countryObj);
-  }
-
-  obj["countries"] = countries;
-}
-
-QJsonObject serializeStatus() {
-  MozillaVPN* vpn = MozillaVPN::instance();
-
-  QJsonObject locationObj;
-  locationObj["exit_country_code"] = vpn->currentServer()->exitCountryCode();
-  locationObj["exit_city_name"] = vpn->currentServer()->exitCityName();
-  locationObj["entry_country_code"] = vpn->currentServer()->entryCountryCode();
-  locationObj["entry_city_name"] = vpn->currentServer()->entryCityName();
-
-  QJsonObject obj;
-  obj["authenticated"] = vpn->userState() == MozillaVPN::UserAuthenticated;
-  obj["location"] = locationObj;
-
-  {
-    MozillaVPN::State state = vpn->state();
-    const QMetaObject* meta = qt_getEnumMetaObject(state);
-    int index = meta->indexOfEnumerator(qt_getEnumName(state));
-    obj["app"] = meta->enumerator(index).valueToKey(state);
-  }
-
-  {
-    Controller::State state = ModuleVPN::instance()->controller()->state();
-    const QMetaObject* meta = qt_getEnumMetaObject(state);
-    int index = meta->indexOfEnumerator(qt_getEnumName(state));
-    obj["vpn"] = meta->enumerator(index).valueToKey(state);
-  }
-
-  return obj;
-}
-
-static QList<RequestType> s_types{
-    RequestType{"activate",
-                [](const QJsonObject&) {
-                  ModuleVPN::instance()->activate();
-                  return QJsonObject();
-                }},
-
-    RequestType{"deactivate",
-                [](const QJsonObject&) {
-                  ModuleVPN::instance()->deactivate();
-                  return QJsonObject();
-                }},
-
-    RequestType{"servers",
-                [](const QJsonObject&) {
-                  QJsonObject servers;
-                  serializeServerCountry(
-                      MozillaVPN::instance()->serverCountryModel(), servers);
-
-                  QJsonObject obj;
-                  obj["servers"] = servers;
-                  return obj;
-                }},
-
-    RequestType{"disabled_apps",
-                [](const QJsonObject&) {
-                  QJsonArray apps;
-                  for (const QString& app :
-                       SettingsHolder::instance()->vpnDisabledApps()) {
-                    apps.append(app);
-                  }
-
-                  QJsonObject obj;
-                  obj["disabled_apps"] = apps;
-                  return obj;
-                }},
-
-    RequestType{"status",
-                [](const QJsonObject&) {
-                  QJsonObject obj;
-                  obj["status"] = serializeStatus();
-                  return obj;
-                }},
-};
+static QList<ServerConnection::RequestType> s_types;
 
 }  // namespace
 
@@ -179,11 +48,12 @@ ServerConnection::ServerConnection(QObject* parent, QTcpSocket* connection)
   connect(m_connection, &QTcpSocket::readyRead, this,
           &ServerConnection::readData);
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-
-  connect(vpn, &MozillaVPN::stateChanged, this, &ServerConnection::writeState);
-  connect(ModuleVPN::instance()->controller(), &Controller::stateChanged, this,
-          &ServerConnection::writeState);
+  ModuleHolder::instance()->forEach([this](const QString&, Module* module) {
+    connect(module, &Module::serverConnectionMessage, this,
+            [this](const QJsonObject& obj) {
+              writeData(QJsonDocument(obj).toJson(QJsonDocument::Compact));
+            });
+  });
 }
 
 ServerConnection::~ServerConnection() {
@@ -250,13 +120,6 @@ void ServerConnection::writeData(const QByteArray& data) {
   }
 }
 
-void ServerConnection::writeState() {
-  QJsonObject obj = serializeStatus();
-  obj["t"] = "status";
-
-  writeData(QJsonDocument(obj).toJson(QJsonDocument::Compact));
-}
-
 void ServerConnection::writeInvalidRequest() {
   QJsonObject obj;
   obj["t"] = "invalidRequest";
@@ -283,4 +146,9 @@ void ServerConnection::processMessage(const QByteArray& message) {
   }
 
   writeInvalidRequest();
+}
+
+// static
+void ServerConnection::registerRequestType(const RequestType& requestType) {
+  s_types.append(requestType);
 }
