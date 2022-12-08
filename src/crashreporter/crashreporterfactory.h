@@ -6,6 +6,7 @@
 #define CRASHREPORTERFACTORY_H
 
 #include <memory>
+
 #include "crashreporter.h"
 
 class CrashReporterFactory final {

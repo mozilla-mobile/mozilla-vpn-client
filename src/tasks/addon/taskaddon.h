@@ -5,9 +5,9 @@
 #ifndef TASKADDON_H
 #define TASKADDON_H
 
-#include "task.h"
-
 #include <QObject>
+
+#include "task.h"
 
 class TaskAddon final : public Task {
   Q_DISABLE_COPY_MOVE(TaskAddon)

@@ -5,9 +5,10 @@
 #ifndef ANDROIDAPPIMAGEPROVIDER_H
 #define ANDROIDAPPIMAGEPROVIDER_H
 
-#include "appimageprovider.h"
-#include <QJniObject>
 #include <QJniEnvironment>
+#include <QJniObject>
+
+#include "appimageprovider.h"
 
 class AndroidAppImageProvider final : public AppImageProvider {
  public:

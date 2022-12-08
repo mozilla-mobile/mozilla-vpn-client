@@ -3,6 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "servercountrymodel.h"
+
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QRandomGenerator>
+
 #include "collator.h"
 #include "constants.h"
 #include "leakdetector.h"
@@ -12,11 +18,6 @@
 #include "serverdata.h"
 #include "serveri18n.h"
 #include "settingsholder.h"
-
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QRandomGenerator>
 
 namespace {
 Logger logger("ServerCountryModel");

@@ -5,8 +5,8 @@
 #ifndef BACKENDLOGSOBSERVER_H
 #define BACKENDLOGSOBSERVER_H
 
-#include <functional>
 #include <QObject>
+#include <functional>
 
 class QDBusPendingCallWatcher;
 

@@ -3,13 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "balrog.h"
-#include "constants.h"
-#include "errorhandler.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "mozillavpn.h"
-#include "networkrequest.h"
-#include "telemetry/gleansample.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -19,11 +12,19 @@
 #include <QSslCertificate>
 #include <QSslKey>
 
+#include "constants.h"
+#include "errorhandler.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "mozillavpn.h"
+#include "networkrequest.h"
+#include "telemetry/gleansample.h"
+
 // Terrible hacking for Windows
 #if defined(MVPN_WINDOWS)
-#  include "windows.h"
-#  include "platforms/windows/windowscommons.h"
 #  include "platforms/windows/golang-msvc-types.h"
+#  include "platforms/windows/windowscommons.h"
+#  include "windows.h"
 #endif
 
 // Import balrog C/Go library, except on windows where we need to use a DLL.

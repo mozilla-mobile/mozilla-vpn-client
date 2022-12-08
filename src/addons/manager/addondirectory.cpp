@@ -3,14 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addondirectory.h"
-#include "leakdetector.h"
-#include "logger.h"
 
+#include <QByteArray>
 #include <QDir>
+#include <QSaveFile>
 #include <QStandardPaths>
 #include <QString>
-#include <QByteArray>
-#include <QSaveFile>
+
+#include "leakdetector.h"
+#include "logger.h"
 
 namespace {
 Logger logger("AddonDirectory");

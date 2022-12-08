@@ -3,13 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "cryptosettings.h"
-#include "hacl-star/Hacl_Chacha20Poly1305_32.h"
-#include "logger.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QRandomGenerator>
+
+#include "hacl-star/Hacl_Chacha20Poly1305_32.h"
+#include "logger.h"
 
 constexpr int NONCE_SIZE = 12;
 constexpr int MAC_SIZE = 16;

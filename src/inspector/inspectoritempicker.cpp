@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "inspectoritempicker.h"
+
 #include "inspectorhandler.h"
 
 InspectorItemPicker::InspectorItemPicker(QObject* parent)

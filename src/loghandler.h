@@ -5,12 +5,12 @@
 #ifndef LOGHANDLER_H
 #define LOGHANDLER_H
 
-#include "loglevel.h"
-
 #include <QDateTime>
-#include <QObject>
 #include <QMutexLocker>
+#include <QObject>
 #include <QVector>
+
+#include "loglevel.h"
 
 class QFile;
 class QTextStream;

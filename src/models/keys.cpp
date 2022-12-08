@@ -3,14 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "keys.h"
-#include "devicemodel.h"
-#include "leakdetector.h"
-#include "settingsholder.h"
 
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+
+#include "devicemodel.h"
+#include "leakdetector.h"
+#include "settingsholder.h"
 
 Keys::Keys() { MVPN_COUNT_CTOR(Keys); }
 

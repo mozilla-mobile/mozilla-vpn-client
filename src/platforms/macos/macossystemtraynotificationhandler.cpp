@@ -3,16 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macossystemtraynotificationhandler.h"
-#include "macosutils.h"
-
-#include "leakdetector.h"
-#include "logger.h"
-#include "mozillavpn.h"
-#include "qmlengineholder.h"
 
 #include <QIcon>
 #include <QMenu>
 #include <QWindow>
+
+#include "leakdetector.h"
+#include "logger.h"
+#include "macosutils.h"
+#include "mozillavpn.h"
+#include "qmlengineholder.h"
 
 namespace {
 Logger logger("MacosSystemTrayNotificationHandler");

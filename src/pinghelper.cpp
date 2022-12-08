@@ -3,15 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "pinghelper.h"
+
+#include <QDateTime>
+#include <cmath>
+
 #include "dnspingsender.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "pingsender.h"
 #include "pingsenderfactory.h"
-
-#include <QDateTime>
-
-#include <cmath>
 
 // Any X seconds, a new ping.
 constexpr uint32_t PING_TIMEOUT_SEC = 1;

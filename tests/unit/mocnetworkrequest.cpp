@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "../../src/leakdetector.h"
+#include "constants.h"
 #include "helper.h"
 #include "networkrequest.h"
-#include "constants.h"
 #include "settingsholder.h"
 #include "task.h"
 

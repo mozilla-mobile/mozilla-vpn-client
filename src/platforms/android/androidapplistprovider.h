@@ -6,6 +6,7 @@
 #define ANDROIDAPPLISTPROVIDER_H
 
 #include <applistprovider.h>
+
 #include <QObject>
 
 class AndroidAppListProvider : public AppListProvider {

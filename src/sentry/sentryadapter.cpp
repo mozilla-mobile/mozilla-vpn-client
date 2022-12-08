@@ -9,14 +9,14 @@
 #include <QDir>
 
 #include "constants.h"
-#include "models/feature.h"
 #include "leakdetector.h"
-#include "loghandler.h"
 #include "logger.h"
+#include "loghandler.h"
+#include "models/feature.h"
+#include "mozillavpn.h"
 #include "settingsholder.h"
 #include "tasks/sentry/tasksentry.h"
 #include "taskscheduler.h"
-#include "mozillavpn.h"
 
 namespace {
 SentryAdapter* s_instance = nullptr;

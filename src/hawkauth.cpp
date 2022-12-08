@@ -3,13 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "hawkauth.h"
-#include "hkdf.h"
 
 #include <QCryptographicHash>
 #include <QDateTime>
 #include <QMessageAuthenticationCode>
 #include <QRandomGenerator>
 #include <QTextStream>
+
+#include "hkdf.h"
 
 HawkAuth::HawkAuth(const QByteArray& id, const QByteArray& key) {
   m_id = id;

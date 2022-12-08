@@ -3,6 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "dnshelper.h"
+
+#include <QHostAddress>
+
 #include "ipaddress.h"
 #include "logger.h"
 #include "models/feature.h"
@@ -11,8 +14,6 @@
 #include "rfc/rfc4291.h"
 #include "rfc/rfc5735.h"
 #include "settingsholder.h"
-
-#include <QHostAddress>
 
 namespace {
 Logger logger("DNSHelper");

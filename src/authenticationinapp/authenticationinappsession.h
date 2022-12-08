@@ -5,10 +5,10 @@
 #ifndef AUTHENTICATIONINAPPSESSION_H
 #define AUTHENTICATIONINAPPSESSION_H
 
-#include "errorhandler.h"
-
-#include <QObject>
 #include <QNetworkReply>
+#include <QObject>
+
+#include "errorhandler.h"
 
 class Task;
 

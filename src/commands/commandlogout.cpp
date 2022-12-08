@@ -3,15 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "commandlogout.h"
+
+#include <QEventLoop>
+#include <QTextStream>
+
 #include "commandlineparser.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "models/device.h"
 #include "mozillavpn.h"
 #include "tasks/removedevice/taskremovedevice.h"
-
-#include <QEventLoop>
-#include <QTextStream>
 
 CommandLogout::CommandLogout(QObject* parent)
     : Command(parent, "logout", "Logout the current user.") {

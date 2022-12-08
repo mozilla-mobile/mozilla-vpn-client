@@ -3,15 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "tutorialstepnext.h"
+
+#include <QJsonObject>
+#include <QJsonValue>
+#include <QMetaMethod>
+
 #include "inspector/inspectorutils.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
-
-#include <QJsonObject>
-#include <QJsonValue>
-#include <QMetaMethod>
 
 namespace {
 Logger logger("TutorialStepNext");

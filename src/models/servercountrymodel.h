@@ -5,11 +5,11 @@
 #ifndef SERVERCOUNTRYMODEL_H
 #define SERVERCOUNTRYMODEL_H
 
-#include "servercountry.h"
-
 #include <QAbstractListModel>
 #include <QByteArray>
 #include <QObject>
+
+#include "servercountry.h"
 
 class ServerCountryModel final : public QAbstractListModel {
   Q_OBJECT

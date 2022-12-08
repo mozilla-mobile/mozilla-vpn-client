@@ -5,10 +5,10 @@
 #ifndef SERVERCOUNTRY_H
 #define SERVERCOUNTRY_H
 
-#include "servercity.h"
-
 #include <QList>
 #include <QString>
+
+#include "servercity.h"
 
 class QJsonObject;
 

@@ -3,13 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "server.h"
-#include "leakdetector.h"
 
 #include <QDateTime>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QRandomGenerator>
+
+#include "leakdetector.h"
 
 Server::Server() { MVPN_COUNT_CTOR(Server); }
 

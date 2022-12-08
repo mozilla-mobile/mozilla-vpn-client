@@ -6,6 +6,7 @@
 #define CAPTIVEPORTALDETECTION_H
 
 #include <QObject>
+
 #include "captiveportalrequest.h"
 
 class CaptivePortalDetectionImpl;

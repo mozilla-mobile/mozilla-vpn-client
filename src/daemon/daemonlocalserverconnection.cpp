@@ -3,14 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "daemonlocalserverconnection.h"
-#include "daemon.h"
-#include "leakdetector.h"
-#include "logger.h"
 
-#include <QLocalSocket>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QLocalSocket>
+
+#include "daemon.h"
+#include "leakdetector.h"
+#include "logger.h"
 
 namespace {
 Logger logger("DaemonLocalServerConnection");

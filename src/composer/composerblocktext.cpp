@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "composerblocktext.h"
-#include "leakdetector.h"
-#include "logger.h"
 
 #include <QJsonObject>
+
+#include "leakdetector.h"
+#include "logger.h"
 
 namespace {
 Logger logger("ComposerBlockText");

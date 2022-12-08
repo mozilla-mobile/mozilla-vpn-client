@@ -3,11 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macospingsender.h"
-#include "leakdetector.h"
-#include "logger.h"
-
-#include <QSocketNotifier>
-#include <QtEndian>
 
 #include <arpa/inet.h>
 #include <net/if.h>
@@ -17,6 +12,12 @@
 #include <netinet/ip_icmp.h>
 #include <sys/errno.h>
 #include <unistd.h>
+
+#include <QSocketNotifier>
+#include <QtEndian>
+
+#include "leakdetector.h"
+#include "logger.h"
 
 namespace {
 

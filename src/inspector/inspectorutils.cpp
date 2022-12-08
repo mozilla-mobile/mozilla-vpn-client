@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "inspectorutils.h"
-#include "qmlengineholder.h"
 
 #include <QQmlApplicationEngine>
 #include <QQuickItem>
+
+#include "qmlengineholder.h"
 
 // static
 QObject* InspectorUtils::findObject(const QString& name) {

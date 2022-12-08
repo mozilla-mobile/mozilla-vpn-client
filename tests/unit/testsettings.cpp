@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testsettings.h"
+
 #include "../../src/settingsholder.h"
 #include "helper.h"
 

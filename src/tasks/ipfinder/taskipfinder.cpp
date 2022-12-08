@@ -3,12 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskipfinder.h"
-#include "constants.h"
-#include "errorhandler.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "networkrequest.h"
-#include "settingsholder.h"
 
 #include <QHostAddress>
 #include <QHostInfo>
@@ -16,6 +10,13 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QUrl>
+
+#include "constants.h"
+#include "errorhandler.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "networkrequest.h"
+#include "settingsholder.h"
 
 namespace {
 Logger logger("TaskIPFinder");

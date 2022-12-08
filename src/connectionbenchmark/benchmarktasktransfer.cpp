@@ -3,16 +3,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "benchmarktasktransfer.h"
-#include "constants.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "networkrequest.h"
-#include "uploaddatagenerator.h"
 
 #include <QByteArray>
 #include <QDnsLookup>
 #include <QHostAddress>
 #include <QScopeGuard>
+
+#include "constants.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "networkrequest.h"
+#include "uploaddatagenerator.h"
 
 #if !defined(MVPN_DUMMY) && !defined(MVPN_ANDROID) && !defined(MVPN_WASM)
 constexpr const char* MULLVAD_DEFAULT_DNS = "10.64.0.1";

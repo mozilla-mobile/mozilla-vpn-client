@@ -3,12 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "commanddevice.h"
+
+#include <QEventLoop>
+#include <QTextStream>
+
 #include "leakdetector.h"
 #include "mozillavpn.h"
 #include "tasks/removedevice/taskremovedevice.h"
-
-#include <QTextStream>
-#include <QEventLoop>
 
 CommandDevice::CommandDevice(QObject* parent)
     : Command(parent, "device", "Remove a device by its id.") {

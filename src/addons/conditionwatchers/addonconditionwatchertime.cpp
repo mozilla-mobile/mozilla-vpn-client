@@ -3,11 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addonconditionwatchertime.h"
+
+#include <QDateTime>
+
 #include "leakdetector.h"
 #include "mfbt/checkedint.h"
 #include "settingsholder.h"
-
-#include <QDateTime>
 
 AddonConditionWatcherTime::AddonConditionWatcherTime(QObject* parent,
                                                      qint64 time, bool isStart)

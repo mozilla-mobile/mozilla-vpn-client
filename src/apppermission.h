@@ -5,9 +5,10 @@
 #ifndef APPPERMISSION_H
 #define APPPERMISSION_H
 
+#include <QAbstractListModel>
 #include <QObject>
 #include <QPair>
-#include <QAbstractListModel>
+
 #include "applistprovider.h"
 
 class AppPermission final : public QAbstractListModel {

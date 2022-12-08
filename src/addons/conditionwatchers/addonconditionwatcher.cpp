@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addonconditionwatcher.h"
+
 #include "leakdetector.h"
 
 AddonConditionWatcher::AddonConditionWatcher(QObject* parent)

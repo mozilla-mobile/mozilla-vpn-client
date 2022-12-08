@@ -5,10 +5,10 @@
 #ifndef TASKRELEASE_H
 #define TASKRELEASE_H
 
+#include <QObject>
+
 #include "errorhandler.h"
 #include "task.h"
-
-#include <QObject>
 
 class TaskRelease final : public Task {
   Q_OBJECT

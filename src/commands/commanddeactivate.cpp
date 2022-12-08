@@ -3,12 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "commanddeactivate.h"
-#include "commandlineparser.h"
-#include "leakdetector.h"
-#include "mozillavpn.h"
 
 #include <QEventLoop>
 #include <QTextStream>
+
+#include "commandlineparser.h"
+#include "leakdetector.h"
+#include "mozillavpn.h"
 
 CommandDeactivate::CommandDeactivate(QObject* parent)
     : Command(parent, "deactivate", "Deactivate the VPN tunnel") {

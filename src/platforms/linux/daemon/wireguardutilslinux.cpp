@@ -3,13 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "wireguardutilslinux.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "platforms/linux/linuxdependencies.h"
-
-#include <QHostAddress>
-#include <QFile>
-#include <QScopeGuard>
 
 #include <arpa/inet.h>
 #include <linux/fib_rules.h>
@@ -19,10 +12,18 @@
 #include <net/if.h>
 #include <netdb.h>
 #include <sys/ioctl.h>
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
+
+#include <QFile>
+#include <QHostAddress>
+#include <QScopeGuard>
+
+#include "leakdetector.h"
+#include "logger.h"
+#include "platforms/linux/linuxdependencies.h"
 
 // Import wireguard C library for Linux
 #if defined(__cplusplus)
@@ -152,8 +153,9 @@ bool WireguardUtilsLinux::addInterface(const InterfaceConfig& config) {
 
   // Set/update device
   device->fwmark = WG_FIREWALL_MARK;
-  device->flags = (wg_device_flags)(
-      WGDEVICE_HAS_PRIVATE_KEY | WGDEVICE_REPLACE_PEERS | WGDEVICE_HAS_FWMARK);
+  device->flags =
+      (wg_device_flags)(WGDEVICE_HAS_PRIVATE_KEY | WGDEVICE_REPLACE_PEERS |
+                        WGDEVICE_HAS_FWMARK);
   if (wg_set_device(device) != 0) {
     logger.error() << "Failed to setup the device";
     return false;

@@ -5,12 +5,12 @@
 #ifndef DBUSTYPESLINUX_H
 #define DBUSTYPESLINUX_H
 
-#include <QtDBus/QtDBus>
-#include <QDBusArgument>
-#include <QByteArray>
-#include <QHostAddress>
-
 #include <sys/socket.h>
+
+#include <QByteArray>
+#include <QDBusArgument>
+#include <QHostAddress>
+#include <QtDBus/QtDBus>
 
 /* D-Bus metatype for marshalling arguments to the SetLinkDNS method */
 class DnsResolver : public QHostAddress {

@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "networkrequest.h"
+
 #include "captiveportal/captiveportal.h"
 #include "constants.h"
 #include "hawkauth.h"
@@ -19,8 +20,8 @@
 
 #include <QDirIterator>
 #include <QHostAddress>
-#include <QJsonDocument>
 #include <QJsonArray>
+#include <QJsonDocument>
 #include <QJsonObject>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>

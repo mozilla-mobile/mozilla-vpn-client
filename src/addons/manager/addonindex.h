@@ -5,10 +5,10 @@
 #ifndef ADDONINDEX_H
 #define ADDONINDEX_H
 
-#include "addondirectory.h"
-
 #include <QObject>
 #include <QString>
+
+#include "addondirectory.h"
 
 class QByteArray;
 class QJsonObject;

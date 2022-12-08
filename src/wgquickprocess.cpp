@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "wgquickprocess.h"
-#include "../../src/logger.h"
 
 #include <QCoreApplication>
 #include <QProcess>
+
+#include "../../src/logger.h"
 
 namespace {
 Logger logger("WgQuickProcess");

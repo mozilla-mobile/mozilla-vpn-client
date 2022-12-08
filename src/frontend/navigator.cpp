@@ -3,15 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "navigator.h"
+
+#include <QCoreApplication>
+#include <QQuickItem>
+
 #include "externalophandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
-
-#include <QCoreApplication>
-#include <QQuickItem>
 
 namespace {
 Navigator* s_instance = nullptr;

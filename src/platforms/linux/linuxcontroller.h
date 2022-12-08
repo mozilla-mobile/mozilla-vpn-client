@@ -5,10 +5,10 @@
 #ifndef LINUXCONTROLLER_H
 #define LINUXCONTROLLER_H
 
-#include "controllerimpl.h"
-
-#include <QObject>
 #include <QHostAddress>
+#include <QObject>
+
+#include "controllerimpl.h"
 
 class DBusClient;
 class QDBusPendingCallWatcher;

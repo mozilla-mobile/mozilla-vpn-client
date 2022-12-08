@@ -3,10 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "telemetry.h"
+
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
-
 #include "telemetry/gleansample.h"
 
 constexpr int CONNECTION_STABILITY_MSEC = 45000;

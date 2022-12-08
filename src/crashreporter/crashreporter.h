@@ -10,8 +10,8 @@
 #include <memory>
 
 #include "crashui.h"
-#include "settingsholder.h"
 #include "localizer.h"
+#include "settingsholder.h"
 
 class CrashData;
 

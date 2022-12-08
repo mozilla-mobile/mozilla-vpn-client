@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskfunction.h"
+
 #include "leakdetector.h"
 
 TaskFunction::TaskFunction(std::function<void()>&& callback,

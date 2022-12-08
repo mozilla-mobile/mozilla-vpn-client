@@ -3,16 +3,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "commandservers.h"
-#include "commandlineparser.h"
-#include "leakdetector.h"
-#include "mozillavpn.h"
-#include "tasks/servers/taskservers.h"
 
 #include <QEventLoop>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QTextStream>
+
+#include "commandlineparser.h"
+#include "leakdetector.h"
+#include "mozillavpn.h"
+#include "tasks/servers/taskservers.h"
 
 CommandServers::CommandServers(QObject* parent)
     : Command(parent, "servers", "Show the list of servers.") {

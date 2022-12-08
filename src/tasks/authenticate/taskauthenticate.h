@@ -5,8 +5,8 @@
 #ifndef TASKAUTHENTICATE_H
 #define TASKAUTHENTICATE_H
 
-#include "task.h"
 #include "mozillavpn.h"
+#include "task.h"
 
 class QByteArray;
 class AuthenticationListener;

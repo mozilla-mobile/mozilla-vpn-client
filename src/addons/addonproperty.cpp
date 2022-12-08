@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addonproperty.h"
+
 #include "leakdetector.h"
 
 AddonProperty::AddonProperty() { MVPN_COUNT_CTOR(AddonProperty); }

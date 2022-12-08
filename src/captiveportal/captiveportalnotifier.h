@@ -5,9 +5,9 @@
 #ifndef CAPTIVEPORTALNOTIFIER_H
 #define CAPTIVEPORTALNOTIFIER_H
 
-#include "notificationhandler.h"
-
 #include <QTimer>
+
+#include "notificationhandler.h"
 
 class CaptivePortalNotifier final : public QObject {
   Q_OBJECT

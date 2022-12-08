@@ -5,10 +5,10 @@
 #ifndef WINCRASHREPORTER_H
 #define WINCRASHREPORTER_H
 
+#include <memory>
+
 #include "../../crashreporter.h"
 #include "crashreporter/crashuploader.h"
-
-#include <memory>
 
 class WinCrashReporter final : public CrashReporter {
  public:

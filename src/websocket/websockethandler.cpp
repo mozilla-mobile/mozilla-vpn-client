@@ -3,16 +3,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "websockethandler.h"
+
 #include "constants.h"
+#include "exponentialbackoffstrategy.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
-#include "settingsholder.h"
-#include "urlopener.h"
-#include "exponentialbackoffstrategy.h"
 #include "pushmessage.h"
+#include "settingsholder.h"
 #include "telemetry/gleansample.h"
+#include "urlopener.h"
 
 namespace {
 Logger logger("WebSocketHandler");

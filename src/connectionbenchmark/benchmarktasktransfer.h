@@ -5,12 +5,12 @@
 #ifndef BENCHMARKTASKTRANSFER_H
 #define BENCHMARKTASKTRANSFER_H
 
-#include "benchmarktask.h"
-
 #include <QDnsLookup>
 #include <QElapsedTimer>
 #include <QNetworkReply>
 #include <QUrl>
+
+#include "benchmarktask.h"
 
 class NetworkRequest;
 

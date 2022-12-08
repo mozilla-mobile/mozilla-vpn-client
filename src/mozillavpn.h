@@ -5,6 +5,13 @@
 #ifndef MOZILLAVPN_H
 #define MOZILLAVPN_H
 
+#include <QList>
+#include <QNetworkReply>
+#include <QObject>
+#include <QStandardPaths>
+#include <QTimer>
+#include <QVariant>
+
 #include "captiveportal/captiveportal.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "connectionbenchmark/connectionbenchmark.h"
@@ -31,13 +38,6 @@
 #include "telemetry.h"
 #include "theme.h"
 #include "websocket/websockethandler.h"
-
-#include <QList>
-#include <QNetworkReply>
-#include <QObject>
-#include <QStandardPaths>
-#include <QTimer>
-#include <QVariant>
 
 class QTextStream;
 

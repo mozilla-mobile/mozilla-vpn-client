@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "collator.h"
+
 #include "localizer.h"
 
 #ifdef MVPN_IOS
@@ -10,8 +11,9 @@
 #endif
 
 #if defined(MVPN_WASM)
-#  include "settingsholder.h"
 #  include <emscripten.h>
+
+#  include "settingsholder.h"
 
 EM_JS(int, vpnWasmCompareString,
       (const char* a, const char* b, const char* languageCode), {

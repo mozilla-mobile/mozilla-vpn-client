@@ -3,14 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "captiveportal.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "settingsholder.h"
 
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+
+#include "leakdetector.h"
+#include "logger.h"
+#include "settingsholder.h"
 
 namespace {
 Logger logger("CaptivePortal");

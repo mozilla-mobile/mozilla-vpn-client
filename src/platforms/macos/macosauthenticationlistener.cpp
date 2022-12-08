@@ -3,13 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macosauthenticationlistener.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "urlopener.h"
 
 #include <QCoreApplication>
 #include <QFileOpenEvent>
 #include <QUrlQuery>
+
+#include "leakdetector.h"
+#include "logger.h"
+#include "urlopener.h"
 
 namespace {
 

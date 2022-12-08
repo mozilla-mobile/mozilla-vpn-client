@@ -5,9 +5,9 @@
 #ifndef ADDONMESSAGE_H
 #define ADDONMESSAGE_H
 
+#include "../composer/composer.h"
 #include "addon.h"
 #include "addonproperty.h"
-#include "../composer/composer.h"
 #include "settingsholder.h"
 
 class QJsonObject;

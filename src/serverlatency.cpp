@@ -3,14 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "serverlatency.h"
+
+#include <QDateTime>
+
 #include "leakdetector.h"
 #include "logger.h"
 #include "mfbt/checkedint.h"
 #include "models/feature.h"
 #include "mozillavpn.h"
 #include "pingsenderfactory.h"
-
-#include <QDateTime>
 
 constexpr const uint32_t SERVER_LATENCY_TIMEOUT_MSEC = 5000;
 

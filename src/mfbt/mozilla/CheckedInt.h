@@ -15,9 +15,10 @@
 #include <stdint.h>
 //#include "mozilla/Assertions.h"
 //#include "mozilla/Attributes.h"
-#include "mfbt/mozilla/IntegerTypeTraits.h"
 #include <limits>
 #include <type_traits>
+
+#include "mfbt/mozilla/IntegerTypeTraits.h"
 
 #define MOZILLA_CHECKEDINT_COMPARABLE_VERSION(major, minor, patch) \
   (major << 16 | minor << 8 | patch)

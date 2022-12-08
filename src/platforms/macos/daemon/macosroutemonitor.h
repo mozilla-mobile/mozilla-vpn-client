@@ -5,13 +5,13 @@
 #ifndef MACOSROUTEMONITOR_H
 #define MACOSROUTEMONITOR_H
 
-#include "ipaddress.h"
-
 #include <QByteArray>
 #include <QHostAddress>
 #include <QList>
 #include <QObject>
 #include <QSocketNotifier>
+
+#include "ipaddress.h"
 
 struct if_msghdr;
 struct rt_msghdr;

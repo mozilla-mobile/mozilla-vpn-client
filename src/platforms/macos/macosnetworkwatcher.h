@@ -5,10 +5,10 @@
 #ifndef MACOSNETWORKWATCHER_H
 #define MACOSNETWORKWATCHER_H
 
-#include "networkwatcherimpl.h"
-#include "../ios/iosnetworkwatcher.h"
-
 #import <Network/Network.h>
+
+#include "../ios/iosnetworkwatcher.h"
+#include "networkwatcherimpl.h"
 
 class QString;
 

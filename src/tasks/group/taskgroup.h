@@ -5,10 +5,10 @@
 #ifndef TASKGROUP_H
 #define TASKGROUP_H
 
-#include "task.h"
-
 #include <QList>
 #include <QObject>
+
+#include "task.h"
 
 class TaskGroup final : public Task {
   Q_DISABLE_COPY_MOVE(TaskGroup)

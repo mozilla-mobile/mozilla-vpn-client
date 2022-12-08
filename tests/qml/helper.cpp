@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "helper.h"
-#include "../../src/qmlengineholder.h"
 
 #include <glean.h>
 #include <nebula.h>
+
+#include "../../src/qmlengineholder.h"
 
 TestHelper::TestHelper() {
   m_l18nstrings = L18nStrings::instance();

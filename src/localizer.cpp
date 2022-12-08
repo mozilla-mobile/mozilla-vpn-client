@@ -3,6 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "localizer.h"
+
+#include <QCoreApplication>
+#include <QDir>
+#include <QFileInfo>
+#include <QLocale>
+
 #include "collator.h"
 #include "constants.h"
 #include "inspector/inspectorhandler.h"
@@ -14,11 +20,6 @@
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosutils.h"
 #endif
-
-#include <QCoreApplication>
-#include <QDir>
-#include <QFileInfo>
-#include <QLocale>
 
 namespace {
 Logger logger("Localizer");

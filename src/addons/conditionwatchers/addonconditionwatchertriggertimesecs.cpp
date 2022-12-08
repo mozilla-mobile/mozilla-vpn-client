@@ -3,11 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addonconditionwatchertriggertimesecs.h"
+
+#include <QDateTime>
+
 #include "leakdetector.h"
 #include "mfbt/checkedint.h"
 #include "settingsholder.h"
-
-#include <QDateTime>
 
 // static
 AddonConditionWatcher* AddonConditionWatcherTriggerTimeSecs::maybeCreate(

@@ -5,12 +5,12 @@
 #ifndef TUTORIALSTEP_H
 #define TUTORIALSTEP_H
 
-#include "../addons/addonproperty.h"
-
+#include <QJsonObject>
 #include <QList>
 #include <QObject>
-#include <QJsonObject>
 #include <QTimer>
+
+#include "../addons/addonproperty.h"
 
 class AddonConditionWatcher;
 class AddonTutorial;

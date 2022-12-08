@@ -3,18 +3,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "dbusservice.h"
-#include "dbus_adaptor.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "loghandler.h"
-#include "polkithelper.h"
 
-#include <QtDBus/QtDBus>
 #include <QCoreApplication>
 #include <QDBusConnection>
 #include <QDBusInterface>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QtDBus/QtDBus>
+
+#include "dbus_adaptor.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "loghandler.h"
+#include "polkithelper.h"
 
 namespace {
 Logger logger("DBusService");

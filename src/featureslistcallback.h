@@ -15,8 +15,9 @@
 
 #ifdef MVPN_LINUX
 #  include <QProcessEnvironment>
-#  include "update/versionapi.h"
+
 #  include "platforms/linux/linuxdependencies.h"
+#  include "update/versionapi.h"
 #endif
 
 // Generic callback functions

@@ -5,9 +5,9 @@
 #ifndef TASKREMOVEDEVICE_H
 #define TASKREMOVEDEVICE_H
 
-#include "task.h"
-
 #include <QObject>
+
+#include "task.h"
 
 class TaskRemoveDevice final : public Task {
   Q_DISABLE_COPY_MOVE(TaskRemoveDevice)

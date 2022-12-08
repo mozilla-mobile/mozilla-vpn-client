@@ -2,9 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "helper.h"
-
 #include <QtQuickTest>
+
+#include "helper.h"
 
 int main(int argc, char* argv[]) {
   // In order to be able to call our TestHelper constructor how we want,

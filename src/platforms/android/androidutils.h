@@ -6,12 +6,12 @@
 #define ANDROIDUTILS_H
 
 #include <jni.h>
+
+#include <QJniEnvironment>
+#include <QJniObject>
 #include <QObject>
 #include <QString>
 #include <QUrl>
-
-#include <QJniObject>
-#include <QJniEnvironment>
 
 class AuthenticationListener;
 

@@ -3,14 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "wasmnetworkrequest.h"
-#include "logger.h"
-#include "networkrequest.h"
+
+#include <emscripten/bind.h>
+#include <emscripten/emscripten.h>
 
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include <emscripten/bind.h>
-#include <emscripten/emscripten.h>
+#include "logger.h"
+#include "networkrequest.h"
 
 namespace {
 Logger logger("WasmNetworkRequest");

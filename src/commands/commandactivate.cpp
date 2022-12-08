@@ -3,12 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "commandactivate.h"
-#include "commandlineparser.h"
-#include "leakdetector.h"
-#include "mozillavpn.h"
 
 #include <QEventLoop>
 #include <QTextStream>
+
+#include "commandlineparser.h"
+#include "leakdetector.h"
+#include "mozillavpn.h"
 
 CommandActivate::CommandActivate(QObject* parent)
     : Command(parent, "activate", "Activate the VPN tunnel") {

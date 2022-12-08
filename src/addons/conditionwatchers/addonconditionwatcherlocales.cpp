@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addonconditionwatcherlocales.h"
+
 #include "leakdetector.h"
 #include "localizer.h"
 #include "settingsholder.h"

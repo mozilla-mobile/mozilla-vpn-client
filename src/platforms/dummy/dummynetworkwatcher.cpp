@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "dummynetworkwatcher.h"
+
 #include "leakdetector.h"
 
 DummyNetworkWatcher::DummyNetworkWatcher(QObject* parent)

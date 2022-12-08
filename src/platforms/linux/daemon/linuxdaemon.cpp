@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "command.h"
-#include "dbusservice.h"
 #include "dbus_adaptor.h"
+#include "dbusservice.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"

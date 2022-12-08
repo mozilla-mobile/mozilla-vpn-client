@@ -5,9 +5,9 @@
 #ifndef TASKPRODUCTS_H
 #define TASKPRODUCTS_H
 
-#include "task.h"
-
 #include <QObject>
+
+#include "task.h"
 
 class TaskProducts final : public Task {
   Q_DISABLE_COPY_MOVE(TaskProducts)

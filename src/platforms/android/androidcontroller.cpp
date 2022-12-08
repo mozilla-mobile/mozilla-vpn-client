@@ -3,19 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidcontroller.h"
-#include "androidvpnactivity.h"
-#include "androidutils.h"
-#include "errorhandler.h"
-#include "ipaddress.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "models/device.h"
-#include "models/keys.h"
-#include "models/server.h"
-#include "notificationhandler.h"
-#include "mozillavpn.h"
-#include "settingsholder.h"
-#include "l18nstrings.h"
 
 #include <QHostAddress>
 #include <QJsonArray>
@@ -24,6 +11,20 @@
 #include <QRandomGenerator>
 #include <QFile>
 #include <QDir>
+
+#include "androidutils.h"
+#include "androidvpnactivity.h"
+#include "errorhandler.h"
+#include "ipaddress.h"
+#include "l18nstrings.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "models/device.h"
+#include "models/keys.h"
+#include "models/server.h"
+#include "mozillavpn.h"
+#include "notificationhandler.h"
+#include "settingsholder.h"
 
 namespace {
 Logger logger("AndroidController");

@@ -3,12 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "theme.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "settingsholder.h"
 
 #include <QDir>
 #include <QJSEngine>
+
+#include "leakdetector.h"
+#include "logger.h"
+#include "settingsholder.h"
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosutils.h"

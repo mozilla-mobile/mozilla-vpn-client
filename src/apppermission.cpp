@@ -3,14 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "apppermission.h"
-#include "applistprovider.h"
-#include "logger.h"
-#include "leakdetector.h"
-#include "mozillavpn.h"
+
 #include <QApplication>
 #include <QVector>
-#include "settingsholder.h"
+
+#include "applistprovider.h"
 #include "l18nstrings.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "mozillavpn.h"
+#include "settingsholder.h"
 
 #if defined(MVPN_ANDROID)
 #  include "platforms/android/androidapplistprovider.h"

@@ -5,9 +5,9 @@
 #ifndef UPDATER_H
 #define UPDATER_H
 
-#include "errorhandler.h"
-
 #include <QObject>
+
+#include "errorhandler.h"
 
 class Task;
 

@@ -5,10 +5,10 @@
 #ifndef SENTRYADAPTER_H
 #define SENTRYADAPTER_H
 
-#include <QObject>
-#include <QApplication>
-
 #include <sentry.h>
+
+#include <QApplication>
+#include <QObject>
 
 class SentryAdapter final : public QObject {
   Q_OBJECT

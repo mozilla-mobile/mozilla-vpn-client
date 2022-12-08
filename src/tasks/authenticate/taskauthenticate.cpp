@@ -3,6 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskauthenticate.h"
+
+#include <QJSValue>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QUrl>
+#include <QUrlQuery>
+
 #include "authenticationlistener.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
@@ -11,12 +18,6 @@
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
-
-#include <QJSValue>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QUrl>
-#include <QUrlQuery>
 
 namespace {
 Logger logger("TaskAuthenticate");

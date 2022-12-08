@@ -3,15 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "commandstatus.h"
+
+#include <QEventLoop>
+#include <QTextStream>
+
 #include "commandlineparser.h"
 #include "leakdetector.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"
 #include "tasks/account/taskaccount.h"
-
-#include <QEventLoop>
-#include <QTextStream>
 
 CommandStatus::CommandStatus(QObject* parent)
     : Command(parent, "status", "Show the current VPN status.") {

@@ -3,6 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "crashui.h"
+
+#include <QCoreApplication>
+#include <QQmlApplicationEngine>
+#include <QWindow>
+
 #include "fontloader.h"
 #include "imageproviderfactory.h"
 #include "l18nstrings.h"
@@ -11,10 +16,6 @@
 #include "nebula.h"
 #include "qmlengineholder.h"
 #include "theme.h"
-
-#include <QQmlApplicationEngine>
-#include <QCoreApplication>
-#include <QWindow>
 
 using namespace std;
 

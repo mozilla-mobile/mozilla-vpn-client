@@ -7,6 +7,7 @@
 
 #include <QObject>
 #include <memory>
+
 #include "theme.h"
 
 class CrashUI final : public QObject {

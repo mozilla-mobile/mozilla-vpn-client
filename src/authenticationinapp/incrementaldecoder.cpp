@@ -3,9 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "incrementaldecoder.h"
-#include "leakdetector.h"
 
 #include <QTextStream>
+
+#include "leakdetector.h"
 
 constexpr int RADIX = 36;
 

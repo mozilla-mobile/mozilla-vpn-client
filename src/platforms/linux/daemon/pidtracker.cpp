@@ -3,21 +3,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "pidtracker.h"
-#include "leakdetector.h"
-#include "logger.h"
 
+#include <errno.h>
+#include <limits.h>
+#include <linux/cn_proc.h>
+#include <linux/connector.h>
+#include <linux/netlink.h>
 #include <stdio.h>
 #include <string.h>
-#include <errno.h>
-#include <unistd.h>
-#include <limits.h>
 #include <sys/select.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
-#include <linux/netlink.h>
-#include <linux/connector.h>
-#include <linux/cn_proc.h>
+#include "leakdetector.h"
+#include "logger.h"
 
 constexpr size_t CN_MCAST_MSG_SIZE =
     sizeof(struct cn_msg) + sizeof(enum proc_cn_mcast_op);

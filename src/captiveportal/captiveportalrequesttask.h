@@ -5,10 +5,10 @@
 #ifndef CAPTIVEPORTALREQUESTTASK_H
 #define CAPTIVEPORTALREQUESTTASK_H
 
+#include <QObject>
+
 #include "captiveportalrequest.h"
 #include "task.h"
-
-#include <QObject>
 
 class CaptivePortalRequestTask final : public Task {
   Q_OBJECT

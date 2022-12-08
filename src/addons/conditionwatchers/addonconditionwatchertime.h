@@ -5,9 +5,9 @@
 #ifndef ADDONCONDITIONWATCHERTIME_H
 #define ADDONCONDITIONWATCHERTIME_H
 
-#include "addonconditionwatcher.h"
-
 #include <QTimer>
+
+#include "addonconditionwatcher.h"
 
 class AddonConditionWatcherTime : public AddonConditionWatcher {
   Q_OBJECT

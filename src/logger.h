@@ -5,8 +5,6 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include "loglevel.h"
-
 #include <QIODevice>
 #include <QObject>
 #include <QString>

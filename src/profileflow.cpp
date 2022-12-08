@@ -2,17 +2,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "leakdetector.h"
-#include "logger.h"
-#include "mozillavpn.h"
 #include "profileflow.h"
-#include "models/subscriptiondata.h"
-#include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
-#include "taskscheduler.h"
-#include "telemetry/gleansample.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
+
+#include "leakdetector.h"
+#include "logger.h"
+#include "models/subscriptiondata.h"
+#include "mozillavpn.h"
+#include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
+#include "taskscheduler.h"
+#include "telemetry/gleansample.h"
 
 namespace {
 Logger logger("ProfileFlow");

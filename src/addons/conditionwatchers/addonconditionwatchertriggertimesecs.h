@@ -5,9 +5,9 @@
 #ifndef ADDONCONDITIONWATCHERTRIGGERTIMESECS_H
 #define ADDONCONDITIONWATCHERTRIGGERTIMESECS_H
 
-#include "addonconditionwatcher.h"
-
 #include <QTimer>
+
+#include "addonconditionwatcher.h"
 
 class AddonConditionWatcherTriggerTimeSecs final
     : public AddonConditionWatcher {
