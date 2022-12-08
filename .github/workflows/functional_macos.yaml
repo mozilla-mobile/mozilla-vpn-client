@@ -1,0 +1,137 @@
+name: MacOS Functional Tests
+on:
+  push:
+    branches:
+      - main
+      - 'releases/**'
+  pull_request:
+    branches:
+      - main
+      - 'releases/**'
+
+# Restrict tests to the most recent commit.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build_test_app:
+    name: Build Test Client
+    runs-on: macos-latest
+    outputs:
+      matrix: ${{ steps.testGen.outputs.tests }}
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+        with: 
+          submodules: 'true'
+
+      - name: Clone Qt6 repository
+        with:
+          path: 3rdparty/qt_static_macos
+      
+      - name: Install Qt6
+        shell: bash
+        run: cat 3rdparty/qt_static_macos/qt6* | tar xz --strip-components=1 -C 3rdparty/qt_static_macos
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          pip3 install -r requirements.txt
+          brew install ninja
+
+      - name: Compile test client
+        shell: bash
+        run: |
+          mkdir -p build/cmake
+          cmake -S . -B $(pwd)/build/cmake -GNinja \
+              -DCMAKE_PREFIX_PATH=$(pwd)/3rdparty/qt_static_macos/lib/cmake \
+              -DCMAKE_CXX_FLAGS="--coverage -fprofile-generate=$(pwd)/build/profile" \
+              -DCMAKE_EXE_LINKER_FLAGS="--coverage -fprofile-generate=$(pwd)/build/profile"
+          cmake --build $(pwd)/build/cmake --target dummyvpn
+
+          mkdir -p build/profile
+          rsync -a --include '*/' --include '*.gcno' --exclude '*' \
+              build/cmake/tests/dummyvpn/CMakeFiles/dummyvpn.dir/ build/profile/
+          cp ./build/cmake/tests/dummyvpn/dummyvpn build/
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: test-client-${{ github.sha }}
+          path: |
+            build/
+            !build/cmake/
+
+      - name: Generate tasklist
+        id: testGen
+        shell: bash
+        run: |
+          echo -n "tests=" >> $GITHUB_OUTPUT
+          for test in $(find tests/functional -name 'test*.js' | sort); do
+            printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
+          done | jq -s -c >> $GITHUB_OUTPUT
+
+      - name: Check tests
+        shell: bash
+        env:
+          TEST_LIST: ${{ steps.testGen.outputs.tests }}
+        run: |
+          echo $TEST_LIST | jq
+
+  functional_tests:
+    name: Functional tests
+    needs: 
+      - build_test_app
+    runs-on: macos-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false # Don't cancel other jobs if a test fails
+      matrix:
+        test: ${{ fromJson(needs.build_test_app.outputs.matrix) }}
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: test-client-${{ github.sha }}
+          path: build/
+
+      - name: Install test dependecies
+        run: |
+          pip3 install -r requirements.txt
+          npm install
+
+      - name: Check build
+        shell: bash
+        run: |
+            chmod +x ./build/dummyvpn
+            ./build/dummyvpn -v
+
+      - name: Build addons
+        shell: bash
+        run: ./scripts/addon/generate_all_tests.py
+
+      - name: Running ${{matrix.test.name}} Tests
+        id: runTests
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 15
+          max_attempts: 3
+          command: |
+            export PATH=$(npm bin):$PATH
+            export HEADLESS=yes
+            export TZ=Europe/London
+            mkdir -p $ARTIFACT_DIR
+            npm run functionalTest -- ${{matrix.test.path}}
+        env:
+          ARTIFACT_DIR: ${{ runner.temp }}/artifacts
+          MVPN_BIN: ./build/dummyvpn
+
+      - name: Uploading artifacts
+        uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: ${{matrix.test.name}} Logs
+          path: ${{ runner.temp }}/artifacts
