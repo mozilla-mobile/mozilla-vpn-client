@@ -14,10 +14,11 @@
 #  include "vpnglean.h"
 #endif
 
+#include <QCoreApplication>
 #include <QDir>
-#include <QStandardPaths>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QStandardPaths>
 
 namespace {
 Logger logger(LOG_MAIN, "Glean");
@@ -32,7 +33,9 @@ QString rootAppFolder() {
 }
 }  // namespace
 
-VPNGlean::VPNGlean() { MVPN_COUNT_CTOR(VPNGlean); }
+VPNGlean::VPNGlean(QObject* parent) : QObject(parent) {
+  MVPN_COUNT_CTOR(VPNGlean);
+}
 
 VPNGlean::~VPNGlean() { MVPN_COUNT_DTOR(VPNGlean); }
 
@@ -64,7 +67,7 @@ void VPNGlean::initialize() {
       return;
     }
 
-    s_instance = new VPNGlean();
+    s_instance = new VPNGlean(qApp);
     connect(SettingsHolder::instance(), &SettingsHolder::gleanEnabledChanged,
             s_instance, []() {
               s_instance->setUploadEnabled(
