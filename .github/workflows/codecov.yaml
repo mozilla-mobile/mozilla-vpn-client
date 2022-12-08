@@ -1,0 +1,53 @@
+name: Codecov Uploader
+
+on:
+  workflow_run:
+    workflows:
+    # Note: We will gather coverage from all tests.
+    # This just happens to be the slowest, meaning we don't n
+    # need to trigger the task before this has reached a conclusion :) 
+    # We can take a faster one, this task will wait for all to finish. 
+      - "Functional tests"
+    types: 
+      - completed
+
+jobs:
+  fetch_coverage_data:
+    runs-on: ubuntu-20.04
+    strategy:
+        matrix:
+          # Folders from archive that should be forwarded
+          test_workflow_names: [
+            "Functional Tests",
+            "Unit Tests",
+            "Lottie Tests",
+          ]
+    steps:
+      - name: Wait for Task To Finish and Download it
+        shell: powershell
+        run: |
+          $runs = gh run list -b ${{github.ref_name}} -w "${{matrix.test_workflow_names}}" --json "databaseId" | ConvertFrom-Json
+          echo "Waiting for the task to exit"
+          gh run watch $runs[-1].databaseId > $null
+          gh run download $runs[-1].databaseId -p *.info 
+      - name: Uploading artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: *.info # Only codecov files.
+
+  upload_coverage:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Download All Fetched Artifacts
+        uses: actions/download-artifact@v3
+      - name: Upload coverage to Codecov
+        shell: powerpowershell
+        run: |
+          curl https://uploader.codecov.io/verification.gpg | gpg --no-default-keyring --keyring trustedkeys.gpg --import # One-time step
+          curl -Os https://uploader.codecov.io/latest/linux/codecov
+          curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM
+          curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig
+          gpgv codecov.SHA256SUM.sig codecov.SHA256SUM
+          shasum -a 256 -c codecov.SHA256SUM
+          chmod +x codecov
+          ./codecov -f *.info

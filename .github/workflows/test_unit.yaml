@@ -59,25 +59,21 @@ jobs:
           ctest --output-on-failure
 
           grcov $(pwd)/tests/auth/CMakeFiles/auth_tests.dir -s ${{github.workspace}} \
-              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/auth_lcov.info
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/auth_linux_lcov.info
 
           grcov $(pwd)/tests/nativemessaging/CMakeFiles/nativemessaging_tests.dir -s ${{github.workspace}} \
-              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/nativemessaging_lcov.info
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/nativemessaging_linux_lcov.info
 
           grcov $(pwd)/tests/qml/CMakeFiles/qml_tests.dir -s ${{github.workspace}} \
-              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/qml_lcov.info
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/qml_linux_lcov.info
 
           grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
-              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_linux_lcov.info
+      - name: Uploading coverage
+        uses: actions/upload-artifact@v3
+        if: ${{ always() }}
         with:
-          directory: .
-          flags: unit_tests
-          name: codecov-poc
-          files: auth_lcov.info,nativemessaging_lcov.info,qml_lcov.info,unit_lcov.info
-          verbose: true
+          path: ${{github.workspace}}/*.info
 
   macos-unit-tests:
     runs-on: macos-latest
@@ -136,25 +132,22 @@ jobs:
           ctest --output-on-failure
 
           grcov $(pwd)/tests/auth/CMakeFiles/auth_tests.dir -s ${{github.workspace}} \
-              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/auth_lcov.info
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/auth_osx_lcov.info
 
           grcov $(pwd)/tests/nativemessaging/CMakeFiles/nativemessaging_tests.dir -s ${{github.workspace}} \
-              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/nativemessaging_lcov.info
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/nativemessaging_osx_lcov.info
 
           grcov $(pwd)/tests/qml/CMakeFiles/qml_tests.dir -s ${{github.workspace}} \
-              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/qml_lcov.info
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/qml_osx_lcov.info
 
           grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
-              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_osx_lcov.info
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+      - name: Uploading coverage
+        uses: actions/upload-artifact@v3
+        if: ${{ always() }}
         with:
-          directory: .
-          flags: unit_tests
-          name: codecov-poc
-          files: unit_lcov.info
-          verbose: true
+          path: ${{github.workspace}}/*.info
 
   windows-unit-tests:
     name: Run Unit tests on Windows

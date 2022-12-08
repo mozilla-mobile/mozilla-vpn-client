@@ -122,15 +122,11 @@ jobs:
 
           grcov $(pwd)/tests/unit/CMakeFiles/lottie_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/lottie_lcov.info
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+      - name: Uploading coverage
+        uses: actions/upload-artifact@v3
+        if: ${{ always() }}
         with:
-          directory: .
-          flags: lottie_tests
-          name: codecov-poc
-          files: lottie_lcov.info
-          verbose: true
+          path: ${{github.workspace}}/lottie_lcov.info
 
   windows-lottie-tests:
     name: Run Lottie tests on Windows

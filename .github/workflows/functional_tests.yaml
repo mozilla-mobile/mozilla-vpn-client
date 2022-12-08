@@ -156,18 +156,12 @@ jobs:
           export PATH=${{github.workspace}}/grcov-build/bin:$PATH
           grcov build/profile \
               -s src -t lcov --branch --ignore-not-existing \
-              -o ${{runner.temp}}/artifacts/functional_lcov.info
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        if: steps.generateGrcov.outcome == 'success'
+              -o ${{runner.temp}}/functional_${{matrix.test.name}}_lcov.info
+      - name: Uploading coverage
+        uses: actions/upload-artifact@v3
+        if: ${{ always() }}
         with:
-          directory: .
-          flags: functional_tests
-          name: codecov-poc
-          files: ${{runner.temp}}/artifacts/functional_lcov.info
-          verbose: true
-
+          path: ${{runner.temp}}/functional_${{matrix.test.name}}_lcov.info
       - name: Uploading artifacts
         uses: actions/upload-artifact@v3
         if: ${{ always() }}
