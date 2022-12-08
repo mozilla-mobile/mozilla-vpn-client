@@ -74,7 +74,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           directory: .
-          flags: unit_tests
+          flags: linux_unit_tests
           name: codecov-poc
           files: auth_lcov.info,nativemessaging_lcov.info,qml_lcov.info,unit_lcov.info
           verbose: true
@@ -151,7 +151,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           directory: .
-          flags: unit_tests
+          flags: macos_unit_tests
           name: codecov-poc
           files: auth_lcov.info,nativemessaging_lcov.info,qml_lcov.info,unit_lcov.info
           verbose: true
