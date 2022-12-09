@@ -7,7 +7,7 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
-
+import components 0.1
 
 Item {
     id: box
@@ -420,7 +420,7 @@ Item {
         }
     ]
 
-    VPNAnimatedRings {
+    AnimatedRings {
         id: animatedRings
         // Make sure we only do the render animation when
         // The element is visible &&
