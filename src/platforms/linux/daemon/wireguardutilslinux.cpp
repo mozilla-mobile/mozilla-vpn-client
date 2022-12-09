@@ -153,9 +153,8 @@ bool WireguardUtilsLinux::addInterface(const InterfaceConfig& config) {
 
   // Set/update device
   device->fwmark = WG_FIREWALL_MARK;
-  device->flags =
-      (wg_device_flags)(WGDEVICE_HAS_PRIVATE_KEY | WGDEVICE_REPLACE_PEERS |
-                        WGDEVICE_HAS_FWMARK);
+  device->flags = (wg_device_flags)(
+      WGDEVICE_HAS_PRIVATE_KEY | WGDEVICE_REPLACE_PEERS | WGDEVICE_HAS_FWMARK);
   if (wg_set_device(device) != 0) {
     logger.error() << "Failed to setup the device";
     return false;
