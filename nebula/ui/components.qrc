@@ -13,7 +13,6 @@
         <file>components/forms/VPNTextField.qml</file>
         <file>components/qmldir</file>
         <file>components/VPNAlert.qml</file>
-        <file>components/VPNAnimatedRings.qml</file>
         <file>components/VPNAvatar.qml</file>
         <file>components/VPNBoldInterLabel.qml</file>
         <file>components/VPNBoldLabel.qml</file>
@@ -36,8 +35,6 @@
         <file>components/VPNConnectionInfoContent.qml</file>
         <file>components/VPNConnectionInfoItem.qml</file>
         <file>components/VPNConnectionStability.qml</file>
-        <file>components/VPNControllerNav.qml</file>
-        <file>components/VPNControllerView.qml</file>
         <file>components/VPNDropShadowWithStates.qml</file>
         <file>components/VPNExternalLinkListItem.qml</file>
         <file>components/VPNFlickable.qml</file>
@@ -94,7 +91,6 @@
         <file>components/VPNTextBlock.qml</file>
         <file>components/VPNTimer.qml</file>
         <file>components/VPNToggleCard.qml</file>
-        <file>components/VPNToggle.qml</file>
         <file>components/VPNToolTip.qml</file>
         <file>components/VPNTutorialCard.qml</file>
         <file>components/VPNUIStates.qml</file>

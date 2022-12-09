@@ -1,5 +1,4 @@
 VPNAlert 0.1 VPNAlert.qml
-VPNAnimatedRings 0.1 VPNAnimatedRings.qml
 VPNAvatar 0.1 VPNAvatar.qml
 VPNBadge 0.1 VPNBadge.qml
 VPNBoldInterLabel 0.1 VPNBoldInterLabel.qml
@@ -24,8 +23,6 @@ VPNConnectionInfoScreen 0.1 VPNConnectionInfoScreen.qml
 VPNConnectionInfoContent 0.1 VPNConnectionInfoContent.qml
 VPNConnectionInfoItem 0.1 VPNConnectionInfoItem.qml
 VPNConnectionStability 0.1 VPNConnectionStability.qml
-VPNControllerNav 0.1 VPNControllerNav.qml
-VPNControllerView 0.1 VPNControllerView.qml
 VPNDropShadowWithStates 0.1 VPNDropShadowWithStates.qml
 VPNExternalLinkListItem 0.1 VPNExternalLinkListItem.qml
 VPNFeatureTour 0.1 VPNFeatureTour.qml
@@ -88,7 +85,6 @@ VPNSystemAlert 0.1 VPNSystemAlert.qml
 VPNTabNavigation 0.1 VPNTabNavigation.qml
 VPNTextBlock 0.1 VPNTextBlock.qml
 VPNTimer 0.1 VPNTimer.qml
-VPNToggle 0.1 VPNToggle.qml
 VPNToggleCard 0.1 VPNToggleCard.qml
 VPNToolTip 0.1 VPNToolTip.qml
 VPNTutorialCard 0.1 VPNTutorialCard.qml

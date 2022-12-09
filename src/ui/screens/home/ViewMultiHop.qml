@@ -47,7 +47,7 @@ StackView {
                 showMultiHopRecentConnections: true
             }
 
-            VPNControllerNav {
+            ControllerNav {
                 function handleClick() {
                     multiHopStackView.push(
                         "qrc:/nebula/components/VPNServerList.qml",
@@ -81,7 +81,7 @@ StackView {
 
             ColumnLayout {
                 spacing: 8
-                VPNControllerNav {
+                ControllerNav {
                     function handleClick() {
                         multiHopStackView.push("qrc:/nebula/components/VPNServerList.qml",
                            {

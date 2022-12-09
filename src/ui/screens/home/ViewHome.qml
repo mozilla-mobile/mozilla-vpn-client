@@ -71,12 +71,12 @@ VPNFlickable {
             }
         }
 
-        VPNControllerView {
+        ControllerView {
             id: box
             z: 1
         }
 
-        VPNControllerNav {
+        ControllerNav {
             function handleClick() {
                 if (disableRowWhen) {
                     return
