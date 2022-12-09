@@ -34,7 +34,7 @@
         <file>screens/getHelp/giveFeedback/ViewGiveFeedbackForm.qml</file>
         <file>screens/getHelp/giveFeedback/ViewGiveFeedbackReview.qml</file>
         <file>screens/getHelp/giveFeedback/ViewGiveFeedbackThankYou.qml</file>
-        <fil>screens/home/ControllerNav.qml</file>
+        <file>screens/home/ControllerNav.qml</file>
         <file>screens/home/controller/AnimatedRings.qml</file>
         <file>screens/home/controller/ControllerView.qml</file>
         <file>screens/home/controller/VPNToggle.qml</file>
