@@ -125,9 +125,6 @@ void AndroidVPNActivity::handleServiceMessage(int code, const QString& data) {
     case ServiceEvents::EVENT_STATISTIC_UPDATE:
       emit eventStatisticUpdate(data);
       break;
-    case ServiceEvents::EVENT_BACKEND_LOGS:
-      emit eventBackendLogs(data);
-      break;
     case ServiceEvents::EVENT_ACTIVATION_ERROR:
       emit eventActivationError(data);
       break;
