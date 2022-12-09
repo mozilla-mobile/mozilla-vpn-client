@@ -39,10 +39,6 @@
         <file>screens/home/controller/ControllerView.qml</file>
         <file>screens/home/controller/VPNToggle.qml</file>
         <file>screens/home/qmldir</file>
-        <file>screens/home/speedTest/ConnectionInfoContent.qml</file>
-        <file>screens/home/speedTest/ConnectionInfoError.qml</file>
-        <file>screens/home/speedTest/ConnectionInfoItem.qml</file>
-        <file>screens/home/speedTest/ConnectionInfoScreen.qml</file>
         <file>screens/home/ViewHome.qml</file>
         <file>screens/home/ViewMultiHop.qml</file>
         <file>screens/home/ViewServers.qml</file>
@@ -102,5 +98,9 @@
         <file>sharedViews/ViewUpdate.qml</file>
         <file>screens/ScreenDeleteAccount.qml</file>
         <file>screens/home/controller/ConnectionStability.qml</file>
+        <file>screens/home/controller/ConnectionInfoContent.qml</file>
+        <file>screens/home/controller/ConnectionInfoError.qml</file>
+        <file>screens/home/controller/ConnectionInfoItem.qml</file>
+        <file>screens/home/controller/ConnectionInfoScreen.qml</file>
     </qresource>
 </RCC>

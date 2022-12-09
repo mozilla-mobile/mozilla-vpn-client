@@ -112,7 +112,7 @@ Item {
 
             PropertyChanges {
                 target: boxBackground
-                color: "yellow"
+                color: "#FFFFFF"
             }
 
             PropertyChanges {
@@ -602,6 +602,7 @@ Item {
         height: boxBackground.height
         radius: VPNTheme.theme.cornerRadius * 2
     }
+
 
     Component.onCompleted: VPNNavigator.addView(VPNNavigator.ScreenHome, connectionInfoScreen)
 

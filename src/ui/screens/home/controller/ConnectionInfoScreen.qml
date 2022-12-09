@@ -6,7 +6,9 @@ import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
+import compat 0.1
 import components 0.1
+
 
 Rectangle {
     property bool isOpen: false
@@ -14,7 +16,6 @@ Rectangle {
     property int transitionDuration: 750
 
     id: root
-
     clip: true
     color: VPNTheme.colors.primary
     opacity: 0

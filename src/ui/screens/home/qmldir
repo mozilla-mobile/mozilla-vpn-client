@@ -1,8 +1,8 @@
 AnimatedRings 0.1 controller/AnimatedRings.qml
-ConnectionInfoContent 0.1 speedTest/ConnectionInfoContent.qml
-ConnectionInfoError 0.1 speedTest/ConnectionInfoError.qml
-ConnectionInfoItem 0.1 speedTest/ConnectionInfoItem.qml
-ConnectionInfoScreen 0.1 speedTest/ConnectionInfoScreen.qml
+ConnectionInfoContent 0.1 controller/ConnectionInfoContent.qml
+ConnectionInfoError 0.1 controller/ConnectionInfoError.qml
+ConnectionInfoItem 0.1 controller/ConnectionInfoItem.qml
+ConnectionInfoScreen 0.1 controller/ConnectionInfoScreen.qml
 ConnectionStability 0.1 controller/ConnectionStability.qml
 ControllerView 0.1 controller/ControllerView.qml
 VPNToggle 0.1 controller/VPNToggle.qml
