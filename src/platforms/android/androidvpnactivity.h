@@ -83,7 +83,6 @@ class AndroidVPNActivity : public QObject {
   void eventConnected(const QString& data);
   void eventDisconnected(const QString& data);
   void eventStatisticUpdate(const QString& data);
-  void eventBackendLogs(const QString& data);
   void eventActivationError(const QString& data);
 
  private:
