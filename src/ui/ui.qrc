@@ -102,5 +102,6 @@
         <file>screens/home/controller/ConnectionInfoError.qml</file>
         <file>screens/home/controller/ConnectionInfoItem.qml</file>
         <file>screens/home/controller/ConnectionInfoScreen.qml</file>
+        <file>screens/home/controller/VPNIPAddress.qml</file>
     </qresource>
 </RCC>

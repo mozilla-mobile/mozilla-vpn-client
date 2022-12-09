@@ -6,3 +6,4 @@ ConnectionInfoScreen 0.1 controller/ConnectionInfoScreen.qml
 ConnectionStability 0.1 controller/ConnectionStability.qml
 ControllerView 0.1 controller/ControllerView.qml
 VPNToggle 0.1 controller/VPNToggle.qml
+VPNIPAddress 0.1 controller/VPNIPAddress.qml
