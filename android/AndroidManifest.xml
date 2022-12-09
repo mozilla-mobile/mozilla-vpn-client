@@ -64,7 +64,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
                 android:value="minimal" />
 
         </activity>
-        <service
+        <!-- <service
             android:name=".daemon.VPNTileService"
             android:label="@string/product_name"
             android:icon="@drawable/ic_mozvpn_round"
@@ -73,7 +73,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
-        </service>
+        </service> -->
     </application>
 
 </manifest>
