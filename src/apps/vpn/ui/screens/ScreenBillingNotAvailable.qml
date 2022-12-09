@@ -34,5 +34,6 @@ VPNStackView {
             }
         );
         VPN.recordGleanEvent("billingNotAvailableViewed");
+        Glean.sample.billingNotAvailableViewed.record();
     }
 }

@@ -150,6 +150,9 @@ ColumnLayout {
 
                     onClicked: {
                         VPN.recordGleanEventWithExtraKeys("addonCtaClicked", { "addon_id": addon.id });
+                        Glean.sample.addonCtaClicked.record({
+                            addon_id: addon.id
+                        });
                         loader.composerBlock.click();
                     }
                 }
