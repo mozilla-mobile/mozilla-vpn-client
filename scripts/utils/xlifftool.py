@@ -55,6 +55,8 @@ class xliff_language:
                 print(f'String ID {trid} was not found', file=sys.stderr)
             return
 
+        target = self.translate(trid)
+
         while len(trid) > 0 and strip_trid > 0:
             index = trid.find('.')
             if index < 0:
@@ -62,7 +64,6 @@ class xliff_language:
             strip_trid = strip_trid - 1
             trid = trid[index+1:]
 
-        target = self.translate(trid)
         if format == 'env':
             escstring = target.replace('"', '\\"')
             return f"{trid.upper().replace('.', '_')}=\"{escstring}\""
