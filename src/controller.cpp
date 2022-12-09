@@ -162,7 +162,9 @@ void Controller::implInitialized(bool status, bool a_connected,
   // If we are connected already at startup time, we can trigger the connection
   // sequence of tasks.
   if (a_connected) {
-    m_connectedTimeInUTC = connectionDate.toUTC();
+    m_connectedTimeInUTC = connectionDate.isValid()
+                               ? connectionDate.toUTC()
+                               : QDateTime::currentDateTimeUtc();
     emit timeChanged();
     m_timer.start(TIMER_MSEC);
   }
@@ -594,7 +596,10 @@ void Controller::setState(State state) {
 }
 
 qint64 Controller::time() const {
-  return m_connectedTimeInUTC.secsTo(QDateTime::currentDateTimeUtc());
+  if (m_connectedTimeInUTC.isValid()) {
+    return m_connectedTimeInUTC.secsTo(QDateTime::currentDateTimeUtc());
+  }
+  return 0;
 }
 
 void Controller::getBackendLogs(
