@@ -7,7 +7,7 @@ on:
     # This just happens to be the slowest, meaning we don't n
     # need to trigger the task before this has reached a conclusion :) 
     # We can take a faster one, this task will wait for all to finish. 
-      - "Functional tests"
+      - Functional tests
     types: 
       - completed
 
@@ -33,7 +33,7 @@ jobs:
       - name: Uploading artifacts
         uses: actions/upload-artifact@v3
         with:
-          path: ./**.info
+          path: .
   upload_coverage:
     runs-on: ubuntu-20.04
     steps:
