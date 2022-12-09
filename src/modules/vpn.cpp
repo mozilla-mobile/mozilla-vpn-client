@@ -10,10 +10,13 @@
 #include "mozillavpn.h"
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
-#include "server/serverconnection.h"
 #include "settingsholder.h"
 #include "taskscheduler.h"
 #include "tutorial/tutorial.h"
+
+#ifdef MVPN_WEBEXTENSION
+#  include "server/serverconnection.h"
+#endif
 
 #include <QGuiApplication>
 #include <QJsonArray>
@@ -197,6 +200,7 @@ void ModuleVPN::initialize() {
   m_telemetry.initialize();
 
   registerInspectorHandlerCommands();
+
   registerServerConnectionRequestTypes();
 }
 
@@ -382,6 +386,7 @@ void ModuleVPN::registerInspectorHandlerCommands() {
 }
 
 void ModuleVPN::registerServerConnectionRequestTypes() {
+#ifdef MVPN_WEBEXTENSION
   ServerConnection::registerRequestType(
       ServerConnection::RequestType{"activate", [](const QJsonObject&) {
                                       ModuleVPN::instance()->activate();
@@ -424,6 +429,7 @@ void ModuleVPN::registerServerConnectionRequestTypes() {
                                       obj["status"] = serializeStatus();
                                       return obj;
                                     }});
+#endif
 }
 
 void ModuleVPN::updateRequired() { m_controller.updateRequired(); }

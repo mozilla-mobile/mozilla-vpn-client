@@ -883,6 +883,9 @@ void TestAddon::message_notification_data() {
   // Mock a user login.
   TestHelper::resetLastSystemNotification();
   MozillaVPN::instance()->forceUserState(MozillaVPN::UserAuthenticated);
+  auto guard = qScopeGuard([&] {
+    MozillaVPN::instance()->forceUserState(MozillaVPN::UserNotAuthenticated);
+  });
 
   // A login should not trigger any messages either.
   QTest::addRow("login") << QString() << QString()
