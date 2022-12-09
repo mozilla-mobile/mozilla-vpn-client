@@ -255,8 +255,6 @@ void MozillaVPN::initialize() {
 
   AddonManager::instance();
 
-  VPNGlean::initialize();
-
   RecentConnections::instance()->initialize();
 
   QList<Task*> initTasks{new TaskAddonIndex(), new TaskGetFeatureList()};

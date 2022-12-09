@@ -17,7 +17,6 @@ class VPNGlean final : public QObject {
   explicit VPNGlean(QObject* parent);
 
   static void setUploadEnabled(bool isTelemetryEnabled);
-  static void registerQMLSingletons();
 
  public:
   ~VPNGlean();

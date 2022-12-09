@@ -47,6 +47,9 @@ class __DONOTUSE__{{ category_name|Camelize }} final {
 {% endfor %}
 
   public:
+    __DONOTUSE__{{ category_name|Camelize }}() = default;
+    ~__DONOTUSE__{{ category_name|Camelize }}() = default;
+
     {% for obj in objs.values() %}
     {{ obj|type_name }} {{obj.name|camelize }} () const { return m_{{obj.name|camelize }}; };
     {% endfor %}

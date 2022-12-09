@@ -61,6 +61,12 @@ class EventMetric final {
   Q_GADGET
 
  public:
+  // QML custom types require these three declarations.
+  // See: https://doc.qt.io/qt-6/custom-types.html#creating-a-custom-type
+  EventMetric() = default;
+  EventMetric(const EventMetric&) = default;
+  EventMetric& operator=(const EventMetric&) = default;
+
   explicit EventMetric(
       int id, EventMetricExtraParser* parser = new EventMetricExtraParser());
   ~EventMetric() = default;
