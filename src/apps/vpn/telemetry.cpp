@@ -41,25 +41,24 @@ void Telemetry::initialize() {
   Controller* controller = MozillaVPN::instance()->controller();
   Q_ASSERT(controller);
 
-  connect(
-      controller, &Controller::handshakeFailed, this,
-      [](const QString& publicKey) {
-        logger.info() << "Send a handshake failure event";
+  connect(controller, &Controller::handshakeFailed, this,
+          [](const QString& publicKey) {
+            logger.info() << "Send a handshake failure event";
 
-        auto extras = mozilla::glean::sample::ConnectivityHandshakeTimeoutExtra{
-          _server : publicKey,
-          _transport : MozillaVPN::instance()
-              ->networkWatcher()
-              ->getCurrentTransport()
-        };
-        mozilla::glean::sample::connectivity_handshake_timeout.record(&extras);
-        emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
-            GleanSample::connectivityHandshakeTimeout,
-            {{"server", publicKey},
-             {"transport", MozillaVPN::instance()
-                               ->networkWatcher()
-                               ->getCurrentTransport()}});
-      });
+            mozilla::glean::sample::connectivity_handshake_timeout.record(
+                mozilla::glean::sample::ConnectivityHandshakeTimeoutExtra{
+                  _server : publicKey,
+                  _transport : MozillaVPN::instance()
+                      ->networkWatcher()
+                      ->getCurrentTransport()
+                });
+            emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+                GleanSample::connectivityHandshakeTimeout,
+                {{"server", publicKey},
+                 {"transport", MozillaVPN::instance()
+                                   ->networkWatcher()
+                                   ->getCurrentTransport()}});
+          });
 
   connect(controller, &Controller::stateChanged, this, [this]() {
     MozillaVPN* vpn = MozillaVPN::instance();
@@ -74,9 +73,9 @@ void Telemetry::initialize() {
       m_connectionStabilityTimer.start(CONNECTION_STABILITY_MSEC);
     }
 
-    auto extras = mozilla::glean::sample::
-    ControllerStepExtra{_state : QVariant::fromValue(state).toString()};
-    mozilla::glean::sample::controller_step.record(&extras);
+    mozilla::glean::sample::controller_step.record(
+        mozilla::glean::sample::
+        ControllerStepExtra{_state : QVariant::fromValue(state).toString()});
     emit vpn->recordGleanEventWithExtraKeys(
         GleanSample::controllerStep,
         {{"state", QVariant::fromValue(state).toString()}});
@@ -109,14 +108,14 @@ void Telemetry::connectionStabilityEvent() {
   Q_ASSERT(controller);
   Q_ASSERT(controller->state() == Controller::StateOn);
 
-  auto extras = mozilla::glean::sample::ConnectivityStableExtra{
-    _latency : QString::number(vpn->connectionHealth()->latency()),
-    _loss : QString::number(vpn->connectionHealth()->loss()),
-    _server : vpn->currentServer()->exitServerPublicKey(),
-    _stddev : QString::number(vpn->connectionHealth()->stddev()),
-    _transport : vpn->networkWatcher()->getCurrentTransport()
-  };
-  mozilla::glean::sample::connectivity_stable.record(&extras);
+  mozilla::glean::sample::connectivity_stable.record(
+      mozilla::glean::sample::ConnectivityStableExtra{
+        _latency : QString::number(vpn->connectionHealth()->latency()),
+        _loss : QString::number(vpn->connectionHealth()->loss()),
+        _server : vpn->currentServer()->exitServerPublicKey(),
+        _stddev : QString::number(vpn->connectionHealth()->stddev()),
+        _transport : vpn->networkWatcher()->getCurrentTransport()
+      });
   emit vpn->recordGleanEventWithExtraKeys(
       GleanSample::connectivityStable,
       {{"server", vpn->currentServer()->exitServerPublicKey()},

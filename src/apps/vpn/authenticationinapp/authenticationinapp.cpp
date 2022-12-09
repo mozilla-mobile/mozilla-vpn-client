@@ -59,33 +59,27 @@ void AuthenticationInApp::setState(State state,
       logger.debug() << "TypeDefault";
       gleanSample = GleanSample::authenticationInappStep;
 
-      {
-        auto extras = mozilla::glean::sample::
-        AuthenticationInappStepExtra{_state : stateAsString};
-        mozilla::glean::sample::authentication_inapp_step.record(&extras);
-      }
+      mozilla::glean::sample::authentication_inapp_step.record(
+          mozilla::glean::sample::
+          AuthenticationInappStepExtra{_state : stateAsString});
 
       break;
     case AuthenticationInAppSession::TypeAccountDeletion:
       logger.debug() << "TypeAccountDeletion";
       gleanSample = GleanSample::authenticationAcntDelStep;
 
-      {
-        auto extras = mozilla::glean::sample::
-        AuthenticationAcntDelStepExtra{_state : stateAsString};
-        mozilla::glean::sample::authentication_acnt_del_step.record(&extras);
-      }
+      mozilla::glean::sample::authentication_acnt_del_step.record(
+          mozilla::glean::sample::
+          AuthenticationAcntDelStepExtra{_state : stateAsString});
 
       break;
     case AuthenticationInAppSession::TypeSubscriptionManagement:
       logger.debug() << "TypeSubscriptionManagement";
       gleanSample = GleanSample::authenticationSubManageStep;
 
-      {
-        auto extras = mozilla::glean::sample::
-        AuthenticationSubManageStepExtra{_state : stateAsString};
-        mozilla::glean::sample::authentication_sub_manage_step.record(&extras);
-      }
+      mozilla::glean::sample::authentication_sub_manage_step.record(
+          mozilla::glean::sample::
+          AuthenticationSubManageStepExtra{_state : stateAsString});
 
       break;
     default:

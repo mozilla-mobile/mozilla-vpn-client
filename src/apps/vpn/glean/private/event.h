@@ -48,7 +48,7 @@ struct EventMetricExtraParser {
 
     return FfiExtra();
   };
-  virtual FfiExtra fromStruct(EventMetricExtra* extras,
+  virtual FfiExtra fromStruct(const EventMetricExtra& extras,
                               QList<QByteArray>& keepStringsAlive, int id) {
     Q_ASSERT(false);
     // This function should be overriden.
@@ -71,7 +71,7 @@ class EventMetric final {
   // on C++ the variant that receives the FFI extra struct is preferred.
   Q_INVOKABLE void record(const QJsonObject& extras);
 
-  void record(EventMetricExtra* extras);
+  void record(const EventMetricExtra& extras);
 
 #if defined(UNIT_TEST)
   Q_INVOKABLE int32_t

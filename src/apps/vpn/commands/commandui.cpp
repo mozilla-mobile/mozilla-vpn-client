@@ -240,11 +240,12 @@ int CommandUI::run(QStringList& tokens) {
     AndroidGlean::initialize(engine);
 #endif
     if (updateOption.m_set) {
-      auto extras = mozilla::glean::sample::UpdateStepExtra{
-        _state : QVariant::fromValue(Updater::ApplicationRestartedAfterUpdate)
-            .toString()
-      };
-      mozilla::glean::sample::update_step.record(&extras);
+      mozilla::glean::sample::update_step.record(
+          mozilla::glean::sample::UpdateStepExtra{
+            _state :
+                QVariant::fromValue(Updater::ApplicationRestartedAfterUpdate)
+                    .toString()
+          });
       emit vpn.recordGleanEventWithExtraKeys(
           GleanSample::updateStep,
           {{"state",

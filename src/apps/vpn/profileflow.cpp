@@ -34,10 +34,10 @@ void ProfileFlow::setState(State state) {
   m_state = state;
   emit stateChanged(m_state);
 
-  auto extras = mozilla::glean::sample::ProfileFlowStateChangedExtra{
-    _state : QVariant::fromValue(state).toString(),
-  };
-  mozilla::glean::sample::profile_flow_state_changed.record(&extras);
+  mozilla::glean::sample::profile_flow_state_changed.record(
+      mozilla::glean::sample::ProfileFlowStateChangedExtra{
+        _state : QVariant::fromValue(state).toString(),
+      });
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::profileFlowStateChanged,
       {{"state", QVariant::fromValue(state).toString()}});

@@ -51,25 +51,26 @@ struct __DONOTUSE__{{ obj.name|Camelize }}ExtraParser : EventMetricExtraParser {
     return ffiExtras;
   }
 
-  virtual FfiExtra fromStruct(EventMetricExtra* extras, QList<QByteArray>& keepStringsAlive, int id) override {
-    mozilla::glean::{{ category_name|snake_case }}::{{ obj.name|Camelize }}Extra* parsedExtras =
-      static_cast<mozilla::glean::{{ category_name|snake_case }}::{{ obj.name|Camelize }}Extra*>(extras);
-    Q_ASSERT(id == parsedExtras->__PRIVATE__id);
+  virtual FfiExtra fromStruct(const EventMetricExtra& extras, QList<QByteArray>& keepStringsAlive, int id) override {
+    auto parsedExtras = static_cast<const mozilla::glean::{{ category_name|snake_case }}::{{ obj.name|Camelize }}Extra&>(extras);
+
+    // Assert the cast extra is the correct one.
+    Q_ASSERT(id == parsedExtras.__PRIVATE__id);
 
     const char* extraKeys[{{ obj|attr("allowed_extra_keys_with_types")|length }}];
     const char* extraValues[{{ obj|attr("allowed_extra_keys_with_types")|length }}];
     int count = 0;
 
     {% for item, type in obj|attr("allowed_extra_keys_with_types") %}
-    if (parsedExtras->_{{item|camelize}}.canConvert<{{type|extra_type_name}}>()) {
+    if (parsedExtras._{{item|camelize}}.canConvert<{{type|extra_type_name}}>()) {
       {% if type == "string" %}
-      QByteArray s = parsedExtras->_{{item|camelize}}.toString().toUtf8();
+      QByteArray s = parsedExtras._{{item|camelize}}.toString().toUtf8();
       keepStringsAlive.append(s);
       extraValues[count] = s.constData();
       {% elif type == "boolean" %}
-      extraValues[count] = parsedExtras->_{{item|camelize}} ? "true" : "false";
+      extraValues[count] = parsedExtras._{{item|camelize}} ? "true" : "false";
       {% elif type == "quantity" %}
-      QByteArray s = QString::number(parsedExtras->_{{item|camelize}}.toInt()).toUtf8();
+      QByteArray s = QString::number(parsedExtras._{{item|camelize}}.toInt()).toUtf8();
       keepStringsAlive.append(s);
       extraValues[count] = s.constData();
       {% else %}

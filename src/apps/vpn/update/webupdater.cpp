@@ -27,9 +27,10 @@ WebUpdater::~WebUpdater() {
 }
 
 void WebUpdater::start(Task*) {
-  auto extras = mozilla::glean::sample::
-  UpdateStepExtra{_state : QVariant::fromValue(FallbackInBrowser).toString()};
-  mozilla::glean::sample::update_step.record(&extras);
+  mozilla::glean::sample::update_step.record(
+      mozilla::glean::sample::UpdateStepExtra{
+        _state : QVariant::fromValue(FallbackInBrowser).toString()
+      });
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(FallbackInBrowser).toString()}});

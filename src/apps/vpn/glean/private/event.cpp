@@ -36,7 +36,7 @@ void EventMetric::record(const QJsonObject& extras) {
   }
 }
 
-void EventMetric::record(EventMetricExtra* extras) {
+void EventMetric::record(const EventMetricExtra& extras) {
   // Helper vector to extend the lifetime of the strings
   // that hold the extra key values until they are used.
   QList<QByteArray> keepStringsAlive;

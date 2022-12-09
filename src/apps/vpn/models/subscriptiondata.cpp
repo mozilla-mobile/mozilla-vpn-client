@@ -133,9 +133,9 @@ bool SubscriptionData::fromJsonInternal(const QByteArray& json) {
   } else {
     logger.error() << "Unexpected interval type:" << planInterval;
 
-    auto extras = mozilla::glean::sample::
-    UnhandledSubPlanIntervalExtra{_interval : planInterval};
-    mozilla::glean::sample::unhandled_sub_plan_interval.record(&extras);
+    mozilla::glean::sample::unhandled_sub_plan_interval.record(
+        mozilla::glean::sample::
+        UnhandledSubPlanIntervalExtra{_interval : planInterval});
     emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
         GleanSample::unhandledSubPlanInterval, {{"interval", planInterval}});
     return false;
@@ -164,11 +164,11 @@ bool SubscriptionData::fromJsonInternal(const QByteArray& json) {
       logger.error() << "Unexpected billing interval:"
                      << planIntervalMonthsTotal;
 
-      auto extras = mozilla::glean::sample::UnhandledSubPlanIntervalExtra{
-        _interval : planInterval,
-        _intervalCount : planIntervalCount
-      };
-      mozilla::glean::sample::unhandled_sub_plan_interval.record(&extras);
+      mozilla::glean::sample::unhandled_sub_plan_interval.record(
+          mozilla::glean::sample::UnhandledSubPlanIntervalExtra{
+            _interval : planInterval,
+            _intervalCount : planIntervalCount
+          });
       emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
           GleanSample::unhandledSubPlanInterval,
           {{"interval", planInterval}, {"interval_count", planIntervalCount}});
