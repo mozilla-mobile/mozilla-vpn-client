@@ -34,10 +34,7 @@ jobs:
       
       - name: Install Qt6
         shell: bash
-        run: |
-          cat 3rdparty/qt_static_macos/qt6* | tar xz --strip-components=1 -C 3rdparty/qt_static_macos
-          echo "[Paths]\nPrefix=$(pwd)/3rdparty/qt_static_macos" > 3rdparty/qt_static_macos/bin/qt.conf
-          echo "[Paths]\nPrefix=$(pwd)/3rdparty/qt_static_macos" > 3rdparty/qt_static_macos/libexec/qt.conf
+        run: cat 3rdparty/qt_static_macos/qt6* | tar xz --strip-components=1 -C 3rdparty/qt_static_macos
 
       - name: Install dependencies
         shell: bash

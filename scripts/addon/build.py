@@ -295,27 +295,23 @@ if not os.path.isdir(qtbinpath):
     print(f"QT path is not a diretory: {qtbinpath}")
     sys.exit(1)
 
-lconvert = os.path.join(qtbinpath, "lconvert")
-lrelease = os.path.join(qtbinpath, "lrelease")
+## Assemble some likely places where we will find tools
+qttoolpath = qtbinpath
+qtlibexec = qtquery(os.path.join(qtbinpath, "qmake"), "QT_INSTALL_LIBEXECS")
+if qtlibexec is not None:
+    qttoolpath += ':' + qtlibexec
+qt6libexec = qtquery(os.path.join(qtbinpath, "qmake6"), "QT_INSTALL_LIBEXECS")
+if qt6libexec is not None:
+    qttoolpath += ':' + qt6libexec
+relativelibexec = os.path.join(qtbinpath, '..', 'libexec')
+qttoolpath += ':' + os.path.normpath(relativelibexec)
 
-rcc_bin = "rcc"
-if os.name == "nt":
-    rcc_bin = "rcc.exe"
-
-rcc = os.path.join(qtbinpath, rcc_bin)
-if not os.path.isfile(rcc):
-    qtlibexecpath = qtquery(os.path.join(qtbinpath, "qmake"), "QT_INSTALL_LIBEXECS")
-    if qtlibexecpath is None:
-        qtlibexecpath = qtquery(
-            os.path.join(qtbinpath, "qmake6"), "QT_INSTALL_LIBEXECS"
-        )
-    if qtlibexecpath is None:
-        print("Unable to locate qmake libexec path.")
-        sys.exit(1)
-    rcc = os.path.join(qtlibexecpath, rcc_bin)
-    if not os.path.isfile(rcc):
-        print("Unable to locate rcc path.")
-        sys.exit(1)
+lconvert = shutil.which('lconvert', path=qttoolpath)
+lrelease = shutil.which('lrelease', path=qttoolpath)
+rcc = shutil.which('rcc', path=qttoolpath)
+if rcc is None:
+    print("Unable to locate rcc path.")
+    sys.exit(1)
 
 if not os.path.isfile(args.source):
     exit(f"`{args.source}` is not a file")
