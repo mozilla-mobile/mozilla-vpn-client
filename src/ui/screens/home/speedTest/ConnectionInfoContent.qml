@@ -109,7 +109,7 @@ VPNFlickable {
                     Layout.leftMargin: VPNTheme.theme.windowMargin
                     Layout.rightMargin: VPNTheme.theme.windowMargin
 
-                    VPNConnectionInfoItem {
+                    ConnectionInfoItem {
                         title: VPNServerCountryModel.getLocalizedCountryName(
                             VPNCurrentServer.exitCountryCode
                         )
@@ -127,7 +127,7 @@ VPNFlickable {
                         Layout.fillWidth: true
                     }
 
-                    VPNConnectionInfoItem {
+                    ConnectionInfoItem {
                         title: VPNl18n.ConnectionInfoLabelPing
                         subtitle: VPNConnectionBenchmark.pingLatency + " " + VPNl18n.ConnectionInfoUnitPing
                         iconPath: "qrc:/nebula/resources/connection-green.svg"
@@ -140,7 +140,7 @@ VPNFlickable {
                         Layout.fillWidth: true
                     }
 
-                    VPNConnectionInfoItem {
+                    ConnectionInfoItem {
                         //% "Download"
                         title: qsTrId("vpn.connectionInfo.download")
                         subtitle: root.getConnectionLabel(VPNConnectionBenchmark.downloadBps)
@@ -156,7 +156,7 @@ VPNFlickable {
                         Layout.fillWidth: true
                     }
 
-                    VPNConnectionInfoItem {
+                    ConnectionInfoItem {
                         title: VPNl18n.ConnectionInfoLabelUpload
                         subtitle: root.getConnectionLabel(VPNConnectionBenchmark.uploadBps)
                         iconPath: "qrc:/nebula/resources/upload.svg"

@@ -112,7 +112,7 @@ Item {
 
             PropertyChanges {
                 target: boxBackground
-                color: "#FFFFFF"
+                color: "yellow"
             }
 
             PropertyChanges {
@@ -574,7 +574,7 @@ Item {
           }
         }
 
-        VPNConnectionStability {
+        ConnectionStability {
             id: connectionStability
             Accessible.ignored: connectionInfoScreenVisible || !visible
             width: parent.width
@@ -595,7 +595,7 @@ Item {
         enabled: !connectionInfoScreenVisible
     }
 
-    VPNConnectionInfoScreen {
+    ConnectionInfoScreen {
         id: connectionInfoScreen
         isOpen: box.connectionInfoScreenVisible
 

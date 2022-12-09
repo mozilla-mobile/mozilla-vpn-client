@@ -30,11 +30,6 @@
         <file>components/VPNChevron.qml</file>
         <file>components/VPNClickableRow.qml</file>
         <file>components/VPNCollapsibleCard.qml</file>
-        <file>components/VPNConnectionInfoError.qml</file>
-        <file>components/VPNConnectionInfoScreen.qml</file>
-        <file>components/VPNConnectionInfoContent.qml</file>
-        <file>components/VPNConnectionInfoItem.qml</file>
-        <file>components/VPNConnectionStability.qml</file>
         <file>components/VPNDropShadowWithStates.qml</file>
         <file>components/VPNExternalLinkListItem.qml</file>
         <file>components/VPNFlickable.qml</file>
