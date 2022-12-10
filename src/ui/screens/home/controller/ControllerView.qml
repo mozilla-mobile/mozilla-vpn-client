@@ -568,7 +568,7 @@ Item {
             text: qsTrId("vpn.controller.active") + " • "
           }
 
-          VPNSemiMonoLabel {
+          SemiMonoLabel {
             id: connectionTime
             Accessible.ignored: true
           }

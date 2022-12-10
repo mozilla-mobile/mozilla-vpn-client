@@ -59,7 +59,6 @@ VPNRecentConnections 0.1 VPNRecentConnections.qml
 VPNScreenBase 0.1 VPNScreenBase.qml
 VPNSegmentedNavigation 0.1 VPNSegmentedNavigation.qml
 VPNSegmentedToggle 0.1 VPNSegmentedToggle.qml
-VPNSemiMonoLabel 0.1 VPNSemiMonoLabel.qml
 VPNServerCountry 0.1 VPNServerCountry.qml
 VPNServerLabel 0.1 VPNServerLabel.qml
 VPNServerLatencyIndicator 0.1 VPNServerLatencyIndicator.qml
