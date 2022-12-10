@@ -22,6 +22,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QRandomGenerator>
+#include <QFile>
+#include <QDir>
 
 namespace {
 Logger logger(LOG_ANDROID, "AndroidController");
@@ -66,14 +68,6 @@ AndroidController::AndroidController() {
       Qt::QueuedConnection);
   connect(activity, &AndroidVPNActivity::eventDisconnected, this,
           &AndroidController::disconnected, Qt::QueuedConnection);
-  connect(
-      activity, &AndroidVPNActivity::eventBackendLogs, this,
-      [this](const QString& parcelBody) {
-        if (m_logCallback) {
-          m_logCallback(parcelBody);
-        }
-      },
-      Qt::QueuedConnection);
   connect(
       activity, &AndroidVPNActivity::eventStatisticUpdate, this,
       [this](const QString& parcelBody) {
@@ -224,11 +218,16 @@ void AndroidController::checkStatus() {
 
 void AndroidController::getBackendLogs(
     std::function<void(const QString&)>&& a_callback) {
-  logger.debug() << "get logs";
-
-  m_logCallback = std::move(a_callback);
-  AndroidVPNActivity::sendToService(ServiceAction::ACTION_REQUEST_GET_LOG,
-                                    QString());
+  QString cacheFolderPath =
+      QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+  auto cacheFolder = QDir(cacheFolderPath);
+  QFile logFile(cacheFolder.absoluteFilePath("mozilla_deamon_logs.txt"));
+  if (!logFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    a_callback(QString());
+    return;
+  }
+  auto content = logFile.readAll();
+  a_callback(QString::fromUtf8(content));
 }
 
 void AndroidController::cleanupBackendLogs() {

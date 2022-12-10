@@ -27,7 +27,6 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val deactivate = 2
         const val registerEventListener = 3
         const val requestStatistic = 4
-        const val requestGetLog = 5
         const val requestCleanupLog = 6
         const val resumeActivate = 7
         const val setNotificationText = 8
@@ -129,12 +128,6 @@ class VPNServiceBinder(service: VPNService) : Binder() {
 
             ACTIONS.requestStatistic -> {
                 dispatchEvent(EVENTS.statisticUpdate, mService.status.toString())
-                return true
-            }
-
-            ACTIONS.requestGetLog -> {
-                // Grabs all the Logs and dispatch new Log Event
-                dispatchEvent(EVENTS.backendLogs, Log.getContent())
                 return true
             }
             ACTIONS.requestCleanupLog -> {
@@ -260,7 +253,6 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val connected = 1
         const val disconnected = 2
         const val statisticUpdate = 3
-        const val backendLogs = 4
         const val activationError = 5
         const val permissionRequired = 6
     }
