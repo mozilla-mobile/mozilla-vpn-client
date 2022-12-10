@@ -13,6 +13,7 @@
 #include "settingsholder.h"
 #include "taskscheduler.h"
 #include "tutorial/tutorial.h"
+#include "tutorial/tutorialstepnext.h"
 
 #ifdef MVPN_WEBEXTENSION
 #  include "server/serverconnection.h"
@@ -202,6 +203,8 @@ void ModuleVPN::initialize() {
   registerInspectorHandlerCommands();
 
   registerServerConnectionRequestTypes();
+
+  registerTutorialStepEmitters();
 }
 
 QJSValue ModuleVPN::captivePortalDetectionValue() {
@@ -430,6 +433,12 @@ void ModuleVPN::registerServerConnectionRequestTypes() {
                                       return obj;
                                     }});
 #endif
+}
+
+void ModuleVPN::registerTutorialStepEmitters() {
+  TutorialStepNext::registerEmitter("vpn_emitter", "controller", &m_controller);
+  TutorialStepNext::registerEmitter("vpn_emitter", "settingsHolder",
+                                    SettingsHolder::instance());
 }
 
 void ModuleVPN::updateRequired() { m_controller.updateRequired(); }

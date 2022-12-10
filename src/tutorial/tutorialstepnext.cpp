@@ -11,7 +11,6 @@
 #include "inspector/inspectorutils.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "modules/vpn.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 
@@ -33,6 +32,7 @@ QMetaMethod signalByName(const QMetaObject* metaObject, const QString& name) {
   return QMetaMethod();
 }
 
+QMap<QString, QMap<QString, QObject*>> s_emitters;
 }  // namespace
 
 // static
@@ -45,11 +45,29 @@ TutorialStepNext* TutorialStepNext::create(QObject* parent,
   }
 
   QString qmlEmitter = obj["qml_emitter"].toString();
-  QString vpnEmitter = obj["vpn_emitter"].toString();
-  if ((qmlEmitter.isEmpty() ? 0 : 1) + (vpnEmitter.isEmpty() ? 0 : 1) != 1) {
-    logger.warning()
-        << "Only 1 qml_emitter or 1 vpn_emitter. Not none, not both.";
-    return nullptr;
+  QObject* emitter = nullptr;
+
+  int count = qmlEmitter.isEmpty() ? 0 : 1;
+  for (QMap<QString, QMap<QString, QObject*>>::const_iterator i =
+           s_emitters.constBegin();
+       i != s_emitters.constEnd(); ++i) {
+    if (obj.contains(i.key())) {
+      ++count;
+      if (count > 1) {
+        logger.warning() << "Only 1 emitter type is supported.";
+        return nullptr;
+      }
+
+      QString emitterStr = obj[i.key()].toString();
+      if (!i.value().contains(emitterStr)) {
+        logger.warning() << "Emitter group" << i.key()
+                         << "does not contain emitter" << emitterStr;
+        return nullptr;
+      }
+
+      emitter = i.value()[emitterStr];
+      Q_ASSERT(emitter);
+    }
   }
 
   QString signal = obj["signal"].toString();
@@ -58,28 +76,13 @@ TutorialStepNext* TutorialStepNext::create(QObject* parent,
     return nullptr;
   }
 
-  EmitterType emitterType = QML;
-  if (!vpnEmitter.isEmpty()) {
-    if (vpnEmitter == "settingsHolder") {
-      emitterType = SettingsHolder;
-    } else if (vpnEmitter == "controller") {
-      emitterType = Controller;
-    } else {
-      logger.warning()
-          << "Only 'settingsHolder' and 'controller' are supported "
-             "as vpn_emitter";
-      return nullptr;
-    }
-  }
-
-  return new TutorialStepNext(parent, emitterType, qmlEmitter, signal);
+  return new TutorialStepNext(parent, qmlEmitter, emitter, signal);
 }
 
-TutorialStepNext::TutorialStepNext(QObject* parent, EmitterType emitterType,
-                                   const QString& emitter,
-                                   const QString& signal)
+TutorialStepNext::TutorialStepNext(QObject* parent, const QString& qmlEmitter,
+                                   QObject* emitter, const QString& signal)
     : QObject(parent),
-      m_emitterType(emitterType),
+      m_qmlEmitter(qmlEmitter),
       m_emitter(emitter),
       m_signal(signal) {
   MVPN_COUNT_CTOR(TutorialStepNext);
@@ -88,17 +91,9 @@ TutorialStepNext::TutorialStepNext(QObject* parent, EmitterType emitterType,
 TutorialStepNext::~TutorialStepNext() { MVPN_COUNT_DTOR(TutorialStepNext); }
 
 void TutorialStepNext::startOrStop(bool start) {
-  QObject* obj = nullptr;
-  switch (m_emitterType) {
-    case SettingsHolder:
-      obj = ::SettingsHolder::instance();
-      break;
-    case Controller:
-      obj = ModuleVPN::instance()->controller();
-      break;
-    case QML:
-      obj = InspectorUtils::findObject(m_emitter);
-      break;
+  QObject* obj = m_emitter;
+  if (!m_qmlEmitter.isEmpty()) {
+    obj = InspectorUtils::findObject(m_qmlEmitter);
   }
 
   if (!obj) {
@@ -131,3 +126,16 @@ void TutorialStepNext::startOrStop(bool start) {
 void TutorialStepNext::start() { startOrStop(true); }
 
 void TutorialStepNext::stop() { startOrStop(false); }
+
+// static
+void TutorialStepNext::registerEmitter(const QString& group,
+                                       const QString& emitter, QObject* obj) {
+  Q_ASSERT(group != "qml_emitter");
+
+  if (!s_emitters.contains(group)) {
+    s_emitters.insert(group, QMap<QString, QObject*>());
+  }
+
+  Q_ASSERT(!s_emitters[group].contains(emitter));
+  s_emitters[group].insert(emitter, obj);
+}

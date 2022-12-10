@@ -118,6 +118,7 @@ class ModuleVPN final : public Module {
 
   void registerInspectorHandlerCommands();
   void registerServerConnectionRequestTypes();
+  void registerTutorialStepEmitters();
 
   void maybeShowNotification();
 
