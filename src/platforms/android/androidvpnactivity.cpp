@@ -107,10 +107,6 @@ void AndroidVPNActivity::onServiceMessage(JNIEnv* env, jobject thiz,
 }
 
 void AndroidVPNActivity::handleServiceMessage(int code, const QString& data) {
-  if (code != ServiceEvents::EVENT_BACKEND_LOGS) {
-    // Don't put the logs in the log.
-    logger.debug() << "handleServiceMessage" << code << data;
-  }
   auto mode = (ServiceEvents)code;
   switch (mode) {
     case ServiceEvents::EVENT_INIT:
@@ -124,9 +120,6 @@ void AndroidVPNActivity::handleServiceMessage(int code, const QString& data) {
       break;
     case ServiceEvents::EVENT_STATISTIC_UPDATE:
       emit eventStatisticUpdate(data);
-      break;
-    case ServiceEvents::EVENT_BACKEND_LOGS:
-      emit eventBackendLogs(data);
       break;
     case ServiceEvents::EVENT_ACTIVATION_ERROR:
       emit eventActivationError(data);

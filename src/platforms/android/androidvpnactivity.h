@@ -24,8 +24,6 @@ enum ServiceAction {
   ACTION_REGISTERLISTENER = 3,
   // Requests an EVENT_STATISTIC_UPDATE to be send
   ACTION_REQUEST_STATISTIC = 4,
-  // Requests an EVENT_LOG_UPDATE to be send
-  ACTION_REQUEST_GET_LOG = 5,
   // Requests to clean up the internal log
   ACTION_REQUEST_CLEANUP_LOG = 6,
   // Retry activation using the last config
@@ -62,8 +60,6 @@ enum ServiceEvents {
   EVENT_DISCONNECTED = 2,
   // Contains the Current transfered bytes to endpoint x.
   EVENT_STATISTIC_UPDATE = 3,
-  // Contains the current log of the vpnservice
-  EVENT_BACKEND_LOGS = 4,
   // An Error happened during activation
   // Contains the error message
   EVENT_ACTIVATION_ERROR = 5,
@@ -87,7 +83,6 @@ class AndroidVPNActivity : public QObject {
   void eventConnected(const QString& data);
   void eventDisconnected(const QString& data);
   void eventStatisticUpdate(const QString& data);
-  void eventBackendLogs(const QString& data);
   void eventActivationError(const QString& data);
 
  private:
