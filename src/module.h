@@ -11,6 +11,7 @@
 #include <QJsonObject>
 
 class QTextStream;
+class TutorialStepBefore;
 
 class Module : public QObject {
   Q_OBJECT
@@ -63,6 +64,18 @@ class Module : public QObject {
    * @brief Clean up all the log entries
    */
   virtual void cleanupLogs() = 0;
+
+  /**
+   * @brief Create a tutorial step before object if supported
+   *
+   * @param parent - the parent object to use
+   * @param name - the name of this step
+   * @param json - the JSON object to parse
+   */
+  virtual TutorialStepBefore* maybeCreateTutorialStepBefore(
+      QObject* parent, const QString& name, const QJsonObject& json) {
+    return nullptr;
+  }
 
  signals:
   void readyToUpdate();

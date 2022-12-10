@@ -13,6 +13,7 @@
 #include "settingsholder.h"
 #include "taskscheduler.h"
 #include "tutorial/tutorial.h"
+#include "tutorial/tutorialstepbefore.h"
 #include "tutorial/tutorialstepnext.h"
 
 #ifdef MVPN_WEBEXTENSION
@@ -110,6 +111,80 @@ QJsonObject serializeStatus() {
 
   return obj;
 }
+
+class TutorialStepBeforeVpnLocationSet final : public TutorialStepBefore {
+ public:
+  static TutorialStepBefore* create(QObject* parent, const QJsonObject& obj) {
+    QString exitCountryCode = obj["exitCountryCode"].toString();
+    if (exitCountryCode.isEmpty()) {
+      logger.warning()
+          << "Empty exitCountryCode for 'before' step vpn_location_set";
+      return nullptr;
+    }
+
+    QString exitCity = obj["exitCity"].toString();
+    if (exitCity.isEmpty()) {
+      logger.warning() << "Empty exitCity for 'before' step vpn_location_set";
+      return nullptr;
+    }
+
+    QString entryCountryCode = obj["entryCountryCode"].toString();
+    QString entryCity = obj["entryCity"].toString();
+
+    return new TutorialStepBeforeVpnLocationSet(
+        parent, exitCountryCode, exitCity, entryCountryCode, entryCity);
+  };
+
+  TutorialStepBeforeVpnLocationSet(QObject* parent,
+                                   const QString& exitCountryCode,
+                                   const QString& exitCity,
+                                   const QString& entryCountryCode,
+                                   const QString& entryCity)
+      : TutorialStepBefore(parent),
+        m_exitCountryCode(exitCountryCode),
+        m_exitCity(exitCity),
+        m_entryCountryCode(entryCountryCode),
+        m_entryCity(entryCity) {
+    MVPN_COUNT_CTOR(TutorialStepBeforeVpnLocationSet);
+  }
+
+  ~TutorialStepBeforeVpnLocationSet() {
+    MVPN_COUNT_DTOR(TutorialStepBeforeVpnLocationSet);
+  }
+
+  bool run() override {
+    MozillaVPN::instance()->currentServer()->changeServer(
+        m_exitCountryCode, m_exitCity, m_entryCountryCode, m_entryCity);
+    return true;
+  }
+
+ private:
+  const QString m_exitCountryCode;
+  const QString m_exitCity;
+  const QString m_entryCountryCode;
+  const QString m_entryCity;
+};
+
+class TutorialStepBeforeVpnOff final : public TutorialStepBefore {
+ public:
+  TutorialStepBeforeVpnOff(QObject* parent) : TutorialStepBefore(parent) {
+    MVPN_COUNT_CTOR(TutorialStepBeforeVpnOff);
+  }
+
+  ~TutorialStepBeforeVpnOff() { MVPN_COUNT_DTOR(TutorialStepBeforeVpnOff); }
+
+  bool run() override {
+    Controller* controller = ModuleVPN::instance()->controller();
+    Q_ASSERT(controller);
+
+    if (controller->state() == Controller::StateOff) {
+      return true;
+    }
+
+    controller->deactivate();
+    return false;
+  }
+};
 
 }  // namespace
 
@@ -593,4 +668,17 @@ void ModuleVPN::serverConnectionStateUpdate() {
   QJsonObject obj = serializeStatus();
   obj["t"] = "status";
   emit serverConnectionMessage(obj);
+}
+
+TutorialStepBefore* ModuleVPN::maybeCreateTutorialStepBefore(
+    QObject* parent, const QString& name, const QJsonObject& json) {
+  if (name == "vpn_location_set") {
+    return TutorialStepBeforeVpnLocationSet::create(parent, json);
+  }
+
+  if (name == "vpn_off") {
+    return new TutorialStepBeforeVpnOff(parent);
+  }
+
+  return nullptr;
 }

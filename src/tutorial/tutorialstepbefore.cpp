@@ -6,7 +6,7 @@
 #include "inspector/inspectorutils.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "modules/vpn.h"
+#include "moduleholder.h"
 #include "mozillavpn.h"
 
 #include <QJsonArray>
@@ -150,84 +150,6 @@ class TutorialStepBeforePropertySet final : public TutorialStepBefore {
   const QVariant m_value;
 };
 
-class TutorialStepBeforeVpnLocationSet final : public TutorialStepBefore {
- public:
-  static TutorialStepBefore* create(QObject* parent, const QJsonObject& obj) {
-    QString exitCountryCode = obj["exitCountryCode"].toString();
-    if (exitCountryCode.isEmpty()) {
-      logger.warning()
-          << "Empty exitCountryCode for 'before' step vpn_location_set";
-      return nullptr;
-    }
-
-    QString exitCity = obj["exitCity"].toString();
-    if (exitCity.isEmpty()) {
-      logger.warning() << "Empty exitCity for 'before' step vpn_location_set";
-      return nullptr;
-    }
-
-    QString entryCountryCode = obj["entryCountryCode"].toString();
-    QString entryCity = obj["entryCity"].toString();
-
-    return new TutorialStepBeforeVpnLocationSet(
-        parent, exitCountryCode, exitCity, entryCountryCode, entryCity);
-  };
-
-  TutorialStepBeforeVpnLocationSet(QObject* parent,
-                                   const QString& exitCountryCode,
-                                   const QString& exitCity,
-                                   const QString& entryCountryCode,
-                                   const QString& entryCity)
-      : TutorialStepBefore(parent),
-        m_exitCountryCode(exitCountryCode),
-        m_exitCity(exitCity),
-        m_entryCountryCode(entryCountryCode),
-        m_entryCity(entryCity) {
-    MVPN_COUNT_CTOR(TutorialStepBeforeVpnLocationSet);
-  }
-
-  ~TutorialStepBeforeVpnLocationSet() {
-    MVPN_COUNT_DTOR(TutorialStepBeforeVpnLocationSet);
-  }
-
-  bool run() override {
-    MozillaVPN::instance()->currentServer()->changeServer(
-        m_exitCountryCode, m_exitCity, m_entryCountryCode, m_entryCity);
-    return true;
-  }
-
- private:
-  const QString m_exitCountryCode;
-  const QString m_exitCity;
-  const QString m_entryCountryCode;
-  const QString m_entryCity;
-};
-
-class TutorialStepBeforeVpnOff final : public TutorialStepBefore {
- public:
-  static TutorialStepBefore* create(QObject* parent, const QJsonObject&) {
-    return new TutorialStepBeforeVpnOff(parent);
-  };
-
-  TutorialStepBeforeVpnOff(QObject* parent) : TutorialStepBefore(parent) {
-    MVPN_COUNT_CTOR(TutorialStepBeforeVpnOff);
-  }
-
-  ~TutorialStepBeforeVpnOff() { MVPN_COUNT_DTOR(TutorialStepBeforeVpnOff); }
-
-  bool run() override {
-    Controller* controller = ModuleVPN::instance()->controller();
-    Q_ASSERT(controller);
-
-    if (controller->state() == Controller::StateOff) {
-      return true;
-    }
-
-    controller->deactivate();
-    return false;
-  }
-};
-
 // static
 QList<TutorialStepBefore*> TutorialStepBefore::create(
     QObject* parent, const QString& elementForTooltip, const QJsonValue& json) {
@@ -243,13 +165,17 @@ QList<TutorialStepBefore*> TutorialStepBefore::create(
       tsb = TutorialStepBeforePropertySet::create(parent, obj);
     } else if (opValue == "property_get") {
       tsb = TutorialStepBeforePropertyGet::create(parent, obj);
-    } else if (opValue == "vpn_location_set") {
-      tsb = TutorialStepBeforeVpnLocationSet::create(parent, obj);
-    } else if (opValue == "vpn_off") {
-      tsb = TutorialStepBeforeVpnOff::create(parent, obj);
     } else {
-      logger.warning() << "Invalid 'before' operation:" << opValue;
-      return QList<TutorialStepBefore*>();
+      ModuleHolder::instance()->forEach(
+          [tsb = &tsb, parent, opValue, obj](const QString&, Module* module) {
+            Q_ASSERT(tsb && !*tsb);
+            *tsb = module->maybeCreateTutorialStepBefore(parent, opValue, obj);
+          });
+
+      if (!tsb) {
+        logger.warning() << "Invalid 'before' operation:" << opValue;
+        return QList<TutorialStepBefore*>();
+      }
     }
 
     if (!tsb) {

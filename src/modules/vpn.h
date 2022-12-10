@@ -51,6 +51,9 @@ class ModuleVPN final : public Module {
 
   void cleanupLogs() override;
 
+  TutorialStepBefore* maybeCreateTutorialStepBefore(
+      QObject* parent, const QString& name, const QJsonObject& json) override;
+
   static ModuleVPN* instance();
 
   /**
