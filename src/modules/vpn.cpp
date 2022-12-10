@@ -511,9 +511,12 @@ void ModuleVPN::registerServerConnectionRequestTypes() {
 }
 
 void ModuleVPN::registerTutorialStepEmitters() {
-  TutorialStepNext::registerEmitter("vpn_emitter", "controller", &m_controller);
-  TutorialStepNext::registerEmitter("vpn_emitter", "settingsHolder",
-                                    SettingsHolder::instance());
+  TutorialStepNext::registerEmitter(
+      "vpn_emitter", "controller",
+      [this]() -> QObject* { return controller(); });
+  TutorialStepNext::registerEmitter(
+      "vpn_emitter", "settingsHolder",
+      [this]() -> QObject* { return SettingsHolder::instance(); });
 }
 
 void ModuleVPN::updateRequired() { m_controller.updateRequired(); }

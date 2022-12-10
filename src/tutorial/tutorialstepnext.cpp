@@ -32,7 +32,7 @@ QMetaMethod signalByName(const QMetaObject* metaObject, const QString& name) {
   return QMetaMethod();
 }
 
-QMap<QString, QMap<QString, QObject*>> s_emitters;
+QMap<QString, QMap<QString, std::function<QObject*()>>> s_emitters;
 }  // namespace
 
 // static
@@ -45,11 +45,11 @@ TutorialStepNext* TutorialStepNext::create(QObject* parent,
   }
 
   QString qmlEmitter = obj["qml_emitter"].toString();
-  QObject* emitter = nullptr;
+  std::function<QObject*()> emitterGetter = nullptr;
 
   int count = qmlEmitter.isEmpty() ? 0 : 1;
-  for (QMap<QString, QMap<QString, QObject*>>::const_iterator i =
-           s_emitters.constBegin();
+  for (QMap<QString, QMap<QString, std::function<QObject*()>>>::const_iterator
+           i = s_emitters.constBegin();
        i != s_emitters.constEnd(); ++i) {
     if (obj.contains(i.key())) {
       ++count;
@@ -65,9 +65,15 @@ TutorialStepNext* TutorialStepNext::create(QObject* parent,
         return nullptr;
       }
 
-      emitter = i.value()[emitterStr];
-      Q_ASSERT(emitter);
+      emitterGetter = i.value()[emitterStr];
+      Q_ASSERT(emitterGetter);
     }
+  }
+
+  Q_ASSERT(count <= 1);
+  if (count == 0) {
+    logger.warning() << "No emitter found";
+    return nullptr;
   }
 
   QString signal = obj["signal"].toString();
@@ -76,14 +82,16 @@ TutorialStepNext* TutorialStepNext::create(QObject* parent,
     return nullptr;
   }
 
-  return new TutorialStepNext(parent, qmlEmitter, emitter, signal);
+  return new TutorialStepNext(parent, qmlEmitter, std::move(emitterGetter),
+                              signal);
 }
 
 TutorialStepNext::TutorialStepNext(QObject* parent, const QString& qmlEmitter,
-                                   QObject* emitter, const QString& signal)
+                                   std::function<QObject*()>&& emitterGetter,
+                                   const QString& signal)
     : QObject(parent),
       m_qmlEmitter(qmlEmitter),
-      m_emitter(emitter),
+      m_emitterGetter(std::move(emitterGetter)),
       m_signal(signal) {
   MVPN_COUNT_CTOR(TutorialStepNext);
 }
@@ -91,9 +99,11 @@ TutorialStepNext::TutorialStepNext(QObject* parent, const QString& qmlEmitter,
 TutorialStepNext::~TutorialStepNext() { MVPN_COUNT_DTOR(TutorialStepNext); }
 
 void TutorialStepNext::startOrStop(bool start) {
-  QObject* obj = m_emitter;
+  QObject* obj = nullptr;
   if (!m_qmlEmitter.isEmpty()) {
     obj = InspectorUtils::findObject(m_qmlEmitter);
+  } else {
+    obj = m_emitterGetter();
   }
 
   if (!obj) {
@@ -129,13 +139,14 @@ void TutorialStepNext::stop() { startOrStop(false); }
 
 // static
 void TutorialStepNext::registerEmitter(const QString& group,
-                                       const QString& emitter, QObject* obj) {
+                                       const QString& emitter,
+                                       std::function<QObject*()>&& getter) {
   Q_ASSERT(group != "qml_emitter");
 
   if (!s_emitters.contains(group)) {
-    s_emitters.insert(group, QMap<QString, QObject*>());
+    s_emitters.insert(group, QMap<QString, std::function<QObject*()>>());
   }
 
   Q_ASSERT(!s_emitters[group].contains(emitter));
-  s_emitters[group].insert(emitter, obj);
+  s_emitters[group].insert(emitter, std::move(getter));
 }

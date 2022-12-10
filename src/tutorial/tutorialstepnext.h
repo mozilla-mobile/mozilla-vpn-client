@@ -24,7 +24,7 @@ class TutorialStepNext final : public QObject {
    * @param obj - a QObject that must be kept alive by the calleer
    */
   static void registerEmitter(const QString& group, const QString& emitter,
-                              QObject* obj);
+                              std::function<QObject*()>&& getter);
 
   ~TutorialStepNext();
 
@@ -32,8 +32,8 @@ class TutorialStepNext final : public QObject {
   void stop();
 
  private:
-  TutorialStepNext(QObject* parent, const QString& qmlEmitter, QObject* emitter,
-                   const QString& signal);
+  TutorialStepNext(QObject* parent, const QString& qmlEmitter,
+                   std::function<QObject*()>&& emitter, const QString& signal);
 
   void startOrStop(bool start);
 
@@ -42,7 +42,7 @@ class TutorialStepNext final : public QObject {
 
  private:
   const QString m_qmlEmitter;
-  QObject* m_emitter = nullptr;
+  std::function<QObject*()> m_emitterGetter;
   const QString m_signal;
 };
 
