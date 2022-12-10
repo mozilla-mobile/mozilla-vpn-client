@@ -51,9 +51,10 @@ AndroidController::AndroidController() {
         }
         m_init = true;
         auto doc = QJsonDocument::fromJson(parcelBody.toUtf8());
-        emit initialized(true, doc.object()["connected"].toBool(),
-                         QDateTime::fromMSecsSinceEpoch(
-                             doc.object()["time"].toVariant().toLongLong()));
+        qlonglong time = doc.object()["time"].toVariant().toLongLong();
+        emit initialized(
+            true, doc.object()["connected"].toBool(),
+            time > 0 ? QDateTime::fromMSecsSinceEpoch(time) : QDateTime());
       },
       Qt::QueuedConnection);
 
