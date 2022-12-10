@@ -37,7 +37,6 @@
         <file>components/VPNFocusOutline.qml</file>
         <file>components/VPNFooterLink.qml</file>
         <file>components/VPNFooterMargin.qml</file>
-        <file>components/VPNGraphLegendMarker.qml</file>
         <file>components/VPNGreyLink.qml</file>
         <file>components/VPNGuideCard.qml</file>
         <file>components/VPNHeaderLink.qml</file>
