@@ -168,6 +168,8 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/modules/vpn/captiveportal/captiveportalrequest.h
     ${MVPN_SOURCE_DIR}/modules/vpn/captiveportal/captiveportalrequesttask.cpp
     ${MVPN_SOURCE_DIR}/modules/vpn/captiveportal/captiveportalrequesttask.h
+    ${MVPN_SOURCE_DIR}/modules/vpn/captiveportal/taskcaptiveportallookup.cpp
+    ${MVPN_SOURCE_DIR}/modules/vpn/captiveportal/taskcaptiveportallookup.h
     ${MVPN_SOURCE_DIR}/modules/vpn/connectionbenchmark/benchmarktask.cpp
     ${MVPN_SOURCE_DIR}/modules/vpn/connectionbenchmark/benchmarktask.h
     ${MVPN_SOURCE_DIR}/modules/vpn/connectionbenchmark/benchmarktaskping.cpp

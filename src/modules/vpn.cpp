@@ -6,6 +6,7 @@
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "modules/vpn/captiveportal/taskcaptiveportallookup.h"
 #include "modules/vpn/taskcontrolleraction.h"
 #include "mozillavpn.h"
 #include "notificationhandler.h"
@@ -684,4 +685,9 @@ TutorialStepBefore* ModuleVPN::maybeCreateTutorialStepBefore(
   }
 
   return nullptr;
+}
+
+QList<Task*> ModuleVPN::retrievePeriodicTasks() {
+  return QList<Task*>{
+      new TaskCaptivePortalLookup(ErrorHandler::DoNotPropagateError)};
 }

@@ -54,6 +54,8 @@ class ModuleVPN final : public Module {
   TutorialStepBefore* maybeCreateTutorialStepBefore(
       QObject* parent, const QString& name, const QJsonObject& json) override;
 
+  QList<Task*> retrievePeriodicTasks() override;
+
   static ModuleVPN* instance();
 
   /**

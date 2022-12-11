@@ -11,6 +11,7 @@
 #include <QJsonObject>
 
 class QTextStream;
+class Task;
 class TutorialStepBefore;
 
 class Module : public QObject {
@@ -76,6 +77,11 @@ class Module : public QObject {
       QObject* parent, const QString& name, const QJsonObject& json) {
     return nullptr;
   }
+
+  /**
+   * @brief retrieve a list of periodic tasks
+   */
+  virtual QList<Task*> retrievePeriodicTasks() { return QList<Task*>(); }
 
  signals:
   void readyToUpdate();

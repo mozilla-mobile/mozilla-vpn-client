@@ -20,7 +20,6 @@
 #include "models/recentconnections.h"
 #include "module.h"
 #include "moduleholder.h"
-#include "modules/vpn/captiveportal/taskcaptiveportallookup.h"
 #include "networkmanager.h"
 #include "productshandler.h"
 #include "profileflow.h"
@@ -111,14 +110,22 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 
 #ifndef UNIT_TEST
   connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {
-    TaskScheduler::scheduleTask(new TaskGroup(
-        {new TaskAccount(ErrorHandler::DoNotPropagateError),
-         new TaskServers(ErrorHandler::DoNotPropagateError),
-         new TaskCaptivePortalLookup(ErrorHandler::DoNotPropagateError),
-         new TaskHeartbeat(), new TaskGetFeatureList(), new TaskAddonIndex(),
-         new TaskGetSubscriptionDetails(
-             TaskGetSubscriptionDetails::NoAuthenticationFlow,
-             ErrorHandler::PropagateError)}));
+    QList<Task*> taskList{new TaskAccount(ErrorHandler::DoNotPropagateError),
+                          new TaskServers(ErrorHandler::DoNotPropagateError),
+                          new TaskHeartbeat(),
+                          new TaskGetFeatureList(),
+                          new TaskAddonIndex(),
+                          new TaskGetSubscriptionDetails(
+                              TaskGetSubscriptionDetails::NoAuthenticationFlow,
+                              ErrorHandler::PropagateError)};
+
+    ModuleHolder::instance()->forEach(
+        [taskList = &taskList](const QString&, Module* module) {
+          QList<Task*> tasks = module->retrievePeriodicTasks();
+          taskList->append(tasks);
+        });
+
+    TaskScheduler::scheduleTask(new TaskGroup(taskList));
   });
 #endif
 
@@ -1477,10 +1484,15 @@ void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {
   QList<Task*> refreshTasks{
       new TaskAccount(ErrorHandler::PropagateError),
       new TaskServers(ErrorHandler::PropagateError),
-      new TaskCaptivePortalLookup(ErrorHandler::PropagateError),
       new TaskGetSubscriptionDetails(
           TaskGetSubscriptionDetails::NoAuthenticationFlow,
           ErrorHandler::PropagateError)};
+
+  ModuleHolder::instance()->forEach(
+      [refreshTasks = &refreshTasks](const QString&, Module* module) {
+        QList<Task*> tasks = module->retrievePeriodicTasks();
+        refreshTasks->append(tasks);
+      });
 
   if (refreshProducts) {
     if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
