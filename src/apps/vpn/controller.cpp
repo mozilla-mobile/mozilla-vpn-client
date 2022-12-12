@@ -55,6 +55,10 @@ namespace {
 Logger logger("Controller");
 
 ControllerImpl::Reason stateToReason(Controller::State state) {
+  if (state == Controller::StateOn) {
+    // This is a silent-server switch.
+    return ControllerImpl::ReasonSwitching;
+  }
   if (state == Controller::StateSwitching) {
     return ControllerImpl::ReasonSwitching;
   }
