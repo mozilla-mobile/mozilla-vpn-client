@@ -4,13 +4,13 @@
 
 #include "androidcontroller.h"
 
+#include <QDir>
+#include <QFile>
 #include <QHostAddress>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QRandomGenerator>
-#include <QFile>
-#include <QDir>
 
 #include "androidutils.h"
 #include "androidvpnactivity.h"
