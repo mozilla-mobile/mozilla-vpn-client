@@ -370,10 +370,10 @@
     // select first country again
     await actions.serverList.selectCountryFromList(exitFirstCountryId)
     await vpn.wait();
-    while (await vpn.getElementProperty(exitFirstCountryId, 'cityListVisible') === 'false'){
-      await vpn.clickOnElement(exitFirstCountryId);
-      await vpn.wait()
-    }
+    if (await vpn.getElementProperty(exitFirstCountryId, 'cityListVisible') ===
+         'false') {
+       await vpn.clickOnElement(exitFirstCountryId);
+     }
     await vpn.waitForElementProperty(exitFirstCountryId, 'cityListVisible', 'true');
     
     // select first city in exit country
@@ -407,10 +407,10 @@
 
     // select first country again
     await actions.serverList.selectCountryFromList(exitThirdCountryId)
-    while (await vpn.getElementProperty(exitThirdCountryId, 'cityListVisible') === 'false'){
-      await vpn.clickOnElement(exitThirdCountryId);
-      await vpn.wait()
-    }
+    if (await vpn.getElementProperty(exitThirdCountryId, 'cityListVisible') ===
+         'false') {
+       await vpn.clickOnElement(exitThirdCountryId);
+     }
     await vpn.waitForElementProperty(exitThirdCountryId, 'cityListVisible', 'true');
     
     // select first city in exit country
