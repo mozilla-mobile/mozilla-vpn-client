@@ -35,12 +35,8 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
             set(RUST_ARCH "x86_64-linux-android")
         endif()
-    elseif(${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
-        if(${CMAKE_OSX_SYSROOT} STREQUAL "iphonesimulator")
-            set(RUST_ARCH "x86_64-apple-ios")
-        else()
-            set(RUST_ARCH "aarch64-apple-ios")
-        endif()
+    elseif(IOS)
+        set(RUST_ARCH x86_64-apple-ios aarch64-apple-ios)
     endif()
 
     if(NOT RUST_ARCH)
@@ -74,16 +70,30 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     set(LIBNAME ${CMAKE_STATIC_LIBRARY_PREFIX}vpnglean${CMAKE_STATIC_LIBRARY_SUFFIX})
 
     ## Build the vpnglean Rust library
-    # TODO: We still need to graft in the android OpenSSL helpers
     build_rust_archives(
         ARCH ${RUST_ARCH}
         PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
         LIBRARY_FILE ${LIBNAME}
         CARGO_ENV ${CARGO_ENV}
     )
-    add_custom_target(vpnglean_ffi
-        DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/$<IF:$<CONFIG:Debug>,debug,release>/${LIBNAME}
-    )
+
+    if(APPLE AND XCODE)
+        add_custom_target(vpnglean_ffi
+            DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/unified/$<IF:$<CONFIG:Debug>,debug,release>/${LIBNAME}
+        )
+        set_target_properties(vpnglean PROPERTIES
+            IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/unified/release/${LIBNAME}
+            IMPORTED_LOCATION_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/unified/debug/${LIBNAME}
+        )
+    else()
+        add_custom_target(vpnglean_ffi
+            DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/$<IF:$<CONFIG:Debug>,debug,release>/${LIBNAME}
+        )
+        set_target_properties(vpnglean PROPERTIES
+            IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/release/${LIBNAME}
+            IMPORTED_LOCATION_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/debug/${LIBNAME}
+        )
+    endif()
     set_target_properties(vpnglean_ffi PROPERTIES FOLDER "Libs")
 
     add_dependencies(vpnglean_ffi vpnglean_telemetry)
@@ -136,10 +146,6 @@ add_custom_target(vpnglean_telemetry
 )
 set_target_properties(vpnglean_telemetry PROPERTIES FOLDER "Libs")
 
-set_target_properties(vpnglean PROPERTIES
-    IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/release/${LIBNAME}
-    IMPORTED_LOCATION_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/debug/${LIBNAME}
-)
 set_property(TARGET vpnglean APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_BINARY_DIR}
 )

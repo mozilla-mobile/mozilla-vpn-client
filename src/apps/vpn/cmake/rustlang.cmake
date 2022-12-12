@@ -17,7 +17,7 @@ endif()
 ### Helper function to build Rust static libraries.
 #
 # Accepts the following arguments:
-#   ARCH: Rust target architecture to build with --target ${ARCH}
+#   ARCH: Rust target architecture(s) to build with --target ${ARCH}
 #   BINARY_DIR: Binary directory to output build artifacts to.
 #   PACKAGE_DIR: Soruce directory where Cargo.toml can be found.
 #   LIBRARY_FILE: Filename of the expected library to be built.
@@ -31,8 +31,8 @@ endif()
 function(build_rust_archives)
     cmake_parse_arguments(RUST_BUILD
         ""
-        "ARCH;BINARY_DIR;PACKAGE_DIR;LIBRARY_FILE"
-        "CARGO_ENV"
+        "BINARY_DIR;PACKAGE_DIR;LIBRARY_FILE"
+        "ARCH;CARGO_ENV"
         ${ARGN})
 
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cargo_home)
@@ -66,21 +66,45 @@ function(build_rust_archives)
 
     file(MAKE_DIRECTORY ${RUST_BUILD_BINARY_DIR})
 
-    ## Outputs for the release build
-    add_custom_command(
-        OUTPUT ${RUST_BUILD_BINARY_DIR}/${RUST_BUILD_ARCH}/release/${RUST_BUILD_LIBRARY_FILE}
-        ## DEPFILE ${RUST_BUILD_BINARY_DIR}/${RUST_BUILD_ARCH}/release/
-        WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
-        COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                ${CARGO_BUILD_TOOL} build --lib --release --target ${RUST_BUILD_ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
-    )
+    ## Generate builds for each desired architecture
+    foreach(ARCH ${RUST_BUILD_ARCH})
+        ## Outputs for the release build
+        add_custom_command(
+            OUTPUT ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_BUILD_LIBRARY_FILE}
+            ## DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/
+            WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
+            COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
+                    ${CARGO_BUILD_TOOL} build --lib --release --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
+        )
 
-    ## Outputs for the debug build
-    add_custom_command(
-        OUTPUT ${RUST_BUILD_BINARY_DIR}/${RUST_BUILD_ARCH}/debug/${RUST_BUILD_LIBRARY_FILE}
-        ## DEPFILE ${RUST_BUILD_BINARY_DIR}/${RUST_BUILD_ARCH}/debug/
-        WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
-        COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                ${CARGO_BUILD_TOOL} build --lib --target ${RUST_BUILD_ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
-    )
+        ## Outputs for the debug build
+        add_custom_command(
+            OUTPUT ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_BUILD_LIBRARY_FILE}
+            ## DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/
+            WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
+            COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
+                    ${CARGO_BUILD_TOOL} build --lib --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
+        )
+
+        ## Keep a record of the expected libs.
+        list(APPEND RUST_BUILD_RELEASE_LIBS ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_BUILD_LIBRARY_FILE})
+        list(APPEND RUST_BUILD_DEBUG_LIBS ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_BUILD_LIBRARY_FILE})
+    endforeach()
+
+    ## For apple builds bundle the rust libraries
+    if(APPLE AND XCODE)
+        add_custom_command(
+            OUTPUT ${RUST_BUILD_BINARY_DIR}/unified/release/${RUST_BUILD_LIBRARY_FILE}
+            DEPENDS ${RUST_BUILD_RELEASE_LIBS}
+            COMMAND lipo -create -output ${RUST_BUILD_BINARY_DIR}/unified/release/${RUST_BUILD_LIBRARY_FILE}
+                        ${RUST_BUILD_RELEASE_LIBS}
+        )
+
+        add_custom_command(
+            OUTPUT ${RUST_BUILD_BINARY_DIR}/unified/debug/${RUST_BUILD_LIBRARY_FILE}
+            DEPENDS ${RUST_BUILD_DEBUG_LIBS}
+            COMMAND lipo -create -output ${RUST_BUILD_BINARY_DIR}/unified/debug/${RUST_BUILD_LIBRARY_FILE}
+                        ${RUST_BUILD_DEBUG_LIBS}
+        )
+    endif()
 endfunction()
