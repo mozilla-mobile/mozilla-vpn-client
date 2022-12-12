@@ -6,6 +6,7 @@
     "enabled_features": ["multiHop"]
   },
   "type": "tutorial",
+  "translatable": false,
   "tutorial": {
     "id": "03_multi_hop",
     "image": "qrc:/addons/tutorial_03_multi_hop/image.svg",
@@ -87,7 +88,7 @@
       {
         "id": "s6",
         "element": "controllerToggle",
-        "tooltip": "Toggle this switch to activate or deactivate the VPN",
+        "tooltip": "Toggle this switch to activate the VPN",
         "next": {
           "op": "signal",
           "vpn_emitter": "controller",
