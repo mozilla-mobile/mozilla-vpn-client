@@ -46,11 +46,19 @@ cd mozilla-vpn-client
 git submodule update --init
 ```
 
-## How to build from the source code
+## Minimum build requirements
 
-In order to build this application, you need to install a few dependencies.
+This list is not comprehensive. Different platforms may require other tools to be installed.
+Check out the platform section for more information on your specific platform.
 
-#### Install Qt6
+- [C++20](https://en.cppreference.com/w/cpp/20)
+- [Qt6](https://www.qt.io/product/qt6)
+- [Python 3](https://www.python.org/downloads/)
+- [Cmake > 3.16](https://cmake.org/install/)
+- [Rust](https://www.rust-lang.org/tools/install)
+- [Go](https://go.dev/)
+
+### Installing Qt6
 
 Qt6 can be installed in a number of ways:
 
@@ -80,7 +88,7 @@ Qt6 can be installed in a number of ways:
 ./scripts/utils/qt6_compile.sh </qt6/source/code/path> </destination/path>
 ```
 
-#### Install Python 3
+### Installing Python 3
 
 [Python](https://www.python.org/) >= 3.6 is required. You also need to install
 a few python modules using [pip](https://pypi.org/):
@@ -91,7 +99,7 @@ pip install -r requirements.txt --user
 
 (`pip3` may need to be substituted for `pip` in the above line.)
 
-#### Install CMake
+### Installing CMake
 
 There are many ways to install [CMake](https://cmake.org).
 
@@ -101,17 +109,17 @@ On macOS, it is easy to do with [Homebrew](https://brew.sh/). After
 brew install cmake
 ```
 
-#### Install rust
+### Installing Rust
 
 [Rust](https://www.rust-lang.org/) is required for desktop builds (macOS, Linux
 and Windows). See the official rust documentation to know how to install it.
 
-#### What's next?
+### What's next?
 
 We support the following platforms: Linux, Windows, macOS, iOS, Android and
 WASM. Each one is unique and it has a different section in this document.
 
-### How to build from source code for Desktop
+## How to build from source code for Desktop
 
 On deskop platforms, such as Windows, Linux and macOS, we build the Mozilla VPN
 using CMake, and as long as the required dependencies can be located in your
@@ -546,11 +554,11 @@ https://mozilla-mobile.github.io/mozilla-vpn-client/inspector/) to interact
 with the app. Connect the inspector to the app using the web-socket interface.
 On desktop, use `ws://localhost:8765`.
 
-The inspector offers a number of tools to help debug and navigate through the VPN client: 
+The inspector offers a number of tools to help debug and navigate through the VPN client:
 * **Shell:** By default the inspector link will take you to the Shell. From there type `help` to see the list of available commands.
 * **Logs:** Will constantly output all the app activities happening in real time. This information includes the timesamp, component and message. From the left column you can select which component(s) you'd like to monitor.
 * **Network Inspector:** Includes a list of all incoming and outgoing network requests. This is especially helpful when debugging network related issues or monitoring how the app communicates with external components such as the Guardian.
-* **QML Inspector:** Allows you to identify and inspect all QML components in the app by mirroring the local VPN client running on your machine and highlighting components by clicking on the QML instance on the right. 
+* **QML Inspector:** Allows you to identify and inspect all QML components in the app by mirroring the local VPN client running on your machine and highlighting components by clicking on the QML instance on the right.
 
 ![inspector_snapshot](https://user-images.githubusercontent.com/3746552/204422879-0799cbd8-91cd-4601-8df8-0d0e9f7cd887.png)
 
