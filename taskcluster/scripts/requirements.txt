@@ -1,3 +1,1 @@
-multidict
 taskcluster==44.7.1
-
