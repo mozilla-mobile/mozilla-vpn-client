@@ -9,13 +9,13 @@
 #include <QString>
 #include <QStringList>
 
-// Note: include order matters here.
+// Note: the ws2tcpip.h import must come before the others.
+// clang-format off
 #include <ws2tcpip.h>
+// clang-format on
 #include <Ws2ipdef.h>
-#include <tlhelp32.h>
-
 #include <ioapiset.h>
-
+#include <tlhelp32.h>
 #include <windows.h>
 
 // States for GetState

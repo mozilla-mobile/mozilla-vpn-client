@@ -5,12 +5,12 @@
 #ifndef WINDOWSTUNNELSERVICE_H
 #define WINDOWSTUNNELSERVICE_H
 
-#include "windowstunnellogger.h"
-
 #include <QFile>
 #include <QObject>
-#include <QTimer>
 #include <QThread>
+#include <QTimer>
+
+#include "windowstunnellogger.h"
 
 class WindowsTunnelService final : public QObject {
   Q_OBJECT

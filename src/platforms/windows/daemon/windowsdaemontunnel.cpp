@@ -3,16 +3,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "windowsdaemontunnel.h"
+
+#include <Windows.h>
+
+#include <QCoreApplication>
+
 #include "commandlineparser.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "platforms/windows/windowscommons.h"
 #include "platforms/windows/daemon/wireguardutilswindows.h"
-
-#include <QCoreApplication>
-
-#include <Windows.h>
+#include "platforms/windows/windowscommons.h"
 
 namespace {
 Logger logger("WindowsDaemonTunnel");

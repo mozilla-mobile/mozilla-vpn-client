@@ -3,20 +3,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "windowsapplistprovider.h"
+
+#include <Windows.h>
+
+#include <QDir>
+#include <QDirIterator>
+#include <QFile>
+#include <QSettings>
+#include <QStandardPaths>
+#include <QString>
+
 #include "leakdetector.h"
 #include "logger.h"
 #include "settingsholder.h"
-#include "windowscommons.h"
-
-#include <QSettings>
-#include <QString>
-#include <QFile>
-#include <QDir>
-#include <QDirIterator>
-#include <QStandardPaths>
-#include <Windows.h>
-
 #include "windowsappimageprovider.h"
+#include "windowscommons.h"
 
 namespace {
 const QString REG_UNINSTALLER =

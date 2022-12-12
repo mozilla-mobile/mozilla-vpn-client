@@ -5,15 +5,14 @@
 #ifndef WINDOWSROUTEMONITOR_H
 #define WINDOWSROUTEMONITOR_H
 
+#include <WS2tcpip.h>
+#include <iphlpapi.h>
+#include <windows.h>
+#include <winsock2.h>
+#include <ws2ipdef.h>
+
 #include <QHostAddress>
 #include <QObject>
-
-#include <winsock2.h>
-#include <WS2tcpip.h>
-#include <windows.h>
-#include <ws2ipdef.h>
-#include <iphlpapi.h>
-
 class WindowsRouteMonitor final : public QObject {
   Q_OBJECT
 
