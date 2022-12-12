@@ -36,7 +36,7 @@ VPNScreenBase {
             getStack().pop(null);
 
             // push server view
-            getStack().push("qrc:/ui/screens/home/ViewServers.qml", StackView.Immediate);
+            getStack().push("qrc:/ui/screens/home/servers/ViewServers.qml", StackView.Immediate);
         }
     }
 }
