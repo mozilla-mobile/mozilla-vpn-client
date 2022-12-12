@@ -20,8 +20,6 @@ VPNIconButton {
         VPNNavigator.requestScreen(_screen, VPNNavigator.screen === _screen ? VPNNavigator.ForceReload : VPNNavigator.NoFlags);
     }
 
-    onCheckedChanged: if (checked) btn.forceActiveFocus();
-
     width: VPNTheme.theme.navBarIconSize
     height: VPNTheme.theme.navBarIconSize
 
