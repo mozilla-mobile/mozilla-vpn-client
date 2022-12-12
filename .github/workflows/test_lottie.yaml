@@ -68,7 +68,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: .
-          flags: lottie_tests
+          flags: linux_lottie_tests
           name: codecov-poc
           files: lottie_lcov.info
           verbose: true
@@ -129,7 +129,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: .
-          flags: lottie_tests
+          flags: macos_lottie_tests
           name: codecov-poc
           files: lottie_lcov.info
           verbose: true
