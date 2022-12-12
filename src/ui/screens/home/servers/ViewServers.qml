@@ -72,7 +72,7 @@ Item {
         }
 
         stackContent: [
-            VPNServerList {
+            ServerList {
                 id: singleHopServerList
                 currentServer: {
                     "countryCode": VPNCurrentServer.exitCountryCode,

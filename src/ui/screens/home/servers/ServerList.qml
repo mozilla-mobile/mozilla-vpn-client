@@ -271,7 +271,7 @@ FocusScope {
                             height: parent.height
                             width: parent.width - VPNTheme.theme.windowMargin
 
-                            VPNServerLabel {
+                            ServerLabel {
                                 id: recommendedServerLabel
 
                                 Layout.leftMargin: VPNTheme.theme.listSpacing * 0.5
@@ -284,7 +284,7 @@ FocusScope {
                                 }]
                             }
 
-                            VPNServerLatencyIndicator {
+                            ServerLatencyIndicator {
                                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                                 score: recommendedServer.locationScore
                             }
@@ -358,7 +358,7 @@ FocusScope {
                 }
 
 
-                VPNRecentConnections {
+                RecentConnections {
                     id: recentConnections
                     anchors {
                         left: parent.left
@@ -374,7 +374,7 @@ FocusScope {
                 Repeater {
                     id: countriesRepeater
                     model: searchBar.getProxyModel()
-                    delegate: VPNServerCountry {}
+                    delegate: ServerCountry {}
                 }
             }
         }

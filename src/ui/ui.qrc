@@ -34,14 +34,11 @@
         <file>screens/getHelp/giveFeedback/ViewGiveFeedbackForm.qml</file>
         <file>screens/getHelp/giveFeedback/ViewGiveFeedbackReview.qml</file>
         <file>screens/getHelp/giveFeedback/ViewGiveFeedbackThankYou.qml</file>
-        <file>screens/home/ControllerNav.qml</file>
         <file>screens/home/controller/AnimatedRings.qml</file>
         <file>screens/home/controller/ControllerView.qml</file>
         <file>screens/home/controller/VPNToggle.qml</file>
         <file>screens/home/qmldir</file>
         <file>screens/home/ViewHome.qml</file>
-        <file>screens/home/ViewMultiHop.qml</file>
-        <file>screens/home/ViewServers.qml</file>
         <file>screens/initialize/ViewInitialize.qml</file>
         <file>screens/initialize/ViewOnboarding.qml</file>
         <file>screens/initialize/ViewMobileOnboarding.qml</file>
@@ -104,5 +101,14 @@
         <file>screens/home/controller/ConnectionInfoScreen.qml</file>
         <file>screens/home/controller/SemiMonoLabel.qml</file>
         <file>screens/home/controller/VPNIPAddress.qml</file>
+        <file>screens/home/servers/RecentConnections.qml</file>
+        <file>screens/home/servers/ServerCountry.qml</file>
+        <file>screens/home/servers/ServerLatencyIndicator.qml</file>
+        <file>screens/home/servers/ServerList.qml</file>
+        <file>screens/home/servers/ServerListCaret.qml</file>
+        <file>screens/home/servers/ViewServers.qml</file>
+        <file>screens/home/servers/ViewMultiHop.qml</file>
+        <file>screens/home/servers/ServerLabel.qml</file>
+        <file>screens/home/servers/ControllerNav.qml</file>
     </qresource>
 </RCC>

@@ -42,7 +42,7 @@ StackView {
                 Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin
             }
 
-            VPNRecentConnections {
+            RecentConnections {
                 Layout.fillWidth: true
                 showMultiHopRecentConnections: true
             }
@@ -50,7 +50,7 @@ StackView {
             ControllerNav {
                 function handleClick() {
                     multiHopStackView.push(
-                        "qrc:/nebula/components/VPNServerList.qml",
+                        "ServerList.qml",
                         {
                             currentServer: entryLabel.serversList[0],
                             showRecentConnections: false
@@ -63,7 +63,7 @@ StackView {
                 titleText: VPNl18n.MultiHopFeatureMultiHopEntryLocationHeader
                 descriptionText: titleText
                 contentChildren: [
-                    VPNServerLabel {
+                    ServerLabel {
                         id: entryLabel
 
                         serversList: [
@@ -83,7 +83,7 @@ StackView {
                 spacing: 8
                 ControllerNav {
                     function handleClick() {
-                        multiHopStackView.push("qrc:/nebula/components/VPNServerList.qml",
+                        multiHopStackView.push("ServerList.qml",
                            {
                                 currentServer:  exitLabel.serversList[0],
                                 showRecentConnections: false
@@ -98,7 +98,7 @@ StackView {
                     descriptionText: titleText
                     contentChildren: [
 
-                        VPNServerLabel {
+                        ServerLabel {
                             id: exitLabel
                             serversList: [
 

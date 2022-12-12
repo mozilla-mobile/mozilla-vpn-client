@@ -81,7 +81,7 @@ VPNFlickable {
                     return
                 }
 
-                stackview.push("ViewServers.qml")
+                stackview.push("servers/ViewServers.qml")
             }
 
             id: serverInfo
@@ -106,7 +106,7 @@ VPNFlickable {
             Layout.topMargin: 12
             contentChildren: [
 
-                VPNServerLabel {
+                ServerLabel {
                     id: selectLocationLabel
                     serversList: [
                         {

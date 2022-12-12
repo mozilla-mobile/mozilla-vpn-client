@@ -41,7 +41,7 @@ VPNButtonBase {
 
     // visual state changes are applied to this
     // component to prevent state overwrite conflicts
-    // in VPNServerCountry {}
+    // in ServerCountry {}
     Rectangle {
         id: rowVisualStates
 

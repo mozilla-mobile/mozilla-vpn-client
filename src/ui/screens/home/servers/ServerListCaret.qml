@@ -4,8 +4,8 @@
 
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
+import components 0.1
 
-// VPNServerListToggle
 VPNIcon {
     source: "qrc:/nebula/resources/arrow-toggle.svg"
     transformOrigin: Image.Center

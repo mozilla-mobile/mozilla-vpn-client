@@ -121,7 +121,7 @@ VPNClickableRow {
         anchors.left: parent.left
 
 
-        VPNServerListToggle {
+        ServerListCaret {
             id: serverListToggle
 
             Layout.leftMargin: VPNTheme.theme.windowMargin / 2
@@ -202,7 +202,7 @@ VPNClickableRow {
                     }
                 }
 
-                VPNServerLatencyIndicator {
+                ServerLatencyIndicator {
                     anchors {
                         right: parent.right
                         rightMargin: VPNTheme.theme.hSpacing

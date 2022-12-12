@@ -9,6 +9,7 @@ import QtQml.Models 2.2
 
 import Mozilla.VPN 1.0
 import Mozilla.VPN.qmlcomponents 1.0
+import components 0.1
 
 ColumnLayout {
     property bool hasVisibleConnections: false
@@ -100,7 +101,7 @@ ColumnLayout {
                     width: parent.width - VPNTheme.theme.windowMargin * 2
                     height: parent.height
 
-                    VPNServerLabel {
+                    ServerLabel {
 
                         id: serverLabel
                         Layout.fillWidth: true
