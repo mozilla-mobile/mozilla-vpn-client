@@ -11,6 +11,18 @@ find_program(RUSTC_EXECUTABLE NAMES rustc REQUIRED)
 
 add_library(vpnglean STATIC IMPORTED GLOBAL)
 
+if(ANDROID)
+    add_dependencies(vpnglean ndk_openssl_merged)
+    get_property(crypto_module GLOBAL PROPERTY OPENSSL_CRYPTO_MODULE)
+    get_property(ssl_module GLOBAL PROPERTY OPENSSL_SSL_MODULE)
+    get_property(openssl_libs GLOBAL PROPERTY OPENSSL_LIBS)
+
+    set(OPENSSL_LIBS ${openssl_libs})
+    set(SSL_INCLUDE ${ssl_module}/include)
+    set(SSL_LIB ${ssl_module}/libs/android.${ANDROID_ABI})
+    set(CRYPTO_LIB ${crypto_module}/libs/android.${ANDROID_ABI})
+endif()
+
 set_target_properties(vpnglean PROPERTIES FOLDER "Libs")
 
 # glean-core cannot be compiled to WASM
@@ -29,16 +41,12 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
         if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64")
             set(RUST_ARCH "aarch64-linux-android")
-            set(OPENSSL_ARCH "arm64")
         elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7-a")
             set(RUST_ARCH "armv7-linux-androideabi")
-            set(OPENSSL_ARCH "arm")
         elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i686")
             set(RUST_ARCH "i686-linux-android")
-            set(OPENSSL_ARCH "x86")
         elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
             set(RUST_ARCH "x86_64-linux-android")
-            set(OPENSSL_ARCH "x86_64")
         endif()
     elseif(${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
         if(${CMAKE_OSX_SYSROOT} STREQUAL "iphonesimulator")
@@ -58,8 +66,8 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 
     if(ANDROID)
         list(APPEND CARGO_ENV
-            OPENSSL_LIB_DIR=${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/openSSL/static/lib/${OPENSSL_ARCH}
-            OPENSSL_INCLUDE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/openSSL/static/include
+            OPENSSL_LIB_DIR=${OPENSSL_LIBS}/
+            OPENSSL_INCLUDE_DIR=${SSL_INCLUDE}/
             AR=llvm-ar)
     elseif(APPLE AND XCODE)
         ## Don't trust Xcode to provide us with a usable linker.
