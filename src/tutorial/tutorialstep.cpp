@@ -18,7 +18,7 @@
 #include <QQuickItem>
 
 namespace {
-Logger logger(LOG_MAIN, "TutorialStep");
+Logger logger("TutorialStep");
 }
 
 constexpr int TIMEOUT_ITEM_TIMER_MSEC = 300;

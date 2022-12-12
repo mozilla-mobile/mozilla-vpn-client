@@ -21,7 +21,7 @@ constexpr const char* UI_PIPE = "/tmp/mozillavpn.ui.sock";
 #endif
 
 namespace {
-Logger logger(LOG_MAIN, "EventListener");
+Logger logger("EventListener");
 }
 
 EventListener::EventListener() {

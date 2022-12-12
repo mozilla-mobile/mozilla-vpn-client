@@ -35,7 +35,7 @@
 constexpr const char* DBUS_NETWORKMANAGER = "org.freedesktop.NetworkManager";
 
 namespace {
-Logger logger(LOG_LINUX, "LinuxNetworkWatcherWorker");
+Logger logger("LinuxNetworkWatcherWorker");
 }
 
 static inline bool checkUnsecureFlags(int rsnFlags, int wpaFlags) {

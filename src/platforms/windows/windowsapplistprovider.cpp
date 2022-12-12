@@ -21,7 +21,7 @@
 namespace {
 const QString REG_UNINSTALLER =
     R"(HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\)";
-Logger logger(LOG_WINDOWS, "AppListProvider");
+Logger logger("AppListProvider");
 }  // namespace
 
 WindowsAppListProvider::WindowsAppListProvider(QObject* parent)

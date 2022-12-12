@@ -8,7 +8,7 @@
 #include "update/updater.h"
 
 namespace {
-Logger logger(LOG_MAIN, "TaskRelease");
+Logger logger("TaskRelease");
 }
 
 TaskRelease::TaskRelease(

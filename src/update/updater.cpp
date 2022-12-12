@@ -17,7 +17,7 @@
 #endif
 
 namespace {
-Logger logger(LOG_NETWORKING, "Updater");
+Logger logger("Updater");
 }
 
 // static

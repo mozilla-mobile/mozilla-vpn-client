@@ -9,7 +9,7 @@
 #include "networkrequest.h"
 
 namespace {
-Logger logger(LOG_MAIN, "TaskAccount");
+Logger logger("TaskAccount");
 }
 
 TaskAccount::TaskAccount(

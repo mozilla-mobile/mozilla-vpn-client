@@ -38,7 +38,7 @@ constexpr uint32_t PING_BASELINE_EWMA_DIVISOR = 8;
 constexpr auto SETTLING_TIMEOUT_SEC = 3;
 
 namespace {
-Logger logger(LOG_NETWORKING, "ConnectionHealth");
+Logger logger("ConnectionHealth");
 }
 
 ConnectionHealth::ConnectionHealth() : m_dnsPingSender(QHostAddress()) {

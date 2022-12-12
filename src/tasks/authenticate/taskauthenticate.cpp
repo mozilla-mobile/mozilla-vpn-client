@@ -19,7 +19,7 @@
 #include <QUrlQuery>
 
 namespace {
-Logger logger(LOG_MAIN, "TaskAuthenticate");
+Logger logger("TaskAuthenticate");
 }  // anonymous namespace
 
 TaskAuthenticate::TaskAuthenticate(

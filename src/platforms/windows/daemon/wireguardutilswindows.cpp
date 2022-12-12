@@ -21,7 +21,7 @@
 #pragma comment(lib, "iphlpapi.lib")
 
 namespace {
-Logger logger(LOG_WINDOWS, "WireguardUtilsWindows");
+Logger logger("WireguardUtilsWindows");
 };  // namespace
 
 WireguardUtilsWindows::WireguardUtilsWindows(QObject* parent)

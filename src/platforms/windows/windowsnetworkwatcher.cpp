@@ -23,7 +23,7 @@ auto wait_for(Async const& async, Windows::Foundation::TimeSpan const& timeout);
 #include <winrt/Windows.Networking.Connectivity.h>
 
 namespace {
-Logger logger(LOG_WINDOWS, "WindowsNetworkWatcher");
+Logger logger("WindowsNetworkWatcher");
 }
 
 WindowsNetworkWatcher::WindowsNetworkWatcher(QObject* parent)

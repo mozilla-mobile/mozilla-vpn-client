@@ -9,7 +9,7 @@
 #include "mozillavpn.h"
 
 namespace {
-Logger logger(LOG_MAIN, "BenchmarkTaskPing");
+Logger logger("BenchmarkTaskPing");
 }
 
 BenchmarkTaskPing::BenchmarkTaskPing()

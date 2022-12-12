@@ -17,7 +17,7 @@ constexpr const char* PIXMAP_FALLBACK_PATH = "/usr/share/pixmaps/";
 constexpr const char* DESKTOP_ICON_LOCATION = "/usr/share/icons/";
 
 namespace {
-Logger logger(LOG_CONTROLLER, "LinuxAppImageProvider");
+Logger logger("LinuxAppImageProvider");
 }
 
 LinuxAppImageProvider::LinuxAppImageProvider(QObject* parent)

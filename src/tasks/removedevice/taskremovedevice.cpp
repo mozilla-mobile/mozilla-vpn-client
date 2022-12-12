@@ -12,7 +12,7 @@
 #include "telemetry/gleansample.h"
 
 namespace {
-Logger logger(LOG_MAIN, "TaskRemoveDevice");
+Logger logger("TaskRemoveDevice");
 }
 
 TaskRemoveDevice::TaskRemoveDevice(const QString& publicKey)

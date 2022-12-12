@@ -11,7 +11,7 @@
 
 namespace {
 
-Logger logger(LOG_IOS, "IOSAdjustHelper");
+Logger logger("IOSAdjustHelper");
 
 }  // namespace
 

@@ -21,7 +21,7 @@
 #include <QRandomGenerator>
 
 namespace {
-Logger logger(LOG_ADJUST, "AdjustHandler");
+Logger logger("AdjustHandler");
 bool s_initialized = false;
 AdjustProxy* s_adjustProxy = nullptr;
 }  // namespace

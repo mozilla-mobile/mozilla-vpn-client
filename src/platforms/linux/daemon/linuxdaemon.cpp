@@ -11,7 +11,7 @@
 #include "signalhandler.h"
 
 namespace {
-Logger logger(LOG_LINUX, "main");
+Logger logger("main");
 }
 
 class CommandLinuxDaemon final : public Command {

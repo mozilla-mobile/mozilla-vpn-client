@@ -45,7 +45,7 @@ constexpr const char* BALROG_CERT_SUBJECT_CN =
     "aus.content-signature.mozilla.org";
 
 namespace {
-Logger logger(LOG_NETWORKING, "Balrog");
+Logger logger("Balrog");
 
 void balrogLogger(int level, const char* msg) {
   Q_UNUSED(level);

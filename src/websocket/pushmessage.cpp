@@ -14,7 +14,7 @@
 #include <QJsonValue>
 
 namespace {
-Logger logger(LOG_MAIN, "PushMessage");
+Logger logger("PushMessage");
 }  // namespace
 
 /**

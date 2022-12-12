@@ -20,7 +20,7 @@ constexpr uint32_t PING_TIMEOUT_SEC = 1;
 constexpr int PING_STATS_WINDOW = 32;
 
 namespace {
-Logger logger(LOG_NETWORKING, "PingHelper");
+Logger logger("PingHelper");
 }
 
 PingHelper::PingHelper() {

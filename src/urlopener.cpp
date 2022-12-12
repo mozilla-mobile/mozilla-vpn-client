@@ -29,7 +29,7 @@ constexpr const char* APPLE_STORE_REVIEW_URL =
 #endif
 
 namespace {
-Logger logger(LOG_MAIN, "UrlOpener");
+Logger logger("UrlOpener");
 UrlOpener* s_instance = nullptr;
 }  // namespace
 

@@ -20,7 +20,7 @@
 namespace {
 AndroidVPNActivity* s_instance = nullptr;
 constexpr auto CLASSNAME = "org.mozilla.firefox.vpn.qt.VPNActivity";
-Logger logger(LOG_ANDROID, "AndroidVPNActivity");
+Logger logger("AndroidVPNActivity");
 }  // namespace
 
 AndroidVPNActivity::AndroidVPNActivity() {

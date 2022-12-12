@@ -16,7 +16,7 @@
 #include <QScopeGuard>
 
 namespace {
-Logger logger(LOG_MAIN, "AddonTutorial");
+Logger logger("AddonTutorial");
 }
 
 class AddonTutorial::TutorialItemPicker final : public ItemPicker {

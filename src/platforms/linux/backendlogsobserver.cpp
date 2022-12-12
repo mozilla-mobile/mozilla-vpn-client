@@ -10,7 +10,7 @@
 #include <QDBusPendingReply>
 
 namespace {
-Logger logger({LOG_LINUX, LOG_CONTROLLER}, "BackendLogsObserver");
+Logger logger("BackendLogsObserver");
 }
 
 BackendLogsObserver::BackendLogsObserver(

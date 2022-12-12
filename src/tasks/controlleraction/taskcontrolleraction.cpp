@@ -10,7 +10,7 @@
 constexpr uint32_t TASKCONTROLLER_TIMER_MSEC = 3000;
 
 namespace {
-Logger logger(QStringList{LOG_MAIN, LOG_CONTROLLER}, "TaskControllerAction");
+Logger logger("TaskControllerAction");
 }
 
 TaskControllerAction::TaskControllerAction(

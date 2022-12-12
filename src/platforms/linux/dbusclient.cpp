@@ -20,7 +20,7 @@ constexpr const char* DBUS_SERVICE = "org.mozilla.vpn.dbus";
 constexpr const char* DBUS_PATH = "/";
 
 namespace {
-Logger logger(LOG_LINUX, "DBusClient");
+Logger logger("DBusClient");
 }
 
 DBusClient::DBusClient(QObject* parent) : QObject(parent) {

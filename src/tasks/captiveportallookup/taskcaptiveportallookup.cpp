@@ -10,7 +10,7 @@
 #include "networkrequest.h"
 
 namespace {
-Logger logger(LOG_NETWORKING, "TaskCaptivePortalLookup");
+Logger logger("TaskCaptivePortalLookup");
 }
 
 TaskCaptivePortalLookup::TaskCaptivePortalLookup(

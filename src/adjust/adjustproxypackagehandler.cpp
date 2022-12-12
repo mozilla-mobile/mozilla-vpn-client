@@ -13,7 +13,7 @@
 #include <QUrlQuery>
 
 namespace {
-Logger logger(LOG_ADJUST, "AdjustProxyPackageHandler");
+Logger logger("AdjustProxyPackageHandler");
 }  // namespace
 
 AdjustProxyPackageHandler::AdjustProxyPackageHandler() {

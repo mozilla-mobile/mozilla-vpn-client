@@ -6,7 +6,7 @@
 #include "logger.h"
 
 namespace {
-Logger logger(LOG_NETWORKING, "PingSender");
+Logger logger("PingSender");
 }
 
 quint16 PingSender::inetChecksum(const void* data, size_t len) {

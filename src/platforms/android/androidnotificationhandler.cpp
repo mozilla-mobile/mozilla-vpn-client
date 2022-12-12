@@ -12,7 +12,7 @@
 #include <QJsonDocument>
 
 namespace {
-Logger logger(LOG_ANDROID, "AndroidNotificationHandler");
+Logger logger("AndroidNotificationHandler");
 }
 
 AndroidNotificationHandler::AndroidNotificationHandler(QObject* parent)

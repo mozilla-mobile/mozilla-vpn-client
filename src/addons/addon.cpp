@@ -32,7 +32,7 @@
 #include <QJsonObject>
 
 namespace {
-Logger logger(LOG_MAIN, "Addon");
+Logger logger("Addon");
 
 bool evaluateConditionsSettingsOp(const QString& op, bool result) {
   if (op == "eq") return result;

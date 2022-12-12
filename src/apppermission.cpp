@@ -25,7 +25,7 @@
 #include <QFileDialog>
 
 namespace {
-Logger logger(LOG_MAIN, "AppPermission");
+Logger logger("AppPermission");
 AppPermission* s_instance = nullptr;
 }  // namespace
 

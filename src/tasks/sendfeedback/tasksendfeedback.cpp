@@ -14,7 +14,7 @@ constexpr uint32_t FEEDBACK_MESSAGE_MAX_LENGTH = 1000;
 constexpr uint32_t FEEDBACK_LOG_MAX_LENGTH = 100000;
 
 namespace {
-Logger logger(LOG_MAIN, "TaskSendFeedback");
+Logger logger("TaskSendFeedback");
 }
 
 TaskSendFeedback::TaskSendFeedback(const QString& feedbackText,

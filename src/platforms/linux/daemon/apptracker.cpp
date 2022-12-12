@@ -23,7 +23,7 @@ constexpr const char* DBUS_SYSTEMD_PATH = "/org/freedesktop/systemd1";
 constexpr const char* DBUS_SYSTEMD_MANAGER = "org.freedesktop.systemd1.Manager";
 
 namespace {
-Logger logger(LOG_LINUX, "AppTracker");
+Logger logger("AppTracker");
 QString s_cgroupMount;
 }  // namespace
 

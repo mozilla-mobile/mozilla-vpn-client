@@ -25,7 +25,7 @@ struct WindowsPingSenderPrivate {
 };
 
 namespace {
-Logger logger({LOG_WINDOWS, LOG_NETWORKING}, "WindowsPingSender");
+Logger logger("WindowsPingSender");
 }
 
 static DWORD icmpCleanupHelper(LPVOID data) {

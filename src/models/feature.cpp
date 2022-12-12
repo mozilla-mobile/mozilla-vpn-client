@@ -14,7 +14,7 @@
 #include <QList>
 
 namespace {
-Logger logger(LOG_MODEL, "Feature");
+Logger logger("Feature");
 QMap<QString, Feature*>* s_featuresHashtable = nullptr;
 QList<Feature*>* s_featuresList = nullptr;
 }  // namespace

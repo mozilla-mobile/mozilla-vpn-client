@@ -14,7 +14,7 @@
 #include <QJsonValue>
 
 namespace {
-Logger logger(LOG_MODEL, "DeviceModel");
+Logger logger("DeviceModel");
 }
 
 DeviceModel::DeviceModel() { MVPN_COUNT_CTOR(DeviceModel); }

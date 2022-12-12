@@ -21,7 +21,7 @@
 
 namespace {
 
-Logger logger({LOG_IOS, LOG_CONTROLLER}, "IOSController");
+Logger logger("IOSController");
 
 // Our Swift singleton.
 IOSControllerImpl* impl = nullptr;

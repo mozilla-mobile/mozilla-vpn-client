@@ -17,7 +17,7 @@
 #include <QMetaEnum>
 
 namespace {
-Logger logger(LOG_MAIN, "AddonMessage");
+Logger logger("AddonMessage");
 }
 
 // static

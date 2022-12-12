@@ -28,7 +28,7 @@ constexpr int MAX_CONNECTION_RETRY = 10;
 constexpr int CONNECTION_RETRY_TIMER_MSEC = 500;
 
 namespace {
-Logger logger(LOG_CONTROLLER, "LocalSocketController");
+Logger logger("LocalSocketController");
 }
 
 LocalSocketController::LocalSocketController() {

@@ -18,7 +18,7 @@
 #include <QQmlEngine>
 
 namespace {
-Logger logger(LOG_MAIN, "AddonApi");
+Logger logger("AddonApi");
 }
 
 AddonApi::AddonApi(Addon* addon) : QObject(addon), m_addon(addon) {

@@ -12,7 +12,7 @@
 #include <QJsonObject>
 
 namespace {
-Logger logger(LOG_MAIN, "TaskHeartbeat");
+Logger logger("TaskHeartbeat");
 }
 
 TaskHeartbeat::TaskHeartbeat() : Task("TaskHeartbeat") {

@@ -9,14 +9,7 @@
 #include <QProcess>
 
 namespace {
-Logger logger(
-#if defined(MVPN_MACOS)
-    LOG_MACOS
-#elif defined(MVPN_WINDOWS)
-    LOG_WINDOWS
-#endif
-    ,
-    "WgQuickProcess");
+Logger logger("WgQuickProcess");
 }  // namespace
 
 // static

@@ -7,7 +7,7 @@
 #include "logger.h"
 
 namespace {
-Logger logger(LOG_MAIN, "TaskGroup");
+Logger logger("TaskGroup");
 }
 
 TaskGroup::TaskGroup(const QList<Task*>& list)

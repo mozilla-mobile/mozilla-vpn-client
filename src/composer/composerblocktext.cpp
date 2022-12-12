@@ -9,7 +9,7 @@
 #include <QJsonObject>
 
 namespace {
-Logger logger(LOG_MAIN, "ComposerBlockText");
+Logger logger("ComposerBlockText");
 }
 
 // static

@@ -12,7 +12,7 @@
 #include "networkrequest.h"
 
 namespace {
-Logger logger(LOG_MAIN, "TaskGetSubscriptionDetails");
+Logger logger("TaskGetSubscriptionDetails");
 }  // anonymous namespace
 
 TaskGetSubscriptionDetails::TaskGetSubscriptionDetails(

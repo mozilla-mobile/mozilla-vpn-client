@@ -9,7 +9,7 @@
 #include <QFile>
 
 namespace {
-Logger logger(LOG_MODEL, "LicenseModel");
+Logger logger("LicenseModel");
 }
 
 LicenseModel::LicenseModel() { MVPN_COUNT_CTOR(LicenseModel); }

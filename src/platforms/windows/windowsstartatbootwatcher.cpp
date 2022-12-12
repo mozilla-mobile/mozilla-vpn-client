@@ -10,8 +10,9 @@
 #include <QCoreApplication>
 #include <QSettings>
 #include <QDir>
+
 namespace {
-Logger logger(LOG_WINDOWS, "WindowsStartAtBootWatcher");
+Logger logger("WindowsStartAtBootWatcher");
 }
 
 WindowsStartAtBootWatcher::WindowsStartAtBootWatcher() {

@@ -16,7 +16,7 @@
 #include "leakdetector.h"
 
 namespace {
-Logger logger(LOG_CONTROLLER, "AndroidAppListProvider");
+Logger logger("AndroidAppListProvider");
 }
 
 AndroidAppListProvider::AndroidAppListProvider(QObject* parent)

@@ -21,7 +21,7 @@
 #include <QtNetwork>  // for qpassworddigestor.h
 
 namespace {
-Logger logger(LOG_MAIN, "AuthenticationInAppSession");
+Logger logger("AuthenticationInAppSession");
 }  // anonymous namespace
 
 AuthenticationInAppSession::AuthenticationInAppSession(QObject* parent,

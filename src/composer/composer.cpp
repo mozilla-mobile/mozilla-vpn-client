@@ -14,7 +14,7 @@
 #include <QScopeGuard>
 
 namespace {
-Logger logger(LOG_MAIN, "Composer");
+Logger logger("Composer");
 
 }  // namespace
 

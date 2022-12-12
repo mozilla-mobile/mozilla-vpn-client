@@ -7,7 +7,7 @@
 #include "logger.h"
 
 namespace {
-Logger logger(LOG_NETWORKING, "DummyPingSender");
+Logger logger("DummyPingSender");
 }
 
 DummyPingSender::DummyPingSender(const QHostAddress& source, QObject* parent)

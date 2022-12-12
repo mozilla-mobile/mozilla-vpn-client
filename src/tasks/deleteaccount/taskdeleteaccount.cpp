@@ -13,7 +13,7 @@
 #include "taskscheduler.h"
 
 namespace {
-Logger logger(LOG_MAIN, "TaskDeleteAccount");
+Logger logger("TaskDeleteAccount");
 }  // anonymous namespace
 
 TaskDeleteAccount::TaskDeleteAccount(const QString& emailAddress)

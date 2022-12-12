@@ -10,7 +10,7 @@
 
 namespace {
 
-Logger logger(LOG_MAIN, "WasmAuthenticationListener");
+Logger logger("WasmAuthenticationListener");
 
 }  // anonymous namespace
 

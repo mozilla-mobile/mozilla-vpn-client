@@ -15,7 +15,7 @@
 #endif
 
 namespace {
-Logger logger(LOG_MAIN, "Theme");
+Logger logger("Theme");
 }
 
 Theme::Theme() { MVPN_COUNT_CTOR(Theme); }

@@ -33,7 +33,7 @@ constexpr uint32_t RINGLOG_FILE_SIZE =
     ((RINGLOG_MESSAGE_SIZE + RINGLOG_TIMESTAMP_SIZE) * RINGLOG_MAX_ENTRIES);
 
 namespace {
-Logger logger(LOG_WINDOWS, "tunnel.dll");
+Logger logger("tunnel.dll");
 }  // namespace
 
 WindowsTunnelLogger::WindowsTunnelLogger(const QString& filename,

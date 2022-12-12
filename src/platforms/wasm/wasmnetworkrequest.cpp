@@ -13,7 +13,7 @@
 #include <emscripten/emscripten.h>
 
 namespace {
-Logger logger(LOG_MAIN, "WasmNetworkRequest");
+Logger logger("WasmNetworkRequest");
 
 QMap<int, NetworkRequest*> s_networkRequestMap;
 int m_networkRequestId = 0;

@@ -13,7 +13,7 @@
 #include <QTimer>
 
 namespace {
-Logger logger(LOG_WINDOWS, "WindowsServiceManager");
+Logger logger("WindowsServiceManager");
 }
 
 WindowsServiceManager::WindowsServiceManager(LPCWSTR serviceName) {

@@ -16,7 +16,7 @@
 #include "settingsholder.h"
 
 namespace {
-Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalDetection");
+Logger logger("CaptivePortalDetection");
 }
 
 CaptivePortalDetection::CaptivePortalDetection() {

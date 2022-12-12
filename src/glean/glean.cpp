@@ -21,7 +21,7 @@
 #include <QStandardPaths>
 
 namespace {
-Logger logger(LOG_MAIN, "Glean");
+Logger logger("Glean");
 VPNGlean* s_instance = nullptr;
 
 QString rootAppFolder() {

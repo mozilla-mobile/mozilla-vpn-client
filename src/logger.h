@@ -12,42 +12,12 @@
 #include <QString>
 #include <QTextStream>
 
-constexpr const char* LOG_ADJUST = "adjust";
-constexpr const char* LOG_CAPTIVEPORTAL = "captiveportal";
-constexpr const char* LOG_CONTROLLER = "controller";
-constexpr const char* LOG_IAP = "iap";
-constexpr const char* LOG_INSPECTOR = "inspector";
-constexpr const char* LOG_MAIN = "main";
-constexpr const char* LOG_MODEL = "model";
-constexpr const char* LOG_NETWORKING = "networking";
-constexpr const char* LOG_SERVER = "server";
-constexpr const char* LOG_CRASHREPORTER = "crashreporter";
-
-#if defined(MVPN_LINUX) || defined(MVPN_ANDROID)
-constexpr const char* LOG_LINUX = "linux";
-#endif
-
-#ifdef MVPN_WINDOWS
-constexpr const char* LOG_WINDOWS = "windows";
-#endif
-
-#if __APPLE__ || defined(MVPN_WASM)
-constexpr const char* LOG_MACOS = "macos";
-constexpr const char* LOG_IOS = "ios";
-#endif
-
-#if defined(MVPN_ANDROID) || defined(UNIT_TEST)
-constexpr const char* LOG_ANDROID = "android";
-#endif
-
 class QJsonObject;
 
 class Logger {
  public:
-  Logger(const QString& module, const QString& className);
-  Logger(const QStringList& modules, const QString& className);
+  Logger(const QString& className);
 
-  const QStringList& modules() const { return m_modules; }
   const QString& className() const { return m_className; }
 
   class Log {
@@ -104,7 +74,6 @@ class Logger {
   QString keys(const QString& input);
 
  private:
-  QStringList m_modules;
   QString m_className;
 };
 

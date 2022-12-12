@@ -23,7 +23,7 @@ constexpr size_t CN_MCAST_MSG_SIZE =
     sizeof(struct cn_msg) + sizeof(enum proc_cn_mcast_op);
 
 namespace {
-Logger logger(LOG_LINUX, "PidTracker");
+Logger logger("PidTracker");
 }
 
 PidTracker::PidTracker(QObject* parent) : QObject(parent) {

@@ -18,7 +18,7 @@
 #include <QScopeGuard>
 
 namespace {
-Logger logger(LOG_IAP, "ProductsHandler");
+Logger logger("ProductsHandler");
 ProductsHandler* s_instance = nullptr;
 }  // namespace
 

@@ -19,7 +19,7 @@
 #include <QtGlobal>
 
 namespace {
-Logger logger(LOG_MACOS, "MacOSDaemon");
+Logger logger("MacOSDaemon");
 MacOSDaemon* s_daemon = nullptr;
 }  // namespace
 

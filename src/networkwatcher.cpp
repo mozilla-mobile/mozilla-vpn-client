@@ -42,7 +42,7 @@ constexpr uint32_t NETWORK_WATCHER_TIMER_MSEC = 20000;
 #endif
 
 namespace {
-Logger logger(LOG_NETWORKING, "NetworkWatcher");
+Logger logger("NetworkWatcher");
 }
 
 NetworkWatcher::NetworkWatcher() { MVPN_COUNT_CTOR(NetworkWatcher); }

@@ -15,7 +15,7 @@
 constexpr uint32_t WINDOWS_NETSH_TIMEOUT_MSEC = 2000;
 
 namespace {
-Logger logger(LOG_WINDOWS, "DnsUtilsWindows");
+Logger logger("DnsUtilsWindows");
 }
 
 DnsUtilsWindows::DnsUtilsWindows(QObject* parent) : DnsUtils(parent) {

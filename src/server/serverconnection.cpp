@@ -22,7 +22,7 @@ constexpr uint32_t MAX_MSG_SIZE = 1024 * 1024;
 
 namespace {
 
-Logger logger(LOG_SERVER, "ServerConnection");
+Logger logger("ServerConnection");
 
 struct RequestType {
   QString m_name;

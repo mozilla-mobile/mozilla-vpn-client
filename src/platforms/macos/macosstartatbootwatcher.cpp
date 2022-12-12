@@ -9,7 +9,7 @@
 #include "settingsholder.h"
 
 namespace {
-Logger logger(LOG_MACOS, "MacOSStartAtBootWatcher");
+Logger logger("MacOSStartAtBootWatcher");
 }
 
 MacOSStartAtBootWatcher::MacOSStartAtBootWatcher() {

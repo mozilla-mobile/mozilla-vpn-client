@@ -26,7 +26,7 @@
 #include <QDir>
 
 namespace {
-Logger logger(LOG_ANDROID, "AndroidController");
+Logger logger("AndroidController");
 AndroidController* s_instance = nullptr;
 
 }  // namespace

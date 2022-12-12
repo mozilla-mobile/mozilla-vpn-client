@@ -18,7 +18,7 @@
 #include <QWindow>
 
 namespace {
-Logger logger(LOG_MAIN, "WasmWindowController");
+Logger logger("WasmWindowController");
 
 WasmWindowController* s_instance = nullptr;
 }  // namespace

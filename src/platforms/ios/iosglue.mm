@@ -183,7 +183,7 @@ EXPORT bool key_eq(const uint8_t key1[WG_KEY_LEN], const uint8_t key2[WG_KEY_LEN
 
 #ifndef NETWORK_EXTENSION
 namespace {
-Logger logger(LOG_IOS, "IOSSGlue");
+Logger logger("IOSSGlue");
 }
 #endif
 

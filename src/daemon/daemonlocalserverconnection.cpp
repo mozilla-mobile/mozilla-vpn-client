@@ -13,7 +13,7 @@
 #include <QJsonValue>
 
 namespace {
-Logger logger(LOG_MAIN, "DaemonLocalServerConnection");
+Logger logger("DaemonLocalServerConnection");
 }
 
 DaemonLocalServerConnection::DaemonLocalServerConnection(QObject* parent,

@@ -21,7 +21,7 @@ constexpr const char* VAR_PATH = "/var/run/mozillavpn/daemon.socket";
 #endif
 
 namespace {
-Logger logger(LOG_MAIN, "DaemonLocalServer");
+Logger logger("DaemonLocalServer");
 }  // namespace
 
 DaemonLocalServer::DaemonLocalServer(QObject* parent) : QObject(parent) {

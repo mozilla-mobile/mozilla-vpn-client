@@ -7,7 +7,7 @@
 #include "logger.h"
 
 namespace {
-Logger logger(LOG_NETWORKING, "WasmNetworkWatcher");
+Logger logger("WasmNetworkWatcher");
 }
 
 WasmNetworkWatcher::WasmNetworkWatcher(QObject* parent)

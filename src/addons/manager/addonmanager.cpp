@@ -33,7 +33,7 @@ constexpr const char* MVPN_ENV_SKIP_ADDON_SIGNATURE =
     "MVPN_SKIP_ADDON_SIGNATURE";
 
 namespace {
-Logger logger(LOG_MAIN, "AddonManager");
+Logger logger("AddonManager");
 AddonManager* s_instance = nullptr;
 }  // namespace
 

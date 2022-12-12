@@ -22,7 +22,7 @@
 
 namespace {
 FeatureModel* s_instance = nullptr;
-Logger logger(LOG_MODEL, "FeatureModel");
+Logger logger("FeatureModel");
 
 void featureToggleOff(const QString& feature, bool add_to_off) {
   auto const settings = SettingsHolder::instance();

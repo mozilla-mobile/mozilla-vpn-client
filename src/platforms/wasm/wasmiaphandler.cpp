@@ -17,7 +17,7 @@
 #include <QTimer>
 
 namespace {
-Logger logger(LOG_IAP, "WasmIAPHandler");
+Logger logger("WasmIAPHandler");
 }  // namespace
 
 WasmIAPHandler::WasmIAPHandler(QObject* parent) : PurchaseIAPHandler(parent) {

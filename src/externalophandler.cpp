@@ -12,7 +12,7 @@
 
 namespace {
 ExternalOpHandler* s_instance = nullptr;
-Logger logger(LOG_MAIN, "ExternalOpHandler");
+Logger logger("ExternalOpHandler");
 }  // namespace
 
 // static

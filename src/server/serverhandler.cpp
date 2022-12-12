@@ -11,7 +11,7 @@
 #include <QTcpSocket>
 
 namespace {
-Logger logger(LOG_SERVER, "ServerHandler");
+Logger logger("ServerHandler");
 }
 
 constexpr int SERVER_PORT = 8754;

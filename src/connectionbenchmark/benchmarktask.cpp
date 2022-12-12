@@ -9,7 +9,7 @@
 #include <QTimer>
 
 namespace {
-Logger logger(LOG_MAIN, "BenchmarkTask");
+Logger logger("BenchmarkTask");
 }
 
 BenchmarkTask::BenchmarkTask(const QString& taskName, uint32_t maxExecutionTime)

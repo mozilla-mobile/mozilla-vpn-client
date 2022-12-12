@@ -15,7 +15,7 @@
 #include <QJsonObject>
 
 namespace {
-Logger logger(LOG_MODEL, "ProfileFlow");
+Logger logger("ProfileFlow");
 }
 
 ProfileFlow::ProfileFlow() { MVPN_COUNT_CTOR(ProfileFlow); }

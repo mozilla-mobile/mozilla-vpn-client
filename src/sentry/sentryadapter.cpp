@@ -20,7 +20,7 @@
 
 namespace {
 SentryAdapter* s_instance = nullptr;
-Logger logger(LOG_MAIN, "Sentry");
+Logger logger("Sentry");
 
 }  // namespace
 

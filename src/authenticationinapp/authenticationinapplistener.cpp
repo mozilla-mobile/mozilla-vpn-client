@@ -8,7 +8,7 @@
 #include "logger.h"
 
 namespace {
-Logger logger(LOG_MAIN, "AuthenticationInAppListener");
+Logger logger("AuthenticationInAppListener");
 }  // anonymous namespace
 
 AuthenticationInAppListener::AuthenticationInAppListener(QObject* parent)

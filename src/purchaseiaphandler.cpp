@@ -10,7 +10,7 @@
 #include "models/feature.h"
 
 namespace {
-Logger logger(LOG_IAP, "PurchaseIAPHandler");
+Logger logger("PurchaseIAPHandler");
 PurchaseIAPHandler* s_instance = nullptr;
 }  // namespace
 

@@ -27,7 +27,7 @@ constexpr const char* VPN_NAME = "MozillaVPN";
 constexpr const int WINDOWS_11_BUILD =
     22000;  // Build Number of the first release win 11 iso
 namespace {
-Logger logger(LOG_MAIN, "WindowsCommons");
+Logger logger("WindowsCommons");
 }
 
 QString WindowsCommons::getErrorMessage() {

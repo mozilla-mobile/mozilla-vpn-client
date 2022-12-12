@@ -13,7 +13,7 @@
 #include <android/bitmap.h>
 
 namespace {
-Logger logger(LOG_CONTROLLER, "AndroidAppImageProvider");
+Logger logger("AndroidAppImageProvider");
 }
 
 AndroidAppImageProvider::AndroidAppImageProvider(QObject* parent)

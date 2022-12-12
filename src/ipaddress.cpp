@@ -9,7 +9,7 @@
 #include <QtMath>
 
 namespace {
-Logger logger(LOG_NETWORKING, "IPAddress");
+Logger logger("IPAddress");
 }  // namespace
 
 IPAddress::IPAddress() { MVPN_COUNT_CTOR(IPAddress); }

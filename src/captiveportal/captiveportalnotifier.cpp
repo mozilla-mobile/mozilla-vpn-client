@@ -10,7 +10,7 @@
 #include "qmlengineholder.h"
 
 namespace {
-Logger logger(LOG_NETWORKING, "CaptivePortalNotifier");
+Logger logger("CaptivePortalNotifier");
 }
 
 CaptivePortalNotifier::CaptivePortalNotifier(QObject* parent)

@@ -19,7 +19,7 @@
 #include <unistd.h>
 
 namespace {
-Logger logger({LOG_LINUX, LOG_NETWORKING}, "LinuxPingSender");
+Logger logger("LinuxPingSender");
 }
 
 int LinuxPingSender::createSocket() {

@@ -19,7 +19,7 @@ constexpr const char* MULLVAD_DEFAULT_DNS = "10.64.0.1";
 #endif
 
 namespace {
-Logger logger(LOG_MAIN, "BenchmarkTaskTransfer");
+Logger logger("BenchmarkTaskTransfer");
 }
 
 BenchmarkTaskTransfer::BenchmarkTaskTransfer(const QString& name,

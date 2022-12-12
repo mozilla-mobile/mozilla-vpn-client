@@ -16,7 +16,7 @@ constexpr int MAC_SIZE = 16;
 
 namespace {
 
-Logger logger(LOG_MAIN, "CryptoSettings");
+Logger logger("CryptoSettings");
 
 uint64_t lastNonce = 0;
 

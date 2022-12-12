@@ -19,7 +19,7 @@ constexpr int HANDSHAKE_POLL_MSEC = 250;
 
 namespace {
 
-Logger logger(LOG_MAIN, "Daemon");
+Logger logger("Daemon");
 
 Daemon* s_daemon = nullptr;
 

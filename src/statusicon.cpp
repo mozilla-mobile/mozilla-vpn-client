@@ -15,7 +15,7 @@
 #include <QPixmap>
 
 namespace {
-Logger logger(LOG_MAIN, "StatusIcon");
+Logger logger("StatusIcon");
 
 constexpr const QColor GREEN_COLOR = QColor(63, 225, 176, 255);
 constexpr const QColor ORANGE_COLOR = QColor(255, 164, 54, 255);

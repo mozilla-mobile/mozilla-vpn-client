@@ -20,7 +20,7 @@
 #include <shellapi.h>
 
 namespace {
-Logger logger(LOG_WINDOWS, "WindowsAppImageProvider");
+Logger logger("WindowsAppImageProvider");
 }
 
 WindowsAppImageProvider::WindowsAppImageProvider(QObject* parent)

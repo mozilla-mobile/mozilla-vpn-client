@@ -12,7 +12,7 @@
 constexpr int CONNECTION_STABILITY_MSEC = 45000;
 
 namespace {
-Logger logger(LOG_MAIN, "Telemetry");
+Logger logger("Telemetry");
 }
 
 Telemetry::Telemetry() {

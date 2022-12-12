@@ -12,7 +12,7 @@
 #include <systemconfiguration/scdynamicstore.h>
 
 namespace {
-Logger logger(LOG_MACOS, "DnsUtilsMacos");
+Logger logger("DnsUtilsMacos");
 }
 
 DnsUtilsMacos::DnsUtilsMacos(QObject* parent) : DnsUtils(parent) {

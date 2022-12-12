@@ -18,7 +18,8 @@
 
 namespace {
 
-Logger logger(LOG_MAIN, "SettingsHolder");
+Logger logger("SettingsHolder");
+
 // Setting Keys That won't show up in a report;
 QVector<QString> SENSITIVE_SETTINGS({
     "token", "privateKey",

@@ -18,7 +18,7 @@
 #include <QSaveFile>
 
 namespace {
-Logger logger(LOG_MAIN, "AddonIndex");
+Logger logger("AddonIndex");
 }  // namespace
 
 /**

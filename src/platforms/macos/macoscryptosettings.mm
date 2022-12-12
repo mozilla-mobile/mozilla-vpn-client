@@ -19,7 +19,7 @@ constexpr const NSString* SERVICE = @"Mozilla VPN";
 
 namespace {
 
-Logger logger({LOG_MACOS, LOG_MAIN}, "MacOSCryptoSettings");
+Logger logger("MacOSCryptoSettings");
 
 bool initialized = false;
 QByteArray key;

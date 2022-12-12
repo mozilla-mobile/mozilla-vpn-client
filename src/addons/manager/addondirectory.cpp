@@ -13,7 +13,7 @@
 #include <QSaveFile>
 
 namespace {
-Logger logger(LOG_MAIN, "AddonDirectory");
+Logger logger("AddonDirectory");
 
 QString rootAppFolder() {
 #ifdef MVPN_WASM

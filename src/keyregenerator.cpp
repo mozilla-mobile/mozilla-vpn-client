@@ -16,7 +16,7 @@
 #include "taskscheduler.h"
 
 namespace {
-Logger logger(LOG_MAIN, "KeyRegenerator");
+Logger logger("KeyRegenerator");
 }
 
 KeyRegenerator::KeyRegenerator() {

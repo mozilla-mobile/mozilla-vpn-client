@@ -21,7 +21,7 @@
 #define SERVICE_NAME (wchar_t*)L"Mozilla  VPN"
 
 namespace {
-Logger logger(LOG_WINDOWS, "WindowsDaemonServer");
+Logger logger("WindowsDaemonServer");
 
 SERVICE_STATUS s_serviceStatus = {0};
 SERVICE_STATUS_HANDLE s_statusHandle = nullptr;

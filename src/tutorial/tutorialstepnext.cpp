@@ -14,7 +14,7 @@
 #include <QMetaMethod>
 
 namespace {
-Logger logger(LOG_MAIN, "TutorialStepNext");
+Logger logger("TutorialStepNext");
 
 // We cannot use QMetaObject::indexOfSignal() because that wants the signal
 // signature (with params) and we do not have them.

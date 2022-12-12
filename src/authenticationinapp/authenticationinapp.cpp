@@ -19,7 +19,7 @@
 constexpr int PASSWORD_MIN_LENGTH = 8;
 
 namespace {
-Logger logger(LOG_MAIN, "AuthenticationInApp");
+Logger logger("AuthenticationInApp");
 AuthenticationInApp* s_instance = nullptr;
 }  // namespace
 

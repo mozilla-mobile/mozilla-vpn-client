@@ -13,7 +13,7 @@
 #include <QUrlQuery>
 
 namespace {
-Logger logger(LOG_MAIN, "DesktopAuthenticationListener");
+Logger logger("DesktopAuthenticationListener");
 }
 
 DesktopAuthenticationListener::DesktopAuthenticationListener(QObject* parent)

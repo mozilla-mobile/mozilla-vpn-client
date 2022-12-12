@@ -17,7 +17,7 @@
 #include <QJsonObject>
 
 namespace {
-Logger logger(LOG_MAIN, "RecentConnections");
+Logger logger("RecentConnections");
 }
 
 constexpr const char* ENTER_CITY_NAME = "enter_city_name";

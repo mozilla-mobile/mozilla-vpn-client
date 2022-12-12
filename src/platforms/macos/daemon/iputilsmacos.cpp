@@ -23,7 +23,7 @@ constexpr uint32_t ETH_MTU = 1500;
 constexpr uint32_t WG_MTU_OVERHEAD = 80;
 
 namespace {
-Logger logger(LOG_MACOS, "IPUtilsMacos");
+Logger logger("IPUtilsMacos");
 }
 
 IPUtilsMacos::IPUtilsMacos(QObject* parent) : IPUtils(parent) {
