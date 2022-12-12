@@ -2,13 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-## Find the absolute path cargo.
-## Mostly necessary for iOS builds,
-## because Xcode will attempt to use it's own installation of cargo,
-## which we don't want.
-find_program(CARGO_EXECUTABLE NAMES cargo REQUIRED)
-find_program(RUSTC_EXECUTABLE NAMES rustc REQUIRED)
-
 add_library(vpnglean STATIC IMPORTED GLOBAL)
 
 if(ANDROID)
@@ -28,13 +21,7 @@ set_target_properties(vpnglean PROPERTIES FOLDER "Libs")
 # glean-core cannot be compiled to WASM
 # See: https://blog.mozilla.org/data/2020/09/25/this-week-in-glean-glean-core-to-wasm-experiment/
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
-    # Figure out Rust's host architecture
-    execute_process(OUTPUT_VARIABLE RUSTC_VERSION_RAW COMMAND rustc --version --verbose)
-    if(RUSTC_VERSION_RAW MATCHES "host: ([^\n]+)")
-        set(RUSTC_HOST_ARCH ${CMAKE_MATCH_1})
-    else()
-        message(FATAL_ERROR "Failed to find rustc host arch")
-    endif()
+    include(${CMAKE_SOURCE_DIR}/src/apps/vpn/cmake/rustlang.cmake)
 
     if(NOT CMAKE_CROSSCOMPILING)
         set(RUST_ARCH ${RUSTC_HOST_ARCH})
@@ -60,9 +47,11 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         message(FATAL_ERROR "Unable to determine Rust target for ${CMAKE_SYSTEM_NAME} (${CMAKE_SYSTEM_PROCESSOR}).")
     endif()
 
-    list(APPEND CARGO_ENV BUILD_ID=${BUILD_ID})
-    list(APPEND CARGO_ENV APP_VERSION=${CMAKE_PROJECT_VERSION})
-    list(APPEND CARGO_ENV CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR})
+    set(CARGO_ENV
+        BUILD_ID=${BUILD_ID}
+        APP_VERSION=${CMAKE_PROJECT_VERSION}
+        CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR}
+    )
 
     if(ANDROID)
         list(APPEND CARGO_ENV
@@ -72,7 +61,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     elseif(APPLE AND XCODE)
         ## Don't trust Xcode to provide us with a usable linker.
         file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh "#!/bin/sh\n")
-        file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh "${RUSTC_EXECUTABLE} -C linker=/usr/bin/cc \$@\n")
+        file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh "${RUSTC_BUILD_TOOL} -C linker=/usr/bin/cc \$@\n")
         file(CHMOD ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh FILE_PERMISSIONS
             OWNER_READ OWNER_WRITE OWNER_EXECUTE
             GROUP_READ GROUP_WRITE GROUP_EXECUTE
@@ -85,14 +74,15 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     set(LIBNAME ${CMAKE_STATIC_LIBRARY_PREFIX}vpnglean${CMAKE_STATIC_LIBRARY_SUFFIX})
 
     ## Build the vpnglean Rust library
+    # TODO: We still need to graft in the android OpenSSL helpers
+    build_rust_archives(
+        ARCH ${RUST_ARCH}
+        PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
+        LIBRARY_FILE ${LIBNAME}
+        CARGO_ENV ${CARGO_ENV}
+    )
     add_custom_target(vpnglean_ffi
-        BYPRODUCTS
-            ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/debug/${LIBNAME}
-            ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/release/${LIBNAME}
-            ${CMAKE_CURRENT_BINARY_DIR}/${HEADER_FILE}
-        COMMAND ${CMAKE_COMMAND} -E env ${CARGO_ENV}
-                ${CARGO_EXECUTABLE} build $<IF:$<CONFIG:Debug>,,--release> --target ${RUST_ARCH}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/$<IF:$<CONFIG:Debug>,debug,release>/${LIBNAME}
     )
     set_target_properties(vpnglean_ffi PROPERTIES FOLDER "Libs")
 
