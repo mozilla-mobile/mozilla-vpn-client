@@ -46,8 +46,8 @@ Updater::Updater(QObject* parent) : QObject(parent) {
 
     mozilla::glean::sample::update_step.record(
         mozilla::glean::sample::UpdateStepExtra{
-          _state : QVariant::fromValue(RecommendedUpdateAvailable).toString()
-        });
+            ._state =
+                QVariant::fromValue(RecommendedUpdateAvailable).toString()});
     emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
         GleanSample::updateStep,
         {{"state",
@@ -59,8 +59,7 @@ Updater::Updater(QObject* parent) : QObject(parent) {
 
     mozilla::glean::sample::update_step.record(
         mozilla::glean::sample::UpdateStepExtra{
-          _state : QVariant::fromValue(RequiredUpdateAvailable).toString()
-        });
+            ._state = QVariant::fromValue(RequiredUpdateAvailable).toString()});
     emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
         GleanSample::updateStep,
         {{"state", QVariant::fromValue(RequiredUpdateAvailable).toString()}});
@@ -85,8 +84,7 @@ QString Updater::appVersion() {
 void Updater::updateViewShown() {
   mozilla::glean::sample::update_step.record(
       mozilla::glean::sample::UpdateStepExtra{
-        _state : QVariant::fromValue(UpdateViewShown).toString()
-      });
+          ._state = QVariant::fromValue(UpdateViewShown).toString()});
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(UpdateViewShown).toString()}});

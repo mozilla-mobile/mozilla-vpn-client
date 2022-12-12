@@ -60,8 +60,8 @@ void AuthenticationInApp::setState(State state,
       gleanSample = GleanSample::authenticationInappStep;
 
       mozilla::glean::sample::authentication_inapp_step.record(
-          mozilla::glean::sample::
-          AuthenticationInappStepExtra{_state : stateAsString});
+          mozilla::glean::sample::AuthenticationInappStepExtra{
+              ._state = stateAsString});
 
       break;
     case AuthenticationInAppSession::TypeAccountDeletion:
@@ -69,8 +69,8 @@ void AuthenticationInApp::setState(State state,
       gleanSample = GleanSample::authenticationAcntDelStep;
 
       mozilla::glean::sample::authentication_acnt_del_step.record(
-          mozilla::glean::sample::
-          AuthenticationAcntDelStepExtra{_state : stateAsString});
+          mozilla::glean::sample::AuthenticationAcntDelStepExtra{
+              ._state = stateAsString});
 
       break;
     case AuthenticationInAppSession::TypeSubscriptionManagement:
@@ -78,8 +78,8 @@ void AuthenticationInApp::setState(State state,
       gleanSample = GleanSample::authenticationSubManageStep;
 
       mozilla::glean::sample::authentication_sub_manage_step.record(
-          mozilla::glean::sample::
-          AuthenticationSubManageStepExtra{_state : stateAsString});
+          mozilla::glean::sample::AuthenticationSubManageStepExtra{
+              ._state = stateAsString});
 
       break;
     default:

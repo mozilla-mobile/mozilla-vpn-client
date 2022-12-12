@@ -115,8 +115,8 @@ void AddonMessage::updateMessageState(MessageState newState) {
 
   mozilla::glean::sample::addon_message_state_changed.record(
       mozilla::glean::sample::AddonMessageStateChangedExtra{
-        _messageId : id(),
-        _messageState : newStateSetting,
+          ._messageId = id(),
+          ._messageState = newStateSetting,
       });
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::addonMessageStateChanged,

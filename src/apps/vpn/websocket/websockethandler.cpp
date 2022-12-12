@@ -201,8 +201,8 @@ void WebSocketHandler::onClose() {
   m_aboutToClose = false;
 
   mozilla::glean::sample::websocket_closed.record(
-      mozilla::glean::sample::
-      WebsocketClosedExtra{_reason : m_webSocket.closeCode()});
+      mozilla::glean::sample::WebsocketClosedExtra{
+          ._reason = m_webSocket.closeCode()});
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::websocketClosed, {{"reason", m_webSocket.closeCode()}});
 
@@ -278,8 +278,8 @@ void WebSocketHandler::onError(QAbstractSocket::SocketError error) {
   logger.debug() << "WebSocket error:" << error;
 
   mozilla::glean::sample::websocket_errored.record(
-      mozilla::glean::sample::
-      WebsocketErroredExtra{_type : QVariant::fromValue(error).toInt()});
+      mozilla::glean::sample::WebsocketErroredExtra{
+          ._type = QVariant::fromValue(error).toInt()});
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::websocketErrored,
       {{"type", QVariant::fromValue(error).toInt()}});
@@ -299,8 +299,7 @@ void WebSocketHandler::onMessageReceived(const QString& message) {
 
   mozilla::glean::sample::push_message_received.record(
       mozilla::glean::sample::PushMessageReceivedExtra{
-        _type : QVariant::fromValue(parsedMessage.type()).toString()
-      });
+          ._type = QVariant::fromValue(parsedMessage.type()).toString()});
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::pushMessageReceived,
       {{"type", QVariant::fromValue(parsedMessage.type()).toString()}});

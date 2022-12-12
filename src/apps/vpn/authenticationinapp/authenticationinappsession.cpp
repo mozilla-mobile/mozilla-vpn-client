@@ -755,9 +755,8 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
 
       mozilla::glean::sample::authentication_inapp_error.record(
           mozilla::glean::sample::AuthenticationInappErrorExtra{
-            _errno : "107",
-            _validation : QJsonDocument(objValidation).toJson()
-          });
+              ._errno = "107",
+              ._validation = QJsonDocument(objValidation).toJson()});
       emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
           GleanSample::authenticationInappError,
           {{"errno", "107"},
@@ -790,9 +789,7 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
 
       mozilla::glean::sample::authentication_inapp_error.record(
           mozilla::glean::sample::AuthenticationInappErrorExtra{
-            _errno : "125",
-            _verificationmethod : verificationMethod
-          });
+              ._errno = "125", ._verificationmethod = verificationMethod});
       emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
           GleanSample::authenticationInappError,
           {{"errno", "125"}, {"verificationmethod", verificationMethod}});
@@ -964,10 +961,9 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
     default:
       mozilla::glean::sample::authentication_inapp_error.record(
           mozilla::glean::sample::AuthenticationInappErrorExtra{
-            _errno : QString::number(errorCode),
-            _error : obj["error"].toString(),
-            _message : obj["message"].toString()
-          });
+              ._errno = QString::number(errorCode),
+              ._error = obj["error"].toString(),
+              ._message = obj["message"].toString()});
       emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
           GleanSample::authenticationInappError,
           {{"errno", QString::number(errorCode)},

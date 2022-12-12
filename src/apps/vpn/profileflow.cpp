@@ -36,7 +36,7 @@ void ProfileFlow::setState(State state) {
 
   mozilla::glean::sample::profile_flow_state_changed.record(
       mozilla::glean::sample::ProfileFlowStateChangedExtra{
-        _state : QVariant::fromValue(state).toString(),
+          ._state = QVariant::fromValue(state).toString(),
       });
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::profileFlowStateChanged,

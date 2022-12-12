@@ -246,10 +246,9 @@ int CommandUI::run(QStringList& tokens) {
     if (updateOption.m_set) {
       mozilla::glean::sample::update_step.record(
           mozilla::glean::sample::UpdateStepExtra{
-            _state :
-                QVariant::fromValue(Updater::ApplicationRestartedAfterUpdate)
-                    .toString()
-          });
+              ._state =
+                  QVariant::fromValue(Updater::ApplicationRestartedAfterUpdate)
+                      .toString()});
       emit vpn.recordGleanEventWithExtraKeys(
           GleanSample::updateStep,
           {{"state",

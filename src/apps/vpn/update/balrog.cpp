@@ -85,8 +85,7 @@ void Balrog::start(Task* task) {
   if (m_downloadAndInstall) {
     mozilla::glean::sample::update_step.record(
         mozilla::glean::sample::UpdateStepExtra{
-          _state : QVariant::fromValue(UpdateProcessStarted).toString()
-        });
+            ._state = QVariant::fromValue(UpdateProcessStarted).toString()});
     emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
         GleanSample::updateStep,
         {{"state", QVariant::fromValue(UpdateProcessStarted).toString()}});
@@ -383,8 +382,7 @@ bool Balrog::computeHash(const QString& url, const QByteArray& data,
 
   mozilla::glean::sample::update_step.record(
       mozilla::glean::sample::UpdateStepExtra{
-        _state : QVariant::fromValue(BalrogValidationCompleted).toString()
-      });
+          ._state = QVariant::fromValue(BalrogValidationCompleted).toString()});
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(BalrogValidationCompleted).toString()}});
@@ -429,8 +427,7 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
 
   mozilla::glean::sample::update_step.record(
       mozilla::glean::sample::UpdateStepExtra{
-        _state : QVariant::fromValue(BalrogFileSaved).toString()
-      });
+          ._state = QVariant::fromValue(BalrogFileSaved).toString()});
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(BalrogFileSaved).toString()}});
@@ -510,8 +507,8 @@ bool Balrog::install(const QString& filePath) {
 
   mozilla::glean::sample::update_step.record(
       mozilla::glean::sample::UpdateStepExtra{
-        _state : QVariant::fromValue(InstallationProcessExecuted).toString()
-      });
+          ._state =
+              QVariant::fromValue(InstallationProcessExecuted).toString()});
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(InstallationProcessExecuted).toString()}});
