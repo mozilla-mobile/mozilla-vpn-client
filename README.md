@@ -246,6 +246,8 @@ Some variables that might be useful when configuring the project:
    identifier. This defaults to `org.mozilla.macos.FirefoxVPN` if not set.
  - `BUILD_VPN_DEVELOPMENT_TEAM=<Development Team ID>`: can be set to change the development
    team used for Xcode certificates. This defaults to `43AQ936H96` if not set.
+ - `CMAKE_OSX_ARCHITECTURES="arm64;x86_64"`: can be set to produce a universal binary that
+   will run on both Intel and Apple silicon devices (experimental).
 
 4. Compile the source code:
 ```bash
@@ -387,15 +389,6 @@ mkdir build-ios
 /Users/example/Qt/6.3.2/ios/bin/qt-cmake . -B build-ios -GXcode
 ```
 
-However, due to limitations in cmake, you cannot switch between iOS and simulator builds
-without re-generating the Xcode project. To make it easier to develop, it's recommend
-build into a different project for simulation. This can be achieved with:
-```bash
-mkdir build-ios-sim
-/Users/example/Qt/6.3.2/ios/bin/qt-cmake . -B build-ios-sim -GXcode
-    -DCMAKE_OSX_SYSROOT="iphonesimulator"
-```
-
 Some variables that might be useful when configuring the project:
  - `BUILD_ADJUST_SDK_TOKEN=<SDK Token>`: can be set to enable the use of the Adjust telemetry
    and attribution data collection.
@@ -403,10 +396,8 @@ Some variables that might be useful when configuring the project:
    identifier. This defaults to `org.mozilla.ios.FirefoxVPN` if not set.
  - `BUILD_VPN_DEVELOPMENT_TEAM=<Development Team ID>`: can be set to change the development
    team used for Xcode certificates. This defaults to `43AQ936H96` if not set.
- - `CMAKE_OSX_SYSROOT="iphonesimulator"` to build for the iOS simulator.
 
-3. Open the generated Xcode project for iOS devices with `open build-ios/Mozilla\ VPN.xcodeproj`
-or `open build-ios-sim/Mozilla\ VPN.xcodeproj` for simulation.
+3. Open the generated Xcode project with `open build-ios/Mozilla\ VPN.xcodeproj`.
 
 4. Select the `mozillavpn` target and `Any iOS Device (arm64)` as the build configuration
 for iOS devices, or select any of the simulation targets when building for the simulator.
