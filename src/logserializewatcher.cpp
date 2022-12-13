@@ -9,7 +9,7 @@
 #include "mozillavpn.h"
 
 namespace {
-Logger logger(LOG_MAIN, "LogSerializeWatcher");
+Logger logger("LogSerializeWatcher");
 }
 
 LogSerializeWatcher::LogSerializeWatcher(QObject* parent, QTextStream* out)

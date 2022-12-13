@@ -9,7 +9,7 @@
 #include "mozillavpn.h"
 
 namespace {
-Logger logger(LOG_MAIN, "UpdateRequiredWatcher");
+Logger logger("UpdateRequiredWatcher");
 }
 
 UpdateRequiredWatcher::UpdateRequiredWatcher(QObject* parent)

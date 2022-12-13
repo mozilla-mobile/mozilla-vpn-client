@@ -9,7 +9,7 @@
 #include "mozillavpn.h"
 
 namespace {
-Logger logger(LOG_MAIN, "QuitWatcher");
+Logger logger("QuitWatcher");
 }
 
 QuitWatcher::QuitWatcher(QObject* parent) : QObject(parent) {

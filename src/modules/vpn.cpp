@@ -28,7 +28,7 @@
 
 namespace {
 ModuleVPN* s_instance = nullptr;
-Logger logger(LOG_MAIN, "ModuleVPN");
+Logger logger("ModuleVPN");
 
 void serializeServerCountry(ServerCountryModel* model, QJsonObject& obj) {
   QJsonArray countries;

@@ -16,7 +16,7 @@ class QJsonObject;
 
 class Logger {
  public:
-  Logger(const QString& className);
+  explicit Logger(const QString& className);
 
   const QString& className() const { return m_className; }
 

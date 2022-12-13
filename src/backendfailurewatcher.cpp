@@ -9,7 +9,7 @@
 #include "mozillavpn.h"
 
 namespace {
-Logger logger(LOG_MAIN, "BackendFailureWatcher");
+Logger logger("BackendFailureWatcher");
 }
 
 BackendFailureWatcher::BackendFailureWatcher(QObject* parent)
