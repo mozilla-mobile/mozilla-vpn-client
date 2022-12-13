@@ -77,10 +77,38 @@ function(add_go_library GOTARGET SOURCE)
     separate_arguments(DEFAULT_CGO_LDFLAGS NATIVE_COMMAND ${DEFAULT_CGO_LDFLAGS})
 
     ## The actual commands that do the building.
-    build_go_archive(${CMAKE_CURRENT_BINARY_DIR}/${ARCHIVE_NAME} ${DIR_NAME}/go.mod
-        CGO_CFLAGS ${DEFAULT_CGO_CFLAGS} ${GOLANG_CGO_CFLAGS}
-        CGO_LDFLAGS ${DEFAULT_CGO_LDFLAGS} ${GOLANG_CGO_LDFLAGS}
-    )
+    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        ## Special case for apple universal binaries.
+        build_go_archive(${CMAKE_CURRENT_BINARY_DIR}/amd64/${ARCHIVE_NAME} ${DIR_NAME}/go.mod
+            GOARCH amd64
+            CGO_CFLAGS ${DEFAULT_CGO_CFLAGS} ${GOLANG_CGO_CFLAGS} -arch x86_64
+            CGO_LDFLAGS ${DEFAULT_CGO_LDFLAGS} ${GOLANG_CGO_LDFLAGS} -arch x86_64
+        )
+        build_go_archive(${CMAKE_CURRENT_BINARY_DIR}/arm64/${ARCHIVE_NAME} ${DIR_NAME}/go.mod
+            GOARCH arm64
+            CGO_CFLAGS ${DEFAULT_CGO_CFLAGS} ${GOLANG_CGO_CFLAGS} -arch arm64
+            CGO_LDFLAGS ${DEFAULT_CGO_LDFLAGS} ${GOLANG_CGO_LDFLAGS} -arch arm64
+        )
+
+        add_custom_command(
+            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${ARCHIVE_NAME} ${CMAKE_CURRENT_BINARY_DIR}/${HEADER_NAME}
+            DEPENDS
+                ${CMAKE_CURRENT_BINARY_DIR}/amd64/${HEADER_NAME}
+                ${CMAKE_CURRENT_BINARY_DIR}/amd64/${ARCHIVE_NAME}
+                ${CMAKE_CURRENT_BINARY_DIR}/arm64/${HEADER_NAME}
+                ${CMAKE_CURRENT_BINARY_DIR}/arm64/${ARCHIVE_NAME}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            COMMAND lipo -create -output ${ARCHIVE_NAME} amd64/${ARCHIVE_NAME} arm64/${ARCHIVE_NAME}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different amd64/${HEADER_NAME} ${HEADER_NAME}
+        )
+    else()
+        ## Regular single architecture build
+        build_go_archive(${CMAKE_CURRENT_BINARY_DIR}/${ARCHIVE_NAME} ${DIR_NAME}/go.mod
+            CGO_CFLAGS ${DEFAULT_CGO_CFLAGS} ${GOLANG_CGO_CFLAGS}
+            CGO_LDFLAGS ${DEFAULT_CGO_LDFLAGS} ${GOLANG_CGO_LDFLAGS}
+        )
+    endif()
+
     set_source_files_properties({CMAKE_CURRENT_BINARY_DIR}/${HEADER_NAME} PROPERTIES
         GENERATED TRUE
         SKIP_AUTOGEN TRUE
@@ -94,7 +122,7 @@ function(add_go_library GOTARGET SOURCE)
         IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/${ARCHIVE_NAME})
 
     ## Some dependency glue to ensure we actually build the library.
-    add_custom_target(${GOTARGET}_builder DEPENDS ${ARCHIVE_NAME})
+    add_custom_target(${GOTARGET}_builder DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${ARCHIVE_NAME})
     add_dependencies(${GOTARGET} ${GOTARGET}_builder)
     set_target_properties(${GOTARGET}_builder PROPERTIES FOLDER "Libs")
 

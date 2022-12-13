@@ -112,7 +112,7 @@ build_go_archive(${CMAKE_CURRENT_BINARY_DIR}/libwg-dev.a ${CMAKE_SOURCE_DIR}/3rd
     GOOS ios
     GOARCH arm64
     CGO_CFLAGS -arch arm64 -isysroot ${IOS_SDKROOT}
-    CGO_CFLAGS -arch arm64 -isysroot ${IOS_SDKROOT}
+    CGO_LDFLAGS -arch arm64 -isysroot ${IOS_SDKROOT}
 )
 
 ## Unify the wireguard go libraries.
