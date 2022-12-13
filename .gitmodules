@@ -28,4 +28,4 @@
 [submodule "3rdparty/glean"]
 	path = 3rdparty/glean
 	url = https://github.com/mozilla/glean.git
-	branch = main
+	branch = release
