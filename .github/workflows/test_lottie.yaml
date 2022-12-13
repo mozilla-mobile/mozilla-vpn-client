@@ -48,6 +48,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p build
+          pip install coverage
           cmake -S lottie -B $(pwd)/build -DBUILD_TESTING=ON \
             -DCMAKE_PREFIX_PATH=/opt/$QTVERSION/gcc_64/lib/cmake/ \
             -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
@@ -109,6 +110,7 @@ jobs:
         shell: bash
         run: |
           export PATH=/opt/qt6/bin:${{github.workspace}}/grcov-build/bin:$PATH
+          pip install coverage
           mkdir -p build
           cmake -S lottie -B $(pwd)/build -DBUILD_TESTING=ON \
             -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
@@ -161,6 +163,7 @@ jobs:
         shell: bash
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
+          pip install coverage
           mkdir -p build
           cmake -S lottie -B $(pwd)/build -DBUILD_TESTING=ON
           cmake --build $(pwd)/build --config Release

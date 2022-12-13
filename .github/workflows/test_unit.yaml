@@ -29,6 +29,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
           pip3 install -r requirements.txt
+          pip install coverage
 
       - name: Cache grcov
         id: cache-grcov
@@ -94,6 +95,7 @@ jobs:
         shell: bash
         run: |
           pip3 install -r requirements.txt
+          pip install coverage
           brew install ninja
 
       - name: Install Qt6
@@ -187,6 +189,7 @@ jobs:
         shell: bash
         run: |
           pip3 install -r requirements.txt
+          pip install coverage
 
       - name: Building tests
         shell: bash
