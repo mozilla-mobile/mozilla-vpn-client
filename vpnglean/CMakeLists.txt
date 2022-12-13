@@ -23,9 +23,12 @@ set_target_properties(vpnglean PROPERTIES FOLDER "Libs")
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     include(${CMAKE_SOURCE_DIR}/src/apps/vpn/cmake/rustlang.cmake)
 
-    if(NOT CMAKE_CROSSCOMPILING)
-        set(RUST_ARCH ${RUSTC_HOST_ARCH})
-    elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
+    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        # TODO: We should technically derive this from CMAKE_OSX_ARCHITECTURES
+        set(RUST_ARCH aarch64-apple-darwin x86_64-apple-darwin)
+    elseif(IOS)
+        set(RUST_ARCH aarch64-apple-ios x86_64-apple-ios)
+    elseif(ANDROID)
         if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64")
             set(RUST_ARCH "aarch64-linux-android")
         elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7-a")
@@ -35,12 +38,9 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
             set(RUST_ARCH "x86_64-linux-android")
         endif()
-    elseif(IOS)
-        set(RUST_ARCH x86_64-apple-ios aarch64-apple-ios)
-    endif()
-
-    if(NOT RUST_ARCH)
-        message(FATAL_ERROR "Unable to determine Rust target for ${CMAKE_SYSTEM_NAME} (${CMAKE_SYSTEM_PROCESSOR}).")
+    else()
+        # Just use the host arch and hope for the best.
+        set(RUST_ARCH ${RUSTC_HOST_ARCH})
     endif()
 
     set(CARGO_ENV
@@ -77,7 +77,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         CARGO_ENV ${CARGO_ENV}
     )
 
-    if(APPLE AND XCODE)
+    if(APPLE)
         add_custom_target(vpnglean_ffi
             DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/unified/$<IF:$<CONFIG:Debug>,debug,release>/${LIBNAME}
         )

@@ -91,8 +91,8 @@ function(build_rust_archives)
         list(APPEND RUST_BUILD_DEBUG_LIBS ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_BUILD_LIBRARY_FILE})
     endforeach()
 
-    ## For apple builds bundle the rust libraries
-    if(APPLE AND XCODE)
+    ## For apple builds, bundle the build artifacts into a unified library
+    if(APPLE)
         add_custom_command(
             OUTPUT ${RUST_BUILD_BINARY_DIR}/unified/release/${RUST_BUILD_LIBRARY_FILE}
             DEPENDS ${RUST_BUILD_RELEASE_LIBS}
