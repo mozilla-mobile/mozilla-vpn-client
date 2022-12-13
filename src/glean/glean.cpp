@@ -2,7 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "glean/glean.h"
+// TODO: Stop using the relative path once Glean.js is fully removed from the
+// codebase. Until then we need the relative path, otherwise XCode is confused
+// about what is being imported.
+#include "./glean.h"
 
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
@@ -13,6 +16,9 @@
 #include "settingsholder.h"
 #if not(defined(MVPN_WASM) || defined(BUILD_QMAKE))
 #  include "vpnglean.h"
+#endif
+#if defined(MVPN_IOS) && not(defined(BUILD_QMAKE))
+#  include "platforms/ios/iosgleanbridge.h"
 #endif
 
 #include <QCoreApplication>
@@ -84,6 +90,8 @@ void VPNGlean::initialize() {
 
 #if defined(UNIT_TEST)
     glean_test_reset_glean(uploadEnabled, dataPath.toLocal8Bit());
+#elif defined(MVPN_IOS) && not(defined(BUILD_QMAKE))
+    new IOSGleanBridge(uploadEnabled, appChannel);
 #elif not(defined(MVPN_WASM) || defined(BUILD_QMAKE))
     glean_initialize(uploadEnabled, dataPath.toLocal8Bit(), appChannel);
 #endif
