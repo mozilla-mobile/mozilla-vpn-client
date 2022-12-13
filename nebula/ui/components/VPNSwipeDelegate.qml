@@ -21,8 +21,6 @@ SwipeDelegate {
         color: VPNTheme.theme.bgColor
     }
 
-    onPressed: window.removeFocus()
-
     onReleased: {
         swipeDelegate.state = swipeDelegate.uiState.stateDefault
     }

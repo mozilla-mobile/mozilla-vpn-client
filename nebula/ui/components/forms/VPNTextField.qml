@@ -90,8 +90,12 @@ TextField {
 
     Connections {
         target: window
-        function onRemoveFocus() {
-            textField.focus = false
+        function onRemoveFocus(x, y) {
+            //Remove focus if the global point pressed is not contained by the global area of the text field
+            let globalX = textField.mapToItem(window.contentItem, 0, 0).x
+            let globalY = textField.mapToItem(window.contentItem, 0, 0).y
+            if(x < globalX || x > globalX + textField.width || y < globalY || y > globalY + textField.height)
+                textField.focus = false
         }
     }
 }

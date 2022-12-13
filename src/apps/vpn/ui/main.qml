@@ -18,7 +18,7 @@ Window {
     id: window
 
     signal showServerList
-    signal removeFocus
+    signal removeFocus(double x, double y)
 
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
 
@@ -29,11 +29,6 @@ Window {
         return Qt.platform.os === "android" ||
                 Qt.platform.os === "ios" ||
                 Qt.platform.os === "tvos";
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        onPressed: window.removeFocus()
     }
 
     function safeAreaHeightByDevice() {
@@ -102,6 +97,16 @@ Window {
 
         }
         VPN.mainWindowLoaded()
+    }
+
+    //Overlays the entire window at all times to remove focus from components on click away
+    MouseArea {
+        anchors.fill: parent
+        z: VPNTheme.theme.maxZLevel
+        onPressed: (mouse) => {
+            window.removeFocus(mouse.x, mouse.y)
+            mouse.accepted = false
+        }
     }
 
     VPNMobileStatusBarModifier {

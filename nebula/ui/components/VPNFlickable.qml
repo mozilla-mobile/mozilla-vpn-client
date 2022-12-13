@@ -23,7 +23,6 @@ Flickable {
         propagateComposedEvents: true
 
         onPressed: mouse => {
-            window.removeFocus()
             if (window.activeFocusItem &&
                 window.activeFocusItem.forceBlurOnOutsidePress &&
                 (Qt.platform.os === "android" || Qt.platform.os === "ios")) {
