@@ -12,6 +12,19 @@ import components 0.1
 StackView {
     id: multiHopStackView
 
+    Component.onCompleted: function() {
+        VPNNavigator.addStackView(VPNNavigator.ScreenHome, multiHopStackView)
+    }
+
+    Connections {
+        target: VPNNavigator
+        function onGoBack(item) {
+            if (item === multiHopStackView) {
+                multiHopStackView.pop();
+            }
+        }
+    }
+
     initialItem: VPNFlickable {
 
         id: vpnFlickable
