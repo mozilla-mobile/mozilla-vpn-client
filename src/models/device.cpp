@@ -13,7 +13,7 @@
 #include "keys.h"
 #include "leakdetector.h"
 
-#if defined(MVPN_WINDOWS) || defined(MVPN_ANDROID)
+#ifndef QT_NO_SSL
 #  include <QSslSocket>
 #endif
 
@@ -77,7 +77,7 @@ QString Device::currentDeviceReport() {
   out << "Build ID -> " << Constants::buildNumber() << Qt::endl;
   out << "Device ID -> " << uniqueDeviceId() << Qt::endl;
 
-#if defined(MVPN_WINDOWS) || defined(MVPN_ANDROID)
+#ifndef QT_NO_SSL
   out << "SSL Lib:" << QSslSocket::sslLibraryVersionString()
       << QSslSocket::sslLibraryVersionNumber() << Qt::endl;
 #endif
