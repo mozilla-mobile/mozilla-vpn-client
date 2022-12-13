@@ -30,7 +30,7 @@
       }, {
         "id": "s1",
         "element": "navigationLayout/navButton-settings",
-        "tooltip": "TODO TODO",
+        "tooltip": "Select your account settings",
         "next": {
           "op": "signal",
           "qml_emitter": "navigationLayout/navButton-settings",
@@ -78,7 +78,7 @@
       },{
         "id": "s6",
         "element": "navigationLayout/navButton-home",
-        "tooltip": "TODO TODO TODO",
+        "tooltip": "Go back to the VPN dashboard",
         "conditions": {
           "javascript": "vpnWasOn.js"
        },
