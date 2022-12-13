@@ -25,9 +25,6 @@ CheckBox {
     Layout.alignment: Qt.AlignLeft | Qt.AlignTop
     Component.onCompleted: state = uiState.stateDefault
     hoverEnabled: false
-
-    onClicked: window.removeFocus()
-
     onActiveFocusChanged: {
         if (!activeFocus)
             mouseArea.changeState(uiState.stateDefault);

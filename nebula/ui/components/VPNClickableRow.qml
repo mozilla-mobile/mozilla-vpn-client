@@ -15,6 +15,8 @@ VPNButtonBase {
     property var rowShouldBeDisabled: false
     property string accessibleName: ""
     property var backgroundColor: VPNTheme.theme.iconButtonLightBackground
+
+    property var handleMouseClick: function() { mainRow.clicked(); }
     property var canGrowVertical: false
 
     visualStateItem: rowVisualStates
@@ -71,5 +73,7 @@ VPNButtonBase {
         anchors.fill: rowVisualStates
         hoverEnabled: enabled
         targetEl: rowVisualStates
+        onMouseAreaClicked: handleMouseClick
     }
+
 }

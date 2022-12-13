@@ -12,7 +12,7 @@ MouseArea {
     property var targetEl: parent
     property var uiState: VPNTheme.theme.uiState
     property bool propagateClickToParent: true
-    property var onMouseAreaClicked: function () { if(propagateClickToParent) parent.clicked() }
+    property var onMouseAreaClicked: () => { if(propagateClickToParent) parent.clicked() }
 
     // Set to true in tst_VPNMouseArea.qml to prevent failing
     // at L32 `mouseArea.containsMouse`.
@@ -26,10 +26,7 @@ MouseArea {
     cursorShape: !hoverEnabled ? Qt.ForbiddenCursor : Qt.PointingHandCursor
     onEntered: changeState(uiState.stateHovered)
     onExited: changeState(uiState.stateDefault)
-    onPressed: {
-        changeState(uiState.statePressed)
-        window.removeFocus()
-    }
+    onPressed: changeState(uiState.statePressed)
     onCanceled: changeState(uiState.stateDefault)
     onReleased: {
         if (hoverEnabled && (mouseArea.containsMouse || mouseArea.qmlUnitTestWorkaround)) {
