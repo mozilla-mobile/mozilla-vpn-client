@@ -40,12 +40,12 @@ target_sources(mozillavpn PRIVATE
 target_sources(mozillavpn PRIVATE
     ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c
     ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h
-    daemon/daemon.cpp
-    daemon/daemon.h
-    daemon/dnsutils.h
-    daemon/interfaceconfig.h
-    daemon/iputils.h
-    daemon/wireguardutils.h
+    modules/vpn/daemon/daemon.cpp
+    modules/vpn/daemon/daemon.h
+    modules/vpn/daemon/dnsutils.h
+    modules/vpn/daemon/interfaceconfig.h
+    modules/vpn/daemon/iputils.h
+    modules/vpn/daemon/wireguardutils.h
     platforms/linux/daemon/apptracker.cpp
     platforms/linux/daemon/apptracker.h
     platforms/linux/daemon/dbusservice.cpp

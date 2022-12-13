@@ -8,9 +8,9 @@
 
 #include "commandlineparser.h"
 #include "constants.h"
-#include "daemon/daemonlocalserver.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "modules/vpn/daemon/daemonlocalserver.h"
 #include "macosdaemon.h"
 #include "mozillavpn.h"
 #include "signalhandler.h"

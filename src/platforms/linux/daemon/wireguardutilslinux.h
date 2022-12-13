@@ -10,7 +10,7 @@
 #include <QSocketNotifier>
 #include <QStringList>
 
-#include "daemon/wireguardutils.h"
+#include "modules/vpn/daemon/wireguardutils.h"
 
 class WireguardUtilsLinux final : public WireguardUtils {
   Q_OBJECT

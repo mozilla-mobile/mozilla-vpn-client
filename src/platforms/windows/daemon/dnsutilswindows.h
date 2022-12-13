@@ -10,7 +10,7 @@
 #include <QHostAddress>
 #include <QString>
 
-#include "daemon/dnsutils.h"
+#include "modules/vpn/daemon/dnsutils.h"
 
 class DnsUtilsWindows final : public DnsUtils {
   Q_OBJECT

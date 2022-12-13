@@ -3,6 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "iputilsmacos.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "macosdaemon.h"
+#include "modules/vpn/daemon/wireguardutils.h"
+
+#include <QHostAddress>
+#include <QScopeGuard>
 
 #include <arpa/inet.h>
 #include <net/if.h>
@@ -11,14 +18,6 @@
 #include <netinet/in_var.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
-
-#include <QHostAddress>
-#include <QScopeGuard>
-
-#include "daemon/wireguardutils.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "macosdaemon.h"
 
 constexpr uint32_t ETH_MTU = 1500;
 constexpr uint32_t WG_MTU_OVERHEAD = 80;

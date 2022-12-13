@@ -12,7 +12,7 @@
 #include <QMap>
 #include <QString>
 
-#include "daemon/dnsutils.h"
+#include "modules/vpn/daemon/dnsutils.h"
 
 class DnsUtilsMacos final : public DnsUtils {
   Q_OBJECT

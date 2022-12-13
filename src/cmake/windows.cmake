@@ -25,18 +25,18 @@ target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
 target_sources(mozillavpn PRIVATE
     commands/commandcrashreporter.cpp
     commands/commandcrashreporter.h
-    daemon/daemon.cpp
-    daemon/daemon.h
-    daemon/daemonlocalserver.cpp
-    daemon/daemonlocalserver.h
-    daemon/daemonlocalserverconnection.cpp
-    daemon/daemonlocalserverconnection.h
-    daemon/dnsutils.h
-    daemon/interfaceconfig.h
-    daemon/iputils.h
-    daemon/wireguardutils.h
     eventlistener.cpp
     eventlistener.h
+    modules/vpn/daemon/daemon.cpp
+    modules/vpn/daemon/daemon.h
+    modules/vpn/daemon/daemonlocalserver.cpp
+    modules/vpn/daemon/daemonlocalserver.h
+    modules/vpn/daemon/daemonlocalserverconnection.cpp
+    modules/vpn/daemon/daemonlocalserverconnection.h
+    modules/vpn/daemon/dnsutils.h
+    modules/vpn/daemon/interfaceconfig.h
+    modules/vpn/daemon/iputils.h
+    modules/vpn/daemon/wireguardutils.h
     modules/vpn/localsocketcontroller.cpp
     modules/vpn/localsocketcontroller.h
     modules/vpn/wgquickprocess.cpp

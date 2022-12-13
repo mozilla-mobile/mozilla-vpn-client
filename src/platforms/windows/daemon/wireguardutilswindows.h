@@ -10,7 +10,7 @@
 #include <QHostAddress>
 #include <QObject>
 
-#include "daemon/wireguardutils.h"
+#include "modules/vpn/daemon/wireguardutils.h"
 #include "windowsroutemonitor.h"
 #include "windowstunnelservice.h"
 
