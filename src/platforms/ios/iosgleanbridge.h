@@ -5,9 +5,9 @@
 #ifndef IOSGLEANBRIDGE_H
 #define IOSGLEANBRIDGE_H
 
-#include "controllerimpl.h"
-
 #include <QObject>
+
+#include "controllerimpl.h"
 
 class IOSGleanBridge {
   Q_DISABLE_COPY_MOVE(IOSGleanBridge)
