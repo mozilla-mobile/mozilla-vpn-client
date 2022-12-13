@@ -3,17 +3,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "desktopauthenticationlistener.h"
+
+#include <QOAuthHttpServerReplyHandler>
+#include <QRandomGenerator>
+#include <QUrlQuery>
+#include <limits>
+
 #include "leakdetector.h"
 #include "logger.h"
 #include "urlopener.h"
 
-#include <limits>
-#include <QOAuthHttpServerReplyHandler>
-#include <QRandomGenerator>
-#include <QUrlQuery>
-
 namespace {
-Logger logger(LOG_MAIN, "DesktopAuthenticationListener");
+Logger logger("DesktopAuthenticationListener");
 }
 
 DesktopAuthenticationListener::DesktopAuthenticationListener(QObject* parent)

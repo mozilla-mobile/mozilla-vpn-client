@@ -6,6 +6,10 @@
 // It is just a proxy server designed to work with the Adjust SDK
 
 #include "adjustproxyconnection.h"
+
+#include <QUrl>
+#include <QUrlQuery>
+
 #include "adjustfiltering.h"
 #include "adjusttasksubmission.h"
 #include "constants.h"
@@ -15,14 +19,11 @@
 #include "qmlengineholder.h"
 #include "taskscheduler.h"
 
-#include <QUrl>
-#include <QUrlQuery>
-
 const QString HTTP_RESPONSE(
     "HTTP/1.1 %1\nContent-Type: application/json\n\n%2\n");
 
 namespace {
-Logger logger(LOG_ADJUST, "AdjustProxyConnection");
+Logger logger("AdjustProxyConnection");
 }  // namespace
 
 AdjustProxyConnection::AdjustProxyConnection(QObject* parent,

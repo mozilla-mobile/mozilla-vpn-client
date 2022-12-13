@@ -3,6 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "commandui.h"
+
+#include <glean.h>
+#include <lottie.h>
+#include <nebula.h>
+
+#include <QQmlApplicationEngine>
+#include <QQmlContext>
+
 #include "addons/manager/addonmanager.h"
 #include "apppermission.h"
 #include "authenticationinapp/authenticationinapp.h"
@@ -34,13 +42,6 @@
 #include "update/updater.h"
 #include "urlopener.h"
 
-#include <glean.h>
-#include <lottie.h>
-#include <nebula.h>
-
-#include <QQmlApplicationEngine>
-#include <QQmlContext>
-
 #ifdef MVPN_DEBUG
 #  include <QQmlDebuggingEnabler>
 #endif
@@ -57,8 +58,8 @@
 #endif
 
 #ifdef MVPN_ANDROID
-#  include "platforms/android/androidutils.h"
 #  include "platforms/android/androidglean.h"
+#  include "platforms/android/androidutils.h"
 #endif
 
 #ifndef Q_OS_WIN
@@ -66,12 +67,13 @@
 #endif
 
 #ifdef MVPN_WINDOWS
-#  include "eventlistener.h"
-#  include "platforms/windows/windowsstartatbootwatcher.h"
-#  include "platforms/windows/windowsappimageprovider.h"
+#  include <windows.h>
 
 #  include <iostream>
-#  include <windows.h>
+
+#  include "eventlistener.h"
+#  include "platforms/windows/windowsappimageprovider.h"
+#  include "platforms/windows/windowsstartatbootwatcher.h"
 #endif
 
 #ifdef MVPN_WASM
@@ -85,7 +87,7 @@
 #include <QApplication>
 
 namespace {
-Logger logger(LOG_MAIN, "CommandUI");
+Logger logger("CommandUI");
 }
 
 CommandUI::CommandUI(QObject* parent) : Command(parent, "ui", "Start the UI.") {

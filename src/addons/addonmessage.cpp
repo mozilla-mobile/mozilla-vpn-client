@@ -3,6 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addonmessage.h"
+
+#include <QJsonObject>
+#include <QMetaEnum>
+
 #include "constants.h"
 #include "l18nstrings.h"
 #include "leakdetector.h"
@@ -13,11 +17,8 @@
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
 
-#include <QJsonObject>
-#include <QMetaEnum>
-
 namespace {
-Logger logger(LOG_MAIN, "AddonMessage");
+Logger logger("AddonMessage");
 }
 
 // static

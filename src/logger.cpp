@@ -3,16 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "logger.h"
-#include "loghandler.h"
 
 #include <QJsonDocument>
 #include <QMetaEnum>
 
-Logger::Logger(const QString& module, const QString& className)
-    : Logger(QStringList({module}), className) {}
+#include "loghandler.h"
 
-Logger::Logger(const QStringList& modules, const QString& className)
-    : m_modules(modules), m_className(className) {}
+Logger::Logger(const QString& className) : m_className(className) {}
 
 Logger::Log Logger::error() { return Log(this, LogLevel::Error); }
 Logger::Log Logger::warning() { return Log(this, LogLevel::Warning); }
@@ -23,8 +20,8 @@ Logger::Log::Log(Logger* logger, LogLevel logLevel)
     : m_logger(logger), m_logLevel(logLevel), m_data(new Data()) {}
 
 Logger::Log::~Log() {
-  LogHandler::messageHandler(m_logLevel, m_logger->modules(),
-                             m_logger->className(), m_data->m_buffer.trimmed());
+  LogHandler::messageHandler(m_logLevel, m_logger->className(),
+                             m_data->m_buffer.trimmed());
   delete m_data;
 }
 

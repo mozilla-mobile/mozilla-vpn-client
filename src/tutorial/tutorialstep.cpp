@@ -3,22 +3,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "tutorialstep.h"
-#include "addons/addontutorial.h"
-#include "addons/conditionwatchers/addonconditionwatcher.h"
-#include "inspector/inspectorutils.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "tutorialstep.h"
-#include "tutorial.h"
-#include "tutorialstepbefore.h"
-#include "tutorialstepnext.h"
 
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QQuickItem>
 
+#include "addons/addontutorial.h"
+#include "addons/conditionwatchers/addonconditionwatcher.h"
+#include "inspector/inspectorutils.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "tutorial.h"
+#include "tutorialstep.h"
+#include "tutorialstepbefore.h"
+#include "tutorialstepnext.h"
+
 namespace {
-Logger logger(LOG_MAIN, "TutorialStep");
+Logger logger("TutorialStep");
 }
 
 constexpr int TIMEOUT_ITEM_TIMER_MSEC = 300;

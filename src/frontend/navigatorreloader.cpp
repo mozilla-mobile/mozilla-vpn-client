@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "navigatorreloader.h"
+
 #include "navigator.h"
 
 NavigatorReloader::NavigatorReloader(QObject* parent) : QObject(parent) {

@@ -5,9 +5,9 @@
 #ifndef IOSCONTROLLER_H
 #define IOSCONTROLLER_H
 
-#include "controllerimpl.h"
-
 #include <QObject>
+
+#include "controllerimpl.h"
 
 class IOSController final : public ControllerImpl {
   Q_DISABLE_COPY_MOVE(IOSController)

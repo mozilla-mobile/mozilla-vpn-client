@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskcontrolleraction.h"
+
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -10,7 +11,7 @@
 constexpr uint32_t TASKCONTROLLER_TIMER_MSEC = 3000;
 
 namespace {
-Logger logger(QStringList{LOG_MAIN, LOG_CONTROLLER}, "TaskControllerAction");
+Logger logger("TaskControllerAction");
 }
 
 TaskControllerAction::TaskControllerAction(

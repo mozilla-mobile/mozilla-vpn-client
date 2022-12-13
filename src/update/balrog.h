@@ -5,12 +5,12 @@
 #ifndef BALROG_H
 #define BALROG_H
 
-#include "errorhandler.h"
-#include "updater.h"
-#include "temporarydir.h"
-
 #include <QCryptographicHash>
 #include <QNetworkReply>
+
+#include "errorhandler.h"
+#include "temporarydir.h"
+#include "updater.h"
 
 class NetworkRequest;
 

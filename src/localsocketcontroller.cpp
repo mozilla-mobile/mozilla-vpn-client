@@ -3,6 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "localsocketcontroller.h"
+
+#include <QDir>
+#include <QFileInfo>
+#include <QHostAddress>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
+#include <QStandardPaths>
+
 #include "errorhandler.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
@@ -12,15 +22,6 @@
 #include "models/server.h"
 #include "settingsholder.h"
 
-#include <QDir>
-#include <QFileInfo>
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonValue>
-#include <QStandardPaths>
-#include <QHostAddress>
-
 // How many times do we try to reconnect.
 constexpr int MAX_CONNECTION_RETRY = 10;
 
@@ -28,7 +29,7 @@ constexpr int MAX_CONNECTION_RETRY = 10;
 constexpr int CONNECTION_RETRY_TIMER_MSEC = 500;
 
 namespace {
-Logger logger(LOG_CONTROLLER, "LocalSocketController");
+Logger logger("LocalSocketController");
 }
 
 LocalSocketController::LocalSocketController() {

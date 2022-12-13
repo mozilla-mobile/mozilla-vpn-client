@@ -3,6 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "recentconnections.h"
+
+#include <QCoreApplication>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -11,13 +17,8 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 
-#include <QCoreApplication>
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
-
 namespace {
-Logger logger(LOG_MAIN, "RecentConnections");
+Logger logger("RecentConnections");
 }
 
 constexpr const char* ENTER_CITY_NAME = "enter_city_name";

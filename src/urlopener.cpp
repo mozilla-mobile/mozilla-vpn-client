@@ -3,18 +3,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "urlopener.h"
+
+#include <QDesktopServices>
+#include <QUrl>
+#include <QUrlQuery>
+
 #include "constants.h"
+#include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
-#include "inspector/inspectorhandler.h"
 #include "settingsholder.h"
-
-#include <QDesktopServices>
-#include <QUrl>
-#include <QUrlQuery>
 
 #ifdef MVPN_ANDROID
 constexpr const char* GOOGLE_PLAYSTORE_URL =
@@ -29,7 +30,7 @@ constexpr const char* APPLE_STORE_REVIEW_URL =
 #endif
 
 namespace {
-Logger logger(LOG_MAIN, "UrlOpener");
+Logger logger("UrlOpener");
 UrlOpener* s_instance = nullptr;
 }  // namespace
 

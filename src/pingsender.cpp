@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "pingsender.h"
+
 #include "logger.h"
 
 namespace {
-Logger logger(LOG_NETWORKING, "PingSender");
+Logger logger("PingSender");
 }
 
 quint16 PingSender::inetChecksum(const void* data, size_t len) {

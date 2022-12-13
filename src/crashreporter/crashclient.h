@@ -6,6 +6,7 @@
 #define CRASHCLIENT_H
 
 #include <memory>
+
 #include "crashserverclient.h"
 
 class CrashClient {

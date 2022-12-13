@@ -3,21 +3,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "linuxappimageprovider.h"
-#include "logger.h"
-#include "leakdetector.h"
 
 #include <QDir>
 #include <QDirIterator>
-#include <QProcessEnvironment>
-#include <QString>
-#include <QSettings>
 #include <QIcon>
+#include <QProcessEnvironment>
+#include <QSettings>
+#include <QString>
+
+#include "leakdetector.h"
+#include "logger.h"
 
 constexpr const char* PIXMAP_FALLBACK_PATH = "/usr/share/pixmaps/";
 constexpr const char* DESKTOP_ICON_LOCATION = "/usr/share/icons/";
 
 namespace {
-Logger logger(LOG_CONTROLLER, "LinuxAppImageProvider");
+Logger logger("LinuxAppImageProvider");
 }
 
 LinuxAppImageProvider::LinuxAppImageProvider(QObject* parent)

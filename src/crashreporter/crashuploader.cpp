@@ -3,15 +3,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "crashuploader.h"
-#include "constants.h"
-#include "qmlengineholder.h"
+
 #include <QApplication>
-#include <QHttpMultiPart>
+#include <QByteArray>
 #include <QFile>
 #include <QFileInfo>
-#include <QByteArray>
+#include <QHttpMultiPart>
 #include <QNetworkReply>
+
+#include "constants.h"
 #include "logger.h"
+#include "qmlengineholder.h"
 
 using namespace std;
 
@@ -19,7 +21,7 @@ constexpr auto MAX_RETRIES = 3;
 constexpr auto BOUNDARY = "--------------------XYsowmfWDDGdos";
 
 namespace {
-Logger logger(LOG_CRASHREPORTER, "CrashUploader");
+Logger logger("CrashUploader");
 }
 
 CrashUploader::CrashUploader(QObject* parent) : QObject(parent) {

@@ -2,19 +2,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include <QCoreApplication>
+#include <QtTest/QtTest>
+
 #include "../../src/authenticationinapp/authenticationinapp.h"
 #include "../../src/constants.h"
 #include "../../src/leakdetector.h"
 #include "../../src/loghandler.h"
 #include "../../src/settingsholder.h"
 #include "../../src/simplenetworkmanager.h"
-
 #include "testemailvalidation.h"
 #include "testpasswordvalidation.h"
 #include "testsignupandin.h"
-
-#include <QCoreApplication>
-#include <QtTest/QtTest>
 
 int main(int argc, char* argv[]) {
 #ifdef MVPN_DEBUG

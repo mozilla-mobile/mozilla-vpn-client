@@ -3,16 +3,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskheartbeat.h"
+
+#include <QJsonDocument>
+#include <QJsonObject>
+
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 
-#include <QJsonDocument>
-#include <QJsonObject>
-
 namespace {
-Logger logger(LOG_MAIN, "TaskHeartbeat");
+Logger logger("TaskHeartbeat");
 }
 
 TaskHeartbeat::TaskHeartbeat() : Task("TaskHeartbeat") {

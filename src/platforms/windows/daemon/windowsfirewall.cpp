@@ -3,29 +3,30 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "windowsfirewall.h"
-#include "logger.h"
-#include "leakdetector.h"
-#include "../windowscommons.h"
-#include "../../daemon/interfaceconfig.h"
-#include "../../ipaddress.h"
+
+#include <comdef.h>
+#include <fwpmu.h>
+#include <guiddef.h>
+#include <initguid.h>
+#include <netfw.h>
+#include <qaccessible.h>
+#include <stdio.h>
+#include <windows.h>
 
 #include <QApplication>
-#include <QObject>
 #include <QFileInfo>
-#include <QNetworkInterface>
-#include <QScopeGuard>
 #include <QHostAddress>
+#include <QNetworkInterface>
+#include <QObject>
+#include <QScopeGuard>
 #include <QtEndian>
-#include <windows.h>
-#include <fwpmu.h>
-#include <stdio.h>
-#include <comdef.h>
-#include <netfw.h>
-#include "winsock.h"
 
-#include <initguid.h>
-#include <guiddef.h>
-#include <qaccessible.h>
+#include "../../daemon/interfaceconfig.h"
+#include "../../ipaddress.h"
+#include "../windowscommons.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "winsock.h"
 
 #define IPV6_ADDRESS_SIZE 16
 
@@ -37,7 +38,7 @@ DEFINE_GUID(ST_FW_PROVIDER_KEY, 0xe2c114ee, 0xf32a, 0x4264, 0xa6, 0xcb, 0x3f,
             0xa7, 0x99, 0x63, 0x56, 0xd9);
 
 namespace {
-Logger logger(LOG_WINDOWS, "WindowsFirewall");
+Logger logger("WindowsFirewall");
 WindowsFirewall* s_instance = nullptr;
 
 // Note Filter Weight may be between 0-15!

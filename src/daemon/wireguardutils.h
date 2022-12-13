@@ -5,12 +5,12 @@
 #ifndef WIREGUARDUTILS_H
 #define WIREGUARDUTILS_H
 
-#include "interfaceconfig.h"
-
+#include <QCoreApplication>
 #include <QHostAddress>
 #include <QObject>
 #include <QStringList>
-#include <QCoreApplication>
+
+#include "interfaceconfig.h"
 
 constexpr const char* WG_INTERFACE = "moz0";
 

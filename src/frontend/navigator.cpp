@@ -3,19 +3,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "navigator.h"
-#include "externalophandler.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "models/feature.h"
-#include "mozillavpn.h"
-#include "qmlengineholder.h"
 
 #include <QCoreApplication>
 #include <QQuickItem>
 
+#include "externalophandler.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "loglevel.h"
+#include "models/feature.h"
+#include "mozillavpn.h"
+#include "qmlengineholder.h"
+
 namespace {
 Navigator* s_instance = nullptr;
-Logger logger(LOG_MAIN, "Navigator");
+Logger logger("Navigator");
 
 struct Layer {
   enum Type {

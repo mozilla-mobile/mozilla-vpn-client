@@ -3,11 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "purchasehandler.h"
-#include "constants.h"
-#include "inspector/inspectorhandler.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "models/feature.h"
 
 #include <QCoreApplication>
 #include <QJsonArray>
@@ -15,6 +10,12 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QScopeGuard>
+
+#include "constants.h"
+#include "inspector/inspectorhandler.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "models/feature.h"
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosiaphandler.h"
@@ -27,7 +28,7 @@
 #endif
 
 namespace {
-Logger logger(LOG_IAP, "PurchaseHandler");
+Logger logger("PurchaseHandler");
 PurchaseHandler* s_instance = nullptr;
 }  // namespace
 

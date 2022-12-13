@@ -3,13 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "ipaddress.h"
-#include "leakdetector.h"
-#include "logger.h"
 
 #include <QtMath>
 
+#include "leakdetector.h"
+#include "logger.h"
+
 namespace {
-Logger logger(LOG_NETWORKING, "IPAddress");
+Logger logger("IPAddress");
 }  // namespace
 
 IPAddress::IPAddress() { MVPN_COUNT_CTOR(IPAddress); }

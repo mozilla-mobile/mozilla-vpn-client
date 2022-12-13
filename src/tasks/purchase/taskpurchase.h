@@ -5,10 +5,10 @@
 #ifndef TASKPURCHASE_H
 #define TASKPURCHASE_H
 
-#include "task.h"
-
-#include <QObject>
 #include <QNetworkReply>
+#include <QObject>
+
+#include "task.h"
 
 class TaskPurchase final : public Task {
   Q_OBJECT

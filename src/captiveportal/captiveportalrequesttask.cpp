@@ -3,19 +3,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "captiveportalrequesttask.h"
-#include "captiveportalrequest.h"
-
-#include "captiveportal.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "networkrequest.h"
-#include "settingsholder.h"
-#include "networkmanager.h"
 
 #include <QTimer>
 
+#include "captiveportal.h"
+#include "captiveportalrequest.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "networkmanager.h"
+#include "networkrequest.h"
+#include "settingsholder.h"
+
 namespace {
-Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalRequestTask");
+Logger logger("CaptivePortalRequestTask");
 }
 
 CaptivePortalRequestTask::CaptivePortalRequestTask(bool retryOnFailure)

@@ -3,13 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "fontloader.h"
-#include "logger.h"
 
 #include <QDir>
 #include <QFontDatabase>
 
+#include "logger.h"
+
 namespace {
-Logger logger(LOG_MAIN, "FontLoader");
+Logger logger("FontLoader");
 }
 
 // static

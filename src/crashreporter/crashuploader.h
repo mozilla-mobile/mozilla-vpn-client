@@ -5,9 +5,9 @@
 #ifndef CRASHUPLOADER_H
 #define CRASHUPLOADER_H
 
-#include <QObject>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QObject>
 
 class CrashUploader final : public QObject {
   Q_OBJECT

@@ -6,8 +6,8 @@
 #define LOTTIEPRIVATEWINDOW_H
 
 #include <QJSValue>
-#include <QObject>
 #include <QMap>
+#include <QObject>
 
 class LottiePrivate;
 class QQuickItem;

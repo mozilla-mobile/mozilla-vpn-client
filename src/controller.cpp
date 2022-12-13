@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "constants.h"
 #include "controller.h"
+
+#include "constants.h"
 #include "controllerimpl.h"
 #include "dnshelper.h"
 #include "frontend/navigator.h"
@@ -51,7 +52,7 @@ constexpr const int MULLVAD_PROXY_RANGE_LENGTH = 20;
 #endif
 
 namespace {
-Logger logger(LOG_CONTROLLER, "Controller");
+Logger logger("Controller");
 
 ControllerImpl::Reason stateToReason(Controller::State state) {
   if (state == Controller::StateSwitching) {
@@ -162,7 +163,9 @@ void Controller::implInitialized(bool status, bool a_connected,
   // If we are connected already at startup time, we can trigger the connection
   // sequence of tasks.
   if (a_connected) {
-    m_connectedTimeInUTC = connectionDate.toUTC();
+    m_connectedTimeInUTC = connectionDate.isValid()
+                               ? connectionDate.toUTC()
+                               : QDateTime::currentDateTimeUtc();
     emit timeChanged();
     m_timer.start(TIMER_MSEC);
   }
@@ -594,7 +597,10 @@ void Controller::setState(State state) {
 }
 
 qint64 Controller::time() const {
-  return m_connectedTimeInUTC.secsTo(QDateTime::currentDateTimeUtc());
+  if (m_connectedTimeInUTC.isValid()) {
+    return m_connectedTimeInUTC.secsTo(QDateTime::currentDateTimeUtc());
+  }
+  return 0;
 }
 
 void Controller::getBackendLogs(

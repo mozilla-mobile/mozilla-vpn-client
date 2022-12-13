@@ -3,13 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "servercity.h"
-#include "constants.h"
-#include "leakdetector.h"
-#include "serveri18n.h"
 
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonValue>
+
+#include "constants.h"
+#include "leakdetector.h"
+#include "serveri18n.h"
 
 ServerCity::ServerCity() { MVPN_COUNT_CTOR(ServerCity); }
 

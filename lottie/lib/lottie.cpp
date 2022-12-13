@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "lottie.h"
+
 #include "lottieprivate.h"
 
 constexpr auto QRC_ROOT = "qrc:///lottie/";

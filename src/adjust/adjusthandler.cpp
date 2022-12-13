@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "adjusthandler.h"
+
 #include "adjustproxy.h"
 #include "constants.h"
 #include "logger.h"
@@ -13,15 +14,16 @@
 #  include "platforms/ios/iosadjusthelper.h"
 #endif
 #ifdef MVPN_ANDROID
-#  include "platforms/android/androidutils.h"
 #  include <QJniObject>
+
+#  include "platforms/android/androidutils.h"
 #endif
 
-#include <QString>
 #include <QRandomGenerator>
+#include <QString>
 
 namespace {
-Logger logger(LOG_ADJUST, "AdjustHandler");
+Logger logger("AdjustHandler");
 bool s_initialized = false;
 AdjustProxy* s_adjustProxy = nullptr;
 }  // namespace

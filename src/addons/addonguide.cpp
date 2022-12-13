@@ -3,14 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addonguide.h"
-#include "leakdetector.h"
-#include "logger.h"
 
 #include <QJsonObject>
 #include <QScopeGuard>
 
+#include "leakdetector.h"
+#include "logger.h"
+
 namespace {
-Logger logger(LOG_MAIN, "AddonGuide");
+Logger logger("AddonGuide");
 }
 
 // static

@@ -5,18 +5,17 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include "models/server.h"
-#include "ipaddress.h"
-#include "pinghelper.h"
-
+#include <QDateTime>
 #include <QElapsedTimer>
 #include <QHostAddress>
 #include <QList>
 #include <QObject>
 #include <QTimer>
-#include <QDateTime>
-
 #include <functional>
+
+#include "ipaddress.h"
+#include "models/server.h"
+#include "pinghelper.h"
 
 class ControllerImpl;
 class MozillaVPN;

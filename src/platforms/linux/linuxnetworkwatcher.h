@@ -5,9 +5,9 @@
 #ifndef LINUXNETWORKWATCHER_H
 #define LINUXNETWORKWATCHER_H
 
-#include "networkwatcherimpl.h"
-
 #include <QThread>
+
+#include "networkwatcherimpl.h"
 
 class LinuxNetworkWatcherWorker;
 

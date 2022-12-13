@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "updater.h"
+
 #include "constants.h"
 #include "inspector/inspectorhandler.h"
-#include "logger.h"
 #include "leakdetector.h"
+#include "logger.h"
 #include "mozillavpn.h"
 #include "telemetry/gleansample.h"
 #include "versionapi.h"
@@ -17,7 +18,7 @@
 #endif
 
 namespace {
-Logger logger(LOG_NETWORKING, "Updater");
+Logger logger("Updater");
 }
 
 // static

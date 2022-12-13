@@ -5,9 +5,9 @@
 #ifndef TASKADDONINDEX_H
 #define TASKADDONINDEX_H
 
-#include "task.h"
-
 #include <QObject>
+
+#include "task.h"
 
 class TaskAddonIndex final : public Task {
   Q_DISABLE_COPY_MOVE(TaskAddonIndex)

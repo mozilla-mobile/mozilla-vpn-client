@@ -3,9 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macosdaemon.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "wgquickprocess.h"
 
 #include <QCoreApplication>
 #include <QDir>
@@ -18,8 +15,12 @@
 #include <QTextStream>
 #include <QtGlobal>
 
+#include "leakdetector.h"
+#include "logger.h"
+#include "wgquickprocess.h"
+
 namespace {
-Logger logger(LOG_MACOS, "MacOSDaemon");
+Logger logger("MacOSDaemon");
 MacOSDaemon* s_daemon = nullptr;
 }  // namespace
 

@@ -5,11 +5,11 @@
 #ifndef WIREGUARDUTILSMACOS_H
 #define WIREGUARDUTILSMACOS_H
 
-#include "daemon/wireguardutils.h"
-#include "macosroutemonitor.h"
-
 #include <QObject>
 #include <QProcess>
+
+#include "daemon/wireguardutils.h"
+#include "macosroutemonitor.h"
 
 class WireguardUtilsMacos final : public WireguardUtils {
   Q_OBJECT

@@ -3,17 +3,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "adjustproxypackagehandler.h"
+
+#include <QUrl>
+#include <QUrlQuery>
+
 #include "adjustfiltering.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "qmlengineholder.h"
 
-#include <QUrl>
-#include <QUrlQuery>
-
 namespace {
-Logger logger(LOG_ADJUST, "AdjustProxyPackageHandler");
+Logger logger("AdjustProxyPackageHandler");
 }  // namespace
 
 AdjustProxyPackageHandler::AdjustProxyPackageHandler() {

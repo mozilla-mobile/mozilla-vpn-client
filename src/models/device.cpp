@@ -3,16 +3,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "device.h"
-#include "constants.h"
-#include "keys.h"
-#include "leakdetector.h"
 
 #include <QDateTime>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QTextStream>
 
-#ifdef MVPN_WINDOWS
+#include "constants.h"
+#include "keys.h"
+#include "leakdetector.h"
+
+#ifndef QT_NO_SSL
 #  include <QSslSocket>
 #endif
 
@@ -76,7 +77,7 @@ QString Device::currentDeviceReport() {
   out << "Build ID -> " << Constants::buildNumber() << Qt::endl;
   out << "Device ID -> " << uniqueDeviceId() << Qt::endl;
 
-#ifdef MVPN_WINDOWS
+#ifndef QT_NO_SSL
   out << "SSL Lib:" << QSslSocket::sslLibraryVersionString()
       << QSslSocket::sslLibraryVersionNumber() << Qt::endl;
 #endif

@@ -5,9 +5,9 @@
 #ifndef ANDROIDNOTIFICATIONHANDLER_H
 #define ANDROIDNOTIFICATIONHANDLER_H
 
-#include "notificationhandler.h"
-
 #include <QObject>
+
+#include "notificationhandler.h"
 
 class AndroidNotificationHandler final : public NotificationHandler {
   Q_DISABLE_COPY_MOVE(AndroidNotificationHandler)

@@ -3,6 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "windowsdaemonserver.h"
+
+#include <AclAPI.h>
+#include <Windows.h>
+#include <winsvc.h>
+
+#include <QCoreApplication>
+#include <QThread>
+#include <QTimer>
+
 #include "commandlineparser.h"
 #include "constants.h"
 #include "daemon/daemonlocalserver.h"
@@ -10,18 +19,10 @@
 #include "logger.h"
 #include "windowsdaemon.h"
 
-#include <QCoreApplication>
-#include <QThread>
-#include <QTimer>
-
-#include <Windows.h>
-#include <winsvc.h>
-#include <AclAPI.h>
-
 #define SERVICE_NAME (wchar_t*)L"Mozilla  VPN"
 
 namespace {
-Logger logger(LOG_WINDOWS, "WindowsDaemonServer");
+Logger logger("WindowsDaemonServer");
 
 SERVICE_STATUS s_serviceStatus = {0};
 SERVICE_STATUS_HANDLE s_statusHandle = nullptr;

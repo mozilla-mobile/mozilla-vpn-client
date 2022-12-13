@@ -5,10 +5,10 @@
 #ifndef DNSUTILS_H
 #define DNSUTILS_H
 
-#include "dnsutils.h"
-
 #include <QHostAddress>
 #include <QString>
+
+#include "dnsutils.h"
 
 class DnsUtils : public QObject {
   Q_OBJECT

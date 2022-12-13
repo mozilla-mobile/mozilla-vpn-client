@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskcreatesupportticket.h"
+
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -17,7 +18,7 @@ constexpr uint32_t SUPPORT_TICKET_MESSAGE_MAX_LENGTH = 1000;
 constexpr uint32_t SUPPORT_TICKET_LOG_MAX_LENGTH = 100000;
 
 namespace {
-Logger logger(LOG_MAIN, "TaskCreateSupportTicket");
+Logger logger("TaskCreateSupportTicket");
 }
 
 TaskCreateSupportTicket::TaskCreateSupportTicket(const QString& email,

@@ -6,10 +6,10 @@
 #ifndef TASKSENTRY_H
 #define TASKSENTRY_H
 
-#include "task.h"
-
-#include <QObject>
 #include <QByteArray>
+#include <QObject>
+
+#include "task.h"
 
 class TaskSentry final : public Task {
   Q_DISABLE_COPY_MOVE(TaskSentry)

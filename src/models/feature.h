@@ -5,11 +5,11 @@
 #ifndef FEATURE_H
 #define FEATURE_H
 
-#include "qmlengineholder.h"
-#include "l18nstrings.h"
-
-#include <QObject>
 #include <QApplication>
+#include <QObject>
+
+#include "l18nstrings.h"
+#include "qmlengineholder.h"
 
 class Feature : public QObject {
   Q_OBJECT

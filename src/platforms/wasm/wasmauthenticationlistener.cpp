@@ -3,14 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "wasmauthenticationlistener.h"
-#include "leakdetector.h"
-#include "logger.h"
 
 #include <QTimer>
 
+#include "leakdetector.h"
+#include "logger.h"
+
 namespace {
 
-Logger logger(LOG_MAIN, "WasmAuthenticationListener");
+Logger logger("WasmAuthenticationListener");
 
 }  // anonymous namespace
 

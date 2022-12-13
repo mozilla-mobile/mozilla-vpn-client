@@ -3,24 +3,25 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidvpnactivity.h"
+
+#include <QApplication>
+#include <QJniEnvironment>
+#include <QJniObject>
+#include <QJsonDocument>
+#include <QJsonObject>
+
 #include "androidutils.h"
 #include "constants.h"
 #include "frontend/navigator.h"
+#include "jni.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 
-#include "jni.h"
-#include <QApplication>
-#include <QJniObject>
-#include <QJniEnvironment>
-#include <QJsonDocument>
-#include <QJsonObject>
-
 namespace {
 AndroidVPNActivity* s_instance = nullptr;
 constexpr auto CLASSNAME = "org.mozilla.firefox.vpn.qt.VPNActivity";
-Logger logger(LOG_ANDROID, "AndroidVPNActivity");
+Logger logger("AndroidVPNActivity");
 }  // namespace
 
 AndroidVPNActivity::AndroidVPNActivity() {
@@ -107,10 +108,6 @@ void AndroidVPNActivity::onServiceMessage(JNIEnv* env, jobject thiz,
 }
 
 void AndroidVPNActivity::handleServiceMessage(int code, const QString& data) {
-  if (code != ServiceEvents::EVENT_BACKEND_LOGS) {
-    // Don't put the logs in the log.
-    logger.debug() << "handleServiceMessage" << code << data;
-  }
   auto mode = (ServiceEvents)code;
   switch (mode) {
     case ServiceEvents::EVENT_INIT:
@@ -124,9 +121,6 @@ void AndroidVPNActivity::handleServiceMessage(int code, const QString& data) {
       break;
     case ServiceEvents::EVENT_STATISTIC_UPDATE:
       emit eventStatisticUpdate(data);
-      break;
-    case ServiceEvents::EVENT_BACKEND_LOGS:
-      emit eventBackendLogs(data);
       break;
     case ServiceEvents::EVENT_ACTIVATION_ERROR:
       emit eventActivationError(data);

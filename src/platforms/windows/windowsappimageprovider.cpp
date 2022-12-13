@@ -4,23 +4,23 @@
 
 #include "windowsappimageprovider.h"
 
-#include "logger.h"
-#include "leakdetector.h"
-#include "windowscommons.h"
+#include <Windows.h>
+#include <shellapi.h>
 
-#include <QObject>
 #include <QDir>
+#include <QObject>
 #include <QPixmap>
 #include <QQuickImageProvider>
 #include <QScopedArrayPointer>
 #include <QStringList>
 #include <QSysInfo>
 
-#include <Windows.h>
-#include <shellapi.h>
+#include "leakdetector.h"
+#include "logger.h"
+#include "windowscommons.h"
 
 namespace {
-Logger logger(LOG_WINDOWS, "WindowsAppImageProvider");
+Logger logger("WindowsAppImageProvider");
 }
 
 WindowsAppImageProvider::WindowsAppImageProvider(QObject* parent)

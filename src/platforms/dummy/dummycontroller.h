@@ -5,10 +5,10 @@
 #ifndef DUMMYCONTROLLER_H
 #define DUMMYCONTROLLER_H
 
-#include "controllerimpl.h"
-
 #include <QDateTime>
 #include <QObject>
+
+#include "controllerimpl.h"
 
 class DummyController final : public ControllerImpl {
   Q_DISABLE_COPY_MOVE(DummyController)

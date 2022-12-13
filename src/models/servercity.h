@@ -5,11 +5,11 @@
 #ifndef SERVERCITY_H
 #define SERVERCITY_H
 
-#include "server.h"
-
 #include <QList>
 #include <QObject>
 #include <QString>
+
+#include "server.h"
 
 class QJsonObject;
 

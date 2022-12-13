@@ -3,6 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskadddevice.h"
+
+#include <QRandomGenerator>
+
 #include "curve25519.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
@@ -10,11 +13,9 @@
 #include "mozillavpn.h"
 #include "networkrequest.h"
 
-#include <QRandomGenerator>
-
 namespace {
 
-Logger logger(LOG_MAIN, "TaskAddDevice");
+Logger logger("TaskAddDevice");
 
 QByteArray generatePrivateKey() {
   QByteArray key;

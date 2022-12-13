@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskcaptiveportallookup.h"
+
 #include "captiveportal/captiveportal.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -10,7 +11,7 @@
 #include "networkrequest.h"
 
 namespace {
-Logger logger(LOG_NETWORKING, "TaskCaptivePortalLookup");
+Logger logger("TaskCaptivePortalLookup");
 }
 
 TaskCaptivePortalLookup::TaskCaptivePortalLookup(

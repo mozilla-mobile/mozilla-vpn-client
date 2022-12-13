@@ -5,8 +5,8 @@
 #ifndef BENCHMARKTASK_H
 #define BENCHMARKTASK_H
 
-#include "task.h"
 #include "benchmarktasksentinel.h"
+#include "task.h"
 
 class BenchmarkTask : public Task {
   Q_OBJECT

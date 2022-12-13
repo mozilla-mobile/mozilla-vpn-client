@@ -3,6 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macosdaemonserver.h"
+
+#include <QCoreApplication>
+
 #include "commandlineparser.h"
 #include "constants.h"
 #include "daemon/daemonlocalserver.h"
@@ -12,10 +15,8 @@
 #include "mozillavpn.h"
 #include "signalhandler.h"
 
-#include <QCoreApplication>
-
 namespace {
-Logger logger(LOG_MACOS, "MacOSDaemonServer");
+Logger logger("MacOSDaemonServer");
 }
 
 MacOSDaemonServer::MacOSDaemonServer(QObject* parent)

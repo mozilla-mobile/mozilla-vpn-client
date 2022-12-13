@@ -3,6 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addon.h"
+
+#include <QCoreApplication>
+#include <QDir>
+#include <QFileInfo>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+
 #include "addonapi.h"
 #include "addonguide.h"
 #include "addoni18n.h"
@@ -12,9 +20,9 @@
 #include "conditionwatchers/addonconditionwatchergroup.h"
 #include "conditionwatchers/addonconditionwatcherjavascript.h"
 #include "conditionwatchers/addonconditionwatcherlocales.h"
-#include "conditionwatchers/addonconditionwatchertriggertimesecs.h"
-#include "conditionwatchers/addonconditionwatchertimestart.h"
 #include "conditionwatchers/addonconditionwatchertimeend.h"
+#include "conditionwatchers/addonconditionwatchertimestart.h"
+#include "conditionwatchers/addonconditionwatchertriggertimesecs.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
@@ -24,15 +32,8 @@
 #include "telemetry/gleansample.h"
 #include "update/versionapi.h"
 
-#include <QCoreApplication>
-#include <QDir>
-#include <QFileInfo>
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
-
 namespace {
-Logger logger(LOG_MAIN, "Addon");
+Logger logger("Addon");
 
 bool evaluateConditionsSettingsOp(const QString& op, bool result) {
   if (op == "eq") return result;
@@ -438,17 +439,12 @@ void Addon::retranslate() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  QString code = settingsHolder->languageCode();
-
-  QLocale locale = QLocale(code);
-  if (code.isEmpty()) {
-    locale = QLocale(Localizer::systemLanguageCode());
-  }
+  QLocale locale = Localizer::instance()->locale();
 
   if (!m_translator.load(
           locale, "locale", "_",
           QFileInfo(m_manifestFileName).dir().filePath("i18n"))) {
-    logger.error() << "Loading the locale failed. - code:" << code;
+    logger.error() << "Loading the locale failed.";
   }
 
   emit retranslationCompleted();

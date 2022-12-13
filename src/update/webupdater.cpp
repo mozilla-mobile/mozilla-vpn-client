@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "webupdater.h"
+
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -11,7 +12,7 @@
 #include "urlopener.h"
 
 namespace {
-Logger logger(LOG_NETWORKING, "WebUpdater");
+Logger logger("WebUpdater");
 }
 
 WebUpdater::WebUpdater(QObject* parent) : Updater(parent) {

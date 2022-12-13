@@ -5,9 +5,9 @@
 #ifndef TASKIPFINDER_H
 #define TASKIPFINDER_H
 
-#include "task.h"
-
 #include <QObject>
+
+#include "task.h"
 
 class QHostAddress;
 class QHostInfo;

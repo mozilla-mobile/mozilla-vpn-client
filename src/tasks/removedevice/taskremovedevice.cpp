@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskremovedevice.h"
+
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -12,7 +13,7 @@
 #include "telemetry/gleansample.h"
 
 namespace {
-Logger logger(LOG_MAIN, "TaskRemoveDevice");
+Logger logger("TaskRemoveDevice");
 }
 
 TaskRemoveDevice::TaskRemoveDevice(const QString& publicKey)

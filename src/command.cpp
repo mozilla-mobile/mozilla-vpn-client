@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "command.h"
+
 #include "commandlineparser.h"
 #include "constants.h"
 #include "leakdetector.h"
@@ -14,9 +15,11 @@
 #include "simplenetworkmanager.h"
 
 #ifdef MVPN_WINDOWS
-#  include <QSGRendererInterface>
-#  include <QQuickWindow>
 #  include <Windows.h>
+
+#  include <QQuickWindow>
+#  include <QSGRendererInterface>
+
 #  include "platforms/windows/windowscommons.h"
 #endif
 
@@ -29,7 +32,7 @@
 #include <QTextStream>
 
 namespace {
-Logger logger(LOG_MAIN, "Command");
+Logger logger("Command");
 }  // namespace
 
 QVector<std::function<Command*(QObject*)>> Command::s_commandCreators;

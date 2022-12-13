@@ -3,14 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "composerblockunorderedlist.h"
-#include "leakdetector.h"
-#include "logger.h"
 
 #include <QJsonArray>
 #include <QJsonObject>
 
+#include "leakdetector.h"
+#include "logger.h"
+
 namespace {
-Logger logger(LOG_MAIN, "ComposerBlockUnorderedList");
+Logger logger("ComposerBlockUnorderedList");
 }
 
 // static

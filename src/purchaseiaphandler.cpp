@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "purchaseiaphandler.h"
+
 #include "constants.h"
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
@@ -10,7 +11,7 @@
 #include "models/feature.h"
 
 namespace {
-Logger logger(LOG_IAP, "PurchaseIAPHandler");
+Logger logger("PurchaseIAPHandler");
 PurchaseIAPHandler* s_instance = nullptr;
 }  // namespace
 

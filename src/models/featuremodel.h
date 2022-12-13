@@ -5,8 +5,8 @@
 #ifndef FEATUREMODEL_H
 #define FEATUREMODEL_H
 
-#include <QObject>
 #include <QAbstractListModel>
+#include <QObject>
 
 class Feature;
 

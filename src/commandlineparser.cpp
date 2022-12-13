@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "commandlineparser.h"
+
 #include "command.h"
 #include "commands/commandui.h"
 #include "constants.h"
@@ -14,7 +15,7 @@
 constexpr const char* CLP_DEFAULT_COMMAND = "ui";
 
 namespace {
-Logger logger(LOG_MAIN, "CommandLineParser");
+Logger logger("CommandLineParser");
 
 int s_argc = 0;
 char** s_argv = nullptr;

@@ -5,9 +5,9 @@
 #ifndef ADDONCONDITIONWATCHERJAVASCRIPT_H
 #define ADDONCONDITIONWATCHERJAVASCRIPT_H
 
-#include "addonconditionwatcher.h"
-
 #include <QJSValue>
+
+#include "addonconditionwatcher.h"
 
 class Addon;
 

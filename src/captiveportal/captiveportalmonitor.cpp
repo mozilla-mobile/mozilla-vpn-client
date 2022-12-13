@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "captiveportalmonitor.h"
+
 #include "captiveportalrequest.h"
 #include "captiveportalrequesttask.h"
 #include "leakdetector.h"
@@ -12,7 +13,7 @@
 constexpr uint32_t CAPTIVE_PORTAL_MONITOR_MSEC = 10000;
 
 namespace {
-Logger logger(LOG_NETWORKING, "CaptivePortalMonitor");
+Logger logger("CaptivePortalMonitor");
 }
 
 CaptivePortalMonitor::CaptivePortalMonitor(QObject* parent) : QObject(parent) {

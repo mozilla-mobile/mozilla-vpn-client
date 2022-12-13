@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "tasksendfeedback.h"
+
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -14,7 +15,7 @@ constexpr uint32_t FEEDBACK_MESSAGE_MAX_LENGTH = 1000;
 constexpr uint32_t FEEDBACK_LOG_MAX_LENGTH = 100000;
 
 namespace {
-Logger logger(LOG_MAIN, "TaskSendFeedback");
+Logger logger("TaskSendFeedback");
 }
 
 TaskSendFeedback::TaskSendFeedback(const QString& feedbackText,

@@ -5,10 +5,10 @@
 #ifndef LOTTIEPRIVATE_H
 #define LOTTIEPRIVATE_H
 
-#include "lottiestatus.h"
-
 #include <QJSValue>
 #include <QtQuick/QQuickItem>
+
+#include "lottiestatus.h"
 
 class QJSEngine;
 class LottiePrivateWindow;

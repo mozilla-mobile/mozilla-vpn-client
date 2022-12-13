@@ -5,9 +5,9 @@
 #ifndef LINUXNOTIFICATIONNOTIFICATIONHANDLER_H
 #define LINUXNOTIFICATIONNOTIFICATIONHANDLER_H
 
-#include "systemtraynotificationhandler.h"
-
 #include <QObject>
+
+#include "systemtraynotificationhandler.h"
 
 class LinuxSystemTrayNotificationHandler final
     : public SystemTrayNotificationHandler {

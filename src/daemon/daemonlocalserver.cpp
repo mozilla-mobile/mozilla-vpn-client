@@ -3,13 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "daemonlocalserver.h"
-#include "daemonlocalserverconnection.h"
-#include "leakdetector.h"
-#include "logger.h"
 
 #include <QDir>
 #include <QFileInfo>
 #include <QLocalSocket>
+
+#include "daemonlocalserverconnection.h"
+#include "leakdetector.h"
+#include "logger.h"
 
 #ifdef MVPN_MACOS
 #  include <sys/stat.h>
@@ -21,7 +22,7 @@ constexpr const char* VAR_PATH = "/var/run/mozillavpn/daemon.socket";
 #endif
 
 namespace {
-Logger logger(LOG_MAIN, "DaemonLocalServer");
+Logger logger("DaemonLocalServer");
 }  // namespace
 
 DaemonLocalServer::DaemonLocalServer(QObject* parent) : QObject(parent) {

@@ -3,8 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "serveri18n.h"
-#include "logger.h"
-#include "settingsholder.h"
 
 #include <QFile>
 #include <QHash>
@@ -12,8 +10,11 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+#include "logger.h"
+#include "settingsholder.h"
+
 namespace {
-Logger logger(LOG_MAIN, "ServerI18N");
+Logger logger("ServerI18N");
 
 bool s_initialized = false;
 

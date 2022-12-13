@@ -5,8 +5,8 @@
 #ifndef KEYS_H
 #define KEYS_H
 
-#include <QString>
 #include <QObject>
+#include <QString>
 
 class Keys final {
   Q_DISABLE_COPY_MOVE(Keys)

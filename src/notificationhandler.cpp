@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "notificationhandler.h"
+
 #include "constants.h"
 #include "externalophandler.h"
-#include "leakdetector.h"
 #include "l18nstrings.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
@@ -30,7 +31,7 @@
 #include "systemtraynotificationhandler.h"
 
 namespace {
-Logger logger(LOG_MAIN, "NotificationHandler");
+Logger logger("NotificationHandler");
 
 NotificationHandler* s_instance = nullptr;
 }  // namespace

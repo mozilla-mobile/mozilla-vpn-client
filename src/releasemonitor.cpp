@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "releasemonitor.h"
+
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -12,7 +13,7 @@
 #include "update/updater.h"
 
 namespace {
-Logger logger(LOG_MAIN, "ReleaseMonitor");
+Logger logger("ReleaseMonitor");
 }
 
 ReleaseMonitor::ReleaseMonitor() {

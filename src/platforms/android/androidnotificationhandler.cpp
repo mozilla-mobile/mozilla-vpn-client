@@ -3,16 +3,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "platforms/android/androidnotificationhandler.h"
-#include "leakdetector.h"
-#include "logger.h"
+
+#include <QJsonDocument>
+#include <QJsonObject>
+
 #include "androidvpnactivity.h"
 #include "l18nstrings.h"
-
-#include <QJsonObject>
-#include <QJsonDocument>
+#include "leakdetector.h"
+#include "logger.h"
 
 namespace {
-Logger logger(LOG_ANDROID, "AndroidNotificationHandler");
+Logger logger("AndroidNotificationHandler");
 }
 
 AndroidNotificationHandler::AndroidNotificationHandler(QObject* parent)

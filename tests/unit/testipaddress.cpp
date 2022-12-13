@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testipaddress.h"
+
 #include "../../src/ipaddress.h"
 #include "helper.h"
 

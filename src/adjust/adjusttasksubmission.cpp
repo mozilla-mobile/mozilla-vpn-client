@@ -3,12 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "adjusttasksubmission.h"
+
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
 
 namespace {
-Logger logger(LOG_ADJUST, "AdjustTaskSubmission");
+Logger logger("AdjustTaskSubmission");
 }  // namespace
 
 AdjustTaskSubmission::AdjustTaskSubmission(

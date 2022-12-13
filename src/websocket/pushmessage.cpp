@@ -3,18 +3,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "pushmessage.h"
+
+#include <QEventLoop>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
+
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "telemetry/gleansample.h"
 
-#include <QEventLoop>
-#include <QJsonObject>
-#include <QJsonDocument>
-#include <QJsonValue>
-
 namespace {
-Logger logger(LOG_MAIN, "PushMessage");
+Logger logger("PushMessage");
 }  // namespace
 
 /**

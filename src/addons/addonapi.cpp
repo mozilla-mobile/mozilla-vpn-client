@@ -3,6 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addonapi.h"
+
+#include <QCoreApplication>
+#include <QQmlEngine>
+
 #include "addon.h"
 #include "frontend/navigator.h"
 #include "leakdetector.h"
@@ -14,11 +18,8 @@
 #include "settingsholder.h"
 #include "urlopener.h"
 
-#include <QCoreApplication>
-#include <QQmlEngine>
-
 namespace {
-Logger logger(LOG_MAIN, "AddonApi");
+Logger logger("AddonApi");
 }
 
 AddonApi::AddonApi(Addon* addon) : QObject(addon), m_addon(addon) {

@@ -3,17 +3,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidappimageprovider.h"
-#include "logger.h"
-#include "leakdetector.h"
-#include "androidutils.h"
 
-#include <QJniObject>
-#include <QJniEnvironment>
-#include <jni.h>
 #include <android/bitmap.h>
+#include <jni.h>
+
+#include <QJniEnvironment>
+#include <QJniObject>
+
+#include "androidutils.h"
+#include "leakdetector.h"
+#include "logger.h"
 
 namespace {
-Logger logger(LOG_CONTROLLER, "AndroidAppImageProvider");
+Logger logger("AndroidAppImageProvider");
 }
 
 AndroidAppImageProvider::AndroidAppImageProvider(QObject* parent)

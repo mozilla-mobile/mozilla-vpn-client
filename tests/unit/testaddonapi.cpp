@@ -3,6 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testaddonapi.h"
+
+#include <QQmlApplicationEngine>
+
 #include "../../src/addons/addon.h"
 #include "../../src/addons/addonmessage.h"
 #include "../../src/addons/conditionwatchers/addonconditionwatcherjavascript.h"
@@ -10,8 +13,6 @@
 #include "../../src/qmlengineholder.h"
 #include "../../src/settingsholder.h"
 #include "helper.h"
-
-#include <QQmlApplicationEngine>
 
 void TestAddonApi::controller() {
   MozillaVPN vpn;

@@ -7,8 +7,8 @@
 #  include "vpnglean.h"
 #endif
 
-#include <QObject>
 #include <QJsonObject>
+#include <QObject>
 #include <QPair>
 #if defined(UNIT_TEST)
 #  include <QJsonDocument>

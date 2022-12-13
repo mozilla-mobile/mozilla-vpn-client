@@ -3,13 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "windowsroutemonitor.h"
-#include "leakdetector.h"
-#include "logger.h"
 
 #include <QScopeGuard>
 
+#include "leakdetector.h"
+#include "logger.h"
+
 namespace {
-Logger logger(LOG_WINDOWS, "WindowsRouteMonitor");
+Logger logger("WindowsRouteMonitor");
 };  // namespace
 
 // Called by the kernel on route changes - perform some basic filtering and

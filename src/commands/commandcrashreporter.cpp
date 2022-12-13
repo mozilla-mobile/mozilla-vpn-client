@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "commandcrashreporter.h"
-#include "commandlineparser.h"
-#include "leakdetector.h"
 
 #include <crashreporter/crashreporterapp.h>
+
+#include "commandlineparser.h"
+#include "leakdetector.h"
 
 CommandCrashReporter::CommandCrashReporter(QObject* parent)
     : Command(parent, "crashreporter", "Starts the crash reporter.") {

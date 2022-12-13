@@ -3,19 +3,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "errorhandler.h"
+
+#include <QApplication>
+
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "telemetry/gleansample.h"
-
-#include <QApplication>
 
 // in seconds, hide alerts
 constexpr const uint32_t HIDE_ALERT_SEC = 4;
 
 namespace {
 ErrorHandler* s_instance = nullptr;
-Logger logger(LOG_MAIN, "ErrorHandler");
+Logger logger("ErrorHandler");
 
 struct ErrorTypeData {
   ErrorTypeData(ErrorHandler::ErrorType errorType,

@@ -3,6 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "settingsholder.h"
+
+#include <QDir>
+#include <QFile>
+#include <QSettings>
+#include <QStandardPaths>
+
 #include "constants.h"
 #include "cryptosettings.h"
 #include "env.h"
@@ -11,14 +17,10 @@
 #include "models/feature.h"
 #include "telemetry/gleansample.h"
 
-#include <QDir>
-#include <QFile>
-#include <QSettings>
-#include <QStandardPaths>
-
 namespace {
 
-Logger logger(LOG_MAIN, "SettingsHolder");
+Logger logger("SettingsHolder");
+
 // Setting Keys That won't show up in a report;
 QVector<QString> SENSITIVE_SETTINGS({
     "token", "privateKey",

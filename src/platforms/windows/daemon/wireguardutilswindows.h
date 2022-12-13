@@ -5,13 +5,14 @@
 #ifndef WIREGUARDUTILSWINDOWS_H
 #define WIREGUARDUTILSWINDOWS_H
 
+#include <windows.h>
+
+#include <QHostAddress>
+#include <QObject>
+
 #include "daemon/wireguardutils.h"
 #include "windowsroutemonitor.h"
 #include "windowstunnelservice.h"
-
-#include <windows.h>
-#include <QHostAddress>
-#include <QObject>
 
 class WireguardUtilsWindows final : public WireguardUtils {
   Q_OBJECT

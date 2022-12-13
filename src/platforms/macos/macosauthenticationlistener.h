@@ -5,9 +5,9 @@
 #ifndef MACOSAUTHENTICATIONLISTENER_H
 #define MACOSAUTHENTICATIONLISTENER_H
 
-#include "tasks/authenticate/desktopauthenticationlistener.h"
-
 #include <QEvent>
+
+#include "tasks/authenticate/desktopauthenticationlistener.h"
 
 class MacosAuthenticationListener final : public DesktopAuthenticationListener {
   Q_OBJECT

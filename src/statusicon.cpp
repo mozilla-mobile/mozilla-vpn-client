@@ -3,19 +3,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "statusicon.h"
+
+#include <QBitmap>
+#include <QFileInfo>
+#include <QPainter>
+#include <QPixmap>
+#include <array>
+
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 
-#include <array>
-#include <QBitmap>
-#include <QFileInfo>
-#include <QPainter>
-#include <QPixmap>
-
 namespace {
-Logger logger(LOG_MAIN, "StatusIcon");
+Logger logger("StatusIcon");
 
 constexpr const QColor GREEN_COLOR = QColor(63, 225, 176, 255);
 constexpr const QColor ORANGE_COLOR = QColor(255, 164, 54, 255);

@@ -3,14 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "serverlatency.h"
+
+#include <QDateTime>
+
 #include "leakdetector.h"
 #include "logger.h"
 #include "mfbt/checkedint.h"
 #include "models/feature.h"
 #include "mozillavpn.h"
 #include "pingsenderfactory.h"
-
-#include <QDateTime>
 
 constexpr const uint32_t SERVER_LATENCY_TIMEOUT_MSEC = 5000;
 
@@ -23,7 +24,7 @@ constexpr const int SERVER_LATENCY_MAX_PARALLEL = 8;
 constexpr const int SERVER_LATENCY_MAX_RETRIES = 2;
 
 namespace {
-Logger logger(LOG_MAIN, "ServerLatency");
+Logger logger("ServerLatency");
 }
 
 ServerLatency::ServerLatency() { MVPN_COUNT_CTOR(ServerLatency); }

@@ -3,6 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addonindex.h"
+
+#include <QFile>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QSaveFile>
+
 #include "addondirectory.h"
 #include "addonmanager.h"
 #include "constants.h"
@@ -11,14 +18,8 @@
 #include "settingsholder.h"
 #include "signature.h"
 
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QFile>
-#include <QSaveFile>
-
 namespace {
-Logger logger(LOG_MAIN, "AddonIndex");
+Logger logger("AddonIndex");
 }  // namespace
 
 /**

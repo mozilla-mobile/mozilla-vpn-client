@@ -4,16 +4,16 @@
 
 #include "windowsservicemanager.h"
 
+#include <QTimer>
+
+#include "Windows.h"
+#include "Winsvc.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "windowscommons.h"
 
-#include "Windows.h"
-#include "Winsvc.h"
-#include <QTimer>
-
 namespace {
-Logger logger(LOG_WINDOWS, "WindowsServiceManager");
+Logger logger("WindowsServiceManager");
 }
 
 WindowsServiceManager::WindowsServiceManager(LPCWSTR serviceName) {

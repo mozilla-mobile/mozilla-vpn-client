@@ -5,9 +5,9 @@
 #ifndef IPUTILSLINUX_H
 #define IPUTILSLINUX_H
 
-#include "daemon/iputils.h"
-
 #include <arpa/inet.h>
+
+#include "daemon/iputils.h"
 
 class IPUtilsLinux final : public IPUtils {
  public:

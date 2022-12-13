@@ -3,13 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "wireguardutilslinux.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "platforms/linux/linuxdependencies.h"
-
-#include <QHostAddress>
-#include <QFile>
-#include <QScopeGuard>
 
 #include <arpa/inet.h>
 #include <linux/fib_rules.h>
@@ -19,10 +12,18 @@
 #include <net/if.h>
 #include <netdb.h>
 #include <sys/ioctl.h>
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
+
+#include <QFile>
+#include <QHostAddress>
+#include <QScopeGuard>
+
+#include "leakdetector.h"
+#include "logger.h"
+#include "platforms/linux/linuxdependencies.h"
 
 // Import wireguard C library for Linux
 #if defined(__cplusplus)
@@ -58,7 +59,7 @@ static void nlmsg_append_attr32(struct nlmsghdr* nlmsg, size_t maxlen,
                                 int attrtype, uint32_t value);
 
 namespace {
-Logger logger(LOG_LINUX, "WireguardUtilsLinux");
+Logger logger("WireguardUtilsLinux");
 
 void NetfilterLogger(int level, const char* msg) {
   Q_UNUSED(level);

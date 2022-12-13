@@ -3,19 +3,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "tutorial.h"
-#include "addons/addontutorial.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "mozillavpn.h"
-#include "frontend/navigator.h"
-#include "telemetry/gleansample.h"
 
 #include <QCoreApplication>
 #include <QDir>
 
+#include "addons/addontutorial.h"
+#include "frontend/navigator.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "mozillavpn.h"
+#include "telemetry/gleansample.h"
+
 namespace {
 Tutorial* s_instance = nullptr;
-Logger logger(LOG_MAIN, "Tutorial");
+Logger logger("Tutorial");
 }  // namespace
 
 // static

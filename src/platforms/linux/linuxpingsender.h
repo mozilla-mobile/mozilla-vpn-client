@@ -5,9 +5,9 @@
 #ifndef LINUXPINGSENDER_H
 #define LINUXPINGSENDER_H
 
-#include "pingsender.h"
-
 #include <QObject>
+
+#include "pingsender.h"
 
 class QSocketNotifier;
 

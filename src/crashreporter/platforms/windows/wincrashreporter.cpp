@@ -3,18 +3,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "wincrashreporter.h"
-#include "crashreporter/crashuploader.h"
-#include <QApplication>
-#include <QStandardPaths>
+
 #include <Windows.h>
+
+#include <QApplication>
 #include <QDir>
+#include <QStandardPaths>
 #include <iostream>
+
+#include "crashreporter/crashuploader.h"
 #include "logger.h"
 
 using namespace std;
 
 namespace {
-Logger logger(LOG_CRASHREPORTER, "WinCrashReporter");
+Logger logger("WinCrashReporter");
 }
 
 WinCrashReporter::WinCrashReporter(QObject* parent) : CrashReporter(parent) {

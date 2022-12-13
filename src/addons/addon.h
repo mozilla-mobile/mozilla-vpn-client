@@ -8,6 +8,7 @@
 #include <QJSValue>
 #include <QObject>
 #include <QTranslator>
+
 #include "settingsholder.h"
 
 class AddonConditionWatcher;

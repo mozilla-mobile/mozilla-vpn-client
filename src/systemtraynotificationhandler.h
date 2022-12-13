@@ -5,9 +5,9 @@
 #ifndef SYSTEMTRAYNOTIFICATIONHANDLER_H
 #define SYSTEMTRAYNOTIFICATIONHANDLER_H
 
-#include "notificationhandler.h"
-
 #include <QSystemTrayIcon>
+
+#include "notificationhandler.h"
 
 class QAction;
 class QMenu;

@@ -5,10 +5,10 @@
 #ifndef WGQUICKPROCESS_H
 #define WGQUICKPROCESS_H
 
+#include <QObject>
+
 #include "daemon/daemon.h"
 #include "daemon/interfaceconfig.h"
-
-#include <QObject>
 
 class WgQuickProcess final {
   Q_DISABLE_COPY_MOVE(WgQuickProcess)

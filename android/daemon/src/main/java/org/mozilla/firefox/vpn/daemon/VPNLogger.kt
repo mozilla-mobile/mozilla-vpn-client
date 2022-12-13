@@ -60,14 +60,6 @@ class Log {
             e(prefix + tag, message)
         }
 
-        fun getContent(): String? {
-            return try {
-                instance?.file?.readText()
-            } catch (e: Exception) {
-                "=== Failed to read Daemon Logs === \n ${e.localizedMessage} "
-            }
-        }
-
         fun clearFile() {
             instance?.file?.writeText("")
         }

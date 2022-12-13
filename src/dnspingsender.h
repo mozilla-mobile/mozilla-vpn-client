@@ -5,9 +5,9 @@
 #ifndef DNSPINGSENDER_H
 #define DNSPINGSENDER_H
 
-#include "pingsender.h"
-
 #include <QUdpSocket>
+
+#include "pingsender.h"
 
 class DnsPingSender final : public PingSender {
   Q_OBJECT

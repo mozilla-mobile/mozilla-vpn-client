@@ -104,7 +104,7 @@ add_dependencies(mozillavpn balrogdll)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/balrog.dll DESTINATION .)
 
 # Use Balrog for update support.
-add_definitions(-DMVPN_BALROG)
+target_compile_definitions(mozillavpn PRIVATE MVPN_BALROG)
 target_sources(mozillavpn PRIVATE
     update/balrog.cpp
     update/balrog.h

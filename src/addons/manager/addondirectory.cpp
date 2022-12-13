@@ -3,17 +3,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addondirectory.h"
+
+#include <QByteArray>
+#include <QDir>
+#include <QSaveFile>
+#include <QStandardPaths>
+#include <QString>
+
 #include "leakdetector.h"
 #include "logger.h"
 
-#include <QDir>
-#include <QStandardPaths>
-#include <QString>
-#include <QByteArray>
-#include <QSaveFile>
-
 namespace {
-Logger logger(LOG_MAIN, "AddonDirectory");
+Logger logger("AddonDirectory");
 
 QString rootAppFolder() {
 #ifdef MVPN_WASM

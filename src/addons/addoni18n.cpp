@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addoni18n.h"
+
 #include "leakdetector.h"
 #include "settingsholder.h"
 

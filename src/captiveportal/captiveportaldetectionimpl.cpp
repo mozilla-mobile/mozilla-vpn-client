@@ -3,14 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "captiveportaldetectionimpl.h"
-#include "captiveportalrequesttask.h"
-#include "taskscheduler.h"
 
+#include "captiveportalrequesttask.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "taskscheduler.h"
 
 namespace {
-Logger logger(LOG_NETWORKING, "CaptivePortalDetectionImpl");
+Logger logger("CaptivePortalDetectionImpl");
 }
 
 CaptivePortalDetectionImpl::CaptivePortalDetectionImpl() {

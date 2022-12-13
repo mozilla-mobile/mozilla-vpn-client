@@ -5,9 +5,9 @@
 #ifndef PURCHASEIAPHANDLER_H
 #define PURCHASEIAPHANDLER_H
 
-#include "purchasehandler.h"
-
 #include <QObject>
+
+#include "purchasehandler.h"
 
 class PurchaseIAPHandler : public PurchaseHandler {
   Q_OBJECT

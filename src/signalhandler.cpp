@@ -3,15 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "signalhandler.h"
-#include "logger.h"
-#include "signal.h"
 
 #include <fcntl.h>
 #include <unistd.h>
 
+#include "logger.h"
+#include "signal.h"
+
 namespace {
 
-Logger logger(LOG_MAIN, "SignalHandler");
+Logger logger("SignalHandler");
 
 int s_signalpipe = -1;
 

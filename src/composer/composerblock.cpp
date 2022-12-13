@@ -3,6 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "composerblock.h"
+
+#include <QJsonObject>
+
 #include "composer.h"
 #include "composerblockbutton.h"
 #include "composerblockorderedlist.h"
@@ -12,10 +15,8 @@
 #include "leakdetector.h"
 #include "logger.h"
 
-#include <QJsonObject>
-
 namespace {
-Logger logger(LOG_MAIN, "ComposerBlock");
+Logger logger("ComposerBlock");
 }
 
 ComposerBlock::ComposerBlock(Composer* composer, const QString& id,

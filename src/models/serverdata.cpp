@@ -3,6 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "serverdata.h"
+
+#include <QJsonDocument>
+#include <QJsonObject>
+
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -10,16 +14,13 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 
-#include <QJsonDocument>
-#include <QJsonObject>
-
 constexpr const char* EXIT_COUNTRY_CODE = "exit_country_code";
 constexpr const char* EXIT_CITY_NAME = "exit_city_name";
 constexpr const char* ENTER_COUNTRY_CODE = "enter_country_code";
 constexpr const char* ENTER_CITY_NAME = "enter_city_name";
 
 namespace {
-Logger logger(LOG_MODEL, "ServerData");
+Logger logger("ServerData");
 
 QList<Server> filterServerList(const QList<Server>& servers) {
   QList<Server> results;

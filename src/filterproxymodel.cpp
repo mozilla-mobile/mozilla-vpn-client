@@ -3,11 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "filterproxymodel.h"
+
 #include "logger.h"
 #include "qmlengineholder.h"
 
 namespace {
-Logger logger(LOG_MODEL, "FilterProxyModel");
+Logger logger("FilterProxyModel");
 }
 
 FilterProxyModel::FilterProxyModel(QObject* parent)

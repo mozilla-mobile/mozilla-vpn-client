@@ -3,6 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "dbusclient.h"
+
+#include <QDBusPendingCall>
+#include <QDBusPendingCallWatcher>
+#include <QDBusPendingReply>
+
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -12,15 +17,11 @@
 #include "mozillavpn.h"
 #include "settingsholder.h"
 
-#include <QDBusPendingCall>
-#include <QDBusPendingCallWatcher>
-#include <QDBusPendingReply>
-
 constexpr const char* DBUS_SERVICE = "org.mozilla.vpn.dbus";
 constexpr const char* DBUS_PATH = "/";
 
 namespace {
-Logger logger(LOG_LINUX, "DBusClient");
+Logger logger("DBusClient");
 }
 
 DBusClient::DBusClient(QObject* parent) : QObject(parent) {

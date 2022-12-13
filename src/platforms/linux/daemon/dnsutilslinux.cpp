@@ -3,13 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "dnsutilslinux.h"
-#include "leakdetector.h"
-#include "logger.h"
-
-#include <QtDBus/QtDBus>
-#include <QDBusVariant>
 
 #include <net/if.h>
+
+#include <QDBusVariant>
+#include <QtDBus/QtDBus>
+
+#include "leakdetector.h"
+#include "logger.h"
 
 constexpr const char* DBUS_RESOLVE_SERVICE = "org.freedesktop.resolve1";
 constexpr const char* DBUS_RESOLVE_PATH = "/org/freedesktop/resolve1";
@@ -18,7 +19,7 @@ constexpr const char* DBUS_PROPERTY_INTERFACE =
     "org.freedesktop.DBus.Properties";
 
 namespace {
-Logger logger(LOG_LINUX, "DnsUtilsLinux");
+Logger logger("DnsUtilsLinux");
 }
 
 DnsUtilsLinux::DnsUtilsLinux(QObject* parent) : DnsUtils(parent) {

@@ -3,12 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "subscriptiondata.h"
-#include "constants.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "mozillavpn.h"
-#include "settingsholder.h"
-#include "telemetry/gleansample.h"
 
 #include <QDateTime>
 #include <QJsonArray>
@@ -17,8 +11,15 @@
 #include <QJsonValue>
 #include <QMetaEnum>
 
+#include "constants.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "mozillavpn.h"
+#include "settingsholder.h"
+#include "telemetry/gleansample.h"
+
 namespace {
-Logger logger(LOG_MODEL, "SubscriptionData");
+Logger logger("SubscriptionData");
 }  // namespace
 
 SubscriptionData::SubscriptionData() { MVPN_COUNT_CTOR(SubscriptionData); }

@@ -3,18 +3,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "tutorialstepnext.h"
+
+#include <QJsonObject>
+#include <QJsonValue>
+#include <QMetaMethod>
+
 #include "inspector/inspectorutils.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 
-#include <QJsonObject>
-#include <QJsonValue>
-#include <QMetaMethod>
-
 namespace {
-Logger logger(LOG_MAIN, "TutorialStepNext");
+Logger logger("TutorialStepNext");
 
 // We cannot use QMetaObject::indexOfSignal() because that wants the signal
 // signature (with params) and we do not have them.

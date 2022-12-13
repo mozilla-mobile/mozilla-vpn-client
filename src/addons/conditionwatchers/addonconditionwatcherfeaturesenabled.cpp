@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addonconditionwatcherfeaturesenabled.h"
+
 #include "leakdetector.h"
 #include "models/feature.h"
 

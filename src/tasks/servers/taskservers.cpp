@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskservers.h"
+
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -10,7 +11,7 @@
 #include "networkrequest.h"
 
 namespace {
-Logger logger(LOG_MAIN, "TaskServers");
+Logger logger("TaskServers");
 }
 
 TaskServers::TaskServers(

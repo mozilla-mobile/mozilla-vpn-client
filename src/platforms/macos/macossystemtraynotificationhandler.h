@@ -5,11 +5,11 @@
 #ifndef MACOSSYSTEMTRAYNOTIFICATIONHANDLER_H
 #define MACOSSYSTEMTRAYNOTIFICATIONHANDLER_H
 
-#include "systemtraynotificationhandler.h"
-#include "platforms/macos/macosstatusicon.h"
-
 #include <QMenu>
 #include <QSystemTrayIcon>
+
+#include "platforms/macos/macosstatusicon.h"
+#include "systemtraynotificationhandler.h"
 
 class MacosSystemTrayNotificationHandler
     : public SystemTrayNotificationHandler {

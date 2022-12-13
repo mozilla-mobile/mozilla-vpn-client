@@ -3,16 +3,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "dnsutilsmacos.h"
-#include "leakdetector.h"
-#include "logger.h"
+
+#include <systemconfiguration/scdynamicstore.h>
+#include <systemconfiguration/scpreferences.h>
 
 #include <QScopeGuard>
 
-#include <systemconfiguration/scpreferences.h>
-#include <systemconfiguration/scdynamicstore.h>
+#include "leakdetector.h"
+#include "logger.h"
 
 namespace {
-Logger logger(LOG_MACOS, "DnsUtilsMacos");
+Logger logger("DnsUtilsMacos");
 }
 
 DnsUtilsMacos::DnsUtilsMacos(QObject* parent) : DnsUtils(parent) {

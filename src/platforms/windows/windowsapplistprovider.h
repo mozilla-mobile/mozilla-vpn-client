@@ -6,9 +6,9 @@
 #define WINDOWSAPPLISTPROVIDER_H
 
 #include <QFileInfo>
+#include <QObject>
 
 #include "applistprovider.h"
-#include <QObject>
 
 class WindowsAppListProvider final : public AppListProvider {
   Q_OBJECT

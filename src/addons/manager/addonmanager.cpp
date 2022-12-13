@@ -2,9 +2,22 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "addonmanager.h"
+
+#include <QCoreApplication>
+#include <QCryptographicHash>
+#include <QDir>
+#include <QFileInfo>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QProcessEnvironment>
+#include <QQmlEngine>
+#include <QResource>
+#include <QSaveFile>
+
 #include "addondirectory.h"
 #include "addonindex.h"
-#include "addonmanager.h"
 #include "addons/addonmessage.h"
 #include "constants.h"
 #include "leakdetector.h"
@@ -17,23 +30,11 @@
 #include "tasks/function/taskfunction.h"
 #include "taskscheduler.h"
 
-#include <QCoreApplication>
-#include <QCryptographicHash>
-#include <QDir>
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QFileInfo>
-#include <QProcessEnvironment>
-#include <QResource>
-#include <QQmlEngine>
-#include <QSaveFile>
-
 constexpr const char* MVPN_ENV_SKIP_ADDON_SIGNATURE =
     "MVPN_SKIP_ADDON_SIGNATURE";
 
 namespace {
-Logger logger(LOG_MAIN, "AddonManager");
+Logger logger("AddonManager");
 AddonManager* s_instance = nullptr;
 }  // namespace
 

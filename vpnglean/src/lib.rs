@@ -39,6 +39,7 @@ pub extern "C" fn glean_initialize(is_telemetry_enabled: bool, data_path: FfiStr
         uploader: Some(Box::new(VPNPingUploader::new())),
         // Whether Glean should schedule “metrics” pings for you
         use_core_mps: true,
+        trim_data_to_registered_pings: false,
     };
 
     let client_info = ClientInfoMetrics {
@@ -75,6 +76,7 @@ pub extern "C" fn glean_test_reset_glean(is_telemetry_enabled: bool, data_path: 
         uploader: Some(Box::new(VPNPingUploader::new())),
         // Whether Glean should schedule “metrics” pings for you
         use_core_mps: true,
+        trim_data_to_registered_pings: false,
     };
 
     let client_info = ClientInfoMetrics {

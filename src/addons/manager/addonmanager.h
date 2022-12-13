@@ -5,12 +5,12 @@
 #ifndef ADDONMANAGER_H
 #define ADDONMANAGER_H
 
-#include "addons/addon.h"  // required for the signal
-#include "addonindex.h"
-
+#include <QAbstractListModel>
 #include <QJSValue>
 #include <QMap>
-#include <QAbstractListModel>
+
+#include "addonindex.h"
+#include "addons/addon.h"  // required for the signal
 
 class AddonManager final : public QAbstractListModel {
   Q_OBJECT

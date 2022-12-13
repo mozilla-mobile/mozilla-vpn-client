@@ -4,17 +4,17 @@
 
 #include "androidnetworkwatcher.h"
 
-#include "platforms/android/androidutils.h"
-#include "logger.h"
-#include "leakdetector.h"
-#include "networkwatcherimpl.h"
-
-#include <QJniObject>
-#include <QJniEnvironment>
 #include <QApplication>
+#include <QJniEnvironment>
+#include <QJniObject>
+
+#include "leakdetector.h"
+#include "logger.h"
+#include "networkwatcherimpl.h"
+#include "platforms/android/androidutils.h"
 
 namespace {
-Logger logger(LOG_ANDROID, "AndroidNetworkWatcher");
+Logger logger("AndroidNetworkWatcher");
 
 constexpr auto VPNNetworkWatcher_CLASS =
     "org/mozilla/firefox/vpn/qt/VPNNetworkWatcher";

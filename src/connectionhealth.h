@@ -5,8 +5,8 @@
 #ifndef CONNECTIONHEALTH_H
 #define CONNECTIONHEALTH_H
 
-#include "pinghelper.h"
 #include "dnspingsender.h"
+#include "pinghelper.h"
 
 class ConnectionHealth final : public QObject {
  public:

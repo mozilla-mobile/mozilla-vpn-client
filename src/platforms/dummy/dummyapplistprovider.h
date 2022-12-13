@@ -5,8 +5,9 @@
 #ifndef DUMMYAPPLISTPROVIDER_H
 #define DUMMYAPPLISTPROVIDER_H
 
-#include "applistprovider.h"
 #include <QObject>
+
+#include "applistprovider.h"
 
 class DummyAppListProvider : public AppListProvider {
   Q_OBJECT

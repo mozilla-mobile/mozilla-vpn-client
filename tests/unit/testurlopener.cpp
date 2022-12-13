@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testurlopener.h"
+
 #include "../../src/urlopener.h"
 
 void TestUrlOpener::urlQueryReplacement_data() {

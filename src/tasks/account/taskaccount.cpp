@@ -3,13 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskaccount.h"
+
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 
 namespace {
-Logger logger(LOG_MAIN, "TaskAccount");
+Logger logger("TaskAccount");
 }
 
 TaskAccount::TaskAccount(

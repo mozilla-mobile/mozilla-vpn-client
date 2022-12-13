@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "lottieprivatewindow.h"
-#include "lottieprivate.h"
 
 #include <QJSEngine>
 #include <QTimer>
+
+#include "lottieprivate.h"
 
 LottiePrivateWindow::LottiePrivateWindow(LottiePrivate* parent)
     : QObject(parent), m_private(parent) {

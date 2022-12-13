@@ -3,11 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "feedbackcategorymodel.h"
+
 #include "leakdetector.h"
 #include "logger.h"
 
 namespace {
-Logger logger(LOG_MODEL, "FeedbackCategoryModel");
+Logger logger("FeedbackCategoryModel");
 
 struct FeedbackCategory {
   const char* m_categoryName;

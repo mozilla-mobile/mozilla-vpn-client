@@ -3,17 +3,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskgetfeaturelist.h"
-#include "leakdetector.h"
-#include "errorhandler.h"
-#include "logger.h"
-#include "models/featuremodel.h"
-#include "networkrequest.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
 
+#include "errorhandler.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "models/featuremodel.h"
+#include "networkrequest.h"
+
 namespace {
-Logger logger(LOG_MAIN, "TaskGetFeatureList");
+Logger logger("TaskGetFeatureList");
 }
 
 TaskGetFeatureList::TaskGetFeatureList() : Task("TaskGetFeatureList") {

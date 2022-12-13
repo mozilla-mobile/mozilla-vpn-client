@@ -3,28 +3,31 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidcontroller.h"
-#include "androidvpnactivity.h"
-#include "androidutils.h"
-#include "errorhandler.h"
-#include "ipaddress.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "models/device.h"
-#include "models/keys.h"
-#include "models/server.h"
-#include "notificationhandler.h"
-#include "mozillavpn.h"
-#include "settingsholder.h"
-#include "l18nstrings.h"
 
+#include <QDir>
+#include <QFile>
 #include <QHostAddress>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QRandomGenerator>
 
+#include "androidutils.h"
+#include "androidvpnactivity.h"
+#include "errorhandler.h"
+#include "ipaddress.h"
+#include "l18nstrings.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "models/device.h"
+#include "models/keys.h"
+#include "models/server.h"
+#include "mozillavpn.h"
+#include "notificationhandler.h"
+#include "settingsholder.h"
+
 namespace {
-Logger logger(LOG_ANDROID, "AndroidController");
+Logger logger("AndroidController");
 AndroidController* s_instance = nullptr;
 
 }  // namespace
@@ -51,9 +54,10 @@ AndroidController::AndroidController() {
         }
         m_init = true;
         auto doc = QJsonDocument::fromJson(parcelBody.toUtf8());
-        emit initialized(true, doc.object()["connected"].toBool(),
-                         QDateTime::fromMSecsSinceEpoch(
-                             doc.object()["time"].toVariant().toLongLong()));
+        qlonglong time = doc.object()["time"].toVariant().toLongLong();
+        emit initialized(
+            true, doc.object()["connected"].toBool(),
+            time > 0 ? QDateTime::fromMSecsSinceEpoch(time) : QDateTime());
       },
       Qt::QueuedConnection);
 
@@ -66,14 +70,6 @@ AndroidController::AndroidController() {
       Qt::QueuedConnection);
   connect(activity, &AndroidVPNActivity::eventDisconnected, this,
           &AndroidController::disconnected, Qt::QueuedConnection);
-  connect(
-      activity, &AndroidVPNActivity::eventBackendLogs, this,
-      [this](const QString& parcelBody) {
-        if (m_logCallback) {
-          m_logCallback(parcelBody);
-        }
-      },
-      Qt::QueuedConnection);
   connect(
       activity, &AndroidVPNActivity::eventStatisticUpdate, this,
       [this](const QString& parcelBody) {
@@ -222,11 +218,16 @@ void AndroidController::checkStatus() {
 
 void AndroidController::getBackendLogs(
     std::function<void(const QString&)>&& a_callback) {
-  logger.debug() << "get logs";
-
-  m_logCallback = std::move(a_callback);
-  AndroidVPNActivity::sendToService(ServiceAction::ACTION_REQUEST_GET_LOG,
-                                    QString());
+  QString cacheFolderPath =
+      QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+  auto cacheFolder = QDir(cacheFolderPath);
+  QFile logFile(cacheFolder.absoluteFilePath("mozilla_deamon_logs.txt"));
+  if (!logFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    a_callback(QString());
+    return;
+  }
+  auto content = logFile.readAll();
+  a_callback(QString::fromUtf8(content));
 }
 
 void AndroidController::cleanupBackendLogs() {

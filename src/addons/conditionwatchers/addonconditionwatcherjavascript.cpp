@@ -3,19 +3,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addonconditionwatcherjavascript.h"
-#include "addons/addon.h"
-#include "addons/addonapi.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "qmlengineholder.h"
 
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QQmlEngine>
 
+#include "addons/addon.h"
+#include "addons/addonapi.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "qmlengineholder.h"
+
 namespace {
-Logger logger(LOG_MAIN, "AddonConditionWatcherJavascript");
+Logger logger("AddonConditionWatcherJavascript");
 }
 
 // static

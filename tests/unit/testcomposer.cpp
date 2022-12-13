@@ -3,19 +3,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testcomposer.h"
+
+#include <QQmlApplicationEngine>
+
 #include "../../src/addons/addon.h"
 #include "../../src/addons/addonmessage.h"
 #include "../../src/composer/composer.h"
 #include "../../src/composer/composerblockbutton.h"
+#include "../../src/composer/composerblockorderedlist.h"
 #include "../../src/composer/composerblocktext.h"
 #include "../../src/composer/composerblocktitle.h"
 #include "../../src/composer/composerblockunorderedlist.h"
-#include "../../src/composer/composerblockorderedlist.h"
-#include "../../src/settingsholder.h"
 #include "../../src/qmlengineholder.h"
+#include "../../src/settingsholder.h"
 #include "helper.h"
-
-#include <QQmlApplicationEngine>
 
 void TestComposer::generic_data() {
   QTest::addColumn<QJsonObject>("json");

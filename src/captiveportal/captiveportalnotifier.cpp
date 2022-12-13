@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "captiveportalnotifier.h"
+
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -10,7 +11,7 @@
 #include "qmlengineholder.h"
 
 namespace {
-Logger logger(LOG_NETWORKING, "CaptivePortalNotifier");
+Logger logger("CaptivePortalNotifier");
 }
 
 CaptivePortalNotifier::CaptivePortalNotifier(QObject* parent)

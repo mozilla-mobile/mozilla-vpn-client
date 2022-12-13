@@ -5,9 +5,9 @@
 #ifndef RFC4193_H
 #define RFC4193_H
 
-#include "ipaddress.h"
-
 #include <QList>
+
+#include "ipaddress.h"
 
 class RFC4193 final {
  public:

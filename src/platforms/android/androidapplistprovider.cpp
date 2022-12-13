@@ -3,20 +3,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidapplistprovider.h"
-#include "androidutils.h"
-#include "leakdetector.h"
 
-#include <QJniObject>
-#include <QJniEnvironment>
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <jni.h>
 
-#include "logger.h"
+#include <QJniEnvironment>
+#include <QJniObject>
+#include <QJsonDocument>
+#include <QJsonObject>
+
+#include "androidutils.h"
 #include "leakdetector.h"
+#include "logger.h"
 
 namespace {
-Logger logger(LOG_CONTROLLER, "AndroidAppListProvider");
+Logger logger("AndroidAppListProvider");
 }
 
 AndroidAppListProvider::AndroidAppListProvider(QObject* parent)

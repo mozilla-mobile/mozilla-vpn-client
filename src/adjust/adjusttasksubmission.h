@@ -5,9 +5,9 @@
 #ifndef ADJUSTTASKSUBMISSION_H
 #define ADJUSTTASKSUBMISSION_H
 
-#include "task.h"
-
 #include <QObject>
+
+#include "task.h"
 
 class AdjustTaskSubmission final : public Task {
   Q_OBJECT

@@ -3,6 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "linuxcontroller.h"
+
+#include <QDBusPendingCallWatcher>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
+#include <QProcess>
+#include <QString>
+
 #include "backendlogsobserver.h"
 #include "dbusclient.h"
 #include "errorhandler.h"
@@ -13,15 +21,8 @@
 #include "models/keys.h"
 #include "models/server.h"
 
-#include <QDBusPendingCallWatcher>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonValue>
-#include <QProcess>
-#include <QString>
-
 namespace {
-Logger logger({LOG_LINUX, LOG_CONTROLLER}, "LinuxController");
+Logger logger("LinuxController");
 }
 
 LinuxController::LinuxController() {

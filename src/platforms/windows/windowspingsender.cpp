@@ -3,16 +3,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "windowspingsender.h"
-#include "logger.h"
-#include "leakdetector.h"
-#include "windowscommons.h"
-
-#include <QtEndian>
 
 #include <WS2tcpip.h>
 #include <Windows.h>
 #include <iphlpapi.h>
+// Note: This important must come after the previous three.
+// clang-format off
 #include <IcmpAPI.h>
+// clang-format on
+
+#include <QtEndian>
+
+#include "leakdetector.h"
+#include "logger.h"
+#include "windowscommons.h"
 
 #pragma comment(lib, "Ws2_32")
 
@@ -25,7 +29,7 @@ struct WindowsPingSenderPrivate {
 };
 
 namespace {
-Logger logger({LOG_WINDOWS, LOG_NETWORKING}, "WindowsPingSender");
+Logger logger("WindowsPingSender");
 }
 
 static DWORD icmpCleanupHelper(LPVOID data) {

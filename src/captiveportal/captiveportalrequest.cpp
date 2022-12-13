@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "captiveportalrequest.h"
+
 #include "captiveportal.h"
 #include "constants.h"
 #include "leakdetector.h"
@@ -12,7 +13,7 @@
 #include "task.h"
 
 namespace {
-Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalRequest");
+Logger logger("CaptivePortalRequest");
 }
 
 CaptivePortalRequest::CaptivePortalRequest(Task* parent) : QObject(parent) {

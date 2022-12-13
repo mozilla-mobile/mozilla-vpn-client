@@ -3,31 +3,31 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidglean.h"
+
+#include <QApplication>
+#include <QFile>
+#include <QFileInfo>
+#include <QJSEngine>
+#include <QJniEnvironment>
+#include <QJniObject>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QQmlApplicationEngine>
+#include <QQmlEngine>
+
 #include "androidutils.h"
+#include "androidvpnactivity.h"
 #include "constants.h"
+#include "jni.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
-#include "settingsholder.h"
-#include "jni.h"
-#include "mozillavpn.h"
 #include "qmlengineholder.h"
-#include "androidvpnactivity.h"
-
-#include <QApplication>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJniObject>
-#include <QJniEnvironment>
-#include <QQmlApplicationEngine>
-#include <QJSEngine>
-#include <QQmlEngine>
-#include <QFileInfo>
-#include <QFile>
+#include "settingsholder.h"
 
 namespace {
 AndroidGlean* s_instance = nullptr;
-Logger logger(LOG_ANDROID, "AndroidGlean");
+Logger logger("AndroidGlean");
 
 }  // namespace
 

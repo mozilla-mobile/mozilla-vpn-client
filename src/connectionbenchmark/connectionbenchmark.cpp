@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "connectionbenchmark.h"
+
 #include "benchmarktaskping.h"
 #include "benchmarktasktransfer.h"
 #include "connectionhealth.h"
@@ -14,7 +15,7 @@
 #include "taskscheduler.h"
 
 namespace {
-Logger logger(LOG_MODEL, "ConnectionBenchmark");
+Logger logger("ConnectionBenchmark");
 }
 
 ConnectionBenchmark::ConnectionBenchmark() {

@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "windowssplittunnel.h"
+
 #include "../windowscommons.h"
 #include "../windowsservicemanager.h"
-#include "windowsfirewall.h"
 #include "logger.h"
+#include "windowsfirewall.h"
 
 #define PSAPI_VERSION 2
 #include <Windows.h>
@@ -18,7 +19,7 @@
 #include <QScopeGuard>
 
 namespace {
-Logger logger(LOG_WINDOWS, "WindowsSplitTunnel");
+Logger logger("WindowsSplitTunnel");
 }
 
 WindowsSplitTunnel::WindowsSplitTunnel(QObject* parent) : QObject(parent) {

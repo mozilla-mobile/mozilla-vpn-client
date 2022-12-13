@@ -6,6 +6,7 @@
 #define CONSTANTS_H
 
 #include <stdint.h>
+
 #include <QString>
 
 namespace Constants {

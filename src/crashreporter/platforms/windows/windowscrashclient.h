@@ -5,8 +5,9 @@
 #ifndef WINDOWSCRASHCLIENT_H
 #define WINDOWSCRASHCLIENT_H
 
-#include "../../crashserverclient.h"
 #include <string>
+
+#include "../../crashserverclient.h"
 
 class WindowsCrashClient : public CrashServerClient {
  public:

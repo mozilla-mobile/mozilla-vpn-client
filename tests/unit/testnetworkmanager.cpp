@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testnetworkmanager.h"
+
 #include "../../src/settingsholder.h"
 #include "../../src/simplenetworkmanager.h"
 #include "helper.h"

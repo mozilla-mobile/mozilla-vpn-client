@@ -5,11 +5,11 @@
 #ifndef AUTHENTICATIONLISTENER_H
 #define AUTHENTICATIONLISTENER_H
 
-#include "errorhandler.h"
-#include "mozillavpn.h"
-
 #include <QObject>
 #include <QUrl>
+
+#include "errorhandler.h"
+#include "mozillavpn.h"
 
 constexpr const char* CODE_CHALLENGE_METHOD = "S256";
 

@@ -3,15 +3,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "eventlistener.h"
+
+#include <QLocalSocket>
+
 #include "logger.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
 
-#include <QLocalSocket>
-
 #if defined(MVPN_WINDOWS)
-#  include "platforms/windows/windowscommons.h"
 #  include <windows.h>
+
+#  include "platforms/windows/windowscommons.h"
 
 constexpr const char* UI_PIPE = "\\\\.\\pipe\\mozillavpn.ui";
 #elif defined(MVPN_LINUX)
@@ -21,7 +23,7 @@ constexpr const char* UI_PIPE = "/tmp/mozillavpn.ui.sock";
 #endif
 
 namespace {
-Logger logger(LOG_MAIN, "EventListener");
+Logger logger("EventListener");
 }
 
 EventListener::EventListener() {

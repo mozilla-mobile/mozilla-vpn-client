@@ -5,12 +5,12 @@
 #ifndef LOCALSOCKETCONTROLLER_H
 #define LOCALSOCKETCONTROLLER_H
 
-#include "controllerimpl.h"
-
-#include <functional>
-#include <QLocalSocket>
 #include <QHostAddress>
+#include <QLocalSocket>
 #include <QTimer>
+#include <functional>
+
+#include "controllerimpl.h"
 
 class QJsonObject;
 

@@ -5,10 +5,10 @@
 #ifndef NETWORKWATCHER_H
 #define NETWORKWATCHER_H
 
-#include "notificationhandler.h"
-
 #include <QElapsedTimer>
 #include <QMap>
+
+#include "notificationhandler.h"
 
 class NetworkWatcherImpl;
 

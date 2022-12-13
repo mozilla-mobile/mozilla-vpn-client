@@ -118,11 +118,9 @@ if [[ "$GITREF" =~ ^refs/pull/([0-9]+)/merge ]]; then
 elif [[ "$GITREF" =~ ^refs/tags/v([0-9a-z.]+) ]]; then
   SHORTVERSION=${BASH_REMATCH[1]}
 elif [[ "$GITREF" =~ ^refs/heads/releases/([0-9][^/]*) ]]; then
-  git fetch $([ $(git rev-parse --is-shallow-repository) = 'false' ] && echo --unshallow)
-  RCVERSION="~rc$(git rev-list --count --first-parent origin/main..HEAD)"
-  SHORTVERSION="${BASH_REMATCH[1]}${RCVERSION}"
+  SHORTVERSION="${BASH_REMATCH[1]}~rc$(date -u +%Y%m%d%H%M%S)"
 elif [[ "$GITREF" == "refs/heads/main" ]]; then
-  SHORTVERSION="${SHORTVERSION}~nightly$(date +%Y%m%d)"
+  SHORTVERSION="${SHORTVERSION}~nightly$(date -u +%Y%m%d)"
 fi
 WORKDIR=mozillavpn-${SHORTVERSION}
 print G "${SHORTVERSION}"
@@ -134,7 +132,7 @@ print Y "Update the submodules..."
 git submodule init || die "Failed"
 git submodule update --remote --depth 1 i18n || die "Failed"
 git submodule update --remote --depth 1 3rdparty/wireguard-tools || die "Failed"
-git submodule update --remote --depth 1 3rdparty/glean || die "Failed"
+git submodule update --depth 1 3rdparty/glean || die "Failed"
 print G "done."
 
 print G "Creating the orig tarball"

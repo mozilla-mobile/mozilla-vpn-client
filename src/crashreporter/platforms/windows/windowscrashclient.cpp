@@ -4,21 +4,22 @@
 
 #include "windowscrashclient.h"
 
-#include "crashreporter/crashreporterapp.h"
-#include "../logger.h"
+#include <Windows.h>
 
-#include <codecvt>
-#include <iostream>
 #include <QDir>
 #include <QObject>
 #include <QStandardPaths>
+#include <codecvt>
+#include <iostream>
 #include <sstream>
-#include <Windows.h>
+
+#include "../logger.h"
+#include "crashreporter/crashreporterapp.h"
 
 using namespace std;
 
 namespace {
-Logger logger("CrashClient", "WindowsCrashServerClient");
+Logger logger("WindowsCrashServerClient");
 }
 
 constexpr auto ARG = L"crashreporter";

@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "keyregenerator.h"
+
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -16,7 +17,7 @@
 #include "taskscheduler.h"
 
 namespace {
-Logger logger(LOG_MAIN, "KeyRegenerator");
+Logger logger("KeyRegenerator");
 }
 
 KeyRegenerator::KeyRegenerator() {

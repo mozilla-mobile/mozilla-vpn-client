@@ -3,6 +3,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "inspectorhandler.h"
+
+#include <QBuffer>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
+#include <QMetaObject>
+#include <QNetworkAccessManager>
+#include <QPixmap>
+#include <QQmlApplicationEngine>
+#include <QQuickItem>
+#include <QQuickWindow>
+#include <QScreen>
+#include <QTest>
+#include <functional>
+
 #include "addons/manager/addonmanager.h"
 #include "constants.h"
 #include "controller.h"
@@ -27,28 +43,12 @@
 #include "urlopener.h"
 #include "websocket/pushmessage.h"
 
-#include <functional>
-
-#include <QBuffer>
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonValue>
-#include <QMetaObject>
-#include <QNetworkAccessManager>
-#include <QPixmap>
-#include <QQmlApplicationEngine>
-#include <QQuickItem>
-#include <QQuickWindow>
-#include <QScreen>
-#include <QTest>
-
 #ifdef MVPN_WASM
 #  include "platforms/wasm/wasminspector.h"
 #else
-#  include "inspectorwebsocketserver.h"
-
 #  include <QCoreApplication>
+
+#  include "inspectorwebsocketserver.h"
 #endif
 
 #ifdef MVPN_ANDROID
@@ -56,7 +56,7 @@
 #endif
 
 namespace {
-Logger logger(LOG_INSPECTOR, "InspectorHandler");
+Logger logger("InspectorHandler");
 
 bool s_stealUrls = false;
 bool s_forwardNetwork = false;

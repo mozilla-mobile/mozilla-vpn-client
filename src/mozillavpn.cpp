@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "mozillavpn.h"
+
 #include "addons/manager/addonmanager.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "constants.h"
@@ -15,10 +17,9 @@
 #include "models/device.h"
 #include "models/feature.h"
 #include "models/recentconnections.h"
-#include "mozillavpn.h"
 #include "networkmanager.h"
-#include "profileflow.h"
 #include "productshandler.h"
+#include "profileflow.h"
 #include "purchasehandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
@@ -60,8 +61,8 @@
 #endif
 
 #ifdef MVPN_ANDROID
-#  include "platforms/android/androidvpnactivity.h"
 #  include "platforms/android/androidutils.h"
+#  include "platforms/android/androidvpnactivity.h"
 #endif
 
 #ifdef MVPN_ADJUST
@@ -81,7 +82,7 @@
 #include <QUrl>
 
 namespace {
-Logger logger(LOG_MAIN, "MozillaVPN");
+Logger logger("MozillaVPN");
 MozillaVPN* s_instance = nullptr;
 }  // namespace
 

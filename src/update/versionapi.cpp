@@ -3,18 +3,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "versionapi.h"
-#include "constants.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "networkrequest.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QRegularExpression>
 
+#include "constants.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "networkrequest.h"
+
 namespace {
-Logger logger(LOG_NETWORKING, "VersionApi");
+Logger logger("VersionApi");
 }
 
 VersionApi::VersionApi(QObject* parent) : Updater(parent) {

@@ -14,7 +14,7 @@ class VPNGlean final : public QObject {
   Q_DISABLE_COPY_MOVE(VPNGlean)
 
  private:
-  VPNGlean();
+  explicit VPNGlean(QObject* parent);
 
   static void setUploadEnabled(bool isTelemetryEnabled);
   static void registerQMLSingletons();

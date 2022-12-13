@@ -3,13 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "dnspingsender.h"
-#include "leakdetector.h"
-#include "logger.h"
+
+#include <string.h>
 
 #include <QNetworkDatagram>
 #include <QtEndian>
 
-#include <string.h>
+#include "leakdetector.h"
+#include "logger.h"
 
 constexpr const quint16 DNS_PORT = 53;
 
@@ -44,7 +45,7 @@ struct dnsHeader {
 #define DNS_FLAG_RCODE_REFUSED (0x5 << 0)
 
 namespace {
-Logger logger(LOG_NETWORKING, "DnsPingSender");
+Logger logger("DnsPingSender");
 }
 
 DnsPingSender::DnsPingSender(const QHostAddress& source, QObject* parent)

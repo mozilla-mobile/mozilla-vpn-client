@@ -3,11 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "platforms/wasm/wasmiaphandler.h"
-#include "errorhandler.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "tasks/purchase/taskpurchase.h"
-#include "taskscheduler.h"
 
 #include <QCoreApplication>
 #include <QJsonDocument>
@@ -16,8 +11,14 @@
 #include <QRandomGenerator>
 #include <QTimer>
 
+#include "errorhandler.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "tasks/purchase/taskpurchase.h"
+#include "taskscheduler.h"
+
 namespace {
-Logger logger(LOG_IAP, "WasmIAPHandler");
+Logger logger("WasmIAPHandler");
 }  // namespace
 
 WasmIAPHandler::WasmIAPHandler(QObject* parent) : PurchaseIAPHandler(parent) {

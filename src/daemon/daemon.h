@@ -5,13 +5,13 @@
 #ifndef DAEMON_H
 #define DAEMON_H
 
+#include <QDateTime>
+#include <QTimer>
+
 #include "dnsutils.h"
 #include "interfaceconfig.h"
 #include "iputils.h"
 #include "wireguardutils.h"
-
-#include <QDateTime>
-#include <QTimer>
 
 class Daemon : public QObject {
   Q_OBJECT

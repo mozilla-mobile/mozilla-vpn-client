@@ -7,14 +7,19 @@
 
 #pragma comment(lib, "Fwpuclnt")
 
-#include "../../daemon/interfaceconfig.h"
-
+// Note: The windows.h import needs to come before the fwpmu.h import.
+// clang-format off
 #include <windows.h>
 #include <fwpmu.h>
-#include <QString>
-#include <QObject>
-#include <QHostAddress>
+// clang-format on
+
 #include <QByteArray>
+#include <QHostAddress>
+#include <QObject>
+#include <QString>
+
+#include "../../daemon/interfaceconfig.h"
+
 class IpAdressRange;
 struct FWP_VALUE0_;
 struct FWP_CONDITION_VALUE0_;

@@ -3,22 +3,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "linuxapplistprovider.h"
-#include "leakdetector.h"
 
-#include <QProcess>
-#include <QString>
 #include <QDir>
 #include <QDirIterator>
-#include <QSettings>
+#include <QProcess>
 #include <QProcessEnvironment>
+#include <QSettings>
+#include <QString>
 
-#include "logger.h"
 #include "leakdetector.h"
+#include "logger.h"
 
 constexpr const char* DESKTOP_ENTRY_LOCATION = "/usr/share/applications/";
 
 namespace {
-Logger logger(LOG_CONTROLLER, "LinuxAppListProvider");
+Logger logger("LinuxAppListProvider");
 }
 
 LinuxAppListProvider::LinuxAppListProvider(QObject* parent)

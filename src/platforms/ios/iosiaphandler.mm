@@ -27,7 +27,7 @@ constexpr const uint32_t GUARDIAN_ERROR_RECEIPT_NOT_VALID = 142;
 constexpr const uint32_t GUARDIAN_ERROR_RECEIPT_IN_USE = 145;
 
 namespace {
-Logger logger(LOG_IAP, "IOSIAPHandler");
+Logger logger("IOSIAPHandler");
 bool s_transactionsProcessed = false;
 }  // namespace
 

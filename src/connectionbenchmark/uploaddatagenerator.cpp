@@ -3,14 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "uploaddatagenerator.h"
-#include "leakdetector.h"
-#include "logger.h"
 
 #include <QBuffer>
 #include <QRandomGenerator>
 
+#include "leakdetector.h"
+#include "logger.h"
+
 namespace {
-Logger logger(LOG_MAIN, "UploadDataGenerator");
+Logger logger("UploadDataGenerator");
 }
 
 UploadDataGenerator::UploadDataGenerator(const qint64 totalSize)

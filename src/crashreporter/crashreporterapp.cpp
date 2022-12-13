@@ -7,8 +7,9 @@
 #include <QApplication>
 #include <QTimer>
 #include <iostream>
-#include "loghandler.h"
+
 #include "crashreporterfactory.h"
+#include "loghandler.h"
 
 int CrashReporterApp::main(int argc, char* argv[]) {
   QApplication a(argc, argv);

@@ -3,16 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "authenticationinappsession.h"
-#include "authenticationinapp.h"
-#include "authenticationlistener.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "hkdf.h"
-#include "models/feature.h"
-#include "mozillavpn.h"
-#include "networkrequest.h"
-
-#include "telemetry/gleansample.h"
 
 #include <QCoreApplication>
 #include <QJsonDocument>
@@ -20,8 +10,18 @@
 #include <QJsonValue>
 #include <QtNetwork>  // for qpassworddigestor.h
 
+#include "authenticationinapp.h"
+#include "authenticationlistener.h"
+#include "hkdf.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "models/feature.h"
+#include "mozillavpn.h"
+#include "networkrequest.h"
+#include "telemetry/gleansample.h"
+
 namespace {
-Logger logger(LOG_MAIN, "AuthenticationInAppSession");
+Logger logger("AuthenticationInAppSession");
 }  // anonymous namespace
 
 AuthenticationInAppSession::AuthenticationInAppSession(QObject* parent,

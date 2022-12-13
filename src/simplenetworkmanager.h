@@ -5,9 +5,9 @@
 #ifndef SIMPLENETWORKMANAGER_H
 #define SIMPLENETWORKMANAGER_H
 
-#include "networkmanager.h"
-
 #include <QObject>
+
+#include "networkmanager.h"
 
 class SimpleNetworkManager final : public NetworkManager {
   Q_DISABLE_COPY_MOVE(SimpleNetworkManager)

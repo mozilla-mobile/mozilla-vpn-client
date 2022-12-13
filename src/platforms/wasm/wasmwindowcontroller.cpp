@@ -3,11 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "wasmwindowcontroller.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "mozillavpn.h"
-#include "notificationhandler.h"
-#include "platforms/macos/macosmenubar.h"
 
 #include <QGuiApplication>
 #include <QLabel>
@@ -17,8 +12,14 @@
 #include <QVBoxLayout>
 #include <QWindow>
 
+#include "leakdetector.h"
+#include "logger.h"
+#include "mozillavpn.h"
+#include "notificationhandler.h"
+#include "platforms/macos/macosmenubar.h"
+
 namespace {
-Logger logger(LOG_MAIN, "WasmWindowController");
+Logger logger("WasmWindowController");
 
 WasmWindowController* s_instance = nullptr;
 }  // namespace

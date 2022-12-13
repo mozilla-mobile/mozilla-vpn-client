@@ -3,6 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "feature.h"
+
+#include <QList>
+#include <QScopeGuard>
+
 #include "constants.h"
 #include "featureslistcallback.h"
 #include "l18nstrings.h"
@@ -10,11 +14,8 @@
 #include "settingsholder.h"
 #include "update/versionapi.h"
 
-#include <QScopeGuard>
-#include <QList>
-
 namespace {
-Logger logger(LOG_MODEL, "Feature");
+Logger logger("Feature");
 QMap<QString, Feature*>* s_featuresHashtable = nullptr;
 QList<Feature*>* s_featuresList = nullptr;
 }  // namespace

@@ -5,11 +5,10 @@
 #ifndef CONTROLLERIMPL_H
 #define CONTROLLERIMPL_H
 
-#include "controller.h"
-
 #include <QObject>
-
 #include <functional>
+
+#include "controller.h"
 
 class Keys;
 class Device;

@@ -3,12 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "windowsnetworkwatcher.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "windowscommons.h"
-#include "networkwatcherimpl.h"
 
 #include <QScopeGuard>
+
+#include "leakdetector.h"
+#include "logger.h"
+#include "networkwatcherimpl.h"
+#include "windowscommons.h"
 
 #pragma comment(lib, "Wlanapi.lib")
 #pragma comment(lib, "windowsapp.lib")
@@ -23,7 +24,7 @@ auto wait_for(Async const& async, Windows::Foundation::TimeSpan const& timeout);
 #include <winrt/Windows.Networking.Connectivity.h>
 
 namespace {
-Logger logger(LOG_WINDOWS, "WindowsNetworkWatcher");
+Logger logger("WindowsNetworkWatcher");
 }
 
 WindowsNetworkWatcher::WindowsNetworkWatcher(QObject* parent)

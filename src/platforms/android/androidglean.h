@@ -6,9 +6,10 @@
 #define ANDROIDGLEAN_H
 
 #include <jni.h>
+
 #include <QObject>
-#include <QString>
 #include <QQmlEngine>
+#include <QString>
 
 class AndroidGlean final : public QObject {
   Q_OBJECT
