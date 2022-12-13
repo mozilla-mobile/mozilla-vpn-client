@@ -83,7 +83,7 @@ target_sources(mozillavpn PRIVATE
 
 include(apps/vpn/cmake/osxtools.cmake)
 include(apps/vpn/cmake/golang.cmake)
-include(apps/vpn/cmake/signature.cmake)
+include(apps/vpn/cmake/rustlang.cmake)
 
 # Enable Balrog for update support.
 target_compile_definitions(mozillavpn PRIVATE MVPN_BALROG)
@@ -94,6 +94,16 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/balrog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/balrog.h
 )
+
+# Compile and link the signature library.
+add_rust_library(signature
+    ARCH aarch64-apple-darwin x86_64-apple-darwin
+    PACKAGE_DIR ${CMAKE_SOURCE_DIR}/signature
+    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
+    LIBNAME signature
+)
+target_compile_definitions(mozillavpn PRIVATE MVPN_SIGNATURE)
+target_link_libraries(mozillavpn PRIVATE signature)
 
 # Build the Wireguard Go tunnel
 # FIXME: this builds in the source directory.

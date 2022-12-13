@@ -108,3 +108,64 @@ function(build_rust_archives)
         )
     endif()
 endfunction()
+
+function(add_rust_library TARGET_NAME)
+    cmake_parse_arguments(RUST_TARGET
+        ""
+        "BINARY_DIR;PACKAGE_DIR;LIBNAME"
+        "ARCH;CARGO_ENV"
+        ${ARGN})
+    
+    add_library(${TARGET_NAME} STATIC IMPORTED GLOBAL)
+
+    if(NOT RUST_TARGET_LIBNAME)
+        ## TODO: I would like to pull this from the package manifest.
+        error("Mandatory argument LIBNAME was not found")
+    endif()
+    if(NOT RUST_TARGET_ARCH)
+        set(RUST_TARGET_ARCH ${RUSTC_HOST_ARCH})
+    endif()
+    if(NOT RUST_TARGET_BINARY_DIR)
+        set(RUST_TARGET_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
+    endif()
+    if(NOT RUST_TARGET_PACKAGE_DIR)
+        set(RUST_TARGET_PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+    endif()
+    
+    set(RUST_TARGET_LIBRARY_FILE
+        ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_TARGET_LIBNAME}${CMAKE_STATIC_LIBRARY_SUFFIX}
+    )
+    build_rust_archives(
+        ARCH ${RUST_TARGET_ARCH}
+        BINARY_DIR ${RUST_TARGET_BINARY_DIR}
+        PACKAGE_DIR ${RUST_TARGET_PACKAGE_DIR}
+        LIBRARY_FILE ${RUST_TARGET_LIBRARY_FILE}
+        CARGO_ENV ${CARGO_ENV}
+    )
+    
+    if(APPLE)
+        ## For apple targets - build all architectures as a univeral binary.
+        add_custom_target(${TARGET_NAME}_builder
+            DEPENDS ${RUST_TARGET_BINARY_DIR}/unified/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_TARGET_LIBRARY_FILE}
+        )
+        set_target_properties(${TARGET_NAME} PROPERTIES
+            IMPORTED_LOCATION ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_TARGET_LIBRARY_FILE}
+            IMPORTED_LOCATION_DEBUG ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_TARGET_LIBRARY_FILE}
+        )
+    else()
+        ## For all other targets, only build the first architecture
+        list(GET RUST_TARGET_ARCH 0 RUST_FIRST_ARCH)
+        add_custom_target(${TARGET_NAME}_builder
+            DEPENDS ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_TARGET_LIBRARY_FILE}
+        )
+        set_target_properties(vpnglean PROPERTIES
+            IMPORTED_LOCATION ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/release/${RUST_TARGET_LIBRARY_FILE}
+            IMPORTED_LOCATION_DEBUG ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/debug/${RUST_TARGET_LIBRARY_FILE}
+        )
+    endif()
+    set_target_properties(${TARGET_NAME}_builder PROPERTIES FOLDER "Libs")
+
+    add_dependencies(${TARGET_NAME} ${TARGET_NAME}_builder)
+    set_property(TARGET ${TARGET_NAME} APPEND PROPERTY INTERFACE_LINK_LIBRARIES ${CMAKE_DL_LIBS})
+    set_property(TARGET ${TARGET_NAME} APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${RUST_TARGET_BINARY_DIR})
+endfunction()
