@@ -10,6 +10,7 @@
 #include "externalophandler.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "loglevel.h"
 #include "models/feature.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"

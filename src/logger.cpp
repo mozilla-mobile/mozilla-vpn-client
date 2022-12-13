@@ -7,6 +7,8 @@
 #include <QJsonDocument>
 #include <QMetaEnum>
 
+#include "loghandler.h"
+
 Logger::Logger(const QString& className) : m_className(className) {}
 
 Logger::Log Logger::error() { return Log(this, LogLevel::Error); }

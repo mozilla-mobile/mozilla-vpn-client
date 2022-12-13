@@ -10,6 +10,8 @@
 #include <QString>
 #include <QTextStream>
 
+#include "loglevel.h"
+
 class QJsonObject;
 
 class Logger {
