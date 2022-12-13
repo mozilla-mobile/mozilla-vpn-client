@@ -1,11 +1,8 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-
 # This cmake file integrates the OpenSSL-Prefab into our build system.
 # Google Publishes builds of openSSL for android on maven. 
-
 
 include(ExternalProject)
 ExternalProject_Add(ndk_openssl
@@ -16,7 +13,6 @@ ExternalProject_Add(ndk_openssl
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
   INSTALL_COMMAND ""
-  DOWNLOAD_EXTRACT_TIMESTAMP true
 )
 
 # Sadly, since we're not building the client in the gradle enviroment
@@ -32,7 +28,6 @@ ExternalProject_Add(ndk_openssl
 # QT only seeems to load them if they are called x.1_1.so
 # For the Rust/Openssl-sys crate we need x.so
 
-
 SET( _OPENSSL_CRYPTO_MODULE "${CMAKE_BINARY_DIR}/ndk_openssl-prefix/src/ndk_openssl/prefab/modules/crypto")
 SET( _OPENSSL_SSL_MODULE "${CMAKE_BINARY_DIR}/ndk_openssl-prefix/src/ndk_openssl/prefab/modules/ssl")
 SET( _OPENSSL_LIBS "${CMAKE_BINARY_DIR}/ndk_openssl/libs") 
@@ -40,8 +35,6 @@ SET( _OPENSSL_INCLUDE "${CMAKE_BINARY_DIR}/ndk_openssl/include")
 
 file(MAKE_DIRECTORY ${_OPENSSL_LIBS})
 file(MAKE_DIRECTORY ${_OPENSSL_INCLUDE})
-
-
 
 set_property(GLOBAL PROPERTY OPENSSL_CRYPTO_MODULE ${_OPENSSL_CRYPTO_MODULE})
 set_property(GLOBAL PROPERTY OPENSSL_SSL_MODULE ${_OPENSSL_SSL_MODULE})
@@ -58,4 +51,3 @@ add_custom_command(
         COMMAND ${CMAKE_COMMAND} -E copy ${_OPENSSL_CRYPTO_MODULE}/libs/android.${ANDROID_ABI}/libcrypto.so ${_OPENSSL_LIBS}/libcrypto_1_1.so
         COMMAND ${CMAKE_COMMAND} -E copy ${_OPENSSL_SSL_MODULE}/libs/android.${ANDROID_ABI}/libssl.so ${_OPENSSL_LIBS}/libssl.so
         COMMAND ${CMAKE_COMMAND} -E copy ${_OPENSSL_CRYPTO_MODULE}/libs/android.${ANDROID_ABI}/libcrypto.so ${_OPENSSL_LIBS}/libcrypto.so)
-
