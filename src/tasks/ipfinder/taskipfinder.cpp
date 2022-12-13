@@ -18,7 +18,7 @@
 #include <QUrl>
 
 namespace {
-Logger logger(LOG_NETWORKING, "TaskIPFinder");
+Logger logger("TaskIPFinder");
 }
 
 TaskIPFinder::TaskIPFinder() : Task("TaskIPFinder") {

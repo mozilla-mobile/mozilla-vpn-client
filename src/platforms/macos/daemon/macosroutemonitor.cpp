@@ -24,7 +24,7 @@
 #include <unistd.h>
 
 namespace {
-Logger logger(LOG_MACOS, "MacosRouteMonitor");
+Logger logger("MacosRouteMonitor");
 }  // namespace
 
 MacosRouteMonitor::MacosRouteMonitor(const QString& ifname, QObject* parent)

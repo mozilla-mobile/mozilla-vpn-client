@@ -15,7 +15,7 @@
 #include <QJsonObject>
 
 namespace {
-Logger logger(LOG_MAIN, "ComposerBlock");
+Logger logger("ComposerBlock");
 }
 
 ComposerBlock::ComposerBlock(Composer* composer, const QString& id,

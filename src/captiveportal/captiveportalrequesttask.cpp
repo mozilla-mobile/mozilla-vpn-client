@@ -15,7 +15,7 @@
 #include <QTimer>
 
 namespace {
-Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalRequestTask");
+Logger logger("CaptivePortalRequestTask");
 }
 
 CaptivePortalRequestTask::CaptivePortalRequestTask(bool retryOnFailure)

@@ -10,7 +10,7 @@
 #include <QWebSocket>
 
 namespace {
-Logger logger(LOG_INSPECTOR, "InspectorWebSocketConnection");
+Logger logger("InspectorWebSocketConnection");
 }  // namespace
 
 InspectorWebSocketConnection::InspectorWebSocketConnection(

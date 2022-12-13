@@ -21,7 +21,7 @@
 #include <QLocale>
 
 namespace {
-Logger logger(LOG_MAIN, "Localizer");
+Logger logger("Localizer");
 Localizer* s_instance = nullptr;
 
 struct StaticLanguage {

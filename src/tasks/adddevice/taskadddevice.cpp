@@ -14,7 +14,7 @@
 
 namespace {
 
-Logger logger(LOG_MAIN, "TaskAddDevice");
+Logger logger("TaskAddDevice");
 
 QByteArray generatePrivateKey() {
   QByteArray key;

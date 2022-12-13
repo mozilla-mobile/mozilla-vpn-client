@@ -14,7 +14,7 @@
 #include <QApplication>
 
 namespace {
-Logger logger(LOG_ANDROID, "AndroidNetworkWatcher");
+Logger logger("AndroidNetworkWatcher");
 
 constexpr auto VPNNetworkWatcher_CLASS =
     "org/mozilla/firefox/vpn/qt/VPNNetworkWatcher";

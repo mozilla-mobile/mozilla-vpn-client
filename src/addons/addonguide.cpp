@@ -10,7 +10,7 @@
 #include <QScopeGuard>
 
 namespace {
-Logger logger(LOG_MAIN, "AddonGuide");
+Logger logger("AddonGuide");
 }
 
 // static

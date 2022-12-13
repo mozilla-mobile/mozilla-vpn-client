@@ -15,7 +15,7 @@
 #include <QCoreApplication>
 
 namespace {
-Logger logger(LOG_MACOS, "MacOSDaemonServer");
+Logger logger("MacOSDaemonServer");
 }
 
 MacOSDaemonServer::MacOSDaemonServer(QObject* parent)

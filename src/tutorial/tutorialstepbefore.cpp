@@ -14,7 +14,7 @@
 #include <QMetaMethod>
 
 namespace {
-Logger logger(LOG_MAIN, "TutorialStepBefore");
+Logger logger("TutorialStepBefore");
 }
 
 class TutorialStepBeforePropertyGet final : public TutorialStepBefore {

@@ -15,7 +15,7 @@
 #include <QWindow>
 
 namespace {
-Logger logger(LOG_MAIN, "MacosSystemTrayNotificationHandler");
+Logger logger("MacosSystemTrayNotificationHandler");
 }
 
 MacosSystemTrayNotificationHandler::MacosSystemTrayNotificationHandler(

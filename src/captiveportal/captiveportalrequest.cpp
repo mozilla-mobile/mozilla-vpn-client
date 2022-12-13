@@ -12,7 +12,7 @@
 #include "task.h"
 
 namespace {
-Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalRequest");
+Logger logger("CaptivePortalRequest");
 }
 
 CaptivePortalRequest::CaptivePortalRequest(Task* parent) : QObject(parent) {

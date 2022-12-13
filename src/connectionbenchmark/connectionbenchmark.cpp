@@ -14,7 +14,7 @@
 #include "taskscheduler.h"
 
 namespace {
-Logger logger(LOG_MODEL, "ConnectionBenchmark");
+Logger logger("ConnectionBenchmark");
 }
 
 ConnectionBenchmark::ConnectionBenchmark() {

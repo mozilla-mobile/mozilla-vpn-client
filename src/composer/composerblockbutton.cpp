@@ -16,7 +16,7 @@
 #include <QQmlEngine>
 
 namespace {
-Logger logger(LOG_MAIN, "ComposerBlockButton");
+Logger logger("ComposerBlockButton");
 }
 
 // static

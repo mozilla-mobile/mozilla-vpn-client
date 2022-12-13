@@ -28,11 +28,9 @@ class LogHandler final : public QObject {
   struct Log {
     Log() = default;
 
-    Log(LogLevel logLevel, const QStringList& modules, const QString& className,
-        const QString& message)
+    Log(LogLevel logLevel, const QString& className, const QString& message)
         : m_logLevel(logLevel),
           m_dateTime(QDateTime::currentDateTime()),
-          m_modules(modules),
           m_className(className),
           m_message(message),
           m_fromQT(false) {}
@@ -51,7 +49,6 @@ class LogHandler final : public QObject {
     QDateTime m_dateTime;
     QString m_file;
     QString m_function;
-    QStringList m_modules;
     QString m_className;
     QString m_message;
     int32_t m_line = -1;
@@ -64,8 +61,8 @@ class LogHandler final : public QObject {
                                const QMessageLogContext& context,
                                const QString& message);
 
-  static void messageHandler(LogLevel logLevel, const QStringList& modules,
-                             const QString& className, const QString& message);
+  static void messageHandler(LogLevel logLevel, const QString& className,
+                             const QString& message);
 
   static void prettyOutput(QTextStream& out, const LogHandler::Log& log);
 
@@ -81,15 +78,13 @@ class LogHandler final : public QObject {
   void logEntryAdded(const QByteArray& log);
 
  private:
-  LogHandler(LogLevel m_minLogLevel, const QStringList& modules,
-             const MutexLocker& proofOfLock);
+  LogHandler(LogLevel m_minLogLevel, const MutexLocker& proofOfLock);
 
   static LogHandler* maybeCreate(const MutexLocker& proofOfLock);
 
   void addLog(const Log& log, const MutexLocker& proofOfLock);
 
   bool matchLogLevel(const Log& log, const MutexLocker& proofOfLock) const;
-  bool matchModule(const Log& log, const MutexLocker& proofOfLock) const;
 
   void openLogFile(const MutexLocker& proofOfLock);
 
@@ -98,7 +93,6 @@ class LogHandler final : public QObject {
   static void cleanupLogFile(const MutexLocker& proofOfLock);
 
   const LogLevel m_minLogLevel;
-  const QStringList m_modules;
   bool m_showDebug = false;
 
   QFile* m_logFile = nullptr;

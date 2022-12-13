@@ -7,7 +7,7 @@
 #include "qmlengineholder.h"
 
 namespace {
-Logger logger(LOG_MODEL, "FilterProxyModel");
+Logger logger("FilterProxyModel");
 }
 
 FilterProxyModel::FilterProxyModel(QObject* parent)

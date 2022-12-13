@@ -56,7 +56,7 @@
 #endif
 
 namespace {
-Logger logger(LOG_INSPECTOR, "InspectorHandler");
+Logger logger("InspectorHandler");
 
 bool s_stealUrls = false;
 bool s_forwardNetwork = false;

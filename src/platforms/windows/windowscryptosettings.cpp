@@ -14,7 +14,7 @@
 #define CRED_KEY L"Mozilla VPN"
 
 namespace {
-Logger logger(LOG_WINDOWS, "CryptoSettings");
+Logger logger("CryptoSettings");
 
 bool s_initialized = false;
 QByteArray s_key;

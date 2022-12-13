@@ -18,7 +18,7 @@
 #include <QMetaEnum>
 
 namespace {
-Logger logger(LOG_MODEL, "SubscriptionData");
+Logger logger("SubscriptionData");
 }  // namespace
 
 SubscriptionData::SubscriptionData() { MVPN_COUNT_CTOR(SubscriptionData); }

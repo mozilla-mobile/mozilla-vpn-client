@@ -18,7 +18,7 @@
 constexpr const char* DESKTOP_ENTRY_LOCATION = "/usr/share/applications/";
 
 namespace {
-Logger logger(LOG_CONTROLLER, "LinuxAppListProvider");
+Logger logger("LinuxAppListProvider");
 }
 
 LinuxAppListProvider::LinuxAppListProvider(QObject* parent)

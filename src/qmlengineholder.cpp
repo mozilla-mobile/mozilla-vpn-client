@@ -11,7 +11,7 @@
 #include <QWindow>
 
 namespace {
-Logger logger(LOG_MAIN, "QmlEngineHolder");
+Logger logger("QmlEngineHolder");
 QmlEngineHolder* s_instance = nullptr;
 }  // namespace
 

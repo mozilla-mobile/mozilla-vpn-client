@@ -9,7 +9,7 @@
 #include "task.h"
 
 namespace {
-Logger logger(LOG_MAIN, "TaskScheduler");
+Logger logger("TaskScheduler");
 }  // namespace
 
 // static

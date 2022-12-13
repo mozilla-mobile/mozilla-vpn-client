@@ -9,7 +9,7 @@
 #include <QScopeGuard>
 
 namespace {
-Logger logger(LOG_WINDOWS, "WindowsRouteMonitor");
+Logger logger("WindowsRouteMonitor");
 };  // namespace
 
 // Called by the kernel on route changes - perform some basic filtering and

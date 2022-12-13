@@ -37,7 +37,7 @@ DEFINE_GUID(ST_FW_PROVIDER_KEY, 0xe2c114ee, 0xf32a, 0x4264, 0xa6, 0xcb, 0x3f,
             0xa7, 0x99, 0x63, 0x56, 0xd9);
 
 namespace {
-Logger logger(LOG_WINDOWS, "WindowsFirewall");
+Logger logger("WindowsFirewall");
 WindowsFirewall* s_instance = nullptr;
 
 // Note Filter Weight may be between 0-15!

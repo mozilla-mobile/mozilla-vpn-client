@@ -14,7 +14,7 @@
 using namespace std;
 
 namespace {
-Logger logger(LOG_CRASHREPORTER, "WinCrashReporter");
+Logger logger("WinCrashReporter");
 }
 
 WinCrashReporter::WinCrashReporter(QObject* parent) : CrashReporter(parent) {

@@ -27,7 +27,7 @@
 
 namespace {
 AndroidGlean* s_instance = nullptr;
-Logger logger(LOG_ANDROID, "AndroidGlean");
+Logger logger("AndroidGlean");
 
 }  // namespace
 

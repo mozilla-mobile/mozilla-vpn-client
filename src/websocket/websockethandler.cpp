@@ -15,7 +15,7 @@
 #include "telemetry/gleansample.h"
 
 namespace {
-Logger logger(LOG_MAIN, "WebSocketHandler");
+Logger logger("WebSocketHandler");
 }  // namespace
 
 WebSocketHandler::WebSocketHandler() {

@@ -23,7 +23,7 @@
 #include <QUrlQuery>
 
 namespace {
-Logger logger(LOG_MAIN, "AuthenticationListener");
+Logger logger("AuthenticationListener");
 }  // anonymous namespace
 
 // static

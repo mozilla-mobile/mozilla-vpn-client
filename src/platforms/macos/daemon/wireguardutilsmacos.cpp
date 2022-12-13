@@ -18,8 +18,8 @@ constexpr const int WG_TUN_PROC_TIMEOUT = 5000;
 constexpr const char* WG_RUNTIME_DIR = "/var/run/wireguard";
 
 namespace {
-Logger logger(LOG_MACOS, "WireguardUtilsMacos");
-Logger logwireguard(LOG_MACOS, "WireguardGo");
+Logger logger("WireguardUtilsMacos");
+Logger logwireguard("WireguardGo");
 };  // namespace
 
 WireguardUtilsMacos::WireguardUtilsMacos(QObject* parent)

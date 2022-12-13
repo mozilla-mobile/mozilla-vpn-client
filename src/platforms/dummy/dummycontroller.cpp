@@ -13,7 +13,7 @@
 constexpr uint32_t DUMMY_CONNECTION_DELAY_MSEC = 1500;
 
 namespace {
-Logger logger(LOG_CONTROLLER, "DummyController");
+Logger logger("DummyController");
 }
 
 DummyController::DummyController() : m_delayTimer(this) {

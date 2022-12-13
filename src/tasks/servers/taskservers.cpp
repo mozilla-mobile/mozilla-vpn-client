@@ -10,7 +10,7 @@
 #include "networkrequest.h"
 
 namespace {
-Logger logger(LOG_MAIN, "TaskServers");
+Logger logger("TaskServers");
 }
 
 TaskServers::TaskServers(

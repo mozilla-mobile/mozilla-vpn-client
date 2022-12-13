@@ -15,7 +15,7 @@
 
 namespace {
 Navigator* s_instance = nullptr;
-Logger logger(LOG_MAIN, "Navigator");
+Logger logger("Navigator");
 
 struct Layer {
   enum Type {

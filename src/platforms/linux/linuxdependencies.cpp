@@ -15,7 +15,7 @@
 
 namespace {
 
-Logger logger(LOG_LINUX, "LinuxDependencies");
+Logger logger("LinuxDependencies");
 
 void showAlert(const QString& message) {
   logger.debug() << "Show alert:" << message;

@@ -10,7 +10,7 @@
 #include <QUuid>
 
 namespace {
-Logger logger(LOG_MAIN, "TemporaryDir");
+Logger logger("TemporaryDir");
 
 constexpr const char* TMP_FOLDER = "tmp";
 

@@ -12,7 +12,7 @@
 #include "update/updater.h"
 
 namespace {
-Logger logger(LOG_MAIN, "ReleaseMonitor");
+Logger logger("ReleaseMonitor");
 }
 
 ReleaseMonitor::ReleaseMonitor() {

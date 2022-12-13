@@ -109,7 +109,7 @@
 @end
 
 namespace {
-Logger logger(LOG_MACOS, "MacOSStatusIcon");
+Logger logger("MacOSStatusIcon");
 
 MacOSStatusIconDelegate* m_statusBarIcon = nullptr;
 }

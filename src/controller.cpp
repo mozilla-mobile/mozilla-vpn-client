@@ -51,7 +51,7 @@ constexpr const int MULLVAD_PROXY_RANGE_LENGTH = 20;
 #endif
 
 namespace {
-Logger logger(LOG_CONTROLLER, "Controller");
+Logger logger("Controller");
 
 ControllerImpl::Reason stateToReason(Controller::State state) {
   if (state == Controller::StateSwitching) {

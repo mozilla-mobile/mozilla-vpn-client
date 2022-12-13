@@ -81,7 +81,7 @@
 #include <QUrl>
 
 namespace {
-Logger logger(LOG_MAIN, "MozillaVPN");
+Logger logger("MozillaVPN");
 MozillaVPN* s_instance = nullptr;
 }  // namespace
 

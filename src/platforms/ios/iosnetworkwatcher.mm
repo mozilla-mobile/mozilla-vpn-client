@@ -10,7 +10,7 @@
 #import <Network/Network.h>
 
 namespace {
-Logger logger(LOG_IOS, "IOSNetworkWatcher");
+Logger logger("IOSNetworkWatcher");
 dispatch_queue_t s_queue = dispatch_queue_create("VPNNetwork.queue", DISPATCH_QUEUE_SERIAL);
 }
 

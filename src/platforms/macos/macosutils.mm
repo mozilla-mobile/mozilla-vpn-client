@@ -13,7 +13,7 @@
 #import <ServiceManagement/ServiceManagement.h>
 
 namespace {
-Logger logger(LOG_MACOS, "MacOSUtils");
+Logger logger("MacOSUtils");
 }
 
 // static

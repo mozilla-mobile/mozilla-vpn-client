@@ -8,7 +8,7 @@
 #include "l18nstrings.h"
 
 namespace {
-Logger logger(LOG_MODEL, "SupportCategoryModel");
+Logger logger("SupportCategoryModel");
 
 struct SupportCategory {
   const char* m_categoryName;

@@ -19,7 +19,7 @@ constexpr auto MAX_RETRIES = 3;
 constexpr auto BOUNDARY = "--------------------XYsowmfWDDGdos";
 
 namespace {
-Logger logger(LOG_CRASHREPORTER, "CrashUploader");
+Logger logger("CrashUploader");
 }
 
 CrashUploader::CrashUploader(QObject* parent) : QObject(parent) {

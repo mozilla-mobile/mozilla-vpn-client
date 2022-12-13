@@ -10,7 +10,7 @@
 #include <QTimer>
 
 namespace {
-Logger logger(LOG_LINUX, "LinuxNetworkWatcher");
+Logger logger("LinuxNetworkWatcher");
 }
 
 LinuxNetworkWatcher::LinuxNetworkWatcher(QObject* parent)

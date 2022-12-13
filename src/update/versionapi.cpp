@@ -14,7 +14,7 @@
 #include <QRegularExpression>
 
 namespace {
-Logger logger(LOG_NETWORKING, "VersionApi");
+Logger logger("VersionApi");
 }
 
 VersionApi::VersionApi(QObject* parent) : Updater(parent) {

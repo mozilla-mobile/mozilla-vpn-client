@@ -8,11 +8,11 @@
 #include "helper.h"
 
 void TestLogger::logger() {
-  Logger l("test", "class");
+  Logger l("class");
   l.info() << "Hello world" << 42 << 'a' << QString("OK") << QByteArray("Array")
            << QStringList{"A", "B"} << Qt::endl;
 
-  Logger l2(QStringList{"a", "b"}, "class");
+  Logger l2("class");
   l2.info() << "Hello world" << 42 << 'a' << QString("OK")
             << QByteArray("Array") << QStringList{"A", "B"} << Qt::endl;
 }

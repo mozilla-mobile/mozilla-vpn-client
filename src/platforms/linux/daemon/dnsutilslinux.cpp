@@ -18,7 +18,7 @@ constexpr const char* DBUS_PROPERTY_INTERFACE =
     "org.freedesktop.DBus.Properties";
 
 namespace {
-Logger logger(LOG_LINUX, "DnsUtilsLinux");
+Logger logger("DnsUtilsLinux");
 }
 
 DnsUtilsLinux::DnsUtilsLinux(QObject* parent) : DnsUtils(parent) {

@@ -20,7 +20,7 @@
 
 namespace {
 
-Logger logger({LOG_MACOS, LOG_NETWORKING}, "MacOSPingSender");
+Logger logger("MacOSPingSender");
 
 int identifier() { return (getpid() & 0xFFFF); }
 

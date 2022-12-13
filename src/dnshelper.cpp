@@ -15,7 +15,7 @@
 #include <QHostAddress>
 
 namespace {
-Logger logger(LOG_NETWORKING, "DNSHelper");
+Logger logger("DNSHelper");
 }
 
 // Returns the DNS Server the user asked for in the Settings;

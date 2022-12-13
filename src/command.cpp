@@ -29,7 +29,7 @@
 #include <QTextStream>
 
 namespace {
-Logger logger(LOG_MAIN, "Command");
+Logger logger("Command");
 }  // namespace
 
 QVector<std::function<Command*(QObject*)>> Command::s_commandCreators;

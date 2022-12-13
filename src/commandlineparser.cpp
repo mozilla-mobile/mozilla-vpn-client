@@ -14,7 +14,7 @@
 constexpr const char* CLP_DEFAULT_COMMAND = "ui";
 
 namespace {
-Logger logger(LOG_MAIN, "CommandLineParser");
+Logger logger("CommandLineParser");
 
 int s_argc = 0;
 char** s_argv = nullptr;

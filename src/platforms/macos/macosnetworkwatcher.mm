@@ -11,7 +11,7 @@
 #import <Network/Network.h>
 
 namespace {
-Logger logger(LOG_MACOS, "MacOSNetworkWatcher");
+Logger logger("MacOSNetworkWatcher");
 }
 
 @interface MacOSNetworkWatcherDelegate : NSObject <CWEventDelegate> {

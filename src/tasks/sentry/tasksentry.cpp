@@ -10,7 +10,7 @@
 #include "networkrequest.h"
 
 namespace {
-Logger logger(LOG_MAIN, "TaskSentry");
+Logger logger("TaskSentry");
 }
 
 TaskSentry::TaskSentry(const QByteArray& envelope) : Task("TaskSentry") {

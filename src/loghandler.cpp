@@ -65,18 +65,16 @@ void LogHandler::messageQTHandler(QtMsgType type,
 }
 
 // static
-void LogHandler::messageHandler(LogLevel logLevel, const QStringList& modules,
-                                const QString& className,
+void LogHandler::messageHandler(LogLevel logLevel, const QString& className,
                                 const QString& message) {
   MutexLocker lock(&s_mutex);
-  maybeCreate(lock)->addLog(Log(logLevel, modules, className, message), lock);
+  maybeCreate(lock)->addLog(Log(logLevel, className, message), lock);
 }
 
 // static
 LogHandler* LogHandler::maybeCreate(const MutexLocker& proofOfLock) {
   if (!s_instance) {
     LogLevel minLogLevel = Debug;  // TODO: in prod, we should log >= warning
-    QStringList modules;
     QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
     if (pe.contains("MOZVPN_LEVEL")) {
       QString level = pe.value("MOZVPN_LEVEL");
@@ -88,14 +86,7 @@ LogHandler* LogHandler::maybeCreate(const MutexLocker& proofOfLock) {
         minLogLevel = Error;
     }
 
-    if (pe.contains("MOZVPN_LOG")) {
-      QStringList parts = pe.value("MOZVPN_LOG").split(",");
-      for (const QString& part : parts) {
-        modules.append(part.trimmed());
-      }
-    }
-
-    s_instance = new LogHandler(minLogLevel, modules, proofOfLock);
+    s_instance = new LogHandler(minLogLevel, proofOfLock);
   }
 
   return s_instance;
@@ -149,8 +140,7 @@ void LogHandler::prettyOutput(QTextStream& out, const LogHandler::Log& log) {
       out << ")";
     }
   } else {
-    out << "(" << log.m_modules.join("|") << " - " << log.m_className << ") "
-        << log.m_message;
+    out << log.m_message;
   }
 
   out << Qt::endl;
@@ -162,9 +152,8 @@ void LogHandler::enableDebug() {
   maybeCreate(lock)->m_showDebug = true;
 }
 
-LogHandler::LogHandler(LogLevel minLogLevel, const QStringList& modules,
-                       const MutexLocker& proofOfLock)
-    : m_minLogLevel(minLogLevel), m_modules(modules) {
+LogHandler::LogHandler(LogLevel minLogLevel, const MutexLocker& proofOfLock)
+    : m_minLogLevel(minLogLevel) {
   Q_UNUSED(proofOfLock);
 
 #if defined(MVPN_DEBUG)
@@ -178,10 +167,6 @@ LogHandler::LogHandler(LogLevel minLogLevel, const QStringList& modules,
 
 void LogHandler::addLog(const Log& log, const MutexLocker& proofOfLock) {
   if (!matchLogLevel(log, proofOfLock)) {
-    return;
-  }
-
-  if (!matchModule(log, proofOfLock)) {
     return;
   }
 
@@ -208,29 +193,6 @@ void LogHandler::addLog(const Log& log, const MutexLocker& proofOfLock) {
     __android_log_write(ANDROID_LOG_DEBUG, "mozillavpn", str);
   }
 #endif
-}
-
-bool LogHandler::matchModule(const Log& log,
-                             const MutexLocker& proofOfLock) const {
-  Q_UNUSED(proofOfLock);
-
-  // Let's include QT logs always.
-  if (log.m_fromQT) {
-    return true;
-  }
-
-  // If no modules has been specified, let's include all.
-  if (m_modules.isEmpty()) {
-    return true;
-  }
-
-  for (const QString& module : log.m_modules) {
-    if (m_modules.contains(module)) {
-      return true;
-    }
-  }
-
-  return false;
 }
 
 bool LogHandler::matchLogLevel(const Log& log,
@@ -327,8 +289,7 @@ void LogHandler::openLogFile(const MutexLocker& proofOfLock) {
 
   m_output = new QTextStream(m_logFile);
 
-  addLog(Log(Debug, QStringList{LOG_MAIN}, "LogHandler",
-             QString("Log file: %1").arg(logFileName)),
+  addLog(Log(Debug, "LogHandler", QString("Log file: %1").arg(logFileName)),
          proofOfLock);
 }
 

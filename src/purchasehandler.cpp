@@ -27,7 +27,7 @@
 #endif
 
 namespace {
-Logger logger(LOG_IAP, "PurchaseHandler");
+Logger logger("PurchaseHandler");
 PurchaseHandler* s_instance = nullptr;
 }  // namespace
 

@@ -19,7 +19,7 @@
 #include <QJsonObject>
 
 namespace {
-Logger logger(LOG_IAP, "AndroidIAPHandler");
+Logger logger("AndroidIAPHandler");
 constexpr auto CLASSNAME = "org.mozilla.firefox.vpn.InAppPurchase";
 }  // namespace
 

@@ -11,7 +11,7 @@
 
 namespace {
 
-Logger logger(LOG_MAIN, "SignalHandler");
+Logger logger("SignalHandler");
 
 int s_signalpipe = -1;
 

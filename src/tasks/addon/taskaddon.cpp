@@ -9,7 +9,7 @@
 #include "networkrequest.h"
 
 namespace {
-Logger logger(LOG_MAIN, "TaskAddon");
+Logger logger("TaskAddon");
 }
 
 TaskAddon::TaskAddon(const QString& addonId, const QByteArray& sha256)

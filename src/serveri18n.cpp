@@ -13,7 +13,7 @@
 #include <QJsonObject>
 
 namespace {
-Logger logger(LOG_MAIN, "ServerI18N");
+Logger logger("ServerI18N");
 
 bool s_initialized = false;
 

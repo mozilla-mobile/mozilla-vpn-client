@@ -10,7 +10,7 @@
 #include "logger.h"
 
 namespace {
-Logger logger(LOG_NETWORKING, "CaptivePortalDetectionImpl");
+Logger logger("CaptivePortalDetectionImpl");
 }
 
 CaptivePortalDetectionImpl::CaptivePortalDetectionImpl() {

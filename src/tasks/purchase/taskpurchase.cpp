@@ -8,7 +8,7 @@
 #include "networkrequest.h"
 
 namespace {
-Logger logger(LOG_MAIN, "TaskPurchase");
+Logger logger("TaskPurchase");
 }
 
 #ifdef MVPN_IOS

@@ -23,7 +23,7 @@
 #include <Windows.h>
 
 namespace {
-Logger logger(LOG_WINDOWS, "WindowsDaemon");
+Logger logger("WindowsDaemon");
 }
 
 WindowsDaemon::WindowsDaemon() : Daemon(nullptr), m_splitTunnelManager(this) {

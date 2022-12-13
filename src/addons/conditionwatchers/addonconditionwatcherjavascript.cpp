@@ -15,7 +15,7 @@
 #include <QQmlEngine>
 
 namespace {
-Logger logger(LOG_MAIN, "AddonConditionWatcherJavascript");
+Logger logger("AddonConditionWatcherJavascript");
 }
 
 // static

@@ -13,7 +13,7 @@
 
 namespace {
 
-Logger logger(LOG_MAIN, "MacosAuthenticationListener");
+Logger logger("MacosAuthenticationListener");
 
 }  // anonymous namespace
 

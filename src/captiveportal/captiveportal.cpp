@@ -13,7 +13,7 @@
 #include <QJsonValue>
 
 namespace {
-Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortal");
+Logger logger("CaptivePortal");
 }
 
 CaptivePortal::CaptivePortal() { MVPN_COUNT_CTOR(CaptivePortal); }

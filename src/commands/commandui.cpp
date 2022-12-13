@@ -85,7 +85,7 @@
 #include <QApplication>
 
 namespace {
-Logger logger(LOG_MAIN, "CommandUI");
+Logger logger("CommandUI");
 }
 
 CommandUI::CommandUI(QObject* parent) : Command(parent, "ui", "Start the UI.") {

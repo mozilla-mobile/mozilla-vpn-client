@@ -9,7 +9,7 @@
 #include "taskaddonindex.h"
 
 namespace {
-Logger logger(LOG_MAIN, "TaskAddonIndex");
+Logger logger("TaskAddonIndex");
 }
 
 TaskAddonIndex::TaskAddonIndex() : Task("TaskAddonIndex") {

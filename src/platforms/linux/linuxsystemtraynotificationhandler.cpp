@@ -15,7 +15,7 @@ constexpr const char* DBUS_INTERFACE = "org.freedesktop.Notifications";
 constexpr const char* ACTION_ID = "mozilla_vpn_notification";
 
 namespace {
-Logger logger(LOG_LINUX, "LinuxSystemTrayNotificationHandler");
+Logger logger("LinuxSystemTrayNotificationHandler");
 }  // namespace
 
 // static

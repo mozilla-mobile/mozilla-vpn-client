@@ -17,7 +17,7 @@
 #import <UIKit/UIKit.h>
 
 namespace {
-Logger logger(LOG_IOS, "IOSUtils");
+Logger logger("IOSUtils");
 }
 
 // static

@@ -36,7 +36,7 @@ constexpr const char* IPINFO_URL_IPV4 = "https://%1/api/v1/vpn/ipinfo";
 constexpr const char* IPINFO_URL_IPV6 = "https://[%1]/api/v1/vpn/ipinfo";
 
 namespace {
-Logger logger(LOG_NETWORKING, "NetworkRequest");
+Logger logger("NetworkRequest");
 
 #ifndef QT_NO_SSL
 QList<QSslCertificate> s_intervention_certs;

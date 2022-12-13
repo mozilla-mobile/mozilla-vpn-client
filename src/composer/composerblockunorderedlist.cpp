@@ -10,7 +10,7 @@
 #include <QJsonObject>
 
 namespace {
-Logger logger(LOG_MAIN, "ComposerBlockUnorderedList");
+Logger logger("ComposerBlockUnorderedList");
 }
 
 // static

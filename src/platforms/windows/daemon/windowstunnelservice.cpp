@@ -20,7 +20,7 @@
 constexpr uint32_t WINDOWS_TUNNEL_MONITOR_TIMEOUT_MSEC = 2000;
 
 namespace {
-Logger logger(LOG_WINDOWS, "WindowsTunnelService");
+Logger logger("WindowsTunnelService");
 }  // namespace
 
 static bool stopAndDeleteTunnelService(SC_HANDLE service);

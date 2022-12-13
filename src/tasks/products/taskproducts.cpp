@@ -10,7 +10,7 @@
 #include "productshandler.h"
 
 namespace {
-Logger logger(LOG_IAP, "TaskProducts");
+Logger logger("TaskProducts");
 }
 
 TaskProducts::TaskProducts() : Task("TaskProducts") {

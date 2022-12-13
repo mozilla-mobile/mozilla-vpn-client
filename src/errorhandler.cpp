@@ -15,7 +15,7 @@ constexpr const uint32_t HIDE_ALERT_SEC = 4;
 
 namespace {
 ErrorHandler* s_instance = nullptr;
-Logger logger(LOG_MAIN, "ErrorHandler");
+Logger logger("ErrorHandler");
 
 struct ErrorTypeData {
   ErrorTypeData(ErrorHandler::ErrorType errorType,

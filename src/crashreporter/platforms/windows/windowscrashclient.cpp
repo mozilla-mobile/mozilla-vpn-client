@@ -18,7 +18,7 @@
 using namespace std;
 
 namespace {
-Logger logger("CrashClient", "WindowsCrashServerClient");
+Logger logger("WindowsCrashServerClient");
 }
 
 constexpr auto ARG = L"crashreporter";

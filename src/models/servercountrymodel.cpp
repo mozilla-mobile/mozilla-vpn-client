@@ -19,7 +19,7 @@
 #include <QRandomGenerator>
 
 namespace {
-Logger logger(LOG_MODEL, "ServerCountryModel");
+Logger logger("ServerCountryModel");
 }
 
 ServerCountryModel::ServerCountryModel() {

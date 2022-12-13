@@ -11,7 +11,7 @@
 #include "urlopener.h"
 
 namespace {
-Logger logger(LOG_NETWORKING, "WebUpdater");
+Logger logger("WebUpdater");
 }
 
 WebUpdater::WebUpdater(QObject* parent) : Updater(parent) {

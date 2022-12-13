@@ -11,7 +11,7 @@
 #include <QTcpSocket>
 
 namespace {
-Logger logger(LOG_ADJUST, "AdjustProxy");
+Logger logger("AdjustProxy");
 }  // namespace
 
 AdjustProxy::AdjustProxy(QObject* parent) : QTcpServer(parent) {

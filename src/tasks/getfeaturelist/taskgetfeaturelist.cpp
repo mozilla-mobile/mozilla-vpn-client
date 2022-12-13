@@ -13,7 +13,7 @@
 #include <QJsonObject>
 
 namespace {
-Logger logger(LOG_MAIN, "TaskGetFeatureList");
+Logger logger("TaskGetFeatureList");
 }
 
 TaskGetFeatureList::TaskGetFeatureList() : Task("TaskGetFeatureList") {

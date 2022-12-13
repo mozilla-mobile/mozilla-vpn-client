@@ -10,7 +10,7 @@
 #include "polkit/polkit.h"
 
 namespace {
-Logger logger(LOG_LINUX, "PolkitHelper");
+Logger logger("PolkitHelper");
 }  // namespace
 
 class Helper final {

@@ -44,7 +44,7 @@ struct dnsHeader {
 #define DNS_FLAG_RCODE_REFUSED (0x5 << 0)
 
 namespace {
-Logger logger(LOG_NETWORKING, "DnsPingSender");
+Logger logger("DnsPingSender");
 }
 
 DnsPingSender::DnsPingSender(const QHostAddress& source, QObject* parent)

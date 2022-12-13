@@ -8,7 +8,7 @@
 #include "networkrequest.h"
 
 namespace {
-Logger logger(LOG_ADJUST, "AdjustTaskSubmission");
+Logger logger("AdjustTaskSubmission");
 }  // namespace
 
 AdjustTaskSubmission::AdjustTaskSubmission(

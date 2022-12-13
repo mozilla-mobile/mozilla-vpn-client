@@ -23,7 +23,7 @@ constexpr const int SERVER_LATENCY_MAX_PARALLEL = 8;
 constexpr const int SERVER_LATENCY_MAX_RETRIES = 2;
 
 namespace {
-Logger logger(LOG_MAIN, "ServerLatency");
+Logger logger("ServerLatency");
 }
 
 ServerLatency::ServerLatency() { MVPN_COUNT_CTOR(ServerLatency); }

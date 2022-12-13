@@ -10,7 +10,7 @@
 #include <QRandomGenerator>
 
 namespace {
-Logger logger(LOG_MAIN, "UploadDataGenerator");
+Logger logger("UploadDataGenerator");
 }
 
 UploadDataGenerator::UploadDataGenerator(const qint64 totalSize)

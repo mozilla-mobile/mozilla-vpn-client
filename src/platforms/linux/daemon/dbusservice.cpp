@@ -17,7 +17,7 @@
 #include <QJsonObject>
 
 namespace {
-Logger logger(LOG_LINUX, "DBusService");
+Logger logger("DBusService");
 }
 
 constexpr const char* APP_STATE_ACTIVE = "active";

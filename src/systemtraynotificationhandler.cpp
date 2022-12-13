@@ -18,7 +18,7 @@
 #include <QSystemTrayIcon>
 
 namespace {
-Logger logger(LOG_MAIN, "SystemTrayNotificationHandler");
+Logger logger("SystemTrayNotificationHandler");
 }
 
 SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)

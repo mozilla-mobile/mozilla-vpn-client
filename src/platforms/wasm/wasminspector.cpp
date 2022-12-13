@@ -12,7 +12,7 @@
 #include <emscripten/emscripten.h>
 
 namespace {
-Logger logger(LOG_INSPECTOR, "WasmInspector");
+Logger logger("WasmInspector");
 
 WasmInspector* s_inspector = nullptr;
 }  // namespace

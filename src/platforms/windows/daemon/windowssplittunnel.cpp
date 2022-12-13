@@ -18,7 +18,7 @@
 #include <QScopeGuard>
 
 namespace {
-Logger logger(LOG_WINDOWS, "WindowsSplitTunnel");
+Logger logger("WindowsSplitTunnel");
 }
 
 WindowsSplitTunnel::WindowsSplitTunnel(QObject* parent) : QObject(parent) {

@@ -22,7 +22,7 @@
 
 namespace {
 AndroidUtils* s_instance = nullptr;
-Logger logger(LOG_ANDROID, "AndroidUtils");
+Logger logger("AndroidUtils");
 
 constexpr auto UTILS_CLASS = "org/mozilla/firefox/vpn/qt/VPNUtils";
 }  // namespace

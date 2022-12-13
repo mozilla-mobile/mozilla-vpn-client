@@ -30,7 +30,7 @@
 #include "systemtraynotificationhandler.h"
 
 namespace {
-Logger logger(LOG_MAIN, "NotificationHandler");
+Logger logger("NotificationHandler");
 
 NotificationHandler* s_instance = nullptr;
 }  // namespace

@@ -11,7 +11,7 @@
 #include <QWebSocket>
 
 namespace {
-Logger logger(LOG_INSPECTOR, "InspectorWebSocketServer");
+Logger logger("InspectorWebSocketServer");
 }
 
 constexpr int INSPECT_PORT = 8765;

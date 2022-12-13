@@ -19,7 +19,7 @@ constexpr const char* ENTER_COUNTRY_CODE = "enter_country_code";
 constexpr const char* ENTER_CITY_NAME = "enter_city_name";
 
 namespace {
-Logger logger(LOG_MODEL, "ServerData");
+Logger logger("ServerData");
 
 QList<Server> filterServerList(const QList<Server>& servers) {
   QList<Server> results;

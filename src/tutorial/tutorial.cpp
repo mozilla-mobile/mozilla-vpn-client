@@ -15,7 +15,7 @@
 
 namespace {
 Tutorial* s_instance = nullptr;
-Logger logger(LOG_MAIN, "Tutorial");
+Logger logger("Tutorial");
 }  // namespace
 
 // static

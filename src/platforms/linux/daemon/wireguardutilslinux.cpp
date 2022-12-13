@@ -58,7 +58,7 @@ static void nlmsg_append_attr32(struct nlmsghdr* nlmsg, size_t maxlen,
                                 int attrtype, uint32_t value);
 
 namespace {
-Logger logger(LOG_LINUX, "WireguardUtilsLinux");
+Logger logger("WireguardUtilsLinux");
 
 void NetfilterLogger(int level, const char* msg) {
   Q_UNUSED(level);

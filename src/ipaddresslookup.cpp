@@ -15,7 +15,7 @@
 #include <QJsonValue>
 
 namespace {
-Logger logger(LOG_NETWORKING, "IpAddressLookup");
+Logger logger("IpAddressLookup");
 }
 
 IpAddressLookup::IpAddressLookup() {

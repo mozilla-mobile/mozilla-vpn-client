@@ -15,7 +15,7 @@
 #include <Windows.h>
 
 namespace {
-Logger logger(LOG_WINDOWS, "WindowsDaemonTunnel");
+Logger logger("WindowsDaemonTunnel");
 }  // namespace
 
 WindowsDaemonTunnel::WindowsDaemonTunnel(QObject* parent)

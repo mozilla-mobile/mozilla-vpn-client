@@ -9,7 +9,7 @@
 #include "taskscheduler.h"
 
 namespace {
-Logger logger(LOG_IAP, "PurchaseWebHandler");
+Logger logger("PurchaseWebHandler");
 }  // namespace
 
 PurchaseWebHandler::PurchaseWebHandler(QObject* parent)
