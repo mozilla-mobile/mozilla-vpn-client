@@ -31,7 +31,6 @@ set(IOS_TARGET_COMPILED_TYPES
     MODULE_LIBRARY
     SHARED_LIBRARY
     OBJECT_LIBRARY
-    INTERFACE_LIBRARY
     EXECUTABLE
 )
 
@@ -46,7 +45,7 @@ while(IOS_TARGETS)
     endif()
 
     ## I just want to say it's amazing this doesn't explode with syntax errors.
-    message("Patching architectures for ${TARGET_NAME}: ${TARGET_TYPE}")
+    message("Patching architectures for ${TARGET_NAME}")
     set_target_properties(${TARGET_NAME} PROPERTIES
         XCODE_ATTRIBUTE_ARCHS[sdk=iphoneos*] "arm64"
         XCODE_ATTRIBUTE_ARCHS[sdk=iphonesimulator*] "x86_64"
