@@ -81,15 +81,6 @@ target_sources(networkextension PRIVATE
 target_include_directories(networkextension PRIVATE ${CMAKE_SOURCE_DIR})
 target_include_directories(networkextension PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
-## HACK: Build only the first architecture, this will break universal builds
-## for now, but they are already broken for mobile, which uses the arch to
-## determine iOS vs. simulator builds :)
-if(NOT CMAKE_OSX_ARCHITECTURES)
-    set(OSXARCH arm64)
-else()
-    list(GET CMAKE_OSX_ARCHITECTURES 0 OSXARCH)
-endif()
-
 ## Build the wireguard go library
 ## TODO: The upstream makefile also makes an attempt to patch the golang runtime
 ## to provide the boot-time clock instead of an uptime clock. We should probably
