@@ -5,9 +5,9 @@
 #ifndef IOSNOTIFICATIONHANDLER_H
 #define IOSNOTIFICATIONHANDLER_H
 
-#include "notificationhandler.h"
-
 #include <QObject>
+
+#include "notificationhandler.h"
 
 class IOSNotificationHandler final : public NotificationHandler {
   Q_DISABLE_COPY_MOVE(IOSNotificationHandler)

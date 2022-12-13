@@ -5,9 +5,9 @@
 #ifndef CAPTIVEPORTALDETECTIONIMPL_H
 #define CAPTIVEPORTALDETECTIONIMPL_H
 
-#include "captiveportalrequest.h"
-
 #include <QObject>
+
+#include "captiveportalrequest.h"
 
 class CaptivePortalDetectionImpl : public QObject {
   Q_OBJECT

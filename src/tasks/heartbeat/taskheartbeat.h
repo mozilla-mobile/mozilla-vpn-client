@@ -5,9 +5,9 @@
 #ifndef TASKHEARTBEAT_H
 #define TASKHEARTBEAT_H
 
-#include "task.h"
-
 #include <QObject>
+
+#include "task.h"
 
 class TaskHeartbeat final : public Task {
   Q_DISABLE_COPY_MOVE(TaskHeartbeat)

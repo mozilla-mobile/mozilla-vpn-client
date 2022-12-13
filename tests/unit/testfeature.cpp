@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testfeature.h"
+
+#include "../../src/adjust/adjustfiltering.h"
 #include "../../src/models/feature.h"
 #include "../../src/models/featuremodel.h"
 #include "../../src/settingsholder.h"
-#include "../../src/adjust/adjustfiltering.h"
 #include "helper.h"
 
 void TestFeature::flipOnOff() {

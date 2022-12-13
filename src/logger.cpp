@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "logger.h"
-#include "loghandler.h"
 
 #include <QJsonDocument>
 #include <QMetaEnum>
+
+#include "loghandler.h"
 
 Logger::Logger(const QString& className) : m_className(className) {}
 

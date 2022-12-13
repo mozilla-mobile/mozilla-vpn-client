@@ -5,10 +5,10 @@
 #ifndef RELEASEMONITOR_H
 #define RELEASEMONITOR_H
 
-#include "errorhandler.h"
-
 #include <QObject>
 #include <QTimer>
+
+#include "errorhandler.h"
 
 class ReleaseMonitor final : public QObject {
   Q_OBJECT

@@ -5,8 +5,8 @@
 #ifndef EVENTLISTENER_H
 #define EVENTLISTENER_H
 
-#include <QObject>
 #include <QLocalServer>
+#include <QObject>
 
 class EventListener final : public QObject {
   Q_OBJECT

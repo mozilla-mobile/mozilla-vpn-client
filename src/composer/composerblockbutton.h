@@ -5,10 +5,10 @@
 #ifndef COMPOSERBLOCKBUTTON_H
 #define COMPOSERBLOCKBUTTON_H
 
+#include <QJSValue>
+
 #include "../addons/addonproperty.h"
 #include "composerblock.h"
-
-#include <QJSValue>
 
 class Addon;
 

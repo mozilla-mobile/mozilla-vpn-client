@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "commandlineparser.h"
+
 #include "command.h"
 #include "commands/commandui.h"
 #include "constants.h"

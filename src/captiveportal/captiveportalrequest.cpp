@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "captiveportalrequest.h"
+
 #include "captiveportal.h"
 #include "constants.h"
 #include "leakdetector.h"

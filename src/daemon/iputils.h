@@ -5,10 +5,10 @@
 #ifndef IPUTILS_H
 #define IPUTILS_H
 
-#include "interfaceconfig.h"
-
-#include <QObject>
 #include <QCoreApplication>
+#include <QObject>
+
+#include "interfaceconfig.h"
 
 class IPUtils : public QObject {
  public:

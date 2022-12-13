@@ -5,9 +5,9 @@
 #ifndef TASKSENDFEEDBACK_H
 #define TASKSENDFEEDBACK_H
 
-#include "task.h"
-
 #include <QObject>
+
+#include "task.h"
 
 class TaskSendFeedback final : public Task {
   Q_DISABLE_COPY_MOVE(TaskSendFeedback)

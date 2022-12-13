@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testadjust.h"
+
 #include "../../src/adjust/adjustfiltering.h"
 #include "../../src/adjust/adjustproxypackagehandler.h"
 #include "helper.h"

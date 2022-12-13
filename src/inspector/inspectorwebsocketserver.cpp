@@ -3,12 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "inspectorwebsocketserver.h"
-#include "inspectorwebsocketconnection.h"
-#include "leakdetector.h"
-#include "logger.h"
 
 #include <QHostAddress>
 #include <QWebSocket>
+
+#include "inspectorwebsocketconnection.h"
+#include "leakdetector.h"
+#include "logger.h"
 
 namespace {
 Logger logger("InspectorWebSocketServer");

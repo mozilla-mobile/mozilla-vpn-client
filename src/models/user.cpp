@@ -3,14 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "user.h"
-#include "leakdetector.h"
-#include "settingsholder.h"
 
-#include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+
+#include "leakdetector.h"
+#include "settingsholder.h"
 
 User::User() { MVPN_COUNT_CTOR(User); }
 

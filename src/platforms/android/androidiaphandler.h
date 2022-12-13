@@ -5,8 +5,8 @@
 #ifndef ANDROIDIAPHANDLER_H
 #define ANDROIDIAPHANDLER_H
 
-#include "purchaseiaphandler.h"
 #include "jni.h"
+#include "purchaseiaphandler.h"
 
 class AndroidIAPHandler final : public PurchaseIAPHandler {
   Q_OBJECT

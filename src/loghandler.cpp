@@ -3,8 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "loghandler.h"
-#include "constants.h"
-#include "logger.h"
 
 #include <QDate>
 #include <QDir>
@@ -15,6 +13,9 @@
 #include <QStandardPaths>
 #include <QString>
 #include <QTextStream>
+
+#include "constants.h"
+#include "logger.h"
 
 #ifdef MVPN_ANDROID
 #  include <android/log.h>

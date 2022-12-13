@@ -5,11 +5,11 @@
 #ifndef DBUSCLIENT_H
 #define DBUSCLIENT_H
 
-#include "dbus_interface.h"
-
+#include <QHostAddress>
 #include <QList>
 #include <QObject>
-#include <QHostAddress>
+
+#include "dbus_interface.h"
 
 class Server;
 class Device;

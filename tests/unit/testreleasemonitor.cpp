@@ -3,13 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testreleasemonitor.h"
-#include "../../src/releasemonitor.h"
-#include "../../src/update/versionapi.h"
-#include "helper.h"
 
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+
+#include "../../src/releasemonitor.h"
+#include "../../src/update/versionapi.h"
+#include "helper.h"
 
 void TestReleaseMonitor::failure() {
   qDebug() << "SET";

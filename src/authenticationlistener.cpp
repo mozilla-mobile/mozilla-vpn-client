@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "authenticationlistener.h"
+
 #include "authenticationinapp/authenticationinapplistener.h"
 #include "constants.h"
 #include "leakdetector.h"

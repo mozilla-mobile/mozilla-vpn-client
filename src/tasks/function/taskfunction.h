@@ -5,10 +5,10 @@
 #ifndef TASKFUNCTION_H
 #define TASKFUNCTION_H
 
-#include "task.h"
-
-#include <functional>
 #include <QObject>
+#include <functional>
+
+#include "task.h"
 
 class TaskFunction final : public Task {
   Q_DISABLE_COPY_MOVE(TaskFunction)

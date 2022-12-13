@@ -3,12 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "productshandler.h"
-#include "constants.h"
-#include "purchasehandler.h"
-#include "inspector/inspectorhandler.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "models/feature.h"
 
 #include <QCoreApplication>
 #include <QJsonArray>
@@ -16,6 +10,13 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QScopeGuard>
+
+#include "constants.h"
+#include "inspector/inspectorhandler.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "models/feature.h"
+#include "purchasehandler.h"
 
 namespace {
 Logger logger("ProductsHandler");

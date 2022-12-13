@@ -3,15 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "connectionhealth.h"
+
+#include <QApplication>
+#include <QDateTime>
+#include <QRandomGenerator>
+
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/server.h"
 #include "mozillavpn.h"
 #include "telemetry/gleansample.h"
-
-#include <QApplication>
-#include <QDateTime>
-#include <QRandomGenerator>
 
 // In seconds, the time between pings while the VPN is deactivated.
 constexpr uint32_t PING_INTERVAL_IDLE_SEC = 15;

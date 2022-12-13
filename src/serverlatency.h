@@ -5,11 +5,11 @@
 #ifndef SERVERLATENCY_H
 #define SERVERLATENCY_H
 
-#include "pingsender.h"
-#include "task.h"
-
 #include <QObject>
 #include <QTimer>
+
+#include "pingsender.h"
+#include "task.h"
 
 class ServerLatency final : public QObject {
   Q_OBJECT

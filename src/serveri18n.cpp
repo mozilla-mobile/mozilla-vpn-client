@@ -3,14 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "serveri18n.h"
-#include "logger.h"
-#include "settingsholder.h"
 
 #include <QFile>
 #include <QHash>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+
+#include "logger.h"
+#include "settingsholder.h"
 
 namespace {
 Logger logger("ServerI18N");

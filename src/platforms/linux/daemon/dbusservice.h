@@ -5,10 +5,10 @@
 #ifndef DBUSSERVICE_H
 #define DBUSSERVICE_H
 
-#include "daemon/daemon.h"
 #include "apptracker.h"
-#include "iputilslinux.h"
+#include "daemon/daemon.h"
 #include "dnsutilslinux.h"
+#include "iputilslinux.h"
 #include "pidtracker.h"
 #include "wireguardutilslinux.h"
 

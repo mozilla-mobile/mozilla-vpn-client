@@ -3,16 +3,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "ipaddresslookup.h"
+
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
+
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "tasks/ipfinder/taskipfinder.h"
 #include "taskscheduler.h"
-
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonValue>
 
 namespace {
 Logger logger("IpAddressLookup");

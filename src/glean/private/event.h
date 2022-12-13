@@ -10,9 +10,9 @@
 #  include "vpnglean.h"
 #endif
 
-#include <QObject>
-#include <QJsonObject>
 #include <QJsonArray>
+#include <QJsonObject>
+#include <QObject>
 
 struct FfiExtra {
   const char* const* keys;

@@ -3,20 +3,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "wireguardutilswindows.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "platforms/windows/windowscommons.h"
-#include "windowsdaemon.h"
-#include "windowsfirewall.h"
-#include "wgquickprocess.h"
+
+#include <WS2tcpip.h>
+#include <iphlpapi.h>
+#include <windows.h>
+#include <winsock2.h>
+#include <ws2ipdef.h>
 
 #include <QFileInfo>
 
-#include <winsock2.h>
-#include <WS2tcpip.h>
-#include <windows.h>
-#include <ws2ipdef.h>
-#include <iphlpapi.h>
+#include "leakdetector.h"
+#include "logger.h"
+#include "platforms/windows/windowscommons.h"
+#include "wgquickprocess.h"
+#include "windowsdaemon.h"
+#include "windowsfirewall.h"
 
 #pragma comment(lib, "iphlpapi.lib")
 

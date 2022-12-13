@@ -3,11 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "backendlogsobserver.h"
-#include "leakdetector.h"
-#include "logger.h"
 
 #include <QDBusPendingCallWatcher>
 #include <QDBusPendingReply>
+
+#include "leakdetector.h"
+#include "logger.h"
 
 namespace {
 Logger logger("BackendLogsObserver");

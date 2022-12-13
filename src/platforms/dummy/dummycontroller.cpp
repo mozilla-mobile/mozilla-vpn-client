@@ -3,12 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "dummycontroller.h"
+
+#include <QHostAddress>
+#include <QRandomGenerator>
+
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/server.h"
-#include <QHostAddress>
-
-#include <QRandomGenerator>
 
 constexpr uint32_t DUMMY_CONNECTION_DELAY_MSEC = 1500;
 

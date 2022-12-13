@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "linuxnetworkwatcherworker.h"
-#include "leakdetector.h"
-#include "logger.h"
 
 #include <QtDBus/QtDBus>
+
+#include "leakdetector.h"
+#include "logger.h"
 
 // https://developer.gnome.org/NetworkManager/stable/nm-dbus-types.html#NMDeviceType
 #ifndef NM_DEVICE_TYPE_WIFI

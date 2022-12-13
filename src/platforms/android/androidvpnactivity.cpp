@@ -3,19 +3,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidvpnactivity.h"
+
+#include <QApplication>
+#include <QJniEnvironment>
+#include <QJniObject>
+#include <QJsonDocument>
+#include <QJsonObject>
+
 #include "androidutils.h"
 #include "constants.h"
 #include "frontend/navigator.h"
+#include "jni.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
-
-#include "jni.h"
-#include <QApplication>
-#include <QJniObject>
-#include <QJniEnvironment>
-#include <QJsonDocument>
-#include <QJsonObject>
 
 namespace {
 AndroidVPNActivity* s_instance = nullptr;

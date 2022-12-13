@@ -3,12 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "qmlengineholder.h"
+
+#include <QNetworkAccessManager>
+#include <QQmlApplicationEngine>
+#include <QWindow>
+
 #include "leakdetector.h"
 #include "logger.h"
-
-#include <QQmlApplicationEngine>
-#include <QNetworkAccessManager>
-#include <QWindow>
 
 namespace {
 Logger logger("QmlEngineHolder");

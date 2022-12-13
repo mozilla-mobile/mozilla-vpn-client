@@ -6,6 +6,7 @@
 
 #include <QCoreApplication>
 #include <QString>
+
 #include "crashserverclientfactory.h"
 
 using namespace std;

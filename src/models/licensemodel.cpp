@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "licensemodel.h"
-#include "leakdetector.h"
-#include "logger.h"
 
 #include <QFile>
+
+#include "leakdetector.h"
+#include "logger.h"
 
 namespace {
 Logger logger("LicenseModel");

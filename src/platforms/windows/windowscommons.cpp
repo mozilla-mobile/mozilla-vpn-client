@@ -3,22 +3,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "windowscommons.h"
-#include "logger.h"
+
+#include <Windows.h>
+#include <d3d11.h>
+#include <dxgi.h>
+#include <iphlpapi.h>
 
 #include <QDir>
-#include <QtEndian>
 #include <QHostAddress>
+#include <QNetworkInterface>
 #include <QScopeGuard>
 #include <QSettings>
 #include <QStandardPaths>
 #include <QSysInfo>
-#include <QNetworkInterface>
+#include <QtEndian>
 
-#include <Windows.h>
-#include <iphlpapi.h>
-
-#include <dxgi.h>
-#include <d3d11.h>
+#include "logger.h"
 
 #define TUNNEL_SERVICE_NAME L"WireGuardTunnel$mozvpn"
 

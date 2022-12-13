@@ -3,9 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskdeleteaccount.h"
-#include "authenticationlistener.h"
+
 #include "authenticationinapp/authenticationinapp.h"
 #include "authenticationinapp/authenticationinappsession.h"
+#include "authenticationlistener.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"

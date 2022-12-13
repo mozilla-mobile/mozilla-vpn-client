@@ -3,9 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskgetsubscriptiondetails.h"
-#include "authenticationlistener.h"
+
 #include "authenticationinapp/authenticationinapp.h"
 #include "authenticationinapp/authenticationinappsession.h"
+#include "authenticationlistener.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"

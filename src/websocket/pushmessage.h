@@ -5,9 +5,9 @@
 #ifndef PUSHMESSAGE_H
 #define PUSHMESSAGE_H
 
-#include <QVariant>
-#include <QObject>
 #include <QJsonObject>
+#include <QObject>
+#include <QVariant>
 
 class PushMessage final : public QObject {
   Q_OBJECT

@@ -3,14 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macosroutemonitor.h"
-#include "leakdetector.h"
-#include "logger.h"
-
-#include <QCoreApplication>
-
-#include <QScopeGuard>
-#include <QTimer>
-#include <QProcess>
 
 #include <arpa/inet.h>
 #include <errno.h>
@@ -22,6 +14,14 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
+
+#include <QCoreApplication>
+#include <QProcess>
+#include <QScopeGuard>
+#include <QTimer>
+
+#include "leakdetector.h"
+#include "logger.h"
 
 namespace {
 Logger logger("MacosRouteMonitor");

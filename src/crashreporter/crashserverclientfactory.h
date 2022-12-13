@@ -5,8 +5,9 @@
 #ifndef CRASHSERVERCLIENTFACTORY_H
 #define CRASHSERVERCLIENTFACTORY_H
 
-#include "crashserverclient.h"
 #include <memory>
+
+#include "crashserverclient.h"
 
 class CrashServerClientFactory final {
  public:

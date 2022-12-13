@@ -5,9 +5,9 @@
 #ifndef TASKGETFEATURELIST_H
 #define TASKGETFEATURELIST_H
 
-#include "task.h"
-
 #include <QObject>
+
+#include "task.h"
 
 class TaskGetFeatureList final : public Task {
   Q_DISABLE_COPY_MOVE(TaskGetFeatureList)

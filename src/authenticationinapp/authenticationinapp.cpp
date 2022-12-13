@@ -3,18 +3,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "authenticationinapp.h"
-#include "authenticationinappsession.h"
-#include "incrementaldecoder.h"
-#include "logger.h"
-#include "leakdetector.h"
-#include "mozillavpn.h"
-
-#include "telemetry/gleansample.h"
 
 #include <QCoreApplication>
 #include <QFile>
 #include <QMetaEnum>
 #include <QRegularExpression>
+
+#include "authenticationinappsession.h"
+#include "incrementaldecoder.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "mozillavpn.h"
+#include "telemetry/gleansample.h"
 
 constexpr int PASSWORD_MIN_LENGTH = 8;
 

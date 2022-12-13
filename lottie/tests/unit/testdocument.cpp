@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testdocument.h"
-#include "../../lib/lottieprivate.h"
-#include "../../lib/lottieprivatedocument.h"
 
 #include <QJSEngine>
+
+#include "../../lib/lottieprivate.h"
+#include "../../lib/lottieprivatedocument.h"
 
 void TestDocument::readyState() {
   LottiePrivate p;

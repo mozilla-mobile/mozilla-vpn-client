@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.orgß/MPL/2.0/. */
 
 #include "testpushmessage.h"
+
 #include "../../src/websocket/pushmessage.h"
 #include "helper.h"
 

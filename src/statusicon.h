@@ -5,12 +5,12 @@
 #ifndef STATUSICON_H
 #define STATUSICON_H
 
-#include "connectionhealth.h"
-
 #include <QIcon>
 #include <QObject>
 #include <QTimer>
 #include <QUrl>
+
+#include "connectionhealth.h"
 
 class StatusIcon final : public QObject {
   Q_OBJECT

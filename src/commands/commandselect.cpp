@@ -3,13 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "commandselect.h"
+
+#include <QTextStream>
+
 #include "leakdetector.h"
 #include "localizer.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"
-
-#include <QTextStream>
 
 CommandSelect::CommandSelect(QObject* parent)
     : Command(parent, "select", "Select a server.") {

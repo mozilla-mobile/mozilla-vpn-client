@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "windowstunnellogger.h"
-#include "leakdetector.h"
-#include "logger.h"
 
 #include <QDateTime>
+
+#include "leakdetector.h"
+#include "logger.h"
 
 /* The ring logger format used by the Wireguard DLL is as follows, assuming
  * no padding:

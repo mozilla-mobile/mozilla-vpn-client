@@ -4,13 +4,13 @@
 
 #include "windowsservicemanager.h"
 
-#include "logger.h"
-#include "mozillavpn.h"
-#include "windowscommons.h"
+#include <QTimer>
 
 #include "Windows.h"
 #include "Winsvc.h"
-#include <QTimer>
+#include "logger.h"
+#include "mozillavpn.h"
+#include "windowscommons.h"
 
 namespace {
 Logger logger("WindowsServiceManager");

@@ -3,13 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "windowsstartatbootwatcher.h"
+
+#include <QCoreApplication>
+#include <QDir>
+#include <QSettings>
+
 #include "leakdetector.h"
 #include "logger.h"
 #include "settingsholder.h"
-
-#include <QCoreApplication>
-#include <QSettings>
-#include <QDir>
 
 namespace {
 Logger logger("WindowsStartAtBootWatcher");

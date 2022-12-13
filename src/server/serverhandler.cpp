@@ -3,12 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "serverhandler.h"
-#include "serverconnection.h"
-#include "leakdetector.h"
-#include "logger.h"
 
 #include <QHostAddress>
 #include <QTcpSocket>
+
+#include "leakdetector.h"
+#include "logger.h"
+#include "serverconnection.h"
 
 namespace {
 Logger logger("ServerHandler");

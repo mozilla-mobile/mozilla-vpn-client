@@ -3,14 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "dnsutilswindows.h"
-#include "leakdetector.h"
-#include "logger.h"
+
+#include <iphlpapi.h>
+#include <windows.h>
 
 #include <QProcess>
 #include <QTextStream>
 
-#include <windows.h>
-#include <iphlpapi.h>
+#include "leakdetector.h"
+#include "logger.h"
 
 constexpr uint32_t WINDOWS_NETSH_TIMEOUT_MSEC = 2000;
 

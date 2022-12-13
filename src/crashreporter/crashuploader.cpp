@@ -3,15 +3,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "crashuploader.h"
-#include "constants.h"
-#include "qmlengineholder.h"
+
 #include <QApplication>
-#include <QHttpMultiPart>
+#include <QByteArray>
 #include <QFile>
 #include <QFileInfo>
-#include <QByteArray>
+#include <QHttpMultiPart>
 #include <QNetworkReply>
+
+#include "constants.h"
 #include "logger.h"
+#include "qmlengineholder.h"
 
 using namespace std;
 

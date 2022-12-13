@@ -3,6 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testmodels.h"
+
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+
 #include "../../src/models/device.h"
 #include "../../src/models/devicemodel.h"
 #include "../../src/models/keys.h"
@@ -14,10 +19,6 @@
 #include "../../src/models/user.h"
 #include "../../src/settingsholder.h"
 #include "helper.h"
-
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
 
 // Device
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -3,13 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "serverconnection.h"
-#include "settingsholder.h"
-#include "leakdetector.h"
-#include "localizer.h"
-#include "logger.h"
-#include "mozillavpn.h"
-
-#include <functional>
 
 #include <QHostAddress>
 #include <QJsonArray>
@@ -17,6 +10,13 @@
 #include <QJsonObject>
 #include <QMetaEnum>
 #include <QTcpSocket>
+#include <functional>
+
+#include "leakdetector.h"
+#include "localizer.h"
+#include "logger.h"
+#include "mozillavpn.h"
+#include "settingsholder.h"
 
 constexpr uint32_t MAX_MSG_SIZE = 1024 * 1024;
 

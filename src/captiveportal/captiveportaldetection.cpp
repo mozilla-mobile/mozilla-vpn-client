@@ -3,9 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "captiveportaldetection.h"
+
 #include "captiveportal.h"
-#include "captiveportalmonitor.h"
 #include "captiveportaldetectionimpl.h"
+#include "captiveportalmonitor.h"
 #include "captiveportalnotifier.h"
 #include "constants.h"
 #include "controller.h"

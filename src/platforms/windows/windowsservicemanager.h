@@ -5,10 +5,11 @@
 #ifndef WINDOWSSERVICEMANAGER
 #define WINDOWSSERVICEMANAGER
 
+#include <QObject>
+#include <QTimer>
+
 #include "Windows.h"
 #include "Winsvc.h"
-#include <QTimer>
-#include <QObject>
 
 /**
  * @brief The WindowsServiceManager provides controll over the MozillaVPNBroker

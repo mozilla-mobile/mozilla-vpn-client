@@ -5,9 +5,9 @@
 #ifndef FILTERPROXYMODEL_H
 #define FILTERPROXYMODEL_H
 
-#include <QQmlEngine>
 #include <QHash>
 #include <QJSValue>
+#include <QQmlEngine>
 #include <QQmlParserStatus>
 #include <QSortFilterProxyModel>
 

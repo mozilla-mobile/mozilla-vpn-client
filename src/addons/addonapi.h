@@ -5,10 +5,10 @@
 #ifndef ADDONAPI_H
 #define ADDONAPI_H
 
-#include "env.h"
-
 #include <QJSValue>
 #include <QObject>
+
+#include "env.h"
 
 class Addon;
 

@@ -5,11 +5,11 @@
 #ifndef DNSUTILSLINUX_H
 #define DNSUTILSLINUX_H
 
-#include "daemon/dnsutils.h"
-#include "dbustypeslinux.h"
-
 #include <QDBusInterface>
 #include <QDBusPendingCallWatcher>
+
+#include "daemon/dnsutils.h"
+#include "dbustypeslinux.h"
 
 class DnsUtilsLinux final : public DnsUtils {
   Q_OBJECT

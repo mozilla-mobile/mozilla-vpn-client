@@ -5,11 +5,11 @@
 #ifndef TUTORIAL_H
 #define TUTORIAL_H
 
-#include "externalophandler.h"
-
-#include <QList>
 #include <QAbstractListModel>
+#include <QList>
+
 #include "addons/addontutorial.h"
+#include "externalophandler.h"
 
 class Addon;
 class QJsonObject;

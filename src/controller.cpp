@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "constants.h"
 #include "controller.h"
+
+#include "constants.h"
 #include "controllerimpl.h"
 #include "dnshelper.h"
 #include "frontend/navigator.h"

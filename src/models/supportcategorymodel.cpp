@@ -3,9 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "supportcategorymodel.h"
+
+#include "l18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "l18nstrings.h"
 
 namespace {
 Logger logger("SupportCategoryModel");

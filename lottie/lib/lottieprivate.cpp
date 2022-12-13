@@ -3,14 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "lottieprivate.h"
-#include "lottieprivatedocument.h"
-#include "lottieprivatenavigator.h"
-#include "lottieprivatewindow.h"
-#include "lottiestatus.h"
 
 #include <QFile>
 #include <QGlobalStatic>
 #include <QJSEngine>
+
+#include "lottieprivatedocument.h"
+#include "lottieprivatenavigator.h"
+#include "lottieprivatewindow.h"
+#include "lottiestatus.h"
 
 constexpr const char* FILLMODE_STRETCH = "stretch";
 constexpr const char* FILLMODE_PAD = "pad";

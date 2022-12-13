@@ -3,17 +3,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "addontutorial.h"
+
+#include <QCoreApplication>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QScopeGuard>
+
 #include "frontend/navigatorreloader.h"
 #include "itempicker.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "tutorial/tutorial.h"
 #include "tutorial/tutorialstep.h"
-
-#include <QCoreApplication>
-#include <QJsonArray>
-#include <QJsonObject>
-#include <QScopeGuard>
 
 namespace {
 Logger logger("AddonTutorial");

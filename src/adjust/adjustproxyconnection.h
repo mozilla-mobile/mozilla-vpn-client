@@ -5,9 +5,9 @@
 #ifndef ADJUSTPROXYCONNECTION_H
 #define ADJUSTPROXYCONNECTION_H
 
-#include "adjustproxypackagehandler.h"
-
 #include <QObject>
+
+#include "adjustproxypackagehandler.h"
 
 class QTcpSocket;
 

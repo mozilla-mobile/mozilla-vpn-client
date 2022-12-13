@@ -5,12 +5,12 @@
 #ifndef ADJUSTFILTERING_H
 #define ADJUSTFILTERING_H
 
-#include "constants.h"
-
+#include <QMap>
+#include <QSet>
 #include <QUrl>
 #include <QUrlQuery>
-#include <QSet>
-#include <QMap>
+
+#include "constants.h"
 
 class AdjustFiltering final {
  public:

@@ -3,17 +3,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "composerblockbutton.h"
+
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
+#include <QJsonObject>
+#include <QQmlEngine>
+
 #include "addons/addon.h"
 #include "addons/addonapi.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "qmlengineholder.h"
-
-#include <QDir>
-#include <QJsonObject>
-#include <QFile>
-#include <QFileInfo>
-#include <QQmlEngine>
 
 namespace {
 Logger logger("ComposerBlockButton");

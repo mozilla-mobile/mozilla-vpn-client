@@ -3,6 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "networkwatcher.h"
+
+#include <QMetaEnum>
+
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -10,8 +13,6 @@
 #include "networkwatcherimpl.h"
 #include "platforms/dummy/dummynetworkwatcher.h"
 #include "settingsholder.h"
-
-#include <QMetaEnum>
 
 #ifdef MVPN_WINDOWS
 #  include "platforms/windows/windowsnetworkwatcher.h"

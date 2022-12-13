@@ -5,11 +5,11 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
-#include <functional>
 #include <QObject>
 #include <QScopedPointer>
 #include <QStringList>
 #include <QVector>
+#include <functional>
 
 class Command : public QObject {
   Q_OBJECT

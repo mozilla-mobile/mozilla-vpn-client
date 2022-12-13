@@ -3,15 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "WindowsTunnelService.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "platforms/windows/windowscommons.h"
-#include "windowsdaemon.h"
+
+#include <Windows.h>
 
 #include <QDateTime>
 #include <QScopeGuard>
 
-#include <Windows.h>
+#include "leakdetector.h"
+#include "logger.h"
+#include "platforms/windows/windowscommons.h"
+#include "windowsdaemon.h"
 
 #define TUNNEL_NAMED_PIPE \
   "\\\\."                 \

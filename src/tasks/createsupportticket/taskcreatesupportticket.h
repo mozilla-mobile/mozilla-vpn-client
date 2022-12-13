@@ -5,9 +5,9 @@
 #ifndef TASKCREATESUPPORTTICKET_H
 #define TASKCREATESUPPORTTICKET_H
 
-#include "task.h"
-
 #include <QObject>
+
+#include "task.h"
 
 class TaskCreateSupportTicket final : public Task {
   Q_DISABLE_COPY_MOVE(TaskCreateSupportTicket)

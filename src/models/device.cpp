@@ -3,14 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "device.h"
-#include "constants.h"
-#include "keys.h"
-#include "leakdetector.h"
 
 #include <QDateTime>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QTextStream>
+
+#include "constants.h"
+#include "keys.h"
+#include "leakdetector.h"
 
 #ifdef MVPN_WINDOWS
 #  include <QSslSocket>

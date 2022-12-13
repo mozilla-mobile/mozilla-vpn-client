@@ -3,9 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "daemon.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "loghandler.h"
 
 #include <QCoreApplication>
 #include <QJsonArray>
@@ -13,6 +10,10 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QTimer>
+
+#include "leakdetector.h"
+#include "logger.h"
+#include "loghandler.h"
 
 constexpr const char* JSON_ALLOWEDIPADDRESSRANGES = "allowedIPAddressRanges";
 constexpr int HANDSHAKE_POLL_MSEC = 250;

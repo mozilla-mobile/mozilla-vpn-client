@@ -3,13 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "constants.h"
-#include "settingsholder.h"
-#include "version.h"
 
 #include <QProcessEnvironment>
 #include <QString>
-#include <QtGlobal>
 #include <QUrl>
+#include <QtGlobal>
+
+#include "settingsholder.h"
+#include "version.h"
 
 namespace {
 bool s_inProduction = true;

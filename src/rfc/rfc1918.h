@@ -5,10 +5,10 @@
 #ifndef RFC1918_H
 #define RFC1918_H
 
-#include "ipaddress.h"
-
-#include <QList>
 #include <QHostAddress>
+#include <QList>
+
+#include "ipaddress.h"
 
 class RFC1918 final {
  public:

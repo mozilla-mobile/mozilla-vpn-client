@@ -5,12 +5,12 @@
 #ifndef DNSUTILSWINDOWS_H
 #define DNSUTILSWINDOWS_H
 
-#include "daemon/dnsutils.h"
+#include <windows.h>
 
 #include <QHostAddress>
 #include <QString>
 
-#include <windows.h>
+#include "daemon/dnsutils.h"
 
 class DnsUtilsWindows final : public DnsUtils {
   Q_OBJECT

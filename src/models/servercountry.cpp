@@ -3,15 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "servercountry.h"
-#include "collator.h"
-#include "leakdetector.h"
-#include "serverdata.h"
-#include "serveri18n.h"
 
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QStringList>
+
+#include "collator.h"
+#include "leakdetector.h"
+#include "serverdata.h"
+#include "serveri18n.h"
 
 ServerCountry::ServerCountry() { MVPN_COUNT_CTOR(ServerCountry); }
 

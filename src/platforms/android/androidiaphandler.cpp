@@ -3,6 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidiaphandler.h"
+
+#include <QCoreApplication>
+#include <QJniEnvironment>
+#include <QJniObject>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+
 #include "androidutils.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -10,13 +18,6 @@
 #include "networkrequest.h"
 #include "tasks/purchase/taskpurchase.h"
 #include "taskscheduler.h"
-
-#include <QJniObject>
-#include <QJniEnvironment>
-#include <QCoreApplication>
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
 
 namespace {
 Logger logger("AndroidIAPHandler");

@@ -5,10 +5,10 @@
 #ifndef INTERFACECONFIG_H
 #define INTERFACECONFIG_H
 
-#include "ipaddress.h"
-
 #include <QList>
 #include <QString>
+
+#include "ipaddress.h"
 
 struct InterfaceConfig {
   int m_hopindex = 0;

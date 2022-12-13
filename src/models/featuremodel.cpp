@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "featuremodel.h"
+
 #include "feature.h"
 #include "logger.h"
 #include "qmlengineholder.h"
@@ -12,11 +13,11 @@
 #  include "adjust/adjustfiltering.h"
 #endif
 
+#include <QHash>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QJsonArray>
 #include <QJsonValue>
-#include <QHash>
 #include <QProcessEnvironment>
 #include <QQmlEngine>
 

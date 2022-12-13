@@ -6,6 +6,7 @@
 #define LINUXAPPLISTPROVIDER_H
 
 #include <applistprovider.h>
+
 #include <QObject>
 #include <QProcess>
 

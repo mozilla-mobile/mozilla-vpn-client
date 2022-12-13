@@ -3,12 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "externalophandler.h"
+
+#include <QCoreApplication>
+
+#include "frontend/navigator.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
-#include "frontend/navigator.h"
-
-#include <QCoreApplication>
 
 namespace {
 ExternalOpHandler* s_instance = nullptr;

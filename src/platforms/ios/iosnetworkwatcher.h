@@ -5,8 +5,9 @@
 #ifndef IOSNETWORKWATCHER_H
 #define IOSNETWORKWATCHER_H
 
-#include "networkwatcherimpl.h"
 #include <Network/Network.h>
+
+#include "networkwatcherimpl.h"
 
 class IOSNetworkWatcher : public NetworkWatcherImpl {
  public:

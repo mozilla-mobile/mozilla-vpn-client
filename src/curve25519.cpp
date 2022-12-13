@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "curve25519.h"
+
 #include "hacl-star/Hacl_Curve25519_51.h"
 
 // static

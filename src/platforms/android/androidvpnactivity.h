@@ -10,6 +10,7 @@
  */
 
 #include <QObject>
+
 #include "jni.h"
 
 // Binder Codes for VPNServiceBinder

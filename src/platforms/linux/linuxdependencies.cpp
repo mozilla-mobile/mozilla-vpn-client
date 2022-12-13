@@ -3,15 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "linuxdependencies.h"
-#include "dbusclient.h"
-#include "logger.h"
+
+#include <mntent.h>
 
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QMessageBox>
 
-#include <mntent.h>
+#include "dbusclient.h"
+#include "logger.h"
 
 namespace {
 

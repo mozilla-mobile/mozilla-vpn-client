@@ -7,9 +7,9 @@
 
 #include "daemon/daemon.h"
 #include "dnsutilswindows.h"
+#include "windowssplittunnel.h"
 #include "windowstunnelservice.h"
 #include "wireguardutilswindows.h"
-#include "windowssplittunnel.h"
 
 #define TUNNEL_SERVICE_NAME L"WireGuardTunnel$MozillaVPN"
 

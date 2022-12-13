@@ -3,13 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "windowsdaemon.h"
-#include "dnsutilswindows.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "platforms/windows/windowscommons.h"
-#include "platforms/windows/windowsservicemanager.h"
-#include "wgquickprocess.h"
-#include "windowsfirewall.h"
+
+#include <Windows.h>
 
 #include <QCoreApplication>
 #include <QJsonDocument>
@@ -20,7 +15,13 @@
 #include <QTextStream>
 #include <QtGlobal>
 
-#include <Windows.h>
+#include "dnsutilswindows.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "platforms/windows/windowscommons.h"
+#include "platforms/windows/windowsservicemanager.h"
+#include "wgquickprocess.h"
+#include "windowsfirewall.h"
 
 namespace {
 Logger logger("WindowsDaemon");

@@ -3,19 +3,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "systemtraynotificationhandler.h"
-#include "constants.h"
-#include "externalophandler.h"
-#include "frontend/navigator.h"
-#include "leakdetector.h"
-#include "l18nstrings.h"
-#include "logger.h"
-#include "mozillavpn.h"
-#include "qmlengineholder.h"
 
 #include <QIcon>
 #include <QMenu>
-#include <QWindow>
 #include <QSystemTrayIcon>
+#include <QWindow>
+
+#include "constants.h"
+#include "externalophandler.h"
+#include "frontend/navigator.h"
+#include "l18nstrings.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "mozillavpn.h"
+#include "qmlengineholder.h"
 
 namespace {
 Logger logger("SystemTrayNotificationHandler");

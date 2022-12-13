@@ -3,15 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "composer.h"
-#include "addons/addon.h"
-#include "composerblock.h"
-#include "leakdetector.h"
-#include "logger.h"
 
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QScopeGuard>
+
+#include "addons/addon.h"
+#include "composerblock.h"
+#include "leakdetector.h"
+#include "logger.h"
 
 namespace {
 Logger logger("Composer");

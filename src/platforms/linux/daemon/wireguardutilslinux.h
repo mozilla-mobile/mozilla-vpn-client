@@ -5,11 +5,12 @@
 #ifndef WIREGUARDUTILSLINUX_H
 #define WIREGUARDUTILSLINUX_H
 
-#include "daemon/wireguardutils.h"
 #include <QHostAddress>
 #include <QObject>
 #include <QSocketNotifier>
 #include <QStringList>
+
+#include "daemon/wireguardutils.h"
 
 class WireguardUtilsLinux final : public WireguardUtils {
   Q_OBJECT

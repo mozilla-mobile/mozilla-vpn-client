@@ -3,9 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "exponentialbackoffstrategy.h"
-#include "leakdetector.h"
 
 #include <QtMath>
+
+#include "leakdetector.h"
 
 ExponentialBackoffStrategy::ExponentialBackoffStrategy() {
   MVPN_COUNT_CTOR(ExponentialBackoffStrategy);
