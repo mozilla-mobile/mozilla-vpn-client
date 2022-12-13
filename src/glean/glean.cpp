@@ -17,7 +17,7 @@
 #if not(defined(MVPN_WASM) || defined(BUILD_QMAKE))
 #  include "vpnglean.h"
 #endif
-#if defined(MVPN_IOS)
+#if defined(MVPN_IOS) && not(defined(BUILD_QMAKE))
 #  include "platforms/ios/iosgleanbridge.h"
 #endif
 
@@ -90,7 +90,7 @@ void VPNGlean::initialize() {
 
 #if defined(UNIT_TEST)
     glean_test_reset_glean(uploadEnabled, dataPath.toLocal8Bit());
-#elif defined(MVPN_IOS)
+#elif defined(MVPN_IOS) && not(defined(BUILD_QMAKE))
     new IOSGleanBridge(uploadEnabled, appChannel);
 #elif not(defined(MVPN_WASM) || defined(BUILD_QMAKE))
     glean_initialize(uploadEnabled, dataPath.toLocal8Bit(), appChannel);
