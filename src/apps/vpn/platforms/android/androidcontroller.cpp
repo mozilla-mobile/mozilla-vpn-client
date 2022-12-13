@@ -194,10 +194,10 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
                                     doc.toJson());
 }
 
-void AndroidController::deactivate(Reason reason) {
+void AndroidController::deactivate(Controller::Reason reason) {
   logger.debug() << "deactivation";
 
-  if (reason != ReasonNone) {
+  if (reason != Controller::ReasonNone) {
     // Just show that we're disconnected
     // we're doing the actual disconnect once
     // the vpn-service has the new server ready in Action->Activate
