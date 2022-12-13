@@ -9,7 +9,7 @@
 #include <QObject>
 #include <QTimer>
 
-#include "connectionhealth.h"
+#include "modules/vpn/connectionhealth.h"
 
 class StatusIcon final : public QObject {
   Q_OBJECT

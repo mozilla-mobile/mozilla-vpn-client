@@ -5,13 +5,13 @@
 #ifndef HELPER_H
 #define HELPER_H
 
-#include "../../src/mozillavpn.h"
-#include "../../src/notificationhandler.h"
-#include "../../src/modules/vpn/controller.h"
-
 #include <QObject>
 #include <QVector>
 #include <QtTest/QtTest>
+
+#include "../../src/modules/vpn/controller.h"
+#include "../../src/mozillavpn.h"
+#include "../../src/notificationhandler.h"
 
 class TestHelper : public QObject {
   Q_OBJECT

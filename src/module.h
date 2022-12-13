@@ -5,10 +5,10 @@
 #ifndef MODULE_H
 #define MODULE_H
 
-#include "notificationhandler.h"
-
-#include <QObject>
 #include <QJsonObject>
+#include <QObject>
+
+#include "notificationhandler.h"
 
 class QTextStream;
 class Task;

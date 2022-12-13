@@ -5,8 +5,8 @@
 #ifndef ANDROIDCONTROLLER_H
 #define ANDROIDCONTROLLER_H
 
-#include "modules/vpn/controllerimpl.h"
 #include "models/device.h"
+#include "modules/vpn/controllerimpl.h"
 
 class AndroidController final : public ControllerImpl {
   Q_DISABLE_COPY_MOVE(AndroidController)

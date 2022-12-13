@@ -5,11 +5,11 @@
 #ifndef WEBSOCKETHANDLER_H
 #define WEBSOCKETHANDLER_H
 
-#include "exponentialbackoffstrategy.h"
-
 #include <QTimer>
 #include <QUrl>
 #include <QWebSocket>
+
+#include "exponentialbackoffstrategy.h"
 
 constexpr const int WEBSOCKET_PING_INTERVAL_MSEC = 30 * 1000;  // 30s
 

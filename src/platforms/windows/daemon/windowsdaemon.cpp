@@ -3,18 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "windowsdaemon.h"
-<<<<<<< HEAD
 
 #include <Windows.h>
-=======
-#include "dnsutilswindows.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "modules/vpn/wgquickprocess.h"
-#include "platforms/windows/windowscommons.h"
-#include "platforms/windows/windowsservicemanager.h"
-#include "windowsfirewall.h"
->>>>>>> 60d661ef (Move WgQuickProcess and NetworkWatcherImpl)
 
 #include <QCoreApplication>
 #include <QJsonDocument>
@@ -28,9 +18,9 @@
 #include "dnsutilswindows.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "modules/vpn/wgquickprocess.h"
 #include "platforms/windows/windowscommons.h"
 #include "platforms/windows/windowsservicemanager.h"
-#include "wgquickprocess.h"
 #include "windowsfirewall.h"
 
 namespace {

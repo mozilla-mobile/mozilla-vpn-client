@@ -6,8 +6,8 @@
 #define WINDOWSDAEMON_H
 
 #include "dnsutilswindows.h"
-#include "windowssplittunnel.h"
 #include "modules/vpn/daemon/daemon.h"
+#include "windowssplittunnel.h"
 #include "windowstunnelservice.h"
 #include "wireguardutilswindows.h"
 

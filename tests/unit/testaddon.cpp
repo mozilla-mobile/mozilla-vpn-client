@@ -23,11 +23,10 @@
 #include "../../src/localizer.h"
 #include "../../src/models/feature.h"
 #include "../../src/models/featuremodel.h"
-#include "../../src/qmlengineholder.h"
 #include "../../src/module.h"
 #include "../../src/moduleholder.h"
-#include "../../src/settingsholder.h"
 #include "../../src/qmlengineholder.h"
+#include "../../src/settingsholder.h"
 #include "../../src/tutorial/tutorial.h"
 #include "helper.h"
 

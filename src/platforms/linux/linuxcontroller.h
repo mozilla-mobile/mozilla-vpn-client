@@ -5,7 +5,6 @@
 #ifndef LINUXCONTROLLER_H
 #define LINUXCONTROLLER_H
 
-#include <QObject>
 #include <QHostAddress>
 #include <QObject>
 

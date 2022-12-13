@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "moduleholder.h"
-#include "leakdetector.h"
-#include "module.h"
 
 #include <QCoreApplication>
+
+#include "leakdetector.h"
+#include "module.h"
 
 // static
 ModuleHolder* ModuleHolder::instance() {

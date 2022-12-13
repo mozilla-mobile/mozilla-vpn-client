@@ -66,7 +66,7 @@ void ReleaseMonitor::updateSoon() {
         new TaskRelease(TaskRelease::Update, ErrorHandler::PropagateError);
     // The updater, in download mode, is not destroyed. So, if this happens,
     // probably something went wrong.
-    connect(task, &Task::completed, task, [] {
+    QObject::connect(task, &Task::completed, task, [] {
       MozillaVPN* vpn = MozillaVPN::instance();
       Q_ASSERT(vpn);
       vpn->setUpdating(false);

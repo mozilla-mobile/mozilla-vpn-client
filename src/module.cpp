@@ -3,11 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "module.h"
+
+#include <QCoreApplication>
+
 #include "leakdetector.h"
 #include "moduleholder.h"
 #include "modules/vpn.h"
-
-#include <QCoreApplication>
 
 #define MODULE(key, obj)
 #include "modulelist.h"

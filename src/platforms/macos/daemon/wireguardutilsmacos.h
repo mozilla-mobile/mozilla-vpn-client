@@ -8,8 +8,8 @@
 #include <QObject>
 #include <QProcess>
 
-#include "modules/vpn/daemon/wireguardutils.h"
 #include "macosroutemonitor.h"
+#include "modules/vpn/daemon/wireguardutils.h"
 
 class WireguardUtilsMacos final : public WireguardUtils {
   Q_OBJECT

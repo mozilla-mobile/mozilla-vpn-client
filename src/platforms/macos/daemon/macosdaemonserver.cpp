@@ -10,8 +10,8 @@
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "modules/vpn/daemon/daemonlocalserver.h"
 #include "macosdaemon.h"
+#include "modules/vpn/daemon/daemonlocalserver.h"
 #include "mozillavpn.h"
 #include "signalhandler.h"
 

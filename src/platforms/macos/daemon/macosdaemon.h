@@ -5,9 +5,9 @@
 #ifndef MACOSDAEMON_H
 #define MACOSDAEMON_H
 
-#include "modules/vpn/daemon/daemon.h"
 #include "dnsutilsmacos.h"
 #include "iputilsmacos.h"
+#include "modules/vpn/daemon/daemon.h"
 #include "wireguardutilsmacos.h"
 
 class MacOSDaemon final : public Daemon {

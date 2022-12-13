@@ -3,17 +3,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "statusicon.h"
-#include "constants.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "modules/vpn.h"
-#include "mozillavpn.h"
 
 #include <QBitmap>
 #include <QFileInfo>
 #include <QPainter>
 #include <QPixmap>
 #include <array>
+
+#include "constants.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "modules/vpn.h"
+#include "mozillavpn.h"
 
 namespace {
 Logger logger("StatusIcon");

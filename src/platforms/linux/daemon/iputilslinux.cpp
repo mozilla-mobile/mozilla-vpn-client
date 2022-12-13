@@ -4,10 +4,6 @@
 
 #include "iputilslinux.h"
 
-#include "modules/vpn/daemon/wireguardutils.h"
-#include "leakdetector.h"
-#include "logger.h"
-
 #include <arpa/inet.h>
 #include <net/if.h>
 #include <sys/ioctl.h>
@@ -15,6 +11,10 @@
 
 #include <QHostAddress>
 #include <QScopeGuard>
+
+#include "leakdetector.h"
+#include "logger.h"
+#include "modules/vpn/daemon/wireguardutils.h"
 
 constexpr uint32_t ETH_MTU = 1500;
 constexpr uint32_t WG_MTU_OVERHEAD = 80;

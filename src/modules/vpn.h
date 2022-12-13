@@ -5,6 +5,8 @@
 #ifndef MODULEVPN_H
 #define MODULEVPN_H
 
+#include <QJSValue>
+
 #include "module.h"
 #include "modules/vpn/captiveportal/captiveportal.h"
 #include "modules/vpn/captiveportal/captiveportaldetection.h"
@@ -17,8 +19,6 @@
 #include "modules/vpn/networkwatcher.h"
 #include "modules/vpn/serverlatency.h"
 #include "modules/vpn/telemetry.h"
-
-#include <QJSValue>
 
 class ModuleVPN final : public Module {
   Q_OBJECT

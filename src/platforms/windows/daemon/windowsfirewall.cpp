@@ -13,11 +13,6 @@
 #include <stdio.h>
 #include <windows.h>
 
-#include "logger.h"
-#include "leakdetector.h"
-#include "../windowscommons.h"
-#include "../../ipaddress.h"
-
 #include <QApplication>
 #include <QFileInfo>
 #include <QHostAddress>
@@ -25,6 +20,12 @@
 #include <QObject>
 #include <QScopeGuard>
 #include <QtEndian>
+
+#include "../../ipaddress.h"
+#include "../windowscommons.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "winsock.h"
 
 #define IPV6_ADDRESS_SIZE 16
 

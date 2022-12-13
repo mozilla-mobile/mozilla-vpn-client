@@ -3,16 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidutils.h"
-#include "androidvpnactivity.h"
-#include "constants.h"
-#include "inspector/inspectorhandler.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "mozillavpn.h"
-#include "networkrequest.h"
-#include "settingsholder.h"
-#include "qmlengineholder.h"
-#include "jni.h"
 
 #include <QApplication>
 #include <QJniEnvironment>
@@ -21,6 +11,17 @@
 #include <QJsonObject>
 #include <QNetworkCookieJar>
 #include <QUrlQuery>
+
+#include "androidvpnactivity.h"
+#include "constants.h"
+#include "inspector/inspectorhandler.h"
+#include "jni.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "mozillavpn.h"
+#include "networkrequest.h"
+#include "qmlengineholder.h"
+#include "settingsholder.h"
 
 namespace {
 AndroidUtils* s_instance = nullptr;
