@@ -506,16 +506,18 @@ ctest --test-dir build
 
 ### Running the functional tests
 
-> **Note**: Functional tests require a dummy build of the application.
-> In order to create such a build, on the root folder of this repository run:
+> **Note**: Functional tests require a dummy build of the application, which is not
+> built by default. To build the `dummyvpn` target, in the root folder of this repository run:
 >
 > ```
-> cmake -S . -B ./dummybuild -DBUILD_DUMMY=ON
-> cmake --build dummybuild -j$(nproc)
+> cmake --build build -j$(nproc) --target dummyvpn
 > ```
 >
-> This will create a dummy build under the `dummybuild/` folder. To run the functional tests against this build,
-> make sure the `MVPN_BIN` environment variable is pointing to the application under the `dummybuild/` folder.
+> This will create a dummy build under the `tests/dummyvpn` folder. To run the functional
+> tests against this build, make sure the `MVPN_BIN` environment variable is set:
+> ```
+> export MVPN_BIN=$(pwd)/build/tests/dummyvpn/dummyvpn
+> ```
 
 * Install node (if needed) and then `npm install` to install the testing
   dependencies
