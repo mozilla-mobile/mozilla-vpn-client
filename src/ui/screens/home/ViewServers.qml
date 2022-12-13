@@ -46,6 +46,16 @@ Item {
         }
     }
 
+    Connections {
+        function onGoBack(item) {
+            if (getStack() === item && root.visible) {
+                menu._menuOnBackClicked();
+            }
+        }
+
+        target: VPNNavigator
+    }
+
     VPNSegmentedNavigation {
         id: segmentedNav
 
