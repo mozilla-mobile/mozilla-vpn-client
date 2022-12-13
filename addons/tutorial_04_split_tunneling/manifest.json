@@ -3,7 +3,8 @@
   "id": "tutorial_04_split_tunneling",
   "name": "Tutorial: Split tunneling",
   "conditions": {
-    "enabled_features": ["splitTunnel"]
+    "enabled_features": ["splitTunnel"],
+    "min_client_version": "2.13.0"
   },
   "type": "tutorial",
   "translatable": false,
