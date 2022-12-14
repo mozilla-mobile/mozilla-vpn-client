@@ -413,7 +413,7 @@ it from the [official website](https://golang.org/dl/).
 3. Set the `QT_HOST_PATH` environment variable to point to the location of the `androiddeployqt` tool.
 
 4. Set the `ANDROID_SDK_ROOT` and `ANDROID_NDK_ROOT` (required version: 21.0.6113669) environment variables,
-to point to the Android SDK and NDK intallation directories.
+to point to the Android SDK and NDK installation directories.
 
 5. Add the Android NDK llvm prebuilt tools to your `PATH`. These are located under the Android NDK installation
 directory on `${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/*/bin`.
