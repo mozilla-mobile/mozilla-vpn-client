@@ -1,0 +1,64 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "(Mac) Get logs",
+            "type": "shell",
+            "command": "tail -f '/Users/basti/Library/Application Support/mozillavpn.txt'",
+            "problemMatcher": []
+        },
+        {
+            "label": "(Mac) Build",
+            "type": "shell",
+            "command": "./.vscode/task_scripts/macos.sh",
+            "group": "build",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc",
+                "$rustc",
+                "$go"
+            ]
+        },
+        {
+            "label": "(Android) Build",
+            "type": "shell",
+            "command": "./scripts/android/cmake.sh ~/Qt/6.2.4/android_arm64_v8a",
+            "group": "build",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc",
+                "$rustc",
+                "$go"
+            ]
+        },
+        {
+            "label": "(iOS) Build",
+            "type": "shell",
+            "command": "./scripts/macos/apple_compile.sh ios",
+            "group": "build",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc",
+                "$rustc",
+                "$go"
+            ]
+        },
+        {
+            "type": "cmake",
+            "label": "CMake: build-tests",
+            "command": "build",
+            "targets": [
+                "unit_tests"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "CMake template build task"
+        }
+    ]
+}
