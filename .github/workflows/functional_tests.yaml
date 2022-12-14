@@ -165,7 +165,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: .
-          flags: functional_tests
+          flags: ${{matrix.test.name}}_functional_tests
           name: codecov-poc
           files: ${{runner.temp}}/artifacts/${{matrix.test.name}}_functional_lcov.info
           verbose: true
