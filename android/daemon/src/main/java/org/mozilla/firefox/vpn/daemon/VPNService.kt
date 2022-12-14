@@ -276,13 +276,16 @@ class VPNService : android.net.VpnService() {
                 )
                 return
             }
-            // In case we do not have a config, currentConnectionTime needs to be now.
-            currentConnectionTime = System.currentTimeMillis()
             this.mConfig = JSONObject(lastConfString)
         }
         Log.v(tag, "Try to reconnect tunnel with same conf")
         this.turnOn(this.mConfig!!, forceFallBack)
-        mConnectionTime = currentConnectionTime
+        if (currentConnectionTime != 0.toLong()) {
+            // In case we have had a connection timestamp,
+            // restore that, so that the silent switch is not
+            // putting people off. :)
+            mConnectionTime = currentConnectionTime
+        }
     }
 
     fun turnOff() {
