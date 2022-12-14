@@ -2,26 +2,16 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-add_library(vpnglean STATIC IMPORTED GLOBAL)
-
-if(ANDROID)
-    add_dependencies(vpnglean ndk_openssl_merged)
-    get_property(crypto_module GLOBAL PROPERTY OPENSSL_CRYPTO_MODULE)
-    get_property(ssl_module GLOBAL PROPERTY OPENSSL_SSL_MODULE)
-    get_property(openssl_libs GLOBAL PROPERTY OPENSSL_LIBS)
-
-    set(OPENSSL_LIBS ${openssl_libs})
-    set(SSL_INCLUDE ${ssl_module}/include)
-    set(SSL_LIB ${ssl_module}/libs/android.${ANDROID_ABI})
-    set(CRYPTO_LIB ${crypto_module}/libs/android.${ANDROID_ABI})
-endif()
-
-set_target_properties(vpnglean PROPERTIES FOLDER "Libs")
-
 # glean-core cannot be compiled to WASM
 # See: https://blog.mozilla.org/data/2020/09/25/this-week-in-glean-glean-core-to-wasm-experiment/
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     include(${CMAKE_SOURCE_DIR}/src/apps/vpn/cmake/rustlang.cmake)
+
+    set(CARGO_ENV
+        BUILD_ID=${BUILD_ID}
+        APP_VERSION=${CMAKE_PROJECT_VERSION}
+        CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR}
+    )
 
     if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
         # TODO: We should technically derive this from CMAKE_OSX_ARCHITECTURES
@@ -38,24 +28,20 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
             set(RUST_ARCH "x86_64-linux-android")
         endif()
+
+        get_property(ssl_module GLOBAL PROPERTY OPENSSL_SSL_MODULE)
+        get_property(openssl_libs GLOBAL PROPERTY OPENSSL_LIBS)
+        list(APPEND CARGO_ENV
+            OPENSSL_LIB_DIR=${openssl_libs}
+            OPENSSL_INCLUDE_DIR=${ssl_module}/include
+            AR=llvm-ar)
     else()
         # Just use the host arch and hope for the best.
         set(RUST_ARCH ${RUSTC_HOST_ARCH})
     endif()
 
-    set(CARGO_ENV
-        BUILD_ID=${BUILD_ID}
-        APP_VERSION=${CMAKE_PROJECT_VERSION}
-        CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR}
-    )
-
-    if(ANDROID)
-        list(APPEND CARGO_ENV
-            OPENSSL_LIB_DIR=${OPENSSL_LIBS}/
-            OPENSSL_INCLUDE_DIR=${SSL_INCLUDE}/
-            AR=llvm-ar)
-    elseif(APPLE AND XCODE)
-        ## Don't trust Xcode to provide us with a usable linker.
+    ## Don't trust Xcode to provide us with a usable linker.
+    if(APPLE AND XCODE)
         file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh "#!/bin/sh\n")
         file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh "${RUSTC_BUILD_TOOL} -C linker=/usr/bin/cc \$@\n")
         file(CHMOD ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh FILE_PERMISSIONS
@@ -67,37 +53,16 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     endif()
 
     set(HEADER_FILE vpnglean.h)
-    set(LIBNAME ${CMAKE_STATIC_LIBRARY_PREFIX}vpnglean${CMAKE_STATIC_LIBRARY_SUFFIX})
 
     ## Build the vpnglean Rust library
-    build_rust_archives(
+    add_rust_library(vpnglean
         ARCH ${RUST_ARCH}
         PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
-        LIBRARY_FILE ${LIBNAME}
+        CRATE_NAME vpnglean
         CARGO_ENV ${CARGO_ENV}
     )
 
-    if(APPLE)
-        add_custom_target(vpnglean_ffi
-            DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/unified/$<IF:$<CONFIG:Debug>,debug,release>/${LIBNAME}
-        )
-        set_target_properties(vpnglean PROPERTIES
-            IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/unified/release/${LIBNAME}
-            IMPORTED_LOCATION_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/unified/debug/${LIBNAME}
-        )
-    else()
-        add_custom_target(vpnglean_ffi
-            DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/$<IF:$<CONFIG:Debug>,debug,release>/${LIBNAME}
-        )
-        set_target_properties(vpnglean PROPERTIES
-            IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/release/${LIBNAME}
-            IMPORTED_LOCATION_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/${RUST_ARCH}/debug/${LIBNAME}
-        )
-    endif()
-    set_target_properties(vpnglean_ffi PROPERTIES FOLDER "Libs")
-
-    add_dependencies(vpnglean_ffi vpnglean_telemetry)
-    add_dependencies(vpnglean vpnglean_ffi)
+    add_dependencies(vpnglean vpnglean_telemetry)
 else()
     message("Cannot build vpnglean Rust library build for WASM. Skipping.")
     # Since the metric recording code is sprinkled throughout the code,
@@ -151,13 +116,14 @@ set_property(TARGET vpnglean APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
 )
 
 ## Fixup any missing link dependencies to pass to the vpnglean consumer
-set_property(TARGET vpnglean APPEND PROPERTY INTERFACE_LINK_LIBRARIES ${CMAKE_DL_LIBS})
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+if(ANDROID)
+    add_dependencies(vpnglean ndk_openssl_merged)
+elseif(LINUX)
     find_package(OpenSSL REQUIRED)
     set_property(TARGET vpnglean APPEND PROPERTY
         INTERFACE_LINK_LIBRARIES OpenSSL::SSL
     )
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+elseif(WIN32)
     ## Windows seems to miss some system libraries when importing static OpenSSL
     set_property(TARGET vpnglean APPEND PROPERTY
         INTERFACE_LINK_LIBRARIES crypt32 Secur32 bcrypt ncrypt ntdll)

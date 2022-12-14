@@ -100,7 +100,7 @@ add_rust_library(signature
     ARCH aarch64-apple-darwin x86_64-apple-darwin
     PACKAGE_DIR ${CMAKE_SOURCE_DIR}/signature
     BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
-    LIBNAME signature
+    CRATE_NAME signature
 )
 target_compile_definitions(mozillavpn PRIVATE MVPN_SIGNATURE)
 target_link_libraries(mozillavpn PRIVATE signature)

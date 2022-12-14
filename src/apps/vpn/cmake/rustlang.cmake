@@ -109,18 +109,30 @@ function(build_rust_archives)
     endif()
 endfunction()
 
+### Helper function to create a linkable target from a Rust package.
+#
+# This function takes one mandatory argument: TARGET_NAME which
+# sets the name of the CMake target to produce.
+#
+# Accepts the following optional arguments:
+#   ARCH: Rust target architecture(s) to build with --target ${ARCH}
+#   BINARY_DIR: Binary directory to output build artifacts to.
+#   PACKAGE_DIR: Soruce directory where Cargo.toml can be found.
+#   CRATE_NAME: Name of the staticlib crate we want to build.
+#   CARGO_ENV: Environment variables to pass to cargo
+#
 function(add_rust_library TARGET_NAME)
     cmake_parse_arguments(RUST_TARGET
         ""
-        "BINARY_DIR;PACKAGE_DIR;LIBNAME"
+        "BINARY_DIR;PACKAGE_DIR;CRATE_NAME"
         "ARCH;CARGO_ENV"
         ${ARGN})
-    
+
     add_library(${TARGET_NAME} STATIC IMPORTED GLOBAL)
 
-    if(NOT RUST_TARGET_LIBNAME)
+    if(NOT RUST_TARGET_CRATE_NAME)
         ## TODO: I would like to pull this from the package manifest.
-        error("Mandatory argument LIBNAME was not found")
+        error("Mandatory argument CRATE_NAME was not found")
     endif()
     if(NOT RUST_TARGET_ARCH)
         set(RUST_TARGET_ARCH ${RUSTC_HOST_ARCH})
@@ -131,9 +143,10 @@ function(add_rust_library TARGET_NAME)
     if(NOT RUST_TARGET_PACKAGE_DIR)
         set(RUST_TARGET_PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
     endif()
-    
+
+    ## Build the rust library files.
     set(RUST_TARGET_LIBRARY_FILE
-        ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_TARGET_LIBNAME}${CMAKE_STATIC_LIBRARY_SUFFIX}
+        ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_TARGET_CRATE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}
     )
     build_rust_archives(
         ARCH ${RUST_TARGET_ARCH}
@@ -158,7 +171,7 @@ function(add_rust_library TARGET_NAME)
         add_custom_target(${TARGET_NAME}_builder
             DEPENDS ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_TARGET_LIBRARY_FILE}
         )
-        set_target_properties(vpnglean PROPERTIES
+        set_target_properties(${TARGET_NAME} PROPERTIES
             IMPORTED_LOCATION ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/release/${RUST_TARGET_LIBRARY_FILE}
             IMPORTED_LOCATION_DEBUG ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/debug/${RUST_TARGET_LIBRARY_FILE}
         )
@@ -167,5 +180,4 @@ function(add_rust_library TARGET_NAME)
 
     add_dependencies(${TARGET_NAME} ${TARGET_NAME}_builder)
     set_property(TARGET ${TARGET_NAME} APPEND PROPERTY INTERFACE_LINK_LIBRARIES ${CMAKE_DL_LIBS})
-    set_property(TARGET ${TARGET_NAME} APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${RUST_TARGET_BINARY_DIR})
 endfunction()
