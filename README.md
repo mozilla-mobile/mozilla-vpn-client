@@ -313,12 +313,6 @@ and we have also added experimental support for `cmake`.
 2. We use `qmake` to generate the Xcode project and then we "patch" it to add
 extra components such as the wireguard, the browser bridge and so on. 
 
-To make sure qmake is available set the environment variable QT_IOS_BIN:
-
-```
-export QT_IOS_BIN=/Users/[username]/Qt/6.2.4/ios/bin
-```
-
 We patch the Xcode project using [xcodeproj](https://github.com/CocoaPods/Xcodeproj). To
 install it:
 ```
@@ -345,14 +339,17 @@ APP_ID_IOS = org.mozilla.ios.FirefoxVPN
 NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 ```
 
-6. Generate the Xcode project using our script (and an optional adjust token):
-```bash
-./scripts/macos/apple_compile.sh ios [--adjust <adjust_token>]
+6. Make sure qmake is available by setting the environment variable QT_IOS_BIN:
+
 ```
-(If you get an error like `Step 7: Generate translation resources...
-sh: /Users/[username]/Qt/6.2.4/ios/bin/lconvert: No such file or directory`
-you may need to provide the macOS Qt bin folder through the -q flag:
-`./scripts/macos/apple_compile.sh ios -q ~/Qt/6.2.4/macos/bin`)
+export QT_IOS_BIN=/Users/[username]/Qt/6.2.4/ios/bin
+```
+
+Then generate the Xcode project using our script (and an optional adjust token):
+
+```bash
+./scripts/macos/apple_compile.sh ios [--adjust <adjust_token>] -q ~/Qt/6.2.4/macos/bin
+```
 
 7. Xcode should automatically open. You can then run/test/archive/ship the app.
 If you prefer to compile the app in command-line mode, use the following
