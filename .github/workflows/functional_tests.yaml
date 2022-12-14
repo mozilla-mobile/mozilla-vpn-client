@@ -156,7 +156,7 @@ jobs:
         run: |
           export PATH=${{github.workspace}}/grcov-build/bin:$PATH
           echo ${{runner.temp}}/artifacts/${{matrix.test.name}}_functional_lcov.info
-          
+
           grcov build/profile \
               -s src -t lcov --branch --ignore-not-existing --ignore --ignore "tests/*" \
               -o ${{runner.temp}}/artifacts/${{matrix.test.name}}_functional_lcov.info
@@ -167,7 +167,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: .
-          flags: ${{matrix.test.name}}_functional_tests
+          flags: functional_tests
           name: codecov-poc
           files: ${{runner.temp}}/artifacts/${{matrix.test.name}}_functional_lcov.info
           verbose: true
