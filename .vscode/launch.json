@@ -19,6 +19,18 @@
             "program": "${workspaceFolder}/.vscode/build_osx/tests/unit/unit_tests",
             "args": [],
             "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "(Windows) Starten",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "C:/Program Files/Mozilla/Mozilla VPN/MozillaVPN.exe",
+            "symbolSearchPath": "${workspaceFolder}/.vscode/",
+            "args": [],            
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "console": "externalTerminal"
         }
     ]
 }

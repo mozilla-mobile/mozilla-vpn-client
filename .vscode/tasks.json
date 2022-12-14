@@ -59,6 +59,30 @@
             "group": "build",
             "problemMatcher": [],
             "detail": "CMake template build task"
+        },
+        {
+            "label": "Build (Windows)",
+            "type": "shell",
+            "command": "",
+            "windows": {
+                "command": "${workspaceFolder}/.vscode/task_scripts/build_deploy.ps1"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/",
+                "shell": {
+                    "executable": "powershell.exe",
+                }
+            },
+            "problemMatcher": [
+                "$gcc",
+                "$rustc",
+                "$go"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
         }
     ]
 }
