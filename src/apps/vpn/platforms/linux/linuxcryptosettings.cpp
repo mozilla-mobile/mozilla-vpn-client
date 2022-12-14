@@ -65,7 +65,7 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
       for (int i = 0; i < CRYPTO_SETTINGS_KEY_SIZE; ++i) {
         s_key[i] = rg->generate() & 0xFF;
       }
-      
+
       QString b64key(s_key.toBase64());
       gboolean ok = secret_password_store_sync(
           cryptosettings_get_schema(), SECRET_COLLECTION_DEFAULT,
