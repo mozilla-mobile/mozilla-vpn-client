@@ -15,11 +15,12 @@ Requires:  qt6-qtsvg >= 6.0
 Requires:  qt6-qt5compat >= 6.0
 Requires:  wireguard-tools
 
+BuildRequires: cargo
 BuildRequires: golang >= 1.13
+BuildRequires: libsecret-devel
+BuildRequires: openssl-devel
 BuildRequires: polkit-devel
 BuildRequires: python3-yaml
-BuildRequires: cargo
-BuildRequires: openssl-devel
 BuildRequires: qt6-qtbase-devel >= 6.0
 BuildRequires: qt6-qtnetworkauth-devel >= 6.0
 BuildRequires: qt6-qtdeclarative-devel >= 6.0
