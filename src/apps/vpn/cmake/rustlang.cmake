@@ -21,7 +21,7 @@ endif()
 #   BINARY_DIR: Binary directory to output build artifacts to.
 #   PACKAGE_DIR: Soruce directory where Cargo.toml can be found.
 #   LIBRARY_FILE: Filename of the expected library to be built.
-#   CARGO_ENV_<name>: Environment variables to pass to cargo
+#   CARGO_ENV: Environment variables to pass to cargo
 #
 # This function generates commands necessary to build static archives
 # in ${BINARY_DIR}/${ARCH}/debug/ and ${BINARY_DIR}/${ARCH}/release/
@@ -31,28 +31,15 @@ endif()
 function(build_rust_archives)
     cmake_parse_arguments(RUST_BUILD
         ""
-        "BINARY_DIR;PACKAGE_DIR;LIBRARY_FILE"
+        "BINARY_DIR;PACKAGE_DIR;CRATE_NAME"
         "ARCH;CARGO_ENV"
         ${ARGN})
 
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cargo_home)
     list(APPEND RUST_BUILD_CARGO_ENV CARGO_HOME=\"${CMAKE_BINARY_DIR}/cargo_home\")
 
-    # Parse the remaining arguments for environment variables to pass to cargo.
-    # This emulates single-valued arguments in the form CARGO_ENV_<name> <value>
-    while(RUST_BUILD_UNPARSED_ARGUMENTS)
-        list(POP_FRONT RUST_BUILD_UNPARSED_ARGUMENTS NEXT_UNPARSED_ARG)
-
-        if(${NEXT_UNPARSED_ARG} MATCHES "CARGO_ENV_([0-9A-Z_]+)$")
-            list(POP_FRONT RUST_BUILD_UNPARSED_ARGUMENTS NEXT_UNPARSED_VALUE)
-            list(APPEND RUST_BUILD_CARGO_ENV ${CMAKE_MATCH_1}=\"${NEXT_UNPARSED_VALUE}\")
-        else()
-            message(WARNING "Unexpected argument: ${NEXT_UNPARSED_ARG}")
-        endif()
-    endwhile()
-
-    if(NOT RUST_BUILD_LIBRARY_FILE)
-        error("Mandatory argument LIBRARY_FILE was not found")
+    if(NOT RUST_BUILD_CRATE_NAME)
+        error("Mandatory argument CRATE_NAME was not found")
     endif()
     if(NOT RUST_BUILD_ARCH)
         set(RUST_BUILD_ARCH ${RUSTC_HOST_ARCH})
@@ -64,14 +51,25 @@ function(build_rust_archives)
         set(RUST_BUILD_PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
     endif()
 
+    ## Some files that we will be building.
     file(MAKE_DIRECTORY ${RUST_BUILD_BINARY_DIR})
+    set(RUST_BUILD_LIBRARY_FILE
+        ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_BUILD_CRATE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}
+    )
+    set(RUST_BUILD_DEPENDENCY_FILE
+        ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_BUILD_CRATE_NAME}.d
+    )
+
+    ## Suppress a Ninja warning about dependency file paths
+    cmake_policy(PUSH)
+    cmake_policy(SET CMP0116 NEW)
 
     ## Generate builds for each desired architecture
     foreach(ARCH ${RUST_BUILD_ARCH})
         ## Outputs for the release build
         add_custom_command(
             OUTPUT ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_BUILD_LIBRARY_FILE}
-            ## DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/
+            DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_BUILD_DEPENDENCY_FILE}
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
                     ${CARGO_BUILD_TOOL} build --lib --release --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
@@ -80,7 +78,7 @@ function(build_rust_archives)
         ## Outputs for the debug build
         add_custom_command(
             OUTPUT ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_BUILD_LIBRARY_FILE}
-            ## DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/
+            DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_BUILD_DEPENDENCY_FILE}
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
                     ${CARGO_BUILD_TOOL} build --lib --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
@@ -90,6 +88,9 @@ function(build_rust_archives)
         list(APPEND RUST_BUILD_RELEASE_LIBS ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_BUILD_LIBRARY_FILE})
         list(APPEND RUST_BUILD_DEBUG_LIBS ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_BUILD_LIBRARY_FILE})
     endforeach()
+
+    ## Reset our policy changes
+    cmake_policy(POP)
 
     ## For apple builds, bundle the build artifacts into a unified library
     if(APPLE)
@@ -145,17 +146,17 @@ function(add_rust_library TARGET_NAME)
     endif()
 
     ## Build the rust library files.
-    set(RUST_TARGET_LIBRARY_FILE
-        ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_TARGET_CRATE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}
-    )
     build_rust_archives(
         ARCH ${RUST_TARGET_ARCH}
         BINARY_DIR ${RUST_TARGET_BINARY_DIR}
         PACKAGE_DIR ${RUST_TARGET_PACKAGE_DIR}
-        LIBRARY_FILE ${RUST_TARGET_LIBRARY_FILE}
+        CRATE_NAME ${RUST_TARGET_CRATE_NAME}
         CARGO_ENV ${CARGO_ENV}
     )
     
+    set(RUST_TARGET_LIBRARY_FILE
+        ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_TARGET_CRATE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}
+    )
     if(APPLE)
         ## For apple targets - build all architectures as a univeral binary.
         add_custom_target(${TARGET_NAME}_builder
