@@ -296,7 +296,6 @@ class MozillaVPN final : public QObject {
   bool checkCurrentDevice();
 
  public slots:
-  void requestSettings();
   void requestAbout();
 
   void scheduleRefreshDataTasks(bool refreshProducts);
