@@ -5,9 +5,9 @@
 #ifndef ANDROIDAPPLISTPROVIDER_H
 #define ANDROIDAPPLISTPROVIDER_H
 
-#include <applistprovider.h>
-
 #include <QObject>
+
+#include "modules/vpn/applistprovider.h"
 
 class AndroidAppListProvider : public AppListProvider {
   Q_OBJECT

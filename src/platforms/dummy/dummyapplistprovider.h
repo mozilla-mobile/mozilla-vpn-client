@@ -7,7 +7,7 @@
 
 #include <QObject>
 
-#include "applistprovider.h"
+#include "modules/vpn/applistprovider.h"
 
 class DummyAppListProvider : public AppListProvider {
   Q_OBJECT

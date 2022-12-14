@@ -5,7 +5,7 @@
 #ifndef WINDOWSAPPIMAGEPROVIDER_H
 #define WINDOWSAPPIMAGEPROVIDER_H
 
-#include "appimageprovider.h"
+#include "modules/vpn/appimageprovider.h"
 
 class WindowsAppImageProvider final : public AppImageProvider {
  public:

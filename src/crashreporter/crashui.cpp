@@ -9,9 +9,9 @@
 #include <QWindow>
 
 #include "fontloader.h"
-#include "imageproviderfactory.h"
 #include "l18nstrings.h"
 #include "localizer.h"
+#include "modules/vpn/imageproviderfactory.h"
 #include "mozillavpn.h"
 #include "nebula.h"
 #include "qmlengineholder.h"

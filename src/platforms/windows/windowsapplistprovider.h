@@ -8,7 +8,7 @@
 #include <QFileInfo>
 #include <QObject>
 
-#include "applistprovider.h"
+#include "modules/vpn/applistprovider.h"
 
 class WindowsAppListProvider final : public AppListProvider {
   Q_OBJECT

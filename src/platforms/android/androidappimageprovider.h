@@ -8,7 +8,7 @@
 #include <QJniEnvironment>
 #include <QJniObject>
 
-#include "appimageprovider.h"
+#include "modules/vpn/appimageprovider.h"
 
 class AndroidAppImageProvider final : public AppImageProvider {
  public:

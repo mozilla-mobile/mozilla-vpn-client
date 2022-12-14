@@ -5,7 +5,7 @@
 #ifndef LINUXAPPIMAGEPROVIDER_H
 #define LINUXAPPIMAGEPROVIDER_H
 
-#include "appimageprovider.h"
+#include "modules/vpn/appimageprovider.h"
 
 class LinuxAppImageProvider final : public AppImageProvider {
  public:

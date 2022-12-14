@@ -61,10 +61,6 @@ target_sources(mozillavpn-sources INTERFACE
     addons/manager/addonindex.h
     addons/manager/addonmanager.cpp
     addons/manager/addonmanager.h
-    appimageprovider.h
-    applistprovider.h
-    apppermission.cpp
-    apppermission.h
     authenticationinapp/authenticationinapp.cpp
     authenticationinapp/authenticationinapp.h
     authenticationinapp/authenticationinapplistener.cpp
@@ -141,8 +137,6 @@ target_sources(mozillavpn-sources INTERFACE
     hawkauth.h
     hkdf.cpp
     hkdf.h
-    imageproviderfactory.cpp
-    imageproviderfactory.h
     inspector/inspectorhandler.cpp
     inspector/inspectorhandler.h
     inspector/inspectoritempicker.cpp
@@ -209,6 +203,10 @@ target_sources(mozillavpn-sources INTERFACE
     modulelist.h
     modules/vpn.cpp
     modules/vpn.h
+    modules/vpn/appimageprovider.h
+    modules/vpn/applistprovider.h
+    modules/vpn/apppermission.cpp
+    modules/vpn/apppermission.h
     modules/vpn/captiveportal/captiveportal.cpp
     modules/vpn/captiveportal/captiveportal.h
     modules/vpn/captiveportal/captiveportaldetection.cpp
@@ -255,6 +253,8 @@ target_sources(mozillavpn-sources INTERFACE
     modules/vpn/dnshelper.h
     modules/vpn/dnspingsender.cpp
     modules/vpn/dnspingsender.h
+    modules/vpn/imageproviderfactory.cpp
+    modules/vpn/imageproviderfactory.h
     modules/vpn/ipaddresslookup.cpp
     modules/vpn/ipaddresslookup.h
     modules/vpn/keyregenerator.cpp

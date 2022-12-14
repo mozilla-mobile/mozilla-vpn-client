@@ -21,7 +21,6 @@ SOURCES += \
         addons/manager/addondirectory.cpp \
         addons/manager/addonindex.cpp \
         addons/manager/addonmanager.cpp \
-        apppermission.cpp \
         authenticationlistener.cpp \
         authenticationinapp/authenticationinapp.cpp \
         authenticationinapp/authenticationinapplistener.cpp \
@@ -60,7 +59,6 @@ SOURCES += \
         hacl-star/Hacl_Poly1305_32.c \
         hawkauth.cpp \
         hkdf.cpp \
-        imageproviderfactory.cpp \
         inspector/inspectorhandler.cpp \
         inspector/inspectoritempicker.cpp \
         inspector/inspectorutils.cpp \
@@ -94,6 +92,7 @@ SOURCES += \
         module.cpp \
         moduleholder.cpp \
         modules/vpn.cpp \
+        modules/vpn/apppermission.cpp \
         modules/vpn/captiveportal/captiveportal.cpp \
         modules/vpn/captiveportal/captiveportaldetection.cpp \
         modules/vpn/captiveportal/captiveportaldetectionimpl.cpp \
@@ -116,6 +115,7 @@ SOURCES += \
         modules/vpn/controller.cpp \
         modules/vpn/dnshelper.cpp \
         modules/vpn/dnspingsender.cpp \
+        modules/vpn/imageproviderfactory.cpp \
         modules/vpn/ipaddresslookup.cpp \
         modules/vpn/keyregenerator.cpp \
         modules/vpn/networkwatcher.cpp \
@@ -205,9 +205,6 @@ HEADERS += \
         addons/manager/addondirectory.h \
         addons/manager/addonindex.h \
         addons/manager/addonmanager.h \
-        appimageprovider.h \
-        apppermission.h \
-        applistprovider.h \
         authenticationlistener.h \
         authenticationinapp/authenticationinapp.h \
         authenticationinapp/authenticationinapplistener.h \
@@ -245,7 +242,6 @@ HEADERS += \
         glean/generated/pings.h \
         hawkauth.h \
         hkdf.h \
-        imageproviderfactory.h \
         inspector/inspectorhandler.h \
         inspector/inspectoritempicker.h \
         inspector/inspectorutils.h \
@@ -279,6 +275,9 @@ HEADERS += \
         moduleholder.h \
         modulelist.h \
         modules/vpn.h \
+        modules/vpn/appimageprovider.h \
+        modules/vpn/apppermission.h \
+        modules/vpn/applistprovider.h \
         modules/vpn/captiveportal/captiveportal.h \
         modules/vpn/captiveportal/captiveportaldetection.h \
         modules/vpn/captiveportal/captiveportaldetectionimpl.h \
@@ -303,6 +302,7 @@ HEADERS += \
         modules/vpn/controllerimpl.h \
         modules/vpn/dnshelper.h \
         modules/vpn/dnspingsender.h \
+        modules/vpn/imageproviderfactory.h \
         modules/vpn/ipaddresslookup.h \
         modules/vpn/keyregenerator.h \
         modules/vpn/networkwatcher.h \

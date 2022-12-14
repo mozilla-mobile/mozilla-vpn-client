@@ -12,13 +12,11 @@
 #include <QQmlContext>
 
 #include "addons/manager/addonmanager.h"
-#include "apppermission.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "commandlineparser.h"
 #include "constants.h"
 #include "fontloader.h"
 #include "frontend/navigator.h"
-#include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
 #include "l18nstrings.h"
 #include "leakdetector.h"
@@ -29,6 +27,8 @@
 #include "models/recentconnections.h"
 #include "moduleholder.h"
 #include "modules/vpn.h"
+#include "modules/vpn/apppermission.h"
+#include "modules/vpn/imageproviderfactory.h"
 #include "mozillavpn.h"
 #include "notificationhandler.h"
 #include "productshandler.h"

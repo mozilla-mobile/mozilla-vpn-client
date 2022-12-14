@@ -5,10 +5,10 @@
 #ifndef LINUXAPPLISTPROVIDER_H
 #define LINUXAPPLISTPROVIDER_H
 
-#include <applistprovider.h>
-
 #include <QObject>
 #include <QProcess>
+
+#include "modules/vpn/applistprovider.h"
 
 class LinuxAppListProvider final : public AppListProvider {
   Q_OBJECT
