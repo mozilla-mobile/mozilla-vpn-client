@@ -1,0 +1,19 @@
+# To update, run:
+#
+#    pip-compile --generate-hashes --output-file=requirements.txt --resolver=backtracking requirements.in
+#
+appdirs
+attrs
+click
+diskcache
+flask
+glean_parser==6.4.0
+Jinja2
+jsonschema
+lxml==4.9.1
+MarkupSafe
+oathtool
+pathspec
+pyrsistent
+PyYAML
+yamllint
