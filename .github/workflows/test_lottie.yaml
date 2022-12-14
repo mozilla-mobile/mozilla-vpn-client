@@ -62,7 +62,7 @@ jobs:
           ctest --output-on-failure
 
           grcov $(pwd)/tests/unit/CMakeFiles/lottie_tests.dir -s ${{github.workspace}} \
-              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/lottie_lcov.info
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/linux_lottie_lcov.info
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -71,7 +71,7 @@ jobs:
           directory: .
           flags: linux_lottie_tests
           name: codecov-poc
-          files: lottie_lcov.info
+          files: linux_lottie_lcov.info
           verbose: true
 
   macos-lottie-tests:
@@ -124,7 +124,7 @@ jobs:
           ctest --output-on-failure
 
           grcov $(pwd)/tests/unit/CMakeFiles/lottie_tests.dir -s ${{github.workspace}} \
-              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/lottie_lcov.info
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/macos_lottie_lcov.info
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -133,7 +133,7 @@ jobs:
           directory: .
           flags: macos_lottie_tests
           name: codecov-poc
-          files: lottie_lcov.info
+          files: macos_lottie_lcov.info
           verbose: true
 
   windows-lottie-tests:

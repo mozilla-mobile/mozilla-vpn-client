@@ -157,7 +157,7 @@ jobs:
           export PATH=${{github.workspace}}/grcov-build/bin:$PATH
           grcov build/profile \
               -s src -t lcov --branch --ignore-not-existing \
-              -o ${{runner.temp}}/artifacts/functional_lcov.info
+              -o ${{runner.temp}}/artifacts/${{matrix.test.name}}_functional_lcov.info
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -167,7 +167,7 @@ jobs:
           directory: .
           flags: functional_tests
           name: codecov-poc
-          files: ${{runner.temp}}/artifacts/functional_lcov.info
+          files: ${{runner.temp}}/artifacts/${{matrix.test.name}}functional_lcov.info
           verbose: true
 
       - name: Uploading artifacts
