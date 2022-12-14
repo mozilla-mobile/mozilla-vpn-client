@@ -167,7 +167,7 @@ jobs:
           directory: .
           flags: functional_tests
           name: codecov-poc
-          files: ${{runner.temp}}/artifacts/${{matrix.test.name}}functional_lcov.info
+          files: ${{runner.temp}}/artifacts/${{matrix.test.name}}_functional_lcov.info
           verbose: true
 
       - name: Uploading artifacts
