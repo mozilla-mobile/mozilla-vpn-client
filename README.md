@@ -260,6 +260,9 @@ time.
 
 #### Building with Xcode
 
+Before you start this process, if you have a fresh install of Xcode, open it and sign-in.
+You may also need to make sure your certificates are added.
+
 In some circumstances, you may wish to use Xcode to build the Mozilla VPN in order to
 access cloud-managed signing certificates. In such circumstances, this can be enabled
 by using the `-GXcode` command line option:
@@ -308,8 +311,15 @@ and we have also added experimental support for `cmake`.
 [Xcode](https://developer.apple.com/xcode/) version 12 or higher.
 
 2. We use `qmake` to generate the Xcode project and then we "patch" it to add
-extra components such as the wireguard, the browser bridge and so on. We patch
-the Xcode project using [xcodeproj](https://github.com/CocoaPods/Xcodeproj). To
+extra components such as the wireguard, the browser bridge and so on. 
+
+To make sure qmake is available set the environment variable QT_IOS_BIN:
+
+```
+export QT_IOS_BIN=/Users/[username]/Qt/6.2.4/ios/bin
+```
+
+We patch the Xcode project using [xcodeproj](https://github.com/CocoaPods/Xcodeproj). To
 install it:
 ```
 gem install xcodeproj # probably you want to run this command with `sudo`
