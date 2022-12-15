@@ -108,7 +108,7 @@ void AndroidController::initialize(const Device* device, const Keys* keys) {
 }
 
 void AndroidController::activate(const HopConnection& hop, const Device* device,
-                                 const Keys* keys, Reason reason) {
+                                 const Keys* keys, Controller::Reason reason) {
   Q_ASSERT(hop.m_hopindex == 0);
   logger.debug() << "Activation";
 
