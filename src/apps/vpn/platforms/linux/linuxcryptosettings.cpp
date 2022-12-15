@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include <QtDBus/QtDBus>
 #include <QRandomGenerator>
 
 #include "cryptosettings.h"
@@ -24,7 +25,7 @@ const SecretSchema* cryptosettings_get_schema(void) {
 namespace {
 Logger logger("CryptoSettings");
 
-bool s_initialized = false;
+CryptoSettings::Version s_keyVersion = CryptoSettings::NoEncryption;
 QByteArray s_key;
 }  // namespace
 
@@ -37,13 +38,22 @@ void CryptoSettings::resetKey() {
   if (error != nullptr) {
     logger.error() << "Key reset failed:" << error->message;
     g_error_free(error);
+
+    // Fallback to unencrypted settings.
+    s_keyVersion = CryptoSettings::NoEncryption;
   }
 
-  s_initialized = false;
+  s_key.clear();
 }
 
 bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
-  if (!s_initialized) {
+  if (s_keyVersion == CryptoSettings::NoEncryption) {
+    logger.error() << "libsecrets is not supported";
+    return false;
+  }
+
+  if (s_key.isEmpty()) {
+    // Try to lookup the encryption key.
     GError* error = nullptr;
     gchar* password = secret_password_lookup_sync(cryptosettings_get_schema(),
                                                   nullptr, &error, nullptr);
@@ -74,6 +84,10 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
       if (error != nullptr) {
         logger.error() << "Key storage failed:" << error->message;
         g_error_free(error);
+
+        // Fallback to unencrypted settings.
+        s_keyVersion = CryptoSettings::NoEncryption;
+        s_key.clear();
         return false;
       }
     }
@@ -90,5 +104,25 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
 
 // static
 CryptoSettings::Version CryptoSettings::getSupportedVersion() {
-  return CryptoSettings::EncryptionChachaPolyV1;
+  static bool s_initialized = false;
+
+  // Check if "org.freedesktop.secrets" has been taken on the session D-Bus.
+  if (!s_initialized) {
+    s_initialized = true;
+
+    QDBusConnection bus = QDBusConnection::sessionBus();
+    QDBusMessage hasOwnerCall = QDBusMessage::createMethodCall(
+        "org.freedesktop.DBus", "/org/freedesktop/DBus", "org.freedesktop.DBus",
+        "NameHasOwner");
+    hasOwnerCall << QVariant("org.freedesktop.secrets");
+
+    QDBusMessage reply = bus.call(hasOwnerCall, QDBus::Block, 1000);
+    if (reply.type() == QDBusMessage::ReplyMessage &&
+        !reply.arguments().isEmpty() && reply.arguments().first().toBool()) {
+      logger.info() << "Encrypted settings with libsecrets is supported";
+      s_keyVersion = CryptoSettings::EncryptionChachaPolyV1;
+    }
+  }
+
+  return s_keyVersion;
 }
