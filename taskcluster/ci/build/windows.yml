@@ -28,8 +28,8 @@ windows/opt:
               name: public/build/MozillaVPN.msi
               path: artifacts/MozillaVPN.msi
             - type: file
-              name: public/build/MozillaVPN.pdb
-              path: artifacts/MozillaVPN.pdb
+              name: public/build/Mozilla VPN.pdb
+              path: artifacts/Mozilla VPN.pdb
     release-artifacts:
         - unsigned.zip
     run:
