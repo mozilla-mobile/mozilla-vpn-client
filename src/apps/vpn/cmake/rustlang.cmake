@@ -62,7 +62,9 @@ function(build_rust_archives)
 
     ## Suppress a Ninja warning about dependency file paths
     cmake_policy(PUSH)
-    cmake_policy(SET CMP0116 NEW)
+    if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.20)
+        cmake_policy(SET CMP0116 NEW)
+    endif()
 
     ## Generate builds for each desired architecture
     foreach(ARCH ${RUST_BUILD_ARCH})
