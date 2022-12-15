@@ -26,6 +26,7 @@ sentry_value_t SentryAdapter::onCrash(const sentry_ucontext_t* uctx,
   Q_UNUSED(uctx);
   Q_UNUSED(event);
   Q_UNUSED(closure);
+  return nullptr;
 }
 
 // static
