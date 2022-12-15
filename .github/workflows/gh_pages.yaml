@@ -60,13 +60,12 @@ jobs:
         run: |
             sudo apt-get update 
             sudo apt-get install doxygen -y 
-            cd src
             doxygen
       - name: Uploading
         uses: actions/upload-artifact@v3
         with:
             name: doxygen-docs
-            path: src/html/
+            path: html/
 
   inspector:
     name: Add Inspector
