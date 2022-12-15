@@ -15,6 +15,10 @@
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
 
+#ifdef SENTRY_ENABLED
+#  include "sentry/sentryadapter.h"
+#endif
+
 namespace {
 Navigator* s_instance = nullptr;
 Logger logger("Navigator");
@@ -474,6 +478,11 @@ Navigator::Navigator(QObject* parent) : QObject(parent) {
 
   connect(ErrorHandler::instance(), &ErrorHandler::subscriptionInUse, this,
           [this]() { requestScreen(ScreenSubscriptionInUseError); });
+
+#ifdef SENTRY_ENABLED
+  connect(SentryAdapter::instance(), &SentryAdapter::needsCrashReportScreen,
+          this, [this]() { requestScreen(Navigator::ScreenCrashReporting); });
+#endif
 
   computeComponent();
 }

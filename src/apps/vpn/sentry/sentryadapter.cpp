@@ -156,7 +156,7 @@ SentryAdapter::UserConsentResult SentryAdapter::hasCrashUploadConsent() const {
   Q_ASSERT(m_initialized);
   // We have not yet asked the user - let's do that.
   if (m_userConsent == UserConsentResult::Pending) {
-    Navigator::instance()->requestScreen(Navigator::ScreenCrashReporting);
+    emit needsCrashReportScreen();
   }
   return m_userConsent;
 }

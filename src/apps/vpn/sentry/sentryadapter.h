@@ -132,6 +132,11 @@ class SentryAdapter final : public QObject {
    */
   void userConsentChanged();
 
+  /**
+   * @brief Signal that is fired when the CrashReport screen needs to be shown
+   */
+  void needsCrashReportScreen() const;
+
  private:
   bool m_initialized = false;
   UserConsentResult m_userConsent = UserConsentResult::Pending;
