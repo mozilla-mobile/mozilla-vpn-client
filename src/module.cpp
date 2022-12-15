@@ -8,7 +8,6 @@
 
 #include "leakdetector.h"
 #include "moduleholder.h"
-#include "modules/vpn.h"
 
 #define MODULE(key, obj)
 #include "modulelist.h"

@@ -10,12 +10,12 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "androidutils.h"
 #include "constants.h"
 #include "frontend/navigator.h"
 #include "jni.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "platforms/android/androidutils.h"
 #include "settingsholder.h"
 
 namespace {

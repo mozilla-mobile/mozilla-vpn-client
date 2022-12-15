@@ -18,6 +18,10 @@
 #include "tutorial/tutorialstepbefore.h"
 #include "tutorial/tutorialstepnext.h"
 
+#ifdef MVPN_ANDROID
+#  include "modules/vpn/platforms/android/androidvpnactivity.h"
+#endif
+
 #ifdef MVPN_WEBEXTENSION
 #  include "server/serverconnection.h"
 #endif
@@ -463,6 +467,21 @@ void ModuleVPN::registerInspectorHandlerCommands() {
             arguments[1]);
         return QJsonObject();
       }});
+
+#ifdef MVPN_ANDROID
+  InspectorHandler::registerCommand(InspectorHandler::InspectorCommand{
+      "android_daemon", "Send a request to the Daemon {type} {args}", 2,
+      [](InspectorHandler*, const QList<QByteArray>& arguments) {
+        auto activity = AndroidVPNActivity::instance();
+        Q_ASSERT(activity);
+        auto type = QString(arguments[1]);
+        auto json = QString(arguments[2]);
+
+        ServiceAction a = (ServiceAction)type.toInt();
+        AndroidVPNActivity::sendToService(a, json);
+        return QJsonObject();
+      }});
+#endif
 }
 
 void ModuleVPN::registerServerConnectionRequestTypes() {

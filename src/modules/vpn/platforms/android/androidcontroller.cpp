@@ -12,7 +12,6 @@
 #include <QJsonObject>
 #include <QRandomGenerator>
 
-#include "androidutils.h"
 #include "androidvpnactivity.h"
 #include "errorhandler.h"
 #include "ipaddress.h"

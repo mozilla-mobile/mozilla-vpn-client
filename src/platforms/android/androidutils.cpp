@@ -17,7 +17,6 @@
 #include "jni.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "modules/vpn/platforms/android/androidvpnactivity.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "qmlengineholder.h"
@@ -77,19 +76,6 @@ AndroidUtils::AndroidUtils(QObject* parent) : QObject(parent) {
 
   env->RegisterNatives(javaClass, methods,
                        sizeof(methods) / sizeof(methods[0]));
-
-  InspectorHandler::registerCommand(InspectorHandler::InspectorCommand{
-      "android_daemon", "Send a request to the Daemon {type} {args}", 2,
-      [](InspectorHandler*, const QList<QByteArray>& arguments) {
-        auto activity = AndroidVPNActivity::instance();
-        Q_ASSERT(activity);
-        auto type = QString(arguments[1]);
-        auto json = QString(arguments[2]);
-
-        ServiceAction a = (ServiceAction)type.toInt();
-        AndroidVPNActivity::sendToService(a, json);
-        return QJsonObject();
-      }});
 }
 
 AndroidUtils::~AndroidUtils() {

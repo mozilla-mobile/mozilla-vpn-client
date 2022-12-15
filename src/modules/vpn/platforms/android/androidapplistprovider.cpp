@@ -11,9 +11,9 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "androidutils.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "platforms/android/androidutils.h"
 
 namespace {
 Logger logger("AndroidAppListProvider");
