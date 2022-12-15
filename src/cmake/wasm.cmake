@@ -5,6 +5,8 @@
 target_sources(mozillavpn PRIVATE
     modules/vpn/platforms/dummy/dummycontroller.cpp
     modules/vpn/platforms/dummy/dummycontroller.h
+    modules/vpn/platforms/wasm/wasmnetworkwatcher.cpp
+    modules/vpn/platforms/wasm/wasmnetworkwatcher.h
     platforms/dummy/dummycryptosettings.cpp
     platforms/macos/macosmenubar.cpp
     platforms/macos/macosmenubar.h
@@ -12,8 +14,6 @@ target_sources(mozillavpn PRIVATE
     platforms/wasm/wasmauthenticationlistener.h
     platforms/wasm/wasmnetworkrequest.cpp
     platforms/wasm/wasmnetworkrequest.h
-    platforms/wasm/wasmnetworkwatcher.cpp
-    platforms/wasm/wasmnetworkwatcher.h
     platforms/wasm/wasmwindowcontroller.cpp
     platforms/wasm/wasmwindowcontroller.h
     platforms/wasm/wasmiaphandler.cpp

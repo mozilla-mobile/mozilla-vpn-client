@@ -11,8 +11,8 @@
 #include <QFileInfo>
 #include <QMessageBox>
 
-#include "dbusclient.h"
 #include "logger.h"
+#include "modules/vpn/platforms/linux/dbusclient.h"
 
 namespace {
 

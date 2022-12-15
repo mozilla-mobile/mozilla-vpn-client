@@ -21,30 +21,30 @@ target_link_libraries(
     mozillavpn PRIVATE
     -ljnigraphics)
 
-target_sources(mozillavpn PRIVATE 
+target_sources(mozillavpn PRIVATE
+    modules/vpn/platforms/linux/linuxpingsender.cpp
+    modules/vpn/platforms/linux/linuxpingsender.h
     platforms/android/androidcontroller.cpp
-    platforms/android/androidglean.cpp
-    platforms/android/androidiaphandler.cpp
-    platforms/android/androidnetworkwatcher.cpp
-    platforms/android/androidnotificationhandler.cpp
-    platforms/android/androidutils.cpp
-    platforms/android/androidvpnactivity.cpp
-    platforms/android/androidappimageprovider.cpp
-    platforms/android/androidapplistprovider.cpp
-    tasks/purchase/taskpurchase.cpp
     platforms/android/androidcontroller.h
+    platforms/android/androidglean.cpp
     platforms/android/androidglean.h
+    platforms/android/androidiaphandler.cpp
     platforms/android/androidiaphandler.h
+    platforms/android/androidnetworkwatcher.cpp
     platforms/android/androidnetworkwatcher.h
+    platforms/android/androidnotificationhandler.cpp
     platforms/android/androidnotificationhandler.h
+    platforms/android/androidutils.cpp
     platforms/android/androidutils.h
+    platforms/android/androidvpnactivity.cpp
     platforms/android/androidvpnactivity.h
+    platforms/android/androidappimageprovider.cpp
     platforms/android/androidappimageprovider.h
+    platforms/android/androidapplistprovider.cpp
     platforms/android/androidapplistprovider.h
+    tasks/purchase/taskpurchase.cpp
     tasks/purchase/taskpurchase.h
-    platforms/linux/linuxpingsender.cpp 
     platforms/linux/linuxcryptosettings.cpp
-    platforms/linux/linuxpingsender.h
 )
 
 if(ADJUST_TOKEN)

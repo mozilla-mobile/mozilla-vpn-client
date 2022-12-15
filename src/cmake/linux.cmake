@@ -13,25 +13,25 @@ target_link_libraries(mozillavpn PRIVATE PkgConfig::polkit)
 target_sources(mozillavpn PRIVATE
     eventlistener.cpp
     eventlistener.h
-    platforms/linux/backendlogsobserver.cpp
-    platforms/linux/backendlogsobserver.h
-    platforms/linux/dbusclient.cpp
-    platforms/linux/dbusclient.h
-    platforms/linux/linuxappimageprovider.cpp
-    platforms/linux/linuxappimageprovider.h
-    platforms/linux/linuxapplistprovider.cpp
-    platforms/linux/linuxapplistprovider.h
-    platforms/linux/linuxcontroller.cpp
-    platforms/linux/linuxcontroller.h
+    modules/vpn/platforms/linux/backendlogsobserver.cpp
+    modules/vpn/platforms/linux/backendlogsobserver.h
+    modules/vpn/platforms/linux/dbusclient.cpp
+    modules/vpn/platforms/linux/dbusclient.h
+    modules/vpn/platforms/linux/linuxappimageprovider.cpp
+    modules/vpn/platforms/linux/linuxappimageprovider.h
+    modules/vpn/platforms/linux/linuxapplistprovider.cpp
+    modules/vpn/platforms/linux/linuxapplistprovider.h
+    modules/vpn/platforms/linux/linuxcontroller.cpp
+    modules/vpn/platforms/linux/linuxcontroller.h
+    modules/vpn/platforms/linux/linuxnetworkwatcher.cpp
+    modules/vpn/platforms/linux/linuxnetworkwatcher.h
+    modules/vpn/platforms/linux/linuxnetworkwatcherworker.cpp
+    modules/vpn/platforms/linux/linuxnetworkwatcherworker.h
+    modules/vpn/platforms/linux/linuxpingsender.cpp
+    modules/vpn/platforms/linux/linuxpingsender.h
     platforms/linux/linuxcryptosettings.cpp
     platforms/linux/linuxdependencies.cpp
     platforms/linux/linuxdependencies.h
-    platforms/linux/linuxnetworkwatcher.cpp
-    platforms/linux/linuxnetworkwatcher.h
-    platforms/linux/linuxnetworkwatcherworker.cpp
-    platforms/linux/linuxnetworkwatcherworker.h
-    platforms/linux/linuxpingsender.cpp
-    platforms/linux/linuxpingsender.h
     platforms/linux/linuxsystemtraynotificationhandler.cpp
     platforms/linux/linuxsystemtraynotificationhandler.h
 )
@@ -46,22 +46,22 @@ target_sources(mozillavpn PRIVATE
     modules/vpn/daemon/interfaceconfig.h
     modules/vpn/daemon/iputils.h
     modules/vpn/daemon/wireguardutils.h
-    platforms/linux/daemon/apptracker.cpp
-    platforms/linux/daemon/apptracker.h
-    platforms/linux/daemon/dbusservice.cpp
-    platforms/linux/daemon/dbusservice.h
-    platforms/linux/daemon/dbustypeslinux.h
-    platforms/linux/daemon/dnsutilslinux.cpp
-    platforms/linux/daemon/dnsutilslinux.h
-    platforms/linux/daemon/iputilslinux.cpp
-    platforms/linux/daemon/iputilslinux.h
-    platforms/linux/daemon/linuxdaemon.cpp
-    platforms/linux/daemon/pidtracker.cpp
-    platforms/linux/daemon/pidtracker.h
-    platforms/linux/daemon/polkithelper.cpp
-    platforms/linux/daemon/polkithelper.h
-    platforms/linux/daemon/wireguardutilslinux.cpp
-    platforms/linux/daemon/wireguardutilslinux.h
+    modules/vpn/platforms/linux/daemon/apptracker.cpp
+    modules/vpn/platforms/linux/daemon/apptracker.h
+    modules/vpn/platforms/linux/daemon/dbusservice.cpp
+    modules/vpn/platforms/linux/daemon/dbusservice.h
+    modules/vpn/platforms/linux/daemon/dbustypeslinux.h
+    modules/vpn/platforms/linux/daemon/dnsutilslinux.cpp
+    modules/vpn/platforms/linux/daemon/dnsutilslinux.h
+    modules/vpn/platforms/linux/daemon/iputilslinux.cpp
+    modules/vpn/platforms/linux/daemon/iputilslinux.h
+    modules/vpn/platforms/linux/daemon/linuxdaemon.cpp
+    modules/vpn/platforms/linux/daemon/pidtracker.cpp
+    modules/vpn/platforms/linux/daemon/pidtracker.h
+    modules/vpn/platforms/linux/daemon/polkithelper.cpp
+    modules/vpn/platforms/linux/daemon/polkithelper.h
+    modules/vpn/platforms/linux/daemon/wireguardutilslinux.cpp
+    modules/vpn/platforms/linux/daemon/wireguardutilslinux.h
 )
 
 add_definitions(-DPROTOCOL_VERSION=\"1\")
@@ -69,10 +69,10 @@ add_definitions(-DPROTOCOL_VERSION=\"1\")
 include(cmake/signature.cmake)
 
 set(DBUS_GENERATED_SOURCES)
-qt_add_dbus_interface(DBUS_GENERATED_SOURCES platforms/linux/daemon/org.mozilla.vpn.dbus.xml dbus_interface)
+qt_add_dbus_interface(DBUS_GENERATED_SOURCES modules/vpn/platforms/linux/daemon/org.mozilla.vpn.dbus.xml dbus_interface)
 qt_add_dbus_adaptor(DBUS_GENERATED_SOURCES
-                    platforms/linux/daemon/org.mozilla.vpn.dbus.xml
-                    platforms/linux/daemon/dbusservice.h
+                    modules/vpn/platforms/linux/daemon/org.mozilla.vpn.dbus.xml
+                    modules/vpn/platforms/linux/daemon/dbusservice.h
                     ""
                     dbus_adaptor)
 target_sources(mozillavpn PRIVATE ${DBUS_GENERATED_SOURCES})
@@ -111,13 +111,13 @@ install(FILES ../linux/extra/icons/128x128/mozillavpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/128x128/apps)
 
 pkg_get_variable(POLKIT_POLICY_DIR polkit-gobject-1 policydir)
-install(FILES platforms/linux/daemon/org.mozilla.vpn.policy
+install(FILES modules/vpn/platforms/linux/daemon/org.mozilla.vpn.policy
     DESTINATION ${POLKIT_POLICY_DIR})
 
-install(FILES platforms/linux/daemon/org.mozilla.vpn.conf
+install(FILES modules/vpn/platforms/linux/daemon/org.mozilla.vpn.conf
     DESTINATION /usr/share/dbus-1/system.d)
 
-install(FILES platforms/linux/daemon/org.mozilla.vpn.dbus.service
+install(FILES modules/vpn/platforms/linux/daemon/org.mozilla.vpn.dbus.service
     DESTINATION /usr/share/dbus-1/system-services)
 
 pkg_check_modules(SYSTEMD systemd)

@@ -1,4 +1,4 @@
-module github.com/mozilla-mobile/mozilla-vpn-client/src/platforms/linux/netfilter
+module github.com/mozilla-mobile/mozilla-vpn-client/linux/netfilter
 
 require (
 	github.com/google/go-cmp v0.5.8 // indirect
