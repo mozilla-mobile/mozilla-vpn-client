@@ -91,8 +91,6 @@ bool MozillaVPN::viewLogs() { return true; }
 
 bool MozillaVPN::modelsInitialized() const { return true; }
 
-void MozillaVPN::requestSettings() {}
-
 void MozillaVPN::requestAbout() {}
 
 void MozillaVPN::requestViewLogs() {}

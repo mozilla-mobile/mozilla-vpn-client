@@ -1173,14 +1173,6 @@ bool MozillaVPN::modelsInitialized() const {
   return true;
 }
 
-void MozillaVPN::requestSettings() {
-  logger.debug() << "Settings required";
-
-  QmlEngineHolder::instance()->showWindow();
-  Navigator::instance()->requestScreen(Navigator::ScreenSettings,
-                                       Navigator::ForceReload);
-}
-
 void MozillaVPN::requestAbout() {
   logger.debug() << "About view requested";
 
