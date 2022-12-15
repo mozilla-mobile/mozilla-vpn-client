@@ -61,10 +61,10 @@ SOURCES += \
     tasks/purchase/taskpurchase.cpp
 
 OBJECTIVE_SOURCES += \
+    modules/vpn/platforms/ios/ioscontroller.mm \
+    modules/vpn/platforms/ios/iosglue.mm \
+    modules/vpn/platforms/ios/iosnetworkwatcher.mm \
     platforms/ios/iosiaphandler.mm \
-    platforms/ios/ioscontroller.mm \
-    platforms/ios/iosglue.mm \
-    platforms/ios/iosnetworkwatcher.mm \
     platforms/ios/iosnotificationhandler.mm \
     platforms/ios/iosutils.mm \
     platforms/macos/macoscryptosettings.mm
@@ -74,9 +74,9 @@ HEADERS += \
     tasks/purchase/taskpurchase.h
 
 OBJECTIVE_HEADERS += \
+    modules/vpn/platforms/ios/ioscontroller.h \
+    modules/vpn/platforms/ios/iosnetworkwatcher.h \
     platforms/ios/iosiaphandler.h \
-    platforms/ios/ioscontroller.h \
-    platforms/ios/iosnetworkwatcher.h \
     platforms/ios/iosnotificationhandler.h \
     platforms/ios/iosutils.h
 

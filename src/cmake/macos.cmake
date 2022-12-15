@@ -50,6 +50,8 @@ target_sources(mozillavpn PRIVATE
     modules/vpn/daemon/wireguardutils.h
     modules/vpn/localsocketcontroller.cpp
     modules/vpn/localsocketcontroller.h
+    modules/vpn/platforms/ios/iosnetworkwatcher.mm
+    modules/vpn/platforms/ios/iosnetworkwatcher.h
     modules/vpn/wgquickprocess.cpp
     modules/vpn/wgquickprocess.h
     platforms/macos/daemon/dnsutilsmacos.cpp
@@ -81,8 +83,6 @@ target_sources(mozillavpn PRIVATE
     platforms/macos/macosstatusicon.h
     platforms/macos/macosutils.mm
     platforms/macos/macosutils.h
-    platforms/ios/iosnetworkwatcher.mm
-    platforms/ios/iosnetworkwatcher.h
 )
 
 include(cmake/osxtools.cmake)

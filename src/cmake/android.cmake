@@ -24,27 +24,27 @@ target_link_libraries(
 target_sources(mozillavpn PRIVATE
     modules/vpn/platforms/linux/linuxpingsender.cpp
     modules/vpn/platforms/linux/linuxpingsender.h
-    platforms/android/androidcontroller.cpp
-    platforms/android/androidcontroller.h
+    modules/vpn/platforms/android/androidcontroller.cpp
+    modules/vpn/platforms/android/androidcontroller.h
+    modules/vpn/platforms/android/androidnetworkwatcher.cpp
+    modules/vpn/platforms/android/androidnetworkwatcher.h
+    modules/vpn/platforms/android/androidvpnactivity.cpp
+    modules/vpn/platforms/android/androidvpnactivity.h
+    modules/vpn/platforms/android/androidappimageprovider.cpp
+    modules/vpn/platforms/android/androidappimageprovider.h
+    modules/vpn/platforms/android/androidapplistprovider.cpp
+    modules/vpn/platforms/android/androidapplistprovider.h
     platforms/android/androidglean.cpp
     platforms/android/androidglean.h
     platforms/android/androidiaphandler.cpp
     platforms/android/androidiaphandler.h
-    platforms/android/androidnetworkwatcher.cpp
-    platforms/android/androidnetworkwatcher.h
     platforms/android/androidnotificationhandler.cpp
     platforms/android/androidnotificationhandler.h
     platforms/android/androidutils.cpp
     platforms/android/androidutils.h
-    platforms/android/androidvpnactivity.cpp
-    platforms/android/androidvpnactivity.h
-    platforms/android/androidappimageprovider.cpp
-    platforms/android/androidappimageprovider.h
-    platforms/android/androidapplistprovider.cpp
-    platforms/android/androidapplistprovider.h
+    platforms/linux/linuxcryptosettings.cpp
     tasks/purchase/taskpurchase.cpp
     tasks/purchase/taskpurchase.h
-    platforms/linux/linuxcryptosettings.cpp
 )
 
 if(ADJUST_TOKEN)

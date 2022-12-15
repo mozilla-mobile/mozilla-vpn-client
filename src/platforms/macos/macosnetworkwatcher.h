@@ -7,8 +7,8 @@
 
 #import <Network/Network.h>
 
-#include "../ios/iosnetworkwatcher.h"
 #include "modules/vpn/networkwatcherimpl.h"
+#include "modules/vpn/platforms/ios/iosnetworkwatcher.h"
 
 class QString;
 

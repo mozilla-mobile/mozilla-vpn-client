@@ -12,12 +12,12 @@
 #include <QNetworkCookieJar>
 #include <QUrlQuery>
 
-#include "androidvpnactivity.h"
 #include "constants.h"
 #include "inspector/inspectorhandler.h"
 #include "jni.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "modules/vpn/platforms/android/androidvpnactivity.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "qmlengineholder.h"

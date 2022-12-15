@@ -61,9 +61,9 @@ target_sources(networkextension PRIVATE
     ${WG_APPLE_SOURCE_DIR}/WireGuardKit/Array+ConcurrentMap.swift
     ${WG_APPLE_SOURCE_DIR}/WireGuardKit/IPAddress+AddrInfo.swift
     ${WG_APPLE_SOURCE_DIR}/WireGuardKit/PrivateKey.swift
-    ${CMAKE_SOURCE_DIR}/src/platforms/ios/iostunnel.swift
-    ${CMAKE_SOURCE_DIR}/src/platforms/ios/iosglue.mm
-    ${CMAKE_SOURCE_DIR}/src/platforms/ios/ioslogger.swift
+    ${CMAKE_SOURCE_DIR}/src/modules/vpn/platforms/ios/iosglue.mm
+    ${CMAKE_SOURCE_DIR}/src/modules/vpn/platforms/ios/ioslogger.swift
+    ${CMAKE_SOURCE_DIR}/src/modules/vpn/platforms/ios/iostunnel.swift
 )
 
 ## Build wireguard-go-version.h

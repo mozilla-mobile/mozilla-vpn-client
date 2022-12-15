@@ -44,22 +44,22 @@ target_include_directories(mozillavpn PRIVATE ${Qt6Gui_PRIVATE_INCLUDE_DIRS})
 
 # iOS platform source files
 target_sources(mozillavpn PRIVATE
+    modules/vpn/platforms/ios/ioscontroller.mm
+    modules/vpn/platforms/ios/ioscontroller.h
+    modules/vpn/platforms/ios/iosglue.mm
+    modules/vpn/platforms/ios/iosnetworkwatcher.mm
+    modules/vpn/platforms/ios/iosnetworkwatcher.h
     platforms/macos/macospingsender.cpp
     platforms/macos/macospingsender.h
-    tasks/purchase/taskpurchase.cpp
-    tasks/purchase/taskpurchase.h
     platforms/ios/iosiaphandler.mm
     platforms/ios/iosiaphandler.h
-    platforms/ios/ioscontroller.mm
-    platforms/ios/ioscontroller.h
-    platforms/ios/iosglue.mm
-    platforms/ios/iosnetworkwatcher.mm
-    platforms/ios/iosnetworkwatcher.h
     platforms/ios/iosnotificationhandler.mm
     platforms/ios/iosnotificationhandler.h
     platforms/ios/iosutils.mm
     platforms/ios/iosutils.h
     platforms/macos/macoscryptosettings.mm
+    tasks/purchase/taskpurchase.cpp
+    tasks/purchase/taskpurchase.h
 )
 
 # Include the Adjust SDK
@@ -111,8 +111,8 @@ target_compile_options(mozillavpn PRIVATE
     -DVPN_NE_BUNDLEID=\"${BUILD_IOS_APP_IDENTIFIER}.network-extension\"
 )
 target_sources(mozillavpn PRIVATE
-    platforms/ios/ioscontroller.swift
-    platforms/ios/ioslogger.swift
+    modules/vpn/platforms/ios/ioscontroller.swift
+    modules/vpn/platforms/ios/ioslogger.swift
 )
 
 target_sources(mozillavpn PRIVATE
