@@ -21,6 +21,7 @@
 #include "module.h"
 #include "moduleholder.h"
 #include "networkmanager.h"
+#include "product.h"
 #include "productshandler.h"
 #include "profileflow.h"
 #include "purchasehandler.h"
@@ -106,7 +107,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   Q_ASSERT(!s_instance);
   s_instance = this;
 
-  Module::load(this);
+  new Product(this);
 
 #ifndef UNIT_TEST
   connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {

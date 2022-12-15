@@ -6,8 +6,8 @@
 
 #include "leakdetector.h"
 #include "logger.h"
+#include "module.h"
 #include "moduleholder.h"
-#include "mozillavpn.h"
 
 namespace {
 Logger logger("LogSerializeWatcher");

@@ -18,6 +18,7 @@ INCLUDEPATH += \
             hacl-star \
             hacl-star/kremlin \
             hacl-star/kremlin/minimal \
+            products/vpn \
             ../lottie/lib
 
 DEPENDPATH  += $${INCLUDEPATH}

@@ -19,8 +19,6 @@ class Module : public QObject {
   Q_DISABLE_COPY_MOVE(Module)
 
  public:
-  static void load(QObject* parent);
-
   explicit Module(QObject* parent);
   virtual ~Module();
 

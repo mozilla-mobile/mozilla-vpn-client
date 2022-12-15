@@ -123,6 +123,7 @@ SOURCES += \
         networkmanager.cpp \
         networkrequest.cpp \
         notificationhandler.cpp \
+        products/vpn/product.cpp \
         products/vpn/commands/commandactivate.cpp \
         products/vpn/commands/commanddeactivate.cpp \
         products/vpn/commands/commanddevice.cpp \
@@ -269,7 +270,6 @@ HEADERS += \
         models/user.h \
         module.h \
         moduleholder.h \
-        modulelist.h \
         modules/vpn.h \
         modules/vpn/appimageprovider.h \
         modules/vpn/apppermission.h \
@@ -311,6 +311,7 @@ HEADERS += \
         networkmanager.h \
         networkrequest.h \
         notificationhandler.h \
+        product.h \
         products/vpn/commands/commandactivate.h \
         products/vpn/commands/commanddeactivate.h \
         products/vpn/commands/commanddevice.h \

@@ -15,6 +15,7 @@
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
+#include "module.h"
 #include "moduleholder.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"

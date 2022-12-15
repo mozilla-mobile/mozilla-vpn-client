@@ -10,6 +10,7 @@
 #include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
+#include "module.h"
 #include "moduleholder.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"

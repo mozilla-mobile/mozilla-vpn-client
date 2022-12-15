@@ -9,6 +9,7 @@
 #include "l18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "module.h"
 #include "moduleholder.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"

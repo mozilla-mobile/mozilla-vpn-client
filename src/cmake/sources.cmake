@@ -14,6 +14,7 @@ set_property(TARGET mozillavpn-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star
     ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin
     ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin/minimal
+    ${CMAKE_CURRENT_SOURCE_DIR}/products/vpn
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
@@ -192,7 +193,6 @@ target_sources(mozillavpn-sources INTERFACE
     module.h
     moduleholder.cpp
     moduleholder.h
-    modulelist.h
     modules/vpn.cpp
     modules/vpn.h
     modules/vpn/appimageprovider.h
@@ -270,6 +270,8 @@ target_sources(mozillavpn-sources INTERFACE
     networkrequest.h
     notificationhandler.cpp
     notificationhandler.h
+    product.h
+    products/vpn/product.cpp
     products/vpn/commands/commandactivate.cpp
     products/vpn/commands/commandactivate.h
     products/vpn/commands/commanddeactivate.cpp

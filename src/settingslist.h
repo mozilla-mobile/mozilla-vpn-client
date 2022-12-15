@@ -61,47 +61,6 @@ SETTING_BOOL(addonProdKeyInStaging,        // getter
              false                         // remove when reset
 )
 
-SETTING_BOOL(captivePortalAlert,        // getter
-             setCaptivePortalAlert,     // setter
-             removeCaptivePortalAlert,  // remover
-             hasCaptivePortalAlert,     // has
-             "captivePortalAlert",      // key
-             Feature::get(Feature::Feature_captivePortal)
-                 ->isSupported(),  // default value
-             true,                 // user setting
-             false                 // remove when reset
-)
-
-SETTING_STRINGLIST(captivePortalIpv4Addresses,        // getter
-                   setCaptivePortalIpv4Addresses,     // setter
-                   removeCaptivePortalIpv4Addresses,  // remover
-                   hasCaptivePortalIpv4Addresses,     // has
-                   "captivePortal/ipv4Addresses",     // key
-                   QStringList(),                     // default value
-                   false,                             // user setting
-                   false                              // remove when reset
-)
-
-SETTING_STRINGLIST(captivePortalIpv6Addresses,         // getter
-                   setCaptivePortalIpv6Addresses,      // setter
-                   removerCaptivePortalIpv6Addresses,  // remover
-                   hasCaptivePortalIpv6Addresses,      // has
-                   "captivePortal/ipv6Addresses",      // key
-                   QStringList(),                      // default value
-                   false,                              // user setting
-                   false                               // remove when reset
-)
-
-SETTING_BOOL(connectionChangeNotification,        // getter
-             setConnectionChangeNotification,     // setter
-             removeConnectionChangeNotification,  // remover
-             hasConnectionChangeNotification,     // has
-             "connectionChangeNotification",      // key
-             true,                                // default value
-             true,                                // user setting
-             false                                // remove when reset
-)
-
 SETTING_STRING(currentServerCityDeprecated,        // getter
                setCurrentServerCityDeprecated,     // setter
                removeCurrentServerCityDeprecated,  // remover
@@ -150,16 +109,6 @@ SETTING_BYTEARRAY(devices,        // getter
                   "",             // default value
                   false,          // user setting
                   true            // remove when reset
-)
-
-SETTING_INT(dnsProvider,                           // getter
-            setDNSProvider,                        // setter
-            removeDNSProvider,                     // remover
-            hasDNSProvider,                        // has
-            "dnsProvider",                         // key
-            SettingsHolder::DnsProvider::Gateway,  // default value
-            true,                                  // user setting
-            false                                  // remove when reset
 )
 
 SETTING_STRING(entryServerCityDeprecated,        // getter
@@ -253,16 +202,6 @@ SETTING_STRING(installedVersion,        // getter
                "",                      // default value
                false,                   // user setting
                false                    // remove when reset
-)
-
-SETTING_INT64(keyRegenerationTimeSec,        // getter
-              setKeyRegenerationTimeSec,     // setter
-              removeKeyRegenerationTimeSec,  // remover
-              hasKeyRegenerationTimeSec,     // has
-              "keyRegenerationTimeSec",      // key
-              0,                             // default value
-              false,                         // user setting
-              true                           // remove when reset
 )
 
 SETTING_STRING(languageCode,        // getter
@@ -654,3 +593,5 @@ SETTING_STRING(theme,          // getter
                true,           // user setting
                true            // remove when reset
 )
+
+#include "productsettingslist.h"

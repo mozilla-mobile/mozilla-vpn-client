@@ -8,10 +8,6 @@
 #include <QMap>
 #include <QQmlPropertyMap>
 
-#define MODULE(key, obj) static constexpr const char* Module_##key = #key;
-#include "modulelist.h"
-#undef MODULE
-
 class Module;
 
 class ModuleHolder final : public QQmlPropertyMap {

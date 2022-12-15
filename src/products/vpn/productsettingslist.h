@@ -2,10 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "module.h"
+// This file is used to include the setting list for this product and its
+// modules NOTE! do not include this file directly. Use settingslist.h instead.
 
-#include "leakdetector.h"
-
-Module::Module(QObject* parent) : QObject(parent) { MVPN_COUNT_CTOR(Module); }
-
-Module::~Module() { MVPN_COUNT_DTOR(Module); }
+#include "modules/vpn/settingslist.h"

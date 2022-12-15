@@ -11,6 +11,7 @@ include_directories(${MVPN_SOURCE_DIR}/composer)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin)
 include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin/minimal)
+include_directories(${MVPN_SOURCE_DIR}/products/vpn)
 include_directories(${CMAKE_SOURCE_DIR}/tests/unit)
 
 qt_add_executable(unit_tests EXCLUDE_FROM_ALL)
@@ -274,6 +275,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/notificationhandler.cpp
     ${MVPN_SOURCE_DIR}/notificationhandler.h
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummycryptosettings.cpp
+    ${MVPN_SOURCE_DIR}/product.h
+    ${MVPN_SOURCE_DIR}/products/vpn/product.cpp
     ${MVPN_SOURCE_DIR}/productshandler.cpp
     ${MVPN_SOURCE_DIR}/productshandler.h
     ${MVPN_SOURCE_DIR}/profileflow.cpp
