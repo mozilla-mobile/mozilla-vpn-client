@@ -19,8 +19,6 @@
 #include "tasks/sentry/tasksentry.h"
 #include "taskscheduler.h"
 
-#include "mozillavpn.h"
-
 namespace {
 SentryAdapter* s_instance = nullptr;
 Logger logger("Sentry");

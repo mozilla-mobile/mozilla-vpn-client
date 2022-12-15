@@ -4,6 +4,11 @@
 
 #include "tasksentry.h"
 
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
+#include <QStringList>
+
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -11,11 +16,6 @@
 #include "networkrequest.h"
 #include "sentry/sentryadapter.h"
 #include "settingsholder.h"
-
-#include <QStringList>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonValue>
 
 namespace {
 Logger logger("TaskSentry");
