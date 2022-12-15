@@ -1,7 +1,9 @@
 # To update, run:
 #
-#    pip-compile --resolver=backtracking --output-file=requirements.txt requirements.in
-#
+#  pip-compile --resolver=backtracking --output-file=requirements.txt requirements.in
+#  Please make sure to run this on the same version of python that us used in the CI
+#  Currently: python 3.6
+
 appdirs
 attrs
 click
