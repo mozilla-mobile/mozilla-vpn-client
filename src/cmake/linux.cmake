@@ -23,6 +23,8 @@ target_sources(mozillavpn PRIVATE
     modules/vpn/platforms/linux/linuxapplistprovider.h
     modules/vpn/platforms/linux/linuxcontroller.cpp
     modules/vpn/platforms/linux/linuxcontroller.h
+    modules/vpn/platforms/linux/linuxdependencies.cpp
+    modules/vpn/platforms/linux/linuxdependencies.h
     modules/vpn/platforms/linux/linuxnetworkwatcher.cpp
     modules/vpn/platforms/linux/linuxnetworkwatcher.h
     modules/vpn/platforms/linux/linuxnetworkwatcherworker.cpp
@@ -30,8 +32,6 @@ target_sources(mozillavpn PRIVATE
     modules/vpn/platforms/linux/linuxpingsender.cpp
     modules/vpn/platforms/linux/linuxpingsender.h
     platforms/linux/linuxcryptosettings.cpp
-    platforms/linux/linuxdependencies.cpp
-    platforms/linux/linuxdependencies.h
     platforms/linux/linuxsystemtraynotificationhandler.cpp
     platforms/linux/linuxsystemtraynotificationhandler.h
 )

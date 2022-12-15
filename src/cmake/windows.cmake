@@ -11,9 +11,9 @@ set_target_properties(mozillavpn PROPERTIES
 )
 # Todo: This will force the generation of a .pdb
 # ignoring buildmode. we need to fix the relwithdebug target
-# and then we can remove this :) 
+# and then we can remove this :)
 target_compile_options(mozillavpn
-    PRIVATE 
+    PRIVATE
     $<$<CONFIG:Release>:/ZI>
 )
 
@@ -39,41 +39,41 @@ target_sources(mozillavpn PRIVATE
     modules/vpn/daemon/wireguardutils.h
     modules/vpn/localsocketcontroller.cpp
     modules/vpn/localsocketcontroller.h
+    modules/vpn/platforms/windows/windowsapplistprovider.cpp
+    modules/vpn/platforms/windows/windowsapplistprovider.h
+    modules/vpn/platforms/windows/windowsappimageprovider.cpp
+    modules/vpn/platforms/windows/windowsappimageprovider.h
+    modules/vpn/platforms/windows/daemon/dnsutilswindows.cpp
+    modules/vpn/platforms/windows/daemon/dnsutilswindows.h
+    modules/vpn/platforms/windows/daemon/windowsdaemon.cpp
+    modules/vpn/platforms/windows/daemon/windowsdaemon.h
+    modules/vpn/platforms/windows/daemon/windowsdaemonserver.cpp
+    modules/vpn/platforms/windows/daemon/windowsdaemonserver.h
+    modules/vpn/platforms/windows/daemon/windowsdaemontunnel.cpp
+    modules/vpn/platforms/windows/daemon/windowsdaemontunnel.h
+    modules/vpn/platforms/windows/daemon/windowsroutemonitor.cpp
+    modules/vpn/platforms/windows/daemon/windowsroutemonitor.h
+    modules/vpn/platforms/windows/daemon/windowstunnellogger.cpp
+    modules/vpn/platforms/windows/daemon/windowstunnellogger.h
+    modules/vpn/platforms/windows/daemon/windowstunnelservice.cpp
+    modules/vpn/platforms/windows/daemon/windowstunnelservice.h
+    modules/vpn/platforms/windows/daemon/wireguardutilswindows.cpp
+    modules/vpn/platforms/windows/daemon/wireguardutilswindows.h
+    modules/vpn/platforms/windows/daemon/windowsfirewall.cpp
+    modules/vpn/platforms/windows/daemon/windowsfirewall.h
+    modules/vpn/platforms/windows/daemon/windowssplittunnel.cpp
+    modules/vpn/platforms/windows/daemon/windowssplittunnel.h
+    modules/vpn/platforms/windows/windowsnetworkwatcher.cpp
+    modules/vpn/platforms/windows/windowsnetworkwatcher.h
+    modules/vpn/platforms/windows/windowspingsender.cpp
+    modules/vpn/platforms/windows/windowspingsender.h
+    modules/vpn/platforms/windows/windowsservicemanager.cpp
+    modules/vpn/platforms/windows/windowsservicemanager.h
     modules/vpn/wgquickprocess.cpp
     modules/vpn/wgquickprocess.h
-    platforms/windows/windowsapplistprovider.cpp 
-    platforms/windows/windowsapplistprovider.h
-    platforms/windows/windowsappimageprovider.cpp
-    platforms/windows/windowsappimageprovider.h
-    platforms/windows/daemon/dnsutilswindows.cpp
-    platforms/windows/daemon/dnsutilswindows.h
-    platforms/windows/daemon/windowsdaemon.cpp
-    platforms/windows/daemon/windowsdaemon.h
-    platforms/windows/daemon/windowsdaemonserver.cpp
-    platforms/windows/daemon/windowsdaemonserver.h
-    platforms/windows/daemon/windowsdaemontunnel.cpp
-    platforms/windows/daemon/windowsdaemontunnel.h
-    platforms/windows/daemon/windowsroutemonitor.cpp
-    platforms/windows/daemon/windowsroutemonitor.h
-    platforms/windows/daemon/windowstunnellogger.cpp
-    platforms/windows/daemon/windowstunnellogger.h
-    platforms/windows/daemon/windowstunnelservice.cpp
-    platforms/windows/daemon/windowstunnelservice.h
-    platforms/windows/daemon/wireguardutilswindows.cpp
-    platforms/windows/daemon/wireguardutilswindows.h
-    platforms/windows/daemon/windowsfirewall.cpp
-    platforms/windows/daemon/windowsfirewall.h
-    platforms/windows/daemon/windowssplittunnel.cpp
-    platforms/windows/daemon/windowssplittunnel.h
-    platforms/windows/windowsservicemanager.cpp
-    platforms/windows/windowsservicemanager.h
     platforms/windows/windowscommons.cpp
     platforms/windows/windowscommons.h
     platforms/windows/windowscryptosettings.cpp
-    platforms/windows/windowsnetworkwatcher.cpp
-    platforms/windows/windowsnetworkwatcher.h
-    platforms/windows/windowspingsender.cpp
-    platforms/windows/windowspingsender.h
     platforms/windows/windowsstartatbootwatcher.cpp
     platforms/windows/windowsstartatbootwatcher.h
 )
@@ -91,7 +91,7 @@ include(cmake/golang.cmake)
 add_custom_target(balrogdll ALL
     BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/balrog.dll ${CMAKE_CURRENT_BINARY_DIR}/balrog.h
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/balrog
-    COMMAND ${CMAKE_COMMAND} -E env 
+    COMMAND ${CMAKE_COMMAND} -E env
                 GOCACHE=${CMAKE_BINARY_DIR}/go-cache
                 GOOS=windows CGO_ENABLED=1
                 CC=gcc

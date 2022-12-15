@@ -48,7 +48,7 @@
 
 #ifdef MVPN_LINUX
 #  include "eventlistener.h"
-#  include "platforms/linux/linuxdependencies.h"
+#  include "modules/vpn/platforms/linux/linuxdependencies.h"
 #endif
 
 #ifdef MVPN_MACOS
@@ -72,8 +72,8 @@
 #  include <iostream>
 
 #  include "eventlistener.h"
-#  include "platforms/windows/windowsappimageprovider.h"
-#  include "platforms/windows/windowsstartatbootwatcher.h"
+#  include "modules/vpn/platforms/windows/windowsappimageprovider.h"
+#  include "modules/vpn/platforms/windows/windowsstartatbootwatcher.h"
 #endif
 
 #ifdef MVPN_WASM

@@ -18,7 +18,7 @@
 #include <QObject>
 #include <QString>
 
-#include "../../modules/vpn/daemon/interfaceconfig.h"
+#include "modules/vpn/daemon/interfaceconfig.h"
 
 class IpAdressRange;
 struct FWP_VALUE0_;

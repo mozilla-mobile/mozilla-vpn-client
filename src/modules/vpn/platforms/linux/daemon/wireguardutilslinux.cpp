@@ -23,7 +23,7 @@
 
 #include "leakdetector.h"
 #include "logger.h"
-#include "platforms/linux/linuxdependencies.h"
+#include "modules/vpn/platforms/linux/linuxdependencies.h"
 
 // Import wireguard C library for Linux
 #if defined(__cplusplus)

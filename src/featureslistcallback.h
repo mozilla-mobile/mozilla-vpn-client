@@ -10,13 +10,13 @@
 #endif
 
 #ifdef MVPN_WINDOWS
-#  include "platforms/windows/daemon/windowssplittunnel.h"
+#  include "modules/vpn/platforms/windows/daemon/windowssplittunnel.h"
 #endif
 
 #ifdef MVPN_LINUX
 #  include <QProcessEnvironment>
 
-#  include "platforms/linux/linuxdependencies.h"
+#  include "modules/vpn/platforms/linux/linuxdependencies.h"
 #  include "update/versionapi.h"
 #endif
 
