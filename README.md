@@ -66,8 +66,9 @@ Qt6 can be installed in a number of ways:
     - iOS (if you'll be doing iOS work)
     - QT 5 Compatability Module
     - Additional Libraries
-     - Qt Networking Authorization
-     - Qt WebSockets
+       - Qt Networking Authorization
+       - Qt WebSockets
+    - Qt Debug Information Files
   - Developer and Designer Tools
     - CMake
     - Ninja
