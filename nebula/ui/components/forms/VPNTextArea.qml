@@ -82,12 +82,8 @@ Item {
 
             Connections {
                 target: window
-                function onRemoveFocus(x, y) {
-                    //Remove focus if the global point pressed is not contained by the global area of the text area
-                    let globalX = textArea.mapToItem(window.contentItem, 0, 0).x
-                    let globalY = textArea.mapToItem(window.contentItem, 0, 0).y
-                    if(x < globalX || x > globalX + textArea.width || y < globalY || y > globalY + textArea.height)
-                        textArea.focus = false
+                function onScreenClicked(x, y) {
+                    if(textArea.focus) window.removeFocus(textArea, x, y)
                 }
             }
 

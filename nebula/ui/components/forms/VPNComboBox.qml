@@ -207,12 +207,8 @@ ComboBox {
 
     Connections {
         target: window
-        function onRemoveFocus(x, y) {
-            //Remove focus if the global point pressed is not contained by the global area of the combo box
-            let globalX = combo.mapToItem(window.contentItem, 0, 0).x
-            let globalY = combo.mapToItem(window.contentItem, 0, 0).y
-            if(x < globalX || x > globalX + combo.width || y < globalY || y > globalY + combo.height)
-                combo.focus = false
+        function onScreenClicked(x, y) {
+            if(combo.focus) window.removeFocus(combo, x, y)
         }
     }
 }
