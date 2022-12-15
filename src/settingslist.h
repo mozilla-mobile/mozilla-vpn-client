@@ -202,16 +202,6 @@ SETTING_STRINGLIST(featuresFlippedOn,        // getter
                    false                     // remove when reset
 )
 
-SETTING_BOOL(featuresTourShown,        // getter
-             setFeaturesTourShown,     // setter
-             removeFeaturesTourShown,  // remover
-             hasFeaturesTourShown,     // has
-             "featuresTourShown",      // key
-             false,                    // default value
-             false,                    // user setting
-             false                     // remove when reset
-)
-
 // TODO - This would be better named "telemetryEnabled", but as we already
 // shipped with it called gleanEnabled it's non-trivial to change
 // the name. https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2050
@@ -383,16 +373,6 @@ SETTING_STRINGLIST(recentConnectionsDeprecated,        // getter
                    QStringList(),                      // default value
                    true,                               // user setting
                    true                                // remove when reset
-)
-
-SETTING_STRINGLIST(seenFeatures,        // getter
-                   setSeenFeatures,     // setter
-                   removeSeenFeatures,  // remover
-                   hasSeenFeatures,     // has
-                   "seenFeatures",      // key
-                   QStringList(),       // default value
-                   false,               // user setting
-                   false                // remove when reset
 )
 
 SETTING_BYTEARRAY(servers,        // getter
