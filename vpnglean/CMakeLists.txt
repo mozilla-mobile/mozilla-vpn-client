@@ -119,7 +119,7 @@ set_property(TARGET vpnglean APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
 ## Fixup any missing link dependencies to pass to the vpnglean consumer
 if(ANDROID)
     add_dependencies(vpnglean ndk_openssl_merged)
-elseif(LINUX)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     find_package(OpenSSL REQUIRED)
     set_property(TARGET vpnglean APPEND PROPERTY
         INTERFACE_LINK_LIBRARIES OpenSSL::SSL
