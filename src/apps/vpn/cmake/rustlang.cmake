@@ -59,39 +59,66 @@ function(build_rust_archives)
     set(RUST_BUILD_LIBRARY_FILE
         ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_BUILD_CRATE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}
     )
-    set(RUST_BUILD_DEPENDENCY_FILE
-        ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_BUILD_CRATE_NAME}.d
-    )
 
-    ## Suppress a Ninja warning about dependency file paths
-    cmake_policy(PUSH)
-    if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.20)
-        cmake_policy(SET CMP0116 NEW)
-    endif()
+    if(CMAKE_GENERATOR MATCHES "Ninja")
+        ## If we are building with Ninja, then we can improve build times by
+        # specifying a DEPFILE to let CMake know when the library needs
+        # building and when we can skip it.
+        #
+        # TODO: Since CMake 3.20 can also set a DEPFILE for Unix Makefiles too.
+        set(RUST_BUILD_DEPENDENCY_FILE
+            ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_BUILD_CRATE_NAME}.d
+        )
+        cmake_policy(PUSH)
+        if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.20)
+            cmake_policy(SET CMP0116 NEW)
+        endif()
 
-    ## Outputs for the release build
-    add_custom_command(
-        OUTPUT ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_BUILD_LIBRARY_FILE}
-        DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_BUILD_DEPENDENCY_FILE}
-        WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
-        COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                ${CARGO_BUILD_TOOL} build --lib --release --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
-    )
+        ## Outputs for the release build
+        add_custom_command(
+            OUTPUT ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_BUILD_LIBRARY_FILE}
+            DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_BUILD_DEPENDENCY_FILE}
+            WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
+            COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
+                    ${CARGO_BUILD_TOOL} build --lib --release --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
+        )
 
-    ## Outputs for the debug build
-    add_custom_command(
-        OUTPUT ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_BUILD_LIBRARY_FILE}
-        DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_BUILD_DEPENDENCY_FILE}
-        WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
-        COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                ${CARGO_BUILD_TOOL} build --lib --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
-    )
+        ## Outputs for the debug build
+        add_custom_command(
+            OUTPUT ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_BUILD_LIBRARY_FILE}
+            DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_BUILD_DEPENDENCY_FILE}
+            WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
+            COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
+                    ${CARGO_BUILD_TOOL} build --lib --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
+        )
 
-    ## Reset our policy changes
-    cmake_policy(POP)
+        ## Reset our policy changes
+        cmake_policy(POP)
+    else()
+        ## For all other generators, set a non-existent output file to force
+        # the command to be invoked on every build. This ensures that the
+        # library stays up todate with the sources, and relies on cargo to
+        # rebuild if necessary.
 
-    ## For apple builds, bundle the build artifacts into a unified library
-    if(APPLE)
+        ## Outputs for the release build
+        add_custom_command(
+            OUTPUT
+                ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_BUILD_LIBRARY_FILE}
+                ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/.noexist
+            WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
+            COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
+                    ${CARGO_BUILD_TOOL} build --lib --release --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
+        )
+
+        ## Outputs for the debug build
+        add_custom_command(
+            OUTPUT
+                ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_BUILD_LIBRARY_FILE}
+                ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/.noexist
+            WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
+            COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
+                    ${CARGO_BUILD_TOOL} build --lib --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
+        )
     endif()
 endfunction()
 
@@ -154,12 +181,14 @@ function(add_rust_library TARGET_NAME)
         add_custom_command(
             OUTPUT ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_TARGET_LIBRARY_FILE}
             DEPENDS ${RUST_TARGET_RELEASE_LIBS}
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${RUST_TARGET_BINARY_DIR}/unified/release
             COMMAND lipo -create -output ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_TARGET_LIBRARY_FILE}
                         ${RUST_TARGET_RELEASE_LIBS}
         )
         add_custom_command(
             OUTPUT ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_TARGET_LIBRARY_FILE}
             DEPENDS ${RUST_TARGET_DEBUG_LIBS}
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${RUST_TARGET_BINARY_DIR}/unified/debug
             COMMAND lipo -create -output ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_TARGET_LIBRARY_FILE}
                         ${RUST_TARGET_DEBUG_LIBS}
         )
