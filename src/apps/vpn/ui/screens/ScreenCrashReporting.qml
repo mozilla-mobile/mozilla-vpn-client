@@ -12,7 +12,7 @@ import components 0.1
 VPNFlickable {
     id: vpnFlickable
 
-    readonly property bool isMobile: window.fullScreenRequired()
+    readonly property bool isMobile: window.fullscreenRequired()
 
     flickContentHeight: content.implicitHeight
 
