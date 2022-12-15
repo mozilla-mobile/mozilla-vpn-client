@@ -3,7 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // This file is used to include the feature list for this product and its
-// modules NOTE! do not include this file directly. Use featureslist.h instead.
+// modules.
+
+//  NOTE! do not include this file directly. Use featureslist.h instead.
 
 #include "modules/vpn/featureslist.h"
 

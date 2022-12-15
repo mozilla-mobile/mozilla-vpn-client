@@ -9,17 +9,6 @@
 #  include "platforms/android/androidutils.h"
 #endif
 
-#ifdef MVPN_WINDOWS
-#  include "modules/vpn/platforms/windows/daemon/windowssplittunnel.h"
-#endif
-
-#ifdef MVPN_LINUX
-#  include <QProcessEnvironment>
-
-#  include "modules/vpn/platforms/linux/linuxdependencies.h"
-#  include "update/versionapi.h"
-#endif
-
 // Generic callback functions
 // --------------------------
 
@@ -48,44 +37,10 @@ bool FeatureCallback_accountDeletion() {
 #endif
 }
 
-bool FeatureCallback_captivePortal() {
-#if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS) || \
-    defined(MVPN_DUMMY) || defined(MVPN_WASM)
-  return true;
-#else
-  // If we decide to enable the captive-portal notification for
-  // IOS, remember to add the following keys/values in the
-  // ios/app/Info.plist:
-  // ```
-  // <key>NSAppTransportSecurity</key>
-  // <dict>
-  //   <key>NSAllowsArbitraryLoads</key>
-  //   <true/>
-  // </dict>
-  // ```
-  // NSAllowsArbitraryLoads allows the loading of HTTP
-  // (not-encrypted) requests. By default, IOS apps work in
-  // HTTPS-only mode.
-  return false;
-#endif
-}
-
 bool FeatureCallback_webPurchase() {
 #if defined(MVPN_IOS) || defined(MVPN_ANDROID) || defined(MVPN_WASM)
   return false;
 #else
-  return true;
-#endif
-}
-
-bool FeatureCallback_lanAccess() {
-#if defined(MVPN_IOS)
-  // managed by the OS automatically. No need to
-  // expose this feature.
-  return false;
-#else
-  // All the rest (android, windows, linux,
-  // mac,...) is OK.
   return true;
 #endif
 }
@@ -102,65 +57,9 @@ bool FeatureCallback_shareLogs() {
 #endif
 }
 
-bool FeatureCallback_splitTunnel() {
-#if defined(MVPN_ANDROID) || defined(MVPN_DUMMY)
-  return true;
-#elif defined(MVPN_WINDOWS)
-  return !WindowsSplitTunnel::detectConflict();
-#elif defined(MVPN_LINUX)
-  static bool initDone = false;
-  static bool splitTunnelSupported = false;
-  if (initDone) {
-    return splitTunnelSupported;
-  }
-  initDone = true;
-
-  /* Control groups v2 must be mounted for app/traffic classification
-   */
-  if (LinuxDependencies::findCgroup2Path().isNull()) {
-    return false;
-  }
-
-  /* Application tracking is only supported on GTK-based desktops
-   */
-  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
-  if (!pe.contains("XDG_CURRENT_DESKTOP")) {
-    return false;
-  }
-  QStringList desktop = pe.value("XDG_CURRENT_DESKTOP").split(":");
-  if (desktop.contains("GNOME")) {
-    QString shellVersion = LinuxDependencies::gnomeShellVersion();
-    if (shellVersion.isNull()) {
-      return false;
-    }
-    if (VersionApi::compareVersions(shellVersion, "3.34") < 0) {
-      return false;
-    }
-  }
-  // TODO: These shells need more testing.
-  else if (!desktop.contains("MATE") && !desktop.contains("Unity") &&
-           !desktop.contains("X-Cinnamon")) {
-    return false;
-  }
-  splitTunnelSupported = true;
-  return splitTunnelSupported;
-#else
-  return false;
-#endif
-}
-
 bool FeatureCallback_startOnBoot() {
 #if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS) || \
     defined(MVPN_DUMMY) || defined(MVPN_WASM) || defined(MVPN_ANDROID)
-  return true;
-#else
-  return false;
-#endif
-}
-
-bool FeatureCallback_unsecuredNetworkNotification() {
-#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS) || \
-    defined(MVPN_WASM) || defined(MVPN_DUMMY)
   return true;
 #else
   return false;
@@ -174,5 +73,7 @@ bool FeatureCallback_freeTrial() {
   return false;
 #endif
 }
+
+#include "productfeatureslistcallback.h"
 
 #endif  // FEATURELISTCALLBACK_H
