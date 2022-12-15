@@ -747,6 +747,9 @@ global:
   copied:
     value: Copied!
     comment: Confirmation banner displayed after clicking a button to copy something.
+  paste:
+    value: Paste
+    comment: Label for button to paste value from clipboard into input
 
 getHelp:
   helpCenter: Help Center
