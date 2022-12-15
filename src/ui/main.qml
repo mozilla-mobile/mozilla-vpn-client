@@ -18,7 +18,7 @@ Window {
     id: window
 
     signal showServerList
-    signal removeFocus(double x, double y)
+    signal screenClicked(double x, double y)
 
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
 
@@ -52,6 +52,16 @@ Window {
             return 48;
         default:
             return 20;
+        }
+    }
+
+    function removeFocus(item, x, y) {
+        //Remove focus if the global point pressed is not contained by the global area of the text field
+        if(item.focus) {
+            let globalX = item.mapToItem(window.contentItem, 0, 0).x
+            let globalY = item.mapToItem(window.contentItem, 0, 0).y
+            if(x < globalX || x > globalX + item.width || y < globalY || y > globalY + item.height)
+                item.focus = false
         }
     }
 
@@ -104,7 +114,7 @@ Window {
         anchors.fill: parent
         z: VPNTheme.theme.maxZLevel
         onPressed: (mouse) => {
-            window.removeFocus(mouse.x, mouse.y)
+            window.screenClicked(mouse.x, mouse.y)
             mouse.accepted = false
         }
     }
