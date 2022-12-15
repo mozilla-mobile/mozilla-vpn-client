@@ -1,6 +1,6 @@
 # To update, run:
 #
-#    pip-compile --resolver=backtracking  --generate-hashes --output-file=requirements.txt requirements.in
+#    pip-compile --resolver=backtracking --output-file=requirements.txt requirements.in
 #
 appdirs
 attrs
@@ -11,6 +11,7 @@ glean_parser
 Jinja2
 jsonschema
 MarkupSafe
+autocommand==2.2.1
 oathtool
 pathspec
 pyrsistent
