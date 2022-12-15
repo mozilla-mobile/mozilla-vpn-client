@@ -2,15 +2,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "platforms/android/androidnotificationhandler.h"
+#include "androidnotificationhandler.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "androidvpnactivity.h"
 #include "l18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "modules/vpn/platforms/android/androidvpnactivity.h"
 
 namespace {
 Logger logger("AndroidNotificationHandler");

@@ -24,16 +24,16 @@ target_link_libraries(
 target_sources(mozillavpn PRIVATE
     modules/vpn/platforms/linux/linuxpingsender.cpp
     modules/vpn/platforms/linux/linuxpingsender.h
+    modules/vpn/platforms/android/androidappimageprovider.cpp
+    modules/vpn/platforms/android/androidappimageprovider.h
     modules/vpn/platforms/android/androidcontroller.cpp
+    modules/vpn/platforms/android/androidapplistprovider.cpp
+    modules/vpn/platforms/android/androidapplistprovider.h
     modules/vpn/platforms/android/androidcontroller.h
     modules/vpn/platforms/android/androidnetworkwatcher.cpp
     modules/vpn/platforms/android/androidnetworkwatcher.h
     modules/vpn/platforms/android/androidvpnactivity.cpp
     modules/vpn/platforms/android/androidvpnactivity.h
-    modules/vpn/platforms/android/androidappimageprovider.cpp
-    modules/vpn/platforms/android/androidappimageprovider.h
-    modules/vpn/platforms/android/androidapplistprovider.cpp
-    modules/vpn/platforms/android/androidapplistprovider.h
     platforms/android/androidglean.cpp
     platforms/android/androidglean.h
     platforms/android/androidiaphandler.cpp

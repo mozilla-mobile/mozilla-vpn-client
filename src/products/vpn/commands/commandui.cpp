@@ -73,7 +73,7 @@
 
 #  include "eventlistener.h"
 #  include "modules/vpn/platforms/windows/windowsappimageprovider.h"
-#  include "modules/vpn/platforms/windows/windowsstartatbootwatcher.h"
+#  include "platforms/windows/windowsstartatbootwatcher.h"
 #endif
 
 #ifdef MVPN_WASM
