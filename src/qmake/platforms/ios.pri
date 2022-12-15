@@ -57,7 +57,7 @@ LIBS += -framework Network
 DEFINES += MVPN_IOS
 
 SOURCES += \
-    platforms/macos/macospingsender.cpp \
+    modules/vpn/platforms/macos/macospingsender.cpp \
     tasks/purchase/taskpurchase.cpp
 
 OBJECTIVE_SOURCES += \
@@ -70,7 +70,7 @@ OBJECTIVE_SOURCES += \
     platforms/macos/macoscryptosettings.mm
 
 HEADERS += \
-    platforms/macos/macospingsender.h \
+    modules/vpn/platforms/macos/macospingsender.h \
     tasks/purchase/taskpurchase.h
 
 OBJECTIVE_HEADERS += \

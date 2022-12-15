@@ -49,8 +49,8 @@ target_sources(mozillavpn PRIVATE
     modules/vpn/platforms/ios/iosglue.mm
     modules/vpn/platforms/ios/iosnetworkwatcher.mm
     modules/vpn/platforms/ios/iosnetworkwatcher.h
-    platforms/macos/macospingsender.cpp
-    platforms/macos/macospingsender.h
+    modules/vpn/platforms/macos/macospingsender.cpp
+    modules/vpn/platforms/macos/macospingsender.h
     platforms/ios/iosiaphandler.mm
     platforms/ios/iosiaphandler.h
     platforms/ios/iosnotificationhandler.mm

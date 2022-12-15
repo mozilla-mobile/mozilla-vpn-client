@@ -52,33 +52,33 @@ target_sources(mozillavpn PRIVATE
     modules/vpn/localsocketcontroller.h
     modules/vpn/platforms/ios/iosnetworkwatcher.mm
     modules/vpn/platforms/ios/iosnetworkwatcher.h
+    modules/vpn/platforms/macos/daemon/dnsutilsmacos.cpp
+    modules/vpn/platforms/macos/daemon/dnsutilsmacos.h
+    modules/vpn/platforms/macos/daemon/iputilsmacos.cpp
+    modules/vpn/platforms/macos/daemon/iputilsmacos.h
+    modules/vpn/platforms/macos/daemon/macosdaemon.cpp
+    modules/vpn/platforms/macos/daemon/macosdaemon.h
+    modules/vpn/platforms/macos/daemon/macosdaemonserver.cpp
+    modules/vpn/platforms/macos/daemon/macosdaemonserver.h
+    modules/vpn/platforms/macos/daemon/macosroutemonitor.cpp
+    modules/vpn/platforms/macos/daemon/macosroutemonitor.h
+    modules/vpn/platforms/macos/daemon/wireguardutilsmacos.cpp
+    modules/vpn/platforms/macos/daemon/wireguardutilsmacos.h
+    modules/vpn/platforms/macos/macospingsender.cpp
+    modules/vpn/platforms/macos/macospingsender.h
+    modules/vpn/platforms/macos/macosnetworkwatcher.mm
+    modules/vpn/platforms/macos/macosnetworkwatcher.h
     modules/vpn/wgquickprocess.cpp
     modules/vpn/wgquickprocess.h
-    platforms/macos/daemon/dnsutilsmacos.cpp
-    platforms/macos/daemon/dnsutilsmacos.h
-    platforms/macos/daemon/iputilsmacos.cpp
-    platforms/macos/daemon/iputilsmacos.h
-    platforms/macos/daemon/macosdaemon.cpp
-    platforms/macos/daemon/macosdaemon.h
-    platforms/macos/daemon/macosdaemonserver.cpp
-    platforms/macos/daemon/macosdaemonserver.h
-    platforms/macos/daemon/macosroutemonitor.cpp
-    platforms/macos/daemon/macosroutemonitor.h
-    platforms/macos/daemon/wireguardutilsmacos.cpp
-    platforms/macos/daemon/wireguardutilsmacos.h
     platforms/macos/macosauthenticationlistener.cpp
     platforms/macos/macosauthenticationlistener.h
     platforms/macos/macosmenubar.cpp
     platforms/macos/macosmenubar.h
-    platforms/macos/macospingsender.cpp
-    platforms/macos/macospingsender.h
     platforms/macos/macosstartatbootwatcher.cpp
     platforms/macos/macosstartatbootwatcher.h
     platforms/macos/macossystemtraynotificationhandler.cpp
     platforms/macos/macossystemtraynotificationhandler.h
     platforms/macos/macoscryptosettings.mm
-    platforms/macos/macosnetworkwatcher.mm
-    platforms/macos/macosnetworkwatcher.h
     platforms/macos/macosstatusicon.mm
     platforms/macos/macosstatusicon.h
     platforms/macos/macosutils.mm
