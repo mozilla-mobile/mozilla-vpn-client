@@ -142,5 +142,5 @@ bool Tutorial::maybeBlockRequest(ExternalOpHandler::Op op) {
 void Tutorial::interruptAccepted(ExternalOpHandler::Op op) {
   logger.debug() << "Interrupt by the user";
   stop();
-  ExternalOpHandler::instance()->request(op);
+  (void)ExternalOpHandler::instance()->request(op);
 }

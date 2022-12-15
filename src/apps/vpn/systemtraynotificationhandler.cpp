@@ -78,12 +78,13 @@ void SystemTrayNotificationHandler::createStatusMenu() {
   m_statusLabel->setEnabled(false);
 
   m_lastLocationLabel = m_menu->addAction("", []() {
-    ExternalOpHandler::instance()->request(ExternalOpHandler::OpActivate);
+    (void)ExternalOpHandler::instance()->request(ExternalOpHandler::OpActivate);
   });
   m_lastLocationLabel->setEnabled(false);
 
   m_disconnectAction = m_menu->addAction("", []() {
-    ExternalOpHandler::instance()->request(ExternalOpHandler::OpDeactivate);
+    (void)ExternalOpHandler::instance()->request(
+        ExternalOpHandler::OpDeactivate);
   });
 
   m_separator = m_menu->addSeparator();
@@ -94,7 +95,7 @@ void SystemTrayNotificationHandler::createStatusMenu() {
   m_menu->addSeparator();
 
   m_quitAction = m_menu->addAction("", []() {
-    ExternalOpHandler::instance()->request(ExternalOpHandler::OpQuit);
+    (void)ExternalOpHandler::instance()->request(ExternalOpHandler::OpQuit);
   });
 }
 
