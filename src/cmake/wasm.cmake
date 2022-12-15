@@ -3,8 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 target_sources(mozillavpn PRIVATE
-    platforms/dummy/dummycontroller.cpp
-    platforms/dummy/dummycontroller.h
+    modules/vpn/platforms/dummy/dummycontroller.cpp
+    modules/vpn/platforms/dummy/dummycontroller.h
     platforms/dummy/dummycryptosettings.cpp
     platforms/macos/macosmenubar.cpp
     platforms/macos/macosmenubar.h

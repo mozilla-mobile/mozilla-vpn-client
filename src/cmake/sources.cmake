@@ -268,6 +268,12 @@ target_sources(mozillavpn-sources INTERFACE
     modules/vpn/pingsender.h
     modules/vpn/pingsenderfactory.cpp
     modules/vpn/pingsenderfactory.h
+    modules/vpn/platforms/dummy/dummyapplistprovider.cpp
+    modules/vpn/platforms/dummy/dummyapplistprovider.h
+    modules/vpn/platforms/dummy/dummynetworkwatcher.cpp
+    modules/vpn/platforms/dummy/dummynetworkwatcher.h
+    modules/vpn/platforms/dummy/dummypingsender.cpp
+    modules/vpn/platforms/dummy/dummypingsender.h
     modules/vpn/serverlatency.cpp
     modules/vpn/serverlatency.h
     modules/vpn/taskcontrolleraction.cpp
@@ -282,12 +288,6 @@ target_sources(mozillavpn-sources INTERFACE
     networkrequest.h
     notificationhandler.cpp
     notificationhandler.h
-    platforms/dummy/dummyapplistprovider.cpp
-    platforms/dummy/dummyapplistprovider.h
-    platforms/dummy/dummynetworkwatcher.cpp
-    platforms/dummy/dummynetworkwatcher.h
-    platforms/dummy/dummypingsender.cpp
-    platforms/dummy/dummypingsender.h
     productshandler.cpp
     productshandler.h
     profileflow.cpp

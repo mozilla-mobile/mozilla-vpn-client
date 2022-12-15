@@ -122,6 +122,9 @@ SOURCES += \
         modules/vpn/pinghelper.cpp \
         modules/vpn/pingsender.cpp \
         modules/vpn/pingsenderfactory.cpp \
+        modules/vpn/platforms/dummy/dummyapplistprovider.cpp \
+        modules/vpn/platforms/dummy/dummynetworkwatcher.cpp \
+        modules/vpn/platforms/dummy/dummypingsender.cpp \
         modules/vpn/serverlatency.cpp \
         modules/vpn/taskcontrolleraction.cpp \
         modules/vpn/telemetry.cpp \
@@ -129,9 +132,6 @@ SOURCES += \
         networkmanager.cpp \
         networkrequest.cpp \
         notificationhandler.cpp \
-        platforms/dummy/dummyapplistprovider.cpp \
-        platforms/dummy/dummynetworkwatcher.cpp \
-        platforms/dummy/dummypingsender.cpp \
         productshandler.cpp \
         purchasehandler.cpp \
         purchaseiaphandler.cpp \
@@ -310,6 +310,9 @@ HEADERS += \
         modules/vpn/pinghelper.h \
         modules/vpn/pingsender.h \
         modules/vpn/pingsenderfactory.h \
+        modules/vpn/platforms/dummy/dummyapplistprovider.h \
+        modules/vpn/platforms/dummy/dummynetworkwatcher.h \
+        modules/vpn/platforms/dummy/dummypingsender.h \
         modules/vpn/serverlatency.h \
         modules/vpn/taskcontrolleraction.h \
         modules/vpn/telemetry.h \
@@ -317,9 +320,6 @@ HEADERS += \
         networkmanager.h \
         networkrequest.h \
         notificationhandler.h \
-        platforms/dummy/dummyapplistprovider.h \
-        platforms/dummy/dummynetworkwatcher.h \
-        platforms/dummy/dummypingsender.h \
         productshandler.h \
         profileflow.h \
         purchasehandler.h \

@@ -190,6 +190,10 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/modules/vpn/pingsender.h
     ${MVPN_SOURCE_DIR}/modules/vpn/pingsenderfactory.cpp
     ${MVPN_SOURCE_DIR}/modules/vpn/pingsenderfactory.h
+    ${MVPN_SOURCE_DIR}/modules/vpn/platforms/dummy/dummynetworkwatcher.cpp
+    ${MVPN_SOURCE_DIR}/modules/vpn/platforms/dummy/dummynetworkwatcher.h
+    ${MVPN_SOURCE_DIR}/modules/vpn/platforms/dummy/dummypingsender.cpp
+    ${MVPN_SOURCE_DIR}/modules/vpn/platforms/dummy/dummypingsender.h
     ${MVPN_SOURCE_DIR}/modules/vpn/serverlatency.cpp
     ${MVPN_SOURCE_DIR}/modules/vpn/serverlatency.h
     ${MVPN_SOURCE_DIR}/modules/vpn/taskcontrolleraction.cpp
@@ -221,10 +225,6 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/theme.cpp
     ${MVPN_SOURCE_DIR}/theme.h
     ${MVPN_SOURCE_DIR}/platforms/dummy/dummycryptosettings.cpp
-    ${MVPN_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.cpp
-    ${MVPN_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.h
-    ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
-    ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.h
     ${MVPN_SOURCE_DIR}/qmlengineholder.cpp
     ${MVPN_SOURCE_DIR}/qmlengineholder.h
     ${MVPN_SOURCE_DIR}/update/updater.cpp
