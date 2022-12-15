@@ -30,10 +30,6 @@ SOURCES += \
         collator.cpp \
         command.cpp \
         commandlineparser.cpp \
-        commands/commanddevice.cpp \
-        commands/commandlogin.cpp \
-        commands/commandlogout.cpp \
-        commands/commandui.cpp \
         composer/composer.cpp \
         composer/composerblock.cpp \
         composer/composerblockbutton.cpp \
@@ -101,11 +97,6 @@ SOURCES += \
         modules/vpn/captiveportal/captiveportalrequest.cpp \
         modules/vpn/captiveportal/captiveportalrequesttask.cpp \
         modules/vpn/captiveportal/taskcaptiveportallookup.cpp \
-        modules/vpn/commands/commandactivate.cpp \
-        modules/vpn/commands/commanddeactivate.cpp \
-        modules/vpn/commands/commandselect.cpp \
-        modules/vpn/commands/commandservers.cpp \
-        modules/vpn/commands/commandstatus.cpp \
         modules/vpn/connectionbenchmark/benchmarktask.cpp \
         modules/vpn/connectionbenchmark/benchmarktaskping.cpp \
         modules/vpn/connectionbenchmark/benchmarktasktransfer.cpp \
@@ -132,6 +123,15 @@ SOURCES += \
         networkmanager.cpp \
         networkrequest.cpp \
         notificationhandler.cpp \
+        products/vpn/commands/commandactivate.cpp \
+        products/vpn/commands/commanddeactivate.cpp \
+        products/vpn/commands/commanddevice.cpp \
+        products/vpn/commands/commandlogin.cpp \
+        products/vpn/commands/commandlogout.cpp \
+        products/vpn/commands/commandselect.cpp \
+        products/vpn/commands/commandservers.cpp \
+        products/vpn/commands/commandstatus.cpp \
+        products/vpn/commands/commandui.cpp \
         productshandler.cpp \
         purchasehandler.cpp \
         purchaseiaphandler.cpp \
@@ -214,10 +214,6 @@ HEADERS += \
         collator.h \
         command.h \
         commandlineparser.h \
-        commands/commanddevice.h \
-        commands/commandlogin.h \
-        commands/commandlogout.h \
-        commands/commandui.h \
         composer/composer.h \
         composer/composerblock.h \
         composer/composerblockbutton.h \
@@ -286,11 +282,6 @@ HEADERS += \
         modules/vpn/captiveportal/captiveportalrequest.h \
         modules/vpn/captiveportal/captiveportalrequesttask.h \
         modules/vpn/captiveportal/taskcaptiveportallookup.h \
-        modules/vpn/commands/commandactivate.h \
-        modules/vpn/commands/commanddeactivate.h \
-        modules/vpn/commands/commandselect.h \
-        modules/vpn/commands/commandservers.h \
-        modules/vpn/commands/commandstatus.h \
         modules/vpn/connectionbenchmark/benchmarktask.h \
         modules/vpn/connectionbenchmark/benchmarktaskping.h \
         modules/vpn/connectionbenchmark/benchmarktasksentinel.h \
@@ -320,6 +311,15 @@ HEADERS += \
         networkmanager.h \
         networkrequest.h \
         notificationhandler.h \
+        products/vpn/commands/commandactivate.h \
+        products/vpn/commands/commanddeactivate.h \
+        products/vpn/commands/commanddevice.h \
+        products/vpn/commands/commandlogin.h \
+        products/vpn/commands/commandlogout.h \
+        products/vpn/commands/commandselect.h \
+        products/vpn/commands/commandservers.h \
+        products/vpn/commands/commandstatus.h \
+        products/vpn/commands/commandui.h \
         productshandler.h \
         profileflow.h \
         purchasehandler.h \

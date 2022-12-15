@@ -5,7 +5,6 @@
 #include "commandlineparser.h"
 
 #include "command.h"
-#include "commands/commandui.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"

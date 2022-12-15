@@ -79,14 +79,6 @@ target_sources(mozillavpn-sources INTERFACE
     command.h
     commandlineparser.cpp
     commandlineparser.h
-    commands/commanddevice.cpp
-    commands/commanddevice.h
-    commands/commandlogin.cpp
-    commands/commandlogin.h
-    commands/commandlogout.cpp
-    commands/commandlogout.h
-    commands/commandui.cpp
-    commands/commandui.h
     composer/composer.cpp
     composer/composer.h
     composer/composerblock.cpp
@@ -223,16 +215,6 @@ target_sources(mozillavpn-sources INTERFACE
     modules/vpn/captiveportal/captiveportalrequesttask.h
     modules/vpn/captiveportal/taskcaptiveportallookup.cpp
     modules/vpn/captiveportal/taskcaptiveportallookup.h
-    modules/vpn/commands/commandactivate.cpp
-    modules/vpn/commands/commandactivate.h
-    modules/vpn/commands/commanddeactivate.cpp
-    modules/vpn/commands/commanddeactivate.h
-    modules/vpn/commands/commandselect.cpp
-    modules/vpn/commands/commandselect.h
-    modules/vpn/commands/commandservers.cpp
-    modules/vpn/commands/commandservers.h
-    modules/vpn/commands/commandstatus.cpp
-    modules/vpn/commands/commandstatus.h
     modules/vpn/connectionbenchmark/benchmarktask.cpp
     modules/vpn/connectionbenchmark/benchmarktask.h
     modules/vpn/connectionbenchmark/benchmarktaskping.cpp
@@ -288,6 +270,24 @@ target_sources(mozillavpn-sources INTERFACE
     networkrequest.h
     notificationhandler.cpp
     notificationhandler.h
+    products/vpn/commands/commandactivate.cpp
+    products/vpn/commands/commandactivate.h
+    products/vpn/commands/commanddeactivate.cpp
+    products/vpn/commands/commanddeactivate.h
+    products/vpn/commands/commanddevice.cpp
+    products/vpn/commands/commanddevice.h
+    products/vpn/commands/commandlogin.cpp
+    products/vpn/commands/commandlogin.h
+    products/vpn/commands/commandlogout.cpp
+    products/vpn/commands/commandlogout.h
+    products/vpn/commands/commandselect.cpp
+    products/vpn/commands/commandselect.h
+    products/vpn/commands/commandservers.cpp
+    products/vpn/commands/commandservers.h
+    products/vpn/commands/commandstatus.cpp
+    products/vpn/commands/commandstatus.h
+    products/vpn/commands/commandui.cpp
+    products/vpn/commands/commandui.h
     productshandler.cpp
     productshandler.h
     profileflow.cpp
