@@ -156,8 +156,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/externalophandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/filterproxymodel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/filterproxymodel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/fontloader.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/fontloader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/frontend/navigator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/frontend/navigator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/frontend/navigatorreloader.cpp
@@ -191,10 +189,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/keyregenerator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/localizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/localizer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/logger.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/logger.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/loghandler.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/loghandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/logoutobserver.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/logoutobserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/main.cpp
@@ -279,7 +273,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/simplenetworkmanager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/statusicon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/statusicon.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/task.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/account/taskaccount.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/account/taskaccount.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/adddevice/taskadddevice.cpp
@@ -320,12 +313,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/sendfeedback/tasksendfeedback.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/servers/taskservers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/servers/taskservers.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/taskscheduler.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/taskscheduler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/telemetry.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/telemetry.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/temporarydir.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/temporarydir.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/theme.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/theme.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tutorial/tutorial.cpp

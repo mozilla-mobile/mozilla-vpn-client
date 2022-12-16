@@ -45,10 +45,6 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/apps/vpn/filterproxymodel.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/filterproxymodel.h
     ${MVPN_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/logger.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/logger.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/loghandler.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/loghandler.h
     ${MVPN_SOURCE_DIR}/apps/vpn/models/feature.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/models/feature.h
     ${MVPN_SOURCE_DIR}/apps/vpn/models/featuremodel.cpp
@@ -91,6 +87,10 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/shared/hkdf.h
     ${MVPN_SOURCE_DIR}/shared/ipaddress.cpp
     ${MVPN_SOURCE_DIR}/shared/ipaddress.h
+    ${MVPN_SOURCE_DIR}/shared/logger.cpp
+    ${MVPN_SOURCE_DIR}/shared/logger.h
+    ${MVPN_SOURCE_DIR}/shared/loghandler.cpp
+    ${MVPN_SOURCE_DIR}/shared/loghandler.h
     ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c
     ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20Poly1305_32.c
     ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Curve25519_51.c

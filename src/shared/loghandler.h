@@ -72,19 +72,17 @@ class LogHandler final : public QObject {
 
   static void setLocation(const QString& path);
 
-  static void enableDebug();
+  static void enableStderr();
 
  signals:
   void logEntryAdded(const QByteArray& log);
 
  private:
-  LogHandler(LogLevel m_minLogLevel, const MutexLocker& proofOfLock);
+  explicit LogHandler(const MutexLocker& proofOfLock);
 
   static LogHandler* maybeCreate(const MutexLocker& proofOfLock);
 
   void addLog(const Log& log, const MutexLocker& proofOfLock);
-
-  bool matchLogLevel(const Log& log, const MutexLocker& proofOfLock) const;
 
   void openLogFile(const MutexLocker& proofOfLock);
 
@@ -92,8 +90,7 @@ class LogHandler final : public QObject {
 
   static void cleanupLogFile(const MutexLocker& proofOfLock);
 
-  const LogLevel m_minLogLevel;
-  bool m_showDebug = false;
+  bool m_stderrEnabled = false;
 
   QFile* m_logFile = nullptr;
   QTextStream* m_output = nullptr;

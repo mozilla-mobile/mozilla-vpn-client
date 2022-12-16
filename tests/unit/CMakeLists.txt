@@ -139,10 +139,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/apps/vpn/itempicker.h
     ${MVPN_SOURCE_DIR}/apps/vpn/localizer.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/localizer.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/logger.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/logger.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/loghandler.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/loghandler.h
     ${MVPN_SOURCE_DIR}/apps/vpn/models/device.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/models/device.h
     ${MVPN_SOURCE_DIR}/apps/vpn/models/devicemodel.cpp
@@ -209,7 +205,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/apps/vpn/statusicon.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/statusicon.h
     ${MVPN_SOURCE_DIR}/apps/vpn/systemtraynotificationhandler.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/task.h
     ${MVPN_SOURCE_DIR}/apps/vpn/tasks/account/taskaccount.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/tasks/account/taskaccount.h
     ${MVPN_SOURCE_DIR}/apps/vpn/tasks/adddevice/taskadddevice.cpp
@@ -228,10 +223,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/apps/vpn/tasks/release/taskrelease.h
     ${MVPN_SOURCE_DIR}/apps/vpn/tasks/servers/taskservers.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/tasks/servers/taskservers.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/taskscheduler.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/taskscheduler.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/temporarydir.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/temporarydir.h
     ${MVPN_SOURCE_DIR}/apps/vpn/theme.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/theme.h
     ${MVPN_SOURCE_DIR}/apps/vpn/tutorial/tutorial.cpp
@@ -258,10 +249,18 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/apps/vpn/websocket/websockethandler.h
     ${MVPN_SOURCE_DIR}/shared/curve25519.cpp
     ${MVPN_SOURCE_DIR}/shared/curve25519.h
+    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c
+    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20Poly1305_32.c
+    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Curve25519_51.c
+    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Poly1305_32.c
     ${MVPN_SOURCE_DIR}/shared/ipaddress.cpp
     ${MVPN_SOURCE_DIR}/shared/ipaddress.h
     ${MVPN_SOURCE_DIR}/shared/leakdetector.cpp
     ${MVPN_SOURCE_DIR}/shared/leakdetector.h
+    ${MVPN_SOURCE_DIR}/shared/logger.cpp
+    ${MVPN_SOURCE_DIR}/shared/logger.h
+    ${MVPN_SOURCE_DIR}/shared/loghandler.cpp
+    ${MVPN_SOURCE_DIR}/shared/loghandler.h
     ${MVPN_SOURCE_DIR}/shared/rfc/rfc1918.cpp
     ${MVPN_SOURCE_DIR}/shared/rfc/rfc1918.h
     ${MVPN_SOURCE_DIR}/shared/rfc/rfc4193.cpp
@@ -270,10 +269,11 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/shared/rfc/rfc4291.h
     ${MVPN_SOURCE_DIR}/shared/rfc/rfc5735.cpp
     ${MVPN_SOURCE_DIR}/shared/rfc/rfc5735.h
-    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c
-    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20Poly1305_32.c
-    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Curve25519_51.c
-    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Poly1305_32.c
+    ${MVPN_SOURCE_DIR}/shared/task.h
+    ${MVPN_SOURCE_DIR}/shared/taskscheduler.cpp
+    ${MVPN_SOURCE_DIR}/shared/taskscheduler.h
+    ${MVPN_SOURCE_DIR}/shared/temporarydir.cpp
+    ${MVPN_SOURCE_DIR}/shared/temporarydir.h
 )
 
 # VPN Client UI resources

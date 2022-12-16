@@ -18,14 +18,24 @@ set_property(TARGET shared-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
 target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/curve25519.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/curve25519.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/fontloader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/fontloader.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20Poly1305_32.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star/Hacl_Curve25519_51.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star/Hacl_Poly1305_32.c
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/hawkauth.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/hawkauth.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/ipaddress.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/ipaddress.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/hkdf.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/hkdf.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/ipaddress.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/ipaddress.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/leakdetector.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/leakdetector.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/logger.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/logger.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/loghandler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/loghandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/rfc/rfc1112.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/rfc/rfc1112.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/rfc/rfc1918.cpp
@@ -36,8 +46,9 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/rfc/rfc4291.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/rfc/rfc5735.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/rfc/rfc5735.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20Poly1305_32.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star/Hacl_Curve25519_51.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star/Hacl_Poly1305_32.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/task.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/taskscheduler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/taskscheduler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/temporarydir.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/temporarydir.h
 )
