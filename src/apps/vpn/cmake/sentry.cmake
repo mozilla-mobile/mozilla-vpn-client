@@ -102,6 +102,6 @@ endif()
 
 # Add Sources that will be required anyway
 target_sources(mozillavpn PRIVATE
-    tasks/sentry/tasksentry.cpp
-    tasks/sentry/tasksentry.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/sentry/tasksentry.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/sentry/tasksentry.h
 )

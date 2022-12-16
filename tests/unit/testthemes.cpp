@@ -6,9 +6,9 @@
 
 #include <QQmlApplicationEngine>
 
-#include "../../src/qmlengineholder.h"
-#include "../../src/settingsholder.h"
-#include "../../src/theme.h"
+#include "qmlengineholder.h"
+#include "settingsholder.h"
+#include "theme.h"
 
 void TestThemes::loadTheme_data() {
   QTest::addColumn<QString>("theme");

@@ -14,11 +14,11 @@
 #include <QProcessEnvironment>
 #include <QTest>
 
-#include "../../src/authenticationinapp/authenticationinapp.h"
-#include "../../src/networkrequest.h"
-#include "../../src/tasks/authenticate/taskauthenticate.h"
-#include "../../src/tasks/deleteaccount/taskdeleteaccount.h"
-#include "../../src/tasks/function/taskfunction.h"
+#include "authenticationinapp/authenticationinapp.h"
+#include "networkrequest.h"
+#include "tasks/authenticate/taskauthenticate.h"
+#include "tasks/deleteaccount/taskdeleteaccount.h"
+#include "tasks/function/taskfunction.h"
 
 constexpr const char* PASSWORD = "12345678";
 

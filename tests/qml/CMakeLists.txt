@@ -6,9 +6,11 @@ get_filename_component(MVPN_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src ABSOLUTE)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${MVPN_SOURCE_DIR})
-include_directories(${MVPN_SOURCE_DIR}/hacl-star)
-include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin)
-include_directories(${MVPN_SOURCE_DIR}/hacl-star/kremlin/minimal)
+include_directories(${MVPN_SOURCE_DIR}/apps/vpn)
+include_directories(${MVPN_SOURCE_DIR}/shared)
+include_directories(${MVPN_SOURCE_DIR}/shared/hacl-star)
+include_directories(${MVPN_SOURCE_DIR}/shared/hacl-star/kremlin)
+include_directories(${MVPN_SOURCE_DIR}/shared/hacl-star/kremlin/minimal)
 
 qt_add_executable(qml_tests EXCLUDE_FROM_ALL)
 set_target_properties(qml_tests PROPERTIES FOLDER "Tests")
@@ -31,73 +33,73 @@ target_compile_definitions(qml_tests PRIVATE MVPN_DUMMY)
 
 # VPN Client source files
 target_sources(qml_tests PRIVATE
-    ${MVPN_SOURCE_DIR}/constants.h
-    ${MVPN_SOURCE_DIR}/controller.h
-    ${MVPN_SOURCE_DIR}/cryptosettings.cpp
-    ${MVPN_SOURCE_DIR}/cryptosettings.h
-    ${MVPN_SOURCE_DIR}/dnspingsender.cpp
-    ${MVPN_SOURCE_DIR}/dnspingsender.h
-    ${MVPN_SOURCE_DIR}/env.h
-    ${MVPN_SOURCE_DIR}/externalophandler.cpp
-    ${MVPN_SOURCE_DIR}/externalophandler.h
-    ${MVPN_SOURCE_DIR}/filterproxymodel.cpp
-    ${MVPN_SOURCE_DIR}/filterproxymodel.h
-    ${MVPN_SOURCE_DIR}/hawkauth.cpp
-    ${MVPN_SOURCE_DIR}/hawkauth.h
-    ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Chacha20.c
-    ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Chacha20Poly1305_32.c
-    ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Curve25519_51.c
-    ${MVPN_SOURCE_DIR}/hacl-star/Hacl_Poly1305_32.c
-    ${MVPN_SOURCE_DIR}/hkdf.cpp
-    ${MVPN_SOURCE_DIR}/hkdf.h
-    ${MVPN_SOURCE_DIR}/ipaddress.cpp
-    ${MVPN_SOURCE_DIR}/ipaddress.h
-    ${MVPN_SOURCE_DIR}/inspector/inspectorhandler.h
-    ${MVPN_SOURCE_DIR}/logger.cpp
-    ${MVPN_SOURCE_DIR}/logger.h
-    ${MVPN_SOURCE_DIR}/loghandler.cpp
-    ${MVPN_SOURCE_DIR}/loghandler.h
-    ${MVPN_SOURCE_DIR}/models/feature.cpp
-    ${MVPN_SOURCE_DIR}/models/feature.h
-    ${MVPN_SOURCE_DIR}/models/featuremodel.cpp
-    ${MVPN_SOURCE_DIR}/models/featuremodel.h
-    ${MVPN_SOURCE_DIR}/models/server.cpp
-    ${MVPN_SOURCE_DIR}/models/server.h
-    ${MVPN_SOURCE_DIR}/models/subscriptiondata.cpp
-    ${MVPN_SOURCE_DIR}/models/subscriptiondata.h
-    ${MVPN_SOURCE_DIR}/mozillavpn.h
-    ${MVPN_SOURCE_DIR}/networkmanager.cpp
-    ${MVPN_SOURCE_DIR}/networkmanager.h
-    ${MVPN_SOURCE_DIR}/networkrequest.cpp
-    ${MVPN_SOURCE_DIR}/networkrequest.h
-    ${MVPN_SOURCE_DIR}/settingsholder.cpp
-    ${MVPN_SOURCE_DIR}/settingsholder.h
-    ${MVPN_SOURCE_DIR}/theme.cpp
-    ${MVPN_SOURCE_DIR}/theme.h
-    ${MVPN_SOURCE_DIR}/pinghelper.cpp
-    ${MVPN_SOURCE_DIR}/pinghelper.h
-    ${MVPN_SOURCE_DIR}/pingsender.cpp
-    ${MVPN_SOURCE_DIR}/pingsender.h
-    ${MVPN_SOURCE_DIR}/pingsenderfactory.cpp
-    ${MVPN_SOURCE_DIR}/pingsenderfactory.h
-    ${MVPN_SOURCE_DIR}/platforms/dummy/dummycryptosettings.cpp
-    ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
-    ${MVPN_SOURCE_DIR}/platforms/dummy/dummypingsender.h
-    ${MVPN_SOURCE_DIR}/update/updater.cpp
-    ${MVPN_SOURCE_DIR}/update/updater.h
-    ${MVPN_SOURCE_DIR}/update/versionapi.cpp
-    ${MVPN_SOURCE_DIR}/update/versionapi.h
-    ${MVPN_SOURCE_DIR}/update/webupdater.cpp
-    ${MVPN_SOURCE_DIR}/update/webupdater.h
-    ${MVPN_SOURCE_DIR}/qmlengineholder.cpp
-    ${MVPN_SOURCE_DIR}/qmlengineholder.h
-    ${MVPN_SOURCE_DIR}/urlopener.cpp
-    ${MVPN_SOURCE_DIR}/urlopener.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/constants.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/controller.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/cryptosettings.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/cryptosettings.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/dnspingsender.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/dnspingsender.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/env.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/externalophandler.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/externalophandler.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/filterproxymodel.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/filterproxymodel.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/logger.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/logger.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/loghandler.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/loghandler.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/models/feature.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/models/feature.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/models/featuremodel.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/models/featuremodel.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/models/server.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/models/server.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/models/subscriptiondata.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/models/subscriptiondata.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/mozillavpn.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/networkmanager.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/networkmanager.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/networkrequest.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/networkrequest.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/settingsholder.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/settingsholder.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/theme.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/theme.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/pinghelper.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/pinghelper.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/pingsender.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/pingsender.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/pingsenderfactory.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/pingsenderfactory.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/platforms/dummy/dummycryptosettings.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/update/updater.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/update/updater.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/update/versionapi.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/update/versionapi.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/update/webupdater.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/update/webupdater.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/qmlengineholder.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/qmlengineholder.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/urlopener.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/urlopener.h
+    ${MVPN_SOURCE_DIR}/shared/hawkauth.cpp
+    ${MVPN_SOURCE_DIR}/shared/hawkauth.h
+    ${MVPN_SOURCE_DIR}/shared/hkdf.cpp
+    ${MVPN_SOURCE_DIR}/shared/hkdf.h
+    ${MVPN_SOURCE_DIR}/shared/ipaddress.cpp
+    ${MVPN_SOURCE_DIR}/shared/ipaddress.h
+    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c
+    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20Poly1305_32.c
+    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Curve25519_51.c
+    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Poly1305_32.c
 )
 
 # VPN Client UI resources
 target_sources(qml_tests PRIVATE
-    ${MVPN_SOURCE_DIR}/ui/ui.qrc
+    ${MVPN_SOURCE_DIR}/apps/vpn/ui/ui.qrc
 )
 
 # QML test source files

@@ -38,56 +38,56 @@ target_link_libraries(mozillavpn PRIVATE ${FW_NETWORK})
 
 # MacOS platform source files
 target_sources(mozillavpn PRIVATE
-    daemon/daemon.cpp
-    daemon/daemon.h
-    daemon/daemonlocalserver.cpp
-    daemon/daemonlocalserver.h
-    daemon/daemonlocalserverconnection.cpp
-    daemon/daemonlocalserverconnection.h
-    daemon/dnsutils.h
-    daemon/interfaceconfig.h
-    daemon/iputils.h
-    daemon/wireguardutils.h
-    localsocketcontroller.cpp
-    localsocketcontroller.h
-    platforms/macos/daemon/dnsutilsmacos.cpp
-    platforms/macos/daemon/dnsutilsmacos.h
-    platforms/macos/daemon/iputilsmacos.cpp
-    platforms/macos/daemon/iputilsmacos.h
-    platforms/macos/daemon/macosdaemon.cpp
-    platforms/macos/daemon/macosdaemon.h
-    platforms/macos/daemon/macosdaemonserver.cpp
-    platforms/macos/daemon/macosdaemonserver.h
-    platforms/macos/daemon/macosroutemonitor.cpp
-    platforms/macos/daemon/macosroutemonitor.h
-    platforms/macos/daemon/wireguardutilsmacos.cpp
-    platforms/macos/daemon/wireguardutilsmacos.h
-    platforms/macos/macosauthenticationlistener.cpp
-    platforms/macos/macosauthenticationlistener.h
-    platforms/macos/macosmenubar.cpp
-    platforms/macos/macosmenubar.h
-    platforms/macos/macospingsender.cpp
-    platforms/macos/macospingsender.h
-    platforms/macos/macosstartatbootwatcher.cpp
-    platforms/macos/macosstartatbootwatcher.h
-    platforms/macos/macossystemtraynotificationhandler.cpp
-    platforms/macos/macossystemtraynotificationhandler.h
-    wgquickprocess.cpp
-    wgquickprocess.h
-    platforms/macos/macoscryptosettings.mm
-    platforms/macos/macosnetworkwatcher.mm
-    platforms/macos/macosnetworkwatcher.h
-    platforms/macos/macosstatusicon.mm
-    platforms/macos/macosstatusicon.h
-    platforms/macos/macosutils.mm
-    platforms/macos/macosutils.h
-    platforms/ios/iosnetworkwatcher.mm
-    platforms/ios/iosnetworkwatcher.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemon.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemon.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemonlocalserver.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemonlocalserver.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemonlocalserverconnection.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemonlocalserverconnection.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/dnsutils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/interfaceconfig.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/iputils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/wireguardutils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/localsocketcontroller.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/localsocketcontroller.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/daemon/dnsutilsmacos.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/daemon/dnsutilsmacos.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/daemon/iputilsmacos.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/daemon/iputilsmacos.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/daemon/macosdaemon.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/daemon/macosdaemon.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/daemon/macosdaemonserver.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/daemon/macosdaemonserver.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/daemon/macosroutemonitor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/daemon/macosroutemonitor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/daemon/wireguardutilsmacos.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/daemon/wireguardutilsmacos.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosauthenticationlistener.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosauthenticationlistener.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosmenubar.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosmenubar.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macospingsender.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macospingsender.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosstartatbootwatcher.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosstartatbootwatcher.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macossystemtraynotificationhandler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macossystemtraynotificationhandler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/wgquickprocess.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/wgquickprocess.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macoscryptosettings.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosnetworkwatcher.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosnetworkwatcher.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosstatusicon.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosstatusicon.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosutils.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosutils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosnetworkwatcher.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosnetworkwatcher.h
 )
 
-include(cmake/osxtools.cmake)
-include(cmake/golang.cmake)
-include(cmake/signature.cmake)
+include(apps/vpn/cmake/osxtools.cmake)
+include(apps/vpn/cmake/golang.cmake)
+include(apps/vpn/cmake/signature.cmake)
 
 # Enable Balrog for update support.
 target_compile_definitions(mozillavpn PRIVATE MVPN_BALROG)
@@ -95,8 +95,8 @@ add_go_library(balrog-api ../balrog/balrog-api.go
     CGO_CFLAGS -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET})
 target_link_libraries(mozillavpn PRIVATE balrog-api)
 target_sources(mozillavpn PRIVATE
-    update/balrog.cpp
-    update/balrog.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/balrog.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/balrog.h
 )
 
 # Build the Wireguard Go tunnel
@@ -161,19 +161,3 @@ osx_bundle_assetcatalog(mozillavpn CATALOG ${CMAKE_SOURCE_DIR}/macos/app/Images.
 
 # Perform codesigning.
 osx_codesign_target(mozillavpn FORCE)
-
-#LD_RUNPATH_SEARCH_PATHS.name = "LD_RUNPATH_SEARCH_PATHS"
-#LD_RUNPATH_SEARCH_PATHS.value = '"$(inherited) @executable_path/../Frameworks"'
-#QMAKE_MAC_XCODE_SETTINGS += LD_RUNPATH_SEARCH_PATHS
-#
-#SWIFT_VERSION.name = "SWIFT_VERSION"
-#SWIFT_VERSION.value = "5.0"
-#QMAKE_MAC_XCODE_SETTINGS += SWIFT_VERSION
-#
-#CLANG_ENABLE_MODULES.name = "CLANG_ENABLE_MODULES"
-#CLANG_ENABLE_MODULES.value = 'YES'
-#QMAKE_MAC_XCODE_SETTINGS += CLANG_ENABLE_MODULES
-#
-#SWIFT_OPTIMIZATION_LEVEL.name = "SWIFT_OPTIMIZATION_LEVEL"
-#SWIFT_OPTIMIZATION_LEVEL.value = "-Onone"
-#QMAKE_MAC_XCODE_SETTINGS += SWIFT_OPTIMIZATION_LEVEL

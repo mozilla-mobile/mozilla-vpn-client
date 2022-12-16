@@ -4,11 +4,11 @@
 
 #include "testfeature.h"
 
-#include "../../src/adjust/adjustfiltering.h"
-#include "../../src/models/feature.h"
-#include "../../src/models/featuremodel.h"
-#include "../../src/settingsholder.h"
+#include "adjust/adjustfiltering.h"
 #include "helper.h"
+#include "models/feature.h"
+#include "models/featuremodel.h"
+#include "settingsholder.h"
 
 void TestFeature::flipOnOff() {
   SettingsHolder settingsHolder;

@@ -4,8 +4,8 @@
 
 #include "testsettings.h"
 
-#include "../../src/settingsholder.h"
 #include "helper.h"
+#include "settingsholder.h"
 
 void TestSettings::transactionErrors() {
   SettingsHolder settingsHolder;

@@ -9,9 +9,9 @@
 #include <QEventLoop>
 #include <QTest>
 
-#include "../../src/authenticationinapp/authenticationinapp.h"
-#include "../../src/authenticationinapp/incrementaldecoder.h"
-#include "../../src/tasks/authenticate/taskauthenticate.h"
+#include "authenticationinapp/authenticationinapp.h"
+#include "authenticationinapp/incrementaldecoder.h"
+#include "tasks/authenticate/taskauthenticate.h"
 
 class EventLoop final : public QEventLoop {
  public:

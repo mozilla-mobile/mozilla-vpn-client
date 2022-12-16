@@ -2,9 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "../../src/leakdetector.h"
 #include "constants.h"
 #include "helper.h"
+#include "leakdetector.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
 #include "task.h"

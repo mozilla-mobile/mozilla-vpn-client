@@ -6,7 +6,7 @@
 
 #include <QEventLoop>
 
-#include "../../src/statusicon.h"
+#include "statusicon.h"
 
 void TestStatusIcon::basic() {
   StatusIcon si;

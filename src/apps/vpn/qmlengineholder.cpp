@@ -9,10 +9,8 @@
 #include <QWindow>
 
 #include "leakdetector.h"
-#include "logger.h"
 
 namespace {
-Logger logger("QmlEngineHolder");
 QmlEngineHolder* s_instance = nullptr;
 }  // namespace
 

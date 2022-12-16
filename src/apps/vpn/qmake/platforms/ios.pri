@@ -17,24 +17,24 @@ adjust {
     DEFINES += MVPN_ADJUST
 
     SOURCES += \
-        adjust/adjustfiltering.cpp \
-        adjust/adjusthandler.cpp \
-        adjust/adjustproxy.cpp \
-        adjust/adjustproxyconnection.cpp \
-        adjust/adjustproxypackagehandler.cpp \
-        adjust/adjusttasksubmission.cpp
+        apps/vpn/adjust/adjustfiltering.cpp \
+        apps/vpn/adjust/adjusthandler.cpp \
+        apps/vpn/adjust/adjustproxy.cpp \
+        apps/vpn/adjust/adjustproxyconnection.cpp \
+        apps/vpn/adjust/adjustproxypackagehandler.cpp \
+        apps/vpn/adjust/adjusttasksubmission.cpp
 
-    OBJECTIVE_SOURCES += platforms/ios/iosadjusthelper.mm
+    OBJECTIVE_SOURCES += apps/vpn/platforms/ios/iosadjusthelper.mm
 
     HEADERS += \
-        adjust/adjustfiltering.h \
-        adjust/adjusthandler.h \
-        adjust/adjustproxy.h \
-        adjust/adjustproxyconnection.h \
-        adjust/adjustproxypackagehandler.h \
-        adjust/adjusttasksubmission.h
+        apps/vpn/adjust/adjustfiltering.h \
+        apps/vpn/adjust/adjusthandler.h \
+        apps/vpn/adjust/adjustproxy.h \
+        apps/vpn/adjust/adjustproxyconnection.h \
+        apps/vpn/adjust/adjustproxypackagehandler.h \
+        apps/vpn/adjust/adjusttasksubmission.h
 
-    OBJECTIVE_HEADERS += platforms/ios/iosadjusthelper.h
+    OBJECTIVE_HEADERS += apps/vpn/platforms/ios/iosadjusthelper.h
 }
 
 TARGET = "MozillaVPN"
@@ -57,37 +57,37 @@ LIBS += -framework Network
 DEFINES += MVPN_IOS
 
 SOURCES += \
-    platforms/macos/macospingsender.cpp \
-    tasks/purchase/taskpurchase.cpp
+    apps/vpn/platforms/macos/macospingsender.cpp \
+    apps/vpn/tasks/purchase/taskpurchase.cpp
 
 OBJECTIVE_SOURCES += \
-    platforms/ios/iosiaphandler.mm \
-    platforms/ios/ioscontroller.mm \
-    platforms/ios/iosglue.mm \
-    platforms/ios/iosnetworkwatcher.mm \
-    platforms/ios/iosnotificationhandler.mm \
-    platforms/ios/iosutils.mm \
-    platforms/macos/macoscryptosettings.mm
+    apps/vpn/platforms/ios/iosiaphandler.mm \
+    apps/vpn/platforms/ios/ioscontroller.mm \
+    apps/vpn/platforms/ios/iosglue.mm \
+    apps/vpn/platforms/ios/iosnetworkwatcher.mm \
+    apps/vpn/platforms/ios/iosnotificationhandler.mm \
+    apps/vpn/platforms/ios/iosutils.mm \
+    apps/vpn/platforms/macos/macoscryptosettings.mm
 
 HEADERS += \
-    platforms/macos/macospingsender.h \
-    tasks/purchase/taskpurchase.h
+    apps/vpn/platforms/macos/macospingsender.h \
+    apps/vpn/tasks/purchase/taskpurchase.h
 
 OBJECTIVE_HEADERS += \
-    platforms/ios/iosiaphandler.h \
-    platforms/ios/ioscontroller.h \
-    platforms/ios/iosnetworkwatcher.h \
-    platforms/ios/iosnotificationhandler.h \
-    platforms/ios/iosutils.h
+    apps/vpn/platforms/ios/iosiaphandler.h \
+    apps/vpn/platforms/ios/ioscontroller.h \
+    apps/vpn/platforms/ios/iosnetworkwatcher.h \
+    apps/vpn/platforms/ios/iosnotificationhandler.h \
+    apps/vpn/platforms/ios/iosutils.h
 
-QMAKE_INFO_PLIST= $$PWD/../../../ios/app/Info.plist
+QMAKE_INFO_PLIST= $$PWD/../../../../../ios/app/Info.plist
 QMAKE_ASSET_CATALOGS_APP_ICON = "AppIcon"
-QMAKE_ASSET_CATALOGS = $$PWD/../../../ios/app/Images.xcassets
+QMAKE_ASSET_CATALOGS = $$PWD/../../../../../ios/app/Images.xcassets
 
-app_launch_screen.files = $$files($$PWD/../../../ios/app/MozillaVPNLaunchScreen.storyboard)
+app_launch_screen.files = $$files(apps/vpn/../../../ios/app/MozillaVPNLaunchScreen.storyboard)
 QMAKE_BUNDLE_DATA += app_launch_screen
 
-ios_launch_screen_images.files = $$PWD/../../../ios/app/launch.png
+ios_launch_screen_images.files = $$PWD/../../../../../ios/app/launch.png
 QMAKE_BUNDLE_DATA += ios_launch_screen_images
 
 LD_RUNPATH_SEARCH_PATHS.name = "LD_RUNPATH_SEARCH_PATHS"
@@ -115,11 +115,11 @@ CURRENT_PROJECT_VERSION.value = "$$system(echo "$$VERSION" | cut -d. -f1).$$syst
 QMAKE_MAC_XCODE_SETTINGS += CURRENT_PROJECT_VERSION
 
 INFOPLIST_FILE.name = "INFOPLIST_FILE"
-INFOPLIST_FILE.value = $$PWD/../../../ios/app/Info.plist
+INFOPLIST_FILE.value = $$PWD/../../../../../ios/app/Info.plist
 QMAKE_MAC_XCODE_SETTINGS += INFOPLIST_FILE
 
 CODE_SIGN_ENTITLEMENTS.name = "CODE_SIGN_ENTITLEMENTS"
-CODE_SIGN_ENTITLEMENTS.value = $$PWD/../../../ios/app/main.entitlements
+CODE_SIGN_ENTITLEMENTS.value = $$PWD/../../../../../ios/app/main.entitlements
 QMAKE_MAC_XCODE_SETTINGS += CODE_SIGN_ENTITLEMENTS
 
 CODE_SIGN_IDENTITY.name = "CODE_SIGN_IDENTITY"

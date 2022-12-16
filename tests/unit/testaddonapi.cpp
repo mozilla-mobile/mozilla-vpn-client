@@ -6,13 +6,13 @@
 
 #include <QQmlApplicationEngine>
 
-#include "../../src/addons/addon.h"
-#include "../../src/addons/addonmessage.h"
-#include "../../src/addons/conditionwatchers/addonconditionwatcherjavascript.h"
-#include "../../src/models/feature.h"
-#include "../../src/qmlengineholder.h"
-#include "../../src/settingsholder.h"
+#include "addons/addon.h"
+#include "addons/addonmessage.h"
+#include "addons/conditionwatchers/addonconditionwatcherjavascript.h"
 #include "helper.h"
+#include "models/feature.h"
+#include "qmlengineholder.h"
+#include "settingsholder.h"
 
 void TestAddonApi::controller() {
   MozillaVPN vpn;

@@ -4,7 +4,7 @@
 
 #include "testurlopener.h"
 
-#include "../../src/urlopener.h"
+#include "urlopener.h"
 
 void TestUrlOpener::urlQueryReplacement_data() {
   QTest::addColumn<QUrl>("input");
