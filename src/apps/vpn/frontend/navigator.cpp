@@ -8,10 +8,10 @@
 #include <QQuickItem>
 
 #include "externalophandler.h"
+#include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loglevel.h"
-#include "models/feature.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
 

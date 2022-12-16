@@ -11,10 +11,10 @@
 #include <QJsonValue>
 #include <QScopeGuard>
 
+#include "feature.h"
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/feature.h"
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosiaphandler.h"

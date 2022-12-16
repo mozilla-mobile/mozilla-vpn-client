@@ -12,10 +12,9 @@
 #include "appconstants.h"
 #include "cryptosettings.h"
 #include "env.h"
+#include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/feature.h"
-#include "telemetry/gleansample.h"
 
 namespace {
 
@@ -48,7 +47,7 @@ SettingsHolder::SettingsHolder()
 #else
                  "mozilla_testing",
 #endif
-                 "vpn") {
+                 AppConstants::SETTINGS_APP_NAME) {
   MVPN_COUNT_CTOR(SettingsHolder);
 
   // The location changes after the initialization of the app. Let's store the
@@ -209,22 +208,13 @@ QString SettingsHolder::getReport() const {
 #include "settingslist.h"
 #undef SETTING
 
-QString SettingsHolder::placeholderUserDNS() const {
-  return AppConstants::PLACEHOLDER_USER_DNS;
-}
-
-void SettingsHolder::removeEntryServer() {
-  m_settings.remove("entryServer/countryCode");
-  m_settings.remove("entryServer/city");
-}
-
 // Addon specific
 
 void SettingsHolder::clearAddonSettings(const QString& group) {
   logger.debug() << "Clean up the settings for group" << group;
 
   const QString groupKey(
-      QString("%1/%2").arg(AppConstants::ADDON_SETTINGS_GROUP, group));
+      QString("%1/%2").arg(Constants::ADDON_SETTINGS_GROUP, group));
 
   m_settings.beginGroup(groupKey);
   m_settings.remove("");
@@ -236,8 +226,8 @@ void SettingsHolder::clearAddonSettings(const QString& group) {
 // static
 QString SettingsHolder::getAddonSettingKey(const AddonSettingQuery& query) {
   return QString("%1/%2/%3/%4")
-      .arg(AppConstants::ADDON_SETTINGS_GROUP, query.m_addonGroup,
-           query.m_addonId, query.m_setting);
+      .arg(Constants::ADDON_SETTINGS_GROUP, query.m_addonGroup, query.m_addonId,
+           query.m_setting);
 }
 
 QString SettingsHolder::getAddonSetting(const AddonSettingQuery& query) {

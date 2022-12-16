@@ -9,10 +9,10 @@
 #include <QUrlQuery>
 
 #include "appconstants.h"
+#include "feature.h"
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/feature.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "settingsholder.h"

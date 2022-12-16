@@ -28,7 +28,7 @@
 #elif MVPN_ANDROID
 #  include "platforms/android/androidutils.h"
 #elif MVPN_WINDOWS
-#  include "platforms/windows/windowscommons.h"
+#  include "platforms/windows/windowsutils.h"
 #endif
 
 // static
@@ -47,7 +47,7 @@ QString Device::currentDeviceName() {
       "WASM";
 #elif MVPN_WINDOWS
       QSysInfo::machineHostName() + " " + QSysInfo::productType() + " " +
-      WindowsCommons::WindowsVersion();
+      WindowsUtils::windowsVersion();
 #else
       QSysInfo::machineHostName() + " " + QSysInfo::productType() + " " +
       QSysInfo::productVersion();
@@ -65,7 +65,7 @@ QString Device::currentDeviceReport() {
   out << "Machine arch -> " << QSysInfo::currentCpuArchitecture() << Qt::endl;
   out << "OS -> " << QSysInfo::productType() << Qt::endl;
 #ifdef MVPN_WINDOWS
-  out << "OS Version -> " << WindowsCommons::WindowsVersion() << Qt::endl;
+  out << "OS Version -> " << WindowsUtils::windowsVersion() << Qt::endl;
 #else
   out << "OS Version -> " << QSysInfo::productVersion() << Qt::endl;
 #endif

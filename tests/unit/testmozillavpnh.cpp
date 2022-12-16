@@ -11,7 +11,7 @@
 void TestMozillaVPNh::osVersion() {
   QString expected;
 #ifdef MVPN_WINDOWS
-  expected = WindowsCommons::WindowsVersion();
+  expected = WindowsUtils::windowsVersion();
 #else
   expected = QSysInfo::productVersion();
 #endif

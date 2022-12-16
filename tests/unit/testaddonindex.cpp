@@ -6,7 +6,7 @@
 
 #include "addons/manager/addondirectory.h"
 #include "addons/manager/addonindex.h"
-#include "models/feature.h"
+#include "feature.h"
 #include "settingsholder.h"
 
 void TestAddonIndex::update_data() {

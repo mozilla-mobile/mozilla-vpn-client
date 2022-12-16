@@ -9,9 +9,9 @@
 #include "benchmarktasktransfer.h"
 #include "connectionhealth.h"
 #include "controller.h"
+#include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/feature.h"
 #include "mozillavpn.h"
 #include "taskscheduler.h"
 

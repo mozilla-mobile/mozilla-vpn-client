@@ -8,11 +8,11 @@
 #include <QScopeGuard>
 
 #include "constants.h"
-#include "featureslistcallback.h"
+#include "featurelistcallback.h"
 #include "l18nstrings.h"
 #include "logger.h"
 #include "settingsholder.h"
-#include "update/versionapi.h"
+#include "versionutils.h"
 
 namespace {
 Logger logger("Feature");
@@ -34,7 +34,7 @@ void Feature::maybeInitialize() {
   new Feature(#id, name, isMajor, displayNameId, shortDescId, descId, imgPath, \
               iconPath, linkUrl, releaseVersion, flippableOn, flippableOff,    \
               otherFeatureDependencies, callback);
-#include "featureslist.h"
+#include "featurelist.h"
 #undef FEATURE
   }
 }
@@ -70,10 +70,10 @@ Feature::Feature(const QString& id, const QString& name, bool isMajor,
   Q_ASSERT(s_featuresList);
   s_featuresList->append(this);
 
-  auto releaseVersion = VersionApi::stripMinor(aReleaseVersion);
-  auto currentVersion = VersionApi::stripMinor(Constants::versionString());
+  auto releaseVersion = VersionUtils::stripMinor(aReleaseVersion);
+  auto currentVersion = VersionUtils::stripMinor(Constants::versionString());
 
-  auto cmp = VersionApi::compareVersions(releaseVersion, currentVersion);
+  auto cmp = VersionUtils::compareVersions(releaseVersion, currentVersion);
   if (cmp == -1) {
     // Release version < currVersion
     m_released = true;

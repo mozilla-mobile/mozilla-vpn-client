@@ -8,6 +8,7 @@
 #include "appconstants.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "dnshelper.h"
+#include "feature.h"
 #include "frontend/navigator.h"
 #include "glean/glean.h"
 #include "leakdetector.h"
@@ -15,7 +16,6 @@
 #include "loghandler.h"
 #include "logoutobserver.h"
 #include "models/device.h"
-#include "models/feature.h"
 #include "models/recentconnections.h"
 #include "networkmanager.h"
 #include "productshandler.h"
@@ -43,8 +43,8 @@
 #include "taskscheduler.h"
 #include "telemetry/gleansample.h"
 #include "update/updater.h"
-#include "update/versionapi.h"
 #include "urlopener.h"
+#include "versionutils.h"
 #include "websocket/websockethandler.h"
 
 #ifdef SENTRY_ENABLED
@@ -1470,8 +1470,8 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
   Q_ASSERT(settingsHolder);
 
   if (settingsHolder->hasDeviceKeyVersion() &&
-      VersionApi::compareVersions(settingsHolder->deviceKeyVersion(),
-                                  "2.5.0") >= 0) {
+      VersionUtils::compareVersions(settingsHolder->deviceKeyVersion(),
+                                    "2.5.0") >= 0) {
     return;
   }
 
@@ -1603,4 +1603,8 @@ void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {
   }
 
   TaskScheduler::scheduleTask(new TaskGroup(refreshTasks));
+}
+
+QString MozillaVPN::placeholderUserDNS() const {
+  return AppConstants::PLACEHOLDER_USER_DNS;
 }

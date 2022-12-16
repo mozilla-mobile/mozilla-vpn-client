@@ -2,21 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// 1. Define the FEATURE macro
-// 2. include this file
-// 3. undefine the FEATURE macro
-
-// If you want to use the callback, include `featurelistcallback.h`
-
-#if defined(_MSVC_TRADITIONAL) && _MSVC_TRADITIONAL
-#  error No supported
-#endif
-
-#define FEATURE_SIMPLE(id, name, releaseVersion, flippableOn, flippableOff, \
-                       dependencies, callback)                              \
-  FEATURE(id, name, false, L18nStrings::Empty, L18nStrings::Empty,          \
-          L18nStrings::Empty, "", "", "", releaseVersion, flippableOn,      \
-          flippableOff, dependencies, callback)
+// NOTE! Do not include this file directly. Use featurelist.h instead.
 
 FEATURE_SIMPLE(accountDeletion,        // Feature ID
                "Account deletion",     // Feature name

@@ -6,11 +6,11 @@
 
 #include "controllerimpl.h"
 #include "dnshelper.h"
+#include "feature.h"
 #include "frontend/navigator.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/feature.h"
 #include "models/server.h"
 #include "mozillavpn.h"
 #include "rfc/rfc1112.h"
