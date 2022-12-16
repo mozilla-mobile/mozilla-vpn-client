@@ -2,23 +2,95 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
-linux/opt:
-    description: "Linux Build"
+task-defaults:
     treeherder:
-        symbol: B
-        kind: build
-        tier: 1
-        platform: linux/opt
+            symbol: B
+            kind: build
+            tier: 1
     worker-type: b-linux
+    requires-level: 1
+    worker:
+          max-run-time: 3600
+          chain-of-trust: true
+    run:
+          using: run-task
+          use-caches: true
+
+linux/source:
+    description: "Linux Source Build"
+    treeherder:
+        platform: linux/source
     worker:
         docker-image: {in-tree: build}
-        max-run-time: 3600
-        chain-of-trust: true
     release-artifacts:
         # release-artifacts expects file to be in /builds/worker/artifacts/
-        - target.tar.gz
+        - mozillavpn-sources.tar.gz
     run:
-        using: run-task
-        use-caches: true
         cwd: '{checkout}'
-        command: ./taskcluster/scripts/build/linux.sh
+        command: >-
+            ./scripts/linux/script.sh --source &&
+            tar -C .tmp -zvcf /builds/worker/artifacts/mozillavpn-sources.tar.gz .
+
+linxu/bionic:
+    description: "Linux Build (Ubuntu/Bionic)"
+    treeherder:
+        platform: linux/bionic
+    fetches:
+        build:
+            - artifact: mozillavpn-sources.tar.gz
+    dependencies:
+        build: build-linux/source
+    worker:
+        docker-image: {in-tree: linux-build-bionic}
+    release-artifacts:
+        - mozillavpn-bionic.tar.gz
+    run:
+        command: /builds/worker/linux.sh --ppa ppa:okirby/qt6-backports
+
+linux/focal:
+    description: "Linux Build (Ubuntu/Focal)"
+    treeherder:
+        platform: linux/focal
+    fetches:
+        build:
+            - artifact: mozillavpn-sources.tar.gz
+    dependencies:
+        build: build-linux/source
+    worker:
+        docker-image: {in-tree: linux-build-focal}
+    release-artifacts:
+        - mozillavpn-focal.tar.gz
+    run:
+        command: /builds/worker/linux.sh --ppa ppa:okirby/qt6-backports
+
+linux/jammy:
+    description: "Linux Build (Ubuntu/Jammy)"
+    treeherder:
+        platform: linux/jammy
+    fetches:
+        build:
+            - artifact: mozillavpn-sources.tar.gz
+    dependencies:
+        build: build-linux/source
+    worker:
+        docker-image: {in-tree: linux-build-jammy}
+    release-artifacts:
+        - mozillavpn-jammy.tar.gz
+    run:
+        command: /builds/worker/linux.sh
+
+linux/kinetic:
+    description: "Linux Build (Ubuntu/Kinetic)"
+    treeherder:
+        platform: linux/kinetic
+    fetches:
+        build:
+            - artifact: mozillavpn-sources.tar.gz
+    dependencies:
+        build: build-linux/source
+    worker:
+        docker-image: {in-tree: linux-build-kinetic}
+    release-artifacts:
+        - mozillavpn-kinetic.tar.gz
+    run:
+        command: /builds/worker/linux.sh
