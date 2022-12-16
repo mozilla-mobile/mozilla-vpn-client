@@ -148,14 +148,27 @@ function(add_rust_library TARGET_NAME)
         ## TODO: I would like to pull this from the package manifest.
         error("Mandatory argument CRATE_NAME was not found")
     endif()
-    if(NOT RUST_TARGET_ARCH)
-        set(RUST_TARGET_ARCH ${RUSTC_HOST_ARCH})
-    endif()
     if(NOT RUST_TARGET_BINARY_DIR)
         set(RUST_TARGET_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
     endif()
     if(NOT RUST_TARGET_PACKAGE_DIR)
         set(RUST_TARGET_PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+    endif()
+
+    # Guess the target architecture if not set.
+    if(NOT RUST_TARGET_ARCH)
+        if(CMAKE_CROSSCOMPILING)
+            # TODO: We could write something here for Android and IOS maybe
+            message(FATAL_ERROR "Unable to determine rust target architecture when cross compiling.")
+        elseif((CMAKE_SYSTEM_NAME STREQUAL "Darwin") AND CMAKE_OSX_ARCHITECTURES)
+            # Special case for MacOS universal binaries.
+            foreach(OSXARCH ${CMAKE_OSX_ARCHITECTURES})
+                string(REPLACE "arm64" "aarch64" OSXARCH ${OSXARCH})
+                list(APPEND RUST_TARGET_ARCH "${OSXARCH}-apple-darwin")
+            endforeach()
+        else()
+            set(RUST_TARGET_ARCH ${RUSTC_HOST_ARCH})
+        endif()
     endif()
 
     set(RUST_TARGET_LIBRARY_FILE

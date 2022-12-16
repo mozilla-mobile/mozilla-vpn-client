@@ -13,10 +13,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR}
     )
 
-    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-        # TODO: We should technically derive this from CMAKE_OSX_ARCHITECTURES
-        set(RUST_ARCH aarch64-apple-darwin x86_64-apple-darwin)
-    elseif(IOS)
+    if(IOS)
         set(RUST_ARCH aarch64-apple-ios x86_64-apple-ios)
     elseif(ANDROID)
         if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64")
@@ -35,9 +32,6 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
             OPENSSL_LIB_DIR=${openssl_libs}
             OPENSSL_INCLUDE_DIR=${ssl_module}/include
             AR=llvm-ar)
-    else()
-        # Just use the host arch and hope for the best.
-        set(RUST_ARCH ${RUSTC_HOST_ARCH})
     endif()
 
     ## Don't trust Xcode to provide us with a usable linker.
