@@ -38,7 +38,7 @@
 
     <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
 
-    <Icon Id="MozillaVPNMainIcon" SourceFile="../../src/ui/resources/logo.ico" />
+    <Icon Id="MozillaVPNMainIcon" SourceFile="../../src/apps/vpn/ui/resources/logo.ico" />
 
     <Property Id="ARPPRODUCTICON" Value="MozillaVPNMainIcon" />
     <Property Id="ARPURLINFOABOUT" Value="https://vpn.mozilla.org" />

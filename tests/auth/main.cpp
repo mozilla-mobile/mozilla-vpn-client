@@ -5,12 +5,12 @@
 #include <QCoreApplication>
 #include <QtTest/QtTest>
 
-#include "../../src/authenticationinapp/authenticationinapp.h"
-#include "../../src/constants.h"
-#include "../../src/leakdetector.h"
-#include "../../src/loghandler.h"
-#include "../../src/settingsholder.h"
-#include "../../src/simplenetworkmanager.h"
+#include "authenticationinapp/authenticationinapp.h"
+#include "constants.h"
+#include "leakdetector.h"
+#include "loghandler.h"
+#include "settingsholder.h"
+#include "simplenetworkmanager.h"
 #include "testemailvalidation.h"
 #include "testpasswordvalidation.h"
 #include "testsignupandin.h"

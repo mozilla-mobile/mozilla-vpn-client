@@ -22,6 +22,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
 endif()
 
 target_link_libraries(dummyvpn PRIVATE
+    shared-sources
     mozillavpn-sources
     glean
     lottie
@@ -31,9 +32,9 @@ target_link_libraries(dummyvpn PRIVATE
 )
 
 target_sources(dummyvpn PRIVATE
-    ${CMAKE_SOURCE_DIR}/src/platforms/dummy/dummycontroller.cpp
-    ${CMAKE_SOURCE_DIR}/src/platforms/dummy/dummycontroller.h
-    ${CMAKE_SOURCE_DIR}/src/platforms/dummy/dummycryptosettings.cpp
+    ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/dummy/dummycontroller.cpp
+    ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/dummy/dummycontroller.h
+    ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/dummy/dummycryptosettings.cpp
 )
 
 target_compile_definitions(dummyvpn PRIVATE MVPN_DEBUG)

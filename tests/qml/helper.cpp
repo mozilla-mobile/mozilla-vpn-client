@@ -7,7 +7,7 @@
 #include <glean.h>
 #include <nebula.h>
 
-#include "../../src/qmlengineholder.h"
+#include "qmlengineholder.h"
 
 TestHelper::TestHelper() {
   m_l18nstrings = L18nStrings::instance();

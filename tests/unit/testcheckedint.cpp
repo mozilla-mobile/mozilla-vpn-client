@@ -4,8 +4,8 @@
 
 #include "testcheckedint.h"
 
-#include "../../src/mfbt/checkedint.h"
 #include "helper.h"
+#include "mfbt/checkedint.h"
 
 // This file is mainly a copy from
 // https://searchfox.org/mozilla-central/source/mfbt/tests/TestCheckedInt.cpp

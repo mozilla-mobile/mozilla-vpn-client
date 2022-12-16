@@ -6,17 +6,17 @@
 
 #include <QQmlApplicationEngine>
 
-#include "../../src/addons/addon.h"
-#include "../../src/addons/addonmessage.h"
-#include "../../src/composer/composer.h"
-#include "../../src/composer/composerblockbutton.h"
-#include "../../src/composer/composerblockorderedlist.h"
-#include "../../src/composer/composerblocktext.h"
-#include "../../src/composer/composerblocktitle.h"
-#include "../../src/composer/composerblockunorderedlist.h"
-#include "../../src/qmlengineholder.h"
-#include "../../src/settingsholder.h"
+#include "addons/addon.h"
+#include "addons/addonmessage.h"
+#include "composer/composer.h"
+#include "composer/composerblockbutton.h"
+#include "composer/composerblockorderedlist.h"
+#include "composer/composerblocktext.h"
+#include "composer/composerblocktitle.h"
+#include "composer/composerblockunorderedlist.h"
 #include "helper.h"
+#include "qmlengineholder.h"
+#include "settingsholder.h"
 
 void TestComposer::generic_data() {
   QTest::addColumn<QJsonObject>("json");

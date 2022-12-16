@@ -7,11 +7,6 @@
 #include <QtMath>
 
 #include "leakdetector.h"
-#include "logger.h"
-
-namespace {
-Logger logger("IPAddress");
-}  // namespace
 
 IPAddress::IPAddress() { MVPN_COUNT_CTOR(IPAddress); }
 

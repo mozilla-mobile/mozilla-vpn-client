@@ -21,9 +21,8 @@
 #include <QScopeGuard>
 #include <QtEndian>
 
-#include "../../daemon/interfaceconfig.h"
-#include "../../ipaddress.h"
 #include "../windowscommons.h"
+#include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "winsock.h"

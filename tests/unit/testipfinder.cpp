@@ -6,10 +6,10 @@
 
 #include <QHostInfo>
 
-#include "../../src/networkrequest.h"
-#include "../../src/settingsholder.h"
-#include "../../src/tasks/ipfinder/taskipfinder.h"
 #include "helper.h"
+#include "networkrequest.h"
+#include "settingsholder.h"
+#include "tasks/ipfinder/taskipfinder.h"
 
 void TestIpFinder::ipv4AndIpv6() {
   SettingsHolder settingsHolder;

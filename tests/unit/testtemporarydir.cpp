@@ -4,7 +4,7 @@
 
 #include "testtemporarydir.h"
 
-#include "../../src/temporarydir.h"
+#include "temporarydir.h"
 
 void TestTemporaryDir::basic() {
   TemporaryDir td;

@@ -7,7 +7,7 @@
 #include <QCoreApplication>
 #include <QProcess>
 
-#include "../../src/logger.h"
+#include "logger.h"
 
 namespace {
 Logger logger("WgQuickProcess");

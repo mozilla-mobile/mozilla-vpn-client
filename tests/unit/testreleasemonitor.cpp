@@ -8,9 +8,9 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "../../src/releasemonitor.h"
-#include "../../src/update/versionapi.h"
 #include "helper.h"
+#include "releasemonitor.h"
+#include "update/versionapi.h"
 
 void TestReleaseMonitor::failure() {
   qDebug() << "SET";

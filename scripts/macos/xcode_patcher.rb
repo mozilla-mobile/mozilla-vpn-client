@@ -99,8 +99,8 @@ class XCodeprojPatcher
     group = @project.main_group.new_group('SwiftIntegration')
 
     [
-      'src/platforms/ios/ioscontroller.swift',
-      'src/platforms/ios/ioslogger.swift',
+      'src/apps/vpn/platforms/ios/ioscontroller.swift',
+      'src/apps/vpn/platforms/ios/ioslogger.swift',
     ].each { |filename|
       file = group.new_file(filename)
       @target_main.add_file_references([file])
@@ -287,9 +287,9 @@ class XCodeprojPatcher
     group = @project.main_group.new_group('SwiftIntegration')
 
     [
-      'src/platforms/ios/iostunnel.swift',
-      'src/platforms/ios/iosglue.mm',
-      'src/platforms/ios/ioslogger.swift',
+      'src/apps/vpn/platforms/ios/iostunnel.swift',
+      'src/apps/vpn/platforms/ios/iosglue.mm',
+      'src/apps/vpn/platforms/ios/ioslogger.swift',
     ].each { |filename|
       file = group.new_file(filename)
       @target_extension.add_file_references([file])

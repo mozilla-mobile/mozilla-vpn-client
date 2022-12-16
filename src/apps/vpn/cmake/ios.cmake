@@ -44,22 +44,22 @@ target_include_directories(mozillavpn PRIVATE ${Qt6Gui_PRIVATE_INCLUDE_DIRS})
 
 # iOS platform source files
 target_sources(mozillavpn PRIVATE
-    platforms/macos/macospingsender.cpp
-    platforms/macos/macospingsender.h
-    tasks/purchase/taskpurchase.cpp
-    tasks/purchase/taskpurchase.h
-    platforms/ios/iosiaphandler.mm
-    platforms/ios/iosiaphandler.h
-    platforms/ios/ioscontroller.mm
-    platforms/ios/ioscontroller.h
-    platforms/ios/iosglue.mm
-    platforms/ios/iosnetworkwatcher.mm
-    platforms/ios/iosnetworkwatcher.h
-    platforms/ios/iosnotificationhandler.mm
-    platforms/ios/iosnotificationhandler.h
-    platforms/ios/iosutils.mm
-    platforms/ios/iosutils.h
-    platforms/macos/macoscryptosettings.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macospingsender.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macospingsender.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/purchase/taskpurchase.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/purchase/taskpurchase.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosiaphandler.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosiaphandler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/ioscontroller.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/ioscontroller.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosglue.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosnetworkwatcher.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosnetworkwatcher.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosnotificationhandler.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosnotificationhandler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosutils.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosutils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macoscryptosettings.mm
 )
 
 # Include the Adjust SDK
@@ -67,20 +67,20 @@ if(BUILD_ADJUST_SDK_TOKEN)
     add_compile_definitions(MVPN_ADJUST)
     target_compile_options(mozillavpn PRIVATE -DADJUST_SDK_TOKEN=${BUILD_ADJUST_SDK_TOKEN})
     target_sources(mozillavpn PRIVATE
-        adjust/adjustfiltering.cpp
-        adjust/adjustfiltering.h
-        adjust/adjusthandler.cpp
-        adjust/adjusthandler.h
-        adjust/adjustproxy.cpp
-        adjust/adjustproxy.h
-        adjust/adjustproxyconnection.cpp
-        adjust/adjustproxyconnection.h
-        adjust/adjustproxypackagehandler.cpp
-        adjust/adjustproxypackagehandler.h
-        adjust/adjusttasksubmission.cpp
-        adjust/adjusttasksubmission.h
-        platforms/ios/iosadjusthelper.mm
-        platforms/ios/iosadjusthelper.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjustfiltering.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjustfiltering.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjusthandler.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjusthandler.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjustproxy.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjustproxy.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjustproxyconnection.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjustproxyconnection.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjustproxypackagehandler.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjustproxypackagehandler.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjusttasksubmission.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjusttasksubmission.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosadjusthelper.mm
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosadjusthelper.h
     )
     target_link_libraries(mozillavpn PRIVATE adjust)
 endif()
@@ -111,8 +111,8 @@ target_compile_options(mozillavpn PRIVATE
     -DVPN_NE_BUNDLEID=\"${BUILD_IOS_APP_IDENTIFIER}.network-extension\"
 )
 target_sources(mozillavpn PRIVATE
-    platforms/ios/ioscontroller.swift
-    platforms/ios/ioslogger.swift
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/ioscontroller.swift
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/ioslogger.swift
 )
 
 target_sources(mozillavpn PRIVATE

@@ -4,8 +4,8 @@
 
 #include "testipaddress.h"
 
-#include "../../src/ipaddress.h"
 #include "helper.h"
+#include "ipaddress.h"
 
 void TestIpAddress::ctor() {
   IPAddress ip;

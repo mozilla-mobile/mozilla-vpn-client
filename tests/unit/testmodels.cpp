@@ -8,17 +8,17 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "../../src/models/device.h"
-#include "../../src/models/devicemodel.h"
-#include "../../src/models/keys.h"
-#include "../../src/models/recentconnections.h"
-#include "../../src/models/servercity.h"
-#include "../../src/models/servercountry.h"
-#include "../../src/models/servercountrymodel.h"
-#include "../../src/models/serverdata.h"
-#include "../../src/models/user.h"
-#include "../../src/settingsholder.h"
 #include "helper.h"
+#include "models/device.h"
+#include "models/devicemodel.h"
+#include "models/keys.h"
+#include "models/recentconnections.h"
+#include "models/servercity.h"
+#include "models/servercountry.h"
+#include "models/servercountrymodel.h"
+#include "models/serverdata.h"
+#include "models/user.h"
+#include "settingsholder.h"
 
 // Device
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

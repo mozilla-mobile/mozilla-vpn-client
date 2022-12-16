@@ -4,8 +4,8 @@
 
 #include "testlicense.h"
 
-#include "../../src/settingsholder.h"
 #include "helper.h"
+#include "settingsholder.h"
 
 void TestLicense::parse() {
   LicenseModel lm;

@@ -6,7 +6,6 @@
 
 #include "constants.h"
 #include "leakdetector.h"
-#include "models/feature.h"
 
 #if MVPN_WINDOWS
 #  include "platforms/windows/windowscommons.h"

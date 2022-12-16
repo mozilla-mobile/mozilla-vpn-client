@@ -4,9 +4,9 @@
 
 #include "testnetworkmanager.h"
 
-#include "../../src/settingsholder.h"
-#include "../../src/simplenetworkmanager.h"
 #include "helper.h"
+#include "settingsholder.h"
+#include "simplenetworkmanager.h"
 
 void TestNetworkManager::basic() {
   SimpleNetworkManager snm;

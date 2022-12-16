@@ -26,38 +26,39 @@ addons/**/manifest.json @flodolo
 /signature/ @bakulf @birdsarah @brizental
 
 /src/ @birdsarah @bakulf
-/src/addons/ @brizental @bakulf
-/src/adjust/ @bakulf @birdsarah
-/src/authenticationinapp/ @bakulf @birdsarah
-/src/captiveportal/ @birdsarah @bakulf
-/src/cmake/ @oskirby
-/src/commands/ @bakulf @birdsarah
-/src/composer/ @bakulf @brizental
-/src/connectionbenchmark/ @bakulf @flozia
-/src/crashreporter/ @strseb
-/src/daemon/ @birdsarah @bakulf
-/src/frontend/ @lesleyjanenorton @MattLichtenstein @flozia
-/src/glean/ @brizental
-/src/hacl-star/ @bakulf @birdsarah
-/src/inspector/ @bakulf @oskirby @strseb
-/src/mfbt/ @bakulf @birdsarah
-/src/models/ @bakulf @birdsarah
-/src/platforms/android/ @strseb
-/src/platforms/dummy/ @bakulf @birdsarah
-/src/platforms/linux/ @oskirby @bakulf
-/src/platforms/ios/ @bakulf @birdsarah @mcleinman
-/src/platforms/macos/ @bakulf @birdsarah
-/src/platforms/windows/ @oskirby @bakulf
-/src/qmake/ @bakulf @oskirby
-/src/resources/ @birdsarah
-/src/rfc/ @oskirby @bakulf
-/src/sentry/ @strseb
-/src/server/ @birdsarah @bakulf
-src/tasks/ @bakulf @birdsarah
-/src/tutorial/ @bakulf @brizental
-/src/ui/ @lesleyjanenorton @MattLichtenstein @flozia
-/src/update/ @bakulf @birdsarah
-/src/websocket/ @brizental
+/src/shared @birdsarah @bakulf
+/src/apps/vpn/addons/ @brizental @bakulf
+/src/apps/vpn/adjust/ @bakulf @birdsarah
+/src/apps/vpn/authenticationinapp/ @bakulf @birdsarah
+/src/apps/vpn/captiveportal/ @birdsarah @bakulf
+/src/apps/vpn/cmake/ @oskirby
+/src/apps/vpn/commands/ @bakulf @birdsarah
+/src/apps/vpn/composer/ @bakulf @brizental
+/src/apps/vpn/connectionbenchmark/ @bakulf @flozia
+/src/apps/vpn/crashreporter/ @strseb
+/src/apps/vpn/daemon/ @birdsarah @bakulf
+/src/apps/vpn/frontend/ @lesleyjanenorton @MattLichtenstein @flozia
+/src/apps/vpn/glean/ @brizental
+/src/apps/vpn/hacl-star/ @bakulf @birdsarah
+/src/apps/vpn/inspector/ @bakulf @oskirby @strseb
+/src/apps/vpn/mfbt/ @bakulf @birdsarah
+/src/apps/vpn/models/ @bakulf @birdsarah
+/src/apps/vpn/platforms/android/ @strseb
+/src/apps/vpn/platforms/dummy/ @bakulf @birdsarah
+/src/apps/vpn/platforms/linux/ @oskirby @bakulf
+/src/apps/vpn/platforms/ios/ @bakulf @birdsarah @mcleinman
+/src/apps/vpn/platforms/macos/ @bakulf @birdsarah
+/src/apps/vpn/platforms/windows/ @oskirby @bakulf
+/src/apps/vpn/qmake/ @bakulf @oskirby
+/src/apps/vpn/resources/ @birdsarah
+/src/apps/vpn/rfc/ @oskirby @bakulf
+/src/apps/vpn/sentry/ @strseb
+/src/apps/vpn/server/ @birdsarah @bakulf
+src/apps/vpn/tasks/ @bakulf @birdsarah
+/src/apps/vpn/tutorial/ @bakulf @brizental
+/src/apps/vpn/ui/ @lesleyjanenorton @MattLichtenstein @flozia
+/src/apps/vpn/update/ @bakulf @birdsarah
+/src/apps/vpn/websocket/ @brizental
 
 /taskcluster/ @mozrokafor @strseb
 /tests/auth/ @bakulf @birdsarah

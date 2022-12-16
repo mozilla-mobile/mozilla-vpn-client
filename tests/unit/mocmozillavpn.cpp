@@ -2,9 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "../../src/controller.h"
-#include "../../src/mozillavpn.h"
+#include "controller.h"
 #include "helper.h"
+#include "mozillavpn.h"
 
 // The singleton.
 static MozillaVPN* s_instance = nullptr;

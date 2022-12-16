@@ -4,19 +4,15 @@
 
 #include "commandlineparser.h"
 
+#include <QTextStream>
+
 #include "command.h"
-#include "commands/commandui.h"
 #include "constants.h"
 #include "leakdetector.h"
-#include "logger.h"
-#include "mozillavpn.h"
-#include "settingsholder.h"
 
 constexpr const char* CLP_DEFAULT_COMMAND = "ui";
 
 namespace {
-Logger logger("CommandLineParser");
-
 int s_argc = 0;
 char** s_argv = nullptr;
 }  // namespace
