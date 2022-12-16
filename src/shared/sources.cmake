@@ -52,3 +52,12 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/temporarydir.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/temporarydir.h
 )
+
+# Signal handling for unix platforms
+if(UNIX)
+     target_sources(shared-sources INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/shared/signalhandler.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/shared/signalhandler.h
+     )
+endif()
+

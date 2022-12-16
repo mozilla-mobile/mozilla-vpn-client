@@ -323,11 +323,6 @@ HEADERS += \
         apps/vpn/websocket/pushmessage.h \
         apps/vpn/websocket/websockethandler.h
 
-# Signal handling for unix platforms
-unix {
-    SOURCES += apps/vpn/signalhandler.cpp
-    HEADERS += apps/vpn/signalhandler.h
-}
 
 RESOURCES += apps/vpn/ui/resources.qrc
 RESOURCES += apps/vpn/ui/license.qrc

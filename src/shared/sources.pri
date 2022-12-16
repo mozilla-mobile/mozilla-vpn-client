@@ -40,3 +40,9 @@ HEADERS += \
         $$PWD/task.h \
         $$PWD/taskscheduler.h \
         $$PWD/temporarydir.h
+
+# Signal handling for unix platforms
+unix {
+    SOURCES += $$PWD/signalhandler.cpp
+    HEADERS += $$PWD/signalhandler.h
+}

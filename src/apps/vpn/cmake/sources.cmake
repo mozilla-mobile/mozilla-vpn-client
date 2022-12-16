@@ -350,14 +350,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/resources/public_keys/public_keys.qrc
 )
 
-# Signal handling for unix platforms
-if(UNIX)
-     target_sources(mozillavpn-sources INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/signalhandler.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/signalhandler.h
-     )
-endif()
-
 # Sources for desktop platforms.
 if(NOT CMAKE_CROSSCOMPILING)
      target_sources(mozillavpn-sources INTERFACE
