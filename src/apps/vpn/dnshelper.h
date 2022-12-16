@@ -12,9 +12,6 @@ class DNSHelper final {
   static QString getDNS(const QString& fallbackAddress);
 
   static bool validateUserDNS(const QString& dns);
-
- private:
-  static bool isMullvadDNS(const QString& address);
 };
 
 #endif  // DNSHELPER_H
