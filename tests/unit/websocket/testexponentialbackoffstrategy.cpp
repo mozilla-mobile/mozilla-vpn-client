@@ -6,7 +6,6 @@
 
 #include <QtMath>
 
-#include "constants.h"
 #include "helper.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"

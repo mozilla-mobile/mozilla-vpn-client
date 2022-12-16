@@ -33,7 +33,7 @@ target_compile_definitions(qml_tests PRIVATE MVPN_DUMMY)
 
 # VPN Client source files
 target_sources(qml_tests PRIVATE
-    ${MVPN_SOURCE_DIR}/apps/vpn/constants.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/appconstants.h
     ${MVPN_SOURCE_DIR}/apps/vpn/controller.h
     ${MVPN_SOURCE_DIR}/apps/vpn/cryptosettings.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/cryptosettings.h
@@ -81,6 +81,7 @@ target_sources(qml_tests PRIVATE
     ${MVPN_SOURCE_DIR}/apps/vpn/qmlengineholder.h
     ${MVPN_SOURCE_DIR}/apps/vpn/urlopener.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/urlopener.h
+    ${MVPN_SOURCE_DIR}/shared/constants.h
     ${MVPN_SOURCE_DIR}/shared/hawkauth.cpp
     ${MVPN_SOURCE_DIR}/shared/hawkauth.h
     ${MVPN_SOURCE_DIR}/shared/hkdf.cpp

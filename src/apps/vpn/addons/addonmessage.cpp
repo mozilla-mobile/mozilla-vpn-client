@@ -7,7 +7,6 @@
 #include <QJsonObject>
 #include <QMetaEnum>
 
-#include "constants.h"
 #include "l18nstrings.h"
 #include "leakdetector.h"
 #include "localizer.h"

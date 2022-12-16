@@ -16,7 +16,6 @@
 #include "captiveportal/captiveportaldetection.h"
 #include "connectionbenchmark/connectionbenchmark.h"
 #include "connectionhealth.h"
-#include "constants.h"
 #include "controller.h"
 #include "env.h"
 #include "errorhandler.h"

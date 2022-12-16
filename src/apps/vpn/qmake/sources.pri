@@ -21,6 +21,7 @@ SOURCES += \
         apps/vpn/addons/manager/addondirectory.cpp \
         apps/vpn/addons/manager/addonindex.cpp \
         apps/vpn/addons/manager/addonmanager.cpp \
+        apps/vpn/appconstants.cpp \
         apps/vpn/apppermission.cpp \
         apps/vpn/authenticationlistener.cpp \
         apps/vpn/authenticationinapp/authenticationinapp.cpp \
@@ -59,7 +60,6 @@ SOURCES += \
         apps/vpn/connectionbenchmark/connectionbenchmark.cpp \
         apps/vpn/connectionbenchmark/uploaddatagenerator.cpp \
         apps/vpn/connectionhealth.cpp \
-        apps/vpn/constants.cpp \
         apps/vpn/controller.cpp \
         apps/vpn/cryptosettings.cpp \
         apps/vpn/dnshelper.cpp \
@@ -179,6 +179,7 @@ HEADERS += \
         apps/vpn/addons/manager/addondirectory.h \
         apps/vpn/addons/manager/addonindex.h \
         apps/vpn/addons/manager/addonmanager.h \
+        apps/vpn/appconstants.h \
         apps/vpn/appimageprovider.h \
         apps/vpn/apppermission.h \
         apps/vpn/applistprovider.h \
@@ -220,7 +221,6 @@ HEADERS += \
         apps/vpn/connectionbenchmark/connectionbenchmark.h \
         apps/vpn/connectionbenchmark/uploaddatagenerator.h \
         apps/vpn/connectionhealth.h \
-        apps/vpn/constants.h \
         apps/vpn/controller.h \
         apps/vpn/controllerimpl.h \
         apps/vpn/cryptosettings.h \

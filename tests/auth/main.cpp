@@ -5,8 +5,8 @@
 #include <QCoreApplication>
 #include <QtTest/QtTest>
 
+#include "appconstants.h"
 #include "authenticationinapp/authenticationinapp.h"
-#include "constants.h"
 #include "leakdetector.h"
 #include "loghandler.h"
 #include "settingsholder.h"
@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
 #endif
 
   SettingsHolder settingsHolder;
-  Constants::setStaging();
+  AppConstants::setStaging();
 
   QCoreApplication a(argc, argv);
 

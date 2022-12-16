@@ -35,6 +35,8 @@ target_compile_definitions(auth_tests PRIVATE MVPN_DUMMY)
 
 # VPN Client source files
 target_sources(auth_tests PRIVATE
+    ${MVPN_SOURCE_DIR}/apps/vpn/appconstants.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/appconstants.h
     ${MVPN_SOURCE_DIR}/apps/vpn/authenticationinapp/authenticationinapp.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/authenticationinapp/authenticationinapp.h
     ${MVPN_SOURCE_DIR}/apps/vpn/authenticationinapp/authenticationinapplistener.cpp
@@ -45,8 +47,6 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/apps/vpn/authenticationinapp/incrementaldecoder.h
     ${MVPN_SOURCE_DIR}/apps/vpn/authenticationlistener.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/authenticationlistener.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/constants.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/constants.h
     ${MVPN_SOURCE_DIR}/apps/vpn/controller.h
     ${MVPN_SOURCE_DIR}/apps/vpn/cryptosettings.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/cryptosettings.h
@@ -98,6 +98,8 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/apps/vpn/update/webupdater.h
     ${MVPN_SOURCE_DIR}/apps/vpn/urlopener.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/urlopener.h
+    ${MVPN_SOURCE_DIR}/shared/constants.cpp
+    ${MVPN_SOURCE_DIR}/shared/constants.h
     ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c
     ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20Poly1305_32.c
     ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Curve25519_51.c

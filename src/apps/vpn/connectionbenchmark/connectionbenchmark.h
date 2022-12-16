@@ -9,8 +9,8 @@
 #include <QObject>
 #include <QUrl>
 
+#include "appconstants.h"
 #include "benchmarktask.h"
-#include "constants.h"
 
 class ConnectionHealth;
 
@@ -91,8 +91,8 @@ class ConnectionBenchmark final : public QObject {
   void stop();
 
  private:
-  QUrl m_downloadUrl = QUrl(Constants::BENCHMARK_DOWNLOAD_URL);
-  QUrl m_uploadUrl = QUrl(Constants::benchmarkUploadUrl());
+  QUrl m_downloadUrl = QUrl(AppConstants::BENCHMARK_DOWNLOAD_URL);
+  QUrl m_uploadUrl = QUrl(AppConstants::benchmarkUploadUrl());
 
   QList<BenchmarkTask*> m_benchmarkTasks;
 

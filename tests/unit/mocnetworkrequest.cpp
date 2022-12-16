@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "constants.h"
+#include "appconstants.h"
 #include "helper.h"
 #include "leakdetector.h"
 #include "networkrequest.h"
@@ -37,7 +37,7 @@ NetworkRequest::~NetworkRequest() { MVPN_COUNT_DTOR(NetworkRequest); }
 // static
 QString NetworkRequest::apiBaseUrl() {
   return Constants::envOrDefault("MVPN_API_BASE_URL",
-                                 Constants::API_PRODUCTION_URL);
+                                 AppConstants::API_PRODUCTION_URL);
 }
 
 // static

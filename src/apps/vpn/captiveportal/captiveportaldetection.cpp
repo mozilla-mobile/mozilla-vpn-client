@@ -8,7 +8,6 @@
 #include "captiveportaldetectionimpl.h"
 #include "captiveportalmonitor.h"
 #include "captiveportalnotifier.h"
-#include "constants.h"
 #include "controller.h"
 #include "frontend/navigator.h"
 #include "leakdetector.h"

@@ -5,8 +5,8 @@
 #include "mozillavpn.h"
 
 #include "addons/manager/addonmanager.h"
+#include "appconstants.h"
 #include "authenticationinapp/authenticationinapp.h"
-#include "constants.h"
 #include "dnshelper.h"
 #include "frontend/navigator.h"
 #include "glean/glean.h"
@@ -916,7 +916,7 @@ void MozillaVPN::mainWindowLoaded() {
 
   // Setup regular glean ping sending
   connect(&m_gleanTimer, &QTimer::timeout, this, &MozillaVPN::sendGleanPings);
-  m_gleanTimer.start(Constants::gleanTimeoutMsec());
+  m_gleanTimer.start(AppConstants::gleanTimeoutMsec());
   m_gleanTimer.setSingleShot(false);
 #endif
 #ifdef SENTRY_ENABLED
@@ -954,8 +954,9 @@ void MozillaVPN::setUserState(UserState state) {
 
 void MozillaVPN::startSchedulingPeriodicOperations() {
   logger.debug() << "Start scheduling account and servers"
-                 << Constants::schedulePeriodicTaskTimerMsec();
-  m_periodicOperationsTimer.start(Constants::schedulePeriodicTaskTimerMsec());
+                 << AppConstants::schedulePeriodicTaskTimerMsec();
+  m_periodicOperationsTimer.start(
+      AppConstants::schedulePeriodicTaskTimerMsec());
 }
 
 void MozillaVPN::stopSchedulingPeriodicOperations() {
@@ -1289,7 +1290,7 @@ void MozillaVPN::subscriptionCompleted() {
   logger.debug() << "Subscription completed";
 
 #ifdef MVPN_ADJUST
-  AdjustHandler::trackEvent(Constants::ADJUST_SUBSCRIPTION_COMPLETED);
+  AdjustHandler::trackEvent(AppConstants::ADJUST_SUBSCRIPTION_COMPLETED);
 #endif
 
   emit recordGleanEventWithExtraKeys(

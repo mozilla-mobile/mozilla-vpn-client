@@ -17,7 +17,6 @@
 
 #include "androidutils.h"
 #include "androidvpnactivity.h"
-#include "constants.h"
 #include "jni.h"
 #include "leakdetector.h"
 #include "logger.h"
