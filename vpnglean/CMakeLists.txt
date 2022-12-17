@@ -5,7 +5,7 @@
 # glean-core cannot be compiled to WASM
 # See: https://blog.mozilla.org/data/2020/09/25/this-week-in-glean-glean-core-to-wasm-experiment/
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
-    include(${CMAKE_SOURCE_DIR}/src/apps/vpn/cmake/rustlang.cmake)
+    include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
 
     set(CARGO_ENV
         BUILD_ID=${BUILD_ID}

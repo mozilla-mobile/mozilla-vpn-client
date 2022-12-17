@@ -171,5 +171,5 @@ elseif(IOS)
     endif()
 
     # A final post-processing hack to enable simulation builds.
-    include(scripts/utils/ios-arch-fixup.cmake)
+    include(scripts/cmake/ios-arch-fixup.cmake)
 endif()

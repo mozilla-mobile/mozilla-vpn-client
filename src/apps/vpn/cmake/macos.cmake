@@ -81,9 +81,9 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosnetworkwatcher.h
 )
 
-include(apps/vpn/cmake/osxtools.cmake)
-include(apps/vpn/cmake/golang.cmake)
-include(apps/vpn/cmake/rustlang.cmake)
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
 
 # Enable Balrog for update support.
 target_compile_definitions(mozillavpn PRIVATE MVPN_BALROG)

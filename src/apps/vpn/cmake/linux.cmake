@@ -67,7 +67,7 @@ target_sources(mozillavpn PRIVATE
 add_definitions(-DPROTOCOL_VERSION=\"1\")
 
 # Compile and link the signature library.
-include(apps/vpn/cmake/rustlang.cmake)
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
 add_rust_library(signature
     PACKAGE_DIR ${CMAKE_SOURCE_DIR}/signature
     BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
@@ -86,7 +86,7 @@ qt_add_dbus_adaptor(DBUS_GENERATED_SOURCES
     dbus_adaptor)
 target_sources(mozillavpn PRIVATE ${DBUS_GENERATED_SOURCES})
 
-include(apps/vpn/cmake/golang.cmake)
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
 add_go_library(netfilter ../linux/netfilter/netfilter.go)
 target_link_libraries(mozillavpn PRIVATE netfilter)
 

@@ -43,7 +43,7 @@ if( ${_SUPPORTED} GREATER -1 )
 
     # Configure Linking and Compile
     if(APPLE)
-        include(apps/vpn/cmake/osxtools.cmake)
+        include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
         # Let sentry.h know we are using a static build
         target_compile_definitions(mozillavpn PRIVATE SENTRY_BUILD_STATIC)
         # Let mozilla-vpn know we need to provide the upload client

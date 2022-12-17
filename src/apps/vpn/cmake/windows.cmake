@@ -84,7 +84,7 @@ else()
     target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/ui/qt6winhack.qrc)
 endif()
 
-include(apps/vpn/cmake/golang.cmake)
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
 
 # Build the Balrog library as a DLL
 add_custom_target(balrogdll ALL
@@ -110,7 +110,7 @@ target_sources(mozillavpn PRIVATE
 )
 
 # Compile and link the signature library.
-include(apps/vpn/cmake/rustlang.cmake)
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
 add_rust_library(signature
     PACKAGE_DIR ${CMAKE_SOURCE_DIR}/signature
     BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}

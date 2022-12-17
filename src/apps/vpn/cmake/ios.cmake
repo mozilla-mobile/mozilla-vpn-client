@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-include(apps/vpn/cmake/osxtools.cmake)
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
 
 # Configure the application bundle Info.plist
 set_target_properties(mozillavpn PROPERTIES
