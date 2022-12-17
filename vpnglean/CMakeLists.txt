@@ -62,6 +62,11 @@ else()
     message("Cannot build vpnglean Rust library build for WASM. Skipping.")
     # Since the metric recording code is sprinkled throughout the code,
     # it's easier to just generate the APIs and have them be noop.
+    add_custom_target(vpnglean_telemetry
+        DEPENDS
+            ${CMAKE_SOURCE_DIR}/src/glean/generated/metrics.h
+            ${CMAKE_SOURCE_DIR}/src/glean/generated/pings.h
+    )
     add_dependencies(mozillavpn vpnglean_telemetry)
 endif()
 
