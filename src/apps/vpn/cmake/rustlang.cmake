@@ -133,12 +133,13 @@ endfunction()
 #   PACKAGE_DIR: Soruce directory where Cargo.toml can be found.
 #   CRATE_NAME: Name of the staticlib crate we want to build.
 #   CARGO_ENV: Environment variables to pass to cargo
+#   DEPENDS: Additional files on which the target depends.
 #
 function(add_rust_library TARGET_NAME)
     cmake_parse_arguments(RUST_TARGET
         ""
         "BINARY_DIR;PACKAGE_DIR;CRATE_NAME"
-        "ARCH;CARGO_ENV"
+        "ARCH;CARGO_ENV;DEPENDS"
         ${ARGN})
 
     add_library(${TARGET_NAME} STATIC IMPORTED GLOBAL)
@@ -170,6 +171,17 @@ function(add_rust_library TARGET_NAME)
             CRATE_NAME ${RUST_TARGET_CRATE_NAME}
             CARGO_ENV ${CARGO_ENV}
         )
+
+        if(RUST_TARGET_DEPENDS)
+            add_custom_command(APPEND
+                OUTPUT ${RUST_TARGET_BINARY_DIR}/${ARCH}/release/${RUST_TARGET_LIBRARY_FILE}
+                DEPENDS ${RUST_TARGET_DEPENDS}
+            )
+            add_custom_command(APPEND
+                OUTPUT ${RUST_TARGET_BINARY_DIR}/${ARCH}/debug/${RUST_TARGET_LIBRARY_FILE}
+                DEPENDS ${RUST_TARGET_DEPENDS}
+            )
+        endif()
 
         # Keep track of the expected library artifacts.
         list(APPEND RUST_TARGET_RELEASE_LIBS ${RUST_TARGET_BINARY_DIR}/${ARCH}/release/${RUST_TARGET_LIBRARY_FILE})

@@ -60,9 +60,10 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
         CRATE_NAME vpnglean
         CARGO_ENV ${CARGO_ENV}
+        DEPENDS
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.rs
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.rs
     )
-
-    add_dependencies(vpnglean vpnglean_telemetry)
 else()
     message("Cannot build vpnglean Rust library build for WASM. Skipping.")
     # Since the metric recording code is sprinkled throughout the code,
@@ -72,12 +73,13 @@ endif()
 
 # This options should be used if the glean_parser command needs to be run on some sort of pre-build script.
 if(NOT SKIP_GLEAN_PARSER)
-    set(GENERATE_GLEAN_CMD python3 ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py)
+    set(GENERATE_GLEAN_CMD ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py)
 
     # Prepare for generating Glean metrics and pings files
     # Note: the next steps are not required by run_glean_parser, but by CMake quirks.
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/generated)
-    file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../src/apps/vpn/glean/generated)
+    file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/src/apps/vpn/glean/generated)
+
     # 1. Because both the metrics.h and pings.h files have class declarations
     # of objects that extend QObject, these files need to be in the main MozillaVPN
     # target otherwise we run into linker issues e.g. undefined reference to `vtable for __DONOTUSE__GleanPings'.
@@ -90,17 +92,17 @@ if(NOT SKIP_GLEAN_PARSER)
     # The solution is to generate empty files at build setup time so that we can
     # add them as sources to other target and still not have Cmake freak out.
     # Actual generation happen when the `run_glean_parser` command is executed.
-    file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/../src/apps/vpn/glean/generated/metrics.h)
-    file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/../src/apps/vpn/glean/generated/pings.h)
+    file(WRITE ${CMAKE_SOURCE_DIR}/src/apps/vpn/glean/generated/metrics.h)
+    file(WRITE ${CMAKE_SOURCE_DIR}/src/apps/vpn/glean/generated/pings.h)
 else()
     set(GENERATE_GLEAN_CMD echo "Skipping glean_parser step.")
 endif()
 
 ## Generate metrics and pings files
-add_custom_target(vpnglean_telemetry
-    BYPRODUCTS
-        ${CMAKE_CURRENT_SOURCE_DIR}/../src/apps/vpn/glean/generated/metrics.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/../src/apps/vpn/glean/generated/pings.h
+add_custom_command(
+    OUTPUT
+        ${CMAKE_SOURCE_DIR}/src/apps/vpn/glean/generated/metrics.h
+        ${CMAKE_SOURCE_DIR}/src/apps/vpn/glean/generated/pings.h
         ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.rs
         ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.rs
     DEPENDS
@@ -109,7 +111,6 @@ add_custom_target(vpnglean_telemetry
         ${CMAKE_SOURCE_DIR}/glean/metrics.yaml
     COMMAND ${GENERATE_GLEAN_CMD}
 )
-set_target_properties(vpnglean_telemetry PROPERTIES FOLDER "Libs")
 
 set_property(TARGET vpnglean APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_BINARY_DIR}
