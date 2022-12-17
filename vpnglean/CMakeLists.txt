@@ -68,8 +68,8 @@ else()
     # it's easier to just generate the APIs and have them be noop.
     add_custom_target(vpnglean_telemetry
         DEPENDS
-            ${CMAKE_SOURCE_DIR}/src/glean/generated/metrics.h
-            ${CMAKE_SOURCE_DIR}/src/glean/generated/pings.h
+            ${CMAKE_SOURCE_DIR}/src/apps/vpn/glean/generated/metrics.h
+            ${CMAKE_SOURCE_DIR}/src/apps/vpn/glean/generated/pings.h
     )
     add_dependencies(mozillavpn vpnglean_telemetry)
 endif()
