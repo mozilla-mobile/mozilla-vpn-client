@@ -46,7 +46,6 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         list(APPEND CARGO_ENV RUSTC=${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh)
     endif()
 
-    set(HEADER_FILE vpnglean.h)
 
     ## Build the vpnglean Rust library
     add_rust_library(vpnglean
@@ -57,6 +56,11 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         DEPENDS
             ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.rs
             ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.rs
+    )
+
+    set(HEADER_FILE vpnglean.h)
+    set_property(TARGET vpnglean APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+        ${CMAKE_CURRENT_BINARY_DIR}
     )
 else()
     message("Cannot build vpnglean Rust library build for WASM. Skipping.")
@@ -111,9 +115,6 @@ add_custom_command(
     COMMAND ${GENERATE_GLEAN_CMD}
 )
 
-set_property(TARGET vpnglean APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
-    ${CMAKE_CURRENT_BINARY_DIR}
-)
 
 ## Fixup any missing link dependencies to pass to the vpnglean consumer
 if(ANDROID)
