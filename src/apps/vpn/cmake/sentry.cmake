@@ -10,7 +10,7 @@
 set(SENTRY_SUPPORTED_OS  "Windows" "Darwin" "Android")
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 include(ExternalProject)
- 
+
 
 
 LIST(FIND SENTRY_SUPPORTED_OS ${CMAKE_SYSTEM_NAME} _SUPPORTED)
@@ -22,7 +22,7 @@ endif()
 
 
 
-## Remove support for android 32bit. 
+## Remove support for android 32bit.
 ## It's  currently broken. see: VPN-3332
 if( CMAKE_ANDROID_ARCH STREQUAL "x86" )
     set( _SUPPORTED -1)
@@ -37,13 +37,13 @@ if( ${_SUPPORTED} GREATER -1 )
     target_compile_definitions(mozillavpn PRIVATE SENTRY_ENABLED)
     # Sentry support is given
     target_sources(mozillavpn PRIVATE
-        sentry/sentryadapter.cpp
-        sentry/sentryadapter.h     
+        apps/vpn/sentry/sentryadapter.cpp
+        apps/vpn/sentry/sentryadapter.h
     )
 
     # Configure Linking and Compile
     if(APPLE)
-        include(cmake/osxtools.cmake)
+        include(apps/vpn/cmake/osxtools.cmake)
         # Let sentry.h know we are using a static build
         target_compile_definitions(mozillavpn PRIVATE SENTRY_BUILD_STATIC)
         # Let mozilla-vpn know we need to provide the upload client
@@ -69,16 +69,16 @@ if( ${_SUPPORTED} GREATER -1 )
     if(ANDROID)
         # Let mozilla-vpn know we need to provide the upload client
         target_compile_definitions(mozillavpn PRIVATE SENTRY_NONE_TRANSPORT)
-        
+
         target_link_libraries(mozillavpn PUBLIC libsentry.a)
         target_link_libraries(mozillavpn PUBLIC libunwindstack.a)
         # We can only use inproc as crash backend.
-        SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=false 
-                        -DANDROID_PLATFORM=21 
-                        -DCMAKE_SYSTEM_NAME=Android 
-                        -DANDROID_ABI=${ANDROID_ABI} 
-                        -DCMAKE_ANDROID_NDK=${ANDROID_NDK_ROOT} 
-                        -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake  
+        SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=false
+                        -DANDROID_PLATFORM=21
+                        -DCMAKE_SYSTEM_NAME=Android
+                        -DANDROID_ABI=${ANDROID_ABI}
+                        -DCMAKE_ANDROID_NDK=${ANDROID_NDK_ROOT}
+                        -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake
                         -DSENTRY_BACKEND=inproc
             )
     endif()
