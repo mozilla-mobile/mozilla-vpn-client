@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
   int failures = 0;
 
   L18nStrings::initialize();
-  LogHandler::enableDebug();
+  LogHandler::enableStderr();
 
   // If arguments were passed, then run a subset of tests.
   QStringList args = app.arguments();

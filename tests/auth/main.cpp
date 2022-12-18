@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
   settingsHolder.setFeaturesFlippedOn(QStringList{
       "inAppAccountCreate", "inAppAuthentication", "accountDeletion"});
 
-  LogHandler::enableDebug();
+  LogHandler::enableStderr();
 
   int failures = 0;
   TestEmailValidation tev;

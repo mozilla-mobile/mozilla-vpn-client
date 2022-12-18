@@ -14,9 +14,6 @@
 #include <QString>
 #include <QTextStream>
 
-#include "constants.h"
-#include "logger.h"
-
 #ifdef MVPN_ANDROID
 #  include <android/log.h>
 #endif
@@ -75,19 +72,7 @@ void LogHandler::messageHandler(LogLevel logLevel, const QString& className,
 // static
 LogHandler* LogHandler::maybeCreate(const MutexLocker& proofOfLock) {
   if (!s_instance) {
-    LogLevel minLogLevel = Debug;  // TODO: in prod, we should log >= warning
-    QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
-    if (pe.contains("MOZVPN_LEVEL")) {
-      QString level = pe.value("MOZVPN_LEVEL");
-      if (level == "info")
-        minLogLevel = Info;
-      else if (level == "warning")
-        minLogLevel = Warning;
-      else if (level == "error")
-        minLogLevel = Error;
-    }
-
-    s_instance = new LogHandler(minLogLevel, proofOfLock);
+    s_instance = new LogHandler(proofOfLock);
   }
 
   return s_instance;
@@ -148,17 +133,16 @@ void LogHandler::prettyOutput(QTextStream& out, const LogHandler::Log& log) {
 }
 
 // static
-void LogHandler::enableDebug() {
+void LogHandler::enableStderr() {
   MutexLocker lock(&s_mutex);
-  maybeCreate(lock)->m_showDebug = true;
+  maybeCreate(lock)->m_stderrEnabled = true;
 }
 
-LogHandler::LogHandler(LogLevel minLogLevel, const MutexLocker& proofOfLock)
-    : m_minLogLevel(minLogLevel) {
+LogHandler::LogHandler(const MutexLocker& proofOfLock) {
   Q_UNUSED(proofOfLock);
 
 #if defined(MVPN_DEBUG)
-  m_showDebug = true;
+  m_stderrEnabled = true;
 #endif
 
   if (!s_location.isEmpty()) {
@@ -167,15 +151,11 @@ LogHandler::LogHandler(LogLevel minLogLevel, const MutexLocker& proofOfLock)
 }
 
 void LogHandler::addLog(const Log& log, const MutexLocker& proofOfLock) {
-  if (!matchLogLevel(log, proofOfLock)) {
-    return;
-  }
-
   if (m_output) {
     prettyOutput(*m_output, log);
   }
 
-  if (!Constants::inProduction()) {
+  if (m_stderrEnabled) {
     QTextStream out(stderr);
     prettyOutput(out, log);
   }
@@ -194,12 +174,6 @@ void LogHandler::addLog(const Log& log, const MutexLocker& proofOfLock) {
     __android_log_write(ANDROID_LOG_DEBUG, "mozillavpn", str);
   }
 #endif
-}
-
-bool LogHandler::matchLogLevel(const Log& log,
-                               const MutexLocker& proofOfLock) const {
-  Q_UNUSED(proofOfLock);
-  return log.m_logLevel >= m_minLogLevel;
 }
 
 // static

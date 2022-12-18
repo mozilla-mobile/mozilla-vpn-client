@@ -4,9 +4,11 @@
 
 #include "taskscheduler.h"
 
+#include <QCoreApplication>
+#include <QTimer>
+
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "task.h"
 
 namespace {
@@ -43,7 +45,7 @@ void TaskScheduler::forceDeleteTasks() {
 TaskScheduler* TaskScheduler::maybeCreate() {
   static TaskScheduler* s_taskScheduler = nullptr;
   if (!s_taskScheduler) {
-    s_taskScheduler = new TaskScheduler(MozillaVPN::instance());
+    s_taskScheduler = new TaskScheduler(qApp);
   }
   return s_taskScheduler;
 }

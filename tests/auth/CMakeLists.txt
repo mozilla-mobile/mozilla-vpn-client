@@ -56,10 +56,6 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/apps/vpn/errorhandler.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/errorhandler.h
     ${MVPN_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/logger.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/logger.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/loghandler.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/loghandler.h
     ${MVPN_SOURCE_DIR}/apps/vpn/models/feature.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/models/feature.h
     ${MVPN_SOURCE_DIR}/apps/vpn/models/featuremodel.cpp
@@ -86,7 +82,6 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/apps/vpn/settingsholder.h
     ${MVPN_SOURCE_DIR}/apps/vpn/simplenetworkmanager.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/simplenetworkmanager.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/task.h
     ${MVPN_SOURCE_DIR}/apps/vpn/tasks/authenticate/desktopauthenticationlistener.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/tasks/authenticate/desktopauthenticationlistener.h
     ${MVPN_SOURCE_DIR}/apps/vpn/tasks/authenticate/taskauthenticate.cpp
@@ -95,8 +90,6 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/apps/vpn/tasks/deleteaccount/taskdeleteaccount.h
     ${MVPN_SOURCE_DIR}/apps/vpn/tasks/function/taskfunction.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/tasks/function/taskfunction.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/taskscheduler.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/taskscheduler.h
     ${MVPN_SOURCE_DIR}/apps/vpn/update/updater.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/update/updater.h
     ${MVPN_SOURCE_DIR}/apps/vpn/update/versionapi.cpp
@@ -105,6 +98,10 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/apps/vpn/update/webupdater.h
     ${MVPN_SOURCE_DIR}/apps/vpn/urlopener.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/urlopener.h
+    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c
+    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20Poly1305_32.c
+    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Curve25519_51.c
+    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Poly1305_32.c
     ${MVPN_SOURCE_DIR}/shared/hawkauth.cpp
     ${MVPN_SOURCE_DIR}/shared/hawkauth.h
     ${MVPN_SOURCE_DIR}/shared/hkdf.cpp
@@ -113,6 +110,10 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/shared/ipaddress.h
     ${MVPN_SOURCE_DIR}/shared/leakdetector.cpp
     ${MVPN_SOURCE_DIR}/shared/leakdetector.h
+    ${MVPN_SOURCE_DIR}/shared/logger.cpp
+    ${MVPN_SOURCE_DIR}/shared/logger.h
+    ${MVPN_SOURCE_DIR}/shared/loghandler.cpp
+    ${MVPN_SOURCE_DIR}/shared/loghandler.h
     ${MVPN_SOURCE_DIR}/shared/rfc/rfc1918.cpp
     ${MVPN_SOURCE_DIR}/shared/rfc/rfc1918.h
     ${MVPN_SOURCE_DIR}/shared/rfc/rfc4193.cpp
@@ -121,10 +122,9 @@ target_sources(auth_tests PRIVATE
     ${MVPN_SOURCE_DIR}/shared/rfc/rfc4291.h
     ${MVPN_SOURCE_DIR}/shared/rfc/rfc5735.cpp
     ${MVPN_SOURCE_DIR}/shared/rfc/rfc5735.h
-    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c
-    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20Poly1305_32.c
-    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Curve25519_51.c
-    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Poly1305_32.c
+    ${MVPN_SOURCE_DIR}/shared/task.h
+    ${MVPN_SOURCE_DIR}/shared/taskscheduler.cpp
+    ${MVPN_SOURCE_DIR}/shared/taskscheduler.h
 )
 
 # Generate the version header

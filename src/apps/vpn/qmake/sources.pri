@@ -67,7 +67,6 @@ SOURCES += \
         apps/vpn/errorhandler.cpp \
         apps/vpn/externalophandler.cpp \
         apps/vpn/filterproxymodel.cpp \
-        apps/vpn/fontloader.cpp \
         apps/vpn/frontend/navigator.cpp \
         apps/vpn/frontend/navigatorreloader.cpp \
         apps/vpn/glean/glean.cpp \
@@ -83,8 +82,6 @@ SOURCES += \
         apps/vpn/ipaddresslookup.cpp \
         apps/vpn/itempicker.cpp \
         apps/vpn/localizer.cpp \
-        apps/vpn/logger.cpp \
-        apps/vpn/loghandler.cpp \
         apps/vpn/logoutobserver.cpp \
         apps/vpn/main.cpp \
         apps/vpn/models/device.cpp \
@@ -147,9 +144,7 @@ SOURCES += \
         apps/vpn/tasks/removedevice/taskremovedevice.cpp \
         apps/vpn/tasks/sendfeedback/tasksendfeedback.cpp \
         apps/vpn/tasks/servers/taskservers.cpp \
-        apps/vpn/taskscheduler.cpp \
         apps/vpn/telemetry.cpp \
-        apps/vpn/temporarydir.cpp \
         apps/vpn/theme.cpp \
         apps/vpn/tutorial/tutorial.cpp \
         apps/vpn/tutorial/tutorialstep.cpp \
@@ -235,7 +230,6 @@ HEADERS += \
         apps/vpn/errorhandler.h \
         apps/vpn/externalophandler.h \
         apps/vpn/filterproxymodel.h \
-        apps/vpn/fontloader.h \
         apps/vpn/frontend/navigator.h \
         apps/vpn/frontend/navigatorreloader.h \
         apps/vpn/glean/glean.h \
@@ -253,8 +247,6 @@ HEADERS += \
         apps/vpn/ipaddresslookup.h \
         apps/vpn/itempicker.h \
         apps/vpn/localizer.h \
-        apps/vpn/logger.h \
-        apps/vpn/loghandler.h \
         apps/vpn/logoutobserver.h \
         apps/vpn/models/device.h \
         apps/vpn/models/devicemodel.h \
@@ -297,7 +289,6 @@ HEADERS += \
         apps/vpn/signature.h \
         apps/vpn/simplenetworkmanager.h \
         apps/vpn/statusicon.h \
-        apps/vpn/task.h \
         apps/vpn/tasks/account/taskaccount.h \
         apps/vpn/tasks/adddevice/taskadddevice.h \
         apps/vpn/tasks/addon/taskaddon.h \
@@ -318,9 +309,7 @@ HEADERS += \
         apps/vpn/tasks/removedevice/taskremovedevice.h \
         apps/vpn/tasks/sendfeedback/tasksendfeedback.h \
         apps/vpn/tasks/servers/taskservers.h \
-        apps/vpn/taskscheduler.h \
         apps/vpn/telemetry.h \
-        apps/vpn/temporarydir.h \
         apps/vpn/theme.h \
         apps/vpn/tutorial/tutorial.h \
         apps/vpn/tutorial/tutorialstep.h \

@@ -88,7 +88,7 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
 
   if (settingsHolder.stagingServer()) {
     Constants::setStaging();
-    LogHandler::enableDebug();
+    LogHandler::enableStderr();
   }
 
   qInstallMessageHandler(LogHandler::messageQTHandler);
@@ -113,7 +113,7 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
 
   if (settingsHolder.stagingServer()) {
     Constants::setStaging();
-    LogHandler::enableDebug();
+    LogHandler::enableStderr();
   }
 
   qInstallMessageHandler(LogHandler::messageQTHandler);
@@ -146,7 +146,7 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
 
   if (settingsHolder.stagingServer()) {
     Constants::setStaging();
-    LogHandler::enableDebug();
+    LogHandler::enableStderr();
   }
 
   qInstallMessageHandler(LogHandler::messageQTHandler);
