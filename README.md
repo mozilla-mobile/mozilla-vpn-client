@@ -330,11 +330,9 @@ cp xcode.xconfig.template xcode.xconfig
 
 5. Modify the xcode.xconfig to something like:
 ```
-# macOS configuration
 APP_ID_MACOS = org.mozilla.macos.FirefoxVPN
 LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item
 
-# iOS configuration
 GROUP_ID_IOS = group.org.mozilla.ios.Guardian
 APP_ID_IOS = org.mozilla.ios.FirefoxVPN
 NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
