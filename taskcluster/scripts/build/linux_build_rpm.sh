@@ -53,12 +53,14 @@ case ${ID} in
   fedora)
     BUILDSUFFIX="fc${VERSION_ID}"
     ;;
-  ;;
+
   *)
     echo "Unsupported RPM distribution: ${ID}"
     exit 1
     ;;
 esac
+
+RPM_BUILD_ARCH=$(uname -m)
 
 # Install the build dependencies.
 sudo yum-builddep -y ${MOZ_FETCHES_DIR}/mozillavpn.spec
@@ -67,7 +69,7 @@ sudo yum-builddep -y ${MOZ_FETCHES_DIR}/mozillavpn.spec
 rpmbuild -D "_topdir ${HOME}" -D "_sourcedir ${MOZ_FETCHES_DIR}" -ba ${MOZ_FETCHES_DIR}/mozillavpn.spec
 
 # Gather the build artifacts for export
-tar -C ${HOME}/RPMS/x86_64 -cvzf /builds/worker/artifacts/mozillavpn-${ID}-${BUILDSUFFIX}.tar.gz .
+tar -C ${HOME}/RPMS/${RPM_BUILD_ARCH} -cvzf /builds/worker/artifacts/mozillavpn-${ID}-${BUILDSUFFIX}.tar.gz .
 
 # Lets see what got built...
 echo "Listing ${HOME}/RPMS/x86_64:"
