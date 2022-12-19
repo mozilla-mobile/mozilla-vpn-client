@@ -60,7 +60,7 @@ ls -al ${MOZ_FETCHES_DIR}
 sudo yum-builddep -y ${MOZ_FETCHES_DIR}/mozillavpn.spec
 
 # Build the packages.
-rpmbuild -D "_topdir ${MOZ_FETCHES_DIR}" -D "_sourcedir ${MOZ_FETCHES_DIR}" -ba mozillavpn.spec
+rpmbuild -D "_topdir ${MOZ_FETCHES_DIR}" -D "_sourcedir ${MOZ_FETCHES_DIR}" -ba ${MOZ_FETCHES_DIR}/mozillavpn.spec
 
 # Let's see what got built...
 echo "Listing $(pwd):"
