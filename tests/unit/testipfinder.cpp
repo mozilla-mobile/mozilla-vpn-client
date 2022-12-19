@@ -3,12 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testipfinder.h"
-#include "../../src/tasks/ipfinder/taskipfinder.h"
-#include "../../src/networkrequest.h"
-#include "../../src/settingsholder.h"
-#include "helper.h"
 
 #include <QHostInfo>
+
+#include "helper.h"
+#include "networkrequest.h"
+#include "settingsholder.h"
+#include "tasks/ipfinder/taskipfinder.h"
 
 void TestIpFinder::ipv4AndIpv6() {
   SettingsHolder settingsHolder;

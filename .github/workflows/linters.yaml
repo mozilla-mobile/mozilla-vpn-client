@@ -22,7 +22,7 @@ jobs:
 
       - name: Clone repository
         uses: actions/checkout@v3
-        with: 
+        with:
           submodules: 'true'
 
       - name: Set up Python 3
@@ -61,7 +61,7 @@ jobs:
           python scripts/ci/check_jsonschema.py addon.json addons/*/manifest.json
 
       - name: Check for issues with clang-format
-        uses: DoozyX/clang-format-lint-action@v0.11
+        uses: DoozyX/clang-format-lint-action@v0.15
         with:
           source: '.'
           clangFormatVersion: 11

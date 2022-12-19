@@ -3,30 +3,31 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testaddon.h"
-#include "../../src/addons/addon.h"
-#include "../../src/addons/addonguide.h"
-#include "../../src/addons/addonmessage.h"
-#include "../../src/addons/addonproperty.h"
-#include "../../src/addons/addonpropertylist.h"
-#include "../../src/addons/addontutorial.h"
-#include "../../src/addons/conditionwatchers/addonconditionwatcherfeaturesenabled.h"
-#include "../../src/addons/conditionwatchers/addonconditionwatchergroup.h"
-#include "../../src/addons/conditionwatchers/addonconditionwatcherlocales.h"
-#include "../../src/addons/conditionwatchers/addonconditionwatcherjavascript.h"
-#include "../../src/addons/conditionwatchers/addonconditionwatchertimeend.h"
-#include "../../src/addons/conditionwatchers/addonconditionwatchertimestart.h"
-#include "../../src/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h"
-#include "../../src/localizer.h"
-#include "../../src/models/feature.h"
-#include "../../src/models/featuremodel.h"
-#include "../../src/settingsholder.h"
-#include "../../src/systemtraynotificationhandler.h"
-#include "../../src/qmlengineholder.h"
-#include "../../src/tutorial/tutorial.h"
-#include "helper.h"
 
 #include <QQmlApplicationEngine>
 #include <QTemporaryFile>
+
+#include "addons/addon.h"
+#include "addons/addonguide.h"
+#include "addons/addonmessage.h"
+#include "addons/addonproperty.h"
+#include "addons/addonpropertylist.h"
+#include "addons/addontutorial.h"
+#include "addons/conditionwatchers/addonconditionwatcherfeaturesenabled.h"
+#include "addons/conditionwatchers/addonconditionwatchergroup.h"
+#include "addons/conditionwatchers/addonconditionwatcherjavascript.h"
+#include "addons/conditionwatchers/addonconditionwatcherlocales.h"
+#include "addons/conditionwatchers/addonconditionwatchertimeend.h"
+#include "addons/conditionwatchers/addonconditionwatchertimestart.h"
+#include "addons/conditionwatchers/addonconditionwatchertriggertimesecs.h"
+#include "helper.h"
+#include "localizer.h"
+#include "models/feature.h"
+#include "models/featuremodel.h"
+#include "qmlengineholder.h"
+#include "settingsholder.h"
+#include "systemtraynotificationhandler.h"
+#include "tutorial/tutorial.h"
 
 void TestAddon::property() {
   AddonProperty p;
@@ -281,6 +282,7 @@ void TestAddon::conditionWatcher_javascript() {
 
 void TestAddon::conditionWatcher_locale() {
   SettingsHolder settingsHolder;
+  Localizer l;
 
   QObject parent;
 
@@ -852,6 +854,7 @@ void TestAddon::message_load_state() {
 
 void TestAddon::message_notification_data() {
   SettingsHolder settingsHolder;
+  Localizer l;
 
   QObject parent;
   SystemTrayNotificationHandler nh(&parent);
@@ -1072,6 +1075,7 @@ void TestAddon::message_date() {
 
 void TestAddon::message_dismiss() {
   SettingsHolder settingsHolder;
+  Localizer l;
 
   QJsonObject messageObj;
   messageObj["id"] = "foo";

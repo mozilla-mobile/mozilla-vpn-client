@@ -70,11 +70,11 @@ jobs:
           grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
 
-      - name: Upload coverage to Codecov
+      - name: Upload coverage for linux unit tests to Codecov
         uses: codecov/codecov-action@v3
         with:
           directory: .
-          flags: unit_tests
+          flags: linux_unit_tests
           name: codecov-poc
           files: auth_lcov.info,nativemessaging_lcov.info,qml_lcov.info,unit_lcov.info
           verbose: true
@@ -147,13 +147,13 @@ jobs:
           grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
 
-      - name: Upload coverage to Codecov
+      - name: Upload coverage for macos unit tests to Codecov
         uses: codecov/codecov-action@v3
         with:
           directory: .
-          flags: unit_tests
+          flags: macos_unit_tests
           name: codecov-poc
-          files: unit_lcov.info
+          files: auth_lcov.info,nativemessaging_lcov.info,qml_lcov.info,unit_lcov.info
           verbose: true
 
   windows-unit-tests:

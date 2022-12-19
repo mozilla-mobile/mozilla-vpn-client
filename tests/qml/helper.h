@@ -5,14 +5,14 @@
 #ifndef TESTHELPER_H
 #define TESTHELPER_H
 
+#include <QObject>
+#include <QQmlEngine>
+#include <QtQuickTest>
+
 #include "l18nstrings.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #include "theme.h"
-
-#include <QObject>
-#include <QQmlEngine>
-#include <QtQuickTest>
 
 class TestHelper final : public QObject {
   Q_OBJECT

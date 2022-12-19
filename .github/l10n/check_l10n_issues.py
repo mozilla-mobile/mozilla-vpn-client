@@ -3,7 +3,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from lxml import etree
+import xml.etree.ElementTree as etree
 import json
 import os
 import sys
@@ -31,12 +31,12 @@ misused_characters = {
     "...": 'Invalid "..." in string: use proper ellipsis (…) instead.',
 }
 errors = {}
-for message in root.xpath("//message"):
+for message in root.findall(".//message"):
     message_id = message.get("id")
-    source_text = message.xpath("./source")[0].text
+    source_text = message.find("./source").text
     source_comment = (
-        message.xpath("./extracomment")[0].text
-        if message.xpath("./extracomment")
+        message.find("./extracomment").text
+        if message.find("./extracomment") is not None
         else ""
     )
 

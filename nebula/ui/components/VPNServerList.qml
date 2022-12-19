@@ -304,16 +304,8 @@ FocusScope {
             property alias countries: countriesRepeater
             id: vpnFlickable
 
-            flickContentHeight: serverList.implicitHeight + listOffset
+            flickContentHeight: serverList.implicitHeight
             anchors.fill: parent
-
-            Rectangle {
-                id: verticalSpacer
-
-                height: VPNTheme.theme.vSpacing
-                width: parent.width
-                color: VPNTheme.theme.transparent
-            }
 
             NumberAnimation on contentY {
                 id: scrollAnimation
@@ -328,10 +320,16 @@ FocusScope {
 
                 spacing: VPNTheme.theme.listSpacing * 1.75
                 width: parent.width
-                anchors.top: verticalSpacer.bottom
+                anchors.top: parent.top
+
+                Item {
+                    height: VPNTheme.theme.vSpacing - parent.spacing
+                    width: parent.width
+                }
 
                 VPNSearchBar {
                     id: searchBar
+                    objectName: "countrySearchBar"
 
                     _filterProxySource: VPNServerCountryModel
                     _filterProxyCallback: country => {
@@ -345,7 +343,7 @@ FocusScope {
 
                             return includesName || includesLocalizedName || matchesCountryCode;
                         }
-                    _searchBarHasError: () => { return countriesRepeater.count === 0 }
+                    _searchBarHasError: countriesRepeater.count === 0
                     _searchBarPlaceholderText: VPNl18n.ServersViewSearchPlaceholder
 
                     anchors {

@@ -2,8 +2,12 @@
 
 This section of documentation deep dives into how [Glean](the-glean-book) is integrated
 on the Mozilla VPN application. It is aimed at developers working on the Mozilla VPN.
+
 However, this is not a guide on how to add new data collection to the Mozilla VPN.
 For a step-by-step guide on that refer to ["Working on tickets with Glean instrumentation"](readme-glean).
+[The Glean book](the-glean-book) is also the source of truth for Glean API reference documentation.
+The Mozilla VPN follows the mozilla-central Glean integration implementation, so when looking at
+Glean API docs on the book, choose the "Firefox Desktop" examples tab. The API will be the same.
 
 > **Note**: An understanding of the fundamentals of Glean such as metrics, pings and glean_parser is assumed.
 
@@ -46,12 +50,12 @@ by removing the Firefox specific code and adding some Qt/QML sprinkles on top.
 
 Finally, since the Glean mobile SDKs are based on the same Rust core as the Glean Rust SDK,
 they can seamlessly be used alongside one another as longs as they are all linked to the exact same
-Glean Rust core library.
+Glean Rust core library -- read more on this on the "Adding Glean to mobile builds" section of this document.
 
 ## Architecture
 
 The Glean integration code on the Mozilla VPN codebase can be found mostly under the `/vpnglean`
-folder plus a small extension on the `src/glean` folder.
+folder plus a small extension on the `src/apps/vpn/glean` folder.
 
 ```
 ├── src                      Bulk of the MozillaVPN source code
@@ -134,7 +138,6 @@ but how to call those APIs from C++ thorugh an FFI layer?
 Let's now look at what the Rust and C++ generated code looks like, using the `glean_parser_ext` custom templates.
 
 ```rust
-
 pub mod example {
     #[allow(non_upper_case_globals)]
     /// generated from example.my_boolean
@@ -210,9 +213,9 @@ pub extern "C" fn glean_boolean_set(id: u32, value: bool) {
 With the macro expanded we can see the `BOOLEAN_MAP` is queried using the metric id in order to access the concrete metric instance
 and once that is found -- if it is found -- the metric API is called on it.
 
-### `src/glean`
+### `src/apps/vpn/glean`
 
-The `src/glean` module is where these exposed FFI functions are called.
+The `src/apps/vpn/glean` module is where these exposed FFI functions are called.
 
 Let's look at the C++ implementation of the `BooleanMetric`.
 
@@ -231,12 +234,29 @@ It contains close to no logic at all. The only thing it keeps track of is the me
 provided once the metric instance is initialized on the glean_parser_ext generated files
 and it calls on the FFI function exposed by Rust.
 
-We have reached full circle. The boolean example is a intentionally simple API and metric type
+We have reached full circle. The boolean example is an intentionally simple API and metric type
 to aid in grasping the concept of the metric map and the complexities it aims to address.
 Other Glean APIs such as the testing APIs and other metric types can be more complex than this,
 however the metric maps concept remains the same throughout.
 
-<!-- TODO: Document the Cmake config, especially the ios and android part (VPN-3054/3056) -->
+## Adding Glean to mobile builds
+
+The Glean mobile SDKs are essentially language bindings linked to the Glean core, a Rust library.
+Understanding this architecture is important, because it is taken advantage of on the Mozilla VPN
+to use Glean on C++, QML, Swift and Kotlin simultaneously and still record data and send pings
+from the same instance of Glean.
+
+Instead of consuming the Glean mobile SDKs through the normal channels, the `glean` repository is a
+submodule of this repository. When building for mobile, the Glean platform specific code is added
+to the Mozilla VPN sources -- it is worth noting that part of that code is generated using a tool
+called [UniFFI](uniffi) and Glean itself has internal metrics and pings which also require a generation step,
+both generations steps are also added to the Mozilla VPN plaform specific build setup.
+
+The `vpnglean` library exposes the glean_core library symbols as well as the symbols used by the Mozilla VPN C++ code.
+Since that is linked to the Mozilla VPN project the Glean platform specific code added can access those symbols too.
+
+With the Glean platform specific code and the Mozilla VPN linked to the same glean-core library,
+any call to a Glean API from any language will record to the same Glean instance. Done.
 
 [the-glean-book]: https://mozilla.github.io/glean/book/index.html
 [readme-glean]: https://github.com/mozilla-mobile/mozilla-vpn-client#working-on-tickets-with-new-glean-instrumentation
@@ -246,3 +266,4 @@ however the metric maps concept remains the same throughout.
 [t-c-glean-parser]: https://searchfox.org/mozilla-central/source/toolkit/components/glean/build_scripts/glean_parser_ext
 [t-c-g-ffi]: https://searchfox.org/mozilla-central/source/toolkit/components/glean/api/src/ffi
 [glean-bool-set]: https://mozilla.github.io/glean/book/reference/metrics/boolean.html
+[uniffi]: https://mozilla.github.io/uniffi-rs/

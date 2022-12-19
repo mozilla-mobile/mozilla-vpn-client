@@ -2,9 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "controller.h"
 #include "helper.h"
 #include "mozillavpn.h"
-#include "controller.h"
 
 // The singleton.
 static MozillaVPN* s_instance = nullptr;
@@ -48,8 +48,6 @@ bool MozillaVPN::debugMode() const {
 void MozillaVPN::initialize() {}
 
 void MozillaVPN::setState(State) {}
-
-void MozillaVPN::getStarted() {}
 
 void MozillaVPN::authenticate() {}
 void MozillaVPN::authenticateWithType(MozillaVPN::AuthenticationType) {}
@@ -100,8 +98,6 @@ bool MozillaVPN::writeLogs(QStandardPaths::StandardLocation,
 bool MozillaVPN::viewLogs() { return true; }
 
 bool MozillaVPN::modelsInitialized() const { return true; }
-
-void MozillaVPN::requestSettings() {}
 
 void MozillaVPN::requestAbout() {}
 

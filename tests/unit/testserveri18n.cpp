@@ -3,8 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testserveri18n.h"
-#include "../../src/serveri18n.h"
-#include "../../src/settingsholder.h"
+
+#include "serveri18n.h"
+#include "settingsholder.h"
 
 void TestServerI18n::basic() {
   SettingsHolder settingsHolder;

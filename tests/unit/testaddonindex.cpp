@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testaddonindex.h"
-#include "../../src/addons/manager/addondirectory.h"
-#include "../../src/addons/manager/addonindex.h"
-#include "../../src/models/feature.h"
-#include "../../src/settingsholder.h"
+
+#include "addons/manager/addondirectory.h"
+#include "addons/manager/addonindex.h"
+#include "models/feature.h"
+#include "settingsholder.h"
 
 void TestAddonIndex::update_data() {
   QTest::addColumn<QByteArray>("index");

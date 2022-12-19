@@ -6,7 +6,6 @@ flask
 glean_parser
 Jinja2
 jsonschema
-lxml
 MarkupSafe
 oathtool
 pathspec

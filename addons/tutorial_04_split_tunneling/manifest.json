@@ -3,7 +3,8 @@
   "id": "tutorial_04_split_tunneling",
   "name": "Tutorial: Split tunneling",
   "conditions": {
-    "enabled_features": ["splitTunnel"]
+    "enabled_features": ["splitTunnel"],
+    "min_client_version": "2.13.0"
   },
   "type": "tutorial",
   "translatable": false,
@@ -30,7 +31,7 @@
       }, {
         "id": "s1",
         "element": "navigationLayout/navButton-settings",
-        "tooltip": "TODO TODO",
+        "tooltip": "Select your account settings",
         "next": {
           "op": "signal",
           "qml_emitter": "navigationLayout/navButton-settings",
@@ -78,7 +79,7 @@
       },{
         "id": "s6",
         "element": "navigationLayout/navButton-home",
-        "tooltip": "TODO TODO TODO",
+        "tooltip": "Go back to the VPN dashboard",
         "conditions": {
           "javascript": "vpnWasOn.js"
        },

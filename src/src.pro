@@ -9,34 +9,33 @@
 
 TEMPLATE = app
 
-include($$PWD/qmake/debug.pri)
-include($$PWD/qmake/includes_and_defines.pri)
-include($$PWD/qmake/qt.pri)
+include($$PWD/apps/vpn/qmake/debug.pri)
+include($$PWD/apps/vpn/qmake/includes_and_defines.pri)
+include($$PWD/apps/vpn/qmake/qt.pri)
 include($$PWD/../glean/glean.pri)
 include($$PWD/../nebula/nebula.pri)
 include($$PWD/../lottie/lottie.pri)
 include($$PWD/../translations/translations.pri)
-include($$PWD/crashreporter/crashreporter.pri)
+include($$PWD/apps/vpn/crashreporter/crashreporter.pri)
 
 unix {
-   include($$PWD/qmake/ccache.pri)
-   include($$PWD/qmake/golang.pri)
+   include($$PWD/apps/vpn/qmake/ccache.pri)
+   include($$PWD/apps/vpn/qmake/golang.pri)
 }
 
 # Cross-platform entries go in here:
-include($$PWD/qmake/sources.pri)
+include($$PWD/shared/sources.pri)
+include($$PWD/apps/vpn/qmake/sources.pri)
 
 # Platform-specific entries:
 DUMMY {
-   include($$PWD/qmake/platforms/dummy.pri)
+   include($$PWD/apps/vpn/qmake/platforms/dummy.pri)
 } else:linux:!android {
    error(qmake is not supported for Linux. Please use cmake.)
 } else:android {
    error(qmake is not supported for Android. Please use cmake.)
-} else:macos {
-   include($$PWD/qmake/platforms/macos.pri)
 } else:ios {
-   include($$PWD/qmake/platforms/ios.pri)
+   include($$PWD/apps/vpn/qmake/platforms/ios.pri)
 } else:linux {
    error(qmake is not supported for Linux. Please use cmake.)
 } else:macos {

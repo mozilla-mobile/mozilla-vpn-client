@@ -61,6 +61,8 @@ git submodule update || die
 
 
 if [[ "$RELEASE" ]]; then
+    # Install dependendy got get-secret.py 
+    python3 -m pip install -r taskcluster/scripts/requirements.txt --user
     print Y "Fetching tokens..."
     # Only on a release build we have access to those secrects. 
     ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_dsn -f sentry_dsn

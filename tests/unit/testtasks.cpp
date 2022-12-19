@@ -3,13 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testtasks.h"
-#include "../../src/mozillavpn.h"
-#include "../../src/tasks/account/taskaccount.h"
-#include "../../src/tasks/adddevice/taskadddevice.h"
-#include "../../src/tasks/function/taskfunction.h"
-#include "../../src/tasks/group/taskgroup.h"
-#include "../../src/tasks/servers/taskservers.h"
-#include "../../src/taskscheduler.h"
+
+#include "mozillavpn.h"
+#include "tasks/account/taskaccount.h"
+#include "tasks/adddevice/taskadddevice.h"
+#include "tasks/function/taskfunction.h"
+#include "tasks/group/taskgroup.h"
+#include "tasks/servers/taskservers.h"
+#include "taskscheduler.h"
 
 void TestTasks::account() {
   // Failure

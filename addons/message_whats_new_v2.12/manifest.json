@@ -11,6 +11,7 @@
     "enable": "setDate.js"
   },
   "message": {
+    "date": 1671066000,
     "id": "message_whats_new_v2.12",
     "title": "Welcome to Mozilla VPN 2.12",
     "subtitle": "You’re using the latest version of Mozilla VPN. Take a look at the newest features and updates:",

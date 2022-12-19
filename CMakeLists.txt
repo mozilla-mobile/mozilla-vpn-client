@@ -69,7 +69,9 @@ if(APPLE)
     endif()
 endif()
 
-option(BUILD_DUMMY "Build for the dummy platform" OFF)
+if(ANDROID)
+    include(src/apps/vpn/cmake/android_openssl.cmake)
+endif()
 
 if(NOT DEFINED BUILD_ID)
     string(TIMESTAMP BUILD_ID "${PROJECT_VERSION_MAJOR}.%Y%m%d%H%M")
@@ -85,10 +87,10 @@ endif()
 
 find_program(PYTHON_EXECUTABLE NAMES python3)
 if(MSVC)
-    include(src/cmake/msvc.cmake)
+    include(src/apps/vpn/cmake/msvc.cmake)
 endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang$")
-    include(src/cmake/clang.cmake)
+    include(src/apps/vpn/cmake/clang.cmake)
 endif()
 
 set(CMAKE_AUTOMOC ON)
@@ -112,7 +114,7 @@ find_package(Qt6 COMPONENTS
     Xml
 )
 
-if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND 
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND
    NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Android")
     find_package(Qt6 COMPONENTS
         NetworkAuth
@@ -127,10 +129,8 @@ add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0x050F00)
 add_subdirectory(src)
 # Glean.js
 add_subdirectory(glean)
-if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
-    # Glean.rs
-    add_subdirectory(vpnglean)
-endif()
+# Glean.rs
+add_subdirectory(vpnglean)
 add_subdirectory(lottie)
 add_subdirectory(nebula)
 add_subdirectory(translations)
@@ -152,6 +152,9 @@ if(NOT CMAKE_CROSSCOMPILING)
     add_subdirectory(tests/nativemessaging EXCLUDE_FROM_ALL)
     add_subdirectory(tests/unit EXCLUDE_FROM_ALL)
     add_subdirectory(tests/qml EXCLUDE_FROM_ALL)
+
+    # Dummy Testing Client
+    add_subdirectory(tests/dummyvpn EXCLUDE_FROM_ALL)
 endif()
 
 # Extra platform targets

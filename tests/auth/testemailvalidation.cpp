@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testemailvalidation.h"
-#include "../../src/authenticationinapp/authenticationinapp.h"
 
 #include <QDebug>
 #include <QTest>
+
+#include "authenticationinapp/authenticationinapp.h"
 
 void TestEmailValidation::basic_data() {
   QTest::addColumn<QString>("input");
@@ -22,6 +23,8 @@ void TestEmailValidation::basic_data() {
 
   QTest::addRow("invalid part 0") << ",@a" << false;
   QTest::addRow("invalid part 1") << "a@^" << false;
+  QTest::addRow("missing dot and domain") << "a@b" << false;
+  QTest::addRow("missing domain") << "a@b." << false;
 
   QTest::addRow("all good") << "a@b.c" << true;
 }

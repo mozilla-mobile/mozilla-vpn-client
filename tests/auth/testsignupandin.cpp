@@ -3,21 +3,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testsignupandin.h"
-#include "../../src/authenticationinapp/authenticationinapp.h"
-#include "../../src/networkrequest.h"
-#include "../../src/tasks/authenticate/taskauthenticate.h"
-#include "../../src/tasks/deleteaccount/taskdeleteaccount.h"
-#include "../../src/tasks/function/taskfunction.h"
 
 #include <QDateTime>
 #include <QDebug>
+#include <QEventLoop>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QEventLoop>
 #include <QProcess>
 #include <QProcessEnvironment>
 #include <QTest>
+
+#include "authenticationinapp/authenticationinapp.h"
+#include "networkrequest.h"
+#include "tasks/authenticate/taskauthenticate.h"
+#include "tasks/deleteaccount/taskdeleteaccount.h"
+#include "tasks/function/taskfunction.h"
 
 constexpr const char* PASSWORD = "12345678";
 

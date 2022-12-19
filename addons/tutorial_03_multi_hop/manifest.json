@@ -3,9 +3,11 @@
   "id": "tutorial_03_multi_hop",
   "name": "Tutorial: Using multi-hop VPN",
   "conditions": {
-    "enabled_features": ["multiHop"]
+    "enabled_features": ["multiHop"],
+    "min_client_version": "2.13.0"
   },
   "type": "tutorial",
+  "translatable": false,
   "tutorial": {
     "id": "03_multi_hop",
     "image": "qrc:/addons/tutorial_03_multi_hop/image.svg",
@@ -87,7 +89,7 @@
       {
         "id": "s6",
         "element": "controllerToggle",
-        "tooltip": "Toggle this switch to activate or deactivate the VPN",
+        "tooltip": "Toggle this switch to activate the VPN",
         "next": {
           "op": "signal",
           "vpn_emitter": "controller",

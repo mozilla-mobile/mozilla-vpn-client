@@ -3,15 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testaddonapi.h"
-#include "../../src/addons/addon.h"
-#include "../../src/addons/addonmessage.h"
-#include "../../src/addons/conditionwatchers/addonconditionwatcherjavascript.h"
-#include "../../src/models/feature.h"
-#include "../../src/qmlengineholder.h"
-#include "../../src/settingsholder.h"
-#include "helper.h"
 
 #include <QQmlApplicationEngine>
+
+#include "addons/addon.h"
+#include "addons/addonmessage.h"
+#include "addons/conditionwatchers/addonconditionwatcherjavascript.h"
+#include "helper.h"
+#include "models/feature.h"
+#include "qmlengineholder.h"
+#include "settingsholder.h"
 
 void TestAddonApi::controller() {
   MozillaVPN vpn;

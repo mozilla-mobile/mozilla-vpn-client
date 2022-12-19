@@ -3,8 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testcheckedint.h"
-#include "../../src/mfbt/checkedint.h"
+
 #include "helper.h"
+#include "mfbt/checkedint.h"
 
 // This file is mainly a copy from
 // https://searchfox.org/mozilla-central/source/mfbt/tests/TestCheckedInt.cpp

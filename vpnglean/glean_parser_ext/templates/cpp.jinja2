@@ -14,95 +14,106 @@ Jinja2 template is not. Please file bugs! #}
 #include "glean/metrictypes.h"
 
 #include <QString>
+#include <QObject>
+
+{% import 'macros.jinja2' as macros %}
 
 namespace mozilla::glean {
-
-{%- macro generate_extra_keys(obj) -%}
-{% for name, suffix in obj["_generate_enums"] %}
-{# we always use the `extra` suffix, because we only expose the new event API #}
-{% set suffix = "Extra" %}
-{% if obj|attr(name)|length %}
-    {% if obj.has_extra_types %}
-    {{ extra_keys_with_types(obj, name, suffix)|indent }}
-    {% else %}
-#error "Untyped event extras not supported. Please annotate event extras with a type. See documentation for details. (Metric: {{obj.category}}.{{obj.name}}, defined in: {{obj.defined_in['filepath']}}:{{obj.defined_in['line']}})"
-    {% endif %}
-{% endif %}
-{% endfor %}
-{%- endmacro -%}
-
-{%- macro extra_keys_with_types(obj, name, suffix) -%}
-struct {{ obj.name|Camelize }}{{ suffix }} {
-  {% for item, type in obj|attr(name) %}
-  QVariant _{{ item|camelize }} = QVariant();
+{% for category_name, objs in all_objs.items() %}
+namespace {{ category_name|snake_case }} {
+  {% for obj in objs.values() %}
+  {% if obj|attr("_generate_enums") %}
+{{ macros.generate_extra_keys(obj, obj|metric_id) }}
+  {%- endif %}
   {% endfor %}
+}
+{% endfor %}
+} // namespace mozilla::glean
 
-  FfiExtra ToFfiExtra() const {
-    m_keepStringsAlive.clear();
+namespace {
+{% for category_name, objs in all_objs.items() %}
+  {% for obj in objs.values() %}
+  {% if obj|attr("_generate_enums") %}
+{{ macros.generate_extra_keys_parser(obj, category_name) }}
+  {%- endif %}
+  {% endfor %}
+{% endfor %}
+} // namespace
 
-    const char* extraKeys[{{ obj|attr(name)|length }} + 1];
-    const char* extraValues[{{ obj|attr(name)|length }} + 1];
-    int count = 0;
+{% for category_name, objs in all_objs.items() %}
+class __DONOTUSE__{{ category_name|Camelize }} final {
+  Q_GADGET
 
-    {% for item, type in obj|attr(name) %}
-    if (_{{item|camelize}}.canConvert<{{type|extra_type_name}}>()) {
-      {% if type == "string" %}
-      QByteArray s = _{{item|camelize}}.toString().toUtf8();
-      m_keepStringsAlive.append(s);
-      extraValues[count] = s.constData();
-      {% elif type == "boolean" %}
-      extraValues[count] = m_keepStringsAlive[count];
-      {% elif type == "quantity" %}
-      QByteArray s = QString::number(_{{item|camelize}}.toInt()).toUtf8();
-      extraValues[count] = s.constData();
-      {% else %}
-#error "Glean: Invalid extra key type for metric {{obj.category}}.{{obj.name}}, defined in: {{obj.defined_in['filepath']}}:{{obj.defined_in['line']}})"
-      {% endif %}
-      extraKeys[count] = "{{item}}";
-      count++;
-    }
+{% for obj in objs.values() %}
+  Q_PROPERTY({{ obj|type_name }} {{obj.name|camelize }} READ {{ obj.name|camelize }} CONSTANT);
+{% endfor %}
+
+  public:
+    {% for obj in objs.values() %}
+    {{ obj|type_name }} {{obj.name|camelize }} () const { return m_{{obj.name|camelize }}; };
     {% endfor %}
 
-    FfiExtra extras;
-    extras.keys = std::move(extraKeys);
-    extras.values = std::move(extraValues);
-    extras.count = count;
-    return extras;
-  };
-
   private:
-    // Helper vector to extend the lifetime of the strings
-    // that hold the extra key values until they are used.
-    QVector<QByteArray> m_keepStringsAlive;
+    {% for obj in objs.values() %}
+    {{ obj|type_name }} m_{{obj.name|camelize }} = {{ obj|type_name }}({{obj|metric_id}}{% if obj|attr("allowed_extra_keys_with_types")|length > 0 %}, {{ obj.name|Camelize }}ExtraParser(){%- endif %});
+    {% endfor %}
 };
-{%- endmacro %}
+{% endfor %}
 
-struct NoExtraKeys;
+// This class is not meant to be used directly.
+// It is exposed as a singleton to QML.
+//
+// The reason for this is to keep consistency with the Glean API on m-c.
+// On JavaScript pings are accessed through GleanMetrics.<MyMetric> and
+// on C++ they are accessed through mozilla::glean_pings::<my_metric>.
+class __DONOTUSE__GleanMetrics final : public QObject {
+    Q_OBJECT
+    Q_DISABLE_COPY_MOVE(__DONOTUSE__GleanMetrics)
 
-struct FfiExtra {
-  const char* const* keys;
-  const char* const* values;
-  int count;
+    {% for category_name, _ in all_objs.items() %}
+    Q_PROPERTY(__DONOTUSE__{{ category_name|Camelize }} {{ category_name|camelize }} READ {{ category_name|camelize }} CONSTANT);
+    {% endfor %}
+
+    private:
+        __DONOTUSE__GleanMetrics() = default;
+
+    public:
+        ~__DONOTUSE__GleanMetrics() = default;
+
+        static __DONOTUSE__GleanMetrics* instance() {
+            if (!s_instance) {
+                s_instance = new __DONOTUSE__GleanMetrics();
+            }
+
+            return s_instance;
+        }
+
+        {% for category_name, _ in all_objs.items() %}
+        __DONOTUSE__{{ category_name|Camelize }} {{ category_name|camelize }} () const { return m_{{ category_name|camelize }}; };
+        {% endfor %}
+
+    private:
+        {% for category_name, _ in all_objs.items() %}
+        __DONOTUSE__{{ category_name|Camelize }} m_{{ category_name|camelize }} = __DONOTUSE__{{ category_name|Camelize }}() ;
+        {% endfor %}
+
+        inline static __DONOTUSE__GleanMetrics* s_instance = nullptr;
 };
 
+namespace mozilla::glean {
 {% for category_name, objs in all_objs.items() %}
 namespace {{ category_name|snake_case }} {
     {% for obj in objs.values() %}
     /**
      * generated from {{ category_name }}.{{ obj.name }}
-     */
-    {% if obj|attr("_generate_enums") %}
-{{ generate_extra_keys(obj) }}
-    {%- endif %}
-    /**
+     *
      * {{ obj.description|wordwrap() | replace('\n', '\n     * ') }}
      */
-    constexpr {{ obj|type_name }} {{obj.name|snake_case }}({{obj|metric_id}});
+    inline {{ obj|type_name }} {{obj.name|snake_case }} = __DONOTUSE__GleanMetrics::instance()->{{ category_name|camelize }}().{{ obj.name|camelize }}();
 
     {% endfor %}
 }
 {% endfor %}
-
 } // namespace mozilla::glean
 
 #endif // mozilla_Metrics_h

@@ -14,21 +14,6 @@ Item {
 
     property bool connectionInfoScreenVisible: false
 
-    function formatSingle(value) {
-        if (value === 0)
-            return "00";
-
-        return (value < 10 ? "0" : "") + value;
-    }
-
-    function formatTime(time) {
-        var secs = time % 60;
-        time = Math.floor(time / 60);
-        var mins = time % 60;
-        time = Math.floor(time / 60);
-        return formatSingle(time) + ":" + formatSingle(mins) + ":" + formatSingle(secs);
-    }
-
     function closeConnectionInfo() {
         box.connectionInfoScreenVisible = false;
     }

@@ -15,4 +15,10 @@ class TestLocalizer final : public TestHelper {
   void localizeCurrency();
 
   void majorLanguageCode();
+
+  void parseBCP47Languages_data();
+  void parseBCP47Languages();
+
+  void parseIOSLanguages_data();
+  void parseIOSLanguages();
 };

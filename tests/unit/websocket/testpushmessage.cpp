@@ -3,8 +3,9 @@
  * file, You can obtain one at http://mozilla.orgß/MPL/2.0/. */
 
 #include "testpushmessage.h"
-#include "../../src/websocket/pushmessage.h"
+
 #include "helper.h"
+#include "websocket/pushmessage.h"
 
 void TestPushMessage::tst_invalidMessagesAreIgnored() {
   QString msg = "invalid message";

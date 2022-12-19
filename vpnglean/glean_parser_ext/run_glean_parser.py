@@ -69,6 +69,21 @@ def cpp_metrics(output_fd, *args):
     cpp.output_cpp(all_objs, output_fd, options)
 
 
+def create_dir(path):
+    """
+    Creates directory if it doesn't exist. Logs a message otherwise.
+    Other types of errors are still thrown.
+    """
+    try:
+        os.mkdir(path)
+    except FileExistsError:
+        # This error can be ignored.
+        print("Glean files directory \"{}\" exists.".format(path))
+    except Exception as e:
+        print("Error generating Glean files directory \"{}\".".format(path))
+        raise e;
+
+
 if __name__ == "__main__":
     if len(sys.argv) == 1:
         print("Generating Mozilla VPN Glean files.")
@@ -76,20 +91,16 @@ if __name__ == "__main__":
         workspace_root = Path(os.path.dirname(os.path.realpath(__file__))).parent.parent
 
         yaml_files_path = os.path.join(workspace_root, "glean")
-        generated_files_path = os.path.join(workspace_root, "vpnglean", "src", "generated")
+        generated_rust_files_path = os.path.join(workspace_root, "vpnglean", "src", "generated")
+        generated_cpp_files_path = os.path.join(workspace_root, "src", "apps", "vpn", "glean", "generated")
 
-        try:
-            os.mkdir(generated_files_path)
-        except FileExistsError:
-            # This error can be ignored.
-            print("Glean files directory exists.")
-        except:
-            raise Exception("Error generating Glean files directory.")
+        create_dir(generated_rust_files_path)
+        create_dir(generated_cpp_files_path)
 
         # Generate C++ files
         for [ output, input ] in [
-            [os.path.join(generated_files_path, "pings.h"), os.path.join(yaml_files_path, "pings.yaml")],
-            [os.path.join(generated_files_path, "metrics.h"), os.path.join(yaml_files_path, "metrics.yaml")],
+            [os.path.join(generated_cpp_files_path, "pings.h"), os.path.join(yaml_files_path, "pings.yaml")],
+            [os.path.join(generated_cpp_files_path, "metrics.h"), os.path.join(yaml_files_path, "metrics.yaml")],
         ]:
             print("Generating {} from {}".format(output, input))
             with open(output, 'w+', encoding='utf-8') as f:
@@ -97,8 +108,8 @@ if __name__ == "__main__":
 
         # Generate Rust files
         for [ output, input ] in [
-            [os.path.join(generated_files_path, "pings.rs"), os.path.join(yaml_files_path, "pings.yaml")],
-            [os.path.join(generated_files_path, "metrics.rs"), os.path.join(yaml_files_path, "metrics.yaml")],
+            [os.path.join(generated_rust_files_path, "pings.rs"), os.path.join(yaml_files_path, "pings.yaml")],
+            [os.path.join(generated_rust_files_path, "metrics.rs"), os.path.join(yaml_files_path, "metrics.yaml")],
         ]:
             print("Generating {} from {}".format(output, input))
             with open(output, 'w+', encoding='utf-8') as f:
