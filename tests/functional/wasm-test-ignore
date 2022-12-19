@@ -1,4 +1,5 @@
 testAuthenticationInApp.js
+testBenchmark.js
 testCaptivePortal.js
 testSubscription.js
 testPushMessageHandlers.js
