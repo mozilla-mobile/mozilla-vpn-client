@@ -55,14 +55,6 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
 
   @Override
   public Object getSystemService (String name){
-
-    if(Build.VERSION.SDK_INT >= 29 && name.equals("clipboard")){
-      // QT will always attempt to read the clipboard if content is there.
-      // since we have no use of the clipboard in android 10+
-      // we _can_  return null 
-      // And we defnitly should since android 12 displays clipboard access.
-      return null;
-    }
     return super.getSystemService(name);
   }
 
