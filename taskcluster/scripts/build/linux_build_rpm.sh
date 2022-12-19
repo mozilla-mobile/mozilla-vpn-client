@@ -48,10 +48,17 @@ if [[ -z "$DIST" ]]; then
   DIST="${VERSION_CODENAME}"
 fi
 
-# Install a PPA for Qt packages, if necessary.
-if [[ -n "$QTPPA" ]]; then
-    sudo add-apt-repository -y ${QTPPA}
-fi
+# Determine the build suffix to generate from /etc/os-release
+case ${ID} in
+  fedora)
+    BUILDSUFFIX="fc${VERSION_ID}"
+    ;;
+  ;;
+  *)
+    echo "Unsupported RPM distribution: ${ID}"
+    exit 1
+    ;;
+esac
 
 # Install the build dependencies.
 sudo yum-builddep -y ${MOZ_FETCHES_DIR}/mozillavpn.spec
@@ -60,11 +67,8 @@ sudo yum-builddep -y ${MOZ_FETCHES_DIR}/mozillavpn.spec
 rpmbuild -D "_topdir ${HOME}" -D "_sourcedir ${MOZ_FETCHES_DIR}" -ba ${MOZ_FETCHES_DIR}/mozillavpn.spec
 
 # Gather the build artifacts for export
-tar -C ${HOME}/RPMS/x86_64 -cvzf /builds/worker/artifacts/mozillavpn-rpm.tar.gz .
+tar -C ${HOME}/RPMS/x86_64 -cvzf /builds/worker/artifacts/mozillavpn-${ID}-${BUILDSUFFIX}.tar.gz .
 
-# Let's see what got built...
-echo "Listing $(pwd):"
-ls -al $(pwd)
-
-echo "Listing ${MOZ_FETCHES_DIR}:"
-ls -al ${MOZ_FETCHES_DIR}
+# Lets see what got built...
+echo "Listing ${HOME}/RPMS/x86_64:"
+ls -al ${HOME}/RPMS/x86_64
