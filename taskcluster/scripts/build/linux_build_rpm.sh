@@ -65,8 +65,11 @@ RPM_BUILD_ARCH=$(uname -m)
 # Install the build dependencies.
 sudo yum-builddep -y ${MOZ_FETCHES_DIR}/mozillavpn.spec
 
+# Append the build suffix to the package revision.
+cat ${MOZ_FETCHES_DIR}/mozillavpn.spec | sed -e "s/^Release:.*$/Release: 1.${BUILDSUFFIX}/" > ${MOZ_FETCHES_DIR}/mozillavpn-${BUILDSUFFIX}.spec
+
 # Build the packages.
-rpmbuild -D "_topdir ${HOME}" -D "_sourcedir ${MOZ_FETCHES_DIR}" -ba ${MOZ_FETCHES_DIR}/mozillavpn.spec
+rpmbuild -D "_topdir ${HOME}" -D "_sourcedir ${MOZ_FETCHES_DIR}" -ba ${MOZ_FETCHES_DIR}/mozillavpn-${BUILDSUFFIX}.spec
 
 # Gather the build artifacts for export
 tar -C ${HOME}/RPMS/${RPM_BUILD_ARCH} -cvzf /builds/worker/artifacts/mozillavpn-${ID}-${BUILDSUFFIX}.tar.gz .
