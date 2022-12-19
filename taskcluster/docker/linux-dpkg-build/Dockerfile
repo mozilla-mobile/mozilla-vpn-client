@@ -50,7 +50,7 @@ RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/apt,/usr/bin/apt-get,/usr/bi
 #----------------------------------------------------------------------------------------------------------------------
 
 # %include-run-task
-# %include taskcluster/scripts/build/linux.sh
+# %include taskcluster/scripts/build/linux_build_dpkg.sh
 ADD topsrcdir/taskcluster/scripts/build/linux_build_dpkg.sh /builds/worker/builder.sh
 
 VOLUME /builds/worker/checkouts

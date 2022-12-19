@@ -35,7 +35,7 @@ WORKDIR /builds/worker/
 #----------------------------------------------------------------------------------------------------------------------
 
 # %include-run-task
-# %include taskcluster/scripts/build/linux.sh
+# %include taskcluster/scripts/build/linux_build_rpm.sh
 ADD topsrcdir/taskcluster/scripts/build/linux_build_rpm.sh /builds/worker/builder.sh
 
 VOLUME /builds/worker/checkouts
