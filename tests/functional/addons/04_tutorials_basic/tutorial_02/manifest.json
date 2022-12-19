@@ -1,0 +1,26 @@
+{
+  "api_version": "0.1",
+  "id": "tutorial_02",
+  "name": "Tutorial 02",
+  "conditions": {},
+  "type": "tutorial",
+  "tutorial": {
+    "id": "02_connect_on_startup",
+    "image": "qrc:/addons/tutorial_02/image.svg",
+    "title": "Tutorial 02",
+    "subtitle": "Tutorial 02 sub",
+    "completion_message": "You’ve successfully completed tutorial 02",
+    "steps": [
+      {
+        "id": "s1",
+        "element": "navigationLayout/navButton-settings",
+        "tooltip": "Select your account settings",
+        "next": {
+          "op": "signal",
+          "qml_emitter": "navigationLayout/navButton-settings",
+          "signal": "clicked"
+        }
+      }
+    ]
+  }
+}

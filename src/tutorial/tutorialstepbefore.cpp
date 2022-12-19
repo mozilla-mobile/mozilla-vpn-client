@@ -190,11 +190,8 @@ class TutorialStepBeforeVpnLocationSet final : public TutorialStepBefore {
   }
 
   bool run() override {
-    Controller* controller = MozillaVPN::instance()->controller();
-    Q_ASSERT(controller);
-
-    controller->changeServer(m_exitCountryCode, m_exitCity, m_entryCountryCode,
-                             m_entryCity);
+    MozillaVPN::instance()->currentServer()->changeServer(
+        m_exitCountryCode, m_exitCity, m_entryCountryCode, m_entryCity);
     return true;
   }
 

@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
+const constants = require('./constants.js');
 const {URL} = require('node:url');
 const http = require('http')
 
@@ -14,6 +15,8 @@ let _lastNotification = {
   title: null,
   message: null,
 };
+
+let _lastAddonLoadingCompleted = false;
 
 module.exports = {
   async connect(impl, options) {
@@ -37,6 +40,11 @@ module.exports = {
             if (json.type === 'notification') {
               _lastNotification.title = json.title;
               _lastNotification.message = json.message;
+              return;
+            }
+
+            if (json.type === 'addon_load_completed') {
+              _lastAddonLoadingCompleted = true;
               return;
             }
 
@@ -482,6 +490,42 @@ module.exports = {
         json.type === 'send_push_message_device_deleted' && !('error' in json),
         `Command failed: ${json.error}`);
     return json.value;
+  },
+
+  async resetAddons(addonPath) {
+    await this.waitForElementProperty(
+        'VPNAddonManager', 'loadCompleted', 'true');
+
+    _lastAddonLoadingCompleted = false;
+
+    await this.setSetting(
+        'addonCustomServerAddress', `${constants.ADDON_URL}/${addonPath}/`);
+    await this.setSetting('addonCustomServer', 'true');
+
+    const json = await this._writeCommand('reset_addons');
+    assert(
+        json.type === 'reset_addons' && !('error' in json),
+        `Command failed: ${json.error}`);
+
+    await this.waitForCondition(() => _lastAddonLoadingCompleted);
+  },
+
+  async fetchAddons(addonPath) {
+    await this.waitForElementProperty(
+        'VPNAddonManager', 'loadCompleted', 'true');
+
+    _lastAddonLoadingCompleted = false;
+
+    await this.setSetting(
+        'addonCustomServerAddress', `${constants.ADDON_URL}/${addonPath}/`);
+    await this.setSetting('addonCustomServer', 'true');
+
+    const json = await this._writeCommand('fetch_addons');
+    assert(
+        json.type === 'fetch_addons' && !('error' in json),
+        `Command failed: ${json.error}`);
+
+    await this.waitForCondition(() => _lastAddonLoadingCompleted);
   },
 
   // Internal methods.

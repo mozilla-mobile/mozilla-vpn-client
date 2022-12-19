@@ -55,18 +55,18 @@ jobs:
           cp $(pwd)/build/src/mozillavpn.wasm wasm
           cp $(pwd)/build/src/mozillavpn.js wasm
           cp $(pwd)/build/src/qtloader.js wasm
-          cp $(pwd)/tests/functional/fxa_endpoints.js wasm
-          cp $(pwd)/tests/functional/guardian_endpoints.js wasm
+          cp $(pwd)/tests/functional/servers/fxa_endpoints.js wasm
+          cp $(pwd)/tests/functional/servers/guardian_endpoints.js wasm
           cp -r $(pwd)/tools/logviewer wasm
 
       - name: Generate tasklist
         id: testGen
         shell: bash
         run: |
-          echo -n "::set-output name=tests::"
+          echo -n "tests=" >> $GITHUB_OUTPUT
           for test in $(find tests/functional -name 'test*.js' | sort); do
             grep "$(basename ${test%.js})" tests/functional/wasm-test-ignore &>/dev/null || printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
-          done | jq -s -c
+          done | jq -s -c >> $GITHUB_OUTPUT
 
       - name: Check tests
         shell: bash
@@ -91,6 +91,9 @@ jobs:
       fail-fast: false # Don't cancel other jobs if a test fails
       matrix:
         test: ${{ fromJson(needs.wasmQt6.outputs.matrix) }}
+    env:
+      QTVERSION: 6.2.4
+
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
@@ -101,6 +104,12 @@ jobs:
         with:
           path: build/
           key: ${{ github.sha }}
+
+      - name: Install Qt
+        shell: bash
+        run: |
+          python3 -m pip install aqtinstall
+          python3 -m aqt install-qt -O /opt linux desktop $QTVERSION
 
       - name: Install dependecies
         run: |
@@ -116,6 +125,10 @@ jobs:
           path: wasm
 
       - uses: browser-actions/setup-geckodriver@latest
+
+      - name: Build addons
+        shell: bash
+        run: ./scripts/addon/generate_all_tests.py -q /opt/$QTVERSION/gcc_64/bin
 
       - name: Running ${{matrix.test.name}} Tests
         id: runTests

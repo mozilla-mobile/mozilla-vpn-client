@@ -18,11 +18,8 @@ Item {
    property alias _viewContentData: viewContent.data
    property alias _interactive: vpnFlickable.interactive
 
-   height: parent.implicitHeight
-
    anchors {
        top: if (parent) parent.top
-       topMargin: menu.visible ? VPNTheme.theme.menuHeight : 0
    }
 
    Rectangle {

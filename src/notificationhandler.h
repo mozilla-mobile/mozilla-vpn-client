@@ -75,8 +75,6 @@ class NotificationHandler : public QObject {
   Message m_lastMessage = None;
 
  private:
-  QString m_switchingLocalizedServerCountry;
-  QString m_switchingLocalizedServerCity;
   bool m_switching = false;
 
   // We want to show a 'disconnected' notification only if we were actually

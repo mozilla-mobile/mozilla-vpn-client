@@ -16,8 +16,9 @@ const {URL} = require('node:url');
 const vpn = require('./helper.js');
 const vpnWasm = require('./helperWasm.js');
 
-const fxa = require('./fxa.js');
-const guardian = require('./guardian.js');
+const fxaServer = require('./servers/fxa.js');
+const guardian = require('./servers/guardian.js');
+const addonServer = require('./servers/addon.js');
 const networkBenchmark = require('./networkBenchmark.js');
 const wasm = require('./wasm.js');
 
@@ -34,22 +35,28 @@ exports.mochaHooks = {
   async beforeAll() {
     const u = new URL(`http://localhost:${wasm.start()}/test.html`);
     u.searchParams.set('guardian', `http://localhost:${guardian.start()}`);
-    u.searchParams.set('fxa', `http://localhost:${fxa.start()}`);
+    u.searchParams.set('fxa', `http://localhost:${fxaServer.start()}`);
+    u.searchParams.set(
+        'addon', `http://localhost:${addonServer.start()}/01_empty_manifest/`);
     u.searchParams.set('benchmark',
         `http://localhost:${networkBenchmark.start()}`);
 
     process.env['MVPN_WASM_URL'] = u.toString();
+    process.env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';
+
     driver = await new Builder().forBrowser('firefox').build();
   },
 
   async afterAll() {
     guardian.stop();
-    fxa.stop();
+    fxaServer.stop();
+    addonServer.stop();
     networkBenchmark.stop();
     wasm.stop();
 
     guardian.throwExceptionsIfAny();
-    fxa.throwExceptionsIfAny();
+    fxaServer.throwExceptionsIfAny();
+    addonServer.throwExceptionsIfAny();
     networkBenchmark.throwExceptionsIfAny();
 
     await driver.quit();
@@ -60,11 +67,12 @@ exports.mochaHooks = {
 
     guardian.overrideEndpoints =
         this.currentTest.ctx.guardianOverrideEndpoints || null;
-    fxa.overrideEndpoints = this.currentTest.ctx.fxaOverrideEndpoints || null;
+    fxaServer.overrideEndpoints =
+        this.currentTest.ctx.fxaOverrideEndpoints || null;
 
     await startAndConnect();
     await vpn.setGleanAutomationHeader();
-    await vpn.setSetting('tips-and-tricks-intro-shown', 'true')
+    await vpn.setSetting('tipsAndTricksIntroShown', 'true')
 
     if (this.currentTest.ctx.authenticationNeeded) {
       await vpn.authenticateInApp(true, true);

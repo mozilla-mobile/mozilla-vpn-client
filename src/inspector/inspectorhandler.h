@@ -36,6 +36,7 @@ class InspectorHandler : public QObject {
   virtual ~InspectorHandler();
 
  private:
+  void addonLoadCompleted();
   void logEntryAdded(const QByteArray& log);
   void notificationShown(const QString& title, const QString& message);
   void networkRequestFinished(QNetworkReply* reply);

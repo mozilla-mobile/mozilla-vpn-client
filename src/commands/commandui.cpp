@@ -20,6 +20,7 @@
 #include "logger.h"
 #include "models/feature.h"
 #include "models/featuremodel.h"
+#include "models/recentconnections.h"
 #include "mozillavpn.h"
 #include "notificationhandler.h"
 #include "productshandler.h"
@@ -254,12 +255,12 @@ int CommandUI::run(QStringList& tokens) {
     vpn.initialize();
 
 #ifdef MVPN_MACOS
-    MacOSStartAtBootWatcher startAtBootWatcher();
+    MacOSStartAtBootWatcher startAtBootWatcher;
     MacOSUtils::setDockClickHandler();
 #endif
 
 #ifdef MVPN_WINDOWS
-    WindowsStartAtBootWatcher startAtBootWatcher();
+    WindowsStartAtBootWatcher startAtBootWatcher;
 #endif
 
 #ifdef MVPN_LINUX
@@ -332,6 +333,14 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNLicenseModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance()->licenseModel();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNRecentConnections",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = RecentConnections::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -586,24 +595,25 @@ int CommandUI::run(QStringList& tokens) {
 
 #endif
 
-    QObject::connect(Localizer::instance(), &Localizer::codeChanged, []() {
-      logger.debug() << "Retranslating";
-      QmlEngineHolder::instance()->engine()->retranslate();
-      NotificationHandler::instance()->retranslate();
-      L18nStrings::instance()->retranslate();
-      AddonManager::instance()->retranslate();
+    QObject::connect(
+        SettingsHolder::instance(), &SettingsHolder::languageCodeChanged, []() {
+          logger.debug() << "Retranslating";
+          QmlEngineHolder::instance()->engine()->retranslate();
+          NotificationHandler::instance()->retranslate();
+          L18nStrings::instance()->retranslate();
+          AddonManager::instance()->retranslate();
 
 #ifdef MVPN_MACOS
-      MacOSMenuBar::instance()->retranslate();
+          MacOSMenuBar::instance()->retranslate();
 #endif
 
 #ifdef MVPN_WASM
-      WasmWindowController::instance()->retranslate();
+          WasmWindowController::instance()->retranslate();
 #endif
 
-      MozillaVPN::instance()->serverCountryModel()->retranslate();
-      MozillaVPN::instance()->currentServer()->retranslate();
-    });
+          MozillaVPN::instance()->serverCountryModel()->retranslate();
+          MozillaVPN::instance()->currentServer()->retranslate();
+        });
 
     InspectorHandler::initialize();
 

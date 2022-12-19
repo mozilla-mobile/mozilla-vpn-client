@@ -3,54 +3,121 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
+const {navBar, settingsScreen, homeScreen} = require('./elements.js');
 const vpn = require('./helper.js');
 
 describe('Addons', function() {
   this.ctx.authenticationNeeded = true;
 
-  it('Addons are loaded', async () => {
-    if (!(await vpn.isFeatureFlippedOff('addonSignature'))) {
-      await vpn.flipFeatureOff('addonSignature');
-      assert(await vpn.isFeatureFlippedOff('addonSignature'));
-    }
-
-    await vpn.setSetting('addon/customServer', 'false');
-
-    await vpn.waitForElementProperty(
-        'VPNAddonManager', 'loadCompleted', 'true');
-
-    let count = 0;
+  it('Empty addon index', async () => {
+    await vpn.resetAddons('01_empty_manifest');
     await vpn.waitForCondition(async () => {
-      count = parseInt(
-          await vpn.getElementProperty('VPNAddonManager', 'count'), 10);
-      return count > 0;
+      return parseInt(
+                 await vpn.getElementProperty('VPNAddonManager', 'count'),
+                 10) === 0;
+    });
+  });
+
+  it('Broken addon index', async () => {
+    await vpn.resetAddons('03_single_addon');
+    await vpn.waitForCondition(async () => {
+      return parseInt(
+                 await vpn.getElementProperty('VPNAddonManager', 'count'),
+                 10) === 1;
     });
 
-    await vpn.setSetting('addon/customServer', 'true');
-    await vpn.setSetting(
-        'addon/customServerAddress',
-        'https://bakulf.github.io/vpn-addons-test/empty_manifest/');
+    await vpn.fetchAddons('02_broken_manifest');
+    await vpn.waitForCondition(async () => {
+      return parseInt(
+                 await vpn.getElementProperty('VPNAddonManager', 'count'),
+                 10) === 1;
+    });
+  });
+
+  it('Addons are loaded', async () => {
+    await vpn.resetAddons('03_single_addon');
+    await vpn.waitForCondition(async () => {
+      return parseInt(
+                 await vpn.getElementProperty('VPNAddonManager', 'count'),
+                 10) === 1;
+    });
+
+    await vpn.fetchAddons('01_empty_manifest');
     await vpn.waitForCondition(async () => {
       return parseInt(
                  await vpn.getElementProperty('VPNAddonManager', 'count'),
                  10) === 0;
     });
 
-    await vpn.setSetting('addon/customServer', 'false');
+    await vpn.fetchAddons('03_single_addon');
     await vpn.waitForCondition(async () => {
       return parseInt(
                  await vpn.getElementProperty('VPNAddonManager', 'count'),
-                 10) === count;
+                 10) === 1;
+    });
+  });
+
+  it('Settings rollback - location', async () => {
+    // Loading the custom tutorial
+    await vpn.resetAddons('05_settings_rollback');
+
+    await vpn.waitForCondition(async () => {
+      return parseInt(
+                 await vpn.getElementProperty('VPNAddonManager', 'count'),
+                 10) === 1;
     });
 
-    await vpn.setSetting('addon/customServer', 'true');
-    await vpn.setSetting(
-        'addon/customServerAddress',
-        'https://archive.mozilla.org/pub/vpn/addons/releases/latest/');
+    const exitCityName =
+        await vpn.getElementProperty('VPNCurrentServer', 'exitCityName');
+    const exitCountryCode =
+        await vpn.getElementProperty('VPNCurrentServer', 'exitCountryCode');
 
-    // Now we need to wait. Unfortunately there is not an easy way to know when
-    // the loading of the new addons happen. In case we will add a signal, or
-    // something, we can do better than this.
-    await vpn.wait(5000);
+    // Let's start the tutorial
+    await vpn.waitForElementAndClick(navBar.SETTINGS);
+    await vpn.waitForElementAndClick(settingsScreen.TIPS_AND_TRICKS);
+    await vpn.waitForElementAndClick(homeScreen.TUTORIAL_LIST_HIGHLIGHT);
+
+    // Confirmation dialog for settings-rollback
+    await vpn.waitForElementProperty(
+        homeScreen.TUTORIAL_POPUP_PRIMARY_BUTTON, 'visible', 'true');
+    assert(
+        (await vpn.getElementProperty(
+            homeScreen.TUTORIAL_POPUP_PRIMARY_BUTTON, 'text')) === 'Continue');
+    await vpn.waitForElementAndClick(homeScreen.TUTORIAL_POPUP_PRIMARY_BUTTON);
+
+    await vpn.waitForCondition(async () => {
+      return await vpn.getElementProperty(
+                 'VPNCurrentServer', 'exitCityName') === 'Vienna';
+    });
+
+    assert(
+        await vpn.getElementProperty('VPNCurrentServer', 'exitCityName') ===
+        'Vienna');
+    assert(
+        await vpn.getElementProperty('VPNCurrentServer', 'exitCountryCode') ===
+        'at');
+
+    await vpn.waitForElementAndClick('serverListButton-btn');
+
+    // Final dialog
+    await vpn.waitForElementProperty(
+        homeScreen.TUTORIAL_POPUP_PRIMARY_BUTTON, 'visible', 'true');
+    assert(
+        (await vpn.getElementProperty(
+            homeScreen.TUTORIAL_POPUP_PRIMARY_BUTTON, 'text')) === 'Let’s go!');
+    await vpn.waitForElementAndClick(
+        homeScreen.TUTORIAL_POPUP_SECONDARY_BUTTON);
+
+    await vpn.waitForCondition(async () => {
+      return await vpn.getElementProperty(
+                 'VPNCurrentServer', 'exitCityName') === exitCityName;
+    });
+
+    assert(
+        await vpn.getElementProperty('VPNCurrentServer', 'exitCityName') ===
+        exitCityName);
+    assert(
+        await vpn.getElementProperty('VPNCurrentServer', 'exitCountryCode') ===
+        exitCountryCode);
   });
 });

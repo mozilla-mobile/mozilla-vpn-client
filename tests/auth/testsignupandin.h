@@ -8,6 +8,17 @@ class TestSignUpAndIn final : public QObject {
   Q_OBJECT
 
  public:
+  // We want to send the wrong totp code a few times using strings, numbers,
+  // etc. at the first StateVerificationSessionByTotpNeeded state change.
+  enum SendTotpCodeState {
+    NoCodeSent = 0,
+    SendWrongTotpCodeNumber,
+    SendWrongTotpCodeString,
+    SendWrongTotpCodeAlphaNumeric,
+    GoodTotpCode,
+  };
+  Q_ENUM(SendTotpCodeState);
+
   TestSignUpAndIn(const QString& pattern, bool totpCreation = false);
   ~TestSignUpAndIn() = default;
 
@@ -24,13 +35,12 @@ class TestSignUpAndIn final : public QObject {
   QString fetchCode(const QString& code);
   void waitForTotpCodes();
   void fetchAndSendUnblockCode();
+  void sendNextTotpCode();
 
   QString m_emailAccount;
   bool m_totpCreation = false;
 
-  // We want to send the wrong totp code only once. At the first
-  // StateVerificationSessionByTotpNeeded state change.
-  bool m_sendWrongTotpCode = true;
+  SendTotpCodeState m_sendTotpCodeState = NoCodeSent;
 
   QString m_totpSecret;
 };

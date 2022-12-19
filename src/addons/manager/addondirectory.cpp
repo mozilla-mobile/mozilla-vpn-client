@@ -40,7 +40,8 @@ AddonDirectory::AddonDirectory() {
 
 AddonDirectory::~AddonDirectory() { MVPN_COUNT_DTOR(AddonDirectory); }
 
-bool AddonDirectory::getDirectory(QDir* dir) const {
+// static
+bool AddonDirectory::getDirectory(QDir* dir) {
   QDir addonDirectory(rootAppFolder());
   if (!addonDirectory.exists(ADDON_FOLDER)) {
     return false;
@@ -55,8 +56,8 @@ bool AddonDirectory::getDirectory(QDir* dir) const {
   return true;
 }
 
-bool AddonDirectory::readFile(const QString& fileName,
-                              QByteArray* contents) const {
+// static
+bool AddonDirectory::readFile(const QString& fileName, QByteArray* contents) {
   QDir dir;
   if (!getDirectory(&dir)) {
     return false;
@@ -79,8 +80,9 @@ bool AddonDirectory::readFile(const QString& fileName,
   return true;
 }
 
+// static
 bool AddonDirectory::writeToFile(const QString& fileName,
-                                 const QByteArray& contents) const {
+                                 const QByteArray& contents) {
   QDir dir;
   if (!getDirectory(&dir)) {
     return false;
@@ -107,7 +109,8 @@ bool AddonDirectory::writeToFile(const QString& fileName,
   return true;
 }
 
-bool AddonDirectory::deleteFile(const QString& fileName) const {
+// static
+bool AddonDirectory::deleteFile(const QString& fileName) {
   QDir dir;
   if (!getDirectory(&dir)) {
     return false;
@@ -125,14 +128,8 @@ bool AddonDirectory::deleteFile(const QString& fileName) const {
   return true;
 }
 
-#ifdef UNIT_TEST
-/**
- * @brief Deletes all files in the directory.
- *
- * Useful for testing. This can be called to ensure
- * when the addon index is updated it will not be a no-op.
- */
-void AddonDirectory::testReset() {
+// static
+void AddonDirectory::reset() {
   QDir dir;
   if (!getDirectory(&dir)) {
     return;
@@ -145,4 +142,3 @@ void AddonDirectory::testReset() {
     dir.remove(dirFile);
   }
 }
-#endif

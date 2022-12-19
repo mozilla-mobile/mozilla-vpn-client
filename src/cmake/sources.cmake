@@ -208,6 +208,8 @@ target_sources(mozillavpn PRIVATE
     models/keys.h
     models/licensemodel.cpp
     models/licensemodel.h
+    models/recentconnections.cpp
+    models/recentconnections.h
     models/server.cpp
     models/server.h
     models/servercity.cpp

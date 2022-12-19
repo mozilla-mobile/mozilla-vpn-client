@@ -16,7 +16,7 @@ describe('Navigation bar', async function() {
 
 
   it('Is not visible over initial screen', async () => {
-    await vpn.wait();
+    await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
     assert(await navigationBarVisible() === 'false');
   });
 
@@ -25,7 +25,7 @@ describe('Navigation bar', async function() {
     await vpn.waitForElementAndClick(initialScreen.GET_HELP_LINK);
     await vpn.waitForElement(getHelpScreen.BACK);
     await vpn.waitForElementProperty(getHelpScreen.BACK, 'visible', 'true');
-    await vpn.wait();
+    await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
     assert(await navigationBarVisible() === 'false');
   });
 

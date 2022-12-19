@@ -80,7 +80,7 @@ class xliff_language:
     def transform(self, text):
         start = 0
         ac_regex = re.compile('@[\w.]+@') ## Autoconf style match: @VARNAME@
-        cm_regex = re.compile('\${[\w.]}')  ## CMake style match: ${VARNAME}
+        cm_regex = re.compile('\${[\w.]+}')  ## CMake style match: ${VARNAME}
         qt_regex = re.compile('qtTrId("[\w.]+")') ## Qt match: qtTrId("VARNAME")
 
         while start < len(text):

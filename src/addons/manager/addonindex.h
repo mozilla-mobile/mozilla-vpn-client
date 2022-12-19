@@ -39,7 +39,7 @@ class AddonIndex final : public QObject {
   void update(const QByteArray& index, const QByteArray& indexSignature);
 
  signals:
-  void indexUpdated(const QList<AddonData>& addons);
+  void indexUpdated(bool status, const QList<AddonData>& addons);
 
  private:
   bool read(QByteArray& index, QByteArray& indexSignature);
