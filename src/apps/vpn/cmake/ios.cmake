@@ -6,7 +6,7 @@ enable_language(OBJC)
 enable_language(OBJCXX)
 enable_language(Swift)
 
-include(cmake/osxtools.cmake)
+include(apps/vpn/cmake/osxtools.cmake)
 
 # Configure the application bundle Info.plist
 set_target_properties(mozillavpn PROPERTIES
