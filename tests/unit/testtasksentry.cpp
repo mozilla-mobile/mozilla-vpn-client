@@ -6,8 +6,8 @@
 
 #include <QTextStream>
 
-#include "../../src/settingsholder.h"
-#include "../../src/tasks/sentry/tasksentry.h"
+#include "../../src/apps/vpn/settingsholder.h"
+#include "../../src/apps/vpn/tasks/sentry/tasksentry.h"
 #include "helper.h"
 
 void TestTaskSentry::testParse_data() {
