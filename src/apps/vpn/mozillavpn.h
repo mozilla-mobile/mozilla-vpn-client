@@ -144,7 +144,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void requestDeleteAccount();
   Q_INVOKABLE void cancelReauthentication();
   Q_INVOKABLE void updateViewShown();
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
   Q_INVOKABLE void launchPlayStore();
 #endif
   Q_INVOKABLE void requestViewLogs();

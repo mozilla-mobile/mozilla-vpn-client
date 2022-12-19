@@ -13,9 +13,9 @@
 #include "leakdetector.h"
 #include "settingsholder.h"
 
-Keys::Keys() { MVPN_COUNT_CTOR(Keys); }
+Keys::Keys() { MZ_COUNT_CTOR(Keys); }
 
-Keys::~Keys() { MVPN_COUNT_DTOR(Keys); }
+Keys::~Keys() { MZ_COUNT_DTOR(Keys); }
 
 bool Keys::fromSettings() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();

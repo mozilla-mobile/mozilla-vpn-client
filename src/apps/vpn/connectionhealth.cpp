@@ -43,7 +43,7 @@ Logger logger("ConnectionHealth");
 }
 
 ConnectionHealth::ConnectionHealth() : m_dnsPingSender(QHostAddress()) {
-  MVPN_COUNT_CTOR(ConnectionHealth);
+  MZ_COUNT_CTOR(ConnectionHealth);
 
   m_noSignalTimer.setSingleShot(true);
 
@@ -76,7 +76,7 @@ ConnectionHealth::ConnectionHealth() : m_dnsPingSender(QHostAddress()) {
   m_dnsPingLatency = PING_TIME_UNSTABLE_SEC * 1000;
 }
 
-ConnectionHealth::~ConnectionHealth() { MVPN_COUNT_DTOR(ConnectionHealth); }
+ConnectionHealth::~ConnectionHealth() { MZ_COUNT_DTOR(ConnectionHealth); }
 
 void ConnectionHealth::stop() {
   logger.debug() << "ConnectionHealth deactivated";
@@ -178,7 +178,7 @@ void ConnectionHealth::connectionStateChanged() {
 }
 
 void ConnectionHealth::pingSentAndReceived(qint64 msec) {
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
   logger.debug() << "Ping answer received in msec:" << msec;
 #else
   Q_UNUSED(msec);
@@ -237,7 +237,7 @@ void ConnectionHealth::startUnsettledPeriod() {
 }
 
 void ConnectionHealth::applicationStateChanged(Qt::ApplicationState state) {
-#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS)
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
   Q_UNUSED(state);
   // Do not suspend PingsendHelper on Desktop.
   return;

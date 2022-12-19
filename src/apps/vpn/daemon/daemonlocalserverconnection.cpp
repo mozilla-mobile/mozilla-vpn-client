@@ -20,7 +20,7 @@ Logger logger("DaemonLocalServerConnection");
 DaemonLocalServerConnection::DaemonLocalServerConnection(QObject* parent,
                                                          QLocalSocket* socket)
     : QObject(parent) {
-  MVPN_COUNT_CTOR(DaemonLocalServerConnection);
+  MZ_COUNT_CTOR(DaemonLocalServerConnection);
 
   logger.debug() << "Connection created";
 
@@ -40,7 +40,7 @@ DaemonLocalServerConnection::DaemonLocalServerConnection(QObject* parent,
 }
 
 DaemonLocalServerConnection::~DaemonLocalServerConnection() {
-  MVPN_COUNT_DTOR(DaemonLocalServerConnection);
+  MZ_COUNT_DTOR(DaemonLocalServerConnection);
 
   logger.debug() << "Connection released";
 }

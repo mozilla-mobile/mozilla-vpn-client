@@ -51,16 +51,16 @@
 #  include "sentry/sentryadapter.h"
 #endif
 
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
 #  include "platforms/ios/iosutils.h"
 #endif
 
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
 #  include "platforms/android/androidiaphandler.h"
 #  include "platforms/android/androidutils.h"
 #endif
 
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
 #  include "platforms/android/androidutils.h"
 #  include "platforms/android/androidvpnactivity.h"
 #endif
@@ -96,7 +96,7 @@ MozillaVPN* MozillaVPN::instance() {
 MozillaVPN* MozillaVPN::maybeInstance() { return s_instance; }
 
 MozillaVPN::MozillaVPN() : m_private(new Private()) {
-  MVPN_COUNT_CTOR(MozillaVPN);
+  MZ_COUNT_CTOR(MozillaVPN);
 
   logger.debug() << "Creating MozillaVPN singleton";
 
@@ -190,7 +190,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 }
 
 MozillaVPN::~MozillaVPN() {
-  MVPN_COUNT_DTOR(MozillaVPN);
+  MZ_COUNT_DTOR(MozillaVPN);
 
   logger.debug() << "Deleting MozillaVPN singleton";
 
@@ -219,7 +219,7 @@ MozillaVPN::UserState MozillaVPN::userState() const { return m_userState; }
 bool MozillaVPN::stagingMode() const { return !Constants::inProduction(); }
 
 bool MozillaVPN::debugMode() const {
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
   return true;
 #else
   return false;
@@ -268,7 +268,7 @@ void MozillaVPN::initialize() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
   AndroidVPNActivity::maybeInit();
   AndroidUtils::instance();
 #endif
@@ -389,7 +389,7 @@ void MozillaVPN::maybeStateMain() {
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
-#if !defined(MVPN_ANDROID) && !defined(MVPN_IOS)
+#if !defined(MZ_ANDROID) && !defined(MZ_IOS)
   if (!settingsHolder->postAuthenticationShown()) {
     setState(StatePostAuthentication);
     return;
@@ -746,7 +746,7 @@ void MozillaVPN::createSupportTicket(const QString& email,
   });
 }
 
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
 void MozillaVPN::launchPlayStore() {
   logger.debug() << "Launch Play Store";
   PurchaseHandler* purchaseHandler = PurchaseHandler::instance();
@@ -908,7 +908,7 @@ void MozillaVPN::postAuthenticationCompleted() {
 void MozillaVPN::mainWindowLoaded() {
   logger.debug() << "main window loaded";
 
-#ifndef MVPN_WASM
+#ifndef MZ_WASM
   // Initialize glean with an async call because at this time, QQmlEngine does
   // not have root objects yet to see the current graphics API in use.
   logger.debug() << "Initializing Glean";
@@ -1075,12 +1075,12 @@ bool MozillaVPN::viewLogs() {
     return false;
   }
 
-#if defined(MVPN_ANDROID) || defined(MVPN_IOS)
+#if defined(MZ_ANDROID) || defined(MZ_IOS)
   QString* buffer = new QString();
   QTextStream* out = new QTextStream(buffer);
   bool ok = true;
   serializeLogs(out, [buffer, out
-#  if defined(MVPN_ANDROID)
+#  if defined(MZ_ANDROID)
                       ,
                       &ok
 #  endif
@@ -1088,7 +1088,7 @@ bool MozillaVPN::viewLogs() {
     Q_ASSERT(out);
     Q_ASSERT(buffer);
 
-#  if defined(MVPN_ANDROID)
+#  if defined(MZ_ANDROID)
     ok = AndroidUtils::ShareText(*buffer);
 #  else
     IOSUtils::shareLogs(*buffer);
@@ -1274,7 +1274,7 @@ void MozillaVPN::restoreSubscriptionStarted() {
 }
 
 void MozillaVPN::subscriptionCompleted() {
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
   // This is Android only
   // iOS can end up here if the subsciption get finished outside of the IAP
   // process
@@ -1333,7 +1333,7 @@ void MozillaVPN::subscriptionCanceled() {
 }
 
 void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
   // This is iOS only.
   // Android can legitimately end up here on a skuDetailsFailed.
   if (m_state != StateSubscriptionInProgress) {
@@ -1362,7 +1362,7 @@ void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
 }
 
 void MozillaVPN::alreadySubscribed() {
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
   // This randomness is an iOS only issue
   // TODO - How can we make this cleaner in the future
   if (m_state != StateSubscriptionInProgress) {
@@ -1386,7 +1386,7 @@ void MozillaVPN::update() {
 
   // The windows installer will stop the client and daemon before installation
   // so it's not necessary to disable the VPN to perform an upgrade.
-#ifndef MVPN_WINDOWS
+#ifndef MZ_WINDOWS
   if (m_private->m_controller.state() != Controller::StateOff &&
       m_private->m_controller.state() != Controller::StateInitializing) {
     deactivate();

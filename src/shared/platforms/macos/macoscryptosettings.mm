@@ -20,7 +20,7 @@ QByteArray key;
 NSString* getAppId() {
   NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
   if (!appId) {
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
     appId = QString(AppConstants::IOS_FALLBACK_APP_ID).toNSString();
 #else
     appId = QString(AppConstants::MACOS_FALLBACK_APP_ID).toNSString();
@@ -54,7 +54,7 @@ void CryptoSettings::resetKey() {
 
 // static
 bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
-#if defined(MVPN_IOS) || defined(MVPN_MACOS)
+#if defined(MZ_IOS) || defined(MZ_MACOS)
   if (!initialized) {
     initialized = true;
 
@@ -133,7 +133,7 @@ bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
 CryptoSettings::Version CryptoSettings::getSupportedVersion() {
   logger.debug() << "Get supported settings method";
 
-#if defined(MVPN_IOS) || defined(MVPN_MACOS)
+#if defined(MZ_IOS) || defined(MZ_MACOS)
   uint8_t key[CRYPTO_SETTINGS_KEY_SIZE];
   if (getKey(key)) {
     logger.debug() << "Encryption supported!";

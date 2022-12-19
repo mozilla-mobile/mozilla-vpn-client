@@ -13,10 +13,10 @@
 
 CommandDeactivate::CommandDeactivate(QObject* parent)
     : Command(parent, "deactivate", "Deactivate the VPN tunnel") {
-  MVPN_COUNT_CTOR(CommandDeactivate);
+  MZ_COUNT_CTOR(CommandDeactivate);
 }
 
-CommandDeactivate::~CommandDeactivate() { MVPN_COUNT_DTOR(CommandDeactivate); }
+CommandDeactivate::~CommandDeactivate() { MZ_COUNT_DTOR(CommandDeactivate); }
 
 int CommandDeactivate::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());

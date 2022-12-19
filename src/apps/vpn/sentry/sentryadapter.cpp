@@ -30,8 +30,8 @@ SentryAdapter* SentryAdapter::instance() {
   }
   return s_instance;
 }
-SentryAdapter::SentryAdapter() { MVPN_COUNT_CTOR(SentryAdapter); }
-SentryAdapter::~SentryAdapter() { MVPN_COUNT_DTOR(SentryAdapter); }
+SentryAdapter::SentryAdapter() { MZ_COUNT_CTOR(SentryAdapter); }
+SentryAdapter::~SentryAdapter() { MZ_COUNT_DTOR(SentryAdapter); }
 
 void SentryAdapter::init() {
   if (!Feature::get(Feature::Feature_sentry)->isSupported()) {

@@ -145,9 +145,9 @@ constexpr const char* PLACEHOLDER_USER_DNS = "127.0.0.1";
 // "Subscription Completed" event. We have two since in the Adjust dashboard we
 // have defined two apps for iOS and Android with a event token each.
 constexpr const char* ADJUST_SUBSCRIPTION_COMPLETED =
-#  if defined(MVPN_IOS)
+#  if defined(MZ_IOS)
     "jl72xm"
-#  elif defined(MVPN_ANDROID)
+#  elif defined(MZ_ANDROID)
     "o1mn9m"
 #  else
     ""

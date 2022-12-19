@@ -16,10 +16,10 @@
 
 CommandStatus::CommandStatus(QObject* parent)
     : Command(parent, "status", "Show the current VPN status.") {
-  MVPN_COUNT_CTOR(CommandStatus);
+  MZ_COUNT_CTOR(CommandStatus);
 }
 
-CommandStatus::~CommandStatus() { MVPN_COUNT_DTOR(CommandStatus); }
+CommandStatus::~CommandStatus() { MZ_COUNT_DTOR(CommandStatus); }
 
 int CommandStatus::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());

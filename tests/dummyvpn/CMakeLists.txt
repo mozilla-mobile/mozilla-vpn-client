@@ -45,8 +45,8 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     target_link_libraries(dummyvpn PRIVATE PkgConfig::libsecret)
 endif()
 
-target_compile_definitions(dummyvpn PRIVATE MVPN_DEBUG)
-target_compile_definitions(dummyvpn PRIVATE MVPN_DUMMY)
+target_compile_definitions(dummyvpn PRIVATE MZ_DEBUG)
+target_compile_definitions(dummyvpn PRIVATE MZ_DUMMY)
 
 qt6_add_qml_module(dummyvpn
   URI Mozilla.VPN.qmlcomponents

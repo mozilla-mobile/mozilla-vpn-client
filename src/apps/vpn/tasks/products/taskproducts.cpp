@@ -15,10 +15,10 @@ Logger logger("TaskProducts");
 }
 
 TaskProducts::TaskProducts() : Task("TaskProducts") {
-  MVPN_COUNT_CTOR(TaskProducts);
+  MZ_COUNT_CTOR(TaskProducts);
 }
 
-TaskProducts::~TaskProducts() { MVPN_COUNT_DTOR(TaskProducts); }
+TaskProducts::~TaskProducts() { MZ_COUNT_DTOR(TaskProducts); }
 
 void TaskProducts::run() {
   NetworkRequest* request = NetworkRequest::createForProducts(this);

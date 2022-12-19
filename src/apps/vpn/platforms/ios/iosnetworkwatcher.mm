@@ -15,11 +15,11 @@ dispatch_queue_t s_queue = dispatch_queue_create("VPNNetwork.queue", DISPATCH_QU
 }
 
 IOSNetworkWatcher::IOSNetworkWatcher(QObject* parent) : NetworkWatcherImpl(parent) {
-  MVPN_COUNT_CTOR(IOSNetworkWatcher);
+  MZ_COUNT_CTOR(IOSNetworkWatcher);
 }
 
 IOSNetworkWatcher::~IOSNetworkWatcher() {
-  MVPN_COUNT_DTOR(IOSNetworkWatcher);
+  MZ_COUNT_DTOR(IOSNetworkWatcher);
   if (m_networkMonitor != nil) {
     nw_path_monitor_cancel(m_networkMonitor);
     nw_release(m_networkMonitor);

@@ -14,11 +14,11 @@
 #include "mozillavpn.h"
 #include "settingsholder.h"
 
-#if defined(MVPN_ANDROID)
+#if defined(MZ_ANDROID)
 #  include "platforms/android/androidapplistprovider.h"
-#elif defined(MVPN_LINUX)
+#elif defined(MZ_LINUX)
 #  include "platforms/linux/linuxapplistprovider.h"
-#elif defined(MVPN_WINDOWS)
+#elif defined(MZ_WINDOWS)
 #  include "platforms/windows/windowsapplistprovider.h"
 #else
 #  include "platforms/dummy/dummyapplistprovider.h"
@@ -32,16 +32,16 @@ AppPermission* s_instance = nullptr;
 }  // namespace
 
 AppPermission::AppPermission(QObject* parent) : QAbstractListModel(parent) {
-  MVPN_COUNT_CTOR(AppPermission);
+  MZ_COUNT_CTOR(AppPermission);
   Q_ASSERT(!s_instance);
   s_instance = this;
 
   m_listprovider =
-#if defined(MVPN_ANDROID)
+#if defined(MZ_ANDROID)
       new AndroidAppListProvider(this);
-#elif defined(MVPN_LINUX)
+#elif defined(MZ_LINUX)
       new LinuxAppListProvider(this);
-#elif defined(MVPN_WINDOWS)
+#elif defined(MZ_WINDOWS)
       new WindowsAppListProvider(this);
 #else
       new DummyAppListProvider(this);
@@ -51,7 +51,7 @@ AppPermission::AppPermission(QObject* parent) : QAbstractListModel(parent) {
           &AppPermission::receiveAppList);
 }
 AppPermission::~AppPermission() {
-  MVPN_COUNT_DTOR(AppPermission);
+  MZ_COUNT_DTOR(AppPermission);
   Q_ASSERT(s_instance = this);
   s_instance = nullptr;
 }

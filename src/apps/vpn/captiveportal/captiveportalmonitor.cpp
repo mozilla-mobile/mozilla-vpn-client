@@ -17,13 +17,13 @@ Logger logger("CaptivePortalMonitor");
 }
 
 CaptivePortalMonitor::CaptivePortalMonitor(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(CaptivePortalMonitor);
+  MZ_COUNT_CTOR(CaptivePortalMonitor);
 
   connect(&m_timer, &QTimer::timeout, this, &CaptivePortalMonitor::check);
 }
 
 CaptivePortalMonitor::~CaptivePortalMonitor() {
-  MVPN_COUNT_DTOR(CaptivePortalMonitor);
+  MZ_COUNT_DTOR(CaptivePortalMonitor);
 }
 
 void CaptivePortalMonitor::start() {

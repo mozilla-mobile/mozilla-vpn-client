@@ -15,7 +15,7 @@
 #include "networkrequest.h"
 #include "uploaddatagenerator.h"
 
-#if !defined(MVPN_DUMMY) && !defined(MVPN_ANDROID) && !defined(MVPN_WASM)
+#if !defined(MZ_DUMMY) && !defined(MZ_ANDROID) && !defined(MZ_WASM)
 constexpr const char* MULLVAD_DEFAULT_DNS = "10.64.0.1";
 #endif
 
@@ -30,7 +30,7 @@ BenchmarkTaskTransfer::BenchmarkTaskTransfer(const QString& name,
       m_type(type),
       m_dnsLookup(QDnsLookup::A, url.host()),
       m_url(url) {
-  MVPN_COUNT_CTOR(BenchmarkTaskTransfer);
+  MZ_COUNT_CTOR(BenchmarkTaskTransfer);
 
   connect(this, &BenchmarkTask::stateChanged, this,
           &BenchmarkTaskTransfer::handleState);
@@ -39,14 +39,14 @@ BenchmarkTaskTransfer::BenchmarkTaskTransfer(const QString& name,
 }
 
 BenchmarkTaskTransfer::~BenchmarkTaskTransfer() {
-  MVPN_COUNT_DTOR(BenchmarkTaskTransfer);
+  MZ_COUNT_DTOR(BenchmarkTaskTransfer);
 }
 
 void BenchmarkTaskTransfer::handleState(BenchmarkTask::State state) {
   logger.debug() << "Handle state" << state;
 
   if (state == BenchmarkTask::StateActive) {
-#if defined(MVPN_DUMMY) || defined(MVPN_ANDROID) || defined(MVPN_WASM)
+#if defined(MZ_DUMMY) || defined(MZ_ANDROID) || defined(MZ_WASM)
 #  if QT_VERSION >= 0x060500
 #    error Check if QT added support for QDnsLookup::lookup() on Android
 #  endif
@@ -190,7 +190,7 @@ void BenchmarkTaskTransfer::dnsLookupFinished() {
 void BenchmarkTaskTransfer::transferProgressed(qint64 bytesSent,
                                                qint64 bytesTotal,
                                                QNetworkReply* reply) {
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
   logger.debug() << "Transfer progressed:" << bytesSent << "(transferred)"
                  << bytesTotal << "(total)";
 #else
@@ -235,7 +235,7 @@ void BenchmarkTaskTransfer::transferReady(QNetworkReply::NetworkError error,
   bool hasUnexpectedError = (error != QNetworkReply::NoError &&
                              error != QNetworkReply::OperationCanceledError &&
                              error != QNetworkReply::TimeoutError)
-#ifndef MVPN_WASM
+#ifndef MZ_WASM
                             || bitsPerSec == 0
 #endif
       ;

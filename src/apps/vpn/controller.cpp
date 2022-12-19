@@ -22,13 +22,13 @@
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "telemetry/gleansample.h"
 
-#if defined(MVPN_LINUX)
+#if defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
-#elif defined(MVPN_MACOS) || defined(MVPN_WINDOWS)
+#elif defined(MZ_MACOS) || defined(MZ_WINDOWS)
 #  include "localsocketcontroller.h"
-#elif defined(MVPN_IOS)
+#elif defined(MZ_IOS)
 #  include "platforms/ios/ioscontroller.h"
-#elif defined(MVPN_ANDROID)
+#elif defined(MZ_ANDROID)
 #  include "platforms/android/androidcontroller.h"
 #else
 #  include "platforms/dummy/dummycontroller.h"
@@ -42,7 +42,7 @@ constexpr const int CONNECTION_MAX_RETRY = 9;
 constexpr const uint32_t CONFIRMING_TIMOUT_SEC = 10;
 constexpr const uint32_t HANDSHAKE_TIMEOUT_SEC = 15;
 
-#ifndef MVPN_IOS
+#ifndef MZ_IOS
 // The Mullvad proxy services are located at internal IPv4 addresses in the
 // 10.124.0.0/20 address range, which is a subset of the 10.0.0.0/8 Class-A
 // private address range.
@@ -68,7 +68,7 @@ Controller::Reason stateToReason(Controller::State state) {
 }  // namespace
 
 Controller::Controller() {
-  MVPN_COUNT_CTOR(Controller);
+  MZ_COUNT_CTOR(Controller);
 
   m_connectingTimer.setSingleShot(true);
   m_handshakeTimer.setSingleShot(true);
@@ -84,7 +84,7 @@ Controller::Controller() {
           &Controller::handshakeTimeout);
 }
 
-Controller::~Controller() { MVPN_COUNT_DTOR(Controller); }
+Controller::~Controller() { MZ_COUNT_DTOR(Controller); }
 
 Controller::State Controller::state() const { return m_state; }
 
@@ -100,13 +100,13 @@ void Controller::initialize() {
     m_impl.reset(nullptr);
   }
 
-#if defined(MVPN_LINUX)
+#if defined(MZ_LINUX)
   m_impl.reset(new LinuxController());
-#elif defined(MVPN_MACOS) || defined(MVPN_WINDOWS)
+#elif defined(MZ_MACOS) || defined(MZ_WINDOWS)
   m_impl.reset(new LocalSocketController());
-#elif defined(MVPN_IOS)
+#elif defined(MZ_IOS)
   m_impl.reset(new IOSController());
-#elif defined(MVPN_ANDROID)
+#elif defined(MZ_ANDROID)
   m_impl.reset(new AndroidController());
 #else
   m_impl.reset(new DummyController());
@@ -687,7 +687,7 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
 
   QList<IPAddress> list;
 
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
   Q_UNUSED(exitServer);
 
   logger.debug() << "Catch all IPv4";

@@ -13,12 +13,10 @@ Logger logger("WasmNetworkWatcher");
 
 WasmNetworkWatcher::WasmNetworkWatcher(QObject* parent)
     : NetworkWatcherImpl(parent) {
-  MVPN_COUNT_CTOR(WasmNetworkWatcher);
+  MZ_COUNT_CTOR(WasmNetworkWatcher);
 }
 
-WasmNetworkWatcher::~WasmNetworkWatcher() {
-  MVPN_COUNT_DTOR(WasmNetworkWatcher);
-}
+WasmNetworkWatcher::~WasmNetworkWatcher() { MZ_COUNT_DTOR(WasmNetworkWatcher); }
 
 void WasmNetworkWatcher::initialize() { logger.debug() << "initialize"; }
 

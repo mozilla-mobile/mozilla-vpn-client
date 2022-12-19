@@ -25,10 +25,10 @@ ExternalOpHandler* ExternalOpHandler::instance() {
 }
 
 ExternalOpHandler::ExternalOpHandler(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(ExternalOpHandler);
+  MZ_COUNT_CTOR(ExternalOpHandler);
 }
 
-ExternalOpHandler::~ExternalOpHandler() { MVPN_COUNT_DTOR(ExternalOpHandler); }
+ExternalOpHandler::~ExternalOpHandler() { MZ_COUNT_DTOR(ExternalOpHandler); }
 
 void ExternalOpHandler::registerBlocker(Blocker* blocker) {
   Q_ASSERT(blocker);

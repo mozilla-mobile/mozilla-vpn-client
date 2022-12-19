@@ -14,10 +14,10 @@
 
 CommandSelect::CommandSelect(QObject* parent)
     : Command(parent, "select", "Select a server.") {
-  MVPN_COUNT_CTOR(CommandSelect);
+  MZ_COUNT_CTOR(CommandSelect);
 }
 
-CommandSelect::~CommandSelect() { MVPN_COUNT_DTOR(CommandSelect); }
+CommandSelect::~CommandSelect() { MZ_COUNT_DTOR(CommandSelect); }
 
 int CommandSelect::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());

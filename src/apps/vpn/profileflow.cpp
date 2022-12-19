@@ -19,9 +19,9 @@ namespace {
 Logger logger("ProfileFlow");
 }
 
-ProfileFlow::ProfileFlow() { MVPN_COUNT_CTOR(ProfileFlow); }
+ProfileFlow::ProfileFlow() { MZ_COUNT_CTOR(ProfileFlow); }
 
-ProfileFlow::~ProfileFlow() { MVPN_COUNT_DTOR(ProfileFlow); }
+ProfileFlow::~ProfileFlow() { MZ_COUNT_DTOR(ProfileFlow); }
 
 void ProfileFlow::setState(State state) {
   logger.debug() << "Set state" << state;

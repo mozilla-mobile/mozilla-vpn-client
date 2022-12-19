@@ -4,11 +4,11 @@
 
 #include "signature.h"
 
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
 #  include "platforms/ios/iosutils.h"
 #endif
 
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
 #  include "platforms/android/androidutils.h"
 #endif
 
@@ -31,11 +31,11 @@ bool Signature::verify(const QByteArray& publicKey, const QByteArray& content,
   return verify_rsa(publicKey.constData(), publicKey.length(),
                     content.constData(), content.length(),
                     signature.constData(), signature.length());
-#elif defined(MVPN_IOS)
+#elif defined(MZ_IOS)
   return IOSUtils::verifySignature(publicKey, content, signature);
-#elif defined(MVPN_ANDROID)
+#elif defined(MZ_ANDROID)
   return AndroidUtils::verifySignature(publicKey, content, signature);
-#elif defined(MVPN_WASM) or defined(UNIT_TEST) or defined(MVPN_DUMMY)
+#elif defined(MZ_WASM) or defined(UNIT_TEST) or defined(MZ_DUMMY)
   Q_UNUSED(publicKey);
   Q_UNUSED(content);
   Q_UNUSED(signature);

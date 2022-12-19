@@ -7,15 +7,15 @@
 
 #include <QObject>
 
-#ifdef MVPN_DEBUG
-#  define MVPN_COUNT_CTOR(_type)                                 \
+#ifdef MZ_DEBUG
+#  define MZ_COUNT_CTOR(_type)                                   \
     do {                                                         \
       static_assert(std::is_class<_type>(),                      \
                     "Token '" #_type "' is not a class type.");  \
       LeakDetector::logCtor((void*)this, #_type, sizeof(*this)); \
     } while (0)
 
-#  define MVPN_COUNT_DTOR(_type)                                 \
+#  define MZ_COUNT_DTOR(_type)                                   \
     do {                                                         \
       static_assert(std::is_class<_type>(),                      \
                     "Token '" #_type "' is not a class type.");  \
@@ -23,8 +23,8 @@
     } while (0)
 
 #else
-#  define MVPN_COUNT_CTOR(_type)
-#  define MVPN_COUNT_DTOR(_type)
+#  define MZ_COUNT_CTOR(_type)
+#  define MZ_COUNT_DTOR(_type)
 #endif
 
 class LeakDetector {
@@ -32,7 +32,7 @@ class LeakDetector {
   LeakDetector();
   ~LeakDetector();
 
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
   static void logCtor(void* ptr, const char* typeName, uint32_t size);
   static void logDtor(void* ptr, const char* typeName, uint32_t size);
 #endif

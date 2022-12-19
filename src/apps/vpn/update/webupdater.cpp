@@ -16,12 +16,12 @@ Logger logger("WebUpdater");
 }
 
 WebUpdater::WebUpdater(QObject* parent) : Updater(parent) {
-  MVPN_COUNT_CTOR(WebUpdater);
+  MZ_COUNT_CTOR(WebUpdater);
   logger.debug() << "WebUpdater created";
 }
 
 WebUpdater::~WebUpdater() {
-  MVPN_COUNT_DTOR(WebUpdater);
+  MZ_COUNT_DTOR(WebUpdater);
   logger.debug() << "WebUpdater released";
 }
 

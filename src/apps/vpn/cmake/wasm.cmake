@@ -25,4 +25,4 @@ target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/purchase/taskpurchase.h
 )
 
-add_compile_definitions("MVPN_DUMMY")
+add_compile_definitions("MZ_DUMMY")

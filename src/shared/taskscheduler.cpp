@@ -51,10 +51,10 @@ TaskScheduler* TaskScheduler::maybeCreate() {
 }
 
 TaskScheduler::TaskScheduler(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(TaskScheduler);
+  MZ_COUNT_CTOR(TaskScheduler);
 }
 
-TaskScheduler::~TaskScheduler() { MVPN_COUNT_DTOR(TaskScheduler); }
+TaskScheduler::~TaskScheduler() { MZ_COUNT_DTOR(TaskScheduler); }
 
 void TaskScheduler::scheduleTaskInternal(Task* task) {
   m_tasks.append(task);

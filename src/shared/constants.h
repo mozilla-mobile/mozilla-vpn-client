@@ -27,17 +27,17 @@ constexpr const char* ADDON_STAGING_KEY = ":/addons_signature/staging.der";
 constexpr const char* ADDON_SETTINGS_GROUP = "addons";
 
 constexpr const char* PLATFORM_NAME =
-#if defined(MVPN_IOS)
+#if defined(MZ_IOS)
     "ios"
-#elif defined(MVPN_MACOS)
+#elif defined(MZ_MACOS)
     "macos"
-#elif defined(MVPN_LINUX)
+#elif defined(MZ_LINUX)
     "linux"
-#elif defined(MVPN_ANDROID)
+#elif defined(MZ_ANDROID)
     "android"
-#elif defined(MVPN_WINDOWS)
+#elif defined(MZ_WINDOWS)
     "windows"
-#elif defined(UNIT_TEST) || defined(MVPN_DUMMY)
+#elif defined(UNIT_TEST) || defined(MZ_DUMMY)
     "dummy"
 #else
 #  error "Unsupported platform"
@@ -50,7 +50,7 @@ constexpr const char* PLATFORM_NAME =
 PRODBETAEXPR(
     QString, addonBaseUrl,
     "https://archive.mozilla.org/pub/vpn/addons/releases/latest/",
-    envOrDefault("MVPN_ADDON_URL",
+    envOrDefault("MZ_ADDON_URL",
                  "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/"))
 
 #undef PRODBETAEXPR

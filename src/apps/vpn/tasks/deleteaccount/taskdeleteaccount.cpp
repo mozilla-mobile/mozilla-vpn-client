@@ -19,10 +19,10 @@ Logger logger("TaskDeleteAccount");
 
 TaskDeleteAccount::TaskDeleteAccount(const QString& emailAddress)
     : Task("TaskDeleteAccount"), m_emailAddress(emailAddress) {
-  MVPN_COUNT_CTOR(TaskDeleteAccount);
+  MZ_COUNT_CTOR(TaskDeleteAccount);
 }
 
-TaskDeleteAccount::~TaskDeleteAccount() { MVPN_COUNT_DTOR(TaskDeleteAccount); }
+TaskDeleteAccount::~TaskDeleteAccount() { MZ_COUNT_DTOR(TaskDeleteAccount); }
 
 void TaskDeleteAccount::run() {
   logger.debug() << "run";

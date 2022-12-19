@@ -14,10 +14,10 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
-#if not(defined(MVPN_WASM) || defined(BUILD_QMAKE))
+#if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
 #  include "vpnglean.h"
 #endif
-#if defined(MVPN_IOS) && not(defined(BUILD_QMAKE))
+#if defined(MZ_IOS) && not(defined(BUILD_QMAKE))
 #  include "platforms/ios/iosgleanbridge.h"
 #endif
 
@@ -41,10 +41,10 @@ QString rootAppFolder() {
 }  // namespace
 
 VPNGlean::VPNGlean(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(VPNGlean);
+  MZ_COUNT_CTOR(VPNGlean);
 }
 
-VPNGlean::~VPNGlean() { MVPN_COUNT_DTOR(VPNGlean); }
+VPNGlean::~VPNGlean() { MZ_COUNT_DTOR(VPNGlean); }
 
 // static
 void VPNGlean::initialize() {
@@ -90,9 +90,9 @@ void VPNGlean::initialize() {
 
 #if defined(UNIT_TEST)
     glean_test_reset_glean(uploadEnabled, dataPath.toLocal8Bit());
-#elif defined(MVPN_IOS) && not(defined(BUILD_QMAKE))
+#elif defined(MZ_IOS) && not(defined(BUILD_QMAKE))
     new IOSGleanBridge(uploadEnabled, appChannel);
-#elif not(defined(MVPN_WASM) || defined(BUILD_QMAKE))
+#elif not(defined(MZ_WASM) || defined(BUILD_QMAKE))
     glean_initialize(uploadEnabled, dataPath.toLocal8Bit(), appChannel);
 #endif
   }
@@ -102,7 +102,7 @@ void VPNGlean::initialize() {
 void VPNGlean::setUploadEnabled(bool isTelemetryEnabled) {
   logger.debug() << "Changing VPNGlean upload status to" << isTelemetryEnabled;
 
-#if not(defined(MVPN_WASM) || defined(BUILD_QMAKE))
+#if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
   glean_set_upload_enabled(isTelemetryEnabled);
 #endif
 }

@@ -16,7 +16,7 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
 #  include "platforms/ios/iosutils.h"
 #endif
 
@@ -90,7 +90,7 @@ QList<QPair<QString, QString>> Localizer::parseIOSLanguages(
 }
 
 QString Localizer::systemLanguageCode() const {
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
   // iOS (or Qt?) is buggy and QLocale::system().uiLanguages() does not return
   // the list of languages in the preferable order. For some languages (es-GB),
   // en-US is always the preferable one even when it should not be. Let's use
@@ -120,7 +120,7 @@ Localizer* Localizer::instance() {
 }
 
 Localizer::Localizer() {
-  MVPN_COUNT_CTOR(Localizer);
+  MZ_COUNT_CTOR(Localizer);
 
   Q_ASSERT(!s_instance);
   s_instance = this;
@@ -129,7 +129,7 @@ Localizer::Localizer() {
 }
 
 Localizer::~Localizer() {
-  MVPN_COUNT_DTOR(Localizer);
+  MZ_COUNT_DTOR(Localizer);
 
   Q_ASSERT(s_instance = this);
   s_instance = nullptr;

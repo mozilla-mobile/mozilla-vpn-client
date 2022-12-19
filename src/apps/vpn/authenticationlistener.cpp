@@ -11,9 +11,9 @@
 #include "networkmanager.h"
 #include "networkrequest.h"
 
-#if defined(MVPN_MACOS)
+#if defined(MZ_MACOS)
 #  include "platforms/macos/macosauthenticationlistener.h"
-#elif defined(MVPN_WASM)
+#elif defined(MZ_WASM)
 #  include "platforms/wasm/wasmauthenticationlistener.h"
 #else
 #  include "tasks/authenticate/desktopauthenticationlistener.h"
@@ -32,12 +32,12 @@ AuthenticationListener* AuthenticationListener::create(
     QObject* parent, MozillaVPN::AuthenticationType authenticationType) {
   switch (authenticationType) {
     case MozillaVPN::AuthenticationInBrowser:
-#if defined(MVPN_ANDROID) or defined(MVPN_IOS)
+#if defined(MZ_ANDROID) or defined(MZ_IOS)
       logger.error() << "Something went totally wrong";
       Q_ASSERT(false);
-#elif defined(MVPN_MACOS)
+#elif defined(MZ_MACOS)
       return new MacosAuthenticationListener(parent);
-#elif defined(MVPN_WASM)
+#elif defined(MZ_WASM)
       return new WasmAuthenticationListener(parent);
 #else
       return new DesktopAuthenticationListener(parent);
@@ -53,11 +53,11 @@ AuthenticationListener* AuthenticationListener::create(
 
 AuthenticationListener::AuthenticationListener(QObject* parent)
     : QObject(parent) {
-  MVPN_COUNT_CTOR(AuthenticationListener);
+  MZ_COUNT_CTOR(AuthenticationListener);
 }
 
 AuthenticationListener::~AuthenticationListener() {
-  MVPN_COUNT_DTOR(AuthenticationListener);
+  MZ_COUNT_DTOR(AuthenticationListener);
 }
 
 // static
@@ -66,7 +66,7 @@ QUrl AuthenticationListener::createAuthenticationUrl(
     const QString& emailAddress) {
   QString path("/api/v2/vpn/login/");
 
-#if !defined(MVPN_DUMMY)
+#if !defined(MZ_DUMMY)
   path.append(Constants::PLATFORM_NAME);
 #else
   // Let's use ios here.

@@ -58,11 +58,11 @@ class TutorialStepBeforePropertyGet final : public TutorialStepBefore {
         m_element(element),
         m_property(property),
         m_value(value) {
-    MVPN_COUNT_CTOR(TutorialStepBeforePropertyGet);
+    MZ_COUNT_CTOR(TutorialStepBeforePropertyGet);
   }
 
   ~TutorialStepBeforePropertyGet() {
-    MVPN_COUNT_DTOR(TutorialStepBeforePropertyGet);
+    MZ_COUNT_DTOR(TutorialStepBeforePropertyGet);
   }
 
   bool run() override {
@@ -127,11 +127,11 @@ class TutorialStepBeforePropertySet final : public TutorialStepBefore {
         m_element(element),
         m_property(property),
         m_value(value) {
-    MVPN_COUNT_CTOR(TutorialStepBeforePropertySet);
+    MZ_COUNT_CTOR(TutorialStepBeforePropertySet);
   }
 
   ~TutorialStepBeforePropertySet() {
-    MVPN_COUNT_DTOR(TutorialStepBeforePropertySet);
+    MZ_COUNT_DTOR(TutorialStepBeforePropertySet);
   }
 
   bool run() override {
@@ -183,11 +183,11 @@ class TutorialStepBeforeVpnLocationSet final : public TutorialStepBefore {
         m_exitCity(exitCity),
         m_entryCountryCode(entryCountryCode),
         m_entryCity(entryCity) {
-    MVPN_COUNT_CTOR(TutorialStepBeforeVpnLocationSet);
+    MZ_COUNT_CTOR(TutorialStepBeforeVpnLocationSet);
   }
 
   ~TutorialStepBeforeVpnLocationSet() {
-    MVPN_COUNT_DTOR(TutorialStepBeforeVpnLocationSet);
+    MZ_COUNT_DTOR(TutorialStepBeforeVpnLocationSet);
   }
 
   bool run() override {
@@ -210,10 +210,10 @@ class TutorialStepBeforeVpnOff final : public TutorialStepBefore {
   };
 
   TutorialStepBeforeVpnOff(QObject* parent) : TutorialStepBefore(parent) {
-    MVPN_COUNT_CTOR(TutorialStepBeforeVpnOff);
+    MZ_COUNT_CTOR(TutorialStepBeforeVpnOff);
   }
 
-  ~TutorialStepBeforeVpnOff() { MVPN_COUNT_DTOR(TutorialStepBeforeVpnOff); }
+  ~TutorialStepBeforeVpnOff() { MZ_COUNT_DTOR(TutorialStepBeforeVpnOff); }
 
   bool run() override {
     Controller* controller = MozillaVPN::instance()->controller();
@@ -267,9 +267,7 @@ QList<TutorialStepBefore*> TutorialStepBefore::create(
 }
 
 TutorialStepBefore::TutorialStepBefore(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(TutorialStepBefore);
+  MZ_COUNT_CTOR(TutorialStepBefore);
 }
 
-TutorialStepBefore::~TutorialStepBefore() {
-  MVPN_COUNT_DTOR(TutorialStepBefore);
-}
+TutorialStepBefore::~TutorialStepBefore() { MZ_COUNT_DTOR(TutorialStepBefore); }

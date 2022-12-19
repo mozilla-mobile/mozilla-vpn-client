@@ -14,7 +14,7 @@
 #include "settingsholder.h"
 #include "task.h"
 
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
 #  include "platforms/wasm/wasmnetworkrequest.h"
 #endif
 
@@ -47,7 +47,7 @@ QList<QSslCertificate> s_intervention_certs;
 NetworkRequest::NetworkRequest(Task* parent, int status,
                                bool setAuthorizationHeader)
     : QObject(parent), m_expectedStatusCode(status) {
-  MVPN_COUNT_CTOR(NetworkRequest);
+  MZ_COUNT_CTOR(NetworkRequest);
   logger.debug() << "Network request created by" << parent->name();
 
   m_request.setAttribute(QNetworkRequest::Http2AllowedAttribute, false);
@@ -91,7 +91,7 @@ NetworkRequest::NetworkRequest(Task* parent, int status,
 }
 
 NetworkRequest::~NetworkRequest() {
-  MVPN_COUNT_DTOR(NetworkRequest);
+  MZ_COUNT_DTOR(NetworkRequest);
 
   // During the shutdown, the QML NetworkManager can be released before the
   // deletion of the pending network requests.
@@ -303,7 +303,7 @@ NetworkRequest* NetworkRequest::createForDeviceRemoval(Task* parent,
 
   r->m_request.setUrl(QUrl(url));
 
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
   logger.debug() << "Network starting" << r->m_request.url().toString();
 #endif
 
@@ -858,7 +858,7 @@ NetworkRequest* NetworkRequest::createForProducts(Task* parent) {
   return r;
 }
 
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
 NetworkRequest* NetworkRequest::createForIOSPurchase(Task* parent,
                                                      const QString& receipt) {
   Q_ASSERT(parent);
@@ -883,7 +883,7 @@ NetworkRequest* NetworkRequest::createForIOSPurchase(Task* parent,
 }
 #endif
 
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
 NetworkRequest* NetworkRequest::createForAndroidPurchase(
     Task* parent, const QString& sku, const QString& purchaseToken) {
   Q_ASSERT(parent);
@@ -911,7 +911,7 @@ NetworkRequest* NetworkRequest::createForAndroidPurchase(
 }
 #endif
 
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
 NetworkRequest* NetworkRequest::createForWasmPurchase(
     Task* parent, const QString& productId) {
   Q_ASSERT(parent);
@@ -951,7 +951,7 @@ void NetworkRequest::replyFinished() {
     if (brokenUrl.host().isEmpty() && !m_redirectedUrl.isEmpty()) {
       QUrl url = m_redirectedUrl.resolved(brokenUrl);
 
-#  ifdef MVPN_DEBUG
+#  ifdef MZ_DEBUG
       // See https://bugreports.qt.io/browse/QTBUG-100651
       logger.debug()
           << "QT6 redirect bug! The current URL is broken because it's not "
@@ -992,7 +992,7 @@ void NetworkRequest::processData(QNetworkReply::NetworkError error,
   m_completed = true;
   m_timer.stop();
 
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
   m_finalStatusCode = status;
 #endif
 
@@ -1038,7 +1038,7 @@ void NetworkRequest::handleHeaderReceived() {
 void NetworkRequest::handleRedirect(const QUrl& redirectUrl) {
 #if QT_VERSION >= 0x060000 && QT_VERSION < 0x060400
   if (redirectUrl.host().isEmpty()) {
-#  ifdef MVPN_DEBUG
+#  ifdef MZ_DEBUG
     // See https://bugreports.qt.io/browse/QTBUG-100651
     logger.debug()
         << "QT6 redirect bug! The redirected URL is broken because it's not "
@@ -1062,7 +1062,7 @@ void NetworkRequest::handleRedirect(const QUrl& redirectUrl) {
 }
 
 void NetworkRequest::timeout() {
-#ifndef MVPN_WASM
+#ifndef MZ_WASM
   Q_ASSERT(m_reply);
   Q_ASSERT(!m_reply->isFinished());
 #endif
@@ -1079,7 +1079,7 @@ void NetworkRequest::timeout() {
 }
 
 void NetworkRequest::getRequest() {
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
   WasmNetworkRequest::getRequest(this);
 #else
   QNetworkAccessManager* manager =
@@ -1090,7 +1090,7 @@ void NetworkRequest::getRequest() {
 }
 
 void NetworkRequest::deleteRequest() {
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
   WasmNetworkRequest::deleteRequest(this);
 #else
   QNetworkAccessManager* manager =
@@ -1101,7 +1101,7 @@ void NetworkRequest::deleteRequest() {
 }
 
 void NetworkRequest::postRequest(const QByteArray& body) {
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
   WasmNetworkRequest::postRequest(this, body);
 #else
   QNetworkAccessManager* manager =
@@ -1153,7 +1153,7 @@ void NetworkRequest::maybeDeleteLater() {
 }
 
 int NetworkRequest::statusCode() const {
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
   return m_finalStatusCode;
 #endif
 

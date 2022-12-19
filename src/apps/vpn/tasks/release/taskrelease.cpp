@@ -17,10 +17,10 @@ TaskRelease::TaskRelease(
     : Task("TaskRelease"),
       m_op(op),
       m_errorPropagationPolicy(errorPropagationPolicy) {
-  MVPN_COUNT_CTOR(TaskRelease);
+  MZ_COUNT_CTOR(TaskRelease);
 }
 
-TaskRelease::~TaskRelease() { MVPN_COUNT_DTOR(TaskRelease); }
+TaskRelease::~TaskRelease() { MZ_COUNT_DTOR(TaskRelease); }
 
 void TaskRelease::run() {
   logger.debug() << "Release check started";

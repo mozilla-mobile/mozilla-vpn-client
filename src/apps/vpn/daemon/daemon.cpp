@@ -27,7 +27,7 @@ Daemon* s_daemon = nullptr;
 }  // namespace
 
 Daemon::Daemon(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(Daemon);
+  MZ_COUNT_CTOR(Daemon);
 
   logger.debug() << "Daemon created";
 
@@ -39,7 +39,7 @@ Daemon::Daemon(QObject* parent) : QObject(parent) {
 }
 
 Daemon::~Daemon() {
-  MVPN_COUNT_DTOR(Daemon);
+  MZ_COUNT_DTOR(Daemon);
 
   logger.debug() << "Daemon released";
 

@@ -24,11 +24,11 @@ Logger logger("SystemTrayNotificationHandler");
 
 SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
     : NotificationHandler(parent) {
-  MVPN_COUNT_CTOR(SystemTrayNotificationHandler);
+  MZ_COUNT_CTOR(SystemTrayNotificationHandler);
 }
 
 SystemTrayNotificationHandler::~SystemTrayNotificationHandler() {
-  MVPN_COUNT_DTOR(SystemTrayNotificationHandler);
+  MZ_COUNT_DTOR(SystemTrayNotificationHandler);
 }
 
 void SystemTrayNotificationHandler::initialize() {
@@ -65,7 +65,7 @@ void SystemTrayNotificationHandler::initialize() {
   updateIcon();
 }
 
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
 QMenu* SystemTrayNotificationHandler::contextMenu() {
   return m_systemTrayIcon->contextMenu();
 }
@@ -103,7 +103,7 @@ void SystemTrayNotificationHandler::setStatusMenu() {
   logger.debug() << "Set status menu";
 
   // TODO: Check if method is called on these devices.
-#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
+#if defined(MZ_LINUX) || defined(MZ_WINDOWS)
   MozillaVPN* vpn = MozillaVPN::instance();
   m_systemTrayIcon->setToolTip(qtTrId("vpn.main.productName"));
   m_systemTrayIcon->setContextMenu(m_menu.get());
@@ -136,7 +136,7 @@ void SystemTrayNotificationHandler::retranslate() {
 void SystemTrayNotificationHandler::updateContextMenu() {
   logger.debug() << "Update context menu";
 
-#if defined(MVPN_IOS) || defined(MVPN_ANDROID)
+#if defined(MZ_IOS) || defined(MZ_ANDROID)
   return;
 #endif
 
@@ -226,7 +226,7 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 void SystemTrayNotificationHandler::updateIcon() {
   logger.debug() << "Update icon";
 
-#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
+#if defined(MZ_LINUX) || defined(MZ_WINDOWS)
   MozillaVPN* vpn = MozillaVPN::instance();
   m_systemTrayIcon->setIcon(vpn->statusIcon()->icon());
 #endif
@@ -245,7 +245,7 @@ void SystemTrayNotificationHandler::maybeActivated(
     QSystemTrayIcon::ActivationReason reason) {
   logger.debug() << "Activated";
 
-#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX)
   if (reason == QSystemTrayIcon::DoubleClick ||
       reason == QSystemTrayIcon::Trigger) {
     QmlEngineHolder* engine = QmlEngineHolder::instance();

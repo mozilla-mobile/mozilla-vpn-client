@@ -391,7 +391,7 @@ Addon::Addon(QObject* parent, const QString& manifestFileName,
       m_id(id),
       m_name(name),
       m_type(type) {
-  MVPN_COUNT_CTOR(Addon);
+  MZ_COUNT_CTOR(Addon);
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
@@ -412,7 +412,7 @@ Addon::Addon(QObject* parent, const QString& manifestFileName,
   }
 }
 
-Addon::~Addon() { MVPN_COUNT_DTOR(Addon); }
+Addon::~Addon() { MZ_COUNT_DTOR(Addon); }
 
 void Addon::updateAddonState(State newState) {
   Q_ASSERT(newState != Unknown);

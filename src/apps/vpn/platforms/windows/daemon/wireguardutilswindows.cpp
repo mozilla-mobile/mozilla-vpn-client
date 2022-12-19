@@ -27,7 +27,7 @@ Logger logger("WireguardUtilsWindows");
 
 WireguardUtilsWindows::WireguardUtilsWindows(QObject* parent)
     : WireguardUtils(parent), m_tunnel(this), m_routeMonitor(this) {
-  MVPN_COUNT_CTOR(WireguardUtilsWindows);
+  MZ_COUNT_CTOR(WireguardUtilsWindows);
   logger.debug() << "WireguardUtilsWindows created.";
 
   connect(&m_tunnel, &WindowsTunnelService::backendFailure, this,
@@ -35,7 +35,7 @@ WireguardUtilsWindows::WireguardUtilsWindows(QObject* parent)
 }
 
 WireguardUtilsWindows::~WireguardUtilsWindows() {
-  MVPN_COUNT_DTOR(WireguardUtilsWindows);
+  MZ_COUNT_DTOR(WireguardUtilsWindows);
   logger.debug() << "WireguardUtilsWindows destroyed.";
 }
 

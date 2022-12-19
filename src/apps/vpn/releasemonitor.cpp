@@ -17,7 +17,7 @@ Logger logger("ReleaseMonitor");
 }
 
 ReleaseMonitor::ReleaseMonitor() {
-  MVPN_COUNT_CTOR(ReleaseMonitor);
+  MZ_COUNT_CTOR(ReleaseMonitor);
 
   m_timer.setSingleShot(true);
   connect(&m_timer, &QTimer::timeout, this, [this]() {
@@ -25,7 +25,7 @@ ReleaseMonitor::ReleaseMonitor() {
   });
 }
 
-ReleaseMonitor::~ReleaseMonitor() { MVPN_COUNT_DTOR(ReleaseMonitor); }
+ReleaseMonitor::~ReleaseMonitor() { MZ_COUNT_DTOR(ReleaseMonitor); }
 
 void ReleaseMonitor::runSoon(
     ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy) {

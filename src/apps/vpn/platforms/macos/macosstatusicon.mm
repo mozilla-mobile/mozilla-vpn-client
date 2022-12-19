@@ -115,7 +115,7 @@ MacOSStatusIconDelegate* m_statusBarIcon = nullptr;
 }
 
 MacOSStatusIcon::MacOSStatusIcon(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(MacOSStatusIcon);
+  MZ_COUNT_CTOR(MacOSStatusIcon);
 
   logger.debug() << "Register delegate";
   Q_ASSERT(!m_statusBarIcon);
@@ -124,7 +124,7 @@ MacOSStatusIcon::MacOSStatusIcon(QObject* parent) : QObject(parent) {
 }
 
 MacOSStatusIcon::~MacOSStatusIcon() {
-  MVPN_COUNT_DTOR(MacOSStatusIcon);
+  MZ_COUNT_DTOR(MacOSStatusIcon);
 
   logger.debug() << "Remove delegate";
   Q_ASSERT(m_statusBarIcon);

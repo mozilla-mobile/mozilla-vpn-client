@@ -15,14 +15,14 @@ class TaskPurchase final : public Task {
   Q_DISABLE_COPY_MOVE(TaskPurchase)
 
  public:
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
   static TaskPurchase* createForIOS(const QString& receipt);
 #endif
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
   static TaskPurchase* createForAndroid(const QString& sku,
                                         const QString& token);
 #endif
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
   static TaskPurchase* createForWasm(const QString& productId);
 #endif
 
@@ -36,13 +36,13 @@ class TaskPurchase final : public Task {
 
  private:
   enum Op {
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
     IOS,
 #endif
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
     Android,
 #endif
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
     Wasm,
 #endif
   };
@@ -51,14 +51,14 @@ class TaskPurchase final : public Task {
 
  private:
   Op m_op;
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
   QString m_iOSReceipt;
 #endif
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
   QString m_androidSku;
   QString m_androidToken;
 #endif
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
   QString m_productId;
 #endif
 };

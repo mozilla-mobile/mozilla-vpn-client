@@ -42,22 +42,22 @@
 #include "update/updater.h"
 #include "urlopener.h"
 
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
 #  include <QQmlDebuggingEnabler>
 #endif
 
-#ifdef MVPN_LINUX
+#ifdef MZ_LINUX
 #  include "eventlistener.h"
 #  include "platforms/linux/linuxdependencies.h"
 #endif
 
-#ifdef MVPN_MACOS
+#ifdef MZ_MACOS
 #  include "platforms/macos/macosmenubar.h"
 #  include "platforms/macos/macosstartatbootwatcher.h"
 #  include "platforms/macos/macosutils.h"
 #endif
 
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
 #  include "platforms/android/androidglean.h"
 #  include "platforms/android/androidutils.h"
 #endif
@@ -66,7 +66,7 @@
 #  include "signalhandler.h"
 #endif
 
-#ifdef MVPN_WINDOWS
+#ifdef MZ_WINDOWS
 #  include <windows.h>
 
 #  include <iostream>
@@ -76,7 +76,7 @@
 #  include "platforms/windows/windowsstartatbootwatcher.h"
 #endif
 
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
 #  include "platforms/wasm/wasmwindowcontroller.h"
 #endif
 
@@ -91,10 +91,10 @@ Logger logger("CommandUI");
 }
 
 CommandUI::CommandUI(QObject* parent) : Command(parent, "ui", "Start the UI.") {
-  MVPN_COUNT_CTOR(CommandUI);
+  MZ_COUNT_CTOR(CommandUI);
 }
 
-CommandUI::~CommandUI() { MVPN_COUNT_DTOR(CommandUI); }
+CommandUI::~CommandUI() { MZ_COUNT_DTOR(CommandUI); }
 
 int CommandUI::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
@@ -133,7 +133,7 @@ int CommandUI::run(QStringList& tokens) {
     }
 
     if (testingOption.m_set
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
         || true
 #endif
     ) {
@@ -159,7 +159,7 @@ int CommandUI::run(QStringList& tokens) {
       }
     }
 
-#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX)
     // If there is another instance, the execution terminates here.
     if (!EventListener::checkOtherInstances()) {
       return 0;
@@ -169,8 +169,8 @@ int CommandUI::run(QStringList& tokens) {
     EventListener eventListener;
 #endif
 
-#ifdef MVPN_WINDOWS
-#  ifdef MVPN_DEBUG
+#ifdef MZ_WINDOWS
+#  ifdef MZ_DEBUG
     // Allocate a console to view log output in debug mode on windows
     if (AllocConsole()) {
       FILE* unusedFile;
@@ -183,7 +183,7 @@ int CommandUI::run(QStringList& tokens) {
 #  endif
 #endif
 
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
     // This enables the qt-creator qml debugger on debug builds.:
     // Go to QtCreator: Debug->Start Debugging-> Attach to QML port
     // Port is 1234.
@@ -200,7 +200,7 @@ int CommandUI::run(QStringList& tokens) {
       logger.error() << "Failed to start QML Debugging";
     }
 #endif
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
     // https://bugreports.qt.io/browse/QTBUG-82617
     // Currently there is a crash happening on exit with Huawei devices.
     // Until this is fixed, setting this variable is the "official" workaround.
@@ -233,7 +233,7 @@ int CommandUI::run(QStringList& tokens) {
     vpn.setStartMinimized(minimizedOption.m_set ||
                           (qgetenv("MVPN_MINIMIZED") == "1"));
 
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
     AndroidGlean::initialize(engine);
 #endif
     if (updateOption.m_set) {
@@ -256,16 +256,16 @@ int CommandUI::run(QStringList& tokens) {
 
     vpn.initialize();
 
-#ifdef MVPN_MACOS
+#ifdef MZ_MACOS
     MacOSStartAtBootWatcher startAtBootWatcher;
     MacOSUtils::setDockClickHandler();
 #endif
 
-#ifdef MVPN_WINDOWS
+#ifdef MZ_WINDOWS
     WindowsStartAtBootWatcher startAtBootWatcher;
 #endif
 
-#ifdef MVPN_LINUX
+#ifdef MZ_LINUX
     // Dependencies - so far, only for linux.
     if (!LinuxDependencies::checkDependencies()) {
       return 1;
@@ -460,7 +460,7 @@ int CommandUI::run(QStringList& tokens) {
           return obj;
         });
 
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNAndroidUtils",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
@@ -536,7 +536,7 @@ int CommandUI::run(QStringList& tokens) {
           return obj;
         });
 
-#if MVPN_IOS && QT_VERSION >= 0x060000 && QT_VERSION < 0x060300
+#if MZ_IOS && QT_VERSION >= 0x060000 && QT_VERSION < 0x060300
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
                      &MozillaVPN::quit);
 #else
@@ -577,7 +577,7 @@ int CommandUI::run(QStringList& tokens) {
                      notificationHandler,
                      &NotificationHandler::showNotification);
 
-#ifdef MVPN_MACOS
+#ifdef MZ_MACOS
     MacOSMenuBar menuBar;
     menuBar.initialize();
 
@@ -597,11 +597,11 @@ int CommandUI::run(QStringList& tokens) {
           L18nStrings::instance()->retranslate();
           AddonManager::instance()->retranslate();
 
-#ifdef MVPN_MACOS
+#ifdef MZ_MACOS
           MacOSMenuBar::instance()->retranslate();
 #endif
 
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
           WasmWindowController::instance()->retranslate();
 #endif
 
@@ -611,7 +611,7 @@ int CommandUI::run(QStringList& tokens) {
 
     InspectorHandler::initialize();
 
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
     WasmWindowController wasmWindowController;
 #endif
 
