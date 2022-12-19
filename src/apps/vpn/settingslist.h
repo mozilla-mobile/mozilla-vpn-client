@@ -265,16 +265,6 @@ SETTING_STRING(languageCode,        // getter
                false                // remove when reset
 )
 
-SETTING_BOOL(localNetworkAccess,        // getter
-             setLocalNetworkAccess,     // setter
-             removeLocalNetworkAccess,  // remover
-             hasLocalNetworkAccess,     // has
-             "localNetworkAccess",      // key
-             false,                     // default value
-             true,                      // user setting
-             false                      // remove when reset
-)
-
 SETTING_STRINGLIST(missingApps,        // getter
                    setMissingApps,     // setter
                    removeMissingApps,  // remover

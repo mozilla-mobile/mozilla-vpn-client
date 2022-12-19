@@ -674,8 +674,7 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   // routed through the VPN.
 
   // filtering out the RFC1918 local area network
-  if (Feature::get(Feature::Feature_lanAccess)->isSupported() &&
-      SettingsHolder::instance()->localNetworkAccess()) {
+  if (Feature::get(Feature::Feature_lanAccess)->isSupported()) {
     logger.debug() << "Filtering out the local area networks (rfc 1918)";
     excludeIPv4s.append(RFC1918::ipv4());
 
@@ -736,13 +735,6 @@ QStringList Controller::getExcludedAddresses(const Server& exitServer) {
       logger.debug() << "Filtering out the captive portal address:" << address;
       list.append(address);
     }
-  }
-
-  // Filter out the Custom DNS Server, if the user has set one.
-  if (DNSHelper::shouldExcludeDNS()) {
-    auto dns = DNSHelper::getDNS(exitServer.ipv4Gateway());
-    logger.debug() << "Filtering out the DNS address:" << dns;
-    list.append(dns);
   }
 
   return list;
