@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import QtQuick 2.0
+import QtQuick 2.15
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
@@ -85,6 +85,13 @@ TextField {
         visible: !textField.activeFocus
         onPressed: {
             textField.forceActiveFocus();
+        }
+    }
+
+    Connections {
+        target: window
+        function onScreenClicked(x, y) {
+            if(textField.focus) window.removeFocus(textField, x, y)
         }
     }
 }

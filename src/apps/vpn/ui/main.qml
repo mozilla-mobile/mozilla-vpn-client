@@ -18,6 +18,7 @@ Window {
     id: window
 
     signal showServerList
+    signal screenClicked(double x, double y)
 
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
 
@@ -29,7 +30,6 @@ Window {
                 Qt.platform.os === "ios" ||
                 Qt.platform.os === "tvos";
     }
-
 
     function safeAreaHeightByDevice() {
         if (Qt.platform.os !== "ios") {
@@ -52,6 +52,16 @@ Window {
             return 48;
         default:
             return 20;
+        }
+    }
+
+    function removeFocus(item, x, y) {
+        //Remove focus if the global point pressed is not contained by the global area of the text field
+        if(item.focus) {
+            let globalX = item.mapToItem(window.contentItem, 0, 0).x
+            let globalY = item.mapToItem(window.contentItem, 0, 0).y
+            if(x < globalX || x > globalX + item.width || y < globalY || y > globalY + item.height)
+                item.focus = false
         }
     }
 
@@ -97,6 +107,16 @@ Window {
 
         }
         VPN.mainWindowLoaded()
+    }
+
+    //Overlays the entire window at all times to remove focus from components on click away
+    MouseArea {
+        anchors.fill: parent
+        z: VPNTheme.theme.maxZLevel
+        onPressed: (mouse) => {
+            window.screenClicked(mouse.x, mouse.y)
+            mouse.accepted = false
+        }
     }
 
     VPNMobileStatusBarModifier {
