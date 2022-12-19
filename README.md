@@ -262,7 +262,7 @@ time.
 #### Building with Xcode
 
 Before you start this process, open Xcode, go to settings, accounts, and sign in with your 
-mozilla developer Apple ID.
+Apple ID.
 
 In some circumstances, you may wish to use Xcode to build the Mozilla VPN in order to
 access cloud-managed signing certificates. In such circumstances, this can be enabled
