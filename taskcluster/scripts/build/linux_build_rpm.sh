@@ -43,7 +43,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-echo "User is: $USERNAME (uid: $UID)"
+echo "User is: $USER (uid: $UID)"
 
 ## Wait, are we building as root? That seems wrong.
 echo "Listing env:"

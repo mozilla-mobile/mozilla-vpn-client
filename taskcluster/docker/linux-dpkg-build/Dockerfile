@@ -53,6 +53,10 @@ RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/apt,/usr/bin/apt-get,/usr/bi
 # %include taskcluster/scripts/build/linux_build_dpkg.sh
 ADD topsrcdir/taskcluster/scripts/build/linux_build_dpkg.sh /builds/worker/builder.sh
 
+ENV SHELL=/bin/bash \
+    HOME=/builds/worker \
+    PATH="/builds/worker/.local/bin:$PATH"
+
 VOLUME /builds/worker/checkouts
 VOLUME /builds/worker/.cache
 

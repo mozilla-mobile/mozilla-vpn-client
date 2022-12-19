@@ -38,6 +38,10 @@ WORKDIR /builds/worker/
 # %include taskcluster/scripts/build/linux_build_rpm.sh
 ADD topsrcdir/taskcluster/scripts/build/linux_build_rpm.sh /builds/worker/builder.sh
 
+ENV SHELL=/bin/bash \
+    HOME=/builds/worker \
+    PATH="/builds/worker/.local/bin:$PATH"
+
 VOLUME /builds/worker/checkouts
 VOLUME /builds/worker/.cache
 
