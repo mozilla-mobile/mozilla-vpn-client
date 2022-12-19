@@ -43,7 +43,7 @@ linux/bionic:
     worker:
         docker-image: {in-tree: linux-build-bionic}
     run:
-        command: /builds/worker/linux.sh --ppa ppa:okirby/qt6-backports
+        command: /builds/worker/builder.sh --ppa ppa:okirby/qt6-backports
 
 linux/focal:
     description: "Linux Build (Ubuntu/Focal)"
@@ -57,7 +57,7 @@ linux/focal:
     worker:
         docker-image: {in-tree: linux-build-focal}
     run:
-        command: /builds/worker/linux.sh --ppa ppa:okirby/qt6-backports
+        command: /builds/worker/builder.sh --ppa ppa:okirby/qt6-backports
 
 linux/jammy:
     description: "Linux Build (Ubuntu/Jammy)"
@@ -71,7 +71,7 @@ linux/jammy:
     worker:
         docker-image: {in-tree: linux-build-jammy}
     run:
-        command: /builds/worker/linux.sh
+        command: /builds/worker/builder.sh
 
 linux/kinetic:
     description: "Linux Build (Ubuntu/Kinetic)"
@@ -85,4 +85,20 @@ linux/kinetic:
     worker:
         docker-image: {in-tree: linux-build-kinetic}
     run:
-        command: /builds/worker/linux.sh
+        command: /builds/worker/builder.sh
+
+linux/fedora-fc36:
+    description: "Linux Build (Fedora/36)"
+    treeherder:
+        platform: linux/fedora-fc36
+    fetches:
+        build:
+            - artifact: mozillavpn-sources.tar.gz
+    dependencies:
+        build: build-linux/source
+    worker:
+        docker-image: {in-tree: linux-build-fedora-fc36}
+    release-artifacts:
+        - mozillavpn-fedora-fc36.tar.gz
+    run:
+        command: /builds/worker/builder.sh

@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-ARG DOCKER_BASE_IMAGE=ubuntu:20:04
+ARG DOCKER_BASE_IMAGE=fedora:36
 
 FROM $DOCKER_BASE_IMAGE
 
@@ -11,23 +11,11 @@ MAINTAINER Owen Kirby <okirby@mozilla.com>
 #----------------------------------------------------------------------------------------------------------------------
 #-- Extra Packages ----------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------
-ENV CURL='curl --location --retry 5' \
-    DEBIAN_FRONTENT='noninteractive' \
-    LANG='en_US.UTF-8' \
-    TERM='dumb'
+# TODO: What are we missing?
+RUN yum -y install rpm-build rpmdevtools yum-utils sudo
 
-RUN apt-get update \
-    && apt-get install -y tzdata \
-    && apt-get install -y debhelper \
-                          devscripts \
-                          equivs \
-                          gpg-agent \
-                          locales \
-                          software-properties-common \
-                          sudo \
-    && apt-get clean
-
-RUN locale-gen "$LANG"
+# Grant the worker user the ability to install packages without login
+RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/yum,/usr/bin/yum-builddep" > /etc/sudoers.d/worker-packages
 
 #----------------------------------------------------------------------------------------------------------------------
 #-- Worker User -------------------------------------------------------------------------------------------------------
@@ -42,16 +30,13 @@ RUN mkdir /builds && \
 
 WORKDIR /builds/worker/
 
-# Grant the worker user the ability to install packages without login
-RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/apt,/usr/bin/apt-get,/usr/bin/dpkg,/usr/bin/add-apt-repository" > /etc/sudoers.d/worker-packages
-
 #----------------------------------------------------------------------------------------------------------------------
 #-- Task Setup --------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------
 
 # %include-run-task
 # %include taskcluster/scripts/build/linux.sh
-ADD topsrcdir/taskcluster/scripts/build/linux_build_dpkg.sh /builds/worker/builder.sh
+ADD topsrcdir/taskcluster/scripts/build/linux_build_rpm.sh /builds/worker/builder.sh
 
 VOLUME /builds/worker/checkouts
 VOLUME /builds/worker/.cache
