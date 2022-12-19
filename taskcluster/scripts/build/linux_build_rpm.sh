@@ -43,12 +43,6 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-echo "User is: $USER (uid: $UID)"
-
-## Wait, are we building as root? That seems wrong.
-echo "Listing env:"
-env
-
 # Fall back to the host operating system if no distribution was specified
 if [[ -z "$DIST" ]]; then
   DIST="${VERSION_CODENAME}"
@@ -59,14 +53,14 @@ if [[ -n "$QTPPA" ]]; then
     sudo add-apt-repository -y ${QTPPA}
 fi
 
-echo "Listing ${MOZ_FETCHES_DIR}:"
-ls -al ${MOZ_FETCHES_DIR}
-
 # Install the build dependencies.
 sudo yum-builddep -y ${MOZ_FETCHES_DIR}/mozillavpn.spec
 
 # Build the packages.
-rpmbuild -D "_topdir ${MOZ_FETCHES_DIR}" -D "_sourcedir ${MOZ_FETCHES_DIR}" -ba ${MOZ_FETCHES_DIR}/mozillavpn.spec
+rpmbuild -D "_topdir ${HOME}" -D "_sourcedir ${MOZ_FETCHES_DIR}" -ba ${MOZ_FETCHES_DIR}/mozillavpn.spec
+
+# Gather the build artifacts for export
+tar -C ${HOME}/RPMS/x86_64 -cvzf /builds/worker/artifacts/mozillavpn-rpm.tar.gz .
 
 # Let's see what got built...
 echo "Listing $(pwd):"
