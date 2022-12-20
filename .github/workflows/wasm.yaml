@@ -133,7 +133,7 @@ jobs:
 
       - name: Set up gecko driver
         if: steps.cache-gecko.outputs.cache-hit != 'true'
-        uses: browser-actions/setup-geckodriver@0latest
+        uses: browser-actions/setup-geckodriver@latest
         env:
           token: ${{ secrets.GITHUB_TOKEN }}
           
