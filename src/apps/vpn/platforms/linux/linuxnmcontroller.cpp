@@ -3,14 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "linuxnmcontroller.h"
+
+#include <QScopeGuard>
+#include <QUuid>
+
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
 #include "models/keys.h"
 #include "settingsholder.h"
-
-#include <QScopeGuard>
-#include <QUuid>
 
 #if defined(__cplusplus)
 extern "C" {
@@ -167,7 +168,7 @@ void LinuxNMController::initialize(const Device* device, const Keys* keys) {
     logger.info() << "Connection" << m_tunnelUuid << "already exists";
     m_remote = remote;
 
-    NMSettingIPConfig* ipv4config = 
+    NMSettingIPConfig* ipv4config =
         nm_connection_get_setting_ip4_config(NM_CONNECTION(remote));
     m_ipv4config = nm_setting_duplicate(NM_SETTING(ipv4config));
 
@@ -308,7 +309,7 @@ void LinuxNMController::activate(const HopConnection& hop, const Device* device,
     g_object_set(ipcfg, NM_SETTING_IP_CONFIG_DNS, dnsServerList,
                  NM_SETTING_IP_CONFIG_DNS_SEARCH, dnsSearchList,
                  NM_SETTING_IP_CONFIG_DNS_PRIORITY, 10, NULL);
-    
+
     // Keep the IPv4 gateway for later.
     m_serverIpv4Gateway = hop.m_server.ipv4Gateway();
   }

@@ -5,9 +5,9 @@
 #ifndef LINUXNMCONTROLLER_H
 #define LINUXNMCONTROLLER_H
 
-#include "controllerimpl.h"
-
 #include <QObject>
+
+#include "controllerimpl.h"
 
 struct _GAsyncResult;
 struct _GObject;
