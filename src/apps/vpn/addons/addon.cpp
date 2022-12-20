@@ -25,10 +25,10 @@
 #include "conditionwatchers/addonconditionwatchertriggertimesecs.h"
 #include "feature.h"
 #include "glean/generated/metrics.h"
+#include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
@@ -438,7 +438,7 @@ void Addon::updateAddonState(State newState) {
           ._addonId = m_id,
           ._state = newStateSetting,
       });
-  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
       GleanSample::addonStateChanged,
       {{"addon_id", m_id}, {"state", newStateSetting}});
 }

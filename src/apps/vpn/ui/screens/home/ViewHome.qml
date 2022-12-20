@@ -171,7 +171,7 @@ VPNFlickable {
 
             onClosed: {
                 tipsAndTricksIntroPopupLoader.active = false
-                VPN.recordGleanEventWithExtraKeys("tipsAndTricksModalClosed", {"action": closedByPrimaryButton ? "cta" : "dismissed"});
+                VPNGleanDeprecated.recordGleanEventWithExtraKeys("tipsAndTricksModalClosed", {"action": closedByPrimaryButton ? "cta" : "dismissed"});
                 Glean.sample.tipsAndTricksModalClosed.record({
                     action: closedByPrimaryButton ? "cta" : "dismissed"
                 });

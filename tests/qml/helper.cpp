@@ -7,6 +7,7 @@
 #include <glean.h>
 #include <nebula.h>
 
+#include "gleandeprecated.h"
 #include "qmlengineholder.h"
 
 TestHelper::TestHelper() {
@@ -41,7 +42,7 @@ void TestHelper::triggerInitializeGlean() const {
 }
 
 void TestHelper::triggerRecordGleanEvent(const QString& event) const {
-  emit MozillaVPN::instance()->recordGleanEvent(event);
+  emit GleanDeprecated::instance()->recordGleanEvent(event);
 }
 
 void TestHelper::triggerSendGleanPings() const {

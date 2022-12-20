@@ -11,6 +11,7 @@ target_sources(shared-sources INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 set_property(TARGET shared-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/shared
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/glean
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
@@ -29,6 +30,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/feature.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/fontloader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/fontloader.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/glean/gleandeprecated.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/glean/gleandeprecated.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20Poly1305_32.c
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star/Hacl_Curve25519_51.c
