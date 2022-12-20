@@ -102,3 +102,19 @@ linux/fedora-fc36:
         - mozillavpn-fedora-fc36.tar.gz
     run:
         command: /builds/worker/builder.sh
+
+linux/fedora-fc37:
+    description: "Linux Build (Fedora/37)"
+    treeherder:
+        platform: linux/fedora-fc37
+    fetches:
+        build:
+            - artifact: mozillavpn-sources.tar.gz
+    dependencies:
+        build: build-linux/source
+    worker:
+        docker-image: {in-tree: linux-build-fedora-fc37}
+    release-artifacts:
+        - mozillavpn-fedora-fc37.tar.gz
+    run:
+        command: /builds/worker/builder.sh

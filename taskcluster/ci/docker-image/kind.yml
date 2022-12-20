@@ -101,3 +101,8 @@ tasks:
         definition: linux-rpm-build
         args:
             DOCKER_BASE_IMAGE: fedora:36
+    linux-build-fedora-fc37:
+        symbol: I(linux-fedora-fc37)
+        definition: linux-rpm-build
+        args:
+            DOCKER_BASE_IMAGE: fedora:37
