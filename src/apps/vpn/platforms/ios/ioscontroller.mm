@@ -105,7 +105,7 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
 }
 
 void IOSController::activate(const HopConnection& hop, const Device* device, const Keys* keys,
-                             Reason reason) {
+                             Controller::Reason reason) {
   Q_UNUSED(device);
   Q_UNUSED(keys);
 
@@ -146,10 +146,10 @@ void IOSController::activate(const HopConnection& hop, const Device* device, con
              }];
 }
 
-void IOSController::deactivate(Reason reason) {
+void IOSController::deactivate(Controller::Reason reason) {
   logger.debug() << "IOSController deactivated";
 
-  if (reason != ReasonNone) {
+  if (reason != Controller::ReasonNone) {
     logger.debug() << "We do not need to disable the VPN for switching or connection check.";
     emit disconnected();
     return;
