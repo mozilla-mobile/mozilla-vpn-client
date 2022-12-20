@@ -455,7 +455,7 @@ void LinuxNMController::checkStatus() {
   }
 
   QString deviceAddress(
-      nm_ip_address_get_address((NMIPAddress *)(addrcfg->pdata[0])));
+      nm_ip_address_get_address((NMIPAddress*)(addrcfg->pdata[0])));
 
   logger.info() << "Status:" << deviceAddress;
   emit statusUpdated(m_serverIpv4Gateway, deviceAddress, 1234500, 6789000);
