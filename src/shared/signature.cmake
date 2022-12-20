@@ -24,10 +24,10 @@ add_custom_command(
     COMMAND ${CARGO_CMD} --target-dir "${CMAKE_CURRENT_BINARY_DIR}"
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../signature)
 
-target_sources(mozillavpn PRIVATE
+target_sources(shared-sources PRIVATE
     ${GENERATED_DIR}/${LIBNAME}
 )
-target_link_libraries(mozillavpn PRIVATE ${GENERATED_DIR}/${LIBNAME})
-target_link_libraries(mozillavpn PUBLIC ${CMAKE_DL_LIBS})
+target_link_libraries(shared-sources INTERFACE ${GENERATED_DIR}/${LIBNAME})
+target_link_libraries(shared-sources INTERFACE ${CMAKE_DL_LIBS})
 
-target_compile_definitions(mozillavpn PRIVATE MVPN_SIGNATURE)
+target_compile_definitions(shared-sources INTERFACE MVPN_SIGNATURE)

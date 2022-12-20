@@ -10,19 +10,19 @@
 #include <QLocale>
 
 #include "collator.h"
-#include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "serveri18n.h"
 #include "settingsholder.h"
 
 #ifdef MZ_IOS
-#  include "platforms/ios/iosutils.h"
+#  include "platforms/ios/ioscommons.h"
 #endif
 
 namespace {
 Logger logger("Localizer");
 Localizer* s_instance = nullptr;
+bool s_forceRTL = false;
 
 struct StaticLanguage {
   QString m_name;
@@ -96,7 +96,7 @@ QString Localizer::systemLanguageCode() const {
   // en-US is always the preferable one even when it should not be. Let's use
   // custom code here.
   QList<QPair<QString, QString>> uiLanguages =
-      parseIOSLanguages(IOSUtils::systemLanguageCodes());
+      parseIOSLanguages(IOSCommons::systemLanguageCodes());
 #else
   QList<QPair<QString, QString>> uiLanguages =
       parseBCP47Languages(QLocale::system().uiLanguages());
@@ -471,8 +471,7 @@ QString Localizer::majorLanguageCode(const QString& aCode) {
 }
 
 bool Localizer::isRightToLeft() const {
-  return InspectorHandler::forceRTL() ||
-         m_locale.textDirection() == Qt::RightToLeft;
+  return s_forceRTL || m_locale.textDirection() == Qt::RightToLeft;
 }
 
 QString Localizer::findLanguageCode(const QString& languageCode,
@@ -498,3 +497,6 @@ QString Localizer::findLanguageCode(const QString& languageCode,
 
   return languageCodeWithoutCountry;
 }
+
+// static
+void Localizer::forceRTL() { s_forceRTL = true; }

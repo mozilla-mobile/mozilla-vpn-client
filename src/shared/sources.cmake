@@ -16,6 +16,8 @@ set_property(TARGET shared-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
 
 # Shared components
 target_sources(shared-sources INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/collator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/collator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/constants.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/constants.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/cryptosettings.cpp
@@ -39,6 +41,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/ipaddress.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/leakdetector.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/leakdetector.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/localizer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/localizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/logger.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/logger.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/loghandler.cpp
@@ -55,11 +59,15 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/rfc/rfc5735.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/settingsholder.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/settingsholder.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/signature.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/signature.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/task.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/taskscheduler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/taskscheduler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/temporarydir.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/temporarydir.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/theme.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/theme.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/versionutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/versionutils.h
 )

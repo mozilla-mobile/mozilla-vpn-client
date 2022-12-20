@@ -7,13 +7,11 @@
 #include "localizer.h"
 
 #ifdef MZ_IOS
-#  include "platforms/ios/iosutils.h"
+#  include "platforms/ios/ioscommons.h"
 #endif
 
 #if defined(MZ_WASM)
 #  include <emscripten.h>
-
-#  include "settingsholder.h"
 
 EM_JS(int, vpnWasmCompareString,
       (const char* a, const char* b, const char* languageCode), {
@@ -27,7 +25,7 @@ int Collator::compare(const QString& a, const QString& b) {
   // On iOS, the standard QT package for arm does not link ICU. Let's have our
   // own collator implementation based on NSStrings.
 #if defined(MZ_IOS)
-  return IOSUtils::compareStrings(a, b);
+  return IOSCommons::compareStrings(a, b);
 #elif defined(MZ_WASM)
   // For WASM, we have a similar issue (no ICU). Let's use the JS API to sort
   // strings.

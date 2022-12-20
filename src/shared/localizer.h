@@ -66,6 +66,8 @@ class Localizer final : public QAbstractListModel {
   static QList<QPair<QString, QString>> parseIOSLanguages(
       const QStringList& languages);
 
+  static void forceRTL();
+
   // QAbstractListModel methods
 
   QHash<int, QByteArray> roleNames() const override;

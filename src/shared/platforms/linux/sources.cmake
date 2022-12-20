@@ -9,3 +9,5 @@ target_include_directories(shared-sources INTERFACE ${libsecret_INCLUDE_DIRS})
 target_sources(shared-sources INTERFACE
      ${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/linux/linuxcryptosettings.cpp
 )
+
+include(${CMAKE_CURRENT_SOURCE_DIR}/shared/signature.cmake)

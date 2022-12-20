@@ -7,3 +7,5 @@ target_sources(shared-sources INTERFACE
      ${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/windows/windowsutils.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/windows/windowsutils.h
 )
+
+include(${CMAKE_CURRENT_SOURCE_DIR}/shared/signature.cmake)

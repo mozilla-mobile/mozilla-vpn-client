@@ -62,8 +62,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/networkmanager.h
     ${MZ_SOURCE_DIR}/apps/vpn/networkrequest.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/networkrequest.h
-    ${MZ_SOURCE_DIR}/apps/vpn/theme.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/theme.h
     ${MZ_SOURCE_DIR}/apps/vpn/pinghelper.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/pinghelper.h
     ${MZ_SOURCE_DIR}/apps/vpn/pingsender.cpp
@@ -105,6 +103,8 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/platforms/wasm/wasmcryptosettings.cpp
     ${MZ_SOURCE_DIR}/shared/settingsholder.cpp
     ${MZ_SOURCE_DIR}/shared/settingsholder.h
+    ${MZ_SOURCE_DIR}/shared/theme.cpp
+    ${MZ_SOURCE_DIR}/shared/theme.h
     ${MZ_SOURCE_DIR}/shared/versionutils.cpp
     ${MZ_SOURCE_DIR}/shared/versionutils.h
 )

@@ -17,14 +17,13 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "platforms/android/androidcommons.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 
 namespace {
 AndroidUtils* s_instance = nullptr;
 Logger logger("AndroidUtils");
-
-constexpr auto UTILS_CLASS = "org/mozilla/firefox/vpn/qt/VPNUtils";
 }  // namespace
 
 // static
@@ -62,7 +61,7 @@ AndroidUtils::AndroidUtils(QObject* parent) : QObject(parent) {
   s_instance = this;
 
   QJniEnvironment env;
-  jclass javaClass = env.findClass(UTILS_CLASS);
+  jclass javaClass = env.findClass(ANDROID_UTILS_CLASS);
 
   JNINativeMethod methods[]{
       {"recordGleanEvent", "(Ljava/lang/String;)V",
@@ -140,7 +139,7 @@ QJsonObject AndroidUtils::getQJsonObjectFromJString(JNIEnv* env, jstring data) {
 
 bool AndroidUtils::ShareText(const QString& text) {
   return (bool)QJniObject::callStaticMethod<jboolean>(
-      UTILS_CLASS, "sharePlainText", "(Ljava/lang/String;)Z",
+      ANDROID_UTILS_CLASS, "sharePlainText", "(Ljava/lang/String;)Z",
       QJniObject::fromString(text).object());
 }
 
@@ -156,7 +155,7 @@ QByteArray AndroidUtils::DeviceId() {
   QJniEnvironment env;
   QJniObject activity = getActivity();
   QJniObject string = QJniObject::callStaticObjectMethod(
-      UTILS_CLASS, "getDeviceID",
+      ANDROID_UTILS_CLASS, "getDeviceID",
       "(Landroid/content/Context;)Ljava/lang/String;", activity.object());
   jstring value = (jstring)string.object();
   const char* buffer = env->GetStringUTFChars(value, nullptr);
@@ -171,8 +170,8 @@ QByteArray AndroidUtils::DeviceId() {
 }
 
 void AndroidUtils::openNotificationSettings() {
-  QJniObject::callStaticMethod<void>(UTILS_CLASS, "openNotificationSettings",
-                                     "()V");
+  QJniObject::callStaticMethod<void>(ANDROID_UTILS_CLASS,
+                                     "openNotificationSettings", "()V");
 }
 
 QJniObject AndroidUtils::getActivity() {
@@ -248,7 +247,7 @@ bool AndroidUtils::verifySignature(const QByteArray& publicKey,
                                    const QByteArray& signature) {
   QJniEnvironment env;
   auto out = (bool)QJniObject::callStaticMethod<jboolean>(
-      UTILS_CLASS, "verifyContentSignature", "([B[B[B)Z",
+      ANDROID_UTILS_CLASS, "verifyContentSignature", "([B[B[B)Z",
       tojByteArray(publicKey), tojByteArray(content), tojByteArray(signature));
   logger.info() << "Android Signature Response" << out;
   return out;

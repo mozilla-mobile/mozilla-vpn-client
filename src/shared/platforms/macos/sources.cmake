@@ -5,3 +5,5 @@
 target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/macos/macoscryptosettings.mm
 )
+
+include(${CMAKE_CURRENT_SOURCE_DIR}/shared/signature.cmake)

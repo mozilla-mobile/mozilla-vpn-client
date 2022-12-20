@@ -83,7 +83,6 @@ target_sources(mozillavpn PRIVATE
 
 include(apps/vpn/cmake/osxtools.cmake)
 include(apps/vpn/cmake/golang.cmake)
-include(apps/vpn/cmake/signature.cmake)
 
 # Enable Balrog for update support.
 target_compile_definitions(mozillavpn PRIVATE MVPN_BALROG)

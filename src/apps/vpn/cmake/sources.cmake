@@ -89,8 +89,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/captiveportal/captiveportalrequest.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/captiveportal/captiveportalrequesttask.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/captiveportal/captiveportalrequesttask.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/collator.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/collator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/command.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/command.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commandlineparser.cpp
@@ -184,8 +182,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/itempicker.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/keyregenerator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/keyregenerator.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/localizer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/localizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/logoutobserver.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/logoutobserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/main.cpp
@@ -260,8 +256,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/serveri18n.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/serverlatency.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/serverlatency.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/signature.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/signature.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/simplenetworkmanager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/simplenetworkmanager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/statusicon.cpp
@@ -308,8 +302,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/servers/taskservers.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/telemetry.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/telemetry.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/theme.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/theme.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tutorial/tutorial.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tutorial/tutorial.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tutorial/tutorialstep.cpp

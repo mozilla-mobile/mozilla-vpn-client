@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 SOURCES += \
+        $$PWD/collator.cpp \
         $$PWD/constants.cpp \
         $$PWD/cryptosettings.cpp \
         $$PWD/curve25519.cpp \
@@ -16,6 +17,7 @@ SOURCES += \
         $$PWD/hkdf.cpp \
         $$PWD/ipaddress.cpp \
         $$PWD/leakdetector.cpp \
+        $$PWD/localizer.cpp \
         $$PWD/logger.cpp \
         $$PWD/loghandler.cpp \
         $$PWD/rfc/rfc1112.cpp \
@@ -24,11 +26,14 @@ SOURCES += \
         $$PWD/rfc/rfc4291.cpp \
         $$PWD/rfc/rfc5735.cpp \
         $$PWD/settingsholder.cpp \
+        $$PWD/signature.cpp \
         $$PWD/taskscheduler.cpp \
         $$PWD/temporarydir.cpp \
+        $$PWD/theme.cpp \
         $$PWD/versionutils.cpp
 
 HEADERS += \
+        $$PWD/collator.h \
         $$PWD/constants.h \
         $$PWD/cryptosettings.h \
         $$PWD/curve25519.h \
@@ -39,6 +44,7 @@ HEADERS += \
         $$PWD/hkdf.h \
         $$PWD/ipaddress.h \
         $$PWD/leakdetector.h \
+        $$PWD/localizer.h \
         $$PWD/logger.h \
         $$PWD/loghandler.h \
         $$PWD/rfc/rfc1112.h \
@@ -47,9 +53,11 @@ HEADERS += \
         $$PWD/rfc/rfc4291.h \
         $$PWD/rfc/rfc5735.h \
         $$PWD/settingsholder.h \
+        $$PWD/signature.h \
         $$PWD/task.h \
         $$PWD/taskscheduler.h \
         $$PWD/temporarydir.h \
+        $$PWD/theme.h \
         $$PWD/versionutils.h
 
 # Signal handling for unix platforms
@@ -60,5 +68,9 @@ unix {
 
 ios {
     OBJECTIVE_SOURCES += \
-        shared/platforms/macos/macoscryptosettings.mm
+        shared/platforms/macos/macoscryptosettings.mm \
+        shared/platforms/ios/ioscommons.mm
+
+    OBJECTIVE_HEADERS += \
+        shared/platforms/ios/ioscommons.h
 }
