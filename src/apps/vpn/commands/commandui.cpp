@@ -22,7 +22,9 @@
 #include "frontend/navigator.h"
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
-#include "glean/glean.h"
+// Relative path is required here,
+// otherwise this gets confused with the Glean.js implementation
+#include "../glean/glean.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
 #include "keyregenerator.h"
