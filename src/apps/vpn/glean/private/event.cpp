@@ -38,10 +38,12 @@ void EventMetric::record(const QJsonObject& extras) {
 
   if (!ffiExtras.keys.empty()) {
 #if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
-    glean_event_record(m_id, ffiExtras.keys.data(), ffiExtras.values.data(), ffiExtras.keys.size());
+    glean_event_record(m_id, ffiExtras.keys.data(), ffiExtras.values.data(),
+                       ffiExtras.keys.size());
 #endif
   } else {
-    logger.error() << "Attempted to record an event with extras, but no extras were provided. Ignoring.";
+    logger.error() << "Attempted to record an event with extras, but no extras "
+                      "were provided. Ignoring.";
     // TODO: record an error.
   }
 }
@@ -54,10 +56,12 @@ void EventMetric::record(const EventMetricExtra& extras) {
 
   if (!ffiExtras.keys.empty()) {
 #if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
-    glean_event_record(m_id, ffiExtras.keys.data(), ffiExtras.values.data(), ffiExtras.keys.size());
+    glean_event_record(m_id, ffiExtras.keys.data(), ffiExtras.values.data(),
+                       ffiExtras.keys.size());
 #endif
   } else {
-    logger.error() << "Attempted to record an event with extras, but no extras were provided. Ignoring.";
+    logger.error() << "Attempted to record an event with extras, but no extras "
+                      "were provided. Ignoring.";
     // TODO: record an error.
   }
 }
