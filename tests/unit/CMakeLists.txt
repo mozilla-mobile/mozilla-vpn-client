@@ -83,6 +83,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/apps/vpn/adjust/adjustfiltering.h
     ${MVPN_SOURCE_DIR}/apps/vpn/adjust/adjustproxypackagehandler.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/adjust/adjustproxypackagehandler.h
+    ${MVPN_SOURCE_DIR}/apps/vpn/appconstants.cpp
+    ${MVPN_SOURCE_DIR}/apps/vpn/appconstants.h
     ${MVPN_SOURCE_DIR}/apps/vpn/captiveportal/captiveportal.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/captiveportal/captiveportal.h
     ${MVPN_SOURCE_DIR}/apps/vpn/collator.cpp
@@ -105,8 +107,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/apps/vpn/composer/composerblocktitle.h
     ${MVPN_SOURCE_DIR}/apps/vpn/composer/composerblockunorderedlist.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/composer/composerblockunorderedlist.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/constants.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/constants.h
     ${MVPN_SOURCE_DIR}/apps/vpn/controller.h
     ${MVPN_SOURCE_DIR}/apps/vpn/cryptosettings.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/cryptosettings.h
@@ -247,6 +247,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/apps/vpn/websocket/pushmessage.h
     ${MVPN_SOURCE_DIR}/apps/vpn/websocket/websockethandler.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/websocket/websockethandler.h
+    ${MVPN_SOURCE_DIR}/shared/constants.cpp
+    ${MVPN_SOURCE_DIR}/shared/constants.h
     ${MVPN_SOURCE_DIR}/shared/curve25519.cpp
     ${MVPN_SOURCE_DIR}/shared/curve25519.h
     ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c

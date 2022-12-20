@@ -12,11 +12,11 @@
 #include <QQmlContext>
 
 #include "addons/manager/addonmanager.h"
+#include "appconstants.h"
 #include "apppermission.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "commandlineparser.h"
-#include "constants.h"
 #include "fontloader.h"
 #include "frontend/navigator.h"
 #include "imageproviderfactory.h"
@@ -137,7 +137,7 @@ int CommandUI::run(QStringList& tokens) {
         || true
 #endif
     ) {
-      Constants::setStaging();
+      AppConstants::setStaging();
     }
 
     logger.info() << "MozillaVPN" << Constants::versionString();

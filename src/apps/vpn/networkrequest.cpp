@@ -4,8 +4,8 @@
 
 #include "networkrequest.h"
 
+#include "appconstants.h"
 #include "captiveportal/captiveportal.h"
-#include "constants.h"
 #include "hawkauth.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -103,10 +103,10 @@ NetworkRequest::~NetworkRequest() {
 // static
 QString NetworkRequest::apiBaseUrl() {
   if (Constants::inProduction()) {
-    return Constants::API_PRODUCTION_URL;
+    return AppConstants::API_PRODUCTION_URL;
   }
 
-  return Constants::getStagingServerAddress();
+  return AppConstants::getStagingServerAddress();
 }
 
 // static
@@ -510,7 +510,7 @@ NetworkRequest* NetworkRequest::createForFxaAccountStatus(
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
 
-  QUrl url(Constants::fxaApiBaseUrl());
+  QUrl url(AppConstants::fxaApiBaseUrl());
   url.setPath("/v1/account/status");
   r->m_request.setUrl(url);
 
@@ -531,7 +531,7 @@ NetworkRequest* NetworkRequest::createForFxaAccountCreation(
     const QString& fxaFlowId, double fxaFlowBeginTime) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaApiBaseUrl());
+  QUrl url(AppConstants::fxaApiBaseUrl());
   url.setPath("/v1/account/create");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -564,7 +564,7 @@ NetworkRequest* NetworkRequest::createForFxaLogin(
     const QString& fxaFlowId, double fxaFlowBeginTime) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaApiBaseUrl());
+  QUrl url(AppConstants::fxaApiBaseUrl());
   url.setPath("/v1/account/login");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -608,7 +608,7 @@ NetworkRequest* NetworkRequest::createForFxaSendUnblockCode(
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
 
-  QUrl url(Constants::fxaApiBaseUrl());
+  QUrl url(AppConstants::fxaApiBaseUrl());
   url.setPath("/v1/account/login/send_unblock_code");
   r->m_request.setUrl(url);
 
@@ -628,7 +628,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionVerifyByEmailCode(
     const QString& fxaClientId, const QString& fxaScope) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaApiBaseUrl());
+  QUrl url(AppConstants::fxaApiBaseUrl());
   url.setPath("/v1/session/verify_code");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -666,7 +666,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionResendCode(
     Task* parent, const QByteArray& sessionToken) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaApiBaseUrl());
+  QUrl url(AppConstants::fxaApiBaseUrl());
   url.setPath("/v1/session/resend_code");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -689,7 +689,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionVerifyByTotpCode(
     const QString& fxaClientId, const QString& fxaScope) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaApiBaseUrl());
+  QUrl url(AppConstants::fxaApiBaseUrl());
   url.setPath("/v1/session/verify/totp");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -720,7 +720,7 @@ NetworkRequest* NetworkRequest::createForFxaAuthz(
     const QString& fxaAccessType) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaApiBaseUrl());
+  QUrl url(AppConstants::fxaApiBaseUrl());
   url.setPath("/v1/oauth/authorization");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -748,7 +748,7 @@ NetworkRequest* NetworkRequest::createForFxaTotpCreation(
     Task* parent, const QByteArray& sessionToken) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaApiBaseUrl());
+  QUrl url(AppConstants::fxaApiBaseUrl());
   url.setPath("/v1/totp/create");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -770,7 +770,7 @@ NetworkRequest* NetworkRequest::createForFxaAttachedClients(
     Task* parent, const QByteArray& sessionToken) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaApiBaseUrl());
+  QUrl url(AppConstants::fxaApiBaseUrl());
   url.setPath("/v1/account/attached_clients");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -790,7 +790,7 @@ NetworkRequest* NetworkRequest::createForFxaAccountDeletion(
     const QByteArray& authpw) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaApiBaseUrl());
+  QUrl url(AppConstants::fxaApiBaseUrl());
   url.setPath("/v1/account/destroy");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -815,7 +815,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionDestroy(
     Task* parent, const QByteArray& sessionToken) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaApiBaseUrl());
+  QUrl url(AppConstants::fxaApiBaseUrl());
   url.setPath("/v1/session/destroy");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -836,11 +836,11 @@ NetworkRequest* NetworkRequest::createForFxaSessionDestroy(
 NetworkRequest* NetworkRequest::createForSentry(Task* parent,
                                                 const QByteArray& envelope) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  QUrl url(Constants::SENTRY_ENVELOPE_INGESTION);
+  QUrl url(AppConstants::SENTRY_ENVELOPE_INGESTION);
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/x-sentry-envelope");
-  r->m_request.setRawHeader("dsn", Constants::SENTRY_DSN_ENDPOINT);
+  r->m_request.setRawHeader("dsn", AppConstants::SENTRY_DSN_ENDPOINT);
   r->postRequest(envelope);
   return r;
 }

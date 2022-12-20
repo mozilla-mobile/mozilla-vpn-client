@@ -4,7 +4,7 @@
 
 #include "websockethandler.h"
 
-#include "constants.h"
+#include "appconstants.h"
 #include "exponentialbackoffstrategy.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -58,9 +58,9 @@ QString WebSocketHandler::webSocketServerUrl() {
 
   QString httpServerUrl;
   if (Constants::inProduction()) {
-    httpServerUrl = Constants::API_PRODUCTION_URL;
+    httpServerUrl = AppConstants::API_PRODUCTION_URL;
   } else {
-    httpServerUrl = Constants::getStagingServerAddress();
+    httpServerUrl = AppConstants::getStagingServerAddress();
   }
 
   return httpServerUrl.toLower().replace("http", "ws");

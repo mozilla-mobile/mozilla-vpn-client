@@ -12,7 +12,6 @@
 #include <QNetworkCookieJar>
 #include <QUrlQuery>
 
-#include "constants.h"
 #include "jni.h"
 #include "leakdetector.h"
 #include "logger.h"

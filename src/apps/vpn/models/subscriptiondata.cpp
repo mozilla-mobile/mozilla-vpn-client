@@ -11,7 +11,7 @@
 #include <QJsonValue>
 #include <QMetaEnum>
 
-#include "constants.h"
+#include "appconstants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -189,7 +189,8 @@ bool SubscriptionData::fromJsonInternal(const QByteArray& json) {
     QJsonArray subscriptionsList = paymentData["subscriptions"].toArray();
     for (const QJsonValue& subscriptionValue : subscriptionsList) {
       QJsonObject subscription = subscriptionValue.toObject();
-      if (subscription["product_id"] == Constants::privacyBundleProductId()) {
+      if (subscription["product_id"] ==
+          AppConstants::privacyBundleProductId()) {
         m_isPrivacyBundleSubscriber = true;
         break;
       }

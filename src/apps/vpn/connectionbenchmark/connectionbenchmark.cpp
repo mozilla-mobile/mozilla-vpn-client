@@ -4,6 +4,7 @@
 
 #include "connectionbenchmark.h"
 
+#include "appconstants.h"
 #include "benchmarktaskping.h"
 #include "benchmarktasktransfer.h"
 #include "connectionhealth.h"
@@ -42,9 +43,9 @@ void ConnectionBenchmark::setConnectionSpeed() {
   logger.debug() << "Set connection speed";
 
   // TODO: Take uploadBps for calculating speed into account
-  if (m_downloadBps >= Constants::BENCHMARK_THRESHOLD_SPEED_FAST) {
+  if (m_downloadBps >= AppConstants::BENCHMARK_THRESHOLD_SPEED_FAST) {
     m_speed = SpeedFast;
-  } else if (m_downloadBps >= Constants::BENCHMARK_THRESHOLD_SPEED_MEDIUM) {
+  } else if (m_downloadBps >= AppConstants::BENCHMARK_THRESHOLD_SPEED_MEDIUM) {
     m_speed = SpeedMedium;
   } else {
     m_speed = SpeedSlow;

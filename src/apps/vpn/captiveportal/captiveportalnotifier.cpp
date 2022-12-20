@@ -4,7 +4,6 @@
 
 #include "captiveportalnotifier.h"
 
-#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "notificationhandler.h"

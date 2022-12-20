@@ -59,6 +59,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/addons/manager/addonindex.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/addons/manager/addonmanager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/addons/manager/addonmanager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/appconstants.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/appconstants.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/appimageprovider.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/applistprovider.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/apppermission.cpp
@@ -138,8 +140,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/connectionbenchmark/uploaddatagenerator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/connectionhealth.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/connectionhealth.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/constants.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/constants.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/controller.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/controller.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/controllerimpl.h

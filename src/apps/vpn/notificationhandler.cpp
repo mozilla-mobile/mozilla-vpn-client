@@ -4,7 +4,7 @@
 
 #include "notificationhandler.h"
 
-#include "constants.h"
+#include "appconstants.h"
 #include "externalophandler.h"
 #include "l18nstrings.h"
 #include "leakdetector.h"
@@ -198,7 +198,7 @@ void NotificationHandler::captivePortalBlockNotificationRequired() {
       l18nStrings->t(L18nStrings::NotificationsCaptivePortalBlockMessage2);
 
   notifyInternal(CaptivePortalBlock, title, message,
-                 Constants::CAPTIVE_PORTAL_ALERT_MSEC);
+                 AppConstants::CAPTIVE_PORTAL_ALERT_MSEC);
 }
 
 void NotificationHandler::captivePortalUnblockNotificationRequired() {
@@ -213,7 +213,7 @@ void NotificationHandler::captivePortalUnblockNotificationRequired() {
       l18nStrings->t(L18nStrings::NotificationsCaptivePortalUnblockMessage2);
 
   notifyInternal(CaptivePortalUnblock, title, message,
-                 Constants::CAPTIVE_PORTAL_ALERT_MSEC);
+                 AppConstants::CAPTIVE_PORTAL_ALERT_MSEC);
 }
 
 void NotificationHandler::unsecuredNetworkNotification(
@@ -230,7 +230,7 @@ void NotificationHandler::unsecuredNetworkNotification(
           .arg(networkName);
 
   notifyInternal(UnsecuredNetwork, title, message,
-                 Constants::UNSECURED_NETWORK_ALERT_MSEC);
+                 AppConstants::UNSECURED_NETWORK_ALERT_MSEC);
 }
 
 void NotificationHandler::serverUnavailableNotification(bool pingRecieved) {
@@ -253,7 +253,7 @@ void NotificationHandler::serverUnavailableNotification(bool pingRecieved) {
           : l18nStrings->t(L18nStrings::ServerUnavailableNotificationBodyText);
 
   notifyInternal(ServerUnavailable, title, message,
-                 Constants::SERVER_UNAVAILABLE_ALERT_MSEC);
+                 AppConstants::SERVER_UNAVAILABLE_ALERT_MSEC);
 }
 
 void NotificationHandler::newInAppMessageNotification(const QString& title,
@@ -266,7 +266,7 @@ void NotificationHandler::newInAppMessageNotification(const QString& title,
   }
 
   notifyInternal(NewInAppMessage, title, message,
-                 Constants::NEW_IN_APP_MESSAGE_ALERT_MSEC);
+                 AppConstants::NEW_IN_APP_MESSAGE_ALERT_MSEC);
 }
 
 void NotificationHandler::subscriptionNotFoundNotification() {
@@ -281,7 +281,7 @@ void NotificationHandler::subscriptionNotFoundNotification() {
       l18nStrings->t(L18nStrings::NotificationsSubscriptionNotFound);
 
   notifyInternal(SubscriptionNotFound, notificationTitle, notificationBody,
-                 Constants::DEFAULT_OS_NOTIFICATION_MSEC);
+                 AppConstants::DEFAULT_OS_NOTIFICATION_MSEC);
 }
 
 void NotificationHandler::notifyInternal(Message type, const QString& title,

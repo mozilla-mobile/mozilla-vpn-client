@@ -8,7 +8,7 @@
 #include <QUrl>
 #include <QUrlQuery>
 
-#include "constants.h"
+#include "appconstants.h"
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -56,7 +56,7 @@ void UrlOpener::openLink(LinkType linkType) {
 
   switch (linkType) {
     case LinkAccount:
-      url = Constants::fxaUrl();
+      url = AppConstants::fxaUrl();
       addEmailAddress = true;
       break;
 
@@ -66,7 +66,7 @@ void UrlOpener::openLink(LinkType linkType) {
       break;
 
     case LinkForgotPassword:
-      url = Constants::fxaUrl();
+      url = AppConstants::fxaUrl();
       url.append("/reset_password");
       break;
 
@@ -131,26 +131,26 @@ void UrlOpener::openLink(LinkType linkType) {
       break;
 
     case LinkRelayPremium:
-      url = Constants::relayUrl();
+      url = AppConstants::relayUrl();
       url.append("/premium");
       break;
 
     case LinkSubscriptionFxa:
-      url = Constants::fxaUrl();
+      url = AppConstants::fxaUrl();
       url.append("/subscriptions");
       break;
 
     case LinkSubscriptionIapApple:
-      url = Constants::APPLE_SUBSCRIPTIONS_URL;
+      url = AppConstants::APPLE_SUBSCRIPTIONS_URL;
       break;
 
     case LinkSubscriptionIapGoogle:
-      url = Constants::GOOGLE_SUBSCRIPTIONS_URL;
+      url = AppConstants::GOOGLE_SUBSCRIPTIONS_URL;
       break;
 
     case LinkUpgradeToBundle:
-      url = Constants::inProduction() ? Constants::API_PRODUCTION_URL
-                                      : Constants::API_STAGING_URL;
+      url = Constants::inProduction() ? AppConstants::API_PRODUCTION_URL
+                                      : AppConstants::API_STAGING_URL;
       url.append("/r/vpn/upgradeToPrivacyBundle");
       break;
 

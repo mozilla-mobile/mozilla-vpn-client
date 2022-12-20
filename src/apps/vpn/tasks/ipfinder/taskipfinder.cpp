@@ -11,7 +11,6 @@
 #include <QJsonValue>
 #include <QUrl>
 
-#include "constants.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"

@@ -9,7 +9,7 @@
 #include <QSystemTrayIcon>
 #include <QWindow>
 
-#include "constants.h"
+#include "appconstants.h"
 #include "externalophandler.h"
 #include "frontend/navigator.h"
 #include "l18nstrings.h"
@@ -116,7 +116,7 @@ void SystemTrayNotificationHandler::notify(NotificationHandler::Message type,
                                            int timerMsec) {
   Q_UNUSED(type);
 
-  QIcon icon(Constants::LOGO_URL);
+  QIcon icon(AppConstants::LOGO_URL);
   m_systemTrayIcon->showMessage(title, message, icon, timerMsec);
 }
 

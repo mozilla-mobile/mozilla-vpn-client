@@ -4,7 +4,7 @@
 
 #include "benchmarktaskping.h"
 
-#include "constants.h"
+#include "appconstants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -15,7 +15,7 @@ Logger logger("BenchmarkTaskPing");
 
 BenchmarkTaskPing::BenchmarkTaskPing()
     : BenchmarkTask("BenchmarkTaskPing",
-                    Constants::BENCHMARK_MAX_DURATION_PING) {
+                    AppConstants::BENCHMARK_MAX_DURATION_PING) {
   MVPN_COUNT_CTOR(BenchmarkTaskPing);
 
   connect(this, &BenchmarkTask::stateChanged, this,

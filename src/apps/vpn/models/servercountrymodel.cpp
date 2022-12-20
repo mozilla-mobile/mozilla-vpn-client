@@ -9,8 +9,8 @@
 #include <QJsonObject>
 #include <QRandomGenerator>
 
+#include "appconstants.h"
 #include "collator.h"
-#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/feature.h"
@@ -347,7 +347,7 @@ void ServerCountryModel::setServerLatency(const QString& publicKey,
 void ServerCountryModel::setServerCooldown(const QString& publicKey) {
   if (m_servers.contains(publicKey)) {
     m_servers[publicKey].setCooldownTimeout(
-        Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
+        AppConstants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
   }
 }
 

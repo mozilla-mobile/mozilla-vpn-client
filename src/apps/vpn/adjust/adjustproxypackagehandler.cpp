@@ -8,7 +8,6 @@
 #include <QUrlQuery>
 
 #include "adjustfiltering.h"
-#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "qmlengineholder.h"

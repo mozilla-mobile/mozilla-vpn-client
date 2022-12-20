@@ -3,18 +3,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include <QString>
-#include <QtGlobal>
 
-#include "constants.h"
+#include "appconstants.h"
 
 bool Constants::inProduction() { return false; }
 
-const QString& Constants::getStagingServerAddress() {
-  static QString stagingServerAddress = Constants::API_STAGING_URL;
+const QString& AppConstants::getStagingServerAddress() {
+  static QString stagingServerAddress = AppConstants::API_STAGING_URL;
   return stagingServerAddress;
 }
 
 void Constants::setStaging() {}
+void AppConstants::setStaging() {}
 
 QString Constants::versionString() {
   return QStringLiteral("QMLTest_AppVersion");

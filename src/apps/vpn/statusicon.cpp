@@ -10,7 +10,7 @@
 #include <QPixmap>
 #include <array>
 
-#include "constants.h"
+#include "appconstants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -68,7 +68,7 @@ const QIcon& StatusIcon::icon() {
 void StatusIcon::activateAnimation() {
   logger.debug() << "Activate animation";
   m_animatedIconIndex = 0;
-  m_animatedIconTimer.start(Constants::statusIconAnimationMsec());
+  m_animatedIconTimer.start(AppConstants::statusIconAnimationMsec());
 }
 
 void StatusIcon::animateIcon() {
