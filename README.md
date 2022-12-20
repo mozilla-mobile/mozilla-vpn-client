@@ -66,8 +66,9 @@ Qt6 can be installed in a number of ways:
     - iOS (if you'll be doing iOS work)
     - QT 5 Compatability Module
     - Additional Libraries
-     - Qt Networking Authorization
-     - Qt WebSockets
+       - Qt Networking Authorization
+       - Qt WebSockets
+    - Qt Debug Information Files
   - Developer and Designer Tools
     - CMake
     - Ninja
@@ -260,6 +261,9 @@ time.
 
 #### Building with Xcode
 
+Before you start this process, open Xcode, go to settings, accounts, and sign in with your 
+Apple ID.
+
 In some circumstances, you may wish to use Xcode to build the Mozilla VPN in order to
 access cloud-managed signing certificates. In such circumstances, this can be enabled
 by using the `-GXcode` command line option:
@@ -308,8 +312,9 @@ and we have also added experimental support for `cmake`.
 [Xcode](https://developer.apple.com/xcode/) version 12 or higher.
 
 2. We use `qmake` to generate the Xcode project and then we "patch" it to add
-extra components such as the wireguard, the browser bridge and so on. We patch
-the Xcode project using [xcodeproj](https://github.com/CocoaPods/Xcodeproj). To
+extra components such as the wireguard, the browser bridge and so on. 
+
+We patch the Xcode project using [xcodeproj](https://github.com/CocoaPods/Xcodeproj). To
 install it:
 ```
 gem install xcodeproj # probably you want to run this command with `sudo`
@@ -325,24 +330,25 @@ cp xcode.xconfig.template xcode.xconfig
 
 5. Modify the xcode.xconfig to something like:
 ```
-# macOS configuration
 APP_ID_MACOS = org.mozilla.macos.FirefoxVPN
 LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item
 
-# iOS configuration
 GROUP_ID_IOS = group.org.mozilla.ios.Guardian
 APP_ID_IOS = org.mozilla.ios.FirefoxVPN
 NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 ```
 
-6. Generate the Xcode project using our script (and an optional adjust token):
-```bash
-./scripts/macos/apple_compile.sh ios [--adjust <adjust_token>]
+6. Make sure qmake is available by setting the environment variable QT_IOS_BIN:
+
 ```
-(If you get an error like `Step 7: Generate translation resources...
-sh: /Users/[username]/Qt/6.2.4/ios/bin/lconvert: No such file or directory`
-you may need to provide the macOS Qt bin folder through the -q flag:
-`./scripts/macos/apple_compile.sh ios -q ~/Qt/6.2.4/macos/bin`)
+export QT_IOS_BIN=/Users/[username]/Qt/6.2.4/ios/bin
+```
+
+Then generate the Xcode project using our script (and an optional adjust token):
+
+```bash
+./scripts/macos/apple_compile.sh ios [--adjust <adjust_token>] -q ~/Qt/6.2.4/macos/bin
+```
 
 7. Xcode should automatically open. You can then run/test/archive/ship the app.
 If you prefer to compile the app in command-line mode, use the following
@@ -406,7 +412,7 @@ it from the [official website](https://golang.org/dl/).
 3. Set the `QT_HOST_PATH` environment variable to point to the location of the `androiddeployqt` tool.
 
 4. Set the `ANDROID_SDK_ROOT` and `ANDROID_NDK_ROOT` (required version: 21.0.6113669) environment variables,
-to point to the Android SDK and NDK intallation directories.
+to point to the Android SDK and NDK installation directories.
 
 5. Add the Android NDK llvm prebuilt tools to your `PATH`. These are located under the Android NDK installation
 directory on `${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/*/bin`.
