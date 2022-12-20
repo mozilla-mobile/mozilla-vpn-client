@@ -66,8 +66,7 @@ lrelease = os.path.join(qtbinpath, 'lrelease')
 
 # Step 1 (continued)
 # Let's update the i18n repo
-os.system(f"git submodule init")
-os.system(f"git submodule update --remote --depth 1 i18n")
+os.system(f"git submodule update --init")
 
 # Step 2
 # Go through the i18n repo, check each XLIFF file and take

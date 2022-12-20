@@ -53,11 +53,10 @@ print Y "Installing python dependencies..."
 python3 -m pip install -r requirements.txt --user
 export PYTHONIOENCODING="UTF-8"
 
-print Y "Updating submodules..."
+print Y "Refresh submodules..."
 
-# should already be done by Xcode cloud cloning but just to make sure
-git submodule init || die
-git submodule update || die
+# Should already be done by Xcode cloud cloning but just to make sure
+git submodule update --init || die
 
 
 if [[ "$RELEASE" ]]; then

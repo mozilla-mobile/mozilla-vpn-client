@@ -128,11 +128,8 @@ print G "${SHORTVERSION}"
 rm -rf .tmp || die "Failed to remove the temporary directory"
 mkdir .tmp || die "Failed to create the temporary directory"
 
-print Y "Update the submodules..."
-git submodule init || die "Failed"
-git submodule update --remote --depth 1 i18n || die "Failed"
-git submodule update --remote --depth 1 3rdparty/wireguard-tools || die "Failed"
-git submodule update --depth 1 3rdparty/glean || die "Failed"
+print Y "Get the submodules..."
+git submodule update --init || die "Failed"
 print G "done."
 
 print G "Creating the orig tarball"

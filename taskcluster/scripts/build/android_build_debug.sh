@@ -5,8 +5,7 @@
 set -e
 
 # This script is used in the Android Debug (universal) build task
-git submodule init
-git submodule update
+git submodule update --init
 # glean
 ./scripts/utils/generate_glean.py
 # translations

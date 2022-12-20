@@ -5,8 +5,7 @@
 
 set -e
 
-git submodule sync --recursive
-git submodule update --init --force --recursive --depth=1
+git submodule update --init
 
 
 # Reqs

@@ -5,15 +5,14 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-# switch to repository directory for setup
+# Switch to repository directory for setup
 cd /Volumes/workspace/repository
 
-# make sure submodules are up to date
+# Make sure submodules are up to date
 # should already be done by XCode cloud cloning but just to make sure
-git submodule init
-git submodule update
+git submodule update --init
 
-# add necessary directories to path
+# Add necessary directories to path
 export PATH=/Users/local/.gem/ruby/2.6.0/bin:/Users/local/Library/Python/3.8/bin:$PATH
 
 python3 -m pip install --upgrade pip

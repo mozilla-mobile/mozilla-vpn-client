@@ -50,9 +50,8 @@ cd $PROJECT_HOME
 ln -s ../../fetches/qt_ios/ qt_ios 
 
 
-print Y "Updating submodules..."
-git submodule init || die
-git submodule update || die
+print Y "Refreshing submodules..."
+git submodule update --init || die
 
 print Y "Configuring the build..."
 

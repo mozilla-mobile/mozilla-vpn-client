@@ -6,8 +6,7 @@ set -e
 
 source /opt/emsdk/emsdk_env.sh
 
-git submodule init
-git submodule update
+git submodule update --init
 
 pip3 install -r requirements.txt
 
