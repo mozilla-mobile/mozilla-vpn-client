@@ -1483,7 +1483,7 @@ sample:
       - technical
     notification_emails:
       - brizental@mozilla.com
-    expires: 2022-12-31
+    expires: 2023-12-31
 
   websocket_connected:
     type: event
@@ -1500,7 +1500,7 @@ sample:
       - technical
     notification_emails:
       - brizental@mozilla.com
-    expires: 2022-12-31
+    expires: 2023-12-31
 
   websocket_errored:
     type: event
@@ -1517,7 +1517,7 @@ sample:
       - technical
     notification_emails:
       - brizental@mozilla.com
-    expires: 2022-12-31
+    expires: 2023-12-31
     extra_keys:
       type:
         description: |
@@ -1540,7 +1540,7 @@ sample:
       - technical
     notification_emails:
       - brizental@mozilla.com
-    expires: 2022-12-31
+    expires: 2023-12-31
 
   websocket_close_attempted:
     type: event
@@ -1557,7 +1557,7 @@ sample:
       - technical
     notification_emails:
       - brizental@mozilla.com
-    expires: 2022-12-31
+    expires: 2023-12-31
 
   websocket_closed:
     type: event
@@ -1574,7 +1574,7 @@ sample:
       - technical
     notification_emails:
       - brizental@mozilla.com
-    expires: 2022-12-31
+    expires: 2023-12-31
     extra_keys:
       reason:
         description: |
@@ -1597,7 +1597,7 @@ sample:
       - technical
     notification_emails:
       - brizental@mozilla.com
-    expires: 2022-12-31
+    expires: 2023-12-31
     extra_keys:
       type:
         description: |
@@ -1620,7 +1620,7 @@ sample:
       - technical
     notification_emails:
       - brizental@mozilla.com
-    expires: 2022-12-31
+    expires: 2023-12-31
     extra_keys:
       source:
         description: |
