@@ -8,6 +8,7 @@
 #include <QJsonObject>
 
 #include "glean/generated/metrics.h"
+#include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/subscriptiondata.h"
@@ -38,7 +39,7 @@ void ProfileFlow::setState(State state) {
       mozilla::glean::sample::ProfileFlowStateChangedExtra{
           ._state = QVariant::fromValue(state).toString(),
       });
-  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
       GleanSample::profileFlowStateChanged,
       {{"state", QVariant::fromValue(state).toString()}});
 }

@@ -7,6 +7,7 @@
 #include <QApplication>
 
 #include "glean/generated/metrics.h"
+#include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -232,8 +233,6 @@ void ErrorHandler::errorHandle(ErrorHandler::ErrorType error,
 
   setAlert(alert);
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-
   QVariantMap extraKeys;
   mozilla::glean::sample::ErrorAlertShownExtra extras;
 
@@ -253,16 +252,20 @@ void ErrorHandler::errorHandle(ErrorHandler::ErrorType error,
   }
 
   mozilla::glean::sample::error_alert_shown.record(extras);
-  vpn->recordGleanEventWithExtraKeys(GleanSample::errorAlertShown, extraKeys);
+  GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::errorAlertShown, extraKeys);
 
   // Any error in authenticating state sends to the Initial state.
+  MozillaVPN* vpn = MozillaVPN::instance();
   if (vpn->state() == MozillaVPN::StateAuthenticating) {
     if (alert == GeoIpRestrictionAlert) {
       mozilla::glean::sample::authentication_failure_by_geo.record();
-      emit vpn->recordGleanEvent(GleanSample::authenticationFailureByGeo);
+      emit GleanDeprecated::instance()->recordGleanEvent(
+          GleanSample::authenticationFailureByGeo);
     } else {
       mozilla::glean::sample::authentication_failure.record();
-      emit vpn->recordGleanEvent(GleanSample::authenticationFailure);
+      emit GleanDeprecated::instance()->recordGleanEvent(
+          GleanSample::authenticationFailure);
     }
     vpn->reset(true);
     return;

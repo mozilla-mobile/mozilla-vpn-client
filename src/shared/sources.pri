@@ -8,6 +8,7 @@ SOURCES += \
         $$PWD/curve25519.cpp \
         $$PWD/feature.cpp \
         $$PWD/fontloader.cpp \
+        $$PWD/glean/gleandeprecated.cpp \
         $$PWD/hacl-star/Hacl_Chacha20.c \
         $$PWD/hacl-star/Hacl_Chacha20Poly1305_32.c \
         $$PWD/hacl-star/Hacl_Curve25519_51.c \
@@ -37,6 +38,7 @@ HEADERS += \
         $$PWD/env.h \
         $$PWD/feature.h \
         $$PWD/fontloader.h \
+        $$PWD/glean/gleandeprecated.h \
         $$PWD/hawkauth.h \
         $$PWD/hkdf.h \
         $$PWD/ipaddress.h \

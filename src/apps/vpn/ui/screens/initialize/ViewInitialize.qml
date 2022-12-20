@@ -17,7 +17,7 @@ Item {
 
         labelText: qsTrId("vpn.main.getHelp2")
         onClicked: {
-            VPN.recordGleanEvent("getHelpClickedInitialize");
+            VPNGleanDeprecated.recordGleanEvent("getHelpClickedInitialize")
             Glean.sample.getHelpClickedInitialize.record();
             VPNNavigator.requestScreen(VPNNavigator.ScreenGetHelp);
         }
@@ -54,7 +54,7 @@ Item {
         //% "Learn more"
         labelText: qsTrId("vpn.main.learnMore")
         onClicked: {
-            VPN.recordGleanEvent("onboardingOpened");
+            VPNGleanDeprecated.recordGleanEvent("onboardingOpened");
             Glean.sample.onboardingOpened.record();
             stackview.push("ViewOnboarding.qml");
         }
