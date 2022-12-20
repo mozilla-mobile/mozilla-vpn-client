@@ -15,9 +15,12 @@
 #include <QObject>
 
 struct FfiExtra {
-  const char* const* keys;
-  const char* const* values;
-  int count;
+  std::vector<const char*> keys;
+  std::vector<const char*> values;
+
+  FfiExtra() : keys(0), values(0) {}
+
+  FfiExtra(int keysSize, int valuesSize) : keys(keysSize), values(valuesSize) {}
 };
 
 struct EventMetricExtra {

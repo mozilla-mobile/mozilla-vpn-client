@@ -33,7 +33,6 @@ target_compile_definitions(qml_tests PRIVATE MZ_DUMMY)
 
 # VPN Client source files
 target_sources(qml_tests PRIVATE
-<<<<<<< HEAD
     ${MZ_SOURCE_DIR}/apps/vpn/appconstants.h
     ${MZ_SOURCE_DIR}/apps/vpn/controller.h
     ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.cpp
@@ -108,80 +107,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/settingsholder.h
     ${MZ_SOURCE_DIR}/shared/versionutils.cpp
     ${MZ_SOURCE_DIR}/shared/versionutils.h
-=======
-    ${MVPN_SOURCE_DIR}/apps/vpn/appconstants.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/controller.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/cryptosettings.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/cryptosettings.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/dnspingsender.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/dnspingsender.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/env.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/externalophandler.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/externalophandler.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/filterproxymodel.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/filterproxymodel.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/glean/glean.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/glean/glean.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/glean/generated/metrics.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/glean/generated/pings.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/glean/private/event.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/glean/private/event.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/glean/private/ping.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/glean/private/ping.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/glean/metrictypes.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/models/feature.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/models/feature.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/models/featuremodel.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/models/featuremodel.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/models/server.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/models/server.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/models/subscriptiondata.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/models/subscriptiondata.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/mozillavpn.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/networkmanager.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/networkmanager.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/networkrequest.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/networkrequest.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/settingsholder.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/settingsholder.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/theme.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/theme.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/pinghelper.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/pinghelper.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/pingsender.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/pingsender.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/pingsenderfactory.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/pingsenderfactory.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/platforms/dummy/dummycryptosettings.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/update/updater.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/update/updater.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/update/versionapi.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/update/versionapi.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/update/webupdater.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/update/webupdater.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/qmlengineholder.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/qmlengineholder.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/urlopener.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/urlopener.h
-    ${MVPN_SOURCE_DIR}/shared/constants.h
-    ${MVPN_SOURCE_DIR}/shared/hawkauth.cpp
-    ${MVPN_SOURCE_DIR}/shared/hawkauth.h
-    ${MVPN_SOURCE_DIR}/shared/hkdf.cpp
-    ${MVPN_SOURCE_DIR}/shared/hkdf.h
-    ${MVPN_SOURCE_DIR}/shared/ipaddress.cpp
-    ${MVPN_SOURCE_DIR}/shared/ipaddress.h
-    ${MVPN_SOURCE_DIR}/shared/logger.cpp
-    ${MVPN_SOURCE_DIR}/shared/logger.h
-    ${MVPN_SOURCE_DIR}/shared/loghandler.cpp
-    ${MVPN_SOURCE_DIR}/shared/loghandler.h
-    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c
-    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20Poly1305_32.c
-    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Curve25519_51.c
-    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Poly1305_32.c
->>>>>>> ebd0054a (Fix rebase issues)
 )
 
 # VPN Client UI resources

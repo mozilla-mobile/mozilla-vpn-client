@@ -58,9 +58,7 @@ pub fn from_raw_string_array(
             .zip(values_ptrs.iter())
             .map(|(&k, &v)| {
                 let k = FfiStr::from_raw(k).to_string_fallible()?;
-
                 let v = FfiStr::from_raw(v).to_string_fallible()?;
-
                 Ok((k, v))
             })
             .collect();

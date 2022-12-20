@@ -14,23 +14,22 @@ struct {{ obj.name|Camelize }}Extra : EventMetricExtra {
 {% if obj|attr("allowed_extra_keys_with_types")|length > 0 %}
 struct __DONOTUSE__{{ obj.name|Camelize }}ExtraParser : EventMetricExtraParser {
   virtual FfiExtra fromJsonObject(const QJsonObject& extras, QList<QByteArray>& keepStringsAlive) override {
-    const char* extraKeys[{{ obj|attr("allowed_extra_keys_with_types")|length }}];
-    const char* extraValues[{{ obj|attr("allowed_extra_keys_with_types")|length }}];
-    int count = 0;
+    FfiExtra ffiExtras({{ obj|attr("allowed_extra_keys_with_types")|length }}, {{ obj|attr("allowed_extra_keys_with_types")|length }});
 
+    int count = 0;
     foreach (const QString& key, extras.keys()) {
       auto rawValue = extras.value(key);
 
       if (rawValue.isString()) {
         QByteArray value = rawValue.toString().toUtf8();
         keepStringsAlive.append(value);
-        extraValues[count] = value.constData();
+        ffiExtras.values[count] = value.constData();
       } else if (rawValue.isBool()) {
-        extraValues[count] = rawValue.toBool() ? "true" : "false";
+        ffiExtras.values[count] = rawValue.toBool() ? "true" : "false";
       } else if (rawValue.isDouble()) {
         QByteArray value = QString::number(rawValue.toDouble()).toUtf8();
         keepStringsAlive.append(value);
-        extraValues[count] = value.constData();
+        ffiExtras.values[count] = value.constData();
       } else {
         Q_ASSERT(false);
         // TODO: Record error.
@@ -39,15 +38,13 @@ struct __DONOTUSE__{{ obj.name|Camelize }}ExtraParser : EventMetricExtraParser {
 
       QByteArray k = key.toUtf8();
       keepStringsAlive.append(k);
-      extraKeys[count] = k.constData();
+      ffiExtras.keys[count] = k.constData();
 
       count++;
     }
 
-    FfiExtra ffiExtras;
-    ffiExtras.keys = std::move(extraKeys);
-    ffiExtras.values = std::move(extraValues);
-    ffiExtras.count = count;
+    ffiExtras.values.resize(count);
+    ffiExtras.keys.resize(count);
     return ffiExtras;
   }
 
@@ -57,34 +54,32 @@ struct __DONOTUSE__{{ obj.name|Camelize }}ExtraParser : EventMetricExtraParser {
     // Assert the cast extra is the correct one.
     Q_ASSERT(id == parsedExtras.__PRIVATE__id);
 
-    const char* extraKeys[{{ obj|attr("allowed_extra_keys_with_types")|length }}];
-    const char* extraValues[{{ obj|attr("allowed_extra_keys_with_types")|length }}];
-    int count = 0;
+    FfiExtra ffiExtras({{ obj|attr("allowed_extra_keys_with_types")|length }}, {{ obj|attr("allowed_extra_keys_with_types")|length }});
 
+    int count = 0;
     {% for item, type in obj|attr("allowed_extra_keys_with_types") %}
     if (parsedExtras._{{item|camelize}}.canConvert<{{type|extra_type_name}}>()) {
       {% if type == "string" %}
       QByteArray s = parsedExtras._{{item|camelize}}.toString().toUtf8();
       keepStringsAlive.append(s);
-      extraValues[count] = s.constData();
+      ffiExtras.values[count] = s.constData();
       {% elif type == "boolean" %}
-      extraValues[count] = parsedExtras._{{item|camelize}} ? "true" : "false";
+      ffiExtras.values[count] = parsedExtras._{{item|camelize}} ? "true" : "false";
       {% elif type == "quantity" %}
       QByteArray s = QString::number(parsedExtras._{{item|camelize}}.toInt()).toUtf8();
       keepStringsAlive.append(s);
-      extraValues[count] = s.constData();
+      ffiExtras.values[count] = s.constData();
       {% else %}
 #error "Glean: Invalid extra key type for metric {{obj.category}}.{{obj.name}}, defined in: {{obj.defined_in['filepath']}}:{{obj.defined_in['line']}})"
       {% endif %}
-      extraKeys[count] = "{{item}}";
+      ffiExtras.keys[count] = "{{item}}";
+
       count++;
     }
     {% endfor %}
 
-    FfiExtra ffiExtras;
-    ffiExtras.keys = std::move(extraKeys);
-    ffiExtras.values = std::move(extraValues);
-    ffiExtras.count = count;
+    ffiExtras.values.resize(count);
+    ffiExtras.keys.resize(count);
     return ffiExtras;
   }
 };
