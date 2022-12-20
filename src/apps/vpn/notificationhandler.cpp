@@ -129,26 +129,36 @@ void NotificationHandler::showNotification() {
         }
 
         //% "VPN Switched Servers"
-        title = qtTrId("vpn.systray.statusSwitch.title");
-        //% "Switched from %1, %2 to %3, %4"
-        //: Shown as message body in a notification. %1 and %3 are countries, %2
-        //: and %4 are cities.
-        message = qtTrId("vpn.systray.statusSwtich.message")
-                      .arg(localizedPreviousExitCountryName,
-                           localizedPreviousExitCityName, localizedCountryName,
-                           localizedCityName);
+        // title = qtTrId("vpn.systray.statusSwitch.title");
+        // //% "Switched from %1, %2 to %3, %4"
+        // //: Shown as message body in a notification. %1 and %3 are countries, %2
+        // //: and %4 are cities.
+        // message = qtTrId("vpn.systray.statusSwtich.message")
+        //               .arg(localizedPreviousExitCountryName,
+        //                    localizedPreviousExitCityName, localizedCountryName,
+        //                    localizedCityName);
+
+        // "VPN Switched Servers"
+        L18nStrings* l18nStrings = L18nStrings::instance();
+        title = l18nStrings->t(L18nStrings::NotificationsUnsecuredNetworkTitle);        
+        message = l18nStrings->t(L18nStrings::NotificationsUnsecuredNetworkMessage);
       } else {
         if (!SettingsHolder::instance()->connectionChangeNotification()) {
           // Notifications for ConnectionChange are disabled
           return;
         }
-        //% "VPN Connected"
-        title = qtTrId("vpn.systray.statusConnected.title");
-        //% "Connected to %1, %2"
-        //: Shown as message body in a notification. %1 is the country, %2 is
-        //: the city.
-        message = qtTrId("vpn.systray.statusConnected.message")
-                      .arg(localizedCountryName, localizedCityName);
+
+        // "VPN Connected"
+        L18nStrings* l18nStrings = L18nStrings::instance();
+        title = l18nStrings->t(L18nStrings::NotificationsUnsecuredNetworkTitle);        
+        message = l18nStrings->t(L18nStrings::NotificationsUnsecuredNetworkMessage);
+
+        // title = qtTrId("vpn.systray.statusConnected.title");
+        // //% "Connected to %1, %2"
+        // //: Shown as message body in a notification. %1 is the country, %2 is
+        // //: the city.
+        // message = qtTrId("vpn.systray.statusConnected.message")
+        //               .arg(localizedCountryName, localizedCityName);
       }
       break;
 
@@ -160,13 +170,18 @@ void NotificationHandler::showNotification() {
           return;
         }
 
-        //% "VPN Disconnected"
-        title = qtTrId("vpn.systray.statusDisconnected.title");
-        //% "Disconnected from %1, %2"
-        //: Shown as message body in a notification. %1 is the country, %2 is
-        //: the city.
-        message = qtTrId("vpn.systray.statusDisconnected.message")
-                      .arg(localizedCountryName, localizedCityName);
+        // //% "VPN Disconnected"
+        // title = qtTrId("vpn.systray.statusDisconnected.title");
+        // //% "Disconnected from %1, %2"
+        // //: Shown as message body in a notification. %1 is the country, %2 is
+        // //: the city.
+        // message = qtTrId("vpn.systray.statusDisconnected.message")
+        //               .arg(localizedCountryName, localizedCityName);
+
+        // "VPN Disconnected"
+        L18nStrings* l18nStrings = L18nStrings::instance();
+        title = l18nStrings->t(L18nStrings::NotificationsUnsecuredNetworkTitle);        
+        message = l18nStrings->t(L18nStrings::NotificationsUnsecuredNetworkMessage);
       }
       break;
 
