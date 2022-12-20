@@ -314,6 +314,9 @@ This step needs to be executed each time Xcode updates.
 There are two ways to build the project on iOS, using the legacy Qt build system `qmake`
 and we have also added experimental support for `cmake`.
 
+> **Note**: Due to lack of low level networking support, it is not possible to turn on
+> the VPN from the iOS simulator in XCode. 
+
 #### Building with QMake
 
 1. On iOS, we compile the app using
