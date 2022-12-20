@@ -124,7 +124,16 @@ jobs:
           # Destination path
           path: wasm
 
-      - uses: browser-actions/setup-geckodriver@latest
+      - name: Cache geckodriver
+        id: cache-gecko
+        uses: actions/cache@v3
+        with:
+          path: geckodriver/
+          key: geckodriver-v0.32.0
+
+      - name: Set up gecko driver
+        if: steps.cache-gecko.outputs.cache-hit != 'true'
+        uses: browser-actions/setup-geckodriver@0.32.0
         env:
           token: ${{ secrets.GITHUB_TOKEN }}
           
