@@ -138,3 +138,21 @@ QString LinuxDependencies::gnomeShellVersion() {
   }
   return shellVersion.toString();
 }
+
+// static
+QString LinuxDependencies::kdeFrameworkVersion() {
+  QProcess proc;
+  proc.start("kf5-config", QStringList{"--version"}, QIODeviceBase::ReadOnly);
+  if (!proc.waitForFinished()) {
+    return QString();
+  }
+
+  QByteArray result = proc.readAllStandardOutput();
+  for (const QByteArray& line : result.split('\n')) {
+    if (line.startsWith("KDE Frameworks: ")) {
+      return QString::fromUtf8(line.last(line.size() - 16));
+    }
+  }
+
+  return QString();
+}

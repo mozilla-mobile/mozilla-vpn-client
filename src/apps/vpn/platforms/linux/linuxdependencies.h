@@ -13,6 +13,7 @@ class LinuxDependencies final {
   static QString findCgroupPath(const QString& type);
   static QString findCgroup2Path();
   static QString gnomeShellVersion();
+  static QString kdeFrameworkVersion();
 
  private:
   LinuxDependencies() = default;
