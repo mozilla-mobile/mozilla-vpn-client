@@ -19,6 +19,7 @@ build-options:
 modules:
   - flatpak-pydeps.yaml
   - flatpak-libnm.yaml
+  - flatpak-libsecret.yaml
 
   - name: qt5compat
     buildsystem: cmake
