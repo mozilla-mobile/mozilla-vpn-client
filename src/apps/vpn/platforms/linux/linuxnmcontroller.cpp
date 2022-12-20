@@ -34,7 +34,7 @@ constexpr uint16_t WG_KEEPALIVE_PERIOD = 60;
 constexpr uint16_t WG_EXCLUDE_RULE_PRIO = 100;
 
 namespace {
-Logger logger({LOG_LINUX, LOG_CONTROLLER}, "LinuxNMController");
+Logger logger("LinuxNMController");
 }
 
 LinuxNMController::LinuxNMController() {
