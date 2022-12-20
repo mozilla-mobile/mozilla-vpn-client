@@ -15,6 +15,7 @@
 #include "frontend/navigator.h"
 #include "jni.h"
 #include "logger.h"
+#include "logoutobserver.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 
@@ -42,13 +43,16 @@ AndroidVPNActivity::AndroidVPNActivity() {
     env->RegisterNatives(objectClass, methods,
                          sizeof(methods) / sizeof(methods[0]));
     env->DeleteLocalRef(objectClass);
-
     logger.debug() << "Registered native methods";
   });
 
   QObject::connect(SettingsHolder::instance(),
                    &SettingsHolder::startAtBootChanged, this,
                    &AndroidVPNActivity::startAtBootChanged);
+
+  LogoutObserver* lo = new LogoutObserver(this);
+  QObject::connect(lo, &LogoutObserver::ready, this,
+                   &AndroidVPNActivity::onLogout);
 }
 
 void AndroidVPNActivity::maybeInit() {
@@ -148,4 +152,8 @@ void AndroidVPNActivity::startAtBootChanged() {
   args["startOnBoot"] = SettingsHolder::instance()->startAtBoot();
   QJsonDocument doc(args);
   sendToService(ServiceAction::ACTION_SET_START_ON_BOOT, doc.toJson());
+}
+
+void AndroidVPNActivity::onLogout() {
+  sendToService(ServiceAction::ACTION_CLEAR_STORAGE);
 }

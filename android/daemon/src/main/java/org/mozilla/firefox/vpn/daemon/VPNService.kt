@@ -164,6 +164,16 @@ class VPNService : android.net.VpnService() {
         get() {
             return mConnectionTime
         }
+    var canActivate: Boolean = false
+        get() {
+            if (mConfig != null) {
+                // We have a config in the runtime, can do
+                return true
+            }
+            // Return what we have in the
+            val lastConfString = Prefs.get(this).getString("lastConf", "")
+            return !lastConfString.isNullOrEmpty()
+        }
     var cityname: String = ""
         get() {
             return mCityname
@@ -286,6 +296,12 @@ class VPNService : android.net.VpnService() {
             // putting people off. :)
             mConnectionTime = currentConnectionTime
         }
+    }
+    fun clearConfig() {
+        Prefs.get(this).edit().apply() {
+            putString("lastConf", "")
+        }.apply()
+        mConfig = null
     }
 
     fun turnOff() {

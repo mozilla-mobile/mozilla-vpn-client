@@ -48,6 +48,11 @@ enum ServiceAction {
   ACTION_GLEAN_SET_SOURCE_TAGS = 14,
   // Set startOnBoot pref
   ACTION_SET_START_ON_BOOT = 15,
+  // Reactivate the last connection (unusued from the client)
+  ACTION_REACTIVATE = 16,
+  // Clear the VPN storage
+  ACTION_CLEAR_STORAGE = 17,
+
 };
 typedef enum ServiceAction ServiceAction;
 // Event Types that will be Dispatched after registration
@@ -74,7 +79,7 @@ class AndroidVPNActivity : public QObject {
   static void maybeInit();
   static AndroidVPNActivity* instance();
   static bool handleBackButton(JNIEnv* env, jobject thiz);
-  static void sendToService(ServiceAction type, const QString& data);
+  static void sendToService(ServiceAction type, const QString& data = "");
   static void connectService();
 
  signals:
@@ -89,6 +94,7 @@ class AndroidVPNActivity : public QObject {
  private:
   AndroidVPNActivity();
   void startAtBootChanged();
+  void onLogout();
 
   static void onServiceMessage(JNIEnv* env, jobject thiz, jint messageType,
                                jstring body);

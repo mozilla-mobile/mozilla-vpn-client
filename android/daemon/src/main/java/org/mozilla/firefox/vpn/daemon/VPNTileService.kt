@@ -34,6 +34,9 @@ class VPNTileService : android.service.quicksettings.TileService() {
                     val config = JSONObject(json)
                     mState = if (config.getBoolean("connected")) State.Connected else State.Disconnected
                     mCity = config.getString("city")
+                    if (!config.getBoolean("canActivate", true)) {
+                        mState = State.Unknown
+                    }
                 }
                 VPNServiceBinder.EVENTS.activationError -> {
                     mState = State.Error
@@ -113,7 +116,7 @@ class VPNTileService : android.service.quicksettings.TileService() {
             }
             State.Unknown -> {
                 tile_state = Tile.STATE_UNAVAILABLE
-                tile_state_description = "Not Connected With Service"
+                tile_state_description = "Not Available"
                 tile_subtitle = "Disconnected"
             }
             State.Connected -> {
