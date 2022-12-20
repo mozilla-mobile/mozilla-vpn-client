@@ -9,19 +9,20 @@
 #include <QFileInfo>
 #include <QLocale>
 
+#include "appconstants.h"
 #include "collator.h"
-#include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "settingsholder.h"
 
 #ifdef MZ_IOS
-#  include "platforms/ios/iosutils.h"
+#  include "platforms/ios/ioscommons.h"
 #endif
 
 namespace {
 Logger logger("Localizer");
 Localizer* s_instance = nullptr;
+bool s_forceRTL = false;
 
 struct StaticLanguage {
   QString m_name;
@@ -95,7 +96,7 @@ QString Localizer::systemLanguageCode() const {
   // en-US is always the preferable one even when it should not be. Let's use
   // custom code here.
   QList<QPair<QString, QString>> uiLanguages =
-      parseIOSLanguages(IOSUtils::systemLanguageCodes());
+      parseIOSLanguages(IOSCommons::systemLanguageCodes());
 #else
   QList<QPair<QString, QString>> uiLanguages =
       parseBCP47Languages(QLocale::system().uiLanguages());
@@ -172,7 +173,8 @@ void Localizer::loadLanguagesFromI18n() {
   QDir dir(":/i18n");
   QStringList files = dir.entryList();
   for (const QString& file : files) {
-    if (!file.startsWith("mozillavpn_") || !file.endsWith(".qm")) {
+    if (!file.startsWith(AppConstants::LOCALIZER_FILENAME_PREFIX) ||
+        !file.endsWith(".qm")) {
       continue;
     }
 
@@ -223,7 +225,8 @@ bool Localizer::loadLanguage(const QString& code) {
 
   QLocale::setDefault(locale);
 
-  if (!m_translator.load(locale, "mozillavpn", "_", ":/i18n")) {
+  if (!m_translator.load(locale, AppConstants::LOCALIZER_FILENAME_PREFIX, "_",
+                         ":/i18n")) {
     logger.error() << "Loading the locale failed - code:" << code;
     return false;
   }
@@ -337,47 +340,6 @@ bool Localizer::languageSort(const Localizer::Language& a,
   return collator->compare(a.m_localizedName, b.m_localizedName) < 0;
 }
 
-// static
-void Localizer::macOSInstallerStrings() {
-  //% "Mozilla VPN for macOS"
-  qtTrId("macosinstaller.title");
-
-  //% "Unable to install"
-  qtTrId("macosinstaller.unsupported_version.title");
-
-  //% "Mozilla VPN requires Mac OS X 10.6 or later."
-  qtTrId("macosinstaller.unsupported_version.message");
-
-  //% "Previous Installation Detected"
-  qtTrId("macosinstaller.previous_build.title");
-
-  //% "A previous installation of Mozilla VPN exists at /Applications/Mozilla "
-  //% "VPN.app. This installer will remove the previous installation prior to "
-  //% "installing. Please back up any data before proceeding."
-  qtTrId("macosinstaller.previous_build.message");
-
-  //% "You will now be guided through the installation steps for the Mozilla "
-  //% "VPN. Thank you for choosing your VPN from the trusted pioneer of "
-  //% "internet privacy."
-  qtTrId("macosinstaller.welcome.message1");
-
-  //% "Click “Continue” to continue the setup."
-  qtTrId("macosinstaller.welcome.message2");
-
-  //% "Success!"
-  qtTrId("macosinstaller.conclusion.title");
-
-  //% "The Mozilla VPN is successfully installed. You’re ready to start "
-  //% "taking control of your online privacy."
-  qtTrId("macosinstaller.conclusion.message1_v2");
-
-  //% "Trouble with this installation?"
-  qtTrId("macosinstaller.conclusion.message2");
-
-  //% "Get help."
-  qtTrId("macosinstaller.conclusion.message3");
-}
-
 QString Localizer::languageCodeOrSystem() const {
   QString code = SettingsHolder::instance()->languageCode();
   if (!code.isEmpty()) {
@@ -473,8 +435,7 @@ QString Localizer::majorLanguageCode(const QString& aCode) {
 }
 
 bool Localizer::isRightToLeft() const {
-  return InspectorHandler::forceRTL() ||
-         m_locale.textDirection() == Qt::RightToLeft;
+  return s_forceRTL || m_locale.textDirection() == Qt::RightToLeft;
 }
 
 QString Localizer::findLanguageCode(const QString& languageCode,
@@ -500,3 +461,6 @@ QString Localizer::findLanguageCode(const QString& languageCode,
 
   return languageCodeWithoutCountry;
 }
+
+// static
+void Localizer::forceRTL() { s_forceRTL = true; }

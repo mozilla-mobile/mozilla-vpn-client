@@ -35,7 +35,6 @@ SOURCES += \
         apps/vpn/captiveportal/captiveportalnotifier.cpp \
         apps/vpn/captiveportal/captiveportalrequest.cpp \
         apps/vpn/captiveportal/captiveportalrequesttask.cpp \
-        apps/vpn/collator.cpp \
         apps/vpn/command.cpp \
         apps/vpn/commandlineparser.cpp \
         apps/vpn/commands/commandactivate.cpp \
@@ -76,7 +75,6 @@ SOURCES += \
         apps/vpn/inspector/inspectorwebsocketconnection.cpp \
         apps/vpn/inspector/inspectorwebsocketserver.cpp \
         apps/vpn/ipaddresslookup.cpp \
-        apps/vpn/localizer.cpp \
         apps/vpn/logoutobserver.cpp \
         apps/vpn/main.cpp \
         apps/vpn/models/device.cpp \
@@ -113,7 +111,6 @@ SOURCES += \
         apps/vpn/releasemonitor.cpp \
         apps/vpn/serveri18n.cpp \
         apps/vpn/serverlatency.cpp \
-        apps/vpn/signature.cpp \
         apps/vpn/statusicon.cpp \
         apps/vpn/tasks/account/taskaccount.cpp \
         apps/vpn/tasks/adddevice/taskadddevice.cpp \
@@ -137,7 +134,6 @@ SOURCES += \
         apps/vpn/tasks/sendfeedback/tasksendfeedback.cpp \
         apps/vpn/tasks/servers/taskservers.cpp \
         apps/vpn/telemetry.cpp \
-        apps/vpn/theme.cpp \
         apps/vpn/tutorial/tutorial.cpp \
         apps/vpn/tutorial/tutorialstep.cpp \
         apps/vpn/tutorial/tutorialstepbefore.cpp \
@@ -186,7 +182,6 @@ HEADERS += \
         apps/vpn/captiveportal/captiveportalnotifier.h \
         apps/vpn/captiveportal/captiveportalrequest.h \
         apps/vpn/captiveportal/captiveportalrequesttask.h \
-        apps/vpn/collator.h \
         apps/vpn/command.h \
         apps/vpn/commandlineparser.h \
         apps/vpn/commands/commandactivate.h \
@@ -266,7 +261,6 @@ HEADERS += \
         apps/vpn/releasemonitor.h \
         apps/vpn/serveri18n.h \
         apps/vpn/serverlatency.h \
-        apps/vpn/signature.h \
         apps/vpn/statusicon.h \
         apps/vpn/tasks/account/taskaccount.h \
         apps/vpn/tasks/adddevice/taskadddevice.h \
@@ -290,7 +284,6 @@ HEADERS += \
         apps/vpn/tasks/sendfeedback/tasksendfeedback.h \
         apps/vpn/tasks/servers/taskservers.h \
         apps/vpn/telemetry.h \
-        apps/vpn/theme.h \
         apps/vpn/tutorial/tutorial.h \
         apps/vpn/tutorial/tutorialstep.h \
         apps/vpn/tutorial/tutorialstepbefore.h \

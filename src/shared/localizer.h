@@ -68,6 +68,8 @@ class Localizer final : public QAbstractListModel {
   static QList<QPair<QString, QString>> parseIOSLanguages(
       const QStringList& languages);
 
+  static void forceRTL();
+
   // QAbstractListModel methods
 
   QHash<int, QByteArray> roleNames() const override;
@@ -92,10 +94,6 @@ class Localizer final : public QAbstractListModel {
   bool loadLanguage(const QString& code);
   QString findLanguageCode(const QString& languageCode,
                            const QString& countryCode) const;
-
-  // This method is not used. It exists just to add the installer strings into
-  // the QT language files.
-  static void macOSInstallerStrings();
 
   static QString retrieveCurrencySymbolFallback(const QString& currencyIso4217,
                                                 const QLocale& currentLocale);

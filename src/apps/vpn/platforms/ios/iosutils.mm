@@ -5,7 +5,6 @@
 #include "iosutils.h"
 #include "logger.h"
 #include "qmlengineholder.h"
-#include "theme.h"
 
 #include <QDateTime>
 #include <QString>
@@ -96,67 +95,4 @@ void IOSUtils::shareLogs(const QString& logs) {
   }
   [qtController presentViewController:activityViewController animated:YES completion:nil];
   [activityViewController release];
-}
-
-// static
-int IOSUtils::compareStrings(const QString& a, const QString& b) {
-  NSString* aNS = a.toNSString();
-  NSString* bNS = b.toNSString();
-  NSComparisonResult result = [aNS compare:bNS];
-  switch (result) {
-    case NSOrderedAscending:
-      return -1;
-    case NSOrderedDescending:
-      return 1;
-    case NSOrderedSame:
-      return 0;
-    default:
-      Q_ASSERT(false);
-      return -1;
-  }
-}
-
-@interface StatusBarModifierViewController : UIViewController
-@property (nonatomic, assign) UIStatusBarStyle preferredStatusBarStyle;
-@end
-
-void IOSUtils::setStatusBarTextColor(Theme::StatusBarTextColor color) {
-    StatusBarModifierViewController* rootViewController = static_cast<StatusBarModifierViewController *>([[UIApplication sharedApplication].windows[0] rootViewController]);
-    if (color == Theme::StatusBarTextColorLight) {
-        rootViewController.preferredStatusBarStyle = UIStatusBarStyleLightContent;
-    } else {
-        rootViewController.preferredStatusBarStyle = UIStatusBarStyleDarkContent;
-    }
-    [rootViewController setNeedsStatusBarAppearanceUpdate];
-}
-
-// static
-bool IOSUtils::verifySignature(const QByteArray& publicKey, const QByteArray& content,
-                               const QByteArray& signature) {
-  NSDictionary* attributes = @{
-    (__bridge NSString*)kSecAttrKeyType : (__bridge NSString*)kSecAttrKeyTypeRSA,
-    (__bridge NSString*)kSecAttrKeyClass : (__bridge NSString*)kSecAttrKeyClassPublic
-  };
-  SecKeyRef publicKeyRef = SecKeyCreateWithData((CFDataRef)publicKey.toNSData(),
-                                                (__bridge CFDictionaryRef)attributes, nullptr);
-
-  if (SecKeyVerifySignature(publicKeyRef, kSecKeyAlgorithmRSASignatureMessagePKCS1v15SHA256,
-                            (CFDataRef)content.toNSData(), (CFDataRef)signature.toNSData(),
-                            nullptr)) {
-    return true;
-  }
-
-  logger.warning() << "Signature verification failed";
-  return false;
-}
-
-// static
-QStringList IOSUtils::systemLanguageCodes() {
-  NSArray<NSString*>* languages = [NSLocale preferredLanguages];
-
-  QStringList codes;
-  for (NSString* language in languages) {
-    codes.append(QString::fromNSString(language));
-  }
-  return codes;
 }

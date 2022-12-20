@@ -4,4 +4,6 @@
 
 target_sources(shared-sources INTERFACE
      ${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/macos/macoscryptosettings.mm
+     ${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/ios/ioscommons.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/ios/ioscommons.mm
 )
