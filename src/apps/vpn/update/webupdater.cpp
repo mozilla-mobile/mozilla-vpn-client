@@ -4,12 +4,12 @@
 
 #include "webupdater.h"
 
+#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "task.h"
 #include "telemetry/gleansample.h"
-#include "glean/generated/metrics.h"
 #include "urlopener.h"
 
 namespace {

@@ -7,6 +7,7 @@
 #include <QJsonObject>
 #include <QMetaEnum>
 
+#include "glean/generated/metrics.h"
 #include "l18nstrings.h"
 #include "leakdetector.h"
 #include "localizer.h"
@@ -15,7 +16,6 @@
 #include "notificationhandler.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
-#include "glean/generated/metrics.h"
 
 namespace {
 Logger logger("AddonMessage");

@@ -5,11 +5,11 @@
 #include "telemetry.h"
 
 #include "appconstants.h"
+#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "telemetry/gleansample.h"
-#include "glean/generated/metrics.h"
 
 constexpr int CONNECTION_STABILITY_MSEC = 45000;
 

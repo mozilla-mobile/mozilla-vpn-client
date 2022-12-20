@@ -8,12 +8,12 @@
 #include <QDateTime>
 #include <QRandomGenerator>
 
+#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/server.h"
 #include "mozillavpn.h"
 #include "telemetry/gleansample.h"
-#include "glean/generated/metrics.h"
 
 // In seconds, the time between pings while the VPN is deactivated.
 constexpr uint32_t PING_INTERVAL_IDLE_SEC = 15;
