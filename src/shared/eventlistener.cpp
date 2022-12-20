@@ -4,6 +4,7 @@
 
 #include "eventlistener.h"
 
+#include <QDir>
 #include <QFileInfo>
 #include <QLocalSocket>
 
