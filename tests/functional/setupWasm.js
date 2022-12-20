@@ -19,7 +19,7 @@ const vpnWasm = require('./helperWasm.js');
 const fxaServer = require('./servers/fxa.js');
 const guardian = require('./servers/guardian.js');
 const addonServer = require('./servers/addon.js');
-const networkBenchmark = require('./networkBenchmark.js');
+const networkBenchmark = require('./servers/networkBenchmark.js');
 const wasm = require('./wasm.js');
 
 const {Builder, By, Key, until} = require('selenium-webdriver');

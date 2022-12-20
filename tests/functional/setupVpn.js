@@ -23,7 +23,7 @@ const vpnWS = require('./helperWS.js');
 const fxaServer = require('./servers/fxa.js');
 const guardian = require('./servers/guardian.js');
 const addonServer = require('./servers/addon.js');
-const networkBenchmark = require('./networkBenchmark.js');
+const networkBenchmark = require('./servers/networkBenchmark.js');
 
 const app = process.env.MVPN_BIN;
 let vpnProcess = null;

@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const Server = require('./server.js');
-const constants = require('./constants.js');
+const constants = require('../constants.js');
 
 // Mock server for VPN Network Benchmark:
 // https://github.com/mozilla-services/vpn-network-benchmark
