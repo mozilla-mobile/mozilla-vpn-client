@@ -4,14 +4,17 @@
 ---
 task-defaults:
     treeherder:
-            symbol: B
-            kind: build
-            tier: 1
+        symbol: B
+        kind: build
+        tier: 1
     worker-type: b-linux
-    requires-level: 1
     worker:
-          max-run-time: 3600
-          chain-of-trust: true
+        max-run-time: 3600
+        chain-of-trust: true
+        artifacts:
+            - type: directory
+              name: public/build
+              path: /builds/worker/artifacts
     run:
           using: run-task
           use-caches: true
@@ -22,9 +25,6 @@ linux/source:
         platform: linux/source
     worker:
         docker-image: {in-tree: build}
-    release-artifacts:
-        # release-artifacts expects file to be in /builds/worker/artifacts/
-        - mozillavpn-sources.tar.gz
     run:
         cwd: '{checkout}'
         command: >-
@@ -42,8 +42,6 @@ linux/bionic:
         build: build-linux/source
     worker:
         docker-image: {in-tree: linux-build-bionic}
-    release-artifacts:
-        - mozillavpn-bionic.tar.gz
     run:
         command: /builds/worker/linux.sh --ppa ppa:okirby/qt6-backports
 
@@ -58,8 +56,6 @@ linux/focal:
         build: build-linux/source
     worker:
         docker-image: {in-tree: linux-build-focal}
-    release-artifacts:
-        - mozillavpn-focal.tar.gz
     run:
         command: /builds/worker/linux.sh --ppa ppa:okirby/qt6-backports
 
@@ -74,8 +70,6 @@ linux/jammy:
         build: build-linux/source
     worker:
         docker-image: {in-tree: linux-build-jammy}
-    release-artifacts:
-        - mozillavpn-jammy.tar.gz
     run:
         command: /builds/worker/linux.sh
 
@@ -90,7 +84,5 @@ linux/kinetic:
         build: build-linux/source
     worker:
         docker-image: {in-tree: linux-build-kinetic}
-    release-artifacts:
-        - mozillavpn-kinetic.tar.gz
     run:
         command: /builds/worker/linux.sh
