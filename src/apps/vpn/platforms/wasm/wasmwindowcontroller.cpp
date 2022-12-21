@@ -25,7 +25,7 @@ WasmWindowController* s_instance = nullptr;
 }  // namespace
 
 WasmWindowController::WasmWindowController() {
-  MVPN_COUNT_CTOR(WasmWindowController);
+  MZ_COUNT_CTOR(WasmWindowController);
   Q_ASSERT(s_instance == nullptr);
   s_instance = this;
 
@@ -102,7 +102,7 @@ WasmWindowController::WasmWindowController() {
 }
 
 WasmWindowController::~WasmWindowController() {
-  MVPN_COUNT_DTOR(WasmWindowController);
+  MZ_COUNT_DTOR(WasmWindowController);
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;
 }

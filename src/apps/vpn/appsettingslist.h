@@ -2,32 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// 1. Define the SETTING macro
-// 2. include this file
-// 3. undefine the SETTING macro
-
-#if defined(_MSVC_TRADITIONAL) && _MSVC_TRADITIONAL
-#  error No supported
-#endif
-
-#define SETTING_BOOL(getter, ...) SETTING(bool, toBool, getter, __VA_ARGS__)
-
-#define SETTING_BYTEARRAY(getter, ...) \
-  SETTING(QByteArray, toByteArray, getter, __VA_ARGS__)
-
-#define SETTING_DATETIME(getter, ...) \
-  SETTING(QDateTime, toDateTime, getter, __VA_ARGS__)
-
-#define SETTING_INT(getter, ...) SETTING(int, toInt, getter, __VA_ARGS__)
-
-#define SETTING_INT64(getter, ...) \
-  SETTING(qint64, toLongLong, getter, __VA_ARGS__)
-
-#define SETTING_STRING(getter, ...) \
-  SETTING(QString, toString, getter, __VA_ARGS__)
-
-#define SETTING_STRINGLIST(getter, ...) \
-  SETTING(QStringList, toStringList, getter, __VA_ARGS__)
+// NOTE! Do not include this file directly. Include settingslist.h instead.
 
 // Please! Keep the alphabetic order!
 
@@ -265,16 +240,6 @@ SETTING_STRING(languageCode,        // getter
                false                // remove when reset
 )
 
-SETTING_BOOL(localNetworkAccess,        // getter
-             setLocalNetworkAccess,     // setter
-             removeLocalNetworkAccess,  // remover
-             hasLocalNetworkAccess,     // has
-             "localNetworkAccess",      // key
-             false,                     // default value
-             true,                      // user setting
-             false                      // remove when reset
-)
-
 SETTING_STRINGLIST(missingApps,        // getter
                    setMissingApps,     // setter
                    removeMissingApps,  // remover
@@ -423,9 +388,9 @@ SETTING_STRING(
     hasStagingServerAddress,     // has
     "stagingServerAddress",      // key
     Constants::envOrDefault("MVPN_API_BASE_URL",
-                            Constants::API_STAGING_URL),  // default value
-    false,                                                // user setting
-    false                                                 // remove when reset
+                            AppConstants::API_STAGING_URL),  // default value
+    false,                                                   // user setting
+    false  // remove when reset
 )
 
 SETTING_BOOL(stagingServer,        // getter
@@ -496,16 +461,6 @@ SETTING_STRING(token,        // getter
                "",           // default value
                false,        // user setting
                true          // remove when reset
-)
-
-SETTING_BOOL(tunnelPort53,        // getter
-             setTunnelPort53,     // setter
-             removeTunnelPort53,  // remover
-             hasTunnelPort53,     // has
-             "tunnelPort53",      // key
-             false,               // default value
-             true,                // user setting
-             false                // remove when reset
 )
 
 SETTING_BOOL(unsecuredNetworkAlert,        // getter
@@ -611,7 +566,7 @@ SETTING_BOOL(adjustActivatable,        // getter
 )
 #endif
 
-#if defined(MVPN_IOS)
+#if defined(MZ_IOS)
 SETTING_STRINGLIST(subscriptionTransactions,        // getter
                    setSubscriptionTransactions,     // setter
                    removeSubscriptionTransactions,  // remover

@@ -4,11 +4,10 @@
 
 #include "purchaseiaphandler.h"
 
-#include "constants.h"
+#include "feature.h"
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/feature.h"
 
 namespace {
 Logger logger("PurchaseIAPHandler");
@@ -23,14 +22,14 @@ PurchaseIAPHandler* PurchaseIAPHandler::instance() {
 
 PurchaseIAPHandler::PurchaseIAPHandler(QObject* parent)
     : PurchaseHandler(parent) {
-  MVPN_COUNT_CTOR(PurchaseIAPHandler);
+  MZ_COUNT_CTOR(PurchaseIAPHandler);
 
   Q_ASSERT(!s_instance);
   s_instance = this;
 }
 
 PurchaseIAPHandler::~PurchaseIAPHandler() {
-  MVPN_COUNT_DTOR(PurchaseIAPHandler);
+  MZ_COUNT_DTOR(PurchaseIAPHandler);
 
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;
@@ -56,7 +55,7 @@ void PurchaseIAPHandler::startSubscription(const QString& productIdentifier) {
 void PurchaseIAPHandler::startRestoreSubscription() {
   logger.debug() << "Starting the restore of the subscription";
 
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
   nativeRestoreSubscription();
 #else
   logger.error() << "Restore not implemented!";

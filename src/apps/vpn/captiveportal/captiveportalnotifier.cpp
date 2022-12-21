@@ -4,7 +4,6 @@
 
 #include "captiveportalnotifier.h"
 
-#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "notificationhandler.h"
@@ -16,7 +15,7 @@ Logger logger("CaptivePortalNotifier");
 
 CaptivePortalNotifier::CaptivePortalNotifier(QObject* parent)
     : QObject(parent) {
-  MVPN_COUNT_CTOR(CaptivePortalNotifier);
+  MZ_COUNT_CTOR(CaptivePortalNotifier);
 
   connect(NotificationHandler::instance(),
           &NotificationHandler::notificationClicked, this,
@@ -24,7 +23,7 @@ CaptivePortalNotifier::CaptivePortalNotifier(QObject* parent)
 }
 
 CaptivePortalNotifier::~CaptivePortalNotifier() {
-  MVPN_COUNT_DTOR(CaptivePortalNotifier);
+  MZ_COUNT_DTOR(CaptivePortalNotifier);
 }
 
 void CaptivePortalNotifier::notifyCaptivePortalBlock() {

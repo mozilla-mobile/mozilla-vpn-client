@@ -69,7 +69,7 @@ void NetfilterLogger(int level, const char* msg) {
 
 WireguardUtilsLinux::WireguardUtilsLinux(QObject* parent)
     : WireguardUtils(parent) {
-  MVPN_COUNT_CTOR(WireguardUtilsLinux);
+  MZ_COUNT_CTOR(WireguardUtilsLinux);
   NetfilterSetLogger((GoUintptr)&NetfilterLogger);
   NetfilterCreateTables();
 
@@ -118,7 +118,7 @@ WireguardUtilsLinux::WireguardUtilsLinux(QObject* parent)
 }
 
 WireguardUtilsLinux::~WireguardUtilsLinux() {
-  MVPN_COUNT_DTOR(WireguardUtilsLinux);
+  MZ_COUNT_DTOR(WireguardUtilsLinux);
   NetfilterRemoveTables();
   if (m_nlsock >= 0) {
     close(m_nlsock);

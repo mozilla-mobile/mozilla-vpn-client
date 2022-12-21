@@ -33,7 +33,7 @@ Logger logger("LocalSocketController");
 }
 
 LocalSocketController::LocalSocketController() {
-  MVPN_COUNT_CTOR(LocalSocketController);
+  MZ_COUNT_CTOR(LocalSocketController);
 
   m_socket = new QLocalSocket(this);
   connect(m_socket, &QLocalSocket::connected, this,
@@ -51,7 +51,7 @@ LocalSocketController::LocalSocketController() {
 }
 
 LocalSocketController::~LocalSocketController() {
-  MVPN_COUNT_DTOR(LocalSocketController);
+  MZ_COUNT_DTOR(LocalSocketController);
 }
 
 void LocalSocketController::errorOccurred(
@@ -95,7 +95,7 @@ void LocalSocketController::initialize(const Device* device, const Keys* keys) {
 void LocalSocketController::initializeInternal() {
   m_daemonState = eInitializing;
 
-#ifdef MVPN_WINDOWS
+#ifdef MZ_WINDOWS
   QString path = "\\\\.\\pipe\\mozillavpn";
 #else
   QString path = "/var/run/mozillavpn/daemon.socket";
@@ -116,7 +116,7 @@ void LocalSocketController::daemonConnected() {
 
 void LocalSocketController::activate(const HopConnection& hop,
                                      const Device* device, const Keys* keys,
-                                     Reason reason) {
+                                     Controller::Reason reason) {
   Q_UNUSED(reason);
 
   QJsonObject json;
@@ -161,7 +161,7 @@ void LocalSocketController::activate(const HopConnection& hop,
   write(json);
 }
 
-void LocalSocketController::deactivate(Reason reason) {
+void LocalSocketController::deactivate(Controller::Reason reason) {
   logger.debug() << "Deactivating";
 
   if (m_daemonState != eReady) {
@@ -170,7 +170,7 @@ void LocalSocketController::deactivate(Reason reason) {
     return;
   }
 
-  if (reason == ReasonSwitching) {
+  if (reason == Controller::ReasonSwitching) {
     logger.debug() << "No disconnect for quick server switching";
     emit disconnected();
     return;

@@ -4,13 +4,14 @@
 
 #include "connectionbenchmark.h"
 
+#include "appconstants.h"
 #include "benchmarktaskping.h"
 #include "benchmarktasktransfer.h"
 #include "connectionhealth.h"
 #include "controller.h"
+#include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/feature.h"
 #include "mozillavpn.h"
 #include "taskscheduler.h"
 
@@ -19,11 +20,11 @@ Logger logger("ConnectionBenchmark");
 }
 
 ConnectionBenchmark::ConnectionBenchmark() {
-  MVPN_COUNT_CTOR(ConnectionBenchmark);
+  MZ_COUNT_CTOR(ConnectionBenchmark);
 }
 
 ConnectionBenchmark::~ConnectionBenchmark() {
-  MVPN_COUNT_DTOR(ConnectionBenchmark);
+  MZ_COUNT_DTOR(ConnectionBenchmark);
 }
 
 void ConnectionBenchmark::initialize() {
@@ -42,9 +43,9 @@ void ConnectionBenchmark::setConnectionSpeed() {
   logger.debug() << "Set connection speed";
 
   // TODO: Take uploadBps for calculating speed into account
-  if (m_downloadBps >= Constants::BENCHMARK_THRESHOLD_SPEED_FAST) {
+  if (m_downloadBps >= AppConstants::BENCHMARK_THRESHOLD_SPEED_FAST) {
     m_speed = SpeedFast;
-  } else if (m_downloadBps >= Constants::BENCHMARK_THRESHOLD_SPEED_MEDIUM) {
+  } else if (m_downloadBps >= AppConstants::BENCHMARK_THRESHOLD_SPEED_MEDIUM) {
     m_speed = SpeedMedium;
   } else {
     m_speed = SpeedSlow;

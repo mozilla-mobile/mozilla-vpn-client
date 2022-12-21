@@ -27,8 +27,8 @@ const {Builder, By, Key, until} = require('selenium-webdriver');
 let driver;
 
 async function startAndConnect() {
-  await driver.get(process.env['MVPN_WASM_URL']);
-  await vpn.connect(vpnWasm, {url: process.env['MVPN_WASM_URL'], driver});
+  await driver.get(process.env['MZ_WASM_URL']);
+  await vpn.connect(vpnWasm, {url: process.env['MZ_WASM_URL'], driver});
 }
 
 exports.mochaHooks = {
@@ -41,7 +41,7 @@ exports.mochaHooks = {
     u.searchParams.set('benchmark',
         `http://localhost:${networkBenchmark.start()}`);
 
-    process.env['MVPN_WASM_URL'] = u.toString();
+    process.env['MZ_WASM_URL'] = u.toString();
     process.env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';
 
     driver = await new Builder().forBrowser('firefox').build();

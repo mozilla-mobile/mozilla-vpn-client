@@ -110,7 +110,7 @@ VPNFlickable {
                         id: ipInput
 
                         enabled: (VPNSettings.dnsProvider === VPNSettings.Custom) && vpnIsOff
-                        _placeholderText: VPNSettings.placeholderUserDNS
+                        _placeholderText: VPN.placeholderUserDNS
                         text: ""
                         Layout.fillWidth: true
                         Layout.preferredHeight: 40

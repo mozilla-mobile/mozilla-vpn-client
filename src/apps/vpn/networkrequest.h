@@ -143,16 +143,16 @@ class NetworkRequest final : public QObject {
 
   static NetworkRequest* createForProducts(Task* parent);
 
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
   static NetworkRequest* createForIOSPurchase(Task* parent,
                                               const QString& receipt);
 #endif
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
   static NetworkRequest* createForAndroidPurchase(Task* parent,
                                                   const QString& sku,
                                                   const QString& purchaseToken);
 #endif
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
   static NetworkRequest* createForWasmPurchase(Task* parent,
                                                const QString& productId);
 #endif
@@ -221,7 +221,7 @@ class NetworkRequest final : public QObject {
 
   QNetworkReply* m_reply = nullptr;
   int m_expectedStatusCode = 0;
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
   // In wasm network request, m_reply is null. So we need to store the "status
   // code" in a variable member.
   int m_finalStatusCode = 0;

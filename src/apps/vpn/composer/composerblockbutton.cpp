@@ -82,11 +82,11 @@ ComposerBlockButton::ComposerBlockButton(Composer* composer, Addon* addon,
       m_addon(addon),
       m_style(style),
       m_function(function) {
-  MVPN_COUNT_CTOR(ComposerBlockButton);
+  MZ_COUNT_CTOR(ComposerBlockButton);
 }
 
 ComposerBlockButton::~ComposerBlockButton() {
-  MVPN_COUNT_DTOR(ComposerBlockButton);
+  MZ_COUNT_DTOR(ComposerBlockButton);
 }
 
 void ComposerBlockButton::click() const {

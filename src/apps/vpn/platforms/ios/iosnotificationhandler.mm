@@ -43,10 +43,10 @@
 @end
 
 IOSNotificationHandler::IOSNotificationHandler(QObject* parent) : NotificationHandler(parent) {
-  MVPN_COUNT_CTOR(IOSNotificationHandler);
+  MZ_COUNT_CTOR(IOSNotificationHandler);
 }
 
-IOSNotificationHandler::~IOSNotificationHandler() { MVPN_COUNT_DTOR(IOSNotificationHandler); }
+IOSNotificationHandler::~IOSNotificationHandler() { MZ_COUNT_DTOR(IOSNotificationHandler); }
 
 void IOSNotificationHandler::initialize() {
   UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];

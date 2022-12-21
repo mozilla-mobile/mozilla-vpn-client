@@ -8,21 +8,21 @@
 #include <QUrl>
 #include <QUrlQuery>
 
-#include "constants.h"
+#include "appconstants.h"
+#include "feature.h"
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/feature.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
 
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
 constexpr const char* GOOGLE_PLAYSTORE_URL =
     "https://play.google.com/store/apps/details?id=org.mozilla.firefox.vpn";
 #endif
 
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
 constexpr const char* APPLE_STORE_URL =
     "https://apps.apple.com/us/app/mozilla-vpn-secure-private/id1489407738";
 constexpr const char* APPLE_STORE_REVIEW_URL =
@@ -43,10 +43,10 @@ UrlOpener* UrlOpener::instance() {
 }
 
 UrlOpener::UrlOpener(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(UrlOpener);
+  MZ_COUNT_CTOR(UrlOpener);
 }
 
-UrlOpener::~UrlOpener() { MVPN_COUNT_DTOR(UrlOpener); }
+UrlOpener::~UrlOpener() { MZ_COUNT_DTOR(UrlOpener); }
 
 void UrlOpener::openLink(LinkType linkType) {
   logger.debug() << "Opening link: " << linkType;
@@ -56,7 +56,7 @@ void UrlOpener::openLink(LinkType linkType) {
 
   switch (linkType) {
     case LinkAccount:
-      url = Constants::fxaUrl();
+      url = AppConstants::fxaUrl();
       addEmailAddress = true;
       break;
 
@@ -66,21 +66,20 @@ void UrlOpener::openLink(LinkType linkType) {
       break;
 
     case LinkForgotPassword:
-      url = Constants::fxaUrl();
+      url = AppConstants::fxaUrl();
       url.append("/reset_password");
       break;
 
-    case LinkHelpSupport:
-      url = NetworkRequest::apiBaseUrl();
-      url.append("/r/vpn/support");
+    case LinkSumo:
+      url = AppConstants::MOZILLA_VPN_SUMO_URL;
       break;
 
     case LinkLeaveReview:
       Q_ASSERT(Feature::get(Feature::Feature_appReview)->isSupported());
       url =
-#if defined(MVPN_IOS)
+#if defined(MZ_IOS)
           APPLE_STORE_REVIEW_URL;
-#elif defined(MVPN_ANDROID)
+#elif defined(MZ_ANDROID)
           GOOGLE_PLAYSTORE_URL;
 #else
           "";
@@ -98,9 +97,9 @@ void UrlOpener::openLink(LinkType linkType) {
       break;
 
     case LinkUpdate:
-#if defined(MVPN_IOS)
+#if defined(MZ_IOS)
       url = APPLE_STORE_URL;
-#elif defined(MVPN_ANDROID)
+#elif defined(MZ_ANDROID)
       url = GOOGLE_PLAYSTORE_URL;
 #else
       url = NetworkRequest::apiBaseUrl();
@@ -131,26 +130,26 @@ void UrlOpener::openLink(LinkType linkType) {
       break;
 
     case LinkRelayPremium:
-      url = Constants::relayUrl();
+      url = AppConstants::relayUrl();
       url.append("/premium");
       break;
 
     case LinkSubscriptionFxa:
-      url = Constants::fxaUrl();
+      url = AppConstants::fxaUrl();
       url.append("/subscriptions");
       break;
 
     case LinkSubscriptionIapApple:
-      url = Constants::APPLE_SUBSCRIPTIONS_URL;
+      url = AppConstants::APPLE_SUBSCRIPTIONS_URL;
       break;
 
     case LinkSubscriptionIapGoogle:
-      url = Constants::GOOGLE_SUBSCRIPTIONS_URL;
+      url = AppConstants::GOOGLE_SUBSCRIPTIONS_URL;
       break;
 
     case LinkUpgradeToBundle:
-      url = Constants::inProduction() ? Constants::API_PRODUCTION_URL
-                                      : Constants::API_STAGING_URL;
+      url = Constants::inProduction() ? AppConstants::API_PRODUCTION_URL
+                                      : AppConstants::API_STAGING_URL;
       url.append("/r/vpn/upgradeToPrivacyBundle");
       break;
 

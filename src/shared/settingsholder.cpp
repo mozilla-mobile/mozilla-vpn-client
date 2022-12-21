@@ -9,13 +9,12 @@
 #include <QSettings>
 #include <QStandardPaths>
 
-#include "constants.h"
+#include "appconstants.h"
 #include "cryptosettings.h"
 #include "env.h"
+#include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/feature.h"
-#include "telemetry/gleansample.h"
 
 namespace {
 
@@ -48,14 +47,14 @@ SettingsHolder::SettingsHolder()
 #else
                  "mozilla_testing",
 #endif
-                 "vpn") {
-  MVPN_COUNT_CTOR(SettingsHolder);
+                 AppConstants::SETTINGS_APP_NAME) {
+  MZ_COUNT_CTOR(SettingsHolder);
 
   // The location changes after the initialization of the app. Let's store the
   // journal file-name in the CTOR to avoid race-conditions.
   m_settingsJournalFileName =
       QDir(
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
           // https://wiki.qt.io/Qt_for_WebAssembly#Files_and_local_file_system_access
           "/"
 #elif defined(UNIT_TEST)
@@ -106,7 +105,7 @@ SettingsHolder::SettingsHolder()
 }
 
 SettingsHolder::~SettingsHolder() {
-  MVPN_COUNT_DTOR(SettingsHolder);
+  MZ_COUNT_DTOR(SettingsHolder);
 
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;
@@ -208,15 +207,6 @@ QString SettingsHolder::getReport() const {
 
 #include "settingslist.h"
 #undef SETTING
-
-QString SettingsHolder::placeholderUserDNS() const {
-  return Constants::PLACEHOLDER_USER_DNS;
-}
-
-void SettingsHolder::removeEntryServer() {
-  m_settings.remove("entryServer/countryCode");
-  m_settings.remove("entryServer/city");
-}
 
 // Addon specific
 

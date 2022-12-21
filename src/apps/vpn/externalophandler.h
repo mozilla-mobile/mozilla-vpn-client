@@ -29,7 +29,7 @@ class ExternalOpHandler final : public QObject {
 
   static ExternalOpHandler* instance();
 
-  void request(Op op);
+  [[nodiscard]] bool request(Op op);
 
   void registerBlocker(Blocker* blocker);
   void unregisterBlocker(Blocker* blocker);

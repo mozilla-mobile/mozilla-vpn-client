@@ -13,9 +13,9 @@ namespace {
 Logger logger("LicenseModel");
 }
 
-LicenseModel::LicenseModel() { MVPN_COUNT_CTOR(LicenseModel); }
+LicenseModel::LicenseModel() { MZ_COUNT_CTOR(LicenseModel); }
 
-LicenseModel::~LicenseModel() { MVPN_COUNT_DTOR(LicenseModel); }
+LicenseModel::~LicenseModel() { MZ_COUNT_DTOR(LicenseModel); }
 
 QHash<int, QByteArray> LicenseModel::roleNames() const {
   QHash<int, QByteArray> roles;

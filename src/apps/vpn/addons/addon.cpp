@@ -23,14 +23,17 @@
 #include "conditionwatchers/addonconditionwatchertimeend.h"
 #include "conditionwatchers/addonconditionwatchertimestart.h"
 #include "conditionwatchers/addonconditionwatchertriggertimesecs.h"
+#include "feature.h"
+#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
-#include "models/feature.h"
 #include "mozillavpn.h"
+#include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
 #include "update/versionapi.h"
+#include "versionutils.h"
 
 namespace {
 Logger logger("Addon");
@@ -185,7 +188,7 @@ QList<ConditionCallback> s_conditionCallbacks{
        QString currentVersion = Constants::versionString();
 
        if (!min.isEmpty() &&
-           VersionApi::compareVersions(min, currentVersion) == 1) {
+           VersionUtils::compareVersions(min, currentVersion) == 1) {
          logger.info() << "Min version is" << min << " curent"
                        << currentVersion;
          return false;
@@ -203,7 +206,7 @@ QList<ConditionCallback> s_conditionCallbacks{
        QString currentVersion = Constants::versionString();
 
        if (!max.isEmpty() &&
-           VersionApi::compareVersions(max, currentVersion) == -1) {
+           VersionUtils::compareVersions(max, currentVersion) == -1) {
          logger.info() << "Max version is" << max << " curent"
                        << currentVersion;
          return false;
@@ -390,7 +393,7 @@ Addon::Addon(QObject* parent, const QString& manifestFileName,
       m_id(id),
       m_name(name),
       m_type(type) {
-  MVPN_COUNT_CTOR(Addon);
+  MZ_COUNT_CTOR(Addon);
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
@@ -411,7 +414,7 @@ Addon::Addon(QObject* parent, const QString& manifestFileName,
   }
 }
 
-Addon::~Addon() { MVPN_COUNT_DTOR(Addon); }
+Addon::~Addon() { MZ_COUNT_DTOR(Addon); }
 
 void Addon::updateAddonState(State newState) {
   Q_ASSERT(newState != Unknown);
@@ -430,6 +433,11 @@ void Addon::updateAddonState(State newState) {
 
   settingsHolder->setAddonSetting(StateQuery(id()), newStateSetting);
 
+  mozilla::glean::sample::addon_state_changed.record(
+      mozilla::glean::sample::AddonStateChangedExtra{
+          ._addonId = m_id,
+          ._state = newStateSetting,
+      });
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::addonStateChanged,
       {{"addon_id", m_id}, {"state", newStateSetting}});

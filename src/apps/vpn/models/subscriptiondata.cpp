@@ -11,7 +11,8 @@
 #include <QJsonValue>
 #include <QMetaEnum>
 
-#include "constants.h"
+#include "appconstants.h"
+#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -22,9 +23,9 @@ namespace {
 Logger logger("SubscriptionData");
 }  // namespace
 
-SubscriptionData::SubscriptionData() { MVPN_COUNT_CTOR(SubscriptionData); }
+SubscriptionData::SubscriptionData() { MZ_COUNT_CTOR(SubscriptionData); }
 
-SubscriptionData::~SubscriptionData() { MVPN_COUNT_DTOR(SubscriptionData); }
+SubscriptionData::~SubscriptionData() { MZ_COUNT_DTOR(SubscriptionData); }
 
 bool SubscriptionData::fromJson(const QByteArray& json) {
   logger.debug() << "Subscription data from JSON start";
@@ -131,6 +132,10 @@ bool SubscriptionData::fromJsonInternal(const QByteArray& json) {
     planIntervalMonths = 1;
   } else {
     logger.error() << "Unexpected interval type:" << planInterval;
+
+    mozilla::glean::sample::unhandled_sub_plan_interval.record(
+        mozilla::glean::sample::UnhandledSubPlanIntervalExtra{
+            ._interval = planInterval});
     emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
         GleanSample::unhandledSubPlanInterval, {{"interval", planInterval}});
     return false;
@@ -158,6 +163,10 @@ bool SubscriptionData::fromJsonInternal(const QByteArray& json) {
     default:
       logger.error() << "Unexpected billing interval:"
                      << planIntervalMonthsTotal;
+
+      mozilla::glean::sample::unhandled_sub_plan_interval.record(
+          mozilla::glean::sample::UnhandledSubPlanIntervalExtra{
+              ._interval = planInterval, ._intervalCount = planIntervalCount});
       emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
           GleanSample::unhandledSubPlanInterval,
           {{"interval", planInterval}, {"interval_count", planIntervalCount}});
@@ -189,7 +198,8 @@ bool SubscriptionData::fromJsonInternal(const QByteArray& json) {
     QJsonArray subscriptionsList = paymentData["subscriptions"].toArray();
     for (const QJsonValue& subscriptionValue : subscriptionsList) {
       QJsonObject subscription = subscriptionValue.toObject();
-      if (subscription["product_id"] == Constants::privacyBundleProductId()) {
+      if (subscription["product_id"] ==
+          AppConstants::privacyBundleProductId()) {
         m_isPrivacyBundleSubscriber = true;
         break;
       }

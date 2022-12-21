@@ -36,6 +36,8 @@ VPNStackView {
                 statusLinkVisible: true
             }
         );
-         VPN.recordGleanEvent("backendFailureViewed");
+
+        VPN.recordGleanEvent("backendFailureViewed");
+        Glean.sample.backendFailureViewed.record();
     }
 }

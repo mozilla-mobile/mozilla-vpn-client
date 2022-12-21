@@ -11,17 +11,16 @@
 #include <QJsonValue>
 #include <QScopeGuard>
 
-#include "constants.h"
+#include "feature.h"
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/feature.h"
 
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
 #  include "platforms/ios/iosiaphandler.h"
-#elif MVPN_ANDROID
+#elif MZ_ANDROID
 #  include "platforms/android/androidiaphandler.h"
-#elif MVPN_WASM
+#elif MZ_WASM
 #  include "platforms/wasm/wasmiaphandler.h"
 #else
 #  include "purchasewebhandler.h"
@@ -35,11 +34,11 @@ PurchaseHandler* s_instance = nullptr;
 // static
 PurchaseHandler* PurchaseHandler::createInstance() {
   Q_ASSERT(!s_instance);
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
   new IOSIAPHandler(qApp);
-#elif MVPN_ANDROID
+#elif MZ_ANDROID
   new AndroidIAPHandler(qApp);
-#elif MVPN_WASM
+#elif MZ_WASM
   new WasmIAPHandler(qApp);
 #else
   new PurchaseWebHandler(qApp);
@@ -55,14 +54,14 @@ PurchaseHandler* PurchaseHandler::instance() {
 }
 
 PurchaseHandler::PurchaseHandler(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(PurchaseHandler);
+  MZ_COUNT_CTOR(PurchaseHandler);
 
   Q_ASSERT(!s_instance);
   s_instance = this;
 }
 
 PurchaseHandler::~PurchaseHandler() {
-  MVPN_COUNT_DTOR(PurchaseHandler);
+  MZ_COUNT_DTOR(PurchaseHandler);
 
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;

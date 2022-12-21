@@ -4,7 +4,7 @@
 
 #include "notificationhandler.h"
 
-#include "constants.h"
+#include "appconstants.h"
 #include "externalophandler.h"
 #include "l18nstrings.h"
 #include "leakdetector.h"
@@ -12,19 +12,19 @@
 #include "mozillavpn.h"
 #include "settingsholder.h"
 
-#if defined(MVPN_IOS)
+#if defined(MZ_IOS)
 #  include "platforms/ios/iosnotificationhandler.h"
 #endif
 
-#if defined(MVPN_ANDROID)
+#if defined(MZ_ANDROID)
 #  include "platforms/android/androidnotificationhandler.h"
 #endif
 
-#if defined(MVPN_LINUX)
+#if defined(MZ_LINUX)
 #  include "platforms/linux/linuxsystemtraynotificationhandler.h"
 #endif
 
-#if defined(MVPN_MACOS)
+#if defined(MZ_MACOS)
 #  include "platforms/macos/macossystemtraynotificationhandler.h"
 #endif
 
@@ -45,21 +45,21 @@ NotificationHandler* NotificationHandler::create(QObject* parent) {
 
 // static
 NotificationHandler* NotificationHandler::createInternal(QObject* parent) {
-#if defined(MVPN_IOS)
+#if defined(MZ_IOS)
   return new IOSNotificationHandler(parent);
 #endif
 
-#if defined(MVPN_ANDROID)
+#if defined(MZ_ANDROID)
   return new AndroidNotificationHandler(parent);
 #endif
 
-#if defined(MVPN_LINUX)
+#if defined(MZ_LINUX)
   if (LinuxSystemTrayNotificationHandler::requiredCustomImpl()) {
     return new LinuxSystemTrayNotificationHandler(parent);
   }
 #endif
 
-#if defined(MVPN_MACOS)
+#if defined(MZ_MACOS)
   return new MacosSystemTrayNotificationHandler(parent);
 #endif
 
@@ -70,14 +70,14 @@ NotificationHandler* NotificationHandler::createInternal(QObject* parent) {
 NotificationHandler* NotificationHandler::instance() { return s_instance; }
 
 NotificationHandler::NotificationHandler(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(NotificationHandler);
+  MZ_COUNT_CTOR(NotificationHandler);
 
   Q_ASSERT(!s_instance);
   s_instance = this;
 }
 
 NotificationHandler::~NotificationHandler() {
-  MVPN_COUNT_DTOR(NotificationHandler);
+  MZ_COUNT_DTOR(NotificationHandler);
 
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;
@@ -198,7 +198,7 @@ void NotificationHandler::captivePortalBlockNotificationRequired() {
       l18nStrings->t(L18nStrings::NotificationsCaptivePortalBlockMessage2);
 
   notifyInternal(CaptivePortalBlock, title, message,
-                 Constants::CAPTIVE_PORTAL_ALERT_MSEC);
+                 AppConstants::CAPTIVE_PORTAL_ALERT_MSEC);
 }
 
 void NotificationHandler::captivePortalUnblockNotificationRequired() {
@@ -213,7 +213,7 @@ void NotificationHandler::captivePortalUnblockNotificationRequired() {
       l18nStrings->t(L18nStrings::NotificationsCaptivePortalUnblockMessage2);
 
   notifyInternal(CaptivePortalUnblock, title, message,
-                 Constants::CAPTIVE_PORTAL_ALERT_MSEC);
+                 AppConstants::CAPTIVE_PORTAL_ALERT_MSEC);
 }
 
 void NotificationHandler::unsecuredNetworkNotification(
@@ -230,7 +230,7 @@ void NotificationHandler::unsecuredNetworkNotification(
           .arg(networkName);
 
   notifyInternal(UnsecuredNetwork, title, message,
-                 Constants::UNSECURED_NETWORK_ALERT_MSEC);
+                 AppConstants::UNSECURED_NETWORK_ALERT_MSEC);
 }
 
 void NotificationHandler::serverUnavailableNotification(bool pingRecieved) {
@@ -253,7 +253,7 @@ void NotificationHandler::serverUnavailableNotification(bool pingRecieved) {
           : l18nStrings->t(L18nStrings::ServerUnavailableNotificationBodyText);
 
   notifyInternal(ServerUnavailable, title, message,
-                 Constants::SERVER_UNAVAILABLE_ALERT_MSEC);
+                 AppConstants::SERVER_UNAVAILABLE_ALERT_MSEC);
 }
 
 void NotificationHandler::newInAppMessageNotification(const QString& title,
@@ -266,7 +266,7 @@ void NotificationHandler::newInAppMessageNotification(const QString& title,
   }
 
   notifyInternal(NewInAppMessage, title, message,
-                 Constants::NEW_IN_APP_MESSAGE_ALERT_MSEC);
+                 AppConstants::NEW_IN_APP_MESSAGE_ALERT_MSEC);
 }
 
 void NotificationHandler::subscriptionNotFoundNotification() {
@@ -281,7 +281,7 @@ void NotificationHandler::subscriptionNotFoundNotification() {
       l18nStrings->t(L18nStrings::NotificationsSubscriptionNotFound);
 
   notifyInternal(SubscriptionNotFound, notificationTitle, notificationBody,
-                 Constants::DEFAULT_OS_NOTIFICATION_MSEC);
+                 AppConstants::DEFAULT_OS_NOTIFICATION_MSEC);
 }
 
 void NotificationHandler::notifyInternal(Message type, const QString& title,
@@ -301,8 +301,10 @@ void NotificationHandler::messageClickHandle() {
     return;
   }
 
-  ExternalOpHandler::instance()->request(
-      ExternalOpHandler::OpNotificationClicked);
+  if (!ExternalOpHandler::instance()->request(
+          ExternalOpHandler::OpNotificationClicked)) {
+    return;
+  }
 
   emit notificationClicked(m_lastMessage);
   m_lastMessage = None;

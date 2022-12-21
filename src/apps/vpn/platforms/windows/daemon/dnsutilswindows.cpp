@@ -20,7 +20,7 @@ Logger logger("DnsUtilsWindows");
 }
 
 DnsUtilsWindows::DnsUtilsWindows(QObject* parent) : DnsUtils(parent) {
-  MVPN_COUNT_CTOR(DnsUtilsWindows);
+  MZ_COUNT_CTOR(DnsUtilsWindows);
   logger.debug() << "DnsUtilsWindows created.";
 
   typedef DWORD WindowsSetDnsCallType(GUID, const void*);
@@ -32,7 +32,7 @@ DnsUtilsWindows::DnsUtilsWindows(QObject* parent) : DnsUtils(parent) {
 }
 
 DnsUtilsWindows::~DnsUtilsWindows() {
-  MVPN_COUNT_DTOR(DnsUtilsWindows);
+  MZ_COUNT_DTOR(DnsUtilsWindows);
   restoreResolvers();
   logger.debug() << "DnsUtilsWindows destroyed.";
 }

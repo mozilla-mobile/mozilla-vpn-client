@@ -56,7 +56,7 @@ exports.mochaHooks = {
     process.env['MVPN_API_BASE_URL'] = `http://localhost:${guardian.start()}`;
     process.env['MVPN_FXA_API_BASE_URL'] =
         `http://localhost:${fxaServer.start()}`;
-    process.env['MVPN_ADDON_URL'] =
+    process.env['MZ_ADDON_URL'] =
         `http://localhost:${addonServer.start()}/01_empty_manifest/`;
     process.env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';
     process.env['MVPN_BENCHMARK_URL'] =

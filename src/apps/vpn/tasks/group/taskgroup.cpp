@@ -13,11 +13,11 @@ Logger logger("TaskGroup");
 
 TaskGroup::TaskGroup(const QList<Task*>& list)
     : Task("TaskGroup"), m_tasks(list) {
-  MVPN_COUNT_CTOR(TaskGroup);
+  MZ_COUNT_CTOR(TaskGroup);
 }
 
 TaskGroup::~TaskGroup() {
-  MVPN_COUNT_DTOR(TaskGroup);
+  MZ_COUNT_DTOR(TaskGroup);
 
   for (Task* task : m_tasks) {
     task->deleteLater();

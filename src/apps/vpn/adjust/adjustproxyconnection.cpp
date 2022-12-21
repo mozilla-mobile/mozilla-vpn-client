@@ -12,7 +12,6 @@
 
 #include "adjustfiltering.h"
 #include "adjusttasksubmission.h"
-#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -29,7 +28,7 @@ Logger logger("AdjustProxyConnection");
 AdjustProxyConnection::AdjustProxyConnection(QObject* parent,
                                              QTcpSocket* connection)
     : QObject(parent), m_connection(connection) {
-  MVPN_COUNT_CTOR(AdjustProxyConnection);
+  MZ_COUNT_CTOR(AdjustProxyConnection);
 
   logger.debug() << "New connection received";
 
@@ -39,7 +38,7 @@ AdjustProxyConnection::AdjustProxyConnection(QObject* parent,
 }
 
 AdjustProxyConnection::~AdjustProxyConnection() {
-  MVPN_COUNT_DTOR(AdjustProxyConnection);
+  MZ_COUNT_DTOR(AdjustProxyConnection);
   logger.debug() << "Connection released";
 }
 

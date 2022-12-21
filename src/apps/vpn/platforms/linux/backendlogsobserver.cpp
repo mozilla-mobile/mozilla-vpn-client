@@ -17,11 +17,11 @@ Logger logger("BackendLogsObserver");
 BackendLogsObserver::BackendLogsObserver(
     QObject* parent, std::function<void(const QString&)>&& callback)
     : QObject(parent), m_callback(std::move(callback)) {
-  MVPN_COUNT_CTOR(BackendLogsObserver);
+  MZ_COUNT_CTOR(BackendLogsObserver);
 }
 
 BackendLogsObserver::~BackendLogsObserver() {
-  MVPN_COUNT_DTOR(BackendLogsObserver);
+  MZ_COUNT_DTOR(BackendLogsObserver);
 }
 
 void BackendLogsObserver::completed(QDBusPendingCallWatcher* call) {

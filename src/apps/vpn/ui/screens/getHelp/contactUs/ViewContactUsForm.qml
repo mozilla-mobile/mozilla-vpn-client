@@ -42,7 +42,7 @@ VPNViewBase {
                        secondaryButtonText: VPNl18n.InAppSupportWorkflowSupportErrorBrowserButton,
                        secondaryButtonObjectName: "errorFxALinkButton",
                        secondaryButtonOnClick: () => {
-                               VPNUrlOpener.openLink(VPNUrlOpener.LinkHelpSupport);
+                               VPNUrlOpener.openLink(VPNUrlOpener.LinkSumo);
                                getHelpStackView.pop();
                            },
                        }

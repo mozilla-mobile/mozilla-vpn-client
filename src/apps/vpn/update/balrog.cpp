@@ -12,8 +12,9 @@
 #include <QSslCertificate>
 #include <QSslKey>
 
-#include "constants.h"
+#include "appconstants.h"
 #include "errorhandler.h"
+#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -21,22 +22,22 @@
 #include "telemetry/gleansample.h"
 
 // Terrible hacking for Windows
-#if defined(MVPN_WINDOWS)
+#if defined(MZ_WINDOWS)
 #  include "platforms/windows/golang-msvc-types.h"
 #  include "platforms/windows/windowscommons.h"
 #  include "windows.h"
 #endif
 
 // Import balrog C/Go library, except on windows where we need to use a DLL.
-#if !defined(MVPN_WINDOWS)
+#if !defined(MZ_WINDOWS)
 extern "C" {
 #  include "balrog-api.h"
 }
 #endif
 
-#if defined(MVPN_WINDOWS)
+#if defined(MZ_WINDOWS)
 constexpr const char* BALROG_WINDOWS_UA = "WINNT_x86_64";
-#elif defined(MVPN_MACOS)
+#elif defined(MZ_MACOS)
 constexpr const char* BALROG_MACOS_UA = "Darwin_x86";
 #else
 #  error Platform not supported yet
@@ -60,20 +61,20 @@ Balrog::Balrog(QObject* parent, bool downloadAndInstall,
     : Updater(parent),
       m_downloadAndInstall(downloadAndInstall),
       m_errorPropagationPolicy(errorPropagationPolicy) {
-  MVPN_COUNT_CTOR(Balrog);
+  MZ_COUNT_CTOR(Balrog);
   logger.debug() << "Balrog created";
 }
 
 Balrog::~Balrog() {
-  MVPN_COUNT_DTOR(Balrog);
+  MZ_COUNT_DTOR(Balrog);
   logger.debug() << "Balrog released";
 }
 
 // static
 QString Balrog::userAgent() {
-#if defined(MVPN_WINDOWS)
+#if defined(MZ_WINDOWS)
   return BALROG_WINDOWS_UA;
-#elif defined(MVPN_MACOS)
+#elif defined(MZ_MACOS)
   return BALROG_MACOS_UA;
 #else
 #  error Unsupported platform
@@ -82,13 +83,16 @@ QString Balrog::userAgent() {
 
 void Balrog::start(Task* task) {
   if (m_downloadAndInstall) {
+    mozilla::glean::sample::update_step.record(
+        mozilla::glean::sample::UpdateStepExtra{
+            ._state = QVariant::fromValue(UpdateProcessStarted).toString()});
     emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
         GleanSample::updateStep,
         {{"state", QVariant::fromValue(UpdateProcessStarted).toString()}});
   }
 
   QString url =
-      QString(Constants::balrogUrl()).arg(appVersion()).arg(userAgent());
+      QString(AppConstants::balrogUrl()).arg(appVersion()).arg(userAgent());
   logger.debug() << "URL:" << url;
 
   NetworkRequest* request = NetworkRequest::createForGetUrl(task, url, 200);
@@ -187,7 +191,7 @@ bool Balrog::checkSignature(Task* task, const QByteArray& x5uData,
 bool Balrog::validateSignature(const QByteArray& x5uData,
                                const QByteArray& updateData,
                                const QByteArray& signatureBlob) {
-#if defined(MVPN_WINDOWS)
+#if defined(MZ_WINDOWS)
   typedef void BalrogSetLogger(GoUintptr func);
   typedef GoUint8 BalrogValidate(GoString x5uData, GoString updateData,
                                  GoString signature, GoString rootHash,
@@ -235,7 +239,7 @@ bool Balrog::validateSignature(const QByteArray& x5uData,
   QByteArray updateDataCopy = updateData;
   GoString updateDataGo{updateDataCopy.constData(), updateDataCopy.length()};
 
-  QByteArray rootHashCopy = Constants::AUTOGRAPH_ROOT_CERT_FINGERPRINT;
+  QByteArray rootHashCopy = AppConstants::AUTOGRAPH_ROOT_CERT_FINGERPRINT;
   rootHashCopy = rootHashCopy.toUpper();
   GoString rootHashGo{rootHashCopy.constData(), rootHashCopy.length()};
 
@@ -376,6 +380,9 @@ bool Balrog::computeHash(const QString& url, const QByteArray& data,
     return false;
   }
 
+  mozilla::glean::sample::update_step.record(
+      mozilla::glean::sample::UpdateStepExtra{
+          ._state = QVariant::fromValue(BalrogValidationCompleted).toString()});
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(BalrogValidationCompleted).toString()}});
@@ -418,6 +425,9 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
 
   file.close();
 
+  mozilla::glean::sample::update_step.record(
+      mozilla::glean::sample::UpdateStepExtra{
+          ._state = QVariant::fromValue(BalrogFileSaved).toString()});
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(BalrogFileSaved).toString()}});
@@ -430,7 +440,7 @@ bool Balrog::install(const QString& filePath) {
 
   QString logFile = m_tmpDir.filePath("msiexec.log");
 
-#if defined(MVPN_WINDOWS)
+#if defined(MZ_WINDOWS)
   QStringList arguments;
   arguments << "/qb!-"
             << "REBOOT=ReallySuppress"
@@ -465,7 +475,7 @@ bool Balrog::install(const QString& filePath) {
   }
 #endif
 
-#if defined(MVPN_MACOS)
+#if defined(MZ_MACOS)
   QStringList arguments;
   arguments << filePath;
 
@@ -495,6 +505,10 @@ bool Balrog::install(const QString& filePath) {
       });
 #endif
 
+  mozilla::glean::sample::update_step.record(
+      mozilla::glean::sample::UpdateStepExtra{
+          ._state =
+              QVariant::fromValue(InstallationProcessExecuted).toString()});
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(InstallationProcessExecuted).toString()}});

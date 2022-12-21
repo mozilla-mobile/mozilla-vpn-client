@@ -7,7 +7,7 @@
 #include <QJsonObject>
 #include <QMetaEnum>
 
-#include "constants.h"
+#include "glean/generated/metrics.h"
 #include "l18nstrings.h"
 #include "leakdetector.h"
 #include "localizer.h"
@@ -76,10 +76,10 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
 AddonMessage::AddonMessage(QObject* parent, const QString& manifestFileName,
                            const QString& id, const QString& name)
     : Addon(parent, manifestFileName, id, name, "message") {
-  MVPN_COUNT_CTOR(AddonMessage);
+  MZ_COUNT_CTOR(AddonMessage);
 }
 
-AddonMessage::~AddonMessage() { MVPN_COUNT_DTOR(AddonMessage); }
+AddonMessage::~AddonMessage() { MZ_COUNT_DTOR(AddonMessage); }
 
 // static
 AddonMessage::MessageState AddonMessage::loadMessageState(const QString& id) {
@@ -112,6 +112,12 @@ void AddonMessage::updateMessageState(MessageState newState) {
   Q_ASSERT(settingsHolder);
 
   settingsHolder->setAddonSetting(MessageStateQuery(id()), newStateSetting);
+
+  mozilla::glean::sample::addon_message_state_changed.record(
+      mozilla::glean::sample::AddonMessageStateChangedExtra{
+          ._messageId = id(),
+          ._messageState = newStateSetting,
+      });
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::addonMessageStateChanged,
       {{"message_id", id()}, {"message_state", newStateSetting}});

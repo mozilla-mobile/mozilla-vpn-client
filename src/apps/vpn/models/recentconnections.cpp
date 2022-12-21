@@ -9,7 +9,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "constants.h"
+#include "appconstants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -36,10 +36,10 @@ RecentConnections* RecentConnections::instance() {
 }
 
 RecentConnections::RecentConnections(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(RecentConnections);
+  MZ_COUNT_CTOR(RecentConnections);
 }
 
-RecentConnections::~RecentConnections() { MVPN_COUNT_DTOR(RecentConnections); }
+RecentConnections::~RecentConnections() { MZ_COUNT_DTOR(RecentConnections); }
 
 void RecentConnections::initialize() {
   connect(MozillaVPN::instance()->currentServer(), &ServerData::changed, this,
@@ -229,7 +229,7 @@ bool RecentConnectionModel::add(RecentConnection& newRecentConnection,
     m_list.removeAt(index);
   }
 
-  while (m_list.count() > Constants::RECENT_CONNECTIONS_MAX_COUNT) {
+  while (m_list.count() > AppConstants::RECENT_CONNECTIONS_MAX_COUNT) {
     m_list.removeLast();
   }
 

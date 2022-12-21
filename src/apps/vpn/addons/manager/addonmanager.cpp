@@ -20,9 +20,9 @@
 #include "addonindex.h"
 #include "addons/addonmessage.h"
 #include "constants.h"
+#include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/feature.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "tasks/addon/taskaddon.h"
@@ -61,10 +61,10 @@ QString AddonManager::addonServerAddress() {
 
 AddonManager::AddonManager(QObject* parent)
     : QAbstractListModel(parent), m_addonIndex(&m_addonDirectory) {
-  MVPN_COUNT_CTOR(AddonManager);
+  MZ_COUNT_CTOR(AddonManager);
 }
 
-AddonManager::~AddonManager() { MVPN_COUNT_DTOR(AddonManager); }
+AddonManager::~AddonManager() { MZ_COUNT_DTOR(AddonManager); }
 
 void AddonManager::initialize() {
   if (!Feature::get(Feature::Feature_addon)->isSupported()) {
@@ -245,7 +245,7 @@ bool AddonManager::validateAndLoad(const QString& addonId,
                                    const QByteArray& sha256, bool checkSha256) {
   logger.debug() << "Load addon" << addonId;
 
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
   if (addonId.startsWith("message_")) {
     logger.debug() << "Skipping the message addon";
     return true;

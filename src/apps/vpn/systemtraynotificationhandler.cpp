@@ -9,7 +9,7 @@
 #include <QSystemTrayIcon>
 #include <QWindow>
 
-#include "constants.h"
+#include "appconstants.h"
 #include "externalophandler.h"
 #include "frontend/navigator.h"
 #include "l18nstrings.h"
@@ -24,11 +24,11 @@ Logger logger("SystemTrayNotificationHandler");
 
 SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
     : NotificationHandler(parent) {
-  MVPN_COUNT_CTOR(SystemTrayNotificationHandler);
+  MZ_COUNT_CTOR(SystemTrayNotificationHandler);
 }
 
 SystemTrayNotificationHandler::~SystemTrayNotificationHandler() {
-  MVPN_COUNT_DTOR(SystemTrayNotificationHandler);
+  MZ_COUNT_DTOR(SystemTrayNotificationHandler);
 }
 
 void SystemTrayNotificationHandler::initialize() {
@@ -65,7 +65,7 @@ void SystemTrayNotificationHandler::initialize() {
   updateIcon();
 }
 
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
 QMenu* SystemTrayNotificationHandler::contextMenu() {
   return m_systemTrayIcon->contextMenu();
 }
@@ -78,12 +78,13 @@ void SystemTrayNotificationHandler::createStatusMenu() {
   m_statusLabel->setEnabled(false);
 
   m_lastLocationLabel = m_menu->addAction("", []() {
-    ExternalOpHandler::instance()->request(ExternalOpHandler::OpActivate);
+    (void)ExternalOpHandler::instance()->request(ExternalOpHandler::OpActivate);
   });
   m_lastLocationLabel->setEnabled(false);
 
   m_disconnectAction = m_menu->addAction("", []() {
-    ExternalOpHandler::instance()->request(ExternalOpHandler::OpDeactivate);
+    (void)ExternalOpHandler::instance()->request(
+        ExternalOpHandler::OpDeactivate);
   });
 
   m_separator = m_menu->addSeparator();
@@ -94,7 +95,7 @@ void SystemTrayNotificationHandler::createStatusMenu() {
   m_menu->addSeparator();
 
   m_quitAction = m_menu->addAction("", []() {
-    ExternalOpHandler::instance()->request(ExternalOpHandler::OpQuit);
+    (void)ExternalOpHandler::instance()->request(ExternalOpHandler::OpQuit);
   });
 }
 
@@ -102,7 +103,7 @@ void SystemTrayNotificationHandler::setStatusMenu() {
   logger.debug() << "Set status menu";
 
   // TODO: Check if method is called on these devices.
-#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
+#if defined(MZ_LINUX) || defined(MZ_WINDOWS)
   MozillaVPN* vpn = MozillaVPN::instance();
   m_systemTrayIcon->setToolTip(qtTrId("vpn.main.productName"));
   m_systemTrayIcon->setContextMenu(m_menu.get());
@@ -116,7 +117,7 @@ void SystemTrayNotificationHandler::notify(NotificationHandler::Message type,
                                            int timerMsec) {
   Q_UNUSED(type);
 
-  QIcon icon(Constants::LOGO_URL);
+  QIcon icon(AppConstants::LOGO_URL);
   m_systemTrayIcon->showMessage(title, message, icon, timerMsec);
 }
 
@@ -135,7 +136,7 @@ void SystemTrayNotificationHandler::retranslate() {
 void SystemTrayNotificationHandler::updateContextMenu() {
   logger.debug() << "Update context menu";
 
-#if defined(MVPN_IOS) || defined(MVPN_ANDROID)
+#if defined(MZ_IOS) || defined(MZ_ANDROID)
   return;
 #endif
 
@@ -225,7 +226,7 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 void SystemTrayNotificationHandler::updateIcon() {
   logger.debug() << "Update icon";
 
-#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
+#if defined(MZ_LINUX) || defined(MZ_WINDOWS)
   MozillaVPN* vpn = MozillaVPN::instance();
   m_systemTrayIcon->setIcon(vpn->statusIcon()->icon());
 #endif
@@ -244,7 +245,7 @@ void SystemTrayNotificationHandler::maybeActivated(
     QSystemTrayIcon::ActivationReason reason) {
   logger.debug() << "Activated";
 
-#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX)
   if (reason == QSystemTrayIcon::DoubleClick ||
       reason == QSystemTrayIcon::Trigger) {
     QmlEngineHolder* engine = QmlEngineHolder::instance();

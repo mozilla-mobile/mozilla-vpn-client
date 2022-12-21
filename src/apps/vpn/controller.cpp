@@ -4,14 +4,13 @@
 
 #include "controller.h"
 
-#include "constants.h"
 #include "controllerimpl.h"
 #include "dnshelper.h"
+#include "feature.h"
 #include "frontend/navigator.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/feature.h"
 #include "models/server.h"
 #include "mozillavpn.h"
 #include "rfc/rfc1112.h"
@@ -21,15 +20,14 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 #include "tasks/heartbeat/taskheartbeat.h"
-#include "telemetry/gleansample.h"
 
-#if defined(MVPN_LINUX)
+#if defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
-#elif defined(MVPN_MACOS) || defined(MVPN_WINDOWS)
+#elif defined(MZ_MACOS) || defined(MZ_WINDOWS)
 #  include "localsocketcontroller.h"
-#elif defined(MVPN_IOS)
+#elif defined(MZ_IOS)
 #  include "platforms/ios/ioscontroller.h"
-#elif defined(MVPN_ANDROID)
+#elif defined(MZ_ANDROID)
 #  include "platforms/android/androidcontroller.h"
 #else
 #  include "platforms/dummy/dummycontroller.h"
@@ -43,7 +41,7 @@ constexpr const int CONNECTION_MAX_RETRY = 9;
 constexpr const uint32_t CONFIRMING_TIMOUT_SEC = 10;
 constexpr const uint32_t HANDSHAKE_TIMEOUT_SEC = 15;
 
-#ifndef MVPN_IOS
+#ifndef MZ_IOS
 // The Mullvad proxy services are located at internal IPv4 addresses in the
 // 10.124.0.0/20 address range, which is a subset of the 10.0.0.0/8 Class-A
 // private address range.
@@ -54,22 +52,22 @@ constexpr const int MULLVAD_PROXY_RANGE_LENGTH = 20;
 namespace {
 Logger logger("Controller");
 
-ControllerImpl::Reason stateToReason(Controller::State state) {
+Controller::Reason stateToReason(Controller::State state) {
   if (state == Controller::StateSwitching) {
-    return ControllerImpl::ReasonSwitching;
+    return Controller::ReasonSwitching;
   }
 
   if (state == Controller::StateConfirming) {
-    return ControllerImpl::ReasonConfirming;
+    return Controller::ReasonConfirming;
   }
 
-  return ControllerImpl::ReasonNone;
+  return Controller::ReasonNone;
 }
 
 }  // namespace
 
 Controller::Controller() {
-  MVPN_COUNT_CTOR(Controller);
+  MZ_COUNT_CTOR(Controller);
 
   m_connectingTimer.setSingleShot(true);
   m_handshakeTimer.setSingleShot(true);
@@ -85,7 +83,7 @@ Controller::Controller() {
           &Controller::handshakeTimeout);
 }
 
-Controller::~Controller() { MVPN_COUNT_DTOR(Controller); }
+Controller::~Controller() { MZ_COUNT_DTOR(Controller); }
 
 Controller::State Controller::state() const { return m_state; }
 
@@ -101,13 +99,13 @@ void Controller::initialize() {
     m_impl.reset(nullptr);
   }
 
-#if defined(MVPN_LINUX)
+#if defined(MZ_LINUX)
   m_impl.reset(new LinuxController());
-#elif defined(MVPN_MACOS) || defined(MVPN_WINDOWS)
+#elif defined(MZ_MACOS) || defined(MZ_WINDOWS)
   m_impl.reset(new LocalSocketController());
-#elif defined(MVPN_IOS)
+#elif defined(MZ_IOS)
   m_impl.reset(new IOSController());
-#elif defined(MVPN_ANDROID)
+#elif defined(MZ_ANDROID)
   m_impl.reset(new AndroidController());
 #else
   m_impl.reset(new DummyController());
@@ -192,11 +190,11 @@ bool Controller::activate() {
 
   clearRetryCounter();
 
-  activateInternal();
+  activateInternal(stateToReason(m_state));
   return true;
 }
 
-void Controller::activateInternal(bool forcePort53) {
+void Controller::activateInternal(Reason reason, bool forcePort53) {
   logger.debug() << "Activation internal";
   Q_ASSERT(m_impl);
 
@@ -240,7 +238,7 @@ void Controller::activateInternal(bool forcePort53) {
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv6AddrIn());
 
     // If requested, force the use of port 53/DNS.
-    if (settingsHolder->tunnelPort53() || forcePort53) {
+    if (forcePort53) {
       exitHop.m_server.forcePort(53);
     }
     // For single-hop, they are the same
@@ -258,7 +256,7 @@ void Controller::activateInternal(bool forcePort53) {
       return;
     }
     // If requested, force the use of port 53/DNS.
-    if (settingsHolder->tunnelPort53() || forcePort53) {
+    if (forcePort53) {
       hop.m_server.forcePort(53);
     }
 
@@ -293,10 +291,10 @@ void Controller::activateInternal(bool forcePort53) {
   m_ping_canary.start(m_activationQueue.first().m_server.ipv4AddrIn(),
                       "0.0.0.0/0");
   logger.info() << "Canary Ping Started";
-  activateNext();
+  activateNext(reason);
 }
 
-void Controller::activateNext() {
+void Controller::activateNext(Reason reason) {
   MozillaVPN* vpn = MozillaVPN::instance();
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
   if (device == nullptr) {
@@ -308,7 +306,7 @@ void Controller::activateNext() {
 
   logger.debug() << "Activating peer" << logger.keys(hop.m_server.publicKey());
   m_handshakeTimer.start(HANDSHAKE_TIMEOUT_SEC * 1000);
-  m_impl->activate(hop, device, vpn->keys(), stateToReason(m_state));
+  m_impl->activate(hop, device, vpn->keys(), reason);
 
   // Move to the confirming state if we are awaiting any connection handshakes.
   setState(StateConfirming);
@@ -337,7 +335,7 @@ bool Controller::silentSwitchServers() {
       vpn->currentServer()->exitServerPublicKey());
 
   // Activate the first connection to kick off the server switch.
-  activateInternal();
+  activateInternal(ReasonSwitching);
   return true;
 }
 
@@ -383,7 +381,7 @@ void Controller::connected(const QString& pubkey) {
     // Start the next connection if there is more work to do.
     m_activationQueue.removeFirst();
     if (!m_activationQueue.isEmpty()) {
-      activateNext();
+      activateNext(stateToReason(m_state));
       return;
     }
   }
@@ -425,14 +423,14 @@ void Controller::handshakeTimeout() {
   // Try again, again if there are sufficient retries left.
   ++m_connectionRetry;
   emit connectionRetryChanged();
-  if (m_connectionRetry == 1 && !SettingsHolder::instance()->tunnelPort53()) {
+  if (m_connectionRetry == 1) {
     logger.info() << "Connection Attempt: Using Port 53 Option this time.";
     // On the first retry, opportunisticly try again using the port 53
     // option enabled, if that feature is disabled.
-    activateInternal(true);
+    activateInternal(stateToReason(m_state), true);
     return;
   } else if (m_connectionRetry < CONNECTION_MAX_RETRY) {
-    activateInternal();
+    activateInternal(stateToReason(m_state));
     return;
   }
 
@@ -674,8 +672,7 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   // routed through the VPN.
 
   // filtering out the RFC1918 local area network
-  if (Feature::get(Feature::Feature_lanAccess)->isSupported() &&
-      SettingsHolder::instance()->localNetworkAccess()) {
+  if (Feature::get(Feature::Feature_lanAccess)->isSupported()) {
     logger.debug() << "Filtering out the local area networks (rfc 1918)";
     excludeIPv4s.append(RFC1918::ipv4());
 
@@ -689,7 +686,7 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
 
   QList<IPAddress> list;
 
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
   Q_UNUSED(exitServer);
 
   logger.debug() << "Catch all IPv4";
@@ -736,13 +733,6 @@ QStringList Controller::getExcludedAddresses(const Server& exitServer) {
       logger.debug() << "Filtering out the captive portal address:" << address;
       list.append(address);
     }
-  }
-
-  // Filter out the Custom DNS Server, if the user has set one.
-  if (DNSHelper::shouldExcludeDNS()) {
-    auto dns = DNSHelper::getDNS(exitServer.ipv4Gateway());
-    logger.debug() << "Filtering out the DNS address:" << dns;
-    list.append(dns);
   }
 
   return list;

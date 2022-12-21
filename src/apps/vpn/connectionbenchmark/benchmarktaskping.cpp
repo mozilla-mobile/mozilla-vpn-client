@@ -4,7 +4,7 @@
 
 #include "benchmarktaskping.h"
 
-#include "constants.h"
+#include "appconstants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -15,14 +15,14 @@ Logger logger("BenchmarkTaskPing");
 
 BenchmarkTaskPing::BenchmarkTaskPing()
     : BenchmarkTask("BenchmarkTaskPing",
-                    Constants::BENCHMARK_MAX_DURATION_PING) {
-  MVPN_COUNT_CTOR(BenchmarkTaskPing);
+                    AppConstants::BENCHMARK_MAX_DURATION_PING) {
+  MZ_COUNT_CTOR(BenchmarkTaskPing);
 
   connect(this, &BenchmarkTask::stateChanged, this,
           &BenchmarkTaskPing::handleState);
 }
 
-BenchmarkTaskPing::~BenchmarkTaskPing() { MVPN_COUNT_DTOR(BenchmarkTaskPing); }
+BenchmarkTaskPing::~BenchmarkTaskPing() { MZ_COUNT_DTOR(BenchmarkTaskPing); }
 
 void BenchmarkTaskPing::handleState(BenchmarkTask::State state) {
   logger.debug() << "Handle state" << state;

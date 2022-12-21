@@ -34,13 +34,13 @@ Logger logger("AddonIndex");
  * completed successfully to emit a signal with the updated list of addons.
  */
 AddonIndex::AddonIndex(AddonDirectory* addonDirectory) {
-  MVPN_COUNT_CTOR(AddonIndex);
+  MZ_COUNT_CTOR(AddonIndex);
 
   Q_ASSERT(addonDirectory);
   m_addonDirectory = addonDirectory;
 }
 
-AddonIndex::~AddonIndex() { MVPN_COUNT_DTOR(AddonIndex); }
+AddonIndex::~AddonIndex() { MZ_COUNT_DTOR(AddonIndex); }
 
 /**
  * @brief Gets the on disk addon list from the addons file, if any.

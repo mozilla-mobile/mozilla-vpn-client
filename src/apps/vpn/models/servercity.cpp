@@ -12,10 +12,10 @@
 #include "leakdetector.h"
 #include "serveri18n.h"
 
-ServerCity::ServerCity() { MVPN_COUNT_CTOR(ServerCity); }
+ServerCity::ServerCity() { MZ_COUNT_CTOR(ServerCity); }
 
 ServerCity::ServerCity(const ServerCity& other) {
-  MVPN_COUNT_CTOR(ServerCity);
+  MZ_COUNT_CTOR(ServerCity);
   *this = other;
 }
 
@@ -32,7 +32,7 @@ ServerCity& ServerCity::operator=(const ServerCity& other) {
   return *this;
 }
 
-ServerCity::~ServerCity() { MVPN_COUNT_DTOR(ServerCity); }
+ServerCity::~ServerCity() { MZ_COUNT_DTOR(ServerCity); }
 
 bool ServerCity::fromJson(const QJsonObject& obj, const QString& country) {
   QJsonValue name = obj.value("name");

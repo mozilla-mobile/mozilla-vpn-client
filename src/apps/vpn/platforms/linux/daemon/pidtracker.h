@@ -18,13 +18,13 @@ class ProcessGroup {
  public:
   ProcessGroup(const QString& groupName, int groupRootPid,
                const QString& groupState = "active") {
-    MVPN_COUNT_CTOR(ProcessGroup);
+    MZ_COUNT_CTOR(ProcessGroup);
     name = groupName;
     rootpid = groupRootPid;
     state = groupState;
     refcount = 0;
   }
-  ~ProcessGroup() { MVPN_COUNT_DTOR(ProcessGroup); }
+  ~ProcessGroup() { MZ_COUNT_DTOR(ProcessGroup); }
 
   bool moveToCgroup(const QString& name);
 

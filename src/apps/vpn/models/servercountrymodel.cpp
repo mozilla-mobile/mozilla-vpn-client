@@ -9,11 +9,11 @@
 #include <QJsonObject>
 #include <QRandomGenerator>
 
+#include "appconstants.h"
 #include "collator.h"
-#include "constants.h"
+#include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/feature.h"
 #include "servercountry.h"
 #include "serverdata.h"
 #include "serveri18n.h"
@@ -23,13 +23,9 @@ namespace {
 Logger logger("ServerCountryModel");
 }
 
-ServerCountryModel::ServerCountryModel() {
-  MVPN_COUNT_CTOR(ServerCountryModel);
-}
+ServerCountryModel::ServerCountryModel() { MZ_COUNT_CTOR(ServerCountryModel); }
 
-ServerCountryModel::~ServerCountryModel() {
-  MVPN_COUNT_DTOR(ServerCountryModel);
-}
+ServerCountryModel::~ServerCountryModel() { MZ_COUNT_DTOR(ServerCountryModel); }
 
 bool ServerCountryModel::fromSettings() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
@@ -347,7 +343,7 @@ void ServerCountryModel::setServerLatency(const QString& publicKey,
 void ServerCountryModel::setServerCooldown(const QString& publicKey) {
   if (m_servers.contains(publicKey)) {
     m_servers[publicKey].setCooldownTimeout(
-        Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
+        AppConstants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
   }
 }
 

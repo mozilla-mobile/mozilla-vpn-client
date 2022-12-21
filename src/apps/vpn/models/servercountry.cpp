@@ -14,10 +14,10 @@
 #include "serverdata.h"
 #include "serveri18n.h"
 
-ServerCountry::ServerCountry() { MVPN_COUNT_CTOR(ServerCountry); }
+ServerCountry::ServerCountry() { MZ_COUNT_CTOR(ServerCountry); }
 
 ServerCountry::ServerCountry(const ServerCountry& other) {
-  MVPN_COUNT_CTOR(ServerCountry);
+  MZ_COUNT_CTOR(ServerCountry);
   *this = other;
 }
 
@@ -31,7 +31,7 @@ ServerCountry& ServerCountry::operator=(const ServerCountry& other) {
   return *this;
 }
 
-ServerCountry::~ServerCountry() { MVPN_COUNT_DTOR(ServerCountry); }
+ServerCountry::~ServerCountry() { MZ_COUNT_DTOR(ServerCountry); }
 
 bool ServerCountry::fromJson(const QJsonObject& countryObj) {
   QJsonValue countryName = countryObj.value("name");

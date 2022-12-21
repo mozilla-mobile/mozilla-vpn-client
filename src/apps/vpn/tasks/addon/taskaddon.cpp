@@ -15,10 +15,10 @@ Logger logger("TaskAddon");
 
 TaskAddon::TaskAddon(const QString& addonId, const QByteArray& sha256)
     : Task("TaskAddon"), m_addonId(addonId), m_sha256(sha256) {
-  MVPN_COUNT_CTOR(TaskAddon);
+  MZ_COUNT_CTOR(TaskAddon);
 }
 
-TaskAddon::~TaskAddon() { MVPN_COUNT_DTOR(TaskAddon); }
+TaskAddon::~TaskAddon() { MZ_COUNT_DTOR(TaskAddon); }
 
 void TaskAddon::run() {
   NetworkRequest* request = NetworkRequest::createForGetUrl(

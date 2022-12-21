@@ -2,10 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-enable_language(OBJC)
-enable_language(OBJCXX)
-enable_language(Swift)
-
 include(apps/vpn/cmake/osxtools.cmake)
 
 # Configure the application bundle Info.plist
@@ -59,7 +55,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosnotificationhandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosutils.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macoscryptosettings.mm
 )
 
 # Include the Adjust SDK

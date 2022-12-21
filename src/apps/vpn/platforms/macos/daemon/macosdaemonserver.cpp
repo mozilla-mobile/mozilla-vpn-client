@@ -21,10 +21,10 @@ Logger logger("MacOSDaemonServer");
 
 MacOSDaemonServer::MacOSDaemonServer(QObject* parent)
     : Command(parent, "macosdaemon", "Activate the macos daemon") {
-  MVPN_COUNT_CTOR(MacOSDaemonServer);
+  MZ_COUNT_CTOR(MacOSDaemonServer);
 }
 
-MacOSDaemonServer::~MacOSDaemonServer() { MVPN_COUNT_DTOR(MacOSDaemonServer); }
+MacOSDaemonServer::~MacOSDaemonServer() { MZ_COUNT_DTOR(MacOSDaemonServer); }
 
 int MacOSDaemonServer::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());

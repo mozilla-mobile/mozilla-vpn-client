@@ -10,8 +10,6 @@ import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 
-
-
 VPNViewBase {
     id: vpnFlickable
     objectName: "settingsNetworkingBackButton"
@@ -43,31 +41,6 @@ VPNViewBase {
                     visible: VPNController.state !== VPNController.StateOff
                 }
             ]
-        }
-
-        VPNCheckBoxRow {
-            id: localNetwork
-            objectName: "settingLocalNetworkAccess"
-            visible: VPNFeatureList.get("lanAccess").isSupported
-            anchors {
-                right: parent.right
-                left: parent.left
-                rightMargin: VPNTheme.theme.windowMargin
-            }
-
-            showDivider: true
-
-            //% "Local network access"
-            labelText: qsTrId("vpn.settings.lanAccess")
-            //% "Access printers, streaming sticks and all other devices on your local network"
-            subLabelText: qsTrId("vpn.settings.lanAccess.description")
-            isChecked: (VPNSettings.localNetworkAccess)
-            enabled: vpnFlickable.vpnIsOff
-            onClicked: {
-                if (vpnFlickable.vpnIsOff) {
-                    VPNSettings.localNetworkAccess = !VPNSettings.localNetworkAccess
-                }
-            }
         }
 
         Column {
@@ -105,8 +78,10 @@ VPNViewBase {
 
     Component.onCompleted: {
         VPN.recordGleanEvent("networkSettingsViewOpened");
+        Glean.sample.networkSettingsViewOpened.record();
         if (!vpnIsOff) {
             VPN.recordGleanEvent("networkSettingsViewWarning");
+            Glean.sample.networkSettingsViewWarning.record();
         }
     }
 }

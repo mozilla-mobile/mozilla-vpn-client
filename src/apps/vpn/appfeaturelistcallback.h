@@ -2,46 +2,39 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef FEATURELISTCALLBACK_H
-#define FEATURELISTCALLBACK_H
+// NOTE! Do not include this file directly. Use featurelistcallback.h instead.
 
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
 #  include "platforms/android/androidutils.h"
 #endif
 
-#ifdef MVPN_WINDOWS
+#ifdef MZ_WINDOWS
 #  include "platforms/windows/daemon/windowssplittunnel.h"
 #endif
 
-#ifdef MVPN_LINUX
+#ifdef MZ_LINUX
 #  include <QProcessEnvironment>
 
 #  include "platforms/linux/linuxdependencies.h"
-#  include "update/versionapi.h"
+#  include "versionutils.h"
 #endif
 
 // Generic callback functions
 // --------------------------
 
-bool FeatureCallback_true() { return true; }
-
-bool FeatureCallback_false() { return false; }
-
 bool FeatureCallback_iosOrAndroid() {
-#if defined(MVPN_IOS) || defined(MVPN_ANDROID)
+#if defined(MZ_IOS) || defined(MZ_ANDROID)
   return true;
 #else
   return false;
 #endif
 }
 
-bool FeatureCallback_inStaging() { return !Constants::inProduction(); }
-
 // Custom callback functions
 // -------------------------
 
 bool FeatureCallback_accountDeletion() {
-#if defined(MVPN_IOS)
+#if defined(MZ_IOS)
   return true;
 #else
   return false;
@@ -49,8 +42,8 @@ bool FeatureCallback_accountDeletion() {
 }
 
 bool FeatureCallback_captivePortal() {
-#if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS) || \
-    defined(MVPN_DUMMY) || defined(MVPN_WASM)
+#if defined(MZ_LINUX) || defined(MZ_MACOS) || defined(MZ_WINDOWS) || \
+    defined(MZ_DUMMY) || defined(MZ_WASM)
   return true;
 #else
   // If we decide to enable the captive-portal notification for
@@ -71,7 +64,7 @@ bool FeatureCallback_captivePortal() {
 }
 
 bool FeatureCallback_webPurchase() {
-#if defined(MVPN_IOS) || defined(MVPN_ANDROID) || defined(MVPN_WASM)
+#if defined(MZ_IOS) || defined(MZ_ANDROID) || defined(MZ_WASM)
   return false;
 #else
   return true;
@@ -79,7 +72,7 @@ bool FeatureCallback_webPurchase() {
 }
 
 bool FeatureCallback_lanAccess() {
-#if defined(MVPN_IOS)
+#if defined(MZ_IOS)
   // managed by the OS automatically. No need to
   // expose this feature.
   return false;
@@ -91,10 +84,10 @@ bool FeatureCallback_lanAccess() {
 }
 
 bool FeatureCallback_shareLogs() {
-#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS) || \
-    defined(MVPN_IOS) || defined(MVPN_DUMMY)
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS) || \
+    defined(MZ_IOS) || defined(MZ_DUMMY)
   return true;
-#elif defined(MVPN_ANDROID)
+#elif defined(MZ_ANDROID)
   return AndroidUtils::GetSDKVersion() >=
          29;  // Android Q (10) is required for this
 #else
@@ -103,11 +96,11 @@ bool FeatureCallback_shareLogs() {
 }
 
 bool FeatureCallback_splitTunnel() {
-#if defined(MVPN_ANDROID) || defined(MVPN_DUMMY)
+#if defined(MZ_ANDROID) || defined(MZ_DUMMY)
   return true;
-#elif defined(MVPN_WINDOWS)
+#elif defined(MZ_WINDOWS)
   return !WindowsSplitTunnel::detectConflict();
-#elif defined(MVPN_LINUX)
+#elif defined(MZ_LINUX)
   static bool initDone = false;
   static bool splitTunnelSupported = false;
   if (initDone) {
@@ -133,7 +126,7 @@ bool FeatureCallback_splitTunnel() {
     if (shellVersion.isNull()) {
       return false;
     }
-    if (VersionApi::compareVersions(shellVersion, "3.34") < 0) {
+    if (VersionUtils::compareVersions(shellVersion, "3.34") < 0) {
       return false;
     }
   }
@@ -150,8 +143,8 @@ bool FeatureCallback_splitTunnel() {
 }
 
 bool FeatureCallback_startOnBoot() {
-#if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS) || \
-    defined(MVPN_DUMMY) || defined(MVPN_WASM) || defined(MVPN_ANDROID)
+#if defined(MZ_LINUX) || defined(MZ_MACOS) || defined(MZ_WINDOWS) || \
+    defined(MZ_DUMMY) || defined(MZ_WASM) || defined(MZ_ANDROID)
   return true;
 #else
   return false;
@@ -159,8 +152,8 @@ bool FeatureCallback_startOnBoot() {
 }
 
 bool FeatureCallback_unsecuredNetworkNotification() {
-#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS) || \
-    defined(MVPN_WASM) || defined(MVPN_DUMMY)
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS) || \
+    defined(MZ_WASM) || defined(MZ_DUMMY)
   return true;
 #else
   return false;
@@ -168,11 +161,9 @@ bool FeatureCallback_unsecuredNetworkNotification() {
 }
 
 bool FeatureCallback_freeTrial() {
-#if defined(MVPN_IOS)
+#if defined(MZ_IOS)
   return true;
 #else
   return false;
 #endif
 }
-
-#endif  // FEATURELISTCALLBACK_H

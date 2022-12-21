@@ -17,12 +17,12 @@ class VPNGlean final : public QObject {
   explicit VPNGlean(QObject* parent);
 
   static void setUploadEnabled(bool isTelemetryEnabled);
-  static void registerQMLSingletons();
 
  public:
   ~VPNGlean();
 
   static void initialize();
+  static void shutdown();
 
   // TODO: Just use the glean_core type once
   // https://github.com/mozilla/glean/pull/2283 lands.

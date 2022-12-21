@@ -29,9 +29,9 @@ char** CommandLineParser::argv() {
   return s_argv;
 }
 
-CommandLineParser::CommandLineParser() { MVPN_COUNT_CTOR(CommandLineParser); }
+CommandLineParser::CommandLineParser() { MZ_COUNT_CTOR(CommandLineParser); }
 
-CommandLineParser::~CommandLineParser() { MVPN_COUNT_DTOR(CommandLineParser); }
+CommandLineParser::~CommandLineParser() { MZ_COUNT_DTOR(CommandLineParser); }
 
 int CommandLineParser::parse(int argc, char* argv[]) {
   Q_ASSERT(argc >= 1);
@@ -41,7 +41,7 @@ int CommandLineParser::parse(int argc, char* argv[]) {
 
   QStringList tokens;
   for (int i = 0; i < argc; ++i) {
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
     if (QString(argv[i]).startsWith("-qmljsdebugger")) {
       continue;
     }

@@ -16,10 +16,10 @@
 
 CommandLogout::CommandLogout(QObject* parent)
     : Command(parent, "logout", "Logout the current user.") {
-  MVPN_COUNT_CTOR(CommandLogout);
+  MZ_COUNT_CTOR(CommandLogout);
 }
 
-CommandLogout::~CommandLogout() { MVPN_COUNT_DTOR(CommandLogout); }
+CommandLogout::~CommandLogout() { MZ_COUNT_DTOR(CommandLogout); }
 
 int CommandLogout::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());

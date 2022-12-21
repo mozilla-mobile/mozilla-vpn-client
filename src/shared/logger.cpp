@@ -55,7 +55,7 @@ Logger::Log& Logger::Log::operator<<(QTextStreamFunction t) {
 }
 
 QString Logger::sensitive(const QString& input) {
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
   return input;
 #else
   Q_UNUSED(input);
@@ -64,7 +64,7 @@ QString Logger::sensitive(const QString& input) {
 }
 
 QString Logger::keys(const QString& input) {
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
   if (input.length() < 12) {
     return input;
   } else {

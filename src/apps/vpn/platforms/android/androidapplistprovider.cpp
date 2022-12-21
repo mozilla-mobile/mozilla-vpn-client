@@ -21,7 +21,7 @@ Logger logger("AndroidAppListProvider");
 
 AndroidAppListProvider::AndroidAppListProvider(QObject* parent)
     : AppListProvider(parent) {
-  MVPN_COUNT_CTOR(AndroidAppListProvider);
+  MZ_COUNT_CTOR(AndroidAppListProvider);
 }
 
 void AndroidAppListProvider::getApplicationList() {

@@ -14,10 +14,10 @@ Logger logger("TaskAddonIndex");
 }
 
 TaskAddonIndex::TaskAddonIndex() : Task("TaskAddonIndex") {
-  MVPN_COUNT_CTOR(TaskAddonIndex);
+  MZ_COUNT_CTOR(TaskAddonIndex);
 }
 
-TaskAddonIndex::~TaskAddonIndex() { MVPN_COUNT_DTOR(TaskAddonIndex); }
+TaskAddonIndex::~TaskAddonIndex() { MZ_COUNT_DTOR(TaskAddonIndex); }
 
 void TaskAddonIndex::run() {
   // Index file

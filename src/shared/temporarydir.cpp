@@ -16,7 +16,7 @@ Logger logger("TemporaryDir");
 constexpr const char* TMP_FOLDER = "tmp";
 
 QString rootAppFolder() {
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
   // https://wiki.qt.io/Qt_for_WebAssembly#Files_and_local_file_system_access
   return "/";
 #elif defined(UNIT_TEST)
@@ -28,11 +28,11 @@ QString rootAppFolder() {
 }  // namespace
 
 TemporaryDir::TemporaryDir(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(TemporaryDir);
+  MZ_COUNT_CTOR(TemporaryDir);
 }
 
 TemporaryDir::~TemporaryDir() {
-  MVPN_COUNT_DTOR(TemporaryDir);
+  MZ_COUNT_DTOR(TemporaryDir);
 
   if (m_state == Fallback && !m_fallbackDir.removeRecursively()) {
     logger.debug() << "Failed to remove the fallback dir"

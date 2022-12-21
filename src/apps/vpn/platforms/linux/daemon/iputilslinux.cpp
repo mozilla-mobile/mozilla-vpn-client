@@ -24,12 +24,12 @@ Logger logger("IPUtilsLinux");
 }
 
 IPUtilsLinux::IPUtilsLinux(QObject* parent) : IPUtils(parent) {
-  MVPN_COUNT_CTOR(IPUtilsLinux);
+  MZ_COUNT_CTOR(IPUtilsLinux);
   logger.debug() << "IPUtilsLinux created.";
 }
 
 IPUtilsLinux::~IPUtilsLinux() {
-  MVPN_COUNT_DTOR(IPUtilsLinux);
+  MZ_COUNT_DTOR(IPUtilsLinux);
   logger.debug() << "IPUtilsLinux destroyed.";
 }
 

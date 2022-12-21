@@ -18,11 +18,11 @@ TaskCaptivePortalLookup::TaskCaptivePortalLookup(
     ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy)
     : Task("TaskCaptivePortalLookup"),
       m_errorPropagationPolicy(errorPropagationPolicy) {
-  MVPN_COUNT_CTOR(TaskCaptivePortalLookup);
+  MZ_COUNT_CTOR(TaskCaptivePortalLookup);
 }
 
 TaskCaptivePortalLookup::~TaskCaptivePortalLookup() {
-  MVPN_COUNT_DTOR(TaskCaptivePortalLookup);
+  MZ_COUNT_DTOR(TaskCaptivePortalLookup);
 }
 
 void TaskCaptivePortalLookup::run() {

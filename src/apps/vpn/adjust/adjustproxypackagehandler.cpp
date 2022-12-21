@@ -8,7 +8,6 @@
 #include <QUrlQuery>
 
 #include "adjustfiltering.h"
-#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "qmlengineholder.h"
@@ -18,13 +17,13 @@ Logger logger("AdjustProxyPackageHandler");
 }  // namespace
 
 AdjustProxyPackageHandler::AdjustProxyPackageHandler() {
-  MVPN_COUNT_CTOR(AdjustProxyPackageHandler);
+  MZ_COUNT_CTOR(AdjustProxyPackageHandler);
 
   logger.debug() << "New package handler created";
 }
 
 AdjustProxyPackageHandler::~AdjustProxyPackageHandler() {
-  MVPN_COUNT_DTOR(AdjustProxyPackageHandler);
+  MZ_COUNT_DTOR(AdjustProxyPackageHandler);
   logger.debug() << "Package handler destroyed";
 }
 

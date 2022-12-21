@@ -2,15 +2,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-get_filename_component(MVPN_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src ABSOLUTE)
+get_filename_component(MZ_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src ABSOLUTE)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-include_directories(${MVPN_SOURCE_DIR})
-include_directories(${MVPN_SOURCE_DIR}/apps/vpn)
-include_directories(${MVPN_SOURCE_DIR}/shared)
-include_directories(${MVPN_SOURCE_DIR}/shared/hacl-star)
-include_directories(${MVPN_SOURCE_DIR}/shared/hacl-star/kremlin)
-include_directories(${MVPN_SOURCE_DIR}/shared/hacl-star/kremlin/minimal)
+include_directories(${MZ_SOURCE_DIR})
+include_directories(${MZ_SOURCE_DIR}/apps/vpn)
+include_directories(${MZ_SOURCE_DIR}/shared)
+include_directories(${MZ_SOURCE_DIR}/shared/hacl-star)
+include_directories(${MZ_SOURCE_DIR}/shared/hacl-star/kremlin)
+include_directories(${MZ_SOURCE_DIR}/shared/hacl-star/kremlin/minimal)
 
 qt_add_executable(auth_tests EXCLUDE_FROM_ALL)
 set_target_properties(auth_tests PROPERTIES FOLDER "Tests")
@@ -27,108 +27,122 @@ target_link_libraries(auth_tests PRIVATE
     Qt6::Qml
     Qt6::Quick
 )
-target_link_libraries(auth_tests PRIVATE glean translations)
+
+target_link_libraries(auth_tests PRIVATE glean vpnglean translations)
 
 target_compile_definitions(auth_tests PRIVATE UNIT_TEST)
-target_compile_definitions(auth_tests PRIVATE MVPN_DEBUG)
-target_compile_definitions(auth_tests PRIVATE MVPN_DUMMY)
+target_compile_definitions(auth_tests PRIVATE MZ_DEBUG)
+target_compile_definitions(auth_tests PRIVATE MZ_DUMMY)
 
 # VPN Client source files
 target_sources(auth_tests PRIVATE
-    ${MVPN_SOURCE_DIR}/apps/vpn/authenticationinapp/authenticationinapp.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/authenticationinapp/authenticationinapp.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/authenticationinapp/authenticationinapplistener.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/authenticationinapp/authenticationinapplistener.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/authenticationinapp/authenticationinappsession.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/authenticationinapp/authenticationinappsession.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/authenticationinapp/incrementaldecoder.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/authenticationinapp/incrementaldecoder.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/authenticationlistener.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/authenticationlistener.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/constants.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/constants.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/controller.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/cryptosettings.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/cryptosettings.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/dnspingsender.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/dnspingsender.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/env.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/errorhandler.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/errorhandler.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/models/feature.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/models/feature.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/models/featuremodel.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/models/featuremodel.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/models/server.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/models/server.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/models/subscriptiondata.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/models/subscriptiondata.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/mozillavpn.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/networkmanager.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/networkmanager.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/networkrequest.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/networkrequest.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/pinghelper.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/pinghelper.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/pingsender.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/pingsender.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/pingsenderfactory.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/pingsenderfactory.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/platforms/dummy/dummycryptosettings.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/settingsholder.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/settingsholder.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/simplenetworkmanager.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/simplenetworkmanager.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/tasks/authenticate/desktopauthenticationlistener.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/tasks/authenticate/desktopauthenticationlistener.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/tasks/authenticate/taskauthenticate.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/tasks/authenticate/taskauthenticate.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/tasks/deleteaccount/taskdeleteaccount.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/tasks/deleteaccount/taskdeleteaccount.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/tasks/function/taskfunction.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/tasks/function/taskfunction.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/update/updater.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/update/updater.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/update/versionapi.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/update/versionapi.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/update/webupdater.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/update/webupdater.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/urlopener.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/urlopener.h
-    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c
-    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20Poly1305_32.c
-    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Curve25519_51.c
-    ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Poly1305_32.c
-    ${MVPN_SOURCE_DIR}/shared/hawkauth.cpp
-    ${MVPN_SOURCE_DIR}/shared/hawkauth.h
-    ${MVPN_SOURCE_DIR}/shared/hkdf.cpp
-    ${MVPN_SOURCE_DIR}/shared/hkdf.h
-    ${MVPN_SOURCE_DIR}/shared/ipaddress.cpp
-    ${MVPN_SOURCE_DIR}/shared/ipaddress.h
-    ${MVPN_SOURCE_DIR}/shared/leakdetector.cpp
-    ${MVPN_SOURCE_DIR}/shared/leakdetector.h
-    ${MVPN_SOURCE_DIR}/shared/logger.cpp
-    ${MVPN_SOURCE_DIR}/shared/logger.h
-    ${MVPN_SOURCE_DIR}/shared/loghandler.cpp
-    ${MVPN_SOURCE_DIR}/shared/loghandler.h
-    ${MVPN_SOURCE_DIR}/shared/rfc/rfc1918.cpp
-    ${MVPN_SOURCE_DIR}/shared/rfc/rfc1918.h
-    ${MVPN_SOURCE_DIR}/shared/rfc/rfc4193.cpp
-    ${MVPN_SOURCE_DIR}/shared/rfc/rfc4193.h
-    ${MVPN_SOURCE_DIR}/shared/rfc/rfc4291.cpp
-    ${MVPN_SOURCE_DIR}/shared/rfc/rfc4291.h
-    ${MVPN_SOURCE_DIR}/shared/rfc/rfc5735.cpp
-    ${MVPN_SOURCE_DIR}/shared/rfc/rfc5735.h
-    ${MVPN_SOURCE_DIR}/shared/task.h
-    ${MVPN_SOURCE_DIR}/shared/taskscheduler.cpp
-    ${MVPN_SOURCE_DIR}/shared/taskscheduler.h
+    ${MZ_SOURCE_DIR}/apps/vpn/appconstants.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/appconstants.h
+    ${MZ_SOURCE_DIR}/apps/vpn/authenticationinapp/authenticationinapp.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/authenticationinapp/authenticationinapp.h
+    ${MZ_SOURCE_DIR}/apps/vpn/authenticationinapp/authenticationinapplistener.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/authenticationinapp/authenticationinapplistener.h
+    ${MZ_SOURCE_DIR}/apps/vpn/authenticationinapp/authenticationinappsession.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/authenticationinapp/authenticationinappsession.h
+    ${MZ_SOURCE_DIR}/apps/vpn/authenticationinapp/incrementaldecoder.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/authenticationinapp/incrementaldecoder.h
+    ${MZ_SOURCE_DIR}/apps/vpn/authenticationlistener.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/authenticationlistener.h
+    ${MZ_SOURCE_DIR}/apps/vpn/controller.h
+    ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.h
+    ${MZ_SOURCE_DIR}/apps/vpn/errorhandler.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/errorhandler.h
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/glean.h
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/glean.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/generated/metrics.h
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/generated/pings.h
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/private/event.h
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/private/event.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/private/ping.h
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/private/ping.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/metrictypes.h
+    ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.h
+    ${MZ_SOURCE_DIR}/apps/vpn/models/featuremodel.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/models/featuremodel.h
+    ${MZ_SOURCE_DIR}/apps/vpn/models/server.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/models/server.h
+    ${MZ_SOURCE_DIR}/apps/vpn/models/subscriptiondata.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/models/subscriptiondata.h
+    ${MZ_SOURCE_DIR}/apps/vpn/mozillavpn.h
+    ${MZ_SOURCE_DIR}/apps/vpn/networkmanager.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/networkmanager.h
+    ${MZ_SOURCE_DIR}/apps/vpn/networkrequest.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/networkrequest.h
+    ${MZ_SOURCE_DIR}/apps/vpn/pinghelper.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/pinghelper.h
+    ${MZ_SOURCE_DIR}/apps/vpn/pingsender.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/pingsender.h
+    ${MZ_SOURCE_DIR}/apps/vpn/pingsenderfactory.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/pingsenderfactory.h
+    ${MZ_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.h
+    ${MZ_SOURCE_DIR}/apps/vpn/simplenetworkmanager.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/simplenetworkmanager.h
+    ${MZ_SOURCE_DIR}/apps/vpn/tasks/authenticate/desktopauthenticationlistener.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/tasks/authenticate/desktopauthenticationlistener.h
+    ${MZ_SOURCE_DIR}/apps/vpn/tasks/authenticate/taskauthenticate.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/tasks/authenticate/taskauthenticate.h
+    ${MZ_SOURCE_DIR}/apps/vpn/tasks/deleteaccount/taskdeleteaccount.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/tasks/deleteaccount/taskdeleteaccount.h
+    ${MZ_SOURCE_DIR}/apps/vpn/tasks/function/taskfunction.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/tasks/function/taskfunction.h
+    ${MZ_SOURCE_DIR}/apps/vpn/update/updater.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/update/updater.h
+    ${MZ_SOURCE_DIR}/apps/vpn/update/versionapi.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/update/versionapi.h
+    ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.h
+    ${MZ_SOURCE_DIR}/apps/vpn/urlopener.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/urlopener.h
+    ${MZ_SOURCE_DIR}/shared/constants.cpp
+    ${MZ_SOURCE_DIR}/shared/constants.h
+    ${MZ_SOURCE_DIR}/shared/cryptosettings.cpp
+    ${MZ_SOURCE_DIR}/shared/cryptosettings.h
+    ${MZ_SOURCE_DIR}/shared/env.h
+    ${MZ_SOURCE_DIR}/shared/feature.cpp
+    ${MZ_SOURCE_DIR}/shared/feature.h
+    ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c
+    ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20Poly1305_32.c
+    ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Curve25519_51.c
+    ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Poly1305_32.c
+    ${MZ_SOURCE_DIR}/shared/hawkauth.cpp
+    ${MZ_SOURCE_DIR}/shared/hawkauth.h
+    ${MZ_SOURCE_DIR}/shared/hkdf.cpp
+    ${MZ_SOURCE_DIR}/shared/hkdf.h
+    ${MZ_SOURCE_DIR}/shared/ipaddress.cpp
+    ${MZ_SOURCE_DIR}/shared/ipaddress.h
+    ${MZ_SOURCE_DIR}/shared/leakdetector.cpp
+    ${MZ_SOURCE_DIR}/shared/leakdetector.h
+    ${MZ_SOURCE_DIR}/shared/logger.cpp
+    ${MZ_SOURCE_DIR}/shared/logger.h
+    ${MZ_SOURCE_DIR}/shared/loghandler.cpp
+    ${MZ_SOURCE_DIR}/shared/loghandler.h
+    ${MZ_SOURCE_DIR}/shared/platforms/wasm/wasmcryptosettings.cpp
+    ${MZ_SOURCE_DIR}/shared/rfc/rfc1918.cpp
+    ${MZ_SOURCE_DIR}/shared/rfc/rfc1918.h
+    ${MZ_SOURCE_DIR}/shared/rfc/rfc4193.cpp
+    ${MZ_SOURCE_DIR}/shared/rfc/rfc4193.h
+    ${MZ_SOURCE_DIR}/shared/rfc/rfc4291.cpp
+    ${MZ_SOURCE_DIR}/shared/rfc/rfc4291.h
+    ${MZ_SOURCE_DIR}/shared/rfc/rfc5735.cpp
+    ${MZ_SOURCE_DIR}/shared/rfc/rfc5735.h
+    ${MZ_SOURCE_DIR}/shared/settingsholder.cpp
+    ${MZ_SOURCE_DIR}/shared/settingsholder.h
+    ${MZ_SOURCE_DIR}/shared/task.h
+    ${MZ_SOURCE_DIR}/shared/taskscheduler.cpp
+    ${MZ_SOURCE_DIR}/shared/taskscheduler.h
+    ${MZ_SOURCE_DIR}/shared/versionutils.cpp
+    ${MZ_SOURCE_DIR}/shared/versionutils.h
 )
 
 # Generate the version header
-configure_file(${MVPN_SOURCE_DIR}/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
+configure_file(${MZ_SOURCE_DIR}/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 target_sources(auth_tests PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 # Auth test mock resources

@@ -11,7 +11,7 @@
 #include <QHttpMultiPart>
 #include <QNetworkReply>
 
-#include "constants.h"
+#include "appconstants.h"
 #include "logger.h"
 #include "qmlengineholder.h"
 
@@ -90,11 +90,11 @@ void CrashUploader::startRequest(const QString& file) {
   multipart->append(formPart);
 
   auto urlStr =
-#ifdef MVPN_DEBUG
-      Constants::CRASH_STAGING_URL;
+#ifdef MZ_DEBUG
+      AppConstants::CRASH_STAGING_URL;
 #else
-      Constants::inProduction() ? Constants::CRASH_STAGING_URL
-                                : Constants::CRASH_PRODUCTION_URL;
+      Constants::inProduction() ? AppConstants::CRASH_STAGING_URL
+                                : AppConstants::CRASH_PRODUCTION_URL;
 #endif
 
   logger.debug() << "Uploading to : " << urlStr;
@@ -117,9 +117,9 @@ void CrashUploader::startRequest(const QString& file) {
 }
 
 void CrashUploader::requestComplete(QNetworkReply* reply) {
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
   dumpResponse(reply);
-#endif  // MVPN_DEBUG
+#endif  // MZ_DEBUG
 
   if (reply->error() != QNetworkReply::NoError) {
     logger.error() << "Upload failed for " << m_currentFile

@@ -24,10 +24,10 @@ Logger logger("AddonApi");
 
 AddonApi::AddonApi(Addon* addon) : QObject(addon), m_addon(addon) {
   logger.debug() << "Create API for" << addon->id();
-  MVPN_COUNT_CTOR(AddonApi);
+  MZ_COUNT_CTOR(AddonApi);
 }
 
-AddonApi::~AddonApi() { MVPN_COUNT_DTOR(AddonApi); }
+AddonApi::~AddonApi() { MZ_COUNT_DTOR(AddonApi); }
 
 void AddonApi::connectSignal(QObject* obj, const QString& signalName,
                              const QJSValue& callback) {

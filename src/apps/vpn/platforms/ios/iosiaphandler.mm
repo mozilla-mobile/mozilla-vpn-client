@@ -3,13 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "platforms/ios/iosiaphandler.h"
-#include "constants.h"
+#include "errorhandler.h"
 #include "iosutils.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
-#include "errorhandler.h"
 #include "tasks/purchase/taskpurchase.h"
 #include "taskscheduler.h"
 
@@ -202,7 +201,7 @@ bool s_transactionsProcessed = false;
 @end
 
 IOSIAPHandler::IOSIAPHandler(QObject* parent) : PurchaseIAPHandler(parent) {
-  MVPN_COUNT_CTOR(IOSIAPHandler);
+  MZ_COUNT_CTOR(IOSIAPHandler);
 
   m_delegate = [[IOSIAPHandlerDelegate alloc] initWithObject:this];
   [[SKPaymentQueue defaultQueue]
@@ -210,7 +209,7 @@ IOSIAPHandler::IOSIAPHandler(QObject* parent) : PurchaseIAPHandler(parent) {
 }
 
 IOSIAPHandler::~IOSIAPHandler() {
-  MVPN_COUNT_DTOR(IOSIAPHandler);
+  MZ_COUNT_DTOR(IOSIAPHandler);
 
   IOSIAPHandlerDelegate* delegate = static_cast<IOSIAPHandlerDelegate*>(m_delegate);
   [[SKPaymentQueue defaultQueue] removeTransactionObserver:delegate];

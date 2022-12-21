@@ -5,12 +5,12 @@
 #include "ioscontroller.h"
 #include "Mozilla_VPN-Swift.h"
 #include "controller.h"
+#include "feature.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
 #include "models/keys.h"
-#include "models/feature.h"
 #include "models/server.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
@@ -29,7 +29,7 @@ IOSControllerImpl* impl = nullptr;
 }  // namespace
 
 IOSController::IOSController() {
-  MVPN_COUNT_CTOR(IOSController);
+  MZ_COUNT_CTOR(IOSController);
 
   logger.debug() << "created";
 
@@ -37,7 +37,7 @@ IOSController::IOSController() {
 }
 
 IOSController::~IOSController() {
-  MVPN_COUNT_DTOR(IOSController);
+  MZ_COUNT_DTOR(IOSController);
 
   logger.debug() << "deallocated";
 
@@ -105,7 +105,7 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
 }
 
 void IOSController::activate(const HopConnection& hop, const Device* device, const Keys* keys,
-                             Reason reason) {
+                             Controller::Reason reason) {
   Q_UNUSED(device);
   Q_UNUSED(keys);
 
@@ -146,10 +146,10 @@ void IOSController::activate(const HopConnection& hop, const Device* device, con
              }];
 }
 
-void IOSController::deactivate(Reason reason) {
+void IOSController::deactivate(Controller::Reason reason) {
   logger.debug() << "IOSController deactivated";
 
-  if (reason != ReasonNone) {
+  if (reason != Controller::ReasonNone) {
     logger.debug() << "We do not need to disable the VPN for switching or connection check.";
     emit disconnected();
     return;

@@ -12,10 +12,10 @@
 #include <QScopeGuard>
 
 #include "constants.h"
+#include "feature.h"
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/feature.h"
 #include "purchasehandler.h"
 
 namespace {
@@ -38,13 +38,13 @@ ProductsHandler* ProductsHandler::instance() {
 }
 
 ProductsHandler::ProductsHandler(QObject* parent) : QAbstractListModel(parent) {
-  MVPN_COUNT_CTOR(ProductsHandler);
+  MZ_COUNT_CTOR(ProductsHandler);
   Q_ASSERT(!s_instance);
   s_instance = this;
 }
 
 ProductsHandler::~ProductsHandler() {
-  MVPN_COUNT_DTOR(ProductsHandler);
+  MZ_COUNT_DTOR(ProductsHandler);
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;
 }

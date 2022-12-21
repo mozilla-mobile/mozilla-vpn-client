@@ -55,12 +55,12 @@ static inline bool checkUnsecureFlags(int rsnFlags, int wpaFlags) {
 }
 
 LinuxNetworkWatcherWorker::LinuxNetworkWatcherWorker(QThread* thread) {
-  MVPN_COUNT_CTOR(LinuxNetworkWatcherWorker);
+  MZ_COUNT_CTOR(LinuxNetworkWatcherWorker);
   moveToThread(thread);
 }
 
 LinuxNetworkWatcherWorker::~LinuxNetworkWatcherWorker() {
-  MVPN_COUNT_DTOR(LinuxNetworkWatcherWorker);
+  MZ_COUNT_DTOR(LinuxNetworkWatcherWorker);
 }
 
 void LinuxNetworkWatcherWorker::initialize() {

@@ -14,7 +14,7 @@ Logger logger("AuthenticationInAppListener");
 
 AuthenticationInAppListener::AuthenticationInAppListener(QObject* parent)
     : AuthenticationListener(parent) {
-  MVPN_COUNT_CTOR(AuthenticationInAppListener);
+  MZ_COUNT_CTOR(AuthenticationInAppListener);
 
   m_session = new AuthenticationInAppSession(
       this, AuthenticationInAppSession::TypeDefault);
@@ -29,7 +29,7 @@ AuthenticationInAppListener::AuthenticationInAppListener(QObject* parent)
 }
 
 AuthenticationInAppListener::~AuthenticationInAppListener() {
-  MVPN_COUNT_DTOR(AuthenticationInAppListener);
+  MZ_COUNT_DTOR(AuthenticationInAppListener);
 }
 
 void AuthenticationInAppListener::start(Task* task,

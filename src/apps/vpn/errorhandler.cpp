@@ -6,6 +6,7 @@
 
 #include <QApplication>
 
+#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -113,13 +114,13 @@ ErrorHandler* ErrorHandler::instance() {
 }
 
 ErrorHandler::ErrorHandler(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(ErrorHandler);
+  MZ_COUNT_CTOR(ErrorHandler);
 
   connect(&m_alertTimer, &QTimer::timeout, this,
           [this]() { setAlert(NoAlert); });
 }
 
-ErrorHandler::~ErrorHandler() { MVPN_COUNT_DTOR(ErrorHandler); }
+ErrorHandler::~ErrorHandler() { MZ_COUNT_DTOR(ErrorHandler); }
 
 #define ERRORSTATE(name)                           \
   void ErrorHandler::name##Error() {               \
@@ -234,26 +235,33 @@ void ErrorHandler::errorHandle(ErrorHandler::ErrorType error,
   MozillaVPN* vpn = MozillaVPN::instance();
 
   QVariantMap extraKeys;
+  mozilla::glean::sample::ErrorAlertShownExtra extras;
 
   if (!taskName.isEmpty()) {
     extraKeys["task"] = taskName;
+    extras._task = taskName;
   }
 
   if (!fileName.isEmpty()) {
     extraKeys["filename"] = fileName;
+    extras._filename = fileName;
   }
 
   if (lineNumber >= 0) {
     extraKeys["linenumber"] = lineNumber;
+    extras._linenumber = lineNumber;
   }
 
+  mozilla::glean::sample::error_alert_shown.record(extras);
   vpn->recordGleanEventWithExtraKeys(GleanSample::errorAlertShown, extraKeys);
 
   // Any error in authenticating state sends to the Initial state.
   if (vpn->state() == MozillaVPN::StateAuthenticating) {
     if (alert == GeoIpRestrictionAlert) {
+      mozilla::glean::sample::authentication_failure_by_geo.record();
       emit vpn->recordGleanEvent(GleanSample::authenticationFailureByGeo);
     } else {
+      mozilla::glean::sample::authentication_failure.record();
       emit vpn->recordGleanEvent(GleanSample::authenticationFailure);
     }
     vpn->reset(true);

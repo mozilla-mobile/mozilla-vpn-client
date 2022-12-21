@@ -4,12 +4,12 @@
 
 #include "keyregenerator.h"
 
-#include "constants.h"
+#include "appconstants.h"
+#include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mfbt/checkedint.h"
 #include "models/device.h"
-#include "models/feature.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #include "tasks/account/taskaccount.h"
@@ -21,7 +21,7 @@ Logger logger("KeyRegenerator");
 }
 
 KeyRegenerator::KeyRegenerator() {
-  MVPN_COUNT_CTOR(KeyRegenerator);
+  MZ_COUNT_CTOR(KeyRegenerator);
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
@@ -35,7 +35,7 @@ KeyRegenerator::KeyRegenerator() {
   stateChanged();
 }
 
-KeyRegenerator::~KeyRegenerator() { MVPN_COUNT_DTOR(KeyRegenerator); }
+KeyRegenerator::~KeyRegenerator() { MZ_COUNT_DTOR(KeyRegenerator); }
 
 void KeyRegenerator::stateChanged() {
   logger.debug() << "Let's check if the key has to be regenerated";
@@ -65,7 +65,7 @@ void KeyRegenerator::stateChanged() {
         QDateTime::currentSecsSinceEpoch());
   }
 
-  qint64 diff = Constants::keyRegeneratorTimeSec() -
+  qint64 diff = AppConstants::keyRegeneratorTimeSec() -
                 (QDateTime::currentSecsSinceEpoch() -
                  settingsHolder->keyRegenerationTimeSec());
   if (diff > 0) {
@@ -85,7 +85,7 @@ void KeyRegenerator::stateChanged() {
       new TaskAddDevice(Device::currentDeviceName(), Device::uniqueDeviceId()));
   TaskScheduler::scheduleTask(new TaskAccount(ErrorHandler::PropagateError));
 
-  CheckedInt<int> value(Constants::keyRegeneratorTimeSec());
+  CheckedInt<int> value(AppConstants::keyRegeneratorTimeSec());
   value *= 1000;
 
   m_timer.start(value.isValid() ? value.value()

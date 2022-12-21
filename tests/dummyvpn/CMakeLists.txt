@@ -34,11 +34,19 @@ target_link_libraries(dummyvpn PRIVATE
 target_sources(dummyvpn PRIVATE
     ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/dummy/dummycontroller.cpp
     ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/dummy/dummycontroller.h
-    ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/dummy/dummycryptosettings.cpp
 )
 
-target_compile_definitions(dummyvpn PRIVATE MVPN_DEBUG)
-target_compile_definitions(dummyvpn PRIVATE MVPN_DUMMY)
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    find_package(Qt6 REQUIRED COMPONENTS DBus)
+    target_link_libraries(dummyvpn PRIVATE Qt6::DBus)
+
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(libsecret REQUIRED IMPORTED_TARGET libsecret-1)
+    target_link_libraries(dummyvpn PRIVATE PkgConfig::libsecret)
+endif()
+
+target_compile_definitions(dummyvpn PRIVATE MZ_DEBUG)
+target_compile_definitions(dummyvpn PRIVATE MZ_DUMMY)
 
 qt6_add_qml_module(dummyvpn
   URI Mozilla.VPN.qmlcomponents

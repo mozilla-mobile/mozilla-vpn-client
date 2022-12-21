@@ -8,10 +8,10 @@
 
 #include "leakdetector.h"
 
-IPAddress::IPAddress() { MVPN_COUNT_CTOR(IPAddress); }
+IPAddress::IPAddress() { MZ_COUNT_CTOR(IPAddress); }
 
 IPAddress::IPAddress(const QString& ip) {
-  MVPN_COUNT_CTOR(IPAddress);
+  MZ_COUNT_CTOR(IPAddress);
   if (ip.contains("/")) {
     QPair<QHostAddress, int> p = QHostAddress::parseSubnet(ip);
     m_address = p.first;
@@ -35,7 +35,7 @@ IPAddress::IPAddress(const QString& ip) {
 }
 
 IPAddress::IPAddress(const IPAddress& other) {
-  MVPN_COUNT_CTOR(IPAddress);
+  MZ_COUNT_CTOR(IPAddress);
   *this = other;
 }
 
@@ -49,7 +49,7 @@ IPAddress& IPAddress::operator=(const IPAddress& other) {
 }
 
 IPAddress::IPAddress(const QHostAddress& address) : m_address(address) {
-  MVPN_COUNT_CTOR(IPAddress);
+  MZ_COUNT_CTOR(IPAddress);
 
   if (address.protocol() == QAbstractSocket::IPv4Protocol) {
     m_prefixLength = 32;
@@ -61,7 +61,7 @@ IPAddress::IPAddress(const QHostAddress& address) : m_address(address) {
 
 IPAddress::IPAddress(const QHostAddress& address, int prefixLength)
     : m_address(address), m_prefixLength(prefixLength) {
-  MVPN_COUNT_CTOR(IPAddress);
+  MZ_COUNT_CTOR(IPAddress);
 
   if (address.protocol() == QAbstractSocket::IPv4Protocol) {
     Q_ASSERT(prefixLength >= 0 && prefixLength <= 32);
@@ -71,7 +71,7 @@ IPAddress::IPAddress(const QHostAddress& address, int prefixLength)
   }
 }
 
-IPAddress::~IPAddress() { MVPN_COUNT_DTOR(IPAddress); }
+IPAddress::~IPAddress() { MZ_COUNT_DTOR(IPAddress); }
 
 QAbstractSocket::NetworkLayerProtocol IPAddress::type() const {
   return m_address.protocol();

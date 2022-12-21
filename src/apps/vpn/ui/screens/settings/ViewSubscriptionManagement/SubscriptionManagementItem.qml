@@ -196,6 +196,7 @@ ColumnLayout {
         Component.onCompleted: {
             if (visible) {
                 VPN.recordGleanEvent("bundle_upsell_viewed");
+                Glean.sample.bundleUpsellViewed.record();
             }
         }
 
@@ -225,6 +226,7 @@ ColumnLayout {
 
                 onClicked: {
                     VPN.recordGleanEvent("bundle_upsell_link_clicked");
+                    Glean.sample.bundleUpsellLinkClicked.record();
                     VPNUrlOpener.openLink(VPNUrlOpener.LinkRelayPremium);
                 }
             }
@@ -235,6 +237,7 @@ ColumnLayout {
 
             onClicked: {
                 VPN.recordGleanEvent("bundle_upsell_upgrade_clicked");
+                Glean.sample.bundleUpsellUpgradeClicked.record();
                 VPNUrlOpener.openLink(VPNUrlOpener.LinkUpgradeToBundle);
             }
 

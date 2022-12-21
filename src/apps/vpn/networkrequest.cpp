@@ -4,8 +4,8 @@
 
 #include "networkrequest.h"
 
+#include "appconstants.h"
 #include "captiveportal/captiveportal.h"
-#include "constants.h"
 #include "hawkauth.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -14,7 +14,7 @@
 #include "settingsholder.h"
 #include "task.h"
 
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
 #  include "platforms/wasm/wasmnetworkrequest.h"
 #endif
 
@@ -47,7 +47,7 @@ QList<QSslCertificate> s_intervention_certs;
 NetworkRequest::NetworkRequest(Task* parent, int status,
                                bool setAuthorizationHeader)
     : QObject(parent), m_expectedStatusCode(status) {
-  MVPN_COUNT_CTOR(NetworkRequest);
+  MZ_COUNT_CTOR(NetworkRequest);
   logger.debug() << "Network request created by" << parent->name();
 
   m_request.setAttribute(QNetworkRequest::Http2AllowedAttribute, false);
@@ -91,7 +91,7 @@ NetworkRequest::NetworkRequest(Task* parent, int status,
 }
 
 NetworkRequest::~NetworkRequest() {
-  MVPN_COUNT_DTOR(NetworkRequest);
+  MZ_COUNT_DTOR(NetworkRequest);
 
   // During the shutdown, the QML NetworkManager can be released before the
   // deletion of the pending network requests.
@@ -103,10 +103,10 @@ NetworkRequest::~NetworkRequest() {
 // static
 QString NetworkRequest::apiBaseUrl() {
   if (Constants::inProduction()) {
-    return Constants::API_PRODUCTION_URL;
+    return AppConstants::API_PRODUCTION_URL;
   }
 
-  return Constants::getStagingServerAddress();
+  return AppConstants::getStagingServerAddress();
 }
 
 // static
@@ -303,7 +303,7 @@ NetworkRequest* NetworkRequest::createForDeviceRemoval(Task* parent,
 
   r->m_request.setUrl(QUrl(url));
 
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
   logger.debug() << "Network starting" << r->m_request.url().toString();
 #endif
 
@@ -510,7 +510,7 @@ NetworkRequest* NetworkRequest::createForFxaAccountStatus(
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
 
-  QUrl url(Constants::fxaApiBaseUrl());
+  QUrl url(AppConstants::fxaApiBaseUrl());
   url.setPath("/v1/account/status");
   r->m_request.setUrl(url);
 
@@ -531,7 +531,7 @@ NetworkRequest* NetworkRequest::createForFxaAccountCreation(
     const QString& fxaFlowId, double fxaFlowBeginTime) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaApiBaseUrl());
+  QUrl url(AppConstants::fxaApiBaseUrl());
   url.setPath("/v1/account/create");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -564,7 +564,7 @@ NetworkRequest* NetworkRequest::createForFxaLogin(
     const QString& fxaFlowId, double fxaFlowBeginTime) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaApiBaseUrl());
+  QUrl url(AppConstants::fxaApiBaseUrl());
   url.setPath("/v1/account/login");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -608,7 +608,7 @@ NetworkRequest* NetworkRequest::createForFxaSendUnblockCode(
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
 
-  QUrl url(Constants::fxaApiBaseUrl());
+  QUrl url(AppConstants::fxaApiBaseUrl());
   url.setPath("/v1/account/login/send_unblock_code");
   r->m_request.setUrl(url);
 
@@ -628,7 +628,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionVerifyByEmailCode(
     const QString& fxaClientId, const QString& fxaScope) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaApiBaseUrl());
+  QUrl url(AppConstants::fxaApiBaseUrl());
   url.setPath("/v1/session/verify_code");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -666,7 +666,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionResendCode(
     Task* parent, const QByteArray& sessionToken) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaApiBaseUrl());
+  QUrl url(AppConstants::fxaApiBaseUrl());
   url.setPath("/v1/session/resend_code");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -689,7 +689,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionVerifyByTotpCode(
     const QString& fxaClientId, const QString& fxaScope) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaApiBaseUrl());
+  QUrl url(AppConstants::fxaApiBaseUrl());
   url.setPath("/v1/session/verify/totp");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -720,7 +720,7 @@ NetworkRequest* NetworkRequest::createForFxaAuthz(
     const QString& fxaAccessType) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaApiBaseUrl());
+  QUrl url(AppConstants::fxaApiBaseUrl());
   url.setPath("/v1/oauth/authorization");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -748,7 +748,7 @@ NetworkRequest* NetworkRequest::createForFxaTotpCreation(
     Task* parent, const QByteArray& sessionToken) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaApiBaseUrl());
+  QUrl url(AppConstants::fxaApiBaseUrl());
   url.setPath("/v1/totp/create");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -770,7 +770,7 @@ NetworkRequest* NetworkRequest::createForFxaAttachedClients(
     Task* parent, const QByteArray& sessionToken) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaApiBaseUrl());
+  QUrl url(AppConstants::fxaApiBaseUrl());
   url.setPath("/v1/account/attached_clients");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -790,7 +790,7 @@ NetworkRequest* NetworkRequest::createForFxaAccountDeletion(
     const QByteArray& authpw) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaApiBaseUrl());
+  QUrl url(AppConstants::fxaApiBaseUrl());
   url.setPath("/v1/account/destroy");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -815,7 +815,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionDestroy(
     Task* parent, const QByteArray& sessionToken) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::fxaApiBaseUrl());
+  QUrl url(AppConstants::fxaApiBaseUrl());
   url.setPath("/v1/session/destroy");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -836,11 +836,11 @@ NetworkRequest* NetworkRequest::createForFxaSessionDestroy(
 NetworkRequest* NetworkRequest::createForSentry(Task* parent,
                                                 const QByteArray& envelope) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
-  QUrl url(Constants::SENTRY_ENVELOPE_INGESTION);
+  QUrl url(AppConstants::SENTRY_ENVELOPE_INGESTION);
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/x-sentry-envelope");
-  r->m_request.setRawHeader("dsn", Constants::SENTRY_DSN_ENDPOINT);
+  r->m_request.setRawHeader("dsn", AppConstants::SENTRY_DSN_ENDPOINT);
   r->postRequest(envelope);
   return r;
 }
@@ -858,7 +858,7 @@ NetworkRequest* NetworkRequest::createForProducts(Task* parent) {
   return r;
 }
 
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
 NetworkRequest* NetworkRequest::createForIOSPurchase(Task* parent,
                                                      const QString& receipt) {
   Q_ASSERT(parent);
@@ -883,7 +883,7 @@ NetworkRequest* NetworkRequest::createForIOSPurchase(Task* parent,
 }
 #endif
 
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
 NetworkRequest* NetworkRequest::createForAndroidPurchase(
     Task* parent, const QString& sku, const QString& purchaseToken) {
   Q_ASSERT(parent);
@@ -911,7 +911,7 @@ NetworkRequest* NetworkRequest::createForAndroidPurchase(
 }
 #endif
 
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
 NetworkRequest* NetworkRequest::createForWasmPurchase(
     Task* parent, const QString& productId) {
   Q_ASSERT(parent);
@@ -951,7 +951,7 @@ void NetworkRequest::replyFinished() {
     if (brokenUrl.host().isEmpty() && !m_redirectedUrl.isEmpty()) {
       QUrl url = m_redirectedUrl.resolved(brokenUrl);
 
-#  ifdef MVPN_DEBUG
+#  ifdef MZ_DEBUG
       // See https://bugreports.qt.io/browse/QTBUG-100651
       logger.debug()
           << "QT6 redirect bug! The current URL is broken because it's not "
@@ -992,7 +992,7 @@ void NetworkRequest::processData(QNetworkReply::NetworkError error,
   m_completed = true;
   m_timer.stop();
 
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
   m_finalStatusCode = status;
 #endif
 
@@ -1038,7 +1038,7 @@ void NetworkRequest::handleHeaderReceived() {
 void NetworkRequest::handleRedirect(const QUrl& redirectUrl) {
 #if QT_VERSION >= 0x060000 && QT_VERSION < 0x060400
   if (redirectUrl.host().isEmpty()) {
-#  ifdef MVPN_DEBUG
+#  ifdef MZ_DEBUG
     // See https://bugreports.qt.io/browse/QTBUG-100651
     logger.debug()
         << "QT6 redirect bug! The redirected URL is broken because it's not "
@@ -1062,7 +1062,7 @@ void NetworkRequest::handleRedirect(const QUrl& redirectUrl) {
 }
 
 void NetworkRequest::timeout() {
-#ifndef MVPN_WASM
+#ifndef MZ_WASM
   Q_ASSERT(m_reply);
   Q_ASSERT(!m_reply->isFinished());
 #endif
@@ -1079,7 +1079,7 @@ void NetworkRequest::timeout() {
 }
 
 void NetworkRequest::getRequest() {
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
   WasmNetworkRequest::getRequest(this);
 #else
   QNetworkAccessManager* manager =
@@ -1090,7 +1090,7 @@ void NetworkRequest::getRequest() {
 }
 
 void NetworkRequest::deleteRequest() {
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
   WasmNetworkRequest::deleteRequest(this);
 #else
   QNetworkAccessManager* manager =
@@ -1101,7 +1101,7 @@ void NetworkRequest::deleteRequest() {
 }
 
 void NetworkRequest::postRequest(const QByteArray& body) {
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
   WasmNetworkRequest::postRequest(this, body);
 #else
   QNetworkAccessManager* manager =
@@ -1153,7 +1153,7 @@ void NetworkRequest::maybeDeleteLater() {
 }
 
 int NetworkRequest::statusCode() const {
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
   return m_finalStatusCode;
 #endif
 

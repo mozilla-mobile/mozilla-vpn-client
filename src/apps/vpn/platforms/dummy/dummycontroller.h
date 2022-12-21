@@ -25,9 +25,9 @@ class DummyController final : public ControllerImpl {
   }
 
   void activate(const HopConnection& hop, const Device* device,
-                const Keys* keys, Reason reason) override;
+                const Keys* keys, Controller::Reason reason) override;
 
-  void deactivate(Reason reason) override;
+  void deactivate(Controller::Reason reason) override;
 
   void checkStatus() override;
 

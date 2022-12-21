@@ -4,7 +4,6 @@
 
 #include "testipaddresslookup.h"
 
-#include "constants.h"
 #include "helper.h"
 #include "ipaddresslookup.h"
 #include "settingsholder.h"

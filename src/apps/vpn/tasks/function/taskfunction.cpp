@@ -11,10 +11,10 @@ TaskFunction::TaskFunction(std::function<void()>&& callback,
     : Task("TaskFunction"),
       m_callback(std::move(callback)),
       m_deletePolicy(deletePolicy) {
-  MVPN_COUNT_CTOR(TaskFunction);
+  MZ_COUNT_CTOR(TaskFunction);
 }
 
-TaskFunction::~TaskFunction() { MVPN_COUNT_DTOR(TaskFunction); }
+TaskFunction::~TaskFunction() { MZ_COUNT_DTOR(TaskFunction); }
 
 void TaskFunction::run() {
   m_callback();

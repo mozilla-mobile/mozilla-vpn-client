@@ -21,6 +21,7 @@ SOURCES += \
         apps/vpn/addons/manager/addondirectory.cpp \
         apps/vpn/addons/manager/addonindex.cpp \
         apps/vpn/addons/manager/addonmanager.cpp \
+        apps/vpn/appconstants.cpp \
         apps/vpn/apppermission.cpp \
         apps/vpn/authenticationlistener.cpp \
         apps/vpn/authenticationinapp/authenticationinapp.cpp \
@@ -59,9 +60,7 @@ SOURCES += \
         apps/vpn/connectionbenchmark/connectionbenchmark.cpp \
         apps/vpn/connectionbenchmark/uploaddatagenerator.cpp \
         apps/vpn/connectionhealth.cpp \
-        apps/vpn/constants.cpp \
         apps/vpn/controller.cpp \
-        apps/vpn/cryptosettings.cpp \
         apps/vpn/dnshelper.cpp \
         apps/vpn/dnspingsender.cpp \
         apps/vpn/errorhandler.cpp \
@@ -86,7 +85,6 @@ SOURCES += \
         apps/vpn/main.cpp \
         apps/vpn/models/device.cpp \
         apps/vpn/models/devicemodel.cpp \
-        apps/vpn/models/feature.cpp \
         apps/vpn/models/featuremodel.cpp \
         apps/vpn/models/feedbackcategorymodel.cpp \
         apps/vpn/models/keys.cpp \
@@ -120,7 +118,6 @@ SOURCES += \
         apps/vpn/releasemonitor.cpp \
         apps/vpn/serveri18n.cpp \
         apps/vpn/serverlatency.cpp \
-        apps/vpn/settingsholder.cpp \
         apps/vpn/signature.cpp \
         apps/vpn/simplenetworkmanager.cpp \
         apps/vpn/statusicon.cpp \
@@ -179,6 +176,7 @@ HEADERS += \
         apps/vpn/addons/manager/addondirectory.h \
         apps/vpn/addons/manager/addonindex.h \
         apps/vpn/addons/manager/addonmanager.h \
+        apps/vpn/appconstants.h \
         apps/vpn/appimageprovider.h \
         apps/vpn/apppermission.h \
         apps/vpn/applistprovider.h \
@@ -220,13 +218,10 @@ HEADERS += \
         apps/vpn/connectionbenchmark/connectionbenchmark.h \
         apps/vpn/connectionbenchmark/uploaddatagenerator.h \
         apps/vpn/connectionhealth.h \
-        apps/vpn/constants.h \
         apps/vpn/controller.h \
         apps/vpn/controllerimpl.h \
-        apps/vpn/cryptosettings.h \
         apps/vpn/dnshelper.h \
         apps/vpn/dnspingsender.h \
-        apps/vpn/env.h \
         apps/vpn/errorhandler.h \
         apps/vpn/externalophandler.h \
         apps/vpn/filterproxymodel.h \
@@ -250,7 +245,6 @@ HEADERS += \
         apps/vpn/logoutobserver.h \
         apps/vpn/models/device.h \
         apps/vpn/models/devicemodel.h \
-        apps/vpn/models/feature.h \
         apps/vpn/models/featuremodel.h \
         apps/vpn/models/feedbackcategorymodel.h \
         apps/vpn/models/keys.h \
@@ -285,7 +279,6 @@ HEADERS += \
         apps/vpn/releasemonitor.h \
         apps/vpn/serveri18n.h \
         apps/vpn/serverlatency.h \
-        apps/vpn/settingsholder.h \
         apps/vpn/signature.h \
         apps/vpn/simplenetworkmanager.h \
         apps/vpn/statusicon.h \
@@ -323,11 +316,6 @@ HEADERS += \
         apps/vpn/websocket/pushmessage.h \
         apps/vpn/websocket/websockethandler.h
 
-# Signal handling for unix platforms
-unix {
-    SOURCES += apps/vpn/signalhandler.cpp
-    HEADERS += apps/vpn/signalhandler.h
-}
 
 RESOURCES += apps/vpn/ui/resources.qrc
 RESOURCES += apps/vpn/ui/license.qrc

@@ -19,7 +19,7 @@ TaskControllerAction::TaskControllerAction(
     : Task("TaskControllerAction"),
       m_action(action),
       m_lastState(Controller::State::StateOff) {
-  MVPN_COUNT_CTOR(TaskControllerAction);
+  MZ_COUNT_CTOR(TaskControllerAction);
 
   logger.debug() << "TaskControllerAction created for"
                  << (action == eActivate ? "activation" : "deactivation");
@@ -28,7 +28,7 @@ TaskControllerAction::TaskControllerAction(
 }
 
 TaskControllerAction::~TaskControllerAction() {
-  MVPN_COUNT_DTOR(TaskControllerAction);
+  MZ_COUNT_DTOR(TaskControllerAction);
 }
 
 void TaskControllerAction::run() {

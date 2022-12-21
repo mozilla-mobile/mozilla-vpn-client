@@ -67,7 +67,7 @@ ColumnLayout {
         ToolTip {
             property bool _isSignUp: VPNAuthInApp.state === VPNAuthInApp.StateSignUp
             id: toolTip
-            visible: _isSignUp && passwordInput.activeFocus
+            visible: _isSignUp && passwordInput.text.length > 0 && passwordInput.activeFocus
             padding: VPNTheme.theme.windowMargin
             x: VPNTheme.theme.vSpacing
             y: passwordInput.y - height - 4

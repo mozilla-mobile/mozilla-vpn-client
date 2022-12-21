@@ -14,10 +14,17 @@ set_property(TARGET shared-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-# VPN Client source files
+# Shared components
 target_sources(shared-sources INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/constants.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/constants.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/cryptosettings.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/cryptosettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/curve25519.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/curve25519.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/env.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/feature.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/feature.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/fontloader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/fontloader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c
@@ -46,9 +53,23 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/rfc/rfc4291.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/rfc/rfc5735.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/rfc/rfc5735.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/settingsholder.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/settingsholder.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/task.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/taskscheduler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/taskscheduler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/temporarydir.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/temporarydir.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/versionutils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/versionutils.h
 )
+
+# Signal handling for unix platforms
+if(UNIX)
+     target_sources(shared-sources INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/shared/signalhandler.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/shared/signalhandler.h
+     )
+endif()
+
+include(${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/${MZ_PLATFORM_NAME}/sources.cmake)

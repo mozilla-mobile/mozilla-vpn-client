@@ -17,7 +17,6 @@
 
 #include "androidutils.h"
 #include "androidvpnactivity.h"
-#include "constants.h"
 #include "jni.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -50,7 +49,7 @@ void AndroidGlean::initialize(QQmlEngine* engine) {
 }
 
 AndroidGlean::AndroidGlean(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(AndroidGlean);
+  MZ_COUNT_CTOR(AndroidGlean);
   Q_ASSERT(!s_instance);
   logger.debug() << "Connect Glean stuff";
   auto vpn = MozillaVPN::instance();
@@ -75,7 +74,7 @@ AndroidGlean::AndroidGlean(QObject* parent) : QObject(parent) {
 }
 
 AndroidGlean::~AndroidGlean() {
-  MVPN_COUNT_DTOR(AndroidGlean);
+  MZ_COUNT_DTOR(AndroidGlean);
 
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;

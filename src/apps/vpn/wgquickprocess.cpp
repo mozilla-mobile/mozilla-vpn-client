@@ -68,7 +68,7 @@ QString WgQuickProcess::createConfigString(
   //
   // This function should go away as soon as we fixup the Mac implementation
   // anyways.
-#if !defined(MVPN_WINDOWS) && !defined(MVPN_MACOS)
+#if !defined(MZ_WINDOWS) && !defined(MZ_MACOS)
   out << "\n[Peer]\n";
   out << "PublicKey = " << config.m_serverPublicKey << "\n";
   out << "Endpoint = " << config.m_serverIpv4AddrIn.toUtf8() << ":"
@@ -86,7 +86,7 @@ QString WgQuickProcess::createConfigString(
   out << "AllowedIPs = " << ranges.join(", ") << "\n";
 #endif
 
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
   logger.debug() << content;
 #endif
   return content;

@@ -26,7 +26,7 @@ Logger logger("LinuxController");
 }
 
 LinuxController::LinuxController() {
-  MVPN_COUNT_CTOR(LinuxController);
+  MZ_COUNT_CTOR(LinuxController);
 
   m_dbus = new DBusClient(this);
   connect(m_dbus, &DBusClient::connected, this, &LinuxController::connected);
@@ -34,7 +34,7 @@ LinuxController::LinuxController() {
           &LinuxController::disconnected);
 }
 
-LinuxController::~LinuxController() { MVPN_COUNT_DTOR(LinuxController); }
+LinuxController::~LinuxController() { MZ_COUNT_DTOR(LinuxController); }
 
 void LinuxController::initialize(const Device* device, const Keys* keys) {
   Q_UNUSED(device);
@@ -68,7 +68,7 @@ void LinuxController::initializeCompleted(QDBusPendingCallWatcher* call) {
 }
 
 void LinuxController::activate(const HopConnection& hop, const Device* device,
-                               const Keys* keys, Reason reason) {
+                               const Keys* keys, Controller::Reason reason) {
   Q_UNUSED(reason);
 
   connect(
@@ -81,10 +81,10 @@ void LinuxController::activate(const HopConnection& hop, const Device* device,
   logger.debug() << "LinuxController activated";
 }
 
-void LinuxController::deactivate(Reason reason) {
+void LinuxController::deactivate(Controller::Reason reason) {
   logger.debug() << "LinuxController deactivated";
 
-  if (reason == ReasonSwitching) {
+  if (reason == Controller::ReasonSwitching) {
     logger.debug() << "No disconnect for quick server switching";
     emit disconnected();
     return;

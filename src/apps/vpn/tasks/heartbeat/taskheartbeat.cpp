@@ -17,10 +17,10 @@ Logger logger("TaskHeartbeat");
 }
 
 TaskHeartbeat::TaskHeartbeat() : Task("TaskHeartbeat") {
-  MVPN_COUNT_CTOR(TaskHeartbeat);
+  MZ_COUNT_CTOR(TaskHeartbeat);
 }
 
-TaskHeartbeat::~TaskHeartbeat() { MVPN_COUNT_DTOR(TaskHeartbeat); }
+TaskHeartbeat::~TaskHeartbeat() { MZ_COUNT_DTOR(TaskHeartbeat); }
 
 void TaskHeartbeat::run() {
   NetworkRequest* request = NetworkRequest::createForHeartbeat(this);

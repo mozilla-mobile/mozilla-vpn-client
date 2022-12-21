@@ -133,8 +133,6 @@ describe('Settings', function () {
     await vpn.clickOnElement(settingsScreen.NETWORK_SETTINGS);
     await vpn.wait();
 
-    await checkSetting('settingLocalNetworkAccess', 'localNetworkAccess');
-
     await vpn.waitForElement(settingsScreen.BACK);
     await vpn.waitForElementProperty(settingsScreen.BACK, 'visible', 'true');
     await vpn.clickOnElement(settingsScreen.BACK);
@@ -376,7 +374,7 @@ describe('Settings', function () {
     await vpn.clickOnElement(getHelpScreen.HELP_CENTER);
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
-      return url.endsWith('/r/vpn/support');
+      return url.endsWith('/firefox-private-network-vpn');
     });
 
     await vpn.wait();

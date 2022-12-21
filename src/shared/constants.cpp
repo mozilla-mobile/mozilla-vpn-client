@@ -14,20 +14,11 @@
 
 namespace {
 bool s_inProduction = true;
-QString s_stagingServerAddress = "";
 }  // namespace
 
 bool Constants::inProduction() { return s_inProduction; }
 
-const QString& Constants::getStagingServerAddress() {
-  return s_stagingServerAddress;
-}
-
-void Constants::setStaging() {
-  s_inProduction = false;
-  s_stagingServerAddress = SettingsHolder::instance()->stagingServerAddress();
-  Q_ASSERT(!s_stagingServerAddress.isEmpty());
-}
+void Constants::setStaging() { s_inProduction = false; }
 
 QString Constants::versionString() { return QStringLiteral(APP_VERSION); }
 

@@ -8,11 +8,11 @@
 
 #include <QDir>
 
-#include "constants.h"
+#include "appconstants.h"
+#include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
-#include "models/feature.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #include "tasks/sentry/tasksentry.h"
@@ -30,15 +30,15 @@ SentryAdapter* SentryAdapter::instance() {
   }
   return s_instance;
 }
-SentryAdapter::SentryAdapter() { MVPN_COUNT_CTOR(SentryAdapter); }
-SentryAdapter::~SentryAdapter() { MVPN_COUNT_DTOR(SentryAdapter); }
+SentryAdapter::SentryAdapter() { MZ_COUNT_CTOR(SentryAdapter); }
+SentryAdapter::~SentryAdapter() { MZ_COUNT_DTOR(SentryAdapter); }
 
 void SentryAdapter::init() {
   if (!Feature::get(Feature::Feature_sentry)->isSupported()) {
     return;
   }
-  if (QString(Constants::SENTRY_DSN_ENDPOINT).isEmpty() ||
-      QString(Constants::SENTRY_ENVELOPE_INGESTION).isEmpty()) {
+  if (QString(AppConstants::SENTRY_DSN_ENDPOINT).isEmpty() ||
+      QString(AppConstants::SENTRY_ENVELOPE_INGESTION).isEmpty()) {
     logger.error() << "Sentry failed to init, no sentry config present";
     return;
   }
@@ -56,7 +56,7 @@ void SentryAdapter::init() {
           &SentryAdapter::onLoglineAdded);
 
   sentry_options_t* options = sentry_options_new();
-  sentry_options_set_dsn(options, Constants::SENTRY_DSN_ENDPOINT);
+  sentry_options_set_dsn(options, AppConstants::SENTRY_DSN_ENDPOINT);
   sentry_options_set_environment(
       options, Constants::inProduction() ? "production" : "stage");
   sentry_options_set_release(

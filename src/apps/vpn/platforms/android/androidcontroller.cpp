@@ -33,7 +33,7 @@ AndroidController* s_instance = nullptr;
 }  // namespace
 
 AndroidController::AndroidController() {
-  MVPN_COUNT_CTOR(AndroidController);
+  MZ_COUNT_CTOR(AndroidController);
   s_instance = this;
 
   auto activity = AndroidVPNActivity::instance();
@@ -96,7 +96,7 @@ AndroidController::AndroidController() {
       []() { REPORTERROR(ErrorHandler::ControllerError, "controller"); },
       Qt::QueuedConnection);
 }
-AndroidController::~AndroidController() { MVPN_COUNT_DTOR(AndroidController); }
+AndroidController::~AndroidController() { MZ_COUNT_DTOR(AndroidController); }
 
 void AndroidController::initialize(const Device* device, const Keys* keys) {
   logger.debug() << "Initializing";
@@ -108,7 +108,7 @@ void AndroidController::initialize(const Device* device, const Keys* keys) {
 }
 
 void AndroidController::activate(const HopConnection& hop, const Device* device,
-                                 const Keys* keys, Reason reason) {
+                                 const Keys* keys, Controller::Reason reason) {
   Q_ASSERT(hop.m_hopindex == 0);
   logger.debug() << "Activation";
 
@@ -194,10 +194,10 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
                                     doc.toJson());
 }
 
-void AndroidController::deactivate(Reason reason) {
+void AndroidController::deactivate(Controller::Reason reason) {
   logger.debug() << "deactivation";
 
-  if (reason != ReasonNone) {
+  if (reason != Controller::ReasonNone) {
     // Just show that we're disconnected
     // we're doing the actual disconnect once
     // the vpn-service has the new server ready in Action->Activate

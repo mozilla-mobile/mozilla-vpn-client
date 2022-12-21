@@ -4,7 +4,7 @@
 
 #include "releasemonitor.h"
 
-#include "constants.h"
+#include "appconstants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -17,7 +17,7 @@ Logger logger("ReleaseMonitor");
 }
 
 ReleaseMonitor::ReleaseMonitor() {
-  MVPN_COUNT_CTOR(ReleaseMonitor);
+  MZ_COUNT_CTOR(ReleaseMonitor);
 
   m_timer.setSingleShot(true);
   connect(&m_timer, &QTimer::timeout, this, [this]() {
@@ -25,7 +25,7 @@ ReleaseMonitor::ReleaseMonitor() {
   });
 }
 
-ReleaseMonitor::~ReleaseMonitor() { MVPN_COUNT_DTOR(ReleaseMonitor); }
+ReleaseMonitor::~ReleaseMonitor() { MZ_COUNT_DTOR(ReleaseMonitor); }
 
 void ReleaseMonitor::runSoon(
     ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy) {
@@ -50,7 +50,7 @@ void ReleaseMonitor::runSoon(
 
 void ReleaseMonitor::schedule() {
   logger.debug() << "ReleaseMonitor scheduling";
-  m_timer.start(Constants::releaseMonitorMsec());
+  m_timer.start(AppConstants::releaseMonitorMsec());
 }
 
 void ReleaseMonitor::updateRequired() {

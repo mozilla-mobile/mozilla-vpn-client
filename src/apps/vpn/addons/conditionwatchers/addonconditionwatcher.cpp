@@ -8,9 +8,9 @@
 
 AddonConditionWatcher::AddonConditionWatcher(QObject* parent)
     : QObject(parent) {
-  MVPN_COUNT_CTOR(AddonConditionWatcher);
+  MZ_COUNT_CTOR(AddonConditionWatcher);
 }
 
 AddonConditionWatcher::~AddonConditionWatcher() {
-  MVPN_COUNT_DTOR(AddonConditionWatcher);
+  MZ_COUNT_DTOR(AddonConditionWatcher);
 }

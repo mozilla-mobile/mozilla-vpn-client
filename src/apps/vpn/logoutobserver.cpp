@@ -8,7 +8,7 @@
 #include "mozillavpn.h"
 
 LogoutObserver::LogoutObserver(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(LogoutObserver);
+  MZ_COUNT_CTOR(LogoutObserver);
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn->userState() == MozillaVPN::UserLoggingOut);
@@ -17,7 +17,7 @@ LogoutObserver::LogoutObserver(QObject* parent) : QObject(parent) {
           &LogoutObserver::userStateChanged);
 }
 
-LogoutObserver::~LogoutObserver() { MVPN_COUNT_DTOR(LogoutObserver); }
+LogoutObserver::~LogoutObserver() { MZ_COUNT_DTOR(LogoutObserver); }
 
 void LogoutObserver::userStateChanged() {
   MozillaVPN* vpn = MozillaVPN::instance();

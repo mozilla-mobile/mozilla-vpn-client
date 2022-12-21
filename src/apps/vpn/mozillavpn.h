@@ -16,7 +16,6 @@
 #include "captiveportal/captiveportaldetection.h"
 #include "connectionbenchmark/connectionbenchmark.h"
 #include "connectionhealth.h"
-#include "constants.h"
 #include "controller.h"
 #include "env.h"
 #include "errorhandler.h"
@@ -90,6 +89,7 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
   Q_PROPERTY(bool stagingMode READ stagingMode CONSTANT)
   Q_PROPERTY(bool debugMode READ debugMode CONSTANT)
+  Q_PROPERTY(QString placeholderUserDNS READ placeholderUserDNS CONSTANT)
 
  public:
   MozillaVPN();
@@ -144,7 +144,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void requestDeleteAccount();
   Q_INVOKABLE void cancelReauthentication();
   Q_INVOKABLE void updateViewShown();
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
   Q_INVOKABLE void launchPlayStore();
 #endif
   Q_INVOKABLE void requestViewLogs();
@@ -294,6 +294,8 @@ class MozillaVPN final : public QObject {
   void maybeRegenerateDeviceKey();
 
   bool checkCurrentDevice();
+
+  QString placeholderUserDNS() const;
 
  public slots:
   void requestAbout();

@@ -6,7 +6,7 @@
 
 #include <QObject>
 
-#ifdef MVPN_WINDOWS
+#ifdef MZ_WINDOWS
 #  include "platforms/windows/windowscrashclient.h"
 #endif
 
@@ -15,7 +15,7 @@ using namespace std;
 CrashServerClientFactory::CrashServerClientFactory() {}
 
 shared_ptr<CrashServerClient> CrashServerClientFactory::create() {
-#ifdef MVPN_WINDOWS
+#ifdef MZ_WINDOWS
   return make_shared<WindowsCrashClient>();
 #endif
   Q_ASSERT(false);
