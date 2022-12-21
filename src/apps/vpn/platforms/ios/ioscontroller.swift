@@ -263,20 +263,20 @@ public class IOSControllerImpl : NSObject {
     * We are setting a rule matching * any network change
     * which will cause the phone to start the VPN after the phone boots.
     *
-    * Note: For the Setting to be applied to the iOS settings: 
-    *       tunnel!.saveToPreferences needs to be called.  
     * @param setEnabled: bool If the rule should be added or removed.
     **/
     @objc func setAlwaysOn(setEnabled: Bool){
         if(!setEnabled){
             tunnel!.isOnDemandEnabled = false;
             tunnel!.onDemandRules = []
+            tunnel!.saveToPreferences()
             return;
         }
         let alwaysConnect = NEOnDemandRuleConnect()
         alwaysConnect.interfaceTypeMatch = .any
         tunnel!.isOnDemandEnabled = true
         tunnel!.onDemandRules = [alwaysConnect]
+        tunnel!.saveToPreferences()
     }
     
     @objc func getAlwaysOn() -> Bool{

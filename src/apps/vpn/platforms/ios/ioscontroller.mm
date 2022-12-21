@@ -60,6 +60,8 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
     }
     importAlwaysOnSetting();
   });
+  connect(SettingsHolder::instance(), &SettingsHolder::startAtBootChanged, this,
+          &IOSController::onAlwaysOnSettingChanged);
 
   static bool creating = false;
   // No nested creation!
@@ -264,5 +266,13 @@ void IOSController::importAlwaysOnSetting() {
     if (SettingsHolder::instance()->startAtBoot() != userSetAlwaysOn) {
       SettingsHolder::instance()->setStartAtBoot(userSetAlwaysOn);
     }
+  }
+}
+
+void IOSController::onAlwaysOnSettingChanged() {
+  bool iosSystemAlwaysON = [impl getAlwaysOn];
+  bool vpnClientAlwaysOn = SettingsHolder::instance()->startAtBoot();
+  if (vpnClientAlwaysOn != iosSystemAlwaysON) {
+    [impl setAlwaysOnSetEnabled:vpnClientAlwaysOn];
   }
 }

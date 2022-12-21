@@ -37,6 +37,11 @@ class IOSController final : public ControllerImpl {
    */
   void importAlwaysOnSetting();
 
+  /**
+   * @brief Called when the Client's always on value changed
+   */
+  void onAlwaysOnSettingChanged();
+
   bool m_checkingStatus = false;
   QString m_serverPublicKey;
 };
