@@ -34,7 +34,7 @@ class VPNTileService : android.service.quicksettings.TileService() {
                     val config = JSONObject(json)
                     mState = if (config.getBoolean("connected")) State.Connected else State.Disconnected
                     mCity = config.getString("city")
-                    if (!config.getBoolean("canActivate", true)) {
+                    if (!config.getBoolean("canActivate")) {
                         mState = State.Unknown
                     }
                 }

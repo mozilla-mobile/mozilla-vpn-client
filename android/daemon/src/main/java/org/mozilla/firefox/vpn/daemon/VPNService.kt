@@ -164,13 +164,18 @@ class VPNService : android.net.VpnService() {
         get() {
             return mConnectionTime
         }
+
+    /**
+    * Checks if there is a config loaded 
+    * or some available in the Storage to fetch.
+    * if this is false calling {reconnect()} will abort.
+    * @returns whether a config is found.
+    */
     var canActivate: Boolean = false
         get() {
             if (mConfig != null) {
-                // We have a config in the runtime, can do
                 return true
             }
-            // Return what we have in the
             val lastConfString = Prefs.get(this).getString("lastConf", "")
             return !lastConfString.isNullOrEmpty()
         }
