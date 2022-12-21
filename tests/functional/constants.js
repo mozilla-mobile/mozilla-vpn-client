@@ -9,5 +9,5 @@ module.exports = {
   WASM_PORT : 3002,
   ADDON_PORT : 3003,
   ADDON_URL : 'http://localhost:3003',
-  UPLOAD_BENCHMARK_PORT: 3003,
+  UPLOAD_BENCHMARK_PORT: 3004,
 };

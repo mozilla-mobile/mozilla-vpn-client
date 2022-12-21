@@ -60,7 +60,7 @@ exports.mochaHooks = {
         `http://localhost:${addonServer.start()}/01_empty_manifest/`;
     process.env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';
     process.env['MVPN_BENCHMARK_URL'] =
-    `http://localhost:${networkBenchmark.start()}`;
+        `http://localhost:${networkBenchmark.start()}`;
   },
 
   async afterAll() {
