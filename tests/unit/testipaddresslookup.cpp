@@ -4,10 +4,9 @@
 
 #include "testipaddresslookup.h"
 
-#include "../../src/constants.h"
-#include "../../src/ipaddresslookup.h"
-#include "../../src/settingsholder.h"
 #include "helper.h"
+#include "ipaddresslookup.h"
+#include "settingsholder.h"
 
 void TestIpAddressLookup::checkIpAddressFailure() {
   IpAddressLookup ial;

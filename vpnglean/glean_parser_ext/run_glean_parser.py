@@ -92,7 +92,7 @@ if __name__ == "__main__":
 
         yaml_files_path = os.path.join(workspace_root, "glean")
         generated_rust_files_path = os.path.join(workspace_root, "vpnglean", "src", "generated")
-        generated_cpp_files_path = os.path.join(workspace_root, "src", "glean", "generated")
+        generated_cpp_files_path = os.path.join(workspace_root, "src", "apps", "vpn", "glean", "generated")
 
         create_dir(generated_rust_files_path)
         create_dir(generated_cpp_files_path)

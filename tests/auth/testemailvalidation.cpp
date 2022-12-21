@@ -7,7 +7,7 @@
 #include <QDebug>
 #include <QTest>
 
-#include "../../src/authenticationinapp/authenticationinapp.h"
+#include "authenticationinapp/authenticationinapp.h"
 
 void TestEmailValidation::basic_data() {
   QTest::addColumn<QString>("input");

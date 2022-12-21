@@ -4,8 +4,8 @@
 
 #include "testlocalizer.h"
 
-#include "../../src/localizer.h"
 #include "helper.h"
+#include "localizer.h"
 #include "settingsholder.h"
 
 void TestLocalizer::basic() {

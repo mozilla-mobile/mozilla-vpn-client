@@ -33,7 +33,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     if(RUSTC_VERSION_RAW MATCHES "host: ([^\n]+)")
         set(RUSTC_HOST_ARCH ${CMAKE_MATCH_1})
     else()
-        error("Failed to find rustc host arch")
+        message(FATAL_ERROR "Failed to find rustc host arch")
     endif()
 
     if(NOT CMAKE_CROSSCOMPILING)
@@ -112,7 +112,7 @@ if(NOT SKIP_GLEAN_PARSER)
     # Prepare for generating Glean metrics and pings files
     # Note: the next steps are not required by run_glean_parser, but by CMake quirks.
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/generated)
-    file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../src/glean/generated)
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../src/apps/vpn/glean/generated)
     # 1. Because both the metrics.h and pings.h files have class declarations
     # of objects that extend QObject, these files need to be in the main MozillaVPN
     # target otherwise we run into linker issues e.g. undefined reference to `vtable for __DONOTUSE__GleanPings'.
@@ -125,8 +125,8 @@ if(NOT SKIP_GLEAN_PARSER)
     # The solution is to generate empty files at build setup time so that we can
     # add them as sources to other target and still not have Cmake freak out.
     # Actual generation happen when the `run_glean_parser` command is executed.
-    file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/../src/glean/generated/metrics.h)
-    file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/../src/glean/generated/pings.h)
+    file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/../src/apps/vpn/glean/generated/metrics.h)
+    file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/../src/apps/vpn/glean/generated/pings.h)
 else()
     set(GENERATE_GLEAN_CMD echo "Skipping glean_parser step.")
 endif()
@@ -134,8 +134,8 @@ endif()
 ## Generate metrics and pings files
 add_custom_target(vpnglean_telemetry
     BYPRODUCTS
-        ${CMAKE_CURRENT_SOURCE_DIR}/../src/glean/generated/metrics.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/../src/glean/generated/pings.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src/apps/vpn/glean/generated/metrics.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src/apps/vpn/glean/generated/pings.h
         ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.rs
         ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.rs
     DEPENDS

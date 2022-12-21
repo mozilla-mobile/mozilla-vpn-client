@@ -6,11 +6,10 @@
 
 #include <QtMath>
 
-#include "../../src/constants.h"
-#include "../../src/mozillavpn.h"
-#include "../../src/settingsholder.h"
-#include "../../src/websocket/exponentialbackoffstrategy.h"
 #include "helper.h"
+#include "mozillavpn.h"
+#include "settingsholder.h"
+#include "websocket/exponentialbackoffstrategy.h"
 
 void TestExponentialBackoffStrategy::
     tst_reconnectionBackoffTimeExponentiallyIncreases() {

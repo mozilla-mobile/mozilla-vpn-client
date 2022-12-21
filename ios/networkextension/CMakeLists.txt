@@ -61,9 +61,9 @@ target_sources(networkextension PRIVATE
     ${WG_APPLE_SOURCE_DIR}/WireGuardKit/Array+ConcurrentMap.swift
     ${WG_APPLE_SOURCE_DIR}/WireGuardKit/IPAddress+AddrInfo.swift
     ${WG_APPLE_SOURCE_DIR}/WireGuardKit/PrivateKey.swift
-    ${CMAKE_SOURCE_DIR}/src/platforms/ios/iostunnel.swift
-    ${CMAKE_SOURCE_DIR}/src/platforms/ios/iosglue.mm
-    ${CMAKE_SOURCE_DIR}/src/platforms/ios/ioslogger.swift
+    ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/ios/iostunnel.swift
+    ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/ios/iosglue.mm
+    ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/ios/ioslogger.swift
 )
 
 ## Build wireguard-go-version.h
@@ -94,7 +94,7 @@ endif()
 ## TODO: The upstream makefile also makes an attempt to patch the golang runtime
 ## to provide the boot-time clock instead of an uptime clock. We should probably
 ## make an attempt to do the same, somehow?
-include(${CMAKE_SOURCE_DIR}/src/cmake/golang.cmake)
+include(${CMAKE_SOURCE_DIR}/src/apps/vpn/cmake/golang.cmake)
 if(OSXARCH STREQUAL "x86_64")
     set(GOARCH amd64)
 else()

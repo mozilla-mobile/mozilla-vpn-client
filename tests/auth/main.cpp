@@ -5,12 +5,12 @@
 #include <QCoreApplication>
 #include <QtTest/QtTest>
 
-#include "../../src/authenticationinapp/authenticationinapp.h"
-#include "../../src/constants.h"
-#include "../../src/leakdetector.h"
-#include "../../src/loghandler.h"
-#include "../../src/settingsholder.h"
-#include "../../src/simplenetworkmanager.h"
+#include "appconstants.h"
+#include "authenticationinapp/authenticationinapp.h"
+#include "leakdetector.h"
+#include "loghandler.h"
+#include "settingsholder.h"
+#include "simplenetworkmanager.h"
 #include "testemailvalidation.h"
 #include "testpasswordvalidation.h"
 #include "testsignupandin.h"
@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
 #endif
 
   SettingsHolder settingsHolder;
-  Constants::setStaging();
+  AppConstants::setStaging();
 
   QCoreApplication a(argc, argv);
 
@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
   settingsHolder.setFeaturesFlippedOn(QStringList{
       "inAppAccountCreate", "inAppAuthentication", "accountDeletion"});
 
-  LogHandler::enableDebug();
+  LogHandler::enableStderr();
 
   int failures = 0;
   TestEmailValidation tev;

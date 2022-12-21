@@ -4,8 +4,8 @@
 
 #include "testcommandlineparser.h"
 
-#include "../../src/command.h"
-#include "../../src/commandlineparser.h"
+#include "command.h"
+#include "commandlineparser.h"
 
 namespace {
 bool s_executed = false;

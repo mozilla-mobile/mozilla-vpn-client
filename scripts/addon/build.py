@@ -6,7 +6,7 @@
 import argparse
 import json
 import os
-from lxml import etree as ET
+import xml.etree.ElementTree as ET
 import tempfile
 import shutil
 import sys
@@ -204,7 +204,7 @@ def write_en_language(filename, strings):
             extracomment.text = value["comments"]
 
     with open(filename, "w", encoding="utf-8") as f:
-        f.write(ET.tostring(ts, encoding="unicode", pretty_print=True))
+        f.write(ET.tostring(ts, encoding="unicode"))
 
 
 def copy_files(path, dest_path):

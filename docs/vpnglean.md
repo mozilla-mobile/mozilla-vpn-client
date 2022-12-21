@@ -55,7 +55,7 @@ Glean Rust core library -- read more on this on the "Adding Glean to mobile buil
 ## Architecture
 
 The Glean integration code on the Mozilla VPN codebase can be found mostly under the `/vpnglean`
-folder plus a small extension on the `src/glean` folder.
+folder plus a small extension on the `src/apps/vpn/glean` folder.
 
 ```
 ├── src                      Bulk of the MozillaVPN source code
@@ -213,9 +213,9 @@ pub extern "C" fn glean_boolean_set(id: u32, value: bool) {
 With the macro expanded we can see the `BOOLEAN_MAP` is queried using the metric id in order to access the concrete metric instance
 and once that is found -- if it is found -- the metric API is called on it.
 
-### `src/glean`
+### `src/apps/vpn/glean`
 
-The `src/glean` module is where these exposed FFI functions are called.
+The `src/apps/vpn/glean` module is where these exposed FFI functions are called.
 
 Let's look at the C++ implementation of the `BooleanMetric`.
 

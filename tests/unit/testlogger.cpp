@@ -4,9 +4,9 @@
 
 #include "testlogger.h"
 
-#include "../../src/logger.h"
-#include "../../src/loghandler.h"
 #include "helper.h"
+#include "logger.h"
+#include "loghandler.h"
 
 void TestLogger::logger() {
   Logger l("class");

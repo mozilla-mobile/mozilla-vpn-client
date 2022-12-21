@@ -70,7 +70,7 @@ if(APPLE)
 endif()
 
 if(ANDROID)
-    include(src/cmake/android_openssl.cmake)
+    include(src/apps/vpn/cmake/android_openssl.cmake)
 endif()
 
 if(NOT DEFINED BUILD_ID)
@@ -79,7 +79,7 @@ if(NOT DEFINED BUILD_ID)
 endif()
 
 ## Toolchain Setup
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.17)
     cmake_policy(SET CMP0099 OLD)
@@ -87,10 +87,10 @@ endif()
 
 find_program(PYTHON_EXECUTABLE NAMES python3)
 if(MSVC)
-    include(src/cmake/msvc.cmake)
+    include(src/apps/vpn/cmake/msvc.cmake)
 endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang$")
-    include(src/cmake/clang.cmake)
+    include(src/apps/vpn/cmake/clang.cmake)
 endif()
 
 set(CMAKE_AUTOMOC ON)

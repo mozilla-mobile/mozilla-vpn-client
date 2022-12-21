@@ -9,8 +9,8 @@
 #include <QVector>
 #include <QtTest/QtTest>
 
-#include "../../src/controller.h"
-#include "../../src/mozillavpn.h"
+#include "controller.h"
+#include "mozillavpn.h"
 
 class TestHelper : public QObject {
   Q_OBJECT

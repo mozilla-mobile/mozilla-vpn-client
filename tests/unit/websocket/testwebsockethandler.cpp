@@ -7,11 +7,10 @@
 #include <QtMath>
 #include <QtWebSockets/QWebSocketServer>
 
-#include "../../src/constants.h"
-#include "../../src/mozillavpn.h"
-#include "../../src/settingsholder.h"
-#include "../../src/websocket/websockethandler.h"
 #include "helper.h"
+#include "mozillavpn.h"
+#include "settingsholder.h"
+#include "websocket/websockethandler.h"
 
 /**
  * @brief Construct a new Mock Server:: Mock Server object
