@@ -65,7 +65,6 @@ SOURCES += \
         apps/vpn/dnspingsender.cpp \
         apps/vpn/errorhandler.cpp \
         apps/vpn/externalophandler.cpp \
-        apps/vpn/filterproxymodel.cpp \
         apps/vpn/frontend/navigator.cpp \
         apps/vpn/frontend/navigatorreloader.cpp \
         apps/vpn/glean/glean.cpp \
@@ -77,7 +76,6 @@ SOURCES += \
         apps/vpn/inspector/inspectorwebsocketconnection.cpp \
         apps/vpn/inspector/inspectorwebsocketserver.cpp \
         apps/vpn/ipaddresslookup.cpp \
-        apps/vpn/itempicker.cpp \
         apps/vpn/localizer.cpp \
         apps/vpn/logoutobserver.cpp \
         apps/vpn/main.cpp \
@@ -218,7 +216,6 @@ HEADERS += \
         apps/vpn/dnspingsender.h \
         apps/vpn/errorhandler.h \
         apps/vpn/externalophandler.h \
-        apps/vpn/filterproxymodel.h \
         apps/vpn/frontend/navigator.h \
         apps/vpn/frontend/navigatorreloader.h \
         apps/vpn/glean/glean.h \
@@ -230,7 +227,6 @@ HEADERS += \
         apps/vpn/inspector/inspectorwebsocketconnection.h \
         apps/vpn/inspector/inspectorwebsocketserver.h \
         apps/vpn/ipaddresslookup.h \
-        apps/vpn/itempicker.h \
         apps/vpn/localizer.h \
         apps/vpn/logoutobserver.h \
         apps/vpn/models/device.h \

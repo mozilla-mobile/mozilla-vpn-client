@@ -16,7 +16,7 @@ class FilterProxyModel : public QSortFilterProxyModel, public QQmlParserStatus {
   Q_DISABLE_COPY_MOVE(FilterProxyModel)
   Q_INTERFACES(QQmlParserStatus)
 
-  QML_NAMED_ELEMENT(VPNFilterProxyModel)
+  QML_NAMED_ELEMENT(MZFilterProxyModel)
 
   Q_PROPERTY(QJSValue filterCallback READ filterCallback WRITE setFilterCallback
                  NOTIFY filterCallbackChanged)

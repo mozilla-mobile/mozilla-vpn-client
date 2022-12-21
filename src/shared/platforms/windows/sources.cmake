@@ -3,6 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 target_sources(shared-sources INTERFACE
+     ${CMAKE_CURRENT_SOURCE_DIR}/shared/eventlistener.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/shared/eventlistener.h
      ${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/windows/windowscryptosettings.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/windows/windowsutils.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/windows/windowsutils.h

@@ -20,7 +20,7 @@ GridLayout {
         return addon.type === "guide" && customFilter(addon);
     }
 
-    VPNFilterProxyModel {
+    MZFilterProxyModel {
         id: guideModel
         source: VPNAddonManager
         filterCallback: ({ addon }) => guideFilter(addon)

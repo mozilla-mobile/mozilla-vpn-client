@@ -35,8 +35,6 @@ target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/interfaceconfig.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/iputils.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/wireguardutils.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/eventlistener.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/eventlistener.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/localsocketcontroller.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/localsocketcontroller.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowsapplistprovider.cpp 

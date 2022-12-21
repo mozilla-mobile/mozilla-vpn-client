@@ -13,7 +13,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "platforms/windows/daemon/wireguardutilswindows.h"
-#include "platforms/windows/windowscommons.h"
+#include "platforms/windows/windowsutils.h"
 
 namespace {
 Logger logger("WindowsDaemonTunnel");
@@ -52,7 +52,7 @@ int WindowsDaemonTunnel::run(QStringList& tokens) {
   // FreeLibrary.
   HMODULE tunnelLib = LoadLibrary(TEXT("tunnel.dll"));
   if (!tunnelLib) {
-    WindowsCommons::windowsLog("Failed to load tunnel.dll");
+    WindowsUtils::windowsLog("Failed to load tunnel.dll");
     return 1;
   }
 
@@ -62,7 +62,7 @@ int WindowsDaemonTunnel::run(QStringList& tokens) {
   WireGuardTunnelService* tunnelProc = (WireGuardTunnelService*)GetProcAddress(
       tunnelLib, "WireGuardTunnelService");
   if (!tunnelProc) {
-    WindowsCommons::windowsLog("Failed to get WireGuardTunnelService function");
+    WindowsUtils::windowsLog("Failed to get WireGuardTunnelService function");
     return 1;
   }
   auto name = WireguardUtilsWindows::s_interfaceName();

@@ -74,7 +74,7 @@ ColumnLayout {
         ]
     }
 
-    VPNFilterProxyModel {
+    MZFilterProxyModel {
         id: model
         filterCallback: _filterProxyCallback
         sortCallback: _sortProxyCallback

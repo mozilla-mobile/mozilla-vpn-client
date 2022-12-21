@@ -17,6 +17,7 @@
 #include <QtEndian>
 
 #include "logger.h"
+#include "platforms/windows/windowsutils.h"
 
 #define TUNNEL_SERVICE_NAME L"WireGuardTunnel$mozvpn"
 
@@ -24,27 +25,6 @@ constexpr const char* VPN_NAME = "MozillaVPN";
 
 namespace {
 Logger logger("WindowsCommons");
-}
-
-QString WindowsCommons::getErrorMessage() {
-  DWORD errorId = GetLastError();
-  LPSTR messageBuffer = nullptr;
-  size_t size = FormatMessageA(
-      FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
-          FORMAT_MESSAGE_IGNORE_INSERTS,
-      nullptr, errorId, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-      (LPSTR)&messageBuffer, 0, nullptr);
-
-  std::string message(messageBuffer, size);
-  QString result(message.c_str());
-  LocalFree(messageBuffer);
-  return result;
-}
-
-// A simple function to log windows error messages.
-void WindowsCommons::windowsLog(const QString& msg) {
-  QString errmsg = getErrorMessage();
-  logger.error() << msg << "-" << errmsg;
 }
 
 QString WindowsCommons::tunnelConfigFile() {
@@ -148,7 +128,7 @@ QString WindowsCommons::getCurrentPath() {
     ok = GetModuleFileNameA(NULL, buffer.data(), buffer.size());
   }
   if (ok == 0) {
-    WindowsCommons::windowsLog("Err fetching dos path");
+    WindowsUtils::windowsLog("Err fetching dos path");
     return "";
   }
   return QString::fromLocal8Bit(buffer);
