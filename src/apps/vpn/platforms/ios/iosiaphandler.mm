@@ -201,7 +201,7 @@ bool s_transactionsProcessed = false;
 @end
 
 IOSIAPHandler::IOSIAPHandler(QObject* parent) : PurchaseIAPHandler(parent) {
-  MVPN_COUNT_CTOR(IOSIAPHandler);
+  MZ_COUNT_CTOR(IOSIAPHandler);
 
   m_delegate = [[IOSIAPHandlerDelegate alloc] initWithObject:this];
   [[SKPaymentQueue defaultQueue]
@@ -209,7 +209,7 @@ IOSIAPHandler::IOSIAPHandler(QObject* parent) : PurchaseIAPHandler(parent) {
 }
 
 IOSIAPHandler::~IOSIAPHandler() {
-  MVPN_COUNT_DTOR(IOSIAPHandler);
+  MZ_COUNT_DTOR(IOSIAPHandler);
 
   IOSIAPHandlerDelegate* delegate = static_cast<IOSIAPHandlerDelegate*>(m_delegate);
   [[SKPaymentQueue defaultQueue] removeTransactionObserver:delegate];

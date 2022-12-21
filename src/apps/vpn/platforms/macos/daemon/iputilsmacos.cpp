@@ -28,12 +28,12 @@ Logger logger("IPUtilsMacos");
 }
 
 IPUtilsMacos::IPUtilsMacos(QObject* parent) : IPUtils(parent) {
-  MVPN_COUNT_CTOR(IPUtilsMacos);
+  MZ_COUNT_CTOR(IPUtilsMacos);
   logger.debug() << "IPUtilsMacos created.";
 }
 
 IPUtilsMacos::~IPUtilsMacos() {
-  MVPN_COUNT_DTOR(IPUtilsMacos);
+  MZ_COUNT_DTOR(IPUtilsMacos);
   logger.debug() << "IPUtilsMacos destroyed.";
 }
 

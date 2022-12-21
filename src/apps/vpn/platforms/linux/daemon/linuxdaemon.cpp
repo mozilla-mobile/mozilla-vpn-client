@@ -18,10 +18,10 @@ class CommandLinuxDaemon final : public Command {
  public:
   explicit CommandLinuxDaemon(QObject* parent)
       : Command(parent, "linuxdaemon", "Starts the linux daemon") {
-    MVPN_COUNT_CTOR(CommandLinuxDaemon);
+    MZ_COUNT_CTOR(CommandLinuxDaemon);
   }
 
-  ~CommandLinuxDaemon() { MVPN_COUNT_DTOR(CommandLinuxDaemon); }
+  ~CommandLinuxDaemon() { MZ_COUNT_DTOR(CommandLinuxDaemon); }
 
   int run(QStringList& tokens) override {
     Q_ASSERT(!tokens.isEmpty());

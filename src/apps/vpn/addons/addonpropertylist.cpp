@@ -6,9 +6,9 @@
 
 #include "leakdetector.h"
 
-AddonPropertyList::AddonPropertyList() { MVPN_COUNT_CTOR(AddonPropertyList); }
+AddonPropertyList::AddonPropertyList() { MZ_COUNT_CTOR(AddonPropertyList); }
 
-AddonPropertyList::~AddonPropertyList() { MVPN_COUNT_DTOR(AddonPropertyList); }
+AddonPropertyList::~AddonPropertyList() { MZ_COUNT_DTOR(AddonPropertyList); }
 
 void AddonPropertyList::set(int pos, const QString& id,
                             const QString& fallback) {

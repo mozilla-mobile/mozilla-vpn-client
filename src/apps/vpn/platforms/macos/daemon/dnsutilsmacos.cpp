@@ -17,7 +17,7 @@ Logger logger("DnsUtilsMacos");
 }
 
 DnsUtilsMacos::DnsUtilsMacos(QObject* parent) : DnsUtils(parent) {
-  MVPN_COUNT_CTOR(DnsUtilsMacos);
+  MZ_COUNT_CTOR(DnsUtilsMacos);
 
   m_scStore = SCDynamicStoreCreate(kCFAllocatorSystemDefault,
                                    CFSTR("mozillavpn"), nullptr, nullptr);
@@ -29,7 +29,7 @@ DnsUtilsMacos::DnsUtilsMacos(QObject* parent) : DnsUtils(parent) {
 }
 
 DnsUtilsMacos::~DnsUtilsMacos() {
-  MVPN_COUNT_DTOR(DnsUtilsMacos);
+  MZ_COUNT_DTOR(DnsUtilsMacos);
   restoreResolvers();
   logger.debug() << "DnsUtilsMacos destroyed.";
 }

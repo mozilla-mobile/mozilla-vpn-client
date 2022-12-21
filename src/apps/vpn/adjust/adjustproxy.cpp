@@ -16,11 +16,11 @@ Logger logger("AdjustProxy");
 }  // namespace
 
 AdjustProxy::AdjustProxy(QObject* parent) : QTcpServer(parent) {
-  MVPN_COUNT_CTOR(AdjustProxy);
+  MZ_COUNT_CTOR(AdjustProxy);
   logger.debug() << "Creating the AdjustProxy server";
 }
 
-AdjustProxy::~AdjustProxy() { MVPN_COUNT_DTOR(AdjustProxy); }
+AdjustProxy::~AdjustProxy() { MZ_COUNT_DTOR(AdjustProxy); }
 
 bool AdjustProxy::initialize(quint16 port) {
   if (!listen(QHostAddress::LocalHost, port)) {

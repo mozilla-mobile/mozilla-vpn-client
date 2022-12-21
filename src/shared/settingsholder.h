@@ -23,8 +23,6 @@ class SettingsHolder final : public QObject {
 #include "settingslist.h"
 #undef SETTING
 
-  Q_PROPERTY(QString placeholderUserDNS READ placeholderUserDNS CONSTANT)
-
   SettingsHolder();
   ~SettingsHolder();
 
@@ -74,8 +72,6 @@ class SettingsHolder final : public QObject {
 #include "settingslist.h"
 #undef SETTING
 
-  void removeEntryServer();
-
   // Delete _ALL_ the settings. Probably this method is not what you want to
   // use.
   void hardReset();
@@ -100,8 +96,6 @@ class SettingsHolder final : public QObject {
 
  private:
   explicit SettingsHolder(QObject* parent);
-
-  QString placeholderUserDNS() const;
 
   bool finalizeTransaction();
 

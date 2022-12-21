@@ -161,9 +161,9 @@ static QList<RequestType> s_types{
 
 ServerConnection::ServerConnection(QObject* parent, QTcpSocket* connection)
     : QObject(parent), m_connection(connection) {
-  MVPN_COUNT_CTOR(ServerConnection);
+  MZ_COUNT_CTOR(ServerConnection);
 
-#if !defined(MVPN_ANDROID) && !defined(MVPN_IOS)
+#if !defined(MZ_ANDROID) && !defined(MZ_IOS)
   // `::ffff:127.0.0.1` is the IPv4 localhost address written with the IPv6
   // notation.
   Q_ASSERT(connection->localAddress() == QHostAddress("::ffff:127.0.0.1") ||
@@ -185,7 +185,7 @@ ServerConnection::ServerConnection(QObject* parent, QTcpSocket* connection)
 }
 
 ServerConnection::~ServerConnection() {
-  MVPN_COUNT_DTOR(ServerConnection);
+  MZ_COUNT_DTOR(ServerConnection);
   logger.debug() << "Connection released";
 }
 

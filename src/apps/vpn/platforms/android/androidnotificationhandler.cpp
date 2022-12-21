@@ -18,11 +18,11 @@ Logger logger("AndroidNotificationHandler");
 
 AndroidNotificationHandler::AndroidNotificationHandler(QObject* parent)
     : NotificationHandler(parent) {
-  MVPN_COUNT_CTOR(AndroidNotificationHandler);
+  MZ_COUNT_CTOR(AndroidNotificationHandler);
 }
 
 AndroidNotificationHandler::~AndroidNotificationHandler() {
-  MVPN_COUNT_DTOR(AndroidNotificationHandler);
+  MZ_COUNT_DTOR(AndroidNotificationHandler);
 }
 
 void AndroidNotificationHandler::initialize() {

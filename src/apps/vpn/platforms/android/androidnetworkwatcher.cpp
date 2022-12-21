@@ -22,11 +22,11 @@ constexpr auto VPNNetworkWatcher_CLASS =
 
 AndroidNetworkWatcher::AndroidNetworkWatcher(QObject* parent)
     : NetworkWatcherImpl(parent) {
-  MVPN_COUNT_CTOR(AndroidNetworkWatcher);
+  MZ_COUNT_CTOR(AndroidNetworkWatcher);
 }
 
 AndroidNetworkWatcher::~AndroidNetworkWatcher() {
-  MVPN_COUNT_DTOR(AndroidNetworkWatcher);
+  MZ_COUNT_DTOR(AndroidNetworkWatcher);
 }
 
 void AndroidNetworkWatcher::initialize() {}

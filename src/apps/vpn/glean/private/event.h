@@ -6,7 +6,7 @@
 #define EVENT_METRIC_H
 
 #include "glean/glean.h"
-#if not(defined(MVPN_WASM) || defined(BUILD_QMAKE))
+#if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
 #  include "vpnglean.h"
 #endif
 
@@ -15,9 +15,12 @@
 #include <QObject>
 
 struct FfiExtra {
-  const char* const* keys;
-  const char* const* values;
-  int count;
+  std::vector<const char*> keys;
+  std::vector<const char*> values;
+
+  FfiExtra() : keys(0), values(0) {}
+
+  FfiExtra(int keysSize, int valuesSize) : keys(keysSize), values(valuesSize) {}
 };
 
 struct EventMetricExtra {
@@ -37,7 +40,7 @@ struct EventMetricExtra {
   // Glean APIs to be exactly the same as the Firefox Desktop Glean APIs. Also
   // and probably most importantly, it's also just looks better to have a key
   // value initialization in this case since all extras are optional.
-  int __PRIVATE__id = 0;
+  int __PRIVATE__id;
 };
 
 struct EventMetricExtraParser {
@@ -48,8 +51,8 @@ struct EventMetricExtraParser {
 
     return FfiExtra();
   };
-  virtual FfiExtra fromStruct(EventMetricExtra& extras,
-                              QList<QByteArray>& keepStringsAlive) {
+  virtual FfiExtra fromStruct(const EventMetricExtra& extras,
+                              QList<QByteArray>& keepStringsAlive, int id) {
     Q_ASSERT(false);
     // This function should be overriden.
 
@@ -61,8 +64,14 @@ class EventMetric final {
   Q_GADGET
 
  public:
+  // QML custom types require these three declarations.
+  // See: https://doc.qt.io/qt-6/custom-types.html#creating-a-custom-type
+  EventMetric() = default;
+  EventMetric(const EventMetric&) = default;
+  EventMetric& operator=(const EventMetric&) = default;
+
   explicit EventMetric(
-      int id, EventMetricExtraParser parser = EventMetricExtraParser());
+      int id, EventMetricExtraParser* parser = new EventMetricExtraParser());
   ~EventMetric() = default;
 
   Q_INVOKABLE void record() const;
@@ -71,18 +80,19 @@ class EventMetric final {
   // on C++ the variant that receives the FFI extra struct is preferred.
   Q_INVOKABLE void record(const QJsonObject& extras);
 
-  void record(EventMetricExtra extras);
+  void record(const EventMetricExtra& extras);
 
 #if defined(UNIT_TEST)
   Q_INVOKABLE int32_t
   testGetNumRecordedErrors(VPNGlean::ErrorType errorType) const;
 
-  Q_INVOKABLE QJsonArray testGetValue(const QString& pingName = "") const;
+  Q_INVOKABLE QList<QJsonObject> testGetValue(
+      const QString& pingName = "") const;
 #endif
 
  private:
   int m_id;
-  EventMetricExtraParser m_parser;
+  EventMetricExtraParser* m_parser;
 };
 
 #endif  // EVENT_METRIC_H

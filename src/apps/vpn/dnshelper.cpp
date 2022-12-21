@@ -6,9 +6,9 @@
 
 #include <QHostAddress>
 
+#include "feature.h"
 #include "ipaddress.h"
 #include "logger.h"
-#include "models/feature.h"
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
 #include "rfc/rfc4291.h"
@@ -73,7 +73,7 @@ bool DNSHelper::validateUserDNS(const QString& dns) {
     // See: https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1714
     return false;
   }
-#if defined(MVPN_ANDROID) || defined(MVPN_IOS)
+#if defined(MZ_ANDROID) || defined(MZ_IOS)
   // Android/IOS rejects loopback as dns
   if (address.isLoopback()) {
     return false;

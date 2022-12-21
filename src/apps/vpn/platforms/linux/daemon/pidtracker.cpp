@@ -27,7 +27,7 @@ Logger logger("PidTracker");
 }
 
 PidTracker::PidTracker(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(PidTracker);
+  MZ_COUNT_CTOR(PidTracker);
   logger.debug() << "PidTracker created.";
 
   m_nlsock = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_CONNECTOR);
@@ -79,7 +79,7 @@ PidTracker::PidTracker(QObject* parent) : QObject(parent) {
 }
 
 PidTracker::~PidTracker() {
-  MVPN_COUNT_DTOR(PidTracker);
+  MZ_COUNT_DTOR(PidTracker);
   logger.debug() << "PidTracker destroyed.";
 
   m_processTree.clear();

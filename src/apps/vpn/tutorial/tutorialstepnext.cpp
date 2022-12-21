@@ -81,10 +81,10 @@ TutorialStepNext::TutorialStepNext(QObject* parent, EmitterType emitterType,
       m_emitterType(emitterType),
       m_emitter(emitter),
       m_signal(signal) {
-  MVPN_COUNT_CTOR(TutorialStepNext);
+  MZ_COUNT_CTOR(TutorialStepNext);
 }
 
-TutorialStepNext::~TutorialStepNext() { MVPN_COUNT_DTOR(TutorialStepNext); }
+TutorialStepNext::~TutorialStepNext() { MZ_COUNT_DTOR(TutorialStepNext); }
 
 void TutorialStepNext::startOrStop(bool start) {
   QObject* obj = nullptr;

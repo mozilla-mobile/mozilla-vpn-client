@@ -28,7 +28,7 @@ static bool stopAndDeleteTunnelService(SC_HANDLE service);
 static bool waitForServiceStatus(SC_HANDLE service, DWORD expectedStatus);
 
 WindowsTunnelService::WindowsTunnelService(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(WindowsTunnelService);
+  MZ_COUNT_CTOR(WindowsTunnelService);
 
   m_scm = OpenSCManager(nullptr, nullptr, SC_MANAGER_ALL_ACCESS);
   if (m_scm == nullptr) {
@@ -39,7 +39,7 @@ WindowsTunnelService::WindowsTunnelService(QObject* parent) : QObject(parent) {
 }
 
 WindowsTunnelService::~WindowsTunnelService() {
-  MVPN_COUNT_CTOR(WindowsTunnelService);
+  MZ_COUNT_CTOR(WindowsTunnelService);
   stop();
   CloseServiceHandle((SC_HANDLE)m_scm);
 }

@@ -5,12 +5,12 @@
 #include "ioscontroller.h"
 #include "Mozilla_VPN-Swift.h"
 #include "controller.h"
+#include "feature.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
 #include "models/keys.h"
-#include "models/feature.h"
 #include "models/server.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
@@ -29,7 +29,7 @@ IOSControllerImpl* impl = nullptr;
 }  // namespace
 
 IOSController::IOSController() {
-  MVPN_COUNT_CTOR(IOSController);
+  MZ_COUNT_CTOR(IOSController);
 
   logger.debug() << "created";
 
@@ -37,7 +37,7 @@ IOSController::IOSController() {
 }
 
 IOSController::~IOSController() {
-  MVPN_COUNT_DTOR(IOSController);
+  MZ_COUNT_DTOR(IOSController);
 
   logger.debug() << "deallocated";
 

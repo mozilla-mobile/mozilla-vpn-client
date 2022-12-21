@@ -33,11 +33,11 @@ static QList<SupportCategory> s_supportCategories{
 }  // namespace
 
 SupportCategoryModel::SupportCategoryModel() {
-  MVPN_COUNT_CTOR(SupportCategoryModel);
+  MZ_COUNT_CTOR(SupportCategoryModel);
 }
 
 SupportCategoryModel::~SupportCategoryModel() {
-  MVPN_COUNT_DTOR(SupportCategoryModel);
+  MZ_COUNT_DTOR(SupportCategoryModel);
 }
 
 QHash<int, QByteArray> SupportCategoryModel::roleNames() const {

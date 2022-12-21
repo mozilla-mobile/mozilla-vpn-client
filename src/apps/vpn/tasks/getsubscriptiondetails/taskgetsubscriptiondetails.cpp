@@ -22,11 +22,11 @@ TaskGetSubscriptionDetails::TaskGetSubscriptionDetails(
     : Task("TaskGetSubscriptionDetails"),
       m_authenticationPolicy(authenticationPolicy),
       m_errorPropagationPolicy(errorPropagationPolicy) {
-  MVPN_COUNT_CTOR(TaskGetSubscriptionDetails);
+  MZ_COUNT_CTOR(TaskGetSubscriptionDetails);
 }
 
 TaskGetSubscriptionDetails::~TaskGetSubscriptionDetails() {
-  MVPN_COUNT_DTOR(TaskGetSubscriptionDetails);
+  MZ_COUNT_DTOR(TaskGetSubscriptionDetails);
 }
 
 void TaskGetSubscriptionDetails::run() {

@@ -27,7 +27,7 @@ WinCrashReporter::WinCrashReporter(QObject* parent) : CrashReporter(parent) {
 bool WinCrashReporter::start(int argc, char* argv[]) {
   Q_UNUSED(argc);
   Q_UNUSED(argv);
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
   if (AllocConsole()) {
     FILE* unusedFile;
     freopen_s(&unusedFile, "CONOUT$", "w", stdout);
@@ -36,7 +36,7 @@ bool WinCrashReporter::start(int argc, char* argv[]) {
     std::clog.clear();
     std::cerr.clear();
   }
-#endif  // MVPN_DEBUG
+#endif  // MZ_DEBUG
 
   auto appDatas =
       QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);

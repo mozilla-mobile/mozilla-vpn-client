@@ -45,10 +45,10 @@ WasmInspector* WasmInspector::instance() {
 }
 
 WasmInspector::WasmInspector(QObject* parent) : InspectorHandler(parent) {
-  MVPN_COUNT_CTOR(WasmInspector);
+  MZ_COUNT_CTOR(WasmInspector);
 }
 
-WasmInspector::~WasmInspector() { MVPN_COUNT_DTOR(WasmInspector); }
+WasmInspector::~WasmInspector() { MZ_COUNT_DTOR(WasmInspector); }
 
 void WasmInspector::send(const QByteArray& buffer) {
   call_inspectorMessage(buffer.constData());

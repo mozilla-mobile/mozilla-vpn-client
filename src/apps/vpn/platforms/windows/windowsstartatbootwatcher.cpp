@@ -17,7 +17,7 @@ Logger logger("WindowsStartAtBootWatcher");
 }
 
 WindowsStartAtBootWatcher::WindowsStartAtBootWatcher() {
-  MVPN_COUNT_CTOR(WindowsStartAtBootWatcher);
+  MZ_COUNT_CTOR(WindowsStartAtBootWatcher);
 
   logger.debug() << "StartAtBoot watcher";
 
@@ -28,7 +28,7 @@ WindowsStartAtBootWatcher::WindowsStartAtBootWatcher() {
 }
 
 WindowsStartAtBootWatcher::~WindowsStartAtBootWatcher() {
-  MVPN_COUNT_DTOR(WindowsStartAtBootWatcher);
+  MZ_COUNT_DTOR(WindowsStartAtBootWatcher);
 }
 
 void WindowsStartAtBootWatcher::startAtBootChanged() {

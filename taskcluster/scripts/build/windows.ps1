@@ -20,11 +20,12 @@ Remove-Item $FETCHES_PATH/VisualStudio/VC/Tools/MSVC/14.30.30705/bin/HostX64/x64
 
 # Fetch 3rdparty stuff.
 python3 -m pip install -r requirements.txt --user
+python3 -m pip install -r taskcluster/scripts/requirements.txt --user
 git submodule update --init --force --recursive --remote --depth=1
 
 # Fix: pip scripts are not on path by default on tc, so glean would fail
 $PYTHON_SCRIPTS =resolve-path "$env:APPDATA\Python\Python36\Scripts"
-$env:PATH ="$QTPATH;$PYTHON_SCRIPTS;$env:PATH"
+$env:PATH ="$FETCHES_PATH;$QTPATH;$PYTHON_SCRIPTS;$env:PATH"
 
 # Setup Go and MinGW up (for gco)
 $env:GOROOT="$FETCHES_PATH\go\"
@@ -55,8 +56,20 @@ $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
 
 
 cmake --version
-cmake -S . -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release # TODO: Linking breaks horribly with RelWithDebInfo
-cmake --build $BUILD_DIR #--config RelWithDebInfo Ignored as we are using ninja
+if ($env:MOZ_SCM_LEVEL -eq "3") {
+    # Only on a release build we have access to those secrects. 
+    python3  ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_dsn -f sentry_dsn
+    python3  ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_envelope_endpoint -f sentry_envelope_endpoint
+    python3  ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
+    $SENTRY_ENVELOPE_ENDPOINT = Get-Content sentry_envelope_endpoint
+    $SENTRY_DSN = Get-Content sentry_dsn
+    # 
+    cmake -S . -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release -DSENTRY_DSN="$SENTRY_DSN" -DSENTRY_ENVELOPE_ENDPOINT="$SENTRY_ENVELOPE_ENDPOINT"
+} else {
+    # Do the generic build
+   cmake -S . -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release
+}
+cmake --build $BUILD_DIR
 cmake --build $BUILD_DIR --target msi
 cmake --install $BUILD_DIR --prefix "$TASK_WORKDIR/unsigned"
 
@@ -69,6 +82,13 @@ Copy-Item -Path "$BUILD_DIR/src/CMakeFiles/mozillavpn.dir/vc140.pdb" -Destinatio
 Compress-Archive -Path $TASK_WORKDIR/unsigned/* -Destination $ARTIFACTS_PATH/unsigned.zip
 Write-Output "Artifacts Location:$TASK_WORKDIR/artifacts"
 Get-ChildItem -Path $TASK_WORKDIR/artifacts
+
+if ($env:MOZ_SCM_LEVEL -eq "3") {
+    sentry-cli-Windows-x86_64.exe login --auth-token $(Get-Content sentry_debug_file_upload_key)
+    # This will ask sentry to scan all files in there and upload 
+    # missing debug info, for symbolification
+    sentry-cli-Windows-x86_64.exe debug-files upload --org mozilla -p vpn-client $BUILD_DIR/src/CMakeFiles/mozillavpn.dir/vc140.pdb   
+}
 
 # mspdbsrv might be stil running after the build, so we need to kill it
 Stop-Process -Name "mspdbsrv.exe" -Force -ErrorAction SilentlyContinue

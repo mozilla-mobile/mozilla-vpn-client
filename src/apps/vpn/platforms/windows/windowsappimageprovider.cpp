@@ -25,11 +25,11 @@ Logger logger("WindowsAppImageProvider");
 
 WindowsAppImageProvider::WindowsAppImageProvider(QObject* parent)
     : AppImageProvider(parent, QQuickImageProvider::Pixmap) {
-  MVPN_COUNT_CTOR(WindowsAppImageProvider);
+  MZ_COUNT_CTOR(WindowsAppImageProvider);
 }
 
 WindowsAppImageProvider::~WindowsAppImageProvider() {
-  MVPN_COUNT_DTOR(WindowsAppImageProvider);
+  MZ_COUNT_DTOR(WindowsAppImageProvider);
 }
 
 QPixmap WindowsAppImageProvider::requestPixmap(const QString& path, QSize* size,

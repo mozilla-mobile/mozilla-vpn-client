@@ -4,8 +4,8 @@
 
 #include "addonconditionwatcherfeaturesenabled.h"
 
+#include "feature.h"
 #include "leakdetector.h"
-#include "models/feature.h"
 
 // static
 AddonConditionWatcher* AddonConditionWatcherFeaturesEnabled::maybeCreate(
@@ -27,7 +27,7 @@ AddonConditionWatcher* AddonConditionWatcherFeaturesEnabled::maybeCreate(
 AddonConditionWatcherFeaturesEnabled::AddonConditionWatcherFeaturesEnabled(
     QObject* parent, const QStringList& features)
     : AddonConditionWatcher(parent), m_features(features) {
-  MVPN_COUNT_CTOR(AddonConditionWatcherFeaturesEnabled);
+  MZ_COUNT_CTOR(AddonConditionWatcherFeaturesEnabled);
 
   m_currentStatus = conditionApplied();
 
@@ -46,7 +46,7 @@ AddonConditionWatcherFeaturesEnabled::AddonConditionWatcherFeaturesEnabled(
 }
 
 AddonConditionWatcherFeaturesEnabled::~AddonConditionWatcherFeaturesEnabled() {
-  MVPN_COUNT_DTOR(AddonConditionWatcherFeaturesEnabled);
+  MZ_COUNT_DTOR(AddonConditionWatcherFeaturesEnabled);
 }
 
 bool AddonConditionWatcherFeaturesEnabled::conditionApplied() const {

@@ -9,7 +9,6 @@
 #include <QObject>
 
 #include "l18nstrings.h"
-#include "qmlengineholder.h"
 
 class Feature : public QObject {
   Q_OBJECT
@@ -19,7 +18,7 @@ class Feature : public QObject {
                 imgPath, iconPath, linkUrl, releaseVersion, flippableOn, \
                 flippableOff, otherFeatureDependencies, callback)        \
   static constexpr const char* Feature_##id = #id;
-#include "featureslist.h"
+#include "featurelist.h"
 #undef FEATURE
 
   Q_PROPERTY(QString id MEMBER m_id CONSTANT)

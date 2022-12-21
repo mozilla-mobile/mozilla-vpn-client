@@ -59,7 +59,7 @@ Addon* AddonGuide::create(QObject* parent, const QString& manifestFileName,
 AddonGuide::AddonGuide(QObject* parent, const QString& manifestFileName,
                        const QString& id, const QString& name)
     : Addon(parent, manifestFileName, id, name, "guide") {
-  MVPN_COUNT_CTOR(AddonGuide);
+  MZ_COUNT_CTOR(AddonGuide);
 }
 
-AddonGuide::~AddonGuide() { MVPN_COUNT_DTOR(AddonGuide); }
+AddonGuide::~AddonGuide() { MZ_COUNT_DTOR(AddonGuide); }

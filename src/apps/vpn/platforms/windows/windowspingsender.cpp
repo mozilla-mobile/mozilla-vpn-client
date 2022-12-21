@@ -47,7 +47,7 @@ static DWORD icmpCleanupHelper(LPVOID data) {
 WindowsPingSender::WindowsPingSender(const QHostAddress& source,
                                      QObject* parent)
     : PingSender(parent) {
-  MVPN_COUNT_CTOR(WindowsPingSender);
+  MZ_COUNT_CTOR(WindowsPingSender);
   m_source = source;
   m_private = new struct WindowsPingSenderPrivate;
   m_private->m_handle = IcmpCreateFile();
@@ -61,7 +61,7 @@ WindowsPingSender::WindowsPingSender(const QHostAddress& source,
 }
 
 WindowsPingSender::~WindowsPingSender() {
-  MVPN_COUNT_DTOR(WindowsPingSender);
+  MZ_COUNT_DTOR(WindowsPingSender);
   if (m_notifier) {
     delete m_notifier;
   }

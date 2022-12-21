@@ -12,7 +12,6 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
-#include "telemetry/gleansample.h"
 
 namespace {
 Logger logger("PushMessage");
@@ -43,11 +42,11 @@ Logger logger("PushMessage");
 PushMessage::PushMessage(const QString& message)
     : m_messageType(MessageType_UnknownMessage),
       m_messagePayload(QJsonObject()) {
-  MVPN_COUNT_CTOR(PushMessage);
+  MZ_COUNT_CTOR(PushMessage);
   parseMessage(message);
 }
 
-PushMessage::~PushMessage() { MVPN_COUNT_DTOR(PushMessage); }
+PushMessage::~PushMessage() { MZ_COUNT_DTOR(PushMessage); }
 
 /**
  * @brief Parses messages send from the push server.

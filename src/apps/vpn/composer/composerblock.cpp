@@ -22,13 +22,13 @@ Logger logger("ComposerBlock");
 ComposerBlock::ComposerBlock(Composer* composer, const QString& id,
                              const QString& type)
     : QObject(composer), m_id(id), m_type(type) {
-  MVPN_COUNT_CTOR(ComposerBlock);
+  MZ_COUNT_CTOR(ComposerBlock);
 
   connect(composer, &Composer::retranslationCompleted, this,
           &ComposerBlock::retranslationCompleted);
 }
 
-ComposerBlock::~ComposerBlock() { MVPN_COUNT_DTOR(ComposerBlock); }
+ComposerBlock::~ComposerBlock() { MZ_COUNT_DTOR(ComposerBlock); }
 
 // static
 ComposerBlock* ComposerBlock::create(Composer* composer, Addon* addon,

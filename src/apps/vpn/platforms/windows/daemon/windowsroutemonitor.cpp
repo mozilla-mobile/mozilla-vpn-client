@@ -58,14 +58,14 @@ static int prefixcmp(const void* a, const void* b, size_t bits) {
 }
 
 WindowsRouteMonitor::WindowsRouteMonitor(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(WindowsRouteMonitor);
+  MZ_COUNT_CTOR(WindowsRouteMonitor);
   logger.debug() << "WindowsRouteMonitor created.";
 
   NotifyRouteChange2(AF_INET, routeChangeCallback, this, FALSE, &m_routeHandle);
 }
 
 WindowsRouteMonitor::~WindowsRouteMonitor() {
-  MVPN_COUNT_DTOR(WindowsRouteMonitor);
+  MZ_COUNT_DTOR(WindowsRouteMonitor);
   CancelMibChangeNotify2(m_routeHandle);
   flushExclusionRoutes();
   logger.debug() << "WindowsRouteMonitor destroyed.";

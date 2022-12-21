@@ -12,9 +12,9 @@
 #include "leakdetector.h"
 #include "settingsholder.h"
 
-User::User() { MVPN_COUNT_CTOR(User); }
+User::User() { MZ_COUNT_CTOR(User); }
 
-User::~User() { MVPN_COUNT_DTOR(User); }
+User::~User() { MZ_COUNT_DTOR(User); }
 
 bool User::fromJson(const QByteArray& json) {
   m_initialized = false;

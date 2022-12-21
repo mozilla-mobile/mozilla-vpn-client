@@ -11,11 +11,11 @@
 
 CommandCrashReporter::CommandCrashReporter(QObject* parent)
     : Command(parent, "crashreporter", "Starts the crash reporter.") {
-  MVPN_COUNT_CTOR(CommandCrashReporter);
+  MZ_COUNT_CTOR(CommandCrashReporter);
 }
 
 CommandCrashReporter::~CommandCrashReporter() {
-  MVPN_COUNT_DTOR(CommandCrashReporter);
+  MZ_COUNT_DTOR(CommandCrashReporter);
 }
 
 int CommandCrashReporter::run(QStringList& tokens) {

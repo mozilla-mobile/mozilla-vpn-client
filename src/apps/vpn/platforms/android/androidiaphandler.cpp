@@ -26,12 +26,12 @@ constexpr auto CLASSNAME = "org.mozilla.firefox.vpn.InAppPurchase";
 
 AndroidIAPHandler::AndroidIAPHandler(QObject* parent)
     : PurchaseIAPHandler(parent) {
-  MVPN_COUNT_CTOR(AndroidIAPHandler);
+  MZ_COUNT_CTOR(AndroidIAPHandler);
   maybeInit();
 }
 
 AndroidIAPHandler::~AndroidIAPHandler() {
-  MVPN_COUNT_DTOR(AndroidIAPHandler);
+  MZ_COUNT_DTOR(AndroidIAPHandler);
   QJniObject::callStaticMethod<void>("org/mozilla/firefox/vpn/InAppPurchase",
                                      "deinit", "()V");
 }

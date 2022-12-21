@@ -38,11 +38,11 @@ bool LinuxSystemTrayNotificationHandler::requiredCustomImpl() {
 LinuxSystemTrayNotificationHandler::LinuxSystemTrayNotificationHandler(
     QObject* parent)
     : SystemTrayNotificationHandler(parent) {
-  MVPN_COUNT_CTOR(LinuxSystemTrayNotificationHandler);
+  MZ_COUNT_CTOR(LinuxSystemTrayNotificationHandler);
 }
 
 LinuxSystemTrayNotificationHandler::~LinuxSystemTrayNotificationHandler() {
-  MVPN_COUNT_DTOR(LinuxSystemTrayNotificationHandler);
+  MZ_COUNT_DTOR(LinuxSystemTrayNotificationHandler);
 }
 
 void LinuxSystemTrayNotificationHandler::initialize() {

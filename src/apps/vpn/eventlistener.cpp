@@ -10,13 +10,13 @@
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
 
-#if defined(MVPN_WINDOWS)
+#if defined(MZ_WINDOWS)
 #  include <windows.h>
 
 #  include "platforms/windows/windowscommons.h"
 
 constexpr const char* UI_PIPE = "\\\\.\\pipe\\mozillavpn.ui";
-#elif defined(MVPN_LINUX)
+#elif defined(MZ_LINUX)
 #  include <QFileInfo>
 
 constexpr const char* UI_PIPE = "/tmp/mozillavpn.ui.sock";
@@ -33,7 +33,7 @@ EventListener::EventListener() {
 
   logger.debug() << "Server path:" << UI_PIPE;
 
-#ifdef MVPN_LINUX
+#ifdef MZ_LINUX
   if (QFileInfo::exists(UI_PIPE)) {
     QFile::remove(UI_PIPE);
   }
@@ -76,7 +76,7 @@ EventListener::~EventListener() {
 
   m_server.close();
 
-#ifdef MVPN_LINUX
+#ifdef MZ_LINUX
   if (QFileInfo::exists(UI_PIPE)) {
     QFile::remove(UI_PIPE);
   }
@@ -86,7 +86,7 @@ EventListener::~EventListener() {
 bool EventListener::checkOtherInstances() {
   logger.debug() << "Checking other instances";
 
-#ifdef MVPN_WINDOWS
+#ifdef MZ_WINDOWS
   // Let's check if there is a window with the right name.
   QString windowTitle = qtTrId("vpn.main.productName");
   HWND window = FindWindow(nullptr, (const wchar_t*)windowTitle.utf16());

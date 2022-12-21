@@ -20,13 +20,13 @@ Logger logger("MacosAuthenticationListener");
 
 MacosAuthenticationListener::MacosAuthenticationListener(QObject* parent)
     : DesktopAuthenticationListener(parent) {
-  MVPN_COUNT_CTOR(MacosAuthenticationListener);
+  MZ_COUNT_CTOR(MacosAuthenticationListener);
 
   qApp->installEventFilter(this);
 }
 
 MacosAuthenticationListener::~MacosAuthenticationListener() {
-  MVPN_COUNT_DTOR(MacosAuthenticationListener);
+  MZ_COUNT_DTOR(MacosAuthenticationListener);
 
   qApp->removeEventFilter(this);
 }

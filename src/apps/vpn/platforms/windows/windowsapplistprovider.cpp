@@ -27,11 +27,11 @@ Logger logger("AppListProvider");
 
 WindowsAppListProvider::WindowsAppListProvider(QObject* parent)
     : AppListProvider(parent) {
-  MVPN_COUNT_CTOR(WindowsAppListProvider);
+  MZ_COUNT_CTOR(WindowsAppListProvider);
 }
 
 WindowsAppListProvider::~WindowsAppListProvider() {
-  MVPN_COUNT_DTOR(WindowsAppListProvider);
+  MZ_COUNT_DTOR(WindowsAppListProvider);
 }
 
 /**

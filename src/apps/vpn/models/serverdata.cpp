@@ -37,9 +37,9 @@ QList<Server> filterServerList(const QList<Server>& servers) {
 
 }  // namespace
 
-ServerData::ServerData() { MVPN_COUNT_CTOR(ServerData); }
+ServerData::ServerData() { MZ_COUNT_CTOR(ServerData); }
 
-ServerData::~ServerData() { MVPN_COUNT_DTOR(ServerData); }
+ServerData::~ServerData() { MZ_COUNT_DTOR(ServerData); }
 
 void ServerData::initialize() {
   m_initialized = true;

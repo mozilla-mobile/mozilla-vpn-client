@@ -2,9 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-enable_language(OBJC)
-enable_language(OBJCXX)
-
 set_target_properties(mozillavpn PROPERTIES OUTPUT_NAME "Mozilla VPN")
 
 # Configure the application bundle Info.plist
@@ -74,7 +71,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macossystemtraynotificationhandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/wgquickprocess.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/wgquickprocess.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macoscryptosettings.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosnetworkwatcher.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosnetworkwatcher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosstatusicon.mm

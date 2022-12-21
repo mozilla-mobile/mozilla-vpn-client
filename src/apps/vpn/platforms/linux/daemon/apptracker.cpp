@@ -29,7 +29,7 @@ QString s_cgroupMount;
 }  // namespace
 
 AppTracker::AppTracker(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(AppTracker);
+  MZ_COUNT_CTOR(AppTracker);
   logger.debug() << "AppTracker created.";
 
   /* Monitor for changes to the user's application control groups. */
@@ -37,7 +37,7 @@ AppTracker::AppTracker(QObject* parent) : QObject(parent) {
 }
 
 AppTracker::~AppTracker() {
-  MVPN_COUNT_DTOR(AppTracker);
+  MZ_COUNT_DTOR(AppTracker);
   logger.debug() << "AppTracker destroyed.";
 
   for (AppData* data : m_runningApps) {
