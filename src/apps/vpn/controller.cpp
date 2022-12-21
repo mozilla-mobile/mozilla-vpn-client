@@ -239,7 +239,7 @@ void Controller::activateInternal(Reason reason, bool forcePort53) {
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv6AddrIn());
 
     // If requested, force the use of port 53/DNS.
-    if (settingsHolder->tunnelPort53() || forcePort53) {
+    if (forcePort53) {
       exitHop.m_server.forcePort(53);
     }
     // For single-hop, they are the same
@@ -257,7 +257,7 @@ void Controller::activateInternal(Reason reason, bool forcePort53) {
       return;
     }
     // If requested, force the use of port 53/DNS.
-    if (settingsHolder->tunnelPort53() || forcePort53) {
+    if (forcePort53) {
       hop.m_server.forcePort(53);
     }
 
@@ -424,7 +424,7 @@ void Controller::handshakeTimeout() {
   // Try again, again if there are sufficient retries left.
   ++m_connectionRetry;
   emit connectionRetryChanged();
-  if (m_connectionRetry == 1 && !SettingsHolder::instance()->tunnelPort53()) {
+  if (m_connectionRetry == 1) {
     logger.info() << "Connection Attempt: Using Port 53 Option this time.";
     // On the first retry, opportunisticly try again using the port 53
     // option enabled, if that feature is disabled.
