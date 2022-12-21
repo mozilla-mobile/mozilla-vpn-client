@@ -30,12 +30,6 @@ class ControllerImpl : public QObject {
 
   virtual ~ControllerImpl() = default;
 
-  enum Reason {
-    ReasonNone = 0,
-    ReasonSwitching,
-    ReasonConfirming,
-  };
-
   // This method is called to initialize the controller. The initialization
   // is completed when the signal "initialized" is emitted.
   virtual void initialize(const Device* device, const Keys* keys) = 0;
@@ -46,11 +40,11 @@ class ControllerImpl : public QObject {
   // state terminates when the "connected" (or the "disconnected") signal is
   // received.
   virtual void activate(const HopConnection& hop, const Device* device,
-                        const Keys* keys, Reason Reason) = 0;
+                        const Keys* keys, Controller::Reason Reason) = 0;
 
   // This method terminates the VPN tunnel. The VPN client is in
   // "disconnecting" state until the "disconnected" signal is received.
-  virtual void deactivate(Reason reason) = 0;
+  virtual void deactivate(Controller::Reason reason) = 0;
 
   // This method is used to retrieve the VPN tunnel status (mainly the number
   // of bytes sent and received). It's called always when the VPN tunnel is

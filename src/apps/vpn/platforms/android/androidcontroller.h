@@ -20,9 +20,9 @@ class AndroidController final : public ControllerImpl {
   void initialize(const Device* device, const Keys* keys) override;
 
   void activate(const HopConnection& hop, const Device* device,
-                const Keys* keys, Reason Reason) override;
+                const Keys* keys, Controller::Reason Reason) override;
 
-  void deactivate(Reason reason) override;
+  void deactivate(Controller::Reason reason) override;
 
   void checkStatus() override;
 

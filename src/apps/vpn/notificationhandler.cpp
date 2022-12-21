@@ -301,8 +301,10 @@ void NotificationHandler::messageClickHandle() {
     return;
   }
 
-  ExternalOpHandler::instance()->request(
-      ExternalOpHandler::OpNotificationClicked);
+  if (!ExternalOpHandler::instance()->request(
+          ExternalOpHandler::OpNotificationClicked)) {
+    return;
+  }
 
   emit notificationClicked(m_lastMessage);
   m_lastMessage = None;

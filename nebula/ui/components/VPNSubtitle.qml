@@ -17,4 +17,6 @@ Text {
     color: VPNTheme.theme.fontColor
     lineHeightMode: Text.FixedHeight
     lineHeight: VPNTheme.theme.labelLineHeight
+    Accessible.role: Accessible.StaticText
+    Accessible.name: text
 }

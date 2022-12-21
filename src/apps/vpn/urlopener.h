@@ -22,7 +22,6 @@ class UrlOpener final : public QObject {
     LinkContact,
     LinkForgotPassword,
     LinkLeaveReview,
-    LinkHelpSupport,
     LinkTermsOfService,
     LinkPrivacyNotice,
     LinkUpdate,
@@ -34,6 +33,7 @@ class UrlOpener final : public QObject {
     LinkSubscriptionIapApple,
     LinkSubscriptionFxa,
     LinkSubscriptionIapGoogle,
+    LinkSumo,
     LinkUpgradeToBundle,
   };
   Q_ENUM(LinkType)
