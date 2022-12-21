@@ -76,7 +76,7 @@ int32_t EventMetric::testGetNumRecordedErrors(
 #  endif
 }
 
-QJsonArray EventMetric::testGetValue(const QString& pingName) const {
+QList<QJsonObject> EventMetric::testGetValue(const QString& pingName) const {
 #  if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
   auto value = glean_event_test_get_value(m_id, pingName.toLocal8Bit());
   auto recordedEvents = QJsonDocument::fromJson(value).array();

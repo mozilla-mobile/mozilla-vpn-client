@@ -14,7 +14,6 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
-#include "models/feature.h"
 #include "settingsholder.h"
 #if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
 #  include "vpnglean.h"
