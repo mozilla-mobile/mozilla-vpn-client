@@ -109,7 +109,7 @@ void VPNGlean::setUploadEnabled(bool isTelemetryEnabled) {
 
 // static
 void VPNGlean::shutdown() {
-#if not(defined(MVPN_WASM) || defined(BUILD_QMAKE))
+#if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
   glean_shutdown();
 #endif
 }
