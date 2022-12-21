@@ -5,7 +5,6 @@
 target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/dummy/dummycontroller.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/dummy/dummycontroller.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/dummy/dummycryptosettings.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosmenubar.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosmenubar.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/wasm/wasmauthenticationlistener.cpp
@@ -26,4 +25,4 @@ target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/purchase/taskpurchase.h
 )
 
-add_compile_definitions("MVPN_DUMMY")
+add_compile_definitions("MZ_DUMMY")

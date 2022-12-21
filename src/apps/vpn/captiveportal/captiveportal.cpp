@@ -17,9 +17,9 @@ namespace {
 Logger logger("CaptivePortal");
 }
 
-CaptivePortal::CaptivePortal() { MVPN_COUNT_CTOR(CaptivePortal); }
+CaptivePortal::CaptivePortal() { MZ_COUNT_CTOR(CaptivePortal); }
 
-CaptivePortal::~CaptivePortal() { MVPN_COUNT_DTOR(CaptivePortal); }
+CaptivePortal::~CaptivePortal() { MZ_COUNT_DTOR(CaptivePortal); }
 
 bool CaptivePortal::fromJson(const QByteArray& data) {
   logger.debug() << "Captive portal from Json";

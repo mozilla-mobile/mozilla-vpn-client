@@ -17,37 +17,37 @@
 #  include <QSslSocket>
 #endif
 
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
 #  include <QRandomGenerator>
 #endif
 
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
 #  include "platforms/ios/iosutils.h"
-#elif MVPN_MACOS
+#elif MZ_MACOS
 #  include "platforms/macos/macosutils.h"
-#elif MVPN_ANDROID
+#elif MZ_ANDROID
 #  include "platforms/android/androidutils.h"
-#elif MVPN_WINDOWS
-#  include "platforms/windows/windowscommons.h"
+#elif MZ_WINDOWS
+#  include "platforms/windows/windowsutils.h"
 #endif
 
 // static
 QString Device::currentDeviceName() {
   QString deviceName =
 
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
       IOSUtils::computerName();
-#elif MVPN_MACOS
+#elif MZ_MACOS
       // MacOS has a funny way to rename the hostname based on the network
       // status.
       MacOSUtils::computerName();
-#elif MVPN_ANDROID
+#elif MZ_ANDROID
       AndroidUtils::GetDeviceName();
-#elif MVPN_WASM
+#elif MZ_WASM
       "WASM";
-#elif MVPN_WINDOWS
+#elif MZ_WINDOWS
       QSysInfo::machineHostName() + " " + QSysInfo::productType() + " " +
-      WindowsCommons::WindowsVersion();
+      WindowsUtils::windowsVersion();
 #else
       QSysInfo::machineHostName() + " " + QSysInfo::productType() + " " +
       QSysInfo::productVersion();
@@ -64,12 +64,12 @@ QString Device::currentDeviceReport() {
   out << "ABI -> " << QSysInfo::buildAbi() << Qt::endl;
   out << "Machine arch -> " << QSysInfo::currentCpuArchitecture() << Qt::endl;
   out << "OS -> " << QSysInfo::productType() << Qt::endl;
-#ifdef MVPN_WINDOWS
-  out << "OS Version -> " << WindowsCommons::WindowsVersion() << Qt::endl;
+#ifdef MZ_WINDOWS
+  out << "OS Version -> " << WindowsUtils::windowsVersion() << Qt::endl;
 #else
   out << "OS Version -> " << QSysInfo::productVersion() << Qt::endl;
 #endif
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
   out << "SDK Version -> " << AndroidUtils::GetSDKVersion() << Qt::endl;
 #endif
 
@@ -86,16 +86,16 @@ QString Device::currentDeviceReport() {
 }
 
 QString Device::uniqueDeviceId() {
-#if MVPN_ANDROID
+#if MZ_ANDROID
   return AndroidUtils::DeviceId();
 #endif
   return QSysInfo::machineUniqueId();
 }
 
-Device::Device() { MVPN_COUNT_CTOR(Device); }
+Device::Device() { MZ_COUNT_CTOR(Device); }
 
 Device::Device(const Device& other) {
-  MVPN_COUNT_CTOR(Device);
+  MZ_COUNT_CTOR(Device);
   *this = other;
 }
 
@@ -112,7 +112,7 @@ Device& Device::operator=(const Device& other) {
   return *this;
 }
 
-Device::~Device() { MVPN_COUNT_DTOR(Device); }
+Device::~Device() { MZ_COUNT_DTOR(Device); }
 
 bool Device::fromJson(const QJsonValue& json) {
   if (!json.isObject()) {

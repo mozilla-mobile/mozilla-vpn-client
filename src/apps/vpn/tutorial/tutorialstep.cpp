@@ -78,7 +78,7 @@ TutorialStep::TutorialStep(AddonTutorial* parent, const QString& element,
       m_before(before),
       m_next(next),
       m_enabled(Addon::evaluateConditions(conditions)) {
-  MVPN_COUNT_CTOR(TutorialStep);
+  MZ_COUNT_CTOR(TutorialStep);
 
   m_string.initialize(stepId, fallback);
 
@@ -88,7 +88,7 @@ TutorialStep::TutorialStep(AddonTutorial* parent, const QString& element,
   m_conditionWatcher = Addon::maybeCreateConditionWatchers(parent, conditions);
 }
 
-TutorialStep::~TutorialStep() { MVPN_COUNT_DTOR(TutorialStep); }
+TutorialStep::~TutorialStep() { MZ_COUNT_DTOR(TutorialStep); }
 
 void TutorialStep::stop() {
   Q_ASSERT(m_state != StateStopped);

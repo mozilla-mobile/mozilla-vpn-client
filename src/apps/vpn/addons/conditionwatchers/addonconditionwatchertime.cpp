@@ -13,7 +13,7 @@
 AddonConditionWatcherTime::AddonConditionWatcherTime(QObject* parent,
                                                      qint64 time, bool isStart)
     : AddonConditionWatcher(parent), m_time(time), m_isStart(isStart) {
-  MVPN_COUNT_CTOR(AddonConditionWatcherTime);
+  MZ_COUNT_CTOR(AddonConditionWatcherTime);
 
   m_timer.setSingleShot(true);
   connect(&m_timer, &QTimer::timeout, this, [this]() {
@@ -26,7 +26,7 @@ AddonConditionWatcherTime::AddonConditionWatcherTime(QObject* parent,
 }
 
 AddonConditionWatcherTime::~AddonConditionWatcherTime() {
-  MVPN_COUNT_DTOR(AddonConditionWatcherTime);
+  MZ_COUNT_DTOR(AddonConditionWatcherTime);
 }
 
 bool AddonConditionWatcherTime::conditionApplied() const {

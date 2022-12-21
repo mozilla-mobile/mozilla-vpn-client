@@ -53,7 +53,7 @@ AddonConditionWatcher* AddonConditionWatcherJavascript::maybeCreate(
 AddonConditionWatcherJavascript::AddonConditionWatcherJavascript(
     Addon* addon, const QJSValue& function)
     : AddonConditionWatcher(addon) {
-  MVPN_COUNT_CTOR(AddonConditionWatcherJavascript);
+  MZ_COUNT_CTOR(AddonConditionWatcherJavascript);
 
   QJSEngine* engine = QmlEngineHolder::instance()->engine();
   QJSValue api = engine->newQObject(addon->api());
@@ -67,7 +67,7 @@ AddonConditionWatcherJavascript::AddonConditionWatcherJavascript(
 }
 
 AddonConditionWatcherJavascript::~AddonConditionWatcherJavascript() {
-  MVPN_COUNT_DTOR(AddonConditionWatcherJavascript);
+  MZ_COUNT_DTOR(AddonConditionWatcherJavascript);
 }
 
 bool AddonConditionWatcherJavascript::conditionApplied() const {

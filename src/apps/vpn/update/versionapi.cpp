@@ -7,24 +7,24 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QRegularExpression>
 
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
+#include "versionutils.h"
 
 namespace {
 Logger logger("VersionApi");
 }
 
 VersionApi::VersionApi(QObject* parent) : Updater(parent) {
-  MVPN_COUNT_CTOR(VersionApi);
+  MZ_COUNT_CTOR(VersionApi);
   logger.debug() << "VersionApi created";
 }
 
 VersionApi::~VersionApi() {
-  MVPN_COUNT_DTOR(VersionApi);
+  MZ_COUNT_DTOR(VersionApi);
   logger.debug() << "VersionApi released";
 }
 
@@ -108,73 +108,15 @@ bool VersionApi::processData(const QByteArray& data) {
   logger.debug() << "Minimum version:" << minimumVersion;
   logger.debug() << "Current version:" << currentVersion;
 
-  if (compareVersions(currentVersion, minimumVersion) == -1) {
+  if (VersionUtils::compareVersions(currentVersion, minimumVersion) == -1) {
     logger.debug() << "update required";
     emit updateRequired();
     return true;
   }
 
-  if (compareVersions(currentVersion, latestVersion) == -1) {
+  if (VersionUtils::compareVersions(currentVersion, latestVersion) == -1) {
     logger.debug() << "Update recommended.";
     emit updateRecommended();
   }
   return true;
-}
-
-// static
-int VersionApi::compareVersions(const QString& a, const QString& b) {
-  if (a == b) {
-    return 0;
-  }
-
-  if (a.isEmpty()) {
-    return 1;
-  }
-
-  if (b.isEmpty()) {
-    return -1;
-  }
-
-  static QRegularExpression re("[^0-9a-z.]");
-
-  QStringList aParts;
-  qsizetype aMatchLength = a.indexOf(re);
-  aParts = (aMatchLength < 0) ? a.split(".") : a.left(aMatchLength).split(".");
-
-  QStringList bParts;
-  qsizetype bMatchLength = b.indexOf(re);
-  bParts = (bMatchLength < 0) ? b.split(".") : b.left(bMatchLength).split(".");
-
-  // Normalize by appending zeros as necessary.
-  while (aParts.length() < 3) aParts.append("0");
-  while (bParts.length() < 3) bParts.append("0");
-
-  // Major version number.
-  for (uint32_t i = 0; i < 3; ++i) {
-    int aDigit = aParts[i].toInt();
-    int bDigit = bParts[i].toInt();
-    if (aDigit != bDigit) {
-      return aDigit < bDigit ? -1 : 1;
-    }
-  }
-
-  return 0;
-}
-
-// static
-QString VersionApi::stripMinor(const QString& a) {
-  QStringList aParts;
-
-  if (!a.isEmpty()) {
-    static QRegularExpression re("[^0-9a-z.]");
-    qsizetype matchLength = a.indexOf(re);
-    aParts = (matchLength < 0) ? a.split(".") : a.left(matchLength).split(".");
-  }
-
-  while (aParts.length() < 3) aParts.append("0");
-
-  while (aParts.length() > 2) aParts.removeLast();
-
-  aParts.append("0");
-  return aParts.join(".");
 }

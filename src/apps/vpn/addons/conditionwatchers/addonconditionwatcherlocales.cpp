@@ -21,7 +21,7 @@ AddonConditionWatcher* AddonConditionWatcherLocales::maybeCreate(
 AddonConditionWatcherLocales::AddonConditionWatcherLocales(
     QObject* parent, const QStringList& locales)
     : AddonConditionWatcher(parent), m_locales(locales) {
-  MVPN_COUNT_CTOR(AddonConditionWatcherLocales);
+  MZ_COUNT_CTOR(AddonConditionWatcherLocales);
 
   m_currentStatus = conditionApplied();
 
@@ -36,7 +36,7 @@ AddonConditionWatcherLocales::AddonConditionWatcherLocales(
 }
 
 AddonConditionWatcherLocales::~AddonConditionWatcherLocales() {
-  MVPN_COUNT_DTOR(AddonConditionWatcherLocales);
+  MZ_COUNT_DTOR(AddonConditionWatcherLocales);
 }
 
 bool AddonConditionWatcherLocales::conditionApplied() const {

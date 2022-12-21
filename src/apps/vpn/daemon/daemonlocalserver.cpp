@@ -12,7 +12,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 
-#ifdef MVPN_MACOS
+#ifdef MZ_MACOS
 #  include <sys/stat.h>
 #  include <sys/types.h>
 #  include <unistd.h>
@@ -26,10 +26,10 @@ Logger logger("DaemonLocalServer");
 }  // namespace
 
 DaemonLocalServer::DaemonLocalServer(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(DaemonLocalServer);
+  MZ_COUNT_CTOR(DaemonLocalServer);
 }
 
-DaemonLocalServer::~DaemonLocalServer() { MVPN_COUNT_DTOR(DaemonLocalServer); }
+DaemonLocalServer::~DaemonLocalServer() { MZ_COUNT_DTOR(DaemonLocalServer); }
 
 bool DaemonLocalServer::initialize() {
   m_server.setSocketOptions(QLocalServer::WorldAccessOption);
@@ -66,9 +66,9 @@ bool DaemonLocalServer::initialize() {
 }
 
 QString DaemonLocalServer::daemonPath() const {
-#if defined(MVPN_WINDOWS)
+#if defined(MZ_WINDOWS)
   return "\\\\.\\pipe\\mozillavpn";
-#elif defined(MVPN_MACOS)
+#elif defined(MZ_MACOS)
   QDir dir("/var/run");
   if (!dir.exists()) {
     logger.warning() << "/var/run doesn't exist. Fallback /tmp.";

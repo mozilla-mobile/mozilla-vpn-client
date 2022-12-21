@@ -107,10 +107,10 @@ AddonTutorial::AddonTutorial(QObject* parent, const QString& manifestFileName,
                              const QString& id, const QString& name)
     : Addon(parent, manifestFileName, id, name, "tutorial"),
       m_itemPicker(new TutorialItemPicker(this)) {
-  MVPN_COUNT_CTOR(AddonTutorial);
+  MZ_COUNT_CTOR(AddonTutorial);
 }
 
-AddonTutorial::~AddonTutorial() { MVPN_COUNT_DTOR(AddonTutorial); }
+AddonTutorial::~AddonTutorial() { MZ_COUNT_DTOR(AddonTutorial); }
 
 void AddonTutorial::play(const QStringList& allowedItems) {
   m_allowedItems = allowedItems;

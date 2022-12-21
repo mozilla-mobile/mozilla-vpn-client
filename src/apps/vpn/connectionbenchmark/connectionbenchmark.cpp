@@ -9,9 +9,9 @@
 #include "benchmarktasktransfer.h"
 #include "connectionhealth.h"
 #include "controller.h"
+#include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/feature.h"
 #include "mozillavpn.h"
 #include "taskscheduler.h"
 
@@ -20,11 +20,11 @@ Logger logger("ConnectionBenchmark");
 }
 
 ConnectionBenchmark::ConnectionBenchmark() {
-  MVPN_COUNT_CTOR(ConnectionBenchmark);
+  MZ_COUNT_CTOR(ConnectionBenchmark);
 }
 
 ConnectionBenchmark::~ConnectionBenchmark() {
-  MVPN_COUNT_DTOR(ConnectionBenchmark);
+  MZ_COUNT_DTOR(ConnectionBenchmark);
 }
 
 void ConnectionBenchmark::initialize() {

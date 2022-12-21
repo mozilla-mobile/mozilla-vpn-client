@@ -17,10 +17,10 @@
 
 CommandServers::CommandServers(QObject* parent)
     : Command(parent, "servers", "Show the list of servers.") {
-  MVPN_COUNT_CTOR(CommandServers);
+  MZ_COUNT_CTOR(CommandServers);
 }
 
-CommandServers::~CommandServers() { MVPN_COUNT_DTOR(CommandServers); }
+CommandServers::~CommandServers() { MZ_COUNT_DTOR(CommandServers); }
 
 int CommandServers::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());

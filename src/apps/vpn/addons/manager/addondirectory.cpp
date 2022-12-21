@@ -17,7 +17,7 @@ namespace {
 Logger logger("AddonDirectory");
 
 QString rootAppFolder() {
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
   // https://wiki.qt.io/Qt_for_WebAssembly#Files_and_local_file_system_access
   return "/";
 #elif defined(UNIT_TEST)
@@ -29,7 +29,7 @@ QString rootAppFolder() {
 }  // namespace
 
 AddonDirectory::AddonDirectory() {
-  MVPN_COUNT_CTOR(AddonDirectory);
+  MZ_COUNT_CTOR(AddonDirectory);
 
   QDir addonDirectory(rootAppFolder());
   if (!addonDirectory.exists(ADDON_FOLDER) &&
@@ -39,7 +39,7 @@ AddonDirectory::AddonDirectory() {
   }
 }
 
-AddonDirectory::~AddonDirectory() { MVPN_COUNT_DTOR(AddonDirectory); }
+AddonDirectory::~AddonDirectory() { MZ_COUNT_DTOR(AddonDirectory); }
 
 // static
 bool AddonDirectory::getDirectory(QDir* dir) {

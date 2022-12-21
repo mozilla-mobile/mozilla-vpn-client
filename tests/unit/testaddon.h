@@ -4,10 +4,15 @@
 
 #include "helper.h"
 
+class SettingsHolder;
+
 class TestAddon final : public TestHelper {
   Q_OBJECT
 
  private slots:
+  void init();
+  void cleanup();
+
   void property();
   void property_list();
 
@@ -37,4 +42,9 @@ class TestAddon final : public TestHelper {
   void message_load_state_data();
   void message_load_state();
   void message_dismiss();
+
+  void telemetry_state_change();
+
+ private:
+  SettingsHolder* m_settingsHolder = nullptr;
 };

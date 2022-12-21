@@ -21,11 +21,11 @@ Logger logger("AndroidAppImageProvider");
 AndroidAppImageProvider::AndroidAppImageProvider(QObject* parent)
     : AppImageProvider(parent, QQuickImageProvider::Image,
                        QQmlImageProviderBase::ForceAsynchronousImageLoading) {
-  MVPN_COUNT_CTOR(AndroidAppImageProvider);
+  MZ_COUNT_CTOR(AndroidAppImageProvider);
 }
 
 AndroidAppImageProvider::~AndroidAppImageProvider() {
-  MVPN_COUNT_DTOR(AndroidAppImageProvider);
+  MZ_COUNT_DTOR(AndroidAppImageProvider);
 }
 
 // from QQuickImageProvider

@@ -12,19 +12,19 @@
 #include "mozillavpn.h"
 #include "settingsholder.h"
 
-#if defined(MVPN_IOS)
+#if defined(MZ_IOS)
 #  include "platforms/ios/iosnotificationhandler.h"
 #endif
 
-#if defined(MVPN_ANDROID)
+#if defined(MZ_ANDROID)
 #  include "platforms/android/androidnotificationhandler.h"
 #endif
 
-#if defined(MVPN_LINUX)
+#if defined(MZ_LINUX)
 #  include "platforms/linux/linuxsystemtraynotificationhandler.h"
 #endif
 
-#if defined(MVPN_MACOS)
+#if defined(MZ_MACOS)
 #  include "platforms/macos/macossystemtraynotificationhandler.h"
 #endif
 
@@ -45,21 +45,21 @@ NotificationHandler* NotificationHandler::create(QObject* parent) {
 
 // static
 NotificationHandler* NotificationHandler::createInternal(QObject* parent) {
-#if defined(MVPN_IOS)
+#if defined(MZ_IOS)
   return new IOSNotificationHandler(parent);
 #endif
 
-#if defined(MVPN_ANDROID)
+#if defined(MZ_ANDROID)
   return new AndroidNotificationHandler(parent);
 #endif
 
-#if defined(MVPN_LINUX)
+#if defined(MZ_LINUX)
   if (LinuxSystemTrayNotificationHandler::requiredCustomImpl()) {
     return new LinuxSystemTrayNotificationHandler(parent);
   }
 #endif
 
-#if defined(MVPN_MACOS)
+#if defined(MZ_MACOS)
   return new MacosSystemTrayNotificationHandler(parent);
 #endif
 
@@ -70,14 +70,14 @@ NotificationHandler* NotificationHandler::createInternal(QObject* parent) {
 NotificationHandler* NotificationHandler::instance() { return s_instance; }
 
 NotificationHandler::NotificationHandler(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(NotificationHandler);
+  MZ_COUNT_CTOR(NotificationHandler);
 
   Q_ASSERT(!s_instance);
   s_instance = this;
 }
 
 NotificationHandler::~NotificationHandler() {
-  MVPN_COUNT_DTOR(NotificationHandler);
+  MZ_COUNT_DTOR(NotificationHandler);
 
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;

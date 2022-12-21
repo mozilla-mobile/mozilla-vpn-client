@@ -11,12 +11,10 @@
 constexpr int RADIX = 36;
 
 IncrementalDecoder::IncrementalDecoder(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(IncrementalDecoder);
+  MZ_COUNT_CTOR(IncrementalDecoder);
 }
 
-IncrementalDecoder::~IncrementalDecoder() {
-  MVPN_COUNT_DTOR(IncrementalDecoder);
-}
+IncrementalDecoder::~IncrementalDecoder() { MZ_COUNT_DTOR(IncrementalDecoder); }
 
 IncrementalDecoder::Result IncrementalDecoder::match(QTextStream& stream,
                                                      const QString& input) {

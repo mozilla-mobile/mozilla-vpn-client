@@ -26,10 +26,10 @@ TaskSendFeedback::TaskSendFeedback(const QString& feedbackText,
       m_logs(logs.right(FEEDBACK_LOG_MAX_LENGTH)),
       m_rating(rating),
       m_category(category) {
-  MVPN_COUNT_CTOR(TaskSendFeedback);
+  MZ_COUNT_CTOR(TaskSendFeedback);
 }
 
-TaskSendFeedback::~TaskSendFeedback() { MVPN_COUNT_DTOR(TaskSendFeedback); }
+TaskSendFeedback::~TaskSendFeedback() { MZ_COUNT_DTOR(TaskSendFeedback); }
 
 void TaskSendFeedback::run() {
   logger.debug() << "Sending the feedback";

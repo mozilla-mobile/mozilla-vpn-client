@@ -40,11 +40,11 @@ Logger logger("MacOSNetworkWatcher");
 @end
 
 MacOSNetworkWatcher::MacOSNetworkWatcher(QObject* parent) : IOSNetworkWatcher(parent) {
-  MVPN_COUNT_CTOR(MacOSNetworkWatcher);
+  MZ_COUNT_CTOR(MacOSNetworkWatcher);
 }
 
 MacOSNetworkWatcher::~MacOSNetworkWatcher() {
-  MVPN_COUNT_DTOR(MacOSNetworkWatcher);
+  MZ_COUNT_DTOR(MacOSNetworkWatcher);
   if (m_delegate) {
     CWWiFiClient* client = CWWiFiClient.sharedWiFiClient;
     if (!client) {

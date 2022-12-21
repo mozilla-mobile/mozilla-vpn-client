@@ -24,11 +24,11 @@ AdjustTaskSubmission::AdjustTaskSubmission(
       m_queryParameters(queryParameters),
       m_bodyParameters(bodyParameters),
       m_unknownParameters(unknownParameters) {
-  MVPN_COUNT_CTOR(AdjustTaskSubmission);
+  MZ_COUNT_CTOR(AdjustTaskSubmission);
 }
 
 AdjustTaskSubmission::~AdjustTaskSubmission() {
-  MVPN_COUNT_DTOR(AdjustTaskSubmission);
+  MZ_COUNT_DTOR(AdjustTaskSubmission);
 }
 
 void AdjustTaskSubmission::run() {

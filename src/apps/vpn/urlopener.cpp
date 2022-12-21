@@ -9,20 +9,20 @@
 #include <QUrlQuery>
 
 #include "appconstants.h"
+#include "feature.h"
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/feature.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
 
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
 constexpr const char* GOOGLE_PLAYSTORE_URL =
     "https://play.google.com/store/apps/details?id=org.mozilla.firefox.vpn";
 #endif
 
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
 constexpr const char* APPLE_STORE_URL =
     "https://apps.apple.com/us/app/mozilla-vpn-secure-private/id1489407738";
 constexpr const char* APPLE_STORE_REVIEW_URL =
@@ -43,10 +43,10 @@ UrlOpener* UrlOpener::instance() {
 }
 
 UrlOpener::UrlOpener(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(UrlOpener);
+  MZ_COUNT_CTOR(UrlOpener);
 }
 
-UrlOpener::~UrlOpener() { MVPN_COUNT_DTOR(UrlOpener); }
+UrlOpener::~UrlOpener() { MZ_COUNT_DTOR(UrlOpener); }
 
 void UrlOpener::openLink(LinkType linkType) {
   logger.debug() << "Opening link: " << linkType;
@@ -77,9 +77,9 @@ void UrlOpener::openLink(LinkType linkType) {
     case LinkLeaveReview:
       Q_ASSERT(Feature::get(Feature::Feature_appReview)->isSupported());
       url =
-#if defined(MVPN_IOS)
+#if defined(MZ_IOS)
           APPLE_STORE_REVIEW_URL;
-#elif defined(MVPN_ANDROID)
+#elif defined(MZ_ANDROID)
           GOOGLE_PLAYSTORE_URL;
 #else
           "";
@@ -97,9 +97,9 @@ void UrlOpener::openLink(LinkType linkType) {
       break;
 
     case LinkUpdate:
-#if defined(MVPN_IOS)
+#if defined(MZ_IOS)
       url = APPLE_STORE_URL;
-#elif defined(MVPN_ANDROID)
+#elif defined(MZ_ANDROID)
       url = GOOGLE_PLAYSTORE_URL;
 #else
       url = NetworkRequest::apiBaseUrl();

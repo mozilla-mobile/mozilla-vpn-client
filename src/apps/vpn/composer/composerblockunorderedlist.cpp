@@ -70,11 +70,11 @@ ComposerBlockUnorderedList::ComposerBlockUnorderedList(Composer* composer,
                                                        const QString& blockId,
                                                        const QString& type)
     : ComposerBlock(composer, blockId, type) {
-  MVPN_COUNT_CTOR(ComposerBlockUnorderedList);
+  MZ_COUNT_CTOR(ComposerBlockUnorderedList);
 }
 
 ComposerBlockUnorderedList::~ComposerBlockUnorderedList() {
-  MVPN_COUNT_DTOR(ComposerBlockUnorderedList);
+  MZ_COUNT_DTOR(ComposerBlockUnorderedList);
 }
 
 bool ComposerBlockUnorderedList::contains(const QString& string) const {

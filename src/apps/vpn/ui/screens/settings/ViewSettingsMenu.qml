@@ -35,7 +35,8 @@ VPNViewBase {
                     if (subscriptionManagementEnabled) {
                         VPNProfileFlow.start();
                     } else {
-                        VPN.recordGleanEvent("manageAccountClicked")
+                        VPN.recordGleanEvent("manageAccountClicked");
+                        Glean.sample.manageAccountClicked.record();
                         VPNUrlOpener.openLink(VPNUrlOpener.LinkAccount);
                     }
                 }
@@ -122,6 +123,7 @@ VPNViewBase {
                 imageRightMirror: VPNLocalizer.isRightToLeft
                 onClicked: {
                     VPN.recordGleanEvent("getHelpClickedViewSettings");
+                    Glean.sample.getHelpClickedViewSettings.record();
                     VPNNavigator.requestScreen(VPNNavigator.ScreenGetHelp);
                 }
             }
@@ -187,5 +189,6 @@ VPNViewBase {
     }
     Component.onCompleted: {
         VPN.recordGleanEvent("settingsViewOpened");
+        Glean.sample.settingsViewOpened.record();
     }
 }

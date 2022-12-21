@@ -13,11 +13,11 @@ Logger logger("DummyPingSender");
 
 DummyPingSender::DummyPingSender(const QHostAddress& source, QObject* parent)
     : PingSender(parent) {
-  MVPN_COUNT_CTOR(DummyPingSender);
+  MZ_COUNT_CTOR(DummyPingSender);
   Q_UNUSED(source);
 }
 
-DummyPingSender::~DummyPingSender() { MVPN_COUNT_DTOR(DummyPingSender); }
+DummyPingSender::~DummyPingSender() { MZ_COUNT_DTOR(DummyPingSender); }
 
 void DummyPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
   logger.debug() << "Dummy ping to:" << dest.toString();

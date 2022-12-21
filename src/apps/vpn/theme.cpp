@@ -11,7 +11,7 @@
 #include "logger.h"
 #include "settingsholder.h"
 
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
 #  include "platforms/ios/iosutils.h"
 #endif
 
@@ -19,9 +19,9 @@ namespace {
 Logger logger("Theme");
 }
 
-Theme::Theme() { MVPN_COUNT_CTOR(Theme); }
+Theme::Theme() { MZ_COUNT_CTOR(Theme); }
 
-Theme::~Theme() { MVPN_COUNT_DTOR(Theme); }
+Theme::~Theme() { MZ_COUNT_DTOR(Theme); }
 
 void Theme::initialize(QJSEngine* engine) {
   m_themes.clear();
@@ -153,7 +153,7 @@ QVariant Theme::data(const QModelIndex& index, int role) const {
 }
 
 void Theme::setStatusBarTextColor([[maybe_unused]] StatusBarTextColor color) {
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
   IOSUtils::setStatusBarTextColor(color);
 #endif
 }

@@ -19,7 +19,7 @@ Logger logger("IpAddressLookup");
 }
 
 IpAddressLookup::IpAddressLookup() {
-  MVPN_COUNT_CTOR(IpAddressLookup);
+  MZ_COUNT_CTOR(IpAddressLookup);
 
   reset();
 
@@ -27,7 +27,7 @@ IpAddressLookup::IpAddressLookup() {
           [this]() { updateIpAddress(); });
 }
 
-IpAddressLookup::~IpAddressLookup() { MVPN_COUNT_DTOR(IpAddressLookup); }
+IpAddressLookup::~IpAddressLookup() { MZ_COUNT_DTOR(IpAddressLookup); }
 
 void IpAddressLookup::initialize() {
   MozillaVPN* vpn = MozillaVPN::instance();

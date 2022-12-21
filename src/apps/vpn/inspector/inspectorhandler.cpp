@@ -23,6 +23,7 @@
 #include "constants.h"
 #include "controller.h"
 #include "externalophandler.h"
+#include "feature.h"
 #include "frontend/navigator.h"
 #include "inspectoritempicker.h"
 #include "inspectorutils.h"
@@ -30,7 +31,6 @@
 #include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
-#include "models/feature.h"
 #include "models/featuremodel.h"
 #include "mozillavpn.h"
 #include "networkmanager.h"
@@ -43,7 +43,7 @@
 #include "urlopener.h"
 #include "websocket/pushmessage.h"
 
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
 #  include "platforms/wasm/wasminspector.h"
 #else
 #  include <QCoreApplication>
@@ -51,7 +51,7 @@
 #  include "inspectorwebsocketserver.h"
 #endif
 
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
 #  include "platforms/android/androidvpnactivity.h"
 #endif
 
@@ -615,7 +615,7 @@ static QList<InspectorCommand> s_commands{
           obj["value"] = countryArray;
           return obj;
         }},
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
     InspectorCommand{"android_daemon",
                      "Send a request to the Daemon {type} {args}", 2,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
@@ -805,7 +805,7 @@ static QList<InspectorCommand> s_commands{
 
 // static
 void InspectorHandler::initialize() {
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
   WasmInspector::instance();
 #else
   if (!Constants::inProduction()) {
@@ -819,7 +819,7 @@ void InspectorHandler::initialize() {
 }
 
 InspectorHandler::InspectorHandler(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(InspectorHandler);
+  MZ_COUNT_CTOR(InspectorHandler);
 
   connect(LogHandler::instance(), &LogHandler::logEntryAdded, this,
           &InspectorHandler::logEntryAdded);
@@ -834,7 +834,7 @@ InspectorHandler::InspectorHandler(QObject* parent) : QObject(parent) {
           &InspectorHandler::addonLoadCompleted);
 }
 
-InspectorHandler::~InspectorHandler() { MVPN_COUNT_DTOR(InspectorHandler); }
+InspectorHandler::~InspectorHandler() { MZ_COUNT_DTOR(InspectorHandler); }
 
 void InspectorHandler::recv(const QByteArray& command) {
   logger.debug() << "command received:" << command;

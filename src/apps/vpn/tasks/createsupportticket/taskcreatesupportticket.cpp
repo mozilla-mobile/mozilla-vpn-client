@@ -32,11 +32,11 @@ TaskCreateSupportTicket::TaskCreateSupportTicket(const QString& email,
       m_issueText(issueText.left(SUPPORT_TICKET_MESSAGE_MAX_LENGTH)),
       m_logs(logs.right(SUPPORT_TICKET_LOG_MAX_LENGTH)),
       m_category(category) {
-  MVPN_COUNT_CTOR(TaskCreateSupportTicket);
+  MZ_COUNT_CTOR(TaskCreateSupportTicket);
 }
 
 TaskCreateSupportTicket::~TaskCreateSupportTicket() {
-  MVPN_COUNT_DTOR(TaskCreateSupportTicket);
+  MZ_COUNT_DTOR(TaskCreateSupportTicket);
 }
 
 void TaskCreateSupportTicket::run() {

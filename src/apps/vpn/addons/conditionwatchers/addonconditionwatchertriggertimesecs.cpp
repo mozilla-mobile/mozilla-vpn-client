@@ -23,7 +23,7 @@ AddonConditionWatcher* AddonConditionWatcherTriggerTimeSecs::maybeCreate(
 AddonConditionWatcherTriggerTimeSecs::AddonConditionWatcherTriggerTimeSecs(
     QObject* parent, qint64 triggerTimeSecs)
     : AddonConditionWatcher(parent), m_triggerTimeSecs(triggerTimeSecs) {
-  MVPN_COUNT_CTOR(AddonConditionWatcherTriggerTimeSecs);
+  MZ_COUNT_CTOR(AddonConditionWatcherTriggerTimeSecs);
 
   m_timer.setSingleShot(true);
   connect(&m_timer, &QTimer::timeout, this, [this]() {
@@ -36,7 +36,7 @@ AddonConditionWatcherTriggerTimeSecs::AddonConditionWatcherTriggerTimeSecs(
 }
 
 AddonConditionWatcherTriggerTimeSecs::~AddonConditionWatcherTriggerTimeSecs() {
-  MVPN_COUNT_DTOR(AddonConditionWatcherTriggerTimeSecs);
+  MZ_COUNT_DTOR(AddonConditionWatcherTriggerTimeSecs);
 }
 
 bool AddonConditionWatcherTriggerTimeSecs::conditionApplied() const {

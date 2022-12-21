@@ -29,7 +29,7 @@ Logger logger("MacosRouteMonitor");
 
 MacosRouteMonitor::MacosRouteMonitor(const QString& ifname, QObject* parent)
     : QObject(parent), m_ifname(ifname) {
-  MVPN_COUNT_CTOR(MacosRouteMonitor);
+  MZ_COUNT_CTOR(MacosRouteMonitor);
   logger.debug() << "MacosRouteMonitor created.";
 
   m_rtsock = socket(PF_ROUTE, SOCK_RAW, 0);
@@ -50,7 +50,7 @@ MacosRouteMonitor::MacosRouteMonitor(const QString& ifname, QObject* parent)
 }
 
 MacosRouteMonitor::~MacosRouteMonitor() {
-  MVPN_COUNT_DTOR(MacosRouteMonitor);
+  MZ_COUNT_DTOR(MacosRouteMonitor);
   flushExclusionRoutes();
   if (m_rtsock >= 0) {
     close(m_rtsock);
@@ -77,7 +77,7 @@ void MacosRouteMonitor::handleRtmDelete(const struct rt_msghdr* rtm,
   }
 
   QStringList list;
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
   for (auto addr : addrlist) {
     list.append(addrToString(addr));
   }
@@ -189,7 +189,7 @@ void MacosRouteMonitor::handleRtmUpdate(const struct rt_msghdr* rtm,
 
   // Log relevant updates to the routing table.
   QStringList list;
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
   for (auto addr : addrlist) {
     list.append(addrToString(addr));
   }
@@ -270,7 +270,7 @@ void MacosRouteMonitor::handleIfaceInfo(const struct if_msghdr* ifm,
   }
   m_ifflags = ifm->ifm_flags;
 
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
   QList<QByteArray> addrlist = parseAddrList(payload);
   for (auto addr : addrlist) {
     list.append(addrToString(addr));

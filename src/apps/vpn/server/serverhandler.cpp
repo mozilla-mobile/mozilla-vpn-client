@@ -18,7 +18,7 @@ Logger logger("ServerHandler");
 constexpr int SERVER_PORT = 8754;
 
 ServerHandler::ServerHandler() {
-  MVPN_COUNT_CTOR(ServerHandler);
+  MZ_COUNT_CTOR(ServerHandler);
 
   logger.debug() << "Creating the server";
 
@@ -31,7 +31,7 @@ ServerHandler::ServerHandler() {
           &ServerHandler::newConnectionReceived);
 }
 
-ServerHandler::~ServerHandler() { MVPN_COUNT_DTOR(ServerHandler); }
+ServerHandler::~ServerHandler() { MZ_COUNT_DTOR(ServerHandler); }
 
 void ServerHandler::newConnectionReceived() {
   QTcpSocket* child = nextPendingConnection();

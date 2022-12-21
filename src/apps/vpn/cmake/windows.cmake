@@ -67,7 +67,6 @@ target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowsservicemanager.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowscommons.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowscommons.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowscryptosettings.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowsnetworkwatcher.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowsnetworkwatcher.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowspingsender.cpp

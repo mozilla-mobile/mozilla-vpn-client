@@ -18,7 +18,7 @@ Logger logger("DummyController");
 }
 
 DummyController::DummyController() : m_delayTimer(this) {
-  MVPN_COUNT_CTOR(DummyController);
+  MZ_COUNT_CTOR(DummyController);
 
   m_delayTimer.setSingleShot(true);
   connect(&m_delayTimer, &QTimer::timeout, this, [&] {
@@ -30,7 +30,7 @@ DummyController::DummyController() : m_delayTimer(this) {
   });
 }
 
-DummyController::~DummyController() { MVPN_COUNT_DTOR(DummyController); }
+DummyController::~DummyController() { MZ_COUNT_DTOR(DummyController); }
 
 void DummyController::activate(const HopConnection& hop, const Device* device,
                                const Keys* keys, Controller::Reason reason) {

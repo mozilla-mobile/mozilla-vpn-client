@@ -27,12 +27,10 @@ ComposerBlock* ComposerBlockTitle::create(Composer* composer,
 ComposerBlockTitle::ComposerBlockTitle(Composer* composer,
                                        const QString& blockId)
     : ComposerBlock(composer, blockId, "title") {
-  MVPN_COUNT_CTOR(ComposerBlockTitle);
+  MZ_COUNT_CTOR(ComposerBlockTitle);
 }
 
-ComposerBlockTitle::~ComposerBlockTitle() {
-  MVPN_COUNT_DTOR(ComposerBlockTitle);
-}
+ComposerBlockTitle::~ComposerBlockTitle() { MZ_COUNT_DTOR(ComposerBlockTitle); }
 
 bool ComposerBlockTitle::contains(const QString& string) const {
   return m_title.get().contains(string, Qt::CaseInsensitive);

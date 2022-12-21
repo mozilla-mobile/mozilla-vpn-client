@@ -10,10 +10,10 @@
 AddonI18n::AddonI18n(QObject* parent, const QString& manifestFileName,
                      const QString& id, const QString& name)
     : Addon(parent, manifestFileName, id, name, "i18n") {
-  MVPN_COUNT_CTOR(AddonI18n);
+  MZ_COUNT_CTOR(AddonI18n);
 }
 
-AddonI18n::~AddonI18n() { MVPN_COUNT_DTOR(AddonI18n); }
+AddonI18n::~AddonI18n() { MZ_COUNT_DTOR(AddonI18n); }
 
 void AddonI18n::enable() {
   emit SettingsHolder::instance()->languageCodeChanged();

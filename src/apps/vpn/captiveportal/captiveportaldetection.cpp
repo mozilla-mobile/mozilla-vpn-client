@@ -20,11 +20,11 @@ Logger logger("CaptivePortalDetection");
 }
 
 CaptivePortalDetection::CaptivePortalDetection() {
-  MVPN_COUNT_CTOR(CaptivePortalDetection);
+  MZ_COUNT_CTOR(CaptivePortalDetection);
 }
 
 CaptivePortalDetection::~CaptivePortalDetection() {
-  MVPN_COUNT_DTOR(CaptivePortalDetection);
+  MZ_COUNT_DTOR(CaptivePortalDetection);
 }
 
 void CaptivePortalDetection::initialize() {
@@ -121,7 +121,7 @@ void CaptivePortalDetection::detectCaptivePortal() {
 
   logger.debug() << "Captive portal detection started";
 
-#if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS)
+#if defined(MZ_LINUX) || defined(MZ_MACOS) || defined(MZ_WINDOWS)
   m_impl.reset(new CaptivePortalDetectionImpl());
 #else
   logger.warning()

@@ -37,5 +37,6 @@ VPNStackView {
             }
         );
         VPN.recordGleanEvent("subscriptionBlockedViewed");
+        Glean.sample.subscriptionBlockedViewed.record();
     }
 }

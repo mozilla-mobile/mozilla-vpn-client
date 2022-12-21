@@ -18,12 +18,10 @@ Logger logger("TaskGetFeatureList");
 }
 
 TaskGetFeatureList::TaskGetFeatureList() : Task("TaskGetFeatureList") {
-  MVPN_COUNT_CTOR(TaskGetFeatureList);
+  MZ_COUNT_CTOR(TaskGetFeatureList);
 }
 
-TaskGetFeatureList::~TaskGetFeatureList() {
-  MVPN_COUNT_DTOR(TaskGetFeatureList);
-}
+TaskGetFeatureList::~TaskGetFeatureList() { MZ_COUNT_DTOR(TaskGetFeatureList); }
 
 void TaskGetFeatureList::run() {
   NetworkRequest* request = NetworkRequest::createForGetFeatureList(this);

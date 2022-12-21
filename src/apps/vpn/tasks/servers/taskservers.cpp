@@ -17,10 +17,10 @@ Logger logger("TaskServers");
 TaskServers::TaskServers(
     ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy)
     : Task("TaskServers"), m_errorPropagationPolicy(errorPropagationPolicy) {
-  MVPN_COUNT_CTOR(TaskServers);
+  MZ_COUNT_CTOR(TaskServers);
 }
 
-TaskServers::~TaskServers() { MVPN_COUNT_DTOR(TaskServers); }
+TaskServers::~TaskServers() { MZ_COUNT_DTOR(TaskServers); }
 
 void TaskServers::run() {
   NetworkRequest* request = NetworkRequest::createForServers(this);

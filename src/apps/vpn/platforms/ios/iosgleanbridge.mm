@@ -16,7 +16,7 @@ IOSGleanBridgeImpl* impl = nullptr;
 }  // namespace
 
 IOSGleanBridge::IOSGleanBridge(bool isTelemetryEnabled, const QString& channel) {
-  MVPN_COUNT_CTOR(IOSGleanBridge);
+  MZ_COUNT_CTOR(IOSGleanBridge);
 
   impl = [[IOSGleanBridgeImpl alloc] initWithTelemetryEnabled:isTelemetryEnabled
                                                       channel:channel.toNSString()];
@@ -24,7 +24,7 @@ IOSGleanBridge::IOSGleanBridge(bool isTelemetryEnabled, const QString& channel) 
 }
 
 IOSGleanBridge::~IOSGleanBridge() {
-  MVPN_COUNT_DTOR(IOSGleanBridge);
+  MZ_COUNT_DTOR(IOSGleanBridge);
 
   if (impl) {
     [impl dealloc];

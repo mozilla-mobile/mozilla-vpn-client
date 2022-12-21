@@ -15,10 +15,10 @@ Logger logger("BenchmarkTask");
 
 BenchmarkTask::BenchmarkTask(const QString& taskName, uint32_t maxExecutionTime)
     : Task(taskName), m_maxExecutionTime(maxExecutionTime) {
-  MVPN_COUNT_CTOR(BenchmarkTask);
+  MZ_COUNT_CTOR(BenchmarkTask);
 }
 
-BenchmarkTask::~BenchmarkTask() { MVPN_COUNT_DTOR(BenchmarkTask); }
+BenchmarkTask::~BenchmarkTask() { MZ_COUNT_DTOR(BenchmarkTask); }
 
 void BenchmarkTask::setState(State state) {
   logger.debug() << "Set state" << state;

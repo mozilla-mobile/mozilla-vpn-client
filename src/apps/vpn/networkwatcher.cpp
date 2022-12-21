@@ -13,26 +13,26 @@
 #include "platforms/dummy/dummynetworkwatcher.h"
 #include "settingsholder.h"
 
-#ifdef MVPN_WINDOWS
+#ifdef MZ_WINDOWS
 #  include "platforms/windows/windowsnetworkwatcher.h"
 #endif
 
-#ifdef MVPN_LINUX
+#ifdef MZ_LINUX
 #  include "platforms/linux/linuxnetworkwatcher.h"
 #endif
 
-#ifdef MVPN_MACOS
+#ifdef MZ_MACOS
 #  include "platforms/macos/macosnetworkwatcher.h"
 #endif
 
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
 #  include "platforms/wasm/wasmnetworkwatcher.h"
 #endif
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
 #  include "platforms/android/androidnetworkwatcher.h"
 #endif
 
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
 #  include "platforms/ios/iosnetworkwatcher.h"
 #endif
 
@@ -45,24 +45,24 @@ namespace {
 Logger logger("NetworkWatcher");
 }
 
-NetworkWatcher::NetworkWatcher() { MVPN_COUNT_CTOR(NetworkWatcher); }
+NetworkWatcher::NetworkWatcher() { MZ_COUNT_CTOR(NetworkWatcher); }
 
-NetworkWatcher::~NetworkWatcher() { MVPN_COUNT_DTOR(NetworkWatcher); }
+NetworkWatcher::~NetworkWatcher() { MZ_COUNT_DTOR(NetworkWatcher); }
 
 void NetworkWatcher::initialize() {
   logger.debug() << "Initialize";
 
-#if defined(MVPN_WINDOWS)
+#if defined(MZ_WINDOWS)
   m_impl = new WindowsNetworkWatcher(this);
-#elif defined(MVPN_LINUX)
+#elif defined(MZ_LINUX)
   m_impl = new LinuxNetworkWatcher(this);
-#elif defined(MVPN_MACOS)
+#elif defined(MZ_MACOS)
   m_impl = new MacOSNetworkWatcher(this);
-#elif defined(MVPN_WASM)
+#elif defined(MZ_WASM)
   m_impl = new WasmNetworkWatcher(this);
-#elif defined(MVPN_ANDROID)
+#elif defined(MZ_ANDROID)
   m_impl = new AndroidNetworkWatcher(this);
-#elif defined(MVPN_IOS)
+#elif defined(MZ_IOS)
   m_impl = new IOSNetworkWatcher(this);
 #else
   m_impl = new DummyNetworkWatcher(this);

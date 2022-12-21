@@ -38,6 +38,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val gleanSetSourceTags = 14
         const val setStartOnBoot = 15
         const val reactivate = 16
+        const val clearStorage = 17
     }
 
     /**
@@ -122,6 +123,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 obj.put("connected", mService.isUp)
                 obj.put("time", mService.connectionTime)
                 obj.put("city", mService.cityname)
+                obj.put("canActivate", mService.canActivate)
                 dispatchEvent(EVENTS.init, obj.toString())
                 return true
             }
@@ -173,6 +175,9 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 Prefs.get(mService).edit().apply() {
                     putBoolean(BootReceiver.START_ON_BOOT, value)
                 }.apply()
+            }
+            ACTIONS.clearStorage -> {
+                mService.clearConfig()
             }
 
             IBinder.LAST_CALL_TRANSACTION -> {

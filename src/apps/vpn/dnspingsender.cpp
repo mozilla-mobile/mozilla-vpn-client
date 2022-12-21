@@ -50,7 +50,7 @@ Logger logger("DnsPingSender");
 
 DnsPingSender::DnsPingSender(const QHostAddress& source, QObject* parent)
     : PingSender(parent) {
-  MVPN_COUNT_CTOR(DnsPingSender);
+  MZ_COUNT_CTOR(DnsPingSender);
 
   if (source.isNull()) {
     m_socket.bind();
@@ -61,7 +61,7 @@ DnsPingSender::DnsPingSender(const QHostAddress& source, QObject* parent)
   connect(&m_socket, &QUdpSocket::readyRead, this, &DnsPingSender::readData);
 }
 
-DnsPingSender::~DnsPingSender() { MVPN_COUNT_DTOR(DnsPingSender); }
+DnsPingSender::~DnsPingSender() { MZ_COUNT_DTOR(DnsPingSender); }
 
 void DnsPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
   QByteArray packet;

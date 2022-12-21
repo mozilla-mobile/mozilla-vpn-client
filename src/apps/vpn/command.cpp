@@ -14,7 +14,7 @@
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"
 
-#ifdef MVPN_WINDOWS
+#ifdef MZ_WINDOWS
 #  include <Windows.h>
 
 #  include <QQuickWindow>
@@ -23,7 +23,7 @@
 #  include "platforms/windows/windowscommons.h"
 #endif
 
-#ifdef MVPN_MACOS
+#ifdef MZ_MACOS
 #  include "platforms/macos/macosutils.h"
 #endif
 
@@ -40,10 +40,10 @@ QVector<std::function<Command*(QObject*)>> Command::s_commandCreators;
 Command::Command(QObject* parent, const QString& name,
                  const QString& description)
     : QObject(parent), m_name(name), m_description(description) {
-  MVPN_COUNT_CTOR(Command);
+  MZ_COUNT_CTOR(Command);
 }
 
-Command::~Command() { MVPN_COUNT_DTOR(Command); }
+Command::~Command() { MZ_COUNT_DTOR(Command); }
 
 bool Command::userAuthenticated() {
   if (!SettingsHolder::instance()->hasToken()) {
@@ -129,7 +129,7 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
   Localizer localizer;
   SimpleNetworkManager snm;
 
-#ifdef MVPN_MACOS
+#ifdef MZ_MACOS
   MacOSUtils::patchNSStatusBarSetImageForBigSur();
 #endif
 
@@ -154,7 +154,7 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
   // Ensure that external styling hints are disabled.
   qunsetenv("QT_STYLE_OVERRIDE");
 
-#ifdef MVPN_WINDOWS
+#ifdef MZ_WINDOWS
   SetProcessDPIAware();
 #endif
 
@@ -163,12 +163,12 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
   QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
   QGuiApplication::setHighDpiScaleFactorRoundingPolicy(
       Qt::HighDpiScaleFactorRoundingPolicy::Round);
 #endif
 
-#ifdef MVPN_WINDOWS
+#ifdef MZ_WINDOWS
   if (WindowsCommons::requireSoftwareRendering()) {
     QQuickWindow::setGraphicsApi(QSGRendererInterface::Software);
   }
@@ -181,7 +181,7 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
 
   Localizer localizer;
 
-#ifdef MVPN_MACOS
+#ifdef MZ_MACOS
   MacOSUtils::patchNSStatusBarSetImageForBigSur();
 #endif
 

@@ -9,7 +9,7 @@
 AddonConditionWatcherGroup::AddonConditionWatcherGroup(
     QObject* parent, const QList<AddonConditionWatcher*>& group)
     : AddonConditionWatcher(parent), m_group(group) {
-  MVPN_COUNT_CTOR(AddonConditionWatcherGroup);
+  MZ_COUNT_CTOR(AddonConditionWatcherGroup);
 
   m_currentStatus = conditionApplied();
 
@@ -26,7 +26,7 @@ AddonConditionWatcherGroup::AddonConditionWatcherGroup(
 }
 
 AddonConditionWatcherGroup::~AddonConditionWatcherGroup() {
-  MVPN_COUNT_DTOR(AddonConditionWatcherGroup);
+  MZ_COUNT_DTOR(AddonConditionWatcherGroup);
 }
 
 bool AddonConditionWatcherGroup::conditionApplied() const {

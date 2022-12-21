@@ -204,4 +204,11 @@ ComboBox {
             }
         }
     ]
+
+    Connections {
+        target: window
+        function onScreenClicked(x, y) {
+            if(combo.focus) window.removeFocus(combo, x, y)
+        }
+    }
 }

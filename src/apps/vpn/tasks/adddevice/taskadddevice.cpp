@@ -35,10 +35,10 @@ QByteArray generatePrivateKey() {
 
 TaskAddDevice::TaskAddDevice(const QString& deviceName, const QString& deviceID)
     : Task("TaskAddDevice"), m_deviceName(deviceName), m_deviceID(deviceID) {
-  MVPN_COUNT_CTOR(TaskAddDevice);
+  MZ_COUNT_CTOR(TaskAddDevice);
 }
 
-TaskAddDevice::~TaskAddDevice() { MVPN_COUNT_DTOR(TaskAddDevice); }
+TaskAddDevice::~TaskAddDevice() { MZ_COUNT_DTOR(TaskAddDevice); }
 
 void TaskAddDevice::run() {
   logger.debug() << "Adding the device" << logger.sensitive(m_deviceName);

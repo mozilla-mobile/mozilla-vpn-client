@@ -30,7 +30,6 @@ namespace {{ category_name|snake_case }} {
 {% endfor %}
 } // namespace mozilla::glean
 
-namespace {
 {% for category_name, objs in all_objs.items() %}
   {% for obj in objs.values() %}
   {% if obj|attr("_generate_enums") %}
@@ -38,7 +37,6 @@ namespace {
   {%- endif %}
   {% endfor %}
 {% endfor %}
-} // namespace
 
 {% for category_name, objs in all_objs.items() %}
 class __DONOTUSE__{{ category_name|Camelize }} final {
@@ -49,13 +47,17 @@ class __DONOTUSE__{{ category_name|Camelize }} final {
 {% endfor %}
 
   public:
+    __DONOTUSE__{{ category_name|Camelize }}() = default;
+    ~__DONOTUSE__{{ category_name|Camelize }}() = default;
+
     {% for obj in objs.values() %}
     {{ obj|type_name }} {{obj.name|camelize }} () const { return m_{{obj.name|camelize }}; };
     {% endfor %}
 
   private:
     {% for obj in objs.values() %}
-    {{ obj|type_name }} m_{{obj.name|camelize }} = {{ obj|type_name }}({{obj|metric_id}}{% if obj|attr("allowed_extra_keys_with_types")|length > 0 %}, {{ obj.name|Camelize }}ExtraParser(){%- endif %});
+    {% if obj|attr("allowed_extra_keys_with_types")|length > 0 %}__DONOTUSE__{{ obj.name|Camelize }}ExtraParser m_{{obj.name|camelize }}ExtraParser;{%- endif %}
+    {{ obj|type_name }} m_{{obj.name|camelize }} = {{ obj|type_name }}({{obj|metric_id}}{% if obj|attr("allowed_extra_keys_with_types")|length > 0 %}, &m_{{obj.name|camelize }}ExtraParser {%- endif %});
     {% endfor %}
 };
 {% endfor %}

@@ -11,6 +11,12 @@ class Ping final {
   Q_GADGET
 
  public:
+  // QML custom types require these three declarations.
+  // See: https://doc.qt.io/qt-6/custom-types.html#creating-a-custom-type
+  Ping() = default;
+  Ping(const Ping&) = default;
+  Ping& operator=(const Ping&) = default;
+
   explicit Ping(int aId);
   ~Ping() = default;
 
