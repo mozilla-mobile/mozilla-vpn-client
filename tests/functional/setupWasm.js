@@ -19,6 +19,7 @@ const vpnWasm = require('./helperWasm.js');
 const fxaServer = require('./servers/fxa.js');
 const guardian = require('./servers/guardian.js');
 const addonServer = require('./servers/addon.js');
+const networkBenchmark = require('./servers/networkBenchmark.js');
 const wasm = require('./wasm.js');
 
 const {Builder, By, Key, until} = require('selenium-webdriver');
@@ -37,6 +38,8 @@ exports.mochaHooks = {
     u.searchParams.set('fxa', `http://localhost:${fxaServer.start()}`);
     u.searchParams.set(
         'addon', `http://localhost:${addonServer.start()}/01_empty_manifest/`);
+    u.searchParams.set('benchmark',
+        `http://localhost:${networkBenchmark.start()}`);
 
     process.env['MZ_WASM_URL'] = u.toString();
     process.env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';
@@ -48,11 +51,13 @@ exports.mochaHooks = {
     guardian.stop();
     fxaServer.stop();
     addonServer.stop();
+    networkBenchmark.stop();
     wasm.stop();
 
     guardian.throwExceptionsIfAny();
     fxaServer.throwExceptionsIfAny();
     addonServer.throwExceptionsIfAny();
+    networkBenchmark.throwExceptionsIfAny();
 
     await driver.quit();
   },

@@ -23,6 +23,7 @@ const vpnWS = require('./helperWS.js');
 const fxaServer = require('./servers/fxa.js');
 const guardian = require('./servers/guardian.js');
 const addonServer = require('./servers/addon.js');
+const networkBenchmark = require('./servers/networkBenchmark.js');
 
 const app = process.env.MVPN_BIN;
 let vpnProcess = null;
@@ -58,16 +59,20 @@ exports.mochaHooks = {
     process.env['MZ_ADDON_URL'] =
         `http://localhost:${addonServer.start()}/01_empty_manifest/`;
     process.env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';
+    process.env['MVPN_BENCHMARK_URL'] =
+        `http://localhost:${networkBenchmark.start()}`;
   },
 
   async afterAll() {
     guardian.stop();
     fxaServer.stop();
     addonServer.stop();
+    networkBenchmark.stop();
 
     guardian.throwExceptionsIfAny();
     fxaServer.throwExceptionsIfAny();
     addonServer.throwExceptionsIfAny();
+    networkBenchmark.throwExceptionsIfAny();
   },
 
   async beforeEach() {
