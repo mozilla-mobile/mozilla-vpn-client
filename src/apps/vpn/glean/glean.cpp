@@ -7,8 +7,8 @@
 // about what is being imported.
 #include "./glean.h"
 
-#include "feature.h"
 #include "constants.h"
+#include "feature.h"
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
 #include "leakdetector.h"

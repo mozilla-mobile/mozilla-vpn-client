@@ -32,7 +32,6 @@
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
-#include "glean/generated/metrics.h"
 #include "update/versionapi.h"
 #include "versionutils.h"
 

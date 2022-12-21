@@ -15,7 +15,6 @@
 #include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "feature.h"
 
 namespace {
 
