@@ -102,6 +102,8 @@ theme.badgeVerticalPadding = 3
 theme.darkFocusBorder = theme.fontColor;
 theme.lightFocusBorder = '#d5d3e0';
 
+theme.maxZLevel = 10
+
 
 theme.onBoardingGradient = {
   'start': '#472C87',

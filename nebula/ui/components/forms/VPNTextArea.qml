@@ -80,6 +80,13 @@ Item {
                 }
             }
 
+            Connections {
+                target: window
+                function onScreenClicked(x, y) {
+                    if(textArea.focus) window.removeFocus(textArea, x, y)
+                }
+            }
+
             VPNTextBlock {
                 id: formattedPlaceholderText
 
