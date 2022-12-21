@@ -22,7 +22,7 @@ buildscript {
 }
 
 plugins {
-    id "com.jetbrains.python.envs" version "0.0.26"
+    id "com.jetbrains.python.envs"
 }
 
 // Copied from from 3rdparty/glean/build.gradle
@@ -53,7 +53,8 @@ def versions = [
 apply plugin: "com.android.library"
 apply plugin: "kotlin-android"
 
-def gleanVendoredPath = "$rootDir/../../../3rdparty/glean/"
+def repositoryRoot = "$rootDir/../../.."
+def gleanVendoredPath = "$repositoryRoot/3rdparty/glean"
 
 ext.allowGleanInternal = true
 ext.gleanNamespace = "mozilla.telemetry.glean"
@@ -127,7 +128,7 @@ android.libraryVariants.all { variant ->
     def udlFilePath = "glean-core/src/glean.udl"
     def t = tasks.register("generate${variant.name.capitalize()}UniFFIBindings", Exec) {
         workingDir "$gleanVendoredPath"
-        commandLine "cargo", "uniffi-bindgen", "generate", "--no-format", "${udlFilePath}", "--language", "kotlin", "--out-dir", "${buildDir}/${uniffiGeneratedPath}"
+        commandLine "cargo", "uniffi-bindgen", "generate", "--no-format", "${udlFilePath}", "--language", "kotlin", "--out-dir", "${buildDir}/${uniffiGeneratedPath}", "--config","${repositoryRoot}/vpnglean/uniffi.toml"
         outputs.dir "${buildDir}/${uniffiGeneratedPath}"
         // Re-generate if the interface definition changes.
         inputs.file "$gleanVendoredPath/glean-core/src/glean.udl"

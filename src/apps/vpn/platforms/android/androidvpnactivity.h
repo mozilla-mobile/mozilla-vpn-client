@@ -36,16 +36,8 @@ enum ServiceAction {
   // Sets the fallback text if the OS triggered the VPN-Service
   // to show a notification
   ACTION_SET_NOTIFICATION_FALLBACK = 9,
-  // Records a Glean Event
-  ACTION_RECORD_EVENT = 10,
-  // Requests Glean to Send main ping
-  ACTION_SEND_GLEAN_MAIN_PING = 11,
-  // Upload Enabled Changed
-  ACTION_GLEAN_ENABLED_CHANGED = 12,
   // Get's current status
   ACTION_GET_STATUS = 13,
-  // Set Glean Source tags
-  ACTION_GLEAN_SET_SOURCE_TAGS = 14,
   // Set startOnBoot pref
   ACTION_SET_START_ON_BOOT = 15,
   // Reactivate the last connection (unusued from the client)

@@ -162,6 +162,7 @@ mozillavpnnp.vcxproj*
 !/glean/telemetry/.keepme
 android/src/org/mozilla/firefox/vpn/glean/GleanEvents.kt
 vpnglean/prebuilt/
+vpnglean/uniffi.toml
 
 # For users compiling QT per the README
 /qt/
