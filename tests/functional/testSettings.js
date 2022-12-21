@@ -374,7 +374,7 @@ describe('Settings', function () {
     await vpn.clickOnElement(getHelpScreen.HELP_CENTER);
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
-      return url.endsWith('/r/vpn/support');
+      return url.endsWith('/firefox-private-network-vpn');
     });
 
     await vpn.wait();
