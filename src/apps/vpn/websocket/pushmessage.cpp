@@ -12,7 +12,6 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
-#include "telemetry/gleansample.h"
 
 namespace {
 Logger logger("PushMessage");

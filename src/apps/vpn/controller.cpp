@@ -20,7 +20,6 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 #include "tasks/heartbeat/taskheartbeat.h"
-#include "telemetry/gleansample.h"
 
 #if defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"

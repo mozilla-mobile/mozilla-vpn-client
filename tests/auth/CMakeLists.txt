@@ -27,7 +27,8 @@ target_link_libraries(auth_tests PRIVATE
     Qt6::Qml
     Qt6::Quick
 )
-target_link_libraries(auth_tests PRIVATE glean translations)
+
+target_link_libraries(auth_tests PRIVATE glean vpnglean translations)
 
 target_compile_definitions(auth_tests PRIVATE UNIT_TEST)
 target_compile_definitions(auth_tests PRIVATE MZ_DEBUG)
@@ -52,6 +53,15 @@ target_sources(auth_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.h
     ${MZ_SOURCE_DIR}/apps/vpn/errorhandler.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/errorhandler.h
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/glean.h
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/glean.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/generated/metrics.h
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/generated/pings.h
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/private/event.h
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/private/event.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/private/ping.h
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/private/ping.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/metrictypes.h
     ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/featuremodel.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/featuremodel.h

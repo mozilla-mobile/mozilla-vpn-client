@@ -4,6 +4,7 @@
 
 #include "webupdater.h"
 
+#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -26,6 +27,9 @@ WebUpdater::~WebUpdater() {
 }
 
 void WebUpdater::start(Task*) {
+  mozilla::glean::sample::update_step.record(
+      mozilla::glean::sample::UpdateStepExtra{
+          ._state = QVariant::fromValue(FallbackInBrowser).toString()});
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(FallbackInBrowser).toString()}});

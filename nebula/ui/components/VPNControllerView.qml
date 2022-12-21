@@ -462,6 +462,7 @@ Item {
         onClicked: {
             if (!box.connectionInfoScreenVisible) {
                 VPN.recordGleanEvent("connectionInfoOpened");
+                Glean.sample.connectionInfoOpened.record();
             }
             box.connectionInfoScreenVisible = !box.connectionInfoScreenVisible;
         }

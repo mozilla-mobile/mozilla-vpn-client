@@ -25,7 +25,7 @@ target_link_libraries(qml_tests PRIVATE
     Qt6::QuickTest
 )
 
-target_link_libraries(qml_tests PRIVATE glean lottie nebula translations)
+target_link_libraries(qml_tests PRIVATE glean vpnglean lottie nebula translations)
 
 target_compile_definitions(qml_tests PRIVATE QUICK_TEST_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
 target_compile_definitions(qml_tests PRIVATE UNIT_TEST)
@@ -41,6 +41,15 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/externalophandler.h
     ${MZ_SOURCE_DIR}/apps/vpn/filterproxymodel.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/filterproxymodel.h
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/glean.h
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/glean.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/generated/metrics.h
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/generated/pings.h
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/private/event.h
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/private/event.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/private/ping.h
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/private/ping.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/glean/metrictypes.h
     ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/featuremodel.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/featuremodel.h

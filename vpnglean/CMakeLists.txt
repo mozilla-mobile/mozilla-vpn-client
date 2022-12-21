@@ -164,5 +164,5 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     ## Windows seems to miss some system libraries when importing static OpenSSL
     set_property(TARGET vpnglean APPEND PROPERTY
-        INTERFACE_LINK_LIBRARIES crypt32 Secur32 ntdll)
+        INTERFACE_LINK_LIBRARIES crypt32 Secur32 bcrypt ncrypt ntdll)
 endif()

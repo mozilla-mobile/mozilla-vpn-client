@@ -78,8 +78,10 @@ VPNViewBase {
 
     Component.onCompleted: {
         VPN.recordGleanEvent("networkSettingsViewOpened");
+        Glean.sample.networkSettingsViewOpened.record();
         if (!vpnIsOff) {
             VPN.recordGleanEvent("networkSettingsViewWarning");
+            Glean.sample.networkSettingsViewWarning.record();
         }
     }
 }

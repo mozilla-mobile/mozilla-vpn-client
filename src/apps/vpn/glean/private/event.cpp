@@ -3,6 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "glean/private/event.h"
+
+#include "logger.h"
 #if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
 #  include "vpnglean.h"
 #endif
@@ -14,10 +16,12 @@
 #  include <QJsonDocument>
 #endif
 
-#include <any>
+namespace {
+Logger logger("VPNGlean::EventMetric");
+}  // namespace
 
-EventMetric::EventMetric(int id, EventMetricExtraParser aParser)
-    : m_id(id), m_parser(aParser) {}
+EventMetric::EventMetric(int id, EventMetricExtraParser* parser)
+    : m_id(id), m_parser(parser) {}
 
 void EventMetric::record() const {
 #if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
@@ -29,27 +33,35 @@ void EventMetric::record(const QJsonObject& extras) {
   // Helper vector to extend the lifetime of the strings
   // that hold the extra key values until they are used.
   QList<QByteArray> keepStringsAlive;
-  FfiExtra ffiExtras = m_parser.fromJsonObject(extras, keepStringsAlive);
+  FfiExtra ffiExtras = m_parser->fromJsonObject(extras, keepStringsAlive);
 
-  if (ffiExtras.count > 0) {
+  if (!ffiExtras.keys.empty()) {
 #if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
-    glean_event_record(m_id, ffiExtras.keys, ffiExtras.values, ffiExtras.count);
+    glean_event_record(m_id, ffiExtras.keys.data(), ffiExtras.values.data(),
+                       ffiExtras.keys.size());
 #endif
+  } else {
+    logger.error() << "Attempted to record an event with extras, but no extras "
+                      "were provided. Ignoring.";
+    // TODO: record an error.
   }
 }
 
-void EventMetric::record(EventMetricExtra extras) {
-  Q_ASSERT(extras.__PRIVATE__id == m_id);
-
+void EventMetric::record(const EventMetricExtra& extras) {
   // Helper vector to extend the lifetime of the strings
   // that hold the extra key values until they are used.
   QList<QByteArray> keepStringsAlive;
-  FfiExtra ffiExtras = m_parser.fromStruct(extras, keepStringsAlive);
+  FfiExtra ffiExtras = m_parser->fromStruct(extras, keepStringsAlive, m_id);
 
-  if (ffiExtras.count > 0) {
+  if (!ffiExtras.keys.empty()) {
 #if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
-    glean_event_record(m_id, ffiExtras.keys, ffiExtras.values, ffiExtras.count);
+    glean_event_record(m_id, ffiExtras.keys.data(), ffiExtras.values.data(),
+                       ffiExtras.keys.size());
 #endif
+  } else {
+    logger.error() << "Attempted to record an event with extras, but no extras "
+                      "were provided. Ignoring.";
+    // TODO: record an error.
   }
 }
 
@@ -64,19 +76,21 @@ int32_t EventMetric::testGetNumRecordedErrors(
 #  endif
 }
 
-QJsonArray EventMetric::testGetValue(const QString& pingName) const {
+QList<QJsonObject> EventMetric::testGetValue(const QString& pingName) const {
 #  if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
   auto value = glean_event_test_get_value(m_id, pingName.toLocal8Bit());
-  QJsonArray recordedEvents = QJsonDocument::fromJson(value).array();
+  auto recordedEvents = QJsonDocument::fromJson(value).array();
+  QList<QJsonObject> result;
   if (!recordedEvents.isEmpty()) {
     for (const QJsonValue& recordedEvent : recordedEvents) {
       Q_ASSERT(recordedEvent.isObject());
+      result.append(recordedEvent.toObject());
     }
   }
 
-  return recordedEvents;
+  return result;
 #  else
-  return QJsonArray();
+  return QList();
 #  endif
 }
 #endif

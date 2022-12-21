@@ -7,6 +7,7 @@
 #include <QJsonObject>
 #include <QMetaEnum>
 
+#include "glean/generated/metrics.h"
 #include "l18nstrings.h"
 #include "leakdetector.h"
 #include "localizer.h"
@@ -111,6 +112,12 @@ void AddonMessage::updateMessageState(MessageState newState) {
   Q_ASSERT(settingsHolder);
 
   settingsHolder->setAddonSetting(MessageStateQuery(id()), newStateSetting);
+
+  mozilla::glean::sample::addon_message_state_changed.record(
+      mozilla::glean::sample::AddonMessageStateChangedExtra{
+          ._messageId = id(),
+          ._messageState = newStateSetting,
+      });
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::addonMessageStateChanged,
       {{"message_id", id()}, {"message_state", newStateSetting}});

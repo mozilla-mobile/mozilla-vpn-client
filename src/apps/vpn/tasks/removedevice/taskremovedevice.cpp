@@ -10,7 +10,6 @@
 #include "models/user.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
-#include "telemetry/gleansample.h"
 
 namespace {
 Logger logger("TaskRemoveDevice");

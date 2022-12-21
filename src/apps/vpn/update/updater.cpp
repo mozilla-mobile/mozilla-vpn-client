@@ -5,6 +5,7 @@
 #include "updater.h"
 
 #include "constants.h"
+#include "glean/generated/metrics.h"
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -43,6 +44,10 @@ Updater::Updater(QObject* parent) : QObject(parent) {
   connect(this, &Updater::updateRecommended, [this] {
     m_recommendedOrRequired = true;
 
+    mozilla::glean::sample::update_step.record(
+        mozilla::glean::sample::UpdateStepExtra{
+            ._state =
+                QVariant::fromValue(RecommendedUpdateAvailable).toString()});
     emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
         GleanSample::updateStep,
         {{"state",
@@ -52,6 +57,9 @@ Updater::Updater(QObject* parent) : QObject(parent) {
   connect(this, &Updater::updateRequired, [this] {
     m_recommendedOrRequired = true;
 
+    mozilla::glean::sample::update_step.record(
+        mozilla::glean::sample::UpdateStepExtra{
+            ._state = QVariant::fromValue(RequiredUpdateAvailable).toString()});
     emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
         GleanSample::updateStep,
         {{"state", QVariant::fromValue(RequiredUpdateAvailable).toString()}});
@@ -74,6 +82,9 @@ QString Updater::appVersion() {
 
 // static
 void Updater::updateViewShown() {
+  mozilla::glean::sample::update_step.record(
+      mozilla::glean::sample::UpdateStepExtra{
+          ._state = QVariant::fromValue(UpdateViewShown).toString()});
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(UpdateViewShown).toString()}});

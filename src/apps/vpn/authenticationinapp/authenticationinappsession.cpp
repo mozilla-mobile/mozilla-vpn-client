@@ -13,6 +13,7 @@
 #include "authenticationinapp.h"
 #include "authenticationlistener.h"
 #include "feature.h"
+#include "glean/generated/metrics.h"
 #include "hkdf.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -570,6 +571,7 @@ void AuthenticationInAppSession::deleteAccount() {
             emit accountDeleted();
           });
 
+  mozilla::glean::sample::delete_account_clicked.record();
   emit MozillaVPN::instance()->recordGleanEvent(
       GleanSample::deleteAccountClicked);
 }
@@ -751,6 +753,10 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
         break;
       }
 
+      mozilla::glean::sample::authentication_inapp_error.record(
+          mozilla::glean::sample::AuthenticationInappErrorExtra{
+              ._errno = "107",
+              ._validation = QJsonDocument(objValidation).toJson()});
       emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
           GleanSample::authenticationInappError,
           {{"errno", "107"},
@@ -781,6 +787,9 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
         break;
       }
 
+      mozilla::glean::sample::authentication_inapp_error.record(
+          mozilla::glean::sample::AuthenticationInappErrorExtra{
+              ._errno = "125", ._verificationmethod = verificationMethod});
       emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
           GleanSample::authenticationInappError,
           {{"errno", "125"}, {"verificationmethod", verificationMethod}});
@@ -950,6 +959,11 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
     case 998:  // An internal validation check failed.
       [[fallthrough]];
     default:
+      mozilla::glean::sample::authentication_inapp_error.record(
+          mozilla::glean::sample::AuthenticationInappErrorExtra{
+              ._errno = QString::number(errorCode),
+              ._error = obj["error"].toString(),
+              ._message = obj["message"].toString()});
       emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
           GleanSample::authenticationInappError,
           {{"errno", QString::number(errorCode)},

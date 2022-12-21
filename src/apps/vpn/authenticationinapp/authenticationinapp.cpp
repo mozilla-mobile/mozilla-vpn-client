@@ -10,6 +10,8 @@
 #include <QRegularExpression>
 
 #include "authenticationinappsession.h"
+#include "glean/generated/metrics.h"
+#include "glean/metrictypes.h"
 #include "incrementaldecoder.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -51,18 +53,34 @@ void AuthenticationInApp::setState(State state,
 
   Q_ASSERT(session);
   const char* gleanSample = nullptr;
+  QString stateAsString = QVariant::fromValue(state).toString();
   switch (session->type()) {
     case AuthenticationInAppSession::TypeDefault:
       logger.debug() << "TypeDefault";
       gleanSample = GleanSample::authenticationInappStep;
+
+      mozilla::glean::sample::authentication_inapp_step.record(
+          mozilla::glean::sample::AuthenticationInappStepExtra{
+              ._state = stateAsString});
+
       break;
     case AuthenticationInAppSession::TypeAccountDeletion:
       logger.debug() << "TypeAccountDeletion";
       gleanSample = GleanSample::authenticationAcntDelStep;
+
+      mozilla::glean::sample::authentication_acnt_del_step.record(
+          mozilla::glean::sample::AuthenticationAcntDelStepExtra{
+              ._state = stateAsString});
+
       break;
     case AuthenticationInAppSession::TypeSubscriptionManagement:
       logger.debug() << "TypeSubscriptionManagement";
       gleanSample = GleanSample::authenticationSubManageStep;
+
+      mozilla::glean::sample::authentication_sub_manage_step.record(
+          mozilla::glean::sample::AuthenticationSubManageStepExtra{
+              ._state = stateAsString});
+
       break;
     default:
       logger.error()
@@ -70,8 +88,9 @@ void AuthenticationInApp::setState(State state,
   }
 
   Q_ASSERT(gleanSample);
+
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
-      gleanSample, {{"state", QVariant::fromValue(state).toString()}});
+      gleanSample, {{"state", stateAsString}});
 }
 
 void AuthenticationInApp::registerSession(AuthenticationInAppSession* session) {

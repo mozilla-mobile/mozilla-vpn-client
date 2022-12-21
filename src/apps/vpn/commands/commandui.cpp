@@ -20,6 +20,11 @@
 #include "feature.h"
 #include "fontloader.h"
 #include "frontend/navigator.h"
+#include "glean/generated/metrics.h"
+#include "glean/generated/pings.h"
+// Relative path is required here,
+// otherwise this gets confused with the Glean.js implementation
+#include "../glean/glean.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
 #include "keyregenerator.h"
@@ -220,7 +225,11 @@ int CommandUI::run(QStringList& tokens) {
     QQmlContext* ctx = engine->rootContext();
     ctx->setContextProperty("QT_QUICK_BACKEND", qgetenv("QT_QUICK_BACKEND"));
 
+    // Glean.js
     Glean::Initialize(engine);
+    // Glean.rs
+    VPNGlean::initialize();
+
     Lottie::initialize(engine, QString(NetworkManager::userAgent()));
     Nebula::Initialize(engine);
     L18nStrings::initialize();
@@ -237,6 +246,11 @@ int CommandUI::run(QStringList& tokens) {
     AndroidGlean::initialize(engine);
 #endif
     if (updateOption.m_set) {
+      mozilla::glean::sample::update_step.record(
+          mozilla::glean::sample::UpdateStepExtra{
+              ._state =
+                  QVariant::fromValue(Updater::ApplicationRestartedAfterUpdate)
+                      .toString()});
       emit vpn.recordGleanEventWithExtraKeys(
           GleanSample::updateStep,
           {{"state",
@@ -536,12 +550,35 @@ int CommandUI::run(QStringList& tokens) {
           return obj;
         });
 
-#if MZ_IOS && QT_VERSION >= 0x060000 && QT_VERSION < 0x060300
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "GleanPings",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = __DONOTUSE__GleanPings::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "Glean", [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = __DONOTUSE__GleanMetrics::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+#if MVPN_IOS && QT_VERSION >= 0x060000 && QT_VERSION < 0x060300
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
                      &MozillaVPN::quit);
 #else
-    QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
-                     &MozillaVPN::aboutToQuit);
+    QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn, [] {
+      // Submit the main ping one last time.
+      mozilla::glean_pings::Main.submit();
+      // During shutdown Glean will attempt to finish all tasks
+      // and submit all enqueued pings (including the one we
+      // just sent).
+      VPNGlean::shutdown();
+
+      emit MozillaVPN::instance()->aboutToQuit();
+    });
 #endif
 
     QObject::connect(

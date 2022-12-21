@@ -7,6 +7,7 @@
 // about what is being imported.
 #include "./glean.h"
 
+#include "constants.h"
 #include "feature.h"
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
@@ -50,11 +51,20 @@ VPNGlean::~VPNGlean() { MZ_COUNT_DTOR(VPNGlean); }
 void VPNGlean::initialize() {
   logger.debug() << "Initializing VPNGlean";
 
-  registerQMLSingletons();
-
   if (Feature::get(Feature::Feature_gleanRust)->isSupported()) {
+    if (!s_instance) {
+      s_instance = new VPNGlean(qApp);
+
+      connect(SettingsHolder::instance(), &SettingsHolder::gleanEnabledChanged,
+              s_instance, []() {
+                s_instance->setUploadEnabled(
+                    SettingsHolder::instance()->gleanEnabled());
+              });
+    }
+
     QDir gleanDirectory(rootAppFolder());
 #if defined(UNIT_TEST)
+    logger.debug() << "Cleaning Glean directory for testing";
     // Clean the directory so test state doesn't leak
     // See https://bugzilla.mozilla.org/show_bug.cgi?id=1800901
     gleanDirectory.removeRecursively();
@@ -74,18 +84,8 @@ void VPNGlean::initialize() {
       return;
     }
 
-    s_instance = new VPNGlean(qApp);
-    connect(SettingsHolder::instance(), &SettingsHolder::gleanEnabledChanged,
-            s_instance, []() {
-              s_instance->setUploadEnabled(
-                  SettingsHolder::instance()->gleanEnabled());
-            });
-
-    SettingsHolder* settingsHolder = SettingsHolder::instance();
-    MozillaVPN* vpn = MozillaVPN::instance();
-
-    auto uploadEnabled = settingsHolder->gleanEnabled();
-    auto appChannel = vpn->stagingMode() ? "staging" : "production";
+    auto uploadEnabled = SettingsHolder::instance()->gleanEnabled();
+    auto appChannel = Constants::inProduction() ? "production" : "staging";
     auto dataPath = gleanDirectory.absolutePath();
 
 #if defined(UNIT_TEST)
@@ -108,19 +108,8 @@ void VPNGlean::setUploadEnabled(bool isTelemetryEnabled) {
 }
 
 // static
-void VPNGlean::registerQMLSingletons() {
-  qmlRegisterSingletonType<MozillaVPN>(
-      "Mozilla.VPN", 1, 0, "GleanPings",
-      [](QQmlEngine*, QJSEngine*) -> QObject* {
-        QObject* obj = __DONOTUSE__GleanPings::instance();
-        QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-        return obj;
-      });
-
-  qmlRegisterSingletonType<MozillaVPN>(
-      "Mozilla.VPN", 1, 0, "Glean", [](QQmlEngine*, QJSEngine*) -> QObject* {
-        QObject* obj = __DONOTUSE__GleanMetrics::instance();
-        QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-        return obj;
-      });
+void VPNGlean::shutdown() {
+#if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
+  glean_shutdown();
+#endif
 }

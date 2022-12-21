@@ -149,9 +149,11 @@ VPNViewBase {
         console.log("Component ready");
         VPNAppPermissions.requestApplist();
         VPN.recordGleanEvent("appPermissionsViewOpened");
+        Glean.sample.appPermissionsViewOpened.record();
 
         if (!vpnIsOff) {
             VPN.recordGleanEvent("appPermissionsViewWarning");
+            Glean.sample.appPermissionsViewWarning.record();
         }
     }
 

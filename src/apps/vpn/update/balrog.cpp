@@ -14,6 +14,7 @@
 
 #include "appconstants.h"
 #include "errorhandler.h"
+#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -82,6 +83,9 @@ QString Balrog::userAgent() {
 
 void Balrog::start(Task* task) {
   if (m_downloadAndInstall) {
+    mozilla::glean::sample::update_step.record(
+        mozilla::glean::sample::UpdateStepExtra{
+            ._state = QVariant::fromValue(UpdateProcessStarted).toString()});
     emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
         GleanSample::updateStep,
         {{"state", QVariant::fromValue(UpdateProcessStarted).toString()}});
@@ -376,6 +380,9 @@ bool Balrog::computeHash(const QString& url, const QByteArray& data,
     return false;
   }
 
+  mozilla::glean::sample::update_step.record(
+      mozilla::glean::sample::UpdateStepExtra{
+          ._state = QVariant::fromValue(BalrogValidationCompleted).toString()});
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(BalrogValidationCompleted).toString()}});
@@ -418,6 +425,9 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
 
   file.close();
 
+  mozilla::glean::sample::update_step.record(
+      mozilla::glean::sample::UpdateStepExtra{
+          ._state = QVariant::fromValue(BalrogFileSaved).toString()});
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(BalrogFileSaved).toString()}});
@@ -495,6 +505,10 @@ bool Balrog::install(const QString& filePath) {
       });
 #endif
 
+  mozilla::glean::sample::update_step.record(
+      mozilla::glean::sample::UpdateStepExtra{
+          ._state =
+              QVariant::fromValue(InstallationProcessExecuted).toString()});
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(InstallationProcessExecuted).toString()}});
