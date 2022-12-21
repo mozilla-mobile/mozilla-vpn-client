@@ -70,9 +70,8 @@ void UrlOpener::openLink(LinkType linkType) {
       url.append("/reset_password");
       break;
 
-    case LinkHelpSupport:
-      url = NetworkRequest::apiBaseUrl();
-      url.append("/r/vpn/support");
+    case LinkSumo:
+      url = AppConstants::MOZILLA_VPN_SUMO_URL;
       break;
 
     case LinkLeaveReview:
