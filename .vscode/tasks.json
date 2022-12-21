@@ -77,5 +77,34 @@
                 "$go"
             ]
         },
+        {
+            "label": "Format: C++",
+            "type": "shell",
+            "command": "git clang-format",
+            "group": "none",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": ["$gcc",]
+        },
+        {
+            "label": "Format: Kotlin",
+            "type": "shell",
+            "command": "./gradlew ktlintFormat || true", // This always fails, for jvm reasons, but it will format :) 
+            "group": "none",
+            "options": {
+                "cwd": "${workspaceFolder}/android"
+            },
+        },
+        {
+            "label": "Format: QML",
+            "type": "shell",
+            "command": "./scripts/utils/format_qml.sh",
+            "group": "none",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+        },
+
     ]
 }
