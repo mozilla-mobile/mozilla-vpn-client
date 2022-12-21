@@ -261,7 +261,7 @@ void IOSController::importAlwaysOnSetting() {
   bool alwaysOnRulePresent = [impl hasAlwaysOn];
   if (alwaysOnRulePresent) {
     // Make sure that the value in the system settings is
-    // is matching what we have. If not, the user changed that and we should update our side.
+    // is matching what we have. If not, the user changed it in iOS Settings (under VPN) and we should update our side.
     bool userSetAlwaysOn = [impl getAlwaysOn];
     if (SettingsHolder::instance()->startAtBoot() != userSetAlwaysOn) {
       SettingsHolder::instance()->setStartAtBoot(userSetAlwaysOn);

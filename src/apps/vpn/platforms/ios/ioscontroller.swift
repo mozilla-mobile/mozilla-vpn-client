@@ -201,10 +201,10 @@ public class IOSControllerImpl : NSObject {
 
         let config = TunnelConfiguration(name: vpnName, interface: interface, peers: peerConfigurations)
 
-        self.configureTunnel(config: config, reason: reason, serverName: serverIpv4AddrIn + ":\(serverPort )",enableAlwaysOn:enableAlwaysOn, failureCallback: failureCallback)
+        self.configureTunnel(config: config, reason: reason, serverName: serverIpv4AddrIn + ":\(serverPort )", enableAlwaysOn: enableAlwaysOn, failureCallback: failureCallback)
     }
 
-    func configureTunnel(config: TunnelConfiguration, reason: Int, serverName: String,enableAlwaysOn:Bool, failureCallback: @escaping () -> Void) {
+    func configureTunnel(config: TunnelConfiguration, reason: Int, serverName: String, enableAlwaysOn: Bool, failureCallback: @escaping () -> Void) {
         let proto = NETunnelProviderProtocol(tunnelConfiguration: config)
         proto!.providerBundleIdentifier = vpnBundleID
         proto!.disconnectOnSleep = false
@@ -265,8 +265,8 @@ public class IOSControllerImpl : NSObject {
     *
     * @param setEnabled: bool If the rule should be added or removed.
     **/
-    @objc func setAlwaysOn(setEnabled: Bool){
-        if(!setEnabled){
+    @objc func setAlwaysOn(setEnabled: Bool) {
+        if (!setEnabled) {
             tunnel!.isOnDemandEnabled = false;
             tunnel!.onDemandRules = []
             tunnel!.saveToPreferences()
@@ -279,11 +279,11 @@ public class IOSControllerImpl : NSObject {
         tunnel!.saveToPreferences()
     }
     
-    @objc func getAlwaysOn() -> Bool{
+    @objc func getAlwaysOn() -> Bool {
         return tunnel!.isOnDemandEnabled;
     }
     
-    @objc func hasAlwaysOn() -> Bool{
+    @objc func hasAlwaysOn() -> Bool {
        guard let rules = tunnel?.onDemandRules else {
             return false;
         }
@@ -295,6 +295,7 @@ public class IOSControllerImpl : NSObject {
     @objc func disconnect() {
         Logger.global?.log(message: "Disconnecting")
         assert(tunnel != nil)
+        (tunnel!.connection as? NETunnelProviderSession)?.stopTunnel()
         // Turn off "always-on", as this rule would
         // trigger an immediate reconnect from the OS
         setAlwaysOn(setEnabled: false)
@@ -302,7 +303,6 @@ public class IOSControllerImpl : NSObject {
             if let error = saveError {
                 Logger.global?.log(message: "Tunnel Save Error: \(error)")
             }
-            (tunnel!.connection as? NETunnelProviderSession)?.stopTunnel()
         }
         
     }
