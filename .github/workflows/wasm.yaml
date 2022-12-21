@@ -45,9 +45,6 @@ jobs:
       - name: Setup emsdk
         uses: mymindstorm/setup-emsdk@v7
 
-      - name: Set up gecko driver
-        uses: browser-actions/setup-geckodriver@latest
-
       - name: Compiling
         shell: bash
         run: |
