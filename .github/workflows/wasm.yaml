@@ -127,7 +127,7 @@ jobs:
       - name: Set up gecko driver
         uses: browser-actions/setup-geckodriver@latest
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Build addons
         shell: bash
