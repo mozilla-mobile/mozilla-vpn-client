@@ -29,7 +29,6 @@ ColumnLayout {
         Accessible.searchEdit: true
         Layout.fillWidth: true
 
-        _accessibleName: _placeholderText
         background: VPNInputBackground {}
         leftInset: VPNTheme.theme.windowMargin * 3
         leftPadding: VPNTheme.theme.windowMargin * 3
