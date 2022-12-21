@@ -7,30 +7,41 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug",
-            "program": "${workspaceFolder}/.vscode/build_osx/src/Mozilla VPN.app/Contents/MacOS/Mozilla VPN",
+            "name": "Debug: Client",
+            "osx": {
+                "program": "${workspaceFolder}/.vscode/build_osx/src/Mozilla VPN.app/Contents/MacOS/Mozilla VPN",
+            },
+            "windows": {
+                "type": "cppvsdbg",
+                "request": "launch",
+                "program": "C:/Program Files/Mozilla/Mozilla VPN/MozillaVPN.exe",
+                "symbolSearchPath": "${workspaceFolder}/.vscode/",
+                "args": [],            
+                "stopAtEntry": false,
+            },
+          
             "args": [],
             "cwd": "${workspaceFolder}"
         },
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Tests",
+            "name": "Debug: Tests",
             "program": "${workspaceFolder}/.vscode/build_osx/tests/unit/unit_tests",
             "args": [],
             "cwd": "${workspaceFolder}"
         },
         {
-            "name": "(Windows) Starten",
-            "type": "cppvsdbg",
+            "type": "python",
             "request": "launch",
-            "program": "C:/Program Files/Mozilla/Mozilla VPN/MozillaVPN.exe",
-            "symbolSearchPath": "${workspaceFolder}/.vscode/",
-            "args": [],            
-            "stopAtEntry": false,
-            "cwd": "${fileDirname}",
-            "environment": [],
-            "console": "externalTerminal"
-        }
+            "name": "Debug: Taskcluster Taskgraph",
+            "program": "${workspaceFolder}/.vscode/task_scripts/launch_taskgraph.py",
+            "args": [
+                "full",
+                "-p",
+                "taskcluster/test/params/main-push.yml"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
     ]
 }
