@@ -270,9 +270,14 @@ void IOSController::importAlwaysOnSetting() {
 }
 
 void IOSController::onAlwaysOnSettingChanged() {
-  bool iosSystemAlwaysON = [impl getAlwaysOn];
-  bool vpnClientAlwaysOn = SettingsHolder::instance()->startAtBoot();
-  if (vpnClientAlwaysOn != iosSystemAlwaysON) {
-    [impl setAlwaysOnSetEnabled:vpnClientAlwaysOn];
-  }
+    // When this Setting is touched, we should activate / deactivate the VPN.
+    // A: This ensures the Setting-Value is Consistent with the iOS Settings.
+    // B: This ensures the behavior is the same as touching the button
+    //    in the iOS Settings.
+    if(SettingsHolder::instance()->startAtBoot()){
+        MozillaVPN::instance()->activate();
+    }
+    else{
+        MozillaVPN::instance()->deactivate();
+    }
 }

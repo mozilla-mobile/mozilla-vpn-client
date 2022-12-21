@@ -269,14 +269,12 @@ public class IOSControllerImpl : NSObject {
         if (!setEnabled) {
             tunnel!.isOnDemandEnabled = false;
             tunnel!.onDemandRules = []
-            tunnel!.saveToPreferences()
             return;
         }
         let alwaysConnect = NEOnDemandRuleConnect()
         alwaysConnect.interfaceTypeMatch = .any
         tunnel!.isOnDemandEnabled = true
         tunnel!.onDemandRules = [alwaysConnect]
-        tunnel!.saveToPreferences()
     }
     
     @objc func getAlwaysOn() -> Bool {
