@@ -9,7 +9,7 @@
 #include <QHostAddress>
 #include <QScopeGuard>
 
-#include "constants.h"
+#include "appconstants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
@@ -26,7 +26,7 @@ Logger logger("BenchmarkTaskTransfer");
 BenchmarkTaskTransfer::BenchmarkTaskTransfer(const QString& name,
                                              BenchmarkType type,
                                              const QUrl& url)
-    : BenchmarkTask(name, Constants::BENCHMARK_MAX_DURATION_TRANSFER),
+    : BenchmarkTask(name, AppConstants::BENCHMARK_MAX_DURATION_TRANSFER),
       m_type(type),
       m_dnsLookup(QDnsLookup::A, url.host()),
       m_url(url) {
@@ -79,7 +79,7 @@ void BenchmarkTaskTransfer::createNetworkRequest() {
     }
     case BenchmarkUpload: {
       UploadDataGenerator* uploadData =
-          new UploadDataGenerator(Constants::BENCHMARK_MAX_BITS_UPLOAD);
+          new UploadDataGenerator(AppConstants::BENCHMARK_MAX_BITS_UPLOAD);
 
       if (!uploadData->open(UploadDataGenerator::ReadOnly)) {
         emit finished(0, true);
@@ -108,7 +108,7 @@ void BenchmarkTaskTransfer::createNetworkRequestWithRecord(
     }
     case BenchmarkUpload: {
       UploadDataGenerator* uploadData =
-          new UploadDataGenerator(Constants::BENCHMARK_MAX_BITS_UPLOAD);
+          new UploadDataGenerator(AppConstants::BENCHMARK_MAX_BITS_UPLOAD);
 
       if (!uploadData->open(UploadDataGenerator::ReadOnly)) {
         emit finished(0, true);

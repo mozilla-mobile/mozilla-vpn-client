@@ -9,7 +9,7 @@
 #include <QSettings>
 #include <QStandardPaths>
 
-#include "constants.h"
+#include "appconstants.h"
 #include "cryptosettings.h"
 #include "env.h"
 #include "leakdetector.h"
@@ -210,7 +210,7 @@ QString SettingsHolder::getReport() const {
 #undef SETTING
 
 QString SettingsHolder::placeholderUserDNS() const {
-  return Constants::PLACEHOLDER_USER_DNS;
+  return AppConstants::PLACEHOLDER_USER_DNS;
 }
 
 void SettingsHolder::removeEntryServer() {
@@ -224,7 +224,7 @@ void SettingsHolder::clearAddonSettings(const QString& group) {
   logger.debug() << "Clean up the settings for group" << group;
 
   const QString groupKey(
-      QString("%1/%2").arg(Constants::ADDON_SETTINGS_GROUP, group));
+      QString("%1/%2").arg(AppConstants::ADDON_SETTINGS_GROUP, group));
 
   m_settings.beginGroup(groupKey);
   m_settings.remove("");
@@ -236,8 +236,8 @@ void SettingsHolder::clearAddonSettings(const QString& group) {
 // static
 QString SettingsHolder::getAddonSettingKey(const AddonSettingQuery& query) {
   return QString("%1/%2/%3/%4")
-      .arg(Constants::ADDON_SETTINGS_GROUP, query.m_addonGroup, query.m_addonId,
-           query.m_setting);
+      .arg(AppConstants::ADDON_SETTINGS_GROUP, query.m_addonGroup,
+           query.m_addonId, query.m_setting);
 }
 
 QString SettingsHolder::getAddonSetting(const AddonSettingQuery& query) {

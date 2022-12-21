@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "constants.h"
+#include "appconstants.h"
 #include "helper.h"
 #include "l18nstrings.h"
 #include "leakdetector.h"
@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
 #endif
   {
     SettingsHolder settingsHolder;
-    Constants::setStaging();
+    AppConstants::setStaging();
   }
 
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();

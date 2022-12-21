@@ -12,7 +12,6 @@
 
 #include "adjustfiltering.h"
 #include "adjusttasksubmission.h"
-#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"

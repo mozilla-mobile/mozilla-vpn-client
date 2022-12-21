@@ -3,13 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "platforms/ios/iosiaphandler.h"
-#include "constants.h"
+#include "errorhandler.h"
 #include "iosutils.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
-#include "errorhandler.h"
 #include "tasks/purchase/taskpurchase.h"
 #include "taskscheduler.h"
 

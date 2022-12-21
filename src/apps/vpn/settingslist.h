@@ -265,16 +265,6 @@ SETTING_STRING(languageCode,        // getter
                false                // remove when reset
 )
 
-SETTING_BOOL(localNetworkAccess,        // getter
-             setLocalNetworkAccess,     // setter
-             removeLocalNetworkAccess,  // remover
-             hasLocalNetworkAccess,     // has
-             "localNetworkAccess",      // key
-             false,                     // default value
-             true,                      // user setting
-             false                      // remove when reset
-)
-
 SETTING_STRINGLIST(missingApps,        // getter
                    setMissingApps,     // setter
                    removeMissingApps,  // remover
@@ -423,9 +413,9 @@ SETTING_STRING(
     hasStagingServerAddress,     // has
     "stagingServerAddress",      // key
     Constants::envOrDefault("MVPN_API_BASE_URL",
-                            Constants::API_STAGING_URL),  // default value
-    false,                                                // user setting
-    false                                                 // remove when reset
+                            AppConstants::API_STAGING_URL),  // default value
+    false,                                                   // user setting
+    false  // remove when reset
 )
 
 SETTING_BOOL(stagingServer,        // getter
@@ -496,16 +486,6 @@ SETTING_STRING(token,        // getter
                "",           // default value
                false,        // user setting
                true          // remove when reset
-)
-
-SETTING_BOOL(tunnelPort53,        // getter
-             setTunnelPort53,     // setter
-             removeTunnelPort53,  // remover
-             hasTunnelPort53,     // has
-             "tunnelPort53",      // key
-             false,               // default value
-             true,                // user setting
-             false                // remove when reset
 )
 
 SETTING_BOOL(unsecuredNetworkAlert,        // getter

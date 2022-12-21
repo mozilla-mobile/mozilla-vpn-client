@@ -4,7 +4,7 @@
 
 #include "releasemonitor.h"
 
-#include "constants.h"
+#include "appconstants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -50,7 +50,7 @@ void ReleaseMonitor::runSoon(
 
 void ReleaseMonitor::schedule() {
   logger.debug() << "ReleaseMonitor scheduling";
-  m_timer.start(Constants::releaseMonitorMsec());
+  m_timer.start(AppConstants::releaseMonitorMsec());
 }
 
 void ReleaseMonitor::updateRequired() {

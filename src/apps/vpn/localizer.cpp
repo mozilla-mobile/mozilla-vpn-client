@@ -10,7 +10,6 @@
 #include <QLocale>
 
 #include "collator.h"
-#include "constants.h"
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"

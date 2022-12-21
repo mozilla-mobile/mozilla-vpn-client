@@ -11,7 +11,6 @@
 #include <QJsonValue>
 #include <QScopeGuard>
 
-#include "constants.h"
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"

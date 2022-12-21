@@ -7,7 +7,8 @@ target_link_libraries(mozillavpn PRIVATE Qt6::DBus)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(polkit REQUIRED IMPORTED_TARGET polkit-gobject-1)
-target_link_libraries(mozillavpn PRIVATE PkgConfig::polkit)
+pkg_check_modules(libsecret REQUIRED IMPORTED_TARGET libsecret-1)
+target_link_libraries(mozillavpn PRIVATE PkgConfig::polkit PkgConfig::libsecret)
 
 # Linux platform source files
 target_sources(mozillavpn PRIVATE

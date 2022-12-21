@@ -77,14 +77,14 @@ VPNViewBase {
 
             VPNSettingsItem {
                 objectName: "settingsNetworking"
-                settingTitle: qsTrId("vpn.settings.networking")
+                settingTitle: VPNFeatureList.get("splitTunnel").isSupported ? qsTrId("vpn.settings.networking") : VPNl18n.CustomDNSSettingsDnsNavItem
                 imageLeftSrc: "qrc:/ui/resources/settings/networkSettings.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: VPNLocalizer.isRightToLeft
-                onClicked: stackview.push("qrc:/ui/screens/settings/ViewNetworkSettings.qml", {
+                onClicked: VPNFeatureList.get("splitTunnel").isSupported ? stackview.push("qrc:/ui/screens/settings/ViewNetworkSettings.qml", {
                                                       //% "App permissions"
                                                       _appPermissionsTitle: Qt.binding(() => qsTrId("vpn.settings.appPermissions2"))
-                                                  })
+                                                  }) : stackview.push("qrc:/ui/screens/settings/dnsSettings/ViewAdvancedDNSSettings.qml")
             }
 
             VPNSettingsItem {

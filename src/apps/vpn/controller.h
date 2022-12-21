@@ -48,6 +48,12 @@ class Controller final : public QObject {
   };
   Q_ENUM(State)
 
+  enum Reason {
+    ReasonNone = 0,
+    ReasonSwitching,
+    ReasonConfirming,
+  };
+
  private:
   Q_PROPERTY(State state READ state NOTIFY stateChanged)
   Q_PROPERTY(qint64 time READ time NOTIFY timeChanged)
@@ -134,8 +140,8 @@ class Controller final : public QObject {
   QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
   QStringList getExcludedAddresses(const Server& server);
 
-  void activateInternal(bool forceDNSPort = false);
-  void activateNext();
+  void activateInternal(Reason reason, bool forceDNSPort = false);
+  void activateNext(Reason reason);
 
   void clearRetryCounter();
   void clearConnectedTime();

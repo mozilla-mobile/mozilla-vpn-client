@@ -2,24 +2,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef CONSTANTS_H
-#define CONSTANTS_H
+#ifndef APPCONSTANTS_H
+#define APPCONSTANTS_H
 
 #include <stdint.h>
 
 #include <QString>
 
-namespace Constants {
+#include "constants.h"
+
+namespace AppConstants {
 
 // Returns true if we are in a production environment.
-bool inProduction();
 const QString& getStagingServerAddress();
 void setStaging();
-
-// Project version and build strings.
-QString versionString();
-QString buildNumber();
-QString envOrDefault(const QString& name, const QString& defaultValue);
 
 // Number of msecs for the captive-portal block alert.
 constexpr uint32_t CAPTIVE_PORTAL_ALERT_MSEC = 4000;
@@ -56,10 +52,10 @@ constexpr const char* BENCHMARK_DOWNLOAD_URL =
                     testingValue)                                 \
     inline type functionName() { return testingValue; }
 #else
-#  define CONSTEXPR(type, functionName, releaseValue, debugValue, \
-                    testingValue)                                 \
-    inline type functionName() {                                  \
-      return inProduction() ? releaseValue : debugValue;          \
+#  define CONSTEXPR(type, functionName, releaseValue, debugValue,   \
+                    testingValue)                                   \
+    inline type functionName() {                                    \
+      return Constants::inProduction() ? releaseValue : debugValue; \
     }
 #endif
 
@@ -84,9 +80,6 @@ CONSTEXPR(uint32_t, controllerPeriodicStateRecorderMsec, 10800000, 60000, 0)
 
 #undef CONSTEXPR
 
-#define PRODBETAEXPR(type, functionName, prod, beta) \
-  inline type functionName() { return inProduction() ? prod : beta; }
-
 #ifdef SENTRY_ENABLED
 constexpr const char* SENTRY_DSN_ENDPOINT = SENTRY_DSN;
 constexpr const char* SENTRY_ENVELOPE_INGESTION = SENTRY_ENVELOPE_ENDPOINT;
@@ -98,10 +91,6 @@ constexpr const char* SENTRY_ENVELOPE_INGESTION = "";
 constexpr const char* API_PRODUCTION_URL = "https://vpn.mozilla.org";
 constexpr const char* API_STAGING_URL =
     "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
-
-constexpr const char* ADDON_PRODUCTION_KEY =
-    ":/addons_signature/production.der";
-constexpr const char* ADDON_STAGING_KEY = ":/addons_signature/staging.der";
 
 constexpr auto CRASH_PRODUCTION_URL =
     "https://crash-reports.mozilla.com/submit";
@@ -117,22 +106,22 @@ constexpr const char* GOOGLE_SUBSCRIPTIONS_URL =
 
 constexpr const char* ADDON_SETTINGS_GROUP = "addons";
 
+#define PRODBETAEXPR(type, functionName, prod, beta) \
+  inline type functionName() { return Constants::inProduction() ? prod : beta; }
+
+constexpr const char* MOZILLA_VPN_SUMO_URL =
+    "https://support.mozilla.org/en-US/products/firefox-private-network-vpn";
+
 PRODBETAEXPR(
     const char*, benchmarkUploadUrl, "https://benchmark.vpn.mozilla.org/upload",
     "https://dev.vpn-network-benchmark.nonprod.webservices.mozgcp.net/upload");
 
 PRODBETAEXPR(QString, fxaApiBaseUrl, "https://api.accounts.firefox.com",
-             envOrDefault("MVPN_FXA_API_BASE_URL",
-                          "https://api-accounts.stage.mozaws.net"))
+             Constants::envOrDefault("MVPN_FXA_API_BASE_URL",
+                                     "https://api-accounts.stage.mozaws.net"))
 
 PRODBETAEXPR(const char*, fxaUrl, "https://accounts.firefox.com",
              "https://accounts.stage.mozaws.net")
-
-PRODBETAEXPR(
-    QString, addonBaseUrl,
-    "https://archive.mozilla.org/pub/vpn/addons/releases/latest/",
-    envOrDefault("MVPN_ADDON_URL",
-                 "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/"))
 
 PRODBETAEXPR(
     const char*, balrogUrl,
@@ -152,24 +141,6 @@ PRODBETAEXPR(qint64, keyRegeneratorTimeSec, 604800, 300);
 
 #undef PRODBETAEXPR
 
-constexpr const char* PLATFORM_NAME =
-#if defined(MVPN_IOS)
-    "ios"
-#elif defined(MVPN_MACOS)
-    "macos"
-#elif defined(MVPN_LINUX)
-    "linux"
-#elif defined(MVPN_ANDROID)
-    "android"
-#elif defined(MVPN_WINDOWS)
-    "windows"
-#elif defined(UNIT_TEST) || defined(MVPN_DUMMY)
-    "dummy"
-#else
-#  error "Unsupported platform"
-#endif
-    ;
-
 constexpr const char* PLACEHOLDER_USER_DNS = "127.0.0.1";
 
 #if defined(MVPN_ADJUST)
@@ -187,6 +158,6 @@ constexpr const char* ADJUST_SUBSCRIPTION_COMPLETED =
     ;
 #endif
 
-};  // namespace Constants
+};  // namespace AppConstants
 
-#endif  // CONSTANTS_H
+#endif  // APPCONSTANTS_H

@@ -8,7 +8,6 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
-#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"

@@ -4,6 +4,7 @@
 
 #include "telemetry.h"
 
+#include "appconstants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -26,7 +27,7 @@ Telemetry::Telemetry() {
   connect(&m_gleanControllerUpTimer, &QTimer::timeout, this,
           &Telemetry::periodicStateRecorder);
   m_gleanControllerUpTimer.start(
-      Constants::controllerPeriodicStateRecorderMsec());
+      AppConstants::controllerPeriodicStateRecorderMsec());
   m_gleanControllerUpTimer.setSingleShot(false);
 #endif
 }

@@ -12,7 +12,7 @@
 #include <QSslCertificate>
 #include <QSslKey>
 
-#include "constants.h"
+#include "appconstants.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -88,7 +88,7 @@ void Balrog::start(Task* task) {
   }
 
   QString url =
-      QString(Constants::balrogUrl()).arg(appVersion()).arg(userAgent());
+      QString(AppConstants::balrogUrl()).arg(appVersion()).arg(userAgent());
   logger.debug() << "URL:" << url;
 
   NetworkRequest* request = NetworkRequest::createForGetUrl(task, url, 200);
@@ -235,7 +235,7 @@ bool Balrog::validateSignature(const QByteArray& x5uData,
   QByteArray updateDataCopy = updateData;
   GoString updateDataGo{updateDataCopy.constData(), updateDataCopy.length()};
 
-  QByteArray rootHashCopy = Constants::AUTOGRAPH_ROOT_CERT_FINGERPRINT;
+  QByteArray rootHashCopy = AppConstants::AUTOGRAPH_ROOT_CERT_FINGERPRINT;
   rootHashCopy = rootHashCopy.toUpper();
   GoString rootHashGo{rootHashCopy.constData(), rootHashCopy.length()};
 

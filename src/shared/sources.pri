@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 SOURCES += \
+        $$PWD/constants.cpp \
         $$PWD/curve25519.cpp \
         $$PWD/fontloader.cpp \
         $$PWD/hacl-star/Hacl_Chacha20.c \
@@ -24,6 +25,7 @@ SOURCES += \
         $$PWD/temporarydir.cpp
 
 HEADERS += \
+        $$PWD/constants.h \
         $$PWD/curve25519.h \
         $$PWD/fontloader.h \
         $$PWD/hawkauth.h \
@@ -40,3 +42,9 @@ HEADERS += \
         $$PWD/task.h \
         $$PWD/taskscheduler.h \
         $$PWD/temporarydir.h
+
+# Signal handling for unix platforms
+unix {
+    SOURCES += $$PWD/signalhandler.cpp
+    HEADERS += $$PWD/signalhandler.h
+}

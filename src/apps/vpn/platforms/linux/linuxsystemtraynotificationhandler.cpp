@@ -6,7 +6,6 @@
 
 #include <QtDBus/QtDBus>
 
-#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 

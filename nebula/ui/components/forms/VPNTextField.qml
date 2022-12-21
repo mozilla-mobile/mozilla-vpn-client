@@ -14,13 +14,11 @@ TextField {
     property bool showInteractionStates: true
     property bool forceBlurOnOutsidePress: true
     property alias _placeholderText: centeredPlaceholderText.text
-    property string _accessibleName: _placeholderText
-    property string _accessibleDescription: ""
 
     id: textField
 
-    Accessible.name: _accessibleName
-    Accessible.description: _accessibleDescription
+    Accessible.name: centeredPlaceholderText.text
+    Accessible.description:  centeredPlaceholderText.text
     Accessible.focused: textField.focus
     Layout.alignment: Qt.AlignVCenter
     Layout.preferredHeight: VPNTheme.theme.rowHeight
