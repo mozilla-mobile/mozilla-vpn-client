@@ -91,7 +91,7 @@ Item {
         height: 2
         color: VPNTheme.colors.purple70
         anchors.bottom: bar.bottom
-        x: (bar.visible && currentTab) ? currentTab.x - currentTab.ListView.view.originX : 0
+        x: (currentTab.x && currentTab.ListView.view.originX) ? currentTab.x - currentTab.ListView.view.originX : 0
         visible: stack.children.length > 1
         Behavior on x {
             PropertyAnimation {
