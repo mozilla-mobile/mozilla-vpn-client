@@ -45,6 +45,11 @@ jobs:
       - name: Setup emsdk
         uses: mymindstorm/setup-emsdk@v7
 
+      - name: Set up gecko driver
+        uses: browser-actions/setup-geckodriver@latest
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Compiling
         shell: bash
         run: |
@@ -122,12 +127,7 @@ jobs:
         with:
           name: WebAssembly Build Qt6
           # Destination path
-          path: wasm
-      
-      - name: Set up gecko driver
-        uses: browser-actions/setup-geckodriver@latest
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          path: wasm          
           
       - name: Build addons
         shell: bash
