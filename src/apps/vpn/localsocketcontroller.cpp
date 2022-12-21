@@ -116,7 +116,7 @@ void LocalSocketController::daemonConnected() {
 
 void LocalSocketController::activate(const HopConnection& hop,
                                      const Device* device, const Keys* keys,
-                                     Reason reason) {
+                                     Controller::Reason reason) {
   Q_UNUSED(reason);
 
   QJsonObject json;
@@ -161,7 +161,7 @@ void LocalSocketController::activate(const HopConnection& hop,
   write(json);
 }
 
-void LocalSocketController::deactivate(Reason reason) {
+void LocalSocketController::deactivate(Controller::Reason reason) {
   logger.debug() << "Deactivating";
 
   if (m_daemonState != eReady) {
@@ -170,7 +170,7 @@ void LocalSocketController::deactivate(Reason reason) {
     return;
   }
 
-  if (reason == ReasonSwitching) {
+  if (reason == Controller::ReasonSwitching) {
     logger.debug() << "No disconnect for quick server switching";
     emit disconnected();
     return;

@@ -46,7 +46,7 @@ void ExternalOpHandler::unregisterBlocker(Blocker* blocker) {
   m_blockers.removeOne(blocker);
 }
 
-void ExternalOpHandler::request(Op op) {
+bool ExternalOpHandler::request(Op op) {
   logger.debug() << "Op request received";
 
   MozillaVPN* vpn = MozillaVPN::instance();
@@ -54,7 +54,7 @@ void ExternalOpHandler::request(Op op) {
   for (Blocker* blocker : m_blockers) {
     if (blocker->maybeBlockRequest(op)) {
       logger.debug() << "Operation rejected by a blocker";
-      return;
+      return false;
     }
   }
 
@@ -78,4 +78,6 @@ void ExternalOpHandler::request(Op op) {
     case OpCloseEvent:
       break;
   }
+
+  return true;
 }

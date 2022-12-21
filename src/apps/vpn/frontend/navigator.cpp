@@ -623,7 +623,11 @@ void Navigator::removeItem(QObject* item) {
 bool Navigator::eventHandled() {
   logger.debug() << "Close event handled";
 
-  ExternalOpHandler::instance()->request(ExternalOpHandler::OpCloseEvent);
+  if (!ExternalOpHandler::instance()->request(
+          ExternalOpHandler::OpCloseEvent)) {
+    // Something is blocking the close event handler"
+    return true;
+  }
 
 #if defined(MVPN_ANDROID) || defined(MVPN_WASM)
   if (m_screenHistory.isEmpty()) {
