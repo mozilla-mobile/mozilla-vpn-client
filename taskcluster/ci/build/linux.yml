@@ -31,7 +31,7 @@ linux/source:
             ./scripts/linux/script.sh --source &&
             tar -C .tmp -zvcf /builds/worker/artifacts/mozillavpn-sources.tar.gz .
 
-linxu/bionic:
+linux/bionic:
     description: "Linux Build (Ubuntu/Bionic)"
     treeherder:
         platform: linux/bionic
