@@ -11,7 +11,7 @@ import Mozilla.VPN 1.0
 VPNButtonBase {
     id: root
 
-    property var labelText
+    property var labelText: ""
     property variant fontName: VPNTheme.theme.fontInterFamily
     property var baseColor: VPNTheme.theme.linkButton
     property var linkColor: VPNTheme.theme.blueButton
