@@ -2,15 +2,29 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "(Mac) Get logs",
+            "label": "Util: Pring Logfile",
             "type": "shell",
-            "command": "tail -f '/Users/basti/Library/Application Support/mozillavpn.txt'",
+            "osx": {
+                "command": "tail -f '~/Library/Application Support/mozillavpn.txt'"
+            },
+            "command": "echo 'Unsupported'; exit 1",
             "problemMatcher": []
         },
         {
-            "label": "(Mac) Build",
+            "label": "Build: (host)",
             "type": "shell",
-            "command": "./.vscode/task_scripts/macos.sh",
+            "osx": {
+                "command": "./.vscode/task_scripts/macos.sh"
+            },
+            "windows": {
+                "command": "${workspaceFolder}/.vscode/task_scripts/build_deploy.ps1",
+                "options": {
+                    "cwd": "${workspaceFolder}/",
+                    "shell": {
+                        "executable": "powershell.exe"
+                    }
+                }
+            },
             "group": "build",
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -22,7 +36,7 @@
             ]
         },
         {
-            "label": "(Android) Build",
+            "label": "Build: (Android)",
             "type": "shell",
             "command": "./scripts/android/cmake.sh ~/Qt/6.2.4/android_arm64_v8a",
             "group": "build",
@@ -36,7 +50,7 @@
             ]
         },
         {
-            "label": "(iOS) Build",
+            "label": "Build: (iOS)",
             "type": "shell",
             "command": "./scripts/macos/apple_compile.sh ios",
             "group": "build",
@@ -51,38 +65,17 @@
         },
         {
             "type": "cmake",
-            "label": "CMake: build-tests",
+            "label": "Build: unit-tests",
             "command": "build",
             "targets": [
                 "unit_tests"
             ],
             "group": "build",
-            "problemMatcher": [],
-            "detail": "CMake template build task"
-        },
-        {
-            "label": "Build (Windows)",
-            "type": "shell",
-            "command": "",
-            "windows": {
-                "command": "${workspaceFolder}/.vscode/task_scripts/build_deploy.ps1"
-            },
-            "options": {
-                "cwd": "${workspaceFolder}/",
-                "shell": {
-                    "executable": "powershell.exe",
-                }
-            },
             "problemMatcher": [
                 "$gcc",
                 "$rustc",
                 "$go"
-            ],
-            "group": "build",
-            "presentation": {
-                "reveal": "always",
-                "panel": "shared"
-            }
-        }
+            ]
+        },
     ]
 }
