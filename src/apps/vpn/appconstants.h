@@ -109,6 +109,9 @@ constexpr const char* ADDON_SETTINGS_GROUP = "addons";
 #define PRODBETAEXPR(type, functionName, prod, beta) \
   inline type functionName() { return Constants::inProduction() ? prod : beta; }
 
+constexpr const char* MOZILLA_VPN_SUMO_URL =
+    "https://support.mozilla.org/en-US/products/firefox-private-network-vpn";
+
 PRODBETAEXPR(
     const char*, benchmarkUploadUrl, "https://benchmark.vpn.mozilla.org/upload",
     "https://dev.vpn-network-benchmark.nonprod.webservices.mozgcp.net/upload");

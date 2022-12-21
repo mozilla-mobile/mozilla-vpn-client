@@ -13,6 +13,7 @@ Text {
     lineHeight: VPNTheme.theme.controllerInterLineHeight
     color: VPNTheme.theme.fontColorDark
     wrapMode: Text.Wrap
+    horizontalAlignment: Qt.AlignLeft
 
     Accessible.role: Accessible.StaticText
     Accessible.name: text

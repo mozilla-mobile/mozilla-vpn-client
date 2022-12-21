@@ -50,7 +50,7 @@ describe('Initial view and onboarding', function() {
     await vpn.clickOnElement('helpCenter');
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
-      return url.endsWith('/r/vpn/support');
+      return url.endsWith('/firefox-private-network-vpn');
     });
 
     await vpn.clickOnElement(getHelpScreen.SUPPORT);

@@ -68,7 +68,7 @@ void LinuxController::initializeCompleted(QDBusPendingCallWatcher* call) {
 }
 
 void LinuxController::activate(const HopConnection& hop, const Device* device,
-                               const Keys* keys, Reason reason) {
+                               const Keys* keys, Controller::Reason reason) {
   Q_UNUSED(reason);
 
   connect(
@@ -81,10 +81,10 @@ void LinuxController::activate(const HopConnection& hop, const Device* device,
   logger.debug() << "LinuxController activated";
 }
 
-void LinuxController::deactivate(Reason reason) {
+void LinuxController::deactivate(Controller::Reason reason) {
   logger.debug() << "LinuxController deactivated";
 
-  if (reason == ReasonSwitching) {
+  if (reason == Controller::ReasonSwitching) {
     logger.debug() << "No disconnect for quick server switching";
     emit disconnected();
     return;

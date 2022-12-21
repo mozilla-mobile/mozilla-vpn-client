@@ -14,15 +14,6 @@
 #pragma comment(lib, "Wlanapi.lib")
 #pragma comment(lib, "windowsapp.lib")
 
-#include <winrt/base.h>
-// See
-// https://github.com/microsoft/Windows.UI.Composition-Win32-Samples/issues/47
-namespace winrt::impl {
-template <typename Async>
-auto wait_for(Async const& async, Windows::Foundation::TimeSpan const& timeout);
-}
-#include <winrt/Windows.Networking.Connectivity.h>
-
 namespace {
 Logger logger("WindowsNetworkWatcher");
 }
@@ -148,26 +139,6 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
 }
 
 NetworkWatcherImpl::TransportType WindowsNetworkWatcher::getTransportType() {
-  using namespace winrt::Windows::Networking::Connectivity;
-  ConnectionProfile profile =
-      NetworkInformation::GetInternetConnectionProfile();
-
-  if (profile.IsWlanConnectionProfile()) {
-    return TransportType_WiFi;
-  }
-  if (profile.IsWwanConnectionProfile()) {
-    return TransportType_Cellular;
-  }
-  NetworkAdapter device = profile.NetworkAdapter();
-  if (device == nullptr) {
-    return TransportType_Unknown;
-  }
-
-  switch (device.IanaInterfaceType()) {
-    case 6:
-      return TransportType_Ethernet;
-    case 71:
-      return TransportType_WiFi;
-  }
+  // TODO: Implement this once we update to Qt6.3 (VPN-3511)
   return TransportType_Other;
 }

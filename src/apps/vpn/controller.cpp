@@ -53,16 +53,16 @@ constexpr const int MULLVAD_PROXY_RANGE_LENGTH = 20;
 namespace {
 Logger logger("Controller");
 
-ControllerImpl::Reason stateToReason(Controller::State state) {
+Controller::Reason stateToReason(Controller::State state) {
   if (state == Controller::StateSwitching) {
-    return ControllerImpl::ReasonSwitching;
+    return Controller::ReasonSwitching;
   }
 
   if (state == Controller::StateConfirming) {
-    return ControllerImpl::ReasonConfirming;
+    return Controller::ReasonConfirming;
   }
 
-  return ControllerImpl::ReasonNone;
+  return Controller::ReasonNone;
 }
 
 }  // namespace
@@ -191,11 +191,11 @@ bool Controller::activate() {
 
   clearRetryCounter();
 
-  activateInternal();
+  activateInternal(stateToReason(m_state));
   return true;
 }
 
-void Controller::activateInternal(bool forcePort53) {
+void Controller::activateInternal(Reason reason, bool forcePort53) {
   logger.debug() << "Activation internal";
   Q_ASSERT(m_impl);
 
@@ -239,7 +239,7 @@ void Controller::activateInternal(bool forcePort53) {
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv6AddrIn());
 
     // If requested, force the use of port 53/DNS.
-    if (settingsHolder->tunnelPort53() || forcePort53) {
+    if (forcePort53) {
       exitHop.m_server.forcePort(53);
     }
     // For single-hop, they are the same
@@ -257,7 +257,7 @@ void Controller::activateInternal(bool forcePort53) {
       return;
     }
     // If requested, force the use of port 53/DNS.
-    if (settingsHolder->tunnelPort53() || forcePort53) {
+    if (forcePort53) {
       hop.m_server.forcePort(53);
     }
 
@@ -292,10 +292,10 @@ void Controller::activateInternal(bool forcePort53) {
   m_ping_canary.start(m_activationQueue.first().m_server.ipv4AddrIn(),
                       "0.0.0.0/0");
   logger.info() << "Canary Ping Started";
-  activateNext();
+  activateNext(reason);
 }
 
-void Controller::activateNext() {
+void Controller::activateNext(Reason reason) {
   MozillaVPN* vpn = MozillaVPN::instance();
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
   if (device == nullptr) {
@@ -307,7 +307,7 @@ void Controller::activateNext() {
 
   logger.debug() << "Activating peer" << logger.keys(hop.m_server.publicKey());
   m_handshakeTimer.start(HANDSHAKE_TIMEOUT_SEC * 1000);
-  m_impl->activate(hop, device, vpn->keys(), stateToReason(m_state));
+  m_impl->activate(hop, device, vpn->keys(), reason);
 
   // Move to the confirming state if we are awaiting any connection handshakes.
   setState(StateConfirming);
@@ -336,7 +336,7 @@ bool Controller::silentSwitchServers() {
       vpn->currentServer()->exitServerPublicKey());
 
   // Activate the first connection to kick off the server switch.
-  activateInternal();
+  activateInternal(ReasonSwitching);
   return true;
 }
 
@@ -382,7 +382,7 @@ void Controller::connected(const QString& pubkey) {
     // Start the next connection if there is more work to do.
     m_activationQueue.removeFirst();
     if (!m_activationQueue.isEmpty()) {
-      activateNext();
+      activateNext(stateToReason(m_state));
       return;
     }
   }
@@ -424,14 +424,14 @@ void Controller::handshakeTimeout() {
   // Try again, again if there are sufficient retries left.
   ++m_connectionRetry;
   emit connectionRetryChanged();
-  if (m_connectionRetry == 1 && !SettingsHolder::instance()->tunnelPort53()) {
+  if (m_connectionRetry == 1) {
     logger.info() << "Connection Attempt: Using Port 53 Option this time.";
     // On the first retry, opportunisticly try again using the port 53
     // option enabled, if that feature is disabled.
-    activateInternal(true);
+    activateInternal(stateToReason(m_state), true);
     return;
   } else if (m_connectionRetry < CONNECTION_MAX_RETRY) {
-    activateInternal();
+    activateInternal(stateToReason(m_state));
     return;
   }
 
