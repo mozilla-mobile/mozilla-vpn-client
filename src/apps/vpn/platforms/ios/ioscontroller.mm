@@ -29,7 +29,7 @@ IOSControllerImpl* impl = nullptr;
 }  // namespace
 
 IOSController::IOSController() {
-  MVPN_COUNT_CTOR(IOSController);
+  MZ_COUNT_CTOR(IOSController);
 
   logger.debug() << "created";
 
@@ -37,7 +37,7 @@ IOSController::IOSController() {
 }
 
 IOSController::~IOSController() {
-  MVPN_COUNT_DTOR(IOSController);
+  MZ_COUNT_DTOR(IOSController);
 
   logger.debug() << "deallocated";
 

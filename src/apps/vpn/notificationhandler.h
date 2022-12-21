@@ -48,7 +48,7 @@ class NotificationHandler : public QObject {
 
   virtual void retranslate() {}
 
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
   virtual QMenu* contextMenu() { return nullptr; }
 #endif
 

@@ -17,13 +17,13 @@ Logger logger("Telemetry");
 }
 
 Telemetry::Telemetry() {
-  MVPN_COUNT_CTOR(Telemetry);
+  MZ_COUNT_CTOR(Telemetry);
 
   m_connectionStabilityTimer.setSingleShot(true);
   connect(&m_connectionStabilityTimer, &QTimer::timeout, this,
           &Telemetry::connectionStabilityEvent);
 
-#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS)
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
   connect(&m_gleanControllerUpTimer, &QTimer::timeout, this,
           &Telemetry::periodicStateRecorder);
   m_gleanControllerUpTimer.start(
@@ -32,7 +32,7 @@ Telemetry::Telemetry() {
 #endif
 }
 
-Telemetry::~Telemetry() { MVPN_COUNT_DTOR(Telemetry); }
+Telemetry::~Telemetry() { MZ_COUNT_DTOR(Telemetry); }
 
 void Telemetry::initialize() {
   logger.debug() << "Initialize";
@@ -103,7 +103,7 @@ void Telemetry::connectionStabilityEvent() {
        {"transport", vpn->networkWatcher()->getCurrentTransport()}});
 }
 
-#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS)
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
 void Telemetry::periodicStateRecorder() {
   // On mobile this is handled seperately in a background process
   MozillaVPN* vpn = MozillaVPN::instance();

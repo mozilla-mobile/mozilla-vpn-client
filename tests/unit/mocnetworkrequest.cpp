@@ -14,7 +14,7 @@ NetworkRequest::NetworkRequest(Task* parent, int status,
     : QObject(parent), m_expectedStatusCode(status) {
   Q_UNUSED(setAuthorizationHeader);
 
-  MVPN_COUNT_CTOR(NetworkRequest);
+  MZ_COUNT_CTOR(NetworkRequest);
 
   Q_ASSERT(!TestHelper::networkConfig.isEmpty());
   TestHelper::NetworkConfig nc = TestHelper::networkConfig.takeFirst();
@@ -32,7 +32,7 @@ NetworkRequest::NetworkRequest(Task* parent, int status,
   });
 }
 
-NetworkRequest::~NetworkRequest() { MVPN_COUNT_DTOR(NetworkRequest); }
+NetworkRequest::~NetworkRequest() { MZ_COUNT_DTOR(NetworkRequest); }
 
 // static
 QString NetworkRequest::apiBaseUrl() {
@@ -100,7 +100,7 @@ NetworkRequest* NetworkRequest::createForProducts(Task* parent) {
   return new NetworkRequest(parent, 1234, false);
 }
 
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
 NetworkRequest* NetworkRequest::createForIOSPurchase(Task* parent,
                                                      const QString&) {
   return new NetworkRequest(parent, 1234, false);

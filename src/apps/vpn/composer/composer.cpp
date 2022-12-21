@@ -21,10 +21,10 @@ Logger logger("Composer");
 
 Composer::Composer(Addon* addon, const QString& prefix)
     : QObject(addon), m_addon(addon), m_prefix(prefix) {
-  MVPN_COUNT_CTOR(Composer);
+  MZ_COUNT_CTOR(Composer);
 }
 
-Composer::~Composer() { MVPN_COUNT_DTOR(Composer); }
+Composer::~Composer() { MZ_COUNT_DTOR(Composer); }
 
 // static
 Composer* Composer::create(Addon* addon, const QString& prefix,

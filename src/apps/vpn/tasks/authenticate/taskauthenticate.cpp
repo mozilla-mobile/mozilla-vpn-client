@@ -26,10 +26,10 @@ Logger logger("TaskAuthenticate");
 TaskAuthenticate::TaskAuthenticate(
     MozillaVPN::AuthenticationType authenticationType)
     : Task("TaskAuthenticate"), m_authenticationType(authenticationType) {
-  MVPN_COUNT_CTOR(TaskAuthenticate);
+  MZ_COUNT_CTOR(TaskAuthenticate);
 }
 
-TaskAuthenticate::~TaskAuthenticate() { MVPN_COUNT_DTOR(TaskAuthenticate); }
+TaskAuthenticate::~TaskAuthenticate() { MZ_COUNT_DTOR(TaskAuthenticate); }
 
 void TaskAuthenticate::run() {
   logger.debug() << "TaskAuthenticate::Run";

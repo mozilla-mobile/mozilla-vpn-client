@@ -16,11 +16,11 @@ Logger logger("CaptivePortalRequest");
 }
 
 CaptivePortalRequest::CaptivePortalRequest(Task* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(CaptivePortalRequest);
+  MZ_COUNT_CTOR(CaptivePortalRequest);
 }
 
 CaptivePortalRequest::~CaptivePortalRequest() {
-  MVPN_COUNT_DTOR(CaptivePortalRequest);
+  MZ_COUNT_DTOR(CaptivePortalRequest);
 }
 
 void CaptivePortalRequest::run() {

@@ -18,9 +18,9 @@ namespace {
 Logger logger("DeviceModel");
 }
 
-DeviceModel::DeviceModel() { MVPN_COUNT_CTOR(DeviceModel); }
+DeviceModel::DeviceModel() { MZ_COUNT_CTOR(DeviceModel); }
 
-DeviceModel::~DeviceModel() { MVPN_COUNT_DTOR(DeviceModel); }
+DeviceModel::~DeviceModel() { MZ_COUNT_DTOR(DeviceModel); }
 
 bool DeviceModel::fromJson(const Keys* keys, const QByteArray& s) {
   logger.debug() << "DeviceModel from json";

@@ -22,11 +22,11 @@ Logger logger("LinuxAppListProvider");
 
 LinuxAppListProvider::LinuxAppListProvider(QObject* parent)
     : AppListProvider(parent) {
-  MVPN_COUNT_CTOR(LinuxAppListProvider);
+  MZ_COUNT_CTOR(LinuxAppListProvider);
 }
 
 LinuxAppListProvider::~LinuxAppListProvider() {
-  MVPN_COUNT_DTOR(LinuxAppListProvider);
+  MZ_COUNT_DTOR(LinuxAppListProvider);
 }
 
 void LinuxAppListProvider::fetchEntries(const QString& dataDir,

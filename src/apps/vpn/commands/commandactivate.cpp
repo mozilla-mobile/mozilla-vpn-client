@@ -13,10 +13,10 @@
 
 CommandActivate::CommandActivate(QObject* parent)
     : Command(parent, "activate", "Activate the VPN tunnel") {
-  MVPN_COUNT_CTOR(CommandActivate);
+  MZ_COUNT_CTOR(CommandActivate);
 }
 
-CommandActivate::~CommandActivate() { MVPN_COUNT_DTOR(CommandActivate); }
+CommandActivate::~CommandActivate() { MZ_COUNT_DTOR(CommandActivate); }
 
 int CommandActivate::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());

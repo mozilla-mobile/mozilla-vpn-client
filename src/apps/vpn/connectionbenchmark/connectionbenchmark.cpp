@@ -20,11 +20,11 @@ Logger logger("ConnectionBenchmark");
 }
 
 ConnectionBenchmark::ConnectionBenchmark() {
-  MVPN_COUNT_CTOR(ConnectionBenchmark);
+  MZ_COUNT_CTOR(ConnectionBenchmark);
 }
 
 ConnectionBenchmark::~ConnectionBenchmark() {
-  MVPN_COUNT_DTOR(ConnectionBenchmark);
+  MZ_COUNT_DTOR(ConnectionBenchmark);
 }
 
 void ConnectionBenchmark::initialize() {

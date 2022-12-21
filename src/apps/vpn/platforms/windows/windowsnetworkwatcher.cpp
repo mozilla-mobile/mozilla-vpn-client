@@ -20,11 +20,11 @@ Logger logger("WindowsNetworkWatcher");
 
 WindowsNetworkWatcher::WindowsNetworkWatcher(QObject* parent)
     : NetworkWatcherImpl(parent) {
-  MVPN_COUNT_CTOR(WindowsNetworkWatcher);
+  MZ_COUNT_CTOR(WindowsNetworkWatcher);
 }
 
 WindowsNetworkWatcher::~WindowsNetworkWatcher() {
-  MVPN_COUNT_DTOR(WindowsNetworkWatcher);
+  MZ_COUNT_DTOR(WindowsNetworkWatcher);
 
   if (m_wlanHandle) {
     WlanCloseHandle(m_wlanHandle, nullptr);

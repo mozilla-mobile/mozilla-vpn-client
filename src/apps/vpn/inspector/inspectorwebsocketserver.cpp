@@ -19,7 +19,7 @@ constexpr int INSPECT_PORT = 8765;
 
 InspectorWebSocketServer::InspectorWebSocketServer(QObject* parent)
     : QWebSocketServer("", QWebSocketServer::NonSecureMode, parent) {
-  MVPN_COUNT_CTOR(InspectorWebSocketServer);
+  MZ_COUNT_CTOR(InspectorWebSocketServer);
 
   logger.debug() << "Creating the inspector websocket server";
 
@@ -33,7 +33,7 @@ InspectorWebSocketServer::InspectorWebSocketServer(QObject* parent)
 }
 
 InspectorWebSocketServer::~InspectorWebSocketServer() {
-  MVPN_COUNT_DTOR(InspectorWebSocketServer);
+  MZ_COUNT_DTOR(InspectorWebSocketServer);
 }
 
 void InspectorWebSocketServer::newConnectionReceived() {
@@ -42,7 +42,7 @@ void InspectorWebSocketServer::newConnectionReceived() {
 
   QHostAddress address = child->localAddress();
 
-#if !defined(MVPN_ANDROID) && !defined(MVPN_IOS)
+#if !defined(MZ_ANDROID) && !defined(MZ_IOS)
   // `::ffff:127.0.0.1` is the IPv4 localhost address written with the IPv6
   // notation.
   if (address != QHostAddress("::ffff:127.0.0.1") &&

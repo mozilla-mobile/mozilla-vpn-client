@@ -6,7 +6,7 @@
 #define EVENT_METRIC_H
 
 #include "glean/glean.h"
-#if not(defined(MVPN_WASM) || defined(BUILD_QMAKE))
+#if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
 #  include "vpnglean.h"
 #endif
 

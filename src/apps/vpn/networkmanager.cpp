@@ -7,7 +7,7 @@
 #include "constants.h"
 #include "leakdetector.h"
 
-#if MVPN_WINDOWS
+#if MZ_WINDOWS
 #  include "platforms/windows/windowsutils.h"
 #endif
 
@@ -18,14 +18,14 @@ NetworkManager* s_instance = nullptr;
 }
 
 NetworkManager::NetworkManager() {
-  MVPN_COUNT_CTOR(NetworkManager);
+  MZ_COUNT_CTOR(NetworkManager);
 
   Q_ASSERT(!s_instance);
   s_instance = this;
 }
 
 NetworkManager::~NetworkManager() {
-  MVPN_COUNT_DTOR(NetworkManager);
+  MZ_COUNT_DTOR(NetworkManager);
 
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;
@@ -46,9 +46,9 @@ QByteArray NetworkManager::osVersion() {
 
   {
     QTextStream out(&osVersion);
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
     out << "WASM";
-#elif MVPN_WINDOWS
+#elif MZ_WINDOWS
     out << QSysInfo::productType().toLocal8Bit() << " "
         << WindowsUtils::windowsVersion().toLocal8Bit();
 #else

@@ -566,7 +566,7 @@ SETTING_BOOL(adjustActivatable,        // getter
 )
 #endif
 
-#if defined(MVPN_IOS)
+#if defined(MZ_IOS)
 SETTING_STRINGLIST(subscriptionTransactions,        // getter
                    setSubscriptionTransactions,     // setter
                    removeSubscriptionTransactions,  // remover

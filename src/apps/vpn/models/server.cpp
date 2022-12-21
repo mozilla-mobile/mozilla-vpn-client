@@ -12,10 +12,10 @@
 
 #include "leakdetector.h"
 
-Server::Server() { MVPN_COUNT_CTOR(Server); }
+Server::Server() { MZ_COUNT_CTOR(Server); }
 
 Server::Server(const Server& other) {
-  MVPN_COUNT_CTOR(Server);
+  MZ_COUNT_CTOR(Server);
   *this = other;
 }
 
@@ -38,7 +38,7 @@ Server& Server::operator=(const Server& other) {
   return *this;
 }
 
-Server::~Server() { MVPN_COUNT_DTOR(Server); }
+Server::~Server() { MZ_COUNT_DTOR(Server); }
 
 bool Server::fromJson(const QJsonObject& obj) {
   // Reset.

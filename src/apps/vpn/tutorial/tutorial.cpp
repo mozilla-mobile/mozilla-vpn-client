@@ -30,7 +30,7 @@ Tutorial* Tutorial::instance() {
 
 Tutorial::Tutorial(QObject* parent) : QObject(parent) {
   logger.debug() << "create";
-  MVPN_COUNT_CTOR(Tutorial);
+  MZ_COUNT_CTOR(Tutorial);
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
@@ -40,7 +40,7 @@ Tutorial::Tutorial(QObject* parent) : QObject(parent) {
           &Tutorial::stop);
 }
 
-Tutorial::~Tutorial() { MVPN_COUNT_DTOR(Tutorial); }
+Tutorial::~Tutorial() { MZ_COUNT_DTOR(Tutorial); }
 
 void Tutorial::allowItem(const QString& objectName) {
   m_allowedItems.append(objectName);

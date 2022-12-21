@@ -11,7 +11,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
-#ifdef MVPN_MACOS
+#ifdef MZ_MACOS
 #  include "platforms/macos/macosutils.h"
 #endif
 
@@ -25,14 +25,14 @@ MacOSMenuBar* s_instance = nullptr;
 }  // namespace
 
 MacOSMenuBar::MacOSMenuBar() {
-  MVPN_COUNT_CTOR(MacOSMenuBar);
+  MZ_COUNT_CTOR(MacOSMenuBar);
 
   Q_ASSERT(!s_instance);
   s_instance = this;
 }
 
 MacOSMenuBar::~MacOSMenuBar() {
-  MVPN_COUNT_DTOR(MacOSMenuBar);
+  MZ_COUNT_DTOR(MacOSMenuBar);
 
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;
@@ -68,7 +68,7 @@ void MacOSMenuBar::initialize() {
 
   m_closeAction = fileMenu->addAction("close", []() {
     QmlEngineHolder::instance()->hideWindow();
-#ifdef MVPN_MACOS
+#ifdef MZ_MACOS
     MacOSUtils::hideDockIcon();
 #endif
   });

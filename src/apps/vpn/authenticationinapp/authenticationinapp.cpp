@@ -33,13 +33,13 @@ AuthenticationInApp* AuthenticationInApp::instance() {
 }
 
 AuthenticationInApp::AuthenticationInApp(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(AuthenticationInApp);
+  MZ_COUNT_CTOR(AuthenticationInApp);
   Q_ASSERT(!s_instance);
   s_instance = this;
 }
 
 AuthenticationInApp::~AuthenticationInApp() {
-  MVPN_COUNT_DTOR(AuthenticationInApp);
+  MZ_COUNT_DTOR(AuthenticationInApp);
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;
 }

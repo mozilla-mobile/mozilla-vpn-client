@@ -4,27 +4,27 @@
 
 #include "imageproviderfactory.h"
 
-#ifdef MVPN_LINUX
+#ifdef MZ_LINUX
 #  include "platforms/linux/linuxappimageprovider.h"
 #endif
 
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
 #  include "platforms/android/androidappimageprovider.h"
 #endif
 
-#ifdef MVPN_WINDOWS
+#ifdef MZ_WINDOWS
 #  include "platforms/windows/windowsappimageprovider.h"
 #endif
 
 QQuickImageProvider* ImageProviderFactory::create(QObject* parent) {
-#ifdef MVPN_LINUX
+#ifdef MZ_LINUX
   return new LinuxAppImageProvider(parent);
 #endif
 
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
   return new AndroidAppImageProvider(parent);
 #endif
-#ifdef MVPN_WINDOWS
+#ifdef MZ_WINDOWS
   return new WindowsAppImageProvider(parent);
 #endif
   Q_UNUSED(parent);

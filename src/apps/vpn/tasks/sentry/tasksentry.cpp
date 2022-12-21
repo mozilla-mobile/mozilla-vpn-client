@@ -15,11 +15,11 @@ Logger logger("TaskSentry");
 }
 
 TaskSentry::TaskSentry(const QByteArray& envelope) : Task("TaskSentry") {
-  MVPN_COUNT_CTOR(TaskSentry);
+  MZ_COUNT_CTOR(TaskSentry);
   m_envelope = envelope;
 }
 
-TaskSentry::~TaskSentry() { MVPN_COUNT_DTOR(TaskSentry); }
+TaskSentry::~TaskSentry() { MZ_COUNT_DTOR(TaskSentry); }
 
 void TaskSentry::run() {
   NetworkRequest* request = NetworkRequest::createForSentry(this, m_envelope);

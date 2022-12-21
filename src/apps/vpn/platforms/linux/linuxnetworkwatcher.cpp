@@ -16,13 +16,13 @@ Logger logger("LinuxNetworkWatcher");
 
 LinuxNetworkWatcher::LinuxNetworkWatcher(QObject* parent)
     : NetworkWatcherImpl(parent) {
-  MVPN_COUNT_CTOR(LinuxNetworkWatcher);
+  MZ_COUNT_CTOR(LinuxNetworkWatcher);
 
   m_thread.start();
 }
 
 LinuxNetworkWatcher::~LinuxNetworkWatcher() {
-  MVPN_COUNT_DTOR(LinuxNetworkWatcher);
+  MZ_COUNT_DTOR(LinuxNetworkWatcher);
 
   delete m_worker;
 

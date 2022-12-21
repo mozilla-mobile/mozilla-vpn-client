@@ -14,7 +14,7 @@ set_property(TARGET shared-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-# VPN Client source files
+# Shared components
 target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/constants.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/constants.h
@@ -72,4 +72,4 @@ if(UNIX)
      )
 endif()
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/${MVPN_PLATFORM_NAME}/sources.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/${MZ_PLATFORM_NAME}/sources.cmake)

@@ -21,22 +21,22 @@
 #include "telemetry/gleansample.h"
 
 // Terrible hacking for Windows
-#if defined(MVPN_WINDOWS)
+#if defined(MZ_WINDOWS)
 #  include "platforms/windows/golang-msvc-types.h"
 #  include "platforms/windows/windowscommons.h"
 #  include "windows.h"
 #endif
 
 // Import balrog C/Go library, except on windows where we need to use a DLL.
-#if !defined(MVPN_WINDOWS)
+#if !defined(MZ_WINDOWS)
 extern "C" {
 #  include "balrog-api.h"
 }
 #endif
 
-#if defined(MVPN_WINDOWS)
+#if defined(MZ_WINDOWS)
 constexpr const char* BALROG_WINDOWS_UA = "WINNT_x86_64";
-#elif defined(MVPN_MACOS)
+#elif defined(MZ_MACOS)
 constexpr const char* BALROG_MACOS_UA = "Darwin_x86";
 #else
 #  error Platform not supported yet
@@ -60,20 +60,20 @@ Balrog::Balrog(QObject* parent, bool downloadAndInstall,
     : Updater(parent),
       m_downloadAndInstall(downloadAndInstall),
       m_errorPropagationPolicy(errorPropagationPolicy) {
-  MVPN_COUNT_CTOR(Balrog);
+  MZ_COUNT_CTOR(Balrog);
   logger.debug() << "Balrog created";
 }
 
 Balrog::~Balrog() {
-  MVPN_COUNT_DTOR(Balrog);
+  MZ_COUNT_DTOR(Balrog);
   logger.debug() << "Balrog released";
 }
 
 // static
 QString Balrog::userAgent() {
-#if defined(MVPN_WINDOWS)
+#if defined(MZ_WINDOWS)
   return BALROG_WINDOWS_UA;
-#elif defined(MVPN_MACOS)
+#elif defined(MZ_MACOS)
   return BALROG_MACOS_UA;
 #else
 #  error Unsupported platform
@@ -187,7 +187,7 @@ bool Balrog::checkSignature(Task* task, const QByteArray& x5uData,
 bool Balrog::validateSignature(const QByteArray& x5uData,
                                const QByteArray& updateData,
                                const QByteArray& signatureBlob) {
-#if defined(MVPN_WINDOWS)
+#if defined(MZ_WINDOWS)
   typedef void BalrogSetLogger(GoUintptr func);
   typedef GoUint8 BalrogValidate(GoString x5uData, GoString updateData,
                                  GoString signature, GoString rootHash,
@@ -430,7 +430,7 @@ bool Balrog::install(const QString& filePath) {
 
   QString logFile = m_tmpDir.filePath("msiexec.log");
 
-#if defined(MVPN_WINDOWS)
+#if defined(MZ_WINDOWS)
   QStringList arguments;
   arguments << "/qb!-"
             << "REBOOT=ReallySuppress"
@@ -465,7 +465,7 @@ bool Balrog::install(const QString& filePath) {
   }
 #endif
 
-#if defined(MVPN_MACOS)
+#if defined(MZ_MACOS)
   QStringList arguments;
   arguments << filePath;
 

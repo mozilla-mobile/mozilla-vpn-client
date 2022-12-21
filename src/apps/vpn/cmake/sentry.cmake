@@ -6,7 +6,7 @@
 # This CMAKE File will Integrate Sentry into MVPN
 
 
-# Defines which OS builds can include sentry. Check src/cmake Lists for all values of MVPN_PLATFORM_NAME
+# Defines which OS builds can include sentry. Check src/cmake Lists for all values of MZ_PLATFORM_NAME
 set(SENTRY_SUPPORTED_OS  "Windows" "Darwin" "Android")
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 include(ExternalProject)

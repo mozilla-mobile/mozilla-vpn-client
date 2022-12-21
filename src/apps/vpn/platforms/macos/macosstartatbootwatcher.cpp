@@ -14,7 +14,7 @@ Logger logger("MacOSStartAtBootWatcher");
 }
 
 MacOSStartAtBootWatcher::MacOSStartAtBootWatcher() {
-  MVPN_COUNT_CTOR(MacOSStartAtBootWatcher);
+  MZ_COUNT_CTOR(MacOSStartAtBootWatcher);
 
   logger.debug() << "StartAtBoot watcher";
 
@@ -25,7 +25,7 @@ MacOSStartAtBootWatcher::MacOSStartAtBootWatcher() {
 }
 
 MacOSStartAtBootWatcher::~MacOSStartAtBootWatcher() {
-  MVPN_COUNT_DTOR(MacOSStartAtBootWatcher);
+  MZ_COUNT_DTOR(MacOSStartAtBootWatcher);
 }
 
 void MacOSStartAtBootWatcher::startAtBootChanged() {

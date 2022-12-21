@@ -19,12 +19,12 @@ Logger logger("VersionApi");
 }
 
 VersionApi::VersionApi(QObject* parent) : Updater(parent) {
-  MVPN_COUNT_CTOR(VersionApi);
+  MZ_COUNT_CTOR(VersionApi);
   logger.debug() << "VersionApi created";
 }
 
 VersionApi::~VersionApi() {
-  MVPN_COUNT_DTOR(VersionApi);
+  MZ_COUNT_DTOR(VersionApi);
   logger.debug() << "VersionApi released";
 }
 

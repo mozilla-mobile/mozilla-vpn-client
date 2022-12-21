@@ -22,9 +22,9 @@ namespace {
 Logger logger("SubscriptionData");
 }  // namespace
 
-SubscriptionData::SubscriptionData() { MVPN_COUNT_CTOR(SubscriptionData); }
+SubscriptionData::SubscriptionData() { MZ_COUNT_CTOR(SubscriptionData); }
 
-SubscriptionData::~SubscriptionData() { MVPN_COUNT_DTOR(SubscriptionData); }
+SubscriptionData::~SubscriptionData() { MZ_COUNT_DTOR(SubscriptionData); }
 
 bool SubscriptionData::fromJson(const QByteArray& json) {
   logger.debug() << "Subscription data from JSON start";

@@ -25,7 +25,7 @@ MacOSDaemon* s_daemon = nullptr;
 }  // namespace
 
 MacOSDaemon::MacOSDaemon() : Daemon(nullptr) {
-  MVPN_COUNT_CTOR(MacOSDaemon);
+  MZ_COUNT_CTOR(MacOSDaemon);
 
   logger.debug() << "Daemon created";
 
@@ -38,7 +38,7 @@ MacOSDaemon::MacOSDaemon() : Daemon(nullptr) {
 }
 
 MacOSDaemon::~MacOSDaemon() {
-  MVPN_COUNT_DTOR(MacOSDaemon);
+  MZ_COUNT_DTOR(MacOSDaemon);
 
   logger.debug() << "Daemon released";
 

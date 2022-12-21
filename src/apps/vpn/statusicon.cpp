@@ -23,7 +23,7 @@ constexpr const QColor ORANGE_COLOR = QColor(255, 164, 54, 255);
 constexpr const QColor RED_COLOR = QColor(226, 40, 80, 255);
 constexpr const QColor INVALID_COLOR = QColor();
 
-#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
+#if defined(MZ_LINUX) || defined(MZ_WINDOWS)
 constexpr const std::array<const char*, 4> ANIMATED_LOGO_STEPS = {
     ":/ui/resources/logo-animated1.png", ":/ui/resources/logo-animated2.png",
     ":/ui/resources/logo-animated3.png", ":/ui/resources/logo-animated4.png"};
@@ -48,13 +48,13 @@ constexpr const char* LOGO_GENERIC_ON =
 }  // namespace
 
 StatusIcon::StatusIcon() {
-  MVPN_COUNT_CTOR(StatusIcon);
+  MZ_COUNT_CTOR(StatusIcon);
 
   connect(&m_animatedIconTimer, &QTimer::timeout, this,
           &StatusIcon::animateIcon);
 }
 
-StatusIcon::~StatusIcon() { MVPN_COUNT_DTOR(StatusIcon); }
+StatusIcon::~StatusIcon() { MZ_COUNT_DTOR(StatusIcon); }
 
 const QIcon& StatusIcon::icon() {
   if (m_icon.isNull()) {

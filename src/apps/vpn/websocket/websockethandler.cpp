@@ -20,7 +20,7 @@ Logger logger("WebSocketHandler");
 }  // namespace
 
 WebSocketHandler::WebSocketHandler() {
-  MVPN_COUNT_CTOR(WebSocketHandler);
+  MZ_COUNT_CTOR(WebSocketHandler);
 
   connect(&m_webSocket, &QWebSocket::connected, this,
           &WebSocketHandler::onConnected);
@@ -40,7 +40,7 @@ WebSocketHandler::WebSocketHandler() {
 }
 
 WebSocketHandler::~WebSocketHandler() {
-  MVPN_COUNT_DTOR(WebSocketHandler);
+  MZ_COUNT_DTOR(WebSocketHandler);
 
   m_webSocket.disconnect();
   m_backoffStrategy.disconnect();

@@ -27,11 +27,11 @@ Logger logger("AuthenticationInAppSession");
 AuthenticationInAppSession::AuthenticationInAppSession(QObject* parent,
                                                        TypeAuthentication type)
     : QObject(parent), m_typeAuthentication(type) {
-  MVPN_COUNT_CTOR(AuthenticationInAppSession);
+  MZ_COUNT_CTOR(AuthenticationInAppSession);
 }
 
 AuthenticationInAppSession::~AuthenticationInAppSession() {
-  MVPN_COUNT_DTOR(AuthenticationInAppSession);
+  MZ_COUNT_DTOR(AuthenticationInAppSession);
 }
 
 void AuthenticationInAppSession::terminate() {

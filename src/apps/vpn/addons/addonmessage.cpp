@@ -75,10 +75,10 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
 AddonMessage::AddonMessage(QObject* parent, const QString& manifestFileName,
                            const QString& id, const QString& name)
     : Addon(parent, manifestFileName, id, name, "message") {
-  MVPN_COUNT_CTOR(AddonMessage);
+  MZ_COUNT_CTOR(AddonMessage);
 }
 
-AddonMessage::~AddonMessage() { MVPN_COUNT_DTOR(AddonMessage); }
+AddonMessage::~AddonMessage() { MZ_COUNT_DTOR(AddonMessage); }
 
 // static
 AddonMessage::MessageState AddonMessage::loadMessageState(const QString& id) {

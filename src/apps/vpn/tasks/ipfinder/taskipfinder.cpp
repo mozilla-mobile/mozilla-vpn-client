@@ -22,7 +22,7 @@ Logger logger("TaskIPFinder");
 }
 
 TaskIPFinder::TaskIPFinder() : Task("TaskIPFinder") {
-  MVPN_COUNT_CTOR(TaskIPFinder);
+  MZ_COUNT_CTOR(TaskIPFinder);
 
   // Queued to avoid this task to be deleted before the processing of the slots.
   connect(this, &TaskIPFinder::operationCompleted, this, &Task::completed,
@@ -30,7 +30,7 @@ TaskIPFinder::TaskIPFinder() : Task("TaskIPFinder") {
 }
 
 TaskIPFinder::~TaskIPFinder() {
-  MVPN_COUNT_DTOR(TaskIPFinder);
+  MZ_COUNT_DTOR(TaskIPFinder);
   if (m_lookupId > -1) {
     QHostInfo::abortHostLookup(m_lookupId);
   }
@@ -39,7 +39,7 @@ TaskIPFinder::~TaskIPFinder() {
 void TaskIPFinder::run() {
   logger.debug() << "Starting the ip-lookup";
 
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
   // QHostInfo uses dlopen() to run the DNS lookup. This does not work on WASM.
   // Let's fake the result.
   emit operationCompleted("1.2.3.4", "a1f:ea75:ca75", "Mordor");

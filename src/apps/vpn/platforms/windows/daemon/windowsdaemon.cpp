@@ -28,7 +28,7 @@ Logger logger("WindowsDaemon");
 }
 
 WindowsDaemon::WindowsDaemon() : Daemon(nullptr), m_splitTunnelManager(this) {
-  MVPN_COUNT_CTOR(WindowsDaemon);
+  MZ_COUNT_CTOR(WindowsDaemon);
 
   m_wgutils = new WireguardUtilsWindows(this);
   m_dnsutils = new DnsUtilsWindows(this);
@@ -38,7 +38,7 @@ WindowsDaemon::WindowsDaemon() : Daemon(nullptr), m_splitTunnelManager(this) {
 }
 
 WindowsDaemon::~WindowsDaemon() {
-  MVPN_COUNT_DTOR(WindowsDaemon);
+  MZ_COUNT_DTOR(WindowsDaemon);
   logger.debug() << "Daemon released";
 }
 

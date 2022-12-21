@@ -23,7 +23,7 @@ Logger logger("DnsUtilsLinux");
 }
 
 DnsUtilsLinux::DnsUtilsLinux(QObject* parent) : DnsUtils(parent) {
-  MVPN_COUNT_CTOR(DnsUtilsLinux);
+  MZ_COUNT_CTOR(DnsUtilsLinux);
   logger.debug() << "DnsUtilsLinux created.";
 
   QDBusConnection conn = QDBusConnection::systemBus();
@@ -32,7 +32,7 @@ DnsUtilsLinux::DnsUtilsLinux(QObject* parent) : DnsUtils(parent) {
 }
 
 DnsUtilsLinux::~DnsUtilsLinux() {
-  MVPN_COUNT_DTOR(DnsUtilsLinux);
+  MZ_COUNT_DTOR(DnsUtilsLinux);
 
   for (auto iterator = m_linkDomains.constBegin();
        iterator != m_linkDomains.constEnd(); ++iterator) {

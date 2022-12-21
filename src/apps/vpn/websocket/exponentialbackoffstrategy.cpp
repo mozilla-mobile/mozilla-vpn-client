@@ -9,7 +9,7 @@
 #include "leakdetector.h"
 
 ExponentialBackoffStrategy::ExponentialBackoffStrategy() {
-  MVPN_COUNT_CTOR(ExponentialBackoffStrategy);
+  MZ_COUNT_CTOR(ExponentialBackoffStrategy);
 
   connect(&m_retryTimer, &QTimer::timeout, this,
           &ExponentialBackoffStrategy::executeNextAttempt);
@@ -17,7 +17,7 @@ ExponentialBackoffStrategy::ExponentialBackoffStrategy() {
 }
 
 ExponentialBackoffStrategy::~ExponentialBackoffStrategy() {
-  MVPN_COUNT_DTOR(ExponentialBackoffStrategy);
+  MZ_COUNT_DTOR(ExponentialBackoffStrategy);
 }
 
 #ifdef UNIT_TEST

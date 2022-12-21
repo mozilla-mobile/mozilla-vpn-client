@@ -25,7 +25,7 @@ Logger logwireguard("WireguardGo");
 
 WireguardUtilsMacos::WireguardUtilsMacos(QObject* parent)
     : WireguardUtils(parent), m_tunnel(this) {
-  MVPN_COUNT_CTOR(WireguardUtilsMacos);
+  MZ_COUNT_CTOR(WireguardUtilsMacos);
   logger.debug() << "WireguardUtilsMacos created.";
 
   connect(&m_tunnel, SIGNAL(readyReadStandardOutput()), this,
@@ -35,7 +35,7 @@ WireguardUtilsMacos::WireguardUtilsMacos(QObject* parent)
 }
 
 WireguardUtilsMacos::~WireguardUtilsMacos() {
-  MVPN_COUNT_DTOR(WireguardUtilsMacos);
+  MZ_COUNT_DTOR(WireguardUtilsMacos);
   logger.debug() << "WireguardUtilsMacos destroyed.";
 }
 
@@ -69,7 +69,7 @@ bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
   QString wgNameFile = wgRuntimeDir.filePath(QString(WG_INTERFACE) + ".name");
   pe.insert("WG_TUN_NAME_FILE", wgNameFile);
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
   pe.insert("LOG_LEVEL", "debug");
 #endif
   m_tunnel.setProcessEnvironment(pe);

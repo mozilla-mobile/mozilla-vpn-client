@@ -54,7 +54,7 @@ LIBS += -framework StoreKit
 LIBS += -framework UserNotifications
 LIBS += -framework Network
 
-DEFINES += MVPN_IOS
+DEFINES += MZ_IOS
 
 SOURCES += \
     apps/vpn/platforms/macos/macospingsender.cpp \

@@ -39,7 +39,7 @@ Updater* Updater::create(
 }
 
 Updater::Updater(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(Updater);
+  MZ_COUNT_CTOR(Updater);
   connect(this, &Updater::updateRecommended, [this] {
     m_recommendedOrRequired = true;
 
@@ -60,7 +60,7 @@ Updater::Updater(QObject* parent) : QObject(parent) {
 }
 
 Updater::~Updater() {
-  MVPN_COUNT_DTOR(Updater);
+  MZ_COUNT_DTOR(Updater);
   logger.debug() << "Updater released";
 }
 

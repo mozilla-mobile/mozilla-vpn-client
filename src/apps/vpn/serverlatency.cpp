@@ -27,9 +27,9 @@ namespace {
 Logger logger("ServerLatency");
 }
 
-ServerLatency::ServerLatency() { MVPN_COUNT_CTOR(ServerLatency); }
+ServerLatency::ServerLatency() { MZ_COUNT_CTOR(ServerLatency); }
 
-ServerLatency::~ServerLatency() { MVPN_COUNT_DTOR(ServerLatency); }
+ServerLatency::~ServerLatency() { MZ_COUNT_DTOR(ServerLatency); }
 
 void ServerLatency::initialize() {
   MozillaVPN* vpn = MozillaVPN::instance();

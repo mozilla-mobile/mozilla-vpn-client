@@ -12,7 +12,7 @@ namespace {
 Logger logger("TaskPurchase");
 }
 
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
 // static
 TaskPurchase* TaskPurchase::createForIOS(const QString& receipt) {
   TaskPurchase* task = new TaskPurchase(IOS);
@@ -21,7 +21,7 @@ TaskPurchase* TaskPurchase::createForIOS(const QString& receipt) {
 }
 #endif
 
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
 // static
 TaskPurchase* TaskPurchase::createForAndroid(const QString& sku,
                                              const QString& token) {
@@ -32,7 +32,7 @@ TaskPurchase* TaskPurchase::createForAndroid(const QString& sku,
 }
 #endif
 
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
 // static
 TaskPurchase* TaskPurchase::createForWasm(const QString& productId) {
   TaskPurchase* task = new TaskPurchase(Wasm);
@@ -42,26 +42,26 @@ TaskPurchase* TaskPurchase::createForWasm(const QString& productId) {
 #endif
 
 TaskPurchase::TaskPurchase(Op op) : Task("TaskPurchase"), m_op(op) {
-  MVPN_COUNT_CTOR(TaskPurchase);
+  MZ_COUNT_CTOR(TaskPurchase);
 }
 
-TaskPurchase::~TaskPurchase() { MVPN_COUNT_DTOR(TaskPurchase); }
+TaskPurchase::~TaskPurchase() { MZ_COUNT_DTOR(TaskPurchase); }
 
 void TaskPurchase::run() {
   NetworkRequest* request = nullptr;
   switch (m_op) {
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
     case IOS:
       request = NetworkRequest::createForIOSPurchase(this, m_iOSReceipt);
       break;
 #endif
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
     case Android:
       request = NetworkRequest::createForAndroidPurchase(this, m_androidSku,
                                                          m_androidToken);
       break;
 #endif
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
     case Wasm:
       request = NetworkRequest::createForWasmPurchase(this, m_productId);
       break;

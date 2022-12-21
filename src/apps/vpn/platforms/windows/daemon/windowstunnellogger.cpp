@@ -40,7 +40,7 @@ Logger logger("tunnel.dll");
 WindowsTunnelLogger::WindowsTunnelLogger(const QString& filename,
                                          QObject* parent)
     : QObject(parent), m_logfile(filename, this), m_timer(this) {
-  MVPN_COUNT_CTOR(WindowsTunnelLogger);
+  MZ_COUNT_CTOR(WindowsTunnelLogger);
 
   m_startTime = QDateTime::currentMSecsSinceEpoch() * 1000000;
   m_logindex = -1;
@@ -50,7 +50,7 @@ WindowsTunnelLogger::WindowsTunnelLogger(const QString& filename,
 }
 
 WindowsTunnelLogger::~WindowsTunnelLogger() {
-  MVPN_COUNT_DTOR(WindowsTunnelLogger);
+  MZ_COUNT_DTOR(WindowsTunnelLogger);
   if (m_logdata) {
     timeout();
 

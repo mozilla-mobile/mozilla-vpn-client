@@ -48,11 +48,11 @@ class ServiceThread : public QThread {
 
 WindowsDaemonServer::WindowsDaemonServer(QObject* parent)
     : Command(parent, "windowsdaemon", "Activate the windows daemon") {
-  MVPN_COUNT_CTOR(WindowsDaemonServer);
+  MZ_COUNT_CTOR(WindowsDaemonServer);
 }
 
 WindowsDaemonServer::~WindowsDaemonServer() {
-  MVPN_COUNT_DTOR(WindowsDaemonServer);
+  MZ_COUNT_DTOR(WindowsDaemonServer);
 }
 
 int WindowsDaemonServer::run(QStringList& tokens) {

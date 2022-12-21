@@ -15,12 +15,10 @@ Logger logger("PurchaseWebHandler");
 
 PurchaseWebHandler::PurchaseWebHandler(QObject* parent)
     : PurchaseHandler(parent) {
-  MVPN_COUNT_CTOR(PurchaseWebHandler);
+  MZ_COUNT_CTOR(PurchaseWebHandler);
 }
 
-PurchaseWebHandler::~PurchaseWebHandler() {
-  MVPN_COUNT_DTOR(PurchaseWebHandler);
-}
+PurchaseWebHandler::~PurchaseWebHandler() { MZ_COUNT_DTOR(PurchaseWebHandler); }
 
 void PurchaseWebHandler::startSubscription(const QString&) {
   if (m_subscriptionState != eInactive) {

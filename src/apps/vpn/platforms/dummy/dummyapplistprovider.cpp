@@ -8,11 +8,11 @@
 
 DummyAppListProvider::DummyAppListProvider(QObject* parent)
     : AppListProvider(parent) {
-  MVPN_COUNT_CTOR(DummyAppListProvider);
+  MZ_COUNT_CTOR(DummyAppListProvider);
 }
 
 DummyAppListProvider::~DummyAppListProvider() {
-  MVPN_COUNT_DTOR(DummyAppListProvider);
+  MZ_COUNT_DTOR(DummyAppListProvider);
 }
 
 void DummyAppListProvider::getApplicationList() {

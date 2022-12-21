@@ -113,13 +113,13 @@ ErrorHandler* ErrorHandler::instance() {
 }
 
 ErrorHandler::ErrorHandler(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(ErrorHandler);
+  MZ_COUNT_CTOR(ErrorHandler);
 
   connect(&m_alertTimer, &QTimer::timeout, this,
           [this]() { setAlert(NoAlert); });
 }
 
-ErrorHandler::~ErrorHandler() { MVPN_COUNT_DTOR(ErrorHandler); }
+ErrorHandler::~ErrorHandler() { MZ_COUNT_DTOR(ErrorHandler); }
 
 #define ERRORSTATE(name)                           \
   void ErrorHandler::name##Error() {               \

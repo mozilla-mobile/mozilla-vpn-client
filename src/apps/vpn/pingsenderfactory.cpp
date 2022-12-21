@@ -4,13 +4,13 @@
 
 #include "pingsenderfactory.h"
 
-#if defined(MVPN_LINUX) || defined(MVPN_ANDROID)
+#if defined(MZ_LINUX) || defined(MZ_ANDROID)
 #  include "platforms/linux/linuxpingsender.h"
-#elif defined(MVPN_MACOS) || defined(MVPN_IOS)
+#elif defined(MZ_MACOS) || defined(MZ_IOS)
 #  include "platforms/macos/macospingsender.h"
-#elif defined(MVPN_WINDOWS)
+#elif defined(MZ_WINDOWS)
 #  include "platforms/windows/windowspingsender.h"
-#elif defined(MVPN_DUMMY) || defined(UNIT_TEST)
+#elif defined(MZ_DUMMY) || defined(UNIT_TEST)
 #  include "platforms/dummy/dummypingsender.h"
 #else
 #  error "Unsupported platform"
@@ -18,11 +18,11 @@
 
 PingSender* PingSenderFactory::create(const QHostAddress& source,
                                       QObject* parent) {
-#if defined(MVPN_LINUX) || defined(MVPN_ANDROID)
+#if defined(MZ_LINUX) || defined(MZ_ANDROID)
   return new LinuxPingSender(source, parent);
-#elif defined(MVPN_MACOS) || defined(MVPN_IOS)
+#elif defined(MZ_MACOS) || defined(MZ_IOS)
   return new MacOSPingSender(source, parent);
-#elif defined(MVPN_WINDOWS)
+#elif defined(MZ_WINDOWS)
   return new WindowsPingSender(source, parent);
 #else
   return new DummyPingSender(source, parent);

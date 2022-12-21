@@ -16,20 +16,20 @@ Logger logger("UploadDataGenerator");
 
 UploadDataGenerator::UploadDataGenerator(const qint64 totalSize)
     : m_totalSize(totalSize) {
-  MVPN_COUNT_CTOR(UploadDataGenerator);
+  MZ_COUNT_CTOR(UploadDataGenerator);
 
   memset(m_dataBuffer, 0x00, sizeof(m_dataBuffer));
 }
 
 UploadDataGenerator::~UploadDataGenerator() {
-  MVPN_COUNT_DTOR(UploadDataGenerator);
+  MZ_COUNT_DTOR(UploadDataGenerator);
 }
 
 qint64 UploadDataGenerator::readData(char* data, qint64 maxSize) {
   qint64 maxBufferSize = qMin(MAX_BUFFER_SIZE, maxSize);
   qint64 maxReadSize = qMin(m_totalSize - pos(), maxBufferSize);
 
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
   logger.debug() << "Read data" << maxReadSize;
 #endif
 

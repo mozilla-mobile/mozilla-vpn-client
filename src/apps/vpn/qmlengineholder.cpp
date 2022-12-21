@@ -15,7 +15,7 @@ QmlEngineHolder* s_instance = nullptr;
 }  // namespace
 
 QmlEngineHolder::QmlEngineHolder(QQmlEngine* engine) : m_engine(engine) {
-  MVPN_COUNT_CTOR(QmlEngineHolder);
+  MZ_COUNT_CTOR(QmlEngineHolder);
 
   Q_ASSERT(engine);
   Q_ASSERT(!s_instance);
@@ -23,7 +23,7 @@ QmlEngineHolder::QmlEngineHolder(QQmlEngine* engine) : m_engine(engine) {
 }
 
 QmlEngineHolder::~QmlEngineHolder() {
-  MVPN_COUNT_DTOR(QmlEngineHolder);
+  MZ_COUNT_DTOR(QmlEngineHolder);
 
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;

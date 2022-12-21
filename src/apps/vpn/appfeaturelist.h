@@ -125,7 +125,7 @@ FEATURE_SIMPLE(mobileOnboarding,       // Feature ID
                QStringList(),          // feature dependencies
                FeatureCallback_iosOrAndroid)
 
-#if defined(MVPN_ANDROID) || defined(MVPN_IOS)
+#if defined(MZ_ANDROID) || defined(MZ_IOS)
 #  define MULTIHOP_RELEASE "2.7"
 #else
 #  define MULTIHOP_RELEASE "2.5"

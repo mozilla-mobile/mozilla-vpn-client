@@ -18,11 +18,11 @@ Logger logger("TaskRemoveDevice");
 
 TaskRemoveDevice::TaskRemoveDevice(const QString& publicKey)
     : Task("TaskRemoveDevice"), m_publicKey(publicKey) {
-  MVPN_COUNT_CTOR(TaskRemoveDevice);
+  MZ_COUNT_CTOR(TaskRemoveDevice);
 }
 
 TaskRemoveDevice::~TaskRemoveDevice() {
-  MVPN_COUNT_DTOR(TaskRemoveDevice);
+  MZ_COUNT_DTOR(TaskRemoveDevice);
 
   // Nothing guarantees that when this task is deleted, the VPN object is still
   // alive. We cannot use the QObject-parenting solution because it deletes the

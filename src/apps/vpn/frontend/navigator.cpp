@@ -440,7 +440,7 @@ Navigator* Navigator::instance() {
 }
 
 Navigator::Navigator(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(Navigator);
+  MZ_COUNT_CTOR(Navigator);
 
   connect(MozillaVPN::instance(), &MozillaVPN::stateChanged, this,
           &Navigator::computeComponent);
@@ -466,7 +466,7 @@ Navigator::Navigator(QObject* parent) : QObject(parent) {
   computeComponent();
 }
 
-Navigator::~Navigator() { MVPN_COUNT_DTOR(Navigator); }
+Navigator::~Navigator() { MZ_COUNT_DTOR(Navigator); }
 
 void Navigator::computeComponent() {
   logger.debug() << "Compute component";
@@ -599,7 +599,7 @@ void Navigator::removeItem(QObject* item) {
   logger.debug() << "Remove item";
   Q_ASSERT(item);
 
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
   bool found = false;
 #endif
 
@@ -607,7 +607,7 @@ void Navigator::removeItem(QObject* item) {
     for (int i = 0; i < screen.m_layers.length(); ++i) {
       if (screen.m_layers.at(i).m_layer == item) {
         screen.m_layers.removeAt(i);
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
         found = true;
 #endif
         break;
@@ -615,7 +615,7 @@ void Navigator::removeItem(QObject* item) {
     }
   }
 
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
   Q_ASSERT(found);
 #endif
 }
@@ -629,7 +629,7 @@ bool Navigator::eventHandled() {
     return true;
   }
 
-#if defined(MVPN_ANDROID) || defined(MVPN_WASM)
+#if defined(MZ_ANDROID) || defined(MZ_WASM)
   if (m_screenHistory.isEmpty()) {
     return false;
   }
@@ -679,10 +679,10 @@ bool Navigator::eventHandled() {
   }
 
   return currentScreen->m_quitBlocked();
-#elif defined(MVPN_IOS)
+#elif defined(MZ_IOS)
   return false;
-#elif defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS) || \
-    defined(MVPN_DUMMY) || defined(UNIT_TEST)
+#elif defined(MZ_LINUX) || defined(MZ_MACOS) || defined(MZ_WINDOWS) || \
+    defined(MZ_DUMMY) || defined(UNIT_TEST)
   logger.error() << "We should not be here! Why "
                     "CloseEventHandler::eventHandled() is called on desktop?!?";
   return true;
