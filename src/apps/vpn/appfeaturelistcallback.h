@@ -146,8 +146,9 @@ bool FeatureCallback_startOnBoot() {
 #if defined(MZ_LINUX) || defined(MZ_MACOS) || defined(MZ_WINDOWS) || \
     defined(MZ_DUMMY) || defined(MZ_WASM) || defined(MZ_IOS)
   return true;
-#endif
+#else
   return false;
+#endif
 }
 
 bool FeatureCallback_unsecuredNetworkNotification() {
