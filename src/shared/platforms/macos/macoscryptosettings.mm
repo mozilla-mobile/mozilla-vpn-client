@@ -2,18 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "appconstants.h"
 #include "cryptosettings.h"
 #include "logger.h"
 
-#ifdef MVPN_IOS
-#  include "../ios/iosutils.h"
-#else
-#  include "macosutils.h"
-#endif
-
 #include <QRandomGenerator>
-
-constexpr const NSString* SERVICE = @"Mozilla VPN";
 
 #import <Foundation/Foundation.h>
 
@@ -24,20 +17,26 @@ Logger logger("MacOSCryptoSettings");
 bool initialized = false;
 QByteArray key;
 
+NSString* getAppId() {
+  NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
+  if (!appId) {
+#ifdef MVPN_IOS
+    appId = QString(AppConstants::IOS_FALLBACK_APP_ID).toNSString();
+#else
+    appId = QString(AppConstants::MACOS_FALLBACK_APP_ID).toNSString();
+#endif
+  }
+  return appId;
+}
+
 }  // anonymous
 
 // static
 void CryptoSettings::resetKey() {
   logger.debug() << "Reset the key in the keychain";
 
-  NSData* service = [SERVICE dataUsingEncoding:NSUTF8StringEncoding];
-
-#ifdef MVPN_IOS
-  NSString* appId = IOSUtils::appId();
-#else
-  NSString* appId = MacOSUtils::appId();
-#endif
-  Q_ASSERT(appId);
+  NSData* service = QByteArray(AppConstants::CRYPTO_SETTINGS_SERVICE).toNSData();
+  NSString* appId = getAppId();
 
   NSMutableDictionary* query = [[NSMutableDictionary alloc] init];
 
@@ -61,14 +60,8 @@ bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
 
     logger.debug() << "Retrieving the key from the keychain";
 
-    NSData* service = [SERVICE dataUsingEncoding:NSUTF8StringEncoding];
-
-#ifdef MVPN_IOS
-    NSString* appId = IOSUtils::appId();
-#else
-    NSString* appId = MacOSUtils::appId();
-#endif
-    Q_ASSERT(appId);
+    NSData* service = QByteArray(AppConstants::CRYPTO_SETTINGS_SERVICE).toNSData();
+    NSString* appId = getAppId();
 
     NSMutableDictionary* query = [[NSMutableDictionary alloc] init];
 

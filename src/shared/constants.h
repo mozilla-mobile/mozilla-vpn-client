@@ -24,6 +24,8 @@ constexpr const char* ADDON_PRODUCTION_KEY =
     ":/addons_signature/production.der";
 constexpr const char* ADDON_STAGING_KEY = ":/addons_signature/staging.der";
 
+constexpr const char* ADDON_SETTINGS_GROUP = "addons";
+
 constexpr const char* PLATFORM_NAME =
 #if defined(MVPN_IOS)
     "ios"

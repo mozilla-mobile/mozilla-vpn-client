@@ -4,8 +4,8 @@
 
 #include "addonconditionwatcherfeaturesenabled.h"
 
+#include "feature.h"
 #include "leakdetector.h"
-#include "models/feature.h"
 
 // static
 AddonConditionWatcher* AddonConditionWatcherFeaturesEnabled::maybeCreate(

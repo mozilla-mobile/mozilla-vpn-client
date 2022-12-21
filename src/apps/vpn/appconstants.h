@@ -5,10 +5,6 @@
 #ifndef APPCONSTANTS_H
 #define APPCONSTANTS_H
 
-#include <stdint.h>
-
-#include <QString>
-
 #include "constants.h"
 
 namespace AppConstants {
@@ -16,6 +12,9 @@ namespace AppConstants {
 // Returns true if we are in a production environment.
 const QString& getStagingServerAddress();
 void setStaging();
+
+// This is used by SettingsHolder to configure the QSetting file.
+constexpr const char* SETTINGS_APP_NAME = "vpn";
 
 // Number of msecs for the captive-portal block alert.
 constexpr uint32_t CAPTIVE_PORTAL_ALERT_MSEC = 4000;
@@ -104,8 +103,6 @@ constexpr const char* APPLE_SUBSCRIPTIONS_URL =
 constexpr const char* GOOGLE_SUBSCRIPTIONS_URL =
     "https://play.google.com/store/account/subscriptions";
 
-constexpr const char* ADDON_SETTINGS_GROUP = "addons";
-
 #define PRODBETAEXPR(type, functionName, prod, beta) \
   inline type functionName() { return Constants::inProduction() ? prod : beta; }
 
@@ -156,6 +153,16 @@ constexpr const char* ADJUST_SUBSCRIPTION_COMPLETED =
     ""
 #  endif
     ;
+#endif
+
+#if defined(__APPLE__)
+// This is the name of the service to encrypt the settings file
+constexpr const char* CRYPTO_SETTINGS_SERVICE = "Mozilla VPN";
+
+// Fallback. When an unsigned/un-notarized app is executed in
+// command-line mode, it could fail the fetching of its own bundle id.
+constexpr const char* MACOS_FALLBACK_APP_ID = "org.mozilla.macos.FirefoxVPN";
+constexpr const char* IOS_FALLBACK_APP_ID = "org.mozilla.ios.FirefoxVPN";
 #endif
 
 };  // namespace AppConstants

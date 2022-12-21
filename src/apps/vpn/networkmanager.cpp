@@ -8,7 +8,7 @@
 #include "leakdetector.h"
 
 #if MVPN_WINDOWS
-#  include "platforms/windows/windowscommons.h"
+#  include "platforms/windows/windowsutils.h"
 #endif
 
 #include <QTextStream>
@@ -50,7 +50,7 @@ QByteArray NetworkManager::osVersion() {
     out << "WASM";
 #elif MVPN_WINDOWS
     out << QSysInfo::productType().toLocal8Bit() << " "
-        << WindowsCommons::WindowsVersion().toLocal8Bit();
+        << WindowsUtils::windowsVersion().toLocal8Bit();
 #else
     out << QSysInfo::productType().toLocal8Bit() << " "
         << QSysInfo::productVersion().toLocal8Bit();

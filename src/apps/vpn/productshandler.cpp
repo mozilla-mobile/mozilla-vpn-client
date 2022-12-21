@@ -12,10 +12,10 @@
 #include <QScopeGuard>
 
 #include "constants.h"
+#include "feature.h"
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/feature.h"
 #include "purchasehandler.h"
 
 namespace {

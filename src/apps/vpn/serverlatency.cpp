@@ -6,10 +6,10 @@
 
 #include <QDateTime>
 
+#include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mfbt/checkedint.h"
-#include "models/feature.h"
 #include "mozillavpn.h"
 #include "pingsenderfactory.h"
 

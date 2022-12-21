@@ -11,9 +11,9 @@
 
 #include "appconstants.h"
 #include "collator.h"
+#include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/feature.h"
 #include "servercountry.h"
 #include "serverdata.h"
 #include "serveri18n.h"

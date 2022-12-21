@@ -9,10 +9,10 @@
 #include <QDir>
 
 #include "appconstants.h"
+#include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
-#include "models/feature.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #include "tasks/sentry/tasksentry.h"

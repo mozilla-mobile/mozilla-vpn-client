@@ -21,12 +21,6 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
     )
 endif()
 
-include(shared/sources.cmake)
-include(apps/vpn/cmake/sources.cmake)
-include(apps/vpn/cmake/sentry.cmake)
-
-target_link_libraries(mozillavpn PRIVATE shared-sources mozillavpn-sources glean lottie nebula translations)
-
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     set(MVPN_PLATFORM_NAME "linux")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
@@ -40,6 +34,12 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     set(MVPN_PLATFORM_NAME "wasm")
 endif()
+
+include(shared/sources.cmake)
+include(apps/vpn/cmake/sources.cmake)
+include(apps/vpn/cmake/sentry.cmake)
+
+target_link_libraries(mozillavpn PRIVATE shared-sources mozillavpn-sources glean lottie nebula translations)
 
 target_compile_definitions(mozillavpn PRIVATE "$<$<CONFIG:Debug>:MVPN_DEBUG>")
 target_compile_definitions(mozillavpn PRIVATE "MVPN_$<UPPER_CASE:${MVPN_PLATFORM_NAME}>")

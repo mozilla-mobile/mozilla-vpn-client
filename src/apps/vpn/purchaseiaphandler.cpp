@@ -4,10 +4,10 @@
 
 #include "purchaseiaphandler.h"
 
+#include "feature.h"
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/feature.h"
 
 namespace {
 Logger logger("PurchaseIAPHandler");

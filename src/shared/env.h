@@ -8,7 +8,7 @@
 #include "constants.h"
 
 #ifdef MVPN_WINDOWS
-#  include "platforms/windows/windowscommons.h"
+#  include "platforms/windows/windowsutils.h"
 #endif
 
 #include <QObject>
@@ -33,7 +33,7 @@ class Env final : public QObject {
   static QString buildNumber() { return Constants::buildNumber(); }
   static QString osVersion() {
 #ifdef MVPN_WINDOWS
-    return WindowsCommons::WindowsVersion();
+    return WindowsUtils::windowsVersion();
 #else
     return QSysInfo::productVersion();
 #endif

@@ -108,11 +108,8 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/apps/vpn/composer/composerblockunorderedlist.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/composer/composerblockunorderedlist.h
     ${MVPN_SOURCE_DIR}/apps/vpn/controller.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/cryptosettings.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/cryptosettings.h
     ${MVPN_SOURCE_DIR}/apps/vpn/dnspingsender.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/dnspingsender.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/env.h
     ${MVPN_SOURCE_DIR}/apps/vpn/errorhandler.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/errorhandler.h
     ${MVPN_SOURCE_DIR}/apps/vpn/externalophandler.cpp
@@ -143,8 +140,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/apps/vpn/models/device.h
     ${MVPN_SOURCE_DIR}/apps/vpn/models/devicemodel.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/models/devicemodel.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/models/feature.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/models/feature.h
     ${MVPN_SOURCE_DIR}/apps/vpn/models/featuremodel.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/models/featuremodel.h
     ${MVPN_SOURCE_DIR}/apps/vpn/models/feedbackcategorymodel.cpp
@@ -185,7 +180,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/apps/vpn/pingsender.h
     ${MVPN_SOURCE_DIR}/apps/vpn/pingsenderfactory.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/pingsenderfactory.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/platforms/dummy/dummycryptosettings.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/platforms/dummy/dummynetworkwatcher.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/platforms/dummy/dummynetworkwatcher.h
     ${MVPN_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.cpp
@@ -196,8 +190,6 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/apps/vpn/releasemonitor.h
     ${MVPN_SOURCE_DIR}/apps/vpn/serveri18n.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/serveri18n.h
-    ${MVPN_SOURCE_DIR}/apps/vpn/settingsholder.cpp
-    ${MVPN_SOURCE_DIR}/apps/vpn/settingsholder.h
     ${MVPN_SOURCE_DIR}/apps/vpn/signature.cpp
     ${MVPN_SOURCE_DIR}/apps/vpn/signature.h
     ${MVPN_SOURCE_DIR}/apps/vpn/simplenetworkmanager.cpp
@@ -249,8 +241,13 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/apps/vpn/websocket/websockethandler.h
     ${MVPN_SOURCE_DIR}/shared/constants.cpp
     ${MVPN_SOURCE_DIR}/shared/constants.h
+    ${MVPN_SOURCE_DIR}/shared/cryptosettings.cpp
+    ${MVPN_SOURCE_DIR}/shared/cryptosettings.h
     ${MVPN_SOURCE_DIR}/shared/curve25519.cpp
     ${MVPN_SOURCE_DIR}/shared/curve25519.h
+    ${MVPN_SOURCE_DIR}/shared/env.h
+    ${MVPN_SOURCE_DIR}/shared/feature.cpp
+    ${MVPN_SOURCE_DIR}/shared/feature.h
     ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c
     ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20Poly1305_32.c
     ${MVPN_SOURCE_DIR}/shared/hacl-star/Hacl_Curve25519_51.c
@@ -263,6 +260,7 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/shared/logger.h
     ${MVPN_SOURCE_DIR}/shared/loghandler.cpp
     ${MVPN_SOURCE_DIR}/shared/loghandler.h
+    ${MVPN_SOURCE_DIR}/shared/platforms/wasm/wasmcryptosettings.cpp
     ${MVPN_SOURCE_DIR}/shared/rfc/rfc1918.cpp
     ${MVPN_SOURCE_DIR}/shared/rfc/rfc1918.h
     ${MVPN_SOURCE_DIR}/shared/rfc/rfc4193.cpp
@@ -271,11 +269,15 @@ target_sources(unit_tests PRIVATE
     ${MVPN_SOURCE_DIR}/shared/rfc/rfc4291.h
     ${MVPN_SOURCE_DIR}/shared/rfc/rfc5735.cpp
     ${MVPN_SOURCE_DIR}/shared/rfc/rfc5735.h
+    ${MVPN_SOURCE_DIR}/shared/settingsholder.cpp
+    ${MVPN_SOURCE_DIR}/shared/settingsholder.h
     ${MVPN_SOURCE_DIR}/shared/task.h
     ${MVPN_SOURCE_DIR}/shared/taskscheduler.cpp
     ${MVPN_SOURCE_DIR}/shared/taskscheduler.h
     ${MVPN_SOURCE_DIR}/shared/temporarydir.cpp
     ${MVPN_SOURCE_DIR}/shared/temporarydir.h
+    ${MVPN_SOURCE_DIR}/shared/versionutils.cpp
+    ${MVPN_SOURCE_DIR}/shared/versionutils.h
 )
 
 # VPN Client UI resources

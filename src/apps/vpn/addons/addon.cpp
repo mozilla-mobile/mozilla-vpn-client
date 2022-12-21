@@ -23,14 +23,15 @@
 #include "conditionwatchers/addonconditionwatchertimeend.h"
 #include "conditionwatchers/addonconditionwatchertimestart.h"
 #include "conditionwatchers/addonconditionwatchertriggertimesecs.h"
+#include "feature.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
-#include "models/feature.h"
 #include "mozillavpn.h"
+#include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
-#include "update/versionapi.h"
+#include "versionutils.h"
 
 namespace {
 Logger logger("Addon");
@@ -185,7 +186,7 @@ QList<ConditionCallback> s_conditionCallbacks{
        QString currentVersion = Constants::versionString();
 
        if (!min.isEmpty() &&
-           VersionApi::compareVersions(min, currentVersion) == 1) {
+           VersionUtils::compareVersions(min, currentVersion) == 1) {
          logger.info() << "Min version is" << min << " curent"
                        << currentVersion;
          return false;
@@ -203,7 +204,7 @@ QList<ConditionCallback> s_conditionCallbacks{
        QString currentVersion = Constants::versionString();
 
        if (!max.isEmpty() &&
-           VersionApi::compareVersions(max, currentVersion) == -1) {
+           VersionUtils::compareVersions(max, currentVersion) == -1) {
          logger.info() << "Max version is" << max << " curent"
                        << currentVersion;
          return false;

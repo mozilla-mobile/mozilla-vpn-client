@@ -2,8 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef FEATURELISTCALLBACK_H
-#define FEATURELISTCALLBACK_H
+// NOTE! Do not include this file directly. Use featurelistcallback.h instead.
 
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androidutils.h"
@@ -17,15 +16,11 @@
 #  include <QProcessEnvironment>
 
 #  include "platforms/linux/linuxdependencies.h"
-#  include "update/versionapi.h"
+#  include "versionutils.h"
 #endif
 
 // Generic callback functions
 // --------------------------
-
-bool FeatureCallback_true() { return true; }
-
-bool FeatureCallback_false() { return false; }
 
 bool FeatureCallback_iosOrAndroid() {
 #if defined(MVPN_IOS) || defined(MVPN_ANDROID)
@@ -34,8 +29,6 @@ bool FeatureCallback_iosOrAndroid() {
   return false;
 #endif
 }
-
-bool FeatureCallback_inStaging() { return !Constants::inProduction(); }
 
 // Custom callback functions
 // -------------------------
@@ -133,7 +126,7 @@ bool FeatureCallback_splitTunnel() {
     if (shellVersion.isNull()) {
       return false;
     }
-    if (VersionApi::compareVersions(shellVersion, "3.34") < 0) {
+    if (VersionUtils::compareVersions(shellVersion, "3.34") < 0) {
       return false;
     }
   }
@@ -174,5 +167,3 @@ bool FeatureCallback_freeTrial() {
   return false;
 #endif
 }
-
-#endif  // FEATURELISTCALLBACK_H

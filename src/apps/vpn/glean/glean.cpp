@@ -7,11 +7,11 @@
 // about what is being imported.
 #include "./glean.h"
 
+#include "feature.h"
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/feature.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #if not(defined(MVPN_WASM) || defined(BUILD_QMAKE))
