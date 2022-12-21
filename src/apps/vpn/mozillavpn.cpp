@@ -20,6 +20,7 @@
 #include "models/device.h"
 #include "models/recentconnections.h"
 #include "networkmanager.h"
+#include "networkrequest.h"
 #include "productshandler.h"
 #include "profileflow.h"
 #include "purchasehandler.h"
@@ -82,6 +83,19 @@
 #include <QScreen>
 #include <QTimer>
 #include <QUrl>
+#include <QUrlQuery>
+
+#ifdef MZ_ANDROID
+constexpr const char* GOOGLE_PLAYSTORE_URL =
+    "https://play.google.com/store/apps/details?id=org.mozilla.firefox.vpn";
+#endif
+
+#ifdef MZ_IOS
+constexpr const char* APPLE_STORE_URL =
+    "https://apps.apple.com/us/app/mozilla-vpn-secure-private/id1489407738";
+constexpr const char* APPLE_STORE_REVIEW_URL =
+    "https://apps.apple.com/app/id1489407738?action=write-review";
+#endif
 
 namespace {
 Logger logger("MozillaVPN");
@@ -189,6 +203,8 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           &MozillaVPN::billingNotAvailable);
   connect(purchaseHandler, &PurchaseHandler::subscriptionNotValidated, this,
           &MozillaVPN::subscriptionNotValidated);
+
+  registerUrlOpenerLabels();
 }
 
 MozillaVPN::~MozillaVPN() {
@@ -979,8 +995,7 @@ void MozillaVPN::stopSchedulingPeriodicOperations() {
 bool MozillaVPN::writeAndShowLogs(QStandardPaths::StandardLocation location) {
   return writeLogs(location, [](const QString& filename) {
     logger.debug() << "Opening the logFile somehow:" << filename;
-    QUrl url = QUrl::fromLocalFile(filename);
-    UrlOpener::instance()->open(url);
+    UrlOpener::instance()->openUrl(QUrl::fromLocalFile(filename));
   });
 }
 
@@ -1497,7 +1512,12 @@ void MozillaVPN::addCurrentDeviceAndRefreshData(bool refreshProducts) {
 
 void MozillaVPN::openAppStoreReviewLink() {
   Q_ASSERT(Feature::get(Feature::Feature_appReview)->isSupported());
-  UrlOpener::instance()->openLink(UrlOpener::LinkLeaveReview);
+
+#if defined(MZ_IOS)
+  UrlOpener::instance()->openUrl(APPLE_STORE_REVIEW_URL);
+#elif defined(MZ_ANDROID)
+  UrlOpener::instance()->openUrl(GOOGLE_PLAYSTORE_URL);
+#endif
 }
 
 bool MozillaVPN::validateUserDNS(const QString& dns) const {
@@ -1646,4 +1666,81 @@ void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {
 
 QString MozillaVPN::placeholderUserDNS() const {
   return AppConstants::PLACEHOLDER_USER_DNS;
+}
+
+// static
+void MozillaVPN::registerUrlOpenerLabels() {
+  UrlOpener* uo = UrlOpener::instance();
+
+  uo->registerUrlLabel("captivePortal", []() -> QString {
+    SettingsHolder* settingsHolder = SettingsHolder::instance();
+
+    return QString("http://%1/success.txt")
+        .arg(settingsHolder->captivePortalIpv4Addresses().isEmpty()
+                 ? "127.0.0.1"
+                 : settingsHolder->captivePortalIpv4Addresses().first());
+  });
+
+  uo->registerUrlLabel("inspector", []() -> QString {
+    return "https://mozilla-mobile.github.io/mozilla-vpn-client/inspector/";
+  });
+
+  uo->registerUrlLabel("privacyNotice", []() -> QString {
+    return QString("%1/r/vpn/privacy").arg(NetworkRequest::apiBaseUrl());
+  });
+
+  uo->registerUrlLabel("relayPremium", []() -> QString {
+    return QString("%1/premium").arg(AppConstants::relayUrl());
+  });
+
+  // TODO: This should link to a more helpful article
+  uo->registerUrlLabel("splitTunnelHelp", []() -> QString {
+    return "https://support.mozilla.org/kb/"
+           "split-tunneling-use-mozilla-vpn-specific-apps-wind";
+  });
+
+  uo->registerUrlLabel("subscriptionBlocked", []() -> QString {
+    return QString("%1/r/vpn/subscriptionBlocked")
+        .arg(NetworkRequest::apiBaseUrl());
+  });
+
+  uo->registerUrlLabel("subscriptionIapApple", []() -> QString {
+    return AppConstants::APPLE_SUBSCRIPTIONS_URL;
+  });
+
+  uo->registerUrlLabel("subscriptionIapGoogle", []() -> QString {
+    return AppConstants::GOOGLE_SUBSCRIPTIONS_URL;
+  });
+
+  uo->registerUrlLabel("subscriptionFxa", []() -> QString {
+    return QString("%1/subscriptions")
+        .arg(AppConstants::APPLE_SUBSCRIPTIONS_URL);
+  });
+
+  uo->registerUrlLabel(
+      "sumo", []() -> QString { return AppConstants::MOZILLA_VPN_SUMO_URL; });
+
+  uo->registerUrlLabel("termsOfService", []() -> QString {
+    return QString("%1/r/vpn/terms").arg(NetworkRequest::apiBaseUrl());
+  });
+
+  uo->registerUrlLabel("update", []() -> QString {
+    return
+#if defined(MZ_IOS)
+        APPLE_STORE_URL
+#elif defined(MZ_ANDROID)
+                              GOOGLE_PLAYSTORE_URL
+#else
+                              QString("%1/r/vpn/update/%2")
+                                  .arg(NetworkRequest::apiBaseUrl(),
+                                       Constants::PLATFORM_NAME)
+#endif
+        ;
+  });
+
+  uo->registerUrlLabel("upgradeToBundle", []() -> QString {
+    return QString("%1/r/vpn/upgradeToPrivacyBundle")
+        .arg(Constants::inProduction() ? AppConstants::API_PRODUCTION_URL
+                                       : AppConstants::API_STAGING_URL);
+  });
 }

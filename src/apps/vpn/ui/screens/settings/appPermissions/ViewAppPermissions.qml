@@ -141,7 +141,7 @@ VPNViewBase {
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: VPNTheme.theme.windowMargin / 2
             onClicked: {
-               VPNUrlOpener.openLink(VPNUrlOpener.LinkSplitTunnelHelp)
+               VPNUrlOpener.openUrlLabel("splitTunnelHelp")
             }
         }
     }

@@ -12,7 +12,7 @@ VPNStackView {
     id: stackview
 
     function handleButtonClick() {
-        VPNUrlOpener.openLink(VPNUrlOpener.LinkSubscriptionsBlocked)
+        VPNUrlOpener.openUrlLabel("subscriptionBlocked");
     }
 
     Component.onCompleted: {

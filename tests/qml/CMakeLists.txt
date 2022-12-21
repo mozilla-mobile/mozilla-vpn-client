@@ -78,8 +78,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.h
     ${MZ_SOURCE_DIR}/apps/vpn/qmlengineholder.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/qmlengineholder.h
-    ${MZ_SOURCE_DIR}/apps/vpn/urlopener.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/urlopener.h
     ${MZ_SOURCE_DIR}/shared/constants.h
     ${MZ_SOURCE_DIR}/shared/cryptosettings.cpp
     ${MZ_SOURCE_DIR}/shared/cryptosettings.h
@@ -105,6 +103,8 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/settingsholder.h
     ${MZ_SOURCE_DIR}/shared/theme.cpp
     ${MZ_SOURCE_DIR}/shared/theme.h
+    ${MZ_SOURCE_DIR}/shared/urlopener.cpp
+    ${MZ_SOURCE_DIR}/shared/urlopener.h
     ${MZ_SOURCE_DIR}/shared/versionutils.cpp
     ${MZ_SOURCE_DIR}/shared/versionutils.h
 )

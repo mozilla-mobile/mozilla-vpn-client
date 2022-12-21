@@ -30,6 +30,7 @@ SOURCES += \
         $$PWD/taskscheduler.cpp \
         $$PWD/temporarydir.cpp \
         $$PWD/theme.cpp \
+        $$PWD/urlopener.cpp \
         $$PWD/versionutils.cpp
 
 HEADERS += \
@@ -58,6 +59,7 @@ HEADERS += \
         $$PWD/taskscheduler.h \
         $$PWD/temporarydir.h \
         $$PWD/theme.h \
+        $$PWD/urlopener.h \
         $$PWD/versionutils.h
 
 # Signal handling for unix platforms

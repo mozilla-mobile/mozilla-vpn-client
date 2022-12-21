@@ -1,3 +1,7 @@
 ((api) => {
-  api.urlOpener.openLink(api.urlOpener.LinkUpdate);
+  if ('openLink' in api.urlOpener) {
+    api.urlOpener.openLink(api.urlOpener.LinkUpdate);
+  } else {
+    api.urlOpener.openUrlLabel('update');
+  }
 });

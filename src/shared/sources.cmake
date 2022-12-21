@@ -68,6 +68,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/temporarydir.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/theme.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/theme.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/urlopener.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/urlopener.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/versionutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/versionutils.h
 )

@@ -53,6 +53,13 @@ PRODBETAEXPR(
     envOrDefault("MZ_ADDON_URL",
                  "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/"))
 
+PRODBETAEXPR(const char*, fxaUrl, "https://accounts.firefox.com",
+             "https://accounts.stage.mozaws.net")
+
+PRODBETAEXPR(QString, fxaApiBaseUrl, "https://api.accounts.firefox.com",
+             Constants::envOrDefault("MZ_FXA_API_BASE_URL",
+                                     "https://api-accounts.stage.mozaws.net"))
+
 #undef PRODBETAEXPR
 
 };  // namespace Constants

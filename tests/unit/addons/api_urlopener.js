@@ -12,8 +12,8 @@ if (vpn.urlOpener.lastUrl !== 'https://example.com') {
   return;
 }
 
-vpn.urlOpener.openLink(vpn.urlOpener.LinkContact);
-if (vpn.urlOpener.lastUrl !== 'https://vpn.mozilla.org/r/vpn/contact') {
+vpn.urlOpener.openUrlLabel('gctermsOfService");
+if (vpn.urlOpener.lastUrl !== 'https://vpn.mozilla.org/r/vpn/terms') {
   return;
 }
 

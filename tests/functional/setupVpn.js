@@ -53,7 +53,7 @@ exports.mochaHooks = {
     }
 
     process.env['MVPN_API_BASE_URL'] = `http://localhost:${guardian.start()}`;
-    process.env['MVPN_FXA_API_BASE_URL'] =
+    process.env['MZ_FXA_API_BASE_URL'] =
         `http://localhost:${fxaServer.start()}`;
     process.env['MZ_ADDON_URL'] =
         `http://localhost:${addonServer.start()}/01_empty_manifest/`;
