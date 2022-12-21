@@ -123,19 +123,11 @@ jobs:
           name: WebAssembly Build Qt6
           # Destination path
           path: wasm
-
-      - name: Cache geckodriver
-        id: cache-gecko
-        uses: actions/cache@v3
-        with:
-          path: ./opt/hostedtoolcache/geckodriver/0.32.0/x64/
-          key: geckodriver 0.32.0
-
+      
       - name: Set up gecko driver
-        if: steps.cache-gecko.outputs.cache-hit != 'true'
         uses: browser-actions/setup-geckodriver@latest
         env:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Build addons
         shell: bash
