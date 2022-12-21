@@ -128,7 +128,7 @@ jobs:
         id: cache-gecko
         uses: actions/cache@v3
         with:
-          path: ~/opt/hostedtoolcache/geckodriver/0.32.0/x64
+          path: ~/opt/hostedtoolcache/geckodriver/0.32.0/x64/
           key: geckodriver 0.32.0
 
       - name: Set up gecko driver
