@@ -119,13 +119,6 @@ PRODBETAEXPR(
     const char*, benchmarkUploadUrl, "https://benchmark.vpn.mozilla.org/upload",
     "https://dev.vpn-network-benchmark.nonprod.webservices.mozgcp.net/upload");
 
-PRODBETAEXPR(QString, fxaApiBaseUrl, "https://api.accounts.firefox.com",
-             Constants::envOrDefault("MVPN_FXA_API_BASE_URL",
-                                     "https://api-accounts.stage.mozaws.net"))
-
-PRODBETAEXPR(const char*, fxaUrl, "https://accounts.firefox.com",
-             "https://accounts.stage.mozaws.net")
-
 PRODBETAEXPR(
     const char*, balrogUrl,
     "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release/update.json",

@@ -317,8 +317,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/versionapi.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/webupdater.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/webupdater.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/urlopener.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/urlopener.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/websocket/exponentialbackoffstrategy.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/websocket/exponentialbackoffstrategy.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/websocket/pushmessage.cpp
