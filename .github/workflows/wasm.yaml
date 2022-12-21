@@ -45,6 +45,9 @@ jobs:
       - name: Setup emsdk
         uses: mymindstorm/setup-emsdk@v7
 
+      - name: Set up gecko driver
+        uses: browser-actions/setup-geckodriver@latest
+
       - name: Compiling
         shell: bash
         run: |
@@ -122,10 +125,8 @@ jobs:
         with:
           name: WebAssembly Build Qt6
           # Destination path
-          path: wasm
-
-      - uses: browser-actions/setup-geckodriver@latest
-
+          path: wasm          
+          
       - name: Build addons
         shell: bash
         run: ./scripts/addon/generate_all_tests.py -q /opt/$QTVERSION/gcc_64/bin
