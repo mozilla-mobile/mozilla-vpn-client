@@ -45,6 +45,13 @@ jobs:
       - name: Setup emsdk
         uses: mymindstorm/setup-emsdk@v7
 
+      - name: Cache geckodriver
+        id: cache-lel
+        uses: actions/cache@v3
+        with:
+          path: /opt/hostedtoolcache/geckodriver/
+          key: wasm_geckodriver
+
       - name: Set up gecko driver
         uses: browser-actions/setup-geckodriver@latest
 
