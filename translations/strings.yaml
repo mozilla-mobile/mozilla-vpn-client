@@ -413,12 +413,12 @@ connectionInfo:
       - Exit server IP label for IPV4 when there is only IPv4.
       - IP is the abbreviation for Internet Procol. This is followed by the user’s IPv4 address.
   exitServerLabelIpv4:
-    value: "Exit IPv4:"
+    value: "Server IP:"
     comment:
       - Exit server IP label for IPV4 when there is IPv4 and IPv6.
       - IPv4 is the abbreviation for Internet Procol version 4. This is followed by the user’s IPv4 address.
   exitServerLabelIpv6:
-    value: "Exit IPv6:"
+    value: "Server IPv6:"
     comment:
       - Exit server IP label for IPv6.
       - IPv6 is the abbreviation for Internet Procol version 6. This is followed by the user’s IPv6 address.
