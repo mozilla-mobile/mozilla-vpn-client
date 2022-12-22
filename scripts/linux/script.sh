@@ -219,6 +219,9 @@ if [ "$SOURCEONLY" == "Y" ]; then
   print Y "Building Debian sources"
   build_deb_source
 
+  print Y "Cleaning up working directory..."
+  rm -rf $WORKDIR || die "Failed"
+
   print G "All done."
   exit 0
 fi
