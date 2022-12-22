@@ -2,14 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/addons)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/composer)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hacl-star)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin/minimal)
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
+# For CMake versions prior to 3.19, we may need to perform manual
+# finalization in order to pick up QML dependencies when built
+# statically.
 qt_add_executable(mozillavpn MANUAL_FINALIZATION)
 
 target_link_libraries(mozillavpn PRIVATE
@@ -19,46 +14,49 @@ target_link_libraries(mozillavpn PRIVATE
     Qt6::Widgets
 )
 
-if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
+   AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Android" )
     target_link_libraries(mozillavpn PRIVATE
         Qt6::NetworkAuth
     )
 endif()
 
-target_include_directories(mozillavpn PUBLIC
-                           $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-                           $<INSTALL_INTERFACE:include>)
-target_link_libraries(mozillavpn PUBLIC ${CMAKE_DL_LIBS})
-target_link_libraries(mozillavpn PRIVATE glean lottie nebula translations)
-
-include(cmake/sources.cmake)
-
-if(${BUILD_DUMMY})
-    set(MVPN_PLATFORM_NAME "dummy")
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    set(MVPN_PLATFORM_NAME "linux")
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    set(MZ_PLATFORM_NAME "linux")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    set(MVPN_PLATFORM_NAME "windows")
+    set(MZ_PLATFORM_NAME "windows")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
-    set(MVPN_PLATFORM_NAME "macos")
+    set(MZ_PLATFORM_NAME "macos")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
-    set(MVPN_PLATFORM_NAME "android")
+    set(MZ_PLATFORM_NAME "android")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
-    set(MVPN_PLATFORM_NAME "ios")
+    set(MZ_PLATFORM_NAME "ios")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
-    set(MVPN_PLATFORM_NAME "wasm")
+    set(MZ_PLATFORM_NAME "wasm")
 endif()
 
-add_compile_definitions("$<$<CONFIG:Debug>:MVPN_DEBUG>")
-add_compile_definitions("MVPN_$<UPPER_CASE:${MVPN_PLATFORM_NAME}>")
-include(cmake/${MVPN_PLATFORM_NAME}.cmake)
+include(shared/sources.cmake)
+include(apps/vpn/cmake/sources.cmake)
+include(apps/vpn/cmake/sentry.cmake)
+
+target_link_libraries(mozillavpn PRIVATE shared-sources mozillavpn-sources glean lottie nebula translations)
+
+target_compile_definitions(mozillavpn PRIVATE "$<$<CONFIG:Debug>:MZ_DEBUG>")
+target_compile_definitions(mozillavpn PRIVATE "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
+include(apps/vpn/cmake/${MZ_PLATFORM_NAME}.cmake)
 
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
-    add_subdirectory(crashreporter)
-    target_link_libraries(mozillavpn PRIVATE crashreporter vpnglean -ldl)
-    if (WIN32)
-        target_link_libraries(mozillavpn PRIVATE ntdll)
-    endif()
+    add_subdirectory(apps/vpn/crashreporter)
+    target_link_libraries(mozillavpn PRIVATE crashreporter vpnglean)
 endif()
+
+if(NOT CMAKE_CROSSCOMPILING)
+    target_compile_definitions(mozillavpn PUBLIC MVPN_WEBEXTENSION)
+endif()
+
+qt6_add_qml_module(mozillavpn
+  URI Mozilla.VPN.qmlcomponents
+  VERSION 1.0
+)
 
 qt_finalize_target(mozillavpn)

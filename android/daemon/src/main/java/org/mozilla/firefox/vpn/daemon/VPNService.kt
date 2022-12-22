@@ -36,7 +36,7 @@ class VPNService : android.net.VpnService() {
     ) {
         override fun onTick(millisUntilFinished: Long) {}
         override fun onFinish() {
-            if (currentTunnelHandle == -1) {
+            if (!isUp) {
                 mGlean.recordGleanEvent("controllerStateOff")
             } else {
                 // When we're stil connected, rescheudle.
@@ -45,8 +45,26 @@ class VPNService : android.net.VpnService() {
             }
         }
     }
+    private var mCityname = ""
 
     private var currentTunnelHandle = -1
+        set(value: Int) {
+            field = value
+            if (value > -1) {
+                Log.i(tag, "Dispatch Daemon State -> connected")
+                mBinder.dispatchEvent(
+                    VPNServiceBinder.EVENTS.connected,
+                    JSONObject().apply {
+                        put("city", mCityname)
+                    }.toString()
+                )
+                mConnectionTime = System.currentTimeMillis()
+                return
+            }
+            Log.i(tag, "Dispatch Daemon State -> disconnected")
+            mBinder.dispatchEvent(VPNServiceBinder.EVENTS.disconnected, "")
+            mConnectionTime = 0
+        }
 
     fun init() {
         if (mAlreadyInitialised) {
@@ -61,10 +79,8 @@ class VPNService : android.net.VpnService() {
 
     override fun onUnbind(intent: Intent?): Boolean {
         if (!isUp) {
-            // If the Qt Client got closed while we were not connected
-            // we do not need to stay as a foreground service.
-            stopForeground(true)
             Log.v(tag, "Client Disconnected, VPN is down - Service might shut down soon")
+            return super.onUnbind(intent)
         }
         Log.v(tag, "Client Disconnected, VPN is up")
         return super.onUnbind(intent)
@@ -149,20 +165,28 @@ class VPNService : android.net.VpnService() {
             return mConnectionTime
         }
 
-    var isUp: Boolean
+    /**
+    * Checks if there is a config loaded 
+    * or some available in the Storage to fetch.
+    * if this is false calling {reconnect()} will abort.
+    * @returns whether a config is found.
+    */
+    var canActivate: Boolean = false
+        get() {
+            if (mConfig != null) {
+                return true
+            }
+            val lastConfString = Prefs.get(this).getString("lastConf", "")
+            return !lastConfString.isNullOrEmpty()
+        }
+    var cityname: String = ""
+        get() {
+            return mCityname
+        }
+
+    var isUp: Boolean = false
         get() {
             return currentTunnelHandle >= 0
-        }
-        private set(value) {
-            if (value) {
-                Log.i(tag, "Dispatch Daemon State -> connected")
-                mBinder.dispatchEvent(VPNServiceBinder.EVENTS.connected, "")
-                mConnectionTime = System.currentTimeMillis()
-                return
-            }
-            Log.i(tag, "Dispatch Daemon State -> disconnected")
-            mBinder.dispatchEvent(VPNServiceBinder.EVENTS.disconnected, "")
-            mConnectionTime = 0
         }
     val status: JSONObject
         get() {
@@ -190,10 +214,10 @@ class VPNService : android.net.VpnService() {
     fun turnOn(json: JSONObject, useFallbackServer: Boolean = false) {
         Log.sensitive(tag, json.toString())
         val wireguard_conf = buildWireugardConfig(json, useFallbackServer)
+        mCityname = json.getString("city")
 
         if (checkPermissions() != null) {
-            Log.e(tag, "turn on was called without vpn-permission!")
-            isUp = false
+            throw Error("turn on was called without vpn-permission!")
             return
         }
         if (currentTunnelHandle != -1) {
@@ -207,22 +231,18 @@ class VPNService : android.net.VpnService() {
         builder.setSession("mvpn0")
         builder.establish().use { tun ->
             if (tun == null) {
-                isUp = false
                 Log.e(tag, "Activation Error: did not get a TUN handle")
                 return
             }
             currentTunnelHandle = wgTurnOn("mvpn0", tun.detachFd(), wgConfig)
         }
         if (currentTunnelHandle < 0) {
-            Log.e(tag, "WActivation Error Wireguard-Error -> $currentTunnelHandle")
-            isUp = false
+            throw Error("Activation Error Wireguard-Error -> $currentTunnelHandle")
             return
         }
         protect(wgGetSocketV4(currentTunnelHandle))
         protect(wgGetSocketV6(currentTunnelHandle))
         mConfig = json
-        isUp = true
-
         // Store the config in case the service gets
         // asked boot vpn from the OS
         val prefs = Prefs.get(this)
@@ -255,26 +275,54 @@ class VPNService : android.net.VpnService() {
     }
 
     fun reconnect(forceFallBack: Boolean = false) {
+        // Save the current timestamp - so that a silent switch won't
+        // reset the timer in the app.
+        var currentConnectionTime = mConnectionTime
+
         if (this.mConfig == null) {
-            Log.e(tag, "Called reconnect without setting any conf first?")
-            return
+            // If we don't have a saved conf, retrieve the last connection from the Storage
+            val prefs = Prefs.get(this)
+            val lastConfString = prefs.getString("lastConf", "")
+            if (lastConfString.isNullOrEmpty()) {
+                // We have nothing to connect to -> Exit
+                Log.e(
+                    tag,
+                    "VPN service was triggered without defining a Server or having a tunnel"
+                )
+                return
+            }
+            this.mConfig = JSONObject(lastConfString)
         }
-        // Don't reset the connection time,
-        // so the users won't be surprised :)
-        val oldConnectionTime = mConnectionTime
         Log.v(tag, "Try to reconnect tunnel with same conf")
         this.turnOn(this.mConfig!!, forceFallBack)
-        mConnectionTime = oldConnectionTime
+        if (currentConnectionTime != 0.toLong()) {
+            // In case we have had a connection timestamp,
+            // restore that, so that the silent switch is not
+            // putting people off. :)
+            mConnectionTime = currentConnectionTime
+        }
+    }
+    fun clearConfig() {
+        Prefs.get(this).edit().apply() {
+            putString("lastConf", "")
+        }.apply()
+        mConfig = null
     }
 
     fun turnOff() {
         Log.v(tag, "Try to disable tunnel")
         wgTurnOff(currentTunnelHandle)
         currentTunnelHandle = -1
-        stopForeground(false)
-        isUp = false
+        // If the client is "dead", on a disconnect the
+        // message won't be updated to 'you disconnected from X'
+        // so we should get rid of it. :)
+        val shouldClearNotification = !mBinder.isClientAttached
+        stopForeground(shouldClearNotification)
         mGleanTimer.cancel()
         mConnectionHealth.stop()
+        // Clear the notification message, so the content
+        // is not "disconnected" in case we connect from a non-client.
+        NotificationUtil.get(this)?.onHide(this)
     }
 
     /**

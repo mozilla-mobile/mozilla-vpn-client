@@ -3,14 +3,14 @@
  * file, You can obtain one at http://mozilla.orgß/MPL/2.0/. */
 
 #include "testwebsockethandler.h"
-#include "../../src/settingsholder.h"
-#include "../../src/constants.h"
-#include "../../src/mozillavpn.h"
-#include "../../src/websocket/websockethandler.h"
-#include "helper.h"
 
-#include <QtWebSockets/QWebSocketServer>
 #include <QtMath>
+#include <QtWebSockets/QWebSocketServer>
+
+#include "helper.h"
+#include "mozillavpn.h"
+#include "settingsholder.h"
+#include "websocket/websockethandler.h"
 
 /**
  * @brief Construct a new Mock Server:: Mock Server object

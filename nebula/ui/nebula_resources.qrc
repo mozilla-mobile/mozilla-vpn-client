@@ -15,6 +15,7 @@
         <file>resources/checkmark-green.svg</file>
         <file>resources/chevron-right-dark.svg</file>
         <file>resources/chevron.svg</file>
+        <file>resources/clock.svg</file>
         <file>resources/close-darker.svg</file>
         <file>resources/close-dark.svg</file>
         <file>resources/close-white.svg</file>
@@ -306,7 +307,6 @@
         <file>resources/Icon1024.png</file>
         <file>resources/location-dark.svg</file>
         <file>resources/logo-dock.png</file>
-        <file>resources/logo.ico</file>
         <file>resources/magic-dark.svg</file>
         <file>resources/open-in-new.svg</file>
         <file>resources/plus.svg</file>
@@ -337,10 +337,6 @@
         <file>resources/check-green70.svg</file>
         <file>resources/shield-green50.svg</file>
         <file>resources/checkmark-blue50.svg</file>
-        <file>resources/wifi-0.svg</file>
-        <file>resources/wifi-1.svg</file>
-        <file>resources/wifi-2.svg</file>
-        <file>resources/wifi-3.svg</file>
         <file>resources/navbar/home.svg</file>
         <file>resources/navbar/home-selected.svg</file>
         <file>resources/navbar/messages.svg</file>
@@ -349,5 +345,6 @@
         <file>resources/navbar/settings-selected.svg</file>
         <file>resources/navbar/messages-notification-selected.svg</file>
         <file>resources/navbar/messages-notification.svg</file>
+        <file>resources/copy.svg</file>
     </qresource>
 </RCC>

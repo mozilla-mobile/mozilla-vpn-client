@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testaddonindex.h"
-#include "../../src/addons/manager/addondirectory.h"
-#include "../../src/addons/manager/addonindex.h"
-#include "../../src/models/feature.h"
-#include "../../src/settingsholder.h"
+
+#include "addons/manager/addondirectory.h"
+#include "addons/manager/addonindex.h"
+#include "feature.h"
+#include "settingsholder.h"
 
 void TestAddonIndex::update_data() {
   QTest::addColumn<QByteArray>("index");
@@ -72,15 +73,16 @@ void TestAddonIndex::update() {
   AddonDirectory ad;
   AddonIndex ai(&ad);
 
-  QSignalSpy indexUpdatedSpy(&ai, SIGNAL(indexUpdated(QList<AddonData>)));
+  QSignalSpy indexUpdatedSpy(&ai, SIGNAL(indexUpdated(bool, QList<AddonData>)));
 
   ai.update(index, QByteArray("test signature"));
+  QTRY_COMPARE(indexUpdatedSpy.count(), 1);
 
   if (expectsSignal) {
-    QTRY_COMPARE(indexUpdatedSpy.count(), 1);
-
     QList<QVariant> arguments = indexUpdatedSpy.takeFirst();
-    QList<AddonData> addonData = arguments.at(0).value<QList<AddonData>>();
+
+    QVERIFY(arguments.at(0).toBool());
+    QList<AddonData> addonData = arguments.at(1).value<QList<AddonData>>();
 
     QStringList addonIds;
     for (int i = 0; i < addonData.size(); ++i) {
@@ -88,8 +90,6 @@ void TestAddonIndex::update() {
     }
 
     QCOMPARE(addonIds, expectedAddonIds);
-  } else {
-    QTRY_COMPARE(indexUpdatedSpy.count(), 0);
   }
 }
 
@@ -109,7 +109,7 @@ void TestAddonIndex::testSignatureChecksCanBeToggled() {
   AddonDirectory ad;
   AddonIndex ai(&ad);
 
-  QSignalSpy indexUpdatedSpy(&ai, SIGNAL(indexUpdated(QList<AddonData>)));
+  QSignalSpy indexUpdatedSpy(&ai, SIGNAL(indexUpdated(bool, QList<AddonData>)));
 
   QJsonObject addon;
   addon["sha256"] =
@@ -122,9 +122,8 @@ void TestAddonIndex::testSignatureChecksCanBeToggled() {
 
   // We need to reset otherwise update
   // will bail early due to index not having changed.
-  ad.testReset();
+  ad.reset();
   ai.update(QJsonDocument(index).toJson(), QByteArray());
-
   QTRY_COMPARE(indexUpdatedSpy.count(), 1);
 
   settingsHolder.setFeaturesFlippedOn(QStringList{"addonSignature"});
@@ -133,15 +132,15 @@ void TestAddonIndex::testSignatureChecksCanBeToggled() {
 
   // We need to reset otherwise update
   // will bail early due to index not having changed.
-  ad.testReset();
+  ad.reset();
   ai.update(QJsonDocument(index).toJson(), QByteArray());
 
-  // Still one, no signals emitted. Validation should have failed.
-  QTRY_COMPARE(indexUpdatedSpy.count(), 1);
+  // The update has triggered a second signal.
+  QTRY_COMPARE(indexUpdatedSpy.count(), 2);
 
   // With a non empty signature all is good.
   ai.update(QJsonDocument(index).toJson(), QByteArray("test signature"));
-  QTRY_COMPARE(indexUpdatedSpy.count(), 2);
+  QTRY_COMPARE(indexUpdatedSpy.count(), 3);
 }
 
 static TestAddonIndex s_testAddonIndex;

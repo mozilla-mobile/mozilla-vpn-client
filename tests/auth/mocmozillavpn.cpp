@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "../../src/mozillavpn.h"
+#include "mozillavpn.h"
 
 // The singleton.
 static MozillaVPN* s_instance = nullptr;
@@ -27,6 +27,10 @@ ConnectionHealth* MozillaVPN::connectionHealth() { return nullptr; }
 
 Controller* MozillaVPN::controller() { return nullptr; }
 
+SubscriptionData* MozillaVPN::subscriptionData() {
+  return new SubscriptionData();
+}
+
 MozillaVPN::State MozillaVPN::state() const { return StateInitialize; }
 MozillaVPN::UserState MozillaVPN::userState() const {
   return UserNotAuthenticated;
@@ -38,8 +42,6 @@ bool MozillaVPN::debugMode() const { return true; }
 void MozillaVPN::initialize() {}
 
 void MozillaVPN::setState(State) {}
-
-void MozillaVPN::getStarted() {}
 
 void MozillaVPN::authenticate() {}
 void MozillaVPN::authenticateWithType(MozillaVPN::AuthenticationType) {}
@@ -63,13 +65,6 @@ void MozillaVPN::accountChecked(const QByteArray&) {}
 void MozillaVPN::cancelAuthentication() {}
 
 void MozillaVPN::logout() {}
-
-const QList<Server> MozillaVPN::exitServers() const { return QList<Server>(); }
-
-const QList<Server> MozillaVPN::entryServers() const { return QList<Server>(); }
-
-void MozillaVPN::changeServer(const QString&, const QString&, const QString&,
-                              const QString&) {}
 
 void MozillaVPN::postAuthenticationCompleted() {}
 
@@ -95,8 +90,6 @@ bool MozillaVPN::writeLogs(QStandardPaths::StandardLocation,
 bool MozillaVPN::viewLogs() { return true; }
 
 bool MozillaVPN::modelsInitialized() const { return true; }
-
-void MozillaVPN::requestSettings() {}
 
 void MozillaVPN::requestAbout() {}
 
@@ -135,7 +128,7 @@ void MozillaVPN::submitFeedback(const QString&, const qint8, const QString&) {}
 void MozillaVPN::createSupportTicket(const QString&, const QString&,
                                      const QString&, const QString&) {}
 
-void MozillaVPN::addCurrentDeviceAndRefreshData() {}
+void MozillaVPN::addCurrentDeviceAndRefreshData(bool refreshProducts) {}
 
 void MozillaVPN::abortAuthentication() {}
 
@@ -164,3 +157,7 @@ void MozillaVPN::requestDeleteAccount() {}
 void MozillaVPN::cancelReauthentication() {}
 
 void MozillaVPN::updateViewShown() {}
+
+void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {}
+
+QString MozillaVPN::placeholderUserDNS() const { return ""; }

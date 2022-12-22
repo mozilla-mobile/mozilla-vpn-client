@@ -3,13 +3,13 @@
  * file, You can obtain one at http://mozilla.orgß/MPL/2.0/. */
 
 #include "testexponentialbackoffstrategy.h"
-#include "../../src/settingsholder.h"
-#include "../../src/constants.h"
-#include "../../src/mozillavpn.h"
-#include "../../src/websocket/exponentialbackoffstrategy.h"
-#include "helper.h"
 
 #include <QtMath>
+
+#include "helper.h"
+#include "mozillavpn.h"
+#include "settingsholder.h"
+#include "websocket/exponentialbackoffstrategy.h"
 
 void TestExponentialBackoffStrategy::
     tst_reconnectionBackoffTimeExponentiallyIncreases() {

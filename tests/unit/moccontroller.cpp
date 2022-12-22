@@ -2,11 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "../../src/controllerimpl.h"
-#include "../../src/ipaddress.h"
-#include "../../src/mozillavpn.h"
-#include "../../src/pinghelper.h"
+#include "controllerimpl.h"
 #include "helper.h"
+#include "ipaddress.h"
+#include "mozillavpn.h"
+#include "pinghelper.h"
 
 Controller::Controller() {}
 
@@ -18,7 +18,10 @@ void Controller::implInitialized(bool, bool, const QDateTime&) {}
 
 bool Controller::activate() { return false; }
 
-void Controller::activateInternal(bool forcePort53) { Q_UNUSED(forcePort53) }
+void Controller::activateInternal(Reason reason, bool forcePort53) {
+  Q_UNUSED(reason);
+  Q_UNUSED(forcePort53)
+}
 
 bool Controller::deactivate() { return false; }
 
@@ -27,9 +30,6 @@ void Controller::connected(const QString& pubkey) { Q_UNUSED(pubkey); }
 void Controller::disconnected() {}
 
 void Controller::timerTimeout() {}
-
-void Controller::changeServer(const QString&, const QString&, const QString&,
-                              const QString&) {}
 
 void Controller::logout() {}
 
@@ -74,14 +74,4 @@ void Controller::captivePortalPresent() {}
 
 void Controller::captivePortalGone() {}
 
-QString Controller::currentLocalizedCityName() const { return ""; }
-
-QString Controller::switchingLocalizedCityName() const { return ""; }
-
 void Controller::handshakeTimeout() {}
-
-void Controller::setCooldownForAllServersInACity(const QString& countryCode,
-                                                 const QString& cityCode) {
-  Q_UNUSED(countryCode);
-  Q_UNUSED(cityCode);
-}

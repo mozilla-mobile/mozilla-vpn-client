@@ -3,11 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testwindow.h"
-#include "../../lib/lottieprivate.h"
-#include "../../lib/lottieprivatewindow.h"
 
 #include <QJSEngine>
 #include <QTimer>
+
+#include "../../lib/lottieprivate.h"
+#include "../../lib/lottieprivatewindow.h"
 
 void TestWindow::setInterval() {
   QJSEngine engine;

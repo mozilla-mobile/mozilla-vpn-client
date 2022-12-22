@@ -5,6 +5,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.14
+
 import Mozilla.VPN 1.0
 
 Item {
@@ -16,9 +17,11 @@ Item {
     property bool btnDisabled: false
     property alias forceFocus: iconButton.focus
     property string _menuIconButtonSource: "qrc:/nebula/resources/back.svg"
+    property alias _menuIconButtonMirror: menuIcon.mirror
     property alias _iconButtonAccessibleName: iconButton.accessibleName
     property var _menuOnBackClicked: () => {}
     property alias _menuIconVisibility: iconButton.visible
+    property var titleClicked: () => {}
     property Component titleComponent
     property Component rightButtonComponent
 
@@ -56,8 +59,10 @@ Item {
         opacity: enabled ? 1 : .4
 
         Image {
+            id: menuIcon
             objectName: "menuIcon"
             source: _menuIconButtonSource
+            mirror: VPNLocalizer.isRightToLeft
             sourceSize.width: VPNTheme.theme.iconSize
             fillMode: Image.PreserveAspectFit
             anchors.centerIn: iconButton
@@ -75,6 +80,12 @@ Item {
         Accessible.ignored: accessibleIgnored
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
+
+        MouseArea {
+            anchors.fill: parent
+            cursorShape: Qt.ArrowCursor
+            onClicked: titleClicked()
+        }
     }
 
     Loader {

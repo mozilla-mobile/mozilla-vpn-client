@@ -2,12 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "3rdparty/wireguard-apple/Sources/WireGuardKitGo/wireguard.h"
-#include "3rdparty/wireguard-apple/Sources/WireGuardKitGo/wireguard-go-version.h"
-#include "3rdparty/wireguard-apple/Sources/WireGuardKitC/WireGuardKitC.h"
-
 #include <stdbool.h>
 #include <stdint.h>
+
+#include "3rdparty/wireguard-apple/Sources/WireGuardKitC/WireGuardKitC.h"
+#include "3rdparty/wireguard-apple/Sources/WireGuardKitGo/wireguard.h"
+#include "wireguard-go-version.h"
 
 #define WG_KEY_LEN (32)
 #define WG_KEY_LEN_BASE64 (45)

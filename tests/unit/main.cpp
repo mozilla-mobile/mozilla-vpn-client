@@ -2,12 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "../../src/leakdetector.h"
-#include "../../src/loghandler.h"
-#include "../../src/settingsholder.h"
-#include "constants.h"
+#include "appconstants.h"
 #include "helper.h"
 #include "l18nstrings.h"
+#include "leakdetector.h"
+#include "loghandler.h"
+#include "settingsholder.h"
 
 QVector<TestHelper::NetworkConfig> TestHelper::networkConfig;
 MozillaVPN::State TestHelper::vpnState = MozillaVPN::StateInitialize;
@@ -30,13 +30,13 @@ QObject* TestHelper::findTest(const QString& name) {
 TestHelper::TestHelper() { testList.append(this); }
 
 int main(int argc, char* argv[]) {
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
   LeakDetector leakDetector;
   Q_UNUSED(leakDetector);
 #endif
   {
     SettingsHolder settingsHolder;
-    Constants::setStaging();
+    AppConstants::setStaging();
   }
 
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
   int failures = 0;
 
   L18nStrings::initialize();
-  LogHandler::enableDebug();
+  LogHandler::enableStderr();
 
   // If arguments were passed, then run a subset of tests.
   QStringList args = app.arguments();

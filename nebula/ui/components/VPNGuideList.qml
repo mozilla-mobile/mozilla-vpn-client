@@ -48,8 +48,8 @@ GridLayout {
                 VPN.recordGleanEventWithExtraKeys("guideOpened", {
                     "id": addon.id
                 });
+                Glean.sample.guideOpened.record({ id: addon.id });
             }
         }
     }
 }
-

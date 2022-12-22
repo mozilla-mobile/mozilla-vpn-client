@@ -5,10 +5,10 @@
 #ifndef HELPERSERVER_H
 #define HELPERSERVER_H
 
-#include <QThread>
-#include <QTimer>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QThread>
+#include <QTimer>
 
 class EchoServer final : public QTcpServer {
   Q_OBJECT

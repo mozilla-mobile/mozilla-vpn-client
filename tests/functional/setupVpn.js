@@ -20,8 +20,10 @@ const {execSync, spawn} = require('child_process');
 const vpn = require('./helper.js');
 const vpnWS = require('./helperWS.js');
 
-const fxa = require('./fxa.js');
-const guardian = require('./guardian.js');
+const fxaServer = require('./servers/fxa.js');
+const guardian = require('./servers/guardian.js');
+const addonServer = require('./servers/addon.js');
+const networkBenchmark = require('./servers/networkBenchmark.js');
 
 const app = process.env.MVPN_BIN;
 let vpnProcess = null;
@@ -52,15 +54,25 @@ exports.mochaHooks = {
     }
 
     process.env['MVPN_API_BASE_URL'] = `http://localhost:${guardian.start()}`;
-    process.env['MVPN_FXA_API_BASE_URL'] = `http://localhost:${fxa.start()}`;
+    process.env['MVPN_FXA_API_BASE_URL'] =
+        `http://localhost:${fxaServer.start()}`;
+    process.env['MZ_ADDON_URL'] =
+        `http://localhost:${addonServer.start()}/01_empty_manifest/`;
+    process.env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';
+    process.env['MVPN_BENCHMARK_URL'] =
+        `http://localhost:${networkBenchmark.start()}`;
   },
 
   async afterAll() {
     guardian.stop();
-    fxa.stop();
+    fxaServer.stop();
+    addonServer.stop();
+    networkBenchmark.stop();
 
     guardian.throwExceptionsIfAny();
-    fxa.throwExceptionsIfAny();
+    fxaServer.throwExceptionsIfAny();
+    addonServer.throwExceptionsIfAny();
+    networkBenchmark.throwExceptionsIfAny();
   },
 
   async beforeEach() {
@@ -69,11 +81,11 @@ exports.mochaHooks = {
       console.log('Retrieving the setting file...');
 
       guardian.overrideEndpoints = null;
-      fxa.overrideEndpoints = null;
+      fxaServer.overrideEndpoints = null;
 
       await startAndConnect();
       await vpn.reset();
-      await vpn.setSetting('tips-and-tricks-intro-shown', 'true');
+      await vpn.setSetting('tipsAndTricksIntroShown', 'true');
       await vpn.flipFeatureOn('websocket');
       await vpn.authenticateInApp(true, true);
 
@@ -87,7 +99,8 @@ exports.mochaHooks = {
 
     guardian.overrideEndpoints =
         this.currentTest.ctx.guardianOverrideEndpoints || null;
-    fxa.overrideEndpoints = this.currentTest.ctx.fxaOverrideEndpoints || null;
+    fxaServer.overrideEndpoints =
+        this.currentTest.ctx.fxaOverrideEndpoints || null;
 
     if (this.currentTest.ctx.authenticationNeeded) {
       fs.writeFileSync(
@@ -104,7 +117,7 @@ exports.mochaHooks = {
 
       await startAndConnect();
       await vpn.reset();
-      await vpn.setSetting('tips-and-tricks-intro-shown', 'true')
+      await vpn.setSetting('tipsAndTricksIntroShown', 'true')
     }
 
     await vpn.setGleanAutomationHeader();

@@ -9,7 +9,7 @@
         ignore=all
 [submodule "3rdparty/wireguard-apple"]
 	path = 3rdparty/wireguard-apple
-	url = https://github.com/WireGuard/wireguard-apple
+	url = https://github.com/mozilla/wireguard-apple
         ignore=all
 [submodule "3rdparty/openSSL"]
 	path = 3rdparty/openSSL
@@ -28,4 +28,7 @@
 [submodule "3rdparty/glean"]
 	path = 3rdparty/glean
 	url = https://github.com/mozilla/glean.git
-	branch = main
+	branch = release
+[submodule "3rdparty/sentry"]
+	path = 3rdparty/sentry
+	url = https://github.com/getsentry/sentry-native/

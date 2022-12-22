@@ -5,12 +5,12 @@
 #ifndef HELPER_H
 #define HELPER_H
 
-#include "../../src/mozillavpn.h"
-#include "../../src/controller.h"
-
 #include <QObject>
 #include <QVector>
 #include <QtTest/QtTest>
+
+#include "controller.h"
+#include "mozillavpn.h"
 
 class TestHelper : public QObject {
   Q_OBJECT

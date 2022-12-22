@@ -3,16 +3,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testlogger.h"
-#include "../../src/logger.h"
-#include "../../src/loghandler.h"
+
 #include "helper.h"
+#include "logger.h"
+#include "loghandler.h"
 
 void TestLogger::logger() {
-  Logger l("test", "class");
+  Logger l("class");
   l.info() << "Hello world" << 42 << 'a' << QString("OK") << QByteArray("Array")
            << QStringList{"A", "B"} << Qt::endl;
 
-  Logger l2(QStringList{"a", "b"}, "class");
+  Logger l2("class");
   l2.info() << "Hello world" << 42 << 'a' << QString("OK")
             << QByteArray("Array") << QStringList{"A", "B"} << Qt::endl;
 }

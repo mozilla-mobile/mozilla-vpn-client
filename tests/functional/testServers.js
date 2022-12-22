@@ -20,8 +20,10 @@ describe('Server list', function() {
     await vpn.wait();
 
     servers = await vpn.servers();
-    currentCountryCode = await vpn.getSetting('current-server-country-code');
-    currentCity = await vpn.getSetting('current-server-city');
+    currentCountryCode =
+        await vpn.getElementProperty('VPNCurrentServer', 'exitCountryCode');
+    currentCity =
+        await vpn.getElementProperty('VPNCurrentServer', 'exitCityName');
 
     for (let server of servers) {
       if (currentCountryCode === server.code) {
@@ -143,8 +145,8 @@ describe('Server list', function() {
   });
 
   it('Server switching', async () => {
-    await vpn.setSetting('server-switch-notification', 'true');
-    await vpn.setSetting('connection-change-notification', 'true');
+    await vpn.setSetting('serverSwitchNotification', 'true');
+    await vpn.setSetting('connectionChangeNotification', 'true');
     await vpn.waitForElement(homeScreen.selectSingleHopServerView.BACK_BUTTON);
     await vpn.waitForElementProperty(homeScreen.selectSingleHopServerView.BACK_BUTTON, 'visible', 'true');
     await vpn.clickOnElement(homeScreen.selectSingleHopServerView.BACK_BUTTON);
@@ -234,6 +236,29 @@ describe('Server list', function() {
         vpn.lastNotification().message,
         `Switched from ${previousCountry}, ${previousCity} to ${
             currentCountry}, ${currentCity}`);
+  });
+
+  it('ensuring search message appears appropriately', async () => {
+    // open it up
+    await vpn.clickOnElement(homeScreen.serverListView.SERVER_SEARCH_BAR);
+    // ensure no message visible
+    await vpn.waitForElementProperty(homeScreen.serverListView.SEARCH_BAR_ERROR, 'visible', 'false');
+    // search down to one item - need to modify text within it
+    await vpn.setElementProperty(homeScreen.serverListView.SEARCH_BAR_TEXT_FIELD, 'text', 's', 'Austra');
+    // ensure no message visible
+    await vpn.waitForElementProperty(homeScreen.serverListView.SEARCH_BAR_ERROR, 'visible', 'false');
+    // search to zero items
+    await vpn.setElementProperty(homeScreen.serverListView.SEARCH_BAR_TEXT_FIELD, 'text', 's', 'Austraz');
+    // ensure message is visible
+    await vpn.waitForElementProperty(homeScreen.serverListView.SEARCH_BAR_ERROR, 'visible', 'true');
+    // add another character
+    await vpn.setElementProperty(homeScreen.serverListView.SEARCH_BAR_TEXT_FIELD, 'text', 's', 'Austrazz');
+    // ensure message
+    await vpn.waitForElementProperty(homeScreen.serverListView.SEARCH_BAR_ERROR, 'visible', 'true');
+    // delete a couple characters
+    await vpn.setElementProperty(homeScreen.serverListView.SEARCH_BAR_TEXT_FIELD, 'text', 's', 'Austra');
+    // ensure message disappears
+    await vpn.waitForElementProperty(homeScreen.serverListView.SEARCH_BAR_ERROR, 'visible', 'false');
   });
 
   // TODO: server list disabled when reached the device limit

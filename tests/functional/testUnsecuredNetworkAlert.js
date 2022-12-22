@@ -11,11 +11,11 @@ describe('Unsecured network alert', function() {
     it('Enable unsecured-network-alert feature', async () => {
       vpn.resetLastNotification();
 
-      await vpn.setSetting('unsecured-network-alert', 'false');
-      assert(await vpn.getSetting('unsecured-network-alert') === 'false');
+      await vpn.setSetting('unsecuredNetworkAlert', 'false');
+      assert(await vpn.getSetting('unsecuredNetworkAlert') === false);
 
-      await vpn.setSetting('unsecured-network-alert', 'true');
-      assert(await vpn.getSetting('unsecured-network-alert') === 'true');
+      await vpn.setSetting('unsecuredNetworkAlert', 'true');
+      assert(await vpn.getSetting('unsecuredNetworkAlert') === true);
     });
 
     it('Unsecured network alert during the main view', async () => {
@@ -31,12 +31,13 @@ describe('Unsecured network alert', function() {
       assert(vpn.lastNotification().title === null);
     });
 
-    it('Unsecured network alert during the authentication', async () => {
+    it('Unsecured network alert during the browser authentication', async () => {
       if (this.ctx.wasm) {
         // In wasm, the auth is fake and we cannot cancel the auth flow
         return;
       }
 
+      await vpn.flipFeatureOff('inAppAuthentication');
       await vpn.waitForElement(initialScreen.GET_HELP_LINK);
       await vpn.waitForElementProperty(initialScreen.GET_HELP_LINK, 'visible', 'true');
 

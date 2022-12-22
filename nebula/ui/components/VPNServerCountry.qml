@@ -118,7 +118,8 @@ VPNClickableRow {
 
         spacing: 0
         height: VPNTheme.theme.rowHeight
-        width: parent.width
+        anchors.left: parent.left
+
 
         VPNServerListToggle {
             id: serverListToggle
@@ -188,13 +189,7 @@ VPNClickableRow {
                         return;
                     }
 
-                    if (currentServer.whichHop === "singleHopServer") {
-                        VPNController.changeServer(code, del._cityName);
-                        return stackview.pop();
-                    }
-
-                    segmentedNav[currentServer.whichHop] = [del._countryCode,  del._cityName, del._localizedCityName]; // [countryCode, cityName, localizedCityName]
-                    multiHopStackView.pop();
+                    focusScope.setSelectedServer(del._countryCode, del._cityName,del._localizedCityName);
                 }
                 height: itemHeight
                 checked: del._countryCode === focusScope.currentServer.countryCode && del._cityName === focusScope.currentServer.cityName
@@ -207,24 +202,14 @@ VPNClickableRow {
                     }
                 }
 
-                VPNIcon {
-                    id: availabilityIndicator
-
+                VPNServerLatencyIndicator {
                     anchors {
-                        right: del.right
+                        right: parent.right
                         rightMargin: VPNTheme.theme.hSpacing
-                        top: del.top
-                        verticalCenter: del.verticalCenter
+                        verticalCenter: parent.verticalCenter
                     }
-                    source: del.locationScore < 0 ? "qrc:/nebula/resources/warning.svg" :
-                        "qrc:/nebula/resources/wifi-" + del.locationScore + ".svg"
-                    sourceSize {
-                        height: VPNTheme.theme.iconSizeSmall
-                        width: VPNTheme.theme.iconSizeSmall
-                    }
-                    visible: del.locationScore != 0
+                    score: del.locationScore
                 }
-
             }
         }
 

@@ -3,15 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testaddonapi.h"
-#include "../../src/addons/addon.h"
-#include "../../src/addons/addonmessage.h"
-#include "../../src/addons/conditionwatchers/addonconditionwatcherjavascript.h"
-#include "../../src/models/feature.h"
-#include "../../src/qmlengineholder.h"
-#include "../../src/settingsholder.h"
-#include "helper.h"
 
 #include <QQmlApplicationEngine>
+
+#include "addons/addon.h"
+#include "addons/addonmessage.h"
+#include "addons/conditionwatchers/addonconditionwatcherjavascript.h"
+#include "feature.h"
+#include "helper.h"
+#include "qmlengineholder.h"
+#include "settingsholder.h"
 
 void TestAddonApi::controller() {
   MozillaVPN vpn;
@@ -157,6 +158,31 @@ void TestAddonApi::settings() {
   QVERIFY(!!a);
   QVERIFY(a->conditionApplied());
   QVERIFY(settingsHolder.postAuthenticationShown());
+}
+
+void TestAddonApi::subscriptionData() {
+  MozillaVPN vpn;
+
+  QQmlApplicationEngine engine;
+  QmlEngineHolder qml(&engine);
+
+  SettingsHolder settingsHolder;
+
+  QJsonObject content;
+  content["id"] = "foo";
+  content["blocks"] = QJsonArray();
+
+  QJsonObject obj;
+  obj["message"] = content;
+
+  QObject parent;
+  Addon* message = AddonMessage::create(&parent, "foo", "bar", "name", obj);
+  QVERIFY(!!message);
+
+  AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
+      message, ":/addons_test/api_subscriptionData.js");
+  QVERIFY(!!a);
+  QVERIFY(a->conditionApplied());
 }
 
 void TestAddonApi::urlopener() {

@@ -129,7 +129,7 @@ const homeScreen = {
 
     selectSingleHopServerView: {
         BACK_BUTTON: "serverListBackButton",
-        MULTIHOP_SELECTOR_TAB: "multiHopSelector/tabMultiHop",
+        MULTIHOP_SELECTOR_TAB: "segmentedNavToggle/segmentedToggleBtnLayout/tabMultiHop",
         SINGLEHOP_SELECTOR_TAB: "multiHopSelector/tabSingleHop",
     },
     
@@ -147,7 +147,10 @@ const homeScreen = {
     
         generateCityId: (countryId, cityName) => {
             return countryId + '/serverCityList/serverCity-' + cityName.replace(/ /g, '_');
-        }
+        },
+        SERVER_SEARCH_BAR: "countrySearchBar",
+        SEARCH_BAR_TEXT_FIELD: "searchBarTextField",
+        SEARCH_BAR_ERROR: "searchBarError",
     }
 }
 

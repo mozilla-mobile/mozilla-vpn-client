@@ -1,6 +1,14 @@
+appdirs
+attrs
+click
+diskcache
 flask
 glean_parser
-lxml
-PyYAML
+Jinja2
 jsonschema
+MarkupSafe
 oathtool
+pathspec
+pyrsistent
+PyYAML
+yamllint

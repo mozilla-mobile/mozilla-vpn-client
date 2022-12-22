@@ -92,6 +92,13 @@ class Controller {
         `Command failed: ${json.error}`);
   }
 
+  async flipFeatureOff(key) {
+    const json = await this._writeCommand(`flip_off_feature ${key}`);
+    assert(
+        json.type === 'flip_off_feature' && !('error' in json),
+        `Command failed: ${json.error}`);
+  }
+
   async flipFeatureOn(key) {
     const json = await this._writeCommand(`flip_on_feature ${key}`);
     assert(
@@ -130,6 +137,7 @@ class Controller {
     if (obj.type === 'log') return;
     if (obj.type === 'network') return;
     if (obj.type === 'notification') return;
+    if (obj.type === 'addon_load_completed') return;
 
     assert(this._waitReadCallback, 'No waiting callback?');
     const wr = this._waitReadCallback;

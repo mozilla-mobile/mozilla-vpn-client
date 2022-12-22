@@ -3,9 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "lottieprivatedocument.h"
-#include "lottieprivate.h"
 
 #include <QJSEngine>
+
+#include "lottieprivate.h"
 
 LottiePrivateDocument::LottiePrivateDocument(LottiePrivate* parent)
     : QObject(parent), m_private(parent) {

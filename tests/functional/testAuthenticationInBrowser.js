@@ -42,10 +42,6 @@ describe('User authentication in browser', function() {
     await vpn.waitForElement(initialScreen.SKIP_ONBOARDING);
     await vpn.waitForElementProperty(initialScreen.SKIP_ONBOARDING, 'visible', 'true');
 
-    // This is needed just for humans. The UI is already in the other state
-    // before completing the animation.
-    await vpn.wait();
-
     while (true) {
       assert(await vpn.hasElement(initialScreen.ONBOARDING_NEXT));
       assert(await vpn.getElementProperty(initialScreen.ONBOARDING_NEXT, 'visible') === 'true');
@@ -53,9 +49,6 @@ describe('User authentication in browser', function() {
       assert(await vpn.getElementProperty(initialScreen.ONBOARDING_NEXT, 'visible') === 'true');
       if (await vpn.getElementProperty(initialScreen.ONBOARDING_NEXT, 'text') === 'Next') {
         await vpn.clickOnElement(initialScreen.ONBOARDING_NEXT);
-        // This is needed just for humans. The UI is already in the other state
-        // before completing the animation.
-        await vpn.wait();
         continue;
       }
 

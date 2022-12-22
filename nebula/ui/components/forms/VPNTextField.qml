@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import QtQuick 2.0
+import QtQuick 2.15
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
@@ -14,13 +14,11 @@ TextField {
     property bool showInteractionStates: true
     property bool forceBlurOnOutsidePress: true
     property alias _placeholderText: centeredPlaceholderText.text
-    property string _accessibleName: _placeholderText
-    property string _accessibleDescription: ""
 
     id: textField
 
-    Accessible.name: _accessibleName
-    Accessible.description: _accessibleDescription
+    Accessible.name: centeredPlaceholderText.text
+    Accessible.description:  centeredPlaceholderText.text
     Accessible.focused: textField.focus
     Layout.alignment: Qt.AlignVCenter
     Layout.preferredHeight: VPNTheme.theme.rowHeight
@@ -42,6 +40,7 @@ TextField {
     selectByMouse: true
     topPadding: VPNTheme.theme.windowMargin / 2
     verticalAlignment: TextInput.AlignVCenter
+    horizontalAlignment: TextInput.AlignLeft
 
     onActiveFocusChanged: if (focus && typeof(vpnFlickable) !== "undefined" && vpnFlickable.ensureVisible) {
         vpnFlickable.ensureVisible(textField);
@@ -67,6 +66,7 @@ TextField {
         font: textField.font
         height: VPNTheme.theme.rowHeight
         verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignLeft
         visible: !textField.length && !textField.preeditText
         width: textField.width - (textField.leftPadding + textField.rightPadding)
         x: textField.leftPadding
@@ -83,6 +83,13 @@ TextField {
         visible: !textField.activeFocus
         onPressed: {
             textField.forceActiveFocus();
+        }
+    }
+
+    Connections {
+        target: window
+        function onScreenClicked(x, y) {
+            if(textField.focus) window.removeFocus(textField, x, y)
         }
     }
 }

@@ -3,10 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testipaddresslookup.h"
-#include "../../src/ipaddresslookup.h"
-#include "../../src/constants.h"
-#include "../../src/settingsholder.h"
+
 #include "helper.h"
+#include "ipaddresslookup.h"
+#include "settingsholder.h"
 
 void TestIpAddressLookup::checkIpAddressFailure() {
   IpAddressLookup ial;

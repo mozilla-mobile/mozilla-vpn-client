@@ -13,10 +13,11 @@ transforms = TransformSequence()
 @transforms.add
 def add_addons_release_artifacts(config, tasks):
     for task in tasks:
-        if task["attributes"]["build-type"] == "addons/opt" and task["name"] == "addons-bundle":
+        if (
+            task["attributes"]["build-type"] == "addons/opt"
+            and task["name"] == "addons-bundle"
+        ):
             addons = set(os.listdir("addons"))
-            addons.remove("examples")
-            addons.remove("deprecated")
             for addon in addons:
                 task["attributes"]["release-artifacts"].append(
                     {
@@ -40,8 +41,8 @@ def add_beetmover_worker_config(config, tasks):
         build_id = config.params["moz_build_date"]
         build_type = task["attributes"]["build-type"]
         build_type_os = {
-            'macos/opt': 'mac',
-            'windows/opt': 'windows',
+            "macos/opt": "mac",
+            "windows/opt": "windows",
         }
         build_os = build_type_os.get(build_type)
         shipping_phase = config.params.get("shipping_phase", "")
@@ -146,6 +147,9 @@ def add_beetmover_worker_config(config, tasks):
         else:
             raise Exception(f"Invalid shipping_phase `{shipping_phase}`")
 
+        extra = {
+            "release_destinations": [f"{archive_url}{dest}/" for dest in destination_paths]
+        }
         worker = {
             "upstream-artifacts": upstream_artifacts,
             "bucket": bucket,
@@ -168,5 +172,6 @@ def add_beetmover_worker_config(config, tasks):
             "worker": worker,
             "attributes": attributes,
             "run-on-tasks-for": task["run-on-tasks-for"],
+            "extra": extra,
         }
         yield task_def

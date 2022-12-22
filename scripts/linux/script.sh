@@ -118,11 +118,9 @@ if [[ "$GITREF" =~ ^refs/pull/([0-9]+)/merge ]]; then
 elif [[ "$GITREF" =~ ^refs/tags/v([0-9a-z.]+) ]]; then
   SHORTVERSION=${BASH_REMATCH[1]}
 elif [[ "$GITREF" =~ ^refs/heads/releases/([0-9][^/]*) ]]; then
-  git fetch --unshallow
-  RCVERSION="~rc$(git rev-list --count --first-parent origin/main..HEAD)"
-  SHORTVERSION="${BASH_REMATCH[1]}${RCVERSION}"
+  SHORTVERSION="${BASH_REMATCH[1]}~rc$(date -u +%Y%m%d%H%M%S)"
 elif [[ "$GITREF" == "refs/heads/main" ]]; then
-  SHORTVERSION="${SHORTVERSION}~nightly$(date +%Y%m%d)"
+  SHORTVERSION="${SHORTVERSION}~nightly$(date -u +%Y%m%d)"
 fi
 WORKDIR=mozillavpn-${SHORTVERSION}
 print G "${SHORTVERSION}"
@@ -134,7 +132,7 @@ print Y "Update the submodules..."
 git submodule init || die "Failed"
 git submodule update --remote --depth 1 i18n || die "Failed"
 git submodule update --remote --depth 1 3rdparty/wireguard-tools || die "Failed"
-git submodule update --remote --depth 1 3rdparty/glean || die "Failed"
+git submodule update --depth 1 3rdparty/glean || die "Failed"
 print G "done."
 
 print G "Creating the orig tarball"
@@ -152,6 +150,9 @@ cd .tmp
 
 print Y "Generating glean samples..."
 (cd $WORKDIR && python3 scripts/utils/generate_glean.py) || die "Failed to generate glean samples"
+
+print Y "Generating Glean (vpnglean) files..."
+(cd $WORKDIR && python3 vpnglean/glean_parser_ext/run_glean_parser.py) || die "Failed to generate Glean (vpnglean) files"
 
 printn Y "Downloading Go dependencies..."
 (cd $WORKDIR/linux/netfilter && go mod vendor)

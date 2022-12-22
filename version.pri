@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-!defined(VERSION, var):VERSION = 2.12.0
+!defined(VERSION, var):VERSION = 2.13.0
 
 VERSION_MAJOR = $$section(VERSION, ., 0, 0)
 !defined(BUILD_ID, var) {
@@ -20,4 +20,5 @@ DBUS_PROTOCOL_VERSION = 1
 message("Generating version.h")
 system(python3 $$PWD/scripts/utils/make_template.py \
          $$PWD/src/version.h.in -o $$PWD/src/version.h \
-         -k @CMAKE_PROJECT_VERSION@="$${VERSION}" -k @BUILD_ID@="$${BUILD_ID}")
+         -k CMAKE_PROJECT_VERSION="$${VERSION}" \
+         -k BUILD_ID="$${BUILD_ID}")

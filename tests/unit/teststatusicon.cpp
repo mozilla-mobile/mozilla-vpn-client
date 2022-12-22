@@ -3,9 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "teststatusicon.h"
-#include "../../src/statusicon.h"
 
 #include <QEventLoop>
+
+#include "statusicon.h"
 
 void TestStatusIcon::basic() {
   StatusIcon si;

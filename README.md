@@ -46,11 +46,19 @@ cd mozilla-vpn-client
 git submodule update --init
 ```
 
-## How to build from the source code
+## Minimum build requirements
 
-In order to build this application, you need to install a few dependencies.
+This list is not comprehensive. Different platforms may require other tools to be installed.
+Check out the platform section for more information on your specific platform.
 
-#### Install Qt6
+- [C++20](https://en.cppreference.com/w/cpp/20)
+- [Qt6](https://www.qt.io/product/qt6)
+- [Python 3](https://www.python.org/downloads/)
+- [Cmake > 3.16](https://cmake.org/install/)
+- [Rust](https://www.rust-lang.org/tools/install)
+- [Go](https://go.dev/)
+
+### Installing Qt6
 
 Qt6 can be installed in a number of ways:
 
@@ -66,8 +74,9 @@ Qt6 can be installed in a number of ways:
     - iOS (if you'll be doing iOS work)
     - QT 5 Compatability Module
     - Additional Libraries
-     - Qt Networking Authorization
-     - Qt WebSockets
+       - Qt Networking Authorization
+       - Qt WebSockets
+    - Qt Debug Information Files
   - Developer and Designer Tools
     - CMake
     - Ninja
@@ -79,7 +88,7 @@ Qt6 can be installed in a number of ways:
 ./scripts/utils/qt6_compile.sh </qt6/source/code/path> </destination/path>
 ```
 
-#### Install Python 3
+### Installing Python 3
 
 [Python](https://www.python.org/) >= 3.6 is required. You also need to install
 a few python modules using [pip](https://pypi.org/):
@@ -90,7 +99,7 @@ pip install -r requirements.txt --user
 
 (`pip3` may need to be substituted for `pip` in the above line.)
 
-#### Install CMake
+### Installing CMake
 
 There are many ways to install [CMake](https://cmake.org).
 
@@ -100,17 +109,17 @@ On macOS, it is easy to do with [Homebrew](https://brew.sh/). After
 brew install cmake
 ```
 
-#### Install rust
+### Installing Rust
 
 [Rust](https://www.rust-lang.org/) is required for desktop builds (macOS, Linux
 and Windows). See the official rust documentation to know how to install it.
 
-#### What's next?
+### What's next?
 
 We support the following platforms: Linux, Windows, macOS, iOS, Android and
 WASM. Each one is unique and it has a different section in this document.
 
-### How to build from source code for Desktop
+## How to build from source code for Desktop
 
 On deskop platforms, such as Windows, Linux and macOS, we build the Mozilla VPN
 using CMake, and as long as the required dependencies can be located in your
@@ -138,7 +147,7 @@ The following variables may be of use:
 
 2. Once the makefiles have been generated, the next step is to compile the source code:
 ```bash
-cmake --build build
+cmake --build build -j$(nproc)
 ```
 
 The following sections go into further detail for each of the supported platforms.
@@ -215,7 +224,7 @@ a copy of the debug build for the macOS Applications folder.)
 #### Building from terminal
 
 1. On macOS, we compile the app using
-[XCode](https://developer.apple.com/xcode/) version 12 or higher.
+[Xcode](https://developer.apple.com/xcode/) version 12 or higher.
 
 2. You also need to install go >= v1.16. If you don't have it done already,
 download go from the [official website](https://golang.org/dl/).
@@ -235,12 +244,12 @@ Some variables that might be useful when configuring the project:
    installer package.
  - `BUILD_OSX_APP_IDENTIFIER=<App Identifier>`: can be set to change the application bundle
    identifier. This defaults to `org.mozilla.macos.FirefoxVPN` if not set.
- - `BUILD_OSX_DEVELOPMENT_TEAM=<Development Team ID>`: can be set to change the development
-   team used for XCode certificates. This defaults to `43AQ936H96` if not set.
+ - `BUILD_VPN_DEVELOPMENT_TEAM=<Development Team ID>`: can be set to change the development
+   team used for Xcode certificates. This defaults to `43AQ936H96` if not set.
 
 4. Compile the source code:
 ```bash
-cmake --build build
+cmake --build build -j$(nproc)
 ```
 
 This will produce the application bundle in `build/src/Mozilla VPN.app`.
@@ -258,9 +267,12 @@ and a signed installer at `build/macos/pkg/MozillaVPN-signed.pkg` if a valid ins
 signing identity was provided in the `INSTALLER_SIGN_IDENTITIY` variable at configuration
 time.
 
-#### Building with XCode
+#### Building with Xcode
 
-In some circumstances, you may wish to use XCode to build the Mozilla VPN in order to
+Before you start this process, open Xcode, go to settings, accounts, and sign in with your 
+Apple ID.
+
+In some circumstances, you may wish to use Xcode to build the Mozilla VPN in order to
 access cloud-managed signing certificates. In such circumstances, this can be enabled
 by using the `-GXcode` command line option:
 
@@ -268,21 +280,21 @@ by using the `-GXcode` command line option:
 mkdir build && cmake -S . -B build -GXcode
 ```
 
-This will generate an XCode project file at `build/Mozilla VPN.xcodeproj` which can be opened
+This will generate an Xcode project file at `build/Mozilla VPN.xcodeproj` which can be opened
 by Xcode:
 
 ```bash
 open build/Mozilla\ VPN.xcodeproj
 ```
 
-Once XCode has opened the project, building is as simple as selecting the `mozillavpn` target
+Once Xcode has opened the project, building is as simple as selecting the `mozillavpn` target
 and starting the build from the `Product->Build For->Testing` menu.
 
-*Note*: some developers have experienced that XCode reports that `go` isn't
-available and so you can't build the app and dependencies in XCode. (This may show up as build
+*Note*: some developers have experienced that Xcode reports that `go` isn't
+available and so you can't build the app and dependencies in Xcode. (This may show up as build
 errors like `Run custom shell script ‘Generate extension/CMakeFiles/cargo_mozillavpnnp’ \ No
 such file or directory \ Command PhaseScriptExecution failed with a nonzero exit code`) In this
-case, a workaround is to symlink `go` into XCode directory as follows:
+case, a workaround is to symlink `go` into Xcode directory as follows:
 
 * Make sure go is 1.16+: `go version`
 * Find the location of go binary `which go` example output `/usr/local/go/bin/go`
@@ -295,16 +307,25 @@ sudo ln -s $(which cargo)
 sudo ln -s $(which rustc)
 ```
 
-This step needs to be executed each time XCode updates.
+This step needs to be executed each time Xcode updates.
 
 ### How to build from source code for iOS
 
-1. On iOS, we compile the app using
-[XCode](https://developer.apple.com/xcode/) version 12 or higher.
+There are two ways to build the project on iOS, using the legacy Qt build system `qmake`
+and we have also added experimental support for `cmake`.
 
-2. We use `qmake` to generate the XCode project and then we "patch" it to add
-extra components such as the wireguard, the browser bridge and so on. We patch
-the XCode project using [xcodeproj](https://github.com/CocoaPods/Xcodeproj). To
+> **Note**: Due to lack of low level networking support, it is not possible to turn on
+> the VPN from the iOS simulator in XCode. 
+
+#### Building with QMake
+
+1. On iOS, we compile the app using
+[Xcode](https://developer.apple.com/xcode/) version 12 or higher.
+
+2. We use `qmake` to generate the Xcode project and then we "patch" it to add
+extra components such as the wireguard, the browser bridge and so on. 
+
+We patch the Xcode project using [xcodeproj](https://github.com/CocoaPods/Xcodeproj). To
 install it:
 ```
 gem install xcodeproj # probably you want to run this command with `sudo`
@@ -320,24 +341,25 @@ cp xcode.xconfig.template xcode.xconfig
 
 5. Modify the xcode.xconfig to something like:
 ```
-# macOS configuration
 APP_ID_MACOS = org.mozilla.macos.FirefoxVPN
 LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item
 
-# iOS configuration
 GROUP_ID_IOS = group.org.mozilla.ios.Guardian
 APP_ID_IOS = org.mozilla.ios.FirefoxVPN
 NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 ```
 
-6. Generate the XCode project using our script (and an optional adjust token):
-```bash
-./scripts/macos/apple_compile.sh ios [--adjust <adjust_token>]
+6. Make sure qmake is available by setting the environment variable QT_IOS_BIN:
+
 ```
-(If you get an error like `Step 7: Generate translation resources...
-sh: /Users/[username]/Qt/6.2.4/ios/bin/lconvert: No such file or directory`
-you may need to provide the macOS Qt bin folder through the -q flag:
-`./scripts/macos/apple_compile.sh ios -q ~/Qt/6.2.4/macos/bin`)
+export QT_IOS_BIN=/Users/[username]/Qt/6.2.4/ios/bin
+```
+
+Then generate the Xcode project using our script (and an optional adjust token):
+
+```bash
+./scripts/macos/apple_compile.sh ios [--adjust <adjust_token>] -q ~/Qt/6.2.4/macos/bin
+```
 
 7. Xcode should automatically open. You can then run/test/archive/ship the app.
 If you prefer to compile the app in command-line mode, use the following
@@ -345,6 +367,51 @@ command:
 ```bash
 xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project "Mozilla VPN.xcodeproj"
 ```
+
+#### Building with CMake (Experimental)
+
+We also support building from sources for iOS using CMake.
+
+1. On iOS, we compile the app using
+[Xcode](https://developer.apple.com/xcode/) version 12 or higher and [Qt](https://www.qt.io/download)
+version 6.3.2.
+
+2. Ensure rust targets for iOS development are installed.
+```bash
+rustup target add x86_64-apple-ios aarch64-apple-ios
+```
+
+2. We use `qt-cmake` from the Qt installation to configure the Xcode project.
+```bash
+mkdir build-ios
+/Users/example/Qt/6.3.2/ios/bin/qt-cmake . -B build-ios -GXcode
+```
+
+However, due to limitations in cmake, you cannot switch between iOS and simulator builds
+without re-generating the Xcode project. To make it easier to develop, it's recommend
+build into a different project for simulation. This can be achieved with:
+```bash
+mkdir build-ios-sim
+/Users/example/Qt/6.3.2/ios/bin/qt-cmake . -B build-ios-sim -GXcode
+    -DCMAKE_OSX_SYSROOT="iphonesimulator"
+```
+
+Some variables that might be useful when configuring the project:
+ - `BUILD_ADJUST_SDK_TOKEN=<SDK Token>`: can be set to enable the use of the Adjust telemetry
+   and attribution data collection.
+ - `BUILD_IOS_APP_IDENTIFIER=<App Identifier>`: can be set to change the application bundle
+   identifier. This defaults to `org.mozilla.ios.FirefoxVPN` if not set.
+ - `BUILD_VPN_DEVELOPMENT_TEAM=<Development Team ID>`: can be set to change the development
+   team used for Xcode certificates. This defaults to `43AQ936H96` if not set.
+ - `CMAKE_OSX_SYSROOT="iphonesimulator"` to build for the iOS simulator.
+
+3. Open the generated Xcode project for iOS devices with `open build-ios/Mozilla\ VPN.xcodeproj`
+or `open build-ios-sim/Mozilla\ VPN.xcodeproj` for simulation.
+
+4. Select the `mozillavpn` target and `Any iOS Device (arm64)` as the build configuration
+for iOS devices, or select any of the simulation targets when building for the simulator.
+
+5. Click on the Play button to start building and signing of the Mozilla VPN app.
 
 ### How to build from source code for Android
 
@@ -356,7 +423,7 @@ it from the [official website](https://golang.org/dl/).
 3. Set the `QT_HOST_PATH` environment variable to point to the location of the `androiddeployqt` tool.
 
 4. Set the `ANDROID_SDK_ROOT` and `ANDROID_NDK_ROOT` (required version: 21.0.6113669) environment variables,
-to point to the Android SDK and NDK intallation directories.
+to point to the Android SDK and NDK installation directories.
 
 5. Add the Android NDK llvm prebuilt tools to your `PATH`. These are located under the Android NDK installation
 directory on `${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/*/bin`.
@@ -456,26 +523,23 @@ ctest --test-dir build
 
 * Install node (if needed) and then `npm install` to install the testing
   dependencies
-* Install geckodriver and ensure it's on your path.
-  [Docs](https://www.selenium.dev/documentation/getting_started/installing_browser_drivers/)
+* Compile the testing addons: ./scripts/addon/generate_all_tests.py
 * Make a .env file with:
- * `MVPN_API_BASE_URL` (where proxy runs, most likely http://localhost:5000)
  * `MVPN_BIN` (location of compiled mvpn binary. This must be a dummy binary, see note below.)
- * `ARTIFACT_DIR` (directory to put screenshots from test failures)
-* (Optional) In one window run `./tests/proxy/wsgi.py --mock-devices`
-* Run a test from the root of the project: `./scripts/tests/functional_tests.sh {test_file}.js`. To run, say, the authentication tests: `./scripts/tests/functional_tests.sh
-  tests/functional/testAuthentication.js`.
+ * `ARTIFACT_DIR` - optional (directory to put screenshots from test failures)
+* Run a test from the root of the project: `npm run functionalTest path/to/testFile.js`. To run, say, the authentication tests: `npm run functionalTest tests/functional/testAuthenticationInApp.js`.
 
-> **Note**: Functional tests require a dummy build of the application.
-> In order to create such a build, on the root folder of this repository run:
->
+> **Note**: Functional tests require a dummy build of the application, which is not
+> built by default. Ensure the `dummyvpn` target is built, by running:
 > ```
-> cmake -S . -B ./dummybuild -DBUILD_DUMMY=ON
-> cmake --build dummybuild -j$(nproc)
+> cmake --build build -j$(nproc) --target dummyvpn
 > ```
 >
-> This will create a dummy build under the `dummybuild/` folder. To run the functional tests against this build,
-> make sure the `MVPN_BIN` environment variable is pointing to the application under the `dummybuild/` folder.
+> This will create a dummy build under the `tests/dummyvpn` folder. To run the functional
+> tests against this build, make sure the `MVPN_BIN` environment variable is set:
+> ```
+> export MVPN_BIN=$(pwd)/build/tests/dummyvpn/dummyvpn
+> ```
 
 ## Developer Options and staging environment
 
@@ -493,7 +557,13 @@ https://mozilla-mobile.github.io/mozilla-vpn-client/inspector/) to interact
 with the app. Connect the inspector to the app using the web-socket interface.
 On desktop, use `ws://localhost:8765`.
 
-From the inspector, type `help` to see the list of available commands.
+The inspector offers a number of tools to help debug and navigate through the VPN client:
+* **Shell:** By default the inspector link will take you to the Shell. From there type `help` to see the list of available commands.
+* **Logs:** Will constantly output all the app activities happening in real time. This information includes the timesamp, component and message. From the left column you can select which component(s) you'd like to monitor.
+* **Network Inspector:** Includes a list of all incoming and outgoing network requests. This is especially helpful when debugging network related issues or monitoring how the app communicates with external components such as the Guardian.
+* **QML Inspector:** Allows you to identify and inspect all QML components in the app by mirroring the local VPN client running on your machine and highlighting components by clicking on the QML instance on the right.
+
+![inspector_snapshot](https://user-images.githubusercontent.com/3746552/204422879-0799cbd8-91cd-4601-8df8-0d0e9f7cd887.png)
 
 ## Glean
 

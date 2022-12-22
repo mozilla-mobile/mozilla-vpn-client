@@ -25,8 +25,6 @@ StackView {
 
     }
 
-    anchors.fill: parent
-
     Connections {
         target: VPNNavigator
         function onGoBack(item) {
@@ -34,8 +32,5 @@ StackView {
                 stackView.pop();
             }
         }
-    }
-    function unwindToInitialItem() {
-        stackView.pop(stackView.find(stackView.get(1)), StackView.Immediate)
     }
 }

@@ -16,48 +16,38 @@ concurrency:
 
 jobs:
   linux-unit-tests:
-    runs-on: ubuntu-20.04
-    env:
-      QTVERSION: 6.2.4
+    runs-on: ubuntu-22.04
     name: Run Unit tests on Linux
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
+        with: 
+          submodules: 'true'
 
       - name: Install dependences
         run: |
-          sudo apt update
-          sudo apt install git libgl-dev libegl-dev libpolkit-gobject-1-dev clang-10 liboath-dev python3 -y
-          python3 -m pip install -r requirements.txt
-          python3 -m pip install aqtinstall
-          aqt install-qt --outputdir /opt linux desktop $QTVERSION gcc_64 -m all
-
-      - name: Checkout submodules
-        shell: bash
-        run: |
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git submodule sync --recursive
-          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+          sudo apt-get update
+          sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
+          pip3 install -r requirements.txt
 
       - name: Cache grcov
         id: cache-grcov
         uses: actions/cache@v3
         with:
           path: grcov-build/
-          key: ${{runner.os}}-grcov-v0.8.9
+          key: ${{runner.os}}-grcov-v0.8.13
 
       - name: Install Grcov
         if: steps.cache-grcov.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          cargo install grcov --root ${{github.workspace}}/grcov-build --version 0.8.9
+          cargo install grcov --root ${{github.workspace}}/grcov-build --version 0.8.13
 
       - name: Building tests
         shell: bash
         run: |
           mkdir -p build
-          cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON \
-            -DCMAKE_PREFIX_PATH=/opt/$QTVERSION/gcc_64/lib/cmake/ \
+          cmake -S . -B $(pwd)/build \
             -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
           cmake --build $(pwd)/build --target build_tests -j$(nproc)
 
@@ -80,11 +70,11 @@ jobs:
           grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
 
-      - name: Upload coverage to Codecov
+      - name: Upload coverage for linux unit tests to Codecov
         uses: codecov/codecov-action@v3
         with:
           directory: .
-          flags: unit_tests
+          flags: linux_unit_tests
           name: codecov-poc
           files: auth_lcov.info,nativemessaging_lcov.info,qml_lcov.info,unit_lcov.info
           verbose: true
@@ -96,18 +86,14 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
+        with: 
+          submodules: 'true'
 
-      - name: Checkout submodules
-        shell: bash
-        run: |
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git submodule sync --recursive
-          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
-
-      - name: Install python dependencies
+      - name: Install dependencies
         shell: bash
         run: |
           pip3 install -r requirements.txt
+          brew install ninja
 
       - name: Install Qt6
         shell: bash
@@ -125,20 +111,20 @@ jobs:
         uses: actions/cache@v3
         with:
           path: grcov-build/
-          key: ${{runner.os}}-grcov-v0.8.9
+          key: ${{runner.os}}-grcov-v0.8.13
 
       - name: Install Grcov
         if: steps.cache-grcov.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          cargo install grcov --root ${{github.workspace}}/grcov-build --version 0.8.9
+          cargo install grcov --root ${{github.workspace}}/grcov-build --version 0.8.13
 
       - name: Building tests
         shell: bash
         run: |
           export PATH=/opt/qt6/bin:${{github.workspace}}/grcov-build/bin:$PATH
           mkdir -p build
-          cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON \
+          cmake -S . -B $(pwd)/build -GNinja \
             -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
           cmake --build $(pwd)/build --target build_tests
 
@@ -161,13 +147,13 @@ jobs:
           grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
 
-      - name: Upload coverage to Codecov
+      - name: Upload coverage for macos unit tests to Codecov
         uses: codecov/codecov-action@v3
         with:
           directory: .
-          flags: unit_tests
+          flags: macos_unit_tests
           name: codecov-poc
-          files: unit_lcov.info
+          files: auth_lcov.info,nativemessaging_lcov.info,qml_lcov.info,unit_lcov.info
           verbose: true
 
   windows-unit-tests:
@@ -177,13 +163,8 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
-
-      - name: Checkout submodules
-        shell: bash
-        run: |
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git submodule sync --recursive
-          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+        with: 
+          submodules: 'true'
 
       - name: Install Qt
         shell: bash

@@ -6,8 +6,8 @@
 #define HELPER_H
 
 #include <QObject>
-#include <QtTest/QtTest>
 #include <QVector>
+#include <QtTest/QtTest>
 
 class TestHelper : public QObject {
   Q_OBJECT

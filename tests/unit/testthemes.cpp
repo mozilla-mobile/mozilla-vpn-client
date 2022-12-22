@@ -3,11 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testthemes.h"
-#include "../../src/qmlengineholder.h"
-#include "../../src/settingsholder.h"
-#include "../../src/theme.h"
 
 #include <QQmlApplicationEngine>
+
+#include "qmlengineholder.h"
+#include "settingsholder.h"
+#include "theme.h"
 
 void TestThemes::loadTheme_data() {
   QTest::addColumn<QString>("theme");

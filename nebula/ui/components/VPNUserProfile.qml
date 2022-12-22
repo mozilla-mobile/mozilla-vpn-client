@@ -15,6 +15,7 @@ VPNClickableRow {
 
     property string _objNameBase: "settingsUserProfile"
     property string _iconSource: ""
+    property alias _iconMirror: icon.mirror
     property bool _loaderVisible: false
     property var _buttonOnClicked
 

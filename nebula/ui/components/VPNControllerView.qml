@@ -14,21 +14,6 @@ Item {
 
     property bool connectionInfoScreenVisible: false
 
-    function formatSingle(value) {
-        if (value === 0)
-            return "00";
-
-        return (value < 10 ? "0" : "") + value;
-    }
-
-    function formatTime(time) {
-        var secs = time % 60;
-        time = Math.floor(time / 60);
-        var mins = time % 60;
-        time = Math.floor(time / 60);
-        return formatSingle(time) + ":" + formatSingle(mins) + ":" + formatSingle(secs);
-    }
-
     function closeConnectionInfo() {
         box.connectionInfoScreenVisible = false;
     }
@@ -358,7 +343,7 @@ Item {
                 target: logoSubtitle
                 //% "From %1 to %2"
                 //: Switches from location 1 to location 2
-                text: qsTrId("vpn.controller.switchingDetail").arg(VPNController.currentLocalizedCityName).arg(VPNController.switchingLocalizedCityName)
+                text: qsTrId("vpn.controller.switchingDetail").arg(VPNCurrentServer.localizedPreviousExitCityName).arg(VPNCurrentServer.localizedCityName)
                 color: "#FFFFFF"
                 opacity: 0.8
                 visible: true
@@ -477,6 +462,7 @@ Item {
         onClicked: {
             if (!box.connectionInfoScreenVisible) {
                 VPN.recordGleanEvent("connectionInfoOpened");
+                Glean.sample.connectionInfoOpened.record();
             }
             box.connectionInfoScreenVisible = !box.connectionInfoScreenVisible;
         }

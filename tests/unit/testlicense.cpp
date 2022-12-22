@@ -3,8 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testlicense.h"
-#include "../../src/settingsholder.h"
+
 #include "helper.h"
+#include "settingsholder.h"
 
 void TestLicense::parse() {
   LicenseModel lm;

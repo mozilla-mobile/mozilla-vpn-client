@@ -11,8 +11,7 @@ import components.forms 0.1
 VPNTextField {
     property bool charactersMasked: true
     property bool isValid: true
-    property alias button: toggleButton
-    property alias placeholder: passwordInput._placeholderText
+    property alias button: showHidePasswordButton
 
     id: passwordInput
 
@@ -25,15 +24,14 @@ VPNTextField {
 
     echoMode: charactersMasked ? TextInput.Password : TextInput.Normal
     hasError: !isValid
-    height: VPNTheme.theme.rowHeight
-    rightPadding: VPNTheme.theme.windowMargin * 0.5 + toggleButton.width
-    width: parent.width
+    rightPadding: VPNTheme.theme.windowMargin * 0.5 + showHidePasswordButton.width
 
     VPNIconButton {
-        id: toggleButton
+        id: showHidePasswordButton
 
-        // TODO: Add accesibleName string
-        accessibleName: ""
+        accessibleName: passwordInput.charactersMasked
+                        ? VPNl18n.InAppAuthShowPassword
+                        : VPNl18n.InAppAuthHidePassword
         anchors {
             right: parent.right
             rightMargin: VPNTheme.theme.listSpacing / 2
@@ -41,9 +39,10 @@ VPNTextField {
         }
         height: parent.height - VPNTheme.theme.listSpacing
         width: parent.height - VPNTheme.theme.listSpacing
+        onClicked: passwordInput.charactersMasked = !passwordInput.charactersMasked
 
         Image {
-            anchors.centerIn: toggleButton
+            anchors.centerIn: showHidePasswordButton
             fillMode: Image.PreserveAspectFit
             source: passwordInput.charactersMasked
               ? "qrc:/nebula/resources/eye-hidden.svg"
@@ -52,18 +51,13 @@ VPNTextField {
             sourceSize.width: VPNTheme.theme.iconSize * 1.5
         }
 
-        function toggleVisibility() {
-            passwordInput.charactersMasked = !passwordInput.charactersMasked;
-        }
-
-        // Temporary workaround for QTBUG-78813: TextInput prevents touch events
+        // workaround for QTBUG-78813: TextInput prevents touch events
         // from reaching other MouseAreas.
         // https://bugreports.qt.io/browse/QTBUG-78813
         MouseArea {
+            onPressed: showHidePasswordButton.clicked()
             anchors.fill: parent
-            onPressed: {
-                toggleButton.toggleVisibility();
-            }
+            enabled: ["android", "ios"].includes(Qt.platform.os)
         }
     }
 }

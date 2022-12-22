@@ -69,3 +69,30 @@ tasks:
         args:
             ANDROID_ARCH: android_arm64_v8a
             QT_VERSION: 6.4.0
+    android-qt-next-armv7:
+        parent: base
+        symbol: I(android_armv7_next)
+        definition: android-qt6-build
+        args:
+            ANDROID_ARCH: android_armv7
+            QT_VERSION: 6.4.0
+    linux-build-bionic:
+        symbol: I(linux-bionic)
+        definition: linux-dpkg-build
+        args:
+            DOCKER_BASE_IMAGE: ubuntu:bionic
+    linux-build-focal:
+        symbol: I(linux-focal)
+        definition: linux-dpkg-build
+        args:
+            DOCKER_BASE_IMAGE: ubuntu:focal
+    linux-build-jammy:
+        symbol: I(linux-jammy)
+        definition: linux-dpkg-build
+        args:
+            DOCKER_BASE_IMAGE: ubuntu:jammy
+    linux-build-kinetic:
+        symbol: I(linux-kinetic)
+        definition: linux-dpkg-build
+        args:
+            DOCKER_BASE_IMAGE: ubuntu:kinetic

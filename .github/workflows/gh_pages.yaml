@@ -49,6 +49,23 @@ jobs:
           with:
               name: Logviewer
               path: tools/logviewer
+  docs:
+    name: Render Docs
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+      - name: Building
+        shell: bash
+        run: |
+            sudo apt-get update 
+            sudo apt-get install doxygen -y 
+            doxygen
+      - name: Uploading
+        uses: actions/upload-artifact@v3
+        with:
+            name: doxygen-docs
+            path: html/
 
   inspector:
     name: Add Inspector
@@ -81,13 +98,8 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
-
-      - name: Checkout submodules
-        shell: bash
-        run: |
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git submodule sync --recursive
-          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+        with: 
+          submodules: 'true'
 
       - name: Install Qt
         shell: bash
@@ -123,7 +135,7 @@ jobs:
 
   ghPages:
     runs-on: ubuntu-20.04
-    needs: [wasm_chrome, inspector,addons,logviewer]
+    needs: [wasm_chrome, inspector,addons,logviewer,docs]
     name: Compile Github Page from Components
     env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -134,7 +146,12 @@ jobs:
           name: Wasm-Chrome
           # Destination path
           path: _site
-
+      - name: Download Docs
+        uses: actions/download-artifact@v3
+        with:
+          name: doxygen-docs
+          # Destination path
+          path: _site/docs
       - name: Download a Addons Artifact
         uses: actions/download-artifact@v3
         with:

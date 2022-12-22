@@ -5,7 +5,7 @@ Name:      mozillavpn
 Version:   %{_version}
 Release:   1~git%(git log -1 --format=%h)%{?dist}
 Summary:   Mozilla VPN
-License:   MPLv2.0
+License:   MPL-2.0
 URL:       https://vpn.mozilla.org
 Packager:  Owen Kirby
 Requires:  qt6-qtbase >= 6.0
@@ -15,11 +15,12 @@ Requires:  qt6-qtsvg >= 6.0
 Requires:  qt6-qt5compat >= 6.0
 Requires:  wireguard-tools
 
+BuildRequires: cargo
 BuildRequires: golang >= 1.13
+BuildRequires: libsecret-devel
+BuildRequires: openssl-devel
 BuildRequires: polkit-devel
 BuildRequires: python3-yaml
-BuildRequires: cargo
-BuildRequires: openssl-devel
 BuildRequires: qt6-qtbase-devel >= 6.0
 BuildRequires: qt6-qtnetworkauth-devel >= 6.0
 BuildRequires: qt6-qtdeclarative-devel >= 6.0
@@ -39,7 +40,7 @@ Read more on https://vpn.mozilla.org
 
 %build
 %define _vpath_srcdir %{_srcdir}
-%cmake -DWEBEXT_INSTALL_LIBDIR=/usr/lib -DCMAKE_INSTALL_SYSCONFDIR=/etc -DBUILD_TESTING=OFF
+%cmake -DWEBEXT_INSTALL_LIBDIR=/usr/lib -DCMAKE_INSTALL_SYSCONFDIR=/etc -DBUILD_TESTING=OFF -DSKIP_GLEAN_PARSER=true
 %cmake_build
 
 %install

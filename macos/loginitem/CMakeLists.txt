@@ -22,11 +22,13 @@ set_target_properties(loginitem PROPERTIES
     MACOSX_BUNDLE_INFO_STRING "MozillaVPNLoginItem"
     MACOSX_BUNDLE_LONG_VERSION_STRING "${CMAKE_PROJECT_VERSION}-${BUILD_ID}"
     MACOSX_BUNDLE_SHORT_VERSION_STRING "${CMAKE_PROJECT_VERSION}"
+    XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${CMAKE_CURRENT_SOURCE_DIR}/MozillaVPNLoginItem.entitlements"
     XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${BUILD_OSX_APP_IDENTIFIER}.login-item"
+    XCODE_GENERATE_SCHEME TRUE
 )
 
 target_compile_options(loginitem PRIVATE -DAPP_ID="$<TARGET_PROPERTY:mozillavpn,MACOSX_BUNDLE_GUI_IDENTIFIER>")
 target_sources(loginitem PRIVATE main.m)
 
-include(${CMAKE_SOURCE_DIR}/src/cmake/osxtools.cmake)
+include(${CMAKE_SOURCE_DIR}/src/apps/vpn/cmake/osxtools.cmake)
 osx_codesign_target(loginitem)

@@ -2,28 +2,27 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "../../src/authenticationinapp/authenticationinapp.h"
-#include "../../src/constants.h"
-#include "../../src/leakdetector.h"
-#include "../../src/loghandler.h"
-#include "../../src/settingsholder.h"
-#include "../../src/simplenetworkmanager.h"
+#include <QCoreApplication>
+#include <QtTest/QtTest>
 
+#include "appconstants.h"
+#include "authenticationinapp/authenticationinapp.h"
+#include "leakdetector.h"
+#include "loghandler.h"
+#include "settingsholder.h"
+#include "simplenetworkmanager.h"
 #include "testemailvalidation.h"
 #include "testpasswordvalidation.h"
 #include "testsignupandin.h"
 
-#include <QCoreApplication>
-#include <QtTest/QtTest>
-
 int main(int argc, char* argv[]) {
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
   LeakDetector leakDetector;
   Q_UNUSED(leakDetector);
 #endif
 
   SettingsHolder settingsHolder;
-  Constants::setStaging();
+  AppConstants::setStaging();
 
   QCoreApplication a(argc, argv);
 
@@ -32,7 +31,7 @@ int main(int argc, char* argv[]) {
   settingsHolder.setFeaturesFlippedOn(QStringList{
       "inAppAccountCreate", "inAppAuthentication", "accountDeletion"});
 
-  LogHandler::enableDebug();
+  LogHandler::enableStderr();
 
   int failures = 0;
   TestEmailValidation tev;

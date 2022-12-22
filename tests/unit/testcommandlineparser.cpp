@@ -3,8 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testcommandlineparser.h"
-#include "../../src/command.h"
-#include "../../src/commandlineparser.h"
+
+#include "command.h"
+#include "commandlineparser.h"
 
 namespace {
 bool s_executed = false;

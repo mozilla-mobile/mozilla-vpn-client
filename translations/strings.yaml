@@ -73,6 +73,21 @@
 #
 
 serversView:
+  recommendedCardTitle:
+    value: Why are these locations recommended?
+    comment: Title of an expandable info card on the recommended servers list.
+  recommendedCardBody:
+    value: These locations are sorted by expected performance.
+    comment: Body text of an expandable info card on the recommended servers list.
+  recommendedRefreshLabel:
+    value: Refresh list
+    comment: Accessible label for the button that triggers a refresh of the recommended servers list.
+  tabAllLabel:
+    value: All
+    comment: Label for the “all” servers tab
+  tabRecommendedLabel:
+    value: Recommended
+    comment: Label for the “recommended” servers tab
   searchPlaceholder: Search countries
   searchNoResultsLabel: No results. Try a different search
 
@@ -214,6 +229,13 @@ restorePurchaseExpiredError:
 restorePurchaseInUseError:
   restorePurchaseInUseErrorText: Another Firefox Account has already subscribed using this Apple ID. Please sign out and try again or contact our support team for help.
 
+purchaseWeb:
+  title: Subscribe to Mozilla VPN
+  message:
+    value: We couldn’t find a subscription for %1. Subscribe now to protect your connection.
+    comment: "%1 is the user’s email address."
+  inProgress2: Please continue subscribing in your browser…
+
 # Adding functionality for users selecting custom DNS settings, associated settings nav items, headers, and selectable options. Some is not included in 2.5.
 customDNSSettings:
   dnsInfoAlert: VPN must be off to change these settings
@@ -250,6 +272,7 @@ notifications:
   captivePortalBlockMessage2: The guest Wi-Fi network you’re connected to requires action. Click to turn off VPN to see the portal.
   captivePortalUnblockTitle: Guest Wi-Fi portal detected
   captivePortalUnblockMessage2: The guest Wi-Fi network you’re connected to may not be secure. Click to turn on VPN to secure your device.
+  subscriptionNotFound: Your Mozilla VPN subscription cannot be found. Please open the app to resolve this subscription issue.
   unsecuredNetworkTitle: Unsecured Wi-Fi network detected
   unsecuredNetworkMessage:
     value: "%1 is not secure. Click here to turn on VPN and secure your device."
@@ -278,16 +301,15 @@ settings:
     value: Connect VPN on startup
     comment: Startup refers to a device's startup, not the VPN client's.
   startAtBootSubtitle: Mozilla VPN will launch and connect when you start up your device
-  tunnelPort53:
-    value: Tunnel VPN through port 53/DNS
-    comment: Tunnel is used as a verb, as in to direct traffic through
-  tunnelPort53Description: Use port 53/DNS for Wireguard traffic, which may help evade firewalls
   crashOptInDescription:
     value: Allow Mozilla VPN to automatically send crash reports to help fix unexpected crashes
     comment: This is the description of a checkbox option to allow the app to send crash reports without a user prompt
 
 aboutUs:
   licenses: Licenses
+  copyVersionNumber:
+    value: Copy %1
+    comment: "Accessible name for a button. %1 is the version number of the VPN client."
 
 AndroidNotifications:
   GeneralNotifications:
@@ -465,6 +487,12 @@ inAppAuth:
   passwordHintCommonPassword:
     value: Must not be a common password
     comment: This is a hint for the user - password they provide must not be a common password. Ex. password.
+  showPassword:
+    value: Show password
+    comment: Tooltip label for the eye icon in password input
+  hidePassword:
+    value: Hide password
+    comment: Tooltip label for the eye icon in password input
   productUpdateOptInDescription:
     value: I’d like to receive product update emails from Firefox.
     comment: Checkbox label for users to opt in, when creating an account, to receive product update emails from Firefox.
@@ -688,6 +716,10 @@ tutorialPopup:
   tutorialLeaveSubtitle: Looks like you haven’t finished the tutorial quite yet. Would you like to continue and finish now or quit and come back later?
   tutorialLeavePrimaryButtonLabel: Resume tutorial
 
+  tutorialWarningTitle: Continue tutorial?
+  tutorialWarningDescription: By continuing this tutorial, you will be changing your VPN settings. These settings will revert to their original state upon completion or quitting of the tutorial.
+
+
 inAppMessaging:
   menuTitle: Messages
   editButton: Edit
@@ -730,6 +762,15 @@ global:
   goBack:
     value: Go back
     comment: Label for button used in intro modals to return to the app.
+  continue:
+    value: Continue
+    comment: Label for button used to proceed with an action
+  noThanks:
+    value: No thanks
+    comment: Label for button used to not proceed with an action
+  copied:
+    value: Copied!
+    comment: Confirmation banner displayed after clicking a button to copy something.
 
 getHelp:
   helpCenter: Help Center

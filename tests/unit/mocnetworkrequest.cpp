@@ -2,10 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "../../src/leakdetector.h"
+#include "appconstants.h"
 #include "helper.h"
+#include "leakdetector.h"
 #include "networkrequest.h"
-#include "constants.h"
 #include "settingsholder.h"
 #include "task.h"
 
@@ -14,7 +14,7 @@ NetworkRequest::NetworkRequest(Task* parent, int status,
     : QObject(parent), m_expectedStatusCode(status) {
   Q_UNUSED(setAuthorizationHeader);
 
-  MVPN_COUNT_CTOR(NetworkRequest);
+  MZ_COUNT_CTOR(NetworkRequest);
 
   Q_ASSERT(!TestHelper::networkConfig.isEmpty());
   TestHelper::NetworkConfig nc = TestHelper::networkConfig.takeFirst();
@@ -32,12 +32,12 @@ NetworkRequest::NetworkRequest(Task* parent, int status,
   });
 }
 
-NetworkRequest::~NetworkRequest() { MVPN_COUNT_DTOR(NetworkRequest); }
+NetworkRequest::~NetworkRequest() { MZ_COUNT_DTOR(NetworkRequest); }
 
 // static
 QString NetworkRequest::apiBaseUrl() {
   return Constants::envOrDefault("MVPN_API_BASE_URL",
-                                 Constants::API_PRODUCTION_URL);
+                                 AppConstants::API_PRODUCTION_URL);
 }
 
 // static
@@ -100,7 +100,7 @@ NetworkRequest* NetworkRequest::createForProducts(Task* parent) {
   return new NetworkRequest(parent, 1234, false);
 }
 
-#ifdef MVPN_IOS
+#ifdef MZ_IOS
 NetworkRequest* NetworkRequest::createForIOSPurchase(Task* parent,
                                                      const QString&) {
   return new NetworkRequest(parent, 1234, false);

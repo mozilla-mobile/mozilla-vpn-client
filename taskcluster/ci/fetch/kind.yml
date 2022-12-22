@@ -50,9 +50,16 @@ tasks:
             sha256: 2220ddb49fea0e0945b1b5913e33d66bd223a67f19fd1c116be0318de7ed9d9c
             size: 10077696
     win-go:
-        description: go1.17beta1
+        description: go1.18.8
         fetch:
             type: static-url
-            url: https://download.wireguard.com/windows-toolchain/distfiles/go1.17beta1-windows_amd64_2021-06-11.zip
-            sha256: 09601956a35ee4c2fa199da301c4b210fd365a46d286a7160388a1cdc07b7a6d
-            size: 83720417
+            url: https://go.dev/dl/go1.18.8.windows-amd64.zip
+            sha256: 980788761e75ed33ffc4f2a7a3ff07cd90949bd023eb1a8d855ef0b5de9cbcba
+            size: 155201453
+    win-sentry-cli:
+        description: Sentry-Cli.exe
+        fetch: 
+            type: static-url
+            url: https://github.com/getsentry/sentry-cli/releases/download/2.10.0/sentry-cli-Windows-x86_64.exe
+            sha256: 3d9e04ab5f1bea8709f8302a33e81b75aca0a93d1431dde56063549a335acfd0
+            size: 10361344

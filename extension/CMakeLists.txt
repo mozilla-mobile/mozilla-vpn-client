@@ -36,8 +36,4 @@ elseif(WIN32)
     install(PROGRAMS $<TARGET_FILE:mozillavpnnp> DESTINATION .)
     install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/manifests/windows/mozillavpn.json
         DESTINATION .)
-elseif(APPLE)
-    include(${CMAKE_SOURCE_DIR}/src/cmake/osxtools.cmake)
-    osx_codesign_target(cargo_mozillavpnnp OPTIONS runtime FORCE FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/bridge/target/release/mozillavpnnp)
 endif()

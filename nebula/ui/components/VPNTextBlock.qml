@@ -17,6 +17,8 @@ Text {
     lineHeight: 21
     width: VPNTheme.theme.maxTextWidth
     wrapMode: Text.Wrap
+    Layout.alignment: Qt.AlignLeft
+    horizontalAlignment: Qt.AlignLeft
 
     Accessible.role: Accessible.StaticText
     Accessible.name: text

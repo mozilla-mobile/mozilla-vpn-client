@@ -17,34 +17,32 @@ concurrency:
 jobs:
   build_test_app:
     name: Build Test Client
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     outputs:
       matrix: ${{ steps.testGen.outputs.tests }}
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
+        with: 
+          submodules: 'true'
 
-      - name: Checkout submodules
+      - name: Install build dependecies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
+
+      - name: Cache grcov
+        id: cache-grcov
+        uses: actions/cache@v3
+        with:
+          path: grcov-build/
+          key: ${{runner.os}}-grcov-v0.8.13
+
+      - name: Install Grcov
+        if: steps.cache-grcov.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git submodule sync --recursive
-          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
-      - name: Install dependecies
-        if: steps.cache-build.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p build/archive
-
-          # Install grcov into the build directory, to reduce downstream compilation times.
-          cargo install --root $(pwd)/build grcov 
-
-          # Add external PPA for Qt6 support on Ubuntu 20.04
-          sudo add-apt-repository ppa:okirby/qt6-backports
-
-          # Download the build and runtime package dependencies.
-          sudo apt-get -o "Dir::Cache::archives=$(pwd)/build/archive" install -y \
-               $(./scripts/linux/getdeps.py -a linux/debian/control)
-          sudo chown -R $USER:$USER build/archive
+          cargo install grcov --root ${{github.workspace}}/grcov-build --version 0.8.13
 
       - name: Compile test client
         shell: bash
@@ -53,22 +51,33 @@ jobs:
           pip3 install -r requirements.txt
 
           mkdir -p build/cmake
-          cmake -S $(pwd) -B build/cmake -DBUILD_DUMMY=ON \
-              -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
-          cmake --build build/cmake -j$(nproc)
+          mkdir -p build/profile
+          cmake -S $(pwd) -B build/cmake \
+              -DCMAKE_CXX_FLAGS="--coverage -fprofile-generate=$(pwd)/build/profile" \
+              -DCMAKE_EXE_LINKER_FLAGS="--coverage -fprofile-generate=$(pwd)/build/profile"
+          cmake --build build/cmake -j$(nproc) --target dummyvpn
+
+          mkdir -p build/profile
+          rsync -a --include '*/' --include '*.gcno' --exclude '*' \
+              build/cmake/tests/dummyvpn/CMakeFiles/dummyvpn.dir/ build/profile/
+          cp ./build/cmake/tests/dummyvpn/dummyvpn build/
+
       - uses: actions/upload-artifact@v3
         with:
           name: test-client-${{ github.sha }}
-          path: build/
+          path: |
+            build/
+            !build/cmake/
 
       - name: Generate tasklist
         id: testGen
         shell: bash
         run: |
-          echo -n "::set-output name=tests::"
+          echo -n "tests=" >> $GITHUB_OUTPUT
           for test in $(find tests/functional -name 'test*.js' | sort); do
             printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
-          done | jq -s -c
+          done | jq -s -c >> $GITHUB_OUTPUT
+
       - name: Check tests
         shell: bash
         env:
@@ -80,7 +89,7 @@ jobs:
     name: Functional tests
     needs: 
       - build_test_app
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 45
     strategy:
       fail-fast: false # Don't cancel other jobs if a test fails
@@ -89,23 +98,39 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
+
       - uses: actions/download-artifact@v3
         with:
           name: test-client-${{ github.sha }}
           path: build/
 
-      - name: Install dependecies
+      - name: Install test dependecies
         run: |
-          sudo apt install ./build/archive/*.deb
+          sudo apt-get update
+          sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
           sudo apt install --no-upgrade firefox xvfb -y
           pip3 install -r requirements.txt
           npm install
-      
+
+      - name: Cache grcov
+        id: cache-grcov
+        uses: actions/cache@v3
+        with:
+          path: grcov-build/
+          key: ${{runner.os}}-grcov-v0.8.13
+
       - name: Check build
         shell: bash
         run: |
-            chmod +x ./build/cmake/src/mozillavpn
-            ./build/cmake/src/mozillavpn -v
+            chmod +x ./build/dummyvpn
+            ./build/dummyvpn -v
+
+            chmod +x ${{github.workspace}}/grcov-build/bin/grcov
+            ${{github.workspace}}/grcov-build/bin/grcov --version
+
+      - name: Build addons
+        shell: bash
+        run: ./scripts/addon/generate_all_tests.py
 
       - name: Running ${{matrix.test.name}} Tests
         id: runTests
@@ -121,15 +146,15 @@ jobs:
             xvfb-run -a npm run functionalTest -- ${{matrix.test.path}}
         env:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
-          MVPN_BIN: ./build/cmake/src/mozillavpn
+          MVPN_BIN: ./build/dummyvpn
 
       - name: Generating grcov reports
         id: generateGrcov
         continue-on-error: true # Ignore GRCOV parsing errors, see github.com/mozilla/grcov/issues/570
         timeout-minutes: 1 # Give GRCOV a short timeout in case it hangs after a panic
         run: |
-          chmod +x ./build/bin/grcov
-          ./build/bin/grcov build/cmake/src/CMakeFiles/mozillavpn.dir \
+          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
+          grcov build/profile \
               -s src -t lcov --branch --ignore-not-existing \
               -o ${{runner.temp}}/artifacts/functional_lcov.info
 

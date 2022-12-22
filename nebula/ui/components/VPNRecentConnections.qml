@@ -8,62 +8,13 @@ import QtQuick.Layouts 1.14
 import QtQml.Models 2.2
 
 import Mozilla.VPN 1.0
+import Mozilla.VPN.qmlcomponents 1.0
 
 ColumnLayout {
     property bool hasVisibleConnections: false
     property bool showMultiHopRecentConnections: true
     property real numVisibleConnections: recentConnectionsRepeater.count
-    property var recentConnectionsModel: getRecentConnectionsModel()
-
-    function getRecentConnectionsModel() {
-        const maxNumVisibleConnections = 2
-        const recentConnections = []
-        for (let i=1; i<VPNSettings.recentConnections.length; i++) {
-            if (recentConnections.length === maxNumVisibleConnections) {
-                return recentConnections;
-            }
-
-            const recentConnection = VPNSettings.recentConnections[i];
-            const servers = recentConnection.split(" -> ");
-            const isMultiHop = servers.length > 1;
-
-            if (isMultiHop !== showMultiHopRecentConnections) {
-                return recentConnections;
-            }
-
-            const connection = [];
-
-            for(let x = 0; x < servers.length; x++) {
-                let index = servers[x].lastIndexOf(",");
-                if (index <= 0) {
-                    console.log("Unable to parse server from " + servers[x]);
-                    continue;
-                }
-                let countryCode = servers[x].slice(index+1).trim();
-                let serverCityName = servers[x].slice(0, index).trim();
-
-                connection.push({
-                     countryCode: countryCode,
-                     serverCityName: serverCityName,
-                     localizedCityName: VPNLocalizer.localizedCityName(countryCode, serverCityName)
-                 });
-            }
-
-            const [{ localizedCityName: firstCityLocalizedName }, secondServer] = connection;
-            const accessibleLabel = secondServer
-                ? VPNl18n.MultiHopFeatureAccessibleNameRecentConnection
-                    .arg(firstCityLocalizedName)
-                    .arg(secondServer.localizedCityName)
-                : firstCityLocalizedName;
-
-            recentConnections.push({
-                isMultiHop,
-                connection,
-                accessibleLabel
-            });
-        }
-        return recentConnections
-    }
+    property var recentConnectionsModel: showMultiHopRecentConnections ? VPNRecentConnections.multiHopModel : VPNRecentConnections.singleHopModel
 
     function focusItemAt(idx) {
         if (!visible) {
@@ -73,11 +24,26 @@ ColumnLayout {
         recentConnectionsRepeater.itemAt(idx).forceActiveFocus();
     }
 
+    function generateServersList(exitCountryCode, localizedExitCityName, isMultiHop, entryCountryCode, localizedEntryCityName) {
+        const list = [];
+        if (isMultiHop) {
+            list.push({
+                countryCode: entryCountryCode,
+                localizedCityName: localizedEntryCityName,
+            });
+        }
+        list.push({
+            countryCode: exitCountryCode,
+            localizedCityName: localizedExitCityName,
+        });
+
+        return list;
+    }
 
     id: root
 
     spacing: VPNTheme.theme.windowMargin / 2
-    visible: root.recentConnectionsModel.length > 0
+    visible: !root.recentConnectionsModel.isEmpty
 
     function popStack() {
         stackview.pop()
@@ -89,7 +55,7 @@ ColumnLayout {
         Layout.leftMargin: VPNTheme.theme.windowMargin
         Layout.minimumHeight: VPNTheme.theme.vSpacing
         verticalAlignment: Text.AlignVCenter
-        visible: root.recentConnectionsModel.length > 0
+        visible: !root.recentConnectionsModel.isEmpty
 
     }
 
@@ -107,7 +73,10 @@ ColumnLayout {
             delegate: VPNClickableRow {
                 id: del
 
-                accessibleName: modelData.accessibleLabel
+                accessibleName: isMultiHop ?
+                    VPNl18n.MultiHopFeatureAccessibleNameRecentConnection
+                        .arg(localizedEntryCityName).arg(localizedExitCityName)
+                    : localizedExitCityName;
 
                 Layout.fillWidth: true
                 Layout.preferredHeight: VPNTheme.theme.rowHeight
@@ -120,15 +89,8 @@ ColumnLayout {
                 Keys.onUpPressed: recentConnectionsRepeater.itemAt(index - 1) ? recentConnectionsRepeater.itemAt(index - 1).forceActiveFocus() : serverSearchInput.forceActiveFocus()
 
                 onClicked: {
-                    let args = [];
                     popStack();
-
-                    if (modelData.isMultiHop) {
-                        return VPNController.changeServer(modelData.connection[1].countryCode, modelData.connection[1].serverCityName, modelData.connection[0].countryCode, modelData.connection[0].serverCityName)
-                    }
-
-                    return VPNController.changeServer(modelData.connection[0].countryCode, modelData.connection[0].serverCityName)
-
+                    VPNCurrentServer.changeServer(exitCountryCode, exitCityName, entryCountryCode, entryCityName);
                 }
 
                 RowLayout {
@@ -139,10 +101,11 @@ ColumnLayout {
                     height: parent.height
 
                     VPNServerLabel {
+
                         id: serverLabel
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                        serversList: modelData.connection
+                        serversList: generateServersList(exitCountryCode, localizedExitCityName, isMultiHop, entryCountryCode, localizedEntryCityName);
                     }
                 }
             }
@@ -154,7 +117,7 @@ ColumnLayout {
         Layout.preferredHeight: 1
         Layout.alignment: Qt.AlignHCenter
         color: VPNTheme.colors.grey10
-        visible: root.recentConnectionsModel.length > 0
+        visible: !root.recentConnectionsModel.isEmpty
     }
 
 }

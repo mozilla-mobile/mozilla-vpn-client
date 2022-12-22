@@ -18,7 +18,7 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          submodules: 'true'
 
       - name: Install dependencies
         shell: bash
@@ -49,7 +49,7 @@ jobs:
 
           if [[ "$GITREF" == "refs/heads/main" ]]; then
             if [[ ! -z $(git rev-list --after="25 hours" ${{github.sha}}) ]]; then
-              echo "::set-output name=nightly-changes::true"
+              echo "nightly-changes=true" >> $GITHUB_OUTPUT
             fi
           fi
 

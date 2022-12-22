@@ -205,7 +205,7 @@ class MVPNWasm {
   }
 
   _loadLanguage(lang) {
-    controller.setSetting('language-code', lang);
+    controller.setSetting('languageCode', lang);
   }
 
   _backButtonClicked() {

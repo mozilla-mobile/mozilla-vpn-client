@@ -23,22 +23,24 @@ ColumnLayout {
 
     VPNTextField {
         id: searchBar
+        objectName: "searchBarTextField"
 
         Accessible.editable: false
         Accessible.searchEdit: true
         Layout.fillWidth: true
 
-        _accessibleName: _placeholderText
         background: VPNInputBackground {}
         leftInset: VPNTheme.theme.windowMargin * 3
         leftPadding: VPNTheme.theme.windowMargin * 3
+        rightPadding: VPNTheme.theme.windowMargin * 3
+        rightInset: VPNTheme.theme.windowMargin * 3
+        hasError: _searchBarHasError
 
         onActiveFocusChanged: if (focus && vpnFlickable.ensureVisible) {
             vpnFlickable.ensureVisible(searchBar);
         }
         onLengthChanged: text => model.invalidate()
         onTextChanged: {
-            hasError = _searchBarHasError;
             if (focus) {
                 _editCallback();
             }
@@ -59,6 +61,7 @@ ColumnLayout {
 
     VPNContextualAlerts {
         id: searchWarning
+        objectName: "searchBarError"
         Layout.fillWidth: true
         visible: _searchBarHasError
 
