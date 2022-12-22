@@ -38,10 +38,10 @@ void TestSettings::transactionCommit() {
   SettingsHolder settingsHolder;
 
   QVERIFY(settingsHolder.beginTransaction());
-  settingsHolder.setTheme("AAA");
-  QCOMPARE(settingsHolder.theme(), "AAA");
+  settingsHolder.setFoobar("AAA");
+  QCOMPARE(settingsHolder.foobar(), "AAA");
   QVERIFY(settingsHolder.commitTransaction());
-  QCOMPARE(settingsHolder.theme(), "AAA");
+  QCOMPARE(settingsHolder.foobar(), "AAA");
 }
 
 void TestSettings::transactionRollback() {
@@ -49,21 +49,21 @@ void TestSettings::transactionRollback() {
 
   QVERIFY(settingsHolder.beginTransaction());
 
-  settingsHolder.setToken("TOKEN 1");
-  QCOMPARE(settingsHolder.token(), "TOKEN 1");
+  settingsHolder.setBarfoo("TOKEN 1");
+  QCOMPARE(settingsHolder.barfoo(), "TOKEN 1");
 
-  settingsHolder.setTheme("AAA");
-  settingsHolder.setTheme("BBB");
-  settingsHolder.setTheme("CCC");
-  QCOMPARE(settingsHolder.theme(), "CCC");
+  settingsHolder.setFoobar("AAA");
+  settingsHolder.setFoobar("BBB");
+  settingsHolder.setFoobar("CCC");
+  QCOMPARE(settingsHolder.foobar(), "CCC");
 
   int count = 0;
-  connect(&settingsHolder, &SettingsHolder::themeChanged, [&]() { ++count; });
+  connect(&settingsHolder, &SettingsHolder::foobarChanged, [&]() { ++count; });
 
   QVERIFY(settingsHolder.rollbackTransaction());
 
-  QCOMPARE(settingsHolder.theme(), DEFAULT_THEME);
-  QCOMPARE(settingsHolder.token(), "TOKEN 1");
+  QCOMPARE(settingsHolder.foobar(), "FOO BAR");
+  QCOMPARE(settingsHolder.barfoo(), "TOKEN 1");
   QCOMPARE(count, 1);
 }
 
@@ -76,10 +76,10 @@ void TestSettings::transactionRollbackStartup() {
     settingsHolder.doNotClearOnDTOR();
 
     QVERIFY(!settingsHolder.recoveredFromJournal());
-    settingsHolder.setTheme("AAA");
-    QCOMPARE(settingsHolder.theme(), "AAA");
-    settingsHolder.setToken("TOKEN 1");
-    QCOMPARE(settingsHolder.token(), "TOKEN 1");
+    settingsHolder.setFoobar("AAA");
+    QCOMPARE(settingsHolder.foobar(), "AAA");
+    settingsHolder.setBarfoo("TOKEN 1");
+    QCOMPARE(settingsHolder.barfoo(), "TOKEN 1");
   }
 
   // Step 2: let's start a transaction without finalizing it
@@ -88,14 +88,14 @@ void TestSettings::transactionRollbackStartup() {
     settingsHolder.doNotClearOnDTOR();
 
     QVERIFY(!settingsHolder.recoveredFromJournal());
-    QCOMPARE(settingsHolder.theme(), "AAA");
-    QCOMPARE(settingsHolder.token(), "TOKEN 1");
+    QCOMPARE(settingsHolder.foobar(), "AAA");
+    QCOMPARE(settingsHolder.barfoo(), "TOKEN 1");
 
     QVERIFY(settingsHolder.beginTransaction());
-    settingsHolder.setTheme("BBB");
-    QCOMPARE(settingsHolder.theme(), "BBB");
-    settingsHolder.setToken("TOKEN 2");
-    QCOMPARE(settingsHolder.token(), "TOKEN 2");
+    settingsHolder.setFoobar("BBB");
+    QCOMPARE(settingsHolder.foobar(), "BBB");
+    settingsHolder.setBarfoo("TOKEN 2");
+    QCOMPARE(settingsHolder.barfoo(), "TOKEN 2");
   }
 
   // Step 3: a new SettingsHolder object will rollback the changes using the
@@ -105,20 +105,20 @@ void TestSettings::transactionRollbackStartup() {
     settingsHolder.doNotClearOnDTOR();
 
     QVERIFY(settingsHolder.recoveredFromJournal());
-    QCOMPARE(settingsHolder.theme(), "AAA");
-    QCOMPARE(settingsHolder.token(), "TOKEN 2");
+    QCOMPARE(settingsHolder.foobar(), "AAA");
+    QCOMPARE(settingsHolder.barfoo(), "TOKEN 2");
 
-    settingsHolder.setTheme("BBB");
+    settingsHolder.setFoobar("BBB");
   }
 
   // Step 4: we do not use the journal file at the next restart
   {
     SettingsHolder settingsHolder;
     QVERIFY(!settingsHolder.recoveredFromJournal());
-    QCOMPARE(settingsHolder.theme(), "BBB");
-    QCOMPARE(settingsHolder.token(), "TOKEN 2");
+    QCOMPARE(settingsHolder.foobar(), "BBB");
+    QCOMPARE(settingsHolder.barfoo(), "TOKEN 2");
 
-    settingsHolder.setTheme("BBB");
+    settingsHolder.setFoobar("BBB");
   }
 }
 

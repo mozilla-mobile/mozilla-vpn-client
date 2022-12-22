@@ -189,8 +189,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/feedbackcategorymodel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/keys.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/keys.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/licensemodel.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/licensemodel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/location.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/location.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/recentconnections.cpp
@@ -322,7 +320,6 @@ target_sources(mozillavpn-sources INTERFACE
 
 # VPN Client UI resources
 target_sources(mozillavpn-sources INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/ui/license.qrc
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/ui/resources.qrc
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/ui/ui.qrc
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/resources/certs/certs.qrc

@@ -4,6 +4,7 @@
 
 #include "testurlopener.h"
 
+#include "env.h"
 #include "urlopener.h"
 
 void TestUrlOpener::urlQueryReplacement_data() {
@@ -17,6 +18,15 @@ void TestUrlOpener::urlQueryReplacement_data() {
       << QUrl("http://example.com?a=b&c=42")
       << QUrl("http://example.com?a=b&c=42");
   QTest::addRow("Replacement query param")
+      << QUrl(
+             "http://"
+             "example.com?a=__MZ_VERSION__&b=__MZ_BUILDNUMBER__&c=__MZ_OS__&"
+             "d=__"
+             "MZ_PLATFORM__&e=__MZ_ARCH__")
+      << QUrl(QString("http://example.com?a=%1&b=%2&c=%3&d=%4&e=%5")
+                  .arg(Env::versionString(), Env::buildNumber(),
+                       Env::osVersion(), Env::platform(), Env::architecture()));
+  QTest::addRow("Replacement query param (legacy)")
       << QUrl(
              "http://"
              "example.com?a=__VPN_VERSION__&b=__VPN_BUILDNUMBER__&c=__VPN_OS__&"

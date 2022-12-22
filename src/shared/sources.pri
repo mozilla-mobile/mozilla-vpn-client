@@ -21,6 +21,7 @@ SOURCES += \
         $$PWD/leakdetector.cpp \
         $$PWD/logger.cpp \
         $$PWD/loghandler.cpp \
+        $$PWD/models/licensemodel.cpp \
         $$PWD/networkmanager.cpp \
         $$PWD/qmlengineholder.cpp \
         $$PWD/qmlpath.cpp \
@@ -52,6 +53,7 @@ HEADERS += \
         $$PWD/leakdetector.h \
         $$PWD/logger.h \
         $$PWD/loghandler.h \
+        $$PWD/models/licensemodel.h \
         $$PWD/networkmanager.h \
         $$PWD/qmlengineholder.h \
         $$PWD/qmlpath.h \
@@ -78,3 +80,5 @@ ios {
     OBJECTIVE_SOURCES += \
         shared/platforms/macos/macoscryptosettings.mm
 }
+
+RESOURCES += shared/resources/license.qrc

@@ -12,7 +12,7 @@ void TestNetworkManager::basic() {
   SimpleNetworkManager snm;
   SettingsHolder settingsHolder;
   QCOMPARE(&snm, NetworkManager::instance());
-  QVERIFY(snm.userAgent().contains("MozillaVPN"));
+  QVERIFY(snm.userAgent().contains("FooBar"));
   QCOMPARE(snm.networkAccessManager(), snm.networkAccessManager());
 }
 

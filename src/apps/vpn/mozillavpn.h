@@ -22,7 +22,6 @@
 #include "models/devicemodel.h"
 #include "models/feedbackcategorymodel.h"
 #include "models/keys.h"
-#include "models/licensemodel.h"
 #include "models/location.h"
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
@@ -171,7 +170,6 @@ class MozillaVPN final : public QObject {
     return &m_private->m_supportCategoryModel;
   }
   Keys* keys() { return &m_private->m_keys; }
-  LicenseModel* licenseModel() { return &m_private->m_licenseModel; }
   Location* location() { return &m_private->m_location; }
   NetworkWatcher* networkWatcher() { return &m_private->m_networkWatcher; }
   ProfileFlow* profileFlow() { return &m_private->m_profileFlow; }
@@ -340,7 +338,6 @@ class MozillaVPN final : public QObject {
     IpAddressLookup m_ipAddressLookup;
     SupportCategoryModel m_supportCategoryModel;
     Keys m_keys;
-    LicenseModel m_licenseModel;
     Location m_location;
     NetworkWatcher m_networkWatcher;
     ReleaseMonitor m_releaseMonitor;

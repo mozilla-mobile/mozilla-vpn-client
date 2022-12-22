@@ -135,8 +135,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/models/feedbackcategorymodel.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/keys.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/keys.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/licensemodel.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/licensemodel.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/location.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/location.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/recentconnections.cpp
@@ -282,7 +280,6 @@ target_sources(unit_tests PRIVATE
 
 # VPN Client UI resources
 target_sources(unit_tests PRIVATE
-    ${MZ_SOURCE_DIR}/apps/vpn/ui/license.qrc
     ${MZ_SOURCE_DIR}/apps/vpn/resources/public_keys/public_keys.qrc
 )
 
@@ -304,52 +301,30 @@ target_sources(unit_tests PRIVATE
     testaddonindex.h
     testadjust.cpp
     testadjust.h
-    testcheckedint.h
-    testcheckedint.cpp
     testcommandlineparser.cpp
     testcommandlineparser.h
     testcomposer.cpp
     testcomposer.h
-    testfeature.cpp
-    testfeature.h
-    testipaddress.cpp
-    testipaddress.h
     testipaddresslookup.cpp
     testipaddresslookup.h
     testipfinder.cpp
     testipfinder.h
-    testlicense.cpp
-    testlicense.h
-    testlocalizer.cpp
-    testlocalizer.h
-    testlogger.cpp
-    testlogger.h
     testmodels.cpp
     testmodels.h
     testmozillavpnh.cpp
     testmozillavpnh.h
-    testnetworkmanager.cpp
-    testnetworkmanager.h
     testqmlpath.cpp
     testqmlpath.h
     testreleasemonitor.cpp
     testreleasemonitor.h
     testserveri18n.cpp
     testserveri18n.h
-    testsettings.cpp
-    testsettings.h
     teststatusicon.cpp
     teststatusicon.h
     testtasks.cpp
     testtasks.h
     testtasksentry.cpp
     testtasksentry.h
-    testtemporarydir.cpp
-    testtemporarydir.h
-    testthemes.cpp
-    testthemes.h
-    testurlopener.cpp
-    testurlopener.h
     websocket/testexponentialbackoffstrategy.cpp
     websocket/testexponentialbackoffstrategy.h
     websocket/testpushmessage.cpp
@@ -368,7 +343,6 @@ target_sources(unit_tests PRIVATE
     guides/guides.qrc
     qml/qml.qrc
     servers/servers.qrc
-    themes/themes.qrc
     tutorials/tutorials.qrc
 )
 
