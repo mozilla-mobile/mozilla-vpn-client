@@ -14,7 +14,7 @@ import compat 0.1
 RadioDelegate {
     property var value
     property alias iconSource: img.source
-    property var iconSize: 30
+    property real iconSize: 30
     property var uiState: VPNTheme.theme.uiState
 
     id: radio
