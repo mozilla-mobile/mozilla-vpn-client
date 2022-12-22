@@ -112,6 +112,8 @@ const homeScreen = {
     CONNECTION_INFO_TOGGLE: 'connectionInfoToggleButton',
     CONNECTION_BENCHMARK: 'VPNConnectionBenchmark',
     CONNECTION_INFO_RETRY: 'connectionInfoErrorRetryButton',
+    IP_INFO_PANEL: 'ipInfoPanel',
+    IP_INFO_TOGGLE: 'ipInfoToggleButton',
 
     // tips and tricks
     TIPS_AND_TRICKS_VIEW: 'settingsTipsAndTricksPage',
