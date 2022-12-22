@@ -19,29 +19,29 @@ import com.wireguard.config.Peer
 import com.wireguard.crypto.Key
 import org.json.JSONObject
 import java.util.*
+import org.mozilla.firefox.vpn.daemon.GleanMetrics.Sample
 
 class VPNService : android.net.VpnService() {
     private val tag = "VPNService"
     private var mBinder: VPNServiceBinder = VPNServiceBinder(this)
-    val mGlean = GleanUtil(this)
     private var mConfig: JSONObject? = null
     private var mConnectionTime: Long = 0
     private var mAlreadyInitialised = false
-    private val controllerPeriodicStateRecorderMsec: Long = 10800000
+    private val mGleanControllerStateTimerInterval: Long = 3 * 60 * 60 * 1000 // 3hrs
     private val mConnectionHealth = ConnectionHealth(this)
 
-    private val mGleanTimer = object : CountDownTimer(
-        controllerPeriodicStateRecorderMsec,
-        controllerPeriodicStateRecorderMsec / 4
+    private val mGleanControllerStateTimer = object : CountDownTimer(
+        mGleanControllerStateTimerInterval,
+        mGleanControllerStateTimerInterval / 4
     ) {
-        override fun onTick(millisUntilFinished: Long) {}
+        override fun onTick(millisUntilFinished: Long) { }
         override fun onFinish() {
             if (!isUp) {
-                mGlean.recordGleanEvent("controllerStateOff")
+                Sample.controllerStateOff.record()
             } else {
                 // When we're stil connected, rescheudle.
                 this.start()
-                mGlean.recordGleanEvent("controllerStateOn")
+                Sample.controllerStateOn.record()
             }
         }
     }
@@ -71,7 +71,6 @@ class VPNService : android.net.VpnService() {
             return
         }
         Log.init(this)
-        mGlean.initializeGlean()
         SharedLibraryLoader.loadSharedLibrary(this, "wg-go")
         Log.i(tag, "Initialised Service with Wireguard Version ${wgVersion()}")
         mAlreadyInitialised = true
@@ -166,7 +165,7 @@ class VPNService : android.net.VpnService() {
         }
 
     /**
-    * Checks if there is a config loaded 
+    * Checks if there is a config loaded
     * or some available in the Storage to fetch.
     * if this is false calling {reconnect()} will abort.
     * @returns whether a config is found.
@@ -251,7 +250,7 @@ class VPNService : android.net.VpnService() {
             .apply()
 
         NotificationUtil.get(this)?.show(this) // Go foreground
-        mGleanTimer.start()
+        mGleanControllerStateTimer.start()
 
         if (useFallbackServer) {
             mConnectionHealth.start(
@@ -318,7 +317,7 @@ class VPNService : android.net.VpnService() {
         // so we should get rid of it. :)
         val shouldClearNotification = !mBinder.isClientAttached
         stopForeground(shouldClearNotification)
-        mGleanTimer.cancel()
+        mGleanControllerStateTimer.cancel()
         mConnectionHealth.stop()
         // Clear the notification message, so the content
         // is not "disconnected" in case we connect from a non-client.
