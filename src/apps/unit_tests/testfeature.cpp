@@ -1,0 +1,79 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include "testfeature.h"
+
+#include "feature.h"
+#include "helper.h"
+#include "settingsholder.h"
+
+void TestFeature::flipOnOff() {
+  SettingsHolder settingsHolder;
+
+  // Fresh settings!
+  QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureA"));
+  QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureB"));
+  QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureC"));
+  QVERIFY(!settingsHolder.featuresFlippedOff().contains("testFeatureA"));
+  QVERIFY(!settingsHolder.featuresFlippedOff().contains("testFeatureB"));
+  QVERIFY(!settingsHolder.featuresFlippedOff().contains("testFeatureC"));
+
+  // Let's create a few features
+
+  QVERIFY(!Feature::getOrNull("testFeatureA"));
+  Feature fA(
+      "testFeatureA", "Feature A",
+      false,                          // Is Major Feature
+      L18nStrings::Empty,             // Display name
+      L18nStrings::Empty,             // Description
+      L18nStrings::Empty,             // LongDescr
+      "",                             // ImagePath
+      "",                             // IconPath
+      "",                             // link URL
+      "1.0",                          // released
+      []() -> bool { return true; },  // Can be flipped on
+      []() -> bool { return true; },  // Can be flipped off
+      QStringList(),                  // feature dependencies
+      []() -> bool { return true; });
+  QVERIFY(!!Feature::get("testFeatureA"));
+  QVERIFY(Feature::get("testFeatureA")->isSupported());
+
+  QVERIFY(!Feature::getOrNull("testFeatureB"));
+  Feature fB(
+      "testFeatureB", "Feature B",
+      false,                          // Is Major Feature
+      L18nStrings::Empty,             // Display name
+      L18nStrings::Empty,             // Description
+      L18nStrings::Empty,             // LongDescr
+      "",                             // ImagePath
+      "",                             // IconPath
+      "",                             // link URL
+      "1.0",                          // released
+      []() -> bool { return true; },  // Can be flipped on
+      []() -> bool { return true; },  // Can be flipped off
+      QStringList(),                  // feature dependencies
+      []() -> bool { return false; });
+  QVERIFY(!!Feature::get("testFeatureB"));
+  QVERIFY(!Feature::get("testFeatureB")->isSupported());
+
+  QVERIFY(!Feature::getOrNull("testFeatureC"));
+  Feature fC(
+      "testFeatureC", "Feature C",
+      false,                           // Is Major Feature
+      L18nStrings::Empty,              // Display name
+      L18nStrings::Empty,              // Description
+      L18nStrings::Empty,              // LongDescr
+      "",                              // ImagePath
+      "",                              // IconPath
+      "",                              // link URL
+      "1.0",                           // released
+      []() -> bool { return false; },  // Can be flipped on
+      []() -> bool { return false; },  // Can be flipped off
+      QStringList(),                   // feature dependencies
+      []() -> bool { return false; });
+  QVERIFY(!!Feature::get("testFeatureC"));
+  QVERIFY(!Feature::get("testFeatureC")->isSupported());
+}
+
+static TestFeature s_testFeature;
