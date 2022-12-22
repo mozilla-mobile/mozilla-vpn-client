@@ -87,6 +87,20 @@ linux/kinetic:
     run:
         command: /builds/worker/builder.sh
 
+linux/fedora-fc35:
+    description: "Linux Build (Fedora/35)"
+    treeherder:
+        platform: linux/fedora-fc35
+    fetches:
+        build:
+            - artifact: mozillavpn-sources.tar.gz
+    dependencies:
+        build: build-linux/source
+    worker:
+        docker-image: {in-tree: linux-build-fedora-fc35}
+    run:
+        command: /builds/worker/builder.sh
+
 linux/fedora-fc36:
     description: "Linux Build (Fedora/36)"
     treeherder:
@@ -98,8 +112,6 @@ linux/fedora-fc36:
         build: build-linux/source
     worker:
         docker-image: {in-tree: linux-build-fedora-fc36}
-    release-artifacts:
-        - mozillavpn-fedora-fc36.tar.gz
     run:
         command: /builds/worker/builder.sh
 
@@ -114,7 +126,5 @@ linux/fedora-fc37:
         build: build-linux/source
     worker:
         docker-image: {in-tree: linux-build-fedora-fc37}
-    release-artifacts:
-        - mozillavpn-fedora-fc37.tar.gz
     run:
         command: /builds/worker/builder.sh

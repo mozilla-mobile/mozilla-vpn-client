@@ -96,6 +96,11 @@ tasks:
         definition: linux-dpkg-build
         args:
             DOCKER_BASE_IMAGE: ubuntu:kinetic
+    linux-build-fedora-fc35:
+        symbol: I(linux-fedora-fc35)
+        definition: linux-rpm-build
+        args:
+            DOCKER_BASE_IMAGE: fedora:35
     linux-build-fedora-fc36:
         symbol: I(linux-fedora-fc36)
         definition: linux-rpm-build
