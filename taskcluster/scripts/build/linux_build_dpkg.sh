@@ -77,7 +77,7 @@ export DEBFULLNAME="Mozilla VPN Team"
 DPKG_PACKAGE_SRCNAME=$(dpkg-parsechangelog -l mozillavpn-source/debian/changelog -S Source)
 DPKG_PACKAGE_BASE_VERSION=$(dpkg-parsechangelog -l mozillavpn-source/debian/changelog -S Version)
 DPKG_PACKAGE_DIST_VERSION=${DPKG_PACKAGE_BASE_VERSION}-${DIST}1
-dch -l $(pwd)/mozillavpn-source/debian/changelog -v ${DPKG_PACKAGE_BASE_VERSION}-${DIST}1 -D ${DIST} \
+dch -c $(pwd)/mozillavpn-source/debian/changelog -v ${DPKG_PACKAGE_BASE_VERSION}-${DIST}1 -D ${DIST} \
     "Release for ${DIST}"
 
 # Install the package build dependencies.
