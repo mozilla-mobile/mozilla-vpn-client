@@ -12,7 +12,7 @@ Item {
     id: root
 
     property var headlineText
-    property var footerLinkIsVisible: true
+    property bool footerLinkIsVisible: true
 
     Component.onCompleted: fade.start()
     height: window.safeContentHeight
