@@ -417,6 +417,9 @@ connectionInfo:
     comment:
       - Exit server IP label for IPv6.
       - IPv6 is the abbreviation for Internet Procol version 6. This is followed by the user’s IPv6 address.
+  ipInfoButtonLabel:
+    value: Show IP info
+    comment: Accessible label for the IP info button that shows the IP info panel when clicked.
 
 crashreporter:
   mainTitle:

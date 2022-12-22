@@ -455,7 +455,7 @@ Item {
         accessibleName: box.connectionInfoScreenVisible ? connectionInfoCloseText : VPNl18n.ConnectionInfoOpenButton
         Accessible.ignored: !visible
         buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
-        enabled: visible && !ipInfo.isOpen
+        enabled: visible && !ipInfoPanel.isOpen
         opacity: visible ? 1 : 0
         z: 1
 
@@ -588,86 +588,29 @@ Item {
         id: toggle
         objectName: "controllerToggle"
 
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 48
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-        Accessible.ignored: connectionInfoScreenVisible
-        enabled: !connectionInfoScreenVisible
+        anchors {
+            bottom: parent.bottom
+            bottomMargin: 48
+            horizontalCenterOffset: 0
+            horizontalCenter: parent.horizontalCenter
+        }
+        enabled: !connectionInfoScreenVisible && !ipInfoPanel.isOpen
+
+        Accessible.ignored: connectionInfoScreenVisible || ipInfoPanel.isOpen
     }
 
-    Rectangle {
-        property bool isOpen: false
+    VPNIPInfoPanel {
+        id: ipInfoPanel
+        objectName: "ipInfoPanel"
 
-        id: ipInfo
-
-        anchors.fill: parent
-        color: VPNTheme.colors.primary
-        opacity: ipInfo.isOpen ? 1 : 0
-        radius: boxBackground.radius
+        opacity: ipInfoPanel.isOpen ? 1 : 0
         visible: opacity > 0
         z: 1
-
-        // IP Adresses
-        ColumnLayout {
-            anchors {
-                left: parent.left
-                leftMargin: VPNTheme.theme.windowMargin * 1.5
-                right: parent.right
-                rightMargin: VPNTheme.theme.windowMargin * 1.5
-                top: parent.top
-                topMargin: VPNTheme.theme.windowMargin * 3
-            }
-            width: parent.width
-
-            VPNBoldLabel {
-                color: VPNTheme.colors.white
-                text: VPNl18n.ConnectionInfoMetricsTitle
-                wrapMode: Text.WordWrap
-
-                Accessible.role: Accessible.StaticText
-                Accessible.name: text
-                Layout.bottomMargin: VPNTheme.theme.listSpacing * 1.5
-                Layout.fillWidth: true
-            }
-
-            VPNIPAddress {
-                id: ipv4Address
-
-                // Exit IP:
-                ipVersionText: VPNl18n.ConnectionInfoExitServerLabelIp
-                ipAddressText: VPNIPAddressLookup.ipv4Address
-                visible: VPNIPAddressLookup.ipv4Address !== ""
-            }
-
-            Rectangle {
-                color: VPNTheme.colors.white
-                height: 1
-                opacity: 0.2
-                visible: ipv6Address.visible
-                Layout.fillWidth: true
-            }
-
-            VPNIPAddress {
-                id: ipv6Address
-
-                // Exit IPv6:
-                ipVersionText: VPNl18n.ConnectionInfoExitServerLabelIpv6
-                ipAddressText: VPNIPAddressLookup.ipv6Address
-                visible: VPNIPAddressLookup.ipv6Address !== ""
-            }
-        }
-
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 300
-            }
-        }
     }
 
     VPNIconButton {
-        id: ipInfoButton
-        objectName: "ipInfoButton"
+        id: ipInfoToggleButton
+        objectName: "ipInfoToggleButton"
 
         //% "Close"
         property var connectionInfoCloseText: qsTrId("vpn.connectionInfo.close")
@@ -678,7 +621,9 @@ Item {
             top: parent.top
             topMargin: VPNTheme.theme.windowMargin / 2
         }
-        accessibleName: ipInfo.isOpen ? connectionInfoCloseText : "Show ip info"
+        accessibleName: ipInfoPanel.isOpen
+            ? connectionInfoCloseText
+            : VPNl18n.ConnectionInfoIpInfoButtonLabel
         buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
         enabled: visible
         opacity: visible ? 1 : 0
@@ -687,17 +632,17 @@ Item {
             && !connectionInfoScreen.isTransitioning
         z: 1
         onClicked: {
-            ipInfo.isOpen = !ipInfo.isOpen;
+            ipInfoPanel.isOpen = !ipInfoPanel.isOpen;
         }
         Accessible.ignored: !visible
 
         Image {
-            property int iconSize: ipInfo.isOpen
+            property int iconSize: ipInfoPanel.isOpen
                 ? VPNTheme.theme.iconSize
                 : VPNTheme.theme.iconSize * 1.5
 
-            anchors.centerIn: ipInfoButton
-            source: ipInfo.isOpen
+            anchors.centerIn: ipInfoToggleButton
+            source: ipInfoPanel.isOpen
                 ? "qrc:/nebula/resources/close-white.svg"
                 : "qrc:/nebula/resources/connection-info.svg"
             sourceSize {
