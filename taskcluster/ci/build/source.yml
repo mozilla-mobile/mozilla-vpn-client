@@ -22,6 +22,8 @@ source/vpn:
     add-index-routes:
         name: source
         type: build
+    release-artifacts:
+        - mozillavpn-sources.tar.gz
     run:
         using: run-task
         use-caches: true

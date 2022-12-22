@@ -22,7 +22,7 @@ only-for-build-types:
     - android-x86/release
     - android-arm64/release
     - android-armv7/release
-    # - linux/opt
+    - source/vpn
     - macos/opt
     - windows/opt
     - addons/opt
@@ -37,7 +37,7 @@ job-template:
     signing-format:
         by-build-type:
             android.*: autograph_apk
-            linux.*: autograph_debsign
+            source/vpn: autograph_debsign
             macos.*: macapp
             windows/opt: autograph_authenticode
             addons/opt: autograph_rsa
@@ -55,7 +55,7 @@ job-template:
                 android-x86/release: android/x86
                 android-arm64/release: android/arm64-v8a
                 android-armv7/release: android/armv7
-                linux/opt: linux/opt
+                source/vpn: linux/opt
                 macos/opt: macos/opt
                 windows/opt: windows/x86_64
                 addons/opt: addons/opt
