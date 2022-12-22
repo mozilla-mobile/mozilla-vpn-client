@@ -7,6 +7,7 @@
 # so we generate the SDK oursevels.
 
 enable_language(Swift)
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
 
 set(GLEAN_VENDORED_PATH ${CMAKE_SOURCE_DIR}/3rdparty/glean)
 
@@ -71,7 +72,7 @@ target_sources(iosglean PUBLIC
 # and build the internal Glean metrics file
 execute_process(
     COMMAND ${CMAKE_COMMAND} -E env
-        ${CARGO_EXECUTABLE} run --manifest-path ${GLEAN_VENDORED_PATH}/tools/embedded-uniffi-bindgen/Cargo.toml 
+        ${CARGO_BUILD_TOOL} run --manifest-path ${GLEAN_VENDORED_PATH}/tools/embedded-uniffi-bindgen/Cargo.toml 
             -- generate -l swift -o ${CMAKE_CURRENT_BINARY_DIR}/glean
             ${GLEAN_VENDORED_PATH}/glean-core/src/glean.udl
     COMMAND ${CMAKE_COMMAND} -E env     
@@ -109,9 +110,9 @@ set_source_files_properties(
 )
 target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
-    platforms/ios/iosgleanbridge.swift
-    platforms/ios/iosgleanbridge.mm
-    platforms/ios/iosgleanbridge.h
+    ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/ios/iosgleanbridge.swift
+    ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/ios/iosgleanbridge.mm
+    ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/ios/iosgleanbridge.h
 )
 
 target_link_libraries(iosglean PRIVATE vpnglean)

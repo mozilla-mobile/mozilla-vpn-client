@@ -85,7 +85,7 @@ target_include_directories(networkextension PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 ## TODO: The upstream makefile also makes an attempt to patch the golang runtime
 ## to provide the boot-time clock instead of an uptime clock. We should probably
 ## make an attempt to do the same, somehow?
-include(${CMAKE_SOURCE_DIR}/scripts/vpn/cmake/golang.cmake)
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
 
 ## Build the wireguard go library for iOS simulation.
 ## TODO: Some special handling around GOARCH for
