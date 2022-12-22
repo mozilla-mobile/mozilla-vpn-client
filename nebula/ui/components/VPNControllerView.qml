@@ -634,11 +634,8 @@ Item {
             VPNIPAddress {
                 id: ipv4Address
 
-                ipVersionText: VPNIPAddressLookup.ipv6Address === ""
-                    // Exit IP:
-                    ? VPNl18n.ConnectionInfoExitServerLabelIp
-                    // Exit IPv4:
-                    : VPNl18n.ConnectionInfoExitServerLabelIpv4
+                // Exit IP:
+                ipVersionText: VPNl18n.ConnectionInfoExitServerLabelIp
                 ipAddressText: VPNIPAddressLookup.ipv4Address
                 visible: VPNIPAddressLookup.ipv4Address !== ""
             }
@@ -653,6 +650,7 @@ Item {
 
             VPNIPAddress {
                 id: ipv6Address
+
                 // Exit IPv6:
                 ipVersionText: VPNl18n.ConnectionInfoExitServerLabelIpv6
                 ipAddressText: VPNIPAddressLookup.ipv6Address
