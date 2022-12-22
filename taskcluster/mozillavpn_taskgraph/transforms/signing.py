@@ -35,7 +35,7 @@ SIGNING_BUILD_TYPES = PRODUCTION_SIGNING_BUILD_TYPES + [
 def set_run_on_tasks_for(config, tasks):
     for task in tasks:
         if task["attributes"]["build-type"] in SIGNING_BUILD_TYPES:
-            task["run-on-tasks-for"] = ["github-push"]
+            task["run-on-tasks-for"] = ["github-push", "github-pull-request"]
         yield task
 
 
