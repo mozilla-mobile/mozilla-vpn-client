@@ -84,6 +84,7 @@ VPNFlickable {
                             anchors.left: parent.left
                             anchors.bottom: parent.bottom
 
+                            enabled: radioButton.enabled
                             width: Math.min(parent.implicitWidth, parent.width)
                             propagateClickToParent: false
                             onClicked: VPNSettings.dnsProvider = settingValue
@@ -122,7 +123,7 @@ VPNFlickable {
                                 enabled: (VPNSettings.dnsProvider === VPNSettings.Custom) && vpnIsOff
                                 onEnabledChanged: if(enabled) forceActiveFocus()
 
-                                _placeholderText: VPNSettings.placeholderUserDNS
+                                _placeholderText: VPN.placeholderUserDNS
                                 text: ""
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 40
