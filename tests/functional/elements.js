@@ -171,6 +171,7 @@ const authScreen = {
     START_BUTTON: 'authStart-button',
     START_BACK_BUTTON: 'authStart-backButton',
     SIGNIN_PASS_INPUT: 'authSignIn-passwordInput',
+    SIGNUP_PASS_PASTE_BUTTON: 'authSignUp-passwordInputPasteButton',
     SIGNUP_PASS_INPUT: 'authSignUp-passwordInput',
     PASS_INPUT_CONDITION: 'authSignUp-passwordConditionCommon',
     PASS_LENGTH_CONDITION: 'authSignUp-passwordConditionLength',
@@ -188,13 +189,15 @@ const authScreen = {
         BACK: 'authVerificationSessionByEmailNeeded-backButton',
         GET_HELP: 'authVerificationSessionByEmailNeeded-getHelpLink',
         EMAIL_BUTTON: 'authVerificationSessionByEmailNeeded-button',
+        PASTE_BUTTON:'authVerificationSessionByEmailNeeded-textInputPasteButton',
     },
 
     verificationBySessionTotpView: {
         GET_HELP_LINK: 'authVerificationSessionByTotpNeeded-getHelpLink',
         BACK: 'authVerificationSessionByTotpNeeded-backButton',
+        PASTE_BUTTON:'authVerificationSessionByTotpNeeded-textInputPasteButton',
         TEXT_INPUT: 'authVerificationSessionByTotpNeeded-textInput',
-        TOTP_NEEDED_BUTTON: 'authVerificationSessionByTotpNeeded-button'
+        TOTP_NEEDED_BUTTON: 'authVerificationSessionByTotpNeeded-button',
     },
 
     authUnblockCodeView: {
@@ -202,6 +205,7 @@ const authScreen = {
         BACK: 'authUnblockCodeNeeded-backButton',
         CODE_INPUT: 'authUnblockCodeNeeded-textInput',
         CODE_BUTTON: 'authUnblockCodeNeeded-button',
+        PASTE_BUTTON:'authUnblockCodeNeeded-textInputPasteButton',
     }
 }
 

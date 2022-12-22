@@ -114,11 +114,22 @@ describe('User authentication', function() {
           'false');
 
       await vpn.waitForElementProperty(
-          authScreen.SIGNUP_BUTTON, 'enabled', 'false');
+        authScreen.SIGNUP_BUTTON, 'enabled', 'false');
       await vpn.setElementProperty(
           authScreen.SIGNUP_PASS_INPUT, 'text', 's', 'P4ass0rd!!');
       await vpn.waitForElementProperty(
-          authScreen.SIGNUP_BUTTON, 'enabled', 'true');
+        authScreen.SIGNUP_BUTTON, 'enabled', 'true');
+      
+      await vpn.setElementProperty(
+          authScreen.SIGNUP_PASS_INPUT, 'text', 's', '');
+      await vpn.waitForElementProperty(
+        authScreen.SIGNUP_BUTTON, 'enabled', 'false');
+
+      await vpn.copyToClipboard('P4ass0rd!!');
+      await vpn.clickOnElement(authScreen.SIGNUP_PASS_PASTE_BUTTON);
+
+      await vpn.waitForElementProperty(
+        authScreen.SIGNUP_BUTTON, 'enabled', 'true');
       await vpn.clickOnElement(authScreen.SIGNUP_BUTTON);
 
       await vpn.waitForElementProperty('VPN', 'userState', 'UserAuthenticated');
@@ -200,6 +211,12 @@ describe('User authentication', function() {
           authScreen.verificationByEmailView.TEXT_INPUT, 'text', 's', '123456');
       await vpn.waitForElementProperty(
           authScreen.verificationByEmailView.EMAIL_BUTTON, 'enabled', 'true');
+
+      await vpn.setElementProperty(
+        authScreen.verificationByEmailView.TEXT_INPUT, 'text', 's', '');
+      await vpn.copyToClipboard('654321');
+      await vpn.clickOnElement(authScreen.verificationByEmailView.PASTE_BUTTON);
+
       await vpn.waitForElement(authScreen.verificationByEmailView.EMAIL_BUTTON);
       await vpn.clickOnElement(authScreen.verificationByEmailView.EMAIL_BUTTON);
 
@@ -289,6 +306,13 @@ describe('User authentication', function() {
       await vpn.waitForElementProperty(
           authScreen.verificationBySessionTotpView.TOTP_NEEDED_BUTTON,
           'enabled', 'true');
+      
+      await vpn.setElementProperty(
+        authScreen.verificationBySessionTotpView.TEXT_INPUT, 'text', 's',
+        '');
+      await vpn.copyToClipboard('123456');
+      await vpn.clickOnElement(authScreen.verificationBySessionTotpView.PASTE_BUTTON);
+    
       await vpn.waitForElement(
           authScreen.verificationBySessionTotpView.TOTP_NEEDED_BUTTON);
       await vpn.clickOnElement(
@@ -342,7 +366,10 @@ describe('User authentication', function() {
       await vpn.waitForElementProperty(
           authScreen.authUnblockCodeView.CODE_BUTTON, 'enabled', 'false');
       await vpn.setElementProperty(
-          authScreen.authUnblockCodeView.CODE_INPUT, 'text', 's', '12345678');
+        authScreen.authUnblockCodeView.CODE_INPUT, 'text', 's', '');
+      await vpn.copyToClipboard("12345678");
+      await vpn.clickOnElement(authScreen.authUnblockCodeView.PASTE_BUTTON);
+
       await vpn.waitForElementProperty(
           authScreen.authUnblockCodeView.CODE_BUTTON, 'enabled', 'true');
       await vpn.waitForElementAndClick(
@@ -476,8 +503,10 @@ describe('User authentication', function() {
       await vpn.waitForElement(authScreen.SIGNIN_PASS_INPUT);
       await vpn.waitForElementProperty(
           authScreen.SIGNIN_PASS_INPUT, 'visible', 'true');
-      await vpn.setElementProperty(
-          authScreen.SIGNIN_PASS_INPUT, 'text', 's', 'P4ass0rd!!');
+
+      await vpn.waitForElement(authScreen.SIGNIN_PASS_PASTE_BUTTON)
+      await vpn.copyToClipboard('pa$$vv0rd');
+      await vpn.clickOnElement(authScreen.SIGNIN_PASS_PASTE_BUTTON);
 
       await vpn.waitForElementProperty(
           authScreen.SIGNIN_BUTTON, 'enabled', 'true');
