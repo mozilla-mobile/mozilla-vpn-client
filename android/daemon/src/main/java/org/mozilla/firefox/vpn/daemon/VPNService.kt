@@ -165,11 +165,11 @@ class VPNService : android.net.VpnService() {
         }
 
     /**
-    * Checks if there is a config loaded
-    * or some available in the Storage to fetch.
-    * if this is false calling {reconnect()} will abort.
-    * @returns whether a config is found.
-    */
+     * Checks if there is a config loaded
+     * or some available in the Storage to fetch.
+     * if this is false calling {reconnect()} will abort.
+     * @returns whether a config is found.
+     */
     var canActivate: Boolean = false
         get() {
             if (mConfig != null) {
