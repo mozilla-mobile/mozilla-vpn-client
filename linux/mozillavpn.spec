@@ -22,6 +22,9 @@ BuildRequires: openssl-devel
 BuildRequires: polkit-devel
 BuildRequires: python3-yaml
 BuildRequires: qt6-qtbase-devel >= 6.0
+BuildRequires: qt6-qtbase-mysql >= 6.0
+BuildRequires: qt6-qtbase-odbc >= 6.0
+BuildRequires: qt6-qtbase-postgresql >= 6.0
 BuildRequires: qt6-qtnetworkauth-devel >= 6.0
 BuildRequires: qt6-qtdeclarative-devel >= 6.0
 BuildRequires: qt6-qtsvg-devel >= 6.0
