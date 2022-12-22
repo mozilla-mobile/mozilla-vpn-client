@@ -13,7 +13,6 @@
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "serveri18n.h"
 #include "settingsholder.h"
 
 #ifdef MZ_IOS
