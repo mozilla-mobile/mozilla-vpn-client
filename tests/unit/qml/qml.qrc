@@ -1,0 +1,6 @@
+<RCC>
+    <qresource>
+        <file>a.qml</file>
+        <file>components/FooBar.qml</file>
+    </qresource>
+</RCC>

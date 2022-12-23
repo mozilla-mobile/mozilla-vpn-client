@@ -44,6 +44,10 @@
       "type": "boolean",
       "description": "Do we need to revert all the settings changes at the end of the tutorial?"
     },
+    "support_qml_path": {
+      "type": "boolean",
+      "description": "True if the QML paths are written in the QmlPath syntax"
+    },
     "steps": {
       "type": "array",
       "description": "The list of text steps",

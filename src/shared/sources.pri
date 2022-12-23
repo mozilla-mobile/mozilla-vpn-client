@@ -18,6 +18,7 @@ SOURCES += \
         $$PWD/leakdetector.cpp \
         $$PWD/logger.cpp \
         $$PWD/loghandler.cpp \
+        $$PWD/qmlpath.cpp \
         $$PWD/rfc/rfc1112.cpp \
         $$PWD/rfc/rfc1918.cpp \
         $$PWD/rfc/rfc4193.cpp \
@@ -41,6 +42,7 @@ HEADERS += \
         $$PWD/leakdetector.h \
         $$PWD/logger.h \
         $$PWD/loghandler.h \
+        $$PWD/qmlpath.h \
         $$PWD/rfc/rfc1112.h \
         $$PWD/rfc/rfc1918.h \
         $$PWD/rfc/rfc4193.h \

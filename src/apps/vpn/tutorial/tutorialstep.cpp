@@ -149,7 +149,9 @@ void TutorialStep::startInternal() {
     }
 
     case StateTooltip: {
-      QObject* element = InspectorUtils::findObject(m_element);
+      QObject* element = m_parent->supportQmlPath()
+                             ? InspectorUtils::queryObject(m_element)
+                             : InspectorUtils::findObject(m_element);
       if (!element) {
         m_timer.start(TIMEOUT_ITEM_TIMER_MSEC);
         return;
@@ -177,7 +179,9 @@ void TutorialStep::startInternal() {
 }
 
 bool TutorialStep::itemPicked(const QList<QQuickItem*>& list) {
-  QObject* element = InspectorUtils::findObject(m_element);
+  QObject* element = m_parent->supportQmlPath()
+                         ? InspectorUtils::queryObject(m_element)
+                         : InspectorUtils::findObject(m_element);
   if (element) {
     QQuickItem* item = qobject_cast<QQuickItem*>(element);
     Q_ASSERT(item);
