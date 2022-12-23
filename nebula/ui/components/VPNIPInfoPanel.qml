@@ -50,7 +50,7 @@ Rectangle {
             color: VPNTheme.colors.white
             height: 1
             opacity: 0.2
-            visible: ipv6Address.visible
+            visible: ipv4Address.visible
             Layout.fillWidth: true
         }
 
@@ -61,6 +61,14 @@ Rectangle {
             ipVersionText: VPNl18n.ConnectionInfoExitServerLabelIpv6
             ipAddressText: VPNIPAddressLookup.ipv6Address
             visible: VPNIPAddressLookup.ipv6Address !== ""
+        }
+
+        Rectangle {
+            color: VPNTheme.colors.white
+            height: 1
+            opacity: 0.2
+            visible: ipv6Address.visible
+            Layout.fillWidth: true
         }
     }
 
