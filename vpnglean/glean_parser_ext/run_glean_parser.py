@@ -66,7 +66,11 @@ def rust_metrics(output_fd, *args):
 
 def cpp_metrics(output_fd, *args):
     all_objs, options = parse(args)
-    cpp.output_cpp(all_objs, output_fd, options)
+    cpp.output_source(all_objs, output_fd, options)
+
+def cpp_headers(output_fd, *args):
+    all_objs, options = parse(args)
+    cpp.output_header(all_objs, output_fd, options)
 
 
 def create_dir(path):
@@ -97,10 +101,19 @@ if __name__ == "__main__":
         create_dir(generated_rust_files_path)
         create_dir(generated_cpp_files_path)
 
-        # Generate C++ files
+        # Generate C++ header files
         for [ output, input ] in [
             [os.path.join(generated_cpp_files_path, "pings.h"), os.path.join(yaml_files_path, "pings.yaml")],
             [os.path.join(generated_cpp_files_path, "metrics.h"), os.path.join(yaml_files_path, "metrics.yaml")],
+        ]:
+            print("Generating {} from {}".format(output, input))
+            with open(output, 'w+', encoding='utf-8') as f:
+                cpp_headers(f, input)
+
+        # Generate C++ source files
+        for [ output, input ] in [
+            [os.path.join(generated_cpp_files_path, "pings.cpp"), os.path.join(yaml_files_path, "pings.yaml")],
+            [os.path.join(generated_cpp_files_path, "metrics.cpp"), os.path.join(yaml_files_path, "metrics.yaml")],
         ]:
             print("Generating {} from {}".format(output, input))
             with open(output, 'w+', encoding='utf-8') as f:
@@ -121,7 +134,19 @@ if __name__ == "__main__":
 
         print("Generating Glean files for '{}' on '{}' with arguments '{}'.".format(lang, file_path, glean_parser_args))
 
-        fn = rust_metrics if lang == "rust" else cpp_metrics
+        # Guess language and operation from the file extension.
+        file_split = os.path.splitext(file_path)
+        if file_split[1] == '.rs':
+            fn = rust_metrics
+        elif file_split[1] == '.cpp':
+            fn = cpp_metrics
+        elif file_split[1] == '.h':
+            fp = cpp_headers 
+        else:
+            print(f'Unknown language for extension: "{file_split[1]}"', file=sys.stderr)
+            sys.exit(1)
+
+        # Generate the file
         with open(file_path, 'w+', encoding='utf-8') as f:
             print("Generating {} with args {}".format(filepath, glean_parser_args))
             fn(f, *glean_parser_args)
