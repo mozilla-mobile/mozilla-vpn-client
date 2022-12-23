@@ -2,6 +2,29 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+## Add a static library for the generated C++ code.
+add_library(vpnglean STATIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/event.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/ping.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/event.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ping.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/metrics.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/pings.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.cpp
+)
+set_source_files_properties(
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/metrics.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/pings.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.cpp
+    PROPERTIES GENERATED TRUE
+)
+target_include_directories(vpnglean PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/generated
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_BINARY_DIR}
+)
+target_link_libraries(vpnglean PRIVATE Qt6::Core Qt6::Qml)
+
 # glean-core cannot be compiled to WASM
 # See: https://blog.mozilla.org/data/2020/09/25/this-week-in-glean-glean-core-to-wasm-experiment/
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
@@ -48,7 +71,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 
 
     ## Build the vpnglean Rust library
-    add_rust_library(vpnglean
+    add_rust_library(vpnglean_bindings
         ARCH ${RUST_ARCH}
         PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
         CRATE_NAME vpnglean
@@ -57,19 +80,17 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
             ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.rs
             ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.rs
     )
+    target_link_libraries(vpnglean PRIVATE vpnglean_bindings)
 
     set(HEADER_FILE vpnglean.h)
-    set_property(TARGET vpnglean APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
-        ${CMAKE_CURRENT_BINARY_DIR}
-    )
 else()
     message("Cannot build vpnglean Rust library build for WASM. Skipping.")
     # Since the metric recording code is sprinkled throughout the code,
     # it's easier to just generate the APIs and have them be noop.
     add_custom_target(vpnglean_telemetry
         DEPENDS
-            ${CMAKE_SOURCE_DIR}/src/apps/vpn/glean/generated/metrics.h
-            ${CMAKE_SOURCE_DIR}/src/apps/vpn/glean/generated/pings.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/metrics.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/pings.h
     )
     add_dependencies(mozillavpn vpnglean_telemetry)
 endif()
@@ -95,8 +116,8 @@ if(NOT SKIP_GLEAN_PARSER)
     # The solution is to generate empty files at build setup time so that we can
     # add them as sources to other target and still not have Cmake freak out.
     # Actual generation happen when the `run_glean_parser` command is executed.
-    file(WRITE ${CMAKE_SOURCE_DIR}/src/apps/vpn/glean/generated/metrics.h)
-    file(WRITE ${CMAKE_SOURCE_DIR}/src/apps/vpn/glean/generated/pings.h)
+    file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/metrics.h)
+    file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/pings.h)
 else()
     set(GENERATE_GLEAN_CMD echo "Skipping glean_parser step.")
 endif()
@@ -104,8 +125,10 @@ endif()
 ## Generate metrics and pings files
 add_custom_command(
     OUTPUT
-        ${CMAKE_SOURCE_DIR}/src/apps/vpn/glean/generated/metrics.h
-        ${CMAKE_SOURCE_DIR}/src/apps/vpn/glean/generated/pings.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/metrics.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/pings.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.rs
         ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.rs
     DEPENDS
@@ -114,7 +137,6 @@ add_custom_command(
         ${CMAKE_SOURCE_DIR}/glean/metrics.yaml
     COMMAND ${GENERATE_GLEAN_CMD}
 )
-
 
 ## Fixup any missing link dependencies to pass to the vpnglean consumer
 if(ANDROID)

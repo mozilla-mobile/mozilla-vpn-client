@@ -95,16 +95,16 @@ if __name__ == "__main__":
         workspace_root = Path(os.path.dirname(os.path.realpath(__file__))).parent.parent
 
         yaml_files_path = os.path.join(workspace_root, "glean")
-        generated_rust_files_path = os.path.join(workspace_root, "vpnglean", "src", "generated")
-        generated_cpp_files_path = os.path.join(workspace_root, "src", "apps", "vpn", "glean", "generated")
+        generated_include_files_path = os.path.join(workspace_root, "vpnglean", "include", "glean", "generated")
+        generated_src_files_path = os.path.join(workspace_root, "vpnglean", "src", "generated")
 
-        create_dir(generated_rust_files_path)
-        create_dir(generated_cpp_files_path)
+        create_dir(generated_include_files_path)
+        create_dir(generated_src_files_path)
 
         # Generate C++ header files
         for [ output, input ] in [
-            [os.path.join(generated_cpp_files_path, "pings.h"), os.path.join(yaml_files_path, "pings.yaml")],
-            [os.path.join(generated_cpp_files_path, "metrics.h"), os.path.join(yaml_files_path, "metrics.yaml")],
+            [os.path.join(generated_include_files_path, "pings.h"), os.path.join(yaml_files_path, "pings.yaml")],
+            [os.path.join(generated_include_files_path, "metrics.h"), os.path.join(yaml_files_path, "metrics.yaml")],
         ]:
             print("Generating {} from {}".format(output, input))
             with open(output, 'w+', encoding='utf-8') as f:
@@ -112,8 +112,8 @@ if __name__ == "__main__":
 
         # Generate C++ source files
         for [ output, input ] in [
-            [os.path.join(generated_cpp_files_path, "pings.cpp"), os.path.join(yaml_files_path, "pings.yaml")],
-            [os.path.join(generated_cpp_files_path, "metrics.cpp"), os.path.join(yaml_files_path, "metrics.yaml")],
+            [os.path.join(generated_src_files_path, "pings.cpp"), os.path.join(yaml_files_path, "pings.yaml")],
+            [os.path.join(generated_src_files_path, "metrics.cpp"), os.path.join(yaml_files_path, "metrics.yaml")],
         ]:
             print("Generating {} from {}".format(output, input))
             with open(output, 'w+', encoding='utf-8') as f:
@@ -121,8 +121,8 @@ if __name__ == "__main__":
 
         # Generate Rust files
         for [ output, input ] in [
-            [os.path.join(generated_rust_files_path, "pings.rs"), os.path.join(yaml_files_path, "pings.yaml")],
-            [os.path.join(generated_rust_files_path, "metrics.rs"), os.path.join(yaml_files_path, "metrics.yaml")],
+            [os.path.join(generated_src_files_path, "pings.rs"), os.path.join(yaml_files_path, "pings.yaml")],
+            [os.path.join(generated_src_files_path, "metrics.rs"), os.path.join(yaml_files_path, "metrics.yaml")],
         ]:
             print("Generating {} from {}".format(output, input))
             with open(output, 'w+', encoding='utf-8') as f:
