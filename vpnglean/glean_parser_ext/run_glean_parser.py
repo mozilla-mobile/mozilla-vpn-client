@@ -4,6 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import argparse
 import sys
 import os
 from pathlib import Path
@@ -89,22 +90,38 @@ def create_dir(path):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 1:
+    argparser = argparse.ArgumentParser(
+        description='Parse glean telemetry definitions and generate C++/Rust code')
+    
+    argparser.add_argument('filename', metavar='FILE', type=str, nargs='?',
+        help='Specific file to generate')
+    argparser.add_argument('gleanargs', metavar='ARG', type=str, nargs='*',
+        help='Extra arguments to pass to glean_parser')
+    argparser.add_argument('--cppdir', metavar='DIR', type=str,
+        help='Output generated C++ content to DIR')
+    argparser.add_argument('--rustdir', metavar='DIR', type=str,
+        help='Output generated Rust content to DIR')
+    args = argparser.parse_args()
+
+    # Setup default output directories.
+    workspace_root = Path(os.path.dirname(os.path.realpath(__file__))).parent.parent
+    if args.cppdir is None:
+        args.cppdir = os.path.join(os.getcwd(), "glean", "generated")
+    if args.rustdir is None:
+        args.rustdir = os.path.join(workspace_root, "vpnglean", "include", "glean", "generated")
+
+    if args.filename is None:
         print("Generating Mozilla VPN Glean files.")
 
-        workspace_root = Path(os.path.dirname(os.path.realpath(__file__))).parent.parent
-
         yaml_files_path = os.path.join(workspace_root, "glean")
-        generated_include_files_path = os.path.join(workspace_root, "vpnglean", "include", "glean", "generated")
-        generated_src_files_path = os.path.join(workspace_root, "vpnglean", "src", "generated")
 
-        create_dir(generated_include_files_path)
-        create_dir(generated_src_files_path)
+        os.makedirs(args.cppdir, exist_ok=True)
+        os.makedirs(args.rustdir, exist_ok=True)
 
         # Generate C++ header files
         for [ output, input ] in [
-            [os.path.join(generated_include_files_path, "pings.h"), os.path.join(yaml_files_path, "pings.yaml")],
-            [os.path.join(generated_include_files_path, "metrics.h"), os.path.join(yaml_files_path, "metrics.yaml")],
+            [os.path.join(args.cppdir, "pings.h"), os.path.join(yaml_files_path, "pings.yaml")],
+            [os.path.join(args.cppdir, "metrics.h"), os.path.join(yaml_files_path, "metrics.yaml")],
         ]:
             print("Generating {} from {}".format(output, input))
             with open(output, 'w+', encoding='utf-8') as f:
@@ -112,8 +129,8 @@ if __name__ == "__main__":
 
         # Generate C++ source files
         for [ output, input ] in [
-            [os.path.join(generated_src_files_path, "pings.cpp"), os.path.join(yaml_files_path, "pings.yaml")],
-            [os.path.join(generated_src_files_path, "metrics.cpp"), os.path.join(yaml_files_path, "metrics.yaml")],
+            [os.path.join(args.cppdir, "pings.cpp"), os.path.join(yaml_files_path, "pings.yaml")],
+            [os.path.join(args.cppdir, "metrics.cpp"), os.path.join(yaml_files_path, "metrics.yaml")],
         ]:
             print("Generating {} from {}".format(output, input))
             with open(output, 'w+', encoding='utf-8') as f:
@@ -121,32 +138,31 @@ if __name__ == "__main__":
 
         # Generate Rust files
         for [ output, input ] in [
-            [os.path.join(generated_src_files_path, "pings.rs"), os.path.join(yaml_files_path, "pings.yaml")],
-            [os.path.join(generated_src_files_path, "metrics.rs"), os.path.join(yaml_files_path, "metrics.yaml")],
+            [os.path.join(args.rustdir, "pings.rs"), os.path.join(yaml_files_path, "pings.yaml")],
+            [os.path.join(args.rustdir, "metrics.rs"), os.path.join(yaml_files_path, "metrics.yaml")],
         ]:
             print("Generating {} from {}".format(output, input))
             with open(output, 'w+', encoding='utf-8') as f:
                 rust_metrics(f, input)
     else:
-        lang = sys.argv[1]
-        file_path = sys.argv[2]
-        glean_parser_args = sys.argv[3:]
-
-        print("Generating Glean files for '{}' on '{}' with arguments '{}'.".format(lang, file_path, glean_parser_args))
-
         # Guess language and operation from the file extension.
-        file_split = os.path.splitext(file_path)
+        file_split = os.path.splitext(args.filename)
         if file_split[1] == '.rs':
             fn = rust_metrics
+            lang = 'rust'
         elif file_split[1] == '.cpp':
             fn = cpp_metrics
+            lang = 'c++'
         elif file_split[1] == '.h':
             fp = cpp_headers 
+            lang = 'c++'
         else:
             print(f'Unknown language for extension: "{file_split[1]}"', file=sys.stderr)
             sys.exit(1)
 
+        print("Generating Glean files for '{}' on '{}' with arguments '{}'.".format(lang, args.filename, args.gleanargs))
+
         # Generate the file
-        with open(file_path, 'w+', encoding='utf-8') as f:
-            print("Generating {} with args {}".format(filepath, glean_parser_args))
-            fn(f, *glean_parser_args)
+        with open(args.filename, 'w+', encoding='utf-8') as f:
+            print("Generating {} with args {}".format(args.filename, args.gleanargs))
+            fn(f, *args.gleanargs)

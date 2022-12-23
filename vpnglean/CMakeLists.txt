@@ -8,9 +8,9 @@ add_library(vpnglean STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/ping.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/event.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ping.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/metrics.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/pings.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.h
+    ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.h
+    ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.cpp
 )
 target_include_directories(vpnglean PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src/generated
@@ -83,8 +83,8 @@ else()
     # it's easier to just generate the APIs and have them be noop.
     add_custom_target(vpnglean_telemetry
         DEPENDS
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/metrics.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/pings.h
+            ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.h
+            ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.h
     )
     add_dependencies(mozillavpn vpnglean_telemetry)
 endif()
@@ -93,16 +93,20 @@ endif()
 if(SKIP_GLEAN_PARSER)
     set(GENERATE_GLEAN_CMD echo "Skipping glean_parser step.")
 else()
-    set(GENERATE_GLEAN_CMD ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py)
+    set(GENERATE_GLEAN_CMD
+        ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py
+                --cppdir ${CMAKE_CURRENT_BINARY_DIR}/glean/generated
+                --rustdir ${CMAKE_CURRENT_SOURCE_DIR}/src/generated
+    )
 endif()
 
 ## Generate metrics and pings files
 add_custom_command(
     OUTPUT
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/metrics.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/pings.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.h
+        ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.h
         ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.rs
         ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.rs
     DEPENDS
@@ -119,10 +123,10 @@ add_custom_command(
     COMMAND ${GENERATE_GLEAN_CMD}
 )
 set_source_files_properties(
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/metrics.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/pings.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.h
+    ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.h
     PROPERTIES GENERATED TRUE
 )
 
