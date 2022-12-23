@@ -9,7 +9,7 @@ import Mozilla.VPN 1.0
 Rectangle {
     id: logo
 
-    property var showVPNOnIcon: false
+    property bool showVPNOnIcon: false
 
     color: VPNTheme.theme.transparent
     opacity: 1

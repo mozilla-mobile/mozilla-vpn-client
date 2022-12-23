@@ -9,7 +9,7 @@ import Mozilla.VPN 1.0
 Rectangle {
     property variant focusedComponent
     property var focusColorScheme: VPNTheme.theme.blueButton
-    property var setMargins: -3
+    property real setMargins: -3
 
     color: focusColorScheme.focusOutline
     antialiasing: true

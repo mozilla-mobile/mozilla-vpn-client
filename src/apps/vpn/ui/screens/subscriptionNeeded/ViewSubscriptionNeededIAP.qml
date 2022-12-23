@@ -12,7 +12,7 @@ import components 0.1
 VPNFlickable {
     id: vpnFlickable
 
-    property var wasmView: false
+    property bool wasmView: false
 
     flickContentHeight: col.y + col.height
 

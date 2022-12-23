@@ -13,7 +13,7 @@ RoundButton {
 
     property var visualStateItem: root
     property var uiState: VPNTheme.theme.uiState
-    property var loaderVisible: false
+    property bool loaderVisible: false
     property var handleKeyClick: function() { clicked() }
 
     focusPolicy: Qt.StrongFocus

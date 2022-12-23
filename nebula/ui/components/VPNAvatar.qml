@@ -9,7 +9,7 @@ import compat 0.1
 Item {
     id: logoRoot
 
-    property string avatarUrl: ""
+    property string avatarUrl
 
     Image {
         id: avatar

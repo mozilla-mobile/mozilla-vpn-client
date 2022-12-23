@@ -11,7 +11,7 @@ import compat 0.1
 import components 0.1
 
 ComboBox {
-    property var placeholderText: ""
+    property string placeholderText
     property bool showInteractionStates: true
     textRole: "name"
     valueRole: "value"

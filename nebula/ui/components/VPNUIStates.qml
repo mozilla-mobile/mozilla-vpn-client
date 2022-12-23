@@ -14,8 +14,8 @@ Rectangle {
     property variant itemToAnchor: parent
     property var borderWidth: VPNTheme.theme.focusBorderWidth
     property var colorScheme: VPNTheme.theme.linkButton
-    property var setMargins: -2
-    property var showFocusRings: true
+    property real setMargins: -2
+    property bool showFocusRings: true
 
     signal clicked()
 
