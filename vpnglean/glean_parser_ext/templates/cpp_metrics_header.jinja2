@@ -33,7 +33,7 @@ namespace {{ category_name|snake_case }} {
 {% for category_name, objs in all_objs.items() %}
   {% for obj in objs.values() %}
   {% if obj|attr("_generate_enums") %}
-{{ macros.generate_extra_keys_parser(obj, category_name) }}
+{{ macros.generate_extra_keys_parser_declaration(obj) }}
   {%- endif %}
   {% endfor %}
 {% endfor %}

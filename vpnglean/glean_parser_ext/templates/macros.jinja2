@@ -10,78 +10,86 @@ struct {{ obj.name|Camelize }}Extra : EventMetricExtra {
 {% endif %}
 {%- endmacro -%}
 
-{%- macro generate_extra_keys_parser(obj, category_name) -%}
+{%- macro generate_extra_keys_parser_declaration(obj) -%}
 {% if obj|attr("allowed_extra_keys_with_types")|length > 0 %}
 struct __DONOTUSE__{{ obj.name|Camelize }}ExtraParser : EventMetricExtraParser {
-  virtual FfiExtra fromJsonObject(const QJsonObject& extras, QList<QByteArray>& keepStringsAlive) override {
-    FfiExtra ffiExtras({{ obj|attr("allowed_extra_keys_with_types")|length }}, {{ obj|attr("allowed_extra_keys_with_types")|length }});
-
-    int count = 0;
-    foreach (const QString& key, extras.keys()) {
-      auto rawValue = extras.value(key);
-
-      if (rawValue.isString()) {
-        QByteArray value = rawValue.toString().toUtf8();
-        keepStringsAlive.append(value);
-        ffiExtras.values[count] = value.constData();
-      } else if (rawValue.isBool()) {
-        ffiExtras.values[count] = rawValue.toBool() ? "true" : "false";
-      } else if (rawValue.isDouble()) {
-        QByteArray value = QString::number(rawValue.toDouble()).toUtf8();
-        keepStringsAlive.append(value);
-        ffiExtras.values[count] = value.constData();
-      } else {
-        Q_ASSERT(false);
-        // TODO: Record error.
-        continue;
-      }
-
-      QByteArray k = key.toUtf8();
-      keepStringsAlive.append(k);
-      ffiExtras.keys[count] = k.constData();
-
-      count++;
-    }
-
-    ffiExtras.values.resize(count);
-    ffiExtras.keys.resize(count);
-    return ffiExtras;
-  }
-
-  virtual FfiExtra fromStruct(const EventMetricExtra& extras, QList<QByteArray>& keepStringsAlive, int id) override {
-    auto parsedExtras = static_cast<const mozilla::glean::{{ category_name|snake_case }}::{{ obj.name|Camelize }}Extra&>(extras);
-
-    // Assert the cast extra is the correct one.
-    Q_ASSERT(id == parsedExtras.__PRIVATE__id);
-
-    FfiExtra ffiExtras({{ obj|attr("allowed_extra_keys_with_types")|length }}, {{ obj|attr("allowed_extra_keys_with_types")|length }});
-
-    int count = 0;
-    {% for item, type in obj|attr("allowed_extra_keys_with_types") %}
-    if (parsedExtras._{{item|camelize}}.canConvert<{{type|extra_type_name}}>()) {
-      {% if type == "string" %}
-      QByteArray s = parsedExtras._{{item|camelize}}.toString().toUtf8();
-      keepStringsAlive.append(s);
-      ffiExtras.values[count] = s.constData();
-      {% elif type == "boolean" %}
-      ffiExtras.values[count] = parsedExtras._{{item|camelize}} ? "true" : "false";
-      {% elif type == "quantity" %}
-      QByteArray s = QString::number(parsedExtras._{{item|camelize}}.toInt()).toUtf8();
-      keepStringsAlive.append(s);
-      ffiExtras.values[count] = s.constData();
-      {% else %}
-#error "Glean: Invalid extra key type for metric {{obj.category}}.{{obj.name}}, defined in: {{obj.defined_in['filepath']}}:{{obj.defined_in['line']}})"
-      {% endif %}
-      ffiExtras.keys[count] = "{{item}}";
-
-      count++;
-    }
-    {% endfor %}
-
-    ffiExtras.values.resize(count);
-    ffiExtras.keys.resize(count);
-    return ffiExtras;
-  }
+  virtual FfiExtra fromJsonObject(const QJsonObject& extras, QList<QByteArray>& keepStringsAlive) override;
+  virtual FfiExtra fromStruct(const EventMetricExtra& extras, QList<QByteArray>& keepStringsAlive, int id) override;
 };
+{% endif %}
+{%- endmacro -%}
+
+
+{%- macro generate_extra_keys_parser(obj, category_name) -%}
+{% if obj|attr("allowed_extra_keys_with_types")|length > 0 %}
+FfiExtra __DONOTUSE__{{ obj.name|Camelize }}ExtraParser::fromJsonObject(const QJsonObject& extras, QList<QByteArray>& keepStringsAlive) {
+  FfiExtra ffiExtras({{ obj|attr("allowed_extra_keys_with_types")|length }}, {{ obj|attr("allowed_extra_keys_with_types")|length }});
+
+  int count = 0;
+  foreach (const QString& key, extras.keys()) {
+    auto rawValue = extras.value(key);
+
+    if (rawValue.isString()) {
+      QByteArray value = rawValue.toString().toUtf8();
+      keepStringsAlive.append(value);
+      ffiExtras.values[count] = value.constData();
+    } else if (rawValue.isBool()) {
+      ffiExtras.values[count] = rawValue.toBool() ? "true" : "false";
+    } else if (rawValue.isDouble()) {
+      QByteArray value = QString::number(rawValue.toDouble()).toUtf8();
+      keepStringsAlive.append(value);
+      ffiExtras.values[count] = value.constData();
+    } else {
+      Q_ASSERT(false);
+      // TODO: Record error.
+      continue;
+    }
+
+    QByteArray k = key.toUtf8();
+    keepStringsAlive.append(k);
+    ffiExtras.keys[count] = k.constData();
+
+    count++;
+  }
+
+  ffiExtras.values.resize(count);
+  ffiExtras.keys.resize(count);
+  return ffiExtras;
+}
+
+FfiExtra __DONOTUSE__{{ obj.name|Camelize }}ExtraParser::fromStruct(const EventMetricExtra& extras, QList<QByteArray>& keepStringsAlive, int id) {
+  auto parsedExtras = static_cast<const mozilla::glean::{{ category_name|snake_case }}::{{ obj.name|Camelize }}Extra&>(extras);
+
+  // Assert the cast extra is the correct one.
+  Q_ASSERT(id == parsedExtras.__PRIVATE__id);
+
+  FfiExtra ffiExtras({{ obj|attr("allowed_extra_keys_with_types")|length }}, {{ obj|attr("allowed_extra_keys_with_types")|length }});
+
+  int count = 0;
+  {% for item, type in obj|attr("allowed_extra_keys_with_types") %}
+  if (parsedExtras._{{item|camelize}}.canConvert<{{type|extra_type_name}}>()) {
+    {% if type == "string" %}
+    QByteArray s = parsedExtras._{{item|camelize}}.toString().toUtf8();
+    keepStringsAlive.append(s);
+    ffiExtras.values[count] = s.constData();
+    {% elif type == "boolean" %}
+    ffiExtras.values[count] = parsedExtras._{{item|camelize}} ? "true" : "false";
+    {% elif type == "quantity" %}
+    QByteArray s = QString::number(parsedExtras._{{item|camelize}}.toInt()).toUtf8();
+    keepStringsAlive.append(s);
+    ffiExtras.values[count] = s.constData();
+    {% else %}
+#error "Glean: Invalid extra key type for metric {{obj.category}}.{{obj.name}}, defined in: {{obj.defined_in['filepath']}}:{{obj.defined_in['line']}})"
+    {% endif %}
+    ffiExtras.keys[count] = "{{item}}";
+
+    count++;
+  }
+  {% endfor %}
+
+  ffiExtras.values.resize(count);
+  ffiExtras.keys.resize(count);
+  return ffiExtras;
+}
 {% endif %}
 {%- endmacro -%}

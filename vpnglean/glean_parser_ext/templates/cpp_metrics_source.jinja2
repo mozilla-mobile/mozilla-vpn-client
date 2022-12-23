@@ -8,27 +8,13 @@ Jinja2 template is not. Please file bugs! #}
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef mozilla_Metrics_h
-#define mozilla_Metrics_h
-
 #include "glean/metrictypes.h"
+#include "glean/generated/metrics.h
 
 #include <QString>
 #include <QObject>
 
 {% import 'macros.jinja2' as macros %}
-
-namespace mozilla::glean {
-{% for category_name, objs in all_objs.items() %}
-namespace {{ category_name|snake_case }} {
-  {% for obj in objs.values() %}
-  {% if obj|attr("_generate_enums") %}
-{{ macros.generate_extra_keys(obj, obj|metric_id) }}
-  {%- endif %}
-  {% endfor %}
-}
-{% endfor %}
-} // namespace mozilla::glean
 
 {% for category_name, objs in all_objs.items() %}
   {% for obj in objs.values() %}
@@ -61,61 +47,3 @@ class __DONOTUSE__{{ category_name|Camelize }} final {
     {% endfor %}
 };
 {% endfor %}
-
-// This class is not meant to be used directly.
-// It is exposed as a singleton to QML.
-//
-// The reason for this is to keep consistency with the Glean API on m-c.
-// On JavaScript pings are accessed through GleanMetrics.<MyMetric> and
-// on C++ they are accessed through mozilla::glean_pings::<my_metric>.
-class __DONOTUSE__GleanMetrics final : public QObject {
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(__DONOTUSE__GleanMetrics)
-
-    {% for category_name, _ in all_objs.items() %}
-    Q_PROPERTY(__DONOTUSE__{{ category_name|Camelize }} {{ category_name|camelize }} READ {{ category_name|camelize }} CONSTANT);
-    {% endfor %}
-
-    private:
-        __DONOTUSE__GleanMetrics() = default;
-
-    public:
-        ~__DONOTUSE__GleanMetrics() = default;
-
-        static __DONOTUSE__GleanMetrics* instance() {
-            if (!s_instance) {
-                s_instance = new __DONOTUSE__GleanMetrics();
-            }
-
-            return s_instance;
-        }
-
-        {% for category_name, _ in all_objs.items() %}
-        __DONOTUSE__{{ category_name|Camelize }} {{ category_name|camelize }} () const { return m_{{ category_name|camelize }}; };
-        {% endfor %}
-
-    private:
-        {% for category_name, _ in all_objs.items() %}
-        __DONOTUSE__{{ category_name|Camelize }} m_{{ category_name|camelize }} = __DONOTUSE__{{ category_name|Camelize }}() ;
-        {% endfor %}
-
-        inline static __DONOTUSE__GleanMetrics* s_instance = nullptr;
-};
-
-namespace mozilla::glean {
-{% for category_name, objs in all_objs.items() %}
-namespace {{ category_name|snake_case }} {
-    {% for obj in objs.values() %}
-    /**
-     * generated from {{ category_name }}.{{ obj.name }}
-     *
-     * {{ obj.description|wordwrap() | replace('\n', '\n     * ') }}
-     */
-    inline {{ obj|type_name }} {{obj.name|snake_case }} = __DONOTUSE__GleanMetrics::instance()->{{ category_name|camelize }}().{{ obj.name|camelize }}();
-
-    {% endfor %}
-}
-{% endfor %}
-} // namespace mozilla::glean
-
-#endif // mozilla_Metrics_h
