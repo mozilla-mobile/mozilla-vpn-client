@@ -12,12 +12,6 @@ add_library(vpnglean STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/pings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.cpp
 )
-set_source_files_properties(
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/metrics.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/pings.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.cpp
-    PROPERTIES GENERATED TRUE
-)
 target_include_directories(vpnglean PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src/generated
     ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -96,30 +90,10 @@ else()
 endif()
 
 # This options should be used if the glean_parser command needs to be run on some sort of pre-build script.
-if(NOT SKIP_GLEAN_PARSER)
-    set(GENERATE_GLEAN_CMD ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py)
-
-    # Prepare for generating Glean metrics and pings files
-    # Note: the next steps are not required by run_glean_parser, but by CMake quirks.
-    file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/generated)
-    file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/src/apps/vpn/glean/generated)
-
-    # 1. Because both the metrics.h and pings.h files have class declarations
-    # of objects that extend QObject, these files need to be in the main MozillaVPN
-    # target otherwise we run into linker issues e.g. undefined reference to `vtable for __DONOTUSE__GleanPings'.
-    # See: https://github.com/bincrafters/community/issues/466#issuecomment-426329142
-    #      and https://gitlab.cern.ch/-/snippets/2128
-    # 2. Cmake is simply ignoring or being weird about adding these files as
-    # sources to the main target and marking them as GENERATED TRUE.
-    # See: https://gitlab.kitware.com/cmake/cmake/-/issues/18399
-    #
-    # The solution is to generate empty files at build setup time so that we can
-    # add them as sources to other target and still not have Cmake freak out.
-    # Actual generation happen when the `run_glean_parser` command is executed.
-    file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/metrics.h)
-    file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/pings.h)
-else()
+if(SKIP_GLEAN_PARSER)
     set(GENERATE_GLEAN_CMD echo "Skipping glean_parser step.")
+else()
+    set(GENERATE_GLEAN_CMD ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py)
 endif()
 
 ## Generate metrics and pings files
@@ -133,9 +107,23 @@ add_custom_command(
         ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.rs
     DEPENDS
         ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py
+        ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/templates/cpp_metrics_header.jinja2
+        ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/templates/cpp_metrics_source.jinja2
+        ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/templates/cpp_pings_header.jinja2
+        ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/templates/cpp_pings_source.jinja2
+        ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/templates/macros.jinja2
+        ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/templates/rust_pings.jinja2
+        ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/templates/rust.jinja2
         ${CMAKE_SOURCE_DIR}/glean/pings.yaml
         ${CMAKE_SOURCE_DIR}/glean/metrics.yaml
     COMMAND ${GENERATE_GLEAN_CMD}
+)
+set_source_files_properties(
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/metrics.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/generated/pings.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.cpp
+    PROPERTIES GENERATED TRUE
 )
 
 ## Fixup any missing link dependencies to pass to the vpnglean consumer
