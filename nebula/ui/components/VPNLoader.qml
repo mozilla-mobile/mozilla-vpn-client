@@ -11,7 +11,7 @@ import components 0.1
 Item {
     id: root
 
-    property var headlineText
+    property string headlineText
     property bool footerLinkIsVisible: true
 
     Component.onCompleted: fade.start()
