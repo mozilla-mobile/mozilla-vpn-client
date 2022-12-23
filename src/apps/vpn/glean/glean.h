@@ -23,21 +23,6 @@ class VPNGlean final : public QObject {
 
   static void initialize();
   static void shutdown();
-
-  // TODO: Just use the glean_core type once
-  // https://github.com/mozilla/glean/pull/2283 lands.
-  enum ErrorType {
-    /// For when the value to be recorded does not match the metric-specific
-    /// restrictions
-    InvalidValue,
-    /// For when the label of a labeled metric does not match the restrictions
-    InvalidLabel,
-    /// For when the metric caught an invalid state while recording
-    InvalidState,
-    /// For when the value to be recorded overflows the metric-specific upper
-    /// range
-    InvalidOverflow,
-  };
 };
 
 #endif  // VPNGLEAN_H

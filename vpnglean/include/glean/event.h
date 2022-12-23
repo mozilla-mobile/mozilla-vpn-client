@@ -5,10 +5,6 @@
 #ifndef EVENT_METRIC_H
 #define EVENT_METRIC_H
 
-#if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
-#  include "vpnglean.h"
-#endif
-
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QObject>
@@ -81,13 +77,24 @@ class EventMetric final {
 
   void record(const EventMetricExtra& extras);
 
-#if defined(UNIT_TEST)
-  Q_INVOKABLE int32_t
-  testGetNumRecordedErrors(VPNGlean::ErrorType errorType) const;
+  // TODO: Just use the glean_core type once
+  // https://github.com/mozilla/glean/pull/2283 lands.
+  enum ErrorType {
+    /// For when the value to be recorded does not match the metric-specific
+    /// restrictions
+    InvalidValue,
+    /// For when the label of a labeled metric does not match the restrictions
+    InvalidLabel,
+    /// For when the metric caught an invalid state while recording
+    InvalidState,
+    /// For when the value to be recorded overflows the metric-specific upper
+    /// range
+    InvalidOverflow,
+  };
 
-  Q_INVOKABLE QList<QJsonObject> testGetValue(
-      const QString& pingName = "") const;
-#endif
+  Q_INVOKABLE int32_t numRecordedErrors(ErrorType errorType) const;
+
+  Q_INVOKABLE QList<QJsonObject> testGetValue(const QString& pingName = "") const;
 
  private:
   int m_id;
