@@ -106,11 +106,11 @@ def output_header(objs, output_fd, options={}):
     get_ping_id = generate_ping_ids(objs)
 
     if "pings" in objs:
-        template_filename = "cpp_pings.jinja2"
+        template_filename = "cpp_pings_header.jinja2"
         if objs.get("tags"):
             del objs["tags"]
     else:
-        template_filename = "cpp.jinja2"
+        template_filename = "cpp_metrics_header.jinja2"
         objs = get_metrics(objs)
 
     template = util.get_jinja2_template(
