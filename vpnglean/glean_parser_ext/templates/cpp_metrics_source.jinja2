@@ -24,3 +24,12 @@ Jinja2 template is not. Please file bugs! #}
   {% endfor %}
 {% endfor %}
 
+namespace mozilla::glean {
+{% for category_name, objs in all_objs.items() %}
+namespace {{ category_name|snake_case }} {
+  {% for obj in objs.values() %}
+  {{ obj|type_name }} {{obj.name|snake_case }} = {{ obj|type_name }}({{obj|metric_id}}{% if obj|attr("allowed_extra_keys_with_types")|length > 0 %}, &s_{{obj.name|camelize }}ExtraParser {%- endif %});
+  {% endfor %}
+} // namespace {{ category_name|snake_case }}
+{% endfor %}
+} // namespace mozilla::glean
