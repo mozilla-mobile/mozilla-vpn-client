@@ -88,13 +88,13 @@ else()
     add_dependencies(mozillavpn vpnglean_telemetry)
 endif()
 
-if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated)
+if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/prebuilt)
     # On some build platforms, we may not have the ability to install the 
     # glean_parser module, and we must rely on a pre-build script to generate
     # the telemetry bindings for us.
     set(GENERATE_GLEAN_CMD
         ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_CURRENT_SOURCE_DIR}/generated
+            ${CMAKE_CURRENT_SOURCE_DIR}/prebuilt/glean/generated
             ${CMAKE_CURRENT_BINARY_DIR}/glean/generated
     )
 else()
