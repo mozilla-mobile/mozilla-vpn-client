@@ -172,6 +172,7 @@ const authScreen = {
     START_BACK_BUTTON: 'authStart-backButton',
     SIGNIN_PASS_INPUT: 'authSignIn-passwordInput',
     SIGNUP_PASS_PASTE_BUTTON: 'authSignUp-inputPasteButton',
+    SIGNIN_PASS_PASTE_BUTTON: 'authSignIn-inputPasteButton',
     SIGNUP_PASS_INPUT: 'authSignUp-passwordInput',
     PASS_INPUT_CONDITION: 'authSignUp-passwordConditionCommon',
     PASS_LENGTH_CONDITION: 'authSignUp-passwordConditionLength',
