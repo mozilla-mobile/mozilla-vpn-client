@@ -71,8 +71,8 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         CRATE_NAME vpnglean
         CARGO_ENV ${CARGO_ENV}
         DEPENDS
-            ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.rs
-            ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.rs
+            ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.rs
+            ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.rs
     )
     target_link_libraries(vpnglean PRIVATE vpnglean_bindings)
 
@@ -95,8 +95,7 @@ if(SKIP_GLEAN_PARSER)
 else()
     set(GENERATE_GLEAN_CMD
         ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py
-                --cppdir ${CMAKE_CURRENT_BINARY_DIR}/glean/generated
-                --rustdir ${CMAKE_CURRENT_SOURCE_DIR}/src/generated
+                --outdir ${CMAKE_CURRENT_BINARY_DIR}/glean/generated
     )
 endif()
 
@@ -107,8 +106,8 @@ add_custom_command(
         ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.h
         ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.rs
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.rs
+        ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.rs
+        ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.rs
     DEPENDS
         ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py
         ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/templates/cpp_metrics_header.jinja2
