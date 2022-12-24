@@ -10,15 +10,6 @@ struct {{ obj.name|Camelize }}Extra : EventMetricExtra {
 {% endif %}
 {%- endmacro -%}
 
-{%- macro generate_extra_keys_parser_declaration(obj) -%}
-{% if obj|attr("allowed_extra_keys_with_types")|length > 0 %}
-struct __DONOTUSE__{{ obj.name|Camelize }}ExtraParser : EventMetricExtraParser {
-  virtual FfiExtra fromStruct(const EventMetricExtra& extras, QList<QByteArray>& keepStringsAlive, int id) override;
-};
-{% endif %}
-{%- endmacro -%}
-
-
 {%- macro generate_extra_keys_parser(obj, category_name) -%}
 {% if obj|attr("allowed_extra_keys_with_types")|length > 0 %}
 struct {{ obj.name|Camelize }}ExtraParser : EventMetricExtraParser {
