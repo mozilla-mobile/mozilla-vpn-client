@@ -104,7 +104,7 @@ if __name__ == "__main__":
     # Setup default output directories.
     workspace_root = Path(os.path.dirname(os.path.realpath(__file__))).parent.parent
     if args.outdir is None:
-        args.outdir = os.path.join(os.getcwd(), "glean", "generated")
+        args.outdir = os.path.join(workspace_root, "vpnglean", "generated")
 
     if args.filename is None:
         print("Generating Mozilla VPN Glean files.")

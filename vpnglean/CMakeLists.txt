@@ -13,7 +13,6 @@ add_library(vpnglean STATIC
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.cpp
 )
 target_include_directories(vpnglean PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/generated
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_BINARY_DIR}
 )
@@ -89,9 +88,15 @@ else()
     add_dependencies(mozillavpn vpnglean_telemetry)
 endif()
 
-# This options should be used if the glean_parser command needs to be run on some sort of pre-build script.
-if(SKIP_GLEAN_PARSER)
-    set(GENERATE_GLEAN_CMD echo "Skipping glean_parser step.")
+if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated)
+    # On some build platforms, we may not have the ability to install the 
+    # glean_parser module, and we must rely on a pre-build script to generate
+    # the telemetry bindings for us.
+    set(GENERATE_GLEAN_CMD
+        ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_CURRENT_SOURCE_DIR}/generated
+            ${CMAKE_CURRENT_BINARY_DIR}/glean/generated
+    )
 else()
     set(GENERATE_GLEAN_CMD
         ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py
