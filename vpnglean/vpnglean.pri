@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 exists($$PWD/prebuilt/glean/generated/metrics.cpp) {
-  SORUCES += $$PWD/prebuilt/glean/generated/metrics.cpp
+  SOURCES += $$PWD/prebuilt/glean/generated/metrics.cpp
   HEADERS += $$PWD/prebuilt/glean/generated/metrics.h
   SOURCES += $$PWD/prebuilt/glean/generated/pings.cpp
   HEADERS += $$PWD/prebuilt/glean/generated/pings.h
