@@ -26,8 +26,37 @@ void EventMetric::record(const QJsonObject& extras) {
   // Helper vector to extend the lifetime of the strings
   // that hold the extra key values until they are used.
   QList<QByteArray> keepStringsAlive;
-  FfiExtra ffiExtras = m_parser->fromJsonObject(extras, keepStringsAlive);
+  FfiExtra ffiExtras(extras.count(), extras.count());
 
+  int count = 0;
+  foreach (const QString& key, extras.keys()) {
+    auto rawValue = extras.value(key);
+
+    if (rawValue.isString()) {
+      QByteArray value = rawValue.toString().toUtf8();
+      keepStringsAlive.append(value);
+      ffiExtras.values[count] = value.constData();
+    } else if (rawValue.isBool()) {
+      ffiExtras.values[count] = rawValue.toBool() ? "true" : "false";
+    } else if (rawValue.isDouble()) {
+      QByteArray value = QString::number(rawValue.toDouble()).toUtf8();
+      keepStringsAlive.append(value);
+      ffiExtras.values[count] = value.constData();
+    } else {
+      Q_ASSERT(false);
+      // TODO: Record error.
+      continue;
+    }
+
+    QByteArray k = key.toUtf8();
+    keepStringsAlive.append(k);
+    ffiExtras.keys[count] = k.constData();
+
+    count++;
+  }
+
+  ffiExtras.values.resize(count);
+  ffiExtras.keys.resize(count);
   if (!ffiExtras.keys.empty()) {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
     glean_event_record(m_id, ffiExtras.keys.data(), ffiExtras.values.data(),
