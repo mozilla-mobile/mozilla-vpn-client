@@ -8,10 +8,10 @@
 #  include "vpnglean.h"
 #endif
 
+#include <QJsonDocument>
 #include <QJsonObject>
 #include <QObject>
 #include <QPair>
-#include <QJsonDocument>
 
 EventMetric::EventMetric(int id, EventMetricExtraParser* parser)
     : m_id(id), m_parser(parser) {}
@@ -59,16 +59,16 @@ void EventMetric::record(const EventMetricExtra& extras) {
 }
 
 int32_t EventMetric::numRecordedErrors(ErrorType errorType) const {
-#  if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
+#if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
   return glean_event_test_get_num_recorded_errors(
       m_id, static_cast<int32_t>(errorType));
-#  else
+#else
   return 0;
-#  endif
+#endif
 }
 
 QList<QJsonObject> EventMetric::testGetValue(const QString& pingName) const {
-#  if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
+#if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
   auto value = glean_event_test_get_value(m_id, pingName.toLocal8Bit());
   auto recordedEvents = QJsonDocument::fromJson(value).array();
   QList<QJsonObject> result;
@@ -80,7 +80,7 @@ QList<QJsonObject> EventMetric::testGetValue(const QString& pingName) const {
   }
 
   return result;
-#  else
+#else
   return QList();
-#  endif
+#endif
 }

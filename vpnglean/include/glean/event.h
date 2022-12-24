@@ -94,7 +94,8 @@ class EventMetric final {
 
   Q_INVOKABLE int32_t numRecordedErrors(ErrorType errorType) const;
 
-  Q_INVOKABLE QList<QJsonObject> testGetValue(const QString& pingName = "") const;
+  Q_INVOKABLE QList<QJsonObject> testGetValue(
+      const QString& pingName = "") const;
 
  private:
   int m_id;
