@@ -41,6 +41,8 @@ struct EventMetricExtra {
 struct EventMetricExtraParser {
   virtual FfiExtra fromJsonObject(const QJsonObject& extras,
                                   QList<QByteArray>& keepStringsAlive) {
+    Q_UNUSED(extras);
+    Q_UNUSED(keepStringsAlive);
     Q_ASSERT(false);
     // This function should be overriden.
 
@@ -48,6 +50,9 @@ struct EventMetricExtraParser {
   };
   virtual FfiExtra fromStruct(const EventMetricExtra& extras,
                               QList<QByteArray>& keepStringsAlive, int id) {
+    Q_UNUSED(extras);
+    Q_UNUSED(keepStringsAlive);
+    Q_UNUSED(id);
     Q_ASSERT(false);
     // This function should be overriden.
 
