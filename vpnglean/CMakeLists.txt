@@ -11,6 +11,7 @@ add_library(vpnglean STATIC
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.h
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.h
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.cpp
 )
 target_include_directories(vpnglean PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
