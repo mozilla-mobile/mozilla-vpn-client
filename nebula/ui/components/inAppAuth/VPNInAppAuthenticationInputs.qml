@@ -47,7 +47,6 @@ ColumnLayout {
         spacing: VPNTheme.theme.listSpacing
 
         RowLayout {
-            id: textInputSection
             Layout.fillWidth: true
             spacing: VPNTheme.theme.windowMargin / 2
 
@@ -60,24 +59,6 @@ ColumnLayout {
                 onDisplayTextChanged: if (hasError) hasError = false
             }
 
-            VPNPasteButton {
-                id: textInputPasteButton
-                objectName: base.objectName + "-textInputPasteButton"
-                Layout.preferredWidth: VPNTheme.theme.rowHeight
-                Layout.preferredHeight: VPNTheme.theme.rowHeight
-                height: undefined
-                width: undefined
-                onClicked: {
-                    textInput.paste();
-                }
-            }
-        }
-
-        RowLayout {
-            id: passwordInputSection
-            Layout.fillWidth: true
-            spacing: VPNTheme.theme.windowMargin / 2
-
             VPNPasswordInput {
                 id: passwordInput
                 objectName: base.objectName + "-passwordInput"
@@ -88,14 +69,14 @@ ColumnLayout {
             }
 
             VPNPasteButton {
-                id: passwordInputPasteButton
-                objectName: base.objectName + "-passwordInputPasteButton"
+                id: inputPasteButton
+                objectName: base.objectName + "-inputPasteButton"
                 Layout.preferredWidth: VPNTheme.theme.rowHeight
                 Layout.preferredHeight: VPNTheme.theme.rowHeight
                 height: undefined
                 width: undefined
                 onClicked: {
-                    passwordInput.paste();
+                   activeInput().paste();
                 }
             }
         }
@@ -202,15 +183,15 @@ ColumnLayout {
             when: VPNAuthInApp.state === VPNAuthInApp.StateStart ||
                   VPNAuthInApp.state === VPNAuthInApp.StateCheckingAccount
             PropertyChanges {
-                target: textInputSection
+                target: textInput
                 visible: true
             }
             PropertyChanges {
-                target: textInputPasteButton
+                target: inputPasteButton
                 visible: false
             }
             PropertyChanges {
-                target: passwordInputSection
+                target: passwordInput
                 visible: false
             }
         },
@@ -223,7 +204,7 @@ ColumnLayout {
                   VPNAuthInApp.state === VPNAuthInApp.StateVerifyingSessionTotpCode
             extend: "auth-start"
             PropertyChanges {
-                target: textInputPasteButton
+                target: inputPasteButton
                 visible: true
             }
         },
@@ -232,11 +213,11 @@ ColumnLayout {
             when: VPNAuthInApp.state === VPNAuthInApp.StateSignUp || VPNAuthInApp.state === VPNAuthInApp.StateSigningUp ||
                   VPNAuthInApp.state === VPNAuthInApp.StateSignIn || VPNAuthInApp.state === VPNAuthInApp.StateSigningIn
             PropertyChanges {
-                target: textInputSection
+                target: textInput
                 visible: false
             }
             PropertyChanges {
-                target: passwordInputSection
+                target: passwordInput
                 visible: true
             }
         }
