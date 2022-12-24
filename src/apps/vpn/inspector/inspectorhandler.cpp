@@ -757,12 +757,12 @@ static QList<InspectorCommand> s_commands{
                        return QJsonObject();
                      }},
 
-    InspectorCommand{"copy_to_clipboard", "Copy text to clipboard", 1,
-                    [](InspectorHandler*, const QList<QByteArray>& arguments) {
-                      QString copiedText =  arguments[1];
-                      MozillaVPN::instance()->storeInClipboard(copiedText);
-                      return QJsonObject();
-                    }},
+  InspectorCommand{"copy_to_clipboard", "Copy text to clipboard", 1,
+                  [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                    QString copiedText =  arguments[1];
+                    MozillaVPN::instance()->storeInClipboard(copiedText);
+                    return QJsonObject();
+                  }},
 
     InspectorCommand{
         "send_push_message_device_deleted",
