@@ -81,6 +81,6 @@ QList<QJsonObject> EventMetric::testGetValue(const QString& pingName) const {
 
   return result;
 #else
-  return QList();
+  return QList<QJsonObject>();
 #endif
 }
