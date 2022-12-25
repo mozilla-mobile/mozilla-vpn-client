@@ -2,6 +2,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+## Let's check if the glean_parser module exists.
+execute_process(
+    COMMAND ${PYTHON_EXECUTABLE} -c "import glean_parser; print(glean_parser.__version__)"
+    OUTPUT_VARIABLE GLEAN_PARSER_VERSION
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
+)
+
 ## Add a static library for the generated C++ code.
 add_library(vpnglean STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/event.h
@@ -89,7 +97,13 @@ else()
     add_dependencies(mozillavpn vpnglean_telemetry)
 endif()
 
-if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/prebuilt)
+if(GLEAN_PARSER_VERSION VERSION_GREATER_EQUAL 5.0)
+    # If the glean parser exists, then we can build the telemetry bindings.
+    set(GENERATE_GLEAN_CMD
+        ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py
+                --outdir ${CMAKE_CURRENT_BINARY_DIR}/glean/generated
+    )
+elseif(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/prebuilt)
     # On some build platforms, we may not have the ability to install the 
     # glean_parser module, and we must rely on a pre-build script to generate
     # the telemetry bindings for us.
@@ -99,9 +113,9 @@ if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/prebuilt)
             ${CMAKE_CURRENT_BINARY_DIR}/glean/generated
     )
 else()
-    set(GENERATE_GLEAN_CMD
-        ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py
-                --outdir ${CMAKE_CURRENT_BINARY_DIR}/glean/generated
+    message(FATAL_ERROR
+        "Glean generated files are missing, and the glean_parser was not found.\n"
+        "Please run: python3 ./vpnglean/glean_parser_ext/run_glean_parser.py"
     )
 endif()
 
