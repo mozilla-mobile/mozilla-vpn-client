@@ -5,6 +5,7 @@
 const vpn = require('./helper.js');
 const guardian = require('./servers/guardian.js');
 const assert = require('node:assert/strict');
+const queries = require('./queries.js');
 
 describe('PushMessage.handlers', function() {
   describe('DEVICE_DELETED', function() {
@@ -15,7 +16,7 @@ describe('PushMessage.handlers', function() {
       // Override the guardian endpoints to return more than one device.
       const UserData = {
         avatar: '',
-        display_name: 'Test test',
+        display_name: 'Test',
         email: 'test@mozilla.com',
         max_devices: 5,
         subscriptions: {vpn: {active: true}},
@@ -80,57 +81,54 @@ describe('PushMessage.handlers', function() {
       // which means the overrides are only effective after a test case has already run.
     })
 
-    it('attempting to delete the current device leads to a logout', async () => {
-      // Wait for viewMain to load, then wait a bit more for good measure.
-      await vpn.waitForElement("viewMainFlickable");
-      await vpn.wait();
+    it('attempting to delete the current device leads to a logout',
+       async () => {
+         await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
 
-      const devices = await vpn.getDevices();
-      guardian.broadcastMessage(JSON.stringify({
-        type: messageType,
-        payload: {
-          publicKey: devices.find(device => device.currentDevice).publicKey,
-        }
-      }));
+         const devices = await vpn.getDevices();
+         guardian.broadcastMessage(JSON.stringify({
+           type: messageType,
+           payload: {
+             publicKey: devices.find(device => device.currentDevice).publicKey,
+           }
+         }));
 
-      await vpn.waitForElementProperty('VPN', 'userState', 'UserNotAuthenticated');
-    });
+         await vpn.waitForVPNProperty(
+             'VPN', 'userState', 'UserNotAuthenticated');
+       });
 
-    it('attempting to delete a third device updates the device list', async () => {
-      // Wait for viewMain to load, then wait a bit more for good measure.
-      await vpn.waitForElement("viewMainFlickable");
-      await vpn.wait();
+    it('attempting to delete a third device updates the device list',
+       async () => {
+         await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
 
-      let devices = await vpn.getDevices();
-      // Get a device from the list of devices that is not the current one.
-      let otherDevice = devices.find(device => !device.currentDevice);
-      // Delete each one of the devices that are not the current one,
-      // until only the current device is left.
-      while(otherDevice) {
-        // Broadcast a message to delete the device.
-        guardian.broadcastMessage(JSON.stringify({
-          type: messageType,
-          payload: {
-            publicKey: otherDevice.publicKey,
-          }
-        }));
+         let devices = await vpn.getDevices();
+         // Get a device from the list of devices that is not the current one.
+         let otherDevice = devices.find(device => !device.currentDevice);
+         // Delete each one of the devices that are not the current one,
+         // until only the current device is left.
+         while (otherDevice) {
+           // Broadcast a message to delete the device.
+           guardian.broadcastMessage(JSON.stringify({
+             type: messageType,
+             payload: {
+               publicKey: otherDevice.publicKey,
+             }
+           }));
 
-        // Wait for devices list to be updated.
-        await vpn.waitForCondition(async () => {
-          const updatedDevices = await vpn.getDevices();
-          return updatedDevices.length === devices.length - 1;
-        });
+           // Wait for devices list to be updated.
+           await vpn.waitForCondition(async () => {
+             const updatedDevices = await vpn.getDevices();
+             return updatedDevices.length === devices.length - 1;
+           });
 
-        devices = await vpn.getDevices();
-        // Get another device that is not the current one.
-        otherDevice = devices.find(device => !device.currentDevice);
-      }
-    });
+           devices = await vpn.getDevices();
+           // Get another device that is not the current one.
+           otherDevice = devices.find(device => !device.currentDevice);
+         }
+       });
 
     it('invalid device deletion messages are ignored', async () => {
-      // Wait for viewMain to load, then wait a bit more for good measure.
-      await vpn.waitForElement("viewMainFlickable");
-      await vpn.wait();
+      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
 
       const devices = await vpn.getDevices();
 

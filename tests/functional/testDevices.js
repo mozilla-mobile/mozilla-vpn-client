@@ -2,14 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const {
-  navBar,
-  settingsScreen,
-  initialScreen,
-  telemetryScreen,
-  generalElements,
-  authScreen
-} = require('./elements.js');
+const queries = require('./queries.js');
 const vpn = require('./helper.js');
 
 describe('Devices', function() {
@@ -17,20 +10,18 @@ describe('Devices', function() {
     this.ctx.authenticationNeeded = true;
 
     it('Opens and closes the device list', async () => {
-      await vpn.waitForElementAndClick(navBar.SETTINGS);
-      await vpn.waitForElementAndClick(settingsScreen.MY_DEVICE);
-      await vpn.waitForElementAndClick(settingsScreen.BACK);
+      await vpn.waitForQueryAndClick(queries.navBar.SETTINGS);
+      await vpn.waitForQueryAndClick(queries.screenSettings.MY_DEVICE);
+      await vpn.waitForQueryAndClick(queries.screenSettings.BACK);
 
-      await vpn.waitForElement(settingsScreen.MY_DEVICE);
-      await vpn.waitForElementProperty(
-          settingsScreen.MY_DEVICE, 'visible', 'true');
+      await vpn.waitForQuery(queries.screenSettings.MY_DEVICE.visible());
     });
   });
 
   describe('Device limit', function() {
     const UserData = {
       avatar: '',
-      display_name: 'Test test',
+      display_name: 'Test',
       email: 'test@mozilla.com',
       max_devices: 5,
       subscriptions: {vpn: {active: true}},
@@ -114,57 +105,63 @@ describe('Devices', function() {
 
       // This method must be called when the client is on the "Get Started"
       // view.
-      await vpn.waitForMainView();
+      await vpn.waitForInitialView();
 
       // Click on get started and wait for authenticating view
-      await vpn.waitForElementAndClick(initialScreen.GET_STARTED);
-      await vpn.waitForElement(authScreen.EMAIL_INPUT);
-      await vpn.setElementProperty(
-          authScreen.EMAIL_INPUT, 'text', 's', 'test@test.com');
-      await vpn.waitForElement(authScreen.START_BUTTON);
-      await vpn.waitForElementAndClick(authScreen.START_BUTTON);
+      await vpn.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
+      await vpn.waitForQuery(
+          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+      await vpn.setQueryProperty(
+          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+          'text', 'test@test.com');
+      await vpn.waitForQueryAndClick(
+          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+              .enabled());
 
-      await vpn.waitForElement(authScreen.SIGNIN_PASS_INPUT);
-      await vpn.setElementProperty(
-          authScreen.SIGNIN_PASS_INPUT, 'text', 's', 'password');
+      await vpn.waitForQuery(queries.screenAuthenticationInApp
+                                 .AUTH_SIGNIN_PASSWORD_INPUT.visible());
+      await vpn.setQueryProperty(
+          queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
+              .visible(),
+          'text', 'password');
 
-      await vpn.waitForElementAndClick(authScreen.SIGNIN_BUTTON);
+      await vpn.waitForQueryAndClick(
+          queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+              .enabled());
 
       // Wait for VPN client screen to move from spinning wheel to next screen
-      await vpn.waitForElementProperty('VPN', 'userState', 'UserAuthenticated');
-      await vpn.waitForElementAndClick(
-          telemetryScreen.POST_AUTHENTICATION_BUTTON);
+      await vpn.waitForVPNProperty('VPN', 'userState', 'UserAuthenticated');
 
-      await vpn.waitForElement(telemetryScreen.TELEMETRY_POLICY_BUTTON);
-      await vpn.clickOnElement(telemetryScreen.TELEMETRY_POLICY_BUTTON);
-      await vpn.waitForElement(settingsScreen.myDevicesView.BACK);
+      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await vpn.waitForQueryAndClick(
+          queries.screenPostAuthentication.BUTTON.visible());
 
-      await vpn.waitForElement(settingsScreen.myDevicesView.DEVICE_LIST);
-      await vpn.waitForElementProperty(
-          settingsScreen.myDevicesView.DEVICE_LIST, 'visible', 'true');
+      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
 
+      await vpn.waitForQuery(
+          queries.screenSettings.myDevicesView.BACK.visible());
+      await vpn.waitForQuery(
+          queries.screenSettings.myDevicesView.DEVICE_LIST.visible());
 
-      await vpn.waitForElement(
-          settingsScreen.myDevicesView.DEVICE_LIMIT_HEADER);
-      await vpn.waitForElementProperty(
-          settingsScreen.myDevicesView.DEVICE_LIMIT_HEADER, 'visible', 'true');
+      await vpn.waitForQuery(
+          queries.screenSettings.myDevicesView.DEVICE_LIMIT_HEADER.visible());
 
       // Let's remove a device
-      await vpn.waitForElementAndClick(
-          'deviceListView/device-device_1/deviceLayout/deviceRemoveButton');
-      await vpn.waitForElementAndClick(
-          settingsScreen.myDevicesView.CONFIRM_REMOVAL_BUTTON);
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.myDevicesView.REMOVE_DEVICE_BUTTON.visible());
+      await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView
+                                         .CONFIRM_REMOVAL_BUTTON.visible());
 
-      await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
-      await vpn.waitForElementProperty(
-          generalElements.CONTROLLER_TITLE, 'visible', 'true');
+      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
     });
   });
 
   describe('Device limit and push notification', function() {
     const UserData = {
       avatar: '',
-      display_name: 'Test test',
+      display_name: 'Test',
       email: 'test@mozilla.com',
       max_devices: 5,
       subscriptions: {vpn: {active: true}},
@@ -239,53 +236,60 @@ describe('Devices', function() {
 
       // This method must be called when the client is on the "Get Started"
       // view.
-      await vpn.waitForMainView();
+      await vpn.waitForInitialView();
 
       // Click on get started and wait for authenticating view
-      await vpn.waitForElementAndClick(initialScreen.GET_STARTED);
-      await vpn.waitForElement(authScreen.EMAIL_INPUT);
-      await vpn.setElementProperty(
-          authScreen.EMAIL_INPUT, 'text', 's', 'test@test.com');
-      await vpn.waitForElement(authScreen.START_BUTTON);
-      await vpn.waitForElementAndClick(authScreen.START_BUTTON);
+      await vpn.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
+      await vpn.waitForQuery(
+          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+      await vpn.setQueryProperty(
+          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+          'text', 'test@test.com');
+      await vpn.waitForQueryAndClick(
+          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+              .enabled());
 
-      await vpn.waitForElement(authScreen.SIGNIN_PASS_INPUT);
-      await vpn.setElementProperty(
-          authScreen.SIGNIN_PASS_INPUT, 'text', 's', 'password');
-      await vpn.waitForElementAndClick(authScreen.SIGNIN_BUTTON);
+      await vpn.waitForQuery(queries.screenAuthenticationInApp
+                                 .AUTH_SIGNIN_PASSWORD_INPUT.visible());
+      await vpn.setQueryProperty(
+          queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
+              .visible(),
+          'text', 'password');
+      await vpn.waitForQueryAndClick(
+          queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+              .enabled());
 
       // Wait for VPN client screen to move from spinning wheel to next screen
-      await vpn.waitForElementProperty('VPN', 'userState', 'UserAuthenticated');
-      await vpn.waitForElementAndClick(
-          telemetryScreen.POST_AUTHENTICATION_BUTTON);
+      await vpn.waitForVPNProperty('VPN', 'userState', 'UserAuthenticated');
 
-      await vpn.waitForElement(telemetryScreen.TELEMETRY_POLICY_BUTTON);
-      await vpn.clickOnElement(telemetryScreen.TELEMETRY_POLICY_BUTTON);
+      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await vpn.waitForQueryAndClick(
+          queries.screenPostAuthentication.BUTTON.visible());
 
-      await vpn.waitForElement(settingsScreen.myDevicesView.BACK);
-      await vpn.waitForElement(settingsScreen.myDevicesView.DEVICE_LIST);
-      await vpn.waitForElementProperty(
-          settingsScreen.myDevicesView.DEVICE_LIST, 'visible', 'true');
+      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
 
-      await vpn.waitForElement(
-          settingsScreen.myDevicesView.DEVICE_LIMIT_HEADER);
-      await vpn.waitForElementProperty(
-          settingsScreen.myDevicesView.DEVICE_LIMIT_HEADER, 'visible', 'true');
+      await vpn.waitForQuery(
+          queries.screenSettings.myDevicesView.BACK.visible());
+      await vpn.waitForQuery(
+          queries.screenSettings.myDevicesView.DEVICE_LIST.visible());
+
+      await vpn.waitForQuery(
+          queries.screenSettings.myDevicesView.DEVICE_LIMIT_HEADER.visible());
 
       const key = UserData.devices[0].pubkey;
       UserData.devices.splice(0, 1);
       await vpn.sendPushMessageDeviceDeleted(key);
 
-      await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
-      await vpn.waitForElementProperty(
-          generalElements.CONTROLLER_TITLE, 'visible', 'true');
+      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
     });
   });
 
   describe('Device limit and race condition', function() {
     const UserData = {
       avatar: '',
-      display_name: 'Test test',
+      display_name: 'Test',
       email: 'test@mozilla.com',
       max_devices: 5,
       subscriptions: {vpn: {active: true}},
@@ -366,52 +370,58 @@ describe('Devices', function() {
 
       // This method must be called when the client is on the "Get Started"
       // view.
-      await vpn.waitForMainView();
+      await vpn.waitForInitialView();
 
       // Click on get started and wait for authenticating view
-      await vpn.waitForElementAndClick(initialScreen.GET_STARTED);
-      await vpn.waitForElement(authScreen.EMAIL_INPUT);
-      await vpn.setElementProperty(
-          authScreen.EMAIL_INPUT, 'text', 's', 'test@test.com');
-      await vpn.waitForElement(authScreen.START_BUTTON);
-      await vpn.waitForElementAndClick(authScreen.START_BUTTON);
+      await vpn.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
+      await vpn.waitForQuery(
+          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+      await vpn.setQueryProperty(
+          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+          'text', 'test@test.com');
+      await vpn.waitForQueryAndClick(
+          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+              .enabled());
 
-      await vpn.waitForElementAndProperty(
-          authScreen.SIGNIN_PASS_INPUT, 'visible', 'true');
-      await vpn.setElementProperty(authScreen.SIGNIN_PASS_INPUT, 'text', 's', 'password');
-      await vpn.waitForElementAndClick(authScreen.SIGNIN_BUTTON);
+      await vpn.waitForQuery(queries.screenAuthenticationInApp
+                                 .AUTH_SIGNIN_PASSWORD_INPUT.visible());
+      await vpn.setQueryProperty(
+          queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
+              .visible(),
+          'text', 'password');
+      await vpn.waitForQueryAndClick(
+          queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible());
 
       // Wait for VPN client screen to move from spinning wheel to next screen
-      await vpn.waitForElementProperty('VPN', 'userState', 'UserAuthenticated');
-      await vpn.waitForElementAndClick(
-          telemetryScreen.POST_AUTHENTICATION_BUTTON);
+      await vpn.waitForVPNProperty('VPN', 'userState', 'UserAuthenticated');
 
-      await vpn.waitForElement(telemetryScreen.TELEMETRY_POLICY_BUTTON);
-      await vpn.clickOnElement(telemetryScreen.TELEMETRY_POLICY_BUTTON);
+      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await vpn.waitForQueryAndClick(
+          queries.screenPostAuthentication.BUTTON.visible());
 
-      await vpn.waitForElement(settingsScreen.myDevicesView.BACK);
-      await vpn.waitForElement(settingsScreen.myDevicesView.DEVICE_LIST);
-      await vpn.waitForElementProperty(
-          settingsScreen.myDevicesView.DEVICE_LIST, 'visible', 'true');
+      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
 
-      await vpn.waitForElement(
-          settingsScreen.myDevicesView.DEVICE_LIMIT_HEADER);
-      await vpn.waitForElementProperty(
-          settingsScreen.myDevicesView.DEVICE_LIMIT_HEADER, 'visible', 'true');
+      await vpn.waitForQuery(
+          queries.screenSettings.myDevicesView.BACK.visible());
+      await vpn.waitForQuery(
+          queries.screenSettings.myDevicesView.DEVICE_LIST.visible());
+
+      await vpn.waitForQuery(
+          queries.screenSettings.myDevicesView.DEVICE_LIMIT_HEADER.visible());
 
       // Let's remove a device
       const key = UserData.devices[0].pubkey;
       UserData.devices.splice(0, 1);
 
       // Let's remove a device by clicking the button
-      await vpn.waitForElementAndClick(
-          'deviceListView/device-device_1/deviceLayout/deviceRemoveButton');
-      await vpn.waitForElementAndClick(
-          settingsScreen.myDevicesView.CONFIRM_REMOVAL_BUTTON);
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.myDevicesView.REMOVE_DEVICE_BUTTON.visible());
+      await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView
+                                         .CONFIRM_REMOVAL_BUTTON.visible());
 
-      await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
-      await vpn.waitForElementProperty(
-          generalElements.CONTROLLER_TITLE, 'visible', 'true');
+      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
     });
   });
 

@@ -18,7 +18,8 @@ class ServerData final : public QObject {
 
   Q_PROPERTY(QString exitCountryCode READ exitCountryCode NOTIFY changed)
   Q_PROPERTY(QString exitCityName READ exitCityName NOTIFY changed)
-  Q_PROPERTY(QString localizedCityName READ localizedCityName NOTIFY changed)
+  Q_PROPERTY(
+      QString localizedExitCityName READ localizedExitCityName NOTIFY changed)
 
   Q_PROPERTY(bool multihop READ multihop NOTIFY changed)
 
@@ -53,7 +54,7 @@ class ServerData final : public QObject {
 
   const QString& exitCountryCode() const { return m_exitCountryCode; }
   const QString& exitCityName() const { return m_exitCityName; }
-  QString localizedCityName() const;
+  QString localizedExitCityName() const;
 
   bool multihop() const {
     return !m_entryCountryCode.isEmpty() && !m_entryCityName.isEmpty();

@@ -6,7 +6,7 @@
 
 const UserData = {
   avatar: '',
-  display_name: 'Test test',
+  display_name: 'Test',
   email: 'test@mozilla.com',
   max_devices: 5,
   subscriptions: {vpn: {active: true}},

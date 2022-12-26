@@ -51,6 +51,7 @@ RowLayout {
 
                 VPNLightLabel {
                     id: serverLocation
+                    objectName: root.objectName + '-label'
                     color: root.fontColor
                     text: {
                         if (typeof(localizedCityName) !== "undefined") {

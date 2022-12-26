@@ -60,7 +60,7 @@ Item {
         id: segmentedNav
 
         property var multiHopEntryServer: [VPNCurrentServer.entryCountryCode, VPNCurrentServer.entryCityName, VPNCurrentServer.localizedEntryCityName]
-        property var multiHopExitServer: [VPNCurrentServer.exitCountryCode, VPNCurrentServer.exitCityName, VPNCurrentServer.localizedCityName]
+        property var multiHopExitServer: [VPNCurrentServer.exitCountryCode, VPNCurrentServer.exitCityName, VPNCurrentServer.localizedExitCityName]
 
         anchors {
             top: menu.bottom
@@ -86,7 +86,7 @@ Item {
                 id: singleHopServerList
                 currentServer: {
                     "countryCode": VPNCurrentServer.exitCountryCode,
-                    "localizedCityName": VPNCurrentServer.localizedCityName,
+                    "localizedCityName": VPNCurrentServer.localizedExitCityName,
                     "cityName": VPNCurrentServer.exitCityName,
                     "whichHop": "singleHopServer"
                 }
