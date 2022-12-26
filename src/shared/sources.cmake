@@ -43,6 +43,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/logger.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/loghandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/loghandler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/qmlpath.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/qmlpath.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/rfc/rfc1112.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/rfc/rfc1112.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/rfc/rfc1918.cpp

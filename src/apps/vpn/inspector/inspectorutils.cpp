@@ -8,6 +8,7 @@
 #include <QQuickItem>
 
 #include "qmlengineholder.h"
+#include "qmlpath.h"
 
 // static
 QObject* InspectorUtils::findObject(const QString& name) {
@@ -76,4 +77,19 @@ QObject* InspectorUtils::findObject(const QString& name) {
   }
 
   return parent;
+}
+
+QObject* InspectorUtils::queryObject(const QString& path) {
+  QmlPath qmlPath(path);
+  if (!qmlPath.isValid()) {
+    return nullptr;
+  }
+
+  QQmlApplicationEngine* engine = qobject_cast<QQmlApplicationEngine*>(
+      QmlEngineHolder::instance()->engine());
+  if (!engine) {
+    return nullptr;
+  }
+
+  return qmlPath.evaluate(engine);
 }

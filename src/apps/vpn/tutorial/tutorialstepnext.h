@@ -7,13 +7,15 @@
 
 #include <QObject>
 
+class AddonTutorial;
 class QJsonValue;
 
 class TutorialStepNext final : public QObject {
   Q_OBJECT
 
  public:
-  static TutorialStepNext* create(QObject* parent, const QJsonValue& json);
+  static TutorialStepNext* create(AddonTutorial* parent,
+                                  const QJsonValue& json);
 
   ~TutorialStepNext();
 
@@ -25,10 +27,11 @@ class TutorialStepNext final : public QObject {
   enum EmitterType {
     Controller,
     QML,
+    QMLQuery,
     SettingsHolder,
   };
 
-  TutorialStepNext(QObject* parent, EmitterType emitterType,
+  TutorialStepNext(AddonTutorial* parent, EmitterType emitterType,
                    const QString& emitter, const QString& signal);
 
   void startOrStop(bool start);
@@ -37,6 +40,8 @@ class TutorialStepNext final : public QObject {
   void completed();
 
  private:
+  AddonTutorial* m_addonTutorial = nullptr;
+
   const EmitterType m_emitterType;
   const QString m_emitter;
   const QString m_signal;

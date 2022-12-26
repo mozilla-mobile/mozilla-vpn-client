@@ -8,6 +8,7 @@
 #include <QJsonValue>
 #include <QMetaMethod>
 
+#include "addons/addontutorial.h"
 #include "inspector/inspectorutils.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -35,7 +36,7 @@ QMetaMethod signalByName(const QMetaObject* metaObject, const QString& name) {
 }  // namespace
 
 // static
-TutorialStepNext* TutorialStepNext::create(QObject* parent,
+TutorialStepNext* TutorialStepNext::create(AddonTutorial* parent,
                                            const QJsonValue& json) {
   QJsonObject obj = json.toObject();
   if (obj["op"] != "signal") {
@@ -74,10 +75,12 @@ TutorialStepNext* TutorialStepNext::create(QObject* parent,
   return new TutorialStepNext(parent, emitterType, qmlEmitter, signal);
 }
 
-TutorialStepNext::TutorialStepNext(QObject* parent, EmitterType emitterType,
+TutorialStepNext::TutorialStepNext(AddonTutorial* parent,
+                                   EmitterType emitterType,
                                    const QString& emitter,
                                    const QString& signal)
     : QObject(parent),
+      m_addonTutorial(parent),
       m_emitterType(emitterType),
       m_emitter(emitter),
       m_signal(signal) {
@@ -96,7 +99,9 @@ void TutorialStepNext::startOrStop(bool start) {
       obj = MozillaVPN::instance()->controller();
       break;
     case QML:
-      obj = InspectorUtils::findObject(m_emitter);
+      obj = m_addonTutorial->supportQmlPath()
+                ? InspectorUtils::queryObject(m_emitter)
+                : InspectorUtils::findObject(m_emitter);
       break;
   }
 

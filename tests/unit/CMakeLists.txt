@@ -258,6 +258,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/loghandler.cpp
     ${MZ_SOURCE_DIR}/shared/loghandler.h
     ${MZ_SOURCE_DIR}/shared/platforms/wasm/wasmcryptosettings.cpp
+    ${MZ_SOURCE_DIR}/shared/qmlpath.cpp
+    ${MZ_SOURCE_DIR}/shared/qmlpath.h
     ${MZ_SOURCE_DIR}/shared/rfc/rfc1918.cpp
     ${MZ_SOURCE_DIR}/shared/rfc/rfc1918.h
     ${MZ_SOURCE_DIR}/shared/rfc/rfc4193.cpp
@@ -326,6 +328,8 @@ target_sources(unit_tests PRIVATE
     testmozillavpnh.h
     testnetworkmanager.cpp
     testnetworkmanager.h
+    testqmlpath.cpp
+    testqmlpath.h
     testreleasemonitor.cpp
     testreleasemonitor.h
     testserveri18n.cpp
@@ -358,6 +362,7 @@ target_sources(auth_tests PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 target_sources(unit_tests PRIVATE
     addons/addons.qrc
     guides/guides.qrc
+    qml/qml.qrc
     servers/servers.qrc
     themes/themes.qrc
     tutorials/tutorials.qrc

@@ -9,13 +9,14 @@
 #include <QObject>
 #include <QVariant>
 
+class AddonTutorial;
 class QJsonValue;
 
 class TutorialStepBefore : public QObject {
   Q_OBJECT
 
  public:
-  static QList<TutorialStepBefore*> create(QObject* parent,
+  static QList<TutorialStepBefore*> create(AddonTutorial* parent,
                                            const QString& elementForTooltip,
                                            const QJsonValue& json);
 
@@ -24,7 +25,10 @@ class TutorialStepBefore : public QObject {
   virtual bool run() = 0;
 
  protected:
-  explicit TutorialStepBefore(QObject* parent);
+  explicit TutorialStepBefore(AddonTutorial* parent);
+
+ protected:
+  AddonTutorial* m_parent = nullptr;
 };
 
 #endif  // TUTORIALSTEPBEFORE_H

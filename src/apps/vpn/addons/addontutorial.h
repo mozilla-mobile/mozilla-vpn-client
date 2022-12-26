@@ -49,6 +49,8 @@ class AddonTutorial final : public Addon {
 
   bool itemPicked(const QList<QQuickItem*>& list);
 
+  bool supportQmlPath() const { return m_supportQmlPath; }
+
  private:
   AddonTutorial(QObject* parent, const QString& manifestFileName,
                 const QString& id, const QString& name);
@@ -72,6 +74,7 @@ class AddonTutorial final : public Addon {
   bool m_highlighted = false;
   bool m_settingsRollbackNeeded = false;
   bool m_activeTransaction = false;
+  bool m_supportQmlPath = false;
 
   QStringList m_allowedItems;
 
