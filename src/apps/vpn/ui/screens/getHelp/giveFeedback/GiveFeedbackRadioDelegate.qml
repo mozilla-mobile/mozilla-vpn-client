@@ -44,8 +44,10 @@ RadioDelegate {
             anchors.fill: parent
             source: img
             color: VPNTheme.colors.blue
-            visible: radio.checked || radio.state === uiState.stateHovered
-                || radio.state === uiState.statePressed
+            //prevents iOS and Android from getting into a weird hover state
+            visible: radio.checked || radio.state === uiState.statePressed
+                     || ((Qt.platform.os !== "android" && Qt.platform.os !== "ios")
+                         && radio.state === uiState.stateHovered)
         }
     }
 
@@ -80,7 +82,7 @@ RadioDelegate {
         id: mouseArea
         onMouseAreaClicked: function() {
             radio.forceActiveFocus();
-            radio.checked = !radio.checked;
+            radio.checked = true
         }
     }
 }
