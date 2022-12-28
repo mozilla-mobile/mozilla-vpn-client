@@ -16,6 +16,7 @@ RadioDelegate {
     property alias iconSource: img.source
     property real iconSize: 30
     property var uiState: VPNTheme.theme.uiState
+    readonly property bool isMobile: (Qt.platform.os === "android" || Qt.platform.os === "ios")
 
     id: radio
 
@@ -46,8 +47,7 @@ RadioDelegate {
             color: VPNTheme.colors.blue
             //prevents iOS and Android from getting into a weird hover state
             visible: radio.checked || radio.state === uiState.statePressed
-                     || ((Qt.platform.os !== "android" && Qt.platform.os !== "ios")
-                         && radio.state === uiState.stateHovered)
+                     || (!radio.isMobile && radio.state === uiState.stateHovered)
         }
     }
 
@@ -68,7 +68,7 @@ RadioDelegate {
         border.width: VPNTheme.theme.focusBorderWidth * 2
         color: VPNTheme.theme.transparent
         //OS Check to prevent multi-touch issue
-        opacity: radio.checked || ((Qt.platform.os !== "android" && Qt.platform.os !== "ios") && radio.activeFocus) ? 1 : 0
+        opacity: radio.checked || (!radio.isMobile && radio.activeFocus) ? 1 : 0
         radius: height
 
         Behavior on opacity {
