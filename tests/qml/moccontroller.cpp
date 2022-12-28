@@ -24,7 +24,11 @@ void Controller::activateInternal(Reason reason, bool forcePort53) {
 
 bool Controller::deactivate() { return false; }
 
-void Controller::connected(const QString& pubkey) { Q_UNUSED(pubkey); }
+void Controller::connected(const QString& pubkey,
+                           const QDateTime& connectionTimestamp) {
+  Q_UNUSED(pubkey);
+  Q_UNUSED(connectionTimestamp);
+}
 
 void Controller::disconnected() {}
 

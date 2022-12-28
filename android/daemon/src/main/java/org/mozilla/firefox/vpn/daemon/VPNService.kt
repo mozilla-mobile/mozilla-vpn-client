@@ -51,14 +51,15 @@ class VPNService : android.net.VpnService() {
         set(value: Int) {
             field = value
             if (value > -1) {
+                mConnectionTime = System.currentTimeMillis()
                 Log.i(tag, "Dispatch Daemon State -> connected")
                 mBinder.dispatchEvent(
                     VPNServiceBinder.EVENTS.connected,
                     JSONObject().apply {
+                        put("time", mConnectionTime)
                         put("city", mCityname)
                     }.toString()
                 )
-                mConnectionTime = System.currentTimeMillis()
                 return
             }
             Log.i(tag, "Dispatch Daemon State -> disconnected")
@@ -166,11 +167,10 @@ class VPNService : android.net.VpnService() {
         }
 
     /**
-    * Checks if there is a config loaded 
-    * or some available in the Storage to fetch.
-    * if this is false calling {reconnect()} will abort.
-    * @returns whether a config is found.
-    */
+     * Checks if there is a config loaded * or some available in the Storage to fetch.
+     * if this is false calling {reconnect()} will abort.
+     * @returns whether a config is found.
+     */
     var canActivate: Boolean = false
         get() {
             if (mConfig != null) {

@@ -108,7 +108,8 @@ class Controller final : public QObject {
   Q_INVOKABLE void quit();
 
  private slots:
-  void connected(const QString& pubkey);
+  void connected(const QString& pubkey,
+                 const QDateTime& connectionTimestamp = QDateTime());
   void disconnected();
   void timerTimeout();
   void implInitialized(bool status, bool connected,
