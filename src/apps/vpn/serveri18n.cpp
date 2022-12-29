@@ -10,6 +10,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+#include "localizer.h"
 #include "logger.h"
 #include "settingsholder.h"
 
@@ -158,15 +159,11 @@ QString translateItemWithLanguage(const QString& languageCode,
 
 QString translateItem(const QString& countryCode, const QString& cityName,
                       const QString& fallback) {
-  if (!SettingsHolder::instance()->hasLanguageCode()) {
-    return fallback;
-  }
-
   maybeInitialize();
 
   QString languageCode = SettingsHolder::instance()->languageCode();
   if (languageCode.isEmpty()) {
-    languageCode = QLocale::system().bcp47Name();
+    languageCode = Localizer::instance()->languageCodeOrSystem();
   }
 
   QString result =

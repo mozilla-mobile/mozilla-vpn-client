@@ -19,7 +19,7 @@ class SystemTrayNotificationHandler : public NotificationHandler {
 
   void retranslate() override;
 
-#ifdef MVPN_WASM
+#ifdef MZ_WASM
   QMenu* contextMenu() override;
 #endif
 

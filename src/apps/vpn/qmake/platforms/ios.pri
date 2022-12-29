@@ -54,7 +54,7 @@ LIBS += -framework StoreKit
 LIBS += -framework UserNotifications
 LIBS += -framework Network
 
-DEFINES += MVPN_IOS
+DEFINES += MZ_IOS
 
 SOURCES += \
     apps/vpn/platforms/macos/macospingsender.cpp \
@@ -66,8 +66,7 @@ OBJECTIVE_SOURCES += \
     apps/vpn/platforms/ios/iosglue.mm \
     apps/vpn/platforms/ios/iosnetworkwatcher.mm \
     apps/vpn/platforms/ios/iosnotificationhandler.mm \
-    apps/vpn/platforms/ios/iosutils.mm \
-    apps/vpn/platforms/macos/macoscryptosettings.mm
+    apps/vpn/platforms/ios/iosutils.mm
 
 HEADERS += \
     apps/vpn/platforms/macos/macospingsender.h \

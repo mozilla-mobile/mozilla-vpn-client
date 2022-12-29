@@ -11,8 +11,8 @@ import Mozilla.VPN 1.0
 RowLayout {
     id: checkBoxRow
 
-    property var labelText: ""
-    property var subLabelText: ""
+    property string labelText
+    property string subLabelText
     property bool isChecked
     property bool showDivider: true
     property var leftMargin: 18

@@ -33,7 +33,7 @@ bool ItemPicker::eventFilterInternal(QObject* obj, QEvent* event) {
       !!qobject_cast<QQuickWindow*>(static_cast<QTouchEvent*>(event)->target());
 
   if (
-#if defined(MVPN_ANDROID) || defined(MVPN_IOS)
+#if defined(MZ_ANDROID) || defined(MZ_IOS)
       !isTouchEvent
 #else
       !isMouseEvent

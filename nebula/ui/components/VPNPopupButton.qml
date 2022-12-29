@@ -15,7 +15,7 @@ VPNButtonBase {
     property alias buttonTextColor: buttonText.color
     property var colorScheme
     property var uiState:VPNTheme.theme.uiState
-    property var isCancelBtn
+    property bool isCancelBtn
 
     enabled: popup.visible
     Layout.fillWidth: true

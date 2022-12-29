@@ -32,9 +32,9 @@ ComposerBlock* ComposerBlockOrderedList::create(Composer* composer,
 ComposerBlockOrderedList::ComposerBlockOrderedList(Composer* composer,
                                                    const QString& blockId)
     : ComposerBlockUnorderedList(composer, blockId, "olist") {
-  MVPN_COUNT_CTOR(ComposerBlockOrderedList);
+  MZ_COUNT_CTOR(ComposerBlockOrderedList);
 }
 
 ComposerBlockOrderedList::~ComposerBlockOrderedList() {
-  MVPN_COUNT_DTOR(ComposerBlockOrderedList);
+  MZ_COUNT_DTOR(ComposerBlockOrderedList);
 }

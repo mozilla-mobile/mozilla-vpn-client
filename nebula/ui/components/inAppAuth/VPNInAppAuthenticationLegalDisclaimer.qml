@@ -28,5 +28,11 @@ ColumnLayout {
             }
             VPNUrlOpener.openLink(VPNUrlOpener.LinkPrivacyNotice);
         }
+
+        Accessible.role: Accessible.StaticText
+        //prevent html tags from being read by screen readers
+        //NOTE: This is not a robust way of removing html tags,
+        //and should only be used for this particular case
+        Accessible.name: text.replace(/<[^>]*>/g, "")
     }
 }

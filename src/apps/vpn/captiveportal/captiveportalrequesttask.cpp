@@ -20,11 +20,11 @@ Logger logger("CaptivePortalRequestTask");
 
 CaptivePortalRequestTask::CaptivePortalRequestTask(bool retryOnFailure)
     : Task("CaptivePortalRequestTask"), m_retryOnFailure(retryOnFailure) {
-  MVPN_COUNT_CTOR(CaptivePortalRequestTask);
+  MZ_COUNT_CTOR(CaptivePortalRequestTask);
 }
 
 CaptivePortalRequestTask::~CaptivePortalRequestTask() {
-  MVPN_COUNT_DTOR(CaptivePortalRequestTask);
+  MZ_COUNT_DTOR(CaptivePortalRequestTask);
 }
 
 void CaptivePortalRequestTask::run() {

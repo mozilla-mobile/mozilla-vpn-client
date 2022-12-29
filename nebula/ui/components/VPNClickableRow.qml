@@ -12,12 +12,12 @@ import components 0.1
 VPNButtonBase {
     id: mainRow
 
-    property var rowShouldBeDisabled: false
+    property bool rowShouldBeDisabled: false
     property string accessibleName: ""
     property var backgroundColor: VPNTheme.theme.iconButtonLightBackground
 
     property var handleMouseClick: function() { mainRow.clicked(); }
-    property var canGrowVertical: false
+    property bool canGrowVertical: false
 
     visualStateItem: rowVisualStates
 

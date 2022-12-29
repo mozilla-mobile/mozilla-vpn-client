@@ -25,7 +25,7 @@ Logger logger("DBusClient");
 }
 
 DBusClient::DBusClient(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(DBusClient);
+  MZ_COUNT_CTOR(DBusClient);
 
   m_dbus = new OrgMozillaVpnDbusInterface(DBUS_SERVICE, DBUS_PATH,
                                           QDBusConnection::systemBus(), this);
@@ -36,7 +36,7 @@ DBusClient::DBusClient(QObject* parent) : QObject(parent) {
           &DBusClient::disconnected);
 }
 
-DBusClient::~DBusClient() { MVPN_COUNT_DTOR(DBusClient); }
+DBusClient::~DBusClient() { MZ_COUNT_DTOR(DBusClient); }
 
 QDBusPendingCallWatcher* DBusClient::version() {
   logger.debug() << "Version via DBus";

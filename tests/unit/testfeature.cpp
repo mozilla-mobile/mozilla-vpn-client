@@ -5,8 +5,8 @@
 #include "testfeature.h"
 
 #include "adjust/adjustfiltering.h"
+#include "feature.h"
 #include "helper.h"
-#include "models/feature.h"
 #include "models/featuremodel.h"
 #include "settingsholder.h"
 

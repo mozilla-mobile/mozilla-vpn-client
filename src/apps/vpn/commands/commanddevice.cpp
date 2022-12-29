@@ -13,10 +13,10 @@
 
 CommandDevice::CommandDevice(QObject* parent)
     : Command(parent, "device", "Remove a device by its id.") {
-  MVPN_COUNT_CTOR(CommandDevice);
+  MZ_COUNT_CTOR(CommandDevice);
 }
 
-CommandDevice::~CommandDevice() { MVPN_COUNT_DTOR(CommandDevice); }
+CommandDevice::~CommandDevice() { MZ_COUNT_DTOR(CommandDevice); }
 
 int CommandDevice::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());

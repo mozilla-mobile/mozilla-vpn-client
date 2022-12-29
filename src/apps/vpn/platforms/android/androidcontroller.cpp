@@ -33,7 +33,7 @@ AndroidController* s_instance = nullptr;
 }  // namespace
 
 AndroidController::AndroidController() {
-  MVPN_COUNT_CTOR(AndroidController);
+  MZ_COUNT_CTOR(AndroidController);
   s_instance = this;
 
   auto activity = AndroidVPNActivity::instance();
@@ -96,7 +96,7 @@ AndroidController::AndroidController() {
       []() { REPORTERROR(ErrorHandler::ControllerError, "controller"); },
       Qt::QueuedConnection);
 }
-AndroidController::~AndroidController() { MVPN_COUNT_DTOR(AndroidController); }
+AndroidController::~AndroidController() { MZ_COUNT_DTOR(AndroidController); }
 
 void AndroidController::initialize(const Device* device, const Keys* keys) {
   logger.debug() << "Initializing";

@@ -9,8 +9,8 @@
 #include "addons/addon.h"
 #include "addons/addonmessage.h"
 #include "addons/conditionwatchers/addonconditionwatcherjavascript.h"
+#include "feature.h"
 #include "helper.h"
-#include "models/feature.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 

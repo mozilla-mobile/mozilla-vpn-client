@@ -24,7 +24,7 @@ Logger logger("PingHelper");
 }
 
 PingHelper::PingHelper() {
-  MVPN_COUNT_CTOR(PingHelper);
+  MZ_COUNT_CTOR(PingHelper);
 
   m_sequence = 0;
   m_pingData.resize(PING_STATS_WINDOW);
@@ -32,7 +32,7 @@ PingHelper::PingHelper() {
   connect(&m_pingTimer, &QTimer::timeout, this, &PingHelper::nextPing);
 }
 
-PingHelper::~PingHelper() { MVPN_COUNT_DTOR(PingHelper); }
+PingHelper::~PingHelper() { MZ_COUNT_DTOR(PingHelper); }
 
 void PingHelper::start(const QString& serverIpv4Gateway,
                        const QString& deviceIpv4Address) {
@@ -78,7 +78,7 @@ void PingHelper::stop() {
 }
 
 void PingHelper::nextPing() {
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
   logger.debug() << "Sending ping seq:" << m_sequence;
 #endif
 
@@ -100,7 +100,7 @@ void PingHelper::pingReceived(quint16 sequence) {
     qint64 sendTime = m_pingData[index].timestamp;
     m_pingData[index].latency = QDateTime::currentMSecsSinceEpoch() - sendTime;
     emit pingSentAndReceived(m_pingData[index].latency);
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
     logger.debug() << "Ping answer received seq:" << sequence
                    << "avg:" << latency()
                    << "loss:" << QString("%1%").arg(loss() * 100.0)

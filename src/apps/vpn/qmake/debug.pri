@@ -9,7 +9,7 @@ CONFIG(debug, debug|release) {
 
 mvpn_debug {
     message(MVPN Debug enabled)
-    DEFINES += MVPN_DEBUG
+    DEFINES += MZ_DEBUG
 
     # This Flag will enable a qmljsdebugger on 0.0.0.0:1234
     CONFIG+=qml_debug

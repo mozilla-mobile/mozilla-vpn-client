@@ -11,7 +11,7 @@ import compat 0.1
 import components 0.1
 
 ComboBox {
-    property var placeholderText: ""
+    property string placeholderText
     property bool showInteractionStates: true
     textRole: "name"
     valueRole: "value"
@@ -204,4 +204,11 @@ ComboBox {
             }
         }
     ]
+
+    Connections {
+        target: window
+        function onScreenClicked(x, y) {
+            if(combo.focus) window.removeFocus(combo, x, y)
+        }
+    }
 }

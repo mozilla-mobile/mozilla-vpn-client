@@ -26,10 +26,10 @@ ComposerBlock* ComposerBlockText::create(Composer* composer,
 
 ComposerBlockText::ComposerBlockText(Composer* composer, const QString& blockId)
     : ComposerBlock(composer, blockId, "text") {
-  MVPN_COUNT_CTOR(ComposerBlockText);
+  MZ_COUNT_CTOR(ComposerBlockText);
 }
 
-ComposerBlockText::~ComposerBlockText() { MVPN_COUNT_DTOR(ComposerBlockText); }
+ComposerBlockText::~ComposerBlockText() { MZ_COUNT_DTOR(ComposerBlockText); }
 
 bool ComposerBlockText::contains(const QString& string) const {
   return m_text.get().contains(string, Qt::CaseInsensitive);

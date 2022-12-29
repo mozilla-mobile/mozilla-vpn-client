@@ -21,11 +21,11 @@ Logger logger("MacosSystemTrayNotificationHandler");
 MacosSystemTrayNotificationHandler::MacosSystemTrayNotificationHandler(
     QObject* parent)
     : SystemTrayNotificationHandler(parent) {
-  MVPN_COUNT_CTOR(MacosSystemTrayNotificationHandler);
+  MZ_COUNT_CTOR(MacosSystemTrayNotificationHandler);
 }
 
 MacosSystemTrayNotificationHandler::~MacosSystemTrayNotificationHandler() {
-  MVPN_COUNT_DTOR(MacosSystemTrayNotificationHandler);
+  MZ_COUNT_DTOR(MacosSystemTrayNotificationHandler);
 }
 
 void MacosSystemTrayNotificationHandler::initialize() {

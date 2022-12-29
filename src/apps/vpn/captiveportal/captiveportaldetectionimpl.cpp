@@ -14,11 +14,11 @@ Logger logger("CaptivePortalDetectionImpl");
 }
 
 CaptivePortalDetectionImpl::CaptivePortalDetectionImpl() {
-  MVPN_COUNT_CTOR(CaptivePortalDetectionImpl);
+  MZ_COUNT_CTOR(CaptivePortalDetectionImpl);
 }
 
 CaptivePortalDetectionImpl::~CaptivePortalDetectionImpl() {
-  MVPN_COUNT_DTOR(CaptivePortalDetectionImpl);
+  MZ_COUNT_DTOR(CaptivePortalDetectionImpl);
 }
 
 void CaptivePortalDetectionImpl::start() {

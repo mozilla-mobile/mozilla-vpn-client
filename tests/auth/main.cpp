@@ -16,7 +16,7 @@
 #include "testsignupandin.h"
 
 int main(int argc, char* argv[]) {
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
   LeakDetector leakDetector;
   Q_UNUSED(leakDetector);
 #endif

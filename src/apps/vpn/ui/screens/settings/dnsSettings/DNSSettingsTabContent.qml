@@ -20,8 +20,6 @@ VPNFlickable {
     property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
     property alias settingsListModel: repeater.model
 
-    anchors.fill: parent
-
     flickContentHeight: col.height + col.anchors.topMargin
 
     ColumnLayout {
@@ -55,6 +53,7 @@ VPNFlickable {
                 Layout.rightMargin: VPNTheme.theme.windowMargin
 
                 VPNRadioButton {
+                    id: radioButton
                     Layout.preferredWidth: VPNTheme.theme.vSpacing
                     Layout.preferredHeight: VPNTheme.theme.rowHeight
                     Layout.alignment: Qt.AlignTop
@@ -83,6 +82,7 @@ VPNFlickable {
                             anchors.left: parent.left
                             anchors.bottom: parent.bottom
 
+                            enabled: radioButton.enabled
                             width: Math.min(parent.implicitWidth, parent.width)
                             propagateClickToParent: false
                             onClicked: VPNSettings.dnsProvider = settingValue
@@ -96,70 +96,85 @@ VPNFlickable {
                         Layout.fillWidth: true
                     }
 
-                    VPNVerticalSpacer {
-                        visible: ipInput.visible
-                        Layout.preferredHeight: VPNTheme.theme.windowMargin
-                        width: undefined
-                    }
-
-                    VPNTextField {
-                        property bool valueInvalid: false
-                        property string error: "This is an error string"
-                        hasError: valueInvalid
-                        visible: showDNSInput
-                        id: ipInput
-
-                        enabled: (VPNSettings.dnsProvider === VPNSettings.Custom) && vpnIsOff
-                        _placeholderText: VPNSettings.placeholderUserDNS
-                        text: ""
+                    Loader {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 40
 
-                        PropertyAnimation on opacity {
-                            duration: 200
-                        }
+                        active: showDNSInput
+                        sourceComponent: ColumnLayout {
 
-                        Component.onCompleted: {
-                            ipInput.text = VPNSettings.userDNS;
-                        }
+                            spacing: 0
 
-                        onTextChanged: text => {
-                            if (ipInput.text === "") {
-                                // If nothing is entered, thats valid too. We will ignore the value later.
-                                ipInput.valueInvalid = false;
-                                VPNSettings.userDNS = ipInput.text
-                                return;
+                            VPNVerticalSpacer {
+                                Layout.preferredHeight: VPNTheme.theme.windowMargin
+                                width: undefined
                             }
-                            if (VPN.validateUserDNS(ipInput.text)) {
-                                ipInput.valueInvalid = false;
-                                VPNSettings.userDNS = ipInput.text
-                            } else {
-                                ipInput.error = VPNl18n.CustomDNSSettingsInlineCustomDNSError
-                                ipInput.valueInvalid = true;
+
+                            VPNTextField {
+                                id: ipInput
+
+                                property bool valueInvalid: false
+                                property string error: "This is an error string"
+
+
+                                hasError: valueInvalid
+                                visible: showDNSInput
+                                enabled: (VPNSettings.dnsProvider === VPNSettings.Custom) && vpnIsOff
+                                onEnabledChanged: if(enabled) forceActiveFocus()
+
+                                _placeholderText: VPN.placeholderUserDNS
+                                text: ""
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 40
+
+                                PropertyAnimation on opacity {
+                                    duration: 200
+                                }
+
+                                Component.onCompleted: {
+                                    ipInput.text = VPNSettings.userDNS;
+                                }
+
+                                onTextChanged: text => {
+                                                   if (ipInput.text === "") {
+                                                       // If nothing is entered, thats valid too. We will ignore the value later.
+                                                       ipInput.valueInvalid = false;
+                                                       VPNSettings.userDNS = ipInput.text
+                                                       return;
+                                                   }
+                                                   if (VPN.validateUserDNS(ipInput.text)) {
+                                                       ipInput.valueInvalid = false;
+                                                       VPNSettings.userDNS = ipInput.text
+                                                   } else {
+                                                       ipInput.error = VPNl18n.CustomDNSSettingsInlineCustomDNSError
+                                                       ipInput.valueInvalid = true;
+                                                   }
+                                               }
                             }
-                        }
-                    }
 
-                    VPNContextualAlerts {
-                        id: errorAlert
+                            VPNContextualAlerts {
+                                id: errorAlert
 
-                        anchors {
-                            left: undefined
-                            right: undefined
-                        }
-                        Layout.topMargin: VPNTheme.theme.listSpacing
+                                property string messageText: ""
+                                property bool messageVisible: false
 
-                        visible: ipInput.valueInvalid && ipInput.visible
+                                anchors {
+                                    left: undefined
+                                    right: undefined
+                                }
+                                Layout.topMargin: VPNTheme.theme.listSpacing
 
-                        messages: [
-                            {
-                                type: "error",
-                                message: ipInput.error,
                                 visible: ipInput.valueInvalid && ipInput.visible
-                            }
-                        ]
-                    }
 
+                                messages: [
+                                    {
+                                        type: "error",
+                                        message: ipInput.error,
+                                        visible: ipInput.valueInvalid && ipInput.visible
+                                    }
+                                ]
+                            }
+                        }
+                    }
                 }
             }
         }

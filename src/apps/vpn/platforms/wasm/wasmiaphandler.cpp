@@ -22,10 +22,10 @@ Logger logger("WasmIAPHandler");
 }  // namespace
 
 WasmIAPHandler::WasmIAPHandler(QObject* parent) : PurchaseIAPHandler(parent) {
-  MVPN_COUNT_CTOR(WasmIAPHandler);
+  MZ_COUNT_CTOR(WasmIAPHandler);
 }
 
-WasmIAPHandler::~WasmIAPHandler() { MVPN_COUNT_DTOR(WasmIAPHandler); }
+WasmIAPHandler::~WasmIAPHandler() { MZ_COUNT_DTOR(WasmIAPHandler); }
 
 void WasmIAPHandler::nativeRegisterProducts() {
   // Let's use the trialDays to sort the products in the wasm client

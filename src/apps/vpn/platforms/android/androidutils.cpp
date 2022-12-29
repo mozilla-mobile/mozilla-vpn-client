@@ -56,7 +56,7 @@ AndroidUtils* AndroidUtils::instance() {
 }
 
 AndroidUtils::AndroidUtils(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(AndroidUtils);
+  MZ_COUNT_CTOR(AndroidUtils);
 
   Q_ASSERT(!s_instance);
   s_instance = this;
@@ -77,7 +77,7 @@ AndroidUtils::AndroidUtils(QObject* parent) : QObject(parent) {
 }
 
 AndroidUtils::~AndroidUtils() {
-  MVPN_COUNT_DTOR(AndroidUtils);
+  MZ_COUNT_DTOR(AndroidUtils);
 
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;

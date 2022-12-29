@@ -38,6 +38,7 @@ VPNViewBase {
             _iconSource: "qrc:/nebula/resources/open-in-new.svg"
             _buttonOnClicked: () => {
                 VPN.recordGleanEvent("manageAccountClicked");
+                Glean.sample.manageAccountClicked.record();
                 VPNUrlOpener.openLink(VPNUrlOpener.LinkAccount);
             }
         }
@@ -112,6 +113,7 @@ VPNViewBase {
 
                 onClicked: {
                     VPN.recordGleanEvent("deleteAccountRequested");
+                    Glean.sample.deleteAccountRequested.record();
                     VPNNavigator.requestScreen(VPNNavigator.ScreenDeleteAccount)
                 }
 
@@ -137,6 +139,7 @@ VPNViewBase {
         }
 
         VPN.recordGleanEvent("manageSubscriptionClicked");
+        Glean.sample.manageSubscriptionClicked.record();
     }
 
     // We show the bundle upgrade only supposed to be available to users that

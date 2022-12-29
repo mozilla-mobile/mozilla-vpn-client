@@ -24,7 +24,7 @@ Logger logger("LinuxAppImageProvider");
 LinuxAppImageProvider::LinuxAppImageProvider(QObject* parent)
     : AppImageProvider(parent, QQuickImageProvider::Image,
                        QQmlImageProviderBase::ForceAsynchronousImageLoading) {
-  MVPN_COUNT_CTOR(LinuxAppImageProvider);
+  MZ_COUNT_CTOR(LinuxAppImageProvider);
 
   QStringList searchPaths = QIcon::fallbackSearchPaths();
 
@@ -47,7 +47,7 @@ LinuxAppImageProvider::LinuxAppImageProvider(QObject* parent)
 }
 
 LinuxAppImageProvider::~LinuxAppImageProvider() {
-  MVPN_COUNT_DTOR(LinuxAppImageProvider);
+  MZ_COUNT_DTOR(LinuxAppImageProvider);
 }
 
 void LinuxAppImageProvider::addFallbackPaths(const QString& iconDir,

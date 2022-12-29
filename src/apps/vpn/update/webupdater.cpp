@@ -4,6 +4,7 @@
 
 #include "webupdater.h"
 
+#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -16,16 +17,19 @@ Logger logger("WebUpdater");
 }
 
 WebUpdater::WebUpdater(QObject* parent) : Updater(parent) {
-  MVPN_COUNT_CTOR(WebUpdater);
+  MZ_COUNT_CTOR(WebUpdater);
   logger.debug() << "WebUpdater created";
 }
 
 WebUpdater::~WebUpdater() {
-  MVPN_COUNT_DTOR(WebUpdater);
+  MZ_COUNT_DTOR(WebUpdater);
   logger.debug() << "WebUpdater released";
 }
 
 void WebUpdater::start(Task*) {
+  mozilla::glean::sample::update_step.record(
+      mozilla::glean::sample::UpdateStepExtra{
+          ._state = QVariant::fromValue(FallbackInBrowser).toString()});
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(FallbackInBrowser).toString()}});

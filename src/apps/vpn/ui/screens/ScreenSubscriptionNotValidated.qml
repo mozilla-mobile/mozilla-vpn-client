@@ -34,5 +34,6 @@ VPNStackView {
             }
         );
         VPN.recordGleanEvent("subNotValidatedViewed");
+        Glean.record.subNotValidatedViewed.record();
     }
 }

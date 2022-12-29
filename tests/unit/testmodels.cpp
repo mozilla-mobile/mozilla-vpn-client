@@ -10,6 +10,7 @@
 
 #include "appconstants.h"
 #include "helper.h"
+#include "localizer.h"
 #include "models/device.h"
 #include "models/devicemodel.h"
 #include "models/keys.h"
@@ -1522,6 +1523,7 @@ void TestModels::serverCountryModelFromJson() {
   // from json
   {
     SettingsHolder settingsHolder;
+    Localizer l;
 
     ServerCountryModel m;
     QCOMPARE(m.fromJson(json), result);
@@ -1573,6 +1575,7 @@ void TestModels::serverCountryModelFromJson() {
   // from settings
   {
     SettingsHolder settingsHolder;
+    Localizer l;
 
     SettingsHolder::instance()->setServers(json);
 
@@ -1667,6 +1670,8 @@ void TestModels::serverCountryModelPick() {
 
   {
     SettingsHolder settingsHolder;
+    Localizer l;
+
     QStringList tuple = m.pickRandom();
     QCOMPARE(tuple.length(), 3);
     QCOMPARE(tuple.at(0), "serverCountryCode");

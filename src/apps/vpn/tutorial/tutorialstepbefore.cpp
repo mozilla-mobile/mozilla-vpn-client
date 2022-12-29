@@ -9,6 +9,7 @@
 #include <QJsonValue>
 #include <QMetaMethod>
 
+#include "addons/addontutorial.h"
 #include "inspector/inspectorutils.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -20,7 +21,8 @@ Logger logger("TutorialStepBefore");
 
 class TutorialStepBeforePropertyGet final : public TutorialStepBefore {
  public:
-  static TutorialStepBefore* create(QObject* parent, const QJsonObject& obj) {
+  static TutorialStepBefore* create(AddonTutorial* parent,
+                                    const QJsonObject& obj) {
     QString element = obj["element"].toString();
     if (element.isEmpty()) {
       logger.warning() << "Empty 'element' for 'before' step property_get";
@@ -52,21 +54,23 @@ class TutorialStepBeforePropertyGet final : public TutorialStepBefore {
                                              valueVariant);
   };
 
-  TutorialStepBeforePropertyGet(QObject* parent, const QString& element,
+  TutorialStepBeforePropertyGet(AddonTutorial* parent, const QString& element,
                                 const QString& property, const QVariant& value)
       : TutorialStepBefore(parent),
         m_element(element),
         m_property(property),
         m_value(value) {
-    MVPN_COUNT_CTOR(TutorialStepBeforePropertyGet);
+    MZ_COUNT_CTOR(TutorialStepBeforePropertyGet);
   }
 
   ~TutorialStepBeforePropertyGet() {
-    MVPN_COUNT_DTOR(TutorialStepBeforePropertyGet);
+    MZ_COUNT_DTOR(TutorialStepBeforePropertyGet);
   }
 
   bool run() override {
-    QObject* element = InspectorUtils::findObject(m_element);
+    QObject* element = m_parent->supportQmlPath()
+                           ? InspectorUtils::queryObject(m_element)
+                           : InspectorUtils::findObject(m_element);
     if (!element) {
       return false;
     }
@@ -89,7 +93,8 @@ class TutorialStepBeforePropertyGet final : public TutorialStepBefore {
 
 class TutorialStepBeforePropertySet final : public TutorialStepBefore {
  public:
-  static TutorialStepBefore* create(QObject* parent, const QJsonObject& obj) {
+  static TutorialStepBefore* create(AddonTutorial* parent,
+                                    const QJsonObject& obj) {
     QString element = obj["element"].toString();
     if (element.isEmpty()) {
       logger.warning() << "Empty 'element' for 'before' step property_set";
@@ -121,21 +126,23 @@ class TutorialStepBeforePropertySet final : public TutorialStepBefore {
                                              valueVariant);
   };
 
-  TutorialStepBeforePropertySet(QObject* parent, const QString& element,
+  TutorialStepBeforePropertySet(AddonTutorial* parent, const QString& element,
                                 const QString& property, const QVariant& value)
       : TutorialStepBefore(parent),
         m_element(element),
         m_property(property),
         m_value(value) {
-    MVPN_COUNT_CTOR(TutorialStepBeforePropertySet);
+    MZ_COUNT_CTOR(TutorialStepBeforePropertySet);
   }
 
   ~TutorialStepBeforePropertySet() {
-    MVPN_COUNT_DTOR(TutorialStepBeforePropertySet);
+    MZ_COUNT_DTOR(TutorialStepBeforePropertySet);
   }
 
   bool run() override {
-    QObject* element = InspectorUtils::findObject(m_element);
+    QObject* element = m_parent->supportQmlPath()
+                           ? InspectorUtils::queryObject(m_element)
+                           : InspectorUtils::findObject(m_element);
     if (!element) {
       return false;
     }
@@ -152,7 +159,8 @@ class TutorialStepBeforePropertySet final : public TutorialStepBefore {
 
 class TutorialStepBeforeVpnLocationSet final : public TutorialStepBefore {
  public:
-  static TutorialStepBefore* create(QObject* parent, const QJsonObject& obj) {
+  static TutorialStepBefore* create(AddonTutorial* parent,
+                                    const QJsonObject& obj) {
     QString exitCountryCode = obj["exitCountryCode"].toString();
     if (exitCountryCode.isEmpty()) {
       logger.warning()
@@ -173,7 +181,7 @@ class TutorialStepBeforeVpnLocationSet final : public TutorialStepBefore {
         parent, exitCountryCode, exitCity, entryCountryCode, entryCity);
   };
 
-  TutorialStepBeforeVpnLocationSet(QObject* parent,
+  TutorialStepBeforeVpnLocationSet(AddonTutorial* parent,
                                    const QString& exitCountryCode,
                                    const QString& exitCity,
                                    const QString& entryCountryCode,
@@ -183,11 +191,11 @@ class TutorialStepBeforeVpnLocationSet final : public TutorialStepBefore {
         m_exitCity(exitCity),
         m_entryCountryCode(entryCountryCode),
         m_entryCity(entryCity) {
-    MVPN_COUNT_CTOR(TutorialStepBeforeVpnLocationSet);
+    MZ_COUNT_CTOR(TutorialStepBeforeVpnLocationSet);
   }
 
   ~TutorialStepBeforeVpnLocationSet() {
-    MVPN_COUNT_DTOR(TutorialStepBeforeVpnLocationSet);
+    MZ_COUNT_DTOR(TutorialStepBeforeVpnLocationSet);
   }
 
   bool run() override {
@@ -205,15 +213,15 @@ class TutorialStepBeforeVpnLocationSet final : public TutorialStepBefore {
 
 class TutorialStepBeforeVpnOff final : public TutorialStepBefore {
  public:
-  static TutorialStepBefore* create(QObject* parent, const QJsonObject&) {
+  static TutorialStepBefore* create(AddonTutorial* parent, const QJsonObject&) {
     return new TutorialStepBeforeVpnOff(parent);
   };
 
-  TutorialStepBeforeVpnOff(QObject* parent) : TutorialStepBefore(parent) {
-    MVPN_COUNT_CTOR(TutorialStepBeforeVpnOff);
+  TutorialStepBeforeVpnOff(AddonTutorial* parent) : TutorialStepBefore(parent) {
+    MZ_COUNT_CTOR(TutorialStepBeforeVpnOff);
   }
 
-  ~TutorialStepBeforeVpnOff() { MVPN_COUNT_DTOR(TutorialStepBeforeVpnOff); }
+  ~TutorialStepBeforeVpnOff() { MZ_COUNT_DTOR(TutorialStepBeforeVpnOff); }
 
   bool run() override {
     Controller* controller = MozillaVPN::instance()->controller();
@@ -230,7 +238,8 @@ class TutorialStepBeforeVpnOff final : public TutorialStepBefore {
 
 // static
 QList<TutorialStepBefore*> TutorialStepBefore::create(
-    QObject* parent, const QString& elementForTooltip, const QJsonValue& json) {
+    AddonTutorial* parent, const QString& elementForTooltip,
+    const QJsonValue& json) {
   QList<TutorialStepBefore*> list;
 
   QJsonArray array = json.toArray();
@@ -266,10 +275,9 @@ QList<TutorialStepBefore*> TutorialStepBefore::create(
   return list;
 }
 
-TutorialStepBefore::TutorialStepBefore(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(TutorialStepBefore);
+TutorialStepBefore::TutorialStepBefore(AddonTutorial* parent)
+    : QObject(parent), m_parent(parent) {
+  MZ_COUNT_CTOR(TutorialStepBefore);
 }
 
-TutorialStepBefore::~TutorialStepBefore() {
-  MVPN_COUNT_DTOR(TutorialStepBefore);
-}
+TutorialStepBefore::~TutorialStepBefore() { MZ_COUNT_DTOR(TutorialStepBefore); }

@@ -26,7 +26,7 @@ Logger logger("LinuxController");
 }
 
 LinuxController::LinuxController() {
-  MVPN_COUNT_CTOR(LinuxController);
+  MZ_COUNT_CTOR(LinuxController);
 
   m_dbus = new DBusClient(this);
   connect(m_dbus, &DBusClient::connected, this, &LinuxController::connected);
@@ -34,7 +34,7 @@ LinuxController::LinuxController() {
           &LinuxController::disconnected);
 }
 
-LinuxController::~LinuxController() { MVPN_COUNT_DTOR(LinuxController); }
+LinuxController::~LinuxController() { MZ_COUNT_DTOR(LinuxController); }
 
 void LinuxController::initialize(const Device* device, const Keys* keys) {
   Q_UNUSED(device);

@@ -10,6 +10,8 @@
 class InspectorUtils final {
  public:
   static QObject* findObject(const QString& name);
+
+  static QObject* queryObject(const QString& path);
 };
 
 #endif  // INSPECTORUTILS_H

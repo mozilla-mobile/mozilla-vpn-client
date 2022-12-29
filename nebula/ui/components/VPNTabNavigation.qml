@@ -47,7 +47,7 @@ Item {
                 id: btn
                 objectName: tabButtonId
                 height: bar.contentHeight
-                width: stack.children.length > 0 ? (bar.width / stack.children.length) : bar.width
+
                 onClicked: handleTabClick(btn)
 
                 background: Rectangle {
@@ -91,7 +91,7 @@ Item {
         height: 2
         color: VPNTheme.colors.purple70
         anchors.bottom: bar.bottom
-        x: (bar.visible && bar.currentItem) ? bar.currentItem.x : 0
+        x: (currentTab.x && currentTab.ListView.view) ? currentTab.x - currentTab.ListView.view.originX : 0
         visible: stack.children.length > 1
         Behavior on x {
             PropertyAnimation {

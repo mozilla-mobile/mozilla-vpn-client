@@ -166,11 +166,15 @@ VPNFlickable {
             onOpened: {
                 VPNSettings.tipsAndTricksIntroShown = true
                 Sample.tipsAndTricksModalShown.record();
+                Glean.sample.tipsAndTricksModalShown.record();
             }
 
             onClosed: {
                 tipsAndTricksIntroPopupLoader.active = false
                 VPN.recordGleanEventWithExtraKeys("tipsAndTricksModalClosed", {"action": closedByPrimaryButton ? "cta" : "dismissed"});
+                Glean.sample.tipsAndTricksModalClosed.record({
+                    action: closedByPrimaryButton ? "cta" : "dismissed"
+                });
             }
         }
 

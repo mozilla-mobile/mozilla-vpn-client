@@ -14,7 +14,7 @@
 #include <QString>
 #include <QTextStream>
 
-#ifdef MVPN_ANDROID
+#ifdef MZ_ANDROID
 #  include <android/log.h>
 #endif
 
@@ -141,7 +141,7 @@ void LogHandler::enableStderr() {
 LogHandler::LogHandler(const MutexLocker& proofOfLock) {
   Q_UNUSED(proofOfLock);
 
-#if defined(MVPN_DEBUG)
+#if defined(MZ_DEBUG)
   m_stderrEnabled = true;
 #endif
 
@@ -168,7 +168,7 @@ void LogHandler::addLog(const Log& log, const MutexLocker& proofOfLock) {
 
   emit logEntryAdded(buffer);
 
-#if defined(MVPN_ANDROID) && defined(MVPN_DEBUG)
+#if defined(MZ_ANDROID) && defined(MZ_DEBUG)
   const char* str = buffer.constData();
   if (str) {
     __android_log_write(ANDROID_LOG_DEBUG, "mozillavpn", str);

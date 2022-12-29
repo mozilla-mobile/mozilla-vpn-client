@@ -19,7 +19,7 @@ Logger logger("DesktopAuthenticationListener");
 
 DesktopAuthenticationListener::DesktopAuthenticationListener(QObject* parent)
     : AuthenticationListener(parent) {
-  MVPN_COUNT_CTOR(DesktopAuthenticationListener);
+  MZ_COUNT_CTOR(DesktopAuthenticationListener);
 
   m_server = new QOAuthHttpServerReplyHandler(QHostAddress::LocalHost, this);
   connect(m_server, &QAbstractOAuthReplyHandler::callbackReceived, this,
@@ -38,7 +38,7 @@ DesktopAuthenticationListener::DesktopAuthenticationListener(QObject* parent)
 }
 
 DesktopAuthenticationListener::~DesktopAuthenticationListener() {
-  MVPN_COUNT_DTOR(DesktopAuthenticationListener);
+  MZ_COUNT_DTOR(DesktopAuthenticationListener);
 }
 
 void DesktopAuthenticationListener::start(Task* task,

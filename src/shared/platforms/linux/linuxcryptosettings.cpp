@@ -26,6 +26,7 @@ namespace {
 Logger logger("CryptoSettings");
 
 CryptoSettings::Version s_keyVersion = CryptoSettings::NoEncryption;
+bool s_initialized = false;
 QByteArray s_key;
 }  // namespace
 
@@ -47,6 +48,9 @@ void CryptoSettings::resetKey() {
 }
 
 bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
+  if (!s_initialized) {
+    s_keyVersion = getSupportedVersion();
+  }
   if (s_keyVersion == CryptoSettings::NoEncryption) {
     logger.error() << "libsecrets is not supported";
     return false;
@@ -104,8 +108,6 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
 
 // static
 CryptoSettings::Version CryptoSettings::getSupportedVersion() {
-  static bool s_initialized = false;
-
   // Check if "org.freedesktop.secrets" has been taken on the session D-Bus.
   if (!s_initialized) {
     s_initialized = true;

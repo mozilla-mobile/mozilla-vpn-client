@@ -13,7 +13,7 @@
 #include "settingsholder.h"
 #include "tasks/authenticate/taskauthenticate.h"
 
-#ifdef MVPN_WINDOWS
+#ifdef MZ_WINDOWS
 #  include <windows.h>
 #else
 #  include <termios.h>
@@ -26,10 +26,10 @@
 
 CommandLogin::CommandLogin(QObject* parent)
     : Command(parent, "login", "Starts the authentication flow.") {
-  MVPN_COUNT_CTOR(CommandLogin);
+  MZ_COUNT_CTOR(CommandLogin);
 }
 
-CommandLogin::~CommandLogin() { MVPN_COUNT_DTOR(CommandLogin); }
+CommandLogin::~CommandLogin() { MZ_COUNT_DTOR(CommandLogin); }
 
 int CommandLogin::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
@@ -244,7 +244,7 @@ QString CommandLogin::getInput(const QString& prompt) {
 // static
 QString CommandLogin::getPassword(const QString& prompt) {
   // Disable the console echo while typing the password
-#ifdef MVPN_WINDOWS
+#ifdef MZ_WINDOWS
   HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
   DWORD mode;
   GetConsoleMode(hStdin, &mode);

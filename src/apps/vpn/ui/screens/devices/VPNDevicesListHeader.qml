@@ -12,7 +12,7 @@ Item {
     id: listHeader
     objectName: "deviceLimitHeader"
 
-    property var pendingDeviceRemoval: false
+    property bool pendingDeviceRemoval: false
 
     Layout.fillWidth: true
     states: [

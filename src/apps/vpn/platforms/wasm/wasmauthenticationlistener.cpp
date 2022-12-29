@@ -17,11 +17,11 @@ Logger logger("WasmAuthenticationListener");
 
 WasmAuthenticationListener::WasmAuthenticationListener(QObject* parent)
     : AuthenticationListener(parent) {
-  MVPN_COUNT_CTOR(WasmAuthenticationListener);
+  MZ_COUNT_CTOR(WasmAuthenticationListener);
 }
 
 WasmAuthenticationListener::~WasmAuthenticationListener() {
-  MVPN_COUNT_DTOR(WasmAuthenticationListener);
+  MZ_COUNT_DTOR(WasmAuthenticationListener);
 }
 
 void WasmAuthenticationListener::start(Task* task, const QString& codeChallenge,

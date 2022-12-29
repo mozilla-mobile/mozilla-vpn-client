@@ -12,7 +12,7 @@ Item {
     property alias logo: logo.source
     property alias logoTitle: logoTitle.text
     property alias logoSubtitle: logoSubtitle.text
-    property var logoSize: 76
+    property real logoSize: 76
 
     anchors.horizontalCenter: parent.horizontalCenter
     width: Math.min(parent.width, VPNTheme.theme.maxHorizontalContentWidth)

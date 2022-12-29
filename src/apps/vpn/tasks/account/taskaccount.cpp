@@ -16,10 +16,10 @@ Logger logger("TaskAccount");
 TaskAccount::TaskAccount(
     ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy)
     : Task("TaskAccount"), m_errorPropagationPolicy(errorPropagationPolicy) {
-  MVPN_COUNT_CTOR(TaskAccount);
+  MZ_COUNT_CTOR(TaskAccount);
 }
 
-TaskAccount::~TaskAccount() { MVPN_COUNT_DTOR(TaskAccount); }
+TaskAccount::~TaskAccount() { MZ_COUNT_DTOR(TaskAccount); }
 
 void TaskAccount::run() {
   NetworkRequest* request = NetworkRequest::createForAccount(this);

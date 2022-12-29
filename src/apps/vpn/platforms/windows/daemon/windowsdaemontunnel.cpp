@@ -21,11 +21,11 @@ Logger logger("WindowsDaemonTunnel");
 
 WindowsDaemonTunnel::WindowsDaemonTunnel(QObject* parent)
     : Command(parent, "tunneldaemon", "Activate the windows tunnel service") {
-  MVPN_COUNT_CTOR(WindowsDaemonTunnel);
+  MZ_COUNT_CTOR(WindowsDaemonTunnel);
 }
 
 WindowsDaemonTunnel::~WindowsDaemonTunnel() {
-  MVPN_COUNT_DTOR(WindowsDaemonTunnel);
+  MZ_COUNT_DTOR(WindowsDaemonTunnel);
 }
 
 int WindowsDaemonTunnel::run(QStringList& tokens) {

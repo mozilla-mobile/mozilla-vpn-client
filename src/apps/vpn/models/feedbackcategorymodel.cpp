@@ -19,7 +19,7 @@ static QList<FeedbackCategory> s_feedbackCategories;
 }  // namespace
 
 FeedbackCategoryModel::FeedbackCategoryModel() {
-  MVPN_COUNT_CTOR(FeedbackCategoryModel);
+  MZ_COUNT_CTOR(FeedbackCategoryModel);
 
   // Here we use the logger to force lrelease to add the category ids.
 
@@ -60,7 +60,7 @@ FeedbackCategoryModel::FeedbackCategoryModel() {
 }
 
 FeedbackCategoryModel::~FeedbackCategoryModel() {
-  MVPN_COUNT_DTOR(FeedbackCategoryModel);
+  MZ_COUNT_DTOR(FeedbackCategoryModel);
 }
 
 QHash<int, QByteArray> FeedbackCategoryModel::roleNames() const {

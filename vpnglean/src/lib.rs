@@ -58,6 +58,11 @@ pub extern "C" fn glean_set_upload_enabled(is_telemetry_enabled: bool) {
 }
 
 #[no_mangle]
+pub extern "C" fn glean_shutdown() {
+    glean::shutdown();
+}
+
+#[no_mangle]
 pub extern "C" fn glean_test_reset_glean(is_telemetry_enabled: bool, data_path: FfiStr) {
     let cfg = Configuration {
         data_path: data_path

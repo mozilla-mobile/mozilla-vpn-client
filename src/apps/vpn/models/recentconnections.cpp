@@ -36,10 +36,10 @@ RecentConnections* RecentConnections::instance() {
 }
 
 RecentConnections::RecentConnections(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(RecentConnections);
+  MZ_COUNT_CTOR(RecentConnections);
 }
 
-RecentConnections::~RecentConnections() { MVPN_COUNT_DTOR(RecentConnections); }
+RecentConnections::~RecentConnections() { MZ_COUNT_DTOR(RecentConnections); }
 
 void RecentConnections::initialize() {
   connect(MozillaVPN::instance()->currentServer(), &ServerData::changed, this,

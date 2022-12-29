@@ -143,13 +143,10 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/controller.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/controller.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/controllerimpl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/cryptosettings.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/cryptosettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/dnshelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/dnshelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/dnspingsender.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/dnspingsender.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/env.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/errorhandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/errorhandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/externalophandler.cpp
@@ -196,8 +193,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/device.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/devicemodel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/devicemodel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/feature.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/feature.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/featuremodel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/featuremodel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/feedbackcategorymodel.cpp
@@ -265,8 +260,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/serveri18n.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/serverlatency.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/serverlatency.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/settingsholder.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/settingsholder.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/signature.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/signature.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/simplenetworkmanager.cpp

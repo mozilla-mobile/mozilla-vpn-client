@@ -9,10 +9,10 @@
 #include <QDir>
 
 #include "appconstants.h"
+#include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
-#include "models/feature.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #include "tasks/sentry/tasksentry.h"
@@ -30,8 +30,8 @@ SentryAdapter* SentryAdapter::instance() {
   }
   return s_instance;
 }
-SentryAdapter::SentryAdapter() { MVPN_COUNT_CTOR(SentryAdapter); }
-SentryAdapter::~SentryAdapter() { MVPN_COUNT_DTOR(SentryAdapter); }
+SentryAdapter::SentryAdapter() { MZ_COUNT_CTOR(SentryAdapter); }
+SentryAdapter::~SentryAdapter() { MZ_COUNT_DTOR(SentryAdapter); }
 
 void SentryAdapter::init() {
   if (!Feature::get(Feature::Feature_sentry)->isSupported()) {

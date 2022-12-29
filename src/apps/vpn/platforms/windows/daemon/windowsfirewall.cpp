@@ -55,7 +55,7 @@ WindowsFirewall* WindowsFirewall::instance() {
 }
 
 WindowsFirewall::WindowsFirewall(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(WindowsFirewall);
+  MZ_COUNT_CTOR(WindowsFirewall);
   Q_ASSERT(s_instance == nullptr);
 
   HANDLE engineHandle = NULL;
@@ -81,7 +81,7 @@ WindowsFirewall::WindowsFirewall(QObject* parent) : QObject(parent) {
 }
 
 WindowsFirewall::~WindowsFirewall() {
-  MVPN_COUNT_DTOR(WindowsFirewall);
+  MZ_COUNT_DTOR(WindowsFirewall);
   if (m_sessionHandle != INVALID_HANDLE_VALUE) {
     CloseHandle(m_sessionHandle);
   }

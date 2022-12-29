@@ -11,7 +11,7 @@ import Mozilla.VPN 1.0
 // VPNExternalLinkListItem
 VPNClickableRow {
     property alias title: title.text
-    property var iconSource:  "qrc:/nebula/resources/externalLink.svg"
+    property string iconSource:  "qrc:/nebula/resources/externalLink.svg"
     property alias iconMirror: icon.mirror
 
     backgroundColor: VPNTheme.theme.clickableRowBlue

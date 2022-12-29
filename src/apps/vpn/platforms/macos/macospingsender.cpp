@@ -29,7 +29,7 @@ int identifier() { return (getpid() & 0xFFFF); }
 
 MacOSPingSender::MacOSPingSender(const QHostAddress& source, QObject* parent)
     : PingSender(parent) {
-  MVPN_COUNT_CTOR(MacOSPingSender);
+  MZ_COUNT_CTOR(MacOSPingSender);
 
   if (getuid()) {
     m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_ICMP);
@@ -62,7 +62,7 @@ MacOSPingSender::MacOSPingSender(const QHostAddress& source, QObject* parent)
 }
 
 MacOSPingSender::~MacOSPingSender() {
-  MVPN_COUNT_DTOR(MacOSPingSender);
+  MZ_COUNT_DTOR(MacOSPingSender);
   if (m_socket >= 0) {
     close(m_socket);
   }

@@ -9,11 +9,11 @@
 #include "leakdetector.h"
 
 SimpleNetworkManager::SimpleNetworkManager() {
-  MVPN_COUNT_CTOR(SimpleNetworkManager);
+  MZ_COUNT_CTOR(SimpleNetworkManager);
 }
 
 SimpleNetworkManager::~SimpleNetworkManager() {
-  MVPN_COUNT_DTOR(SimpleNetworkManager);
+  MZ_COUNT_DTOR(SimpleNetworkManager);
 }
 
 QNetworkAccessManager* SimpleNetworkManager::networkAccessManager() {

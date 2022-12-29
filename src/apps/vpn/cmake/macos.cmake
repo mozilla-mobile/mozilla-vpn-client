@@ -2,9 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-enable_language(OBJC)
-enable_language(OBJCXX)
-
 set_target_properties(mozillavpn PROPERTIES OUTPUT_NAME "Mozilla VPN")
 
 # Configure the application bundle Info.plist
@@ -74,7 +71,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macossystemtraynotificationhandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/wgquickprocess.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/wgquickprocess.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macoscryptosettings.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosnetworkwatcher.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosnetworkwatcher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosstatusicon.mm
@@ -85,9 +81,9 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosnetworkwatcher.h
 )
 
-include(apps/vpn/cmake/osxtools.cmake)
-include(apps/vpn/cmake/golang.cmake)
-include(apps/vpn/cmake/signature.cmake)
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
 
 # Enable Balrog for update support.
 target_compile_definitions(mozillavpn PRIVATE MVPN_BALROG)
@@ -98,6 +94,15 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/balrog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/balrog.h
 )
+
+# Compile and link the signature library.
+add_rust_library(signature
+    PACKAGE_DIR ${CMAKE_SOURCE_DIR}/signature
+    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
+    CRATE_NAME signature
+)
+target_compile_definitions(mozillavpn PRIVATE MVPN_SIGNATURE)
+target_link_libraries(mozillavpn PRIVATE signature)
 
 # Build the Wireguard Go tunnel
 # FIXME: this builds in the source directory.

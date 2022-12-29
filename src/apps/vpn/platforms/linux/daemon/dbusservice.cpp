@@ -30,7 +30,7 @@ constexpr const char* DBUS_LOGIN_PATH = "/org/freedesktop/login1";
 constexpr const char* DBUS_LOGIN_MANAGER = "org.freedesktop.login1.Manager";
 
 DBusService::DBusService(QObject* parent) : Daemon(parent) {
-  MVPN_COUNT_CTOR(DBusService);
+  MZ_COUNT_CTOR(DBusService);
 
   m_wgutils = new WireguardUtilsLinux(this);
 
@@ -60,7 +60,7 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
                    SLOT(userListCompleted(QDBusPendingCallWatcher*)));
 }
 
-DBusService::~DBusService() { MVPN_COUNT_DTOR(DBusService); }
+DBusService::~DBusService() { MZ_COUNT_DTOR(DBusService); }
 
 IPUtils* DBusService::iputils() {
   if (!m_iputils) {

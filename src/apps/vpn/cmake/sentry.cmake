@@ -6,7 +6,7 @@
 # This CMAKE File will Integrate Sentry into MVPN
 
 
-# Defines which OS builds can include sentry. Check src/cmake Lists for all values of MVPN_PLATFORM_NAME
+# Defines which OS builds can include sentry. Check src/cmake Lists for all values of MZ_PLATFORM_NAME
 set(SENTRY_SUPPORTED_OS  "Windows" "Darwin" "Android")
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 include(ExternalProject)
@@ -43,7 +43,7 @@ if( ${_SUPPORTED} GREATER -1 )
 
     # Configure Linking and Compile
     if(APPLE)
-        include(apps/vpn/cmake/osxtools.cmake)
+        include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
         # Let sentry.h know we are using a static build
         target_compile_definitions(mozillavpn PRIVATE SENTRY_BUILD_STATIC)
         # Let mozilla-vpn know we need to provide the upload client
