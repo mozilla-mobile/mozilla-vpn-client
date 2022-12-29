@@ -71,18 +71,6 @@ bool FeatureCallback_webPurchase() {
 #endif
 }
 
-bool FeatureCallback_lanAccess() {
-#if defined(MZ_IOS)
-  // managed by the OS automatically. No need to
-  // expose this feature.
-  return false;
-#else
-  // All the rest (android, windows, linux,
-  // mac,...) is OK.
-  return true;
-#endif
-}
-
 bool FeatureCallback_shareLogs() {
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS) || \
     defined(MZ_IOS) || defined(MZ_DUMMY)
