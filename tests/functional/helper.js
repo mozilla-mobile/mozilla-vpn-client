@@ -147,6 +147,13 @@ module.exports = {
         `Command failed: ${json.error}`);
   },
 
+  async copyToClipboard(text) {
+    const json = await this._writeCommand(`copy_to_clipboard ${text}`);
+    assert(
+      !('type' in json) || (json.type === 'copy_to_clipboard' && !('error' in json)),
+      `Command failed: ${json.error}`);
+  },
+
   async hasElement(id) {
     const json = await this._writeCommand(`has ${id}`);
     assert(

@@ -58,6 +58,7 @@ VPNMetropolisLabel 0.1 VPNMetropolisLabel.qml
 VPNMobileStatusBarModifier 0.1 VPNMobileStatusBarModifier.qml
 VPNMouseArea 0.1 VPNMouseArea.qml
 VPNPanel 0.1 VPNPanel.qml
+VPNPasteButton 0.1 VPNPasteButton.qml
 VPNPaymentMethod 0.1 VPNPaymentMethod.qml
 VPNPill 0.1 VPNPill.qml
 VPNPopup 0.1 VPNPopup.qml

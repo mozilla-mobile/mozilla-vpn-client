@@ -46,23 +46,41 @@ ColumnLayout {
 
         spacing: VPNTheme.theme.listSpacing
 
-        VPNTextField {
-            id: textInput
-            objectName: base.objectName + "-textInput"
+        RowLayout {
             Layout.fillWidth: true
-            _placeholderText: _inputPlaceholderText
-            Keys.onReturnPressed: col.submitInfo(textInput)
-            onDisplayTextChanged: if (hasError) hasError = false
+            spacing: VPNTheme.theme.windowMargin / 2
+
+            VPNTextField {
+                id: textInput
+                objectName: base.objectName + "-textInput"
+                Layout.fillWidth: true
+                _placeholderText: _inputPlaceholderText
+                Keys.onReturnPressed: col.submitInfo(textInput)
+                onDisplayTextChanged: if (hasError) hasError = false
+            }
+
+            VPNPasswordInput {
+                id: passwordInput
+                objectName: base.objectName + "-passwordInput"
+                _placeholderText: _inputPlaceholderText
+                Keys.onReturnPressed: col.submitInfo(passwordInput)
+                Layout.fillWidth: true
+                onTextChanged: if (hasError) hasError = false
+            }
+
+            VPNPasteButton {
+                id: inputPasteButton
+                objectName: base.objectName + "-inputPasteButton"
+                Layout.preferredWidth: VPNTheme.theme.rowHeight
+                Layout.preferredHeight: VPNTheme.theme.rowHeight
+                height: undefined
+                width: undefined
+                onClicked: {
+                   activeInput().paste();
+                }
+            }
         }
 
-        VPNPasswordInput {
-            id: passwordInput
-            objectName: base.objectName + "-passwordInput"
-            _placeholderText: _inputPlaceholderText
-            Layout.fillWidth: true
-            Keys.onReturnPressed: col.submitInfo(passwordInput)
-            onTextChanged: if (hasError) hasError = false
-        }
 
         ToolTip {
             property bool _isSignUp: VPNAuthInApp.state === VPNAuthInApp.StateSignUp
@@ -73,7 +91,6 @@ ColumnLayout {
             y: passwordInput.y - height - 4
             width: passwordInput.width - VPNTheme.theme.vSpacing
             height: passwordConditions.implicitHeight + padding * 2
-
             background: Rectangle { color: VPNTheme.theme.transparent }
 
             Rectangle {
@@ -162,25 +179,46 @@ ColumnLayout {
 
     states: [
         State {
-            when: _isSignUpOrIn
+            name: "auth-start"
+            when: VPNAuthInApp.state === VPNAuthInApp.StateStart ||
+                  VPNAuthInApp.state === VPNAuthInApp.StateCheckingAccount
             PropertyChanges {
                 target: textInput
+                visible: true
+            }
+            PropertyChanges {
+                target: inputPasteButton
                 visible: false
             }
             PropertyChanges {
                 target: passwordInput
-                visible: true
+                visible: false
             }
         },
         State {
-            when: !_isSignUpOrIn
+            when: VPNAuthInApp.state === VPNAuthInApp.StateUnblockCodeNeeded ||
+                  VPNAuthInApp.state === VPNAuthInApp.StateVerifyingUnblockCode ||
+                  VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByEmailNeeded ||
+                  VPNAuthInApp.state === VPNAuthInApp.StateVerifyingSessionEmailCode ||
+                  VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByTotpNeeded ||
+                  VPNAuthInApp.state === VPNAuthInApp.StateVerifyingSessionTotpCode
+            extend: "auth-start"
+            PropertyChanges {
+                target: inputPasteButton
+                visible: true
+            }
+        },
+
+        State {
+            when: VPNAuthInApp.state === VPNAuthInApp.StateSignUp || VPNAuthInApp.state === VPNAuthInApp.StateSigningUp ||
+                  VPNAuthInApp.state === VPNAuthInApp.StateSignIn || VPNAuthInApp.state === VPNAuthInApp.StateSigningIn
             PropertyChanges {
                 target: textInput
-                visible: true
+                visible: false
             }
             PropertyChanges {
                 target: passwordInput
-                visible: false
+                visible: true
             }
         }
     ]
