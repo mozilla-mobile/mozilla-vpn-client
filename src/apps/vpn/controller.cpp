@@ -84,53 +84,6 @@ Controller::Controller() {
 
   connect(SettingsHolder::instance(), &SettingsHolder::transactionBegan, this,
           [this]() { m_wasConnectedPreTransaction = m_state == StateOn; });
-
-  connect(
-      SettingsHolder::instance(), &SettingsHolder::transactionRolledBack, this,
-      [this]() {
-        // If they are in the correct state, or going to the correct state, do
-        // nothing
-        if ((m_wasConnectedPreTransaction &&
-             (m_state == StateOn || m_state == StateConnecting ||
-              m_state == StateConfirming)) ||
-            (!m_wasConnectedPreTransaction &&
-             (m_state == StateOff || m_state == StateDisconnecting)))
-          return;
-
-        if (m_wasConnectedPreTransaction) {
-          // If vpn is already off, just turn it on
-          if (m_state == StateOff) {
-            activate();
-            return;
-          }
-
-          // run lambda function in a context so we can delete it after it runs
-          // once
-          QObject* context = new QObject(this);
-          connect(this, &Controller::stateChanged, context, [this, context]() {
-            if (m_state == StateOff) {
-              activate();
-              delete context;
-            }
-          });
-        } else {
-          // If vpn is already on, just turn it off
-          if (m_state == StateOn) {
-            deactivate();
-            return;
-          }
-
-          // run lambda function in a context so we can delete it after it runs
-          // once
-          QObject* context = new QObject(this);
-          connect(this, &Controller::stateChanged, context, [this, context]() {
-            if (m_state == StateOn) {
-              deactivate();
-              delete context;
-            }
-          });
-        }
-      });
 }
 
 Controller::~Controller() { MZ_COUNT_DTOR(Controller); }
@@ -177,6 +130,53 @@ void Controller::initialize() {
     m_ping_received = true;
     logger.info() << "Canary Ping Succeeded";
   });
+
+  connect(
+      SettingsHolder::instance(), &SettingsHolder::transactionRolledBack, this,
+      [this]() {
+        // If they are in the correct state, or going to the correct state, do
+        // nothing
+        if ((m_wasConnectedPreTransaction &&
+             (m_state == StateOn || m_state == StateConnecting ||
+              m_state == StateConfirming || m_state == StateSwitching)) ||
+            (!m_wasConnectedPreTransaction &&
+             (m_state == StateOff || m_state == StateDisconnecting)))
+          return;
+
+        if (m_wasConnectedPreTransaction) {
+          // If vpn is already off, just turn it on
+          if (m_state == StateOff) {
+            activate();
+            return;
+          }
+
+          // run lambda function in a context so we can delete it after it runs
+          // once
+          QObject* context = new QObject(this);
+          connect(this, &Controller::stateChanged, context, [this, context]() {
+            if (m_state == StateOff) {
+              activate();
+              delete context;
+            }
+          });
+        } else {
+          // If vpn is already on, just turn it off
+          if (m_state == StateOn) {
+            deactivate();
+            return;
+          }
+
+          // run lambda function in a context so we can delete it after it runs
+          // once
+          QObject* context = new QObject(this);
+          connect(this, &Controller::stateChanged, context, [this, context]() {
+            if (m_state == StateOn) {
+              deactivate();
+              delete context;
+            }
+          });
+        }
+      });
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
