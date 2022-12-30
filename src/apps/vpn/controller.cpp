@@ -87,7 +87,9 @@ Controller::Controller() {
   });
 
   connect(SettingsHolder::instance(), &SettingsHolder::transactionRolledBack, this, [this]() {
-    if((m_wasConnectedPreTransaction && (m_state == StateOn || m_state == StateConnecting || m_state == StateConfirming)) || (!m_wasConnectedPreTransaction && (m_state == StateOff || m_state == StateDisconnecting))) return;
+    //If they are in the correct state, or going to the correct state, do nothing
+    if((m_wasConnectedPreTransaction && (m_state == StateOn || m_state == StateConnecting || m_state == StateConfirming)) ||
+            (!m_wasConnectedPreTransaction && (m_state == StateOff || m_state == StateDisconnecting))) return;
 
     if(m_wasConnectedPreTransaction) {
        //If vpn is already off, just turn it on
