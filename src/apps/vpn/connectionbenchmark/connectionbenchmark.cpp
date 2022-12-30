@@ -14,6 +14,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "taskscheduler.h"
+#include "telemetry/gleansample.h"
 
 namespace {
 Logger logger("ConnectionBenchmark");
@@ -51,6 +52,8 @@ void ConnectionBenchmark::setConnectionSpeed() {
     m_speed = SpeedSlow;
   }
 
+  emit MozillaVPN::instance()->recordGleanEvent(GleanSample::speedTestCompleted);
+
   emit speedChanged();
   setState(StateReady);
 }
@@ -64,6 +67,8 @@ void ConnectionBenchmark::setState(State state) {
 
 void ConnectionBenchmark::start() {
   logger.debug() << "Start connection benchmarking";
+  
+  emit MozillaVPN::instance()->recordGleanEvent(GleanSample::speedTestStarted);
 
   Q_ASSERT(m_state != StateRunning);
 

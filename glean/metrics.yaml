@@ -1657,3 +1657,59 @@ sample:
         description: |
           The line number where the error has been triggered
         type: quantity
+
+  speed_test_started:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      Speed test was started.
+    bugs:
+      - TO ADD LATER - DO NOT COMMIT THIS
+    data_reviews:
+      - TO ADD LATER - DO NOT COMMIT THIS
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: 2023-12-31
+
+  speed_test_completed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      Speed test was completed.
+    bugs:
+      - TO ADD LATER - DO NOT COMMIT THIS
+    data_reviews:
+      - TO ADD LATER - DO NOT COMMIT THIS
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: 2023-12-31
+
+  bottom_navigation_bar_click:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has tapped a bottom navigation bar button.
+    bugs:
+      - TO ADD LATER - DO NOT COMMIT THIS
+    data_reviews:
+      - TO ADD LATER - DO NOT COMMIT THIS
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never
+    extra_keys:
+      bar_button:
+        description: |
+          The name of the bar button tapped
+        type: string

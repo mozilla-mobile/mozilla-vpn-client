@@ -14,6 +14,7 @@
 #include "loglevel.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
+#include "telemetry/gleansample.h"
 
 namespace {
 Navigator* s_instance = nullptr;

@@ -6,6 +6,7 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
+import telemetry 0.30
 
 VPNIconButton {
     id: btn
@@ -17,6 +18,23 @@ VPNIconButton {
     accessibleName: ""
 
     onClicked: {
+        switch(_screen) {
+            case VPNNavigator.ScreenMessaging:
+                VPN.recordGleanEventWithExtraKeys("bottomNavigationBarClick", {"bar_button": "ScreenMessaging"});
+                break;
+
+            case VPNNavigator.ScreenHome:
+                VPN.recordGleanEventWithExtraKeys("bottomNavigationBarClick", {"bar_button": "ScreenHome"});
+                break;
+
+            case VPNNavigator.ScreenSettings:
+                VPN.recordGleanEventWithExtraKeys("bottomNavigationBarClick", {"bar_button": "ScreenSettings"});
+                break;
+
+            default:
+                VPN.recordGleanEventWithExtraKeys("bottomNavigationBarClick", {"bar_button": "Unknown"});
+                break;
+        }
         VPNNavigator.requestScreen(_screen, VPNNavigator.screen === _screen ? VPNNavigator.ForceReload : VPNNavigator.NoFlags);
     }
 
