@@ -56,6 +56,7 @@
         <file>components/VPNIcon.qml</file>
         <file>components/VPNInterLabel.qml</file>
         <file>components/VPNIPAddress.qml</file>
+        <file>components/VPNIPInfoPanel.qml</file>
         <file>components/VPNLightLabel.qml</file>
         <file>components/VPNLinkButton.qml</file>
         <file>components/VPNList.qml</file>

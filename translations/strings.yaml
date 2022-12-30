@@ -398,6 +398,28 @@ connectionInfo:
   highBulletThree:
     value: Online gaming
     comment: This is a bullet item in the connection section for high speedtest results
+  # Multi-hop callout
+  multiHopCallout:
+    value: You can improve your speed by switching back to a single-hop connection
+    comment: Informational text that is shown for multi-hop connections.
+  # Connection metrics title
+  metricsTitle:
+    value: Connection information
+    comment: Title for the connection metrics view.
+  # Server IP labels
+  exitServerLabelIp:
+    value: "Exit Server IP:"
+    comment:
+      - Exit server IP label for IPV4.
+      - IP is the abbreviation for Internet Procol. This is followed by the user’s IPv4 address.
+  exitServerLabelIpv6:
+    value: "Exit Server IPv6:"
+    comment:
+      - Exit server IP label for IPv6.
+      - IPv6 is the abbreviation for Internet Procol version 6. This is followed by the user’s IPv6 address.
+  ipInfoButtonLabel:
+    value: Show IP info
+    comment: Accessible label for the IP info button that shows the IP info panel when clicked.
 
 crashreporter:
   mainTitle:
