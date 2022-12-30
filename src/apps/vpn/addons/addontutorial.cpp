@@ -13,7 +13,6 @@
 #include "itempicker.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "tutorial/tutorial.h"
 #include "tutorial/tutorialstep.h"
 
@@ -121,12 +120,6 @@ void AddonTutorial::play(const QStringList& allowedItems) {
   m_activeTransaction = false;
 
   if (settingsRollbackNeeded()) {
-
-    MozillaVPN* vpn = MozillaVPN::instance();
-    Controller* controller = vpn->controller();
-    Q_ASSERT(controller);
-    m_wasVPNOn = controller->state() == Controller::State::StateOn;
-
     m_activeTransaction = SettingsHolder::instance()->beginTransaction();
     if (!m_activeTransaction) {
       logger.warning() << "Unable to start a setting transaction";
@@ -155,12 +148,14 @@ void AddonTutorial::stop() {
     m_steps[m_currentStep]->stop();
   }
 
-  if(m_settingsRollbackNeeded) {
-      beingRollbackSettings();
+  if (m_activeTransaction &&
+      !SettingsHolder::instance()->rollbackTransaction()) {
+    logger.warning() << "Unable to rollback a setting transaction";
   }
 
   m_itemPicker->stop();
   m_currentStep = -1;
+  m_activeTransaction = false;
 
   if (m_navigatorReloader) {
     m_navigatorReloader->deleteLater();
@@ -182,51 +177,6 @@ bool AddonTutorial::maybeStop() {
 
   Tutorial::instance()->stop();
   return true;
-}
-
-void AddonTutorial::beingRollbackSettings() {
-    MozillaVPN* vpn = MozillaVPN::instance();
-    Controller* controller = vpn->controller();
-    //Turn the VPN back off if the tutorial turned it off
-    if(m_wasVPNOn) {
-        controller->activate();
-        m_wasVPNOn = false;
-
-        //rollback settings after re-activation
-        rollbackSettings();
-    }
-    else {
-        if(controller->state() == Controller::StateOn) {
-            controller->deactivate();
-            rollbackSettings();
-        }
-        else if(controller->state() == Controller::StateOff) {
-            rollbackSettings();
-        }
-        //If the controller is in a switching/connecting/disconnecting state, we probably need to wait for it to finish turning on
-        else {
-            //Creates lambda slots in a context so they can be disconnected once operation finished
-            QObject *context = new QObject(this);
-            connect(controller, &Controller::stateChanged, context, [this, context, controller]{
-                if(controller->state() == Controller::StateOn) {
-                    connect(controller, &Controller::stateChanged, context, [this, context, controller]{
-                        if (controller->state() == Controller::StateOff) {
-                            rollbackSettings();
-                            delete context;
-                        }
-                    });
-                    controller->deactivate();
-                }
-            });
-        }
-    }
-}
-
-void AddonTutorial::rollbackSettings() {
-    if(m_activeTransaction && !SettingsHolder::instance()->rollbackTransaction()) {
-        logger.warning() << "Unable to rollback a setting transaction";
-    }
-    m_activeTransaction = false;
 }
 
 void AddonTutorial::processNextOp() {

@@ -81,6 +81,49 @@ Controller::Controller() {
 
   connect(&m_handshakeTimer, &QTimer::timeout, this,
           &Controller::handshakeTimeout);
+
+  connect(SettingsHolder::instance(), &SettingsHolder::transactionBegan, this, [this]() {
+    m_wasConnectedPreTransaction = m_state == StateOn;
+  });
+
+  connect(SettingsHolder::instance(), &SettingsHolder::transactionRolledBack, this, [this]() {
+    if((m_wasConnectedPreTransaction && (m_state == StateOn || m_state == StateConnecting || m_state == StateConfirming)) || (!m_wasConnectedPreTransaction && (m_state == StateOff || m_state == StateDisconnecting))) return;
+
+    if(m_wasConnectedPreTransaction) {
+       //If vpn is already off, just turn it on
+       if(m_state == StateOff) {
+           activate();
+           return;
+       }
+
+       //run lambda function in a context so we can delete it after it runs once
+       QObject *context = new QObject(this);
+       connect(this, &Controller::stateChanged, context,
+               [this, context](){
+           if(m_state == StateOff) {
+               activate();
+               delete context;
+           }
+       });
+   }
+   else {       
+       //If vpn is already on, just turn it off
+       if(m_state == StateOn) {
+           deactivate();
+           return;
+       }
+
+       //run lambda function in a context so we can delete it after it runs once
+       QObject *context = new QObject(this);
+       connect(this, &Controller::stateChanged, context,
+               [this, context](){
+           if(m_state == StateOn) {
+               deactivate();
+               delete context;
+           }
+       });
+   }
+  });
 }
 
 Controller::~Controller() { MZ_COUNT_DTOR(Controller); }

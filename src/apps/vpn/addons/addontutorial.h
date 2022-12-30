@@ -60,10 +60,6 @@ class AddonTutorial final : public Addon {
   // Return true if there are no operations left.
   bool maybeStop();
 
-  void beingRollbackSettings();
-
-  void rollbackSettings();
-
  signals:
   void playingChanged();
 
@@ -79,7 +75,6 @@ class AddonTutorial final : public Addon {
   bool m_settingsRollbackNeeded = false;
   bool m_activeTransaction = false;
   bool m_supportQmlPath = false;
-  bool m_wasVPNOn = false;
 
   QStringList m_allowedItems;
 
