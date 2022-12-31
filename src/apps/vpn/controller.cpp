@@ -81,9 +81,6 @@ Controller::Controller() {
 
   connect(&m_handshakeTimer, &QTimer::timeout, this,
           &Controller::handshakeTimeout);
-
-  connect(SettingsHolder::instance(), &SettingsHolder::transactionBegan, this,
-          [this]() { m_wasConnectedPreTransaction = m_state == StateOn; });
 }
 
 Controller::~Controller() { MZ_COUNT_DTOR(Controller); }
@@ -130,6 +127,9 @@ void Controller::initialize() {
     m_ping_received = true;
     logger.info() << "Canary Ping Succeeded";
   });
+
+  connect(SettingsHolder::instance(), &SettingsHolder::transactionBegan, this,
+          [this]() { m_wasConnectedPreTransaction = m_state == StateOn; });
 
   connect(
       SettingsHolder::instance(), &SettingsHolder::transactionRolledBack, this,
