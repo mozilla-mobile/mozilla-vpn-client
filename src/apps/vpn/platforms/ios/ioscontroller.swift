@@ -258,7 +258,7 @@ public class IOSControllerImpl : NSObject {
     }
     
     /**
-    * @brief Enables / Disables the Always-On Rule on the runnel
+    * @brief Enables / Disables the Always-On Rule on the tunnel
     * This is used for the "start-on-boot" feature. 
     * We are setting a rule matching * any network change
     * which will cause the phone to start the VPN after the phone boots.
@@ -280,7 +280,10 @@ public class IOSControllerImpl : NSObject {
     @objc func getAlwaysOn() -> Bool {
         return tunnel!.isOnDemandEnabled;
     }
-    
+    /**
+    * @brief Returns true/false if there is an "always-on" rule
+    * registered with the iOS system settings app. 
+    */ 
     @objc func hasAlwaysOn() -> Bool {
        guard let rules = tunnel?.onDemandRules else {
             return false;
@@ -297,7 +300,7 @@ public class IOSControllerImpl : NSObject {
         // Turn off "always-on", as this rule would
         // trigger an immediate reconnect from the OS
         setAlwaysOn(setEnabled: false)
-        tunnel!.saveToPreferences { [unowned self] saveError in
+        tunnel!.saveToPreferences { saveError in
             if let error = saveError {
                 Logger.global?.log(message: "Tunnel Save Error: \(error)")
             }
