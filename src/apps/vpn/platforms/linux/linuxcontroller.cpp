@@ -29,7 +29,9 @@ LinuxController::LinuxController() {
   MZ_COUNT_CTOR(LinuxController);
 
   m_dbus = new DBusClient(this);
-  connect(m_dbus, &DBusClient::connected, this, &LinuxController::connected);
+  connect(m_dbus, &DBusClient::connected, this, [this](auto key){
+    emit connected(key,QDateTime());
+  });
   connect(m_dbus, &DBusClient::disconnected, this,
           &LinuxController::disconnected);
 }

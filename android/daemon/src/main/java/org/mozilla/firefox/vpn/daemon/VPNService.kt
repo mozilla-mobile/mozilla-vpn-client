@@ -167,7 +167,7 @@ class VPNService : android.net.VpnService() {
         }
 
     /**
-     * Checks if there is a config loaded * or some available in the Storage to fetch.
+     * Checks if there is a config already loaded or available in the Storage.
      * if this is false calling {reconnect()} will abort.
      * @returns whether a config is found.
      */
