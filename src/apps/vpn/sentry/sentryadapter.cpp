@@ -9,8 +9,8 @@
 #include <QDir>
 
 #include "appconstants.h"
-#include "frontend/navigator.h"
 #include "feature.h"
+#include "frontend/navigator.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
