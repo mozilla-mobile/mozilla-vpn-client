@@ -18,7 +18,7 @@
     "steps": [
       {
         "id": "s0",
-        "element": "controllerToggle",
+        "query": "//controllerToggle{visible=true}",
         "tooltip": "Toggle this switch to deactivate the VPN",
         "conditions": {
            "javascript": "vpnIsOn.js"
@@ -30,67 +30,67 @@
         }
       }, {
         "id": "s1",
-        "element": "navigationLayout/navButton-settings",
+        "query": "//navigationLayout/navButton-settings{visible=true}",
         "tooltip": "Select your account settings",
         "next": {
           "op": "signal",
-          "qml_emitter": "navigationLayout/navButton-settings",
+          "query_emitter": "//navigationLayout/navButton-settings{visible=true}",
           "signal": "clicked"
         }
       }, {
         "id": "s2",
-        "element": "settingsNetworking",
+        "query": "//settingsNetworking{visible=true}",
         "tooltip": "Select “Network settings”",
         "next": {
           "op": "signal",
-          "qml_emitter": "settingsNetworking",
+          "query_emitter": "//settingsNetworking{visible=true}",
           "signal": "clicked"
         }
       },{
         "id": "s3",
-        "element": "appPermissions",
+        "query": "//appPermissions{visible=true}",
         "tooltip": "Select “App permissions”",
         "next": {
           "op": "signal",
-          "qml_emitter": "appPermissions",
+          "query_emitter": "//appPermissions{visible=true}",
           "signal": "clicked"
         }
       },{
         "id": "s4",
-        "element": "settingsAppPermissionsToggle",
+        "query": "//settingsAppPermissionsToggle{visible=true}",
         "tooltip": "Toggle off to view apps",
         "conditions": {
           "javascript": "resetAppPermissions.js"
         },
         "next": {
           "op": "signal",
-          "qml_emitter": "settingsAppPermissionsToggle",
+          "query_emitter": "//settingsAppPermissionsToggle{visible=true}",
           "signal": "clicked"
         }
       },{
         "id": "s5",
-        "element": "appPermissionList/app0/checkbox",
+        "query": "//appPermissionList/app0/checkbox{visible=true}",
         "tooltip": "Select an app to exclude it from VPN protections",
         "next": {
           "op": "signal",
-          "qml_emitter": "appPermissionList/app0/checkbox",
+          "query_emitter": "//appPermissionList/app0/checkbox{visible=true}",
           "signal": "checkedChanged"
         }
       },{
         "id": "s6",
-        "element": "navigationLayout/navButton-home",
+        "query": "//navigationLayout/navButton-home{visible=true}",
         "tooltip": "Go back to the VPN dashboard",
         "conditions": {
           "javascript": "vpnWasOn.js"
        },
         "next": {
           "op": "signal",
-          "qml_emitter": "navigationLayout/navButton-home",
+          "query_emitter": "//navigationLayout/navButton-home{visible=true}",
           "signal": "clicked"
         }
       },{
         "id": "s7",
-        "element": "controllerToggle",
+        "query": "//controllerToggle{visible=true}",
         "tooltip": "Toggle this switch to activate the VPN",
         "conditions": {
            "javascript": "vpnWasOn.js"

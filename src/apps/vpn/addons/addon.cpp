@@ -61,8 +61,7 @@ QList<ConditionCallback> s_conditionCallbacks{
        for (const QJsonValue& enabledFeature : enabledFeatures) {
          QString featureName = enabledFeature.toString();
 
-         // If the feature doesn't exist, we crash.
-         const Feature* feature = Feature::get(featureName);
+         const Feature* feature = Feature::getOrNull(featureName);
          if (!feature) {
            logger.info() << "Feature not found" << featureName;
            return false;
