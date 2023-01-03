@@ -140,8 +140,8 @@ void NotificationHandler::showNotification() {
 
         // "VPN Switched Servers"
         L18nStrings* l18nStrings = L18nStrings::instance();
-        title = l18nStrings->t(L18nStrings::NotificationsUnsecuredNetworkTitle);        
-        message = l18nStrings->t(L18nStrings::NotificationsUnsecuredNetworkMessage);
+        title = l18nStrings->t(L18nStrings::NotificationsVPNSwitchedServersTitle);        
+        message = l18nStrings->t(L18nStrings::NotificationsVPNSwitchedServersMessage);
       } else {
         if (!SettingsHolder::instance()->connectionChangeNotification()) {
           // Notifications for ConnectionChange are disabled
@@ -150,8 +150,8 @@ void NotificationHandler::showNotification() {
 
         // "VPN Connected"
         L18nStrings* l18nStrings = L18nStrings::instance();
-        title = l18nStrings->t(L18nStrings::NotificationsVPNDisconnectedTitle);        
-        message = l18nStrings->t(L18nStrings::NotificationsUnsecuredNetworkMessage);
+        title = l18nStrings->t(L18nStrings::NotificationsVPNConnectedTitle);        
+        message = l18nStrings->t(L18nStrings::NotificationsVPNConnectedMessage);
 
         // title = qtTrId("vpn.systray.statusConnected.title");
         // //% "Connected to %1, %2"
@@ -180,8 +180,8 @@ void NotificationHandler::showNotification() {
 
         // "VPN Disconnected"
         L18nStrings* l18nStrings = L18nStrings::instance();
-        title = l18nStrings->t(L18nStrings::NotificationsUnsecuredNetworkTitle);        
-        message = l18nStrings->t(L18nStrings::NotificationsUnsecuredNetworkMessage);
+        title = l18nStrings->t(L18nStrings::NotificationsVPNDisconnectedTitle);        
+        message = l18nStrings->t(L18nStrings::NotificationsVPNDisconnectedMessage);
       }
       break;
 
