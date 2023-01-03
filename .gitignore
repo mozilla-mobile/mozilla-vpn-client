@@ -168,6 +168,8 @@ src/apps/vpn/glean/generated
 /qt/
 
 # Language files
+l18nstrings.h
+l18nstrings_p.cpp
 /translations/libtranslations.a
 /translations/translations_autogen/
 translations/*/*.ts
