@@ -150,7 +150,7 @@ void NotificationHandler::showNotification() {
 
         // "VPN Connected"
         L18nStrings* l18nStrings = L18nStrings::instance();
-        title = l18nStrings->t(L18nStrings::NotificationsUnsecuredNetworkTitle);        
+        title = l18nStrings->t(L18nStrings::NotificationsVPNDisconnectedTitle);        
         message = l18nStrings->t(L18nStrings::NotificationsUnsecuredNetworkMessage);
 
         // title = qtTrId("vpn.systray.statusConnected.title");
