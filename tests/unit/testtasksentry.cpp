@@ -6,7 +6,6 @@
 
 #include <QTextStream>
 
-#include "../../src/apps/vpn/settingsholder.h"
 #include "../../src/apps/vpn/tasks/sentry/tasksentry.h"
 #include "helper.h"
 
@@ -92,7 +91,7 @@ void TestTaskSentry::testParse_data() {
         << envelope << TaskSentry::ContentType::Ping;
   }
 
-  {  // Envelope with an valid header and attachment in wrong order.
+  {  // Envelope with an valid header and attach gment in wrong order.
     QByteArray envelope;
     QTextStream writer(&envelope);
     writer << Qt::endl;
