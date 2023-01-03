@@ -51,7 +51,7 @@ done
 
 if [[ "$MODE" == "pr" ]]; then
   print N "\t Calling QML Lint for PR"
-  $QT_HOST_PATH/bin/qmllint $(gh pr view --json files --jq '.files.[].path' | grep ".qml") 2> qml_lint_result.txt
+  $QT_HOST_PATH/bin/qmllint $(gh pr view $PR_NUMBER --json files --jq '.files.[].path' | grep ".qml") 2> qml_lint_result.txt
 else
   print N "\t Calling QML Lint staged git files"
   $QT_HOST_PATH/bin/qmllint $(git diff --name-only --cached | grep ".qml") 2> qml_lint_result.txt

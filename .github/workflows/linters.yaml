@@ -100,6 +100,7 @@ jobs:
         env:
           QT_HOST_PATH: /opt/6.2.4/gcc_64
           GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.number }}
         run: |
           # Only check the files changed in the current pr
           ./scripts/utils/lint_qml.sh -pr -s 
