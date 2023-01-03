@@ -6,7 +6,13 @@
 #define LOGOUTOBSERVER_H
 
 #include <QObject>
-
+/**
+ * @brief Observes the User State.
+ *
+ * Will fire the event ready(), whenever
+ * a user session ended.
+ * After that happens the Observer will delete itself.
+ */
 class LogoutObserver final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(LogoutObserver)
