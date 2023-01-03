@@ -1147,10 +1147,10 @@ void TestAddon::telemetry_state_change() {
   // Event metrics can only record InvalidValue or InvalidOverflow errors
   // https://mozilla.github.io/glean/book/reference/metrics/event.html#recorded-errors
 
-  QCOMPARE(mozilla::glean::sample::addon_state_changed.numRecordedErrors(
+  QCOMPARE(mozilla::glean::sample::addon_state_changed.testGetNumRecordedErrors(
                EventMetric::InvalidValue),
            0);
-  QCOMPARE(mozilla::glean::sample::addon_state_changed.numRecordedErrors(
+  QCOMPARE(mozilla::glean::sample::addon_state_changed.testGetNumRecordedErrors(
                EventMetric::InvalidOverflow),
            0);
 
@@ -1175,10 +1175,10 @@ void TestAddon::telemetry_state_change() {
 
   // After disabling we expect a disabled state event to be recorded.
 
-  QCOMPARE(mozilla::glean::sample::addon_state_changed.numRecordedErrors(
+  QCOMPARE(mozilla::glean::sample::addon_state_changed.testGetNumRecordedErrors(
                EventMetric::InvalidValue),
            0);
-  QCOMPARE(mozilla::glean::sample::addon_state_changed.numRecordedErrors(
+  QCOMPARE(mozilla::glean::sample::addon_state_changed.testGetNumRecordedErrors(
                EventMetric::InvalidOverflow),
            0);
 

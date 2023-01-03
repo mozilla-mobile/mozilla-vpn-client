@@ -34,7 +34,7 @@ extern {{ obj|type_name }} {{obj.name|snake_case }};
   {%- endif %}
 
   {% endfor %}
-} // namspace {{ category_name|snake_case }}
+} // namespace {{ category_name|snake_case }}
 {% endfor %}
 } // namespace mozilla::glean
 

@@ -88,7 +88,7 @@ class EventMetric final {
     InvalidOverflow,
   };
 
-  Q_INVOKABLE int32_t numRecordedErrors(ErrorType errorType) const;
+  Q_INVOKABLE int32_t testGetNumRecordedErrors(ErrorType errorType) const;
 
   Q_INVOKABLE QList<QJsonObject> testGetValue(
       const QString& pingName = "") const;

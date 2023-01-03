@@ -10,7 +10,7 @@ execute_process(
     ERROR_QUIET
 )
 
-## Add a static library for the generated C++ code.
+## Add a static library for the Glean C++ code.
 add_library(vpnglean STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/event.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/ping.h
