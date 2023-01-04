@@ -63,6 +63,7 @@ void EventMetric::record(const QJsonObject& extras) {
                        ffiExtras.keys.size());
 #endif
   } else {
+    // As a standalone library, the Logger class isn't available. Use generic logging.
     qWarning() << "Attempted to record an event with extras, but no extras "
                   "were provided. Ignoring.";
     // TODO: record an error.
