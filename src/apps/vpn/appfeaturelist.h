@@ -109,14 +109,6 @@ FEATURE_SIMPLE(keyRegeneration,       // Feature ID
                // TODO: Disabled - VPN-2693
                FeatureCallback_false)
 
-FEATURE_SIMPLE(lanAccess,                    // Feature ID
-               "Local area network access",  // Feature name
-               "2.2",                        // released
-               FeatureCallback_true,         // Can be flipped on
-               FeatureCallback_false,        // Can be flipped off
-               QStringList(),                // feature dependencies
-               FeatureCallback_lanAccess)
-
 FEATURE_SIMPLE(mobileOnboarding,       // Feature ID
                "Mobile Onboarding",    // Feature name
                "2.8",                  // released

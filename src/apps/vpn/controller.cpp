@@ -665,28 +665,12 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
     const Server& exitServer) {
   logger.debug() << "Computing the allowed IP addresses";
 
-  QList<IPAddress> excludeIPv4s;
-  QList<IPAddress> excludeIPv6s;
-  // For multi-hop connections, the last entry in the server list is the
-  // ingress node to the network of wireguard servers, and must not be
-  // routed through the VPN.
-
-  // filtering out the RFC1918 local area network
-  if (Feature::get(Feature::Feature_lanAccess)->isSupported()) {
-    logger.debug() << "Filtering out the local area networks (rfc 1918)";
-    excludeIPv4s.append(RFC1918::ipv4());
-
-    logger.debug() << "Filtering out the local area networks (rfc 4193)";
-    excludeIPv6s.append(RFC4193::ipv6());
-
-    logger.debug() << "Filtering out multicast addresses";
-    excludeIPv4s.append(RFC1112::ipv4MulticastAddressBlock());
-    excludeIPv6s.append(RFC4291::ipv6MulticastAddressBlock());
-  }
-
   QList<IPAddress> list;
 
 #ifdef MZ_IOS
+  // Note: On iOS, we use the `excludeLocalNetworks` flag to ensure
+  // LAN traffic is allowed through. This is in the swift code.
+
   Q_UNUSED(exitServer);
 
   logger.debug() << "Catch all IPv4";
@@ -695,6 +679,23 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   logger.debug() << "Catch all IPv6";
   list.append(IPAddress("::0/0"));
 #else
+  QList<IPAddress> excludeIPv4s;
+  QList<IPAddress> excludeIPv6s;
+  // For multi-hop connections, the last entry in the server list is the
+  // ingress node to the network of wireguard servers, and must not be
+  // routed through the VPN.
+
+  // filtering out the RFC1918 local area network
+  logger.debug() << "Filtering out the local area networks (rfc 1918)";
+  excludeIPv4s.append(RFC1918::ipv4());
+
+  logger.debug() << "Filtering out the local area networks (rfc 4193)";
+  excludeIPv6s.append(RFC4193::ipv6());
+
+  logger.debug() << "Filtering out multicast addresses";
+  excludeIPv4s.append(RFC1112::ipv4MulticastAddressBlock());
+  excludeIPv6s.append(RFC4291::ipv6MulticastAddressBlock());
+
   // Allow access to the internal gateway addresses.
   logger.debug() << "Allow the IPv4 gateway:" << exitServer.ipv4Gateway();
   list.append(IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32));
