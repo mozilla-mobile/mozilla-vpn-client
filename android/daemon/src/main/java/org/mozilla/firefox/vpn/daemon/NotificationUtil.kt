@@ -94,7 +94,7 @@ class NotificationUtil(ctx: Service) {
 
 /*
  * ClientNotification
- * Message send from the client manually.
+ * Message sent from the client manually.
  */
 @Serializable
 data class ClientNotification(val header: String, val body: String)
