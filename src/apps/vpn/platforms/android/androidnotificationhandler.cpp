@@ -40,5 +40,5 @@ void AndroidNotificationHandler::notify(NotificationHandler::Message type,
   args["body"] = message;
   QJsonDocument doc(args);
   AndroidVPNActivity::sendToService(ServiceAction::ACTION_SET_NOTIFICATION_TEXT,
-                                    doc.toJson());
+                                    doc.toJson(QJsonDocument::Compact));
 }

@@ -11,7 +11,7 @@ import android.os.Parcel
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
-import java.lang.Exception
+import kotlin.Exception
 
 class VPNServiceBinder(service: VPNService) : Binder() {
 
@@ -140,8 +140,12 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 if (json.isNullOrEmpty()) {
                     return false
                 }
-                val message = Json.decodeFromString<NotificationUtil.ClientNotification>(json)
-                mService.mNotificationHandler.setNotificationText(message)
+                try {
+                    val message = Json.decodeFromString<NotificationUtil.ClientNotification>(json)
+                    mService.mNotificationHandler.setNotificationText(message)
+                }catch (e: Exception){
+                    e.message?.let { Log.e(tag, it) }
+                }
                 return true
             }
             ACTIONS.setStartOnBoot -> {

@@ -43,8 +43,8 @@ class NotificationUtil
         // Build our notification
         mNotificationBuilder
             .setSmallIcon(R.drawable.icon_mozillavpn_notifiaction)
-            .setContentTitle(message.productName)
-            .setContentText(message.connectedMessage)
+            .setContentTitle(message.connectedMessage.header)
+            .setContentText(message.connectedMessage.body)
             .setOnlyAlertOnce(true)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
@@ -71,7 +71,7 @@ class NotificationUtil
         // Switch the notification to "Disconnected" / or translated version
         // If the VPN-Client is alive, it will override this instantly
         // If not, this fallback is shown.
-        update(message.productName, message.disconnectedMessage)
+        update(message.disconnectedMessage.header, message.disconnectedMessage.body)
     }
 
     // Creates / Updates the notification channel we will be using to post
@@ -98,21 +98,22 @@ class NotificationUtil
     }
 
     /*
-     * A "Canned" Notification contains all strings needed for the "(dis)-connected" flow
+     * A "Canned" Notification contains all strings needed for the "(dis-)/connected" flow
      * and is provided by the controller when asking for a connection
      */
     @Serializable
     data class CannedNotification(
         // Message to be shown when the Client connects
-        val connectedMessage: String,
+        val connectedMessage: ClientNotification,
         // Message to be shown when the client disconnects
-        val disconnectedMessage: String,
+         val disconnectedMessage: ClientNotification,
         // Product-Name -> Will be used as the Notification Header
         val productName: String,
     ) {
         companion object {
             /**
-             * CannedNotification(json) -> Creates a
+             * CannedNotification(json) -> Creates a Canned notification
+             * out of a VPN-Client JSON config.
              */
             operator fun invoke(value: JSONObject?): CannedNotification? {
                 if (value == null) {
@@ -121,11 +122,18 @@ class NotificationUtil
                 val messages = value.getJSONObject("messages")
                 return try {
                     CannedNotification(
-                        messages.getString("connectedMessage"),
-                        messages.getString("disconnectedMessage"),
+                        ClientNotification(
+                            messages.getString("connectedHeader"),
+                            messages.getString("connectedBody"),
+                        ),
+                        ClientNotification(
+                            messages.getString("disconnectedHeader"),
+                            messages.getString("disconnectedBody"),
+                        ),
                         messages.getString("productName"),
                     )
                 } catch (e: Exception) {
+                    Log.e("NotificationUtil", "Failed to Parse Notification Object $value")
                     null
                 }
             }

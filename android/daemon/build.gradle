@@ -30,7 +30,8 @@ buildscript {
 }
 
 plugins {
-    id "com.jetbrains.python.envs"
+    id "com.jetbrains.python.envs" version "0.0.26"
+    id 'org.jetbrains.kotlin.plugin.serialization'
 }
 
 apply plugin: "com.android.library"
