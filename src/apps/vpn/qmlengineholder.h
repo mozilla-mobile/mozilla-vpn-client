@@ -32,6 +32,7 @@ class QmlEngineHolder final : public NetworkManager {
   QWindow* window() const;
   void showWindow();
   void hideWindow();
+  bool hasWindow() const;
 
  protected:
   void clearCacheInternal() override;
