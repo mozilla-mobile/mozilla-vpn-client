@@ -36,7 +36,8 @@ class NotificationUtil(ctx: Service) {
         // Create the Intent that Should be Fired if the User Clicks the notification
         val activity = Class.forName(mainActivityName)
         val intent = Intent(context, activity)
-        val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent =
+            PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
         // Build our notification
         mNotificationBuilder
             .setSmallIcon(R.drawable.icon_mozillavpn_notifiaction)
