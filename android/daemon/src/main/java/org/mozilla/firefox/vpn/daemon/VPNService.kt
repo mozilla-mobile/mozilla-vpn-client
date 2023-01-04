@@ -24,7 +24,7 @@ import org.mozilla.firefox.vpn.daemon.GleanMetrics.Sample
 class VPNService : android.net.VpnService() {
     private val tag = "VPNService"
     private var mBinder: VPNServiceBinder = VPNServiceBinder(this)
-    val mNotificationHandler by lazy{
+    val mNotificationHandler by lazy {
         NotificationUtil(this)
     }
     private var mConfig: JSONObject? = null
@@ -253,7 +253,7 @@ class VPNService : android.net.VpnService() {
             .apply()
 
         // Go foreground
-        NotificationUtil.CannedNotification(mConfig)?.let { mNotificationHandler.show(it) }
+        CannedNotification(mConfig)?.let { mNotificationHandler.show(it) }
         mGleanControllerStateTimer.start()
 
         if (useFallbackServer) {
@@ -325,7 +325,7 @@ class VPNService : android.net.VpnService() {
         mConnectionHealth.stop()
         // Clear the notification message, so the content
         // is not "disconnected" in case we connect from a non-client.
-        NotificationUtil.CannedNotification(mConfig)?.let { mNotificationHandler.hide(it) }
+        CannedNotification(mConfig)?.let { mNotificationHandler.hide(it) }
     }
 
     /**

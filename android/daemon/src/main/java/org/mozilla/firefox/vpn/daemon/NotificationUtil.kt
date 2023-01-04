@@ -15,12 +15,9 @@ import androidx.core.app.NotificationCompat
 import kotlinx.serialization.Serializable
 import org.json.JSONObject
 
-class NotificationUtil
-(ctx: Service) {
-
+class NotificationUtil(ctx: Service) {
     private val NOTIFICATION_CHANNEL_ID = "com.mozilla.vpnNotification"
     private val CONNECTED_NOTIFICATION_ID = 1337
-
     private val context: Service = ctx
     private val mNotificationBuilder: NotificationCompat.Builder by lazy {
         NotificationCompat.Builder(ctx, NOTIFICATION_CHANNEL_ID)
@@ -53,14 +50,18 @@ class NotificationUtil
 
     /**
      * Updates the Notification
-     * in case there is no notification currently, (the client is not in foreground)
+     * in case there is no notification currently,
      * this is a no-op.
      */
     fun setNotificationText(msg: ClientNotification?) {
         if (msg == null) {
             return
         }
-        update(msg.header, msg.body)
+        mNotificationBuilder.let {
+            it.setContentTitle(msg.header)
+            it.setContentText(msg.body)
+            mNotificationManager.notify(CONNECTED_NOTIFICATION_ID, it.build())
+        }
     }
 
     /**
@@ -71,7 +72,7 @@ class NotificationUtil
         // Switch the notification to "Disconnected" / or translated version
         // If the VPN-Client is alive, it will override this instantly
         // If not, this fallback is shown.
-        update(message.disconnectedMessage.header, message.disconnectedMessage.body)
+        setNotificationText(message.disconnectedMessage)
     }
 
     // Creates / Updates the notification channel we will be using to post
@@ -88,62 +89,54 @@ class NotificationUtil
         // Register the channel with the system
         mNotificationManager.createNotificationChannel(channel)
     }
-    // Updates the current notification
-    private fun update(heading: String, message: String) {
-        mNotificationBuilder.let {
-            it.setContentTitle(heading)
-            it.setContentText(message)
-            mNotificationManager.notify(CONNECTED_NOTIFICATION_ID, it.build())
-        }
-    }
+}
 
-    /*
-     * A "Canned" Notification contains all strings needed for the "(dis-)/connected" flow
-     * and is provided by the controller when asking for a connection
-     */
-    @Serializable
-    data class CannedNotification(
-        // Message to be shown when the Client connects
-        val connectedMessage: ClientNotification,
-        // Message to be shown when the client disconnects
-         val disconnectedMessage: ClientNotification,
-        // Product-Name -> Will be used as the Notification Header
-        val productName: String,
-    ) {
-        companion object {
-            /**
-             * CannedNotification(json) -> Creates a Canned notification
-             * out of a VPN-Client JSON config.
-             */
-            operator fun invoke(value: JSONObject?): CannedNotification? {
-                if (value == null) {
-                    return null
-                }
-                val messages = value.getJSONObject("messages")
-                return try {
-                    CannedNotification(
-                        ClientNotification(
-                            messages.getString("connectedHeader"),
-                            messages.getString("connectedBody"),
-                        ),
-                        ClientNotification(
-                            messages.getString("disconnectedHeader"),
-                            messages.getString("disconnectedBody"),
-                        ),
-                        messages.getString("productName"),
-                    )
-                } catch (e: Exception) {
-                    Log.e("NotificationUtil", "Failed to Parse Notification Object $value")
-                    null
-                }
+/*
+ * ClientNotification
+ * Message send from the client manually.
+ */
+@Serializable
+data class ClientNotification(val header: String, val body: String)
+
+/*
+ * A "Canned" Notification contains all strings needed for the "(dis-)/connected" flow
+ * and is provided by the controller when asking for a connection.
+ */
+@Serializable
+data class CannedNotification(
+    // Message to be shown when the Client connects
+    val connectedMessage: ClientNotification,
+    // Message to be shown when the client disconnects
+    val disconnectedMessage: ClientNotification,
+    // Product-Name -> Will be used as the Notification Header
+    val productName: String,
+) {
+    companion object {
+        /**
+         * CannedNotification(json) -> Creates a Canned notification
+         * out of a VPN-Client JSON config.
+         */
+        operator fun invoke(value: JSONObject?): CannedNotification? {
+            if (value == null) {
+                return null
+            }
+            val messages = value.getJSONObject("messages")
+            return try {
+                CannedNotification(
+                    ClientNotification(
+                        messages.getString("connectedHeader"),
+                        messages.getString("connectedBody"),
+                    ),
+                    ClientNotification(
+                        messages.getString("disconnectedHeader"),
+                        messages.getString("disconnectedBody"),
+                    ),
+                    messages.getString("productName"),
+                )
+            } catch (e: Exception) {
+                Log.e("NotificationUtil", "Failed to Parse Notification Object $value")
+                null
             }
         }
     }
-
-    /*
-     * ClientNotification
-     * Message send from the client manually.
-     */
-    @Serializable
-    data class ClientNotification(val header: String, val body: String)
 }

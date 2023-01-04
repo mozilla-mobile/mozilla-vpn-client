@@ -141,9 +141,9 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                     return false
                 }
                 try {
-                    val message = Json.decodeFromString<NotificationUtil.ClientNotification>(json)
+                    val message = Json.decodeFromString<ClientNotification>(json)
                     mService.mNotificationHandler.setNotificationText(message)
-                }catch (e: Exception){
+                } catch (e: Exception) {
                     e.message?.let { Log.e(tag, it) }
                 }
                 return true
