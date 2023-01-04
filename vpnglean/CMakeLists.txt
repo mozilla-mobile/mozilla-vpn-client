@@ -2,6 +2,31 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+## Let's check if the glean_parser module exists.
+execute_process(
+    COMMAND ${PYTHON_EXECUTABLE} -c "import glean_parser; print(glean_parser.__version__)"
+    OUTPUT_VARIABLE GLEAN_PARSER_VERSION
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
+)
+
+## Add a static library for the Glean C++ code.
+add_library(vpnglean STATIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/event.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/ping.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/event.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ping.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.h
+    ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.h
+    ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.cpp
+)
+target_include_directories(vpnglean PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_BINARY_DIR}
+)
+target_link_libraries(vpnglean PRIVATE Qt6::Core Qt6::Qml)
+
 # glean-core cannot be compiled to WASM
 # See: https://blog.mozilla.org/data/2020/09/25/this-week-in-glean-glean-core-to-wasm-experiment/
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
@@ -48,73 +73,81 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 
 
     ## Build the vpnglean Rust library
-    add_rust_library(vpnglean
+    add_rust_library(vpnglean_bindings
         ARCH ${RUST_ARCH}
         PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
         CRATE_NAME vpnglean
         CARGO_ENV ${CARGO_ENV}
         DEPENDS
-            ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.rs
-            ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.rs
+            ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.rs
+            ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.rs
     )
+    target_link_libraries(vpnglean PRIVATE vpnglean_bindings)
 
     set(HEADER_FILE vpnglean.h)
-    set_property(TARGET vpnglean APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
-        ${CMAKE_CURRENT_BINARY_DIR}
-    )
 else()
     message("Cannot build vpnglean Rust library build for WASM. Skipping.")
     # Since the metric recording code is sprinkled throughout the code,
     # it's easier to just generate the APIs and have them be noop.
     add_custom_target(vpnglean_telemetry
         DEPENDS
-            ${CMAKE_SOURCE_DIR}/src/apps/vpn/glean/generated/metrics.h
-            ${CMAKE_SOURCE_DIR}/src/apps/vpn/glean/generated/pings.h
+            ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.h
+            ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.h
     )
     add_dependencies(mozillavpn vpnglean_telemetry)
 endif()
 
-# This options should be used if the glean_parser command needs to be run on some sort of pre-build script.
-if(NOT SKIP_GLEAN_PARSER)
-    set(GENERATE_GLEAN_CMD ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py)
-
-    # Prepare for generating Glean metrics and pings files
-    # Note: the next steps are not required by run_glean_parser, but by CMake quirks.
-    file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/generated)
-    file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/src/apps/vpn/glean/generated)
-
-    # 1. Because both the metrics.h and pings.h files have class declarations
-    # of objects that extend QObject, these files need to be in the main MozillaVPN
-    # target otherwise we run into linker issues e.g. undefined reference to `vtable for __DONOTUSE__GleanPings'.
-    # See: https://github.com/bincrafters/community/issues/466#issuecomment-426329142
-    #      and https://gitlab.cern.ch/-/snippets/2128
-    # 2. Cmake is simply ignoring or being weird about adding these files as
-    # sources to the main target and marking them as GENERATED TRUE.
-    # See: https://gitlab.kitware.com/cmake/cmake/-/issues/18399
-    #
-    # The solution is to generate empty files at build setup time so that we can
-    # add them as sources to other target and still not have Cmake freak out.
-    # Actual generation happen when the `run_glean_parser` command is executed.
-    file(WRITE ${CMAKE_SOURCE_DIR}/src/apps/vpn/glean/generated/metrics.h)
-    file(WRITE ${CMAKE_SOURCE_DIR}/src/apps/vpn/glean/generated/pings.h)
+if(GLEAN_PARSER_VERSION VERSION_GREATER_EQUAL 5.0)
+    # If the glean parser exists, then we can build the telemetry bindings.
+    set(GENERATE_GLEAN_CMD
+        ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py
+                --outdir ${CMAKE_CURRENT_BINARY_DIR}/glean/generated
+    )
+elseif(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/prebuilt)
+    # On some build platforms, we may not have the ability to install the 
+    # glean_parser module, and we must rely on a pre-build script to generate
+    # the telemetry bindings for us.
+    set(GENERATE_GLEAN_CMD
+        ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_CURRENT_SOURCE_DIR}/prebuilt/glean/generated
+            ${CMAKE_CURRENT_BINARY_DIR}/glean/generated
+    )
 else()
-    set(GENERATE_GLEAN_CMD echo "Skipping glean_parser step.")
+    message(FATAL_ERROR
+        "Glean generated files are missing, and the glean_parser was not found.\n"
+        "Please run: python3 ./vpnglean/glean_parser_ext/run_glean_parser.py"
+    )
 endif()
 
 ## Generate metrics and pings files
 add_custom_command(
     OUTPUT
-        ${CMAKE_SOURCE_DIR}/src/apps/vpn/glean/generated/metrics.h
-        ${CMAKE_SOURCE_DIR}/src/apps/vpn/glean/generated/pings.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/metrics.rs
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/pings.rs
+        ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.h
+        ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.h
+        ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.rs
+        ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.rs
     DEPENDS
         ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py
+        ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/templates/cpp_metrics_header.jinja2
+        ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/templates/cpp_metrics_source.jinja2
+        ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/templates/cpp_pings_header.jinja2
+        ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/templates/cpp_pings_source.jinja2
+        ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/templates/macros.jinja2
+        ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/templates/rust_pings.jinja2
+        ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/templates/rust.jinja2
         ${CMAKE_SOURCE_DIR}/glean/pings.yaml
         ${CMAKE_SOURCE_DIR}/glean/metrics.yaml
     COMMAND ${GENERATE_GLEAN_CMD}
 )
-
+set_source_files_properties(
+    ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.h
+    ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.h
+    PROPERTIES GENERATED TRUE
+)
 
 ## Fixup any missing link dependencies to pass to the vpnglean consumer
 if(ANDROID)

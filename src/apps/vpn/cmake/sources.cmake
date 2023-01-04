@@ -159,13 +159,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/frontend/navigatorreloader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/glean/glean.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/glean/glean.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/glean/metrictypes.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/glean/generated/metrics.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/glean/generated/pings.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/glean/private/event.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/glean/private/event.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/glean/private/ping.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/glean/private/ping.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/imageproviderfactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/imageproviderfactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.cpp

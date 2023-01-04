@@ -1148,10 +1148,10 @@ void TestAddon::telemetry_state_change() {
   // https://mozilla.github.io/glean/book/reference/metrics/event.html#recorded-errors
 
   QCOMPARE(mozilla::glean::sample::addon_state_changed.testGetNumRecordedErrors(
-               VPNGlean::InvalidValue),
+               EventMetric::InvalidValue),
            0);
   QCOMPARE(mozilla::glean::sample::addon_state_changed.testGetNumRecordedErrors(
-               VPNGlean::InvalidOverflow),
+               EventMetric::InvalidOverflow),
            0);
 
   // Upon creating the addon we expect two events to be recorded:
@@ -1176,10 +1176,10 @@ void TestAddon::telemetry_state_change() {
   // After disabling we expect a disabled state event to be recorded.
 
   QCOMPARE(mozilla::glean::sample::addon_state_changed.testGetNumRecordedErrors(
-               VPNGlean::InvalidValue),
+               EventMetric::InvalidValue),
            0);
   QCOMPARE(mozilla::glean::sample::addon_state_changed.testGetNumRecordedErrors(
-               VPNGlean::InvalidOverflow),
+               EventMetric::InvalidOverflow),
            0);
 
   auto postDisableValues =
