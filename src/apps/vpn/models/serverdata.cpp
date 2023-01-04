@@ -124,7 +124,7 @@ bool ServerData::settingsChanged() {
   return true;
 }
 
-QString ServerData::localizedCityName() const {
+QString ServerData::localizedExitCityName() const {
   Q_ASSERT(m_initialized);
   return ServerI18N::translateCityName(m_exitCountryCode, m_exitCityName);
 }

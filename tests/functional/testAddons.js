@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const {navBar, settingsScreen, homeScreen} = require('./elements.js');
+const queries = require('./queries.js');
 const vpn = require('./helper.js');
 
 describe('Addons', function() {
@@ -13,8 +13,8 @@ describe('Addons', function() {
     await vpn.resetAddons('01_empty_manifest');
     await vpn.waitForCondition(async () => {
       return parseInt(
-                 await vpn.getElementProperty('VPNAddonManager', 'count'),
-                 10) === 0;
+                 await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
+          0;
     });
   });
 
@@ -22,15 +22,15 @@ describe('Addons', function() {
     await vpn.resetAddons('03_single_addon');
     await vpn.waitForCondition(async () => {
       return parseInt(
-                 await vpn.getElementProperty('VPNAddonManager', 'count'),
-                 10) === 1;
+                 await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
+          1;
     });
 
     await vpn.fetchAddons('02_broken_manifest');
     await vpn.waitForCondition(async () => {
       return parseInt(
-                 await vpn.getElementProperty('VPNAddonManager', 'count'),
-                 10) === 1;
+                 await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
+          1;
     });
   });
 
@@ -38,22 +38,22 @@ describe('Addons', function() {
     await vpn.resetAddons('03_single_addon');
     await vpn.waitForCondition(async () => {
       return parseInt(
-                 await vpn.getElementProperty('VPNAddonManager', 'count'),
-                 10) === 1;
+                 await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
+          1;
     });
 
     await vpn.fetchAddons('01_empty_manifest');
     await vpn.waitForCondition(async () => {
       return parseInt(
-                 await vpn.getElementProperty('VPNAddonManager', 'count'),
-                 10) === 0;
+                 await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
+          0;
     });
 
     await vpn.fetchAddons('03_single_addon');
     await vpn.waitForCondition(async () => {
       return parseInt(
-                 await vpn.getElementProperty('VPNAddonManager', 'count'),
-                 10) === 1;
+                 await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
+          1;
     });
   });
 
@@ -63,61 +63,68 @@ describe('Addons', function() {
 
     await vpn.waitForCondition(async () => {
       return parseInt(
-                 await vpn.getElementProperty('VPNAddonManager', 'count'),
-                 10) === 1;
+                 await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
+          1;
     });
 
     const exitCityName =
-        await vpn.getElementProperty('VPNCurrentServer', 'exitCityName');
+        await vpn.getVPNProperty('VPNCurrentServer', 'exitCityName');
     const exitCountryCode =
-        await vpn.getElementProperty('VPNCurrentServer', 'exitCountryCode');
+        await vpn.getVPNProperty('VPNCurrentServer', 'exitCountryCode');
 
     // Let's start the tutorial
-    await vpn.waitForElementAndClick(navBar.SETTINGS);
-    await vpn.waitForElementAndClick(settingsScreen.TIPS_AND_TRICKS);
-    await vpn.waitForElementAndClick(homeScreen.TUTORIAL_LIST_HIGHLIGHT);
+    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.TIPS_AND_TRICKS.visible());
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.TUTORIAL_LIST_HIGHLIGHT.visible());
 
     // Confirmation dialog for settings-rollback
-    await vpn.waitForElementProperty(
-        homeScreen.TUTORIAL_POPUP_PRIMARY_BUTTON, 'visible', 'true');
+    await vpn.waitForQuery(
+        queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON.visible());
     assert(
-        (await vpn.getElementProperty(
-            homeScreen.TUTORIAL_POPUP_PRIMARY_BUTTON, 'text')) === 'Continue');
-    await vpn.waitForElementAndClick(homeScreen.TUTORIAL_POPUP_PRIMARY_BUTTON);
+        (await vpn.getQueryProperty(
+            queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON.visible(),
+            'text')) === 'Continue');
+    await vpn.clickOnQuery(
+        queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON.visible());
 
     await vpn.waitForCondition(async () => {
-      return await vpn.getElementProperty(
-                 'VPNCurrentServer', 'exitCityName') === 'Vienna';
+      return await vpn.getVPNProperty('VPNCurrentServer', 'exitCityName') ===
+          'Vienna';
     });
 
     assert(
-        await vpn.getElementProperty('VPNCurrentServer', 'exitCityName') ===
+        await vpn.getVPNProperty('VPNCurrentServer', 'exitCityName') ===
         'Vienna');
     assert(
-        await vpn.getElementProperty('VPNCurrentServer', 'exitCountryCode') ===
+        await vpn.getVPNProperty('VPNCurrentServer', 'exitCountryCode') ===
         'at');
 
-    await vpn.waitForElementAndClick('serverListButton-btn');
+    await vpn.waitForQuery(queries.screenHome.TUTORIAL_LEAVE.visible());
+    await vpn.waitForQueryAndClick(
+        queries.screenHome.SERVER_LIST_BUTTON.visible());
 
     // Final dialog
-    await vpn.waitForElementProperty(
-        homeScreen.TUTORIAL_POPUP_PRIMARY_BUTTON, 'visible', 'true');
+    await vpn.waitForQuery(
+        queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON.visible());
     assert(
-        (await vpn.getElementProperty(
-            homeScreen.TUTORIAL_POPUP_PRIMARY_BUTTON, 'text')) === 'Let’s go!');
-    await vpn.waitForElementAndClick(
-        homeScreen.TUTORIAL_POPUP_SECONDARY_BUTTON);
+        (await vpn.getQueryProperty(
+            queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON.visible(),
+            'text')) === 'Let’s go!');
+    await vpn.clickOnQuery(
+        queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON.visible());
 
     await vpn.waitForCondition(async () => {
-      return await vpn.getElementProperty(
-                 'VPNCurrentServer', 'exitCityName') === exitCityName;
+      return await vpn.getVPNProperty('VPNCurrentServer', 'exitCityName') ===
+          exitCityName;
     });
 
     assert(
-        await vpn.getElementProperty('VPNCurrentServer', 'exitCityName') ===
+        await vpn.getVPNProperty('VPNCurrentServer', 'exitCityName') ===
         exitCityName);
     assert(
-        await vpn.getElementProperty('VPNCurrentServer', 'exitCountryCode') ===
+        await vpn.getVPNProperty('VPNCurrentServer', 'exitCountryCode') ===
         exitCountryCode);
   });
 });

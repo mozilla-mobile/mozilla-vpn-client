@@ -60,7 +60,6 @@ Item {
 
         Image {
             id: menuIcon
-            objectName: "menuIcon"
             source: _menuIconButtonSource
             mirror: VPNLocalizer.isRightToLeft
             sourceSize.width: VPNTheme.theme.iconSize

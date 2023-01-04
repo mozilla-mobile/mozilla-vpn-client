@@ -120,28 +120,24 @@ const MVPNPresets = [
     callback: async function() {
       await controller.flipFeatureOff('inAppAuthentication');
 
-      await controller.waitForMainView();
+      await controller.waitForInitialView();
 
-      await controller.waitForElementProperty(
-          'initialStackView', 'busy', 'false');
-      await controller.clickOnElement('getStarted');
+      await controller.waitForQuery('//initialStackView{busy=false}');
+      await controller.clickOnQuery('//getStarted');
 
-      await controller.waitForElementProperty(
+      await controller.waitForVPNProperty(
           'VPN', 'userState', 'UserAuthenticated');
       await controller.wait();
 
-      await controller.waitForElementProperty('screenLoader', 'busy', 'false');
-      await controller.waitForElement('postAuthenticationButton');
-      await controller.clickOnElement('postAuthenticationButton');
+      await controller.waitForQuery('//screenLoader{busy=false}');
 
-      await controller.wait();
-      await controller.waitForElementProperty('screenLoader', 'busy', 'false');
-      await controller.waitForElement('telemetryPolicyButton');
-      await controller.clickOnElement('telemetryPolicyButton');
+      await controller.waitForQueryAndClick('//postAuthenticationButton');
+      await controller.waitForQuery('//screenLoader{busy=false}');
 
-      await controller.wait();
-      await controller.waitForElementProperty('screenLoader', 'busy', 'false');
-      await controller.waitForElement('controllerTitle');
+      await controller.waitForQueryAndClick('//telemetryPolicyButton');
+      await controller.waitForQuery('//screenLoader{busy=false}');
+
+      await controller.waitForQuery('//controllerTitle');
     }
   },
 
@@ -158,12 +154,10 @@ const MVPNPresets = [
       await controller.flipFeatureOn('inAppAuthentication');
       await controller.flipFeatureOn('inAppAccountCreate');
 
-      await controller.waitForMainView();
+      await controller.waitForInitialView();
 
-      await controller.wait();
-      await controller.waitForElementProperty(
-          'initialStackView', 'busy', 'false');
-      await controller.clickOnElement('getStarted');
+      await controller.waitForQuery('//initialStackView{busy=false}');
+      await controller.clickOnQuery('//getStarted');
 
       mvpnWasm.addPresetInfo(
           'Existing account: wasm@wasm.wasm - Password: wasm');
@@ -289,25 +283,21 @@ const MVPNPresets = [
     callback: async function() {
       await controller.flipFeatureOff('inAppAuthentication');
 
-      await controller.waitForMainView();
+      await controller.waitForInitialView();
 
-      await controller.wait();
-      await controller.waitForElementProperty(
-          'initialStackView', 'busy', 'false');
-      await controller.clickOnElement('getStarted');
+      await controller.waitForQuery('//initialStackView{busy=false}');
+      await controller.clickOnQuery('//getStarted');
 
-      await controller.waitForElementProperty(
+      await controller.waitForVPNProperty(
           'VPN', 'userState', 'UserAuthenticated');
       await controller.wait();
 
-      await controller.waitForElementProperty('screenLoader', 'busy', 'false');
-      await controller.waitForElement('postAuthenticationButton');
-      await controller.clickOnElement('postAuthenticationButton');
+      await controller.waitForQuery('//screenLoader{busy=false}');
 
-      await controller.wait();
-      await controller.waitForElementProperty('screenLoader', 'busy', 'false');
-      await controller.waitForElement('telemetryPolicyButton');
-      await controller.clickOnElement('telemetryPolicyButton');
+      await controller.waitForQueryAndClick('//postAuthenticationButton');
+      await controller.waitForQuery('//screenLoader{busy=false}');
+
+      await controller.waitForQueryAndClick('//telemetryPolicyButton');
     },
 
     guardianOverrideEndpoints: {
@@ -347,29 +337,23 @@ const MVPNPresets = [
     callback: async function() {
       await controller.flipFeatureOff('inAppAuthentication');
 
-      await controller.waitForMainView();
+      await controller.waitForInitialView();
 
-      await controller.wait();
-      await controller.waitForElementProperty(
-          'initialStackView', 'busy', 'false');
-      await controller.clickOnElement('getStarted');
+      await controller.waitForQuery('//initialStackView{busy=false}');
+      await controller.clickOnQuery('//getStarted');
 
-      await controller.waitForElementProperty(
+      await controller.waitForVPNProperty(
           'VPN', 'userState', 'UserAuthenticated');
-      await controller.wait();
 
-      await controller.waitForElementProperty('screenLoader', 'busy', 'false');
-      await controller.waitForElement('postAuthenticationButton');
-      await controller.clickOnElement('postAuthenticationButton');
+      await controller.waitForQuery('//screenLoader{busy=false}');
 
-      await controller.wait();
-      await controller.waitForElementProperty('screenLoader', 'busy', 'false');
-      await controller.waitForElement('telemetryPolicyButton');
-      await controller.clickOnElement('telemetryPolicyButton');
+      await controller.waitForQueryAndClick('//postAuthenticationButton');
+      await controller.waitForQuery('//screenLoader{busy=false}');
 
-      await controller.wait();
-      await controller.waitForElementProperty('screenLoader', 'busy', 'false');
-      await controller.waitForElement('controllerTitle');
+      await controller.waitForQueryAndClick('//telemetryPolicyButton');
+      await controller.waitForQuery('//screenLoader{busy=false}');
+
+      await controller.waitForQuery('//controllerTitle');
 
       await controller.forceUpdateCheck('2.0.0');
     },
@@ -410,12 +394,10 @@ const MVPNPresets = [
 
       await controller.flipFeatureOff('inAppAuthentication');
 
-      await controller.waitForMainView();
+      await controller.waitForInitialView();
 
-      await controller.wait();
-      await controller.waitForElementProperty(
-          'initialStackView', 'busy', 'false');
-      await controller.clickOnElement('getStarted');
+      await controller.waitForQuery('//initialStackView{busy=false}');
+      await controller.clickOnQuery('//getStarted');
     },
 
     guardianOverrideEndpoints: {
@@ -446,12 +428,10 @@ const MVPNPresets = [
     callback: async function() {
       await controller.flipFeatureOff('inAppAuthentication');
 
-      await controller.waitForMainView();
+      await controller.waitForInitialView();
 
-      await controller.wait();
-      await controller.waitForElementProperty(
-          'initialStackView', 'busy', 'false');
-      await controller.clickOnElement('getStarted');
+      await controller.waitForQuery('//initialStackView{busy=false}');
+      await controller.clickOnQuery('//getStarted');
     },
 
     guardianOverrideEndpoints: {
