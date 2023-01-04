@@ -72,8 +72,6 @@ bool VersionApi::processData(const QByteArray& data) {
 
   QJsonObject platformData = platformDataValue.toObject();
 
-  QString latestVersion;
-  QString minimumVersion;
   QString currentVersion(appVersion());
 
   QJsonValue latestValue = platformData.value("latest");
@@ -86,7 +84,7 @@ bool VersionApi::processData(const QByteArray& data) {
     if (!latestVersionValue.isString()) {
       logger.warning() << "Platform.latest.version string not available";
     } else {
-      latestVersion = latestVersionValue.toString();
+      m_latestVersion = latestVersionValue.toString();
     }
   }
 
@@ -100,21 +98,21 @@ bool VersionApi::processData(const QByteArray& data) {
     if (!minimumVersionValue.isString()) {
       logger.warning() << "Platform.minimum.version string not available";
     } else {
-      minimumVersion = minimumVersionValue.toString();
+      m_minimumVersion = minimumVersionValue.toString();
     }
   }
 
-  logger.debug() << "Latest version:" << latestVersion;
-  logger.debug() << "Minimum version:" << minimumVersion;
+  logger.debug() << "Latest version:" << m_latestVersion;
+  logger.debug() << "Minimum version:" << m_minimumVersion;
   logger.debug() << "Current version:" << currentVersion;
 
-  if (VersionUtils::compareVersions(currentVersion, minimumVersion) == -1) {
+  if (VersionUtils::compareVersions(currentVersion, m_minimumVersion) == -1) {
     logger.debug() << "update required";
     emit updateRequired();
     return true;
   }
 
-  if (VersionUtils::compareVersions(currentVersion, latestVersion) == -1) {
+  if (VersionUtils::compareVersions(currentVersion, m_latestVersion) == -1) {
     logger.debug() << "Update recommended.";
     emit updateRecommended();
   }

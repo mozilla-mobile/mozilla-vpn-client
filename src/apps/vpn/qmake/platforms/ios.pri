@@ -66,6 +66,7 @@ OBJECTIVE_SOURCES += \
     apps/vpn/platforms/ios/iosglue.mm \
     apps/vpn/platforms/ios/iosnetworkwatcher.mm \
     apps/vpn/platforms/ios/iosnotificationhandler.mm \
+    apps/vpn/platforms/ios/iosupdater.mm \
     apps/vpn/platforms/ios/iosutils.mm
 
 HEADERS += \
@@ -77,6 +78,7 @@ OBJECTIVE_HEADERS += \
     apps/vpn/platforms/ios/ioscontroller.h \
     apps/vpn/platforms/ios/iosnetworkwatcher.h \
     apps/vpn/platforms/ios/iosnotificationhandler.h \
+    apps/vpn/platforms/ios/iosupdater.h \
     apps/vpn/platforms/ios/iosutils.h
 
 QMAKE_INFO_PLIST= $$PWD/../../../../../ios/app/Info.plist

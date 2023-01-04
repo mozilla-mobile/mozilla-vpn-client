@@ -14,6 +14,10 @@
 #include "versionapi.h"
 #include "webupdater.h"
 
+#ifdef MZ_IOS
+#  include "platforms/ios/iosupdater.h"
+#endif
+
 #ifdef MVPN_BALROG
 #  include "balrog.h"
 #endif
@@ -33,6 +37,9 @@ Updater* Updater::create(
   Q_UNUSED(errorPropagationPolicy);
 
   if (!downloadAndInstall) {
+#ifdef MZ_IOS
+    return new IOSUpdater(parent);
+#endif
     return new VersionApi(parent);
   }
 

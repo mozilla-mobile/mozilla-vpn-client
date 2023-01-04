@@ -53,6 +53,8 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosnetworkwatcher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosnotificationhandler.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosnotificationhandler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosupdater.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosupdater.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosutils.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosutils.h
 )

@@ -16,8 +16,15 @@ class VersionApi final : public Updater {
 
   void start(Task* task) override;
 
+  const QString& latestVersion() const { return m_latestVersion; }
+  const QString& minimumVersion() const { return m_minimumVersion; }
+
  private:
   [[nodiscard]] bool processData(const QByteArray& data);
+
+ private:
+  QString m_latestVersion;
+  QString m_minimumVersion;
 };
 
 #endif  // VERSIONAPI_H
