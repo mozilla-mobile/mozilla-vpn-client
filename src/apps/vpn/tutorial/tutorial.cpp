@@ -76,13 +76,13 @@ void Tutorial::play(Addon* tutorial) {
 
   emit playingChanged();
 
-  m_currentTutorial->play(m_allowedItems);
-
   mozilla::glean::sample::tutorial_started.record(
       mozilla::glean::sample::TutorialStartedExtra{
           ._id = m_currentTutorial->id()});
   emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::tutorialStarted, {{"id", m_currentTutorial->id()}});
+
+  m_currentTutorial->play(m_allowedItems);
 }
 
 void Tutorial::stop() {

@@ -18,13 +18,5 @@
           L18nStrings::Empty, "", "", "", releaseVersion, flippableOn,      \
           flippableOff, dependencies, callback)
 
-FEATURE_SIMPLE(qmlpath,                // Feature ID
-               "QMLPath support",      // Feature name
-               "2.13.0",               // released
-               FeatureCallback_false,  // Can be flipped on
-               FeatureCallback_false,  // Can be flipped off
-               QStringList(),          // feature dependencies
-               FeatureCallback_true)
-
 // The app must implement its feature list file.
 #include "appfeaturelist.h"
