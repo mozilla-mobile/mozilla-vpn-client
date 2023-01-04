@@ -138,7 +138,7 @@ class Controller final : public QObject {
 
   bool processNextStep();
   QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
-  QStringList getExcludedAddresses(const Server& server);
+  QStringList getExcludedAddresses();
 
   void activateInternal(Reason reason, bool forceDNSPort = false);
   void activateNext(Reason reason);
