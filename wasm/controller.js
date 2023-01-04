@@ -14,6 +14,14 @@ class Controller {
     }
   }
 
+  async query(id) {
+    const json = await this._writeCommand(`query ${id}`);
+    assert(
+        json.type === 'query' && !('error' in json),
+        `Command failed: ${json.error}`);
+    return json.value || false;
+  }
+
   async getVPNProperty(id, property) {
     const json = await this._writeCommand(`property ${id} ${property}`);
     assert(
@@ -63,8 +71,8 @@ class Controller {
 
   async waitForInitialView() {
     await this.waitForQuery('//getHelpLink{visible=true}');
-    assert(await this.query('//getStarted{visible=true}');
-    assert(await this.query('//learnMoreLink{visible=true}');
+    assert(await this.query('//getStarted{visible=true}'));
+    assert(await this.query('//learnMoreLink{visible=true}'));
   }
 
   async hardReset() {
