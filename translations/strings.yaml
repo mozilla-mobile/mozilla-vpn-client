@@ -278,7 +278,8 @@ notifications:
     value: "%1 is not secure. Click here to turn on VPN and secure your device."
     comment: "%1 is the Wi-Fi network name"
   VPNConnectedTitle: VPN Connected
-  VPNConnectedMessage: VPN Connected Message
+  VPNConnectedMessage:
+    value: "Connected to %1"
   VPNDisconnectedTitle: VPN Disconnected
   VPNDisconnectedMessage: VPN Disconnected Message
   VPNSwitchedServersTitle: VPN Switched Servers
