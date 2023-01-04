@@ -127,38 +127,17 @@ void NotificationHandler::showNotification() {
           // https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1719
           return;
         }
-
-        //% "VPN Switched Servers"
-        // title = qtTrId("vpn.systray.statusSwitch.title");
-        // //% "Switched from %1, %2 to %3, %4"
-        // //: Shown as message body in a notification. %1 and %3 are countries, %2
-        // //: and %4 are cities.
-        // message = qtTrId("vpn.systray.statusSwtich.message")
-        //               .arg(localizedPreviousExitCountryName,
-        //                    localizedPreviousExitCityName, localizedCountryName,
-        //                    localizedCityName);
-
         // "VPN Switched Servers"
-        L18nStrings* l18nStrings = L18nStrings::instance();
-        title = l18nStrings->t(L18nStrings::NotificationsVPNSwitchedServersTitle);        
-        message = l18nStrings->t(L18nStrings::NotificationsVPNSwitchedServersMessage);
+        title = L18nStrings::instance()->t(L18nStrings::NotificationsVPNSwitchedServersTitle);        
+        message = L18nStrings::instance()->t(L18nStrings::NotificationsVPNSwitchedServersMessage).arg(localizedPreviousExitCityName, localizedCityName);
       } else {
         if (!SettingsHolder::instance()->connectionChangeNotification()) {
           // Notifications for ConnectionChange are disabled
           return;
         }
-
         // "VPN Connected"
-        L18nStrings* l18nStrings = L18nStrings::instance();
-        title = l18nStrings->t(L18nStrings::NotificationsVPNConnectedTitle);        
-        message = l18nStrings->t(L18nStrings::NotificationsVPNConnectedMessage).arg(localizedCityName);
-
-        // title = qtTrId("vpn.systray.statusConnected.title");
-        // //% "Connected to %1, %2"
-        // //: Shown as message body in a notification. %1 is the country, %2 is
-        // //: the city.
-        // message = qtTrId("vpn.systray.statusConnected.message")
-        //               .arg(localizedCountryName, localizedCityName);
+        title = L18nStrings::instance()->t(L18nStrings::NotificationsVPNConnectedTitle);        
+        message = L18nStrings::instance()->t(L18nStrings::NotificationsVPNConnectedMessage).arg(localizedCityName);
       }
       break;
 
@@ -169,19 +148,9 @@ void NotificationHandler::showNotification() {
           // Notifications for ConnectionChange are disabled
           return;
         }
-
-        // //% "VPN Disconnected"
-        // title = qtTrId("vpn.systray.statusDisconnected.title");
-        // //% "Disconnected from %1, %2"
-        // //: Shown as message body in a notification. %1 is the country, %2 is
-        // //: the city.
-        // message = qtTrId("vpn.systray.statusDisconnected.message")
-        //               .arg(localizedCountryName, localizedCityName);
-
         // "VPN Disconnected"
-        L18nStrings* l18nStrings = L18nStrings::instance();
-        title = l18nStrings->t(L18nStrings::NotificationsVPNDisconnectedTitle);        
-        message = l18nStrings->t(L18nStrings::NotificationsVPNDisconnectedMessage);
+        title = L18nStrings::instance()->t(L18nStrings::NotificationsVPNDisconnectedTitle);        
+        message = L18nStrings::instance()->t(L18nStrings::NotificationsVPNDisconnectedMessage).arg(localizedCityName);
       }
       break;
 

@@ -278,21 +278,11 @@ notifications:
     value: "%1 is not secure. Click here to turn on VPN and secure your device."
     comment: "%1 is the Wi-Fi network name"
   VPNConnectedTitle: VPN Connected
-  VPNConnectedMessage:
-    value: "Connected to %1"
+  VPNConnectedMessage: "Connected to %1"
   VPNDisconnectedTitle: VPN Disconnected
-  VPNDisconnectedMessage: VPN Disconnected Message
+  VPNDisconnectedMessage: "Disconnected from %1"
   VPNSwitchedServersTitle: VPN Switched Servers
-  connectedCity: 
-    value: "%2"
-    comment: Name of the city VPN is connected to.
-  disconnectedCity: 
-    value: "%3"
-    comment: Name of the city VPN disconnected from.    
-  serverSwitchCities:
-    value: "%4, %5"
-    comment: "%4 is the server switched from, %5 is the server switched to."
-  VPNSwitchedServersMessage: VPN Switched Servers Message
+  VPNSwitchedServersMessage: "Switched from %1 to %2"
 
 systray:
   hide: Hide Mozilla VPN
