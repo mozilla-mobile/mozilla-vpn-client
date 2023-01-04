@@ -14,12 +14,13 @@
 #include <QString>
 #include <QTextStream>
 
+#include "appconstants.h"
+
 #ifdef MZ_ANDROID
 #  include <android/log.h>
 #endif
 
 constexpr qint64 LOG_MAX_FILE_SIZE = 204800;
-constexpr const char* LOG_FILENAME = "mozillavpn.txt";
 
 namespace {
 QMutex s_mutex;
@@ -171,7 +172,7 @@ void LogHandler::addLog(const Log& log, const MutexLocker& proofOfLock) {
 #if defined(MZ_ANDROID) && defined(MZ_DEBUG)
   const char* str = buffer.constData();
   if (str) {
-    __android_log_write(ANDROID_LOG_DEBUG, "mozillavpn", str);
+    __android_log_write(ANDROID_LOG_DEBUG, AppConstants::ANDROID_LOG_NAME, str);
   }
 #endif
 }
@@ -249,7 +250,8 @@ void LogHandler::openLogFile(const MutexLocker& proofOfLock) {
     }
   }
 
-  QString logFileName = appDataLocation.filePath(LOG_FILENAME);
+  QString logFileName = appDataLocation.filePath(
+      QString("mozilla_%1.txt").arg(AppConstants::SETTINGS_APP_NAME));
   m_logFile = new QFile(logFileName);
   if (m_logFile->size() > LOG_MAX_FILE_SIZE) {
     m_logFile->remove();
