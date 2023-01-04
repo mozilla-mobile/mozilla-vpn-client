@@ -658,10 +658,10 @@ void TestAddon::tutorial_create_data() {
   step["id"] = "s1";
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-without-element")
+  QTest::addRow("with-step-without-query")
       << "foo" << obj << false << false << false;
 
-  step["element"] = "wow";
+  step["query"] = "wow";
   steps.replace(0, step);
   obj["steps"] = steps;
   QTest::addRow("with-step-without-next")
@@ -702,7 +702,7 @@ void TestAddon::tutorial_create_data() {
   QTest::addRow("with-step-with-invalid-next-4")
       << "foo" << obj << false << false << false;
 
-  nextObj["qml_emitter"] = "a";
+  nextObj["query_emitter"] = "a";
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
@@ -716,7 +716,7 @@ void TestAddon::tutorial_create_data() {
   QTest::addRow("with-step-with-invalid-next-6")
       << "foo" << obj << false << false << false;
 
-  nextObj.remove("qml_emitter");
+  nextObj.remove("query_emitter");
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
@@ -731,7 +731,7 @@ void TestAddon::tutorial_create_data() {
       << "foo" << obj << true << false << false;
 
   obj["conditions"] = QJsonObject();
-  QTest::addRow("with-step-element and conditions")
+  QTest::addRow("with-step-query and conditions")
       << "foo" << obj << true << false << false;
 
   obj["highlighted"] = true;
