@@ -13,13 +13,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-// !!!DO NOT MERGE!!!
-// FIXME: Use of this API is permitted for project use only, we would need
-// to purchase an API key for commercial usage, or we just add lat/long client
-// coordinates to the guardian ipinfo API. But hopefully this is fine as a
-// proof-of-concept.
-constexpr const char* SERVER_GUESS_GEOIP_URL = "https://json.geoiplookup.io/";
-
 namespace {
 Logger logger("TaskServerSelect");
 }
@@ -34,8 +27,7 @@ TaskServerSelect::TaskServerSelect(
 TaskServerSelect::~TaskServerSelect() { MZ_COUNT_DTOR(TaskServerSelect); }
 
 void TaskServerSelect::run() {
-  NetworkRequest* request =
-      NetworkRequest::createForGetUrl(this, SERVER_GUESS_GEOIP_URL, 200);
+  NetworkRequest* request = NetworkRequest::createForIpInfo(this);
 
   connect(
       request, &NetworkRequest::requestFailed, this,
@@ -58,9 +50,16 @@ void TaskServerSelect::processData(const QByteArray& data) {
     logger.error() << "Invalid data returned from the GeoIP lookup";
     return;
   }
+
   QJsonObject obj = json.object();
-  double latitude = obj.value("latitude").toDouble();
-  double longitude = obj.value("longitude").toDouble();
+  QStringList latlong = obj.value("lat_long").toString().split(',');
+  if (latlong.count() != 2) {
+    // TODO: Fallback to random selection.
+    logger.info() << "No GeoIP data returned in ipinfo lookup";
+    return;
+  }
+  double latitude = latlong[0].toDouble();
+  double longitude = latlong[1].toDouble();
   double clientSin = qSin(latitude * M_PI / 180.0);
   double clientCos = qCos(latitude * M_PI / 180.0);
   logger.debug() << "Client located at"

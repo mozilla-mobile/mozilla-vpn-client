@@ -66,8 +66,8 @@ class NetworkRequest final : public QObject {
 
   static NetworkRequest* createForVersions(Task* parent);
 
-  static NetworkRequest* createForIpInfo(Task* parent,
-                                         const QHostAddress& address);
+  static NetworkRequest* createForIpInfo(
+      Task* parent, const QHostAddress& address = QHostAddress());
 
   static NetworkRequest* createForCaptivePortalDetection(
       Task* parent, const QUrl& url, const QByteArray& host);

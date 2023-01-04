@@ -369,16 +369,22 @@ NetworkRequest* NetworkRequest::createForIpInfo(Task* parent,
 
   NetworkRequest* r = new NetworkRequest(parent, 200, true);
 
+  QUrl url(apiBaseUrl());
+  QString hostname = url.host();
   if (address.protocol() == QAbstractSocket::IPv6Protocol) {
-    r->m_request.setUrl(QUrl(QString(IPINFO_URL_IPV6).arg(address.toString())));
+    url.setHost(QString("[%]").arg(address.toString()));
+  } else if(address.protocol() == QAbstractSocket::IPv4Protocol) {
+    url.setHost(address.toString());
   } else {
-    Q_ASSERT(address.protocol() == QAbstractSocket::IPv4Protocol);
-    r->m_request.setUrl(QUrl(QString(IPINFO_URL_IPV4).arg(address.toString())));
+    // Otherwise, a default-constructed address indicates we should not mangle
+    // the address and just rely on the hostname.
+    Q_ASSERT(address.isNull());
   }
 
-  QUrl url(apiBaseUrl());
-  r->m_request.setRawHeader("Host", url.host().toLocal8Bit());
-  r->m_request.setPeerVerifyName(url.host());
+  url.setPath("/api/v1/vpn/ipinfo");
+  r->m_request.setRawHeader("Host", hostname.toLocal8Bit());
+  r->m_request.setPeerVerifyName(hostname);
+  r->m_request.setUrl(url);
 
   r->getRequest();
   return r;
