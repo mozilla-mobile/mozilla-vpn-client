@@ -128,16 +128,22 @@ void NotificationHandler::showNotification() {
           return;
         }
         // "VPN Switched Servers"
-        title = L18nStrings::instance()->t(L18nStrings::NotificationsVPNSwitchedServersTitle);        
-        message = L18nStrings::instance()->t(L18nStrings::NotificationsVPNSwitchedServersMessage).arg(localizedPreviousExitCityName, localizedCityName);
+        title = L18nStrings::instance()->t(
+            L18nStrings::NotificationsVPNSwitchedServersTitle);
+        message = L18nStrings::instance()
+                      ->t(L18nStrings::NotificationsVPNSwitchedServersMessage)
+                      .arg(localizedPreviousExitCityName, localizedCityName);
       } else {
         if (!SettingsHolder::instance()->connectionChangeNotification()) {
           // Notifications for ConnectionChange are disabled
           return;
         }
         // "VPN Connected"
-        title = L18nStrings::instance()->t(L18nStrings::NotificationsVPNConnectedTitle);        
-        message = L18nStrings::instance()->t(L18nStrings::NotificationsVPNConnectedMessage).arg(localizedCityName);
+        title = L18nStrings::instance()->t(
+            L18nStrings::NotificationsVPNConnectedTitle);
+        message = L18nStrings::instance()
+                      ->t(L18nStrings::NotificationsVPNConnectedMessage)
+                      .arg(localizedCityName);
       }
       break;
 
@@ -149,8 +155,11 @@ void NotificationHandler::showNotification() {
           return;
         }
         // "VPN Disconnected"
-        title = L18nStrings::instance()->t(L18nStrings::NotificationsVPNDisconnectedTitle);        
-        message = L18nStrings::instance()->t(L18nStrings::NotificationsVPNDisconnectedMessage).arg(localizedCityName);
+        title = L18nStrings::instance()->t(
+            L18nStrings::NotificationsVPNDisconnectedTitle);
+        message = L18nStrings::instance()
+                      ->t(L18nStrings::NotificationsVPNDisconnectedMessage)
+                      .arg(localizedCityName);
       }
       break;
 
