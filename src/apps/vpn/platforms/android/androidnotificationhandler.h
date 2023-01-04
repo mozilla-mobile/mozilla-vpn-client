@@ -21,7 +21,6 @@ class AndroidNotificationHandler final : public NotificationHandler {
               int timerMsec) override;
 
  private:
-  void applyStrings();
 
   void initialize() override;
 };

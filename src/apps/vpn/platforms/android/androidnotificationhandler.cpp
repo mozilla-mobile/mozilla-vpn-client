@@ -25,9 +25,7 @@ AndroidNotificationHandler::~AndroidNotificationHandler() {
   MZ_COUNT_DTOR(AndroidNotificationHandler);
 }
 
-void AndroidNotificationHandler::initialize() {
-
-}
+void AndroidNotificationHandler::initialize() {}
 
 void AndroidNotificationHandler::notify(NotificationHandler::Message type,
                                         const QString& title,
