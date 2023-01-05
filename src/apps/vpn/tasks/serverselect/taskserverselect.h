@@ -21,7 +21,7 @@ class TaskServerSelect final : public Task {
   void run() override;
 
  private:
-  void processData(const QByteArray& data);
+  QStringList processData(const QByteArray& data);
   ErrorHandler::ErrorPropagationPolicy m_errorPropagationPolicy =
       ErrorHandler::DoNotPropagateError;
 };

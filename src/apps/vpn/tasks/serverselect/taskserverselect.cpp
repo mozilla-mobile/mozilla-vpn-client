@@ -29,26 +29,33 @@ TaskServerSelect::~TaskServerSelect() { MZ_COUNT_DTOR(TaskServerSelect); }
 void TaskServerSelect::run() {
   NetworkRequest* request = NetworkRequest::createForIpInfo(this);
 
-  connect(
-      request, &NetworkRequest::requestFailed, this,
-      [this](QNetworkReply::NetworkError error, const QByteArray&) {
-        logger.error() << "Failed to retrieve client GeoIP";
-        REPORTNETWORKERROR(error, m_errorPropagationPolicy, name());
-        emit completed();
-      });
+  connect(request, &NetworkRequest::requestFailed, this,
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+            logger.error() << "Failed to retrieve client GeoIP";
+            REPORTNETWORKERROR(error, m_errorPropagationPolicy, name());
+            emit completed();
+          });
 
   connect(request, &NetworkRequest::requestCompleted, this,
-      [this](const QByteArray& data){
-        processData(data);
-        emit completed();
-      });
+          [this](const QByteArray& data){
+            QStringList choice = processData(data);
+            Q_ASSERT(choice.length() >= 2);
+
+            ServerData* sd = MozillaVPN::instance()->currentServer();
+            sd->update(choice[0], choice[1]);
+            Q_ASSERT(sd->hasServerData());
+
+            emit completed();
+          });
 }
 
-void TaskServerSelect::processData(const QByteArray& data) {
+QStringList TaskServerSelect::processData(const QByteArray& data) {
+  ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
+
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (!json.isObject()) {
     logger.error() << "Invalid data returned from the GeoIP lookup";
-    return;
+    return scm->pickRandom();
   }
 
   QJsonObject obj = json.object();
@@ -56,7 +63,7 @@ void TaskServerSelect::processData(const QByteArray& data) {
   if (latlong.count() != 2) {
     // TODO: Fallback to random selection.
     logger.info() << "No GeoIP data returned in ipinfo lookup";
-    return;
+    return scm->pickRandom();
   }
   double latitude = latlong[0].toDouble();
   double longitude = latlong[1].toDouble();
@@ -71,14 +78,13 @@ void TaskServerSelect::processData(const QByteArray& data) {
   //    d = acos(sin(lat1)*sin(lat2) + cos(lat1)*cos(lat2)*cos(long1-long2))
   QString bestCountry;
   QString bestCity;
-  double bestDistance = M_2_PI; 
-  ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
+  double bestDistance = M_2_PI;
   for (const ServerCountry& country : scm->countries()) {
     for (const ServerCity& city : country.cities()) {
       double citySin = qSin(city.latitude() * M_PI / 180.0);
       double cityCos = qCos(city.latitude() * M_PI / 180.0);
       double diffCos = qCos((city.longitude() - longitude) * M_PI / 180.0);
-      double distance = qAcos(clientSin*citySin + clientCos*cityCos*diffCos);
+      double distance = qAcos(clientSin * citySin + clientCos * cityCos * diffCos);
 
       if (distance < bestDistance) {
         bestCountry = country.code();
@@ -88,9 +94,8 @@ void TaskServerSelect::processData(const QByteArray& data) {
     }
   }
 
-  ServerData* sd = MozillaVPN::instance()->currentServer();
-  if (!bestCountry.isEmpty() && !bestCity.isEmpty()) {
-    sd->update(bestCountry, bestCity);
-    Q_ASSERT(sd->hasServerData());
+  if (bestCountry.isEmpty() || bestCity.isEmpty()) {
+    return scm->pickRandom();
   }
+  return QStringList({bestCountry, bestCity});
 }
