@@ -28,6 +28,12 @@ class LogHandler final : public QObject {
   struct Log {
     Log() = default;
 
+    Log(LogLevel logLevel, const QString& message)
+        : m_logLevel(logLevel),
+          m_dateTime(QDateTime::currentDateTime()),
+          m_message(message),
+          m_fromQT(false) {}
+
     Log(LogLevel logLevel, const QString& className, const QString& message)
         : m_logLevel(logLevel),
           m_dateTime(QDateTime::currentDateTime()),
@@ -63,6 +69,8 @@ class LogHandler final : public QObject {
 
   static void messageHandler(LogLevel logLevel, const QString& className,
                              const QString& message);
+
+  static void rustMessageHandler(int32_t logLevel, char* message);
 
   static void prettyOutput(QTextStream& out, const LogHandler::Log& log);
 

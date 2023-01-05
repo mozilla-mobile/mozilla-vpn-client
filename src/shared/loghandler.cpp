@@ -45,6 +45,23 @@ LogLevel qtTypeToLogLevel(QtMsgType type) {
   }
 }
 
+// This is based on values set from vpnglean/src/logger.rs
+LogLevel intToLogLevel(uint8_t type) {
+  switch (type) {
+    case 0:
+      return Trace;
+    case 1:
+      return Debug;
+    case 2:
+      return Info;
+    case 3:
+      return Warning;
+    case 4:
+      return Error;
+    default:
+      return Debug;
+  }
+}
 }  // namespace
 
 // static
@@ -71,6 +88,14 @@ void LogHandler::messageHandler(LogLevel logLevel, const QString& className,
 }
 
 // static
+void LogHandler::rustMessageHandler(int32_t logLevel, char* message) {
+  MutexLocker lock(&s_mutex);
+
+  maybeCreate(lock)->addLog(
+      Log(intToLogLevel(logLevel), QString::fromUtf8(message)), lock);
+}
+
+// static
 LogHandler* LogHandler::maybeCreate(const MutexLocker& proofOfLock) {
   if (!s_instance) {
     s_instance = new LogHandler(proofOfLock);
@@ -88,6 +113,9 @@ void LogHandler::prettyOutput(QTextStream& out, const LogHandler::Log& log) {
   }
 
   switch (log.m_logLevel) {
+    case Trace:
+      out << "Trace: ";
+      break;
     case Debug:
       out << "Debug: ";
       break;

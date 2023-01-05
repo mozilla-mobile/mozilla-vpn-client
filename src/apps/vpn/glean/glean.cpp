@@ -51,6 +51,13 @@ VPNGlean::VPNGlean(QObject* parent) : QObject(parent) {
 VPNGlean::~VPNGlean() { MZ_COUNT_DTOR(VPNGlean); }
 
 // static
+void VPNGlean::registerLogHandler(void (*messageHandler)(int32_t, char*)) {
+#if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
+  glean_register_log_handler(messageHandler);
+#endif
+}
+
+// static
 void VPNGlean::initialize() {
   logger.debug() << "Initializing VPNGlean";
 
