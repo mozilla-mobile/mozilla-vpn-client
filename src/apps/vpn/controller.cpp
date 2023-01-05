@@ -219,7 +219,7 @@ void Controller::activateInternal(Reason reason, bool forcePort53) {
   exitHop.m_server = exitServer;
   exitHop.m_hopindex = 0;
   exitHop.m_allowedIPAddressRanges = getAllowedIPAddressRanges(exitServer);
-  exitHop.m_excludedAddresses = getExcludedAddresses(exitServer);
+  exitHop.m_excludedAddresses = getExcludedAddresses();
   exitHop.m_dnsServer =
       QHostAddress(DNSHelper::getDNS(exitServer.ipv4Gateway()));
   logger.debug() << "DNS Set" << exitHop.m_dnsServer.toString();
@@ -716,7 +716,7 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   return list;
 }
 
-QStringList Controller::getExcludedAddresses(const Server& exitServer) {
+QStringList Controller::getExcludedAddresses() {
   logger.debug() << "Computing the excluded IP addresses";
 
   QStringList list;
