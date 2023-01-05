@@ -32,10 +32,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val setNotificationText = 8
         const val setStrings = 9
         const val recordEvent = 10
-        const val sendGleanPings = 11
-        const val gleanUploadEnabledChanged = 12
         const val getStatus = 13
-        const val gleanSetSourceTags = 14
         const val setStartOnBoot = 15
         const val reactivate = 16
         const val clearStorage = 17
@@ -143,29 +140,6 @@ class VPNServiceBinder(service: VPNService) : Binder() {
             ACTIONS.setStrings -> {
                 NotificationUtil.get(mService)?.updateStrings(data, mService)
                 return true
-            }
-            ACTIONS.recordEvent -> {
-                val buffer = data.createByteArray()
-                val json = buffer?.let { String(it) }
-                val event = JSONObject(json)
-                mService.mGlean.recordEvent(event)
-                return true
-            }
-            ACTIONS.sendGleanPings -> {
-                mService.mGlean.sendGleanMainPing()
-                return true
-            }
-            ACTIONS.gleanUploadEnabledChanged -> {
-                val buffer = data.createByteArray()
-                val json = buffer?.let { String(it) }
-                val args = JSONObject(json)
-                mService.mGlean.setGleanUploadEnabled(args.getBoolean("enabled"))
-                return true
-            }
-            ACTIONS.gleanSetSourceTags -> {
-                val buffer = data.createByteArray()
-                val list = buffer?.let { String(it) }
-                mService.mGlean.setGleanSourceTag(list)
             }
             ACTIONS.setStartOnBoot -> {
                 val buffer = data.createByteArray()

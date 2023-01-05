@@ -60,20 +60,6 @@ AndroidUtils::AndroidUtils(QObject* parent) : QObject(parent) {
 
   Q_ASSERT(!s_instance);
   s_instance = this;
-
-  QJniEnvironment env;
-  jclass javaClass = env.findClass(UTILS_CLASS);
-
-  JNINativeMethod methods[]{
-      {"recordGleanEvent", "(Ljava/lang/String;)V",
-       reinterpret_cast<void*>(recordGleanEvent)},
-      {"recordGleanEventWithExtraKeys",
-       "(Ljava/lang/String;Ljava/lang/String;)V",
-       reinterpret_cast<void*>(recordGleanEventWithExtraKeys)},
-  };
-
-  env->RegisterNatives(javaClass, methods,
-                       sizeof(methods) / sizeof(methods[0]));
 }
 
 AndroidUtils::~AndroidUtils() {
@@ -212,36 +198,6 @@ void AndroidUtils::runOnAndroidThreadSync(
       .waitForFinished();
 }
 
-void AndroidUtils::recordGleanEvent(JNIEnv* env, jobject VPNUtils,
-                                    jstring event) {
-  Q_UNUSED(VPNUtils);
-  const char* buffer = env->GetStringUTFChars(event, nullptr);
-  if (!buffer) {
-    return;
-  }
-  if (!MozillaVPN::instance()) {
-    return;
-  }
-  QString eventString(buffer);
-  logger.info() << "Glean Event via JNI:" << eventString;
-  emit MozillaVPN::instance()->recordGleanEvent(eventString);
-  env->ReleaseStringUTFChars(event, buffer);
-}
-
-void AndroidUtils::recordGleanEventWithExtraKeys(JNIEnv* env, jobject VPNUtils,
-                                                 jstring jevent,
-                                                 jstring jextras) {
-  if (!MozillaVPN::instance()) {
-    return;
-  }
-  Q_UNUSED(VPNUtils);
-  auto event = getQStringFromJString(env, jevent);
-  QJsonObject extras = getQJsonObjectFromJString(env, jextras);
-  logger.info() << "Glean Event via JNI:" << event;
-  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
-      event, extras.toVariantMap());
-}
-
 // static
 bool AndroidUtils::verifySignature(const QByteArray& publicKey,
                                    const QByteArray& content,
@@ -253,6 +209,19 @@ bool AndroidUtils::verifySignature(const QByteArray& publicKey,
   logger.info() << "Android Signature Response" << out;
   return out;
 }
+
+// static
+void AndroidUtils::initializeGlean(bool isTelemetryEnabled,
+                                   const QString& channel) {
+  AndroidUtils::runOnAndroidThreadSync([isTelemetryEnabled, channel]() {
+    QJniObject::callStaticMethod<void>(
+        UTILS_CLASS, "initializeGlean",
+        "(Landroid/content/Context;ZLjava/lang/String;)V",
+        getActivity().object(), (jboolean)isTelemetryEnabled,
+        QJniObject::fromString(channel).object());
+  });
+}
+
 // Static
 // Creates a copy of the passed QByteArray in the JVM and passes back a ref
 jbyteArray AndroidUtils::tojByteArray(const QByteArray& data) {
