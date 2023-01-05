@@ -280,11 +280,11 @@ notifications:
   VPNConnectedTitle: VPN Connected
   VPNConnectedMessage:
     value: "Connected to %1"
-    comment: "Name of the city the VPN is connected to."
+    comment: "%1 is the name of the city the VPN is connected to."
   VPNDisconnectedTitle: VPN Disconnected
   VPNDisconnectedMessage:
     value: "Disconnected from %1"
-    comment: "Name of the city the VPN disconnected from."
+    comment: "%1 is the name of the city the VPN disconnected from."
   VPNSwitchedServersTitle: VPN Switched Servers
   VPNSwitchedServersMessage:
     value: "Switched from %1 to %2"
