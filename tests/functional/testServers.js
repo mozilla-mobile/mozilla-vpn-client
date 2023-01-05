@@ -176,7 +176,7 @@ describe('Server list', function() {
     assert.strictEqual(vpn.lastNotification().title, 'VPN Connected');
     assert.strictEqual(
         vpn.lastNotification().message,
-        `Connected to ${currentCountry}, ${currentCity}`);
+        `Connected to ${currentCity}`);
 
     await vpn.clickOnElement(homeScreen.SERVER_LIST_BUTTON);
     await vpn.wait();
@@ -234,8 +234,7 @@ describe('Server list', function() {
     assert.strictEqual(vpn.lastNotification().title, 'VPN Switched Servers');
     assert.strictEqual(
         vpn.lastNotification().message,
-        `Switched from ${previousCountry}, ${previousCity} to ${
-            currentCountry}, ${currentCity}`);
+        `Switched from ${previousCity} to ${currentCity}`);
   });
 
   it('ensuring search message appears appropriately', async () => {
