@@ -378,6 +378,9 @@ connectionInfo:
   troubleshootingBulletTwo:
     value: Checking your internet connection
     comment: This is a bullet item in the connection troubleshooting section
+  troubleshootingBulletThree:
+    value: Switching back to a single-hop connection
+    comment: This is a bullet item in the connection troubleshooting section for multi-hop connections
   # Bullet items for medium speedtest results
   mediumBulletOne:
     value: Browsing the internet
