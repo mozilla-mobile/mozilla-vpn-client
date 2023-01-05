@@ -33,9 +33,6 @@
 constexpr uint32_t REQUEST_TIMEOUT_MSEC = 15000;
 constexpr int REQUEST_MAX_REDIRECTS = 4;
 
-constexpr const char* IPINFO_URL_IPV4 = "https://%1/api/v1/vpn/ipinfo";
-constexpr const char* IPINFO_URL_IPV6 = "https://[%1]/api/v1/vpn/ipinfo";
-
 namespace {
 Logger logger("NetworkRequest");
 
@@ -372,7 +369,7 @@ NetworkRequest* NetworkRequest::createForIpInfo(Task* parent,
   QUrl url(apiBaseUrl());
   QString hostname = url.host();
   if (address.protocol() == QAbstractSocket::IPv6Protocol) {
-    url.setHost(QString("[%]").arg(address.toString()));
+    url.setHost(QString("[%1]").arg(address.toString()));
   } else if (address.protocol() == QAbstractSocket::IPv4Protocol) {
     url.setHost(address.toString());
   } else {
