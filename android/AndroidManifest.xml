@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- 
+<!--
 This Source Code Form is subject to the terms of the Mozilla Public
 License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -31,7 +31,6 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
         <activity
             android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
             android:name="org.mozilla.firefox.vpn.qt.VPNActivity"
-            android:process=":QtOnlyProcess"
             android:label="Mozilla VPN"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Splash"
@@ -69,6 +68,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
             android:label="@string/product_name"
             android:icon="@drawable/ic_mozvpn_round"
             android:exported="true"
+            android:process=":Daemon"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />

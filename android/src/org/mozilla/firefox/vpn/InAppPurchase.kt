@@ -22,18 +22,17 @@ import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.SkuDetails
 import com.android.billingclient.api.SkuDetailsParams
 import com.android.billingclient.api.SkuDetailsResponseListener
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import org.mozilla.firefox.vpn.glean.GleanEvent
-import org.mozilla.firefox.vpn.qt.VPNUtils
 import java.text.NumberFormat
 import java.time.Duration
 import java.time.format.DateTimeParseException
 import java.util.Currency
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.Serializable
+import org.mozilla.firefox.vpn.GleanMetrics.Sample
 
 /**
  * Generally this contains the contents of a native BillingResult.
@@ -166,7 +165,7 @@ class InAppPurchase private constructor(ctx: Context) :
         val skuDetails = skusWithSkuDetails[productToPurchase]
         if (skuDetails == null) {
             Log.wtf(TAG, "Attempting to purchase a product with no skuDetails")
-            VPNUtils.recordGleanEvent(GleanEvent.iapGNoSkuDetails)
+            Sample.iapGNoSkuDetails.record()
             onSubscriptionFailed(
                 Json.encodeToString(
                     BillingResultData(
@@ -185,7 +184,7 @@ class InAppPurchase private constructor(ctx: Context) :
             .build()
         val billingResult = billingClient.launchBillingFlow(activity, billingParams)
         if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
-            VPNUtils.recordGleanEvent(GleanEvent.iapGLaunchbillingflowFailed)
+            Sample.iapGLaunchbillingflowFailed.record()
             onSubscriptionFailed(billingResultToJson(billingResult, "initiatePurchase"))
         }
     }
@@ -203,7 +202,6 @@ class InAppPurchase private constructor(ctx: Context) :
 
     override fun onBillingSetupFinished(billingResult: BillingResult) {
         if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
-            VPNUtils.recordGleanEvent(GleanEvent.iapGBillingNotAvailable)
             onBillingNotAvailable(billingResultToJson(billingResult, "onBillingSetupFinished"))
         } else {
             querySkuAndPurchases()
@@ -230,12 +228,12 @@ class InAppPurchase private constructor(ctx: Context) :
         skuDetailsList: MutableList<SkuDetails>?
     ) {
         if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
-            VPNUtils.recordGleanEvent(GleanEvent.iapGQuerySkuDetailsFailed)
+            Sample.iapGQuerySkuDetailsFailed.record()
             onSkuDetailsFailed(billingResultToJson(billingResult, "onSkuDetailsResponse"))
             return
         }
         if (skuDetailsList == null) {
-            VPNUtils.recordGleanEvent(GleanEvent.iapGQuerySkuDetailsFailed)
+            Sample.iapGQuerySkuDetailsFailed.record()
             onSkuDetailsFailed(
                 Json.encodeToString(
                     BillingResultData(
@@ -266,7 +264,7 @@ class InAppPurchase private constructor(ctx: Context) :
         if (responseCode == BillingClient.BillingResponseCode.OK) {
             processPurchases(purchases)
         } else {
-            VPNUtils.recordGleanEvent(GleanEvent.iapGQuerySkuDetailsFailed)
+            Sample.iapGQuerySkuDetailsFailed.record()
             Log.e(TAG, "onQueryPurchasesReponse got BillingResponseCode $responseCode")
         }
     }
@@ -284,8 +282,10 @@ class InAppPurchase private constructor(ctx: Context) :
                 BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED -> "item-unavailable"
                 else -> "unknown-${billingResult.responseCode}"
             }
-            VPNUtils.recordGleanEventWithExtraKeys(
-                GleanEvent.iapGPurchasesUpdatedFailed, "{ \"reason\":\"$reason\"}"
+            Sample.iapGPurchasesUpdatedFailed.record(
+                Sample.IapGPurchasesUpdatedFailedExtra(
+                    reason = reason
+                )
             )
             onSubscriptionFailed(billingResultToJson(billingResult, "onSkuDetailsResponse"))
         }
@@ -295,7 +295,6 @@ class InAppPurchase private constructor(ctx: Context) :
         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
             onPurchaseAcknowledged()
         } else {
-            VPNUtils.recordGleanEvent(GleanEvent.iapGPurchaseAckFailed)
             onPurchaseAcknowledgeFailed(
                 billingResultToJson(billingResult, "onAcknowledgePurchaseResponse")
             )
@@ -327,12 +326,12 @@ class InAppPurchase private constructor(ctx: Context) :
     fun processPurchases(purchases: MutableList<Purchase>?) {
         if (purchases == null) {
             Log.d(TAG, "onPurchasesUpdated: null purchase list")
-            VPNUtils.recordGleanEvent(GleanEvent.iapGPurchasesUpdateIsNull)
+            Sample.iapGPurchasesUpdateIsNull.record()
             return
         }
         for (purchase in purchases) {
             if (purchase.purchaseState != Purchase.PurchaseState.PURCHASED) {
-                VPNUtils.recordGleanEvent(GleanEvent.iapGUnexpectedPurchasestate)
+                Sample.iapGUnexpectedPurchasestate.record()
                 Log.i(TAG, "Purchase State is unexpectedly not PURCHASED")
             }
             onPurchaseUpdated(purchase.originalJson)
@@ -346,7 +345,7 @@ class InAppPurchase private constructor(ctx: Context) :
         val monthCount = skusWithMonthCount[sku]
         if (monthCount == null) {
             Log.e(TAG, "We did not get a monthCount for sku: $sku")
-            VPNUtils.recordGleanEvent(GleanEvent.iapGSkuWithoutMonth)
+            Sample.iapGSkuWithoutMonth.record()
             return null
         }
         Log.d(TAG, "For sku $sku, we have $priceMicros priceMicros $monthCount months")
