@@ -3,15 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskserverselect.h"
+
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QtMath>
+
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
-
-#include <QtMath>
-#include <QJsonDocument>
-#include <QJsonObject>
 
 namespace {
 Logger logger("TaskServerSelect");
@@ -37,7 +38,7 @@ void TaskServerSelect::run() {
           });
 
   connect(request, &NetworkRequest::requestCompleted, this,
-          [this](const QByteArray& data){
+          [this](const QByteArray& data) {
             QStringList choice = processData(data);
             Q_ASSERT(choice.length() >= 2);
 
@@ -84,7 +85,8 @@ QStringList TaskServerSelect::processData(const QByteArray& data) {
       double citySin = qSin(city.latitude() * M_PI / 180.0);
       double cityCos = qCos(city.latitude() * M_PI / 180.0);
       double diffCos = qCos((city.longitude() - longitude) * M_PI / 180.0);
-      double distance = qAcos(clientSin * citySin + clientCos * cityCos * diffCos);
+      double distance =
+          qAcos(clientSin * citySin + clientCos * cityCos * diffCos);
 
       if (distance < bestDistance) {
         bestCountry = country.code();

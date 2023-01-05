@@ -43,8 +43,8 @@
 #include "tasks/products/taskproducts.h"
 #include "tasks/removedevice/taskremovedevice.h"
 #include "tasks/sendfeedback/tasksendfeedback.h"
-#include "tasks/serverselect/taskserverselect.h"
 #include "tasks/servers/taskservers.h"
+#include "tasks/serverselect/taskserverselect.h"
 #include "taskscheduler.h"
 #include "telemetry/gleansample.h"
 #include "update/updater.h"
@@ -358,7 +358,8 @@ void MozillaVPN::initialize() {
 
   Q_ASSERT(!m_private->m_serverData.hasServerData());
   if (!m_private->m_serverData.fromSettings()) {
-    TaskScheduler::scheduleTask(new TaskServerSelect(ErrorHandler::DoNotPropagateError));
+    TaskScheduler::scheduleTask(
+        new TaskServerSelect(ErrorHandler::DoNotPropagateError));
   }
 
   scheduleRefreshDataTasks(true);
@@ -692,7 +693,8 @@ void MozillaVPN::serversFetched(const QByteArray& serverData) {
       !m_private->m_serverCountryModel.exists(
           m_private->m_serverData.exitCountryCode(),
           m_private->m_serverData.exitCityName())) {
-    TaskScheduler::scheduleTask(new TaskServerSelect(ErrorHandler::DoNotPropagateError));
+    TaskScheduler::scheduleTask(
+        new TaskServerSelect(ErrorHandler::DoNotPropagateError));
   }
 }
 

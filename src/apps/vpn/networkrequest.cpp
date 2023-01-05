@@ -373,7 +373,7 @@ NetworkRequest* NetworkRequest::createForIpInfo(Task* parent,
   QString hostname = url.host();
   if (address.protocol() == QAbstractSocket::IPv6Protocol) {
     url.setHost(QString("[%]").arg(address.toString()));
-  } else if(address.protocol() == QAbstractSocket::IPv4Protocol) {
+  } else if (address.protocol() == QAbstractSocket::IPv4Protocol) {
     url.setHost(address.toString());
   } else {
     // Otherwise, a default-constructed address indicates we should not mangle
