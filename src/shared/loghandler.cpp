@@ -83,6 +83,10 @@ LogHandler* LogHandler::maybeCreate(const MutexLocker& proofOfLock) {
 void LogHandler::prettyOutput(QTextStream& out, const LogHandler::Log& log) {
   out << "[" << log.m_dateTime.toString("dd.MM.yyyy hh:mm:ss.zzz") << "] ";
 
+  if (!log.m_className.isEmpty()) {
+    out << "(" << log.m_className << ") ";
+  }
+
   switch (log.m_logLevel) {
     case Debug:
       out << "Debug: ";
