@@ -147,7 +147,6 @@ SOURCES += \
         apps/vpn/tutorial/tutorialstepnext.cpp \
         apps/vpn/update/updater.cpp \
         apps/vpn/update/versionapi.cpp \
-        apps/vpn/urlopener.cpp \
         apps/vpn/update/webupdater.cpp \
         apps/vpn/websocket/exponentialbackoffstrategy.cpp \
         apps/vpn/websocket/pushmessage.cpp \
@@ -305,7 +304,6 @@ HEADERS += \
         apps/vpn/update/updater.h \
         apps/vpn/update/versionapi.h \
         apps/vpn/update/webupdater.h \
-        apps/vpn/urlopener.h \
         apps/vpn/websocket/exponentialbackoffstrategy.h \
         apps/vpn/websocket/pushmessage.h \
         apps/vpn/websocket/websockethandler.h

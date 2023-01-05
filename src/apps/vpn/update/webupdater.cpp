@@ -34,6 +34,6 @@ void WebUpdater::start(Task*) {
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(FallbackInBrowser).toString()}});
 
-  UrlOpener::instance()->openLink(UrlOpener::LinkUpdate);
+  UrlOpener::instance()->openUrlLabel("update");
   deleteLater();
 }
