@@ -216,7 +216,6 @@ Window {
 
     Connections {
         target: VPNSettings
-        enabled: Qt.platform.os != "android"
         function onGleanEnabledChanged() {
             console.debug("Glean - onGleanEnabledChanged", VPNSettings.gleanEnabled);
             Glean.setUploadEnabled(VPNSettings.gleanEnabled);

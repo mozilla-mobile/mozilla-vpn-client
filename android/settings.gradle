@@ -9,5 +9,6 @@ buildCache {
         removeUnusedEntriesAfterDays = 30
     }
 }
+include ':vpnglean'
 include ':daemon'
 include ':qtBindings'

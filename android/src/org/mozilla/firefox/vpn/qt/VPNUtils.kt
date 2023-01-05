@@ -17,13 +17,15 @@ import android.provider.Settings
 import android.util.Log
 import org.bouncycastle.asn1.ASN1Sequence
 import org.bouncycastle.asn1.pkcs.RSAPublicKey
-import org.mozilla.firefox.vpn.glean.GleanEvent
 import java.io.IOException
 import java.security.KeyFactory
 import java.security.Signature
 import java.security.spec.RSAPublicKeySpec
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import org.mozilla.firefox.vpn.GleanMetrics.GleanBuildInfo
+import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.config.Configuration
 
 // Companion for AndroidUtils.cpp
 object VPNUtils {
@@ -108,14 +110,6 @@ object VPNUtils {
         context.startActivity(intent)
     }
 
-    fun recordGleanEvent(metricName: GleanEvent) {
-        // Explicit cast to string so the jni
-        // does not explode here :)
-        recordGleanEvent(metricName.toString())
-    }
-    fun recordGleanEventWithExtraKeys(metricName: GleanEvent, keysJSON: String) {
-        recordGleanEventWithExtraKeys(metricName.toString(), keysJSON)
-    }
     @SuppressLint("Unused")
     @JvmStatic
     fun verifyContentSignature(publicKey: ByteArray, content: ByteArray, signature: ByteArray): Boolean {
@@ -137,11 +131,14 @@ object VPNUtils {
         }
     }
 
-    @SuppressLint("Unused")
+    @SuppressLint("NewApi")
     @JvmStatic
-    private external fun recordGleanEvent(metricName: String)
-
-    @SuppressLint("Unused")
-    @JvmStatic
-    private external fun recordGleanEventWithExtraKeys(metricName: String, keysJSON: String)
+    fun initializeGlean(ctx: Context, isTelemetryEnabled: Boolean, channel: String) {
+        Glean.initialize(
+            applicationContext = ctx.applicationContext,
+            uploadEnabled = isTelemetryEnabled,
+            buildInfo = GleanBuildInfo.buildInfo,
+            configuration = Configuration(channel = channel)
+        )
+    }
 }

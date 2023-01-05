@@ -18,6 +18,9 @@
 #if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
 #  include "vpnglean.h"
 #endif
+#if defined(MZ_ANDROID) && not(defined(BUILD_QMAKE))
+#  include "platforms/android/androidutils.h"
+#endif
 #if defined(MZ_IOS) && not(defined(BUILD_QMAKE))
 #  include "platforms/ios/iosgleanbridge.h"
 #endif
@@ -92,6 +95,8 @@ void VPNGlean::initialize() {
     glean_test_reset_glean(uploadEnabled, dataPath.toLocal8Bit());
 #elif defined(MZ_IOS) && not(defined(BUILD_QMAKE))
     new IOSGleanBridge(uploadEnabled, appChannel);
+#elif defined(MZ_ANDROID) && not(defined(BUILD_QMAKE))
+    AndroidUtils::initializeGlean(uploadEnabled, appChannel);
 #elif not(defined(MZ_WASM) || defined(BUILD_QMAKE))
     glean_initialize(uploadEnabled, dataPath.toLocal8Bit(), appChannel);
 #endif

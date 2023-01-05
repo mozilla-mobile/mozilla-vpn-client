@@ -10,11 +10,12 @@ buildscript {
     ext{
         groupName = 'org.mozilla.firefox.vpn'
         try{
-            if(qtAndroidDir){
+            if (qtAndroidDir) {
                 print("Android Location for wg")
             }
+
             WG_TOOLS_DIR= "../../../../../3rdparty/wireguard-tools"
-        }catch(Exception ignored){
+        } catch (Exception ignored) {
             // This is checked from <proj>/android/daemon/tunnel
             WG_TOOLS_DIR= "../../../3rdparty/wireguard-tools"
 
@@ -29,14 +30,16 @@ buildscript {
 }
 
 plugins {
-    id "com.jetbrains.python.envs" version "0.0.26"
+    id "com.jetbrains.python.envs"
 }
-
 
 apply plugin: "com.android.library"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
 
+dependencies {
+    implementation project(path: ':vpnglean')
+}
 
 android {
     compileSdkVersion Config.compileSdkVersion
@@ -44,23 +47,25 @@ android {
     defaultConfig {
         minSdkVersion Config.minSdkVersion
         targetSdkVersion Config.targetSdkVersion
-        
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField  "String", "VERSIONCODE" ,  '"' +System.getenv("VERSIONCODE") + '"'
-        buildConfigField  "String", "SHORTVERSION" ,  '"' + System.getenv("SHORTVERSION") +  '"'
     }
+
     buildFeatures {
         buildConfig = true
     }
+
     sourceSets {
         main {
             res.srcDirs =  ["res"]
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = '1.8'
     }
@@ -70,6 +75,7 @@ android {
             path 'tunnel/CMakeLists.txt'
         }
     }
+
     buildTypes {
         debug {
             minifyEnabled false
@@ -81,6 +87,7 @@ android {
                 }
             }
         }
+
         release {
             minifyEnabled false
             externalNativeBuild {
@@ -92,12 +99,9 @@ android {
             }
         }
     }
-
-
 }
 
 dependencies {
-
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
@@ -105,16 +109,10 @@ dependencies {
     implementation SharedDependencies.androidx_core
     implementation "androidx.security:security-crypto:1.1.0-alpha03"
     implementation "androidx.security:security-identity-credential:1.0.0-alpha03"
-    implementation "org.mozilla.telemetry:glean:51.6.0"
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.6.20"
 }
 
 ext.gleanNamespace = "mozilla.telemetry.glean"
-try{
-    if(qtAndroidDir){}
-    // We're reunning gradle via qmake in .tmp/src/android-build
-    ext.gleanYamlFiles = ["$rootDir/../../../glean/metrics.yaml", "$rootDir/../../../glean/pings.yaml"]
-}catch(Exception ignored){
-    // We running gradle from /android
-    ext.gleanYamlFiles = ["$rootDir/../glean/metrics.yaml", "$rootDir/../glean/pings.yaml"]
-}
+// TODO: We should spin off the daemon telemetry into a self contained thing.
+// This is soft blocked by https://bugzilla.mozilla.org/show_bug.cgi?id=1807019
+ext.gleanYamlFiles = ["$rootDir/../../../glean/metrics.yaml"]

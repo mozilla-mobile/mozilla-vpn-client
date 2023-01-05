@@ -1,0 +1,11 @@
+# We need to override glean_core's uniffi config (3rdparty/glean/glean-core/uniffi.toml)
+# for kotlin only in order to provide uniffi with the correct cdylib_name. The glean_core
+# symbols are on the mozillavpn lib for us, that is what we need to give to uniffi.
+#
+# Due to the way Qt does things the final lib name has also an `_arm64-v8a`
+# suffix, so we have this template which will be used to generate the real thing
+# with the right suffix on pre-build.
+
+[bindings.kotlin]
+package_name = "mozilla.telemetry.glean.internal"
+cdylib_name = "mozillavpn_@ARCHITECTURE@"
