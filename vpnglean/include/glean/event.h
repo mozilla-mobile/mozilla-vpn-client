@@ -12,7 +12,7 @@
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
 #  include "vpnglean.h"
 #else
-enum ErrorType {}
+enum ErrorType {};
 #endif
 
 struct FfiExtra {
