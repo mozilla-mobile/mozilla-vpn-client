@@ -5,12 +5,12 @@
 #ifndef NETWORKREQUEST_H
 #define NETWORKREQUEST_H
 
+#include <QHostAddress>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QObject>
 #include <QTimer>
 
-class QHostAddress;
 class QNetworkAccessManager;
 #ifndef QT_NO_SSL
 class QSslCertificate;
