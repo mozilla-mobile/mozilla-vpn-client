@@ -49,11 +49,11 @@ void AndroidNotificationHandler::applyStrings() {
   QJsonObject localisedMessages;
   localisedMessages["productName"] = qtTrId("vpn.main.productName");
 
-localisedMessages["connectedText"] = L18nStrings::instance()->t(
-            L18nStrings::NotificationsVPNConnectedTitle);
+  localisedMessages["connectedText"] =
+      L18nStrings::instance()->t(L18nStrings::NotificationsVPNConnectedTitle);
 
   localisedMessages["disconnectedText"] = L18nStrings::instance()->t(
-            L18nStrings::NotificationsVPNDisconnectedTitle);
+      L18nStrings::NotificationsVPNDisconnectedTitle);
 
   localisedMessages["notification_group_name"] = L18nStrings::instance()->t(
       L18nStrings::AndroidNotificationsGeneralNotifications);
