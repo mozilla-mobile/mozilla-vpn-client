@@ -15,6 +15,8 @@ class UrlOpener final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(UrlOpener)
 
+  Q_PROPERTY(QString lastUrl READ lastUrl NOTIFY lastUrlChanged)
+
  public:
   static UrlOpener* instance();
   ~UrlOpener();
@@ -24,7 +26,10 @@ class UrlOpener final : public QObject {
   Q_INVOKABLE void openUrl(const QUrl& url);
 
   const QString& lastUrl() const { return m_lastUrl; }
-  void setLastUrl(const QString& url) { m_lastUrl = url; }
+  void setLastUrl(const QString& url) {
+    m_lastUrl = url;
+    emit lastUrlChanged();
+  }
 
   static QUrl replaceUrlParams(const QUrl& originalUrl);
 
@@ -41,6 +46,9 @@ class UrlOpener final : public QObject {
 
  private:
   explicit UrlOpener(QObject* parent);
+
+ signals:
+  void lastUrlChanged();
 
  private:
   QMap<QString, std::function<QString()>> m_urlLabels;
