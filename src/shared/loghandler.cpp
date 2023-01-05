@@ -92,7 +92,7 @@ void LogHandler::rustMessageHandler(int32_t logLevel, char* message) {
   MutexLocker lock(&s_mutex);
 
   maybeCreate(lock)->addLog(
-      Log(intToLogLevel(logLevel), QString::fromUtf8(message)), lock);
+      Log(intToLogLevel(logLevel), "Rust", QString::fromUtf8(message)), lock);
 }
 
 // static
