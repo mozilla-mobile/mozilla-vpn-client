@@ -62,7 +62,6 @@ QStringList TaskServerSelect::processData(const QByteArray& data) {
   QJsonObject obj = json.object();
   QStringList latlong = obj.value("lat_long").toString().split(',');
   if (latlong.count() != 2) {
-    // TODO: Fallback to random selection.
     logger.info() << "No GeoIP data returned in ipinfo lookup";
     return scm->pickRandom();
   }
