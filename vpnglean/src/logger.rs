@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use std::os::raw::c_char;
+use std::ffi::CString;
 
 use log::{Level, LevelFilter, Log, Metadata, Record};
 
@@ -41,7 +42,9 @@ impl Log for Logger {
             Level::Trace => 0,
         };
 
-        (self.message_handler)(log_level, record.args().to_string().as_ptr() as *mut c_char);
+        if let Ok(message) = CString::new(record.args().to_string()) {
+            (self.message_handler)(log_level, message.as_ptr() as *mut c_char);
+        }
     }
 
     fn flush(&self) {}
