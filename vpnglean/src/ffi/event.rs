@@ -7,6 +7,7 @@ use std::os::raw::c_char;
 
 use ffi_support::FfiStr;
 use glean::traits::EventRecordingError;
+use glean::ErrorType;
 
 use crate::ffi::helpers::{from_raw_string_array, FallibleToString, RawStringArray};
 use crate::metrics::__generated_metrics as metric_maps;
@@ -40,7 +41,7 @@ pub extern "C" fn glean_event_record(
 }
 
 #[no_mangle]
-pub extern "C" fn glean_event_test_get_num_recorded_errors(id: u32, error_type: i32) -> i32 {
+pub extern "C" fn glean_event_test_get_num_recorded_errors(id: u32, error_type: ErrorType) -> i32 {
     metric_maps::event_test_get_num_recorded_errors(
         id,
         glean::ErrorType::try_from(error_type).expect("Invalid error type."),

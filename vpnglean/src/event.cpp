@@ -91,8 +91,7 @@ void EventMetric::record(const EventMetricExtra& extras) {
 
 int32_t EventMetric::testGetNumRecordedErrors(ErrorType errorType) const {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
-  return glean_event_test_get_num_recorded_errors(
-      m_id, static_cast<int32_t>(errorType));
+  return glean_event_test_get_num_recorded_errors(m_id, errorType);
 #else
   return 0;
 #endif
