@@ -215,6 +215,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/user.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/mozillavpn.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/mozillavpn.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/networkmanager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/networkmanager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/networkrequest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/networkrequest.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/networkwatcher.cpp
@@ -244,6 +246,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/purchaseiaphandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/purchasewebhandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/purchasewebhandler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/qmlengineholder.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/qmlengineholder.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/releasemonitor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/releasemonitor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/serveri18n.cpp
@@ -252,6 +256,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/serverlatency.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/signature.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/signature.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/simplenetworkmanager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/simplenetworkmanager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/statusicon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/statusicon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/account/taskaccount.cpp

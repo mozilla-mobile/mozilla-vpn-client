@@ -158,6 +158,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/models/user.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/user.h
     ${MZ_SOURCE_DIR}/apps/vpn/mozillavpn.h
+    ${MZ_SOURCE_DIR}/apps/vpn/networkmanager.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/networkmanager.h
     ${MZ_SOURCE_DIR}/apps/vpn/networkrequest.h
     ${MZ_SOURCE_DIR}/apps/vpn/networkwatcher.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/networkwatcher.h
@@ -173,12 +175,16 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/platforms/dummy/dummynetworkwatcher.h
     ${MZ_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.h
+    ${MZ_SOURCE_DIR}/apps/vpn/qmlengineholder.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/qmlengineholder.h
     ${MZ_SOURCE_DIR}/apps/vpn/releasemonitor.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/releasemonitor.h
     ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.h
     ${MZ_SOURCE_DIR}/apps/vpn/signature.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/signature.h
+    ${MZ_SOURCE_DIR}/apps/vpn/simplenetworkmanager.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/simplenetworkmanager.h
     ${MZ_SOURCE_DIR}/apps/vpn/statusicon.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/statusicon.h
     ${MZ_SOURCE_DIR}/apps/vpn/systemtraynotificationhandler.h
@@ -245,12 +251,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/logger.h
     ${MZ_SOURCE_DIR}/shared/loghandler.cpp
     ${MZ_SOURCE_DIR}/shared/loghandler.h
-    ${MZ_SOURCE_DIR}/shared/networkmanager.cpp
-    ${MZ_SOURCE_DIR}/shared/networkmanager.h
     ${MZ_SOURCE_DIR}/shared/platforms/wasm/wasmcryptosettings.cpp
     ${MZ_SOURCE_DIR}/shared/qmlpath.cpp
-    ${MZ_SOURCE_DIR}/shared/qmlengineholder.cpp
-    ${MZ_SOURCE_DIR}/shared/qmlengineholder.h
     ${MZ_SOURCE_DIR}/shared/qmlpath.h
     ${MZ_SOURCE_DIR}/shared/rfc/rfc1918.cpp
     ${MZ_SOURCE_DIR}/shared/rfc/rfc1918.h
@@ -262,8 +264,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/rfc/rfc5735.h
     ${MZ_SOURCE_DIR}/shared/settingsholder.cpp
     ${MZ_SOURCE_DIR}/shared/settingsholder.h
-    ${MZ_SOURCE_DIR}/shared/simplenetworkmanager.cpp
-    ${MZ_SOURCE_DIR}/shared/simplenetworkmanager.h
     ${MZ_SOURCE_DIR}/shared/task.h
     ${MZ_SOURCE_DIR}/shared/taskscheduler.cpp
     ${MZ_SOURCE_DIR}/shared/taskscheduler.h
