@@ -74,6 +74,7 @@ class Controller final : public QObject {
 
   qint64 time() const;
 
+  bool switchServers();
   bool silentSwitchServers();
 
   void updateRequired();
