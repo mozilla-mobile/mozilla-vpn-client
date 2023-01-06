@@ -264,6 +264,8 @@ bool SettingsHolder::beginTransaction() {
 
   m_settingsJournal =
       new QSettings(m_settingsJournalFileName, m_settings.format(), this);
+
+  emit transactionBegan();
   return true;
 }
 
@@ -281,6 +283,8 @@ bool SettingsHolder::rollbackTransaction() {
     logger.warning() << "We are not in a transaction";
     return false;
   }
+
+  emit transactionAboutToRollBack();
 
   QMap<QString, QPair<const char*, QVariant>> transactionChanges(
       m_transactionChanges);

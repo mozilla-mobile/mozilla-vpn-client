@@ -130,6 +130,17 @@ void Controller::initialize() {
     logger.info() << "Canary Ping Succeeded";
   });
 
+  connect(SettingsHolder::instance(), &SettingsHolder::transactionBegan, this,
+          [this]() { m_connectedBeforeTransaction = m_state == StateOn; });
+
+  connect(SettingsHolder::instance(),
+          &SettingsHolder::transactionAboutToRollBack, this, [this]() {
+            if (m_connectedBeforeTransaction)
+              MozillaVPN::instance()->activate();
+            else
+              MozillaVPN::instance()->deactivate();
+          });
+
   MozillaVPN* vpn = MozillaVPN::instance();
 
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
