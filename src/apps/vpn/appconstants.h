@@ -19,6 +19,9 @@ constexpr const char* SETTINGS_APP_NAME = "vpn";
 // The prefix for the user-agent requests
 constexpr const char* NETWORK_USERAGENT_PREFIX = "MozillaVPN";
 
+// The file name for the logging
+constexpr const char* LOG_FILE_NAME = "mozillavpn.txt";
+
 // Number of msecs for the captive-portal block alert.
 constexpr uint32_t CAPTIVE_PORTAL_ALERT_MSEC = 4000;
 
