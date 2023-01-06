@@ -58,7 +58,6 @@
 namespace {
 Logger logger("InspectorHandler");
 
-bool s_stealUrls = false;
 bool s_forwardNetwork = false;
 bool s_mockFreeTrial = false;
 bool s_forceRTL = false;
@@ -326,7 +325,7 @@ static QList<InspectorCommand> s_commands{
         "stealurls",
         "Do not open the URLs in browser and expose them via inspector", 0,
         [](InspectorHandler*, const QList<QByteArray>&) {
-          s_stealUrls = true;
+          UrlOpener::instance()->setStealUrls();
           return QJsonObject();
         }},
     InspectorCommand{"mockFreeTrial",
@@ -976,9 +975,6 @@ QString InspectorHandler::getObjectClass(const QObject* target) {
   auto metaObject = target->metaObject();
   return metaObject->className();
 }
-
-// static
-bool InspectorHandler::stealUrls() { return s_stealUrls; }
 
 // static
 bool InspectorHandler::mockFreeTrial() { return s_mockFreeTrial; }

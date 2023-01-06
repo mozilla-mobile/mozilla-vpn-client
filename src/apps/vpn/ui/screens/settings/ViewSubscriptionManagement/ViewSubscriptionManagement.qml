@@ -37,9 +37,9 @@ VPNViewBase {
 
             _iconSource: "qrc:/nebula/resources/open-in-new.svg"
             _buttonOnClicked: () => {
-                VPN.recordGleanEvent("manageAccountClicked");
+                VPNGleanDeprecated.recordGleanEvent("manageAccountClicked");
                 Glean.sample.manageAccountClicked.record();
-                VPNUrlOpener.openLink(VPNUrlOpener.LinkAccount);
+                VPNUrlOpener.openUrlLabel("account");
             }
         }
 
@@ -112,8 +112,7 @@ VPNViewBase {
                 visible: VPNFeatureList.get("accountDeletion").isSupported
 
                 onClicked: {
-                    VPN.recordGleanEvent("deleteAccountRequested");
-                    Glean.sample.deleteAccountRequested.record();
+                    VPNGleanDeprecated.recordGleanEvent("deleteAccountRequested");
                     VPNNavigator.requestScreen(VPNNavigator.ScreenDeleteAccount)
                 }
 
@@ -126,19 +125,19 @@ VPNViewBase {
     function handleManageAccountClicked() {
         switch(VPNSubscriptionData.type) {
             case VPNSubscriptionData.SubscriptionWeb:
-                VPNUrlOpener.openLink(VPNUrlOpener.LinkSubscriptionFxa);
+                VPNUrlOpener.openUrlLabel("subscriptionFxa");
                 break;
             case VPNSubscriptionData.SubscriptionGoogle:
-                VPNUrlOpener.openLink(VPNUrlOpener.LinkSubscriptionIapGoogle);
+                VPNUrlOpener.openUrlLabel("subscriptionIapGoogle");
                 break;
             case VPNSubscriptionData.SubscriptionApple:
-                VPNUrlOpener.openLink(VPNUrlOpener.LinkSubscriptionIapApple);
+                VPNUrlOpener.openUrlLabel("subscriptionIapApple");
                 break;
             default:
-                VPNUrlOpener.openLink(VPNUrlOpener.LinkAccount);
+                VPNUrlOpener.openUrlLabel("account");
         }
 
-        VPN.recordGleanEvent("manageSubscriptionClicked");
+        VPNGleanDeprecated.recordGleanEvent("manageSubscriptionClicked");
         Glean.sample.manageSubscriptionClicked.record();
     }
 

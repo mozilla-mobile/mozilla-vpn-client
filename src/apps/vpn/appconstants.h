@@ -16,6 +16,9 @@ void setStaging();
 // This is used by SettingsHolder to configure the QSetting file.
 constexpr const char* SETTINGS_APP_NAME = "vpn";
 
+// The prefix for the user-agent requests
+constexpr const char* NETWORK_USERAGENT_PREFIX = "MozillaVPN";
+
 // Number of msecs for the captive-portal block alert.
 constexpr uint32_t CAPTIVE_PORTAL_ALERT_MSEC = 4000;
 
@@ -118,13 +121,6 @@ PRODBETAEXPR(QString, addonBaseUrl,
 PRODBETAEXPR(
     const char*, benchmarkUploadUrl, "https://benchmark.vpn.mozilla.org/upload",
     "https://dev.vpn-network-benchmark.nonprod.webservices.mozgcp.net/upload");
-
-PRODBETAEXPR(QString, fxaApiBaseUrl, "https://api.accounts.firefox.com",
-             Constants::envOrDefault("MVPN_FXA_API_BASE_URL",
-                                     "https://api-accounts.stage.mozaws.net"))
-
-PRODBETAEXPR(const char*, fxaUrl, "https://accounts.firefox.com",
-             "https://accounts.stage.mozaws.net")
 
 PRODBETAEXPR(
     const char*, balrogUrl,
