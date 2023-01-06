@@ -21,9 +21,7 @@ TaskControllerAction::TaskControllerAction(
       m_lastState(Controller::State::StateOff) {
   MZ_COUNT_CTOR(TaskControllerAction);
 
-  logger.debug() << "TaskControllerAction created for"
-                 << (action == eActivate ? "activation" : "deactivation");
-
+  logger.debug() << "TaskControllerAction created" << action;
   connect(&m_timer, &QTimer::timeout, this, &TaskControllerAction::checkStatus);
 }
 
@@ -39,10 +37,10 @@ void TaskControllerAction::run() {
 
   if (m_action == eSilentSwitch) {
     connect(controller, &Controller::silentSwitchDone, this,
-            &TaskControllerAction::silentSwitchDone);
+            &TaskControllerAction::silentSwitchDone, Qt::QueuedConnection);
   } else {
     connect(controller, &Controller::stateChanged, this,
-            &TaskControllerAction::stateChanged);
+            &TaskControllerAction::stateChanged, Qt::QueuedConnection);
   }
 
   bool expectSignal = false;
@@ -60,6 +58,10 @@ void TaskControllerAction::run() {
 
     case eSilentSwitch:
       expectSignal = controller->silentSwitchServers();
+      break;
+
+    case eSwitch:
+      expectSignal = controller->switchServers();
       break;
   }
 
@@ -84,7 +86,8 @@ void TaskControllerAction::stateChanged() {
   Q_ASSERT(controller);
 
   Controller::State state = controller->state();
-  if ((m_action == eActivate && state == Controller::StateOn) ||
+  if (((m_action == eActivate || m_action == eSwitch) &&
+       state == Controller::StateOn) ||
       (m_action == eDeactivate && state == Controller::StateOff)) {
     logger.debug() << "Operation completed";
     m_timer.stop();

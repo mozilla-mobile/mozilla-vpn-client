@@ -19,7 +19,9 @@
 #include "rfc/rfc4291.h"
 #include "serveri18n.h"
 #include "settingsholder.h"
+#include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/heartbeat/taskheartbeat.h"
+#include "taskscheduler.h"
 
 #if defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
@@ -775,6 +777,17 @@ void Controller::serverDataChanged() {
     return;
   }
 
+  TaskScheduler::deleteTasks();
+  TaskScheduler::scheduleTask(
+      new TaskControllerAction(TaskControllerAction::eSwitch));
+}
+
+bool Controller::switchServers() {
+  if (m_state == StateOff) {
+    logger.debug() << "Server data changed but we are off";
+    return false;
+  }
+
   clearConnectedTime();
   clearRetryCounter();
 
@@ -782,4 +795,6 @@ void Controller::serverDataChanged() {
 
   setState(StateSwitching);
   deactivate();
+
+  return true;
 }
