@@ -93,7 +93,7 @@ VPNFlickable {
                         VPNConnectionInfoItem {
                             id: entryServerLabel
                             title: serverLocations.isMultipHop
-                                ? VPNServerCountryModel.getLocalizedCountryName(VPNCurrentServer.entryCountryCode)
+                                ? VPNCurrentServer.localizedEntryCityName
                                 : ""
                             subtitle: ""
                             iconPath: serverLocations.isMultipHop
@@ -119,9 +119,7 @@ VPNFlickable {
                         }
 
                         VPNConnectionInfoItem {
-                            title: VPNServerCountryModel.getLocalizedCountryName(
-                                VPNCurrentServer.exitCountryCode
-                            )
+                            title: VPNCurrentServer.localizedExitCityName
                             subtitle: serverLocations.isMultipHop
                                 ? ""
                                 : VPNCurrentServer.localizedExitCityName
