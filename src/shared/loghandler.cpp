@@ -45,23 +45,6 @@ LogLevel qtTypeToLogLevel(QtMsgType type) {
   }
 }
 
-// This is based on values set from vpnglean/src/logger.rs
-LogLevel intToLogLevel(uint8_t type) {
-  switch (type) {
-    case 0:
-      return Trace;
-    case 1:
-      return Debug;
-    case 2:
-      return Info;
-    case 3:
-      return Warning;
-    case 4:
-      return Error;
-    default:
-      return Debug;
-  }
-}
 }  // namespace
 
 // static
@@ -92,7 +75,8 @@ void LogHandler::rustMessageHandler(int32_t logLevel, char* message) {
   MutexLocker lock(&s_mutex);
 
   maybeCreate(lock)->addLog(
-      Log(intToLogLevel(logLevel), "Rust", QString::fromUtf8(message)), lock);
+      Log(static_cast<LogLevel>(logLevel), "Rust", QString::fromUtf8(message)),
+      lock);
 }
 
 // static

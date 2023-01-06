@@ -6,7 +6,7 @@
 #define LOGLEVEL_H
 
 enum LogLevel {
-  Trace,
+  Trace = 0,
   Debug,
   Info,
   Warning,
