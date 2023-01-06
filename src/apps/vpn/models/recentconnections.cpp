@@ -97,6 +97,10 @@ bool RecentConnections::migrate() {
 void RecentConnections::serverChanged() {
   ServerData* sd = MozillaVPN::instance()->currentServer();
 
+  if (!sd->hasServerData()) {
+    return;
+  }
+
   RecentConnection newRecentConnection{
       sd->entryCityName(), sd->entryCountryCode(), sd->exitCityName(),
       sd->exitCountryCode()};

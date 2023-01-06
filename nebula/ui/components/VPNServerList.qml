@@ -68,6 +68,14 @@ FocusScope {
         });
     }
 
+    function clearSelectedServer() {
+        if (currentServer.whichHop === "singleHopServer") {
+            VPNCurrentServer.changeServer("", "");
+            stackview.pop();
+            return;
+        }
+    }
+
     function setSelectedServer(countryCode, cityName, localizedCityName) {
         if (currentServer.whichHop === "singleHopServer") {
             VPNCurrentServer.changeServer(countryCode, cityName);
@@ -366,6 +374,23 @@ FocusScope {
                     height: showRecentConnections ? implicitHeight : 0
                     showMultiHopRecentConnections: false
                     visible: showRecentConnections && searchBar.getSearchBarText().length === 0
+                }
+
+                VPNRadioDelegate {
+                    id: autoServerSelect
+                    anchors {
+                        left: parent.left
+                        leftMargin: VPNTheme.theme.windowMargin
+                        right: parent.right
+                        rightMargin: VPNTheme.theme.windowMargin * 0.5
+                    }
+                    visible: currentServer.whichHop === "singleHopServer";
+
+                    radioButtonLabelText: "Automatic"
+                    checked: VPNCurrentServer.exitCountryCode === "" || VPNCurrentServer.exitCityName === ""
+                    onClicked: {
+                        focusScope.clearSelectedServer();
+                    }
                 }
 
                 Repeater {
