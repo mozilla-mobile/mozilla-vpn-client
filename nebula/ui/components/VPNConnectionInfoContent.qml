@@ -107,6 +107,7 @@ VPNFlickable {
 
                         VPNIcon {
                             id: arrowIcon
+                            anchors.horizontalCenter: parent.horizontalCenter
                             source: "qrc:/nebula/resources/arrow-forward-white.svg"
                             sourceSize {
                                 height: VPNTheme.theme.iconSize * 1.25
