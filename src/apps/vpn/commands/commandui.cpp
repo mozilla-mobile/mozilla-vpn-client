@@ -25,7 +25,6 @@
 // Relative path is required here,
 // otherwise this gets confused with the Glean.js implementation
 #include "../glean/glean.h"
-#include "gleandeprecated.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
 #include "keyregenerator.h"
@@ -249,7 +248,7 @@ int CommandUI::run(QStringList& tokens) {
               ._state =
                   QVariant::fromValue(Updater::ApplicationRestartedAfterUpdate)
                       .toString()});
-      emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
+      emit vpn.recordGleanEventWithExtraKeys(
           GleanSample::updateStep,
           {{"state",
             QVariant::fromValue(Updater::ApplicationRestartedAfterUpdate)
@@ -299,14 +298,6 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNFeatureList",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = FeatureModel::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNGleanDeprecated",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = GleanDeprecated::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

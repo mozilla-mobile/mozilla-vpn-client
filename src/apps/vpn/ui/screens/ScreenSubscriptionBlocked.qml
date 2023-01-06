@@ -36,7 +36,7 @@ VPNStackView {
             getHelpLinkVisible: false
             }
         );
-        VPNGleanDeprecated.recordGleanEvent("subscriptionBlockedViewed");
+        VPN.recordGleanEvent("subscriptionBlockedViewed");
         Glean.sample.subscriptionBlockedViewed.record();
     }
 }

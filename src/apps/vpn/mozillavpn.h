@@ -10,6 +10,7 @@
 #include <QObject>
 #include <QStandardPaths>
 #include <QTimer>
+#include <QVariant>
 
 #include "captiveportal/captiveportal.h"
 #include "captiveportal/captiveportaldetection.h"
@@ -315,6 +316,9 @@ class MozillaVPN final : public QObject {
   // For Glean
   void initializeGlean();
   void sendGleanPings();
+  void recordGleanEvent(const QString& gleanSampleName);
+  void recordGleanEventWithExtraKeys(const QString& gleanSampleName,
+                                     const QVariantMap& extraKeys);
   void setGleanSourceTags(const QStringList& tags);
 
   void aboutToQuit();

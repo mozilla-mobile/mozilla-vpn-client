@@ -369,7 +369,7 @@ Item {
         }
 
         function recordGleanEvtAndStartAuth(ctaObjectName) {
-            VPNGleanDeprecated.recordGleanEventWithExtraKeys("onboardingCtaClick",{
+            VPN.recordGleanEventWithExtraKeys("onboardingCtaClick",{
                                               "panel_id": currentPanelValues._panelId,
                                               "panel_idx": swipeView.currentIndex.toString(),
                                               "panel_cta": ctaObjectName

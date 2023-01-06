@@ -37,7 +37,7 @@ VPNViewBase {
 
             _iconSource: "qrc:/nebula/resources/open-in-new.svg"
             _buttonOnClicked: () => {
-                VPNGleanDeprecated.recordGleanEvent("manageAccountClicked");
+                VPN.recordGleanEvent("manageAccountClicked");
                 Glean.sample.manageAccountClicked.record();
                 VPNUrlOpener.openUrlLabel("account");
             }
@@ -112,7 +112,8 @@ VPNViewBase {
                 visible: VPNFeatureList.get("accountDeletion").isSupported
 
                 onClicked: {
-                    VPNGleanDeprecated.recordGleanEvent("deleteAccountRequested");
+                    VPN.recordGleanEvent("deleteAccountRequested");
+                    Glean.sample.deleteAccountRequested.record();
                     VPNNavigator.requestScreen(VPNNavigator.ScreenDeleteAccount)
                 }
 
@@ -137,7 +138,7 @@ VPNViewBase {
                 VPNUrlOpener.openUrlLabel("account");
         }
 
-        VPNGleanDeprecated.recordGleanEvent("manageSubscriptionClicked");
+        VPN.recordGleanEvent("manageSubscriptionClicked");
         Glean.sample.manageSubscriptionClicked.record();
     }
 
