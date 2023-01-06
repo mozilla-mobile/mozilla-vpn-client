@@ -70,6 +70,15 @@ void LogHandler::messageHandler(LogLevel logLevel, const QString& className,
 }
 
 // static
+void LogHandler::rustMessageHandler(int32_t logLevel, char* message) {
+  MutexLocker lock(&s_mutex);
+
+  maybeCreate(lock)->addLog(
+      Log(static_cast<LogLevel>(logLevel), "Rust", QString::fromUtf8(message)),
+      lock);
+}
+
+// static
 LogHandler* LogHandler::maybeCreate(const MutexLocker& proofOfLock) {
   if (!s_instance) {
     s_instance = new LogHandler(proofOfLock);
@@ -83,6 +92,9 @@ void LogHandler::prettyOutput(QTextStream& out, const LogHandler::Log& log) {
   out << "[" << log.m_dateTime.toString("dd.MM.yyyy hh:mm:ss.zzz") << "] ";
 
   switch (log.m_logLevel) {
+    case Trace:
+      out << "Trace: ";
+      break;
     case Debug:
       out << "Debug: ";
       break;

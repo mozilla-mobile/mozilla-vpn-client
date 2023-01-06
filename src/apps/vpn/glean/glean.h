@@ -21,6 +21,8 @@ class VPNGlean final : public QObject {
  public:
   ~VPNGlean();
 
+  static void registerLogHandler(void (*messageHandler)(int32_t, char*));
+
   static void initialize();
   static void shutdown();
 
