@@ -137,8 +137,6 @@ describe('Server list', function() {
 
     await vpn.waitForQueryAndClick(
         queries.screenHome.serverListView.BACK_BUTTON.visible());
-    await vpn.waitForQueryAndClick(
-        queries.screenHome.SERVER_LIST_BUTTON.visible());
 
     await vpn.activate();
 
