@@ -264,6 +264,7 @@ bool SettingsHolder::beginTransaction() {
 
   m_settingsJournal =
       new QSettings(m_settingsJournalFileName, m_settings.format(), this);
+  emit transactionBegan();
   return true;
 }
 
