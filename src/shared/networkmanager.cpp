@@ -4,7 +4,7 @@
 
 #include "networkmanager.h"
 
-#include "constants.h"
+#include "appconstants.h"
 #include "leakdetector.h"
 
 #if MZ_WINDOWS
@@ -69,13 +69,9 @@ QByteArray NetworkManager::userAgent() {
     flags.append(QString("sys:") + NetworkManager::osVersion());
     flags.append("iap:true");
 
-#ifdef MVPN_EXTRA_USERAGENT
-    flags.append(MVPN_EXTRA_USERAGENT);
-#endif
-
     QTextStream out(&userAgent);
-    out << "MozillaVPN/" << Constants::versionString() << " ("
-        << flags.join("; ") << ")";
+    out << AppConstants::NETWORK_USERAGENT_PREFIX << "/"
+        << Constants::versionString() << " (" << flags.join("; ") << ")";
   }
 
   return userAgent;

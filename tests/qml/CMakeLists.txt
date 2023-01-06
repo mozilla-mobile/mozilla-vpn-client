@@ -52,8 +52,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/models/subscriptiondata.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/subscriptiondata.h
     ${MZ_SOURCE_DIR}/apps/vpn/mozillavpn.h
-    ${MZ_SOURCE_DIR}/apps/vpn/networkmanager.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/networkmanager.h
     ${MZ_SOURCE_DIR}/apps/vpn/networkrequest.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/networkrequest.h
     ${MZ_SOURCE_DIR}/apps/vpn/theme.cpp
@@ -72,8 +70,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/update/versionapi.h
     ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.h
-    ${MZ_SOURCE_DIR}/apps/vpn/qmlengineholder.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/qmlengineholder.h
     ${MZ_SOURCE_DIR}/shared/constants.h
     ${MZ_SOURCE_DIR}/shared/cryptosettings.cpp
     ${MZ_SOURCE_DIR}/shared/cryptosettings.h
@@ -96,7 +92,11 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/logger.h
     ${MZ_SOURCE_DIR}/shared/loghandler.cpp
     ${MZ_SOURCE_DIR}/shared/loghandler.h
+    ${MZ_SOURCE_DIR}/shared/networkmanager.cpp
+    ${MZ_SOURCE_DIR}/shared/networkmanager.h
     ${MZ_SOURCE_DIR}/shared/platforms/wasm/wasmcryptosettings.cpp
+    ${MZ_SOURCE_DIR}/shared/qmlengineholder.cpp
+    ${MZ_SOURCE_DIR}/shared/qmlengineholder.h
     ${MZ_SOURCE_DIR}/shared/settingsholder.cpp
     ${MZ_SOURCE_DIR}/shared/settingsholder.h
     ${MZ_SOURCE_DIR}/shared/urlopener.cpp
