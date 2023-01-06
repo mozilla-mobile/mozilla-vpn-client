@@ -1713,8 +1713,7 @@ void MozillaVPN::registerUrlOpenerLabels() {
   });
 
   uo->registerUrlLabel("subscriptionFxa", []() -> QString {
-    return QString("%1/subscriptions")
-        .arg(AppConstants::APPLE_SUBSCRIPTIONS_URL);
+    return QString("%1/subscriptions").arg(Constants::fxaUrl());
   });
 
   uo->registerUrlLabel(
