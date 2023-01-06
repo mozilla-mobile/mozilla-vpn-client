@@ -91,7 +91,7 @@ VPNViewBase {
                     //% "Mozilla VPN Privacy Notice"
                     labelText: qsTrId("vpn.feedbackForm.privacyNoticeLink")
                     Layout.alignment: Qt.AlignHCenter
-                    onClicked: VPNUrlOpener.openUrlLabel("privacyNotice")
+                    onClicked: VPNUrlOpener.openLink(VPNUrlOpener.LinkPrivacyNotice)
                     width: parent.width
                 }
             }

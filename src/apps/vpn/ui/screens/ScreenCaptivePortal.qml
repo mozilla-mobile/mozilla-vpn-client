@@ -89,7 +89,7 @@ VPNFlickable {
             radius: 4
             onClicked: {
                 if(vpnFlickable.state === "pre-activation"){
-                    VPNUrlOpener.openUrlLabel("captivePortal");
+                    VPNUrlOpener.openLink(VPNUrlOpener.LinkCaptivePortal);
                 }
                 if(vpnFlickable.state === "post-activation"){
                     VPNCaptivePortal.deactivationRequired();

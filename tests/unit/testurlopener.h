@@ -10,6 +10,4 @@ class TestUrlOpener : public TestHelper {
  private slots:
   void urlQueryReplacement_data();
   void urlQueryReplacement();
-
-  void urlLabel();
 };

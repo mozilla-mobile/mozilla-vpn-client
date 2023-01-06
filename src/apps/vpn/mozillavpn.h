@@ -302,8 +302,6 @@ class MozillaVPN final : public QObject {
 
   void scheduleRefreshDataTasks(bool refreshProducts);
 
-  static void registerUrlOpenerLabels();
-
  signals:
   void stateChanged();
   void userStateChanged();

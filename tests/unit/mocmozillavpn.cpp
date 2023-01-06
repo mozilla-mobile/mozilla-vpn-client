@@ -174,5 +174,3 @@ bool MozillaVPN::checkCurrentDevice() { return true; }
 void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {}
 
 QString MozillaVPN::placeholderUserDNS() const { return ""; }
-
-void MozillaVPN::registerUrlOpenerLabels() {}

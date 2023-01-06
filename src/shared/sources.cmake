@@ -62,8 +62,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/taskscheduler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/temporarydir.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/temporarydir.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/urlopener.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/urlopener.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/versionutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/versionutils.h
 )

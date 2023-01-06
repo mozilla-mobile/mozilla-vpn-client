@@ -29,15 +29,5 @@
 #define SETTING_STRINGLIST(getter, ...) \
   SETTING(QStringList, toStringList, getter, __VA_ARGS__)
 
-SETTING_STRING(userEmail,        // getter
-               setUserEmail,     // setter
-               removeUserEmail,  // remover
-               hasUserEmail,     // has
-               "user/email",     // key
-               "",               // default value
-               false,            // user setting
-               true              // remove when reset
-)
-
 // The app must implement its settings list file.
 #include "appsettingslist.h"

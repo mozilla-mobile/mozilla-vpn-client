@@ -68,5 +68,5 @@ void DesktopAuthenticationListener::start(Task* task,
   query.addQueryItem("port", QString::number(m_server->port()));
   url.setQuery(query);
 
-  UrlOpener::instance()->openUrl(url);
+  UrlOpener::instance()->open(url.toString());
 }

@@ -37,7 +37,7 @@ VPNViewBase {
                     } else {
                         VPN.recordGleanEvent("manageAccountClicked");
                         Glean.sample.manageAccountClicked.record();
-                        VPNUrlOpener.openUrlLabel("account");
+                        VPNUrlOpener.openLink(VPNUrlOpener.LinkAccount);
                     }
                 }
                 _loaderVisible: VPNProfileFlow.state === VPNProfileFlow.StateLoading

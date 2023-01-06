@@ -44,18 +44,6 @@ constexpr const char* PLATFORM_NAME =
 #endif
     ;
 
-#define PRODBETAEXPR(type, functionName, prod, beta) \
-  inline type functionName() { return Constants::inProduction() ? prod : beta; }
-
-PRODBETAEXPR(const char*, fxaUrl, "https://accounts.firefox.com",
-             "https://accounts.stage.mozaws.net")
-
-PRODBETAEXPR(QString, fxaApiBaseUrl, "https://api.accounts.firefox.com",
-             Constants::envOrDefault("MZ_FXA_API_BASE_URL",
-                                     "https://api-accounts.stage.mozaws.net"))
-
-#undef PRODBETAEXPR
-
 };  // namespace Constants
 
 #endif  // CONSTANTS_H

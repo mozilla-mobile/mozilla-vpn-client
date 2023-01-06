@@ -19,6 +19,7 @@ class InspectorHandler : public QObject {
  public:
   static void initialize();
 
+  static bool stealUrls();
   static bool mockFreeTrial();
   static bool forceRTL();
   static QString appVersionForUpdate();

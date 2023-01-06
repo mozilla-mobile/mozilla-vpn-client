@@ -39,7 +39,7 @@ VPNViewBase {
             _buttonOnClicked: () => {
                 VPN.recordGleanEvent("manageAccountClicked");
                 Glean.sample.manageAccountClicked.record();
-                VPNUrlOpener.openUrlLabel("account");
+                VPNUrlOpener.openLink(VPNUrlOpener.LinkAccount);
             }
         }
 
@@ -126,16 +126,16 @@ VPNViewBase {
     function handleManageAccountClicked() {
         switch(VPNSubscriptionData.type) {
             case VPNSubscriptionData.SubscriptionWeb:
-                VPNUrlOpener.openUrlLabel("subscriptionFxa");
+                VPNUrlOpener.openLink(VPNUrlOpener.LinkSubscriptionFxa);
                 break;
             case VPNSubscriptionData.SubscriptionGoogle:
-                VPNUrlOpener.openUrlLabel("subscriptionIapGoogle");
+                VPNUrlOpener.openLink(VPNUrlOpener.LinkSubscriptionIapGoogle);
                 break;
             case VPNSubscriptionData.SubscriptionApple:
-                VPNUrlOpener.openUrlLabel("subscriptionIapApple");
+                VPNUrlOpener.openLink(VPNUrlOpener.LinkSubscriptionIapApple);
                 break;
             default:
-                VPNUrlOpener.openUrlLabel("account");
+                VPNUrlOpener.openLink(VPNUrlOpener.LinkAccount);
         }
 
         VPN.recordGleanEvent("manageSubscriptionClicked");
