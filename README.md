@@ -166,6 +166,7 @@ what we wrote before, you also need the following dependencies:
 - resolvconf >= 1.82
 - golang >= 1.13
 - cmake >= 3.16
+- libsecret-1-dev
 
 2. **Optional**: In case you want to change the shaders, you must regenerate
 them:
@@ -403,7 +404,7 @@ Some variables that might be useful when configuring the project:
 for iOS devices, or select any of the simulation targets when building for the simulator.
 
 6. Click on the Play button to start building and signing of the Mozilla VPN app. (If this step
-results in an error, ensure the app was built with Qt 6.3.2. If it was not, the build folder must 
+results in an error, ensure the app was built with Qt 6.3.2. If it was not, the build folder must
 be completely deleted and the app must be re-built.)
 
 ### How to build from source code for Android
