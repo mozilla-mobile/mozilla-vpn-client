@@ -8,7 +8,6 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${MZ_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR}/apps/vpn)
 include_directories(${MZ_SOURCE_DIR}/shared)
-include_directories(${MZ_SOURCE_DIR}/shared/glean)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star/kremlin)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star/kremlin/minimal)
@@ -64,6 +63,8 @@ target_sources(auth_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/models/subscriptiondata.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/subscriptiondata.h
     ${MZ_SOURCE_DIR}/apps/vpn/mozillavpn.h
+    ${MZ_SOURCE_DIR}/apps/vpn/networkmanager.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/networkmanager.h
     ${MZ_SOURCE_DIR}/apps/vpn/networkrequest.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/networkrequest.h
     ${MZ_SOURCE_DIR}/apps/vpn/pinghelper.cpp
@@ -74,6 +75,8 @@ target_sources(auth_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/pingsenderfactory.h
     ${MZ_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.h
+    ${MZ_SOURCE_DIR}/apps/vpn/simplenetworkmanager.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/simplenetworkmanager.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/authenticate/desktopauthenticationlistener.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/authenticate/desktopauthenticationlistener.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/authenticate/taskauthenticate.cpp
@@ -88,6 +91,8 @@ target_sources(auth_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/update/versionapi.h
     ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.h
+    ${MZ_SOURCE_DIR}/apps/vpn/urlopener.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/urlopener.h
     ${MZ_SOURCE_DIR}/shared/constants.cpp
     ${MZ_SOURCE_DIR}/shared/constants.h
     ${MZ_SOURCE_DIR}/shared/cryptosettings.cpp
@@ -95,8 +100,6 @@ target_sources(auth_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/env.h
     ${MZ_SOURCE_DIR}/shared/feature.cpp
     ${MZ_SOURCE_DIR}/shared/feature.h
-    ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.cpp
-    ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.h
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20Poly1305_32.c
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Curve25519_51.c
@@ -113,8 +116,6 @@ target_sources(auth_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/logger.h
     ${MZ_SOURCE_DIR}/shared/loghandler.cpp
     ${MZ_SOURCE_DIR}/shared/loghandler.h
-    ${MZ_SOURCE_DIR}/shared/networkmanager.cpp
-    ${MZ_SOURCE_DIR}/shared/networkmanager.h
     ${MZ_SOURCE_DIR}/shared/platforms/wasm/wasmcryptosettings.cpp
     ${MZ_SOURCE_DIR}/shared/rfc/rfc1918.cpp
     ${MZ_SOURCE_DIR}/shared/rfc/rfc1918.h
@@ -126,13 +127,9 @@ target_sources(auth_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/rfc/rfc5735.h
     ${MZ_SOURCE_DIR}/shared/settingsholder.cpp
     ${MZ_SOURCE_DIR}/shared/settingsholder.h
-    ${MZ_SOURCE_DIR}/shared/simplenetworkmanager.cpp
-    ${MZ_SOURCE_DIR}/shared/simplenetworkmanager.h
     ${MZ_SOURCE_DIR}/shared/task.h
     ${MZ_SOURCE_DIR}/shared/taskscheduler.cpp
     ${MZ_SOURCE_DIR}/shared/taskscheduler.h
-    ${MZ_SOURCE_DIR}/shared/urlopener.cpp
-    ${MZ_SOURCE_DIR}/shared/urlopener.h
     ${MZ_SOURCE_DIR}/shared/versionutils.cpp
     ${MZ_SOURCE_DIR}/shared/versionutils.h
 )

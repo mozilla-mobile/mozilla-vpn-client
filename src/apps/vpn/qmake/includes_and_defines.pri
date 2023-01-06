@@ -5,6 +5,10 @@
 include($$PWD/../../../../version.pri)
 DEFINES += BUILD_QMAKE
 
+!isEmpty(MVPN_EXTRA_USERAGENT) {
+    DEFINES += MVPN_EXTRA_USERAGENT=\\\"$$MVPN_EXTRA_USERAGENT\\\"
+}
+
 DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
 
@@ -13,7 +17,6 @@ INCLUDEPATH += \
             $$PWD/../addons \
             $$PWD/../composer \
             $$PWD/../../../shared \
-            $$PWD/../../../shared/glean \
             $$PWD/../../../shared/hacl-star \
             $$PWD/../../../shared/hacl-star/kremlin \
             $$PWD/../../../shared/hacl-star/kremlin/minimal \

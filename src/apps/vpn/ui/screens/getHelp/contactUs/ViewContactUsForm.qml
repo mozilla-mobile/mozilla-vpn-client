@@ -42,7 +42,7 @@ VPNViewBase {
                        secondaryButtonText: VPNl18n.InAppSupportWorkflowSupportErrorBrowserButton,
                        secondaryButtonObjectName: "errorFxALinkButton",
                        secondaryButtonOnClick: () => {
-                               VPNUrlOpener.openUrlLabel("sumo");
+                               VPNUrlOpener.openLink(VPNUrlOpener.LinkSumo);
                                getHelpStackView.pop();
                            },
                        }
@@ -183,7 +183,7 @@ VPNViewBase {
                 VPNLinkButton {
                     anchors.horizontalCenter: parent.horizontalCenter
                     labelText: VPNl18n.InAppSupportWorkflowPrivacyNoticeLinkText
-                    onClicked: VPNUrlOpener.openUrlLabel("privacyNotice")
+                    onClicked: VPNUrlOpener.openLink(VPNUrlOpener.LinkPrivacyNotice)
                 }
             }
 

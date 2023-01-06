@@ -141,18 +141,18 @@ VPNViewBase {
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: VPNTheme.theme.windowMargin / 2
             onClicked: {
-               VPNUrlOpener.openUrlLabel("splitTunnelHelp")
+               VPNUrlOpener.openLink(VPNUrlOpener.LinkSplitTunnelHelp)
             }
         }
     }
     Component.onCompleted: {
         console.log("Component ready");
         VPNAppPermissions.requestApplist();
-        VPNGleanDeprecated.recordGleanEvent("appPermissionsViewOpened");
+        VPN.recordGleanEvent("appPermissionsViewOpened");
         Glean.sample.appPermissionsViewOpened.record();
 
         if (!vpnIsOff) {
-            VPNGleanDeprecated.recordGleanEvent("appPermissionsViewWarning");
+            VPN.recordGleanEvent("appPermissionsViewWarning");
             Glean.sample.appPermissionsViewWarning.record();
         }
     }

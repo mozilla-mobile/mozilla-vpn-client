@@ -5,9 +5,9 @@
 #include "webupdater.h"
 
 #include "glean/generated/metrics.h"
-#include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
 #include "task.h"
 #include "telemetry/gleansample.h"
 #include "urlopener.h"
@@ -30,10 +30,10 @@ void WebUpdater::start(Task*) {
   mozilla::glean::sample::update_step.record(
       mozilla::glean::sample::UpdateStepExtra{
           ._state = QVariant::fromValue(FallbackInBrowser).toString()});
-  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(FallbackInBrowser).toString()}});
 
-  UrlOpener::instance()->openUrlLabel("update");
+  UrlOpener::instance()->openLink(UrlOpener::LinkUpdate);
   deleteLater();
 }

@@ -12,7 +12,7 @@ VPNStackView {
     id: stackview
 
     function handleButtonClick() {
-        VPNUrlOpener.openUrlLabel("subscriptionBlocked");
+        VPNUrlOpener.openLink(VPNUrlOpener.LinkSubscriptionsBlocked)
     }
 
     Component.onCompleted: {
@@ -36,7 +36,7 @@ VPNStackView {
             getHelpLinkVisible: false
             }
         );
-        VPNGleanDeprecated.recordGleanEvent("subscriptionBlockedViewed");
+        VPN.recordGleanEvent("subscriptionBlockedViewed");
         Glean.sample.subscriptionBlockedViewed.record();
     }
 }

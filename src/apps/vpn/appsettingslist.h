@@ -514,6 +514,16 @@ SETTING_STRING(userDNS,        // getter
                false           // remove when reset
 )
 
+SETTING_STRING(userEmail,        // getter
+               setUserEmail,     // setter
+               removeUserEmail,  // remover
+               hasUserEmail,     // has
+               "user/email",     // key
+               "",               // default value
+               false,            // user setting
+               true              // remove when reset
+)
+
 SETTING_INT(userMaxDevices,        // getter
             setUserMaxDevices,     // setter
             removeUserMaxDevices,  // remover

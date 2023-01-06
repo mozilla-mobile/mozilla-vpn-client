@@ -81,7 +81,7 @@ VPNInAppAuthenticationBase {
         VPNLinkButton {
             labelText: VPNl18n.InAppAuthForgotPasswordLink
             anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: VPNUrlOpener.openUrlLabel("forgotPassword")
+            onClicked: VPNUrlOpener.openLink(VPNUrlOpener.LinkForgotPassword)
         }
 
         VPNCancelButton {

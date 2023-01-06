@@ -33,7 +33,7 @@ VPNStackView {
             getHelpLinkVisible: true
             }
         );
-        VPNGleanDeprecated.recordGleanEvent("billingNotAvailableViewed");
+        VPN.recordGleanEvent("billingNotAvailableViewed");
         Glean.sample.billingNotAvailableViewed.record();
     }
 }

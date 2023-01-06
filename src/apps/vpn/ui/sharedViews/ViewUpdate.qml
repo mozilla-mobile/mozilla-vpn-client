@@ -60,7 +60,7 @@ VPNFlickable {
             PropertyChanges {
                 target: footerLink
                 onClicked: {
-                    VPNUrlOpener.openUrlLabel("account");
+                    VPNUrlOpener.openLink(VPNUrlOpener.LinkAccount);
                 }
             }
 

@@ -8,7 +8,6 @@ SOURCES += \
         $$PWD/curve25519.cpp \
         $$PWD/feature.cpp \
         $$PWD/fontloader.cpp \
-        $$PWD/glean/gleandeprecated.cpp \
         $$PWD/hacl-star/Hacl_Chacha20.c \
         $$PWD/hacl-star/Hacl_Chacha20Poly1305_32.c \
         $$PWD/hacl-star/Hacl_Curve25519_51.c \
@@ -19,8 +18,6 @@ SOURCES += \
         $$PWD/leakdetector.cpp \
         $$PWD/logger.cpp \
         $$PWD/loghandler.cpp \
-        $$PWD/networkmanager.cpp \
-        $$PWD/qmlengineholder.cpp \
         $$PWD/qmlpath.cpp \
         $$PWD/rfc/rfc1112.cpp \
         $$PWD/rfc/rfc1918.cpp \
@@ -28,10 +25,8 @@ SOURCES += \
         $$PWD/rfc/rfc4291.cpp \
         $$PWD/rfc/rfc5735.cpp \
         $$PWD/settingsholder.cpp \
-        $$PWD/simplenetworkmanager.cpp \
         $$PWD/taskscheduler.cpp \
         $$PWD/temporarydir.cpp \
-        $$PWD/urlopener.cpp \
         $$PWD/versionutils.cpp
 
 HEADERS += \
@@ -41,15 +36,12 @@ HEADERS += \
         $$PWD/env.h \
         $$PWD/feature.h \
         $$PWD/fontloader.h \
-        $$PWD/glean/gleandeprecated.h \
         $$PWD/hawkauth.h \
         $$PWD/hkdf.h \
         $$PWD/ipaddress.h \
         $$PWD/leakdetector.h \
         $$PWD/logger.h \
         $$PWD/loghandler.h \
-        $$PWD/networkmanager.h \
-        $$PWD/qmlengineholder.h \
         $$PWD/qmlpath.h \
         $$PWD/rfc/rfc1112.h \
         $$PWD/rfc/rfc1918.h \
@@ -57,11 +49,9 @@ HEADERS += \
         $$PWD/rfc/rfc4291.h \
         $$PWD/rfc/rfc5735.h \
         $$PWD/settingsholder.h \
-        $$PWD/simplenetworkmanager.h \
         $$PWD/task.h \
         $$PWD/taskscheduler.h \
         $$PWD/temporarydir.h \
-        $$PWD/urlopener.h \
         $$PWD/versionutils.h
 
 # Signal handling for unix platforms

@@ -7,7 +7,6 @@
 #include "appconstants.h"
 #include "exponentialbackoffstrategy.h"
 #include "glean/generated/metrics.h"
-#include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -119,7 +118,7 @@ void WebSocketHandler::onUserStateChanged() {
  */
 void WebSocketHandler::open() {
   mozilla::glean::sample::websocket_connection_attempted.record();
-  emit GleanDeprecated::instance()->recordGleanEvent(
+  emit MozillaVPN::instance()->recordGleanEvent(
       GleanSample::websocketConnectionAttempted);
 
   if (m_webSocket.state() != QAbstractSocket::UnconnectedState &&
@@ -148,7 +147,7 @@ void WebSocketHandler::onConnected() {
   m_aboutToClose = false;
 
   mozilla::glean::sample::websocket_connected.record();
-  emit GleanDeprecated::instance()->recordGleanEvent(
+  emit MozillaVPN::instance()->recordGleanEvent(
       GleanSample::websocketConnected);
 
   m_backoffStrategy.reset();
@@ -169,7 +168,7 @@ void WebSocketHandler::onConnected() {
  */
 void WebSocketHandler::close() {
   mozilla::glean::sample::websocket_close_attempted.record();
-  emit GleanDeprecated::instance()->recordGleanEvent(
+  emit MozillaVPN::instance()->recordGleanEvent(
       GleanSample::websocketCloseAttempted);
 
   // QAbstractSocket may throw a write error when attempting to close the
@@ -204,7 +203,7 @@ void WebSocketHandler::onClose() {
   mozilla::glean::sample::websocket_closed.record(
       mozilla::glean::sample::WebsocketClosedExtra{
           ._reason = m_webSocket.closeCode()});
-  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::websocketClosed, {{"reason", m_webSocket.closeCode()}});
 
   m_pingTimer.stop();
@@ -263,7 +262,7 @@ void WebSocketHandler::onPingTimeout() {
   logger.debug() << "Timed out waiting for ping response";
 
   mozilla::glean::sample::websocket_pong_timed_out.record();
-  emit GleanDeprecated::instance()->recordGleanEvent(
+  emit MozillaVPN::instance()->recordGleanEvent(
       GleanSample::websocketPongTimedOut);
 
   close();
@@ -281,7 +280,7 @@ void WebSocketHandler::onError(QAbstractSocket::SocketError error) {
   mozilla::glean::sample::websocket_errored.record(
       mozilla::glean::sample::WebsocketErroredExtra{
           ._type = QVariant::fromValue(error).toInt()});
-  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::websocketErrored,
       {{"type", QVariant::fromValue(error).toInt()}});
 
@@ -301,7 +300,7 @@ void WebSocketHandler::onMessageReceived(const QString& message) {
   mozilla::glean::sample::push_message_received.record(
       mozilla::glean::sample::PushMessageReceivedExtra{
           ._type = QVariant::fromValue(parsedMessage.type()).toString()});
-  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       GleanSample::pushMessageReceived,
       {{"type", QVariant::fromValue(parsedMessage.type()).toString()}});
 

@@ -37,7 +37,7 @@ VPNStackView {
             }
         );
 
-        VPNGleanDeprecated.recordGleanEvent("backendFailureViewed");
+        VPN.recordGleanEvent("backendFailureViewed");
         Glean.sample.backendFailureViewed.record();
     }
 }

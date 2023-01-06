@@ -21,26 +21,17 @@ void TestUrlOpener::urlQueryReplacement_data() {
              "http://"
              "example.com?a=__VPN_VERSION__&b=__VPN_BUILDNUMBER__&c=__VPN_OS__&"
              "d=__"
-             "VPN_PLATFORM__&e=__VPN_ARCH__")
-      << QUrl(QString("http://example.com?a=%1&b=%2&c=%3&d=%4&e=%5")
+             "VPN_PLATFORM__&e=__VPN_ARCH__&f=__VPN_GRAPHICSAPI__")
+      << QUrl(QString("http://example.com?a=%1&b=%2&c=%3&d=%4&e=%5&f=%6")
                   .arg(Env::versionString(), Env::buildNumber(),
-                       Env::osVersion(), Env::platform(), Env::architecture()));
+                       Env::osVersion(), Env::platform(), Env::architecture(),
+                       MozillaVPN::graphicsApi()));
 }
 
 void TestUrlOpener::urlQueryReplacement() {
   QFETCH(QUrl, input);
   QFETCH(QUrl, output);
   QCOMPARE(UrlOpener::replaceUrlParams(input), output);
-}
-
-void TestUrlOpener::urlLabel() {
-  UrlOpener* uo = UrlOpener::instance();
-  QVERIFY(!!uo);
-
-  uo->registerUrlLabel("aa", []() -> QString { return "http://foo.bar"; });
-  uo->setStealUrls();
-  uo->openUrlLabel("aa");
-  QCOMPARE(uo->lastUrl(), "http://foo.bar");
 }
 
 static TestUrlOpener s_testUrlOpener;

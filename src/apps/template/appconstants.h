@@ -12,9 +12,6 @@ namespace AppConstants {
 // This is used by SettingsHolder to configure the QSetting file.
 constexpr const char* SETTINGS_APP_NAME = "FooBar";
 
-// The prefix for the user-agent requests
-constexpr const char* NETWORK_USERAGENT_PREFIX = "FooBar";
-
 #if defined(__APPLE__)
 // This is the name of the service to encrypt the settings file
 constexpr const char* CRYPTO_SETTINGS_SERVICE = "App FooBar";

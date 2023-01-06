@@ -12,10 +12,10 @@
 #include "authenticationinappsession.h"
 #include "glean/generated/metrics.h"
 #include "glean/metrictypes.h"
-#include "gleandeprecated.h"
 #include "incrementaldecoder.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
 #include "telemetry/gleansample.h"
 
 constexpr int PASSWORD_MIN_LENGTH = 8;
@@ -89,7 +89,7 @@ void AuthenticationInApp::setState(State state,
 
   Q_ASSERT(gleanSample);
 
-  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
+  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
       gleanSample, {{"state", stateAsString}});
 }
 

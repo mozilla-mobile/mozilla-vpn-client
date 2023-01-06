@@ -195,7 +195,7 @@ ColumnLayout {
 
         Component.onCompleted: {
             if (visible) {
-                VPNGleanDeprecated.recordGleanEvent("bundle_upsell_viewed");
+                VPN.recordGleanEvent("bundle_upsell_viewed");
                 Glean.sample.bundleUpsellViewed.record();
             }
         }
@@ -225,9 +225,9 @@ ColumnLayout {
                 Layout.leftMargin: -4
 
                 onClicked: {
-                    VPNGleanDeprecated.recordGleanEvent("bundle_upsell_link_clicked");
+                    VPN.recordGleanEvent("bundle_upsell_link_clicked");
                     Glean.sample.bundleUpsellLinkClicked.record();
-                    VPNUrlOpener.openUrlLabel("relayPremium");
+                    VPNUrlOpener.openLink(VPNUrlOpener.LinkRelayPremium);
                 }
             }
         }
@@ -236,9 +236,9 @@ ColumnLayout {
             objectName: _objectName + "-relayUpsell-upgradeButton"
 
             onClicked: {
-                VPNGleanDeprecated.recordGleanEvent("bundle_upsell_upgrade_clicked");
+                VPN.recordGleanEvent("bundle_upsell_upgrade_clicked");
                 Glean.sample.bundleUpsellUpgradeClicked.record();
-                VPNUrlOpener.openUrlLabel("upgradeToBundle");
+                VPNUrlOpener.openLink(VPNUrlOpener.LinkUpgradeToBundle);
             }
 
             contentItem: Label {

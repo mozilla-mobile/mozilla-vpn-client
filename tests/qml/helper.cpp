@@ -7,7 +7,6 @@
 #include <glean.h>
 #include <nebula.h>
 
-#include "gleandeprecated.h"
 #include "qmlengineholder.h"
 
 TestHelper::TestHelper() {
@@ -42,7 +41,7 @@ void TestHelper::triggerInitializeGlean() const {
 }
 
 void TestHelper::triggerRecordGleanEvent(const QString& event) const {
-  emit GleanDeprecated::instance()->recordGleanEvent(event);
+  emit MozillaVPN::instance()->recordGleanEvent(event);
 }
 
 void TestHelper::triggerSendGleanPings() const {
@@ -104,14 +103,6 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
       [this](QQmlEngine*, QJSEngine* engine) -> QObject* {
         m_theme->initialize(engine);
         QObject* obj = m_theme;
-        QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-        return obj;
-      });
-
-  qmlRegisterSingletonType<MozillaVPN>(
-      "Mozilla.VPN", 1, 0, "VPNGleanDeprecated",
-      [](QQmlEngine*, QJSEngine*) -> QObject* {
-        QObject* obj = GleanDeprecated::instance();
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
         return obj;
       });
