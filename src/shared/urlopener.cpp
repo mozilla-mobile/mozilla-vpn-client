@@ -47,12 +47,13 @@ UrlOpener::UrlOpener(QObject* parent) : QObject(parent) {
 UrlOpener::~UrlOpener() { MZ_COUNT_DTOR(UrlOpener); }
 
 void UrlOpener::openUrlLabel(const QString& label) {
+  logger.debug() << "Opening url label: " << label;
   Q_ASSERT(m_urlLabels.contains(label));
   openUrl(m_urlLabels[label]());
 }
 
 void UrlOpener::openUrl(const QString& linkUrl) {
-  logger.debug() << "Opening link: " << linkUrl;
+  logger.debug() << "Opening url: " << linkUrl;
   openUrl(QUrl(linkUrl));
 }
 
