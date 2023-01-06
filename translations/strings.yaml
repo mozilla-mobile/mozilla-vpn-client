@@ -73,6 +73,9 @@
 #
 
 serversView:
+  automaticLocation:
+    value: Automatic
+    comment: Server location to use in place of a country and city name.
   recommendedCardTitle:
     value: Why are these locations recommended?
     comment: Title of an expandable info card on the recommended servers list.

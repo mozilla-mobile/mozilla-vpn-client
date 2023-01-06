@@ -386,7 +386,12 @@ FocusScope {
                     }
                     visible: currentServer.whichHop === "singleHopServer";
 
-                    radioButtonLabelText: "Automatic"
+                    radioButtonLabelText: VPNl18n.ServersViewAutomaticLocation
+                    // TODO: Accessibility!
+                    // TODO: Label should probably be bold for visual consistency.
+                    // TODO: Label should have a flag for visual consistency.
+                    // TODO: Subtitle with a description of what this does.
+
                     checked: VPNCurrentServer.exitCountryCode === "" || VPNCurrentServer.exitCityName === ""
                     onClicked: {
                         focusScope.clearSelectedServer();

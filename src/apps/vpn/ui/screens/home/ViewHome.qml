@@ -117,7 +117,7 @@ VPNFlickable {
                         },
                         {
                          countryCode: VPNCurrentServer.exitCountryCode,
-                         localizedCityName: VPNCurrentServer.localizedExitCityName,
+                         localizedCityName: VPNCurrentServer.exitCountryCode !== "" ? VPNCurrentServer.localizedExitCityName : VPNl18n.ServersViewAutomaticLocation,
                          cityName: VPNCurrentServer.exitCityName
                         }
                     ]
