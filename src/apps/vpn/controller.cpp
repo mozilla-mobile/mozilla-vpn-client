@@ -135,10 +135,14 @@ void Controller::initialize() {
 
   connect(SettingsHolder::instance(),
           &SettingsHolder::transactionAboutToRollBack, this, [this]() {
+            if (!m_connectedBeforeTransaction)
+              MozillaVPN::instance()->deactivate();
+          });
+
+  connect(SettingsHolder::instance(), &SettingsHolder::transactionRolledBack,
+          this, [this]() {
             if (m_connectedBeforeTransaction)
               MozillaVPN::instance()->activate();
-            else
-              MozillaVPN::instance()->deactivate();
           });
 
   MozillaVPN* vpn = MozillaVPN::instance();

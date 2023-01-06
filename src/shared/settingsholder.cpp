@@ -300,6 +300,8 @@ bool SettingsHolder::rollbackTransaction() {
     QMetaObject::invokeMethod(this, i.value().first, Qt::DirectConnection);
   }
 
+  emit transactionRolledBack();
+
   return true;
 }
 
