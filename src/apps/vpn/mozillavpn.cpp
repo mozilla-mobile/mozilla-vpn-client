@@ -45,7 +45,6 @@
 #include "tasks/removedevice/taskremovedevice.h"
 #include "tasks/sendfeedback/tasksendfeedback.h"
 #include "tasks/servers/taskservers.h"
-#include "tasks/serverselect/taskserverselect.h"
 #include "taskscheduler.h"
 #include "telemetry/gleansample.h"
 #include "update/updater.h"
@@ -359,8 +358,11 @@ void MozillaVPN::initialize() {
 
   Q_ASSERT(!m_private->m_serverData.hasServerData());
   if (!m_private->m_serverData.fromSettings()) {
-    TaskScheduler::scheduleTask(
-        new TaskServerSelect(ErrorHandler::DoNotPropagateError));
+    QStringList list = m_private->m_serverCountryModel.pickBest(m_private->m_location);
+    Q_ASSERT(list.length() >= 2);
+
+    m_private->m_serverData.update(list[0], list[1]);
+    Q_ASSERT(m_private->m_serverData.hasServerData());
   }
 
   scheduleRefreshDataTasks(true);
@@ -692,8 +694,12 @@ void MozillaVPN::serversFetched(const QByteArray& serverData) {
       !m_private->m_serverCountryModel.exists(
           m_private->m_serverData.exitCountryCode(),
           m_private->m_serverData.exitCityName())) {
-    TaskScheduler::scheduleTask(
-        new TaskServerSelect(ErrorHandler::DoNotPropagateError));
+    QStringList list =
+        m_private->m_serverCountryModel.pickBest(m_private->m_location);
+    Q_ASSERT(list.length() >= 2);
+
+    m_private->m_serverData.update(list[0], list[1]);
+    Q_ASSERT(m_private->m_serverData.hasServerData());
   }
 }
 
@@ -1222,12 +1228,6 @@ void MozillaVPN::activate() {
   // is the right time to do it.
   maybeRegenerateDeviceKey();
 
-  // If there is no server chosen, schedule an automatic server selection.
-  if (!m_private->m_serverData.hasServerData()) {
-    TaskScheduler::scheduleTask(
-        new TaskServerSelect(ErrorHandler::DoNotPropagateError));
-  }
-
   TaskScheduler::scheduleTask(
       new TaskControllerAction(TaskControllerAction::eActivate));
 }
@@ -1663,10 +1663,16 @@ void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {
           ErrorHandler::PropagateError)};
   
   // The VPN needs to be off in order to determine the client's real location.
+  // And it also needs to complete before TaskServers in case this triggers an
+  // automatic server selection.
+  //
+  // TODO: This ordering requirement can be relaxed in the future once automatic
+  // server selection is implemented upon activation.
   if (!m_private->m_location.initialized()) {
     Controller::State st = m_private->m_controller.state();
     if (st == Controller::StateOff || st == Controller::StateInitializing) {
-      refreshTasks.append(new TaskGetLocation(ErrorHandler::PropagateError));
+      TaskScheduler::scheduleTask(
+          new TaskGetLocation(ErrorHandler::PropagateError));
     }
   }
 

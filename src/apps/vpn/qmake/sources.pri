@@ -138,7 +138,6 @@ SOURCES += \
         apps/vpn/tasks/removedevice/taskremovedevice.cpp \
         apps/vpn/tasks/sendfeedback/tasksendfeedback.cpp \
         apps/vpn/tasks/servers/taskservers.cpp \
-        apps/vpn/tasks/serverselect/taskserverselect.cpp \
         apps/vpn/telemetry.cpp \
         apps/vpn/theme.cpp \
         apps/vpn/tutorial/tutorial.cpp \
@@ -294,7 +293,6 @@ HEADERS += \
         apps/vpn/tasks/removedevice/taskremovedevice.h \
         apps/vpn/tasks/sendfeedback/tasksendfeedback.h \
         apps/vpn/tasks/servers/taskservers.h \
-        apps/vpn/tasks/serverselect/taskserverselect.h \
         apps/vpn/telemetry.h \
         apps/vpn/theme.h \
         apps/vpn/tutorial/tutorial.h \
