@@ -271,9 +271,13 @@ QStringList ServerCountryModel::pickRandom() const {
 }
 
 // Select the city that we think is going to perform the best
-QStringList ServerCountryModel::pickBest(const Location& location) const {
-  double latitude = location.latitude();
-  double longitude = location.longitude();
+QStringList ServerCountryModel::pickBest(const Location* location) const {
+  double latitude = qQNaN();
+  double longitude = qQNaN();
+  if (location != nullptr) {
+    latitude = location->latitude();
+    longitude = location->longitude();
+  }
   if (qIsNaN(latitude) || qIsNaN(longitude)) {
     // If we don't know the client's location, just pick at random.
     return pickRandom();

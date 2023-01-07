@@ -359,7 +359,7 @@ void MozillaVPN::initialize() {
   Q_ASSERT(!m_private->m_serverData.hasServerData());
   if (!m_private->m_serverData.fromSettings()) {
     QStringList list =
-        m_private->m_serverCountryModel.pickBest(m_private->m_location);
+        m_private->m_serverCountryModel.pickBest(&m_private->m_location);
     Q_ASSERT(list.length() >= 2);
 
     m_private->m_serverData.update(list[0], list[1]);
@@ -698,7 +698,7 @@ void MozillaVPN::serversFetched(const QByteArray& serverData) {
           m_private->m_serverData.exitCountryCode(),
           m_private->m_serverData.exitCityName())) {
     QStringList list =
-        m_private->m_serverCountryModel.pickBest(m_private->m_location);
+        m_private->m_serverCountryModel.pickBest(&m_private->m_location);
     Q_ASSERT(list.length() >= 2);
 
     m_private->m_serverData.update(list[0], list[1]);
