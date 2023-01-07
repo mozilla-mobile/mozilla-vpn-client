@@ -21,20 +21,6 @@ constexpr const char* ENTER_CITY_NAME = "enter_city_name";
 
 namespace {
 Logger logger("ServerData");
-
-QList<Server> filterServerList(const QList<Server>& servers) {
-  QList<Server> results;
-  qint64 now = QDateTime::currentSecsSinceEpoch();
-
-  for (const Server& server : servers) {
-    if (server.cooldownTimeout() <= now) {
-      results.append(server);
-    }
-  }
-
-  return results;
-}
-
 }  // namespace
 
 ServerData::ServerData() { MZ_COUNT_CTOR(ServerData); }
@@ -166,8 +152,8 @@ void ServerData::forget() {
 }
 
 const QList<Server> ServerData::exitServers() const {
-  return filterServerList(MozillaVPN::instance()->serverCountryModel()->servers(
-      m_exitCountryCode, m_exitCityName));
+  return MozillaVPN::instance()->serverCountryModel()->servers(
+      m_exitCountryCode, m_exitCityName, true);
 }
 
 const QList<Server> ServerData::entryServers() const {
@@ -175,6 +161,6 @@ const QList<Server> ServerData::entryServers() const {
     return exitServers();
   }
 
-  return filterServerList(MozillaVPN::instance()->serverCountryModel()->servers(
-      m_entryCountryCode, m_entryCityName));
+  return MozillaVPN::instance()->serverCountryModel()->servers(
+      m_entryCountryCode, m_entryCityName, true);
 }

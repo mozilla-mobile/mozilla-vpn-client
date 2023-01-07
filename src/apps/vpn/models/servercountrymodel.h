@@ -49,7 +49,8 @@ class ServerCountryModel final : public QAbstractListModel {
   bool exists(const QString& countryCode, const QString& cityName) const;
 
   const QList<Server> servers(const QString& countryCode,
-                              const QString& cityName) const;
+                              const QString& cityName,
+                              bool filterInactive = false) const;
   const QList<Server> servers() const { return m_servers.values(); };
   Server server(const QString& pubkey) const { return m_servers.value(pubkey); }
 

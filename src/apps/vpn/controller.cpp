@@ -204,10 +204,22 @@ void Controller::activateInternal(Reason reason, bool forcePort53) {
   m_handshakeTimer.stop();
   m_activationQueue.clear();
 
-  MozillaVPN* vpn = MozillaVPN::instance();
+  ServerData* sd = MozillaVPN::instance()->currentServer();
 
-  Server exitServer =
-      Server::weightChooser(vpn->currentServer()->exitServers());
+  // Select the exit server.
+  Server exitServer;
+  if (sd->hasServerData()) {
+    exitServer = Server::weightChooser(sd->exitServers());
+  } else {
+    ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
+    QStringList list = scm->pickBest(MozillaVPN::instance()->location());
+
+    Q_ASSERT(list.length() >= 2);
+    exitServer = Server::weightChooser(scm->servers(list[0], list[1], true));
+    
+    // Ensure we don't go down the multihop path.
+    Q_ASSERT(!sd->multihop());
+  }
   if (!exitServer.initialized()) {
     logger.error() << "Empty exit server list in state" << m_state;
     serverUnavailable();
@@ -235,7 +247,7 @@ void Controller::activateInternal(Reason reason, bool forcePort53) {
 
   // For single-hop connections, exclude the entry server
   if (!Feature::get(Feature::Feature_multiHop)->isSupported() ||
-      !vpn->currentServer()->multihop()) {
+      !sd->multihop()) {
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv4AddrIn());
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv6AddrIn());
 
@@ -250,7 +262,7 @@ void Controller::activateInternal(Reason reason, bool forcePort53) {
   // The entry server should start first, followed by the exit server.
   else if (m_impl->multihopSupported()) {
     HopConnection hop;
-    hop.m_server = Server::weightChooser(vpn->currentServer()->entryServers());
+    hop.m_server = Server::weightChooser(sd->entryServers());
     setEntryServerPublicKey(hop.m_server.publicKey());
     if (!hop.m_server.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
@@ -273,7 +285,7 @@ void Controller::activateInternal(Reason reason, bool forcePort53) {
   // connection to the exit server via the multihop port.
   else {
     Server entryServer =
-        Server::weightChooser(vpn->currentServer()->entryServers());
+        Server::weightChooser(sd->entryServers());
     setEntryServerPublicKey(entryServer.publicKey());
     if (!entryServer.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
