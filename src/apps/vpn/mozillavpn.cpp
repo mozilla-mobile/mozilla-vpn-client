@@ -37,6 +37,7 @@
 #include "tasks/deleteaccount/taskdeleteaccount.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/getfeaturelist/taskgetfeaturelist.h"
+#include "tasks/getlocation/taskgetlocation.h"
 #include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
 #include "tasks/group/taskgroup.h"
 #include "tasks/heartbeat/taskheartbeat.h"
@@ -1660,6 +1661,14 @@ void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {
       new TaskGetSubscriptionDetails(
           TaskGetSubscriptionDetails::NoAuthenticationFlow,
           ErrorHandler::PropagateError)};
+  
+  // The VPN needs to be off in order to determine the client's real location.
+  if (!m_private->m_location.initialized()) {
+    Controller::State st = m_private->m_controller.state();
+    if (st == Controller::StateOff || st == Controller::StateInitializing) {
+      refreshTasks.append(new TaskGetLocation(ErrorHandler::PropagateError));
+    }
+  }
 
   if (refreshProducts) {
     if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {

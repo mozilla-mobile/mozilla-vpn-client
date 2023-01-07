@@ -87,6 +87,7 @@ SOURCES += \
         apps/vpn/models/feedbackcategorymodel.cpp \
         apps/vpn/models/keys.cpp \
         apps/vpn/models/licensemodel.cpp \
+        apps/vpn/models/location.cpp \
         apps/vpn/models/recentconnections.cpp \
         apps/vpn/models/server.cpp \
         apps/vpn/models/servercity.cpp \
@@ -124,6 +125,7 @@ SOURCES += \
         apps/vpn/tasks/captiveportallookup/taskcaptiveportallookup.cpp \
         apps/vpn/tasks/deleteaccount/taskdeleteaccount.cpp \
         apps/vpn/tasks/getfeaturelist/taskgetfeaturelist.cpp \
+        apps/vpn/tasks/getlocation/taskgetlocation.cpp \
         apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp \
         apps/vpn/tasks/controlleraction/taskcontrolleraction.cpp \
         apps/vpn/tasks/createsupportticket/taskcreatesupportticket.cpp \
@@ -240,6 +242,7 @@ HEADERS += \
         apps/vpn/models/feedbackcategorymodel.h \
         apps/vpn/models/keys.h \
         apps/vpn/models/licensemodel.h \
+        apps/vpn/models/location.h \
         apps/vpn/models/recentconnections.h \
         apps/vpn/models/server.h \
         apps/vpn/models/servercity.h \
@@ -278,6 +281,7 @@ HEADERS += \
         apps/vpn/tasks/captiveportallookup/taskcaptiveportallookup.h \
         apps/vpn/tasks/deleteaccount/taskdeleteaccount.h \
         apps/vpn/tasks/getfeaturelist/taskgetfeaturelist.h \
+        apps/vpn/tasks/getlocation/taskgetlocation.h \
         apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h \
         apps/vpn/tasks/controlleraction/taskcontrolleraction.h \
         apps/vpn/tasks/createsupportticket/taskcreatesupportticket.h \
