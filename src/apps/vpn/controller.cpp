@@ -214,7 +214,7 @@ void Controller::activateInternal(Reason reason, bool forcePort53) {
     return;
   }
 
-  vpn->currentServer()->setExitServerPublicKey(exitServer.publicKey());
+  setExitServerPublicKey(exitServer.publicKey());
 
   // Prepare the exit server's connection data.
   HopConnection exitHop;
@@ -244,14 +244,14 @@ void Controller::activateInternal(Reason reason, bool forcePort53) {
       exitHop.m_server.forcePort(53);
     }
     // For single-hop, they are the same
-    vpn->currentServer()->setEntryServerPublicKey(exitServer.publicKey());
+    setEntryServerPublicKey(exitServer.publicKey());
   }
   // For controllers that support multiple hops, create a queue of connections.
   // The entry server should start first, followed by the exit server.
   else if (m_impl->multihopSupported()) {
     HopConnection hop;
     hop.m_server = Server::weightChooser(vpn->currentServer()->entryServers());
-    vpn->currentServer()->setEntryServerPublicKey(hop.m_server.publicKey());
+    setEntryServerPublicKey(hop.m_server.publicKey());
     if (!hop.m_server.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
       serverUnavailable();
@@ -274,7 +274,7 @@ void Controller::activateInternal(Reason reason, bool forcePort53) {
   else {
     Server entryServer =
         Server::weightChooser(vpn->currentServer()->entryServers());
-    vpn->currentServer()->setEntryServerPublicKey(entryServer.publicKey());
+    setEntryServerPublicKey(entryServer.publicKey());
     if (!entryServer.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
       serverUnavailable();
@@ -333,8 +333,7 @@ bool Controller::silentSwitchServers() {
         << "Cannot silent switch servers because there is only one available";
     return false;
   }
-  vpn->serverCountryModel()->setServerCooldown(
-      vpn->currentServer()->exitServerPublicKey());
+  vpn->serverCountryModel()->setServerCooldown(m_exitServerPublicKey);
 
   // Activate the first connection to kick off the server switch.
   activateInternal(ReasonSwitching);
@@ -370,7 +369,7 @@ void Controller::connected(const QString& pubkey) {
   if (m_activationQueue.isEmpty()) {
     MozillaVPN* vpn = MozillaVPN::instance();
     Q_ASSERT(vpn);
-    if (vpn->currentServer()->exitServerPublicKey() != pubkey) {
+    if (m_exitServerPublicKey != pubkey) {
       logger.warning() << "Unexpected handshake: no pending connections.";
       return;
     }
@@ -797,4 +796,14 @@ bool Controller::switchServers() {
   deactivate();
 
   return true;
+}
+
+void Controller::setEntryServerPublicKey(const QString& publicKey) {
+  logger.debug() << "Set entry-server public key:" << logger.keys(publicKey);
+  m_entryServerPublicKey = publicKey;
+}
+
+void Controller::setExitServerPublicKey(const QString& publicKey) {
+  logger.debug() << "Set exit-server public key:" << logger.keys(publicKey);
+  m_exitServerPublicKey = publicKey;
 }

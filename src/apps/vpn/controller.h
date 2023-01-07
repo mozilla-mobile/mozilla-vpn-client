@@ -100,6 +100,9 @@ class Controller final : public QObject {
   void captivePortalPresent();
   void captivePortalGone();
 
+  const QString& exitServerPublicKey() const { return m_exitServerPublicKey; }
+  const QString& entryServerPublicKey() const { return m_entryServerPublicKey; }
+
  public slots:
   // These 2 methods activate/deactivate the VPN. Return true if a signal will
   // be emitted at the end of the operation.
@@ -150,6 +153,9 @@ class Controller final : public QObject {
 
   void serverDataChanged();
 
+  void setEntryServerPublicKey(const QString& publicKey);
+  void setExitServerPublicKey(const QString& publicKey);
+
  private:
   State m_state = StateInitializing;
 
@@ -182,6 +188,8 @@ class Controller final : public QObject {
   int m_connectionRetry = 0;
 
   QList<HopConnection> m_activationQueue;
+  QString m_exitServerPublicKey;
+  QString m_entryServerPublicKey;
 
   QList<std::function<void(const QString& serverIpv4Gateway,
                            const QString& deviceIpv4Address, uint64_t txBytes,

@@ -115,12 +115,12 @@ void Telemetry::connectionStabilityEvent() {
       mozilla::glean::sample::ConnectivityStableExtra{
           ._latency = QString::number(vpn->connectionHealth()->latency()),
           ._loss = QString::number(vpn->connectionHealth()->loss()),
-          ._server = vpn->currentServer()->exitServerPublicKey(),
+          ._server = vpn->controller()->exitServerPublicKey(),
           ._stddev = QString::number(vpn->connectionHealth()->stddev()),
           ._transport = vpn->networkWatcher()->getCurrentTransport()});
   emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
       GleanSample::connectivityStable,
-      {{"server", vpn->currentServer()->exitServerPublicKey()},
+      {{"server", vpn->controller()->exitServerPublicKey()},
        {"latency", QString::number(vpn->connectionHealth()->latency())},
        {"loss", QString::number(vpn->connectionHealth()->loss())},
        {"stddev", QString::number(vpn->connectionHealth()->stddev())},

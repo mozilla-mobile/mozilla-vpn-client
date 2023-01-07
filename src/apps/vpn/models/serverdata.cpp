@@ -178,13 +178,3 @@ const QList<Server> ServerData::entryServers() const {
   return filterServerList(MozillaVPN::instance()->serverCountryModel()->servers(
       m_entryCountryCode, m_entryCityName));
 }
-
-void ServerData::setEntryServerPublicKey(const QString& publicKey) {
-  logger.debug() << "Set entry-server public key:" << logger.keys(publicKey);
-  m_entryServerPublicKey = publicKey;
-}
-
-void ServerData::setExitServerPublicKey(const QString& publicKey) {
-  logger.debug() << "Set exit-server public key:" << logger.keys(publicKey);
-  m_exitServerPublicKey = publicKey;
-}
