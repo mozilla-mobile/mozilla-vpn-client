@@ -356,16 +356,6 @@ void MozillaVPN::initialize() {
     return;
   }
 
-  Q_ASSERT(!m_private->m_serverData.hasServerData());
-  if (!m_private->m_serverData.fromSettings()) {
-    QStringList list =
-        m_private->m_serverCountryModel.pickBest(&m_private->m_location);
-    Q_ASSERT(list.length() >= 2);
-
-    m_private->m_serverData.update(list[0], list[1]);
-    Q_ASSERT(m_private->m_serverData.hasServerData());
-  }
-
   scheduleRefreshDataTasks(true);
   setUserState(UserAuthenticated);
   maybeStateMain();
@@ -441,8 +431,6 @@ void MozillaVPN::maybeStateMain() {
     setState(StateInitialize);
     return;
   }
-
-  Q_ASSERT(m_private->m_serverData.hasServerData());
 
   // For 2.5 we need to regenerate the device key to allow the the custom DNS
   // feature. We can do it in background when the main view is shown.
@@ -690,19 +678,6 @@ void MozillaVPN::serversFetched(const QByteArray& serverData) {
   if (!setServerList(serverData)) {
     // This is OK. The check is done elsewhere.
     return;
-  }
-
-  // The serverData could be unset or invalid with the new server list.
-  if (!m_private->m_serverData.hasServerData() ||
-      !m_private->m_serverCountryModel.exists(
-          m_private->m_serverData.exitCountryCode(),
-          m_private->m_serverData.exitCityName())) {
-    QStringList list =
-        m_private->m_serverCountryModel.pickBest(&m_private->m_location);
-    Q_ASSERT(list.length() >= 2);
-
-    m_private->m_serverData.update(list[0], list[1]);
-    Q_ASSERT(m_private->m_serverData.hasServerData());
   }
 }
 
