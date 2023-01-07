@@ -441,6 +441,8 @@ void MozillaVPN::maybeStateMain() {
     return;
   }
 
+  Q_ASSERT(m_private->m_serverData.hasServerData());
+
   // For 2.5 we need to regenerate the device key to allow the the custom DNS
   // feature. We can do it in background when the main view is shown.
   maybeRegenerateDeviceKey();
