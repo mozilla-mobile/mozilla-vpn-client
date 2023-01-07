@@ -13,7 +13,7 @@
 
 Location::Location() {
   MZ_COUNT_CTOR(Location);
-  
+
   m_latitude = qQNaN();
   m_longitude = qQNaN();
 }
