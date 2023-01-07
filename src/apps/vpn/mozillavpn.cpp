@@ -358,7 +358,8 @@ void MozillaVPN::initialize() {
 
   Q_ASSERT(!m_private->m_serverData.hasServerData());
   if (!m_private->m_serverData.fromSettings()) {
-    QStringList list = m_private->m_serverCountryModel.pickBest(m_private->m_location);
+    QStringList list =
+        m_private->m_serverCountryModel.pickBest(m_private->m_location);
     Q_ASSERT(list.length() >= 2);
 
     m_private->m_serverData.update(list[0], list[1]);
@@ -1663,7 +1664,7 @@ void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {
       new TaskGetSubscriptionDetails(
           TaskGetSubscriptionDetails::NoAuthenticationFlow,
           ErrorHandler::PropagateError)};
-  
+
   // The VPN needs to be off in order to determine the client's real location.
   // And it also needs to complete before TaskServers in case this triggers an
   // automatic server selection.
