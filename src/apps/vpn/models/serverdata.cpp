@@ -153,7 +153,7 @@ void ServerData::forget() {
 
 const QList<Server> ServerData::exitServers() const {
   return MozillaVPN::instance()->serverCountryModel()->servers(
-      m_exitCountryCode, m_exitCityName, true);
+      m_exitCountryCode, m_exitCityName);
 }
 
 const QList<Server> ServerData::entryServers() const {
@@ -162,5 +162,5 @@ const QList<Server> ServerData::entryServers() const {
   }
 
   return MozillaVPN::instance()->serverCountryModel()->servers(
-      m_entryCountryCode, m_entryCityName, true);
+      m_entryCountryCode, m_entryCityName);
 }

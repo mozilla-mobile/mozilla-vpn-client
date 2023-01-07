@@ -165,14 +165,21 @@ const Server& Server::weightChooser(const QList<Server>& servers) {
   }
 
   uint32_t weightSum = 0;
+  qint64 now = QDateTime::currentSecsSinceEpoch();
 
   for (const Server& server : servers) {
+    if (server.m_cooldownTimeout > now) {
+      continue;
+    }
     weightSum += server.weight();
   }
 
   quint32 r = QRandomGenerator::global()->generate() % (weightSum + 1);
 
   for (const Server& server : servers) {
+    if (server.m_cooldownTimeout > now) {
+      continue;
+    }
     if (server.weight() >= r) {
       return server;
     }
@@ -180,8 +187,7 @@ const Server& Server::weightChooser(const QList<Server>& servers) {
     r -= server.weight();
   }
 
-  // This should not happen.
-  Q_ASSERT(false);
+  // If we get here, all servers are on cooldown.
   return emptyServer;
 }
 

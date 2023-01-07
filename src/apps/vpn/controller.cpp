@@ -212,11 +212,11 @@ void Controller::activateInternal(Reason reason, bool forcePort53) {
     exitServer = Server::weightChooser(sd->exitServers());
   } else {
     ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
-    QStringList list = scm->pickBest(MozillaVPN::instance()->location());
+    QStringList choice = scm->pickBest(MozillaVPN::instance()->location());
 
-    Q_ASSERT(list.length() >= 2);
-    exitServer = Server::weightChooser(scm->servers(list[0], list[1], true));
-    
+    Q_ASSERT(choice.length() >= 2);
+    exitServer = Server::weightChooser(scm->servers(choice[0], choice[1]));
+
     // Ensure we don't go down the multihop path.
     Q_ASSERT(!sd->multihop());
   }
@@ -284,8 +284,7 @@ void Controller::activateInternal(Reason reason, bool forcePort53) {
   // Otherwise, we can approximate multihop support by redirecting the
   // connection to the exit server via the multihop port.
   else {
-    Server entryServer =
-        Server::weightChooser(sd->entryServers());
+    Server entryServer = Server::weightChooser(sd->entryServers());
     setEntryServerPublicKey(entryServer.publicKey());
     if (!entryServer.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
@@ -336,15 +335,25 @@ bool Controller::silentSwitchServers() {
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
-  // Set a cooldown timer on the current server.
-  QList<Server> servers = vpn->currentServer()->exitServers();
-  Q_ASSERT(!servers.isEmpty());
+  // Ensure we don't try to silently switch if there is nothing
+  // to switch to.
+  if (vpn->currentServer()->hasServerData()) {
+    qint64 now = QDateTime::currentSecsSinceEpoch();
+    int activeServerCount = 0;
+    for (const Server& s : vpn->currentServer()->exitServers()) {
+      if (s.cooldownTimeout() <= now) {
+        activeServerCount++;
+      }
+    }
 
-  if (servers.length() <= 1) {
-    logger.warning()
-        << "Cannot silent switch servers because there is only one available";
-    return false;
+    if (activeServerCount <= 1) {
+      logger.warning()
+          << "Cannot silent switch servers because there is only one available";
+      return false;
+    }
   }
+
+  // Set a cooldown timer on the current server.
   vpn->serverCountryModel()->setServerCooldown(m_exitServerPublicKey);
 
   // Activate the first connection to kick off the server switch.

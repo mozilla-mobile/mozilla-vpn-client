@@ -335,22 +335,16 @@ bool ServerCountryModel::exists(const QString& countryCode,
 }
 
 const QList<Server> ServerCountryModel::servers(const QString& countryCode,
-                                                const QString& cityName,
-                                                bool filterInactive) const {
+                                                const QString& cityName) const {
   QList<Server> results;
   qint64 now = QDateTime::currentSecsSinceEpoch();
 
   for (const ServerCountry& country : m_countries) {
     if (country.code() == countryCode) {
       for (const QString& pubkey : country.serversFromCityName(cityName)) {
-        if (!m_servers.contains(pubkey)) {
-          continue;
+        if (m_servers.contains(pubkey)) {
+          results.append(m_servers.value(pubkey));
         }
-        const Server& s = m_servers.value(pubkey);
-        if (filterInactive && (s.cooldownTimeout() > now)) {
-          continue;
-        }
-        results.append(s);
       }
     }
   }
