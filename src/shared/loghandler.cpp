@@ -266,8 +266,7 @@ void LogHandler::openLogFile(const MutexLocker& proofOfLock) {
     }
   }
 
-  QString logFileName = appDataLocation.filePath(
-      QString("mozilla_%1.txt").arg(AppConstants::SETTINGS_APP_NAME));
+  QString logFileName = appDataLocation.filePath(AppConstants::LOG_FILE_NAME);
   m_logFile = new QFile(logFileName);
   if (m_logFile->size() > LOG_MAX_FILE_SIZE) {
     m_logFile->remove();
