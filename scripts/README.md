@@ -15,7 +15,7 @@ can be used to run tests locally or via the CI.
 
 # Linux-specific scripts
 
-- ./linux/ppa_script.sh - upload ubuntu packages to the PPA
+- ./linux/ppa_script.sh - upload Ubuntu packages to the PPA
 - ./linux/script.sh - compile the client and upload it to the PPA
 
 TODO: unify build.sh and script.sh (or remove build.sh)
@@ -37,7 +37,7 @@ TODO: unify build.sh and script.sh (or remove build.sh)
 - ./utils/generate_strings.py - process the string.yaml file and generate resources
 - ./utils/import_languages.py - process languages and import them
 - ./utils/inspector.py - send commands to the VPN client inspector
-- ./utils/qt6_compile.sh - compile qt6 for linux and macos
+- ./utils/qt6_compile.sh - compile qt6 for Linux and MacOS
 
 # Clang-format utils
 

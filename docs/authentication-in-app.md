@@ -155,7 +155,7 @@ From here we can go to **Verifying unblock code**.
 ### State: Verifying unblock code
 
 The client is sending the unblock code to FxA. We are waiting for the result of
-the validation. From here, we can go to **Finalize** or bak to **Unblock code
+the validation. From here, we can go to **Finalize** or back to **Unblock code
 needed** in case the code is invalid.
 
 From here we can go to **Finalize**, or **Unblock code needed** in case the code is invalid.

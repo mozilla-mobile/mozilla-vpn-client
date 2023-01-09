@@ -207,7 +207,7 @@ In verbose mode, this is the output:
 
 ## Selecting a server
 
-I can select a server using ‘select’ and the server’s hostname. For instance:
+I can select a server using ‘select’ and the server’s host name. For instance:
 
 ```
 % mozillavpn select au4-wireguard
