@@ -93,7 +93,7 @@ VPNFlickable {
                         VPNConnectionInfoItem {
                             id: entryServerLabel
                             title: serverLocations.isMultipHop
-                                ? VPNServerCountryModel.getLocalizedCountryName(VPNCurrentServer.entryCountryCode)
+                                ? VPNCurrentServer.localizedEntryCityName
                                 : ""
                             subtitle: ""
                             iconPath: serverLocations.isMultipHop
@@ -107,6 +107,7 @@ VPNFlickable {
 
                         VPNIcon {
                             id: arrowIcon
+                            anchors.horizontalCenter: parent.horizontalCenter
                             source: "qrc:/nebula/resources/arrow-forward-white.svg"
                             sourceSize {
                                 height: VPNTheme.theme.iconSize * 1.25
@@ -119,9 +120,7 @@ VPNFlickable {
                         }
 
                         VPNConnectionInfoItem {
-                            title: VPNServerCountryModel.getLocalizedCountryName(
-                                VPNCurrentServer.exitCountryCode
-                            )
+                            title: VPNCurrentServer.localizedExitCityName
                             subtitle: serverLocations.isMultipHop
                                 ? ""
                                 : VPNCurrentServer.localizedExitCityName
