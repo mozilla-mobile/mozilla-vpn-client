@@ -16,7 +16,7 @@ jobs:
       - name: Install Linux packages
         run: |
           sudo apt update
-          sudo apt install git libgl-dev libegl-dev libpolkit-gobject-1-dev clang-10 liboath-dev python3 -y
+          sudo apt install git libgl-dev libegl-dev libpolkit-gobject-1-dev clang-10 liboath-dev python3 aspell aspell-en -y
           python3 -m pip install aqtinstall
           aqt install-qt --outputdir /opt linux desktop $QTVERSION gcc_64 -m all
 
@@ -66,6 +66,10 @@ jobs:
           source: '.'
           clangFormatVersion: 11
           style: file
+
+      - name: Spell check documentation files
+        run: |
+          scripts/utils/spellcheck.sh list
   ktlint:
     name: Run ktLint
     runs-on: ubuntu-latest
