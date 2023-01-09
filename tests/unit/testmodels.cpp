@@ -2079,4 +2079,71 @@ void TestModels::userFromSettings() {
   QCOMPARE(user.subscriptionNeeded(), true);
 }
 
+// Location
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+void TestModels::locationBasic() {
+  Location location;
+  QVERIFY(!location.initialized());
+  QCOMPARE(location.cityName(), "");
+  QCOMPARE(location.countryCode(), "");
+  QCOMPARE(location.subdivision(), "");
+  QVERIFY(qIsNaN(location.latitude()));
+  QVERIFY(qIsNaN(location.longitude()));
+  QVERIFY(location.ipAddress().isNull());
+}
+
+void TestModels::locationFromJson_data() {
+  QTest::addColumn<QByteArray>("json");
+  QTest::addColumn<bool>("result");
+  QTest::addColumn<QString>("city");
+  QTest::addColumn<QString>("country");
+  QTest::addColumn<QString>("subdivision");
+  QTest::addColumn<bool>("hasLatLong");
+
+  QTest::newRow("null") << QByteArray("") << false << "" << "" << "" << false;
+  QTest::newRow("invalid") << QByteArray("wow") << false << "" << "" << ""
+                           << false;
+  QTest::newRow("array") << QByteArray("[]]") << false << "" << "" << ""
+                         << false;
+
+  QJsonObject obj;
+  QTest::newRow("empty") << QJsonDocument(obj).toJson() << false << "" << ""
+                         << "" << false;
+
+  obj.insert("city", QJsonValue("Mordor"));
+  obj.insert("country", QJsonValue("XX"));
+  obj.insert("subdivision", QJsonValue("MTDOOM"));
+  obj.insert("ip", QJsonValue("169.254.0.1"));
+  QTest::newRow("okay no geoip") << QJsonDocument(obj).toJson() << true
+                                 << "Mordor" << "XX" << "MTDOOM" << false;
+
+  obj.insert("lat_long", QJsonValue("3.14159,-2.71828"));
+  QTest::newRow("okay with geoip") << QJsonDocument(obj).toJson() << true
+                                   << "Mordor" << "XX" << "MTDOOM" << true;
+}
+
+void TestModels::locationFromJson() {
+  QFETCH(QByteArray, json);
+  QFETCH(bool, result);
+  QFETCH(QString, city);
+  QFETCH(QString, country);
+  QFETCH(QString, subdivision);
+  QFETCH(bool, hasLatLong);
+
+  Location location;
+  QCOMPARE(location.fromJson(json), result);
+
+  QCOMPARE(location.cityName(), city);
+  QCOMPARE(location.countryCode(), country);
+  QCOMPARE(location.subdivision(), subdivision);
+  if(hasLatLong) {
+    QVERIFY(!qIsNaN(location.latitude()));
+    QVERIFY(!qIsNaN(location.longitude()));
+  } else {
+    QVERIFY(qIsNaN(location.latitude()));
+    QVERIFY(qIsNaN(location.longitude()));
+  }
+}
+
 static TestModels s_testModels;

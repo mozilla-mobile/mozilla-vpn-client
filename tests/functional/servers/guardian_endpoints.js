@@ -236,9 +236,9 @@ exports.endpoints = {
       status: 200,
       body: {
         city: 'Mordor',
-        country: 'Middle Earth',
+        country: 'XX',
         ip: '169.254.0.1',
-        lat_long: '37.386051,-122.083851',
+        lat_long: '3.14159,-2.71828',
         subdivision: 'MTDOOM',
       }
     },

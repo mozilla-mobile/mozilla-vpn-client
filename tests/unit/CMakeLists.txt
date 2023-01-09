@@ -139,6 +139,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/models/keys.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/licensemodel.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/licensemodel.h
+    ${MZ_SOURCE_DIR}/apps/vpn/models/location.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/models/location.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/recentconnections.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/recentconnections.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/server.cpp
