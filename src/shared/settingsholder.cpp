@@ -289,6 +289,8 @@ bool SettingsHolder::rollbackTransaction() {
   QMap<QString, QPair<const char*, QVariant>> transactionChanges(
       m_transactionChanges);
 
+  auto guard = qScopeGuard([&] { emit transactionRolledBack(); });
+
   if (!finalizeTransaction()) {
     return false;
   }
@@ -299,8 +301,6 @@ bool SettingsHolder::rollbackTransaction() {
     m_settings.setValue(i.key(), i.value().second);
     QMetaObject::invokeMethod(this, i.value().first, Qt::DirectConnection);
   }
-
-  emit transactionRolledBack();
 
   return true;
 }
