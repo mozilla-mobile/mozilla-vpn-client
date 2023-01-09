@@ -44,6 +44,7 @@ linux/bionic:
         docker-image: {in-tree: linux-build-bionic}
     run:
         command: /builds/worker/linux.sh --ppa ppa:okirby/qt6-backports
+    add-index-routes: linux-bionic
 
 linux/focal:
     description: "Linux Build (Ubuntu/Focal)"
@@ -58,6 +59,7 @@ linux/focal:
         docker-image: {in-tree: linux-build-focal}
     run:
         command: /builds/worker/linux.sh --ppa ppa:okirby/qt6-backports
+    add-index-routes: linux-focal
 
 linux/jammy:
     description: "Linux Build (Ubuntu/Jammy)"
@@ -72,6 +74,7 @@ linux/jammy:
         docker-image: {in-tree: linux-build-jammy}
     run:
         command: /builds/worker/linux.sh
+    add-index-routes: linux-jammy
 
 linux/kinetic:
     description: "Linux Build (Ubuntu/Kinetic)"
@@ -86,3 +89,4 @@ linux/kinetic:
         docker-image: {in-tree: linux-build-kinetic}
     run:
         command: /builds/worker/linux.sh
+    add-index-routes: linux-kinetic
