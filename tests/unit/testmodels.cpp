@@ -2101,26 +2101,35 @@ void TestModels::locationFromJson_data() {
   QTest::addColumn<QString>("subdivision");
   QTest::addColumn<bool>("hasLatLong");
 
-  QTest::newRow("null") << QByteArray("") << false << "" << "" << "" << false;
-  QTest::newRow("invalid") << QByteArray("wow") << false << "" << "" << ""
-                           << false;
-  QTest::newRow("array") << QByteArray("[]]") << false << "" << "" << ""
-                         << false;
+  QTest::newRow("null") << QByteArray("") << false << ""
+                        << ""
+                        << "" << false;
+  QTest::newRow("invalid") << QByteArray("wow") << false << ""
+                           << ""
+                           << "" << false;
+  QTest::newRow("array") << QByteArray("[]]") << false << ""
+                         << ""
+                         << "" << false;
 
   QJsonObject obj;
-  QTest::newRow("empty") << QJsonDocument(obj).toJson() << false << "" << ""
+  QTest::newRow("empty") << QJsonDocument(obj).toJson() << false << ""
+                         << ""
                          << "" << false;
 
   obj.insert("city", QJsonValue("Mordor"));
   obj.insert("country", QJsonValue("XX"));
   obj.insert("subdivision", QJsonValue("MTDOOM"));
   obj.insert("ip", QJsonValue("169.254.0.1"));
-  QTest::newRow("okay no geoip") << QJsonDocument(obj).toJson() << true
-                                 << "Mordor" << "XX" << "MTDOOM" << false;
+  QTest::newRow("okay no geoip")
+      << QJsonDocument(obj).toJson() << true << "Mordor"
+      << "XX"
+      << "MTDOOM" << false;
 
   obj.insert("lat_long", QJsonValue("3.14159,-2.71828"));
-  QTest::newRow("okay with geoip") << QJsonDocument(obj).toJson() << true
-                                   << "Mordor" << "XX" << "MTDOOM" << true;
+  QTest::newRow("okay with geoip")
+      << QJsonDocument(obj).toJson() << true << "Mordor"
+      << "XX"
+      << "MTDOOM" << true;
 }
 
 void TestModels::locationFromJson() {
@@ -2137,7 +2146,7 @@ void TestModels::locationFromJson() {
   QCOMPARE(location.cityName(), city);
   QCOMPARE(location.countryCode(), country);
   QCOMPARE(location.subdivision(), subdivision);
-  if(hasLatLong) {
+  if (hasLatLong) {
     QVERIFY(!qIsNaN(location.latitude()));
     QVERIFY(!qIsNaN(location.longitude()));
   } else {
