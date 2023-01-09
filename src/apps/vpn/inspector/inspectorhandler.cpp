@@ -311,8 +311,20 @@ static QList<InspectorCommand> s_commands{
                        QPoint point = pointF.toPoint();
                        point.rx() += item->width() / 2;
                        point.ry() += item->height() / 2;
+
+                       // It seems that in QT/QML there is a race-condition bug
+                       // between the rendering thread and the main one when
+                       // simulating clicks using QTest. At this point, all the
+                       // properties are synchronized, the animation is
+                       // probably already completed (otherwise it's a bug in
+                       // the test!) but it could be that he following
+                       // `mouse`Click` is ignored.
+                       // The horrible/temporary solution is to wait a bit more
+                       // and to add a delay (VPN-3697)
+                       QTest::qWait(150);
                        QTest::mouseClick(item->window(), Qt::LeftButton,
                                          Qt::NoModifier, point);
+
                        return obj;
                      }},
 
