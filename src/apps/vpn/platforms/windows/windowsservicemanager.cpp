@@ -10,7 +10,7 @@
 #include "Winsvc.h"
 #include "logger.h"
 #include "mozillavpn.h"
-#include "windowscommons.h"
+#include "platforms/windows/windowsutils.h"
 
 namespace {
 Logger logger("WindowsServiceManager");
@@ -38,7 +38,7 @@ WindowsServiceManager::WindowsServiceManager(LPCWSTR serviceName) {
                           (GENERIC_READ | SERVICE_START | SERVICE_STOP));
   err = GetLastError();
   if (err != NULL) {
-    WindowsCommons::windowsLog("OpenService failed");
+    WindowsUtils::windowsLog("OpenService failed");
     return;
   }
   m_has_access = true;
@@ -61,7 +61,7 @@ bool WindowsServiceManager::startPolling(DWORD goal_state, int max_wait_sec) {
   while (tries < max_wait_sec) {
     SERVICE_STATUS status;
     if (!QueryServiceStatus(m_service, &status)) {
-      WindowsCommons::windowsLog("Failed to retrieve the service status");
+      WindowsUtils::windowsLog("Failed to retrieve the service status");
       return false;
     }
 
@@ -113,7 +113,7 @@ bool WindowsServiceManager::startService() {
     logger.debug() << ("Service start requested");
     startPolling(SERVICE_RUNNING, 30);
   } else {
-    WindowsCommons::windowsLog("StartService failed");
+    WindowsUtils::windowsLog("StartService failed");
   }
   return ok;
 }
@@ -133,7 +133,7 @@ bool WindowsServiceManager::stopService() {
     logger.debug() << ("Service stop requested");
     startPolling(SERVICE_STOPPED, 10);
   } else {
-    WindowsCommons::windowsLog("StopService failed");
+    WindowsUtils::windowsLog("StopService failed");
   }
   return ok;
 }

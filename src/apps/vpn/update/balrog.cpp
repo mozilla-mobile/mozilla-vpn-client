@@ -24,7 +24,7 @@
 // Terrible hacking for Windows
 #if defined(MZ_WINDOWS)
 #  include "platforms/windows/golang-msvc-types.h"
-#  include "platforms/windows/windowscommons.h"
+#  include "platforms/windows/windowsutils.h"
 #  include "windows.h"
 #endif
 
@@ -204,7 +204,7 @@ bool Balrog::validateSignature(const QByteArray& x5uData,
   if (!balrogDll) {
     balrogDll = LoadLibrary(TEXT("balrog.dll"));
     if (!balrogDll) {
-      WindowsCommons::windowsLog("Failed to load balrog.dll");
+      WindowsUtils::windowsLog("Failed to load balrog.dll");
       return false;
     }
   }
@@ -213,7 +213,7 @@ bool Balrog::validateSignature(const QByteArray& x5uData,
     balrogSetLogger =
         (BalrogSetLogger*)GetProcAddress(balrogDll, "balrogSetLogger");
     if (!balrogSetLogger) {
-      WindowsCommons::windowsLog("Failed to get balrogSetLogger function");
+      WindowsUtils::windowsLog("Failed to get balrogSetLogger function");
       return false;
     }
   }
@@ -222,7 +222,7 @@ bool Balrog::validateSignature(const QByteArray& x5uData,
     balrogValidate =
         (BalrogValidate*)GetProcAddress(balrogDll, "balrogValidate");
     if (!balrogValidate) {
-      WindowsCommons::windowsLog("Failed to get balrogValidate function");
+      WindowsUtils::windowsLog("Failed to get balrogValidate function");
       return false;
     }
   }

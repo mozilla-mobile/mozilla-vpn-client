@@ -4,11 +4,34 @@
 
 #include "windowsutils.h"
 
+#include <Windows.h>
+
 #include <QSettings>
 #include <QSysInfo>
 
 constexpr const int WINDOWS_11_BUILD =
     22000;  // Build Number of the first release win 11 iso
+
+QString WindowsUtils::getErrorMessage() {
+  DWORD errorId = GetLastError();
+  LPSTR messageBuffer = nullptr;
+  size_t size = FormatMessageA(
+      FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
+          FORMAT_MESSAGE_IGNORE_INSERTS,
+      nullptr, errorId, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+      (LPSTR)&messageBuffer, 0, nullptr);
+
+  std::string message(messageBuffer, size);
+  QString result(message.c_str());
+  LocalFree(messageBuffer);
+  return result;
+}
+
+// A simple function to log windows error messages.
+void WindowsUtils::windowsLog(const QString& msg) {
+  QString errmsg = getErrorMessage();
+  logger.error() << msg << "-" << errmsg;
+}
 
 // Static
 QString WindowsUtils::windowsVersion() {
