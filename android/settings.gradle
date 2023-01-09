@@ -12,3 +12,4 @@ buildCache {
 include ':vpnglean'
 include ':daemon'
 include ':qtBindings'
+include ':adjust'

@@ -123,11 +123,8 @@ mkdir .tmp || die "Failed to create the temporary directory"
 print Y "Importing translation files..."
 python3 scripts/utils/import_languages.py || die "Failed to import languages"
 
-
-print Y "Copy and patch Adjust SDK..."
-rm -rf "android/src/com/adjust" || die "Failed to remove the adjust folder"
-cp -a "3rdparty/adjust-android-sdk/Adjust/sdk-core/src/main/java/com/." "android/src/com/" || die "Failed to copy the adjust codebase"
-git apply --directory="android/src/" "3rdparty/adjust_https_to_http.diff" || die "Failed to apply the adjust http patch"
+print Y "Patch Adjust files..."
+./scripts/android/patch_adjust.sh
 
 printn Y "Computing the version... "
 export SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ ) # Export so gradle can pick it up
@@ -152,6 +149,7 @@ if [[ "$RELEASE" ]]; then
     -DANDROID_NDK_ROOT=$ANDROID_NDK_ROOT \
     -DANDROID_SDK_ROOT=$ANDROID_SDK_ROOT \
     -DCMAKE_BUILD_TYPE=Release \
+    -DSKIP_GLEAN_PARSER=true \
     -DADJUST_TOKEN=$ADJUST_SDK_TOKEN \
     -DSENTRY_DSN=$SENTRY_DSN \
     -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
@@ -164,6 +162,7 @@ else
     -DANDROID_NDK_ROOT=$ANDROID_NDK_ROOT \
     -DANDROID_SDK_ROOT=$ANDROID_SDK_ROOT \
     -DCMAKE_BUILD_TYPE=Debug \
+    -DSKIP_GLEAN_PARSER=true \
     -DSENTRY_DSN=$SENTRY_DSN \
     -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
     -S . -B .tmp/
