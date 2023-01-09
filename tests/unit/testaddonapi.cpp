@@ -13,6 +13,7 @@
 #include "helper.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
+#include "urlopener.h"
 
 void TestAddonApi::controller() {
   MozillaVPN vpn;
@@ -205,6 +206,10 @@ void TestAddonApi::urlopener() {
   QVERIFY(!!message);
 
   settingsHolder.setPostAuthenticationShown(false);
+
+  UrlOpener* uo = UrlOpener::instance();
+  QVERIFY(!!uo);
+  uo->registerUrlLabel("aa", []() -> QString { return "http://foo.bar"; });
 
   AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
       message, ":/addons_test/api_urlopener.js");
