@@ -7,7 +7,6 @@
     "min_client_version": "2.13.0"
   },
   "type": "tutorial",
-  "translatable": false,
   "tutorial": {
     "id": "03_multi_hop",
     "image": "qrc:/addons/tutorial_03_multi_hop/image.svg",

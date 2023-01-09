@@ -7,7 +7,6 @@
     "min_client_version": "2.13.0"
   },
   "type": "tutorial",
-  "translatable": false,
   "tutorial": {
     "id": "04_split_tunneling",
     "settings_rollback_needed": true,
