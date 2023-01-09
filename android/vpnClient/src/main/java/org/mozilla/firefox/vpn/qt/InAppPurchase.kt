@@ -4,7 +4,7 @@
 
 @file:Suppress("KotlinJniMissingFunction")
 
-package org.mozilla.firefox.vpn
+package org.mozilla.firefox.vpn.qt
 
 import android.app.Activity
 import android.content.Context
@@ -32,7 +32,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.Serializable
-import org.mozilla.firefox.vpn.GleanMetrics.Sample
+import org.mozilla.firefox.vpn.qt.GleanMetrics.Sample
 
 /**
  * Generally this contains the contents of a native BillingResult.

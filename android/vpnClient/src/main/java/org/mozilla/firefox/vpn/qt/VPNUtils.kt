@@ -15,17 +15,10 @@ import android.os.Build
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
-import org.bouncycastle.asn1.ASN1Sequence
-import org.bouncycastle.asn1.pkcs.RSAPublicKey
 import java.io.IOException
-import java.security.KeyFactory
-import java.security.Signature
-import java.security.spec.RSAPublicKeySpec
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import org.mozilla.firefox.vpn.GleanMetrics.GleanBuildInfo
-import mozilla.telemetry.glean.Glean
-import mozilla.telemetry.glean.config.Configuration
+
 
 // Companion for AndroidUtils.cpp
 object VPNUtils {
@@ -100,7 +93,7 @@ object VPNUtils {
         val context = VPNActivity.getInstance()
         val intent = Intent()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+            intent.setAction(Settings.ACTION_VPN_SETTINGS)
             intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName())
         } else {
             intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS")
@@ -109,36 +102,13 @@ object VPNUtils {
         }
         context.startActivity(intent)
     }
+    
 
     @SuppressLint("Unused")
     @JvmStatic
-    fun verifyContentSignature(publicKey: ByteArray, content: ByteArray, signature: ByteArray): Boolean {
-        return try {
-            val sig = Signature.getInstance("SHA256withRSA")
-            // Use bountycastle to parse the openssl-rsa file
-            val pk: RSAPublicKey =
-                RSAPublicKey.getInstance(ASN1Sequence.fromByteArray(publicKey))
-            // Pass this to android signing stuff :)
-            val spec = RSAPublicKeySpec(pk.modulus, pk.publicExponent)
-            val kf: KeyFactory = KeyFactory.getInstance("RSA")
-            sig.initVerify(kf.generatePublic(spec))
+    private external fun recordGleanEvent(metricName: String)
 
-            sig.update(content)
-            sig.verify(signature)
-        } catch (e: Exception) {
-            Log.e("VPNUtils", "Signature Exception $e")
-            false
-        }
-    }
-
-    @SuppressLint("NewApi")
+    @SuppressLint("Unused")
     @JvmStatic
-    fun initializeGlean(ctx: Context, isTelemetryEnabled: Boolean, channel: String) {
-        Glean.initialize(
-            applicationContext = ctx.applicationContext,
-            uploadEnabled = isTelemetryEnabled,
-            buildInfo = GleanBuildInfo.buildInfo,
-            configuration = Configuration(channel = channel)
-        )
-    }
+    private external fun recordGleanEventWithExtraKeys(metricName: String, keysJSON: String)
 }
