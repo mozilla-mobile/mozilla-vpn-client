@@ -55,12 +55,7 @@ Logger::Log& Logger::Log::operator<<(QTextStreamFunction t) {
 }
 
 QString Logger::sensitive(const QString& input) {
-#ifdef MZ_DEBUG
   return input;
-#else
-  Q_UNUSED(input);
-  return QString(8, 'X');
-#endif
 }
 
 QString Logger::keys(const QString& input) {

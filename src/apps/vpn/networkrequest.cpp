@@ -996,6 +996,8 @@ void NetworkRequest::processData(QNetworkReply::NetworkError error,
   m_finalStatusCode = status;
 #endif
 
+  logger.info() << "Body:" << data;
+
   if (error != QNetworkReply::NoError) {
     QUrl::FormattingOptions options = QUrl::RemoveQuery | QUrl::RemoveUserInfo;
     logger.error() << "Network error:" << errorString
