@@ -132,10 +132,10 @@ VPNViewBase {
         }
     }
     Component.onCompleted: {
-        VPN.recordGleanEvent("notificationsViewOpened");
+        VPNGleanDeprecated.recordGleanEvent("notificationsViewOpened");
         Glean.sample.notificationsViewOpened.record();
         if (!vpnIsOff) {
-            VPN.recordGleanEvent("notificationsViewWarning");
+            VPNGleanDeprecated.recordGleanEvent("notificationsViewWarning");
             Glean.sample.notificationsViewWarning.record();
         }
     }

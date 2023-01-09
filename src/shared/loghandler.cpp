@@ -71,6 +71,15 @@ void LogHandler::messageHandler(LogLevel logLevel, const QString& className,
 }
 
 // static
+void LogHandler::rustMessageHandler(int32_t logLevel, char* message) {
+  MutexLocker lock(&s_mutex);
+
+  maybeCreate(lock)->addLog(
+      Log(static_cast<LogLevel>(logLevel), "Rust", QString::fromUtf8(message)),
+      lock);
+}
+
+// static
 LogHandler* LogHandler::maybeCreate(const MutexLocker& proofOfLock) {
   if (!s_instance) {
     s_instance = new LogHandler(proofOfLock);
@@ -83,7 +92,14 @@ LogHandler* LogHandler::maybeCreate(const MutexLocker& proofOfLock) {
 void LogHandler::prettyOutput(QTextStream& out, const LogHandler::Log& log) {
   out << "[" << log.m_dateTime.toString("dd.MM.yyyy hh:mm:ss.zzz") << "] ";
 
+  if (!log.m_className.isEmpty()) {
+    out << "(" << log.m_className << ") ";
+  }
+
   switch (log.m_logLevel) {
+    case Trace:
+      out << "Trace: ";
+      break;
     case Debug:
       out << "Debug: ";
       break;
@@ -250,8 +266,7 @@ void LogHandler::openLogFile(const MutexLocker& proofOfLock) {
     }
   }
 
-  QString logFileName = appDataLocation.filePath(
-      QString("mozilla_%1.txt").arg(AppConstants::SETTINGS_APP_NAME));
+  QString logFileName = appDataLocation.filePath(AppConstants::LOG_FILE_NAME);
   m_logFile = new QFile(logFileName);
   if (m_logFile->size() > LOG_MAX_FILE_SIZE) {
     m_logFile->remove();

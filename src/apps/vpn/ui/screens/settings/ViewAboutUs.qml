@@ -135,11 +135,11 @@ VPNViewBase {
 
                onClicked: {
                    if (openUrl === "terms-of-service") {
-                       VPNUrlOpener.openLink(VPNUrlOpener.LinkTermsOfService);
+                       VPNUrlOpener.openUrlLabel("termsOfService");
                    }
 
                    if (openUrl === "link-privacy-notice") {
-                       VPNUrlOpener.openLink(VPNUrlOpener.LinkPrivacyNotice);
+                       VPNUrlOpener.openUrlLabel("privacyNotice");
                    }
 
                    if (openView) {

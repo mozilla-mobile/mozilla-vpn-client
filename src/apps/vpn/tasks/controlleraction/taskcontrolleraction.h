@@ -22,12 +22,16 @@ class TaskControllerAction final : public Task {
     eActivate,
     eDeactivate,
     eSilentSwitch,
+    eSwitch,
   };
+  Q_ENUM(TaskAction);
 
   explicit TaskControllerAction(TaskAction action);
   ~TaskControllerAction();
 
   void run() override;
+
+  virtual DeletePolicy deletePolicy() const { return NonDeletable; }
 
  private slots:
   void stateChanged();

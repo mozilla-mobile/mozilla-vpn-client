@@ -6,13 +6,14 @@
 
 #include <QJsonObject>
 #include <QMetaEnum>
+#include <QTimer>
 
 #include "glean/generated/metrics.h"
+#include "gleandeprecated.h"
 #include "l18nstrings.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "notificationhandler.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
@@ -118,7 +119,7 @@ void AddonMessage::updateMessageState(MessageState newState) {
           ._messageId = id(),
           ._messageState = newStateSetting,
       });
-  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
       GleanSample::addonMessageStateChanged,
       {{"message_id", id()}, {"message_state", newStateSetting}});
 }

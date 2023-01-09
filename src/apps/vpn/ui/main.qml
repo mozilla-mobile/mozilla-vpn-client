@@ -195,6 +195,19 @@ Window {
             Pings.main.submit();
         }
 
+        function onAboutToQuit() {
+            console.debug("about to quit, shutdown Glean");
+            // Submit the main ping in case there are outstading metrics in storage before shutdown.
+            Pings.main.submit();
+            // Use glean's built-in shutdown method - https://mozilla.github.io/glean/book/reference/general/shutdown.html
+            Glean.shutdown();
+        }
+    }
+
+    Connections {
+        target: VPNGleanDeprecated
+        enabled: Qt.platform.os !== "android"
+
         function onRecordGleanEvent(sample) {
             console.debug("recording Glean event");
             Sample[sample].record();
@@ -203,14 +216,6 @@ Window {
         function onRecordGleanEventWithExtraKeys(sample, extraKeys) {
             console.debug("recording Glean event with extra keys");
             Sample[sample].record(extraKeys);
-        }
-
-        function onAboutToQuit() {
-            console.debug("about to quit, shutdown Glean");
-            // Submit the main ping in case there are outstading metrics in storage before shutdown.
-            Pings.main.submit();
-            // Use glean's built-in shutdown method - https://mozilla.github.io/glean/book/reference/general/shutdown.html
-            Glean.shutdown();
         }
     }
 

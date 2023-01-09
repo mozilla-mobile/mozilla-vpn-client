@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use std::env;
+use std::os::raw::c_char;
 
 use ffi_support::FfiStr;
 use glean::{ClientInfoMetrics, Configuration};
@@ -10,6 +11,7 @@ use glean::{ClientInfoMetrics, Configuration};
 use ffi::helpers::FallibleToString;
 use metrics::__generated_pings::register_pings;
 use uploader::VPNPingUploader;
+use logger::Logger;
 
 // Make internal Glean symbols public for mobile SDK consumption.
 pub use glean_core;
@@ -17,8 +19,15 @@ pub use glean_core;
 mod ffi;
 mod metrics;
 mod uploader;
+mod logger;
 
 const GLEAN_APPLICATION_ID: &str = "mozillavpn";
+
+#[no_mangle]
+pub extern "C" fn glean_register_log_handler(message_handler: extern fn(i32, *mut c_char)) {
+    let logger = Logger::new(message_handler);
+    logger.init();
+}
 
 #[no_mangle]
 pub extern "C" fn glean_initialize(is_telemetry_enabled: bool, data_path: FfiStr, channel: FfiStr) {

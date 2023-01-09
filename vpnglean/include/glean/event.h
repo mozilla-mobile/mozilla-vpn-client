@@ -9,6 +9,12 @@
 #include <QJsonObject>
 #include <QObject>
 
+#if not(defined(__wasm__) || defined(BUILD_QMAKE))
+#  include "vpnglean.h"
+#else
+enum ErrorType {};
+#endif
+
 struct FfiExtra {
   std::vector<const char*> keys;
   std::vector<const char*> values;
@@ -72,21 +78,6 @@ class EventMetric final {
   Q_INVOKABLE void record(const QJsonObject& extras);
 
   void record(const EventMetricExtra& extras);
-
-  // TODO: Just use the glean_core type once
-  // https://github.com/mozilla/glean/pull/2283 lands.
-  enum ErrorType {
-    /// For when the value to be recorded does not match the metric-specific
-    /// restrictions
-    InvalidValue,
-    /// For when the label of a labeled metric does not match the restrictions
-    InvalidLabel,
-    /// For when the metric caught an invalid state while recording
-    InvalidState,
-    /// For when the value to be recorded overflows the metric-specific upper
-    /// range
-    InvalidOverflow,
-  };
 
   Q_INVOKABLE int32_t testGetNumRecordedErrors(ErrorType errorType) const;
 

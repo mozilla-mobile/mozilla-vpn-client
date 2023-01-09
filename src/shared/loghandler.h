@@ -64,6 +64,8 @@ class LogHandler final : public QObject {
   static void messageHandler(LogLevel logLevel, const QString& className,
                              const QString& message);
 
+  static void rustMessageHandler(int32_t logLevel, char* message);
+
   static void prettyOutput(QTextStream& out, const LogHandler::Log& log);
 
   static void writeLogs(QTextStream& out);

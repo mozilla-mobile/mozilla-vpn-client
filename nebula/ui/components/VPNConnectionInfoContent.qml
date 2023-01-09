@@ -78,19 +78,6 @@ VPNFlickable {
                     Layout.rightMargin: VPNTheme.theme.windowMargin
                 }
 
-                VPNCallout {
-                    calloutCopy: VPNl18n.ConnectionInfoMultiHopCallout
-                    calloutImage: "qrc:/nebula/resources/connection-info.svg"
-                    color: VPNTheme.theme.white
-                    fontPixelSize: VPNTheme.theme.fontSizeSmall
-                    iconSize: VPNTheme.theme.iconSize * 1.25
-                    spacing: VPNTheme.theme.listSpacing * 0.5
-                    visible: serverLocations.isMultipHop
-
-                    Layout.bottomMargin: VPNTheme.theme.windowMargin
-                    Layout.leftMargin: VPNTheme.theme.windowMargin
-                }
-
                 ColumnLayout {
                     property bool isMultipHop: (typeof(VPNCurrentServer.entryCountryCode) !== undefined
                         && VPNCurrentServer.entryCountryCode !== "")
@@ -106,7 +93,7 @@ VPNFlickable {
                         VPNConnectionInfoItem {
                             id: entryServerLabel
                             title: serverLocations.isMultipHop
-                                ? VPNServerCountryModel.getLocalizedCountryName(VPNCurrentServer.entryCountryCode)
+                                ? VPNCurrentServer.localizedEntryCityName
                                 : ""
                             subtitle: ""
                             iconPath: serverLocations.isMultipHop
@@ -120,6 +107,7 @@ VPNFlickable {
 
                         VPNIcon {
                             id: arrowIcon
+                            anchors.horizontalCenter: parent.horizontalCenter
                             source: "qrc:/nebula/resources/arrow-forward-white.svg"
                             sourceSize {
                                 height: VPNTheme.theme.iconSize * 1.25
@@ -132,9 +120,7 @@ VPNFlickable {
                         }
 
                         VPNConnectionInfoItem {
-                            title: VPNServerCountryModel.getLocalizedCountryName(
-                                VPNCurrentServer.exitCountryCode
-                            )
+                            title: VPNCurrentServer.localizedExitCityName
                             subtitle: serverLocations.isMultipHop
                                 ? ""
                                 : VPNCurrentServer.localizedExitCityName
@@ -280,6 +266,13 @@ VPNFlickable {
                 title: VPNl18n.ConnectionInfoTroubleshootingBulletTwo,
                 type: "arrow",
             });
+
+            if (serverLocations.isMultipHop) {
+                checkmarkListModel.append({
+                    title: VPNl18n.ConnectionInfoTroubleshootingBulletThree,
+                    type: "arrow",
+                });
+            }
         }
     }
 

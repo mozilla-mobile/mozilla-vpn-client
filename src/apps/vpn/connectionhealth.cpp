@@ -9,6 +9,7 @@
 #include <QRandomGenerator>
 
 #include "glean/generated/metrics.h"
+#include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/server.h"
@@ -137,11 +138,11 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
     MozillaVPN::instance()->silentSwitch();
 
     mozilla::glean::sample::connection_health_unstable.record();
-    emit MozillaVPN::instance()->recordGleanEvent(
+    emit GleanDeprecated::instance()->recordGleanEvent(
         GleanSample::connectionHealthUnstable);
   } else if (stability == NoSignal) {
     mozilla::glean::sample::connection_health_no_signal.record();
-    emit MozillaVPN::instance()->recordGleanEvent(
+    emit GleanDeprecated::instance()->recordGleanEvent(
         GleanSample::connectionHealthNoSignal);
   }
 

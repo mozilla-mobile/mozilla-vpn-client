@@ -593,7 +593,7 @@ you're embedding glean v0.21.2 then it will still, for Qt's purpose, be v0.21.
 ### Working on tickets with new Glean instrumentation
 
 If you are responsible for a piece of work that adds new Glean instrumentation you will need to do a data review.
-Follwoing is the recommended process along with some pointers.
+Following is the recommended process along with some pointers.
 
 > The data review process is also described here: https://wiki.mozilla.org/Data_Collection
 
