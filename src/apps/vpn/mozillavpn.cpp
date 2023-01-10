@@ -1670,7 +1670,8 @@ void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {
   // automatic server selection.
   //
   // TODO: This ordering requirement can be relaxed in the future once automatic
-  // server selection is implemented upon activation.
+  // server selection is implemented upon activation. See JIRA issue
+  // https://mozilla-hub.atlassian.net/browse/VPN-3726 for more information.
   if (!m_private->m_location.initialized()) {
     Controller::State st = m_private->m_controller.state();
     if (st == Controller::StateOff || st == Controller::StateInitializing) {

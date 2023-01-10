@@ -274,8 +274,6 @@ QStringList ServerCountryModel::pickRandom() const {
 QStringList ServerCountryModel::pickBest(const Location& location) const {
   double latitude = location.latitude();
   double longitude = location.longitude();
-  double clientSin = qSin(latitude * M_PI / 180.0);
-  double clientCos = qCos(latitude * M_PI / 180.0);
   if (qIsNaN(latitude) || qIsNaN(longitude)) {
     // If we don't know the client's location, just pick at random.
     return pickRandom();
@@ -288,6 +286,8 @@ QStringList ServerCountryModel::pickBest(const Location& location) const {
   // TODO: Include other ranking data, such as latency and number of servers.
   QString bestCountry;
   QString bestCity;
+  double clientSin = qSin(latitude * M_PI / 180.0);
+  double clientCos = qCos(latitude * M_PI / 180.0);
   double bestDistance = M_2_PI;
   for (const ServerCountry& country : m_countries) {
     for (const ServerCity& city : country.cities()) {
