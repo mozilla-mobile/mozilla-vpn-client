@@ -95,7 +95,10 @@ VPNViewBase {
                 imageLeftSrc: "qrc:/ui/resources/settings/language.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: VPNLocalizer.isRightToLeft
-                onClicked: stackview.push("qrc:/ui/screens/settings/ViewLanguage.qml")
+                onClicked: {
+                    VPNLocalizer.sortLanguages();
+                    stackview.push("qrc:/ui/screens/settings/ViewLanguage.qml")
+                }
                 visible: VPNLocalizer.hasLanguages
                 width: parent.width - VPNTheme.theme.windowMargin
             }

@@ -59,6 +59,8 @@ class Localizer final : public QAbstractListModel {
 
   QLocale locale() const { return m_locale; }
 
+  Q_INVOKABLE void sortLanguages();
+
   bool isRightToLeft() const;
 
   static QList<QPair<QString, QString>> parseBCP47Languages(

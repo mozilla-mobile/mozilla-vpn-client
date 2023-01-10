@@ -222,15 +222,6 @@ bool Localizer::loadLanguage(const QString& code) {
 
   m_locale = locale;
   emit localeChanged();
-
-  // Sorting languages.
-  beginResetModel();
-  Collator collator;
-  std::sort(m_languages.begin(), m_languages.end(),
-            std::bind(languageSort, std::placeholders::_1,
-                      std::placeholders::_2, &collator));
-  endResetModel();
-
   return true;
 }
 
@@ -404,6 +395,15 @@ QString Localizer::localizeCurrency(double value,
   }
 
   return locale.toCurrencyString(value, symbol);
+}
+
+void Localizer::sortLanguages() {
+  beginResetModel();
+  Collator collator;
+  std::sort(m_languages.begin(), m_languages.end(),
+            std::bind(languageSort, std::placeholders::_1,
+                      std::placeholders::_2, &collator));
+  endResetModel();
 }
 
 // static
