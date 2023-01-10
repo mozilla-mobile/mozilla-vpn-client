@@ -600,6 +600,13 @@ Item {
     }
 
     VPNIPInfoPanel {
+        property var connectionStabilityListener: VPNConnectionHealth.stability
+        onConnectionStabilityListenerChanged: {
+            if (VPNConnectionHealth.stability === VPNConnectionHealth.NoSignal) {
+                ipInfoPanel.isOpen = false;
+            }
+        }
+
         id: ipInfoPanel
         objectName: "ipInfoPanel"
 
@@ -625,7 +632,7 @@ Item {
             ? connectionInfoCloseText
             : VPNl18n.ConnectionInfoIpInfoButtonLabel
         buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
-        enabled: visible
+        enabled: visible && VPNConnectionHealth.stability !== VPNConnectionHealth.NoSignal
         opacity: visible ? 1 : 0
         visible: connectionInfoToggleButton.visible
             && !connectionInfoScreen.isOpen
@@ -649,6 +656,7 @@ Item {
                 height: iconSize
                 width: iconSize
             }
+            opacity: parent.enabled ? 1 : .5
         }
 
         Behavior on opacity {
