@@ -191,6 +191,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/keys.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/licensemodel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/licensemodel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/location.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/location.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/recentconnections.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/recentconnections.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/server.cpp
@@ -272,6 +274,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/function/taskfunction.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getfeaturelist/taskgetfeaturelist.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getfeaturelist/taskgetfeaturelist.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getlocation/taskgetlocation.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getlocation/taskgetlocation.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/group/taskgroup.cpp

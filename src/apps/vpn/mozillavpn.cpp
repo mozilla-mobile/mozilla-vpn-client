@@ -37,6 +37,7 @@
 #include "tasks/deleteaccount/taskdeleteaccount.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/getfeaturelist/taskgetfeaturelist.h"
+#include "tasks/getlocation/taskgetlocation.h"
 #include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
 #include "tasks/group/taskgroup.h"
 #include "tasks/heartbeat/taskheartbeat.h"
@@ -357,7 +358,8 @@ void MozillaVPN::initialize() {
 
   Q_ASSERT(!m_private->m_serverData.hasServerData());
   if (!m_private->m_serverData.fromSettings()) {
-    QStringList list = m_private->m_serverCountryModel.pickRandom();
+    QStringList list =
+        m_private->m_serverCountryModel.pickBest(m_private->m_location);
     Q_ASSERT(list.length() >= 2);
 
     m_private->m_serverData.update(list[0], list[1]);
@@ -695,7 +697,8 @@ void MozillaVPN::serversFetched(const QByteArray& serverData) {
       !m_private->m_serverCountryModel.exists(
           m_private->m_serverData.exitCountryCode(),
           m_private->m_serverData.exitCityName())) {
-    QStringList list = m_private->m_serverCountryModel.pickRandom();
+    QStringList list =
+        m_private->m_serverCountryModel.pickBest(m_private->m_location);
     Q_ASSERT(list.length() >= 2);
 
     m_private->m_serverData.update(list[0], list[1]);
@@ -1661,6 +1664,21 @@ void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {
       new TaskGetSubscriptionDetails(
           TaskGetSubscriptionDetails::NoAuthenticationFlow,
           ErrorHandler::PropagateError)};
+
+  // The VPN needs to be off in order to determine the client's real location.
+  // And it also needs to complete before TaskServers in case this triggers an
+  // automatic server selection.
+  //
+  // TODO: This ordering requirement can be relaxed in the future once automatic
+  // server selection is implemented upon activation. See JIRA issue
+  // https://mozilla-hub.atlassian.net/browse/VPN-3726 for more information.
+  if (!m_private->m_location.initialized()) {
+    Controller::State st = m_private->m_controller.state();
+    if (st == Controller::StateOff || st == Controller::StateInitializing) {
+      TaskScheduler::scheduleTask(
+          new TaskGetLocation(ErrorHandler::PropagateError));
+    }
+  }
 
   if (refreshProducts) {
     if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {

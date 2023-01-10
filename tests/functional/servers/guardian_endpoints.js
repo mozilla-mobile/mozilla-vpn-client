@@ -232,6 +232,16 @@ exports.endpoints = {
         ]
       }
     },
+    '/api/v1/vpn/ipinfo': {
+      status: 200,
+      body: {
+        city: 'Mordor',
+        country: 'XX',
+        ip: '169.254.0.1',
+        lat_long: '3.14159,-2.71828',
+        subdivision: 'MTDOOM',
+      }
+    },
 
     '/r/vpn/terms': {status: 200, body: {}},
 
