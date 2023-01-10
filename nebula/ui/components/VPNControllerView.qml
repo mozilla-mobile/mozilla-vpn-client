@@ -148,10 +148,6 @@ Item {
                 target: animatedRings
                 visible: false
             }
-            PropertyChanges {
-                target: ipInfoPanel
-                isOpen: false
-            }
 
         },
         State {
@@ -281,11 +277,6 @@ Item {
                 opacity: 1
                 startAnimation: true
             }
-
-            PropertyChanges {
-                target: ipInfoPanel
-                isOpen: false
-            }
         },
         State {
             name: VPNController.StateDisconnecting
@@ -329,10 +320,6 @@ Item {
             PropertyChanges {
                 target: animatedRings
                 visible: false
-            }
-            PropertyChanges {
-                target: ipInfoPanel
-                isOpen: false
             }
         },
         State {
@@ -380,11 +367,6 @@ Item {
                 visible: false
                 opacity: 1
                 startAnimation: false
-            }
-
-            PropertyChanges {
-                target: ipInfoPanel
-                isOpen: false
             }
         }
     ]
@@ -615,12 +597,21 @@ Item {
     }
 
     VPNIPInfoPanel {
+        property var connectionStabilityWatcher: VPNConnectionHealth.stability
+        property var vpnStateWatcher: VPNController.state
+
         id: ipInfoPanel
         objectName: "ipInfoPanel"
 
         opacity: ipInfoPanel.isOpen ? 1 : 0
         visible: opacity > 0
         z: 1
+
+        onVpnStateWatcherChanged: ipInfoPanel.isOpen = false
+        onConnectionStabilityWatcherChanged: if (ipInfoPanel.isOpen &&
+                                                VPNConnectionHealth.stability === VPNConnectionHealth.NoSignal) {
+                                                 ipInfoPanel.isOpen = false;
+                                             }
     }
 
     VPNIconButton {
@@ -640,7 +631,7 @@ Item {
             ? connectionInfoCloseText
             : VPNl18n.ConnectionInfoIpInfoButtonLabel
         buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
-        enabled: visible
+        enabled: visible && VPNConnectionHealth.stability !== VPNConnectionHealth.NoSignal
         opacity: visible ? 1 : 0
         visible: connectionInfoToggleButton.visible
             && !connectionInfoScreen.isOpen
@@ -664,6 +655,7 @@ Item {
                 height: iconSize
                 width: iconSize
             }
+            opacity: parent.enabled ? 1 : .6
         }
 
         Behavior on opacity {
