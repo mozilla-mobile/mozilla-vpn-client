@@ -56,6 +56,10 @@ p {
 	margin: .5rem;
 }
 
+#presetInfo li {
+	margin-left: 1.5rem;
+}
+
 header,
 footer {
 	display: flex;

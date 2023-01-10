@@ -78,19 +78,6 @@ VPNFlickable {
                     Layout.rightMargin: VPNTheme.theme.windowMargin
                 }
 
-                VPNCallout {
-                    calloutCopy: VPNl18n.ConnectionInfoMultiHopCallout
-                    calloutImage: "qrc:/nebula/resources/connection-info.svg"
-                    color: VPNTheme.theme.white
-                    fontPixelSize: VPNTheme.theme.fontSizeSmall
-                    iconSize: VPNTheme.theme.iconSize * 1.25
-                    spacing: VPNTheme.theme.listSpacing * 0.5
-                    visible: serverLocations.isMultipHop
-
-                    Layout.bottomMargin: VPNTheme.theme.windowMargin
-                    Layout.leftMargin: VPNTheme.theme.windowMargin
-                }
-
                 ColumnLayout {
                     property bool isMultipHop: (typeof(VPNCurrentServer.entryCountryCode) !== undefined
                         && VPNCurrentServer.entryCountryCode !== "")
@@ -137,7 +124,7 @@ VPNFlickable {
                             )
                             subtitle: serverLocations.isMultipHop
                                 ? ""
-                                : VPNCurrentServer.localizedCityName
+                                : VPNCurrentServer.localizedExitCityName
                             iconPath: "qrc:/nebula/resources/flags/"
                                 + VPNCurrentServer.exitCountryCode.toUpperCase()
                                 + ".png"
@@ -280,6 +267,13 @@ VPNFlickable {
                 title: VPNl18n.ConnectionInfoTroubleshootingBulletTwo,
                 type: "arrow",
             });
+
+            if (serverLocations.isMultipHop) {
+                checkmarkListModel.append({
+                    title: VPNl18n.ConnectionInfoTroubleshootingBulletThree,
+                    type: "arrow",
+                });
+            }
         }
     }
 

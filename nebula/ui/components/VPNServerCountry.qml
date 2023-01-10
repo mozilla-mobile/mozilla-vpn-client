@@ -20,6 +20,8 @@ VPNClickableRow {
     property var currentCityIndex
     property alias serverCountryName: countryName.text
 
+    property bool hasAvailableCities: cities.reduce((initialValue, city) => (initialValue || VPNServerCountryModel.cityConnectionScore(code, city.code) >= 0), false)
+
     function openCityList() {
         cityListVisible = !cityListVisible;
         const itemDistanceFromWindowTop = serverCountry.mapToItem(null, 0, 0).y - multiHopMenuHeight;

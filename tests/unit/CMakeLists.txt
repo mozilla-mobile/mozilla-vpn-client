@@ -8,6 +8,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${CMAKE_BINARY_DIR}/vpnglean)
 include_directories(${MZ_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR}/shared)
+include_directories(${MZ_SOURCE_DIR}/shared/glean)
 include_directories(${MZ_SOURCE_DIR}/apps/vpn)
 include_directories(${MZ_SOURCE_DIR}/apps/vpn/composer)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star)
@@ -117,13 +118,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/frontend/navigatorreloader.h
     ${MZ_SOURCE_DIR}/apps/vpn/glean/glean.h
     ${MZ_SOURCE_DIR}/apps/vpn/glean/glean.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/glean/generated/metrics.h
-    ${MZ_SOURCE_DIR}/apps/vpn/glean/generated/pings.h
-    ${MZ_SOURCE_DIR}/apps/vpn/glean/private/event.h
-    ${MZ_SOURCE_DIR}/apps/vpn/glean/private/event.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/glean/private/ping.h
-    ${MZ_SOURCE_DIR}/apps/vpn/glean/private/ping.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/glean/metrictypes.h
     ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.h
     ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorutils.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorutils.h
@@ -164,8 +158,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/models/user.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/user.h
     ${MZ_SOURCE_DIR}/apps/vpn/mozillavpn.h
-    ${MZ_SOURCE_DIR}/apps/vpn/networkmanager.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/networkmanager.h
     ${MZ_SOURCE_DIR}/apps/vpn/networkrequest.h
     ${MZ_SOURCE_DIR}/apps/vpn/networkwatcher.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/networkwatcher.h
@@ -181,16 +173,12 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/platforms/dummy/dummynetworkwatcher.h
     ${MZ_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.h
-    ${MZ_SOURCE_DIR}/apps/vpn/qmlengineholder.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/qmlengineholder.h
     ${MZ_SOURCE_DIR}/apps/vpn/releasemonitor.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/releasemonitor.h
     ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.h
     ${MZ_SOURCE_DIR}/apps/vpn/signature.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/signature.h
-    ${MZ_SOURCE_DIR}/apps/vpn/simplenetworkmanager.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/simplenetworkmanager.h
     ${MZ_SOURCE_DIR}/apps/vpn/statusicon.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/statusicon.h
     ${MZ_SOURCE_DIR}/apps/vpn/systemtraynotificationhandler.h
@@ -228,8 +216,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/update/versionapi.h
     ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.h
-    ${MZ_SOURCE_DIR}/apps/vpn/urlopener.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/urlopener.h
     ${MZ_SOURCE_DIR}/apps/vpn/websocket/exponentialbackoffstrategy.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/websocket/exponentialbackoffstrategy.h
     ${MZ_SOURCE_DIR}/apps/vpn/websocket/pushmessage.cpp
@@ -245,6 +231,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/env.h
     ${MZ_SOURCE_DIR}/shared/feature.cpp
     ${MZ_SOURCE_DIR}/shared/feature.h
+    ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.cpp
+    ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.h
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20Poly1305_32.c
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Curve25519_51.c
@@ -257,8 +245,12 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/logger.h
     ${MZ_SOURCE_DIR}/shared/loghandler.cpp
     ${MZ_SOURCE_DIR}/shared/loghandler.h
+    ${MZ_SOURCE_DIR}/shared/networkmanager.cpp
+    ${MZ_SOURCE_DIR}/shared/networkmanager.h
     ${MZ_SOURCE_DIR}/shared/platforms/wasm/wasmcryptosettings.cpp
     ${MZ_SOURCE_DIR}/shared/qmlpath.cpp
+    ${MZ_SOURCE_DIR}/shared/qmlengineholder.cpp
+    ${MZ_SOURCE_DIR}/shared/qmlengineholder.h
     ${MZ_SOURCE_DIR}/shared/qmlpath.h
     ${MZ_SOURCE_DIR}/shared/rfc/rfc1918.cpp
     ${MZ_SOURCE_DIR}/shared/rfc/rfc1918.h
@@ -270,11 +262,15 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/rfc/rfc5735.h
     ${MZ_SOURCE_DIR}/shared/settingsholder.cpp
     ${MZ_SOURCE_DIR}/shared/settingsholder.h
+    ${MZ_SOURCE_DIR}/shared/simplenetworkmanager.cpp
+    ${MZ_SOURCE_DIR}/shared/simplenetworkmanager.h
     ${MZ_SOURCE_DIR}/shared/task.h
     ${MZ_SOURCE_DIR}/shared/taskscheduler.cpp
     ${MZ_SOURCE_DIR}/shared/taskscheduler.h
     ${MZ_SOURCE_DIR}/shared/temporarydir.cpp
     ${MZ_SOURCE_DIR}/shared/temporarydir.h
+    ${MZ_SOURCE_DIR}/shared/urlopener.cpp
+    ${MZ_SOURCE_DIR}/shared/urlopener.h
     ${MZ_SOURCE_DIR}/shared/versionutils.cpp
     ${MZ_SOURCE_DIR}/shared/versionutils.h
 )

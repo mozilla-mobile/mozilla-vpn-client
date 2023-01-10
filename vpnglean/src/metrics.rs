@@ -16,9 +16,9 @@ impl From<u32> for MetricId {
 }
 
 pub mod __generated_pings {
-    include!("generated/pings.rs");
+    include!(concat!(env!("CARGO_TARGET_DIR"), "/glean/generated/pings.rs"));
 }
 
 pub mod __generated_metrics {
-    include!("generated/metrics.rs");
+    include!(concat!(env!("CARGO_TARGET_DIR"), "/glean/generated/metrics.rs"));
 }

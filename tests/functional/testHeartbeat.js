@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const { initialScreen, telemetryScreen, generalElements } = require('./elements.js');
+const queries = require('./queries.js');
 const vpn = require('./helper.js');
 
 describe('Backend failure', function() {
@@ -11,59 +11,59 @@ describe('Backend failure', function() {
 
   async function backendFailureAndRestore() {
     await vpn.forceHeartbeatFailure();
-    await vpn.waitForElementAndClick('heartbeatTryButton');
+    await vpn.waitForQueryAndClick(
+        queries.screenBackendFailure.HEARTBEAT_TRY_BUTTON.visible());
   }
 
   it('Backend failure during the main view', async () => {
-    await vpn.waitForMainView();
+    await vpn.waitForInitialView();
     await backendFailureAndRestore();
 
-    await vpn.waitForElement(initialScreen.GET_HELP_LINK);
-    await vpn.waitForElementProperty(initialScreen.GET_HELP_LINK, 'visible', 'true');
+    await vpn.waitForQueryAndClick(queries.screenInitialize.GET_HELP_LINK);
+    await vpn.waitForQuery(queries.screenGetHelp.LINKS.visible());
   });
 
   /* TODO:
     it('Backend failure in the help menu', async () => {
-      await vpn.waitForElementProperty(initialScreen.GET_HELP_LINK, 'visible', 'true');
-      await vpn.clickOnElement(initialScreen.GET_HELP_LINK);
-      await vpn.waitForElementProperty(initialScreen.GET_HELP_LINK, 'visible', 'false');
+      await vpn.waitForQueryAndClick(
+        queries.screenInitialize.GET_HELP_LINK.visible());
 
-      await vpn.waitForElement('getHelpBack');
-      await vpn.waitForElementProperty('getHelpBack', 'visible', 'true');
+      await
+    vpn.waitForQuery(queries.screenGetHelp.BACK_BUTTON.visible());
 
       await backendFailureAndRestore();
     });
   */
 
-    // TODO: check fix
+  // TODO: check fix
   it('Backend failure in the onboarding (aborting in each phase)', async () => {
     let onboardingView = 0;
     let onboarding = true;
     while (onboarding) {
-      await vpn.waitForElement(initialScreen.LEARN_MORE_LINK)
-      assert(await vpn.getElementProperty(initialScreen.LEARN_MORE_LINK, 'visible') === 'true');
-      await vpn.waitForElementAndClick(initialScreen.LEARN_MORE_LINK);
+      await vpn
+          .waitForQuery(queries.screenInitialize.LEARN_MORE_LINK.visible())
+              await vpn.waitForQueryAndClick(
+                  queries.screenInitialize.LEARN_MORE_LINK.visible());
 
-      await vpn.waitForElement(initialScreen.SKIP_ONBOARDING);
-      await vpn.waitForElementProperty(initialScreen.SKIP_ONBOARDING, 'visible', 'true');
-
-      await vpn.wait();
+      await vpn.waitForQuery(
+          queries.screenInitialize.SKIP_ONBOARDING.visible());
 
       for (let i = 0; i < onboardingView; ++i) {
-        assert(await vpn.hasElement(initialScreen.ONBOARDING_NEXT));
-        assert(await vpn.getElementProperty(initialScreen.ONBOARDING_NEXT, 'visible') === 'true');
-        await vpn.clickOnElement(initialScreen.ONBOARDING_NEXT);
-
-        await vpn.wait();
+        assert(await vpn.query(
+            queries.screenInitialize.ONBOARDING_NEXT.visible()));
+        await vpn.clickOnQuery(
+            queries.screenInitialize.ONBOARDING_NEXT.visible());
       }
 
-      assert(await vpn.getElementProperty(initialScreen.ONBOARDING_NEXT, 'visible') === 'true');
-      onboarding = await vpn.getElementProperty(initialScreen.ONBOARDING_NEXT, 'text') === 'Next';
-      
-      await backendFailureAndRestore();      
-      await vpn.waitForElement(initialScreen.GET_HELP_LINK);
-      await vpn.waitForElementProperty(initialScreen.GET_HELP_LINK, 'visible', 'true');
-      await vpn.wait()
+      assert(
+          await vpn.query(queries.screenInitialize.ONBOARDING_NEXT.visible()));
+      onboarding = await vpn.getQueryProperty(
+                       queries.screenInitialize.ONBOARDING_NEXT.visible(),
+                       'text') === 'Next';
+
+      await backendFailureAndRestore();
+      await vpn.waitForQuery(queries.screenInitialize.GET_HELP_LINK.visible());
+      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
       ++onboardingView;
     }
@@ -77,53 +77,51 @@ describe('Backend failure', function() {
 
     await vpn.flipFeatureOff('inAppAuthentication');
 
-    await vpn.waitForMainView();
-    await vpn.waitForElementAndClick(initialScreen.GET_STARTED);
+    await vpn.waitForInitialView();
+    await vpn.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
 
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
       return url.includes('/api/v2/vpn/login');
     });
 
-    await vpn.wait();
-    await vpn.waitForElement(initialScreen.AUTHENTICATE_VIEW);
-    await vpn.waitForElementProperty(initialScreen.AUTHENTICATE_VIEW, 'visible', 'true');
+    await vpn.waitForQuery(
+        queries.screenInitialize.AUTHENTICATE_VIEW.visible());
 
     await backendFailureAndRestore();
-    await vpn.waitForElement(initialScreen.GET_HELP_LINK);
-    await vpn.waitForElementProperty(initialScreen.GET_HELP_LINK, 'visible', 'true');
+    await vpn.waitForQuery(queries.screenInitialize.GET_HELP_LINK.visible());
   });
 
   it('BackendFailure in the Post authentication view', async () => {
     await vpn.authenticateInApp();
-    await vpn.waitForElement(telemetryScreen.POST_AUTHENTICATION_BUTTON);
+    await vpn.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
     await backendFailureAndRestore();
-    await vpn.waitForElement(telemetryScreen.POST_AUTHENTICATION_BUTTON);
+    await vpn.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
   });
 
   it('BackendFailure in the Telemetry policy view', async () => {
     await vpn.authenticateInApp(true, false);
-    await vpn.waitForElement(telemetryScreen.TELEMETRY_POLICY_BUTTON);
+    await vpn.waitForQuery(queries.screenTelemetry.BUTTON.visible());
     await backendFailureAndRestore();
-    await vpn.waitForElement(telemetryScreen.TELEMETRY_POLICY_BUTTON);
+    await vpn.waitForQuery(queries.screenTelemetry.BUTTON.visible());
   });
 
   describe('Post-auth tests', function() {
     this.ctx.authenticationNeeded = true;
 
     it('BackendFailure in the Controller view', async () => {
-      await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
-      await vpn.waitForElementProperty(generalElements.CONTROLLER_TITLE, 'visible', 'true');
+      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
       assert(
-          await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text') ===
+          await vpn.getQueryProperty(
+              queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ===
           'VPN is off');
 
       await backendFailureAndRestore();
 
-      await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
-      await vpn.waitForElementProperty(generalElements.CONTROLLER_TITLE, 'visible', 'true');
+      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
       assert(
-          await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text') ===
+          await vpn.getQueryProperty(
+              queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ===
           'VPN is off');
     });
 
@@ -131,35 +129,39 @@ describe('Backend failure', function() {
       await vpn.activate();
 
       await vpn.waitForCondition(async () => {
-        let connectingMsg =
-            await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text');
+        let connectingMsg = await vpn.getQueryProperty(
+            queries.screenHome.CONTROLLER_TITLE.visible(), 'text');
         return connectingMsg === 'Connecting…';
       });
 
       assert(
-          await vpn.getElementProperty('controllerSubTitle', 'text') ===
+          await vpn.getQueryProperty(
+              queries.screenHome.CONTROLLER_SUBTITLE, 'text') ===
           'Masking connection and location');
 
       await backendFailureAndRestore();
 
-      await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
-      await vpn.waitForElementProperty(generalElements.CONTROLLER_TITLE, 'visible', 'true');
-      assert(await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text') === 'VPN is off');
+      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+      assert(
+          await vpn.getQueryProperty(
+              queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ===
+          'VPN is off');
     });
 
     it('BackendFailure when connected', async () => {
       await vpn.activate();
       await vpn.waitForCondition(async () => {
-        return await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text') ===
+        return await vpn.getQueryProperty(
+                   queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ===
             'VPN is on';
       });
 
       await backendFailureAndRestore();
 
-      await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
-      await vpn.waitForElementProperty(generalElements.CONTROLLER_TITLE, 'visible', 'true');
+      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
       assert(
-          await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text') ===
+          await vpn.getQueryProperty(
+              queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ===
           'VPN is off');
     });
 
@@ -172,16 +174,17 @@ describe('Backend failure', function() {
       await vpn.deactivate();
 
       await vpn.waitForCondition(async () => {
-        const msg = await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text');
+        const msg = await vpn.getQueryProperty(
+            queries.screenHome.CONTROLLER_TITLE.visible(), 'text');
         return msg === 'Disconnecting…' || msg === 'VPN is off';
       });
 
       await backendFailureAndRestore();
 
-      await vpn.waitForElement(generalElements.CONTROLLER_TITLE);
-      await vpn.waitForElementProperty(generalElements.CONTROLLER_TITLE, 'visible', 'true');
+      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
       assert(
-          await vpn.getElementProperty(generalElements.CONTROLLER_TITLE, 'text') ===
+          await vpn.getQueryProperty(
+              queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ===
           'VPN is off');
     });
   });

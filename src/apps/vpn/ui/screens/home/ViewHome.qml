@@ -94,12 +94,10 @@ VPNFlickable {
             //: Select the Location of the VPN server
             titleText: qsTrId("vpn.servers.selectLocation")
 
-            subtitleText: VPNCurrentServer.localizedCityName
-
             //% "current location - %1"
             //: Accessibility description for current location of the VPN server
             descriptionText: qsTrId("vpn.servers.currentLocation").arg(
-                                 VPNCurrentServer.localizedCityName)
+                                 VPNCurrentServer.localizedExitCityName)
 
             disableRowWhen: (VPNController.state !== VPNController.StateOn
                              && VPNController.state !== VPNController.StateOff)
@@ -109,6 +107,8 @@ VPNFlickable {
 
                 VPNServerLabel {
                     id: selectLocationLabel
+                    objectName: "serverListButton-label"
+
                     serversList: [
                         {
                             countryCode: typeof(VPNCurrentServer.entryCountryCode) !== 'undefined' ? VPNCurrentServer.entryCountryCode : "" ,
@@ -117,7 +117,7 @@ VPNFlickable {
                         },
                         {
                          countryCode: VPNCurrentServer.exitCountryCode,
-                         localizedCityName: VPNCurrentServer.localizedCityName,
+                         localizedCityName: VPNCurrentServer.localizedExitCityName,
                          cityName: VPNCurrentServer.exitCityName
                         }
                     ]
@@ -171,7 +171,7 @@ VPNFlickable {
 
             onClosed: {
                 tipsAndTricksIntroPopupLoader.active = false
-                VPN.recordGleanEventWithExtraKeys("tipsAndTricksModalClosed", {"action": closedByPrimaryButton ? "cta" : "dismissed"});
+                VPNGleanDeprecated.recordGleanEventWithExtraKeys("tipsAndTricksModalClosed", {"action": closedByPrimaryButton ? "cta" : "dismissed"});
                 Glean.sample.tipsAndTricksModalClosed.record({
                     action: closedByPrimaryButton ? "cta" : "dismissed"
                 });

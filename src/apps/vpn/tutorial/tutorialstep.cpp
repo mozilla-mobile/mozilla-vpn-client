@@ -38,9 +38,9 @@ TutorialStep* TutorialStep::create(AddonTutorial* parent,
 
   stepId = QString("tutorial.%1.step.%2").arg(tutorialId, stepId);
 
-  QString element = obj["element"].toString();
-  if (element.isEmpty()) {
-    logger.warning() << "Empty element for tutorial step" << stepId;
+  QString query = obj["query"].toString();
+  if (query.isEmpty()) {
+    logger.warning() << "Empty query for tutorial step" << stepId;
     return nullptr;
   }
 
@@ -53,20 +53,18 @@ TutorialStep* TutorialStep::create(AddonTutorial* parent,
     return nullptr;
   }
 
-  // Even if there are no 'before' steps, we always have the visibility check.
-  QList<TutorialStepBefore*> tb =
-      TutorialStepBefore::create(parent, element, obj["before"]);
-  if (tb.isEmpty()) {
+  QList<TutorialStepBefore*> tb;
+  if (!TutorialStepBefore::create(parent, obj["before"], tb)) {
     logger.warning()
         << "Unable to parse the 'before' property for tutorial step" << stepId;
     return nullptr;
   }
 
-  return new TutorialStep(parent, element, stepId, obj["tooltip"].toString(),
+  return new TutorialStep(parent, query, stepId, obj["tooltip"].toString(),
                           conditions, tb, tn);
 }
 
-TutorialStep::TutorialStep(AddonTutorial* parent, const QString& element,
+TutorialStep::TutorialStep(AddonTutorial* parent, const QString& query,
                            const QString& stepId, const QString& fallback,
                            const QJsonObject& conditions,
                            const QList<TutorialStepBefore*>& before,
@@ -74,7 +72,7 @@ TutorialStep::TutorialStep(AddonTutorial* parent, const QString& element,
     : QObject(parent),
       m_parent(parent),
       m_stepId(stepId),
-      m_element(element),
+      m_query(query),
       m_before(before),
       m_next(next),
       m_enabled(Addon::evaluateConditions(conditions)) {
@@ -149,9 +147,7 @@ void TutorialStep::startInternal() {
     }
 
     case StateTooltip: {
-      QObject* element = m_parent->supportQmlPath()
-                             ? InspectorUtils::queryObject(m_element)
-                             : InspectorUtils::findObject(m_element);
+      QObject* element = InspectorUtils::queryObject(m_query);
       if (!element) {
         m_timer.start(TIMEOUT_ITEM_TIMER_MSEC);
         return;
@@ -179,9 +175,7 @@ void TutorialStep::startInternal() {
 }
 
 bool TutorialStep::itemPicked(const QList<QQuickItem*>& list) {
-  QObject* element = m_parent->supportQmlPath()
-                         ? InspectorUtils::queryObject(m_element)
-                         : InspectorUtils::findObject(m_element);
+  QObject* element = InspectorUtils::queryObject(m_query);
   if (element) {
     QQuickItem* item = qobject_cast<QQuickItem*>(element);
     Q_ASSERT(item);

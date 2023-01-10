@@ -44,11 +44,11 @@ TutorialStepNext* TutorialStepNext::create(AddonTutorial* parent,
     return nullptr;
   }
 
-  QString qmlEmitter = obj["qml_emitter"].toString();
+  QString queryEmitter = obj["query_emitter"].toString();
   QString vpnEmitter = obj["vpn_emitter"].toString();
-  if ((qmlEmitter.isEmpty() ? 0 : 1) + (vpnEmitter.isEmpty() ? 0 : 1) != 1) {
+  if ((queryEmitter.isEmpty() ? 0 : 1) + (vpnEmitter.isEmpty() ? 0 : 1) != 1) {
     logger.warning()
-        << "Only 1 qml_emitter or 1 vpn_emitter. Not none, not both.";
+        << "Only 1 query_emitter or 1 vpn_emitter. Not none, not both.";
     return nullptr;
   }
 
@@ -58,7 +58,7 @@ TutorialStepNext* TutorialStepNext::create(AddonTutorial* parent,
     return nullptr;
   }
 
-  EmitterType emitterType = QML;
+  EmitterType emitterType = Query;
   if (!vpnEmitter.isEmpty()) {
     if (vpnEmitter == "settingsHolder") {
       emitterType = SettingsHolder;
@@ -72,7 +72,7 @@ TutorialStepNext* TutorialStepNext::create(AddonTutorial* parent,
     }
   }
 
-  return new TutorialStepNext(parent, emitterType, qmlEmitter, signal);
+  return new TutorialStepNext(parent, emitterType, queryEmitter, signal);
 }
 
 TutorialStepNext::TutorialStepNext(AddonTutorial* parent,
@@ -98,10 +98,8 @@ void TutorialStepNext::startOrStop(bool start) {
     case Controller:
       obj = MozillaVPN::instance()->controller();
       break;
-    case QML:
-      obj = m_addonTutorial->supportQmlPath()
-                ? InspectorUtils::queryObject(m_emitter)
-                : InspectorUtils::findObject(m_emitter);
+    case Query:
+      obj = InspectorUtils::queryObject(m_emitter);
       break;
   }
 

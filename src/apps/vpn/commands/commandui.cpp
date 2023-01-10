@@ -25,6 +25,7 @@
 // Relative path is required here,
 // otherwise this gets confused with the Glean.js implementation
 #include "../glean/glean.h"
+#include "gleandeprecated.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
 #include "keyregenerator.h"
@@ -242,16 +243,13 @@ int CommandUI::run(QStringList& tokens) {
     vpn.setStartMinimized(minimizedOption.m_set ||
                           (qgetenv("MVPN_MINIMIZED") == "1"));
 
-#ifdef MZ_ANDROID
-    AndroidGlean::initialize(engine);
-#endif
     if (updateOption.m_set) {
       mozilla::glean::sample::update_step.record(
           mozilla::glean::sample::UpdateStepExtra{
               ._state =
                   QVariant::fromValue(Updater::ApplicationRestartedAfterUpdate)
                       .toString()});
-      emit vpn.recordGleanEventWithExtraKeys(
+      emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
           GleanSample::updateStep,
           {{"state",
             QVariant::fromValue(Updater::ApplicationRestartedAfterUpdate)
@@ -301,6 +299,14 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNFeatureList",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = FeatureModel::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNGleanDeprecated",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = GleanDeprecated::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -596,16 +602,11 @@ int CommandUI::run(QStringList& tokens) {
 
     // Here is the main QML file.
     const QUrl url(QStringLiteral("qrc:/ui/main.qml"));
-    QObject::connect(
-        engine, &QQmlApplicationEngine::objectCreated, qApp,
-        [url](QObject* obj, const QUrl& objUrl) {
-          if (!obj && url == objUrl) {
-            logger.error() << "Failed to load " << objUrl.toString();
-            QGuiApplication::exit(-1);
-          }
-        },
-        Qt::QueuedConnection);
     engine->load(url);
+    if (!engineHolder.hasWindow()) {
+      logger.error() << "Failed to load " << url.toString();
+      return -1;
+    }
 
     NotificationHandler* notificationHandler =
         NotificationHandler::create(&engineHolder);

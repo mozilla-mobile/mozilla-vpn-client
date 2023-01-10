@@ -16,4 +16,4 @@ language = "C++"
 
 [parse]
 parse_deps = true
-include = ["ffi-support"]
+include = ["ffi-support", "glean-core"]

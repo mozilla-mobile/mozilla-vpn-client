@@ -55,8 +55,15 @@ QWindow* QmlEngineHolder::window() const {
       qobject_cast<QQmlApplicationEngine*>(m_engine);
   if (!engine) return nullptr;
 
+  Q_ASSERT(hasWindow());
   QObject* rootObject = engine->rootObjects().first();
   return qobject_cast<QWindow*>(rootObject);
+}
+
+bool QmlEngineHolder::hasWindow() const {
+  return !qobject_cast<QQmlApplicationEngine*>(m_engine)
+              ->rootObjects()
+              .isEmpty();
 }
 
 void QmlEngineHolder::showWindow() {

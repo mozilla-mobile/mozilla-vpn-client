@@ -271,7 +271,7 @@ time.
 
 #### Building with Xcode
 
-Before you start this process, open Xcode, go to settings, accounts, and sign in with your 
+Before you start this process, open Xcode, go to settings, accounts, and sign in with your
 Apple ID.
 
 In some circumstances, you may wish to use Xcode to build the Mozilla VPN in order to
@@ -317,7 +317,7 @@ There are two ways to build the project on iOS, using the legacy Qt build system
 and we have also added experimental support for `cmake`.
 
 > **Note**: Due to lack of low level networking support, it is not possible to turn on
-> the VPN from the iOS simulator in XCode. 
+> the VPN from the iOS simulator in XCode.
 
 #### Building with QMake
 
@@ -325,7 +325,7 @@ and we have also added experimental support for `cmake`.
 [Xcode](https://developer.apple.com/xcode/) version 12 or higher.
 
 2. We use `qmake` to generate the Xcode project and then we "patch" it to add
-extra components such as the wireguard, the browser bridge and so on. 
+extra components such as the wireguard, the browser bridge and so on.
 
 We patch the Xcode project using [xcodeproj](https://github.com/CocoaPods/Xcodeproj). To
 install it:
@@ -413,15 +413,17 @@ it from the [official website](https://golang.org/dl/).
 
 2. Follow the [Getting started](https://doc.qt.io/qt-6/android-getting-started.html) page.
 
-3. Set the `QT_HOST_PATH` environment variable to point to the location of the `androiddeployqt` tool.
+3. Set the `QT_HOST_PATH` environment variable to point to the location of the `androiddeployqt` tool  -- minus the `/bin` suffix i.e. if `$(which androiddeployqt)` is `$HOME/Qt/6.2.4/gcc_64/bin/androiddeployqt`, `QT_HOST_PATH` is `$HOME/Qt/6.2.4/gcc_64/`.
 
-4. Set the `ANDROID_SDK_ROOT` and `ANDROID_NDK_ROOT` (required version: 21.0.6113669) environment variables,
-to point to the Android SDK and NDK installation directories.
+4. Set the `ANDROID_SDK_ROOT` and `ANDROID_NDK_ROOT` environment variables,
+to point to the Android SDK and NDK intallation directories. Required NDK versions: 23.1.7779620 and 21.0.6113669.
 
 5. Add the Android NDK llvm prebuilt tools to your `PATH`. These are located under the Android NDK installation
 directory on `${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/*/bin`.
 
-6. Build the apk
+6. Install the Rust Android targets `rustup target add x86_64-linux-android i686-linux-android armv7-linux-androideabi aarch64-linux-android`.
+
+7. Build the apk
 ```bash
 ./scripts/android/cmake.sh -d </path/to/Qt6/> -A <architecture> <debug|release>
 ```
@@ -429,10 +431,10 @@ Add the Adjust SDK token with `-a | --adjust <adjust_token>`.
 
 Valid architecture values: `x86`, `x86_64`, `armeabi-v7a` `arm64-v8a`, by default it will use all.
 
-7. The apk will be located in
+8. The apk will be located in
 `.tmp/src/android-build/build/outputs/apk/debug/android-build-debug.apk`
 
-8. Install with adb on device/emulator
+9. Install with adb on device/emulator
 ```bash
 adb install .tmp/src/android-build/build/outputs/apk/debug/android-build-debug.apk
 ```

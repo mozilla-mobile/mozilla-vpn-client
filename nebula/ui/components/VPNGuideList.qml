@@ -45,7 +45,7 @@ GridLayout {
 
             onClicked:{
                 stackview.push("qrc:/ui/screens/settings/ViewGuide.qml", {"guide": addon, "imageBgColor": imageBgColor})
-                VPN.recordGleanEventWithExtraKeys("guideOpened", {
+                VPNGleanDeprecated.recordGleanEventWithExtraKeys("guideOpened", {
                     "id": addon.id
                 });
                 Glean.sample.guideOpened.record({ id: addon.id });

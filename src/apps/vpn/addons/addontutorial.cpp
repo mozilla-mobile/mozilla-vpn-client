@@ -99,8 +99,6 @@ Addon* AddonTutorial::create(QObject* parent, const QString& manifestFileName,
     return nullptr;
   }
 
-  tutorial->m_supportQmlPath = tutorialObj["support_qml_path"].toBool();
-
   guard.dismiss();
   return tutorial;
 }

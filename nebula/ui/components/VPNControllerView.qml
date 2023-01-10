@@ -343,7 +343,7 @@ Item {
                 target: logoSubtitle
                 //% "From %1 to %2"
                 //: Switches from location 1 to location 2
-                text: qsTrId("vpn.controller.switchingDetail").arg(VPNCurrentServer.localizedPreviousExitCityName).arg(VPNCurrentServer.localizedCityName)
+                text: qsTrId("vpn.controller.switchingDetail").arg(VPNCurrentServer.localizedPreviousExitCityName).arg(VPNCurrentServer.localizedExitCityName)
                 color: "#FFFFFF"
                 opacity: 0.8
                 visible: true
@@ -461,7 +461,7 @@ Item {
 
         onClicked: {
             if (!box.connectionInfoScreenVisible) {
-                VPN.recordGleanEvent("connectionInfoOpened");
+                VPNGleanDeprecated.recordGleanEvent("connectionInfoOpened");
                 Glean.sample.connectionInfoOpened.record();
             }
             box.connectionInfoScreenVisible = !box.connectionInfoScreenVisible;

@@ -16,14 +16,18 @@ buildscript {
         classpath SharedDependencies.com_android_tools_build_gradle
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
         classpath "org.jetbrains.kotlin:kotlin-serialization:1.4.30-M1"
+        classpath "org.mozilla.components:tooling-glean-gradle:107.0.2"
     }
 }
+
+plugins {
+    id "com.jetbrains.python.envs" version "0.0.26"
+}
+
 repositories {
     mavenCentral()
     google()
 }
-
-
 
 allprojects {
     repositories {
@@ -36,15 +40,16 @@ allprojects {
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
 apply plugin: 'kotlinx-serialization'
-
+apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     implementation project(path: ':daemon')
     implementation project(path: ':qtBindings')
+    implementation project(path: ':vpnglean')
 
     implementation SharedDependencies.androidx_core
     implementation "com.android.installreferrer:installreferrer:2.2"
@@ -73,7 +78,7 @@ android {
             renderscript.srcDirs = ['src']
             assets.srcDirs = ['assets']
             jniLibs.srcDirs = ['libs','build/ssl']
-       }
+        }
         debug{
             try {
                 res.srcDirs =  [
@@ -183,7 +188,10 @@ android.applicationVariants.all { variant ->
               baseAbiVersionCode + variant.versionCode
     }
   }
-} 
+}
+
+ext.gleanNamespace = "mozilla.telemetry.glean"
+ext.gleanYamlFiles = ["$rootDir/../../../glean/metrics.yaml", "$rootDir/../../../glean/pings.yaml"]
 
 // Enable Ktlint out of the box via gradle Task
 configurations {

@@ -3,21 +3,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const { navBar, settingsScreen, homeScreen } = require('./elements.js');
 const vpn = require('./helper.js');
+const queries = require('./queries.js');
 
 describe('Tutorials', function () {
   this.timeout(60000);
   this.ctx.authenticationNeeded = true;
 
   async function openHighlightedTutorial() {
-    await vpn.clickOnElement(navBar.SETTINGS);
-    await vpn.waitForElementAndClick(settingsScreen.TIPS_AND_TRICKS);
-    await vpn.waitForElementAndClick(homeScreen.TUTORIAL_LIST_HIGHLIGHT);
+    await vpn.clickOnQuery(queries.navBar.SETTINGS);
+    await vpn.waitForQueryAndClick(queries.screenSettings.TIPS_AND_TRICKS);
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.TUTORIAL_LIST_HIGHLIGHT);
   }
 
   async function clickTooltipCloseButton() {
-    await vpn.waitForElementAndClick(homeScreen.TUTORIAL_LEAVE);
+    await vpn.waitForQueryAndClick(queries.screenHome.TUTORIAL_LEAVE.visible());
   }
 
   describe('Tutorial tooltip', function() {
@@ -26,18 +27,20 @@ describe('Tutorials', function () {
       await openHighlightedTutorial();
     });
 
-    it('Has close button', async () => {      
-      await vpn.waitForElement(homeScreen.TUTORIAL_LEAVE);
-      assert((await vpn.getElementProperty(homeScreen.TUTORIAL_LEAVE, 'visible')) === 'true');
+    it('Has close button', async () => {
+      await vpn.waitForQuery(queries.screenHome.TUTORIAL_LEAVE.visible());
     });
 
     it('Clicking close button opens the "Leave tutorial?" modal', async () => {
       await clickTooltipCloseButton();
 
-      await vpn.waitForElementProperty(homeScreen.TUTORIAL_POPUP_PRIMARY_BUTTON, 'visible', 'true');
+      await vpn.waitForQuery(
+          queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON.visible());
 
       assert(
-        (await vpn.getElementProperty(homeScreen.TUTORIAL_POPUP_PRIMARY_BUTTON, 'text')) === 'Resume tutorial');
+          (await vpn.getQueryProperty(
+              queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON, 'text')) ===
+          'Resume tutorial');
     });
   });
 
@@ -50,25 +53,16 @@ describe('Tutorials', function () {
 
     it('Clicking primary button closes modal and resumes tutorial',
        async () => {
-         await vpn.waitForElementAndClick(
-             homeScreen.TUTORIAL_POPUP_PRIMARY_BUTTON);
-
-         assert(
-             (await vpn.getElementProperty(
-                 homeScreen.TUTORIAL_POPUP_PRIMARY_BUTTON, 'visible')) ===
-             'false');
-         assert(
-             (await vpn.getElementProperty(
-                 homeScreen.TUTORIAL_UI, 'visible')) === 'true');
+         await vpn.waitForQueryAndClick(
+             queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON.visible());
+         await vpn.waitForQuery(queries.screenHome.TUTORIAL_UI.visible());
        });
 
     it('Clicking secondary button closes modal and stops tutorial',
        async () => {
-         await vpn.waitForElementAndClick(
-             homeScreen.TUTORIAL_POPUP_SECONDARY_BUTTON);
-         assert(
-             (await vpn.getElementProperty(
-                 homeScreen.TUTORIAL_UI, 'visible')) === 'false');
+         await vpn.waitForQueryAndClick(
+             queries.screenHome.TUTORIAL_POPUP_SECONDARY_BUTTON.visible());
+         await vpn.waitForQuery(queries.screenHome.TUTORIAL_UI.hidden());
        });
   });
 });

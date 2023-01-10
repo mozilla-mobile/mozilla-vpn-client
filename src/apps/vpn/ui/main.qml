@@ -195,16 +195,6 @@ Window {
             Pings.main.submit();
         }
 
-        function onRecordGleanEvent(sample) {
-            console.debug("recording Glean event");
-            Sample[sample].record();
-        }
-
-        function onRecordGleanEventWithExtraKeys(sample, extraKeys) {
-            console.debug("recording Glean event with extra keys");
-            Sample[sample].record(extraKeys);
-        }
-
         function onAboutToQuit() {
             console.debug("about to quit, shutdown Glean");
             // Submit the main ping in case there are outstading metrics in storage before shutdown.
@@ -215,8 +205,22 @@ Window {
     }
 
     Connections {
+        target: VPNGleanDeprecated
+        enabled: Qt.platform.os !== "android"
+
+        function onRecordGleanEvent(sample) {
+            console.debug("recording Glean event");
+            Sample[sample].record();
+        }
+
+        function onRecordGleanEventWithExtraKeys(sample, extraKeys) {
+            console.debug("recording Glean event with extra keys");
+            Sample[sample].record(extraKeys);
+        }
+    }
+
+    Connections {
         target: VPNSettings
-        enabled: Qt.platform.os != "android"
         function onGleanEnabledChanged() {
             console.debug("Glean - onGleanEnabledChanged", VPNSettings.gleanEnabled);
             Glean.setUploadEnabled(VPNSettings.gleanEnabled);

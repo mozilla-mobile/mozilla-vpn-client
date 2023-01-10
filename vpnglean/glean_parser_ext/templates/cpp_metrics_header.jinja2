@@ -22,21 +22,21 @@ namespace mozilla::glean {
 {% for category_name, objs in all_objs.items() %}
 namespace {{ category_name|snake_case }} {
   {% for obj in objs.values() %}
+/**
+ * generated from {{ category_name }}.{{ obj.name }}
+ *
+ * {{ obj.description|wordwrap() | replace('\n', '\n * ') }}
+ */
+extern {{ obj|type_name }} {{obj.name|snake_case }};
+
   {% if obj|attr("_generate_enums") %}
 {{ macros.generate_extra_keys(obj, obj|metric_id) }}
   {%- endif %}
+
   {% endfor %}
-}
+} // namespace {{ category_name|snake_case }}
 {% endfor %}
 } // namespace mozilla::glean
-
-{% for category_name, objs in all_objs.items() %}
-  {% for obj in objs.values() %}
-  {% if obj|attr("_generate_enums") %}
-{{ macros.generate_extra_keys_parser(obj, category_name) }}
-  {%- endif %}
-  {% endfor %}
-{% endfor %}
 
 {% for category_name, objs in all_objs.items() %}
 class __DONOTUSE__{{ category_name|Camelize }} final {
@@ -51,13 +51,7 @@ class __DONOTUSE__{{ category_name|Camelize }} final {
     ~__DONOTUSE__{{ category_name|Camelize }}() = default;
 
     {% for obj in objs.values() %}
-    {{ obj|type_name }} {{obj.name|camelize }} () const { return m_{{obj.name|camelize }}; };
-    {% endfor %}
-
-  private:
-    {% for obj in objs.values() %}
-    {% if obj|attr("allowed_extra_keys_with_types")|length > 0 %}__DONOTUSE__{{ obj.name|Camelize }}ExtraParser m_{{obj.name|camelize }}ExtraParser;{%- endif %}
-    {{ obj|type_name }} m_{{obj.name|camelize }} = {{ obj|type_name }}({{obj|metric_id}}{% if obj|attr("allowed_extra_keys_with_types")|length > 0 %}, &m_{{obj.name|camelize }}ExtraParser {%- endif %});
+    {{ obj|type_name }} {{obj.name|camelize }} () const { return mozilla::glean::{{ category_name|snake_case }}::{{obj.name|snake_case }}; };
     {% endfor %}
 };
 {% endfor %}
@@ -101,21 +95,5 @@ class __DONOTUSE__GleanMetrics final : public QObject {
 
         inline static __DONOTUSE__GleanMetrics* s_instance = nullptr;
 };
-
-namespace mozilla::glean {
-{% for category_name, objs in all_objs.items() %}
-namespace {{ category_name|snake_case }} {
-    {% for obj in objs.values() %}
-    /**
-     * generated from {{ category_name }}.{{ obj.name }}
-     *
-     * {{ obj.description|wordwrap() | replace('\n', '\n     * ') }}
-     */
-    inline {{ obj|type_name }} {{obj.name|snake_case }} = __DONOTUSE__GleanMetrics::instance()->{{ category_name|camelize }}().{{ obj.name|camelize }}();
-
-    {% endfor %}
-}
-{% endfor %}
-} // namespace mozilla::glean
 
 #endif // mozilla_Metrics_h

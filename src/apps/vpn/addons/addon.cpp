@@ -25,10 +25,10 @@
 #include "conditionwatchers/addonconditionwatchertriggertimesecs.h"
 #include "feature.h"
 #include "glean/generated/metrics.h"
+#include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
@@ -61,8 +61,7 @@ QList<ConditionCallback> s_conditionCallbacks{
        for (const QJsonValue& enabledFeature : enabledFeatures) {
          QString featureName = enabledFeature.toString();
 
-         // If the feature doesn't exist, we crash.
-         const Feature* feature = Feature::get(featureName);
+         const Feature* feature = Feature::getOrNull(featureName);
          if (!feature) {
            logger.info() << "Feature not found" << featureName;
            return false;
@@ -438,7 +437,7 @@ void Addon::updateAddonState(State newState) {
           ._addonId = m_id,
           ._state = newStateSetting,
       });
-  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
       GleanSample::addonStateChanged,
       {{"addon_id", m_id}, {"state", newStateSetting}});
 }

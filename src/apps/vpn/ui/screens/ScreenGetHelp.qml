@@ -54,6 +54,7 @@ Item {
 
         VPNStackView {
             id: getHelpStackView
+            objectName: "getHelpStackView"
 
             Layout.fillWidth: true
             Layout.fillHeight: true

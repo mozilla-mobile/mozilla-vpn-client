@@ -54,6 +54,7 @@ Item {
 
         VPNStackView {
             id: stackview
+            objectName: root.objectName + "-stackView"
             Layout.fillHeight: true
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignTop

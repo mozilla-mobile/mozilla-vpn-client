@@ -4,6 +4,7 @@
 
 const assert = require('assert');
 const vpn = require('./helper.js');
+const queries = require('./queries.js');
 
 const SUBSCRIPTION_DETAILS = {
   plan: {amount: 123, currency: 'usd', interval: 'year', interval_count: 1},
@@ -120,39 +121,29 @@ describe('Subscription view', function() {
           .body = {}
     };
 
-    await vpn.waitForElement('navigationLayout/navButton-settings');
-    await vpn.clickOnElement('navigationLayout/navButton-settings');
-    await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
+    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
-    await vpn.waitForElement('settingsUserProfile');
-    await vpn.waitForElementProperty('settingsUserProfile', 'visible', 'true');
+    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+    await vpn.waitForQuery(
+        queries.screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
+            'text', 'Test'));
+    await vpn.waitForQuery(
+        queries.screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
+            'text', 'test@mozilla.com'));
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.USER_PROFILE.visible());
 
-    await vpn.waitForElement('settingsUserProfile-displayName');
-    await vpn.waitForElementProperty(
-        'settingsUserProfile-displayName', 'visible', 'true');
-    await vpn.waitForElementProperty(
-        'settingsUserProfile-displayName', 'text', 'Test test');
+    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
-    await vpn.waitForElement('settingsUserProfile-emailAddress');
-    await vpn.waitForElementProperty(
-        'settingsUserProfile-emailAddress', 'visible', 'true');
-    await vpn.waitForElementProperty(
-        'settingsUserProfile-emailAddress', 'text', 'test@mozilla.com');
-
-    await vpn.waitForElement('settingsUserProfile-manageAccountButton');
-    await vpn.waitForElementProperty(
-        'settingsUserProfile-manageAccountButton', 'visible', 'true');
-    await vpn.clickOnElement('settingsUserProfile-manageAccountButton');
-
-    await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
-
-    await vpn.waitForElement('authSignIn-passwordInput');
-    await vpn.waitForElementProperty(
-        'authSignIn-passwordInput', 'visible', 'true');
-    await vpn.setElementProperty(
-        'authSignIn-passwordInput', 'text', 's', 'P4ass0rd!!');
-
-    await vpn.waitForElementProperty('authSignIn-button', 'enabled', 'true');
+    await vpn.waitForQuery(
+        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible());
+    await vpn.setQueryProperty(
+        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible(),
+        'text', 'P4ssw0rd!!');
+    await vpn.waitForQuery(
+        queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+            .enabled());
 
     this.ctx.guardianSubscriptionDetailsCallback = req => {
       this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
@@ -161,13 +152,12 @@ describe('Subscription view', function() {
           .body = SUBSCRIPTION_DETAILS;
     };
 
-    await vpn.wait();
-    await vpn.clickOnElement('authSignIn-button');
+    await vpn.waitForQueryAndClick(
+        queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+            .enabled());
 
-    await vpn.waitForElement('subscriptionManagmentView');
-    await vpn.waitForElementProperty(
-        'subscriptionManagmentView', 'visible', 'true');
-    await vpn.wait();
+    await vpn.waitForQuery(
+        queries.screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
   });
 
   it('Authentication needed - totp', async () => {
@@ -178,39 +168,30 @@ describe('Subscription view', function() {
           .body = {}
     };
 
-    await vpn.waitForElement('navigationLayout/navButton-settings');
-    await vpn.clickOnElement('navigationLayout/navButton-settings');
+    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
-    await vpn.waitForElement('settingsUserProfile');
-    await vpn.waitForElementProperty('settingsUserProfile', 'visible', 'true');
+    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+    await vpn.waitForQuery(
+        queries.screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
+            'text', 'Test'));
+    await vpn.waitForQuery(
+        queries.screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
+            'text', 'test@mozilla.com'));
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.USER_PROFILE.visible());
 
-    await vpn.waitForElement('settingsUserProfile-displayName');
-    await vpn.waitForElementProperty(
-        'settingsUserProfile-displayName', 'visible', 'true');
-    await vpn.waitForElementProperty(
-        'settingsUserProfile-displayName', 'text', 'Test test');
+    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
-    await vpn.waitForElement('settingsUserProfile-emailAddress');
-    await vpn.waitForElementProperty(
-        'settingsUserProfile-emailAddress', 'visible', 'true');
-    await vpn.waitForElementProperty(
-        'settingsUserProfile-emailAddress', 'text', 'test@mozilla.com');
+    await vpn.waitForQuery(
+        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible());
+    await vpn.setQueryProperty(
+        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible(),
+        'text', 'P4ssw0rd!!');
 
-    await vpn.waitForElement('settingsUserProfile-manageAccountButton');
-    await vpn.waitForElementProperty(
-        'settingsUserProfile-manageAccountButton', 'visible', 'true');
-    await vpn.clickOnElement('settingsUserProfile-manageAccountButton');
-
-    await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
-
-    await vpn.waitForElement('authSignIn-passwordInput');
-    await vpn.waitForElementProperty(
-        'authSignIn-passwordInput', 'visible', 'true');
-    await vpn.setElementProperty(
-        'authSignIn-passwordInput', 'text', 's', 'P4ass0rd!!');
-
-    await vpn.wait();
-    await vpn.waitForElementProperty('authSignIn-button', 'enabled', 'true');
+    await vpn.waitForQuery(
+        queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+            .enabled());
 
     this.ctx.fxaLoginCallback = (req) => {
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
@@ -221,18 +202,20 @@ describe('Subscription view', function() {
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
     };
 
-    await vpn.wait();
-    await vpn.clickOnElement('authSignIn-button');
+    await vpn.waitForQueryAndClick(
+        queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+            .enabled());
 
-    await vpn.waitForElement('authVerificationSessionByTotpNeeded-textInput');
-    await vpn.waitForElementProperty(
-        'authVerificationSessionByTotpNeeded-textInput', 'visible', 'true');
-    await vpn.waitForElementProperty(
-        'authVerificationSessionByTotpNeeded-button', 'enabled', 'false');
-    await vpn.setElementProperty(
-        'authVerificationSessionByTotpNeeded-textInput', 'text', 's', '123456');
-    await vpn.waitForElementProperty(
-        'authVerificationSessionByTotpNeeded-button', 'enabled', 'true');
+    await vpn.waitForQuery(
+        queries.screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible());
+    await vpn.waitForQuery(
+        queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
+            .disabled());
+    await vpn.setQueryProperty(
+        queries.screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible(),
+        'text', '123456');
+    await vpn.waitForQuery(
+        queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible().enabled());
 
     this.ctx.fxaTotpCallback = (req) => {
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/session/verify/totp'].body = {
@@ -247,13 +230,11 @@ describe('Subscription view', function() {
           .body = SUBSCRIPTION_DETAILS;
     };
 
-    await vpn.wait();
-    await vpn.clickOnElement('authVerificationSessionByTotpNeeded-button');
+    await vpn.waitForQueryAndClick(
+        queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible().enabled());
 
-    await vpn.waitForElement('subscriptionManagmentView');
-    await vpn.waitForElementProperty(
-        'subscriptionManagmentView', 'visible', 'true');
-    await vpn.wait();
+    await vpn.waitForQuery(
+        queries.screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
   });
 
   it('Playing with the subscription view', async () => {
@@ -722,130 +703,111 @@ describe('Subscription view', function() {
         }
       };
 
-      await vpn.waitForElement('navigationLayout/navButton-settings');
-      await vpn.clickOnElement('navigationLayout/navButton-settings');
+      await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
-      await vpn.waitForElement('settingsUserProfile');
-      await vpn.waitForElementProperty(
-          'settingsUserProfile', 'visible', 'true');
+      await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+      await vpn.waitForQuery(
+          queries.screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
+              'text', 'Test'));
+      await vpn.waitForQuery(
+          queries.screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
+              'text', 'test@mozilla.com'));
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.USER_PROFILE.visible());
+      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
-      await vpn.waitForElement('settingsUserProfile-displayName');
-      await vpn.waitForElementProperty(
-          'settingsUserProfile-displayName', 'visible', 'true');
-      await vpn.waitForElementProperty(
-          'settingsUserProfile-displayName', 'text', 'Test test');
-
-      await vpn.waitForElement('settingsUserProfile-emailAddress');
-      await vpn.waitForElementProperty(
-          'settingsUserProfile-emailAddress', 'visible', 'true');
-      await vpn.waitForElementProperty(
-          'settingsUserProfile-emailAddress', 'text', 'test@mozilla.com');
-
-      await vpn.waitForElement('settingsUserProfile-manageAccountButton');
-      await vpn.waitForElementProperty(
-          'settingsUserProfile-manageAccountButton', 'visible', 'true');
-      await vpn.clickOnElement('settingsUserProfile-manageAccountButton');
-
-      await vpn.waitForElement('subscriptionManagmentView');
-      await vpn.waitForElementProperty(
-          'subscriptionManagmentView', 'visible', 'true');
-      await vpn.wait();
+      await vpn.waitForQuery(
+          queries.screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
 
       if (data.subscription.expected.status) {
         assert(
-          await vpn.getElementProperty(
-              'subscriptionItem/subscriptionItem-status/subscriptionItem-status-parent/subscriptionItem-status-container/subscriptionItem-status-pillWrapper/subscriptionItem-status-pill',
-              'text') === data.subscription.expected.status);
+            await vpn.getQueryProperty(
+                queries.screenSettings.subscriptionView.STATUS_PILL, 'text') ===
+            data.subscription.expected.status);
       }
 
       if (data.plan.expected &&
           data.subscription.value._subscription_type == "web") {
-        await vpn.waitForElement(
-            'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText');
-        await vpn.waitForElementProperty(
-            'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText',
-            'visible', 'true');
+        await vpn.waitForQuery(
+            queries.screenSettings.subscriptionView.PLAN.visible());
         assert(
-          await vpn.getElementProperty(
-              'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-container/subscriptionItem-plan-valueText',
-              'text') === data.plan.expected);
+            await vpn.getQueryProperty(
+                queries.screenSettings.subscriptionView.PLAN.visible(),
+                'text') === data.plan.expected);
       }
 
       if (data.subscription.expected.activated) {
-        await vpn.waitForElement(
-            'subscriptionItem/subscriptionItem-activated/subscriptionItem-activated-parent/subscriptionItem-activated-container/subscriptionItem-activated-valueText');
+        await vpn.waitForQuery(
+            queries.screenSettings.subscriptionView.ACTIVATED.visible());
         assert(
-            await vpn.getElementProperty(
-                'subscriptionItem/subscriptionItem-activated/subscriptionItem-activated-parent/subscriptionItem-activated-container/subscriptionItem-activated-valueText',
+            await vpn.getQueryProperty(
+                queries.screenSettings.subscriptionView.ACTIVATED.visible(),
                 'text') === data.subscription.expected.activated);
       }
 
-      await vpn.waitForElement(
-          'subscriptionItem/subscriptionItem-cancelled/subscriptionItem-cancelled-parent/subscriptionItem-cancelled-container/subscriptionItem-cancelled-valueText');
+      await vpn.waitForQuery(
+          queries.screenSettings.subscriptionView.CANCELLED.visible());
       assert(
-          await vpn.getElementProperty(
-              'subscriptionItem/subscriptionItem-cancelled/subscriptionItem-cancelled-parent/subscriptionItem-cancelled-container/subscriptionItem-cancelled-valueText',
+          await vpn.getQueryProperty(
+              queries.screenSettings.subscriptionView.CANCELLED.visible(),
               'text') === data.subscription.expected.cancelled);
       assert(
-          await vpn.getElementProperty(
-              'subscriptionItem/subscriptionItem-cancelled/subscriptionItem-cancelled-parent/subscriptionItem-cancelled-container/subscriptionItem-cancelled-labelText',
+          await vpn.getQueryProperty(
+              queries.screenSettings.subscriptionView.CANCELLED_LABEL.visible(),
               'text') === data.subscription.expected.label);
 
       if (data.subscription.value._subscription_type == "web") {
         if (data.payment.expected.card) {
-          await vpn.waitForElement(
-              'subscriptionItem/subscriptionItem-brand/subscriptionItem-brand-parent/subscriptionItem-brand-container/subscriptionItem-brand-valueText');
+          await vpn.waitForQuery(
+              queries.screenSettings.subscriptionView.BRAND.visible());
           assert(
-              await vpn.getElementProperty(
-                  'subscriptionItem/subscriptionItem-brand/subscriptionItem-brand-parent/subscriptionItem-brand-container/subscriptionItem-brand-valueText',
+              await vpn.getQueryProperty(
+                  queries.screenSettings.subscriptionView.BRAND.visible(),
                   'text') === data.payment.expected.card);
         }
         if (data.payment.expected.expires) {
-          await vpn.waitForElement(
-              'subscriptionItem/subscriptionItem-expires/subscriptionItem-expires-parent/subscriptionItem-expires-container/subscriptionItem-expires-valueText');
+          await vpn.waitForQuery(
+              queries.screenSettings.subscriptionView.EXPIRES.visible());
           assert(
-              await vpn.getElementProperty(
-                  'subscriptionItem/subscriptionItem-expires/subscriptionItem-expires-parent/subscriptionItem-expires-container/subscriptionItem-expires-valueText',
+              await vpn.getQueryProperty(
+                  queries.screenSettings.subscriptionView.EXPIRES.visible(),
                   'text') === data.payment.expected.expires);
         }
         if (data.payment.expected.brand) {
-          await vpn.waitForElement(
-              'subscriptionItem/subscriptionItem-brand/subscriptionItem-brand-parent/subscriptionItem-brand-container/subscriptionItem-brand-paymentMethod/paymentLabel');
+          await vpn.waitForQuery(
+              queries.screenSettings.subscriptionView.PAYMENT_METHOD.visible());
           assert(
-              await vpn.getElementProperty(
-                  'subscriptionItem/subscriptionItem-brand/subscriptionItem-brand-parent/subscriptionItem-brand-container/subscriptionItem-brand-paymentMethod/paymentLabel',
+              await vpn.getQueryProperty(
+                  queries.screenSettings.subscriptionView.PAYMENT_METHOD
+                      .visible(),
                   'text') === data.payment.expected.brand);
         }
         if (data.payment.expected.payment) {
-          await vpn.waitForElement(
-              'subscriptionItem/subscriptionItem-payment/subscriptionItem-payment-parent/subscriptionItem-payment-container/subscriptionItem-payment-paymentMethod/paymentLabel');
+          await vpn.waitForQuery(queries.screenSettings.subscriptionView
+                                     .PAYMENT_METHOD_LABEL.visible());
           assert(
-              await vpn.getElementProperty(
-                  'subscriptionItem/subscriptionItem-payment/subscriptionItem-payment-parent/subscriptionItem-payment-container/subscriptionItem-payment-paymentMethod/paymentLabel',
+              await vpn.getQueryProperty(
+                  queries.screenSettings.subscriptionView.PAYMENT_METHOD_LABEL
+                      .visible(),
                   'text') === data.payment.expected.payment);
         }
       }
 
-      await vpn.waitForElement('subscriptionUserProfile');
-      await vpn.waitForElementProperty(
-          'subscriptionUserProfile', 'visible', 'true');
+      await vpn.waitForQuery(queries.screenSettings.subscriptionView
+                                 .SUBSCRIPTION_USER_PROFILE.visible());
+      await vpn.waitForQuery(
+          queries.screenSettings.subscriptionView
+              .SUBSCRIPTION_USER_PROFILE_DISPLAY_NAME.visible()
+              .prop('text', 'Test'));
+      await vpn.waitForQuery(
+          queries.screenSettings.subscriptionView
+              .SUBSCRIPTION_USER_PROFILE_EMAIL_ADDRESS.visible()
+              .prop('text', 'test@mozilla.com'));
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.subscriptionView
+              .SUBSCRIPTION_USER_PROFILE_BUTTON_ACCOUNT.visible());
 
-      await vpn.waitForElement('subscriptionUserProfile-displayName');
-      await vpn.waitForElementProperty(
-          'subscriptionUserProfile-displayName', 'visible', 'true');
-      await vpn.waitForElementProperty(
-          'subscriptionUserProfile-displayName', 'text', 'Test test');
-
-      await vpn.waitForElement('subscriptionUserProfile-emailAddress');
-      await vpn.waitForElementProperty(
-          'subscriptionUserProfile-emailAddress', 'visible', 'true');
-      await vpn.waitForElementProperty(
-          'subscriptionUserProfile-emailAddress', 'text', 'test@mozilla.com');
-
-      await vpn.waitForElement('subscriptionUserProfile-manageAccountButton');
-      await vpn.waitForElementProperty(
-          'subscriptionUserProfile-manageAccountButton', 'visible', 'true');
-      await vpn.clickOnElement('subscriptionUserProfile-manageAccountButton');
       await vpn.waitForCondition(async () => {
         const url = await vpn.getLastUrl();
         return url.includes('https://accounts.stage.mozaws.net') &&
@@ -853,36 +815,31 @@ describe('Subscription view', function() {
       });
 
       if (data.manageSubscriptionLink) {
-        await vpn.waitForElement('manageSubscriptionButton');
-        await vpn.waitForElementProperty(
-            'manageSubscriptionButton', 'visible', 'true');
-        await vpn.setElementProperty(
-            'subscriptionManagmentView-flickable', 'contentY', 'i',
-            parseInt(
-                await vpn.getElementProperty('manageSubscriptionButton', 'y')));
-        await vpn.clickOnElement('manageSubscriptionButton');
+        await vpn.waitForQuery(
+            queries.screenSettings.subscriptionView
+                .SUBSCRIPTION_USER_PROFILE_BUTTON_SUB.visible());
+        await vpn.scrollToQuery(
+            queries.screenSettings.subscriptionView.SCREEN,
+            queries.screenSettings.subscriptionView
+                .SUBSCRIPTION_USER_PROFILE_BUTTON_SUB.visible());
+        await vpn.waitForQueryAndClick(
+            queries.screenSettings.subscriptionView
+                .SUBSCRIPTION_USER_PROFILE_BUTTON_SUB.visible());
         await vpn.waitForCondition(async () => {
           const url = await vpn.getLastUrl();
           return url.includes(data.manageSubscriptionLink);
         });
       }
 
-      await vpn.waitForElement('settings-back');
-      await vpn.waitForElementProperty('settings-back', 'visible', 'true');
-      await vpn.clickOnElement('settings-back');
-      await vpn.wait();
+      await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
+      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
-      await vpn.waitForElement('settingsUserProfile');
-      await vpn.waitForElementProperty(
-          'settingsUserProfile', 'visible', 'true');
+      await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
 
-      await vpn.waitForElement('navigationLayout/navButton-home');
-      await vpn.clickOnElement('navigationLayout/navButton-home');
-      await vpn.wait();
+      await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
+      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
-      await vpn.waitForElement('controllerTitle');
-      await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
-      await vpn.wait();
+      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
     }
   });
 
@@ -902,188 +859,114 @@ describe('Subscription view', function() {
           .body = SUBSCRIPTION_DETAILS;
     };
 
-    await vpn.waitForElement('navigationLayout/navButton-settings');
-    await vpn.clickOnElement('navigationLayout/navButton-settings');
+    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
-    await vpn.waitForElement('settingsUserProfile');
-    await vpn.waitForElementProperty('settingsUserProfile', 'visible', 'true');
+    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+    await vpn.waitForQuery(
+        queries.screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
+            'text', 'Test'));
+    await vpn.waitForQuery(
+        queries.screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
+            'text', 'test@mozilla.com'));
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.USER_PROFILE.visible());
 
-    await vpn.waitForElement('settingsUserProfile-displayName');
-    await vpn.waitForElementProperty(
-        'settingsUserProfile-displayName', 'visible', 'true');
-    await vpn.waitForElementProperty(
-        'settingsUserProfile-displayName', 'text', 'Test test');
+    await vpn.waitForQuery(
+        queries.screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
 
-    await vpn.waitForElement('settingsUserProfile-emailAddress');
-    await vpn.waitForElementProperty(
-        'settingsUserProfile-emailAddress', 'visible', 'true');
-    await vpn.waitForElementProperty(
-        'settingsUserProfile-emailAddress', 'text', 'test@mozilla.com');
-
-    await vpn.waitForElement('settingsUserProfile-manageAccountButton');
-    await vpn.waitForElementProperty(
-        'settingsUserProfile-manageAccountButton', 'visible', 'true');
-    await vpn.clickOnElement('settingsUserProfile-manageAccountButton');
-
-    await vpn.waitForElement('subscriptionManagmentView');
-    await vpn.waitForElementProperty(
-        'subscriptionManagmentView', 'visible', 'true');
-
-    await vpn.waitForElement('accountDeletionButton');
-    await vpn.waitForElementProperty(
-        'accountDeletionButton', 'visible', 'false');
-    await vpn.wait();
-
+    await vpn.waitForQuery(
+        queries.screenSettings.subscriptionView.ACCOUNT_DELETION.hidden());
     await vpn.flipFeatureOn('accountDeletion');
-    await vpn.waitForElementProperty(
-        'accountDeletionButton', 'visible', 'true');
-    await vpn.wait();
+    await vpn.waitForQuery(
+        queries.screenSettings.subscriptionView.ACCOUNT_DELETION.visible());
 
-    await vpn.setElementProperty(
-        'subscriptionManagmentView-flickable', 'contentY', 'i',
-        parseInt(await vpn.getElementProperty('accountDeletionButton', 'y')));
-    await vpn.wait();
+    await vpn.scrollToQuery(
+        queries.screenSettings.subscriptionView.SCREEN,
+        queries.screenSettings.subscriptionView.ACCOUNT_DELETION.visible());
 
-    await vpn.clickOnElement('accountDeletionButton');
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.subscriptionView.ACCOUNT_DELETION.visible());
+    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
-    await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
+    await vpn.waitForQuery(
+        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible());
+    await vpn.setQueryProperty(
+        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible(),
+        'text', 'P4ssw0rd!!');
 
-    await vpn.waitForElement('authSignIn-passwordInput');
-    await vpn.waitForElementProperty(
-        'authSignIn-passwordInput', 'visible', 'true');
-    await vpn.setElementProperty(
-        'authSignIn-passwordInput', 'text', 's', 'P4ass0rd!!');
+    await vpn.waitForQueryAndClick(
+        queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+            .enabled());
 
-    await vpn.wait();
-    await vpn.waitForElementProperty('authSignIn-button', 'enabled', 'true');
-    await vpn.clickOnElement('authSignIn-button');
+    await vpn.waitForQuery(
+        queries.screenDeleteAccount.BUTTON.visible().disabled());
+    await vpn.waitForQuery(queries.screenDeleteAccount.LABEL.visible());
 
-    await vpn.waitForElement('deleteAccountForRealButton');
-    await vpn.waitForElementProperty(
-        'deleteAccountForRealButton', 'visible', 'true');
-    await vpn.waitForElementProperty(
-        'deleteAccountForRealButton', 'enabled', 'false');
+    await vpn.setQueryProperty(
+        queries.screenDeleteAccount.SCREEN, 'contentY',
+        parseInt(await vpn.getQueryProperty(
+            queries.screenDeleteAccount.CHECKBOX1, 'y')));
+    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX1.visible().prop(
+        'isChecked', false));
+    await vpn.waitForQueryAndClick(
+        queries.screenDeleteAccount.CHECKBOX1_CB.visible());
+    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX1.visible().prop(
+        'isChecked', true));
+    await vpn.waitForQuery(
+        queries.screenDeleteAccount.BUTTON.visible().disabled());
 
-    await vpn.waitForElement('accountDeletionLabel');
-    await vpn.waitForElementProperty('accountDeletionLabel', 'visible', 'true');
+    await vpn.setQueryProperty(
+        queries.screenDeleteAccount.SCREEN, 'contentY',
+        parseInt(await vpn.getQueryProperty(
+            queries.screenDeleteAccount.CHECKBOX2, 'y')));
+    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX2.visible().prop(
+        'isChecked', false));
+    await vpn.waitForQueryAndClick(
+        queries.screenDeleteAccount.CHECKBOX2_CB.visible());
+    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX2.visible().prop(
+        'isChecked', true));
+    await vpn.waitForQuery(
+        queries.screenDeleteAccount.BUTTON.visible().disabled());
 
-    await vpn.setElementProperty(
-        'viewDeleteAccountRequest', 'contentY', 'i',
-        parseInt(await vpn.getElementProperty(
-            'accountDeletionLayout/accountDeletionCheckbox-check1', 'y')));
+    await vpn.setQueryProperty(
+        queries.screenDeleteAccount.SCREEN, 'contentY',
+        parseInt(await vpn.getQueryProperty(
+            queries.screenDeleteAccount.CHECKBOX3, 'y')));
+    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX3.visible().prop(
+        'isChecked', false));
+    await vpn.waitForQueryAndClick(
+        queries.screenDeleteAccount.CHECKBOX3_CB.visible());
+    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX3.visible().prop(
+        'isChecked', true));
+    await vpn.waitForQuery(
+        queries.screenDeleteAccount.BUTTON.visible().disabled());
 
-    await vpn.waitForElement(
-        'accountDeletionLayout/accountDeletionCheckbox-check1');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check1', 'visible',
-        'true');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check1', 'isChecked',
-        'false');
-    await vpn.waitForElement(
-        'accountDeletionLayout/accountDeletionCheckbox-check1/checkbox');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check1/checkbox',
-        'visible', 'true');
-    await vpn.clickOnElement(
-        'accountDeletionLayout/accountDeletionCheckbox-check1/checkbox');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check1', 'isChecked',
-        'true');
-    await vpn.waitForElementProperty(
-        'deleteAccountForRealButton', 'enabled', 'false');
-
-    await vpn.setElementProperty(
-        'viewDeleteAccountRequest', 'contentY', 'i',
-        parseInt(await vpn.getElementProperty(
-            'accountDeletionLayout/accountDeletionCheckbox-check2', 'y')));
-
-    await vpn.waitForElement(
-        'accountDeletionLayout/accountDeletionCheckbox-check2');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check2', 'visible',
-        'true');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check2', 'isChecked',
-        'false');
-    await vpn.waitForElement(
-        'accountDeletionLayout/accountDeletionCheckbox-check2/checkbox');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check2/checkbox',
-        'visible', 'true');
-    await vpn.clickOnElement(
-        'accountDeletionLayout/accountDeletionCheckbox-check2/checkbox');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check2', 'isChecked',
-        'true');
-    await vpn.waitForElementProperty(
-        'deleteAccountForRealButton', 'enabled', 'false');
-
-    await vpn.setElementProperty(
-        'viewDeleteAccountRequest', 'contentY', 'i',
-        parseInt(await vpn.getElementProperty(
-            'accountDeletionLayout/accountDeletionCheckbox-check3', 'y')));
-
-    await vpn.waitForElement(
-        'accountDeletionLayout/accountDeletionCheckbox-check3');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check3', 'visible',
-        'true');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check3', 'isChecked',
-        'false');
-    await vpn.waitForElement(
-        'accountDeletionLayout/accountDeletionCheckbox-check3/checkbox');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check3/checkbox',
-        'visible', 'true');
-    await vpn.clickOnElement(
-        'accountDeletionLayout/accountDeletionCheckbox-check3/checkbox');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check3', 'isChecked',
-        'true');
-    await vpn.waitForElementProperty(
-        'deleteAccountForRealButton', 'enabled', 'false');
-
-    await vpn.setElementProperty(
-        'viewDeleteAccountRequest', 'contentY', 'i',
-        parseInt(await vpn.getElementProperty(
-            'accountDeletionLayout/accountDeletionCheckbox-check4', 'y')));
-
-    await vpn.waitForElement(
-        'accountDeletionLayout/accountDeletionCheckbox-check4');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check4', 'visible',
-        'true');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check4', 'isChecked',
-        'false');
-    await vpn.waitForElement(
-        'accountDeletionLayout/accountDeletionCheckbox-check4/checkbox');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check4/checkbox',
-        'visible', 'true');
-    await vpn.clickOnElement(
-        'accountDeletionLayout/accountDeletionCheckbox-check4/checkbox');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check4', 'isChecked',
-        'true');
-    await vpn.waitForElementProperty(
-        'deleteAccountForRealButton', 'enabled', 'true');
+    await vpn.setQueryProperty(
+        queries.screenDeleteAccount.SCREEN, 'contentY',
+        parseInt(await vpn.getQueryProperty(
+            queries.screenDeleteAccount.CHECKBOX3, 'y')));
+    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX4.visible().prop(
+        'isChecked', false));
+    await vpn.waitForQueryAndClick(
+        queries.screenDeleteAccount.CHECKBOX4_CB.visible());
+    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX4.visible().prop(
+        'isChecked', true));
+    await vpn.waitForQuery(
+        queries.screenDeleteAccount.BUTTON.visible().enabled());
 
     this.ctx.fxaDestroyCallback = (req) => {
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/destroy'].status = 200;
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/destroy'].body = {}
     };
 
-    await vpn.clickOnElement('deleteAccountForRealButton');
+    await vpn.waitForQueryAndClick(
+        queries.screenDeleteAccount.BUTTON.visible().enabled());
 
-    await vpn.waitForElement('getHelpLink');
-    await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
-    assert(await vpn.getElementProperty('getStarted', 'visible') === 'true');
-    assert(await vpn.getElementProperty('learnMoreLink', 'visible') === 'true');
+    await vpn.waitForQuery(queries.screenInitialize.GET_HELP_LINK.visible());
+    await vpn.waitForQuery(queries.screenInitialize.GET_STARTED.visible());
+    await vpn.waitForQuery(queries.screenInitialize.LEARN_MORE_LINK.visible());
   });
-
 
   it('Account deletion - totp', async () => {
     this.ctx.fxaLoginCallback = (req) => {
@@ -1102,71 +985,56 @@ describe('Subscription view', function() {
           .body = SUBSCRIPTION_DETAILS;
     };
 
-    await vpn.waitForElement('navigationLayout/navButton-settings');
-    await vpn.clickOnElement('navigationLayout/navButton-settings');
+    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
-    await vpn.waitForElement('settingsUserProfile');
-    await vpn.waitForElementProperty('settingsUserProfile', 'visible', 'true');
+    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+    await vpn.waitForQuery(
+        queries.screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
+            'text', 'Test'));
+    await vpn.waitForQuery(
+        queries.screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
+            'text', 'test@mozilla.com'));
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.USER_PROFILE.visible());
 
-    await vpn.waitForElement('settingsUserProfile-displayName');
-    await vpn.waitForElementProperty(
-        'settingsUserProfile-displayName', 'visible', 'true');
-    await vpn.waitForElementProperty(
-        'settingsUserProfile-displayName', 'text', 'Test test');
+    await vpn.waitForQuery(
+        queries.screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
 
-    await vpn.waitForElement('settingsUserProfile-emailAddress');
-    await vpn.waitForElementProperty(
-        'settingsUserProfile-emailAddress', 'visible', 'true');
-    await vpn.waitForElementProperty(
-        'settingsUserProfile-emailAddress', 'text', 'test@mozilla.com');
-
-    await vpn.waitForElement('settingsUserProfile-manageAccountButton');
-    await vpn.waitForElementProperty(
-        'settingsUserProfile-manageAccountButton', 'visible', 'true');
-    await vpn.clickOnElement('settingsUserProfile-manageAccountButton');
-
-    await vpn.waitForElement('subscriptionManagmentView');
-    await vpn.waitForElementProperty(
-        'subscriptionManagmentView', 'visible', 'true');
-
-    await vpn.waitForElement('accountDeletionButton');
-    await vpn.waitForElementProperty(
-        'accountDeletionButton', 'visible', 'false');
-    await vpn.wait();
-
+    await vpn.waitForQuery(
+        queries.screenSettings.subscriptionView.ACCOUNT_DELETION.hidden());
     await vpn.flipFeatureOn('accountDeletion');
-    await vpn.waitForElementProperty(
-        'accountDeletionButton', 'visible', 'true');
-    await vpn.wait();
+    await vpn.waitForQuery(
+        queries.screenSettings.subscriptionView.ACCOUNT_DELETION.visible());
 
-    await vpn.setElementProperty(
-        'subscriptionManagmentView-flickable', 'contentY', 'i',
-        parseInt(await vpn.getElementProperty('accountDeletionButton', 'y')));
-    await vpn.wait();
+    await vpn.scrollToQuery(
+        queries.screenSettings.subscriptionView.SCREEN,
+        queries.screenSettings.subscriptionView.ACCOUNT_DELETION.visible());
 
-    await vpn.clickOnElement('accountDeletionButton');
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.subscriptionView.ACCOUNT_DELETION.visible());
+    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
-    await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
+    await vpn.waitForQuery(
+        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible());
+    await vpn.setQueryProperty(
+        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible(),
+        'text', 'P4ssw0rd!!');
 
-    await vpn.waitForElement('authSignIn-passwordInput');
-    await vpn.waitForElementProperty(
-        'authSignIn-passwordInput', 'visible', 'true');
-    await vpn.setElementProperty(
-        'authSignIn-passwordInput', 'text', 's', 'P4ass0rd!!');
+    await vpn.waitForQueryAndClick(
+        queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+            .enabled());
 
-    await vpn.wait();
-    await vpn.waitForElementProperty('authSignIn-button', 'enabled', 'true');
-    await vpn.clickOnElement('authSignIn-button');
-
-    await vpn.waitForElement('authVerificationSessionByTotpNeeded-textInput');
-    await vpn.waitForElementProperty(
-        'authVerificationSessionByTotpNeeded-textInput', 'visible', 'true');
-    await vpn.waitForElementProperty(
-        'authVerificationSessionByTotpNeeded-button', 'enabled', 'false');
-    await vpn.setElementProperty(
-        'authVerificationSessionByTotpNeeded-textInput', 'text', 's', '123456');
-    await vpn.waitForElementProperty(
-        'authVerificationSessionByTotpNeeded-button', 'enabled', 'true');
+    await vpn.waitForQuery(
+        queries.screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible());
+    await vpn.waitForQuery(
+        queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
+            .disabled());
+    await vpn.setQueryProperty(
+        queries.screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible(),
+        'text', '123456');
+    await vpn.waitForQuery(
+        queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible().enabled());
 
     this.ctx.fxaTotpCallback = (req) => {
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/session/verify/totp'].body = {
@@ -1174,145 +1042,85 @@ describe('Subscription view', function() {
       }
     };
 
-    await vpn.wait();
-    await vpn.clickOnElement('authVerificationSessionByTotpNeeded-button');
+    await vpn.waitForQueryAndClick(
+        queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible().enabled());
 
-    await vpn.waitForElement('deleteAccountForRealButton');
-    await vpn.waitForElementProperty(
-        'deleteAccountForRealButton', 'visible', 'true');
-    await vpn.waitForElementProperty(
-        'deleteAccountForRealButton', 'enabled', 'false');
+    await vpn.waitForQuery(
+        queries.screenDeleteAccount.BUTTON.visible().disabled());
+    await vpn.waitForQuery(queries.screenDeleteAccount.LABEL.visible());
 
-    await vpn.waitForElement('accountDeletionLabel');
-    await vpn.waitForElementProperty('accountDeletionLabel', 'visible', 'true');
+    await vpn.setQueryProperty(
+        queries.screenDeleteAccount.SCREEN, 'contentY',
+        parseInt(await vpn.getQueryProperty(
+            queries.screenDeleteAccount.CHECKBOX1, 'y')));
+    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX1.visible().prop(
+        'isChecked', false));
+    await vpn.waitForQueryAndClick(
+        queries.screenDeleteAccount.CHECKBOX1_CB.visible());
+    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX1.visible().prop(
+        'isChecked', true));
+    await vpn.waitForQuery(
+        queries.screenDeleteAccount.BUTTON.visible().disabled());
 
-    await vpn.setElementProperty(
-        'viewDeleteAccountRequest', 'contentY', 'i',
-        parseInt(await vpn.getElementProperty(
-            'accountDeletionLayout/accountDeletionCheckbox-check1', 'y')));
+    await vpn.setQueryProperty(
+        queries.screenDeleteAccount.SCREEN, 'contentY',
+        parseInt(await vpn.getQueryProperty(
+            queries.screenDeleteAccount.CHECKBOX2, 'y')));
+    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX2.visible().prop(
+        'isChecked', false));
+    await vpn.waitForQueryAndClick(
+        queries.screenDeleteAccount.CHECKBOX2_CB.visible());
+    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX2.visible().prop(
+        'isChecked', true));
+    await vpn.waitForQuery(
+        queries.screenDeleteAccount.BUTTON.visible().disabled());
 
-    await vpn.waitForElement(
-        'accountDeletionLayout/accountDeletionCheckbox-check1');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check1', 'visible',
-        'true');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check1', 'isChecked',
-        'false');
-    await vpn.waitForElement(
-        'accountDeletionLayout/accountDeletionCheckbox-check1/checkbox');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check1/checkbox',
-        'visible', 'true');
-    await vpn.clickOnElement(
-        'accountDeletionLayout/accountDeletionCheckbox-check1/checkbox');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check1', 'isChecked',
-        'true');
-    await vpn.waitForElementProperty(
-        'deleteAccountForRealButton', 'enabled', 'false');
+    await vpn.setQueryProperty(
+        queries.screenDeleteAccount.SCREEN, 'contentY',
+        parseInt(await vpn.getQueryProperty(
+            queries.screenDeleteAccount.CHECKBOX3, 'y')));
+    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX3.visible().prop(
+        'isChecked', false));
+    await vpn.waitForQueryAndClick(
+        queries.screenDeleteAccount.CHECKBOX3_CB.visible());
+    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX3.visible().prop(
+        'isChecked', true));
+    await vpn.waitForQuery(
+        queries.screenDeleteAccount.BUTTON.visible().disabled());
 
-    await vpn.setElementProperty(
-        'viewDeleteAccountRequest', 'contentY', 'i',
-        parseInt(await vpn.getElementProperty(
-            'accountDeletionLayout/accountDeletionCheckbox-check2', 'y')));
-
-    await vpn.waitForElement(
-        'accountDeletionLayout/accountDeletionCheckbox-check2');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check2', 'visible',
-        'true');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check2', 'isChecked',
-        'false');
-    await vpn.waitForElement(
-        'accountDeletionLayout/accountDeletionCheckbox-check2/checkbox');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check2/checkbox',
-        'visible', 'true');
-    await vpn.clickOnElement(
-        'accountDeletionLayout/accountDeletionCheckbox-check2/checkbox');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check2', 'isChecked',
-        'true');
-    await vpn.waitForElementProperty(
-        'deleteAccountForRealButton', 'enabled', 'false');
-
-    await vpn.setElementProperty(
-        'viewDeleteAccountRequest', 'contentY', 'i',
-        parseInt(await vpn.getElementProperty(
-            'accountDeletionLayout/accountDeletionCheckbox-check3', 'y')));
-
-    await vpn.waitForElement(
-        'accountDeletionLayout/accountDeletionCheckbox-check3');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check3', 'visible',
-        'true');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check3', 'isChecked',
-        'false');
-    await vpn.waitForElement(
-        'accountDeletionLayout/accountDeletionCheckbox-check3/checkbox');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check3/checkbox',
-        'visible', 'true');
-    await vpn.clickOnElement(
-        'accountDeletionLayout/accountDeletionCheckbox-check3/checkbox');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check3', 'isChecked',
-        'true');
-    await vpn.waitForElementProperty(
-        'deleteAccountForRealButton', 'enabled', 'false');
-
-    await vpn.setElementProperty(
-        'viewDeleteAccountRequest', 'contentY', 'i',
-        parseInt(await vpn.getElementProperty(
-            'accountDeletionLayout/accountDeletionCheckbox-check4', 'y')));
-
-    await vpn.waitForElement(
-        'accountDeletionLayout/accountDeletionCheckbox-check4');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check4', 'visible',
-        'true');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check4', 'isChecked',
-        'false');
-    await vpn.waitForElement(
-        'accountDeletionLayout/accountDeletionCheckbox-check4/checkbox');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check4/checkbox',
-        'visible', 'true');
-    await vpn.clickOnElement(
-        'accountDeletionLayout/accountDeletionCheckbox-check4/checkbox');
-    await vpn.waitForElementProperty(
-        'accountDeletionLayout/accountDeletionCheckbox-check4', 'isChecked',
-        'true');
-    await vpn.waitForElementProperty(
-        'deleteAccountForRealButton', 'enabled', 'true');
+    await vpn.setQueryProperty(
+        queries.screenDeleteAccount.SCREEN, 'contentY',
+        parseInt(await vpn.getQueryProperty(
+            queries.screenDeleteAccount.CHECKBOX3, 'y')));
+    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX4.visible().prop(
+        'isChecked', false));
+    await vpn.waitForQueryAndClick(
+        queries.screenDeleteAccount.CHECKBOX4_CB.visible());
+    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX4.visible().prop(
+        'isChecked', true));
+    await vpn.waitForQuery(
+        queries.screenDeleteAccount.BUTTON.visible().enabled());
 
     this.ctx.fxaDestroyCallback = (req) => {
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/destroy'].status = 200;
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/destroy'].body = {}
     };
 
-    await vpn.clickOnElement('deleteAccountForRealButton');
+    await vpn.waitForQueryAndClick(
+        queries.screenDeleteAccount.BUTTON.visible().enabled());
 
-    await vpn.waitForElement('getHelpLink');
-    await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
-    assert(await vpn.getElementProperty('getStarted', 'visible') === 'true');
-    assert(await vpn.getElementProperty('learnMoreLink', 'visible') === 'true');
+    await vpn.waitForQuery(queries.screenInitialize.GET_HELP_LINK.visible());
+    await vpn.waitForQuery(queries.screenInitialize.GET_STARTED.visible());
+    await vpn.waitForQuery(queries.screenInitialize.LEARN_MORE_LINK.visible());
   });
 
-  const relayUpsell =
-      'subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-relayUpsell-layout';
-
   async function clickSettingsIcon() {
-    await vpn.waitForElement('navigationLayout/navButton-settings');
-    await vpn.clickOnElement('navigationLayout/navButton-settings');
+    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
   }
   async function openSubscriptionManagement() {
-    await vpn.waitForElement('settingsUserProfile');
-    await vpn.clickOnElement('settingsUserProfile');
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.USER_PROFILE.visible());
   }
 
   it('Correctly shows the VPN / Relay upgrade UI based on currency',
@@ -1345,47 +1153,44 @@ describe('Subscription view', function() {
       await clickSettingsIcon();
       await openSubscriptionManagement();
 
-      await vpn.waitForElement(relayUpsell);
-      await vpn.waitForElementProperty(relayUpsell, 'visible', 'true');
+      await vpn.waitForQuery(
+          queries.screenSettings.subscriptionView.RELAY_UPSELL_PLAN.visible());
     });
 
-  it('Correctly hides the VPN / Relay upgrade UI based on currency',
-    async () => {
-      this.ctx.fxaLoginCallback = (req) => {
-        this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
-          sessionToken: 'session',
-          verified: true,
-          verificationMethod: ''
+  it(
+      'Correctly hides the VPN / Relay upgrade UI based on currency',
+      async () => {
+        this.ctx.fxaLoginCallback = (req) => {
+          this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
+            sessionToken: 'session',
+            verified: true,
+            verificationMethod: ''
+          };
+          this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
         };
-        this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
-      };
-      this.ctx.guardianSubscriptionDetailsCallback = req => {
-        this.ctx.guardianOverrideEndpoints
-            .GETs['/api/v1/vpn/subscriptionDetails']
-            .status = 200;
+        this.ctx.guardianSubscriptionDetailsCallback = req => {
+          this.ctx.guardianOverrideEndpoints
+              .GETs['/api/v1/vpn/subscriptionDetails']
+              .status = 200;
 
-        const SUBSCRIPTION_DETAILS_CLONE = Object.assign({},
-            SUBSCRIPTION_DETAILS);
-        SUBSCRIPTION_DETAILS_CLONE.plan = { currency: 'eur' };
-        this.ctx.guardianOverrideEndpoints
-            .GETs['/api/v1/vpn/subscriptionDetails']
-            .body = SUBSCRIPTION_DETAILS;
-      };
+          const SUBSCRIPTION_DETAILS_CLONE =
+              Object.assign({}, SUBSCRIPTION_DETAILS);
+          SUBSCRIPTION_DETAILS_CLONE.plan = {currency: 'eur'};
+          this.ctx.guardianOverrideEndpoints
+              .GETs['/api/v1/vpn/subscriptionDetails']
+              .body = SUBSCRIPTION_DETAILS;
+        };
 
-      if (!(await vpn.isFeatureFlippedOn('bundleUpgrade'))) {
-        await vpn.flipFeatureOn('bundleUpgrade');
-      }
+        if (!(await vpn.isFeatureFlippedOn('bundleUpgrade'))) {
+          await vpn.flipFeatureOn('bundleUpgrade');
+        }
 
-      await clickSettingsIcon();
-      await openSubscriptionManagement();
+        await clickSettingsIcon();
+        await openSubscriptionManagement();
 
-      await vpn.waitForElement(
-        'subscriptionItem/subscriptionItem-status/subscriptionItem-status-parent/subscriptionItem-status-relayUpsell-layout');
-      assert(
-          await vpn.getElementProperty(
-              'subscriptionItem/subscriptionItem-status/subscriptionItem-status-parent/subscriptionItem-status-relayUpsell-layout',
-              'visible') === 'false');
-    });
+        await vpn.waitForQuery(queries.screenSettings.subscriptionView
+                                   .RELAY_UPSELL_STATUS.hidden());
+      });
 
   it('Hides Relay upsell if bundleUpgrade feature is not enabled', async () => {
     await vpn.flipFeatureOff('bundleUpgrade');
@@ -1408,8 +1213,8 @@ describe('Subscription view', function() {
     await clickSettingsIcon();
     await openSubscriptionManagement();
 
-    await vpn.waitForElement(relayUpsell);
-    await vpn.waitForElementProperty(relayUpsell, 'visible', 'false');
+    await vpn.waitForQuery(
+        queries.screenSettings.subscriptionView.RELAY_UPSELL_PLAN.hidden());
   });
 
 
@@ -1441,12 +1246,8 @@ describe('Subscription view', function() {
     await clickSettingsIcon();
     await openSubscriptionManagement();
 
-    await vpn.waitForElement(
-        'subscriptionItem/subscriptionItem-status/subscriptionItem-status-parent/subscriptionItem-status-relayUpsell-layout');
-    assert(
-        await vpn.getElementProperty(
-            'subscriptionItem/subscriptionItem-status/subscriptionItem-status-parent/subscriptionItem-status-relayUpsell-layout',
-            'visible') === 'false');
+    await vpn.waitForQuery(
+        queries.screenSettings.subscriptionView.RELAY_UPSELL_STATUS.hidden());
   });
 
   // TODO:

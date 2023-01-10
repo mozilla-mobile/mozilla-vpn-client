@@ -161,13 +161,15 @@ mozillavpnnp.vcxproj*
 /glean/telemetry/*
 !/glean/telemetry/.keepme
 android/src/org/mozilla/firefox/vpn/glean/GleanEvents.kt
-vpnglean/src/generated
-src/apps/vpn/glean/generated
+vpnglean/prebuilt/
+vpnglean/uniffi.toml
 
 # For users compiling QT per the README
 /qt/
 
 # Language files
+l18nstrings.h
+l18nstrings_p.cpp
 /translations/libtranslations.a
 /translations/translations_autogen/
 translations/*/*.ts

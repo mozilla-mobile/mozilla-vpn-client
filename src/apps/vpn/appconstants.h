@@ -16,6 +16,9 @@ void setStaging();
 // This is used by SettingsHolder to configure the QSetting file.
 constexpr const char* SETTINGS_APP_NAME = "vpn";
 
+// The prefix for the user-agent requests
+constexpr const char* NETWORK_USERAGENT_PREFIX = "MozillaVPN";
+
 // Number of msecs for the captive-portal block alert.
 constexpr uint32_t CAPTIVE_PORTAL_ALERT_MSEC = 4000;
 
@@ -109,16 +112,15 @@ constexpr const char* GOOGLE_SUBSCRIPTIONS_URL =
 constexpr const char* MOZILLA_VPN_SUMO_URL =
     "https://support.mozilla.org/en-US/products/firefox-private-network-vpn";
 
+PRODBETAEXPR(QString, addonBaseUrl,
+             "https://archive.mozilla.org/pub/vpn/addons/releases/latest/",
+             Constants::envOrDefault(
+                 "MZ_ADDON_URL",
+                 "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/"))
+
 PRODBETAEXPR(
     const char*, benchmarkUploadUrl, "https://benchmark.vpn.mozilla.org/upload",
     "https://dev.vpn-network-benchmark.nonprod.webservices.mozgcp.net/upload");
-
-PRODBETAEXPR(QString, fxaApiBaseUrl, "https://api.accounts.firefox.com",
-             Constants::envOrDefault("MVPN_FXA_API_BASE_URL",
-                                     "https://api-accounts.stage.mozaws.net"))
-
-PRODBETAEXPR(const char*, fxaUrl, "https://accounts.firefox.com",
-             "https://accounts.stage.mozaws.net")
 
 PRODBETAEXPR(
     const char*, balrogUrl,
@@ -164,6 +166,22 @@ constexpr const char* CRYPTO_SETTINGS_SERVICE = "Mozilla VPN";
 constexpr const char* MACOS_FALLBACK_APP_ID = "org.mozilla.macos.FirefoxVPN";
 constexpr const char* IOS_FALLBACK_APP_ID = "org.mozilla.ios.FirefoxVPN";
 #endif
+
+#if defined(MZ_WINDOWS)
+// Credential key for windows
+constexpr const wchar_t* WINDOWS_CRED_KEY = L"Mozilla VPN";
+#endif
+
+#if defined(MZ_ANDROID)
+constexpr const char* ANDROID_LOG_NAME = "mozillavpn";
+#endif
+
+// TODO: #if defined(MZ_LINUX) - but it breaks dummyvpn
+constexpr const char* LINUX_CRYPTO_SETTINGS_KEY =
+    "org.mozilla.vpn.cryptosettings";
+constexpr const char* LINUX_CRYPTO_SETTINGS_DESC =
+    "VPN settings encryption key";
+// TODO: #endif
 
 };  // namespace AppConstants
 

@@ -5,14 +5,15 @@
 #ifndef EVENT_METRIC_H
 #define EVENT_METRIC_H
 
-#include "glean/glean.h"
-#if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
-#  include "vpnglean.h"
-#endif
-
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QObject>
+
+#if not(defined(__wasm__) || defined(BUILD_QMAKE))
+#  include "vpnglean.h"
+#else
+enum ErrorType {};
+#endif
 
 struct FfiExtra {
   std::vector<const char*> keys;
@@ -44,15 +45,11 @@ struct EventMetricExtra {
 };
 
 struct EventMetricExtraParser {
-  virtual FfiExtra fromJsonObject(const QJsonObject& extras,
-                                  QList<QByteArray>& keepStringsAlive) {
-    Q_ASSERT(false);
-    // This function should be overriden.
-
-    return FfiExtra();
-  };
   virtual FfiExtra fromStruct(const EventMetricExtra& extras,
                               QList<QByteArray>& keepStringsAlive, int id) {
+    Q_UNUSED(extras);
+    Q_UNUSED(keepStringsAlive);
+    Q_UNUSED(id);
     Q_ASSERT(false);
     // This function should be overriden.
 
@@ -82,13 +79,10 @@ class EventMetric final {
 
   void record(const EventMetricExtra& extras);
 
-#if defined(UNIT_TEST)
-  Q_INVOKABLE int32_t
-  testGetNumRecordedErrors(VPNGlean::ErrorType errorType) const;
+  Q_INVOKABLE int32_t testGetNumRecordedErrors(ErrorType errorType) const;
 
   Q_INVOKABLE QList<QJsonObject> testGetValue(
       const QString& pingName = "") const;
-#endif
 
  private:
   int m_id;

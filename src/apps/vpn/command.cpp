@@ -6,6 +6,7 @@
 
 #include "appconstants.h"
 #include "commandlineparser.h"
+#include "glean/glean.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
@@ -91,7 +92,9 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
     LogHandler::enableStderr();
   }
 
+  VPNGlean::registerLogHandler(LogHandler::rustMessageHandler);
   qInstallMessageHandler(LogHandler::messageQTHandler);
+
   logger.info() << "MozillaVPN" << Constants::versionString();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
@@ -116,6 +119,7 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
     LogHandler::enableStderr();
   }
 
+  VPNGlean::registerLogHandler(LogHandler::rustMessageHandler);
   qInstallMessageHandler(LogHandler::messageQTHandler);
 
   logger.info() << "MozillaVPN" << Constants::versionString();
@@ -149,6 +153,7 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
     LogHandler::enableStderr();
   }
 
+  VPNGlean::registerLogHandler(LogHandler::rustMessageHandler);
   qInstallMessageHandler(LogHandler::messageQTHandler);
 
   // Ensure that external styling hints are disabled.

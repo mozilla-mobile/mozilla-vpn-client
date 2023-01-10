@@ -277,6 +277,18 @@ notifications:
   unsecuredNetworkMessage:
     value: "%1 is not secure. Click here to turn on VPN and secure your device."
     comment: "%1 is the Wi-Fi network name"
+  VPNConnectedTitle: VPN Connected
+  VPNConnectedMessage:
+    value: "Connected to %1"
+    comment: "%1 is the name of the city the VPN is connected to."
+  VPNDisconnectedTitle: VPN Disconnected
+  VPNDisconnectedMessage:
+    value: "Disconnected from %1"
+    comment: "%1 is the name of the city the VPN disconnected from."
+  VPNSwitchedServersTitle: VPN Switched Servers
+  VPNSwitchedServersMessage:
+    value: "Switched from %1 to %2"
+    comment: "%1 is the name of the initial server, %2 is the name of the destination server."
 
 systray:
   hide: Hide Mozilla VPN
@@ -378,6 +390,9 @@ connectionInfo:
   troubleshootingBulletTwo:
     value: Checking your internet connection
     comment: This is a bullet item in the connection troubleshooting section
+  troubleshootingBulletThree:
+    value: Switching back to a single-hop connection
+    comment: This is a bullet item in the connection troubleshooting section for multi-hop connections
   # Bullet items for medium speedtest results
   mediumBulletOne:
     value: Browsing the internet
