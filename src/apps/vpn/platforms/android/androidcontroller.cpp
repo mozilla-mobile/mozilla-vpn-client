@@ -190,23 +190,23 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
   // Build the "canned" Notification messages
   // They will be used in case this config will be re-enabled
   // to show the appropriate notification messages
-  QString countryCode = vpn->currentServer()->exitCountryCode();
-  QString localizedCityName = vpn->currentServer()->localizedCityName();
-  QString localizedCountryName =
-      vpn->serverCountryModel()->localizedCountryName(countryCode);
+  QString localizedCityName = vpn->currentServer()->localizedExitCityName();
   args["city"] = localizedCityName;
 
   QJsonObject messages;
   messages["productName"] = qtTrId("vpn.main.productName");
-  messages["connectedHeader"] =
-      qtTrId("vpn.systray.statusConnected.title");  // Connected
-  messages["connectedBody"] = qtTrId("vpn.systray.statusConnected.message")
-                                  .arg(localizedCountryName, localizedCityName);
-  messages["disconnectedHeader"] =
-      qtTrId("vpn.systray.statusDisconnected.title");  // Disconnected
+  messages["connectedHeader"] = L18nStrings::instance()->t(
+      L18nStrings::NotificationsVPNConnectedTitle);  // Connected
+  messages["connectedBody"] =
+      L18nStrings::instance()
+          ->t(L18nStrings::NotificationsVPNConnectedMessage)
+          .arg(localizedCityName);
+  messages["disconnectedHeader"] = L18nStrings::instance()->t(
+      L18nStrings::NotificationsVPNDisconnectedTitle);
   messages["disconnectedBody"] =
-      qtTrId("vpn.systray.statusDisconnected.message")
-          .arg(localizedCountryName, localizedCityName);
+      L18nStrings::instance()
+          ->t(L18nStrings::NotificationsVPNDisconnectedMessage)
+          .arg(localizedCityName);
   args["messages"] = messages;
 
   QJsonDocument doc(args);
