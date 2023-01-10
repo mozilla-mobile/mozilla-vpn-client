@@ -77,6 +77,7 @@ ColumnLayout {
                 width: undefined
                 onClicked: {
                    activeInput().paste();
+                   activeInput().forceActiveFocus();
                 }
             }
         }
