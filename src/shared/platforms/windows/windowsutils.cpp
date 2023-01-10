@@ -9,6 +9,12 @@
 #include <QSettings>
 #include <QSysInfo>
 
+#include "logger.h"
+
+namespace {
+Logger logger("WindowsUtils");
+}  // namespace
+
 constexpr const int WINDOWS_11_BUILD =
     22000;  // Build Number of the first release win 11 iso
 
