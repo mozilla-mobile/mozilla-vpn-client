@@ -148,6 +148,10 @@ Item {
                 target: animatedRings
                 visible: false
             }
+            PropertyChanges {
+                target: ipInfoPanel
+                isOpen: false
+            }
 
         },
         State {
@@ -278,6 +282,10 @@ Item {
                 startAnimation: true
             }
 
+            PropertyChanges {
+                target: ipInfoPanel
+                isOpen: false
+            }
         },
         State {
             name: VPNController.StateDisconnecting
@@ -322,7 +330,10 @@ Item {
                 target: animatedRings
                 visible: false
             }
-
+            PropertyChanges {
+                target: ipInfoPanel
+                isOpen: false
+            }
         },
         State {
             name: VPNController.StateSwitching
@@ -371,6 +382,10 @@ Item {
                 startAnimation: false
             }
 
+            PropertyChanges {
+                target: ipInfoPanel
+                isOpen: false
+            }
         }
     ]
     transitions: [
@@ -594,7 +609,7 @@ Item {
             horizontalCenterOffset: 0
             horizontalCenter: parent.horizontalCenter
         }
-        enabled: !connectionInfoScreenVisible && !ipInfoPanel.isOpen
+        enabled: !connectionInfoScreenVisible && !ipInfoPanel.visible
 
         Accessible.ignored: connectionInfoScreenVisible || ipInfoPanel.isOpen
     }
