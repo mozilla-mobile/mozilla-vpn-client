@@ -4,9 +4,16 @@
 
 #include "taskpurchase.h"
 
+#include "appconstants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
+
+#ifdef MZ_IOS
+#  include "platforms/ios/iosutils.h"
+#endif
+
+#include <QJsonObject>
 
 namespace {
 Logger logger("TaskPurchase");
@@ -48,22 +55,31 @@ TaskPurchase::TaskPurchase(Op op) : Task("TaskPurchase"), m_op(op) {
 TaskPurchase::~TaskPurchase() { MZ_COUNT_DTOR(TaskPurchase); }
 
 void TaskPurchase::run() {
-  NetworkRequest* request = nullptr;
+  NetworkRequest* request = NetworkRequest::create(this, 200);
+
   switch (m_op) {
 #ifdef MZ_IOS
     case IOS:
-      request = NetworkRequest::createForIOSPurchase(this, m_iOSReceipt);
+      request->post(
+          QString("%1/api/v1/vpn/purchases/ios")
+              .arg(AppConstants::apiBaseUrl()),
+          QJsonObject{{"receipt", m_iOSReceipt},
+                      {"appId", QString::fromNSString(IOSUtils::appId())}});
       break;
 #endif
 #ifdef MZ_ANDROID
     case Android:
-      request = NetworkRequest::createForAndroidPurchase(this, m_androidSku,
-                                                         m_androidToken);
+      request->post(
+          QString("%1/api/v1/vpn/purchases/android")
+              .arg(AppConstants::apiBaseUrl()),
+          QJsonObject{{"sku", m_androidSku}, {"token", m_androidToken}});
       break;
 #endif
 #ifdef MZ_WASM
     case Wasm:
-      request = NetworkRequest::createForWasmPurchase(this, m_productId);
+      request->post(QString("%1/api/v1/vpn/purchases/wasm")
+                        .arg(AppConstants::apiBaseUrl()),
+                    QJsonObject{{"productId", m_productId}});
       break;
 #endif
   }

@@ -94,7 +94,6 @@ SOURCES += \
         apps/vpn/models/supportcategorymodel.cpp \
         apps/vpn/models/user.cpp \
         apps/vpn/mozillavpn.cpp \
-        apps/vpn/networkrequest.cpp \
         apps/vpn/networkwatcher.cpp \
         apps/vpn/notificationhandler.cpp \
         apps/vpn/pinghelper.cpp \
@@ -243,7 +242,6 @@ HEADERS += \
         apps/vpn/models/supportcategorymodel.h \
         apps/vpn/models/user.h \
         apps/vpn/mozillavpn.h \
-        apps/vpn/networkrequest.h \
         apps/vpn/networkwatcher.h \
         apps/vpn/networkwatcherimpl.h \
         apps/vpn/notificationhandler.h \

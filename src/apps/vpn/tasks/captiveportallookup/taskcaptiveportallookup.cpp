@@ -28,7 +28,11 @@ TaskCaptivePortalLookup::~TaskCaptivePortalLookup() {
 void TaskCaptivePortalLookup::run() {
   logger.debug() << "Resolving the captive portal detector URL";
 
-  NetworkRequest* request = NetworkRequest::createForCaptivePortalLookup(this);
+  NetworkRequest* request = NetworkRequest::create(this, 200);
+  request->auth(MozillaVPN::authorizationHeader());
+  request->get(QString("%1/api/v1/vpn/dns/detectportal")
+                   .arg(AppConstants::apiBaseUrl()));
+
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
             if (m_cancelled) {

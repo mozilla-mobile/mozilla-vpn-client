@@ -4,6 +4,7 @@
 
 #include "taskproducts.h"
 
+#include "appconstants.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -21,7 +22,9 @@ TaskProducts::TaskProducts() : Task("TaskProducts") {
 TaskProducts::~TaskProducts() { MZ_COUNT_DTOR(TaskProducts); }
 
 void TaskProducts::run() {
-  NetworkRequest* request = NetworkRequest::createForProducts(this);
+  NetworkRequest* request = NetworkRequest::create(this, 200);
+  request->get(
+      QString("%1/api/v3/vpn/products").arg(AppConstants::apiBaseUrl()));
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {

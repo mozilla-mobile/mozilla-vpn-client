@@ -4,10 +4,14 @@
 
 #include "tasksendfeedback.h"
 
+#include <QJsonObject>
+
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/user.h"
+#include "mozillavpn.h"
+#include "networkmanager.h"
 #include "networkrequest.h"
 
 constexpr uint32_t FEEDBACK_MESSAGE_MAX_LENGTH = 1000;
@@ -34,8 +38,16 @@ TaskSendFeedback::~TaskSendFeedback() { MZ_COUNT_DTOR(TaskSendFeedback); }
 void TaskSendFeedback::run() {
   logger.debug() << "Sending the feedback";
 
-  NetworkRequest* request = NetworkRequest::createForFeedback(
-      this, m_feedbackText, m_logs, m_rating, m_category);
+  NetworkRequest* request = NetworkRequest::create(this, 201);
+  request->auth(MozillaVPN::authorizationHeader());
+  request->post(
+      QString("%1/api/v1/vpn/feedback").arg(AppConstants::apiBaseUrl()),
+      QJsonObject{{"feedbackText", m_feedbackText},
+                  {"logs", m_logs},
+                  {"versionString", Env::versionString()},
+                  {"platformVersion", QString(NetworkManager::osVersion())},
+                  {"rating", m_rating},
+                  {"category", m_category}});
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {

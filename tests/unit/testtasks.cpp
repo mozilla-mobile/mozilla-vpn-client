@@ -5,6 +5,8 @@
 #include "testtasks.h"
 
 #include "mozillavpn.h"
+#include "settingsholder.h"
+#include "simplenetworkmanager.h"
 #include "tasks/account/taskaccount.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "tasks/function/taskfunction.h"
@@ -13,6 +15,9 @@
 #include "taskscheduler.h"
 
 void TestTasks::account() {
+  SimpleNetworkManager snm;
+  SettingsHolder settingsHolder;
+
   // Failure
   {
     TestHelper::networkConfig.append(TestHelper::NetworkConfig(
@@ -43,6 +48,9 @@ void TestTasks::account() {
 }
 
 void TestTasks::servers() {
+  SimpleNetworkManager snm;
+  SettingsHolder settingsHolder;
+
   // Failure
   {
     TestHelper::networkConfig.append(TestHelper::NetworkConfig(
@@ -73,6 +81,9 @@ void TestTasks::servers() {
 }
 
 void TestTasks::addDevice_success() {
+  SimpleNetworkManager snm;
+  SettingsHolder settingsHolder;
+
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Success, QByteArray()));
 
@@ -86,6 +97,9 @@ void TestTasks::addDevice_success() {
 }
 
 void TestTasks::addDevice_failure() {
+  SimpleNetworkManager snm;
+  SettingsHolder settingsHolder;
+
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Failure, QByteArray()));
 

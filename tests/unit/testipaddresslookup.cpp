@@ -7,8 +7,11 @@
 #include "helper.h"
 #include "ipaddresslookup.h"
 #include "settingsholder.h"
+#include "simplenetworkmanager.h"
 
 void TestIpAddressLookup::checkIpAddressFailure() {
+  SimpleNetworkManager snm;
+
   IpAddressLookup ial;
   ial.reset();
 
@@ -47,6 +50,8 @@ void TestIpAddressLookup::checkIpAddressSucceess_data() {
 }
 
 void TestIpAddressLookup::checkIpAddressSucceess() {
+  SimpleNetworkManager snm;
+
   IpAddressLookup ial;
   ial.reset();
 

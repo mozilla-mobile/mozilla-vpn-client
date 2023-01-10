@@ -176,3 +176,6 @@ void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {}
 QString MozillaVPN::placeholderUserDNS() const { return ""; }
 
 void MozillaVPN::registerUrlOpenerLabels() {}
+
+// static
+QByteArray MozillaVPN::authorizationHeader() { return ""; }

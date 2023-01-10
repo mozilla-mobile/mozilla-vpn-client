@@ -40,6 +40,11 @@ void ConnectionBenchmark::initialize() {
 }
 
 void ConnectionBenchmark::setConnectionSpeed() {
+  if (m_state == StateError) {
+    logger.debug() << "Set connection speed abort because of errors";
+    return;
+  }
+
   logger.debug() << "Set connection speed";
 
   // TODO: Take uploadBps for calculating speed into account

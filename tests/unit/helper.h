@@ -12,6 +12,8 @@
 #include "controller.h"
 #include "mozillavpn.h"
 
+class NetworkRequest;
+
 class TestHelper : public QObject {
   Q_OBJECT
 
@@ -30,6 +32,26 @@ class TestHelper : public QObject {
     NetworkConfig(NetworkStatus status, const QByteArray& body)
         : m_status(status), m_body(body) {}
   };
+
+  static void networkRequestDelete(NetworkRequest* request) {
+    networkRequestGeneric(request);
+  }
+
+  static void networkRequestGet(NetworkRequest* request) {
+    networkRequestGeneric(request);
+  }
+
+  static void networkRequestPost(NetworkRequest* request,
+                                 const QByteArray& data) {
+    networkRequestGeneric(request);
+  }
+
+  static void networkRequestPostIODevice(NetworkRequest* request,
+                                         QIODevice* device) {
+    networkRequestGeneric(request);
+  }
+
+  static void networkRequestGeneric(NetworkRequest* request);
 
   static QVector<NetworkConfig> networkConfig;
 

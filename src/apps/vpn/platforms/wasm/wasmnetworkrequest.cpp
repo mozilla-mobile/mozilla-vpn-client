@@ -7,6 +7,7 @@
 #include <emscripten/bind.h>
 #include <emscripten/emscripten.h>
 
+#include <QIODevice>
 #include <QJsonDocument>
 #include <QJsonObject>
 
@@ -120,4 +121,10 @@ void WasmNetworkRequest::postRequest(NetworkRequest* request,
   call_mvpnNetworkRequest(processNetworkRequest(request), "POST",
                           request->url().toString().toUtf8().data(),
                           body.data(), body.length());
+}
+
+// static
+void WasmNetworkRequest::postRequestIODevice(NetworkRequest* request,
+                                             QIODevice* device) {
+  return postRequest(request, device->readAll());
 }

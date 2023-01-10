@@ -27,7 +27,14 @@ TaskGetLocation::TaskGetLocation(
 TaskGetLocation::~TaskGetLocation() { MZ_COUNT_DTOR(TaskGetLocation); }
 
 void TaskGetLocation::run() {
-  NetworkRequest* request = NetworkRequest::createForIpInfo(this);
+  QUrl url(QString("%1/api/v1/vpn/ipinfo").arg(AppConstants::apiBaseUrl()));
+  QString host = url.host();
+
+  NetworkRequest* request = NetworkRequest::create(this, 200);
+  request->auth(MozillaVPN::authorizationHeader());
+  request->requestInternal().setRawHeader("Host", host.toLocal8Bit());
+  request->requestInternal().setPeerVerifyName(host);
+  request->get(url);
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {

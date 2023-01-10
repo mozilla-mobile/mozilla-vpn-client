@@ -21,3 +21,11 @@ void AppConstants::setStaging() {
   s_stagingServerAddress = SettingsHolder::instance()->stagingServerAddress();
   Q_ASSERT(!s_stagingServerAddress.isEmpty());
 }
+
+QString AppConstants::apiBaseUrl() {
+  if (Constants::inProduction()) {
+    return AppConstants::API_PRODUCTION_URL;
+  }
+
+  return AppConstants::getStagingServerAddress();
+}

@@ -9,6 +9,11 @@
 
 namespace AppConstants {
 
+/**
+ * @brief expose the API base URL for guardian
+ */
+QString apiBaseUrl();
+
 // Returns true if we are in a production environment.
 const QString& getStagingServerAddress();
 void setStaging();

@@ -56,6 +56,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/loghandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/networkmanager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/networkmanager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/networkrequest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/networkrequest.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/qmlengineholder.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/qmlengineholder.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/qmlpath.cpp
