@@ -36,7 +36,8 @@ SETTING_STRING(userEmail,        // getter
                "user/email",     // key
                "",               // default value
                false,            // user setting
-               true              // remove when reset
+               true,             // remove when reset
+               true              // sensitive (do not log)
 )
 
 // The app must implement its settings list file.
