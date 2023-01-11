@@ -45,6 +45,7 @@
 #include "tasks/sendfeedback/tasksendfeedback.h"
 #include "tasks/servers/taskservers.h"
 #include "taskscheduler.h"
+#include "telemetry.h"
 #include "telemetry/gleansample.h"
 #include "update/updater.h"
 #include "urlopener.h"
@@ -940,9 +941,12 @@ void MozillaVPN::postAuthenticationCompleted() {
 void MozillaVPN::mainWindowLoaded() {
   logger.debug() << "main window loaded";
 
+  Telemetry::stopTimeToMainScreenTimer();
+
 #ifndef MZ_WASM
-  // Initialize glean with an async call because at this time, QQmlEngine does
-  // not have root objects yet to see the current graphics API in use.
+  // Initialize glean with an async call because at this time,
+  // QQmlEngine does not have root objects yet to see the current
+  // graphics API in use.
   logger.debug() << "Initializing Glean";
   QTimer::singleShot(0, this, &MozillaVPN::initializeGlean);
 

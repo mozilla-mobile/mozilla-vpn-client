@@ -15,6 +15,9 @@ class Telemetry final : public QObject {
 
   void initialize();
 
+  static void startTimeToMainScreenTimer();
+  static void stopTimeToMainScreenTimer();
+
  private:
   void connectionStabilityEvent();
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
