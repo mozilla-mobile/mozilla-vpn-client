@@ -48,6 +48,10 @@ if [[ -z "$DIST" ]]; then
   DIST="${VERSION_CODENAME}"
 fi
 
+## Dump our env to see what we're building...
+echo "Dumping environment..."
+env
+
 # Update the package database, just in case.
 sudo apt-get update
 
