@@ -29,7 +29,7 @@ modules:
         url: https://github.com/qt/qt5compat
 
   - name: mozillavpn
-    buildsystem: cmake
+    buildsystem: cmake-ninja
     config-opts:
       - -DCMAKE_BUILD_TYPE=RelWithDebInfo
       - -DBUILD_FLATPAK=ON
