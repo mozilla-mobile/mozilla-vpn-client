@@ -28,13 +28,11 @@ RUN apt-get update \
     && apt-get clean
 
 ARG QTPPA
-RUN echo "Debug: QTPPA is: ${QTPPA}"
 RUN if [ -n "${QTPPA}" ]; then add-apt-repository -y ${QTPPA}; fi
 
 RUN locale-gen "$LANG"
 
 # Also pull in packages from build-depends as early as possible
-# Note: This doesn't let us do any processing on the control file.
 # %include linux/debian/control
 ADD topsrcdir/linux/debian/control /root/mozillavpn-dpkg-control
 RUN mk-build-deps -i -r  --tool="apt-get --no-install-recommends --yes" \
