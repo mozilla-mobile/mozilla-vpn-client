@@ -1657,3 +1657,24 @@ sample:
         description: |
           The line number where the error has been triggered
         type: quantity
+
+  non_default_language_used:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has chosen a default language.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-3742
+    data_reviews:
+      - TODO
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+    extra_keys:
+      language_code:
+        description: The language code chosen.
+        type: string
