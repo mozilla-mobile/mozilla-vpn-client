@@ -597,9 +597,6 @@ Item {
     }
 
     VPNIPInfoPanel {
-        property var connectionStabilityWatcher: VPNConnectionHealth.stability
-        property var vpnStateWatcher: VPNController.state
-
         id: ipInfoPanel
         objectName: "ipInfoPanel"
 
@@ -607,11 +604,21 @@ Item {
         visible: opacity > 0
         z: 1
 
-        onVpnStateWatcherChanged: ipInfoPanel.isOpen = false
-        onConnectionStabilityWatcherChanged: if (ipInfoPanel.isOpen &&
-                                                VPNConnectionHealth.stability === VPNConnectionHealth.NoSignal) {
-                                                 ipInfoPanel.isOpen = false;
-                                             }
+        Connections {
+            target: VPNConnectionHealth
+            function onStabilityChanged() {
+                if (ipInfoPanel.isOpen &&
+                    VPNConnectionHealth.stability === VPNConnectionHealth.NoSignal) {
+                     ipInfoPanel.isOpen = false;
+                 }
+            }
+        }
+        Connections {
+            target: VPNController
+            function onStateChanged() {
+                ipInfoPanel.isOpen = false
+            }
+        }
     }
 
     VPNIconButton {
