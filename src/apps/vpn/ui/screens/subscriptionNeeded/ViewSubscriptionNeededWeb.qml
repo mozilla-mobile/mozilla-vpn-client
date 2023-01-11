@@ -69,6 +69,10 @@ VPNFlickable {
             Layout.fillWidth: true
             Layout.leftMargin: VPNTheme.theme.vSpacingSmall
             Layout.rightMargin: VPNTheme.theme.windowMargin
+
+            Accessible.role: Accessible.StaticText
+            // Prevent html tags from being read by screen readers
+            Accessible.name: text.replace(/<[^>]*>/g, "")
         }
 
         VPNButton {
