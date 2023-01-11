@@ -14,8 +14,12 @@ kind-dependencies:
 
 tasks:
   appium/android:
+    worker-type: b-linux
     description: "Android appium stuff"
     treeherder:
+        symbol: TA
+        kind: Test
+        tier: 1
         platform: android/arm64-v8a
     fetches:
         build:
@@ -24,5 +28,10 @@ tasks:
         build: android-arm64/debug
     worker:
         docker-image: {in-tree: build}
+        max-run-time: 3600
+        chain-of-trust: true
     run:
+        using: run-task
+        use-caches: true
+        cwd: '{checkout}'
         command: taskluster/scripts/appium/upload.sh   
