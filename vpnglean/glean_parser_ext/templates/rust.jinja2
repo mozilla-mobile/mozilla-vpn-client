@@ -95,11 +95,12 @@ pub mod {{ category_name|snake_case }} {
 
 {% for typ, metrics in metric_by_type.items() %}
 pub static {{typ.0}}: Lazy<HashMap<u32, &Lazy<glean::private::{{typ.1}}>>> = Lazy::new(|| {
-    let mut map: HashMap<u32, &Lazy<glean::private::{{typ.1}}>> = HashMap::with_capacity({{metrics|length}});
+    {% set map_ident = "_map" if metrics|length == 0 else "map" %}
+    let mut {{map_ident}}: HashMap<u32, &Lazy<glean::private::{{typ.1}}>> = HashMap::with_capacity({{metrics|length}});
     {% for metric in metrics %}
-    map.insert({{metric.0}}, &{{metric.1}});
+    {{map_ident}}.insert({{metric.0}}, &{{metric.1}});
     {% endfor %}
-    map
+    {{map_ident}}
 });
 {% endfor %}
 
