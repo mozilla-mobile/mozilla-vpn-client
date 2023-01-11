@@ -110,6 +110,9 @@ class SettingsHolder final : public QObject {
  signals:
   void addonSettingsChanged();
   void inTransactionChanged();
+  void transactionBegan();
+  void transactionAboutToRollBack();
+  void transactionRolledBack();
 
  private:
   QSettings m_settings;
