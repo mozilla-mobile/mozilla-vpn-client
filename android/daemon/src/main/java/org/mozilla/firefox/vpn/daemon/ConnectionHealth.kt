@@ -27,6 +27,13 @@ class ConnectionHealth(service: VPNService) {
     var mWorker: ExecutorService = Executors.newSingleThreadExecutor()
 
     fun start(endpoint: String, gateway: String, dns: String, altEndpoint: String) {
+        if (Build.VERSION.SDK_INT < 31) {
+            // Let's disable Daemon Connection health for anyone
+            // Below android 12, that's roughly 50% of our users.
+            // See: VPN-3743
+            Log.i(TAG, "A/B test disabled ConnectionHealth")
+            return
+        }
         mEndPoint = endpoint
         mGateway = gateway
         mDNS = dns
