@@ -113,6 +113,9 @@ VPNViewBase {
                     objectName: "language-column-" + code
                     width: parent.width
 
+                    LayoutMirroring.enabled: isRightToLeft
+                    LayoutMirroring.childrenInherit: true
+
                     function pushFocusToRadio() {
                         delRadio.forceActiveFocus();
                     }
