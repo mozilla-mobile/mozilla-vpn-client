@@ -12,7 +12,7 @@ MAINTAINER Owen Kirby <okirby@mozilla.com>
 #-- Extra Packages ----------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------
 ENV CURL='curl --location --retry 5' \
-    DEBIAN_FRONTENT='noninteractive' \
+    DEBIAN_FRONTEND='noninteractive' \
     LANG='en_US.UTF-8' \
     TERM='dumb'
 

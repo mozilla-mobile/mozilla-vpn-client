@@ -59,6 +59,7 @@ fi
 if [[ -n "$QTPPA" ]]; then
     sudo add-apt-repository -y ${QTPPA}
 fi
+sudo apt-get update
 
 # Find and extract the package source
 DSCFILE=$(find ${MOZ_FETCHES_DIR} -name '*.dsc' | grep -E -- "-${DIST}[0-9]+.dsc")
@@ -75,7 +76,6 @@ DPKG_PACkAGE_BINNAME=$(cat mozillavpn-source/debian/control | grep "^Package:" |
 
 # Install the package build dependencies.
 mk-build-deps $(pwd)/mozillavpn-source/debian/control
-sudo apt-get update
 sudo apt -y install ./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_VERSION}_all.deb
 
 # Build the packages
