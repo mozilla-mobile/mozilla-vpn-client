@@ -72,8 +72,8 @@
         "tooltip": "Select an app to exclude it from VPN protections",
         "next": {
           "op": "signal",
-          "query_emitter": "//appPermissionList/app0/checkbox{visible=true}",
-          "signal": "checkedChanged"
+          "vpn_emitter": "settingsHolder",
+          "signal": "vpnDisabledAppsChanged"
         }
       },{
         "id": "s6",
