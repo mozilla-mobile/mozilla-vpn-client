@@ -29,6 +29,10 @@ RUN apt-get update \
 
 RUN locale-gen "$LANG"
 
+# %include linux/debian/control
+ADD topsrcdir/linux/debian/control /builds/worker/mozillavpn-dpkg-control
+RUN mk-build-deps -i -r /builds/worker/mozillavpn-dpkg-control
+
 #----------------------------------------------------------------------------------------------------------------------
 #-- Worker User -------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------
