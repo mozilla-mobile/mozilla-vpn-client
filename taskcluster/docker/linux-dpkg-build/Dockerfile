@@ -32,9 +32,9 @@ RUN locale-gen "$LANG"
 # Also pull in packages from build-depends as early as possible
 # Note: This doesn't let us do any processing on the control file.
 # %include linux/debian/control
-ADD topsrcdir/linux/debian/control /builds/worker/mozillavpn-dpkg-control
+ADD topsrcdir/linux/debian/control /root/mozillavpn-dpkg-control
 RUN mk-build-deps -i -r  --tool="apt-get --no-install-recommends --yes" \
-        /builds/worker/mozillavpn-dpkg-control
+        /root/mozillavpn-dpkg-control
 
 #----------------------------------------------------------------------------------------------------------------------
 #-- Worker User -------------------------------------------------------------------------------------------------------
