@@ -49,13 +49,6 @@ constexpr const char* LINUX_CRYPTO_SETTINGS_DESC =
     "FooBar settings encryption key";
 #endif
 
-// Communication pipe between instances
-#if defined(MZ_WINDOWS)
-constexpr const char* UI_PIPE = "\\\\.\\pipe\\foobar.ui";
-#else
-constexpr const char* UI_PIPE = "/tmp/foobar.ui.sock";
-#endif
-
 #define PRODBETAEXPR(type, functionName, prod, beta) \
   inline type functionName() { return Constants::inProduction() ? prod : beta; }
 
