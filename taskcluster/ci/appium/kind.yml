@@ -1,0 +1,28 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+
+loader: taskgraph.loader.transform:loader
+
+transforms:
+    - taskgraph.transforms.job:transforms
+    - taskgraph.transforms.task:transforms
+
+kind-dependencies:
+    - build
+
+tasks:
+  appium/android:
+    description: "Android appium stuff"
+    treeherder:
+        platform: android/arm64-v8a
+    fetches:
+        build:
+            - artifact: mozillavpn-arm64-v8a-debug.apk
+    dependencies:
+        build: android-arm64/debug
+    worker:
+        docker-image: {in-tree: build}
+    run:
+        command: taskluster/scripts/appium/upload.sh   
