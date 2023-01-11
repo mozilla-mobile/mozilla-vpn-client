@@ -156,8 +156,8 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
 
   // Find a Server as Fallback in the Same Location in case
   // the original one becomes unstable / unavailable
-  const QList<Server> serverList =
-      MozillaVPN::instance()->currentServer()->exitServers();
+  auto vpn = MozillaVPN::instance();
+  const QList<Server> serverList = vpn->currentServer()->exitServers();
   Server* fallbackServer = nullptr;
   foreach (auto item, serverList) {
     if (item.publicKey() != hop.m_server.publicKey()) {
@@ -187,11 +187,31 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
   if (fallbackServer) {
     args["serverFallback"] = jFallbackServer;
   }
-  args["city"] = MozillaVPN::instance()->currentServer()->exitCityName();
+  // Build the "canned" Notification messages
+  // They will be used in case this config will be re-enabled
+  // to show the appropriate notification messages
+  QString localizedCityName = vpn->currentServer()->localizedExitCityName();
+  args["city"] = localizedCityName;
+
+  QJsonObject messages;
+  messages["productName"] = qtTrId("vpn.main.productName");
+  messages["connectedHeader"] = L18nStrings::instance()->t(
+      L18nStrings::NotificationsVPNConnectedTitle);  // Connected
+  messages["connectedBody"] =
+      L18nStrings::instance()
+          ->t(L18nStrings::NotificationsVPNConnectedMessage)
+          .arg(localizedCityName);
+  messages["disconnectedHeader"] = L18nStrings::instance()->t(
+      L18nStrings::NotificationsVPNDisconnectedTitle);
+  messages["disconnectedBody"] =
+      L18nStrings::instance()
+          ->t(L18nStrings::NotificationsVPNDisconnectedMessage)
+          .arg(localizedCityName);
+  args["messages"] = messages;
 
   QJsonDocument doc(args);
   AndroidVPNActivity::sendToService(ServiceAction::ACTION_ACTIVATE,
-                                    doc.toJson());
+                                    doc.toJson(QJsonDocument::Compact));
 }
 
 void AndroidController::deactivate(Controller::Reason reason) {
