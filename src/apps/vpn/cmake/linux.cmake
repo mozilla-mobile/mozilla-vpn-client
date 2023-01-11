@@ -20,7 +20,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxappimageprovider.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxapplistprovider.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxapplistprovider.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxcryptosettings.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxnetworkwatcher.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxnetworkwatcher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxnetworkwatcherworker.cpp

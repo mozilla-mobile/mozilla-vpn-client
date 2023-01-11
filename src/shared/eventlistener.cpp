@@ -4,9 +4,12 @@
 
 #include "eventlistener.h"
 
+#include <QApplication>
 #include <QDir>
 #include <QFileInfo>
 #include <QLocalSocket>
+#include <QRegularExpression>
+#include <QStandardPaths>
 
 #include "appconstants.h"
 #include "logger.h"

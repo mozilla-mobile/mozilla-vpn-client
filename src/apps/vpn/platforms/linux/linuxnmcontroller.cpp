@@ -39,7 +39,7 @@ Logger logger("LinuxNMController");
 }
 
 LinuxNMController::LinuxNMController() {
-  MVPN_COUNT_CTOR(LinuxNMController);
+  MZ_COUNT_CTOR(LinuxNMController);
 
   GError* err = nullptr;
   m_client = nm_client_new(nullptr, &err);
@@ -56,7 +56,7 @@ LinuxNMController::LinuxNMController() {
 }
 
 LinuxNMController::~LinuxNMController() {
-  MVPN_COUNT_DTOR(LinuxNMController);
+  MZ_COUNT_DTOR(LinuxNMController);
   logger.debug() << "Destroying LinuxNMController";
   g_cancellable_cancel(m_cancellable);
 
@@ -239,7 +239,7 @@ void LinuxNMController::initializeCompleted(void* result) {
 }
 
 void LinuxNMController::activate(const HopConnection& hop, const Device* device,
-                                 const Keys* keys, Reason reason) {
+                                 const Keys* keys, Controller::Reason reason) {
   NMWireGuardPeer* peer = nm_wireguard_peer_new();
 
   // Store the server's public key for later.
@@ -395,7 +395,7 @@ void LinuxNMController::activateCompleted(void* result) {
   g_object_unref(result);
 }
 
-void LinuxNMController::deactivate(Reason reason) {
+void LinuxNMController::deactivate(Controller::Reason reason) {
   Q_UNUSED(reason);
   NMActiveConnection* conn = getActiveConnection();
 
