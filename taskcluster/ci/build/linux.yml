@@ -7,6 +7,11 @@ task-defaults:
         symbol: B
         kind: build
         tier: 1
+    fetches:
+        build:
+            - artifact: mozillavpn-sources.tar.gz
+    dependencies:
+        build: build-linux/source
     worker-type: b-linux
     worker:
         max-run-time: 3600
@@ -19,27 +24,10 @@ task-defaults:
           using: run-task
           use-caches: true
 
-linux/source:
-    description: "Linux Source Build"
-    treeherder:
-        platform: linux/source
-    worker:
-        docker-image: {in-tree: build}
-    run:
-        cwd: '{checkout}'
-        command: >-
-            ./scripts/linux/script.sh --source &&
-            tar -C .tmp -zvcf /builds/worker/artifacts/mozillavpn-sources.tar.gz .
-
 linux/bionic:
     description: "Linux Build (Ubuntu/Bionic)"
     treeherder:
         platform: linux/bionic
-    fetches:
-        build:
-            - artifact: mozillavpn-sources.tar.gz
-    dependencies:
-        build: build-linux/source
     worker:
         docker-image: {in-tree: linux-build-bionic}
     run:
@@ -50,11 +38,6 @@ linux/focal:
     description: "Linux Build (Ubuntu/Focal)"
     treeherder:
         platform: linux/focal
-    fetches:
-        build:
-            - artifact: mozillavpn-sources.tar.gz
-    dependencies:
-        build: build-linux/source
     worker:
         docker-image: {in-tree: linux-build-focal}
     run:
@@ -65,11 +48,6 @@ linux/jammy:
     description: "Linux Build (Ubuntu/Jammy)"
     treeherder:
         platform: linux/jammy
-    fetches:
-        build:
-            - artifact: mozillavpn-sources.tar.gz
-    dependencies:
-        build: build-linux/source
     worker:
         docker-image: {in-tree: linux-build-jammy}
     run:
@@ -80,11 +58,6 @@ linux/kinetic:
     description: "Linux Build (Ubuntu/Kinetic)"
     treeherder:
         platform: linux/kinetic
-    fetches:
-        build:
-            - artifact: mozillavpn-sources.tar.gz
-    dependencies:
-        build: build-linux/source
     worker:
         docker-image: {in-tree: linux-build-kinetic}
     run:
