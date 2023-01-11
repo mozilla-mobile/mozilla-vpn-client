@@ -10,8 +10,10 @@ Jinja2 template is not. Please file bugs! #}
 
 #[allow(dead_code)]
 use std::collections::HashMap;
+
 use glean::traits::EventRecordingError;
 use glean::RecordedEvent;
+use once_cell::sync::Lazy;
 
 {% macro generate_extra_keys(obj) -%}
 {% for name, _ in obj["_generate_enums"] %}
@@ -51,7 +53,8 @@ impl ExtraKeys for {{ obj.name|Camelize }}{{ suffix }} {
 {% for category_name, objs in all_objs.items() %}
 pub mod {{ category_name|snake_case }} {
     use glean::private::*;
-    use glean::{CommonMetricData, Lifetime};
+    #[allow(unused_imports)]
+    use glean::{CommonMetricData, Lifetime, TimeUnit};
     #[allow(unused_imports)] // ExtraKeys might be unusued, let's avoid warnings
     use glean::traits::{ExtraKeys, NoExtraKeys};
     #[allow(unused_imports)] // HistogramType might be unusued, let's avoid warnings
@@ -91,10 +94,10 @@ pub mod {{ category_name|snake_case }} {
 {% endfor %}
 
 {% for typ, metrics in metric_by_type.items() %}
-pub static {{typ.0}}: Lazy<HashMap<MetricId, &Lazy<glean::private::{{typ.1}}>>> = Lazy::new(|| {
-    let mut map: HashMap<MetricId, &Lazy<glean::private::{{typ.1}}>> = HashMap::with_capacity({{metrics|length}});
+pub static {{typ.0}}: Lazy<HashMap<u32, &Lazy<glean::private::{{typ.1}}>>> = Lazy::new(|| {
+    let mut map: HashMap<u32, &Lazy<glean::private::{{typ.1}}>> = HashMap::with_capacity({{metrics|length}});
     {% for metric in metrics %}
-    map.insert({{metric.0}}.into(), &{{metric.1}});
+    map.insert({{metric.0}}, &{{metric.1}});
     {% endfor %}
     map
 });
