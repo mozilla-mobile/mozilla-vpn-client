@@ -27,6 +27,10 @@ RUN apt-get update \
                           sudo \
     && apt-get clean
 
+ARG QTPPA
+RUN echo "Debug: QTPPA is: ${QTPPA}"
+RUN if [ -n "${QTPPA}" ]; then add-apt-repository -y ${QTPPA}; fi
+
 RUN locale-gen "$LANG"
 
 # Also pull in packages from build-depends as early as possible
