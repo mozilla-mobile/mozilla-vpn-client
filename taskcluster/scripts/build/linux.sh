@@ -75,6 +75,7 @@ DPKG_PACkAGE_BINNAME=$(cat mozillavpn-source/debian/control | grep "^Package:" |
 
 # Install the package build dependencies.
 mk-build-deps $(pwd)/mozillavpn-source/debian/control
+sudo apt-get update
 sudo apt -y install ./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_VERSION}_all.deb
 
 # Build the packages
