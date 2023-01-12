@@ -148,3 +148,9 @@ void NetworkRequest::sslErrors(const QList<QSslError>& errors) {
 #endif
 
 void NetworkRequest::disableTimeout() {}
+
+NetworkRequest* NetworkRequest::createForSentry(Task* parent,
+                                                const QByteArray& envelope) {
+  Q_UNUSED(envelope);
+  return new NetworkRequest(parent, 1234, false);
+}
