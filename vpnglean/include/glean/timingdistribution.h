@@ -8,11 +8,7 @@
 #include <QHash>
 #include <QObject>
 
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
-#  include "vpnglean.h"
-#else
-enum ErrorType {};
-#endif
+#include "errortype.h"
 
 // Based on Glean's DistributionData struct.
 // https://github.com/mozilla/glean/blob/main/glean-core/src/metrics/mod.rs#L80
