@@ -187,6 +187,8 @@ class Controller final : public QObject {
                            const QString& deviceIpv4Address, uint64_t txBytes,
                            uint64_t rxBytes)>>
       m_getStatusCallbacks;
+
+  bool m_connectedBeforeTransaction = false;
 };
 
 #endif  // CONTROLLER_H

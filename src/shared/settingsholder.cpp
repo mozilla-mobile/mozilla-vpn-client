@@ -258,6 +258,8 @@ bool SettingsHolder::beginTransaction() {
 
   m_settingsJournal =
       new QSettings(m_settingsJournalFileName, m_settings.format(), this);
+
+  emit transactionBegan();
   return true;
 }
 
@@ -276,8 +278,12 @@ bool SettingsHolder::rollbackTransaction() {
     return false;
   }
 
+  emit transactionAboutToRollBack();
+
   QMap<QString, QPair<const char*, QVariant>> transactionChanges(
       m_transactionChanges);
+
+  auto guard = qScopeGuard([&] { emit transactionRolledBack(); });
 
   if (!finalizeTransaction()) {
     return false;

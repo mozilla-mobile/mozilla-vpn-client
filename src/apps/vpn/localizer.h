@@ -26,6 +26,7 @@ class Localizer final : public QAbstractListModel {
     QString m_countryCode;
     QString m_name;
     QString m_localizedName;
+    bool m_rtl;
   };
 
  public:
@@ -33,6 +34,7 @@ class Localizer final : public QAbstractListModel {
     LanguageRole = Qt::UserRole + 1,
     LocalizedLanguageRole,
     CodeRole,
+    RTLRole,
   };
 
   static Localizer* instance();
@@ -78,8 +80,9 @@ class Localizer final : public QAbstractListModel {
   void localeChanged();
 
  private:
-  static QString languageName(const QString& code);
-  static QString localizedLanguageName(const QString& code);
+  static QString languageName(const QLocale& locale, const QString& code);
+  static QString localizedLanguageName(const QLocale& locale,
+                                       const QString& code);
   static bool languageSort(const Language& a, const Language& b,
                            Collator* collator);
 

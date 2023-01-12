@@ -4,157 +4,140 @@
 
 package org.mozilla.firefox.vpn.daemon
 
-import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.os.Parcel
 import androidx.core.app.NotificationCompat
+import kotlinx.serialization.Serializable
 import org.json.JSONObject
 
-class NotificationUtil {
-    val NOTIFICATION_CHANNEL_ID = "com.mozilla.vpnNotification"
-    val CONNECTED_NOTIFICATION_ID = 1337
-    val tag = "NotificationUtil"
-    val sCurrentContext: Context
-    private val mNotificationBuilder: NotificationCompat.Builder
-    private val mNotificationManager: NotificationManager
-    private constructor(ctx: Context) {
-        sCurrentContext = ctx
-        mNotificationManager = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        mNotificationBuilder = NotificationCompat.Builder(ctx, NOTIFICATION_CHANNEL_ID)
-        updateNotificationChannel(null, null) // Will create the channel, will update
+class NotificationUtil(ctx: Service) {
+    private val NOTIFICATION_CHANNEL_ID = "com.mozilla.vpnNotification"
+    private val CONNECTED_NOTIFICATION_ID = 1337
+    private val context: Service = ctx
+    private val mNotificationBuilder: NotificationCompat.Builder by lazy {
+        NotificationCompat.Builder(ctx, NOTIFICATION_CHANNEL_ID)
     }
-
-    private var mLastMessage = ""
-    private var mLastHeader = ""
-
-    companion object {
-        var instance: NotificationUtil? = null
-        fun get(ctx: Context?): NotificationUtil? {
-            if (instance == null) {
-                instance = ctx?.let { NotificationUtil(it) }
-            }
-            return instance
-        }
+    private val mNotificationManager: NotificationManager by lazy {
+        ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     }
+    private val mainActivityName = "org.mozilla.firefox.vpn.qt.VPNActivity"
 
     /**
-     * Updates the current shown notification from a
-     * Parcel - Gets called from AndroidController.cpp
+     * Creates a new Notification using the {CannedNotification}
+     * Will bring the service into the foreground using that.
      */
-    fun update(data: Parcel) {
-        // [data] is here a json containing the noification content
-        val buffer = data.createByteArray()
-        val json = buffer?.let { String(it) }
-        val content = JSONObject(json)
-
-        update(content.getString("title"), content.getString("message"))
-    }
-
-    /**
-     * Updates the current shown notification
-     */
-    private fun update(heading: String, message: String) {
-        val notificationManager: NotificationManager =
-            sCurrentContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        mLastHeader = heading
-        mLastMessage = message
-        mNotificationBuilder.let {
-            it.setContentTitle(heading)
-            it.setContentText(message)
-            notificationManager.notify(CONNECTED_NOTIFICATION_ID, it.build())
-        }
-    }
-
-    /**
-     * Saves the default translated "connected" notification, in case the vpn gets started
-     * without the app.
-     */
-    fun updateStrings(data: Parcel, context: Context) {
-        // [data] is here a json containing the notification content
-        val buffer = data.createByteArray()
-        val json = buffer?.let { String(it) }
-        val content = JSONObject(json)
-
-        val prefs = Prefs.get(context)
-        prefs.edit()
-            .putString("fallbackNotificationHeader", content.getString("productName"))
-            .putString("fallbackNotificationMessage", content.getString("connectedText"))
-            .putString("fallbackHideNotificationMessage", content.getString("disconnectedText"))
-            .apply()
-
-        val channelName = content.getString("notification_group_name")
-        val channelDescription = ""
-        updateNotificationChannel(channelName, channelDescription)
-    }
-
-    /*
-    * Creates a new Notification using the current set of Strings
-    * Shows the notification in the given {context}
-    */
-    @SuppressLint("NewApi")
-    fun show(service: VPNService) {
-        // In case we do not have gotten a message to show from the Frontend
-        // try to populate the notification with a translated Fallback message
-        val prefs = Prefs.get(service)
-        val message = mLastMessage.ifEmpty {
-            "" + prefs.getString("fallbackNotificationMessage", "Connected")
-        }
-        val header = mLastHeader.ifEmpty {
-            "" + prefs.getString("fallbackNotificationHeader", "Mozilla VPN")
-        }
-
+    fun show(message: CannedNotification) {
+        updateNotificationChannel()
         // Create the Intent that Should be Fired if the User Clicks the notification
-        val mainActivityName = "org.mozilla.firefox.vpn.qt.VPNActivity"
         val activity = Class.forName(mainActivityName)
-        val intent = Intent(service, activity)
-        val pendingIntent = PendingIntent.getActivity(service, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+        val intent = Intent(context, activity)
+        val pendingIntent =
+            PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
         // Build our notification
         mNotificationBuilder
             .setSmallIcon(R.drawable.icon_mozillavpn_notifiaction)
-            .setContentTitle(header)
-            .setContentText(message)
+            .setContentTitle(message.connectedMessage.header)
+            .setContentText(message.connectedMessage.body)
             .setOnlyAlertOnce(true)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
-
-        service.startForeground(CONNECTED_NOTIFICATION_ID, mNotificationBuilder.build())
+        context.startForeground(CONNECTED_NOTIFICATION_ID, mNotificationBuilder.build())
     }
 
-    /*
-     * Should be called whenever a session is ended.
+    /**
+     * Updates the Notification
+     * in case there is no notification currently,
+     * this is a no-op.
      */
-    @SuppressLint("NewApi")
-    fun onHide(service: VPNService) {
+    fun setNotificationText(msg: ClientNotification?) {
+        if (msg == null) {
+            return
+        }
+        mNotificationBuilder.let {
+            it.setContentTitle(msg.header)
+            it.setContentText(msg.body)
+            mNotificationManager.notify(CONNECTED_NOTIFICATION_ID, it.build())
+        }
+    }
+
+    /**
+     * Should be called whenever a session is ended.
+     * Will upadte the notification to show the Disconnected Message
+     */
+    fun hide(message: CannedNotification) {
         // Switch the notification to "Disconnected" / or translated version
         // If the VPN-Client is alive, it will override this instantly
         // If not, this fallback is shown.
-        val prefs = Prefs.get(service)
-        prefs.getString("fallbackHideNotificationMessage", "Disconnected")
-            ?.let { update(it, "") }
-        // Clear the last message, so that we get the default "Connected" when we go back
-        // into foreground.
-        mLastHeader = ""
-        mLastMessage = ""
+        setNotificationText(message.disconnectedMessage)
     }
 
-    private fun updateNotificationChannel(aTitle: String?, aDescription: String?) {
+    // Creates / Updates the notification channel we will be using to post
+    // the notification to.
+    private fun updateNotificationChannel(name: String = "General", descriptionText: String = "") {
         // From Oreo on we need to have a "notification channel" to post to.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return
         }
-        val name = aTitle ?: "General"
-        val descriptionText = aDescription ?: ""
         val importance = NotificationManager.IMPORTANCE_LOW
         val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance).apply {
             description = descriptionText
         }
         // Register the channel with the system
         mNotificationManager.createNotificationChannel(channel)
+    }
+}
+
+/*
+ * ClientNotification
+ * Message sent from the client manually.
+ */
+@Serializable
+data class ClientNotification(val header: String, val body: String)
+
+/*
+ * A "Canned" Notification contains all strings needed for the "(dis-)/connected" flow
+ * and is provided by the controller when asking for a connection.
+ */
+@Serializable
+data class CannedNotification(
+    // Message to be shown when the Client connects
+    val connectedMessage: ClientNotification,
+    // Message to be shown when the client disconnects
+    val disconnectedMessage: ClientNotification,
+    // Product-Name -> Will be used as the Notification Header
+    val productName: String,
+) {
+    companion object {
+        /**
+         * CannedNotification(json) -> Creates a Canned notification
+         * out of a VPN-Client JSON config.
+         */
+        operator fun invoke(value: JSONObject?): CannedNotification? {
+            if (value == null) {
+                return null
+            }
+            val messages = value.getJSONObject("messages")
+            return try {
+                CannedNotification(
+                    ClientNotification(
+                        messages.getString("connectedHeader"),
+                        messages.getString("connectedBody"),
+                    ),
+                    ClientNotification(
+                        messages.getString("disconnectedHeader"),
+                        messages.getString("disconnectedBody"),
+                    ),
+                    messages.getString("productName"),
+                )
+            } catch (e: Exception) {
+                Log.e("NotificationUtil", "Failed to Parse Notification Object $value")
+                null
+            }
+        }
     }
 }
