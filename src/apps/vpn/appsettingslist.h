@@ -249,7 +249,7 @@ SETTING_INT64(keyRegenerationTimeSec,        // getter
               0,                             // default value
               false,                         // user setting
               true,                          // remove when reset
-              true                           // sensitive (do not log)
+              false                          // sensitive (do not log)
 )
 
 SETTING_STRING(languageCode,        // getter
@@ -315,7 +315,7 @@ SETTING_STRING(privateKeyJournal,        // getter
                "",                       // default value
                false,                    // user setting
                true,                     // remove when reset
-               false                     // sensitive (do not log)
+               true                      // sensitive (do not log)
 )
 
 SETTING_BOOL(protectSelectedApps,        // getter
@@ -348,7 +348,7 @@ SETTING_STRING(publicKeyJournal,        // getter
                "",                      // default value
                false,                   // user setting
                true,                    // remove when reset
-               false                    // sensitive (do not log)
+               true                     // sensitive (do not log)
 )
 
 SETTING_BYTEARRAY(recentConnections,        // getter
@@ -561,7 +561,7 @@ SETTING_STRING(userDNS,        // getter
                "",             // default value
                true,           // user setting
                false,          // remove when reset
-               true            // sensitive (do not log)
+               false           // sensitive (do not log)
 )
 
 SETTING_INT(userMaxDevices,        // getter
@@ -619,7 +619,7 @@ SETTING_STRINGLIST(subscriptionTransactions,        // getter
                    QStringList(),                   // efault value
                    false,                           // user setting
                    false,                           // remove when reset
-                   false                            // sensitive (do not log)
+                   true                             // sensitive (do not log)
 )
 #endif
 

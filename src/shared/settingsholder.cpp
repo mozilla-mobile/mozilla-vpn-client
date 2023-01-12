@@ -157,20 +157,22 @@ QString SettingsHolder::getReport() const {
   QTextStream out(&buff);
 #define SETTING(type, toType, getter, setter, remover, has, key, defvalue, \
                 userSettings, removeWhenReset, sensitive)                  \
-  if (sensitive) {                                                         \
-    out << key << " -> <Sensitive>" << Qt::endl;                           \
-  } else {                                                                 \
-    out << key << " -> ";                                                  \
-    QVariant value = m_settings.value(key);                                \
-    switch (value.typeId()) {                                              \
-      case QVariant::List:                                                 \
-      case QVariant::StringList:                                           \
-        out << '[' << value.toStringList().join(",") << ']' << ' ';        \
-        break;                                                             \
-      default:                                                             \
-        out << value.toString();                                           \
+  if (has()) {                                                             \
+    if (sensitive) {                                                       \
+      out << key << " -> <Sensitive>" << Qt::endl;                         \
+    } else {                                                               \
+      out << key << " -> ";                                                \
+      QVariant value = m_settings.value(key);                              \
+      switch (value.typeId()) {                                            \
+        case QVariant::List:                                               \
+        case QVariant::StringList:                                         \
+          out << '[' << value.toStringList().join(",") << ']' << ' ';      \
+          break;                                                           \
+        default:                                                           \
+          out << value.toString();                                         \
+      }                                                                    \
+      out << Qt::endl;                                                     \
     }                                                                      \
-    out << Qt::endl;                                                       \
   }
 #include "settingslist.h"
 #undef SETTING
