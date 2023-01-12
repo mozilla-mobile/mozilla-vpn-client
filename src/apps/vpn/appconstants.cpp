@@ -4,6 +4,7 @@
 
 #include "appconstants.h"
 
+#include <QMap>
 #include <QString>
 
 #include "settingsholder.h"
@@ -28,4 +29,42 @@ QString AppConstants::apiBaseUrl() {
   }
 
   return AppConstants::getStagingServerAddress();
+}
+
+QString AppConstants::apiUrl(ApiEndpoint endpoint) {
+  static QMap<ApiEndpoint, const char*> endpoints{
+      {ApiEndpoint::Account, "/api/v1/vpn/account"},
+      {ApiEndpoint::Adjust, "/api/v1/vpn/adjust"},
+      {ApiEndpoint::CreateSupportTicket, "/api/v1/vpn/createSupportTicket"},
+      {ApiEndpoint::CreateSupportTicketGuest,
+       "/api/v1/vpn/createGuestSupportTicket"},
+      {ApiEndpoint::Device, "/api/v1/vpn/device"},
+      {ApiEndpoint::DeviceWithPublicKeyArgument, "/api/v1/vpn/device/%1"},
+      {ApiEndpoint::DNSDetectPortal, "/api/v1/vpn/dns/detectportal"},
+      {ApiEndpoint::FeatureList, "/api/v1/vpn/featurelist"},
+      {ApiEndpoint::Feedback, "/api/v1/vpn/feedback"},
+      {ApiEndpoint::Heartbeat, "/__heartbeat__"},
+      {ApiEndpoint::IPInfo, "/api/v1/vpn/ipinfo"},
+      {ApiEndpoint::LoginVerify, "/api/v2/vpn/login/verify"},
+      {ApiEndpoint::Products, "/api/v3/vpn/products"},
+#ifdef MZ_ANDROID
+      {ApiEndpoint::PurchasesAndroid, "/api/v1/vpn/purchases/android"},
+#endif
+#ifdef MZ_IOS
+      {ApiEndpoint::PurchasesIOS, "/api/v1/vpn/purchases/ios"},
+#endif
+#ifdef MZ_WASM
+      {ApiEndpoint::PurchasesWasm, "/api/v1/vpn/purchases/wasm"},
+#endif
+      {ApiEndpoint::RedirectPrivacy, "/r/vpn/privacy"},
+      {ApiEndpoint::RedirectSubscriptionBlocked, "/r/vpn/subscriptionBlocked"},
+      {ApiEndpoint::RedirectUpdateWithPlatformArgument, "/r/vpn/update/%1"},
+      {ApiEndpoint::Servers, "/api/v1/vpn/servers"},
+      {ApiEndpoint::SubscriptionDetails, "/api/v1/vpn/subscriptionDetails"},
+      {ApiEndpoint::Versions, "/api/v1/vpn/versions"}};
+
+  Q_ASSERT(endpoints.contains(endpoint));
+
+  QString apiBaseUrl = AppConstants::apiBaseUrl();
+  return apiBaseUrl.append(endpoints[endpoint]);
 }

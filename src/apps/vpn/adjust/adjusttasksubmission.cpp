@@ -47,7 +47,7 @@ void AdjustTaskSubmission::run() {
   }
 
   NetworkRequest* request = NetworkRequest::create(this, 200);
-  request->post(QString("%1/api/v1/vpn/adjust").arg(AppConstants::apiBaseUrl()),
+  request->post(AppConstants::apiUrl(AppConstants::Adjust),
                 QJsonObject{{"method", m_method},
                             {"path", m_path},
                             {"headers", headersObj},

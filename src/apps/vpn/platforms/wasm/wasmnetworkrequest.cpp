@@ -98,7 +98,7 @@ EM_JS(void, call_mvpnNetworkRequest,
       });
 
 // static
-void WasmNetworkRequest::deleteRequest(NetworkRequest* request) {
+void WasmNetworkRequest::deleteResource(NetworkRequest* request) {
   logger.debug() << "Delete request to JS";
 
   call_mvpnNetworkRequest(processNetworkRequest(request), "DELETE",
@@ -106,7 +106,7 @@ void WasmNetworkRequest::deleteRequest(NetworkRequest* request) {
 }
 
 // static
-void WasmNetworkRequest::getRequest(NetworkRequest* request) {
+void WasmNetworkRequest::getResource(NetworkRequest* request) {
   logger.debug() << "Get request to JS";
 
   call_mvpnNetworkRequest(processNetworkRequest(request), "GET",
@@ -114,8 +114,8 @@ void WasmNetworkRequest::getRequest(NetworkRequest* request) {
 }
 
 // static
-void WasmNetworkRequest::postRequest(NetworkRequest* request,
-                                     const QByteArray& body) {
+void WasmNetworkRequest::postResporce(NetworkRequest* request,
+                                      const QByteArray& body) {
   logger.debug() << "Post request to JS";
 
   call_mvpnNetworkRequest(processNetworkRequest(request), "POST",
@@ -124,7 +124,7 @@ void WasmNetworkRequest::postRequest(NetworkRequest* request,
 }
 
 // static
-void WasmNetworkRequest::postRequestIODevice(NetworkRequest* request,
-                                             QIODevice* device) {
-  return postRequest(request, device->readAll());
+void WasmNetworkRequest::postResporceIODevice(NetworkRequest* request,
+                                              QIODevice* device) {
+  return postResporce(request, device->readAll());
 }

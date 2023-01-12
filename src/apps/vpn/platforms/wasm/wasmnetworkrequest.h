@@ -9,10 +9,10 @@ class NetworkRequest;
 
 class WasmNetworkRequest final {
  public:
-  static void deleteRequest(NetworkRequest* request);
-  static void getRequest(NetworkRequest* request);
-  static void postRequest(NetworkRequest* request, const QByteArray& body);
-  static void postRequestIODevice(NetworkRequest* request, QIODevice* device);
+  static void deleteResource(NetworkRequest* request);
+  static void getResource(NetworkRequest* request);
+  static void postResporce(NetworkRequest* request, const QByteArray& body);
+  static void postResporceIODevice(NetworkRequest* request, QIODevice* device);
 
  private:
   static void processResponse(const QByteArray& data, NetworkRequest* request);

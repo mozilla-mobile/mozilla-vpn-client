@@ -49,8 +49,7 @@ void TaskGetSubscriptionDetails::run() {
 void TaskGetSubscriptionDetails::runInternal() {
   NetworkRequest* request = NetworkRequest::create(this, 200);
   request->auth(MozillaVPN::authorizationHeader());
-  request->get(QString("%1/api/v1/vpn/subscriptionDetails")
-                   .arg(AppConstants::apiBaseUrl()));
+  request->get(AppConstants::apiUrl(AppConstants::SubscriptionDetails));
 
   connect(
       request, &NetworkRequest::requestFailed, this,
@@ -146,8 +145,7 @@ void TaskGetSubscriptionDetails::initAuthentication() {
 
             NetworkRequest* request = NetworkRequest::create(this, 200);
             request->post(
-                QString("%1/api/v2/vpn/login/verify")
-                    .arg(AppConstants::apiBaseUrl()),
+                AppConstants::apiUrl(AppConstants::LoginVerify),
                 QJsonObject{{"code", pkceCodeSuccess},
                             {"code_verifier", QString(pkceCodeVerifier)}});
 

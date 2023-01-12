@@ -23,8 +23,7 @@ TaskProducts::~TaskProducts() { MZ_COUNT_DTOR(TaskProducts); }
 
 void TaskProducts::run() {
   NetworkRequest* request = NetworkRequest::create(this, 200);
-  request->get(
-      QString("%1/api/v3/vpn/products").arg(AppConstants::apiBaseUrl()));
+  request->get(AppConstants::apiUrl(AppConstants::Products));
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {

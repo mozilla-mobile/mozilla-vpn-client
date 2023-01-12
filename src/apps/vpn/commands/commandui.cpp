@@ -667,10 +667,10 @@ int CommandUI::run(QStringList& tokens) {
 #ifdef MZ_WASM
     WasmWindowController wasmWindowController;
 
-    NetworkRequest::setRequestHandler(WasmNetworkRequest::deleteRequest,
-                                      WasmNetworkRequest::getRequest,
-                                      WasmNetworkRequest::postRequest,
-                                      WasmNetworkRequest::postRequestIODevice);
+    NetworkRequest::setRequestHandler(WasmNetworkRequest::deleteResource,
+                                      WasmNetworkRequest::getResource,
+                                      WasmNetworkRequest::postResporce,
+                                      WasmNetworkRequest::postResporceIODevice);
 #endif
 
 #ifdef MVPN_WEBEXTENSION

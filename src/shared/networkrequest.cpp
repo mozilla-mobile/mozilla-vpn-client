@@ -30,27 +30,27 @@ Logger logger("NetworkRequest");
 QList<QSslCertificate> s_intervention_certs;
 #endif
 
-std::function<void(NetworkRequest*)> s_deleteRequestCallback = nullptr;
-std::function<void(NetworkRequest*)> s_getRequestCallback = nullptr;
-std::function<void(NetworkRequest*, const QByteArray&)> s_postRequestCallback =
+std::function<void(NetworkRequest*)> s_deleteResourceCallback = nullptr;
+std::function<void(NetworkRequest*)> s_getResourceCallback = nullptr;
+std::function<void(NetworkRequest*, const QByteArray&)> s_postResporceCallback =
     nullptr;
-std::function<void(NetworkRequest*, QIODevice*)> s_postRequestIODeviceCallback =
-    nullptr;
+std::function<void(NetworkRequest*, QIODevice*)>
+    s_postResporceIODeviceCallback = nullptr;
 
 }  // namespace
 
 // static
 void NetworkRequest::setRequestHandler(
-    std::function<void(NetworkRequest*)>&& deleteRequestCallback,
-    std::function<void(NetworkRequest*)>&& getRequestCallback,
+    std::function<void(NetworkRequest*)>&& deleteResourceCallback,
+    std::function<void(NetworkRequest*)>&& getResourceCallback,
     std::function<void(NetworkRequest*, const QByteArray&)>&&
-        postRequestCallback,
+        postResporceCallback,
     std::function<void(NetworkRequest*, QIODevice*)>&&
-        postRequestIODeviceCallback) {
-  s_deleteRequestCallback = std::move(deleteRequestCallback);
-  s_getRequestCallback = std::move(getRequestCallback);
-  s_postRequestCallback = std::move(postRequestCallback);
-  s_postRequestIODeviceCallback = std::move(postRequestIODeviceCallback);
+        postResporceIODeviceCallback) {
+  s_deleteResourceCallback = std::move(deleteResourceCallback);
+  s_getResourceCallback = std::move(getResourceCallback);
+  s_postResporceCallback = std::move(postResporceCallback);
+  s_postResporceIODeviceCallback = std::move(postResporceIODeviceCallback);
 }
 
 NetworkRequest::NetworkRequest(Task* parent, int status,
@@ -127,14 +127,14 @@ void NetworkRequest::auth(const QByteArray& authorizationHeader) {
 
 void NetworkRequest::get(const QUrl& url) {
   m_request.setUrl(url);
-  getRequest();
+  getResource();
 }
 
 void NetworkRequest::post(const QUrl& url, QIODevice* uploadData) {
   m_request.setUrl(url);
 
-  if (s_postRequestIODeviceCallback) {
-    s_postRequestIODeviceCallback(this, uploadData);
+  if (s_postResporceIODeviceCallback) {
+    s_postResporceIODeviceCallback(this, uploadData);
     return;
   }
 
@@ -152,8 +152,8 @@ void NetworkRequest::post(const QUrl& url, const QJsonObject& obj) {
 void NetworkRequest::post(const QUrl& url, const QByteArray& body) {
   m_request.setUrl(url);
 
-  if (s_postRequestCallback) {
-    s_postRequestCallback(this, body);
+  if (s_postResporceCallback) {
+    s_postResporceCallback(this, body);
     return;
   }
 
@@ -164,17 +164,17 @@ void NetworkRequest::post(const QUrl& url, const QByteArray& body) {
   m_timer.start(REQUEST_TIMEOUT_MSEC);
 }
 
-void NetworkRequest::deleteRequest(const QUrl& url) {
+void NetworkRequest::deleteResource(const QUrl& url) {
   m_request.setUrl(url);
 
-  if (s_deleteRequestCallback) {
-    s_deleteRequestCallback(this);
+  if (s_deleteResourceCallback) {
+    s_deleteResourceCallback(this);
     return;
   }
 
   QNetworkAccessManager* manager =
       NetworkManager::instance()->networkAccessManager();
-  handleReply(manager->sendCustomRequest(m_request, "DELETE"));
+  handleReply(manager->deleteResource(m_request));
 
   m_timer.start(REQUEST_TIMEOUT_MSEC);
 }
@@ -213,7 +213,7 @@ void NetworkRequest::replyFinished() {
 
       m_reply = nullptr;
       m_timer.stop();
-      getRequest();
+      getResource();
       return;
     }
   }
@@ -318,9 +318,9 @@ void NetworkRequest::timeout() {
   emit requestFailed(QNetworkReply::TimeoutError, QByteArray());
 }
 
-void NetworkRequest::getRequest() {
-  if (s_getRequestCallback) {
-    s_getRequestCallback(this);
+void NetworkRequest::getResource() {
+  if (s_getResourceCallback) {
+    s_getResourceCallback(this);
     return;
   }
 

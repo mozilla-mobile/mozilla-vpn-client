@@ -56,7 +56,7 @@ void TaskAddDevice::run() {
 
   NetworkRequest* request = NetworkRequest::create(this, 201);
   request->auth(MozillaVPN::authorizationHeader());
-  request->post(QString("%1/api/v1/vpn/device").arg(AppConstants::apiBaseUrl()),
+  request->post(AppConstants::apiUrl(AppConstants::Device),
                 QJsonObject{{"name", m_deviceName},
                             {"unique_id", m_deviceID},
                             {"pubkey", QString(publicKey)}});

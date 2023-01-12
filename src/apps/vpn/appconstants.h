@@ -14,6 +14,43 @@ namespace AppConstants {
  */
 QString apiBaseUrl();
 
+enum ApiEndpoint {
+  Account,
+  Adjust,
+  CreateSupportTicket,
+  CreateSupportTicketGuest,
+  Device,
+  DeviceWithPublicKeyArgument,
+  DNSDetectPortal,
+  FeatureList,
+  Feedback,
+  Heartbeat,
+  IPInfo,
+  LoginVerify,
+  Products,
+#ifdef MZ_ANDROID
+  PurchasesAndroid,
+#endif
+#ifdef MZ_IOS
+  PurchasesIOS,
+#endif
+#ifdef MZ_WASM
+  PurchasesWasm,
+#endif
+  RedirectPrivacy,
+  RedirectSubscriptionBlocked,
+  RedirectTermsOfService,
+  RedirectUpdateWithPlatformArgument,
+  Servers,
+  SubscriptionDetails,
+  Versions,
+};
+
+/**
+ * @brief expose the API URL with the requested path
+ */
+QString apiUrl(ApiEndpoint endpoint);
+
 // Returns true if we are in a production environment.
 const QString& getStagingServerAddress();
 void setStaging();

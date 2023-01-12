@@ -27,7 +27,7 @@ TaskGetLocation::TaskGetLocation(
 TaskGetLocation::~TaskGetLocation() { MZ_COUNT_DTOR(TaskGetLocation); }
 
 void TaskGetLocation::run() {
-  QUrl url(QString("%1/api/v1/vpn/ipinfo").arg(AppConstants::apiBaseUrl()));
+  QUrl url(AppConstants::apiUrl(AppConstants::IPInfo));
   QString host = url.host();
 
   NetworkRequest* request = NetworkRequest::create(this, 200);

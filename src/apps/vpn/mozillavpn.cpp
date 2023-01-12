@@ -1710,7 +1710,7 @@ void MozillaVPN::registerUrlOpenerLabels() {
   });
 
   uo->registerUrlLabel("privacyNotice", []() -> QString {
-    return QString("%1/r/vpn/privacy").arg(AppConstants::apiBaseUrl());
+    return AppConstants::apiUrl(AppConstants::RedirectPrivacy);
   });
 
   uo->registerUrlLabel("relayPremium", []() -> QString {
@@ -1724,8 +1724,7 @@ void MozillaVPN::registerUrlOpenerLabels() {
   });
 
   uo->registerUrlLabel("subscriptionBlocked", []() -> QString {
-    return QString("%1/r/vpn/subscriptionBlocked")
-        .arg(AppConstants::apiBaseUrl());
+    return AppConstants::apiUrl(AppConstants::RedirectSubscriptionBlocked);
   });
 
   uo->registerUrlLabel("subscriptionIapApple", []() -> QString {
@@ -1744,7 +1743,7 @@ void MozillaVPN::registerUrlOpenerLabels() {
       "sumo", []() -> QString { return AppConstants::MOZILLA_VPN_SUMO_URL; });
 
   uo->registerUrlLabel("termsOfService", []() -> QString {
-    return QString("%1/r/vpn/terms").arg(AppConstants::apiBaseUrl());
+    return AppConstants::apiUrl(AppConstants::RedirectTermsOfService);
   });
 
   uo->registerUrlLabel("update", []() -> QString {
@@ -1754,8 +1753,9 @@ void MozillaVPN::registerUrlOpenerLabels() {
 #elif defined(MZ_ANDROID)
                               GOOGLE_PLAYSTORE_URL
 #else
-            QString("%1/r/vpn/update/%2")
-                .arg(AppConstants::apiBaseUrl(), Constants::PLATFORM_NAME)
+            AppConstants::apiUrl(
+                AppConstants::RedirectUpdateWithPlatformArgument)
+                .arg(Constants::PLATFORM_NAME)
 #endif
         ;
   });

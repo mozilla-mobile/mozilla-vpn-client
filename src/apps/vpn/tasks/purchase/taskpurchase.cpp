@@ -61,8 +61,7 @@ void TaskPurchase::run() {
 #ifdef MZ_IOS
     case IOS:
       request->post(
-          QString("%1/api/v1/vpn/purchases/ios")
-              .arg(AppConstants::apiBaseUrl()),
+          AppConstants::apiUrl(AppConstants::PurchasesIOS),
           QJsonObject{{"receipt", m_iOSReceipt},
                       {"appId", QString::fromNSString(IOSUtils::appId())}});
       break;
@@ -70,15 +69,13 @@ void TaskPurchase::run() {
 #ifdef MZ_ANDROID
     case Android:
       request->post(
-          QString("%1/api/v1/vpn/purchases/android")
-              .arg(AppConstants::apiBaseUrl()),
+          AppConstants::apiUrl(AppConstants::PurchasesAndroid),
           QJsonObject{{"sku", m_androidSku}, {"token", m_androidToken}});
       break;
 #endif
 #ifdef MZ_WASM
     case Wasm:
-      request->post(QString("%1/api/v1/vpn/purchases/wasm")
-                        .arg(AppConstants::apiBaseUrl()),
+      request->post(AppConstants::apiUrl(AppConstants::PurchasesWasm),
                     QJsonObject{{"productId", m_productId}});
       break;
 #endif

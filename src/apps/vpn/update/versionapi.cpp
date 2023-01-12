@@ -31,8 +31,7 @@ VersionApi::~VersionApi() {
 
 void VersionApi::start(Task* task) {
   NetworkRequest* request = NetworkRequest::create(task, 200);
-  request->get(
-      QString("%1/api/v1/vpn/versions").arg(AppConstants::apiBaseUrl()));
+  request->get(AppConstants::apiUrl(AppConstants::Versions));
 
   connect(request, &NetworkRequest::requestFailed, request,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {

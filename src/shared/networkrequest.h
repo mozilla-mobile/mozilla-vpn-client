@@ -26,12 +26,12 @@ class NetworkRequest final : public QObject {
   ~NetworkRequest();
 
   static void setRequestHandler(
-      std::function<void(NetworkRequest*)>&& deleteRequestCallback,
-      std::function<void(NetworkRequest*)>&& getRequestCallback,
+      std::function<void(NetworkRequest*)>&& deleteResourceCallback,
+      std::function<void(NetworkRequest*)>&& getResourceCallback,
       std::function<void(NetworkRequest*, const QByteArray&)>&&
-          postRequestCallback,
+          postResporceCallback,
       std::function<void(NetworkRequest*, QIODevice*)>&&
-          postRequestIODeviceCallback);
+          postResporceIODeviceCallback);
 
   // This object deletes itself at the end of the operation.
 
@@ -43,7 +43,7 @@ class NetworkRequest final : public QObject {
   void post(const QUrl& url, const QJsonObject& obj);
   void post(const QUrl& url, const QByteArray& body);
 
-  void deleteRequest(const QUrl& url);
+  void deleteResource(const QUrl& url);
 
   QNetworkRequest& requestInternal() { return m_request; }
 
@@ -66,7 +66,7 @@ class NetworkRequest final : public QObject {
  private:
   NetworkRequest(Task* parent, int status, bool setAuthorizationHeader);
 
-  void getRequest();
+  void getResource();
 
   void handleReply(QNetworkReply* reply);
   void handleHeaderReceived();
@@ -103,6 +103,10 @@ class NetworkRequest final : public QObject {
   QTimer m_timer;
 
 #ifndef QT_NO_SSL
+  /**
+   * @brief this is a workaround against a buggy old version of Firefox with an
+   * expired SRG Root X1 cert
+   */
   void enableSSLIntervention();
 #endif
 

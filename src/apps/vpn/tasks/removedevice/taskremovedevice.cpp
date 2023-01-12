@@ -37,9 +37,12 @@ void TaskRemoveDevice::run() {
                  << logger.keys(m_publicKey);
 
   NetworkRequest* request = NetworkRequest::create(this, 204);
-  request->deleteRequest(QString("%1/api/v1/vpn/device/%2")
-                             .arg(AppConstants::apiBaseUrl(),
-                                  QUrl::toPercentEncoding(m_publicKey)));
+  request->auth(MozillaVPN::authorizationHeader());
+  request->deleteResource(
+      AppConstants::apiUrl(AppConstants::DeviceWithPublicKeyArgument)
+          .arg(QUrl::toPercentEncoding(m_publicKey)));
+
+  request->disableTimeout();
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {

@@ -55,10 +55,9 @@ void TaskCreateSupportTicket::run() {
   }
 
   request->post(
-      QString("%1%2").arg(AppConstants::apiBaseUrl(),
-                          isAuthenticated
-                              ? "/api/v1/vpn/createSupportTicket"
-                              : "/api/v1/vpn/createGuestSupportTicket"),
+      AppConstants::apiUrl(isAuthenticated
+                               ? AppConstants::CreateSupportTicket
+                               : AppConstants::CreateSupportTicketGuest),
       QJsonObject{{"email", m_email},
                   {"logs", m_logs},
                   {"versionString", Env::versionString()},

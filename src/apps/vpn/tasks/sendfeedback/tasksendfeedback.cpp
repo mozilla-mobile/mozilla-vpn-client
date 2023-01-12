@@ -41,7 +41,7 @@ void TaskSendFeedback::run() {
   NetworkRequest* request = NetworkRequest::create(this, 201);
   request->auth(MozillaVPN::authorizationHeader());
   request->post(
-      QString("%1/api/v1/vpn/feedback").arg(AppConstants::apiBaseUrl()),
+      AppConstants::apiUrl(AppConstants::Feedback),
       QJsonObject{{"feedbackText", m_feedbackText},
                   {"logs", m_logs},
                   {"versionString", Env::versionString()},

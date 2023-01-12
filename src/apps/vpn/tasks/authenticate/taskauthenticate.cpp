@@ -56,8 +56,7 @@ void TaskAuthenticate::run() {
 
             NetworkRequest* request = NetworkRequest::create(this, 200);
             request->post(
-                QString("%1/api/v2/vpn/login/verify")
-                    .arg(AppConstants::apiBaseUrl()),
+                AppConstants::apiUrl(AppConstants::LoginVerify),
                 QJsonObject{{"code", pkceCodeSuccess},
                             {"code_verifier", QString(pkceCodeVerifier)}});
 

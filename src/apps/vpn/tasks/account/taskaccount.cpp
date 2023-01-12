@@ -24,8 +24,7 @@ TaskAccount::~TaskAccount() { MZ_COUNT_DTOR(TaskAccount); }
 void TaskAccount::run() {
   NetworkRequest* request = NetworkRequest::create(this, 200);
   request->auth(MozillaVPN::authorizationHeader());
-  request->get(
-      QString("%1/api/v1/vpn/account").arg(AppConstants::apiBaseUrl()));
+  request->get(AppConstants::apiUrl(AppConstants::Account));
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {

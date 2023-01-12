@@ -30,8 +30,7 @@ void TaskCaptivePortalLookup::run() {
 
   NetworkRequest* request = NetworkRequest::create(this, 200);
   request->auth(MozillaVPN::authorizationHeader());
-  request->get(QString("%1/api/v1/vpn/dns/detectportal")
-                   .arg(AppConstants::apiBaseUrl()));
+  request->get(AppConstants::apiUrl(AppConstants::DNSDetectPortal));
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
