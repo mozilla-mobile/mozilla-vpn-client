@@ -23,8 +23,6 @@ target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
 
 # Windows platform source files
 target_sources(mozillavpn PRIVATE
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commandcrashreporter.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commandcrashreporter.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemon.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemon.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemonlocalserver.cpp
