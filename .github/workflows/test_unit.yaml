@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
-        with: 
+        with:
           submodules: 'true'
 
       - name: Install dependences
@@ -56,7 +56,7 @@ jobs:
         working-directory: ./build
         run: |
           export PATH=${{github.workspace}}/grcov-build/bin:$PATH
-          ctest --output-on-failure
+          ctest -j $(nproc) --output-on-failure
 
           grcov $(pwd)/tests/auth/CMakeFiles/auth_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/auth_lcov.info
@@ -86,7 +86,7 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
-        with: 
+        with:
           submodules: 'true'
 
       - name: Install dependencies
@@ -163,7 +163,7 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
-        with: 
+        with:
           submodules: 'true'
 
       - name: Install Qt
