@@ -68,7 +68,7 @@ dpkg-source -x ${DSCFILE} $(pwd)/mozillavpn-source/
 # Update the changelog to release for the target distribution.
 # TODO: If this came from a PR, we should put the author's info here.
 export DEBEMAIL="vpn@mozilla.com"
-export DEBEMAIL="Mozilla VPN Team"
+export DEBFULLNAME="Mozilla VPN Team"
 DPKG_PACKAGE_SRCNAME=$(dpkg-parsechangelog -l mozillavpn-source/debian/changelog -S Source)
 DPKG_PACKAGE_BASE_VERSION=$(dpkg-parsechangelog -l mozillavpn-source/debian/changelog -S Version)
 DPKG_PACKAGE_DIST_VERSION=${DPKG_PACKAGE_BASE_VERSION}-${DIST}1
@@ -80,7 +80,7 @@ mk-build-deps $(pwd)/mozillavpn-source/debian/control
 sudo apt -y install ./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_DIST_VERSION}_all.deb
 
 # Build the packages
-(cd mozillavpn-source/ && dpkg-buildpackage --unsigned-source --build=all)
+(cd mozillavpn-source/ && dpkg-buildpackage --unsigned-source --build=full)
 
 # Gather the build artifacts for export
 tar -cvzf /builds/worker/artifacts/mozillavpn-${DIST}.tar.gz *.deb *.ddeb *.buildinfo *.changes
