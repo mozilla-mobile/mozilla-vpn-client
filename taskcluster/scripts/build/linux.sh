@@ -43,6 +43,10 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+## For debug purposes, dump our environment
+echo "Dumping environment..."
+env
+
 # Fall back to the host operating system if no distribution was specified
 if [[ -z "$DIST" ]]; then
   DIST="${VERSION_CODENAME}"
