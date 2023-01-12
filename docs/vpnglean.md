@@ -11,6 +11,9 @@ Glean API docs on the book, choose the "Firefox Desktop" examples tab. The API w
 
 > **Note**: An understanding of the fundamentals of Glean such as metrics, pings and glean_parser is assumed.
 
+> **Note**: For a list of Glean features/metrics that are not yet implemented on the Mozilla VPN Glean integration, 
+> please consult [VPN-3683](https://mozilla-hub.atlassian.net/browse/VPN-3683).
+
 ## Background
 
 On a first attempt to integrate Glean on the VPN application,
