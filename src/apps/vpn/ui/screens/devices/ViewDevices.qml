@@ -153,6 +153,4 @@ VPNViewBase {
             }
         }
     ]
-
-    Component.onDestruction: menu.rightTitle = ""
 }
