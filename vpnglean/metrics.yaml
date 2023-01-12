@@ -22,4 +22,4 @@ performance:
     notification_emails:
       - brizental@mozilla.com
     expires: never
-    time_unit: nanosecond
+    time_unit: microsecond
