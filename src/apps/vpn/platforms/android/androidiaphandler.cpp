@@ -375,8 +375,9 @@ void AndroidIAPHandler::validatePurchase(QJsonObject purchase) {
             logger.info() << "tokenValid == true, acknowledging purchase.";
             auto jniString = QJniObject::fromString(token);
             QJniObject::callStaticMethod<void>(
-                "org/mozilla/firefox/vpn/qt/InAppPurchase", "acknowledgePurchase",
-                "(Ljava/lang/String;)V", jniString.object());
+                "org/mozilla/firefox/vpn/qt/InAppPurchase",
+                "acknowledgePurchase", "(Ljava/lang/String;)V",
+                jniString.object());
           });
 
   TaskScheduler::scheduleTask(purchaseTask);

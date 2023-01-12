@@ -19,7 +19,6 @@ import java.io.IOException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-
 // Companion for AndroidUtils.cpp
 object VPNUtils {
     @SuppressLint("NewApi")
@@ -102,7 +101,6 @@ object VPNUtils {
         }
         context.startActivity(intent)
     }
-    
 
     @SuppressLint("Unused")
     @JvmStatic

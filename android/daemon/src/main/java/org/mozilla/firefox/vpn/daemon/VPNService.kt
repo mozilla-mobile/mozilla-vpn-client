@@ -18,8 +18,8 @@ import com.wireguard.config.Interface
 import com.wireguard.config.Peer
 import com.wireguard.crypto.Key
 import org.json.JSONObject
-import java.util.*
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.Sample
+import java.util.*
 
 class VPNService : android.net.VpnService() {
     private val tag = "VPNService"

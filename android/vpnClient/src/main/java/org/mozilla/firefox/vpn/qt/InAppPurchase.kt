@@ -22,17 +22,17 @@ import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.SkuDetails
 import com.android.billingclient.api.SkuDetailsParams
 import com.android.billingclient.api.SkuDetailsResponseListener
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import org.mozilla.firefox.vpn.qt.GleanMetrics.Sample
 import java.text.NumberFormat
 import java.time.Duration
 import java.time.format.DateTimeParseException
 import java.util.Currency
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.Serializable
-import org.mozilla.firefox.vpn.qt.GleanMetrics.Sample
 
 /**
  * Generally this contains the contents of a native BillingResult.
