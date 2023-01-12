@@ -43,7 +43,7 @@ linux/bionic:
     worker:
         docker-image: {in-tree: linux-build-bionic}
     run:
-        command: /builds/worker/linux.sh --ppa ppa:okirby/qt6-backports
+        command: /builds/worker/linux.sh
     add-index-routes: linux-bionic
 
 linux/focal:
@@ -58,7 +58,7 @@ linux/focal:
     worker:
         docker-image: {in-tree: linux-build-focal}
     run:
-        command: /builds/worker/linux.sh --ppa ppa:okirby/qt6-backports
+        command: /builds/worker/linux.sh
     add-index-routes: linux-focal
 
 linux/jammy:
