@@ -417,7 +417,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNCurrentServer",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->currentServer();
+          QObject* obj = MozillaVPN::instance()->serverData();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -659,7 +659,7 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
           MozillaVPN::instance()->serverCountryModel()->retranslate();
-          MozillaVPN::instance()->currentServer()->retranslate();
+          MozillaVPN::instance()->serverData()->retranslate();
         });
 
     InspectorHandler::initialize();

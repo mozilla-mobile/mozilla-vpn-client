@@ -157,7 +157,8 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
   // Find a Server as Fallback in the Same Location in case
   // the original one becomes unstable / unavailable
   auto vpn = MozillaVPN::instance();
-  const QList<Server> serverList = vpn->currentServer()->exitServers();
+  const QList<Server> serverList =
+      vpn->controller()->currentServer().exitServers();
   Server* fallbackServer = nullptr;
   foreach (auto item, serverList) {
     if (item.publicKey() != hop.m_server.publicKey()) {
@@ -190,7 +191,8 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
   // Build the "canned" Notification messages
   // They will be used in case this config will be re-enabled
   // to show the appropriate notification messages
-  QString localizedCityName = vpn->currentServer()->localizedExitCityName();
+  QString localizedCityName =
+      vpn->controller()->currentServer().localizedExitCityName();
   args["city"] = localizedCityName;
 
   QJsonObject messages;

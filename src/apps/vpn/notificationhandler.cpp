@@ -98,9 +98,14 @@ void NotificationHandler::showNotification() {
 
   QString title;
   QString message;
-  QString localizedCityName = vpn->currentServer()->localizedExitCityName();
+
+  // We want to show notifications about the location in use by the controller,
+  // which could be different than MozillaVPN::serverData in the rare case of a
+  // server-switch request processed in the meantime.
+  QString localizedCityName =
+      vpn->controller()->currentServer().localizedExitCityName();
   QString localizedCountryName =
-      vpn->currentServer()->localizedExitCountryName();
+      vpn->controller()->currentServer().localizedExitCountryName();
 
   switch (vpn->controller()->state()) {
     case Controller::StateOn:
@@ -115,9 +120,11 @@ void NotificationHandler::showNotification() {
         }
 
         QString localizedPreviousExitCountryName =
-            vpn->currentServer()->localizedPreviousExitCountryName();
+            vpn->controller()
+                ->currentServer()
+                .localizedPreviousExitCountryName();
         QString localizedPreviousExitCityName =
-            vpn->currentServer()->localizedPreviousExitCityName();
+            vpn->controller()->currentServer().localizedPreviousExitCityName();
 
         if ((localizedPreviousExitCountryName == localizedCountryName) &&
             (localizedPreviousExitCityName == localizedCityName)) {

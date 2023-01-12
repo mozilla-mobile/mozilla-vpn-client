@@ -41,7 +41,26 @@ QList<Server> filterServerList(const QList<Server>& servers) {
 
 ServerData::ServerData() { MZ_COUNT_CTOR(ServerData); }
 
+ServerData::ServerData(const ServerData& other) {
+  MZ_COUNT_CTOR(ServerData);
+  *this = other;
+}
+
 ServerData::~ServerData() { MZ_COUNT_DTOR(ServerData); }
+
+ServerData& ServerData::operator=(const ServerData& other) {
+  m_initialized = other.m_initialized;
+  m_exitCountryCode = other.m_exitCountryCode;
+  m_exitCityName = other.m_exitCityName;
+  m_entryCountryCode = other.m_entryCountryCode;
+  m_entryCityName = other.m_entryCityName;
+  m_previousExitCountryCode = other.m_previousExitCountryCode;
+  m_previousExitCityName = other.m_previousExitCityName;
+  m_exitServerPublicKey = other.m_exitServerPublicKey;
+  m_entryServerPublicKey = other.m_entryServerPublicKey;
+
+  return *this;
+}
 
 void ServerData::initialize() {
   m_initialized = true;

@@ -68,7 +68,7 @@ bool Command::loadModels() {
 
   if (!vpn->deviceModel()->fromSettings(vpn->keys()) ||
       !vpn->serverCountryModel()->fromSettings() ||
-      !vpn->user()->fromSettings() || !vpn->currentServer()->fromSettings() ||
+      !vpn->user()->fromSettings() || !vpn->serverData()->fromSettings() ||
       !vpn->modelsInitialized()) {
     QTextStream stream(stdout);
     stream << "No cache available" << Qt::endl;

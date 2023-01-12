@@ -74,8 +74,13 @@ void IpAddressLookup::updateIpAddress() {
 
     // Let's skip this for unit-tests to make them simpler.
 #ifndef UNIT_TEST
-        if (country !=
-            MozillaVPN::instance()->currentServer()->exitCountryCode()) {
+        // The country check should follow the country in use by the controller
+        // and not the MozillaVPN::serverData() which could be changed in the
+        // meantime, because of a server-switch request.
+        if (country != MozillaVPN::instance()
+                           ->controller()
+                           ->currentServer()
+                           .exitCountryCode()) {
           // In case the country-we're reported in does not match the
           // connected server we may retry only once.
           logger.warning() << "Reported ip not in the right country, retry!";

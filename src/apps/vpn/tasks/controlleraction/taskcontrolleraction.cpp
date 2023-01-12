@@ -18,7 +18,10 @@ TaskControllerAction::TaskControllerAction(
     TaskControllerAction::TaskAction action)
     : Task("TaskControllerAction"),
       m_action(action),
-      m_lastState(Controller::State::StateOff) {
+      m_lastState(Controller::State::StateOff),
+      // Let's take a copy of the current server-data to activate/switch to the
+      // current locations even if the settings change in the meantime.
+      m_serverData(*MozillaVPN::instance()->serverData()) {
   MZ_COUNT_CTOR(TaskControllerAction);
 
   logger.debug() << "TaskControllerAction created" << action;
@@ -49,7 +52,7 @@ void TaskControllerAction::run() {
 
   switch (m_action) {
     case eActivate:
-      expectSignal = controller->activate();
+      expectSignal = controller->activate(m_serverData);
       break;
 
     case eDeactivate:
@@ -61,7 +64,7 @@ void TaskControllerAction::run() {
       break;
 
     case eSwitch:
-      expectSignal = controller->switchServers();
+      expectSignal = controller->switchServers(m_serverData);
       break;
   }
 

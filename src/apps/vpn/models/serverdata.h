@@ -14,7 +14,6 @@ class Server;
 
 class ServerData final : public QObject {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(ServerData);
 
   Q_PROPERTY(QString exitCountryCode READ exitCountryCode NOTIFY changed)
   Q_PROPERTY(QString exitCityName READ exitCityName NOTIFY changed)
@@ -43,7 +42,10 @@ class ServerData final : public QObject {
 
  public:
   ServerData();
+  ServerData(const ServerData& other);
   ~ServerData();
+
+  ServerData& operator=(const ServerData& other);
 
   void initialize();
 

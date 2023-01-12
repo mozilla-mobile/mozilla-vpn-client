@@ -111,16 +111,19 @@ void Telemetry::connectionStabilityEvent() {
   Q_ASSERT(controller);
   Q_ASSERT(controller->state() == Controller::StateOn);
 
+  // We use Controller->currentServer because the telemetry event should record
+  // the location in use by the Controller and not MozillaVPN::serverData, which
+  // could have changed in the meantime.
   mozilla::glean::sample::connectivity_stable.record(
       mozilla::glean::sample::ConnectivityStableExtra{
           ._latency = QString::number(vpn->connectionHealth()->latency()),
           ._loss = QString::number(vpn->connectionHealth()->loss()),
-          ._server = vpn->currentServer()->exitServerPublicKey(),
+          ._server = vpn->controller()->currentServer().exitServerPublicKey(),
           ._stddev = QString::number(vpn->connectionHealth()->stddev()),
           ._transport = vpn->networkWatcher()->getCurrentTransport()});
   emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
       GleanSample::connectivityStable,
-      {{"server", vpn->currentServer()->exitServerPublicKey()},
+      {{"server", vpn->controller()->currentServer().exitServerPublicKey()},
        {"latency", QString::number(vpn->connectionHealth()->latency())},
        {"loss", QString::number(vpn->connectionHealth()->loss())},
        {"stddev", QString::number(vpn->connectionHealth()->stddev())},

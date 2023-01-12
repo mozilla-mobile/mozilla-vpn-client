@@ -40,7 +40,7 @@ void SystemTrayNotificationHandler::initialize() {
   connect(vpn, &MozillaVPN::stateChanged, this,
           &SystemTrayNotificationHandler::updateContextMenu);
 
-  connect(vpn->currentServer(), &ServerData::changed, this,
+  connect(vpn->serverData(), &ServerData::changed, this,
           &SystemTrayNotificationHandler::updateContextMenu);
 
   connect(vpn->controller(), &Controller::stateChanged, this,
@@ -208,11 +208,10 @@ void SystemTrayNotificationHandler::updateContextMenu() {
   m_lastLocationLabel->setVisible(true);
 
   QIcon flagIcon(QString(":/nebula/resources/flags/%1.png")
-                     .arg(vpn->currentServer()->exitCountryCode().toUpper()));
+                     .arg(vpn->serverData()->exitCountryCode().toUpper()));
 
-  QString localizedCityName = vpn->currentServer()->localizedExitCityName();
-  QString localizedCountryName =
-      vpn->currentServer()->localizedExitCountryName();
+  QString localizedCityName = vpn->serverData()->localizedExitCityName();
+  QString localizedCountryName = vpn->serverData()->localizedExitCountryName();
 
   m_lastLocationLabel->setIcon(flagIcon);
   m_lastLocationLabel->setText(

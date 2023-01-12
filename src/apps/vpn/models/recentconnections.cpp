@@ -42,7 +42,7 @@ RecentConnections::RecentConnections(QObject* parent) : QObject(parent) {
 RecentConnections::~RecentConnections() { MZ_COUNT_DTOR(RecentConnections); }
 
 void RecentConnections::initialize() {
-  connect(MozillaVPN::instance()->currentServer(), &ServerData::changed, this,
+  connect(MozillaVPN::instance()->serverData(), &ServerData::changed, this,
           &RecentConnections::serverChanged);
 
   m_singleHopModel.clear();
@@ -96,7 +96,7 @@ bool RecentConnections::migrate() {
 
 void RecentConnections::serverChanged() {
   logger.info() << "server changed";
-  ServerData* sd = MozillaVPN::instance()->currentServer();
+  ServerData* sd = MozillaVPN::instance()->serverData();
 
   RecentConnection newRecentConnection{
       sd->entryCityName(), sd->entryCountryCode(), sd->exitCityName(),
