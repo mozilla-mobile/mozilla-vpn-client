@@ -39,59 +39,12 @@ jobs:
           name: Sources
           path: .tmp
 
-  ubuntu-pbuilder:
-    name: Ubuntu Packages
-    needs: source-bundle
-    strategy:
-      matrix:
-        config:
-          - { name: "Bionic", dist: bionic, ppa: "ppa:okirby/qt6-backports" }
-          - { name: "Focal", dist: focal, ppa: "ppa:okirby/qt6-backports" }
-          - { name: "Jammy", dist: jammy, ppa: "" }
-          - { name: "Kinetic", dist: kinetic, ppa: "" }
-
-    runs-on: ubuntu-latest
-    env:
-      BASETGZ: /var/cache/pbuilder/ubuntu-buildd-${{ matrix.config.dist }}.tgz
-      QTPPA: ${{ matrix.config.ppa }}
-    steps:
-      - name: Download Source Package
-        uses: actions/download-artifact@v3
-        with:
-          name: Sources
-
-      - name: Create base ${{ matrix.config.dist }} image
-        run: |
-          pip3 install pyyaml
-          sudo apt-get update
-          sudo apt-get install pbuilder debootstrap debhelper devscripts -y
-          sudo pbuilder create --distribution ${{ matrix.config.dist }} --basetgz $BASETGZ \
-              --othermirror "deb http://security.ubuntu.com/ubuntu ${{ matrix.config.dist }}-updates main restricted universe" \
-              --debootstrapopts --variant=buildd --extrapackages "software-properties-common gpg-agent"
-          if [ ! -z "$QTPPA" ]; then
-              echo '#/bin/sh' > ppa-${{ matrix.config.dist }}-install.sh
-              echo "add-apt-repository ${QTPPA} -y" >> ppa-${{ matrix.config.dist }}-install.sh
-              sudo pbuilder execute --basetgz $BASETGZ --save-after-exec -- ppa-${{ matrix.config.dist }}-install.sh
-          fi
-
-      - name: Building package
-        shell: bash
-        run: |
-          mkdir packages
-          sudo pbuilder build --basetgz $BASETGZ --buildresult $(pwd)/packages mozillavpn_*-${{matrix.config.dist}}[0-9].dsc
-
-      - name: Uploading
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{matrix.config.name}} Build
-          path: packages
-
   rpmbuild:
     name: RPM Packages
     needs: source-bundle
     runs-on: ubuntu-latest
     container:
-      image: fedora:36
+      image: fedora:37
 
     steps:
       - name: Download Source Package

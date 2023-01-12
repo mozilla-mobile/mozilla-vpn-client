@@ -7,6 +7,7 @@
 #include "../windowscommons.h"
 #include "../windowsservicemanager.h"
 #include "logger.h"
+#include "platforms/windows/windowsutils.h"
 #include "windowsfirewall.h"
 
 #define PSAPI_VERSION 2
@@ -32,7 +33,7 @@ WindowsSplitTunnel::WindowsSplitTunnel(QObject* parent) : QObject(parent) {
     logger.debug() << "Driver is not Installed, doing so";
     auto handle = installDriver();
     if (handle == INVALID_HANDLE_VALUE) {
-      WindowsCommons::windowsLog("Failed to install Driver");
+      WindowsUtils::windowsLog("Failed to install Driver");
       return;
     }
     logger.debug() << "Driver installed";
@@ -60,7 +61,7 @@ void WindowsSplitTunnel::initDriver() {
   ;
 
   if (m_driver == INVALID_HANDLE_VALUE) {
-    WindowsCommons::windowsLog("Failed to open Driver: ");
+    WindowsUtils::windowsLog("Failed to open Driver: ");
 
     // If the handle is not present, try again after the serivce has started;
     auto driver_manager = WindowsServiceManager(DRIVER_SERVICE_NAME);
@@ -118,7 +119,7 @@ void WindowsSplitTunnel::setRules(const QStringList& appPaths) {
                             nullptr);
   if (!ok) {
     auto err = GetLastError();
-    WindowsCommons::windowsLog("Set Config Failed:");
+    WindowsUtils::windowsLog("Set Config Failed:");
     logger.error() << "Failed to set Config err code " << err;
     return;
   }
@@ -205,11 +206,11 @@ DRIVER_STATE WindowsSplitTunnel::getState() {
   bool ok = DeviceIoControl(m_driver, IOCTL_GET_STATE, nullptr, 0, &outBuffer,
                             sizeof(outBuffer), &bytesReturned, nullptr);
   if (!ok) {
-    WindowsCommons::windowsLog("getState response failure");
+    WindowsUtils::windowsLog("getState response failure");
     return STATE_UNKNOWN;
   }
   if (bytesReturned == 0) {
-    WindowsCommons::windowsLog("getState response is empty");
+    WindowsUtils::windowsLog("getState response is empty");
     return STATE_UNKNOWN;
   }
   return static_cast<DRIVER_STATE>(outBuffer);
@@ -313,7 +314,7 @@ std::vector<uint8_t> WindowsSplitTunnel::generateProcessBlob() {
   // Get a Snapshot of all processes that are running:
   HANDLE snapshot_handle = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
   if (snapshot_handle == INVALID_HANDLE_VALUE) {
-    WindowsCommons::windowsLog("Creating Process snapshot failed");
+    WindowsUtils::windowsLog("Creating Process snapshot failed");
     return std::vector<uint8_t>(0);
   }
   auto cleanup = qScopeGuard([&] { CloseHandle(snapshot_handle); });
@@ -322,7 +323,7 @@ std::vector<uint8_t> WindowsSplitTunnel::generateProcessBlob() {
   currentProcess.dwSize = sizeof(PROCESSENTRY32W);
 
   if (FALSE == (Process32First(snapshot_handle, &currentProcess))) {
-    WindowsCommons::windowsLog("Cant read first entry");
+    WindowsUtils::windowsLog("Cant read first entry");
   }
 
   QMap<DWORD, ProcessInfo> processes;
@@ -494,7 +495,7 @@ QString WindowsSplitTunnel::convertPath(const QString& path) {
                          buffer.size() / 2);
   }
   if (ok == 0) {
-    WindowsCommons::windowsLog("Err fetching dos path");
+    WindowsUtils::windowsLog("Err fetching dos path");
     return "";
   }
   QString deviceName;
@@ -517,7 +518,7 @@ bool WindowsSplitTunnel::detectConflict() {
   auto err = GetLastError();
   CloseServiceHandle(servicehandle);
   if (err != ERROR_SERVICE_DOES_NOT_EXIST) {
-    WindowsCommons::windowsLog("Mullvad Detected - Disabling SplitTunnel: ");
+    WindowsUtils::windowsLog("Mullvad Detected - Disabling SplitTunnel: ");
     // Mullvad is installed, so we would certainly break things.
     return true;
   }

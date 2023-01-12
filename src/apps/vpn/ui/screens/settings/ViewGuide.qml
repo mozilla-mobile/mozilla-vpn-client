@@ -177,7 +177,7 @@ Item {
     Component.onCompleted: VPNNavigator.addView(VPNNavigator.ScreenSettings, root)
 
     Component.onDestruction: {
-        VPN.recordGleanEventWithExtraKeys("guideClosed",{
+        VPNGleanDeprecated.recordGleanEventWithExtraKeys("guideClosed",{
                                           "id": guide.id,
                                           "duration_ms": new Date().getTime() - timeOfOpen
         });

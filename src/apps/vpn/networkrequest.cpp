@@ -33,9 +33,6 @@
 constexpr uint32_t REQUEST_TIMEOUT_MSEC = 15000;
 constexpr int REQUEST_MAX_REDIRECTS = 4;
 
-constexpr const char* IPINFO_URL_IPV4 = "https://%1/api/v1/vpn/ipinfo";
-constexpr const char* IPINFO_URL_IPV6 = "https://[%1]/api/v1/vpn/ipinfo";
-
 namespace {
 Logger logger("NetworkRequest");
 
@@ -369,16 +366,22 @@ NetworkRequest* NetworkRequest::createForIpInfo(Task* parent,
 
   NetworkRequest* r = new NetworkRequest(parent, 200, true);
 
+  QUrl url(apiBaseUrl());
+  QString hostname = url.host();
   if (address.protocol() == QAbstractSocket::IPv6Protocol) {
-    r->m_request.setUrl(QUrl(QString(IPINFO_URL_IPV6).arg(address.toString())));
+    url.setHost(QString("[%1]").arg(address.toString()));
+  } else if (address.protocol() == QAbstractSocket::IPv4Protocol) {
+    url.setHost(address.toString());
   } else {
-    Q_ASSERT(address.protocol() == QAbstractSocket::IPv4Protocol);
-    r->m_request.setUrl(QUrl(QString(IPINFO_URL_IPV4).arg(address.toString())));
+    // Otherwise, a default-constructed address indicates we should not mangle
+    // the address and just rely on the hostname.
+    Q_ASSERT(address.isNull());
   }
 
-  QUrl url(apiBaseUrl());
-  r->m_request.setRawHeader("Host", url.host().toLocal8Bit());
-  r->m_request.setPeerVerifyName(url.host());
+  url.setPath("/api/v1/vpn/ipinfo");
+  r->m_request.setRawHeader("Host", hostname.toLocal8Bit());
+  r->m_request.setPeerVerifyName(hostname);
+  r->m_request.setUrl(url);
 
   r->getRequest();
   return r;
@@ -510,7 +513,7 @@ NetworkRequest* NetworkRequest::createForFxaAccountStatus(
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
 
-  QUrl url(AppConstants::fxaApiBaseUrl());
+  QUrl url(Constants::fxaApiBaseUrl());
   url.setPath("/v1/account/status");
   r->m_request.setUrl(url);
 
@@ -531,7 +534,7 @@ NetworkRequest* NetworkRequest::createForFxaAccountCreation(
     const QString& fxaFlowId, double fxaFlowBeginTime) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(AppConstants::fxaApiBaseUrl());
+  QUrl url(Constants::fxaApiBaseUrl());
   url.setPath("/v1/account/create");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -564,7 +567,7 @@ NetworkRequest* NetworkRequest::createForFxaLogin(
     const QString& fxaFlowId, double fxaFlowBeginTime) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(AppConstants::fxaApiBaseUrl());
+  QUrl url(Constants::fxaApiBaseUrl());
   url.setPath("/v1/account/login");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -608,7 +611,7 @@ NetworkRequest* NetworkRequest::createForFxaSendUnblockCode(
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
 
-  QUrl url(AppConstants::fxaApiBaseUrl());
+  QUrl url(Constants::fxaApiBaseUrl());
   url.setPath("/v1/account/login/send_unblock_code");
   r->m_request.setUrl(url);
 
@@ -628,7 +631,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionVerifyByEmailCode(
     const QString& fxaClientId, const QString& fxaScope) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(AppConstants::fxaApiBaseUrl());
+  QUrl url(Constants::fxaApiBaseUrl());
   url.setPath("/v1/session/verify_code");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -666,7 +669,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionResendCode(
     Task* parent, const QByteArray& sessionToken) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(AppConstants::fxaApiBaseUrl());
+  QUrl url(Constants::fxaApiBaseUrl());
   url.setPath("/v1/session/resend_code");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -689,7 +692,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionVerifyByTotpCode(
     const QString& fxaClientId, const QString& fxaScope) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(AppConstants::fxaApiBaseUrl());
+  QUrl url(Constants::fxaApiBaseUrl());
   url.setPath("/v1/session/verify/totp");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -720,7 +723,7 @@ NetworkRequest* NetworkRequest::createForFxaAuthz(
     const QString& fxaAccessType) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(AppConstants::fxaApiBaseUrl());
+  QUrl url(Constants::fxaApiBaseUrl());
   url.setPath("/v1/oauth/authorization");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -748,7 +751,7 @@ NetworkRequest* NetworkRequest::createForFxaTotpCreation(
     Task* parent, const QByteArray& sessionToken) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(AppConstants::fxaApiBaseUrl());
+  QUrl url(Constants::fxaApiBaseUrl());
   url.setPath("/v1/totp/create");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -770,7 +773,7 @@ NetworkRequest* NetworkRequest::createForFxaAttachedClients(
     Task* parent, const QByteArray& sessionToken) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(AppConstants::fxaApiBaseUrl());
+  QUrl url(Constants::fxaApiBaseUrl());
   url.setPath("/v1/account/attached_clients");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -790,7 +793,7 @@ NetworkRequest* NetworkRequest::createForFxaAccountDeletion(
     const QByteArray& authpw) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(AppConstants::fxaApiBaseUrl());
+  QUrl url(Constants::fxaApiBaseUrl());
   url.setPath("/v1/account/destroy");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -815,7 +818,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionDestroy(
     Task* parent, const QByteArray& sessionToken) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(AppConstants::fxaApiBaseUrl());
+  QUrl url(Constants::fxaApiBaseUrl());
   url.setPath("/v1/session/destroy");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,

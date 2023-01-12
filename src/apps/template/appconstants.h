@@ -12,6 +12,12 @@ namespace AppConstants {
 // This is used by SettingsHolder to configure the QSetting file.
 constexpr const char* SETTINGS_APP_NAME = "FooBar";
 
+// The prefix for the user-agent requests
+constexpr const char* NETWORK_USERAGENT_PREFIX = "FooBar";
+
+// The file name for the logging
+constexpr const char* LOG_FILE_NAME = "foobar.txt";
+
 #if defined(__APPLE__)
 // This is the name of the service to encrypt the settings file
 constexpr const char* CRYPTO_SETTINGS_SERVICE = "App FooBar";
@@ -36,6 +42,13 @@ constexpr const char* LINUX_CRYPTO_SETTINGS_KEY =
     "org.mozilla.foobar.cryptosettings";
 constexpr const char* LINUX_CRYPTO_SETTINGS_DESC =
     "FooBar settings encryption key";
+#endif
+
+// Communication pipe between instances
+#if defined(MZ_WINDOWS)
+constexpr const char* UI_PIPE = "\\\\.\\pipe\\foobar.ui";
+#else
+constexpr const char* UI_PIPE = "/tmp/foobar.ui.sock";
 #endif
 
 #define PRODBETAEXPR(type, functionName, prod, beta) \

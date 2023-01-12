@@ -52,4 +52,8 @@ class TestModels final : public TestHelper {
   void userFromJson_data();
   void userFromJson();
   void userFromSettings();
+
+  void locationBasic();
+  void locationFromJson_data();
+  void locationFromJson();
 };

@@ -413,10 +413,6 @@ connectionInfo:
   highBulletThree:
     value: Online gaming
     comment: This is a bullet item in the connection section for high speedtest results
-  # Multi-hop callout
-  multiHopCallout:
-    value: You can improve your speed by switching back to a single-hop connection
-    comment: Informational text that is shown for multi-hop connections.
   # Connection metrics title
   metricsTitle:
     value: Connection information

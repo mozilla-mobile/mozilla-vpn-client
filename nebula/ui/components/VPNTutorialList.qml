@@ -25,7 +25,7 @@ GridLayout {
         return addon.type === "tutorial" && customFilter(addon);
     }
 
-    VPNFilterProxyModel {
+    MZFilterProxyModel {
         id: tutorialModel
         source: VPNAddonManager
         filterCallback: ({ addon }) => tutorialFilter(addon)

@@ -17,6 +17,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "windowscommons.h"
+#include "platforms/windows/windowsutils.h"
 
 #pragma comment(lib, "Ws2_32")
 
@@ -99,7 +100,7 @@ void WindowsPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
 
   DWORD status = GetLastError();
   if (status != ERROR_IO_PENDING) {
-    QString errmsg = WindowsCommons::getErrorMessage();
+    QString errmsg = WindowsUtils::getErrorMessage();
     logger.error() << "failed to start Code: " << status
                    << " Message: " << errmsg
                    << " dest:" << logger.sensitive(dest.toString());
@@ -114,7 +115,7 @@ void WindowsPingSender::pingEventReady() {
     if (error == IP_REQ_TIMED_OUT) {
       return;
     }
-    QString errmsg = WindowsCommons::getErrorMessage();
+    QString errmsg = WindowsUtils::getErrorMessage();
     logger.error() << "failed with error:" << errmsg;
     return;
   }

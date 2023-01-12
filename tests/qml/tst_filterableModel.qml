@@ -29,20 +29,20 @@ Item {
         }
     }
 
-    VPNFilterProxyModel {
+    MZFilterProxyModel {
         id: testModel_filterAndSort
         source: fruitModel
         filterCallback: (fruit) => fruit.cost < 3
         sortCallback: (a, b) => a.cost < b.cost
     }
 
-    VPNFilterProxyModel {
+    MZFilterProxyModel {
         id: testModel_filter
         source: fruitModel
         filterCallback: (fruit) => fruit.cost < 3
     }
 
-    VPNFilterProxyModel {
+    MZFilterProxyModel {
         id: testModel_sort
         source: fruitModel
         sortCallback: (a, b) => a.cost < b.cost

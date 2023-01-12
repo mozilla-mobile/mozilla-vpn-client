@@ -16,6 +16,12 @@ void setStaging();
 // This is used by SettingsHolder to configure the QSetting file.
 constexpr const char* SETTINGS_APP_NAME = "vpn";
 
+// The prefix for the user-agent requests
+constexpr const char* NETWORK_USERAGENT_PREFIX = "MozillaVPN";
+
+// The file name for the logging
+constexpr const char* LOG_FILE_NAME = "mozillavpn.txt";
+
 // Number of msecs for the captive-portal block alert.
 constexpr uint32_t CAPTIVE_PORTAL_ALERT_MSEC = 4000;
 
@@ -119,13 +125,6 @@ PRODBETAEXPR(
     const char*, benchmarkUploadUrl, "https://benchmark.vpn.mozilla.org/upload",
     "https://dev.vpn-network-benchmark.nonprod.webservices.mozgcp.net/upload");
 
-PRODBETAEXPR(QString, fxaApiBaseUrl, "https://api.accounts.firefox.com",
-             Constants::envOrDefault("MVPN_FXA_API_BASE_URL",
-                                     "https://api-accounts.stage.mozaws.net"))
-
-PRODBETAEXPR(const char*, fxaUrl, "https://accounts.firefox.com",
-             "https://accounts.stage.mozaws.net")
-
 PRODBETAEXPR(
     const char*, balrogUrl,
     "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release/update.json",
@@ -174,6 +173,13 @@ constexpr const char* IOS_FALLBACK_APP_ID = "org.mozilla.ios.FirefoxVPN";
 #if defined(MZ_WINDOWS)
 // Credential key for windows
 constexpr const wchar_t* WINDOWS_CRED_KEY = L"Mozilla VPN";
+#endif
+
+// Communication pipe between instances
+#if defined(MZ_WINDOWS)
+constexpr const char* UI_PIPE = "\\\\.\\pipe\\mozillavpn.ui";
+#else
+constexpr const char* UI_PIPE = "/tmp/mozillavpn.ui.sock";
 #endif
 
 #if defined(MZ_ANDROID)

@@ -69,6 +69,10 @@ VPNFlickable {
             Layout.fillWidth: true
             Layout.leftMargin: VPNTheme.theme.vSpacingSmall
             Layout.rightMargin: VPNTheme.theme.windowMargin
+
+            Accessible.role: Accessible.StaticText
+            // Prevent html tags from being read by screen readers
+            Accessible.name: text.replace(/<[^>]*>/g, "")
         }
 
         VPNButton {
@@ -107,7 +111,7 @@ VPNFlickable {
                 labelText: qsTrId("vpn.aboutUs.tos2")
                 textAlignment: grid.columns > 1 ? Text.AlignRight : Text.AlignHCenter
 
-                onClicked: VPNUrlOpener.openLink(VPNUrlOpener.LinkTermsOfService)
+                onClicked: VPNUrlOpener.openUrlLabel("termsOfService")
 
                 Layout.alignment: grid.columns > 1 ? Qt.AlignRight : Qt.AlignHCenter
             }
@@ -128,7 +132,7 @@ VPNFlickable {
                 labelText: qsTrId("vpn.aboutUs.privacyNotice2")
                 textAlignment: grid.columns > 1 ? Text.AlignLeft : Text.AlignHCenter
 
-                onClicked: VPNUrlOpener.openLink(VPNUrlOpener.LinkPrivacyNotice)
+                onClicked: VPNUrlOpener.openUrlLabel("privacyNotice")
 
                 Layout.alignment: grid.columns > 1 ? Qt.AlignLeft : Qt.AlignHCenter
             }

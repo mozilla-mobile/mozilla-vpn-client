@@ -12,6 +12,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "platforms/windows/windowscommons.h"
+#include "platforms/windows/windowsutils.h"
 #include "windowsdaemon.h"
 
 #define TUNNEL_NAMED_PIPE \
@@ -32,7 +33,7 @@ WindowsTunnelService::WindowsTunnelService(QObject* parent) : QObject(parent) {
 
   m_scm = OpenSCManager(nullptr, nullptr, SC_MANAGER_ALL_ACCESS);
   if (m_scm == nullptr) {
-    WindowsCommons::windowsLog("Failed to open SCManager");
+    WindowsUtils::windowsLog("Failed to open SCManager");
   }
 
   connect(&m_timer, &QTimer::timeout, this, &WindowsTunnelService::timeout);
@@ -84,7 +85,7 @@ void WindowsTunnelService::timeout() {
 
   SERVICE_STATUS status;
   if (!QueryServiceStatus((SC_HANDLE)m_service, &status)) {
-    WindowsCommons::windowsLog("Failed to retrieve the service status");
+    WindowsUtils::windowsLog("Failed to retrieve the service status");
     emit backendFailure();
     return;
   }
@@ -143,7 +144,7 @@ bool WindowsTunnelService::start(const QString& configData) {
                           (const wchar_t*)serviceCmdline.utf16(), nullptr, 0,
                           TEXT("Nsi\0TcpIp\0"), nullptr, nullptr);
   if (!service) {
-    WindowsCommons::windowsLog("Failed to create the tunnel service");
+    WindowsUtils::windowsLog("Failed to create the tunnel service");
     return false;
   }
 
@@ -151,7 +152,7 @@ bool WindowsTunnelService::start(const QString& configData) {
       (wchar_t*)L"Manages the Mozilla VPN tunnel connection"};
 
   if (!ChangeServiceConfig2(service, SERVICE_CONFIG_DESCRIPTION, &sd)) {
-    WindowsCommons::windowsLog(
+    WindowsUtils::windowsLog(
         "Failed to set the description to the tunnel service");
     return false;
   }
@@ -159,12 +160,12 @@ bool WindowsTunnelService::start(const QString& configData) {
   SERVICE_SID_INFO ssi;
   ssi.dwServiceSidType = SERVICE_SID_TYPE_UNRESTRICTED;
   if (!ChangeServiceConfig2(service, SERVICE_CONFIG_SERVICE_SID_INFO, &ssi)) {
-    WindowsCommons::windowsLog("Failed to set the SID to the tunnel service");
+    WindowsUtils::windowsLog("Failed to set the SID to the tunnel service");
     return false;
   }
 
   if (!StartService(service, 0, nullptr)) {
-    WindowsCommons::windowsLog("Failed to start the service");
+    WindowsUtils::windowsLog("Failed to start the service");
     return false;
   }
 
@@ -180,7 +181,7 @@ bool WindowsTunnelService::start(const QString& configData) {
 
   SERVICE_STATUS status;
   if (!QueryServiceStatus(service, &status)) {
-    WindowsCommons::windowsLog("Failed to retrieve the service status");
+    WindowsUtils::windowsLog("Failed to retrieve the service status");
     return false;
   }
 
@@ -195,7 +196,7 @@ bool WindowsTunnelService::start(const QString& configData) {
 static bool stopAndDeleteTunnelService(SC_HANDLE service) {
   SERVICE_STATUS status;
   if (!QueryServiceStatus(service, &status)) {
-    WindowsCommons::windowsLog("Failed to retrieve the service status");
+    WindowsUtils::windowsLog("Failed to retrieve the service status");
     return false;
   }
 
@@ -205,7 +206,7 @@ static bool stopAndDeleteTunnelService(SC_HANDLE service) {
   if (status.dwCurrentState != SERVICE_STOPPED) {
     logger.debug() << "The service is not stopped yet.";
     if (!ControlService(service, SERVICE_CONTROL_STOP, &status)) {
-      WindowsCommons::windowsLog("Failed to control the service");
+      WindowsUtils::windowsLog("Failed to control the service");
       return false;
     }
 
@@ -218,7 +219,7 @@ static bool stopAndDeleteTunnelService(SC_HANDLE service) {
   logger.debug() << "Proceeding with the deletion";
 
   if (!DeleteService(service)) {
-    WindowsCommons::windowsLog("Failed to delete the service");
+    WindowsUtils::windowsLog("Failed to delete the service");
     return false;
   }
 
@@ -236,13 +237,13 @@ QString WindowsTunnelService::uapiCommand(const QString& command) {
 
   auto guard = qScopeGuard([&] { CloseHandle(pipe); });
   if (!WaitNamedPipe(tunnelName, 1000)) {
-    WindowsCommons::windowsLog("Failed to wait for named pipes");
+    WindowsUtils::windowsLog("Failed to wait for named pipes");
     return QString();
   }
 
   DWORD mode = PIPE_READMODE_BYTE;
   if (!SetNamedPipeHandleState(pipe, &mode, nullptr, nullptr)) {
-    WindowsCommons::windowsLog("Failed to set the read-mode on pipe");
+    WindowsUtils::windowsLog("Failed to set the read-mode on pipe");
     return QString();
   }
 
@@ -254,7 +255,7 @@ QString WindowsTunnelService::uapiCommand(const QString& command) {
   }
   if (!WriteFile(pipe, message.constData(), message.length(), &written,
                  nullptr)) {
-    WindowsCommons::windowsLog("Failed to write into the pipe");
+    WindowsUtils::windowsLog("Failed to write into the pipe");
     return QString();
   }
 
@@ -279,7 +280,7 @@ static bool waitForServiceStatus(SC_HANDLE service, DWORD expectedStatus) {
   while (tries < 30) {
     SERVICE_STATUS status;
     if (!QueryServiceStatus(service, &status)) {
-      WindowsCommons::windowsLog("Failed to retrieve the service status");
+      WindowsUtils::windowsLog("Failed to retrieve the service status");
       return false;
     }
 

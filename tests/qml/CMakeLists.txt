@@ -8,6 +8,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR}/apps/vpn)
 include_directories(${MZ_SOURCE_DIR}/shared)
+include_directories(${MZ_SOURCE_DIR}/shared/glean)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star/kremlin)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star/kremlin/minimal)
@@ -39,8 +40,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.h
     ${MZ_SOURCE_DIR}/apps/vpn/externalophandler.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/externalophandler.h
-    ${MZ_SOURCE_DIR}/apps/vpn/filterproxymodel.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/filterproxymodel.h
     ${MZ_SOURCE_DIR}/apps/vpn/glean/glean.h
     ${MZ_SOURCE_DIR}/apps/vpn/glean/glean.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.h
@@ -51,8 +50,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/models/subscriptiondata.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/subscriptiondata.h
     ${MZ_SOURCE_DIR}/apps/vpn/mozillavpn.h
-    ${MZ_SOURCE_DIR}/apps/vpn/networkmanager.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/networkmanager.h
     ${MZ_SOURCE_DIR}/apps/vpn/networkrequest.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/networkrequest.h
     ${MZ_SOURCE_DIR}/apps/vpn/theme.cpp
@@ -71,16 +68,16 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/update/versionapi.h
     ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.h
-    ${MZ_SOURCE_DIR}/apps/vpn/qmlengineholder.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/qmlengineholder.h
-    ${MZ_SOURCE_DIR}/apps/vpn/urlopener.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/urlopener.h
     ${MZ_SOURCE_DIR}/shared/constants.h
     ${MZ_SOURCE_DIR}/shared/cryptosettings.cpp
     ${MZ_SOURCE_DIR}/shared/cryptosettings.h
     ${MZ_SOURCE_DIR}/shared/env.h
     ${MZ_SOURCE_DIR}/shared/feature.cpp
     ${MZ_SOURCE_DIR}/shared/feature.h
+    ${MZ_SOURCE_DIR}/shared/filterproxymodel.cpp
+    ${MZ_SOURCE_DIR}/shared/filterproxymodel.h
+    ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.cpp
+    ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.h
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20Poly1305_32.c
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Curve25519_51.c
@@ -95,9 +92,15 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/logger.h
     ${MZ_SOURCE_DIR}/shared/loghandler.cpp
     ${MZ_SOURCE_DIR}/shared/loghandler.h
+    ${MZ_SOURCE_DIR}/shared/networkmanager.cpp
+    ${MZ_SOURCE_DIR}/shared/networkmanager.h
     ${MZ_SOURCE_DIR}/shared/platforms/wasm/wasmcryptosettings.cpp
+    ${MZ_SOURCE_DIR}/shared/qmlengineholder.cpp
+    ${MZ_SOURCE_DIR}/shared/qmlengineholder.h
     ${MZ_SOURCE_DIR}/shared/settingsholder.cpp
     ${MZ_SOURCE_DIR}/shared/settingsholder.h
+    ${MZ_SOURCE_DIR}/shared/urlopener.cpp
+    ${MZ_SOURCE_DIR}/shared/urlopener.h
     ${MZ_SOURCE_DIR}/shared/versionutils.cpp
     ${MZ_SOURCE_DIR}/shared/versionutils.h
 )

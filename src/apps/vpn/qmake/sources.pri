@@ -65,7 +65,6 @@ SOURCES += \
         apps/vpn/dnspingsender.cpp \
         apps/vpn/errorhandler.cpp \
         apps/vpn/externalophandler.cpp \
-        apps/vpn/filterproxymodel.cpp \
         apps/vpn/frontend/navigator.cpp \
         apps/vpn/frontend/navigatorreloader.cpp \
         apps/vpn/glean/glean.cpp \
@@ -77,7 +76,6 @@ SOURCES += \
         apps/vpn/inspector/inspectorwebsocketconnection.cpp \
         apps/vpn/inspector/inspectorwebsocketserver.cpp \
         apps/vpn/ipaddresslookup.cpp \
-        apps/vpn/itempicker.cpp \
         apps/vpn/localizer.cpp \
         apps/vpn/logoutobserver.cpp \
         apps/vpn/main.cpp \
@@ -87,6 +85,7 @@ SOURCES += \
         apps/vpn/models/feedbackcategorymodel.cpp \
         apps/vpn/models/keys.cpp \
         apps/vpn/models/licensemodel.cpp \
+        apps/vpn/models/location.cpp \
         apps/vpn/models/recentconnections.cpp \
         apps/vpn/models/server.cpp \
         apps/vpn/models/servercity.cpp \
@@ -97,7 +96,6 @@ SOURCES += \
         apps/vpn/models/supportcategorymodel.cpp \
         apps/vpn/models/user.cpp \
         apps/vpn/mozillavpn.cpp \
-        apps/vpn/networkmanager.cpp \
         apps/vpn/networkrequest.cpp \
         apps/vpn/networkwatcher.cpp \
         apps/vpn/notificationhandler.cpp \
@@ -112,12 +110,10 @@ SOURCES += \
         apps/vpn/purchaseiaphandler.cpp \
         apps/vpn/purchasewebhandler.cpp \
         apps/vpn/profileflow.cpp \
-        apps/vpn/qmlengineholder.cpp \
         apps/vpn/releasemonitor.cpp \
         apps/vpn/serveri18n.cpp \
         apps/vpn/serverlatency.cpp \
         apps/vpn/signature.cpp \
-        apps/vpn/simplenetworkmanager.cpp \
         apps/vpn/statusicon.cpp \
         apps/vpn/tasks/account/taskaccount.cpp \
         apps/vpn/tasks/adddevice/taskadddevice.cpp \
@@ -127,6 +123,7 @@ SOURCES += \
         apps/vpn/tasks/captiveportallookup/taskcaptiveportallookup.cpp \
         apps/vpn/tasks/deleteaccount/taskdeleteaccount.cpp \
         apps/vpn/tasks/getfeaturelist/taskgetfeaturelist.cpp \
+        apps/vpn/tasks/getlocation/taskgetlocation.cpp \
         apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp \
         apps/vpn/tasks/controlleraction/taskcontrolleraction.cpp \
         apps/vpn/tasks/createsupportticket/taskcreatesupportticket.cpp \
@@ -147,7 +144,6 @@ SOURCES += \
         apps/vpn/tutorial/tutorialstepnext.cpp \
         apps/vpn/update/updater.cpp \
         apps/vpn/update/versionapi.cpp \
-        apps/vpn/urlopener.cpp \
         apps/vpn/update/webupdater.cpp \
         apps/vpn/websocket/exponentialbackoffstrategy.cpp \
         apps/vpn/websocket/pushmessage.cpp \
@@ -222,7 +218,6 @@ HEADERS += \
         apps/vpn/dnspingsender.h \
         apps/vpn/errorhandler.h \
         apps/vpn/externalophandler.h \
-        apps/vpn/filterproxymodel.h \
         apps/vpn/frontend/navigator.h \
         apps/vpn/frontend/navigatorreloader.h \
         apps/vpn/glean/glean.h \
@@ -234,7 +229,6 @@ HEADERS += \
         apps/vpn/inspector/inspectorwebsocketconnection.h \
         apps/vpn/inspector/inspectorwebsocketserver.h \
         apps/vpn/ipaddresslookup.h \
-        apps/vpn/itempicker.h \
         apps/vpn/localizer.h \
         apps/vpn/logoutobserver.h \
         apps/vpn/models/device.h \
@@ -243,6 +237,7 @@ HEADERS += \
         apps/vpn/models/feedbackcategorymodel.h \
         apps/vpn/models/keys.h \
         apps/vpn/models/licensemodel.h \
+        apps/vpn/models/location.h \
         apps/vpn/models/recentconnections.h \
         apps/vpn/models/server.h \
         apps/vpn/models/servercity.h \
@@ -253,7 +248,6 @@ HEADERS += \
         apps/vpn/models/supportcategorymodel.h \
         apps/vpn/models/user.h \
         apps/vpn/mozillavpn.h \
-        apps/vpn/networkmanager.h \
         apps/vpn/networkrequest.h \
         apps/vpn/networkwatcher.h \
         apps/vpn/networkwatcherimpl.h \
@@ -269,12 +263,10 @@ HEADERS += \
         apps/vpn/purchasehandler.h \
         apps/vpn/purchaseiaphandler.h \
         apps/vpn/purchasewebhandler.h \
-        apps/vpn/qmlengineholder.h \
         apps/vpn/releasemonitor.h \
         apps/vpn/serveri18n.h \
         apps/vpn/serverlatency.h \
         apps/vpn/signature.h \
-        apps/vpn/simplenetworkmanager.h \
         apps/vpn/statusicon.h \
         apps/vpn/tasks/account/taskaccount.h \
         apps/vpn/tasks/adddevice/taskadddevice.h \
@@ -284,6 +276,7 @@ HEADERS += \
         apps/vpn/tasks/captiveportallookup/taskcaptiveportallookup.h \
         apps/vpn/tasks/deleteaccount/taskdeleteaccount.h \
         apps/vpn/tasks/getfeaturelist/taskgetfeaturelist.h \
+        apps/vpn/tasks/getlocation/taskgetlocation.h \
         apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h \
         apps/vpn/tasks/controlleraction/taskcontrolleraction.h \
         apps/vpn/tasks/createsupportticket/taskcreatesupportticket.h \
@@ -305,7 +298,6 @@ HEADERS += \
         apps/vpn/update/updater.h \
         apps/vpn/update/versionapi.h \
         apps/vpn/update/webupdater.h \
-        apps/vpn/urlopener.h \
         apps/vpn/websocket/exponentialbackoffstrategy.h \
         apps/vpn/websocket/pushmessage.h \
         apps/vpn/websocket/websockethandler.h

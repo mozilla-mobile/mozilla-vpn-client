@@ -182,9 +182,17 @@ void Localizer::loadLanguagesFromI18n() {
     QString code = parts[0].remove(0, 11);
     QStringList codeParts = code.split("_");
 
-    Language language{code, codeParts[0],
+    QLocale locale(code);
+    if (code.isEmpty()) {
+      locale = QLocale::system();
+    }
+
+    Language language{code,
+                      codeParts[0],
                       codeParts.length() > 1 ? codeParts[1] : QString(),
-                      languageName(code), localizedLanguageName(code)};
+                      languageName(locale, code),
+                      localizedLanguageName(locale, code),
+                      locale.textDirection() == Qt::RightToLeft};
     m_languages.append(language);
   }
 }
@@ -235,17 +243,12 @@ bool Localizer::loadLanguage(const QString& code) {
 }
 
 // static
-QString Localizer::languageName(const QString& code) {
+QString Localizer::languageName(const QLocale& locale, const QString& code) {
   if (s_languageMap.contains(code)) {
     QString languageName = s_languageMap[code].m_name;
     if (!languageName.isEmpty()) {
       return languageName;
     }
-  }
-
-  QLocale locale(code);
-  if (code.isEmpty()) {
-    locale = QLocale::system();
   }
 
   if (locale.language() == QLocale::C) {
@@ -260,17 +263,13 @@ QString Localizer::languageName(const QString& code) {
 }
 
 // static
-QString Localizer::localizedLanguageName(const QString& code) {
+QString Localizer::localizedLanguageName(const QLocale& locale,
+                                         const QString& code) {
   if (s_languageMap.contains(code)) {
     QString languageName = s_languageMap[code].m_localizedName;
     if (!languageName.isEmpty()) {
       return languageName;
     }
-  }
-
-  QLocale locale(code);
-  if (code.isEmpty()) {
-    locale = QLocale::system();
   }
 
   if (locale.language() == QLocale::C) {
@@ -279,7 +278,7 @@ QString Localizer::localizedLanguageName(const QString& code) {
 
   QString name = locale.nativeLanguageName();
   if (name.isEmpty()) {
-    return languageName(code);
+    return languageName(locale, code);
   }
 
   // Capitalize the string.
@@ -292,6 +291,7 @@ QHash<int, QByteArray> Localizer::roleNames() const {
   roles[LanguageRole] = "language";
   roles[LocalizedLanguageRole] = "localizedLanguage";
   roles[CodeRole] = "code";
+  roles[RTLRole] = "isRightToLeft";
   return roles;
 }
 
@@ -313,6 +313,9 @@ QVariant Localizer::data(const QModelIndex& index, int role) const {
 
     case CodeRole:
       return QVariant(m_languages.at(index.row()).m_code);
+
+    case RTLRole:
+      return QVariant(m_languages.at(index.row()).m_rtl);
 
     default:
       return QVariant();

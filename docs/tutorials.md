@@ -30,7 +30,7 @@ property object with the following properties:
 
 ### Step object
 
-Each tutorial is composed of a list of steps (tooltips).
+Each tutorial is composed of a list of steps (tool tips).
 
 A step is a JSON object composed of the following properties:
 
