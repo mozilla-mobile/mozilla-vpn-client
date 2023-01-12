@@ -67,3 +67,12 @@ def resolve_keys_scope(config, tasks):
             },
         )
         yield task
+
+
+@transforms.add
+def add_pr_number(config, tasks):
+    for task in tasks:
+        if config.params["pull_request_number"]:
+            task["env"]["PULL_REQUEST_NUMBER"] = str(config.params["pull_request_number"])
+
+        yield task
