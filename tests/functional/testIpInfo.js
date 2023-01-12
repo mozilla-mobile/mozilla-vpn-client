@@ -22,4 +22,23 @@ describe('IP info', function() {
     await vpn.waitForElementAndClick(homeScreen.IP_INFO_TOGGLE);
     assert(await vpn.getElementProperty(homeScreen.IP_INFO_PANEL, 'isOpen') === 'false');
   });
+
+  it('Closes when VPN is deactivated', async () => {
+    await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+    await vpn.activate(true);
+
+    // Open IP info panel
+    await vpn.waitForQueryAndClick(queries.screenHome.IP_INFO_TOGGLE.visible());
+    await vpn.waitForQuery(queries.screenHome.IP_INFO_PANEL.visible());
+    assert(
+        await vpn.getQueryProperty(
+            queries.screenHome.IP_INFO_PANEL, 'isOpen') === 'true');
+
+    // Deactivate VPN
+    await vpn.deactivate();
+
+    assert(
+        await vpn.getQueryProperty(
+            queries.screenHome.IP_INFO_PANEL, 'isOpen') === 'false');
+  });
 });

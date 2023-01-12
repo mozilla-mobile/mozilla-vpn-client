@@ -277,7 +277,6 @@ Item {
                 opacity: 1
                 startAnimation: true
             }
-
         },
         State {
             name: VPNController.StateDisconnecting
@@ -322,7 +321,6 @@ Item {
                 target: animatedRings
                 visible: false
             }
-
         },
         State {
             name: VPNController.StateSwitching
@@ -370,7 +368,6 @@ Item {
                 opacity: 1
                 startAnimation: false
             }
-
         }
     ]
     transitions: [
@@ -594,7 +591,7 @@ Item {
             horizontalCenterOffset: 0
             horizontalCenter: parent.horizontalCenter
         }
-        enabled: !connectionInfoScreenVisible && !ipInfoPanel.isOpen
+        enabled: !connectionInfoScreenVisible && !ipInfoPanel.visible
 
         Accessible.ignored: connectionInfoScreenVisible || ipInfoPanel.isOpen
     }
@@ -606,6 +603,22 @@ Item {
         opacity: ipInfoPanel.isOpen ? 1 : 0
         visible: opacity > 0
         z: 1
+
+        Connections {
+            target: VPNConnectionHealth
+            function onStabilityChanged() {
+                if (ipInfoPanel.isOpen &&
+                    VPNConnectionHealth.stability === VPNConnectionHealth.NoSignal) {
+                     ipInfoPanel.isOpen = false;
+                 }
+            }
+        }
+        Connections {
+            target: VPNController
+            function onStateChanged() {
+                ipInfoPanel.isOpen = false
+            }
+        }
     }
 
     VPNIconButton {
@@ -625,7 +638,7 @@ Item {
             ? connectionInfoCloseText
             : VPNl18n.ConnectionInfoIpInfoButtonLabel
         buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
-        enabled: visible
+        enabled: visible && VPNConnectionHealth.stability !== VPNConnectionHealth.NoSignal
         opacity: visible ? 1 : 0
         visible: connectionInfoToggleButton.visible
             && !connectionInfoScreen.isOpen
@@ -649,6 +662,7 @@ Item {
                 height: iconSize
                 width: iconSize
             }
+            opacity: parent.enabled ? 1 : .6
         }
 
         Behavior on opacity {
