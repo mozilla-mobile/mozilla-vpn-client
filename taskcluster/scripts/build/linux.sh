@@ -14,7 +14,6 @@ helpFunction() {
   echo ""
   echo "Build options:"
   echo "  -d, --dist DIST     Build packages for distribution DIST (defaut: ${VERSION_CODENAME})"
-  echo "  -p, --ppa REPO      Add additional PPA archive from REPO"
   echo "  -h, --help          Display this message and exit"
 }
 
@@ -25,12 +24,6 @@ while [[ $# -gt 0 ]]; do
   case $key in
     -d|--dist)
       DIST="$2"
-      shift
-      shift
-      ;;
-
-    -p|--ppa)
-      QTPPA="$2"
       shift
       shift
       ;;
@@ -55,10 +48,8 @@ if [[ -z "$DIST" ]]; then
   DIST="${VERSION_CODENAME}"
 fi
 
-# Install a PPA for Qt packages, if necessary.
-if [[ -n "$QTPPA" ]]; then
-    sudo add-apt-repository -y ${QTPPA}
-fi
+# Update the package database, just in case.
+sudo apt-get update
 
 # Find and extract the package source
 DSCFILE=$(find ${MOZ_FETCHES_DIR} -name '*.dsc' | grep -E -- "-${DIST}[0-9]+.dsc")
