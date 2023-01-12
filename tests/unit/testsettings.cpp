@@ -128,7 +128,7 @@ void TestSettings::sensitiveLogging() {
   QStringList reportLines = report.split(QLatin1Char('\n'));
   // This is always the first entry because user/email is in the
   // shared/settingsHolder
-  QCOMPARE(reportLines.at(0), "user/email -> <Sensitive>");
+  QCOMPARE(report, "user/email -> <Sensitive>");
 }
 
 static TestSettings s_testSettings;
