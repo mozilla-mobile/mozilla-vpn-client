@@ -34,7 +34,6 @@ tasks:
         using: run-task
         use-caches: true
         cwd: '{checkout}'
-        command: taskluster/scripts/appium/upload.sh
-    taskname-lel:        
-       scopes:
+        command: taskluster/scripts/appium/upload.sh     
+        scopes:
             - 'secrets:get:project/mozillavpn/level-1/browserstack'
