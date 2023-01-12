@@ -81,11 +81,13 @@ tasks:
         definition: linux-dpkg-build
         args:
             DOCKER_BASE_IMAGE: ubuntu:bionic
+            QTPPA: ppa:okirby/qt6-backports
     linux-build-focal:
         symbol: I(linux-focal)
         definition: linux-dpkg-build
         args:
             DOCKER_BASE_IMAGE: ubuntu:focal
+            QTPPA: ppa:okirby/qt6-backports
     linux-build-jammy:
         symbol: I(linux-jammy)
         definition: linux-dpkg-build

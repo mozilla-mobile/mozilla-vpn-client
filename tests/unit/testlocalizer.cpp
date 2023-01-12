@@ -14,10 +14,11 @@ void TestLocalizer::basic() {
   QCOMPARE(Localizer::instance(), &l);
 
   QHash<int, QByteArray> rn = l.roleNames();
-  QCOMPARE(rn.count(), 3);
+  QCOMPARE(rn.count(), 4);
   QCOMPARE(rn[Localizer::LanguageRole], "language");
   QCOMPARE(rn[Localizer::LocalizedLanguageRole], "localizedLanguage");
   QCOMPARE(rn[Localizer::CodeRole], "code");
+  QCOMPARE(rn[Localizer::RTLRole], "isRightToLeft");
 
   QVERIFY(l.rowCount(QModelIndex()) > 0);
   QCOMPARE(l.data(QModelIndex(), Localizer::LanguageRole), QVariant());
