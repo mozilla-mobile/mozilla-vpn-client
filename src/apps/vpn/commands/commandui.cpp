@@ -63,8 +63,7 @@
 #  include "platforms/macos/macosutils.h"
 #endif
 
-#ifdef MZ_ANDROID
-#  include "platforms/android/androidglean.h"
+#ifdef MZ_ANDROID`
 #  include "platforms/android/androidutils.h"
 #endif
 
