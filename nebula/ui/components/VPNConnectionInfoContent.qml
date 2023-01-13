@@ -120,7 +120,9 @@ VPNFlickable {
                         }
 
                         VPNConnectionInfoItem {
-                            title: VPNCurrentServer.localizedExitCityName
+                            title: serverLocations.isMultipHop
+                            ? VPNCurrentServer.localizedExitCityName
+                            : VPNServerCountryModel.getLocalizedCountryName(VPNCurrentServer.exitCountryCode);
                             subtitle: serverLocations.isMultipHop
                                 ? ""
                                 : VPNCurrentServer.localizedExitCityName
