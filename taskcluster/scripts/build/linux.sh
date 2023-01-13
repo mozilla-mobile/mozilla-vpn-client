@@ -66,22 +66,12 @@ fi
 dpkg-source -x ${DSCFILE} $(pwd)/mozillavpn-source/
 DPKG_PACKAGE_SRCNAME=$(dpkg-parsechangelog -l mozillavpn-source/debian/changelog -S Source)
 DPKG_PACKAGE_BASE_VERSION=$(dpkg-parsechangelog -l mozillavpn-source/debian/changelog -S Version)
-
-# Add suffixes to the version number
-if [[ "$MOZILLAVPN_HEAD_REF" =~ releases/([0-9][^/]*) ]]; then
-  DPKG_PACKAGE_FULL_VERSION="${BASH_REMATCH[1]}~rc$(date -u +%Y%m%d%H%M%S)"
-elif [[ "$MOZILLAVPN_HEAD_REF" == "main" ]]; then
-  DPKG_PACKAGE_FULL_VERSION="${DPKG_PACKAGE_BASE_VERSION}~build$(date -u +%Y%m%d%H%M%S)"
-else
-  ## TODO: Get the PR number?
-  DPKG_PACKAGE_FULL_VERSION="${DPKG_PACKAGE_BASE_VERSION}~prXXXX"
-fi
+DPKG_PACKAGE_DIST_VERSION=${DPKG_PACKAGE_BASE_VERSION}-${DIST}1
 
 # Update the changelog to release for the target distribution.
 # TODO: If this came from a PR, we should put the author's info here.
 export DEBEMAIL="vpn@mozilla.com"
 export DEBFULLNAME="Mozilla VPN Team"
-DPKG_PACKAGE_DIST_VERSION=${DPKG_PACKAGE_FULL_VERSION}-${DIST}1
 dch -c $(pwd)/mozillavpn-source/debian/changelog -v ${DPKG_PACKAGE_DIST_VERSION} -D ${DIST} \
     "Release for ${DIST}"
 
