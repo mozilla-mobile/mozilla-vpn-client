@@ -70,6 +70,8 @@ exports.mochaHooks = {
         this.currentTest.ctx.guardianOverrideEndpoints || null;
     fxaServer.overrideEndpoints =
         this.currentTest.ctx.fxaOverrideEndpoints || null;
+    networkBenchmark.overrideEndpoints =
+        this.currentTest.ctx.networkBenchmarkOverrideEndpoints || null;
 
     await startAndConnect();
     await vpn.setGleanAutomationHeader();

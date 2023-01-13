@@ -52,7 +52,7 @@ class Server {
     }
   }
 
-  processRequest(req, res, paths, overriddenPaths) {
+  async processRequest(req, res, paths, overriddenPaths) {
     function findPath(path, paths) {
       if (path in paths) {
         return paths[path];
@@ -84,7 +84,7 @@ class Server {
       return;
     }
 
-    if (responseData.callback) responseData.callback(req);
+    if (responseData.callback) await responseData.callback(req);
 
     if (this._headerCheck) {
       for (let header of responseData.requiredHeaders || []) {

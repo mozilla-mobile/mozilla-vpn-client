@@ -11,17 +11,32 @@ let server = null;
 module.exports = {
   start(headerCheck = true) {
     server = new Server(
-        'VPN Network Benchmark', constants.UPLOAD_BENCHMARK_PORT, {
+        'VPN Network Benchmark', constants.NETWORK_BENCHMARK_PORT, {
+          GETs: {
+            '/': {
+              status: 200,
+              bodyRaw: new Array(1024).join('a'),
+              callback: req => {}
+            }
+          },
           POSTs: {
             '/': {status: 200, body: {}},
           },
         },
         headerCheck);
-    return constants.UPLOAD_BENCHMARK_PORT;
+    return constants.NETWORK_BENCHMARK_PORT;
   },
 
   stop() {
     server.stop();
+  },
+
+  get overrideEndpoints() {
+    return server.overrideEndpoints;
+  },
+
+  set overrideEndpoints(value) {
+    server.overrideEndpoints = value;
   },
 
   throwExceptionsIfAny() {

@@ -65,8 +65,12 @@ exports.mochaHooks = {
     process.env['MZ_ADDON_URL'] =
         `http://localhost:${addonServer.start()}/01_empty_manifest/`;
     process.env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';
-    process.env['MVPN_BENCHMARK_URL'] =
-        `http://localhost:${networkBenchmark.start()}`;
+
+    const networkBenchmarkPort = networkBenchmark.start();
+    process.env['MZ_BENCHMARK_DOWNLOAD_URL'] =
+        `http://localhost:${networkBenchmarkPort}`;
+    process.env['MZ_BENCHMARK_UPLOAD_URL'] =
+        `http://localhost:${networkBenchmarkPort}`;
   },
 
   async afterAll() {
@@ -88,6 +92,7 @@ exports.mochaHooks = {
 
       guardian.overrideEndpoints = null;
       fxaServer.overrideEndpoints = null;
+      networkBenchmark.overrideEndpoints = null;
 
       await startAndConnect();
       await vpn.reset();
@@ -107,6 +112,8 @@ exports.mochaHooks = {
         this.currentTest.ctx.guardianOverrideEndpoints || null;
     fxaServer.overrideEndpoints =
         this.currentTest.ctx.fxaOverrideEndpoints || null;
+    networkBenchmark.overrideEndpoints =
+        this.currentTest.ctx.networkBenchmarkOverrideEndpoints || null;
 
     if (this.currentTest.ctx.authenticationNeeded) {
       fs.writeFileSync(
