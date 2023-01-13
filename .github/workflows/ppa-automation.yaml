@@ -45,14 +45,9 @@ jobs:
             echo "submit-changes=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Uploading sources
-        uses: actions/upload-artifact@v3
-        with:
-            name: Sources
-            path: .tmp
-
       - name: Push to Launchpad PPA
         shell: bash
+        working-directory: .tmp
         if: ${{ steps.gen-source.outputs.submit-changes == 'true' }}
         env:
           DEBEMAIL: ${{ github.actor }}@users.noreply.github.com
@@ -72,7 +67,7 @@ jobs:
           KEYGRIP=$(gpg --with-colons --with-keygrip --list-keys | grep -m1 '^grp:' | tr -d [grp:])
           echo "$GPG_PASSWORD" | /lib/gnupg2/gpg-preset-passphrase --preset $KEYGRIP
 
-          PACKAGE_DSC_FILE=$(find .tmp -name '*.dsc')
+          PACKAGE_DSC_FILE=$(find . -name '*.dsc')
           for dist in ${PPA_TARGET_DISTS}; do
             rm -rf $(pwd)/mozillavpn-source
             dpkg-source -x ${PACKAGE_DSC_FILE} $(pwd)/mozillavpn-source/
@@ -86,3 +81,9 @@ jobs:
 
             dput $PPA_URL ${PACKAGE_SOURCE_NAME}_${PACKAGE_DIST_VERSION}_source.changes
           done
+
+      - name: Uploading sources
+        uses: actions/upload-artifact@v3
+        with:
+            name: Sources
+            path: .tmp
