@@ -76,7 +76,7 @@ jobs:
             PACKAGE_DIST_VERSION=${PACKAGE_BASE_VERSION}-${dist}1
 
             dch -c $(pwd)/mozillavpn-source/debian/changelog -v ${PACKAGE_DIST_VERSION} -D ${dist}  "Release for ${dist}"
-            (cd mozillavpn-source && dpkg-buildpackage --build=source --sign-key $KEYID --no-check-builddeps)
+            (cd mozillavpn-source && dpkg-buildpackage --build=source --sign-key=$KEYID -sa --no-check-builddeps)
 
             dput $PPA_URL ${PACKAGE_SOURCE_NAME}_${PACKAGE_DIST_VERSION}_source.changes
             rm -rf $(pwd)/mozillavpn-source
