@@ -69,7 +69,6 @@ jobs:
 
           PACKAGE_DSC_FILE=$(find . -name '*.dsc')
           for dist in ${PPA_TARGET_DISTS}; do
-            rm -rf $(pwd)/mozillavpn-source
             dpkg-source -x ${PACKAGE_DSC_FILE} $(pwd)/mozillavpn-source/
 
             PACKAGE_SOURCE_NAME=$(dpkg-parsechangelog -l mozillavpn-source/debian/changelog -S Source)
@@ -80,6 +79,7 @@ jobs:
             (cd mozillavpn-source && dpkg-buildpackage --build=source --sign-key $KEYID --no-check-builddeps)
 
             dput $PPA_URL ${PACKAGE_SOURCE_NAME}_${PACKAGE_DIST_VERSION}_source.changes
+            rm -rf $(pwd)/mozillavpn-source
           done
 
       - name: Uploading sources
