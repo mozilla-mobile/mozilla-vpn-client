@@ -104,7 +104,7 @@ SHORTVERSION=$(grep -zoE 'project\s*\([^\(\)]*\)' CMakeLists.txt |
 #  - Pull requests are suffixed with "~pr<Pull Request Number>"
 #  - Release tags force the version to match the tag.
 #  - Release branches are suffixed with "~rc<# of commits since main>"
-#  - The main branch sets a nightly date code.
+#  - The main branch sets a builds date code.
 if [[ "$GITREF" =~ ^refs/pull/([0-9]+)/merge ]]; then
   SHORTVERSION="${SHORTVERSION}~pr${BASH_REMATCH[1]}"
 elif [[ "$GITREF" =~ ^refs/tags/v([0-9a-z.]+) ]]; then
@@ -112,7 +112,7 @@ elif [[ "$GITREF" =~ ^refs/tags/v([0-9a-z.]+) ]]; then
 elif [[ "$GITREF" =~ ^refs/heads/releases/([0-9][^/]*) ]]; then
   SHORTVERSION="${BASH_REMATCH[1]}~rc$(date -u +%Y%m%d%H%M%S)"
 elif [[ "$GITREF" == "refs/heads/main" ]]; then
-  SHORTVERSION="${SHORTVERSION}~nightly$(date -u +%Y%m%d)"
+  SHORTVERSION="${SHORTVERSION}~build$(date -u +%Y%m%d)"
 fi
 WORKDIR=mozillavpn-${SHORTVERSION}
 print G "${SHORTVERSION}"
