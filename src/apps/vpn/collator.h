@@ -17,9 +17,6 @@ class Collator final : public QObject {
   ~Collator() = default;
 
   int compare(const QString& a, const QString& b);
-
- private:
-  QCollator m_collator;
 };
 
 #endif  // COLLATOR_H

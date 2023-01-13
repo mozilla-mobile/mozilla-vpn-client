@@ -38,6 +38,6 @@ int Collator::compare(const QString& a, const QString& b) {
                               b.toLocal8Bit().constData(),
                               languageCode.toLocal8Bit().constData());
 #else
-  return m_collator.compare(a, b);
+  return QString::localeAwareCompare(a, b);
 #endif
 }
