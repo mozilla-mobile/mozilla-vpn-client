@@ -44,7 +44,7 @@ constexpr int RECENT_CONNECTIONS_MAX_COUNT = 2;
 constexpr uint32_t SERVER_UNRESPONSIVE_COOLDOWN_SEC = 300;
 
 // Number of msecs for max runtime of the connection benchmarks.
-constexpr uint32_t BENCHMARK_MAX_BITS_UPLOAD = 80000000;  // 10 Megabyte
+constexpr uint32_t BENCHMARK_MAX_BYTES_UPLOAD = 10485760;  // 10 Megabyte
 constexpr uint32_t BENCHMARK_MAX_DURATION_PING = 3000;
 constexpr uint32_t BENCHMARK_MAX_DURATION_TRANSFER = 15000;
 constexpr uint32_t BENCHMARK_THRESHOLD_SPEED_FAST = 25000000;    // 25 Megabit
