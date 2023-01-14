@@ -118,6 +118,7 @@ const screenInitialize = {
 };
 
 const screenInitializeMobileOnBoarding = {
+  SCREEN: new QmlQueryComposer('//initialMobileStackView'),
   ALREADY_SUBBED_LINK: new QmlQueryComposer('//alreadyASubscriberLink'),
   PANEL_DESCRIPTION: new QmlQueryComposer('//panelDescription'),
   PANEL_TITLE: new QmlQueryComposer('//panelTitle'),

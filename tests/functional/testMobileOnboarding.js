@@ -9,8 +9,14 @@ const vpn = require('./helper.js');
 
 describe('Mobile Onboarding', function() {
   beforeEach(async () => {
-    await vpn.waitForQuery(queries.screenInitialize.SCREEN);
+    await vpn.waitForQuery(queries.screenInitialize.SCREEN.visible());
     await vpn.flipFeatureOn('mobileOnboarding');
+    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await vpn.waitForQuery(
+        queries.screenInitializeMobileOnBoarding.SCREEN.visible());
+    await vpn.waitForQuery(
+        queries.screenInitializeMobileOnBoarding.SCREEN.visible().prop(
+            'busy', false));
   });
 
   it('Navigating to and from the help menu is possible', async () => {
