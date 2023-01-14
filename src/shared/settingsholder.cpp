@@ -21,11 +21,11 @@ namespace {
 Logger logger("SettingsHolder");
 
 // Setting Keys That won't show up in a report;
-QVector<QString> SENSITIVE_SETTINGS({
-    "token", "privateKey",
-    "servers",  // Those 2 are not sensitive but
-    "devices",  // are more noise then info
-});
+QVector<QString> SENSITIVE_SETTINGS(
+    {"token", "privateKey",
+     "servers",  // Those 2 are not sensitive but
+     "devices",  // are more noise then info
+     "subscriptionData", "subscriptionTransactions"});
 
 SettingsHolder* s_instance = nullptr;
 
