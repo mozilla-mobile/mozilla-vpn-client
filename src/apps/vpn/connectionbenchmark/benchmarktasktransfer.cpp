@@ -79,7 +79,7 @@ void BenchmarkTaskTransfer::createNetworkRequest() {
     }
     case BenchmarkUpload: {
       UploadDataGenerator* uploadData =
-          new UploadDataGenerator(AppConstants::BENCHMARK_MAX_BITS_UPLOAD);
+          new UploadDataGenerator(AppConstants::BENCHMARK_MAX_BYTES_UPLOAD);
 
       if (!uploadData->open(UploadDataGenerator::ReadOnly)) {
         emit finished(0, true);
@@ -108,7 +108,7 @@ void BenchmarkTaskTransfer::createNetworkRequestWithRecord(
     }
     case BenchmarkUpload: {
       UploadDataGenerator* uploadData =
-          new UploadDataGenerator(AppConstants::BENCHMARK_MAX_BITS_UPLOAD);
+          new UploadDataGenerator(AppConstants::BENCHMARK_MAX_BYTES_UPLOAD);
 
       if (!uploadData->open(UploadDataGenerator::ReadOnly)) {
         emit finished(0, true);
