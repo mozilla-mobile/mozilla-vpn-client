@@ -4,6 +4,7 @@
 
 #include "taskaccount.h"
 
+#include "appconstants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"

@@ -9,6 +9,7 @@
 #include <QJsonValue>
 #include <QStringList>
 
+#include "appconstants.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"

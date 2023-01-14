@@ -4,6 +4,7 @@
 
 #include "taskremovedevice.h"
 
+#include "appconstants.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
