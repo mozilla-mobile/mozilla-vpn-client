@@ -161,7 +161,8 @@ describe('User authentication', function() {
             verificationMethod: 'email-otp'
           }
         },
-        '/v1/session/verify_code': {status: 200, body: {}},
+        '/v1/session/verify_code':
+            {status: 200, requiredHeaders: ['Authorization'], body: {}},
       },
       DELETEs: {},
     };
@@ -257,7 +258,11 @@ describe('User authentication', function() {
             verificationMethod: 'totp-2fa'
           }
         },
-        '/v1/session/verify/totp': {status: 200, body: {success: true}},
+        '/v1/session/verify/totp': {
+          status: 200,
+          requiredHeaders: ['Authorization'],
+          body: {success: true}
+        },
       },
       DELETEs: {},
     };
@@ -662,11 +667,13 @@ describe('User authentication', function() {
         },
         '/v1/session/verify/totp': {
           status: 200,
+          requiredHeaders: ['Authorization'],
           body: null,
           callback: (req) => this.ctx.fxaTotpCallback(req)
         },
         '/v1/session/verify_code': {
           status: 200,
+          requiredHeaders: ['Authorization'],
           body: null,
           callback: (req) => this.ctx.fxaEmailCallback(req)
         },

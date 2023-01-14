@@ -42,8 +42,11 @@ const SubscriptionDetails = {
 exports.endpoints = {
   GETs: {
     '/api/v1/vpn/featurelist': {status: 200, body: {features: {}}},
+
     '/api/v1/vpn/versions': {status: 200, body: {}},
+
     '/__heartbeat__': {status: 200, body: {mullvadOK: true, dbOK: true}},
+
     '/api/v2/vpn/login/': {
       status: 200,
       match: 'startWith',
@@ -73,10 +76,12 @@ exports.endpoints = {
     // auth-flow
     '/final_redirect': {status: 200, body: {code: 'the-code'}},
 
-    '/api/v1/vpn/featurelist': {status: 200, body: {/* TODO */}},
-    '/api/v1/vpn/account': {status: 200, body: UserData},
+    '/api/v1/vpn/account':
+        {status: 200, requiredHeaders: ['Authorization'], body: UserData},
+
     '/api/v1/vpn/servers': {
       status: 200,
+      requiredHeaders: ['Authorization'],
       body: {
         'countries': [
           {
@@ -198,15 +203,19 @@ exports.endpoints = {
 
     '/api/v1/vpn/dns/detectportal': {
       status: 200,
+      requiredHeaders: ['Authorization'],
       body: [
         {address: '34.107.221.82', family: 4},
         {address: '2600:1901:0:38d7::', family: 6}
       ]
     },
+
     '/api/v1/vpn/subscriptionDetails': {
       status: 200,
+      requiredHeaders: ['Authorization'],
       body: SubscriptionDetails,
     },
+
     '/api/v3/vpn/products': {
       status: 200,
       body: {
@@ -232,8 +241,10 @@ exports.endpoints = {
         ]
       }
     },
+
     '/api/v1/vpn/ipinfo': {
       status: 200,
+      requiredHeaders: ['Authorization', 'Host'],
       body: {
         city: 'Mordor',
         country: 'XX',
@@ -253,8 +264,10 @@ exports.endpoints = {
   POSTs: {
     '/api/v2/vpn/login/verify':
         {status: 200, body: {user: UserData, token: 'our-token'}},
+
     '/api/v1/vpn/device': {
       status: 201,
+      requiredHeaders: ['Authorization'],
       callback: (req) => {
         UserData.devices[0].name = req.body.name;
         UserData.devices[0].pubkey = req.body.pubkey;
@@ -265,7 +278,12 @@ exports.endpoints = {
   },
 
   DELETEs: {
-    '/api/v1/vpn/device/': {match: 'startWith', status: 204, body: {}},
+    '/api/v1/vpn/device/': {
+      match: 'startWith',
+      status: 204,
+      requiredHeaders: ['Authorization'],
+      body: {}
+    },
   },
 };
 })(typeof exports === 'undefined' ? this['guardianEndpoints'] = {} : exports);

@@ -32,6 +32,7 @@ describe('Subscription view', function() {
     GETs: {
       '/api/v1/vpn/subscriptionDetails': {
         status: 200,
+        requiredHeaders: ['Authorization'],
         body: null,
         callback: (req) => this.ctx.guardianSubscriptionDetailsCallback(req)
       },
@@ -42,6 +43,7 @@ describe('Subscription view', function() {
   this.ctx.fxaOverrideEndpoints = {
     GETs: {
       '/v1/account/attached_clients': {
+        requiredHeaders: ['Authorization'],
         status: 200,
         body: [],
       },
@@ -54,11 +56,13 @@ describe('Subscription view', function() {
       },
       '/v1/session/verify/totp': {
         status: 200,
+        requiredHeaders: ['Authorization'],
         body: null,
         callback: (req) => this.ctx.fxaTotpCallback(req)
       },
       '/v1/account/destroy': {
         status: 200,
+        requiredHeaders: ['Authorization'],
         body: null,
         callback: (req) => this.ctx.fxaDestroyCallback(req)
       },

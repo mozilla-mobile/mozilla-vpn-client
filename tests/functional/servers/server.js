@@ -84,6 +84,15 @@ class Server {
 
     if (responseData.callback) responseData.callback(req);
 
+    for (let header of responseData.requiredHeaders || []) {
+      if (!(header.toLowerCase() in req.headers)) {
+        this._addException(`Server ${this._name} - Expected header: ${
+            header} for ${req.path} - method: ${req.method} - query: ${
+            JSON.stringify(req.query)}`);
+        return;
+      }
+    }
+
     res.status(responseData.status);
     if ('bodyRaw' in responseData) {
       res.send(responseData.bodyRaw);

@@ -26,7 +26,8 @@ exports.generateEndpoints = function(constants) {
           redirect: `${constants.GUARDIAN_URL}/final_redirect`
         }
       },
-      '/v1/session/destroy': {status: 200, body: {}},
+      '/v1/session/destroy':
+          {status: 200, requiredHeaders: ['Authorization'], body: {}},
     },
 
     DELETEs: {},
