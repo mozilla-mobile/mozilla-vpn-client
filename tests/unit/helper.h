@@ -33,25 +33,25 @@ class TestHelper : public QObject {
         : m_status(status), m_body(body) {}
   };
 
-  static void networkRequestDelete(NetworkRequest* request) {
-    networkRequestGeneric(request);
+  static bool networkRequestDelete(NetworkRequest* request) {
+    return networkRequestGeneric(request);
   }
 
-  static void networkRequestGet(NetworkRequest* request) {
-    networkRequestGeneric(request);
+  static bool networkRequestGet(NetworkRequest* request) {
+    return networkRequestGeneric(request);
   }
 
-  static void networkRequestPost(NetworkRequest* request,
+  static bool networkRequestPost(NetworkRequest* request,
                                  const QByteArray& data) {
-    networkRequestGeneric(request);
+    return networkRequestGeneric(request);
   }
 
-  static void networkRequestPostIODevice(NetworkRequest* request,
+  static bool networkRequestPostIODevice(NetworkRequest* request,
                                          QIODevice* device) {
-    networkRequestGeneric(request);
+    return networkRequestGeneric(request);
   }
 
-  static void networkRequestGeneric(NetworkRequest* request);
+  static bool networkRequestGeneric(NetworkRequest* request);
 
   static QVector<NetworkConfig> networkConfig;
 

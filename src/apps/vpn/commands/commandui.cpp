@@ -64,7 +64,7 @@
 #  include "platforms/macos/macosutils.h"
 #endif
 
-#ifdef MZ_ANDROID`
+#ifdef MZ_ANDROID
 #  include "platforms/android/androidutils.h"
 #endif
 
@@ -669,8 +669,8 @@ int CommandUI::run(QStringList& tokens) {
 
     NetworkRequest::setRequestHandler(WasmNetworkRequest::deleteResource,
                                       WasmNetworkRequest::getResource,
-                                      WasmNetworkRequest::postResporce,
-                                      WasmNetworkRequest::postResporceIODevice);
+                                      WasmNetworkRequest::postResource,
+                                      WasmNetworkRequest::postResourceIODevice);
 #endif
 
 #ifdef MVPN_WEBEXTENSION

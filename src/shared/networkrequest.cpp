@@ -30,27 +30,27 @@ Logger logger("NetworkRequest");
 QList<QSslCertificate> s_intervention_certs;
 #endif
 
-std::function<void(NetworkRequest*)> s_deleteResourceCallback = nullptr;
-std::function<void(NetworkRequest*)> s_getResourceCallback = nullptr;
-std::function<void(NetworkRequest*, const QByteArray&)> s_postResporceCallback =
+std::function<bool(NetworkRequest*)> s_deleteResourceCallback = nullptr;
+std::function<bool(NetworkRequest*)> s_getResourceCallback = nullptr;
+std::function<bool(NetworkRequest*, const QByteArray&)> s_postResourceCallback =
     nullptr;
-std::function<void(NetworkRequest*, QIODevice*)>
-    s_postResporceIODeviceCallback = nullptr;
+std::function<bool(NetworkRequest*, QIODevice*)>
+    s_postResourceIODeviceCallback = nullptr;
 
 }  // namespace
 
 // static
 void NetworkRequest::setRequestHandler(
-    std::function<void(NetworkRequest*)>&& deleteResourceCallback,
-    std::function<void(NetworkRequest*)>&& getResourceCallback,
-    std::function<void(NetworkRequest*, const QByteArray&)>&&
-        postResporceCallback,
-    std::function<void(NetworkRequest*, QIODevice*)>&&
-        postResporceIODeviceCallback) {
+    std::function<bool(NetworkRequest*)>&& deleteResourceCallback,
+    std::function<bool(NetworkRequest*)>&& getResourceCallback,
+    std::function<bool(NetworkRequest*, const QByteArray&)>&&
+        postResourceCallback,
+    std::function<bool(NetworkRequest*, QIODevice*)>&&
+        postResourceIODeviceCallback) {
   s_deleteResourceCallback = std::move(deleteResourceCallback);
   s_getResourceCallback = std::move(getResourceCallback);
-  s_postResporceCallback = std::move(postResporceCallback);
-  s_postResporceIODeviceCallback = std::move(postResporceIODeviceCallback);
+  s_postResourceCallback = std::move(postResourceCallback);
+  s_postResourceIODeviceCallback = std::move(postResourceIODeviceCallback);
 }
 
 NetworkRequest::NetworkRequest(Task* parent, int status,
@@ -133,8 +133,8 @@ void NetworkRequest::get(const QUrl& url) {
 void NetworkRequest::post(const QUrl& url, QIODevice* uploadData) {
   m_request.setUrl(url);
 
-  if (s_postResporceIODeviceCallback) {
-    s_postResporceIODeviceCallback(this, uploadData);
+  if (s_postResourceIODeviceCallback &&
+      s_postResourceIODeviceCallback(this, uploadData)) {
     return;
   }
 
@@ -152,8 +152,7 @@ void NetworkRequest::post(const QUrl& url, const QJsonObject& obj) {
 void NetworkRequest::post(const QUrl& url, const QByteArray& body) {
   m_request.setUrl(url);
 
-  if (s_postResporceCallback) {
-    s_postResporceCallback(this, body);
+  if (s_postResourceCallback && s_postResourceCallback(this, body)) {
     return;
   }
 
@@ -167,8 +166,7 @@ void NetworkRequest::post(const QUrl& url, const QByteArray& body) {
 void NetworkRequest::deleteResource(const QUrl& url) {
   m_request.setUrl(url);
 
-  if (s_deleteResourceCallback) {
-    s_deleteResourceCallback(this);
+  if (s_deleteResourceCallback && s_deleteResourceCallback(this)) {
     return;
   }
 
@@ -319,8 +317,7 @@ void NetworkRequest::timeout() {
 }
 
 void NetworkRequest::getResource() {
-  if (s_getResourceCallback) {
-    s_getResourceCallback(this);
+  if (s_getResourceCallback && s_getResourceCallback(this)) {
     return;
   }
 

@@ -26,12 +26,12 @@ class NetworkRequest final : public QObject {
   ~NetworkRequest();
 
   static void setRequestHandler(
-      std::function<void(NetworkRequest*)>&& deleteResourceCallback,
-      std::function<void(NetworkRequest*)>&& getResourceCallback,
-      std::function<void(NetworkRequest*, const QByteArray&)>&&
-          postResporceCallback,
-      std::function<void(NetworkRequest*, QIODevice*)>&&
-          postResporceIODeviceCallback);
+      std::function<bool(NetworkRequest*)>&& deleteResourceCallback,
+      std::function<bool(NetworkRequest*)>&& getResourceCallback,
+      std::function<bool(NetworkRequest*, const QByteArray&)>&&
+          postResourceCallback,
+      std::function<bool(NetworkRequest*, QIODevice*)>&&
+          postResourceIODeviceCallback);
 
   // This object deletes itself at the end of the operation.
 

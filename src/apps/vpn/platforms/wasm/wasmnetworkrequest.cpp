@@ -98,33 +98,36 @@ EM_JS(void, call_mvpnNetworkRequest,
       });
 
 // static
-void WasmNetworkRequest::deleteResource(NetworkRequest* request) {
+bool WasmNetworkRequest::deleteResource(NetworkRequest* request) {
   logger.debug() << "Delete request to JS";
 
   call_mvpnNetworkRequest(processNetworkRequest(request), "DELETE",
                           request->url().toString().toUtf8().data(), "", 0);
+  return true;
 }
 
 // static
-void WasmNetworkRequest::getResource(NetworkRequest* request) {
+bool WasmNetworkRequest::getResource(NetworkRequest* request) {
   logger.debug() << "Get request to JS";
 
   call_mvpnNetworkRequest(processNetworkRequest(request), "GET",
                           request->url().toString().toUtf8().data(), "", 0);
+  return true;
 }
 
 // static
-void WasmNetworkRequest::postResporce(NetworkRequest* request,
+bool WasmNetworkRequest::postResource(NetworkRequest* request,
                                       const QByteArray& body) {
   logger.debug() << "Post request to JS";
 
   call_mvpnNetworkRequest(processNetworkRequest(request), "POST",
                           request->url().toString().toUtf8().data(),
                           body.data(), body.length());
+  return true;
 }
 
 // static
-void WasmNetworkRequest::postResporceIODevice(NetworkRequest* request,
+bool WasmNetworkRequest::postResourceIODevice(NetworkRequest* request,
                                               QIODevice* device) {
-  return postResporce(request, device->readAll());
+  return postResource(request, device->readAll());
 }

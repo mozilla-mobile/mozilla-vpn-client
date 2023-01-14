@@ -31,7 +31,7 @@ QObject* TestHelper::findTest(const QString& name) {
 TestHelper::TestHelper() { testList.append(this); }
 
 // static
-void TestHelper::networkRequestGeneric(NetworkRequest* request) {
+bool TestHelper::networkRequestGeneric(NetworkRequest* request) {
   Q_ASSERT(!TestHelper::networkConfig.isEmpty());
   TestHelper::NetworkConfig nc = TestHelper::networkConfig.takeFirst();
 
@@ -47,6 +47,8 @@ void TestHelper::networkRequestGeneric(NetworkRequest* request) {
       emit request->requestCompleted(nc.m_body);
     }
   });
+
+  return true;
 }
 
 int main(int argc, char* argv[]) {
