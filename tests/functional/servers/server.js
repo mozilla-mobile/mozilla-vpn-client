@@ -7,10 +7,11 @@ const bodyParser = require('body-parser')
 const cors = require('cors');
 
 class Server {
-  constructor(name, port, endpoints) {
+  constructor(name, port, endpoints, headerCheck) {
     this._name = name;
     this._endpoints = endpoints;
     this._exceptions = [];
+    this._headerCheck = headerCheck;
 
     const app = express()
     app.use(bodyParser.json());
@@ -84,12 +85,14 @@ class Server {
 
     if (responseData.callback) responseData.callback(req);
 
-    for (let header of responseData.requiredHeaders || []) {
-      if (!(header.toLowerCase() in req.headers)) {
-        this._addException(`Server ${this._name} - Expected header: ${
-            header} for ${req.path} - method: ${req.method} - query: ${
-            JSON.stringify(req.query)}`);
-        return;
+    if (this._headerCheck) {
+      for (let header of responseData.requiredHeaders || []) {
+        if (!(header.toLowerCase() in req.headers)) {
+          this._addException(`Server ${this._name} - Expected header: ${
+              header} for ${req.path} - method: ${req.method} - query: ${
+              JSON.stringify(req.query)}`);
+          return;
+        }
       }
     }
 

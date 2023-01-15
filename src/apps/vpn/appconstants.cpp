@@ -58,6 +58,7 @@ QString AppConstants::apiUrl(ApiEndpoint endpoint) {
 #endif
       {ApiEndpoint::RedirectPrivacy, "/r/vpn/privacy"},
       {ApiEndpoint::RedirectSubscriptionBlocked, "/r/vpn/subscriptionBlocked"},
+      {ApiEndpoint::RedirectTermsOfService, "/r/vpn/terms"},
       {ApiEndpoint::RedirectUpdateWithPlatformArgument, "/r/vpn/update/%1"},
       {ApiEndpoint::Servers, "/api/v1/vpn/servers"},
       {ApiEndpoint::SubscriptionDetails, "/api/v1/vpn/subscriptionDetails"},
