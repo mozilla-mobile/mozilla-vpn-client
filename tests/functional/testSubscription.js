@@ -5,6 +5,7 @@
 const assert = require('assert');
 const vpn = require('./helper.js');
 const queries = require('./queries.js');
+const fxaEndpoints = require('./servers/fxa_endpoints.js')
 
 const SUBSCRIPTION_DETAILS = {
   plan: {amount: 123, currency: 'usd', interval: 'year', interval_count: 1},
@@ -51,15 +52,19 @@ describe('Subscription view', function() {
     POSTs: {
       '/v1/account/login': {
         status: 200,
+        bodyValidator: fxaEndpoints.validators.fxaLogin,
         body: null,
         callback: (req) => this.ctx.fxaLoginCallback(req)
       },
+
       '/v1/session/verify/totp': {
         status: 200,
         requiredHeaders: ['Authorization'],
+        bodyValidator: fxaEndpoints.validators.fxaVerifyTotp,
         body: null,
         callback: (req) => this.ctx.fxaTotpCallback(req)
       },
+
       '/v1/account/destroy': {
         status: 200,
         requiredHeaders: ['Authorization'],

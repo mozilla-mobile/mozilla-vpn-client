@@ -5,6 +5,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors');
+const Validator = require('jsonschema').Validator;
 
 class Server {
   constructor(name, port, endpoints, headerCheck) {
@@ -93,6 +94,26 @@ class Server {
               JSON.stringify(req.query)}`);
           return;
         }
+      }
+    }
+
+    for (let queryStringParam of responseData.queryStringParams || []) {
+      if (!(queryStringParam in req.query)) {
+        this._addException(`Server ${this._name} - Expected query param: ${
+            queryStringParam} for ${req.path} - method: ${
+            req.method} - query: ${JSON.stringify(req.query)}`);
+        return;
+      }
+    }
+
+    if (responseData.bodyValidator) {
+      const v = new Validator();
+      const resp = v.validate(req.body, responseData.bodyValidator);
+      if (!resp.valid) {
+        this._addException(
+            `Server ${this._name} - Invalid body for ${req.path} - method: ${
+                req.method} - query: ${JSON.stringify(req.query)}`);
+        return;
       }
     }
 

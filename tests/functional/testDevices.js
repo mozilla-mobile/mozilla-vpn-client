@@ -4,6 +4,7 @@
 
 const queries = require('./queries.js');
 const vpn = require('./helper.js');
+const guardianEndpoints = require('./servers/guardian_endpoints.js')
 
 describe('Devices', function() {
   describe('Device limit', function() {
@@ -75,11 +76,16 @@ describe('Devices', function() {
             {status: 200, requiredHeaders: ['Authorization'], body: UserData},
       },
       POSTs: {
-        '/api/v2/vpn/login/verify':
-            {status: 200, body: {user: UserData, token: 'our-token'}},
+        '/api/v2/vpn/login/verify': {
+          status: 200,
+          bodyValidator: guardianEndpoints.validators.guardianLoginVerify,
+          body: {user: UserData, token: 'our-token'}
+        },
+
         '/api/v1/vpn/device': {
           status: 201,
           requiredHeaders: ['Authorization'],
+          bodyValidator: guardianEndpoints.validators.guardianDevice,
           callback: (req) => {
             UserData.devices[0].name = req.body.name;
             UserData.devices[0].pubkey = req.body.pubkey;
@@ -87,6 +93,7 @@ describe('Devices', function() {
           },
           body: {}
         },
+
       },
       DELETEs: {
         '/api/v1/vpn/device/': {
@@ -218,11 +225,16 @@ describe('Devices', function() {
             {status: 200, requiredHeaders: ['Authorization'], body: UserData},
       },
       POSTs: {
-        '/api/v2/vpn/login/verify':
-            {status: 200, body: {user: UserData, token: 'our-token'}},
+        '/api/v2/vpn/login/verify': {
+          status: 200,
+          bodyValidator: guardianEndpoints.validators.guardianLoginVerify,
+          body: {user: UserData, token: 'our-token'}
+        },
+
         '/api/v1/vpn/device': {
           status: 201,
           requiredHeaders: ['Authorization'],
+          bodyValidator: guardianEndpoints.validators.guardianDevice,
           callback: (req) => {
             UserData.devices[0].name = req.body.name;
             UserData.devices[0].pubkey = req.body.pubkey;
@@ -348,11 +360,16 @@ describe('Devices', function() {
             {status: 200, requiredHeaders: ['Authorization'], body: UserData},
       },
       POSTs: {
-        '/api/v2/vpn/login/verify':
-            {status: 200, body: {user: UserData, token: 'our-token'}},
+        '/api/v2/vpn/login/verify': {
+          status: 200,
+          bodyValidator: guardianEndpoints.validators.guardianLoginVerify,
+          body: {user: UserData, token: 'our-token'}
+        },
+
         '/api/v1/vpn/device': {
           status: 201,
           requiredHeaders: ['Authorization'],
+          bodyValidator: guardianEndpoints.validators.guardianDevice,
           callback: (req) => {
             UserData.devices[0].name = req.body.name;
             UserData.devices[0].pubkey = req.body.pubkey;

@@ -39,6 +39,26 @@ const SubscriptionDetails = {
   },
 };
 
+const VALIDATORS = {
+  guardianLoginVerify: {
+    type: 'object',
+    properties: {code: {type: 'string'}, code_verifier: {type: 'string'}},
+    required: ['code', 'code_verifier']
+  },
+
+  guardianDevice: {
+    type: 'object',
+    properties: {
+      name: {type: 'string'},
+      unique_id: {type: 'string'},
+      pubkey: {type: 'string'}
+    },
+    required: ['name', 'unique_id', 'pubkey']
+  },
+};
+
+exports.validators = VALIDATORS;
+
 exports.endpoints = {
   GETs: {
     '/api/v1/vpn/featurelist': {status: 200, body: {features: {}}},
@@ -50,6 +70,8 @@ exports.endpoints = {
     '/api/v2/vpn/login/': {
       status: 200,
       match: 'startWith',
+      queryStringParams:
+          ['code_challenge', 'code_challenge_method', 'user_agent'],
       body: {
         fxa_oauth: {
           url: 'https://accounts.stage.mozaws.net/authorization',
@@ -262,12 +284,16 @@ exports.endpoints = {
   },
 
   POSTs: {
-    '/api/v2/vpn/login/verify':
-        {status: 200, body: {user: UserData, token: 'our-token'}},
+    '/api/v2/vpn/login/verify': {
+      status: 200,
+      bodyValidator: VALIDATORS.guardianLoginVerify,
+      body: {user: UserData, token: 'our-token'}
+    },
 
     '/api/v1/vpn/device': {
       status: 201,
       requiredHeaders: ['Authorization'],
+      bodyValidator: VALIDATORS.guardianDevice,
       callback: (req) => {
         UserData.devices[0].name = req.body.name;
         UserData.devices[0].pubkey = req.body.pubkey;
