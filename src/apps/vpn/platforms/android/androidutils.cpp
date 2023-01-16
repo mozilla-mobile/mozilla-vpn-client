@@ -25,6 +25,7 @@ AndroidUtils* s_instance = nullptr;
 Logger logger("AndroidUtils");
 
 constexpr auto UTILS_CLASS = "org/mozilla/firefox/vpn/qt/VPNUtils";
+constexpr auto COMMON_UTILS_CLASS = "org/mozilla/firefox/qt/common/Utils";
 }  // namespace
 
 // static
@@ -204,7 +205,7 @@ bool AndroidUtils::verifySignature(const QByteArray& publicKey,
                                    const QByteArray& signature) {
   QJniEnvironment env;
   auto out = (bool)QJniObject::callStaticMethod<jboolean>(
-      UTILS_CLASS, "verifyContentSignature", "([B[B[B)Z",
+      COMMON_UTILS_CLASS, "verifyContentSignature", "([B[B[B)Z",
       tojByteArray(publicKey), tojByteArray(content), tojByteArray(signature));
   logger.info() << "Android Signature Response" << out;
   return out;

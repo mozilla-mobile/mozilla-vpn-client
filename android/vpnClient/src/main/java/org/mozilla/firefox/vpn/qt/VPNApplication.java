@@ -12,7 +12,7 @@ import com.adjust.sdk.AdjustFactory;
 import android.app.Activity;
 import android.os.Bundle;
 
-import org.mozilla.firefox.vpn.BuildConfig;
+import com.adjust.BuildConfig;
 
 public class VPNApplication extends org.qtproject.qt.android.bindings.QtApplication {
 
