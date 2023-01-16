@@ -18,6 +18,28 @@
 $schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
 
 sample:
+  android_daemon_status:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      A status report of the Android Daemon
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-3743
+    data_reviews:
+      - TODO
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - sstreich@mozilla.com
+    expires: 2023-6-1
+    extra_keys:
+      connection_health_state:
+        description: |
+          The State of connection health.
+        type: string
+
   addon_state_changed:
     type: event
     lifetime: ping
