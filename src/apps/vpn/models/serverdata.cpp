@@ -119,6 +119,8 @@ bool ServerData::settingsChanged() {
   m_exitCityName = obj[EXIT_CITY_NAME].toString();
   m_entryCountryCode = obj[ENTER_COUNTRY_CODE].toString();
   m_entryCityName = obj[ENTER_CITY_NAME].toString();
+  m_entryCountryName = MozillaVPN::instance()->serverCountryModel()->countryName(m_entryCountryCode);
+  m_exitCountryName = MozillaVPN::instance()->serverCountryModel()->countryName(m_exitCountryCode);
 
   emit changed();
   return true;
@@ -138,6 +140,16 @@ QString ServerData::localizedPreviousExitCityName() const {
   Q_ASSERT(m_initialized);
   return ServerI18N::translateCityName(m_previousExitCountryCode,
                                        m_previousExitCityName);
+}
+
+QString ServerData::localizedEntryCountryName() const {
+  Q_ASSERT(m_initialized);
+  return ServerI18N::translateCountryName(m_entryCountryCode, m_entryCountryName);
+}
+
+QString ServerData::localizedExitCountryName() const {
+  Q_ASSERT(m_initialized);
+  return ServerI18N::translateCountryName(m_exitCountryCode, m_exitCountryName);
 }
 
 void ServerData::changeServer(const QString& countryCode,
