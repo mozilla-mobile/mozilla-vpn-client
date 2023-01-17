@@ -212,7 +212,8 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 
   QString countryCode = vpn->currentServer()->exitCountryCode();
   QString localizedCityName = vpn->currentServer()->localizedExitCityName();
-  QString localizedCountryName = vpn->serverCountryModel()->countryName(countryCode);
+  QString localizedCountryName =
+      vpn->serverCountryModel()->countryName(countryCode);
 
   m_lastLocationLabel->setIcon(flagIcon);
   m_lastLocationLabel->setText(

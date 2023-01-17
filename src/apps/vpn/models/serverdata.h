@@ -20,8 +20,8 @@ class ServerData final : public QObject {
   Q_PROPERTY(QString exitCityName READ exitCityName NOTIFY changed)
   Q_PROPERTY(
       QString localizedExitCityName READ localizedExitCityName NOTIFY changed)
-        Q_PROPERTY(QString localizedExitCountryName READ
-                 localizedExitCountryName NOTIFY changed)
+  Q_PROPERTY(QString localizedExitCountryName READ localizedExitCountryName
+                 NOTIFY changed)
 
   Q_PROPERTY(bool multihop READ multihop NOTIFY changed)
 
@@ -29,15 +29,15 @@ class ServerData final : public QObject {
   Q_PROPERTY(QString entryCityName READ entryCityName NOTIFY changed)
   Q_PROPERTY(
       QString localizedEntryCityName READ localizedEntryCityName NOTIFY changed)
-  Q_PROPERTY(QString localizedEntryCountryName READ
-                  localizedEntryCountryName NOTIFY changed)
+  Q_PROPERTY(QString localizedEntryCountryName READ localizedEntryCountryName
+                 NOTIFY changed)
 
   Q_PROPERTY(QString previousExitCountryCode READ previousExitCountryCode NOTIFY
                  changed)
   Q_PROPERTY(
       QString previousExitCityName READ previousExitCityName NOTIFY changed)
   Q_PROPERTY(QString localizedPreviousExitCityName READ
-                 localizedPreviousExitCityName NOTIFY changed)               
+                 localizedPreviousExitCityName NOTIFY changed)
 
  public:
   ServerData();
