@@ -369,6 +369,25 @@ void ServerCountryModel::setCooldownForAllServersInACity(
   }
 }
 
+QList<QVariant> ServerCountryModel::recommendedLocations(
+    unsigned int count) const {
+  QList<QVariant> results;
+
+  // For testing - just return the first city of each country.
+  for (const ServerCountry& country : m_countries) {
+    const QList<ServerCity>& cities = country.cities();
+    if (results.count() >= count) {
+      break;
+    }
+    if (cities.isEmpty()) {
+      continue;
+    }
+    results.append(QVariant::fromValue(&cities.first()));
+  }
+
+  return results;
+}
+
 namespace {
 
 bool sortCountryCallback(const ServerCountry& a, const ServerCountry& b,

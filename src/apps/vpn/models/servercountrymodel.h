@@ -66,6 +66,8 @@ class ServerCountryModel final : public QAbstractListModel {
   Q_INVOKABLE int cityConnectionScore(const QString& countryCode,
                                       const QString& cityCode) const;
 
+  Q_INVOKABLE QList<QVariant> recommendedLocations(unsigned int count) const;
+
   // QAbstractListModel methods
 
   QHash<int, QByteArray> roleNames() const override;

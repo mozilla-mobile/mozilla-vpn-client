@@ -18,7 +18,7 @@ class ServerCity final : public QObject {
 
   Q_PROPERTY(QString name READ name CONSTANT)
   Q_PROPERTY(QString code READ code CONSTANT)
-  Q_PROPERTY(QString coutnry READ country CONSTANT)
+  Q_PROPERTY(QString country READ country CONSTANT)
   Q_PROPERTY(QString localizedName READ localizedName CONSTANT)
   Q_PROPERTY(double latitude READ latitude CONSTANT)
   Q_PROPERTY(double longitude READ longitude CONSTANT)
