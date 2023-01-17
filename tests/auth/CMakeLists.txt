@@ -64,8 +64,6 @@ target_sources(auth_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/models/subscriptiondata.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/subscriptiondata.h
     ${MZ_SOURCE_DIR}/apps/vpn/mozillavpn.h
-    ${MZ_SOURCE_DIR}/apps/vpn/networkrequest.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/networkrequest.h
     ${MZ_SOURCE_DIR}/apps/vpn/pinghelper.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/pinghelper.h
     ${MZ_SOURCE_DIR}/apps/vpn/pingsender.cpp
@@ -115,6 +113,8 @@ target_sources(auth_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/loghandler.h
     ${MZ_SOURCE_DIR}/shared/networkmanager.cpp
     ${MZ_SOURCE_DIR}/shared/networkmanager.h
+    ${MZ_SOURCE_DIR}/shared/networkrequest.cpp
+    ${MZ_SOURCE_DIR}/shared/networkrequest.h
     ${MZ_SOURCE_DIR}/shared/platforms/wasm/wasmcryptosettings.cpp
     ${MZ_SOURCE_DIR}/shared/rfc/rfc1918.cpp
     ${MZ_SOURCE_DIR}/shared/rfc/rfc1918.h

@@ -5,12 +5,14 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors');
+const Validator = require('jsonschema').Validator;
 
 class Server {
-  constructor(name, port, endpoints) {
+  constructor(name, port, endpoints, headerCheck) {
     this._name = name;
     this._endpoints = endpoints;
     this._exceptions = [];
+    this._headerCheck = headerCheck;
 
     const app = express()
     app.use(bodyParser.json());
@@ -83,6 +85,37 @@ class Server {
     }
 
     if (responseData.callback) responseData.callback(req);
+
+    if (this._headerCheck) {
+      for (let header of responseData.requiredHeaders || []) {
+        if (!(header.toLowerCase() in req.headers)) {
+          this._addException(`Server ${this._name} - Expected header: ${
+              header} for ${req.path} - method: ${req.method} - query: ${
+              JSON.stringify(req.query)}`);
+          return;
+        }
+      }
+    }
+
+    for (let queryStringParam of responseData.queryStringParams || []) {
+      if (!(queryStringParam in req.query)) {
+        this._addException(`Server ${this._name} - Expected query param: ${
+            queryStringParam} for ${req.path} - method: ${
+            req.method} - query: ${JSON.stringify(req.query)}`);
+        return;
+      }
+    }
+
+    if (responseData.bodyValidator) {
+      const v = new Validator();
+      const resp = v.validate(req.body, responseData.bodyValidator);
+      if (!resp.valid) {
+        this._addException(
+            `Server ${this._name} - Invalid body for ${req.path} - method: ${
+                req.method} - query: ${JSON.stringify(req.query)}`);
+        return;
+      }
+    }
 
     res.status(responseData.status);
     if ('bodyRaw' in responseData) {

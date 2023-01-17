@@ -154,7 +154,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/models/user.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/user.h
     ${MZ_SOURCE_DIR}/apps/vpn/mozillavpn.h
-    ${MZ_SOURCE_DIR}/apps/vpn/networkrequest.h
     ${MZ_SOURCE_DIR}/apps/vpn/networkwatcher.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/networkwatcher.h
     ${MZ_SOURCE_DIR}/apps/vpn/networkwatcherimpl.h
@@ -248,6 +247,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/loghandler.h
     ${MZ_SOURCE_DIR}/shared/networkmanager.cpp
     ${MZ_SOURCE_DIR}/shared/networkmanager.h
+    ${MZ_SOURCE_DIR}/shared/networkrequest.cpp
+    ${MZ_SOURCE_DIR}/shared/networkrequest.h
     ${MZ_SOURCE_DIR}/shared/platforms/wasm/wasmcryptosettings.cpp
     ${MZ_SOURCE_DIR}/shared/qmlpath.cpp
     ${MZ_SOURCE_DIR}/shared/qmlengineholder.cpp
@@ -292,7 +293,6 @@ target_sources(unit_tests PRIVATE
     moccontroller.cpp
     mocinspectorhandler.cpp
     mocmozillavpn.cpp
-    mocnetworkrequest.cpp
     mocsystemtraynotificationhandler.cpp
     mocsentryadapter.cpp
     helper.h

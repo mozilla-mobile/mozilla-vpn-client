@@ -4,13 +4,15 @@
 
 #include <QByteArray>
 
+class QIODevice;
 class NetworkRequest;
 
 class WasmNetworkRequest final {
  public:
-  static void deleteRequest(NetworkRequest* request);
-  static void getRequest(NetworkRequest* request);
-  static void postRequest(NetworkRequest* request, const QByteArray& body);
+  static bool deleteResource(NetworkRequest* request);
+  static bool getResource(NetworkRequest* request);
+  static bool postResource(NetworkRequest* request, const QByteArray& body);
+  static bool postResourceIODevice(NetworkRequest* request, QIODevice* device);
 
  private:
   static void processResponse(const QByteArray& data, NetworkRequest* request);

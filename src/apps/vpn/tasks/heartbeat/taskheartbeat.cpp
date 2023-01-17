@@ -7,6 +7,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+#include "appconstants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -23,7 +24,8 @@ TaskHeartbeat::TaskHeartbeat() : Task("TaskHeartbeat") {
 TaskHeartbeat::~TaskHeartbeat() { MZ_COUNT_DTOR(TaskHeartbeat); }
 
 void TaskHeartbeat::run() {
-  NetworkRequest* request = NetworkRequest::createForHeartbeat(this);
+  NetworkRequest* request = new NetworkRequest(this, 200);
+  request->get(AppConstants::apiUrl(AppConstants::Heartbeat));
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this, request](QNetworkReply::NetworkError, const QByteArray&) {

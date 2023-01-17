@@ -4,6 +4,9 @@
 
 #include "taskdeleteaccount.h"
 
+#include <QJsonObject>
+
+#include "appconstants.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "authenticationinapp/authenticationinappsession.h"
 #include "authenticationlistener.h"
@@ -43,13 +46,15 @@ void TaskDeleteAccount::run() {
 
   connect(
       m_authenticationInAppSession, &AuthenticationInAppSession::completed,
-      this, [this, pkceCodeVerifier](const QString& pkceCodeSucces) {
+      this, [this, pkceCodeVerifier](const QString& pkceCodeSuccess) {
         logger.debug() << "Authentication completed with code:"
-                       << logger.sensitive(pkceCodeSucces);
+                       << logger.sensitive(pkceCodeSuccess);
 
-        NetworkRequest* request =
-            NetworkRequest::createForAuthenticationVerification(
-                this, pkceCodeSucces, pkceCodeVerifier);
+        NetworkRequest* request = new NetworkRequest(this, 200);
+        request->post(
+            AppConstants::apiUrl(AppConstants::LoginVerify),
+            QJsonObject{{"code", pkceCodeSuccess},
+                        {"code_verifier", QString(pkceCodeVerifier)}});
 
         connect(request, &NetworkRequest::requestFailed, this,
                 [this](QNetworkReply::NetworkError error, const QByteArray&) {

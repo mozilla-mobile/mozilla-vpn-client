@@ -24,6 +24,7 @@ SOURCES += \
         $$PWD/logger.cpp \
         $$PWD/loghandler.cpp \
         $$PWD/networkmanager.cpp \
+        $$PWD/networkrequest.cpp \
         $$PWD/qmlengineholder.cpp \
         $$PWD/qmlpath.cpp \
         $$PWD/rfc/rfc1112.cpp \
@@ -59,6 +60,7 @@ HEADERS += \
         $$PWD/logger.h \
         $$PWD/loghandler.h \
         $$PWD/networkmanager.h \
+        $$PWD/networkrequest.h \
         $$PWD/qmlengineholder.h \
         $$PWD/qmlpath.h \
         $$PWD/rfc/rfc1112.h \

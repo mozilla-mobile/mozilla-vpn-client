@@ -8,9 +8,10 @@ const fxaEndpoints = require('./fxa_endpoints.js')
 
 let server = null;
 module.exports = {
-  start() {
+  start(headerCheck = true) {
     server = new Server(
-        'FxA', constants.FXA_PORT, fxaEndpoints.generateEndpoints(constants));
+        'FxA', constants.FXA_PORT, fxaEndpoints.generateEndpoints(constants),
+        headerCheck);
     return constants.FXA_PORT;
   },
 

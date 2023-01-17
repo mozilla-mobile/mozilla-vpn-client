@@ -95,7 +95,8 @@ void Balrog::start(Task* task) {
       QString(AppConstants::balrogUrl()).arg(appVersion()).arg(userAgent());
   logger.debug() << "URL:" << url;
 
-  NetworkRequest* request = NetworkRequest::createForGetUrl(task, url, 200);
+  NetworkRequest* request = new NetworkRequest(task, 200);
+  request->get(url);
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
@@ -150,7 +151,8 @@ bool Balrog::fetchSignature(Task* task, NetworkRequest* initialRequest,
 
   logger.debug() << "Fetching x5u URL:" << x5u;
 
-  NetworkRequest* x5uRequest = NetworkRequest::createForGetUrl(task, x5u, 200);
+  NetworkRequest* x5uRequest = new NetworkRequest(task, 200);
+  x5uRequest->get(QString(x5u));
 
   connect(x5uRequest, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
@@ -284,7 +286,8 @@ bool Balrog::processData(Task* task, const QByteArray& data) {
       return false;
     }
 
-    NetworkRequest* request = NetworkRequest::createForGetUrl(task, url);
+    NetworkRequest* request = new NetworkRequest(task);
+    request->get(url);
 
     connect(request, &NetworkRequest::requestFailed, this,
             [this](QNetworkReply::NetworkError error, const QByteArray&) {
@@ -335,7 +338,8 @@ bool Balrog::processData(Task* task, const QByteArray& data) {
     return false;
   }
 
-  NetworkRequest* request = NetworkRequest::createForGetUrl(task, url);
+  NetworkRequest* request = new NetworkRequest(task);
+  request->get(url);
 
   // No timeout for this request.
   request->disableTimeout();

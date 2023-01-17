@@ -251,6 +251,8 @@ class MozillaVPN final : public QObject {
 
   void hardReset();
 
+  static QByteArray authorizationHeader();
+
  private:
   void setState(State state);
 

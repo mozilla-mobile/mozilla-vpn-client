@@ -21,7 +21,6 @@
 #include "models/device.h"
 #include "models/recentconnections.h"
 #include "networkmanager.h"
-#include "networkrequest.h"
 #include "productshandler.h"
 #include "profileflow.h"
 #include "purchasehandler.h"
@@ -1711,7 +1710,7 @@ void MozillaVPN::registerUrlOpenerLabels() {
   });
 
   uo->registerUrlLabel("privacyNotice", []() -> QString {
-    return QString("%1/r/vpn/privacy").arg(NetworkRequest::apiBaseUrl());
+    return AppConstants::apiUrl(AppConstants::RedirectPrivacy);
   });
 
   uo->registerUrlLabel("relayPremium", []() -> QString {
@@ -1725,8 +1724,7 @@ void MozillaVPN::registerUrlOpenerLabels() {
   });
 
   uo->registerUrlLabel("subscriptionBlocked", []() -> QString {
-    return QString("%1/r/vpn/subscriptionBlocked")
-        .arg(NetworkRequest::apiBaseUrl());
+    return AppConstants::apiUrl(AppConstants::RedirectSubscriptionBlocked);
   });
 
   uo->registerUrlLabel("subscriptionIapApple", []() -> QString {
@@ -1745,7 +1743,7 @@ void MozillaVPN::registerUrlOpenerLabels() {
       "sumo", []() -> QString { return AppConstants::MOZILLA_VPN_SUMO_URL; });
 
   uo->registerUrlLabel("termsOfService", []() -> QString {
-    return QString("%1/r/vpn/terms").arg(NetworkRequest::apiBaseUrl());
+    return AppConstants::apiUrl(AppConstants::RedirectTermsOfService);
   });
 
   uo->registerUrlLabel("update", []() -> QString {
@@ -1755,9 +1753,9 @@ void MozillaVPN::registerUrlOpenerLabels() {
 #elif defined(MZ_ANDROID)
                               GOOGLE_PLAYSTORE_URL
 #else
-                              QString("%1/r/vpn/update/%2")
-                                  .arg(NetworkRequest::apiBaseUrl(),
-                                       Constants::PLATFORM_NAME)
+            AppConstants::apiUrl(
+                AppConstants::RedirectUpdateWithPlatformArgument)
+                .arg(Constants::PLATFORM_NAME)
 #endif
         ;
   });
@@ -1767,4 +1765,16 @@ void MozillaVPN::registerUrlOpenerLabels() {
         .arg(Constants::inProduction() ? AppConstants::API_PRODUCTION_URL
                                        : AppConstants::API_STAGING_URL);
   });
+}
+
+// static
+QByteArray MozillaVPN::authorizationHeader() {
+  if (SettingsHolder::instance()->token().isEmpty()) {
+    logger.error() << "INVALID TOKEN! This network request is going to fail.";
+    Q_ASSERT(false);
+  }
+
+  QByteArray authorizationHeader = "Bearer ";
+  authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
+  return authorizationHeader;
 }

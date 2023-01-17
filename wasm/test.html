@@ -91,11 +91,16 @@ function mvpnNetworkRequest(id, method, url, body) {
     return;
   }
 
-  if (url == "https://archive.mozilla.org/pub/vpn/speedtest/50m.data") {
-      // 50mb of data is too much to be handled in the browser.
-     setTimeout(() => Module.mvpnNetworkResponse(id, JSON.stringify({ status: 200, body: btoa(String.fromCharCode.apply(null, new Uint8Array(1024))) })), 15000);
-      return;
-    }
+  if (url === "https://archive.mozilla.org/pub/vpn/speedtest/50m.data") {
+    // 50mb of data is too much to be handled in the browser.
+   setTimeout(() => Module.mvpnNetworkResponse(id, JSON.stringify({ status: 200, body: btoa(String.fromCharCode.apply(null, new Uint8Array(1024))) })), 1000);
+    return;
+  }
+
+  if (url == "https://dev.vpn-network-benchmark.nonprod.webservices.mozgcp.net/upload") {
+   setTimeout(() => Module.mvpnNetworkResponse(id, JSON.stringify({ status: 200, body: ""})), 1000);
+    return;
+  }
 
   const options = {method};
   if (method === 'POST') {

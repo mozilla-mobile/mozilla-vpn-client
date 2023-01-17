@@ -55,8 +55,15 @@ void CaptivePortalRequest::run() {
 void CaptivePortalRequest::createRequest(const QUrl& url) {
   logger.debug() << "request:" << url.toString();
 
-  NetworkRequest* request = NetworkRequest::createForCaptivePortalDetection(
-      static_cast<Task*>(parent()), url, CAPTIVEPORTAL_HOST);
+  NetworkRequest* request = new NetworkRequest(static_cast<Task*>(parent()));
+
+  // This enables the QNetworkReply::redirected for every type of redirect.
+  request->requestInternal().setAttribute(
+      QNetworkRequest::RedirectPolicyAttribute,
+      QNetworkRequest::UserVerifiedRedirectPolicy);
+  request->requestInternal().setRawHeader("Host", CAPTIVEPORTAL_HOST);
+  request->requestInternal().setPeerVerifyName(CAPTIVEPORTAL_HOST);
+  request->get(url);
 
   connect(request, &NetworkRequest::requestRedirected, this,
           [this](NetworkRequest* request, const QUrl& url) {

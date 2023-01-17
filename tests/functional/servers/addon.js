@@ -65,7 +65,7 @@ function createScenario(scenario, addonPath) {
 
 let server = null;
 module.exports = {
-  start() {
+  start(headerCheck = true) {
     let scenarios = {};
 
     const dirs = fs.readdirSync(ADDON_PATH);
@@ -85,7 +85,7 @@ module.exports = {
       DELETEs: {},
     };
 
-    server = new Server('Addon', constants.ADDON_PORT, endpoints);
+    server = new Server('Addon', constants.ADDON_PORT, endpoints, headerCheck);
 
     return constants.ADDON_PORT;
   },

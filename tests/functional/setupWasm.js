@@ -33,13 +33,14 @@ async function startAndConnect() {
 
 exports.mochaHooks = {
   async beforeAll() {
-    const u = new URL(`http://localhost:${wasm.start()}/test.html`);
-    u.searchParams.set('guardian', `http://localhost:${guardian.start()}`);
-    u.searchParams.set('fxa', `http://localhost:${fxaServer.start()}`);
+    const u = new URL(`http://localhost:${wasm.start(false)}/test.html`);
+    u.searchParams.set('guardian', `http://localhost:${guardian.start(false)}`);
+    u.searchParams.set('fxa', `http://localhost:${fxaServer.start(false)}`);
     u.searchParams.set(
-        'addon', `http://localhost:${addonServer.start()}/01_empty_manifest/`);
-    u.searchParams.set('benchmark',
-        `http://localhost:${networkBenchmark.start()}`);
+        'addon',
+        `http://localhost:${addonServer.start(false)}/01_empty_manifest/`);
+    u.searchParams.set(
+        'benchmark', `http://localhost:${networkBenchmark.start(false)}`);
 
     process.env['MZ_WASM_URL'] = u.toString();
     process.env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';

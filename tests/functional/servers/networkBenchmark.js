@@ -9,16 +9,14 @@ const constants = require('../constants.js');
 // https://github.com/mozilla-services/vpn-network-benchmark
 let server = null;
 module.exports = {
-  start() {
+  start(headerCheck = true) {
     server = new Server(
-      'VPN Network Benchmark',
-      constants.UPLOAD_BENCHMARK_PORT,
-      {
-        POSTs: {
-          '/': {status: 200, body: {}},
+        'VPN Network Benchmark', constants.UPLOAD_BENCHMARK_PORT, {
+          POSTs: {
+            '/': {status: 200, body: {}},
+          },
         },
-      }
-    );
+        headerCheck);
     return constants.UPLOAD_BENCHMARK_PORT;
   },
 

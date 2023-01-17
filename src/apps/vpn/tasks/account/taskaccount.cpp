@@ -4,6 +4,7 @@
 
 #include "taskaccount.h"
 
+#include "appconstants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -22,7 +23,9 @@ TaskAccount::TaskAccount(
 TaskAccount::~TaskAccount() { MZ_COUNT_DTOR(TaskAccount); }
 
 void TaskAccount::run() {
-  NetworkRequest* request = NetworkRequest::createForAccount(this);
+  NetworkRequest* request = new NetworkRequest(this, 200);
+  request->auth(MozillaVPN::authorizationHeader());
+  request->get(AppConstants::apiUrl(AppConstants::Account));
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
