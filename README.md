@@ -506,7 +506,7 @@ cmake --build build -j$(nproc)
 ## Testing
 
 When built for any one of the desktop platforms, this project will also generate
-a suite of unit tests. The tests are built my manually specifying the
+a suite of unit tests. The tests are built by manually specifying the
 `build_tests` target. Once built, you can run them with `ctest` as follows:
 
 ```bash
