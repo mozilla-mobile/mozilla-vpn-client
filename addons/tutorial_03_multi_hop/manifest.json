@@ -13,7 +13,7 @@
     "title": "Using multi-hop VPN",
     "settings_rollback_needed": true,
     "subtitle": "Follow this walkthrough to learn how to use multi-hop VPN.",
-    "completion_message": "You’ve turned on multi-hop VPN and changed your exit location. Would you like to see more tips and tricks?",
+    "completion_message": "You’ve learned how to use multi-hop VPN and change your exit location. Would you like to learn more tips and tricks?",
     "steps": [
       {
         "id": "s1",
