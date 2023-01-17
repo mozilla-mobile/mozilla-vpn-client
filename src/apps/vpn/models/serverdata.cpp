@@ -92,9 +92,11 @@ void ServerData::update(const QString& exitCountryCode,
 
   QJsonObject obj;
   obj[EXIT_COUNTRY_CODE] = exitCountryCode;
+  obj[EXIT_COUNTRY_NAME] = MozillaVPN::instance()->serverCountryModel()->countryName(exitCountryCode);
   obj[EXIT_CITY_NAME] = exitCityName;
 
   obj[ENTER_COUNTRY_CODE] = entryCountryCode;
+  obj[ENTER_COUNTRY_NAME] = MozillaVPN::instance()->serverCountryModel()->countryName(entryCountryCode);
   obj[ENTER_CITY_NAME] = entryCityName;
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
@@ -125,13 +127,11 @@ bool ServerData::settingsChanged() {
   m_exitCityName = obj[EXIT_CITY_NAME].toString();
   m_entryCountryCode = obj[ENTER_COUNTRY_CODE].toString();
   m_entryCityName = obj[ENTER_CITY_NAME].toString();
-  m_entryCountryName = MozillaVPN::instance()->serverCountryModel()->countryName(m_entryCountryCode);
-  m_exitCountryName = MozillaVPN::instance()->serverCountryModel()->countryName(m_exitCountryCode);
+  
+  // If obj[ENTER_COUNTRY_NAME] is null then we need to extract the country name from the country code
+  m_entryCountryName = obj[ENTER_COUNTRY_NAME].isUndefined() ? MozillaVPN::instance()->serverCountryModel()->countryName(m_entryCountryCode) : obj[ENTER_COUNTRY_NAME].toString();
+  m_exitCountryName = obj[EXIT_COUNTRY_NAME].isUndefined() ? MozillaVPN::instance()->serverCountryModel()->countryName(m_exitCountryCode) : obj[EXIT_COUNTRY_NAME].toString();
 
-  // qDebug() << "Country name: " + m_entryCountryName;
-  // qDebug() << m_entryCountryName;
-  std::cout << m_entryCountryCode.toStdString() << std::endl;
-  std::cout << m_entryCountryName.toStdString() << std::endl;
   emit changed();
   return true;
 }
