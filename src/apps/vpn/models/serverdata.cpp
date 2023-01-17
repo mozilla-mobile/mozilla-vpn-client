@@ -14,9 +14,6 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 
-#include <iostream>
-#include<QDebug>
-
 constexpr const char* EXIT_COUNTRY_CODE = "exit_country_code";
 constexpr const char* EXIT_COUNTRY_NAME = "exit_country_name";
 constexpr const char* EXIT_CITY_NAME = "exit_city_name";
