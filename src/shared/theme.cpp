@@ -12,7 +12,7 @@
 #include "settingsholder.h"
 
 #ifdef MZ_IOS
-#  include "platforms/ios/iosutils.h"
+#  include "platforms/ios/ioscommons.h"
 #endif
 
 namespace {
@@ -154,6 +154,6 @@ QVariant Theme::data(const QModelIndex& index, int role) const {
 
 void Theme::setStatusBarTextColor([[maybe_unused]] StatusBarTextColor color) {
 #ifdef MZ_IOS
-  IOSUtils::setStatusBarTextColor(color);
+  IOSCommons::setStatusBarTextColor(color);
 #endif
 }
