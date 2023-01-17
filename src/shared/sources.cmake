@@ -46,6 +46,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/ipaddress.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/itempicker.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/itempicker.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/languagei18n.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/languagei18n.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/leakdetector.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/leakdetector.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/localizer.cpp

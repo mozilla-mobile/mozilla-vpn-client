@@ -75,8 +75,8 @@ VPNViewBase {
                 _filterProxySource: VPNLocalizer
                 _filterProxyCallback: obj => {
                      const filterValue = getSearchBarText();
-                     return obj.localizedLanguage.toLowerCase().includes(filterValue) ||
-                             obj.language.toLowerCase().includes(filterValue);
+                     return obj.nativeLanguageName.toLowerCase().includes(filterValue) ||
+                             obj.localizedLanguageName.toLowerCase().includes(filterValue);
                  }
                 _searchBarHasError: repeater.count === 0
                 _searchBarPlaceholderText: VPNl18n.LanguageViewSearchPlaceholder
@@ -124,7 +124,7 @@ VPNViewBase {
                         id: delRadio
                         objectName: "language-" + code
                         enabled: !useSystemLanguageEnabled
-                        radioButtonLabelText: localizedLanguage
+                        radioButtonLabelText: nativeLanguageName
                         checked: VPNSettings.languageCode === code && !useSystemLanguageEnabled
                         onClicked: {
                             VPNSettings.languageCode = code;
@@ -136,8 +136,8 @@ VPNViewBase {
                         //: This string is read by accessibility tools.
                         //: %1 is the language name, %2 is the localized language name.
                         accessibleName: qsTrId("vpn.settings.languageAccessibleName")
-                                            .arg(language)
-                                            .arg(localizedLanguage)
+                                            .arg(nativeLanguageName)
+                                            .arg(localizedLanguageName)
 
                         activeFocusOnTab: !useSystemLanguageEnabled
                         Keys.onDownPressed: repeater.itemAt(index + 1) ? repeater.itemAt(index + 1).pushFocusToRadio() : repeater.itemAt(0).pushFocusToRadio()
@@ -148,7 +148,7 @@ VPNViewBase {
                         Layout.leftMargin: delRadio.indicator.implicitWidth + VPNTheme.theme.hSpacing - 2
                         Layout.topMargin: 4
                         Layout.fillWidth: true
-                        text: language
+                        text: localizedLanguageName
                         Layout.alignment: Qt.AlignLeft
                     }
                 }
