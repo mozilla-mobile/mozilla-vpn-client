@@ -14,10 +14,16 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 
+#include <iostream>
+#include<QDebug>
+
 constexpr const char* EXIT_COUNTRY_CODE = "exit_country_code";
+constexpr const char* EXIT_COUNTRY_NAME = "exit_country_name";
 constexpr const char* EXIT_CITY_NAME = "exit_city_name";
 constexpr const char* ENTER_COUNTRY_CODE = "enter_country_code";
+constexpr const char* ENTER_COUNTRY_NAME = "enter_country_name";
 constexpr const char* ENTER_CITY_NAME = "enter_city_name";
+
 
 namespace {
 Logger logger("ServerData");
@@ -122,6 +128,10 @@ bool ServerData::settingsChanged() {
   m_entryCountryName = MozillaVPN::instance()->serverCountryModel()->countryName(m_entryCountryCode);
   m_exitCountryName = MozillaVPN::instance()->serverCountryModel()->countryName(m_exitCountryCode);
 
+  // qDebug() << "Country name: " + m_entryCountryName;
+  // qDebug() << m_entryCountryName;
+  std::cout << m_entryCountryCode.toStdString() << std::endl;
+  std::cout << m_entryCountryName.toStdString() << std::endl;
   emit changed();
   return true;
 }
@@ -171,8 +181,10 @@ void ServerData::forget() {
 
   m_exitCountryCode.clear();
   m_exitCityName.clear();
+  m_exitCountryName.clear();
   m_entryCountryCode.clear();
   m_entryCityName.clear();
+  m_entryCountryName.clear();
   m_previousExitCountryCode.clear();
   m_previousExitCityName.clear();
 }

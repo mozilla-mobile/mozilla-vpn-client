@@ -101,7 +101,7 @@ void NotificationHandler::showNotification() {
   QString countryCode = vpn->currentServer()->exitCountryCode();
   QString localizedCityName = vpn->currentServer()->localizedExitCityName();
   QString localizedCountryName =
-      vpn->serverCountryModel()->localizedCountryName(countryCode);
+      vpn->serverCountryModel()->countryName(countryCode);
 
   switch (vpn->controller()->state()) {
     case Controller::StateOn:
@@ -116,7 +116,7 @@ void NotificationHandler::showNotification() {
         }
 
         QString localizedPreviousExitCountryName =
-            vpn->serverCountryModel()->localizedCountryName(
+            vpn->serverCountryModel()->countryName(
                 vpn->currentServer()->previousExitCountryCode());
         QString localizedPreviousExitCityName =
             vpn->currentServer()->localizedPreviousExitCityName();
