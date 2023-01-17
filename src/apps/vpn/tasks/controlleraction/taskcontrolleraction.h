@@ -31,7 +31,7 @@ class TaskControllerAction final : public Task {
 
   void run() override;
 
-  virtual DeletePolicy deletePolicy() const { return NonDeletable; }
+  virtual DeletePolicy deletePolicy() const override { return NonDeletable; }
 
  private slots:
   void stateChanged();
