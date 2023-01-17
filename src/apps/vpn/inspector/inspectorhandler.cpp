@@ -982,7 +982,7 @@ void InspectorHandler::networkRequestFinished(QNetworkReply* reply) {
 // static
 QString InspectorHandler::getObjectClass(const QObject* target) {
   if (target == nullptr) {
-    return "unkown";
+    return "Unknown";
   }
   auto metaObject = target->metaObject();
   return metaObject->className();
