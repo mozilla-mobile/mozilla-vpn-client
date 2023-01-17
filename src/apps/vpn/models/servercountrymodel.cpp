@@ -187,7 +187,7 @@ int ServerCountryModel::cityConnectionScore(const QString& countryCode,
         continue;
       }
 
-      return cityConnectionScore(city);
+      return city.connectionScore();
     }
 
     // No such city was found.
@@ -196,50 +196,6 @@ int ServerCountryModel::cityConnectionScore(const QString& countryCode,
 
   // No such country was found.
   return NoData;
-}
-
-int ServerCountryModel::cityConnectionScore(const ServerCity& city) const {
-  qint64 now = QDateTime::currentSecsSinceEpoch();
-  int score = Poor;
-  int activeServerCount = 0;
-  uint32_t sumLatencyMsec = 0;
-  for (const QString& pubkey : city.servers()) {
-    const Server& server = m_servers[pubkey];
-    if (server.cooldownTimeout() <= now) {
-      sumLatencyMsec += server.latency();
-      activeServerCount++;
-    }
-  }
-
-  // Ensure there is at least one reachable server.
-  if (activeServerCount == 0) {
-    return Unavailable;
-  }
-
-  // If the feature is disabled, we have no data to return.
-  if (!Feature::get(Feature::Feature_serverConnectionScore)->isSupported()) {
-    return NoData;
-  }
-  // In the unlikely event that the sum of the latencies is zero, then we
-  // haven't actually measured anything and have nothing to report.
-  if (sumLatencyMsec == 0) {
-    return NoData;
-  }
-
-  // Increase the score if the location has less than 100ms of latency.
-  if ((sumLatencyMsec / activeServerCount) < 100) {
-    score++;
-  }
-
-  // Increase the score if the location has 6 or more servers.
-  if (activeServerCount >= 6) {
-    score++;
-  }
-
-  if (score > Good) {
-    score = Good;
-  }
-  return score;
 }
 
 QStringList ServerCountryModel::pickRandom() const {
@@ -367,8 +323,22 @@ void ServerCountryModel::retranslate() {
 
 void ServerCountryModel::setServerLatency(const QString& publicKey,
                                           unsigned int msec) {
-  if (m_servers.contains(publicKey)) {
-    m_servers[publicKey].setLatency(msec);
+  if (!m_servers.contains(publicKey)) {
+    return;
+  }
+  
+  Server& server = m_servers[publicKey];
+  server.setLatency(msec);
+
+  // Ugly iteration. Find the city for this server.
+  // TODO: Maybe it would be cleaner to move the latency data into ServerCity.
+  for (const ServerCountry& country : m_countries) {
+    for (const ServerCity& city : country.cities()) {
+      if (city.servers().contains(publicKey)) {
+        emit city.scoreChanged();
+        return;
+      }
+    }
   }
 }
 

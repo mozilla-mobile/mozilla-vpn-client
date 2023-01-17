@@ -22,12 +22,22 @@ class ServerCity final : public QObject {
   Q_PROPERTY(QString localizedName READ localizedName CONSTANT)
   Q_PROPERTY(double latitude READ latitude CONSTANT)
   Q_PROPERTY(double longitude READ longitude CONSTANT)
+  Q_PROPERTY(int connectionScore READ connectionScore NOTIFY scoreChanged)
 
  public:
   ServerCity();
   ServerCity(const ServerCity& other);
   ServerCity& operator=(const ServerCity& other);
   ~ServerCity();
+
+  enum CityConnectionScores {
+    Unavailable = -1,
+    NoData = 0,
+    Poor = 1,
+    Moderate = 2,
+    Good = 3,
+  };
+  Q_ENUM(CityConnectionScores);
 
   [[nodiscard]] bool fromJson(const QJsonObject& obj, const QString& country);
 
@@ -43,7 +53,12 @@ class ServerCity final : public QObject {
 
   double longitude() const { return m_longitude; }
 
+  int connectionScore() const;
+
   const QList<QString> servers() const { return m_servers; }
+
+ signals:
+  void scoreChanged() const;
 
  private:
   QString m_country;

@@ -9,8 +9,11 @@
 #include <QJsonValue>
 
 #include "constants.h"
+#include "feature.h"
 #include "leakdetector.h"
+#include "mozillavpn.h"
 #include "serveri18n.h"
+#include "servercountrymodel.h"
 
 ServerCity::ServerCity() { MZ_COUNT_CTOR(ServerCity); }
 
@@ -90,4 +93,49 @@ bool ServerCity::fromJson(const QJsonObject& obj, const QString& country) {
 
 const QString ServerCity::localizedName() const {
   return ServerI18N::translateCityName(m_country, m_name);
+}
+
+int ServerCity::connectionScore() const {
+  ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
+  qint64 now = QDateTime::currentSecsSinceEpoch();
+  int score = Poor;
+  int activeServerCount = 0;
+  uint32_t sumLatencyMsec = 0;
+  for (const QString& pubkey : m_servers) {
+    const Server server = scm->server(pubkey);
+    if (server.cooldownTimeout() <= now) {
+      sumLatencyMsec += server.latency();
+      activeServerCount++;
+    }
+  }
+
+  // Ensure there is at least one reachable server.
+  if (activeServerCount == 0) {
+    return Unavailable;
+  }
+
+  // If the feature is disabled, we have no data to return.
+  if (!Feature::get(Feature::Feature_serverConnectionScore)->isSupported()) {
+    return NoData;
+  }
+  // In the unlikely event that the sum of the latencies is zero, then we
+  // haven't actually measured anything and have nothing to report.
+  if (sumLatencyMsec == 0) {
+    return NoData;
+  }
+
+  // Increase the score if the location has less than 100ms of latency.
+  if ((sumLatencyMsec / activeServerCount) < 100) {
+    score++;
+  }
+
+  // Increase the score if the location has 6 or more servers.
+  if (activeServerCount >= 6) {
+    score++;
+  }
+
+  if (score > Good) {
+    score = Good;
+  }
+  return score;
 }

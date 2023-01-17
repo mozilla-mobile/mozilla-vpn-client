@@ -83,7 +83,6 @@ class ServerCountryModel final : public QAbstractListModel {
   [[nodiscard]] bool fromJsonInternal(const QByteArray& data);
 
   void sortCountries();
-  int cityConnectionScore(const ServerCity& city) const;
 
  private:
   QByteArray m_rawJson;
