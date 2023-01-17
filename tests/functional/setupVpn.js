@@ -27,6 +27,7 @@ const networkBenchmark = require('./servers/networkBenchmark.js');
 
 const app = process.env.MVPN_BIN;
 let vpnProcess = null;
+let vpnProcessTerminatePromise = null;
 let stdErr = '';
 
 async function startAndConnect() {
@@ -35,6 +36,11 @@ async function startAndConnect() {
   vpnProcess.stderr.on('data', (data) => {
     stdErr += data;
   });
+
+  vpnProcessTerminatePromise = new Promise(r => {
+    vpnProcess.on('exit', (code) => r());
+  });
+
   // Connect to VPN
   await vpn.connect(vpnWS, {hostname: '127.0.0.1'});
 }
@@ -159,9 +165,10 @@ exports.mochaHooks = {
       console.error(error);
     }
     vpn.disconnect();
+
+    vpnProcess.stdin.pause();
     vpnProcess.kill();
-    // Give each test 3 seconds to chill!
-    // Seems to help with tests that are slow to close vpn app at end.
-    await vpn.wait(3000);    
+
+    await vpnProcessTerminatePromise;
   },
 }
