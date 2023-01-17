@@ -718,7 +718,7 @@ paymentMethods:
 tutorialPopup:
   tutorialCompleteHeadline: Well done!
   tutorialCompletePrimaryButtonLabel: Let’s go!
-  secondaryButtonLabel: Come back later
+  secondaryButtonLabel: Dismiss
   leaveTutorialButton: Leave tutorial
 
   tutorialLeaveHeadline: Leave tutorial?
