@@ -77,7 +77,7 @@ void TaskSentry::run() {
 }
 
 void TaskSentry::sendRequest() {
-  NetworkRequest* request = NetworkRequest::create(this, 200);
+  NetworkRequest* request = new NetworkRequest(this, 200);
 
   request->requestInternal().setHeader(QNetworkRequest::ContentTypeHeader,
                                        "application/x-sentry-envelope");

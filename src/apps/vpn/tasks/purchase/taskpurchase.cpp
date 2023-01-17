@@ -55,7 +55,7 @@ TaskPurchase::TaskPurchase(Op op) : Task("TaskPurchase"), m_op(op) {
 TaskPurchase::~TaskPurchase() { MZ_COUNT_DTOR(TaskPurchase); }
 
 void TaskPurchase::run() {
-  NetworkRequest* request = NetworkRequest::create(this, 200);
+  NetworkRequest* request = new NetworkRequest(this, 200);
 
   switch (m_op) {
 #ifdef MZ_IOS

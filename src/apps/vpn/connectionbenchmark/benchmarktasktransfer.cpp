@@ -74,7 +74,7 @@ void BenchmarkTaskTransfer::createNetworkRequest() {
   NetworkRequest* request = nullptr;
   switch (m_type) {
     case BenchmarkDownload: {
-      request = NetworkRequest::create(this);
+      request = new NetworkRequest(this);
       request->get(m_url);
       break;
     }
@@ -86,7 +86,7 @@ void BenchmarkTaskTransfer::createNetworkRequest() {
         emit finished(0, true);
         emit completed();
       };
-      request = NetworkRequest::create(this, 200);
+      request = new NetworkRequest(this, 200);
       request->requestInternal().setHeader(QNetworkRequest::ContentTypeHeader,
                                            "application/x-www-form-urlencoded");
       request->post(m_url, uploadData);
@@ -115,7 +115,7 @@ void BenchmarkTaskTransfer::createNetworkRequestWithRecord(
         requestUrl.setHost(record.value().toString());
       }
 
-      request = NetworkRequest::create(this, 200);
+      request = new NetworkRequest(this, 200);
       request->requestInternal().setRawHeader("Host", hostname.toLocal8Bit());
       request->requestInternal().setPeerVerifyName(hostname);
 
@@ -140,7 +140,7 @@ void BenchmarkTaskTransfer::createNetworkRequestWithRecord(
         requestUrl.setHost(record.value().toString());
       }
 
-      request = NetworkRequest::create(this, 200);
+      request = new NetworkRequest(this, 200);
       request->requestInternal().setHeader(QNetworkRequest::ContentTypeHeader,
                                            "application/x-www-form-urlencoded");
 

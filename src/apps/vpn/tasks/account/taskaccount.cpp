@@ -23,7 +23,7 @@ TaskAccount::TaskAccount(
 TaskAccount::~TaskAccount() { MZ_COUNT_DTOR(TaskAccount); }
 
 void TaskAccount::run() {
-  NetworkRequest* request = NetworkRequest::create(this, 200);
+  NetworkRequest* request = new NetworkRequest(this, 200);
   request->auth(MozillaVPN::authorizationHeader());
   request->get(AppConstants::apiUrl(AppConstants::Account));
 

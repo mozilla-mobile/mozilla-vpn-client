@@ -54,7 +54,7 @@ void TaskAddDevice::run() {
 
   MozillaVPN::instance()->setJournalPublicAndPrivateKeys(publicKey, privateKey);
 
-  NetworkRequest* request = NetworkRequest::create(this, 201);
+  NetworkRequest* request = new NetworkRequest(this, 201);
   request->auth(MozillaVPN::authorizationHeader());
   request->post(AppConstants::apiUrl(AppConstants::Device),
                 QJsonObject{{"name", m_deviceName},

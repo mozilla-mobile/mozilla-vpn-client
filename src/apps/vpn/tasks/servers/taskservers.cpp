@@ -24,7 +24,7 @@ TaskServers::TaskServers(
 TaskServers::~TaskServers() { MZ_COUNT_DTOR(TaskServers); }
 
 void TaskServers::run() {
-  NetworkRequest* request = NetworkRequest::create(this, 200);
+  NetworkRequest* request = new NetworkRequest(this, 200);
   request->auth(MozillaVPN::authorizationHeader());
   request->get(AppConstants::apiUrl(AppConstants::Servers));
 

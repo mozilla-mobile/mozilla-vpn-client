@@ -55,8 +55,7 @@ void CaptivePortalRequest::run() {
 void CaptivePortalRequest::createRequest(const QUrl& url) {
   logger.debug() << "request:" << url.toString();
 
-  NetworkRequest* request =
-      NetworkRequest::create(static_cast<Task*>(parent()));
+  NetworkRequest* request = new NetworkRequest(static_cast<Task*>(parent()));
 
   // This enables the QNetworkReply::redirected for every type of redirect.
   request->requestInternal().setAttribute(

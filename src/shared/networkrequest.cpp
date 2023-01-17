@@ -53,12 +53,12 @@ void NetworkRequest::setRequestHandler(
   s_postResourceIODeviceCallback = std::move(postResourceIODeviceCallback);
 }
 
-NetworkRequest::NetworkRequest(Task* parent, int status,
-                               bool setAuthorizationHeader)
+NetworkRequest::NetworkRequest(Task* parent, int status)
     : QObject(parent), m_expectedStatusCode(status) {
   MZ_COUNT_CTOR(NetworkRequest);
   logger.debug() << "Network request created by" << parent->name();
 
+  m_request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
   m_request.setAttribute(QNetworkRequest::Http2AllowedAttribute, false);
   m_request.setRawHeader("User-Agent", NetworkManager::userAgent());
   m_request.setMaximumRedirectsAllowed(REQUEST_MAX_REDIRECTS);
@@ -74,18 +74,6 @@ NetworkRequest::NetworkRequest(Task* parent, int status,
     m_request.setRawHeader("Sec-GPC", "1");
   }
   m_request.setOriginatingObject(parent);
-
-  if (setAuthorizationHeader) {
-    if (SettingsHolder::instance()->token().isEmpty()) {
-      logger.error() << "INVALID TOKEN! This network request is going to fail.";
-      Q_ASSERT(false);
-    }
-
-    QByteArray authorizationHeader = "Bearer ";
-    authorizationHeader.append(
-        SettingsHolder::instance()->token().toLocal8Bit());
-    m_request.setRawHeader("Authorization", authorizationHeader);
-  }
 
   m_timer.setSingleShot(true);
 
@@ -107,18 +95,6 @@ NetworkRequest::~NetworkRequest() {
   if (NetworkManager::exists()) {
     NetworkManager::instance()->decreaseNetworkRequestCount();
   }
-}
-
-// static
-NetworkRequest* NetworkRequest::create(Task* parent, int status) {
-  Q_ASSERT(parent);
-  NetworkRequest* r = new NetworkRequest(parent, status, false);
-
-  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
-                         "application/json");
-  r->m_request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
-                            QNetworkRequest::NoLessSafeRedirectPolicy);
-  return r;
 }
 
 void NetworkRequest::auth(const QByteArray& authorizationHeader) {

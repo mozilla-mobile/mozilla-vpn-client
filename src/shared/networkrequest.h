@@ -23,6 +23,9 @@ class NetworkRequest final : public QObject {
   Q_DISABLE_COPY_MOVE(NetworkRequest)
 
  public:
+  // This object deletes itself at the end of the operation.
+
+  NetworkRequest(Task* parent, int status = 0);
   ~NetworkRequest();
 
   static void setRequestHandler(
@@ -32,10 +35,6 @@ class NetworkRequest final : public QObject {
           postResourceCallback,
       std::function<bool(NetworkRequest*, QIODevice*)>&&
           postResourceIODeviceCallback);
-
-  // This object deletes itself at the end of the operation.
-
-  static NetworkRequest* create(Task* parent, int status = 0);
 
   void get(const QUrl& url);
 
@@ -64,8 +63,6 @@ class NetworkRequest final : public QObject {
                    const QByteArray& data);
 
  private:
-  NetworkRequest(Task* parent, int status, bool setAuthorizationHeader);
-
   void getResource();
 
   void handleReply(QNetworkReply* reply);

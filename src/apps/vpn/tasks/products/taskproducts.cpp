@@ -22,7 +22,7 @@ TaskProducts::TaskProducts() : Task("TaskProducts") {
 TaskProducts::~TaskProducts() { MZ_COUNT_DTOR(TaskProducts); }
 
 void TaskProducts::run() {
-  NetworkRequest* request = NetworkRequest::create(this, 200);
+  NetworkRequest* request = new NetworkRequest(this, 200);
   request->get(AppConstants::apiUrl(AppConstants::Products));
 
   connect(request, &NetworkRequest::requestFailed, this,

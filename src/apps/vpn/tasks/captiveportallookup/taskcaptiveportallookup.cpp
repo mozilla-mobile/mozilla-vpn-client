@@ -29,7 +29,7 @@ TaskCaptivePortalLookup::~TaskCaptivePortalLookup() {
 void TaskCaptivePortalLookup::run() {
   logger.debug() << "Resolving the captive portal detector URL";
 
-  NetworkRequest* request = NetworkRequest::create(this, 200);
+  NetworkRequest* request = new NetworkRequest(this, 200);
   request->auth(MozillaVPN::authorizationHeader());
   request->get(AppConstants::apiUrl(AppConstants::DNSDetectPortal));
 

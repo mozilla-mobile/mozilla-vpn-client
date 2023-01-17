@@ -47,7 +47,7 @@ void TaskGetSubscriptionDetails::run() {
 }
 
 void TaskGetSubscriptionDetails::runInternal() {
-  NetworkRequest* request = NetworkRequest::create(this, 200);
+  NetworkRequest* request = new NetworkRequest(this, 200);
   request->auth(MozillaVPN::authorizationHeader());
   request->get(AppConstants::apiUrl(AppConstants::SubscriptionDetails));
 
@@ -143,7 +143,7 @@ void TaskGetSubscriptionDetails::initAuthentication() {
             logger.debug() << "Authentication completed with code:"
                            << logger.sensitive(pkceCodeSuccess);
 
-            NetworkRequest* request = NetworkRequest::create(this, 200);
+            NetworkRequest* request = new NetworkRequest(this, 200);
             request->post(
                 AppConstants::apiUrl(AppConstants::LoginVerify),
                 QJsonObject{{"code", pkceCodeSuccess},

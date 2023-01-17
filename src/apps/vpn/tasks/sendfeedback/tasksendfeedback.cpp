@@ -39,7 +39,7 @@ TaskSendFeedback::~TaskSendFeedback() { MZ_COUNT_DTOR(TaskSendFeedback); }
 void TaskSendFeedback::run() {
   logger.debug() << "Sending the feedback";
 
-  NetworkRequest* request = NetworkRequest::create(this, 201);
+  NetworkRequest* request = new NetworkRequest(this, 201);
   request->auth(MozillaVPN::authorizationHeader());
   request->post(
       AppConstants::apiUrl(AppConstants::Feedback),

@@ -37,7 +37,7 @@ void TaskRemoveDevice::run() {
   logger.debug() << "Removing the device with public key"
                  << logger.keys(m_publicKey);
 
-  NetworkRequest* request = NetworkRequest::create(this, 204);
+  NetworkRequest* request = new NetworkRequest(this, 204);
   request->auth(MozillaVPN::authorizationHeader());
   request->deleteResource(
       AppConstants::apiUrl(AppConstants::DeviceWithPublicKeyArgument)

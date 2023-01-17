@@ -35,7 +35,7 @@ NetworkRequest* fxaHawkPostRequest(Task* parent, const QString& path,
   QByteArray hawkHeader =
       hawk.generate(url, "POST", "application/json", payload).toUtf8();
 
-  NetworkRequest* request = NetworkRequest::create(parent, 200);
+  NetworkRequest* request = new NetworkRequest(parent, 200);
   request->requestInternal().setRawHeader("Authorization", hawkHeader);
   request->post(url, payload);
 
@@ -91,7 +91,7 @@ void AuthenticationInAppSession::start(Task* task, const QString& codeChallenge,
   QUrl url(AuthenticationListener::createAuthenticationUrl(
       codeChallenge, codeChallengeMethod, emailAddress));
 
-  NetworkRequest* request = NetworkRequest::create(task);
+  NetworkRequest* request = new NetworkRequest(task);
   request->get(url);
 
   connect(request, &NetworkRequest::requestCompleted, this,
@@ -174,7 +174,7 @@ void AuthenticationInAppSession::checkAccount(const QString& emailAddress) {
   aia->requestEmailAddressChange(this);
   aia->requestState(AuthenticationInApp::StateCheckingAccount, this);
 
-  NetworkRequest* request = NetworkRequest::create(m_task, 200);
+  NetworkRequest* request = new NetworkRequest(m_task, 200);
   request->post(QString("%1/v1/account/status").arg(Constants::fxaApiBaseUrl()),
                 QJsonObject{{"email", m_emailAddress}});
 
@@ -277,7 +277,7 @@ void AuthenticationInAppSession::signInInternal(const QString& unblockCode) {
     obj.insert("unblockCode", unblockCode);
   }
 
-  NetworkRequest* request = NetworkRequest::create(m_task, 200);
+  NetworkRequest* request = new NetworkRequest(m_task, 200);
   request->post(QString("%1/v1/account/login").arg(Constants::fxaApiBaseUrl()),
                 obj);
 
@@ -336,7 +336,7 @@ void AuthenticationInAppSession::signUp() {
   AuthenticationInApp::instance()->requestState(
       AuthenticationInApp::StateSigningUp, this);
 
-  NetworkRequest* request = NetworkRequest::create(m_task, 200);
+  NetworkRequest* request = new NetworkRequest(m_task, 200);
   request->post(QString("%1/v1/account/create").arg(Constants::fxaApiBaseUrl()),
                 QJsonObject{
                     {
@@ -397,7 +397,7 @@ void AuthenticationInAppSession::sendUnblockCodeEmail() {
   logger.debug() << "Resend unblock code";
   Q_ASSERT(m_sessionToken.isEmpty());
 
-  NetworkRequest* request = NetworkRequest::create(m_task, 200);
+  NetworkRequest* request = new NetworkRequest(m_task, 200);
   request->post(QString("%1/v1/account/login/send_unblock_code")
                     .arg(Constants::fxaApiBaseUrl()),
                 QJsonObject{{"email", m_emailAddressCaseFix}});
@@ -579,7 +579,7 @@ void AuthenticationInAppSession::startAccountDeletionFlow() {
   HawkAuth hawk = HawkAuth(m_sessionToken);
   QByteArray hawkHeader = hawk.generate(url, "GET", "", "").toUtf8();
 
-  NetworkRequest* request = NetworkRequest::create(m_task, 200);
+  NetworkRequest* request = new NetworkRequest(m_task, 200);
   request->requestInternal().setRawHeader("Authorization", hawkHeader);
   request->get(url);
 
@@ -713,7 +713,10 @@ void AuthenticationInAppSession::finalizeSignInOrUp() {
               return;
             }
 
-            NetworkRequest* request = NetworkRequest::create(m_task, 200);
+            NetworkRequest* request = new NetworkRequest(m_task, 200);
+            request->requestInternal().setAttribute(
+                QNetworkRequest::RedirectPolicyAttribute,
+                QNetworkRequest::NoLessSafeRedirectPolicy);
             request->get(redirect.toString());
 
             connect(request, &NetworkRequest::requestFailed, this,

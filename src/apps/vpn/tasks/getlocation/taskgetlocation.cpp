@@ -31,7 +31,7 @@ void TaskGetLocation::run() {
   QUrl url(AppConstants::apiUrl(AppConstants::IPInfo));
   QString host = url.host();
 
-  NetworkRequest* request = NetworkRequest::create(this, 200);
+  NetworkRequest* request = new NetworkRequest(this, 200);
   request->auth(MozillaVPN::authorizationHeader());
   request->requestInternal().setRawHeader("Host", host.toLocal8Bit());
   request->requestInternal().setPeerVerifyName(host);

@@ -25,7 +25,7 @@ TaskGetFeatureList::TaskGetFeatureList() : Task("TaskGetFeatureList") {
 TaskGetFeatureList::~TaskGetFeatureList() { MZ_COUNT_DTOR(TaskGetFeatureList); }
 
 void TaskGetFeatureList::run() {
-  NetworkRequest* request = NetworkRequest::create(this, 200);
+  NetworkRequest* request = new NetworkRequest(this, 200);
   request->get(AppConstants::apiUrl(AppConstants::FeatureList));
 
   connect(request, &NetworkRequest::requestFailed, this,

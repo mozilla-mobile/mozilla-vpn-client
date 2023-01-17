@@ -54,7 +54,7 @@ void TaskAuthenticate::run() {
             logger.debug() << "Authentication completed with code:"
                            << logger.sensitive(pkceCodeSuccess);
 
-            NetworkRequest* request = NetworkRequest::create(this, 200);
+            NetworkRequest* request = new NetworkRequest(this, 200);
             request->post(
                 AppConstants::apiUrl(AppConstants::LoginVerify),
                 QJsonObject{{"code", pkceCodeSuccess},

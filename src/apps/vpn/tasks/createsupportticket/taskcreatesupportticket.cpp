@@ -49,7 +49,7 @@ void TaskCreateSupportTicket::run() {
   bool isAuthenticated =
       MozillaVPN::instance()->userState() == MozillaVPN::UserAuthenticated;
 
-  NetworkRequest* request = NetworkRequest::create(this, 201);
+  NetworkRequest* request = new NetworkRequest(this, 201);
   if (isAuthenticated) {
     request->auth(MozillaVPN::authorizationHeader());
   }
