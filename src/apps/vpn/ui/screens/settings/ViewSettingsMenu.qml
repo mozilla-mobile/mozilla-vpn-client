@@ -11,7 +11,7 @@ import components 0.1
 
 
 VPNViewBase {
-    id: settingsList
+    id: vpnFlickable
     objectName: "settingsView"
 
     _viewContentData: ColumnLayout {

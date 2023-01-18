@@ -24,6 +24,11 @@ ComboBox {
         z: -1
     }
 
+    onActiveFocusChanged: {
+        if (focus && vpnFlickable && typeof(vpnFlickable.ensureVisible) !== "undefined")
+            vpnFlickable.ensureVisible(combo)
+    }
+
     indicator: VPNIcon {
         anchors.verticalCenter: combo.verticalCenter
         anchors.right: combo.right

@@ -10,6 +10,7 @@ import Mozilla.VPN 1.0
 import components 0.1
 
 VPNViewBase {
+    id: vpnFlickable
     property string _startAtBootTitle: ""
     property string _notificationsTitle: ""
     property string _languageTitle: ""
