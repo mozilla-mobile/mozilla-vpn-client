@@ -28,6 +28,9 @@ Rectangle {
                 opacity: 0
                 visible: false
             }
+            StateChangeScript {
+                script: VPNConnectionBenchmark.reset();
+            }
         },
         State {
             name: "opening"
