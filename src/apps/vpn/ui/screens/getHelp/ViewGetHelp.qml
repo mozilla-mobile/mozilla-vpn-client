@@ -11,6 +11,7 @@ import components 0.1
 
 
 VPNViewBase {
+    id: vpnFlickable
     //% "Get help"
     _menuTitle: qsTrId("vpn.main.getHelp2")
     _menuOnBackClicked: () => VPNNavigator.requestPreviousScreen()

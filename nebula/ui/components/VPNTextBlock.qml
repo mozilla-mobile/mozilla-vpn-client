@@ -22,4 +22,10 @@ Text {
 
     Accessible.role: Accessible.StaticText
     Accessible.name: text
+
+    onActiveFocusChanged: {
+        if (focus && typeof(vpnFlickable) !== "undefined" && typeof(vpnFlickable.ensureVisible) !== "undefined") {
+            vpnFlickable.ensureVisible(root)
+        }
+    }
 }

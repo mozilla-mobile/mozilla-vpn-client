@@ -65,6 +65,10 @@ Window {
         }
     }
 
+    function repositionTutorialTooltip() {
+        tutorialUI.repositionTutorialTooltip()
+    }
+
     screen: Qt.platform.os === "wasm" && Qt.application.screens.length > 1 ? Qt.application.screens[1] : Qt.application.screens[0]
     flags: Qt.platform.os === "ios" ? Qt.MaximizeUsingFullscreenGeometryHint : Qt.Window
     visible: true

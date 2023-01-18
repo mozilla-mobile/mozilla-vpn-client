@@ -11,6 +11,7 @@ import components 0.1
 import Mozilla.VPN.qmlcomponents 1.0
 
 VPNViewBase {
+    id: vpnFlickable
     property var message
 
     property Component titleComponent: Component {

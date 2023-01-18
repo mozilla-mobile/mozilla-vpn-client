@@ -23,6 +23,7 @@ VPNViewBase {
             id: editLink
 
             property bool isEditing: false
+            property bool skipEnsureVisible: true
 
             horizontalPadding: VPNTheme.theme.hSpacing / 5
             enabled: !isEmptyState

@@ -11,6 +11,8 @@ import compat 0.1
 
 
 Item {
+    id: root
+    objectName: "tutorialUiRoot"
 
     /*
         TODOs
@@ -36,9 +38,6 @@ Item {
     // targetElement is set to `parent` here to get around `Cannot call method ... of undefined` warnings
     // and is reset before the tutorial is opened in onTooltipNeeded()
     property var targetElement: parent
-
-    id: root
-    objectName: "tutorialUiRoot"
 
     anchors.fill: parent
     visible: tutorialTooltip.visible || tutorialPopup.opened
@@ -274,6 +273,10 @@ Item {
         if (targetElement) {
             targetElement.forceActiveFocus();
         }
+    }
+
+    function repositionTutorialTooltip() {
+        tutorialTooltip.repositionTooltip()
     }
 
     Connections {
