@@ -100,12 +100,12 @@ class ServerData final : public QObject {
   bool m_initialized = false;
 
   QString m_exitCountryCode;
-  QString m_exitCityName;
   QString m_exitCountryName;
+  QString m_exitCityName;
 
   QString m_entryCountryCode;
-  QString m_entryCityName;
   QString m_entryCountryName;
+  QString m_entryCityName;
 
   QString m_previousExitCountryCode;
   QString m_previousExitCityName;

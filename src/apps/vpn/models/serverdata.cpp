@@ -125,21 +125,27 @@ bool ServerData::settingsChanged() {
 
   m_exitCountryCode = obj[EXIT_COUNTRY_CODE].toString();
   m_exitCityName = obj[EXIT_CITY_NAME].toString();
+  // If obj[EXIT_COUNTRY_NAME] does not exist then we need to extract the
+  // country name from the country code
+  if (!obj.contains(EXIT_COUNTRY_NAME)) {
+    m_exitCountryName =
+        MozillaVPN::instance()->serverCountryModel()->countryName(
+            m_exitCountryCode);
+  } else {
+    m_exitCountryName = obj[EXIT_COUNTRY_NAME].toString();
+  }
+
   m_entryCountryCode = obj[ENTER_COUNTRY_CODE].toString();
   m_entryCityName = obj[ENTER_CITY_NAME].toString();
-
-  // If obj[ENTER_COUNTRY_NAME] is null then we need to extract the country name
-  // from the country code
-  m_entryCountryName =
-      obj[ENTER_COUNTRY_NAME].isUndefined()
-          ? MozillaVPN::instance()->serverCountryModel()->countryName(
-                m_entryCountryCode)
-          : obj[ENTER_COUNTRY_NAME].toString();
-  m_exitCountryName =
-      obj[EXIT_COUNTRY_NAME].isUndefined()
-          ? MozillaVPN::instance()->serverCountryModel()->countryName(
-                m_exitCountryCode)
-          : obj[EXIT_COUNTRY_NAME].toString();
+  // If obj[ENTER_COUNTRY_NAME] does not exist then we need to extract the
+  // country name from the country code
+  if (!obj.contains(ENTER_COUNTRY_NAME)) {
+    m_entryCountryName =
+        MozillaVPN::instance()->serverCountryModel()->countryName(
+            m_entryCountryCode);
+  } else {
+    m_entryCountryName = obj[ENTER_COUNTRY_NAME].toString();
+  }
 
   emit changed();
   return true;
