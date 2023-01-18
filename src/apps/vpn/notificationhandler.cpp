@@ -115,8 +115,7 @@ void NotificationHandler::showNotification() {
         }
 
         QString localizedPreviousExitCountryName =
-            vpn->serverCountryModel()->countryName(
-                vpn->currentServer()->previousExitCountryCode());
+            vpn->currentServer()->localizedPreviousExitCountryName();
         QString localizedPreviousExitCityName =
             vpn->currentServer()->localizedPreviousExitCityName();
 

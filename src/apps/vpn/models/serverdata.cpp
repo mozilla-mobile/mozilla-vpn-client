@@ -161,6 +161,12 @@ QString ServerData::localizedEntryCityName() const {
   return ServerI18N::translateCityName(m_entryCountryCode, m_entryCityName);
 }
 
+QString ServerData::localizedPreviousExitCountryName() const {
+  Q_ASSERT(m_initialized);
+  return ServerI18N::translateCityName(m_previousExitCountryCode,
+                                       m_previousExitCountryName);
+}
+
 QString ServerData::localizedPreviousExitCityName() const {
   Q_ASSERT(m_initialized);
   return ServerI18N::translateCityName(m_previousExitCountryCode,

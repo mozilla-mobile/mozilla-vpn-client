@@ -34,10 +34,10 @@ class ServerData final : public QObject {
 
   Q_PROPERTY(QString previousExitCountryCode READ previousExitCountryCode NOTIFY
                  changed)
-  Q_PROPERTY(
-      QString previousExitCityName READ previousExitCityName NOTIFY changed)
   Q_PROPERTY(QString localizedPreviousExitCityName READ
                  localizedPreviousExitCityName NOTIFY changed)
+  Q_PROPERTY(
+      QString previousExitCityName READ previousExitCityName NOTIFY changed)
 
  public:
   ServerData();
@@ -73,6 +73,7 @@ class ServerData final : public QObject {
   const QString& previousExitCountryCode() const {
     return m_previousExitCountryCode;
   }
+  QString localizedPreviousExitCountryName() const;
   const QString& previousExitCityName() const { return m_previousExitCityName; }
   QString localizedPreviousExitCityName() const;
 
@@ -108,6 +109,7 @@ class ServerData final : public QObject {
   QString m_entryCityName;
 
   QString m_previousExitCountryCode;
+  QString m_previousExitCountryName;
   QString m_previousExitCityName;
 
   QString m_exitServerPublicKey;
