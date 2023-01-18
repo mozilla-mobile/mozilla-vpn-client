@@ -66,6 +66,8 @@ bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
   m_rawJson = "";
   m_countries.clear();
   m_servers.clear();
+  m_sumLatencyMsec = 0;
+  m_numLatencySamples = 0;
 
   QJsonDocument doc = QJsonDocument::fromJson(s);
   if (!doc.isObject()) {
@@ -318,13 +320,27 @@ void ServerCountryModel::retranslate() {
   endResetModel();
 }
 
+unsigned int ServerCountryModel::avgLatency() const {
+  if (m_numLatencySamples == 0) {
+    return 0;
+  } else {
+    return (m_sumLatencyMsec + m_numLatencySamples - 1) / m_numLatencySamples;
+  }
+}
+
 void ServerCountryModel::setServerLatency(const QString& publicKey,
                                           unsigned int msec) {
   if (!m_servers.contains(publicKey)) {
     return;
   }
-  
+
   Server& server = m_servers[publicKey];
+  if(server.latency() != 0) {
+    m_sumLatencyMsec -= server.latency();
+  } else {
+    m_numLatencySamples++;
+  }
+  m_sumLatencyMsec += msec;
   server.setLatency(msec);
 
   // Ugly iteration. Find the city for this server.
@@ -367,14 +383,14 @@ QList<QVariant> ServerCountryModel::recommendedLocations(
 
   // For testing - just return the first city of each country.
   for (const ServerCountry& country : m_countries) {
-    const QList<ServerCity>& cities = cities(country.code());
+    const QList<ServerCity>& citiesList = cities(country.code());
     if (results.count() >= count) {
       break;
     }
-    if (cities.isEmpty()) {
+    if (citiesList.isEmpty()) {
       continue;
     }
-    results.append(QVariant::fromValue(&cities.first()));
+    results.append(QVariant::fromValue(&citiesList.first()));
   }
 
   return results;

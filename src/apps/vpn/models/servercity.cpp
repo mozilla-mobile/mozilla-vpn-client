@@ -124,8 +124,8 @@ int ServerCity::connectionScore() const {
     return NoData;
   }
 
-  // Increase the score if the location has less than 100ms of latency.
-  if ((sumLatencyMsec / activeServerCount) < 100) {
+  // Increase the score if the location has better than average latency.
+  if ((sumLatencyMsec / activeServerCount) < scm->avgLatency()) {
     score++;
   }
 
