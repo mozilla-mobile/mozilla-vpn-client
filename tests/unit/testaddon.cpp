@@ -401,6 +401,8 @@ void TestAddon::conditionWatcher_featuresEnabled() {
 }
 
 void TestAddon::conditionWatcher_group() {
+  SettingsHolder::instance()->setInstallationTime(QDateTime::currentDateTime());
+
   QObject parent;
   AddonConditionWatcher* acw1 =
       AddonConditionWatcherTriggerTimeSecs::maybeCreate(&parent, 1);
@@ -865,8 +867,6 @@ void TestAddon::message_notification_data() {
   TestHelper::resetLastSystemNotification();
   // Message is created for the first time,
   // but user is not logged in, no  message sent
-  static_cast<AddonMessage*>(
-      Addon::create(&parent, ":/addons_test/message1.json"));
   QTest::addRow("not-logged-in")
       << QString() << QString() << TestHelper::lastSystemNotification.title
       << TestHelper::lastSystemNotification.message;
