@@ -5,25 +5,20 @@
 const Server = require('./server.js');
 const constants = require('../constants.js');
 
-// Mock server for VPN Network Benchmark:
-// https://github.com/mozilla-services/vpn-network-benchmark
 let server = null;
 module.exports = {
   start(headerCheck = true) {
     server = new Server(
-        'VPN Network Benchmark', constants.NETWORK_BENCHMARK_PORT, {
+        'Captive portal server', constants.CAPTIVE_PORTAL_PORT, {
           GETs: {
-            '/': {
+            '/success.txt': {
               status: 200,
-              bodyRaw: new Array(1024).join('a'),
+              bodyRaw: 'success',
             }
-          },
-          POSTs: {
-            '/': {status: 200, body: {}},
           },
         },
         headerCheck);
-    return constants.NETWORK_BENCHMARK_PORT;
+    return constants.CAPTIVE_PORTAL_PORT;
   },
 
   stop() {

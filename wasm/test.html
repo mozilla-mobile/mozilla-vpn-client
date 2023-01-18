@@ -78,6 +78,7 @@ function init() {
         MVPN_SKIP_ADDON_SIGNATURE: '1',
         MZ_BENCHMARK_DOWNLOAD_URL: u.searchParams.get('benchmark'),
         MZ_BENCHMARK_UPLOAD_URL: u.searchParams.get('benchmark'),
+        MZ_CAPTIVE_PORTAL_URL: u.searchParams.get('captivePortal'),
       }
     });
     qtLoader.loadEmscriptenModule('mozillavpn');

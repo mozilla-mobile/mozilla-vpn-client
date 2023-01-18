@@ -4,6 +4,7 @@
 
 #include "captiveportalrequest.h"
 
+#include "appconstants.h"
 #include "captiveportal.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -42,12 +43,13 @@ void CaptivePortalRequest::run() {
   // delete all the others.
 
   for (const QString& address : ipv4Addresses) {
-    QUrl url(QString(CAPTIVEPORTAL_URL_IPV4).arg(address));
+    QUrl url(AppConstants::captivePortalUrl().arg(address));
     createRequest(url);
   }
 
   for (const QString& address : ipv6Addresses) {
-    QUrl url(QString(CAPTIVEPORTAL_URL_IPV6).arg(address));
+    QUrl url(
+        AppConstants::captivePortalUrl().arg(QString("[%1]").arg(address)));
     createRequest(url);
   }
 }

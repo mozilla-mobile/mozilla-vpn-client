@@ -226,10 +226,7 @@ exports.endpoints = {
     '/api/v1/vpn/dns/detectportal': {
       status: 200,
       requiredHeaders: ['Authorization'],
-      body: [
-        {address: '34.107.221.82', family: 4},
-        {address: '2600:1901:0:38d7::', family: 6}
-      ]
+      body: [{address: '127.0.0.1', family: 4}, {address: '::1', family: 6}]
     },
 
     '/api/v1/vpn/subscriptionDetails': {

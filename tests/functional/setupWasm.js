@@ -20,6 +20,7 @@ const fxaServer = require('./servers/fxa.js');
 const guardian = require('./servers/guardian.js');
 const addonServer = require('./servers/addon.js');
 const networkBenchmark = require('./servers/networkBenchmark.js');
+const captivePortalServer = require('./servers/captivePortalServer.js');
 const wasm = require('./wasm.js');
 
 const {Builder, By, Key, until} = require('selenium-webdriver');
@@ -41,6 +42,9 @@ exports.mochaHooks = {
         `http://localhost:${addonServer.start(false)}/01_empty_manifest/`);
     u.searchParams.set(
         'benchmark', `http://localhost:${networkBenchmark.start(false)}`);
+    u.searchParams.set(
+        'captivePortal',
+        `http://%1:${captivePortalServer.start(false)}/success.txt`);
 
     process.env['MZ_WASM_URL'] = u.toString();
     process.env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';
@@ -53,12 +57,14 @@ exports.mochaHooks = {
     fxaServer.stop();
     addonServer.stop();
     networkBenchmark.stop();
+    captivePortalServer.stop();
     wasm.stop();
 
     guardian.throwExceptionsIfAny();
     fxaServer.throwExceptionsIfAny();
     addonServer.throwExceptionsIfAny();
     networkBenchmark.throwExceptionsIfAny();
+    captivePortalServer.throwExceptionsIfAny();
 
     await driver.quit();
   },

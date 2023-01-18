@@ -16,8 +16,8 @@
 #include "versionutils.h"
 
 void TestReleaseMonitor::failure() {
-  SimpleNetworkManager snm;
   SettingsHolder settingsHolder;
+  SimpleNetworkManager snm;
 
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Failure, QByteArray()));
@@ -106,8 +106,8 @@ void TestReleaseMonitor::success_data() {
 }
 
 void TestReleaseMonitor::success() {
-  SimpleNetworkManager snm;
   SettingsHolder settingsHolder;
+  SimpleNetworkManager snm;
 
   ReleaseMonitor rm;
   rm.runSoon();
