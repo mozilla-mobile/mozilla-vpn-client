@@ -79,17 +79,6 @@ bool ServerCountry::fromJson(const QJsonObject& countryObj) {
   return true;
 }
 
-const QList<QString> ServerCountry::serversFromCityName(
-    const QString& cityName) const {
-  for (const ServerCity& city : m_cities) {
-    if (city.name() == cityName) {
-      return city.servers();
-    }
-  }
-
-  return QList<QString>();
-}
-
 namespace {
 
 bool sortCityCallback(const ServerCity& a, const ServerCity& b,

@@ -177,21 +177,10 @@ QVariant ServerCountryModel::data(const QModelIndex& index, int role) const {
 
 int ServerCountryModel::cityConnectionScore(const QString& countryCode,
                                             const QString& cityCode) const {
-  for (const ServerCountry& country : m_countries) {
-    if (country.code() != countryCode) {
-      continue;
-    }
-
-    for (const ServerCity& city : country.cities()) {
-      if (city.code() != cityCode) {
-        continue;
-      }
-
+  for (const ServerCity& city : cities(countryCode)) {
+    if (city.code() == cityCode) {
       return city.connectionScore();
     }
-
-    // No such city was found.
-    return NoData;
   }
 
   // No such country was found.
@@ -214,8 +203,8 @@ QStringList ServerCountryModel::pickRandom() const {
       } else {
         // We found our selection.
         QStringList serverChoice = {
-            country->code(), city->name(),
-            ServerI18N::translateCityName(country->code(), city->name())};
+            city->country(), city->name(),
+            ServerI18N::translateCityName(city->country(), city->name())};
         return serverChoice;
       }
     }
@@ -255,7 +244,7 @@ QStringList ServerCountryModel::pickBest(const Location& location) const {
           qAcos(clientSin * citySin + clientCos * cityCos * diffCos);
 
       if (distance < bestDistance) {
-        bestCountry = country.code();
+        bestCountry = city.country();
         bestCity = city.name();
         bestDistance = distance;
       }
@@ -272,33 +261,41 @@ bool ServerCountryModel::exists(const QString& countryCode,
                                 const QString& cityName) const {
   logger.debug() << "Check if the server is still valid.";
 
-  for (const ServerCountry& country : m_countries) {
-    if (country.code() == countryCode) {
-      for (const ServerCity& city : country.cities()) {
-        if (cityName == city.name()) {
-          return true;
-        }
-      }
-
-      break;
+  for (const ServerCity& city : cities(countryCode)) {
+    if (cityName == city.name()) {
+      return true;
     }
   }
 
   return false;
 }
 
+const QList<ServerCity>& ServerCountryModel::cities(
+    const QString& countryCode) const {
+  for (const ServerCountry& country : m_countries) {
+    if (country.code() == countryCode) {
+      return country.cities();
+    }
+  }
+
+  static const QList<ServerCity> emptylist;
+  return emptylist;
+}
+
 const QList<Server> ServerCountryModel::servers(const QString& countryCode,
                                                 const QString& cityName) const {
   QList<Server> results;
+  for (const ServerCity& city : cities(countryCode)) {
+    if (city.name() != cityName) {
+      continue;
+    }
 
-  for (const ServerCountry& country : m_countries) {
-    if (country.code() == countryCode) {
-      for (const QString& pubkey : country.serversFromCityName(cityName)) {
-        if (m_servers.contains(pubkey)) {
-          results.append(m_servers.value(pubkey));
-        }
+    for (const QString& pubkey : city.servers()) {
+      if (m_servers.contains(pubkey)) {
+        results.append(m_servers.value(pubkey));
       }
     }
+    break;
   }
 
   return results;
@@ -354,17 +351,12 @@ void ServerCountryModel::setCooldownForAllServersInACity(
   logger.debug() << "Set cooldown for all servers for: "
                  << logger.sensitive(countryCode) << logger.sensitive(cityCode);
 
-  for (const ServerCountry& country : m_countries) {
-    if (country.code() == countryCode) {
-      for (const ServerCity& city : country.cities()) {
-        if (city.code() == cityCode) {
-          for (const QString& pubkey : city.servers()) {
-            setServerCooldown(pubkey);
-          }
-          break;
-        }
-      }
-      break;
+  for (const ServerCity& city : cities(countryCode)) {
+    if (city.code() != cityCode) {
+      continue;
+    }
+    for (const QString& pubkey : city.servers()) {
+      setServerCooldown(pubkey);
     }
   }
 }
@@ -375,7 +367,7 @@ QList<QVariant> ServerCountryModel::recommendedLocations(
 
   // For testing - just return the first city of each country.
   for (const ServerCountry& country : m_countries) {
-    const QList<ServerCity>& cities = country.cities();
+    const QList<ServerCity>& cities = cities(country.code());
     if (results.count() >= count) {
       break;
     }
