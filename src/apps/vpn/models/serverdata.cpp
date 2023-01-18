@@ -208,6 +208,7 @@ void ServerData::forget() {
   m_entryCityName.clear();
   m_entryCountryName.clear();
   m_previousExitCountryCode.clear();
+  m_previousExitCountryName.clear();
   m_previousExitCityName.clear();
 }
 

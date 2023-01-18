@@ -34,6 +34,8 @@ class ServerData final : public QObject {
 
   Q_PROPERTY(QString previousExitCountryCode READ previousExitCountryCode NOTIFY
                  changed)
+  Q_PROPERTY(QString localizedPreviousExitCountryName READ
+                 localizedPreviousExitCountryName NOTIFY changed)
   Q_PROPERTY(QString localizedPreviousExitCityName READ
                  localizedPreviousExitCityName NOTIFY changed)
   Q_PROPERTY(
