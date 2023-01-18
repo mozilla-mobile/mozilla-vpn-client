@@ -84,7 +84,9 @@ void ServerData::update(const QString& exitCountryCode,
   Q_ASSERT(m_initialized);
 
   m_previousExitCountryCode = m_exitCountryCode;
-  m_previousExitCountryName = MozillaVPN::instance()->serverCountryModel()->countryName(exitCountryCode);
+  m_previousExitCountryName =
+      MozillaVPN::instance()->serverCountryModel()->countryName(
+          exitCountryCode);
   m_previousExitCityName = m_exitCityName;
 
   QJsonObject obj;

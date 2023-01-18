@@ -228,7 +228,7 @@ Controller* MozillaVPN::controller() { return &m_private->m_controller; }
 ServerData* MozillaVPN::currentServer() { return &m_private->m_serverData; }
 
 ServerCountryModel* MozillaVPN::serverCountryModel() {
-    return &m_private->m_serverCountryModel;
+  return &m_private->m_serverCountryModel;
 }
 
 SubscriptionData* MozillaVPN::subscriptionData() {
