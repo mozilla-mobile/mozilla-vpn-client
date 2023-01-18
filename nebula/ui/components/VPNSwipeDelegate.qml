@@ -39,6 +39,12 @@ SwipeDelegate {
         onSwipeClose()
     }
 
+    onActiveFocusChanged: {
+        if (focus && typeof(vpnFlickable) !== "undefined" && typeof(vpnFlickable.ensureVisible) !== "undefined") {
+            vpnFlickable.ensureVisible(swipeDelegate)
+        }
+    }
+
     contentItem: Item {
         id: swipeDelegateContentItem
 

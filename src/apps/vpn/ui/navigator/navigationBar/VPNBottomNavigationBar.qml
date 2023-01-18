@@ -87,6 +87,7 @@ Rectangle {
                 Layout.preferredHeight: height
                 Layout.preferredWidth: width
 
+                skipEnsureVisible: true
                 _screen: VPNNavigator[screen]
                 _source: checked ? (_hasNotification ? sourceCheckedNotification : sourceChecked) : (_hasNotification ? sourceUncheckedNotification : sourceUnchecked)
                 ButtonGroup.group: navBarButtonGroup

@@ -53,8 +53,8 @@ RoundButton {
         }
         visualStateItem.state = uiState.stateFocused;
 
-        if (typeof(ensureVisible) !== "undefined")
-            ensureVisible(root);
+        if (focus && typeof(vpnFlickable) !== "undefined" && typeof(vpnFlickable.ensureVisible) !== "undefined")
+            vpnFlickable.ensureVisible(root)
     }
 
     background: Rectangle {
