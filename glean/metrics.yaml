@@ -1639,7 +1639,7 @@ sample:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-3320
     data_reviews:
-      - TODO
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5525
     data_sensitivity:
       - technical
     notification_emails:
@@ -1668,7 +1668,7 @@ sample:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-3742
     data_reviews:
-      - TODO
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5525
     data_sensitivity:
       - technical
     notification_emails:
