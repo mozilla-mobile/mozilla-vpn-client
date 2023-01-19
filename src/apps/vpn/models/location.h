@@ -41,6 +41,8 @@ class Location final : public QObject {
 
   double longitude() const { return m_longitude; }
 
+  double distance(double latitude, double longitude) const; 
+
   QHostAddress ipAddress() const { return m_ipAddress; }
 
  signals:
@@ -53,6 +55,8 @@ class Location final : public QObject {
   QHostAddress m_ipAddress;
   double m_latitude;
   double m_longitude;
+  double m_latSin;
+  double m_latCos;
   bool m_initialized = false;
 };
 

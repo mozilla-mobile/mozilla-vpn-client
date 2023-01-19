@@ -16,6 +16,8 @@ Location::Location() {
 
   m_latitude = qQNaN();
   m_longitude = qQNaN();
+  m_latSin = qQNaN();
+  m_latCos = qQNaN();
 }
 
 Location::~Location() { MZ_COUNT_DTOR(Location); }
@@ -61,10 +63,14 @@ bool Location::fromJson(const QByteArray& json) {
   if (latlong.count() >= 2) {
     m_latitude = latlong[0].toDouble(&lat_okay);
     m_longitude = latlong[1].toDouble(&long_okay);
+    m_latSin = qSin(m_latitude * M_PI / 180.0);
+    m_latCos = qCos(m_latitude * M_PI / 180.0);
   }
   if (!lat_okay || !long_okay) {
     m_latitude = qQNaN();
     m_longitude = qQNaN();
+    m_latSin = qQNaN();
+    m_latCos = qQNaN();
   }
 
   m_cityName = cityName.toString();
@@ -75,4 +81,22 @@ bool Location::fromJson(const QByteArray& json) {
 
   emit changed();
   return true;
+}
+
+// Compute distance between two points on a great circle, which is given by:
+//   d = acos(sin(lat1)*sin(lat2) + cos(lat1)*cos(lat2)*cos(long1-long2))
+//
+// This is done in spherical coordinates, and will return a value in the range
+// of zero to pi. Multiply by the Earth's radius if you want meaningful units.
+double Location::distance(double latitude, double longitude) const {
+  if (qIsNaN(m_latitude) || qIsNaN(m_longitude)) {
+    return 0.0;
+  }
+  Q_ASSERT(!qIsNaN(m_latSin));
+  Q_ASSERT(!qIsNaN(m_latCos));
+  double otherSin = qSin(latitude * M_PI / 180.0);
+  double otherCos = qCos(latitude * M_PI / 180.0);
+  double diffCos = qCos((longitude - m_longitude) * M_PI / 180.0);
+
+  return qAcos(m_latSin * otherSin + m_latCos * otherCos * diffCos);
 }

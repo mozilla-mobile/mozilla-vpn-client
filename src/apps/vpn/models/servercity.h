@@ -55,6 +55,8 @@ class ServerCity final : public QObject {
 
   int connectionScore() const;
 
+  unsigned int latency() const;
+
   const QList<QString> servers() const { return m_servers; }
 
  signals:

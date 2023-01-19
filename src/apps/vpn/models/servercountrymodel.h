@@ -44,7 +44,7 @@ class ServerCountryModel final : public QAbstractListModel {
   bool initialized() const { return !m_rawJson.isEmpty(); }
 
   Q_INVOKABLE QStringList pickRandom() const;
-  QStringList pickBest(const Location& location) const;
+  QStringList pickBest() const;
 
   bool exists(const QString& countryCode, const QString& cityName) const;
 

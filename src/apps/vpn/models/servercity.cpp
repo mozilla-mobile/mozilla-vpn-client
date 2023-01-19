@@ -139,3 +139,19 @@ int ServerCity::connectionScore() const {
   }
   return score;
 }
+
+unsigned int ServerCity::latency() const {
+  ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
+  qint64 now = QDateTime::currentSecsSinceEpoch();
+  int activeServerCount = 0;
+  uint32_t sumLatencyMsec = 0;
+  for (const QString& pubkey : m_servers) {
+    const Server server = scm->server(pubkey);
+    if (server.cooldownTimeout() <= now) {
+      sumLatencyMsec += server.latency();
+      activeServerCount++;
+    }
+  }
+  
+  return (sumLatencyMsec + activeServerCount - 1) / activeServerCount;
+}

@@ -15,6 +15,7 @@
 #include "leakdetector.h"
 #include "location.h"
 #include "logger.h"
+#include "mozillavpn.h"
 #include "servercountry.h"
 #include "serverdata.h"
 #include "serveri18n.h"
@@ -219,44 +220,16 @@ QStringList ServerCountryModel::pickRandom() const {
 }
 
 // Select the city that we think is going to perform the best
-QStringList ServerCountryModel::pickBest(const Location& location) const {
-  double latitude = location.latitude();
-  double longitude = location.longitude();
-  if (qIsNaN(latitude) || qIsNaN(longitude)) {
-    // If we don't know the client's location, just pick at random.
-    return pickRandom();
+QStringList ServerCountryModel::pickBest() const {
+  QList<QVariant> list = recommendedLocations(1);
+  if (list.isEmpty()) {
+    return QStringList();
   }
 
-  // We rank cities using the distance between two points on a great circle,
-  // which is given by:
-  //    d = acos(sin(lat1)*sin(lat2) + cos(lat1)*cos(lat2)*cos(long1-long2))
-  //
-  // TODO: Include other ranking data, such as latency and number of servers.
-  QString bestCountry;
-  QString bestCity;
-  double clientSin = qSin(latitude * M_PI / 180.0);
-  double clientCos = qCos(latitude * M_PI / 180.0);
-  double bestDistance = M_2_PI;
-  for (const ServerCountry& country : m_countries) {
-    for (const ServerCity& city : country.cities()) {
-      double citySin = qSin(city.latitude() * M_PI / 180.0);
-      double cityCos = qCos(city.latitude() * M_PI / 180.0);
-      double diffCos = qCos((city.longitude() - longitude) * M_PI / 180.0);
-      double distance =
-          qAcos(clientSin * citySin + clientCos * cityCos * diffCos);
-
-      if (distance < bestDistance) {
-        bestCountry = city.country();
-        bestCity = city.name();
-        bestDistance = distance;
-      }
-    }
-  }
-
-  if (bestCountry.isEmpty() || bestCity.isEmpty()) {
-    return pickRandom();
-  }
-  return QStringList({bestCountry, bestCity});
+  QVariant qv = list.first();
+  Q_ASSERT(qv.canConvert<ServerCity*>());
+  const ServerCity* city = qv.value<ServerCity*>();
+  return QStringList({city->country(), city->name()});
 }
 
 bool ServerCountryModel::exists(const QString& countryCode,
@@ -379,21 +352,57 @@ void ServerCountryModel::setCooldownForAllServersInACity(
 
 QList<QVariant> ServerCountryModel::recommendedLocations(
     unsigned int count) const {
-  QList<QVariant> results;
+  struct RecSearchData {
+    const ServerCity* city;
+    double rank;
+  };
 
-  // For testing - just return the first city of each country.
-  for (const ServerCountry& country : m_countries) {
-    const QList<ServerCity>& citiesList = cities(country.code());
-    if (results.count() >= count) {
-      break;
-    }
-    if (citiesList.isEmpty()) {
-      continue;
-    }
-    results.append(QVariant::fromValue(&citiesList.first()));
+  double latencyScale = avgLatency();
+  if (latencyScale < 100.0) {
+    latencyScale = 100.0;
   }
 
-  return results;
+  QVector<RecSearchData> searchResults(count+1);
+  for (const ServerCountry& country : m_countries) {
+    for (const ServerCity& city : country.cities()) {
+      RecSearchData data;
+      data.city = &city;
+      data.rank = city.connectionScore() * 256.0;
+
+      // For tiebreaking, use the geographic distance and latency.
+      double distance = MozillaVPN::instance()->location()->distance(
+                            city.latitude(), city.longitude());
+      data.rank -= city.latency() / latencyScale;
+      data.rank -= distance;
+
+#ifdef MVPN_DEBUG
+      logger.debug() << "Evaluating" << city.name() << "-"
+                     << city.latency() << "ms" << "-"
+                     << QString::number(distance) << "-"
+                     << QString::number(data.rank);
+#endif
+
+      // Insert into the result list
+      int i;
+      for (i = 0; i < searchResults.count(); i++) {
+        if (searchResults[i].rank < data.rank) {
+          break;
+        }
+      }
+      if (i < count) {
+        searchResults.insert(i, data);
+      }
+      if (searchResults.count() > count) {
+        searchResults.resize(count);
+      }
+    }
+  }
+
+  QList<QVariant> cityResults;
+  for (const RecSearchData& data : searchResults) {
+    cityResults.append(QVariant::fromValue(data.city));
+  }
+  return cityResults;
 }
 
 namespace {
