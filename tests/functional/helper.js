@@ -149,14 +149,15 @@ module.exports = {
   },
 
   async copyToClipboard(text) {
-    const json = await this._writeCommand(`copy_to_clipboard ${text}`);
+    const json = await this._writeCommand(
+        `copy_to_clipboard ${encodeURIComponent(text)}`);
     assert(
       !('type' in json) || (json.type === 'copy_to_clipboard' && !('error' in json)),
       `Command failed: ${json.error}`);
   },
 
   async query(id) {
-    const json = await this._writeCommand(`query ${id}`);
+    const json = await this._writeCommand(`query ${encodeURIComponent(id)}`);
     assert(
         json.type === 'query' && !('error' in json),
         `Command failed: ${json.error}`);
@@ -171,7 +172,7 @@ module.exports = {
 
   async clickOnQuery(id) {
     assert(await this.query(id), 'Clicking on an non-existing element?!?');
-    const json = await this._writeCommand(`click ${id}`);
+    const json = await this._writeCommand(`click ${encodeURIComponent(id)}`);
     assert(
         json.type === 'click' && !('error' in json),
         `Command failed: ${json.error}`);
@@ -208,7 +209,8 @@ module.exports = {
   },
 
   async getVPNProperty(id, property) {
-    const json = await this._writeCommand(`property ${id} ${property}`);
+    const json = await this._writeCommand(
+        `property ${encodeURIComponent(id)} ${encodeURIComponent(property)}`);
     assert(
         json.type === 'property' && !('error' in json),
         `Command failed: ${json.error}`);
@@ -219,7 +221,8 @@ module.exports = {
     assert(
         await this.query(id),
         'Property checks must be done on existing elements');
-    const json = await this._writeCommand(`query_property ${id} ${property}`);
+    const json = await this._writeCommand(`query_property ${
+        encodeURIComponent(id)} ${encodeURIComponent(property)}`);
     assert(
         json.type === 'query_property' && !('error' in json),
         `Command failed: ${json.error}`);
@@ -228,7 +231,8 @@ module.exports = {
 
   async setVPNProperty(id, property, value) {
     const json =
-        await this._writeCommand(`set_property ${id} ${property} ${value}`);
+        await this._writeCommand(`set_property ${encodeURIComponent(id)} ${
+            encodeURIComponent(property)} ${encodeURIComponent(value)}`);
     assert(
         json.type === 'set_property' && !('error' in json),
         `Command failed: ${json.error}`);
@@ -239,7 +243,8 @@ module.exports = {
         await this.query(id),
         'Property checks must be done on existing elements');
     const json = await this._writeCommand(
-        `set_query_property ${id} ${property} ${value}`);
+        `set_query_property ${encodeURIComponent(id)} ${
+            encodeURIComponent(property)} ${encodeURIComponent(value)}`);
     assert(
         json.type === 'set_query_property' && !('error' in json),
         `Command failed: ${json.error}`);
@@ -405,7 +410,8 @@ module.exports = {
   },
 
   async isFeatureFlippedOn(key) {
-    const json = await this._writeCommand(`is_feature_flipped_on ${key}`);
+    const json = await this._writeCommand(
+        `is_feature_flipped_on ${encodeURIComponent(key)}`);
     assert(
         json.type === 'is_feature_flipped_on' && !('error' in json),
         `Command failed: ${json.error}`);
@@ -413,7 +419,8 @@ module.exports = {
   },
 
   async isFeatureFlippedOff(key) {
-    const json = await this._writeCommand(`is_feature_flipped_off ${key}`);
+    const json = await this._writeCommand(
+        `is_feature_flipped_off ${encodeURIComponent(key)}`);
     assert(
         json.type === 'is_feature_flipped_off' && !('error' in json),
         `Command failed: ${json.error}`);
@@ -421,28 +428,31 @@ module.exports = {
   },
 
   async flipFeatureOn(key) {
-    const json = await this._writeCommand(`flip_on_feature ${key}`);
+    const json =
+        await this._writeCommand(`flip_on_feature ${encodeURIComponent(key)}`);
     assert(
         json.type === 'flip_on_feature' && !('error' in json),
         `Command failed: ${json.error}`);
   },
 
   async flipFeatureOff(key) {
-    const json = await this._writeCommand(`flip_off_feature ${key}`);
+    const json =
+        await this._writeCommand(`flip_off_feature ${encodeURIComponent(key)}`);
     assert(
         json.type === 'flip_off_feature' && !('error' in json),
         `Command failed: ${json.error}`);
   },
 
   async setSetting(key, value) {
-    const json = await this._writeCommand(`set_setting ${key} ${value}`);
+    const json = await this._writeCommand(
+        `set_setting ${encodeURIComponent(key)} ${encodeURIComponent(value)}`);
     assert(
         json.type === 'set_setting' && !('error' in json),
         `Command failed: ${json.error}`);
   },
 
   async getSetting(key) {
-    const json = await this._writeCommand(`setting ${key}`);
+    const json = await this._writeCommand(`setting ${encodeURIComponent(key)}`);
     assert(
         json.type === 'setting' && !('error' in json),
         `Command failed: ${json.error}`);
@@ -515,8 +525,8 @@ module.exports = {
   },
 
   async sendPushMessageDeviceDeleted(key) {
-    const json =
-        await this._writeCommand(`send_push_message_device_deleted ${key}`);
+    const json = await this._writeCommand(
+        `send_push_message_device_deleted ${encodeURIComponent(key)}`);
     assert(
         json.type === 'send_push_message_device_deleted' && !('error' in json),
         `Command failed: ${json.error}`);
