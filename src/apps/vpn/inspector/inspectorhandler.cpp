@@ -882,6 +882,9 @@ void InspectorHandler::recv(const QByteArray& command) {
   Q_ASSERT(!parts.isEmpty());
 
   QString cmdName = parts[0].trimmed();
+  for (int i = 1; i < parts.length(); ++i) {
+    parts[i] = QUrl::fromPercentEncoding(parts[i]).toLocal8Bit();
+  }
 
   for (const InspectorCommand& command : s_commands) {
     if (cmdName == command.m_commandName) {

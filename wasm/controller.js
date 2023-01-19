@@ -15,7 +15,7 @@ class Controller {
   }
 
   async query(id) {
-    const json = await this._writeCommand(`query ${id}`);
+    const json = await this._writeCommand(`query ${encodeURIComponent(id)}`);
     assert(
         json.type === 'query' && !('error' in json),
         `Command failed: ${json.error}`);
@@ -23,7 +23,8 @@ class Controller {
   }
 
   async getVPNProperty(id, property) {
-    const json = await this._writeCommand(`property ${id} ${property}`);
+    const json = await this._writeCommand(
+        `property ${encodeURIComponent(id)} ${encodeURIComponent(property)}`);
     assert(
         json.type === 'property' && !('error' in json),
         `Command failed: ${json.error}`);
@@ -31,7 +32,8 @@ class Controller {
   }
 
   async setSetting(key, value) {
-    const json = await this._writeCommand(`set_setting ${key} ${value}`);
+    const json = await this._writeCommand(
+        `set_setting ${encodeURIComponent(key)} ${encodeURIComponent(value)}`);
     assert(
         json.type === 'set_setting' && !('error' in json),
         `Command failed: ${json.error}`);
@@ -63,7 +65,7 @@ class Controller {
 
   async clickOnQuery(query) {
     assert(await this.query(query), 'Clicking on an non-existing element?!?');
-    const json = await this._writeCommand(`click ${query}`);
+    const json = await this._writeCommand(`click ${encodeURIComponent(query)}`);
     assert(
         json.type === 'click' && !('error' in json),
         `Command failed: ${json.error}`);
@@ -90,21 +92,24 @@ class Controller {
   }
 
   async flipFeatureOff(key) {
-    const json = await this._writeCommand(`flip_off_feature ${key}`);
+    const json =
+        await this._writeCommand(`flip_off_feature ${encodeURIComponent(key)}`);
     assert(
         json.type === 'flip_off_feature' && !('error' in json),
         `Command failed: ${json.error}`);
   }
 
   async flipFeatureOn(key) {
-    const json = await this._writeCommand(`flip_on_feature ${key}`);
+    const json =
+        await this._writeCommand(`flip_on_feature ${encodeURIComponent(key)}`);
     assert(
         json.type === 'flip_on_feature' && !('error' in json),
         `Command failed: ${json.error}`);
   }
 
   async forceUpdateCheck(version) {
-    const json = await this._writeCommand(`force_update_check ${version}`);
+    const json = await this._writeCommand(
+        `force_update_check ${encodeURIComponent(version)}`);
     assert(
         json.type === 'force_update_check' && !('error' in json),
         `Command failed: ${json.error}`);
