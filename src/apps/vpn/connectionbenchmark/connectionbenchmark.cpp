@@ -10,6 +10,8 @@
 #include "connectionhealth.h"
 #include "controller.h"
 #include "feature.h"
+#include "glean/generated/metrics.h"
+#include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -52,7 +54,8 @@ void ConnectionBenchmark::setConnectionSpeed() {
     m_speed = SpeedSlow;
   }
 
-  emit MozillaVPN::instance()->recordGleanEvent(GleanSample::speedTestCompleted);
+  emit GleanDeprecated::instance()->recordGleanEvent(GleanSample::speedTestCompleted);
+  mozilla::glean::sample::speed_test_completed.record();
 
   emit speedChanged();
   setState(StateReady);
@@ -68,7 +71,8 @@ void ConnectionBenchmark::setState(State state) {
 void ConnectionBenchmark::start() {
   logger.debug() << "Start connection benchmarking";
   
-  emit MozillaVPN::instance()->recordGleanEvent(GleanSample::speedTestStarted);
+  emit GleanDeprecated::instance()->recordGleanEvent(GleanSample::speedTestStarted);
+  mozilla::glean::sample::speed_test_started.record();
 
   Q_ASSERT(m_state != StateRunning);
 

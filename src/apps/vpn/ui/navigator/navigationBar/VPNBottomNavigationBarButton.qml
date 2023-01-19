@@ -20,19 +20,23 @@ VPNIconButton {
     onClicked: {
         switch(_screen) {
             case VPNNavigator.ScreenMessaging:
-                VPN.recordGleanEventWithExtraKeys("bottomNavigationBarClick", {"bar_button": "ScreenMessaging"});
+                VPNGleanDeprecated.recordGleanEventWithExtraKeys("bottomNavigationBarClick", {"bar_button": "ScreenMessaging"});
+                Glean.sample.bottomNavigationBarClick.record({ bar_button: "ScreenMessaging" });
                 break;
 
             case VPNNavigator.ScreenHome:
-                VPN.recordGleanEventWithExtraKeys("bottomNavigationBarClick", {"bar_button": "ScreenHome"});
+                VPNGleanDeprecated.recordGleanEventWithExtraKeys("bottomNavigationBarClick", {"bar_button": "ScreenHome"});
+                Glean.sample.bottomNavigationBarClick.record({ bar_button: "ScreenHome" });
                 break;
 
             case VPNNavigator.ScreenSettings:
-                VPN.recordGleanEventWithExtraKeys("bottomNavigationBarClick", {"bar_button": "ScreenSettings"});
+                VPNGleanDeprecated.recordGleanEventWithExtraKeys("bottomNavigationBarClick", {"bar_button": "ScreenSettings"});
+                Glean.sample.bottomNavigationBarClick.record({ bar_button: "ScreenSettings" });
                 break;
 
             default:
-                VPN.recordGleanEventWithExtraKeys("bottomNavigationBarClick", {"bar_button": "Unknown"});
+                VPNGleanDeprecated.recordGleanEventWithExtraKeys("bottomNavigationBarClick", {"bar_button": "Unknown"});
+                Glean.sample.bottomNavigationBarClick.record({ bar_button: "Unknown" });
                 break;
         }
         VPNNavigator.requestScreen(_screen, VPNNavigator.screen === _screen ? VPNNavigator.ForceReload : VPNNavigator.NoFlags);
