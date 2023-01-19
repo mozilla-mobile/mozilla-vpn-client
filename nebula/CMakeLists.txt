@@ -2,10 +2,22 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-add_library(nebula STATIC)
+qt_add_library(nebula STATIC)
+
+add_subdirectory(ui/components)
+add_subdirectory(ui/compat)
+add_subdirectory(ui/themes)
+add_subdirectory(ui/resources)
+
 
 set_target_properties(nebula PROPERTIES FOLDER "Libs")
-target_link_libraries(nebula PRIVATE Qt6::Quick)
+target_link_libraries(nebula PRIVATE 
+    Qt6::Quick
+    componentsplugin
+    compatplugin
+    themesplugin
+    resourcesplugin
+)
 target_include_directories(nebula PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_sources(nebula PRIVATE
