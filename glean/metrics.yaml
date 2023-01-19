@@ -36,7 +36,7 @@ sample:
       - technical
     notification_emails:
       - sstreich@mozilla.com
-    expires: 2023-06-01
+    expires: 2024-01-01
     extra_keys:
       connection_health_state:
         description: |
