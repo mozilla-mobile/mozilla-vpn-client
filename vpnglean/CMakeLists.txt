@@ -14,8 +14,10 @@ execute_process(
 add_library(vpnglean STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/event.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/ping.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/event.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/ping.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/timingdistribution.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/event.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/ping.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/timingdistribution.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.h
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.h
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.cpp
@@ -113,7 +115,7 @@ if(GLEAN_PARSER_VERSION VERSION_GREATER_EQUAL 5.0)
                 --outdir ${CMAKE_CURRENT_BINARY_DIR}/glean/generated
     )
 elseif(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/prebuilt)
-    # On some build platforms, we may not have the ability to install the 
+    # On some build platforms, we may not have the ability to install the
     # glean_parser module, and we must rely on a pre-build script to generate
     # the telemetry bindings for us.
     set(GENERATE_GLEAN_CMD

@@ -7,5 +7,6 @@
 
 #include "event.h"
 #include "ping.h"
+#include "timingdistribution.h"
 
 #endif

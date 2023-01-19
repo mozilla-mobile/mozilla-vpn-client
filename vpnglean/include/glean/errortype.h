@@ -2,11 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#[macro_use]
-mod macros;
+#ifndef ERROR_TYPE_H
+#define ERROR_TYPE_H
 
-pub mod helpers;
+#if not(defined(__wasm__) || defined(BUILD_QMAKE))
+#  include "vpnglean.h"
+#else
+enum ErrorType {};
+#endif
 
-pub mod event;
-pub mod ping;
-pub mod timing_distribution;
+#endif  // ERROR_TYPE_H
