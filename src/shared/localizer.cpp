@@ -195,8 +195,7 @@ void Localizer::loadLanguagesFromI18n() {
 
   std::sort(m_languages.begin(), m_languages.end(),
             [&](const Language& a, const Language& b) -> bool {
-              return a.m_nativeLanguageName.compare(b.m_nativeLanguageName,
-                                                    Qt::CaseInsensitive) < 0;
+              return LanguageI18N::languageCompare(a.m_code, b.m_code) < 0;
             });
 }
 

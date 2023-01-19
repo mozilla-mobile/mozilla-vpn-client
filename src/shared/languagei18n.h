@@ -13,6 +13,9 @@ class LanguageI18N final {
 
   static QString translateLanguage(const QString& translationCode,
                                    const QString& languageCode);
+
+  static int languageCompare(const QString& languageCodeA,
+                             const QString& languageCodeB);
 };
 
 #endif  // LANGUAGEI18N_H

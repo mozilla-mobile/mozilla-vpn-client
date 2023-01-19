@@ -52,9 +52,7 @@ void addLanguage(const QJsonValue& value) {
                    translationObj[translationCode].toString());
   }
 
-  if (!Constants::inProduction()) {
-    s_languageList.append(languageCode);
-  }
+  s_languageList.append(languageCode);
 }
 
 void maybeInitialize() {
@@ -86,8 +84,6 @@ void maybeInitialize() {
 
 // static
 bool LanguageI18N::languageExists(const QString& languageCode) {
-  Q_ASSERT(!Constants::inProduction());
-
   maybeInitialize();
   return s_languageList.contains(languageCode);
 }
@@ -97,4 +93,24 @@ QString LanguageI18N::translateLanguage(const QString& translationCode,
                                         const QString& languageCode) {
   maybeInitialize();
   return s_items.value(itemKey(translationCode, languageCode));
+}
+
+// static
+int LanguageI18N::languageCompare(const QString& languageCodeA,
+                                  const QString& languageCodeB) {
+  int a = s_languageList.indexOf(languageCodeA);
+  Q_ASSERT(a >= 0);
+
+  int b = s_languageList.indexOf(languageCodeB);
+  Q_ASSERT(b >= 0);
+
+  if (a < b) {
+    return -1;
+  }
+
+  if (a == b) {
+    return 0;
+  }
+
+  return 1;
 }
