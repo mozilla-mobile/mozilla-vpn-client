@@ -4,7 +4,7 @@
 
 #include "nebula.h"
 
-constexpr auto QRC_ROOT = "qrc:///nebula/";
+constexpr auto QRC_ROOT = ":/nebula";
 
 void Nebula::Initialize(QQmlEngine* engine) {
   Q_INIT_RESOURCE(components);
