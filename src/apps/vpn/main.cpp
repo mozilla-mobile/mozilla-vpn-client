@@ -4,15 +4,12 @@
 
 #include "commandlineparser.h"
 #include "leakdetector.h"
-#include "telemetry.h"
 
 Q_DECL_EXPORT int main(int argc, char* argv[]) {
 #ifdef MZ_DEBUG
   LeakDetector leakDetector;
   Q_UNUSED(leakDetector);
 #endif
-
-  Telemetry::startTimeToMainScreenTimer();
 
   CommandLineParser clp;
   return clp.parse(argc, argv);

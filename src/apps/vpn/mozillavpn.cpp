@@ -941,7 +941,7 @@ void MozillaVPN::postAuthenticationCompleted() {
 void MozillaVPN::mainWindowLoaded() {
   logger.debug() << "main window loaded";
 
-  Telemetry::stopTimeToMainScreenTimer();
+  m_private->m_telemetry.stopTimeToFirstScreenTimer();
 
 #ifndef MZ_WASM
   // Initialize glean with an async call because at this time,

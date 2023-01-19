@@ -16,9 +16,6 @@ constexpr int CONNECTION_STABILITY_MSEC = 45000;
 
 namespace {
 Logger logger("Telemetry");
-
-// The Glean timer id for the performance.time_to_main_screen metric.
-int s_timeToMainScreenTimerId = 0;
 }  // namespace
 
 Telemetry::Telemetry() {
@@ -133,18 +130,18 @@ void Telemetry::connectionStabilityEvent() {
        {"transport", vpn->networkWatcher()->getCurrentTransport()}});
 }
 
-void Telemetry::startTimeToMainScreenTimer() {
+void Telemetry::startTimeToFirstScreenTimer() {
   logger.info() << "Start performance.time_to_main_screen timer";
 
-  s_timeToMainScreenTimerId =
+  m_timeToFirstScreenTimerId =
       mozilla::glean::performance::time_to_main_screen.start();
 }
 
-void Telemetry::stopTimeToMainScreenTimer() {
+void Telemetry::stopTimeToFirstScreenTimer() {
   logger.info() << "Stop performance.time_to_main_screen timer";
 
   mozilla::glean::performance::time_to_main_screen.stopAndAccumulate(
-      s_timeToMainScreenTimerId);
+      m_timeToFirstScreenTimerId);
 }
 
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
