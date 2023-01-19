@@ -17,8 +17,6 @@
 #  include "platforms/windows/windowsutils.h"
 #endif
 
-#include <QFileInfo>
-
 namespace {
 Logger logger("EventListener");
 }

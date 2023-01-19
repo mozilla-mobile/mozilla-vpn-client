@@ -50,6 +50,10 @@ target_compile_definitions(app_unit_tests PRIVATE MZ_DUMMY)
 
 # Unit test source files
 target_sources(app_unit_tests PRIVATE
+    appconstants.h
+    appfeaturelistcallback.h
+    appfeaturelist.h
+    appsettingslist.h
     main.cpp
     helper.h
     testcheckedint.h
@@ -70,10 +74,10 @@ target_sources(app_unit_tests PRIVATE
     testqmlpath.h
     testsettings.cpp
     testsettings.h
-    testthemes.cpp
-    testthemes.h
     testtemporarydir.cpp
     testtemporarydir.h
+    testthemes.cpp
+    testthemes.h
     testurlopener.cpp
     testurlopener.h
 )

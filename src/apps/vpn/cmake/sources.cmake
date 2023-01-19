@@ -62,10 +62,13 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/addons/manager/addonmanager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/appconstants.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/appconstants.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/appfeaturelistcallback.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/appfeaturelist.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/appimageprovider.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/applistprovider.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/apppermission.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/apppermission.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/appsettingslist.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/authenticationinapp/authenticationinapp.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/authenticationinapp/authenticationinapp.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/authenticationinapp/authenticationinapplistener.cpp

@@ -14,10 +14,8 @@ void TestFeature::flipOnOff() {
   // Fresh settings!
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureA"));
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureB"));
-  QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureC"));
   QVERIFY(!settingsHolder.featuresFlippedOff().contains("testFeatureA"));
   QVERIFY(!settingsHolder.featuresFlippedOff().contains("testFeatureB"));
-  QVERIFY(!settingsHolder.featuresFlippedOff().contains("testFeatureC"));
 
   // Let's create a few features
 
@@ -56,24 +54,6 @@ void TestFeature::flipOnOff() {
       []() -> bool { return false; });
   QVERIFY(!!Feature::get("testFeatureB"));
   QVERIFY(!Feature::get("testFeatureB")->isSupported());
-
-  QVERIFY(!Feature::getOrNull("testFeatureC"));
-  Feature fC(
-      "testFeatureC", "Feature C",
-      false,                           // Is Major Feature
-      L18nStrings::Empty,              // Display name
-      L18nStrings::Empty,              // Description
-      L18nStrings::Empty,              // LongDescr
-      "",                              // ImagePath
-      "",                              // IconPath
-      "",                              // link URL
-      "1.0",                           // released
-      []() -> bool { return false; },  // Can be flipped on
-      []() -> bool { return false; },  // Can be flipped off
-      QStringList(),                   // feature dependencies
-      []() -> bool { return false; });
-  QVERIFY(!!Feature::get("testFeatureC"));
-  QVERIFY(!Feature::get("testFeatureC")->isSupported());
 }
 
 static TestFeature s_testFeature;
