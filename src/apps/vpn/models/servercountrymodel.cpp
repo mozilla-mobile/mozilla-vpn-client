@@ -358,17 +358,6 @@ const QString ServerCountryModel::countryName(
   return QString();
 }
 
-const QString ServerCountryModel::localizedCountryName(
-    const QString& countryCode) const {
-  const QString name = countryName(countryCode);
-  return ServerI18N::translateCountryName(countryCode, name);
-}
-
-QString ServerCountryModel::getLocalizedCountryName(
-    const QString& countryCode) {
-  return localizedCountryName(countryCode);
-}
-
 void ServerCountryModel::retranslate() {
   beginResetModel();
   sortCountries();

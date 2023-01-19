@@ -43,6 +43,10 @@ ServerData* MozillaVPN::currentServer() {
   return data;
 }
 
+ServerCountryModel* MozillaVPN::serverCountryModel() {
+  return new ServerCountryModel();
+}
+
 SubscriptionData* MozillaVPN::subscriptionData() {
   return new SubscriptionData();
 }

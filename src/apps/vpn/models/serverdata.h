@@ -20,6 +20,8 @@ class ServerData final : public QObject {
   Q_PROPERTY(QString exitCityName READ exitCityName NOTIFY changed)
   Q_PROPERTY(
       QString localizedExitCityName READ localizedExitCityName NOTIFY changed)
+  Q_PROPERTY(QString localizedExitCountryName READ localizedExitCountryName
+                 NOTIFY changed)
 
   Q_PROPERTY(bool multihop READ multihop NOTIFY changed)
 
@@ -27,13 +29,17 @@ class ServerData final : public QObject {
   Q_PROPERTY(QString entryCityName READ entryCityName NOTIFY changed)
   Q_PROPERTY(
       QString localizedEntryCityName READ localizedEntryCityName NOTIFY changed)
+  Q_PROPERTY(QString localizedEntryCountryName READ localizedEntryCountryName
+                 NOTIFY changed)
 
   Q_PROPERTY(QString previousExitCountryCode READ previousExitCountryCode NOTIFY
                  changed)
-  Q_PROPERTY(
-      QString previousExitCityName READ previousExitCityName NOTIFY changed)
+  Q_PROPERTY(QString localizedPreviousExitCountryName READ
+                 localizedPreviousExitCountryName NOTIFY changed)
   Q_PROPERTY(QString localizedPreviousExitCityName READ
                  localizedPreviousExitCityName NOTIFY changed)
+  Q_PROPERTY(
+      QString previousExitCityName READ previousExitCityName NOTIFY changed)
 
  public:
   ServerData();
@@ -54,6 +60,7 @@ class ServerData final : public QObject {
 
   const QString& exitCountryCode() const { return m_exitCountryCode; }
   const QString& exitCityName() const { return m_exitCityName; }
+  QString localizedExitCountryName() const;
   QString localizedExitCityName() const;
 
   bool multihop() const {
@@ -63,10 +70,12 @@ class ServerData final : public QObject {
   const QString& entryCountryCode() const { return m_entryCountryCode; }
   const QString& entryCityName() const { return m_entryCityName; }
   QString localizedEntryCityName() const;
+  QString localizedEntryCountryName() const;
 
   const QString& previousExitCountryCode() const {
     return m_previousExitCountryCode;
   }
+  QString localizedPreviousExitCountryName() const;
   const QString& previousExitCityName() const { return m_previousExitCityName; }
   QString localizedPreviousExitCityName() const;
 
@@ -94,12 +103,15 @@ class ServerData final : public QObject {
   bool m_initialized = false;
 
   QString m_exitCountryCode;
+  QString m_exitCountryName;
   QString m_exitCityName;
 
   QString m_entryCountryCode;
+  QString m_entryCountryName;
   QString m_entryCityName;
 
   QString m_previousExitCountryCode;
+  QString m_previousExitCountryName;
   QString m_previousExitCityName;
 
   QString m_exitServerPublicKey;
