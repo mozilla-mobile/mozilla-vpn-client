@@ -85,15 +85,7 @@ include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
 
-# Enable Balrog for update support.
-target_compile_definitions(mozillavpn PRIVATE MVPN_BALROG)
-add_go_library(balrog-api ../balrog/balrog-api.go
-    CGO_CFLAGS -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET})
-target_link_libraries(mozillavpn PRIVATE balrog-api)
-target_sources(mozillavpn PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/balrog.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/balrog.h
-)
+
 
 # Build the Wireguard Go tunnel
 # FIXME: this builds in the source directory.
