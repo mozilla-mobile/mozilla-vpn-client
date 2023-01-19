@@ -151,6 +151,7 @@ bool ServerData::settingsChanged() {
   }
 
   emit changed();
+  emit retranslationNeeded();
   return true;
 }
 

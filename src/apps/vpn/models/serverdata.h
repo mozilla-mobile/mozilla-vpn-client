@@ -18,28 +18,20 @@ class ServerData final : public QObject {
 
   Q_PROPERTY(QString exitCountryCode READ exitCountryCode NOTIFY changed)
   Q_PROPERTY(QString exitCityName READ exitCityName NOTIFY changed)
-  Q_PROPERTY(
-      QString localizedExitCityName READ localizedExitCityName NOTIFY changed)
-  Q_PROPERTY(QString localizedExitCountryName READ localizedExitCountryName
-                 NOTIFY changed)
+  Q_PROPERTY(QString localizedExitCountryName READ localizedExitCountryName NOTIFY retranslationNeeded)
+  Q_PROPERTY( QString localizedExitCityName READ localizedExitCityName NOTIFY retranslationNeeded)
 
   Q_PROPERTY(bool multihop READ multihop NOTIFY changed)
 
   Q_PROPERTY(QString entryCountryCode READ entryCountryCode NOTIFY changed)
   Q_PROPERTY(QString entryCityName READ entryCityName NOTIFY changed)
-  Q_PROPERTY(
-      QString localizedEntryCityName READ localizedEntryCityName NOTIFY changed)
-  Q_PROPERTY(QString localizedEntryCountryName READ localizedEntryCountryName
-                 NOTIFY changed)
+  Q_PROPERTY(QString localizedEntryCountryName READ localizedEntryCountryName NOTIFY retranslationNeeded)
+  Q_PROPERTY( QString localizedEntryCityName READ localizedEntryCityName NOTIFY retranslationNeeded)
 
-  Q_PROPERTY(QString previousExitCountryCode READ previousExitCountryCode NOTIFY
-                 changed)
-  Q_PROPERTY(QString localizedPreviousExitCountryName READ
-                 localizedPreviousExitCountryName NOTIFY changed)
-  Q_PROPERTY(QString localizedPreviousExitCityName READ
-                 localizedPreviousExitCityName NOTIFY changed)
-  Q_PROPERTY(
-      QString previousExitCityName READ previousExitCityName NOTIFY changed)
+  Q_PROPERTY(QString previousExitCountryCode READ previousExitCountryCode NOTIFY changed)
+  Q_PROPERTY( QString previousExitCityName READ previousExitCityName NOTIFY changed)
+  Q_PROPERTY(QString localizedPreviousExitCountryName READ localizedPreviousExitCountryName NOTIFY retranslationNeeded)
+  Q_PROPERTY(QString localizedPreviousExitCityName READ localizedPreviousExitCityName NOTIFY retranslationNeeded)
 
  public:
   ServerData();
@@ -85,7 +77,7 @@ class ServerData final : public QObject {
               const QString& entryCountryCode = QString(),
               const QString& entryCityName = QString());
 
-  void retranslate() { emit changed(); }
+  void retranslate() { emit retranslationNeeded(); }
 
   void setEntryServerPublicKey(const QString& publicKey);
   void setExitServerPublicKey(const QString& publicKey);
@@ -95,6 +87,7 @@ class ServerData final : public QObject {
 
  signals:
   void changed();
+  void retranslationNeeded();
 
  private:
   bool settingsChanged();

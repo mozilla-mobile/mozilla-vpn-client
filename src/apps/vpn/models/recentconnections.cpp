@@ -95,6 +95,7 @@ bool RecentConnections::migrate() {
 }
 
 void RecentConnections::serverChanged() {
+  logger.info() << "server changed";
   ServerData* sd = MozillaVPN::instance()->currentServer();
 
   RecentConnection newRecentConnection{
