@@ -161,6 +161,7 @@
      "cy": "Dinas Brwsel",
      "de": "Brüssel",
      "el": "Βρυξέλλες",
+     "en": "City of Brussels",
      "en_CA": "City of Brussels",
      "en_GB": "City of Brussels",
      "es_AR": "Bruselas",
@@ -406,10 +407,64 @@
   "wikiDataID": "Q16"
  },
  {
+  "wikiDataID": "Q224",
+  "countryCode": "hr",
+  "languages": {
+   "co": "Croazia",
+   "de": "Kroatien",
+   "dsb": "Chorwatska",
+   "el": "Κροατία",
+   "es_AR": "Croacia",
+   "es_CL": "Croacia",
+   "es_ES": "Croacia",
+   "es_MX": "Croacia",
+   "fi": "Kroatia",
+   "fr": "Croatie",
+   "fy_NL": "Kroaasje",
+   "hsb": "Chorwatska",
+   "hu": "Horvátország",
+   "id": "Kroasia",
+   "is": "Króatía",
+   "it": "Croazia",
+   "ja": "クロアチア",
+   "nl": "Kroatië",
+   "pa_IN": "ਕ੍ਰੋਏਸ਼ੀਆ",
+   "pt_BR": "Croácia",
+   "pt_PT": "Croácia",
+   "ru": "Хорватия",
+   "sk": "Chorvátsko",
+   "sq": "Kroacia",
+   "sv_SE": "Kroatien",
+   "uk": "Хорватія",
+   "zh_CN": "克罗地亚",
+   "zh_TW": "克羅埃西亞"
+  },
+  "cities": [
+   {
+    "wikiDataID": "Q1435",
+    "city": "Zagreb",
+    "languages": {
+     "co": "Zagabria",
+     "el": "Ζάγκρεμπ",
+     "hu": "Zágráb",
+     "it": "Zagabria",
+     "ja": "ザグレブ",
+     "pa_IN": "ਜ਼ਾਗਰਬ",
+     "ru": "Загреб",
+     "sk": "Záhreb",
+     "sq": "Zagrebi",
+     "uk": "Загреб",
+     "zh_CN": "萨格勒布",
+     "zh_TW": "札格雷布"
+    }
+   }
+  ]
+ },
+ {
   "countryCode": "cz",
   "languages": {
    "co": "Cechia",
-   "cy": "Y Weriniaeth Tsiec",
+   "cy": "y Weriniaeth Tsiec",
    "de": "Tschechien",
    "dsb": "Česka",
    "el": "Τσεχία",
@@ -1054,6 +1109,39 @@
      "zh_TW": "米蘭"
     },
     "wikiDataID": "Q490"
+   },
+   {
+    "wikiDataID": "Q220",
+    "city": "Rome",
+    "languages": {
+     "co": "Roma",
+     "cy": "Rhufain",
+     "de": "Rom",
+     "dsb": "Rom",
+     "el": "Ρώμη",
+     "es_AR": "Roma",
+     "es_CL": "Roma",
+     "es_ES": "Roma",
+     "es_MX": "Roma",
+     "fi": "Rooma",
+     "hsb": "Rom",
+     "hu": "Róma",
+     "ia": "Roma",
+     "id": "Roma",
+     "is": "Róm",
+     "it": "Roma",
+     "ja": "ローマ",
+     "pa_IN": "ਰੋਮ",
+     "pt_BR": "Roma",
+     "pt_PT": "Roma",
+     "ru": "Рим",
+     "sk": "Rím",
+     "sq": "Romë",
+     "sv_SE": "Rom",
+     "uk": "Рим",
+     "zh_CN": "罗马",
+     "zh_TW": "羅馬"
+    }
    }
   ],
   "wikiDataID": "Q38"
