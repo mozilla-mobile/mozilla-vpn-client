@@ -70,11 +70,16 @@ def resolve_keys_scope(config, tasks):
 
 
 @transforms.add
-def add_pr_number(config, tasks):
+def add_build_metadata(config, tasks):
     for task in tasks:
+        task["worker"].setdefault("env", {})
         if config.params["pull_request_number"]:
-            task["worker"].setdefault("env", {}).update({
+            task["worker"]["env"].update({
                 "PULL_REQUEST_NUMBER": str(config.params["pull_request_number"])
+            })
+        if config.params["owner"]:
+            task["worker"]["env"].update({
+                "TASK_OWNER": config.params["owner"]
             })
 
         yield task
