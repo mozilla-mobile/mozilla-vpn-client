@@ -21,6 +21,6 @@ ios/debug:
         - MozillaVPN.tar.gz
     run:
         using: run-task
-        use-caches: false
+        use-caches: true
         cwd: '{checkout}'
         command: ./taskcluster/scripts/build/ios_build_no_adjust.sh
