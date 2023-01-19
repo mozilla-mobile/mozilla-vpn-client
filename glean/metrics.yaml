@@ -24,8 +24,8 @@ sample:
     send_in_pings:
       - main
     description: |
-      A status report of the Android Daemon. Contains information 
-      if the daemon' connection health component. 
+      A status report of the Android Daemon. Contains information
+      if the daemon' connection health component.
       This will help us understand if that component did activate,
       and if so if it did help fix the connection.
     bugs:
@@ -45,7 +45,7 @@ sample:
           deactivated -> vpn disconnected
           active-not-silent-switched -> connection is healthy
           active-silent-switched -> connection was unhealthy
-          active-panic-state-reached -> connection was unhealthy and ch did not help
+          active-panic-state-reached -> connection was unhealthy
         type: string
 
   addon_state_changed:
