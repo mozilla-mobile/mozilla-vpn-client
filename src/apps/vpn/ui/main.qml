@@ -8,7 +8,7 @@ import QtQuick.Layouts 1.14
 import QtQuick.Window 2.12
 
 import Mozilla.VPN 1.0
-import nebula 0.1
+import components 0.1
 
 import org.mozilla.Glean 0.30
 import telemetry 0.30

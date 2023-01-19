@@ -38,7 +38,7 @@ endif()
 include(shared/sources.cmake)
 include(apps/vpn/cmake/sources.cmake)
 include(apps/vpn/cmake/sentry.cmake)
-
+#nebulaplugin
 target_link_libraries(mozillavpn PRIVATE shared-sources mozillavpn-sources glean lottie nebula translations vpnglean)
 target_link_libraries(mozillavpn PUBLIC ${CMAKE_DL_LIBS})
 
