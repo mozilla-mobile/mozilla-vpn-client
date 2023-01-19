@@ -69,9 +69,13 @@ DPKG_PACKAGE_BASE_VERSION=$(dpkg-parsechangelog -l mozillavpn-source/debian/chan
 DPKG_PACKAGE_DIST_VERSION=${DPKG_PACKAGE_BASE_VERSION}-${DIST}1
 
 # Update the changelog to release for the target distribution.
-# TODO: If this came from a PR, we should put the author's info here.
-export DEBEMAIL="vpn@mozilla.com"
-export DEBFULLNAME="Mozilla VPN Team"
+if [[ -z "$TASK_OWNER" ]]; then
+  export DEBEMAIL="vpn@mozilla.com"
+  export DEBFULLNAME="Mozilla VPN Team"
+else
+  export DEBEMAIL="${TASK_OWNER}"
+  export DEBFULLNAME=$(echo ${TASK_OWNER} | cut -d@ -f1)
+fi
 dch -c $(pwd)/mozillavpn-source/debian/changelog -v ${DPKG_PACKAGE_DIST_VERSION} -D ${DIST} \
     "Release for ${DIST}"
 
