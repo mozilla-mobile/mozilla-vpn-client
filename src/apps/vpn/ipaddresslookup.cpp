@@ -79,7 +79,15 @@ void IpAddressLookup::updateIpAddress() {
           // In case the country-we're reported in does not match the
           // connected server we may retry only once.
           logger.warning() << "Reported ip not in the right country, retry!";
-          QTimer::singleShot(3000, this, [this]() { updateIpAddress(); });
+          QTimer::singleShot(3000, this, [this]() {
+            // Maybe we have nothing to do now because the VPN is off or the
+            // user is not authenticated anymore.
+            MozillaVPN* vpn = MozillaVPN::instance();
+            if (vpn->state() == MozillaVPN::StateMain &&
+                vpn->controller()->state() == Controller::StateOn) {
+              updateIpAddress();
+            }
+          });
         }
 #endif
 
