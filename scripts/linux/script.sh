@@ -29,7 +29,6 @@ helpFunction() {
   print N "  -g, --gitref REF       Generated version suffix from REF"
   print N "  -v, --version REV      Set package revision to REV"
   print N "      --source           Build source packages only (no binary)"
-  print N "      --ppa URL          Upload source packages to PPA at URL (implies: --source)"
   print N ""
   print N "Signing options:"
   print N "      --sign             Enable package signing (default: disabled)"
@@ -50,7 +49,7 @@ while [[ $# -gt 0 ]]; do
 
   case $key in
   -r | --release)
-    RELEASE+=" $2"
+    RELEASE="$2"
     shift
     shift
     ;;
@@ -65,14 +64,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
   --source)
-    RELEASE="bionic focal jammy fedora kinetic"
     SOURCEONLY=Y
-    shift
-    ;;
-  --ppa)
-    SOURCEONLY=Y
-    PPA_URL="$2"
-    shift
     shift
     ;;
   --sign)
@@ -112,7 +104,7 @@ SHORTVERSION=$(grep -zoE 'project\s*\([^\(\)]*\)' CMakeLists.txt |
 #  - Pull requests are suffixed with "~pr<Pull Request Number>"
 #  - Release tags force the version to match the tag.
 #  - Release branches are suffixed with "~rc<# of commits since main>"
-#  - The main branch sets a nightly date code.
+#  - The main branch sets a builds date code.
 if [[ "$GITREF" =~ ^refs/pull/([0-9]+)/merge ]]; then
   SHORTVERSION="${SHORTVERSION}~pr${BASH_REMATCH[1]}"
 elif [[ "$GITREF" =~ ^refs/tags/v([0-9a-z.]+) ]]; then
@@ -120,7 +112,7 @@ elif [[ "$GITREF" =~ ^refs/tags/v([0-9a-z.]+) ]]; then
 elif [[ "$GITREF" =~ ^refs/heads/releases/([0-9][^/]*) ]]; then
   SHORTVERSION="${BASH_REMATCH[1]}~rc$(date -u +%Y%m%d%H%M%S)"
 elif [[ "$GITREF" == "refs/heads/main" ]]; then
-  SHORTVERSION="${SHORTVERSION}~nightly$(date -u +%Y%m%d)"
+  SHORTVERSION="${SHORTVERSION}~build$(date -u +%Y%m%d)"
 fi
 WORKDIR=mozillavpn-${SHORTVERSION}
 print G "${SHORTVERSION}"
@@ -181,60 +173,68 @@ LC_ALL=C tar cfz mozillavpn_$SHORTVERSION.orig.tar.gz $TAR_OPTIONS $WORKDIR || d
 print G "done."
 
 ## Generate the spec file for building RPMs
-build_rpm_spec() {
-cat << EOF > mozillavpn.spec
+build_rpm_source() {
+  cat << EOF > mozillavpn.spec
 %define _srcdir .
 Version: $SHORTVERSION
 Release: $REVISION
 Source0: mozillavpn_$SHORTVERSION.orig.tar.gz
 $(sed -e '/^%prep/ a %autosetup' ../linux/mozillavpn.spec | grep -v -e "^Version:" -e "^Release" -e "^%define")
 EOF
+
+  rpmbuild --define "_srcrpmdir $(pwd)" --define "_sourcedir $(pwd)" -bs mozillavpn.spec
 }
 
-## For a given distro, build the DSC and debian tarball.
+## Build the DSC and debian tarball.
 build_deb_source() {
-  local distro=$1
-  local buildrev=${distro}${REVISION}
-
-  print Y "Building sources for $distro ($buildtype)..."
+  print Y "Building sources for $distro..."
   rm -rf $WORKDIR/debian || die "Failed"
   cp -r ../linux/debian $WORKDIR || die "Failed"
 
   mv $WORKDIR/debian/changelog.template $WORKDIR/debian/changelog || die "Failed"
   sed -i -e "s/SHORTVERSION/$SHORTVERSION/g" $WORKDIR/debian/changelog || die "Failed"
-  sed -i -e "s/VERSION/$buildrev/g" $WORKDIR/debian/changelog || die "Failed"
-  sed -i -e "s/RELEASE/$distro/g" $WORKDIR/debian/changelog || die "Failed"
   sed -i -e "s/DATE/$(date -R)/g" $WORKDIR/debian/changelog || die "Failed"
+
+  # If a target distribution was provided, add a changelog entry targeting that distro.
+  if [[ $# -gt 0 ]]; then
+    export DEBEMAIL=${DEBEMAIL:-"vpn@mozilla.com"}
+    export DEBFULLNAME=${DEBFULLNAME:-"Mozilla VPN Team"}
+    dch -c $WORKDIR/debian/changelog -v "${SHORTVERSION}-${1}${REVISION}" -D ${1} "Release for ${1}"
+  fi
 
   (cd $WORKDIR && dpkg-buildpackage --build=source $DPKG_SIGN --no-check-builddeps) || die "Failed"
 }
 
-## Prepare the distribution's packaging sources
-for distro in $RELEASE; do
-  case "$distro" in
-    fedora|rpm)
-      print Y "Building RPM packages for $distro"
-      build_rpm_spec
-      rpmbuild --define "_srcrpmdir $(pwd)" --define "_sourcedir $(pwd)" -bs mozillavpn.spec
-      ;;
+## If we are just doing source packaging, then build the dpkg and rpm sources.
+if [ "$SOURCEONLY" == "Y" ]; then
+  print Y "Building RPM sources"
+  build_rpm_source
 
-    *)
-      print Y "Building Debian packages for $distro"
-      build_deb_source $distro
-      ;;
-  esac
-done
+  print Y "Building Debian sources"
+  build_deb_source
+
+  print Y "Cleaning up working directory..."
+  rm -rf $WORKDIR || die "Failed"
+
+  print G "All done."
+  exit 0
+fi
+
+## Prepare the distribution's packaging sources
+case $RELEASE in
+  fedora|rpm)
+    print Y "Building RPM packages for $distro"
+    build_rpm_source
+    ;;
+
+  *)
+    print Y "Building Debian packages for $RELEASE"
+    build_deb_source $RELEASE
+    ;;
+esac
 
 print Y "Cleaning up working directory..."
 rm -rf $WORKDIR || die "Failed"
-
-## Handle PPA Uploads
-if [ ! -z "$PPA_URL" ]; then
-  print Y "Uploading sources to $PPA_URL"
-  for changeset in $(find . -type f -name '*_source.changes'); do
-    dput "$PPA_URL" $changeset
-  done
-fi
 
 ## Build Binary packages
 if [ "$SOURCEONLY" != "Y" ]; then

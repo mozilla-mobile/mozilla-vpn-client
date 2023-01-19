@@ -52,24 +52,36 @@ fi
 sudo apt-get update
 
 # Find and extract the package source
-DSCFILE=$(find ${MOZ_FETCHES_DIR} -name '*.dsc' | grep -E -- "-${DIST}[0-9]+.dsc")
+DSCFILE=$(find ${MOZ_FETCHES_DIR} -name '*.dsc')
 if [[ ! -f "$DSCFILE" ]]; then
-    echo "Unable to locate DSC file to build for ${DIST}" >&2
+    echo "Unable to locate DSC file" >&2
     echo "${MOZ_FETCHES_DIR} contained:" >2&
-    find ${MOZ_FETCHES_DIR} -name '*.dsc' >2&
+    ls -al ${MOZ_FETCHES_DIR}
     exit 1
 fi
 dpkg-source -x ${DSCFILE} $(pwd)/mozillavpn-source/
 DPKG_PACKAGE_SRCNAME=$(dpkg-parsechangelog -l mozillavpn-source/debian/changelog -S Source)
-DPKG_PACKAGE_VERSION=$(dpkg-parsechangelog -l mozillavpn-source/debian/changelog -S Version)
-DPKG_PACkAGE_BINNAME=$(cat mozillavpn-source/debian/control | grep "^Package:" | awk '{print $2}')
+DPKG_PACKAGE_BASE_VERSION=$(dpkg-parsechangelog -l mozillavpn-source/debian/changelog -S Version)
+DPKG_PACKAGE_DIST_VERSION=${DPKG_PACKAGE_BASE_VERSION}-${DIST}1
+
+# Update the changelog to release for the target distribution.
+if [[ -z "$TASK_OWNER" ]]; then
+  export DEBEMAIL="vpn@mozilla.com"
+  export DEBFULLNAME="Mozilla VPN Team"
+else
+  export DEBEMAIL="${TASK_OWNER}"
+  export DEBFULLNAME=$(echo ${TASK_OWNER} | cut -d@ -f1)
+fi
+dch -c $(pwd)/mozillavpn-source/debian/changelog -v ${DPKG_PACKAGE_DIST_VERSION} -D ${DIST} \
+    "Release for ${DIST}"
 
 # Install the package build dependencies.
 mk-build-deps $(pwd)/mozillavpn-source/debian/control
-sudo apt -y install ./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_VERSION}_all.deb
+sudo apt -y install ./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_DIST_VERSION}_all.deb
+rm -f ./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_DIST_VERSION}_all.deb
 
 # Build the packages
-(cd mozillavpn-source/ && dpkg-buildpackage --unsigned-source --build=binary)
+(cd mozillavpn-source/ && dpkg-buildpackage --unsigned-source --build=full)
 
 # Gather the build artifacts for export
-tar -cvzf /builds/worker/artifacts/mozillavpn-${DIST}.tar.gz *.deb *.ddeb *.buildinfo *.changes
+tar -cvzf /builds/worker/artifacts/mozillavpn-${DIST}.tar.gz *.deb *.ddeb *.buildinfo *.changes *.dsc *.debian.tar.xz
