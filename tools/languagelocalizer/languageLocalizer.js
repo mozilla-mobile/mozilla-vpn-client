@@ -260,7 +260,8 @@ const LanguageLocalizer = {
     const translations = {};
     for (let lang of result.results.bindings) {
       const langCode = lang.languageName['xml:lang'];
-      const value = lang.languageName['value'];
+      let value = lang.languageName['value'];
+      value = value.charAt(0).toUpperCase() + value.slice(1);
 
       if (this.languages.includes(langCode)) {
         translations[langCode] = value;
