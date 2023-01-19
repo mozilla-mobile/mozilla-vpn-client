@@ -318,7 +318,13 @@ QString Localizer::localizedLanguageName(const Language& language) const {
     }
   }
 
-  return language.m_nativeLanguageName;
+  // Let's ask QT to localize the language.
+  QLocale locale(language.m_code);
+  if (language.m_code.isEmpty()) {
+    locale = QLocale::system();
+  }
+
+  return locale.languageToString(locale.language());
 }
 
 QVariant Localizer::data(const QModelIndex& index, int role) const {

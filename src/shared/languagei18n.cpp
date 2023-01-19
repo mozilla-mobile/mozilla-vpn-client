@@ -99,10 +99,12 @@ QString LanguageI18N::translateLanguage(const QString& translationCode,
 int LanguageI18N::languageCompare(const QString& languageCodeA,
                                   const QString& languageCodeB) {
   int a = s_languageList.indexOf(languageCodeA);
-  Q_ASSERT(a >= 0);
-
   int b = s_languageList.indexOf(languageCodeB);
-  Q_ASSERT(b >= 0);
+
+#ifndef UNIT_TEST
+  // We do not have all the languages in unit-tests
+  Q_ASSERT(a >= 0 && b >= 0);
+#endif
 
   if (a < b) {
     return -1;
