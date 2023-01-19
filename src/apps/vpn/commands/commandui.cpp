@@ -375,7 +375,7 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNRecentConnections",
+        "Mozilla.VPN", 1, 0, "VPNRecentConnectionsModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = RecentConnections::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
