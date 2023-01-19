@@ -27,9 +27,13 @@ class ConnectionHealth(service: VPNService) {
     var mVPNNetwork: Network? = null
     var mWorker: ExecutorService = Executors.newSingleThreadExecutor()
 
-    @Deprecated("Only added temporary telemetry, please remove c:")
+    // 
+    @Deprecated("Only added temporary telemetry, please remove (VPN-3956)")
     fun getStatusString(): String {
         if (!mActive) {
+            if (Build.VERSION.SDK_INT < 31) {
+            return "deactivated-feature-flagged"
+            }
             // We have been feature flagged-off, or are disconnected
             return "deactivated"
         }
