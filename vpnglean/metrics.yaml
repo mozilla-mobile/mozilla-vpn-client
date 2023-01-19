@@ -16,7 +16,7 @@ performance:
     bugs:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/4486
     data_reviews:
-      - TODO
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5529#pullrequestreview-1253522353
     data_sensitivity:
       - technical
     notification_emails:
