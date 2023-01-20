@@ -2,42 +2,41 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
-
 loader: taskgraph.loader.transform:loader
 
 transforms:
-    - taskgraph.transforms.job:transforms
-    - taskgraph.transforms.task:transforms
+  - taskgraph.transforms.job:transforms
+  - taskgraph.transforms.task:transforms
 
 kind-dependencies:
-    - build
+  - build
 
 tasks:
   appium/android:
     worker-type: b-linux
     description: "Android appium stuff"
     treeherder:
-        symbol: TA
-        kind: test
-        tier: 1
-        platform: android/arm64-v8a
+      symbol: TA
+      kind: test
+      tier: 1
+      platform: android/arm64-v8a
     fetches:
-        build:
-            - artifact: mozillavpn-arm64-v8a-debug.apk
+      build:
+        - artifact: mozillavpn-arm64-v8a-debug.apk
     dependencies:
-        build: build-android-arm64/debug
+      build: build-android-arm64/debug
     worker:
-        docker-image: {in-tree: build}
-        max-run-time: 3600
-        chain-of-trust: true
-        artifacts:
-            -   type: directory
-                name: public/build
-                path: /builds/worker/artifacts
+      docker-image: { in-tree: build }
+      max-run-time: 3600
+      chain-of-trust: true
+      artifacts:
+        - type: directory
+          name: public/build
+          path: /builds/worker/artifacts
     run:
-        using: run-task
-        use-caches: true
-        cwd: '{checkout}'
-        command: ./taskluster/scripts/appium/upload.sh     
+      using: run-task
+      use-caches: true
+      cwd: "{checkout}"
+      command: ./taskcluster/scripts/appium/upload.sh
     scopes:
-        - 'secrets:get:project/mozillavpn/level-1/browserstack'
+      - "secrets:get:project/mozillavpn/level-1/browserstack"
