@@ -6,6 +6,8 @@
 
 if [[ -n "$PULL_REQUEST_NUMBER" ]]; then
     GITREF="refs/pull/${PULL_REQUEST_NUMBER}/merge"
+elif [[ "$MOZILLAVPN_HEAD_REF" =~ ^refs/heads/ ]]; then
+    GITREF="$MOZILLAVPN_HEAD_REF"
 elif [[ "$MOZILLAVPN_HEAD_REF" =~ ^releases.([0-9][^/]*) ]]; then
     GITREF="refs/heads/releases/${BASH_REMATCH[1]}"
 else
