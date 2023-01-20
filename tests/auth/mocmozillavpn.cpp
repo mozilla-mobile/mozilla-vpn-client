@@ -31,6 +31,10 @@ SubscriptionData* MozillaVPN::subscriptionData() {
   return new SubscriptionData();
 }
 
+ServerCountryModel* MozillaVPN::serverCountryModel() {
+  return new ServerCountryModel();
+}
+
 MozillaVPN::State MozillaVPN::state() const { return StateInitialize; }
 MozillaVPN::UserState MozillaVPN::userState() const {
   return UserNotAuthenticated;
@@ -163,3 +167,8 @@ void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {}
 QString MozillaVPN::placeholderUserDNS() const { return ""; }
 
 void MozillaVPN::registerUrlOpenerLabels() {}
+
+ServerData* MozillaVPN::serverData() {
+  static ServerData* data = new ServerData();
+  return data;
+}

@@ -9,6 +9,7 @@
 #include <QTimer>
 
 #include "controller.h"
+#include "models/serverdata.h"
 #include "task.h"
 
 // The purpose of this task is to block any other task when
@@ -33,7 +34,7 @@ class TaskControllerAction final : public Task {
 
   virtual DeletePolicy deletePolicy() const override { return NonDeletable; }
 
- private slots:
+ private:
   void stateChanged();
   void silentSwitchDone();
   void checkStatus();
@@ -41,6 +42,7 @@ class TaskControllerAction final : public Task {
  private:
   const TaskAction m_action;
   Controller::State m_lastState;
+  ServerData m_serverData;
   QTimer m_timer;
 };
 

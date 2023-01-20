@@ -16,7 +16,11 @@ void Controller::initialize() {}
 
 void Controller::implInitialized(bool, bool, const QDateTime&) {}
 
-bool Controller::activate() { return false; }
+bool Controller::activate(const ServerData&) { return false; }
+
+bool Controller::switchServers(const ServerData& serverData) { return false; }
+
+bool Controller::silentSwitchServers() { return false; }
 
 void Controller::activateInternal(Reason reason, bool forcePort53) {
   Q_UNUSED(reason);
@@ -75,3 +79,7 @@ void Controller::captivePortalPresent() {}
 void Controller::captivePortalGone() {}
 
 void Controller::handshakeTimeout() {}
+
+#ifdef MZ_DUMMY
+QString Controller::currentServerString() const { return QString("42"); }
+#endif

@@ -101,6 +101,9 @@ void Controller::initialize() {
     m_impl.reset(nullptr);
   }
 
+  m_serverData = *MozillaVPN::instance()->serverData();
+  m_nextServerData = *MozillaVPN::instance()->serverData();
+
 #if defined(MZ_LINUX)
   m_impl.reset(new LinuxController());
 #elif defined(MZ_MACOS) || defined(MZ_WINDOWS)
@@ -186,13 +189,19 @@ void Controller::implInitialized(bool status, bool a_connected,
   }
 }
 
-bool Controller::activate() {
+bool Controller::activate(const ServerData& serverData) {
   logger.debug() << "Activation" << m_state;
 
   if (m_state != StateOff && m_state != StateSwitching) {
     logger.debug() << "Already connected";
     return false;
   }
+
+  m_serverData = serverData;
+
+#ifdef MZ_DUMMY
+  emit currentServerChanged();
+#endif
 
   if (m_state == StateOff) {
     if (m_portalDetected) {
@@ -219,17 +228,14 @@ void Controller::activateInternal(Reason reason, bool forcePort53) {
   m_handshakeTimer.stop();
   m_activationQueue.clear();
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-
-  Server exitServer =
-      Server::weightChooser(vpn->currentServer()->exitServers());
+  Server exitServer = Server::weightChooser(m_serverData.exitServers());
   if (!exitServer.initialized()) {
     logger.error() << "Empty exit server list in state" << m_state;
     serverUnavailable();
     return;
   }
 
-  vpn->currentServer()->setExitServerPublicKey(exitServer.publicKey());
+  m_serverData.setExitServerPublicKey(exitServer.publicKey());
 
   // Prepare the exit server's connection data.
   HopConnection exitHop;
@@ -250,7 +256,7 @@ void Controller::activateInternal(Reason reason, bool forcePort53) {
 
   // For single-hop connections, exclude the entry server
   if (!Feature::get(Feature::Feature_multiHop)->isSupported() ||
-      !vpn->currentServer()->multihop()) {
+      !m_serverData.multihop()) {
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv4AddrIn());
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv6AddrIn());
 
@@ -259,14 +265,14 @@ void Controller::activateInternal(Reason reason, bool forcePort53) {
       exitHop.m_server.forcePort(53);
     }
     // For single-hop, they are the same
-    vpn->currentServer()->setEntryServerPublicKey(exitServer.publicKey());
+    m_serverData.setEntryServerPublicKey(exitServer.publicKey());
   }
   // For controllers that support multiple hops, create a queue of connections.
   // The entry server should start first, followed by the exit server.
   else if (m_impl->multihopSupported()) {
     HopConnection hop;
-    hop.m_server = Server::weightChooser(vpn->currentServer()->entryServers());
-    vpn->currentServer()->setEntryServerPublicKey(hop.m_server.publicKey());
+    hop.m_server = Server::weightChooser(m_serverData.entryServers());
+    m_serverData.setEntryServerPublicKey(hop.m_server.publicKey());
     if (!hop.m_server.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
       serverUnavailable();
@@ -287,9 +293,8 @@ void Controller::activateInternal(Reason reason, bool forcePort53) {
   // Otherwise, we can approximate multihop support by redirecting the
   // connection to the exit server via the multihop port.
   else {
-    Server entryServer =
-        Server::weightChooser(vpn->currentServer()->entryServers());
-    vpn->currentServer()->setEntryServerPublicKey(entryServer.publicKey());
+    Server entryServer = Server::weightChooser(m_serverData.entryServers());
+    m_serverData.setEntryServerPublicKey(entryServer.publicKey());
     if (!entryServer.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
       serverUnavailable();
@@ -337,10 +342,8 @@ bool Controller::silentSwitchServers() {
     return false;
   }
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-
   // Set a cooldown timer on the current server.
-  QList<Server> servers = vpn->currentServer()->exitServers();
+  QList<Server> servers = m_serverData.exitServers();
   Q_ASSERT(!servers.isEmpty());
 
   if (servers.length() <= 1) {
@@ -348,8 +351,9 @@ bool Controller::silentSwitchServers() {
         << "Cannot silent switch servers because there is only one available";
     return false;
   }
-  vpn->serverCountryModel()->setServerCooldown(
-      vpn->currentServer()->exitServerPublicKey());
+
+  MozillaVPN::instance()->serverCountryModel()->setServerCooldown(
+      m_serverData.exitServerPublicKey());
 
   // Activate the first connection to kick off the server switch.
   activateInternal(ReasonSwitching);
@@ -383,9 +387,7 @@ bool Controller::deactivate() {
 void Controller::connected(const QString& pubkey) {
   logger.debug() << "handshake completed with:" << logger.keys(pubkey);
   if (m_activationQueue.isEmpty()) {
-    MozillaVPN* vpn = MozillaVPN::instance();
-    Q_ASSERT(vpn);
-    if (vpn->currentServer()->exitServerPublicKey() != pubkey) {
+    if (m_serverData.exitServerPublicKey() != pubkey) {
       logger.warning() << "Unexpected handshake: no pending connections.";
       return;
     }
@@ -470,7 +472,7 @@ void Controller::disconnected() {
   }
 
   if (nextStep == None && m_state == StateSwitching) {
-    activate();
+    activate(m_nextServerData);
     return;
   }
 
@@ -797,11 +799,13 @@ void Controller::serverDataChanged() {
       new TaskControllerAction(TaskControllerAction::eSwitch));
 }
 
-bool Controller::switchServers() {
+bool Controller::switchServers(const ServerData& serverData) {
   if (m_state == StateOff) {
     logger.debug() << "Server data changed but we are off";
     return false;
   }
+
+  m_nextServerData = serverData;
 
   clearConnectedTime();
   clearRetryCounter();
@@ -813,3 +817,11 @@ bool Controller::switchServers() {
 
   return true;
 }
+
+#ifdef MZ_DUMMY
+QString Controller::currentServerString() const {
+  return QString("%1-%2-%3-%4")
+      .arg(m_serverData.exitCountryCode(), m_serverData.exitCityName(),
+           m_serverData.entryCountryCode(), m_serverData.entryCityName());
+}
+#endif

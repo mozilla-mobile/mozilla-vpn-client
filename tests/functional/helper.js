@@ -59,6 +59,12 @@ module.exports = {
     client.close();
   },
 
+  async activateViaToggle() {
+    await this.waitForQueryAndClick(
+        queries.screenHome.CONTROLLER_TOGGLE.visible().prop(
+            'state', /* VPNController.StateOff: */ 1));
+  },
+
   async activate(awaitConnectionOkay = false) {
     const json = await this._writeCommand('activate');
     assert(

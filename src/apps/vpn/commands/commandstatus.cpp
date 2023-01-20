@@ -102,7 +102,7 @@ int CommandStatus::run(QStringList& tokens) {
     }
 
     ServerCountryModel* model = vpn.serverCountryModel();
-    ServerData* sd = vpn.currentServer();
+    ServerData* sd = vpn.serverData();
     Q_ASSERT(sd);
 
     stream << "Server country code: " << sd->exitCountryCode() << Qt::endl;
