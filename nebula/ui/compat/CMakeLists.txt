@@ -12,7 +12,6 @@ target_link_libraries(compat PRIVATE
 qt_add_qml_module(compat
     VERSION 0.1
     URI compat 
-    OUTPUT_DIRECTORY compat
     RESOURCE_PREFIX /nebula
     QML_FILES
         qt6/VPNColorOverlay.qml

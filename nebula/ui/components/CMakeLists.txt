@@ -4,19 +4,30 @@
 
 qt_add_library(components STATIC)
 
+
+add_subdirectory(forms)
+add_subdirectory(inAppAuth)
+
 set_target_properties(components PROPERTIES FOLDER "Libs")
 target_link_libraries(components PRIVATE 
     Qt6::Quick
     Qt6::Gui
     Qt6::Widgets
+    formsplugin
+    inAppAuthplugin
+    lottieplugin
 )
-
 
 qt_add_qml_module(components
     VERSION 0.1
-    URI components 
-    OUTPUT_DIRECTORY components
+    URI components
     RESOURCE_PREFIX /nebula
+    IMPORTS
+        QtQuick/auto
+        QtQuick.Layouts/auto
+        QtQuick.Controls
+        lottie/0.1
+        compat/0.1
     QML_FILES
         VPNViewBase.qml
         VPNLottieAnimation.qml
@@ -38,17 +49,6 @@ qt_add_qml_module(components
         VPNComposerView.qml
         VPNSegmentedToggle.qml
         VPNSubscriptionOption.qml
-        forms/VPNContextualAlerts.qml
-        forms/VPNInputStates.qml
-        forms/VPNTextField.qml
-        forms/VPNInputBackground.qml
-        forms/VPNTextArea.qml
-        forms/VPNPasswordInput.qml
-        forms/VPNRadioButton.qml
-        forms/VPNCursorDelegate.qml
-        forms/VPNSearchBar.qml
-        forms/VPNContextualAlert.qml
-        forms/VPNComboBox.qml
         VPNServerListToggle.qml
         VPNTutorialList.qml
         VPNConnectionInfoScreen.qml
@@ -93,11 +93,6 @@ qt_add_qml_module(components
         VPNGreyLink.qml
         VPNUIStates.qml
         VPNFooterLink.qml
-        inAppAuth/VPNInAppAuthenticationBase.qml
-        inAppAuth/VPNInAppAuthenticationErrorPopup.qml
-        inAppAuth/VPNInAppAuthenticationInputs.qml
-        inAppAuth/VPNInAppAuthenticationPasswordCondition.qml
-        inAppAuth/VPNInAppAuthenticationLegalDisclaimer.qml
         VPNClickableRow.qml
         VPNSimplePopup.qml
         VPNAnimatedRings.qml
