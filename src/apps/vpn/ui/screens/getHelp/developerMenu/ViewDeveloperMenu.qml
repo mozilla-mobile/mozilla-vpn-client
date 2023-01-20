@@ -166,7 +166,7 @@ VPNViewBase {
 
             delegate: VPNSettingsItem {
                settingTitle:  title
-               imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
+               imageLeftSrc: "qrc:/ui/resources/settings/questionMark.svg"
                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                imageRightMirror: VPNLocalizer.isRightToLeft
                onClicked: getHelpStackView.push(viewQrc)
