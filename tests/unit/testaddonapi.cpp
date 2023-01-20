@@ -84,14 +84,6 @@ void TestAddonApi::featurelist() {
   QVERIFY(!Feature::getOrNull("testFeatureAddonApi"));
   Feature feature(
       "testFeatureAddonApi", "Feature Addon API",
-      false,                          // Is Major Feature
-      L18nStrings::Empty,             // Display name
-      L18nStrings::Empty,             // Description
-      L18nStrings::Empty,             // LongDescr
-      "",                             // ImagePath
-      "",                             // IconPath
-      "",                             // link URL
-      "1.0",                          // released
       []() -> bool { return true; },  // Can be flipped on
       []() -> bool { return true; },  // Can be flipped off
       QStringList(),                  // feature dependencies
