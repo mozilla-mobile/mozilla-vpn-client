@@ -237,6 +237,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/ipaddress.h
     ${MZ_SOURCE_DIR}/shared/itempicker.cpp
     ${MZ_SOURCE_DIR}/shared/itempicker.h
+    ${MZ_SOURCE_DIR}/shared/languagei18n.cpp
+    ${MZ_SOURCE_DIR}/shared/languagei18n.h
     ${MZ_SOURCE_DIR}/shared/leakdetector.cpp
     ${MZ_SOURCE_DIR}/shared/leakdetector.h
     ${MZ_SOURCE_DIR}/shared/localizer.cpp
@@ -318,6 +320,8 @@ target_sources(unit_tests PRIVATE
     testipaddresslookup.h
     testipfinder.cpp
     testipfinder.h
+    testlanguagei18n.cpp
+    testlanguagei18n.h
     testlicense.cpp
     testlicense.h
     testlocalizer.cpp
@@ -366,6 +370,7 @@ target_sources(auth_tests PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 target_sources(unit_tests PRIVATE
     addons/addons.qrc
     guides/guides.qrc
+    languages/languages.qrc
     qml/qml.qrc
     servers/servers.qrc
     themes/themes.qrc
