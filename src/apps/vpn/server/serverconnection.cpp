@@ -47,7 +47,7 @@ void serializeServerCountry(ServerCountryModel* model, QJsonObject& obj) {
 
       QJsonArray servers;
       for (const QString& pubkey : city.servers()) {
-        const Server server = model->server(pubkey);
+        const Server& server = model->server(pubkey);
         if (!server.initialized()) {
           continue;
         }

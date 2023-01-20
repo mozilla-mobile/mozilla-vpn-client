@@ -85,7 +85,7 @@ int CommandServers::run(QStringList& tokens) {
 
           QJsonArray serverArray;
           for (const QString& pubkey : city.servers()) {
-            const Server server = vpn.serverCountryModel()->server(pubkey);
+            const Server& server = vpn.serverCountryModel()->server(pubkey);
             if (!server.initialized()) {
               continue;
             }
@@ -118,7 +118,7 @@ int CommandServers::run(QStringList& tokens) {
           stream << "  - City: " << city.name() << " (" << city.code() << ")"
                  << Qt::endl;
           for (const QString& pubkey : city.servers()) {
-            const Server server = vpn.serverCountryModel()->server(pubkey);
+            const Server& server = vpn.serverCountryModel()->server(pubkey);
             if (!server.initialized()) {
               continue;
             }

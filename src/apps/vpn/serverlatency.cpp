@@ -132,7 +132,7 @@ void ServerLatency::maybeSendPings() {
       retry.timestamp = now;
       m_pingReplyList.append(retry);
 
-      Server server = scm->server(retry.publicKey);
+      const Server& server = scm->server(retry.publicKey);
       m_pingSender->sendPing(QHostAddress(server.ipv4AddrIn()), retry.sequence);
     }
 
@@ -152,7 +152,7 @@ void ServerLatency::maybeSendPings() {
     record.retries = 0;
     m_pingReplyList.append(record);
 
-    Server server = scm->server(record.publicKey);
+    const Server& server = scm->server(record.publicKey);
     m_pingSender->sendPing(QHostAddress(server.ipv4AddrIn()), record.sequence);
   }
 

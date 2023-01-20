@@ -276,6 +276,16 @@ const QList<Server> ServerCountryModel::servers(const QString& countryCode,
   return results;
 }
 
+const Server& ServerCountryModel::server(const QString& pubkey) const {
+  auto iterator = m_servers.constFind(pubkey);
+  if (iterator != m_servers.constEnd()) {
+    return iterator.value();
+  }
+
+  static const Server emptyserver;
+  return emptyserver;
+}
+
 const QString ServerCountryModel::countryName(
     const QString& countryCode) const {
   for (const ServerCountry& country : m_countries) {

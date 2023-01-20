@@ -50,8 +50,7 @@ class ServerCountryModel final : public QAbstractListModel {
 
   const QList<Server> servers(const QString& countryCode,
                               const QString& cityName) const;
-  const QList<Server> servers() const { return m_servers.values(); };
-  Server server(const QString& pubkey) const { return m_servers.value(pubkey); }
+  const Server& server(const QString& pubkey) const;
 
   const QString countryName(const QString& countryCode) const;
 
