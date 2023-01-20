@@ -11,9 +11,6 @@ class QHostAddress;
 
 class WindowsCommons final {
  public:
-  static QString getErrorMessage();
-  static void windowsLog(const QString& msg);
-
   static QString tunnelConfigFile();
   static QString tunnelLogFile();
 

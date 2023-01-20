@@ -12,8 +12,6 @@ target_link_libraries(mozillavpn PRIVATE PkgConfig::polkit PkgConfig::libsecret)
 
 # Linux platform source files
 target_sources(mozillavpn PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/eventlistener.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/eventlistener.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/backendlogsobserver.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/backendlogsobserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/dbusclient.cpp

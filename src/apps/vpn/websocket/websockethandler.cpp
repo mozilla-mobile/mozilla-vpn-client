@@ -118,10 +118,6 @@ void WebSocketHandler::onUserStateChanged() {
  * No-op in case the connection is already open.
  */
 void WebSocketHandler::open() {
-  mozilla::glean::sample::websocket_connection_attempted.record();
-  emit GleanDeprecated::instance()->recordGleanEvent(
-      GleanSample::websocketConnectionAttempted);
-
   if (m_webSocket.state() != QAbstractSocket::UnconnectedState &&
       m_webSocket.state() != QAbstractSocket::ClosingState) {
     logger.debug()
@@ -131,6 +127,10 @@ void WebSocketHandler::open() {
 
   logger.debug() << "Attempting to open WebSocket connection."
                  << webSocketServerUrl();
+
+  mozilla::glean::sample::websocket_connection_attempted.record();
+  emit GleanDeprecated::instance()->recordGleanEvent(
+      GleanSample::websocketConnectionAttempted);
 
   QNetworkRequest request;
   request.setRawHeader("Authorization",
@@ -168,10 +168,6 @@ void WebSocketHandler::onConnected() {
  * No-op in case the connection is already closed.
  */
 void WebSocketHandler::close() {
-  mozilla::glean::sample::websocket_close_attempted.record();
-  emit GleanDeprecated::instance()->recordGleanEvent(
-      GleanSample::websocketCloseAttempted);
-
   // QAbstractSocket may throw a write error when attempting to close the
   // underlying socket (see:
   // https://code.woboq.org/qt5/qtwebsockets/src/websockets/qwebsocket_p.cpp.html#357).
@@ -187,6 +183,10 @@ void WebSocketHandler::close() {
   logger.debug() << "Closing WebSocket";
   m_aboutToClose = true;
   m_webSocket.close();
+
+  mozilla::glean::sample::websocket_close_attempted.record();
+  emit GleanDeprecated::instance()->recordGleanEvent(
+      GleanSample::websocketCloseAttempted);
 }
 
 /**

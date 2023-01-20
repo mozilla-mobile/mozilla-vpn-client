@@ -92,6 +92,7 @@ Rectangle {
                 ButtonGroup.group: navBarButtonGroup
 
                 accessibleName: VPNl18n[navAccessibleName]
+                enabled: root.visible
 
                 Component.onCompleted: {
                     if(objectName === "navButton-messages") root.messagesNavButton = this

@@ -20,7 +20,7 @@ task-defaults:
         toolchain:
             - qt-win
     worker:
-        taskcluster-proxy: false
+        taskcluster-proxy: true
         chain-of-trust: true
         max-run-time: 3600
         artifacts:

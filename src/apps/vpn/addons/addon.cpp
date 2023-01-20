@@ -32,7 +32,6 @@
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
-#include "update/versionapi.h"
 #include "versionutils.h"
 
 namespace {

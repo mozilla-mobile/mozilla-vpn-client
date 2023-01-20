@@ -337,7 +337,7 @@ VPNViewBase {
         }
     }
 
-    VPNFilterProxyModel {
+    MZFilterProxyModel {
         id: messagesModel
         source: VPNAddonManager
         filterCallback: obj => { return obj.addon.type === "message" }

@@ -26,6 +26,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/env.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/feature.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/feature.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/filterproxymodel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/filterproxymodel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/fontloader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/fontloader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/glean/gleandeprecated.cpp
@@ -40,6 +42,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/hkdf.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/ipaddress.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/ipaddress.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/itempicker.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/itempicker.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/leakdetector.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/leakdetector.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/logger.cpp

@@ -309,7 +309,7 @@ VPNButtonBase {
 
         targetEl: toggle
         anchors.fill: toggle
-        hoverEnabled: toggleClickable()
+        hoverEnabled: toggleButton.enabled && toggleClickable()
         cursorShape: Qt.PointingHandCursor
     }
 

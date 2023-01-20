@@ -72,7 +72,7 @@ Qt6 can be installed in a number of ways:
     - macOS (if you'll be doing macOS work)
     - Android (if you'll be doing Android work)
     - iOS (if you'll be doing iOS work)
-    - QT 5 Compatability Module
+    - QT 5 Compatibility Module
     - Additional Libraries
        - Qt Networking Authorization
        - Qt WebSockets
@@ -121,7 +121,7 @@ WASM. Each one is unique and it has a different section in this document.
 
 ## How to build from source code for Desktop
 
-On deskop platforms, such as Windows, Linux and macOS, we build the Mozilla VPN
+On desktop platforms, such as Windows, Linux and macOS, we build the Mozilla VPN
 using CMake, and as long as the required dependencies can be located in your
 PATH the build process is effectively the same on each of the supported platform.
 
@@ -237,7 +237,7 @@ mkdir build && cmake -S . -B build
 
 Some variables that might be useful when configuring the project:
  - `CMAKE_PREFIX_PATH=<Qt install path>/lib/cmake`: can be set if CMake is unable to
-   localte a viable Qt installation in your path.
+   locale a viable Qt installation in your path.
  - `CODE_SIGN_IDENTITY=<Certificate Identity>`: can be set to enable code signing during
    the build process.
  - `INSTALLER_SIGN_IDENTITY=<Certificate Identity>`: can be set to enable signing of the
@@ -317,7 +317,7 @@ There are two ways to build the project on iOS, using the legacy Qt build system
 and we have also added experimental support for `cmake`.
 
 > **Note**: Due to lack of low level networking support, it is not possible to turn on
-> the VPN from the iOS simulator in XCode.
+> the VPN from the iOS simulator in Xcode.
 
 #### Building with QMake
 
@@ -416,7 +416,7 @@ it from the [official website](https://golang.org/dl/).
 3. Set the `QT_HOST_PATH` environment variable to point to the location of the `androiddeployqt` tool  -- minus the `/bin` suffix i.e. if `$(which androiddeployqt)` is `$HOME/Qt/6.2.4/gcc_64/bin/androiddeployqt`, `QT_HOST_PATH` is `$HOME/Qt/6.2.4/gcc_64/`.
 
 4. Set the `ANDROID_SDK_ROOT` and `ANDROID_NDK_ROOT` environment variables,
-to point to the Android SDK and NDK intallation directories. Required NDK versions: 23.1.7779620 and 21.0.6113669.
+to point to the Android SDK and NDK installation directories. Required NDK versions: 23.1.7779620 and 21.0.6113669.
 
 5. Add the Android NDK llvm prebuilt tools to your `PATH`. These are located under the Android NDK installation
 directory on `${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/*/bin`.
@@ -563,7 +563,7 @@ On desktop, use `ws://localhost:8765`.
 
 The inspector offers a number of tools to help debug and navigate through the VPN client:
 * **Shell:** By default the inspector link will take you to the Shell. From there type `help` to see the list of available commands.
-* **Logs:** Will constantly output all the app activities happening in real time. This information includes the timesamp, component and message. From the left column you can select which component(s) you'd like to monitor.
+* **Logs:** Will constantly output all the app activities happening in real time. This information includes the timestamp, component and message. From the left column you can select which component(s) you'd like to monitor.
 * **Network Inspector:** Includes a list of all incoming and outgoing network requests. This is especially helpful when debugging network related issues or monitoring how the app communicates with external components such as the Guardian.
 * **QML Inspector:** Allows you to identify and inspect all QML components in the app by mirroring the local VPN client running on your machine and highlighting components by clicking on the QML instance on the right.
 
@@ -593,7 +593,7 @@ you're embedding glean v0.21.2 then it will still, for Qt's purpose, be v0.21.
 ### Working on tickets with new Glean instrumentation
 
 If you are responsible for a piece of work that adds new Glean instrumentation you will need to do a data review.
-Follwoing is the recommended process along with some pointers.
+Following is the recommended process along with some pointers.
 
 > The data review process is also described here: https://wiki.mozilla.org/Data_Collection
 
@@ -603,23 +603,23 @@ The basic process is this:
 * When adding or updating new metrics or pings, the [Glean YAML files](https://github.com/mozilla-mobile/mozilla-vpn-client/tree/main/glean) might need to be updated.
   When that is the case a new data-review must be requested and added to the list of data-reviews for the updated/added instrumentation.
   When updating data-review links on the YAML files, these are the things to keep in mind:
-  * Include a link to the *github* bug that describes the work, this must be a public link;
+  * Include a link to the *GitHub* bug that describes the work, this must be a public link;
   * Put "TBD" in the `data_reviews` entry, that needs to be updated *before* releasing the new instrumentation and ideally before merging it;
   * Think about whether the data you are collecting is technical or interaction, sometimes it's both. In that case pick interaction which is a higher category of data. (See more details on https://wiki.mozilla.org/Data_Collection);
 * Open a **draft** PR on GitHub;
 * Fill out the data-review[^1] form and request a data-review from one of the [Mozilla Data Stewards](https://wiki.mozilla.org/Data_Collection)[^2].
-  That can be done by opening a Bugzilla ticket or more easily by attaching the questionaire as a comment on the PR that implements the instrumentation changes.
-  For Bugzilla, there is a special Bugzilla datareview request option and for GitHub it's enough to add the chosen data steward as a reviwer for the PR.
-* The data-review questionaire will result in a data review response. The link to that response is what should be added to the `data_review` entry on the Glean YAML files.
+  That can be done by opening a Bugzilla ticket or more easily by attaching the questionnaire as a comment on the PR that implements the instrumentation changes.
+  For Bugzilla, there is a special Bugzilla data review request option and for GitHub it's enough to add the chosen data steward as a reviewer for the PR.
+* The data-review questionnaire will result in a data review response. The link to that response is what should be added to the `data_review` entry on the Glean YAML files.
   It must be a public link.
 
 > Note:
 > - It is **ok** for a reviewer to review and approve your code while you're waiting for data review.
-> - It is **not** ok to release code that contains instrumentation changes without a datareview r+. It is good practice not to merge code that does not have a datareview r+.
+> - It is **not** ok to release code that contains instrumentation changes without a data review r+. It is good practice not to merge code that does not have a data review r+.
 
-[^1]: The data-review questionaire can be found at https://github.com/mozilla/data-review/blob/main/request.md. That can be copy pasted and filled out manually. However,
+[^1]: The data-review questionnaire can be found at https://github.com/mozilla/data-review/blob/main/request.md. That can be copy pasted and filled out manually. However,
 since the VPN application uses Glean for data collection developers can also use the [`glean_parser data-review`](https://mozilla.github.io/glean_parser/) command,
-which generates a mostly filled out data-review questionaire for Glean users. The questionaire can seem quite intimidating, but don't panic.
+which generates a mostly filled out data-review questionnaire for Glean users. The questionnaire can seem quite intimidating, but don't panic.
 First, look at an old data-review such as https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4594.
 Questions 1, 2, 3 an 10 are the ones that require most of your attention and thought.
 If you don't know the answers to these questions, reach out to Sarah Bird or the product manager so you can answer these with full confidence.

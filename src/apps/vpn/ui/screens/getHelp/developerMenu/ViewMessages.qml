@@ -37,7 +37,7 @@ Item {
             spacing: VPNTheme.theme.windowMargin
             id: messagessHolder
 
-            VPNFilterProxyModel {
+            MZFilterProxyModel {
                 id: messagesModel
                 source: VPNAddonManager
                 filterCallback: obj => obj.addon.type === "message"

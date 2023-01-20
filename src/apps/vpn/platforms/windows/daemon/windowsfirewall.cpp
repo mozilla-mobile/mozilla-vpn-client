@@ -21,10 +21,10 @@
 #include <QScopeGuard>
 #include <QtEndian>
 
-#include "../windowscommons.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "platforms/windows/windowsutils.h"
 #include "winsock.h"
 
 #define IPV6_ADDRESS_SIZE 16
@@ -73,7 +73,7 @@ WindowsFirewall::WindowsFirewall(QObject* parent) : QObject(parent) {
       FwpmEngineOpen0(NULL, RPC_C_AUTHN_WINNT, NULL, &session, &engineHandle);
 
   if (result != ERROR_SUCCESS) {
-    WindowsCommons::windowsLog("FwpmEngineOpen0 failed");
+    WindowsUtils::windowsLog("FwpmEngineOpen0 failed");
     return;
   }
   logger.debug() << "Filter engine opened successfully.";
@@ -320,7 +320,7 @@ bool WindowsFirewall::allowTrafficForAppOnAll(const QString& exePath,
   FWP_BYTE_BLOB* appID = NULL;
   result = FwpmGetAppIdFromFileName0(appPath, &appID);
   if (result != ERROR_SUCCESS) {
-    WindowsCommons::windowsLog("FwpmGetAppIdFromFileName0 failure");
+    WindowsUtils::windowsLog("FwpmGetAppIdFromFileName0 failure");
     return false;
   }
   // Condition: Request must come from the .exe
@@ -722,7 +722,7 @@ QString WindowsFirewall::getCurrentPath() {
     ok = GetModuleFileNameA(NULL, buffer.data(), buffer.size());
   }
   if (ok == 0) {
-    WindowsCommons::windowsLog("Err fetching dos path");
+    WindowsUtils::windowsLog("Err fetching dos path");
     return "";
   }
 
