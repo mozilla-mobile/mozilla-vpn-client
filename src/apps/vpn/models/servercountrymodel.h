@@ -61,6 +61,7 @@ class ServerCountryModel final : public QAbstractListModel {
   void retranslate();
   unsigned int avgLatency() const;
   void setServerLatency(const QString& publicKey, unsigned int msec);
+  void clearServerLatency();
   void setServerCooldown(const QString& publicKey);
   void setCooldownForAllServersInACity(const QString& countryCode,
                                        const QString& cityCode);

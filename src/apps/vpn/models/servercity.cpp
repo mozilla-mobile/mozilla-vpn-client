@@ -114,10 +114,6 @@ int ServerCity::connectionScore() const {
     return Unavailable;
   }
 
-  // If the feature is disabled, we have no data to return.
-  if (!Feature::get(Feature::Feature_serverConnectionScore)->isSupported()) {
-    return NoData;
-  }
   // In the unlikely event that the sum of the latencies is zero, then we
   // haven't actually measured anything and have nothing to report.
   if (sumLatencyMsec == 0) {

@@ -328,6 +328,22 @@ void ServerCountryModel::setServerLatency(const QString& publicKey,
   }
 }
 
+void ServerCountryModel::clearServerLatency() {
+  // Invalidate the latency data.
+  m_sumLatencyMsec = 0;
+  m_numLatencySamples = 0;
+  for (Server& server : m_servers) {
+    server.setLatency(0);
+  }
+
+  // Emit changed signals for the connection scores.
+  for (const ServerCountry& country : m_countries) {
+    for (const ServerCity& city : country.cities()) {
+      emit city.scoreChanged();
+    }
+  }
+}
+
 void ServerCountryModel::setServerCooldown(const QString& publicKey) {
   if (m_servers.contains(publicKey)) {
     m_servers[publicKey].setCooldownTimeout(

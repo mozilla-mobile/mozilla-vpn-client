@@ -43,17 +43,23 @@ void ServerLatency::initialize() {
   connect(&m_pingTimeout, &QTimer::timeout, this,
           &ServerLatency::maybeSendPings);
 
+  m_refreshTimer.setSingleShot(true);
   connect(&m_refreshTimer, &QTimer::timeout, this, &ServerLatency::start);
 
-  m_refreshTimer.start(SERVER_LATENCY_INITIAL_MSEC);
+  const Feature *feature = Feature::get(Feature::Feature_serverConnectionScore);
+  connect(feature, &Feature::supportedChanged, this, &ServerLatency::start);
+  if (feature->isSupported()) {
+    m_refreshTimer.start(SERVER_LATENCY_INITIAL_MSEC);
+  }
 }
 
 void ServerLatency::start() {
+  MozillaVPN* vpn = MozillaVPN::instance();
   if (!Feature::get(Feature::Feature_serverConnectionScore)->isSupported()) {
+    vpn->serverCountryModel()->clearServerLatency();
     return;
   }
 
-  MozillaVPN* vpn = MozillaVPN::instance();
   if (vpn->controller()->state() != Controller::StateOff) {
     // Don't attempt to refresh latency when the VPN is active, or
     // we could get misleading results.
@@ -68,7 +74,6 @@ void ServerLatency::start() {
   m_sequence = 0;
   m_wantRefresh = false;
   m_pingSender = PingSenderFactory::create(QHostAddress(), this);
-  ServerCountryModel* scm = vpn->serverCountryModel();
 
   connect(m_pingSender, SIGNAL(recvPing(quint16)), this,
           SLOT(recvPing(quint16)), Qt::QueuedConnection);
@@ -77,11 +82,11 @@ void ServerLatency::start() {
 
   // Generate a list of servers to ping. If possible, sort them by geographic
   // distance to try and get data for the quickest servers first.
-  for (const ServerCountry& country : scm->countries()) {
+  for (const ServerCountry& country : vpn->serverCountryModel()->countries()) {
     for (const ServerCity& city : country.cities()) {
       double distance = vpn->location()->distance(city.latitude(),
                                                   city.longitude());
-      
+
       // Search for where in the list to insert this city's servers.
       auto i = m_pingSendQueue.begin();
       while (i != m_pingSendQueue.end()) {

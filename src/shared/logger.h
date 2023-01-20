@@ -32,7 +32,7 @@ class Logger {
     Log& operator<<(const QByteArray& t);
     Log& operator<<(const QJsonObject& t);
     Log& operator<<(QTextStreamFunction t);
-    Log& operator<<(void* t);
+    Log& operator<<(const void* t);
 
     // Q_ENUM
     template <typename T>
