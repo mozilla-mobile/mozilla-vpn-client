@@ -38,12 +38,14 @@ if( ${_SUPPORTED} GREATER -1 )
     # Sentry support is given
     target_sources(mozillavpn PRIVATE
         apps/vpn/sentry/sentryadapter.cpp
-        apps/vpn/sentry/sentryadapter.h
+        apps/vpn/sentry/sentryadapter.h     
+        apps/vpn/tasks/sentry/tasksentry.cpp
+        apps/vpn/tasks/sentry/tasksentry.h
     )
 
     # Configure Linking and Compile
     if(APPLE)
-        include(apps/vpn/cmake/osxtools.cmake)
+        include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
         # Let sentry.h know we are using a static build
         target_compile_definitions(mozillavpn PRIVATE SENTRY_BUILD_STATIC)
         # Let mozilla-vpn know we need to provide the upload client
@@ -100,8 +102,3 @@ else()
     message("Cannot build sentry for ${CMAKE_SYSTEM_NAME}")
 endif()
 
-# Add Sources that will be required anyway
-target_sources(mozillavpn PRIVATE
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/sentry/tasksentry.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/sentry/tasksentry.h
-)

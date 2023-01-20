@@ -11,6 +11,9 @@ Glean API docs on the book, choose the "Firefox Desktop" examples tab. The API w
 
 > **Note**: An understanding of the fundamentals of Glean such as metrics, pings and glean_parser is assumed.
 
+> **Note**: For a list of Glean features/metrics that are not yet implemented on the Mozilla VPN Glean integration, 
+> please consult [VPN-3683](https://mozilla-hub.atlassian.net/browse/VPN-3683).
+
 ## Background
 
 On a first attempt to integrate Glean on the VPN application,
@@ -21,11 +24,11 @@ of having a data collection library based on the QML layer of the application ou
 **Telemetry APIs are only available on QML**. Signals and slots can be leveraged to
 record telemetry from the backend of the application, however that requires aggressively wrapping
 the telemetry library APIs. The Glean APIs are very robust and a lot of work is to required write
-a complete wrapper for them. That invites simplificatin of these APIs. On the long run that puts
+a complete wrapper for them. That invites simplification of these APIs. On the long run that puts
 a significant limitation on what sort of data collection design can quickly be implemented.
 
 **Inability to send telemetry when the application is backgrounded on mobile**. The QML layer
-of the application is immediatelly killed when the mobile application is backgrounded. The VPN
+of the application is immediately killed when the mobile application is backgrounded. The VPN
 application is especially susceptible to this issue, since it is a "set it and forget it" type
 of application and the bulk of its usage happens while the app is on the background. Not only
 is data collection not possible on the background, sending telemetry pings right as the application
@@ -133,7 +136,7 @@ pub mod example {
 ```
 
 That template makes it very easy to call `example::my_boolean` APIs from Rust,
-but how to call those APIs from C++ thorugh an FFI layer?
+but how to call those APIs from C++ through an FFI layer?
 
 Let's now look at what the Rust and C++ generated code looks like, using the `glean_parser_ext` custom templates.
 
@@ -176,7 +179,7 @@ namespace example {
 ```
 
 The metric maps make it easy to generate C++ objects that have a reference to the Rust instances of the metric
-that is easy to pass thorugh the FFI layer.
+that is easy to pass through the FFI layer.
 
 ### `vpnglean/src/ffi`
 
@@ -250,7 +253,7 @@ Instead of consuming the Glean mobile SDKs through the normal channels, the `gle
 submodule of this repository. When building for mobile, the Glean platform specific code is added
 to the Mozilla VPN sources -- it is worth noting that part of that code is generated using a tool
 called [UniFFI](uniffi) and Glean itself has internal metrics and pings which also require a generation step,
-both generations steps are also added to the Mozilla VPN plaform specific build setup.
+both generations steps are also added to the Mozilla VPN platform specific build setup.
 
 The `vpnglean` library exposes the glean_core library symbols as well as the symbols used by the Mozilla VPN C++ code.
 Since that is linked to the Mozilla VPN project the Glean platform specific code added can access those symbols too.

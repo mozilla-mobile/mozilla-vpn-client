@@ -24,9 +24,15 @@ ColumnLayout {
         lineHeight: VPNTheme.theme.labelLineHeight
         onLinkActivated: {
             if (link === "terms-of-service") {
-                return VPNUrlOpener.openLink(VPNUrlOpener.LinkTermsOfService);
+                return VPNUrlOpener.openUrlLabel("termsOfService");
             }
-            VPNUrlOpener.openLink(VPNUrlOpener.LinkPrivacyNotice);
+            VPNUrlOpener.openUrlLabel("privacyNotice");
         }
+
+        Accessible.role: Accessible.StaticText
+        //prevent html tags from being read by screen readers
+        //NOTE: This is not a robust way of removing html tags,
+        //and should only be used for this particular case
+        Accessible.name: text.replace(/<[^>]*>/g, "")
     }
 }

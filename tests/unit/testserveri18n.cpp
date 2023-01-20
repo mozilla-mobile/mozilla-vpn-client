@@ -4,11 +4,13 @@
 
 #include "testserveri18n.h"
 
+#include "localizer.h"
 #include "serveri18n.h"
 #include "settingsholder.h"
 
 void TestServerI18n::basic() {
   SettingsHolder settingsHolder;
+  Localizer l;
 
   // Non existing countries/cities
   QCOMPARE(ServerI18N::translateCountryName("FOO", "FOO"), "FOO");

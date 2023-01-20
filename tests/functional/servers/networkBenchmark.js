@@ -9,21 +9,33 @@ const constants = require('../constants.js');
 // https://github.com/mozilla-services/vpn-network-benchmark
 let server = null;
 module.exports = {
-  start() {
+  start(headerCheck = true) {
     server = new Server(
-      'VPN Network Benchmark',
-      constants.UPLOAD_BENCHMARK_PORT,
-      {
-        POSTs: {
-          '/': {status: 200, body: {}},
+        'VPN Network Benchmark', constants.NETWORK_BENCHMARK_PORT, {
+          GETs: {
+            '/': {
+              status: 200,
+              bodyRaw: new Array(1024).join('a'),
+            }
+          },
+          POSTs: {
+            '/': {status: 200, body: {}},
+          },
         },
-      }
-    );
-    return constants.UPLOAD_BENCHMARK_PORT;
+        headerCheck);
+    return constants.NETWORK_BENCHMARK_PORT;
   },
 
   stop() {
     server.stop();
+  },
+
+  get overrideEndpoints() {
+    return server.overrideEndpoints;
+  },
+
+  set overrideEndpoints(value) {
+    server.overrideEndpoints = value;
   },
 
   throwExceptionsIfAny() {

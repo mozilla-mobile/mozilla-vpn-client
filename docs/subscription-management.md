@@ -13,7 +13,7 @@ The subscription information that is shown to the user.
 | Subscription plan | Amount and interval for billing. |
 | Status | Indicates if the subscription is “active” or “inactive”. |
 | Next billed | Date on which the next payment will occur. |
-| Activated | Daten on which the subscription was created. |
+| Activated | Date on which the subscription was created. |
 | Expires | Expiration date of the subscription. |
 
 ### Payment list
@@ -105,7 +105,7 @@ The subscription data is fetched from the Guardian endpoint `/subscriptionDetail
 | created_at | Subscription start date. | Number | Yes |
 | expires_on | Subscription expiration date. | Number | Yes |
 | is_cancelled | Is the subscription cancelled? | Boolean | Yes |
-| payment | Payment infomation associated with the subscription. | Payment Object | Yes |
+| payment | Payment information associated with the subscription. | Payment Object | Yes |
 | plan | Information on the selected subscription plan. | Plan Object | Yes |
 
 ### Payment object
@@ -122,7 +122,7 @@ Detail info on the payment method.
 | credit_card_brand | Brand of the credit card. Empty if no credit card is used for payment. | String | No |
 | credit_card_exp_month | Expiration month of the credit card. Empty if no credit card is used for payment. | Number | No |
 | credit_card_exp_year | Expiration year of the credit card. Empty if no credit card is used for payment. | Number | No |
-| credit_card_last4 | The last four digits of the credit card numeber. Empty if no credit card is used for payment. | String | No |
+| credit_card_last4 | The last four digits of the credit card number. Empty if no credit card is used for payment. | String | No |
 
 ### Plan object
 

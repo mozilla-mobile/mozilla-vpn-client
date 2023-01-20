@@ -30,19 +30,20 @@ property object with the following properties:
 
 ### Step object
 
-Each tutorial is composed of a list of steps (tooltips).
+Each tutorial is composed of a list of steps (tool tips).
 
 A step is a JSON object composed of the following properties:
 
-| Property   | Description                                                                      | Type                   | Required |
-| ---------- | -------------------------------------------------------------------------------- | ---------------------- | -------- |
-| id         | Each step must have an id. This is used for the localization                     | String                 | Yes      |
-| tooltip    | The text content of the tooltip for this step                                    | String                 | Yes      |
-| comment    | An optional comment to describe the meaning of the tooltip content               | String                 | No       |
-| element    | The object name of the QML element to be used for the positioning of the tooltip | Yes                    |
-| conditions | A list of conditions to be checked before exposing this step. See below          | Condition object       | No       |
-| before     | An array of operations to run before showing the tooltip                         | Array of Before object | No       |
-| next       | An object to describe when this step has to be considered complete               | Next object            | Yes      |
+| Property   | Description                                                                                       | Type                   | Required    |
+| ---------- | --------------------------------------------------------------------------------------------------| ---------------------- | ----------- |
+| id         | Each step must have an id. This is used for the localization                                      | String                 | Yes         |
+| tooltip    | The text content of the tooltip for this step                                                     | String                 | Yes         |
+| comment    | An optional comment to describe the meaning of the tooltip content                                | String                 | No          |
+| query      | The [qml-path](https://mozilla-mobile.github.io/mozilla-vpn-client/docs/classQmlPath.html) query to identify the object to be used for the positioning of the tooltip           | String                 | Yes         |
+| element    | The object name of the QML element to be used for the positioning of the tooltip (pre v2.13 only) | String                 | Yes < v2.13 |
+| conditions | A list of conditions to be checked before exposing this step. See below                           | Condition object       | No          |
+| before     | An array of operations to run before showing the tooltip                                          | Array of Before object | No          |
+| next       | An object to describe when this step has to be considered complete                                | Next object            | Yes         |
 
 ### Condition object
 
@@ -64,21 +65,23 @@ The list of operations are:
 
 Set a property value to a QML object. It's properties are:
 
-| Property | Description                  | Type   | Required |
-| -------- | ---------------------------- | ------ | -------- |
-| element  | The QML object name          | String | Yes      |
-| property | The property name            | String | Yes      |
-| value    | The property value to be set | any    | Yes      |
+| Property | Description                               | Type   | Required    |
+| -------- | ----------------------------------------- | ------ | ----------- |
+| query    | The [qml-path](https://mozilla-mobile.github.io/mozilla-vpn-client/docs/classQmlPath.html) query to identify the object | String | Yes         |
+| element  | The QML object name (pre v2.13 only)      | String | Yes < v2.13 |
+| property | The property name                         | String | Yes         |
+| value    | The property value to be set              | any    | Yes         |
 
 ##### property_get
 
 Get and compare a property value of a QML object. It's properties are:
 
-| Property | Description                 | Type   | Required |
-| -------- | --------------------------- | ------ | -------- |
-| element  | The QML object name         | String | Yes      |
-| property | The property name           | String | Yes      |
-| value    | The property value to match | any    | Yes      |
+| Property | Description                               | Type   | Required    |
+| -------- | ----------------------------------------- | ------ | ----------- |
+| query    | The [qml-path](https://mozilla-mobile.github.io/mozilla-vpn-client/docs/classQmlPath.html) query to identify the object | String | Yes         |
+| element  | The QML object name (pre v2.13 only)      | String | Yes < v2.13 |
+| property | The property name                         | String | Yes         |
+| value    | The property value to match               | any    | Yes         |
 
 ##### vpn_location_set
 
@@ -103,8 +106,9 @@ The next object describes how this step has to be considered complete. It's a JS
 
 So far we support only one operation: 'signal'. This operation requires the following properties:
 
-| Property    | Description                                                                                                        | Type   | Required                    |
-| ----------- | ------------------------------------------------------------------------------------------------------------------ | ------ | --------------------------- |
-| qml_emitter | A QML object name that has to emit a signal                                                                        | String | Yes if vpn_emitter is empty |
-| vml_emitter | An internal VPN component that has to emit a signal. So far, we support only: **settingHolder** and **controller** | String | Yes if qml_emitter is empty |
-| signal      | The signal name                                                                                                    | String | Yes                         |
+| Property      | Description                                                                                                        | Type   | Required                      |
+| ------------- | ------------------------------------------------------------------------------------------------------------------ | ------ | ----------------------------- |
+| query_emitter | A [qml-path](https://mozilla-mobile.github.io/mozilla-vpn-client/docs/classQmlPath.html) query to identify the object that has to emit a signal                                                  | String | Yes if vpn_emitter is empty   |
+| qml_emitter   | A QML object name that has to emit a signal (pre v2.13 only)                                                       | String | No (use only in < v2.13)      |
+| vml_emitter   | An internal VPN component that has to emit a signal. So far, we support only: **settingHolder** and **controller** | String | Yes if query_emitter is empty |
+| signal        | The signal name                                                                                                    | String | Yes                           |

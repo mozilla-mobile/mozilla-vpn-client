@@ -3,43 +3,44 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const { navBar, initialScreen, getHelpScreen, settingsScreen, telemetryScreen, homeScreen, inAppMessagingScreen } = require('./elements.js');
 const vpn = require('./helper.js');
+const queries = require('./queries.js');
 
 describe('Navigation bar', async function() {
   this.timeout(60000);
 
   async function navigationBarVisible() {
-    await vpn.waitForElement(navBar.HOME);
-    return await vpn.getElementProperty(navBar.HOME, 'visible');
+    await vpn.waitForQuery(queries.navBar.HOME);
+    return await vpn.getQueryProperty(queries.navBar.HOME, 'visible');
   }
 
 
   it('Is not visible over initial screen', async () => {
-    await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
+    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
     assert(await navigationBarVisible() === 'false');
   });
 
 
   it('Is not visible over pre-authentication Get help menu', async () => {
-    await vpn.waitForElementAndClick(initialScreen.GET_HELP_LINK);
-    await vpn.waitForElement(getHelpScreen.BACK);
-    await vpn.waitForElementProperty(getHelpScreen.BACK, 'visible', 'true');
-    await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
+    await vpn.waitForQueryAndClick(
+        queries.screenInitialize.GET_HELP_LINK.visible());
+    await vpn.waitForQuery(queries.screenGetHelp.BACK_BUTTON.visible());
+    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
     assert(await navigationBarVisible() === 'false');
   });
 
 
   it('Is not visible over desktop onboarding', async () => {
-    await vpn.waitForElementAndClick(initialScreen.LEARN_MORE_LINK);
+    await vpn.waitForQueryAndClick(
+        queries.screenInitialize.LEARN_MORE_LINK.visible());
     assert(await navigationBarVisible() === 'false');
   });
 
 
   it('Is not visible during browser authentication', async () => {
     await vpn.flipFeatureOff('inAppAuthentication');
-    await vpn.waitForMainView();
-    await vpn.clickOnElement(initialScreen.GET_STARTED);
+    await vpn.waitForInitialView();
+    await vpn.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
 
     if (!this.ctx.wasm) {
       await vpn.waitForCondition(async () => {
@@ -48,15 +49,15 @@ describe('Navigation bar', async function() {
       });
     }
 
-    await vpn.waitForElement(initialScreen.AUTHENTICATE_VIEW);
-    await vpn.waitForElementProperty(initialScreen.AUTHENTICATE_VIEW, 'visible', 'true');
+    await vpn.waitForQuery(
+        queries.screenInitialize.AUTHENTICATE_VIEW.visible());
     assert(await navigationBarVisible() === 'false');
   });
 
 
   it('Is not visible over telemetry screen', async () => {
     await vpn.authenticateInApp(true, false);
-    await vpn.waitForElement(telemetryScreen.TELEMETRY_POLICY_BUTTON);
+    await vpn.waitForQuery(queries.screenTelemetry.BUTTON.visible());
     assert(await navigationBarVisible() === 'false');
   });
 
@@ -65,93 +66,70 @@ describe('Navigation bar', async function() {
     this.ctx.authenticationNeeded = true;
 
     it('Is visible over the Home screen', async () => {
-      await vpn.waitForElement(navBar.HOME);
-      await vpn.waitForElementProperty(navBar.HOME, 'visible', 'true');
-      assert(await navigationBarVisible() === 'true');
+      await vpn.waitForQuery(queries.navBar.HOME.visible());
     });
 
     it('Has Settings, Messaging, and Home buttons', async () => {
-      await vpn.waitForElement(navBar.HOME);
-      await vpn.waitForElementProperty(navBar.HOME, 'visible', 'true');
-
-      await vpn.waitForElement(navBar.MESSAGES);
-      await vpn.waitForElementProperty(navBar.MESSAGES, 'visible', 'true');
-
-      await vpn.waitForElement(navBar.SETTINGS);
-      await vpn.waitForElementProperty(navBar.SETTINGS, 'visible', 'true');
+      await vpn.waitForQuery(queries.navBar.HOME.visible());
+      await vpn.waitForQuery(queries.navBar.MESSAGES.visible());
+      await vpn.waitForQuery(queries.navBar.SETTINGS.visible());
     });
 
-
     it('Clicking the Settings button opens settings screen', async () => {
-      await vpn.waitForElement(navBar.SETTINGS);
-      await vpn.clickOnElement(navBar.SETTINGS);
-      await vpn.waitForElement(settingsScreen.SETTINGS);
-      assert(   await vpn.getElementProperty(settingsScreen.SETTINGS, 'visible') === 'true');
+      await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+      await vpn.waitForQuery(queries.screenSettings.SCREEN.visible());
     });
 
 
     it('Clicking the Messages button opens messaging screen', async () => {
-      await vpn.waitForElement(navBar.MESSAGES);
-      await vpn.clickOnElement(navBar.MESSAGES);
-      await vpn.waitForElement(inAppMessagingScreen.SCREEN);
-      assert(await vpn.getElementProperty(inAppMessagingScreen.SCREEN, 'visible') === 'true');
+      await vpn.waitForQueryAndClick(queries.navBar.MESSAGES.visible());
+      await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
     });
 
 
     it('Clicking the Home button opens home screen', async () => {
-      await vpn.waitForElement(navBar.MESSAGES);
-      await vpn.clickOnElement(navBar.MESSAGES);
-      await vpn.waitForElement(inAppMessagingScreen.SCREEN);
+      await vpn.waitForQueryAndClick(queries.navBar.MESSAGES.visible());
+      await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
 
-      await vpn.clickOnElement(navBar.HOME);
-      await vpn.waitForElement(homeScreen.SERVER_LIST_BUTTON);
-
-      assert(await vpn.getElementProperty(homeScreen.SERVER_LIST_BUTTON, 'visible') === 'true');
+      await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
+      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
     });
 
 
     it('Clicking a selected Home button reloads the Home screen', async () => {
-      await vpn.waitForElement(homeScreen.SERVER_LIST_BUTTON);
-      await vpn.clickOnElement(homeScreen.SERVER_LIST_BUTTON);
-      await vpn.waitForElement(homeScreen.selectSingleHopServerView.BACK_BUTTON);
-      await vpn.waitForElementProperty(homeScreen.selectSingleHopServerView.BACK_BUTTON, 'visible', 'true');
+      await vpn.waitForQueryAndClick(
+          queries.screenHome.SERVER_LIST_BUTTON.visible());
+      await vpn.waitForQuery(
+          queries.screenHome.serverListView.BACK_BUTTON.visible());
 
-      await vpn.waitForElementAndClick(navBar.HOME);
-      assert(await vpn.getElementProperty(homeScreen.SERVER_LIST_BUTTON, 'visible') === 'true');
+      await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
+      await vpn.waitForQueryAndClick(
+          queries.screenHome.SERVER_LIST_BUTTON.visible());
     });
 
 
     it('Clicking a selected Settings button reloads the Settings screen',
        async () => {
-         await vpn
-             .waitForElement(navBar.SETTINGS)
-                 await vpn.clickOnElement(
-                     navBar.SETTINGS);
+         await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
 
-         await vpn.waitForElement(settingsScreen.GET_HELP);
-         await vpn.waitForElementProperty(settingsScreen.GET_HELP, 'visible', 'true');
-         await vpn.clickOnElement(settingsScreen.GET_HELP);
+         await vpn.waitForQueryAndClick(
+             queries.screenSettings.GET_HELP.visible());
 
-         await vpn.waitForElement(getHelpScreen.BACK);
-         await vpn.waitForElementProperty(getHelpScreen.BACK, 'visible', 'true');
+         await vpn.waitForQuery(queries.screenGetHelp.BACK_BUTTON.visible());
 
-         await vpn.waitForElementAndClick(navBar.SETTINGS);
-         assert(await vpn.getElementProperty(settingsScreen.GET_HELP, 'visible') === 'true');
+         await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+         await vpn.waitForQuery(queries.screenSettings.GET_HELP.visible());
        });
 
 
     it('Is visible over the post-auth Get help menu', async () => {
-      await vpn.waitForElement(navBar.SETTINGS)
-          await vpn.clickOnElement(navBar.SETTINGS);
+      await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
 
-      await vpn.waitForElement(settingsScreen.GET_HELP);
-      await vpn.waitForElementProperty(settingsScreen.GET_HELP, 'visible', 'true');
-      await vpn.clickOnElement(settingsScreen.GET_HELP);
+      await vpn.waitForQueryAndClick(queries.screenSettings.GET_HELP.visible());
 
-      await vpn.waitForElement(getHelpScreen.BACK);
-      await vpn.waitForElementProperty(getHelpScreen.BACK, 'visible', 'true');
+      await vpn.waitForQuery(queries.screenGetHelp.BACK_BUTTON.visible());
 
-      await vpn.waitForElementAndClick(navBar.SETTINGS);
+      await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
       assert(await navigationBarVisible() === 'true');
     });
   });

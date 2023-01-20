@@ -21,7 +21,7 @@ SETTING_STRING(addonCustomServerAddress,        // getter
                removeAddonCustomServerAddress,  // remover
                hasAddonCustomServerAddress,     // has
                "addon/customServerAddress",     // key
-               Constants::addonBaseUrl(),       // default value
+               AppConstants::addonBaseUrl(),    // default value
                false,                           // user setting
                false                            // remove when reset
 )
@@ -512,16 +512,6 @@ SETTING_STRING(userDNS,        // getter
                "",             // default value
                true,           // user setting
                false           // remove when reset
-)
-
-SETTING_STRING(userEmail,        // getter
-               setUserEmail,     // setter
-               removeUserEmail,  // remover
-               hasUserEmail,     // has
-               "user/email",     // key
-               "",               // default value
-               false,            // user setting
-               true              // remove when reset
 )
 
 SETTING_INT(userMaxDevices,        // getter

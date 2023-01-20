@@ -11,7 +11,6 @@ ColumnLayout {
     id: controller
 
     property var titleText
-    property string subtitleText: ""
     property alias disableRowWhen: btn.rowShouldBeDisabled
     property alias btnObjectName: btn.objectName
     property string descriptionText

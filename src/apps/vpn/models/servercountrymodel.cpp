@@ -13,6 +13,7 @@
 #include "collator.h"
 #include "feature.h"
 #include "leakdetector.h"
+#include "location.h"
 #include "logger.h"
 #include "servercountry.h"
 #include "serverdata.h"
@@ -241,7 +242,7 @@ int ServerCountryModel::cityConnectionScore(const ServerCity& city) const {
   return score;
 }
 
-QStringList ServerCountryModel::pickRandom() {
+QStringList ServerCountryModel::pickRandom() const {
   logger.debug() << "Choosing a random server";
   qsizetype index = QRandomGenerator::global()->generate() % m_servers.count();
 
@@ -267,6 +268,47 @@ QStringList ServerCountryModel::pickRandom() {
   // We should not get here, unless the model has more entries in m_servers()
   // than actually exist in the country and city lists.
   Q_ASSERT(false);
+}
+
+// Select the city that we think is going to perform the best
+QStringList ServerCountryModel::pickBest(const Location& location) const {
+  double latitude = location.latitude();
+  double longitude = location.longitude();
+  if (qIsNaN(latitude) || qIsNaN(longitude)) {
+    // If we don't know the client's location, just pick at random.
+    return pickRandom();
+  }
+
+  // We rank cities using the distance between two points on a great circle,
+  // which is given by:
+  //    d = acos(sin(lat1)*sin(lat2) + cos(lat1)*cos(lat2)*cos(long1-long2))
+  //
+  // TODO: Include other ranking data, such as latency and number of servers.
+  QString bestCountry;
+  QString bestCity;
+  double clientSin = qSin(latitude * M_PI / 180.0);
+  double clientCos = qCos(latitude * M_PI / 180.0);
+  double bestDistance = M_2_PI;
+  for (const ServerCountry& country : m_countries) {
+    for (const ServerCity& city : country.cities()) {
+      double citySin = qSin(city.latitude() * M_PI / 180.0);
+      double cityCos = qCos(city.latitude() * M_PI / 180.0);
+      double diffCos = qCos((city.longitude() - longitude) * M_PI / 180.0);
+      double distance =
+          qAcos(clientSin * citySin + clientCos * cityCos * diffCos);
+
+      if (distance < bestDistance) {
+        bestCountry = country.code();
+        bestCity = city.name();
+        bestDistance = distance;
+      }
+    }
+  }
+
+  if (bestCountry.isEmpty() || bestCity.isEmpty()) {
+    return pickRandom();
+  }
+  return QStringList({bestCountry, bestCity});
 }
 
 bool ServerCountryModel::exists(const QString& countryCode,
@@ -314,17 +356,6 @@ const QString ServerCountryModel::countryName(
   }
 
   return QString();
-}
-
-const QString ServerCountryModel::localizedCountryName(
-    const QString& countryCode) const {
-  const QString name = countryName(countryCode);
-  return ServerI18N::translateCountryName(countryCode, name);
-}
-
-QString ServerCountryModel::getLocalizedCountryName(
-    const QString& countryCode) {
-  return localizedCountryName(countryCode);
 }
 
 void ServerCountryModel::retranslate() {

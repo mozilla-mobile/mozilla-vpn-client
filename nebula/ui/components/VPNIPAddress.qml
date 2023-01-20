@@ -12,26 +12,32 @@ RowLayout {
     property alias ipVersionText: ipVersion.text
     property alias ipAddressText: ipAddress.text
 
-    spacing: 4
+    spacing: VPNTheme.theme.listSpacing
     Layout.fillWidth: true
 
-    VPNBoldLabel {
+    VPNBoldInterLabel {
         id: ipVersion
+
         color: VPNTheme.theme.white
+        font.pixelSize: VPNTheme.theme.fontSizeSmall
+        lineHeight: VPNTheme.theme.labelLineHeight * 1.25
+        verticalAlignment: Text.AlignVCenter
+
         Accessible.name: text
         Accessible.role: Accessible.StaticText
     }
-    VPNLightLabel {
+
+    VPNInterLabel {
         id: ipAddress
 
-        Layout.topMargin: 1
-        color: VPNTheme.theme.bgColor
-        opacity: .8
-        minimumPixelSize: VPNTheme.theme.fontSizeSmall / 2
+        color: VPNTheme.colors.white
+        font.pixelSize: VPNTheme.theme.fontSizeSmall
+        horizontalAlignment: Text.AlignLeft
+        lineHeight: VPNTheme.theme.labelLineHeight * 1.25
+        opacity: 0.8
+
         Accessible.name: text
         Accessible.role: Accessible.StaticText
         Layout.maximumWidth: maxPaintedTextWidth
-        textFormat: Text.PlainText
-        fontSizeMode: Text.HorizontalFit
     }
 }

@@ -4,6 +4,7 @@
 
 #include "taskservers.h"
 
+#include "appconstants.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -23,7 +24,9 @@ TaskServers::TaskServers(
 TaskServers::~TaskServers() { MZ_COUNT_DTOR(TaskServers); }
 
 void TaskServers::run() {
-  NetworkRequest* request = NetworkRequest::createForServers(this);
+  NetworkRequest* request = new NetworkRequest(this, 200);
+  request->auth(MozillaVPN::authorizationHeader());
+  request->get(AppConstants::apiUrl(AppConstants::Servers));
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {

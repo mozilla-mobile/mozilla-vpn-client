@@ -8,8 +8,4 @@ InspectorHandler::InspectorHandler(QObject*) {}
 
 InspectorHandler::~InspectorHandler() = default;
 
-bool InspectorHandler::stealUrls() { return false; }
-
 QString InspectorHandler::appVersionForUpdate() { return "42"; }
-
-bool InspectorHandler::forceRTL() { return false; }

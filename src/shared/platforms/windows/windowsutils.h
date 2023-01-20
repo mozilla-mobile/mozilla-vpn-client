@@ -9,6 +9,9 @@
 
 class WindowsUtils final {
  public:
+  static QString getErrorMessage();
+  static void windowsLog(const QString& msg);
+
   // Returns the major version of Windows
   static QString windowsVersion();
 };

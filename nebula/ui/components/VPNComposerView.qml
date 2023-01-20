@@ -149,7 +149,7 @@ ColumnLayout {
                     colorScheme: loader.composerBlock.style === VPNComposerBlockButton.Primary ? VPNTheme.theme.blueButton : VPNTheme.theme.redButton
 
                     onClicked: {
-                        VPN.recordGleanEventWithExtraKeys("addonCtaClicked", { "addon_id": addon.id });
+                        VPNGleanDeprecated.recordGleanEventWithExtraKeys("addonCtaClicked", { "addon_id": addon.id });
                         Glean.sample.addonCtaClicked.record({
                             addon_id: addon.id
                         });

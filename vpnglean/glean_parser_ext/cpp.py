@@ -75,8 +75,7 @@ def extra_type_name(typ: str) -> str:
         # in an unsupported extra key type is used.
         return "UNSUPPORTED"
 
-
-def output_cpp(objs, output_fd, options={}):
+def output_header(objs, output_fd, options={}):
     """
     Given a tree of objects, output C++ code to the file-like object `output_fd`.
 
@@ -107,11 +106,65 @@ def output_cpp(objs, output_fd, options={}):
     get_ping_id = generate_ping_ids(objs)
 
     if "pings" in objs:
-        template_filename = "cpp_pings.jinja2"
+        template_filename = "cpp_pings_header.jinja2"
         if objs.get("tags"):
             del objs["tags"]
     else:
-        template_filename = "cpp.jinja2"
+        template_filename = "cpp_metrics_header.jinja2"
+        objs = get_metrics(objs)
+
+    template = util.get_jinja2_template(
+        template_filename,
+        filters=(
+            ("cpp", cpp_datatypes_filter),
+            ("snake_case", util.snake_case),
+            ("type_name", type_name),
+            ("extra_type_name", extra_type_name),
+            ("metric_id", get_metric_id),
+            ("ping_id", get_ping_id),
+            ("Camelize", util.Camelize),
+        ),
+    )
+
+    output_fd.write(template.render(all_objs=objs))
+    output_fd.write("\n")
+
+def output_source(objs, output_fd, options={}):
+    """
+    Given a tree of objects, output C++ code to the file-like object `output_fd`.
+
+    :param objs: A tree of objects (metrics and pings) as returned from
+    `parser.parse_objects`.
+    :param output_fd: Writeable file to write the output to.
+    :param options: options dictionary.
+    """
+
+    # Monkeypatch a util.snake_case function for the templates to use
+    util.snake_case = lambda value: value.replace(".", "_").replace("-", "_")
+    # Monkeypatch util.get_jinja2_template to find templates nearby
+
+    def get_local_template(template_name, filters=()):
+        env = jinja2.Environment(
+            loader=jinja2.PackageLoader("cpp", "templates"),
+            trim_blocks=True,
+            lstrip_blocks=True,
+        )
+        env.filters["camelize"] = util.camelize
+        env.filters["Camelize"] = util.Camelize
+        for filter_name, filter_func in filters:
+            env.filters[filter_name] = filter_func
+        return env.get_template(template_name)
+
+    util.get_jinja2_template = get_local_template
+    get_metric_id = generate_metric_ids(objs)
+    get_ping_id = generate_ping_ids(objs)
+
+    if "pings" in objs:
+        template_filename = "cpp_pings_source.jinja2"
+        if objs.get("tags"):
+            del objs["tags"]
+    else:
+        template_filename = "cpp_metrics_source.jinja2"
         objs = get_metrics(objs)
 
     template = util.get_jinja2_template(

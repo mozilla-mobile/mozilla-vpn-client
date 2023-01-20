@@ -30,6 +30,7 @@
 #include "settingsholder.h"
 #include "systemtraynotificationhandler.h"
 #include "tutorial/tutorial.h"
+#include "vpnglean.h"
 
 void TestAddon::init() {
   m_settingsHolder = new SettingsHolder();
@@ -400,6 +401,8 @@ void TestAddon::conditionWatcher_featuresEnabled() {
 }
 
 void TestAddon::conditionWatcher_group() {
+  SettingsHolder::instance()->setInstallationTime(QDateTime::currentDateTime());
+
   QObject parent;
   AddonConditionWatcher* acw1 =
       AddonConditionWatcherTriggerTimeSecs::maybeCreate(&parent, 1);
@@ -658,10 +661,10 @@ void TestAddon::tutorial_create_data() {
   step["id"] = "s1";
   steps.replace(0, step);
   obj["steps"] = steps;
-  QTest::addRow("with-step-without-element")
+  QTest::addRow("with-step-without-query")
       << "foo" << obj << false << false << false;
 
-  step["element"] = "wow";
+  step["query"] = "wow";
   steps.replace(0, step);
   obj["steps"] = steps;
   QTest::addRow("with-step-without-next")
@@ -702,7 +705,7 @@ void TestAddon::tutorial_create_data() {
   QTest::addRow("with-step-with-invalid-next-4")
       << "foo" << obj << false << false << false;
 
-  nextObj["qml_emitter"] = "a";
+  nextObj["query_emitter"] = "a";
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
@@ -716,7 +719,7 @@ void TestAddon::tutorial_create_data() {
   QTest::addRow("with-step-with-invalid-next-6")
       << "foo" << obj << false << false << false;
 
-  nextObj.remove("qml_emitter");
+  nextObj.remove("query_emitter");
   step["next"] = nextObj;
   steps.replace(0, step);
   obj["steps"] = steps;
@@ -731,7 +734,7 @@ void TestAddon::tutorial_create_data() {
       << "foo" << obj << true << false << false;
 
   obj["conditions"] = QJsonObject();
-  QTest::addRow("with-step-element and conditions")
+  QTest::addRow("with-step-query and conditions")
       << "foo" << obj << true << false << false;
 
   obj["highlighted"] = true;
@@ -864,8 +867,6 @@ void TestAddon::message_notification_data() {
   TestHelper::resetLastSystemNotification();
   // Message is created for the first time,
   // but user is not logged in, no  message sent
-  static_cast<AddonMessage*>(
-      Addon::create(&parent, ":/addons_test/message1.json"));
   QTest::addRow("not-logged-in")
       << QString() << QString() << TestHelper::lastSystemNotification.title
       << TestHelper::lastSystemNotification.message;
@@ -1148,10 +1149,10 @@ void TestAddon::telemetry_state_change() {
   // https://mozilla.github.io/glean/book/reference/metrics/event.html#recorded-errors
 
   QCOMPARE(mozilla::glean::sample::addon_state_changed.testGetNumRecordedErrors(
-               VPNGlean::InvalidValue),
+               ErrorType::InvalidValue),
            0);
   QCOMPARE(mozilla::glean::sample::addon_state_changed.testGetNumRecordedErrors(
-               VPNGlean::InvalidOverflow),
+               ErrorType::InvalidOverflow),
            0);
 
   // Upon creating the addon we expect two events to be recorded:
@@ -1176,10 +1177,10 @@ void TestAddon::telemetry_state_change() {
   // After disabling we expect a disabled state event to be recorded.
 
   QCOMPARE(mozilla::glean::sample::addon_state_changed.testGetNumRecordedErrors(
-               VPNGlean::InvalidValue),
+               ErrorType::InvalidValue),
            0);
   QCOMPARE(mozilla::glean::sample::addon_state_changed.testGetNumRecordedErrors(
-               VPNGlean::InvalidOverflow),
+               ErrorType::InvalidOverflow),
            0);
 
   auto postDisableValues =

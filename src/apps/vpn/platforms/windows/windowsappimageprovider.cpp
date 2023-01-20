@@ -17,7 +17,7 @@
 
 #include "leakdetector.h"
 #include "logger.h"
-#include "windowscommons.h"
+#include "platforms/windows/windowsutils.h"
 
 namespace {
 Logger logger("WindowsAppImageProvider");
@@ -42,20 +42,20 @@ QPixmap WindowsAppImageProvider::requestPixmap(const QString& path, QSize* size,
       reinterpret_cast<const wchar_t*>(nativePath.utf16());
   const UINT iconCount = ExtractIconEx(sourceFileC, -1, nullptr, nullptr, 0);
   if (!iconCount) {
-    WindowsCommons::windowsLog(path + " does not appear to contain icons.");
+    WindowsUtils::windowsLog(path + " does not appear to contain icons.");
     return QPixmap();
   }
   QScopedArrayPointer<HICON> icons(new HICON[iconCount]);
   const auto extractedIconCount =
       ExtractIconEx(sourceFileC, 0, icons.data(), nullptr, iconCount);
   if (!extractedIconCount) {
-    WindowsCommons::windowsLog(path + " Failed to extract icon");
+    WindowsUtils::windowsLog(path + " Failed to extract icon");
     return QPixmap();
   }
 
   auto pixmap = QPixmap::fromImage(QImage::fromHICON(icons[0]));
   if (pixmap.isNull()) {
-    WindowsCommons::windowsLog(path + " Failed to convert icon");
+    WindowsUtils::windowsLog(path + " Failed to convert icon");
     return QPixmap();
   }
   if (size) *size = pixmap.size();

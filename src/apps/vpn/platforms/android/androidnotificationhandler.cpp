@@ -25,38 +25,18 @@ AndroidNotificationHandler::~AndroidNotificationHandler() {
   MZ_COUNT_DTOR(AndroidNotificationHandler);
 }
 
-void AndroidNotificationHandler::initialize() {
-  connect(AndroidVPNActivity::instance(), &AndroidVPNActivity::serviceConnected,
-          this, &AndroidNotificationHandler::applyStrings,
-          Qt::QueuedConnection);
-}
+void AndroidNotificationHandler::initialize() {}
 
 void AndroidNotificationHandler::notify(NotificationHandler::Message type,
                                         const QString& title,
                                         const QString& message, int timerMsec) {
+  Q_UNUSED(type)
+  Q_UNUSED(timerMsec)
   logger.debug() << "Send notification - " << message;
   QJsonObject args;
-  args["title"] = title;
-  args["message"] = message;
-  args["sec"] = timerMsec;
-  args["type"] = type;
+  args["header"] = title;
+  args["body"] = message;
   QJsonDocument doc(args);
   AndroidVPNActivity::sendToService(ServiceAction::ACTION_SET_NOTIFICATION_TEXT,
-                                    doc.toJson());
-}
-
-void AndroidNotificationHandler::applyStrings() {
-  QJsonObject localisedMessages;
-  localisedMessages["productName"] = qtTrId("vpn.main.productName");
-  localisedMessages["connectedText"] =
-      qtTrId("vpn.systray.statusConnected.title");  // Connected
-  localisedMessages["disconnectedText"] =
-      qtTrId("vpn.systray.statusDisconnected.title");  // Disconnected
-
-  localisedMessages["notification_group_name"] = L18nStrings::instance()->t(
-      L18nStrings::AndroidNotificationsGeneralNotifications);
-
-  QJsonDocument doc(localisedMessages);
-  AndroidVPNActivity::sendToService(
-      ServiceAction::ACTION_SET_NOTIFICATION_FALLBACK, doc.toJson());
+                                    doc.toJson(QJsonDocument::Compact));
 }

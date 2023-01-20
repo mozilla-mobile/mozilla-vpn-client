@@ -21,8 +21,8 @@ Item {
     state: VPNController.state
     Layout.preferredHeight: 318
     Layout.fillWidth: true
-    Layout.leftMargin: 8
-    Layout.rightMargin: 8
+    Layout.leftMargin: VPNTheme.theme.listSpacing
+    Layout.rightMargin: VPNTheme.theme.listSpacing
     Layout.alignment: Qt.AlignHCenter
 
     Behavior on Layout.preferredWidth  {
@@ -277,7 +277,6 @@ Item {
                 opacity: 1
                 startAnimation: true
             }
-
         },
         State {
             name: VPNController.StateDisconnecting
@@ -322,7 +321,6 @@ Item {
                 target: animatedRings
                 visible: false
             }
-
         },
         State {
             name: VPNController.StateSwitching
@@ -343,7 +341,7 @@ Item {
                 target: logoSubtitle
                 //% "From %1 to %2"
                 //: Switches from location 1 to location 2
-                text: qsTrId("vpn.controller.switchingDetail").arg(VPNCurrentServer.localizedPreviousExitCityName).arg(VPNCurrentServer.localizedCityName)
+                text: qsTrId("vpn.controller.switchingDetail").arg(VPNCurrentServer.localizedPreviousExitCityName).arg(VPNCurrentServer.localizedExitCityName)
                 color: "#FFFFFF"
                 opacity: 0.8
                 visible: true
@@ -370,7 +368,6 @@ Item {
                 opacity: 1
                 startAnimation: false
             }
-
         }
     ]
     transitions: [
@@ -455,13 +452,13 @@ Item {
         accessibleName: box.connectionInfoScreenVisible ? connectionInfoCloseText : VPNl18n.ConnectionInfoOpenButton
         Accessible.ignored: !visible
         buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
-        enabled: visible
+        enabled: visible && !ipInfoPanel.isOpen
         opacity: visible ? 1 : 0
         z: 1
 
         onClicked: {
             if (!box.connectionInfoScreenVisible) {
-                VPN.recordGleanEvent("connectionInfoOpened");
+                VPNGleanDeprecated.recordGleanEvent("connectionInfoOpened");
                 Glean.sample.connectionInfoOpened.record();
             }
             box.connectionInfoScreenVisible = !box.connectionInfoScreenVisible;
@@ -588,12 +585,91 @@ Item {
         id: toggle
         objectName: "controllerToggle"
 
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 48
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-        Accessible.ignored: connectionInfoScreenVisible
-        enabled: !connectionInfoScreenVisible
+        anchors {
+            bottom: parent.bottom
+            bottomMargin: 48
+            horizontalCenterOffset: 0
+            horizontalCenter: parent.horizontalCenter
+        }
+        enabled: !connectionInfoScreenVisible && !ipInfoPanel.visible
+
+        Accessible.ignored: connectionInfoScreenVisible || ipInfoPanel.isOpen
+    }
+
+    VPNIPInfoPanel {
+        id: ipInfoPanel
+        objectName: "ipInfoPanel"
+
+        opacity: ipInfoPanel.isOpen ? 1 : 0
+        visible: opacity > 0
+        z: 1
+
+        Connections {
+            target: VPNConnectionHealth
+            function onStabilityChanged() {
+                if (ipInfoPanel.isOpen &&
+                    VPNConnectionHealth.stability === VPNConnectionHealth.NoSignal) {
+                     ipInfoPanel.isOpen = false;
+                 }
+            }
+        }
+        Connections {
+            target: VPNController
+            function onStateChanged() {
+                ipInfoPanel.isOpen = false
+            }
+        }
+    }
+
+    VPNIconButton {
+        id: ipInfoToggleButton
+        objectName: "ipInfoToggleButton"
+
+        //% "Close"
+        property var connectionInfoCloseText: qsTrId("vpn.connectionInfo.close")
+
+        anchors {
+            right: parent.right
+            rightMargin: VPNTheme.theme.windowMargin / 2
+            top: parent.top
+            topMargin: VPNTheme.theme.windowMargin / 2
+        }
+        accessibleName: ipInfoPanel.isOpen
+            ? connectionInfoCloseText
+            : VPNl18n.ConnectionInfoIpInfoButtonLabel
+        buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
+        enabled: visible && VPNConnectionHealth.stability !== VPNConnectionHealth.NoSignal
+        opacity: visible ? 1 : 0
+        visible: connectionInfoToggleButton.visible
+            && !connectionInfoScreen.isOpen
+            && !connectionInfoScreen.isTransitioning
+        z: 1
+        onClicked: {
+            ipInfoPanel.isOpen = !ipInfoPanel.isOpen;
+        }
+        Accessible.ignored: !visible
+
+        Image {
+            property int iconSize: ipInfoPanel.isOpen
+                ? VPNTheme.theme.iconSize
+                : VPNTheme.theme.iconSize * 1.5
+
+            anchors.centerIn: ipInfoToggleButton
+            source: ipInfoPanel.isOpen
+                ? "qrc:/nebula/resources/close-white.svg"
+                : "qrc:/nebula/resources/connection-info.svg"
+            sourceSize {
+                height: iconSize
+                width: iconSize
+            }
+            opacity: parent.enabled ? 1 : .6
+        }
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 300
+            }
+        }
     }
 
     VPNConnectionInfoScreen {

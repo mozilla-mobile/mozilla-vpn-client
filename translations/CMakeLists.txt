@@ -24,6 +24,7 @@ target_sources(translations PRIVATE
     ${GENERATED_DIR}/l18nstrings_p.cpp
     ${GENERATED_DIR}/l18nstrings.h
     ${GENERATED_DIR}/translations.qrc
+    languages.qrc
     l18nstrings.cpp
     servers.qrc
 )

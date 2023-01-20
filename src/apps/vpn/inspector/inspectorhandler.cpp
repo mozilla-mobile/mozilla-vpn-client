@@ -58,10 +58,8 @@
 namespace {
 Logger logger("InspectorHandler");
 
-bool s_stealUrls = false;
 bool s_forwardNetwork = false;
 bool s_mockFreeTrial = false;
-bool s_forceRTL = false;
 
 QString s_updateVersion;
 QStringList s_pickedItems;
@@ -169,115 +167,132 @@ static QList<InspectorCommand> s_commands{
                        return obj;
                      }},
 
-    InspectorCommand{"has", "Check if an object exists", 1,
+    InspectorCommand{"query", "Query the tree", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
                        obj["value"] =
-                           !!InspectorUtils::findObject(arguments[1]);
+                           !!InspectorUtils::queryObject(arguments[1]);
                        return obj;
                      }},
 
-    InspectorCommand{"list", "List all properties for an object", 1,
-                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
-                       QJsonObject obj;
-                       QString result;
+    InspectorCommand{
+        "query_property", "Retrieve a property value from an object", 2,
+        [](InspectorHandler*, const QList<QByteArray>& arguments) {
+          QJsonObject obj;
 
-                       QObject* item = InspectorUtils::findObject(arguments[1]);
-                       if (!item) {
-                         obj["error"] = "Object not found";
-                         return obj;
-                       }
-                       const QMetaObject* meta = item->metaObject();
-                       int start = meta->propertyOffset();
-                       size_t longest = 0;
+          QObject* item = InspectorUtils::queryObject(arguments[1]);
+          if (!item) {
+            obj["error"] = "Object not found";
+            return obj;
+          }
 
-                       for (int i = start; i < meta->propertyCount(); i++) {
-                         QMetaProperty mp = meta->property(i);
-                         size_t namelen = strlen(mp.name());
-                         if (namelen > longest) {
-                           longest = namelen;
-                         }
-                       }
+          QVariant property = item->property(arguments[2]);
+          if (!property.isValid()) {
+            obj["error"] = "Property is invalid";
+            return obj;
+          }
 
-                       for (int i = start; i < meta->propertyCount(); i++) {
-                         QMetaProperty mp = meta->property(i);
-                         size_t padding = longest - strlen(mp.name());
-                         QVariant value = mp.read(item);
-                         QString name = mp.name() + QString(padding, ' ');
+          obj["value"] = property.toString();
+          return obj;
+        }},
 
-                         if (value.typeId() == QVariant::StringList) {
-                           QStringList list = value.value<QStringList>();
-                           if (list.isEmpty()) {
-                             result += name + " =\n";
-                             continue;
-                           }
-                           for (const QString& x : list) {
-                             result += name + " = " + x + "\n";
-                             name.fill(' ', longest);
-                           }
-                           continue;
-                         }
+    InspectorCommand{
+        "set_query_property", "Set a property value to an object", 3,
+        [](InspectorHandler*, const QList<QByteArray>& arguments) {
+          QJsonObject obj;
 
-                         result += name + " = " + value.toString() + "\n";
-                       }
+          QObject* item = InspectorUtils::queryObject(arguments[1]);
+          if (!item) {
+            obj["error"] = "Object not found";
+            return obj;
+          }
 
-                       obj["value"] = result.trimmed();
-                       return obj;
-                     }},
+          const QMetaObject* metaObject = item->metaObject();
+          int propertyId = metaObject->indexOfProperty(arguments[2]);
+          if (propertyId < 0) {
+            obj["error"] = "Invalid property";
+            return obj;
+          }
 
-    InspectorCommand{"property", "Retrieve a property value from an object", 2,
-                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
-                       QJsonObject obj;
+          QMetaProperty property = metaObject->property(propertyId);
+          Q_ASSERT(property.isValid());
 
-                       QObject* item = InspectorUtils::findObject(arguments[1]);
-                       if (!item) {
-                         obj["error"] = "Object not found";
-                         return obj;
-                       }
+          QVariant value = QVariant::fromValue(arguments[3]);
+          if (!value.canConvert(property.type())) {
+            obj["error"] = "Property value is invalid";
+            return obj;
+          }
 
-                       QVariant property = item->property(arguments[2]);
-                       if (!property.isValid()) {
-                         obj["error"] = "Property is invalid";
-                         return obj;
-                       }
+          property.write(item, value);
+          return obj;
+        }},
 
-                       obj["value"] = property.toString();
-                       return obj;
-                     }},
+    InspectorCommand{
+        "property", "Retrieve a property value from a Mozilla VPN object", 2,
+        [](InspectorHandler*, const QList<QByteArray>& arguments) {
+          QJsonObject obj;
 
-    InspectorCommand{"set_property", "Set a property value to an object", 4,
-                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
-                       QJsonObject obj;
+          int id = qmlTypeId("Mozilla.VPN", 1, 0, qPrintable(arguments[1]));
 
-                       QVariant value;
-                       if (arguments[3] == "i") {
-                         value = arguments[4].toInt();
-                       } else if (arguments[3] == "s") {
-                         value = arguments[4];
-                       } else {
-                         obj["error"] = "Unsupported type. Use: i, s";
-                       }
+          QQmlApplicationEngine* engine = qobject_cast<QQmlApplicationEngine*>(
+              QmlEngineHolder::instance()->engine());
+          QObject* item = engine->singletonInstance<QObject*>(id);
+          if (!item) {
+            obj["error"] = "Object not found";
+            return obj;
+          }
 
-                       QObject* item = InspectorUtils::findObject(arguments[1]);
-                       if (!item) {
-                         obj["error"] = "Object not found";
-                         return obj;
-                       }
+          QVariant property = item->property(arguments[2]);
+          if (!property.isValid()) {
+            obj["error"] = "Property is invalid";
+            return obj;
+          }
 
-                       if (!item->setProperty(arguments[2], value)) {
-                         obj["error"] = "Property is invalid";
-                         return obj;
-                       }
+          obj["value"] = property.toString();
+          return obj;
+        }},
 
-                       return obj;
-                     }},
+    InspectorCommand{
+        "set_property", "Set a property value to a Mozilla VPN object", 3,
+        [](InspectorHandler*, const QList<QByteArray>& arguments) {
+          QJsonObject obj;
+
+          int id = qmlTypeId("Mozilla.VPN", 1, 0, qPrintable(arguments[1]));
+
+          QQmlApplicationEngine* engine = qobject_cast<QQmlApplicationEngine*>(
+              QmlEngineHolder::instance()->engine());
+          QObject* item = engine->singletonInstance<QObject*>(id);
+          if (!item) {
+            obj["error"] = "Object not found";
+            return obj;
+          }
+
+          const QMetaObject* metaObject = item->metaObject();
+          int propertyId = metaObject->indexOfProperty(arguments[2]);
+          if (propertyId < 0) {
+            obj["error"] = "Invalid property";
+            return obj;
+          }
+
+          QMetaProperty property = metaObject->property(propertyId);
+          Q_ASSERT(property.isValid());
+
+          QVariant value = QVariant::fromValue(arguments[3]);
+          if (!value.canConvert(property.type())) {
+            obj["error"] = "Property value is invalid";
+            return obj;
+          }
+
+          property.write(item, value);
+          return obj;
+        }},
 
     InspectorCommand{"click", "Click on an object", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
 
                        QObject* qmlobj =
-                           InspectorUtils::findObject(arguments[1]);
+                           InspectorUtils::queryObject(arguments[1]);
                        if (!qmlobj) {
                          logger.error() << "Did not find object to click on";
                          obj["error"] = "Object not found";
@@ -294,10 +309,23 @@ static QList<InspectorCommand> s_commands{
                        QPoint point = pointF.toPoint();
                        point.rx() += item->width() / 2;
                        point.ry() += item->height() / 2;
+
+                       // It seems that in QT/QML there is a race-condition bug
+                       // between the rendering thread and the main one when
+                       // simulating clicks using QTest. At this point, all the
+                       // properties are synchronized, the animation is
+                       // probably already completed (otherwise it's a bug in
+                       // the test!) but it could be that he following
+                       // `mouse`Click` is ignored.
+                       // The horrible/temporary solution is to wait a bit more
+                       // and to add a delay (VPN-3697)
+                       QTest::qWait(150);
                        QTest::mouseClick(item->window(), Qt::LeftButton,
                                          Qt::NoModifier, point);
+
                        return obj;
                      }},
+
     InspectorCommand{"click_notification", "Click on a notification", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        NotificationHandler::instance()->messageClickHandle();
@@ -308,7 +336,7 @@ static QList<InspectorCommand> s_commands{
         "stealurls",
         "Do not open the URLs in browser and expose them via inspector", 0,
         [](InspectorHandler*, const QList<QByteArray>&) {
-          s_stealUrls = true;
+          UrlOpener::instance()->setStealUrls();
           return QJsonObject();
         }},
     InspectorCommand{"mockFreeTrial",
@@ -757,6 +785,13 @@ static QList<InspectorCommand> s_commands{
                        return QJsonObject();
                      }},
 
+    InspectorCommand{"copy_to_clipboard", "Copy text to clipboard", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       QString copiedText = arguments[1];
+                       MozillaVPN::instance()->storeInClipboard(copiedText);
+                       return QJsonObject();
+                     }},
+
     InspectorCommand{
         "send_push_message_device_deleted",
         "Simulate the receiving of a push-message type device-deleted", 1,
@@ -783,7 +818,7 @@ static QList<InspectorCommand> s_commands{
 
     InspectorCommand{"force_rtl", "Force RTL layout", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
-                       s_forceRTL = true;
+                       Localizer::instance()->forceRTL();
                        emit SettingsHolder::instance()->languageCodeChanged();
                        return QJsonObject();
                      }},
@@ -847,6 +882,9 @@ void InspectorHandler::recv(const QByteArray& command) {
   Q_ASSERT(!parts.isEmpty());
 
   QString cmdName = parts[0].trimmed();
+  for (int i = 1; i < parts.length(); ++i) {
+    parts[i] = QUrl::fromPercentEncoding(parts[i]).toLocal8Bit();
+  }
 
   for (const InspectorCommand& command : s_commands) {
     if (cmdName == command.m_commandName) {
@@ -946,20 +984,14 @@ void InspectorHandler::networkRequestFinished(QNetworkReply* reply) {
 // static
 QString InspectorHandler::getObjectClass(const QObject* target) {
   if (target == nullptr) {
-    return "unkown";
+    return "Unknown";
   }
   auto metaObject = target->metaObject();
   return metaObject->className();
 }
 
 // static
-bool InspectorHandler::stealUrls() { return s_stealUrls; }
-
-// static
 bool InspectorHandler::mockFreeTrial() { return s_mockFreeTrial; }
-
-// static
-bool InspectorHandler::forceRTL() { return s_forceRTL; }
 
 // static
 QString InspectorHandler::appVersionForUpdate() {

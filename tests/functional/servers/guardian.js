@@ -10,9 +10,10 @@ const guardianEndpoints = require('./guardian_endpoints.js');
 let server = null;
 let wsServer = null;
 module.exports = {
-  start() {
+  start(headerCheck = true) {
     server = new Server(
-        'Guardian', constants.GUARDIAN_PORT, guardianEndpoints.endpoints);
+        'Guardian', constants.GUARDIAN_PORT, guardianEndpoints.endpoints,
+        headerCheck);
 
     wsServer = new WebSocketServer({
       httpServer: server._server,

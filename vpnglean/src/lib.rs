@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use std::env;
+use std::os::raw::c_char;
 
 use ffi_support::FfiStr;
 use glean::{ClientInfoMetrics, Configuration};
@@ -10,6 +11,7 @@ use glean::{ClientInfoMetrics, Configuration};
 use ffi::helpers::FallibleToString;
 use metrics::__generated_pings::register_pings;
 use uploader::VPNPingUploader;
+use logger::Logger;
 
 // Make internal Glean symbols public for mobile SDK consumption.
 pub use glean_core;
@@ -17,8 +19,15 @@ pub use glean_core;
 mod ffi;
 mod metrics;
 mod uploader;
+mod logger;
 
 const GLEAN_APPLICATION_ID: &str = "mozillavpn";
+
+#[no_mangle]
+pub extern "C" fn glean_register_log_handler(message_handler: extern fn(i32, *mut c_char)) {
+    let logger = Logger::new(message_handler);
+    logger.init();
+}
 
 #[no_mangle]
 pub extern "C" fn glean_initialize(is_telemetry_enabled: bool, data_path: FfiStr, channel: FfiStr) {
@@ -77,8 +86,10 @@ pub extern "C" fn glean_test_reset_glean(is_telemetry_enabled: bool, data_path: 
         delay_ping_lifetime_io: false,
         // Default is "https://incoming.telemetry.mozilla.org"
         server_endpoint: None,
-        // Use the Glean provided one once https://bugzilla.mozilla.org/show_bug.cgi?id=1675468 is resolved
-        uploader: Some(Box::new(VPNPingUploader::new())),
+        // Once https://bugzilla.mozilla.org/show_bug.cgi?id=1675468 is resolved
+        // we will need to actually create a custom no-op one.
+        // We want a no-op uploader for tests.
+        uploader: None,
         // Whether Glean should schedule “metrics” pings for you
         use_core_mps: true,
         trim_data_to_registered_pings: false,

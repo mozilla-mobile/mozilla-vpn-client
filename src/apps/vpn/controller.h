@@ -74,6 +74,7 @@ class Controller final : public QObject {
 
   qint64 time() const;
 
+  bool switchServers();
   bool silentSwitchServers();
 
   void updateRequired();
@@ -139,7 +140,7 @@ class Controller final : public QObject {
 
   bool processNextStep();
   QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
-  QStringList getExcludedAddresses(const Server& server);
+  QStringList getExcludedAddresses();
 
   void activateInternal(Reason reason, bool forceDNSPort = false);
   void activateNext(Reason reason);
@@ -187,6 +188,8 @@ class Controller final : public QObject {
                            const QString& deviceIpv4Address, uint64_t txBytes,
                            uint64_t rxBytes)>>
       m_getStatusCallbacks;
+
+  bool m_connectedBeforeTransaction = false;
 };
 
 #endif  // CONTROLLER_H

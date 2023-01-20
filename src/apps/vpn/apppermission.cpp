@@ -47,6 +47,12 @@ AppPermission::AppPermission(QObject* parent) : QAbstractListModel(parent) {
       new DummyAppListProvider(this);
 #endif
 
+  connect(SettingsHolder::instance(), &SettingsHolder::vpnDisabledAppsChanged,
+          this, [this]() {
+            beginResetModel();
+            endResetModel();
+          });
+
   connect(m_listprovider, &AppListProvider::newAppList, this,
           &AppPermission::receiveAppList);
 }
@@ -110,9 +116,6 @@ void AppPermission::flip(const QString& appID) {
 
   int index = static_cast<int>(m_applist.indexOf(AppDescription(appID)));
   emit dataChanged(createIndex(index, 0), createIndex(index, 0));
-
-  beginResetModel();
-  endResetModel();
 }
 
 void AppPermission::requestApplist() {
@@ -176,7 +179,7 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
   }
 
   beginResetModel();
-  logger.debug() << "Recived new Applist -- Entrys: " << applistCopy.size();
+  logger.debug() << "Received new Applist -- Entries: " << applistCopy.size();
   m_applist.clear();
   for (const auto& id : keys) {
     m_applist.append(AppDescription(id, applistCopy[id]));

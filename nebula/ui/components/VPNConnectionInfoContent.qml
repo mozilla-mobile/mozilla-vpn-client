@@ -50,37 +50,12 @@ VPNFlickable {
                 Layout.alignment: Qt.AlignVCenter
                 Layout.preferredWidth: parent.width
                 spacing: VPNTheme.theme.listSpacing * 0.5
-                // IP Adresses
-                VPNIPAddress {
-                    //% "IPv4:"
-                    //: The abbreviation for Internet Protocol. This is followed by the user’s IPv4 address.
-                    property var ipv4label: qsTrId("vpn.connectionInfo.ipv4")
-                    //% "IP:"
-                    //: The abbreviation for Internet Protocol. This is followed by the user’s IP address.
-                    property var iplabel: qsTrId("vpn.connectionInfo.ip2")
-
-                    ipVersionText: VPNIPAddressLookup.ipv6Address === "" ? iplabel : ipv4label;
-                    ipAddressText: VPNIPAddressLookup.ipv4Address
-                    visible: VPNIPAddressLookup.ipv4Address !== ""
-
-                    Layout.alignment: Qt.AlignHCenter
-                    Layout.topMargin: VPNTheme.theme.windowMargin * 1.5
-                }
-
-                VPNIPAddress {
-                    visible: VPNIPAddressLookup.ipv6Address !== ""
-                    //% "IPv6:"
-                    //: The abbreviation for Internet Procol version 6. This is followed by the user’s IPv6 address.
-                    ipVersionText: qsTrId("vpn.connectionInfo.ipv6")
-                    ipAddressText: VPNIPAddressLookup.ipv6Address
-                    Layout.alignment: Qt.AlignHCenter
-                }
 
                 // Lottie animation
                 Item {
                     Layout.alignment: Qt.AlignHCenter
                     Layout.fillWidth: true
-                    Layout.preferredHeight:  root.height * 0.35
+                    Layout.preferredHeight: root.height * 0.25
 
                     VPNLottieAnimation {
                         id: speedometerAnimation
@@ -104,20 +79,58 @@ VPNFlickable {
                 }
 
                 ColumnLayout {
+                    property bool isMultipHop: (typeof(VPNCurrentServer.entryCountryCode) !== undefined
+                        && VPNCurrentServer.entryCountryCode !== "")
+                    id: serverLocations
+
                     spacing: 0
 
+                    Layout.fillWidth: true
                     Layout.leftMargin: VPNTheme.theme.windowMargin
                     Layout.rightMargin: VPNTheme.theme.windowMargin
 
-                    VPNConnectionInfoItem {
-                        title: VPNServerCountryModel.getLocalizedCountryName(
-                            VPNCurrentServer.exitCountryCode
-                        )
-                        subtitle: VPNCurrentServer.localizedCityName
-                        iconPath: "qrc:/nebula/resources/flags/"
-                            + VPNCurrentServer.exitCountryCode.toUpperCase()
-                            + ".png"
-                        isFlagIcon: true
+                    RowLayout {
+                        VPNConnectionInfoItem {
+                            id: entryServerLabel
+                            title: serverLocations.isMultipHop
+                                ? VPNCurrentServer.localizedEntryCityName
+                                : ""
+                            subtitle: ""
+                            iconPath: serverLocations.isMultipHop
+                                ? "qrc:/nebula/resources/flags/"
+                                    + VPNCurrentServer.entryCountryCode.toUpperCase()
+                                    + ".png"
+                                : ""
+                            isFlagIcon: true
+                            visible: serverLocations.isMultipHop
+                        }
+
+                        VPNIcon {
+                            id: arrowIcon
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            source: "qrc:/nebula/resources/arrow-forward-white.svg"
+                            sourceSize {
+                                height: VPNTheme.theme.iconSize * 1.25
+                                width: VPNTheme.theme.iconSize * 1.25
+                            }
+                            visible: serverLocations.isMultipHop
+                            Layout.fillWidth: true
+                            Layout.leftMargin: VPNTheme.theme.listSpacing
+                            Layout.rightMargin: VPNTheme.theme.listSpacing
+                        }
+
+                        VPNConnectionInfoItem {
+                            title: serverLocations.isMultipHop
+                            ? VPNCurrentServer.localizedExitCityName
+                            : VPNCurrentServer.localizedExitCountryName;
+                            subtitle: serverLocations.isMultipHop
+                                ? ""
+                                : VPNCurrentServer.localizedExitCityName
+                            iconPath: "qrc:/nebula/resources/flags/"
+                                + VPNCurrentServer.exitCountryCode.toUpperCase()
+                                + ".png"
+                            isFlagIcon: true
+                        }
                     }
 
                     Rectangle {
@@ -255,6 +268,13 @@ VPNFlickable {
                 title: VPNl18n.ConnectionInfoTroubleshootingBulletTwo,
                 type: "arrow",
             });
+
+            if (serverLocations.isMultipHop) {
+                checkmarkListModel.append({
+                    title: VPNl18n.ConnectionInfoTroubleshootingBulletThree,
+                    type: "arrow",
+                });
+            }
         }
     }
 

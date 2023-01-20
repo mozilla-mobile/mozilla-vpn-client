@@ -25,6 +25,7 @@
 // Relative path is required here,
 // otherwise this gets confused with the Glean.js implementation
 #include "../glean/glean.h"
+#include "gleandeprecated.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
 #include "keyregenerator.h"
@@ -35,6 +36,7 @@
 #include "models/featuremodel.h"
 #include "models/recentconnections.h"
 #include "mozillavpn.h"
+#include "networkrequest.h"
 #include "notificationhandler.h"
 #include "productshandler.h"
 #include "purchasehandler.h"
@@ -63,12 +65,15 @@
 #endif
 
 #ifdef MZ_ANDROID
-#  include "platforms/android/androidglean.h"
 #  include "platforms/android/androidutils.h"
 #endif
 
 #ifndef Q_OS_WIN
 #  include "signalhandler.h"
+#endif
+
+#ifdef SENTRY_ENABLED
+#  include "sentry/sentryadapter.h"
 #endif
 
 #ifdef MZ_WINDOWS
@@ -82,6 +87,7 @@
 #endif
 
 #ifdef MZ_WASM
+#  include "platforms/wasm/wasmnetworkrequest.h"
 #  include "platforms/wasm/wasmwindowcontroller.h"
 #endif
 
@@ -242,16 +248,13 @@ int CommandUI::run(QStringList& tokens) {
     vpn.setStartMinimized(minimizedOption.m_set ||
                           (qgetenv("MVPN_MINIMIZED") == "1"));
 
-#ifdef MZ_ANDROID
-    AndroidGlean::initialize(engine);
-#endif
     if (updateOption.m_set) {
       mozilla::glean::sample::update_step.record(
           mozilla::glean::sample::UpdateStepExtra{
               ._state =
                   QVariant::fromValue(Updater::ApplicationRestartedAfterUpdate)
                       .toString()});
-      emit vpn.recordGleanEventWithExtraKeys(
+      emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
           GleanSample::updateStep,
           {{"state",
             QVariant::fromValue(Updater::ApplicationRestartedAfterUpdate)
@@ -306,6 +309,14 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNGleanDeprecated",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = GleanDeprecated::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNCaptivePortal",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance()->captivePortalDetection();
@@ -320,6 +331,16 @@ int CommandUI::run(QStringList& tokens) {
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
+
+#ifdef SENTRY_ENABLED
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNCrashReporter",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = SentryAdapter::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+#endif
 
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNUser",
@@ -354,7 +375,7 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNRecentConnections",
+        "Mozilla.VPN", 1, 0, "VPNRecentConnectionsModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = RecentConnections::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
@@ -596,16 +617,11 @@ int CommandUI::run(QStringList& tokens) {
 
     // Here is the main QML file.
     const QUrl url(QStringLiteral("qrc:/ui/main.qml"));
-    QObject::connect(
-        engine, &QQmlApplicationEngine::objectCreated, qApp,
-        [url](QObject* obj, const QUrl& objUrl) {
-          if (!obj && url == objUrl) {
-            logger.error() << "Failed to load " << objUrl.toString();
-            QGuiApplication::exit(-1);
-          }
-        },
-        Qt::QueuedConnection);
     engine->load(url);
+    if (!engineHolder.hasWindow()) {
+      logger.error() << "Failed to load " << url.toString();
+      return -1;
+    }
 
     NotificationHandler* notificationHandler =
         NotificationHandler::create(&engineHolder);
@@ -650,6 +666,11 @@ int CommandUI::run(QStringList& tokens) {
 
 #ifdef MZ_WASM
     WasmWindowController wasmWindowController;
+
+    NetworkRequest::setRequestHandler(WasmNetworkRequest::deleteResource,
+                                      WasmNetworkRequest::getResource,
+                                      WasmNetworkRequest::postResource,
+                                      WasmNetworkRequest::postResourceIODevice);
 #endif
 
 #ifdef MVPN_WEBEXTENSION

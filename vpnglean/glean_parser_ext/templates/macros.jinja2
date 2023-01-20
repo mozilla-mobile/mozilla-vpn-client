@@ -12,42 +12,7 @@ struct {{ obj.name|Camelize }}Extra : EventMetricExtra {
 
 {%- macro generate_extra_keys_parser(obj, category_name) -%}
 {% if obj|attr("allowed_extra_keys_with_types")|length > 0 %}
-struct __DONOTUSE__{{ obj.name|Camelize }}ExtraParser : EventMetricExtraParser {
-  virtual FfiExtra fromJsonObject(const QJsonObject& extras, QList<QByteArray>& keepStringsAlive) override {
-    FfiExtra ffiExtras({{ obj|attr("allowed_extra_keys_with_types")|length }}, {{ obj|attr("allowed_extra_keys_with_types")|length }});
-
-    int count = 0;
-    foreach (const QString& key, extras.keys()) {
-      auto rawValue = extras.value(key);
-
-      if (rawValue.isString()) {
-        QByteArray value = rawValue.toString().toUtf8();
-        keepStringsAlive.append(value);
-        ffiExtras.values[count] = value.constData();
-      } else if (rawValue.isBool()) {
-        ffiExtras.values[count] = rawValue.toBool() ? "true" : "false";
-      } else if (rawValue.isDouble()) {
-        QByteArray value = QString::number(rawValue.toDouble()).toUtf8();
-        keepStringsAlive.append(value);
-        ffiExtras.values[count] = value.constData();
-      } else {
-        Q_ASSERT(false);
-        // TODO: Record error.
-        continue;
-      }
-
-      QByteArray k = key.toUtf8();
-      keepStringsAlive.append(k);
-      ffiExtras.keys[count] = k.constData();
-
-      count++;
-    }
-
-    ffiExtras.values.resize(count);
-    ffiExtras.keys.resize(count);
-    return ffiExtras;
-  }
-
+struct {{ obj.name|Camelize }}ExtraParser : EventMetricExtraParser {
   virtual FfiExtra fromStruct(const EventMetricExtra& extras, QList<QByteArray>& keepStringsAlive, int id) override {
     auto parsedExtras = static_cast<const mozilla::glean::{{ category_name|snake_case }}::{{ obj.name|Camelize }}Extra&>(extras);
 
@@ -83,5 +48,8 @@ struct __DONOTUSE__{{ obj.name|Camelize }}ExtraParser : EventMetricExtraParser {
     return ffiExtras;
   }
 };
+
+static {{ obj.name|Camelize }}ExtraParser s_{{ obj.name|camelize }}ExtraParser;
+
 {% endif %}
 {%- endmacro -%}

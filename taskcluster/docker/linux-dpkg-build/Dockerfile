@@ -12,7 +12,7 @@ MAINTAINER Owen Kirby <okirby@mozilla.com>
 #-- Extra Packages ----------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------
 ENV CURL='curl --location --retry 5' \
-    DEBIAN_FRONTENT='noninteractive' \
+    DEBIAN_FRONTEND='noninteractive' \
     LANG='en_US.UTF-8' \
     TERM='dumb'
 
@@ -27,7 +27,16 @@ RUN apt-get update \
                           sudo \
     && apt-get clean
 
+ARG QTPPA
+RUN if [ -n "${QTPPA}" ]; then add-apt-repository -y ${QTPPA}; fi
+
 RUN locale-gen "$LANG"
+
+# Also pull in packages from build-depends as early as possible
+# %include linux/debian/control
+ADD topsrcdir/linux/debian/control /root/mozillavpn-dpkg-control
+RUN mk-build-deps -i -r  --tool="apt-get --no-install-recommends --yes" \
+        /root/mozillavpn-dpkg-control
 
 #----------------------------------------------------------------------------------------------------------------------
 #-- Worker User -------------------------------------------------------------------------------------------------------

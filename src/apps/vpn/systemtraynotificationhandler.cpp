@@ -210,10 +210,9 @@ void SystemTrayNotificationHandler::updateContextMenu() {
   QIcon flagIcon(QString(":/nebula/resources/flags/%1.png")
                      .arg(vpn->currentServer()->exitCountryCode().toUpper()));
 
-  QString countryCode = vpn->currentServer()->exitCountryCode();
-  QString localizedCityName = vpn->currentServer()->localizedCityName();
+  QString localizedCityName = vpn->currentServer()->localizedExitCityName();
   QString localizedCountryName =
-      vpn->serverCountryModel()->localizedCountryName(countryCode);
+      vpn->currentServer()->localizedExitCountryName();
 
   m_lastLocationLabel->setIcon(flagIcon);
   m_lastLocationLabel->setText(

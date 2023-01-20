@@ -14,8 +14,9 @@ import compat 0.1
 RadioDelegate {
     property var value
     property alias iconSource: img.source
-    property var iconSize: 30
+    property real iconSize: 30
     property var uiState: VPNTheme.theme.uiState
+    readonly property bool isMobile: (Qt.platform.os === "android" || Qt.platform.os === "ios")
 
     id: radio
 
@@ -44,8 +45,9 @@ RadioDelegate {
             anchors.fill: parent
             source: img
             color: VPNTheme.colors.blue
-            visible: radio.checked || radio.state === uiState.stateHovered
-                || radio.state === uiState.statePressed
+            //prevents iOS and Android from getting into a weird hover state
+            visible: radio.checked || radio.state === uiState.statePressed
+                     || (!radio.isMobile && radio.state === uiState.stateHovered)
         }
     }
 
@@ -66,7 +68,7 @@ RadioDelegate {
         border.width: VPNTheme.theme.focusBorderWidth * 2
         color: VPNTheme.theme.transparent
         //OS Check to prevent multi-touch issue
-        opacity: radio.checked || ((Qt.platform.os !== "android" && Qt.platform.os !== "ios") && radio.activeFocus) ? 1 : 0
+        opacity: radio.checked || (!radio.isMobile && radio.activeFocus) ? 1 : 0
         radius: height
 
         Behavior on opacity {
@@ -80,7 +82,7 @@ RadioDelegate {
         id: mouseArea
         onMouseAreaClicked: function() {
             radio.forceActiveFocus();
-            radio.checked = !radio.checked;
+            radio.checked = true
         }
     }
 }

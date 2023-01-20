@@ -190,7 +190,6 @@ class ConnectionHealth(service: VPNService) {
                 mService.mainLooper.run {
                     // Silent server switch to the same server
                     mService.reconnect(true)
-                    NotificationUtil.instance?.show(mService)
                 }
                 mResetUsed = true
                 taskDone()

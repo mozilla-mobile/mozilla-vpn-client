@@ -8,6 +8,7 @@
 #include <QJsonValue>
 #include <QMetaMethod>
 
+#include "addons/addontutorial.h"
 #include "inspector/inspectorutils.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -35,7 +36,7 @@ QMetaMethod signalByName(const QMetaObject* metaObject, const QString& name) {
 }  // namespace
 
 // static
-TutorialStepNext* TutorialStepNext::create(QObject* parent,
+TutorialStepNext* TutorialStepNext::create(AddonTutorial* parent,
                                            const QJsonValue& json) {
   QJsonObject obj = json.toObject();
   if (obj["op"] != "signal") {
@@ -43,11 +44,11 @@ TutorialStepNext* TutorialStepNext::create(QObject* parent,
     return nullptr;
   }
 
-  QString qmlEmitter = obj["qml_emitter"].toString();
+  QString queryEmitter = obj["query_emitter"].toString();
   QString vpnEmitter = obj["vpn_emitter"].toString();
-  if ((qmlEmitter.isEmpty() ? 0 : 1) + (vpnEmitter.isEmpty() ? 0 : 1) != 1) {
+  if ((queryEmitter.isEmpty() ? 0 : 1) + (vpnEmitter.isEmpty() ? 0 : 1) != 1) {
     logger.warning()
-        << "Only 1 qml_emitter or 1 vpn_emitter. Not none, not both.";
+        << "Only 1 query_emitter or 1 vpn_emitter. Not none, not both.";
     return nullptr;
   }
 
@@ -57,7 +58,7 @@ TutorialStepNext* TutorialStepNext::create(QObject* parent,
     return nullptr;
   }
 
-  EmitterType emitterType = QML;
+  EmitterType emitterType = Query;
   if (!vpnEmitter.isEmpty()) {
     if (vpnEmitter == "settingsHolder") {
       emitterType = SettingsHolder;
@@ -71,13 +72,15 @@ TutorialStepNext* TutorialStepNext::create(QObject* parent,
     }
   }
 
-  return new TutorialStepNext(parent, emitterType, qmlEmitter, signal);
+  return new TutorialStepNext(parent, emitterType, queryEmitter, signal);
 }
 
-TutorialStepNext::TutorialStepNext(QObject* parent, EmitterType emitterType,
+TutorialStepNext::TutorialStepNext(AddonTutorial* parent,
+                                   EmitterType emitterType,
                                    const QString& emitter,
                                    const QString& signal)
     : QObject(parent),
+      m_addonTutorial(parent),
       m_emitterType(emitterType),
       m_emitter(emitter),
       m_signal(signal) {
@@ -95,8 +98,8 @@ void TutorialStepNext::startOrStop(bool start) {
     case Controller:
       obj = MozillaVPN::instance()->controller();
       break;
-    case QML:
-      obj = InspectorUtils::findObject(m_emitter);
+    case Query:
+      obj = InspectorUtils::queryObject(m_emitter);
       break;
   }
 

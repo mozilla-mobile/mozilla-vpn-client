@@ -23,8 +23,6 @@ target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
 
 # Windows platform source files
 target_sources(mozillavpn PRIVATE
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commandcrashreporter.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commandcrashreporter.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemon.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemon.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemonlocalserver.cpp
@@ -35,8 +33,6 @@ target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/interfaceconfig.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/iputils.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/wireguardutils.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/eventlistener.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/eventlistener.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/localsocketcontroller.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/localsocketcontroller.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowsapplistprovider.cpp 
@@ -84,7 +80,7 @@ else()
     target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/ui/qt6winhack.qrc)
 endif()
 
-include(apps/vpn/cmake/golang.cmake)
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
 
 # Build the Balrog library as a DLL
 add_custom_target(balrogdll ALL
@@ -96,7 +92,7 @@ add_custom_target(balrogdll ALL
                 CC=gcc
                 CGO_CFLAGS="-O3 -Wall -Wno-unused-function -Wno-switch -std=gnu11 -DWINVER=0x0601"
                 CGO_LDFLAGS="-Wl,--dynamicbase -Wl,--nxcompat -Wl,--export-all-symbols -Wl,--high-entropy-va"
-            go build -buildmode c-shared -ldflags="-w -s" -trimpath -v -o "${CMAKE_CURRENT_BINARY_DIR}/balrog.dll"
+            go build -buildmode c-shared -buildvcs=false -ldflags="-w -s" -trimpath -v -o "${CMAKE_CURRENT_BINARY_DIR}/balrog.dll"
 )
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_BINARY_DIR}/go-cache)
 add_dependencies(mozillavpn balrogdll)
@@ -108,8 +104,6 @@ target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/balrog.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/balrog.h
 )
-
-include(apps/vpn/cmake/signature.cmake)
 
 install(TARGETS mozillavpn DESTINATION .)
 install(FILES $<TARGET_PDB_FILE:mozillavpn> DESTINATION . OPTIONAL)

@@ -60,9 +60,13 @@
             "type": "string",
             "description": "A comment to describe how to translate this step content"
           },
+          "query": {
+            "type": "string",
+            "description": "The QmlPath query for the element to highlight"
+          },
           "element": {
             "type": "string",
-            "description": "The objectName to highlight"
+            "description": "The objectName to highlight (deprecated)"
           },
           "conditions": {
             "$ref": "conditions.json#"
@@ -105,7 +109,7 @@
         },
         "required": [
           "id",
-          "element",
+          "query",
           "tooltip",
           "next"
         ]

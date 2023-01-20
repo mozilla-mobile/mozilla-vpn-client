@@ -19,7 +19,9 @@
 #include "rfc/rfc4291.h"
 #include "serveri18n.h"
 #include "settingsholder.h"
+#include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/heartbeat/taskheartbeat.h"
+#include "taskscheduler.h"
 
 #if defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
@@ -128,6 +130,21 @@ void Controller::initialize() {
     logger.info() << "Canary Ping Succeeded";
   });
 
+  connect(SettingsHolder::instance(), &SettingsHolder::transactionBegan, this,
+          [this]() { m_connectedBeforeTransaction = m_state == StateOn; });
+
+  connect(SettingsHolder::instance(),
+          &SettingsHolder::transactionAboutToRollBack, this, [this]() {
+            if (!m_connectedBeforeTransaction)
+              MozillaVPN::instance()->deactivate();
+          });
+
+  connect(SettingsHolder::instance(), &SettingsHolder::transactionRolledBack,
+          this, [this]() {
+            if (m_connectedBeforeTransaction)
+              MozillaVPN::instance()->activate();
+          });
+
   MozillaVPN* vpn = MozillaVPN::instance();
 
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
@@ -219,7 +236,7 @@ void Controller::activateInternal(Reason reason, bool forcePort53) {
   exitHop.m_server = exitServer;
   exitHop.m_hopindex = 0;
   exitHop.m_allowedIPAddressRanges = getAllowedIPAddressRanges(exitServer);
-  exitHop.m_excludedAddresses = getExcludedAddresses(exitServer);
+  exitHop.m_excludedAddresses = getExcludedAddresses();
   exitHop.m_dnsServer =
       QHostAddress(DNSHelper::getDNS(exitServer.ipv4Gateway()));
   logger.debug() << "DNS Set" << exitHop.m_dnsServer.toString();
@@ -674,28 +691,12 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
     const Server& exitServer) {
   logger.debug() << "Computing the allowed IP addresses";
 
-  QList<IPAddress> excludeIPv4s;
-  QList<IPAddress> excludeIPv6s;
-  // For multi-hop connections, the last entry in the server list is the
-  // ingress node to the network of wireguard servers, and must not be
-  // routed through the VPN.
-
-  // filtering out the RFC1918 local area network
-  if (Feature::get(Feature::Feature_lanAccess)->isSupported()) {
-    logger.debug() << "Filtering out the local area networks (rfc 1918)";
-    excludeIPv4s.append(RFC1918::ipv4());
-
-    logger.debug() << "Filtering out the local area networks (rfc 4193)";
-    excludeIPv6s.append(RFC4193::ipv6());
-
-    logger.debug() << "Filtering out multicast addresses";
-    excludeIPv4s.append(RFC1112::ipv4MulticastAddressBlock());
-    excludeIPv6s.append(RFC4291::ipv6MulticastAddressBlock());
-  }
-
   QList<IPAddress> list;
 
 #ifdef MZ_IOS
+  // Note: On iOS, we use the `excludeLocalNetworks` flag to ensure
+  // LAN traffic is allowed through. This is in the swift code.
+
   Q_UNUSED(exitServer);
 
   logger.debug() << "Catch all IPv4";
@@ -704,6 +705,23 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   logger.debug() << "Catch all IPv6";
   list.append(IPAddress("::0/0"));
 #else
+  QList<IPAddress> excludeIPv4s;
+  QList<IPAddress> excludeIPv6s;
+  // For multi-hop connections, the last entry in the server list is the
+  // ingress node to the network of wireguard servers, and must not be
+  // routed through the VPN.
+
+  // filtering out the RFC1918 local area network
+  logger.debug() << "Filtering out the local area networks (rfc 1918)";
+  excludeIPv4s.append(RFC1918::ipv4());
+
+  logger.debug() << "Filtering out the local area networks (rfc 4193)";
+  excludeIPv6s.append(RFC4193::ipv6());
+
+  logger.debug() << "Filtering out multicast addresses";
+  excludeIPv4s.append(RFC1112::ipv4MulticastAddressBlock());
+  excludeIPv6s.append(RFC4291::ipv6MulticastAddressBlock());
+
   // Allow access to the internal gateway addresses.
   logger.debug() << "Allow the IPv4 gateway:" << exitServer.ipv4Gateway();
   list.append(IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32));
@@ -724,7 +742,7 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   return list;
 }
 
-QStringList Controller::getExcludedAddresses(const Server& exitServer) {
+QStringList Controller::getExcludedAddresses() {
   logger.debug() << "Computing the excluded IP addresses";
 
   QStringList list;
@@ -783,6 +801,17 @@ void Controller::serverDataChanged() {
     return;
   }
 
+  TaskScheduler::deleteTasks();
+  TaskScheduler::scheduleTask(
+      new TaskControllerAction(TaskControllerAction::eSwitch));
+}
+
+bool Controller::switchServers() {
+  if (m_state == StateOff) {
+    logger.debug() << "Server data changed but we are off";
+    return false;
+  }
+
   clearConnectedTime();
   clearRetryCounter();
 
@@ -790,4 +819,6 @@ void Controller::serverDataChanged() {
 
   setState(StateSwitching);
   deactivate();
+
+  return true;
 }

@@ -15,16 +15,16 @@
 #include "appconstants.h"
 #include "errorhandler.h"
 #include "glean/generated/metrics.h"
+#include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "networkrequest.h"
 #include "telemetry/gleansample.h"
 
 // Terrible hacking for Windows
 #if defined(MZ_WINDOWS)
 #  include "platforms/windows/golang-msvc-types.h"
-#  include "platforms/windows/windowscommons.h"
+#  include "platforms/windows/windowsutils.h"
 #  include "windows.h"
 #endif
 
@@ -86,7 +86,7 @@ void Balrog::start(Task* task) {
     mozilla::glean::sample::update_step.record(
         mozilla::glean::sample::UpdateStepExtra{
             ._state = QVariant::fromValue(UpdateProcessStarted).toString()});
-    emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+    emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
         GleanSample::updateStep,
         {{"state", QVariant::fromValue(UpdateProcessStarted).toString()}});
   }
@@ -95,7 +95,8 @@ void Balrog::start(Task* task) {
       QString(AppConstants::balrogUrl()).arg(appVersion()).arg(userAgent());
   logger.debug() << "URL:" << url;
 
-  NetworkRequest* request = NetworkRequest::createForGetUrl(task, url, 200);
+  NetworkRequest* request = new NetworkRequest(task, 200);
+  request->get(url);
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
@@ -150,7 +151,8 @@ bool Balrog::fetchSignature(Task* task, NetworkRequest* initialRequest,
 
   logger.debug() << "Fetching x5u URL:" << x5u;
 
-  NetworkRequest* x5uRequest = NetworkRequest::createForGetUrl(task, x5u, 200);
+  NetworkRequest* x5uRequest = new NetworkRequest(task, 200);
+  x5uRequest->get(QString(x5u));
 
   connect(x5uRequest, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
@@ -204,7 +206,7 @@ bool Balrog::validateSignature(const QByteArray& x5uData,
   if (!balrogDll) {
     balrogDll = LoadLibrary(TEXT("balrog.dll"));
     if (!balrogDll) {
-      WindowsCommons::windowsLog("Failed to load balrog.dll");
+      WindowsUtils::windowsLog("Failed to load balrog.dll");
       return false;
     }
   }
@@ -213,7 +215,7 @@ bool Balrog::validateSignature(const QByteArray& x5uData,
     balrogSetLogger =
         (BalrogSetLogger*)GetProcAddress(balrogDll, "balrogSetLogger");
     if (!balrogSetLogger) {
-      WindowsCommons::windowsLog("Failed to get balrogSetLogger function");
+      WindowsUtils::windowsLog("Failed to get balrogSetLogger function");
       return false;
     }
   }
@@ -222,7 +224,7 @@ bool Balrog::validateSignature(const QByteArray& x5uData,
     balrogValidate =
         (BalrogValidate*)GetProcAddress(balrogDll, "balrogValidate");
     if (!balrogValidate) {
-      WindowsCommons::windowsLog("Failed to get balrogValidate function");
+      WindowsUtils::windowsLog("Failed to get balrogValidate function");
       return false;
     }
   }
@@ -284,7 +286,8 @@ bool Balrog::processData(Task* task, const QByteArray& data) {
       return false;
     }
 
-    NetworkRequest* request = NetworkRequest::createForGetUrl(task, url);
+    NetworkRequest* request = new NetworkRequest(task);
+    request->get(url);
 
     connect(request, &NetworkRequest::requestFailed, this,
             [this](QNetworkReply::NetworkError error, const QByteArray&) {
@@ -335,7 +338,8 @@ bool Balrog::processData(Task* task, const QByteArray& data) {
     return false;
   }
 
-  NetworkRequest* request = NetworkRequest::createForGetUrl(task, url);
+  NetworkRequest* request = new NetworkRequest(task);
+  request->get(url);
 
   // No timeout for this request.
   request->disableTimeout();
@@ -383,7 +387,7 @@ bool Balrog::computeHash(const QString& url, const QByteArray& data,
   mozilla::glean::sample::update_step.record(
       mozilla::glean::sample::UpdateStepExtra{
           ._state = QVariant::fromValue(BalrogValidationCompleted).toString()});
-  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(BalrogValidationCompleted).toString()}});
 
@@ -428,7 +432,7 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
   mozilla::glean::sample::update_step.record(
       mozilla::glean::sample::UpdateStepExtra{
           ._state = QVariant::fromValue(BalrogFileSaved).toString()});
-  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(BalrogFileSaved).toString()}});
 
@@ -509,7 +513,7 @@ bool Balrog::install(const QString& filePath) {
       mozilla::glean::sample::UpdateStepExtra{
           ._state =
               QVariant::fromValue(InstallationProcessExecuted).toString()});
-  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
       GleanSample::updateStep,
       {{"state", QVariant::fromValue(InstallationProcessExecuted).toString()}});
 

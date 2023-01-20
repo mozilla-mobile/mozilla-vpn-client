@@ -11,6 +11,8 @@
 
 #include "servercountry.h"
 
+class Location;
+
 class ServerCountryModel final : public QAbstractListModel {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(ServerCountryModel)
@@ -41,7 +43,8 @@ class ServerCountryModel final : public QAbstractListModel {
 
   bool initialized() const { return !m_rawJson.isEmpty(); }
 
-  Q_INVOKABLE QStringList pickRandom();
+  Q_INVOKABLE QStringList pickRandom() const;
+  QStringList pickBest(const Location& location) const;
 
   bool exists(const QString& countryCode, const QString& cityName) const;
 
@@ -51,10 +54,6 @@ class ServerCountryModel final : public QAbstractListModel {
   Server server(const QString& pubkey) const { return m_servers.value(pubkey); }
 
   const QString countryName(const QString& countryCode) const;
-
-  Q_INVOKABLE QString getLocalizedCountryName(const QString& countryCode);
-
-  const QString localizedCountryName(const QString& countryCode) const;
 
   const QList<ServerCountry>& countries() const { return m_countries; }
 
@@ -82,8 +81,6 @@ class ServerCountryModel final : public QAbstractListModel {
 
  private:
   [[nodiscard]] bool fromJsonInternal(const QByteArray& data);
-
-  void pickRandomInternal(QString& countryCode, QString& cityName) const;
 
   void sortCountries();
   int cityConnectionScore(const ServerCity& city) const;

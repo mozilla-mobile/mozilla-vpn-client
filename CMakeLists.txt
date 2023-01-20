@@ -12,7 +12,7 @@ if(NOT (IS_MULTI_CONFIG OR DEFINED CMAKE_BUILD_TYPE))
     message("Setting build type ${CMAKE_BUILD_TYPE}")
 endif()
 
-project("Mozilla VPN" VERSION 2.13.0 LANGUAGES C CXX
+project("Mozilla VPN" VERSION 2.14.0 LANGUAGES C CXX
         DESCRIPTION "A fast, secure and easy to use VPN. Built by the makers of Firefox."
         HOMEPAGE_URL "https://vpn.mozilla.org"
 )
@@ -60,13 +60,6 @@ if(APPLE)
     set(CMAKE_XCODE_GENERATE_SCHEME FALSE)
     set(CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM ${BUILD_VPN_DEVELOPMENT_TEAM})
     set(CMAKE_XCODE_ATTRIBUTE_GROUP_ID_IOS ${BUILD_IOS_GROUP_IDENTIFIER})
-
-    ## HACK: Force iphone simulator builds to target for x86_64 instead of the native
-    ## arch. This is due to buggy behaviour in Qt which uses the target architecture
-    ## to detect simulator builds, and leads to breakage on M1/M2 macbooks.
-    if(CMAKE_OSX_SYSROOT STREQUAL "iphonesimulator")
-        set(CMAKE_OSX_ARCHITECTURES x86_64)
-    endif()
 
     if(IOS)
         set(CMAKE_OSX_DEPLOYMENT_TARGET 13.0)
@@ -176,4 +169,7 @@ elseif(IOS)
     if(BUILD_ADJUST_SDK_TOKEN)
         add_subdirectory(ios/adjust)
     endif()
+
+    # A final post-processing hack to enable simulation builds.
+    include(scripts/cmake/ios-arch-fixup.cmake)
 endif()

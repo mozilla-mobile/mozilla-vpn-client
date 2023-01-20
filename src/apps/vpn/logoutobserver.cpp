@@ -11,7 +11,6 @@ LogoutObserver::LogoutObserver(QObject* parent) : QObject(parent) {
   MZ_COUNT_CTOR(LogoutObserver);
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  Q_ASSERT(vpn->userState() == MozillaVPN::UserLoggingOut);
 
   connect(vpn, &MozillaVPN::userStateChanged, this,
           &LogoutObserver::userStateChanged);

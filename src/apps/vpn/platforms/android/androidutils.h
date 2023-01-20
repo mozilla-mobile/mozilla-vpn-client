@@ -46,16 +46,13 @@ class AndroidUtils final : public QObject {
 
   static QJniObject getActivity();
 
-  static void recordGleanEvent(JNIEnv* env, jobject VPNUtils, jstring event);
-
-  static void recordGleanEventWithExtraKeys(JNIEnv* env, jobject VPNUtils,
-                                            jstring event, jstring extras);
-
   static void runOnAndroidThreadSync(const std::function<void()> runnable);
 
   static bool verifySignature(const QByteArray& publicKey,
                               const QByteArray& content,
                               const QByteArray& signature);
+
+  static void initializeGlean(bool isTelemetryEnabled, const QString& channel);
 
  private:
   AndroidUtils(QObject* parent);

@@ -5,10 +5,14 @@ on:
     branches:
       - main
       - 'releases/**'
-    types: [ opened, synchronize, reopened ]
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 jobs:
   linter:
+    name: Run Main Linters (clang, l10n, etc.)
     runs-on: ubuntu-20.04
     env:
       QTVERSION: 6.2.4
@@ -16,7 +20,7 @@ jobs:
       - name: Install Linux packages
         run: |
           sudo apt update
-          sudo apt install git libgl-dev libegl-dev libpolkit-gobject-1-dev clang-10 liboath-dev python3 -y
+          sudo apt install git libgl-dev libegl-dev libpolkit-gobject-1-dev clang-10 liboath-dev python3 aspell aspell-en -y
           python3 -m pip install aqtinstall
           aqt install-qt --outputdir /opt linux desktop $QTVERSION gcc_64 -m all
 
@@ -45,10 +49,10 @@ jobs:
           export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
           python3 scripts/utils/import_languages.py
 
-      - name: Check for l10n errors
+      - name: Generate updated .ts files and check for l10n errors
         run: |
           export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
-          lupdate -version
+          ./scripts/utils/generate_ts.sh
           python .github/l10n/check_l10n_issues.py
 
       - name: Check for QRC errors
@@ -66,6 +70,10 @@ jobs:
           source: '.'
           clangFormatVersion: 11
           style: file
+
+      - name: Spell check documentation files
+        run: |
+          scripts/utils/spellcheck.sh list
   ktlint:
     name: Run ktLint
     runs-on: ubuntu-latest
@@ -81,3 +89,28 @@ jobs:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-review # Change reporter
           android: true
+  qmllint:
+    name: Run QML-Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@master
+        with:
+          fetch-depth: 1
+      - name: Install Qt
+        shell: bash
+        run: |
+          python3 -m pip install aqtinstall
+          # qt6.2.4 for wasm needs the desktop linux installation
+          python3 -m aqt install-qt -O /opt linux desktop 6.2.4
+      - name: Run Lint
+        shell: bash
+        env:
+          QT_HOST_PATH: /opt/6.2.4/gcc_64
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.number }}
+        run: |
+          # Only check the files changed in the current pr
+          ./scripts/utils/lint_qml.sh -pr -s
+
+

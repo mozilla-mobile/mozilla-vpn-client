@@ -2,13 +2,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
-windows/opt:
+task-defaults:
     description: "Windows Build"
     treeherder:
         symbol: B
         kind: build
         tier: 1
-        platform: windows/x64
+        platform: windows/x86_64
     worker-type: b-win2012
     fetches:
         fetch:
@@ -20,7 +20,7 @@ windows/opt:
         toolchain:
             - qt-win
     worker:
-        taskcluster-proxy: false
+        taskcluster-proxy: true
         chain-of-trust: true
         max-run-time: 3600
         artifacts:
@@ -37,3 +37,15 @@ windows/opt:
         cwd: '{checkout}'
         exec-with: powershell
         command: taskcluster/scripts/build/windows.ps1
+
+
+windows/opt:
+    description: "Windows Build"
+    treeherder:
+        symbol: B
+    scopes:
+        by-level:
+            "3":
+                - secrets:get:project/mozillavpn/tokens
+            default: []
+

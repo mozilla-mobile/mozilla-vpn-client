@@ -16,26 +16,31 @@
       {
         "id": "s1",
         "element": "navigationLayout/navButton-settings",
+        "query": "//navigationLayout/navButton-settings{visible=true}",
         "tooltip": "Select your account settings",
         "next": {
           "op": "signal",
           "qml_emitter": "navigationLayout/navButton-settings",
+          "query_emitter": "//navigationLayout/navButton-settings{visible=true}",
           "signal": "clicked"
         }
       },
       {
         "id": "s2",
         "element": "settingsPreferences",
+        "query": "//settingsPreferences{visible=true}",
         "tooltip": "Select your system preferences",
         "next": {
           "op": "signal",
           "qml_emitter": "settingsPreferences",
+          "query_emitter": "//settingsPreferences{visible=true}",
           "signal": "visibleChanged"
         }
       },
       {
         "id": "s3",
         "element": "settingStartAtBoot/checkbox",
+        "query": "//settingStartAtBoot/checkbox{visible=true}",
         "tooltip": "Select or deselect this checkbox",
         "next": {
           "op": "signal",

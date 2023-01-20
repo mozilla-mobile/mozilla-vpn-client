@@ -1,0 +1,80 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url "https://maven.mozilla.org/maven2"
+        }
+    }
+    dependencies {
+        classpath SharedDependencies.com_android_tools_build_gradle
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:1.4.30-M1"
+        classpath "org.mozilla.components:tooling-glean-gradle:107.0.2"
+    }
+}
+plugins {
+    id "com.jetbrains.python.envs" version "0.0.26"
+}
+
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+
+apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
+
+ext.gleanNamespace = "mozilla.telemetry.glean"
+ext.gleanYamlFiles = ["$rootDir/../../../glean/metrics.yaml"]
+
+android {
+    //namespace 'org.mozilla.firefox.vpn'
+    compileSdkVersion Config.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion Config.minSdkVersion
+        targetSdkVersion Config.targetSdkVersion
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+}
+
+dependencies {
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation project(path: ':daemon')
+    implementation project(path: ':vpnglean')
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    implementation project(path: ":common")
+    implementation project(path: ":qtBindings")
+    implementation project(path: ':adjust')
+
+
+    implementation SharedDependencies.androidx_core
+    implementation "com.android.installreferrer:installreferrer:2.2"
+    implementation "com.android.billingclient:billing-ktx:4.0.0"
+    implementation "com.google.android.gms:play-services-ads-identifier:17.0.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
+}

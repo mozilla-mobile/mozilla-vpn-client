@@ -11,16 +11,16 @@
     {
       "id": "s1",
       "comment": "This is a comment for a step",
-      "element": "a",
+      "query": "//a",
       "tooltip": "wow",
-      "next": { "op": "signal", "qml_emitter": "foo", "signal": "a" },
+      "next": { "op": "signal", "query_emitter": "//foo", "signal": "a" },
       "conditions": { "platforms": ["foo"] }
     },
     {
       "id": "s2",
-      "element": "b",
+      "query": "//b",
       "tooltip": "wow2",
-      "next": { "op": "signal", "qml_emitter": "foo", "signal": "a" }
+      "next": { "op": "signal", "query_emitter": "//foo", "signal": "a" }
     }
   ]
 }

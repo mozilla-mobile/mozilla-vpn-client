@@ -28,6 +28,9 @@ BuildRequires: qt6-qtsvg-devel >= 6.0
 BuildRequires: qt6-qttools-devel >= 6.0
 BuildRequires: qt6-qtwebsockets-devel >= 6.0
 BuildRequires: qt6-qt5compat-devel >= 6.0
+BuildRequires: qt6-qtbase-mysql >= 6.0
+BuildRequires: qt6-qtbase-odbc => 6.0
+BuildRequires: qt6-qtbase-postgresql => 6.0
 BuildRequires: systemd
 BuildRequires: systemd-rpm-macros
 
@@ -40,7 +43,7 @@ Read more on https://vpn.mozilla.org
 
 %build
 %define _vpath_srcdir %{_srcdir}
-%cmake -DWEBEXT_INSTALL_LIBDIR=/usr/lib -DCMAKE_INSTALL_SYSCONFDIR=/etc -DBUILD_TESTING=OFF -DSKIP_GLEAN_PARSER=true
+%cmake -DWEBEXT_INSTALL_LIBDIR=/usr/lib -DCMAKE_INSTALL_SYSCONFDIR=/etc -DBUILD_TESTING=OFF
 %cmake_build
 
 %install

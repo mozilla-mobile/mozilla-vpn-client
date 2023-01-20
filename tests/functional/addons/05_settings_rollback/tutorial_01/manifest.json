@@ -14,7 +14,7 @@
     "steps": [
       {
         "id": "mainScreen",
-        "element": "serverListButton-btn",
+        "query": "//serverListButton-btn{visible=true}",
         "tooltip": "Select your location",
         "before": [{
           "op": "vpn_off"
@@ -27,7 +27,7 @@
         }],
         "next": {
           "op": "signal",
-          "qml_emitter": "serverListButton-btn",
+          "query_emitter": "//serverListButton-btn{visible=true}",
           "signal": "visibleChanged"
         }
       }

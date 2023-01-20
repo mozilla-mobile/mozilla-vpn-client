@@ -5,6 +5,7 @@
 #include <QRandomGenerator>
 #include <QtDBus/QtDBus>
 
+#include "appconstants.h"
 #include "cryptosettings.h"
 #include "logger.h"
 
@@ -14,7 +15,7 @@
 
 const SecretSchema* cryptosettings_get_schema(void) {
   static const SecretSchema cryptosettings_schema = {
-      "org.mozilla.vpn.cryptosettings",
+      AppConstants::LINUX_CRYPTO_SETTINGS_KEY,
       SECRET_SCHEMA_NONE,
       {
           {"NULL", SECRET_SCHEMA_ATTRIBUTE_STRING},
@@ -83,8 +84,8 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
       QString b64key(s_key.toBase64());
       gboolean ok = secret_password_store_sync(
           cryptosettings_get_schema(), SECRET_COLLECTION_DEFAULT,
-          "VPN settings encryption key", qPrintable(b64key), nullptr, &error,
-          nullptr);
+          AppConstants::LINUX_CRYPTO_SETTINGS_DESC, qPrintable(b64key), nullptr,
+          &error, nullptr);
       if (error != nullptr) {
         logger.error() << "Key storage failed:" << error->message;
         g_error_free(error);

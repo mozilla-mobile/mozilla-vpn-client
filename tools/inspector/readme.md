@@ -4,7 +4,7 @@
 # Building
 
 The whole app is build with parcel. It will produce 
-a single html file that can be bundled with the client.
+a single HTML file that can be bundled with the client.
 
 ```
 npm install
@@ -15,7 +15,7 @@ will yield `dist/index.html`
 
 # Running standalone
 
-You can also run the inspector stand-alone, for coding convinience. This also leaves the debug info in place:
+You can also run the inspector stand-alone, for coding convenience. This also leaves the debug info in place:
 
 ```
 npm install 

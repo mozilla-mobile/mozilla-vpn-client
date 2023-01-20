@@ -14,51 +14,59 @@
       {
         "id": "mainScreen",
         "element": "serverListButton-btn",
+        "query": "//serverListButton-btn{visible=true}",
         "tooltip": "Select your location",
         "before": [{
           "op": "vpn_off"
         },{
           "op": "vpn_location_set",
-          "exitCountryCode": "at",
-          "exitCity": "Vienna",
+          "exitCountryCode": "it",
+          "exitCity": "Milan",
           "entryCountryCode": "",
           "entryCity": ""
         }],
         "next": {
           "op": "signal",
           "qml_emitter": "serverListButton-btn",
+          "query_emitter": "//serverListButton-btn{visible=true}",
           "signal": "visibleChanged"
         }
       },
       {
         "id": "countryAU",
         "element": "serverCountryList/serverCountry-au",
+        "query": "//serverCountryList/{className=VPNServerCountry}{hasAvailableCities=true}[0]{visible=true}",
         "tooltip": "Select a different country",
         "before": [{
           "op": "property_set",
           "element": "serverCountryView",
+          "query": "//serverCountryView{visible=true}",
           "property": "contentY",
           "value": 0
         }],
         "next": {
           "op": "signal",
           "qml_emitter": "serverCountryList/serverCountry-au",
+          "query_emitter": "//serverCountryList/{className=VPNServerCountry}{hasAvailableCities=true}[0]{visible=true}",
           "signal": "cityListVisibleChanged"
         }
       },
       {
         "id": "cityAU",
         "element": "serverCountryList/serverCountry-au/serverCityList/serverCity-Melbourne/radioIndicator",
+        "query": "//serverCountryList/{className=VPNServerCountry}{hasAvailableCities=true}[0]//serverCityList/{className=VPNRadioDelegate}{isAvailable=true}[0]{visible=true}",
         "tooltip": "Select a different server location",
         "next": {
           "op": "signal",
           "qml_emitter": "serverCountryList/serverCountry-au/serverCityList/serverCity-Melbourne/radioIndicator",
+          "query_emitter": "//serverCountryList/{className=VPNServerCountry}{hasAvailableCities=true}[0]//serverCityList/{className=VPNRadioDelegate}{isAvailable=true}[0]{visible=true}",
           "signal": "visibleChanged"
         }
       },
       {
         "id": "toggle",
         "element": "controllerToggle",
+        "query": "//controllerToggle{visible=true}",
         "tooltip": "Toggle this switch to activate or deactivate the VPN",
         "next": {
           "op": "signal",

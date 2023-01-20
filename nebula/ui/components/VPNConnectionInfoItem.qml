@@ -10,9 +10,9 @@ import Mozilla.VPN 1.0
 RowLayout {
     id: infoStatusItem
 
-    property string title: ""
-    property string subtitle: ""
-    property string iconPath: ""
+    property string title
+    property string subtitle
+    property string iconPath
     property bool isFlagIcon: false
 
     spacing: VPNTheme.theme.hSpacing * 0.2
@@ -57,6 +57,7 @@ RowLayout {
         color: VPNTheme.colors.white
         text: infoStatusItem.subtitle
         horizontalAlignment: Text.AlignRight
+        visible: itemValue.text !== ""
         
         Layout.alignment: Qt.AlignRight | Qt. AlignVCenter
     }

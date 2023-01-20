@@ -37,7 +37,7 @@ class TutorialStep final : public QObject {
   void completed();
 
  private:
-  TutorialStep(AddonTutorial* parent, const QString& element,
+  TutorialStep(AddonTutorial* parent, const QString& query,
                const QString& stepId, const QString& fallback,
                const QJsonObject& conditions,
                const QList<TutorialStepBefore*>& before,
@@ -50,7 +50,7 @@ class TutorialStep final : public QObject {
   AddonConditionWatcher* m_conditionWatcher = nullptr;
 
   const QString m_stepId;
-  const QString m_element;
+  const QString m_query;
   AddonProperty m_string;
   const QList<TutorialStepBefore*> m_before;
   TutorialStepNext* m_next = nullptr;

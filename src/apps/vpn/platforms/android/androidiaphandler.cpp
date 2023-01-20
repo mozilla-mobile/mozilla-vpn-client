@@ -21,7 +21,7 @@
 
 namespace {
 Logger logger("AndroidIAPHandler");
-constexpr auto CLASSNAME = "org.mozilla.firefox.vpn.InAppPurchase";
+constexpr auto CLASSNAME = "org.mozilla.firefox.vpn.qt.InAppPurchase";
 }  // namespace
 
 AndroidIAPHandler::AndroidIAPHandler(QObject* parent)
@@ -32,7 +32,7 @@ AndroidIAPHandler::AndroidIAPHandler(QObject* parent)
 
 AndroidIAPHandler::~AndroidIAPHandler() {
   MZ_COUNT_DTOR(AndroidIAPHandler);
-  QJniObject::callStaticMethod<void>("org/mozilla/firefox/vpn/InAppPurchase",
+  QJniObject::callStaticMethod<void>("org/mozilla/firefox/vpn/qt/InAppPurchase",
                                      "deinit", "()V");
 }
 
@@ -50,7 +50,7 @@ void AndroidIAPHandler::maybeInit() {
     return;
   }
   logger.debug() << "Android IAP handler init";
-  QJniObject::callStaticMethod<void>("org/mozilla/firefox/vpn/InAppPurchase",
+  QJniObject::callStaticMethod<void>("org/mozilla/firefox/vpn/qt/InAppPurchase",
                                      "init", "(Landroid/content/Context;)V",
                                      appContext.object());
 
@@ -107,7 +107,7 @@ void AndroidIAPHandler::nativeRegisterProducts() {
       QJniObject::fromString(productData.toJson(QJsonDocument::Compact));
 
   QJniObject::callStaticMethod<void>(
-      "org/mozilla/firefox/vpn/InAppPurchase", "lookupProductsInPlayStore",
+      "org/mozilla/firefox/vpn/qt/InAppPurchase", "lookupProductsInPlayStore",
       "(Ljava/lang/String;)V", jniString.object());
 }
 
@@ -118,7 +118,7 @@ void AndroidIAPHandler::nativeStartSubscription(
   auto jniString = QJniObject::fromString(product->m_name);
   auto appActivity = AndroidUtils::getActivity();
   QJniObject::callStaticMethod<void>(
-      "org/mozilla/firefox/vpn/InAppPurchase", "purchaseProduct",
+      "org/mozilla/firefox/vpn/qt/InAppPurchase", "purchaseProduct",
       "(Ljava/lang/String;Landroid/app/Activity;)V", jniString.object(),
       appActivity.object());
 }
@@ -133,7 +133,7 @@ void AndroidIAPHandler::launchPlayStore() {
   Q_ASSERT(m_init);
   auto appActivity = AndroidUtils::getActivity();
   QJniObject::callStaticMethod<void>(
-      "org/mozilla/firefox/vpn/InAppPurchase", "launchPlayStore",
+      "org/mozilla/firefox/vpn/qt/InAppPurchase", "launchPlayStore",
       "(Landroid/app/Activity;)V", appActivity.object());
 }
 
@@ -375,8 +375,9 @@ void AndroidIAPHandler::validatePurchase(QJsonObject purchase) {
             logger.info() << "tokenValid == true, acknowledging purchase.";
             auto jniString = QJniObject::fromString(token);
             QJniObject::callStaticMethod<void>(
-                "org/mozilla/firefox/vpn/InAppPurchase", "acknowledgePurchase",
-                "(Ljava/lang/String;)V", jniString.object());
+                "org/mozilla/firefox/vpn/qt/InAppPurchase",
+                "acknowledgePurchase", "(Ljava/lang/String;)V",
+                jniString.object());
           });
 
   TaskScheduler::scheduleTask(purchaseTask);

@@ -11,6 +11,9 @@ import Mozilla.VPN 1.0
 RowLayout {
     property alias calloutCopy: callout.text
     property alias calloutImage: img.source
+    property alias color: callout.color
+    property alias fontPixelSize: callout.font.pixelSize
+    property alias iconSize: img.sourceSize.width
 
     spacing: VPNTheme.theme.windowMargin
     Layout.alignment: Qt.AlignHCenter
@@ -18,14 +21,14 @@ RowLayout {
     Layout.rightMargin: Layout.leftMargin
 
     Rectangle {
-        Layout.preferredHeight: 24
-        Layout.preferredWidth: 24
+        Layout.preferredHeight: VPNTheme.theme.iconSize * 1.5
+        Layout.preferredWidth: VPNTheme.theme.iconSize * 1.5
         color: VPNTheme.theme.transparent
 
         VPNIcon {
             id: img
             sourceSize.width: VPNTheme.theme.iconSize
-            sourceSize.height: VPNTheme.theme.iconSize
+            sourceSize.height: sourceSize.width
             antialiasing: true
             anchors.centerIn: parent
         }

@@ -9,7 +9,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkwatcherimpl.h"
-#include "windowscommons.h"
+#include "platforms/windows/windowsutils.h"
 
 #pragma comment(lib, "Wlanapi.lib")
 #pragma comment(lib, "windowsapp.lib")
@@ -37,7 +37,7 @@ void WindowsNetworkWatcher::initialize() {
   DWORD negotiatedVersion;
   if (WlanOpenHandle(2, nullptr, &negotiatedVersion, &m_wlanHandle) !=
       ERROR_SUCCESS) {
-    WindowsCommons::windowsLog("Failed to open the WLAN handle");
+    WindowsUtils::windowsLog("Failed to open the WLAN handle");
     return;
   }
 
@@ -46,7 +46,7 @@ void WindowsNetworkWatcher::initialize() {
                                true /* ignore duplicates */,
                                (WLAN_NOTIFICATION_CALLBACK)wlanCallback, this,
                                nullptr, &prefNotifSource) != ERROR_SUCCESS) {
-    WindowsCommons::windowsLog("Failed to register a wlan callback");
+    WindowsUtils::windowsLog("Failed to register a wlan callback");
     return;
   }
 
@@ -90,7 +90,7 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
       m_wlanHandle, &data->InterfaceGuid, wlan_intf_opcode_current_connection,
       nullptr, &connectionInfoSize, (PVOID*)&connectionInfo, &opCode);
   if (result != ERROR_SUCCESS) {
-    WindowsCommons::windowsLog("Failed to query the interface");
+    WindowsUtils::windowsLog("Failed to query the interface");
     return;
   }
 

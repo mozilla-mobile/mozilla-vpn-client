@@ -9,5 +9,11 @@ buildCache {
         removeUnusedEntriesAfterDays = 30
     }
 }
+include ':vpnglean'
 include ':daemon'
 include ':qtBindings'
+include ':ClientCommon'
+include ':vpnClient'
+include ':common'
+include ':adjust'
+

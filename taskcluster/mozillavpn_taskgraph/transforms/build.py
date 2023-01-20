@@ -5,8 +5,9 @@
 Apply some defaults and minor modifications to the jobs defined in the build
 kind.
 """
-from taskgraph.transforms.base import TransformSequence
+from taskgraph.transforms.base import TransformSequence 
 from taskgraph.util.schema import Schema
+from taskgraph.util.schema import resolve_keyed_by
 from voluptuous import Optional, Required, Extra
 
 
@@ -43,4 +44,42 @@ def add_variant_config(config, tasks):
         attributes = task.setdefault("attributes", {})
         if not attributes.get("build-type"):
             attributes["build-type"] = task["name"]
+        yield task
+
+
+
+@transforms.add
+def resolve_keys_scope(config, tasks):
+    # Enables the by-level:
+    # resolver for the "scopes field"
+    # usage:
+    # scopes:
+    #   by-level:
+    #     3: [scope-a,scope-b]
+    #     1: [scope-a]
+    for task in tasks:
+        resolve_keyed_by(
+            task,
+            "scopes",
+            item_name=task["name"],
+            **{
+                "level": config.params["level"],
+            },
+        )
+        yield task
+
+
+@transforms.add
+def add_build_metadata(config, tasks):
+    for task in tasks:
+        task["worker"].setdefault("env", {})
+        if config.params["pull_request_number"]:
+            task["worker"]["env"].update({
+                "PULL_REQUEST_NUMBER": str(config.params["pull_request_number"])
+            })
+        if config.params["owner"]:
+            task["worker"]["env"].update({
+                "TASK_OWNER": config.params["owner"]
+            })
+
         yield task

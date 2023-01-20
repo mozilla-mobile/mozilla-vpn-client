@@ -9,6 +9,7 @@
 #include <QJsonValue>
 #include <QMetaMethod>
 
+#include "addons/addontutorial.h"
 #include "inspector/inspectorutils.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -20,10 +21,11 @@ Logger logger("TutorialStepBefore");
 
 class TutorialStepBeforePropertyGet final : public TutorialStepBefore {
  public:
-  static TutorialStepBefore* create(QObject* parent, const QJsonObject& obj) {
-    QString element = obj["element"].toString();
-    if (element.isEmpty()) {
-      logger.warning() << "Empty 'element' for 'before' step property_get";
+  static TutorialStepBefore* create(AddonTutorial* parent,
+                                    const QJsonObject& obj) {
+    QString query = obj["query"].toString();
+    if (query.isEmpty()) {
+      logger.warning() << "Empty 'query' for 'before' step property_get";
       return nullptr;
     }
 
@@ -48,14 +50,14 @@ class TutorialStepBeforePropertyGet final : public TutorialStepBefore {
       return nullptr;
     }
 
-    return new TutorialStepBeforePropertyGet(parent, element, property,
+    return new TutorialStepBeforePropertyGet(parent, query, property,
                                              valueVariant);
   };
 
-  TutorialStepBeforePropertyGet(QObject* parent, const QString& element,
+  TutorialStepBeforePropertyGet(AddonTutorial* parent, const QString& query,
                                 const QString& property, const QVariant& value)
       : TutorialStepBefore(parent),
-        m_element(element),
+        m_query(query),
         m_property(property),
         m_value(value) {
     MZ_COUNT_CTOR(TutorialStepBeforePropertyGet);
@@ -66,15 +68,15 @@ class TutorialStepBeforePropertyGet final : public TutorialStepBefore {
   }
 
   bool run() override {
-    QObject* element = InspectorUtils::findObject(m_element);
+    QObject* element = InspectorUtils::queryObject(m_query);
     if (!element) {
       return false;
     }
 
     QVariant property = element->property(qPrintable(m_property));
     if (!property.isValid()) {
-      logger.warning() << "Invalid property" << m_property << " for element"
-                       << m_element;
+      logger.warning() << "Invalid property" << m_property << " for query"
+                       << m_query;
       return false;
     }
 
@@ -82,17 +84,18 @@ class TutorialStepBeforePropertyGet final : public TutorialStepBefore {
   }
 
  private:
-  const QString m_element;
+  const QString m_query;
   const QString m_property;
   const QVariant m_value;
 };
 
 class TutorialStepBeforePropertySet final : public TutorialStepBefore {
  public:
-  static TutorialStepBefore* create(QObject* parent, const QJsonObject& obj) {
-    QString element = obj["element"].toString();
-    if (element.isEmpty()) {
-      logger.warning() << "Empty 'element' for 'before' step property_set";
+  static TutorialStepBefore* create(AddonTutorial* parent,
+                                    const QJsonObject& obj) {
+    QString query = obj["query"].toString();
+    if (query.isEmpty()) {
+      logger.warning() << "Empty 'query' for 'before' step property_set";
       return nullptr;
     }
 
@@ -117,14 +120,14 @@ class TutorialStepBeforePropertySet final : public TutorialStepBefore {
       return nullptr;
     }
 
-    return new TutorialStepBeforePropertySet(parent, element, property,
+    return new TutorialStepBeforePropertySet(parent, query, property,
                                              valueVariant);
   };
 
-  TutorialStepBeforePropertySet(QObject* parent, const QString& element,
+  TutorialStepBeforePropertySet(AddonTutorial* parent, const QString& query,
                                 const QString& property, const QVariant& value)
       : TutorialStepBefore(parent),
-        m_element(element),
+        m_query(query),
         m_property(property),
         m_value(value) {
     MZ_COUNT_CTOR(TutorialStepBeforePropertySet);
@@ -135,7 +138,7 @@ class TutorialStepBeforePropertySet final : public TutorialStepBefore {
   }
 
   bool run() override {
-    QObject* element = InspectorUtils::findObject(m_element);
+    QObject* element = InspectorUtils::queryObject(m_query);
     if (!element) {
       return false;
     }
@@ -145,14 +148,15 @@ class TutorialStepBeforePropertySet final : public TutorialStepBefore {
   }
 
  private:
-  const QString m_element;
+  const QString m_query;
   const QString m_property;
   const QVariant m_value;
 };
 
 class TutorialStepBeforeVpnLocationSet final : public TutorialStepBefore {
  public:
-  static TutorialStepBefore* create(QObject* parent, const QJsonObject& obj) {
+  static TutorialStepBefore* create(AddonTutorial* parent,
+                                    const QJsonObject& obj) {
     QString exitCountryCode = obj["exitCountryCode"].toString();
     if (exitCountryCode.isEmpty()) {
       logger.warning()
@@ -173,7 +177,7 @@ class TutorialStepBeforeVpnLocationSet final : public TutorialStepBefore {
         parent, exitCountryCode, exitCity, entryCountryCode, entryCity);
   };
 
-  TutorialStepBeforeVpnLocationSet(QObject* parent,
+  TutorialStepBeforeVpnLocationSet(AddonTutorial* parent,
                                    const QString& exitCountryCode,
                                    const QString& exitCity,
                                    const QString& entryCountryCode,
@@ -205,11 +209,11 @@ class TutorialStepBeforeVpnLocationSet final : public TutorialStepBefore {
 
 class TutorialStepBeforeVpnOff final : public TutorialStepBefore {
  public:
-  static TutorialStepBefore* create(QObject* parent, const QJsonObject&) {
+  static TutorialStepBefore* create(AddonTutorial* parent, const QJsonObject&) {
     return new TutorialStepBeforeVpnOff(parent);
   };
 
-  TutorialStepBeforeVpnOff(QObject* parent) : TutorialStepBefore(parent) {
+  TutorialStepBeforeVpnOff(AddonTutorial* parent) : TutorialStepBefore(parent) {
     MZ_COUNT_CTOR(TutorialStepBeforeVpnOff);
   }
 
@@ -229,10 +233,8 @@ class TutorialStepBeforeVpnOff final : public TutorialStepBefore {
 };
 
 // static
-QList<TutorialStepBefore*> TutorialStepBefore::create(
-    QObject* parent, const QString& elementForTooltip, const QJsonValue& json) {
-  QList<TutorialStepBefore*> list;
-
+bool TutorialStepBefore::create(AddonTutorial* parent, const QJsonValue& json,
+                                QList<TutorialStepBefore*>& list) {
   QJsonArray array = json.toArray();
   for (const QJsonValue& value : array) {
     QJsonObject obj = value.toObject();
@@ -249,24 +251,22 @@ QList<TutorialStepBefore*> TutorialStepBefore::create(
       tsb = TutorialStepBeforeVpnOff::create(parent, obj);
     } else {
       logger.warning() << "Invalid 'before' operation:" << opValue;
-      return QList<TutorialStepBefore*>();
+      return false;
     }
 
     if (!tsb) {
       logger.warning() << "Unable to create a step 'before' object";
-      return QList<TutorialStepBefore*>();
+      return false;
     }
 
     list.append(tsb);
   }
 
-  // The tooltip element must be visible.
-  list.append(new TutorialStepBeforePropertyGet(parent, elementForTooltip,
-                                                "visible", QVariant(true)));
-  return list;
+  return true;
 }
 
-TutorialStepBefore::TutorialStepBefore(QObject* parent) : QObject(parent) {
+TutorialStepBefore::TutorialStepBefore(AddonTutorial* parent)
+    : QObject(parent), m_parent(parent) {
   MZ_COUNT_CTOR(TutorialStepBefore);
 }
 

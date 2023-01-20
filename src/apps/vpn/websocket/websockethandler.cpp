@@ -4,9 +4,13 @@
 
 #include "websockethandler.h"
 
+#include <QApplication>
+#include <QGuiApplication>
+
 #include "appconstants.h"
 #include "exponentialbackoffstrategy.h"
 #include "glean/generated/metrics.h"
+#include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -85,10 +89,47 @@ void WebSocketHandler::testOverrideBaseRetryInterval(int newInterval) {
 void WebSocketHandler::initialize() {
   logger.debug() << "Initialize";
 
+  if (m_initialized) {
+    logger.debug() << "Attempted to initialize WebSocketHandler, but it has "
+                      "already been initialized. Ignoring.";
+    return;
+  }
+
+  m_initialized = true;
+
   MozillaVPN* vpn = MozillaVPN::instance();
 
   connect(vpn, &MozillaVPN::userStateChanged, this,
           &WebSocketHandler::onUserStateChanged);
+
+#if defined(MZ_ANDROID) || defined(MZ_IOS)
+  // From
+  // https://developer.apple.com/library/archive/technotes/tn2277/_index.html:
+  //
+  // "If the system suspends your app and then, later on, reclaims the resources
+  // from underneath your listening socket, your app will no longer be listening
+  // for connections, even after it has been resumed. The app may or may not be
+  // notified of this, depending on how it manages the listening socket. It's
+  // generally easier to avoid this problem entirely by closing the listening
+  // socket when the app is in the background."
+  QObject::connect(qApp, &QGuiApplication::applicationStateChanged, this,
+                   [this](Qt::ApplicationState state) {
+                     logger.debug()
+                         << "ApplicationState change detected" << state;
+                     switch (state) {
+                       case Qt::ApplicationSuspended:
+                         [[fallthrough]];
+                       case Qt::ApplicationInactive:
+                         close();
+                         break;
+                       case Qt::ApplicationActive:
+                         open();
+                         break;
+                       default:
+                         break;
+                     }
+                   });
+#endif
 }
 
 /**
@@ -117,10 +158,6 @@ void WebSocketHandler::onUserStateChanged() {
  * No-op in case the connection is already open.
  */
 void WebSocketHandler::open() {
-  mozilla::glean::sample::websocket_connection_attempted.record();
-  emit MozillaVPN::instance()->recordGleanEvent(
-      GleanSample::websocketConnectionAttempted);
-
   if (m_webSocket.state() != QAbstractSocket::UnconnectedState &&
       m_webSocket.state() != QAbstractSocket::ClosingState) {
     logger.debug()
@@ -130,6 +167,10 @@ void WebSocketHandler::open() {
 
   logger.debug() << "Attempting to open WebSocket connection."
                  << webSocketServerUrl();
+
+  mozilla::glean::sample::websocket_connection_attempted.record();
+  emit GleanDeprecated::instance()->recordGleanEvent(
+      GleanSample::websocketConnectionAttempted);
 
   QNetworkRequest request;
   request.setRawHeader("Authorization",
@@ -147,7 +188,7 @@ void WebSocketHandler::onConnected() {
   m_aboutToClose = false;
 
   mozilla::glean::sample::websocket_connected.record();
-  emit MozillaVPN::instance()->recordGleanEvent(
+  emit GleanDeprecated::instance()->recordGleanEvent(
       GleanSample::websocketConnected);
 
   m_backoffStrategy.reset();
@@ -167,10 +208,6 @@ void WebSocketHandler::onConnected() {
  * No-op in case the connection is already closed.
  */
 void WebSocketHandler::close() {
-  mozilla::glean::sample::websocket_close_attempted.record();
-  emit MozillaVPN::instance()->recordGleanEvent(
-      GleanSample::websocketCloseAttempted);
-
   // QAbstractSocket may throw a write error when attempting to close the
   // underlying socket (see:
   // https://code.woboq.org/qt5/qtwebsockets/src/websockets/qwebsocket_p.cpp.html#357).
@@ -186,6 +223,10 @@ void WebSocketHandler::close() {
   logger.debug() << "Closing WebSocket";
   m_aboutToClose = true;
   m_webSocket.close();
+
+  mozilla::glean::sample::websocket_close_attempted.record();
+  emit GleanDeprecated::instance()->recordGleanEvent(
+      GleanSample::websocketCloseAttempted);
 }
 
 /**
@@ -203,12 +244,21 @@ void WebSocketHandler::onClose() {
   mozilla::glean::sample::websocket_closed.record(
       mozilla::glean::sample::WebsocketClosedExtra{
           ._reason = m_webSocket.closeCode()});
-  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
       GleanSample::websocketClosed, {{"reason", m_webSocket.closeCode()}});
 
   m_pingTimer.stop();
 
   if (MozillaVPN::isUserAuthenticated()) {
+#if defined(MZ_ANDROID) || defined(MZ_IOS)
+    if (QGuiApplication::applicationState() == Qt::ApplicationSuspended ||
+        QGuiApplication::applicationState() == Qt::ApplicationInactive) {
+      logger.debug()
+          << "Application is suspended. Will not attempt to reopen WebSocket.";
+      return;
+    }
+#endif
+
     int nextAttemptIn = m_backoffStrategy.scheduleNextAttempt();
     logger.debug()
         << "User is authenticated. Will attempt to reopen websocket in:"
@@ -217,6 +267,7 @@ void WebSocketHandler::onClose() {
 #ifdef UNIT_TEST
     m_currentBackoffInterval = nextAttemptIn;
 #endif
+
   } else {
     logger.debug()
         << "User is not authenticated. Will not attempt to reopen WebSocket.";
@@ -262,7 +313,7 @@ void WebSocketHandler::onPingTimeout() {
   logger.debug() << "Timed out waiting for ping response";
 
   mozilla::glean::sample::websocket_pong_timed_out.record();
-  emit MozillaVPN::instance()->recordGleanEvent(
+  emit GleanDeprecated::instance()->recordGleanEvent(
       GleanSample::websocketPongTimedOut);
 
   close();
@@ -280,7 +331,7 @@ void WebSocketHandler::onError(QAbstractSocket::SocketError error) {
   mozilla::glean::sample::websocket_errored.record(
       mozilla::glean::sample::WebsocketErroredExtra{
           ._type = QVariant::fromValue(error).toInt()});
-  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
       GleanSample::websocketErrored,
       {{"type", QVariant::fromValue(error).toInt()}});
 
@@ -300,7 +351,7 @@ void WebSocketHandler::onMessageReceived(const QString& message) {
   mozilla::glean::sample::push_message_received.record(
       mozilla::glean::sample::PushMessageReceivedExtra{
           ._type = QVariant::fromValue(parsedMessage.type()).toString()});
-  emit MozillaVPN::instance()->recordGleanEventWithExtraKeys(
+  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
       GleanSample::pushMessageReceived,
       {{"type", QVariant::fromValue(parsedMessage.type()).toString()}});
 

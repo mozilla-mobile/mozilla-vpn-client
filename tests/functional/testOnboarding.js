@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const { initialScreen, getHelpScreen } = require('./elements.js');
+const queries = require('./queries.js');
 const vpn = require('./helper.js');
 
 describe('Initial view and onboarding', function() {
@@ -14,81 +14,81 @@ describe('Initial view and onboarding', function() {
   })
 
   it('Check for links on mainView', async () => {
-    await vpn.waitForElement(initialScreen.GET_HELP_LINK);
-    await vpn.waitForElementProperty(initialScreen.GET_HELP_LINK, 'visible', 'true');
-    assert(await vpn.getElementProperty(initialScreen.GET_STARTED, 'visible') === 'true');
-    assert(await vpn.getElementProperty(initialScreen.LEARN_MORE_LINK, 'visible') === 'true');
+    await vpn.waitForQuery(queries.screenInitialize.GET_HELP_LINK.visible());
+    assert(await vpn.query(queries.screenInitialize.GET_STARTED.visible()));
+    assert(await vpn.query(queries.screenInitialize.LEARN_MORE_LINK.visible()));
   });
 
   it('Open the help menu', async () => {
-    await vpn.clickOnElement(initialScreen.GET_HELP_LINK);
-    await vpn.waitForElement(getHelpScreen.BACK);
-    await vpn.waitForElementProperty(getHelpScreen.BACK, 'visible', 'true');
+    await vpn.clickOnQuery(queries.screenInitialize.GET_HELP_LINK.visible());
+    await vpn.waitForQuery(queries.screenGetHelp.BACK_BUTTON.visible());
   });
 
   it('Open help links', async () => {
-    await vpn.clickOnElement(initialScreen.GET_HELP_LINK);
-    await vpn.waitForElement(getHelpScreen.LINKS);
-    await vpn.waitForElementProperty(getHelpScreen.LINKS, 'visible', 'true');
+    await vpn.clickOnQuery(queries.screenInitialize.GET_HELP_LINK.visible());
+    await vpn.waitForQuery(queries.screenGetHelp.LINKS.visible());
 
-    await vpn.waitForElement(getHelpScreen.HELP_CENTER);
-    await vpn.waitForElementProperty(getHelpScreen.HELP_CENTER, 'visible', 'true');
+    await vpn.waitForQuery(queries.screenGetHelp.HELP_CENTER.visible());
+    await vpn.waitForQuery(queries.screenGetHelp.SUPPORT.visible());
+    await vpn.waitForQuery(queries.screenGetHelp.LOGS.visible());
 
-    await vpn.waitForElement(getHelpScreen.SUPPORT);
-    await vpn.waitForElementProperty(getHelpScreen.SUPPORT, 'visible', 'true');
-
-    await vpn.waitForElement(getHelpScreen.LOGS);
-    await vpn.waitForElementProperty(getHelpScreen.LOGS, 'visible', 'true');
-
-    await vpn.clickOnElement(getHelpScreen.LOGS);
+    await vpn.clickOnQuery(queries.screenGetHelp.LOGS);
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
       return url.startsWith('file://') && url.includes('mozillavpn') &&
           url.endsWith('.txt');
     });
 
-    await vpn.clickOnElement('helpCenter');
+    await vpn.clickOnQuery(queries.screenGetHelp.HELP_CENTER.visible());
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
       return url.endsWith('/firefox-private-network-vpn');
     });
 
-    await vpn.clickOnElement(getHelpScreen.SUPPORT);
-    await vpn.waitForElement(getHelpScreen.contactSupportView.UNAUTH_USER_INPUTS);
-    await vpn.waitForElementProperty(getHelpScreen.contactSupportView.UNAUTH_USER_INPUTS, 'visible', 'true');
+    await vpn.clickOnQuery(queries.screenGetHelp.SUPPORT.visible());
+    await vpn.waitForQuery(
+        queries.screenGetHelp.contactSupportView.UNAUTH_USER_INPUTS.visible());
   });
 
   it('Complete the onboarding (aborting in each phase)', async () => {
     let onboardingView = 0;
 
     while (true) {
-      assert(await vpn.getElementProperty(initialScreen.LEARN_MORE_LINK, 'visible') === 'true');
-      await vpn.clickOnElement(initialScreen.LEARN_MORE_LINK);
+      assert(
+          await vpn.query(queries.screenInitialize.LEARN_MORE_LINK.visible()));
+      await vpn.clickOnQuery(
+          queries.screenInitialize.LEARN_MORE_LINK.visible());
 
-      await vpn.waitForElement(initialScreen.SKIP_ONBOARDING);
-      await vpn.waitForElementProperty(initialScreen.SKIP_ONBOARDING, 'visible', 'true');
+      await vpn.waitForQuery(
+          queries.screenInitialize.SKIP_ONBOARDING.visible());
 
-      await vpn.waitForElementProperty('initialStackView', 'busy', 'false');
+      await vpn.waitForQuery(
+          queries.screenInitialize.SCREEN.prop('busy', false));
 
       for (let i = 0; i < onboardingView; ++i) {
-        assert(await vpn.hasElement(initialScreen.ONBOARDING_NEXT));
-        assert(await vpn.getElementProperty(initialScreen.ONBOARDING_NEXT, 'visible') === 'true');
-        await vpn.clickOnElement(initialScreen.ONBOARDING_NEXT);
-        await vpn.waitForElementProperty('initialStackView', 'busy', 'false');
+        assert(await vpn.query(
+            queries.screenInitialize.ONBOARDING_NEXT.visible()));
+        await vpn.clickOnQuery(
+            queries.screenInitialize.ONBOARDING_NEXT.visible());
+        await vpn.waitForQuery(
+            queries.screenInitialize.SCREEN.prop('busy', false));
       }
 
-      assert(await vpn.getElementProperty(initialScreen.ONBOARDING_NEXT, 'visible') === 'true');
-      if (await vpn.getElementProperty(initialScreen.ONBOARDING_NEXT, 'text') !== 'Next') {
+      assert(
+          await vpn.query(queries.screenInitialize.ONBOARDING_NEXT.visible()));
+      if (await vpn.getQueryProperty(
+              queries.screenInitialize.ONBOARDING_NEXT, 'text') !== 'Next') {
         break;
       }
 
-      await vpn.clickOnElement(initialScreen.SKIP_ONBOARDING);
+      await vpn.clickOnQuery(
+          queries.screenInitialize.SKIP_ONBOARDING.visible());
 
-      await vpn.waitForElement(initialScreen.GET_HELP_LINK);
-      await vpn.waitForElementProperty(initialScreen.GET_HELP_LINK, 'visible', 'true');
+      await vpn.waitForQuery(queries.screenInitialize.GET_HELP_LINK.visible());
 
-      await vpn.waitForElementProperty('initialStackView', 'busy', 'false');
-      await vpn.waitForElementProperty('screenLoader', 'busy', 'false');
+      await vpn.waitForQuery(
+          queries.screenInitialize.SCREEN.prop('busy', false));
+      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
       ++onboardingView;
     }

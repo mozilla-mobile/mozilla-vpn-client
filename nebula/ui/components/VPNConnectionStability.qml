@@ -11,7 +11,7 @@ import org.mozilla.Glean 0.30
 import telemetry 0.30
 
 Item {
-    property var gridFlow: grid.flow
+    property real gridFlow: grid.flow
     id: stability
 
     function setColumns() {
