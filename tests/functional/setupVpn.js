@@ -24,6 +24,7 @@ const fxaServer = require('./servers/fxa.js');
 const guardian = require('./servers/guardian.js');
 const addonServer = require('./servers/addon.js');
 const networkBenchmark = require('./servers/networkBenchmark.js');
+const captivePortalServer = require('./servers/captivePortalServer.js');
 
 const app = process.env.MVPN_BIN;
 let vpnProcess = null;
@@ -71,6 +72,9 @@ exports.mochaHooks = {
         `http://localhost:${networkBenchmarkPort}`;
     process.env['MZ_BENCHMARK_UPLOAD_URL'] =
         `http://localhost:${networkBenchmarkPort}`;
+
+    process.env['MZ_CAPTIVE_PORTAL_URL'] =
+        `http://%1:${captivePortalServer.start()}/success.txt`;
   },
 
   async afterAll() {
@@ -78,11 +82,13 @@ exports.mochaHooks = {
     fxaServer.stop();
     addonServer.stop();
     networkBenchmark.stop();
+    captivePortalServer.stop();
 
     guardian.throwExceptionsIfAny();
     fxaServer.throwExceptionsIfAny();
     addonServer.throwExceptionsIfAny();
     networkBenchmark.throwExceptionsIfAny();
+    captivePortalServer.throwExceptionsIfAny();
   },
 
   async beforeEach() {
@@ -97,6 +103,7 @@ exports.mochaHooks = {
       await startAndConnect();
       await vpn.reset();
       await vpn.setSetting('tipsAndTricksIntroShown', 'true');
+      await vpn.setSetting('localhostRequestsOnly', 'true');
       await vpn.flipFeatureOn('websocket');
       await vpn.authenticateInApp(true, true);
 

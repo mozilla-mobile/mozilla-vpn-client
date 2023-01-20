@@ -179,6 +179,10 @@ PRODBETAEXPR(
         "https://dev.vpn-network-benchmark.nonprod.webservices.mozgcp.net/"
         "upload"));
 
+PRODBETAEXPR(QString, captivePortalUrl, "http://%1/success.txt",
+             Constants::envOrDefault("MZ_CAPTIVE_PORTAL_URL",
+                                     "http://%1/success.txt"));
+
 PRODBETAEXPR(
     const char*, balrogUrl,
     "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release/update.json",

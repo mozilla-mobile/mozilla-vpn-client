@@ -1703,10 +1703,10 @@ void MozillaVPN::registerUrlOpenerLabels() {
   uo->registerUrlLabel("captivePortal", []() -> QString {
     SettingsHolder* settingsHolder = SettingsHolder::instance();
 
-    return QString("http://%1/success.txt")
-        .arg(settingsHolder->captivePortalIpv4Addresses().isEmpty()
-                 ? "127.0.0.1"
-                 : settingsHolder->captivePortalIpv4Addresses().first());
+    return AppConstants::captivePortalUrl().arg(
+        settingsHolder->captivePortalIpv4Addresses().isEmpty()
+            ? "127.0.0.1"
+            : settingsHolder->captivePortalIpv4Addresses().first());
   });
 
   uo->registerUrlLabel("inspector", []() -> QString {

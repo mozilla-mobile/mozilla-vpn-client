@@ -10,4 +10,5 @@ module.exports = {
   ADDON_PORT : 3003,
   ADDON_URL : 'http://localhost:3003',
   NETWORK_BENCHMARK_PORT : 3004,
+  CAPTIVE_PORTAL_PORT : 3005,
 };
