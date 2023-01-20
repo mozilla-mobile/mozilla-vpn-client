@@ -1666,14 +1666,14 @@ sample:
     description: |
       Speed test was started.
     bugs:
-      - TO ADD LATER - DO NOT COMMIT THIS
+      - https://mozilla-hub.atlassian.net/browse/VPN-3630
     data_reviews:
-      - TO ADD LATER - DO NOT COMMIT THIS
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
     data_sensitivity:
       - interaction
     notification_emails:
       - mcleinman@mozilla.com
-    expires: 2023-12-31
+    expires: never
 
   speed_test_completed:
     type: event
@@ -1683,14 +1683,19 @@ sample:
     description: |
       Speed test was completed.
     bugs:
-      - TO ADD LATER - DO NOT COMMIT THIS
+      - https://mozilla-hub.atlassian.net/browse/VPN-3630
     data_reviews:
-      - TO ADD LATER - DO NOT COMMIT THIS
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
     data_sensitivity:
       - interaction
     notification_emails:
       - mcleinman@mozilla.com
-    expires: 2023-12-31
+    expires: never
+    extra_keys:
+      speed:
+        description: |
+          The speed bucket that the test resulted in: Slow | Medium | Fast
+        type: string
 
   bottom_navigation_bar_click:
     type: event
@@ -1700,9 +1705,9 @@ sample:
     description: |
       The user has tapped a bottom navigation bar button.
     bugs:
-      - TO ADD LATER - DO NOT COMMIT THIS
+      - https://mozilla-hub.atlassian.net/browse/VPN-3630
     data_reviews:
-      - TO ADD LATER - DO NOT COMMIT THIS
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
     data_sensitivity:
       - interaction
     notification_emails:
@@ -1711,5 +1716,163 @@ sample:
     extra_keys:
       bar_button:
         description: |
-          The name of the bar button tapped
+          The name of the bar button tapped: ScreenMessaging | ScreenHome | ScreenSettings | Unknown
         type: string
+
+  authentication_error:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user is shown an error while authenticating in the app.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-3630
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never
+    extra_keys:
+      reason:
+        description: |
+          The error shown: IncorrectPassword | InvalidEmail | InvalidOrExpiredVerificiationCode | InvalidTOTP | InvalidUnblockCode | Timeout
+        type: string
+
+  user_changed_endpoint_geo:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user changed the geography (city, or cities if using multihop) of the endpoint
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-3630
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never
+
+  connect_on_startup_active:
+    type: boolean
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The status of whether the VPN is activated on device start
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-3630
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never
+
+  using_system_language:
+    type: boolean
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The status of whether the app is being used in the language of the operating system
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-3630
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never
+
+  help_menu_help_center_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user selected the help center option within the help menu
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-3630
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never
+
+  help_menu_contact_support_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user selected the contact support option within the help menu
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-3630
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never
+
+  support_case_submitted:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user submitted a support case
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-3630
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never
+
+  help_menu_view_logs_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user selected the view logs option within the help menu
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-3630
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never
+
+  settings_about_us_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user selected the about us option within the settings menu
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-3630
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never
