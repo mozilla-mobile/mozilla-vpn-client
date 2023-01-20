@@ -31,7 +31,7 @@ tasks:
         max-run-time: 3600
         chain-of-trust: true
         artifacts:
-            - type: directory
+            -   type: directory
                 name: public/build
                 path: /builds/worker/artifacts
     run:
