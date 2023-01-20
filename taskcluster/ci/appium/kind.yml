@@ -30,6 +30,10 @@ tasks:
         docker-image: {in-tree: build}
         max-run-time: 3600
         chain-of-trust: true
+        artifacts:
+            - type: directory
+                name: public/build
+                path: /builds/worker/artifacts
     run:
         using: run-task
         use-caches: true
