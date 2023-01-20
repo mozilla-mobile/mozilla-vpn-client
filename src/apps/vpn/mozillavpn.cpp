@@ -889,17 +889,12 @@ void MozillaVPN::logout() {
   }
 
   if (m_private->m_deviceModel.hasCurrentDevice(keys())) {
-    TaskScheduler::scheduleTask(new TaskGroup(
-        {new TaskRemoveDevice(keys()->publicKey()),
-         // Immediately after the scheduling of the device removal, we want to
-         // delete the session token, so that, in case the app is terminated, at
-         // the next execution we go back to the init screen.
-         new TaskFunction([this]() { reset(false); })}));
+    TaskScheduler::scheduleTask(new TaskRemoveDevice(keys()->publicKey()));
 
-    // In case the app is closed even before scheduling the previous TaskGroup,
-    // removing the key we will enforce a new authentication at the first
-    // TaskAccount execution.
-    m_private->m_keys.forgetKeys();
+    // Immediately after the scheduling of the device removal, we want to
+    // delete the session token, so that, in case the app is terminated, at
+    // the next execution we go back to the init screen.
+    reset(false);
     return;
   }
 
