@@ -227,8 +227,8 @@ QStringList ServerCountryModel::pickBest() const {
   }
 
   QVariant qv = list.first();
-  Q_ASSERT(qv.canConvert<ServerCity*>());
-  const ServerCity* city = qv.value<ServerCity*>();
+  Q_ASSERT(qv.canConvert<const ServerCity*>());
+  const ServerCity* city = qv.value<const ServerCity*>();
   return QStringList({city->country(), city->name()});
 }
 
@@ -351,58 +351,52 @@ void ServerCountryModel::setCooldownForAllServersInACity(
 }
 
 QList<QVariant> ServerCountryModel::recommendedLocations(
-    unsigned int count) const {
-  struct RecSearchData {
-    const ServerCity* city;
-    double rank;
-  };
-
+    unsigned int maxResults) const {
   double latencyScale = avgLatency();
   if (latencyScale < 100.0) {
     latencyScale = 100.0;
   }
 
-  QVector<RecSearchData> searchResults(count+1);
+  QVector<QVariant> cityResults;
+  QVector<double> rankResults;
+  cityResults.reserve(maxResults+1);
+  rankResults.reserve(maxResults+1);
   for (const ServerCountry& country : m_countries) {
     for (const ServerCity& city : country.cities()) {
-      RecSearchData data;
-      data.city = &city;
-      data.rank = city.connectionScore() * 256.0;
+      double cityRanking = city.connectionScore() * 256.0;
 
       // For tiebreaking, use the geographic distance and latency.
       double distance = MozillaVPN::instance()->location()->distance(
                             city.latitude(), city.longitude());
-      data.rank -= city.latency() / latencyScale;
-      data.rank -= distance;
+      cityRanking -= city.latency() / latencyScale;
+      cityRanking -= distance;
 
-#ifdef MVPN_DEBUG
+#ifdef MZ_DEBUG
       logger.debug() << "Evaluating" << city.name() << "-"
                      << city.latency() << "ms" << "-"
                      << QString::number(distance) << "-"
-                     << QString::number(data.rank);
+                     << QString::number(cityRanking);
 #endif
 
       // Insert into the result list
       int i;
-      for (i = 0; i < searchResults.count(); i++) {
-        if (searchResults[i].rank < data.rank) {
+      for (i = 0; i < rankResults.count(); i++) {
+        if (rankResults[i] < cityRanking) {
           break;
         }
       }
-      if (i < count) {
-        searchResults.insert(i, data);
+      if (i < maxResults) {
+        rankResults.insert(i, cityRanking);
+        cityResults.insert(i, QVariant::fromValue(&city));
       }
-      if (searchResults.count() > count) {
-        searchResults.resize(count);
+      if (rankResults.count() > maxResults) {
+        rankResults.resize(maxResults);
+        cityResults.resize(maxResults);
       }
     }
   }
 
-  QList<QVariant> cityResults;
-  for (const RecSearchData& data : searchResults) {
-    cityResults.append(QVariant::fromValue(data.city));
-  }
-  return cityResults;
+  return cityResults.toList();
 }
 
 namespace {
