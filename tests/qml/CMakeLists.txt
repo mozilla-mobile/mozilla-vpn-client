@@ -98,6 +98,8 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/hkdf.h
     ${MZ_SOURCE_DIR}/shared/ipaddress.cpp
     ${MZ_SOURCE_DIR}/shared/ipaddress.h
+    ${MZ_SOURCE_DIR}/shared/languagei18n.cpp
+    ${MZ_SOURCE_DIR}/shared/languagei18n.h
     ${MZ_SOURCE_DIR}/shared/localizer.cpp
     ${MZ_SOURCE_DIR}/shared/localizer.h
     ${MZ_SOURCE_DIR}/shared/logger.cpp
