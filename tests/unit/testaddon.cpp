@@ -447,6 +447,8 @@ void TestAddon::conditionWatcher_group() {
 }
 
 void TestAddon::conditionWatcher_triggerTime() {
+  SettingsHolder::instance()->setInstallationTime(QDateTime::currentDateTime());
+
   QObject parent;
   AddonConditionWatcher* acw =
       AddonConditionWatcherTriggerTimeSecs::maybeCreate(&parent, 1);
