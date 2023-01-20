@@ -75,10 +75,28 @@ void ServerLatency::start() {
   connect(m_pingSender, SIGNAL(criticalPingError()), this,
           SLOT(criticalPingError()));
 
-  // Generate a list of servers to ping.
-  // TODO: Could be m_pingSendQueue = scm->m_servers.keys(), but it's private.
-  for (const Server& server : scm->servers()) {
-    m_pingSendQueue.append(server.publicKey());
+  // Generate a list of servers to ping. If possible, sort them by geographic
+  // distance to try and get data for the quickest servers first.
+  for (const ServerCountry& country : scm->countries()) {
+    for (const ServerCity& city : country.cities()) {
+      double distance = vpn->location()->distance(city.latitude(),
+                                                  city.longitude());
+      
+      // Search for where in the list to insert this city's servers.
+      auto i = m_pingSendQueue.begin();
+      while (i != m_pingSendQueue.end()) {
+        if (i->distance >= distance) {
+          break;
+        }
+        i++;
+      }
+
+      // Insert the servers into the list.
+      for (const QString& pubkey : city.servers()) {
+        ServerPingRecord rec = { pubkey, 0, 0, distance, 0};
+        i = m_pingSendQueue.insert(i, rec);
+      }
+    }
   }
 
   m_refreshTimer.stop();
@@ -123,8 +141,7 @@ void ServerLatency::maybeSendPings() {
       break;
     }
 
-    ServerPingRecord record;
-    record.publicKey = m_pingSendQueue.takeFirst();
+    ServerPingRecord record = m_pingSendQueue.takeFirst();
     record.sequence = m_sequence++;
     record.timestamp = now;
     record.retries = 0;

@@ -31,11 +31,12 @@ class ServerLatency final : public QObject {
     QString publicKey;
     quint64 timestamp;
     quint16 sequence;
+    double distance;
     int retries;
   };
   quint16 m_sequence = 0;
   PingSender* m_pingSender = nullptr;
-  QList<QString> m_pingSendQueue;
+  QList<ServerPingRecord> m_pingSendQueue;
   QList<ServerPingRecord> m_pingReplyList;
 
   QTimer m_pingTimeout;
