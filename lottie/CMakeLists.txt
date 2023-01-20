@@ -18,7 +18,7 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.17)
     cmake_policy(SET CMP0099 OLD)
 endif()
 
-add_library(lottie STATIC)
+qt_add_library(lottie STATIC)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Qml Qml Quick QuickTest Test)
 target_link_libraries(lottie PUBLIC Qt6::Core Qt6::Qml)
@@ -36,7 +36,17 @@ target_sources(lottie PRIVATE
     lib/lottieprivatewindow.cpp
     lib/lottieprivatewindow.h
     lib/lottiestatus.h
-    lib/lottie.qrc
+)
+
+# This add's a new lib lottieplugin
+qt_add_qml_module(lottie
+    VERSION 0.1
+    URI LottieAnimation 
+    RESOURCE_PREFIX /lottie
+    QML_FILES
+        lib/lottie/LottieAnimation.qml
+    RESOURCES
+        lib/lottie/lottie.mjs
 )
 
 ## This writes into the source directory to generate lottie.mjs. Which is frowned-upon. :`(

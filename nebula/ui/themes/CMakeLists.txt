@@ -9,7 +9,6 @@ target_link_libraries(themes PRIVATE Qt6::Quick)
 qt_add_qml_module(themes
     VERSION 0.1
     URI themes 
-    OUTPUT_DIRECTORY themes
     RESOURCE_PREFIX /nebula
     RESOURCES
         main/theme.js
