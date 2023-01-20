@@ -16,7 +16,7 @@ constexpr int CONNECTION_STABILITY_MSEC = 45000;
 
 namespace {
 Logger logger("Telemetry");
-}
+}  // namespace
 
 Telemetry::Telemetry() {
   MZ_COUNT_CTOR(Telemetry);
@@ -128,6 +128,20 @@ void Telemetry::connectionStabilityEvent() {
        {"loss", QString::number(vpn->connectionHealth()->loss())},
        {"stddev", QString::number(vpn->connectionHealth()->stddev())},
        {"transport", vpn->networkWatcher()->getCurrentTransport()}});
+}
+
+void Telemetry::startTimeToFirstScreenTimer() {
+  logger.info() << "Start performance.time_to_main_screen timer";
+
+  m_timeToFirstScreenTimerId =
+      mozilla::glean::performance::time_to_main_screen.start();
+}
+
+void Telemetry::stopTimeToFirstScreenTimer() {
+  logger.info() << "Stop performance.time_to_main_screen timer";
+
+  mozilla::glean::performance::time_to_main_screen.stopAndAccumulate(
+      m_timeToFirstScreenTimerId);
 }
 
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)

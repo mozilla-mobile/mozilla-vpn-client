@@ -148,6 +148,7 @@ add_custom_command(
         ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/templates/macros.jinja2
         ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/templates/rust_pings.jinja2
         ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/templates/rust.jinja2
+        ${CMAKE_CURRENT_SOURCE_DIR}/metrics.yaml
         ${CMAKE_SOURCE_DIR}/glean/pings.yaml
         ${CMAKE_SOURCE_DIR}/glean/metrics.yaml
     COMMAND ${GENERATE_GLEAN_CMD}

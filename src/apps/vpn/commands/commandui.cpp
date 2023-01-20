@@ -110,6 +110,9 @@ CommandUI::~CommandUI() { MZ_COUNT_DTOR(CommandUI); }
 int CommandUI::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
   return runQmlApp([&]() {
+    MozillaVPN vpn;
+    vpn.telemetry()->startTimeToFirstScreenTimer();
+
     QString appName = tokens[0];
 
     CommandLineParser::Option hOption = CommandLineParser::helpOption();
@@ -242,8 +245,6 @@ int CommandUI::run(QStringList& tokens) {
 
     // Cleanup previous temporary files.
     TemporaryDir::cleanupAll();
-
-    MozillaVPN vpn;
 
     vpn.setStartMinimized(minimizedOption.m_set ||
                           (qgetenv("MVPN_MINIMIZED") == "1"));
@@ -680,7 +681,6 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
     KeyRegenerator keyRegenerator;
-
     // Let's go.
     return qApp->exec();
   });
