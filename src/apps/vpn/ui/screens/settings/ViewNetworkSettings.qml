@@ -15,7 +15,6 @@ VPNViewBase {
     objectName: "settingsNetworkingBackButton"
 
     property string _appPermissionsTitle
-    property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
 
     //% "Network settings"
     _menuTitle: qsTrId("vpn.settings.networking")
@@ -23,25 +22,6 @@ VPNViewBase {
         id: col
         spacing: VPNTheme.theme.windowMargin
         Layout.fillWidth: true
-
-        VPNContextualAlerts {
-            anchors {
-                left: parent.left
-                right: parent.right
-                leftMargin: VPNTheme.theme.windowMargin
-                rightMargin: VPNTheme.theme.windowMargin
-            }
-
-            messages: [
-                {
-                    type: "warning",
-                    //% "VPN must be off to edit these settings"
-                    //: Associated to a group of settings that require the VPN to be disconnected to change
-                    message: qsTrId("vpn.settings.vpnMustBeOff"),
-                    visible: VPNController.state !== VPNController.StateOff
-                }
-            ]
-        }
 
         Column {
             width: parent.width
@@ -79,9 +59,5 @@ VPNViewBase {
     Component.onCompleted: {
         VPNGleanDeprecated.recordGleanEvent("networkSettingsViewOpened");
         Glean.sample.networkSettingsViewOpened.record();
-        if (!vpnIsOff) {
-            VPNGleanDeprecated.recordGleanEvent("networkSettingsViewWarning");
-            Glean.sample.networkSettingsViewWarning.record();
-        }
     }
 }
