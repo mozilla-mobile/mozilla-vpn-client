@@ -400,8 +400,8 @@ QList<QVariant> ServerCountryModel::recommendedLocations(
 #ifdef MZ_DEBUG
       logger.debug() << "Evaluating" << city.name() << "-" << city.latency()
                      << "ms"
-                     << "-" << QString::number(distance)
-                     << "-" << QString::number(cityRanking);
+                     << "-" << QString::number(distance) << "-"
+                     << QString::number(cityRanking);
 #endif
 
       // Insert into the result list
