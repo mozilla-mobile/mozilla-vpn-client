@@ -268,6 +268,7 @@ QStringList ServerCountryModel::pickRandom() const {
   // We should not get here, unless the model has more entries in m_servers()
   // than actually exist in the country and city lists.
   Q_ASSERT(false);
+  return QStringList();
 }
 
 // Select the city that we think is going to perform the best

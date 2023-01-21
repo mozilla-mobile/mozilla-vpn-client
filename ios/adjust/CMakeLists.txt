@@ -4,6 +4,12 @@
 
 add_library(adjust STATIC)
 
+if(MSVC)
+  target_compile_options(adjust-sources PRIVATE /W4 /WX)
+else()
+  target_compile_options(adjust-sources PRIVATE -Wall -Werror)
+endif()
+
 set_target_properties(adjust PROPERTIES FOLDER "Libs")
 
 set(ADJUST_SOURCE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/adjust-ios-sdk)

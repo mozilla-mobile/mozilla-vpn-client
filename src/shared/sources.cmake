@@ -4,6 +4,12 @@
 
 add_library(shared-sources INTERFACE)
 
+if(MSVC)
+  target_compile_options(shared-sources INTERFACE /W4 /WX)
+else()
+  target_compile_options(shared-sources INTERFACE -Wall -Werror)
+endif()
+
 # Generated version header file
 configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 target_sources(shared-sources INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/version.h)

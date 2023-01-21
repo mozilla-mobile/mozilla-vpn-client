@@ -20,6 +20,12 @@ endif()
 
 add_library(lottie STATIC)
 
+if(MSVC)
+  target_compile_options(lottie PRIVATE /W4 /WX)
+else()
+  target_compile_options(lottie PRIVATE -Wall -Werror)
+endif()
+
 find_package(Qt6 REQUIRED COMPONENTS Core Qml Qml Quick QuickTest Test)
 target_link_libraries(lottie PUBLIC Qt6::Core Qt6::Qml)
 target_include_directories(lottie PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib)

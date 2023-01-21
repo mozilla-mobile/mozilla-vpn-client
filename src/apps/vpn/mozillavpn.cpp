@@ -1585,16 +1585,7 @@ void MozillaVPN::exitForUnrecoverableError(const QString& reason) {
 
 void MozillaVPN::crashTest() {
   logger.debug() << "Crashing Application";
-
-  unsigned char* test = NULL;
-  test[1000] = 'a';  //<< here it should crash
-
-  // Interestingly this does not cause a "Signal" but a VC runtime exception
-  // and more interestingly, neither breakpad nor crashpad are catchting this on
-  // windows...
-  char* text = new char[100];
-  delete[] text;
-  delete[] text;
+  qFatal("Ready to crash!");
 }
 
 // static

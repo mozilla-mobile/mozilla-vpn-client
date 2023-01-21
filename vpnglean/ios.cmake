@@ -13,6 +13,12 @@ set(GLEAN_VENDORED_PATH ${CMAKE_SOURCE_DIR}/3rdparty/glean)
 
 add_library(iosglean SHARED)
 
+if(MSVC)
+  target_compile_options(iosglean PRIVATE /W4 /WX)
+else()
+  target_compile_options(iosglean PRIVATE -Wall -Werror)
+endif()
+
 target_include_directories(iosglean PUBLIC ${CMAKE_SOURCE_DIR})
 target_include_directories(iosglean PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(iosglean PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/glean)

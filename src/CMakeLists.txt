@@ -7,6 +7,12 @@
 # statically.
 qt_add_executable(mozillavpn MANUAL_FINALIZATION)
 
+if(MSVC)
+  target_compile_options(mozillavpn PRIVATE /W4 /WX)
+else()
+  target_compile_options(mozillavpn PRIVATE -Wall -Werror)
+endif()
+
 target_link_libraries(mozillavpn PRIVATE
     Qt6::Quick
     Qt6::Test
