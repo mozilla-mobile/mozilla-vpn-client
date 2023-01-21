@@ -12,8 +12,8 @@
 #include "feature.h"
 #include "leakdetector.h"
 #include "mozillavpn.h"
-#include "serveri18n.h"
 #include "servercountrymodel.h"
+#include "serveri18n.h"
 
 ServerCity::ServerCity() { MZ_COUNT_CTOR(ServerCity); }
 
@@ -148,6 +148,6 @@ unsigned int ServerCity::latency() const {
       activeServerCount++;
     }
   }
-  
+
   return (sumLatencyMsec + activeServerCount - 1) / activeServerCount;
 }

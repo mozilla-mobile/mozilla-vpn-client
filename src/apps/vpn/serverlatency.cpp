@@ -46,7 +46,7 @@ void ServerLatency::initialize() {
   m_refreshTimer.setSingleShot(true);
   connect(&m_refreshTimer, &QTimer::timeout, this, &ServerLatency::start);
 
-  const Feature *feature = Feature::get(Feature::Feature_serverConnectionScore);
+  const Feature* feature = Feature::get(Feature::Feature_serverConnectionScore);
   connect(feature, &Feature::supportedChanged, this, &ServerLatency::start);
   if (feature->isSupported()) {
     m_refreshTimer.start(SERVER_LATENCY_INITIAL_MSEC);
@@ -84,8 +84,8 @@ void ServerLatency::start() {
   // distance to try and get data for the quickest servers first.
   for (const ServerCountry& country : vpn->serverCountryModel()->countries()) {
     for (const ServerCity& city : country.cities()) {
-      double distance = vpn->location()->distance(city.latitude(),
-                                                  city.longitude());
+      double distance =
+          vpn->location()->distance(city.latitude(), city.longitude());
 
       // Search for where in the list to insert this city's servers.
       auto i = m_pingSendQueue.begin();
@@ -98,7 +98,7 @@ void ServerLatency::start() {
 
       // Insert the servers into the list.
       for (const QString& pubkey : city.servers()) {
-        ServerPingRecord rec = { pubkey, 0, 0, distance, 0};
+        ServerPingRecord rec = {pubkey, 0, 0, distance, 0};
         i = m_pingSendQueue.insert(i, rec);
       }
     }

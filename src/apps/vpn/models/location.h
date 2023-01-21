@@ -41,7 +41,7 @@ class Location final : public QObject {
 
   double longitude() const { return m_longitude; }
 
-  double distance(double latitude, double longitude) const; 
+  double distance(double latitude, double longitude) const;
 
   QHostAddress ipAddress() const { return m_ipAddress; }
 

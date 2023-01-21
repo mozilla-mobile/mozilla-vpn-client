@@ -318,7 +318,7 @@ void ServerCountryModel::setServerLatency(const QString& publicKey,
   }
 
   Server& server = m_servers[publicKey];
-  if(server.latency() != 0) {
+  if (server.latency() != 0) {
     m_sumLatencyMsec -= server.latency();
   } else {
     m_numLatencySamples++;
@@ -385,23 +385,23 @@ QList<QVariant> ServerCountryModel::recommendedLocations(
 
   QVector<QVariant> cityResults;
   QVector<double> rankResults;
-  cityResults.reserve(maxResults+1);
-  rankResults.reserve(maxResults+1);
+  cityResults.reserve(maxResults + 1);
+  rankResults.reserve(maxResults + 1);
   for (const ServerCountry& country : m_countries) {
     for (const ServerCity& city : country.cities()) {
       double cityRanking = city.connectionScore() * 256.0;
 
       // For tiebreaking, use the geographic distance and latency.
       double distance = MozillaVPN::instance()->location()->distance(
-                            city.latitude(), city.longitude());
+          city.latitude(), city.longitude());
       cityRanking -= city.latency() / latencyScale;
       cityRanking -= distance;
 
 #ifdef MZ_DEBUG
-      logger.debug() << "Evaluating" << city.name() << "-"
-                     << city.latency() << "ms" << "-"
-                     << QString::number(distance) << "-"
-                     << QString::number(cityRanking);
+      logger.debug() << "Evaluating" << city.name() << "-" << city.latency()
+                     << "ms"
+                     << "-" << QString::number(distance)
+                     << "-" << QString::number(cityRanking);
 #endif
 
       // Insert into the result list
