@@ -83,10 +83,6 @@ FocusScope {
     }
 
     Component.onCompleted: {
-        if (showRecommendedConnections) {
-            focusScope.updateServerData();
-        }
-
         centerActiveServer();
     }
 
@@ -141,7 +137,7 @@ FocusScope {
                     rowShouldBeDisabled: !(VPNController.state === VPNController.StateOff)
 
                     onClicked: {
-                        focusScope.updateServerData();
+                        console.log("TODO: Request server data refresh");
                     }
 
                     RowLayout {
@@ -187,10 +183,8 @@ FocusScope {
                             VPNIcon {
                                 id: refreshIcon
                                 source: "qrc:/nebula/resources/refresh.svg"
-                                sourceSize {
-                                    height: parent.height
-                                    width: parent.width
-                                }
+                                sourceSize.height: parent.height
+                                sourceSize.width: parent.width
                             }
 
                             VPNColorOverlay {
@@ -207,8 +201,7 @@ FocusScope {
                     id: recommendedRepeater
                     model: VPNServerCountryModel.recommendedLocations(5)
                     delegate: VPNClickableRow {
-                        property string locationScore: modelData.connectionScore
-                        property bool isAvailable: locationScore >= 0
+                        property bool isAvailable: modelData.connectionScore >= 0
                         id: recommendedServer
 
                         accessibleName: modelData.localizedName
@@ -239,7 +232,7 @@ FocusScope {
 
                             VPNServerLatencyIndicator {
                                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                                score: recommendedServer.locationScore
+                                score: modelData.connectionScore
                             }
                         }
                     }
