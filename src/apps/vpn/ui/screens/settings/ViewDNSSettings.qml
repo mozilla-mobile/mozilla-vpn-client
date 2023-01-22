@@ -16,6 +16,18 @@ VPNViewBase {
 
     _menuTitle: VPNl18n.SettingsDnsSettings
 
+    function maybeApplyChange(settingValue) {
+        // We are not changing anything interesting for the privacy/dns dialog.
+        if (VPNSettings.dnsProvider === VPNSettings.Custom ||
+            VPNSettings.dnProvider === VPNSettings.Gateway) {
+            VPNSettings.dnsProvider = settingValue;
+            return;
+        }
+
+        dnsOverwriteLoader.dnsProviderValue = settingValue;
+        dnsOverwriteLoader.active = true;
+    }
+
     _viewContentData: Column {
         Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin
         Layout.rightMargin: VPNTheme.theme.windowMargin
@@ -36,7 +48,7 @@ VPNViewBase {
                 checked: VPNSettings.dnsProvider == VPNSettings.Gateway
                 ButtonGroup.group: radioButtonGroup
                 accessibleName: VPNl18n.CustomDNSSettingsDnsDefaultRadioHeader
-                onClicked: VPNSettings.dnsProvider = VPNSettings.Gateway
+                onClicked: maybeApplyChange(VPNSettings.Gateway);
             }
 
             ColumnLayout {
@@ -59,7 +71,7 @@ VPNViewBase {
                         enabled: gatewayRadioButton.enabled
                         width: Math.min(parent.implicitWidth, parent.width)
                         propagateClickToParent: false
-                        onClicked: VPNSettings.dnsProvider = VPNSettings.Gateway
+                        onClicked: maybeApplyChange(VPNSettings.Gateway);
                     }
                 }
 
@@ -83,7 +95,7 @@ VPNViewBase {
                 checked: VPNSettings.dnsProvider == VPNSettings.Custom
                 ButtonGroup.group: radioButtonGroup
                 accessibleName: VPNl18n.CustomDNSSettingsDnsCustomDNSRadioHeader
-                onClicked: VPNSettings.dnsProvider = VPNSettings.Custom
+                onClicked: maybeApplyChange(VPNSettings.Custom);
             }
 
             ColumnLayout {
@@ -106,7 +118,7 @@ VPNViewBase {
                         enabled: customRadioButton.enabled
                         width: Math.min(parent.implicitWidth, parent.width)
                         propagateClickToParent: false
-                        onClicked: VPNSettings.dnsProvider = VPNSettings.Custom
+                        onClicked: maybeApplyChange(VPNSettings.Custom);
                     }
                 }
 
@@ -195,6 +207,47 @@ VPNViewBase {
                 }
             }
         }
+    }
+
+    Loader {
+        id: dnsOverwriteLoader
+
+        // This is the value we are going to set if the user confirms.
+        property var dnsProviderValue;
+
+        active: false
+        sourceComponent: VPNSimplePopup {
+            id: dnsOverwritePopup
+
+            anchors.centerIn: Overlay.overlay
+            closeButtonObjectName: "dnsOverwritePopupPopupCloseButton"
+            imageSrc: "qrc:/ui/resources/logo-dns-privacy.svg"
+            imageSize: Qt.size(80, 80)
+            title: VPNl18n.DnsOverwriteDialogTitlePrivacy
+            description: VPNl18n.DnsOverwriteDialogBodyPrivacy
+            buttons: [
+                VPNButton {
+                    id: tipAndTricksIntroButton
+                    objectName: "dnsOverwritePopupDiscoverNowButton"
+                    text: VPNl18n.DnsOverwriteDialogPrimaryButton
+                    onClicked: {
+                        VPNSettings.dnsProvider = dnsOverwriteLoader.dnsProviderValue;
+                        dnsOverwritePopup.close()
+                    }
+                },
+                VPNLinkButton {
+                    objectName: "dnsOverwritePopupGoBackButton"
+                    labelText: VPNl18n.DnsOverwriteDialogSecondaryButton
+                    onClicked: dnsOverwritePopup.close()
+                }
+            ]
+
+            onClosed: {
+                dnsOverwriteLoader.active = false
+            }
+        }
+
+        onActiveChanged: if (active) { item.open() }
     }
 }
 

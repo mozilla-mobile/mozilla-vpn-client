@@ -21,6 +21,18 @@ VPNViewBase {
     _menuTitle: VPNl18n.SettingsPrivacySettings
     _interactive: false
 
+    function maybeApplyChange(settingValue) {
+        // We are not changing anything interesting for the privacy/dns dialog.
+        if (VPNSettings.dnsProvider !== VPNSettings.Custom &&
+            VPNSettings.dnProvider !== VPNSettings.Gateway) {
+            VPNSettings.dnsProvider = settingValue;
+            return;
+        }
+
+        privacyOverwriteLoader.dnsProviderValue = settingValue;
+        privacyOverwriteLoader.active = true;
+    }
+
     _viewContentData: Column {
         id: tabs
         Layout.topMargin: -VPNTheme.theme.windowMargin
@@ -42,7 +54,7 @@ VPNViewBase {
                     Layout.alignment: Qt.AlignTop
                     checked: VPNSettings.dnsProvider == modelData.settingValue
                     accessibleName: modelData.settingTitle
-                    onClicked: VPNSettings.dnsProvider = modelData.settingValue
+                    onClicked: maybeApplyChange(modelData.settingValue);
                 }
 
                 ColumnLayout {
@@ -65,7 +77,7 @@ VPNViewBase {
                             enabled: radioButton.enabled
                             width: Math.min(parent.implicitWidth, parent.width)
                             propagateClickToParent: false
-                            onClicked: VPNSettings.dnsProvider = modelData.settingValue
+                            onClicked: maybeApplyChange(modelData.settingValue);
                         }
                     }
 
@@ -93,6 +105,48 @@ VPNViewBase {
                                              settingDescription: VPNl18n.CustomDNSSettingsDnsAdblockAntiTrackRadioBody,
                                              }];
         }
+    }
+
+    Loader {
+        id: privacyOverwriteLoader
+
+        // This is the value we are going to set if the user confirms.
+        property var dnsProviderValue;
+
+        objectName: "privacyOverwriteLoader"
+        active: false
+        sourceComponent: VPNSimplePopup {
+            id: privacyOverwritePopup
+
+            anchors.centerIn: Overlay.overlay
+            closeButtonObjectName: "privacyOverwritePopupPopupCloseButton"
+            imageSrc: "qrc:/ui/resources/logo-dns-settings.svg"
+            imageSize: Qt.size(80, 80)
+            title: VPNl18n.DnsOverwriteDialogTitleDNS
+            description: VPNl18n.DnsOverwriteDialogBodyDNS
+            buttons: [
+                VPNButton {
+                    id: tipAndTricksIntroButton
+                    objectName: "privacyOverwritePopupDiscoverNowButton"
+                    text: VPNl18n.DnsOverwriteDialogPrimaryButton
+                    onClicked: {
+                        VPNSettings.dnsProvider = privacyOverwriteLoader.dnsProviderValue;
+                        privacyOverwritePopup.close()
+                    }
+                },
+                VPNLinkButton {
+                    objectName: "privacyOverwritePopupGoBackButton"
+                    labelText: VPNl18n.DnsOverwriteDialogSecondaryButton
+                    onClicked: privacyOverwritePopup.close()
+                }
+            ]
+
+            onClosed: {
+                privacyOverwriteLoader.active = false
+            }
+        }
+
+        onActiveChanged: if (active) { item.open() }
     }
 }
 
