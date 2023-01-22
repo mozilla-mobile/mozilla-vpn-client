@@ -103,7 +103,6 @@ VPNViewBase {
             description: VPNl18n.DnsOverwriteDialogBodyDNS
             buttons: [
                 VPNButton {
-                    id: tipAndTricksIntroButton
                     objectName: "privacyOverwritePopupDiscoverNowButton"
                     text: VPNl18n.DnsOverwriteDialogPrimaryButton
                     onClicked: {
