@@ -94,6 +94,8 @@ VPNViewBase {
             }
 
             VPNSettingsItem {
+                objectName: "settingsDevice"
+
                 //% "My devices"
                 settingTitle: qsTrId("vpn.devices.myDevices")
                 imageLeftSrc: "qrc:/ui/resources/devices.svg"

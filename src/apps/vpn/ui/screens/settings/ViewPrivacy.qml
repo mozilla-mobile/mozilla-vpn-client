@@ -32,6 +32,8 @@ VPNViewBase {
             id: repeater
 
             delegate: VPNCheckBoxRow {
+                objectName: modelData.objectName
+
                 width: parent.width
                 labelText: modelData.settingTitle
                 subLabelText: modelData.settingDescription
@@ -63,14 +65,17 @@ VPNViewBase {
         Component.onCompleted: {
             repeater.model = [
                 {
+                    objectName: "blockAds",
                     settingValue: VPNSettings.BlockAds,
                     settingTitle: VPNl18n.SettingsPrivacyAdblockTitle,
                     settingDescription: VPNl18n.SettingsPrivacyAdblockBody,
                 }, {
+                    objectName: "blockTrackers",
                     settingValue: VPNSettings.BlockTrackers,
                     settingTitle: VPNl18n.SettingsPrivacyTrackerTitle,
                     settingDescription: VPNl18n.SettingsPrivacyTrackerBody,
                 }, {
+                    objectName: "blockMalware",
                     settingValue: VPNSettings.BlockMalware,
                     settingTitle: VPNl18n.SettingsPrivacyMalwareTitle,
                     settingDescription: VPNl18n.SettingsPrivacyMalwareBody,
