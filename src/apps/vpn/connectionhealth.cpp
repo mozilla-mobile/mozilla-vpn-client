@@ -64,7 +64,7 @@ ConnectionHealth::ConnectionHealth() : m_dnsPingSender(QHostAddress()) {
           &ConnectionHealth::applicationStateChanged);
 
   connect(&m_dnsPingSender, &DnsPingSender::recvPing, this,
-          &ConnectionHealth::dnsPingReceived);
+          &ConnectionHealth::dnsPingReceived, Qt::QueuedConnection);
 
   connect(&m_dnsPingTimer, &QTimer::timeout, this, [this]() {
     m_dnsPingSequence++;

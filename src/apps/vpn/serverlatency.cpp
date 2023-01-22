@@ -71,7 +71,7 @@ void ServerLatency::start() {
   ServerCountryModel* scm = vpn->serverCountryModel();
 
   connect(m_pingSender, SIGNAL(recvPing(quint16)), this,
-          SLOT(recvPing(quint16)));
+          SLOT(recvPing(quint16)), Qt::QueuedConnection);
   connect(m_pingSender, SIGNAL(criticalPingError()), this,
           SLOT(criticalPingError()));
 
