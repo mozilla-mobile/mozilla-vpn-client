@@ -36,6 +36,7 @@ class SettingsHolder final : public QObject {
     BlockAds = 2,
     BlockTracking = 3,
     Custom = 4,
+    Malware = 5,
   };
   Q_ENUM(DnsProvider)
 

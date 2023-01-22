@@ -236,23 +236,6 @@ purchaseWeb:
     comment: "%1 is the user’s email address."
   inProgress2: Please continue subscribing in your browser…
 
-# Adding functionality for users selecting custom DNS settings, associated settings nav items, headers, and selectable options. Some is not included in 2.5.
-customDNSSettings:
-  dnsDefaultRadioHeader: Use default DNS
-  dnsDefaultRadioBody: Automatically use Mozilla VPN-protected DNS
-  dnsAdvancedToggle: Advanced
-  dnsAdblockRadioHeader: Use adblock DNS
-  dnsAdblockRadioBody: Block internet ads with VPN
-  dnsAntitrackRadioHeader: Use anti-tracking DNS
-  dnsAntitrackRadioBody: Block harmful domains with VPN
-  dnsAdblockAntiTrackRadioHeader: Use adblock and anti-tracking DNS
-  dnsAdblockAntiTrackRadioBody: Block internet ads and harmful domains with VPN
-  dnsCustomDNSRadioHeader: Use custom DNS
-  dnsCustomDNSRadioBody: Resolve websites using a custom DNS
-  dnsFieldPlaceHolder: Enter custom DNS
-  # The below is an inline error when an invalid DNS is entered into the custom DNS field
-  inlineCustomDNSError: Invalid DNS, please try a new one
-
 networkSettings:
   multihopTitle: Multi-hop tunnel
 
@@ -316,6 +299,17 @@ settings:
   crashOptInDescription:
     value: Allow Mozilla VPN to automatically send crash reports to help fix unexpected crashes
     comment: This is the description of a checkbox option to allow the app to send crash reports without a user prompt
+  privacyAdblockTitle: Block ads
+  privacyAdblockBody: Reduces the number of ads you see when you’re using VPN
+  privacyTrackerTitle: Block trackers
+  privacyTrackerBody: Fewer harmful domains will be able to track you
+  privacyMalwareTitle: Block malware
+  privacyMalwareBody: Helps protect you from ransomware, phishing, spyware, viruses, and malware
+  dnsSettingsStandardDNSTitle: Use standard DNS
+  dnsSettingsStandardDNSBody: Resolve websites using Mozilla VPN’s standard DNS
+  dnsSettingsCustomDNSTitle: Use custom DNS
+  dnsSettingsCustomDNSBody: Resolve websites using a custom DNS
+  dnsSettingsCustomDNSError: Invalid DNS, please try a new one
 
 dnsOverwriteDialog:
   titleDNS: Override DNS settings?

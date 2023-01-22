@@ -47,7 +47,7 @@ VPNViewBase {
                 Layout.alignment: Qt.AlignTop
                 checked: VPNSettings.dnsProvider == VPNSettings.Gateway
                 ButtonGroup.group: radioButtonGroup
-                accessibleName: VPNl18n.CustomDNSSettingsDnsDefaultRadioHeader
+                accessibleName: VPNl18n.SettingsDnsSettingsStandardDNSTitle
                 onClicked: maybeApplyChange(VPNSettings.Gateway);
             }
 
@@ -58,7 +58,7 @@ VPNViewBase {
                 VPNInterLabel {
                     Layout.fillWidth: true
 
-                    text: VPNl18n.CustomDNSSettingsDnsDefaultRadioHeader
+                    text: VPNl18n.SettingsDnsSettingsStandardDNSTitle
                     wrapMode: Text.WordWrap
                     horizontalAlignment: Text.AlignLeft
 
@@ -76,7 +76,7 @@ VPNViewBase {
                 }
 
                 VPNTextBlock {
-                    text: VPNl18n.CustomDNSSettingsDnsDefaultRadioBody
+                    text: VPNl18n.SettingsDnsSettingsStandardDNSBody
                     Layout.fillWidth: true
                 }
             }
@@ -94,7 +94,7 @@ VPNViewBase {
                 Layout.alignment: Qt.AlignTop
                 checked: VPNSettings.dnsProvider == VPNSettings.Custom
                 ButtonGroup.group: radioButtonGroup
-                accessibleName: VPNl18n.CustomDNSSettingsDnsCustomDNSRadioHeader
+                accessibleName: VPNl18n.SettingsDnsSettingsCustomDNSTitle
                 onClicked: maybeApplyChange(VPNSettings.Custom);
             }
 
@@ -105,7 +105,7 @@ VPNViewBase {
                 VPNInterLabel {
                     Layout.fillWidth: true
 
-                    text: VPNl18n.CustomDNSSettingsDnsCustomDNSRadioHeader
+                    text: VPNl18n.SettingsDnsSettingsCustomDNSTitle
                     wrapMode: Text.WordWrap
                     horizontalAlignment: Text.AlignLeft
 
@@ -123,7 +123,7 @@ VPNViewBase {
                 }
 
                 VPNTextBlock {
-                    text: VPNl18n.CustomDNSSettingsDnsCustomDNSRadioBody
+                    text: VPNl18n.SettingsDnsSettingsCustomDNSBody
 
                     Layout.fillWidth: true
                 }
@@ -165,20 +165,20 @@ VPNViewBase {
                             }
 
                             onTextChanged: text => {
-                                               if (ipInput.text === "") {
-                                                   // If nothing is entered, thats valid too. We will ignore the value later.
-                                                   ipInput.valueInvalid = false;
-                                                   VPNSettings.userDNS = ipInput.text
-                                                   return;
-                                               }
-                                               if (VPN.validateUserDNS(ipInput.text)) {
-                                                   ipInput.valueInvalid = false;
-                                                   VPNSettings.userDNS = ipInput.text
-                                               } else {
-                                                   ipInput.error = VPNl18n.CustomDNSSettingsInlineCustomDNSError
-                                                   ipInput.valueInvalid = true;
-                                               }
-                                           }
+                                if (ipInput.text === "") {
+                                    // If nothing is entered, thats valid too. We will ignore the value later.
+                                    ipInput.valueInvalid = false;
+                                    VPNSettings.userDNS = ipInput.text
+                                    return;
+                                }
+                                if (VPN.validateUserDNS(ipInput.text)) {
+                                    ipInput.valueInvalid = false;
+                                    VPNSettings.userDNS = ipInput.text
+                                } else {
+                                    ipInput.error = VPNl18n.SettingsDnsSettingsCustomDNSError
+                                    ipInput.valueInvalid = true;
+                                }
+                            }
                         }
 
                         VPNContextualAlerts {
