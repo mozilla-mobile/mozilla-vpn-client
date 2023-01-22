@@ -665,23 +665,6 @@ sample:
       - amarchesini@mozilla.com
     expires: never
 
-  network_settings_view_opened:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has opened the network settings view
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-    expires: never
-
   notifications_view_opened:
     type: event
     lifetime: ping

@@ -59,8 +59,6 @@ VPNViewBase {
             }
         }
 
-
-        // TODO: Move to subscription management
         ColumnLayout {
             Layout.fillWidth: true
             Layout.leftMargin: VPNTheme.theme.windowMargin /2
@@ -68,24 +66,40 @@ VPNViewBase {
             Layout.alignment: Qt.AlignHCenter
 
             VPNSettingsItem {
+                objectName: "privacySettings"
+                settingTitle: VPNl18n.SettingsPrivacySettings
+                imageLeftSrc: "qrc:/ui/resources/settings/privacy.svg"
+                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                imageRightMirror: VPNLocalizer.isRightToLeft
+                onClicked: stackview.push("qrc:/ui/screens/settings/ViewPrivacy.qml")
+            }
+
+            VPNSettingsItem {
+                objectName: "appPermissionSettings"
+                settingTitle: VPNl18n.SettingsAppPermissionSettings
+                imageLeftSrc: "qrc:/ui/resources/settings/apppermissions.svg"
+                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                imageRightMirror: VPNLocalizer.isRightToLeft
+                onClicked: stackview.push("qrc:/ui/screens/settings/appPermissions/ViewAppPermissions.qml")
+                visible: VPNFeatureList.get("splitTunnel").isSupported
+            }
+
+            VPNSettingsItem {
                 objectName: "settingsTipsAndTricks"
                 settingTitle: VPNl18n.TipsAndTricksSettingsEntryLabel
-                imageLeftSrc: "qrc:/nebula/resources/sparkles.svg"
+                imageLeftSrc: "qrc:/ui/resources/settings/tipsandtrickssettings.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: VPNLocalizer.isRightToLeft
                 onClicked: VPNNavigator.requestScreen(VPNNavigator.ScreenTipsAndTricks);
             }
 
             VPNSettingsItem {
-                objectName: "settingsNetworking"
-                settingTitle: VPNFeatureList.get("splitTunnel").isSupported ? qsTrId("vpn.settings.networking") : VPNl18n.CustomDNSSettingsDnsNavItem
-                imageLeftSrc: "qrc:/ui/resources/settings/networkSettings.svg"
+                //% "My devices"
+                settingTitle: qsTrId("vpn.devices.myDevices")
+                imageLeftSrc: "qrc:/ui/resources/devices.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: VPNLocalizer.isRightToLeft
-                onClicked: VPNFeatureList.get("splitTunnel").isSupported ? stackview.push("qrc:/ui/screens/settings/ViewNetworkSettings.qml", {
-                                                      //% "App permissions"
-                                                      _appPermissionsTitle: Qt.binding(() => qsTrId("vpn.settings.appPermissions2"))
-                                                  }) : stackview.push("qrc:/ui/screens/settings/dnsSettings/ViewAdvancedDNSSettings.qml")
+                onClicked: stackview.push("qrc:/ui/screens/devices/ViewDevices.qml")
             }
 
             VPNSettingsItem {
@@ -101,16 +115,6 @@ VPNViewBase {
                                                     _notificationsTitle:  Qt.binding(() => qsTrId("vpn.settings.notifications")),
                                                     _menuTitle: Qt.binding(() => preferencesSetting.settingTitle)
                                                   })
-            }
-
-            VPNSettingsItem {
-                objectName: "settingsDeviceList"
-                //% "My devices"
-                settingTitle: qsTrId("vpn.devices.myDevices")
-                imageLeftSrc: "qrc:/nebula/resources/devices.svg"
-                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                imageRightMirror: VPNLocalizer.isRightToLeft
-                onClicked: stackview.push("qrc:/ui/screens/devices/ViewDevices.qml")
             }
 
             VPNSettingsItem {
