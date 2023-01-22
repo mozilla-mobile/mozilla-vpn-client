@@ -33,7 +33,6 @@ VPNViewBase {
             //% "Get notified if a guest Wi-Fi portal is blocked due to VPN connection"
             subLabelText: qsTrId("vpn.settings.guestWifiAlert.description")
             isChecked: (VPNSettings.captivePortalAlert)
-            enabled: true
             showDivider: false
             onClicked: {
                 VPNSettings.captivePortalAlert = !VPNSettings.captivePortalAlert
