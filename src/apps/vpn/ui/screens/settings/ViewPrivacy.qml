@@ -67,7 +67,7 @@ VPNViewBase {
                     settingTitle: VPNl18n.SettingsPrivacyAdblockTitle,
                     settingDescription: VPNl18n.SettingsPrivacyAdblockBody,
                 }, {
-                    settingValue: VPNSettings.BlockTracking,
+                    settingValue: VPNSettings.BlockTrackers,
                     settingTitle: VPNl18n.SettingsPrivacyTrackerTitle,
                     settingDescription: VPNl18n.SettingsPrivacyTrackerBody,
                 }, {

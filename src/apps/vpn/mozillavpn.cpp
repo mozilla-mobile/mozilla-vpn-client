@@ -299,6 +299,8 @@ void MozillaVPN::initialize() {
   m_private->m_captivePortalDetection.initialize();
   m_private->m_networkWatcher.initialize();
 
+  DNSHelper::maybeMigrateDNSProviderFlags();
+
   SettingsWatcher::instance();
 
   if (!settingsHolder->hasToken()) {
@@ -1552,7 +1554,7 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
 
   // We need a new device key only if the user wants to use custom DNS servers.
   if (settingsHolder->dnsProviderFlags() ==
-      SettingsHolder::DnsProviderFlags::Gateway) {
+      SettingsHolder::DNSProviderFlags::Gateway) {
     logger.debug() << "Removal needed but no custom DNS used.";
     return;
   }

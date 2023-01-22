@@ -50,14 +50,14 @@ QString DNSHelper::getDNS(const QString& fallback) {
 
   static QMap<int, QString> dnsMap{
       {SettingsHolder::BlockAds, "100.64.0.1"},
-      {SettingsHolder::BlockTracking, "100.64.0.2"},
-      {SettingsHolder::BlockAds & SettingsHolder::BlockTracking, "100.64.0.3"},
+      {SettingsHolder::BlockTrackers, "100.64.0.2"},
+      {SettingsHolder::BlockAds & SettingsHolder::BlockTrackers, "100.64.0.3"},
       {SettingsHolder::BlockMalware, "100.64.0.4"},
       {SettingsHolder::BlockMalware + SettingsHolder::BlockAds, "100.64.0.5"},
-      {SettingsHolder::BlockMalware + SettingsHolder::BlockTracking,
+      {SettingsHolder::BlockMalware + SettingsHolder::BlockTrackers,
        "100.64.0.6"},
       {SettingsHolder::BlockMalware + SettingsHolder::BlockAds +
-           SettingsHolder::BlockTracking,
+           SettingsHolder::BlockTrackers,
        "100.64.0.7"},
   };
 
@@ -85,4 +85,45 @@ bool DNSHelper::validateUserDNS(const QString& dns) {
 #endif
 
   return true;
+}
+
+// static
+void DNSHelper::maybeMigrateDNSProviderFlags() {
+  logger.debug() << "Maybe migrate DNS Provider Flags";
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  if (!settingsHolder->hasDNSProviderDeprecated()) {
+    return;
+  }
+
+  switch (settingsHolder->dnsProviderDeprecated()) {
+    case 0:  // Gateway
+      break;
+
+    case 1:  // BlockAll
+      // At the time we implement this migration, we just have adblock +
+      // tracking
+      settingsHolder->setDNSProviderFlags(SettingsHolder::BlockAds &
+                                          SettingsHolder::BlockTrackers);
+      break;
+
+    case 2:  // BlockAds
+      settingsHolder->setDNSProviderFlags(SettingsHolder::BlockAds);
+      break;
+
+    case 3:  // BlockTrackers
+      settingsHolder->setDNSProviderFlags(SettingsHolder::BlockTrackers);
+      break;
+
+    case 4:  // Custom
+      settingsHolder->setDNSProviderFlags(SettingsHolder::Custom);
+      break;
+
+    default:
+      logger.warning() << "Unsupported DNS provider deprecated value"
+                       << settingsHolder->dnsProviderDeprecated();
+      break;
+  }
+
+  settingsHolder->removeDNSProviderDeprecated();
 }
