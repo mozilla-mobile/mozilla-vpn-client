@@ -174,6 +174,8 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 
   switch (vpn->controller()->state()) {
     case Controller::StateOn:
+      [[fallthrough]];
+    case Controller::StateSilentSwitching:
       statusLabel = l18nStrings->t(L18nStrings::SystrayStatusConnectedTo);
       break;
 

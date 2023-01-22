@@ -56,5 +56,6 @@ void SettingsWatcher::maybeServerSwitch() {
 
   TaskScheduler::deleteTasks();
   TaskScheduler::scheduleTask(
-      new TaskControllerAction(TaskControllerAction::eSilentSwitch));
+      new TaskControllerAction(TaskControllerAction::eSilentSwitch,
+                               TaskControllerAction::eServerCoolDownNotNeeded));
 }

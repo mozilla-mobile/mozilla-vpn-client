@@ -27,7 +27,15 @@ class TaskControllerAction final : public Task {
   };
   Q_ENUM(TaskAction);
 
-  explicit TaskControllerAction(TaskAction action);
+  enum ServerCoolDownPolicyForSilentSwitch {
+    eServerCoolDownNeeded,
+    eServerCoolDownNotNeeded,
+  };
+
+  explicit TaskControllerAction(
+      TaskAction action,
+      ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy =
+          eServerCoolDownNotNeeded);
   ~TaskControllerAction();
 
   void run() override;
@@ -36,7 +44,6 @@ class TaskControllerAction final : public Task {
 
  private:
   void stateChanged();
-  void silentSwitchDone();
   void checkStatus();
 
  private:
@@ -44,6 +51,8 @@ class TaskControllerAction final : public Task {
   Controller::State m_lastState;
   ServerData m_serverData;
   QTimer m_timer;
+  ServerCoolDownPolicyForSilentSwitch m_serverCoolDownPolicy =
+      eServerCoolDownNotNeeded;
 };
 
 #endif  // TASKCONTROLLERACTION_H

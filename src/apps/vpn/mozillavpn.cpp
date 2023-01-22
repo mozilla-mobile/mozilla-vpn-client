@@ -1256,7 +1256,8 @@ void MozillaVPN::silentSwitch() {
   // to run the silenct-switch.
   TaskScheduler::deleteTasks();
   TaskScheduler::scheduleTask(
-      new TaskControllerAction(TaskControllerAction::eSilentSwitch));
+      new TaskControllerAction(TaskControllerAction::eSilentSwitch,
+                               TaskControllerAction::eServerCoolDownNeeded));
 }
 
 void MozillaVPN::refreshDevices() {

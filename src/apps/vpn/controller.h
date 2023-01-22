@@ -45,6 +45,7 @@ class Controller final : public QObject {
     StateConfirming,
     StateOn,
     StateDisconnecting,
+    StateSilentSwitching,
     StateSwitching,
   };
   Q_ENUM(State)
@@ -82,7 +83,7 @@ class Controller final : public QObject {
   qint64 time() const;
 
   bool switchServers(const ServerData& serverData);
-  bool silentSwitchServers();
+  bool silentSwitchServers(bool serverCoolDownNeeded);
 
   void updateRequired();
 
@@ -141,7 +142,6 @@ class Controller final : public QObject {
   void readyToServerUnavailable(bool pingReceived);
   void connectionRetryChanged();
   void enableDisconnectInConfirmingChanged();
-  void silentSwitchDone();
   void activationBlockedForCaptivePortal();
   void handshakeFailed(const QString& serverHostname);
 
@@ -158,8 +158,8 @@ class Controller final : public QObject {
   QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
   QStringList getExcludedAddresses();
 
-  void activateInternal(Reason reason, bool forceDNSPort = false);
-  void activateNext(Reason reason);
+  void activateInternal(bool forceDNSPort = false);
+  void activateNext();
 
   void clearRetryCounter();
   void clearConnectedTime();

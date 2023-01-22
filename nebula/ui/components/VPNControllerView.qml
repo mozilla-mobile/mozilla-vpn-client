@@ -18,7 +18,6 @@ Item {
         box.connectionInfoScreenVisible = false;
     }
 
-    state: VPNController.state
     Layout.preferredHeight: 318
     Layout.fillWidth: true
     Layout.leftMargin: VPNTheme.theme.listSpacing
@@ -64,7 +63,8 @@ Item {
 
     states: [
         State {
-            name: VPNController.StateInitializing
+            name: "stateInitializing"
+            when: VPNController.state === VPNController.StateInitializing
 
             PropertyChanges {
                 target: boxBackground
@@ -108,7 +108,8 @@ Item {
 
         },
         State {
-            name: VPNController.StateOff
+            name: "stateOff"
+            when: VPNController.state === VPNController.StateOff
 
             PropertyChanges {
                 target: boxBackground
@@ -151,7 +152,8 @@ Item {
 
         },
         State {
-            name: VPNController.StateConnecting
+            name: "stateConnecting"
+            when: VPNController.state === VPNController.StateConnecting
 
             PropertyChanges {
                 target: boxBackground
@@ -196,7 +198,8 @@ Item {
 
         },
         State {
-            name: VPNController.StateConfirming
+            name: "stateConfirming"
+            when: VPNController.state === VPNController.StateConfirming
 
             PropertyChanges {
                 target: boxBackground
@@ -242,7 +245,9 @@ Item {
 
         },
         State {
-            name: VPNController.StateOn
+            name: "stateOn"
+            when: (VPNController.state === VPNController.StateOn ||
+                   VPNController.state === VPNController.StateSilentSwitching)
 
             PropertyChanges {
                 target: boxBackground
@@ -279,7 +284,8 @@ Item {
             }
         },
         State {
-            name: VPNController.StateDisconnecting
+            name: "stateDisconnecting"
+            when: VPNController.state === VPNController.StateDisconnecting
 
             PropertyChanges {
                 target: boxBackground
@@ -323,7 +329,8 @@ Item {
             }
         },
         State {
-            name: VPNController.StateSwitching
+            name: "stateSwitching"
+            when: VPNController.state === VPNController.StateSwitching
 
             PropertyChanges {
                 target: boxBackground
@@ -372,7 +379,7 @@ Item {
     ]
     transitions: [
         Transition {
-            to: VPNController.StateConnecting
+            to: "stateConnecting"
 
             ColorAnimation {
                 target: boxBackground
@@ -394,7 +401,7 @@ Item {
 
         },
         Transition {
-            to: VPNController.StateDisconnecting
+            to: "stateDisconnecting"
 
             ColorAnimation {
                 target: boxBackground
