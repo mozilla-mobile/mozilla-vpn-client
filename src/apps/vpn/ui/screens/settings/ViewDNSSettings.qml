@@ -18,9 +18,9 @@ VPNViewBase {
 
     function maybeApplyChange(settingValue) {
         // We are not changing anything interesting for the privacy/dns dialog.
-        if (VPNSettings.dnsProvider === VPNSettings.Custom ||
-            VPNSettings.dnProvider === VPNSettings.Gateway) {
-            VPNSettings.dnsProvider = settingValue;
+        if (VPNSettings.dnsProviderFlags === VPNSettings.Custom ||
+            VPNSettings.dnsProviderFlags === VPNSettings.Gateway) {
+            VPNSettings.dnsProviderFlags = settingValue;
             return;
         }
 
@@ -45,7 +45,7 @@ VPNViewBase {
                 Layout.preferredWidth: VPNTheme.theme.vSpacing
                 Layout.preferredHeight: VPNTheme.theme.rowHeight
                 Layout.alignment: Qt.AlignTop
-                checked: VPNSettings.dnsProvider == VPNSettings.Gateway
+                checked: VPNSettings.dnsProviderFlags === VPNSettings.Gateway
                 ButtonGroup.group: radioButtonGroup
                 accessibleName: VPNl18n.SettingsDnsSettingsStandardDNSTitle
                 onClicked: maybeApplyChange(VPNSettings.Gateway);
@@ -92,7 +92,7 @@ VPNViewBase {
                 Layout.preferredWidth: VPNTheme.theme.vSpacing
                 Layout.preferredHeight: VPNTheme.theme.rowHeight
                 Layout.alignment: Qt.AlignTop
-                checked: VPNSettings.dnsProvider == VPNSettings.Custom
+                checked: VPNSettings.dnsProviderFlags === VPNSettings.Custom
                 ButtonGroup.group: radioButtonGroup
                 accessibleName: VPNl18n.SettingsDnsSettingsCustomDNSTitle
                 onClicked: maybeApplyChange(VPNSettings.Custom);
@@ -148,7 +148,7 @@ VPNViewBase {
 
 
                             hasError: valueInvalid
-                            enabled: VPNSettings.dnsProvider === VPNSettings.Custom
+                            enabled: VPNSettings.dnsProviderFlags === VPNSettings.Custom
                             onEnabledChanged: if(enabled) forceActiveFocus()
 
                             _placeholderText: VPN.placeholderUserDNS
@@ -231,7 +231,7 @@ VPNViewBase {
                     objectName: "dnsOverwritePopupDiscoverNowButton"
                     text: VPNl18n.DnsOverwriteDialogPrimaryButton
                     onClicked: {
-                        VPNSettings.dnsProvider = dnsOverwriteLoader.dnsProviderValue;
+                        VPNSettings.dnsProviderFlags = dnsOverwriteLoader.dnsProviderValue;
                         dnsOverwritePopup.close()
                     }
                 },

@@ -1551,7 +1551,8 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
   }
 
   // We need a new device key only if the user wants to use custom DNS servers.
-  if (settingsHolder->dnsProvider() == SettingsHolder::DnsProvider::Gateway) {
+  if (settingsHolder->dnsProviderFlags() ==
+      SettingsHolder::DnsProviderFlags::Gateway) {
     logger.debug() << "Removal needed but no custom DNS used.";
     return;
   }

@@ -127,14 +127,14 @@ SETTING_BYTEARRAY(devices,        // getter
                   true            // remove when reset
 )
 
-SETTING_INT(dnsProvider,                           // getter
-            setDNSProvider,                        // setter
-            removeDNSProvider,                     // remover
-            hasDNSProvider,                        // has
-            "dnsProvider",                         // key
-            SettingsHolder::DnsProvider::Gateway,  // default value
-            true,                                  // user setting
-            false                                  // remove when reset
+SETTING_INT(dnsProviderFlags,                           // getter
+            setDNSProviderFlags,                        // setter
+            removeDNSProviderFlags,                     // remover
+            hasDNSProviderFlags,                        // has
+            "dnsProvider",                              // key
+            SettingsHolder::DnsProviderFlags::Gateway,  // default value
+            true,                                       // user setting
+            false                                       // remove when reset
 )
 
 SETTING_STRING(entryServerCityDeprecated,        // getter

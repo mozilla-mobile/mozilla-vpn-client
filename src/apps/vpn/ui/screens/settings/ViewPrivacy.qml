@@ -35,17 +35,26 @@ VPNViewBase {
                 width: parent.width
                 labelText: modelData.settingTitle
                 subLabelText: modelData.settingDescription
-                isChecked: VPNSettings.dnsProvider == modelData.settingValue
+                isChecked: VPNSettings.dnsProviderFlags & modelData.settingValue
                 showDivider: false
                 onClicked: {
+                    let dnsProviderFlags = VPNSettings.dnsProviderFlags;
+                    dnsProviderFlags &= ~VPNSettings.Custom;
+                    dnsProviderFlags &= ~VPNSettings.Gateway;
+
+                    if (dnsProviderFlags & modelData.settingValue) {
+                        dnsProviderFlags &= ~modelData.settingValue;
+                    } else {
+                        dnsProviderFlags |= modelData.settingValue;
+                    }
+
                     // We are not changing anything interesting for the privacy/dns dialog.
-                    if (VPNSettings.dnsProvider !== VPNSettings.Custom &&
-                        VPNSettings.dnProvider !== VPNSettings.Gateway) {
-                        VPNSettings.dnsProvider = modelData.settingValue;
+                    if (VPNSettings.dnsProviderFlags !== VPNSettings.Custom) {
+                        VPNSettings.dnsProviderFlags = dnsProviderFlags;
                         return;
                     }
 
-                    privacyOverwriteLoader.dnsProviderValue = modelData.settingValue;
+                    privacyOverwriteLoader.dnsProviderValue = dnsProviderFlags;
                     privacyOverwriteLoader.active = true;
                 }
             }
@@ -93,7 +102,7 @@ VPNViewBase {
                     objectName: "privacyOverwritePopupDiscoverNowButton"
                     text: VPNl18n.DnsOverwriteDialogPrimaryButton
                     onClicked: {
-                        VPNSettings.dnsProvider = privacyOverwriteLoader.dnsProviderValue;
+                        VPNSettings.dnsProviderFlags = privacyOverwriteLoader.dnsProviderValue;
                         privacyOverwritePopup.close()
                     }
                 },
