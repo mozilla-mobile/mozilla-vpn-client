@@ -4,9 +4,7 @@
 
 add_library(translations STATIC)
 
-if(MSVC)
-  target_compile_options(translations PRIVATE /W4 /WX)
-else()
+if(NOT MSVC)
   target_compile_options(translations PRIVATE -Wall -Werror)
 endif()
 

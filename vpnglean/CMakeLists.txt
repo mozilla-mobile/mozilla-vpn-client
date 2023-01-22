@@ -24,9 +24,7 @@ add_library(vpnglean STATIC
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.cpp
 )
 
-if(MSVC)
-  target_compile_options(vpnglean PRIVATE /W4 /WX)
-else()
+if(NOT MSVC)
   target_compile_options(vpnglean PRIVATE -Wall -Werror)
 endif()
 

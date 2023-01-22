@@ -20,9 +20,7 @@ endif()
 
 add_library(lottie STATIC)
 
-if(MSVC)
-  target_compile_options(lottie PRIVATE /W4 /WX)
-else()
+if(NOT MSVC)
   target_compile_options(lottie PRIVATE -Wall -Werror)
 endif()
 

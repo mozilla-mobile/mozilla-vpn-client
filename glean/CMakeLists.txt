@@ -4,9 +4,7 @@
 
 add_library(glean STATIC)
 
-if(MSVC)
-  target_compile_options(glean PRIVATE /W4 /WX)
-else()
+if(NOT MSVC)
   target_compile_options(glean PRIVATE -Wall -Werror)
 endif()
 

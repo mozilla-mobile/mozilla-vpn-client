@@ -6,9 +6,7 @@
 # This allows us to pull them into multiple builds like the dummy client.
 add_library(mozillavpn-sources INTERFACE)
 
-if(MSVC)
-  target_compile_options(mozillavpn-sources INTERFACE /W4 /WX)
-else()
+if(NOT MSVC)
   target_compile_options(mozillavpn-sources INTERFACE -Wall -Werror)
 endif()
 

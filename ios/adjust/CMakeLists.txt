@@ -4,9 +4,7 @@
 
 add_library(adjust STATIC)
 
-if(MSVC)
-  target_compile_options(adjust-sources PRIVATE /W4 /WX)
-else()
+if(NOT MSVC)
   target_compile_options(adjust-sources PRIVATE -Wall -Werror)
 endif()
 

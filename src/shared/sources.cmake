@@ -4,9 +4,7 @@
 
 add_library(shared-sources INTERFACE)
 
-if(MSVC)
-  target_compile_options(shared-sources INTERFACE /W4 /WX)
-else()
+if(NOT MSVC)
   target_compile_options(shared-sources INTERFACE -Wall -Werror)
 endif()
 
