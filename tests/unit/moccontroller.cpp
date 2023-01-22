@@ -20,12 +20,9 @@ bool Controller::activate(const ServerData&) { return false; }
 
 bool Controller::switchServers(const ServerData& serverData) { return false; }
 
-bool Controller::silentSwitchServers() { return false; }
+bool Controller::silentSwitchServers(bool) { return false; }
 
-void Controller::activateInternal(Reason reason, bool forcePort53) {
-  Q_UNUSED(reason);
-  Q_UNUSED(forcePort53)
-}
+void Controller::activateInternal(bool forcePort53) { Q_UNUSED(forcePort53) }
 
 bool Controller::deactivate() { return false; }
 

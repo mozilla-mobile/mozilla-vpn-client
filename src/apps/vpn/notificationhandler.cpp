@@ -159,7 +159,7 @@ void NotificationHandler::showNotification() {
                            .arg(localizedCityName),
                        NOTIFICATION_TIME_MSEC);
       }
-        return;
+      return;
 
     case Controller::StateOff:
       if (m_connected) {
