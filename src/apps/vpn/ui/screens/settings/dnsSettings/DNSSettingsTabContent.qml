@@ -22,6 +22,18 @@ VPNFlickable {
 
     flickContentHeight: col.height + col.anchors.topMargin
 
+    function maybeApplyChange(settingValue) {
+        // We are not changing anything interesting for the privacy/dns dialog.
+        if ((VPNSettings.dnsProvider === VPNSettings.Custom) === (settingValue === VPNSettings.Custom)) {
+            VPNSettings.dnsProvider = settingValue;
+            return;
+        }
+
+        dnsOverwriteLoader.dnsProviderValue = settingValue;
+        dnsOverwriteLoader.dnsContent = (VPNSettings.dnsProvider === VPNSettings.Custom);
+        dnsOverwriteLoader.active = true;
+    }
+
     ColumnLayout {
         id: col
         width: parent.width
@@ -61,7 +73,7 @@ VPNFlickable {
                     ButtonGroup.group: radioButtonGroup
                     accessibleName: settingTitle
                     enabled: vpnIsOff
-                    onClicked: VPNSettings.dnsProvider = settingValue
+                    onClicked: maybeApplyChange(settingValue);
                 }
 
                 ColumnLayout {
@@ -85,7 +97,7 @@ VPNFlickable {
                             enabled: radioButton.enabled
                             width: Math.min(parent.implicitWidth, parent.width)
                             propagateClickToParent: false
-                            onClicked: VPNSettings.dnsProvider = settingValue
+                            onClicked: maybeApplyChange(settingValue);
                         }
                     }
 
@@ -178,5 +190,53 @@ VPNFlickable {
                 }
             }
         }
+    }
+
+    // Advanced DNS dialog
+    Loader {
+        id: dnsOverwriteLoader
+
+        // This is the value we are going to set if the user confirms.
+        property var dnsProviderValue;
+
+        // If this is false, we show the dialog to overwrite the privacy
+        // settings. If true, we show the dns overwrite content.
+        property bool dnsContent: false;
+
+        objectName: "dnsOverwriteLoader"
+        active: false
+        sourceComponent: VPNSimplePopup {
+            id: dnsOverwritePopup
+
+            anchors.centerIn: Overlay.overlay
+            closeButtonObjectName: "dnsOverwritePopupPopupCloseButton"
+            // TODO, the image
+            imageSrc: dnsOverwriteLoader.dnsContent ? "qrc:/ui/resources/logo-dns-settings.svg" : "qrc:/ui/resources/logo-dns-privacy.svg"
+            imageSize: Qt.size(80, 80)
+            title: dnsOverwriteLoader.dnsContent ? VPNl18n.DnsOverwriteDialogTitleDNS : VPNl18n.DnsOverwriteDialogTitlePrivacy
+            description: dnsOverwriteLoader.dnsContent ? VPNl18n.DnsOverwriteDialogBodyDNS : VPNl18n.DnsOverwriteDialogBodyPrivacy
+            buttons: [
+                VPNButton {
+                    id: tipAndTricksIntroButton
+                    objectName: "dnsOverwritePopupDiscoverNowButton"
+                    text: VPNl18n.DnsOverwriteDialogPrimaryButton
+                    onClicked: {
+                        VPNSettings.dnsProvider = dnsOverwriteLoader.dnsProviderValue;
+                        dnsOverwritePopup.close()
+                    }
+                },
+                VPNLinkButton {
+                    objectName: "dnsOverwritePopupGoBackButton"
+                    labelText: VPNl18n.DnsOverwriteDialogSecondaryButton
+                    onClicked: dnsOverwritePopup.close()
+                }
+            ]
+
+            onClosed: {
+                dnsOverwriteLoader.active = false
+            }
+        }
+
+        onActiveChanged: if (active) { item.open() }
     }
 }

@@ -317,6 +317,14 @@ settings:
     value: Allow Mozilla VPN to automatically send crash reports to help fix unexpected crashes
     comment: This is the description of a checkbox option to allow the app to send crash reports without a user prompt
 
+dnsOverwriteDialog:
+  titleDNS: Override DNS settings?
+  titlePrivacy: Override privacy features?
+  bodyDNS: Using these privacy features will override your custom DNS.
+  bodyPrivacy: Using a custom DNS will override your preferences in the privacy features page.
+  primaryButton: Confirm
+  secondaryButton: Maybe later
+
 aboutUs:
   licenses: Licenses
   copyVersionNumber:
