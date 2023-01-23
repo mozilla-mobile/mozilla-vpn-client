@@ -4,6 +4,10 @@
 
 add_library(translations STATIC)
 
+if(NOT MSVC)
+  target_compile_options(translations PRIVATE -Wall -Werror)
+endif()
+
 set_target_properties(translations PROPERTIES FOLDER "Libs")
 target_link_libraries(translations PRIVATE Qt6::Core Qt6::Qml)
 

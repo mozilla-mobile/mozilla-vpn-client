@@ -41,7 +41,7 @@ void WasmIAPHandler::nativeRegisterProducts() {
     product.m_nonLocalizedMonthlyPrice = 123;
   }
 
-  QTimer::singleShot(200, this, [this]() {
+  QTimer::singleShot(200, this, []() {
     emit ProductsHandler::instance()->productsRegistrationCompleted();
   });
 }

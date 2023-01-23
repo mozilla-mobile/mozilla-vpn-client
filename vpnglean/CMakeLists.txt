@@ -23,6 +23,11 @@ add_library(vpnglean STATIC
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.cpp
 )
+
+if(NOT MSVC)
+  target_compile_options(vpnglean PRIVATE -Wall -Werror)
+endif()
+
 target_include_directories(vpnglean PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_BINARY_DIR}

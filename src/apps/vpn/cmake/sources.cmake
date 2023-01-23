@@ -6,6 +6,10 @@
 # This allows us to pull them into multiple builds like the dummy client.
 add_library(mozillavpn-sources INTERFACE)
 
+if(NOT MSVC)
+  target_compile_options(mozillavpn-sources INTERFACE -Wall -Werror)
+endif()
+
 # VPN client include paths
 set_property(TARGET mozillavpn-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
