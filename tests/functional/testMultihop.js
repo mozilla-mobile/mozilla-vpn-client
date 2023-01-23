@@ -177,7 +177,8 @@ describe('Server list', function() {
 
                 await vpn.waitForQueryAndClick(cityId.visible());
                 await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
-                await vpn.wait(1000)
+                // wait is for animation, as ENTRY and EXIT servers buttons are not interactible during this animation
+                await vpn.wait()
 
                 currentCountryCode = server.code;
                 currentCity = city.localizedName;
@@ -225,7 +226,8 @@ describe('Server list', function() {
 
                 await vpn.waitForQueryAndClick(cityId.visible());
                 await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
-                await vpn.wait(1000);
+                // wait is for animation
+                await vpn.wait();
 
                 currentCountryCode = server.code;
                 currentCity = city.localizedName;
@@ -288,6 +290,7 @@ describe('Server list', function() {
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
 
         // Back at the main view. select the exit entries
+        // wait is for animation
         await vpn.wait()
         await vpn.waitForQueryAndClick(queries.screenHome.serverListView.EXIT_SERVER_BUTTON.visible());
 
@@ -425,6 +428,7 @@ describe('Server list', function() {
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
 
         // Back at the main view. select the exit entries
+        // wait is for animation
         await vpn.wait()
         await vpn.waitForQueryAndClick(
             queries.screenHome.serverListView.EXIT_SERVER_BUTTON.visible());
@@ -435,6 +439,7 @@ describe('Server list', function() {
             queries.screenHome.serverListView.COUNTRY_VIEW, exitFirstCountryId);
         await vpn.waitForQueryAndClick(exitFirstCountryId.visible());
 
+        // wait is for animation
         await vpn.wait();
         await vpn.waitForQueryAndClick(
             queries.screenHome.serverListView.EXIT_SERVER_BUTTON.visible());
@@ -476,6 +481,7 @@ describe('Server list', function() {
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
 
         // select the exit servers
+        // wait is for animation
         await vpn.wait();
         await vpn.waitForQueryAndClick(queries.screenHome.serverListView.EXIT_SERVER_BUTTON.visible());
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
@@ -561,8 +567,9 @@ describe('Server list', function() {
         await vpn.waitForQueryAndClick(cityOneId.visible());
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
 
-        // Back at the main view. select the exit entries
+        // wait is for animation
         await vpn.wait();
+        await vpn.waitForQuery(queries.screenHome.serverListView.EXIT_SERVER_BUTTON.ready());
         await vpn.waitForQueryAndClick(queries.screenHome.serverListView.EXIT_SERVER_BUTTON.visible());
 
         // select exit country again
