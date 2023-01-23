@@ -2,7 +2,6 @@
   "api_version": "0.1",
   "id": "guide_08_recommended_servers",
   "name": "Guide: recommended servers",
-  "translatable": false,
   "type": "guide",
   "conditions": {
     "enabled_features": ["recommendedServers"]
