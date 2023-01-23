@@ -30,7 +30,7 @@ SettingsWatcher::SettingsWatcher(QObject* parent) : QObject(parent) {
 
   CONNECT(captivePortalAlertChanged);
   CONNECT(protectSelectedAppsChanged);
-  CONNECT(dnsProviderChanged);
+  CONNECT(dnsProviderFlagsChanged);
   CONNECT(userDNSChanged);
 
 #undef CONNECT
