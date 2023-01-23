@@ -172,7 +172,7 @@ jobs:
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git clone https://github.com/mozilla-mobile/qt_static_windows --depth 1
           mkdir /c/MozillaVPNBuild
-          cat qt_static_windows/qt6* | tar -xf - -C /c/MozillaVPNBuild
+          cat qt_static_windows/qt6* | tar -xjf - -C /c/MozillaVPNBuild
           echo "/c/MozillaVPNBuild/bin" >> $GITHUB_PATH
 
       - name: Add msvc dev commands to PATH
