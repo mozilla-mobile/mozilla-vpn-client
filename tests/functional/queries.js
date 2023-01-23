@@ -101,7 +101,13 @@ const screenHome = {
     SEARCH_BAR_ERROR: new QmlQueryComposer('//searchBarError'),
     MULTIHOP_SELECTOR_TAB: new QmlQueryComposer(
         '//segmentedNavToggle/segmentedToggleBtnLayout/tabMultiHop'),
-  }
+    SINGLEHOP_SELECTOR_TAB: new QmlQueryComposer(
+      '//segmentedNavToggle/segmentedToggleBtnLayout/tabSingleHop'),
+    ENTRY_SERVER_BUTTON: new QmlQueryComposer('//buttonSelectEntry'),
+    EXIT_SERVER_BUTTON: new QmlQueryComposer('//buttonSelectExit'),
+    VPN_MULTHOP_CHEVRON: new QmlQueryComposer('//vpnCollapsibleCardChevron'),
+    VPN_COLLAPSIBLE_CARD: new QmlQueryComposer('//vpnCollapsibleCard'),
+  },
 };
 
 const screenTipsAndTricks = {
