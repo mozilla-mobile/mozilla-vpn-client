@@ -384,7 +384,8 @@ bool Controller::deactivate() {
   return true;
 }
 
-void Controller::connected(const QString& pubkey) {
+void Controller::connected(const QString& pubkey,
+                           const QDateTime& connectionTimestamp) {
   logger.debug() << "handshake completed with:" << logger.keys(pubkey);
   if (m_activationQueue.isEmpty()) {
     if (m_serverData.exitServerPublicKey() != pubkey) {
@@ -414,7 +415,15 @@ void Controller::connected(const QString& pubkey) {
   // We have succesfully completed all pending connections.
   logger.debug() << "Connected from state:" << m_state;
   setState(StateOn);
-  resetConnectedTime();
+  // In case the Controller provided a valid timestamp that
+  // should be used.
+  if (connectionTimestamp.isValid()) {
+    m_connectedTimeInUTC = connectionTimestamp;
+    emit timeChanged();
+    m_timer.start(TIMER_MSEC);
+  } else {
+    resetConnectedTime();
+  }
 
   if (m_nextStep != None) {
     deactivate();
