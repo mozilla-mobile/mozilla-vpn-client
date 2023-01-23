@@ -7,6 +7,10 @@
 
 #include <QObject>
 
+/**
+ * @brief this class watches a few setting properties to see if we need to
+ * trigger a silent-server-switch
+ */
 class SettingsWatcher final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(SettingsWatcher)
