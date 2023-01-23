@@ -191,8 +191,8 @@ jobs:
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
           mkdir -p build
-          cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON
-          cmake --build $(pwd)/build --config Release --target build_tests
+          cmake -S . -B $(pwd)/build -GNinja
+          cmake --build $(pwd)/build --target build_tests
 
       - name: Running tests
         shell: bash
