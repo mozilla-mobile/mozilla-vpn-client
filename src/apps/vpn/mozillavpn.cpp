@@ -237,6 +237,8 @@ SubscriptionData* MozillaVPN::subscriptionData() {
   return &m_private->m_subscriptionData;
 }
 
+Location* MozillaVPN::location() const { return &m_private->m_location; }
+
 MozillaVPN::State MozillaVPN::state() const { return m_state; }
 
 MozillaVPN::UserState MozillaVPN::userState() const { return m_userState; }
