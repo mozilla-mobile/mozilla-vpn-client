@@ -173,7 +173,6 @@ jobs:
           git clone https://github.com/mozilla-mobile/qt_static_windows --depth 1
           mkdir /c/MozillaVPNBuild
           cat qt_static_windows/qt6* | tar -xjf - -C /c/MozillaVPNBuild
-          echo "/c/MozillaVPNBuild/bin" >> $GITHUB_PATH
 
       - name: Add msvc dev commands to PATH
         uses: ilammy/msvc-dev-cmd@v1
@@ -189,7 +188,7 @@ jobs:
       - name: Building tests
         run: |
           mkdir -p ./build
-          cmake -S . -B ./build -GNinja -DCMAKE_BUILD_TYPE=Release
+          cmake -S . -B ./build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="C:\MozillaVPNBuild\lib\cmake"
           cmake --build ./build --target build_tests
 
       - name: Running tests
