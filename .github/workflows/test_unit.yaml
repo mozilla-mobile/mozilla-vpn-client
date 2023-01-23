@@ -172,8 +172,8 @@ jobs:
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git clone https://github.com/mozilla-mobile/qt_static_windows --depth 1
           mkdir /c/MozillaVPNBuild
-          cat qt_static_windows/qt6* > qt6_static.tar.bz2
-          tar xf qt6_static.tar.bz2 -C /c/MozillaVPNBuild
+          cat qt_static_windows/qt6* | tar -xf - -C /c/MozillaVPNBuild
+          echo "/c/MozillaVPNBuild/bin" >> $GITHUB_PATH
 
       - name: Add msvc dev commands to PATH
         uses: ilammy/msvc-dev-cmd@v1
@@ -187,9 +187,7 @@ jobs:
           pip3 install -r requirements.txt
 
       - name: Building tests
-        shell: bash
         run: |
-          export PATH=/c/MozillaVPNBuild/bin:$PATH
           mkdir -p build
           cmake -S . -B $(pwd)/build -GNinja -DCMAKE_BUILD_TYPE=Release
           cmake --build $(pwd)/build --target build_tests
