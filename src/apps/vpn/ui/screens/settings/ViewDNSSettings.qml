@@ -28,17 +28,19 @@ VPNViewBase {
         dnsOverwriteLoader.active = true;
     }
 
-    _viewContentData: Column {
-        Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin
+    _viewContentData: ColumnLayout {
+        spacing: VPNTheme.theme.windowMargin * 2
+        Layout.fillWidth: true
+        Layout.leftMargin: VPNTheme.theme.windowMargin
         Layout.rightMargin: VPNTheme.theme.windowMargin
-        spacing: VPNTheme.theme.windowMargin
+        Layout.topMargin: VPNTheme.theme.windowMargin / 2
 
         ButtonGroup {
             id: radioButtonGroup
         }
 
         RowLayout {
-            spacing: VPNTheme.theme.windowMargin * 0.5
+            spacing: VPNTheme.theme.windowMargin
 
             VPNRadioButton {
                 objectName: "dnsStandard"
@@ -55,7 +57,6 @@ VPNViewBase {
 
             ColumnLayout {
                 spacing: 4
-                Layout.fillWidth: true
 
                 VPNInterLabel {
                     Layout.fillWidth: true
@@ -65,10 +66,7 @@ VPNViewBase {
                     horizontalAlignment: Text.AlignLeft
 
                     VPNMouseArea {
-                        anchors.fill: undefined
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.bottom: parent.bottom
+                        anchors.fill: parent
 
                         enabled: gatewayRadioButton.enabled
                         width: Math.min(parent.implicitWidth, parent.width)
@@ -87,7 +85,6 @@ VPNViewBase {
         RowLayout {
             Layout.fillWidth: true
             spacing: VPNTheme.theme.windowMargin
-            Layout.rightMargin: VPNTheme.theme.windowMargin
 
             VPNRadioButton {
                 objectName: "dnsCustom"
@@ -114,10 +111,7 @@ VPNViewBase {
                     horizontalAlignment: Text.AlignLeft
 
                     VPNMouseArea {
-                        anchors.fill: undefined
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.bottom: parent.bottom
+                        anchors.fill: parent
 
                         enabled: customRadioButton.enabled
                         width: Math.min(parent.implicitWidth, parent.width)
@@ -125,79 +119,73 @@ VPNViewBase {
                         onClicked: maybeApplyChange(VPNSettings.Custom);
                     }
                 }
+                VPNTextBlock {
+                    text: VPNl18n.SettingsDnsSettingsCustomDNSBody
+                    Layout.fillWidth: true
+                }
 
-                ColumnLayout {
+                VPNTextField {
+                    id: ipInput
+                    objectName: "dnsCustomInput"
 
-                    spacing: 0
+                    property bool valueInvalid: false
+                    property string error: "This is an error string"
 
-                    VPNVerticalSpacer {
-                        Layout.preferredHeight: VPNTheme.theme.windowMargin
-                        width: undefined
+                    hasError: valueInvalid
+                    enabled: VPNSettings.dnsProviderFlags === VPNSettings.Custom
+                    onEnabledChanged: if(enabled) forceActiveFocus()
+
+                    _placeholderText: VPN.placeholderUserDNS
+                    text: ""
+                    Layout.fillWidth: true
+                    Layout.topMargin: 12
+
+                    PropertyAnimation on opacity {
+                        duration: 200
                     }
 
-                    VPNTextField {
-                        id: ipInput
-                        objectName: "dnsCustomInput"
-
-                        property bool valueInvalid: false
-                        property string error: "This is an error string"
-
-                        hasError: valueInvalid
-                        enabled: VPNSettings.dnsProviderFlags === VPNSettings.Custom
-                        onEnabledChanged: if(enabled) forceActiveFocus()
-
-                        _placeholderText: VPN.placeholderUserDNS
-                        text: ""
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 40
-
-                        PropertyAnimation on opacity {
-                            duration: 200
-                        }
-
-                        Component.onCompleted: {
-                            ipInput.text = VPNSettings.userDNS;
-                        }
-
-                        onTextChanged: text => {
-                            if (ipInput.text === "") {
-                                // If nothing is entered, thats valid too. We will ignore the value later.
-                                ipInput.valueInvalid = false;
-                                VPNSettings.userDNS = ipInput.text
-                                return;
-                            }
-                            if (VPN.validateUserDNS(ipInput.text)) {
-                                ipInput.valueInvalid = false;
-                                VPNSettings.userDNS = ipInput.text
-                            } else {
-                                ipInput.error = VPNl18n.SettingsDnsSettingsCustomDNSError
-                                ipInput.valueInvalid = true;
-                            }
-                        }
+                    Component.onCompleted: {
+                        ipInput.text = VPNSettings.userDNS;
                     }
 
-                    VPNContextualAlerts {
-                        id: errorAlert
-
-                        property string messageText: ""
-                        property bool messageVisible: false
-
-                        anchors {
-                            left: undefined
-                            right: undefined
+                    onTextChanged: text => {
+                        if (ipInput.text === "") {
+                            // If nothing is entered, thats valid too. We will ignore the value later.
+                            ipInput.valueInvalid = false;
+                            VPNSettings.userDNS = ipInput.text
+                            return;
                         }
-                        Layout.topMargin: VPNTheme.theme.listSpacing
-
-                        visible: ipInput.valueInvalid && ipInput.visible
-
-                        messages: [
-                            {
-                                type: "error",
-                                message: ipInput.error,
-                                visible: ipInput.valueInvalid && ipInput.visible
-                            }
-                        ]
+                        if (VPN.validateUserDNS(ipInput.text)) {
+                            ipInput.valueInvalid = false;
+                            VPNSettings.userDNS = ipInput.text
+                        } else {
+                            ipInput.error = VPNl18n.SettingsDnsSettingsCustomDNSError
+                            ipInput.valueInvalid = true;
+                        }
                     }
+                }
+
+                VPNContextualAlerts {
+                    id: errorAlert
+
+                    property string messageText: ""
+                    property bool messageVisible: false
+
+                    anchors {
+                        left: undefined
+                        right: undefined
+                    }
+                    Layout.topMargin: VPNTheme.theme.listSpacing
+
+                    visible: ipInput.valueInvalid && ipInput.visible
+
+                    messages: [
+                        {
+                            type: "error",
+                            message: ipInput.error,
+                            visible: ipInput.valueInvalid && ipInput.visible
+                        }
+                    ]
                 }
             }
         }
