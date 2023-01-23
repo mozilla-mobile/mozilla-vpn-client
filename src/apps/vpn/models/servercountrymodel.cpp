@@ -306,9 +306,8 @@ void ServerCountryModel::retranslate() {
 unsigned int ServerCountryModel::avgLatency() const {
   if (m_numLatencySamples == 0) {
     return 0;
-  } else {
-    return (m_sumLatencyMsec + m_numLatencySamples - 1) / m_numLatencySamples;
   }
+  return (m_sumLatencyMsec + m_numLatencySamples - 1) / m_numLatencySamples;
 }
 
 void ServerCountryModel::setServerLatency(const QString& publicKey,
