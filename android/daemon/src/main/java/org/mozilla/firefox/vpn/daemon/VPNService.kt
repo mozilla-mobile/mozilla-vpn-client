@@ -28,7 +28,7 @@ class VPNService : android.net.VpnService() {
     private var mConnectionTime: Long = 0
     private var mAlreadyInitialised = false
     private val mGleanControllerStateTimerInterval: Long = 3 * 60 * 60 * 1000 // 3hrs
-    private val mConnectionHealth = ConnectionHealth(this)
+    val mConnectionHealth = ConnectionHealth(this)
 
     private val mGleanControllerStateTimer = object : CountDownTimer(
         mGleanControllerStateTimerInterval,

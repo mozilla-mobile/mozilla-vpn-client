@@ -21,12 +21,41 @@ class ConnectionHealth(service: VPNService) {
     private var mGateway: String = ""
     private var mAltEndpoint: String = ""
     private var mResetUsed = false
+    private var mPanicStateReached = false
 
     var mActive = false
     var mVPNNetwork: Network? = null
     var mWorker: ExecutorService = Executors.newSingleThreadExecutor()
 
+    @Deprecated("Only added temporary telemetry, please remove (VPN-3956)")
+    fun getStatusString(): String {
+        if (!mActive) {
+            if (Build.VERSION.SDK_INT < 31) {
+                return "deactivated-feature-flagged"
+            }
+            // We have been feature flagged-off, or are disconnected
+            return "deactivated"
+        }
+        if (!mResetUsed) {
+            // We have not yet silent-server switched
+            return "active-not-silent-switched"
+        }
+        if (!mPanicStateReached) {
+            // We have silent-server switched
+            return "active-silent-switched"
+        }
+        // We have silent-server switched and it did not help.
+        return "active-panic-state-reached"
+    }
+
     fun start(endpoint: String, gateway: String, dns: String, altEndpoint: String) {
+        if (Build.VERSION.SDK_INT < 31) {
+            // Let's disable Daemon Connection health for anyone
+            // Below android 12, that's roughly 50% of our users.
+            // See: VPN-3743
+            Log.i(TAG, "A/B test disabled ConnectionHealth")
+            return
+        }
         mEndPoint = endpoint
         mGateway = gateway
         mDNS = dns
@@ -35,6 +64,7 @@ class ConnectionHealth(service: VPNService) {
             return
         }
         mResetUsed = false
+        mPanicStateReached = false
         val mConnectivityManager = mService.getSystemService(Context.CONNECTIVITY_SERVICE)
             as ConnectivityManager
         mConnectivityManager.registerNetworkCallback(vpnNetworkRequest, networkCallbackHandler)
@@ -199,6 +229,7 @@ class ConnectionHealth(service: VPNService) {
             // If we land here: The server and the fallback are unreachable
             // Nothing we can do here to help.
             Log.e(TAG, "Both Server / Serverfallback seem to be unreachable.")
+            mPanicStateReached = true
             taskDone()
         }
     }

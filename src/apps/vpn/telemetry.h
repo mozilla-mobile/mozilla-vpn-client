@@ -21,6 +21,17 @@ class Telemetry final : public QObject {
   void periodicStateRecorder();
 #endif
 
+#if defined(MZ_ANDROID)
+  /**
+   * @brief (Slot) - Processes a Daemon-Init response and records the daemon
+   * status to glean.
+   *
+   * @param data - A JSON string containting the response of EVENT_INIT
+   * @return * void
+   */
+  void onDaemonStatus(const QString& data);
+#endif
+
  private:
   QTimer m_connectionStabilityTimer;
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
