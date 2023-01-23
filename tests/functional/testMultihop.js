@@ -16,7 +16,7 @@ describe('Server list', function() {
   this.ctx.authenticationNeeded = true;
 
   beforeEach(async () => {
-    await vpn.waitForQueryAndClick(queries.screenHome.SERVER_LIST_BUTTON);
+    await vpn.waitForQueryAndClick(queries.screenHome.SERVER_LIST_BUTTON.visible());
     await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
 
     servers = await vpn.servers();
@@ -40,15 +40,15 @@ describe('Server list', function() {
   });
 
 
-    it('opening the entry and exit server list', async () => {
-        await vpn.waitForQueryAndClick(queries.screenHome.serverListView.MULTIHOP_SELECTOR_TAB);
+    it('verify what is multi-hop vpn collapsible', async () => {
+        await vpn.waitForQueryAndClick(queries.screenHome.serverListView.MULTIHOP_SELECTOR_TAB.visible());
         assert.equal(
             await vpn.getQueryProperty(
                 queries.screenHome.serverListView.VPN_COLLAPSIBLE_CARD,
                 'expanded'), 'false');
 
-        await vpn.waitForQuery(queries.screenHome.serverListView.ENTRY_SERVER_BUTTON);
-        await vpn.waitForQuery(queries.screenHome.serverListView.EXIT_SERVER_BUTTON);
+        await vpn.waitForQuery(queries.screenHome.serverListView.ENTRY_SERVER_BUTTON.visible());
+        await vpn.waitForQuery(queries.screenHome.serverListView.EXIT_SERVER_BUTTON.visible());
 
         await vpn.waitForQueryAndClick(
             queries.screenHome.serverListView.VPN_MULTHOP_CHEVRON)
@@ -118,9 +118,7 @@ describe('Server list', function() {
                 queries.screenHome.serverListView.COUNTRY_VIEW, 'contentY',
                 parseInt(await vpn.getQueryProperty(countryId, 'y')));
 
-            await vpn.wait();
-
-            if (currentCountryCode === server.code) {
+             if (currentCountryCode === server.code) {
                 assert(
                     await vpn.getQueryProperty(countryId, 'cityListVisible') ===
                     'true');
@@ -161,7 +159,7 @@ describe('Server list', function() {
                 await vpn.waitForQueryAndClick(countryId.visible());
             }
 
-            await vpn.waitForQuery(countryId.prop('cityListVisible', true));
+            await vpn.waitForQuery(countryId.visible().prop('cityListVisible', true));
 
             for (let city of server.cities) {
                 console.log('  Start test for city:', city);
@@ -211,7 +209,7 @@ describe('Server list', function() {
                 await vpn.waitForQueryAndClick(countryId.visible());
             }
 
-            await vpn.waitForQuery(countryId.prop('cityListVisible', true));
+            await vpn.waitForQuery(countryId.visible().prop('cityListVisible', true));
 
             for (let city of server.cities) {
                 console.log('  Start test for city:', city);
@@ -225,11 +223,9 @@ describe('Server list', function() {
                         parseInt(await vpn.getQueryProperty(countryId, 'y')));
                 await vpn.waitForQuery(cityId.visible());
 
-                await vpn.getQueryProperty(cityId, 'radioButtonLabelText');
-
                 await vpn.waitForQueryAndClick(cityId.visible());
                 await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
-                await vpn.wait(1000)
+                await vpn.wait(1000);
 
                 currentCountryCode = server.code;
                 currentCity = city.localizedName;
@@ -254,9 +250,9 @@ describe('Server list', function() {
 
         // wait for select entry and select entry
         await vpn.waitForQueryAndClick(
-            queries.screenHome.serverListView.MULTIHOP_SELECTOR_TAB);
+            queries.screenHome.serverListView.MULTIHOP_SELECTOR_TAB.visible());
         await vpn.waitForQueryAndClick(
-            queries.screenHome.serverListView.ENTRY_BUTTON);
+            queries.screenHome.serverListView.ENTRY_BUTTON.visible());
 
         // exit server details
         const firstServer = servers[0];
@@ -287,7 +283,6 @@ describe('Server list', function() {
             queries.screenHome.serverListView.COUNTRY_VIEW, 'contentY',
             parseInt(await vpn.getQueryProperty(cityOneId, 'y')) +
                 parseInt(await vpn.getQueryProperty(entryCountryId, 'y')));
-        await vpn.wait();
 
         await vpn.waitForQueryAndClick(cityOneId.visible());
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
@@ -320,7 +315,6 @@ describe('Server list', function() {
             queries.screenHome.serverListView.BACK_BUTTON.visible());
 
         // define connected server
-        currentCountry = firstServer.localizedName;
         currentCity = cityTwo.localizedName;
 
         // connect vpn
@@ -362,11 +356,10 @@ describe('Server list', function() {
 
         // Back at the main view. select the exit entries
         await vpn.waitForQueryAndClick(
-            queries.screenHome.serverListView.BACK_BUTTON);
+            queries.screenHome.serverListView.BACK_BUTTON.visible());
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
 
         // define new connected server
-        newCurrentCountry = firstServer.localizedName;
         newCurrentCity = cityThree.localizedName;
 
         // wait and assert server switching for multihop
@@ -427,7 +420,6 @@ describe('Server list', function() {
             queries.screenHome.serverListView.COUNTRY_VIEW, 'contentY',
             parseInt(await vpn.getQueryProperty(cityOneId, 'y')) +
                 parseInt(await vpn.getQueryProperty(entryCountryId, 'y')));
-        await vpn.wait();
 
         await vpn.waitForQueryAndClick(cityOneId.visible());
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
@@ -441,10 +433,9 @@ describe('Server list', function() {
         await vpn.waitForQuery(exitFirstCountryId.visible())
         await vpn.scrollToQuery(
             queries.screenHome.serverListView.COUNTRY_VIEW, exitFirstCountryId);
-        await vpn.wait()
         await vpn.waitForQueryAndClick(exitFirstCountryId.visible());
 
-        await vpn.wait()
+        await vpn.wait();
         await vpn.waitForQueryAndClick(
             queries.screenHome.serverListView.EXIT_SERVER_BUTTON.visible());
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
@@ -457,7 +448,6 @@ describe('Server list', function() {
             queries.screenHome.serverListView.COUNTRY_VIEW, 'contentY',
             parseInt(await vpn.getQueryProperty(cityTwoId, 'y')) +
                 parseInt(await vpn.getQueryProperty(exitFirstCountryId, 'y')));
-        await vpn.wait();
 
         await vpn.waitForQueryAndClick(cityTwoId.visible());
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
@@ -467,7 +457,6 @@ describe('Server list', function() {
             queries.screenHome.serverListView.BACK_BUTTON.visible());
 
         // define connected server
-        currentCountry = firstServer.localizedName;
         currentCity = cityTwo.localizedName;
 
         // connect vpn
@@ -487,6 +476,7 @@ describe('Server list', function() {
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
 
         // select the exit servers
+        await vpn.wait();
         await vpn.waitForQueryAndClick(queries.screenHome.serverListView.EXIT_SERVER_BUTTON.visible());
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
 
@@ -504,18 +494,16 @@ describe('Server list', function() {
             queries.screenHome.serverListView.COUNTRY_VIEW, 'contentY',
             parseInt(await vpn.getQueryProperty(cityThreeId, 'y')) +
                 parseInt(await vpn.getQueryProperty(exitThirdCountryId, 'y')));
-        await vpn.wait();
 
         await vpn.waitForQueryAndClick(cityThreeId.visible());
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
 
         // Back at the main view. select the exit entries
         await vpn.waitForQueryAndClick(
-            queries.screenHome.serverListView.BACK_BUTTON);
+            queries.screenHome.serverListView.BACK_BUTTON.visible());
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
 
         // define new connected server
-        newCurrentCountry = thirdServer.localizedName;
         newCurrentCity = cityThree.localizedName;
 
         // wait and assert server switching for multihop
@@ -569,14 +557,12 @@ describe('Server list', function() {
             queries.screenHome.serverListView.COUNTRY_VIEW, 'contentY',
             parseInt(await vpn.getQueryProperty(cityOneId, 'y')) +
                 parseInt(await vpn.getQueryProperty(entryCountryId, 'y')));
-        await vpn.wait();
 
         await vpn.waitForQueryAndClick(cityOneId.visible());
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
-        await vpn.wait(1000)
 
         // Back at the main view. select the exit entries
-        await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
+        await vpn.wait();
         await vpn.waitForQueryAndClick(queries.screenHome.serverListView.EXIT_SERVER_BUTTON.visible());
 
         // select exit country again
@@ -600,7 +586,6 @@ describe('Server list', function() {
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
 
         // define connected server
-        currentCountry = firstServer.localizedName;
         currentCity = cityTwo.localizedName;
 
         // connect vpn
