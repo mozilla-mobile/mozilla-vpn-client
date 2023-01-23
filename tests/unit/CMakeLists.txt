@@ -104,6 +104,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/composer/composerblockunorderedlist.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/composer/composerblockunorderedlist.h
     ${MZ_SOURCE_DIR}/apps/vpn/controller.h
+    ${MZ_SOURCE_DIR}/apps/vpn/dnshelper.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/dnshelper.h
     ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.h
     ${MZ_SOURCE_DIR}/apps/vpn/errorhandler.cpp
@@ -314,6 +316,8 @@ target_sources(unit_tests PRIVATE
     testcommandlineparser.h
     testcomposer.cpp
     testcomposer.h
+    testdnshelper.cpp
+    testdnshelper.h
     testfeature.cpp
     testfeature.h
     testipaddress.cpp

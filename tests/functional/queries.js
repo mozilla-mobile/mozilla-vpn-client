@@ -220,12 +220,13 @@ const screenSettings = {
   ABOUT_US: new QmlQueryComposer('//settingsAboutUs'),
   BACK: new QmlQueryComposer('//settings-back'),
   GET_HELP: new QmlQueryComposer('//settingsGetHelp'),
-  MY_DEVICE: new QmlQueryComposer('//settingsDeviceList'),
-  NETWORK_SETTINGS: new QmlQueryComposer('//settingsNetworking'),
+  APP_PERMISSIONS: new QmlQueryComposer('//appPermissionSettings'),
+  PRIVACY: new QmlQueryComposer('//privacySettings'),
+  MY_DEVICES: new QmlQueryComposer('//settingsDevice'),
   SCREEN: new QmlQueryComposer('//settingsView-flickable'),
   SIGN_OUT: new QmlQueryComposer('//settingsLogout'),
   STACKVIEW: new QmlQueryComposer('//settings-stackView'),
-  SYSTEM_PREFERENCE: new QmlQueryComposer('//settingsPreferences'),
+  APP_PREFERENCES: new QmlQueryComposer('//settingsPreferences'),
   TIPS_AND_TRICKS: new QmlQueryComposer('//settingsTipsAndTricks'),
   TUTORIAL_LIST_HIGHLIGHT: new QmlQueryComposer(
       '//tutorialsSectionAll/tipsAndTricksSetionLoader//highlightedTutorial'),
@@ -238,6 +239,22 @@ const screenSettings = {
 
   SUBSCRIPTION_MANAGMENT_VIEW:
       new QmlQueryComposer('//subscriptionManagmentView'),
+
+  privacyView: {
+    BLOCK_ADS: new QmlQueryComposer('//blockAds'),
+    BLOCK_ADS_CHECKBOX: new QmlQueryComposer('//blockAds//checkbox'),
+    BLOCK_TRACKERS: new QmlQueryComposer('//blockTrackers'),
+    BLOCK_TRACKERS_CHECKBOX: new QmlQueryComposer('//blockTrackers//checkbox'),
+    BLOCK_MALWARE: new QmlQueryComposer('//blockMalware'),
+    BLOCK_MALWARE_CHECKBOX: new QmlQueryComposer('//blockMalware//checkbox'),
+
+    MODAL_CLOSE_BUTTON:
+        new QmlQueryComposer('//privacyOverwritePopupPopupCloseButton'),
+    MODAL_PRIMARY_BUTTON:
+        new QmlQueryComposer('//privacyOverwritePopupDiscoverNowButton'),
+    MODAL_SECONDARY_BUTTON:
+        new QmlQueryComposer('//privacyOverwritePopupGoBackButton'),
+  },
 
   myDevicesView: {
     BACK: new QmlQueryComposer('//deviceList-back'),
@@ -254,14 +271,25 @@ const screenSettings = {
     SCREEN: new QmlQueryComposer('//settingsTipsAndTricksPage'),
   },
 
-  networkSettingsView: {
-    SCREEN: new QmlQueryComposer('//settingsView-flickable'),
-  },
-
-  systemPreferenceView: {
+  appPreferencesView: {
+    START_AT_BOOT: new QmlQueryComposer('//settingStartAtBoot'),
     DATA_COLLECTION: new QmlQueryComposer('//dataCollection'),
     LANGUAGE: new QmlQueryComposer('//settingsLanguages'),
     NOTIFICATIONS: new QmlQueryComposer('//settingsNotifications'),
+    DNS_SETTINGS: new QmlQueryComposer('//dnsSettings'),
+
+    dnsSettingsView: {
+      STANDARD_DNS: new QmlQueryComposer('//dnsStandard'),
+      CUSTOM_DNS: new QmlQueryComposer('//dnsCustom'),
+      CUSTOM_DNS_INPUT: new QmlQueryComposer('//dnsCustomInput'),
+
+      MODAL_CLOSE_BUTTON:
+          new QmlQueryComposer('//dnsOverwritePopupPopupCloseButton'),
+      MODAL_PRIMARY_BUTTON:
+          new QmlQueryComposer('//dnsOverwritePopupDiscoverNowButton'),
+      MODAL_SECONDARY_BUTTON:
+          new QmlQueryComposer('//dnsOverwritePopupGoBackButton'),
+    },
 
     languageSettingsView: {
       languageItem: function(lang) {

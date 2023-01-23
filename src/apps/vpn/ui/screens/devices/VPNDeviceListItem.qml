@@ -109,7 +109,7 @@ Item {
         VPNIcon {
             id: deviceIcon
 
-            source: "qrc:/nebula/resources/devices.svg"
+            source: "qrc:/ui/resources/devices.svg"
             fillMode: Image.PreserveAspectFit
             Layout.leftMargin: VPNTheme.theme.windowMargin
             Layout.rightMargin: VPNTheme.theme.windowMargin

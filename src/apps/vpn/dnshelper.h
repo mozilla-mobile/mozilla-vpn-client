@@ -12,6 +12,8 @@ class DNSHelper final {
   static QString getDNS(const QString& fallbackAddress);
 
   static bool validateUserDNS(const QString& dns);
+
+  static void maybeMigrateDNSProviderFlags();
 };
 
 #endif  // DNSHELPER_H

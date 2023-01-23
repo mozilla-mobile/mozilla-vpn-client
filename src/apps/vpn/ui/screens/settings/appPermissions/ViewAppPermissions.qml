@@ -23,7 +23,7 @@ VPNViewBase {
     id: vpnFlickable
     objectName: "appPermissions"
 
-    _menuTitle: qsTrId("vpn.settings.appPermissions2")
+    _menuTitle: VPNl18n.SettingsAppExclusionSettings
     _viewContentData: ColumnLayout {
         Layout.fillWidth: true
 

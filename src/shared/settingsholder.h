@@ -30,14 +30,14 @@ class SettingsHolder final : public QObject {
 
   bool firstExecution() const { return m_firstExecution; }
 
-  enum DnsProvider {
-    Gateway = 0,
-    BlockAll = 1,
-    BlockAds = 2,
-    BlockTracking = 3,
-    Custom = 4,
+  enum DNSProviderFlags {
+    Gateway = 0x00,
+    Custom = 0x01,
+    BlockAds = 0x02,
+    BlockTrackers = 0x04,
+    BlockMalware = 0x08,
   };
-  Q_ENUM(DnsProvider)
+  Q_ENUM(DNSProviderFlags)
 
   // These 3 methods can be used to store/restore/rollback settings.
   Q_INVOKABLE bool beginTransaction();

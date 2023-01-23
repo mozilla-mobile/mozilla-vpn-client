@@ -14,7 +14,7 @@ VPNViewBase {
     id: root
     objectName: "settingsTipsAndTricksPage"
 
-    _menuTitle: VPNl18n.TipsAndTricksSettingsEntryLabel
+    _menuTitle: VPNl18n.SettingsTipsAndTricksSettings
     _interactive: false
 
     _viewContentData: VPNTabNavigation {

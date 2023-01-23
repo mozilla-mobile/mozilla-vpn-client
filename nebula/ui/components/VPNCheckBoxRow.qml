@@ -21,7 +21,7 @@ RowLayout {
 
     signal clicked()
 
-    spacing: VPNTheme.theme.windowMargin * 0.5
+    spacing: VPNTheme.theme.windowMargin
 
     VPNCheckBox {
         id: checkBox
@@ -63,7 +63,6 @@ RowLayout {
         id: labelWrapper
 
         Layout.fillWidth: true
-        Layout.topMargin: 2
         spacing: 4
         Layout.alignment: Qt.AlignTop
 
