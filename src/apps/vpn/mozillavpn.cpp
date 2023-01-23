@@ -26,6 +26,7 @@
 #include "purchasehandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
+#include "settingswatcher.h"
 #include "tasks/account/taskaccount.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "tasks/addonindex/taskaddonindex.h"
@@ -297,6 +298,8 @@ void MozillaVPN::initialize() {
 
   m_private->m_captivePortalDetection.initialize();
   m_private->m_networkWatcher.initialize();
+
+  SettingsWatcher::instance();
 
   if (!settingsHolder->hasToken()) {
     return;
@@ -1253,7 +1256,8 @@ void MozillaVPN::silentSwitch() {
   // to run the silenct-switch.
   TaskScheduler::deleteTasks();
   TaskScheduler::scheduleTask(
-      new TaskControllerAction(TaskControllerAction::eSilentSwitch));
+      new TaskControllerAction(TaskControllerAction::eSilentSwitch,
+                               TaskControllerAction::eServerCoolDownNeeded));
 }
 
 void MozillaVPN::refreshDevices() {

@@ -287,24 +287,6 @@ sample:
       - amarchesini@mozilla.com
     expires: never
 
-  app_permissions_view_warning:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has opened the app permissions view but is unable
-      to make changes because the VPN is on.
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - amarchesini@mozilla.com
-    expires: never
-
   authentication_aborted:
     type: event
     lifetime: ping
@@ -700,24 +682,6 @@ sample:
       - amarchesini@mozilla.com
     expires: never
 
-  network_settings_view_warning:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has opened network settings but is unable
-      to make changes because the VPN is on.
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - amarchesini@mozilla.com
-    expires: never
-
   notifications_view_opened:
     type: event
     lifetime: ping
@@ -731,24 +695,6 @@ sample:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
     data_sensitivity:
       - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-    expires: never
-
-  notifications_view_warning:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has opened notification settings and is unable
-      to make changes because the VPN is on.
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-    data_sensitivity:
-      - technical
     notification_emails:
       - amarchesini@mozilla.com
     expires: never

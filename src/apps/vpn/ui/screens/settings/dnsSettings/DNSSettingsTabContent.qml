@@ -17,7 +17,6 @@ import telemetry 0.30
 VPNFlickable {
 
     id: vpnFlickable
-    property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
     property alias settingsListModel: repeater.model
 
     flickContentHeight: col.height + col.anchors.topMargin
@@ -32,17 +31,6 @@ VPNFlickable {
         anchors.right: parent.right
         anchors.rightMargin: VPNTheme.theme.windowMargin
         spacing: VPNTheme.theme.vSpacing
-
-        VPNCheckBoxAlert {
-            id: alert
-            //% "VPN must be off to edit these settings"
-            //: Associated to a group of settings that require the VPN to be disconnected to change
-            errorMessage: qsTrId("vpn.settings.vpnMustBeOff")
-            anchors {
-                left: undefined
-                right: undefined
-            }
-        }
 
         Repeater {
             id: repeater
@@ -60,7 +48,7 @@ VPNFlickable {
                     checked: VPNSettings.dnsProvider == settingValue
                     ButtonGroup.group: radioButtonGroup
                     accessibleName: settingTitle
-                    enabled: vpnIsOff
+                    enabled: true
                     onClicked: VPNSettings.dnsProvider = settingValue
                 }
 
@@ -73,7 +61,6 @@ VPNFlickable {
 
                         text: settingTitle
                         wrapMode: Text.WordWrap
-                        opacity: vpnIsOff ? 1 : .5
                         horizontalAlignment: Text.AlignLeft
 
                         VPNMouseArea {
@@ -91,8 +78,6 @@ VPNFlickable {
 
                     VPNTextBlock {
                         text: settingDescription
-                        opacity: vpnIsOff ? 1 : .5
-
                         Layout.fillWidth: true
                     }
 
@@ -118,7 +103,7 @@ VPNFlickable {
 
                                 hasError: valueInvalid
                                 visible: showDNSInput
-                                enabled: (VPNSettings.dnsProvider === VPNSettings.Custom) && vpnIsOff
+                                enabled: (VPNSettings.dnsProvider === VPNSettings.Custom)
                                 onEnabledChanged: if(enabled) forceActiveFocus()
 
                                 _placeholderText: VPN.placeholderUserDNS

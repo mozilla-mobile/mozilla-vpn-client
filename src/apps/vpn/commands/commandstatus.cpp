@@ -141,6 +141,8 @@ int CommandStatus::run(QStringList& tokens) {
         break;
 
       case Controller::StateOn:
+        [[fallthrough]];
+      case Controller::StateSilentSwitching:
         stream << "on";
         break;
 

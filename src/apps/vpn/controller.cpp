@@ -55,7 +55,8 @@ namespace {
 Logger logger("Controller");
 
 Controller::Reason stateToReason(Controller::State state) {
-  if (state == Controller::StateSwitching) {
+  if (state == Controller::StateSwitching ||
+      state == Controller::StateSilentSwitching) {
     return Controller::ReasonSwitching;
   }
 
@@ -192,7 +193,8 @@ void Controller::implInitialized(bool status, bool a_connected,
 bool Controller::activate(const ServerData& serverData) {
   logger.debug() << "Activation" << m_state;
 
-  if (m_state != StateOff && m_state != StateSwitching) {
+  if (m_state != StateOff && m_state != StateSwitching &&
+      m_state != StateSilentSwitching) {
     logger.debug() << "Already connected";
     return false;
   }
@@ -216,11 +218,11 @@ bool Controller::activate(const ServerData& serverData) {
 
   clearRetryCounter();
 
-  activateInternal(stateToReason(m_state));
+  activateInternal();
   return true;
 }
 
-void Controller::activateInternal(Reason reason, bool forcePort53) {
+void Controller::activateInternal(bool forcePort53) {
   logger.debug() << "Activation internal";
   Q_ASSERT(m_impl);
 
@@ -313,10 +315,10 @@ void Controller::activateInternal(Reason reason, bool forcePort53) {
   m_ping_canary.start(m_activationQueue.first().m_server.ipv4AddrIn(),
                       "0.0.0.0/0");
   logger.info() << "Canary Ping Started";
-  activateNext(reason);
+  activateNext();
 }
 
-void Controller::activateNext(Reason reason) {
+void Controller::activateNext() {
   MozillaVPN* vpn = MozillaVPN::instance();
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
   if (device == nullptr) {
@@ -328,13 +330,13 @@ void Controller::activateNext(Reason reason) {
 
   logger.debug() << "Activating peer" << logger.keys(hop.m_server.publicKey());
   m_handshakeTimer.start(HANDSHAKE_TIMEOUT_SEC * 1000);
-  m_impl->activate(hop, device, vpn->keys(), reason);
+  m_impl->activate(hop, device, vpn->keys(), stateToReason(m_state));
 
   // Move to the confirming state if we are awaiting any connection handshakes.
   setState(StateConfirming);
 }
 
-bool Controller::silentSwitchServers() {
+bool Controller::silentSwitchServers(bool serverCoolDownNeeded) {
   logger.debug() << "Silently switch servers";
 
   if (m_state != StateOn) {
@@ -352,27 +354,37 @@ bool Controller::silentSwitchServers() {
     return false;
   }
 
-  MozillaVPN::instance()->serverCountryModel()->setServerCooldown(
-      m_serverData.exitServerPublicKey());
+  if (serverCoolDownNeeded) {
+    MozillaVPN::instance()->serverCountryModel()->setServerCooldown(
+        m_serverData.exitServerPublicKey());
+  }
 
-  // Activate the first connection to kick off the server switch.
-  activateInternal(ReasonSwitching);
+  clearConnectedTime();
+  clearRetryCounter();
+
+  logger.debug() << "Switching to a different server";
+
+  setState(StateSilentSwitching);
+  deactivate();
+
   return true;
 }
 
 bool Controller::deactivate() {
   logger.debug() << "Deactivation" << m_state;
 
-  if ((m_state != StateOn) && (m_state != StateSwitching) &&
-      (m_state != StateConfirming) && (m_state != StateConnecting)) {
+  if (m_state != StateOn && m_state != StateSwitching &&
+      m_state != StateSilentSwitching && m_state != StateConfirming &&
+      m_state != StateConnecting) {
     logger.warning() << "Already disconnected";
     return false;
   }
 
-  if ((m_state == StateOn) || (m_state == StateConfirming) ||
-      (m_state == StateConnecting)) {
+  if (m_state == StateOn || m_state == StateConfirming ||
+      m_state == StateConnecting) {
     setState(StateDisconnecting);
   }
+
   m_ping_canary.stop();
   m_handshakeTimer.stop();
   m_activationQueue.clear();
@@ -401,7 +413,7 @@ void Controller::connected(const QString& pubkey,
     // Start the next connection if there is more work to do.
     m_activationQueue.removeFirst();
     if (!m_activationQueue.isEmpty()) {
-      activateNext(stateToReason(m_state));
+      activateNext();
       return;
     }
   }
@@ -455,10 +467,10 @@ void Controller::handshakeTimeout() {
     logger.info() << "Connection Attempt: Using Port 53 Option this time.";
     // On the first retry, opportunisticly try again using the port 53
     // option enabled, if that feature is disabled.
-    activateInternal(stateToReason(m_state), true);
+    activateInternal(true);
     return;
   } else if (m_connectionRetry < CONNECTION_MAX_RETRY) {
-    activateInternal(stateToReason(m_state));
+    activateInternal();
     return;
   }
 
@@ -480,7 +492,8 @@ void Controller::disconnected() {
     return;
   }
 
-  if (nextStep == None && m_state == StateSwitching) {
+  if (nextStep == None &&
+      (m_state == StateSwitching || m_state == StateSilentSwitching)) {
     activate(m_nextServerData);
     return;
   }
@@ -503,8 +516,8 @@ void Controller::quit() {
 
   m_nextStep = Quit;
 
-  if ((m_state == StateOn) || (m_state == StateSwitching) ||
-      (m_state == StateConnecting)) {
+  if (m_state == StateOn || m_state == StateSwitching ||
+      m_state == StateSilentSwitching || m_state == StateConnecting) {
     deactivate();
     return;
   }
@@ -520,8 +533,9 @@ void Controller::backendFailure() {
 
   m_nextStep = BackendFailure;
 
-  if ((m_state == StateOn) || (m_state == StateSwitching) ||
-      (m_state == StateConnecting) || (m_state == StateConfirming)) {
+  if (m_state == StateOn || m_state == StateSwitching ||
+      m_state == StateSilentSwitching || m_state == StateConnecting ||
+      m_state == StateConfirming) {
     deactivate();
     return;
   }
@@ -532,8 +546,9 @@ void Controller::serverUnavailable() {
 
   m_nextStep = ServerUnavailable;
 
-  if ((m_state == StateOn) || (m_state == StateSwitching) ||
-      (m_state == StateConnecting) || (m_state == StateConfirming)) {
+  if (m_state == StateOn || m_state == StateSwitching ||
+      m_state == StateSilentSwitching || m_state == StateConnecting ||
+      m_state == StateConfirming) {
     deactivate();
     return;
   }

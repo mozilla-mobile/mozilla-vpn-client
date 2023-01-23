@@ -62,7 +62,7 @@ module.exports = {
   async activateViaToggle() {
     await this.waitForQueryAndClick(
         queries.screenHome.CONTROLLER_TOGGLE.visible().prop(
-            'state', /* VPNController.StateOff: */ 1));
+            'state', 'stateOff'));
   },
 
   async activate(awaitConnectionOkay = false) {
