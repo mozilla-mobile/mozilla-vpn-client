@@ -69,7 +69,7 @@ VPNViewBase {
                 VPNTextBlock {
                     Layout.fillWidth: true
                     width: undefined
-                    text: "Lorum ipsum place-holding for final content that wraps and wraps and wraps."
+                    text: VPNl18n.SettingsDnsSettingsWarning
                 }
             }
         }

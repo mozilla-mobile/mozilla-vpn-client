@@ -39,6 +39,7 @@ VPNViewBase {
                     }
                 }
                 _loaderVisible: VPNProfileFlow.state === VPNProfileFlow.StateLoading
+                Layout.topMargin: VPNTheme.theme.windowMargin / 2
 
             }
 
