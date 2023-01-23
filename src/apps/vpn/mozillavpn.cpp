@@ -1689,9 +1689,6 @@ void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {
   TaskScheduler::scheduleTask(new TaskGroup(refreshTasks));
 }
 
-QString MozillaVPN::placeholderUserDNS() const {
-  return AppConstants::PLACEHOLDER_USER_DNS;
-}
 
 // static
 void MozillaVPN::registerUrlOpenerLabels() {

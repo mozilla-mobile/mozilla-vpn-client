@@ -12,6 +12,22 @@ Item {
 
     states: [
         State {
+            name: "disabled"
+            when: !itemToTarget.enabled
+
+            PropertyChanges {
+                target: itemToTarget
+                color: VPNTheme.colors.input.disabled.text
+                placeholderTextColor: VPNTheme.colors.input.disabled.placeholder
+            }
+
+            PropertyChanges {
+                target: itemToTarget.background
+                border.color: VPNTheme.colors.input.disabled.border
+                border.width: 1
+            }
+        },
+        State {
             name: "empty"
             when: itemToTarget.text === ""
                 && itemToTarget.enabled
@@ -111,22 +127,6 @@ Item {
             PropertyChanges {
                 target: itemToTarget.background
                 border.color: VPNTheme.colors.input.error.border
-                border.width: 1
-            }
-        },
-        State {
-            name: "disabled"
-            when: !itemToTarget.enabled
-
-            PropertyChanges {
-                target: itemToTarget
-                color: VPNTheme.colors.input.disabled.text
-                placeholderTextColor: VPNTheme.colors.input.disabled.placeholder
-            }
-
-            PropertyChanges {
-                target: itemToTarget.background
-                border.color: VPNTheme.colors.input.disabled.border
                 border.width: 1
             }
         }
