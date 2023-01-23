@@ -9,6 +9,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
+import compat 0.1
 
 import org.mozilla.Glean 0.30
 import telemetry 0.30
@@ -21,12 +22,57 @@ VPNViewBase {
     _menuTitle: VPNl18n.SettingsPrivacySettings
     _interactive: false
 
-    _viewContentData: Column {
+    _viewContentData: ColumnLayout {
         id: tabs
-        Layout.topMargin: -VPNTheme.theme.windowMargin
-        Layout.preferredHeight: root.height - VPNTheme.theme.menuHeight
-        Layout.preferredWidth: root.width
-        spacing: VPNTheme.theme.windowMargin
+        spacing: VPNTheme.theme.windowMargin * 2
+        Layout.fillWidth: true
+
+        Item {
+            Layout.topMargin: VPNTheme.theme.windowMargin
+            Layout.bottomMargin: VPNTheme.theme.windowMargin *3
+            Layout.leftMargin: VPNTheme.theme.windowMargin * 2
+            Layout.rightMargin: VPNTheme.theme.windowMargin * 2
+            Layout.fillWidth: true
+
+            VPNDropShadow {
+                anchors.fill: bg
+                source: bg
+                horizontalOffset: 1
+                verticalOffset: 1
+                radius: 6
+                color: VPNTheme.colors.grey60
+                opacity: .15
+                transparentBorder: true
+                cached: true
+            }
+
+            Rectangle {
+                id: bg
+                anchors.fill: info
+                anchors.topMargin: -VPNTheme.theme.windowMargin
+                anchors.bottomMargin: anchors.topMargin
+                anchors.leftMargin: -VPNTheme.theme.windowMargin
+                anchors.rightMargin: anchors.leftMargin
+                color: VPNTheme.theme.white
+                radius: 4
+            }
+
+            RowLayout {
+                id: info
+                spacing: VPNTheme.theme.windowMargin * 0.75
+                anchors.left: parent.left
+                anchors.right: parent.right
+                VPNIcon {
+                    source: "qrc:/nebula/resources/info.svg"
+                    Layout.alignment: Qt.AlignTop
+                }
+                VPNTextBlock {
+                    Layout.fillWidth: true
+                    width: undefined
+                    text: "Lorum ipsum place-holding for final content that wraps and wraps and wraps."
+                }
+            }
+        }
 
         Repeater {
             id: repeater
@@ -34,7 +80,8 @@ VPNViewBase {
             delegate: VPNCheckBoxRow {
                 objectName: modelData.objectName
 
-                width: parent.width
+                Layout.fillWidth: true
+                Layout.rightMargin: VPNTheme.theme.windowMargin
                 labelText: modelData.settingTitle
                 subLabelText: modelData.settingDescription
                 isChecked: VPNSettings.dnsProviderFlags & modelData.settingValue

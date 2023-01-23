@@ -345,5 +345,6 @@
         <file>resources/navbar/messages-notification.svg</file>
         <file>resources/copy.svg</file>
         <file>resources/paste.svg</file>
+        <file>resources/info.svg</file>
     </qresource>
 </RCC>
