@@ -187,7 +187,7 @@ jobs:
 
       - name: Building tests
         run: |
-          mkdir -p ./build
+          mkdir ./build
           cmake -S . -B ./build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="C:\MozillaVPNBuild\lib\cmake"
           cmake --build ./build --target build_tests
 
