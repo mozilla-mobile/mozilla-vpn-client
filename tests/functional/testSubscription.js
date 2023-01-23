@@ -969,6 +969,8 @@ describe('Subscription view', function() {
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/destroy'].body = {}
     };
 
+    await vpn.wait();
+
     await vpn.waitForQueryAndClick(
         queries.screenDeleteAccount.BUTTON.visible().enabled());
 

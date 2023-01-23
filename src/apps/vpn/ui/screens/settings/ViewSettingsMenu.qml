@@ -14,8 +14,6 @@ VPNViewBase {
     id: settingsList
     objectName: "settingsView"
 
-    //% "Settings"
-    _menuTitle: qsTrId("vpn.main.settings")
     _viewContentData: ColumnLayout {
         spacing: VPNTheme.theme.windowMargin
         Layout.fillWidth: true
@@ -76,7 +74,7 @@ VPNViewBase {
 
             VPNSettingsItem {
                 objectName: "appPermissionSettings"
-                settingTitle: VPNl18n.SettingsAppPermissionSettings
+                settingTitle: VPNl18n.SettingsAppExclusionSettings
                 imageLeftSrc: "qrc:/ui/resources/settings/apppermissions.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: VPNLocalizer.isRightToLeft
@@ -86,7 +84,7 @@ VPNViewBase {
 
             VPNSettingsItem {
                 objectName: "settingsTipsAndTricks"
-                settingTitle: VPNl18n.TipsAndTricksSettingsEntryLabel
+                settingTitle: VPNl18n.SettingsTipsAndTricksSettings
                 imageLeftSrc: "qrc:/ui/resources/settings/tipsandtrickssettings.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: VPNLocalizer.isRightToLeft
@@ -107,7 +105,7 @@ VPNViewBase {
             VPNSettingsItem {
                 id: preferencesSetting
                 objectName: "settingsPreferences"
-                settingTitle: VPNl18n.SettingsSystemPreferences
+                settingTitle: VPNl18n.SettingsAppPreferences
                 imageLeftSrc: "qrc:/ui/resources/settings/preferences.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: VPNLocalizer.isRightToLeft

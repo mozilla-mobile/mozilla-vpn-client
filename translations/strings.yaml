@@ -288,9 +288,10 @@ systray:
 
 settings:
   privacySettings: Privacy features
-  appPermissionSettings: App permissions
+  appExclusionSettings: App exclusions
+  tipsAndTricksSettings: Tips and tricks
   dnsSettings: DNS settings
-  systemPreferences: System preferences
+  appPreferences: App preferences
   dataCollectionDescription: Allow Mozilla VPN to send technical, interaction, and campaign and referral data to Mozilla
   startAtBootTitle:
     value: Connect VPN on startup
@@ -299,6 +300,7 @@ settings:
   crashOptInDescription:
     value: Allow Mozilla VPN to automatically send crash reports to help fix unexpected crashes
     comment: This is the description of a checkbox option to allow the app to send crash reports without a user prompt
+  privacyCard: These options may cause some websites to break or not display content correctly.
   privacyAdblockTitle: Block ads
   privacyAdblockBody: Reduces the number of ads you see when you’re using VPN
   privacyTrackerTitle: Block trackers
