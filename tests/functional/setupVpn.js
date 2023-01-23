@@ -46,6 +46,8 @@ async function startAndConnect() {
   await vpn.connect(vpnWS, {hostname: '127.0.0.1'});
 }
 
+exports.startAndConnect = startAndConnect;
+
 exports.mochaHooks = {
   async beforeAll() {
     // Check VPN app exists. If not, bail.
