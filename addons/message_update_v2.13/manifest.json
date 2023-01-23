@@ -13,7 +13,7 @@
     "date": 1671066000,
     "id": "message_update_v2.13",
     "title": "Update to Mozilla VPN 2.13",
-    "subtitle": "We’ve released an updated version of Mozilla VPN! Update to the latest version to get the newest features and bug fixes: ",
+    "subtitle": "We’ve released an updated version of Mozilla VPN! Update to the latest version to get the newest features and bug fixes:",
     "badge": "new_update",
     "blocks": [
       { "id": "c_1",
