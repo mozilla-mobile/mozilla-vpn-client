@@ -65,9 +65,6 @@ class ServerCountryModel final : public QAbstractListModel {
   void setCooldownForAllServersInACity(const QString& countryCode,
                                        const QString& cityCode);
 
-  Q_INVOKABLE int cityConnectionScore(const QString& countryCode,
-                                      const QString& cityCode) const;
-
   Q_INVOKABLE QList<QVariant> recommendedLocations(unsigned int count) const;
 
   // QAbstractListModel methods

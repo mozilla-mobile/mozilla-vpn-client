@@ -177,19 +177,6 @@ QVariant ServerCountryModel::data(const QModelIndex& index, int role) const {
       return QVariant();
   }
 }
-
-int ServerCountryModel::cityConnectionScore(const QString& countryCode,
-                                            const QString& cityCode) const {
-  for (const ServerCity& city : cities(countryCode)) {
-    if (city.code() == cityCode) {
-      return city.connectionScore();
-    }
-  }
-
-  // No such country was found.
-  return NoData;
-}
-
 QStringList ServerCountryModel::pickRandom() const {
   logger.debug() << "Choosing a random server";
   qsizetype index = QRandomGenerator::global()->generate() % m_servers.count();
