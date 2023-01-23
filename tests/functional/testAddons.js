@@ -5,6 +5,8 @@
 const assert = require('assert');
 const queries = require('./queries.js');
 const vpn = require('./helper.js');
+const { SubscriptionDetails } = require('./servers/guardian_endpoints.js')
+const { startAndConnect } = require('./setupVpn.js')
 
 describe('Addons', function() {
   this.ctx.authenticationNeeded = true;
@@ -126,5 +128,76 @@ describe('Addons', function() {
     assert(
         await vpn.getVPNProperty('VPNCurrentServer', 'exitCountryCode') ===
         exitCountryCode);
+  });
+
+  describe('test message_subscription_expiring addon condition', async () => {
+    async function checkForSubscriptionExpiringMessage(ctx, subscriptionExpirationCases, shouldBeAvailable) {
+      for (const expiresOn of subscriptionExpirationCases) {
+        const mockDetails = { ...SubscriptionDetails };
+        // We are faking a Stripe subscription, so this value is expected to be in seconds.
+        mockDetails.subscription.current_period_end = expiresOn / 1000;
+        ctx.guardianSubscriptionDetailsCallback = () => {
+          ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails'].status = 200;
+          ctx.guardianOverrideEndpoints
+            .GETs['/api/v1/vpn/subscriptionDetails']
+            .body = mockDetails;
+        };
+
+        // Restart the VPN to load the new sub details.
+        await vpn.quit();
+        await startAndConnect();
+
+        // Load all production addons.
+        // These are loaded all together, so we don't know the exact number of addons.
+        await vpn.resetAddons('prod');
+        await vpn.waitForCondition(async () => (
+          parseInt(await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) > 0
+        ));
+
+        await vpn.waitForCondition(async () => {
+          const loadedMessages = await vpn.messages();
+          console.log(loadedMessages)
+          const isSubscriptionExpiringMessageAvailable = loadedMessages.includes("message_subscription_expiring");
+
+          return shouldBeAvailable ? isSubscriptionExpiringMessageAvailable : !isSubscriptionExpiringMessageAvailable;
+        });
+      }
+    }
+
+    it('message is enabled when subscription is about to expire', async () => {
+      // 1 to 7 days out from expiring.
+      const subscriptionExpirationCases = Array.from(
+        { length: 7 },
+        (_, i) => Date.now() + 1000 * 60 * 60 * 24 * (i + 1)
+      );
+
+      await checkForSubscriptionExpiringMessage(this.ctx, subscriptionExpirationCases, true);
+    });
+
+    it('message is not enabled when subscription is not about to expire', async () => {
+      const subscriptionExpirationCases = [
+        // Seven days out + a minute  from expiring.
+        Date.now() + 1000 * 60 * 60 * 24 * 7 + 1000 * 60,
+        // Eight days from expiring.
+        Date.now() + 1000 * 60 * 60 * 24 * 8,
+        // One month from expiring.
+        Date.now() + 1000 * 60 * 60 * 24 * 30,
+      ]
+
+      await checkForSubscriptionExpiringMessage(this.ctx, subscriptionExpirationCases, false);
+    });
+
+    it('message is not enabled when subscription is already expired', async () => {
+      const subscriptionExpirationCases = [
+        // Literally, has just expired.
+        Date.now(),
+        // Has been expired for a day.
+        Date.now() - 1000 * 60 * 60 * 24,
+        // Has been expired for 30 days.
+        Date.now() - 1000 * 60 * 60 * 24 * 30,
+      ]
+
+      await checkForSubscriptionExpiringMessage(this.ctx, subscriptionExpirationCases, false);
+    });
   });
 });
