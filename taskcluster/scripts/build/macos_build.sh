@@ -41,7 +41,8 @@ source ${TASK_HOME}/miniconda/bin/activate
 
 
 print Y "Installing conda env..."
-conda env create -f env.yml           
+# TODO: Check why --force is needed if we install into TASK_HOME?
+conda env create --force -f env.yml       
 conda activate MozillaVPN         
 conda info 
 
