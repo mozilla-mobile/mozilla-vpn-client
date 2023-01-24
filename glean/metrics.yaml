@@ -41,11 +41,11 @@ sample:
       connection_health_state:
         description: |
           The State of connection health. Possible values are:
-          deactivated-feature-flagged -> deactive due A/B testing.
-          deactivated -> vpn disconnected
-          active-not-silent-switched -> connection is healthy
-          active-silent-switched -> connection was unhealthy
-          active-panic-state-reached -> connection was unhealthy
+          deactivated-feature-flagged - deactive due AB testing.
+          deactivated - vpn disconnected
+          active-not-silent-switched - connection is healthy
+          active-silent-switched - connection was unhealthy
+          active-panic-state-reached - connection was unhealthy
         type: string
 
   addon_state_changed:
