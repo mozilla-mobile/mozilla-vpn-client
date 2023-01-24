@@ -37,7 +37,7 @@ print Y "Installing conda env..."
 
 chmod +x ${MOZ_FETCHES_DIR}/miniconda.sh
 bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -p ${TASK_HOME}/miniconda
-source ${TASK_HOME}/bin/activate
+source ${TASK_HOME}/miniconda/bin/activate
 
 
 print Y "Installing conda env..."
