@@ -17,18 +17,6 @@
     "completion_message": "You’ve learned how to exclude apps from VPN protection. Would you like to learn more tips and tricks?",
     "steps": [
       {
-        "id": "s0",
-        "query": "//controllerToggle{visible=true}",
-        "tooltip": "Toggle this switch to deactivate the VPN",
-        "conditions": {
-           "javascript": "vpnIsOn.js"
-        },
-        "next": {
-          "op": "signal",
-          "vpn_emitter": "controller",
-          "signal": "stateChanged"
-        }
-      }, {
         "id": "s1",
         "query": "//navigationLayout/navButton-settings{visible=true}",
         "tooltip": "Select your account settings",
@@ -66,30 +54,6 @@
           "op": "signal",
           "vpn_emitter": "settingsHolder",
           "signal": "vpnDisabledAppsChanged"
-        }
-      },{
-        "id": "s6",
-        "query": "//navigationLayout/navButton-home{visible=true}",
-        "tooltip": "Go back to the VPN dashboard",
-        "conditions": {
-          "javascript": "vpnWasOn.js"
-       },
-        "next": {
-          "op": "signal",
-          "query_emitter": "//navigationLayout/navButton-home{visible=true}",
-          "signal": "clicked"
-        }
-      },{
-        "id": "s7",
-        "query": "//controllerToggle{visible=true}",
-        "tooltip": "Toggle this switch to activate the VPN",
-        "conditions": {
-           "javascript": "vpnWasOn.js"
-        },
-        "next": {
-          "op": "signal",
-          "vpn_emitter": "controller",
-          "signal": "stateChanged"
         }
       }
     ]
