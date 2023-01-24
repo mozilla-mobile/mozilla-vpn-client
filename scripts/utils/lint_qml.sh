@@ -54,14 +54,18 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-
+if [[ -n "$QT_HOST_PATH" ]]; then
+  QT_QMLLINT_BIN=${QT_HOST_PATH}/bin/qmllint
+else
+  QT_QMLLINT_BIN=$(qmake6 -query QT_HOST_BINS)/qmllint
+fi
 
 if [[ "$MODE" == "pr" ]]; then
   print N "\t Checking for QML Lint in PR $PR_NUMBER"
   QML_FILES=$(gh pr view $PR_NUMBER --json files --jq '.files.[].path' | grep '\.qml$')
 else
   print N "\t Checking for QML Lint since ${COMMIT}"
-  QML_FILES=$(git diff --name-only --cached $COMMIT | grep '\.qml$')
+  QML_FILES=$(git diff --name-only $COMMIT | grep '\.qml$')
 fi
 
 touch qml_lint_result.txt
