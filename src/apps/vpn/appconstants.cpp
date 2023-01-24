@@ -51,7 +51,7 @@ QString AppConstants::apiUrl(ApiEndpoint endpoint) {
       {ApiEndpoint::PurchasesAndroid, "/api/v1/vpn/purchases/android"},
 #endif
 #ifdef MZ_IOS
-      {ApiEndpoint::PurchasesIOS, "/api/v1/vpn/purchases/ios"},
+      {ApiEndpoint::PurchasesIOS, "/api/v2/vpn/purchases/ios"},
 #endif
 #ifdef MZ_WASM
       {ApiEndpoint::PurchasesWasm, "/api/v1/vpn/purchases/wasm"},

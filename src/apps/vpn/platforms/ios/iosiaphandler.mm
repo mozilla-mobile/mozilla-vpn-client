@@ -332,7 +332,11 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
     return;
   }
 
-  TaskPurchase* purchase = TaskPurchase::createForIOS(receipt);
+  QJsonObject receiptJson = QJsonDocument::fromJson(receipt.toUtf8()).object();
+  // TODO dig into the JSON and get the right value
+  QString originalTransactionId = receiptJson["environment"];
+
+  TaskPurchase* purchase = TaskPurchase::createForIOS(originalTransactionId);
   Q_ASSERT(purchase);
 
   connect(

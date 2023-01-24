@@ -21,9 +21,9 @@ Logger logger("TaskPurchase");
 
 #ifdef MZ_IOS
 // static
-TaskPurchase* TaskPurchase::createForIOS(const QString& receipt) {
+TaskPurchase* TaskPurchase::createForIOS(const QString& originalTransactionId) {
   TaskPurchase* task = new TaskPurchase(IOS);
-  task->m_iOSReceipt = receipt;
+  task->m_iOSOriginalTransactionId = originalTransactionId;
   return task;
 }
 #endif
@@ -62,8 +62,7 @@ void TaskPurchase::run() {
     case IOS:
       request->post(
           AppConstants::apiUrl(AppConstants::PurchasesIOS),
-          QJsonObject{{"receipt", m_iOSReceipt},
-                      {"appId", QString::fromNSString(IOSUtils::appId())}});
+          QJsonObject{{"originalTransactionId", m_iOSOriginalTransactionId}});
       break;
 #endif
 #ifdef MZ_ANDROID
