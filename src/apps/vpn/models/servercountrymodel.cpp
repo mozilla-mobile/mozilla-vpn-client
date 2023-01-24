@@ -363,7 +363,7 @@ QList<QVariant> ServerCountryModel::recommendedLocations(
 #endif
 
       // Insert into the result list
-      int i;
+      unsigned int i;
       for (i = 0; i < rankResults.count(); i++) {
         if (rankResults[i] < cityRanking) {
           break;
