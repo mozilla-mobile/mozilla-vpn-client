@@ -34,8 +34,9 @@ export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
 
 print Y "Installing conda env..."
-curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O ~/miniconda.sh
-bash ~/miniconda.sh -b -p ${TASK_HOME}/miniconda
+
+chmod +x ${MOZ_FETCHES_DIR}/miniconda.sh
+bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -p ${TASK_HOME}/miniconda
 source ${TASK_HOME}/bin/activate
 
 
