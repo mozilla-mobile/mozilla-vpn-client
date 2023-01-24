@@ -79,7 +79,8 @@ print Y "Fetching tokens..."
 export SENTRY_ENVELOPE_ENDPOINT=$(cat sentry_envelope_endpoint)
 export SENTRY_DSN=$(cat sentry_dsn)
 #Install Sentry CLI:
-curl -sL https://sentry.io/get-cli/ | bash
+brew install getsentry/tools/sentry-cli
+#curl -sL https://sentry.io/get-cli/ | bash
 sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
 
 
