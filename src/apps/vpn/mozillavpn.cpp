@@ -1689,7 +1689,6 @@ void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {
   TaskScheduler::scheduleTask(new TaskGroup(refreshTasks));
 }
 
-
 // static
 void MozillaVPN::registerUrlOpenerLabels() {
   UrlOpener* uo = UrlOpener::instance();
