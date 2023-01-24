@@ -103,7 +103,13 @@ int LanguageI18N::languageCompare(const QString& languageCodeA,
 
 #ifndef UNIT_TEST
   // We do not have all the languages in unit-tests
-  Q_ASSERT(a >= 0 && b >= 0);
+  QByteArray message;
+  {
+    QTextStream str(&message);
+    str << "Unable to find language " << languageCodeA << ":" << a << " or "
+        << languageCodeB << ":" << b;
+  }
+  Q_ASSERT_X(a >= 0 && b >= 0, "LanguageI18N", message);
 #endif
 
   if (a < b) {
