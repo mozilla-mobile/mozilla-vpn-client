@@ -36,7 +36,7 @@ export LANG=en_US.utf-8
 print Y "Installing conda env..."
 
 chmod +x ${MOZ_FETCHES_DIR}/miniconda.sh
-bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -p ${TASK_HOME}/miniconda
+bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -u -p ${TASK_HOME}/miniconda
 source ${TASK_HOME}/miniconda/bin/activate
 
 
