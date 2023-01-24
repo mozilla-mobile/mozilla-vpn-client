@@ -23,6 +23,10 @@ task-defaults:
         taskcluster-proxy: true
         chain-of-trust: true
         max-run-time: 3600
+        artifacts:
+            - type: file
+              name: public/build/MozillaVPN.dsym
+              path: artifacts/MozillaVPN.dsym
     release-artifacts:
         - MozillaVPN.tar.gz
     run:
@@ -38,6 +42,8 @@ macos/pr:
         symbol: BD
     run:
         command: ./taskcluster/scripts/build/macos_build.sh -d
+    scopes:
+        - secrets:get:project/mozillavpn/level-1/sentry
 
 macos/opt:
     description: "Mac Build"
