@@ -33,24 +33,17 @@ print N ""
 export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
 
-print Y "Installing rust..."
-curl https://sh.rustup.rs -sSf | sh -s -- -y || die
-export PATH="$HOME/.cargo/bin:$PATH"
+print Y "Installing conda env..."
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O ~/miniconda.sh
+bash ~/miniconda.sh -b -p ${TASK_HOME}/miniconda
+source ${TASK_HOME}/bin/activate
 
-print Y "Installing homebrew, cmake, ninja..."
-mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
-export PATH=$PWD/homebrew/bin:$PATH
-brew install cmake
-brew install ninja
 
-print Y "Installing go..."
-curl -O https://dl.google.com/go/go1.17.6.darwin-amd64.tar.gz
-tar -xzf go1.17.6.darwin-amd64.tar.gz
-export PATH="`pwd`/go/bin:$PATH"
+print Y "Installing conda env..."
+conda env create -f env.yml           
+conda activate MozillaVPN         
+conda info 
 
-print Y "Installing python dependencies..."
-# use --user for permissions
-python3 -m pip install -r requirements.txt --user
 export PYTHONIOENCODING="UTF-8"
 
 print Y "Updating submodules..."
