@@ -107,10 +107,12 @@ print Y "Extracting the Symbols..."
 dsymutil ${MOZ_FETCHES_DIR}/build/src/Mozilla\ VPN.app/Contents/MacOS/Mozilla\ VPN  -o tmp/MozillaVPN.dsym
 print Y "Uploading the Symbols..." 
 
+
+ls tmp/MozillaVPN.dsym/Contents/Resources/DWARF/
 sentry-cli difutil check tmp/MozillaVPN.dsym
 
 if [[ "$RELEASE" ]]; then      
-    sentry-cli debug-files upload --org mozilla -p vpn-client tmp/vpn.dsym/Contents/Resources/DWARF/*
+    sentry-cli debug-files upload --org mozilla -p vpn-client tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
 fi
 
 cp -r ${MOZ_FETCHES_DIR}/build/src/Mozilla\ VPN.app tmp || die
