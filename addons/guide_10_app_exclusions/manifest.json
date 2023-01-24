@@ -1,17 +1,17 @@
 {
     "api_version": "0.1",
-    "id": "guide_07_app_permissions",
-    "name": "Guide: app permissions",
+    "id": "guide_10_app_exclusions",
+    "name": "Guide: app exclusions",
     "type": "guide",
     "conditions": {
-        "max_client_version": "2.13.99",
+        "min_client_version": "2.14.0",
         "enabled_features": ["splitTunnel"]
     },
     "guide": {
-        "id": "app_permissions",
-        "title": "Why you should use app permissions",
+        "id": "app_exclusions",
+        "title": "Why you should use app exclusions",
         "advanced": true,
-        "image": "qrc:/addons/guide_07_app_permissions/image.svg",
+        "image": "qrc:/addons/guide_10_app_exclusions/image.svg",
         "blocks": [
             {
                 "id": "c_2",
@@ -21,7 +21,7 @@
             {
                 "id": "c_3",
                 "type": "text",
-                "content": "App permissions is an advanced feature that allows you to choose specific applications in your device that you prefer are not protected by the VPN."
+                "content": "App exclusions is an advanced feature that allows you to choose specific applications in your device that you prefer are not protected by the VPN."
             },
             {
                 "id": "c_4",
