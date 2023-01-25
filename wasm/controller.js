@@ -73,8 +73,8 @@ class Controller {
 
   async waitForInitialView() {
     await this.waitForQuery('//getHelpLink{visible=true}');
-    assert(await this.query('//getStarted{visible=true}'));
-    assert(await this.query('//learnMoreLink{visible=true}'));
+    assert(await this.query('//signUpButton{visible=true}'));
+    assert(await this.query('//alreadyASubscriberLink{visible=true}'));
   }
 
   async hardReset() {

@@ -6,93 +6,78 @@ const assert = require('assert');
 const queries = require('./queries.js');
 const vpn = require('./helper.js');
 
-describe('Initial view and onboarding', function() {
-  this.timeout(240000);
 
-  beforeEach(async () => {
-    assert(await vpn.getLastUrl() === '');
-  })
+describe('Onboarding', function() {
+  it('Navigating to and from the help menu is possible', async () => {
+    await vpn.waitForQueryAndClick(
+        queries.screenInitialize.GET_HELP_LINK.visible());
+    await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON);
 
-  it('Check for links on mainView', async () => {
-    await vpn.waitForQuery(queries.screenInitialize.GET_HELP_LINK.visible());
-    assert(await vpn.query(queries.screenInitialize.GET_STARTED.visible()));
-    assert(await vpn.query(queries.screenInitialize.LEARN_MORE_LINK.visible()));
+    await vpn.waitForQuery(queries.screenInitialize.SWIPE_VIEW.visible());
   });
 
-  it('Open the help menu', async () => {
-    await vpn.clickOnQuery(queries.screenInitialize.GET_HELP_LINK.visible());
-    await vpn.waitForQuery(queries.screenGetHelp.BACK_BUTTON.visible());
+  it('SwipeView is visible', async () => {
+    await vpn.waitForQuery(queries.screenInitialize.SWIPE_VIEW.visible());
   });
 
-  it('Open help links', async () => {
-    await vpn.clickOnQuery(queries.screenInitialize.GET_HELP_LINK.visible());
-    await vpn.waitForQuery(queries.screenGetHelp.LINKS.visible());
+  it('Sign up button is visible', async () => {
+    await vpn.waitForQuery(queries.screenInitialize.SIGNUP_BUTTON.visible());
+  });
 
-    await vpn.waitForQuery(queries.screenGetHelp.HELP_CENTER.visible());
-    await vpn.waitForQuery(queries.screenGetHelp.SUPPORT.visible());
-    await vpn.waitForQuery(queries.screenGetHelp.LOGS.visible());
-
-    await vpn.clickOnQuery(queries.screenGetHelp.LOGS);
-    await vpn.waitForCondition(async () => {
-      const url = await vpn.getLastUrl();
-      return url.startsWith('file://') && url.includes('mozillavpn') &&
-          url.endsWith('.txt');
-    });
-
-    await vpn.clickOnQuery(queries.screenGetHelp.HELP_CENTER.visible());
-    await vpn.waitForCondition(async () => {
-      const url = await vpn.getLastUrl();
-      return url.endsWith('/firefox-private-network-vpn');
-    });
-
-    await vpn.clickOnQuery(queries.screenGetHelp.SUPPORT.visible());
+  it('Already a subscriber button is visible', async () => {
     await vpn.waitForQuery(
-        queries.screenGetHelp.contactSupportView.UNAUTH_USER_INPUTS.visible());
+        queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible());
   });
 
-  it('Complete the onboarding (aborting in each phase)', async () => {
-    let onboardingView = 0;
+  it('Panel title is set correctly based on StackView currentIndex',
+     async () => {
+       await vpn.waitForQuery(queries.screenInitialize.SWIPE_VIEW.visible());
+       await vpn.setQueryProperty(
+           queries.screenInitialize.SWIPE_VIEW, 'currentIndex', 0);
+       await vpn.wait();
+       await vpn.waitForQuery(queries.screenInitialize.PANEL_TITLE.visible());
+       assert(
+           await vpn.getQueryProperty(
+               queries.screenInitialize.PANEL_TITLE, 'text') === 'Mozilla VPN');
+     });
 
-    while (true) {
-      assert(
-          await vpn.query(queries.screenInitialize.LEARN_MORE_LINK.visible()));
-      await vpn.clickOnQuery(
-          queries.screenInitialize.LEARN_MORE_LINK.visible());
+  it('Panel description is set correctly based on StackView currentIndex',
+     async () => {
+       await vpn.waitForQuery(queries.screenInitialize.SWIPE_VIEW.visible());
+       await vpn.setQueryProperty(
+           queries.screenInitialize.SWIPE_VIEW, 'currentIndex', 0);
+       await vpn.wait();
+       const descriptionText = await vpn.getQueryProperty(
+           queries.screenInitialize.PANEL_DESCRIPTION, 'text');
+       assert(descriptionText.includes('Firefox'));
+     });
 
-      await vpn.waitForQuery(
-          queries.screenInitialize.SKIP_ONBOARDING.visible());
+  it('Panel title and description are updated when SwipeView currentIndex changes',
+     async () => {
+       await vpn.waitForQuery(queries.screenInitialize.SWIPE_VIEW.visible());
+       await vpn.setQueryProperty(
+           queries.screenInitialize.SWIPE_VIEW, 'currentIndex', 2);
+       await vpn.wait();
+       assert(
+           await vpn.getQueryProperty(
+               queries.screenInitialize.PANEL_TITLE.visible(), 'text') ===
+           'Protect your privacy');
+       const descriptionText = await vpn.getQueryProperty(
+           queries.screenInitialize.PANEL_DESCRIPTION, 'text');
+       assert(descriptionText.includes('Route your activity and location'));
+     });
 
-      await vpn.waitForQuery(
-          queries.screenInitialize.SCREEN.prop('busy', false));
+  it('Sign up button opens auth flow', async () => {
+    await vpn.waitForQueryAndClick(
+        queries.screenInitialize.SIGNUP_BUTTON.visible());
+    await vpn.waitForQuery(
+        queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+  });
 
-      for (let i = 0; i < onboardingView; ++i) {
-        assert(await vpn.query(
-            queries.screenInitialize.ONBOARDING_NEXT.visible()));
-        await vpn.clickOnQuery(
-            queries.screenInitialize.ONBOARDING_NEXT.visible());
-        await vpn.waitForQuery(
-            queries.screenInitialize.SCREEN.prop('busy', false));
-      }
-
-      assert(
-          await vpn.query(queries.screenInitialize.ONBOARDING_NEXT.visible()));
-      if (await vpn.getQueryProperty(
-              queries.screenInitialize.ONBOARDING_NEXT, 'text') !== 'Next') {
-        break;
-      }
-
-      await vpn.clickOnQuery(
-          queries.screenInitialize.SKIP_ONBOARDING.visible());
-
-      await vpn.waitForQuery(queries.screenInitialize.GET_HELP_LINK.visible());
-
-      await vpn.waitForQuery(
-          queries.screenInitialize.SCREEN.prop('busy', false));
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-
-      ++onboardingView;
-    }
-
-    assert(onboardingView, 4);
+  it('Already a subscriber? opens auth flow', async () => {
+    await vpn.waitForQueryAndClick(
+        queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible());
+    await vpn.waitForQuery(
+        queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
   });
 });

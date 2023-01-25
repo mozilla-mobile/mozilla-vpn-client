@@ -16,7 +16,7 @@ describe('User authentication in browser', function() {
   it('returns to main view on canceling authentication', async () => {
     await vpn.waitForInitialView();
 
-    await vpn.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
+    await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
 
     if (!this.ctx.wasm) {
       await vpn.waitForCondition(async () => {
@@ -30,33 +30,34 @@ describe('User authentication in browser', function() {
     await vpn.waitForQueryAndClick(
         queries.screenAuthenticating.CANCEL_FOOTER_LINK.visible());
 
-    await vpn.waitForQuery(queries.screenInitialize.GET_STARTED.visible());
+    await vpn.waitForQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
   });
 
   it('Starts authentication at end of onboarding view', async () => {
     await vpn.waitForInitialView();
 
     await vpn.waitForQueryAndClick(
-        queries.screenInitialize.LEARN_MORE_LINK.visible());
+        queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible());
 
-    await vpn.waitForQuery(queries.screenInitialize.SKIP_ONBOARDING.visible());
+    await vpn.waitForQuery(
+        queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
 
     while (true) {
       assert(
-          await vpn.query(queries.screenInitialize.ONBOARDING_NEXT.visible()));
+          await vpn.query(queries.screenInitialize.SIGN_UP_BUTTON.visible()));
 
       if (await vpn.getQueryProperty(
-              queries.screenInitialize.ONBOARDING_NEXT.visible(), 'text') ===
+              queries.screenInitialize.SIGN_UP_BUTTON.visible(), 'text') ===
           'Next') {
         await vpn.clickOnQuery(
-            queries.screenInitialize.ONBOARDING_NEXT.visible());
+            queries.screenInitialize.SIGN_UP_BUTTON.visible());
         continue;
       }
 
       break;
     }
 
-    await vpn.clickOnQuery(queries.screenInitialize.ONBOARDING_NEXT.visible());
+    await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
 
     if (!this.ctx.wasm) {
       await vpn.waitForCondition(async () => {

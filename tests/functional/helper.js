@@ -105,9 +105,9 @@ module.exports = {
 
   async waitForInitialView() {
     await this.waitForQuery(queries.screenInitialize.GET_HELP_LINK.visible());
-    assert(await this.query(queries.screenInitialize.GET_STARTED.visible()));
-    assert(
-        await this.query(queries.screenInitialize.LEARN_MORE_LINK.visible()));
+    assert(await this.query(queries.screenInitialize.SIGN_UP_BUTTON.visible()));
+    assert(await this.query(
+        queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible()));
   },
 
   async forceHeartbeatFailure() {
@@ -294,69 +294,78 @@ module.exports = {
 
   // TODO - The expected staging urls are hardcoded, we may want to
   // move these hardcoded urls out if testing in alternate environments.
-  async authenticateInBrowser(clickOnPostAuthenticate, acceptTelemetry, wasm) {
-    if (await this.isFeatureFlippedOn('inAppAuthentication')) {
-      await this.flipFeatureOff('inAppAuthentication');
-    }
+  // async authenticateInBrowser(clickOnPostAuthenticate, acceptTelemetry,
+  // wasm) {
+  //   if (await this.isFeatureFlippedOn('inAppAuthentication')) {
+  //     await this.flipFeatureOff('inAppAuthentication');
+  //   }
 
-    // This method must be called when the client is on the "Get Started" view.
-    await this.waitForInitialView();
-    await this.setVPNProperty('VPNUrlOpener', 'lastUrl', '');
+  //   // This method must be called when the client is on the "Get Started"
+  //   view. await this.waitForInitialView(); await
+  //   this.setVPNProperty('VPNUrlOpener', 'lastUrl', '');
 
-    // Click on get started and wait for authenticating view
-    await this.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
+  //   // Click on get started and wait for authenticating view
+  //   await
+  //   this.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
 
-    if (!wasm) {
-      await this.waitForCondition(async () => {
-        const url = await this.getLastUrl();
-        return url.includes('/api/v2/vpn/login');
-      });
-      await this.wait();
+  //   if (!wasm) {
+  //     await this.waitForCondition(async () => {
+  //       const url = await this.getLastUrl();
+  //       return url.includes('/api/v2/vpn/login');
+  //     });
+  //     await this.wait();
 
-      // We don't really want to go through the authentication flow because we
-      // are mocking everything.
-      const url = await this.getLastUrl();
-      const urlObj = new URL(url);
+  //     // We don't really want to go through the authentication flow because
+  //     we
+  //     // are mocking everything.
+  //     const url = await this.getLastUrl();
+  //     const urlObj = new URL(url);
 
-      const options = {
-        hostname: urlObj.hostname,
-        port: parseInt(urlObj.searchParams.get('port'), 10),
-        path: '/?code=the_code',
-        method: 'GET',
-      };
+  //     const options = {
+  //       hostname: urlObj.hostname,
+  //       port: parseInt(urlObj.searchParams.get('port'), 10),
+  //       path: '/?code=the_code',
+  //       method: 'GET',
+  //     };
 
-      await new Promise(resolve => {
-        const req = http.request(options, res => {});
-        req.on('close', resolve);
-        req.on('error', error => {
-          throw new error(
-              `Unable to connect to ${urlObj.hostname} to complete the auth`);
-        });
-        req.end();
-      });
-    }
+  //     await new Promise(resolve => {
+  //       const req = http.request(options, res => {});
+  //       req.on('close', resolve);
+  //       req.on('error', error => {
+  //         throw new error(
+  //             `Unable to connect to ${urlObj.hostname} to complete the
+  //             auth`);
+  //       });
+  //       req.end();
+  //     });
+  //   }
 
-    // Wait for VPN client screen to move from spinning wheel to next screen
-    await this.waitForVPNProperty('VPN', 'userState', 'UserAuthenticated');
-    await this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
+  //   // Wait for VPN client screen to move from spinning wheel to next screen
+  //   await this.waitForVPNProperty('VPN', 'userState', 'UserAuthenticated');
+  //   await
+  //   this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
 
-    if (clickOnPostAuthenticate) {
-      await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await this.clickOnQuery(
-          queries.screenPostAuthentication.BUTTON.visible());
-      await this.wait();
-    }
-    if (acceptTelemetry) {
-      await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await this.waitForQuery(queries.screenTelemetry.BUTTON.visible());
+  //   // Clean-up extra devices (otherwise test account will fill up in a
+  //   // heartbeats)
+  //   await this._maybeRemoveExistingDevices();
 
-      await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await this.clickOnQuery(queries.screenTelemetry.BUTTON.visible());
+  //   if (clickOnPostAuthenticate) {
+  //     await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
+  //     await this.clickOnQuery(
+  //         queries.screenPostAuthentication.BUTTON.visible());
+  //     await this.wait();
+  //   }
+  //   if (acceptTelemetry) {
+  //     await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
+  //     await this.waitForQuery(queries.screenTelemetry.BUTTON.visible());
 
-      await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await this.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-    }
-  },
+  //     await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
+  //     await this.clickOnQuery(queries.screenTelemetry.BUTTON.visible());
+
+  //     await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
+  //     await this.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+  //   }
+  // },
 
   async authenticateInApp(
       clickOnPostAuthenticate = false, acceptTelemetry = false) {
@@ -364,7 +373,7 @@ module.exports = {
     await this.waitForInitialView();
 
     // Click on get started and wait for authenticating view
-    await this.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
+    await this.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
     await this.waitForQuery(
         queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
     await this.setQueryProperty(
