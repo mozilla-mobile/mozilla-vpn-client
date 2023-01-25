@@ -136,7 +136,7 @@ bool FeatureCallback_splitTunnel() {
     }
     /* The metadata we need (SourcePath) is only added since kio v5.75
      */
-    if (VersionApi::compareVersions(kdeVersion, "5.75") < 0) {
+    if (VersionUtils::compareVersions(kdeVersion, "5.75") < 0) {
       return false;
     }
   }
