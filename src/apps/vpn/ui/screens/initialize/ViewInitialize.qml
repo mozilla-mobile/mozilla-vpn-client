@@ -14,6 +14,10 @@ import compat 0.1
 Item {
     property int safeAreaHeight: window.safeContentHeight
 
+    // Legacy string, defined here but used in ViewAboutUs.qml
+    //% "A fast, secure and easy to use VPN. Built by the makers of Firefox."
+    property string logoSubtitle: qsTrId("vpn.main.productDescription")
+
     VPNRadialGradient {
         height: Screen.height
         width: Screen.width
