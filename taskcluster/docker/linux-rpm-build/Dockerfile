@@ -17,6 +17,11 @@ RUN yum -y install git rpm-build rpmdevtools yum-utils sudo
 # Grant the worker user the ability to install packages without login
 RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/yum,/usr/bin/yum-builddep" > /etc/sudoers.d/worker-packages
 
+# Also pull in packages from BuildRequires as early as possible
+# %include linux/mozillavpn.spec
+ADD topsrcdir/linux/mozillavpn.spec /root/mozillavpn-rpm.spec
+RUN yum-builddep -y /root/mozillavpn-rpm.spec
+
 #----------------------------------------------------------------------------------------------------------------------
 #-- Worker User -------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------
