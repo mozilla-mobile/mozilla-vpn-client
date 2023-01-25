@@ -299,8 +299,8 @@ module.exports = {
       await this.flipFeatureOff('inAppAuthentication');
     }
 
-    // This method must be called when the client is on the "Get Started"
-    view.await this.waitForInitialView();
+    // This method must be called when the client is on the "Get Started"view.
+    await this.waitForInitialView();
     await this.setVPNProperty('VPNUrlOpener', 'lastUrl', '');
 
     // Click on get started and wait for authenticating view
@@ -313,8 +313,7 @@ module.exports = {
       });
       await this.wait();
 
-      // We don't really want to go through the authentication flow because
-      we
+      // We don't really want to go through the authentication flow because we
       // are mocking everything.
       const url = await this.getLastUrl();
       const urlObj = new URL(url);
