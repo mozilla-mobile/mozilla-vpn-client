@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const addonServer = require('./servers/addon.js')
 const {URL} = require('node:url');
 const http = require('http')
 const queries = require('./queries.js');
