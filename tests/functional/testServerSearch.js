@@ -48,10 +48,10 @@ describe("Server list", function () {
       queries.screenHome.serverListView.MULTIHOP_SELECTOR_TAB.visible()
     );
     await vpn.waitForQuery(
-      queries.screenHome.serverListView.EXIT_SERVER_BUTTON
+      queries.screenHome.serverListView.ENTRY_BUTTON
     );
     await vpn.waitForQueryAndClick(
-      queries.screenHome.serverListView.ENTRY_SERVER_BUTTON.visible()
+      queries.screenHome.serverListView.EXIT_BUTTON.visible()
     );
 
     const server = servers[0];
@@ -78,10 +78,11 @@ describe("Server list", function () {
 
     await vpn.waitForQuery(countryId.visible().prop("cityListVisible", true));
 
-    console.log("Start test for city:", server.cities[0]);
+    const city = server.cities[0]
+    console.log("Start test for city:", city);
     const cityId = queries.screenHome.serverListView.generateCityId(
       countryId,
-      server.cities[0].name
+      city.name
     );
     await vpn.waitForQuery(cityId.visible());
 
@@ -102,7 +103,7 @@ describe("Server list", function () {
     );
 
     // define connected server
-    currentCity = cityTwo.localizedName;
+    currentCity = city.localizedName;
 
     // connect vpn
     await vpn.activate();
