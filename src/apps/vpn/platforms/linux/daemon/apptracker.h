@@ -58,6 +58,7 @@ class AppTracker final : public QObject {
   // Monitoring of the user's control groups.
   QString m_cgroupMount;
   QFileSystemWatcher m_cgroupWatcher;
+  QDBusInterface* m_systemdInterface = nullptr;
 
   // The set of applications that we have tracked.
   QHash<QString, AppData*> m_runningApps;
