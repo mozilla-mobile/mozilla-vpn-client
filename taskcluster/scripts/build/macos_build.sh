@@ -47,7 +47,7 @@ source ${TASK_HOME}/miniconda/bin/activate
 print Y "Installing provided conda env..."
 # TODO: Check why --force is needed if we install into TASK_HOME?
 conda env create --force -f env.yml       
-conda activate MozillaVPN         
+conda activate VPN         
 conda info 
 
 # Conda Cannot know installed MacOS SDK'S
@@ -62,13 +62,11 @@ if [ -d "/Library/Developer/CommandLineTools/SDKs/" ]; then
     ls /Library/Developer/CommandLineTools/SDKs/
     export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk 
 elif [ -d "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/" ]; then
-  ls /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/
-  export SDKROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+    ls /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/
+    export SDKROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
 else 
     die "Could not find any SDK?!?!"
 fi
-
-
 
 # Should already have been done by taskcluser, 
 # but double checking c: 

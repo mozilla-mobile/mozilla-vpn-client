@@ -311,6 +311,31 @@ sudo ln -s $(which rustc)
 
 This step needs to be executed each time Xcode updates.
 
+#### Building using Conda on MacOS
+
+We provide a Conda env for easy Setup. 
+Prequisits: 
+- Have miniconda installed. 
+
+```bash 
+$ conda env create -f env.yml
+$ conda activate VPN
+```
+ - Set a MacOS-SDK (via xcode, or the interwebs) 
+    - set `export SDKROOT=<something>`
+    - It's probably in:
+      - `/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk`
+      - `/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk`
+ - Get QT 
+ 
+You are now ready to build 
+
+```bash 
+$ cmake -S . -B -DCMAKE_PREFIX_PATH=${Path to QT}/lib/cmake
+$ cmake --build 
+```
+
+
 ### How to build from source code for iOS
 
 There are two ways to build the project on iOS, using the legacy Qt build system `qmake`
