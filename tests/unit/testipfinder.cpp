@@ -6,18 +6,20 @@
 
 #include <QHostInfo>
 
+#include "appconstants.h"
 #include "helper.h"
-#include "networkrequest.h"
 #include "settingsholder.h"
+#include "simplenetworkmanager.h"
 #include "tasks/ipfinder/taskipfinder.h"
 
 void TestIpFinder::ipv4AndIpv6() {
   SettingsHolder settingsHolder;
+  SimpleNetworkManager snm;
 
   TestHelper::networkConfig.clear();
 
   QEventLoop loop;
-  QUrl url(NetworkRequest::apiBaseUrl());
+  QUrl url(AppConstants::apiBaseUrl());
 
   bool ipv4Expected = false;
   bool ipv6Expected = false;

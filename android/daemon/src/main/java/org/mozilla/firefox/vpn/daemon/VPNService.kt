@@ -18,8 +18,8 @@ import com.wireguard.config.Interface
 import com.wireguard.config.Peer
 import com.wireguard.crypto.Key
 import org.json.JSONObject
-import java.util.*
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.Sample
+import java.util.*
 
 class VPNService : android.net.VpnService() {
     private val tag = "VPNService"
@@ -31,7 +31,7 @@ class VPNService : android.net.VpnService() {
     private var mConnectionTime: Long = 0
     private var mAlreadyInitialised = false
     private val mGleanControllerStateTimerInterval: Long = 3 * 60 * 60 * 1000 // 3hrs
-    private val mConnectionHealth = ConnectionHealth(this)
+    val mConnectionHealth = ConnectionHealth(this)
 
     private val mGleanControllerStateTimer = object : CountDownTimer(
         mGleanControllerStateTimerInterval,
@@ -54,14 +54,15 @@ class VPNService : android.net.VpnService() {
         set(value: Int) {
             field = value
             if (value > -1) {
+                mConnectionTime = System.currentTimeMillis()
                 Log.i(tag, "Dispatch Daemon State -> connected")
                 mBinder.dispatchEvent(
                     VPNServiceBinder.EVENTS.connected,
                     JSONObject().apply {
+                        put("time", mConnectionTime)
                         put("city", mCityname)
                     }.toString()
                 )
-                mConnectionTime = System.currentTimeMillis()
                 return
             }
             Log.i(tag, "Dispatch Daemon State -> disconnected")

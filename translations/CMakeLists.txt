@@ -4,6 +4,10 @@
 
 add_library(translations STATIC)
 
+if(NOT MSVC)
+  target_compile_options(translations PRIVATE -Wall -Werror)
+endif()
+
 set_target_properties(translations PROPERTIES FOLDER "Libs")
 target_link_libraries(translations PRIVATE Qt6::Core Qt6::Qml)
 
@@ -24,6 +28,7 @@ target_sources(translations PRIVATE
     ${GENERATED_DIR}/l18nstrings_p.cpp
     ${GENERATED_DIR}/l18nstrings.h
     ${GENERATED_DIR}/translations.qrc
+    languages.qrc
     l18nstrings.cpp
     servers.qrc
 )

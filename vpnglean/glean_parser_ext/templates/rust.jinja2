@@ -10,20 +10,15 @@ Jinja2 template is not. Please file bugs! #}
 
 #[allow(dead_code)]
 use std::collections::HashMap;
+
 use glean::traits::EventRecordingError;
 use glean::RecordedEvent;
+use once_cell::sync::Lazy;
 
 {% macro generate_extra_keys(obj) -%}
 {% for name, _ in obj["_generate_enums"] %}
-{# we always use the `extra` suffix, because we only expose the new event API #}
 {% set suffix = "Extra" %}
-{% if obj|attr(name)|length %}
-    {% if obj.has_extra_types %}
-    {{ extra_keys_with_types(obj, name, suffix)|indent }}
-    {% else %}
-    compile_error!("Untyped event extras not supported. Please annotate event extras with a type. See documentation for details. (Metric: {{obj.category}}.{{obj.name}}, defined in: {{obj.defined_in['filepath']}}:{{obj.defined_in['line']}})");
-    {% endif %}
-{% endif %}
+{{ extra_keys_with_types(obj, name, suffix)|indent }}
 {% endfor %}
 {%- endmacro -%}
 
@@ -51,7 +46,8 @@ impl ExtraKeys for {{ obj.name|Camelize }}{{ suffix }} {
 {% for category_name, objs in all_objs.items() %}
 pub mod {{ category_name|snake_case }} {
     use glean::private::*;
-    use glean::{CommonMetricData, Lifetime};
+    #[allow(unused_imports)]
+    use glean::{CommonMetricData, Lifetime, TimeUnit};
     #[allow(unused_imports)] // ExtraKeys might be unusued, let's avoid warnings
     use glean::traits::{ExtraKeys, NoExtraKeys};
     #[allow(unused_imports)] // HistogramType might be unusued, let's avoid warnings
@@ -91,12 +87,13 @@ pub mod {{ category_name|snake_case }} {
 {% endfor %}
 
 {% for typ, metrics in metric_by_type.items() %}
-pub static {{typ.0}}: Lazy<HashMap<MetricId, &Lazy<glean::private::{{typ.1}}>>> = Lazy::new(|| {
-    let mut map: HashMap<MetricId, &Lazy<glean::private::{{typ.1}}>> = HashMap::with_capacity({{metrics|length}});
+pub static {{typ.0}}: Lazy<HashMap<u32, &Lazy<glean::private::{{typ.1}}>>> = Lazy::new(|| {
+    {% set map_ident = "_map" if metrics|length == 0 else "map" %}
+    let mut {{map_ident}}: HashMap<u32, &Lazy<glean::private::{{typ.1}}>> = HashMap::with_capacity({{metrics|length}});
     {% for metric in metrics %}
-    map.insert({{metric.0}}.into(), &{{metric.1}});
+    {{map_ident}}.insert({{metric.0}}, &{{metric.1}});
     {% endfor %}
-    map
+    {{map_ident}}
 });
 {% endfor %}
 

@@ -16,16 +16,21 @@ void Controller::initialize() {}
 
 void Controller::implInitialized(bool, bool, const QDateTime&) {}
 
-bool Controller::activate() { return false; }
+bool Controller::activate(const ServerData&) { return false; }
 
-void Controller::activateInternal(Reason reason, bool forcePort53) {
-  Q_UNUSED(reason);
-  Q_UNUSED(forcePort53)
-}
+bool Controller::switchServers(const ServerData& serverData) { return false; }
+
+bool Controller::silentSwitchServers(bool) { return false; }
+
+void Controller::activateInternal(bool forcePort53) { Q_UNUSED(forcePort53) }
 
 bool Controller::deactivate() { return false; }
 
-void Controller::connected(const QString& pubkey) { Q_UNUSED(pubkey); }
+void Controller::connected(const QString& pubkey,
+                           const QDateTime& connectionTimestamp) {
+  Q_UNUSED(pubkey);
+  Q_UNUSED(connectionTimestamp);
+}
 
 void Controller::disconnected() {}
 
@@ -75,3 +80,7 @@ void Controller::captivePortalPresent() {}
 void Controller::captivePortalGone() {}
 
 void Controller::handshakeTimeout() {}
+
+#ifdef MZ_DUMMY
+QString Controller::currentServerString() const { return QString("42"); }
+#endif

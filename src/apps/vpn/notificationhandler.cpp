@@ -30,6 +30,8 @@
 
 #include "systemtraynotificationhandler.h"
 
+constexpr int NOTIFICATION_TIME_MSEC = 2000;
+
 namespace {
 Logger logger("NotificationHandler");
 
@@ -96,17 +98,16 @@ void NotificationHandler::showNotification() {
     return;
   }
 
-  QString title;
-  QString message;
-  QString countryCode = vpn->currentServer()->exitCountryCode();
-  QString localizedCityName = vpn->currentServer()->localizedExitCityName();
+  // We want to show notifications about the location in use by the controller,
+  // which could be different than MozillaVPN::serverData in the rare case of a
+  // server-switch request processed in the meantime.
+  QString localizedCityName =
+      vpn->controller()->currentServer().localizedExitCityName();
   QString localizedCountryName =
-      vpn->serverCountryModel()->localizedCountryName(countryCode);
+      vpn->controller()->currentServer().localizedExitCountryName();
 
   switch (vpn->controller()->state()) {
     case Controller::StateOn:
-      m_connected = true;
-
       if (m_switching) {
         m_switching = false;
 
@@ -116,10 +117,11 @@ void NotificationHandler::showNotification() {
         }
 
         QString localizedPreviousExitCountryName =
-            vpn->serverCountryModel()->localizedCountryName(
-                vpn->currentServer()->previousExitCountryCode());
+            vpn->controller()
+                ->currentServer()
+                .localizedPreviousExitCountryName();
         QString localizedPreviousExitCityName =
-            vpn->currentServer()->localizedPreviousExitCityName();
+            vpn->controller()->currentServer().localizedPreviousExitCityName();
 
         if ((localizedPreviousExitCountryName == localizedCountryName) &&
             (localizedPreviousExitCityName == localizedCityName)) {
@@ -127,25 +129,37 @@ void NotificationHandler::showNotification() {
           // https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1719
           return;
         }
+
         // "VPN Switched Servers"
-        title = L18nStrings::instance()->t(
-            L18nStrings::NotificationsVPNSwitchedServersTitle);
-        message = L18nStrings::instance()
-                      ->t(L18nStrings::NotificationsVPNSwitchedServersMessage)
-                      .arg(localizedPreviousExitCityName, localizedCityName);
-      } else {
+        notifyInternal(
+            None,
+            L18nStrings::instance()->t(
+                L18nStrings::NotificationsVPNSwitchedServersTitle),
+            L18nStrings::instance()
+                ->t(L18nStrings::NotificationsVPNSwitchedServersMessage)
+                .arg(localizedPreviousExitCityName, localizedCityName),
+            NOTIFICATION_TIME_MSEC);
+        return;
+      }
+
+      if (!m_connected) {
+        m_connected = true;
+
         if (!SettingsHolder::instance()->connectionChangeNotification()) {
           // Notifications for ConnectionChange are disabled
           return;
         }
+
         // "VPN Connected"
-        title = L18nStrings::instance()->t(
-            L18nStrings::NotificationsVPNConnectedTitle);
-        message = L18nStrings::instance()
-                      ->t(L18nStrings::NotificationsVPNConnectedMessage)
-                      .arg(localizedCityName);
+        notifyInternal(None,
+                       L18nStrings::instance()->t(
+                           L18nStrings::NotificationsVPNConnectedTitle),
+                       L18nStrings::instance()
+                           ->t(L18nStrings::NotificationsVPNConnectedMessage)
+                           .arg(localizedCityName),
+                       NOTIFICATION_TIME_MSEC);
       }
-      break;
+      return;
 
     case Controller::StateOff:
       if (m_connected) {
@@ -155,28 +169,31 @@ void NotificationHandler::showNotification() {
           return;
         }
         // "VPN Disconnected"
-        title = L18nStrings::instance()->t(
-            L18nStrings::NotificationsVPNDisconnectedTitle);
-        message = L18nStrings::instance()
-                      ->t(L18nStrings::NotificationsVPNDisconnectedMessage)
-                      .arg(localizedCityName);
+        notifyInternal(None,
+                       L18nStrings::instance()->t(
+                           L18nStrings::NotificationsVPNDisconnectedTitle),
+                       L18nStrings::instance()
+                           ->t(L18nStrings::NotificationsVPNDisconnectedMessage)
+                           .arg(localizedCityName),
+                       NOTIFICATION_TIME_MSEC);
       }
-      break;
+      return;
+
+    case Controller::StateSilentSwitching:
+      m_connected = true;
+      m_switching = false;
+      return;
 
     case Controller::StateSwitching:
       m_connected = true;
       m_switching = true;
-      break;
+      return;
 
     default:
-      break;
+      return;
   }
 
-  Q_ASSERT(title.isEmpty() == message.isEmpty());
-
-  if (!title.isEmpty()) {
-    notifyInternal(None, title, message, 2000);
-  }
+  Q_ASSERT(false);
 }
 
 void NotificationHandler::captivePortalBlockNotificationRequired() {

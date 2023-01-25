@@ -4,6 +4,7 @@
 
 #include "taskremovedevice.h"
 
+#include "appconstants.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -16,7 +17,13 @@ Logger logger("TaskRemoveDevice");
 }
 
 TaskRemoveDevice::TaskRemoveDevice(const QString& publicKey)
-    : Task("TaskRemoveDevice"), m_publicKey(publicKey) {
+    : Task("TaskRemoveDevice"),
+      m_publicKey(publicKey),
+      // It could be that we are removing our own device. We need to complete
+      // the operation even if the client resets the token. Because of this,
+      // let's take a copy of the authorization header now. At ::run(), it could
+      // be too late.
+      m_authHeader(MozillaVPN::authorizationHeader()) {
   MZ_COUNT_CTOR(TaskRemoveDevice);
 }
 
@@ -36,8 +43,13 @@ void TaskRemoveDevice::run() {
   logger.debug() << "Removing the device with public key"
                  << logger.keys(m_publicKey);
 
-  NetworkRequest* request =
-      NetworkRequest::createForDeviceRemoval(this, m_publicKey);
+  NetworkRequest* request = new NetworkRequest(this, 204);
+  request->auth(m_authHeader);
+  request->deleteResource(
+      AppConstants::apiUrl(AppConstants::DeviceWithPublicKeyArgument)
+          .arg(QUrl::toPercentEncoding(m_publicKey)));
+
+  request->disableTimeout();
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {

@@ -19,42 +19,21 @@ VPNDropShadow {
 
     states: [
         State {
-            name: VPNController.StateConnecting
+            name: "on"
+            when: (state === VPNController.StateConnecting ||
+                   state === VPNController.StateConfirming ||
+                   state === VPNController.StateOn ||
+                   state === VPNController.StateSilentSwitching ||
+                   state === VPNController.StateSwitching)
             PropertyChanges {
                 target: dropShadow
                 opacity: .3
             }
         },
         State {
-            name: VPNController.StateConfirming
-            PropertyChanges {
-                target: dropShadow
-                opacity: .3
-            }
-        },
-        State {
-            name: VPNController.StateOn
-            PropertyChanges {
-                target: dropShadow
-                opacity: .3
-            }
-        },
-        State {
-            name: VPNController.StateSwitching
-            PropertyChanges {
-                target: dropShadow
-                opacity: .3
-            }
-        },
-        State {
-            name: VPNController.StateDisconnecting
-            PropertyChanges {
-                target:dropShadow
-                opacity: .1
-            }
-        },
-        State {
-            name: VPNController.StateOff
+            name: "off"
+            when: (state === VPNController.StateDisconnecting ||
+                   state === VPNController.StateOff)
             PropertyChanges {
                 target: dropShadow
                 opacity: .1

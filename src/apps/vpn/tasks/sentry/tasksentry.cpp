@@ -9,6 +9,7 @@
 #include <QJsonValue>
 #include <QStringList>
 
+#include "appconstants.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -76,7 +77,13 @@ void TaskSentry::run() {
 }
 
 void TaskSentry::sendRequest() {
-  NetworkRequest* request = NetworkRequest::createForSentry(this, m_envelope);
+  NetworkRequest* request = new NetworkRequest(this, 200);
+
+  request->requestInternal().setHeader(QNetworkRequest::ContentTypeHeader,
+                                       "application/x-sentry-envelope");
+  request->requestInternal().setRawHeader("dsn",
+                                          AppConstants::SENTRY_DSN_ENDPOINT);
+  request->post(QUrl(AppConstants::SENTRY_ENVELOPE_INGESTION), m_envelope);
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {

@@ -28,9 +28,7 @@ describe('Connectivity', function() {
     await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
 
     await vpn.setSetting('connectionChangeNotification', 'true');
-    // TODO: investigate why the click doesn't work on github.
-    // await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
-    await vpn.activate();
+    await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
 
     await vpn.waitForCondition(async () => {
       let connectingMsg = await vpn.getQueryProperty(
@@ -89,5 +87,59 @@ describe('Connectivity', function() {
 
     assert(vpn.lastNotification().title === 'VPN Disconnected');
     assert(vpn.lastNotification().message.startsWith('Disconnected from '));
+  });
+
+  it('Connect to VPN - race condition', async () => {
+    // In this test, we want to see that the  VPNCurrentServer can go
+    // out-of-sync with the VPNController.currentServerString, which, in C++,
+    // means: `MozillaVPN::instance()->serverData()` does not match the
+    // controller ->currentServer()`.
+    //
+    // This can happen if settings change while the controller completes an
+    // activation or a server switch.
+    //
+    // If we keep the two server data objects in sync (or if we have just one
+    // of them), the controller can end up using not what the user asked for
+    // but something that has changed in the meantime.
+    await vpn.setSetting(
+        'serverData',
+        '{"enter_city_name":"","enter_country_code":"","exit_city_name":"Melbourne","exit_country_code":"au"}');
+    await vpn.setSetting('connectionChangeNotification', 'true');
+
+    // Let's activate the VPN clicking on the toggle.
+    await vpn.activateViaToggle();
+
+    // The controller starts with the data we have set in the settings.
+    const currentServer =
+        await vpn.getVPNProperty('VPNController', 'currentServerString');
+    assert(currentServer === 'au-Melbourne--');
+
+    await vpn.setSetting(
+        'serverData',
+        '{"enter_city_name":"","enter_country_code":"","exit_city_name":"Sydney","exit_country_code":"au"}');
+
+    // After changing the settings, the controller has still the previous
+    // values. VPNCurrentServer is updated, instead.
+    assert(
+        currentServer ===
+        await vpn.getVPNProperty('VPNController', 'currentServerString'));
+    assert(
+        await vpn.getVPNProperty('VPNCurrentServer', 'exitCityName') ===
+        'Sydney');
+
+    await vpn.waitForCondition(async () => {
+      let connectingMsg = await vpn.getQueryProperty(
+          queries.screenHome.CONTROLLER_TITLE, 'text');
+      return connectingMsg === 'Connecting…';
+    });
+
+    // At the end of the activation, controller and VPNCurrentServer are again
+    // in sync.
+    assert(
+        currentServer ===
+        await vpn.getVPNProperty('VPNController', 'currentServerString'));
+    assert(
+        await vpn.getVPNProperty('VPNCurrentServer', 'exitCityName') ===
+        'Sydney');
   });
 });

@@ -84,14 +84,6 @@ void TestAddonApi::featurelist() {
   QVERIFY(!Feature::getOrNull("testFeatureAddonApi"));
   Feature feature(
       "testFeatureAddonApi", "Feature Addon API",
-      false,                          // Is Major Feature
-      L18nStrings::Empty,             // Display name
-      L18nStrings::Empty,             // Description
-      L18nStrings::Empty,             // LongDescr
-      "",                             // ImagePath
-      "",                             // IconPath
-      "",                             // link URL
-      "1.0",                          // released
       []() -> bool { return true; },  // Can be flipped on
       []() -> bool { return true; },  // Can be flipped off
       QStringList(),                  // feature dependencies
@@ -109,11 +101,10 @@ void TestAddonApi::featurelist() {
 
 void TestAddonApi::navigator() {
   MozillaVPN vpn;
+  SettingsHolder settingsHolder;
 
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
-
-  SettingsHolder settingsHolder;
 
   QJsonObject content;
   content["id"] = "foo";
@@ -134,11 +125,10 @@ void TestAddonApi::navigator() {
 
 void TestAddonApi::settings() {
   MozillaVPN vpn;
+  SettingsHolder settingsHolder;
 
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
-
-  SettingsHolder settingsHolder;
 
   QJsonObject content;
   content["id"] = "foo";
@@ -163,11 +153,10 @@ void TestAddonApi::settings() {
 
 void TestAddonApi::subscriptionData() {
   MozillaVPN vpn;
+  SettingsHolder settingsHolder;
 
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
-
-  SettingsHolder settingsHolder;
 
   QJsonObject content;
   content["id"] = "foo";
@@ -188,11 +177,10 @@ void TestAddonApi::subscriptionData() {
 
 void TestAddonApi::urlopener() {
   MozillaVPN vpn;
+  SettingsHolder settingsHolder;
 
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
-
-  SettingsHolder settingsHolder;
 
   QJsonObject content;
   content["id"] = "foo";

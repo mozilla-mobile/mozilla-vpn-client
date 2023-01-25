@@ -4,6 +4,9 @@
 
 #include "websockethandler.h"
 
+#include <QApplication>
+#include <QGuiApplication>
+
 #include "appconstants.h"
 #include "exponentialbackoffstrategy.h"
 #include "glean/generated/metrics.h"
@@ -86,10 +89,47 @@ void WebSocketHandler::testOverrideBaseRetryInterval(int newInterval) {
 void WebSocketHandler::initialize() {
   logger.debug() << "Initialize";
 
+  if (m_initialized) {
+    logger.debug() << "Attempted to initialize WebSocketHandler, but it has "
+                      "already been initialized. Ignoring.";
+    return;
+  }
+
+  m_initialized = true;
+
   MozillaVPN* vpn = MozillaVPN::instance();
 
   connect(vpn, &MozillaVPN::userStateChanged, this,
           &WebSocketHandler::onUserStateChanged);
+
+#if defined(MZ_ANDROID) || defined(MZ_IOS)
+  // From
+  // https://developer.apple.com/library/archive/technotes/tn2277/_index.html:
+  //
+  // "If the system suspends your app and then, later on, reclaims the resources
+  // from underneath your listening socket, your app will no longer be listening
+  // for connections, even after it has been resumed. The app may or may not be
+  // notified of this, depending on how it manages the listening socket. It's
+  // generally easier to avoid this problem entirely by closing the listening
+  // socket when the app is in the background."
+  QObject::connect(qApp, &QGuiApplication::applicationStateChanged, this,
+                   [this](Qt::ApplicationState state) {
+                     logger.debug()
+                         << "ApplicationState change detected" << state;
+                     switch (state) {
+                       case Qt::ApplicationSuspended:
+                         [[fallthrough]];
+                       case Qt::ApplicationInactive:
+                         close();
+                         break;
+                       case Qt::ApplicationActive:
+                         open();
+                         break;
+                       default:
+                         break;
+                     }
+                   });
+#endif
 }
 
 /**
@@ -210,6 +250,15 @@ void WebSocketHandler::onClose() {
   m_pingTimer.stop();
 
   if (MozillaVPN::isUserAuthenticated()) {
+#if defined(MZ_ANDROID) || defined(MZ_IOS)
+    if (QGuiApplication::applicationState() == Qt::ApplicationSuspended ||
+        QGuiApplication::applicationState() == Qt::ApplicationInactive) {
+      logger.debug()
+          << "Application is suspended. Will not attempt to reopen WebSocket.";
+      return;
+    }
+#endif
+
     int nextAttemptIn = m_backoffStrategy.scheduleNextAttempt();
     logger.debug()
         << "User is authenticated. Will attempt to reopen websocket in:"
@@ -218,6 +267,7 @@ void WebSocketHandler::onClose() {
 #ifdef UNIT_TEST
     m_currentBackoffInterval = nextAttemptIn;
 #endif
+
   } else {
     logger.debug()
         << "User is not authenticated. Will not attempt to reopen WebSocket.";

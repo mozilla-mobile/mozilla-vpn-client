@@ -66,7 +66,8 @@ describe('PushMessage.handlers', function() {
 
       this.ctx.guardianOverrideEndpoints = {
         GETs: {
-          '/api/v1/vpn/account': {status: 200, body: UserData},
+          '/api/v1/vpn/account':
+              {status: 200, requiredHeaders: ['Authorization'], body: UserData},
         },
       };
     });

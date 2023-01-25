@@ -4,6 +4,7 @@
     "name": "Guide: app permissions",
     "type": "guide",
     "conditions": {
+        "max_client_version": "2.13.99",
         "enabled_features": ["splitTunnel"]
     },
     "guide": {

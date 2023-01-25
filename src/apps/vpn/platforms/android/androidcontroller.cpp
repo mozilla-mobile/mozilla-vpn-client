@@ -64,8 +64,12 @@ AndroidController::AndroidController() {
   connect(
       activity, &AndroidVPNActivity::eventConnected, this,
       [this](const QString& parcelBody) {
+        auto doc = QJsonDocument::fromJson(parcelBody.toUtf8());
+        qlonglong time = doc.object()["time"].toVariant().toLongLong();
         Q_UNUSED(parcelBody);
-        emit connected(m_serverPublicKey);
+        emit connected(
+            m_serverPublicKey,
+            time > 0 ? QDateTime::fromMSecsSinceEpoch(time) : QDateTime());
       },
       Qt::QueuedConnection);
   connect(activity, &AndroidVPNActivity::eventDisconnected, this,
@@ -157,7 +161,8 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
   // Find a Server as Fallback in the Same Location in case
   // the original one becomes unstable / unavailable
   auto vpn = MozillaVPN::instance();
-  const QList<Server> serverList = vpn->currentServer()->exitServers();
+  const QList<Server> serverList =
+      vpn->controller()->currentServer().exitServers();
   Server* fallbackServer = nullptr;
   foreach (auto item, serverList) {
     if (item.publicKey() != hop.m_server.publicKey()) {
@@ -190,7 +195,8 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
   // Build the "canned" Notification messages
   // They will be used in case this config will be re-enabled
   // to show the appropriate notification messages
-  QString localizedCityName = vpn->currentServer()->localizedExitCityName();
+  QString localizedCityName =
+      vpn->controller()->currentServer().localizedExitCityName();
   args["city"] = localizedCityName;
 
   QJsonObject messages;

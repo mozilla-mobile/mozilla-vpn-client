@@ -5,6 +5,7 @@
         <file>resources/connection-error-unstable.svg</file>
         <file>resources/connection-info-dark.svg</file>
         <file>resources/copy.svg</file>
+        <file>resources/devices.svg</file>
         <file>resources/developer.svg</file>
         <file>resources/encodedPassword.txt</file>
         <file>resources/faces/average.svg</file>
@@ -23,6 +24,8 @@
         <file>resources/logo-animated4.png</file>
         <file>resources/logo-animated-mask4.png</file>
         <file>resources/logo-connecting.svg</file>
+        <file>resources/logo-dns-privacy.svg</file>
+        <file>resources/logo-dns-settings.svg</file>
         <file>resources/logo-error.svg</file>
         <file>resources/logo-generic.png</file>
         <file>resources/logo-generic-mask.png</file>
@@ -54,18 +57,19 @@
         <file>resources/payment/unionpay.svg</file>
         <file>resources/payment/visa.svg</file>
         <file>resources/quick-access.svg</file>
+        <file>resources/settings-dark.svg</file>
         <file>resources/settings/aboutUs.svg</file>
         <file>resources/settings/apps.svg</file>
-        <file>resources/settings-dark.svg</file>
+        <file>resources/settings/apppermissions.svg</file>
+        <file>resources/settings/dnssettings.svg</file>
         <file>resources/settings/feedback.svg</file>
         <file>resources/settings/getHelp.svg</file>
         <file>resources/settings/language.svg</file>
-        <file>resources/settings/lock.svg</file>
-        <file>resources/settings/networkSettings.svg</file>
         <file>resources/settings/notifications.svg</file>
         <file>resources/settings/preferences.svg</file>
+        <file>resources/settings/privacy.svg</file>
         <file>resources/settings/questionMark.svg</file>
-        <file>resources/settings/whatsnew.svg</file>
+        <file>resources/settings/tipsandtrickssettings.svg</file>
         <file>resources/sparkling-check.svg</file>
         <file>resources/tip.svg</file>
         <file>resources/updateRecommended.svg</file>

@@ -9,10 +9,12 @@ import Mozilla.VPN 1.0
 import Mozilla.VPN.qmlcomponents 1.0
 
 ColumnLayout {
+    id: root
+
     property bool hasVisibleConnections: false
     property bool showMultiHopRecentConnections: true
     property real numVisibleConnections: recentConnectionsRepeater.count
-    property var recentConnectionsModel: showMultiHopRecentConnections ? VPNRecentConnections.multiHopModel : VPNRecentConnections.singleHopModel
+    property var recentConnectionsModel: showMultiHopRecentConnections ? VPNRecentConnectionsModel.multiHopModel : VPNRecentConnectionsModel.singleHopModel
 
     function focusItemAt(idx) {
         if (!visible) {
@@ -38,8 +40,6 @@ ColumnLayout {
         return list;
     }
 
-    id: root
-
     spacing: VPNTheme.theme.windowMargin / 2
     visible: !root.recentConnectionsModel.isEmpty
 
@@ -48,7 +48,6 @@ ColumnLayout {
     }
 
     VPNBoldLabel {
-        id: recentConnectionsHeader
         text: VPNl18n.MultiHopFeatureMultiHopConnectionsHeader
         Layout.leftMargin: VPNTheme.theme.windowMargin
         Layout.minimumHeight: VPNTheme.theme.vSpacing
@@ -58,8 +57,6 @@ ColumnLayout {
     }
 
     ColumnLayout {
-        id: connectionsCol
-
         spacing: VPNTheme.theme.windowMargin / 2
         Layout.fillWidth: true
 
@@ -69,8 +66,6 @@ ColumnLayout {
             id: recentConnectionsRepeater
             model: root.recentConnectionsModel
             delegate: VPNClickableRow {
-                id: del
-
                 accessibleName: isMultiHop ?
                     VPNl18n.MultiHopFeatureAccessibleNameRecentConnection
                         .arg(localizedEntryCityName).arg(localizedExitCityName)

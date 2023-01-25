@@ -4,8 +4,11 @@
 
 #include "taskadddevice.h"
 
+#include <QJsonObject>
+#include <QJsonValue>
 #include <QRandomGenerator>
 
+#include "appconstants.h"
 #include "curve25519.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
@@ -51,9 +54,12 @@ void TaskAddDevice::run() {
 
   MozillaVPN::instance()->setJournalPublicAndPrivateKeys(publicKey, privateKey);
 
-  NetworkRequest* request = NetworkRequest::createForDeviceCreation(
-      this, m_deviceName, publicKey, m_deviceID);
-
+  NetworkRequest* request = new NetworkRequest(this, 201);
+  request->auth(MozillaVPN::authorizationHeader());
+  request->post(AppConstants::apiUrl(AppConstants::Device),
+                QJsonObject{{"name", m_deviceName},
+                            {"unique_id", m_deviceID},
+                            {"pubkey", QString(publicKey)}});
   request->disableTimeout();
 
   connect(request, &NetworkRequest::requestFailed, this,

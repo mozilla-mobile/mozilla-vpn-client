@@ -4,11 +4,15 @@
 
 #include "taskcreatesupportticket.h"
 
+#include <QJsonObject>
+
+#include "appconstants.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/user.h"
 #include "mozillavpn.h"
+#include "networkmanager.h"
 #include "networkrequest.h"
 
 constexpr uint32_t SUPPORT_TICKET_SUBJECT_MAX_LENGTH = 300;
@@ -42,8 +46,25 @@ TaskCreateSupportTicket::~TaskCreateSupportTicket() {
 void TaskCreateSupportTicket::run() {
   logger.debug() << "Sending the support ticket";
 
-  NetworkRequest* request = NetworkRequest::createForSupportTicket(
-      this, m_email, m_subject, m_issueText, m_logs, m_category);
+  bool isAuthenticated =
+      MozillaVPN::instance()->userState() == MozillaVPN::UserAuthenticated;
+
+  NetworkRequest* request = new NetworkRequest(this, 201);
+  if (isAuthenticated) {
+    request->auth(MozillaVPN::authorizationHeader());
+  }
+
+  request->post(
+      AppConstants::apiUrl(isAuthenticated
+                               ? AppConstants::CreateSupportTicket
+                               : AppConstants::CreateSupportTicketGuest),
+      QJsonObject{{"email", m_email},
+                  {"logs", m_logs},
+                  {"versionString", Env::versionString()},
+                  {"platformVersion", QString(NetworkManager::osVersion())},
+                  {"subject", m_subject},
+                  {"issueText", m_issueText},
+                  {"category", m_category}});
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {

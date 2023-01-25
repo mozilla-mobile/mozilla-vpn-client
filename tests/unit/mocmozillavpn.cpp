@@ -38,9 +38,13 @@ ConnectionHealth* MozillaVPN::connectionHealth() { return nullptr; }
 
 Controller* MozillaVPN::controller() { return new Controller(); }
 
-ServerData* MozillaVPN::currentServer() {
+ServerData* MozillaVPN::serverData() {
   static ServerData* data = new ServerData();
   return data;
+}
+
+ServerCountryModel* MozillaVPN::serverCountryModel() {
+  return new ServerCountryModel();
 }
 
 SubscriptionData* MozillaVPN::subscriptionData() {
@@ -176,3 +180,6 @@ void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {}
 QString MozillaVPN::placeholderUserDNS() const { return ""; }
 
 void MozillaVPN::registerUrlOpenerLabels() {}
+
+// static
+QByteArray MozillaVPN::authorizationHeader() { return ""; }

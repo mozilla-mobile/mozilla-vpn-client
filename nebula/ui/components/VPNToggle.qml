@@ -43,7 +43,8 @@ VPNButtonBase {
 
     states: [
         State {
-            name: VPNController.StateInitializing
+            name: "stateInitializing"
+            when: VPNController.state === VPNController.StateInitializing
 
             PropertyChanges {
                 target: cursor
@@ -63,7 +64,8 @@ VPNButtonBase {
 
         },
         State {
-            name: VPNController.StateOff
+            name: "stateOff"
+            when: VPNController.state === VPNController.StateOff
 
             PropertyChanges {
                 target: cursor
@@ -84,7 +86,8 @@ VPNButtonBase {
 
         },
         State {
-            name: VPNController.StateConnecting
+            name: "stateConnecting"
+            when: VPNController.state === VPNController.StateConnecting
 
             PropertyChanges {
                 target: cursor
@@ -107,7 +110,8 @@ VPNButtonBase {
 
         },
         State {
-            name: VPNController.StateConfirming
+            name: "stateConfirming"
+            when: VPNController.state === VPNController.StateConfirming
 
             PropertyChanges {
                 target: cursor
@@ -130,7 +134,9 @@ VPNButtonBase {
 
         },
         State {
-            name: VPNController.StateOn
+            name: "stateOn"
+            when: (VPNController.state === VPNController.StateOn ||
+                   VPNController.state === VPNController.StateSilentSwitching)
 
             PropertyChanges {
                 target: cursor
@@ -151,7 +157,8 @@ VPNButtonBase {
 
         },
         State {
-            name: VPNController.StateDisconnecting
+            name: "stateDisconnecting"
+            when: VPNController.state === VPNController.StateDisconnecting
 
             PropertyChanges {
                 target: cursor
@@ -172,7 +179,8 @@ VPNButtonBase {
 
         },
         State {
-            name: VPNController.StateSwitching
+            name: "stateSwitching"
+            when: VPNController.state === VPNController.StateSwitching
 
             PropertyChanges {
                 target: cursor
@@ -221,7 +229,7 @@ VPNButtonBase {
         radius: height / 2
         border.color: toggleColor.focusBorder
         color: VPNTheme.theme.transparent
-        opacity: toggleButton.activeFocus && (VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateOff) ? 1 : 0
+        opacity: toggleButton.activeFocus && (VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateSilentSwitching || VPNController.state === VPNController.StateOff) ? 1 : 0
 
         VPNFocusOutline {
             id: vpnFocusOutline
@@ -267,6 +275,7 @@ VPNButtonBase {
     function toggleClickable() {
         return VPN.state === VPN.StateMain &&
                (VPNController.state === VPNController.StateOn ||
+                VPNController.state === VPNController.StateSilentSwitching ||
                 VPNController.state === VPNController.StateOff ||
                 (VPNController.state === VPNController.StateConfirming &&
                  (connectionRetryOverX || enableDisconnectInConfirming)));

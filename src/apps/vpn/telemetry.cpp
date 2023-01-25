@@ -12,11 +12,18 @@
 #include "mozillavpn.h"
 #include "telemetry/gleansample.h"
 
+#if defined(MZ_ANDROID)
+#  include "platforms/android/androidvpnactivity.h"
+#endif
+
+#include <QJsonDocument>
+#include <QJsonValue>
+
 constexpr int CONNECTION_STABILITY_MSEC = 45000;
 
 namespace {
 Logger logger("Telemetry");
-}
+}  // namespace
 
 Telemetry::Telemetry() {
   MZ_COUNT_CTOR(Telemetry);
@@ -41,6 +48,11 @@ void Telemetry::initialize() {
 
   Controller* controller = MozillaVPN::instance()->controller();
   Q_ASSERT(controller);
+
+#if defined(MZ_ANDROID)
+  connect(AndroidVPNActivity::instance(), &AndroidVPNActivity::eventInitialized,
+          this, &Telemetry::onDaemonStatus);
+#endif
 
   connect(controller, &Controller::handshakeFailed, this,
           [](const QString& publicKey) {
@@ -111,20 +123,37 @@ void Telemetry::connectionStabilityEvent() {
   Q_ASSERT(controller);
   Q_ASSERT(controller->state() == Controller::StateOn);
 
+  // We use Controller->currentServer because the telemetry event should record
+  // the location in use by the Controller and not MozillaVPN::serverData, which
+  // could have changed in the meantime.
   mozilla::glean::sample::connectivity_stable.record(
       mozilla::glean::sample::ConnectivityStableExtra{
           ._latency = QString::number(vpn->connectionHealth()->latency()),
           ._loss = QString::number(vpn->connectionHealth()->loss()),
-          ._server = vpn->currentServer()->exitServerPublicKey(),
+          ._server = vpn->controller()->currentServer().exitServerPublicKey(),
           ._stddev = QString::number(vpn->connectionHealth()->stddev()),
           ._transport = vpn->networkWatcher()->getCurrentTransport()});
   emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
       GleanSample::connectivityStable,
-      {{"server", vpn->currentServer()->exitServerPublicKey()},
+      {{"server", vpn->controller()->currentServer().exitServerPublicKey()},
        {"latency", QString::number(vpn->connectionHealth()->latency())},
        {"loss", QString::number(vpn->connectionHealth()->loss())},
        {"stddev", QString::number(vpn->connectionHealth()->stddev())},
        {"transport", vpn->networkWatcher()->getCurrentTransport()}});
+}
+
+void Telemetry::startTimeToFirstScreenTimer() {
+  logger.info() << "Start performance.time_to_main_screen timer";
+
+  m_timeToFirstScreenTimerId =
+      mozilla::glean::performance::time_to_main_screen.start();
+}
+
+void Telemetry::stopTimeToFirstScreenTimer() {
+  logger.info() << "Stop performance.time_to_main_screen timer";
+
+  mozilla::glean::performance::time_to_main_screen.stopAndAccumulate(
+      m_timeToFirstScreenTimerId);
 }
 
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
@@ -146,5 +175,24 @@ void Telemetry::periodicStateRecorder() {
     emit GleanDeprecated::instance()->recordGleanEvent(
         GleanSample::controllerStateOff);
   }
+}
+#endif
+
+#if defined(MZ_ANDROID)
+void Telemetry::onDaemonStatus(const QString& data) {
+  auto doc = QJsonDocument::fromJson(data.toUtf8());
+  bool connected = doc.object()["connected"].toBool(false);
+  if (!connected) {
+    // If we're not connected, connection health is irrelevant.
+    return;
+  }
+  auto status = doc.object()["connection-health-status"].toString();
+  if (status.isNull()) {
+    return;
+  }
+
+  mozilla::glean::sample::android_daemon_status.record(
+      mozilla::glean::sample::AndroidDaemonStatusExtra{._connectionHealthState =
+                                                           status});
 }
 #endif

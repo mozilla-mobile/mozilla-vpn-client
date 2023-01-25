@@ -10,7 +10,22 @@ describe('Benchmark', function() {
   this.timeout(120000);
   this.ctx.authenticationNeeded = true;
 
+  this.ctx.networkBenchmarkOverrideEndpoints = {
+    GETs: {
+      '/': {
+        status: 200,
+        bodyRaw: new Array(1024).join('a'),
+        callback: async req => await this.ctx.downloadUrlCallback(req)
+      },
+    },
+    POSTs: {},
+    DELETEs: {},
+  };
+
   it('Successful benchmark', async () => {
+    // For the first tests, we don't need any special responses.
+    this.ctx.downloadUrlCallback = req => {};
+
     await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
     await vpn.activate(true);
 
@@ -51,9 +66,10 @@ describe('Benchmark', function() {
     await vpn.activate(true);
 
     // Re-Configure the benchmark to use a URL that generates an HTTP error.
-    await vpn.setVPNProperty(
-        'VPNConnectionBenchmark', 'downloadUrl',
-        'http://httpstat.us/500?sleep=2000');
+    this.ctx.downloadUrlCallback = async req => {
+      this.ctx.networkBenchmarkOverrideEndpoints.GETs['/'].status = 500;
+      await new Promise(r => setTimeout(r, 2000));
+    };
 
     // Start the connection benchmark and wait for it to finish.
     await vpn.waitForQueryAndClick(queries.screenHome.CONNECTION_INFO_TOGGLE);
@@ -79,13 +95,12 @@ describe('Benchmark', function() {
   it('Retry failed benchmark', async () => {
     await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
     await vpn.activate(true);
-    let downloadUrl =
-        await vpn.getVPNProperty('VPNConnectionBenchmark', 'downloadUrl');
 
     // Re-Configure the benchmark to use a URL that generates an HTTP error.
-    await vpn.setVPNProperty(
-        'VPNConnectionBenchmark', 'downloadUrl',
-        'http://httpstat.us/404?sleep=2000');
+    this.ctx.downloadUrlCallback = async req => {
+      this.ctx.networkBenchmarkOverrideEndpoints.GETs['/'].status = 400;
+      await new Promise(r => setTimeout(r, 2000));
+    };
 
     // Start the connection benchmark and wait for it to finish.
     await vpn.waitForQueryAndClick(queries.screenHome.CONNECTION_INFO_TOGGLE);
@@ -104,9 +119,11 @@ describe('Benchmark', function() {
         'StateError');
     await vpn.waitForQuery(queries.screenHome.CONNECTION_INFO_ERROR.visible());
 
-    // Restore the original download URL and retry the benchmark.
-    await vpn.setVPNProperty(
-        'VPNConnectionBenchmark', 'downloadUrl', downloadUrl);
+    // Let's set 200 as status code.
+    this.ctx.downloadUrlCallback = async req => {
+      this.ctx.networkBenchmarkOverrideEndpoints.GETs['/'].status = 200;
+    };
+
     await vpn.waitForQueryAndClick(queries.screenHome.CONNECTION_INFO_RETRY);
     await vpn.waitForCondition(async () => {
       let state = await vpn.getVPNProperty('VPNConnectionBenchmark', 'state');
@@ -142,9 +159,10 @@ describe('Benchmark', function() {
     await vpn.activate(true);
 
     // Re-Configure the benchmark to use a URL that will hang for a while.
-    await vpn.setVPNProperty(
-        'VPNConnectionBenchmark', 'downloadUrl',
-        'http://httpstat.us/204?sleep=10000');
+    this.ctx.downloadUrlCallback = async req => {
+      this.ctx.networkBenchmarkOverrideEndpoints.GETs['/'].status = 230;
+      await new Promise(r => setTimeout(r, 10000));
+    };
 
     // Start the connection benchmark.
     await vpn.waitForQueryAndClick(queries.screenHome.CONNECTION_INFO_TOGGLE);
