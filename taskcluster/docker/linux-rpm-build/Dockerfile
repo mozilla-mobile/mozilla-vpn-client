@@ -11,7 +11,6 @@ MAINTAINER Owen Kirby <okirby@mozilla.com>
 #----------------------------------------------------------------------------------------------------------------------
 #-- Extra Packages ----------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------
-# TODO: What are we missing?
 RUN yum -y install git rpm-build rpmdevtools yum-utils sudo
 
 # Grant the worker user the ability to install packages without login

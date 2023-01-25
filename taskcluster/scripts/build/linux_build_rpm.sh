@@ -73,7 +73,3 @@ rpmbuild -D "_topdir ${HOME}" -D "_sourcedir ${MOZ_FETCHES_DIR}" -ba ${MOZ_FETCH
 
 # Gather the build artifacts for export
 tar -C ${HOME}/RPMS/${RPM_BUILD_ARCH} -cvzf /builds/worker/artifacts/mozillavpn-${ID}-${BUILDSUFFIX}.tar.gz .
-
-# Lets see what got built...
-echo "Listing ${HOME}/RPMS/x86_64:"
-ls -al ${HOME}/RPMS/x86_64
