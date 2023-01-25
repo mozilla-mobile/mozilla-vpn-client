@@ -403,14 +403,19 @@ SETTING_STRING(
     false  // remove when reset
 )
 
-SETTING_BOOL(stagingServer,        // getter
-             setStagingServer,     // setter
-             removeStagingServer,  // remover
-             hasStagingServer,     // has
-             "stagingServer",      // key
-             false,                // default value
-             false,                // user setting
-             false                 // remove when reset
+#ifdef MZ_WASM
+#  define STAGING_SERVER_DEFAULT_VALUE true
+#else
+#  define STAGING_SERVER_DEFAULT_VALUE false
+#endif
+SETTING_BOOL(stagingServer,                 // getter
+             setStagingServer,              // setter
+             removeStagingServer,           // remover
+             hasStagingServer,              // has
+             "stagingServer",               // key
+             STAGING_SERVER_DEFAULT_VALUE,  // default value
+             false,                         // user setting
+             false                          // remove when reset
 )
 
 SETTING_BOOL(startAtBoot,        // getter

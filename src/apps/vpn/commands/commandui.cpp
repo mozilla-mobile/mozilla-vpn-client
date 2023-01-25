@@ -146,11 +146,7 @@ int CommandUI::run(QStringList& tokens) {
       return 0;
     }
 
-    if (testingOption.m_set
-#ifdef MZ_WASM
-        || true
-#endif
-    ) {
+    if (testingOption.m_set) {
       AppConstants::setStaging();
     }
 
