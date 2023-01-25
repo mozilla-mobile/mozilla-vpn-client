@@ -1,7 +1,7 @@
 # Language string mapping tool
 
 This tool retrieves the native language and the localized language names for
-all the available translations.
+all the available locales.
 
 ## How to interact with this tool
 
