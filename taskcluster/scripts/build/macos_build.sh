@@ -46,6 +46,11 @@ conda env create --force -f env.yml
 conda activate MozillaVPN         
 conda info 
 
+print G "Checking Available SDK'S....."
+ls /Library/Developer/CommandLineTools/SDKs/
+
+export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+
 export PYTHONIOENCODING="UTF-8"
 
 print Y "Updating submodules..."
