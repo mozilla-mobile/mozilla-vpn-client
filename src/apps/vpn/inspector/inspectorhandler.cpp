@@ -681,33 +681,6 @@ static QList<InspectorCommand> s_commands{
                        return obj;
                      }},
 
-    InspectorCommand{
-        "reset_devices",
-        "Remove all the existing devices and add the current one if needed", 0,
-        [](InspectorHandler*, const QList<QByteArray>&) {
-          MozillaVPN* vpn = MozillaVPN::instance();
-          Q_ASSERT(vpn);
-
-          DeviceModel* dm = vpn->deviceModel();
-          Q_ASSERT(dm);
-
-          bool hasCurrentOne = false;
-          for (const Device& device : dm->devices()) {
-            if (device.isCurrentDevice(vpn->keys())) {
-              hasCurrentOne = true;
-              continue;
-            }
-
-            vpn->removeDeviceFromPublicKey(device.publicKey());
-          }
-
-          if (!hasCurrentOne) {
-            vpn->addCurrentDeviceAndRefreshData(false);
-          }
-
-          return QJsonObject();
-        }},
-
     InspectorCommand{"public_key",
                      "Retrieve the public key of the current device", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
