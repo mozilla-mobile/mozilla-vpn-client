@@ -21,7 +21,7 @@ describe('Onboarding', function() {
   });
 
   it('Sign up button is visible', async () => {
-    await vpn.waitForQuery(queries.screenInitialize.SIGNUP_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
   });
 
   it('Already a subscriber button is visible', async () => {
@@ -69,7 +69,7 @@ describe('Onboarding', function() {
 
   it('Sign up button opens auth flow', async () => {
     await vpn.waitForQueryAndClick(
-        queries.screenInitialize.SIGNUP_BUTTON.visible());
+        queries.screenInitialize.SIGN_UP_BUTTON.visible());
     await vpn.waitForQuery(
         queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
   });
