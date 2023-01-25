@@ -56,7 +56,8 @@ conda info
 #
 print G "Checking Available SDK'S..."
 ls /Library/Developer/CommandLineTools/SDKs/
-export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk
+# TODO: Check if this is the same for every runner on taskcluster .__.
+export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk 
 
 
 # Should already have been done by taskcluser, 
