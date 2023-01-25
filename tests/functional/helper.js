@@ -3,10 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const constants = require('./constants.js');
 const {URL} = require('node:url');
 const http = require('http')
 const queries = require('./queries.js');
+const addonServer = require('./servers/addon.js');
 
 let client;
 
@@ -537,7 +537,7 @@ module.exports = {
     _lastAddonLoadingCompleted = false;
 
     await this.setSetting(
-        'addonCustomServerAddress', `${constants.ADDON_URL}/${addonPath}/`);
+        'addonCustomServerAddress', `${addonServer.url}/${addonPath}/`);
     await this.setSetting('addonCustomServer', 'true');
 
     const json = await this._writeCommand('reset_addons');
@@ -554,7 +554,7 @@ module.exports = {
     _lastAddonLoadingCompleted = false;
 
     await this.setSetting(
-        'addonCustomServerAddress', `${constants.ADDON_URL}/${addonPath}/`);
+        'addonCustomServerAddress', `${addonServer.url}/${addonPath}/`);
     await this.setSetting('addonCustomServer', 'true');
 
     const json = await this._writeCommand('fetch_addons');

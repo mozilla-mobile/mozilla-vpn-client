@@ -60,21 +60,22 @@ exports.mochaHooks = {
       process.exit(1);
     }
 
-    process.env['MVPN_API_BASE_URL'] = `http://localhost:${guardian.start()}`;
-    process.env['MZ_FXA_API_BASE_URL'] =
-        `http://localhost:${fxaServer.start()}`;
-    process.env['MZ_ADDON_URL'] =
-        `http://localhost:${addonServer.start()}/01_empty_manifest/`;
+    await guardian.start();
+    await fxaServer.start(guardian.url);
+    await addonServer.start();
+    await networkBenchmark.start();
+    await captivePortalServer.start();
+
+    process.env['MVPN_API_BASE_URL'] = guardian.url;
+    process.env['MZ_FXA_API_BASE_URL'] = fxaServer.url;
+    process.env['MZ_ADDON_URL'] = `${addonServer.url}/01_empty_manifest/`;
     process.env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';
 
-    const networkBenchmarkPort = networkBenchmark.start();
-    process.env['MZ_BENCHMARK_DOWNLOAD_URL'] =
-        `http://localhost:${networkBenchmarkPort}`;
-    process.env['MZ_BENCHMARK_UPLOAD_URL'] =
-        `http://localhost:${networkBenchmarkPort}`;
+    process.env['MZ_BENCHMARK_DOWNLOAD_URL'] = networkBenchmark.url;
+    process.env['MZ_BENCHMARK_UPLOAD_URL'] = networkBenchmark.url;
 
     process.env['MZ_CAPTIVE_PORTAL_URL'] =
-        `http://%1:${captivePortalServer.start()}/success.txt`;
+        `http://%1:${captivePortalServer.port}/success.txt`;
   },
 
   async afterAll() {

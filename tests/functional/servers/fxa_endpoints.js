@@ -104,7 +104,7 @@ const VALIDATORS = {
 
 exports.validators = VALIDATORS;
 
-exports.generateEndpoints = function(constants) {
+exports.generateEndpoints = function(guardianUrl) {
   return {
     GETs: {},
 
@@ -131,7 +131,7 @@ exports.generateEndpoints = function(constants) {
         body: {
           code: 'the-code',
           state: '',
-          redirect: `${constants.GUARDIAN_URL}/final_redirect`
+          redirect: `${guardianUrl}/final_redirect`
         }
       },
       '/v1/session/destroy':
