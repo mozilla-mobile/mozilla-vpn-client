@@ -9,7 +9,6 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QProcessEnvironment>
 
 #include "constants.h"
 #include "localizer.h"
