@@ -37,14 +37,14 @@ export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
 export PYTHONIOENCODING="UTF-8"
 
-print Y "Installing conda env..."
 
+print Y "Installing conda"
 chmod +x ${MOZ_FETCHES_DIR}/miniconda.sh
 bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -u -p ${TASK_HOME}/miniconda
 source ${TASK_HOME}/miniconda/bin/activate
 
 
-print Y "Installing conda env..."
+print Y "Installing provided conda env..."
 # TODO: Check why --force is needed if we install into TASK_HOME?
 conda env create --force -f env.yml       
 conda activate MozillaVPN         
@@ -59,9 +59,9 @@ ls /Library/Developer/CommandLineTools/SDKs/
 export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk
 
 
+# Should already have been done by taskcluser, 
+# but double checking c: 
 print Y "Updating submodules..."
-
-# should already be done by Xcode cloud cloning but just to make sure
 git submodule init || die
 git submodule update || die
 
