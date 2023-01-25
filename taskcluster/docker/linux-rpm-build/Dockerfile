@@ -20,7 +20,7 @@ RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/yum,/usr/bin/yum-builddep" >
 # Also pull in packages from BuildRequires as early as possible
 # %include linux/mozillavpn.spec
 ADD topsrcdir/linux/mozillavpn.spec /root/mozillavpn-rpm.spec
-RUN yum-builddep -y /root/mozillavpn-rpm.spec
+RUN yum-builddep -y /root/mozillavpn-rpm.spec -D "_version 0.0.1"
 
 #----------------------------------------------------------------------------------------------------------------------
 #-- Worker User -------------------------------------------------------------------------------------------------------
