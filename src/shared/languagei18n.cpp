@@ -9,6 +9,7 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QProcessEnvironment>
 
 #include "constants.h"
 #include "localizer.h"
@@ -102,14 +103,16 @@ int LanguageI18N::languageCompare(const QString& languageCodeA,
   int b = s_languageList.indexOf(languageCodeB);
 
 #ifndef UNIT_TEST
-  // We do not have all the languages in unit-tests
-  QByteArray message;
-  {
-    QTextStream str(&message);
-    str << "Unable to find language " << languageCodeA << ":" << a << " or "
-        << languageCodeB << ":" << b;
+  if (a < 0 || b < 0) {
+    // We do not have all the languages in unit-tests
+    QByteArray message;
+    {
+      QTextStream str(&message);
+      str << "Unable to find language " << languageCodeA << ":" << a << " or "
+          << languageCodeB << ":" << b;
+    }
+    Q_ASSERT_X(false, "LanguageI18N", message);
   }
-  Q_ASSERT_X(a >= 0 && b >= 0, "LanguageI18N", message);
 #endif
 
   if (a < b) {

@@ -209,4 +209,38 @@ void TestLocalizer::parseIOSLanguages() {
   }
 }
 
+// QFETCH fails with double templates. Let's use a typedef to make it happy.
+typedef QMap<QString, double> CompletenessList;
+
+void TestLocalizer::completeness_data() {
+  QTest::addColumn<QString>("filename");
+  QTest::addColumn<CompletenessList>("output");
+
+  {
+    CompletenessList a;
+    QTest::addRow("empty") << ":/i18n/completeness_empty.txt" << a;
+  }
+
+  {
+    CompletenessList a;
+    QTest::addRow("invalid") << ":/i18n/completeness_invalid.txt" << a;
+  }
+
+  {
+    CompletenessList a{{"tlh", 0.8}, {"foo", 0}, {"bar", 1}};
+    QTest::addRow("ok") << ":/i18n/completeness_ok.txt" << a;
+  }
+}
+
+void TestLocalizer::completeness() {
+  QFETCH(QString, filename);
+  QFETCH(CompletenessList, output);
+
+  CompletenessList list = Localizer::loadLanguageCompleteness(filename);
+
+  for (const QString& key : output.keys()) {
+    QCOMPARE(list.value(key, -1), output.value(key));
+  }
+}
+
 static TestLocalizer s_testLocalizer;
