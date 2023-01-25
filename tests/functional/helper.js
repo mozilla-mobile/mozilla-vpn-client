@@ -340,10 +340,6 @@ module.exports = {
     await this.waitForVPNProperty('VPN', 'userState', 'UserAuthenticated');
     await this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
 
-    // Clean-up extra devices (otherwise test account will fill up in a
-    // heartbeats)
-    await this._maybeRemoveExistingDevices();
-
     if (clickOnPostAuthenticate) {
       await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await this.clickOnQuery(
@@ -391,10 +387,6 @@ module.exports = {
     // Wait for VPN client screen to move from spinning wheel to next screen
     await this.waitForVPNProperty('VPN', 'userState', 'UserAuthenticated');
     await this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
-
-    // Clean-up extra devices (otherwise test account will fill up in a
-    // heartbeats)
-    await this._maybeRemoveExistingDevices();
 
     if (clickOnPostAuthenticate) {
       await this.clickOnQuery(
@@ -589,29 +581,5 @@ module.exports = {
 
       wr(json);
     }
-  },
-
-  async _maybeRemoveExistingDevices() {
-    const json = await this._writeCommand('devices');
-    assert(
-        json.type === 'devices' && !('error' in json),
-        `Command failed: ${json.error}`);
-
-    if (json.value.find(device => device.currentDevice)) {
-      return;
-    }
-
-    const addJson = await this._writeCommand('reset_devices');
-    assert(
-        addJson.type === 'reset_devices' && !('error' in addJson),
-        `Command failed: ${addJson.error}`);
-
-    await this.waitForCondition(async () => {
-      const json = await this._writeCommand('devices');
-      assert(
-          json.type === 'devices' && !('error' in json),
-          `Command failed: ${json.error}`);
-      return json.value.find(device => device.currentDevice);
-    });
   },
 };
