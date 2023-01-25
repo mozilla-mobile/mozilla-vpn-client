@@ -92,7 +92,7 @@ add_custom_target(balrogdll ALL
                 CC=gcc
                 CGO_CFLAGS="-O3 -Wall -Wno-unused-function -Wno-switch -std=gnu11 -DWINVER=0x0601"
                 CGO_LDFLAGS="-Wl,--dynamicbase -Wl,--nxcompat -Wl,--export-all-symbols -Wl,--high-entropy-va"
-            go build -buildmode c-shared -buildvcs=false -ldflags="-w -s" -trimpath -v -o "${CMAKE_CURRENT_BINARY_DIR}/balrog.dll"
+            go build -buildmode c-shared -ldflags="-w -s" -trimpath -v -o "${CMAKE_CURRENT_BINARY_DIR}/balrog.dll"
 )
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_BINARY_DIR}/go-cache)
 add_dependencies(mozillavpn balrogdll)
