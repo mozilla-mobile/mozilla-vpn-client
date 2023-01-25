@@ -313,6 +313,7 @@ settings:
   dnsSettingsCustomDNSBody: Resolve websites using a custom DNS
   dnsSettingsCustomDNSError: Invalid DNS, please try a new one
   dnsSettingsWarning: These options may cause some websites to break or not display content correctly.
+  dnsSettingsInputPlaceholder: Enter custom DNS
 
 dnsOverwriteDialog:
   titleDNS: Override DNS settings?
