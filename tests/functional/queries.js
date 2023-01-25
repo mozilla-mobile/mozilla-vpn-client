@@ -114,7 +114,7 @@ const screenInitialize = {
   PANEL_DESCRIPTION: new QmlQueryComposer('//panelDescription'),
   PANEL_TITLE: new QmlQueryComposer('//panelTitle'),
   SCREEN: new QmlQueryComposer('//initialStackView'),
-  SIGNUP_BUTTON: new QmlQueryComposer('//signUpButton'),
+  SIGN_UP_BUTTON: new QmlQueryComposer('//signUpButton'),
   SWIPE_VIEW: new QmlQueryComposer('//swipeView'),
 };
 
