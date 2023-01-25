@@ -30,8 +30,12 @@ mkdir -p "${TASK_HOME}/artifacts"
 print N "Taskcluster macOS compilation script"
 print N ""
 
+
+# TC NIT: we need to assert 
+# that everything is UTF-8 
 export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
+export PYTHONIOENCODING="UTF-8"
 
 print Y "Installing conda env..."
 
@@ -46,12 +50,14 @@ conda env create --force -f env.yml
 conda activate MozillaVPN         
 conda info 
 
-print G "Checking Available SDK'S....."
+# Conda Cannot know installed MacOS SDK'S
+# and as we use conda'provided clang/llvm
+# we need to manually provide the Path. 
+#
+print G "Checking Available SDK'S..."
 ls /Library/Developer/CommandLineTools/SDKs/
+export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk
 
-export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
-
-export PYTHONIOENCODING="UTF-8"
 
 print Y "Updating submodules..."
 
