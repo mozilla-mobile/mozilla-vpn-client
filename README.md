@@ -226,7 +226,7 @@ a copy of the debug build for the macOS Applications folder.)
 1. On macOS, we compile the app using
 [Xcode](https://developer.apple.com/xcode/) version 12 or higher.
 
-2. You also need to install go >= v1.16. If you don't have it done already,
+2. You also need to install go >= v1.18. If you don't have it done already,
 download go from the [official website](https://golang.org/dl/).
 
 3. Create a build directory, and configure the project for building using `cmake`.
@@ -298,7 +298,7 @@ errors like `Run custom shell script ‘Generate extension/CMakeFiles/cargo_mozi
 such file or directory \ Command PhaseScriptExecution failed with a nonzero exit code`) In this
 case, a workaround is to symlink `go` into Xcode directory as follows:
 
-* Make sure go is 1.16+: `go version`
+* Make sure go is 1.18+: `go version`
 * Find the location of go binary `which go` example output `/usr/local/go/bin/go`
 * Symlink e.g.
 ```bash
@@ -333,7 +333,7 @@ install it:
 gem install xcodeproj # probably you want to run this command with `sudo`
 ```
 
-3. You also need to install go >= v1.16. If you don't have it done already,
+3. You also need to install go >= v1.18. If you don't have it done already,
 download go from the [official website](https://golang.org/dl/).
 
 4. Copy `xcode.xconfig.template` to `xcode.xconfig`
@@ -408,7 +408,7 @@ be completely deleted and the app must be re-built.)
 
 ### How to build from source code for Android
 
-1. You need to install go >= v1.16. If you don't have it done already, download
+1. You need to install go >= v1.18. If you don't have it done already, download
 it from the [official website](https://golang.org/dl/).
 
 2. Follow the [Getting started](https://doc.qt.io/qt-6/android-getting-started.html) page.
@@ -449,7 +449,7 @@ adb install .tmp/src/android-build/build/outputs/apk/debug/android-build-debug.a
   - Select the `Desktop development with C++` and `Python development` workloads.
 - OpenSSL: https://www.openssl.org/source/
   - On windows you can choose to bundle OpenSSL when installing python. Skip this step if you have done so.
-- Go: https://golang.org/dl/
+- Go (go version >= v1.18 required): https://golang.org/dl/
 
 We strongly recommend using CMake version 3.21 or later when building with Visual
 Studio. Earlier versions of CMake have bugs that can cause the build to hang.
