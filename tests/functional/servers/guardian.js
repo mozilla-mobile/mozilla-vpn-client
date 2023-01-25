@@ -4,29 +4,33 @@
 
 const WebSocketServer = require('websocket').server;
 const Server = require('./server.js');
-const constants = require('../constants.js');
 const guardianEndpoints = require('./guardian_endpoints.js');
 
 let server = null;
 let wsServer = null;
 module.exports = {
-  start(headerCheck = true) {
-    server = new Server(
-        'Guardian', constants.GUARDIAN_PORT, guardianEndpoints.endpoints,
-        headerCheck);
+  async start(headerCheck = true) {
+    server = new Server('Guardian', guardianEndpoints.endpoints, headerCheck);
+    await server.start();
 
     wsServer = new WebSocketServer({
       httpServer: server._server,
       autoAcceptConnections: true,
     });
-
-    return constants.GUARDIAN_PORT;
   },
 
   stop() {
     wsServer.closeAllConnections();
     wsServer.unmount();
     server.stop();
+  },
+
+  get port() {
+    return server.port;
+  },
+
+  get url() {
+    return server.url;
   },
 
   broadcastMessage(message) {

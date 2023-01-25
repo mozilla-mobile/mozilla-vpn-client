@@ -3,15 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const Server = require('./server.js');
-const constants = require('../constants.js');
 
 // Mock server for VPN Network Benchmark:
 // https://github.com/mozilla-services/vpn-network-benchmark
 let server = null;
 module.exports = {
-  start(headerCheck = true) {
+  async start(headerCheck = true) {
     server = new Server(
-        'VPN Network Benchmark', constants.NETWORK_BENCHMARK_PORT, {
+        'VPN Network Benchmark', {
           GETs: {
             '/': {
               status: 200,
@@ -23,11 +22,19 @@ module.exports = {
           },
         },
         headerCheck);
-    return constants.NETWORK_BENCHMARK_PORT;
+    await server.start();
   },
 
   stop() {
     server.stop();
+  },
+
+  get port() {
+    return server.port;
+  },
+
+  get url() {
+    return server.url;
   },
 
   get overrideEndpoints() {
