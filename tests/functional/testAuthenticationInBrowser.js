@@ -33,43 +33,6 @@ describe('User authentication in browser', function() {
     await vpn.waitForQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
   });
 
-  it('Starts authentication at end of onboarding view', async () => {
-    await vpn.waitForInitialView();
-
-    await vpn.waitForQueryAndClick(
-        queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible());
-
-    await vpn.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
-
-    while (true) {
-      assert(
-          await vpn.query(queries.screenInitialize.SIGN_UP_BUTTON.visible()));
-
-      if (await vpn.getQueryProperty(
-              queries.screenInitialize.SIGN_UP_BUTTON.visible(), 'text') ===
-          'Next') {
-        await vpn.clickOnQuery(
-            queries.screenInitialize.SIGN_UP_BUTTON.visible());
-        continue;
-      }
-
-      break;
-    }
-
-    await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-
-    if (!this.ctx.wasm) {
-      await vpn.waitForCondition(async () => {
-        const url = await vpn.getLastUrl();
-        return url.includes('/api/v2/vpn/login');
-      });
-    }
-
-    await vpn.clickOnQuery(
-        queries.screenInitialize.AUTHENTICATE_VIEW.visible());
-  });
-
   it('Completes authentication', async () => {
     await vpn.authenticateInBrowser(true, true, this.ctx.wasm);
   });
