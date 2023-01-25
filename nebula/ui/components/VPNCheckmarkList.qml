@@ -4,7 +4,6 @@
 
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
-import Qt.labs.qmlmodels 1.0
 
 import Mozilla.VPN 1.0
 
