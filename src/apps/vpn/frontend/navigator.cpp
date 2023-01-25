@@ -15,6 +15,7 @@
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
 #include "telemetry/gleansample.h"
+#include "gleandeprecated.h"
 
 namespace {
 Navigator* s_instance = nullptr;
@@ -495,6 +496,9 @@ void Navigator::computeComponent() {
 void Navigator::requestScreen(Navigator::Screen requestedScreen,
                               Navigator::LoadingFlags loadingFlags) {
   logger.debug() << "Screen request:" << requestedScreen;
+    emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
+        GleanSample::bottomNavigationBarClick,
+                                                                    {{"bar_button", requestedScreen}});
 
   if (!m_reloaders.isEmpty() && loadingFlags == NoFlags) {
     loadingFlags = ForceReload;

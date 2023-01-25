@@ -29,7 +29,11 @@ VPNViewBase {
             subLabelText: VPNl18n.SettingsStartAtBootSubtitle
             isChecked: VPNSettings.startAtBoot
             showDivider: false
-            onClicked: VPNSettings.startAtBoot = !VPNSettings.startAtBoot
+            onClicked: {
+                VPNSettings.startAtBoot = !VPNSettings.startAtBoot
+                VPNGleanDeprecated.connectOnStartupActive.set(VPNSettings.startAtBoot);
+                Glean.flags.connectOnStartupActive.set(VPNSettings.startAtBoot);
+            }
             visible: VPNFeatureList.get("startOnBoot").isSupported
             anchors {
                 right: parent.right

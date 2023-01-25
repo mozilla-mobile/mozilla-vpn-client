@@ -52,6 +52,8 @@ VPNViewBase {
             toggleChecked: VPNSettings.languageCode === ""
             function handleClick() {
                 toggleChecked = !toggleChecked
+                VPNGleanDeprecated.recordGleanBoolean.set(toggleChecked);
+                Glean.flags.usingSystemLanguage.set(toggleChecked);
                 if (toggleChecked) {
                     VPNSettings.languageCode = "";
                 } else {

@@ -1716,7 +1716,8 @@ sample:
     extra_keys:
       bar_button:
         description: |
-          The name of the bar button tapped: ScreenMessaging | ScreenHome | ScreenSettings | Unknown
+          The name of the bar button tapped:
+          ScreenMessaging | ScreenHome | ScreenSettings | Unknown
         type: string
 
   authentication_error:
@@ -1738,7 +1739,8 @@ sample:
     extra_keys:
       reason:
         description: |
-          The error shown: IncorrectPassword | InvalidEmail | InvalidOrExpiredVerificiationCode | InvalidTOTP | InvalidUnblockCode | Timeout
+          The error shown: Timeout | IncorrectPassword | InvalidEmail |
+          InvalidOrExpiredVerificiationCode | InvalidTOTP | InvalidUnblockCode
         type: string
 
   user_changed_endpoint_geo:
@@ -1747,7 +1749,7 @@ sample:
     send_in_pings:
       - main
     description: |
-      The user changed the geography (city, or cities if using multihop) of the endpoint
+      User changed the geography (city, or cities if multihop) of the endpoint
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-3630
     data_reviews:
@@ -1776,12 +1778,12 @@ sample:
     expires: never
 
   using_system_language:
-    type: boolean
+    type: event   # boolean
     lifetime: ping
     send_in_pings:
       - main
     description: |
-      The status of whether the app is being used in the language of the operating system
+      Status of whether app is being used in language of the operating system
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-3630
     data_reviews:
@@ -1809,7 +1811,7 @@ sample:
       - mcleinman@mozilla.com
     expires: never
 
-  help_menu_contact_support_opened:
+  help_contact_support_opened:
     type: event
     lifetime: ping
     send_in_pings:
