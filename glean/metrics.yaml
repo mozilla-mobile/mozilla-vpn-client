@@ -1778,7 +1778,7 @@ sample:
     expires: never
 
   using_system_language:
-    type: event   # boolean
+    type: boolean
     lifetime: ping
     send_in_pings:
       - main
@@ -1869,6 +1869,94 @@ sample:
       - main
     description: |
       The user selected the about us option within the settings menu
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-3630
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never
+
+  session_start:
+    type: datetime
+    description: |
+      The time the user starts a VPN session from the app
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-3630
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never
+
+  session_end:
+    type: datetime
+    description: |
+      The time the user ends a VPN session from the app
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-3630
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never
+
+  daemon_session_start:
+    type: datetime
+    description: |
+      The time the a VPN session is started in the daemon (in order to measure
+      quantity of sessions started from OS settings)
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-3630
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never
+
+  daemon_session_end:
+    type: datetime
+    description: |
+      The time the a VPN session is ended in the daemon (in order to measure
+      quantity of sessions started from OS settings)
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-3630
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never
+
+  dns_type:
+    type: string
+    description: |
+      The type of DNS a user has active.
+      (AdBlock | AntiTracking | AdBlockAndAntiTracking | Custom | Normal)
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-3630
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never
+
+  apps_excluded:
+    type: quantity
+    unit: apps
+    description: |
+      The number of apps the user is excluding from the VPN tunnel
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-3630
     data_reviews:
