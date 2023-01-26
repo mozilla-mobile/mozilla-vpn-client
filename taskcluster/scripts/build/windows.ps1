@@ -22,6 +22,7 @@ Remove-Item $FETCHES_PATH/VisualStudio/VC/Tools/MSVC/14.30.30705/bin/HostX64/x64
 python3 -m pip install -r requirements.txt --user
 python3 -m pip install -r taskcluster/scripts/requirements.txt --user
 git submodule update --init --force --recursive --depth=1
+git submodule update --remote i18n
 
 # Fix: pip scripts are not on path by default on tc, so glean would fail
 $PYTHON_SCRIPTS =resolve-path "$env:APPDATA\Python\Python36\Scripts"
