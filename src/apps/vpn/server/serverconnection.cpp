@@ -38,7 +38,11 @@ void serializeServerCountry(ServerCountryModel* model, QJsonObject& obj) {
     countryObj["code"] = country.code();
 
     QJsonArray cities;
-    for (const ServerCity& city : country.cities()) {
+    for (const QString& cityName : country.cities()) {
+      const ServerCity& city = model->findCity(country.code(), cityName);
+      if (!city.initialized()) {
+        continue;
+      }
       QJsonObject cityObj;
       cityObj["name"] = city.name();
       cityObj["code"] = city.code();

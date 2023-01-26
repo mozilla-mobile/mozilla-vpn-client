@@ -84,11 +84,17 @@ bool ServerCity::fromJson(const QJsonObject& obj, const QString& country) {
   m_name = name.toString();
   m_code = code.toString();
   m_country = country;
+  m_hashKey = hashKey(m_country, m_name);
   m_latitude = latitude.toDouble();
   m_longitude = longitude.toDouble();
   m_servers.swap(servers);
 
   return true;
+}
+
+// static
+QString ServerCity::hashKey(const QString& country, const QString cityName) {
+  return cityName + "," + country;
 }
 
 const QString ServerCity::localizedName() const {

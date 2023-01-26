@@ -83,9 +83,12 @@ void ServerLatency::start() {
   // Generate a list of servers to ping. If possible, sort them by geographic
   // distance to try and get data for the quickest servers first.
   for (const ServerCountry& country : vpn->serverCountryModel()->countries()) {
-    for (const ServerCity& city : country.cities()) {
+    for (const QString& cityName : country.cities()) {
+      const ServerCity& city =
+          vpn->serverCountryModel()->findCity(country.code(), cityName);
       double distance =
           vpn->location()->distance(city.latitude(), city.longitude());
+      Q_ASSERT(city.initialized());
 
       // Search for where in the list to insert this city's servers.
       auto i = m_pingSendQueue.begin();

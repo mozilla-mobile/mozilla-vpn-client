@@ -46,6 +46,8 @@ class ServerCountryModel final : public QAbstractListModel {
   QStringList pickBest() const;
 
   bool exists(const QString& countryCode, const QString& cityName) const;
+  const ServerCity& findCity(const QString& countryCode,
+                             const QString& cityName) const;
 
   const QList<Server> servers(const QString& countryCode,
                               const QString& cityName) const;
@@ -53,7 +55,6 @@ class ServerCountryModel final : public QAbstractListModel {
 
   const QString countryName(const QString& countryCode) const;
 
-  const QList<ServerCity>& cities(const QString& countryCode) const;
   const QList<ServerCountry>& countries() const { return m_countries; }
 
   void retranslate();
@@ -88,6 +89,7 @@ class ServerCountryModel final : public QAbstractListModel {
   QByteArray m_rawJson;
 
   QList<ServerCountry> m_countries;
+  QHash<QString, ServerCity> m_cities;
   QHash<QString, Server> m_servers;
 
   qint64 m_sumLatencyMsec;

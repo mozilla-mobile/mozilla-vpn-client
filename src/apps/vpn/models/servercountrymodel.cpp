@@ -66,6 +66,7 @@ bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
 
   m_rawJson = "";
   m_countries.clear();
+  m_cities.clear();
   m_servers.clear();
   m_sumLatencyMsec = 0;
   m_numLatencySamples = 0;
@@ -117,6 +118,12 @@ bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
         return false;
       }
 
+      ServerCity city;
+      if (!city.fromJson(cityObj, country.code())) {
+        return false;
+      }
+      m_cities[city.hashKey()] = city;
+
       QJsonArray serverArray = servers.toArray();
       for (const QJsonValue& serverValue : serverArray) {
         Server server;
@@ -166,8 +173,11 @@ QVariant ServerCountryModel::data(const QModelIndex& index, int role) const {
       const ServerCountry& country = m_countries.at(index.row());
 
       QList<QVariant> list;
-      for (const ServerCity& city : country.cities()) {
-        list.append(QVariant::fromValue(&city));
+      for (const QString& name : country.cities()) {
+        const ServerCity& city = findCity(country.code(), name);
+        if (city.initialized()) {
+          list.append(QVariant::fromValue(&city));
+        }
       }
 
       return QVariant(list);
@@ -194,42 +204,32 @@ QStringList ServerCountryModel::pickBest() const {
 bool ServerCountryModel::exists(const QString& countryCode,
                                 const QString& cityName) const {
   logger.debug() << "Check if the server is still valid.";
-
-  for (const ServerCity& city : cities(countryCode)) {
-    if (cityName == city.name()) {
-      return true;
-    }
-  }
-
-  return false;
+  return m_cities.contains(ServerCity::hashKey(countryCode, cityName));
 }
 
-const QList<ServerCity>& ServerCountryModel::cities(
-    const QString& countryCode) const {
-  for (const ServerCountry& country : m_countries) {
-    if (country.code() == countryCode) {
-      return country.cities();
-    }
+const ServerCity& ServerCountryModel::findCity(
+    const QString& countryCode, const QString& cityName) const {
+  auto index = m_cities.constFind(ServerCity::hashKey(countryCode, cityName));
+  if (index == m_cities.end()) {
+    static const ServerCity emptycity;
+    return emptycity;
   }
 
-  static const QList<ServerCity> emptylist;
-  return emptylist;
+  return *index;
 }
 
 const QList<Server> ServerCountryModel::servers(const QString& countryCode,
                                                 const QString& cityName) const {
   QList<Server> results;
-  for (const ServerCity& city : cities(countryCode)) {
-    if (city.name() != cityName) {
-      continue;
+  const ServerCity& city = findCity(countryCode, cityName);
+  if (city.initialized()) {
+    return results;
+  }
+  
+  for (const QString& pubkey : city.servers()) {
+    if (m_servers.contains(pubkey)) {
+      results.append(m_servers.value(pubkey));
     }
-
-    for (const QString& pubkey : city.servers()) {
-      if (m_servers.contains(pubkey)) {
-        results.append(m_servers.value(pubkey));
-      }
-    }
-    break;
   }
 
   return results;
@@ -286,12 +286,10 @@ void ServerCountryModel::setServerLatency(const QString& publicKey,
 
   // Ugly iteration. Find the city for this server.
   // TODO: Maybe it would be cleaner to move the latency data into ServerCity.
-  for (const ServerCountry& country : m_countries) {
-    for (const ServerCity& city : country.cities()) {
-      if (city.servers().contains(publicKey)) {
-        emit city.scoreChanged();
-        return;
-      }
+  for (const ServerCity& city : m_cities) {
+    if (city.servers().contains(publicKey)) {
+      emit city.scoreChanged();
+      return;
     }
   }
 }
@@ -305,10 +303,8 @@ void ServerCountryModel::clearServerLatency() {
   }
 
   // Emit changed signals for the connection scores.
-  for (const ServerCountry& country : m_countries) {
-    for (const ServerCity& city : country.cities()) {
-      emit city.scoreChanged();
-    }
+  for (const ServerCity& city : m_cities) {
+    emit city.scoreChanged();
   }
 }
 
@@ -324,7 +320,7 @@ void ServerCountryModel::setCooldownForAllServersInACity(
   logger.debug() << "Set cooldown for all servers for: "
                  << logger.sensitive(countryCode) << logger.sensitive(cityCode);
 
-  for (const ServerCity& city : cities(countryCode)) {
+  for (const ServerCity& city : m_cities) {
     if (city.code() != cityCode) {
       continue;
     }
@@ -345,38 +341,36 @@ QList<QVariant> ServerCountryModel::recommendedLocations(
   QVector<double> rankResults;
   cityResults.reserve(maxResults + 1);
   rankResults.reserve(maxResults + 1);
-  for (const ServerCountry& country : m_countries) {
-    for (const ServerCity& city : country.cities()) {
-      double cityRanking = city.connectionScore() * 256.0;
+  for (const ServerCity& city : m_cities) {
+    double cityRanking = city.connectionScore() * 256.0;
 
-      // For tiebreaking, use the geographic distance and latency.
-      double distance = MozillaVPN::instance()->location()->distance(
-          city.latitude(), city.longitude());
-      cityRanking -= city.latency() / latencyScale;
-      cityRanking -= distance;
+    // For tiebreaking, use the geographic distance and latency.
+    double distance = MozillaVPN::instance()->location()->distance(
+        city.latitude(), city.longitude());
+    cityRanking -= city.latency() / latencyScale;
+    cityRanking -= distance;
 
 #ifdef MZ_DEBUG
-      logger.debug() << "Evaluating" << city.name() << "-" << city.latency()
-                     << "ms"
-                     << "-" << QString::number(distance) << "-"
-                     << QString::number(cityRanking);
+    logger.debug() << "Evaluating" << city.name() << "-" << city.latency()
+                   << "ms"
+                   << "-" << QString::number(distance) << "-"
+                   << QString::number(cityRanking);
 #endif
 
-      // Insert into the result list
-      unsigned int i;
-      for (i = 0; i < rankResults.count(); i++) {
-        if (rankResults[i] < cityRanking) {
-          break;
-        }
+    // Insert into the result list
+    unsigned int i;
+    for (i = 0; i < rankResults.count(); i++) {
+      if (rankResults[i] < cityRanking) {
+        break;
       }
-      if (i < maxResults) {
-        rankResults.insert(i, cityRanking);
-        cityResults.insert(i, QVariant::fromValue(&city));
-      }
-      if (rankResults.count() > maxResults) {
-        rankResults.resize(maxResults);
-        cityResults.resize(maxResults);
-      }
+    }
+    if (i < maxResults) {
+      rankResults.insert(i, cityRanking);
+      cityResults.insert(i, QVariant::fromValue(&city));
+    }
+    if (rankResults.count() > maxResults) {
+      rankResults.resize(maxResults);
+      cityResults.resize(maxResults);
     }
   }
 

@@ -1475,7 +1475,7 @@ void TestModels::serverCountryModelFromJson_data() {
   countries.replace(0, d);
   obj.insert("countries", countries);
   QTest::addRow("good with one empty city")
-      << QJsonDocument(obj).toJson() << true << 0
+      << QJsonDocument(obj).toJson() << true << 1
       << QVariant("serverCountryName") << QVariant("serverCountryCode")
       << QVariant(QList<QVariant>{
              QStringList{"serverCityName", "serverCityName", "0"}});

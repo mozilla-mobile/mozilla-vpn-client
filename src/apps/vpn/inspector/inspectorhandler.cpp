@@ -621,7 +621,11 @@ static QList<InspectorCommand> s_commands{
               MozillaVPN::instance()->serverCountryModel();
           for (const ServerCountry& country : scm->countries()) {
             QJsonArray cityArray;
-            for (const ServerCity& city : country.cities()) {
+            for (const QString& cityName : country.cities()) {
+              const ServerCity& city = scm->findCity(country.code(), cityName);
+              if (!city.initialized()) {
+                continue;
+              }
               QJsonObject cityObj;
               cityObj["name"] = city.name();
               cityObj["localizedName"] =

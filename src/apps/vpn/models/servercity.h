@@ -41,6 +41,8 @@ class ServerCity final : public QObject {
 
   [[nodiscard]] bool fromJson(const QJsonObject& obj, const QString& country);
 
+  const bool initialized() const { return !m_name.isEmpty(); }
+
   const QString& name() const { return m_name; }
 
   const QString& code() const { return m_code; }
@@ -48,6 +50,9 @@ class ServerCity final : public QObject {
   const QString& country() const { return m_country; }
 
   const QString localizedName() const;
+
+  const QString& hashKey() const { return m_hashKey; }
+  static QString hashKey(const QString& country, const QString cityName);
 
   double latitude() const { return m_latitude; }
 
@@ -66,6 +71,7 @@ class ServerCity final : public QObject {
   QString m_country;
   QString m_name;
   QString m_code;
+  QString m_hashKey;
   double m_latitude;
   double m_longitude;
 
