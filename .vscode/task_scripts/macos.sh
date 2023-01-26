@@ -13,6 +13,7 @@ fi
 cmake -S . -B ./.vscode/build_osx -GNinja \
     -DCMAKE_PREFIX_PATH=${QT_MACOS_BIN} \
     -DSENTRY_DSN=$SENTRY_DSN \
+    -DCMAKE_EXPORT_COMPILE_COMMANDS=true \
     -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
     -DCMAKE_BUILD_TYPE=Debug \
@@ -23,5 +24,5 @@ cmake -S . -B ./.vscode/build_osx -GNinja \
 cmake --build ./.vscode/build_osx -j20 || die
 
 # Sign for own use:
-codesign -s "${MACOS_CODESIGN_ID}" .vscode/build_osx/src/Mozilla\ VPN.app 
+codesign -s "${MACOS_CODESIGN_ID}" .vscode/build_osx/src/Mozilla\ VPN.app
 echo "Signed!"
