@@ -333,7 +333,7 @@ $ conda activate VPN
       - Default XCode.app path: `/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk`
  - Get a Build of QT (See: [Installing Qt6](#Installing-Qt6) )
  
-You are now ready to build !
+You are now ready to build!
 
 ```bash 
 (vpn) $ cmake -S . -B -DCMAKE_PREFIX_PATH=${Path to QT}/lib/cmake
