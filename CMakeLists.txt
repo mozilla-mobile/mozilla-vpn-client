@@ -111,6 +111,7 @@ find_package(Qt6 COMPONENTS
     WebSockets
     Widgets
     Xml
+    Svg
 )
 
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND
