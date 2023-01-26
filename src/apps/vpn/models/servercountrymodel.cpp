@@ -218,23 +218,6 @@ const ServerCity& ServerCountryModel::findCity(
   return *index;
 }
 
-const QList<Server> ServerCountryModel::servers(const QString& countryCode,
-                                                const QString& cityName) const {
-  QList<Server> results;
-  const ServerCity& city = findCity(countryCode, cityName);
-  if (city.initialized()) {
-    return results;
-  }
-  
-  for (const QString& pubkey : city.servers()) {
-    if (m_servers.contains(pubkey)) {
-      results.append(m_servers.value(pubkey));
-    }
-  }
-
-  return results;
-}
-
 const Server& ServerCountryModel::server(const QString& pubkey) const {
   auto iterator = m_servers.constFind(pubkey);
   if (iterator != m_servers.constEnd()) {
