@@ -87,6 +87,10 @@ Qt6 can be installed in a number of ways:
 ```bash
 ./scripts/utils/qt6_compile.sh </qt6/source/code/path> </destination/path>
 ```
+- Grab a Static Qt-Build used in Mozilla CI: 
+  - [iOS](https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-ios.latest/artifacts/public%2Fbuild%2Fqt6_ios.zip)
+  - [MacOS](https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-mac.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip)
+  - [Windows](https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-win.latest/artifacts/public%2Fbuild%2Fqt6_win.zip) 
 
 ### Installing Python 3
 
@@ -314,25 +318,26 @@ This step needs to be executed each time Xcode updates.
 #### Building using Conda on MacOS
 
 We provide a Conda env for easy Setup. 
-Prequisits: 
+Prerequisites: 
 - Have miniconda installed. 
 
 ```bash 
 $ conda env create -f env.yml
 $ conda activate VPN
 ```
- - Set a MacOS-SDK (via xcode, or the interwebs) 
-    - set `export SDKROOT=<something>`
-    - It's probably in:
-      - `/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk`
-      - `/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk`
- - Get QT 
+ - Get a copy of a MacOS-SDK (every X-Code install ships this, or you can find it on the internet :) ) 
+    - set `SDKROOT` to the target SDK.
+    - Suggested to add it to the conda env via: `conda env config vars set SDKROOT=<>`
+    - Default Paths where you probably find your sdk: 
+      - Default XCode-command-line tool path: `/Library/Developer/CommandLineTools/SDKs/MacOSX.<VersionNumber>.sdk`
+      - Default XCode.app path: `/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk`
+ - Get a Build of QT (See: [Installing Qt6](#Installing-Qt6) )
  
-You are now ready to build 
+You are now ready to build !
 
 ```bash 
-$ cmake -S . -B -DCMAKE_PREFIX_PATH=${Path to QT}/lib/cmake
-$ cmake --build 
+(vpn) $ cmake -S . -B -DCMAKE_PREFIX_PATH=${Path to QT}/lib/cmake
+(vpn) $ cmake --build 
 ```
 
 
