@@ -189,7 +189,7 @@ module.exports = {
     await this.clickOnQuery(id);
   },
 
-  async waitAndSendkeys(id, value){
+  async waitForQueryAndWriteInTextField(id, value){
     await this.waitForQuery(id)
     await this.setQueryProperty(id, 'text', value)
   },

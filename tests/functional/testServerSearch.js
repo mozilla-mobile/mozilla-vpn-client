@@ -43,20 +43,20 @@ describe("Server list", function () {
     );
   });
 
-  it.only("multihop search", async () => {
+  it("multihop valid search", async () => {
     await vpn.waitForQueryAndClick(
       queries.screenHome.serverListView.MULTIHOP_SELECTOR_TAB.visible()
     );
     await vpn.waitForQuery(
-      queries.screenHome.serverListView.ENTRY_BUTTON
+      queries.screenHome.serverListView.ENTRY_BUTTON.visible()
     );
     await vpn.waitForQueryAndClick(
       queries.screenHome.serverListView.EXIT_BUTTON.visible()
     );
 
-    const server = servers[0];
+    const server = servers[servers.length - 1];
     console.log("server name: ", server.name);
-    await vpn.waitAndSendkeys(
+    await vpn.waitForQueryAndWriteInTextField(
       queries.screenHome.serverListView.SEARCH_BAR_TEXT_FIELD.visible(),
       server.name
     );
@@ -124,10 +124,10 @@ describe("Server list", function () {
     );
   });
 
-  it("singlehop search", async () => {
+  it("singlehop valid search", async () => {
     const server = servers[0];
     console.log("server name: ", server.name);
-    await vpn.waitAndSendkeys(
+    await vpn.waitForQueryAndWriteInTextField(
       queries.screenHome.serverListView.SEARCH_BAR_TEXT_FIELD.visible(),
       server.name
     );
@@ -185,4 +185,61 @@ describe("Server list", function () {
       `Connected to ${currentCity}`
     );
   });
+
+  it('Invalid searchs and multi results for singlehop', async () => {
+    await vpn.waitForQueryAndWriteInTextField(
+      queries.screenHome.serverListView.SEARCH_BAR_TEXT_FIELD.visible(),
+      "invalid search"
+    );
+    await vpn.waitForQuery(queries.screenHome.serverListView.SEARCH_BAR_ERROR.visible())
+
+    await vpn.waitForQueryAndWriteInTextField(
+      queries.screenHome.serverListView.SEARCH_BAR_TEXT_FIELD.visible(),
+      ""
+    );
+
+    await vpn.waitForQueryAndWriteInTextField(
+      queries.screenHome.serverListView.SEARCH_BAR_TEXT_FIELD.visible(),
+      "Au"
+    );
+    
+    const australia = queries.screenHome.serverListView.generateCountryId("au");
+    const austria = queries.screenHome.serverListView.generateCountryId("at");
+
+    await vpn.waitForQuery(australia.visible())
+    await vpn.waitForQuery(austria.visible())
+  })
+
+  it('Invalid searchs and multi results for multihop', async () => {
+    await vpn.waitForQueryAndClick(
+      queries.screenHome.serverListView.MULTIHOP_SELECTOR_TAB.visible()
+    );
+    await vpn.waitForQuery(
+      queries.screenHome.serverListView.ENTRY_BUTTON.visible()
+    );
+    await vpn.waitForQueryAndClick(
+      queries.screenHome.serverListView.EXIT_BUTTON.visible()
+    );
+
+    await vpn.waitForQueryAndWriteInTextField(
+      queries.screenHome.serverListView.SEARCH_BAR_TEXT_FIELD.visible(),
+      "invalid search"
+    );
+
+    await vpn.waitForQueryAndWriteInTextField(
+      queries.screenHome.serverListView.SEARCH_BAR_TEXT_FIELD.visible(),
+      ""
+    );
+
+    await vpn.waitForQueryAndWriteInTextField(
+      queries.screenHome.serverListView.SEARCH_BAR_TEXT_FIELD.visible(),
+      "Au"
+    );
+    
+    const australia = queries.screenHome.serverListView.generateCountryId("au");
+    const austria = queries.screenHome.serverListView.generateCountryId("at");
+
+    await vpn.waitForQuery(australia.visible())
+    await vpn.waitForQuery(austria.visible())
+  })
 });
