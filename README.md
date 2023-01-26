@@ -326,7 +326,7 @@ $ conda env create -f env.yml
 $ conda activate VPN
 ```
  - Get a copy of a MacOS-SDK (every X-Code install ships this, or you can find it on the internet :) ) 
-    - set `SDKROOT` to the target SDK.
+    - Set `SDKROOT` to the target SDK.
     - Suggested to add it to the conda env via: `conda env config vars set SDKROOT=<>`
     - Default Paths where you probably find your sdk: 
       - Default XCode-command-line tool path: `/Library/Developer/CommandLineTools/SDKs/MacOSX.<VersionNumber>.sdk`
