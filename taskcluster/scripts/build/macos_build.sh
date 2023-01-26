@@ -58,15 +58,8 @@ print G "Checking Available SDK'S..."
 # Now you would guess the SDK path is the same on all runners
 # But no. So... let's find out?
 # TODO: Check if this is the same version for every runner on taskcluster .__.
-if [ -d "/Library/Developer/CommandLineTools/SDKs/" ]; then
-    ls /Library/Developer/CommandLineTools/SDKs/
-    export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk 
-elif [ -d "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/" ]; then
-    ls /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/
-    export SDKROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
-else 
-    die "Could not find any SDK?!?!"
-fi
+export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
+
 
 # Should already have been done by taskcluser, 
 # but double checking c: 
