@@ -7,6 +7,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+#include "appconstants.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -27,7 +28,14 @@ TaskGetLocation::TaskGetLocation(
 TaskGetLocation::~TaskGetLocation() { MZ_COUNT_DTOR(TaskGetLocation); }
 
 void TaskGetLocation::run() {
-  NetworkRequest* request = NetworkRequest::createForIpInfo(this);
+  QUrl url(AppConstants::apiUrl(AppConstants::IPInfo));
+  QString host = url.host();
+
+  NetworkRequest* request = new NetworkRequest(this, 200);
+  request->auth(MozillaVPN::authorizationHeader());
+  request->requestInternal().setRawHeader("Host", host.toLocal8Bit());
+  request->requestInternal().setPeerVerifyName(host);
+  request->get(url);
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {

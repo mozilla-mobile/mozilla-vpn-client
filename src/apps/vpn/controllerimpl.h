@@ -72,7 +72,8 @@ class ControllerImpl : public QObject {
                    const QDateTime& connectionDate);
 
   // These 2 signals can be dispatched at any time.
-  void connected(const QString& pubkey);
+  void connected(const QString& pubkey,
+                 const QDateTime& connectionTimestamp = QDateTime());
   void disconnected();
 
   // This method should be emitted after a checkStatus() call.

@@ -22,6 +22,7 @@ L18nStrings* L18nStrings::instance() {
 // static
 void L18nStrings::initialize() {
 #ifndef BUILD_QMAKE
+  Q_INIT_RESOURCE(languages);
   Q_INIT_RESOURCE(servers);
   Q_INIT_RESOURCE(translations);
 #endif

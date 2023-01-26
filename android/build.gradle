@@ -20,9 +20,7 @@ buildscript {
     }
 }
 
-plugins {
-    id "com.jetbrains.python.envs" version "0.0.26"
-}
+
 
 repositories {
     mavenCentral()
@@ -43,25 +41,18 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlinx-serialization'
-apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     implementation project(path: ':daemon')
     implementation project(path: ':qtBindings')
-    implementation project(path: ':vpnglean')
-
-    implementation SharedDependencies.androidx_core
-    implementation "com.android.installreferrer:installreferrer:2.2"
-    implementation "com.android.billingclient:billing-ktx:4.0.0"
-    implementation "com.google.android.gms:play-services-ads-identifier:17.0.1"
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
-    implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
+    implementation project(path: ':vpnClient')
 
     coreLibraryDesugaring SharedDependencies.com_android_tools_desugar_jdk_libs
 }
 
 android {
+    ndkVersion Config.ndkVersion
     compileSdkVersion Config.compileSdkVersion
     buildToolsVersion Config.buildToolsVersion
 
@@ -156,7 +147,7 @@ android {
         targetSdkVersion Config.targetSdkVersion
         versionCode  System.getenv("VERSIONCODE")? System.getenv("VERSIONCODE")?.toInteger() : 99999
         versionName  System.getenv("SHORTVERSION") ? System.getenv("SHORTVERSION"): ""
-        buildConfigField "String", "ADJUST_SDK_TOKEN", '"' + System.getenv("ADJUST_SDK_TOKEN") + '"'
+
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -190,8 +181,6 @@ android.applicationVariants.all { variant ->
   }
 }
 
-ext.gleanNamespace = "mozilla.telemetry.glean"
-ext.gleanYamlFiles = ["$rootDir/../../../glean/metrics.yaml", "$rootDir/../../../glean/pings.yaml"]
 
 // Enable Ktlint out of the box via gradle Task
 configurations {
@@ -218,5 +207,5 @@ task ktlintFormat(type: JavaExec, group: "formatting") {
     description = "Fix Kotlin code style deviations."
     classpath = configurations.ktlint
     main = "com.pinterest.ktlint.Main"
-    args "-F", "src/**/*.kt", "!**/build/**/*.kt", "buildSrc/**/*.kt",  "daemon/**/*.kt", "**/*.kts"
+    args "-F", "src/**/*.kt", "!**/build/**/*.kt", "buildSrc/**/*.kt",  "daemon/**/*.kt", "**/*.kts", "**/*.kt"
 }

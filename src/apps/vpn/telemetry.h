@@ -15,10 +15,24 @@ class Telemetry final : public QObject {
 
   void initialize();
 
+  void startTimeToFirstScreenTimer();
+  void stopTimeToFirstScreenTimer();
+
  private:
   void connectionStabilityEvent();
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
   void periodicStateRecorder();
+#endif
+
+#if defined(MZ_ANDROID)
+  /**
+   * @brief (Slot) - Processes a Daemon-Init response and records the daemon
+   * status to glean.
+   *
+   * @param data - A JSON string containting the response of EVENT_INIT
+   * @return * void
+   */
+  void onDaemonStatus(const QString& data);
 #endif
 
  private:
@@ -26,6 +40,9 @@ class Telemetry final : public QObject {
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
   QTimer m_gleanControllerUpTimer;
 #endif
+
+  // The Glean timer id for the performance.time_to_main_screen metric.
+  int m_timeToFirstScreenTimerId = 0;
 };
 
 #endif  // TELEMETRY_H

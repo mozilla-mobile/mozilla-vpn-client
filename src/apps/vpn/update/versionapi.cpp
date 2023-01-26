@@ -8,6 +8,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
+#include "appconstants.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -29,7 +30,8 @@ VersionApi::~VersionApi() {
 }
 
 void VersionApi::start(Task* task) {
-  NetworkRequest* request = NetworkRequest::createForVersions(task);
+  NetworkRequest* request = new NetworkRequest(task, 200);
+  request->get(AppConstants::apiUrl(AppConstants::Versions));
 
   connect(request, &NetworkRequest::requestFailed, request,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {

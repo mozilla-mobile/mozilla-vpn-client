@@ -37,7 +37,8 @@ void CryptoSettings::resetKey() {
   GError* error = nullptr;
   gboolean ok = secret_password_clear_sync(cryptosettings_get_schema(), nullptr,
                                            &error, nullptr);
-  if (error != nullptr) {
+  if (!ok) {
+    Q_ASSERT(error);
     logger.error() << "Key reset failed:" << error->message;
     g_error_free(error);
 
@@ -86,7 +87,8 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
           cryptosettings_get_schema(), SECRET_COLLECTION_DEFAULT,
           AppConstants::LINUX_CRYPTO_SETTINGS_DESC, qPrintable(b64key), nullptr,
           &error, nullptr);
-      if (error != nullptr) {
+      if (!ok) {
+        Q_ASSERT(error);
         logger.error() << "Key storage failed:" << error->message;
         g_error_free(error);
 

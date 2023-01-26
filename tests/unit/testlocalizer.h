@@ -4,10 +4,15 @@
 
 #include "helper.h"
 
+class SettingsHolder;
+
 class TestLocalizer final : public TestHelper {
   Q_OBJECT
 
  private slots:
+  void init();
+  void cleanup();
+
   void basic();
 
   void systemLanguage();
@@ -21,4 +26,10 @@ class TestLocalizer final : public TestHelper {
 
   void parseIOSLanguages_data();
   void parseIOSLanguages();
+
+  void completeness_data();
+  void completeness();
+
+ private:
+  SettingsHolder* m_settingsHolder = nullptr;
 };

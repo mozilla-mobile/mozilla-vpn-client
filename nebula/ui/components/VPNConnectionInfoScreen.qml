@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 
@@ -27,6 +26,9 @@ Rectangle {
                 target: root
                 opacity: 0
                 visible: false
+            }
+            StateChangeScript {
+                script: VPNConnectionBenchmark.reset();
             }
         },
         State {

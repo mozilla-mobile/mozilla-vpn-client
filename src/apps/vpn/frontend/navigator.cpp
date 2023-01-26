@@ -17,6 +17,10 @@
 #include "telemetry/gleansample.h"
 #include "gleandeprecated.h"
 
+#ifdef SENTRY_ENABLED
+#  include "sentry/sentryadapter.h"
+#endif
+
 namespace {
 Navigator* s_instance = nullptr;
 Logger logger("Navigator");
@@ -129,6 +133,18 @@ ScreenData s_screens[] = {
         "qrc:/ui/screens/ScreenCaptivePortal.qml",
         QVector<MozillaVPN::State>{MozillaVPN::StateMain},
         [](Navigator::Screen*) -> int8_t { return 0; },
+        []() -> bool { return false; }),
+    ScreenData(
+        Navigator::Screen::ScreenCrashReporting,
+        Navigator::LoadPolicy::LoadTemporarily,
+        "qrc:/ui/screens/ScreenCrashReporting.qml",
+        QVector<MozillaVPN::State>{},
+        [](Navigator::Screen* requestedScreen) -> int8_t {
+          return (requestedScreen &&
+                  *requestedScreen == Navigator::Screen::ScreenCrashReporting)
+                     ? 99
+                     : -1;
+        },
         []() -> bool { return false; }),
     ScreenData(
         Navigator::Screen::ScreenDeleteAccount,
@@ -464,6 +480,11 @@ Navigator::Navigator(QObject* parent) : QObject(parent) {
 
   connect(ErrorHandler::instance(), &ErrorHandler::subscriptionInUse, this,
           [this]() { requestScreen(ScreenSubscriptionInUseError); });
+
+#ifdef SENTRY_ENABLED
+  connect(SentryAdapter::instance(), &SentryAdapter::needsCrashReportScreen,
+          this, [this]() { requestScreen(Navigator::ScreenCrashReporting); });
+#endif
 
   computeComponent();
 }

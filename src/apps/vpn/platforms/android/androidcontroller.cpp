@@ -64,8 +64,12 @@ AndroidController::AndroidController() {
   connect(
       activity, &AndroidVPNActivity::eventConnected, this,
       [this](const QString& parcelBody) {
+        auto doc = QJsonDocument::fromJson(parcelBody.toUtf8());
+        qlonglong time = doc.object()["time"].toVariant().toLongLong();
         Q_UNUSED(parcelBody);
-        emit connected(m_serverPublicKey);
+        emit connected(
+            m_serverPublicKey,
+            time > 0 ? QDateTime::fromMSecsSinceEpoch(time) : QDateTime());
       },
       Qt::QueuedConnection);
   connect(activity, &AndroidVPNActivity::eventDisconnected, this,
@@ -156,8 +160,9 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
 
   // Find a Server as Fallback in the Same Location in case
   // the original one becomes unstable / unavailable
+  auto vpn = MozillaVPN::instance();
   const QList<Server> serverList =
-      MozillaVPN::instance()->currentServer()->exitServers();
+      vpn->controller()->currentServer().exitServers();
   Server* fallbackServer = nullptr;
   foreach (auto item, serverList) {
     if (item.publicKey() != hop.m_server.publicKey()) {
@@ -187,11 +192,32 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
   if (fallbackServer) {
     args["serverFallback"] = jFallbackServer;
   }
-  args["city"] = MozillaVPN::instance()->currentServer()->exitCityName();
+  // Build the "canned" Notification messages
+  // They will be used in case this config will be re-enabled
+  // to show the appropriate notification messages
+  QString localizedCityName =
+      vpn->controller()->currentServer().localizedExitCityName();
+  args["city"] = localizedCityName;
+
+  QJsonObject messages;
+  messages["productName"] = qtTrId("vpn.main.productName");
+  messages["connectedHeader"] = L18nStrings::instance()->t(
+      L18nStrings::NotificationsVPNConnectedTitle);  // Connected
+  messages["connectedBody"] =
+      L18nStrings::instance()
+          ->t(L18nStrings::NotificationsVPNConnectedMessage)
+          .arg(localizedCityName);
+  messages["disconnectedHeader"] = L18nStrings::instance()->t(
+      L18nStrings::NotificationsVPNDisconnectedTitle);
+  messages["disconnectedBody"] =
+      L18nStrings::instance()
+          ->t(L18nStrings::NotificationsVPNDisconnectedMessage)
+          .arg(localizedCityName);
+  args["messages"] = messages;
 
   QJsonDocument doc(args);
   AndroidVPNActivity::sendToService(ServiceAction::ACTION_ACTIVATE,
-                                    doc.toJson());
+                                    doc.toJson(QJsonDocument::Compact));
 }
 
 void AndroidController::deactivate(Controller::Reason reason) {

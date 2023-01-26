@@ -1,0 +1,61 @@
+{
+  "api_version": "0.1",
+  "id": "tutorial_04_split_tunneling2",
+  "name": "Tutorial: Split tunneling",
+  "conditions": {
+    "enabled_features": ["splitTunnel"],
+    "min_client_version": "2.14.0"
+  },
+  "translatable": false,
+  "type": "tutorial",
+  "tutorial": {
+    "id": "04_split_tunneling",
+    "settings_rollback_needed": true,
+    "image": "qrc:/addons/tutorial_04_split_tunneling2/image.svg",
+    "title": "How to exclude apps from VPN protection",
+    "subtitle": "Follow this walkthrough to learn how to exclude apps from VPN.",
+    "completion_message": "You’ve learned how to exclude apps from VPN protection. Would you like to learn more tips and tricks?",
+    "steps": [
+      {
+        "id": "s1",
+        "query": "//navigationLayout/navButton-settings{visible=true}",
+        "tooltip": "Select your account settings",
+        "next": {
+          "op": "signal",
+          "query_emitter": "//navigationLayout/navButton-settings{visible=true}",
+          "signal": "clicked"
+        }
+      }, {
+        "id": "s2",
+        "query": "//appPermissionSettings{visible=true}",
+        "tooltip": "Select “App Exclusions”",
+        "next": {
+          "op": "signal",
+          "query_emitter": "//appPermissionSettings{visible=true}",
+          "signal": "clicked"
+        }
+      },{
+        "id": "s4",
+        "query": "//settingsAppPermissionsToggle{visible=true}",
+        "tooltip": "Toggle off to view apps",
+        "conditions": {
+          "javascript": "resetAppPermissions.js"
+        },
+        "next": {
+          "op": "signal",
+          "query_emitter": "//settingsAppPermissionsToggle{visible=true}",
+          "signal": "clicked"
+        }
+      },{
+        "id": "s5",
+        "query": "//appPermissionList/app0/checkbox{visible=true}",
+        "tooltip": "Select an app to exclude it from VPN protection",
+        "next": {
+          "op": "signal",
+          "vpn_emitter": "settingsHolder",
+          "signal": "vpnDisabledAppsChanged"
+        }
+      }
+    ]
+  }
+}

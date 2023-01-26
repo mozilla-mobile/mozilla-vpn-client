@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const Server = require('./server.js');
-const constants = require('../constants.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -65,7 +64,7 @@ function createScenario(scenario, addonPath) {
 
 let server = null;
 module.exports = {
-  start() {
+  async start(headerCheck = true) {
     let scenarios = {};
 
     const dirs = fs.readdirSync(ADDON_PATH);
@@ -85,13 +84,20 @@ module.exports = {
       DELETEs: {},
     };
 
-    server = new Server('Addon', constants.ADDON_PORT, endpoints);
-
-    return constants.ADDON_PORT;
+    server = new Server('Addon', endpoints, headerCheck);
+    await server.start();
   },
 
   stop() {
     server.stop();
+  },
+
+  get port() {
+    return server.port;
+  },
+
+  get url() {
+    return server.url;
   },
 
   get overrideEndpoints() {

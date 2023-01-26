@@ -8,8 +8,10 @@ import android.os.Binder
 import android.os.DeadObjectException
 import android.os.IBinder
 import android.os.Parcel
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import org.json.JSONObject
-import java.lang.Exception
+import kotlin.Exception
 
 class VPNServiceBinder(service: VPNService) : Binder() {
 
@@ -30,7 +32,6 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val requestCleanupLog = 6
         const val resumeActivate = 7
         const val setNotificationText = 8
-        const val setStrings = 9
         const val recordEvent = 10
         const val getStatus = 13
         const val setStartOnBoot = 15
@@ -121,6 +122,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 obj.put("time", mService.connectionTime)
                 obj.put("city", mService.cityname)
                 obj.put("canActivate", mService.canActivate)
+                obj.put("connection-health-status", mService.mConnectionHealth.getStatusString())
                 dispatchEvent(EVENTS.init, obj.toString())
                 return true
             }
@@ -134,11 +136,17 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 return true
             }
             ACTIONS.setNotificationText -> {
-                NotificationUtil.get(mService)?.update(data)
-                return true
-            }
-            ACTIONS.setStrings -> {
-                NotificationUtil.get(mService)?.updateStrings(data, mService)
+                val buffer = data.createByteArray()
+                val json = buffer?.let { String(it) }
+                if (json.isNullOrEmpty()) {
+                    return false
+                }
+                try {
+                    val message = Json.decodeFromString<ClientNotification>(json)
+                    mService.mNotificationHandler.setNotificationText(message)
+                } catch (e: Exception) {
+                    e.message?.let { Log.e(tag, it) }
+                }
                 return true
             }
             ACTIONS.setStartOnBoot -> {

@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
@@ -18,7 +17,6 @@ Item {
         box.connectionInfoScreenVisible = false;
     }
 
-    state: VPNController.state
     Layout.preferredHeight: 318
     Layout.fillWidth: true
     Layout.leftMargin: VPNTheme.theme.listSpacing
@@ -64,7 +62,8 @@ Item {
 
     states: [
         State {
-            name: VPNController.StateInitializing
+            name: "stateInitializing"
+            when: VPNController.state === VPNController.StateInitializing
 
             PropertyChanges {
                 target: boxBackground
@@ -108,7 +107,8 @@ Item {
 
         },
         State {
-            name: VPNController.StateOff
+            name: "stateOff"
+            when: VPNController.state === VPNController.StateOff
 
             PropertyChanges {
                 target: boxBackground
@@ -151,7 +151,8 @@ Item {
 
         },
         State {
-            name: VPNController.StateConnecting
+            name: "stateConnecting"
+            when: VPNController.state === VPNController.StateConnecting
 
             PropertyChanges {
                 target: boxBackground
@@ -196,7 +197,8 @@ Item {
 
         },
         State {
-            name: VPNController.StateConfirming
+            name: "stateConfirming"
+            when: VPNController.state === VPNController.StateConfirming
 
             PropertyChanges {
                 target: boxBackground
@@ -242,7 +244,9 @@ Item {
 
         },
         State {
-            name: VPNController.StateOn
+            name: "stateOn"
+            when: (VPNController.state === VPNController.StateOn ||
+                   VPNController.state === VPNController.StateSilentSwitching)
 
             PropertyChanges {
                 target: boxBackground
@@ -277,10 +281,10 @@ Item {
                 opacity: 1
                 startAnimation: true
             }
-
         },
         State {
-            name: VPNController.StateDisconnecting
+            name: "stateDisconnecting"
+            when: VPNController.state === VPNController.StateDisconnecting
 
             PropertyChanges {
                 target: boxBackground
@@ -322,10 +326,10 @@ Item {
                 target: animatedRings
                 visible: false
             }
-
         },
         State {
-            name: VPNController.StateSwitching
+            name: "stateSwitching"
+            when: VPNController.state === VPNController.StateSwitching
 
             PropertyChanges {
                 target: boxBackground
@@ -370,12 +374,11 @@ Item {
                 opacity: 1
                 startAnimation: false
             }
-
         }
     ]
     transitions: [
         Transition {
-            to: VPNController.StateConnecting
+            to: "stateConnecting"
 
             ColorAnimation {
                 target: boxBackground
@@ -397,7 +400,7 @@ Item {
 
         },
         Transition {
-            to: VPNController.StateDisconnecting
+            to: "stateDisconnecting"
 
             ColorAnimation {
                 target: boxBackground
@@ -594,7 +597,7 @@ Item {
             horizontalCenterOffset: 0
             horizontalCenter: parent.horizontalCenter
         }
-        enabled: !connectionInfoScreenVisible && !ipInfoPanel.isOpen
+        enabled: !connectionInfoScreenVisible && !ipInfoPanel.visible
 
         Accessible.ignored: connectionInfoScreenVisible || ipInfoPanel.isOpen
     }
@@ -606,6 +609,22 @@ Item {
         opacity: ipInfoPanel.isOpen ? 1 : 0
         visible: opacity > 0
         z: 1
+
+        Connections {
+            target: VPNConnectionHealth
+            function onStabilityChanged() {
+                if (ipInfoPanel.isOpen &&
+                    VPNConnectionHealth.stability === VPNConnectionHealth.NoSignal) {
+                     ipInfoPanel.isOpen = false;
+                 }
+            }
+        }
+        Connections {
+            target: VPNController
+            function onStateChanged() {
+                ipInfoPanel.isOpen = false
+            }
+        }
     }
 
     VPNIconButton {
@@ -625,7 +644,7 @@ Item {
             ? connectionInfoCloseText
             : VPNl18n.ConnectionInfoIpInfoButtonLabel
         buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
-        enabled: visible
+        enabled: visible && VPNConnectionHealth.stability !== VPNConnectionHealth.NoSignal
         opacity: visible ? 1 : 0
         visible: connectionInfoToggleButton.visible
             && !connectionInfoScreen.isOpen
@@ -649,6 +668,7 @@ Item {
                 height: iconSize
                 width: iconSize
             }
+            opacity: parent.enabled ? 1 : .6
         }
 
         Behavior on opacity {

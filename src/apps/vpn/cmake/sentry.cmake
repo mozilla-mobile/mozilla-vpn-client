@@ -38,7 +38,9 @@ if( ${_SUPPORTED} GREATER -1 )
     # Sentry support is given
     target_sources(mozillavpn PRIVATE
         apps/vpn/sentry/sentryadapter.cpp
-        apps/vpn/sentry/sentryadapter.h
+        apps/vpn/sentry/sentryadapter.h     
+        apps/vpn/tasks/sentry/tasksentry.cpp
+        apps/vpn/tasks/sentry/tasksentry.h
     )
 
     # Configure Linking and Compile
@@ -100,8 +102,3 @@ else()
     message("Cannot build sentry for ${CMAKE_SYSTEM_NAME}")
 endif()
 
-# Add Sources that will be required anyway
-target_sources(mozillavpn PRIVATE
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/sentry/tasksentry.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/sentry/tasksentry.h
-)

@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/i18n">
+        <file>languages.json</file>
+        <file>completeness_empty.txt</file>
+        <file>completeness_invalid.txt</file>
+        <file>completeness_ok.txt</file>
+    </qresource>
+</RCC>

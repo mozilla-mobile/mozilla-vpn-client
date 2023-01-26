@@ -14,8 +14,6 @@ parser = argparse.ArgumentParser(
 parser.add_argument('-o', '--output', metavar='DIR', type=str, action='store',
     default=os.path.join(os.getcwd(), 'glean', 'telemetry'),
     help='Output directory for generated files')
-parser.add_argument('-j', '--javadir', metavar='DIR', type=str, action='store',
-    help='Output directory for Java/Kotlin files')
 args = parser.parse_args()
 
 

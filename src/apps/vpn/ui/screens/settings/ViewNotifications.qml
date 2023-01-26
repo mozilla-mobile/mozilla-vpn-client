@@ -12,8 +12,6 @@ import components.forms 0.1
 
 
 VPNViewBase {
-    property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
-
     id: vpnFlickable
     objectName: "settingsNotifications"
 
@@ -25,24 +23,6 @@ VPNViewBase {
         Layout.rightMargin: VPNTheme.theme.windowMargin
         spacing: VPNTheme.theme.windowMargin
 
-        VPNContextualAlerts {
-            anchors {
-                left: parent.left
-                leftMargin: VPNTheme.theme.windowMargin
-                right: parent.right
-                topMargin: VPNTheme.theme.windowMargin
-            }
-            messages: [
-                {
-                    type: "warning",
-                    //% "VPN must be off to edit these settings"
-                    //: Associated to a group of settings that require the VPN to be disconnected to change
-                    message: qsTrId("vpn.settings.vpnMustBeOff"),
-                    visible: !vpnFlickable.vpnIsOff && (captivePortalAlert.visible || unsecuredNetworkAlert.visible)
-                }
-            ]
-        }
-
         VPNCheckBoxRow {
             id: captivePortalAlert
             objectName: "settingCaptivePortalAlert"
@@ -53,12 +33,9 @@ VPNViewBase {
             //% "Get notified if a guest Wi-Fi portal is blocked due to VPN connection"
             subLabelText: qsTrId("vpn.settings.guestWifiAlert.description")
             isChecked: (VPNSettings.captivePortalAlert)
-            enabled: vpnFlickable.vpnIsOff
             showDivider: false
             onClicked: {
-                if (vpnFlickable.vpnIsOff) {
-                    VPNSettings.captivePortalAlert = !VPNSettings.captivePortalAlert
-                }
+                VPNSettings.captivePortalAlert = !VPNSettings.captivePortalAlert
             }
         }
 
@@ -73,12 +50,10 @@ VPNViewBase {
             //% "Get notified if you connect to an unsecured Wi-Fi network"
             subLabelText: qsTrId("vpn.settings.unsecuredNetworkAlert.description")
             isChecked: (VPNSettings.unsecuredNetworkAlert)
-            enabled: vpnFlickable.vpnIsOff
+            enabled: true
             showDivider: !enabled
             onClicked: {
-                if (vpnFlickable.vpnIsOff) {
-                    VPNSettings.unsecuredNetworkAlert = !VPNSettings.unsecuredNetworkAlert
-                }
+                VPNSettings.unsecuredNetworkAlert = !VPNSettings.unsecuredNetworkAlert
             }
         }
 
@@ -134,9 +109,5 @@ VPNViewBase {
     Component.onCompleted: {
         VPNGleanDeprecated.recordGleanEvent("notificationsViewOpened");
         Glean.sample.notificationsViewOpened.record();
-        if (!vpnIsOff) {
-            VPNGleanDeprecated.recordGleanEvent("notificationsViewWarning");
-            Glean.sample.notificationsViewWarning.record();
-        }
     }
 }

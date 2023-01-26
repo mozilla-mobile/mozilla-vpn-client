@@ -17,6 +17,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "platforms/android/androidcommons.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 
@@ -196,18 +197,6 @@ void AndroidUtils::runOnAndroidThreadSync(
     const std::function<void()> runnable) {
   QNativeInterface::QAndroidApplication::runOnAndroidMainThread(runnable)
       .waitForFinished();
-}
-
-// static
-bool AndroidUtils::verifySignature(const QByteArray& publicKey,
-                                   const QByteArray& content,
-                                   const QByteArray& signature) {
-  QJniEnvironment env;
-  auto out = (bool)QJniObject::callStaticMethod<jboolean>(
-      UTILS_CLASS, "verifyContentSignature", "([B[B[B)Z",
-      tojByteArray(publicKey), tojByteArray(content), tojByteArray(signature));
-  logger.info() << "Android Signature Response" << out;
-  return out;
 }
 
 // static
