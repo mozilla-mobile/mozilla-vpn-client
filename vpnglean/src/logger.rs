@@ -6,6 +6,7 @@ use std::os::raw::c_char;
 use std::ffi::CString;
 
 use log::{Level, LevelFilter, Log, Metadata, Record};
+use once_cell::sync::{Lazy, OnceCell};
 
 // Logger implementation to integrate the Rust logs with src/shared/loghandler.cpp.
 //
@@ -14,15 +15,18 @@ pub struct Logger {
     message_handler: extern fn(i32, *mut c_char)
 }
 
+static LOGGER: OnceCell<Logger> = OnceCell::new();
+
 impl Logger {
-    pub fn new(f: extern fn(i32, *mut c_char)) -> Logger {
+    fn new(f: extern fn(i32, *mut c_char)) -> Logger {
         Logger {
             message_handler: f
         }
     }
 
-    pub fn init(self) {
-        if log::set_boxed_logger(Box::new(self)).is_ok() {
+    pub fn init(f: extern fn(i32, *mut c_char)) {
+        let logger = LOGGER.get_or_init(|| Logger::new(f));
+        if log::set_logger(logger).is_ok() {
             log::set_max_level(LevelFilter::Debug);
         }
     }
