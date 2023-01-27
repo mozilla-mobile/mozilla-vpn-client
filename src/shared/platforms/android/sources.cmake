@@ -4,4 +4,6 @@
 
 target_sources(shared-sources INTERFACE
      ${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/wasm/wasmcryptosettings.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/android/androidcommons.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/android/androidcommons.h
 )

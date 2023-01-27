@@ -15,6 +15,7 @@
 
 #include "ipaddress.h"
 #include "models/server.h"
+#include "models/serverdata.h"
 #include "pinghelper.h"
 
 class ControllerImpl;
@@ -44,6 +45,7 @@ class Controller final : public QObject {
     StateConfirming,
     StateOn,
     StateDisconnecting,
+    StateSilentSwitching,
     StateSwitching,
   };
   Q_ENUM(State)
@@ -62,6 +64,12 @@ class Controller final : public QObject {
   Q_PROPERTY(bool enableDisconnectInConfirming READ enableDisconnectInConfirming
                  NOTIFY enableDisconnectInConfirmingChanged);
 
+#ifdef MZ_DUMMY
+  // This is just for testing purposes. Not exposed in prod.
+  Q_PROPERTY(QString currentServerString READ currentServerString NOTIFY
+                 currentServerChanged);
+#endif
+
  public:
   Controller();
   ~Controller();
@@ -74,8 +82,8 @@ class Controller final : public QObject {
 
   qint64 time() const;
 
-  bool switchServers();
-  bool silentSwitchServers();
+  bool switchServers(const ServerData& serverData);
+  bool silentSwitchServers(bool serverCoolDownNeeded);
 
   void updateRequired();
 
@@ -100,16 +108,23 @@ class Controller final : public QObject {
   void captivePortalPresent();
   void captivePortalGone();
 
+  const ServerData& currentServer() const { return m_serverData; }
+
+#ifdef MZ_DUMMY
+  QString currentServerString() const;
+#endif
+
  public slots:
   // These 2 methods activate/deactivate the VPN. Return true if a signal will
   // be emitted at the end of the operation.
-  bool activate();
+  bool activate(const ServerData& serverData);
   bool deactivate();
 
   Q_INVOKABLE void quit();
 
  private slots:
-  void connected(const QString& pubkey);
+  void connected(const QString& pubkey,
+                 const QDateTime& connectionTimestamp = QDateTime());
   void disconnected();
   void timerTimeout();
   void implInitialized(bool status, bool connected,
@@ -128,9 +143,12 @@ class Controller final : public QObject {
   void readyToServerUnavailable(bool pingReceived);
   void connectionRetryChanged();
   void enableDisconnectInConfirmingChanged();
-  void silentSwitchDone();
   void activationBlockedForCaptivePortal();
   void handshakeFailed(const QString& serverHostname);
+
+#ifdef MZ_DUMMY
+  void currentServerChanged();
+#endif
 
  private:
   void setState(State state);
@@ -141,8 +159,8 @@ class Controller final : public QObject {
   QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
   QStringList getExcludedAddresses();
 
-  void activateInternal(Reason reason, bool forceDNSPort = false);
-  void activateNext(Reason reason);
+  void activateInternal(bool forceDNSPort = false);
+  void activateNext();
 
   void clearRetryCounter();
   void clearConnectedTime();
@@ -178,6 +196,24 @@ class Controller final : public QObject {
   };
 
   NextStep m_nextStep = None;
+
+  // Server data can change while the controller is busy completing an
+  // activation or a server switch because they are managed by the
+  // SettingsHolder object and exposed to user interaction, addons, and JS.
+  //
+  // But the controller needs to know the location to use for the entire
+  // duration of its tasks. When the client schedules a VPN activation,
+  // `m_serverData` is set as a copy of the current `MozillaVPN::serverData()`,
+  // ignoring further updates until the pending operations terminate. Instead,
+  // `m_nextServerData` is set when a server-switch request is scheduled while
+  // an activation operation is still in progress.
+  //
+  // At initialization time, these two member variables are set to
+  // MozillaVPN::serverData() to do not let not initialize.
+  //
+  // Please, do not use MozillaVPN::serverData() in the controller!
+  ServerData m_serverData;
+  ServerData m_nextServerData;
 
   int m_connectionRetry = 0;
 

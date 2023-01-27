@@ -65,3 +65,15 @@ pub fn from_raw_string_array(
         res.map(Some)
     }
 }
+
+pub fn ping_name_from_ffi(ping_name: FfiStr) -> Option<String> {
+    if let Ok(name) = ping_name.to_string_fallible() {
+        if name.is_empty() {
+            None
+        } else {
+            Some(name)
+        }
+    } else {
+        None
+    }
+}

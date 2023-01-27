@@ -165,7 +165,7 @@ theme.iconButtonDarkBackground = {
   'defaultColor': '#00321C64',
   'buttonHovered': '#5b4983',
   'buttonPressed': '#8477a2',
-  'buttonDisabled': '#564a71',
+  'buttonDisabled': '#00321C64',
   'focusOutline': '#005b4983',
   'focusBorder': theme.lightFocusBorder,
 };

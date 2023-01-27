@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
@@ -21,7 +20,7 @@ RowLayout {
 
     signal clicked()
 
-    spacing: VPNTheme.theme.windowMargin * 0.5
+    spacing: VPNTheme.theme.windowMargin
 
     VPNCheckBox {
         id: checkBox
@@ -63,7 +62,6 @@ RowLayout {
         id: labelWrapper
 
         Layout.fillWidth: true
-        Layout.topMargin: 2
         spacing: 4
         Layout.alignment: Qt.AlignTop
 

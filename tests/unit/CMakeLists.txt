@@ -85,8 +85,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/appconstants.h
     ${MZ_SOURCE_DIR}/apps/vpn/captiveportal/captiveportal.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/captiveportal/captiveportal.h
-    ${MZ_SOURCE_DIR}/apps/vpn/collator.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/collator.h
     ${MZ_SOURCE_DIR}/apps/vpn/command.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/command.h
     ${MZ_SOURCE_DIR}/apps/vpn/commandlineparser.cpp
@@ -106,6 +104,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/composer/composerblockunorderedlist.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/composer/composerblockunorderedlist.h
     ${MZ_SOURCE_DIR}/apps/vpn/controller.h
+    ${MZ_SOURCE_DIR}/apps/vpn/dnshelper.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/dnshelper.h
     ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.h
     ${MZ_SOURCE_DIR}/apps/vpn/errorhandler.cpp
@@ -123,8 +123,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorutils.h
     ${MZ_SOURCE_DIR}/apps/vpn/ipaddresslookup.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/ipaddresslookup.h
-    ${MZ_SOURCE_DIR}/apps/vpn/localizer.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/localizer.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/device.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/device.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/devicemodel.cpp
@@ -158,7 +156,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/models/user.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/user.h
     ${MZ_SOURCE_DIR}/apps/vpn/mozillavpn.h
-    ${MZ_SOURCE_DIR}/apps/vpn/networkrequest.h
     ${MZ_SOURCE_DIR}/apps/vpn/networkwatcher.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/networkwatcher.h
     ${MZ_SOURCE_DIR}/apps/vpn/networkwatcherimpl.h
@@ -177,8 +174,7 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/releasemonitor.h
     ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.h
-    ${MZ_SOURCE_DIR}/apps/vpn/signature.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/signature.h
+    ${MZ_SOURCE_DIR}/apps/vpn/sentry/sentryadapter.h
     ${MZ_SOURCE_DIR}/apps/vpn/statusicon.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/statusicon.h
     ${MZ_SOURCE_DIR}/apps/vpn/systemtraynotificationhandler.h
@@ -190,6 +186,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/addon/taskaddon.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/addonindex/taskaddonindex.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/addonindex/taskaddonindex.h
+    ${MZ_SOURCE_DIR}/apps/vpn/tasks/controlleraction/taskcontrolleraction.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/tasks/controlleraction/taskcontrolleraction.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/function/taskfunction.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/function/taskfunction.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/group/taskgroup.cpp
@@ -200,8 +198,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/release/taskrelease.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/servers/taskservers.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/servers/taskservers.h
-    ${MZ_SOURCE_DIR}/apps/vpn/theme.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/theme.h
+    ${MZ_SOURCE_DIR}/apps/vpn/tasks/sentry/tasksentry.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/tasks/sentry/tasksentry.h
     ${MZ_SOURCE_DIR}/apps/vpn/tutorial/tutorial.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/tutorial/tutorial.h
     ${MZ_SOURCE_DIR}/apps/vpn/tutorial/tutorialstep.cpp
@@ -222,6 +220,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/websocket/pushmessage.h
     ${MZ_SOURCE_DIR}/apps/vpn/websocket/websockethandler.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/websocket/websockethandler.h
+    ${MZ_SOURCE_DIR}/shared/collator.cpp
+    ${MZ_SOURCE_DIR}/shared/collator.h
     ${MZ_SOURCE_DIR}/shared/constants.cpp
     ${MZ_SOURCE_DIR}/shared/constants.h
     ${MZ_SOURCE_DIR}/shared/cryptosettings.cpp
@@ -241,14 +241,20 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/ipaddress.h
     ${MZ_SOURCE_DIR}/shared/itempicker.cpp
     ${MZ_SOURCE_DIR}/shared/itempicker.h
+    ${MZ_SOURCE_DIR}/shared/languagei18n.cpp
+    ${MZ_SOURCE_DIR}/shared/languagei18n.h
     ${MZ_SOURCE_DIR}/shared/leakdetector.cpp
     ${MZ_SOURCE_DIR}/shared/leakdetector.h
+    ${MZ_SOURCE_DIR}/shared/localizer.cpp
+    ${MZ_SOURCE_DIR}/shared/localizer.h
     ${MZ_SOURCE_DIR}/shared/logger.cpp
     ${MZ_SOURCE_DIR}/shared/logger.h
     ${MZ_SOURCE_DIR}/shared/loghandler.cpp
     ${MZ_SOURCE_DIR}/shared/loghandler.h
     ${MZ_SOURCE_DIR}/shared/networkmanager.cpp
     ${MZ_SOURCE_DIR}/shared/networkmanager.h
+    ${MZ_SOURCE_DIR}/shared/networkrequest.cpp
+    ${MZ_SOURCE_DIR}/shared/networkrequest.h
     ${MZ_SOURCE_DIR}/shared/platforms/wasm/wasmcryptosettings.cpp
     ${MZ_SOURCE_DIR}/shared/qmlpath.cpp
     ${MZ_SOURCE_DIR}/shared/qmlengineholder.cpp
@@ -266,11 +272,15 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/settingsholder.h
     ${MZ_SOURCE_DIR}/shared/simplenetworkmanager.cpp
     ${MZ_SOURCE_DIR}/shared/simplenetworkmanager.h
+    ${MZ_SOURCE_DIR}/shared/signature.cpp
+    ${MZ_SOURCE_DIR}/shared/signature.h
     ${MZ_SOURCE_DIR}/shared/task.h
     ${MZ_SOURCE_DIR}/shared/taskscheduler.cpp
     ${MZ_SOURCE_DIR}/shared/taskscheduler.h
     ${MZ_SOURCE_DIR}/shared/temporarydir.cpp
     ${MZ_SOURCE_DIR}/shared/temporarydir.h
+    ${MZ_SOURCE_DIR}/shared/theme.cpp
+    ${MZ_SOURCE_DIR}/shared/theme.h
     ${MZ_SOURCE_DIR}/shared/urlopener.cpp
     ${MZ_SOURCE_DIR}/shared/urlopener.h
     ${MZ_SOURCE_DIR}/shared/versionutils.cpp
@@ -289,8 +299,8 @@ target_sources(unit_tests PRIVATE
     moccontroller.cpp
     mocinspectorhandler.cpp
     mocmozillavpn.cpp
-    mocnetworkrequest.cpp
     mocsystemtraynotificationhandler.cpp
+    mocsentryadapter.cpp
     helper.h
     testaddon.cpp
     testaddon.h
@@ -306,6 +316,8 @@ target_sources(unit_tests PRIVATE
     testcommandlineparser.h
     testcomposer.cpp
     testcomposer.h
+    testdnshelper.cpp
+    testdnshelper.h
     testfeature.cpp
     testfeature.h
     testipaddress.cpp
@@ -314,6 +326,8 @@ target_sources(unit_tests PRIVATE
     testipaddresslookup.h
     testipfinder.cpp
     testipfinder.h
+    testlanguagei18n.cpp
+    testlanguagei18n.h
     testlicense.cpp
     testlicense.h
     testlocalizer.cpp
@@ -338,6 +352,8 @@ target_sources(unit_tests PRIVATE
     teststatusicon.h
     testtasks.cpp
     testtasks.h
+    testtasksentry.cpp
+    testtasksentry.h
     testtemporarydir.cpp
     testtemporarydir.h
     testthemes.cpp
@@ -360,6 +376,7 @@ target_sources(auth_tests PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 target_sources(unit_tests PRIVATE
     addons/addons.qrc
     guides/guides.qrc
+    languages/languages.qrc
     qml/qml.qrc
     servers/servers.qrc
     themes/themes.qrc

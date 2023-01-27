@@ -120,12 +120,9 @@ print G "$SHORTVERSION - $FULLVERSION"
 MACOS_FLAGS="
   QTPLUGIN+=qsvg
   CONFIG-=static
-  MVPN_MACOS=1
 "
 
-IOS_FLAGS="
-  MVPN_IOS=1
-"
+IOS_FLAGS=""
 
 printn Y "Mode: "
 if [[ "$RELEASE" ]]; then

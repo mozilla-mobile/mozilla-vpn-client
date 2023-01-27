@@ -1,0 +1,25 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# This file contains metrics definitions for metrics collected by the
+# Mozilla VPN application using only the vpnglean integration.
+
+---
+$schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
+
+performance:
+  time_to_main_screen:
+    type: timing_distribution
+    description: |
+      The time the app took between starting and rendering the main screen.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/4486
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5529#pullrequestreview-1253522353
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - brizental@mozilla.com
+    expires: never
+    time_unit: microsecond

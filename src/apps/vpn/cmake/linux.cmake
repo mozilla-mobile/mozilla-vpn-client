@@ -64,16 +64,6 @@ target_sources(mozillavpn PRIVATE
 
 add_definitions(-DPROTOCOL_VERSION=\"1\")
 
-# Compile and link the signature library.
-include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
-add_rust_library(signature
-    PACKAGE_DIR ${CMAKE_SOURCE_DIR}/signature
-    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
-    CRATE_NAME signature
-)
-target_compile_definitions(mozillavpn PRIVATE MVPN_SIGNATURE)
-target_link_libraries(mozillavpn PRIVATE signature)
-
 set(DBUS_GENERATED_SOURCES)
 qt_add_dbus_interface(DBUS_GENERATED_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/org.mozilla.vpn.dbus.xml dbus_interface)

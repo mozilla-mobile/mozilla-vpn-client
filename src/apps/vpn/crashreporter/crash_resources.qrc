@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>crashresources/Warning.svg</file>
-    </qresource>
-</RCC>

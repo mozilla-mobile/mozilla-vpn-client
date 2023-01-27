@@ -60,6 +60,7 @@ class WebSocketHandler final : public QObject {
   ExponentialBackoffStrategy m_backoffStrategy;
 
   bool m_aboutToClose = false;
+  bool m_initialized = false;
 
   static QString s_customWebSocketServerUrl;
 };

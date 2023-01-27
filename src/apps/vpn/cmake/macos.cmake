@@ -95,15 +95,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/balrog.h
 )
 
-# Compile and link the signature library.
-add_rust_library(signature
-    PACKAGE_DIR ${CMAKE_SOURCE_DIR}/signature
-    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
-    CRATE_NAME signature
-)
-target_compile_definitions(mozillavpn PRIVATE MVPN_SIGNATURE)
-target_link_libraries(mozillavpn PRIVATE signature)
-
 # Build the Wireguard Go tunnel
 # FIXME: this builds in the source directory.
 get_filename_component(WIREGUARD_GO_DIR ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go ABSOLUTE)

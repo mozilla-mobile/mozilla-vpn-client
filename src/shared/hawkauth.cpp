@@ -55,8 +55,8 @@ QString HawkAuth::hashPayload(const QByteArray& data, const QString& mimetype) {
   return QString(digest.toBase64());
 }
 
-QString HawkAuth::generate(const QUrl& url, const QString& method,
-                           const QString& hash) {
+QString HawkAuth::generateInternal(const QUrl& url, const QString& method,
+                                   const QString& hash) {
   int port = (url.scheme() == "http") ? 80 : 443;
 
   // Build the normalized request header
@@ -92,14 +92,14 @@ QString HawkAuth::generate(const QUrl& url, const QString& method,
   return QString("Hawk ") + values.join(", ");
 }
 
-QString HawkAuth::generate(const QNetworkRequest& request,
-                           const QString& method, const QByteArray& payload) {
+QString HawkAuth::generate(const QUrl& url, const QString& method,
+                           const QString& contentType,
+                           const QByteArray& payload) {
   // Hash the payload, if present.
   QString hash;
   if (!payload.isEmpty()) {
-    QString mimetype(request.rawHeader("Content-Type"));
-    hash = hashPayload(payload, mimetype);
+    hash = hashPayload(payload, contentType);
   }
 
-  return generate(request.url(), method, hash);
+  return generateInternal(url, method, hash);
 }

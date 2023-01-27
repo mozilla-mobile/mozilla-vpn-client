@@ -257,7 +257,7 @@ Item {
         }
 
         tutorialPopup.primaryButtonText = VPNl18n.TutorialPopupTutorialLeavePrimaryButtonLabel;
-        tutorialPopup.secondaryButtonText = VPNl18n.TutorialPopupSecondaryButtonLabel;
+        tutorialPopup.secondaryButtonText = VPNl18n.TutorialPopupTutorialFinishedSecondaryButtonLabel;
         tutorialPopup.title = VPNl18n.TutorialPopupTutorialLeaveHeadline;
         tutorialPopup.description = VPNl18n.TutorialPopupTutorialLeaveSubtitle;
         tutorialPopup.open();
@@ -300,7 +300,7 @@ Item {
             tutorialPopup.primaryButtonOnClicked = () => openTipsAndTricks();
             tutorialPopup.primaryButtonText = VPNl18n.TutorialPopupTutorialCompletePrimaryButtonLabel;
             tutorialPopup.secondaryButtonOnClicked = () => tutorialPopup.close();
-            tutorialPopup.secondaryButtonText = VPNl18n.TutorialPopupSecondaryButtonLabel
+            tutorialPopup.secondaryButtonText = VPNl18n.TutorialPopupTutorialFinishedSecondaryButtonLabel
             tutorialPopup.title =  VPNl18n.TutorialPopupTutorialCompleteHeadline;
             tutorialPopup.description = tutorial.completionMessage;
             tutorialPopup._onClosed = () => {};

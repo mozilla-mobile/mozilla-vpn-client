@@ -4,12 +4,11 @@
 
 #include "authenticationlistener.h"
 
+#include "appconstants.h"
 #include "authenticationinapp/authenticationinapplistener.h"
-#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkmanager.h"
-#include "networkrequest.h"
 
 #if defined(MZ_MACOS)
 #  include "platforms/macos/macosauthenticationlistener.h"
@@ -73,7 +72,7 @@ QUrl AuthenticationListener::createAuthenticationUrl(
   path.append("ios");
 #endif
 
-  QUrl url(NetworkRequest::apiBaseUrl());
+  QUrl url(AppConstants::apiBaseUrl());
   url.setPath(path);
 
   QUrlQuery query;

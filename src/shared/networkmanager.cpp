@@ -6,6 +6,8 @@
 
 #include "appconstants.h"
 #include "leakdetector.h"
+#include "networkrequest.h"
+#include "settingsholder.h"
 
 #if MZ_WINDOWS
 #  include "platforms/windows/windowsutils.h"
@@ -15,13 +17,30 @@
 
 namespace {
 NetworkManager* s_instance = nullptr;
+
+bool localhostRequestCallback(NetworkRequest* request) {
+  QString host(request->url().host());
+  if (host == "localhost" || host == "127.0.0.1" || host == "::1") {
+    return false;
+  }
+
+  qFatal("Non localhost request detected!");
+  Q_ASSERT(false);
+  return true;
 }
+}  // namespace
 
 NetworkManager::NetworkManager() {
   MZ_COUNT_CTOR(NetworkManager);
 
   Q_ASSERT(!s_instance);
   s_instance = this;
+
+  connect(SettingsHolder::instance(),
+          &SettingsHolder::localhostRequestsOnlyChanged, this,
+          &NetworkManager::localhostRequestsOnlyChanged);
+
+  localhostRequestsOnlyChanged();
 }
 
 NetworkManager::~NetworkManager() {
@@ -96,5 +115,18 @@ void NetworkManager::decreaseNetworkRequestCount() {
   if (m_requestCount == 0 && m_clearCacheNeeded) {
     m_clearCacheNeeded = false;
     clearCacheInternal();
+  }
+}
+
+void NetworkManager::localhostRequestsOnlyChanged() {
+  if (SettingsHolder::instance()->localhostRequestsOnly()) {
+    NetworkRequest::setRequestHandler(
+        localhostRequestCallback, localhostRequestCallback,
+        [](NetworkRequest* request, const QByteArray&) -> bool {
+          return localhostRequestCallback(request);
+        },
+        [](NetworkRequest* request, QIODevice*) -> bool {
+          return localhostRequestCallback(request);
+        });
   }
 }

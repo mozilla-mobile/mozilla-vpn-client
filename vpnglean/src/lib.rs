@@ -86,8 +86,10 @@ pub extern "C" fn glean_test_reset_glean(is_telemetry_enabled: bool, data_path: 
         delay_ping_lifetime_io: false,
         // Default is "https://incoming.telemetry.mozilla.org"
         server_endpoint: None,
-        // Use the Glean provided one once https://bugzilla.mozilla.org/show_bug.cgi?id=1675468 is resolved
-        uploader: Some(Box::new(VPNPingUploader::new())),
+        // Once https://bugzilla.mozilla.org/show_bug.cgi?id=1675468 is resolved
+        // we will need to actually create a custom no-op one.
+        // We want a no-op uploader for tests.
+        uploader: None,
         // Whether Glean should schedule “metrics” pings for you
         use_core_mps: true,
         trim_data_to_registered_pings: false,

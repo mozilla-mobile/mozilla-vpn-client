@@ -15,8 +15,10 @@
 #include "settingsholder.h"
 
 constexpr const char* EXIT_COUNTRY_CODE = "exit_country_code";
+constexpr const char* EXIT_COUNTRY_NAME = "exit_country_name";
 constexpr const char* EXIT_CITY_NAME = "exit_city_name";
 constexpr const char* ENTER_COUNTRY_CODE = "enter_country_code";
+constexpr const char* ENTER_COUNTRY_NAME = "enter_country_name";
 constexpr const char* ENTER_CITY_NAME = "enter_city_name";
 
 namespace {
@@ -39,7 +41,26 @@ QList<Server> filterServerList(const QList<Server>& servers) {
 
 ServerData::ServerData() { MZ_COUNT_CTOR(ServerData); }
 
+ServerData::ServerData(const ServerData& other) {
+  MZ_COUNT_CTOR(ServerData);
+  *this = other;
+}
+
 ServerData::~ServerData() { MZ_COUNT_DTOR(ServerData); }
+
+ServerData& ServerData::operator=(const ServerData& other) {
+  m_initialized = other.m_initialized;
+  m_exitCountryCode = other.m_exitCountryCode;
+  m_exitCityName = other.m_exitCityName;
+  m_entryCountryCode = other.m_entryCountryCode;
+  m_entryCityName = other.m_entryCityName;
+  m_previousExitCountryCode = other.m_previousExitCountryCode;
+  m_previousExitCityName = other.m_previousExitCityName;
+  m_exitServerPublicKey = other.m_exitServerPublicKey;
+  m_entryServerPublicKey = other.m_entryServerPublicKey;
+
+  return *this;
+}
 
 void ServerData::initialize() {
   m_initialized = true;
@@ -82,13 +103,22 @@ void ServerData::update(const QString& exitCountryCode,
   Q_ASSERT(m_initialized);
 
   m_previousExitCountryCode = m_exitCountryCode;
+  m_previousExitCountryName =
+      MozillaVPN::instance()->serverCountryModel()->countryName(
+          exitCountryCode);
   m_previousExitCityName = m_exitCityName;
 
   QJsonObject obj;
   obj[EXIT_COUNTRY_CODE] = exitCountryCode;
+  obj[EXIT_COUNTRY_NAME] =
+      MozillaVPN::instance()->serverCountryModel()->countryName(
+          exitCountryCode);
   obj[EXIT_CITY_NAME] = exitCityName;
 
   obj[ENTER_COUNTRY_CODE] = entryCountryCode;
+  obj[ENTER_COUNTRY_NAME] =
+      MozillaVPN::instance()->serverCountryModel()->countryName(
+          entryCountryCode);
   obj[ENTER_CITY_NAME] = entryCityName;
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
@@ -117,10 +147,30 @@ bool ServerData::settingsChanged() {
 
   m_exitCountryCode = obj[EXIT_COUNTRY_CODE].toString();
   m_exitCityName = obj[EXIT_CITY_NAME].toString();
+  // If obj[EXIT_COUNTRY_NAME] does not exist then we need to extract the
+  // country name from the country code
+  if (!obj.contains(EXIT_COUNTRY_NAME)) {
+    m_exitCountryName =
+        MozillaVPN::instance()->serverCountryModel()->countryName(
+            m_exitCountryCode);
+  } else {
+    m_exitCountryName = obj[EXIT_COUNTRY_NAME].toString();
+  }
+
   m_entryCountryCode = obj[ENTER_COUNTRY_CODE].toString();
   m_entryCityName = obj[ENTER_CITY_NAME].toString();
+  // If obj[ENTER_COUNTRY_NAME] does not exist then we need to extract the
+  // country name from the country code
+  if (!obj.contains(ENTER_COUNTRY_NAME)) {
+    m_entryCountryName =
+        MozillaVPN::instance()->serverCountryModel()->countryName(
+            m_entryCountryCode);
+  } else {
+    m_entryCountryName = obj[ENTER_COUNTRY_NAME].toString();
+  }
 
   emit changed();
+  emit retranslationNeeded();
   return true;
 }
 
@@ -134,10 +184,27 @@ QString ServerData::localizedEntryCityName() const {
   return ServerI18N::translateCityName(m_entryCountryCode, m_entryCityName);
 }
 
+QString ServerData::localizedPreviousExitCountryName() const {
+  Q_ASSERT(m_initialized);
+  return ServerI18N::translateCityName(m_previousExitCountryCode,
+                                       m_previousExitCountryName);
+}
+
 QString ServerData::localizedPreviousExitCityName() const {
   Q_ASSERT(m_initialized);
   return ServerI18N::translateCityName(m_previousExitCountryCode,
                                        m_previousExitCityName);
+}
+
+QString ServerData::localizedEntryCountryName() const {
+  Q_ASSERT(m_initialized);
+  return ServerI18N::translateCountryName(m_entryCountryCode,
+                                          m_entryCountryName);
+}
+
+QString ServerData::localizedExitCountryName() const {
+  Q_ASSERT(m_initialized);
+  return ServerI18N::translateCountryName(m_exitCountryCode, m_exitCountryName);
 }
 
 void ServerData::changeServer(const QString& countryCode,
@@ -159,9 +226,12 @@ void ServerData::forget() {
 
   m_exitCountryCode.clear();
   m_exitCityName.clear();
+  m_exitCountryName.clear();
   m_entryCountryCode.clear();
   m_entryCityName.clear();
+  m_entryCountryName.clear();
   m_previousExitCountryCode.clear();
+  m_previousExitCountryName.clear();
   m_previousExitCityName.clear();
 }
 

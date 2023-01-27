@@ -94,6 +94,8 @@ const QString StatusIcon::iconString() {
 
   switch (vpn->controller()->state()) {
     case Controller::StateOn:
+      [[fallthrough]];
+    case Controller::StateSilentSwitching:
       m_animatedIconTimer.stop();
       return LOGO_GENERIC_ON;
       break;

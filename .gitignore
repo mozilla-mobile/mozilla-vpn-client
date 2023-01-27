@@ -182,7 +182,7 @@ macos/pkg/Resources/*.lproj
 addons/generated/
 
 # Adjust SDK Files
-android/src/com/adjust
+android/adjust/src/
 
 # ipmonitor
 tools/ipmonitor/ipmonitor

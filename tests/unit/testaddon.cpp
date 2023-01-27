@@ -353,14 +353,6 @@ void TestAddon::conditionWatcher_featuresEnabled() {
   QVERIFY(!Feature::getOrNull("testFeatureAddon"));
   Feature feature(
       "testFeatureAddon", "Feature Addon",
-      false,                          // Is Major Feature
-      L18nStrings::Empty,             // Display name
-      L18nStrings::Empty,             // Description
-      L18nStrings::Empty,             // LongDescr
-      "",                             // ImagePath
-      "",                             // IconPath
-      "",                             // link URL
-      "1.0",                          // released
       []() -> bool { return true; },  // Can be flipped on
       []() -> bool { return true; },  // Can be flipped off
       QStringList(),                  // feature dependencies
@@ -401,6 +393,8 @@ void TestAddon::conditionWatcher_featuresEnabled() {
 }
 
 void TestAddon::conditionWatcher_group() {
+  SettingsHolder::instance()->setInstallationTime(QDateTime::currentDateTime());
+
   QObject parent;
   AddonConditionWatcher* acw1 =
       AddonConditionWatcherTriggerTimeSecs::maybeCreate(&parent, 1);
@@ -445,6 +439,8 @@ void TestAddon::conditionWatcher_group() {
 }
 
 void TestAddon::conditionWatcher_triggerTime() {
+  SettingsHolder::instance()->setInstallationTime(QDateTime::currentDateTime());
+
   QObject parent;
   AddonConditionWatcher* acw =
       AddonConditionWatcherTriggerTimeSecs::maybeCreate(&parent, 1);
@@ -865,8 +861,6 @@ void TestAddon::message_notification_data() {
   TestHelper::resetLastSystemNotification();
   // Message is created for the first time,
   // but user is not logged in, no  message sent
-  static_cast<AddonMessage*>(
-      Addon::create(&parent, ":/addons_test/message1.json"));
   QTest::addRow("not-logged-in")
       << QString() << QString() << TestHelper::lastSystemNotification.title
       << TestHelper::lastSystemNotification.message;

@@ -57,8 +57,8 @@ int CommandSelect::run(QStringList& tokens) {
       return 1;
     }
 
-    vpn.currentServer()->changeServer(exitCountryCode, exitCityName,
-                                      entryCountryCode, entryCityName);
+    vpn.serverData()->changeServer(exitCountryCode, exitCityName,
+                                   entryCountryCode, entryCityName);
     return 0;
   });
 }

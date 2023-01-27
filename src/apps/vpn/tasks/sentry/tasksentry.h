@@ -20,8 +20,34 @@ class TaskSentry final : public Task {
 
   void run() override;
 
+  enum ContentType { Unknown, Ping, CrashReport };
+  Q_ENUM(ContentType);
+
+  /**
+   * Reads the sentry-envelope and checks
+   * if it is a Ping or CrashReport
+   */
+  TaskSentry::ContentType parseEnvelope();
+
  private:
+  /**
+   * @brief Creates a network request to send the envelope
+   *
+   */
+  void sendRequest();
+
+  /**
+   * @brief Checks if a Sentry header Obj contains
+   * a crash report
+   * @param obj - The json object to chekc
+   * @return true - crashdata exists
+   * @return false - is something else
+   */
+  static bool isCrashReportHeader(const QJsonObject& obj);
+
   QByteArray m_envelope;
+  TaskSentry::ContentType m_Type = TaskSentry::ContentType::Unknown;
+  QString m_eventID;
 };
 
 #endif  // TASKSENTRY_H

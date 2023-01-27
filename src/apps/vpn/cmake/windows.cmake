@@ -23,8 +23,6 @@ target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
 
 # Windows platform source files
 target_sources(mozillavpn PRIVATE
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commandcrashreporter.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commandcrashreporter.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemon.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemon.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemonlocalserver.cpp
@@ -94,7 +92,7 @@ add_custom_target(balrogdll ALL
                 CC=gcc
                 CGO_CFLAGS="-O3 -Wall -Wno-unused-function -Wno-switch -std=gnu11 -DWINVER=0x0601"
                 CGO_LDFLAGS="-Wl,--dynamicbase -Wl,--nxcompat -Wl,--export-all-symbols -Wl,--high-entropy-va"
-            go build -buildmode c-shared -ldflags="-w -s" -trimpath -v -o "${CMAKE_CURRENT_BINARY_DIR}/balrog.dll"
+            go build -buildmode c-shared -buildvcs=false -ldflags="-w -s" -trimpath -v -o "${CMAKE_CURRENT_BINARY_DIR}/balrog.dll"
 )
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_BINARY_DIR}/go-cache)
 add_dependencies(mozillavpn balrogdll)
@@ -106,16 +104,6 @@ target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/balrog.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/balrog.h
 )
-
-# Compile and link the signature library.
-include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
-add_rust_library(signature
-    PACKAGE_DIR ${CMAKE_SOURCE_DIR}/signature
-    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
-    CRATE_NAME signature
-)
-target_compile_definitions(mozillavpn PRIVATE MVPN_SIGNATURE)
-target_link_libraries(mozillavpn PRIVATE signature)
 
 install(TARGETS mozillavpn DESTINATION .)
 install(FILES $<TARGET_PDB_FILE:mozillavpn> DESTINATION . OPTIONAL)

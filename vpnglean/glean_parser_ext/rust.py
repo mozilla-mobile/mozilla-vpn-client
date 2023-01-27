@@ -206,11 +206,11 @@ def output_rust(objs, output_fd, options={}):
     #   path:  The fully qualified path to the metric object in Rust
     #
     # This map is only filled for metrics, not for pings.
-    #
-    # Example:
-    #
-    #   ("COUNTERS", "CounterMetric") -> [(1, "test_only::clicks"), ...]
-    objs_by_type = {}
+    objs_by_type = {
+        # Implemented metric types needs to be added here.
+        ("TIMING_DISTRIBUTION_MAP", "TimingDistributionMetric"): [],
+        ("COUNTER_MAP", "CounterMetric"): [],
+    }
 
     # Map from a metric ID to the fully qualified path of the event object in Rust.
     # Required for the special handling of event lookups.
@@ -241,8 +241,6 @@ def output_rust(objs, output_fd, options={}):
                     events_by_id[get_metric_id(metric)] = full_path
                     continue
 
-                if key not in objs_by_type:
-                    objs_by_type[key] = []
                 objs_by_type[key].append((get_metric_id(metric), full_path))
 
     # Now for the modules for each category.

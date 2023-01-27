@@ -9,5 +9,3 @@ InspectorHandler::InspectorHandler(QObject*) {}
 InspectorHandler::~InspectorHandler() = default;
 
 QString InspectorHandler::appVersionForUpdate() { return "42"; }
-
-bool InspectorHandler::forceRTL() { return false; }

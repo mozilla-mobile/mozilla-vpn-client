@@ -10,6 +10,7 @@
 #include <QUrl>
 #include <QUrlQuery>
 
+#include "appconstants.h"
 #include "authenticationlistener.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
@@ -49,13 +50,15 @@ void TaskAuthenticate::run() {
           this, &Task::completed);
 
   connect(m_authenticationListener, &AuthenticationListener::completed, this,
-          [this, pkceCodeVerifier](const QString& pkceCodeSucces) {
+          [this, pkceCodeVerifier](const QString& pkceCodeSuccess) {
             logger.debug() << "Authentication completed with code:"
-                           << logger.sensitive(pkceCodeSucces);
+                           << logger.sensitive(pkceCodeSuccess);
 
-            NetworkRequest* request =
-                NetworkRequest::createForAuthenticationVerification(
-                    this, pkceCodeSucces, pkceCodeVerifier);
+            NetworkRequest* request = new NetworkRequest(this, 200);
+            request->post(
+                AppConstants::apiUrl(AppConstants::LoginVerify),
+                QJsonObject{{"code", pkceCodeSuccess},
+                            {"code_verifier", QString(pkceCodeVerifier)}});
 
             connect(
                 request, &NetworkRequest::requestFailed, this,

@@ -74,19 +74,22 @@ void BenchmarkTaskTransfer::createNetworkRequest() {
   NetworkRequest* request = nullptr;
   switch (m_type) {
     case BenchmarkDownload: {
-      request = NetworkRequest::createForGetUrl(this, m_url.toString());
+      request = new NetworkRequest(this);
+      request->get(m_url);
       break;
     }
     case BenchmarkUpload: {
       UploadDataGenerator* uploadData =
-          new UploadDataGenerator(AppConstants::BENCHMARK_MAX_BITS_UPLOAD);
+          new UploadDataGenerator(AppConstants::BENCHMARK_MAX_BYTES_UPLOAD);
 
       if (!uploadData->open(UploadDataGenerator::ReadOnly)) {
         emit finished(0, true);
         emit completed();
       };
-      request = NetworkRequest::createForUploadData(this, m_url.toString(),
-                                                    uploadData);
+      request = new NetworkRequest(this, 200);
+      request->requestInternal().setHeader(QNetworkRequest::ContentTypeHeader,
+                                           "application/x-www-form-urlencoded");
+      request->post(m_url, uploadData);
       break;
     }
   }
@@ -102,20 +105,49 @@ void BenchmarkTaskTransfer::createNetworkRequestWithRecord(
   NetworkRequest* request = nullptr;
   switch (m_type) {
     case BenchmarkDownload: {
-      request = NetworkRequest::createForGetHostAddress(this, m_url.toString(),
-                                                        record.value());
+      QUrl requestUrl(m_url);
+      QString hostname = requestUrl.host();
+
+      // Rewrite the request URL to use an explicit host address.
+      if (record.value().protocol() == QAbstractSocket::IPv6Protocol) {
+        requestUrl.setHost("[" + record.value().toString() + "]");
+      } else {
+        requestUrl.setHost(record.value().toString());
+      }
+
+      request = new NetworkRequest(this, 200);
+      request->requestInternal().setRawHeader("Host", hostname.toLocal8Bit());
+      request->requestInternal().setPeerVerifyName(hostname);
+
+      request->get(requestUrl);
       break;
     }
     case BenchmarkUpload: {
       UploadDataGenerator* uploadData =
-          new UploadDataGenerator(AppConstants::BENCHMARK_MAX_BITS_UPLOAD);
+          new UploadDataGenerator(AppConstants::BENCHMARK_MAX_BYTES_UPLOAD);
 
       if (!uploadData->open(UploadDataGenerator::ReadOnly)) {
         emit finished(0, true);
         emit completed();
       };
-      request = NetworkRequest::createForUploadDataHostAddress(
-          this, m_url.toString(), uploadData, record.value());
+      QUrl requestUrl(m_url);
+      QString hostname = requestUrl.host();
+
+      // Rewrite the request URL to use an explicit host address.
+      if (record.value().protocol() == QAbstractSocket::IPv6Protocol) {
+        requestUrl.setHost("[" + record.value().toString() + "]");
+      } else {
+        requestUrl.setHost(record.value().toString());
+      }
+
+      request = new NetworkRequest(this, 200);
+      request->requestInternal().setHeader(QNetworkRequest::ContentTypeHeader,
+                                           "application/x-www-form-urlencoded");
+
+      request->requestInternal().setRawHeader("Host", hostname.toLocal8Bit());
+      request->requestInternal().setPeerVerifyName(hostname);
+
+      request->post(requestUrl, uploadData);
       break;
     }
     default: {

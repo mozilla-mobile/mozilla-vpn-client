@@ -4,6 +4,10 @@
 
 add_library(shared-sources INTERFACE)
 
+if(NOT MSVC)
+  target_compile_options(shared-sources INTERFACE -Wall -Werror -Wno-conversion)
+endif()
+
 # Generated version header file
 configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 target_sources(shared-sources INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
@@ -17,6 +21,8 @@ set_property(TARGET shared-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
 
 # Shared components
 target_sources(shared-sources INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/collator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/collator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/constants.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/constants.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/cryptosettings.cpp
@@ -44,14 +50,20 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/ipaddress.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/itempicker.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/itempicker.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/languagei18n.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/languagei18n.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/leakdetector.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/leakdetector.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/localizer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/localizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/logger.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/logger.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/loghandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/loghandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/networkmanager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/networkmanager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/networkrequest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/networkrequest.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/qmlengineholder.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/qmlengineholder.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/qmlpath.cpp
@@ -68,6 +80,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/rfc/rfc5735.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/settingsholder.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/settingsholder.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/signature.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/signature.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/simplenetworkmanager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/simplenetworkmanager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/task.h
@@ -75,6 +89,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/taskscheduler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/temporarydir.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/temporarydir.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/theme.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/theme.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/urlopener.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/urlopener.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/versionutils.cpp
@@ -87,6 +103,20 @@ if(UNIX)
         ${CMAKE_CURRENT_SOURCE_DIR}/shared/signalhandler.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/shared/signalhandler.h
      )
+endif()
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
+   ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" OR
+   ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+    # Compile and link the signature library.
+    include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
+    add_rust_library(signature
+        PACKAGE_DIR ${CMAKE_SOURCE_DIR}/signature
+        BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
+        CRATE_NAME signature
+    )
+    target_compile_definitions(shared-sources INTERFACE MZ_SIGNATURE)
+    target_link_libraries(shared-sources INTERFACE signature)
 endif()
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/${MZ_PLATFORM_NAME}/sources.cmake)

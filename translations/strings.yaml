@@ -236,26 +236,6 @@ purchaseWeb:
     comment: "%1 is the user’s email address."
   inProgress2: Please continue subscribing in your browser…
 
-# Adding functionality for users selecting custom DNS settings, associated settings nav items, headers, and selectable options. Some is not included in 2.5.
-customDNSSettings:
-  dnsInfoAlert: VPN must be off to change these settings
-  dnsNavItem: DNS settings
-  dnsDefaultToggle: Default
-  dnsDefaultRadioHeader: Use default DNS
-  dnsDefaultRadioBody: Automatically use Mozilla VPN-protected DNS
-  dnsAdvancedToggle: Advanced
-  dnsAdblockRadioHeader: Use adblock DNS
-  dnsAdblockRadioBody: Block internet ads with VPN
-  dnsAntitrackRadioHeader: Use anti-tracking DNS
-  dnsAntitrackRadioBody: Block harmful domains with VPN
-  dnsAdblockAntiTrackRadioHeader: Use adblock and anti-tracking DNS
-  dnsAdblockAntiTrackRadioBody: Block internet ads and harmful domains with VPN
-  dnsCustomDNSRadioHeader: Use custom DNS
-  dnsCustomDNSRadioBody: Resolve websites using a custom DNS
-  dnsFieldPlaceHolder: Enter custom DNS
-  # The below is an inline error when an invalid DNS is entered into the custom DNS field
-  inlineCustomDNSError: Invalid DNS, please try a new one
-
 networkSettings:
   multihopTitle: Multi-hop tunnel
 
@@ -307,7 +287,11 @@ systray:
   quit: Quit Mozilla VPN
 
 settings:
-  systemPreferences: System preferences
+  privacySettings: Privacy features
+  appExclusionSettings: App exclusions
+  tipsAndTricksSettings: Tips and tricks
+  dnsSettings: DNS settings
+  appPreferences: App preferences
   dataCollectionDescription: Allow Mozilla VPN to send technical, interaction, and campaign and referral data to Mozilla
   startAtBootTitle:
     value: Connect VPN on startup
@@ -316,6 +300,28 @@ settings:
   crashOptInDescription:
     value: Allow Mozilla VPN to automatically send crash reports to help fix unexpected crashes
     comment: This is the description of a checkbox option to allow the app to send crash reports without a user prompt
+  privacyCard: These options may cause some websites to break or not display content correctly.
+  privacyAdblockTitle: Block ads
+  privacyAdblockBody: Reduces the number of ads you see when you’re using VPN
+  privacyTrackerTitle: Block trackers
+  privacyTrackerBody: Fewer harmful domains will be able to track you
+  privacyMalwareTitle: Block malware
+  privacyMalwareBody: Helps protect you from ransomware, phishing, spyware, viruses, and malware
+  dnsSettingsStandardDNSTitle: Use standard DNS
+  dnsSettingsStandardDNSBody: Resolve websites using Mozilla VPN’s standard DNS
+  dnsSettingsCustomDNSTitle: Use custom DNS
+  dnsSettingsCustomDNSBody: Resolve websites using a custom DNS
+  dnsSettingsCustomDNSError: Invalid DNS, please try a new one
+  dnsSettingsWarning: These options may cause some websites to break or not display content correctly.
+  dnsSettingsInputPlaceholder: Enter custom DNS
+
+dnsOverwriteDialog:
+  titleDNS: Override DNS settings?
+  titlePrivacy: Override privacy features?
+  bodyDNS: Using these privacy features will override your custom DNS.
+  bodyPrivacy: Using a custom DNS will override your preferences in the privacy features page.
+  primaryButton: Confirm
+  secondaryButton: Maybe later
 
 aboutUs:
   licenses: Licenses
@@ -718,7 +724,7 @@ paymentMethods:
 tutorialPopup:
   tutorialCompleteHeadline: Well done!
   tutorialCompletePrimaryButtonLabel: Let’s go!
-  secondaryButtonLabel: Come back later
+  tutorialFinishedSecondaryButtonLabel: Dismiss
   leaveTutorialButton: Leave tutorial
 
   tutorialLeaveHeadline: Leave tutorial?

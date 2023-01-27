@@ -1445,7 +1445,7 @@ limitations under the License.
 
 
 The MIT License (MIT) - sentry-native
-=================================
+=====================================
 
 Copyright (c) 2019 Sentry (https://sentry.io) and individual contributors.
 All rights reserved.

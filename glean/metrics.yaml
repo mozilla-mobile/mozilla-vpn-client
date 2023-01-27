@@ -18,6 +18,36 @@
 $schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
 
 sample:
+  android_daemon_status:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      A status report of the Android Daemon. Contains information
+      if the daemon' connection health component.
+      This will help us understand if that component did activate,
+      and if so if it did help fix the connection.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-3743
+    data_reviews:
+      - TODO
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - sstreich@mozilla.com
+    expires: 2024-01-01
+    extra_keys:
+      connection_health_state:
+        description: |
+          The State of connection health. Possible values are:
+          deactivated-feature-flagged -> deactive due A/B testing.
+          deactivated -> vpn disconnected
+          active-not-silent-switched -> connection is healthy
+          active-silent-switched -> connection was unhealthy
+          active-panic-state-reached -> connection was unhealthy
+        type: string
+
   addon_state_changed:
     type: event
     lifetime: ping
@@ -283,24 +313,6 @@ sample:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
     data_sensitivity:
       - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-    expires: never
-
-  app_permissions_view_warning:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has opened the app permissions view but is unable
-      to make changes because the VPN is on.
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-    data_sensitivity:
-      - technical
     notification_emails:
       - amarchesini@mozilla.com
     expires: never
@@ -683,41 +695,6 @@ sample:
       - amarchesini@mozilla.com
     expires: never
 
-  network_settings_view_opened:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has opened the network settings view
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-    expires: never
-
-  network_settings_view_warning:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has opened network settings but is unable
-      to make changes because the VPN is on.
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - amarchesini@mozilla.com
-    expires: never
-
   notifications_view_opened:
     type: event
     lifetime: ping
@@ -731,24 +708,6 @@ sample:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
     data_sensitivity:
       - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-    expires: never
-
-  notifications_view_warning:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has opened notification settings and is unable
-      to make changes because the VPN is on.
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-    data_sensitivity:
-      - technical
     notification_emails:
       - amarchesini@mozilla.com
     expires: never
@@ -1639,7 +1598,7 @@ sample:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-3320
     data_reviews:
-      - TODO
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5525
     data_sensitivity:
       - technical
     notification_emails:
@@ -1657,3 +1616,24 @@ sample:
         description: |
           The line number where the error has been triggered
         type: quantity
+
+  non_default_language_used:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has chosen a default language.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-3742
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5525
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+    extra_keys:
+      language_code:
+        description: The language code chosen.
+        type: string

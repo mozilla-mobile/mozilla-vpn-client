@@ -15,10 +15,15 @@ Logger logger("TaskControllerAction");
 }
 
 TaskControllerAction::TaskControllerAction(
-    TaskControllerAction::TaskAction action)
+    TaskControllerAction::TaskAction action,
+    ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy)
     : Task("TaskControllerAction"),
       m_action(action),
-      m_lastState(Controller::State::StateOff) {
+      m_lastState(Controller::State::StateOff),
+      // Let's take a copy of the current server-data to activate/switch to the
+      // current locations even if the settings change in the meantime.
+      m_serverData(*MozillaVPN::instance()->serverData()),
+      m_serverCoolDownPolicy(serverCoolDownPolicy) {
   MZ_COUNT_CTOR(TaskControllerAction);
 
   logger.debug() << "TaskControllerAction created" << action;
@@ -35,13 +40,8 @@ void TaskControllerAction::run() {
   Controller* controller = MozillaVPN::instance()->controller();
   Q_ASSERT(controller);
 
-  if (m_action == eSilentSwitch) {
-    connect(controller, &Controller::silentSwitchDone, this,
-            &TaskControllerAction::silentSwitchDone, Qt::QueuedConnection);
-  } else {
-    connect(controller, &Controller::stateChanged, this,
-            &TaskControllerAction::stateChanged, Qt::QueuedConnection);
-  }
+  connect(controller, &Controller::stateChanged, this,
+          &TaskControllerAction::stateChanged, Qt::QueuedConnection);
 
   bool expectSignal = false;
 
@@ -49,7 +49,7 @@ void TaskControllerAction::run() {
 
   switch (m_action) {
     case eActivate:
-      expectSignal = controller->activate();
+      expectSignal = controller->activate(m_serverData);
       break;
 
     case eDeactivate:
@@ -57,11 +57,12 @@ void TaskControllerAction::run() {
       break;
 
     case eSilentSwitch:
-      expectSignal = controller->silentSwitchServers();
+      expectSignal = controller->silentSwitchServers(m_serverCoolDownPolicy ==
+                                                     eServerCoolDownNeeded);
       break;
 
     case eSwitch:
-      expectSignal = controller->switchServers();
+      expectSignal = controller->switchServers(m_serverData);
       break;
   }
 
@@ -93,12 +94,6 @@ void TaskControllerAction::stateChanged() {
     m_timer.stop();
     emit completed();
   }
-}
-
-void TaskControllerAction::silentSwitchDone() {
-  logger.debug() << "Operation completed";
-  m_timer.stop();
-  emit completed();
 }
 
 void TaskControllerAction::checkStatus() {

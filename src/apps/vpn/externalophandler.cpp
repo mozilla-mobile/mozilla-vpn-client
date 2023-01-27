@@ -10,6 +10,8 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "tasks/controlleraction/taskcontrolleraction.h"
+#include "taskscheduler.h"
 
 namespace {
 ExternalOpHandler* s_instance = nullptr;
@@ -63,10 +65,14 @@ bool ExternalOpHandler::request(Op op) {
       vpn->requestAbout();
       break;
     case OpActivate:
-      vpn->controller()->activate();
+      TaskScheduler::deleteTasks();
+      TaskScheduler::scheduleTask(
+          new TaskControllerAction(TaskControllerAction::eActivate));
       break;
     case OpDeactivate:
-      vpn->controller()->deactivate();
+      TaskScheduler::deleteTasks();
+      TaskScheduler::scheduleTask(
+          new TaskControllerAction(TaskControllerAction::eDeactivate));
       break;
     case OpQuit:
       vpn->controller()->quit();

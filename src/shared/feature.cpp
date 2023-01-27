@@ -28,22 +28,16 @@ void Feature::maybeInitialize() {
     Q_ASSERT(!s_featuresList);
     s_featuresList = new QList<Feature*>();
 
-#define FEATURE(id, name, isMajor, displayNameId, shortDescId, descId,         \
-                imgPath, iconPath, linkUrl, releaseVersion, flippableOn,       \
-                flippableOff, otherFeatureDependencies, callback)              \
-  new Feature(#id, name, isMajor, displayNameId, shortDescId, descId, imgPath, \
-              iconPath, linkUrl, releaseVersion, flippableOn, flippableOff,    \
-              otherFeatureDependencies, callback);
+#define FEATURE(id, name, flippableOn, flippableOff, otherFeatureDependencies, \
+                callback)                                                      \
+  new Feature(#id, name, flippableOn, flippableOff, otherFeatureDependencies,  \
+              callback);
 #include "featurelist.h"
 #undef FEATURE
   }
 }
 
-Feature::Feature(const QString& id, const QString& name, bool isMajor,
-                 L18nStrings::String displayName_id,
-                 L18nStrings::String shortDesc_id, L18nStrings::String desc_id,
-                 const QString& imgPath, const QString& iconPath,
-                 const QString& linkUrl, const QString& aReleaseVersion,
+Feature::Feature(const QString& id, const QString& name,
                  std::function<bool()>&& flippableOn,
                  std::function<bool()>&& flippableOff,
                  const QStringList& featureDependencies,
@@ -51,14 +45,6 @@ Feature::Feature(const QString& id, const QString& name, bool isMajor,
     : QObject(qApp),
       m_id(id),
       m_name(name),
-      m_majorFeature(isMajor),
-      m_displayName_id(displayName_id),
-      m_shortDescription_id(shortDesc_id),
-      m_description_id(desc_id),
-      m_imagePath(imgPath),
-      m_iconPath(iconPath),
-      m_linkUrl(linkUrl),
-      m_releaseVersion(aReleaseVersion),
       m_flippableOn(std::move(flippableOn)),
       m_flippableOff(std::move(flippableOff)),
       m_featureDependencies(featureDependencies),
@@ -69,24 +55,6 @@ Feature::Feature(const QString& id, const QString& name, bool isMajor,
   s_featuresHashtable->insert(m_id, this);
   Q_ASSERT(s_featuresList);
   s_featuresList->append(this);
-
-  auto releaseVersion = VersionUtils::stripMinor(aReleaseVersion);
-  auto currentVersion = VersionUtils::stripMinor(Constants::versionString());
-
-  auto cmp = VersionUtils::compareVersions(releaseVersion, currentVersion);
-  if (cmp == -1) {
-    // Release version < currVersion
-    m_released = true;
-    m_new = false;
-  } else if (cmp == 0) {
-    // Release version === currVersion
-    m_released = true;
-    m_new = true;
-  } else {
-    // releaseVersion > currVersion
-    m_released = false;
-    m_new = false;
-  }
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
@@ -182,10 +150,6 @@ bool Feature::isSupported(bool ignoreCache) const {
 }
 
 bool Feature::isSupportedIgnoringFlip() const {
-  if (!m_released) {
-    return false;
-  }
-
   if (!m_callback()) {
     return false;
   }
@@ -198,16 +162,6 @@ bool Feature::isSupportedIgnoringFlip() const {
   }
 
   return true;
-}
-
-QString Feature::displayName() const {
-  return L18nStrings::instance()->t(m_displayName_id);
-}
-QString Feature::description() const {
-  return L18nStrings::instance()->t(m_description_id);
-}
-QString Feature::shortDescription() const {
-  return L18nStrings::instance()->t(m_shortDescription_id);
 }
 
 void Feature::maybeFlipOnOrOff() {

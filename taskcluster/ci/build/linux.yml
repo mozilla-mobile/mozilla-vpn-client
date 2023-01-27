@@ -7,6 +7,11 @@ task-defaults:
         symbol: B
         kind: build
         tier: 1
+    fetches:
+        build:
+            - artifact: mozillavpn-sources.tar.gz
+    dependencies:
+        build: build-linux/source
     worker-type: b-linux
     worker:
         max-run-time: 3600
@@ -16,77 +21,55 @@ task-defaults:
               name: public/build
               path: /builds/worker/artifacts
     run:
-          using: run-task
-          use-caches: true
-
-linux/source:
-    description: "Linux Source Build"
-    treeherder:
-        platform: linux/source
-    worker:
-        docker-image: {in-tree: build}
-    run:
-        cwd: '{checkout}'
-        command: >-
-            ./scripts/linux/script.sh --source &&
-            tar -C .tmp -zvcf /builds/worker/artifacts/mozillavpn-sources.tar.gz .
+        using: run-task
+        use-caches: true
+        command: /builds/worker/builder.sh
 
 linux/bionic:
     description: "Linux Build (Ubuntu/Bionic)"
     treeherder:
         platform: linux/bionic
-    fetches:
-        build:
-            - artifact: mozillavpn-sources.tar.gz
-    dependencies:
-        build: build-linux/source
     worker:
         docker-image: {in-tree: linux-build-bionic}
-    run:
-        command: /builds/worker/linux.sh
     add-index-routes: linux-bionic
 
 linux/focal:
     description: "Linux Build (Ubuntu/Focal)"
     treeherder:
         platform: linux/focal
-    fetches:
-        build:
-            - artifact: mozillavpn-sources.tar.gz
-    dependencies:
-        build: build-linux/source
     worker:
         docker-image: {in-tree: linux-build-focal}
-    run:
-        command: /builds/worker/linux.sh
     add-index-routes: linux-focal
 
 linux/jammy:
     description: "Linux Build (Ubuntu/Jammy)"
     treeherder:
         platform: linux/jammy
-    fetches:
-        build:
-            - artifact: mozillavpn-sources.tar.gz
-    dependencies:
-        build: build-linux/source
     worker:
         docker-image: {in-tree: linux-build-jammy}
-    run:
-        command: /builds/worker/linux.sh
     add-index-routes: linux-jammy
 
 linux/kinetic:
     description: "Linux Build (Ubuntu/Kinetic)"
     treeherder:
         platform: linux/kinetic
-    fetches:
-        build:
-            - artifact: mozillavpn-sources.tar.gz
-    dependencies:
-        build: build-linux/source
     worker:
         docker-image: {in-tree: linux-build-kinetic}
-    run:
-        command: /builds/worker/linux.sh
     add-index-routes: linux-kinetic
+
+linux/fedora-fc36:
+    description: "Linux Build (Fedora/36)"
+    treeherder:
+        platform: linux/fedora-fc36
+    worker:
+        docker-image: {in-tree: linux-build-fedora-fc36}
+    add-index-routes: linux-fedora-fc36
+
+linux/fedora-fc37:
+    description: "Linux Build (Fedora/37)"
+    treeherder:
+        platform: linux/fedora-fc37
+    worker:
+        docker-image: {in-tree: linux-build-fedora-fc37}
+    add-index-routes: linux-fedora-fc37
+

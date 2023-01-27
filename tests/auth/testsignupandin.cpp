@@ -531,7 +531,8 @@ QString TestSignUpAndIn::fetchCode(const QString& code) {
     // test we do an hack.
     TaskFunction dummyTask([] {});
 
-    NetworkRequest* nr = NetworkRequest::createForGetUrl(&dummyTask, url);
+    NetworkRequest* nr = new NetworkRequest(&dummyTask);
+    nr->get(url);
 
     QByteArray jsonData;
     EventLoop loop;

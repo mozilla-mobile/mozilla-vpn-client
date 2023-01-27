@@ -7,6 +7,7 @@
 #include <emscripten/bind.h>
 #include <emscripten/emscripten.h>
 
+#include <QIODevice>
 #include <QJsonDocument>
 #include <QJsonObject>
 
@@ -97,27 +98,36 @@ EM_JS(void, call_mvpnNetworkRequest,
       });
 
 // static
-void WasmNetworkRequest::deleteRequest(NetworkRequest* request) {
+bool WasmNetworkRequest::deleteResource(NetworkRequest* request) {
   logger.debug() << "Delete request to JS";
 
   call_mvpnNetworkRequest(processNetworkRequest(request), "DELETE",
                           request->url().toString().toUtf8().data(), "", 0);
+  return true;
 }
 
 // static
-void WasmNetworkRequest::getRequest(NetworkRequest* request) {
+bool WasmNetworkRequest::getResource(NetworkRequest* request) {
   logger.debug() << "Get request to JS";
 
   call_mvpnNetworkRequest(processNetworkRequest(request), "GET",
                           request->url().toString().toUtf8().data(), "", 0);
+  return true;
 }
 
 // static
-void WasmNetworkRequest::postRequest(NetworkRequest* request,
-                                     const QByteArray& body) {
+bool WasmNetworkRequest::postResource(NetworkRequest* request,
+                                      const QByteArray& body) {
   logger.debug() << "Post request to JS";
 
   call_mvpnNetworkRequest(processNetworkRequest(request), "POST",
                           request->url().toString().toUtf8().data(),
                           body.data(), body.length());
+  return true;
+}
+
+// static
+bool WasmNetworkRequest::postResourceIODevice(NetworkRequest* request,
+                                              QIODevice* device) {
+  return postResource(request, device->readAll());
 }

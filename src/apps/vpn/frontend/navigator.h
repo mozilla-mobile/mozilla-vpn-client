@@ -44,6 +44,7 @@ class Navigator final : public QObject {
     ScreenBackendFailure,
     ScreenBillingNotAvailable,
     ScreenCaptivePortal,
+    ScreenCrashReporting,
     ScreenDeleteAccount,
     ScreenDeviceLimit,
     ScreenGetHelp,

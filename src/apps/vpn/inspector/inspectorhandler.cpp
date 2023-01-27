@@ -60,7 +60,6 @@ Logger logger("InspectorHandler");
 
 bool s_forwardNetwork = false;
 bool s_mockFreeTrial = false;
-bool s_forceRTL = false;
 
 QString s_updateVersion;
 QStringList s_pickedItems;
@@ -682,33 +681,6 @@ static QList<InspectorCommand> s_commands{
                        return obj;
                      }},
 
-    InspectorCommand{
-        "reset_devices",
-        "Remove all the existing devices and add the current one if needed", 0,
-        [](InspectorHandler*, const QList<QByteArray>&) {
-          MozillaVPN* vpn = MozillaVPN::instance();
-          Q_ASSERT(vpn);
-
-          DeviceModel* dm = vpn->deviceModel();
-          Q_ASSERT(dm);
-
-          bool hasCurrentOne = false;
-          for (const Device& device : dm->devices()) {
-            if (device.isCurrentDevice(vpn->keys())) {
-              hasCurrentOne = true;
-              continue;
-            }
-
-            vpn->removeDeviceFromPublicKey(device.publicKey());
-          }
-
-          if (!hasCurrentOne) {
-            vpn->addCurrentDeviceAndRefreshData(false);
-          }
-
-          return QJsonObject();
-        }},
-
     InspectorCommand{"public_key",
                      "Retrieve the public key of the current device", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
@@ -819,7 +791,7 @@ static QList<InspectorCommand> s_commands{
 
     InspectorCommand{"force_rtl", "Force RTL layout", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
-                       s_forceRTL = true;
+                       Localizer::instance()->forceRTL();
                        emit SettingsHolder::instance()->languageCodeChanged();
                        return QJsonObject();
                      }},
@@ -883,6 +855,9 @@ void InspectorHandler::recv(const QByteArray& command) {
   Q_ASSERT(!parts.isEmpty());
 
   QString cmdName = parts[0].trimmed();
+  for (int i = 1; i < parts.length(); ++i) {
+    parts[i] = QUrl::fromPercentEncoding(parts[i]).toLocal8Bit();
+  }
 
   for (const InspectorCommand& command : s_commands) {
     if (cmdName == command.m_commandName) {
@@ -982,7 +957,7 @@ void InspectorHandler::networkRequestFinished(QNetworkReply* reply) {
 // static
 QString InspectorHandler::getObjectClass(const QObject* target) {
   if (target == nullptr) {
-    return "unkown";
+    return "Unknown";
   }
   auto metaObject = target->metaObject();
   return metaObject->className();
@@ -990,9 +965,6 @@ QString InspectorHandler::getObjectClass(const QObject* target) {
 
 // static
 bool InspectorHandler::mockFreeTrial() { return s_mockFreeTrial; }
-
-// static
-bool InspectorHandler::forceRTL() { return s_forceRTL; }
 
 // static
 QString InspectorHandler::appVersionForUpdate() {

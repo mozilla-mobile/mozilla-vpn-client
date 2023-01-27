@@ -15,6 +15,7 @@
 #include "feature.h"
 #include "glean/generated/metrics.h"
 #include "gleandeprecated.h"
+#include "hawkauth.h"
 #include "hkdf.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -23,6 +24,24 @@
 
 namespace {
 Logger logger("AuthenticationInAppSession");
+
+NetworkRequest* fxaHawkPostRequest(Task* parent, const QString& path,
+                                   const QByteArray& sessionToken,
+                                   const QJsonObject& obj) {
+  QUrl url(QString("%1%2").arg(Constants::fxaApiBaseUrl(), path));
+  QByteArray payload = QJsonDocument(obj).toJson(QJsonDocument::Compact);
+
+  HawkAuth hawk = HawkAuth(sessionToken);
+  QByteArray hawkHeader =
+      hawk.generate(url, "POST", "application/json", payload).toUtf8();
+
+  NetworkRequest* request = new NetworkRequest(parent, 200);
+  request->requestInternal().setRawHeader("Authorization", hawkHeader);
+  request->post(url, payload);
+
+  return request;
+}
+
 }  // anonymous namespace
 
 AuthenticationInAppSession::AuthenticationInAppSession(QObject* parent,
@@ -41,9 +60,8 @@ void AuthenticationInAppSession::terminate() {
     return;
   }
 
-  NetworkRequest* request =
-      NetworkRequest::createForFxaSessionDestroy(m_task, m_sessionToken);
-  Q_ASSERT(request);
+  NetworkRequest* request = fxaHawkPostRequest(m_task, "/v1/session/destroy",
+                                               m_sessionToken, QJsonObject());
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
@@ -73,8 +91,8 @@ void AuthenticationInAppSession::start(Task* task, const QString& codeChallenge,
   QUrl url(AuthenticationListener::createAuthenticationUrl(
       codeChallenge, codeChallengeMethod, emailAddress));
 
-  NetworkRequest* request =
-      NetworkRequest::createForGetUrl(task, url.toString());
+  NetworkRequest* request = new NetworkRequest(task);
+  request->get(url);
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this, emailAddress = QString(emailAddress)](const QByteArray& data) {
@@ -156,8 +174,9 @@ void AuthenticationInAppSession::checkAccount(const QString& emailAddress) {
   aia->requestEmailAddressChange(this);
   aia->requestState(AuthenticationInApp::StateCheckingAccount, this);
 
-  NetworkRequest* request =
-      NetworkRequest::createForFxaAccountStatus(m_task, m_emailAddress);
+  NetworkRequest* request = new NetworkRequest(m_task, 200);
+  request->post(QString("%1/v1/account/status").arg(Constants::fxaApiBaseUrl()),
+                QJsonObject{{"email", m_emailAddress}});
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -238,11 +257,29 @@ void AuthenticationInAppSession::signIn(const QString& unblockCode) {
 }
 
 void AuthenticationInAppSession::signInInternal(const QString& unblockCode) {
-  NetworkRequest* request = NetworkRequest::createForFxaLogin(
-      m_task, m_emailAddressCaseFix, generateAuthPw(),
-      m_originalLoginEmailAddress, unblockCode, m_fxaParams.m_clientId,
-      m_fxaParams.m_deviceId, m_fxaParams.m_flowId,
-      m_fxaParams.m_flowBeginTime);
+  QJsonObject obj{
+      {"email", m_emailAddressCaseFix},
+      {"authPW", QString(generateAuthPw().toHex())},
+      {"reason", "signin"},
+      {"service", m_fxaParams.m_clientId},
+      {"skipErrorCase", true},
+      {"verificationMethod", "email-otp"},
+      {"metricsContext",
+       QJsonObject{{"deviceId", m_fxaParams.m_deviceId},
+                   {"flowId", m_fxaParams.m_flowId},
+                   {"flowBeginTime", m_fxaParams.m_flowBeginTime}}}};
+
+  if (!m_originalLoginEmailAddress.isEmpty()) {
+    obj.insert("originalLoginEmail", m_originalLoginEmailAddress);
+  }
+
+  if (!unblockCode.isEmpty()) {
+    obj.insert("unblockCode", unblockCode);
+  }
+
+  NetworkRequest* request = new NetworkRequest(m_task, 200);
+  request->post(QString("%1/v1/account/login").arg(Constants::fxaApiBaseUrl()),
+                obj);
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this, unblockCode](QNetworkReply::NetworkError error,
@@ -299,10 +336,26 @@ void AuthenticationInAppSession::signUp() {
   AuthenticationInApp::instance()->requestState(
       AuthenticationInApp::StateSigningUp, this);
 
-  NetworkRequest* request = NetworkRequest::createForFxaAccountCreation(
-      m_task, m_emailAddressCaseFix, generateAuthPw(), m_fxaParams.m_clientId,
-      m_fxaParams.m_deviceId, m_fxaParams.m_flowId,
-      m_fxaParams.m_flowBeginTime);
+  NetworkRequest* request = new NetworkRequest(m_task, 200);
+  request->post(QString("%1/v1/account/create").arg(Constants::fxaApiBaseUrl()),
+                QJsonObject{
+                    {
+                        "email",
+                        m_emailAddressCaseFix,
+                    },
+                    {"authPW", QString(generateAuthPw().toHex())},
+                    {
+                        "service",
+                        m_fxaParams.m_clientId,
+                    },
+                    {"verificationMethod", "email-otp"},
+                    {"metricsContext",
+                     QJsonObject{
+                         {"deviceId", m_fxaParams.m_deviceId},
+                         {"flowId", m_fxaParams.m_flowId},
+                         {"flowBeginTime", m_fxaParams.m_flowBeginTime},
+                     }},
+                });
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -344,8 +397,10 @@ void AuthenticationInAppSession::sendUnblockCodeEmail() {
   logger.debug() << "Resend unblock code";
   Q_ASSERT(m_sessionToken.isEmpty());
 
-  NetworkRequest* request = NetworkRequest::createForFxaSendUnblockCode(
-      m_task, m_emailAddressCaseFix);
+  NetworkRequest* request = new NetworkRequest(m_task, 200);
+  request->post(QString("%1/v1/account/login/send_unblock_code")
+                    .arg(Constants::fxaApiBaseUrl()),
+                QJsonObject{{"email", m_emailAddressCaseFix}});
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -366,10 +421,23 @@ void AuthenticationInAppSession::verifySessionEmailCode(const QString& code) {
   AuthenticationInApp::instance()->requestState(
       AuthenticationInApp::StateVerifyingSessionEmailCode, this);
 
+  QJsonArray scopes;
+  QStringList queryScopes = m_fxaParams.m_scope.split(" ");
+  foreach (const QString& s, queryScopes) {
+    QString parsedScope;
+    if (s.startsWith("http")) {
+      parsedScope = QUrl::fromPercentEncoding(s.toUtf8());
+    } else {
+      parsedScope = s;
+    }
+    scopes.append(parsedScope);
+  }
+
   NetworkRequest* request =
-      NetworkRequest::createForFxaSessionVerifyByEmailCode(
-          m_task, m_sessionToken, code, m_fxaParams.m_clientId,
-          m_fxaParams.m_scope);
+      fxaHawkPostRequest(m_task, "/v1/session/verify_code", m_sessionToken,
+                         QJsonObject{{"code", code},
+                                     {"service", m_fxaParams.m_clientId},
+                                     {"scopes", scopes}});
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -389,8 +457,8 @@ void AuthenticationInAppSession::resendVerificationSessionCodeEmail() {
   logger.debug() << "Resend verification code";
   Q_ASSERT(!m_sessionToken.isEmpty());
 
-  NetworkRequest* request =
-      NetworkRequest::createForFxaSessionResendCode(m_task, m_sessionToken);
+  NetworkRequest* request = fxaHawkPostRequest(
+      m_task, "/v1/session/resend_code", m_sessionToken, QJsonObject());
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -411,9 +479,11 @@ void AuthenticationInAppSession::verifySessionTotpCode(const QString& code) {
   AuthenticationInApp::instance()->requestState(
       AuthenticationInApp::StateVerifyingSessionTotpCode, this);
 
-  NetworkRequest* request = NetworkRequest::createForFxaSessionVerifyByTotpCode(
-      m_task, m_sessionToken, code, m_fxaParams.m_clientId,
-      m_fxaParams.m_scope);
+  NetworkRequest* request = fxaHawkPostRequest(
+      m_task, "/v1/session/verify/totp", m_sessionToken,
+      QJsonObject{{"code", code},
+                  {"service", m_fxaParams.m_clientId},
+                  {"scopes", QJsonArray{m_fxaParams.m_scope}}});
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -479,8 +549,8 @@ void AuthenticationInAppSession::signInOrUpCompleted(
 
 #ifdef UNIT_TEST
 void AuthenticationInAppSession::createTotpCodes() {
-  NetworkRequest* request =
-      NetworkRequest::createForFxaTotpCreation(m_task, m_sessionToken);
+  NetworkRequest* request = fxaHawkPostRequest(m_task, "/v1/totp/create",
+                                               m_sessionToken, QJsonObject());
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -503,8 +573,15 @@ void AuthenticationInAppSession::createTotpCodes() {
 #endif
 
 void AuthenticationInAppSession::startAccountDeletionFlow() {
-  NetworkRequest* request =
-      NetworkRequest::createForFxaAttachedClients(m_task, m_sessionToken);
+  QUrl url(QString("%1/v1/account/attached_clients")
+               .arg(Constants::fxaApiBaseUrl()));
+
+  HawkAuth hawk = HawkAuth(m_sessionToken);
+  QByteArray hawkHeader = hawk.generate(url, "GET", "", "").toUtf8();
+
+  NetworkRequest* request = new NetworkRequest(m_task, 200);
+  request->requestInternal().setRawHeader("Authorization", hawkHeader);
+  request->get(url);
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -556,8 +633,10 @@ void AuthenticationInAppSession::startAccountDeletionFlow() {
 }
 
 void AuthenticationInAppSession::deleteAccount() {
-  NetworkRequest* request = NetworkRequest::createForFxaAccountDeletion(
-      m_task, m_sessionToken, m_emailAddress, generateAuthPw());
+  NetworkRequest* request = fxaHawkPostRequest(
+      m_task, "/v1/account/destroy", m_sessionToken,
+      QJsonObject{{"email", m_emailAddress},
+                  {"authPW", QString(generateAuthPw().toHex())}});
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
@@ -590,9 +669,12 @@ void AuthenticationInAppSession::finalizeSignInOrUp() {
   }
 #endif
 
-  NetworkRequest* request = NetworkRequest::createForFxaAuthz(
-      m_task, m_sessionToken, m_fxaParams.m_clientId, m_fxaParams.m_state,
-      m_fxaParams.m_scope, m_fxaParams.m_accessType);
+  NetworkRequest* request = fxaHawkPostRequest(
+      m_task, "/v1/oauth/authorization", m_sessionToken,
+      QJsonObject{{"client_id", m_fxaParams.m_clientId},
+                  {"state", m_fxaParams.m_state},
+                  {"scope", m_fxaParams.m_scope},
+                  {"access_type", m_fxaParams.m_accessType}});
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -600,83 +682,86 @@ void AuthenticationInAppSession::finalizeSignInOrUp() {
             processRequestFailure(error, data);
           });
 
-  connect(
-      request, &NetworkRequest::requestCompleted, this,
-      [this](const QByteArray& data) {
-        logger.debug() << "Oauth code creation completed:"
-                       << logger.sensitive(data);
+  connect(request, &NetworkRequest::requestCompleted, this,
+          [this](const QByteArray& data) {
+            logger.debug() << "Oauth code creation completed:"
+                           << logger.sensitive(data);
 
-        QJsonDocument json = QJsonDocument::fromJson(data);
-        if (json.isNull()) {
-          emit failed(ErrorHandler::AuthenticationError);
-          return;
-        }
-
-        QJsonObject obj = json.object();
-        QJsonValue code = obj.value("code");
-        if (!code.isString()) {
-          logger.error() << "FxA Authz: code not found";
-          emit failed(ErrorHandler::AuthenticationError);
-          return;
-        }
-        QJsonValue state = obj.value("state");
-        if (!state.isString()) {
-          logger.error() << "FxA Authz: state not found";
-          emit failed(ErrorHandler::AuthenticationError);
-          return;
-        }
-        QJsonValue redirect = obj.value("redirect");
-        if (!redirect.isString()) {
-          logger.error() << "FxA Authz: redirect not found";
-          emit failed(ErrorHandler::AuthenticationError);
-          return;
-        }
-
-        NetworkRequest* request =
-            NetworkRequest::createForGetUrl(m_task, redirect.toString(), 200);
-
-        connect(
-            request, &NetworkRequest::requestFailed, this,
-            [this](QNetworkReply::NetworkError error, const QByteArray& data) {
-              QJsonDocument json = QJsonDocument::fromJson(data);
-              if (!json.isObject()) {
-                emit failed(ErrorHandler::toErrorType(error));
-                return;
-              }
-
-              QJsonObject obj = json.object();
-              QString detail = obj["detail"].toString();
-              if (detail.isEmpty()) {
-                logger.error() << "Invalid JSON: no detail value";
-                emit failed(ErrorHandler::AuthenticationError);
-                return;
-              }
-
-              logger.error() << "Authentication failed:" << detail;
+            QJsonDocument json = QJsonDocument::fromJson(data);
+            if (json.isNull()) {
               emit failed(ErrorHandler::AuthenticationError);
-            });
+              return;
+            }
 
-        connect(request, &NetworkRequest::requestCompleted, this,
-                [this](const QByteArray& data) {
-                  logger.debug() << "Final redirect fetch completed:" << data;
+            QJsonObject obj = json.object();
+            QJsonValue code = obj.value("code");
+            if (!code.isString()) {
+              logger.error() << "FxA Authz: code not found";
+              emit failed(ErrorHandler::AuthenticationError);
+              return;
+            }
+            QJsonValue state = obj.value("state");
+            if (!state.isString()) {
+              logger.error() << "FxA Authz: state not found";
+              emit failed(ErrorHandler::AuthenticationError);
+              return;
+            }
+            QJsonValue redirect = obj.value("redirect");
+            if (!redirect.isString()) {
+              logger.error() << "FxA Authz: redirect not found";
+              emit failed(ErrorHandler::AuthenticationError);
+              return;
+            }
 
-                  QJsonDocument json = QJsonDocument::fromJson(data);
-                  if (json.isNull()) {
-                    emit failed(ErrorHandler::AuthenticationError);
-                    return;
-                  }
+            NetworkRequest* request = new NetworkRequest(m_task, 200);
+            request->requestInternal().setAttribute(
+                QNetworkRequest::RedirectPolicyAttribute,
+                QNetworkRequest::NoLessSafeRedirectPolicy);
+            request->get(redirect.toString());
 
-                  QJsonObject obj = json.object();
-                  QJsonValue code = obj.value("code");
-                  if (!code.isString()) {
-                    logger.error() << "Code not received!";
-                    emit failed(ErrorHandler::AuthenticationError);
-                    return;
-                  }
+            connect(request, &NetworkRequest::requestFailed, this,
+                    [this](QNetworkReply::NetworkError error,
+                           const QByteArray& data) {
+                      QJsonDocument json = QJsonDocument::fromJson(data);
+                      if (!json.isObject()) {
+                        emit failed(ErrorHandler::toErrorType(error));
+                        return;
+                      }
 
-                  emit completed(code.toString());
-                });
-      });
+                      QJsonObject obj = json.object();
+                      QString detail = obj["detail"].toString();
+                      if (detail.isEmpty()) {
+                        logger.error() << "Invalid JSON: no detail value";
+                        emit failed(ErrorHandler::AuthenticationError);
+                        return;
+                      }
+
+                      logger.error() << "Authentication failed:" << detail;
+                      emit failed(ErrorHandler::AuthenticationError);
+                    });
+
+            connect(request, &NetworkRequest::requestCompleted, this,
+                    [this](const QByteArray& data) {
+                      logger.debug()
+                          << "Final redirect fetch completed:" << data;
+
+                      QJsonDocument json = QJsonDocument::fromJson(data);
+                      if (json.isNull()) {
+                        emit failed(ErrorHandler::AuthenticationError);
+                        return;
+                      }
+
+                      QJsonObject obj = json.object();
+                      QJsonValue code = obj.value("code");
+                      if (!code.isString()) {
+                        logger.error() << "Code not received!";
+                        emit failed(ErrorHandler::AuthenticationError);
+                        return;
+                      }
+
+                      emit completed(code.toString());
+                    });
+          });
 }
 
 void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {

@@ -99,7 +99,20 @@ VPNViewBase {
                 visible: VPNLocalizer.hasLanguages
                 width: parent.width - VPNTheme.theme.windowMargin
             }
-        }
 
+            VPNSettingsItem {
+                objectName: "dnsSettings"
+
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                settingTitle: VPNl18n.SettingsDnsSettings
+                imageLeftSrc: "qrc:/ui/resources/settings/dnssettings.svg"
+                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                imageRightMirror: VPNLocalizer.isRightToLeft
+                onClicked: stackview.push("qrc:/ui/screens/settings/ViewDNSSettings.qml")
+                width: parent.width - VPNTheme.theme.windowMargin
+            }
+        }
     }
 }

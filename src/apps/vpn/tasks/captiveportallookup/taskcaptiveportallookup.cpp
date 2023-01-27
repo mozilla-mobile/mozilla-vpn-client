@@ -4,6 +4,7 @@
 
 #include "taskcaptiveportallookup.h"
 
+#include "appconstants.h"
 #include "captiveportal/captiveportal.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -28,7 +29,10 @@ TaskCaptivePortalLookup::~TaskCaptivePortalLookup() {
 void TaskCaptivePortalLookup::run() {
   logger.debug() << "Resolving the captive portal detector URL";
 
-  NetworkRequest* request = NetworkRequest::createForCaptivePortalLookup(this);
+  NetworkRequest* request = new NetworkRequest(this, 200);
+  request->auth(MozillaVPN::authorizationHeader());
+  request->get(AppConstants::apiUrl(AppConstants::DNSDetectPortal));
+
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
             if (m_cancelled) {

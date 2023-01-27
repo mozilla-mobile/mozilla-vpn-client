@@ -5,8 +5,6 @@
 #ifndef IOSUTILS_H
 #define IOSUTILS_H
 
-#include "theme.h"
-
 #include <QString>
 
 class IOSUtils final {
@@ -18,15 +16,6 @@ class IOSUtils final {
   static QString IAPReceipt();
 
   static void shareLogs(const QString& logs);
-
-  static int compareStrings(const QString& a, const QString& b);
-
-  static void setStatusBarTextColor(Theme::StatusBarTextColor color);
-
-  static bool verifySignature(const QByteArray& publicKey, const QByteArray& content,
-                              const QByteArray& signature);
-
-  static QStringList systemLanguageCodes();
 };
 
 #endif  // IOSUTILS_H

@@ -4,6 +4,10 @@
 
 #include "adjusttasksubmission.h"
 
+#include <QJsonArray>
+#include <QJsonObject>
+
+#include "appconstants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
@@ -32,9 +36,24 @@ AdjustTaskSubmission::~AdjustTaskSubmission() {
 }
 
 void AdjustTaskSubmission::run() {
-  NetworkRequest* request = NetworkRequest::createForAdjustProxy(
-      this, m_method, m_path, m_headers, m_queryParameters, m_bodyParameters,
-      m_unknownParameters);
+  QJsonObject headersObj;
+  for (const QPair<QString, QString>& header : m_headers) {
+    headersObj.insert(header.first, header.second);
+  }
+
+  QJsonArray unknownParametersArray;
+  for (const QString& unknownParameter : m_unknownParameters) {
+    unknownParametersArray.append(unknownParameter);
+  }
+
+  NetworkRequest* request = new NetworkRequest(this, 200);
+  request->post(AppConstants::apiUrl(AppConstants::Adjust),
+                QJsonObject{{"method", m_method},
+                            {"path", m_path},
+                            {"headers", headersObj},
+                            {"queryParameters", m_queryParameters},
+                            {"bodyParameters", m_bodyParameters},
+                            {"unknownParameters", unknownParametersArray}});
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this, request](QNetworkReply::NetworkError, const QByteArray& data) {

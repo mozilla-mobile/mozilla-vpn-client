@@ -13,6 +13,10 @@ const QString& AppConstants::getStagingServerAddress() {
   return stagingServerAddress;
 }
 
+QString AppConstants::apiBaseUrl() { return AppConstants::API_STAGING_URL; }
+
+QString AppConstants::apiUrl(ApiEndpoint) { return "something here"; }
+
 void Constants::setStaging() {}
 void AppConstants::setStaging() {}
 

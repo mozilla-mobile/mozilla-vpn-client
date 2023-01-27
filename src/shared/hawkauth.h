@@ -15,13 +15,15 @@ class HawkAuth final {
   HawkAuth(const QByteArray& id, const QByteArray& key);
 
   QString generate(const QUrl& url, const QString& method,
-                   const QString& hash = QString());
-  QString generate(const QNetworkRequest& request, const QString& method,
+                   const QString& contentType,
                    const QByteArray& payload = QByteArray());
 
   static QString hashPayload(const QByteArray& data, const QString& mimetype);
 
  private:
+  QString generateInternal(const QUrl& url, const QString& method,
+                           const QString& hash);
+
   static QString generateNonce();
 
   qint64 m_timestamp;

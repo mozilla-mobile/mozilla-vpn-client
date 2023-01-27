@@ -5,7 +5,6 @@ buildscript {
         }
         google()
         mavenCentral()
-
     }
     ext{
         groupName = 'org.mozilla.firefox.vpn'
@@ -20,7 +19,6 @@ buildscript {
             WG_TOOLS_DIR= "../../../3rdparty/wireguard-tools"
 
         }
-
     }
 
     dependencies {
@@ -30,8 +28,8 @@ buildscript {
 }
 
 plugins {
-    id "com.jetbrains.python.envs"
     id 'org.jetbrains.kotlin.plugin.serialization'
+    id "com.jetbrains.python.envs" version "0.0.26"
 }
 
 apply plugin: "com.android.library"

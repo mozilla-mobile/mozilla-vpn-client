@@ -89,7 +89,6 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
   Q_PROPERTY(bool stagingMode READ stagingMode CONSTANT)
   Q_PROPERTY(bool debugMode READ debugMode CONSTANT)
-  Q_PROPERTY(QString placeholderUserDNS READ placeholderUserDNS CONSTANT)
 
  public:
   MozillaVPN();
@@ -161,7 +160,7 @@ class MozillaVPN final : public QObject {
   }
   ConnectionHealth* connectionHealth();
   Controller* controller();
-  ServerData* currentServer();
+  ServerData* serverData();
   DeviceModel* deviceModel() { return &m_private->m_deviceModel; }
   FeedbackCategoryModel* feedbackCategoryModel() {
     return &m_private->m_feedbackCategoryModel;
@@ -176,9 +175,7 @@ class MozillaVPN final : public QObject {
   NetworkWatcher* networkWatcher() { return &m_private->m_networkWatcher; }
   ProfileFlow* profileFlow() { return &m_private->m_profileFlow; }
   ReleaseMonitor* releaseMonitor() { return &m_private->m_releaseMonitor; }
-  ServerCountryModel* serverCountryModel() {
-    return &m_private->m_serverCountryModel;
-  }
+  ServerCountryModel* serverCountryModel();
   StatusIcon* statusIcon() { return &m_private->m_statusIcon; }
   SubscriptionData* subscriptionData();
   Telemetry* telemetry() { return &m_private->m_telemetry; }
@@ -251,6 +248,8 @@ class MozillaVPN final : public QObject {
 
   void hardReset();
 
+  static QByteArray authorizationHeader();
+
  private:
   void setState(State state);
 
@@ -295,8 +294,6 @@ class MozillaVPN final : public QObject {
   void maybeRegenerateDeviceKey();
 
   bool checkCurrentDevice();
-
-  QString placeholderUserDNS() const;
 
  public slots:
   void requestAbout();

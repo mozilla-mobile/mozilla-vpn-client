@@ -13,10 +13,14 @@ else{
     error(Glean generated files are missing. Please run `python3 ./vpnglean/glean_parser_ext/run_glean_parser.py`)
 }
 
-SOURCES += $$PWD/src/event.cpp
-SOURCES += $$PWD/src/ping.cpp
+SOURCES += $$PWD/src/cpp/counter.cpp
+SOURCES += $$PWD/src/cpp/event.cpp
+SOURCES += $$PWD/src/cpp/ping.cpp
+SOURCES += $$PWD/src/cpp/timingdistribution.cpp
 
+HEADERS += $$PWD/include/glean/counter.h
 HEADERS += $$PWD/include/glean/event.h
 HEADERS += $$PWD/include/glean/ping.h
+HEADERS += $$PWD/include/glean/timingdistribution.h
 HEADERS += $$PWD/include/glean/metrictypes.h
 INCLUDEPATH += $$PWD/include

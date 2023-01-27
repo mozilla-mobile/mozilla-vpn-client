@@ -19,11 +19,6 @@ namespace {
 Logger logger("DNSHelper");
 }
 
-// Returns the DNS Server the user asked for in the Settings;
-constexpr const char* MULLVAD_BLOCK_ADS_DNS = "100.64.0.1";
-constexpr const char* MULLVAD_BLOCK_TRACKING_DNS = "100.64.0.2";
-constexpr const char* MULLVAD_BLOCK_ALL_DNS = "100.64.0.3";
-
 // static
 QString DNSHelper::getDNS(const QString& fallback) {
   if (!Feature::get(Feature::Feature_customDNS)->isSupported()) {
@@ -33,32 +28,41 @@ QString DNSHelper::getDNS(const QString& fallback) {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  int dnsProvider = settingsHolder->dnsProvider();
-  switch (dnsProvider) {
-    case SettingsHolder::Gateway:
-      return fallback;
-    case SettingsHolder::BlockAll:
-      return MULLVAD_BLOCK_ALL_DNS;
-    case SettingsHolder::BlockAds:
-      return MULLVAD_BLOCK_ADS_DNS;
-    case SettingsHolder::BlockTracking:
-      return MULLVAD_BLOCK_TRACKING_DNS;
-    case SettingsHolder::Custom:
-    default:
-      break;
-  }
+  int dnsProviderFlags = settingsHolder->dnsProviderFlags();
 
-  Q_ASSERT(dnsProvider == SettingsHolder::Custom);
-
-  QString dns = settingsHolder->userDNS();
-  // User wants to use a Custom DNS, let's check that this is valid.
-  if (dns.isEmpty() || !validateUserDNS(dns)) {
-    logger.debug()
-        << "Saved Custom DNS seems invalid, defaulting to gateway DNS";
+  // Gateway DNS
+  if (dnsProviderFlags == SettingsHolder::Gateway) {
     return fallback;
   }
 
-  return dns;
+  // Custom DNS
+  if (dnsProviderFlags == SettingsHolder::Custom) {
+    QString dns = settingsHolder->userDNS();
+    // User wants to use a Custom DNS, let's check that this is valid.
+    if (dns.isEmpty() || !validateUserDNS(dns)) {
+      logger.debug()
+          << "Saved Custom DNS seems invalid, defaulting to gateway DNS";
+      return fallback;
+    }
+
+    return dns;
+  }
+
+  static QMap<int, QString> dnsMap{
+      {SettingsHolder::BlockAds, "100.64.0.1"},
+      {SettingsHolder::BlockTrackers, "100.64.0.2"},
+      {SettingsHolder::BlockAds & SettingsHolder::BlockTrackers, "100.64.0.3"},
+      {SettingsHolder::BlockMalware, "100.64.0.4"},
+      {SettingsHolder::BlockMalware + SettingsHolder::BlockAds, "100.64.0.5"},
+      {SettingsHolder::BlockMalware + SettingsHolder::BlockTrackers,
+       "100.64.0.6"},
+      {SettingsHolder::BlockMalware + SettingsHolder::BlockAds +
+           SettingsHolder::BlockTrackers,
+       "100.64.0.7"},
+  };
+
+  Q_ASSERT(dnsMap.contains(dnsProviderFlags));
+  return dnsMap[dnsProviderFlags];
 }
 
 // static
@@ -81,4 +85,45 @@ bool DNSHelper::validateUserDNS(const QString& dns) {
 #endif
 
   return true;
+}
+
+// static
+void DNSHelper::maybeMigrateDNSProviderFlags() {
+  logger.debug() << "Maybe migrate DNS Provider Flags";
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  if (!settingsHolder->hasDNSProviderDeprecated()) {
+    return;
+  }
+
+  switch (settingsHolder->dnsProviderDeprecated()) {
+    case 0:  // Gateway
+      break;
+
+    case 1:  // BlockAll
+      // At the time we implement this migration, we just have adblock +
+      // tracking
+      settingsHolder->setDNSProviderFlags(SettingsHolder::BlockAds &
+                                          SettingsHolder::BlockTrackers);
+      break;
+
+    case 2:  // BlockAds
+      settingsHolder->setDNSProviderFlags(SettingsHolder::BlockAds);
+      break;
+
+    case 3:  // BlockTrackers
+      settingsHolder->setDNSProviderFlags(SettingsHolder::BlockTrackers);
+      break;
+
+    case 4:  // Custom
+      settingsHolder->setDNSProviderFlags(SettingsHolder::Custom);
+      break;
+
+    default:
+      logger.warning() << "Unsupported DNS provider deprecated value"
+                       << settingsHolder->dnsProviderDeprecated();
+      break;
+  }
+
+  settingsHolder->removeDNSProviderDeprecated();
 }

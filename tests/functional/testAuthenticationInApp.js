@@ -5,6 +5,7 @@
 const assert = require('assert');  // TODO: add asserts to each block
 const vpn = require('./helper.js');
 const queries = require('./queries.js');
+const fxaEndpoints = require('./servers/fxa_endpoints.js')
 
 describe('User authentication', function() {
   this.timeout(300000);
@@ -17,9 +18,15 @@ describe('User authentication', function() {
     this.ctx.fxaOverrideEndpoints = {
       GETs: {},
       POSTs: {
-        '/v1/account/status': {status: 200, body: {exists: false}},
+        '/v1/account/status': {
+          status: 200,
+          bodyValidator: fxaEndpoints.validators.fxaStatus,
+          body: {exists: false}
+        },
+
         '/v1/account/create': {
           status: 200,
+          bodyValidator: fxaEndpoints.validators.fxaCreate,
           body: {
             sessionToken: 'sessionToken',
             'verified': true,
@@ -152,16 +159,28 @@ describe('User authentication', function() {
     this.ctx.fxaOverrideEndpoints = {
       GETs: {},
       POSTs: {
-        '/v1/account/status': {status: 200, body: {exists: false}},
+        '/v1/account/status': {
+          status: 200,
+          bodyValidator: fxaEndpoints.validators.fxaStatus,
+          body: {exists: false}
+        },
+
         '/v1/account/create': {
           status: 200,
+          bodyValidator: fxaEndpoints.validators.fxaCreate,
           body: {
             sessionToken: 'sessionToken',
             'verified': false,
             verificationMethod: 'email-otp'
           }
         },
-        '/v1/session/verify_code': {status: 200, body: {}},
+
+        '/v1/session/verify_code': {
+          status: 200,
+          requiredHeaders: ['Authorization'],
+          bodyValidator: fxaEndpoints.validators.fxaVerifyCode,
+          body: {}
+        },
       },
       DELETEs: {},
     };
@@ -248,16 +267,28 @@ describe('User authentication', function() {
     this.ctx.fxaOverrideEndpoints = {
       GETs: {},
       POSTs: {
-        '/v1/account/status': {status: 200, body: {exists: false}},
+        '/v1/account/status': {
+          status: 200,
+          bodyValidator: fxaEndpoints.validators.fxaStatus,
+          body: {exists: false}
+        },
+
         '/v1/account/create': {
           status: 200,
+          bodyValidator: fxaEndpoints.validators.fxaCreate,
           body: {
             sessionToken: 'sessionToken',
             'verified': false,
             verificationMethod: 'totp-2fa'
           }
         },
-        '/v1/session/verify/totp': {status: 200, body: {success: true}},
+
+        '/v1/session/verify/totp': {
+          status: 200,
+          requiredHeaders: ['Authorization'],
+          bodyValidator: fxaEndpoints.validators.fxaVerifyTotp,
+          body: {success: true}
+        },
       },
       DELETEs: {},
     };
@@ -347,6 +378,7 @@ describe('User authentication', function() {
       POSTs: {
         '/v1/account/status': {
           status: 400,
+          bodyValidator: fxaEndpoints.validators.fxaStatus,
           body: {errno: 107, validation: {keys: ['unblockCode']}}
         },
       },
@@ -424,11 +456,14 @@ describe('User authentication', function() {
       POSTs: {
         '/v1/account/status': {
           status: 200,
+          bodyValidator: fxaEndpoints.validators.fxaStatus,
           body: null,
           callback: (req) => this.ctx.fxaStatusCallback(req)
         },
+
         '/v1/account/login': {
           status: 200,
+          bodyValidator: fxaEndpoints.validators.fxaLogin,
           body: null,
           callback: (req) => this.ctx.fxaLoginCallback(req)
         },
@@ -652,21 +687,30 @@ describe('User authentication', function() {
       POSTs: {
         '/v1/account/status': {
           status: 200,
+          bodyValidator: fxaEndpoints.validators.fxaStatus,
           body: null,
           callback: (req) => this.ctx.fxaStatusCallback(req)
         },
+
         '/v1/account/login': {
           status: 200,
+          bodyValidator: fxaEndpoints.validators.fxaLogin,
           body: null,
           callback: (req) => this.ctx.fxaLoginCallback(req)
         },
+
         '/v1/session/verify/totp': {
           status: 200,
+          requiredHeaders: ['Authorization'],
+          bodyValidator: fxaEndpoints.validators.fxaVerifyTotp,
           body: null,
           callback: (req) => this.ctx.fxaTotpCallback(req)
         },
+
         '/v1/session/verify_code': {
           status: 200,
+          requiredHeaders: ['Authorization'],
+          bodyValidator: fxaEndpoints.validators.fxaVerifyCode,
           body: null,
           callback: (req) => this.ctx.fxaEmailCallback(req)
         },
@@ -861,6 +905,8 @@ describe('User authentication', function() {
       // Step 6: email code -> back -> start -> totp -> error code
       await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp
                                          .AUTH_EMAILVER_BACK_BUTTON.visible());
+      await vpn.waitForQuery(
+          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
       await vpn.setQueryProperty(
           queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
           'text', 'test@test.com');

@@ -5,14 +5,21 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors');
+const Validator = require('jsonschema').Validator;
+const ports = require('./ports.js');
 
 class Server {
-  constructor(name, port, endpoints) {
+  constructor(name, endpoints, headerCheck) {
     this._name = name;
+    this._port = -1;
     this._endpoints = endpoints;
     this._exceptions = [];
+    this._headerCheck = headerCheck;
+  }
 
+  async start() {
     const app = express()
+
     app.use(bodyParser.json());
     app.use(cors());
     app.use((req, res, next) => {
@@ -40,7 +47,7 @@ class Server {
       }
     });
 
-    this._server = app.listen(port);
+    await this._createServer(app);
   }
 
   stop() {
@@ -50,7 +57,15 @@ class Server {
     }
   }
 
-  processRequest(req, res, paths, overriddenPaths) {
+  get port() {
+    return this._port;
+  }
+
+  get url() {
+    return `http://localhost:${this._port}`;
+  }
+
+  async processRequest(req, res, paths, overriddenPaths) {
     function findPath(path, paths) {
       if (path in paths) {
         return paths[path];
@@ -82,7 +97,38 @@ class Server {
       return;
     }
 
-    if (responseData.callback) responseData.callback(req);
+    if (responseData.callback) await responseData.callback(req);
+
+    if (this._headerCheck) {
+      for (let header of responseData.requiredHeaders || []) {
+        if (!(header.toLowerCase() in req.headers)) {
+          this._addException(`Server ${this._name} - Expected header: ${
+              header} for ${req.path} - method: ${req.method} - query: ${
+              JSON.stringify(req.query)}`);
+          return;
+        }
+      }
+    }
+
+    for (let queryStringParam of responseData.queryStringParams || []) {
+      if (!(queryStringParam in req.query)) {
+        this._addException(`Server ${this._name} - Expected query param: ${
+            queryStringParam} for ${req.path} - method: ${
+            req.method} - query: ${JSON.stringify(req.query)}`);
+        return;
+      }
+    }
+
+    if (responseData.bodyValidator) {
+      const v = new Validator();
+      const resp = v.validate(req.body, responseData.bodyValidator);
+      if (!resp.valid) {
+        this._addException(
+            `Server ${this._name} - Invalid body for ${req.path} - method: ${
+                req.method} - query: ${JSON.stringify(req.query)}`);
+        return;
+      }
+    }
 
     res.status(responseData.status);
     if ('bodyRaw' in responseData) {
@@ -110,6 +156,22 @@ class Server {
 
   set overrideEndpoints(value) {
     this._overrideEndpoints = value;
+  }
+
+  _createServer(app) {
+    return new Promise(r => {
+      this._port = ports.register(this._name);
+      this._server = app.listen(this._port);
+      this._server.on('error', err => {
+        if (err.code === 'EADDRINUSE') {
+          this._createServer(app).then(r);
+          return;
+        }
+
+        throw new Error(err.code);
+      });
+      this._server.on('listening', r);
+    });
   }
 };
 

@@ -136,18 +136,29 @@ SETTING_BYTEARRAY(devices,        // getter
                   "",             // default value
                   false,          // user setting
                   true,           // remove when reset
-                  true  // sensitive (do not log) - noisy and limited value
+                  true            // sensitive (do not log) - noisy and limited value
 )
 
-SETTING_INT(dnsProvider,                           // getter
-            setDNSProvider,                        // setter
-            removeDNSProvider,                     // remover
-            hasDNSProvider,                        // has
-            "dnsProvider",                         // key
-            SettingsHolder::DnsProvider::Gateway,  // default value
-            true,                                  // user setting
-            false,                                 // remove when reset
-            false                                  // sensitive (do not log)
+SETTING_INT(dnsProviderDeprecated,                      // getter
+            setDNSProviderDeprecated,                   // setter
+            removeDNSProviderDeprecated,                // remover
+            hasDNSProviderDeprecated,                   // has
+            "dnsProvider",                              // key
+            SettingsHolder::DNSProviderFlags::Gateway,  // default value
+            true,                                       // user setting
+            false,                                      // remove when reset
+            false                                       // sensitive (do not log)
+)
+
+SETTING_INT(dnsProviderFlags,                           // getter
+            setDNSProviderFlags,                        // setter
+            removeDNSProviderFlags,                     // remover
+            hasDNSProviderFlags,                        // has
+            "dnsProviderFlags",                         // key
+            SettingsHolder::DNSProviderFlags::Gateway,  // default value
+            true,                                       // user setting
+            false,                                      // remove when reset
+            false                                       // sensitive (do not log)
 )
 
 SETTING_STRING(entryServerCityDeprecated,        // getter
@@ -431,15 +442,20 @@ SETTING_STRING(
     false   // sensitive (do not log)
 )
 
-SETTING_BOOL(stagingServer,        // getter
-             setStagingServer,     // setter
-             removeStagingServer,  // remover
-             hasStagingServer,     // has
-             "stagingServer",      // key
-             false,                // default value
-             false,                // user setting
-             false,                // remove when reset
-             false                 // sensitive (do not log)
+#ifdef MZ_WASM
+#  define STAGING_SERVER_DEFAULT_VALUE true
+#else
+#  define STAGING_SERVER_DEFAULT_VALUE false
+#endif
+SETTING_BOOL(stagingServer,                 // getter
+             setStagingServer,              // setter
+             removeStagingServer,           // remover
+             hasStagingServer,              // has
+             "stagingServer",               // key
+             STAGING_SERVER_DEFAULT_VALUE,  // default value
+             false,                         // user setting
+             false,                         // remove when reset
+             false                          // sensitive (do not log)
 )
 
 SETTING_BOOL(startAtBoot,        // getter

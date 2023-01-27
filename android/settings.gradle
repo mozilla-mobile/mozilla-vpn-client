@@ -12,3 +12,8 @@ buildCache {
 include ':vpnglean'
 include ':daemon'
 include ':qtBindings'
+include ':ClientCommon'
+include ':vpnClient'
+include ':common'
+include ':adjust'
+

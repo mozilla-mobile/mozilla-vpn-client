@@ -9,6 +9,48 @@
 
 namespace AppConstants {
 
+/**
+ * @brief expose the API base URL for guardian
+ */
+QString apiBaseUrl();
+
+enum ApiEndpoint {
+  Account,
+  Adjust,
+  CreateSupportTicket,
+  CreateSupportTicketGuest,
+  Device,
+  DeviceWithPublicKeyArgument,
+  DNSDetectPortal,
+  FeatureList,
+  Feedback,
+  Heartbeat,
+  IPInfo,
+  LoginVerify,
+  Products,
+#ifdef MZ_ANDROID
+  PurchasesAndroid,
+#endif
+#ifdef MZ_IOS
+  PurchasesIOS,
+#endif
+#ifdef MZ_WASM
+  PurchasesWasm,
+#endif
+  RedirectPrivacy,
+  RedirectSubscriptionBlocked,
+  RedirectTermsOfService,
+  RedirectUpdateWithPlatformArgument,
+  Servers,
+  SubscriptionDetails,
+  Versions,
+};
+
+/**
+ * @brief expose the API URL with the requested path
+ */
+QString apiUrl(ApiEndpoint endpoint);
+
 // Returns true if we are in a production environment.
 const QString& getStagingServerAddress();
 void setStaging();
@@ -21,6 +63,11 @@ constexpr const char* NETWORK_USERAGENT_PREFIX = "MozillaVPN";
 
 // The file name for the logging
 constexpr const char* LOG_FILE_NAME = "mozillavpn.txt";
+
+// The localization filename prefix. The real file name should be called:
+// `LOCALIZER_FILENAME_PREFIX` + '_' + languageCode + ".qm". For instance:
+// `mozillavpn_it.qm
+constexpr const char* LOCALIZER_FILENAME_PREFIX = "mozillavpn";
 
 // Number of msecs for the captive-portal block alert.
 constexpr uint32_t CAPTIVE_PORTAL_ALERT_MSEC = 4000;
@@ -44,13 +91,11 @@ constexpr int RECENT_CONNECTIONS_MAX_COUNT = 2;
 constexpr uint32_t SERVER_UNRESPONSIVE_COOLDOWN_SEC = 300;
 
 // Number of msecs for max runtime of the connection benchmarks.
-constexpr uint32_t BENCHMARK_MAX_BITS_UPLOAD = 80000000;  // 10 Megabyte
+constexpr uint32_t BENCHMARK_MAX_BYTES_UPLOAD = 10485760;  // 10 Megabyte
 constexpr uint32_t BENCHMARK_MAX_DURATION_PING = 3000;
 constexpr uint32_t BENCHMARK_MAX_DURATION_TRANSFER = 15000;
 constexpr uint32_t BENCHMARK_THRESHOLD_SPEED_FAST = 25000000;    // 25 Megabit
 constexpr uint32_t BENCHMARK_THRESHOLD_SPEED_MEDIUM = 10000000;  // 10 Megabit
-constexpr const char* BENCHMARK_DOWNLOAD_URL =
-    "https://archive.mozilla.org/pub/vpn/speedtest/50m.data";
 
 #if defined(UNIT_TEST)
 #  define CONSTEXPR(type, functionName, releaseValue, debugValue, \
@@ -121,9 +166,22 @@ PRODBETAEXPR(QString, addonBaseUrl,
                  "MZ_ADDON_URL",
                  "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/"))
 
+PRODBETAEXPR(QString, benchmarkDownloadUrl,
+             "https://archive.mozilla.org/pub/vpn/speedtest/50m.data",
+             Constants::envOrDefault(
+                 "MZ_BENCHMARK_DOWNLOAD_URL",
+                 "https://archive.mozilla.org/pub/vpn/speedtest/50m.data"));
+
 PRODBETAEXPR(
-    const char*, benchmarkUploadUrl, "https://benchmark.vpn.mozilla.org/upload",
-    "https://dev.vpn-network-benchmark.nonprod.webservices.mozgcp.net/upload");
+    QString, benchmarkUploadUrl, "https://benchmark.vpn.mozilla.org/upload",
+    Constants::envOrDefault(
+        "MZ_BENCHMARK_UPLOAD_URL",
+        "https://dev.vpn-network-benchmark.nonprod.webservices.mozgcp.net/"
+        "upload"));
+
+PRODBETAEXPR(QString, captivePortalUrl, "http://%1/success.txt",
+             Constants::envOrDefault("MZ_CAPTIVE_PORTAL_URL",
+                                     "http://%1/success.txt"));
 
 PRODBETAEXPR(
     const char*, balrogUrl,
@@ -142,8 +200,6 @@ PRODBETAEXPR(QString, privacyBundleProductId, "prod_MIex7Q079igFZJ",
 PRODBETAEXPR(qint64, keyRegeneratorTimeSec, 604800, 300);
 
 #undef PRODBETAEXPR
-
-constexpr const char* PLACEHOLDER_USER_DNS = "127.0.0.1";
 
 #if defined(MVPN_ADJUST)
 // These are the two auto-generated token from the Adjust dashboard for the

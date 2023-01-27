@@ -36,6 +36,7 @@
 #include "models/featuremodel.h"
 #include "models/recentconnections.h"
 #include "mozillavpn.h"
+#include "networkrequest.h"
 #include "notificationhandler.h"
 #include "productshandler.h"
 #include "purchasehandler.h"
@@ -64,12 +65,15 @@
 #endif
 
 #ifdef MZ_ANDROID
-#  include "platforms/android/androidglean.h"
 #  include "platforms/android/androidutils.h"
 #endif
 
 #ifndef Q_OS_WIN
 #  include "signalhandler.h"
+#endif
+
+#ifdef SENTRY_ENABLED
+#  include "sentry/sentryadapter.h"
 #endif
 
 #ifdef MZ_WINDOWS
@@ -83,6 +87,7 @@
 #endif
 
 #ifdef MZ_WASM
+#  include "platforms/wasm/wasmnetworkrequest.h"
 #  include "platforms/wasm/wasmwindowcontroller.h"
 #endif
 
@@ -105,6 +110,9 @@ CommandUI::~CommandUI() { MZ_COUNT_DTOR(CommandUI); }
 int CommandUI::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
   return runQmlApp([&]() {
+    MozillaVPN vpn;
+    vpn.telemetry()->startTimeToFirstScreenTimer();
+
     QString appName = tokens[0];
 
     CommandLineParser::Option hOption = CommandLineParser::helpOption();
@@ -138,11 +146,7 @@ int CommandUI::run(QStringList& tokens) {
       return 0;
     }
 
-    if (testingOption.m_set
-#ifdef MZ_WASM
-        || true
-#endif
-    ) {
+    if (testingOption.m_set) {
       AppConstants::setStaging();
     }
 
@@ -238,8 +242,6 @@ int CommandUI::run(QStringList& tokens) {
     // Cleanup previous temporary files.
     TemporaryDir::cleanupAll();
 
-    MozillaVPN vpn;
-
     vpn.setStartMinimized(minimizedOption.m_set ||
                           (qgetenv("MVPN_MINIMIZED") == "1"));
 
@@ -327,6 +329,16 @@ int CommandUI::run(QStringList& tokens) {
           return obj;
         });
 
+#ifdef SENTRY_ENABLED
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNCrashReporter",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = SentryAdapter::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+#endif
+
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNUser",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
@@ -360,7 +372,7 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNRecentConnections",
+        "Mozilla.VPN", 1, 0, "VPNRecentConnectionsModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = RecentConnections::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
@@ -402,7 +414,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNCurrentServer",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->currentServer();
+          QObject* obj = MozillaVPN::instance()->serverData();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -644,13 +656,18 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
           MozillaVPN::instance()->serverCountryModel()->retranslate();
-          MozillaVPN::instance()->currentServer()->retranslate();
+          MozillaVPN::instance()->serverData()->retranslate();
         });
 
     InspectorHandler::initialize();
 
 #ifdef MZ_WASM
     WasmWindowController wasmWindowController;
+
+    NetworkRequest::setRequestHandler(WasmNetworkRequest::deleteResource,
+                                      WasmNetworkRequest::getResource,
+                                      WasmNetworkRequest::postResource,
+                                      WasmNetworkRequest::postResourceIODevice);
 #endif
 
 #ifdef MVPN_WEBEXTENSION
@@ -660,7 +677,6 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
     KeyRegenerator keyRegenerator;
-
     // Let's go.
     return qApp->exec();
   });

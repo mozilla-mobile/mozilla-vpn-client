@@ -7,12 +7,14 @@
 #include "helper.h"
 #include "ipaddresslookup.h"
 #include "settingsholder.h"
+#include "simplenetworkmanager.h"
 
 void TestIpAddressLookup::checkIpAddressFailure() {
+  SettingsHolder settingsHolder;
+  SimpleNetworkManager snm;
+
   IpAddressLookup ial;
   ial.reset();
-
-  SettingsHolder settingsHolder;
 
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Failure, QByteArray()));
@@ -47,12 +49,13 @@ void TestIpAddressLookup::checkIpAddressSucceess_data() {
 }
 
 void TestIpAddressLookup::checkIpAddressSucceess() {
+  SettingsHolder settingsHolder;
+  SimpleNetworkManager snm;
+
   IpAddressLookup ial;
   ial.reset();
 
   QSignalSpy spy(&ial, &IpAddressLookup::ipv4AddressChanged);
-
-  SettingsHolder settingsHolder;
 
   TestHelper::networkConfig.clear();
 

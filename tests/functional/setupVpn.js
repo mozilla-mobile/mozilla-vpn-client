@@ -24,9 +24,11 @@ const fxaServer = require('./servers/fxa.js');
 const guardian = require('./servers/guardian.js');
 const addonServer = require('./servers/addon.js');
 const networkBenchmark = require('./servers/networkBenchmark.js');
+const captivePortalServer = require('./servers/captivePortalServer.js');
 
 const app = process.env.MVPN_BIN;
 let vpnProcess = null;
+let vpnProcessTerminatePromise = null;
 let stdErr = '';
 
 async function startAndConnect() {
@@ -35,6 +37,11 @@ async function startAndConnect() {
   vpnProcess.stderr.on('data', (data) => {
     stdErr += data;
   });
+
+  vpnProcessTerminatePromise = new Promise(r => {
+    vpnProcess.on('exit', (code) => r());
+  });
+
   // Connect to VPN
   await vpn.connect(vpnWS, {hostname: '127.0.0.1'});
 }
@@ -53,14 +60,22 @@ exports.mochaHooks = {
       process.exit(1);
     }
 
-    process.env['MVPN_API_BASE_URL'] = `http://localhost:${guardian.start()}`;
-    process.env['MZ_FXA_API_BASE_URL'] =
-        `http://localhost:${fxaServer.start()}`;
-    process.env['MZ_ADDON_URL'] =
-        `http://localhost:${addonServer.start()}/01_empty_manifest/`;
+    await guardian.start();
+    await fxaServer.start(guardian.url);
+    await addonServer.start();
+    await networkBenchmark.start();
+    await captivePortalServer.start();
+
+    process.env['MVPN_API_BASE_URL'] = guardian.url;
+    process.env['MZ_FXA_API_BASE_URL'] = fxaServer.url;
+    process.env['MZ_ADDON_URL'] = `${addonServer.url}/01_empty_manifest/`;
     process.env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';
-    process.env['MVPN_BENCHMARK_URL'] =
-        `http://localhost:${networkBenchmark.start()}`;
+
+    process.env['MZ_BENCHMARK_DOWNLOAD_URL'] = networkBenchmark.url;
+    process.env['MZ_BENCHMARK_UPLOAD_URL'] = networkBenchmark.url;
+
+    process.env['MZ_CAPTIVE_PORTAL_URL'] =
+        `http://%1:${captivePortalServer.port}/success.txt`;
   },
 
   async afterAll() {
@@ -68,11 +83,13 @@ exports.mochaHooks = {
     fxaServer.stop();
     addonServer.stop();
     networkBenchmark.stop();
+    captivePortalServer.stop();
 
     guardian.throwExceptionsIfAny();
     fxaServer.throwExceptionsIfAny();
     addonServer.throwExceptionsIfAny();
     networkBenchmark.throwExceptionsIfAny();
+    captivePortalServer.throwExceptionsIfAny();
   },
 
   async beforeEach() {
@@ -82,10 +99,12 @@ exports.mochaHooks = {
 
       guardian.overrideEndpoints = null;
       fxaServer.overrideEndpoints = null;
+      networkBenchmark.overrideEndpoints = null;
 
       await startAndConnect();
       await vpn.reset();
       await vpn.setSetting('tipsAndTricksIntroShown', 'true');
+      await vpn.setSetting('localhostRequestsOnly', 'true');
       await vpn.flipFeatureOn('websocket');
       await vpn.authenticateInApp(true, true);
 
@@ -101,6 +120,8 @@ exports.mochaHooks = {
         this.currentTest.ctx.guardianOverrideEndpoints || null;
     fxaServer.overrideEndpoints =
         this.currentTest.ctx.fxaOverrideEndpoints || null;
+    networkBenchmark.overrideEndpoints =
+        this.currentTest.ctx.networkBenchmarkOverrideEndpoints || null;
 
     if (this.currentTest.ctx.authenticationNeeded) {
       fs.writeFileSync(
@@ -159,9 +180,10 @@ exports.mochaHooks = {
       console.error(error);
     }
     vpn.disconnect();
+
+    vpnProcess.stdin.pause();
     vpnProcess.kill();
-    // Give each test 3 seconds to chill!
-    // Seems to help with tests that are slow to close vpn app at end.
-    await vpn.wait(3000);    
+
+    await vpnProcessTerminatePromise;
   },
 }

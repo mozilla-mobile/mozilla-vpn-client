@@ -21,12 +21,12 @@
 #include "models/device.h"
 #include "models/recentconnections.h"
 #include "networkmanager.h"
-#include "networkrequest.h"
 #include "productshandler.h"
 #include "profileflow.h"
 #include "purchasehandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
+#include "settingswatcher.h"
 #include "tasks/account/taskaccount.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "tasks/addonindex/taskaddonindex.h"
@@ -46,6 +46,7 @@
 #include "tasks/sendfeedback/tasksendfeedback.h"
 #include "tasks/servers/taskservers.h"
 #include "taskscheduler.h"
+#include "telemetry.h"
 #include "telemetry/gleansample.h"
 #include "update/updater.h"
 #include "urlopener.h"
@@ -226,7 +227,11 @@ ConnectionHealth* MozillaVPN::connectionHealth() {
 
 Controller* MozillaVPN::controller() { return &m_private->m_controller; }
 
-ServerData* MozillaVPN::currentServer() { return &m_private->m_serverData; }
+ServerData* MozillaVPN::serverData() { return &m_private->m_serverData; }
+
+ServerCountryModel* MozillaVPN::serverCountryModel() {
+  return &m_private->m_serverCountryModel;
+}
 
 SubscriptionData* MozillaVPN::subscriptionData() {
   return &m_private->m_subscriptionData;
@@ -293,6 +298,10 @@ void MozillaVPN::initialize() {
 
   m_private->m_captivePortalDetection.initialize();
   m_private->m_networkWatcher.initialize();
+
+  DNSHelper::maybeMigrateDNSProviderFlags();
+
+  SettingsWatcher::instance();
 
   if (!settingsHolder->hasToken()) {
     return;
@@ -886,17 +895,12 @@ void MozillaVPN::logout() {
   }
 
   if (m_private->m_deviceModel.hasCurrentDevice(keys())) {
-    TaskScheduler::scheduleTask(new TaskGroup(
-        {new TaskRemoveDevice(keys()->publicKey()),
-         // Immediately after the scheduling of the device removal, we want to
-         // delete the session token, so that, in case the app is terminated, at
-         // the next execution we go back to the init screen.
-         new TaskFunction([this]() { reset(false); })}));
+    TaskScheduler::scheduleTask(new TaskRemoveDevice(keys()->publicKey()));
 
-    // In case the app is closed even before scheduling the previous TaskGroup,
-    // removing the key we will enforce a new authentication at the first
-    // TaskAccount execution.
-    m_private->m_keys.forgetKeys();
+    // Immediately after the scheduling of the device removal, we want to
+    // delete the session token, so that, in case the app is terminated, at
+    // the next execution we go back to the init screen.
+    reset(false);
     return;
   }
 
@@ -906,7 +910,7 @@ void MozillaVPN::logout() {
 void MozillaVPN::reset(bool forceInitialState) {
   logger.debug() << "Cleaning up all";
 
-  TaskScheduler::deleteTasks();
+  deactivate();
 
   SettingsHolder::instance()->clear();
   m_private->m_keys.forgetKeys();
@@ -942,9 +946,12 @@ void MozillaVPN::postAuthenticationCompleted() {
 void MozillaVPN::mainWindowLoaded() {
   logger.debug() << "main window loaded";
 
+  m_private->m_telemetry.stopTimeToFirstScreenTimer();
+
 #ifndef MZ_WASM
-  // Initialize glean with an async call because at this time, QQmlEngine does
-  // not have root objects yet to see the current graphics API in use.
+  // Initialize glean with an async call because at this time,
+  // QQmlEngine does not have root objects yet to see the current
+  // graphics API in use.
   logger.debug() << "Initializing Glean";
   QTimer::singleShot(0, this, &MozillaVPN::initializeGlean);
 
@@ -1251,7 +1258,8 @@ void MozillaVPN::silentSwitch() {
   // to run the silenct-switch.
   TaskScheduler::deleteTasks();
   TaskScheduler::scheduleTask(
-      new TaskControllerAction(TaskControllerAction::eSilentSwitch));
+      new TaskControllerAction(TaskControllerAction::eSilentSwitch,
+                               TaskControllerAction::eServerCoolDownNeeded));
 }
 
 void MozillaVPN::refreshDevices() {
@@ -1545,7 +1553,8 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
   }
 
   // We need a new device key only if the user wants to use custom DNS servers.
-  if (settingsHolder->dnsProvider() == SettingsHolder::DnsProvider::Gateway) {
+  if (settingsHolder->dnsProviderFlags() ==
+      SettingsHolder::DNSProviderFlags::Gateway) {
     logger.debug() << "Removal needed but no custom DNS used.";
     return;
   }
@@ -1587,16 +1596,7 @@ void MozillaVPN::exitForUnrecoverableError(const QString& reason) {
 
 void MozillaVPN::crashTest() {
   logger.debug() << "Crashing Application";
-
-  unsigned char* test = NULL;
-  test[1000] = 'a';  //<< here it should crash
-
-  // Interestingly this does not cause a "Signal" but a VC runtime exception
-  // and more interestingly, neither breakpad nor crashpad are catchting this on
-  // windows...
-  char* text = new char[100];
-  delete[] text;
-  delete[] text;
+  qFatal("Ready to crash!");
 }
 
 // static
@@ -1689,10 +1689,6 @@ void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {
   TaskScheduler::scheduleTask(new TaskGroup(refreshTasks));
 }
 
-QString MozillaVPN::placeholderUserDNS() const {
-  return AppConstants::PLACEHOLDER_USER_DNS;
-}
-
 // static
 void MozillaVPN::registerUrlOpenerLabels() {
   UrlOpener* uo = UrlOpener::instance();
@@ -1700,10 +1696,10 @@ void MozillaVPN::registerUrlOpenerLabels() {
   uo->registerUrlLabel("captivePortal", []() -> QString {
     SettingsHolder* settingsHolder = SettingsHolder::instance();
 
-    return QString("http://%1/success.txt")
-        .arg(settingsHolder->captivePortalIpv4Addresses().isEmpty()
-                 ? "127.0.0.1"
-                 : settingsHolder->captivePortalIpv4Addresses().first());
+    return AppConstants::captivePortalUrl().arg(
+        settingsHolder->captivePortalIpv4Addresses().isEmpty()
+            ? "127.0.0.1"
+            : settingsHolder->captivePortalIpv4Addresses().first());
   });
 
   uo->registerUrlLabel("inspector", []() -> QString {
@@ -1711,7 +1707,7 @@ void MozillaVPN::registerUrlOpenerLabels() {
   });
 
   uo->registerUrlLabel("privacyNotice", []() -> QString {
-    return QString("%1/r/vpn/privacy").arg(NetworkRequest::apiBaseUrl());
+    return AppConstants::apiUrl(AppConstants::RedirectPrivacy);
   });
 
   uo->registerUrlLabel("relayPremium", []() -> QString {
@@ -1725,8 +1721,7 @@ void MozillaVPN::registerUrlOpenerLabels() {
   });
 
   uo->registerUrlLabel("subscriptionBlocked", []() -> QString {
-    return QString("%1/r/vpn/subscriptionBlocked")
-        .arg(NetworkRequest::apiBaseUrl());
+    return AppConstants::apiUrl(AppConstants::RedirectSubscriptionBlocked);
   });
 
   uo->registerUrlLabel("subscriptionIapApple", []() -> QString {
@@ -1745,7 +1740,7 @@ void MozillaVPN::registerUrlOpenerLabels() {
       "sumo", []() -> QString { return AppConstants::MOZILLA_VPN_SUMO_URL; });
 
   uo->registerUrlLabel("termsOfService", []() -> QString {
-    return QString("%1/r/vpn/terms").arg(NetworkRequest::apiBaseUrl());
+    return AppConstants::apiUrl(AppConstants::RedirectTermsOfService);
   });
 
   uo->registerUrlLabel("update", []() -> QString {
@@ -1755,9 +1750,9 @@ void MozillaVPN::registerUrlOpenerLabels() {
 #elif defined(MZ_ANDROID)
                               GOOGLE_PLAYSTORE_URL
 #else
-                              QString("%1/r/vpn/update/%2")
-                                  .arg(NetworkRequest::apiBaseUrl(),
-                                       Constants::PLATFORM_NAME)
+            AppConstants::apiUrl(
+                AppConstants::RedirectUpdateWithPlatformArgument)
+                .arg(Constants::PLATFORM_NAME)
 #endif
         ;
   });
@@ -1767,4 +1762,16 @@ void MozillaVPN::registerUrlOpenerLabels() {
         .arg(Constants::inProduction() ? AppConstants::API_PRODUCTION_URL
                                        : AppConstants::API_STAGING_URL);
   });
+}
+
+// static
+QByteArray MozillaVPN::authorizationHeader() {
+  if (SettingsHolder::instance()->token().isEmpty()) {
+    logger.error() << "INVALID TOKEN! This network request is going to fail.";
+    Q_ASSERT(false);
+  }
+
+  QByteArray authorizationHeader = "Bearer ";
+  authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
+  return authorizationHeader;
 }

@@ -172,8 +172,7 @@ jobs:
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git clone https://github.com/mozilla-mobile/qt_static_windows --depth 1
           mkdir /c/MozillaVPNBuild
-          cat qt_static_windows/qt6* > qt6_static.tar.bz2
-          tar xf qt6_static.tar.bz2 -C /c/MozillaVPNBuild
+          cat qt_static_windows/qt6* | tar -xjf - -C /c/MozillaVPNBuild
 
       - name: Add msvc dev commands to PATH
         uses: ilammy/msvc-dev-cmd@v1
@@ -187,15 +186,13 @@ jobs:
           pip3 install -r requirements.txt
 
       - name: Building tests
-        shell: bash
         run: |
-          export PATH=/c/MozillaVPNBuild/bin:$PATH
-          mkdir -p build
-          cmake -S . -B $(pwd)/build -DBUILD_TESTING=ON
-          cmake --build $(pwd)/build --config Release --target build_tests
+          mkdir ./build
+          cmake -S . -B ./build -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_PREFIX_PATH="C:\MozillaVPNBuild\lib\cmake"
+          cmake --build ./build --target build_tests
 
       - name: Running tests
         shell: bash
         working-directory: ./build
         run: |
-          ctest --build-config Release --output-on-failure
+          ctest --output-on-failure

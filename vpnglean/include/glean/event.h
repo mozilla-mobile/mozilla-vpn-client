@@ -9,11 +9,7 @@
 #include <QJsonObject>
 #include <QObject>
 
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
-#  include "vpnglean.h"
-#else
-enum ErrorType {};
-#endif
+#include "errortype.h"
 
 struct FfiExtra {
   std::vector<const char*> keys;

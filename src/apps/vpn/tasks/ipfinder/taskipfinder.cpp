@@ -11,9 +11,11 @@
 #include <QJsonValue>
 #include <QUrl>
 
+#include "appconstants.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
 
@@ -46,7 +48,7 @@ void TaskIPFinder::run() {
   return;
 #endif
 
-  QUrl url(NetworkRequest::apiBaseUrl());
+  QUrl url(AppConstants::apiBaseUrl());
   m_lookupId = QHostInfo::lookupHost(url.host(), this,
                                      SLOT(dnsLookupCompleted(QHostInfo)));
 }
@@ -85,7 +87,26 @@ void TaskIPFinder::dnsLookupCompleted(const QHostInfo& hostInfo) {
 }
 
 void TaskIPFinder::createRequest(const QHostAddress& address, bool ipv6) {
-  NetworkRequest* request = NetworkRequest::createForIpInfo(this, address);
+  QUrl url(AppConstants::apiBaseUrl());
+  QString host = url.host();
+
+  if (address.protocol() == QAbstractSocket::IPv6Protocol) {
+    url.setHost(QString("[%1]").arg(address.toString()));
+  } else if (address.protocol() == QAbstractSocket::IPv4Protocol) {
+    url.setHost(address.toString());
+  } else {
+    // Otherwise, a default-constructed address indicates we should not mangle
+    // the address and just rely on the hostname.
+    Q_ASSERT(address.isNull());
+  }
+
+  url.setPath("/api/v1/vpn/ipinfo");
+
+  NetworkRequest* request = new NetworkRequest(this, 200);
+  request->auth(MozillaVPN::authorizationHeader());
+  request->requestInternal().setRawHeader("Host", host.toLocal8Bit());
+  request->requestInternal().setPeerVerifyName(host);
+  request->get(url);
 
   ++m_requestCount;
 
