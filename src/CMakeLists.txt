@@ -16,6 +16,7 @@ target_link_libraries(mozillavpn PRIVATE
     Qt6::Test
     Qt6::WebSockets
     Qt6::Widgets
+    Qt6::Svg
 )
 
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
