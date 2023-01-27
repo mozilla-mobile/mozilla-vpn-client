@@ -69,7 +69,9 @@ LINUX="
 MACOS="
   -appstore-compliant \
   -no-feature-qdbus \
-  -no-dbus
+  -no-dbus \
+  -- \
+  -DCMAKE_OSX_ARCHITECTURES='arm64;x86_64'
 "
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
