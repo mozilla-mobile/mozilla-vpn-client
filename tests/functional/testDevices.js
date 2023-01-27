@@ -12,10 +12,10 @@ describe('Devices', function() {
 
     it('Opens and closes the device list', async () => {
       await vpn.waitForQueryAndClick(queries.navBar.SETTINGS);
-      await vpn.waitForQueryAndClick(queries.screenSettings.MY_DEVICE);
+      await vpn.waitForQueryAndClick(queries.screenSettings.MY_DEVICES);
       await vpn.waitForQueryAndClick(queries.screenSettings.BACK);
 
-      await vpn.waitForQuery(queries.screenSettings.MY_DEVICE.visible());
+      await vpn.waitForQuery(queries.screenSettings.MY_DEVICES.visible());
     });
   });
 

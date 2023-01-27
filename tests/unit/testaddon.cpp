@@ -353,14 +353,6 @@ void TestAddon::conditionWatcher_featuresEnabled() {
   QVERIFY(!Feature::getOrNull("testFeatureAddon"));
   Feature feature(
       "testFeatureAddon", "Feature Addon",
-      false,                          // Is Major Feature
-      L18nStrings::Empty,             // Display name
-      L18nStrings::Empty,             // Description
-      L18nStrings::Empty,             // LongDescr
-      "",                             // ImagePath
-      "",                             // IconPath
-      "",                             // link URL
-      "1.0",                          // released
       []() -> bool { return true; },  // Can be flipped on
       []() -> bool { return true; },  // Can be flipped off
       QStringList(),                  // feature dependencies
@@ -447,6 +439,8 @@ void TestAddon::conditionWatcher_group() {
 }
 
 void TestAddon::conditionWatcher_triggerTime() {
+  SettingsHolder::instance()->setInstallationTime(QDateTime::currentDateTime());
+
   QObject parent;
   AddonConditionWatcher* acw =
       AddonConditionWatcherTriggerTimeSecs::maybeCreate(&parent, 1);

@@ -6,6 +6,10 @@
 # This allows us to pull them into multiple builds like the dummy client.
 add_library(mozillavpn-sources INTERFACE)
 
+if(NOT MSVC)
+  target_compile_options(mozillavpn-sources INTERFACE -Wall -Werror -Wno-conversion)
+endif()
+
 # VPN client include paths
 set_property(TARGET mozillavpn-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -244,6 +248,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/serveri18n.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/serverlatency.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/serverlatency.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/settingswatcher.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/settingswatcher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/statusicon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/statusicon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/account/taskaccount.cpp

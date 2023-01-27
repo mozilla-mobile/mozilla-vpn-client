@@ -47,6 +47,14 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/models/featuremodel.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/server.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/server.h
+    ${MZ_SOURCE_DIR}/apps/vpn/models/servercity.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/models/servercity.h
+    ${MZ_SOURCE_DIR}/apps/vpn/models/servercountry.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/models/servercountry.h
+    ${MZ_SOURCE_DIR}/apps/vpn/models/servercountrymodel.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/models/servercountrymodel.h
+    ${MZ_SOURCE_DIR}/apps/vpn/models/serverdata.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/models/serverdata.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/subscriptiondata.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/subscriptiondata.h
     ${MZ_SOURCE_DIR}/apps/vpn/mozillavpn.h
@@ -58,12 +66,18 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/pingsenderfactory.h
     ${MZ_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.h
+    ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.h
+    ${MZ_SOURCE_DIR}/apps/vpn/tasks/controlleraction/taskcontrolleraction.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/tasks/controlleraction/taskcontrolleraction.h
     ${MZ_SOURCE_DIR}/apps/vpn/update/updater.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/update/updater.h
     ${MZ_SOURCE_DIR}/apps/vpn/update/versionapi.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/update/versionapi.h
     ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.h
+    ${MZ_SOURCE_DIR}/shared/collator.cpp
+    ${MZ_SOURCE_DIR}/shared/collator.h
     ${MZ_SOURCE_DIR}/shared/constants.h
     ${MZ_SOURCE_DIR}/shared/cryptosettings.cpp
     ${MZ_SOURCE_DIR}/shared/cryptosettings.h
@@ -84,6 +98,10 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/hkdf.h
     ${MZ_SOURCE_DIR}/shared/ipaddress.cpp
     ${MZ_SOURCE_DIR}/shared/ipaddress.h
+    ${MZ_SOURCE_DIR}/shared/languagei18n.cpp
+    ${MZ_SOURCE_DIR}/shared/languagei18n.h
+    ${MZ_SOURCE_DIR}/shared/localizer.cpp
+    ${MZ_SOURCE_DIR}/shared/localizer.h
     ${MZ_SOURCE_DIR}/shared/logger.cpp
     ${MZ_SOURCE_DIR}/shared/logger.h
     ${MZ_SOURCE_DIR}/shared/loghandler.cpp
@@ -97,6 +115,9 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/qmlengineholder.h
     ${MZ_SOURCE_DIR}/shared/settingsholder.cpp
     ${MZ_SOURCE_DIR}/shared/settingsholder.h
+    ${MZ_SOURCE_DIR}/shared/task.h
+    ${MZ_SOURCE_DIR}/shared/taskscheduler.cpp
+    ${MZ_SOURCE_DIR}/shared/taskscheduler.h
     ${MZ_SOURCE_DIR}/shared/theme.cpp
     ${MZ_SOURCE_DIR}/shared/theme.h
     ${MZ_SOURCE_DIR}/shared/urlopener.cpp

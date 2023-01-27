@@ -17,6 +17,7 @@ kind-dependencies:
     - toolchain
 
 tasks-from:
+    - source.yml
     - linux.yml
     - windows.yml
     - android.yml

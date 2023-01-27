@@ -104,6 +104,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/composer/composerblockunorderedlist.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/composer/composerblockunorderedlist.h
     ${MZ_SOURCE_DIR}/apps/vpn/controller.h
+    ${MZ_SOURCE_DIR}/apps/vpn/dnshelper.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/dnshelper.h
     ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.h
     ${MZ_SOURCE_DIR}/apps/vpn/errorhandler.cpp
@@ -182,6 +184,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/addon/taskaddon.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/addonindex/taskaddonindex.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/addonindex/taskaddonindex.h
+    ${MZ_SOURCE_DIR}/apps/vpn/tasks/controlleraction/taskcontrolleraction.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/tasks/controlleraction/taskcontrolleraction.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/function/taskfunction.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/function/taskfunction.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/group/taskgroup.cpp
@@ -235,6 +239,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/ipaddress.h
     ${MZ_SOURCE_DIR}/shared/itempicker.cpp
     ${MZ_SOURCE_DIR}/shared/itempicker.h
+    ${MZ_SOURCE_DIR}/shared/languagei18n.cpp
+    ${MZ_SOURCE_DIR}/shared/languagei18n.h
     ${MZ_SOURCE_DIR}/shared/leakdetector.cpp
     ${MZ_SOURCE_DIR}/shared/leakdetector.h
     ${MZ_SOURCE_DIR}/shared/localizer.cpp
@@ -305,12 +311,16 @@ target_sources(unit_tests PRIVATE
     testcommandlineparser.h
     testcomposer.cpp
     testcomposer.h
+    testdnshelper.cpp
+    testdnshelper.h
     testfeaturemodel.cpp
     testfeaturemodel.h
     testipaddresslookup.cpp
     testipaddresslookup.h
     testipfinder.cpp
     testipfinder.h
+    testlanguagei18n.cpp
+    testlanguagei18n.h
     testmodels.cpp
     testmodels.h
     testmozillavpnh.cpp
@@ -341,6 +351,7 @@ target_sources(auth_tests PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 target_sources(unit_tests PRIVATE
     addons/addons.qrc
     guides/guides.qrc
+    languages/languages.qrc
     servers/servers.qrc
     tutorials/tutorials.qrc
 )

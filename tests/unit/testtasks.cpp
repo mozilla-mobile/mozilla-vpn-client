@@ -15,8 +15,8 @@
 #include "taskscheduler.h"
 
 void TestTasks::account() {
-  SimpleNetworkManager snm;
   SettingsHolder settingsHolder;
+  SimpleNetworkManager snm;
 
   // Failure
   {
@@ -48,8 +48,8 @@ void TestTasks::account() {
 }
 
 void TestTasks::servers() {
-  SimpleNetworkManager snm;
   SettingsHolder settingsHolder;
+  SimpleNetworkManager snm;
 
   // Failure
   {
@@ -81,8 +81,8 @@ void TestTasks::servers() {
 }
 
 void TestTasks::addDevice_success() {
-  SimpleNetworkManager snm;
   SettingsHolder settingsHolder;
+  SimpleNetworkManager snm;
 
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Success, QByteArray()));
@@ -97,8 +97,8 @@ void TestTasks::addDevice_success() {
 }
 
 void TestTasks::addDevice_failure() {
-  SimpleNetworkManager snm;
   SettingsHolder settingsHolder;
+  SimpleNetworkManager snm;
 
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Failure, QByteArray()));

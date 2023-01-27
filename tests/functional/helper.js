@@ -3,10 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const constants = require('./constants.js');
 const {URL} = require('node:url');
 const http = require('http')
 const queries = require('./queries.js');
+const addonServer = require('./servers/addon.js');
 
 let client;
 
@@ -57,6 +57,12 @@ module.exports = {
 
   disconnect() {
     client.close();
+  },
+
+  async activateViaToggle() {
+    await this.waitForQueryAndClick(
+        queries.screenHome.CONTROLLER_TOGGLE.visible().prop(
+            'state', 'stateOff'));
   },
 
   async activate(awaitConnectionOkay = false) {
@@ -334,10 +340,6 @@ module.exports = {
     await this.waitForVPNProperty('VPN', 'userState', 'UserAuthenticated');
     await this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
 
-    // Clean-up extra devices (otherwise test account will fill up in a
-    // heartbeats)
-    await this._maybeRemoveExistingDevices();
-
     if (clickOnPostAuthenticate) {
       await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await this.clickOnQuery(
@@ -385,10 +387,6 @@ module.exports = {
     // Wait for VPN client screen to move from spinning wheel to next screen
     await this.waitForVPNProperty('VPN', 'userState', 'UserAuthenticated');
     await this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
-
-    // Clean-up extra devices (otherwise test account will fill up in a
-    // heartbeats)
-    await this._maybeRemoveExistingDevices();
 
     if (clickOnPostAuthenticate) {
       await this.clickOnQuery(
@@ -539,7 +537,7 @@ module.exports = {
     _lastAddonLoadingCompleted = false;
 
     await this.setSetting(
-        'addonCustomServerAddress', `${constants.ADDON_URL}/${addonPath}/`);
+        'addonCustomServerAddress', `${addonServer.url}/${addonPath}/`);
     await this.setSetting('addonCustomServer', 'true');
 
     const json = await this._writeCommand('reset_addons');
@@ -556,7 +554,7 @@ module.exports = {
     _lastAddonLoadingCompleted = false;
 
     await this.setSetting(
-        'addonCustomServerAddress', `${constants.ADDON_URL}/${addonPath}/`);
+        'addonCustomServerAddress', `${addonServer.url}/${addonPath}/`);
     await this.setSetting('addonCustomServer', 'true');
 
     const json = await this._writeCommand('fetch_addons');
@@ -583,29 +581,5 @@ module.exports = {
 
       wr(json);
     }
-  },
-
-  async _maybeRemoveExistingDevices() {
-    const json = await this._writeCommand('devices');
-    assert(
-        json.type === 'devices' && !('error' in json),
-        `Command failed: ${json.error}`);
-
-    if (json.value.find(device => device.currentDevice)) {
-      return;
-    }
-
-    const addJson = await this._writeCommand('reset_devices');
-    assert(
-        addJson.type === 'reset_devices' && !('error' in addJson),
-        `Command failed: ${addJson.error}`);
-
-    await this.waitForCondition(async () => {
-      const json = await this._writeCommand('devices');
-      assert(
-          json.type === 'devices' && !('error' in json),
-          `Command failed: ${json.error}`);
-      return json.value.find(device => device.currentDevice);
-    });
   },
 };

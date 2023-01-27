@@ -174,5 +174,16 @@ SETTING_STRING(theme,          // getter
                true            // remove when reset
 )
 
+// This setting is only intended for running the functional tests.
+SETTING_BOOL(localhostRequestsOnly,        // Feature ID
+             setLocalhostRequestsOnly,     // setter
+             removeLocalhostRequestsOnly,  // remover
+             hasLocalhostRequestsOnly,     // has
+             "localhostRequestOnly",       // key
+             false,                        // default value
+             false,                        // user setting
+             true                          // remove when reset
+)
+
 // The app must implement its settings list file.
 #include "appsettingslist.h"

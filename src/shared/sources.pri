@@ -19,6 +19,7 @@ SOURCES += \
         $$PWD/hkdf.cpp \
         $$PWD/ipaddress.cpp \
         $$PWD/itempicker.cpp \
+        $$PWD/languagei18n.cpp \
         $$PWD/leakdetector.cpp \
         $$PWD/localizer.cpp \
         $$PWD/logger.cpp \
@@ -56,6 +57,7 @@ HEADERS += \
         $$PWD/hkdf.h \
         $$PWD/ipaddress.h \
         $$PWD/itempicker.h \
+        $$PWD/languagei18n.h \
         $$PWD/leakdetector.h \
         $$PWD/localizer.h \
         $$PWD/logger.h \

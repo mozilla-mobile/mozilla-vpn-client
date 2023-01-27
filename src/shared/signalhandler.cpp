@@ -69,6 +69,8 @@ void SignalHandler::pipeReadReady() {
 
 void SignalHandler::saHandler(int signal) {
   if (s_signalpipe >= 0) {
-    write(s_signalpipe, &signal, sizeof(signal));
+    if (write(s_signalpipe, &signal, sizeof(signal)) != sizeof(signal)) {
+      logger.warning() << "Unable to write in the pipe";
+    }
   }
 }

@@ -20,6 +20,7 @@ const fxaServer = require('./servers/fxa.js');
 const guardian = require('./servers/guardian.js');
 const addonServer = require('./servers/addon.js');
 const networkBenchmark = require('./servers/networkBenchmark.js');
+const captivePortalServer = require('./servers/captivePortalServer.js');
 const wasm = require('./wasm.js');
 
 const {Builder, By, Key, until} = require('selenium-webdriver');
@@ -33,14 +34,20 @@ async function startAndConnect() {
 
 exports.mochaHooks = {
   async beforeAll() {
-    const u = new URL(`http://localhost:${wasm.start(false)}/test.html`);
-    u.searchParams.set('guardian', `http://localhost:${guardian.start(false)}`);
-    u.searchParams.set('fxa', `http://localhost:${fxaServer.start(false)}`);
+    await wasm.start(false);
+    await guardian.start(false);
+    await fxaServer.start(guardian.url, false);
+    await addonServer.start(false);
+    await networkBenchmark.start(false);
+    await captivePortalServer.start(false);
+
+    const u = new URL(`${wasm.url}/test.html`);
+    u.searchParams.set('guardian', guardian.url);
+    u.searchParams.set('fxa', fxaServer.url);
+    u.searchParams.set('addon', `${addonServer.url}/01_empty_manifest/`);
+    u.searchParams.set('benchmark', networkBenchmark.url);
     u.searchParams.set(
-        'addon',
-        `http://localhost:${addonServer.start(false)}/01_empty_manifest/`);
-    u.searchParams.set(
-        'benchmark', `http://localhost:${networkBenchmark.start(false)}`);
+        'captivePortal', `http://%1:${captivePortalServer.port}/success.txt`);
 
     process.env['MZ_WASM_URL'] = u.toString();
     process.env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';
@@ -53,12 +60,14 @@ exports.mochaHooks = {
     fxaServer.stop();
     addonServer.stop();
     networkBenchmark.stop();
+    captivePortalServer.stop();
     wasm.stop();
 
     guardian.throwExceptionsIfAny();
     fxaServer.throwExceptionsIfAny();
     addonServer.throwExceptionsIfAny();
     networkBenchmark.throwExceptionsIfAny();
+    captivePortalServer.throwExceptionsIfAny();
 
     await driver.quit();
   },
@@ -70,6 +79,8 @@ exports.mochaHooks = {
         this.currentTest.ctx.guardianOverrideEndpoints || null;
     fxaServer.overrideEndpoints =
         this.currentTest.ctx.fxaOverrideEndpoints || null;
+    networkBenchmark.overrideEndpoints =
+        this.currentTest.ctx.networkBenchmarkOverrideEndpoints || null;
 
     await startAndConnect();
     await vpn.setGleanAutomationHeader();

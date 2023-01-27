@@ -76,7 +76,9 @@ function init() {
         MZ_FXA_API_BASE_URL: u.searchParams.get('fxa'),
         MZ_ADDON_URL: u.searchParams.get('addon'),
         MVPN_SKIP_ADDON_SIGNATURE: '1',
-        MVPN_BENCHMARK_URL: u.searchParams.get('benchmark'),
+        MZ_BENCHMARK_DOWNLOAD_URL: u.searchParams.get('benchmark'),
+        MZ_BENCHMARK_UPLOAD_URL: u.searchParams.get('benchmark'),
+        MZ_CAPTIVE_PORTAL_URL: u.searchParams.get('captivePortal'),
       }
     });
     qtLoader.loadEmscriptenModule('mozillavpn');
@@ -88,17 +90,6 @@ function mvpnNetworkRequest(id, method, url, body) {
   if (url.endsWith("/success.txt")) {
     setTimeout(() => {
             Module.mvpnNetworkResponse(id, JSON.stringify({status: 200, body: btoa('success')})); }, 200);
-    return;
-  }
-
-  if (url === "https://archive.mozilla.org/pub/vpn/speedtest/50m.data") {
-    // 50mb of data is too much to be handled in the browser.
-   setTimeout(() => Module.mvpnNetworkResponse(id, JSON.stringify({ status: 200, body: btoa(String.fromCharCode.apply(null, new Uint8Array(1024))) })), 1000);
-    return;
-  }
-
-  if (url == "https://dev.vpn-network-benchmark.nonprod.webservices.mozgcp.net/upload") {
-   setTimeout(() => Module.mvpnNetworkResponse(id, JSON.stringify({ status: 200, body: ""})), 1000);
     return;
   }
 

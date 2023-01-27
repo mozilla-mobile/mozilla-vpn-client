@@ -251,6 +251,8 @@ bool DBusService::firewallPid(int rootpid, const QString& state) {
                  << "to firewall state" << state;
   return true;
 #else
+  Q_UNUSED(rootpid);
+  Q_UNUSED(state);
   return false;
 #endif
 }

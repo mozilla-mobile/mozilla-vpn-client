@@ -588,11 +588,11 @@ void TestModels::recentConnectionBasic() {
   QVERIFY(rcMultiHop->isEmpty());
   QCOMPARE(rcMultiHop->rowCount(QModelIndex()), 0);
 
-  MozillaVPN::instance()->currentServer()->initialize();
+  MozillaVPN::instance()->serverData()->initialize();
 
   // First entry (single hop)
   {
-    MozillaVPN::instance()->currentServer()->changeServer("a", "b");
+    MozillaVPN::instance()->serverData()->changeServer("a", "b");
 
     QVERIFY(rcSingleHop->isEmpty());
     QCOMPARE(rcSingleHop->rowCount(QModelIndex()), 0);
@@ -603,7 +603,7 @@ void TestModels::recentConnectionBasic() {
 
   // Second entry (single hop)
   {
-    MozillaVPN::instance()->currentServer()->changeServer("c", "d");
+    MozillaVPN::instance()->serverData()->changeServer("c", "d");
 
     QVERIFY(!rcSingleHop->isEmpty());
     QCOMPARE(rcSingleHop->rowCount(QModelIndex()), 1);
@@ -626,7 +626,7 @@ void TestModels::recentConnectionBasic() {
 
   // Reinsering the same connection: no changes
   {
-    MozillaVPN::instance()->currentServer()->changeServer("c", "d");
+    MozillaVPN::instance()->serverData()->changeServer("c", "d");
 
     QVERIFY(!rcSingleHop->isEmpty());
     QCOMPARE(rcSingleHop->rowCount(QModelIndex()), 1);
@@ -649,7 +649,7 @@ void TestModels::recentConnectionBasic() {
 
   // Third entry as the first one: move on top
   {
-    MozillaVPN::instance()->currentServer()->changeServer("a", "b");
+    MozillaVPN::instance()->serverData()->changeServer("a", "b");
 
     QVERIFY(!rcSingleHop->isEmpty());
     QCOMPARE(rcSingleHop->rowCount(QModelIndex()), 1);
@@ -672,7 +672,7 @@ void TestModels::recentConnectionBasic() {
 
   // 4th entry
   {
-    MozillaVPN::instance()->currentServer()->changeServer("e", "f");
+    MozillaVPN::instance()->serverData()->changeServer("e", "f");
 
     QVERIFY(!rcSingleHop->isEmpty());
     QCOMPARE(rcSingleHop->rowCount(QModelIndex()), 2);
@@ -707,7 +707,7 @@ void TestModels::recentConnectionBasic() {
 
   // First multi-hop connection: still empty model
   {
-    MozillaVPN::instance()->currentServer()->changeServer("c", "d", "e", "f");
+    MozillaVPN::instance()->serverData()->changeServer("c", "d", "e", "f");
 
     QVERIFY(!rcSingleHop->isEmpty());
     QCOMPARE(rcSingleHop->rowCount(QModelIndex()), 2);
@@ -718,7 +718,7 @@ void TestModels::recentConnectionBasic() {
 
   // Second mult-hop connection
   {
-    MozillaVPN::instance()->currentServer()->changeServer("a", "b", "c", "d");
+    MozillaVPN::instance()->serverData()->changeServer("a", "b", "c", "d");
 
     QVERIFY(!rcSingleHop->isEmpty());
     QCOMPARE(rcSingleHop->rowCount(QModelIndex()), 2);
@@ -741,7 +741,7 @@ void TestModels::recentConnectionBasic() {
 
   // Let's add a few single-hop entries. We cannot reach the max value.
   for (int i = 1; i < 2 * AppConstants::RECENT_CONNECTIONS_MAX_COUNT; ++i) {
-    MozillaVPN::instance()->currentServer()->changeServer(
+    MozillaVPN::instance()->serverData()->changeServer(
         QString("%1").arg('a' + i), QString("%1").arg('b' + i));
   }
 
@@ -764,7 +764,7 @@ void TestModels::recentConnectionBasic() {
 
   // Let's add a few multi-hop entries. We cannot reach the max value.
   for (int i = 1; i < 2 * AppConstants::RECENT_CONNECTIONS_MAX_COUNT; ++i) {
-    MozillaVPN::instance()->currentServer()->changeServer(
+    MozillaVPN::instance()->serverData()->changeServer(
         QString("%1").arg('a' + i), QString("%1").arg('b' + i),
         QString("%1").arg('c' + 1), QString("%1").arg('d' + 1));
   }
@@ -898,17 +898,17 @@ void TestModels::recentConnectionSaveAndRestore() {
   QCOMPARE(rcMultiHop->rowCount(QModelIndex()), 0);
   QVERIFY(rcMultiHop->isEmpty());
 
-  MozillaVPN::instance()->currentServer()->initialize();
+  MozillaVPN::instance()->serverData()->initialize();
 
   // Let's populate the models
   {
-    MozillaVPN::instance()->currentServer()->changeServer("a", "b");
-    MozillaVPN::instance()->currentServer()->changeServer("c", "d");
-    MozillaVPN::instance()->currentServer()->changeServer("e", "f");
+    MozillaVPN::instance()->serverData()->changeServer("a", "b");
+    MozillaVPN::instance()->serverData()->changeServer("c", "d");
+    MozillaVPN::instance()->serverData()->changeServer("e", "f");
 
-    MozillaVPN::instance()->currentServer()->changeServer("c", "d", "e", "f");
-    MozillaVPN::instance()->currentServer()->changeServer("a", "b", "c", "d");
-    MozillaVPN::instance()->currentServer()->changeServer("g", "b", "c", "d");
+    MozillaVPN::instance()->serverData()->changeServer("c", "d", "e", "f");
+    MozillaVPN::instance()->serverData()->changeServer("a", "b", "c", "d");
+    MozillaVPN::instance()->serverData()->changeServer("g", "b", "c", "d");
   }
 
   // Let's check the data

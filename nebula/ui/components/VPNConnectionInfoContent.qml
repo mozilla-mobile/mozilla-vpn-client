@@ -4,7 +4,6 @@
 
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
-import QtQuick.Controls 2.14
 
 import Mozilla.VPN 1.0
 
@@ -107,7 +106,6 @@ VPNFlickable {
 
                         VPNIcon {
                             id: arrowIcon
-                            anchors.horizontalCenter: parent.horizontalCenter
                             source: "qrc:/nebula/resources/arrow-forward-white.svg"
                             sourceSize {
                                 height: VPNTheme.theme.iconSize * 1.25
@@ -122,7 +120,7 @@ VPNFlickable {
                         VPNConnectionInfoItem {
                             title: serverLocations.isMultipHop
                             ? VPNCurrentServer.localizedExitCityName
-                            : VPNServerCountryModel.getLocalizedCountryName(VPNCurrentServer.exitCountryCode);
+                            : VPNCurrentServer.localizedExitCountryName;
                             subtitle: serverLocations.isMultipHop
                                 ? ""
                                 : VPNCurrentServer.localizedExitCityName

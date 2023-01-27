@@ -15,6 +15,7 @@ class PingSender : public QObject {
 
  public:
   PingSender(QObject* parent = nullptr) : QObject(parent) {}
+  virtual ~PingSender() = default;
 
   virtual bool isValid() { return true; };
 

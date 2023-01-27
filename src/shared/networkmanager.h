@@ -35,6 +35,9 @@ class NetworkManager : public QObject {
   virtual void clearCacheInternal() = 0;
 
  private:
+  void localhostRequestsOnlyChanged();
+
+ private:
   uint32_t m_requestCount = 0;
   bool m_clearCacheNeeded = false;
 };

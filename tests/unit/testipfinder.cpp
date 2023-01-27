@@ -13,9 +13,8 @@
 #include "tasks/ipfinder/taskipfinder.h"
 
 void TestIpFinder::ipv4AndIpv6() {
-  SimpleNetworkManager snm;
-
   SettingsHolder settingsHolder;
+  SimpleNetworkManager snm;
 
   TestHelper::networkConfig.clear();
 

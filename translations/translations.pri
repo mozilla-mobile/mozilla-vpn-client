@@ -11,6 +11,7 @@ exists($$PWD/generated/translations.qrc) {
 }
 
 INCLUDEPATH += $$PWD/generated
+RESOURCES += $$PWD/languages.qrc
 RESOURCES += $$PWD/servers.qrc
 SOURCES += $$PWD/l18nstrings.cpp
 

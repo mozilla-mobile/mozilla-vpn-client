@@ -55,10 +55,6 @@ class ServerCountryModel final : public QAbstractListModel {
 
   const QString countryName(const QString& countryCode) const;
 
-  Q_INVOKABLE QString getLocalizedCountryName(const QString& countryCode);
-
-  const QString localizedCountryName(const QString& countryCode) const;
-
   const QList<ServerCountry>& countries() const { return m_countries; }
 
   void retranslate();

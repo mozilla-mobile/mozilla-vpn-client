@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/i18n">
+        <file>languages.json</file>
+    </qresource>
+</RCC>

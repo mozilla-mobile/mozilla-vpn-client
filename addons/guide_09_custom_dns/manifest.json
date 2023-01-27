@@ -1,0 +1,33 @@
+{
+  "api_version": "0.1",
+  "id": "guide_09_custom_dns",
+  "name": "Guide: custom DNS",
+  "type": "guide",
+  "conditions": {
+    "min_client_version": "2.14.0"
+  },
+  "translatable": false,
+  "guide": {
+    "id": "custom_dns",
+    "title": "Benefits of using a custom DNS",
+    "advanced": true,
+    "image": "qrc:/addons/guide_09_custom_dns/image.svg",
+    "blocks": [
+      {
+        "id": "c_1",
+        "type": "text",
+        "content": "Whenever you connect to a website, a DNS (domain name system) first turns the domain name (e.g. www.mozilla.org) into an IP address that allows your internet traffic to reach that destination. Typically, your ISP (internet service provider) provides you with a DNS server that your devices use automatically."
+      },
+      {
+        "id": "c_2",
+        "type": "text",
+        "content": "Mozilla VPN allows you to choose a custom DNS server if you prefer. To use a custom DNS, first go to “App preferences”, followed by “DNS settings.” There, you’ll be able to select “Use custom DNS” and enter the one you’d like to use."
+      },
+      {
+        "id": "c_3",
+        "type": "text",
+        "content": "Using a custom DNS is not a perfect solution. If you use one, you won’t be able to use other privacy features in the VPN like tracker blocking. This protection is best used in combination with a browser that also protects your privacy. Like Mozilla Firefox!"
+      }
+    ]
+  }
+}

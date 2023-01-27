@@ -102,7 +102,7 @@ int CommandStatus::run(QStringList& tokens) {
     }
 
     ServerCountryModel* model = vpn.serverCountryModel();
-    ServerData* sd = vpn.currentServer();
+    ServerData* sd = vpn.serverData();
     Q_ASSERT(sd);
 
     stream << "Server country code: " << sd->exitCountryCode() << Qt::endl;
@@ -141,6 +141,8 @@ int CommandStatus::run(QStringList& tokens) {
         break;
 
       case Controller::StateOn:
+        [[fallthrough]];
+      case Controller::StateSilentSwitching:
         stream << "on";
         break;
 

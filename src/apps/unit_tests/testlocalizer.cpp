@@ -34,14 +34,15 @@ void TestLocalizer::basic() {
 
   QHash<int, QByteArray> rn = l.roleNames();
   QCOMPARE(rn.count(), 4);
-  QCOMPARE(rn[Localizer::LanguageRole], "language");
-  QCOMPARE(rn[Localizer::LocalizedLanguageRole], "localizedLanguage");
+  QCOMPARE(rn[Localizer::LocalizedLanguageNameRole], "localizedLanguageName");
+  QCOMPARE(rn[Localizer::NativeLanguageNameRole], "nativeLanguageName");
   QCOMPARE(rn[Localizer::CodeRole], "code");
   QCOMPARE(rn[Localizer::RTLRole], "isRightToLeft");
 
   // No language for this unit-test app
   QVERIFY(l.rowCount(QModelIndex()) == 0);
-  QCOMPARE(l.data(QModelIndex(), Localizer::LanguageRole), QVariant());
+  QCOMPARE(l.data(QModelIndex(), Localizer::LocalizedLanguageNameRole),
+           QVariant());
 }
 
 void testGleanEntries(const QString& language) {
@@ -206,6 +207,40 @@ void TestLocalizer::parseIOSLanguages() {
     const QPair<QString, QString>& b = output[i];
     QCOMPARE(a.first, b.first);
     QCOMPARE(a.second, b.second);
+  }
+}
+
+// QFETCH fails with double templates. Let's use a typedef to make it happy.
+typedef QMap<QString, double> CompletenessList;
+
+void TestLocalizer::completeness_data() {
+  QTest::addColumn<QString>("filename");
+  QTest::addColumn<CompletenessList>("output");
+
+  {
+    CompletenessList a;
+    QTest::addRow("empty") << ":/i18n/completeness_empty.txt" << a;
+  }
+
+  {
+    CompletenessList a;
+    QTest::addRow("invalid") << ":/i18n/completeness_invalid.txt" << a;
+  }
+
+  {
+    CompletenessList a{{"tlh", 0.8}, {"foo", 0}, {"bar", 1}};
+    QTest::addRow("ok") << ":/i18n/completeness_ok.txt" << a;
+  }
+}
+
+void TestLocalizer::completeness() {
+  QFETCH(QString, filename);
+  QFETCH(CompletenessList, output);
+
+  CompletenessList list = Localizer::loadLanguageCompleteness(filename);
+
+  for (const QString& key : output.keys()) {
+    QCOMPARE(list.value(key, -1), output.value(key));
   }
 }
 

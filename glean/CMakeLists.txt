@@ -4,6 +4,10 @@
 
 add_library(glean STATIC)
 
+if(NOT MSVC)
+  target_compile_options(glean PRIVATE -Wall -Werror -Wno-conversion)
+endif()
+
 set_target_properties(glean PROPERTIES FOLDER "Libs")
 target_link_libraries(glean PRIVATE Qt6::Core Qt6::Qml)
 

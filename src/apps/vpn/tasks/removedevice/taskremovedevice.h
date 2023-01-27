@@ -22,6 +22,7 @@ class TaskRemoveDevice final : public Task {
 
  private:
   QString m_publicKey;
+  QByteArray m_authHeader;
 };
 
 #endif  // TASKREMOVEDEVICE_H

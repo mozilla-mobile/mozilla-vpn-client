@@ -60,7 +60,7 @@ void EventMetric::record(const QJsonObject& extras) {
   if (!ffiExtras.keys.empty()) {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
     glean_event_record(m_id, ffiExtras.keys.data(), ffiExtras.values.data(),
-                       ffiExtras.keys.size());
+                       static_cast<int32_t>(ffiExtras.keys.size()));
 #endif
   } else {
     // As a standalone library, the Logger class isn't available. Use generic
@@ -80,7 +80,7 @@ void EventMetric::record(const EventMetricExtra& extras) {
   if (!ffiExtras.keys.empty()) {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
     glean_event_record(m_id, ffiExtras.keys.data(), ffiExtras.values.data(),
-                       ffiExtras.keys.size());
+                       static_cast<int32_t>(ffiExtras.keys.size()));
 #endif
   } else {
     qWarning() << "Attempted to record an event with extras, but no extras "

@@ -90,7 +90,9 @@ const ServerLocalizer = {
         if (json.type === 'log') return;
 
         // Ignore notifications.
-        if (json.type === 'notification') return;
+        if (json.type === 'notification' ||
+            json.type === 'addon_load_completed')
+          return;
 
         if (!this._waitReadCallback) {
           console.log('Internal error?!?');
@@ -197,7 +199,7 @@ const ServerLocalizer = {
       }
     }
 
-    this.newData.sort((a, b) => {return a.code < b.code});
+    this.newData.sort((a, b) => a.countryCode < b.countryCode ? -1 : 1);
 
     fs.writeFileSync(
         SERVERS_OUTPUT_FILE, JSON.stringify(this.newData, null, ' '));

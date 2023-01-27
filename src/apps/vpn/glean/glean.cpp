@@ -94,18 +94,20 @@ void VPNGlean::initialize() {
       return;
     }
 
-    auto uploadEnabled = SettingsHolder::instance()->gleanEnabled();
-    auto appChannel = Constants::inProduction() ? "production" : "staging";
-    auto dataPath = gleanDirectory.absolutePath();
-
 #if defined(UNIT_TEST)
-    glean_test_reset_glean(uploadEnabled, dataPath.toLocal8Bit());
+    glean_test_reset_glean(SettingsHolder::instance()->gleanEnabled(),
+                           gleanDirectory.absolutePath().toLocal8Bit());
 #elif defined(MZ_IOS) && not(defined(BUILD_QMAKE))
-    new IOSGleanBridge(uploadEnabled, appChannel);
+    new IOSGleanBridge(SettingsHolder::instance()->gleanEnabled(),
+                       Constants::inProduction() ? "production" : "staging");
 #elif defined(MZ_ANDROID) && not(defined(BUILD_QMAKE))
-    AndroidUtils::initializeGlean(uploadEnabled, appChannel);
+    AndroidUtils::initializeGlean(
+        SettingsHolder::instance()->gleanEnabled(),
+        Constants::inProduction() ? "production" : "staging");
 #elif not(defined(MZ_WASM) || defined(BUILD_QMAKE))
-    glean_initialize(uploadEnabled, dataPath.toLocal8Bit(), appChannel);
+    glean_initialize(SettingsHolder::instance()->gleanEnabled(),
+                     gleanDirectory.absolutePath().toLocal8Bit(),
+                     Constants::inProduction() ? "production" : "staging");
 #endif
   }
 }

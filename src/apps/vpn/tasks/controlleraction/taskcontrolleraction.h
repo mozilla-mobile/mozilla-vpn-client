@@ -9,6 +9,7 @@
 #include <QTimer>
 
 #include "controller.h"
+#include "models/serverdata.h"
 #include "task.h"
 
 // The purpose of this task is to block any other task when
@@ -26,22 +27,32 @@ class TaskControllerAction final : public Task {
   };
   Q_ENUM(TaskAction);
 
-  explicit TaskControllerAction(TaskAction action);
+  enum ServerCoolDownPolicyForSilentSwitch {
+    eServerCoolDownNeeded,
+    eServerCoolDownNotNeeded,
+  };
+
+  explicit TaskControllerAction(
+      TaskAction action,
+      ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy =
+          eServerCoolDownNotNeeded);
   ~TaskControllerAction();
 
   void run() override;
 
   virtual DeletePolicy deletePolicy() const override { return NonDeletable; }
 
- private slots:
+ private:
   void stateChanged();
-  void silentSwitchDone();
   void checkStatus();
 
  private:
   const TaskAction m_action;
   Controller::State m_lastState;
+  ServerData m_serverData;
   QTimer m_timer;
+  ServerCoolDownPolicyForSilentSwitch m_serverCoolDownPolicy =
+      eServerCoolDownNotNeeded;
 };
 
 #endif  // TASKCONTROLLERACTION_H

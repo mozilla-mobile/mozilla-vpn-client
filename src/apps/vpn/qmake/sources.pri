@@ -109,6 +109,7 @@ SOURCES += \
         apps/vpn/releasemonitor.cpp \
         apps/vpn/serveri18n.cpp \
         apps/vpn/serverlatency.cpp \
+        apps/vpn/settingswatcher.cpp \
         apps/vpn/statusicon.cpp \
         apps/vpn/tasks/account/taskaccount.cpp \
         apps/vpn/tasks/adddevice/taskadddevice.cpp \
@@ -257,6 +258,7 @@ HEADERS += \
         apps/vpn/releasemonitor.h \
         apps/vpn/serveri18n.h \
         apps/vpn/serverlatency.h \
+        apps/vpn/settingswatcher.h \
         apps/vpn/statusicon.h \
         apps/vpn/tasks/account/taskaccount.h \
         apps/vpn/tasks/adddevice/taskadddevice.h \

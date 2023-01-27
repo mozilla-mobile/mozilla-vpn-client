@@ -117,6 +117,16 @@ bool FeatureCallback_splitTunnel() {
     if (VersionUtils::compareVersions(shellVersion, "3.34") < 0) {
       return false;
     }
+  } else if (desktop.contains("KDE")) {
+    QString kdeVersion = LinuxDependencies::kdeFrameworkVersion();
+    if (kdeVersion.isNull()) {
+      return false;
+    }
+    /* The metadata we need (SourcePath) is only added since kio v5.75
+     */
+    if (VersionUtils::compareVersions(kdeVersion, "5.75") < 0) {
+      return false;
+    }
   }
   // TODO: These shells need more testing.
   else if (!desktop.contains("MATE") && !desktop.contains("Unity") &&

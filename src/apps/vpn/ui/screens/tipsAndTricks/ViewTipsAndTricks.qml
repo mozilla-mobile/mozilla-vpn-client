@@ -4,7 +4,6 @@
 
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
-import QtQuick.Controls 2.15
 
 import Mozilla.VPN 1.0
 import components 0.1
@@ -14,7 +13,7 @@ VPNViewBase {
     id: root
     objectName: "settingsTipsAndTricksPage"
 
-    _menuTitle: VPNl18n.TipsAndTricksSettingsEntryLabel
+    _menuTitle: VPNl18n.SettingsTipsAndTricksSettings
     _interactive: false
 
     _viewContentData: VPNTabNavigation {

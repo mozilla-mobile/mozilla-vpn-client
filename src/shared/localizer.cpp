@@ -10,11 +10,11 @@
 #include <QLocale>
 
 #include "appconstants.h"
-#include "collator.h"
 #include "glean/generated/metrics.h"
 #include "glean/glean.h"
 #include "glean/gleandeprecated.h"
 #include "inspector/inspectorhandler.h"
+#include "languagei18n.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "settingsholder.h"
@@ -29,21 +29,13 @@ Logger logger("Localizer");
 Localizer* s_instance = nullptr;
 bool s_forceRTL = false;
 
-struct StaticLanguage {
-  QString m_name;
-  QString m_localizedName;
-};
-
 // Some languages do not have the right localized/non-localized names in the QT
 // framework (and some are missing entirely). This static map is the fallback
 // when this happens.
-QMap<QString, StaticLanguage> s_languageMap{
-    {"co", StaticLanguage{"Corsu", ""}},
-    {"es_AR", StaticLanguage{"Spanish (Argentina)", "Español, Argentina"}},
-    {"es_CL", StaticLanguage{"Spanish (Chile)", "Español, Chile"}},
-    {"es_MX", StaticLanguage{"Spanish (Mexico)", "Español, México"}},
-    {"en_GB", StaticLanguage{"English (United Kingdom)", ""}},
-    {"en_CA", StaticLanguage{"English (Canada)", ""}},
+QMap<QString, QString> s_languageMap{
+    {"es_AR", "Español, Argentina"},
+    {"es_CL", "Español, Chile"},
+    {"es_MX", "Español, México"},
 };
 
 }  // namespace
@@ -175,6 +167,9 @@ void Localizer::initialize() {
 }
 
 void Localizer::loadLanguagesFromI18n() {
+  QMap<QString, double> completeness =
+      loadLanguageCompleteness(":/i18n/translations.completeness");
+
   QDir dir(":/i18n");
   QStringList files = dir.entryList();
   for (const QString& file : files) {
@@ -187,6 +182,13 @@ void Localizer::loadLanguagesFromI18n() {
     Q_ASSERT(parts.length() == 2);
 
     QString code = parts[0].remove(0, 11);
+
+    if (Constants::inProduction() && completeness.value(code, 0) < 0.7) {
+      logger.debug() << "Language excluded:" << code
+                     << "completeness:" << completeness.value(code, 0);
+      continue;
+    }
+
     QStringList codeParts = code.split("_");
 
     QLocale locale(code);
@@ -194,14 +196,51 @@ void Localizer::loadLanguagesFromI18n() {
       locale = QLocale::system();
     }
 
-    Language language{code,
-                      codeParts[0],
+    Language language{code, codeParts[0],
                       codeParts.length() > 1 ? codeParts[1] : QString(),
-                      languageName(locale, code),
-                      localizedLanguageName(locale, code),
+                      nativeLanguageName(locale, code),
                       locale.textDirection() == Qt::RightToLeft};
     m_languages.append(language);
   }
+
+  std::sort(m_languages.begin(), m_languages.end(),
+            [&](const Language& a, const Language& b) -> bool {
+              return LanguageI18N::languageCompare(a.m_code, b.m_code) < 0;
+            });
+}
+
+// static
+QMap<QString, double> Localizer::loadLanguageCompleteness(
+    const QString& fileName) {
+  QFile file(fileName);
+  Q_ASSERT(file.exists());
+
+  QMap<QString, double> result;
+
+  if (!file.open(QIODevice::ReadOnly)) {
+    logger.warning() << "Unable to open file translations.completeness:"
+                     << file.errorString();
+    return result;
+  }
+
+  QByteArray content = file.readAll();
+  for (const QByteArray& line : content.split('\n')) {
+    if (!line.contains(':')) continue;
+
+    QList<QByteArray> parts = line.split(':');
+
+    bool ok = false;
+    double value = parts[1].toDouble(&ok);
+    if (!ok) {
+      logger.warning() << "Syntax invalid in translations.completeness, line:"
+                       << line;
+      continue;
+    }
+
+    result.insert(parts[0], value);
+  }
+
+  return result;
 }
 
 void Localizer::settingsChanged() {
@@ -228,6 +267,9 @@ void Localizer::settingsChanged() {
   }
 
   m_code = code;
+
+  beginResetModel();
+  endResetModel();
 }
 
 bool Localizer::loadLanguage(const QString& code) {
@@ -247,54 +289,37 @@ bool Localizer::loadLanguage(const QString& code) {
   m_locale = locale;
   emit localeChanged();
 
-  // Sorting languages.
-  beginResetModel();
-  Collator collator;
-  std::sort(m_languages.begin(), m_languages.end(),
-            std::bind(languageSort, std::placeholders::_1,
-                      std::placeholders::_2, &collator));
-  endResetModel();
-
   return true;
 }
 
 // static
-QString Localizer::languageName(const QLocale& locale, const QString& code) {
+QString Localizer::nativeLanguageName(const QLocale& locale,
+                                      const QString& code) {
+#ifndef UNIT_TEST
+  if (!Constants::inProduction()) {
+    Q_ASSERT_X(LanguageI18N::languageExists(code), "localizer",
+               "Languages are out of sync with the translations");
+  }
+#endif
+
+  // Let's see if we have the translation of this language in this language. We
+  // can use it as native language name.
+  QString name = LanguageI18N::translateLanguage(code, code);
+  if (!name.isEmpty()) {
+    return name;
+  }
+
   if (s_languageMap.contains(code)) {
-    QString languageName = s_languageMap[code].m_name;
-    if (!languageName.isEmpty()) {
-      return languageName;
-    }
+    return s_languageMap[code];
   }
 
   if (locale.language() == QLocale::C) {
     return "English (US)";
   }
 
-  QString name = QLocale::languageToString(locale.language());
-
-  // Capitalize the string.
-  name.replace(0, 1, locale.toUpper(QString(name[0])));
-  return name;
-}
-
-// static
-QString Localizer::localizedLanguageName(const QLocale& locale,
-                                         const QString& code) {
-  if (s_languageMap.contains(code)) {
-    QString languageName = s_languageMap[code].m_localizedName;
-    if (!languageName.isEmpty()) {
-      return languageName;
-    }
-  }
-
-  if (locale.language() == QLocale::C) {
-    return "English (US)";
-  }
-
-  QString name = locale.nativeLanguageName();
+  name = locale.nativeLanguageName();
   if (name.isEmpty()) {
-    return languageName(locale, code);
+    return locale.languageToString(locale.language());
   }
 
   // Capitalize the string.
@@ -304,8 +329,8 @@ QString Localizer::localizedLanguageName(const QLocale& locale,
 
 QHash<int, QByteArray> Localizer::roleNames() const {
   QHash<int, QByteArray> roles;
-  roles[LanguageRole] = "language";
-  roles[LocalizedLanguageRole] = "localizedLanguage";
+  roles[LocalizedLanguageNameRole] = "localizedLanguageName";
+  roles[NativeLanguageNameRole] = "nativeLanguageName";
   roles[CodeRole] = "code";
   roles[RTLRole] = "isRightToLeft";
   return roles;
@@ -315,23 +340,56 @@ int Localizer::rowCount(const QModelIndex&) const {
   return static_cast<int>(m_languages.count());
 }
 
+QString Localizer::localizedLanguageName(const Language& language) const {
+  QString translationCode = SettingsHolder::instance()->languageCode();
+  if (translationCode.isEmpty()) {
+    translationCode = Localizer::instance()->languageCodeOrSystem();
+  }
+
+  QString value =
+      LanguageI18N::translateLanguage(translationCode, language.m_code);
+  if (!value.isEmpty()) {
+    return value;
+  }
+
+  // If we don't have 'ab_BC', but we have 'ab'
+  if (translationCode.contains('_')) {
+    QStringList parts = translationCode.split('_');
+
+    QString value = LanguageI18N::translateLanguage(parts[0], language.m_code);
+    if (!value.isEmpty()) {
+      return value;
+    }
+  }
+
+  // Let's ask QT to localize the language.
+  QLocale locale(language.m_code);
+  if (language.m_code.isEmpty()) {
+    locale = QLocale::system();
+  }
+
+  return locale.languageToString(locale.language());
+}
+
 QVariant Localizer::data(const QModelIndex& index, int role) const {
   if (!index.isValid()) {
     return QVariant();
   }
 
-  switch (role) {
-    case LanguageRole:
-      return QVariant(m_languages.at(index.row()).m_name);
+  const Language& language = m_languages.at(index.row());
 
-    case LocalizedLanguageRole:
-      return QVariant(m_languages.at(index.row()).m_localizedName);
+  switch (role) {
+    case LocalizedLanguageNameRole:
+      return QVariant(localizedLanguageName(language));
+
+    case NativeLanguageNameRole:
+      return QVariant(language.m_nativeLanguageName);
 
     case CodeRole:
-      return QVariant(m_languages.at(index.row()).m_code);
+      return QVariant(language.m_code);
 
     case RTLRole:
-      return QVariant(m_languages.at(index.row()).m_rtl);
+      return QVariant(language.m_rtl);
 
     default:
       return QVariant();
@@ -345,12 +403,6 @@ QStringList Localizer::languages() const {
   }
 
   return languages;
-}
-
-bool Localizer::languageSort(const Localizer::Language& a,
-                             const Localizer::Language& b, Collator* collator) {
-  Q_ASSERT(collator);
-  return collator->compare(a.m_localizedName, b.m_localizedName) < 0;
 }
 
 QString Localizer::languageCodeOrSystem() const {

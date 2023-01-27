@@ -9,7 +9,6 @@
 #include <QObject>
 #include <QUrl>
 
-#include "appconstants.h"
 #include "benchmarktask.h"
 
 class ConnectionHealth;
@@ -18,10 +17,6 @@ class ConnectionBenchmark final : public QObject {
   Q_OBJECT;
   Q_DISABLE_COPY_MOVE(ConnectionBenchmark);
 
-  Q_PROPERTY(QString downloadUrl READ downloadUrl WRITE setDownloadUrl NOTIFY
-                 downloadUrlChanged)
-  Q_PROPERTY(QString uploadUrl READ uploadUrl WRITE setUploadUrl NOTIFY
-                 uploadUrlChanged)
   Q_PROPERTY(State state READ state NOTIFY stateChanged);
   Q_PROPERTY(Speed speed READ speed NOTIFY speedChanged);
   Q_PROPERTY(quint64 downloadBps READ downloadBps NOTIFY downloadBpsChanged);
@@ -58,26 +53,12 @@ class ConnectionBenchmark final : public QObject {
   quint64 downloadBps() const { return m_downloadBps; }
   quint64 uploadBps() const { return m_uploadBps; }
 
-  QString downloadUrl() const { return m_downloadUrl.toString(); }
-  void setDownloadUrl(QString url) {
-    m_downloadUrl.setUrl(url);
-    emit downloadUrlChanged();
-  }
-
-  QString uploadUrl() const { return m_uploadUrl.toString(); }
-  void setUploadUrl(QString url) {
-    m_uploadUrl.setUrl(url);
-    emit uploadUrlChanged();
-  }
-
  signals:
   void downloadBpsChanged();
   void pingLatencyChanged();
   void uploadBpsChanged();
   void speedChanged();
   void stateChanged();
-  void downloadUrlChanged();
-  void uploadUrlChanged();
 
  private:
   void downloadBenchmarked(quint64 bitsPerSec, bool hasUnexpectedError);
@@ -91,9 +72,6 @@ class ConnectionBenchmark final : public QObject {
   void stop();
 
  private:
-  QUrl m_downloadUrl = QUrl(AppConstants::BENCHMARK_DOWNLOAD_URL);
-  QUrl m_uploadUrl = QUrl(AppConstants::benchmarkUploadUrl());
-
   QList<BenchmarkTask*> m_benchmarkTasks;
 
   State m_state = StateInitial;

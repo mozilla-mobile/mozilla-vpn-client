@@ -1,0 +1,38 @@
+{
+    "api_version": "0.1",
+    "id": "guide_10_app_exclusions",
+    "name": "Guide: app exclusions",
+    "type": "guide",
+    "conditions": {
+        "min_client_version": "2.14.0",
+        "enabled_features": ["splitTunnel"]
+    },
+    "guide": {
+        "id": "app_exclusions",
+        "title": "Why you should use app exclusions",
+        "advanced": true,
+        "image": "qrc:/addons/guide_10_app_exclusions/image.svg",
+        "blocks": [
+            {
+                "id": "c_2",
+                "type": "text",
+                "content": "By default, when you activate Mozilla VPN on your device, all the apps you have in it will have their traffic be automatically encrypted and routed by the VPN."
+            },
+            {
+                "id": "c_3",
+                "type": "text",
+                "content": "App exclusions is an advanced feature that allows you to choose specific applications in your device that you prefer are not protected by the VPN."
+            },
+            {
+                "id": "c_4",
+                "type": "text",
+                "content": "Generally speaking, this feature can be useful in situations where you’d like certain applications to connect a bit faster by not routing their traffic via a VPN."
+            },
+            {
+                "id": "c_5",
+                "type": "text",
+                "content": "Another popular reason to consider using this feature is if your mobile data provider offers you unmetered usage to specific services, like certain instant messaging apps. In those cases, you may want to consider excluding those apps using this feature, such that your mobile data provider can effectively consider that traffic free of charge."
+            }
+        ]
+    }
+}

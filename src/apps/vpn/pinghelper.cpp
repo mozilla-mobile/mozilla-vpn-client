@@ -51,7 +51,8 @@ void PingHelper::start(const QString& serverIpv4Gateway,
     m_pingSender = new DnsPingSender(m_source, this);
   }
 
-  connect(m_pingSender, &PingSender::recvPing, this, &PingHelper::pingReceived);
+  connect(m_pingSender, &PingSender::recvPing, this, &PingHelper::pingReceived,
+          Qt::QueuedConnection);
   connect(m_pingSender, &PingSender::criticalPingError, this,
           []() { logger.info() << "Encountered Unrecoverable ping error"; });
 

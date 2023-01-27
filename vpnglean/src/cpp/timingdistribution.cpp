@@ -18,8 +18,9 @@ TimingDistributionMetric::TimingDistributionMetric(int id) : m_id(id) {}
 int TimingDistributionMetric::start() const {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
   return glean_timing_distribution_start(m_id);
-#endif
+#else
   return 0;
+#endif
 }
 
 void TimingDistributionMetric::stopAndAccumulate(int timerId) const {
@@ -39,8 +40,9 @@ int32_t TimingDistributionMetric::testGetNumRecordedErrors(
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
   return glean_timing_distribution_test_get_num_recorded_errors(m_id,
                                                                 errorType);
-#endif
+#else
   return 0;
+#endif
 }
 
 DistributionData TimingDistributionMetric::testGetValue(

@@ -28,7 +28,6 @@
         <file>resources/delete-gray.svg</file>
         <file>resources/devicesLimit.svg</file>
         <file>resources/devicesRemove.svg</file>
-        <file>resources/devices.svg</file>
         <file>resources/down.svg</file>
         <file>resources/dropdown-closed.svg</file>
         <file>resources/externalLink.svg</file>
@@ -322,7 +321,6 @@
         <file>resources/shaders/src/animatedRings.frag</file>
         <file>resources/shield-off.svg</file>
         <file>resources/shield-on.svg</file>
-        <file>resources/sparkles.svg</file>
         <file>resources/spinner.svg</file>
         <file>resources/switching.svg</file>
         <file>resources/update-lock.svg</file>
@@ -347,5 +345,6 @@
         <file>resources/navbar/messages-notification.svg</file>
         <file>resources/copy.svg</file>
         <file>resources/paste.svg</file>
+        <file>resources/info.svg</file>
     </qresource>
 </RCC>

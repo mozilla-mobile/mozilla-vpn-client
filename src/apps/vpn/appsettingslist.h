@@ -97,14 +97,24 @@ SETTING_BYTEARRAY(devices,        // getter
                   true            // remove when reset
 )
 
-SETTING_INT(dnsProvider,                           // getter
-            setDNSProvider,                        // setter
-            removeDNSProvider,                     // remover
-            hasDNSProvider,                        // has
-            "dnsProvider",                         // key
-            SettingsHolder::DnsProvider::Gateway,  // default value
-            true,                                  // user setting
-            false                                  // remove when reset
+SETTING_INT(dnsProviderDeprecated,                      // getter
+            setDNSProviderDeprecated,                   // setter
+            removeDNSProviderDeprecated,                // remover
+            hasDNSProviderDeprecated,                   // has
+            "dnsProvider",                              // key
+            SettingsHolder::DNSProviderFlags::Gateway,  // default value
+            true,                                       // user setting
+            false                                       // remove when reset
+)
+
+SETTING_INT(dnsProviderFlags,                           // getter
+            setDNSProviderFlags,                        // setter
+            removeDNSProviderFlags,                     // remover
+            hasDNSProviderFlags,                        // has
+            "dnsProviderFlags",                         // key
+            SettingsHolder::DNSProviderFlags::Gateway,  // default value
+            true,                                       // user setting
+            false                                       // remove when reset
 )
 
 SETTING_STRING(entryServerCityDeprecated,        // getter
@@ -290,14 +300,19 @@ SETTING_STRING(
     false  // remove when reset
 )
 
-SETTING_BOOL(stagingServer,        // getter
-             setStagingServer,     // setter
-             removeStagingServer,  // remover
-             hasStagingServer,     // has
-             "stagingServer",      // key
-             false,                // default value
-             false,                // user setting
-             false                 // remove when reset
+#ifdef MZ_WASM
+#  define STAGING_SERVER_DEFAULT_VALUE true
+#else
+#  define STAGING_SERVER_DEFAULT_VALUE false
+#endif
+SETTING_BOOL(stagingServer,                 // getter
+             setStagingServer,              // setter
+             removeStagingServer,           // remover
+             hasStagingServer,              // has
+             "stagingServer",               // key
+             STAGING_SERVER_DEFAULT_VALUE,  // default value
+             false,                         // user setting
+             false                          // remove when reset
 )
 
 SETTING_BOOL(startAtBoot,        // getter

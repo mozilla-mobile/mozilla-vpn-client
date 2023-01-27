@@ -1,0 +1,45 @@
+{
+  "api_version": "0.1",
+  "id": "guide_08_privacy_features",
+  "name": "Guide: app permissions",
+  "type": "guide",
+  "conditions": {
+    "min_client_version": "2.14.0"
+  },
+  "guide": {
+    "id": "privacy",
+    "title": "Using advanced privacy features",
+    "advanced": true,
+    "image": "qrc:/addons/guide_08_privacy_features/image.svg",
+    "blocks": [
+      {
+        "id": "c_1",
+        "type": "text",
+        "content": "Mozilla VPN gives you greater control over the types of content you see, on top of protecting your location and browsing activity."
+      },
+      {
+        "id": "c_2",
+        "type": "text",
+        "content": "Within the settings page, you can navigate to “Privacy Features” to see everything you’re able to do to enhance your experience."
+      },
+      {
+        "id": "c_3",
+        "type": "ulist",
+        "content": [
+           { "id": "l_1",
+             "content": "Ad-blocking: Reduces the number of ads you see when you’re using VPN."
+           }, { "id": "l_2",
+             "content": "Tracker-blocking: Fewer harmful domains will be able to track you."
+           }, { "id": "l_3",
+             "content": "Block malware: Helps protect you from ransomware, phishing, spyware, viruses, and malware."
+           }
+        ]
+      },
+      {
+        "id": "c_4",
+        "type": "text",
+        "content": "If you activate these features, they’ll overwrite any custom DNS you’re using. These protections are not a substitute for taking other security precautions — for example, while blocking malware you should still avoid downloading attachments in strange emails."
+      }
+    ]
+  }
+}

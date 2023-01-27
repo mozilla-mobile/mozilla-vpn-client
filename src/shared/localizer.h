@@ -9,7 +9,6 @@
 #include <QLocale>
 #include <QTranslator>
 
-class Collator;
 class SettingsHolder;
 
 class Localizer final : public QAbstractListModel {
@@ -24,15 +23,14 @@ class Localizer final : public QAbstractListModel {
     QString m_code;
     QString m_languageCode;
     QString m_countryCode;
-    QString m_name;
-    QString m_localizedName;
+    QString m_nativeLanguageName;
     bool m_rtl;
   };
 
  public:
-  enum ServerCountryRoles {
-    LanguageRole = Qt::UserRole + 1,
-    LocalizedLanguageRole,
+  enum LocalizerRoles {
+    LocalizedLanguageNameRole = Qt::UserRole + 1,
+    NativeLanguageNameRole,
     CodeRole,
     RTLRole,
   };
@@ -70,6 +68,10 @@ class Localizer final : public QAbstractListModel {
 
   static void forceRTL();
 
+  // Public for testing
+  static QMap<QString, double> loadLanguageCompleteness(
+      const QString& fileName);
+
   // QAbstractListModel methods
 
   QHash<int, QByteArray> roleNames() const override;
@@ -82,11 +84,8 @@ class Localizer final : public QAbstractListModel {
   void localeChanged();
 
  private:
-  static QString languageName(const QLocale& locale, const QString& code);
-  static QString localizedLanguageName(const QLocale& locale,
-                                       const QString& code);
-  static bool languageSort(const Language& a, const Language& b,
-                           Collator* collator);
+  QString localizedLanguageName(const Language& language) const;
+  static QString nativeLanguageName(const QLocale& locale, const QString& code);
 
   QString systemLanguageCode() const;
 

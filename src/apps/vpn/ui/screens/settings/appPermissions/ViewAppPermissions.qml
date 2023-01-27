@@ -12,8 +12,6 @@ import components.forms 0.1
 
 
 VPNViewBase {
-    property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
-
     //% "Search apps"
     //: Search bar placeholder text
     property string searchApps: qsTrId("vpn.protectSelectedApps.searchApps")
@@ -25,7 +23,7 @@ VPNViewBase {
     id: vpnFlickable
     objectName: "appPermissions"
 
-    _menuTitle: qsTrId("vpn.settings.appPermissions2")
+    _menuTitle: VPNl18n.SettingsAppExclusionSettings
     _viewContentData: ColumnLayout {
         Layout.fillWidth: true
 
@@ -38,22 +36,6 @@ VPNViewBase {
             Layout.fillWidth: true
             Layout.fillHeight: false
             spacing: 0
-
-            VPNContextualAlerts {
-                id: vpnOnAlert
-                Layout.fillWidth: true
-                Layout.fillHeight: false
-
-                messages: [
-                    {
-                        type: "warning",
-                        //% "VPN must be off to edit App Permissions"
-                        //: Associated to a group of settings that require the VPN to be disconnected to change
-                        message: qsTrId("vpn.settings.protectSelectedApps.vpnMustBeOff"),
-                        visible: !vpnFlickable.vpnIsOff
-                    }
-                ]
-            }
 
             Connections {
                 target: VPNAppPermissions
@@ -89,7 +71,7 @@ VPNViewBase {
             id: toggleCard
 
             toggleObjectName: "settingsAppPermissionsToggle"
-            toggleEnabled: vpnFlickable.vpnIsOff
+            toggleEnabled: true
             Layout.fillWidth: true
             Layout.preferredHeight: childrenRect.height + VPNTheme.theme.windowMargin
 
@@ -104,9 +86,7 @@ VPNViewBase {
             toggleChecked: (!VPNSettings.protectSelectedApps)
 
             function handleClick() {
-                if (vpnFlickable.vpnIsOff) {
-                    VPNSettings.protectSelectedApps = !VPNSettings.protectSelectedApps
-                }
+                VPNSettings.protectSelectedApps = !VPNSettings.protectSelectedApps
             }
         }
 
@@ -150,11 +130,6 @@ VPNViewBase {
         VPNAppPermissions.requestApplist();
         VPNGleanDeprecated.recordGleanEvent("appPermissionsViewOpened");
         Glean.sample.appPermissionsViewOpened.record();
-
-        if (!vpnIsOff) {
-            VPNGleanDeprecated.recordGleanEvent("appPermissionsViewWarning");
-            Glean.sample.appPermissionsViewWarning.record();
-        }
     }
 
 }

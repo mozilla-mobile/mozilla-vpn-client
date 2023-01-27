@@ -92,7 +92,7 @@ void ConnectionBenchmark::start() {
   // Create download benchmark
   BenchmarkTaskTransfer* downloadTask = new BenchmarkTaskTransfer(
       "BenchmarkTaskDownload", BenchmarkTaskTransfer::BenchmarkDownload,
-      m_downloadUrl);
+      AppConstants::benchmarkDownloadUrl());
   connect(downloadTask, &BenchmarkTaskTransfer::finished, this,
           &ConnectionBenchmark::downloadBenchmarked);
   connect(downloadTask->sentinel(), &BenchmarkTaskSentinel::sentinelDestroyed,
@@ -105,7 +105,7 @@ void ConnectionBenchmark::start() {
   if (Feature::get(Feature::Feature_benchmarkUpload)->isSupported()) {
     BenchmarkTaskTransfer* uploadTask = new BenchmarkTaskTransfer(
         "BenchmarkTaskUpload", BenchmarkTaskTransfer::BenchmarkUpload,
-        m_uploadUrl);
+        AppConstants::benchmarkUploadUrl());
     Q_UNUSED(uploadTask);
 
     connect(uploadTask, &BenchmarkTaskTransfer::finished, this,

@@ -9,8 +9,8 @@
 #include "simplenetworkmanager.h"
 
 void TestNetworkManager::basic() {
-  SimpleNetworkManager snm;
   SettingsHolder settingsHolder;
+  SimpleNetworkManager snm;
   QCOMPARE(&snm, NetworkManager::instance());
   QVERIFY(snm.userAgent().contains("UnitTest"));
   QCOMPARE(snm.networkAccessManager(), snm.networkAccessManager());

@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.6
-import Qt.labs.qmlmodels 1.0
 
 import components.forms 0.1
 

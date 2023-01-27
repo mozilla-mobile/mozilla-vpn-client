@@ -4,6 +4,10 @@
 
 add_library(shared-sources INTERFACE)
 
+if(NOT MSVC)
+  target_compile_options(shared-sources INTERFACE -Wall -Werror -Wno-conversion)
+endif()
+
 # Generated version header file
 configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 target_sources(shared-sources INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
@@ -46,6 +50,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/ipaddress.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/itempicker.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/itempicker.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/languagei18n.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/languagei18n.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/leakdetector.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/leakdetector.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/localizer.cpp

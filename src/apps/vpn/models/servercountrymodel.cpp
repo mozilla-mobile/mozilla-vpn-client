@@ -268,6 +268,7 @@ QStringList ServerCountryModel::pickRandom() const {
   // We should not get here, unless the model has more entries in m_servers()
   // than actually exist in the country and city lists.
   Q_ASSERT(false);
+  return QStringList();
 }
 
 // Select the city that we think is going to perform the best
@@ -356,17 +357,6 @@ const QString ServerCountryModel::countryName(
   }
 
   return QString();
-}
-
-const QString ServerCountryModel::localizedCountryName(
-    const QString& countryCode) const {
-  const QString name = countryName(countryCode);
-  return ServerI18N::translateCountryName(countryCode, name);
-}
-
-QString ServerCountryModel::getLocalizedCountryName(
-    const QString& countryCode) {
-  return localizedCountryName(countryCode);
 }
 
 void ServerCountryModel::retranslate() {

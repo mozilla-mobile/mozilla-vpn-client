@@ -14,8 +14,6 @@ VPNViewBase {
     _menuTitle: VPNl18n.SettingsDevTitle
     _viewContentData: ColumnLayout {
         id: root
-        property bool vpnIsOff: (VPNController.state === VPNController.StateOff) ||
-                                    (VPNController.state === VPNController.StateInitializing)
         Layout.fillWidth: true
 
         spacing: VPNTheme.theme.windowMargin
@@ -39,12 +37,9 @@ VPNViewBase {
             labelText: VPNl18n.SettingsDevUseStagingTitle
             subLabelText: VPNl18n.SettingsDevUseStagingSubtitle
             isChecked: VPNSettings.stagingServer
-            enabled: root.vpnIsOff
             showDivider: false
             onClicked: {
-                if (root.vpnIsOff) {
-                    VPNSettings.stagingServer = !VPNSettings.stagingServer
-                }
+                VPNSettings.stagingServer = !VPNSettings.stagingServer
             }
         }
 
@@ -56,7 +51,7 @@ VPNViewBase {
             Layout.leftMargin: VPNTheme.theme.windowMargin * 3
 
             Layout.alignment: Qt.AlignHCenter
-            enabled: root.vpnIsOff && VPNSettings.stagingServer
+            enabled: VPNSettings.stagingServer
             _placeholderText: "Staging server address"
             Layout.preferredHeight: VPNTheme.theme.rowHeight
 
@@ -65,7 +60,7 @@ VPNViewBase {
             }
 
             onTextChanged: text => {
-                               if (root.vpnIsOff && VPNSettings.stagingServerAddress !== serverAddressInput.text) {
+                               if (VPNSettings.stagingServerAddress !== serverAddressInput.text) {
                                    VPNSettings.stagingServerAddress = serverAddressInput.text;
                                }
                            }
@@ -86,9 +81,7 @@ VPNViewBase {
             isChecked: VPNSettings.addonCustomServer
             showDivider: false
             onClicked: {
-                if (root.vpnIsOff) {
-                    VPNSettings.addonCustomServer = !VPNSettings.addonCustomServer
-                }
+                VPNSettings.addonCustomServer = !VPNSettings.addonCustomServer
             }
         }
 
@@ -166,7 +159,7 @@ VPNViewBase {
 
             delegate: VPNSettingsItem {
                settingTitle:  title
-               imageLeftSrc: "qrc:/ui/resources/settings/whatsnew.svg"
+               imageLeftSrc: "qrc:/ui/resources/settings/questionMark.svg"
                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                imageRightMirror: VPNLocalizer.isRightToLeft
                onClicked: getHelpStackView.push(viewQrc)

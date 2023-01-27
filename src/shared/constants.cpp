@@ -6,7 +6,6 @@
 
 #include <QProcessEnvironment>
 #include <QString>
-#include <QUrl>
 #include <QtGlobal>
 
 #include "settingsholder.h"
@@ -34,10 +33,6 @@ QString Constants::envOrDefault(const QString& name,
   }
 
   if (env.isEmpty()) {
-    return defaultValue;
-  }
-
-  if (!QUrl(env).isValid()) {
     return defaultValue;
   }
 

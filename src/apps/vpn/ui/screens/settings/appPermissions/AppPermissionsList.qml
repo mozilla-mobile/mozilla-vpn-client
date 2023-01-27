@@ -29,21 +29,13 @@ ColumnLayout {
     states: [
         State {
             name: "visibleAndEnabled"
-            when: VPNSettings.protectSelectedApps && vpnIsOff
+            when: VPNSettings.protectSelectedApps
             PropertyChanges {
                 target: appListContainer
                 opacity: 1
                 visible: true
             }
 
-        },
-        State {
-            when: VPNSettings.protectSelectedApps && !vpnIsOff
-            PropertyChanges {
-                target: appListContainer
-                opacity: .5
-                visible: true
-            }
         },
         State {
             name: "hidden"
@@ -115,7 +107,7 @@ ColumnLayout {
         _searchBarHasError: applist.count === 0
         _searchBarPlaceholderText: searchBarPlaceholder
 
-        enabled: vpnIsOff && VPNSettings.protectSelectedApps
+        enabled: VPNSettings.protectSelectedApps
         Layout.fillWidth: true
     }
 
@@ -143,7 +135,7 @@ ColumnLayout {
                 showAppImage: true
                 onClicked: VPNAppPermissions.flip(appID)
                 isChecked: !appIsEnabled
-                enabled: vpnIsOff && VPNSettings.protectSelectedApps
+                enabled: VPNSettings.protectSelectedApps
                 Layout.minimumHeight: VPNTheme.theme.rowHeight * 1.5
             }
         }
@@ -155,7 +147,6 @@ ColumnLayout {
         width: undefined
         onClicked: VPNAppPermissions.openFilePicker()
         visible: Qt.platform.os === "windows"
-        enabled: vpnIsOff
         contentItem: Text {
             // for accessibility
             text: addApplication
