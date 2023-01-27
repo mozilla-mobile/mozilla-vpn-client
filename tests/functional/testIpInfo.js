@@ -23,7 +23,8 @@ describe('IP info', function() {
     assert(await vpn.getElementProperty(homeScreen.IP_INFO_PANEL, 'isOpen') === 'false');
   });
 
-  it('Closes when VPN is deactivated', async () => {
+  // Skip this test on 2.13 branch where queries is not available
+  it.skip('Closes when VPN is deactivated', async () => {
     await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
     await vpn.activate(true);
 
