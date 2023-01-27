@@ -115,7 +115,8 @@ else()
     add_dependencies(mozillavpn vpnglean_telemetry)
 endif()
 
-if(GLEAN_PARSER_VERSION VERSION_GREATER_EQUAL 5.0)
+set(GLEAN_PARSER_VERSION_MIN 5.0)
+if(GLEAN_PARSER_VERSION VERSION_GREATER_EQUAL ${GLEAN_PARSER_VERSION_MIN})
     # If the glean parser exists, then we can build the telemetry bindings.
     set(GENERATE_GLEAN_CMD
         ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/run_glean_parser.py
@@ -129,6 +130,11 @@ elseif(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/prebuilt)
         ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_CURRENT_SOURCE_DIR}/prebuilt/glean/generated
             ${CMAKE_CURRENT_BINARY_DIR}/glean/generated
+    )
+elseif(GLEAN_PARSER_VERSION)
+    message(FATAL_ERROR
+        "Unsupported glean_parser version ${GLEAN_PARSER_VERSION} found.\n"
+        "Please update to version ${GLEAN_PARSER_VERSION_MIN} or later."
     )
 else()
     message(FATAL_ERROR
