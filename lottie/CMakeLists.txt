@@ -21,7 +21,7 @@ endif()
 add_library(lottie STATIC)
 
 if(NOT MSVC)
-  target_compile_options(lottie PRIVATE -Wall -Werror)
+  target_compile_options(lottie PRIVATE -Wall -Werror -Wno-conversion)
 endif()
 
 find_package(Qt6 REQUIRED COMPONENTS Core Qml Qml Quick QuickTest Test)

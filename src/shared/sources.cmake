@@ -5,7 +5,7 @@
 add_library(shared-sources INTERFACE)
 
 if(NOT MSVC)
-  target_compile_options(shared-sources INTERFACE -Wall -Werror)
+  target_compile_options(shared-sources INTERFACE -Wall -Werror -Wno-conversion)
 endif()
 
 # Generated version header file

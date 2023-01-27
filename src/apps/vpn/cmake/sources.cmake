@@ -7,7 +7,7 @@
 add_library(mozillavpn-sources INTERFACE)
 
 if(NOT MSVC)
-  target_compile_options(mozillavpn-sources INTERFACE -Wall -Werror)
+  target_compile_options(mozillavpn-sources INTERFACE -Wall -Werror -Wno-conversion)
 endif()
 
 # VPN client include paths
