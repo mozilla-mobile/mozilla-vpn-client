@@ -27,7 +27,7 @@ add_library(vpnglean STATIC
 )
 
 if(NOT MSVC)
-  target_compile_options(vpnglean PRIVATE -Wall -Werror)
+  target_compile_options(vpnglean PRIVATE -Wall -Werror -Wno-conversion)
 endif()
 
 target_include_directories(vpnglean PUBLIC

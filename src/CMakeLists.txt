@@ -8,7 +8,7 @@
 qt_add_executable(mozillavpn MANUAL_FINALIZATION)
 
 if(NOT MSVC)
-  target_compile_options(mozillavpn PRIVATE -Wall -Werror)
+  target_compile_options(mozillavpn PRIVATE -Wall -Werror -Wno-conversion)
 endif()
 
 target_link_libraries(mozillavpn PRIVATE
