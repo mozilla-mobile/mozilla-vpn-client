@@ -319,8 +319,6 @@ target_sources(unit_tests PRIVATE
     testipaddresslookup.h
     testipfinder.cpp
     testipfinder.h
-    testlanguagei18n.cpp
-    testlanguagei18n.h
     testmodels.cpp
     testmodels.h
     testmozillavpnh.cpp
@@ -351,7 +349,6 @@ target_sources(auth_tests PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 target_sources(unit_tests PRIVATE
     addons/addons.qrc
     guides/guides.qrc
-    languages/languages.qrc
     servers/servers.qrc
     tutorials/tutorials.qrc
 )

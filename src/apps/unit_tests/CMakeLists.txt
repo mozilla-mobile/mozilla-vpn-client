@@ -55,6 +55,7 @@ target_compile_definitions(app_unit_tests PRIVATE MZ_DUMMY)
 target_sources(app_unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/glean/glean.h
     ${MZ_SOURCE_DIR}/apps/vpn/glean/glean.cpp
+    languages/languages.qrc
     appconstants.h
     appfeaturelistcallback.h
     appfeaturelist.h
@@ -67,6 +68,8 @@ target_sources(app_unit_tests PRIVATE
     testfeature.h
     testipaddress.cpp
     testipaddress.h
+    testlanguagei18n.cpp
+    testlanguagei18n.h
     testlicense.cpp
     testlicense.h
     testlocalizer.cpp
