@@ -22,14 +22,6 @@ void TestFeature::flipOnOff() {
   QVERIFY(!Feature::getOrNull("testFeatureA"));
   Feature fA(
       "testFeatureA", "Feature A",
-      false,                          // Is Major Feature
-      L18nStrings::Empty,             // Display name
-      L18nStrings::Empty,             // Description
-      L18nStrings::Empty,             // LongDescr
-      "",                             // ImagePath
-      "",                             // IconPath
-      "",                             // link URL
-      "1.0",                          // released
       []() -> bool { return true; },  // Can be flipped on
       []() -> bool { return true; },  // Can be flipped off
       QStringList(),                  // feature dependencies
@@ -40,14 +32,6 @@ void TestFeature::flipOnOff() {
   QVERIFY(!Feature::getOrNull("testFeatureB"));
   Feature fB(
       "testFeatureB", "Feature B",
-      false,                          // Is Major Feature
-      L18nStrings::Empty,             // Display name
-      L18nStrings::Empty,             // Description
-      L18nStrings::Empty,             // LongDescr
-      "",                             // ImagePath
-      "",                             // IconPath
-      "",                             // link URL
-      "1.0",                          // released
       []() -> bool { return true; },  // Can be flipped on
       []() -> bool { return true; },  // Can be flipped off
       QStringList(),                  // feature dependencies
