@@ -79,7 +79,7 @@ int CommandServers::run(QStringList& tokens) {
 
         QJsonArray cityArray;
         for (const QString& cityName : country.cities()) {
-          const ServerCity& city = scm->findCity(country.code(), cityName); 
+          const ServerCity& city = scm->findCity(country.code(), cityName);
           if (!city.initialized()) {
             continue;
           }

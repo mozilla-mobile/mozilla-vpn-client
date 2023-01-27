@@ -207,8 +207,8 @@ bool ServerCountryModel::exists(const QString& countryCode,
   return m_cities.contains(ServerCity::hashKey(countryCode, cityName));
 }
 
-const ServerCity& ServerCountryModel::findCity(
-    const QString& countryCode, const QString& cityName) const {
+const ServerCity& ServerCountryModel::findCity(const QString& countryCode,
+                                               const QString& cityName) const {
   auto index = m_cities.constFind(ServerCity::hashKey(countryCode, cityName));
   if (index == m_cities.end()) {
     static const ServerCity emptycity;
