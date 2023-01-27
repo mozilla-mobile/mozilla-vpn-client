@@ -59,7 +59,7 @@ SETTING_STRINGLIST(captivePortalIpv4Addresses,        // getter
                    QStringList(),                     // default value
                    false,                             // user setting
                    false,                             // remove when reset
-                   true                               // sensitive (do not log)
+                   false                              // sensitive (do not log)
 )
 
 SETTING_STRINGLIST(captivePortalIpv6Addresses,         // getter
@@ -70,7 +70,7 @@ SETTING_STRINGLIST(captivePortalIpv6Addresses,         // getter
                    QStringList(),                      // default value
                    false,                              // user setting
                    false,                              // remove when reset
-                   true                                // sensitive (do not log)
+                   false                               // sensitive (do not log)
 )
 
 SETTING_BOOL(connectionChangeNotification,        // getter
