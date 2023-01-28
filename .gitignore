@@ -32,6 +32,7 @@ linux/netfilter/vendor/
 .venv
 __pycache__
 lottie.mjs
+qml_lint_result.txt
 
 # Translation pipeline
 addon_ts/

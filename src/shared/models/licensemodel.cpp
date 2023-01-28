@@ -4,6 +4,7 @@
 
 #include "licensemodel.h"
 
+#include <QCoreApplication>
 #include <QFile>
 
 #include "leakdetector.h"
@@ -13,7 +14,18 @@ namespace {
 Logger logger("LicenseModel");
 }
 
-LicenseModel::LicenseModel() { MZ_COUNT_CTOR(LicenseModel); }
+// static
+LicenseModel* LicenseModel::instance() {
+  static LicenseModel* s_instance = nullptr;
+  if (!s_instance) {
+    s_instance = new LicenseModel(qApp);
+  }
+  return s_instance;
+}
+
+LicenseModel::LicenseModel(QObject* parent) : QAbstractListModel(parent) {
+  MZ_COUNT_CTOR(LicenseModel);
+}
 
 LicenseModel::~LicenseModel() { MZ_COUNT_DTOR(LicenseModel); }
 
