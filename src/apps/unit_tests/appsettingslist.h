@@ -31,8 +31,8 @@ SETTING_STRING(sensitive,        // getter
                removeSensitive,  // remover
                hasSensitive,     // has
                "sensitive",      // key
-               "",            // default value
-               false,         // user setting
-               true,          // remove when reset
-               true          // sensitive (do not log)
+               "",               // default value
+               false,            // user setting
+               true,             // remove when reset
+               true              // sensitive (do not log)
 )
