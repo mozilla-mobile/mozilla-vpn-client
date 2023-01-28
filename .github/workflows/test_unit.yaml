@@ -56,7 +56,7 @@ jobs:
         working-directory: ./build
         run: |
           export PATH=${{github.workspace}}/grcov-build/bin:$PATH
-          ctest -j $(nproc) --output-on-failure
+          ctest --output-on-failure
 
           grcov $(pwd)/tests/auth/CMakeFiles/auth_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/auth_lcov.info
