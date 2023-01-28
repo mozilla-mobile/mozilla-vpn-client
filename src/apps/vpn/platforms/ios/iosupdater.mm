@@ -86,6 +86,7 @@ bool IOSUpdater::processData(const QString& latestVersion, const QByteArray& dat
 
   for (const QJsonValue& value : releases) {
     QString version = value.toObject()["version"].toString();
+    // version is Apple-reported (from iTunes request above), latestVersion is Guardian-reported (from VersionApi request). Only continue if Apple is able to provide the app version Guardian expects it to.
     if (VersionUtils::compareVersions(version, latestVersion) != 0) {
       continue;
     }
