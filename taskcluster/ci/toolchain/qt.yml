@@ -12,10 +12,9 @@ task-defaults:
 qt-mac:
     description: "Mac QT compile Task"
     run:
+        using: run-task
         use-caches: false
-        script: compile_qt_6_mac.sh
-        resources:
-            - scripts/utils/qt6_compile.sh
+        command: ./taskcluster/scripts/toolchain/compile_qt_6_mac.sh
         toolchain-alias: qt-mac
         toolchain-artifact: public/build/qt6_mac.zip
     treeherder:
