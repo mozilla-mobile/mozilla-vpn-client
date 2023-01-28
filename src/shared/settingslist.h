@@ -36,8 +36,8 @@ SETTING_BOOL(addonCustomServer,        // getter
              "addon/customServer",     // key
              false,                    // default value
              false,                    // user setting
-             false,                           // remove when reset
-             false                            // sensitive (do not log)
+             false,                    // remove when reset
+             false                     // sensitive (do not log)
 )
 
 SETTING_STRING(addonCustomServerAddress,        // getter
@@ -48,7 +48,7 @@ SETTING_STRING(addonCustomServerAddress,        // getter
                AppConstants::addonBaseUrl(),    // default value
                false,                           // user setting
                false,                           // remove when reset
-             false                            // sensitive (do not log)
+               false                            // sensitive (do not log)
 )
 
 SETTING_BOOL(addonProdKeyInStaging,        // getter
@@ -58,8 +58,8 @@ SETTING_BOOL(addonProdKeyInStaging,        // getter
              "addon/prodKeyInStaging",     // key
              false,                        // default value
              false,                        // user setting
-             false,                           // remove when reset
-             true                            // sensitive (do not log)
+             false,                        // remove when reset
+             true                          // sensitive (do not log)
 )
 
 SETTING_STRINGLIST(featuresFlippedOff,        // getter
@@ -69,8 +69,8 @@ SETTING_STRINGLIST(featuresFlippedOff,        // getter
                    "featuresFlippedOff",      // key
                    QStringList(),             // default value
                    false,                     // user setting
-                   false,                           // remove when reset
-             false                            // sensitive (do not log)
+                   false,                     // remove when reset
+                   false                      // sensitive (do not log)
 )
 
 SETTING_STRINGLIST(featuresFlippedOn,        // getter
@@ -80,8 +80,8 @@ SETTING_STRINGLIST(featuresFlippedOn,        // getter
                    "featuresFlippedOn",      // key
                    QStringList(),            // default value
                    false,                    // user setting
-                   false,                           // remove when reset
-             false                            // sensitive (do not log)
+                   false,                    // remove when reset
+                   false                     // sensitive (do not log)
 )
 
 // TODO - This would be better named "telemetryEnabled", but as we already
@@ -94,8 +94,8 @@ SETTING_BOOL(gleanEnabled,        // getter
              "gleanEnabled",      // key
              true,                // default value
              true,                // user setting
-             false,                           // remove when reset
-             false                            // sensitive (do not log)
+             false,               // remove when reset
+             false                // sensitive (do not log)
 )
 
 SETTING_DATETIME(installationTime,        // getter
@@ -105,8 +105,8 @@ SETTING_DATETIME(installationTime,        // getter
                  "installationTime",      // key
                  QDateTime(),             // default value
                  false,                   // user setting
-                 false,                           // remove when reset
-             false                            // sensitive (do not log)
+                 false,                   // remove when reset
+                 false                    // sensitive (do not log)
 )
 
 SETTING_STRING(installedVersion,        // getter
@@ -116,8 +116,9 @@ SETTING_STRING(installedVersion,        // getter
                "installedVersion",      // key
                "",                      // default value
                false,                   // user setting
-               false,                           // remove when reset
-             false                            // sensitive (do not log)
+               false,                   // remove when reset
+               false                    // sensitive (do not log)
+)
 
 SETTING_STRING(languageCode,        // getter
                setLanguageCode,     // setter
@@ -126,8 +127,8 @@ SETTING_STRING(languageCode,        // getter
                "languageCode",      // key
                "",                  // default value
                true,                // user setting
-               false,                           // remove when reset
-             false                            // sensitive (do not log)
+               false,               // remove when reset
+               false                // sensitive (do not log)
 )
 
 SETTING_STRING(previousLanguageCode,        // getter
@@ -137,8 +138,8 @@ SETTING_STRING(previousLanguageCode,        // getter
                "previousLanguageCode",      // key
                "",                          // default value
                true,                        // user setting
-               false,                           // remove when reset
-             false                            // sensitive (do not log)
+               false,                       // remove when reset
+               false                        // sensitive (do not log)
 )
 
 SETTING_BOOL(systemLanguageCodeMigrated,        // getter
@@ -148,8 +149,8 @@ SETTING_BOOL(systemLanguageCodeMigrated,        // getter
              "systemLanguageCodeMigrated",      // key
              false,                             // default value
              false,                             // user setting
-             true,                           // remove when reset
-             false                            // sensitive (do not log)
+             true,                              // remove when reset
+             false                              // sensitive (do not log)
 )
 
 SETTING_DATETIME(updateTime,        // getter
@@ -159,8 +160,8 @@ SETTING_DATETIME(updateTime,        // getter
                  "updateTime",      // key
                  QDateTime(),       // default value
                  false,             // user setting
-                 false,                           // remove when reset
-             false                            // sensitive (do not log)
+                 false,             // remove when reset
+                 false              // sensitive (do not log)
 )
 
 SETTING_STRING(userEmail,        // getter
@@ -183,8 +184,8 @@ SETTING_STRING(theme,          // getter
                "theme",        // key
                DEFAULT_THEME,  // default value
                true,           // user setting
-               true,                           // remove when reset
-             false                            // sensitive (do not log)
+               true,           // remove when reset
+               false           // sensitive (do not log)
 )
 
 // This setting is only intended for running the functional tests.
@@ -195,8 +196,8 @@ SETTING_BOOL(localhostRequestsOnly,        // Feature ID
              "localhostRequestOnly",       // key
              false,                        // default value
              false,                        // user setting
-             true,                           // remove when reset
-             false                            // sensitive (do not log)
+             true,                         // remove when reset
+             false                         // sensitive (do not log)
 )
 
 // The app must implement its settings list file.
