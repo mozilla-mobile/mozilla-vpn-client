@@ -14,7 +14,7 @@ include_directories(${MZ_SOURCE_DIR}/shared/hacl-star/kremlin/minimal)
 include_directories(${MZ_SOURCE_DIR}/apps/unit_tests)
 include_directories(${MZ_SOURCE_DIR}/apps/vpn)
 
-qt_add_executable(app_unit_tests EXCLUDE_FROM_ALL)
+qt_add_executable(app_unit_tests EXCLUDE_FROM_ALL MANUAL_FINALIZATION)
 add_dependencies(build_tests app_unit_tests)
 target_compile_definitions(app_unit_tests PRIVATE UNIT_TEST)
 
