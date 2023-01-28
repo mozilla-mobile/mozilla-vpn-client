@@ -11,7 +11,8 @@ SETTING_STRING(foobar,        // getter
                "foobar",      // key
                "FOO BAR",     // default value
                true,          // user setting
-               true           // remove when reset
+               true,                           // remove when reset
+             false                            // sensitive (do not log)
 )
 
 SETTING_STRING(barfoo,        // getter
@@ -21,5 +22,6 @@ SETTING_STRING(barfoo,        // getter
                "barfoo",      // key
                "",            // default value
                false,         // user setting
-               true           // remove when reset
+               true,                           // remove when reset
+             false                            // sensitive (do not log)
 )
