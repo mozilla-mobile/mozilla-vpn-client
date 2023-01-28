@@ -60,6 +60,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/logger.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/loghandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/loghandler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/models/licensemodel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/models/licensemodel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/networkmanager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/networkmanager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/networkrequest.cpp
@@ -95,6 +97,10 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/urlopener.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/versionutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/versionutils.h
+)
+
+target_sources(shared-sources INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/resources/license.qrc
 )
 
 # Signal handling for unix platforms

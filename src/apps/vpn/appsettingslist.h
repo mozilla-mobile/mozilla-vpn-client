@@ -6,36 +6,6 @@
 
 // Please! Keep the alphabetic order!
 
-SETTING_BOOL(addonCustomServer,        // getter
-             setAddonCustomServer,     // setter
-             removeAddonCustomServer,  // remover
-             hasAddonCustomServer,     // has
-             "addon/customServer",     // key
-             false,                    // default value
-             false,                    // user setting
-             false                     // remove when reset
-)
-
-SETTING_STRING(addonCustomServerAddress,        // getter
-               setAddonCustomServerAddress,     // setter
-               removeAddonCustomServerAddress,  // remover
-               hasAddonCustomServerAddress,     // has
-               "addon/customServerAddress",     // key
-               AppConstants::addonBaseUrl(),    // default value
-               false,                           // user setting
-               false                            // remove when reset
-)
-
-SETTING_BOOL(addonProdKeyInStaging,        // getter
-             setAddonProdKeyInStaging,     // setter
-             removeAddonProdKeyInStaging,  // remover
-             hasAddonProdKeyInStaging,     // has
-             "addon/prodKeyInStaging",     // key
-             false,                        // default value
-             false,                        // user setting
-             false                         // remove when reset
-)
-
 SETTING_BOOL(captivePortalAlert,        // getter
              setCaptivePortalAlert,     // setter
              removeCaptivePortalAlert,  // remover
@@ -167,39 +137,6 @@ SETTING_STRING(entryServerCountryCodeDeprecated,        // getter
                true                                     // remove when reset
 )
 
-SETTING_STRINGLIST(featuresFlippedOff,        // getter
-                   setFeaturesFlippedOff,     // setter
-                   removeFeaturesFlippedOff,  // remover
-                   hasFeaturesFlippedOff,     // has
-                   "featuresFlippedOff",      // key
-                   QStringList(),             // default value
-                   false,                     // user setting
-                   false                      // remove when reset
-)
-
-SETTING_STRINGLIST(featuresFlippedOn,        // getter
-                   setFeaturesFlippedOn,     // setter
-                   removeFeaturesFlippedOn,  // remover
-                   hasFeaturesFlippedOn,     // has
-                   "featuresFlippedOn",      // key
-                   QStringList(),            // default value
-                   false,                    // user setting
-                   false                     // remove when reset
-)
-
-// TODO - This would be better named "telemetryEnabled", but as we already
-// shipped with it called gleanEnabled it's non-trivial to change
-// the name. https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2050
-SETTING_BOOL(gleanEnabled,        // getter
-             setGleanEnabled,     // setter
-             removeGleanEnabled,  // remover
-             hasGleanEnabled,     // has
-             "gleanEnabled",      // key
-             true,                // default value
-             true,                // user setting
-             false                // remove when reset
-)
-
 SETTING_STRINGLIST(iapProducts,        // getter
                    setIapProducts,     // setter
                    removeIapProducts,  // remover
@@ -210,26 +147,6 @@ SETTING_STRINGLIST(iapProducts,        // getter
                    true                // remove when reset
 )
 
-SETTING_DATETIME(installationTime,        // getter
-                 setInstallationTime,     // setter
-                 removeInstallationTime,  // remover
-                 hasInstallationTime,     // has
-                 "installationTime",      // key
-                 QDateTime(),             // default value
-                 false,                   // user setting
-                 false                    // remove when reset
-)
-
-SETTING_STRING(installedVersion,        // getter
-               setInstalledVersion,     // setter
-               removeInstalledVersion,  // remover
-               hasInstalledVersion,     // has
-               "installedVersion",      // key
-               "",                      // default value
-               false,                   // user setting
-               false                    // remove when reset
-)
-
 SETTING_INT64(keyRegenerationTimeSec,        // getter
               setKeyRegenerationTimeSec,     // setter
               removeKeyRegenerationTimeSec,  // remover
@@ -238,16 +155,6 @@ SETTING_INT64(keyRegenerationTimeSec,        // getter
               0,                             // default value
               false,                         // user setting
               true                           // remove when reset
-)
-
-SETTING_STRING(languageCode,        // getter
-               setLanguageCode,     // setter
-               removeLanguageCode,  // remover
-               hasLanguageCode,     // has
-               "languageCode",      // key
-               "",                  // default value
-               true,                // user setting
-               false                // remove when reset
 )
 
 SETTING_STRINGLIST(missingApps,        // getter
@@ -268,16 +175,6 @@ SETTING_BOOL(postAuthenticationShown,        // getter
              false,                          // default value
              true,                           // user setting
              true                            // remove when reset
-)
-
-SETTING_STRING(previousLanguageCode,        // getter
-               setPreviousLanguageCode,     // setter
-               removePreviousLanguageCode,  // remover
-               hasPreviousLanguageCode,     // has
-               "previousLanguageCode",      // key
-               "",                          // default value
-               true,                        // user setting
-               false                        // remove when reset
 )
 
 SETTING_STRING(privateKey,        // getter
@@ -438,16 +335,6 @@ SETTING_BYTEARRAY(subscriptionData,        // getter
                   true                     // remove when reset
 )
 
-SETTING_BOOL(systemLanguageCodeMigrated,        // getter
-             setSystemLanguageCodeMigrated,     // setter
-             removeSystemLanguageCodeMigrated,  // remover
-             hasSystemLanguageCodeMigrated,     // has
-             "systemLanguageCodeMigrated",      // key
-             false,                             // default value
-             false,                             // user setting
-             true                               // remove when reset
-)
-
 SETTING_BOOL(telemetryPolicyShown,        // getter
              setTelemetryPolicyShown,     // setter
              removeTelemetryPolicyShown,  // remover
@@ -487,16 +374,6 @@ SETTING_BOOL(unsecuredNetworkAlert,        // getter
                  ->isSupported(),  // default value
              true,                 // user setting
              false                 // remove when reset
-)
-
-SETTING_DATETIME(updateTime,        // getter
-                 setUpdateTime,     // setter
-                 removeUpdateTime,  // remover
-                 hasUpdateTime,     // has
-                 "updateTime",      // key
-                 QDateTime(),       // default value
-                 false,             // user setting
-                 false              // remove when reset
 )
 
 SETTING_STRING(userAvatar,        // getter
@@ -582,15 +459,3 @@ SETTING_STRINGLIST(subscriptionTransactions,        // getter
                    false                            // remove when reset
 )
 #endif
-
-#define DEFAULT_THEME "main"
-
-SETTING_STRING(theme,          // getter
-               setTheme,       // setter
-               removeTheme,    // remover
-               hasTheme,       // has
-               "theme",        // key
-               DEFAULT_THEME,  // default value
-               true,           // user setting
-               true            // remove when reset
-)

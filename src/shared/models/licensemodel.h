@@ -15,7 +15,8 @@ class LicenseModel final : public QAbstractListModel {
       QString contentLicense READ contentLicense NOTIFY contentLicenseChanged)
 
  public:
-  LicenseModel();
+  static LicenseModel* instance();
+
   ~LicenseModel();
 
   enum ModelRoles {
@@ -38,6 +39,9 @@ class LicenseModel final : public QAbstractListModel {
 
  signals:
   void contentLicenseChanged();
+
+ private:
+  explicit LicenseModel(QObject* parent);
 
  private:
   struct License {

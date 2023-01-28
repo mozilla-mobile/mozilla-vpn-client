@@ -4,6 +4,7 @@
 
 #include "eventlistener.h"
 
+#include <QFileInfo>
 #include <QLocalSocket>
 
 #include "appconstants.h"
@@ -15,8 +16,6 @@
 
 #  include "platforms/windows/windowsutils.h"
 #endif
-
-#include <QFileInfo>
 
 namespace {
 Logger logger("EventListener");

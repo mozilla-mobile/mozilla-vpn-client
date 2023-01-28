@@ -82,7 +82,6 @@ SOURCES += \
         apps/vpn/models/featuremodel.cpp \
         apps/vpn/models/feedbackcategorymodel.cpp \
         apps/vpn/models/keys.cpp \
-        apps/vpn/models/licensemodel.cpp \
         apps/vpn/models/location.cpp \
         apps/vpn/models/recentconnections.cpp \
         apps/vpn/models/server.cpp \
@@ -231,7 +230,6 @@ HEADERS += \
         apps/vpn/models/featuremodel.h \
         apps/vpn/models/feedbackcategorymodel.h \
         apps/vpn/models/keys.h \
-        apps/vpn/models/licensemodel.h \
         apps/vpn/models/location.h \
         apps/vpn/models/recentconnections.h \
         apps/vpn/models/server.h \
@@ -297,7 +295,6 @@ HEADERS += \
 
 
 RESOURCES += apps/vpn/ui/resources.qrc
-RESOURCES += apps/vpn/ui/license.qrc
 RESOURCES += apps/vpn/ui/ui.qrc
 RESOURCES += apps/vpn/resources/certs/certs.qrc
 RESOURCES += apps/vpn/resources/public_keys/public_keys.qrc

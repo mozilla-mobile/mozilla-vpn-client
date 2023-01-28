@@ -4,7 +4,7 @@
 
 #include "helper.h"
 
-class TestFeature final : public TestHelper {
+class TestFeatureModel final : public TestHelper {
   Q_OBJECT
 
  private slots:

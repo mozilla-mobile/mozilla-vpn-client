@@ -39,7 +39,8 @@ void TestLocalizer::basic() {
   QCOMPARE(rn[Localizer::CodeRole], "code");
   QCOMPARE(rn[Localizer::RTLRole], "isRightToLeft");
 
-  QVERIFY(l.rowCount(QModelIndex()) > 0);
+  // No language for this unit-test app
+  QVERIFY(l.rowCount(QModelIndex()) == 0);
   QCOMPARE(l.data(QModelIndex(), Localizer::LocalizedLanguageNameRole),
            QVariant());
 }

@@ -10,7 +10,7 @@
 void TestIpAddress::ctor() {
   IPAddress ip;
   QCOMPARE(ip, ip);
-  ip = ip;
+  ip = *&ip;
 }
 
 void TestIpAddress::basic_data() {
