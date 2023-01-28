@@ -30,32 +30,40 @@ mkdir -p "${TASK_HOME}/artifacts"
 print N "Taskcluster macOS compilation script"
 print N ""
 
+
+# TC NIT: we need to assert 
+# that everything is UTF-8 
 export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
-
-print Y "Installing rust..."
-curl https://sh.rustup.rs -sSf | sh -s -- -y || die
-export PATH="$HOME/.cargo/bin:$PATH"
-
-print Y "Installing homebrew, cmake, ninja..."
-mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
-export PATH=$PWD/homebrew/bin:$PATH
-brew install cmake
-brew install ninja
-
-print Y "Installing go..."
-curl -O https://dl.google.com/go/go1.17.6.darwin-amd64.tar.gz
-tar -xzf go1.17.6.darwin-amd64.tar.gz
-export PATH="`pwd`/go/bin:$PATH"
-
-print Y "Installing python dependencies..."
-# use --user for permissions
-python3 -m pip install -r requirements.txt --user
 export PYTHONIOENCODING="UTF-8"
 
-print Y "Updating submodules..."
 
-# should already be done by Xcode cloud cloning but just to make sure
+print Y "Installing conda"
+chmod +x ${MOZ_FETCHES_DIR}/miniconda.sh
+bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -u -p ${TASK_HOME}/miniconda
+source ${TASK_HOME}/miniconda/bin/activate
+
+
+print Y "Installing provided conda env..."
+# TODO: Check why --force is needed if we install into TASK_HOME?
+conda env create --force -f env.yml       
+conda activate VPN         
+conda info 
+
+# Conda Cannot know installed MacOS SDK'S
+# and as we use conda'provided clang/llvm
+# we need to manually provide the Path. 
+#
+print G "Checking Available SDK'S..."
+# Now you would guess the SDK path is the same on all runners
+# But no. So... let's find out?
+# TODO: Check if this is the same version for every runner on taskcluster .__.
+export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
+
+
+# Should already have been done by taskcluser, 
+# but double checking c: 
+print Y "Updating submodules..."
 git submodule init || die
 git submodule update || die
 
@@ -79,11 +87,13 @@ if [[ "$RELEASE" ]]; then
         -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake \
         -DSENTRY_DSN=$SENTRY_DSN \
         -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
-        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_BUILD_TYPE=Release \
+        ${CMAKE_ARGS}
 else 
     cmake -S . -B ${MOZ_FETCHES_DIR}/build -GNinja \
         -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake \
-        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_BUILD_TYPE=Release \
+        ${CMAKE_ARGS}
 fi 
 
 print Y "Building the client..."
