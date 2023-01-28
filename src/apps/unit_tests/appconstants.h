@@ -33,10 +33,10 @@ constexpr const char* MACOS_FALLBACK_APP_ID = "org.mozilla.macos.AppUnitTest";
 constexpr const char* IOS_FALLBACK_APP_ID = "org.mozilla.ios.AppUnitTest";
 #endif
 
-#if defined(MZ_WINDOWS)
+//#if defined(MZ_WINDOWS)
 // Credential key for windows
 constexpr const wchar_t* WINDOWS_CRED_KEY = L"Unit Test";
-#endif
+//#endif
 
 #if defined(MZ_ANDROID)
 constexpr const char* ANDROID_LOG_NAME = "unittest";
@@ -64,8 +64,6 @@ PRODBETAEXPR(QString, addonBaseUrl,
                  "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/"))
 
 #undef PRODBETAEXPR
-
-// TODO: add something here.
 
 };  // namespace AppConstants
 
