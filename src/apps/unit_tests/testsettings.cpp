@@ -124,11 +124,12 @@ void TestSettings::transactionRollbackStartup() {
 
 void TestSettings::sensitiveLogging() {
   SettingsHolder settingsHolder;
+  settingsHolder.setFoobar("NotSensitive");
+  settingsHolder.setSensitive("Do NOT print this out!");
   QString report = settingsHolder.getReport();
-  QStringList reportLines = report.split(QLatin1Char('\n'));
-  // This is always the first entry because user/email is in the
-  // shared/settingsHolder
-  QCOMPARE(report, "user/email -> <Sensitive>");
+  QVERIFY(report.contains("\nfoobar -> NotSensitive\n"));
+  QVERIFY(report.contains("\nsensitive -> <Sensitive>\n"));
+  QVERIFY(!report.contains("Do NOT print this out!"));
 }
 
 static TestSettings s_testSettings;

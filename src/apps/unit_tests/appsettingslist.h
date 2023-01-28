@@ -25,3 +25,14 @@ SETTING_STRING(barfoo,        // getter
                true,          // remove when reset
                false          // sensitive (do not log)
 )
+
+SETTING_STRING(sensitive,        // getter
+               setSensitive,     // setter
+               removeSensitive,  // remover
+               hasSensitive,     // has
+               "sensitive",      // key
+               "",            // default value
+               false,         // user setting
+               true,          // remove when reset
+               true          // sensitive (do not log)
+)
