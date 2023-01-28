@@ -12,4 +12,5 @@ class TestSettings final : public TestHelper {
   void transactionCommit();
   void transactionRollback();
   void transactionRollbackStartup();
+  void sensitiveLogging();
 };

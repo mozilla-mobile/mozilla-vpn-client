@@ -433,7 +433,7 @@ Some variables that might be useful when configuring the project:
 for iOS devices, or select any of the simulation targets when building for the simulator.
 
 6. Click on the Play button to start building and signing of the Mozilla VPN app. (If this step
-results in an error, ensure the app was built with Qt 6.3.2. If it was not, the build folder must 
+results in an error, ensure the app was built with Qt 6.3.2. If it was not, the build folder must
 be completely deleted and the app must be re-built.)
 
 ### How to build from source code for Android
@@ -535,33 +535,40 @@ cmake --build build -j$(nproc)
 
 ## Testing
 
+### Unit tests
+
 When built for any one of the desktop platforms, this project will also generate
-a suite of unit tests. The tests are built by manually specifying the
-`build_tests` target. Once built, you can run them with `ctest` as follows:
+a suite of unit tests.
+
+The tests are built manually specifying the `build_tests` target.
 
 ```bash
-cmake --build build --target build_tests
-ctest --test-dir build
+cmake --build build --target build_tests -j $(nproc)
+```
+
+Once built, you can run them with `ctest` as follows:
+``
+ctest --test-dir build -j $(nproc) --output-on-failure
 ```
 
 ### Running the functional tests
 
-> **Note**: Functional tests require a dummy build of the application, which is not
-> built by default. To build the `dummyvpn` target, in the root folder of this repository run:
->
-> ```
-> cmake --build build -j$(nproc) --target dummyvpn
-> ```
->
-> This will create a dummy build under the `tests/dummyvpn` folder. To run the functional
-> tests against this build, make sure the `MVPN_BIN` environment variable is set:
-> ```
-> export MVPN_BIN=$(pwd)/build/tests/dummyvpn/dummyvpn
-> ```
+**New build required**: Functional tests require a dummy build of the application, which is not
+built by default. To build the `dummyvpn` target, in the root folder of this repository run:
 
+```
+cmake --build build -j$(nproc) --target dummyvpn
+```
+This will create a dummy build under the `tests/dummyvpn` folder. To run the functional
+tests against this build, make sure the `MVPN_BIN` environment variable is set:
+```
+export MVPN_BIN=$(pwd)/build/tests/dummyvpn/dummyvpn
+```
+
+**Other dependencies**:
 * Install node (if needed) and then `npm install` to install the testing
   dependencies
-* Compile the testing addons: ./scripts/addon/generate_all_tests.py
+* Compile the testing addons: `./scripts/addon/generate_all_tests.py`
 * Make a .env file and place it in the root folder for the repo. It should include:
  * `MVPN_BIN` (location of compiled mvpn binary. This must be a dummy binary, see note above.)
  * `ARTIFACT_DIR` - optional (directory to put screenshots from test failures)
@@ -573,7 +580,8 @@ ctest --test-dir build
   MVPN_BIN=dummybuild/src/mozillavpn
   ARTIFACT_DIR=tests/artifact
   ```
-* Run a test from the root of the project: `npm run functionalTest path/to/testFile.js`. To run, say, the authentication tests: `npm run functionalTest tests/functional/testAuthenticationInApp.js`.
+
+**To run a test**: from the root of the project: `npm run functionalTest path/to/testFile.js`. To run, say, the authentication tests: `npm run functionalTest tests/functional/testAuthenticationInApp.js`.
 
 ## Developer Options and staging environment
 

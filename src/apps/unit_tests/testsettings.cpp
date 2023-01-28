@@ -122,4 +122,14 @@ void TestSettings::transactionRollbackStartup() {
   }
 }
 
+void TestSettings::sensitiveLogging() {
+  SettingsHolder settingsHolder;
+  settingsHolder.setFoobar("NotSensitive");
+  settingsHolder.setSensitive("Do NOT print this out!");
+  QString report = settingsHolder.getReport();
+  QVERIFY(report.contains("\nfoobar -> NotSensitive\n"));
+  QVERIFY(report.contains("\nsensitive -> <Sensitive>\n"));
+  QVERIFY(!report.contains("Do NOT print this out!"));
+}
+
 static TestSettings s_testSettings;
