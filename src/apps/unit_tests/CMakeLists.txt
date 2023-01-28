@@ -4,6 +4,20 @@
 
 get_filename_component(MZ_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src ABSOLUTE)
 
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    set(MZ_PLATFORM_NAME "linux")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+    set(MZ_PLATFORM_NAME "windows")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+    set(MZ_PLATFORM_NAME "macos")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
+    set(MZ_PLATFORM_NAME "android")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
+    set(MZ_PLATFORM_NAME "ios")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    set(MZ_PLATFORM_NAME "wasm")
+endif()
+
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${MZ_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR}/shared)
@@ -16,7 +30,7 @@ include_directories(${MZ_SOURCE_DIR}/apps/vpn)
 
 qt_add_executable(app_unit_tests EXCLUDE_FROM_ALL MANUAL_FINALIZATION)
 add_dependencies(build_tests app_unit_tests)
-target_compile_definitions(app_unit_tests PRIVATE UNIT_TEST)
+target_compile_definitions(app_unit_tests PRIVATE UNIT_TEST "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
 
 target_link_libraries(app_unit_tests PRIVATE
     Qt6::Quick
