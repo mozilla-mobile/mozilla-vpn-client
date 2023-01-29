@@ -104,7 +104,7 @@ module.exports = {
   },
 
   async waitForInitialView() {
-    await this.waitForQuery(queries.screenInitialize.GET_HELP_LINK.visible());
+    assert(await this.query(queries.screenInitialize.GET_HELP_LINK.visible()));
     assert(await this.query(queries.screenInitialize.SIGN_UP_BUTTON.visible()));
     assert(await this.query(
         queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible()));
@@ -340,10 +340,6 @@ module.exports = {
     // Wait for VPN client screen to move from spinning wheel to next screen
     await this.waitForVPNProperty('VPN', 'userState', 'UserAuthenticated');
     await this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
-
-    // Clean-up extra devices (otherwise test account will fill up in a
-    // heartbeats)
-    await this._maybeRemoveExistingDevices();
 
     if (clickOnPostAuthenticate) {
       await this.waitForQuery(queries.global.SCREEN_LOADER.ready());

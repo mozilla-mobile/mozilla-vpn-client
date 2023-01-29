@@ -34,6 +34,7 @@ describe('User authentication in browser', function() {
   });
 
   it('Completes authentication', async () => {
+    await vpn.waitForInitialView();
     await vpn.authenticateInBrowser(true, true, this.ctx.wasm);
   });
 
