@@ -336,8 +336,8 @@ $ conda activate VPN
 You are now ready to build!
 
 ```bash 
-(vpn) $ cmake -S . -B -DCMAKE_PREFIX_PATH=${Path to QT}/lib/cmake
-(vpn) $ cmake --build 
+(vpn) $ mkdir build && cmake -S . -B build -DCMAKE_PREFIX_PATH=${Path to QT}/lib/cmake
+(vpn) $ cmake --build build 
 ```
 
 
