@@ -167,6 +167,9 @@ void Localizer::initialize() {
 }
 
 void Localizer::loadLanguagesFromI18n() {
+  QMap<QString, double> completeness =
+      loadLanguageCompleteness(":/i18n/translations.completeness");
+
   QDir dir(":/i18n");
   QStringList files = dir.entryList();
   for (const QString& file : files) {
@@ -179,6 +182,13 @@ void Localizer::loadLanguagesFromI18n() {
     Q_ASSERT(parts.length() == 2);
 
     QString code = parts[0].remove(0, 11);
+
+    if (Constants::inProduction() && completeness.value(code, 0) < 0.7) {
+      logger.debug() << "Language excluded:" << code
+                     << "completeness:" << completeness.value(code, 0);
+      continue;
+    }
+
     QStringList codeParts = code.split("_");
 
     QLocale locale(code);
@@ -197,6 +207,40 @@ void Localizer::loadLanguagesFromI18n() {
             [&](const Language& a, const Language& b) -> bool {
               return LanguageI18N::languageCompare(a.m_code, b.m_code) < 0;
             });
+}
+
+// static
+QMap<QString, double> Localizer::loadLanguageCompleteness(
+    const QString& fileName) {
+  QFile file(fileName);
+  Q_ASSERT(file.exists());
+
+  QMap<QString, double> result;
+
+  if (!file.open(QIODevice::ReadOnly)) {
+    logger.warning() << "Unable to open file translations.completeness:"
+                     << file.errorString();
+    return result;
+  }
+
+  QByteArray content = file.readAll();
+  for (const QByteArray& line : content.split('\n')) {
+    if (!line.contains(':')) continue;
+
+    QList<QByteArray> parts = line.split(':');
+
+    bool ok = false;
+    double value = parts[1].toDouble(&ok);
+    if (!ok) {
+      logger.warning() << "Syntax invalid in translations.completeness, line:"
+                       << line;
+      continue;
+    }
+
+    result.insert(parts[0], value);
+  }
+
+  return result;
 }
 
 void Localizer::settingsChanged() {

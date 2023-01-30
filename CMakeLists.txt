@@ -111,6 +111,7 @@ find_package(Qt6 COMPONENTS
     WebSockets
     Widgets
     Xml
+    Svg
 )
 
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND
@@ -151,6 +152,7 @@ if(NOT CMAKE_CROSSCOMPILING)
     add_subdirectory(tests/nativemessaging EXCLUDE_FROM_ALL)
     add_subdirectory(tests/unit EXCLUDE_FROM_ALL)
     add_subdirectory(tests/qml EXCLUDE_FROM_ALL)
+    add_subdirectory(src/apps/unit_tests EXCLUDE_FROM_ALL)
 
     # Dummy Testing Client
     add_subdirectory(tests/dummyvpn EXCLUDE_FROM_ALL)

@@ -905,6 +905,8 @@ describe('User authentication', function() {
       // Step 6: email code -> back -> start -> totp -> error code
       await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp
                                          .AUTH_EMAILVER_BACK_BUTTON.visible());
+      await vpn.waitForQuery(
+          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
       await vpn.setQueryProperty(
           queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
           'text', 'test@test.com');

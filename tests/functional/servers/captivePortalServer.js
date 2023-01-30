@@ -3,13 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const Server = require('./server.js');
-const constants = require('../constants.js');
 
 let server = null;
 module.exports = {
-  start(headerCheck = true) {
+  async start(headerCheck = true) {
     server = new Server(
-        'Captive portal server', constants.CAPTIVE_PORTAL_PORT, {
+        'Captive portal server', {
           GETs: {
             '/success.txt': {
               status: 200,
@@ -18,11 +17,19 @@ module.exports = {
           },
         },
         headerCheck);
-    return constants.CAPTIVE_PORTAL_PORT;
+    await server.start();
   },
 
   stop() {
     server.stop();
+  },
+
+  get port() {
+    return server.port;
+  },
+
+  get url() {
+    return server.url;
   },
 
   get overrideEndpoints() {

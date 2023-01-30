@@ -910,7 +910,7 @@ void MozillaVPN::logout() {
 void MozillaVPN::reset(bool forceInitialState) {
   logger.debug() << "Cleaning up all";
 
-  TaskScheduler::deleteTasks();
+  deactivate();
 
   SettingsHolder::instance()->clear();
   m_private->m_keys.forgetKeys();
@@ -1687,10 +1687,6 @@ void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {
   }
 
   TaskScheduler::scheduleTask(new TaskGroup(refreshTasks));
-}
-
-QString MozillaVPN::placeholderUserDNS() const {
-  return AppConstants::PLACEHOLDER_USER_DNS;
 }
 
 // static

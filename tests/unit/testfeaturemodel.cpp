@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "testfeature.h"
+#include "testfeaturemodel.h"
 
 #include "adjust/adjustfiltering.h"
 #include "feature.h"
@@ -10,7 +10,7 @@
 #include "models/featuremodel.h"
 #include "settingsholder.h"
 
-void TestFeature::flipOnOff() {
+void TestFeatureModel::flipOnOff() {
   SettingsHolder settingsHolder;
 
   // Fresh settings!
@@ -86,7 +86,7 @@ void TestFeature::flipOnOff() {
   QVERIFY(!Feature::get("testFeatureC")->isSupported());
 }
 
-void TestFeature::enableByAPI() {
+void TestFeatureModel::enableByAPI() {
   SettingsHolder settingsHolder;
   // Fresh settings!
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureA"));
@@ -185,4 +185,4 @@ void TestFeature::enableByAPI() {
               .m_defaultValue == "testValue");
 }
 
-static TestFeature s_testFeature;
+static TestFeatureModel s_testFeature;

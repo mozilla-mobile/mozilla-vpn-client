@@ -5,7 +5,7 @@
 add_library(translations STATIC)
 
 if(NOT MSVC)
-  target_compile_options(translations PRIVATE -Wall -Werror)
+  target_compile_options(translations PRIVATE -Wall -Werror -Wno-conversion)
 endif()
 
 set_target_properties(translations PROPERTIES FOLDER "Libs")
@@ -15,14 +15,6 @@ get_filename_component(MVPN_SCRIPT_DIR ${CMAKE_SOURCE_DIR}/scripts ABSOLUTE)
 get_filename_component(GENERATED_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated ABSOLUTE)
 file(MAKE_DIRECTORY ${GENERATED_DIR})
 target_include_directories(translations PUBLIC ${GENERATED_DIR})
-
-# Special language threadshold for wasm where we want to have all the languages
-# for debugging.
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
-    set(LANGUAGE_THRESHOLD "0.0")
-else()
-    set(LANGUAGE_THRESHOLD "0.7")
-endif()
 
 target_sources(translations PRIVATE
     ${GENERATED_DIR}/l18nstrings_p.cpp
@@ -89,16 +81,16 @@ endforeach()
 ## Generate the translation resource file.
 ## TODO: This should be a build-time command that depends on the input XLIFFs.
 file(WRITE ${GENERATED_DIR}/translations.qrc "<RCC>\n    <qresource prefix=\"/i18n\">\n")
+file(APPEND ${GENERATED_DIR}/translations.qrc "        <file>translations.completeness</file>\n")
+file(REMOVE ${GENERATED_DIR}/translations.completeness)
 foreach(LOCALE ${I18N_LOCALES})
     execute_process(
-        RESULT_VARIABLE I18N_CHECK_RESULT
-        COMMAND ${PYTHON_EXECUTABLE} ${MVPN_SCRIPT_DIR}/utils/xlifftool.py -c --locale=${LOCALE} ${I18N_DIR}/${LOCALE}/mozillavpn.xliff -t ${LANGUAGE_THRESHOLD}
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        OUTPUT_VARIABLE I18N_COMPLETENESS
+        COMMAND ${PYTHON_EXECUTABLE} ${MVPN_SCRIPT_DIR}/utils/xlifftool.py -C --locale=${LOCALE} ${I18N_DIR}/${LOCALE}/mozillavpn.xliff
     )
-    if(I18N_CHECK_RESULT EQUAL 0)
-        file(APPEND ${GENERATED_DIR}/translations.qrc "        <file>mozillavpn_${LOCALE}.qm</file>\n")
-        message("Importing translations: ${LOCALE}")
-    else()
-        message("Rejecting translations: ${LOCALE}")
-    endif()
+    file(APPEND ${GENERATED_DIR}/translations.qrc "        <file>mozillavpn_${LOCALE}.qm</file>\n")
+    file(APPEND ${GENERATED_DIR}/translations.completeness "${LOCALE}:${I18N_COMPLETENESS}\n")
+    message("Importing translations: ${LOCALE} - completeness: ${I18N_COMPLETENESS}")
 endforeach()
 file(APPEND ${GENERATED_DIR}/translations.qrc "    </qresource>\n</RCC>\n")

@@ -135,10 +135,11 @@ VPNViewBase {
                     enabled: VPNSettings.dnsProviderFlags === VPNSettings.Custom
                     onEnabledChanged: if(enabled) forceActiveFocus()
 
-                    _placeholderText: VPN.placeholderUserDNS
+                    _placeholderText: VPNl18n.SettingsDnsSettingsInputPlaceholder
                     text: ""
                     Layout.fillWidth: true
                     Layout.topMargin: 12
+                    inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhFormattedNumbersOnly
 
                     PropertyAnimation on opacity {
                         duration: 200

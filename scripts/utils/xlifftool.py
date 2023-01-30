@@ -196,6 +196,8 @@ Output format can take one of the following values:
     parsegroup = parser.add_argument_group('Options controlling the parser')
     parsegroup.add_argument('-c', '--check', default=False, action='store_true',
         help='Check if the XLIFF file is ready for import')
+    parsegroup.add_argument('-C', '--completeness', default=False, action='store_true',
+        help='Print the completeness level of the XLIFF file')
     parsegroup.add_argument('-t', '--threshold', metavar='VAL', type=float, default=0.7,
         help='Minimum required threshold of completed translations (0.0 to 1.0)')
     parsegroup.add_argument('-l', '--locale', metavar='LANG', type=str, action='store',
@@ -242,6 +244,10 @@ Output format can take one of the following values:
             with open(args.xform, "r") as fin:
                 for line in fin:
                     fout.write(xlanguage.transform(line))
+
+        # Return the completeness value
+        if args.completeness:
+            print(xlanguage.completeness)
 
     # Return the verdict
     if args.check:

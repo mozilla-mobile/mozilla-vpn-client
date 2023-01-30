@@ -3,22 +3,49 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const express = require('express')
-const constants = require('./constants.js');
 const path = require('node:path');
+const ports = require('./servers/ports.js');
 
 let server;
+let port;
+
+function createServer(app) {
+  return new Promise(r => {
+    port = ports.register('wasm');
+    server = app.listen(port);
+    server.on('error', err => {
+      if (err.code === 'EADDRINUSE') {
+        createServer(app).then(r);
+        return;
+      }
+
+      throw new Error(err.code);
+    });
+    server.on('listening', r);
+  });
+}
 
 module.exports = {
-  start() {
+  async start() {
     const app = express();
     app.use(express.static(path.join(__dirname, '..', '..', 'wasm')));
-    server = app.listen(constants.WASM_PORT);
-    return constants.WASM_PORT;
+
+    await createServer(app);
   },
+
   stop() {
     if (server) {
       server.close();
       server = null;
     }
+  },
+
+  get port() {
+    return port;
+  },
+
+  get url() {
+    return `http://localhost:${port}`;
   }
+
 };

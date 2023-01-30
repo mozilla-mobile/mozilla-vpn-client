@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.0
-import QtQuick.Controls 2.14
 
 import Mozilla.VPN 1.0
 
@@ -11,6 +10,22 @@ Item {
     property variant itemToTarget
 
     states: [
+        State {
+            name: "disabled"
+            when: !itemToTarget.enabled
+
+            PropertyChanges {
+                target: itemToTarget
+                color: VPNTheme.colors.input.disabled.text
+                placeholderTextColor: VPNTheme.colors.input.disabled.placeholder
+            }
+
+            PropertyChanges {
+                target: itemToTarget.background
+                border.color: VPNTheme.colors.input.disabled.border
+                border.width: 1
+            }
+        },
         State {
             name: "empty"
             when: itemToTarget.text === ""
@@ -111,22 +126,6 @@ Item {
             PropertyChanges {
                 target: itemToTarget.background
                 border.color: VPNTheme.colors.input.error.border
-                border.width: 1
-            }
-        },
-        State {
-            name: "disabled"
-            when: !itemToTarget.enabled
-
-            PropertyChanges {
-                target: itemToTarget
-                color: VPNTheme.colors.input.disabled.text
-                placeholderTextColor: VPNTheme.colors.input.disabled.placeholder
-            }
-
-            PropertyChanges {
-                target: itemToTarget.background
-                border.color: VPNTheme.colors.input.disabled.border
                 border.width: 1
             }
         }

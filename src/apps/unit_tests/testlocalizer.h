@@ -27,6 +27,9 @@ class TestLocalizer final : public TestHelper {
   void parseIOSLanguages_data();
   void parseIOSLanguages();
 
+  void completeness_data();
+  void completeness();
+
  private:
   SettingsHolder* m_settingsHolder = nullptr;
 };

@@ -34,17 +34,20 @@ async function startAndConnect() {
 
 exports.mochaHooks = {
   async beforeAll() {
-    const u = new URL(`http://localhost:${wasm.start(false)}/test.html`);
-    u.searchParams.set('guardian', `http://localhost:${guardian.start(false)}`);
-    u.searchParams.set('fxa', `http://localhost:${fxaServer.start(false)}`);
+    await wasm.start(false);
+    await guardian.start(false);
+    await fxaServer.start(guardian.url, false);
+    await addonServer.start(false);
+    await networkBenchmark.start(false);
+    await captivePortalServer.start(false);
+
+    const u = new URL(`${wasm.url}/test.html`);
+    u.searchParams.set('guardian', guardian.url);
+    u.searchParams.set('fxa', fxaServer.url);
+    u.searchParams.set('addon', `${addonServer.url}/01_empty_manifest/`);
+    u.searchParams.set('benchmark', networkBenchmark.url);
     u.searchParams.set(
-        'addon',
-        `http://localhost:${addonServer.start(false)}/01_empty_manifest/`);
-    u.searchParams.set(
-        'benchmark', `http://localhost:${networkBenchmark.start(false)}`);
-    u.searchParams.set(
-        'captivePortal',
-        `http://%1:${captivePortalServer.start(false)}/success.txt`);
+        'captivePortal', `http://%1:${captivePortalServer.port}/success.txt`);
 
     process.env['MZ_WASM_URL'] = u.toString();
     process.env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';

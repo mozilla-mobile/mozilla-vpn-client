@@ -10,80 +10,71 @@ const queries = require('./queries.js');
 describe('PushMessage.handlers', function() {
   describe('DEVICE_DELETED', function() {
     const messageType = 'DEVICE_DELETED';
-    this.ctx.authenticationNeeded = true;
 
-    this.beforeEach(async () => {
-      // Override the guardian endpoints to return more than one device.
-      const UserData = {
-        avatar: '',
-        display_name: 'Test',
-        email: 'test@mozilla.com',
-        max_devices: 5,
-        subscriptions: {vpn: {active: true}},
-        devices: [
-          {
-            name: 'currentDevice',
-            unique_id: 'currentDevice',
-            pubkey: await vpn.getPublicKey(),
-            ipv4_address: '127.0.0.1',
-            ipv6_address: '::1',
-            created_at: new Date().toISOString()
-          },
-          {
-            name: 'device_2',
-            unique_id: 'device_2',
-            pubkey: 'publicKey_2',
-            ipv4_address: '127.0.0.1',
-            ipv6_address: '::1',
-            created_at: new Date().toISOString()
-          },
-          {
-            name: 'device_3',
-            unique_id: 'device_3',
-            pubkey: 'publicKey_3',
-            ipv4_address: '127.0.0.1',
-            ipv6_address: '::1',
-            created_at: new Date().toISOString()
-          },
-          {
-            name: 'device_4',
-            unique_id: 'device_4',
-            pubkey: 'publicKey_4',
-            ipv4_address: '127.0.0.1',
-            ipv6_address: '::1',
-            created_at: new Date().toISOString()
-          },
-          {
-            name: 'device_5',
-            unique_id: 'device_5',
-            pubkey: 'publicKey_5',
-            ipv4_address: '127.0.0.1',
-            ipv6_address: '::1',
-            created_at: new Date().toISOString()
-          }
-        ],
-      };
-
-      this.ctx.guardianOverrideEndpoints = {
-        GETs: {
-          '/api/v1/vpn/account':
-              {status: 200, requiredHeaders: ['Authorization'], body: UserData},
+    const UserData = {
+      avatar: '',
+      display_name: 'Test',
+      email: 'test@mozilla.com',
+      max_devices: 5,
+      subscriptions: {vpn: {active: true}},
+      devices: [
+        {
+          name: 'device_1',
+          unique_id: 'device_1',
+          pubkey: 'a',
+          ipv4_address: '127.0.0.1',
+          ipv6_address: '::1',
+          created_at: new Date().toISOString()
         },
-      };
-    });
+        {
+          name: 'device_2',
+          unique_id: 'device_2',
+          pubkey: 'b',
+          ipv4_address: '127.0.0.1',
+          ipv6_address: '::1',
+          created_at: new Date().toISOString()
+        },
+        {
+          name: 'device_3',
+          unique_id: 'device_3',
+          pubkey: 'c',
+          ipv4_address: '127.0.0.1',
+          ipv6_address: '::1',
+          created_at: new Date().toISOString()
+        },
+        {
+          name: 'device_4',
+          unique_id: 'device_4',
+          pubkey: 'd',
+          ipv4_address: '127.0.0.1',
+          ipv6_address: '::1',
+          created_at: new Date().toISOString()
+        },
+      ],
+    };
 
-    it('no-op', () => {
-      // We need this test case here for due to the following situation:
-      //
-      // We need the guardian overrides to be inside a `beforeEach` block,
-      // otherwise we cannot use `await` to wait for the publicKey function to complete.
-      //
-      // That means it runs _after_ the VPN is initialized for the first time
-      // which means the overrides are only effective after a test case has already run.
-    })
+    this.ctx.guardianOverrideEndpoints = {
+      GETs: {
+        '/api/v1/vpn/account':
+            {status: 200, requiredHeaders: ['Authorization'], body: UserData},
+      },
+      POSTs: {
+        '/api/v1/vpn/device': {
+          status: 201,
+          requiredHeaders: ['Authorization'],
+          callback: (req) => {
+            UserData.devices[0].name = req.body.name;
+            UserData.devices[0].pubkey = req.body.pubkey;
+            UserData.devices[0].unique_id = req.body.unique_id;
+          },
+          body: {}
+        },
+      }
+    };
 
     it('attempting to delete the current device leads to a logout',
        async () => {
+         await vpn.authenticateInApp(true, true);
          await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
 
          const devices = await vpn.getDevices();
@@ -100,6 +91,7 @@ describe('PushMessage.handlers', function() {
 
     it('attempting to delete a third device updates the device list',
        async () => {
+         await vpn.authenticateInApp(true, true);
          await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
 
          let devices = await vpn.getDevices();
@@ -129,6 +121,7 @@ describe('PushMessage.handlers', function() {
        });
 
     it('invalid device deletion messages are ignored', async () => {
+      await vpn.authenticateInApp(true, true);
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
 
       const devices = await vpn.getDevices();
