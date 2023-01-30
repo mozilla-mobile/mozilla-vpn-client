@@ -83,8 +83,8 @@ Get-ChildItem -Path $TASK_WORKDIR/artifacts
 
 sentry.exe login --auth-token $(Get-Content sentry_debug_file_upload_key)
 
-Write-Output "Calling check $ARTIFACTS_PATH\*.pdb"
-sentry.exe difutil check $ARTIFACTS_PATH\*.pdb
+Write-Output "Calling check $ARTIFACTS_PATH"
+sentry.exe difutil check $ARTIFACTS_PATH
 Write-Output "Calling bundle-sources $ARTIFACTS_PATH\*.pdb"
 sentry.exe difutil bundle-sources $ARTIFACTS_PATH\*.pdb
 
