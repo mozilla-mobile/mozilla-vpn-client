@@ -91,7 +91,7 @@ cmake -S . -B ${MOZ_FETCHES_DIR}/build -GNinja \
         -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake \
         -DSENTRY_DSN=$SENTRY_DSN \
         -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
-        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo
 
 
 print Y "Building the client..."
@@ -106,14 +106,15 @@ mkdir -p tmp || die
 
 print Y "Extracting the Symbols..."
 dsymutil ${MOZ_FETCHES_DIR}/build/src/Mozilla\ VPN.app/Contents/MacOS/Mozilla\ VPN  -o tmp/MozillaVPN.dsym
-print Y "Uploading the Symbols..." 
 
 
+print Y "Checking & genrating a symbols bundle"
 ls tmp/MozillaVPN.dsym/Contents/Resources/DWARF/
 sentry-cli difutil check tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
 sentry-cli difutil bundle-sources tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
 
 if [[ "$RELEASE" ]]; then      
+    print Y "Uploading the Symbols..." 
     sentry-cli debug-files upload --org mozilla -p vpn-client tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
 fi
 
