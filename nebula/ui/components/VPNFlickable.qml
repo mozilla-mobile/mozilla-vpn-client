@@ -99,7 +99,6 @@ Flickable {
         const isItemBehindNavbar = item.mapToItem(window.contentItem, 0, 0).y + item.height > window.height - VPNTheme.theme.navBarHeightWithMargins
         const buffer = navbar.visible && isItemBehindNavbar ? VPNTheme.theme.navBarHeightWithMargins : 20
         const itemHeight = Math.max(item.height, VPNTheme.theme.rowHeight) + buffer
-        let ext = item.height + yPosition
         let destinationY
 
         //When focusing on an item behind the navbar in the downward direction, make sure it is not blocked by the navbar
@@ -110,7 +109,7 @@ Flickable {
         }
         else {
             //When focusing on an item that is off screen in the upward direction
-            if (yPosition < vpnFlickable.contentY /*|| yPosition > vpnFlickable.contentY + vpnFlickable.height || ext < vpnFlickable.contentY || ext > vpnFlickable.contentY + vpnFlickable.height*/) {
+            if (yPosition < vpnFlickable.contentY) {
                 destinationY = yPosition - buffer
             }
         }
