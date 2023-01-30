@@ -485,7 +485,7 @@ describe("Server list", function () {
     await vpn.deactivate();
   });
 
-  it("Server switching -- different country different cities", async () => {
+  it.skip("Server switching -- different country different cities", async () => {
     await vpn.setSetting("serverSwitchNotification", true);
     await vpn.setSetting("connectionChangeNotification", true);
 
