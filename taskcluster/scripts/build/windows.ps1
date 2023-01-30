@@ -80,7 +80,7 @@ Compress-Archive -Path $TASK_WORKDIR/unsigned/* -Destination $ARTIFACTS_PATH/uns
 Write-Output "Artifacts Location:$TASK_WORKDIR/artifacts"
 Get-ChildItem -Path $TASK_WORKDIR/artifacts
 
-$env:SENTRY_LOG_LEVEL=debug
+$env:SENTRY_LOG_LEVEL="debug"
 
 sentry.exe login --auth-token $(Get-Content sentry_debug_file_upload_key)
 
