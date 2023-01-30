@@ -110,7 +110,7 @@ print Y "Uploading the Symbols..."
 
 
 ls tmp/MozillaVPN.dsym/Contents/Resources/DWARF/
-sentry-cli difutil check tmp/MozillaVPN.dsym
+sentry-cli difutil check tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
 
 if [[ "$RELEASE" ]]; then      
     sentry-cli debug-files upload --org mozilla -p vpn-client tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
