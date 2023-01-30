@@ -80,9 +80,20 @@ Compress-Archive -Path $TASK_WORKDIR/unsigned/* -Destination $ARTIFACTS_PATH/uns
 Write-Output "Artifacts Location:$TASK_WORKDIR/artifacts"
 Get-ChildItem -Path $TASK_WORKDIR/artifacts
 
-$env:SENTRY_LOG_LEVEL="debug"
 
 sentry.exe login --auth-token $(Get-Content sentry_debug_file_upload_key)
+$env:SENTRY_LOG_LEVEL="debug"
+
+# What is in the folder. 
+Write-Output "check $BUILD_DIR/src/CMakeFiles/mozillavpn.dir"
+Get-ChildItem -Path $BUILD_DIR/src/CMakeFiles/mozillavpn.dir
+
+Write-Output "check $BUILD_DIR/src/"
+Get-ChildItem -Path $BUILD_DIR/src/
+
+
+
+
 
 Write-Output "Calling check $ARTIFACTS_PATH"
 sentry.exe difutil check $ARTIFACTS_PATH
