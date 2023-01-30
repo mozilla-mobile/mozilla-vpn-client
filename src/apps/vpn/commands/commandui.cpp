@@ -22,6 +22,7 @@
 #include "frontend/navigator.h"
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
+#include "models/licensemodel.h"
 // Relative path is required here,
 // otherwise this gets confused with the Glean.js implementation
 #include "../glean/glean.h"
@@ -146,11 +147,7 @@ int CommandUI::run(QStringList& tokens) {
       return 0;
     }
 
-    if (testingOption.m_set
-#ifdef MZ_WASM
-        || true
-#endif
-    ) {
+    if (testingOption.m_set) {
       AppConstants::setStaging();
     }
 
@@ -370,7 +367,7 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNLicenseModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->licenseModel();
+          QObject* obj = LicenseModel::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

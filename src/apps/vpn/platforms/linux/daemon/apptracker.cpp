@@ -22,6 +22,7 @@ constexpr const char* GTK_DESKTOP_APP_PATH = "/org/gtk/gio/DesktopAppInfo";
 constexpr const char* DBUS_SYSTEMD_SERVICE = "org.freedesktop.systemd1";
 constexpr const char* DBUS_SYSTEMD_PATH = "/org/freedesktop/systemd1";
 constexpr const char* DBUS_SYSTEMD_MANAGER = "org.freedesktop.systemd1.Manager";
+constexpr const char* DBUS_SYSTEMD_UNIT = "org.freedesktop.systemd1.Unit";
 
 namespace {
 Logger logger("AppTracker");
@@ -78,10 +79,10 @@ void AppTracker::userCreated(uint userid, const QDBusObjectPath& path) {
   }
 
   // Watch the user's control groups for new application scopes.
-  auto interface = new QDBusInterface(DBUS_SYSTEMD_SERVICE, DBUS_SYSTEMD_PATH,
-                                      DBUS_SYSTEMD_MANAGER, connection, this);
-  QVariant qv = interface->property("ControlGroup");
-  auto dbusguard = qScopeGuard([&] { delete interface; });
+  m_systemdInterface =
+      new QDBusInterface(DBUS_SYSTEMD_SERVICE, DBUS_SYSTEMD_PATH,
+                         DBUS_SYSTEMD_MANAGER, connection, this);
+  QVariant qv = m_systemdInterface->property("ControlGroup");
   if (!s_cgroupMount.isEmpty() && qv.type() == QVariant::String) {
     QString userCgroupPath = s_cgroupMount + qv.toString();
     logger.debug() << "Monitoring Control Groups v2 at:" << userCgroupPath;
@@ -132,6 +133,20 @@ void AppTracker::appHeuristicMatch(AppData* data) {
     }
   }
 
+  // Query the systemd unit for its SourcePath property, which is set to the
+  // desktop file's full path on KDE
+  QString unit = QFileInfo(data->cgroup).fileName();
+  QDBusReply<QDBusObjectPath> objPath =
+      m_systemdInterface->call("GetUnit", unit);
+
+  QDBusInterface interface(DBUS_SYSTEMD_SERVICE, objPath.value().path(),
+                           DBUS_SYSTEMD_UNIT, m_systemdInterface->connection(),
+                           this);
+  QString source = interface.property("SourcePath").toString();
+  if (!source.isEmpty() && source.endsWith(".desktop")) {
+    data->appId = source;
+  }
+
   // TODO: Some comparison between the .desktop file and the directory name
   // of the control group is also very likely to produce viable application
   // matching, but this will have to be a fuzzy match of some sort because
@@ -142,8 +157,8 @@ void AppTracker::appHeuristicMatch(AppData* data) {
 void AppTracker::cgroupsChanged(const QString& directory) {
   QDir dir(directory);
   QDir mountpoint(s_cgroupMount);
-  QFileInfoList newScopes =
-      dir.entryInfoList(QStringList("*.scope"), QDir::Dirs);
+  QFileInfoList newScopes = dir.entryInfoList(
+      QStringList{"*.scope", "*@autostart.service"}, QDir::Dirs);
   QStringList oldScopes = m_runningApps.keys();
 
   // Figure out what has been added.

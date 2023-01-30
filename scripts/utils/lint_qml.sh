@@ -9,14 +9,20 @@ fi
 . $(dirname $0)/commons.sh
 
 POSITIONAL=()
+COMMIT="HEAD"
 MODE="stage"
 SAVE="0"
 
 helpFunction() {
-  print G "Usage:"
-  print N "\t$0  -pr | check pull request instead of staged files."
-  print N "\t$0  -s  | save lint result"
-  print N "\t$0  -help | show this help text"
+  print G "Verify QML content for style and linting errors"
+  print N ""
+  print N "Usage: $0 [options] [<commit>]"
+  print N ""
+  print N "options:"
+  print N "   -pr          check pull request instead of staged files."
+  print N "   -s           save lint result"
+  print N "   -c <commit>  check files changed since <commit>"
+  print N "   -help        show this message and exit"
   print N ""
   exit 0
 }
@@ -36,24 +42,35 @@ while [[ $# -gt 0 ]]; do
         SAVE="1"
         shift
         ;;
-  *)
-    if [[ "$QT_HOST_PATH" ]]; then
-      helpFunction
-    fi
-    QT_HOST_PATH="$1"
-    shift
-    ;;
+    -c | --commit)
+        COMMIT="$2"
+        MODE="stage"
+        shift
+        shift
+        ;;
+    *)
+        print N "Unsupported argument: $1"
+        exit 1
   esac
 done
 
-
+if [[ -n "$QT_HOST_PATH" ]]; then
+  QT_QMLLINT_BIN=${QT_HOST_PATH}/bin/qmllint
+else
+  QT_QMLLINT_BIN=$(qmake6 -query QT_HOST_BINS)/qmllint
+fi
 
 if [[ "$MODE" == "pr" ]]; then
-  print N "\t Calling QML Lint for PR"
-  $QT_HOST_PATH/bin/qmllint -I nebula/ui -I src/ui $(gh pr view $PR_NUMBER --json files --jq '.files.[].path' | grep ".qml") 2> qml_lint_result.txt
+  print N "\t Checking for QML Lint in PR $PR_NUMBER"
+  QML_FILES=$(gh pr view $PR_NUMBER --json files --jq '.files.[].path' | grep '\.qml$')
 else
-  print N "\t Calling QML Lint staged git files"
-  $QT_HOST_PATH/bin/qmllint -I nebula/ui -I src/ui $(git diff --name-only --cached | grep ".qml") 2> qml_lint_result.txt
+  print N "\t Checking for QML Lint since ${COMMIT}"
+  QML_FILES=$(git diff --name-only $COMMIT | grep '\.qml$')
+fi
+
+touch qml_lint_result.txt
+if [[ -n "${QML_FILES}" ]]; then
+  $QT_QMLLINT_BIN -I nebula/ui -I src/ui ${QML_FILES} 2>> qml_lint_result.txt
 fi
 
 # Check if the file contains any warnings

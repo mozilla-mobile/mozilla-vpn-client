@@ -184,6 +184,8 @@ void Localizer::loadLanguagesFromI18n() {
     QString code = parts[0].remove(0, 11);
 
     if (Constants::inProduction() && completeness.value(code, 0) < 0.7) {
+      logger.debug() << "Language excluded:" << code
+                     << "completeness:" << completeness.value(code, 0);
       continue;
     }
 

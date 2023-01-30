@@ -20,13 +20,6 @@ namespace {
 
 Logger logger("SettingsHolder");
 
-// Setting Keys That won't show up in a report;
-QVector<QString> SENSITIVE_SETTINGS({
-    "token", "privateKey",
-    "servers",  // Those 2 are not sensitive but
-    "devices",  // are more noise then info
-});
-
 SettingsHolder* s_instance = nullptr;
 
 const QSettings::Format MozFormat = QSettings::registerFormat(
@@ -121,7 +114,7 @@ void SettingsHolder::clear() {
   logger.debug() << "Clean up the settings";
 
 #define SETTING(type, toType, getter, setter, remover, has, key, defvalue, \
-                userSettings, removeWhenReset)                             \
+                userSettings, removeWhenReset, ...)                        \
   if (removeWhenReset) {                                                   \
     m_settings.remove(key);                                                \
     emit getter##Changed();                                                \
@@ -162,24 +155,27 @@ void SettingsHolder::setRawSetting(const QString& key, const QVariant& value) {
 QString SettingsHolder::getReport() const {
   QString buff;
   QTextStream out(&buff);
-  auto settingsKeys = m_settings.childKeys();
-  for (const auto& setting : settingsKeys) {
-    if (SENSITIVE_SETTINGS.contains(setting)) {
-      out << setting << " -> <Sensitive>" << Qt::endl;
-      continue;
-    }
-    out << setting << " -> ";
-    QVariant value = m_settings.value(setting);
-    switch (value.typeId()) {
-      case QVariant::List:
-      case QVariant::StringList:
-        out << '[' << value.toStringList().join(",") << ']' << ' ';
-        break;
-      default:
-        out << value.toString();
-    }
-    out << Qt::endl;
+#define SETTING(type, toType, getter, setter, remover, has, key, defvalue, \
+                userSettings, removeWhenReset, sensitive)                  \
+  if (has()) {                                                             \
+    if (sensitive) {                                                       \
+      out << key << " -> <Sensitive>" << Qt::endl;                         \
+    } else {                                                               \
+      out << key << " -> ";                                                \
+      QVariant value = m_settings.value(key);                              \
+      switch (value.typeId()) {                                            \
+        case QVariant::List:                                               \
+        case QVariant::StringList:                                         \
+          out << '[' << value.toStringList().join(",") << ']' << ' ';      \
+          break;                                                           \
+        default:                                                           \
+          out << value.toString();                                         \
+      }                                                                    \
+      out << Qt::endl;                                                     \
+    }                                                                      \
   }
+#include "settingslist.h"
+#undef SETTING
   return buff;
 }
 

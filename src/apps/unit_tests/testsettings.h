@@ -4,10 +4,13 @@
 
 #include "helper.h"
 
-class TestFeature final : public TestHelper {
+class TestSettings final : public TestHelper {
   Q_OBJECT
 
  private slots:
-  void flipOnOff();
-  void enableByAPI();
+  void transactionErrors();
+  void transactionCommit();
+  void transactionRollback();
+  void transactionRollbackStartup();
+  void sensitiveLogging();
 };

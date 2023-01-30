@@ -87,6 +87,10 @@ Qt6 can be installed in a number of ways:
 ```bash
 ./scripts/utils/qt6_compile.sh </qt6/source/code/path> </destination/path>
 ```
+- Grab a Static Qt-Build used in Mozilla CI: 
+  - [iOS](https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-ios.latest/artifacts/public%2Fbuild%2Fqt6_ios.zip)
+  - [MacOS](https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-mac.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip)
+  - [Windows](https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-win.latest/artifacts/public%2Fbuild%2Fqt6_win.zip) 
 
 ### Installing Python 3
 
@@ -226,7 +230,7 @@ a copy of the debug build for the macOS Applications folder.)
 1. On macOS, we compile the app using
 [Xcode](https://developer.apple.com/xcode/) version 12 or higher.
 
-2. You also need to install go >= v1.16. If you don't have it done already,
+2. You also need to install go >= v1.18. If you don't have it done already,
 download go from the [official website](https://golang.org/dl/).
 
 3. Create a build directory, and configure the project for building using `cmake`.
@@ -298,7 +302,7 @@ errors like `Run custom shell script ‘Generate extension/CMakeFiles/cargo_mozi
 such file or directory \ Command PhaseScriptExecution failed with a nonzero exit code`) In this
 case, a workaround is to symlink `go` into Xcode directory as follows:
 
-* Make sure go is 1.16+: `go version`
+* Make sure go is 1.18+: `go version`
 * Find the location of go binary `which go` example output `/usr/local/go/bin/go`
 * Symlink e.g.
 ```bash
@@ -310,6 +314,32 @@ sudo ln -s $(which rustc)
 ```
 
 This step needs to be executed each time Xcode updates.
+
+#### Building using Conda on MacOS
+
+We provide a Conda env for easy Setup. 
+Prerequisites: 
+- Have miniconda installed. 
+
+```bash 
+$ conda env create -f env.yml
+$ conda activate VPN
+```
+ - Get a copy of a MacOS-SDK (every X-Code install ships this, or you can find it on the internet :) ) 
+    - Set `SDKROOT` to the target SDK.
+    - Add it to the conda env via: `conda env config vars set SDKROOT=<>`
+    - Default Paths where you probably find your SDK: 
+      - Default XCode-command-line tool path: `/Library/Developer/CommandLineTools/SDKs/MacOSX.<VersionNumber>.sdk`
+      - Default XCode.app path: `/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk`
+ - Get a Build of QT (See: [Installing Qt6](#Installing-Qt6) )
+ 
+You are now ready to build!
+
+```bash 
+(vpn) $ mkdir build && cmake -S . -B build -DCMAKE_PREFIX_PATH=${Path to QT}/lib/cmake
+(vpn) $ cmake --build build 
+```
+
 
 ### How to build from source code for iOS
 
@@ -333,7 +363,7 @@ install it:
 gem install xcodeproj # probably you want to run this command with `sudo`
 ```
 
-3. You also need to install go >= v1.16. If you don't have it done already,
+3. You also need to install go >= v1.18. If you don't have it done already,
 download go from the [official website](https://golang.org/dl/).
 
 4. Copy `xcode.xconfig.template` to `xcode.xconfig`
@@ -403,12 +433,12 @@ Some variables that might be useful when configuring the project:
 for iOS devices, or select any of the simulation targets when building for the simulator.
 
 6. Click on the Play button to start building and signing of the Mozilla VPN app. (If this step
-results in an error, ensure the app was built with Qt 6.3.2. If it was not, the build folder must 
+results in an error, ensure the app was built with Qt 6.3.2. If it was not, the build folder must
 be completely deleted and the app must be re-built.)
 
 ### How to build from source code for Android
 
-1. You need to install go >= v1.16. If you don't have it done already, download
+1. You need to install go >= v1.18. If you don't have it done already, download
 it from the [official website](https://golang.org/dl/).
 
 2. Follow the [Getting started](https://doc.qt.io/qt-6/android-getting-started.html) page.
@@ -449,7 +479,7 @@ adb install .tmp/src/android-build/build/outputs/apk/debug/android-build-debug.a
   - Select the `Desktop development with C++` and `Python development` workloads.
 - OpenSSL: https://www.openssl.org/source/
   - On windows you can choose to bundle OpenSSL when installing python. Skip this step if you have done so.
-- Go: https://golang.org/dl/
+- Go (go version >= v1.18 required): https://golang.org/dl/
 
 We strongly recommend using CMake version 3.21 or later when building with Visual
 Studio. Earlier versions of CMake have bugs that can cause the build to hang.
@@ -505,33 +535,40 @@ cmake --build build -j$(nproc)
 
 ## Testing
 
+### Unit tests
+
 When built for any one of the desktop platforms, this project will also generate
-a suite of unit tests. The tests are built by manually specifying the
-`build_tests` target. Once built, you can run them with `ctest` as follows:
+a suite of unit tests.
+
+The tests are built manually specifying the `build_tests` target.
 
 ```bash
-cmake --build build --target build_tests
-ctest --test-dir build
+cmake --build build --target build_tests -j $(nproc)
+```
+
+Once built, you can run them with `ctest` as follows:
+``
+ctest --test-dir build -j $(nproc) --output-on-failure
 ```
 
 ### Running the functional tests
 
-> **Note**: Functional tests require a dummy build of the application, which is not
-> built by default. To build the `dummyvpn` target, in the root folder of this repository run:
->
-> ```
-> cmake --build build -j$(nproc) --target dummyvpn
-> ```
->
-> This will create a dummy build under the `tests/dummyvpn` folder. To run the functional
-> tests against this build, make sure the `MVPN_BIN` environment variable is set:
-> ```
-> export MVPN_BIN=$(pwd)/build/tests/dummyvpn/dummyvpn
-> ```
+**New build required**: Functional tests require a dummy build of the application, which is not
+built by default. To build the `dummyvpn` target, in the root folder of this repository run:
 
+```
+cmake --build build -j$(nproc) --target dummyvpn
+```
+This will create a dummy build under the `tests/dummyvpn` folder. To run the functional
+tests against this build, make sure the `MVPN_BIN` environment variable is set:
+```
+export MVPN_BIN=$(pwd)/build/tests/dummyvpn/dummyvpn
+```
+
+**Other dependencies**:
 * Install node (if needed) and then `npm install` to install the testing
   dependencies
-* Compile the testing addons: ./scripts/addon/generate_all_tests.py
+* Compile the testing addons: `./scripts/addon/generate_all_tests.py`
 * Make a .env file and place it in the root folder for the repo. It should include:
  * `MVPN_BIN` (location of compiled mvpn binary. This must be a dummy binary, see note above.)
  * `ARTIFACT_DIR` - optional (directory to put screenshots from test failures)
@@ -543,7 +580,8 @@ ctest --test-dir build
   MVPN_BIN=dummybuild/src/mozillavpn
   ARTIFACT_DIR=tests/artifact
   ```
-* Run a test from the root of the project: `npm run functionalTest path/to/testFile.js`. To run, say, the authentication tests: `npm run functionalTest tests/functional/testAuthenticationInApp.js`.
+
+**To run a test**: from the root of the project: `npm run functionalTest path/to/testFile.js`. To run, say, the authentication tests: `npm run functionalTest tests/functional/testAuthenticationInApp.js`.
 
 ## Developer Options and staging environment
 

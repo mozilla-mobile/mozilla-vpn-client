@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-ARG DOCKER_BASE_IMAGE=ubuntu:20:04
+ARG DOCKER_BASE_IMAGE=fedora:36
 
 FROM $DOCKER_BASE_IMAGE
 
@@ -11,32 +11,15 @@ MAINTAINER Owen Kirby <okirby@mozilla.com>
 #----------------------------------------------------------------------------------------------------------------------
 #-- Extra Packages ----------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------
-ENV CURL='curl --location --retry 5' \
-    DEBIAN_FRONTEND='noninteractive' \
-    LANG='en_US.UTF-8' \
-    TERM='dumb'
+RUN yum -y install git rpm-build rpmdevtools yum-utils sudo
 
-RUN apt-get update \
-    && apt-get install -y tzdata \
-    && apt-get install -y debhelper \
-                          devscripts \
-                          equivs \
-                          gpg-agent \
-                          locales \
-                          software-properties-common \
-                          sudo \
-    && apt-get clean
+# Grant the worker user the ability to install packages without login
+RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/yum,/usr/bin/yum-builddep" > /etc/sudoers.d/worker-packages
 
-ARG QTPPA
-RUN if [ -n "${QTPPA}" ]; then add-apt-repository -y ${QTPPA}; fi
-
-RUN locale-gen "$LANG"
-
-# Also pull in packages from build-depends as early as possible
-# %include linux/debian/control
-ADD topsrcdir/linux/debian/control /root/mozillavpn-dpkg-control
-RUN mk-build-deps -i -r  --tool="apt-get --no-install-recommends --yes" \
-        /root/mozillavpn-dpkg-control
+# Also pull in packages from BuildRequires as early as possible
+# %include linux/mozillavpn.spec
+ADD topsrcdir/linux/mozillavpn.spec /root/mozillavpn-rpm.spec
+RUN yum-builddep -y /root/mozillavpn-rpm.spec -D "_version 0.0.1"
 
 #----------------------------------------------------------------------------------------------------------------------
 #-- Worker User -------------------------------------------------------------------------------------------------------
@@ -51,16 +34,13 @@ RUN mkdir /builds && \
 
 WORKDIR /builds/worker/
 
-# Grant the worker user the ability to install packages without login
-RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/apt,/usr/bin/apt-get,/usr/bin/dpkg,/usr/bin/add-apt-repository" > /etc/sudoers.d/worker-packages
-
 #----------------------------------------------------------------------------------------------------------------------
 #-- Task Setup --------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------
 
 # %include-run-task
-# %include taskcluster/scripts/build/linux_build_dpkg.sh
-ADD topsrcdir/taskcluster/scripts/build/linux_build_dpkg.sh /builds/worker/builder.sh
+# %include taskcluster/scripts/build/linux_build_rpm.sh
+ADD topsrcdir/taskcluster/scripts/build/linux_build_rpm.sh /builds/worker/builder.sh
 
 ENV SHELL=/bin/bash \
     HOME=/builds/worker \

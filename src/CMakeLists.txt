@@ -8,7 +8,7 @@
 qt_add_executable(mozillavpn MANUAL_FINALIZATION)
 
 if(NOT MSVC)
-  target_compile_options(mozillavpn PRIVATE -Wall -Werror)
+  target_compile_options(mozillavpn PRIVATE -Wall -Werror -Wno-conversion)
 endif()
 
 target_link_libraries(mozillavpn PRIVATE
@@ -16,6 +16,7 @@ target_link_libraries(mozillavpn PRIVATE
     Qt6::Test
     Qt6::WebSockets
     Qt6::Widgets
+    Qt6::Svg
 )
 
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
