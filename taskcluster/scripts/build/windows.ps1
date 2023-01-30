@@ -83,15 +83,15 @@ Get-ChildItem -Path $TASK_WORKDIR/artifacts
 
 sentry.exe login --auth-token $(Get-Content sentry_debug_file_upload_key)
 
-Write-Output "Calling check $ARTIFACTS_PATH/*.pdb"
-sentry.exe difutil check $ARTIFACTS_PATH/*.pdb
-Write-Output "Calling bundle-sources $ARTIFACTS_PATH/*.pdb"
-sentry.exe difutil bundle-sources $ARTIFACTS_PATH/*.pdb
+Write-Output "Calling check $ARTIFACTS_PATH\*.pdb"
+sentry.exe difutil check $ARTIFACTS_PATH\*.pdb
+Write-Output "Calling bundle-sources $ARTIFACTS_PATH\*.pdb"
+sentry.exe difutil bundle-sources $ARTIFACTS_PATH\*.pdb
 
 if ($env:MOZ_SCM_LEVEL -eq "3") {
     # This will ask sentry to scan all files in there and upload
     # missing debug info, for symbolification
-    sentry.exe debug-files upload --org mozilla -p vpn-client --include-sources $ARTIFACTS_PATH/*.pdb
+    sentry.exe debug-files upload --org mozilla -p vpn-client --include-sources $ARTIFACTS_PATH\*.pdb
 }
 
 # mspdbsrv might be stil running after the build, so we need to kill it
