@@ -62,12 +62,7 @@ void MacosSystemTrayNotificationHandler::notify(Message type,
                                                 const QString& title,
                                                 const QString& message,
                                                 int timerMsec) {
-  // This is very hacky, but necessary to circumvent a Qt bug where
-  // notifications are not shown when the icon is not visible.
-  // See: https://bugreports.qt.io/browse/QTBUG-108134
-  m_systemTrayIcon->show();
-  SystemTrayNotificationHandler::notify(type, title, message, timerMsec);
-  m_systemTrayIcon->hide();
+  m_macOSStatusIcon->showMessage(title, message);
 }
 
 void MacosSystemTrayNotificationHandler::updateIcon() {
