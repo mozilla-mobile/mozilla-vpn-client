@@ -52,7 +52,7 @@ class TaskPurchase final : public Task {
  private:
   Op m_op;
 #ifdef MZ_IOS
-  QString m_iOSReceipt;
+  QString m_iOSOriginalTransactionId;
 #endif
 #ifdef MZ_ANDROID
   QString m_androidSku;
