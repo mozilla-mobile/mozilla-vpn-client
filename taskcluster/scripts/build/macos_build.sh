@@ -67,8 +67,6 @@ print Y "Updating submodules..."
 git submodule init || die
 git submodule update || die
 
-
-
 # Install dependendy got get-secret.py 
 python3 -m pip install -r taskcluster/scripts/requirements.txt
 print Y "Fetching tokens..."
@@ -79,8 +77,7 @@ print Y "Fetching tokens..."
 export SENTRY_ENVELOPE_ENDPOINT=$(cat sentry_envelope_endpoint)
 export SENTRY_DSN=$(cat sentry_dsn)
 #Install Sentry CLI:
-brew install getsentry/tools/sentry-cli
-#curl -sL https://sentry.io/get-cli/ | bash
+curl -sL https://sentry.io/get-cli/ | bash
 sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
 
 
