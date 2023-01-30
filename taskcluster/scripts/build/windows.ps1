@@ -80,13 +80,15 @@ Compress-Archive -Path $TASK_WORKDIR/unsigned/* -Destination $ARTIFACTS_PATH/uns
 Write-Output "Artifacts Location:$TASK_WORKDIR/artifacts"
 Get-ChildItem -Path $TASK_WORKDIR/artifacts
 
+$env:SENTRY_LOG_LEVEL=debug
 
 sentry.exe login --auth-token $(Get-Content sentry_debug_file_upload_key)
 
 Write-Output "Calling check $ARTIFACTS_PATH"
 sentry.exe difutil check $ARTIFACTS_PATH
-Write-Output "Calling bundle-sources $ARTIFACTS_PATH\*.pdb"
-sentry.exe difutil bundle-sources $ARTIFACTS_PATH\*.pdb
+Write-Output "Calling bundle-sources $ARTIFACTS_PATH\Mozilla VPN.pdb.pdb"
+sentry.exe difutil bundle-sources "$ARTIFACTS_PATH\Mozilla VPN.pdb"
+
 
 if ($env:MOZ_SCM_LEVEL -eq "3") {
     # This will ask sentry to scan all files in there and upload
