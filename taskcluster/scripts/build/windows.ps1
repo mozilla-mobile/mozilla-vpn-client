@@ -57,19 +57,15 @@ $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
 
 
 cmake --version
-if ($env:MOZ_SCM_LEVEL -eq "3") {
-    # Only on a release build we have access to those secrects.
-    python3  ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_dsn -f sentry_dsn
-    python3  ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_envelope_endpoint -f sentry_envelope_endpoint
-    python3  ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
-    $SENTRY_ENVELOPE_ENDPOINT = Get-Content sentry_envelope_endpoint
-    $SENTRY_DSN = Get-Content sentry_dsn
-    #
-    cmake -S . -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release -DSENTRY_DSN="$SENTRY_DSN" -DSENTRY_ENVELOPE_ENDPOINT="$SENTRY_ENVELOPE_ENDPOINT"
-} else {
-    # Do the generic build
-   cmake -S . -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release
-}
+# Enable Sentry 
+python3  ./taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_dsn -f sentry_dsn
+python3  ./taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_envelope_endpoint -f sentry_envelope_endpoint
+python3  ./taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
+$SENTRY_ENVELOPE_ENDPOINT = Get-Content sentry_envelope_endpoint
+$SENTRY_DSN = Get-Content sentry_dsn
+#
+cmake -S . -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release -DSENTRY_DSN="$SENTRY_DSN" -DSENTRY_ENVELOPE_ENDPOINT="$SENTRY_ENVELOPE_ENDPOINT"
+
 cmake --build $BUILD_DIR
 cmake --build $BUILD_DIR --target msi
 cmake --install $BUILD_DIR --prefix "$TASK_WORKDIR/unsigned"
@@ -84,11 +80,16 @@ Compress-Archive -Path $TASK_WORKDIR/unsigned/* -Destination $ARTIFACTS_PATH/uns
 Write-Output "Artifacts Location:$TASK_WORKDIR/artifacts"
 Get-ChildItem -Path $TASK_WORKDIR/artifacts
 
+
+sentry.exe login --auth-token $(Get-Content sentry_debug_file_upload_key)
+
+sentry.exe difutil check $ARTIFACTS_PATH/*.pdb
+sentry.exe difutil bundle-sources $ARTIFACTS_PATH/*.pdb
+
 if ($env:MOZ_SCM_LEVEL -eq "3") {
-    sentry-cli-Windows-x86_64.exe login --auth-token $(Get-Content sentry_debug_file_upload_key)
     # This will ask sentry to scan all files in there and upload
     # missing debug info, for symbolification
-    sentry-cli-Windows-x86_64.exe debug-files upload --org mozilla -p vpn-client $BUILD_DIR/src/CMakeFiles/mozillavpn.dir/vc140.pdb
+    sentry.exe debug-files upload --org mozilla -p vpn-client --include-sources $ARTIFACTS_PATH/*.pdb
 }
 
 # mspdbsrv might be stil running after the build, so we need to kill it

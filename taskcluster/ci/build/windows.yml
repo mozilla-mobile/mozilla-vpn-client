@@ -32,6 +32,8 @@ task-defaults:
               path: artifacts/Mozilla VPN.pdb
     release-artifacts:
         - unsigned.zip
+    scopes:
+        - secrets:get:project/mozillavpn/level-1/sentry
     run:
         using: run-task
         cwd: '{checkout}'
@@ -43,9 +45,5 @@ windows/opt:
     description: "Windows Build"
     treeherder:
         symbol: B
-    scopes:
-        by-level:
-            "3":
-                - secrets:get:project/mozillavpn/tokens
-            default: []
+
 
