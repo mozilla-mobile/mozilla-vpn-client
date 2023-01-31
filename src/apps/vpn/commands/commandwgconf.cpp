@@ -72,8 +72,7 @@ int CommandWgConf::run(QStringList& tokens) {
         Controller::getAllowedIPAddressRanges(exitServer);
 
     // Stream it out to the user.
-    QMap<QString, QString> extras;
-    stream << WgQuickProcess::createConfigString(config, extras) << Qt::endl;
+    stream << WgQuickProcess::createConfigString(config) << Qt::endl;
     return 0;
   });
 }
