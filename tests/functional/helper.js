@@ -104,7 +104,7 @@ module.exports = {
   },
 
   async waitForInitialView() {
-    assert(await this.query(queries.screenInitialize.GET_HELP_LINK.visible()));
+    await this.waitForQuery(queries.screenInitialize.GET_HELP_LINK.visible());
     assert(await this.query(queries.screenInitialize.SIGN_UP_BUTTON.visible()));
     assert(await this.query(
         queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible()));
