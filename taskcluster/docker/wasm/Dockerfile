@@ -6,13 +6,13 @@ FROM $DOCKER_IMAGE_PARENT
 
 MAINTAINER Sebastian Streich <sstreich@mozilla.com>
 
-ARG QT_VERSION=6.2.4
+ARG QT_VERSION=6.4.2
 
 VOLUME /builds/worker/checkouts
 
 RUN mkdir -p /builds/worker/.cache/go-build &&\
     chown -R worker:worker /builds/worker/.cache/ &&\
-    chmod -R 777 /builds/worker/ 
+    chmod -R 777 /builds/worker/
 
 RUN apt-get -q update && apt-get install -y git ccache python3 python3-pip libglib2.0-0 && \
     python3 -m pip install aqtinstall && \

@@ -15,7 +15,7 @@ jobs:
     name: Run Main Linters (clang, l10n, etc.)
     runs-on: ubuntu-20.04
     env:
-      QTVERSION: 6.2.4
+      QTVERSION: 6.4.2
     steps:
       - name: Install Linux packages
         run: |

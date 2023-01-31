@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  wasm_chrome: 
+  wasm_chrome:
     name: Add Wasm_Chrome
     runs-on: ubuntu-20.04
     steps:
@@ -38,7 +38,7 @@ jobs:
             name: Wasm-Chrome
             path: tools/wasm_chrome
 
-  logviewer: 
+  logviewer:
       name: Add Logviewer
       runs-on: ubuntu-20.04
       steps:
@@ -58,8 +58,8 @@ jobs:
       - name: Building
         shell: bash
         run: |
-            sudo apt-get update 
-            sudo apt-get install doxygen -y 
+            sudo apt-get update
+            sudo apt-get install doxygen -y
             doxygen
       - name: Uploading
         uses: actions/upload-artifact@v3
@@ -93,12 +93,12 @@ jobs:
   addons:
     runs-on: ubuntu-20.04
     env:
-      QTVERSION: 6.2.4
+      QTVERSION: 6.4.2
 
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
-        with: 
+        with:
           submodules: 'true'
 
       - name: Install Qt
@@ -181,6 +181,6 @@ jobs:
       needs: ghPages
       if: github.ref == 'refs/heads/main'
       steps:
-        - name: Deploy to GitHub Pages  
+        - name: Deploy to GitHub Pages
           id: deployment
           uses: actions/deploy-pages@v1
