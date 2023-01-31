@@ -8,7 +8,7 @@ const queries = require('./queries.js');
 
 describe('Captive portal', function() {
   this.timeout(300000);
-
+  console.log('does any unrelated change cause a failure?')
   beforeEach(async function() {
     vpn.resetLastNotification();
 
