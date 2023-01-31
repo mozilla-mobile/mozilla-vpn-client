@@ -1,0 +1,37 @@
+{
+  "api_version": "0.1",
+  "id": "guide_11_recommended_servers",
+  "name": "Guide: recommended servers",
+  "type": "guide",
+  "conditions": {
+    "enabled_features": ["recommendedServers"]
+  },
+  "guide": {
+    "id": "recommended_servers",
+    "title": "Why are certain locations recommended?",
+    "advanced": true,
+    "image": "qrc:/addons/guide_11_recommended_servers/image.svg",
+    "blocks": [
+      {
+          "id": "c_1",
+          "type": "text",
+          "content": "When you use Mozilla VPN, your internet activity is encrypted and routed through servers based in a location of your choice."
+      },
+      {
+          "id": "c_2",
+          "type": "text",
+          "content": "Sometimes, you might pick a location for a specific purpose; for example, if you’re traveling internationally, you could choose a server location in your home country so that your banking apps function more smoothly."
+      },
+      {
+          "id": "c_3",
+          "type": "text",
+          "content": "But, for times when you don’t have a specific location in mind, the VPN will recommend server locations. These recommendations are based on the number of servers available, as well as their distance from you."
+      },
+      {
+          "id": "c_4",
+          "type": "text",
+          "content": "These recommended locations will refresh occasionally when the VPN is turned off; if you’d like to use VPN with the best performance and speed, choose a recommended server location."
+      }
+    ]
+  }
+}
