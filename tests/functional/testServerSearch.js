@@ -187,27 +187,29 @@ describe("Server list", function () {
   });
 
   it('Invalid searchs and multi results for singlehop', async () => {
+    const australia = queries.screenHome.serverListView.generateCountryId("au");
+    const austria = queries.screenHome.serverListView.generateCountryId("at");
+    const belgium = queries.screenHome.serverListView.generateCountryId("be");
+
+    // No result search
     await vpn.waitForQueryAndWriteInTextField(
       queries.screenHome.serverListView.SEARCH_BAR_TEXT_FIELD.visible(),
       "invalid search"
     );
     await vpn.waitForQuery(queries.screenHome.serverListView.SEARCH_BAR_ERROR.visible())
-
     await vpn.waitForQueryAndWriteInTextField(
       queries.screenHome.serverListView.SEARCH_BAR_TEXT_FIELD.visible(),
       ""
     );
 
+    // multi result search
     await vpn.waitForQueryAndWriteInTextField(
       queries.screenHome.serverListView.SEARCH_BAR_TEXT_FIELD.visible(),
       "Au"
     );
-    
-    const australia = queries.screenHome.serverListView.generateCountryId("au");
-    const austria = queries.screenHome.serverListView.generateCountryId("at");
-
     await vpn.waitForQuery(australia.visible())
     await vpn.waitForQuery(austria.visible())
+    await vpn.waitForQuery(belgium.hidden())
   })
 
   it('Invalid searchs and multi results for multihop', async () => {
@@ -221,25 +223,28 @@ describe("Server list", function () {
       queries.screenHome.serverListView.EXIT_BUTTON.visible()
     );
 
+    const australia = queries.screenHome.serverListView.generateCountryId("au");
+    const austria = queries.screenHome.serverListView.generateCountryId("at");
+    const belgium = queries.screenHome.serverListView.generateCountryId("be");
+
+    // invalid server search
     await vpn.waitForQueryAndWriteInTextField(
       queries.screenHome.serverListView.SEARCH_BAR_TEXT_FIELD.visible(),
       "invalid search"
     );
-
+    await vpn.waitForQuery(queries.screenHome.serverListView.SEARCH_BAR_ERROR.visible())
     await vpn.waitForQueryAndWriteInTextField(
       queries.screenHome.serverListView.SEARCH_BAR_TEXT_FIELD.visible(),
       ""
     );
 
+    // multi result search
     await vpn.waitForQueryAndWriteInTextField(
       queries.screenHome.serverListView.SEARCH_BAR_TEXT_FIELD.visible(),
       "Au"
     );
-    
-    const australia = queries.screenHome.serverListView.generateCountryId("au");
-    const austria = queries.screenHome.serverListView.generateCountryId("at");
-
     await vpn.waitForQuery(australia.visible())
     await vpn.waitForQuery(austria.visible())
+    await vpn.waitForQuery(belgium.hidden())
   })
 });
