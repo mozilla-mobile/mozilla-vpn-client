@@ -70,3 +70,4 @@ install %{_srcdir}/LICENSE.md %{buildroot}/%{_licensedir}/%{name}/
 %{_datadir}/icons/hicolor/48x48/apps/mozillavpn.png
 %{_datadir}/icons/hicolor/64x64/apps/mozillavpn.png
 %{_datadir}/polkit-1/actions/org.mozilla.vpn.policy
+%{_mandir}/man1/mozillavpn.1.gz
