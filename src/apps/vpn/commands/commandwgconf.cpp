@@ -66,7 +66,12 @@ int CommandWgConf::run(QStringList& tokens) {
     config.m_serverPublicKey = exitServer.publicKey();
     config.m_serverIpv4AddrIn = exitServer.ipv4AddrIn();
     config.m_serverIpv6AddrIn = exitServer.ipv6AddrIn();
-    config.m_serverPort = exitServer.choosePort();
+    if (sd->multihop()) {
+      Server entryServer = Server::weightChooser(sd->entryServers());
+      config.m_serverPort = entryServer.multihopPort();
+    } else {
+      config.m_serverPort = exitServer.choosePort();
+    }
     config.m_dnsServer = DNSHelper::getDNS(exitServer.ipv4Gateway());
     config.m_allowedIPAddressRanges =
         Controller::getAllowedIPAddressRanges(exitServer);
