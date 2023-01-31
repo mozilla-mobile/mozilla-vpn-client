@@ -127,3 +127,10 @@ configure_file(../linux/mozillavpn.service.in
     ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.service)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.service
     DESTINATION ${SYSTEMD_UNIT_DIR})
+
+find_program(PANDOC_EXECUTABLE NAMES pandoc)
+if(PANDOC_EXECUTABLE)
+    execute_process(COMMAND ${PANDOC_EXECUTABLE} ${CMAKE_SOURCE_DIR}/docs/manpage.md -s -t man -o ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.1)
+    execute_process(COMMAND gzip ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.1)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.1.gz DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
+endif()
