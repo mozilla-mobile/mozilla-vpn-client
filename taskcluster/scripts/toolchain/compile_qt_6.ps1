@@ -50,6 +50,7 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
   -static  `
   -opensource  `
   -debug-and-release `
+  -force-debug-info `
   -no-dbus   `
   -no-feature-qdbus  `
   -confirm-license  `
