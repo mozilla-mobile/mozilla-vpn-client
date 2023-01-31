@@ -1,6 +1,6 @@
 {
   "api_version": "0.1",
-  "id": "guide_08_recommended_servers",
+  "id": "guide_11_recommended_servers",
   "name": "Guide: recommended servers",
   "type": "guide",
   "conditions": {
@@ -10,7 +10,7 @@
     "id": "recommended_servers",
     "title": "Why are certain locations recommended?",
     "advanced": true,
-    "image": "qrc:/addons/guide_08_recommended_servers/image.svg",
+    "image": "qrc:/addons/guide_11_recommended_servers/image.svg",
     "blocks": [
       {
           "id": "c_1",
