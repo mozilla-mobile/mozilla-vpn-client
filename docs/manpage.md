@@ -8,7 +8,7 @@ mozillavpn [-h | \-\-help] [-v | \-\-version] command [command-options]
 
 # DESCRIPTION
 **mozillavpn** is the command-line tool for the Mozilla VPN. Most users would
-typically interract with the VPN using the graphical user interface, which is
+typically interact with the VPN using the graphical user interface, which is
 launched when no arguments are given. Providing this tool with additional
 commands can provide other mechanisms to control the VPN.
 
@@ -24,7 +24,7 @@ Unless the **-h**, **\-\-help**, **-v**, or **\-\-version** options are given,
 one of the commands below must be present.
 
 ## ui
-Launch the graphical user interface. This is the default behaviour when no
+Launch the graphical user interface. This is the default behavior when no
 options or commands are given. This command also accepts the following options:
 
 **-h**, **\-\-help**
