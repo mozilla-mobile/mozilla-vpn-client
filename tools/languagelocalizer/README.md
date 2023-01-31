@@ -13,7 +13,7 @@ alternative one if wiki data does not have a page about that new language.
 For instance, while I write this README, `es_CL` is an unknown language on wiki
 data, and we use the `es` as an alternative code.
 
-## How to find the code on wikidata
+## How to find the code on WikiData
 
 Search for the language code (fa - Persian), for instance. Open the page and
 see the URL: https://www.wikidata.org/wiki/Q9168. The code is Q9168.
