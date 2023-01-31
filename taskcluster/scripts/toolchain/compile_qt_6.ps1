@@ -49,7 +49,7 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
 ./configure.bat `
   -static  `
   -opensource  `
-  -debug-and-release `
+  -release `
   -force-debug-info `
   -no-dbus   `
   -no-feature-qdbus  `
@@ -80,7 +80,6 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
 
  cmake --build . --parallel
 
- cmake --install . --config Debug
  cmake --install . --config Release
 
 
