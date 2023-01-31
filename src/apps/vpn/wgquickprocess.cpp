@@ -86,8 +86,5 @@ QString WgQuickProcess::createConfigString(
   out << "AllowedIPs = " << ranges.join(", ") << "\n";
 #endif
 
-#ifdef MZ_DEBUG
-  logger.debug() << content;
-#endif
   return content;
 }

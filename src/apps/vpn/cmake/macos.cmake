@@ -69,8 +69,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosstartatbootwatcher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macossystemtraynotificationhandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macossystemtraynotificationhandler.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/wgquickprocess.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/wgquickprocess.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosnetworkwatcher.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosnetworkwatcher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosstatusicon.mm

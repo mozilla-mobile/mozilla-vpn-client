@@ -69,8 +69,6 @@ target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowspingsender.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowsstartatbootwatcher.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowsstartatbootwatcher.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/wgquickprocess.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/wgquickprocess.h
 )
 
 # Windows Qt6 UI workaround resources

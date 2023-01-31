@@ -114,6 +114,8 @@ class Controller final : public QObject {
   QString currentServerString() const;
 #endif
 
+  static QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
+
  public slots:
   // These 2 methods activate/deactivate the VPN. Return true if a signal will
   // be emitted at the end of the operation.
@@ -156,7 +158,6 @@ class Controller final : public QObject {
   void maybeEnableDisconnectInConfirming();
 
   bool processNextStep();
-  QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
   QStringList getExcludedAddresses();
 
   void activateInternal(bool forceDNSPort = false);

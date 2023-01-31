@@ -119,6 +119,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commandstatus.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commandui.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commandui.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commandwgconf.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commandwgconf.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/composer/composer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/composer/composer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/composer/composerblock.cpp
@@ -316,6 +318,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/websocket/pushmessage.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/websocket/websockethandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/websocket/websockethandler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/wgquickprocess.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/wgquickprocess.h
 )
 
 # VPN Client UI resources
