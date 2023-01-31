@@ -1,6 +1,6 @@
 {
   "api_version": "0.1",
-  "id": "guide_11_multi_account_containers",
+  "id": "guide_12_multi_account_containers",
   "name": "Guide: Multi-Account Containers",
   "type": "guide",
   "conditions": {
@@ -10,7 +10,7 @@
     "id": "guide_multi_account_containers",
     "title": "Mozilla VPN in the Firefox browser",
     "advanced": true,
-    "image": "qrc:/addons/guide_11_multi_account_containers/image.svg",
+    "image": "qrc:/addons/guide_12_multi_account_containers/image.svg",
     "blocks": [
       {
         "id": "c_2",
