@@ -95,10 +95,10 @@ Get-ChildItem -Path $BUILD_DIR/src/
 
 
 
-Write-Output "Calling check $ARTIFACTS_PATH"
-sentry.exe difutil check $ARTIFACTS_PATH
+Write-Output "Calling check $BUILD_DIR\src\CMakeFiles\mozillavpn.dir\vc140.pdb"
+sentry.exe difutil check $BUILD_DIR\src\CMakeFiles\mozillavpn.dir\vc140.pdb
 Write-Output "Calling bundle-sources $ARTIFACTS_PATH\Mozilla VPN.pdb.pdb"
-sentry.exe difutil bundle-sources "$ARTIFACTS_PATH\Mozilla VPN.pdb"
+sentry.exe difutil bundle-sources "$BUILD_DIR\src\CMakeFiles\mozillavpn.dir\vc140.pdb"
 
 
 if ($env:MOZ_SCM_LEVEL -eq "3") {
