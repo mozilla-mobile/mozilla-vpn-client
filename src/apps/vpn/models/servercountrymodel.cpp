@@ -126,7 +126,7 @@ bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
 
       QJsonArray serverArray = servers.toArray();
       for (const QJsonValue& serverValue : serverArray) {
-        Server server;
+        Server server(country.code(), city.name());
         if (!server.fromJson(serverValue.toObject())) {
           return false;
         }
@@ -267,13 +267,10 @@ void ServerCountryModel::setServerLatency(const QString& publicKey,
   m_sumLatencyMsec += msec;
   server.setLatency(msec);
 
-  // Ugly iteration. Find the city for this server.
-  // TODO: Maybe it would be cleaner to move the latency data into ServerCity.
-  for (const ServerCity& city : m_cities) {
-    if (city.servers().contains(publicKey)) {
-      emit city.scoreChanged();
-      return;
-    }
+  auto iter = m_cities.find(
+      ServerCity::hashKey(server.countryCode(), server.cityName()));
+  if (iter != m_cities.end()) {
+    emit iter->scoreChanged();
   }
 }
 
@@ -292,9 +289,19 @@ void ServerCountryModel::clearServerLatency() {
 }
 
 void ServerCountryModel::setServerCooldown(const QString& publicKey) {
-  if (m_servers.contains(publicKey)) {
-    m_servers[publicKey].setCooldownTimeout(
-        AppConstants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
+  auto serverIterator = m_servers.find(publicKey);
+  if (serverIterator == m_servers.end()) {
+    return;
+  }
+
+  serverIterator->setCooldownTimeout(
+      AppConstants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
+
+  auto cityIterator =
+      m_cities.find(ServerCity::hashKey(serverIterator->countryCode(),
+                                        serverIterator->cityName()));
+  if (cityIterator != m_cities.end()) {
+    emit cityIterator->scoreChanged();
   }
 }
 
@@ -308,8 +315,12 @@ void ServerCountryModel::setCooldownForAllServersInACity(
       continue;
     }
     for (const QString& pubkey : city.servers()) {
-      setServerCooldown(pubkey);
+      if (m_servers.contains(pubkey)) {
+        m_servers[pubkey].setCooldownTimeout(
+            AppConstants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
+      }
     }
+    emit city.scoreChanged();
   }
 }
 
