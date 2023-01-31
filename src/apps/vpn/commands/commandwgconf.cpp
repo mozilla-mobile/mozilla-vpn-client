@@ -16,7 +16,7 @@
 #include "wgquickprocess.h"
 
 CommandWgConf::CommandWgConf(QObject* parent)
-    : Command(parent, "wgconf", "Show the current VPN status.") {
+    : Command(parent, "wgconf", "Generate a wireguard configuration file.") {
   MZ_COUNT_CTOR(CommandWgConf);
 }
 
