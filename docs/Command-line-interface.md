@@ -28,6 +28,7 @@ List of commands:
   status               Show the current VPN status.
   ui                   Start the UI.
   linuxdaemon          Starts the linux daemon
+  wgconf               Generate a wireguard configuration file.
 ```
 
 ## UI interface
@@ -262,6 +263,24 @@ A device can be removed using the command ‘device’:
 usage: mozillavpn device <device_id>
 
 The list of <device_id> can be obtained using: 'mozillavpn status'
+```
+
+## Generating wireguard configuration
+
+The current VPN configuration can be exported as a wireguard configuration file
+using the command 'wgconf':
+
+```
+% mozillavpn wgconf
+[Interface]
+PrivateKey = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=
+Address = 10.XXX.XXX.XXX/32, fc00:bbbb:bbbb:bb01::xxxx:xxxx/128
+DNS = 10.64.0.1, fc00:bbbb:bbbb:bb01::1
+
+[Peer]
+PublicKey = Hzf1JH0UERBRNxBSpTvGPZAREa93LoHtPKsJMwdcrV0=
+Endpoint = 89.45.224.41:3406
+AllowedIPs = 10.64.0.1/32, fc00:bbbb:bbbb:bb01::1/128, 10.124.0.0/20, 240.0.0.0/4, 208.0.0.0/4, 200.0.0.0/5, 196.0.0.0/6, 194.0.0.0/7, 193.0.0.0/8, 192.0.0.0/9, 192.192.0.0/10, 192.128.0.0/11, 192.176.0.0/12, 192.160.0.0/13, 192.172.0.0/14, 192.170.0.0/15, 192.169.0.0/16, 128.0.0.0/3, 176.0.0.0/4, 160.0.0.0/5, 168.0.0.0/6, 174.0.0.0/7, 173.0.0.0/8, 172.128.0.0/9, 172.64.0.0/10, 172.32.0.0/11, 172.0.0.0/12, 64.0.0.0/2, 32.0.0.0/3, 16.0.0.0/4, 0.0.0.0/5, 12.0.0.0/6, 8.0.0.0/7, 11.0.0.0/8, ::/1, 8000::/2, c000::/3, e000::/4, f000::/5, f800::/6, fe00::/8
 ```
 
 ## Missing parts:
