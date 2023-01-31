@@ -40,7 +40,8 @@ describe('Navigation bar', async function() {
   it('Is not visible during browser authentication', async () => {
     await vpn.flipFeatureOff('inAppAuthentication');
     await vpn.waitForInitialView();
-    await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
+    await vpn.waitForQueryAndClick(
+        queries.screenInitialize.SIGN_UP_BUTTON.visible());
 
     if (!this.ctx.wasm) {
       await vpn.waitForCondition(async () => {
