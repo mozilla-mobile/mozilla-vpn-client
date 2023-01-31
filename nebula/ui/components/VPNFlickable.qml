@@ -92,13 +92,13 @@ Flickable {
             ensureVisAnimation.stop()
         }
 
-        let yPosition = item.mapToItem(contentItem, 0, 0).y
+        const yPosition = item.mapToItem(contentItem, 0, 0).y
         if (!contentExceedsHeight || item.skipEnsureVisible || yPosition < 0) {
             return
         }
 
         const isItemBehindNavbar = item.mapToItem(window.contentItem, 0, 0).y + item.height > window.height - VPNTheme.theme.navBarHeightWithMargins
-        const buffer = navbar.visible && isItemBehindNavbar ? VPNTheme.theme.navBarHeightWithMargins : 20
+        const buffer = navbar.visible && isItemBehindNavbar ? VPNTheme.theme.navBarHeightWithMargins : VPNTheme.theme.contentBottomMargin
         const itemHeight = Math.max(item.height, VPNTheme.theme.rowHeight) + buffer
         let destinationY
 
