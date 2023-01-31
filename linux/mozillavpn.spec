@@ -19,6 +19,7 @@ BuildRequires: cargo
 BuildRequires: golang >= 1.13
 BuildRequires: libsecret-devel
 BuildRequires: openssl-devel
+BuildRequires: pandoc
 BuildRequires: polkit-devel
 BuildRequires: python3-yaml
 BuildRequires: qt6-qtbase-devel >= 6.0
