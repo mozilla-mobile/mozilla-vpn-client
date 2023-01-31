@@ -62,13 +62,6 @@ QString WgQuickProcess::createConfigString(
     out << key << " = " << extra[key] << "\n";
   }
 
-  // For windows, we don't want to include the peer configuration since they
-  // will be passed later as a UAPI command. and we need to fiddle with the
-  // interface in between creation and peer bringup.
-  //
-  // This function should go away as soon as we fixup the Mac implementation
-  // anyways.
-#if !defined(MZ_WINDOWS) && !defined(MZ_MACOS)
   out << "\n[Peer]\n";
   out << "PublicKey = " << config.m_serverPublicKey << "\n";
   out << "Endpoint = " << config.m_serverIpv4AddrIn.toUtf8() << ":"
@@ -84,7 +77,6 @@ QString WgQuickProcess::createConfigString(
     ranges.append(ip.toString());
   }
   out << "AllowedIPs = " << ranges.join(", ") << "\n";
-#endif
 
   return content;
 }
