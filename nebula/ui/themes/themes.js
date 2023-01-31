@@ -267,6 +267,7 @@ theme.settingsMaxContentHeight = 740;
 theme.maxHorizontalContentWidth = 460;
 theme.contentTopMarginDesktop = 20;
 theme.contentTopMarginMobile = 48;
+theme.contentBottomMargin = 20;
 
 theme.uiState = {
   'stateDefault': 'state-default',
