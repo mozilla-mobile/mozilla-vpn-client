@@ -297,9 +297,8 @@ void ServerCountryModel::setServerCooldown(const QString& publicKey) {
   serverIterator->setCooldownTimeout(
       AppConstants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
 
-  auto cityIterator =
-      m_cities.find(ServerCity::hashKey(serverIterator->countryCode(),
-                                        serverIterator->cityName()));
+  auto cityIterator = m_cities.find(ServerCity::hashKey(
+      serverIterator->countryCode(), serverIterator->cityName()));
   if (cityIterator != m_cities.end()) {
     emit cityIterator->scoreChanged();
   }
