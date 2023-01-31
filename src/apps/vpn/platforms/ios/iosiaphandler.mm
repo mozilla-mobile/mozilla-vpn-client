@@ -333,8 +333,8 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
   }
 
   QJsonObject receiptJson = QJsonDocument::fromJson(receipt.toUtf8()).object();
-  QJsonObject receipt = receiptJson["receipt"].toObject();
-  QJsonArray latestReceiptInfoArray = receipt["latest_receipt_info"].toArray();
+  QJsonObject receiptObj = receiptJson["receipt"].toObject();
+  QJsonArray latestReceiptInfoArray = receiptObj["latest_receipt_info"].toArray();
   QJsonObject latestReceiptInfo = latestReceiptInfoArray.at(0).toObject();
   QString originalTransactionId = latestReceiptInfo["original_transaction_id"].toString();
 
