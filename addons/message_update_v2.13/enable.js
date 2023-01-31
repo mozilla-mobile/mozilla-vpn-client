@@ -7,8 +7,9 @@ if (('updateTime' in api.settings)) {
   api.addon.date = (api.settings.updateTime.getTime() / 1000);
 }
 
-// windows v2.10/v2.12 do require a web-based update.
-if (api.env.platform != 'windows') {
+// Windows v2.10 to v2.12 do require a web-based update,
+// with the exception on v2.11.1.
+if (api.env.platform !== 'windows' || api.env.versionString === '2.11.1') {
   api.addon.composer.remove('c_4');
   api.addon.composer.remove('c_2b');
   return;
