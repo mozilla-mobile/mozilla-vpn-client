@@ -46,12 +46,12 @@ Item {
 
         flickContentHeight: window.safeContentHeight / 2 + col.implicitHeight
         anchors.fill: parent
-        interactive: flickContentHeight > height
 
         ListModel {
             id: onboardingModel
 
             ListElement {
+                animationSpeed: 1.5
                 animationSrc: ":/nebula/resources/animations/vpnlogo-drop_animation.json"
                 loopAnimation: false
                 titleStringId: "MobileOnboardingPanelOneTitle"
@@ -59,6 +59,7 @@ Item {
                 panelId: "mozilla-vpn"
             }
             ListElement {
+                animationSpeed: 1
                 animationSrc: ":/nebula/resources/animations/lock_animation.json"
                 loopAnimation: true
                 titleStringId: "MobileOnboardingPanelTwoTitle"
@@ -66,6 +67,7 @@ Item {
                 panelId: "encrypt-your-activity"
             }
             ListElement {
+                animationSpeed: 1
                 animationSrc: ":/nebula/resources/animations/globe_animation.json"
                 loopAnimation: true
                 titleStringId: "MobileOnboardingPanelThreeTitle"
@@ -73,6 +75,7 @@ Item {
                 panelId: "protect-your-privacy"
             }
             ListElement {
+                animationSpeed: 1
                 animationSrc: ":/nebula/resources/animations/vpnactive_animation.json"
                 loopAnimation: true
                 titleStringId: "MobileOnboardingPanelFourTitle"
@@ -82,6 +85,9 @@ Item {
         }
 
         SwipeView {
+            property int _topMargin: safeAreaHeight / 2 - currentPanelValues._animationHeight
+            property bool _isFirstSlide: swipeView.currentIndex === 0
+
             id: swipeView
             objectName: "swipeView"
             anchors.fill: parent
@@ -107,14 +113,12 @@ Item {
 
                             property real imageScaleValue: 0.9
                             property real imageOpacityValue: 0.0
-                            property int _topMargin: safeAreaHeight / 2 - currentPanelValues._animationHeight
-                            property bool _isFirstSlide: swipeView.currentIndex === 0
-
+                            speed: animationSpeed
                             anchors.fill: undefined
                             anchors.horizontalCenter: parent.horizontalCenter
                             anchors.top: parent.top
-                            anchors.topMargin: panelAnimation._isFirstSlide ? 0 : panelAnimation._topMargin
-                            height: currentPanelValues._animationHeight + (panelAnimation._isFirstSlide ? panelAnimation._topMargin : 0)
+                            anchors.topMargin: swipeView._isFirstSlide ? 0 : swipeView._topMargin
+                            height: currentPanelValues._animationHeight + (swipeView._isFirstSlide ? swipeView._topMargin : 0)
                             loop: loopAnimation
                             opacity: panelAnimation.imageOpacityValue
                             source: animationSrc
@@ -141,7 +145,7 @@ Item {
                                     duration: 100
                                 }
                                 PauseAnimation {
-                                    duration: 150
+                                    duration: 100
                                 }
                                 ScriptAction {
                                     script: {
@@ -155,7 +159,7 @@ Item {
                                         property: "imageScaleValue"
                                         from: panelAnimation.imageScaleValue
                                         to: 1
-                                        duration: 250
+                                        duration: 100
                                         easing.type: Easing.OutQuad
                                     }
                                     PropertyAnimation {
@@ -163,7 +167,7 @@ Item {
                                         property: "opacity"
                                         from: panelAnimation.imageOpacityValue
                                         to: 1
-                                        duration: 250
+                                        duration: 100
                                         easing.type: Easing.OutQuad
                                     }
                                 }
