@@ -19,7 +19,7 @@ import jinja2
 
 from util import generate_metric_ids, generate_ping_ids, get_metrics
 from glean_parser import util
-from glean_parser.metrics import Rate
+from glean_parser.metrics import Rate, Event
 
 # The list of all args to CommonMetricData.
 # No particular order is required, but I have these in common_metric_data.rs
@@ -124,7 +124,7 @@ def type_name(obj):
     generate_enums = getattr(obj, "_generate_enums", [])  # Extra Keys? Reasons?
     if len(generate_enums):
         for name, suffix in generate_enums:
-            if not len(getattr(obj, name)) and suffix == "Keys":
+            if not len(getattr(obj, name)) and isinstance(obj, Event):
                 return class_name(obj.type) + "<NoExtraKeys>"
             else:
                 # we always use the `extra` suffix,
