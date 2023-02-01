@@ -329,8 +329,8 @@ $ conda activate VPN
     - Set `SDKROOT` to the target SDK.
     - Add it to the conda env via: `conda env config vars set SDKROOT=<>`
     - Default Paths where you probably find your SDK:
-      - Default XCode-command-line tool path: `/Library/Developer/CommandLineTools/SDKs/MacOSX.<VersionNumber>.sdk`
-      - Default XCode.app path: `/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk`
+      - Default Xcode-command-line tool path: `/Library/Developer/CommandLineTools/SDKs/MacOSX.<VersionNumber>.sdk`
+      - Default Xcode.app path: `/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk`
  - Get a Build of QT (See: [Installing Qt6](#Installing-Qt6) )
 
 You are now ready to build!
