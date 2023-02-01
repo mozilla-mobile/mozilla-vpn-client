@@ -145,7 +145,7 @@ Item {
                                     duration: 100
                                 }
                                 PauseAnimation {
-                                    duration: 100
+                                    duration: 0
                                 }
                                 ScriptAction {
                                     script: {
@@ -235,8 +235,12 @@ Item {
                 Glean.sample.getHelpClickedInitialize.record();
                 VPNNavigator.requestScreen(VPNNavigator.ScreenGetHelp);
             }
-
-            anchors.topMargin: VPNTheme.theme.listSpacing
+            anchors {
+                top: parent.top
+                topMargin: VPNTheme.theme.windowMargin
+                right: parent.right
+                rightMargin: VPNTheme.theme.windowMargin
+            }
         }
 
         QtObject {
