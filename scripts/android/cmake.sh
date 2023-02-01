@@ -140,9 +140,6 @@ else
   ADJUST="CONFIG-=adjust"
 fi
 
-# Just in case... This has been a problem before.
-chmod +x $QTPATH/bin/qt-cmake
-
 if [[ "$RELEASE" ]]; then
   printn Y "Use release config"
   $QTPATH/bin/qt-cmake \

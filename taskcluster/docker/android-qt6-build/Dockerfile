@@ -69,6 +69,10 @@ RUN python3 -m aqt install-qt --outputdir /opt linux android ${QT_VERSION} ${AND
     mkdir /opt/ccache
 
 ENV QTPATH=/opt/${QT_VERSION}/${ANDROID_ARCH}
+
+# Just in case... This has been a problem before.
+RUN chmod +x ${QTPATH}/bin/qt-cmake
+
 ENV ANDROID_SDK_ROOT="/opt/android/sdk"
 ENV ANDROID_NDK_ROOT="/opt/NDK/${NDK_VERSION}"
 ENV ANDROID_NDK_HOME="/opt/NDK/${NDK_VERSION}"
