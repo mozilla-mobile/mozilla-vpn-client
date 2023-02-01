@@ -7,10 +7,8 @@
 	url = https://github.com/WireGuard/wireguard-tools
 [submodule "3rdparty/wireguard-apple"]
 	path = 3rdparty/wireguard-apple
-	url = https://github.com/WireGuard/wireguard-apple
-[submodule "3rdparty/openSSL"]
-	path = 3rdparty/openSSL
-	url = https://github.com/KDAB/android_openssl
+	url = https://github.com/mozilla/wireguard-apple
+        ignore=all
 [submodule "3rdparty/wireguard-go"]
 	path = 3rdparty/wireguard-go
 	url = https://github.com/WireGuard/wireguard-go
