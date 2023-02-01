@@ -35,7 +35,7 @@ jobs:
           python3 -m pip install aqtinstall
           # qt6.2.3 for wasm needs the desktop linux installation
           python3 -m aqt install-qt -O /opt linux desktop $QTVERSION
-          python3 -m aqt install-qt -O /opt linux desktop $QTVERSION wasm_32 -m qtcharts qtwebsockets qt5compat
+          python3 -m aqt install-qt -O /opt linux desktop $QTVERSION wasm_32 -m qtcharts qtwebsockets qt5compat qtshadertools qtquick3d
 
       - name: Install python dependencies
         shell: bash
