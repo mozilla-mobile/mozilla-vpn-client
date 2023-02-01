@@ -509,6 +509,23 @@ cmake --build build --config Release --target msi
     - Choose `src/Mozilla VPN.exe` as the startup item.
     - Click on the green play button to launch the client attached to a debugger.
 
+#### Building using Conda on Windows
+
+We provide a Conda env for easy Setup. 
+Prerequisites: 
+- Have miniconda installed. 
+
+```bash 
+$ conda env create -f env.yml
+$ conda activate VPN
+$ ./scripts/windows/hol.ps1
+```
+You are now ready to build!
+```bash
+mkdir build && cmake -S . -B build -GNinja
+```
+Note: Using ninja is mandatory.
+
 ### How to build from source code for WASM
 
 Mozilla VPN can be used as a WASM module to test the UI, the localization and
