@@ -66,7 +66,7 @@ def add_beetmover_worker_config(config, tasks):
                     build_id,
                 )
             )
-        else:
+        elif shipping_phase == "promote-client":
             destination_paths.append(
                 os.path.join(
                     "pub",
@@ -74,6 +74,16 @@ def add_beetmover_worker_config(config, tasks):
                     "candidates",
                     f"{app_version}-candidates",
                     f"build{build_id}",
+                    build_os,
+                )
+            )
+        elif shipping_phase == "ship-client":
+            destination_paths.append(
+                os.path.join(
+                    "pub",
+                    "vpn",
+                    "releases",
+                    app_version,
                     build_os,
                 )
             )
@@ -88,6 +98,9 @@ def add_beetmover_worker_config(config, tasks):
                     "latest",
                 )
             )
+
+        if shipping_phase and not destination_paths:
+            raise Exception(f"Invalid shipping phase '{shipping_phase}'!")
 
         archive_url = (
             "https://ftp.mozilla.org/" if is_relpro else "https://ftp.stage.mozaws.net/"
@@ -131,12 +144,13 @@ def add_beetmover_worker_config(config, tasks):
             "shipping-phase": shipping_phase,
         }
 
+        dest = f"{archive_url}{destination_paths[0]}" if destination_paths else archive_url
         if build_type == "addons/opt":
-            task_description = f"This {worker_type} task will upload the {task['name']} to {archive_url}{destination_paths[0]}/"
+            task_description = f"This {worker_type} task will upload the {task['name']} to {dest}/"
         elif shipping_phase == "ship-client":
             task_description = f"This {worker_type} task will copy build {build_id} from candidates to releases"
         else:
-            task_description = f"This {worker_type} task will upload a {build_os} release candidate for v{app_version} to {archive_url}{destination_paths[0]}/"
+            task_description = f"This {worker_type} task will upload a {build_os} release candidate for v{app_version} to {dest}/"
 
         if not shipping_phase or shipping_phase.startswith("promote"):
             action = "push-to-candidates"
