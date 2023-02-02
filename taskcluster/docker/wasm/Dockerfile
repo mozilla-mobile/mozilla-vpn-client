@@ -22,8 +22,8 @@ RUN apt-get -q update && apt-get install -y git ccache python3 python3-pip libgl
     cd /opt/ && \
     git clone https://github.com/emscripten-core/emsdk.git && \
     cd emsdk && \
-    ./emsdk install 2.0.14 && \
-    ./emsdk activate 2.0.14 && \
+    ./emsdk install 3.1.14 && \
+    ./emsdk activate 3.1.14 && \
     wget https://github.com/Kitware/CMake/releases/download/v3.24.0-rc4/cmake-3.24.0-rc4-linux-x86_64.sh && \
     chmod +x cmake-3.24.0-rc4-linux-x86_64.sh && \
     mkdir /tmp/cmake && \
