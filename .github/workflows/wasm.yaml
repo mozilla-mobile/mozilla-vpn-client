@@ -21,7 +21,7 @@ jobs:
     outputs:
       matrix: ${{ steps.testGen.outputs.tests }}
     env:
-      QTVERSION: 6.4.2
+      QTVERSION: 6.4.1
 
     steps:
       - name: Clone repository
@@ -99,7 +99,7 @@ jobs:
       matrix:
         test: ${{ fromJson(needs.wasmQt6.outputs.matrix) }}
     env:
-      QTVERSION: 6.4.2
+      QTVERSION: 6.4.1
 
     steps:
       - name: Clone repository

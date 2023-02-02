@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-20.04
     name: Run Lottie tests on Linux
     env:
-      QTVERSION: 6.4.2
+      QTVERSION: 6.4.1
     steps:
       - name: Install Linux packages
         run: |
