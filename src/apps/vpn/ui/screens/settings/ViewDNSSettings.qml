@@ -36,6 +36,7 @@ VPNViewBase {
         Layout.topMargin: VPNTheme.theme.windowMargin / 2
 
         SettingsDisconnectWarning {
+            objectName: "viewDnsIOSWarning"
             Layout.topMargin: VPNTheme.theme.windowMargin
             Layout.leftMargin: VPNTheme.theme.windowMargin
             Layout.rightMargin: VPNTheme.theme.windowMargin

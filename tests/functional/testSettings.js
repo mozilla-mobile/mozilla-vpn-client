@@ -71,7 +71,7 @@ describe('Settings', function () {
 
 
     // TODO: (VPN-2749)
-    // //Test guides
+    // Test guides
     // let guides = await vpn.guides();
     // let guideParent = 'guideLayout'
 
@@ -105,11 +105,22 @@ describe('Settings', function () {
   it('Checking the privacy settings', async () => {
     await vpn.waitForQuery(queries.screenSettings.PRIVACY.visible());
 
+
     await vpn.scrollToQuery(
         queries.screenSettings.SCREEN, queries.screenSettings.PRIVACY);
 
     await vpn.clickOnQuery(queries.screenSettings.PRIVACY.visible());
     await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    // Checking that the `These changes may affect...` warning is visible
+    await vpn.waitForQuery(
+        queries.screenSettings.privacyView.VIEW_PRIVACY_WARNING.visible());
+    // Checking that the ios-specific warning is not visible
+
+    assert(
+        await vpn.getQueryProperty(
+            queries.screenSettings.privacyView.DISCONNECTION_WARNING_IOS,
+            'visible') === 'false');
 
     // Checking if the checkboxes are correctly set based on the settings prop
     await vpn.setSetting('dnsProviderFlags', 0);
@@ -335,6 +346,13 @@ describe('Settings', function () {
     await vpn.waitForQuery(queries.screenSettings.appPreferencesView
                                .dnsSettingsView.CUSTOM_DNS_INPUT.visible()
                                .prop('hasError', false));
+
+    // Check the warning message
+    assert(
+        await vpn.getQueryProperty(
+            queries.screenSettings.appPreferencesView.dnsSettingsView
+                .DISCONNECTION_WARNING_IOS,
+            'visible') === 'false');
 
     // Check the click
     await vpn.waitForQueryAndClick(
@@ -667,6 +685,14 @@ describe('Settings', function () {
 
     await vpn.clickOnQuery(
         queries.screenSettings.appPreferencesView.NOTIFICATIONS.visible());
+
+    // Check the warning message
+    assert(
+        await vpn.getQueryProperty(
+            queries.screenSettings.appPreferencesView.notificationView
+                .DISCONNECTION_WARNING_IOS,
+            'visible') === 'false');
+
 
     await checkSetting(
         queries.screenSettings.appPreferencesView.notificationView

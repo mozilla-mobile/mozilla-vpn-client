@@ -24,6 +24,7 @@ VPNViewBase {
         spacing: VPNTheme.theme.windowMargin
 
         SettingsDisconnectWarning {
+            objectName: "viewNotificationsIOSWarning"
             Layout.topMargin: VPNTheme.theme.windowMargin
             Layout.leftMargin: VPNTheme.theme.windowMargin * 2
             Layout.rightMargin: VPNTheme.theme.windowMargin

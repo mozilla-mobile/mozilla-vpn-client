@@ -241,12 +241,16 @@ const screenSettings = {
     BLOCK_MALWARE: new QmlQueryComposer('//blockMalware'),
     BLOCK_MALWARE_CHECKBOX: new QmlQueryComposer('//blockMalware//checkbox'),
 
+    DISCONNECTION_WARNING_IOS: new QmlQueryComposer('//viewPrivacyIOSWarning'),
+
     MODAL_CLOSE_BUTTON:
         new QmlQueryComposer('//privacyOverwritePopupPopupCloseButton'),
     MODAL_PRIMARY_BUTTON:
         new QmlQueryComposer('//privacyOverwritePopupDiscoverNowButton'),
     MODAL_SECONDARY_BUTTON:
         new QmlQueryComposer('//privacyOverwritePopupGoBackButton'),
+
+    VIEW_PRIVACY_WARNING: new QmlQueryComposer('//viewPrivacyWarning')
   },
 
   myDevicesView: {
@@ -276,6 +280,8 @@ const screenSettings = {
       CUSTOM_DNS: new QmlQueryComposer('//dnsCustom'),
       CUSTOM_DNS_INPUT: new QmlQueryComposer('//dnsCustomInput'),
 
+      DISCONNECTION_WARNING_IOS: new QmlQueryComposer('//viewDnsIOSWarning'),
+
       MODAL_CLOSE_BUTTON:
           new QmlQueryComposer('//dnsOverwritePopupPopupCloseButton'),
       MODAL_PRIMARY_BUTTON:
@@ -301,6 +307,8 @@ const screenSettings = {
     notificationView: {
       CAPTIVE_PORTAL_ALERT: new QmlQueryComposer('//settingCaptivePortalAlert'),
       CONNECTION_CHANGE_ALERT: new QmlQueryComposer('//connectionChangeAlert'),
+      DISCONNECTION_WARNING_IOS:
+          new QmlQueryComposer('//viewNotificationsIOSWarning'),
       SERVER_UNAVAILABLE_ALERT:
           new QmlQueryComposer('//serverUnavailableNotification'),
       SWITCH_SERVER_ALERT: new QmlQueryComposer('//switchServersAlert'),
