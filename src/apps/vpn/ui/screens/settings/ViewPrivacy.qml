@@ -27,53 +27,27 @@ VPNViewBase {
         spacing: VPNTheme.theme.windowMargin * 2
         Layout.fillWidth: true
 
-        Item {
+        SettingsDisconnectWarning {
             Layout.topMargin: VPNTheme.theme.windowMargin
-            Layout.bottomMargin: VPNTheme.theme.windowMargin *3
             Layout.leftMargin: VPNTheme.theme.windowMargin * 2
             Layout.rightMargin: VPNTheme.theme.windowMargin * 2
             Layout.fillWidth: true
-
-            VPNDropShadow {
-                anchors.fill: bg
-                source: bg
-                horizontalOffset: 1
-                verticalOffset: 1
-                radius: 6
-                color: VPNTheme.colors.grey60
-                opacity: .15
-                transparentBorder: true
-                cached: true
-            }
-
-            Rectangle {
-                id: bg
-                anchors.fill: info
-                anchors.topMargin: -VPNTheme.theme.windowMargin
-                anchors.bottomMargin: anchors.topMargin
-                anchors.leftMargin: -VPNTheme.theme.windowMargin
-                anchors.rightMargin: anchors.leftMargin
-                color: VPNTheme.theme.white
-                radius: 4
-            }
-
-            RowLayout {
-                id: info
-                spacing: VPNTheme.theme.windowMargin * 0.75
-                anchors.left: parent.left
-                anchors.right: parent.right
-                VPNIcon {
-                    source: "qrc:/nebula/resources/info.svg"
-                    Layout.alignment: Qt.AlignTop
-                }
+            Layout.minimumHeight: textBlocks.implicitHeight
+            _infoContent: ColumnLayout {
+                id: textBlocks
                 VPNTextBlock {
                     Layout.fillWidth: true
                     width: undefined
                     text: VPNl18n.SettingsDnsSettingsWarning
                 }
+                VPNTextBlock {
+                    Layout.fillWidth: true
+                    width: undefined
+                    text: VPNl18n.SettingsIOSDisconnectWarning
+                    visible: Qt.platform.os === "ios" && VPNController.state !== VPNController.StateOff
+                }
             }
         }
-
         Repeater {
             id: repeater
 

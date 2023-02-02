@@ -35,6 +35,24 @@ VPNViewBase {
         Layout.rightMargin: VPNTheme.theme.windowMargin
         Layout.topMargin: VPNTheme.theme.windowMargin / 2
 
+        SettingsDisconnectWarning {
+            Layout.topMargin: VPNTheme.theme.windowMargin
+            Layout.leftMargin: VPNTheme.theme.windowMargin
+            Layout.rightMargin: VPNTheme.theme.windowMargin
+            Layout.fillWidth: true
+            Layout.minimumHeight: textBlocks.implicitHeight
+            visible: Qt.platform.os === "ios" && VPNController.state !== VPNController.StateOff
+
+            _infoContent: ColumnLayout {
+                id: textBlocks
+                VPNTextBlock {
+                    Layout.fillWidth: true
+                    width: undefined
+                    text: VPNl18n.SettingsIOSDisconnectWarning
+                }
+            }
+        }
+
         ButtonGroup {
             id: radioButtonGroup
         }

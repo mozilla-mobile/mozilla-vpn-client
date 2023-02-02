@@ -70,6 +70,7 @@
         <file>screens/ScreenViewLogs.qml</file>
         <file>screens/settings/appPermissions/AppPermissionsList.qml</file>
         <file>screens/settings/appPermissions/ViewAppPermissions.qml</file>
+        <file>screens/settings/SettingsDisconnectWarning.qml</file>
         <file>screens/settings/ViewAboutUs.qml</file>
         <file>screens/settings/ViewDNSSettings.qml</file>
         <file>screens/settings/ViewGuide.qml</file>

@@ -18,15 +18,32 @@ VPNViewBase {
     //% "Notifications"
     _menuTitle: qsTrId("vpn.settings.notifications")
 
-    _viewContentData: Column {
+    _viewContentData: ColumnLayout {
         Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin
         Layout.rightMargin: VPNTheme.theme.windowMargin
         spacing: VPNTheme.theme.windowMargin
 
+        SettingsDisconnectWarning {
+            Layout.topMargin: VPNTheme.theme.windowMargin
+            Layout.leftMargin: VPNTheme.theme.windowMargin * 2
+            Layout.rightMargin: VPNTheme.theme.windowMargin
+            Layout.fillWidth: true
+            Layout.bottomMargin: VPNTheme.theme.windowMargin * 2
+            Layout.minimumHeight: textBlocks.height
+            visible: Qt.platform.os === "ios" && VPNController.state !== VPNController.StateOff
+
+            _infoContent: ColumnLayout {
+                id: textBlocks
+                VPNTextBlock {
+                    Layout.fillWidth: true
+                    text: VPNl18n.SettingsIOSDisconnectWarning
+                }
+            }
+        }
+
         VPNCheckBoxRow {
             id: captivePortalAlert
             objectName: "settingCaptivePortalAlert"
-            width: parent.width
             visible: VPNFeatureList.get("captivePortal").isSupported
             //% "Guest Wi-Fi portal alert"
             labelText: qsTrId("vpn.settings.guestWifiAlert")
@@ -42,9 +59,7 @@ VPNViewBase {
         VPNCheckBoxRow {
             id: unsecuredNetworkAlert
             objectName: "settingUnsecuredNetworkAlert"
-            width: parent.width
             visible: VPNFeatureList.get("unsecuredNetworkNotification").isSupported
-
             //% "Unsecured network alert"
             labelText: qsTrId("vpn.settings.unsecuredNetworkAlert")
             //% "Get notified if you connect to an unsecured Wi-Fi network"
@@ -61,8 +76,6 @@ VPNViewBase {
             id: switchServersAlert
             objectName: "switchServersAlert"
             visible: VPNFeatureList.get("notificationControl").isSupported
-            width: parent.width
-
             //% "Server switching notification"
             labelText: qsTrId("vpn.settings.notification.serverSwitch2")
             //% "Get notified when you successfully switched servers"
@@ -78,7 +91,6 @@ VPNViewBase {
             id: connectionChangeAlert
             objectName: "connectionChangeAlert"
             visible: VPNFeatureList.get("notificationControl").isSupported
-            width: parent.width
 
             //% "Connection change notification"
             labelText: qsTrId("vpn.settings.notification.connectionChange2")
@@ -95,8 +107,6 @@ VPNViewBase {
             id: serverUnavailableNotification
             objectName: "serverUnavailableNotification"
             visible: VPNFeatureList.get("serverUnavailableNotification").isSupported
-            width: parent.width
-
             labelText: VPNl18n.ServerUnavailableNotificationPreferencesLabel
             subLabelText: VPNl18n.ServerUnavailableNotificationPreferencesSubLabel
             isChecked: (VPNSettings.serverUnavailableNotification)
