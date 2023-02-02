@@ -14,6 +14,7 @@ class QJsonObject;
 class Server final {
  public:
   Server();
+  Server(const QString& countryCode, const QString& cityName);
   Server(const Server& other);
   Server& operator=(const Server& other);
   ~Server();
@@ -51,6 +52,10 @@ class Server final {
 
   uint32_t multihopPort() const { return m_multihopPort; }
 
+  const QString& countryCode() const { return m_countryCode; }
+
+  const QString& cityName() const { return m_cityName; }
+
   bool forcePort(uint32_t port);
 
   bool operator==(const Server& other) const {
@@ -75,6 +80,8 @@ class Server final {
   uint32_t m_multihopPort = 0;
   qint64 m_cooldownTimeout = 0;
   uint32_t m_latency = 0;
+  QString m_countryCode;
+  QString m_cityName;
 };
 
 #endif  // SERVER_H

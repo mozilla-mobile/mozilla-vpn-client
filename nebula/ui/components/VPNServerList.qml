@@ -21,53 +21,6 @@ FocusScope {
         && VPNFeatureList.get("recommendedServers").isSupported)
     property var currentServer
 
-    ListModel {
-        id: testRecommendedModel
-    }
-
-    // TODO: Replace dummy data with recommended servers list
-    function updateServerData() {
-        testRecommendedModel.clear();
-
-        const data = [
-            {
-                countryCode: "ca",
-                cityName: "Toronto",
-                localizedCityName: "Toronto",
-                code: "tor"
-            },
-            {
-                countryCode: "ca",
-                cityName: "Montreal",
-                localizedCityName: "Montreal",
-                code: "mtr"
-            },
-            {
-                countryCode: "ca",
-                cityName: "Vancouver",
-                localizedCityName: "Vancouver",
-                code: "van"
-            },
-            {
-                countryCode: "us",
-                cityName: "New York City",
-                localizedCityName: "New York City",
-                code: "nyc"
-            },
-            {
-                countryCode: "us",
-                cityName: "Chicago",
-                localizedCityName: "Chicago",
-                code: "chi"
-            }
-        ];
-        const shuffledData = data.sort((a, b) => 0.5 - Math.random());
-
-        shuffledData.forEach((d) => {
-            testRecommendedModel.append(d);
-        });
-    }
-
     function setSelectedServer(countryCode, cityName, localizedCityName) {
         if (currentServer.whichHop === "singleHopServer") {
             VPNCurrentServer.changeServer(countryCode, cityName);
@@ -130,10 +83,6 @@ FocusScope {
     }
 
     Component.onCompleted: {
-        if (showRecommendedConnections) {
-            focusScope.updateServerData();
-        }
-
         centerActiveServer();
     }
 
@@ -188,7 +137,7 @@ FocusScope {
                     rowShouldBeDisabled: !(VPNController.state === VPNController.StateOff)
 
                     onClicked: {
-                        focusScope.updateServerData();
+                        console.log("TODO: Request server data refresh");
                     }
 
                     RowLayout {
@@ -234,10 +183,8 @@ FocusScope {
                             VPNIcon {
                                 id: refreshIcon
                                 source: "qrc:/nebula/resources/refresh.svg"
-                                sourceSize {
-                                    height: parent.height
-                                    width: parent.width
-                                }
+                                sourceSize.height: parent.height
+                                sourceSize.width: parent.width
                             }
 
                             VPNColorOverlay {
@@ -252,18 +199,17 @@ FocusScope {
 
                 Repeater {
                     id: recommendedRepeater
-                    model: testRecommendedModel
+                    model: VPNServerCountryModel.recommendedLocations(5)
                     delegate: VPNClickableRow {
-                        property string locationScore: VPNServerCountryModel.cityConnectionScore(countryCode, code)
-                        property bool isAvailable: locationScore >= 0
+                        property bool isAvailable: modelData.connectionScore >= 0
                         id: recommendedServer
 
-                        accessibleName: localizedCityName
+                        accessibleName: modelData.localizedName
                         onClicked: {
                             if (!isAvailable) {
                                 return;
                             }
-                            focusScope.setSelectedServer(countryCode, cityName, localizedCityName);
+                            focusScope.setSelectedServer(modelData.country, modelData.name, modelData.localizedName);
                         }
 
                         RowLayout {
@@ -278,15 +224,15 @@ FocusScope {
                                 fontColor: VPNTheme.theme.fontColorDark
                                 narrowStyle: false
                                 serversList: [{
-                                    countryCode,
-                                    cityName,
-                                    localizedCityName
+                                    countryCode: modelData.country,
+                                    cityName: modelData.name,
+                                    localizedCityName: modelData.localizedName
                                 }]
                             }
 
                             VPNServerLatencyIndicator {
                                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                                score: recommendedServer.locationScore
+                                score: modelData.connectionScore
                             }
                         }
                     }

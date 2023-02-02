@@ -35,6 +35,11 @@ ServerCountryModel* MozillaVPN::serverCountryModel() {
   return new ServerCountryModel();
 }
 
+Location* MozillaVPN::location() const {
+  static Location* location = new Location();
+  return location;
+}
+
 MozillaVPN::State MozillaVPN::state() const { return StateInitialize; }
 MozillaVPN::UserState MozillaVPN::userState() const {
   return UserNotAuthenticated;

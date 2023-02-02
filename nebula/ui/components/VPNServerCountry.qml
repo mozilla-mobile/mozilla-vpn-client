@@ -19,7 +19,7 @@ VPNClickableRow {
     property var currentCityIndex
     property alias serverCountryName: countryName.text
 
-    property bool hasAvailableCities: cities.reduce((initialValue, city) => (initialValue || VPNServerCountryModel.cityConnectionScore(code, city.code) >= 0), false)
+    property bool hasAvailableCities: cities.reduce((initialValue, city) => (initialValue || city.connectionScore >= 0), false)
 
     function openCityList() {
         cityListVisible = !cityListVisible;
@@ -170,7 +170,7 @@ VPNClickableRow {
                 property string _cityName: modelData.name
                 property string _countryCode: code
                 property string _localizedCityName: modelData.localizedName
-                property string locationScore: VPNServerCountryModel.cityConnectionScore(code, modelData.code)
+                property string locationScore: modelData.connectionScore
                 property bool isAvailable: locationScore >= 0
                 property int itemHeight: 54
 

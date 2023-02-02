@@ -45,6 +45,8 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/featuremodel.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/featuremodel.h
+    ${MZ_SOURCE_DIR}/apps/vpn/models/location.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/models/location.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/server.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/server.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/servercity.cpp
