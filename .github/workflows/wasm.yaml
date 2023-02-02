@@ -50,7 +50,7 @@ jobs:
         run: |
           export PATH=/opt/$QTVERSION/wasm_32/bin:/opt/$QTVERSION/gcc_64/bin:$PATH
           mkdir build
-          /opt/$QTVERSION/wasm_32/bin/qt-cmake -S . -B build -DQT_HOST_PATH=/opt/$QTVERSION/gcc_64 -DQT_HOST_PATH_CMAKE_DIR=/opt/$QTVERSION/gcc_64/lib/cmake -DCMAKE_BUILD_TYPE=Release -DQT_WASM_EXTRA_EXPORTED_METHODS=ENV
+          /opt/$QTVERSION/wasm_32/bin/qt-cmake -S . -B build -DQT_DEBUG_FIND_PACKAGE=ON -DQT_HOST_PATH=/opt/$QTVERSION/gcc_64 -DQT_HOST_PATH_CMAKE_DIR=/opt/$QTVERSION/gcc_64/lib/cmake -DCMAKE_BUILD_TYPE=Release -DQT_WASM_EXTRA_EXPORTED_METHODS=ENV
           cmake --build build -j4
           cp $(pwd)/build/src/mozillavpn.wasm wasm
           cp $(pwd)/build/src/mozillavpn.js wasm
