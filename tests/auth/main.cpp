@@ -14,6 +14,7 @@
 #include "testemailvalidation.h"
 #include "testpasswordvalidation.h"
 #include "testsignupandin.h"
+#include "glean/glean.h"
 
 int main(int argc, char* argv[]) {
 #ifdef MZ_DEBUG
@@ -32,6 +33,7 @@ int main(int argc, char* argv[]) {
       "inAppAccountCreate", "inAppAuthentication", "accountDeletion"});
 
   LogHandler::enableStderr();
+  VPNGlean::registerLogHandler(LogHandler::rustMessageHandler);
 
   int failures = 0;
   TestEmailValidation tev;

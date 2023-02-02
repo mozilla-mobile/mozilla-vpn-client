@@ -9,6 +9,7 @@
 #include "loghandler.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
+#include "glean/glean.h"
 
 QVector<TestHelper::NetworkConfig> TestHelper::networkConfig;
 MozillaVPN::State TestHelper::vpnState = MozillaVPN::StateInitialize;
@@ -75,6 +76,7 @@ int main(int argc, char* argv[]) {
 
   L18nStrings::initialize();
   LogHandler::enableStderr();
+  VPNGlean::registerLogHandler(LogHandler::rustMessageHandler);
 
   // If arguments were passed, then run a subset of tests.
   QStringList args = app.arguments();
