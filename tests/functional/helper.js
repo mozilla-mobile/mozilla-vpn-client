@@ -105,9 +105,9 @@ module.exports = {
 
   async waitForInitialView() {
     await this.waitForQuery(queries.screenInitialize.GET_HELP_LINK.visible());
-    assert(await this.query(queries.screenInitialize.GET_STARTED.visible()));
-    assert(
-        await this.query(queries.screenInitialize.LEARN_MORE_LINK.visible()));
+    assert(await this.query(queries.screenInitialize.SIGN_UP_BUTTON.visible()));
+    assert(await this.query(
+        queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible()));
   },
 
   async forceHeartbeatFailure() {
@@ -299,12 +299,12 @@ module.exports = {
       await this.flipFeatureOff('inAppAuthentication');
     }
 
-    // This method must be called when the client is on the "Get Started" view.
+    // This method must be called when the client is on the "Get Started"view.
     await this.waitForInitialView();
     await this.setVPNProperty('VPNUrlOpener', 'lastUrl', '');
 
     // Click on get started and wait for authenticating view
-    await this.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
+    await this.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
 
     if (!wasm) {
       await this.waitForCondition(async () => {
@@ -330,7 +330,8 @@ module.exports = {
         req.on('close', resolve);
         req.on('error', error => {
           throw new error(
-              `Unable to connect to ${urlObj.hostname} to complete the auth`);
+              `Unable to connect to ${urlObj.hostname} to complete the
+              auth`);
         });
         req.end();
       });
@@ -364,7 +365,7 @@ module.exports = {
     await this.waitForInitialView();
 
     // Click on get started and wait for authenticating view
-    await this.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
+    await this.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
     await this.waitForQuery(
         queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
     await this.setQueryProperty(

@@ -38,8 +38,6 @@
         <file>screens/home/ViewMultiHop.qml</file>
         <file>screens/home/ViewServers.qml</file>
         <file>screens/initialize/ViewInitialize.qml</file>
-        <file>screens/initialize/ViewOnboarding.qml</file>
-        <file>screens/initialize/ViewMobileOnboarding.qml</file>
         <file>screens/messaging/ViewMessage.qml</file>
         <file>screens/messaging/ViewMessagesInbox.qml</file>
         <file>screens/ScreenAuthenticating.qml</file>
@@ -52,7 +50,6 @@
         <file>screens/ScreenGetHelp.qml</file>
         <file>screens/ScreenHome.qml</file>
         <file>screens/ScreenInitialize.qml</file>
-        <file>screens/ScreenInitializeMobileOnboarding.qml</file>
         <file>screens/ScreenMessaging.qml</file>
         <file>screens/ScreenNoSubscriptionFoundError.qml</file>
         <file>screens/ScreenPostAuthentication.qml</file>
@@ -92,5 +89,6 @@
         <file>sharedViews/ViewErrorFullScreen.qml</file>
         <file>sharedViews/ViewUpdate.qml</file>
         <file>screens/ScreenDeleteAccount.qml</file>
+        <file>screens/initialize/ViewOnboarding.qml</file>
     </qresource>
 </RCC>

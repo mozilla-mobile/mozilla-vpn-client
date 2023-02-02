@@ -35,40 +35,6 @@ describe('Backend failure', function() {
     });
   */
 
-  // TODO: check fix
-  it('Backend failure in the onboarding (aborting in each phase)', async () => {
-    let onboardingView = 0;
-    let onboarding = true;
-    while (onboarding) {
-      await vpn
-          .waitForQuery(queries.screenInitialize.LEARN_MORE_LINK.visible())
-              await vpn.waitForQueryAndClick(
-                  queries.screenInitialize.LEARN_MORE_LINK.visible());
-
-      await vpn.waitForQuery(
-          queries.screenInitialize.SKIP_ONBOARDING.visible());
-
-      for (let i = 0; i < onboardingView; ++i) {
-        assert(await vpn.query(
-            queries.screenInitialize.ONBOARDING_NEXT.visible()));
-        await vpn.clickOnQuery(
-            queries.screenInitialize.ONBOARDING_NEXT.visible());
-      }
-
-      assert(
-          await vpn.query(queries.screenInitialize.ONBOARDING_NEXT.visible()));
-      onboarding = await vpn.getQueryProperty(
-                       queries.screenInitialize.ONBOARDING_NEXT.visible(),
-                       'text') === 'Next';
-
-      await backendFailureAndRestore();
-      await vpn.waitForQuery(queries.screenInitialize.GET_HELP_LINK.visible());
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-
-      ++onboardingView;
-    }
-  });
-
   it('BackendFailure during browser authentication', async () => {
     if (this.ctx.wasm) {
       // Ignore this test in wasm
@@ -78,7 +44,7 @@ describe('Backend failure', function() {
     await vpn.flipFeatureOff('inAppAuthentication');
 
     await vpn.waitForInitialView();
-    await vpn.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
+    await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
 
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();

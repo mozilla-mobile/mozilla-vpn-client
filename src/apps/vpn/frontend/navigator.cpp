@@ -191,22 +191,7 @@ ScreenData s_screens[] = {
         Navigator::LoadPolicy::LoadTemporarily,
         "qrc:/ui/screens/ScreenInitialize.qml",
         QVector<MozillaVPN::State>{MozillaVPN::StateInitialize},
-        [](Navigator::Screen*) -> int8_t {
-          return Feature::get(Feature::Feature_mobileOnboarding)->isSupported()
-                     ? -1
-                     : 99;
-        },
-        []() -> bool { return false; }),
-    ScreenData(
-        Navigator::Screen::ScreenInitialize,
-        Navigator::LoadPolicy::LoadTemporarily,
-        "qrc:/ui/screens/ScreenInitializeMobileOnboarding.qml",
-        QVector<MozillaVPN::State>{MozillaVPN::StateInitialize},
-        [](Navigator::Screen*) -> int8_t {
-          return Feature::get(Feature::Feature_mobileOnboarding)->isSupported()
-                     ? 99
-                     : -1;
-        },
+        [](Navigator::Screen*) -> int8_t { return 0; },
         []() -> bool { return false; }),
     ScreenData(
         Navigator::Screen::ScreenMessaging,
@@ -462,9 +447,6 @@ Navigator::Navigator(QObject* parent) : QObject(parent) {
           &Navigator::computeComponent);
 
   connect(Feature::get(Feature::Feature_inAppAuthentication),
-          &Feature::supportedChanged, this, &Navigator::computeComponent);
-
-  connect(Feature::get(Feature::Feature_mobileOnboarding),
           &Feature::supportedChanged, this, &Navigator::computeComponent);
 
   connect(ErrorHandler::instance(), &ErrorHandler::subscriptionGeneric, this,

@@ -32,7 +32,7 @@ describe('Navigation bar', async function() {
 
   it('Is not visible over desktop onboarding', async () => {
     await vpn.waitForQueryAndClick(
-        queries.screenInitialize.LEARN_MORE_LINK.visible());
+        queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible());
     assert(await navigationBarVisible() === 'false');
   });
 
@@ -40,7 +40,8 @@ describe('Navigation bar', async function() {
   it('Is not visible during browser authentication', async () => {
     await vpn.flipFeatureOff('inAppAuthentication');
     await vpn.waitForInitialView();
-    await vpn.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
+    await vpn.waitForQueryAndClick(
+        queries.screenInitialize.SIGN_UP_BUTTON.visible());
 
     if (!this.ctx.wasm) {
       await vpn.waitForCondition(async () => {

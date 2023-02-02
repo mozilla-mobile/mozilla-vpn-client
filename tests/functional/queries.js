@@ -108,20 +108,13 @@ const screenTipsAndTricks = {
 }
 
 const screenInitialize = {
+  ALREADY_A_SUBSCRIBER_LINK: new QmlQueryComposer('//alreadyASubscriberLink'),
   AUTHENTICATE_VIEW: new QmlQueryComposer('//authenticatingView'),
-  SCREEN: new QmlQueryComposer('//initialStackView'),
   GET_HELP_LINK: new QmlQueryComposer('//getHelpLink'),
-  GET_STARTED: new QmlQueryComposer('//getStarted'),
-  LEARN_MORE_LINK: new QmlQueryComposer('//learnMoreLink'),
-  ONBOARDING_NEXT: new QmlQueryComposer('//onboardingNext'),
-  SKIP_ONBOARDING: new QmlQueryComposer('//skipOnboarding'),
-};
-
-const screenInitializeMobileOnBoarding = {
-  ALREADY_SUBBED_LINK: new QmlQueryComposer('//alreadyASubscriberLink'),
   PANEL_DESCRIPTION: new QmlQueryComposer('//panelDescription'),
   PANEL_TITLE: new QmlQueryComposer('//panelTitle'),
-  SIGNUP_BUTTON: new QmlQueryComposer('//signUpButton'),
+  SCREEN: new QmlQueryComposer('//initialStackView'),
+  SIGN_UP_BUTTON: new QmlQueryComposer('//signUpButton'),
   SWIPE_VIEW: new QmlQueryComposer('//swipeView'),
 };
 
@@ -407,7 +400,6 @@ const global = {
 module.exports = {
   screenHome,
   screenInitialize,
-  screenInitializeMobileOnBoarding,
   screenPostAuthentication,
   screenTelemetry,
   screenAuthenticationInApp,

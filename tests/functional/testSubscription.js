@@ -975,8 +975,9 @@ describe('Subscription view', function() {
         queries.screenDeleteAccount.BUTTON.visible().enabled());
 
     await vpn.waitForQuery(queries.screenInitialize.GET_HELP_LINK.visible());
-    await vpn.waitForQuery(queries.screenInitialize.GET_STARTED.visible());
-    await vpn.waitForQuery(queries.screenInitialize.LEARN_MORE_LINK.visible());
+    await vpn.waitForQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
+    await vpn.waitForQuery(
+        queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible());
   });
 
   it('Account deletion - totp', async () => {
@@ -1123,8 +1124,9 @@ describe('Subscription view', function() {
         queries.screenDeleteAccount.BUTTON.visible().enabled());
 
     await vpn.waitForQuery(queries.screenInitialize.GET_HELP_LINK.visible());
-    await vpn.waitForQuery(queries.screenInitialize.GET_STARTED.visible());
-    await vpn.waitForQuery(queries.screenInitialize.LEARN_MORE_LINK.visible());
+    await vpn.waitForQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
+    await vpn.waitForQuery(
+        queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible());
   });
 
   async function clickSettingsIcon() {
