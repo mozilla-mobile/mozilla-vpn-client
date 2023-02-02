@@ -18,7 +18,7 @@ RUN apt-get -q update && apt-get install -y git ccache python3 python3-pip libgl
     python3 -m pip install aqtinstall && \
     # qt6 for wasm needs the desktop linux installation
     python3 -m aqt install-qt -O /opt linux desktop ${QT_VERSION} gcc_64 && \
-    python3 -m aqt install-qt -O /opt linux desktop ${QT_VERSION} wasm_32 -m all && \
+    python3 -m aqt install-qt -O /opt linux desktop ${QT_VERSION} wasm_32 -m qtcharts qtwebsockets qt5compat qtshadertools && \
     cd /opt/ && \
     git clone https://github.com/emscripten-core/emsdk.git && \
     cd emsdk && \
