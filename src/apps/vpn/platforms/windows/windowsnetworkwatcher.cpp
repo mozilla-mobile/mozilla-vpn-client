@@ -137,8 +137,3 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
                  << "id:" << logger.sensitive(bssid);
   emit unsecuredNetwork(ssid, bssid);
 }
-
-NetworkWatcherImpl::TransportType WindowsNetworkWatcher::getTransportType() {
-  // TODO: Implement this once we update to Qt6.3 (VPN-3511)
-  return TransportType_Other;
-}

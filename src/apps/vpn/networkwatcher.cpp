@@ -165,10 +165,3 @@ void NetworkWatcher::notificationClicked(NotificationHandler::Message message) {
     MozillaVPN::instance()->activate();
   }
 }
-
-QString NetworkWatcher::getCurrentTransport() {
-  auto type = m_impl->getTransportType();
-  QMetaEnum metaEnum = QMetaEnum::fromType<NetworkWatcherImpl::TransportType>();
-  return QString(metaEnum.valueToKey(type))
-      .remove("TransportType_", Qt::CaseSensitive);
-}

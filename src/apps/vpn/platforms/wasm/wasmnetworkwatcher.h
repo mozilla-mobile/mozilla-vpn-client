@@ -17,10 +17,6 @@ class WasmNetworkWatcher final : public NetworkWatcherImpl {
   void initialize() override;
 
   void start() override;
-
-  NetworkWatcherImpl::TransportType getTransportType() override {
-    return TransportType_Other;
-  };
 };
 
 #endif  // WASMNETWORKWATCHER_H

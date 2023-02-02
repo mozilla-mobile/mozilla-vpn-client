@@ -13,8 +13,6 @@ class AndroidNetworkWatcher final : public NetworkWatcherImpl {
   ~AndroidNetworkWatcher();
 
   void initialize() override;
-
-  NetworkWatcherImpl::TransportType getTransportType() override;
 };
 
 #endif  // ANDROIDNETWORKWATCHER_H

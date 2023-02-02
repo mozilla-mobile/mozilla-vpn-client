@@ -30,12 +30,3 @@ AndroidNetworkWatcher::~AndroidNetworkWatcher() {
 }
 
 void AndroidNetworkWatcher::initialize() {}
-
-NetworkWatcherImpl::TransportType AndroidNetworkWatcher::getTransportType() {
-  QJniEnvironment env;
-  QJniObject activity = AndroidUtils::getActivity();
-  int type = QJniObject::callStaticMethod<int>(
-      VPNNetworkWatcher_CLASS, "getTransportType",
-      "(Landroid/content/Context;)I", activity.object());
-  return (NetworkWatcherImpl::TransportType)type;
-};

@@ -33,9 +33,6 @@ class NetworkWatcherImpl : public QObject {
   };
   Q_ENUM(TransportType);
 
-  // Returns the current type of Network Connection
-  virtual TransportType getTransportType() = 0;
-
  signals:
   // Fires when the Device Connects to an unsecured Network
   void unsecuredNetwork(const QString& networkName, const QString& networkId);
