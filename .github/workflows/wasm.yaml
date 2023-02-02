@@ -57,7 +57,6 @@ jobs:
         run: |
           export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
           mkdir build
-          ls -R /opt/$QTVERSION/gcc_64/lib
           /opt/$QTVERSION/wasm_32/bin/qt-cmake --debug-find -S . -B build -DQT_HOST_PATH=/opt/$QTVERSION/gcc_64 -DQT_HOST_PATH_CMAKE_DIR=/opt/$QTVERSION/gcc_64/lib/cmake -DCMAKE_BUILD_TYPE=Release -DQT_WASM_EXTRA_EXPORTED_METHODS=ENV
 
           cmake --build build -j4
