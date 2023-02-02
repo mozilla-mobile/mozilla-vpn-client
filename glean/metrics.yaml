@@ -1623,7 +1623,7 @@ sample:
     send_in_pings:
       - main
     description: |
-    The user has chosen a default language.
+      The user has chosen a default language.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-3742
     data_reviews:
@@ -1638,7 +1638,12 @@ sample:
         description: The language code chosen.
         type: string
 
-speed_test_started:
+  speed_test_started:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
       Speed test was started.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-3630
@@ -1735,40 +1740,6 @@ speed_test_started:
       - mcleinman@mozilla.com
     expires: never
 
-  connect_on_startup_active:
-    type: boolean
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The status of whether the VPN is activated on device start
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-3630
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - mcleinman@mozilla.com
-    expires: never
-
-  using_system_language:
-    type: boolean
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      Status of whether app is being used in language of the operating system
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-3630
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - mcleinman@mozilla.com
-    expires: never
-
   help_menu_help_center_opened:
     type: event
     lifetime: ping
@@ -1844,94 +1815,6 @@ speed_test_started:
       - main
     description: |
       The user selected the about us option within the settings menu
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-3630
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - mcleinman@mozilla.com
-    expires: never
-
-  session_start:
-    type: datetime
-    description: |
-      The time the user starts a VPN session from the app
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-3630
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - mcleinman@mozilla.com
-    expires: never
-
-  session_end:
-    type: datetime
-    description: |
-      The time the user ends a VPN session from the app
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-3630
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - mcleinman@mozilla.com
-    expires: never
-
-  daemon_session_start:
-    type: datetime
-    description: |
-      The time the a VPN session is started in the daemon (in order to measure
-      quantity of sessions started from OS settings)
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-3630
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - mcleinman@mozilla.com
-    expires: never
-
-  daemon_session_end:
-    type: datetime
-    description: |
-      The time the a VPN session is ended in the daemon (in order to measure
-      quantity of sessions started from OS settings)
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-3630
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - mcleinman@mozilla.com
-    expires: never
-
-  dns_type:
-    type: string
-    description: |
-      The type of DNS a user has active.
-      (AdBlock | AntiTracking | AdBlockAndAntiTracking | Custom | Normal)
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-3630
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - mcleinman@mozilla.com
-    expires: never
-
-  apps_excluded:
-    type: quantity
-    unit: apps
-    description: |
-      The number of apps the user is excluding from the VPN tunnel
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-3630
     data_reviews:
