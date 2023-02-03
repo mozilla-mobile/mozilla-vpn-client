@@ -249,9 +249,7 @@ void ServerCountryModel::setServerLatency(const QString& publicKey,
     return;
   }
 
-  Server& server = m_servers[publicKey];
-  server.setLatency(msec);
-
+  const Server& server = m_servers[publicKey];
   auto iter = m_cities.find(
       ServerCity::hashKey(server.countryCode(), server.cityName()));
   if (iter != m_cities.end()) {
@@ -260,11 +258,6 @@ void ServerCountryModel::setServerLatency(const QString& publicKey,
 }
 
 void ServerCountryModel::clearServerLatency() {
-  // Invalidate the latency data.
-  for (Server& server : m_servers) {
-    server.setLatency(0);
-  }
-
   // Emit changed signals for the connection scores.
   for (const ServerCity& city : m_cities) {
     emit city.scoreChanged();

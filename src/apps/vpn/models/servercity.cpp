@@ -117,7 +117,7 @@ int ServerCity::connectionScore() const {
   for (const QString& pubkey : m_servers) {
     const Server& server = scm->server(pubkey);
     if (server.cooldownTimeout() <= now) {
-      sumLatencyMsec += server.latency();
+      sumLatencyMsec += sl->getLatency(pubkey);
       activeServerCount++;
     }
   }
@@ -161,13 +161,14 @@ int ServerCity::connectionScore() const {
 
 unsigned int ServerCity::latency() const {
   ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
+  ServerLatency* sl = MozillaVPN::instance()->serverLatency();
   qint64 now = QDateTime::currentSecsSinceEpoch();
   int activeServerCount = 0;
   uint32_t sumLatencyMsec = 0;
   for (const QString& pubkey : m_servers) {
     const Server& server = scm->server(pubkey);
     if (server.cooldownTimeout() <= now) {
-      sumLatencyMsec += server.latency();
+      sumLatencyMsec += sl->getLatency(pubkey);
       activeServerCount++;
     }
   }
