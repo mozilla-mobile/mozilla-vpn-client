@@ -17,22 +17,22 @@ class MVPNWasm {
 
     const qtLoader = QtLoader({
       canvasElements: [controlcanvas, qmlcanvas],
-      showLoader: function(loaderStatus) {
+      showLoader: function (loaderStatus) {
         status.textContent = loaderStatus + '...';
       },
-      showError: function(errorText) {
+      showError: function (errorText) {
         bodyClassList.remove('wasm-loading');
         status.textContent = errorText;
         bodyClassList.add('wasm-loading-error');
       },
-      showExit: function() {
+      showExit: function () {
         status.textContent = 'Application exit';
         if (qtLoader.exitCode !== undefined)
           status.textContent += ' with code ' + qtLoader.exitCode;
         if (qtLoader.exitText !== undefined)
           status.textContent += ' (' + qtLoader.exitText + ')';
       },
-      showCanvas: function() {
+      showCanvas: function () {
         bodyClassList.remove('wasm-loading');
         bodyClassList.add('wasm-loaded');
         status.textContent = '';
@@ -51,7 +51,7 @@ class MVPNWasm {
     preset.onchange = () => this._loadPreset(preset.value);
 
     document.querySelector('#backButton').onclick = () =>
-        this._backButtonClicked();
+      this._backButtonClicked();
   }
 
   networkRequest(id, method, url, body) {
@@ -60,40 +60,40 @@ class MVPNWasm {
     let obj;
     if (u.hostname === 'stage-vpn.guardian.nonprod.cloudops.mozgcp.net') {
       obj = this._findResponse(
-          method, u, body, guardianEndpoints.endpoints,
-          this._guardianOverrideEndpoints,
-          this._guardianOverrideEndpointsPreset);
+        method, u, body, guardianEndpoints.endpoints,
+        this._guardianOverrideEndpoints,
+        this._guardianOverrideEndpointsPreset);
     } else if (u.hostname === 'api-accounts.stage.mozaws.net') {
       obj = this._findResponse(
-          method, u, body, fxaEndpoints.generateEndpoints({
-            GUARDIAN_URL:
-                'https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net'
-          }),
-          this._fxaOverrideEndpoints, this._fxaOverrideEndpointsPreset);
+        method, u, body, fxaEndpoints.generateEndpoints({
+          GUARDIAN_URL:
+            'https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net'
+        }),
+        this._fxaOverrideEndpoints, this._fxaOverrideEndpointsPreset);
     } else if (
-        url == 'https://archive.mozilla.org/pub/vpn/speedtest/50m.data') {
+      url == 'https://archive.mozilla.org/pub/vpn/speedtest/50m.data') {
       // 50mb of data is too much to be handled in the browser.
       setTimeout(
-          () => Module.mvpnNetworkResponse(id, JSON.stringify({
-            status: 200,
-            body: btoa(String.fromCharCode.apply(null, new Uint8Array(1024)))
-          })),
-          15000);
+        () => module.mvpnNetworkResponse(id, JSON.stringify({
+          status: 200,
+          body: btoa(String.fromCharCode.apply(null, new Uint8Array(1024)))
+        })),
+        15000);
       return;
     }
 
     if (!obj) {
       fetch(url)
-          .then(async resp => Module.mvpnNetworkResponse(id, JSON.stringify({
-            status: resp.status,
-            body: btoa(String.fromCharCode.apply(
-                null, new Uint8Array(await resp.arrayBuffer())))
-          })))
-          .catch(() => {
-            console.error('Unable to fetch content for URL', url);
-            Module.mvpnNetworkResponse(
-                id, JSON.stringify({status: 0, body: ''}));
-          });
+        .then(async resp => module.mvpnNetworkResponse(id, JSON.stringify({
+          status: resp.status,
+          body: btoa(String.fromCharCode.apply(
+            null, new Uint8Array(await resp.arrayBuffer())))
+        })))
+        .catch(() => {
+          console.error('Unable to fetch content for URL', url);
+          module.mvpnNetworkResponse(
+            id, JSON.stringify({ status: 0, body: '' }));
+        });
       return;
     }
 
@@ -104,20 +104,20 @@ class MVPNWasm {
       } catch (e) {
         finalBody = body;
       }
-      obj.callback({body: finalBody}, obj);
+      obj.callback({ body: finalBody }, obj);
     }
 
     setTimeout(() => {
-      Module.mvpnNetworkResponse(
-          id,
-          JSON.stringify(
-              {status: obj.status, body: btoa(JSON.stringify(obj.body))}));
+      module.mvpnNetworkResponse(
+        id,
+        JSON.stringify(
+          { status: obj.status, body: btoa(JSON.stringify(obj.body)) }));
     }, 200);
   }
 
   _findResponse(
-      method, url, body, endpoints, overrideEndpoints,
-      overrideEndpointsPreset) {
+    method, url, body, endpoints, overrideEndpoints,
+    overrideEndpointsPreset) {
     let obj = this._findResponseEndpoints(method, url, overrideEndpointsPreset);
     if (obj) return obj;
 
@@ -153,8 +153,8 @@ class MVPNWasm {
     }
 
     const key = Object.keys(endpoints).find(
-        key => endpoints[key].match === 'startWith' &&
-            url.pathname.startsWith(key));
+      key => endpoints[key].match === 'startWith' &&
+        url.pathname.startsWith(key));
 
     if (key) {
       return endpoints[key];

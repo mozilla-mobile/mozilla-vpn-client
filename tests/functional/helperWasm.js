@@ -4,7 +4,7 @@
 
 const assert = require('assert');
 const websocket = require('websocket').w3cwebsocket;
-const {URL} = require('node:url');
+const { URL } = require('node:url');
 const http = require('http')
 
 let driver;
@@ -39,7 +39,7 @@ module.exports = {
     driver = options.driver;
 
     await driver.setContext('content');
-    const handle = await waitForURL(driver, options.url);
+    await waitForURL(driver, options.url);
 
     const objs = await driver.executeScript('return flushMessages()')
     if (!Array.isArray(objs) || objs.length === 0) return false;
@@ -60,7 +60,6 @@ module.exports = {
   },
 
   async send(msg) {
-    await driver.executeScript(`Module.inspectorCommand("${
-        msg.replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0')}")`);
+    await driver.executeScript(`module.inspectorCommand("${msg.replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0')}")`);
   },
 }

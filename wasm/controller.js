@@ -17,26 +17,26 @@ class Controller {
   async query(id) {
     const json = await this._writeCommand(`query ${encodeURIComponent(id)}`);
     assert(
-        json.type === 'query' && !('error' in json),
-        `Command failed: ${json.error}`);
+      json.type === 'query' && !('error' in json),
+      `Command failed: ${json.error}`);
     return json.value || false;
   }
 
   async getVPNProperty(id, property) {
     const json = await this._writeCommand(
-        `property ${encodeURIComponent(id)} ${encodeURIComponent(property)}`);
+      `property ${encodeURIComponent(id)} ${encodeURIComponent(property)}`);
     assert(
-        json.type === 'property' && !('error' in json),
-        `Command failed: ${json.error}`);
+      json.type === 'property' && !('error' in json),
+      `Command failed: ${json.error}`);
     return json.value || '';
   }
 
   async setSetting(key, value) {
     const json = await this._writeCommand(
-        `set_setting ${encodeURIComponent(key)} ${encodeURIComponent(value)}`);
+      `set_setting ${encodeURIComponent(key)} ${encodeURIComponent(value)}`);
     assert(
-        json.type === 'set_setting' && !('error' in json),
-        `Command failed: ${json.error}`);
+      json.type === 'set_setting' && !('error' in json),
+      `Command failed: ${json.error}`);
   }
 
   async waitForQuery(id) {
@@ -53,8 +53,7 @@ class Controller {
       });
     } catch (e) {
       const real = await this.getVPNProperty(id, property);
-      throw new Error(`Timeout for waitForVPNProperty - property: ${
-          property} - value: ${real} - expected: ${value}`);
+      throw new Error(`Timeout for waitForVPNProperty - property: ${property} - value: ${real} - expected: ${value}`);
     }
   }
 
@@ -67,8 +66,8 @@ class Controller {
     assert(await this.query(query), 'Clicking on an non-existing element?!?');
     const json = await this._writeCommand(`click ${encodeURIComponent(query)}`);
     assert(
-        json.type === 'click' && !('error' in json),
-        `Command failed: ${json.error}`);
+      json.type === 'click' && !('error' in json),
+      `Command failed: ${json.error}`);
   }
 
   async waitForInitialView() {
@@ -80,52 +79,52 @@ class Controller {
   async hardReset() {
     const json = await this._writeCommand('hard_reset');
     assert(
-        json.type === 'hard_reset' && !('error' in json),
-        `Command failed: ${json.error}`);
+      json.type === 'hard_reset' && !('error' in json),
+      `Command failed: ${json.error}`);
   }
 
   async reset() {
     const json = await this._writeCommand('reset');
     assert(
-        json.type === 'reset' && !('error' in json),
-        `Command failed: ${json.error}`);
+      json.type === 'reset' && !('error' in json),
+      `Command failed: ${json.error}`);
   }
 
   async flipFeatureOff(key) {
     const json =
-        await this._writeCommand(`flip_off_feature ${encodeURIComponent(key)}`);
+      await this._writeCommand(`flip_off_feature ${encodeURIComponent(key)}`);
     assert(
-        json.type === 'flip_off_feature' && !('error' in json),
-        `Command failed: ${json.error}`);
+      json.type === 'flip_off_feature' && !('error' in json),
+      `Command failed: ${json.error}`);
   }
 
   async flipFeatureOn(key) {
     const json =
-        await this._writeCommand(`flip_on_feature ${encodeURIComponent(key)}`);
+      await this._writeCommand(`flip_on_feature ${encodeURIComponent(key)}`);
     assert(
-        json.type === 'flip_on_feature' && !('error' in json),
-        `Command failed: ${json.error}`);
+      json.type === 'flip_on_feature' && !('error' in json),
+      `Command failed: ${json.error}`);
   }
 
   async forceUpdateCheck(version) {
     const json = await this._writeCommand(
-        `force_update_check ${encodeURIComponent(version)}`);
+      `force_update_check ${encodeURIComponent(version)}`);
     assert(
-        json.type === 'force_update_check' && !('error' in json),
-        `Command failed: ${json.error}`);
+      json.type === 'force_update_check' && !('error' in json),
+      `Command failed: ${json.error}`);
   }
 
   async backButtonClicked() {
     const json = await this._writeCommand('back_button_clicked');
     assert(
-        json.type === 'back_button_clicked' && !('error' in json),
-        `Command failed: ${json.error}`);
+      json.type === 'back_button_clicked' && !('error' in json),
+      `Command failed: ${json.error}`);
   }
 
   _writeCommand(cmd) {
     return new Promise(resolve => {
       this._waitReadCallback = resolve;
-      Module.inspectorCommand(cmd);
+      module.inspectorCommand(cmd);
     });
   }
 
@@ -150,8 +149,8 @@ class Controller {
   async _initialize() {
     const json = await this._writeCommand(`languages`);
     assert(
-        json.type === 'languages' && !('error' in json),
-        `Command failed: ${json.error}`);
+      json.type === 'languages' && !('error' in json),
+      `Command failed: ${json.error}`);
     mvpnWasm.updateLanguages(json.value);
   }
 };
