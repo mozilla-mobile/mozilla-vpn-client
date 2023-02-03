@@ -686,14 +686,6 @@ describe('Settings', function () {
     await vpn.clickOnQuery(
         queries.screenSettings.appPreferencesView.NOTIFICATIONS.visible());
 
-    // Check the warning message
-    assert(
-        await vpn.getQueryProperty(
-            queries.screenSettings.appPreferencesView.notificationView
-                .INFORMATION_CARD,
-            'visible') === 'false');
-
-
     await checkSetting(
         queries.screenSettings.appPreferencesView.notificationView
             .CAPTIVE_PORTAL_ALERT,

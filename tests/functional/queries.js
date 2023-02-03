@@ -309,8 +309,6 @@ const screenSettings = {
     notificationView: {
       CAPTIVE_PORTAL_ALERT: new QmlQueryComposer('//settingCaptivePortalAlert'),
       CONNECTION_CHANGE_ALERT: new QmlQueryComposer('//connectionChangeAlert'),
-      INFORMATION_CARD:
-          new QmlQueryComposer('//settingsNotificationsInformationCard'),
       SERVER_UNAVAILABLE_ALERT:
           new QmlQueryComposer('//serverUnavailableNotification'),
       SWITCH_SERVER_ALERT: new QmlQueryComposer('//switchServersAlert'),
