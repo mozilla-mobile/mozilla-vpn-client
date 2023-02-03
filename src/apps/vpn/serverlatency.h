@@ -5,6 +5,7 @@
 #ifndef SERVERLATENCY_H
 #define SERVERLATENCY_H
 
+#include <QDateTime>
 #include <QObject>
 #include <QTimer>
 
@@ -15,13 +16,19 @@ class ServerLatency final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(ServerLatency)
 
+  Q_PROPERTY(QDateTime lastUpdateTime READ lastUpdateTime CONSTANT)
+
  public:
   ServerLatency();
   ~ServerLatency();
 
+  const QDateTime& lastUpdateTime() const { return m_lastUpdateTime; }
+
   void initialize();
   void start();
   void stop();
+
+  Q_INVOKABLE void refresh();
 
  private:
   void maybeSendPings();
@@ -39,6 +46,7 @@ class ServerLatency final : public QObject {
   QList<ServerPingRecord> m_pingSendQueue;
   QList<ServerPingRecord> m_pingReplyList;
 
+  QDateTime m_lastUpdateTime;
   QTimer m_pingTimeout;
   QTimer m_refreshTimer;
   bool m_wantRefresh = false;

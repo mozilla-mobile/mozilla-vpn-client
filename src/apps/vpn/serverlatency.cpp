@@ -74,6 +74,7 @@ void ServerLatency::start() {
   m_sequence = 0;
   m_wantRefresh = false;
   m_pingSender = PingSenderFactory::create(QHostAddress(), this);
+  m_lastUpdateTime = QDateTime::currentDateTime();
 
   connect(m_pingSender, SIGNAL(recvPing(quint16)), this,
           SLOT(recvPing(quint16)), Qt::QueuedConnection);
@@ -187,6 +188,15 @@ void ServerLatency::stop() {
   if (!m_refreshTimer.isActive()) {
     m_refreshTimer.start(SERVER_LATENCY_REFRESH_MSEC);
   }
+}
+
+void ServerLatency::refresh() {
+  if (m_pingSender) {
+    return;
+  }
+
+  MozillaVPN::instance()->serverCountryModel()->clearServerLatency();
+  start();
 }
 
 void ServerLatency::stateChanged() {

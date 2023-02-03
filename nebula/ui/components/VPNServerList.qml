@@ -137,7 +137,7 @@ FocusScope {
                     rowShouldBeDisabled: !(VPNController.state === VPNController.StateOff)
 
                     onClicked: {
-                        console.log("TODO: Request server data refresh");
+                        VPNServerLatency.refresh();
                     }
 
                     RowLayout {
@@ -168,7 +168,7 @@ FocusScope {
                             // TODO: Replace placeholder strings and generate
                             // values that will be set instead of `%1`
                             text: !statusComponent.rowShouldBeDisabled
-                                ? "Last updated %1 ago."
+                                ? "Last updated %1 ago.".arg(VPNServerLatency.lastUpdateTime)
                                 : "Last updated %1 ago. To update this list please first disconnect from the VPN."
                             wrapMode: Text.WordWrap
                         }
