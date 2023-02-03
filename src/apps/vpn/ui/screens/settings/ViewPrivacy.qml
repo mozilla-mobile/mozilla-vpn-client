@@ -25,27 +25,27 @@ VPNViewBase {
     _viewContentData: ColumnLayout {
         spacing: VPNTheme.theme.windowMargin * 1.5
 
-        Loader {
-            objectName: "privacySettingsViewInformationCardLoader"
+        InformationCard {
+            objectName: "privacySettingsViewInformationCard"
+            Layout.preferredWidth: Math.min(window.width - VPNTheme.theme.windowMargin * 2, VPNTheme.theme.navBarMaxWidth)
+            Layout.minimumHeight: textBlocks.height + VPNTheme.theme.windowMargin * 2
             Layout.alignment: Qt.AlignHCenter
 
-            sourceComponent: InformationCard {
-                objectName: "privacySettingsViewInformationCard"
-                height: textBlocks.height + VPNTheme.theme.windowMargin * 2
-                _infoContent: ColumnLayout {
-                    id: textBlocks
-                    VPNTextBlock {
-                        Layout.fillWidth: true
-                        width: undefined
-                        text: VPNl18n.SettingsDnsSettingsWarning
-                        Accessible.role: Accessible.StaticText
-                        Accessible.name: text
-                    }
-                    VPNTextBlock {
-                        Layout.fillWidth: true
-                        width: undefined
+            _infoContent: ColumnLayout {
+                id: textBlocks
+                VPNTextBlock {
+                    Layout.fillWidth: true
+                    width: undefined
+                    text: VPNl18n.SettingsDnsSettingsWarning
+                    Accessible.role: Accessible.StaticText
+                    Accessible.name: text
+                }
+                Loader {
+                    active: Qt.platform.os === "ios" && VPNController.state !== VPNController.StateOff
+                    Layout.fillWidth: true
+                    sourceComponent: VPNTextBlock {
+                        width: parent.width
                         text: VPNl18n.SettingsIOSDisconnectWarning
-                        visible: Qt.platform.os === "ios" && VPNController.state !== VPNController.StateOff
                         Accessible.role: Accessible.StaticText
                         Accessible.name: text
                     }

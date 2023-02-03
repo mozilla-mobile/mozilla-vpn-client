@@ -40,6 +40,7 @@ VPNViewBase {
             sourceComponent: InformationCard {
                 objectName: "DNSSettingsViewInformationCard"
                 height: textBlocks.height + VPNTheme.theme.windowMargin * 2
+                width: Math.min(window.width - VPNTheme.theme.windowMargin * 2, VPNTheme.theme.navBarMaxWidth)
                 _infoContent: ColumnLayout {
                     id: textBlocks
                     VPNTextBlock {

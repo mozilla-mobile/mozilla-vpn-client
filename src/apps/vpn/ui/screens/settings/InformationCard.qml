@@ -19,7 +19,6 @@ Rectangle {
 
     color: VPNTheme.theme.white
     radius: 4
-    width: Math.min(window.width - VPNTheme.theme.windowMargin * 2, VPNTheme.theme.navBarMaxWidth)
 
     VPNDropShadow {
         anchors.fill: dropShadowSource
