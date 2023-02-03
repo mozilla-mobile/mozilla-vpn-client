@@ -233,6 +233,10 @@ ServerCountryModel* MozillaVPN::serverCountryModel() {
   return &m_private->m_serverCountryModel;
 }
 
+ServerLatency* MozillaVPN::serverLatency() const {
+  return &m_private->m_serverLatency;
+}
+
 SubscriptionData* MozillaVPN::subscriptionData() {
   return &m_private->m_subscriptionData;
 }

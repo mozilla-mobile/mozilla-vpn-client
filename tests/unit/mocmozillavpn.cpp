@@ -47,6 +47,11 @@ ServerCountryModel* MozillaVPN::serverCountryModel() {
   return new ServerCountryModel();
 }
 
+ServerLatency* MozillaVPN::serverLatency() const {
+  static ServerLatency* sl = new ServerLatency();
+  return sl;
+}
+
 SubscriptionData* MozillaVPN::subscriptionData() {
   return new SubscriptionData();
 }

@@ -174,7 +174,7 @@ class MozillaVPN final : public QObject {
   ProfileFlow* profileFlow() { return &m_private->m_profileFlow; }
   ReleaseMonitor* releaseMonitor() { return &m_private->m_releaseMonitor; }
   ServerCountryModel* serverCountryModel();
-  ServerLatency* serverLatency() const { return &m_private->m_serverLatency; }
+  ServerLatency* serverLatency() const;
   StatusIcon* statusIcon() { return &m_private->m_statusIcon; }
   SubscriptionData* subscriptionData();
   Telemetry* telemetry() { return &m_private->m_telemetry; }
