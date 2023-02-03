@@ -29,27 +29,25 @@ VPNViewBase {
     }
 
     _viewContentData: ColumnLayout {
-        spacing: VPNTheme.theme.windowMargin * 2
-        Layout.fillWidth: true
+        spacing: VPNTheme.theme.windowMargin * 1.5
         Layout.leftMargin: VPNTheme.theme.windowMargin
         Layout.rightMargin: VPNTheme.theme.windowMargin
-        Layout.topMargin: VPNTheme.theme.windowMargin / 2
 
-        InformationCard {
-            objectName: "viewDnsInformationCard"
-            Layout.topMargin: VPNTheme.theme.windowMargin
-            Layout.leftMargin: VPNTheme.theme.windowMargin
-            Layout.rightMargin: VPNTheme.theme.windowMargin
-            Layout.fillWidth: true
-            Layout.minimumHeight: textBlocks.implicitHeight
-            visible: Qt.platform.os === "ios" && VPNController.state !== VPNController.StateOff
-
-            _infoContent: ColumnLayout {
-                id: textBlocks
-                VPNTextBlock {
-                    Layout.fillWidth: true
-                    width: undefined
-                    text: VPNl18n.SettingsIOSDisconnectWarning
+        Loader {
+            objectName: "DNSSettingsViewInformationCardLoader"
+            active: Qt.platform.os === "ios" && VPNController.state !== VPNController.StateOff
+            Layout.alignment: Qt.AlignHCenter
+            sourceComponent: InformationCard {
+                objectName: "DNSSettingsViewInformationCard"
+                height: textBlocks.height + VPNTheme.theme.windowMargin * 2
+                _infoContent: ColumnLayout {
+                    id: textBlocks
+                    VPNTextBlock {
+                        Layout.fillWidth: true
+                        text: VPNl18n.SettingsIOSDisconnectWarning
+                        Accessible.role: Accessible.StaticText
+                        Accessible.name: text
+                    }
                 }
             }
         }
@@ -60,6 +58,7 @@ VPNViewBase {
 
         RowLayout {
             spacing: VPNTheme.theme.windowMargin
+            Layout.rightMargin: VPNTheme.theme.windowMargin / 2
 
             VPNRadioButton {
                 objectName: "dnsStandard"
@@ -103,6 +102,7 @@ VPNViewBase {
 
         RowLayout {
             Layout.fillWidth: true
+//            Layout.rightMargin: VPNTheme.theme.windowMargin / 2
             spacing: VPNTheme.theme.windowMargin
 
             VPNRadioButton {
@@ -157,6 +157,7 @@ VPNViewBase {
                     _placeholderText: VPNl18n.SettingsDnsSettingsInputPlaceholder
                     text: ""
                     Layout.fillWidth: true
+                    Layout.maximumWidth: VPNTheme.theme.maxTextWidth
                     Layout.topMargin: 12
                     inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhFormattedNumbersOnly
 

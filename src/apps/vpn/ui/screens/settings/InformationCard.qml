@@ -13,12 +13,17 @@ import components 0.1
 import org.mozilla.Glean 0.30
 import telemetry 0.30
 
-Item {
+Rectangle {
     property alias _infoContent: infoContent.data
+    id: card
+
+    color: VPNTheme.theme.white
+    radius: 4
+    width: Math.min(window.width - VPNTheme.theme.windowMargin * 2, VPNTheme.theme.navBarMaxWidth)
 
     VPNDropShadow {
-        anchors.fill: bg
-        source: bg
+        anchors.fill: dropShadowSource
+        source: dropShadowSource
 
         horizontalOffset: 1
         verticalOffset: 1
@@ -30,21 +35,24 @@ Item {
     }
 
     Rectangle {
-        id: bg
-        anchors.fill: info
-        anchors.topMargin: -VPNTheme.theme.windowMargin
-        anchors.bottomMargin: anchors.topMargin
-        anchors.leftMargin: -VPNTheme.theme.windowMargin
-        anchors.rightMargin: anchors.leftMargin
+        id: dropShadowSource
+        anchors.fill: card
+
         color: VPNTheme.theme.white
-        radius: 4
+        radius: card.radius
     }
 
     RowLayout {
         id: info
         spacing: VPNTheme.theme.windowMargin * 0.75
-        anchors.left: parent.left
-        anchors.right: parent.right
+
+        anchors {
+            left: parent.left
+            right: parent.right
+            leftMargin: VPNTheme.theme.windowMargin
+            rightMargin: VPNTheme.theme.windowMargin
+            verticalCenter: parent.verticalCenter
+        }
 
         VPNIcon {
             source: "qrc:/nebula/resources/info.svg"
@@ -57,3 +65,4 @@ Item {
         }
     }
 }
+

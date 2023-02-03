@@ -241,7 +241,8 @@ const screenSettings = {
     BLOCK_MALWARE: new QmlQueryComposer('//blockMalware'),
     BLOCK_MALWARE_CHECKBOX: new QmlQueryComposer('//blockMalware//checkbox'),
 
-    INFORMATION_CARD: new QmlQueryComposer('//viewPrivacyInformationCard'),
+    INFORMATION_CARD:
+        new QmlQueryComposer('//privacySettingsViewInformationCardLoader'),
 
     MODAL_CLOSE_BUTTON:
         new QmlQueryComposer('//privacyOverwritePopupPopupCloseButton'),
@@ -280,7 +281,8 @@ const screenSettings = {
       CUSTOM_DNS: new QmlQueryComposer('//dnsCustom'),
       CUSTOM_DNS_INPUT: new QmlQueryComposer('//dnsCustomInput'),
 
-      INFORMATION_CARD: new QmlQueryComposer('//viewDnsInformationCard'),
+      INFORMATION_CARD:
+          new QmlQueryComposer('//DNSSettingsViewInformationCard'),
 
       MODAL_CLOSE_BUTTON:
           new QmlQueryComposer('//dnsOverwritePopupPopupCloseButton'),
@@ -308,7 +310,7 @@ const screenSettings = {
       CAPTIVE_PORTAL_ALERT: new QmlQueryComposer('//settingCaptivePortalAlert'),
       CONNECTION_CHANGE_ALERT: new QmlQueryComposer('//connectionChangeAlert'),
       INFORMATION_CARD:
-          new QmlQueryComposer('//viewNotificationsInformationCard'),
+          new QmlQueryComposer('//settingsNotificationsInformationCard'),
       SERVER_UNAVAILABLE_ALERT:
           new QmlQueryComposer('//serverUnavailableNotification'),
       SWITCH_SERVER_ALERT: new QmlQueryComposer('//switchServersAlert'),

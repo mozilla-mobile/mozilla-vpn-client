@@ -23,30 +23,32 @@ VPNViewBase {
     _interactive: false
 
     _viewContentData: ColumnLayout {
-        id: tabs
-        spacing: VPNTheme.theme.windowMargin * 2
-        Layout.fillWidth: true
+        spacing: VPNTheme.theme.windowMargin * 1.5
 
-        InformationCard {
-            objectName: "viewPrivacyWarning"
-            Layout.topMargin: VPNTheme.theme.windowMargin
-            Layout.leftMargin: VPNTheme.theme.windowMargin * 2
-            Layout.rightMargin: VPNTheme.theme.windowMargin * 2
-            Layout.fillWidth: true
-            Layout.minimumHeight: textBlocks.implicitHeight
-            _infoContent: ColumnLayout {
-                id: textBlocks
-                VPNTextBlock {
-                    Layout.fillWidth: true
-                    width: undefined
-                    text: VPNl18n.SettingsDnsSettingsWarning
-                }
-                VPNTextBlock {
-                    objectName: "viewPrivacyInformationCard"
-                    Layout.fillWidth: true
-                    width: undefined
-                    text: VPNl18n.SettingsIOSDisconnectWarning
-                    visible: Qt.platform.os === "ios" && VPNController.state !== VPNController.StateOff
+        Loader {
+            objectName: "privacySettingsViewInformationCardLoader"
+            Layout.alignment: Qt.AlignHCenter
+
+            sourceComponent: InformationCard {
+                objectName: "privacySettingsViewInformationCard"
+                height: textBlocks.height + VPNTheme.theme.windowMargin * 2
+                _infoContent: ColumnLayout {
+                    id: textBlocks
+                    VPNTextBlock {
+                        Layout.fillWidth: true
+                        width: undefined
+                        text: VPNl18n.SettingsDnsSettingsWarning
+                        Accessible.role: Accessible.StaticText
+                        Accessible.name: text
+                    }
+                    VPNTextBlock {
+                        Layout.fillWidth: true
+                        width: undefined
+                        text: VPNl18n.SettingsIOSDisconnectWarning
+                        visible: Qt.platform.os === "ios" && VPNController.state !== VPNController.StateOff
+                        Accessible.role: Accessible.StaticText
+                        Accessible.name: text
+                    }
                 }
             }
         }

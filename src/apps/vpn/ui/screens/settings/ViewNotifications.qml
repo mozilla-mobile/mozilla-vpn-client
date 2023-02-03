@@ -19,25 +19,23 @@ VPNViewBase {
     _menuTitle: qsTrId("vpn.settings.notifications")
 
     _viewContentData: ColumnLayout {
-        Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin
-        Layout.rightMargin: VPNTheme.theme.windowMargin
-        spacing: VPNTheme.theme.windowMargin
+        spacing: VPNTheme.theme.windowMargin * 1.5
 
-        InformationCard {
-            objectName: "viewNotificationsInformationCard"
-            Layout.topMargin: VPNTheme.theme.windowMargin
-            Layout.leftMargin: VPNTheme.theme.windowMargin * 2
-            Layout.rightMargin: VPNTheme.theme.windowMargin
-            Layout.fillWidth: true
-            Layout.bottomMargin: VPNTheme.theme.windowMargin * 2
-            Layout.minimumHeight: textBlocks.height
-            visible: Qt.platform.os === "ios" && VPNController.state !== VPNController.StateOff
-
-            _infoContent: ColumnLayout {
-                id: textBlocks
-                VPNTextBlock {
-                    Layout.fillWidth: true
-                    text: VPNl18n.SettingsIOSDisconnectWarning
+        Loader {
+            objectName: "settingsNotificationsInformationCardLoader"
+            active: Qt.platform.os === "ios" && VPNController.state !== VPNController.StateOff
+            Layout.alignment: Qt.AlignHCenter
+            sourceComponent: InformationCard {
+                objectName: "settingsNotificationsInformationCard"
+                height: textBlocks.height + VPNTheme.theme.windowMargin * 2
+                _infoContent: ColumnLayout {
+                    id: textBlocks
+                    VPNTextBlock {
+                        Layout.fillWidth: true
+                        text: VPNl18n.SettingsIOSDisconnectWarning
+                        Accessible.role: Accessible.StaticText
+                        Accessible.name: text
+                    }
                 }
             }
         }
@@ -55,6 +53,7 @@ VPNViewBase {
             onClicked: {
                 VPNSettings.captivePortalAlert = !VPNSettings.captivePortalAlert
             }
+            Layout.rightMargin: VPNTheme.theme.windowMargin
         }
 
         VPNCheckBoxRow {
@@ -71,6 +70,7 @@ VPNViewBase {
             onClicked: {
                 VPNSettings.unsecuredNetworkAlert = !VPNSettings.unsecuredNetworkAlert
             }
+            Layout.rightMargin: VPNTheme.theme.windowMargin
         }
 
         VPNCheckBoxRow {
@@ -86,6 +86,7 @@ VPNViewBase {
             onClicked: {
                 VPNSettings.serverSwitchNotification = !VPNSettings.serverSwitchNotification
             }
+            Layout.rightMargin: VPNTheme.theme.windowMargin
         }
 
         VPNCheckBoxRow {
@@ -102,6 +103,7 @@ VPNViewBase {
             onClicked: {
                 VPNSettings.connectionChangeNotification = !VPNSettings.connectionChangeNotification
             }
+            Layout.rightMargin: VPNTheme.theme.windowMargin
         }
 
         VPNCheckBoxRow {
@@ -115,6 +117,7 @@ VPNViewBase {
             onClicked: {
                 VPNSettings.serverUnavailableNotification = !VPNSettings.serverUnavailableNotification
             }
+            Layout.rightMargin: VPNTheme.theme.windowMargin
         }
     }
     Component.onCompleted: {
