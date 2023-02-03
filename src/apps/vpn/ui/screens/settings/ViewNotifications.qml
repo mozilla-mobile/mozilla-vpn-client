@@ -21,25 +21,6 @@ VPNViewBase {
     _viewContentData: ColumnLayout {
         spacing: VPNTheme.theme.windowMargin * 1.5
 
-        Loader {
-            objectName: "settingsNotificationsInformationCardLoader"
-            active: Qt.platform.os === "ios" && VPNController.state !== VPNController.StateOff
-            Layout.alignment: Qt.AlignHCenter
-            sourceComponent: InformationCard {
-                objectName: "settingsNotificationsInformationCard"
-                height: textBlocks.height + VPNTheme.theme.windowMargin * 2
-                _infoContent: ColumnLayout {
-                    id: textBlocks
-                    VPNTextBlock {
-                        Layout.fillWidth: true
-                        text: VPNl18n.SettingsIOSDisconnectWarning
-                        Accessible.role: Accessible.StaticText
-                        Accessible.name: text
-                    }
-                }
-            }
-        }
-
         VPNCheckBoxRow {
             id: captivePortalAlert
             objectName: "settingCaptivePortalAlert"
