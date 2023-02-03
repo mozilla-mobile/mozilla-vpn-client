@@ -102,7 +102,6 @@ VPNViewBase {
 
         RowLayout {
             Layout.fillWidth: true
-//            Layout.rightMargin: VPNTheme.theme.windowMargin / 2
             spacing: VPNTheme.theme.windowMargin
 
             VPNRadioButton {
