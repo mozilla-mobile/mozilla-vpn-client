@@ -68,8 +68,6 @@ bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
   m_countries.clear();
   m_cities.clear();
   m_servers.clear();
-  m_sumLatencyMsec = 0;
-  m_numLatencySamples = 0;
 
   QJsonDocument doc = QJsonDocument::fromJson(s);
   if (!doc.isObject()) {
@@ -245,13 +243,6 @@ void ServerCountryModel::retranslate() {
   endResetModel();
 }
 
-unsigned int ServerCountryModel::avgLatency() const {
-  if (m_numLatencySamples == 0) {
-    return 0;
-  }
-  return (m_sumLatencyMsec + m_numLatencySamples - 1) / m_numLatencySamples;
-}
-
 void ServerCountryModel::setServerLatency(const QString& publicKey,
                                           unsigned int msec) {
   if (!m_servers.contains(publicKey)) {
@@ -259,12 +250,6 @@ void ServerCountryModel::setServerLatency(const QString& publicKey,
   }
 
   Server& server = m_servers[publicKey];
-  if (server.latency() != 0) {
-    m_sumLatencyMsec -= server.latency();
-  } else {
-    m_numLatencySamples++;
-  }
-  m_sumLatencyMsec += msec;
   server.setLatency(msec);
 
   auto iter = m_cities.find(
@@ -276,8 +261,6 @@ void ServerCountryModel::setServerLatency(const QString& publicKey,
 
 void ServerCountryModel::clearServerLatency() {
   // Invalidate the latency data.
-  m_sumLatencyMsec = 0;
-  m_numLatencySamples = 0;
   for (Server& server : m_servers) {
     server.setLatency(0);
   }
@@ -325,7 +308,7 @@ void ServerCountryModel::setCooldownForAllServersInACity(
 
 QList<QVariant> ServerCountryModel::recommendedLocations(
     unsigned int maxResults) const {
-  double latencyScale = avgLatency();
+  double latencyScale = MozillaVPN::instance()->serverLatency()->avgLatency();
   if (latencyScale < 100.0) {
     latencyScale = 100.0;
   }

@@ -74,6 +74,7 @@ void ServerLatency::start() {
   m_sequence = 0;
   m_wantRefresh = false;
   m_pingSender = PingSenderFactory::create(QHostAddress(), this);
+
   m_lastUpdateTime = QDateTime::currentDateTime();
 
   connect(m_pingSender, SIGNAL(recvPing(quint16)), this,
@@ -196,6 +197,9 @@ void ServerLatency::refresh() {
   }
 
   MozillaVPN::instance()->serverCountryModel()->clearServerLatency();
+
+  m_sumLatencyMsec = 0;
+  m_latency.clear();
   start();
 }
 
@@ -223,6 +227,9 @@ void ServerLatency::recvPing(quint16 sequence) {
 
     qint64 latency(now - record.timestamp);
     if (latency <= std::numeric_limits<uint>::max()) {
+      m_sumLatencyMsec -= m_latency[record.publicKey];
+      m_sumLatencyMsec += latency;
+      m_latency[record.publicKey] = latency;
       scm->setServerLatency(record.publicKey, static_cast<uint>(latency));
     }
 
@@ -234,4 +241,11 @@ void ServerLatency::recvPing(quint16 sequence) {
 
 void ServerLatency::criticalPingError() {
   logger.info() << "Encountered Unrecoverable ping error";
+}
+
+unsigned int ServerLatency::avgLatency() const {
+  if (m_latency.isEmpty()) {
+    return 0;
+  }
+  return (m_sumLatencyMsec + m_latency.count() - 1) / m_latency.count();
 }

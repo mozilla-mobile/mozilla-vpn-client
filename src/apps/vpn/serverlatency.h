@@ -17,11 +17,16 @@ class ServerLatency final : public QObject {
   Q_DISABLE_COPY_MOVE(ServerLatency)
 
   Q_PROPERTY(QDateTime lastUpdateTime READ lastUpdateTime CONSTANT)
+  Q_PROPERTY(unsigned int avgLatency READ avgLatency CONSTANT)
 
  public:
   ServerLatency();
   ~ServerLatency();
 
+  unsigned int avgLatency() const;
+  unsigned int getLatency(const QString& pubkey) const {
+    return m_latency.value(pubkey);
+  };
   const QDateTime& lastUpdateTime() const { return m_lastUpdateTime; }
 
   void initialize();
@@ -46,7 +51,10 @@ class ServerLatency final : public QObject {
   QList<ServerPingRecord> m_pingSendQueue;
   QList<ServerPingRecord> m_pingReplyList;
 
+  QHash<QString, qint64> m_latency;
+  qint64 m_sumLatencyMsec = 0;
   QDateTime m_lastUpdateTime;
+
   QTimer m_pingTimeout;
   QTimer m_refreshTimer;
   bool m_wantRefresh = false;

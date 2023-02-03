@@ -109,6 +109,7 @@ const QString ServerCity::localizedName() const {
 
 int ServerCity::connectionScore() const {
   ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
+  ServerLatency* sl = MozillaVPN::instance()->serverLatency();
   qint64 now = QDateTime::currentSecsSinceEpoch();
   int score = Poor;
   int activeServerCount = 0;
@@ -134,7 +135,7 @@ int ServerCity::connectionScore() const {
 
   // Increase the score if the location has better than average latency.
   uint32_t cityLatencyMsec = sumLatencyMsec / activeServerCount;
-  if (cityLatencyMsec < scm->avgLatency()) {
+  if (cityLatencyMsec < sl->avgLatency()) {
     score++;
     // Give the location another point if the latency is *very* fast.
     if (cityLatencyMsec < SCORE_EXCELLENT_LATENCY_THRESHOLD) {
