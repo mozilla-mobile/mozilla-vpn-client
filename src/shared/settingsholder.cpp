@@ -10,7 +10,10 @@
 #include <QStandardPaths>
 
 #include "appconstants.h"
-#include "cryptosettings.h"
+#ifndef MZ_WASM
+#  include "cryptosettings.h"
+#endif
+
 #include "env.h"
 #include "feature.h"
 #include "leakdetector.h"
@@ -22,8 +25,12 @@ Logger logger("SettingsHolder");
 
 SettingsHolder* s_instance = nullptr;
 
+#ifndef MZ_WASM
 const QSettings::Format MozFormat = QSettings::registerFormat(
     "moz", CryptoSettings::readFile, CryptoSettings::writeFile);
+#else
+const QSettings::Format MozFormat = QSettings::NativeFormat;
+#endif
 
 }  // namespace
 
