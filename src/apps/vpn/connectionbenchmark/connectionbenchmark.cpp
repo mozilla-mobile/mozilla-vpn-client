@@ -77,9 +77,6 @@ void ConnectionBenchmark::setState(State state) {
 
 void ConnectionBenchmark::start() {
   logger.debug() << "Start connection benchmarking";
-  
-  emit GleanDeprecated::instance()->recordGleanEvent(GleanSample::speedTestStarted);
-  mozilla::glean::sample::speed_test_started.record();
 
   Q_ASSERT(m_state != StateRunning);
 

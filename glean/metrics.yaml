@@ -1638,23 +1638,6 @@ sample:
         description: The language code chosen.
         type: string
 
-  speed_test_started:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      Speed test was started.
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-3630
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - mcleinman@mozilla.com
-    expires: never
-
   speed_test_completed:
     type: event
     lifetime: ping

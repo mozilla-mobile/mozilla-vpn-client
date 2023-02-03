@@ -18,28 +18,7 @@ VPNIconButton {
     accessibleName: ""
 
     onClicked: {
-        switch(_screen) {
-            case VPNNavigator.ScreenMessaging:
-                VPNGleanDeprecated.recordGleanEventWithExtraKeys("bottomNavigationBarClick", {"bar_button": "ScreenMessaging"});
-                Glean.sample.bottomNavigationBarClick.record({ bar_button: "ScreenMessaging" });
-                break;
-
-            case VPNNavigator.ScreenHome:
-                VPNGleanDeprecated.recordGleanEventWithExtraKeys("bottomNavigationBarClick", {"bar_button": "ScreenHome"});
-                Glean.sample.bottomNavigationBarClick.record({ bar_button: "ScreenHome" });
-                break;
-
-            case VPNNavigator.ScreenSettings:
-                VPNGleanDeprecated.recordGleanEventWithExtraKeys("bottomNavigationBarClick", {"bar_button": "ScreenSettings"});
-                Glean.sample.bottomNavigationBarClick.record({ bar_button: "ScreenSettings" });
-                break;
-
-            default:
-                VPNGleanDeprecated.recordGleanEventWithExtraKeys("bottomNavigationBarClick", {"bar_button": "Unknown"});
-                Glean.sample.bottomNavigationBarClick.record({ bar_button: "Unknown" });
-                break;
-        }
-        VPNNavigator.requestScreen(_screen, VPNNavigator.screen === _screen ? VPNNavigator.ForceReload : VPNNavigator.NoFlags);
+        VPNNavigator.requestScreenFromBottomBar(_screen, VPNNavigator.screen === _screen ? VPNNavigator.ForceReload : VPNNavigator.NoFlags);
     }
 
     width: VPNTheme.theme.navBarIconSize

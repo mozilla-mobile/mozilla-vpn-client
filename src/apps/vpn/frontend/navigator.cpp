@@ -9,6 +9,7 @@
 
 #include "externalophandler.h"
 #include "feature.h"
+#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loglevel.h"
@@ -514,12 +515,20 @@ void Navigator::computeComponent() {
              topPriorityScreen->m_qmlComponent, ForceReloadAll);
 }
 
+void Navigator::requestScreenFromBottomBar(Navigator::Screen requestedScreen,
+                              Navigator::LoadingFlags loadingFlags) {
+  // This exists so we can add a glean metric for screen changes only from bottom bar
+  mozilla::glean::sample::bottom_navigation_bar_click.record(mozilla::glean::sample::BottomNavigationBarClickExtra{
+      ._barButton = QVariant::fromValue(requestedScreen).toString()});
+  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
+      GleanSample::bottomNavigationBarClick, {{"bar_button", QVariant::fromValue(requestedScreen).toString()}});
+
+  requestScreen(requestedScreen, loadingFlags);
+}
+
 void Navigator::requestScreen(Navigator::Screen requestedScreen,
                               Navigator::LoadingFlags loadingFlags) {
   logger.debug() << "Screen request:" << requestedScreen;
-    emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-        GleanSample::bottomNavigationBarClick,
-                                                                    {{"bar_button", requestedScreen}});
 
   if (!m_reloaders.isEmpty() && loadingFlags == NoFlags) {
     loadingFlags = ForceReload;
