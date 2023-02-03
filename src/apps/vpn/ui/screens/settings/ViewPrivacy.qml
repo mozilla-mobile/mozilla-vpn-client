@@ -27,7 +27,7 @@ VPNViewBase {
         spacing: VPNTheme.theme.windowMargin * 2
         Layout.fillWidth: true
 
-        SettingsDisconnectWarning {
+        InformationCard {
             objectName: "viewPrivacyWarning"
             Layout.topMargin: VPNTheme.theme.windowMargin
             Layout.leftMargin: VPNTheme.theme.windowMargin * 2
@@ -42,7 +42,7 @@ VPNViewBase {
                     text: VPNl18n.SettingsDnsSettingsWarning
                 }
                 VPNTextBlock {
-                    objectName: "viewPrivacyIOSWarning"
+                    objectName: "viewPrivacyInformationCard"
                     Layout.fillWidth: true
                     width: undefined
                     text: VPNl18n.SettingsIOSDisconnectWarning

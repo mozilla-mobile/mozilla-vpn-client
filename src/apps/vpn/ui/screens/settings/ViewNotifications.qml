@@ -23,8 +23,8 @@ VPNViewBase {
         Layout.rightMargin: VPNTheme.theme.windowMargin
         spacing: VPNTheme.theme.windowMargin
 
-        SettingsDisconnectWarning {
-            objectName: "viewNotificationsIOSWarning"
+        InformationCard {
+            objectName: "viewNotificationsInformationCard"
             Layout.topMargin: VPNTheme.theme.windowMargin
             Layout.leftMargin: VPNTheme.theme.windowMargin * 2
             Layout.rightMargin: VPNTheme.theme.windowMargin

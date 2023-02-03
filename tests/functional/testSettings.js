@@ -119,8 +119,8 @@ describe('Settings', function () {
 
     assert(
         await vpn.getQueryProperty(
-            queries.screenSettings.privacyView.DISCONNECTION_WARNING_IOS,
-            'visible') === 'false');
+            queries.screenSettings.privacyView.INFORMATION_CARD, 'visible') ===
+        'false');
 
     // Checking if the checkboxes are correctly set based on the settings prop
     await vpn.setSetting('dnsProviderFlags', 0);
@@ -351,7 +351,7 @@ describe('Settings', function () {
     assert(
         await vpn.getQueryProperty(
             queries.screenSettings.appPreferencesView.dnsSettingsView
-                .DISCONNECTION_WARNING_IOS,
+                .INFORMATION_CARD,
             'visible') === 'false');
 
     // Check the click
@@ -690,7 +690,7 @@ describe('Settings', function () {
     assert(
         await vpn.getQueryProperty(
             queries.screenSettings.appPreferencesView.notificationView
-                .DISCONNECTION_WARNING_IOS,
+                .INFORMATION_CARD,
             'visible') === 'false');
 
 
