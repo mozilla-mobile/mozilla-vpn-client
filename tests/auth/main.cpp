@@ -7,6 +7,7 @@
 
 #include "appconstants.h"
 #include "authenticationinapp/authenticationinapp.h"
+#include "glean/glean.h"
 #include "leakdetector.h"
 #include "loghandler.h"
 #include "settingsholder.h"
@@ -14,7 +15,6 @@
 #include "testemailvalidation.h"
 #include "testpasswordvalidation.h"
 #include "testsignupandin.h"
-#include "glean/glean.h"
 
 int main(int argc, char* argv[]) {
 #ifdef MZ_DEBUG

@@ -3,13 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "appconstants.h"
+#include "glean/glean.h"
 #include "helper.h"
 #include "l18nstrings.h"
 #include "leakdetector.h"
 #include "loghandler.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
-#include "glean/glean.h"
 
 QVector<TestHelper::NetworkConfig> TestHelper::networkConfig;
 MozillaVPN::State TestHelper::vpnState = MozillaVPN::StateInitialize;
