@@ -69,6 +69,9 @@ FocusScope {
     }
 
     function setSelectedServer(countryCode, cityName, localizedCityName) {
+        VPNGleanDeprecated.recordGleanEventWithExtraKeys("userChangedEndpointGeo", { "server": currentServer.whichHop });
+        Glean.sample.userChangedEndpointGeo.record({ server: currentServer.whichHop });
+
         if (currentServer.whichHop === "singleHopServer") {
             VPNCurrentServer.changeServer(countryCode, cityName);
             stackview.pop();

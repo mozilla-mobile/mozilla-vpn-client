@@ -1722,6 +1722,11 @@ sample:
     notification_emails:
       - mcleinman@mozilla.com
     expires: never
+    extra_keys:
+      server:
+        description: |
+          Which server was changed: multiHopEntryServer | multiHopExitServer | singleHopServer
+        type: string
 
   help_menu_help_center_opened:
     type: event
