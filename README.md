@@ -547,7 +547,7 @@ cmake --build build --target build_tests -j $(nproc)
 ```
 
 Once built, you can run them with `ctest` as follows:
-``
+```
 ctest --test-dir build -j $(nproc) --output-on-failure
 ```
 
