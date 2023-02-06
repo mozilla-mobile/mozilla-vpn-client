@@ -16,7 +16,8 @@ class ServerLatency final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(ServerLatency)
 
-  Q_PROPERTY(QDateTime lastUpdateTime READ lastUpdateTime NOTIFY progressChanged)
+  Q_PROPERTY(
+      QDateTime lastUpdateTime READ lastUpdateTime NOTIFY progressChanged)
   Q_PROPERTY(unsigned int avgLatency READ avgLatency NOTIFY progressChanged)
   Q_PROPERTY(bool isActive READ isActive NOTIFY progressChanged)
   Q_PROPERTY(double progress READ progress NOTIFY progressChanged)

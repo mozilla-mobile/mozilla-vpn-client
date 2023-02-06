@@ -101,8 +101,8 @@ void ServerLatency::start() {
 
       // Insert the servers into the list.
       for (const QString& pubkey : city.servers()) {
-        ServerPingRecord rec =
-            {pubkey, city.country(), city.name(), 0, 0, distance, 0};
+        ServerPingRecord rec = {
+            pubkey, city.country(), city.name(), 0, 0, distance, 0};
         i = m_pingSendQueue.insert(i, rec);
       }
     }
@@ -162,7 +162,7 @@ void ServerLatency::maybeSendPings() {
     const Server& server = scm->server(record.publicKey);
     m_pingSender->sendPing(QHostAddress(server.ipv4AddrIn()), record.sequence);
   }
-  
+
   emit progressChanged();
 
   if (m_pingReplyList.isEmpty()) {
@@ -276,9 +276,9 @@ unsigned int ServerLatency::avgLatency() const {
 
 double ServerLatency::progress() const {
   if ((m_pingSender == nullptr) || (m_pingSendTotal == 0)) {
-    return 1.0; // Operation is complete.
+    return 1.0;  // Operation is complete.
   }
-  
+
   double remaining = m_pingReplyList.count() + m_pingSendQueue.count();
   return 1.0 - (remaining / m_pingSendTotal);
 }
