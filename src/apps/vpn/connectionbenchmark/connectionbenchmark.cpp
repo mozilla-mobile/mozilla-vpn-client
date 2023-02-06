@@ -60,9 +60,11 @@ void ConnectionBenchmark::setConnectionSpeed() {
   }
 
   emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-    GleanSample::speedTestCompleted, {{"speed",  QVariant::fromValue(m_speed).toString()}});
-  mozilla::glean::sample::speed_test_completed.record(mozilla::glean::sample::SpeedTestCompletedExtra{
-      ._speed = QVariant::fromValue(m_speed).toString()});
+      GleanSample::speedTestCompleted,
+      {{"speed", QVariant::fromValue(m_speed).toString()}});
+  mozilla::glean::sample::speed_test_completed.record(
+      mozilla::glean::sample::SpeedTestCompletedExtra{
+          ._speed = QVariant::fromValue(m_speed).toString()});
 
   emit speedChanged();
   setState(StateReady);

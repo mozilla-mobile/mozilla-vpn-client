@@ -1725,7 +1725,8 @@ sample:
     extra_keys:
       server:
         description: |
-          Which server was changed: multiHopEntryServer | multiHopExitServer | singleHopServer
+          Which server changed:
+          multiHopEntryServer | multiHopExitServer | singleHopServer
         type: string
 
   help_menu_help_center_opened:

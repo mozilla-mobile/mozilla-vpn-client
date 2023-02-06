@@ -45,6 +45,11 @@ void TestHelper::triggerRecordGleanEvent(const QString& event) const {
   emit GleanDeprecated::instance()->recordGleanEvent(event);
 }
 
+void TestHelper::triggerRecordGleanEventWithExtraKeys(
+    const QString& event, const QVariantMap& keys) const {
+  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(event, keys);
+}
+
 void TestHelper::triggerSendGleanPings() const {
   emit MozillaVPN::instance()->sendGleanPings();
 }
