@@ -15,7 +15,9 @@ void Controller::initialize() {}
 
 void Controller::implInitialized(bool, bool, const QDateTime&) {}
 
-bool Controller::activate(const ServerData&) { return false; }
+bool Controller::activate(const ServerData&, ServerSelectionPolicy) {
+  return false;
+}
 
 bool Controller::switchServers(const ServerData& serverData) { return false; }
 
@@ -23,7 +25,7 @@ bool Controller::silentSwitchServers(ServerCoolDownPolicyForSilentSwitch) {
   return false;
 }
 
-void Controller::activateInternal(bool forcePort53) { Q_UNUSED(forcePort53) }
+void Controller::activateInternal(DNSPortPolicy, ServerSelectionPolicy) {}
 
 bool Controller::silentServerSwitchingSupported() const { return false; }
 
