@@ -16,7 +16,7 @@ Requires:  qt6-qt5compat >= 6.0
 Requires:  wireguard-tools
 
 BuildRequires: cargo
-BuildRequires: golang >= 1.13
+BuildRequires: golang >= 1.18
 BuildRequires: libsecret-devel
 BuildRequires: openssl-devel
 BuildRequires: polkit-devel
