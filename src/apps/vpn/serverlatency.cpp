@@ -56,7 +56,7 @@ void ServerLatency::initialize() {
 void ServerLatency::start() {
   MozillaVPN* vpn = MozillaVPN::instance();
   if (!Feature::get(Feature::Feature_serverConnectionScore)->isSupported()) {
-    vpn->serverCountryModel()->clearServerLatency();
+    clear();
     return;
   }
 
@@ -101,7 +101,8 @@ void ServerLatency::start() {
 
       // Insert the servers into the list.
       for (const QString& pubkey : city.servers()) {
-        ServerPingRecord rec = {pubkey, 0, 0, distance, 0};
+        ServerPingRecord rec =
+            {pubkey, city.country(), city.name(), 0, 0, distance, 0};
         i = m_pingSendQueue.insert(i, rec);
       }
     }
@@ -202,11 +203,23 @@ void ServerLatency::refresh() {
     return;
   }
 
-  MozillaVPN::instance()->serverCountryModel()->clearServerLatency();
-
-  m_sumLatencyMsec = 0;
-  m_latency.clear();
+  clear();
   start();
+}
+
+void ServerLatency::clear() {
+  m_latency.clear();
+  m_sumLatencyMsec = 0;
+
+  ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
+  for (const ServerCountry& country : scm->countries()) {
+    for (const QString& cityName : country.cities()) {
+      const ServerCity& city = scm->findCity(country.code(), cityName);
+      if (city.initialized()) {
+        emit city.scoreChanged();
+      }
+    }
+  }
 }
 
 void ServerLatency::stateChanged() {
@@ -236,7 +249,12 @@ void ServerLatency::recvPing(quint16 sequence) {
       m_sumLatencyMsec -= m_latency[record.publicKey];
       m_sumLatencyMsec += latency;
       m_latency[record.publicKey] = latency;
-      scm->setServerLatency(record.publicKey, static_cast<uint>(latency));
+
+      const ServerCity& city =
+          scm->findCity(record.countryCode, record.cityName);
+      if (city.initialized()) {
+        emit city.scoreChanged();
+      }
     }
 
     m_pingReplyList.erase(i);

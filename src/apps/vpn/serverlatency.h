@@ -44,10 +44,13 @@ class ServerLatency final : public QObject {
 
  private:
   void maybeSendPings();
+  void clear();
 
  private:
   struct ServerPingRecord {
     QString publicKey;
+    QString countryCode;
+    QString cityName;
     quint64 timestamp;
     quint16 sequence;
     double distance;

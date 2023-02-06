@@ -243,27 +243,6 @@ void ServerCountryModel::retranslate() {
   endResetModel();
 }
 
-void ServerCountryModel::setServerLatency(const QString& publicKey,
-                                          unsigned int msec) {
-  if (!m_servers.contains(publicKey)) {
-    return;
-  }
-
-  const Server& server = m_servers[publicKey];
-  auto iter = m_cities.find(
-      ServerCity::hashKey(server.countryCode(), server.cityName()));
-  if (iter != m_cities.end()) {
-    emit iter->scoreChanged();
-  }
-}
-
-void ServerCountryModel::clearServerLatency() {
-  // Emit changed signals for the connection scores.
-  for (const ServerCity& city : m_cities) {
-    emit city.scoreChanged();
-  }
-}
-
 void ServerCountryModel::setServerCooldown(const QString& publicKey) {
   auto serverIterator = m_servers.find(publicKey);
   if (serverIterator == m_servers.end()) {
