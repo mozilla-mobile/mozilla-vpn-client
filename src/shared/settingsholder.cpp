@@ -135,7 +135,11 @@ void SettingsHolder::sync() { m_settings.sync(); }
 
 void SettingsHolder::hardReset() {
   logger.debug() << "Hard reset";
+#ifndef MZ_WASM
+  // This function hangs forever on WASM.
+  // We manually clear the local storage of the browser to circumvent this.
   m_settings.clear();
+#endif
 
 #define SETTING(type, toType, getter, ...) emit getter##Changed();
 

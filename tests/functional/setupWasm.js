@@ -11,7 +11,7 @@ beforeEach applies to running before every test.
 
 */
 
-const {URL} = require('node:url');
+const { URL } = require('node:url');
 
 const vpn = require('./helper.js');
 const vpnWasm = require('./helperWasm.js');
@@ -23,13 +23,13 @@ const networkBenchmark = require('./servers/networkBenchmark.js');
 const captivePortalServer = require('./servers/captivePortalServer.js');
 const wasm = require('./wasm.js');
 
-const {Builder, By, Key, until} = require('selenium-webdriver');
+const { Builder, By, Key, until } = require('selenium-webdriver');
 
 let driver;
 
 async function startAndConnect() {
   await driver.get(process.env['MZ_WASM_URL']);
-  await vpn.connect(vpnWasm, {url: process.env['MZ_WASM_URL'], driver});
+  await vpn.connect(vpnWasm, { url: process.env['MZ_WASM_URL'], driver });
 }
 
 exports.mochaHooks = {
@@ -47,7 +47,7 @@ exports.mochaHooks = {
     u.searchParams.set('addon', `${addonServer.url}/01_empty_manifest/`);
     u.searchParams.set('benchmark', networkBenchmark.url);
     u.searchParams.set(
-        'captivePortal', `http://%1:${captivePortalServer.port}/success.txt`);
+      'captivePortal', `http://%1:${captivePortalServer.port}/success.txt`);
 
     process.env['MZ_WASM_URL'] = u.toString();
     process.env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';
@@ -76,11 +76,11 @@ exports.mochaHooks = {
     this.currentTest.ctx.wasm = true;
 
     guardian.overrideEndpoints =
-        this.currentTest.ctx.guardianOverrideEndpoints || null;
+      this.currentTest.ctx.guardianOverrideEndpoints || null;
     fxaServer.overrideEndpoints =
-        this.currentTest.ctx.fxaOverrideEndpoints || null;
+      this.currentTest.ctx.fxaOverrideEndpoints || null;
     networkBenchmark.overrideEndpoints =
-        this.currentTest.ctx.networkBenchmarkOverrideEndpoints || null;
+      this.currentTest.ctx.networkBenchmarkOverrideEndpoints || null;
 
     await startAndConnect();
     await vpn.setGleanAutomationHeader();
@@ -99,6 +99,10 @@ exports.mochaHooks = {
     // then this can fail and cause the tests to hang.
     // Logging the error lets us clean-up and move on.
     try {
+      // QSettings::clear() fails on WASM, so hardReset doesn't call that in this platform.
+      // The workaround is to manually clear localstorage directly.
+      // The hardReset function will still take care of emiting the change signals for settings.
+      await await driver.executeScript("localStorage.clear()");
       await vpn.hardReset();
       await vpn.quit();
     } catch (error) {

@@ -31,7 +31,7 @@ EM_JS(void, call_inspectorMessage, (const char* msg), {
   try {
     inspectorMessage(JSON.parse(UTF8ToString(msg)));
   } catch (e) {
-    console.log("Failed to deliver message from Inspector");
+    console.log("Failed to deliver message from Inspector", e);
   }
 });
 
