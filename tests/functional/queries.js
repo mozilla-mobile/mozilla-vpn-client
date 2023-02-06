@@ -281,7 +281,7 @@ const screenSettings = {
       CUSTOM_DNS: new QmlQueryComposer('//dnsCustom'),
       CUSTOM_DNS_INPUT: new QmlQueryComposer('//dnsCustomInput'),
       INFORMATION_CARD_LOADER:
-          new QmlQueryComposer('//DNSSettingsViewInformationCardLoader'),
+          new QmlQueryComposer('//DNSSettingsInformationCardLoader'),
 
       INFORMATION_CARD:
           new QmlQueryComposer('//DNSSettingsViewInformationCard'),
