@@ -22,6 +22,8 @@ bool Controller::switchServers(const ServerData& serverData) { return false; }
 
 bool Controller::silentSwitchServers(bool) { return false; }
 
+bool Controller::silentServerSwitchingSupported() const { return false; }
+
 void Controller::activateInternal(bool forcePort53) { Q_UNUSED(forcePort53) }
 
 bool Controller::deactivate() { return false; }
@@ -48,8 +50,6 @@ void Controller::getBackendLogs(std::function<void(const QString&)>&&) {}
 
 void Controller::statusUpdated(const QString&, const QString&, uint64_t,
                                uint64_t) {}
-
-bool Controller::silentServerSwitchingSupported() const { return false; }
 
 QList<IPAddress> Controller::getAllowedIPAddressRanges(const Server& server) {
   Q_UNUSED(server);
