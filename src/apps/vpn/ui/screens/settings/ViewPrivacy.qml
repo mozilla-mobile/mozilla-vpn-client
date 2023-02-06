@@ -41,7 +41,7 @@ VPNViewBase {
                     Accessible.name: text
                 }
                 Loader {
-                    active: Qt.platform.os === "ios" && VPNController.state !== VPNController.StateOff
+                    active: !VPNController.silentServerSwitchingSupported && VPNController.state !== VPNController.StateOff
                     Layout.fillWidth: true
                     sourceComponent: VPNTextBlock {
                         width: parent.width

@@ -62,6 +62,8 @@ class ControllerImpl : public QObject {
   // Whether the controller supports multihop
   virtual bool multihopSupported() { return false; }
 
+  virtual bool silentServerSwitchingSupported() const { return true; }
+
  signals:
   // This signal is emitted when the controller is initialized. Note that the
   // VPN tunnel can be already active. In this case, "connected" should be set

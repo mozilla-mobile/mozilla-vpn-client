@@ -35,7 +35,7 @@ VPNViewBase {
 
         Loader {
             objectName: "DNSSettingsInformationCardLoader"
-            active: Qt.platform.os === "ios" && VPNController.state !== VPNController.StateOff
+            active: !VPNController.silentServerSwitchingSupported && VPNController.state !== VPNController.StateOff
             Layout.alignment: Qt.AlignHCenter
             sourceComponent: InformationCard {
                 objectName: "DNSSettingsViewInformationCard"
