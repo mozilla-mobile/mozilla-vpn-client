@@ -49,6 +49,8 @@ void Controller::getBackendLogs(std::function<void(const QString&)>&&) {}
 void Controller::statusUpdated(const QString&, const QString&, uint64_t,
                                uint64_t) {}
 
+bool Controller::silentServerSwitchingSupported() const { return false; }
+
 QList<IPAddress> Controller::getAllowedIPAddressRanges(const Server& server) {
   Q_UNUSED(server);
   return QList<IPAddress>();
