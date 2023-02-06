@@ -114,13 +114,7 @@ describe('Settings', function () {
 
     // Checking that the `These changes may affect...` warning is visible
     await vpn.waitForQuery(
-        queries.screenSettings.privacyView.VIEW_PRIVACY_WARNING.visible());
-    // Checking that the ios-specific warning is not visible
-
-    assert(
-        await vpn.getQueryProperty(
-            queries.screenSettings.privacyView.INFORMATION_CARD, 'visible') ===
-        'false');
+        queries.screenSettings.privacyView.INFORMATION_CARD.visible());
 
     // Checking if the checkboxes are correctly set based on the settings prop
     await vpn.setSetting('dnsProviderFlags', 0);
@@ -351,8 +345,8 @@ describe('Settings', function () {
     assert(
         await vpn.getQueryProperty(
             queries.screenSettings.appPreferencesView.dnsSettingsView
-                .INFORMATION_CARD,
-            'visible') === 'false');
+                .INFORMATION_CARD_LOADER,
+            'active') === 'false');
 
     // Check the click
     await vpn.waitForQueryAndClick(

@@ -34,7 +34,7 @@ VPNViewBase {
         Layout.rightMargin: VPNTheme.theme.windowMargin
 
         Loader {
-            objectName: "DNSSettingsViewInformationCardLoader"
+            objectName: "DNSSettingsInformationCardLoader"
             active: Qt.platform.os === "ios" && VPNController.state !== VPNController.StateOff
             Layout.alignment: Qt.AlignHCenter
             sourceComponent: InformationCard {

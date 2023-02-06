@@ -242,7 +242,7 @@ const screenSettings = {
     BLOCK_MALWARE_CHECKBOX: new QmlQueryComposer('//blockMalware//checkbox'),
 
     INFORMATION_CARD:
-        new QmlQueryComposer('//privacySettingsViewInformationCardLoader'),
+        new QmlQueryComposer('//privacySettingsViewInformationCard'),
 
     MODAL_CLOSE_BUTTON:
         new QmlQueryComposer('//privacyOverwritePopupPopupCloseButton'),
@@ -280,6 +280,8 @@ const screenSettings = {
       STANDARD_DNS: new QmlQueryComposer('//dnsStandard'),
       CUSTOM_DNS: new QmlQueryComposer('//dnsCustom'),
       CUSTOM_DNS_INPUT: new QmlQueryComposer('//dnsCustomInput'),
+      INFORMATION_CARD_LOADER:
+          new QmlQueryComposer('//DNSSettingsViewInformationCardLoader'),
 
       INFORMATION_CARD:
           new QmlQueryComposer('//DNSSettingsViewInformationCard'),
