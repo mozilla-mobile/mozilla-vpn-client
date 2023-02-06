@@ -190,7 +190,8 @@ void Controller::implInitialized(bool status, bool a_connected,
   }
 }
 
-bool Controller::activate(const ServerData& serverData) {
+bool Controller::activate(const ServerData& serverData,
+                          ServerSelectionPolicy serverSelectionPolicy) {
   logger.debug() << "Activation" << m_state;
 
   if (m_state != StateOff && m_state != StateSwitching &&
@@ -218,11 +219,12 @@ bool Controller::activate(const ServerData& serverData) {
 
   clearRetryCounter();
 
-  activateInternal();
+  activateInternal(DoNotForceDNSPort, serverSelectionPolicy);
   return true;
 }
 
-void Controller::activateInternal(bool forcePort53) {
+void Controller::activateInternal(DNSPortPolicy dnsPort,
+                                  ServerSelectionPolicy serverSelectionPolicy) {
   logger.debug() << "Activation internal";
   Q_ASSERT(m_impl);
 
@@ -230,7 +232,12 @@ void Controller::activateInternal(bool forcePort53) {
   m_handshakeTimer.stop();
   m_activationQueue.clear();
 
-  Server exitServer = Server::weightChooser(m_serverData.exitServers());
+  Server exitServer =
+      serverSelectionPolicy == DoNotRandomizeServerSelection &&
+              !m_serverData.exitServerPublicKey().isEmpty()
+          ? MozillaVPN::instance()->serverCountryModel()->server(
+                m_serverData.exitServerPublicKey())
+          : Server::weightChooser(m_serverData.exitServers());
   if (!exitServer.initialized()) {
     logger.error() << "Empty exit server list in state" << m_state;
     serverUnavailable();
@@ -263,7 +270,7 @@ void Controller::activateInternal(bool forcePort53) {
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv6AddrIn());
 
     // If requested, force the use of port 53/DNS.
-    if (forcePort53) {
+    if (dnsPort == ForceDNSPort) {
       exitHop.m_server.forcePort(53);
     }
     // For single-hop, they are the same
@@ -273,7 +280,13 @@ void Controller::activateInternal(bool forcePort53) {
   // The entry server should start first, followed by the exit server.
   else if (m_impl->multihopSupported()) {
     HopConnection hop;
-    hop.m_server = Server::weightChooser(m_serverData.entryServers());
+
+    hop.m_server = serverSelectionPolicy == DoNotRandomizeServerSelection &&
+                           !m_serverData.entryServerPublicKey().isEmpty()
+                       ? MozillaVPN::instance()->serverCountryModel()->server(
+                             m_serverData.entryServerPublicKey())
+                       : Server::weightChooser(m_serverData.entryServers());
+
     m_serverData.setEntryServerPublicKey(hop.m_server.publicKey());
     if (!hop.m_server.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
@@ -281,7 +294,7 @@ void Controller::activateInternal(bool forcePort53) {
       return;
     }
     // If requested, force the use of port 53/DNS.
-    if (forcePort53) {
+    if (dnsPort == ForceDNSPort) {
       hop.m_server.forcePort(53);
     }
 
@@ -295,7 +308,13 @@ void Controller::activateInternal(bool forcePort53) {
   // Otherwise, we can approximate multihop support by redirecting the
   // connection to the exit server via the multihop port.
   else {
-    Server entryServer = Server::weightChooser(m_serverData.entryServers());
+    Server entryServer =
+        serverSelectionPolicy == DoNotRandomizeServerSelection &&
+                !m_serverData.entryServerPublicKey().isEmpty()
+            ? MozillaVPN::instance()->serverCountryModel()->server(
+                  m_serverData.entryServerPublicKey())
+            : Server::weightChooser(m_serverData.entryServers());
+
     m_serverData.setEntryServerPublicKey(entryServer.publicKey());
     if (!entryServer.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
@@ -344,20 +363,25 @@ bool Controller::silentSwitchServers(bool serverCoolDownNeeded) {
     return false;
   }
 
-  // Set a cooldown timer on the current server.
-  QList<Server> servers = m_serverData.exitServers();
-  Q_ASSERT(!servers.isEmpty());
-
-  if (servers.length() <= 1) {
-    logger.warning()
-        << "Cannot silent switch servers because there is only one available";
-    return false;
-  }
-
   if (serverCoolDownNeeded) {
+    // Set a cooldown timer on the current server.
+    QList<Server> servers = m_serverData.exitServers();
+    Q_ASSERT(!servers.isEmpty());
+
+    if (servers.length() <= 1) {
+      logger.warning()
+          << "Cannot silent switch servers because there is only one available";
+      return false;
+    }
+
     MozillaVPN::instance()->serverCountryModel()->setServerCooldown(
         m_serverData.exitServerPublicKey());
   }
+
+  m_nextServerData = m_serverData;
+  m_nextServerSelectionPolicy = serverCoolDownNeeded
+                                    ? RandomizeServerSelection
+                                    : DoNotRandomizeServerSelection;
 
   clearConnectedTime();
   clearRetryCounter();
@@ -467,10 +491,10 @@ void Controller::handshakeTimeout() {
     logger.info() << "Connection Attempt: Using Port 53 Option this time.";
     // On the first retry, opportunisticly try again using the port 53
     // option enabled, if that feature is disabled.
-    activateInternal(true);
+    activateInternal(ForceDNSPort, RandomizeServerSelection);
     return;
   } else if (m_connectionRetry < CONNECTION_MAX_RETRY) {
-    activateInternal();
+    activateInternal(DoNotForceDNSPort, RandomizeServerSelection);
     return;
   }
 
@@ -494,7 +518,7 @@ void Controller::disconnected() {
 
   if (nextStep == None &&
       (m_state == StateSwitching || m_state == StateSilentSwitching)) {
-    activate(m_nextServerData);
+    activate(m_nextServerData, m_nextServerSelectionPolicy);
     return;
   }
 
@@ -834,6 +858,7 @@ bool Controller::switchServers(const ServerData& serverData) {
   }
 
   m_nextServerData = serverData;
+  m_nextServerSelectionPolicy = RandomizeServerSelection;
 
   clearConnectedTime();
   clearRetryCounter();

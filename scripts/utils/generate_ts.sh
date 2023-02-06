@@ -27,22 +27,28 @@ print G "done."
 
 printn Y "Generating a dummy PRO file... "
 mkdir -p translations/generated || die
-cat > translations/generated/dummy.pro << EOF
+cat > translations/generated/dummy_ts.pro << EOF
 HEADERS += l18nstrings.h
+HEADERS += \$\$files(../../src/shared/*.h, true)
+HEADERS += \$\$files(../../src/apps/vpn/*.h, true)
+HEADERS += \$\$files(../../nebula/*.h, true)
+
 SOURCES += l18nstrings_p.cpp
 SOURCES += ../l18nstrings.cpp
-TRANSLATIONS += translations.ts
-HEADERS += \$\$files(../../src/*.h, true)
-SOURCES += \$\$files(../../src/*.cpp, true)
-RESOURCES += \$\$files(../../src/*.qrc, true)
-HEADERS += \$\$files(../../nebula/*.h, true)
+SOURCES += \$\$files(../../src/shared/*.cpp, true)
+SOURCES += \$\$files(../../src/apps/vpn/*.cpp, true)
 SOURCES += \$\$files(../../nebula/*.cpp, true)
+
+TRANSLATIONS += translations.ts
+
+RESOURCES += \$\$files(../../src/shared/*.qrc, true)
+RESOURCES += \$\$files(../../src/apps/vpn/*.qrc, true)
 RESOURCES += \$\$files(../../nebula/*.qrc, true)
 EOF
 print G "done"
 
 print Y "Generating the main translation file... "
-lupdate translations/generated/dummy.pro -ts translations.ts || die
+lupdate translations/generated/dummy_ts.pro -ts translations.ts || die
 
 printn Y "Generating strings for addons... "
 python scripts/addon/generate_all.py
@@ -55,7 +61,7 @@ for branch in $(git branch -r | grep origin/releases); do
 
   printn Y "Importing main strings from $branch..."
   python cache/generate_strings.py -o translations/generated translations/strings.yaml || die
-  lupdate translations/generated/dummy.pro -ts branch.ts || die
+  lupdate translations/generated/dummy_ts.pro -ts branch.ts || die
   lconvert -i translations.ts branch.ts -o tmp.ts || die
   mv tmp.ts translations.ts || die
   rm branch.ts || die

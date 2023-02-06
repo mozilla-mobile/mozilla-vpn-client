@@ -547,7 +547,8 @@ cmake --build build --target build_tests -j $(nproc)
 ```
 
 Once built, you can run them with `ctest` as follows:
-``
+
+```
 ctest --test-dir build -j $(nproc) --output-on-failure
 ```
 
@@ -559,8 +560,10 @@ built by default. To build the `dummyvpn` target, in the root folder of this rep
 ```
 cmake --build build -j$(nproc) --target dummyvpn
 ```
+
 This will create a dummy build under the `tests/dummyvpn` folder. To run the functional
 tests against this build, make sure the `MVPN_BIN` environment variable is set:
+
 ```
 export MVPN_BIN=$(pwd)/build/tests/dummyvpn/dummyvpn
 ```
