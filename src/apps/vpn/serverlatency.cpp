@@ -75,8 +75,6 @@ void ServerLatency::start() {
   m_wantRefresh = false;
   m_pingSender = PingSenderFactory::create(QHostAddress(), this);
 
-  m_lastUpdateTime = QDateTime::currentDateTime();
-
   connect(m_pingSender, SIGNAL(recvPing(quint16)), this,
           SLOT(recvPing(quint16)), Qt::QueuedConnection);
   connect(m_pingSender, SIGNAL(criticalPingError()), this,
@@ -108,6 +106,9 @@ void ServerLatency::start() {
       }
     }
   }
+
+  m_lastUpdateTime = QDateTime::currentDateTime();
+  m_pingSendTotal = m_pingSendQueue.count();
 
   m_refreshTimer.stop();
   maybeSendPings();
@@ -160,6 +161,8 @@ void ServerLatency::maybeSendPings() {
     const Server& server = scm->server(record.publicKey);
     m_pingSender->sendPing(QHostAddress(server.ipv4AddrIn()), record.sequence);
   }
+  
+  emit progressChanged();
 
   if (m_pingReplyList.isEmpty()) {
     // If the ping reply list is empty, then we have nothing left to do.
@@ -180,6 +183,9 @@ void ServerLatency::stop() {
   m_pingTimeout.stop();
   m_pingSendQueue.clear();
   m_pingReplyList.clear();
+  m_pingSendTotal = 0;
+
+  emit progressChanged();
 
   if (m_pingSender) {
     delete m_pingSender;
@@ -248,4 +254,13 @@ unsigned int ServerLatency::avgLatency() const {
     return 0;
   }
   return (m_sumLatencyMsec + m_latency.count() - 1) / m_latency.count();
+}
+
+double ServerLatency::progress() const {
+  if ((m_pingSender == nullptr) || (m_pingSendTotal == 0)) {
+    return 1.0; // Operation is complete.
+  }
+  
+  double remaining = m_pingReplyList.count() + m_pingSendQueue.count();
+  return 1.0 - (remaining / m_pingSendTotal);
 }

@@ -16,8 +16,10 @@ class ServerLatency final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(ServerLatency)
 
-  Q_PROPERTY(QDateTime lastUpdateTime READ lastUpdateTime CONSTANT)
-  Q_PROPERTY(unsigned int avgLatency READ avgLatency CONSTANT)
+  Q_PROPERTY(QDateTime lastUpdateTime READ lastUpdateTime NOTIFY progressChanged)
+  Q_PROPERTY(unsigned int avgLatency READ avgLatency NOTIFY progressChanged)
+  Q_PROPERTY(bool isActive READ isActive NOTIFY progressChanged)
+  Q_PROPERTY(double progress READ progress NOTIFY progressChanged)
 
  public:
   ServerLatency();
@@ -28,12 +30,17 @@ class ServerLatency final : public QObject {
     return m_latency.value(pubkey);
   };
   const QDateTime& lastUpdateTime() const { return m_lastUpdateTime; }
+  bool isActive() const { return m_pingSender != nullptr; }
+  double progress() const;
 
   void initialize();
   void start();
   void stop();
 
   Q_INVOKABLE void refresh();
+
+ signals:
+  void progressChanged();
 
  private:
   void maybeSendPings();
@@ -50,6 +57,7 @@ class ServerLatency final : public QObject {
   PingSender* m_pingSender = nullptr;
   QList<ServerPingRecord> m_pingSendQueue;
   QList<ServerPingRecord> m_pingReplyList;
+  qsizetype m_pingSendTotal = 0;
 
   QHash<QString, qint64> m_latency;
   qint64 m_sumLatencyMsec = 0;
