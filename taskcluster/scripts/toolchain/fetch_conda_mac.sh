@@ -11,17 +11,20 @@ set -x
 
 # Find the Output Directory and clear that
 TASK_HOME=$(dirname "${MOZ_FETCHES_DIR}" )
-rm -rf "${TASK_HOME}/miniconda"
-mkdir -p "${TASK_HOME}/miniconda"
+rm -rf "${TASK_WORKDIR}/miniconda"
+mkdir -p "${TASK_WORKDIR}/miniconda"
+
+print Y "Debugging env..."
+env
 
 print Y "Installing conda"
 chmod +x ${MOZ_FETCHES_DIR}/miniconda.sh
-bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -u -p ${TASK_HOME}/miniconda
-source ${TASK_HOME}/miniconda/bin/activate
+bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -u -p ${TASK_WORKDIR}/miniconda
+source ${TASK_WORKDIR}/miniconda/bin/activate
 
 
 print Y "Installing provided conda env..."
-# TODO: Check why --force is needed if we install into TASK_HOME?
-conda env create --force -f env.yml    
+# TODO: Check why --force is needed if we install into TASK_WORKDIR?
+conda env create --force -f ${TASK_WORKDIR}/checkouts/vcs/env.yml    
 conda install conda-pack
 conda pack -n VPN -o ${TASK_WORKDIR}/public/build/conda_env_mac.tar.gz
