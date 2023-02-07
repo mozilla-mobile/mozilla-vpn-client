@@ -17,14 +17,22 @@ VPNViewBase {
     _menuTitle: VPNl18n.SettingsDnsSettings
 
     function maybeApplyChange(settingValue) {
-        // We are not changing anything interesting for the privacy/dns dialog.
+        if (settingValue === VPNSettings.Gateway) {
+            if (VPNSettings.dnsProviderFlags !== VPNSettings.Custom) {
+                // We are not changing anything interesting. Let's keep the current value.
+                return;
+            }
+
+            VPNSettings.dnsProviderFlags = settingValue;
+            return;
+        }
+
         if (VPNSettings.dnsProviderFlags === VPNSettings.Custom ||
             VPNSettings.dnsProviderFlags === VPNSettings.Gateway) {
             VPNSettings.dnsProviderFlags = settingValue;
             return;
         }
 
-        dnsOverwriteLoader.dnsProviderValue = settingValue;
         dnsOverwriteLoader.active = true;
     }
 
@@ -49,7 +57,7 @@ VPNViewBase {
                 Layout.preferredWidth: VPNTheme.theme.vSpacing
                 Layout.preferredHeight: VPNTheme.theme.rowHeight
                 Layout.alignment: Qt.AlignTop
-                checked: VPNSettings.dnsProviderFlags === VPNSettings.Gateway
+                checked: VPNSettings.dnsProviderFlags !== VPNSettings.Custom
                 ButtonGroup.group: radioButtonGroup
                 accessibleName: VPNl18n.SettingsDnsSettingsStandardDNSTitle
                 onClicked: maybeApplyChange(VPNSettings.Gateway);
@@ -195,9 +203,6 @@ VPNViewBase {
     Loader {
         id: dnsOverwriteLoader
 
-        // This is the value we are going to set if the user confirms.
-        property var dnsProviderValue;
-
         active: false
         sourceComponent: VPNSimplePopup {
             id: dnsOverwritePopup
@@ -213,7 +218,7 @@ VPNViewBase {
                     objectName: "dnsOverwritePopupDiscoverNowButton"
                     text: VPNl18n.DnsOverwriteDialogPrimaryButton
                     onClicked: {
-                        VPNSettings.dnsProviderFlags = dnsOverwriteLoader.dnsProviderValue;
+                        VPNSettings.dnsProviderFlags = VPNSettings.Custom;
                         dnsOverwritePopup.close()
                     }
                 },

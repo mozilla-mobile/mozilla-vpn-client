@@ -354,28 +354,9 @@ describe('Settings', function () {
     await vpn.waitForQueryAndClick(
         queries.screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
             .visible()
-            .prop('checked', false));
+            .prop('checked', true));
     assert(await vpn.getSetting('dnsProviderFlags') === 2);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.appPreferencesView.dnsSettingsView
-            .MODAL_SECONDARY_BUTTON.visible());
-    assert(await vpn.getSetting('dnsProviderFlags') === 2);
-    await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView
-                                       .dnsSettingsView.STANDARD_DNS.visible());
-    assert(await vpn.getSetting('dnsProviderFlags') === 2);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.appPreferencesView.dnsSettingsView
-            .MODAL_CLOSE_BUTTON.visible());
-    assert(await vpn.getSetting('dnsProviderFlags') === 2);
-    await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView
-                                       .dnsSettingsView.STANDARD_DNS.visible());
-    assert(await vpn.getSetting('dnsProviderFlags') === 2);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.appPreferencesView.dnsSettingsView
-            .MODAL_PRIMARY_BUTTON.visible());
-    assert(await vpn.getSetting('dnsProviderFlags') === 0);
 
-    await vpn.setSetting('dnsProviderFlags', 2);
     await vpn.waitForQueryAndClick(
         queries.screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
             .visible()
