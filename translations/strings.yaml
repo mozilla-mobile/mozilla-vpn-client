@@ -314,7 +314,7 @@ settings:
   dnsSettingsCustomDNSError: Invalid DNS, please try a new one
   dnsSettingsWarning: These options may cause some websites to break or not display content correctly.
   dnsSettingsInputPlaceholder: Enter custom DNS
-  iOSDisconnectWarning: Changing these settings will cause the VPN to disconnect and reconnect automatically.
+  dnsSettingsDisconnectWarning: Changing these settings will cause the VPN to disconnect and reconnect automatically.
 
 dnsOverwriteDialog:
   titleDNS: Override DNS settings?

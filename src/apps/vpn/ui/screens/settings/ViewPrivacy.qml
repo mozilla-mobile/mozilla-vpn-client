@@ -33,10 +33,13 @@ VPNViewBase {
 
             _infoContent: ColumnLayout {
                 id: textBlocks
+                spacing: 0
+
                 VPNTextBlock {
                     Layout.fillWidth: true
                     width: undefined
                     text: VPNl18n.SettingsDnsSettingsWarning
+                    verticalAlignment: Text.AlignVCenter
                     Accessible.role: Accessible.StaticText
                     Accessible.name: text
                 }
@@ -45,7 +48,8 @@ VPNViewBase {
                     Layout.fillWidth: true
                     sourceComponent: VPNTextBlock {
                         width: parent.width
-                        text: VPNl18n.SettingsIOSDisconnectWarning
+                        text: VPNl18n.SettingsDnsSettingsDisconnectWarning
+                        verticalAlignment: Text.AlignVCenter
                         Accessible.role: Accessible.StaticText
                         Accessible.name: text
                     }

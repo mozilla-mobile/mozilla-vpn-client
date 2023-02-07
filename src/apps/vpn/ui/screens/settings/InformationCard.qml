@@ -61,6 +61,7 @@ Rectangle {
         ColumnLayout {
             id: infoContent
             Layout.fillWidth: true
+            spacing: 0
         }
     }
 }

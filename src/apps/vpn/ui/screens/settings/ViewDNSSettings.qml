@@ -43,9 +43,12 @@ VPNViewBase {
                 width: Math.min(window.width - VPNTheme.theme.windowMargin * 2, VPNTheme.theme.navBarMaxWidth)
                 _infoContent: ColumnLayout {
                     id: textBlocks
+
+                    spacing: 0
                     VPNTextBlock {
                         Layout.fillWidth: true
-                        text: VPNl18n.SettingsIOSDisconnectWarning
+                        text: VPNl18n.SettingsDnsSettingsDisconnectWarning
+                        verticalAlignment: Text.AlignVCenter
                         Accessible.role: Accessible.StaticText
                         Accessible.name: text
                     }
