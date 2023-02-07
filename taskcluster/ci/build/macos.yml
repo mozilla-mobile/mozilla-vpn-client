@@ -12,8 +12,6 @@ task-defaults:
     requires-level: 1
     worker-type: b-macos
     fetches:
-        fetch:
-            - miniconda-osx
         toolchain:
             - conda-mac
             - qt-mac
