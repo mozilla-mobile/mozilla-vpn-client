@@ -13,7 +13,7 @@ if(NOT (IS_MULTI_CONFIG OR DEFINED CMAKE_BUILD_TYPE))
 endif()
 
 project("Mozilla VPN" VERSION 2.15.0 LANGUAGES C CXX
-        DESCRIPTION "A fast, secure and easy to use VPN. Built by the makers of Firefox."
+        DESCRIPTION "Mozilla VPN"
         HOMEPAGE_URL "https://vpn.mozilla.org"
 )
 
