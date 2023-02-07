@@ -6,7 +6,7 @@ use std::os::raw::c_char;
 use std::ffi::CString;
 
 use log::{Level, LevelFilter, Log, Metadata, Record};
-use once_cell::sync::{Lazy, OnceCell};
+use once_cell::sync::OnceCell;
 
 // Logger implementation to integrate the Rust logs with src/shared/loghandler.cpp.
 //
