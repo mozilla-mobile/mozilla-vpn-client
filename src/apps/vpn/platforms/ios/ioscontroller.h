@@ -29,6 +29,8 @@ class IOSController final : public ControllerImpl {
 
   void cleanupBackendLogs() override;
 
+  bool silentServerSwitchingSupported() const override { return false; }
+
  private:
   bool m_checkingStatus = false;
   QString m_serverPublicKey;

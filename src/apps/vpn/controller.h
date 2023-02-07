@@ -63,6 +63,8 @@ class Controller final : public QObject {
       int connectionRetry READ connectionRetry NOTIFY connectionRetryChanged);
   Q_PROPERTY(bool enableDisconnectInConfirming READ enableDisconnectInConfirming
                  NOTIFY enableDisconnectInConfirmingChanged);
+  Q_PROPERTY(bool silentServerSwitchingSupported READ
+                 silentServerSwitchingSupported CONSTANT);
 
 #ifdef MZ_DUMMY
   // This is just for testing purposes. Not exposed in prod.
@@ -109,6 +111,7 @@ class Controller final : public QObject {
   void captivePortalGone();
 
   const ServerData& currentServer() const { return m_serverData; }
+  bool silentServerSwitchingSupported() const;
 
 #ifdef MZ_DUMMY
   QString currentServerString() const;

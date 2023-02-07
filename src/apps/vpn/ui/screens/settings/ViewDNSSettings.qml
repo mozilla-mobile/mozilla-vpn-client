@@ -37,11 +37,32 @@ VPNViewBase {
     }
 
     _viewContentData: ColumnLayout {
-        spacing: VPNTheme.theme.windowMargin * 2
-        Layout.fillWidth: true
+        spacing: VPNTheme.theme.windowMargin * 1.5
         Layout.leftMargin: VPNTheme.theme.windowMargin
         Layout.rightMargin: VPNTheme.theme.windowMargin
-        Layout.topMargin: VPNTheme.theme.windowMargin / 2
+
+        Loader {
+            objectName: "DNSSettingsInformationCardLoader"
+            active: !VPNController.silentServerSwitchingSupported && VPNController.state !== VPNController.StateOff
+            Layout.alignment: Qt.AlignHCenter
+            sourceComponent: InformationCard {
+                objectName: "DNSSettingsViewInformationCard"
+                height: textBlocks.height + VPNTheme.theme.windowMargin * 2
+                width: Math.min(window.width - VPNTheme.theme.windowMargin * 2, VPNTheme.theme.navBarMaxWidth)
+                _infoContent: ColumnLayout {
+                    id: textBlocks
+
+                    spacing: 0
+                    VPNTextBlock {
+                        Layout.fillWidth: true
+                        text: VPNl18n.SettingsDnsSettingsDisconnectWarning
+                        verticalAlignment: Text.AlignVCenter
+                        Accessible.role: Accessible.StaticText
+                        Accessible.name: text
+                    }
+                }
+            }
+        }
 
         ButtonGroup {
             id: radioButtonGroup
@@ -49,6 +70,7 @@ VPNViewBase {
 
         RowLayout {
             spacing: VPNTheme.theme.windowMargin
+            Layout.rightMargin: VPNTheme.theme.windowMargin / 2
 
             VPNRadioButton {
                 objectName: "dnsStandard"
@@ -146,6 +168,7 @@ VPNViewBase {
                     _placeholderText: VPNl18n.SettingsDnsSettingsInputPlaceholder
                     text: ""
                     Layout.fillWidth: true
+                    Layout.maximumWidth: VPNTheme.theme.maxTextWidth
                     Layout.topMargin: 12
                     inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhFormattedNumbersOnly
 

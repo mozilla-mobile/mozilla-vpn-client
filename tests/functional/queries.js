@@ -241,12 +241,17 @@ const screenSettings = {
     BLOCK_MALWARE: new QmlQueryComposer('//blockMalware'),
     BLOCK_MALWARE_CHECKBOX: new QmlQueryComposer('//blockMalware//checkbox'),
 
+    INFORMATION_CARD:
+        new QmlQueryComposer('//privacySettingsViewInformationCard'),
+
     MODAL_CLOSE_BUTTON:
         new QmlQueryComposer('//privacyOverwritePopupPopupCloseButton'),
     MODAL_PRIMARY_BUTTON:
         new QmlQueryComposer('//privacyOverwritePopupDiscoverNowButton'),
     MODAL_SECONDARY_BUTTON:
         new QmlQueryComposer('//privacyOverwritePopupGoBackButton'),
+
+    VIEW_PRIVACY_WARNING: new QmlQueryComposer('//viewPrivacyWarning')
   },
 
   myDevicesView: {
@@ -275,6 +280,11 @@ const screenSettings = {
       STANDARD_DNS: new QmlQueryComposer('//dnsStandard'),
       CUSTOM_DNS: new QmlQueryComposer('//dnsCustom'),
       CUSTOM_DNS_INPUT: new QmlQueryComposer('//dnsCustomInput'),
+      INFORMATION_CARD_LOADER:
+          new QmlQueryComposer('//DNSSettingsInformationCardLoader'),
+
+      INFORMATION_CARD:
+          new QmlQueryComposer('//DNSSettingsViewInformationCard'),
 
       MODAL_CLOSE_BUTTON:
           new QmlQueryComposer('//dnsOverwritePopupPopupCloseButton'),

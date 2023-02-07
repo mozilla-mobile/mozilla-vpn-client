@@ -652,6 +652,10 @@ void Controller::maybeEnableDisconnectInConfirming() {
   }
 }
 
+bool Controller::silentServerSwitchingSupported() const {
+  return m_impl->silentServerSwitchingSupported();
+}
+
 void Controller::setState(State state) {
   if (m_state == state) {
     return;
