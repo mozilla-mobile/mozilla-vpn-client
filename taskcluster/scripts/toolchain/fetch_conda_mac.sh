@@ -9,6 +9,11 @@ set -x
 
 . $(dirname $0)/../../../scripts/utils/commons.sh
 
+# Find the Output Directory and clear that
+TASK_HOME=$(dirname "${MOZ_FETCHES_DIR}" )
+rm -rf "${TASK_HOME}/miniconda"
+mkdir -p "${TASK_HOME}/miniconda"
+
 print Y "Installing conda"
 chmod +x ${MOZ_FETCHES_DIR}/miniconda.sh
 bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -u -p ${TASK_HOME}/miniconda
