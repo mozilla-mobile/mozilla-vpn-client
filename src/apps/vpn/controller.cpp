@@ -4,6 +4,7 @@
 
 #include "controller.h"
 
+#include "appconstants.h"
 #include "controllerimpl.h"
 #include "dnshelper.h"
 #include "feature.h"
@@ -374,8 +375,9 @@ bool Controller::silentSwitchServers(bool serverCoolDownNeeded) {
       return false;
     }
 
-    MozillaVPN::instance()->serverCountryModel()->setServerCooldown(
-        m_serverData.exitServerPublicKey());
+    MozillaVPN::instance()->serverLatency()->setCooldown(
+        m_serverData.exitServerPublicKey(),
+        AppConstants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
   }
 
   m_nextServerData = m_serverData;
@@ -475,7 +477,8 @@ void Controller::handshakeTimeout() {
 
   // Block the offending server and try again.
   HopConnection& hop = m_activationQueue.first();
-  vpn->serverCountryModel()->setServerCooldown(hop.m_server.publicKey());
+  vpn->serverLatency()->setCooldown(
+      hop.m_server.publicKey(), AppConstants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
 
   emit handshakeFailed(hop.m_server.publicKey());
 

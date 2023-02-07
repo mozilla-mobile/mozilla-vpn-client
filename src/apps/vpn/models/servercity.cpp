@@ -12,8 +12,8 @@
 #include "feature.h"
 #include "leakdetector.h"
 #include "mozillavpn.h"
-#include "servercountrymodel.h"
 #include "serveri18n.h"
+#include "serverlatency.h"
 
 // Minimum number of redundant servers we expect at a location.
 constexpr int SCORE_SERVER_REDUNDANCY_THRESHOLD = 3;
@@ -108,15 +108,13 @@ const QString ServerCity::localizedName() const {
 }
 
 int ServerCity::connectionScore() const {
-  ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
   ServerLatency* sl = MozillaVPN::instance()->serverLatency();
   qint64 now = QDateTime::currentSecsSinceEpoch();
   int score = Poor;
   int activeServerCount = 0;
   uint32_t sumLatencyMsec = 0;
   for (const QString& pubkey : m_servers) {
-    const Server& server = scm->server(pubkey);
-    if (server.cooldownTimeout() <= now) {
+    if (sl->getCooldown(pubkey) <= now) {
       sumLatencyMsec += sl->getLatency(pubkey);
       activeServerCount++;
     }
@@ -160,14 +158,12 @@ int ServerCity::connectionScore() const {
 }
 
 unsigned int ServerCity::latency() const {
-  ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
   ServerLatency* sl = MozillaVPN::instance()->serverLatency();
   qint64 now = QDateTime::currentSecsSinceEpoch();
   int activeServerCount = 0;
   uint32_t sumLatencyMsec = 0;
   for (const QString& pubkey : m_servers) {
-    const Server& server = scm->server(pubkey);
-    if (server.cooldownTimeout() <= now) {
+    if (sl->getCooldown(pubkey) <= now) {
       sumLatencyMsec += sl->getLatency(pubkey);
       activeServerCount++;
     }

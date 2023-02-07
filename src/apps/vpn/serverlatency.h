@@ -34,6 +34,11 @@ class ServerLatency final : public QObject {
   bool isActive() const { return m_pingSender != nullptr; }
   double progress() const;
 
+  qint64 getCooldown(const QString& pubkey) const {
+    return m_cooldown.value(pubkey);
+  }
+  void setCooldown(const QString& pubkey, qint64 timeout);
+
   void initialize();
   void start();
   void stop();
@@ -64,6 +69,7 @@ class ServerLatency final : public QObject {
   qsizetype m_pingSendTotal = 0;
 
   QHash<QString, qint64> m_latency;
+  QHash<QString, qint64> m_cooldown;
   qint64 m_sumLatencyMsec = 0;
   QDateTime m_lastUpdateTime;
 

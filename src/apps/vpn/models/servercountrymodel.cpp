@@ -243,22 +243,6 @@ void ServerCountryModel::retranslate() {
   endResetModel();
 }
 
-void ServerCountryModel::setServerCooldown(const QString& publicKey) {
-  auto serverIterator = m_servers.find(publicKey);
-  if (serverIterator == m_servers.end()) {
-    return;
-  }
-
-  serverIterator->setCooldownTimeout(
-      AppConstants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
-
-  auto cityIterator = m_cities.find(ServerCity::hashKey(
-      serverIterator->countryCode(), serverIterator->cityName()));
-  if (cityIterator != m_cities.end()) {
-    emit cityIterator->scoreChanged();
-  }
-}
-
 void ServerCountryModel::setCooldownForAllServersInACity(
     const QString& countryCode, const QString& cityCode) {
   logger.debug() << "Set cooldown for all servers for: "
@@ -269,12 +253,9 @@ void ServerCountryModel::setCooldownForAllServersInACity(
       continue;
     }
     for (const QString& pubkey : city.servers()) {
-      if (m_servers.contains(pubkey)) {
-        m_servers[pubkey].setCooldownTimeout(
-            AppConstants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
-      }
+      MozillaVPN::instance()->serverLatency()->setCooldown(
+          pubkey, AppConstants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
     }
-    emit city.scoreChanged();
   }
 }
 

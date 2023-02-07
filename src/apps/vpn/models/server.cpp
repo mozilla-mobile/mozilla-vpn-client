@@ -38,7 +38,6 @@ Server& Server::operator=(const Server& other) {
   m_weight = other.m_weight;
   m_socksName = other.m_socksName;
   m_multihopPort = other.m_multihopPort;
-  m_cooldownTimeout = other.m_cooldownTimeout;
   m_countryCode = other.m_countryCode;
   m_cityName = other.m_cityName;
 
@@ -128,7 +127,6 @@ bool Server::fromJson(const QJsonObject& obj) {
   m_weight = weight.toInt();
   m_socksName = socks5_name.toString();
   m_multihopPort = multihop_port.toInt();
-  m_cooldownTimeout = 0;
 
   return true;
 }
@@ -140,7 +138,6 @@ bool Server::fromMultihop(const Server& exit, const Server& entry) {
   m_publicKey = exit.m_publicKey;
   m_socksName = exit.m_socksName;
   m_multihopPort = exit.m_multihopPort;
-  m_cooldownTimeout = exit.m_cooldownTimeout;
 
   m_ipv4AddrIn = entry.m_ipv4AddrIn;
   m_ipv6AddrIn = entry.m_ipv6AddrIn;
@@ -151,14 +148,6 @@ bool Server::forcePort(uint32_t port) {
   m_portRanges.clear();
   m_portRanges.append(QPair<uint32_t, uint32_t>(port, port));
   return true;
-}
-
-void Server::setCooldownTimeout(qint64 timeout) {
-  if (timeout <= 0) {
-    m_cooldownTimeout = 0;
-  } else {
-    m_cooldownTimeout = QDateTime::currentSecsSinceEpoch() + timeout;
-  }
 }
 
 // static

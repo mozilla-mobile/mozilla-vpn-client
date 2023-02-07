@@ -282,3 +282,20 @@ double ServerLatency::progress() const {
   double remaining = m_pingReplyList.count() + m_pingSendQueue.count();
   return 1.0 - (remaining / m_pingSendTotal);
 }
+
+void ServerLatency::setCooldown(const QString& publicKey, qint64 timeout) {
+  if (timeout <= 0) {
+    m_cooldown.remove(publicKey);
+  } else {
+    m_cooldown[publicKey] = QDateTime::currentSecsSinceEpoch() + timeout;
+  }
+
+  // Emit signals that the connection score may have changed.
+  ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
+  const Server& server = scm->server(publicKey);
+  const ServerCity& city =
+      scm->findCity(server.countryCode(), server.cityName());
+  if (city.initialized()) {
+    emit city.scoreChanged();
+  }
+}
