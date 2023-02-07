@@ -178,11 +178,6 @@ print Y "Generate Android Project"
 
 
 cd .tmp/src/android-build/
-
-env 
-
-exit 1
-
 # This will combine the qt-libs + qt-resources and the client
 # Into a single gradle project
 if [[ "$RELEASE" ]]; then
