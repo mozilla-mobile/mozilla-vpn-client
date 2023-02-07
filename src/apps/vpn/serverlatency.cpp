@@ -186,13 +186,12 @@ void ServerLatency::stop() {
   m_pingReplyList.clear();
   m_pingSendTotal = 0;
 
-  emit progressChanged();
-
   if (m_pingSender) {
     delete m_pingSender;
     m_pingSender = nullptr;
   }
 
+  emit progressChanged();
   if (!m_refreshTimer.isActive()) {
     m_refreshTimer.start(SERVER_LATENCY_REFRESH_MSEC);
   }

@@ -134,7 +134,7 @@ FocusScope {
                     accessibleName: VPNl18n.ServersViewRecommendedRefreshLabel
                     canGrowVertical: true
                     height: statusTitle.implicitHeight + VPNTheme.theme.vSpacingSmall
-                    rowShouldBeDisabled: !(VPNController.state === VPNController.StateOff)
+                    rowShouldBeDisabled: !(VPNController.state === VPNController.StateOff) || VPNServerLatency.isActive
 
                     onClicked: {
                         VPNServerLatency.refresh();
@@ -167,9 +167,9 @@ FocusScope {
                             horizontalAlignment: Text.AlignLeft
                             // TODO: Replace placeholder strings and generate
                             // values that will be set instead of `%1`
-                            text: VPNServerLatency.progress < 1.0
+                            text: VPNServerLatency.isActive
                                 ? "Checking... %1%".arg(Math.round(VPNServerLatency.progress * 100))
-                                : !statusComponent.rowShouldBeDisabled
+                                : (VPNController.state === VPNController.StateOff)
                                 ? "Last updated %1 ago.".arg(VPNServerLatency.lastUpdateTime)
                                 : "Last updated %1 ago. To update this list please first disconnect from the VPN."
                             wrapMode: Text.WordWrap
@@ -202,6 +202,7 @@ FocusScope {
                 Repeater {
                     id: recommendedRepeater
                     model: VPNServerCountryModel.recommendedLocations(5)
+
                     delegate: VPNClickableRow {
                         property bool isAvailable: modelData.connectionScore >= 0
                         id: recommendedServer
@@ -237,6 +238,19 @@ FocusScope {
                                 score: modelData.connectionScore
                             }
                         }
+                    }
+                }
+
+                Timer {
+                    id: recommendedLocationsRefreshTimer
+                    interval: 2000
+                    running: VPNServerLatency.isActive
+                    repeat: false
+                    onTriggered: {
+                        if (VPNServerLatency.isActive) {
+                            recommendedLocationsRefreshTimer.start();
+                        }
+                        recommendedRepeater.model = VPNServerCountryModel.recommendedLocations(5);
                     }
                 }
             }
