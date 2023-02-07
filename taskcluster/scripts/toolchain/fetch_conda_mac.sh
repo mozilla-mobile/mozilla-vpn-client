@@ -24,5 +24,6 @@ print Y "Installing provided conda env..."
 # TODO: Check why --force is needed if we install into TASK_WORKDIR?
 conda env create --force -f ${TASK_WORKDIR}/checkouts/vcs/env.yml    
 conda install conda-pack
+conda info
 mkdir -p ${TASK_WORKDIR}/public/build
 conda pack -n VPN -o ${TASK_WORKDIR}/public/build/conda_env_mac.tar.gz
