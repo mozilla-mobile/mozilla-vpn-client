@@ -23,57 +23,39 @@ VPNViewBase {
     _interactive: false
 
     _viewContentData: ColumnLayout {
-        id: tabs
-        spacing: VPNTheme.theme.windowMargin * 2
-        Layout.fillWidth: true
+        spacing: VPNTheme.theme.windowMargin * 1.5
 
-        Item {
-            Layout.topMargin: VPNTheme.theme.windowMargin
-            Layout.bottomMargin: VPNTheme.theme.windowMargin *3
-            Layout.leftMargin: VPNTheme.theme.windowMargin * 2
-            Layout.rightMargin: VPNTheme.theme.windowMargin * 2
-            Layout.fillWidth: true
+        InformationCard {
+            objectName: "privacySettingsViewInformationCard"
+            Layout.preferredWidth: Math.min(window.width - VPNTheme.theme.windowMargin * 2, VPNTheme.theme.navBarMaxWidth)
+            Layout.minimumHeight: textBlocks.height + VPNTheme.theme.windowMargin * 2
+            Layout.alignment: Qt.AlignHCenter
 
-            VPNDropShadow {
-                anchors.fill: bg
-                source: bg
-                horizontalOffset: 1
-                verticalOffset: 1
-                radius: 6
-                color: VPNTheme.colors.grey60
-                opacity: .15
-                transparentBorder: true
-                cached: true
-            }
+            _infoContent: ColumnLayout {
+                id: textBlocks
+                spacing: 0
 
-            Rectangle {
-                id: bg
-                anchors.fill: info
-                anchors.topMargin: -VPNTheme.theme.windowMargin
-                anchors.bottomMargin: anchors.topMargin
-                anchors.leftMargin: -VPNTheme.theme.windowMargin
-                anchors.rightMargin: anchors.leftMargin
-                color: VPNTheme.theme.white
-                radius: 4
-            }
-
-            RowLayout {
-                id: info
-                spacing: VPNTheme.theme.windowMargin * 0.75
-                anchors.left: parent.left
-                anchors.right: parent.right
-                VPNIcon {
-                    source: "qrc:/nebula/resources/info.svg"
-                    Layout.alignment: Qt.AlignTop
-                }
                 VPNTextBlock {
                     Layout.fillWidth: true
                     width: undefined
                     text: VPNl18n.SettingsDnsSettingsWarning
+                    verticalAlignment: Text.AlignVCenter
+                    Accessible.role: Accessible.StaticText
+                    Accessible.name: text
+                }
+                Loader {
+                    active: !VPNController.silentServerSwitchingSupported && VPNController.state !== VPNController.StateOff
+                    Layout.fillWidth: true
+                    sourceComponent: VPNTextBlock {
+                        width: parent.width
+                        text: VPNl18n.SettingsDnsSettingsDisconnectWarning
+                        verticalAlignment: Text.AlignVCenter
+                        Accessible.role: Accessible.StaticText
+                        Accessible.name: text
+                    }
                 }
             }
         }
-
         Repeater {
             id: repeater
 

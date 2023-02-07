@@ -51,6 +51,11 @@ SubscriptionData* MozillaVPN::subscriptionData() {
   return new SubscriptionData();
 }
 
+Location* MozillaVPN::location() const {
+  static Location* location = new Location();
+  return location;
+}
+
 void MozillaVPN::initialize() {}
 
 void MozillaVPN::setState(State) {}

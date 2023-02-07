@@ -7,6 +7,7 @@
 
 #include "appconstants.h"
 #include "authenticationinapp/authenticationinapp.h"
+#include "glean/glean.h"
 #include "leakdetector.h"
 #include "loghandler.h"
 #include "settingsholder.h"
@@ -32,6 +33,7 @@ int main(int argc, char* argv[]) {
       "inAppAccountCreate", "inAppAuthentication", "accountDeletion"});
 
   LogHandler::enableStderr();
+  VPNGlean::registerLogHandler(LogHandler::rustMessageHandler);
 
   int failures = 0;
   TestEmailValidation tev;

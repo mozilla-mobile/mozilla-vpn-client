@@ -118,7 +118,7 @@ describe('Devices', function() {
       await vpn.waitForInitialView();
 
       // Click on get started and wait for authenticating view
-      await vpn.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
+      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
       await vpn.waitForQuery(
           queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
       await vpn.setQueryProperty(
@@ -256,7 +256,7 @@ describe('Devices', function() {
       await vpn.waitForInitialView();
 
       // Click on get started and wait for authenticating view
-      await vpn.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
+      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
       await vpn.waitForQuery(
           queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
       await vpn.setQueryProperty(
@@ -398,7 +398,7 @@ describe('Devices', function() {
       await vpn.waitForInitialView();
 
       // Click on get started and wait for authenticating view
-      await vpn.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
+      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
       await vpn.waitForQuery(
           queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
       await vpn.setQueryProperty(

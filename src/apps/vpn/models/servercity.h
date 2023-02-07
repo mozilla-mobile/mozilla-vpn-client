@@ -18,10 +18,11 @@ class ServerCity final : public QObject {
 
   Q_PROPERTY(QString name READ name CONSTANT)
   Q_PROPERTY(QString code READ code CONSTANT)
-  Q_PROPERTY(QString coutnry READ country CONSTANT)
+  Q_PROPERTY(QString country READ country CONSTANT)
   Q_PROPERTY(QString localizedName READ localizedName CONSTANT)
   Q_PROPERTY(double latitude READ latitude CONSTANT)
   Q_PROPERTY(double longitude READ longitude CONSTANT)
+  Q_PROPERTY(int connectionScore READ connectionScore NOTIFY scoreChanged)
 
  public:
   ServerCity();
@@ -29,7 +30,18 @@ class ServerCity final : public QObject {
   ServerCity& operator=(const ServerCity& other);
   ~ServerCity();
 
+  enum CityConnectionScores {
+    Unavailable = -1,
+    NoData = 0,
+    Poor = 1,
+    Moderate = 2,
+    Good = 3,
+  };
+  Q_ENUM(CityConnectionScores);
+
   [[nodiscard]] bool fromJson(const QJsonObject& obj, const QString& country);
+
+  const bool initialized() const { return !m_name.isEmpty(); }
 
   const QString& name() const { return m_name; }
 
@@ -39,16 +51,27 @@ class ServerCity final : public QObject {
 
   const QString localizedName() const;
 
+  const QString& hashKey() const { return m_hashKey; }
+  static QString hashKey(const QString& country, const QString cityName);
+
   double latitude() const { return m_latitude; }
 
   double longitude() const { return m_longitude; }
 
+  int connectionScore() const;
+
+  unsigned int latency() const;
+
   const QList<QString> servers() const { return m_servers; }
+
+ signals:
+  void scoreChanged() const;
 
  private:
   QString m_country;
   QString m_name;
   QString m_code;
+  QString m_hashKey;
   double m_latitude;
   double m_longitude;
 

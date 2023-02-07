@@ -329,8 +329,8 @@ $ conda activate VPN
     - Set `SDKROOT` to the target SDK.
     - Add it to the conda env via: `conda env config vars set SDKROOT=<>`
     - Default Paths where you probably find your SDK: 
-      - Default XCode-command-line tool path: `/Library/Developer/CommandLineTools/SDKs/MacOSX.<VersionNumber>.sdk`
-      - Default XCode.app path: `/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk`
+      - Default Xcode-command-line tool path: `/Library/Developer/CommandLineTools/SDKs/MacOSX.<VersionNumber>.sdk`
+      - Default Xcode.app path: `/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk`
  - Get a Build of QT (See: [Installing Qt6](#Installing-Qt6) )
  
 You are now ready to build!
@@ -547,7 +547,8 @@ cmake --build build --target build_tests -j $(nproc)
 ```
 
 Once built, you can run them with `ctest` as follows:
-``
+
+```
 ctest --test-dir build -j $(nproc) --output-on-failure
 ```
 
@@ -559,8 +560,10 @@ built by default. To build the `dummyvpn` target, in the root folder of this rep
 ```
 cmake --build build -j$(nproc) --target dummyvpn
 ```
+
 This will create a dummy build under the `tests/dummyvpn` folder. To run the functional
 tests against this build, make sure the `MVPN_BIN` environment variable is set:
+
 ```
 export MVPN_BIN=$(pwd)/build/tests/dummyvpn/dummyvpn
 ```

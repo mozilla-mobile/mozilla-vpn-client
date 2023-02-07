@@ -1475,7 +1475,7 @@ void TestModels::serverCountryModelFromJson_data() {
   countries.replace(0, d);
   obj.insert("countries", countries);
   QTest::addRow("good with one empty city")
-      << QJsonDocument(obj).toJson() << true << 0
+      << QJsonDocument(obj).toJson() << true << 1
       << QVariant("serverCountryName") << QVariant("serverCountryCode")
       << QVariant(QList<QVariant>{
              QStringList{"serverCityName", "serverCityName", "0"}});
@@ -1672,11 +1672,17 @@ void TestModels::serverCountryModelPick() {
     SettingsHolder settingsHolder;
     Localizer l;
 
-    QStringList tuple = m.pickRandom();
-    QCOMPARE(tuple.length(), 3);
-    QCOMPARE(tuple.at(0), "serverCountryCode");
-    QCOMPARE(tuple.at(1), "serverCityName");
-    QCOMPARE(tuple.at(2), "serverCityName");  // Localized?
+    QList<QVariant> results = m.recommendedLocations(1);
+    QCOMPARE(results.length(), 1);
+
+    QVariant qv = results.first();
+    QVERIFY(qv.canConvert<const ServerCity*>());
+
+    const ServerCity* city = qv.value<const ServerCity*>();
+    QVERIFY(city != nullptr);
+    QCOMPARE(city->country(), "serverCountryCode");
+    QCOMPARE(city->name(), "serverCityName");
+    QCOMPARE(city->localizedName(), "serverCityName");  // Localized?
   }
 }
 

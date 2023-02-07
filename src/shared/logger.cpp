@@ -35,7 +35,7 @@ CREATE_LOG_OP_REF(uint64_t);
 CREATE_LOG_OP_REF(const char*);
 CREATE_LOG_OP_REF(const QString&);
 CREATE_LOG_OP_REF(const QByteArray&);
-CREATE_LOG_OP_REF(void*);
+CREATE_LOG_OP_REF(const void*);
 
 #undef CREATE_LOG_OP_REF
 

@@ -96,13 +96,6 @@ FEATURE(keyRegeneration,       // Feature ID
         // TODO: Disabled - VPN-2693
         FeatureCallback_false)
 
-FEATURE(mobileOnboarding,       // Feature ID
-        "Mobile Onboarding",    // Feature name
-        FeatureCallback_true,   // Can be flipped on
-        FeatureCallback_false,  // Can be flipped off
-        QStringList(),          // feature dependencies
-        FeatureCallback_iosOrAndroid)
-
 FEATURE(multiHop,               // Feature ID
         "Multi-hop",            // Feature name
         FeatureCallback_true,   // Can be flipped on
@@ -192,4 +185,4 @@ FEATURE(sentry,                     // Feature ID
         FeatureCallback_true,       // Can be flipped on
         FeatureCallback_true,       // Can be flipped off
         QStringList(),              // feature dependencies
-        FeatureCallback_inStaging)
+        FeatureCallback_true)

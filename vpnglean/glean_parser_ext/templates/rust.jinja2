@@ -18,7 +18,9 @@ use once_cell::sync::Lazy;
 {% macro generate_extra_keys(obj) -%}
 {% for name, _ in obj["_generate_enums"] %}
 {% set suffix = "Extra" %}
-{{ extra_keys_with_types(obj, name, suffix)|indent }}
+{% if obj|attr(name)|length %}
+    {{ extra_keys_with_types(obj, name, suffix)|indent }}
+{% endif %}
 {% endfor %}
 {%- endmacro -%}
 

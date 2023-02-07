@@ -39,7 +39,7 @@ describe('Unsecured network alert', function() {
       await vpn.flipFeatureOff('inAppAuthentication');
       await vpn.waitForQuery(queries.screenInitialize.GET_HELP_LINK.visible());
 
-      await vpn.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
+      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
 
       await vpn.waitForCondition(async () => {
         const url = await vpn.getLastUrl();
@@ -60,7 +60,7 @@ describe('Unsecured network alert', function() {
       await vpn.waitForQueryAndClick(
           queries.screenAuthenticating.CANCEL_FOOTER_LINK.visible());
 
-      await vpn.waitForQuery(queries.screenInitialize.GET_STARTED.visible());
+      await vpn.waitForQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
     });
 
     it('Unsecured network alert in the Post authentication view', async () => {

@@ -35,9 +35,6 @@ ColumnLayout {
         rightInset: VPNTheme.theme.windowMargin * 3
         hasError: _searchBarHasError
 
-        onActiveFocusChanged: if (focus && vpnFlickable.ensureVisible) {
-            vpnFlickable.ensureVisible(searchBar);
-        }
         onLengthChanged: text => model.invalidate()
         onTextChanged: {
             if (focus) {

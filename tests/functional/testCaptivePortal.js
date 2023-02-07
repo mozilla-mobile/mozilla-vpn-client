@@ -39,7 +39,7 @@ describe('Captive portal', function() {
 
     await vpn.flipFeatureOff('inAppAuthentication');
     await vpn.waitForQueryAndClick(
-        queries.screenInitialize.GET_STARTED.visible());
+        queries.screenInitialize.SIGN_UP_BUTTON.visible());
 
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();

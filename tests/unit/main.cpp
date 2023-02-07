@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "appconstants.h"
+#include "glean/glean.h"
 #include "helper.h"
 #include "l18nstrings.h"
 #include "leakdetector.h"
@@ -75,6 +76,7 @@ int main(int argc, char* argv[]) {
 
   L18nStrings::initialize();
   LogHandler::enableStderr();
+  VPNGlean::registerLogHandler(LogHandler::rustMessageHandler);
 
   // If arguments were passed, then run a subset of tests.
   QStringList args = app.arguments();

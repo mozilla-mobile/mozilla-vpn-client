@@ -19,7 +19,7 @@ VPNClickableRow {
     property var currentCityIndex
     property alias serverCountryName: countryName.text
 
-    property bool hasAvailableCities: cities.reduce((initialValue, city) => (initialValue || VPNServerCountryModel.cityConnectionScore(code, city.code) >= 0), false)
+    property bool hasAvailableCities: cities.reduce((initialValue, city) => (initialValue || city.connectionScore >= 0), false)
 
     function openCityList() {
         cityListVisible = !cityListVisible;
@@ -38,7 +38,6 @@ VPNClickableRow {
         if (event.key === Qt.Key_Space) handleKeyClick()
     }
 
-    onActiveFocusChanged: vpnFlickable.ensureVisible(serverCountry)
     handleMouseClick: openCityList
     handleKeyClick: openCityList
     clip: true
@@ -171,7 +170,7 @@ VPNClickableRow {
                 property string _cityName: modelData.name
                 property string _countryCode: code
                 property string _localizedCityName: modelData.localizedName
-                property string locationScore: VPNServerCountryModel.cityConnectionScore(code, modelData.code)
+                property string locationScore: modelData.connectionScore
                 property bool isAvailable: locationScore >= 0
                 property int itemHeight: 54
 
@@ -180,7 +179,6 @@ VPNClickableRow {
                 activeFocusOnTab: cityListVisible
                 Keys.onDownPressed: if (citiesRepeater.itemAt(index + 1)) citiesRepeater.itemAt(index + 1).forceActiveFocus()
                 Keys.onUpPressed: if (citiesRepeater.itemAt(index - 1)) citiesRepeater.itemAt(index - 1).forceActiveFocus()
-                onActiveFocusChanged: vpnFlickable.ensureVisible(del)
                 radioButtonLabelText: _localizedCityName
                 accessibleName: _localizedCityName
                 implicitWidth: parent.width

@@ -113,10 +113,7 @@ describe('Server list', function() {
         const cityId = queries.screenHome.serverListView.generateCityId(
             countryId, city.name);
         console.log('  Waiting for cityId:', cityId);
-        await vpn.waitForQuery(cityId.visible().prop(
-            'checked',
-            currentCountryCode === server.code &&
-                currentCity === city.localizedName));
+        await vpn.waitForQuery(cityId.visible());
       }
     }
   })

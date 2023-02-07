@@ -26,12 +26,14 @@ find_library(FW_SERVICEMGMT ServiceManagement)
 find_library(FW_SECURITY Security)
 find_library(FW_COREWLAN CoreWLAN)
 find_library(FW_NETWORK Network)
+find_library(FW_USER_NOTIFICATIONS UserNotifications)
 
 target_link_libraries(mozillavpn PRIVATE ${FW_SYSTEMCONFIG})
 target_link_libraries(mozillavpn PRIVATE ${FW_SERVICEMGMT})
 target_link_libraries(mozillavpn PRIVATE ${FW_SECURITY})
 target_link_libraries(mozillavpn PRIVATE ${FW_COREWLAN})
 target_link_libraries(mozillavpn PRIVATE ${FW_NETWORK})
+target_link_libraries(mozillavpn PRIVATE ${FW_USER_NOTIFICATIONS})
 
 # MacOS platform source files
 target_sources(mozillavpn PRIVATE
@@ -69,8 +71,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosstartatbootwatcher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macossystemtraynotificationhandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macossystemtraynotificationhandler.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/wgquickprocess.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/wgquickprocess.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosnetworkwatcher.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosnetworkwatcher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosstatusicon.mm

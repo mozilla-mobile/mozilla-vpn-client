@@ -14,6 +14,12 @@
 
 Server::Server() { MZ_COUNT_CTOR(Server); }
 
+Server::Server(const QString& countryCode, const QString& cityName) {
+  MZ_COUNT_CTOR(Server);
+  m_countryCode = countryCode;
+  m_cityName = cityName;
+}
+
 Server::Server(const Server& other) {
   MZ_COUNT_CTOR(Server);
   *this = other;
@@ -34,6 +40,8 @@ Server& Server::operator=(const Server& other) {
   m_multihopPort = other.m_multihopPort;
   m_cooldownTimeout = other.m_cooldownTimeout;
   m_latency = other.m_latency;
+  m_countryCode = other.m_countryCode;
+  m_cityName = other.m_cityName;
 
   return *this;
 }

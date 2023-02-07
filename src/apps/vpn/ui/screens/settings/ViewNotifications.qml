@@ -18,15 +18,12 @@ VPNViewBase {
     //% "Notifications"
     _menuTitle: qsTrId("vpn.settings.notifications")
 
-    _viewContentData: Column {
-        Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin
-        Layout.rightMargin: VPNTheme.theme.windowMargin
-        spacing: VPNTheme.theme.windowMargin
+    _viewContentData: ColumnLayout {
+        spacing: VPNTheme.theme.windowMargin * 1.5
 
         VPNCheckBoxRow {
             id: captivePortalAlert
             objectName: "settingCaptivePortalAlert"
-            width: parent.width
             visible: VPNFeatureList.get("captivePortal").isSupported
             //% "Guest Wi-Fi portal alert"
             labelText: qsTrId("vpn.settings.guestWifiAlert")
@@ -37,14 +34,13 @@ VPNViewBase {
             onClicked: {
                 VPNSettings.captivePortalAlert = !VPNSettings.captivePortalAlert
             }
+            Layout.rightMargin: VPNTheme.theme.windowMargin
         }
 
         VPNCheckBoxRow {
             id: unsecuredNetworkAlert
             objectName: "settingUnsecuredNetworkAlert"
-            width: parent.width
             visible: VPNFeatureList.get("unsecuredNetworkNotification").isSupported
-
             //% "Unsecured network alert"
             labelText: qsTrId("vpn.settings.unsecuredNetworkAlert")
             //% "Get notified if you connect to an unsecured Wi-Fi network"
@@ -55,14 +51,13 @@ VPNViewBase {
             onClicked: {
                 VPNSettings.unsecuredNetworkAlert = !VPNSettings.unsecuredNetworkAlert
             }
+            Layout.rightMargin: VPNTheme.theme.windowMargin
         }
 
         VPNCheckBoxRow {
             id: switchServersAlert
             objectName: "switchServersAlert"
             visible: VPNFeatureList.get("notificationControl").isSupported
-            width: parent.width
-
             //% "Server switching notification"
             labelText: qsTrId("vpn.settings.notification.serverSwitch2")
             //% "Get notified when you successfully switched servers"
@@ -72,13 +67,13 @@ VPNViewBase {
             onClicked: {
                 VPNSettings.serverSwitchNotification = !VPNSettings.serverSwitchNotification
             }
+            Layout.rightMargin: VPNTheme.theme.windowMargin
         }
 
         VPNCheckBoxRow {
             id: connectionChangeAlert
             objectName: "connectionChangeAlert"
             visible: VPNFeatureList.get("notificationControl").isSupported
-            width: parent.width
 
             //% "Connection change notification"
             labelText: qsTrId("vpn.settings.notification.connectionChange2")
@@ -89,14 +84,13 @@ VPNViewBase {
             onClicked: {
                 VPNSettings.connectionChangeNotification = !VPNSettings.connectionChangeNotification
             }
+            Layout.rightMargin: VPNTheme.theme.windowMargin
         }
 
         VPNCheckBoxRow {
             id: serverUnavailableNotification
             objectName: "serverUnavailableNotification"
             visible: VPNFeatureList.get("serverUnavailableNotification").isSupported
-            width: parent.width
-
             labelText: VPNl18n.ServerUnavailableNotificationPreferencesLabel
             subLabelText: VPNl18n.ServerUnavailableNotificationPreferencesSubLabel
             isChecked: (VPNSettings.serverUnavailableNotification)
@@ -104,6 +98,7 @@ VPNViewBase {
             onClicked: {
                 VPNSettings.serverUnavailableNotification = !VPNSettings.serverUnavailableNotification
             }
+            Layout.rightMargin: VPNTheme.theme.windowMargin
         }
     }
     Component.onCompleted: {

@@ -43,17 +43,23 @@ void ServerLatency::initialize() {
   connect(&m_pingTimeout, &QTimer::timeout, this,
           &ServerLatency::maybeSendPings);
 
+  m_refreshTimer.setSingleShot(true);
   connect(&m_refreshTimer, &QTimer::timeout, this, &ServerLatency::start);
 
-  m_refreshTimer.start(SERVER_LATENCY_INITIAL_MSEC);
+  const Feature* feature = Feature::get(Feature::Feature_serverConnectionScore);
+  connect(feature, &Feature::supportedChanged, this, &ServerLatency::start);
+  if (feature->isSupported()) {
+    m_refreshTimer.start(SERVER_LATENCY_INITIAL_MSEC);
+  }
 }
 
 void ServerLatency::start() {
+  MozillaVPN* vpn = MozillaVPN::instance();
   if (!Feature::get(Feature::Feature_serverConnectionScore)->isSupported()) {
+    vpn->serverCountryModel()->clearServerLatency();
     return;
   }
 
-  MozillaVPN* vpn = MozillaVPN::instance();
   if (vpn->controller()->state() != Controller::StateOff) {
     // Don't attempt to refresh latency when the VPN is active, or
     // we could get misleading results.
@@ -68,17 +74,37 @@ void ServerLatency::start() {
   m_sequence = 0;
   m_wantRefresh = false;
   m_pingSender = PingSenderFactory::create(QHostAddress(), this);
-  ServerCountryModel* scm = vpn->serverCountryModel();
 
   connect(m_pingSender, SIGNAL(recvPing(quint16)), this,
           SLOT(recvPing(quint16)), Qt::QueuedConnection);
   connect(m_pingSender, SIGNAL(criticalPingError()), this,
           SLOT(criticalPingError()));
 
-  // Generate a list of servers to ping.
-  // TODO: Could be m_pingSendQueue = scm->m_servers.keys(), but it's private.
-  for (const Server& server : scm->servers()) {
-    m_pingSendQueue.append(server.publicKey());
+  // Generate a list of servers to ping. If possible, sort them by geographic
+  // distance to try and get data for the quickest servers first.
+  for (const ServerCountry& country : vpn->serverCountryModel()->countries()) {
+    for (const QString& cityName : country.cities()) {
+      const ServerCity& city =
+          vpn->serverCountryModel()->findCity(country.code(), cityName);
+      double distance =
+          vpn->location()->distance(city.latitude(), city.longitude());
+      Q_ASSERT(city.initialized());
+
+      // Search for where in the list to insert this city's servers.
+      auto i = m_pingSendQueue.begin();
+      while (i != m_pingSendQueue.end()) {
+        if (i->distance >= distance) {
+          break;
+        }
+        i++;
+      }
+
+      // Insert the servers into the list.
+      for (const QString& pubkey : city.servers()) {
+        ServerPingRecord rec = {pubkey, 0, 0, distance, 0};
+        i = m_pingSendQueue.insert(i, rec);
+      }
+    }
   }
 
   m_refreshTimer.stop();
@@ -109,7 +135,7 @@ void ServerLatency::maybeSendPings() {
       retry.timestamp = now;
       m_pingReplyList.append(retry);
 
-      Server server = scm->server(retry.publicKey);
+      const Server& server = scm->server(retry.publicKey);
       m_pingSender->sendPing(QHostAddress(server.ipv4AddrIn()), retry.sequence);
     }
 
@@ -123,14 +149,13 @@ void ServerLatency::maybeSendPings() {
       break;
     }
 
-    ServerPingRecord record;
-    record.publicKey = m_pingSendQueue.takeFirst();
+    ServerPingRecord record = m_pingSendQueue.takeFirst();
     record.sequence = m_sequence++;
     record.timestamp = now;
     record.retries = 0;
     m_pingReplyList.append(record);
 
-    Server server = scm->server(record.publicKey);
+    const Server& server = scm->server(record.publicKey);
     m_pingSender->sendPing(QHostAddress(server.ipv4AddrIn()), record.sequence);
   }
 

@@ -123,7 +123,7 @@ const MVPNPresets = [
       await controller.waitForInitialView();
 
       await controller.waitForQuery('//initialStackView{busy=false}');
-      await controller.clickOnQuery('//getStarted');
+      await controller.clickOnQuery('//signUpButton');
 
       await controller.waitForVPNProperty(
           'VPN', 'userState', 'UserAuthenticated');
@@ -140,14 +140,6 @@ const MVPNPresets = [
       await controller.waitForQuery('//controllerTitle');
     }
   },
-
-  {
-    name: 'Mobile onboarding',
-    callback: async function() {
-      await controller.flipFeatureOn('mobileOnboarding');
-    }
-  },
-
   {
     name: 'Authentication in app',
     callback: async function() {
@@ -157,7 +149,7 @@ const MVPNPresets = [
       await controller.waitForInitialView();
 
       await controller.waitForQuery('//initialStackView{busy=false}');
-      await controller.clickOnQuery('//getStarted');
+      await controller.clickOnQuery('//signUpButton');
 
       mvpnWasm.addPresetInfo(
           'Existing account: wasm@wasm.wasm - Password: wasm');
@@ -286,7 +278,7 @@ const MVPNPresets = [
       await controller.waitForInitialView();
 
       await controller.waitForQuery('//initialStackView{busy=false}');
-      await controller.clickOnQuery('//getStarted');
+      await controller.clickOnQuery('//signUpButton');
 
       await controller.waitForVPNProperty(
           'VPN', 'userState', 'UserAuthenticated');
@@ -340,7 +332,7 @@ const MVPNPresets = [
       await controller.waitForInitialView();
 
       await controller.waitForQuery('//initialStackView{busy=false}');
-      await controller.clickOnQuery('//getStarted');
+      await controller.clickOnQuery('//signUpButton');
 
       await controller.waitForVPNProperty(
           'VPN', 'userState', 'UserAuthenticated');
@@ -397,7 +389,7 @@ const MVPNPresets = [
       await controller.waitForInitialView();
 
       await controller.waitForQuery('//initialStackView{busy=false}');
-      await controller.clickOnQuery('//getStarted');
+      await controller.clickOnQuery('//signUpButton');
     },
 
     guardianOverrideEndpoints: {
@@ -431,7 +423,7 @@ const MVPNPresets = [
       await controller.waitForInitialView();
 
       await controller.waitForQuery('//initialStackView{busy=false}');
-      await controller.clickOnQuery('//getStarted');
+      await controller.clickOnQuery('//signUpButton');
     },
 
     guardianOverrideEndpoints: {

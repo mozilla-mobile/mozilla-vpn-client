@@ -25,9 +25,7 @@ class ServerCountry final {
 
   const QString& code() const { return m_code; }
 
-  const QList<ServerCity>& cities() const { return m_cities; }
-
-  const QList<QString> serversFromCityName(const QString& cityName) const;
+  const QList<QString>& cities() const { return m_cities; }
 
   void sortCities();
 
@@ -35,7 +33,7 @@ class ServerCountry final {
   QString m_name;
   QString m_code;
 
-  QList<ServerCity> m_cities;
+  QList<QString> m_cities;
 };
 
 #endif  // SERVERCOUNTRY_H

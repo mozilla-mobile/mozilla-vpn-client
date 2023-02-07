@@ -45,7 +45,7 @@ describe('User authentication', function() {
 
       await vpn.waitForInitialView();
 
-      await vpn.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
+      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
       await vpn.waitForQuery(
           queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
       await vpn.waitForQuery(
@@ -193,7 +193,7 @@ describe('User authentication', function() {
 
       await vpn.waitForInitialView();
 
-      await vpn.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
+      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
       await vpn.waitForQuery(
           queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
       await vpn.waitForQuery(
@@ -301,7 +301,7 @@ describe('User authentication', function() {
 
       await vpn.waitForInitialView();
 
-      await vpn.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
+      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
       await vpn.waitForQuery(
           queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
       await vpn.waitForQuery(
@@ -393,7 +393,7 @@ describe('User authentication', function() {
 
       await vpn.waitForInitialView();
 
-      await vpn.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
+      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
       await vpn.waitForQuery(
           queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
       await vpn.waitForQuery(
@@ -479,14 +479,14 @@ describe('User authentication', function() {
 
       // Step 1: main -> start -> main
       await vpn.waitForInitialView();
-      await vpn.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
+      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await vpn.waitForQueryAndClick(
           queries.screenAuthenticationInApp.AUTH_START_BACK_BUTTON.visible());
       await vpn.waitForInitialView();
 
       // Step 2: main -> start -> help -> start
-      await vpn.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
+      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
       await vpn.waitForQuery(
           queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
       await vpn.waitForQueryAndClick(
@@ -643,7 +643,7 @@ describe('User authentication', function() {
         };
         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 400;
       };
-      await vpn.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
+      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
       await vpn.waitForQuery(
           queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
       await vpn.setQueryProperty(
@@ -724,7 +724,7 @@ describe('User authentication', function() {
         await vpn.flipFeatureOn('inAppAccountCreate');
       }
 
-      await vpn.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
+      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
 
       // Step 1: start -> popup errors
       for (let errorCode
@@ -983,7 +983,7 @@ describe('User authentication', function() {
         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 400;
       };
 
-      await vpn.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
+      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
       await vpn.waitForQuery(
           queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
       await vpn.setQueryProperty(

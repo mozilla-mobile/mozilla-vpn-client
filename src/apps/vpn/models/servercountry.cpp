@@ -49,7 +49,7 @@ bool ServerCountry::fromJson(const QJsonObject& countryObj) {
     return false;
   }
 
-  QList<ServerCity> scList;
+  QList<QString> cityNames;
   QJsonArray citiesArray = cities.toArray();
   for (const QJsonValue& cityValue : citiesArray) {
     if (!cityValue.isObject()) {
@@ -57,47 +57,29 @@ bool ServerCountry::fromJson(const QJsonObject& countryObj) {
     }
 
     QJsonObject cityObject = cityValue.toObject();
-
-    ServerCity serverCity;
-    if (!serverCity.fromJson(cityObject, countryCode.toString())) {
+    QString cityName = cityObject.value("name").toString();
+    if (cityName.isEmpty()) {
       return false;
     }
-
-    if (serverCity.servers().isEmpty()) {
-      continue;
-    }
-
-    scList.append(serverCity);
+    cityNames.append(cityName);
   }
 
   m_name = countryName.toString();
   m_code = countryCode.toString();
-  m_cities.swap(scList);
+  m_cities.swap(cityNames);
 
   sortCities();
 
   return true;
 }
 
-const QList<QString> ServerCountry::serversFromCityName(
-    const QString& cityName) const {
-  for (const ServerCity& city : m_cities) {
-    if (city.name() == cityName) {
-      return city.servers();
-    }
-  }
-
-  return QList<QString>();
-}
-
 namespace {
 
-bool sortCityCallback(const ServerCity& a, const ServerCity& b,
+bool sortCityCallback(const QString& a, const QString& b,
                       const QString& countryCode, Collator* collator) {
   Q_ASSERT(collator);
-  return collator->compare(
-             ServerI18N::translateCityName(countryCode, a.name()),
-             ServerI18N::translateCityName(countryCode, b.name())) < 0;
+  return collator->compare(ServerI18N::translateCityName(countryCode, a),
+                           ServerI18N::translateCityName(countryCode, b)) < 0;
 }
 
 }  // anonymous namespace

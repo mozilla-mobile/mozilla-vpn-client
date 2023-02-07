@@ -43,28 +43,27 @@ class ServerCountryModel final : public QAbstractListModel {
 
   bool initialized() const { return !m_rawJson.isEmpty(); }
 
-  Q_INVOKABLE QStringList pickRandom() const;
-  QStringList pickBest(const Location& location) const;
+  QStringList pickBest() const;
 
   bool exists(const QString& countryCode, const QString& cityName) const;
+  const ServerCity& findCity(const QString& countryCode,
+                             const QString& cityName) const;
 
-  const QList<Server> servers(const QString& countryCode,
-                              const QString& cityName) const;
-  const QList<Server> servers() const { return m_servers.values(); };
-  Server server(const QString& pubkey) const { return m_servers.value(pubkey); }
+  const Server& server(const QString& pubkey) const;
 
   const QString countryName(const QString& countryCode) const;
 
   const QList<ServerCountry>& countries() const { return m_countries; }
 
   void retranslate();
+  unsigned int avgLatency() const;
   void setServerLatency(const QString& publicKey, unsigned int msec);
+  void clearServerLatency();
   void setServerCooldown(const QString& publicKey);
   void setCooldownForAllServersInACity(const QString& countryCode,
                                        const QString& cityCode);
 
-  Q_INVOKABLE int cityConnectionScore(const QString& countryCode,
-                                      const QString& cityCode) const;
+  Q_INVOKABLE QList<QVariant> recommendedLocations(unsigned int count) const;
 
   // QAbstractListModel methods
 
@@ -83,13 +82,16 @@ class ServerCountryModel final : public QAbstractListModel {
   [[nodiscard]] bool fromJsonInternal(const QByteArray& data);
 
   void sortCountries();
-  int cityConnectionScore(const ServerCity& city) const;
 
  private:
   QByteArray m_rawJson;
 
   QList<ServerCountry> m_countries;
+  QHash<QString, ServerCity> m_cities;
   QHash<QString, Server> m_servers;
+
+  qint64 m_sumLatencyMsec;
+  qint64 m_numLatencySamples;
 };
 
 #endif  // SERVERCOUNTRYMODEL_H

@@ -16,7 +16,7 @@ describe('User authentication in browser', function() {
   it('returns to main view on canceling authentication', async () => {
     await vpn.waitForInitialView();
 
-    await vpn.clickOnQuery(queries.screenInitialize.GET_STARTED.visible());
+    await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
 
     if (!this.ctx.wasm) {
       await vpn.waitForCondition(async () => {
@@ -30,46 +30,11 @@ describe('User authentication in browser', function() {
     await vpn.waitForQueryAndClick(
         queries.screenAuthenticating.CANCEL_FOOTER_LINK.visible());
 
-    await vpn.waitForQuery(queries.screenInitialize.GET_STARTED.visible());
-  });
-
-  it('Starts authentication at end of onboarding view', async () => {
-    await vpn.waitForInitialView();
-
-    await vpn.waitForQueryAndClick(
-        queries.screenInitialize.LEARN_MORE_LINK.visible());
-
-    await vpn.waitForQuery(queries.screenInitialize.SKIP_ONBOARDING.visible());
-
-    while (true) {
-      assert(
-          await vpn.query(queries.screenInitialize.ONBOARDING_NEXT.visible()));
-
-      if (await vpn.getQueryProperty(
-              queries.screenInitialize.ONBOARDING_NEXT.visible(), 'text') ===
-          'Next') {
-        await vpn.clickOnQuery(
-            queries.screenInitialize.ONBOARDING_NEXT.visible());
-        continue;
-      }
-
-      break;
-    }
-
-    await vpn.clickOnQuery(queries.screenInitialize.ONBOARDING_NEXT.visible());
-
-    if (!this.ctx.wasm) {
-      await vpn.waitForCondition(async () => {
-        const url = await vpn.getLastUrl();
-        return url.includes('/api/v2/vpn/login');
-      });
-    }
-
-    await vpn.clickOnQuery(
-        queries.screenInitialize.AUTHENTICATE_VIEW.visible());
+    await vpn.waitForQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
   });
 
   it('Completes authentication', async () => {
+    await vpn.waitForInitialView();
     await vpn.authenticateInBrowser(true, true, this.ctx.wasm);
   });
 

@@ -101,6 +101,8 @@ class ServerData final : public QObject {
 
  private:
   bool settingsChanged();
+  static QList<Server> getServerList(const QString& countryCode,
+                                     const QString& cityName);
 
  private:
   bool m_initialized = false;

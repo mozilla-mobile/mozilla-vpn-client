@@ -169,7 +169,7 @@ class MozillaVPN final : public QObject {
     return &m_private->m_supportCategoryModel;
   }
   Keys* keys() { return &m_private->m_keys; }
-  Location* location() { return &m_private->m_location; }
+  Location* location() const;
   NetworkWatcher* networkWatcher() { return &m_private->m_networkWatcher; }
   ProfileFlow* profileFlow() { return &m_private->m_profileFlow; }
   ReleaseMonitor* releaseMonitor() { return &m_private->m_releaseMonitor; }

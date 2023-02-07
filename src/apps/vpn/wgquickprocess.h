@@ -14,8 +14,9 @@ class WgQuickProcess final {
   Q_DISABLE_COPY_MOVE(WgQuickProcess)
 
  public:
-  static QString createConfigString(const InterfaceConfig& config,
-                                    const QMap<QString, QString>& extra);
+  static QString createConfigString(
+      const InterfaceConfig& config,
+      const QMap<QString, QString>& extra = QMap<QString, QString>());
 };
 
 #endif  // WGQUICKPROCESS_H

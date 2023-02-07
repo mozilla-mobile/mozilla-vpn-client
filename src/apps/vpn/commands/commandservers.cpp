@@ -78,14 +78,18 @@ int CommandServers::run(QStringList& tokens) {
         countryObj["code"] = country.code();
 
         QJsonArray cityArray;
-        for (const ServerCity& city : country.cities()) {
+        for (const QString& cityName : country.cities()) {
+          const ServerCity& city = scm->findCity(country.code(), cityName);
+          if (!city.initialized()) {
+            continue;
+          }
           QJsonObject cityObj;
           cityObj["name"] = city.name();
           cityObj["code"] = city.code();
 
           QJsonArray serverArray;
           for (const QString& pubkey : city.servers()) {
-            const Server server = vpn.serverCountryModel()->server(pubkey);
+            const Server& server = vpn.serverCountryModel()->server(pubkey);
             if (!server.initialized()) {
               continue;
             }
@@ -114,11 +118,15 @@ int CommandServers::run(QStringList& tokens) {
       for (const ServerCountry& country : scm->countries()) {
         stream << "- Country: " << country.name()
                << " (code: " << country.code() << ")" << Qt::endl;
-        for (const ServerCity& city : country.cities()) {
+        for (const QString& cityName : country.cities()) {
+          const ServerCity& city = scm->findCity(country.code(), cityName);
+          if (!city.initialized()) {
+            continue;
+          }
           stream << "  - City: " << city.name() << " (" << city.code() << ")"
                  << Qt::endl;
           for (const QString& pubkey : city.servers()) {
-            const Server server = vpn.serverCountryModel()->server(pubkey);
+            const Server& server = vpn.serverCountryModel()->server(pubkey);
             if (!server.initialized()) {
               continue;
             }

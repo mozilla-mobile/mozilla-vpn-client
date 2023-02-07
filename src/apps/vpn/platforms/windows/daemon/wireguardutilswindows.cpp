@@ -94,6 +94,14 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
     return false;
   }
 
+  // We don't want to pass a peer just yet, that will happen later with
+  // a UAPI command in WireguardUtilsWindows::updatePeer(), so truncate
+  // the config file to remove the [Peer] section.
+  qsizetype peerStart = configString.indexOf("[Peer]", 0, Qt::CaseSensitive);
+  if (peerStart >= 0) {
+    configString.truncate(peerStart);
+  }
+
   if (!m_tunnel.start(configString)) {
     logger.error() << "Failed to activate the tunnel service";
     return false;

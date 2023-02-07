@@ -63,6 +63,8 @@ class Controller final : public QObject {
       int connectionRetry READ connectionRetry NOTIFY connectionRetryChanged);
   Q_PROPERTY(bool enableDisconnectInConfirming READ enableDisconnectInConfirming
                  NOTIFY enableDisconnectInConfirmingChanged);
+  Q_PROPERTY(bool silentServerSwitchingSupported READ
+                 silentServerSwitchingSupported CONSTANT);
 
 #ifdef MZ_DUMMY
   // This is just for testing purposes. Not exposed in prod.
@@ -109,15 +111,25 @@ class Controller final : public QObject {
   void captivePortalGone();
 
   const ServerData& currentServer() const { return m_serverData; }
+  bool silentServerSwitchingSupported() const;
 
 #ifdef MZ_DUMMY
   QString currentServerString() const;
 #endif
 
+  static QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
+
+  enum ServerSelectionPolicy {
+    RandomizeServerSelection,
+    DoNotRandomizeServerSelection,
+  };
+
  public slots:
   // These 2 methods activate/deactivate the VPN. Return true if a signal will
   // be emitted at the end of the operation.
-  bool activate(const ServerData& serverData);
+  bool activate(
+      const ServerData& serverData,
+      ServerSelectionPolicy serverSelectionPolicy = RandomizeServerSelection);
   bool deactivate();
 
   Q_INVOKABLE void quit();
@@ -156,10 +168,15 @@ class Controller final : public QObject {
   void maybeEnableDisconnectInConfirming();
 
   bool processNextStep();
-  QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
   QStringList getExcludedAddresses();
 
-  void activateInternal(bool forceDNSPort = false);
+  enum DNSPortPolicy {
+    ForceDNSPort,
+    DoNotForceDNSPort,
+  };
+
+  void activateInternal(DNSPortPolicy dnsPort,
+                        ServerSelectionPolicy serverSelectionPolicy);
   void activateNext();
 
   void clearRetryCounter();
@@ -214,6 +231,8 @@ class Controller final : public QObject {
   // Please, do not use MozillaVPN::serverData() in the controller!
   ServerData m_serverData;
   ServerData m_nextServerData;
+
+  ServerSelectionPolicy m_nextServerSelectionPolicy = RandomizeServerSelection;
 
   int m_connectionRetry = 0;
 
