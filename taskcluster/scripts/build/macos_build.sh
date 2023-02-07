@@ -39,6 +39,7 @@ export PYTHONIOENCODING="UTF-8"
 
 
 print Y "Installing conda environment"
+export CONDA_BUILD_SYSROOT=$(xcrun --sdk macosx --show-sdk-path)
 ls -al ${MOZ_FETCHES_DIR}
 source ${MOZ_FETCHES_DIR}/bin/activate
 conda-unpack
