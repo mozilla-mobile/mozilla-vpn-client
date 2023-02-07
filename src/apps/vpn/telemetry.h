@@ -43,6 +43,16 @@ class Telemetry final : public QObject {
 
   // The Glean timer id for the performance.time_to_main_screen metric.
   int m_timeToFirstScreenTimerId = 0;
+
+  enum ControllerOperation {
+    None,
+    Switching,
+    SilentSwitching,
+  };
+  Q_ENUM(ControllerOperation);
+
+  // Monitor the operation the controller is performing.
+  ControllerOperation m_controllerOperation = None;
 };
 
 #endif  // TELEMETRY_H

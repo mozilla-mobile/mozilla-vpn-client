@@ -949,6 +949,11 @@ sample:
       transport:
         description: The Host network type (i.e wifi or 4g)
         type: string
+      operation_type:
+        description: |
+          The type of operation the controller was performing. Ex. none,
+          silent-switch, switch
+        type: string
 
   connectivity_stable:
     type: event

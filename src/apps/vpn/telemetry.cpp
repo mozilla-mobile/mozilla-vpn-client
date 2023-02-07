@@ -54,23 +54,27 @@ void Telemetry::initialize() {
           this, &Telemetry::onDaemonStatus);
 #endif
 
-  connect(controller, &Controller::handshakeFailed, this,
-          [](const QString& publicKey) {
-            logger.info() << "Send a handshake failure event";
+  connect(
+      controller, &Controller::handshakeFailed, this,
+      [this](const QString& publicKey) {
+        logger.info() << "Send a handshake failure event";
 
-            mozilla::glean::sample::connectivity_handshake_timeout.record(
-                mozilla::glean::sample::ConnectivityHandshakeTimeoutExtra{
-                    ._server = publicKey,
-                    ._transport = MozillaVPN::instance()
-                                      ->networkWatcher()
-                                      ->getCurrentTransport()});
-            emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-                GleanSample::connectivityHandshakeTimeout,
-                {{"server", publicKey},
-                 {"transport", MozillaVPN::instance()
-                                   ->networkWatcher()
-                                   ->getCurrentTransport()}});
-          });
+        mozilla::glean::sample::connectivity_handshake_timeout.record(
+            mozilla::glean::sample::ConnectivityHandshakeTimeoutExtra{
+                ._operationType =
+                    QVariant::fromValue(m_controllerOperation).toString(),
+                ._server = publicKey,
+                ._transport = MozillaVPN::instance()
+                                  ->networkWatcher()
+                                  ->getCurrentTransport()});
+        emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
+            GleanSample::connectivityHandshakeTimeout,
+            {{"server", publicKey},
+             {"transport",
+              MozillaVPN::instance()->networkWatcher()->getCurrentTransport()},
+             {"operationType",
+              QVariant::fromValue(m_controllerOperation).toString()}});
+      });
 
   connect(controller, &Controller::stateChanged, this, [this]() {
     MozillaVPN* vpn = MozillaVPN::instance();
@@ -83,6 +87,21 @@ void Telemetry::initialize() {
       m_connectionStabilityTimer.stop();
     } else {
       m_connectionStabilityTimer.start(CONNECTION_STABILITY_MSEC);
+    }
+
+    // Let's try to guess the Controller operation
+    switch (state) {
+      case Controller::StateOff:
+        m_controllerOperation = None;
+        break;
+      case Controller::StateSilentSwitching:
+        m_controllerOperation = SilentSwitching;
+        break;
+      case Controller::StateSwitching:
+        m_controllerOperation = Switching;
+        break;
+      default:
+        break;
     }
 
     mozilla::glean::sample::controller_step.record(
