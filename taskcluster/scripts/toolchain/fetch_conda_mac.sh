@@ -14,9 +14,6 @@ TASK_HOME=$(dirname "${MOZ_FETCHES_DIR}" )
 rm -rf "${TASK_WORKDIR}/miniconda"
 mkdir -p "${TASK_WORKDIR}/miniconda"
 
-print Y "Debugging env..."
-env
-
 print Y "Installing conda"
 chmod +x ${MOZ_FETCHES_DIR}/miniconda.sh
 bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -u -p ${TASK_WORKDIR}/miniconda
