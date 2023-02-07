@@ -24,6 +24,8 @@ bool Controller::silentSwitchServers(bool) { return false; }
 
 void Controller::activateInternal(bool forcePort53) { Q_UNUSED(forcePort53) }
 
+bool Controller::silentServerSwitchingSupported() const { return false; }
+
 bool Controller::deactivate() { return false; }
 
 void Controller::connected(const QString& pubkey,

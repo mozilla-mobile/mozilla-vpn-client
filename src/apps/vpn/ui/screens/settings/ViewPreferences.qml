@@ -39,11 +39,6 @@ VPNViewBase {
             }
         }
 
-        VPNVerticalSpacer {
-            height: 1
-            width: parent.width
-        }
-
         VPNCheckBoxRow {
             id: dataCollection
             objectName: "dataCollection"
