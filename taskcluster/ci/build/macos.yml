@@ -15,6 +15,7 @@ task-defaults:
         fetch:
             - miniconda-osx
         toolchain:
+            - conda-mac
             - qt-mac
     scopes:
         - project:releng:services/tooltool/api/download/public

@@ -22,4 +22,5 @@ task-defaults:
         tier: 1
 
 tasks-from:
+    - conda.yml
     - qt.yml
