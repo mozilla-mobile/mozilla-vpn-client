@@ -8,6 +8,8 @@ task-defaults:
             - env.yml
             - requirements.txt
             - taskcluster/scripts/requirements.txt
+    worker:
+        max-run-time: 3600
 
 conda-mac:
     description: "Conda dev environment (MacOS)"
