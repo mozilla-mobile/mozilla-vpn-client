@@ -39,9 +39,11 @@ export PYTHONIOENCODING="UTF-8"
 
 
 print Y "Installing conda environment"
-mkdir -p ${TASK_HOME}/miniconda
-tar -xzf ${MOZ_FETCHES_DIR}/conda_env_mac.tar.gz -C ${TASK_HOME}/miniconda
-source ${TASK_HOME}/miniconda/bin/activate
+ls -al ${MOZ_FETCHES_DIR}
+source ${MOZ_FETCHES_DIR}/bin/activate
+#mkdir -p ${TASK_HOME}/miniconda
+#tar -xzf ${MOZ_FETCHES_DIR}/conda_env_mac.tar.gz -C ${TASK_HOME}/miniconda
+#source ${TASK_HOME}/miniconda/bin/activate
 
 # Conda Cannot know installed MacOS SDK'S
 # and as we use conda'provided clang/llvm
