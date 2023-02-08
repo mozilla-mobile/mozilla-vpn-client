@@ -189,6 +189,11 @@ module.exports = {
     await this.clickOnQuery(id);
   },
 
+  async waitForQueryAndWriteInTextField(id, value){
+    await this.waitForQuery(id)
+    await this.setQueryProperty(id, 'text', value)
+  },
+
   async clickOnNotification() {
     const json = await this._writeCommand('click_notification');
     assert(
