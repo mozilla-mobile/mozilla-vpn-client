@@ -4,6 +4,7 @@
   "name": "Guide: recommended servers",
   "type": "guide",
   "conditions": {
+    "translation_threshold": 1.0,
     "enabled_features": ["recommendedServers"]
   },
   "guide": {

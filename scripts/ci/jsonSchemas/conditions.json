@@ -15,6 +15,10 @@
       "type": "string",
       "description": "Enable the addon only in a particular environment: staging, production"
     },
+    "translation_threshold" : {
+      "type": "number",
+      "description": "The threshold value for translation"
+    },
     "locales": {
       "type": "array",
       "description": "List of supported locales",

@@ -56,6 +56,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/addons/conditionwatchers/addonconditionwatchertime.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/addons/conditionwatchers/addonconditionwatchertimeend.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/addons/conditionwatchers/addonconditionwatchertimestart.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/addons/conditionwatchers/addonconditionwatchertranslationthreshold.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/addons/conditionwatchers/addonconditionwatchertranslationthreshold.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/addons/manager/addondirectory.cpp

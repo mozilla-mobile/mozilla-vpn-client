@@ -69,7 +69,7 @@ class Localizer final : public QAbstractListModel {
   static void forceRTL();
 
   // Public for testing
-  static QMap<QString, double> loadLanguageCompleteness(
+  static QMap<QString, double> loadTranslationCompleteness(
       const QString& fileName);
 
   // QAbstractListModel methods

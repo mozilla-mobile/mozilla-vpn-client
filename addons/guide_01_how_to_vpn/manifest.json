@@ -2,6 +2,9 @@
   "api_version": "0.1",
   "id": "guide_01_how_to_vpn",
   "name": "Guide: how to vpn",
+  "conditions": {
+    "translation_threshold": 1.0
+  },
   "type": "guide",
   "guide": {
     "id": "how_to_vpn",

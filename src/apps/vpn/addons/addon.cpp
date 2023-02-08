@@ -22,6 +22,7 @@
 #include "conditionwatchers/addonconditionwatcherlocales.h"
 #include "conditionwatchers/addonconditionwatchertimeend.h"
 #include "conditionwatchers/addonconditionwatchertimestart.h"
+#include "conditionwatchers/addonconditionwatchertranslationthreshold.h"
 #include "conditionwatchers/addonconditionwatchertriggertimesecs.h"
 #include "feature.h"
 #include "glean/generated/metrics.h"
@@ -267,6 +268,16 @@ QList<ConditionCallback> s_conditionCallbacks{
      [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
        return AddonConditionWatcherJavascript::maybeCreate(addon,
                                                            value.toString());
+     }},
+
+    {"translation_threshold",
+     [](const QJsonValue&) -> bool {
+       // dynamic condition
+       return true;
+     },
+     [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
+       return AddonConditionWatcherTranslationThreshold::maybeCreate(
+           addon, value.toDouble());
      }},
 };
 

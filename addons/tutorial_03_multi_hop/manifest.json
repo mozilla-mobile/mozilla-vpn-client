@@ -3,6 +3,7 @@
   "id": "tutorial_03_multi_hop",
   "name": "Tutorial: Using multi-hop VPN",
   "conditions": {
+    "translation_threshold": 1.0,
     "enabled_features": ["multiHop"],
     "min_client_version": "2.13.0"
   },

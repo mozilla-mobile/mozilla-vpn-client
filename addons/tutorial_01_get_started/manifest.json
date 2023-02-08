@@ -3,6 +3,9 @@
   "id": "tutorial_01_get_started",
   "name": "Tutorial: get started",
   "type": "tutorial",
+  "conditions": {
+    "translation_threshold": 1.0
+  },
   "tutorial": {
     "id": "01_get_started",
     "highlighted": true,

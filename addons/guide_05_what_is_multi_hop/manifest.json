@@ -3,6 +3,9 @@
     "id": "guide_05_what_is_multi_hop",
     "name": "Guide: what is multi-hop VPN",
     "type": "guide",
+    "conditions": {
+        "translation_threshold": 1.0
+    },
     "guide": {
         "id": "what_is_multi_hop",
         "title": "What is multi-hop VPN?",

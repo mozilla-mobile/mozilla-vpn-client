@@ -1,0 +1,39 @@
+{
+  "api_version": "0.1",
+  "id": "tutorial_01",
+  "name": "Tutorial: 01",
+  "type": "tutorial",
+  "conditions": {
+    "translation_threshold": 1
+  },
+  "tutorial": {
+    "id": "01",
+    "highlighted": true,
+    "settings_rollback_needed": true,
+    "image": "qrc:/addons/tutorial_01/image.svg",
+    "title": "Tutorial 01",
+    "subtitle": "Tutorial 01 sub",
+    "completion_message": "You’ve successfully completed tutorial 01",
+    "steps": [
+      {
+        "id": "mainScreen",
+        "query": "//serverListButton-btn{visible=true}",
+        "tooltip": "Select your location",
+        "before": [{
+          "op": "vpn_off"
+        },{
+          "op": "vpn_location_set",
+          "exitCountryCode": "at",
+          "exitCity": "Vienna",
+          "entryCountryCode": "",
+          "entryCity": ""
+        }],
+        "next": {
+          "op": "signal",
+          "query_emitter": "//serverListButton-btn{visible=true}",
+          "signal": "visibleChanged"
+        }
+      }
+    ]
+  }
+}
