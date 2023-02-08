@@ -15,8 +15,8 @@
 #include "servercountrymodel.h"
 #include "serveri18n.h"
 
-// Minimum number of redundant servers in a location in order to be "good"
-constexpr int SCORE_GOOD_SERVER_REDUNDANCY = 3;
+// Minimum number of redundant servers we expect at a location.
+constexpr int SCORE_SERVER_REDUNDANCY_THRESHOLD = 3;
 
 // Latency threshold for excellent connections, set intentionally very low.
 constexpr int SCORE_EXCELLENT_LATENCY_THRESHOLD = 30;
@@ -143,7 +143,7 @@ int ServerCity::connectionScore() const {
   }
 
   // Increase the score if the location has sufficient redundancy.
-  if (activeServerCount >= SCORE_GOOD_SERVER_REDUNDANCY) {
+  if (activeServerCount >= SCORE_SERVER_REDUNDANCY_THRESHOLD) {
     score++;
   }
 
