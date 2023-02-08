@@ -19,6 +19,7 @@ task-defaults:
     scopes:
         - project:releng:services/tooltool/api/download/public
         - project:releng:services/tooltool/api/download/internal
+        - secrets:get:project/mozillavpn/level-1/sentry
     worker:
         taskcluster-proxy: true
         chain-of-trust: true
@@ -44,7 +45,4 @@ macos/opt:
     treeherder:
         symbol: B
     requires-level: 3 
-    scopes:
-        - project:releng:services/tooltool/api/download/public
-        - project:releng:services/tooltool/api/download/internal
-        - secrets:get:project/mozillavpn/tokens
+
