@@ -1,12 +1,16 @@
 version: 2
 updates:
-  # gitsubmodules in 3rdparty
-  - package-ecosystem: "gitsubmodule"
-    directory: "/"
-    schedule:
-      interval: "monthly"
-    labels:
-      - "dependencies"
+#  # gitsubmodules in 3rdparty
+## Why is this disabled? 
+##  Dependabot cannot currently update from Tag -> Newer Tag
+#   Only to newer commits. Therefore it is not providing us the 
+#   updates we need :c
+#  - package-ecosystem: "gitsubmodule"
+#    directory: "/"
+#    schedule:
+#      interval: "monthly"
+#    labels:
+#      - "dependencies"
   # Windows Wireguard-Go
   - package-ecosystem: "gomod"
     directory: "/windows/tunnel"
