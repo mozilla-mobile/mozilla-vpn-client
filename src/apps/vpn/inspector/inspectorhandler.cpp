@@ -567,6 +567,24 @@ static QList<InspectorCommand> s_commands{
                        return obj;
                      }},
 
+    InspectorCommand{"messages", "Returns a list of the loaded messages ids", 0,
+                     [](InspectorHandler*, const QList<QByteArray>&) {
+                       QJsonObject obj;
+
+                       AddonManager* am = AddonManager::instance();
+                       Q_ASSERT(am);
+
+                       QJsonArray messages;
+                       am->forEach([&](Addon* addon) {
+                         if (addon->type() == "message") {
+                           messages.append(addon->id());
+                         }
+                       });
+
+                       obj["value"] = messages;
+                       return obj;
+                     }},
+
     InspectorCommand{"translate", "Translate a string", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;

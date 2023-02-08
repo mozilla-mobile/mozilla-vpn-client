@@ -1,7 +1,7 @@
 {
   "scripts": {
-    "functionalTest": "mocha --require ./tests/functional/setupVpn.js --timeout 30000 --retries 3",
-    "functionalTestWasm": "mocha --require ./tests/functional/setupWasm.js --timeout 30000 --retries 3"
+    "functionalTest": "mocha --require ./tests/functional/setupVpn.js --timeout 30000",
+    "functionalTestWasm": "mocha --require ./tests/functional/setupWasm.js --timeout 30000"
   },
   "devDependencies": {
     "body-parser": "^1.20.0",

@@ -499,6 +499,14 @@ module.exports = {
     return json.value;
   },
 
+  async messages() {
+    const json = await this._writeCommand('messages');
+    assert(
+        json.type === 'messages' && !('error' in json),
+        `Command failed: ${json.error}`);
+    return json.value;
+  },
+
   async screenCapture() {
     const json = await this._writeCommand('screen_capture');
     assert(
