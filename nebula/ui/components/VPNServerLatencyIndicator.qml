@@ -14,7 +14,8 @@ VPNIcon {
     states: [
         // Low latency
         State {
-            when: score === VPNServerCountryModel.Good
+            when: (score === VPNServerCountryModel.Good ||
+                score == VPNServerCountryModel.Excellent)
             PropertyChanges {
                 target: latencyIndicator
                 source: "qrc:/nebula/resources/server-latency-strong.svg"

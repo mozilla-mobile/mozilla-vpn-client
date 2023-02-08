@@ -18,6 +18,9 @@
 // Minimum number of redundant servers in a location in order to be "good"
 constexpr int SCORE_GOOD_SERVER_REDUNDANCY = 3;
 
+// Latency threshold for excellent connections, set intentionally very low.
+constexpr int SCORE_EXCELLENT_LATENCY_THRESHOLD = 30;
+
 ServerCity::ServerCity() { MZ_COUNT_CTOR(ServerCity); }
 
 ServerCity::ServerCity(const ServerCity& other) {
@@ -130,17 +133,27 @@ int ServerCity::connectionScore() const {
   }
 
   // Increase the score if the location has better than average latency.
-  if ((sumLatencyMsec / activeServerCount) < scm->avgLatency()) {
+  uint32_t cityLatencyMsec = sumLatencyMsec / activeServerCount;
+  if (cityLatencyMsec < scm->avgLatency()) {
     score++;
+    // Give the location another point if the latency is *very* fast.
+    if (cityLatencyMsec < SCORE_EXCELLENT_LATENCY_THRESHOLD) {
+      score++;
+    }
   }
 
-  // Increase the score if the location has 6 or more servers.
+  // Increase the score if the location has sufficient redundancy.
   if (activeServerCount >= SCORE_GOOD_SERVER_REDUNDANCY) {
     score++;
   }
 
-  if (score > Good) {
-    score = Good;
+  // Increase the score for locations in the same country as the user.
+  if (m_country == MozillaVPN::instance()->location()->countryCode()) {
+    score++;
+  }
+
+  if (score > Excellent) {
+    score = Excellent;
   }
   return score;
 }
