@@ -29,7 +29,7 @@ struct {{ obj.name|Camelize }}ExtraParser : EventMetricExtraParser {
       keepStringsAlive.append(s);
       ffiExtras.values[count] = s.constData();
       {% elif type == "boolean" %}
-      ffiExtras.values[count] = parsedExtras._{{item|camelize}} ? "true" : "false";
+      ffiExtras.values[count] = parsedExtras._{{item|camelize}}.toBool() ? "true" : "false";
       {% elif type == "quantity" %}
       QByteArray s = QString::number(parsedExtras._{{item|camelize}}.toInt()).toUtf8();
       keepStringsAlive.append(s);
