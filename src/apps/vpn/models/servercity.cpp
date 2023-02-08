@@ -26,6 +26,14 @@ ServerCity::ServerCity() { MZ_COUNT_CTOR(ServerCity); }
 ServerCity::ServerCity(const ServerCity& other) {
   MZ_COUNT_CTOR(ServerCity);
   *this = other;
+
+  // Changes in the average latency may cause the connection score to change.
+  MozillaVPN* vpn = MozillaVPN::instance();
+  if (vpn) {
+    connect(vpn->serverLatency(), &ServerLatency::progressChanged, this, [this]{
+      emit scoreChanged();
+    });
+  }
 }
 
 ServerCity& ServerCity::operator=(const ServerCity& other) {

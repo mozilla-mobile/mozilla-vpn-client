@@ -23,6 +23,9 @@ constexpr const int SERVER_LATENCY_MAX_PARALLEL = 8;
 
 constexpr const int SERVER_LATENCY_MAX_RETRIES = 2;
 
+// Delay the progressChanged() signal to rate-limit how often score changes.
+constexpr const uint32_t SERVER_LATENCY_PROGRESS_DELAY_MSEC = 500;
+
 namespace {
 Logger logger("ServerLatency");
 }
@@ -45,6 +48,11 @@ void ServerLatency::initialize() {
 
   m_refreshTimer.setSingleShot(true);
   connect(&m_refreshTimer, &QTimer::timeout, this, &ServerLatency::start);
+
+  m_progressDelayTimer.setSingleShot(true);
+  connect(&m_progressDelayTimer, &QTimer::timeout, this, [this]() {
+    emit progressChanged();
+  });
 
   const Feature* feature = Feature::get(Feature::Feature_serverConnectionScore);
   connect(feature, &Feature::supportedChanged, this, &ServerLatency::start);
@@ -108,8 +116,10 @@ void ServerLatency::start() {
     }
   }
 
-  m_lastUpdateTime = QDateTime::currentDateTime();
   m_pingSendTotal = m_pingSendQueue.count();
+
+  m_progressDelayTimer.stop();
+  emit progressChanged();
 
   m_refreshTimer.stop();
   maybeSendPings();
@@ -163,7 +173,10 @@ void ServerLatency::maybeSendPings() {
     m_pingSender->sendPing(QHostAddress(server.ipv4AddrIn()), record.sequence);
   }
 
-  emit progressChanged();
+  m_lastUpdateTime = QDateTime::currentDateTime();
+  if (!m_progressDelayTimer.isActive()) {
+    m_progressDelayTimer.start(SERVER_LATENCY_PROGRESS_DELAY_MSEC);
+  }
 
   if (m_pingReplyList.isEmpty()) {
     // If the ping reply list is empty, then we have nothing left to do.
@@ -192,6 +205,9 @@ void ServerLatency::stop() {
   }
 
   emit progressChanged();
+  if (m_progressDelayTimer.isActive()) {
+    m_progressDelayTimer.stop();
+  }
   if (!m_refreshTimer.isActive()) {
     m_refreshTimer.start(SERVER_LATENCY_REFRESH_MSEC);
   }
@@ -210,15 +226,7 @@ void ServerLatency::clear() {
   m_latency.clear();
   m_sumLatencyMsec = 0;
 
-  ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
-  for (const ServerCountry& country : scm->countries()) {
-    for (const QString& cityName : country.cities()) {
-      const ServerCity& city = scm->findCity(country.code(), cityName);
-      if (city.initialized()) {
-        emit city.scoreChanged();
-      }
-    }
-  }
+  emit progressChanged();
 }
 
 void ServerLatency::stateChanged() {

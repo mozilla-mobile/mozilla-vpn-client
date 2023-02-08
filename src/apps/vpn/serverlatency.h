@@ -75,6 +75,7 @@ class ServerLatency final : public QObject {
 
   QTimer m_pingTimeout;
   QTimer m_refreshTimer;
+  QTimer m_progressDelayTimer;
   bool m_wantRefresh = false;
 
  private slots:
