@@ -2,7 +2,7 @@ version: 2
 updates:
   # gitsubmodules in 3rdparty
   - package-ecosystem: "gitsubmodule"
-    directory: "/3rdparty"
+    directory: "/"
     schedule:
       interval: "monthly"
     labels:
