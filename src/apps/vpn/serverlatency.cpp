@@ -50,9 +50,8 @@ void ServerLatency::initialize() {
   connect(&m_refreshTimer, &QTimer::timeout, this, &ServerLatency::start);
 
   m_progressDelayTimer.setSingleShot(true);
-  connect(&m_progressDelayTimer, &QTimer::timeout, this, [this]() {
-    emit progressChanged();
-  });
+  connect(&m_progressDelayTimer, &QTimer::timeout, this,
+          [this]() { emit progressChanged(); });
 
   const Feature* feature = Feature::get(Feature::Feature_serverConnectionScore);
   connect(feature, &Feature::supportedChanged, this, &ServerLatency::start);
