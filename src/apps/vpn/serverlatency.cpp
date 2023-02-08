@@ -204,9 +204,7 @@ void ServerLatency::stop() {
   }
 
   emit progressChanged();
-  if (m_progressDelayTimer.isActive()) {
-    m_progressDelayTimer.stop();
-  }
+  m_progressDelayTimer.stop();
   if (!m_refreshTimer.isActive()) {
     m_refreshTimer.start(SERVER_LATENCY_REFRESH_MSEC);
   }

@@ -31,7 +31,7 @@ ServerCity::ServerCity(const ServerCity& other) {
   MozillaVPN* vpn = MozillaVPN::instance();
   if (vpn) {
     connect(vpn->serverLatency(), &ServerLatency::progressChanged, this,
-            [this]{ emit scoreChanged(); });
+            [this] { emit scoreChanged(); });
   }
 }
 
