@@ -67,34 +67,32 @@ print Y "Updating submodules..."
 git submodule init || die
 git submodule update || die
 
-
-if [[ "$RELEASE" ]]; then
-    # Install dependendy got get-secret.py 
-    python3 -m pip install -r taskcluster/scripts/requirements.txt --user
-    print Y "Fetching tokens..."
-    # Only on a release build we have access to those secrects. 
-    ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_dsn -f sentry_dsn
-    ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_envelope_endpoint -f sentry_envelope_endpoint
-    export SENTRY_ENVELOPE_ENDPOINT=$(cat sentry_envelope_endpoint)
-    export SENTRY_DSN=$(cat sentry_dsn)
+# Install dependendy got get-secret.py 
+python3 -m pip install -r taskcluster/scripts/requirements.txt
+print Y "Fetching tokens..."
+# Only on a release build we have access to those secrects. 
+./taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_dsn -f sentry_dsn
+./taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_envelope_endpoint -f sentry_envelope_endpoint
+./taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
+export SENTRY_ENVELOPE_ENDPOINT=$(cat sentry_envelope_endpoint)
+export SENTRY_DSN=$(cat sentry_dsn)
+#Install Sentry CLI, if' not already installed from previous run. 
+if ! command -v sentry-cli &> /dev/null
+then
+    npm install -g @sentry/cli
 fi
+sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
+
 
 print Y "Configuring the build..."
 mkdir ${MOZ_FETCHES_DIR}/build
 
-if [[ "$RELEASE" ]]; then
-    cmake -S . -B ${MOZ_FETCHES_DIR}/build -GNinja \
+cmake -S . -B ${MOZ_FETCHES_DIR}/build -GNinja \
         -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake \
         -DSENTRY_DSN=$SENTRY_DSN \
         -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
-        -DCMAKE_BUILD_TYPE=Release \
-        ${CMAKE_ARGS}
-else 
-    cmake -S . -B ${MOZ_FETCHES_DIR}/build -GNinja \
-        -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake \
-        -DCMAKE_BUILD_TYPE=Release \
-        ${CMAKE_ARGS}
-fi 
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo
+
 
 print Y "Building the client..."
 cmake --build ${MOZ_FETCHES_DIR}/build
@@ -104,6 +102,22 @@ cmake --build ${MOZ_FETCHES_DIR}/build --target pkg
 
 print Y "Exporting the build artifacts..."
 mkdir -p tmp || die
+
+
+print Y "Extracting the Symbols..."
+dsymutil ${MOZ_FETCHES_DIR}/build/src/Mozilla\ VPN.app/Contents/MacOS/Mozilla\ VPN  -o tmp/MozillaVPN.dsym
+
+
+print Y "Checking & genrating a symbols bundle"
+ls tmp/MozillaVPN.dsym/Contents/Resources/DWARF/
+sentry-cli difutil check tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
+sentry-cli difutil bundle-sources tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
+
+if [[ "$RELEASE" ]]; then      
+    print Y "Uploading the Symbols..." 
+    sentry-cli debug-files upload --org mozilla -p vpn-client tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
+fi
+
 cp -r ${MOZ_FETCHES_DIR}/build/src/Mozilla\ VPN.app tmp || die
 cp -r ${MOZ_FETCHES_DIR}/build/macos/pkg/Resources tmp || die
 cp -r ./macos/pkg/scripts tmp || die

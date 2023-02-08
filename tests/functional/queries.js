@@ -95,6 +95,7 @@ const screenHome = {
     BACK_BUTTON: new QmlQueryComposer('//serverListBackButton'),
     COUNTRY_VIEW: new QmlQueryComposer('//serverCountryView'),
     ENTRY_BUTTON: new QmlQueryComposer('//buttonSelectEntry'),
+    EXIT_BUTTON: new QmlQueryComposer('//buttonSelectExit'),
     SEARCH_BAR: new QmlQueryComposer('//countrySearchBar'),
     SEARCH_BAR_TEXT_FIELD: new QmlQueryComposer('//searchBarTextField'),
     SEARCH_BAR_ERROR: new QmlQueryComposer('//searchBarError'),

@@ -189,6 +189,11 @@ module.exports = {
     await this.clickOnQuery(id);
   },
 
+  async waitForQueryAndWriteInTextField(id, value){
+    await this.waitForQuery(id)
+    await this.setQueryProperty(id, 'text', value)
+  },
+
   async clickOnNotification() {
     const json = await this._writeCommand('click_notification');
     assert(
@@ -495,6 +500,14 @@ module.exports = {
     const json = await this._writeCommand('guides');
     assert(
         json.type === 'guides' && !('error' in json),
+        `Command failed: ${json.error}`);
+    return json.value;
+  },
+
+  async messages() {
+    const json = await this._writeCommand('messages');
+    assert(
+        json.type === 'messages' && !('error' in json),
         `Command failed: ${json.error}`);
     return json.value;
   },

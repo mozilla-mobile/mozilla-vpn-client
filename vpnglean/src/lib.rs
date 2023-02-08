@@ -25,8 +25,7 @@ const GLEAN_APPLICATION_ID: &str = "mozillavpn";
 
 #[no_mangle]
 pub extern "C" fn glean_register_log_handler(message_handler: extern fn(i32, *mut c_char)) {
-    let logger = Logger::new(message_handler);
-    logger.init();
+    Logger::init(message_handler);
 }
 
 #[no_mangle]

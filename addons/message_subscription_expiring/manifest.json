@@ -1,0 +1,37 @@
+{
+  "api_version": "0.1",
+  "id": "message_subscription_expiring",
+  "name": "Subscription expiring message",
+  "type": "message",
+  "conditions": {
+    "javascript": "isExpiring.js",
+    "min_client_version": "2.15.0"
+  },
+  "message": {
+    "id": "message_subscription_expiring",
+    "title": "Your subscription is ending soon",
+    "subtitle": "Your Mozilla VPN subscription will end in one week. After that, you’ll no longer be able to use Mozilla VPN.",
+    "badge": "warning",
+    "blocks": [
+      {
+        "id": "c_1",
+        "type": "text",
+        "content": "Don’t lose your subscription — please go to your account page to renew your access to Mozilla VPN. If you’re having any issues, please contact support to get help."
+      },
+      {
+        "id": "c_2",
+        "type": "button",
+        "style": "primary",
+        "content": "Manage account",
+        "javascript": "manageAccountLink.js"
+      },
+      {
+        "id": "c_3",
+        "type": "button",
+        "style": "link",
+        "content": "Contact support",
+        "javascript": "contactSupportLink.js"
+      }
+    ]
+  }
+}

@@ -39,6 +39,8 @@ const SubscriptionDetails = {
   },
 };
 
+exports.SubscriptionDetails = SubscriptionDetails;
+
 const VALIDATORS = {
   guardianLoginVerify: {
     type: 'object',

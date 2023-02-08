@@ -17,7 +17,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "org.mozilla.components:tooling-glean-gradle:107.0.2"
+        classpath "org.mozilla.telemetry:glean-gradle-plugin:52.2.0"
     }
 }
 
@@ -128,7 +128,7 @@ android.libraryVariants.all { variant ->
     def udlFilePath = "glean-core/src/glean.udl"
     def t = tasks.register("generate${variant.name.capitalize()}UniFFIBindings", Exec) {
         workingDir "$gleanVendoredPath"
-        commandLine "cargo", "uniffi-bindgen", "generate", "--no-format", "${udlFilePath}", "--language", "kotlin", "--out-dir", "${buildDir}/${uniffiGeneratedPath}", "--config","${repositoryRoot}/vpnglean/uniffi.toml"
+        commandLine "cargo", "uniffi-bindgen", "generate", "--no-format", "${udlFilePath}", "--language", "kotlin", "--out-dir", "${buildDir}/${uniffiGeneratedPath}"
         outputs.dir "${buildDir}/${uniffiGeneratedPath}"
         // Re-generate if the interface definition changes.
         inputs.file "$gleanVendoredPath/glean-core/src/glean.udl"
