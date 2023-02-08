@@ -15,6 +15,9 @@
 #include "servercountrymodel.h"
 #include "serveri18n.h"
 
+// Minimum number of redundant servers in a location in order to be "good"
+constexpr int SCORE_GOOD_SERVER_REDUNDANCY = 3;
+
 ServerCity::ServerCity() { MZ_COUNT_CTOR(ServerCity); }
 
 ServerCity::ServerCity(const ServerCity& other) {
@@ -132,7 +135,7 @@ int ServerCity::connectionScore() const {
   }
 
   // Increase the score if the location has 6 or more servers.
-  if (activeServerCount >= 6) {
+  if (activeServerCount >= SCORE_GOOD_SERVER_REDUNDANCY) {
     score++;
   }
 
