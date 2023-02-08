@@ -89,7 +89,6 @@ if ! command -v sentry-cli &> /dev/null
 then
     npm install -g @sentry/cli
 fi
-sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
 
 
 print Y "Configuring the build..."
@@ -123,6 +122,7 @@ sentry-cli difutil bundle-sources tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
 
 if [[ "$RELEASE" ]]; then      
     print Y "Uploading the Symbols..." 
+    sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
     sentry-cli debug-files upload --org mozilla -p vpn-client tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
 fi
 
