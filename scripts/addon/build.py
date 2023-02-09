@@ -9,6 +9,7 @@ import os
 import xml.etree.ElementTree as ET
 import tempfile
 import shutil
+import subprocess
 import sys
 
 comment_types = {
@@ -363,6 +364,7 @@ with open(args.source, "r", encoding="utf-8") as file:
         shutil.copyfile(template_ts_file, ts_file)
         os.system(f"{lrelease} -idbased {ts_file}")
 
+        completeness = [];
         i18n_path = os.path.join(os.path.dirname(script_path), "i18n")
         for locale in os.listdir(i18n_path):
             if not os.path.isdir(os.path.join(i18n_path, locale)) or locale.startswith("."):
@@ -376,6 +378,20 @@ with open(args.source, "r", encoding="utf-8") as file:
                 locale_file = os.path.join(tmp_path, "i18n", f"locale_{locale}.ts")
                 os.system(f"{lconvert} -if xlf -i {xliff_path} -o {locale_file}")
                 os.system(f"{lrelease} -idbased {locale_file}")
+
+                xlifftool_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "utils", "xlifftool.py")
+                xlifftool_cmd = [sys.executable, xlifftool_path, "-C", f"--locale={locale}", xliff_path]
+                xlifftool = subprocess.run(xlifftool_cmd, capture_output=True)
+                completeness_output = xlifftool.stdout.decode("utf-8")
+                completeness.append(f"{locale}:{completeness_output}")
+
+        # If we don't have translations yet, we still have English at 100%.
+        if not completeness:
+            completeness.append("en:1.0")
+
+        completeness_file = os.path.join(tmp_path, "i18n", f"translations.completeness")
+        with open(completeness_file, "w", encoding="utf-8") as f:
+            f.write("".join(completeness))
 
     else:
        print("Addon not translatable")

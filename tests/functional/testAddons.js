@@ -202,4 +202,28 @@ describe('Addons', function () {
       });
     });
   });
+
+  it('Translations threshold', async () => {
+    await vpn.resetAddons('06_translation_threshold');
+    await vpn.waitForCondition(async () => {
+      return parseInt(
+                 await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
+          2;
+    });
+
+    await vpn.setSetting('languageCode', 'it');
+
+    await vpn.waitForCondition(async () => {
+      return parseInt(
+                 await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
+          1;
+    });
+
+    await vpn.setSetting('languageCode', '');
+    await vpn.waitForCondition(async () => {
+      return parseInt(
+                 await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
+          2;
+    });
+  });
 });

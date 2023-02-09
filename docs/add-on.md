@@ -49,6 +49,7 @@ Add-ons can enable and disable themselves using the `conditions` key in the mani
 | start_time | The epoch time that activates the current add-on | Integer | No | Yes |
 | end_time | The epoch time that deactivates the current add-on | Integer | No | Yes |
 | javascript | A script file is executed to change the condition status. See below | String | No | Yes | 
+| translation_threshold | The translation threshold to use. By default 1 (full translation required) | Number | No | No |
 
 Some conditions are dynamic. This means that the value can change their status dynamically during the app execution.
 

@@ -168,7 +168,7 @@ void Localizer::initialize() {
 
 void Localizer::loadLanguagesFromI18n() {
   QMap<QString, double> completeness =
-      loadLanguageCompleteness(":/i18n/translations.completeness");
+      loadTranslationCompleteness(":/i18n/translations.completeness");
 
   QDir dir(":/i18n");
   QStringList files = dir.entryList();
@@ -210,7 +210,7 @@ void Localizer::loadLanguagesFromI18n() {
 }
 
 // static
-QMap<QString, double> Localizer::loadLanguageCompleteness(
+QMap<QString, double> Localizer::loadTranslationCompleteness(
     const QString& fileName) {
   QFile file(fileName);
   Q_ASSERT(file.exists());

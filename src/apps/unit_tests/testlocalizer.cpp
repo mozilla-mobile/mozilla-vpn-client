@@ -237,7 +237,7 @@ void TestLocalizer::completeness() {
   QFETCH(QString, filename);
   QFETCH(CompletenessList, output);
 
-  CompletenessList list = Localizer::loadLanguageCompleteness(filename);
+  CompletenessList list = Localizer::loadTranslationCompleteness(filename);
 
   for (const QString& key : output.keys()) {
     QCOMPARE(list.value(key, -1), output.value(key));
