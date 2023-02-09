@@ -466,6 +466,9 @@ Item {
             if (!box.connectionInfoScreenVisible) {
                 VPNGleanDeprecated.recordGleanEvent("connectionInfoOpened");
                 Glean.sample.connectionInfoOpened.record();
+            } else if (VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateRunning) {
+                VPNGleanDeprecated.recordGleanEventWithExtraKeys("speedTestCompleted", { "speed": "Cancelled" });
+                Glean.sample.speedTestCompleted.record({ speed: "Cancelled" });
             }
             box.connectionInfoScreenVisible = !box.connectionInfoScreenVisible;
         }

@@ -71,6 +71,14 @@ void ConnectionBenchmark::setConnectionSpeed() {
 }
 
 void ConnectionBenchmark::setState(State state) {
+  // Wrapped in if statement so only log this once when have both upload and
+  // download errors
+  if (state == StateError && m_state != StateError) {
+    emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
+        GleanSample::speedTestCompleted, {{"speed", "Error"}});
+    mozilla::glean::sample::speed_test_completed.record(
+        mozilla::glean::sample::SpeedTestCompletedExtra{._speed = "Error"});
+  }
   logger.debug() << "Set state" << state;
   m_state = state;
 
