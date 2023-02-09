@@ -126,6 +126,9 @@ exports.mochaHooks = {
       console.log('::endgroup');
     }
 
+    // Clear our logs from file.
+    fs.writeFileSync(stdout, "");
+
     // Close VPN app
     // If something's gone really wrong with the test,
     // then this can fail and cause the tests to hang.
