@@ -1,5 +1,5 @@
 codecov:
-  token: process.env.CODECOV_TOKEN
+  token: ${{ secrets.CODECOV_TOKEN }}
   require_ci_to_pass: yes
 
 coverage:
