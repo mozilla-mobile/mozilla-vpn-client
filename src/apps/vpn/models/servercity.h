@@ -36,6 +36,7 @@ class ServerCity final : public QObject {
     Poor = 1,
     Moderate = 2,
     Good = 3,
+    Excellent = 4,
   };
   Q_ENUM(CityConnectionScores);
 

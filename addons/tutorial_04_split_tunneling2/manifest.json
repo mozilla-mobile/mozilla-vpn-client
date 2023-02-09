@@ -6,7 +6,6 @@
     "enabled_features": ["splitTunnel"],
     "min_client_version": "2.14.0"
   },
-  "translatable": false,
   "type": "tutorial",
   "tutorial": {
     "id": "04_split_tunneling",

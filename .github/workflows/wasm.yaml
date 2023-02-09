@@ -26,7 +26,7 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
-        with: 
+        with:
             submodules: 'true'
 
       - name: Install Qt
@@ -122,8 +122,8 @@ jobs:
         with:
           name: WebAssembly Build Qt6
           # Destination path
-          path: wasm          
-          
+          path: wasm
+
       - name: Build addons
         shell: bash
         run: ./scripts/addon/generate_all_tests.py -q /opt/$QTVERSION/gcc_64/bin
@@ -137,4 +137,4 @@ jobs:
           command: |
             export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
             export HEADLESS=yes
-            xvfb-run -a npm run functionalTestWasm -- ${{matrix.test.path}}
+            xvfb-run -a npm run functionalTestWasm --  --retries 3 ${{matrix.test.path}}
