@@ -6,7 +6,6 @@ task-defaults:
     worker:
         env:
             QT_VERSION: "6.2.4"
-            QT_MAJOR: "6.2"
         max-run-time: 14400
 
 qt-mac:
@@ -20,6 +19,9 @@ qt-mac:
     treeherder:
         symbol: TL(qt-mac)
     worker-type: b-macos
+    worker:
+        env:
+            QT_VERSION: "6.3.2"
 
 qt-win:
     description: "Windows QT compile Task"
