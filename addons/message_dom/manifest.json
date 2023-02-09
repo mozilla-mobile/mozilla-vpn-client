@@ -5,6 +5,7 @@
   "translatable": false,
   "type": "message",
   "conditions": {
+    "translation_threshold": 0,
     "env": "staging"
   },
   "message": {

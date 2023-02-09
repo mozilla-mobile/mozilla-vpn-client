@@ -208,7 +208,7 @@ describe('Addons', function () {
     await vpn.waitForCondition(async () => {
       return parseInt(
                  await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
-          1;
+          2;
     });
 
     await vpn.setSetting('languageCode', 'it');
@@ -216,14 +216,14 @@ describe('Addons', function () {
     await vpn.waitForCondition(async () => {
       return parseInt(
                  await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
-          0;
+          1;
     });
 
     await vpn.setSetting('languageCode', '');
     await vpn.waitForCondition(async () => {
       return parseInt(
                  await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
-          1;
+          2;
     });
   });
 });

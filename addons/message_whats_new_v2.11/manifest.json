@@ -4,7 +4,6 @@
   "name": "What's new message",
   "type": "message",
   "conditions": {
-    "translation_threshold": 1.0,
     "min_client_version": "2.11.0",
     "max_client_version": "2.11.9"
   },  

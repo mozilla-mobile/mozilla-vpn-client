@@ -4,7 +4,6 @@
   "name": "Survey Message",
   "type": "message",
   "conditions": {
-    "translation_threshold": 1.0,
     "trigger_time": 2419200
   },
   "javascript": {

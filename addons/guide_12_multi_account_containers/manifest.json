@@ -4,7 +4,6 @@
   "name": "Guide: Multi-Account Containers",
   "type": "guide",
   "conditions": {
-    "translation_threshold": 1.0,
     "platforms": ["windows", "macos", "linux"]
   },
   "guide": {

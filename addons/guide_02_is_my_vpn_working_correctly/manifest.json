@@ -3,9 +3,6 @@
   "id": "guide_02_is_my_vpn_working_correctly",
   "name": "Guide: is my VPN working correctly",
   "type": "guide",
-  "conditions": {
-    "translation_threshold": 1.0
-  },
   "guide": {
     "id": "is_my_vpn_working_correctly",
     "title": "Is my VPN connected to the right server location?",

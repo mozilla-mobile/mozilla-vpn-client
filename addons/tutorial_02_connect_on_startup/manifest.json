@@ -3,7 +3,6 @@
   "id": "tutorial_02_connect_on_startup",
   "name": "Tutorial: Connect on startup",
   "conditions": {
-    "translation_threshold": 1.0,
     "enabled_features": ["startOnBoot"]
   },
   "type": "tutorial",

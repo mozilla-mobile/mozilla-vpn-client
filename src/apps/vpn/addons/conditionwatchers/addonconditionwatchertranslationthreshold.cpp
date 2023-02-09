@@ -7,8 +7,8 @@
 #include <QDir>
 #include <QFileInfo>
 
-#include "addon.h"
 #include "addonconditionwatcherlocales.h"
+#include "addons/addon.h"
 #include "leakdetector.h"
 #include "localizer.h"
 
@@ -22,6 +22,10 @@ AddonConditionWatcher* AddonConditionWatcherTranslationThreshold::maybeCreate(
   QFileInfo manifestFileInfo(addon->manifestFileName());
   QDir addonPath = manifestFileInfo.dir();
   if (!addonPath.cd("i18n")) {
+    return nullptr;
+  }
+
+  if (!addonPath.exists("translations.completeness")) {
     return nullptr;
   }
 

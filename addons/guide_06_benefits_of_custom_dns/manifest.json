@@ -3,9 +3,6 @@
     "id": "guide_06_benefits_of_custom_dns",
     "name": "Guide: benefits of custom DNS",
     "type": "guide",
-    "conditions": {
-        "translation_threshold": 1.0
-    },
     "guide": {
         "id": "benefits_of_custom_dns",
         "title": "Benefits of using a custom DNS",

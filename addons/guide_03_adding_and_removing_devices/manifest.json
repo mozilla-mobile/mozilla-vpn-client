@@ -3,9 +3,6 @@
   "id": "guide_03_adding_and_removing_devices",
   "name": "Guide: adding and removing devices",
   "type": "guide",
-  "conditions": {
-    "translation_threshold": 1.0
-  },
   "guide": {
     "id": "adding_and_removing_devices",
     "title": "How do I add and remove devices?",

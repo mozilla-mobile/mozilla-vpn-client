@@ -52,6 +52,7 @@ struct ConditionCallback {
   std::function<bool(const QJsonValue&)> m_staticCallback;
   std::function<AddonConditionWatcher*(Addon*, const QJsonValue&)>
       m_dynamicCallback;
+  std::function<AddonConditionWatcher*(Addon*)> m_defaultCallback;
 };
 
 QList<ConditionCallback> s_conditionCallbacks{
@@ -80,7 +81,8 @@ QList<ConditionCallback> s_conditionCallbacks{
 
        return AddonConditionWatcherFeaturesEnabled::maybeCreate(addon,
                                                                 features);
-     }},
+     },
+     nullptr},
 
     {"platforms",
      [](const QJsonValue& value) -> bool {
@@ -99,7 +101,8 @@ QList<ConditionCallback> s_conditionCallbacks{
      },
      [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
        return nullptr;
-     }},
+     },
+     nullptr},
 
     {"settings",
      [](const QJsonValue& value) -> bool {
@@ -156,7 +159,8 @@ QList<ConditionCallback> s_conditionCallbacks{
      },
      [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
        return nullptr;
-     }},
+     },
+     nullptr},
 
     {"env",
      [](const QJsonValue& value) -> bool {
@@ -179,7 +183,8 @@ QList<ConditionCallback> s_conditionCallbacks{
      },
      [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
        return nullptr;
-     }},
+     },
+     nullptr},
 
     {"min_client_version",
      [](const QJsonValue& value) -> bool {
@@ -197,7 +202,8 @@ QList<ConditionCallback> s_conditionCallbacks{
      },
      [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
        return nullptr;
-     }},
+     },
+     nullptr},
 
     {"max_client_version",
      [](const QJsonValue& value) -> bool {
@@ -215,7 +221,8 @@ QList<ConditionCallback> s_conditionCallbacks{
      },
      [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
        return nullptr;
-     }},
+     },
+     nullptr},
 
     {"locales",
      [](const QJsonValue&) -> bool {
@@ -230,7 +237,8 @@ QList<ConditionCallback> s_conditionCallbacks{
        }
 
        return AddonConditionWatcherLocales::maybeCreate(addon, locales);
-     }},
+     },
+     nullptr},
 
     {"trigger_time",
      [](const QJsonValue&) -> bool {
@@ -240,7 +248,8 @@ QList<ConditionCallback> s_conditionCallbacks{
      [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
        return AddonConditionWatcherTriggerTimeSecs::maybeCreate(
            addon, value.toInteger());
-     }},
+     },
+     nullptr},
 
     {"start_time",
      [](const QJsonValue&) -> bool {
@@ -249,7 +258,8 @@ QList<ConditionCallback> s_conditionCallbacks{
      },
      [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
        return new AddonConditionWatcherTimeStart(addon, value.toInteger());
-     }},
+     },
+     nullptr},
 
     {"end_time",
      [](const QJsonValue&) -> bool {
@@ -258,7 +268,8 @@ QList<ConditionCallback> s_conditionCallbacks{
      },
      [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
        return new AddonConditionWatcherTimeEnd(addon, value.toInteger());
-     }},
+     },
+     nullptr},
 
     {"javascript",
      [](const QJsonValue&) -> bool {
@@ -268,7 +279,8 @@ QList<ConditionCallback> s_conditionCallbacks{
      [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
        return AddonConditionWatcherJavascript::maybeCreate(addon,
                                                            value.toString());
-     }},
+     },
+     nullptr},
 
     {"translation_threshold",
      [](const QJsonValue&) -> bool {
@@ -278,6 +290,10 @@ QList<ConditionCallback> s_conditionCallbacks{
      [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
        return AddonConditionWatcherTranslationThreshold::maybeCreate(
            addon, value.toDouble());
+     },
+     [](Addon* addon) -> AddonConditionWatcher* {
+       return AddonConditionWatcherTranslationThreshold::maybeCreate(addon,
+                                                                     1.0);
      }},
 };
 
@@ -471,15 +487,22 @@ AddonConditionWatcher* Addon::maybeCreateConditionWatchers(
     Addon* addon, const QJsonObject& conditions) {
   QList<AddonConditionWatcher*> watcherList;
 
-  for (const QString& key : conditions.keys()) {
-    for (const ConditionCallback& condition : s_conditionCallbacks) {
-      if (condition.m_key == key) {
-        AddonConditionWatcher* conditionWatcher =
-            condition.m_dynamicCallback(addon, conditions[key]);
-        if (conditionWatcher) {
-          watcherList.append(conditionWatcher);
-        }
-        break;
+  for (const ConditionCallback& condition : s_conditionCallbacks) {
+    if (conditions.contains(condition.m_key)) {
+      AddonConditionWatcher* conditionWatcher =
+          condition.m_dynamicCallback(addon, conditions[condition.m_key]);
+      if (conditionWatcher) {
+        watcherList.append(conditionWatcher);
+      }
+
+      continue;
+    }
+
+    if (condition.m_defaultCallback) {
+      AddonConditionWatcher* conditionWatcher =
+          condition.m_defaultCallback(addon);
+      if (conditionWatcher) {
+        watcherList.append(conditionWatcher);
       }
     }
   }
