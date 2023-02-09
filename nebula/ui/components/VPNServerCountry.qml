@@ -18,6 +18,7 @@ VPNClickableRow {
     property string _countryCode: code
     property var currentCityIndex
     property alias serverCountryName: countryName.text
+    property bool showConnectionScores: (focusScope.currentServer.whichHop === "singleHopServer")
 
     property bool hasAvailableCities: cities.reduce((initialValue, city) => (initialValue || city.connectionScore >= 0), false)
 
@@ -170,8 +171,7 @@ VPNClickableRow {
                 property string _cityName: modelData.name
                 property string _countryCode: code
                 property string _localizedCityName: modelData.localizedName
-                property string locationScore: modelData.connectionScore
-                property bool isAvailable: locationScore >= 0
+                property bool isAvailable: modelData.connectionScore >= 0
                 property int itemHeight: 54
 
                 id: del
@@ -207,7 +207,7 @@ VPNClickableRow {
                         rightMargin: VPNTheme.theme.hSpacing
                         verticalCenter: parent.verticalCenter
                     }
-                    score: del.locationScore
+                    score: showConnectionScores ? modelData.connectionScore : (isAvailable ? VPNServerCountryModel.NoData : VPNServerCountryModel.Unavailable)
                 }
             }
         }
