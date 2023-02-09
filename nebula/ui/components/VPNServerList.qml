@@ -245,7 +245,6 @@ FocusScope {
                     id: recommendedLocationsRefreshTimer
                     interval: 2000
                     running: VPNServerLatency.isActive
-                    repeat: false
                     onTriggered: {
                         if (VPNServerLatency.isActive) {
                             recommendedLocationsRefreshTimer.start();
