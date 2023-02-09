@@ -1,8 +1,8 @@
 {
-  "name": "serverlocalizer",
+  "name": "languagelocalizer",
   "version": "1.0.0",
-  "description": "The localizator of countries and cities",
-  "main": "serverlocalizer.js",
+  "description": "The localizator of languages",
+  "main": "languagelocalizer.js",
   "type": "module",
   "license": "Mozilla Public License 2.0",
   "dependencies": {
