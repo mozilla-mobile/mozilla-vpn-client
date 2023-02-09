@@ -115,14 +115,14 @@ const QString ServerCity::localizedName() const {
 }
 
 int ServerCity::connectionScore() const {
-  ServerLatency* sl = MozillaVPN::instance()->serverLatency();
+  ServerLatency* serverLatency = MozillaVPN::instance()->serverLatency();
   qint64 now = QDateTime::currentSecsSinceEpoch();
   int score = Poor;
   int activeServerCount = 0;
   uint32_t sumLatencyMsec = 0;
   for (const QString& pubkey : m_servers) {
-    if (sl->getCooldown(pubkey) <= now) {
-      sumLatencyMsec += sl->getLatency(pubkey);
+    if (serverLatency->getCooldown(pubkey) <= now) {
+      sumLatencyMsec += serverLatency->getLatency(pubkey);
       activeServerCount++;
     }
   }
@@ -140,7 +140,7 @@ int ServerCity::connectionScore() const {
 
   // Increase the score if the location has better than average latency.
   uint32_t cityLatencyMsec = sumLatencyMsec / activeServerCount;
-  if (cityLatencyMsec < sl->avgLatency()) {
+  if (cityLatencyMsec < serverLatency->avgLatency()) {
     score++;
     // Give the location another point if the latency is *very* fast.
     if (cityLatencyMsec < SCORE_EXCELLENT_LATENCY_THRESHOLD) {
@@ -165,13 +165,13 @@ int ServerCity::connectionScore() const {
 }
 
 unsigned int ServerCity::latency() const {
-  ServerLatency* sl = MozillaVPN::instance()->serverLatency();
+  ServerLatency* serverLatency = MozillaVPN::instance()->serverLatency();
   qint64 now = QDateTime::currentSecsSinceEpoch();
   int activeServerCount = 0;
   uint32_t sumLatencyMsec = 0;
   for (const QString& pubkey : m_servers) {
-    if (sl->getCooldown(pubkey) <= now) {
-      sumLatencyMsec += sl->getLatency(pubkey);
+    if (serverLatency->getCooldown(pubkey) <= now) {
+      sumLatencyMsec += serverLatency->getLatency(pubkey);
       activeServerCount++;
     }
   }

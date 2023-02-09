@@ -225,14 +225,14 @@ void ServerData::forget() {
 QList<Server> ServerData::getServerList(const QString& countryCode,
                                         const QString& cityName) {
   ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
-  ServerLatency* sl = MozillaVPN::instance()->serverLatency();
+  ServerLatency* serverLatency = MozillaVPN::instance()->serverLatency();
   const ServerCity& city = scm->findCity(countryCode, cityName);
   QList<Server> results;
   qint64 now = QDateTime::currentSecsSinceEpoch();
 
   for (const QString& pubkey : city.servers()) {
     const Server& server = scm->server(pubkey);
-    if (server.initialized() && (sl->getCooldown(pubkey) <= now)) {
+    if (server.initialized() && (serverLatency->getCooldown(pubkey) <= now)) {
       results.append(server);
     }
   }
