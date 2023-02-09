@@ -4,10 +4,10 @@
 
 import chalk from 'chalk';
 import child_process from 'child_process';
-import fetch from 'node-fetch';
+import {program} from 'commander';
 import fs from 'fs';
 import inquirer from 'inquirer';
-import program from 'commander';
+import fetch from 'node-fetch';
 import websocket from 'websocket';
 import WBK from 'wikibase-sdk';
 
