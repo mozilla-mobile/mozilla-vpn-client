@@ -837,6 +837,13 @@ static QList<InspectorCommand> s_commands{
                        AddonManager::instance()->fetch();
                        return QJsonObject();
                      }},
+
+    InspectorCommand{"set_version_override", "Override the version string", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       QString versionOverride = QString(arguments[1]);
+                       Constants::setVersionOverride(versionOverride);
+                       return QJsonObject();
+                     }},
 };
 
 // static

@@ -130,6 +130,21 @@ describe('Addons', function () {
       exitCountryCode);
   });
 
+  it('test only a single update message exists at a time', async () => {
+    await vpn.setVersionOverride("1.0.0");
+
+    // Load all production addons.
+    // These are loaded all together, so we don't know the exact number of addons.
+    await vpn.resetAddons('prod');
+    await vpn.waitForCondition(async () => (
+      parseInt(await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) > 0
+    ));
+    const loadedMessages = await vpn.messages();
+    const updateMessages = loadedMessages.filter(message => message.startsWith('message_update_'));
+
+    assert(updateMessages.length === 1, `We must only have a single update message at a time. ${updateMessages.length} were found: ${updateMessages}`);
+  });
+
   describe('test message_subscription_expiring addon condition', async () => {
     const testCases = [
       ...Array.from(
