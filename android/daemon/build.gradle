@@ -25,21 +25,15 @@ buildscript {
 
     dependencies {
         classpath SharedDependencies.com_android_tools_build_gradle
-        classpath "org.mozilla.components:tooling-glean-gradle:107.0.2"
     }
 }
 
 plugins {
-    id "com.jetbrains.python.envs"
+    id 'org.jetbrains.kotlin.plugin.serialization'
 }
 
 apply plugin: "com.android.library"
 apply plugin: "org.jetbrains.kotlin.android"
-apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
-
-dependencies {
-    implementation project(path: ':vpnglean')
-}
 
 android {
     compileSdkVersion Config.compileSdkVersion
@@ -111,8 +105,3 @@ dependencies {
     implementation "androidx.security:security-identity-credential:1.0.0-alpha03"
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.6.20"
 }
-
-ext.gleanNamespace = "mozilla.telemetry.glean"
-// TODO: We should spin off the daemon telemetry into a self contained thing.
-// This is soft blocked by https://bugzilla.mozilla.org/show_bug.cgi?id=1807019
-ext.gleanYamlFiles = ["$rootDir/../../../glean/metrics.yaml"]
