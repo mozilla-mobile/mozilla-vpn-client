@@ -1,5 +1,4 @@
 #!/bin/bash
-CHANGES=false
 if [[ ! -f ".env" ]]
 then
     echo ".env file does not exist"
@@ -17,21 +16,18 @@ fi
 if [[ ! -d "./build/tests/dummyvpn" ]]
 then
     echo "dummyvpn dir does not exist, run cmake command to build it"
-    CHANGES=true
     cmake -B build .
 fi
 
 # rebuild if changes in the /src
 if [[ ! $(git status --porcelain --untracked-files=no | wc -l) -eq "0" ]]; then
-  echo "  🔴 Changes detected. Please rebuild dummyvpn."
-  CHANGES=true
+    echo "  🔴 Changes detected. Please rebuild dummyvpn."
 fi
 
 # create dummyvpn app if it doesnt exist
 if [[ ! -f "./build/tests/dummyvpn/dummyvpn" ]]
 then
     echo "dummyvpn does not exist, run cmake command to create it"
-    CHANGES=true
     cmake --build build -j$(nproc) --target dummyvpn
 fi
 
@@ -39,7 +35,6 @@ fi
 if [[ ! -d "./node_modules" ]]
 then
     echo "node modules does not exist, run npm install"
-    CHANGES=true
     npm install
 fi
 
@@ -47,6 +42,5 @@ fi
 if [[ ! -d "./tests/functional/addons/01_empty_manifest" ]]
 then
     echo "addons manifests do not exist, run python script to generate it"
-    CHANGES=true
     ./scripts/addon/generate_all_tests.py
 fi
