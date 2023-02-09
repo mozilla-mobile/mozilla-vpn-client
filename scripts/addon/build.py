@@ -385,7 +385,7 @@ with open(args.source, "r", encoding="utf-8") as file:
                 completeness_output = xlifftool.stdout.decode("utf-8")
                 completeness.append(f"{locale}:{completeness_output}")
 
-        # If we don't have translations yet, we still have english at 100%.
+        # If we don't have translations yet, we still have English at 100%.
         if not completeness:
             completeness.append("en:1.0")
 
