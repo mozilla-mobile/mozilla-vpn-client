@@ -17,6 +17,7 @@ SOURCES += \
         apps/vpn/addons/conditionwatchers/addonconditionwatcherjavascript.cpp \
         apps/vpn/addons/conditionwatchers/addonconditionwatcherlocales.cpp \
         apps/vpn/addons/conditionwatchers/addonconditionwatchertime.cpp \
+        apps/vpn/addons/conditionwatchers/addonconditionwatchertranslationthreshold.cpp \
         apps/vpn/addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp \
         apps/vpn/addons/manager/addondirectory.cpp \
         apps/vpn/addons/manager/addonindex.cpp \
@@ -161,6 +162,7 @@ HEADERS += \
         apps/vpn/addons/conditionwatchers/addonconditionwatchertime.h \
         apps/vpn/addons/conditionwatchers/addonconditionwatchertimeend.h \
         apps/vpn/addons/conditionwatchers/addonconditionwatchertimestart.h \
+        apps/vpn/addons/conditionwatchers/addonconditionwatchertranslationthreshold.h \
         apps/vpn/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h \
         apps/vpn/addons/manager/addondirectory.h \
         apps/vpn/addons/manager/addonindex.h \

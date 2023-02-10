@@ -4,7 +4,7 @@
 
 import chalk from 'chalk';
 import child_process from 'child_process';
-import program from 'commander';
+import {program} from 'commander';
 import fs from 'fs';
 import inquirer from 'inquirer';
 import fetch from 'node-fetch';

@@ -119,6 +119,7 @@ jobs:
           python3 scripts/addon/generate_all.py
 
       - name: Sign manifest
+        if: github.ref == 'refs/heads/main'
         shell: bash
         env:
           ADDON_PRIVATE_KEY: ${{ secrets.ADDON_PRIVATE_KEY }}

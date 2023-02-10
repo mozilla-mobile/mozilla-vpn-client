@@ -1,0 +1,32 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+base_ref: origin/main
+base_repository: https://github.com/mozilla-mobile/mozilla-vpn-client
+base_rev: 8f3c09e652af74781e6301a68a48c4e861107dd6
+build_date: 1675877334
+build_number: 1
+do_not_optimize: []
+enable_always_target: true
+existing_tasks: {}
+filters:
+- target_tasks_method
+head_ref: dependabot/gradle/android/com.squareup.okhttp3-mockwebserver-4.10.0
+head_repository: https://github.com/mozilla-mobile/mozilla-vpn-client
+head_rev: 6d060577074f2260849cf97d5a5925d995ab6ea0
+head_tag: ''
+level: '1'
+moz_build_date: '20230208172854'
+next_version: null
+optimize_strategies: null
+optimize_target_tasks: true
+owner: dependabot[bot]@users.noreply.github.com
+project: mozilla-vpn-client
+pull_request_number: 5942
+pushdate: 0
+pushlog_id: '0'
+repository_type: git
+target_tasks_method: default
+tasks_for: github-pull-request-untrusted
+version: ''

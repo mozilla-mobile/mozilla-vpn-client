@@ -36,7 +36,7 @@ mkdir -p /builds/worker/artifacts/
 sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
 # This will ask sentry to scan all files in there and upload 
 # missing debug info, for symbolification
-sentry-cli debug-files upload --org mozilla -p vpn-client .tmp/src/android-build/build/intermediates/merged_native_libs
+sentry-cli debug-files upload --org mozilla -p vpn-client --include-sources .tmp/src/android-build/build/intermediates/merged_native_libs
 
 # Artifacts should be placed here!
 mkdir -p /builds/worker/artifacts/

@@ -6,6 +6,7 @@
   "type": "message",
   "conditions": {
     "env": "staging",
+    "translation_threshold": 0,
     "trigger_time": 3600
   },
   "javascript": {

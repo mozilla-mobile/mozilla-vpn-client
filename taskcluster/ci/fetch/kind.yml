@@ -47,8 +47,8 @@ tasks:
         fetch:
             type: static-url
             url: https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe
-            sha256: 2220ddb49fea0e0945b1b5913e33d66bd223a67f19fd1c116be0318de7ed9d9c
-            size: 10077696
+            sha256: f7ddacce04969a59f7080a64c466b936d7c2ae661b4fda44be8fe54aac0972ec
+            size: 9996288
     win-go:
         description: go1.18.8
         fetch:

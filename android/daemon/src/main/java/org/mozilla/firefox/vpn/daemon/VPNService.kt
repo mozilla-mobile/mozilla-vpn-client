@@ -18,7 +18,6 @@ import com.wireguard.config.Interface
 import com.wireguard.config.Peer
 import com.wireguard.crypto.Key
 import org.json.JSONObject
-import org.mozilla.firefox.vpn.daemon.GleanMetrics.Sample
 import java.util.*
 
 class VPNService : android.net.VpnService() {
@@ -30,24 +29,7 @@ class VPNService : android.net.VpnService() {
     private var mConfig: JSONObject? = null
     private var mConnectionTime: Long = 0
     private var mAlreadyInitialised = false
-    private val mGleanControllerStateTimerInterval: Long = 3 * 60 * 60 * 1000 // 3hrs
     val mConnectionHealth = ConnectionHealth(this)
-
-    private val mGleanControllerStateTimer = object : CountDownTimer(
-        mGleanControllerStateTimerInterval,
-        mGleanControllerStateTimerInterval / 4
-    ) {
-        override fun onTick(millisUntilFinished: Long) { }
-        override fun onFinish() {
-            if (!isUp) {
-                Sample.controllerStateOff.record()
-            } else {
-                // When we're stil connected, rescheudle.
-                this.start()
-                Sample.controllerStateOn.record()
-            }
-        }
-    }
     private var mCityname = ""
 
     private var currentTunnelHandle = -1
@@ -255,7 +237,6 @@ class VPNService : android.net.VpnService() {
 
         // Go foreground
         CannedNotification(mConfig)?.let { mNotificationHandler.show(it) }
-        mGleanControllerStateTimer.start()
 
         if (useFallbackServer) {
             mConnectionHealth.start(
@@ -322,7 +303,6 @@ class VPNService : android.net.VpnService() {
         // so we should get rid of it. :)
         val shouldClearNotification = !mBinder.isClientAttached
         stopForeground(shouldClearNotification)
-        mGleanControllerStateTimer.cancel()
         mConnectionHealth.stop()
         // Clear the notification message, so the content
         // is not "disconnected" in case we connect from a non-client.
