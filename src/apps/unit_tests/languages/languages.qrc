@@ -4,5 +4,6 @@
         <file>completeness_empty.txt</file>
         <file>completeness_invalid.txt</file>
         <file>completeness_ok.txt</file>
+        <file alias="translations_fallback.json">../../../../translations/translations_fallback.json</file>
     </qresource>
 </RCC>
