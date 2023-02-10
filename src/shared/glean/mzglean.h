@@ -2,24 +2,24 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef VPNGLEAN_H
-#define VPNGLEAN_H
+#ifndef MZGLEAN_H
+#define MZGLEAN_H
 
 #include <QObject>
 
 constexpr const char* GLEAN_DATA_DIRECTORY = "glean";
 
-class VPNGlean final : public QObject {
+class MZGlean final : public QObject {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(VPNGlean)
+  Q_DISABLE_COPY_MOVE(MZGlean)
 
  private:
-  explicit VPNGlean(QObject* parent);
+  explicit MZGlean(QObject* parent);
 
   static void setUploadEnabled(bool isTelemetryEnabled);
 
  public:
-  ~VPNGlean();
+  ~MZGlean();
 
   static void registerLogHandler(void (*messageHandler)(int32_t, char*));
 
@@ -27,4 +27,4 @@ class VPNGlean final : public QObject {
   static void shutdown();
 };
 
-#endif  // VPNGLEAN_H
+#endif  // MZGLEAN_H

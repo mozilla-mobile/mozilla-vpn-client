@@ -5,7 +5,7 @@
 #include "testlocalizer.h"
 
 #include "glean/generated/metrics.h"
-#include "glean/glean.h"
+#include "glean/mzglean.h"
 #include "helper.h"
 #include "localizer.h"
 #include "settingsholder.h"
@@ -23,7 +23,7 @@ void TestLocalizer::init() {
   // the state of the test that actually is testing telemetry.
   //
   // Note: on tests Glean::initialize clears Glean's storage.
-  VPNGlean::initialize();
+  MZGlean::initialize();
 }
 
 void TestLocalizer::cleanup() { delete m_settingsHolder; }

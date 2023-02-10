@@ -38,6 +38,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/fontloader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/glean/gleandeprecated.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/glean/gleandeprecated.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/glean/mzglean.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/glean/mzglean.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20Poly1305_32.c
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star/Hacl_Curve25519_51.c

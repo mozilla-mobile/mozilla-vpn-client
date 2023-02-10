@@ -4,10 +4,9 @@
 
 #include "helper.h"
 
-#include <glean.h>
-#include <nebula.h>
-
+#include "glean.h"
 #include "gleandeprecated.h"
+#include "nebula.h"
 #include "qmlengineholder.h"
 
 TestHelper::TestHelper() {
@@ -109,7 +108,7 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
       });
 
   qmlRegisterSingletonType<MozillaVPN>(
-      "Mozilla.VPN", 1, 0, "VPNGleanDeprecated",
+      "Mozilla.VPN", 1, 0, "MZGleanDeprecated",
       [](QQmlEngine*, QJSEngine*) -> QObject* {
         QObject* obj = GleanDeprecated::instance();
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);

@@ -11,6 +11,7 @@ SOURCES += \
         $$PWD/filterproxymodel.cpp \
         $$PWD/fontloader.cpp \
         $$PWD/glean/gleandeprecated.cpp \
+        $$PWD/glean/mzglean.cpp \
         $$PWD/hacl-star/Hacl_Chacha20.c \
         $$PWD/hacl-star/Hacl_Chacha20Poly1305_32.c \
         $$PWD/hacl-star/Hacl_Curve25519_51.c \
@@ -53,6 +54,7 @@ HEADERS += \
         $$PWD/filterproxymodel.h \
         $$PWD/fontloader.h \
         $$PWD/glean/gleandeprecated.h \
+        $$PWD/glean/mzglean.h \
         $$PWD/hawkauth.h \
         $$PWD/hkdf.h \
         $$PWD/ipaddress.h \

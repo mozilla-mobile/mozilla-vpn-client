@@ -54,8 +54,6 @@ target_sources(auth_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.h
     ${MZ_SOURCE_DIR}/apps/vpn/errorhandler.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/errorhandler.h
-    ${MZ_SOURCE_DIR}/apps/vpn/glean/glean.h
-    ${MZ_SOURCE_DIR}/apps/vpn/glean/glean.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/featuremodel.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/featuremodel.h
@@ -111,6 +109,8 @@ target_sources(auth_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/feature.h
     ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.cpp
     ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.h
+    ${MZ_SOURCE_DIR}/shared/glean/mzglean.h
+    ${MZ_SOURCE_DIR}/shared/glean/mzglean.cpp
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20Poly1305_32.c
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Curve25519_51.c

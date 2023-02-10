@@ -102,7 +102,7 @@ VPNViewBase {
         }
     }
     Component.onCompleted: {
-        VPNGleanDeprecated.recordGleanEvent("notificationsViewOpened");
+        MZGleanDeprecated.recordGleanEvent("notificationsViewOpened");
         Glean.sample.notificationsViewOpened.record();
     }
 }

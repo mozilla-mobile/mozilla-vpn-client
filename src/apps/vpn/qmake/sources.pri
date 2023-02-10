@@ -67,7 +67,6 @@ SOURCES += \
         apps/vpn/externalophandler.cpp \
         apps/vpn/frontend/navigator.cpp \
         apps/vpn/frontend/navigatorreloader.cpp \
-        apps/vpn/glean/glean.cpp \
         apps/vpn/keyregenerator.cpp \
         apps/vpn/imageproviderfactory.cpp \
         apps/vpn/inspector/inspectorhandler.cpp \
@@ -216,7 +215,6 @@ HEADERS += \
         apps/vpn/externalophandler.h \
         apps/vpn/frontend/navigator.h \
         apps/vpn/frontend/navigatorreloader.h \
-        apps/vpn/glean/glean.h \
         apps/vpn/keyregenerator.h \
         apps/vpn/imageproviderfactory.h \
         apps/vpn/inspector/inspectorhandler.h \

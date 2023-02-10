@@ -128,7 +128,7 @@ VPNViewBase {
     Component.onCompleted: {
         console.log("Component ready");
         VPNAppPermissions.requestApplist();
-        VPNGleanDeprecated.recordGleanEvent("appPermissionsViewOpened");
+        MZGleanDeprecated.recordGleanEvent("appPermissionsViewOpened");
         Glean.sample.appPermissionsViewOpened.record();
     }
 

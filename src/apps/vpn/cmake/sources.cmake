@@ -166,8 +166,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/frontend/navigator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/frontend/navigatorreloader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/frontend/navigatorreloader.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/glean/glean.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/glean/glean.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/imageproviderfactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/imageproviderfactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.cpp
