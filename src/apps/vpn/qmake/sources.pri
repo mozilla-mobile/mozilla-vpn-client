@@ -123,8 +123,6 @@ SOURCES += \
         apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp \
         apps/vpn/tasks/controlleraction/taskcontrolleraction.cpp \
         apps/vpn/tasks/createsupportticket/taskcreatesupportticket.cpp \
-        apps/vpn/tasks/function/taskfunction.cpp \
-        apps/vpn/tasks/group/taskgroup.cpp \
         apps/vpn/tasks/heartbeat/taskheartbeat.cpp \
         apps/vpn/tasks/ipfinder/taskipfinder.cpp \
         apps/vpn/tasks/products/taskproducts.cpp \
@@ -272,8 +270,6 @@ HEADERS += \
         apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h \
         apps/vpn/tasks/controlleraction/taskcontrolleraction.h \
         apps/vpn/tasks/createsupportticket/taskcreatesupportticket.h \
-        apps/vpn/tasks/function/taskfunction.h \
-        apps/vpn/tasks/group/taskgroup.h \
         apps/vpn/tasks/heartbeat/taskheartbeat.h \
         apps/vpn/tasks/ipfinder/taskipfinder.h \
         apps/vpn/tasks/products/taskproducts.h \

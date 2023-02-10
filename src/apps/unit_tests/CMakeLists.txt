@@ -93,6 +93,8 @@ target_sources(app_unit_tests PRIVATE
     testqmlpath.h
     testsettings.cpp
     testsettings.h
+    testtasks.cpp
+    testtasks.h
     testtemporarydir.cpp
     testtemporarydir.h
     testthemes.cpp
