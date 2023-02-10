@@ -17,6 +17,7 @@
 #include "models/server.h"
 #include "models/servercountrymodel.h"
 #include "mozillavpn.h"
+#include "networkrequest.h"
 #include "rfc/rfc1112.h"
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
@@ -24,6 +25,8 @@
 #include "serveri18n.h"
 #include "serverlatency.h"
 #include "settingsholder.h"
+#include "task.h"
+#include "tasks/account/taskaccount.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "taskscheduler.h"
@@ -219,6 +222,28 @@ bool Controller::activate(const ServerData& serverData,
       m_portalDetected = false;
       return true;
     }
+
+    // Before attempting to enable VPN connection we should check that the subscription is active
+    setState(StateCheckSubscription);
+
+    //Set up a network request to check the subscription status
+    TaskAccount* task = new TaskAccount(ErrorHandler::DoNotPropagateError);
+    NetworkRequest* request = new NetworkRequest(task, 200);
+    request->auth(MozillaVPN::authorizationHeader());
+    request->get(AppConstants::apiUrl(AppConstants::Account));
+
+    connect(request, &NetworkRequest::requestFailed, this,
+            [task, this](QNetworkReply::NetworkError error, const QByteArray&) {
+              logger.error() << "Account request failed" << error;
+              REPORTNETWORKERROR(error, m_errorPropagationPolicy, task->name());
+            });
+
+    connect(request, &NetworkRequest::requestCompleted, this,
+            [](const QByteArray& data) {
+              logger.debug() << "Check subscription status completed";
+              MozillaVPN::instance()->accountChecked(data);
+            });         
+
     setState(StateConnecting);
   }
 
@@ -405,13 +430,13 @@ bool Controller::deactivate() {
 
   if (m_state != StateOn && m_state != StateSwitching &&
       m_state != StateSilentSwitching && m_state != StateConfirming &&
-      m_state != StateConnecting) {
+      m_state != StateConnecting && m_state != StateCheckSubscription) {
     logger.warning() << "Already disconnected";
     return false;
   }
 
   if (m_state == StateOn || m_state == StateConfirming ||
-      m_state == StateConnecting) {
+      m_state == StateConnecting || m_state == StateCheckSubscription) {
     setState(StateDisconnecting);
   }
 
@@ -548,7 +573,7 @@ void Controller::quit() {
   m_nextStep = Quit;
 
   if (m_state == StateOn || m_state == StateSwitching ||
-      m_state == StateSilentSwitching || m_state == StateConnecting) {
+      m_state == StateSilentSwitching || m_state == StateConnecting || m_state  == StateCheckSubscription) {
     deactivate();
     return;
   }
@@ -565,7 +590,7 @@ void Controller::backendFailure() {
   m_nextStep = BackendFailure;
 
   if (m_state == StateOn || m_state == StateSwitching ||
-      m_state == StateSilentSwitching || m_state == StateConnecting ||
+      m_state == StateSilentSwitching || m_state == StateConnecting || m_state == StateCheckSubscription ||
       m_state == StateConfirming) {
     deactivate();
     return;
@@ -579,7 +604,7 @@ void Controller::serverUnavailable() {
 
   if (m_state == StateOn || m_state == StateSwitching ||
       m_state == StateSilentSwitching || m_state == StateConnecting ||
-      m_state == StateConfirming) {
+      m_state == StateConfirming || m_state == StateCheckSubscription) {
     deactivate();
     return;
   }

@@ -6,6 +6,23 @@ const assert = require('assert');
 const vpn = require('./helper.js');
 const queries = require('./queries.js');
 const fxaEndpoints = require('./servers/fxa_endpoints.js')
+// const { SubscriptionDetails } = require('./servers/guardian_endpoints.js');
+
+const INACTIVE_USER_DATA = {
+  avatar: '',
+  display_name: 'Test',
+  email: 'test@mozilla.com',
+  max_devices: 5,
+  subscriptions: {vpn: {active: false}}, //
+  devices: [{
+    name: 'Current device',
+    unique_id: '',
+    pubkey: '',
+    ipv4_address: '127.0.0.1',
+    ipv6_address: '::1',
+    created_at: new Date().toISOString()
+  }],
+};
 
 const SUBSCRIPTION_DETAILS = {
   plan: {amount: 123, currency: 'usd', interval: 'year', interval_count: 1},
@@ -25,6 +42,23 @@ const SUBSCRIPTION_DETAILS = {
     status: 'active'
   },
 };
+//   plan: {amount: 123, currency: 'usd', interval: 'year', interval_count: 1},
+//   payment: {
+//     payment_provider: 'stripe',
+//     payment_type: 'credit',
+//     last4: '1234',
+//     exp_month: 12,
+//     exp_year: 2022,
+//     brand: 'visa',
+//   },
+//   subscription: {
+//     _subscription_type: 'web',
+//     created: 1,
+//     current_period_end: 2,
+//     cancel_at_period_end: true,
+//     status: 'cancelled',
+//   },
+// };
 
 describe('Subscription view', function() {
   this.timeout(3000000);
@@ -112,6 +146,61 @@ describe('Subscription view', function() {
 
   afterEach(() => {
     this.ctx.resetCallbacks();
+  });
+
+  it.only('Verify subscription before logging in', async () => {
+    this.ctx.fxaLoginCallback = (req) => {
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
+        sessionToken: 'session',
+        verified: true,
+        verificationMethod: ''
+      };
+      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
+    };
+    this.ctx.guardianSubscriptionDetailsCallback = req => {
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .status = 401;
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .body = {}
+    };
+
+    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+
+    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+    await vpn.waitForQuery(
+        queries.screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
+            'text', 'Test'));
+    await vpn.waitForQuery(
+        queries.screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
+            'text', 'test@mozilla.com'));
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.USER_PROFILE.visible());
+
+    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+
+    await vpn.waitForQuery(
+        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible());
+    await vpn.setQueryProperty(
+        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible(),
+        'text', 'P4ssw0rd!!');
+    await vpn.waitForQuery(
+        queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+            .enabled());
+
+    this.ctx.guardianSubscriptionDetailsCallback = req => {
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .status = 200;
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+          .body = SUBSCRIPTION_DETAILS;
+    };
+
+    await vpn.waitForQueryAndClick(
+        queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+            .enabled());
+
+    await vpn.waitForQuery(
+        queries.screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
   });
 
   it('Authentication needed - sample', async () => {

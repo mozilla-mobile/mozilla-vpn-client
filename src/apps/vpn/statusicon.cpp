@@ -108,6 +108,8 @@ const QString StatusIcon::iconString() {
       [[fallthrough]];
     case Controller::StateConnecting:
       [[fallthrough]];
+    case Controller::StateCheckSubscription:
+      [[fallthrough]];  
     case Controller::StateConfirming:
       [[fallthrough]];
     case Controller::StateDisconnecting:

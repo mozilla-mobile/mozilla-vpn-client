@@ -13,6 +13,7 @@
 #include <QTimer>
 #include <functional>
 
+#include "errorhandler.h"
 #include "ipaddress.h"
 #include "models/server.h"
 #include "models/serverdata.h"
@@ -41,6 +42,7 @@ class Controller final : public QObject {
   enum State {
     StateInitializing,
     StateOff,
+    StateCheckSubscription,
     StateConnecting,
     StateConfirming,
     StateOn,
@@ -186,6 +188,8 @@ class Controller final : public QObject {
   void serverDataChanged();
 
  private:
+   ErrorHandler::ErrorPropagationPolicy m_errorPropagationPolicy =
+      ErrorHandler::DoNotPropagateError;
   State m_state = StateInitializing;
 
   QTimer m_timer;

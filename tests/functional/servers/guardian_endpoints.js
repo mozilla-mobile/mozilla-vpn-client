@@ -9,7 +9,8 @@ const UserData = {
   display_name: 'Test',
   email: 'test@mozilla.com',
   max_devices: 5,
-  subscriptions: {vpn: {active: true}},
+  // subscriptions: {vpn: {active: true}},
+  subscriptions: {vpn: {active: false}},
   devices: [{
     name: 'Current device',
     unique_id: '',
@@ -35,7 +36,8 @@ const SubscriptionDetails = {
     created: 1,
     current_period_end: 2,
     cancel_at_period_end: true,
-    status: 'active'
+    // status: 'active'
+    status: 'cancelled'
   },
 };
 
