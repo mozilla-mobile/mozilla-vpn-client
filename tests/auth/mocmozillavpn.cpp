@@ -35,6 +35,11 @@ ServerCountryModel* MozillaVPN::serverCountryModel() {
   return new ServerCountryModel();
 }
 
+ServerLatency* MozillaVPN::serverLatency() const {
+  static ServerLatency* serverLatency = new ServerLatency();
+  return serverLatency;
+}
+
 Location* MozillaVPN::location() const {
   static Location* location = new Location();
   return location;

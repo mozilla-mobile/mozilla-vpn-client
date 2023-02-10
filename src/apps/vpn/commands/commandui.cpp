@@ -421,6 +421,14 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNServerLatency",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->serverLatency();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNConnectionHealth",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance()->connectionHealth();

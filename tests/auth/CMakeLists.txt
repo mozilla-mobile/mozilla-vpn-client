@@ -84,6 +84,8 @@ target_sources(auth_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.h
     ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.h
+    ${MZ_SOURCE_DIR}/apps/vpn/serverlatency.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/serverlatency.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/authenticate/desktopauthenticationlistener.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/authenticate/desktopauthenticationlistener.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/authenticate/taskauthenticate.cpp

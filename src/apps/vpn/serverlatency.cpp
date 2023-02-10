@@ -23,6 +23,9 @@ constexpr const int SERVER_LATENCY_MAX_PARALLEL = 8;
 
 constexpr const int SERVER_LATENCY_MAX_RETRIES = 2;
 
+// Delay the progressChanged() signal to rate-limit how often score changes.
+constexpr const uint32_t SERVER_LATENCY_PROGRESS_DELAY_MSEC = 500;
+
 namespace {
 Logger logger("ServerLatency");
 }
@@ -46,6 +49,10 @@ void ServerLatency::initialize() {
   m_refreshTimer.setSingleShot(true);
   connect(&m_refreshTimer, &QTimer::timeout, this, &ServerLatency::start);
 
+  m_progressDelayTimer.setSingleShot(true);
+  connect(&m_progressDelayTimer, &QTimer::timeout, this,
+          [this]() { emit progressChanged(); });
+
   const Feature* feature = Feature::get(Feature::Feature_serverConnectionScore);
   connect(feature, &Feature::supportedChanged, this, &ServerLatency::start);
   if (feature->isSupported()) {
@@ -56,7 +63,7 @@ void ServerLatency::initialize() {
 void ServerLatency::start() {
   MozillaVPN* vpn = MozillaVPN::instance();
   if (!Feature::get(Feature::Feature_serverConnectionScore)->isSupported()) {
-    vpn->serverCountryModel()->clearServerLatency();
+    clear();
     return;
   }
 
@@ -101,11 +108,17 @@ void ServerLatency::start() {
 
       // Insert the servers into the list.
       for (const QString& pubkey : city.servers()) {
-        ServerPingRecord rec = {pubkey, 0, 0, distance, 0};
+        ServerPingRecord rec = {
+            pubkey, city.country(), city.name(), 0, 0, distance, 0};
         i = m_pingSendQueue.insert(i, rec);
       }
     }
   }
+
+  m_pingSendTotal = m_pingSendQueue.count();
+
+  m_progressDelayTimer.stop();
+  emit progressChanged();
 
   m_refreshTimer.stop();
   maybeSendPings();
@@ -159,6 +172,11 @@ void ServerLatency::maybeSendPings() {
     m_pingSender->sendPing(QHostAddress(server.ipv4AddrIn()), record.sequence);
   }
 
+  m_lastUpdateTime = QDateTime::currentDateTime();
+  if (!m_progressDelayTimer.isActive()) {
+    m_progressDelayTimer.start(SERVER_LATENCY_PROGRESS_DELAY_MSEC);
+  }
+
   if (m_pingReplyList.isEmpty()) {
     // If the ping reply list is empty, then we have nothing left to do.
     stop();
@@ -178,15 +196,34 @@ void ServerLatency::stop() {
   m_pingTimeout.stop();
   m_pingSendQueue.clear();
   m_pingReplyList.clear();
+  m_pingSendTotal = 0;
 
   if (m_pingSender) {
     delete m_pingSender;
     m_pingSender = nullptr;
   }
 
+  emit progressChanged();
+  m_progressDelayTimer.stop();
   if (!m_refreshTimer.isActive()) {
     m_refreshTimer.start(SERVER_LATENCY_REFRESH_MSEC);
   }
+}
+
+void ServerLatency::refresh() {
+  if (m_pingSender) {
+    return;
+  }
+
+  clear();
+  start();
+}
+
+void ServerLatency::clear() {
+  m_latency.clear();
+  m_sumLatencyMsec = 0;
+
+  emit progressChanged();
 }
 
 void ServerLatency::stateChanged() {
@@ -213,7 +250,15 @@ void ServerLatency::recvPing(quint16 sequence) {
 
     qint64 latency(now - record.timestamp);
     if (latency <= std::numeric_limits<uint>::max()) {
-      scm->setServerLatency(record.publicKey, static_cast<uint>(latency));
+      m_sumLatencyMsec -= m_latency[record.publicKey];
+      m_sumLatencyMsec += latency;
+      m_latency[record.publicKey] = latency;
+
+      const ServerCity& city =
+          scm->findCity(record.countryCode, record.cityName);
+      if (city.initialized()) {
+        emit city.scoreChanged();
+      }
     }
 
     m_pingReplyList.erase(i);
@@ -224,4 +269,37 @@ void ServerLatency::recvPing(quint16 sequence) {
 
 void ServerLatency::criticalPingError() {
   logger.info() << "Encountered Unrecoverable ping error";
+}
+
+unsigned int ServerLatency::avgLatency() const {
+  if (m_latency.isEmpty()) {
+    return 0;
+  }
+  return (m_sumLatencyMsec + m_latency.count() - 1) / m_latency.count();
+}
+
+double ServerLatency::progress() const {
+  if ((m_pingSender == nullptr) || (m_pingSendTotal == 0)) {
+    return 1.0;  // Operation is complete.
+  }
+
+  double remaining = m_pingReplyList.count() + m_pingSendQueue.count();
+  return 1.0 - (remaining / m_pingSendTotal);
+}
+
+void ServerLatency::setCooldown(const QString& publicKey, qint64 timeout) {
+  if (timeout <= 0) {
+    m_cooldown.remove(publicKey);
+  } else {
+    m_cooldown[publicKey] = QDateTime::currentSecsSinceEpoch() + timeout;
+  }
+
+  // Emit signals that the connection score may have changed.
+  ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
+  const Server& server = scm->server(publicKey);
+  const ServerCity& city =
+      scm->findCity(server.countryCode(), server.cityName());
+  if (city.initialized()) {
+    emit city.scoreChanged();
+  }
 }

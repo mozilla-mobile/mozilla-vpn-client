@@ -12,8 +12,8 @@
 #include "feature.h"
 #include "leakdetector.h"
 #include "mozillavpn.h"
-#include "servercountrymodel.h"
 #include "serveri18n.h"
+#include "serverlatency.h"
 
 // Minimum number of redundant servers we expect at a location.
 constexpr int SCORE_SERVER_REDUNDANCY_THRESHOLD = 3;
@@ -26,6 +26,13 @@ ServerCity::ServerCity() { MZ_COUNT_CTOR(ServerCity); }
 ServerCity::ServerCity(const ServerCity& other) {
   MZ_COUNT_CTOR(ServerCity);
   *this = other;
+
+  // Changes in the average latency may cause the connection score to change.
+  MozillaVPN* vpn = MozillaVPN::instance();
+  if (vpn) {
+    connect(vpn->serverLatency(), &ServerLatency::progressChanged, this,
+            [this] { emit scoreChanged(); });
+  }
 }
 
 ServerCity& ServerCity::operator=(const ServerCity& other) {
@@ -108,15 +115,14 @@ const QString ServerCity::localizedName() const {
 }
 
 int ServerCity::connectionScore() const {
-  ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
+  ServerLatency* serverLatency = MozillaVPN::instance()->serverLatency();
   qint64 now = QDateTime::currentSecsSinceEpoch();
   int score = Poor;
   int activeServerCount = 0;
   uint32_t sumLatencyMsec = 0;
   for (const QString& pubkey : m_servers) {
-    const Server& server = scm->server(pubkey);
-    if (server.cooldownTimeout() <= now) {
-      sumLatencyMsec += server.latency();
+    if (serverLatency->getCooldown(pubkey) <= now) {
+      sumLatencyMsec += serverLatency->getLatency(pubkey);
       activeServerCount++;
     }
   }
@@ -134,7 +140,7 @@ int ServerCity::connectionScore() const {
 
   // Increase the score if the location has better than average latency.
   uint32_t cityLatencyMsec = sumLatencyMsec / activeServerCount;
-  if (cityLatencyMsec < scm->avgLatency()) {
+  if (cityLatencyMsec < serverLatency->avgLatency()) {
     score++;
     // Give the location another point if the latency is *very* fast.
     if (cityLatencyMsec < SCORE_EXCELLENT_LATENCY_THRESHOLD) {
@@ -159,14 +165,13 @@ int ServerCity::connectionScore() const {
 }
 
 unsigned int ServerCity::latency() const {
-  ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
+  ServerLatency* serverLatency = MozillaVPN::instance()->serverLatency();
   qint64 now = QDateTime::currentSecsSinceEpoch();
   int activeServerCount = 0;
   uint32_t sumLatencyMsec = 0;
   for (const QString& pubkey : m_servers) {
-    const Server& server = scm->server(pubkey);
-    if (server.cooldownTimeout() <= now) {
-      sumLatencyMsec += server.latency();
+    if (serverLatency->getCooldown(pubkey) <= now) {
+      sumLatencyMsec += serverLatency->getLatency(pubkey);
       activeServerCount++;
     }
   }
