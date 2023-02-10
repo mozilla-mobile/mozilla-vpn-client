@@ -37,6 +37,8 @@
 #include "theme.h"
 #include "websocket/websockethandler.h"
 
+struct MozillaVPNPrivate;
+
 class QTextStream;
 
 class MozillaVPN final : public QObject {
@@ -149,38 +151,29 @@ class MozillaVPN final : public QObject {
 
   void authenticateWithType(AuthenticationType authenticationType);
 
-  // Internal object getters:
-  CaptivePortal* captivePortal() { return &m_private->m_captivePortal; }
-  CaptivePortalDetection* captivePortalDetection() {
-    return &m_private->m_captivePortalDetection;
-  }
-  ConnectionBenchmark* connectionBenchmark() {
-    return &m_private->m_connectionBenchmark;
-  }
-  ConnectionHealth* connectionHealth();
-  Controller* controller();
-  ServerData* serverData();
-  DeviceModel* deviceModel() { return &m_private->m_deviceModel; }
-  FeedbackCategoryModel* feedbackCategoryModel() {
-    return &m_private->m_feedbackCategoryModel;
-  }
-  IpAddressLookup* ipAddressLookup() { return &m_private->m_ipAddressLookup; }
-  SupportCategoryModel* supportCategoryModel() {
-    return &m_private->m_supportCategoryModel;
-  }
-  Keys* keys() { return &m_private->m_keys; }
+  // Private object getters:
+  CaptivePortal* captivePortal() const;
+  CaptivePortalDetection* captivePortalDetection() const;
+  ConnectionBenchmark* connectionBenchmark() const;
+  ConnectionHealth* connectionHealth() const;
+  Controller* controller() const;
+  ServerData* serverData() const;
+  DeviceModel* deviceModel() const;
+  FeedbackCategoryModel* feedbackCategoryModel() const;
+  IpAddressLookup* ipAddressLookup() const;
+  SupportCategoryModel* supportCategoryModel() const;
+  Keys* keys() const;
   Location* location() const;
-  NetworkWatcher* networkWatcher() { return &m_private->m_networkWatcher; }
-  ProfileFlow* profileFlow() { return &m_private->m_profileFlow; }
-  ReleaseMonitor* releaseMonitor() { return &m_private->m_releaseMonitor; }
-  ServerCountryModel* serverCountryModel();
+  NetworkWatcher* networkWatcher() const;
+  ProfileFlow* profileFlow() const;
+  ReleaseMonitor* releaseMonitor() const;
+  ServerCountryModel* serverCountryModel() const;
   ServerLatency* serverLatency() const;
-  StatusIcon* statusIcon() { return &m_private->m_statusIcon; }
-  SubscriptionData* subscriptionData();
-  Telemetry* telemetry() { return &m_private->m_telemetry; }
-  Theme* theme() { return &m_private->m_theme; }
-
-  User* user() { return &m_private->m_user; }
+  StatusIcon* statusIcon() const;
+  SubscriptionData* subscriptionData() const;
+  Telemetry* telemetry() const;
+  Theme* theme() const;
+  User* user() const;
 
   // Called at the end of the authentication flow. We can continue adding the
   // device if it doesn't exist yet, or we can go to OFF state.
@@ -323,37 +316,9 @@ class MozillaVPN final : public QObject {
 
  private:
   bool m_initialized = false;
-
-  // Internal objects.
-  struct Private {
-    CaptivePortal m_captivePortal;
-    CaptivePortalDetection m_captivePortalDetection;
-    ConnectionBenchmark m_connectionBenchmark;
-    ConnectionHealth m_connectionHealth;
-    Controller m_controller;
-    DeviceModel m_deviceModel;
-    FeedbackCategoryModel m_feedbackCategoryModel;
-    IpAddressLookup m_ipAddressLookup;
-    SupportCategoryModel m_supportCategoryModel;
-    Keys m_keys;
-    Location m_location;
-    NetworkWatcher m_networkWatcher;
-    ReleaseMonitor m_releaseMonitor;
-    ServerCountryModel m_serverCountryModel;
-    ServerData m_serverData;
-    ServerLatency m_serverLatency;
-    StatusIcon m_statusIcon;
-    SubscriptionData m_subscriptionData;
-    ProfileFlow m_profileFlow;
-    Telemetry m_telemetry;
-    Theme m_theme;
-    WebSocketHandler m_webSocketHandler;
-    User m_user;
-  };
+  struct MozillaVPNPrivate* m_private = nullptr;
 
   Env m_env;
-
-  Private* m_private = nullptr;
 
   State m_state = StateInitialize;
 

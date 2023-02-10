@@ -25,15 +25,15 @@ MozillaVPN::MozillaVPN() {}
 
 MozillaVPN::~MozillaVPN() {}
 
-ConnectionHealth* MozillaVPN::connectionHealth() { return nullptr; }
+ConnectionHealth* MozillaVPN::connectionHealth() const { return nullptr; }
 
-Controller* MozillaVPN::controller() { return new Controller(); }
+Controller* MozillaVPN::controller() const { return new Controller(); }
 
-SubscriptionData* MozillaVPN::subscriptionData() {
+SubscriptionData* MozillaVPN::subscriptionData() const {
   return new SubscriptionData();
 }
 
-ServerCountryModel* MozillaVPN::serverCountryModel() {
+ServerCountryModel* MozillaVPN::serverCountryModel() const {
   return new ServerCountryModel();
 }
 
@@ -183,8 +183,3 @@ void MozillaVPN::updateViewShown() {}
 void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {}
 
 void MozillaVPN::registerUrlOpenerLabels() {}
-
-ServerData* MozillaVPN::serverData() {
-  static ServerData* data = new ServerData();
-  return data;
-}
