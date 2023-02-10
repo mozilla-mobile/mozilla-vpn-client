@@ -13,12 +13,12 @@ VPNSimplePopup {
     anchors.centerIn: parent
     imageSrc: "qrc:/nebula/resources/server-unavailable.svg"
     imageSize: Qt.size(80, 80)
-    title: VPNl18n.ServerUnavailableModalHeaderText
+    title: VPNI18n.ServerUnavailableModalHeaderText
     // In case the handshake failed but the ping succeeded - use the Firewall Error Message
-    description: receivedPing ? VPNl18n.ServerUnavailableNotificationBodyTextFireWallBlocked : VPNl18n.ServerUnavailableModalBodyText
+    description: receivedPing ? VPNI18n.ServerUnavailableNotificationBodyTextFireWallBlocked : VPNI18n.ServerUnavailableModalBodyText
     buttons: [
         VPNButton {
-            text: VPNl18n.ServerUnavailableModalButtonLabel
+            text: VPNI18n.ServerUnavailableModalButtonLabel
             onClicked: {
                 VPNNavigator.requestScreen(VPNNavigator.ScreenHome)
                 window.showServerList();

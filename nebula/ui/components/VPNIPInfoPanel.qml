@@ -28,7 +28,7 @@ Rectangle {
 
         VPNBoldLabel {
             color: VPNTheme.colors.white
-            text: VPNl18n.ConnectionInfoMetricsTitle
+            text: VPNI18n.ConnectionInfoMetricsTitle
             wrapMode: Text.WordWrap
 
             Accessible.role: Accessible.StaticText
@@ -41,7 +41,7 @@ Rectangle {
             id: ipv4Address
 
             // Exit IP:
-            ipVersionText: VPNl18n.ConnectionInfoExitServerLabelIp
+            ipVersionText: VPNI18n.ConnectionInfoExitServerLabelIp
             ipAddressText: VPNIPAddressLookup.ipv4Address
             visible: VPNIPAddressLookup.ipv4Address !== ""
         }
@@ -58,7 +58,7 @@ Rectangle {
             id: ipv6Address
 
             // Exit IPv6:
-            ipVersionText: VPNl18n.ConnectionInfoExitServerLabelIpv6
+            ipVersionText: VPNI18n.ConnectionInfoExitServerLabelIpv6
             ipAddressText: VPNIPAddressLookup.ipv6Address
             visible: VPNIPAddressLookup.ipv6Address !== ""
         }

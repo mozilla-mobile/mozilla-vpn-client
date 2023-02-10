@@ -54,7 +54,7 @@ VPNViewBase {
 
             VPNComboBox {
                 id: dropDown
-                placeholderText: VPNl18n.FeedbackFormChooseCategory
+                placeholderText: VPNI18n.FeedbackFormChooseCategory
                 model: VPNFeedbackCategoryModel
             }
 

@@ -69,7 +69,7 @@ Item {
                 }
 
                 contentItem: VPNBoldLabel {
-                    text: VPNl18n[tabLabelStringId]
+                    text: VPNI18n[tabLabelStringId]
                     elide: Qt.ElideRight
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter

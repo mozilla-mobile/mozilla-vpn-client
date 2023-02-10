@@ -11,7 +11,7 @@
 #include "qmlengineholder.h"
 
 TestHelper::TestHelper() {
-  m_l18nstrings = L18nStrings::instance();
+  m_i18nstrings = I18nStrings::instance();
   m_theme = new Theme();
   m_mozillavpn = MozillaVPN::instance();
 }
@@ -84,9 +84,9 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
       });
 
   qmlRegisterSingletonType<MozillaVPN>(
-      "Mozilla.VPN", 1, 0, "VPNl18n",
+      "Mozilla.VPN", 1, 0, "VPNI18n",
       [this](QQmlEngine*, QJSEngine*) -> QObject* {
-        QObject* obj = m_l18nstrings;
+        QObject* obj = m_i18nstrings;
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
         return obj;
       });

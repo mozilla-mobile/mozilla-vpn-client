@@ -48,7 +48,7 @@ ColumnLayout {
     }
 
     VPNBoldLabel {
-        text: VPNl18n.MultiHopFeatureMultiHopConnectionsHeader
+        text: VPNI18n.MultiHopFeatureMultiHopConnectionsHeader
         Layout.leftMargin: VPNTheme.theme.windowMargin
         Layout.minimumHeight: VPNTheme.theme.vSpacing
         verticalAlignment: Text.AlignVCenter
@@ -67,7 +67,7 @@ ColumnLayout {
             model: root.recentConnectionsModel
             delegate: VPNClickableRow {
                 accessibleName: isMultiHop ?
-                    VPNl18n.MultiHopFeatureAccessibleNameRecentConnection
+                    VPNI18n.MultiHopFeatureAccessibleNameRecentConnection
                         .arg(localizedEntryCityName).arg(localizedExitCityName)
                     : localizedExitCityName;
 

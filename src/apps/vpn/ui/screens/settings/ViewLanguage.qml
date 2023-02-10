@@ -79,7 +79,7 @@ VPNViewBase {
                              obj.localizedLanguageName.toLowerCase().includes(filterValue);
                  }
                 _searchBarHasError: repeater.count === 0
-                _searchBarPlaceholderText: VPNl18n.LanguageViewSearchPlaceholder
+                _searchBarPlaceholderText: VPNI18n.LanguageViewSearchPlaceholder
 
                 enabled: !useSystemLanguageEnabled
                 anchors.left: parent.left

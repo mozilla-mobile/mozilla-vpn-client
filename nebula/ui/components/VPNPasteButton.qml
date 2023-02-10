@@ -7,7 +7,7 @@ import QtQuick 2.5
 import Mozilla.VPN 1.0
 
 VPNIconButton {
-    accessibleName: VPNl18n.GlobalPaste
+    accessibleName: VPNI18n.GlobalPaste
 
     Image {
         anchors.centerIn: parent

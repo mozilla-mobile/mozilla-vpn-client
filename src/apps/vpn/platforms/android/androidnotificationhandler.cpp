@@ -8,7 +8,7 @@
 #include <QJsonObject>
 
 #include "androidvpnactivity.h"
-#include "l18nstrings.h"
+#include "i18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
 

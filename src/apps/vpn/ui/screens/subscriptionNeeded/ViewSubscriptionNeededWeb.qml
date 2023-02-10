@@ -48,7 +48,7 @@ VPNFlickable {
 
         VPNHeadline {
             id: headline
-            text: VPNl18n.PurchaseWebTitle
+            text: VPNI18n.PurchaseWebTitle
 
             Layout.bottomMargin: VPNTheme.theme.listSpacing
             Layout.topMargin: VPNTheme.theme.vSpacingSmall
@@ -59,7 +59,7 @@ VPNFlickable {
             font.pixelSize: VPNTheme.theme.fontSize
             horizontalAlignment: Text.AlignHCenter
             textFormat: Text.RichText
-            text: VPNl18n.PurchaseWebMessage
+            text: VPNI18n.PurchaseWebMessage
                 .arg("<b style='color:" + VPNTheme.theme.fontColorDark + ";'>"
                     + VPNUser.email + "</b>")
             wrapMode: Text.WordWrap

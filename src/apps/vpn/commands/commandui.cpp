@@ -27,10 +27,10 @@
 // otherwise this gets confused with the Glean.js implementation
 #include "../glean/glean.h"
 #include "gleandeprecated.h"
+#include "i18nstrings.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
 #include "keyregenerator.h"
-#include "l18nstrings.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
@@ -238,7 +238,7 @@ int CommandUI::run(QStringList& tokens) {
 
     Lottie::initialize(engine, QString(NetworkManager::userAgent()));
     Nebula::Initialize(engine);
-    L18nStrings::initialize();
+    I18nStrings::initialize();
 
     // Cleanup previous temporary files.
     TemporaryDir::cleanupAll();
@@ -530,9 +530,9 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNl18n",
+        "Mozilla.VPN", 1, 0, "VPNI18n",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = L18nStrings::instance();
+          QObject* obj = I18nStrings::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -645,7 +645,7 @@ int CommandUI::run(QStringList& tokens) {
           logger.debug() << "Retranslating";
           QmlEngineHolder::instance()->engine()->retranslate();
           NotificationHandler::instance()->retranslate();
-          L18nStrings::instance()->retranslate();
+          I18nStrings::instance()->retranslate();
           AddonManager::instance()->retranslate();
 
 #ifdef MZ_MACOS

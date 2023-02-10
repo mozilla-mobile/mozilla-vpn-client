@@ -43,11 +43,11 @@ StackView {
             spacing: VPNTheme.theme.vSpacing
 
             VPNCollapsibleCard {
-                title: VPNl18n.MultiHopFeatureMultiHopCardHeader
+                title: VPNI18n.MultiHopFeatureMultiHopCardHeader
 
                 iconSrc: "qrc:/ui/resources/tip.svg"
                 contentItem: VPNTextBlock {
-                    text: VPNl18n.MultiHopFeatureMultiHopCardBody
+                    text: VPNI18n.MultiHopFeatureMultiHopCardBody
                     textFormat: Text.StyledText
                     Layout.fillWidth: true
                 }
@@ -73,7 +73,7 @@ StackView {
                 }
 
                 objectName: "buttonSelectEntry"
-                titleText: VPNl18n.MultiHopFeatureMultiHopEntryLocationHeader
+                titleText: VPNI18n.MultiHopFeatureMultiHopEntryLocationHeader
                 descriptionText: titleText
                 contentChildren: [
                     VPNServerLabel {
@@ -107,7 +107,7 @@ StackView {
 
                     objectName: "buttonSelectExit"
                     btnObjectName: "buttonSelectExit-btn"
-                    titleText: VPNl18n.MultiHopFeatureMultiHopExitLocationHeader
+                    titleText: VPNI18n.MultiHopFeatureMultiHopExitLocationHeader
                     descriptionText: titleText
                     contentChildren: [
 
@@ -149,7 +149,7 @@ StackView {
 
                     VPNTextBlock {
                         id: message
-                        text: VPNl18n.MultiHopFeatureMultiHopInfoText
+                        text: VPNI18n.MultiHopFeatureMultiHopInfoText
                         color: VPNTheme.colors.grey40
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignTop

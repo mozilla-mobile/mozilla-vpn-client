@@ -15,7 +15,7 @@ VPNViewBase {
 
     Component.onDestruction: () => VPNProfileFlow.reset()
 
-    _menuTitle: VPNl18n.SubscriptionManagementMenuTitle
+    _menuTitle: VPNI18n.SubscriptionManagementMenuTitle
     _menuOnBackClicked: () => { stackview.pop(null) }
     _viewContentData: ColumnLayout {
         spacing: VPNTheme.theme.windowMargin
@@ -56,7 +56,7 @@ VPNViewBase {
                 color: VPNTheme.theme.fontColorDark
                 horizontalAlignment: Text.AlignLeft
                 font.family: VPNTheme.theme.fontBoldFamily
-                text: VPNl18n.SubscriptionManagementSummaryHeadline
+                text: VPNI18n.SubscriptionManagementSummaryHeadline
 
                 Layout.bottomMargin: VPNTheme.theme.listSpacing * 0.5
                 Layout.topMargin: VPNTheme.theme.listSpacing * 0.5
@@ -76,7 +76,7 @@ VPNViewBase {
                 color: VPNTheme.theme.fontColorDark
                 horizontalAlignment: Text.AlignLeft
                 font.family: VPNTheme.theme.fontBoldFamily
-                text: VPNl18n.SubscriptionManagementPaymentHeadline
+                text: VPNI18n.SubscriptionManagementPaymentHeadline
 
                 Layout.topMargin: VPNTheme.theme.windowMargin * 2
                 Layout.bottomMargin: VPNTheme.theme.listSpacing * 0.5
@@ -97,7 +97,7 @@ VPNViewBase {
                 id: manageSubscriptionButton
 
                 onClicked: handleManageAccountClicked()
-                text: VPNl18n.SubscriptionManagementManageSubscriptionButton
+                text: VPNI18n.SubscriptionManagementManageSubscriptionButton
                 width: undefined
 
                 Layout.topMargin: VPNTheme.theme.windowMargin * 2
@@ -107,7 +107,7 @@ VPNViewBase {
             VPNLinkButton {
                 objectName: "accountDeletionButton"
                 fontName: VPNTheme.theme.fontBoldFamily
-                labelText: VPNl18n.DeleteAccountButtonLabel
+                labelText: VPNI18n.DeleteAccountButtonLabel
                 linkColor: VPNTheme.theme.redLinkButton
                 visible: VPNFeatureList.get("accountDeletion").isSupported
 
@@ -169,7 +169,7 @@ VPNViewBase {
         ) {
             subscriptionInfoModel.append({
                 _objectName: "subscriptionItem-plan",
-                labelText: VPNl18n.SubscriptionManagementPlanLabel,
+                labelText: VPNI18n.SubscriptionManagementPlanLabel,
                 valueText: getPlanText(
                     VPNSubscriptionData.planCurrency,
                     VPNSubscriptionData.planAmount,
@@ -181,10 +181,10 @@ VPNViewBase {
         // Status
         subscriptionInfoModel.append({
             _objectName: "subscriptionItem-status",
-            labelText: VPNl18n.SubscriptionManagementStatusLabel,
+            labelText: VPNI18n.SubscriptionManagementStatusLabel,
             valueText: VPNSubscriptionData.status === VPNSubscriptionData.Active
-                ? VPNl18n.SubscriptionManagementStatusActive
-                : VPNl18n.SubscriptionManagementStatusInactive,
+                ? VPNI18n.SubscriptionManagementStatusActive
+                : VPNI18n.SubscriptionManagementStatusInactive,
             type: "pill",
         });
 
@@ -192,7 +192,7 @@ VPNViewBase {
         if (VPNSubscriptionData.createdAt) {
             subscriptionInfoModel.append({
                 _objectName: "subscriptionItem-activated",
-                labelText: VPNl18n.SubscriptionManagementActivatedLabel,
+                labelText: VPNI18n.SubscriptionManagementActivatedLabel,
                 valueText: epochTimeToDate(VPNSubscriptionData.createdAt),
                 type: "text",
             });
@@ -202,8 +202,8 @@ VPNViewBase {
         subscriptionInfoModel.append({
             _objectName: "subscriptionItem-cancelled",
             labelText: VPNSubscriptionData.isCancelled
-                ? VPNl18n.SubscriptionManagementExpiresLabel
-                : VPNl18n.SubscriptionManagementNextLabel,
+                ? VPNI18n.SubscriptionManagementExpiresLabel
+                : VPNI18n.SubscriptionManagementNextLabel,
             valueText: epochTimeToDate(VPNSubscriptionData.expiresOn),
             type: "text",
         });
@@ -221,7 +221,7 @@ VPNViewBase {
                 subscriptionPaymentModel.append({
                     _objectName: "subscriptionItem-brand",
                     labelText: VPNSubscriptionData.creditCardBrand,
-                    valueText: VPNl18n.SubscriptionManagementCardLast4.arg(VPNSubscriptionData.creditCardLast4),
+                    valueText: VPNI18n.SubscriptionManagementCardLast4.arg(VPNSubscriptionData.creditCardLast4),
                     type: "payment",
                 });
 
@@ -232,7 +232,7 @@ VPNViewBase {
                     // Credit card expires
                     subscriptionPaymentModel.append({
                         _objectName: "subscriptionItem-expires",
-                        labelText: VPNl18n.SubscriptionManagementCardExpiresLabel,
+                        labelText: VPNI18n.SubscriptionManagementCardExpiresLabel,
                         valueText: getPaymentExpiration(),
                         type: "text",
                     });
@@ -284,13 +284,13 @@ VPNViewBase {
         switch (VPNSubscriptionData.planBillingInterval) {
             case VPNSubscriptionData.BillingIntervalMonthly:
                 // {¤amount} Monthly
-                return VPNl18n.SubscriptionManagementPlanValueMonthly.arg(localizedCurrency);
+                return VPNI18n.SubscriptionManagementPlanValueMonthly.arg(localizedCurrency);
             case VPNSubscriptionData.BillingIntervalHalfYearly:
                 // {¤amount} Half-yearly
-                return VPNl18n.SubscriptionManagementPlanValueHalfYearly.arg(localizedCurrency);
+                return VPNI18n.SubscriptionManagementPlanValueHalfYearly.arg(localizedCurrency);
             case VPNSubscriptionData.BillingIntervalYearly:
                 // {¤amount} Yearly
-                return VPNl18n.SubscriptionManagementPlanValueYearly.arg(localizedCurrency);
+                return VPNI18n.SubscriptionManagementPlanValueYearly.arg(localizedCurrency);
             default:
                 // If we made it here something went wrong. In case we encounter
                 // an unhandled TypeBillingInterval we should have should have

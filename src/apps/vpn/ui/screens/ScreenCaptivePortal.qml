@@ -22,22 +22,22 @@ VPNFlickable {
             name: "pre-activation"
             PropertyChanges { 
                 target: subTextBlock; 
-                text: VPNl18n.CaptivePortalAlertActionPreActivation
+                text: VPNI18n.CaptivePortalAlertActionPreActivation
             }
             PropertyChanges{
                 target:openPortalButton
-                text: VPNl18n.CaptivePortalAlertButtonTextPreActivation
+                text: VPNI18n.CaptivePortalAlertButtonTextPreActivation
             }
         },
         State {
             name: "post-activation"
             PropertyChanges { 
                 target: subTextBlock; 
-                text: VPNl18n.CaptivePortalAlertActionPostActivation
+                text: VPNI18n.CaptivePortalAlertActionPostActivation
             }
             PropertyChanges{
                 target:openPortalButton
-                text: VPNl18n.CaptivePortalAlertButtonTextPostActivation
+                text: VPNI18n.CaptivePortalAlertButtonTextPostActivation
             }
         }
     ]
@@ -58,8 +58,8 @@ VPNFlickable {
 
             logo: "qrc:/ui/resources/globe-warning.svg"
             logoSize: 80
-            logoSubtitle: VPNl18n.CaptivePortalAlertHeader
-            logoTitle: VPNl18n.CaptivePortalAlertTitle
+            logoSubtitle: VPNI18n.CaptivePortalAlertHeader
+            logoTitle: VPNI18n.CaptivePortalAlertTitle
             width: parent.width
 
         }

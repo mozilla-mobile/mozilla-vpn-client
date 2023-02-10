@@ -188,7 +188,7 @@ RadioDelegate {
                     rightPadding: 8
                     bottomPadding: 3
 
-                    text: VPNl18n.FreeTrialsFreeTrialLabel
+                    text: VPNI18n.FreeTrialsFreeTrialLabel
                     verticalAlignment: Text.AlignVCenter
                     lineHeight: VPNTheme.theme.controllerInterLineHeight
                     lineHeightMode: Text.FixedHeight

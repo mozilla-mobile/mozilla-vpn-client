@@ -14,7 +14,7 @@ VPNViewBase {
     id: vpnFlickable
     objectName: "DNSSettingsView"
 
-    _menuTitle: VPNl18n.SettingsDnsSettings
+    _menuTitle: VPNI18n.SettingsDnsSettings
 
     function maybeApplyChange(settingValue) {
         if (settingValue === VPNSettings.Gateway) {
@@ -55,7 +55,7 @@ VPNViewBase {
                     spacing: 0
                     VPNTextBlock {
                         Layout.fillWidth: true
-                        text: VPNl18n.SettingsDnsSettingsDisconnectWarning
+                        text: VPNI18n.SettingsDnsSettingsDisconnectWarning
                         verticalAlignment: Text.AlignVCenter
                         Accessible.role: Accessible.StaticText
                         Accessible.name: text
@@ -81,7 +81,7 @@ VPNViewBase {
                 Layout.alignment: Qt.AlignTop
                 checked: VPNSettings.dnsProviderFlags !== VPNSettings.Custom
                 ButtonGroup.group: radioButtonGroup
-                accessibleName: VPNl18n.SettingsDnsSettingsStandardDNSTitle
+                accessibleName: VPNI18n.SettingsDnsSettingsStandardDNSTitle
                 onClicked: maybeApplyChange(VPNSettings.Gateway);
             }
 
@@ -91,7 +91,7 @@ VPNViewBase {
                 VPNInterLabel {
                     Layout.fillWidth: true
 
-                    text: VPNl18n.SettingsDnsSettingsStandardDNSTitle
+                    text: VPNI18n.SettingsDnsSettingsStandardDNSTitle
                     wrapMode: Text.WordWrap
                     horizontalAlignment: Text.AlignLeft
 
@@ -106,7 +106,7 @@ VPNViewBase {
                 }
 
                 VPNTextBlock {
-                    text: VPNl18n.SettingsDnsSettingsStandardDNSBody
+                    text: VPNI18n.SettingsDnsSettingsStandardDNSBody
                     Layout.fillWidth: true
                 }
             }
@@ -125,7 +125,7 @@ VPNViewBase {
                 Layout.alignment: Qt.AlignTop
                 checked: VPNSettings.dnsProviderFlags === VPNSettings.Custom
                 ButtonGroup.group: radioButtonGroup
-                accessibleName: VPNl18n.SettingsDnsSettingsCustomDNSTitle
+                accessibleName: VPNI18n.SettingsDnsSettingsCustomDNSTitle
                 onClicked: maybeApplyChange(VPNSettings.Custom);
             }
 
@@ -136,7 +136,7 @@ VPNViewBase {
                 VPNInterLabel {
                     Layout.fillWidth: true
 
-                    text: VPNl18n.SettingsDnsSettingsCustomDNSTitle
+                    text: VPNI18n.SettingsDnsSettingsCustomDNSTitle
                     wrapMode: Text.WordWrap
                     horizontalAlignment: Text.AlignLeft
 
@@ -150,7 +150,7 @@ VPNViewBase {
                     }
                 }
                 VPNTextBlock {
-                    text: VPNl18n.SettingsDnsSettingsCustomDNSBody
+                    text: VPNI18n.SettingsDnsSettingsCustomDNSBody
                     Layout.fillWidth: true
                 }
 
@@ -165,7 +165,7 @@ VPNViewBase {
                     enabled: VPNSettings.dnsProviderFlags === VPNSettings.Custom
                     onEnabledChanged: if(enabled) forceActiveFocus()
 
-                    _placeholderText: VPNl18n.SettingsDnsSettingsInputPlaceholder
+                    _placeholderText: VPNI18n.SettingsDnsSettingsInputPlaceholder
                     text: ""
                     Layout.fillWidth: true
                     Layout.maximumWidth: VPNTheme.theme.maxTextWidth
@@ -191,7 +191,7 @@ VPNViewBase {
                             ipInput.valueInvalid = false;
                             VPNSettings.userDNS = ipInput.text
                         } else {
-                            ipInput.error = VPNl18n.SettingsDnsSettingsCustomDNSError
+                            ipInput.error = VPNI18n.SettingsDnsSettingsCustomDNSError
                             ipInput.valueInvalid = true;
                         }
                     }
@@ -234,12 +234,12 @@ VPNViewBase {
             closeButtonObjectName: "dnsOverwritePopupPopupCloseButton"
             imageSrc: "qrc:/ui/resources/logo-dns-privacy.svg"
             imageSize: Qt.size(80, 80)
-            title: VPNl18n.DnsOverwriteDialogTitlePrivacy
-            description: VPNl18n.DnsOverwriteDialogBodyPrivacy
+            title: VPNI18n.DnsOverwriteDialogTitlePrivacy
+            description: VPNI18n.DnsOverwriteDialogBodyPrivacy
             buttons: [
                 VPNButton {
                     objectName: "dnsOverwritePopupDiscoverNowButton"
-                    text: VPNl18n.DnsOverwriteDialogPrimaryButton
+                    text: VPNI18n.DnsOverwriteDialogPrimaryButton
                     onClicked: {
                         VPNSettings.dnsProviderFlags = VPNSettings.Custom;
                         dnsOverwritePopup.close()
@@ -247,7 +247,7 @@ VPNViewBase {
                 },
                 VPNLinkButton {
                     objectName: "dnsOverwritePopupGoBackButton"
-                    labelText: VPNl18n.DnsOverwriteDialogSecondaryButton
+                    labelText: VPNI18n.DnsOverwriteDialogSecondaryButton
                     onClicked: dnsOverwritePopup.close()
                 }
             ]

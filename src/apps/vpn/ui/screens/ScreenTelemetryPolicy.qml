@@ -33,7 +33,7 @@ VPNFlickable {
         VPNPanel {
             logo: "qrc:/ui/resources/updateRecommended.svg"
             logoTitle: qsTrId("vpn.settings.dataCollection")
-            logoSubtitle: VPNl18n.TelemetryPolicyViewDescription
+            logoSubtitle: VPNI18n.TelemetryPolicyViewDescription
             Layout.fillWidth: true
             anchors.horizontalCenter: undefined
             height: undefined
@@ -55,7 +55,7 @@ VPNFlickable {
                 Layout.rightMargin: VPNTheme.theme.windowMargin * 3
                 Layout.maximumWidth: VPNTheme.theme.maxHorizontalContentWidth
                 Layout.fillWidth: true
-                text: VPNl18n.TelemetryPolicyViewQuestion
+                text: VPNI18n.TelemetryPolicyViewQuestion
             }
 
             VPNButton {

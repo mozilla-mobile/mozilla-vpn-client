@@ -5,7 +5,7 @@
 #include "appconstants.h"
 #include "glean/glean.h"
 #include "helper.h"
-#include "l18nstrings.h"
+#include "i18nstrings.h"
 #include "leakdetector.h"
 #include "loghandler.h"
 #include "networkrequest.h"
@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
       TestHelper::networkRequestDelete, TestHelper::networkRequestGet,
       TestHelper::networkRequestPost, TestHelper::networkRequestPostIODevice);
 
-  L18nStrings::initialize();
+  I18nStrings::initialize();
   LogHandler::enableStderr();
   VPNGlean::registerLogHandler(LogHandler::rustMessageHandler);
 
