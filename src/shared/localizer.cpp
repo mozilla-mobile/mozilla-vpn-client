@@ -348,11 +348,6 @@ void Localizer::maybeLoadLanguageFallback(const QString& code) {
                      << fallbackCode;
       continue;
     }
-
-    if (m_translationCompleteness.value(fallbackCode, 0) == 1) {
-      logger.debug() << "We reached 100% of completeness";
-      break;
-    }
   }
 }
 
