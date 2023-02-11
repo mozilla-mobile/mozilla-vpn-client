@@ -10,7 +10,7 @@
 
 #include "glean/generated/metrics.h"
 #include "gleandeprecated.h"
-#include "l18nstrings.h"
+#include "i18nstrings.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
@@ -191,8 +191,8 @@ QString AddonMessage::dateInternal(const QDateTime& nowDateTime,
       (nowDateTime.date().dayOfYear() == 1 &&
        messageDateTime.date().dayOfYear() ==
            messageDateTime.date().daysInYear())) {
-    return L18nStrings::instance()->t(
-        L18nStrings::InAppMessagingDateTimeYesterday);
+    return I18nStrings::instance()->t(
+        I18nStrings::InAppMessagingDateTimeYesterday);
   }
 
   // Before yesterday (but still this week)

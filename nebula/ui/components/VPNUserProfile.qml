@@ -68,7 +68,7 @@ VPNClickableRow {
 
             VPNBoldLabel {
                 objectName: _objNameBase + "-displayName"
-                readonly property var textVpnUser: VPNl18n.GlobalVpnUser
+                readonly property var textVpnUser: VPNI18n.GlobalVpnUser
                 text: VPNUser.displayName ? VPNUser.displayName : textVpnUser
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 Layout.fillWidth: true

@@ -11,7 +11,7 @@ import components 0.1
 
 
 VPNViewBase {
-    _menuTitle: VPNl18n.AboutUsLicenses
+    _menuTitle: VPNI18n.AboutUsLicenses
     _viewContentData: Column {
         Layout.fillWidth: true
 

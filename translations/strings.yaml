@@ -31,18 +31,18 @@
 #      - Also comments can be written using
 #      - multiple lines!
 #
-# In QML/JS, you can use the string IDs via the `VPNl18n` object. Each string
+# In QML/JS, you can use the string IDs via the `VPNI18n` object. Each string
 # is converted in an enum composed by categoryName + stringId, in pascal case.
 # For instance:
 # ```
 # Text {
-#   text: VPNl18n.InitialViewSubTitle
+#   text: VPNI18n.InitialViewSubTitle
 # ```
 #
 # In C++, you can do basically the same:
 # ```
 # QString foo =
-#    L18nStrings::instance()->t(L18nStrings::InitialViewGetStartedButton)
+#    I18nStrings::instance()->t(I18nStrings::InitialViewGetStartedButton)
 # ```
 #
 # If a string contains arguments, add '%<number>' for each argument. For
@@ -59,13 +59,13 @@
 # When you use a string with arguments, in QML, you can write:
 # ```
 # Text {
-#   text: VPNl18n.Something.arg("hello")
-#   otherText: VPNl18n.Something.arg("hello").arg("second argument")
+#   text: VPNI18n.Something.arg("hello")
+#   otherText: VPNI18n.Something.arg("hello").arg("second argument")
 # ```
 # In C++:
 # ```
 # QString foo =
-#    L18nStrings::instance()->t(L18nStrings::Something).arg("hello")
+#    I18nStrings::instance()->t(I18nStrings::Something).arg("hello")
 # ```
 #
 # Remember! When you change this file, you must run the

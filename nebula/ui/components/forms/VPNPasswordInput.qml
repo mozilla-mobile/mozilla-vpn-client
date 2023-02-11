@@ -30,8 +30,8 @@ VPNTextField {
         id: showHidePasswordButton
 
         accessibleName: passwordInput.charactersMasked
-                        ? VPNl18n.InAppAuthShowPassword
-                        : VPNl18n.InAppAuthHidePassword
+                        ? VPNI18n.InAppAuthShowPassword
+                        : VPNI18n.InAppAuthHidePassword
         anchors {
             right: parent.right
             rightMargin: VPNTheme.theme.listSpacing / 2

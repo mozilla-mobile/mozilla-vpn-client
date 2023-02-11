@@ -27,17 +27,17 @@ VPNInAppAuthenticationBase {
         }
     }
     _menuButtonAccessibleName: qsTrId("vpn.connectionInfo.close")
-    _headlineText: VPNl18n.InAppAuthVerificationCodeTitle
-    _subtitleText: VPNl18n.InAppAuthEmailVerificationDescription
+    _headlineText: VPNI18n.InAppAuthVerificationCodeTitle
+    _subtitleText: VPNI18n.InAppAuthEmailVerificationDescription
     _imgSource: "qrc:/nebula/resources/verification-code.svg"
 
     _inputs: VPNInAppAuthenticationInputs {
         objectName: "authUnblockCodeNeeded"
         _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateUnblockCodeNeeded && activeInput().text.length === VPNAuthInApp.unblockCodeLength && !activeInput().hasError
         _buttonOnClicked: (inputText) => { VPNAuthInApp.verifyUnblockCode(inputText) }
-        _buttonText: VPNl18n.InAppAuthVerifySecurityCodeButton
+        _buttonText: VPNI18n.InAppAuthVerifySecurityCodeButton
         _inputMethodHints: Qt.ImhNone
-        _inputPlaceholderText: VPNl18n.InAppAuthUnblockCodeInputPlaceholder
+        _inputPlaceholderText: VPNI18n.InAppAuthUnblockCodeInputPlaceholder
     }
 
     _footerContent: Column {
@@ -45,7 +45,7 @@ VPNInAppAuthenticationBase {
         spacing: VPNTheme.theme.windowMargin
 
         VPNLinkButton {
-            labelText: VPNl18n.InAppAuthResendCodeLink
+            labelText: VPNI18n.InAppAuthResendCodeLink
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
                 VPNAuthInApp.resendUnblockCodeEmail();

@@ -11,7 +11,7 @@ ColumnLayout {
     Layout.alignment: Qt.AlignHCenter
 
     Text {
-        text: VPNl18n.InAppAuthTermsOfServiceAndPrivacyDisclaimer
+        text: VPNI18n.InAppAuthTermsOfServiceAndPrivacyDisclaimer
         font.family: VPNTheme.theme.fontInterFamily
         font.pixelSize: VPNTheme.theme.fontSizeSmall
         color: VPNTheme.theme.fontColor

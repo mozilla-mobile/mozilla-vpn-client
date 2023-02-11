@@ -187,8 +187,8 @@ Item {
 
                         Component.onCompleted: {
                             currentPanelValues._panelId = panelId;
-                            currentPanelValues._panelTitleText = VPNl18n[titleStringId];
-                            currentPanelValues._panelDescriptionText = VPNl18n[subtitleStringId];
+                            currentPanelValues._panelTitleText = VPNI18n[titleStringId];
+                            currentPanelValues._panelDescriptionText = VPNI18n[subtitleStringId];
                             updatePanel.start();
                         }
 
@@ -300,7 +300,7 @@ Item {
 
                 VPNInterLabel {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: VPNl18n.FreeTrialsStartYourFreeTrial
+                    text: VPNI18n.FreeTrialsStartYourFreeTrial
                     color: VPNTheme.colors.white80
                     font.family: VPNTheme.theme.fontInterSemiBoldFamily
                     width: parent.width
@@ -338,7 +338,7 @@ Item {
                     id: signUpButton
                     objectName: "signUpButton"
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: VPNl18n.MobileOnboardingSignUpBtn
+                    text: VPNI18n.MobileOnboardingSignUpBtn
                     width: Math.min(parent.width, VPNTheme.theme.maxHorizontalContentWidth)
                     onClicked: {
                         const platform = Qt.platform.os;
@@ -351,7 +351,7 @@ Item {
 
                 VPNLinkButton {
                     objectName: "alreadyASubscriberLink"
-                    labelText: VPNl18n.MobileOnboardingAlreadyASubscriber
+                    labelText: VPNI18n.MobileOnboardingAlreadyASubscriber
                     anchors.horizontalCenter: parent.horizontalCenter
                     height: VPNTheme.theme.rowHeight
                     linkColor: VPNTheme.theme.whiteButton

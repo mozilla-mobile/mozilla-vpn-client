@@ -8,7 +8,7 @@
 #include <QVector>
 
 #include "applistprovider.h"
-#include "l18nstrings.h"
+#include "i18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -192,10 +192,10 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
   if (removedMissingApps.isEmpty()) {
     return;
   }
-  auto strings = L18nStrings::instance();
-  QString action = strings->t(L18nStrings::SplittunnelMissingAppActionButton);
+  auto strings = I18nStrings::instance();
+  QString action = strings->t(I18nStrings::SplittunnelMissingAppActionButton);
 
-  QString message = strings->t(L18nStrings::SplittunnelMissingAppMultiple)
+  QString message = strings->t(I18nStrings::SplittunnelMissingAppMultiple)
                         .arg(removedMissingApps.count());
   emit notification("warning", message, action);
 }
@@ -259,8 +259,8 @@ void AppPermission::openFilePicker() {
   }
   m_listprovider->addApplication(fileNames[0]);
 
-  QString message = L18nStrings::instance()
-                        ->t(L18nStrings::SplittunnelMissingAppAddedOne)
+  QString message = I18nStrings::instance()
+                        ->t(I18nStrings::SplittunnelMissingAppAddedOne)
                         .arg(m_listprovider->getAppName(fileNames[0]));
   emit notification("success", message);
 }

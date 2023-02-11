@@ -2,25 +2,25 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "l18nstrings.h"
+#include "i18nstrings.h"
 
 #include <QCoreApplication>
 
 namespace {
-L18nStrings* s_instance = nullptr;
+I18nStrings* s_instance = nullptr;
 }
 
 // static
-L18nStrings* L18nStrings::instance() {
+I18nStrings* I18nStrings::instance() {
   if (!s_instance) {
-    s_instance = new L18nStrings(qApp);
+    s_instance = new I18nStrings(qApp);
   }
 
   return s_instance;
 }
 
 // static
-void L18nStrings::initialize() {
+void I18nStrings::initialize() {
 #ifndef BUILD_QMAKE
   Q_INIT_RESOURCE(languages);
   Q_INIT_RESOURCE(servers);
@@ -28,16 +28,16 @@ void L18nStrings::initialize() {
 #endif
 }
 
-L18nStrings::L18nStrings(QObject* parent) : QQmlPropertyMap(parent) {
+I18nStrings::I18nStrings(QObject* parent) : QQmlPropertyMap(parent) {
   retranslate();
 }
 
-const char* L18nStrings::id(L18nStrings::String string) const {
+const char* I18nStrings::id(I18nStrings::String string) const {
   Q_ASSERT(string < __Last);
   return _ids[string];
 }
 
-QString L18nStrings::t(L18nStrings::String string) const {
+QString I18nStrings::t(I18nStrings::String string) const {
   Q_ASSERT(string < __Last);
   QString id = _ids[string];
   if (id.isEmpty()) return "";

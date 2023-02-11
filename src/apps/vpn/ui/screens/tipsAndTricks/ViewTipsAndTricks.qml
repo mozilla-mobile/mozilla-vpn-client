@@ -13,7 +13,7 @@ VPNViewBase {
     id: root
     objectName: "settingsTipsAndTricksPage"
 
-    _menuTitle: VPNl18n.SettingsTipsAndTricksSettings
+    _menuTitle: VPNI18n.SettingsTipsAndTricksSettings
     _interactive: false
 
     _viewContentData: VPNTabNavigation {
@@ -43,15 +43,15 @@ VPNViewBase {
 
             // Quick tips
             Item {
-                property string title: VPNl18n.TipsAndTricksQuickTipsTitle
-                property string description: VPNl18n.TipsAndTricksQuickTipsDescription
+                property string title: VPNI18n.TipsAndTricksQuickTipsTitle
+                property string description: VPNI18n.TipsAndTricksQuickTipsDescription
                 property var filter: (addon) => !addon.advanced && !addon.highlighted
             }
 
             // Advanced tips
             Item {
-                property string title: VPNl18n.TipsAndTricksAdvancedTipsTitle
-                property string description: VPNl18n.TipsAndTricksAdvancedTipsDescription
+                property string title: VPNI18n.TipsAndTricksAdvancedTipsTitle
+                property string description: VPNI18n.TipsAndTricksAdvancedTipsDescription
                 property var filter: (addon) => addon.advanced && !addon.highlighted
             }
         }
@@ -61,15 +61,15 @@ VPNViewBase {
 
             // Highlighted tutorials
             Item {
-                property string title: VPNl18n.TipsAndTricksTutorialsTitle
-                property string description: VPNl18n.TipsAndTricksTutorialsDescription
+                property string title: VPNI18n.TipsAndTricksTutorialsTitle
+                property string description: VPNI18n.TipsAndTricksTutorialsDescription
                 property var filter: (addon) => addon.highlighted
             }
 
             // More tutorials
             Item {
-                property string title: VPNl18n.TipsAndTricksMoreTutorialsTitle
-                property string description: VPNl18n.TipsAndTricksMoreTutorialsDescription2
+                property string title: VPNI18n.TipsAndTricksMoreTutorialsTitle
+                property string description: VPNI18n.TipsAndTricksMoreTutorialsDescription2
                 property var filter: (addon) => !addon.highlighted
             }
         }

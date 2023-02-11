@@ -16,22 +16,22 @@ VPNInAppAuthenticationBase {
 
     property var checkboxData: [
         {
-            subLabelText: VPNl18n.DeleteAccountOptionDescriptionOne,
+            subLabelText: VPNI18n.DeleteAccountOptionDescriptionOne,
             objectName: "check1",
             isSelected: false
         },
         {
-            subLabelText: VPNl18n.DeleteAccountOptionDescriptionTwo,
+            subLabelText: VPNI18n.DeleteAccountOptionDescriptionTwo,
             objectName: "check2",
             isSelected: false
         },
         {
-            subLabelText: VPNl18n.DeleteAccountOptionDescriptionThree,
+            subLabelText: VPNI18n.DeleteAccountOptionDescriptionThree,
             objectName: "check3",
             isSelected: false
         },
         {
-            subLabelText: VPNl18n.DeleteAccountOptionDescriptionFour,
+            subLabelText: VPNI18n.DeleteAccountOptionDescriptionFour,
             objectName: "check4",
             isSelected: false
         }
@@ -46,7 +46,7 @@ VPNInAppAuthenticationBase {
     _menuButtonOnClick: () => {
         cancelAuthenticationFlow();
     }
-    _headlineText: VPNl18n.DeleteAccountHeadline
+    _headlineText: VPNI18n.DeleteAccountHeadline
     _imgSource: "qrc:/nebula/resources/avatar-delete-account.svg"
 
     _inputs: ColumnLayout {
@@ -55,7 +55,7 @@ VPNInAppAuthenticationBase {
             objectName: "accountDeletionLabel"
             color: VPNTheme.theme.fontColor
             horizontalAlignment: Text.AlignLeft
-            text: VPNl18n.DeleteAccountSubheadline
+            text: VPNI18n.DeleteAccountSubheadline
                 .arg("<b style='color:" + VPNTheme.theme.fontColorDark + ";'>"
                     + VPNAuthInApp.emailAddress + "</b>")
             textFormat: Text.RichText
@@ -91,7 +91,7 @@ VPNInAppAuthenticationBase {
             colorScheme: VPNTheme.theme.redButton
             enabled: viewDeleteAccount.allowAccountDeletion
             // Delete account
-            text: VPNl18n.DeleteAccountButtonLabel
+            text: VPNI18n.DeleteAccountButtonLabel
             onClicked: if (viewDeleteAccount.allowAccountDeletion) {
                 VPNAuthInApp.deleteAccount();
             }
@@ -102,7 +102,7 @@ VPNInAppAuthenticationBase {
 
             fontName: VPNTheme.theme.fontBoldFamily
             // Cancel
-            labelText: VPNl18n.InAppSupportWorkflowSupportSecondaryActionText
+            labelText: VPNI18n.InAppSupportWorkflowSupportSecondaryActionText
             linkColor: VPNTheme.theme.redLinkButton
             onClicked: {
                 cancelAuthenticationFlow();

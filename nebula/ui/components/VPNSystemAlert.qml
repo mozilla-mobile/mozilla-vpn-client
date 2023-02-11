@@ -27,7 +27,7 @@ VPNAlert {
                 PropertyChanges {
                     target: alertBox
                     alertType: alertTypes.success
-                    alertText: VPNl18n.InAppAuthEmailTokenResentAlert
+                    alertText: VPNI18n.InAppAuthEmailTokenResentAlert
                     visible: true
                 }
             },
@@ -138,7 +138,7 @@ VPNAlert {
                 PropertyChanges {
                     target: alertBox
                     alertType: alertTypes.success
-                    alertText: VPNl18n.GlobalCopied
+                    alertText: VPNI18n.GlobalCopied
                     visible: true
                 }
             }

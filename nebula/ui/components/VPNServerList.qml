@@ -114,11 +114,11 @@ FocusScope {
 
                     iconSrc: "qrc:/ui/resources/tip.svg"
                     contentItem: VPNTextBlock {
-                        text: VPNl18n.ServersViewRecommendedCardBody
+                        text: VPNI18n.ServersViewRecommendedCardBody
                         textFormat: Text.StyledText
                         Layout.fillWidth: true
                     }
-                    title: VPNl18n.ServersViewRecommendedCardTitle
+                    title: VPNI18n.ServersViewRecommendedCardTitle
                     width: parent.width - VPNTheme.theme.windowMargin * 2
                 }
 
@@ -131,7 +131,7 @@ FocusScope {
                         leftMargin: VPNTheme.theme.windowMargin * 0.5
                         rightMargin: VPNTheme.theme.windowMargin * 0.5
                     }
-                    accessibleName: VPNl18n.ServersViewRecommendedRefreshLabel
+                    accessibleName: VPNI18n.ServersViewRecommendedRefreshLabel
                     canGrowVertical: true
                     height: statusTitle.implicitHeight + VPNTheme.theme.vSpacingSmall
                     rowShouldBeDisabled: !(VPNController.state === VPNController.StateOff) || VPNServerLatency.isActive
@@ -305,7 +305,7 @@ FocusScope {
                             return includesName || includesLocalizedName || matchesCountryCode;
                         }
                     _searchBarHasError: countriesRepeater.count === 0
-                    _searchBarPlaceholderText: VPNl18n.ServersViewSearchPlaceholder
+                    _searchBarPlaceholderText: VPNI18n.ServersViewSearchPlaceholder
 
                     anchors {
                         left: parent.left

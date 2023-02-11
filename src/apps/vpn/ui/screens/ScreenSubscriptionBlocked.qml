@@ -20,10 +20,10 @@ VPNStackView {
 
         stackview.push("qrc:/ui/sharedViews/ViewErrorFullScreen.qml", {
             // "Problem confirming subscription…"
-            headlineText: VPNl18n.MultiFxaAccountErrorFxaAccountErrorHeader,
+            headlineText: VPNI18n.MultiFxaAccountErrorFxaAccountErrorHeader,
 
             // "Your subscription is linked to another Firefox Account....."
-            errorMessage: VPNl18n.MultiFxaAccountErrorFxaAccountErrorText,
+            errorMessage: VPNI18n.MultiFxaAccountErrorFxaAccountErrorText,
 
             //% "Visit our help center to learn more about managing your subscriptions."
             errorMessage2: qsTrId("vpn.subscriptionBlocked.visitHelpCenter"),

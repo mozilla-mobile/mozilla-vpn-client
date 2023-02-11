@@ -28,13 +28,13 @@ print G "done."
 printn Y "Generating a dummy PRO file... "
 mkdir -p translations/generated || die
 cat > translations/generated/dummy_ts.pro << EOF
-HEADERS += l18nstrings.h
+HEADERS += i18nstrings.h
 HEADERS += \$\$files(../../src/shared/*.h, true)
 HEADERS += \$\$files(../../src/apps/vpn/*.h, true)
 HEADERS += \$\$files(../../nebula/*.h, true)
 
-SOURCES += l18nstrings_p.cpp
-SOURCES += ../l18nstrings.cpp
+SOURCES += i18nstrings_p.cpp
+SOURCES += ../i18nstrings.cpp
 SOURCES += \$\$files(../../src/shared/*.cpp, true)
 SOURCES += \$\$files(../../src/apps/vpn/*.cpp, true)
 SOURCES += \$\$files(../../nebula/*.cpp, true)

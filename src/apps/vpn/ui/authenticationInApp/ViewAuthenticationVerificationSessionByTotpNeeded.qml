@@ -20,19 +20,19 @@ VPNInAppAuthenticationBase {
         }
     }
     _menuButtonAccessibleName: qsTrId("vpn.connectionInfo.close")
-    _headlineText: VPNl18n.InAppAuthSecurityCodeTitle
-    _subtitleText: VPNl18n.InAppAuthSecurityCodeSubtitle
+    _headlineText: VPNI18n.InAppAuthSecurityCodeTitle
+    _subtitleText: VPNI18n.InAppAuthSecurityCodeSubtitle
     _imgSource: "qrc:/nebula/resources/verification-code.svg"
-    _inputLabel: VPNl18n.InAppAuthSecurityCodeLabel
+    _inputLabel: VPNI18n.InAppAuthSecurityCodeLabel
 
     _inputs: VPNInAppAuthenticationInputs {
         objectName: "authVerificationSessionByTotpNeeded"
 
         _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByTotpNeeded && activeInput().text.length === VPNAuthInApp.totpCodeLength && !activeInput().hasError
         _buttonOnClicked: (inputText) => { VPNAuthInApp.verifySessionTotpCode(inputText) }
-        _buttonText: VPNl18n.InAppAuthVerifySecurityCodeButton
+        _buttonText: VPNI18n.InAppAuthVerifySecurityCodeButton
         _inputMethodHints: Qt.ImhDigitsOnly
-        _inputPlaceholderText: VPNl18n.InAppAuthSecurityCodeInputPlaceholder
+        _inputPlaceholderText: VPNI18n.InAppAuthSecurityCodeInputPlaceholder
     }
 
     _footerContent: Column {
