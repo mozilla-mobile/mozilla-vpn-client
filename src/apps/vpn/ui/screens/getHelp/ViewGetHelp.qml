@@ -42,6 +42,10 @@ VPNViewBase {
 
             accessibleName: VPNI18n.InAppSupportWorkflowSupportNavLinkText
             title: VPNI18n.InAppSupportWorkflowSupportNavLinkText
+<<<<<<< HEAD
+=======
+            onClicked: getHelpStackView.push("qrc:/ui/screens/getHelp/contactUs/ViewContactUsForm.qml");
+>>>>>>> 39e260398 (Rename VPNL18n to VPNI18n (#5994))
             iconSource: "qrc:/nebula/resources/chevron.svg"
             iconMirror: VPNLocalizer.isRightToLeft
             backgroundColor: VPNTheme.theme.iconButtonLightBackground
@@ -58,6 +62,10 @@ VPNViewBase {
 
             accessibleName: VPNI18n.GetHelpViewLogs
             title: VPNI18n.GetHelpViewLogs
+<<<<<<< HEAD
+=======
+            onClicked: VPN.requestViewLogs()
+>>>>>>> 39e260398 (Rename VPNL18n to VPNI18n (#5994))
             iconSource: VPNFeatureList.get("shareLogs").isSupported ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"
             iconMirror: !VPNFeatureList.get("shareLogs").isSupported && VPNLocalizer.isRightToLeft
             backgroundColor: VPNFeatureList.get("shareLogs").isSupported ?VPNTheme.theme.clickableRowBlue : VPNTheme.theme.iconButtonLightBackground

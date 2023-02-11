@@ -4,6 +4,10 @@
 
 #include "appconstants.h"
 #include "helper.h"
+<<<<<<< HEAD
+=======
+#include "i18nstrings.h"
+>>>>>>> 39e260398 (Rename VPNL18n to VPNI18n (#5994))
 #include "leakdetector.h"
 #include "loghandler.h"
 #include "settingsholder.h"
