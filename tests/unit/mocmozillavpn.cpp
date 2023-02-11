@@ -8,6 +8,7 @@
 #include "models/servercountrymodel.h"
 #include "models/subscriptiondata.h"
 #include "mozillavpn.h"
+#include "serverlatency.h"
 
 // The singleton.
 static MozillaVPN* s_instance = nullptr;

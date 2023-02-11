@@ -6,8 +6,10 @@
 #include "helper.h"
 #include "models/location.h"
 #include "models/servercountrymodel.h"
+#include "models/serverdata.h"
 #include "models/subscriptiondata.h"
 #include "mozillavpn.h"
+#include "serverlatency.h"
 
 // The singleton.
 static MozillaVPN* s_instance = nullptr;
@@ -38,6 +40,11 @@ SubscriptionData* MozillaVPN::subscriptionData() const {
 
 ServerCountryModel* MozillaVPN::serverCountryModel() const {
   return new ServerCountryModel();
+}
+
+ServerData* MozillaVPN::serverData() const {
+  static ServerData* data = new ServerData();
+  return data;
 }
 
 ServerLatency* MozillaVPN::serverLatency() const {
