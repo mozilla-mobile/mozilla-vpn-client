@@ -25,7 +25,7 @@ jobs:
       - name: Install dependecies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git libgl-dev libegl-dev libpolkit-gobject-1-dev clang-10 liboath-dev python3 aspell aspell-en
+          sudo apt-get install -y aspell aspell-en
           sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
           pip3 install -r requirements.txt
 
