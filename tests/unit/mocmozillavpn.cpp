@@ -4,6 +4,9 @@
 
 #include "controller.h"
 #include "helper.h"
+#include "models/location.h"
+#include "models/servercountrymodel.h"
+#include "models/subscriptiondata.h"
 #include "mozillavpn.h"
 
 // The singleton.
