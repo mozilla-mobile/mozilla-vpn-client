@@ -8,11 +8,11 @@
 
 #include "leakdetector.h"
 #include "localizer.h"
-#include "mozillavpn.h"
-#include "settingsholder.h"
 #include "models/servercity.h"
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
+#include "mozillavpn.h"
+#include "settingsholder.h"
 #include "simplenetworkmanager.h"
 
 CommandSelect::CommandSelect(QObject* parent)

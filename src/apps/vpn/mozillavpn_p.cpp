@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "mozillavpn.h"
 #include "mozillavpn_p.h"
+
+#include "mozillavpn.h"
 
 CaptivePortal* MozillaVPN::captivePortal() const {
   return &m_private->m_captivePortal;
@@ -22,7 +23,9 @@ ConnectionHealth* MozillaVPN::connectionHealth() const {
 
 Controller* MozillaVPN::controller() const { return &m_private->m_controller; }
 
-DeviceModel* MozillaVPN::deviceModel() const { return &m_private->m_deviceModel; }
+DeviceModel* MozillaVPN::deviceModel() const {
+  return &m_private->m_deviceModel;
+}
 
 FeedbackCategoryModel* MozillaVPN::feedbackCategoryModel() const {
   return &m_private->m_feedbackCategoryModel;
@@ -58,9 +61,7 @@ ServerLatency* MozillaVPN::serverLatency() const {
   return &m_private->m_serverLatency;
 }
 
-StatusIcon* MozillaVPN::statusIcon() const {
-  return &m_private->m_statusIcon;
-}
+StatusIcon* MozillaVPN::statusIcon() const { return &m_private->m_statusIcon; }
 
 SubscriptionData* MozillaVPN::subscriptionData() const {
   return &m_private->m_subscriptionData;
