@@ -10,6 +10,7 @@
 #include <QWindow>
 
 #include "appconstants.h"
+#include "controller.h"
 #include "externalophandler.h"
 #include "frontend/navigator.h"
 #include "i18nstrings.h"
@@ -17,6 +18,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
+#include "statusicon.h"
 
 namespace {
 Logger logger("SystemTrayNotificationHandler");

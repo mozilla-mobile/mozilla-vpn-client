@@ -11,33 +11,32 @@
 #include <QStandardPaths>
 #include <QTimer>
 
-#include "captiveportal/captiveportal.h"
-#include "captiveportal/captiveportaldetection.h"
-#include "connectionbenchmark/connectionbenchmark.h"
-#include "connectionhealth.h"
-#include "controller.h"
 #include "env.h"
 #include "errorhandler.h"
-#include "ipaddresslookup.h"
-#include "models/devicemodel.h"
-#include "models/feedbackcategorymodel.h"
-#include "models/keys.h"
-#include "models/location.h"
-#include "models/servercountrymodel.h"
-#include "models/serverdata.h"
-#include "models/subscriptiondata.h"
-#include "models/supportcategorymodel.h"
-#include "models/user.h"
-#include "networkwatcher.h"
-#include "profileflow.h"
-#include "releasemonitor.h"
-#include "serverlatency.h"
-#include "statusicon.h"
-#include "telemetry.h"
-#include "theme.h"
-#include "websocket/websockethandler.h"
 
 struct MozillaVPNPrivate;
+class CaptivePortal;
+class CaptivePortalDetection;
+class ConnectionBenchmark;
+class ConnectionHealth;
+class Controller;
+class DeviceModel;
+class FeedbackCategoryModel;
+class IpAddressLookup;
+class Keys;
+class Location;
+class NetworkWatcher;
+class ProfileFlow;
+class ReleaseMonitor;
+class ServerCountryModel;
+class ServerData;
+class ServerLatency;
+class StatusIcon;
+class SubscriptionData;
+class SupportCategoryModel;
+class Telemetry;
+class Theme;
+class User;
 
 class QTextStream;
 

@@ -11,6 +11,7 @@
 #include "constants.h"
 #include "feature.h"
 #include "leakdetector.h"
+#include "location.h"
 #include "mozillavpn.h"
 #include "serveri18n.h"
 #include "serverlatency.h"

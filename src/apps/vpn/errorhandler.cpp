@@ -6,6 +6,8 @@
 
 #include <QApplication>
 
+#include "connectionhealth.h"
+#include "controller.h"
 #include "glean/generated/metrics.h"
 #include "gleandeprecated.h"
 #include "leakdetector.h"

@@ -19,6 +19,7 @@
 #include "servercountry.h"
 #include "serverdata.h"
 #include "serveri18n.h"
+#include "serverlatency.h"
 #include "settingsholder.h"
 
 namespace {

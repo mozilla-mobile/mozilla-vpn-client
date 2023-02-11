@@ -5,6 +5,7 @@
 #include "benchmarktaskping.h"
 
 #include "appconstants.h"
+#include "connectionhealth.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"

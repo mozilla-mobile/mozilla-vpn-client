@@ -6,6 +6,7 @@
 
 #include <QMetaEnum>
 
+#include "controller.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"

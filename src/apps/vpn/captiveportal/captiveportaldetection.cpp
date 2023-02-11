@@ -9,10 +9,12 @@
 #include "captiveportalmonitor.h"
 #include "captiveportalnotifier.h"
 #include "controller.h"
+#include "connectionhealth.h"
 #include "frontend/navigator.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "networkwatcher.h"
 #include "settingsholder.h"
 
 namespace {

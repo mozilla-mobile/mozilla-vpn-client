@@ -5,11 +5,14 @@
 #include "telemetry.h"
 
 #include "appconstants.h"
+#include "connectionhealth.h"
+#include "controller.h"
 #include "glean/generated/metrics.h"
 #include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "networkwatcher.h"
 #include "telemetry/gleansample.h"
 
 #if defined(MZ_ANDROID)
