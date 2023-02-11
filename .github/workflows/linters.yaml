@@ -13,29 +13,20 @@ on:
 jobs:
   linter:
     name: Run Main Linters (clang, l10n, etc.)
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     env:
       QTVERSION: 6.2.4
     steps:
-      - name: Install Linux packages
-        run: |
-          sudo apt update
-          sudo apt install git libgl-dev libegl-dev libpolkit-gobject-1-dev clang-10 liboath-dev python3 aspell aspell-en -y
-          python3 -m pip install aqtinstall
-          aqt install-qt --outputdir /opt linux desktop $QTVERSION gcc_64 -m all
-
       - name: Clone repository
         uses: actions/checkout@v3
         with:
           submodules: 'true'
 
-      - name: Set up Python 3
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.8'
-
-      - name: Install Python dependencies
+      - name: Install dependecies
         run: |
+          sudo apt-get update
+          sudo apt-get install -y git libgl-dev libegl-dev libpolkit-gobject-1-dev clang-10 liboath-dev python3 aspell aspell-en
+          sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
           pip3 install -r requirements.txt
 
       - name: Generating glean samples
@@ -46,18 +37,15 @@ jobs:
       - name: Importing translation files
         shell: bash
         run: |
-          export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
           python3 scripts/utils/import_languages.py
 
       - name: Generate updated .ts files and check for l10n errors
         run: |
-          export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
           ./scripts/utils/generate_ts.sh
           python .github/l10n/check_l10n_issues.py
 
       - name: Check for QRC errors
         run: |
-          export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
           python scripts/ci/check_qrc.py
 
       - name: Check for addons JSON syntax
@@ -74,15 +62,16 @@ jobs:
       - name: Spell check documentation files
         run: |
           scripts/utils/spellcheck.sh list
+
   ktlint:
     name: Run ktLint
     runs-on: ubuntu-latest
-
     steps:
       - name: Clone repo
         uses: actions/checkout@master
         with:
           fetch-depth: 1
+
       - name: ktlint
         uses: ScaCap/action-ktlint@master
         with:
