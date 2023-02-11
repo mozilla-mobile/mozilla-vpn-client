@@ -25,8 +25,7 @@ jobs:
       - name: Install dependecies
         run: |
           sudo apt-get update
-          sudo apt-get install -y aspell aspell-en
-          sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
+          sudo apt-get install -y aspell aspell-en $(./scripts/linux/getdeps.py -b linux/debian/control)
           pip3 install -r requirements.txt
 
       - name: Generating glean samples
