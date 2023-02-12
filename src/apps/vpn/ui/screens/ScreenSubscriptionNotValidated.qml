@@ -33,7 +33,7 @@ VPNStackView {
             getHelpLinkVisible: true,
             }
         );
-        VPNGleanDeprecated.recordGleanEvent("subNotValidatedViewed");
+        MZGleanDeprecated.recordGleanEvent("subNotValidatedViewed");
         Glean.record.subNotValidatedViewed.record();
     }
 }

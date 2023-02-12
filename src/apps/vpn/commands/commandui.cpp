@@ -25,7 +25,7 @@
 #include "models/licensemodel.h"
 // Relative path is required here,
 // otherwise this gets confused with the Glean.js implementation
-#include "../glean/glean.h"
+#include "glean/mzglean.h"
 #include "gleandeprecated.h"
 #include "i18nstrings.h"
 #include "imageproviderfactory.h"
@@ -234,7 +234,7 @@ int CommandUI::run(QStringList& tokens) {
     // Glean.js
     Glean::Initialize(engine);
     // Glean.rs
-    VPNGlean::initialize();
+    MZGlean::initialize();
 
     Lottie::initialize(engine, QString(NetworkManager::userAgent()));
     Nebula::Initialize(engine);
@@ -307,7 +307,7 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNGleanDeprecated",
+        "Mozilla.VPN", 1, 0, "MZGleanDeprecated",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = GleanDeprecated::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
@@ -602,7 +602,7 @@ int CommandUI::run(QStringList& tokens) {
       // During shutdown Glean will attempt to finish all tasks
       // and submit all enqueued pings (including the one we
       // just sent).
-      VPNGlean::shutdown();
+      MZGlean::shutdown();
 
       emit MozillaVPN::instance()->aboutToQuit();
     });

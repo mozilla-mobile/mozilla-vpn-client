@@ -246,7 +246,7 @@ Item {
         }
 
         tutorialPopup.secondaryButtonOnClicked = () => {
-            VPNGleanDeprecated.recordGleanEventWithExtraKeys("tutorialAborted", {"id": VPNTutorial.currentTutorial.id});
+            MZGleanDeprecated.recordGleanEventWithExtraKeys("tutorialAborted", {"id": VPNTutorial.currentTutorial.id});
             Glean.sample.tutorialAborted.record({ id: VPNTutorial.currentTutorial.id });
             tutorialPopup._onClosed = () => {
                 if (op !== null) VPNTutorial.interruptAccepted(op);

@@ -464,7 +464,7 @@ Item {
 
         onClicked: {
             if (!box.connectionInfoScreenVisible) {
-                VPNGleanDeprecated.recordGleanEvent("connectionInfoOpened");
+                MZGleanDeprecated.recordGleanEvent("connectionInfoOpened");
                 Glean.sample.connectionInfoOpened.record();
             }
             box.connectionInfoScreenVisible = !box.connectionInfoScreenVisible;

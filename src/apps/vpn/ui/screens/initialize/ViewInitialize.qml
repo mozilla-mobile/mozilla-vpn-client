@@ -237,7 +237,7 @@ Item {
             labelText: qsTrId("vpn.main.getHelp2")
             isLightTheme: false
             onClicked: {
-                VPNGleanDeprecated.recordGleanEvent("getHelpClickedInitialize")
+                MZGleanDeprecated.recordGleanEvent("getHelpClickedInitialize")
                 Glean.sample.getHelpClickedInitialize.record();
                 VPNNavigator.requestScreen(VPNNavigator.ScreenGetHelp);
             }
@@ -402,7 +402,7 @@ Item {
         }
 
         function recordGleanEvtAndStartAuth(ctaObjectName) {
-            VPNGleanDeprecated.recordGleanEventWithExtraKeys("onboardingCtaClick",{
+            MZGleanDeprecated.recordGleanEventWithExtraKeys("onboardingCtaClick",{
                                               "panel_id": currentPanelValues._panelId,
                                               "panel_idx": swipeView.currentIndex.toString(),
                                               "panel_cta": ctaObjectName

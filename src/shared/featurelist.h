@@ -12,5 +12,12 @@
 #  error No supported
 #endif
 
+FEATURE(gleanRust,             // Feature ID
+        "Glean Rust SDK",      // Feature name
+        FeatureCallback_true,  // Can be flipped on
+        FeatureCallback_true,  // Can be flipped off
+        QStringList(),         // feature dependencies
+        FeatureCallback_true)
+
 // The app must implement its feature list file.
 #include "appfeaturelist.h"

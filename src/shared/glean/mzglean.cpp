@@ -2,10 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// TODO: Stop using the relative path once Glean.js is fully removed from the
-// codebase. Until then we need the relative path, otherwise XCode is confused
-// about what is being imported.
-#include "./glean.h"
+#include "mzglean.h"
 
 #include "constants.h"
 #include "feature.h"
@@ -13,7 +10,6 @@
 #include "glean/generated/pings.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "settingsholder.h"
 #if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
 #  include "vpnglean.h"
@@ -33,7 +29,7 @@
 
 namespace {
 Logger logger("Glean");
-VPNGlean* s_instance = nullptr;
+MZGlean* s_instance = nullptr;
 
 QString rootAppFolder() {
 #if defined(UNIT_TEST)
@@ -44,26 +40,24 @@ QString rootAppFolder() {
 }
 }  // namespace
 
-VPNGlean::VPNGlean(QObject* parent) : QObject(parent) {
-  MZ_COUNT_CTOR(VPNGlean);
-}
+MZGlean::MZGlean(QObject* parent) : QObject(parent) { MZ_COUNT_CTOR(MZGlean); }
 
-VPNGlean::~VPNGlean() { MZ_COUNT_DTOR(VPNGlean); }
+MZGlean::~MZGlean() { MZ_COUNT_DTOR(MZGlean); }
 
 // static
-void VPNGlean::registerLogHandler(void (*messageHandler)(int32_t, char*)) {
+void MZGlean::registerLogHandler(void (*messageHandler)(int32_t, char*)) {
 #if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
   glean_register_log_handler(messageHandler);
 #endif
 }
 
 // static
-void VPNGlean::initialize() {
-  logger.debug() << "Initializing VPNGlean";
+void MZGlean::initialize() {
+  logger.debug() << "Initializing MZGlean";
 
   if (Feature::get(Feature::Feature_gleanRust)->isSupported()) {
     if (!s_instance) {
-      s_instance = new VPNGlean(qApp);
+      s_instance = new MZGlean(qApp);
 
       connect(SettingsHolder::instance(), &SettingsHolder::gleanEnabledChanged,
               s_instance, []() {
@@ -83,14 +77,14 @@ void VPNGlean::initialize() {
     if (!gleanDirectory.exists(GLEAN_DATA_DIRECTORY) &&
         !gleanDirectory.mkpath(GLEAN_DATA_DIRECTORY)) {
       logger.error()
-          << "Unable to create the VPNGlean data directory. Terminating."
+          << "Unable to create the MZGlean data directory. Terminating."
           << rootAppFolder();
       return;
     }
 
     if (!gleanDirectory.cd(GLEAN_DATA_DIRECTORY)) {
       logger.error()
-          << "Unable to open the VPNGlean data directory. Terminating.";
+          << "Unable to open the MZGlean data directory. Terminating.";
       return;
     }
 
@@ -113,8 +107,8 @@ void VPNGlean::initialize() {
 }
 
 // static
-void VPNGlean::setUploadEnabled(bool isTelemetryEnabled) {
-  logger.debug() << "Changing VPNGlean upload status to" << isTelemetryEnabled;
+void MZGlean::setUploadEnabled(bool isTelemetryEnabled) {
+  logger.debug() << "Changing MZGlean upload status to" << isTelemetryEnabled;
 
 #if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
   glean_set_upload_enabled(isTelemetryEnabled);
@@ -122,7 +116,7 @@ void VPNGlean::setUploadEnabled(bool isTelemetryEnabled) {
 }
 
 // static
-void VPNGlean::shutdown() {
+void MZGlean::shutdown() {
 #if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
   glean_shutdown();
 #endif
