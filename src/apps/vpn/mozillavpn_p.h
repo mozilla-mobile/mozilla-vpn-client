@@ -29,8 +29,6 @@
 #include "theme.h"
 #include "websocket/websockethandler.h"
 
-// TODO: Even this could be moved into the private CPP file if we
-// cleaned up the use of m_private directly within mozillavpn.cpp
 struct MozillaVPNPrivate {
   CaptivePortal m_captivePortal;
   CaptivePortalDetection m_captivePortalDetection;
