@@ -32,7 +32,7 @@ def versions = [
     jna: '5.12.1',
     junit: '4.12',
     mockito: '3.11.2',
-    mockwebserver: '4.9.1', // This is different than a-c, but we're fine, it's only tests.
+    mockwebserver: '4.10.0', // This is different than a-c, but we're fine, it's only tests.
     kotlin: '1.7.20',
     robolectric: '4.9',
     rust_android_plugin: '0.9.3',
