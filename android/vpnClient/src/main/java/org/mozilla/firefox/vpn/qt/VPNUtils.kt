@@ -15,13 +15,13 @@ import android.os.Build
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
-import java.io.IOException
-import java.time.format.DateTimeFormatter
-import java.time.LocalDateTime
-import java.util.Calendar
-import mozilla.telemetry.glean.config.Configuration
-import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.BuildInfo
+import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.config.Configuration
+import java.io.IOException
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Calendar
 
 // Companion for AndroidUtils.cpp
 object VPNUtils {
@@ -45,11 +45,11 @@ object VPNUtils {
         val collection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
         val dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("y-mm-dd-H-m-ss"))
         val fileMetaData =
-                ContentValues().apply {
-                    put(MediaStore.Downloads.MIME_TYPE, "text/plain")
-                    put(MediaStore.Downloads.DISPLAY_NAME, "MozillaVPN_Logs_$dateTime")
-                    put(MediaStore.Downloads.IS_PENDING, 1)
-                }
+            ContentValues().apply {
+                put(MediaStore.Downloads.MIME_TYPE, "text/plain")
+                put(MediaStore.Downloads.DISPLAY_NAME, "MozillaVPN_Logs_$dateTime")
+                put(MediaStore.Downloads.IS_PENDING, 1)
+            }
         // Create the File and get the URI
         val fileURI: Uri? = resolver.insert(collection, fileMetaData)
         if (fileURI == null) {
@@ -111,12 +111,12 @@ object VPNUtils {
     @JvmStatic
     fun initializeGlean(ctx: Context, isTelemetryEnabled: Boolean, channel: String) {
         Glean.initialize(
-                applicationContext = ctx.applicationContext,
-                uploadEnabled = isTelemetryEnabled,
-                // GleanBuildInfo can only be generated for application,
-                // We are in a library so we have to build it ourselves.
-                buildInfo = BuildInfo(BuildConfig.VERSIONCODE, BuildConfig.SHORTVERSION, Calendar.getInstance()),
-                configuration = Configuration(channel = channel)
+            applicationContext = ctx.applicationContext,
+            uploadEnabled = isTelemetryEnabled,
+            // GleanBuildInfo can only be generated for application,
+            // We are in a library so we have to build it ourselves.
+            buildInfo = BuildInfo(BuildConfig.VERSIONCODE, BuildConfig.SHORTVERSION, Calendar.getInstance()),
+            configuration = Configuration(channel = channel)
         )
     }
 }
