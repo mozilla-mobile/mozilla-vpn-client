@@ -194,12 +194,6 @@ describe('Addons', function () {
 
     testCases.forEach(([_, shouldBeAvailable, testCase]) => {
       it(`message display is correct when subscription expiration ${testCase}`, async () => {
-        // This tests cannot be run in WASM due to Qt limitations.
-        // See: https://mozilla-hub.atlassian.net/browse/VPN-4127
-        if (this.ctx.wasm) {
-          return;
-        }
-
         // Load all production addons.
         // These are loaded all together, so we don't know the exact number of addons.
         await vpn.resetAddons('prod');
@@ -222,23 +216,23 @@ describe('Addons', function () {
     await vpn.resetAddons('06_translation_threshold');
     await vpn.waitForCondition(async () => {
       return parseInt(
-                 await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
-          2;
+        await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
+        2;
     });
 
     await vpn.setSetting('languageCode', 'it');
 
     await vpn.waitForCondition(async () => {
       return parseInt(
-                 await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
-          1;
+        await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
+        1;
     });
 
     await vpn.setSetting('languageCode', '');
     await vpn.waitForCondition(async () => {
       return parseInt(
-                 await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
-          2;
+        await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
+        2;
     });
   });
 });
