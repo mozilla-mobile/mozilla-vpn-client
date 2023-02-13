@@ -51,7 +51,7 @@ QString DNSHelper::getDNS(const QString& fallback) {
   static QMap<int, QString> dnsMap{
       {SettingsHolder::BlockAds, "100.64.0.1"},
       {SettingsHolder::BlockTrackers, "100.64.0.2"},
-      {SettingsHolder::BlockAds & SettingsHolder::BlockTrackers, "100.64.0.3"},
+      {SettingsHolder::BlockAds + SettingsHolder::BlockTrackers, "100.64.0.3"},
       {SettingsHolder::BlockMalware, "100.64.0.4"},
       {SettingsHolder::BlockMalware + SettingsHolder::BlockAds, "100.64.0.5"},
       {SettingsHolder::BlockMalware + SettingsHolder::BlockTrackers,
