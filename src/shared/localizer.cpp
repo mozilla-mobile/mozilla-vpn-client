@@ -11,9 +11,8 @@
 
 #include "appconstants.h"
 #include "glean/generated/metrics.h"
-#include "glean/glean.h"
 #include "glean/gleandeprecated.h"
-#include "inspector/inspectorhandler.h"
+#include "glean/mzglean.h"
 #include "languagei18n.h"
 #include "leakdetector.h"
 #include "logger.h"

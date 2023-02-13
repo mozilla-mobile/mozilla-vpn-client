@@ -132,6 +132,6 @@ add_dependencies(mozillavpn networkextension)
 set_target_properties(mozillavpn PROPERTIES XCODE_EMBED_APP_EXTENSIONS networkextension)
 
 ## Install the Glean iOS SDK into the bundle.
-include(${CMAKE_SOURCE_DIR}/vpnglean/ios.cmake)
+include(${CMAKE_SOURCE_DIR}/qtglean/ios.cmake)
 add_dependencies(mozillavpn iosglean)
 set_target_properties(mozillavpn PROPERTIES XCODE_EMBED_APP_EXTENSIONS iosglean)

@@ -28,8 +28,8 @@ ColumnLayout {
         Layout.alignment: Qt.AlignHCenter
 
         logo: "qrc:/ui/resources/heart-check.svg"
-        logoTitle: VPNl18n.InAppSupportWorkflowSupportResponseHeader
-        logoSubtitle: VPNl18n.InAppSupportWorkflowSupportResponseBody.arg(base._emailAddress)
+        logoTitle: VPNI18n.InAppSupportWorkflowSupportResponseHeader
+        logoSubtitle: VPNI18n.InAppSupportWorkflowSupportResponseBody.arg(base._emailAddress)
     }
 
     Item {
@@ -42,7 +42,7 @@ ColumnLayout {
         Layout.rightMargin: VPNTheme.theme.windowMargin * 2
         Layout.bottomMargin: navbar.visible ? VPNTheme.theme.navBarHeightWithMargins : 34
 
-        text: VPNl18n.InAppSupportWorkflowSupportResponseButton
+        text: VPNI18n.InAppSupportWorkflowSupportResponseButton
 
         onClicked: {
             getHelpStackView.pop();

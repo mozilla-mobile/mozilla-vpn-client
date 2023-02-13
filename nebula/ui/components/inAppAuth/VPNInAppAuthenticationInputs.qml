@@ -141,20 +141,20 @@ ColumnLayout {
                     objectName: base.objectName + "-passwordConditionLength"
                     _iconVisible: true
                     _passwordConditionIsSatisfied: toolTip._isSignUp && VPNAuthInApp.validatePasswordLength(passwordInput.text)
-                    _passwordConditionDescription: VPNl18n.InAppAuthPasswordHintCharacterLength
+                    _passwordConditionDescription: VPNI18n.InAppAuthPasswordHintCharacterLength
                 }
                 VPNInAppAuthenticationPasswordCondition {
                     objectName: base.objectName + "-passwordConditionEmailAddress"
                     _iconVisible: passwordLength._passwordConditionIsSatisfied
                     _passwordConditionIsSatisfied: toolTip._isSignUp && passwordLength._passwordConditionIsSatisfied && VPNAuthInApp.validatePasswordEmail(passwordInput.text)
-                    _passwordConditionDescription: VPNl18n.InAppAuthPasswordHintEmailAddressAsPassword
+                    _passwordConditionDescription: VPNI18n.InAppAuthPasswordHintEmailAddressAsPassword
                     opacity: passwordLength._passwordConditionIsSatisfied ? 1 : .5
                 }
                 VPNInAppAuthenticationPasswordCondition {
                     objectName: base.objectName + "-passwordConditionCommon"
                     _iconVisible:  passwordLength._passwordConditionIsSatisfied
                     _passwordConditionIsSatisfied: toolTip._isSignUp && passwordLength._passwordConditionIsSatisfied && VPNAuthInApp.validatePasswordCommons(passwordInput.text)
-                    _passwordConditionDescription: VPNl18n.InAppAuthPasswordHintCommonPassword
+                    _passwordConditionDescription: VPNI18n.InAppAuthPasswordHintCommonPassword
                     opacity: _iconVisible ? 1 : .5
                 }
             }
@@ -250,21 +250,21 @@ ColumnLayout {
                 VPNGleanDeprecated.recordGleanEventWithExtraKeys("authenticationError", { "reason": "IncorrectPassword" });
                 Glean.sample.authenticationError.record({ reason: "IncorrectPassword" });
 
-                base._inputErrorMessage =  VPNl18n.InAppAuthInvalidPasswordErrorMessage;
+                base._inputErrorMessage =  VPNI18n.InAppAuthInvalidPasswordErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
             case VPNAuthInApp.ErrorInvalidEmailAddress:
                 VPNGleanDeprecated.recordGleanEventWithExtraKeys("authenticationError", { "reason": "InvalidEmail" });
                 Glean.sample.authenticationError.record({ reason: "InvalidEmail" });
 
-                base._inputErrorMessage =  VPNl18n.InAppAuthInvalidEmailErrorMessage;
+                base._inputErrorMessage =  VPNI18n.InAppAuthInvalidEmailErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
             case VPNAuthInApp.ErrorInvalidOrExpiredVerificationCode:
                 VPNGleanDeprecated.recordGleanEventWithExtraKeys("authenticationError", { "reason": "InvalidOrExpiredVerificationCode" });
                 Glean.sample.authenticationError.record({ reason: "InvalidOrExpiredVerificationCode" });
 
-                base._inputErrorMessage = VPNl18n.InAppAuthInvalidCodeErrorMessage;
+                base._inputErrorMessage = VPNI18n.InAppAuthInvalidCodeErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
 
@@ -272,7 +272,7 @@ ColumnLayout {
                 VPNGleanDeprecated.recordGleanEventWithExtraKeys("authenticationError", { "reason": "InvalidTotpCode" });
                 Glean.sample.authenticationError.record({ reason: "InvalidTotpCode" });
 
-                base._inputErrorMessage = VPNl18n.InAppAuthInvalidCodeErrorMessage;
+                base._inputErrorMessage = VPNI18n.InAppAuthInvalidCodeErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
 
@@ -280,7 +280,7 @@ ColumnLayout {
                 VPNGleanDeprecated.recordGleanEventWithExtraKeys("authenticationError", { "reason": "InvalidUnblockCode" });
                 Glean.sample.authenticationError.record({ reason: "InvalidUnblockCode" });
 
-                base._inputErrorMessage = VPNl18n.InAppAuthInvalidCodeErrorMessage;
+                base._inputErrorMessage = VPNI18n.InAppAuthInvalidCodeErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
             case VPNAuthInApp.ErrorConnectionTimeout:

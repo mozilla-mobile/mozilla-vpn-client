@@ -4,9 +4,10 @@
 
 #include "macosmenubar.h"
 
+#include "controller.h"
 #include "externalophandler.h"
 #include "frontend/navigator.h"
-#include "l18nstrings.h"
+#include "i18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"

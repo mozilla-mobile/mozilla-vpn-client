@@ -12,6 +12,7 @@
 
 #include "commandlineparser.h"
 #include "leakdetector.h"
+#include "models/servercountrymodel.h"
 #include "mozillavpn.h"
 #include "tasks/servers/taskservers.h"
 

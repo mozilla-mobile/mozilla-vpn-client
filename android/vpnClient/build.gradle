@@ -39,6 +39,8 @@ android {
     defaultConfig {
         minSdkVersion Config.minSdkVersion
         targetSdkVersion Config.targetSdkVersion
+        buildConfigField  "String", "VERSIONCODE" ,  '"' +System.getenv("VERSIONCODE") + '"'
+        buildConfigField  "String", "SHORTVERSION" ,  '"' + System.getenv("SHORTVERSION") +  '"'
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -62,7 +64,7 @@ android {
 dependencies {
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation project(path: ':daemon')
-    implementation project(path: ':vpnglean')
+    implementation project(path: ':qtglean')
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

@@ -27,7 +27,7 @@ VPNViewBase {
             objectName: "settingStartAtBoot"
 
             labelText: _startAtBootTitle
-            subLabelText: VPNl18n.SettingsStartAtBootSubtitle
+            subLabelText: VPNI18n.SettingsStartAtBootSubtitle
             isChecked: VPNSettings.startAtBoot
             showDivider: false
             onClicked: VPNSettings.startAtBoot = !VPNSettings.startAtBoot
@@ -51,7 +51,7 @@ VPNViewBase {
 
             //% "Data collection and use"
             labelText: qsTrId("vpn.settings.dataCollection")
-            subLabelText: VPNl18n.SettingsDataCollectionDescription
+            subLabelText: VPNI18n.SettingsDataCollectionDescription
             isChecked: VPNSettings.gleanEnabled
             onClicked: {
                 VPNSettings.gleanEnabled = !VPNSettings.gleanEnabled
@@ -102,7 +102,7 @@ VPNViewBase {
                 anchors.left: parent.left
                 anchors.right: parent.right
 
-                settingTitle: VPNl18n.SettingsDnsSettings
+                settingTitle: VPNI18n.SettingsDnsSettings
                 imageLeftSrc: "qrc:/ui/resources/settings/dnssettings.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: VPNLocalizer.isRightToLeft

@@ -57,10 +57,6 @@ class ServerCountryModel final : public QAbstractListModel {
   const QList<ServerCountry>& countries() const { return m_countries; }
 
   void retranslate();
-  unsigned int avgLatency() const;
-  void setServerLatency(const QString& publicKey, unsigned int msec);
-  void clearServerLatency();
-  void setServerCooldown(const QString& publicKey);
   void setCooldownForAllServersInACity(const QString& countryCode,
                                        const QString& cityCode);
 
@@ -90,9 +86,6 @@ class ServerCountryModel final : public QAbstractListModel {
   QList<ServerCountry> m_countries;
   QHash<QString, ServerCity> m_cities;
   QHash<QString, Server> m_servers;
-
-  qint64 m_sumLatencyMsec;
-  qint64 m_numLatencySamples;
 };
 
 #endif  // SERVERCOUNTRYMODEL_H

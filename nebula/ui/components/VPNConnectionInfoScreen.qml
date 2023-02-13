@@ -189,7 +189,7 @@ Rectangle {
             }
             color: VPNTheme.colors.white
             font.pixelSize: VPNTheme.theme.fontSizeLarge
-            text: VPNl18n.ConnectionInfoLoadingIndicatorLabel
+            text: VPNI18n.ConnectionInfoLoadingIndicatorLabel
         }
     }
 

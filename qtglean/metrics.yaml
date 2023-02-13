@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # This file contains metrics definitions for metrics collected by the
-# Mozilla VPN application using only the vpnglean integration.
+# Mozilla VPN application using only the qtglean integration.
 
 ---
 $schema: moz://mozilla.org/schemas/glean/metrics/2-0-0

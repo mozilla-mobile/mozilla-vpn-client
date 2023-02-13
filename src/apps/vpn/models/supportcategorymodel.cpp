@@ -4,7 +4,7 @@
 
 #include "supportcategorymodel.h"
 
-#include "l18nstrings.h"
+#include "i18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -13,21 +13,21 @@ Logger logger("SupportCategoryModel");
 
 struct SupportCategory {
   const char* m_categoryName;
-  L18nStrings::String m_stringId;
+  I18nStrings::String m_stringId;
 };
 
 static QList<SupportCategory> s_supportCategories{
     SupportCategory{"payment",
-                    L18nStrings::InAppSupportWorkflowPaymentDropdownListItem},
+                    I18nStrings::InAppSupportWorkflowPaymentDropdownListItem},
     SupportCategory{"account",
-                    L18nStrings::InAppSupportWorkflowAccountDropdownListItem},
+                    I18nStrings::InAppSupportWorkflowAccountDropdownListItem},
     SupportCategory{"technical",
-                    L18nStrings::InAppSupportWorkflowTechnicaDropdownListItem},
+                    I18nStrings::InAppSupportWorkflowTechnicaDropdownListItem},
     SupportCategory{
         "feature",
-        L18nStrings::InAppSupportWorkflowFeatureRequestDropdownListItem},
+        I18nStrings::InAppSupportWorkflowFeatureRequestDropdownListItem},
     SupportCategory{"other",
-                    L18nStrings::InAppSupportWorkflowOtherDropdownListItem},
+                    I18nStrings::InAppSupportWorkflowOtherDropdownListItem},
 };
 
 }  // namespace
@@ -61,7 +61,7 @@ QVariant SupportCategoryModel::data(const QModelIndex& index, int role) const {
       return QVariant(s_supportCategories.at(index.row()).m_categoryName);
 
     case LocalizedNameRole:
-      return QVariant(L18nStrings::instance()->t(
+      return QVariant(I18nStrings::instance()->t(
           s_supportCategories.at(index.row()).m_stringId));
 
     default:

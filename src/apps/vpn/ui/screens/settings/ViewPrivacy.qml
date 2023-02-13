@@ -19,7 +19,7 @@ VPNViewBase {
     id: root
     objectName: "privacySettingsView"
 
-    _menuTitle: VPNl18n.SettingsPrivacySettings
+    _menuTitle: VPNI18n.SettingsPrivacySettings
     _interactive: false
 
     _viewContentData: ColumnLayout {
@@ -38,7 +38,7 @@ VPNViewBase {
                 VPNTextBlock {
                     Layout.fillWidth: true
                     width: undefined
-                    text: VPNl18n.SettingsDnsSettingsWarning
+                    text: VPNI18n.SettingsDnsSettingsWarning
                     verticalAlignment: Text.AlignVCenter
                     Accessible.role: Accessible.StaticText
                     Accessible.name: text
@@ -48,7 +48,7 @@ VPNViewBase {
                     Layout.fillWidth: true
                     sourceComponent: VPNTextBlock {
                         width: parent.width
-                        text: VPNl18n.SettingsDnsSettingsDisconnectWarning
+                        text: VPNI18n.SettingsDnsSettingsDisconnectWarning
                         verticalAlignment: Text.AlignVCenter
                         Accessible.role: Accessible.StaticText
                         Accessible.name: text
@@ -96,18 +96,18 @@ VPNViewBase {
                 {
                     objectName: "blockAds",
                     settingValue: VPNSettings.BlockAds,
-                    settingTitle: VPNl18n.SettingsPrivacyAdblockTitle,
-                    settingDescription: VPNl18n.SettingsPrivacyAdblockBody,
+                    settingTitle: VPNI18n.SettingsPrivacyAdblockTitle,
+                    settingDescription: VPNI18n.SettingsPrivacyAdblockBody,
                 }, {
                     objectName: "blockTrackers",
                     settingValue: VPNSettings.BlockTrackers,
-                    settingTitle: VPNl18n.SettingsPrivacyTrackerTitle,
-                    settingDescription: VPNl18n.SettingsPrivacyTrackerBody,
+                    settingTitle: VPNI18n.SettingsPrivacyTrackerTitle,
+                    settingDescription: VPNI18n.SettingsPrivacyTrackerBody,
                 }, {
                     objectName: "blockMalware",
                     settingValue: VPNSettings.BlockMalware,
-                    settingTitle: VPNl18n.SettingsPrivacyMalwareTitle,
-                    settingDescription: VPNl18n.SettingsPrivacyMalwareBody,
+                    settingTitle: VPNI18n.SettingsPrivacyMalwareTitle,
+                    settingDescription: VPNI18n.SettingsPrivacyMalwareBody,
                 }
             ];
         }
@@ -128,12 +128,12 @@ VPNViewBase {
             closeButtonObjectName: "privacyOverwritePopupPopupCloseButton"
             imageSrc: "qrc:/ui/resources/logo-dns-settings.svg"
             imageSize: Qt.size(80, 80)
-            title: VPNl18n.DnsOverwriteDialogTitleDNS
-            description: VPNl18n.DnsOverwriteDialogBodyDNS
+            title: VPNI18n.DnsOverwriteDialogTitleDNS
+            description: VPNI18n.DnsOverwriteDialogBodyDNS
             buttons: [
                 VPNButton {
                     objectName: "privacyOverwritePopupDiscoverNowButton"
-                    text: VPNl18n.DnsOverwriteDialogPrimaryButton
+                    text: VPNI18n.DnsOverwriteDialogPrimaryButton
                     onClicked: {
                         VPNSettings.dnsProviderFlags = privacyOverwriteLoader.dnsProviderValue;
                         privacyOverwritePopup.close()
@@ -141,7 +141,7 @@ VPNViewBase {
                 },
                 VPNLinkButton {
                     objectName: "privacyOverwritePopupGoBackButton"
-                    labelText: VPNl18n.DnsOverwriteDialogSecondaryButton
+                    labelText: VPNI18n.DnsOverwriteDialogSecondaryButton
                     onClicked: privacyOverwritePopup.close()
                 }
             ]

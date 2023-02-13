@@ -117,7 +117,7 @@ Item {
                     VPNBoldInterLabel {
                         Layout.fillWidth: true
 
-                        text: guide.advanced ? VPNl18n.TipsAndTricksAdvancedTipsGuideViewTitle : VPNl18n.TipsAndTricksQuickTipsGuideViewTitle
+                        text: guide.advanced ? VPNI18n.TipsAndTricksAdvancedTipsGuideViewTitle : VPNI18n.TipsAndTricksQuickTipsGuideViewTitle
                         font.pixelSize: VPNTheme.theme.fontSize
                         lineHeight: VPNTheme.theme.labelLineHeight
                         color: VPNTheme.theme.fontColor
@@ -177,7 +177,7 @@ Item {
     Component.onCompleted: VPNNavigator.addView(VPNNavigator.ScreenSettings, root)
 
     Component.onDestruction: {
-        VPNGleanDeprecated.recordGleanEventWithExtraKeys("guideClosed",{
+        MZGleanDeprecated.recordGleanEventWithExtraKeys("guideClosed",{
                                           "id": guide.id,
                                           "duration_ms": new Date().getTime() - timeOfOpen
         });

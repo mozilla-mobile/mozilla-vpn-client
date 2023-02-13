@@ -10,9 +10,11 @@
 #include <QMetaMethod>
 
 #include "addons/addontutorial.h"
+#include "controller.h"
 #include "inspector/inspectorutils.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/serverdata.h"
 #include "mozillavpn.h"
 
 namespace {

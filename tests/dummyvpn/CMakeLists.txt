@@ -28,7 +28,7 @@ target_link_libraries(dummyvpn PRIVATE
     lottie
     nebula
     translations
-    vpnglean
+    qtglean
 )
 
 target_sources(dummyvpn PRIVATE

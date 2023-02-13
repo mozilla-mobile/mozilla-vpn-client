@@ -5,7 +5,7 @@
 // Mostly copied from 3rdparty/glean/glean-core/android/build.gradle
 // We can't use it directly, because we don't want to use the `glean-native`
 // project used in there which adds a glean-core binary, we want to use the
-// vpnglean binary instead and we don't event need to add it here because
+// qtglean binary instead and we don't event need to add it here because
 // those symbols are already alvailable from the VPN project.
 
 buildscript {

@@ -26,7 +26,6 @@ include_directories(${MZ_SOURCE_DIR}/shared/hacl-star)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star/kremlin)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star/kremlin/minimal)
 include_directories(${MZ_SOURCE_DIR}/apps/unit_tests)
-include_directories(${MZ_SOURCE_DIR}/apps/vpn)
 
 qt_add_executable(app_unit_tests EXCLUDE_FROM_ALL MANUAL_FINALIZATION)
 add_dependencies(build_tests app_unit_tests)
@@ -48,7 +47,7 @@ endif()
 
 target_link_libraries(app_unit_tests PRIVATE
     glean
-    vpnglean
+    qtglean
     shared-sources
     translations
 )
@@ -67,8 +66,6 @@ target_compile_definitions(app_unit_tests PRIVATE MZ_DUMMY)
 
 # Unit test source files
 target_sources(app_unit_tests PRIVATE
-    ${MZ_SOURCE_DIR}/apps/vpn/glean/glean.h
-    ${MZ_SOURCE_DIR}/apps/vpn/glean/glean.cpp
     languages/languages.qrc
     appconstants.h
     appfeaturelistcallback.h
@@ -96,6 +93,8 @@ target_sources(app_unit_tests PRIVATE
     testqmlpath.h
     testsettings.cpp
     testsettings.h
+    testtasks.cpp
+    testtasks.h
     testtemporarydir.cpp
     testtemporarydir.h
     testthemes.cpp

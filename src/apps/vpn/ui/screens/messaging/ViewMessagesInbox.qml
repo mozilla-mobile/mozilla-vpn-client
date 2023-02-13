@@ -27,7 +27,7 @@ VPNViewBase {
 
             horizontalPadding: VPNTheme.theme.hSpacing / 5
             enabled: !isEmptyState
-            labelText: !vpnFlickable.isEditing || isEmptyState ? VPNl18n.InAppMessagingEditButton : VPNl18n.InAppSupportWorkflowSupportResponseButton
+            labelText: !vpnFlickable.isEditing || isEmptyState ? VPNI18n.InAppMessagingEditButton : VPNI18n.InAppSupportWorkflowSupportResponseButton
             onClicked: {
                 vpnFlickable.isEditing = !vpnFlickable.isEditing
             }
@@ -39,7 +39,7 @@ VPNViewBase {
     //Weird workaround to fix VPN-2895
     onIsEditingChanged: editModeChanged()
 
-    _menuTitle: VPNl18n.InAppMessagingMenuTitle
+    _menuTitle: VPNI18n.InAppMessagingMenuTitle
 
     onVisibleChanged: if (!visible) resetPage()
 
@@ -89,7 +89,7 @@ VPNViewBase {
             enabled: !vpnFlickable.isEmptyState
             onEnabledChanged: if (!enabled) clearText()
 
-            _searchBarPlaceholderText: VPNl18n.InAppMessagingSearchBarPlaceholderText
+            _searchBarPlaceholderText: VPNI18n.InAppMessagingSearchBarPlaceholderText
             _searchBarHasError: !vpnFlickable.isEmptyState && listView.count === 0
 
             _filterProxySource: VPNAddonManager
@@ -115,7 +115,7 @@ VPNViewBase {
             Layout.rightMargin: VPNTheme.theme.windowMargin * 1.5
             Layout.fillWidth: true
 
-            text: VPNl18n.InAppMessagingEmptyStateTitle
+            text: VPNI18n.InAppMessagingEmptyStateTitle
             visible: vpnFlickable.isEmptyState
         }
 
@@ -125,7 +125,7 @@ VPNViewBase {
             Layout.rightMargin: VPNTheme.theme.windowMargin * 1.5
             Layout.fillWidth: true
 
-            text: VPNl18n.InAppMessagingEmptyStateDescription
+            text: VPNI18n.InAppMessagingEmptyStateDescription
             visible: vpnFlickable.isEmptyState
             color: VPNTheme.theme.fontColor
         }
@@ -221,7 +221,7 @@ VPNViewBase {
                             anchors.centerIn: parent
                             source: "qrc:/nebula/resources/delete-white.svg"
                         }
-                        Accessible.name: VPNl18n.InAppMessagingDeleteMessage
+                        Accessible.name: VPNI18n.InAppMessagingDeleteMessage
 
                         SwipeDelegate.onClicked: {
                             swipeDelegate.swipe.close() // prevents weird iOS animation bug

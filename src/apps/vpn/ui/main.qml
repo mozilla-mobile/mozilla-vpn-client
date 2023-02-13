@@ -209,7 +209,7 @@ Window {
     }
 
     Connections {
-        target: VPNGleanDeprecated
+        target: MZGleanDeprecated
         enabled: Qt.platform.os !== "android"
 
         function onRecordGleanEvent(sample) {

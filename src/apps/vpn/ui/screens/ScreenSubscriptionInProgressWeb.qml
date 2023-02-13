@@ -7,7 +7,7 @@ import components 0.1
 
 VPNLoader {
     objectName: "subscriptionInProgressWeb"
-    headlineText: VPNl18n.PurchaseWebInProgress2
+    headlineText: VPNI18n.PurchaseWebInProgress2
 
     VPNCancelButton {
         id: footerLink

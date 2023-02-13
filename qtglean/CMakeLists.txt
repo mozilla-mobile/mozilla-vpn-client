@@ -11,7 +11,7 @@ execute_process(
 )
 
 ## Add a static library for the Glean C++ code.
-add_library(vpnglean STATIC
+add_library(qtglean STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/counter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/event.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/ping.h
@@ -27,14 +27,14 @@ add_library(vpnglean STATIC
 )
 
 if(NOT MSVC)
-  target_compile_options(vpnglean PRIVATE -Wall -Werror -Wno-conversion)
+  target_compile_options(qtglean PRIVATE -Wall -Werror -Wno-conversion)
 endif()
 
-target_include_directories(vpnglean PUBLIC
+target_include_directories(qtglean PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_BINARY_DIR}
 )
-target_link_libraries(vpnglean PRIVATE Qt6::Core Qt6::Qml)
+target_link_libraries(qtglean PRIVATE Qt6::Core Qt6::Qml)
 
 # glean-core cannot be compiled to WASM
 # See: https://blog.mozilla.org/data/2020/09/25/this-week-in-glean-glean-core-to-wasm-experiment/
@@ -90,29 +90,29 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     endif()
 
 
-    ## Build the vpnglean Rust library
-    add_rust_library(vpnglean_bindings
+    ## Build the qtglean Rust library
+    add_rust_library(qtglean_bindings
         ARCH ${RUST_ARCH}
         PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
-        CRATE_NAME vpnglean
+        CRATE_NAME qtglean
         CARGO_ENV ${CARGO_ENV}
         DEPENDS
             ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.rs
             ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.rs
     )
-    target_link_libraries(vpnglean PRIVATE vpnglean_bindings)
+    target_link_libraries(qtglean PRIVATE qtglean_bindings)
 
-    set(HEADER_FILE vpnglean.h)
+    set(HEADER_FILE qtglean.h)
 else()
-    message("Cannot build vpnglean Rust library build for WASM. Skipping.")
+    message("Cannot build qtglean Rust library build for WASM. Skipping.")
     # Since the metric recording code is sprinkled throughout the code,
     # it's easier to just generate the APIs and have them be noop.
-    add_custom_target(vpnglean_telemetry
+    add_custom_target(qtglean_telemetry
         DEPENDS
             ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.h
             ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.h
     )
-    add_dependencies(mozillavpn vpnglean_telemetry)
+    add_dependencies(mozillavpn qtglean_telemetry)
 endif()
 
 set(GLEAN_PARSER_VERSION_MIN 5.0)
@@ -139,7 +139,7 @@ elseif(GLEAN_PARSER_VERSION)
 else()
     message(FATAL_ERROR
         "Glean generated files are missing, and the glean_parser was not found.\n"
-        "Please run: python3 ./vpnglean/glean_parser_ext/run_glean_parser.py"
+        "Please run: python3 ./qtglean/glean_parser_ext/run_glean_parser.py"
     )
 endif()
 
@@ -174,16 +174,16 @@ set_source_files_properties(
     PROPERTIES GENERATED TRUE
 )
 
-## Fixup any missing link dependencies to pass to the vpnglean consumer
+## Fixup any missing link dependencies to pass to the qtglean consumer
 if(ANDROID)
-    add_dependencies(vpnglean ndk_openssl_merged)
+    add_dependencies(qtglean ndk_openssl_merged)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     find_package(OpenSSL REQUIRED)
-    set_property(TARGET vpnglean APPEND PROPERTY
+    set_property(TARGET qtglean APPEND PROPERTY
         INTERFACE_LINK_LIBRARIES OpenSSL::SSL
     )
 elseif(WIN32)
     ## Windows seems to miss some system libraries when importing static OpenSSL
-    set_property(TARGET vpnglean APPEND PROPERTY
+    set_property(TARGET qtglean APPEND PROPERTY
         INTERFACE_LINK_LIBRARIES crypt32 Secur32 bcrypt ncrypt ntdll)
 endif()

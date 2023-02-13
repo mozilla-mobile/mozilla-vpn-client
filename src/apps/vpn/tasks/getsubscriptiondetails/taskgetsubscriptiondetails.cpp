@@ -12,6 +12,8 @@
 #include "authenticationlistener.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/subscriptiondata.h"
+#include "models/user.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 

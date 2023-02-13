@@ -53,7 +53,7 @@ VPNViewBase {
 
                 id: copyVersionNumber
 
-                Accessible.name: VPNl18n.AboutUsCopyVersionNumber.arg(releaseVersion.text)
+                Accessible.name: VPNI18n.AboutUsCopyVersionNumber.arg(releaseVersion.text)
                 Layout.leftMargin: -marginOffset
                 Layout.rightMargin: -marginOffset
                 Layout.topMargin: -VPNTheme.theme.windowMargin
@@ -154,7 +154,7 @@ VPNViewBase {
            Component.onCompleted: {
               aboutUsListModel.append({
                    linkId: "license",
-                   linkTitle: VPNl18n.AboutUsLicenses,
+                   linkTitle: VPNI18n.AboutUsLicenses,
                    openView: "qrc:/ui/screens/settings/ViewLicenses.qml"
               });
            }
@@ -171,7 +171,7 @@ VPNViewBase {
                 updateButtonImageAnimation.start();
                 VPNReleaseMonitor.runSoon();
             }
-            text: VPNl18n.UpdateButtonCheckForUpdateButtonText
+            text: VPNI18n.UpdateButtonCheckForUpdateButtonText
             Image {
                 id:updateButtonImage
                 anchors {
@@ -222,16 +222,16 @@ VPNViewBase {
                 updateButtonImageAnimation.stop();
                 updatePopup.imageSrc = "qrc:/nebula/resources/updateStatusUpdateAvailable.svg";
                 updatePopup.imageSize = Qt.size(80, 80)
-                updatePopup.title = VPNl18n.UpdateButtonTitleOnUpdate
-                updatePopup.description = VPNl18n.UpdateButtonDescriptionOnUpdate
-                updatePopup.buttonText = VPNl18n.UpdateButtonActionOnUpdate
+                updatePopup.title = VPNI18n.UpdateButtonTitleOnUpdate
+                updatePopup.description = VPNI18n.UpdateButtonDescriptionOnUpdate
+                updatePopup.buttonText = VPNI18n.UpdateButtonActionOnUpdate
             } else {
                 updateButtonImageAnimation.stop();
                 updatePopup.imageSrc = "qrc:/nebula/resources/updateStatusUpToDate.svg";
                 updatePopup.imageSize = Qt.size(80, 80)
-                updatePopup.title = VPNl18n.UpdateButtonTitleNoUpdate
-                updatePopup.description = VPNl18n.UpdateButtonDescriptionNoUpdate2
-                updatePopup.buttonText = VPNl18n.UpdateButtonActionNoUpdate
+                updatePopup.title = VPNI18n.UpdateButtonTitleNoUpdate
+                updatePopup.description = VPNI18n.UpdateButtonDescriptionNoUpdate2
+                updatePopup.buttonText = VPNI18n.UpdateButtonActionNoUpdate
             }
             updatePopup.open()
             listenForUpdateEvents=false;
@@ -246,12 +246,12 @@ VPNViewBase {
         anchors.centerIn: Overlay.overlay
         imageSrc: "qrc:/nebula/resources/updateStatusUpdateAvailable.svg"
         imageSize: Qt.size(80, 80)
-        title: VPNl18n.UpdateButtonTitleOnUpdate
-        description: VPNl18n.UpdateButtonDescriptionOnUpdate
+        title: VPNI18n.UpdateButtonTitleOnUpdate
+        description: VPNI18n.UpdateButtonDescriptionOnUpdate
         buttons: [
             VPNButton {
                 id: popupBtn
-                text: VPNl18n.UpdateButtonActionOnUpdate
+                text: VPNI18n.UpdateButtonActionOnUpdate
                 onClicked: {
                    if (updatePopup.updateAvailable) {
                        VPN.update()

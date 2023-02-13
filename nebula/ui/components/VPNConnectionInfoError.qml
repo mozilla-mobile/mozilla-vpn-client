@@ -29,7 +29,7 @@ ColumnLayout {
 
         color: VPNTheme.colors.white
         font.pixelSize: VPNTheme.theme.fontSizeLarge
-        text: VPNl18n.GenericErrorUnexpected
+        text: VPNI18n.GenericErrorUnexpected
         width: parent.width - VPNTheme.theme.windowMargin
     }
 
@@ -42,7 +42,7 @@ ColumnLayout {
 
         color: VPNTheme.colors.grey20
         horizontalAlignment: Text.AlignHCenter
-        text: VPNl18n.ConnectionInfoErrorMessage
+        text: VPNI18n.ConnectionInfoErrorMessage
         wrapMode: Text.WordWrap
         width: parent.width < VPNTheme.theme.maxTextWidth
             ? parent.width
@@ -54,7 +54,7 @@ ColumnLayout {
         Layout.fillWidth: true
 
         // Try again
-        text: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton
+        text: VPNI18n.GenericPurchaseErrorGenericPurchaseErrorButton
         onClicked: {
             VPNConnectionBenchmark.start();
         }

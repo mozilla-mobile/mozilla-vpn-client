@@ -8,6 +8,7 @@
 #include <QTextStream>
 
 #include "leakdetector.h"
+#include "models/devicemodel.h"
 #include "mozillavpn.h"
 #include "tasks/removedevice/taskremovedevice.h"
 

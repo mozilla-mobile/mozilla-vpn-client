@@ -8,6 +8,7 @@
 #include <QDir>
 
 #include "addons/addontutorial.h"
+#include "controller.h"
 #include "frontend/navigator.h"
 #include "glean/generated/metrics.h"
 #include "gleandeprecated.h"

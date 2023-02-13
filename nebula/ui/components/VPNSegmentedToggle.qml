@@ -107,7 +107,7 @@ Rectangle {
                 focusPolicy: Qt.NoFocus
                 activeFocusOnTab: true
 
-                Accessible.name: (root.selectedIndex === index ? VPNl18n.AccessibilitySelectedAndItemName.arg(label.text) : label.text) + VPNl18n.AccessibilityCurrentIndexFocusedOfTotalItemsInGroup.arg(index + 1).arg(options.count)
+                Accessible.name: (root.selectedIndex === index ? VPNI18n.AccessibilitySelectedAndItemName.arg(label.text) : label.text) + VPNI18n.AccessibilityCurrentIndexFocusedOfTotalItemsInGroup.arg(index + 1).arg(options.count)
 
                 Rectangle {
                     anchors.fill: parent
@@ -143,7 +143,7 @@ Rectangle {
                 contentItem: Text {
                     id: label
 
-                    text: VPNl18n[segmentLabelStringId]
+                    text: VPNI18n[segmentLabelStringId]
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     // Bug VPN-2158 - Apparently QText is not rendered on android

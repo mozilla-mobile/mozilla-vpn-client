@@ -92,7 +92,7 @@ Rectangle {
                 _source: checked ? (_hasNotification ? sourceCheckedNotification : sourceChecked) : (_hasNotification ? sourceUncheckedNotification : sourceUnchecked)
                 ButtonGroup.group: navBarButtonGroup
 
-                accessibleName: VPNl18n[navAccessibleName]
+                accessibleName: VPNI18n[navAccessibleName]
                 enabled: root.visible
 
                 Component.onCompleted: {

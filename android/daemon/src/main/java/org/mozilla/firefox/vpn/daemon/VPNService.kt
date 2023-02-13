@@ -7,7 +7,6 @@ package org.mozilla.firefox.vpn.daemon
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.os.CountDownTimer
 import android.os.IBinder
 import android.system.OsConstants
 import com.wireguard.android.util.SharedLibraryLoader

@@ -20,6 +20,7 @@
 #include <functional>
 
 #include "addons/manager/addonmanager.h"
+#include "captiveportal/captiveportaldetection.h"
 #include "constants.h"
 #include "controller.h"
 #include "externalophandler.h"
@@ -31,12 +32,17 @@
 #include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
+#include "models/devicemodel.h"
 #include "models/featuremodel.h"
+#include "models/keys.h"
+#include "models/servercountrymodel.h"
 #include "mozillavpn.h"
 #include "networkmanager.h"
+#include "networkwatcher.h"
 #include "notificationhandler.h"
 #include "profileflow.h"
 #include "qmlengineholder.h"
+#include "releasemonitor.h"
 #include "serveri18n.h"
 #include "settingsholder.h"
 #include "task.h"
@@ -829,6 +835,13 @@ static QList<InspectorCommand> s_commands{
                      0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        AddonManager::instance()->fetch();
+                       return QJsonObject();
+                     }},
+
+    InspectorCommand{"set_version_override", "Override the version string", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       QString versionOverride = QString(arguments[1]);
+                       Constants::setVersionOverride(versionOverride);
                        return QJsonObject();
                      }},
 };

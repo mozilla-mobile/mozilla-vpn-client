@@ -27,8 +27,8 @@ ColumnLayout {
         Layout.alignment: Qt.AlignHCenter
 
         logo: "qrc:/ui/resources/app-rating.svg"
-        logoTitle: VPNl18n.FeedbackFormReviewHeader
-        logoSubtitle: VPNl18n.FeedbackFormReviewBody
+        logoTitle: VPNI18n.FeedbackFormReviewHeader
+        logoSubtitle: VPNI18n.FeedbackFormReviewBody
     }
 
     Item {
@@ -43,7 +43,7 @@ ColumnLayout {
         Layout.leftMargin: VPNTheme.theme.windowMargin * 2
         Layout.rightMargin: VPNTheme.theme.windowMargin * 2
 
-        text: VPNl18n.FeedbackFormLeaveReviewButton
+        text: VPNI18n.FeedbackFormLeaveReviewButton
         onClicked: {
             getHelpStackView.push("qrc:/ui/screens/getHelp/giveFeedback/ViewGiveFeedbackThankYou.qml", StackView.Immediate);
             VPN.openAppStoreReviewLink();

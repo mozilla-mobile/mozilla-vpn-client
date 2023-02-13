@@ -142,13 +142,13 @@ VPNFlickable {
             closeButtonObjectName: "tipsAndTricksIntroPopupCloseButton"
             imageSrc: "qrc:/ui/resources/logo-sparkles.svg"
             imageSize: Qt.size(116, 80)
-            title: VPNl18n.TipsAndTricksSettingsEntryLabel
-            description: VPNl18n.TipsAndTricksIntroModalDescription
+            title: VPNI18n.TipsAndTricksSettingsEntryLabel
+            description: VPNI18n.TipsAndTricksIntroModalDescription
             buttons: [
                 VPNButton {
                     id: tipAndTricksIntroButton
                     objectName: "tipsAndTricksIntroPopupDiscoverNowButton"
-                    text: VPNl18n.GlobalDiscoverNow
+                    text: VPNI18n.GlobalDiscoverNow
                     onClicked: {
                         tipAndTricksIntroButton.enabled = false
                         closedByPrimaryButton = true
@@ -158,7 +158,7 @@ VPNFlickable {
                 },
                 VPNLinkButton {
                     objectName: "tipsAndTricksIntroPopupGoBackButton"
-                    labelText: VPNl18n.GlobalGoBack
+                    labelText: VPNI18n.GlobalGoBack
                     onClicked: tipsAndTricksIntroPopup.close()
                 }
             ]
@@ -171,7 +171,7 @@ VPNFlickable {
 
             onClosed: {
                 tipsAndTricksIntroPopupLoader.active = false
-                VPNGleanDeprecated.recordGleanEventWithExtraKeys("tipsAndTricksModalClosed", {"action": closedByPrimaryButton ? "cta" : "dismissed"});
+                MZGleanDeprecated.recordGleanEventWithExtraKeys("tipsAndTricksModalClosed", {"action": closedByPrimaryButton ? "cta" : "dismissed"});
                 Glean.sample.tipsAndTricksModalClosed.record({
                     action: closedByPrimaryButton ? "cta" : "dismissed"
                 });

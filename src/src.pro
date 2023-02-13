@@ -16,7 +16,7 @@ include($$PWD/../glean/glean.pri)
 include($$PWD/../nebula/nebula.pri)
 include($$PWD/../lottie/lottie.pri)
 include($$PWD/../translations/translations.pri)
-include($$PWD/../vpnglean/vpnglean.pri)
+include($$PWD/../qtglean/qtglean.pri)
 include($$PWD/apps/vpn/crashreporter/crashreporter.pri)
 
 unix {

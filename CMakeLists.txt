@@ -130,7 +130,7 @@ add_subdirectory(src)
 # Glean.js
 add_subdirectory(glean)
 # Glean.rs
-add_subdirectory(vpnglean)
+add_subdirectory(qtglean)
 add_subdirectory(lottie)
 add_subdirectory(nebula)
 add_subdirectory(translations)

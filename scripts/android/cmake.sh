@@ -179,7 +179,7 @@ print Y "Generate Android Project"
 
 # Warning: this is hacky.
 #
-# We build the Glean Android SDK from scratch in order to have it linked to the vpnglean binary instead of the default glean one.
+# We build the Glean Android SDK from scratch in order to have it linked to the qtglean binary instead of the default glean one.
 # In order to do that we need to generate the Glean internal Kotlin bindings.
 #
 # We need to change the name of the binary in the Uniffi UDL file inside the Glean folder
@@ -190,7 +190,7 @@ print Y "Generate Android Project"
 #
 # Here we go
 mv $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml.backup
-mv $WORKSPACE_ROOT/vpnglean/uniffi.toml 3rdparty/glean/glean-core/uniffi.toml
+mv $WORKSPACE_ROOT/qtglean/uniffi.toml 3rdparty/glean/glean-core/uniffi.toml
 
 cd .tmp/src/android-build/
 # This will combine the qt-libs + qt-resources and the client

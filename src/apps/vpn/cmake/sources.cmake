@@ -166,8 +166,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/frontend/navigator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/frontend/navigatorreloader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/frontend/navigatorreloader.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/glean/glean.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/glean/glean.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/imageproviderfactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/imageproviderfactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.cpp
@@ -219,6 +217,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/user.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/mozillavpn.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/mozillavpn.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/mozillavpn_p.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/mozillavpn_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/networkwatcher.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/networkwatcher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/networkwatcherimpl.h
@@ -274,16 +274,12 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/createsupportticket/taskcreatesupportticket.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/deleteaccount/taskdeleteaccount.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/deleteaccount/taskdeleteaccount.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/function/taskfunction.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/function/taskfunction.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getfeaturelist/taskgetfeaturelist.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getfeaturelist/taskgetfeaturelist.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getlocation/taskgetlocation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getlocation/taskgetlocation.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/group/taskgroup.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/group/taskgroup.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/heartbeat/taskheartbeat.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/heartbeat/taskheartbeat.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/ipfinder/taskipfinder.cpp

@@ -8,6 +8,7 @@
 #include <QQmlEngine>
 
 #include "addon.h"
+#include "controller.h"
 #include "frontend/navigator.h"
 #include "leakdetector.h"
 #include "logger.h"
