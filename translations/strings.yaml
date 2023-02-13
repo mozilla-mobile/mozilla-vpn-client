@@ -790,6 +790,9 @@ global:
   paste:
     value: Paste
     comment: Label for button to paste value from clipboard into input
+  clearAll:
+    value: Clear all (%1)
+    comment: Button label. %1 refers to the number of items to be cleared.
 
 getHelp:
   helpCenter: Help Center

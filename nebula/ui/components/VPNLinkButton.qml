@@ -32,6 +32,7 @@ VPNButtonBase {
     }
 
     Accessible.name: labelText
+    opacity: enabled? 1 : VPNTheme.theme.opacityDisabled
 
     Component.onCompleted: {
         state = Qt.binding(() => (
@@ -43,6 +44,14 @@ VPNButtonBase {
     }
 
     states: [
+        State {
+            name: uiState.stateDisabled
+
+            PropertyChanges {
+                target: label
+                color: root.linkColor.buttonDisabled
+            }
+        },
         State {
             name: uiState.stateHovered
 
@@ -78,14 +87,6 @@ VPNButtonBase {
                 color: root.linkColor.defaultColor
             }
 
-        },
-        State {
-            name: uiState.stateDisabled
-
-            PropertyChanges {
-                target: label
-                color: root.linkColor.buttonDisabled
-            }
         }
     ]
 
@@ -106,7 +107,7 @@ VPNButtonBase {
 
     VPNMouseArea {
         id: buttonMouseArea
-        hoverEnabled: loaderVisible === false
+        hoverEnabled: loaderVisible === false && parent.enabled
     }
 
     background: Rectangle {

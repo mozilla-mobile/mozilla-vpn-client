@@ -67,62 +67,13 @@ VPNViewBase {
             }
         }
 
-        VPNToggleCard {
-            id: toggleCard
-
-            toggleObjectName: "settingsAppPermissionsToggle"
-            toggleEnabled: true
-            Layout.fillWidth: true
-            Layout.preferredHeight: childrenRect.height + VPNTheme.theme.windowMargin
-
-            //% "Protect all apps with VPN"
-            labelText: qsTrId("vpn.settings.protectAllApps")
-
-            //% "VPN protects all apps by default. Turn off to choose which apps Mozilla VPN should not protect."
-            sublabelText: qsTrId("vpn.settings.protectAllApps.description")
-
-            toolTipTitleText: qsTrId("vpn.settings.protectAllApps")
-
-            toggleChecked: (!VPNSettings.protectSelectedApps)
-
-            function handleClick() {
-                VPNSettings.protectSelectedApps = !VPNSettings.protectSelectedApps
-            }
-        }
-
         AppPermissionsList {
             id: enabledList
             Layout.fillWidth: true
             Layout.fillHeight: false
             Layout.leftMargin: VPNTheme.theme.vSpacing
             Layout.rightMargin: VPNTheme.theme.vSpacing
-            Layout.topMargin: VPNTheme.theme.vSpacing
             searchBarPlaceholder: searchApps
-
-            //% "Exclude apps from VPN protection"
-            //: Header for the list of apps protected by VPN
-            header: qsTrId("vpn.settings.excludeTitle")
-        }
-
-        VPNTextBlock {
-            id: helpInfoText
-            width: undefined
-            Layout.fillWidth: true
-            Layout.leftMargin: VPNTheme.theme.vSpacing
-            Layout.rightMargin: VPNTheme.theme.vSpacing
-            Layout.topMargin: VPNTheme.theme.vSpacing
-            text: VPNI18n.SplittunnelInfoText2
-        }
-
-        VPNLinkButton {
-            id: helpLink
-            labelText: VPNI18n.SplittunnelInfoLinkText
-            Layout.fillWidth: true
-            Layout.alignment: Qt.AlignHCenter
-            Layout.topMargin: VPNTheme.theme.windowMargin / 2
-            onClicked: {
-               VPNUrlOpener.openUrlLabel("splitTunnelHelp")
-            }
         }
     }
     Component.onCompleted: {
