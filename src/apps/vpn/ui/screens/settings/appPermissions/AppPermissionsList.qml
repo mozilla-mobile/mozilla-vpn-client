@@ -48,7 +48,7 @@ ColumnLayout {
             Layout.alignment: Qt.AlignLeft
             Layout.leftMargin: -4
             textAlignment: Text.AlignLeft
-            labelText: VPNl18n.GlobalClearAll.arg(VPNSettings.vpnDisabledApps.length)
+            labelText: VPNI18n.GlobalClearAll.arg(VPNSettings.vpnDisabledApps.length)
             fontSize: VPNTheme.theme.fontSize
             fontName: VPNTheme.theme.fontInterSemiBoldFamily
             onClicked: VPNAppPermissions.protectAll();
