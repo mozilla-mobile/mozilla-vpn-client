@@ -14,19 +14,10 @@ describe('Onboarding', function() {
     await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON);
 
     await vpn.waitForQuery(queries.screenInitialize.SWIPE_VIEW.visible());
-  });
-
-  it('SwipeView is visible', async () => {
     await vpn.waitForQuery(queries.screenInitialize.SWIPE_VIEW.visible());
-  });
-
-  it('Sign up button is visible', async () => {
     await vpn.waitForQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-  });
-
-  it('Already a subscriber button is visible', async () => {
     await vpn.waitForQuery(
-        queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible());
+      queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible());
   });
 
   it('Panel title is set correctly based on StackView currentIndex',
@@ -68,6 +59,8 @@ describe('Onboarding', function() {
      });
 
   it('Sign up button opens auth flow', async () => {
+    // must wait for animation
+    await vpn.wait()
     await vpn.waitForQueryAndClick(
         queries.screenInitialize.SIGN_UP_BUTTON.visible());
     await vpn.waitForQuery(
@@ -75,6 +68,8 @@ describe('Onboarding', function() {
   });
 
   it('Already a subscriber? opens auth flow', async () => {
+    // must wait for animation
+    await vpn.wait()
     await vpn.waitForQueryAndClick(
         queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible());
     await vpn.waitForQuery(
