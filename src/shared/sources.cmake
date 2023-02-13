@@ -91,6 +91,10 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/task.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/taskscheduler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/taskscheduler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/function/taskfunction.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/function/taskfunction.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/group/taskgroup.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/group/taskgroup.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/temporarydir.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/temporarydir.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/theme.cpp

@@ -4,113 +4,11 @@
 
 #include "testtasks.h"
 
-#include "mozillavpn.h"
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"
-#include "tasks/account/taskaccount.h"
-#include "tasks/adddevice/taskadddevice.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/group/taskgroup.h"
-#include "tasks/servers/taskservers.h"
 #include "taskscheduler.h"
-
-void TestTasks::account() {
-  SettingsHolder settingsHolder;
-  SimpleNetworkManager snm;
-
-  // Failure
-  {
-    TestHelper::networkConfig.append(TestHelper::NetworkConfig(
-        TestHelper::NetworkConfig::Failure, QByteArray()));
-
-    TaskAccount* task = new TaskAccount(ErrorHandler::PropagateError);
-
-    QEventLoop loop;
-    connect(task, &Task::completed, task, [&]() { loop.exit(); });
-
-    TaskScheduler::scheduleTask(task);
-    loop.exec();
-  }
-
-  // Success
-  {
-    TestHelper::networkConfig.append(TestHelper::NetworkConfig(
-        TestHelper::NetworkConfig::Success, QByteArray()));
-
-    TaskAccount* task = new TaskAccount(ErrorHandler::DoNotPropagateError);
-
-    QEventLoop loop;
-    connect(task, &Task::completed, task, [&]() { loop.exit(); });
-
-    TaskScheduler::scheduleTask(task);
-    loop.exec();
-  }
-}
-
-void TestTasks::servers() {
-  SettingsHolder settingsHolder;
-  SimpleNetworkManager snm;
-
-  // Failure
-  {
-    TestHelper::networkConfig.append(TestHelper::NetworkConfig(
-        TestHelper::NetworkConfig::Failure, QByteArray()));
-
-    TaskServers* task = new TaskServers(ErrorHandler::DoNotPropagateError);
-
-    QEventLoop loop;
-    connect(task, &Task::completed, task, [&]() { loop.exit(); });
-
-    TaskScheduler::scheduleTask(task);
-    loop.exec();
-  }
-
-  // Success
-  {
-    TestHelper::networkConfig.append(TestHelper::NetworkConfig(
-        TestHelper::NetworkConfig::Success, QByteArray()));
-
-    TaskServers* task = new TaskServers(ErrorHandler::PropagateError);
-
-    QEventLoop loop;
-    connect(task, &Task::completed, task, [&]() { loop.exit(); });
-
-    TaskScheduler::scheduleTask(task);
-    loop.exec();
-  }
-}
-
-void TestTasks::addDevice_success() {
-  SettingsHolder settingsHolder;
-  SimpleNetworkManager snm;
-
-  TestHelper::networkConfig.append(TestHelper::NetworkConfig(
-      TestHelper::NetworkConfig::Success, QByteArray()));
-
-  TaskAddDevice* task = new TaskAddDevice("foobar", "id");
-
-  QEventLoop loop;
-  connect(task, &Task::completed, task, [&]() { loop.exit(); });
-
-  TaskScheduler::scheduleTask(task);
-  loop.exec();
-}
-
-void TestTasks::addDevice_failure() {
-  SettingsHolder settingsHolder;
-  SimpleNetworkManager snm;
-
-  TestHelper::networkConfig.append(TestHelper::NetworkConfig(
-      TestHelper::NetworkConfig::Failure, QByteArray()));
-
-  TaskAddDevice* task = new TaskAddDevice("foobar", "id");
-
-  QEventLoop loop;
-  connect(task, &Task::completed, task, [&]() { loop.exit(); });
-
-  TaskScheduler::scheduleTask(task);
-  loop.exec();
-}
 
 void TestTasks::function() {
   bool completed = false;

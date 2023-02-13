@@ -188,10 +188,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/addonindex/taskaddonindex.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/controlleraction/taskcontrolleraction.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/controlleraction/taskcontrolleraction.h
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/function/taskfunction.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/function/taskfunction.h
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/group/taskgroup.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/group/taskgroup.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/ipfinder/taskipfinder.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/ipfinder/taskipfinder.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/release/taskrelease.cpp
@@ -279,6 +275,10 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/task.h
     ${MZ_SOURCE_DIR}/shared/taskscheduler.cpp
     ${MZ_SOURCE_DIR}/shared/taskscheduler.h
+    ${MZ_SOURCE_DIR}/shared/tasks/function/taskfunction.cpp
+    ${MZ_SOURCE_DIR}/shared/tasks/function/taskfunction.h
+    ${MZ_SOURCE_DIR}/shared/tasks/group/taskgroup.cpp
+    ${MZ_SOURCE_DIR}/shared/tasks/group/taskgroup.h
     ${MZ_SOURCE_DIR}/shared/temporarydir.cpp
     ${MZ_SOURCE_DIR}/shared/temporarydir.h
     ${MZ_SOURCE_DIR}/shared/theme.cpp
@@ -333,8 +333,6 @@ target_sources(unit_tests PRIVATE
     testserveri18n.h
     teststatusicon.cpp
     teststatusicon.h
-    testtasks.cpp
-    testtasks.h
     testtasksentry.cpp
     testtasksentry.h
     websocket/testexponentialbackoffstrategy.cpp

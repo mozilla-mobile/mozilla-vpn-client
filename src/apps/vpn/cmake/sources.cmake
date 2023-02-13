@@ -274,16 +274,12 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/createsupportticket/taskcreatesupportticket.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/deleteaccount/taskdeleteaccount.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/deleteaccount/taskdeleteaccount.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/function/taskfunction.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/function/taskfunction.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getfeaturelist/taskgetfeaturelist.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getfeaturelist/taskgetfeaturelist.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getlocation/taskgetlocation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getlocation/taskgetlocation.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/group/taskgroup.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/group/taskgroup.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/heartbeat/taskheartbeat.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/heartbeat/taskheartbeat.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/ipfinder/taskipfinder.cpp

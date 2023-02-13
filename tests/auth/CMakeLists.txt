@@ -92,8 +92,6 @@ target_sources(auth_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/controlleraction/taskcontrolleraction.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/deleteaccount/taskdeleteaccount.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/deleteaccount/taskdeleteaccount.h
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/function/taskfunction.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/function/taskfunction.h
     ${MZ_SOURCE_DIR}/apps/vpn/update/updater.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/update/updater.h
     ${MZ_SOURCE_DIR}/apps/vpn/update/versionapi.cpp
@@ -153,6 +151,8 @@ target_sources(auth_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/task.h
     ${MZ_SOURCE_DIR}/shared/taskscheduler.cpp
     ${MZ_SOURCE_DIR}/shared/taskscheduler.h
+    ${MZ_SOURCE_DIR}/shared/tasks/function/taskfunction.cpp
+    ${MZ_SOURCE_DIR}/shared/tasks/function/taskfunction.h
     ${MZ_SOURCE_DIR}/shared/urlopener.cpp
     ${MZ_SOURCE_DIR}/shared/urlopener.h
     ${MZ_SOURCE_DIR}/shared/versionutils.cpp

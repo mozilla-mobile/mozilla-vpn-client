@@ -39,6 +39,8 @@ SOURCES += \
         $$PWD/signature.cpp \
         $$PWD/simplenetworkmanager.cpp \
         $$PWD/taskscheduler.cpp \
+        $$PWD/tasks/function/taskfunction.cpp \
+        $$PWD/tasks/group/taskgroup.cpp \
         $$PWD/temporarydir.cpp \
         $$PWD/theme.cpp \
         $$PWD/urlopener.cpp \
@@ -79,6 +81,8 @@ HEADERS += \
         $$PWD/simplenetworkmanager.h \
         $$PWD/task.h \
         $$PWD/taskscheduler.h \
+        $$PWD/tasks/function/taskfunction.h \
+        $$PWD/tasks/group/taskgroup.h \
         $$PWD/temporarydir.h \
         $$PWD/theme.h \
         $$PWD/urlopener.h \
