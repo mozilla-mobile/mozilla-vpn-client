@@ -10,4 +10,5 @@ pub mod helpers;
 pub mod counter;
 pub mod event;
 pub mod ping;
+pub mod string;
 pub mod timing_distribution;

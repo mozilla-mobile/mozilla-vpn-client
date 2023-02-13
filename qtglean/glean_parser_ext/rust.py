@@ -210,6 +210,7 @@ def output_rust(objs, output_fd, options={}):
         # Implemented metric types needs to be added here.
         ("TIMING_DISTRIBUTION_MAP", "TimingDistributionMetric"): [],
         ("COUNTER_MAP", "CounterMetric"): [],
+        ("STRING_MAP", "StringMetric"): [],
     }
 
     # Map from a metric ID to the fully qualified path of the event object in Rust.
