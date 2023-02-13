@@ -10,13 +10,15 @@
 #include <QWindow>
 
 #include "appconstants.h"
+#include "controller.h"
 #include "externalophandler.h"
 #include "frontend/navigator.h"
-#include "l18nstrings.h"
+#include "i18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
+#include "statusicon.h"
 
 namespace {
 Logger logger("SystemTrayNotificationHandler");
@@ -123,11 +125,11 @@ void SystemTrayNotificationHandler::notify(NotificationHandler::Message type,
 void SystemTrayNotificationHandler::retranslate() {
   logger.debug() << "Retranslate";
 
-  L18nStrings* l18nStrings = L18nStrings::instance();
-  Q_ASSERT(l18nStrings);
+  I18nStrings* i18nStrings = I18nStrings::instance();
+  Q_ASSERT(i18nStrings);
 
-  m_disconnectAction->setText(l18nStrings->t(L18nStrings::SystrayDisconnect));
-  m_quitAction->setText(l18nStrings->t(L18nStrings::SystrayQuit));
+  m_disconnectAction->setText(i18nStrings->t(I18nStrings::SystrayDisconnect));
+  m_quitAction->setText(i18nStrings->t(I18nStrings::SystrayQuit));
 
   updateContextMenu();
 }
@@ -156,13 +158,13 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 
   m_separator->setVisible(isStateMain);
 
-  L18nStrings* l18nStrings = L18nStrings::instance();
-  Q_ASSERT(l18nStrings);
+  I18nStrings* i18nStrings = I18nStrings::instance();
+  Q_ASSERT(i18nStrings);
 
   if (QmlEngineHolder::instance()->window()->isVisible()) {
-    m_showHideLabel->setText(l18nStrings->t(L18nStrings::SystrayHide));
+    m_showHideLabel->setText(i18nStrings->t(I18nStrings::SystrayHide));
   } else {
-    m_showHideLabel->setText(l18nStrings->t(L18nStrings::SystrayShow));
+    m_showHideLabel->setText(i18nStrings->t(I18nStrings::SystrayShow));
   }
 
   // If we are in a non-main state, we don't need to show notifications.
@@ -176,11 +178,11 @@ void SystemTrayNotificationHandler::updateContextMenu() {
     case Controller::StateOn:
       [[fallthrough]];
     case Controller::StateSilentSwitching:
-      statusLabel = l18nStrings->t(L18nStrings::SystrayStatusConnectedTo);
+      statusLabel = i18nStrings->t(I18nStrings::SystrayStatusConnectedTo);
       break;
 
     case Controller::StateOff:
-      statusLabel = l18nStrings->t(L18nStrings::SystrayStatusConnectTo);
+      statusLabel = i18nStrings->t(I18nStrings::SystrayStatusConnectTo);
       break;
 
     case Controller::StateSwitching:
@@ -188,11 +190,11 @@ void SystemTrayNotificationHandler::updateContextMenu() {
     case Controller::StateConnecting:
       [[fallthrough]];
     case Controller::StateConfirming:
-      statusLabel = l18nStrings->t(L18nStrings::SystrayStatusConnectingTo);
+      statusLabel = i18nStrings->t(I18nStrings::SystrayStatusConnectingTo);
       break;
 
     case Controller::StateDisconnecting:
-      statusLabel = l18nStrings->t(L18nStrings::SystrayStatusDisconnectingFrom);
+      statusLabel = i18nStrings->t(I18nStrings::SystrayStatusDisconnectingFrom);
       break;
 
     default:
@@ -216,7 +218,7 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 
   m_lastLocationLabel->setIcon(flagIcon);
   m_lastLocationLabel->setText(
-      l18nStrings->t(L18nStrings::SystrayLocation2)
+      i18nStrings->t(I18nStrings::SystrayLocation2)
           .arg(localizedCountryName, localizedCityName));
   m_lastLocationLabel->setEnabled(vpn->controller()->state() ==
                                   Controller::StateOff);

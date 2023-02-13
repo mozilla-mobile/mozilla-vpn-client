@@ -91,8 +91,8 @@ VPNViewBase {
             id: serverUnavailableNotification
             objectName: "serverUnavailableNotification"
             visible: VPNFeatureList.get("serverUnavailableNotification").isSupported
-            labelText: VPNl18n.ServerUnavailableNotificationPreferencesLabel
-            subLabelText: VPNl18n.ServerUnavailableNotificationPreferencesSubLabel
+            labelText: VPNI18n.ServerUnavailableNotificationPreferencesLabel
+            subLabelText: VPNI18n.ServerUnavailableNotificationPreferencesSubLabel
             isChecked: (VPNSettings.serverUnavailableNotification)
             showDivider: false
             onClicked: {

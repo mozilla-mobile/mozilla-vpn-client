@@ -9,7 +9,7 @@
 #include <QQmlEngine>
 #include <QtQuickTest>
 
-#include "l18nstrings.h"
+#include "i18nstrings.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #include "theme.h"
@@ -49,7 +49,7 @@ class TestHelper final : public QObject {
   bool m_debugMode = true;
   bool m_stagingMode = true;
 
-  L18nStrings* m_l18nstrings = nullptr;
+  I18nStrings* m_i18nstrings = nullptr;
   MozillaVPN* m_mozillavpn = nullptr;
   Theme* m_theme = nullptr;
 };

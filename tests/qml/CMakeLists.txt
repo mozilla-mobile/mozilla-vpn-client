@@ -69,6 +69,8 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.h
     ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.h
+    ${MZ_SOURCE_DIR}/apps/vpn/serverlatency.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/serverlatency.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/controlleraction/taskcontrolleraction.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/controlleraction/taskcontrolleraction.h
     ${MZ_SOURCE_DIR}/apps/vpn/update/updater.cpp

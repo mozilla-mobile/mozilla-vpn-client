@@ -172,6 +172,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/releasemonitor.h
     ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.h
+    ${MZ_SOURCE_DIR}/apps/vpn/serverlatency.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/serverlatency.h
     ${MZ_SOURCE_DIR}/apps/vpn/sentry/sentryadapter.h
     ${MZ_SOURCE_DIR}/apps/vpn/statusicon.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/statusicon.h

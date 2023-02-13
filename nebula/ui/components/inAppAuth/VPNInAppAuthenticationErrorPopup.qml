@@ -14,12 +14,12 @@ VPNSimplePopup {
     anchors.centerIn: Overlay.overlay
     imageSrc: "qrc:/ui/resources/updateRequired.svg"
     imageSize: Qt.size(80, 80)
-    title: VPNl18n.InAppAuthSignInFailedPopupTitle
+    title: VPNI18n.InAppAuthSignInFailedPopupTitle
     description: ""
     buttons: [
         VPNButton {
             objectName: authError.objectName + "-button";
-            text: VPNl18n.CaptivePortalAlertButtonTextPreActivation
+            text: VPNI18n.CaptivePortalAlertButtonTextPreActivation
             onClicked: {
                 authError.close()
             }
@@ -40,7 +40,7 @@ VPNSimplePopup {
         }
 
         function showGenericAuthError() {
-            authError.description = VPNl18n.InAppSupportWorkflowSupportErrorText
+            authError.description = VPNI18n.InAppSupportWorkflowSupportErrorText
             authError.open()
         }
 
@@ -59,7 +59,7 @@ VPNSimplePopup {
                 break;
 
             case VPNAuthInApp.ErrorEmailTypeNotSupported:
-                authError.description = VPNl18n.InAppAuthProblemEmailTypeNotSupported
+                authError.description = VPNI18n.InAppAuthProblemEmailTypeNotSupported
                 authError.open()
                 break;
             case VPNAuthInApp.ErrorConnectionTimeout:
@@ -67,7 +67,7 @@ VPNSimplePopup {
                 authError.open()
                 break;
             case VPNAuthInApp.ErrorFailedToSendEmail:
-                authError.description = VPNl18n.InAppAuthProblemSendingEmailErrorMessage
+                authError.description = VPNI18n.InAppAuthProblemSendingEmailErrorMessage
                 authError.open()
                 break;
 
@@ -78,9 +78,9 @@ VPNSimplePopup {
             case VPNAuthInApp.ErrorTooManyRequests:
                 const retryAfterMin = retryAfterSecToMin(retryAfterSec);
                 if (retryAfterMin === 1) {
-                    authError.description = VPNl18n.InAppAuthSignInBlockedForOneMinute;
+                    authError.description = VPNI18n.InAppAuthSignInBlockedForOneMinute;
                 } else {
-                    authError.description = VPNl18n.InAppAuthSignInFailedPopupDescription
+                    authError.description = VPNI18n.InAppAuthSignInFailedPopupDescription
                 }
                 authError.open()
                 break;

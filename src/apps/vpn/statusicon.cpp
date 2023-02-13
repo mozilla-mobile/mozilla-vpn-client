@@ -11,6 +11,7 @@
 #include <array>
 
 #include "appconstants.h"
+#include "controller.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"

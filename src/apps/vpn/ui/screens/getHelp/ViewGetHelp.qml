@@ -25,8 +25,8 @@ VPNViewBase {
         VPNExternalLinkListItem {
             objectName: "helpCenter"
 
-            accessibleName: VPNl18n.GetHelpHelpCenter
-            title: VPNl18n.GetHelpHelpCenter
+            accessibleName: VPNI18n.GetHelpHelpCenter
+            title: VPNI18n.GetHelpHelpCenter
             onClicked: VPNUrlOpener.openUrlLabel("sumo")
             iconSource: "qrc:/nebula/resources/externalLink.svg"
             backgroundColor: VPNTheme.theme.clickableRowBlue
@@ -36,8 +36,8 @@ VPNViewBase {
         VPNExternalLinkListItem {
             objectName: "inAppSupport"
 
-            accessibleName: VPNl18n.InAppSupportWorkflowSupportNavLinkText
-            title: VPNl18n.InAppSupportWorkflowSupportNavLinkText
+            accessibleName: VPNI18n.InAppSupportWorkflowSupportNavLinkText
+            title: VPNI18n.InAppSupportWorkflowSupportNavLinkText
             onClicked: getHelpStackView.push("qrc:/ui/screens/getHelp/contactUs/ViewContactUsForm.qml");
             iconSource: "qrc:/nebula/resources/chevron.svg"
             iconMirror: VPNLocalizer.isRightToLeft
@@ -48,8 +48,8 @@ VPNViewBase {
         VPNExternalLinkListItem {
             objectName: "viewLogs"
 
-            accessibleName: VPNl18n.GetHelpViewLogs
-            title: VPNl18n.GetHelpViewLogs
+            accessibleName: VPNI18n.GetHelpViewLogs
+            title: VPNI18n.GetHelpViewLogs
             onClicked: VPN.requestViewLogs()
             iconSource: VPNFeatureList.get("shareLogs").isSupported ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"
             iconMirror: !VPNFeatureList.get("shareLogs").isSupported && VPNLocalizer.isRightToLeft

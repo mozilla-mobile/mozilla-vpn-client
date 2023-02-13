@@ -11,6 +11,7 @@
 
 #include "controller.h"
 #include "mozillavpn.h"
+#include "notificationhandler.h"
 
 class NetworkRequest;
 

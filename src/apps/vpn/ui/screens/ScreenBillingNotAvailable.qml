@@ -20,13 +20,13 @@ VPNStackView {
 
         stackview.push("qrc:/ui/sharedViews/ViewErrorFullScreen.qml", {
             // Sign in to Google Account
-            headlineText: VPNl18n.NotSignedInGoogleGoogleModalHeader,
+            headlineText: VPNI18n.NotSignedInGoogleGoogleModalHeader,
 
             // To continue subscribing, please sign in to your Google Account
-            errorMessage: VPNl18n.NotSignedInGoogleGoogleModalBodyText,
+            errorMessage: VPNI18n.NotSignedInGoogleGoogleModalBodyText,
 
             // Go to Play Store
-            primaryButtonText: VPNl18n.NotSignedInGoogleGoogleModalLinkText,
+            primaryButtonText: VPNI18n.NotSignedInGoogleGoogleModalLinkText,
             primaryButtonObjectName: "errorGetHelpButton",
             primaryButtonOnClick: stackview.handleButtonClick,
             secondaryButtonIsSignOff: true,

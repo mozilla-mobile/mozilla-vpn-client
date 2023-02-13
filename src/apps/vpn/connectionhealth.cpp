@@ -8,6 +8,7 @@
 #include <QDateTime>
 #include <QRandomGenerator>
 
+#include "controller.h"
 #include "glean/generated/metrics.h"
 #include "gleandeprecated.h"
 #include "leakdetector.h"

@@ -8,7 +8,11 @@
 #include <QTextStream>
 
 #include "commandlineparser.h"
+#include "controller.h"
 #include "leakdetector.h"
+#include "models/devicemodel.h"
+#include "models/servercountrymodel.h"
+#include "models/user.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"

@@ -173,7 +173,7 @@ VPNFlickable {
                 visible: Qt.platform.os === "ios"
 
                 // Already a subscriber?
-                labelText: VPNl18n.RestorePurchaseRestorePurchaseButton
+                labelText: VPNI18n.RestorePurchaseRestorePurchaseButton
                 Layout.alignment: Qt.AlignHCenter
                 onClicked: VPNPurchase.restore()
             }

@@ -20,6 +20,7 @@
 #include "logoutobserver.h"
 #include "models/device.h"
 #include "models/recentconnections.h"
+#include "mozillavpn_p.h"
 #include "networkmanager.h"
 #include "productshandler.h"
 #include "profileflow.h"
@@ -114,7 +115,7 @@ MozillaVPN* MozillaVPN::instance() {
 // static
 MozillaVPN* MozillaVPN::maybeInstance() { return s_instance; }
 
-MozillaVPN::MozillaVPN() : m_private(new Private()) {
+MozillaVPN::MozillaVPN() : m_private(new MozillaVPNPrivate()) {
   MZ_COUNT_CTOR(MozillaVPN);
 
   logger.debug() << "Creating MozillaVPN singleton";
@@ -220,24 +221,6 @@ MozillaVPN::~MozillaVPN() {
 
   delete m_private;
 }
-
-ConnectionHealth* MozillaVPN::connectionHealth() {
-  return &m_private->m_connectionHealth;
-}
-
-Controller* MozillaVPN::controller() { return &m_private->m_controller; }
-
-ServerData* MozillaVPN::serverData() { return &m_private->m_serverData; }
-
-ServerCountryModel* MozillaVPN::serverCountryModel() {
-  return &m_private->m_serverCountryModel;
-}
-
-SubscriptionData* MozillaVPN::subscriptionData() {
-  return &m_private->m_subscriptionData;
-}
-
-Location* MozillaVPN::location() const { return &m_private->m_location; }
 
 MozillaVPN::State MozillaVPN::state() const { return m_state; }
 

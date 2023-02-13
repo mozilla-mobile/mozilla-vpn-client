@@ -17,6 +17,7 @@
 #include "mozillavpn.h"
 #include "notificationhandler.h"
 #include "platforms/macos/macosmenubar.h"
+#include "statusicon.h"
 
 namespace {
 Logger logger("WasmWindowController");

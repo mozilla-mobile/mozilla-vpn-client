@@ -20,7 +20,7 @@ VPNInAppAuthenticationBase {
                 target: authSignIn
 
                 _changeEmailLinkVisible: false
-                _subtitleText: VPNl18n.InAppAuthReauthSignInSubtitle
+                _subtitleText: VPNI18n.InAppAuthReauthSignInSubtitle
             }
 
             PropertyChanges {
@@ -32,7 +32,7 @@ VPNInAppAuthenticationBase {
             PropertyChanges {
                 target: authInputs
 
-                _buttonText: VPNl18n.DeleteAccountAuthButtonLabel
+                _buttonText: VPNI18n.DeleteAccountAuthButtonLabel
             }
         }
     ]
@@ -50,9 +50,9 @@ VPNInAppAuthenticationBase {
     }
     _menuButtonAccessibleName: qsTrId("vpn.main.back")
     _headlineText: VPNAuthInApp.emailAddress
-    _subtitleText: VPNl18n.InAppAuthSignInSubtitle
+    _subtitleText: VPNI18n.InAppAuthSignInSubtitle
     _imgSource: "qrc:/nebula/resources/avatar.svg"
-    _inputLabel: VPNl18n.InAppAuthPasswordInputLabel
+    _inputLabel: VPNI18n.InAppAuthPasswordInputLabel
 
     _inputs: VPNInAppAuthenticationInputs {
         objectName: "authSignIn"
@@ -63,8 +63,8 @@ VPNInAppAuthenticationBase {
              VPNAuthInApp.setPassword(inputText);
              VPNAuthInApp.signIn();
          }
-        _buttonText: VPNl18n.InAppAuthSignInButton
-        _inputPlaceholderText: VPNl18n.InAppAuthPasswordInputPlaceholder
+        _buttonText: VPNI18n.InAppAuthSignInButton
+        _inputPlaceholderText: VPNI18n.InAppAuthPasswordInputPlaceholder
     }
 
     _disclaimers: Loader {
@@ -79,7 +79,7 @@ VPNInAppAuthenticationBase {
         spacing: VPNTheme.theme.windowMargin
 
         VPNLinkButton {
-            labelText: VPNl18n.InAppAuthForgotPasswordLink
+            labelText: VPNI18n.InAppAuthForgotPasswordLink
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: VPNUrlOpener.openUrlLabel("forgotPassword")
         }

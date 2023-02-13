@@ -9,7 +9,7 @@
 
 #include "constants.h"
 #include "featurelistcallback.h"
-#include "l18nstrings.h"
+#include "i18nstrings.h"
 #include "logger.h"
 #include "settingsholder.h"
 #include "versionutils.h"

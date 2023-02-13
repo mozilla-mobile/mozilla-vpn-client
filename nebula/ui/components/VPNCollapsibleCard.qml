@@ -139,7 +139,7 @@ Rectangle {
                 Layout.preferredHeight: VPNTheme.theme.rowHeight
                 Layout.preferredWidth: VPNTheme.theme.rowHeight
 
-                accessibleName: expanded ? VPNl18n.GlobalCollapse : VPNl18n.GlobalExpand
+                accessibleName: expanded ? VPNI18n.GlobalCollapse : VPNI18n.GlobalExpand
 
                 VPNChevron {
                     id: chevron

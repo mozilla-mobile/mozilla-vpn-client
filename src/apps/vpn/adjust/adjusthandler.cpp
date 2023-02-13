@@ -6,6 +6,7 @@
 
 #include "adjustproxy.h"
 #include "constants.h"
+#include "controller.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"

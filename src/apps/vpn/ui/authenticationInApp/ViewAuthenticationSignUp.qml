@@ -21,9 +21,9 @@ VPNInAppAuthenticationBase {
     }
     _menuButtonAccessibleName: qsTrId("vpn.main.back")
     _headlineText: VPNAuthInApp.emailAddress
-    _subtitleText: VPNl18n.InAppAuthFinishAccountCreationDescription
+    _subtitleText: VPNI18n.InAppAuthFinishAccountCreationDescription
     _imgSource: "qrc:/nebula/resources/avatar.svg"
-    _inputLabel: VPNl18n.InAppAuthCreatePasswordLabel
+    _inputLabel: VPNI18n.InAppAuthCreatePasswordLabel
 
     _inputs: VPNInAppAuthenticationInputs {
         objectName: "authSignUp"
@@ -38,8 +38,8 @@ VPNInAppAuthenticationBase {
                               VPNAuthInApp.setPassword(inputText);
                               VPNAuthInApp.signUp();
                           }
-        _buttonText: VPNl18n.InAppAuthCreateAccountButton
-        _inputPlaceholderText: VPNl18n.InAppAuthPasswordInputPlaceholder
+        _buttonText: VPNI18n.InAppAuthCreateAccountButton
+        _inputPlaceholderText: VPNI18n.InAppAuthPasswordInputPlaceholder
     }
 
     _disclaimers: VPNInAppAuthenticationLegalDisclaimer {}

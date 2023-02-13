@@ -46,6 +46,7 @@ QT += gui-private
 QT -= networkauth
 
 CONFIG += c++1z
+QMAKE_CXXFLAGS += -Wno-shorten-64-to-32
 
 # For notifications
 LIBS += -framework UIKit

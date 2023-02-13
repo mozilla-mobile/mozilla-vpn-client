@@ -15,8 +15,8 @@
 #include "androidutils.h"
 #include "androidvpnactivity.h"
 #include "errorhandler.h"
+#include "i18nstrings.h"
 #include "ipaddress.h"
-#include "l18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
@@ -201,17 +201,17 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
 
   QJsonObject messages;
   messages["productName"] = qtTrId("vpn.main.productName");
-  messages["connectedHeader"] = L18nStrings::instance()->t(
-      L18nStrings::NotificationsVPNConnectedTitle);  // Connected
+  messages["connectedHeader"] = I18nStrings::instance()->t(
+      I18nStrings::NotificationsVPNConnectedTitle);  // Connected
   messages["connectedBody"] =
-      L18nStrings::instance()
-          ->t(L18nStrings::NotificationsVPNConnectedMessage)
+      I18nStrings::instance()
+          ->t(I18nStrings::NotificationsVPNConnectedMessage)
           .arg(localizedCityName);
-  messages["disconnectedHeader"] = L18nStrings::instance()->t(
-      L18nStrings::NotificationsVPNDisconnectedTitle);
+  messages["disconnectedHeader"] = I18nStrings::instance()->t(
+      I18nStrings::NotificationsVPNDisconnectedTitle);
   messages["disconnectedBody"] =
-      L18nStrings::instance()
-          ->t(L18nStrings::NotificationsVPNDisconnectedMessage)
+      I18nStrings::instance()
+          ->t(I18nStrings::NotificationsVPNDisconnectedMessage)
           .arg(localizedCityName);
   args["messages"] = messages;
 

@@ -17,20 +17,30 @@
 #include "authenticationinapp/authenticationinapp.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "commandlineparser.h"
+#include "connectionbenchmark/connectionbenchmark.h"
+#include "connectionhealth.h"
+#include "controller.h"
 #include "feature.h"
 #include "fontloader.h"
 #include "frontend/navigator.h"
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
+#include "ipaddresslookup.h"
+#include "models/devicemodel.h"
+#include "models/feedbackcategorymodel.h"
 #include "models/licensemodel.h"
+#include "models/servercountrymodel.h"
+#include "models/subscriptiondata.h"
+#include "models/supportcategorymodel.h"
+#include "models/user.h"
 // Relative path is required here,
 // otherwise this gets confused with the Glean.js implementation
 #include "glean/mzglean.h"
 #include "gleandeprecated.h"
+#include "i18nstrings.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
 #include "keyregenerator.h"
-#include "l18nstrings.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
@@ -40,9 +50,13 @@
 #include "networkrequest.h"
 #include "notificationhandler.h"
 #include "productshandler.h"
+#include "profileflow.h"
 #include "purchasehandler.h"
 #include "qmlengineholder.h"
+#include "releasemonitor.h"
+#include "serverlatency.h"
 #include "settingsholder.h"
+#include "telemetry.h"
 #include "telemetry/gleansample.h"
 #include "temporarydir.h"
 #include "theme.h"
@@ -238,7 +252,7 @@ int CommandUI::run(QStringList& tokens) {
 
     Lottie::initialize(engine, QString(NetworkManager::userAgent()));
     Nebula::Initialize(engine);
-    L18nStrings::initialize();
+    I18nStrings::initialize();
 
     // Cleanup previous temporary files.
     TemporaryDir::cleanupAll();
@@ -421,6 +435,14 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNServerLatency",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->serverLatency();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNConnectionHealth",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance()->connectionHealth();
@@ -530,9 +552,9 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNl18n",
+        "Mozilla.VPN", 1, 0, "VPNI18n",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = L18nStrings::instance();
+          QObject* obj = I18nStrings::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -645,7 +667,7 @@ int CommandUI::run(QStringList& tokens) {
           logger.debug() << "Retranslating";
           QmlEngineHolder::instance()->engine()->retranslate();
           NotificationHandler::instance()->retranslate();
-          L18nStrings::instance()->retranslate();
+          I18nStrings::instance()->retranslate();
           AddonManager::instance()->retranslate();
 
 #ifdef MZ_MACOS
