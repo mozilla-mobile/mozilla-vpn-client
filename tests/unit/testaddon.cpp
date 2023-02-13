@@ -27,10 +27,10 @@
 #include "localizer.h"
 #include "models/featuremodel.h"
 #include "qmlengineholder.h"
+#include "qtglean.h"
 #include "settingsholder.h"
 #include "systemtraynotificationhandler.h"
 #include "tutorial/tutorial.h"
-#include "vpnglean.h"
 
 void TestAddon::init() {
   m_settingsHolder = new SettingsHolder();

@@ -47,7 +47,7 @@ endif()
 
 target_link_libraries(app_unit_tests PRIVATE
     glean
-    vpnglean
+    qtglean
     shared-sources
     translations
 )

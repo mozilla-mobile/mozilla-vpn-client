@@ -7,7 +7,7 @@
 #include <QDebug>
 
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
-#  include "vpnglean.h"
+#  include "qtglean.h"
 #endif
 
 CounterMetric::CounterMetric(int id) : m_id(id) {}

@@ -8,8 +8,8 @@
 #include "glean/mzglean.h"
 #include "helper.h"
 #include "localizer.h"
+#include "qtglean.h"
 #include "settingsholder.h"
-#include "vpnglean.h"
 
 void TestLocalizer::init() {
   m_settingsHolder = new SettingsHolder();
