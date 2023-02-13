@@ -143,8 +143,8 @@ cd .tmp
 print Y "Generating glean samples..."
 (cd $WORKDIR && python3 scripts/utils/generate_glean.py) || die "Failed to generate glean samples"
 
-print Y "Generating Glean (vpnglean) files..."
-(cd $WORKDIR && python3 vpnglean/glean_parser_ext/run_glean_parser.py) || die "Failed to generate Glean (vpnglean) files"
+print Y "Generating Glean (qtglean) files..."
+(cd $WORKDIR && python3 qtglean/glean_parser_ext/run_glean_parser.py) || die "Failed to generate Glean (qtglean) files"
 
 printn Y "Downloading Go dependencies..."
 (cd $WORKDIR/linux/netfilter && go mod vendor)
@@ -158,8 +158,8 @@ printn Y "Downloading Rust dependencies (signature)..."
 (cd $WORKDIR/signature && mkdir -p .cargo && cargo vendor > .cargo/config.toml)
 print G "done."
 
-printn Y "Downloading Rust dependencies (vpnglean)..."
-(cd $WORKDIR/vpnglean && mkdir -p .cargo && cargo vendor > .cargo/config.toml)
+printn Y "Downloading Rust dependencies (qtglean)..."
+(cd $WORKDIR/qtglean && mkdir -p .cargo && cargo vendor > .cargo/config.toml)
 print G "done."
 
 printn Y "Removing the packaging templates... "

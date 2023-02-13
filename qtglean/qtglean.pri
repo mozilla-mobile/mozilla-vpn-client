@@ -10,7 +10,7 @@ exists($$PWD/prebuilt/glean/generated/metrics.cpp) {
   INCLUDEPATH += $$PWD/prebuilt
 }
 else{
-    error(Glean generated files are missing. Please run `python3 ./vpnglean/glean_parser_ext/run_glean_parser.py`)
+    error(Glean generated files are missing. Please run `python3 ./qtglean/glean_parser_ext/run_glean_parser.py`)
 }
 
 SOURCES += $$PWD/src/cpp/counter.cpp

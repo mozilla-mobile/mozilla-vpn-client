@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # When building for iOS we want to include the Glean iOS SDK on the build as well.
-# Instead of using it out of the box, we want it to be linked to the vpnglean_ffi target,
+# Instead of using it out of the box, we want it to be linked to the qtglean_ffi target,
 # so we generate the SDK oursevels.
 
 enable_language(Swift)
@@ -119,5 +119,5 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/ios/iosgleanbridge.h
 )
 
-target_link_libraries(iosglean PRIVATE vpnglean)
+target_link_libraries(iosglean PRIVATE qtglean)
 target_link_libraries(mozillavpn PRIVATE iosglean)

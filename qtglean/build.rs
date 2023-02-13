@@ -7,7 +7,7 @@ use std::path::PathBuf;
 
 use cbindgen;
 
-const HEADER_FILE_NAME: &str = "vpnglean.h";
+const HEADER_FILE_NAME: &str = "qtglean.h";
 
 fn main() -> Result<(), String> {
     // Generate C++ header using cbindgen.

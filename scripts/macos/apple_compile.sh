@@ -109,8 +109,8 @@ python3 scripts/utils/import_languages.py $([[ $QTBINPATH ]] && echo "-q $QTBINP
 print Y "Generating glean samples..."
 python3 scripts/utils/generate_glean.py || die "Failed to generate glean samples"
 
-print Y "Generating vpnglean samples..."
-python3 vpnglean/glean_parser_ext/run_glean_parser.py || die "Failed to generate vpnglean samples"
+print Y "Generating qtglean samples..."
+python3 qtglean/glean_parser_ext/run_glean_parser.py || die "Failed to generate qtglean samples"
 
 printn Y "Extract the project version... "
 SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )

@@ -12,7 +12,7 @@
 #include "logger.h"
 #include "settingsholder.h"
 #if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
-#  include "vpnglean.h"
+#  include "qtglean.h"
 #endif
 #if defined(MZ_ANDROID) && not(defined(BUILD_QMAKE))
 #  include "platforms/android/androidutils.h"

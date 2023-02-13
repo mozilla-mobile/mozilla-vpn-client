@@ -29,7 +29,7 @@ target_link_libraries(auth_tests PRIVATE
     Qt6::Quick
 )
 
-target_link_libraries(auth_tests PRIVATE glean vpnglean translations)
+target_link_libraries(auth_tests PRIVATE glean qtglean translations)
 
 target_compile_definitions(auth_tests PRIVATE UNIT_TEST)
 target_compile_definitions(auth_tests PRIVATE MZ_DEBUG)

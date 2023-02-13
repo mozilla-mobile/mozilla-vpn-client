@@ -5,7 +5,7 @@
 #include "glean/event.h"
 
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
-#  include "vpnglean.h"
+#  include "qtglean.h"
 #endif
 
 #include <QJsonDocument>
