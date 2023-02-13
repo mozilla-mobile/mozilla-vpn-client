@@ -4,12 +4,12 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
+import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 
 VPNButtonBase {
     id: root
-
 
     property string labelText
     property variant fontName: VPNTheme.theme.fontInterFamily
@@ -17,10 +17,9 @@ VPNButtonBase {
     property var linkColor: VPNTheme.theme.blueButton
     property var fontSize: VPNTheme.theme.fontSize
     property real textAlignment: Text.AlignHCenter
-    property var buttonPadding: VPNTheme.theme.hSpacing
+    property Component iconComponent
 
-
-    radius: 4
+    radius: VPNTheme.theme.cornerRadius
 
     Keys.onReleased: event => {
         if (loaderVisible) {
@@ -115,20 +114,30 @@ VPNButtonBase {
         color: VPNTheme.theme.transparent
     }
 
-    contentItem: Label {
-        id: label
+    contentItem: RowLayout {
+        spacing: VPNTheme.theme.windowMargin / 2
 
-        text: labelText
-        color: root.linkColor.defaultColor
-        horizontalAlignment: textAlignment
-        verticalAlignment: Text.AlignVCenter
-        font.pixelSize: fontSize
-        font.family: fontName
-        wrapMode: Text.WordWrap
-        opacity: loaderVisible ? 0 : 1
-        Behavior on color {
-            ColorAnimation {
-                duration: 200
+        Loader {
+            id: iconLoader
+            Layout.alignment: Qt.AlignVCenter
+            sourceComponent: iconComponent
+        }
+
+        Label {
+            id: label
+
+            text: labelText
+            color: root.linkColor.defaultColor
+            horizontalAlignment: textAlignment
+            verticalAlignment: Text.AlignVCenter
+            font.pixelSize: fontSize
+            font.family: fontName
+            wrapMode: Text.WordWrap
+            opacity: loaderVisible ? 0 : 1
+            Behavior on color {
+                ColorAnimation {
+                    duration: 200
+                }
             }
         }
     }

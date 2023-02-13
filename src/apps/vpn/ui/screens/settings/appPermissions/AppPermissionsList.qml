@@ -17,7 +17,7 @@ ColumnLayout {
     objectName: "appListContainer"
     property string searchBarPlaceholder: ""
 
-    spacing: 24
+    spacing: VPNTheme.theme.vSpacing
 
     VPNSearchBar {
         property bool sorted: false;
@@ -36,21 +36,27 @@ ColumnLayout {
         id: col2
         objectName: "appExclusionsList"
 
-        spacing: VPNTheme.theme.windowMargin
-        Layout.fillHeight: false
+        spacing: VPNTheme.theme.windowMargin / 2
         Layout.fillWidth: true
 
         VPNLinkButton {
             property int numDisabledApps: VPNSettings.vpnDisabledApps.length
+
             id: clearAllButton
             objectName: "clearAll"
 
             Layout.alignment: Qt.AlignLeft
+
+            // Hack to horizontally align the text
+            // with column of checkboxes. This is
+            // repeated on L132
             Layout.leftMargin: -4
+
             textAlignment: Text.AlignLeft
             labelText: VPNI18n.GlobalClearAll.arg(VPNSettings.vpnDisabledApps.length)
-            fontSize: VPNTheme.theme.fontSize
+            fontSize: VPNTheme.theme.   fontSize
             fontName: VPNTheme.theme.fontInterSemiBoldFamily
+
             onClicked: VPNAppPermissions.protectAll();
             enabled: VPNSettings.vpnDisabledApps.length > 0
             visible: applist.count > 0
@@ -61,14 +67,13 @@ ColumnLayout {
 
             objectName: "appList"
             model: searchBarWrapper.getProxyModel()
-            Layout.fillHeight: false
             delegate: RowLayout {
                 property int idxForFunctionalTests: index
                 id: appRow
 
                 objectName: `${appID}-row`
                 spacing: VPNTheme.theme.windowMargin
-                Layout.minimumHeight: VPNTheme.theme.navBarTopMargin
+                Layout.preferredHeight: VPNTheme.theme.navBarTopMargin
 
                 function handleClick() {
                     VPNAppPermissions.flip(appID)
@@ -89,7 +94,7 @@ ColumnLayout {
                     Layout.maximumWidth: VPNTheme.theme.windowMargin * 2
                     Layout.alignment: Qt.AlignVCenter
                     color: VPNTheme.theme.transparent
-                    radius: 4
+                    radius: VPNTheme.theme.cornerRadius
 
                     Image {
                         sourceSize.width: VPNTheme.theme.windowMargin * 2
@@ -124,41 +129,25 @@ ColumnLayout {
             }
         }
 
-        VPNButton {
-            text: ""
-            width: undefined
-            Layout.preferredWidth: buttonTextAndIcon.implicitWidth + VPNTheme.theme.windowMargin
-            Layout.alignment: Qt.AlignLeft
-            Layout.fillWidth: false;
-
+        VPNLinkButton {
+            objectName: "addApplication"
+            labelText: addApplication
+            textAlignment: Text.AlignLeft
+            fontSize: VPNTheme.theme.fontSize
+            fontName: VPNTheme.theme.fontInterSemiBoldFamily
             onClicked: VPNAppPermissions.openFilePicker()
-            colorScheme: VPNTheme.theme.iconButtonLightBackground
+
+            // Hack to horizontally align the "+" sign with the
+            // column of checkboxes
+            Layout.leftMargin: -1
+
             visible: Qt.platform.os === "windows"
-            contentItem: Text {
-                // for accessibility
-                text: addApplication
-                color: VPNTheme.theme.transparent
-            }
-
-            RowLayout {
-                id: buttonTextAndIcon
-                anchors.left: parent.left
-                anchors.leftMargin: 3
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: 4
-
+            iconComponent: Component {
                 VPNIcon {
                     source: "qrc:/nebula/resources/plus.svg"
-                    sourceSize.height: 14
-                    sourceSize.width: 14
-                    Layout.alignment: Qt.AlignVCenter
-                }
-                VPNBoldInterLabel {
-                    text: addApplication
-                    color: VPNTheme.theme.blue
-                    font.pixelSize: VPNTheme.theme.fontSize
-                    verticalAlignment: Qt.AlignVCenter
-                    Layout.alignment: Qt.AlignVCenter
+                    sourceSize.height: VPNTheme.theme.iconSmallSize
+                    sourceSize.width: VPNTheme.theme.iconSmallSize
+                    anchors.verticalCenter: parent.verticalCenter
                 }
             }
         }
