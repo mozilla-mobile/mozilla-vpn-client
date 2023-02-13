@@ -5,6 +5,7 @@
 #include "notificationhandler.h"
 
 #include "appconstants.h"
+#include "controller.h"
 #include "externalophandler.h"
 #include "i18nstrings.h"
 #include "leakdetector.h"

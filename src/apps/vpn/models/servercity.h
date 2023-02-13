@@ -42,7 +42,7 @@ class ServerCity final : public QObject {
 
   [[nodiscard]] bool fromJson(const QJsonObject& obj, const QString& country);
 
-  const bool initialized() const { return !m_name.isEmpty(); }
+  bool initialized() const { return !m_name.isEmpty(); }
 
   const QString& name() const { return m_name; }
 

@@ -11,6 +11,7 @@
 #include "leakdetector.h"
 #include "localizer.h"
 #include "models/device.h"
+#include "models/devicemodel.h"
 #include "mozillavpn.h"
 #include "tasks/removedevice/taskremovedevice.h"
 

@@ -48,6 +48,8 @@ MZGlean::~MZGlean() { MZ_COUNT_DTOR(MZGlean); }
 void MZGlean::registerLogHandler(void (*messageHandler)(int32_t, char*)) {
 #if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
   glean_register_log_handler(messageHandler);
+#else
+  Q_UNUSED(messageHandler);
 #endif
 }
 

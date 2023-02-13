@@ -93,6 +93,7 @@ int32_t EventMetric::testGetNumRecordedErrors(ErrorType errorType) const {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
   return glean_event_test_get_num_recorded_errors(m_id, errorType);
 #else
+  Q_UNUSED(errorType);
   return 0;
 #endif
 }
@@ -111,6 +112,7 @@ QList<QJsonObject> EventMetric::testGetValue(const QString& pingName) const {
 
   return result;
 #else
+  Q_UNUSED(pingName);
   return QList<QJsonObject>();
 #endif
 }

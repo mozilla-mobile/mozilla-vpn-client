@@ -2,7 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "models/location.h"
+#include "models/servercountrymodel.h"
+#include "models/serverdata.h"
+#include "models/subscriptiondata.h"
 #include "mozillavpn.h"
+#include "serverlatency.h"
 
 // The singleton.
 static MozillaVPN* s_instance = nullptr;
@@ -23,15 +28,15 @@ MozillaVPN::MozillaVPN() {}
 
 MozillaVPN::~MozillaVPN() {}
 
-ConnectionHealth* MozillaVPN::connectionHealth() { return nullptr; }
+ConnectionHealth* MozillaVPN::connectionHealth() const { return nullptr; }
 
-Controller* MozillaVPN::controller() { return nullptr; }
+Controller* MozillaVPN::controller() const { return nullptr; }
 
-SubscriptionData* MozillaVPN::subscriptionData() {
+SubscriptionData* MozillaVPN::subscriptionData() const {
   return new SubscriptionData();
 }
 
-ServerCountryModel* MozillaVPN::serverCountryModel() {
+ServerCountryModel* MozillaVPN::serverCountryModel() const {
   return new ServerCountryModel();
 }
 
@@ -176,7 +181,7 @@ void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {}
 
 void MozillaVPN::registerUrlOpenerLabels() {}
 
-ServerData* MozillaVPN::serverData() {
+ServerData* MozillaVPN::serverData() const {
   static ServerData* data = new ServerData();
   return data;
 }

@@ -4,7 +4,11 @@
 
 #include "controller.h"
 #include "helper.h"
+#include "models/location.h"
+#include "models/servercountrymodel.h"
+#include "models/subscriptiondata.h"
 #include "mozillavpn.h"
+#include "serverlatency.h"
 
 // The singleton.
 static MozillaVPN* s_instance = nullptr;
@@ -34,16 +38,22 @@ MozillaVPN::UserState MozillaVPN::userState() const {
 bool MozillaVPN::stagingMode() const { return true; }
 bool MozillaVPN::debugMode() const { return true; }
 
-ConnectionHealth* MozillaVPN::connectionHealth() { return nullptr; }
+CaptivePortal* MozillaVPN::captivePortal() const { return nullptr; }
 
-Controller* MozillaVPN::controller() { return new Controller(); }
+ConnectionHealth* MozillaVPN::connectionHealth() const { return nullptr; }
 
-ServerData* MozillaVPN::serverData() {
+Controller* MozillaVPN::controller() const { return new Controller(); }
+
+DeviceModel* MozillaVPN::deviceModel() const { return nullptr; }
+
+Keys* MozillaVPN::keys() const { return nullptr; }
+
+ServerData* MozillaVPN::serverData() const {
   static ServerData* data = new ServerData();
   return data;
 }
 
-ServerCountryModel* MozillaVPN::serverCountryModel() {
+ServerCountryModel* MozillaVPN::serverCountryModel() const {
   return new ServerCountryModel();
 }
 
@@ -52,9 +62,11 @@ ServerLatency* MozillaVPN::serverLatency() const {
   return serverLatency;
 }
 
-SubscriptionData* MozillaVPN::subscriptionData() {
+SubscriptionData* MozillaVPN::subscriptionData() const {
   return new SubscriptionData();
 }
+
+User* MozillaVPN::user() const { return nullptr; }
 
 Location* MozillaVPN::location() const {
   static Location* location = new Location();

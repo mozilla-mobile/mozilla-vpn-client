@@ -4,6 +4,7 @@
 
 #include "macosmenubar.h"
 
+#include "controller.h"
 #include "externalophandler.h"
 #include "frontend/navigator.h"
 #include "i18nstrings.h"

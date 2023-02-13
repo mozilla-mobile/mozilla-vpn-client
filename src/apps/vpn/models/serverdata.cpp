@@ -12,6 +12,7 @@
 #include "mozillavpn.h"
 #include "servercountrymodel.h"
 #include "serveri18n.h"
+#include "serverlatency.h"
 #include "settingsholder.h"
 
 constexpr const char* EXIT_COUNTRY_CODE = "exit_country_code";
