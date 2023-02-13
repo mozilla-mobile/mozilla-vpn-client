@@ -158,8 +158,9 @@ module.exports = {
     const json = await this._writeCommand(
         `copy_to_clipboard ${encodeURIComponent(text)}`);
     assert(
-      !('type' in json) || (json.type === 'copy_to_clipboard' && !('error' in json)),
-      `Command failed: ${json.error}`);
+        !('type' in json) ||
+            (json.type === 'copy_to_clipboard' && !('error' in json)),
+        `Command failed: ${json.error}`);
   },
 
   async query(id) {
@@ -189,9 +190,9 @@ module.exports = {
     await this.clickOnQuery(id);
   },
 
-  async waitForQueryAndWriteInTextField(id, value){
-    await this.waitForQuery(id)
-    await this.setQueryProperty(id, 'text', value)
+  async waitForQueryAndWriteInTextField(id, value) {
+    await this.waitForQuery(id);
+    await this.setQueryProperty(id, 'text', value);
   },
 
   async clickOnNotification() {
@@ -577,6 +578,15 @@ module.exports = {
         `Command failed: ${json.error}`);
 
     await this.waitForCondition(() => _lastAddonLoadingCompleted);
+  },
+
+  async setVersionOverride(versionOverride) {
+    const json = await this._writeCommand(
+        `set_version_override ${encodeURIComponent(versionOverride)}`);
+    assert(
+        json.type === 'set_version_override' && !('error' in json),
+        `Command failed: ${json.error}`);
+    return json.value;
   },
 
   // Internal methods.
