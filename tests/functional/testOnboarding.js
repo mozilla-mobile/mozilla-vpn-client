@@ -14,7 +14,6 @@ describe('Onboarding', function() {
     await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON);
 
     await vpn.waitForQuery(queries.screenInitialize.SWIPE_VIEW.visible());
-    await vpn.waitForQuery(queries.screenInitialize.SWIPE_VIEW.visible());
     await vpn.waitForQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
     await vpn.waitForQuery(
       queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible());
