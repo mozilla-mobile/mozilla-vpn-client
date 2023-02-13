@@ -12,6 +12,7 @@ include_directories(${MZ_SOURCE_DIR}/shared/glean)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star/kremlin)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star/kremlin/minimal)
+include_directories(${CMAKE_SOURCE_DIR}/glean)
 
 qt_add_executable(qml_tests EXCLUDE_FROM_ALL)
 set_target_properties(qml_tests PROPERTIES FOLDER "Tests")
@@ -26,7 +27,7 @@ target_link_libraries(qml_tests PRIVATE
     Qt6::QuickTest
 )
 
-target_link_libraries(qml_tests PRIVATE glean vpnglean lottie nebula translations)
+target_link_libraries(qml_tests PRIVATE glean qtglean lottie nebula translations)
 
 target_compile_definitions(qml_tests PRIVATE QUICK_TEST_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
 target_compile_definitions(qml_tests PRIVATE UNIT_TEST)
@@ -40,8 +41,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.h
     ${MZ_SOURCE_DIR}/apps/vpn/externalophandler.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/externalophandler.h
-    ${MZ_SOURCE_DIR}/apps/vpn/glean/glean.h
-    ${MZ_SOURCE_DIR}/apps/vpn/glean/glean.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/featuremodel.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/featuremodel.h
@@ -70,6 +69,8 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.h
     ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.h
+    ${MZ_SOURCE_DIR}/apps/vpn/serverlatency.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/serverlatency.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/controlleraction/taskcontrolleraction.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/controlleraction/taskcontrolleraction.h
     ${MZ_SOURCE_DIR}/apps/vpn/update/updater.cpp
@@ -90,6 +91,8 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/filterproxymodel.h
     ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.cpp
     ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.h
+    ${MZ_SOURCE_DIR}/shared/glean/mzglean.h
+    ${MZ_SOURCE_DIR}/shared/glean/mzglean.cpp
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20Poly1305_32.c
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Curve25519_51.c

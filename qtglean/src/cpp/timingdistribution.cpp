@@ -5,7 +5,7 @@
 #include "glean/timingdistribution.h"
 
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
-#  include "vpnglean.h"
+#  include "qtglean.h"
 #endif
 
 #include <QJsonDocument>
@@ -26,12 +26,16 @@ int TimingDistributionMetric::start() const {
 void TimingDistributionMetric::stopAndAccumulate(int timerId) const {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
   glean_timing_distribution_stop_and_accumulate(m_id, timerId);
+#else
+  Q_UNUSED(timerId);
 #endif
 }
 
 void TimingDistributionMetric::cancel(int timerId) const {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
   glean_timing_distribution_cancel(m_id, timerId);
+#else
+  Q_UNUSED(timerId);
 #endif
 }
 
@@ -41,6 +45,7 @@ int32_t TimingDistributionMetric::testGetNumRecordedErrors(
   return glean_timing_distribution_test_get_num_recorded_errors(m_id,
                                                                 errorType);
 #else
+  Q_UNUSED(errorType);
   return 0;
 #endif
 }
@@ -64,6 +69,7 @@ DistributionData TimingDistributionMetric::testGetValue(
 
   return result;
 #else
+  Q_UNUSED(pingName);
   return DistributionData();
 #endif
 }

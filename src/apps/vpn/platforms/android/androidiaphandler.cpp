@@ -14,6 +14,7 @@
 #include "androidutils.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/user.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "tasks/purchase/taskpurchase.h"

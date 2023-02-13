@@ -455,7 +455,7 @@ Item {
             top: parent.top
             topMargin: VPNTheme.theme.windowMargin / 2
         }
-        accessibleName: box.connectionInfoScreenVisible ? connectionInfoCloseText : VPNl18n.ConnectionInfoOpenButton
+        accessibleName: box.connectionInfoScreenVisible ? connectionInfoCloseText : VPNI18n.ConnectionInfoOpenButton
         Accessible.ignored: !visible
         buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
         enabled: visible && !ipInfoPanel.isOpen
@@ -464,7 +464,7 @@ Item {
 
         onClicked: {
             if (!box.connectionInfoScreenVisible) {
-                VPNGleanDeprecated.recordGleanEvent("connectionInfoOpened");
+                MZGleanDeprecated.recordGleanEvent("connectionInfoOpened");
                 Glean.sample.connectionInfoOpened.record();
             } else if (VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateRunning) {
                 VPNGleanDeprecated.recordGleanEventWithExtraKeys("speedTestCompleted", { "speed": "Cancelled" });
@@ -645,7 +645,7 @@ Item {
         }
         accessibleName: ipInfoPanel.isOpen
             ? connectionInfoCloseText
-            : VPNl18n.ConnectionInfoIpInfoButtonLabel
+            : VPNI18n.ConnectionInfoIpInfoButtonLabel
         buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
         enabled: visible && VPNConnectionHealth.stability !== VPNConnectionHealth.NoSignal
         opacity: visible ? 1 : 0

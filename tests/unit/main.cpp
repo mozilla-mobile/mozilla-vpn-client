@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "appconstants.h"
-#include "glean/glean.h"
+#include "glean/mzglean.h"
 #include "helper.h"
-#include "l18nstrings.h"
+#include "i18nstrings.h"
 #include "leakdetector.h"
 #include "loghandler.h"
 #include "networkrequest.h"
@@ -74,9 +74,9 @@ int main(int argc, char* argv[]) {
       TestHelper::networkRequestDelete, TestHelper::networkRequestGet,
       TestHelper::networkRequestPost, TestHelper::networkRequestPostIODevice);
 
-  L18nStrings::initialize();
+  I18nStrings::initialize();
   LogHandler::enableStderr();
-  VPNGlean::registerLogHandler(LogHandler::rustMessageHandler);
+  MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
 
   // If arguments were passed, then run a subset of tests.
   QStringList args = app.arguments();

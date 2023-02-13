@@ -176,7 +176,7 @@ Item {
                 Keys.onTabPressed: pushFocusToTargetElement()
                 Keys.onBacktabPressed: pushFocusToTargetElement()
 
-                accessibleName: VPNl18n.TutorialPopupLeaveTutorialButton
+                accessibleName: VPNI18n.TutorialPopupLeaveTutorialButton
                 Layout.preferredWidth: VPNTheme.theme.rowHeight
                 Layout.preferredHeight: VPNTheme.theme.rowHeight
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -246,7 +246,7 @@ Item {
         }
 
         tutorialPopup.secondaryButtonOnClicked = () => {
-            VPNGleanDeprecated.recordGleanEventWithExtraKeys("tutorialAborted", {"id": VPNTutorial.currentTutorial.id});
+            MZGleanDeprecated.recordGleanEventWithExtraKeys("tutorialAborted", {"id": VPNTutorial.currentTutorial.id});
             Glean.sample.tutorialAborted.record({ id: VPNTutorial.currentTutorial.id });
             tutorialPopup._onClosed = () => {
                 if (op !== null) VPNTutorial.interruptAccepted(op);
@@ -255,10 +255,10 @@ Item {
             tutorialPopup.close();
         }
 
-        tutorialPopup.primaryButtonText = VPNl18n.TutorialPopupTutorialLeavePrimaryButtonLabel;
-        tutorialPopup.secondaryButtonText = VPNl18n.TutorialPopupTutorialFinishedSecondaryButtonLabel;
-        tutorialPopup.title = VPNl18n.TutorialPopupTutorialLeaveHeadline;
-        tutorialPopup.description = VPNl18n.TutorialPopupTutorialLeaveSubtitle;
+        tutorialPopup.primaryButtonText = VPNI18n.TutorialPopupTutorialLeavePrimaryButtonLabel;
+        tutorialPopup.secondaryButtonText = VPNI18n.TutorialPopupTutorialFinishedSecondaryButtonLabel;
+        tutorialPopup.title = VPNI18n.TutorialPopupTutorialLeaveHeadline;
+        tutorialPopup.description = VPNI18n.TutorialPopupTutorialLeaveSubtitle;
         tutorialPopup.open();
     }
 
@@ -301,10 +301,10 @@ Item {
         function onTutorialCompleted(tutorial) {
             tutorialPopup.imageSrc = "qrc:/ui/resources/logo-success.svg";
             tutorialPopup.primaryButtonOnClicked = () => openTipsAndTricks();
-            tutorialPopup.primaryButtonText = VPNl18n.TutorialPopupTutorialCompletePrimaryButtonLabel;
+            tutorialPopup.primaryButtonText = VPNI18n.TutorialPopupTutorialCompletePrimaryButtonLabel;
             tutorialPopup.secondaryButtonOnClicked = () => tutorialPopup.close();
-            tutorialPopup.secondaryButtonText = VPNl18n.TutorialPopupTutorialFinishedSecondaryButtonLabel
-            tutorialPopup.title =  VPNl18n.TutorialPopupTutorialCompleteHeadline;
+            tutorialPopup.secondaryButtonText = VPNI18n.TutorialPopupTutorialFinishedSecondaryButtonLabel
+            tutorialPopup.title =  VPNI18n.TutorialPopupTutorialCompleteHeadline;
             tutorialPopup.description = tutorial.completionMessage;
             tutorialPopup._onClosed = () => {};
             tutorialPopup.dismissOnStop = false;
@@ -318,11 +318,11 @@ Item {
                 shouldPlayTutorial = true
                 tutorialPopup.close()
             }
-            tutorialPopup.primaryButtonText = VPNl18n.GlobalContinue
+            tutorialPopup.primaryButtonText = VPNI18n.GlobalContinue
             tutorialPopup.secondaryButtonOnClicked = () => tutorialPopup.close();
-            tutorialPopup.secondaryButtonText = VPNl18n.GlobalNoThanks
-            tutorialPopup.title = VPNl18n.TutorialPopupTutorialWarningTitle;
-            tutorialPopup.description = VPNl18n.TutorialPopupTutorialWarningDescription
+            tutorialPopup.secondaryButtonText = VPNI18n.GlobalNoThanks
+            tutorialPopup.title = VPNI18n.TutorialPopupTutorialWarningTitle;
+            tutorialPopup.description = VPNI18n.TutorialPopupTutorialWarningDescription
             tutorialPopup._onClosed = () => {
                 VPNTutorial.stop()
                 if(shouldPlayTutorial) {

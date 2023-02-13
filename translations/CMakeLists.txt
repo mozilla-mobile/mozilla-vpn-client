@@ -17,17 +17,17 @@ file(MAKE_DIRECTORY ${GENERATED_DIR})
 target_include_directories(translations PUBLIC ${GENERATED_DIR})
 
 target_sources(translations PRIVATE
-    ${GENERATED_DIR}/l18nstrings_p.cpp
-    ${GENERATED_DIR}/l18nstrings.h
+    ${GENERATED_DIR}/i18nstrings_p.cpp
+    ${GENERATED_DIR}/i18nstrings.h
     ${GENERATED_DIR}/translations.qrc
     languages.qrc
-    l18nstrings.cpp
+    i18nstrings.cpp
     servers.qrc
 )
 
 ## Generate the string database (language agnostic)
 add_custom_command(
-    OUTPUT ${GENERATED_DIR}/l18nstrings_p.cpp ${GENERATED_DIR}/l18nstrings.h
+    OUTPUT ${GENERATED_DIR}/i18nstrings_p.cpp ${GENERATED_DIR}/i18nstrings.h
     MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/strings.yaml
     COMMAND ${PYTHON_EXECUTABLE} ${MVPN_SCRIPT_DIR}/utils/generate_strings.py -o ${GENERATED_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/strings.yaml
 )
@@ -64,8 +64,8 @@ foreach(LOCALE ${I18N_LOCALES})
     add_custom_command(
         OUTPUT ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
         MAIN_DEPENDENCY ${I18N_DIR}/${LOCALE}/mozillavpn.xliff
-        DEPENDS ${GENERATED_DIR}/l18nstrings_p.cpp
-        COMMAND ${QT_LUPDATE_EXECUTABLE} -target-language ${LOCALE} ${GENERATED_DIR}/l18nstrings_p.cpp -ts ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
+        DEPENDS ${GENERATED_DIR}/i18nstrings_p.cpp
+        COMMAND ${QT_LUPDATE_EXECUTABLE} -target-language ${LOCALE} ${GENERATED_DIR}/i18nstrings_p.cpp -ts ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
         COMMAND ${QT_LCONVERT_EXECUTABLE} -verbose -o ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
                       -if ts -i ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
                       -if xlf -i ${I18N_DIR}/${LOCALE}/mozillavpn.xliff

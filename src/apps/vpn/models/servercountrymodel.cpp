@@ -19,6 +19,7 @@
 #include "servercountry.h"
 #include "serverdata.h"
 #include "serveri18n.h"
+#include "serverlatency.h"
 #include "settingsholder.h"
 
 namespace {
@@ -68,8 +69,6 @@ bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
   m_countries.clear();
   m_cities.clear();
   m_servers.clear();
-  m_sumLatencyMsec = 0;
-  m_numLatencySamples = 0;
 
   QJsonDocument doc = QJsonDocument::fromJson(s);
   if (!doc.isObject()) {
@@ -245,65 +244,6 @@ void ServerCountryModel::retranslate() {
   endResetModel();
 }
 
-unsigned int ServerCountryModel::avgLatency() const {
-  if (m_numLatencySamples == 0) {
-    return 0;
-  }
-  return (m_sumLatencyMsec + m_numLatencySamples - 1) / m_numLatencySamples;
-}
-
-void ServerCountryModel::setServerLatency(const QString& publicKey,
-                                          unsigned int msec) {
-  if (!m_servers.contains(publicKey)) {
-    return;
-  }
-
-  Server& server = m_servers[publicKey];
-  if (server.latency() != 0) {
-    m_sumLatencyMsec -= server.latency();
-  } else {
-    m_numLatencySamples++;
-  }
-  m_sumLatencyMsec += msec;
-  server.setLatency(msec);
-
-  auto iter = m_cities.find(
-      ServerCity::hashKey(server.countryCode(), server.cityName()));
-  if (iter != m_cities.end()) {
-    emit iter->scoreChanged();
-  }
-}
-
-void ServerCountryModel::clearServerLatency() {
-  // Invalidate the latency data.
-  m_sumLatencyMsec = 0;
-  m_numLatencySamples = 0;
-  for (Server& server : m_servers) {
-    server.setLatency(0);
-  }
-
-  // Emit changed signals for the connection scores.
-  for (const ServerCity& city : m_cities) {
-    emit city.scoreChanged();
-  }
-}
-
-void ServerCountryModel::setServerCooldown(const QString& publicKey) {
-  auto serverIterator = m_servers.find(publicKey);
-  if (serverIterator == m_servers.end()) {
-    return;
-  }
-
-  serverIterator->setCooldownTimeout(
-      AppConstants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
-
-  auto cityIterator = m_cities.find(ServerCity::hashKey(
-      serverIterator->countryCode(), serverIterator->cityName()));
-  if (cityIterator != m_cities.end()) {
-    emit cityIterator->scoreChanged();
-  }
-}
-
 void ServerCountryModel::setCooldownForAllServersInACity(
     const QString& countryCode, const QString& cityCode) {
   logger.debug() << "Set cooldown for all servers for: "
@@ -314,18 +254,15 @@ void ServerCountryModel::setCooldownForAllServersInACity(
       continue;
     }
     for (const QString& pubkey : city.servers()) {
-      if (m_servers.contains(pubkey)) {
-        m_servers[pubkey].setCooldownTimeout(
-            AppConstants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
-      }
+      MozillaVPN::instance()->serverLatency()->setCooldown(
+          pubkey, AppConstants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
     }
-    emit city.scoreChanged();
   }
 }
 
 QList<QVariant> ServerCountryModel::recommendedLocations(
     unsigned int maxResults) const {
-  double latencyScale = avgLatency();
+  double latencyScale = MozillaVPN::instance()->serverLatency()->avgLatency();
   if (latencyScale < 100.0) {
     latencyScale = 100.0;
   }

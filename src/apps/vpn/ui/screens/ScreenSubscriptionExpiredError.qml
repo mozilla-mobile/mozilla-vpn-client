@@ -16,14 +16,14 @@ VPNStackView {
 
        stackView.push("qrc:/ui/sharedViews/ViewErrorFullScreen.qml", {
            // Problem confirming subscription...
-           headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
+           headlineText: VPNI18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
            // Sorry we are unable to connect your Firefox Account to a current subscription.
            // Please try again or contact our support team for further assistance.
-           errorMessage: VPNl18n.RestorePurchaseExpiredErrorRestorePurchaseExpiredErrorText,
+           errorMessage: VPNI18n.RestorePurchaseExpiredErrorRestorePurchaseExpiredErrorText,
 
            // Try again (Error SubscriptionExpiredError only happens on iOS, so ok to point to ScreenSubscriptionNeededIAP)
-           primaryButtonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
+           primaryButtonText: VPNI18n.GenericPurchaseErrorGenericPurchaseErrorButton,
            primaryButtonObjectName: "errorTryAgainButton",
            primaryButtonOnClick: () => { VPNNavigator.requestScreen(VPNNavigator.ScreenSubscriptionNeededIAP) },
            secondaryButtonIsSignOff: false,

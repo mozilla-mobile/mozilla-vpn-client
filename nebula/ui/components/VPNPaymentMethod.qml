@@ -40,52 +40,52 @@ RowLayout {
             case "amex":
                 return {
                     icon: "qrc:/ui/resources/payment/amex.svg",
-                    name: VPNl18n.PaymentMethodsAmex
+                    name: VPNI18n.PaymentMethodsAmex
                 };
             case "diners":
                 return {
                     icon: "qrc:/ui/resources/payment/diners.svg",
-                    name: VPNl18n.PaymentMethodsDiners
+                    name: VPNI18n.PaymentMethodsDiners
                 };
             case "discover":
                 return {
                     icon: "qrc:/ui/resources/payment/discover.svg",
-                    name: VPNl18n.PaymentMethodsDiscover
+                    name: VPNI18n.PaymentMethodsDiscover
                 };
             case "jcb":
                 return {
                     icon: "qrc:/ui/resources/payment/jcb.svg",
-                    name: VPNl18n.PaymentMethodsJcb
+                    name: VPNI18n.PaymentMethodsJcb
                 };
             case "iap_apple":
                 return {
                     icon: "qrc:/ui/resources/payment/apple.svg",
-                    name: VPNl18n.PaymentMethodsIapApple
+                    name: VPNI18n.PaymentMethodsIapApple
                 };
             case "iap_google":
                 return {
                     icon: "qrc:/ui/resources/payment/android.svg",
-                    name: VPNl18n.PaymentMethodsIapGoogle
+                    name: VPNI18n.PaymentMethodsIapGoogle
                 };
             case "mastercard":
                 return {
                     icon: "qrc:/ui/resources/payment/mastercard.svg",
-                    name: VPNl18n.PaymentMethodsMastercard
+                    name: VPNI18n.PaymentMethodsMastercard
                 };
             case "paypal":
                 return {
                     icon: "qrc:/ui/resources/payment/paypal.svg",
-                    name: VPNl18n.PaymentMethodsPaypal
+                    name: VPNI18n.PaymentMethodsPaypal
                 };
             case "unionpay":
                 return {
                     icon: "qrc:/ui/resources/payment/unionpay.svg",
-                    name: VPNl18n.PaymentMethodsUnionpay
+                    name: VPNI18n.PaymentMethodsUnionpay
                 };
             case "visa":
                 return {
                     icon: "qrc:/ui/resources/payment/visa.svg",
-                    name: VPNl18n.PaymentMethodsVisa
+                    name: VPNI18n.PaymentMethodsVisa
                 };
             default:
                 return {

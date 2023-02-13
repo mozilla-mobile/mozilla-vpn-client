@@ -67,7 +67,6 @@ SOURCES += \
         apps/vpn/externalophandler.cpp \
         apps/vpn/frontend/navigator.cpp \
         apps/vpn/frontend/navigatorreloader.cpp \
-        apps/vpn/glean/glean.cpp \
         apps/vpn/keyregenerator.cpp \
         apps/vpn/imageproviderfactory.cpp \
         apps/vpn/inspector/inspectorhandler.cpp \
@@ -94,6 +93,7 @@ SOURCES += \
         apps/vpn/models/supportcategorymodel.cpp \
         apps/vpn/models/user.cpp \
         apps/vpn/mozillavpn.cpp \
+        apps/vpn/mozillavpn_p.cpp \
         apps/vpn/networkwatcher.cpp \
         apps/vpn/notificationhandler.cpp \
         apps/vpn/pinghelper.cpp \
@@ -124,8 +124,6 @@ SOURCES += \
         apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp \
         apps/vpn/tasks/controlleraction/taskcontrolleraction.cpp \
         apps/vpn/tasks/createsupportticket/taskcreatesupportticket.cpp \
-        apps/vpn/tasks/function/taskfunction.cpp \
-        apps/vpn/tasks/group/taskgroup.cpp \
         apps/vpn/tasks/heartbeat/taskheartbeat.cpp \
         apps/vpn/tasks/ipfinder/taskipfinder.cpp \
         apps/vpn/tasks/products/taskproducts.cpp \
@@ -216,7 +214,6 @@ HEADERS += \
         apps/vpn/externalophandler.h \
         apps/vpn/frontend/navigator.h \
         apps/vpn/frontend/navigatorreloader.h \
-        apps/vpn/glean/glean.h \
         apps/vpn/keyregenerator.h \
         apps/vpn/imageproviderfactory.h \
         apps/vpn/inspector/inspectorhandler.h \
@@ -243,6 +240,7 @@ HEADERS += \
         apps/vpn/models/supportcategorymodel.h \
         apps/vpn/models/user.h \
         apps/vpn/mozillavpn.h \
+        apps/vpn/mozillavpn_p.h \
         apps/vpn/networkwatcher.h \
         apps/vpn/networkwatcherimpl.h \
         apps/vpn/notificationhandler.h \
@@ -274,8 +272,6 @@ HEADERS += \
         apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h \
         apps/vpn/tasks/controlleraction/taskcontrolleraction.h \
         apps/vpn/tasks/createsupportticket/taskcreatesupportticket.h \
-        apps/vpn/tasks/function/taskfunction.h \
-        apps/vpn/tasks/group/taskgroup.h \
         apps/vpn/tasks/heartbeat/taskheartbeat.h \
         apps/vpn/tasks/ipfinder/taskipfinder.h \
         apps/vpn/tasks/products/taskproducts.h \

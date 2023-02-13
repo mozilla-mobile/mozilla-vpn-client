@@ -13,6 +13,7 @@
 #include "macosutils.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
+#include "statusicon.h"
 
 namespace {
 Logger logger("MacosSystemTrayNotificationHandler");

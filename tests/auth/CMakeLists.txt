@@ -29,7 +29,7 @@ target_link_libraries(auth_tests PRIVATE
     Qt6::Quick
 )
 
-target_link_libraries(auth_tests PRIVATE glean vpnglean translations)
+target_link_libraries(auth_tests PRIVATE glean qtglean translations)
 
 target_compile_definitions(auth_tests PRIVATE UNIT_TEST)
 target_compile_definitions(auth_tests PRIVATE MZ_DEBUG)
@@ -54,8 +54,6 @@ target_sources(auth_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.h
     ${MZ_SOURCE_DIR}/apps/vpn/errorhandler.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/errorhandler.h
-    ${MZ_SOURCE_DIR}/apps/vpn/glean/glean.h
-    ${MZ_SOURCE_DIR}/apps/vpn/glean/glean.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/featuremodel.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/featuremodel.h
@@ -84,6 +82,8 @@ target_sources(auth_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.h
     ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.h
+    ${MZ_SOURCE_DIR}/apps/vpn/serverlatency.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/serverlatency.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/authenticate/desktopauthenticationlistener.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/authenticate/desktopauthenticationlistener.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/authenticate/taskauthenticate.cpp
@@ -92,8 +92,6 @@ target_sources(auth_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/controlleraction/taskcontrolleraction.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/deleteaccount/taskdeleteaccount.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/deleteaccount/taskdeleteaccount.h
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/function/taskfunction.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/function/taskfunction.h
     ${MZ_SOURCE_DIR}/apps/vpn/update/updater.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/update/updater.h
     ${MZ_SOURCE_DIR}/apps/vpn/update/versionapi.cpp
@@ -111,6 +109,8 @@ target_sources(auth_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/feature.h
     ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.cpp
     ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.h
+    ${MZ_SOURCE_DIR}/shared/glean/mzglean.h
+    ${MZ_SOURCE_DIR}/shared/glean/mzglean.cpp
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20Poly1305_32.c
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Curve25519_51.c
@@ -151,6 +151,8 @@ target_sources(auth_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/task.h
     ${MZ_SOURCE_DIR}/shared/taskscheduler.cpp
     ${MZ_SOURCE_DIR}/shared/taskscheduler.h
+    ${MZ_SOURCE_DIR}/shared/tasks/function/taskfunction.cpp
+    ${MZ_SOURCE_DIR}/shared/tasks/function/taskfunction.h
     ${MZ_SOURCE_DIR}/shared/urlopener.cpp
     ${MZ_SOURCE_DIR}/shared/urlopener.h
     ${MZ_SOURCE_DIR}/shared/versionutils.cpp

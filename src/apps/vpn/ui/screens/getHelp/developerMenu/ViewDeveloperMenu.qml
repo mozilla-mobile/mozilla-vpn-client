@@ -11,7 +11,7 @@ import components 0.1
 import components.forms 0.1
 
 VPNViewBase {
-    _menuTitle: VPNl18n.SettingsDevTitle
+    _menuTitle: VPNI18n.SettingsDevTitle
     _viewContentData: ColumnLayout {
         id: root
         Layout.fillWidth: true
@@ -23,8 +23,8 @@ VPNViewBase {
 
             Layout.fillWidth: true
             Layout.rightMargin: VPNTheme.theme.windowMargin
-            labelText:  VPNl18n.SettingsDevShowOptionTitle
-            subLabelText: VPNl18n.SettingsDevShowOptionSubtitle
+            labelText:  VPNI18n.SettingsDevShowOptionTitle
+            subLabelText: VPNI18n.SettingsDevShowOptionSubtitle
             isChecked: VPNSettings.developerUnlock
             onClicked: VPNSettings.developerUnlock = !VPNSettings.developerUnlock
         }
@@ -34,8 +34,8 @@ VPNViewBase {
 
             Layout.fillWidth: true
             Layout.rightMargin: VPNTheme.theme.windowMargin
-            labelText: VPNl18n.SettingsDevUseStagingTitle
-            subLabelText: VPNl18n.SettingsDevUseStagingSubtitle
+            labelText: VPNI18n.SettingsDevUseStagingTitle
+            subLabelText: VPNI18n.SettingsDevUseStagingSubtitle
             isChecked: VPNSettings.stagingServer
             showDivider: false
             onClicked: {
@@ -203,7 +203,7 @@ VPNViewBase {
             messages: [
                 {
                     type: "warning",
-                    message: VPNl18n.SettingsDevRestartRequired,
+                    message: VPNI18n.SettingsDevRestartRequired,
                     visible: isVisible
                 }
             ]

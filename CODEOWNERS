@@ -74,6 +74,6 @@ src/apps/vpn/tasks/ @bakulf @birdsarah
 /translations/strings.yaml @flodolo
 /translations/servers.json @flodolo
 
-/vpnglean/ @brizental
+/qtglean/ @brizental
 /wasm/ @bakulf @strseb
 /windows/ @bakulf @oskirby

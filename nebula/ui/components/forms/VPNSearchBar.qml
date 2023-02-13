@@ -64,7 +64,7 @@ ColumnLayout {
         messages: [
             {
                 type: "error",
-                message: VPNl18n.ServersViewSearchNoResultsLabel,
+                message: VPNI18n.ServersViewSearchNoResultsLabel,
                 visible: searchBar.hasError
             }
         ]

@@ -12,6 +12,7 @@
 #include "mozillavpn.h"
 #include "servercountrymodel.h"
 #include "serveri18n.h"
+#include "serverlatency.h"
 #include "settingsholder.h"
 
 constexpr const char* EXIT_COUNTRY_CODE = "exit_country_code";
@@ -225,13 +226,14 @@ void ServerData::forget() {
 QList<Server> ServerData::getServerList(const QString& countryCode,
                                         const QString& cityName) {
   ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
+  ServerLatency* serverLatency = MozillaVPN::instance()->serverLatency();
   const ServerCity& city = scm->findCity(countryCode, cityName);
   QList<Server> results;
   qint64 now = QDateTime::currentSecsSinceEpoch();
 
   for (const QString& pubkey : city.servers()) {
     const Server& server = scm->server(pubkey);
-    if (server.initialized() && server.cooldownTimeout() <= now) {
+    if (server.initialized() && (serverLatency->getCooldown(pubkey) <= now)) {
       results.append(server);
     }
   }

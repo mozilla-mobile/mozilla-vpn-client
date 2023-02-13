@@ -15,26 +15,26 @@ Row {
     function computeRange() {
         if (markerDataBits < 1000) {
             // bit/s
-            return VPNl18n.ConnectionInfoLabelBitps;
+            return VPNI18n.ConnectionInfoLabelBitps;
         }
 
         if (markerDataBits < Math.pow(1000, 2)) {
             // kbit/s
-            return VPNl18n.ConnectionInfoLabelKbitps;
+            return VPNI18n.ConnectionInfoLabelKbitps;
         }
 
         if (markerDataBits < Math.pow(1000, 3)) {
             // Mbit/s
-            return VPNl18n.ConnectionInfoLabelMbitps;
+            return VPNI18n.ConnectionInfoLabelMbitps;
         }
 
         if (markerDataBits < Math.pow(1000, 4)) {
             // Gbit/s
-            return VPNl18n.ConnectionInfoLabelGbitps;
+            return VPNI18n.ConnectionInfoLabelGbitps;
         }
 
         // Tbit/s
-        return VPNl18n.ConnectionInfoLabelTbitps;
+        return VPNI18n.ConnectionInfoLabelTbitps;
     }
 
     function roundValue(value) {

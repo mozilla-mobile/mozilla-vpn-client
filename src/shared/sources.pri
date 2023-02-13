@@ -11,6 +11,7 @@ SOURCES += \
         $$PWD/filterproxymodel.cpp \
         $$PWD/fontloader.cpp \
         $$PWD/glean/gleandeprecated.cpp \
+        $$PWD/glean/mzglean.cpp \
         $$PWD/hacl-star/Hacl_Chacha20.c \
         $$PWD/hacl-star/Hacl_Chacha20Poly1305_32.c \
         $$PWD/hacl-star/Hacl_Curve25519_51.c \
@@ -38,6 +39,8 @@ SOURCES += \
         $$PWD/signature.cpp \
         $$PWD/simplenetworkmanager.cpp \
         $$PWD/taskscheduler.cpp \
+        $$PWD/tasks/function/taskfunction.cpp \
+        $$PWD/tasks/group/taskgroup.cpp \
         $$PWD/temporarydir.cpp \
         $$PWD/theme.cpp \
         $$PWD/urlopener.cpp \
@@ -53,6 +56,7 @@ HEADERS += \
         $$PWD/filterproxymodel.h \
         $$PWD/fontloader.h \
         $$PWD/glean/gleandeprecated.h \
+        $$PWD/glean/mzglean.h \
         $$PWD/hawkauth.h \
         $$PWD/hkdf.h \
         $$PWD/ipaddress.h \
@@ -77,6 +81,8 @@ HEADERS += \
         $$PWD/simplenetworkmanager.h \
         $$PWD/task.h \
         $$PWD/taskscheduler.h \
+        $$PWD/tasks/function/taskfunction.h \
+        $$PWD/tasks/group/taskgroup.h \
         $$PWD/temporarydir.h \
         $$PWD/theme.h \
         $$PWD/urlopener.h \

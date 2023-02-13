@@ -16,9 +16,9 @@ VPNInAppAuthenticationBase {
     _menuButtonImageMirror: VPNLocalizer.isRightToLeft
     _menuButtonAccessibleName:  qsTrId("vpn.main.back")
     _headlineText: "Mozilla VPN"
-    _subtitleText: VPNl18n.InAppAuthEnterEmailAddressDescription
+    _subtitleText: VPNI18n.InAppAuthEnterEmailAddressDescription
     _imgSource: "qrc:/ui/resources/logo.svg"
-    _inputLabel: VPNl18n.InAppAuthEmailInputPlaceholder
+    _inputLabel: VPNI18n.InAppAuthEmailInputPlaceholder
 
     _inputs: VPNInAppAuthenticationInputs {
         objectName: "authStart"
@@ -26,7 +26,7 @@ VPNInAppAuthenticationBase {
         _buttonOnClicked: (inputText) => { VPNAuthInApp.checkAccount(inputText); }
         _buttonText: qsTrId("vpn.postAuthentication.continue")
         _inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhEmailCharactersOnly | Qt.ImhNoAutoUppercase | Qt.ImhSensitiveData
-        _inputPlaceholderText: VPNl18n.InAppSupportWorkflowSupportEmailFieldPlaceholder
+        _inputPlaceholderText: VPNI18n.InAppSupportWorkflowSupportEmailFieldPlaceholder
     }
 
     _disclaimers: RowLayout {
@@ -38,7 +38,7 @@ VPNInAppAuthenticationBase {
 
         VPNTextBlock {
             id: txt
-            text: VPNl18n.InAppAuthInformationUsageDisclaimer
+            text: VPNI18n.InAppAuthInformationUsageDisclaimer
             Layout.fillWidth: true
         }
     }

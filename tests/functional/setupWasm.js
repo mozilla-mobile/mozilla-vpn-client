@@ -11,7 +11,7 @@ beforeEach applies to running before every test.
 
 */
 
-const {URL} = require('node:url');
+const { URL } = require('node:url');
 
 const vpn = require('./helper.js');
 const vpnWasm = require('./helperWasm.js');
@@ -23,13 +23,20 @@ const networkBenchmark = require('./servers/networkBenchmark.js');
 const captivePortalServer = require('./servers/captivePortalServer.js');
 const wasm = require('./wasm.js');
 
-const {Builder, By, Key, until} = require('selenium-webdriver');
+const { Builder, logging } = require('selenium-webdriver');
+const firefox = require('selenium-webdriver/firefox');
+
+const { tmpdir } = require('os');
+const path = require('path');
+const fs = require("fs")
+
+const stdout = path.join(tmpdir(), "stdout.txt")
 
 let driver;
 
 async function startAndConnect() {
   await driver.get(process.env['MZ_WASM_URL']);
-  await vpn.connect(vpnWasm, {url: process.env['MZ_WASM_URL'], driver});
+  await vpn.connect(vpnWasm, { url: process.env['MZ_WASM_URL'], driver });
 }
 
 exports.mochaHooks = {
@@ -47,12 +54,30 @@ exports.mochaHooks = {
     u.searchParams.set('addon', `${addonServer.url}/01_empty_manifest/`);
     u.searchParams.set('benchmark', networkBenchmark.url);
     u.searchParams.set(
-        'captivePortal', `http://%1:${captivePortalServer.port}/success.txt`);
+      'captivePortal', `http://%1:${captivePortalServer.port}/success.txt`);
 
     process.env['MZ_WASM_URL'] = u.toString();
     process.env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';
 
-    driver = await new Builder().forBrowser('firefox').build();
+    const prefs = new logging.Preferences()
+    prefs.setLevel(logging.Type.BROWSER, logging.Level.ALL);
+    driver = await new Builder()
+      .forBrowser('firefox')
+      .setLoggingPrefs(prefs)
+      .setFirefoxOptions(
+        new firefox.Options()
+          // provide access to console logs in Firefox
+          .setPreference('devtools.console.stdout.content', true)
+      )
+      .setFirefoxService(
+        new firefox.ServiceBuilder()
+          .setStdio([
+            'ignore',
+            fs.openSync(stdout, 'w'),
+            'ignore',
+          ])
+      )
+      .build();
   },
 
   async afterAll() {
@@ -76,11 +101,11 @@ exports.mochaHooks = {
     this.currentTest.ctx.wasm = true;
 
     guardian.overrideEndpoints =
-        this.currentTest.ctx.guardianOverrideEndpoints || null;
+      this.currentTest.ctx.guardianOverrideEndpoints || null;
     fxaServer.overrideEndpoints =
-        this.currentTest.ctx.fxaOverrideEndpoints || null;
+      this.currentTest.ctx.fxaOverrideEndpoints || null;
     networkBenchmark.overrideEndpoints =
-        this.currentTest.ctx.networkBenchmarkOverrideEndpoints || null;
+      this.currentTest.ctx.networkBenchmarkOverrideEndpoints || null;
 
     await startAndConnect();
     await vpn.setGleanAutomationHeader();
@@ -94,6 +119,16 @@ exports.mochaHooks = {
   },
 
   async afterEach() {
+    if (this.currentTest.state === 'failed') {
+      // Print error logs
+      console.log('::group::Error Logs');
+      console.log(fs.readFileSync(stdout).toString());
+      console.log('::endgroup');
+    }
+
+    // Clear our logs from file.
+    fs.writeFileSync(stdout, "");
+
     // Close VPN app
     // If something's gone really wrong with the test,
     // then this can fail and cause the tests to hang.

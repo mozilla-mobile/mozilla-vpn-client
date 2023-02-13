@@ -95,7 +95,7 @@ ColumnLayout {
         }
 
         GiveFeedbackRadioDelegate {
-            Accessible.name: VPNl18n.FeedbackFormExcellentLabel
+            Accessible.name: VPNI18n.FeedbackFormExcellentLabel
             iconSource: "qrc:/ui/resources/faces/veryGood.svg"
             value: 5
         }
@@ -119,7 +119,7 @@ ColumnLayout {
 
         VPNInterLabel {
             horizontalAlignment: Qt.AlignRight
-            text: VPNl18n.FeedbackFormExcellentLabel
+            text: VPNI18n.FeedbackFormExcellentLabel
             Layout.fillWidth: true
             color: VPNTheme.theme.fontColor
         }

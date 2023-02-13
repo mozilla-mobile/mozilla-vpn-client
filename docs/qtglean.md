@@ -57,14 +57,14 @@ Glean Rust core library -- read more on this on the "Adding Glean to mobile buil
 
 ## Architecture
 
-The Glean integration code on the Mozilla VPN codebase can be found mostly under the `/vpnglean`
+The Glean integration code on the Mozilla VPN codebase can be found mostly under the `/qtglean`
 folder plus a small extension on the `src/apps/vpn/glean` folder.
 
 ```
 ├── src                      Bulk of the MozillaVPN source code
-    └── glean                Calls on the FFI APIs exposed by vpnglean, initializes Glean for the correct platform
+    └── glean                Calls on the FFI APIs exposed by qtglean, initializes Glean for the correct platform
 
-├── vpnglean                 Bulk of the Mozilla VPN Glean integration code
+├── qtglean                 Bulk of the Mozilla VPN Glean integration code
 
     ├── glean_parser_ext     Extends glean_parser to generate metrics and ping files for the MozillaVPN
         └── templates        Jinja templates for C++ and Rust metrics and pings files
@@ -74,7 +74,7 @@ folder plus a small extension on the `src/apps/vpn/glean` folder.
         └── generated        Generated metrics and ping Rust files
 ```
 
-### `vpnglean/glean_parser_ext`
+### `qtglean/glean_parser_ext`
 
 > **Note**: This part of the code is _heavily_ copy pasted from mozilla-central
 > [`t/c/glean/build_scripts/glean_parser_ext`](t-c-glean-parser).
@@ -181,12 +181,12 @@ namespace example {
 The metric maps make it easy to generate C++ objects that have a reference to the Rust instances of the metric
 that is easy to pass through the FFI layer.
 
-### `vpnglean/src/ffi`
+### `qtglean/src/ffi`
 
 > **Note**: This part of the code is _heavily_ copy pasted from mozilla-central
 > [`t/c/glean/api/src/ffi`](t-c-g-ffi).
 
-The `ffi` module on the `vpnglean` Rust crate exports all of the metrics and pings APIs to the FFI.
+The `ffi` module on the `qtglean` Rust crate exports all of the metrics and pings APIs to the FFI.
 These are standalone functions which receive the metric id as a first argument to be able to call
 the desired APIs on the correct metric instances.
 
@@ -255,7 +255,7 @@ to the Mozilla VPN sources -- it is worth noting that part of that code is gener
 called [UniFFI](uniffi) and Glean itself has internal metrics and pings which also require a generation step,
 both generations steps are also added to the Mozilla VPN platform specific build setup.
 
-The `vpnglean` library exposes the glean_core library symbols as well as the symbols used by the Mozilla VPN C++ code.
+The `qtglean` library exposes the glean_core library symbols as well as the symbols used by the Mozilla VPN C++ code.
 Since that is linked to the Mozilla VPN project the Glean platform specific code added can access those symbols too.
 
 With the Glean platform specific code and the Mozilla VPN linked to the same glean-core library,

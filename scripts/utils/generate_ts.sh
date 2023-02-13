@@ -28,13 +28,13 @@ print G "done."
 printn Y "Generating a dummy PRO file... "
 mkdir -p translations/generated || die
 cat > translations/generated/dummy_ts.pro << EOF
-HEADERS += l18nstrings.h
+HEADERS += i18nstrings.h
 HEADERS += \$\$files(../../src/shared/*.h, true)
 HEADERS += \$\$files(../../src/apps/vpn/*.h, true)
 HEADERS += \$\$files(../../nebula/*.h, true)
 
-SOURCES += l18nstrings_p.cpp
-SOURCES += ../l18nstrings.cpp
+SOURCES += i18nstrings_p.cpp
+SOURCES += ../i18nstrings.cpp
 SOURCES += \$\$files(../../src/shared/*.cpp, true)
 SOURCES += \$\$files(../../src/apps/vpn/*.cpp, true)
 SOURCES += \$\$files(../../nebula/*.cpp, true)
@@ -47,8 +47,10 @@ RESOURCES += \$\$files(../../nebula/*.qrc, true)
 EOF
 print G "done"
 
+QT_HOST_BINS=$(qmake6 -query QT_HOST_BINS)
+
 print Y "Generating the main translation file... "
-lupdate translations/generated/dummy_ts.pro -ts translations.ts || die
+${QT_HOST_BINS}/lupdate translations/generated/dummy_ts.pro -ts translations.ts || die
 
 printn Y "Generating strings for addons... "
 python scripts/addon/generate_all.py
@@ -61,8 +63,8 @@ for branch in $(git branch -r | grep origin/releases); do
 
   printn Y "Importing main strings from $branch..."
   python cache/generate_strings.py -o translations/generated translations/strings.yaml || die
-  lupdate translations/generated/dummy_ts.pro -ts branch.ts || die
-  lconvert -i translations.ts branch.ts -o tmp.ts || die
+  ${QT_HOST_BINS}/lupdate translations/generated/dummy_ts.pro -ts branch.ts || die
+  ${QT_HOST_BINS}/lconvert -i translations.ts branch.ts -o tmp.ts || die
   mv tmp.ts translations.ts || die
   rm branch.ts || die
 
@@ -75,7 +77,7 @@ for branch in $(git branch -r | grep origin/releases); do
       ts_name=$(basename "$f")
       if [ -f "addon_ts/${ts_name}" ]; then
         printn Y "File ${ts_name} exists, updating with branch strings..."
-        lconvert -i "addon_ts/${ts_name}" "addons/generated/addons/${ts_name}" -o tmp.ts || die
+        ${QT_HOST_BINS}/lconvert -i "addon_ts/${ts_name}" "addons/generated/addons/${ts_name}" -o tmp.ts || die
         mv tmp.ts "addon_ts/${ts_name}"
       else
         printn Y "File ${ts_name} does not exist, copying over..."

@@ -195,7 +195,7 @@ ColumnLayout {
 
         Component.onCompleted: {
             if (visible) {
-                VPNGleanDeprecated.recordGleanEvent("bundle_upsell_viewed");
+                MZGleanDeprecated.recordGleanEvent("bundle_upsell_viewed");
                 Glean.sample.bundleUpsellViewed.record();
             }
         }
@@ -207,7 +207,7 @@ ColumnLayout {
                 color: VPNTheme.theme.fontColorDark
                 horizontalAlignment: Text.AlignLeft
                 font.pixelSize: VPNTheme.theme.fontSizeSmall
-                text: VPNl18n.SubscriptionManagementAddFirefoxRelay // "Add Firefox Relay"
+                text: VPNI18n.SubscriptionManagementAddFirefoxRelay // "Add Firefox Relay"
                 wrapMode: Text.WordWrap
                 lineHeight: 13
                 Layout.alignment: Qt.AlignLeft
@@ -219,13 +219,13 @@ ColumnLayout {
                 objectName: _objectName + "-relayUpsell-learnMoreLink"
                 linkColor: VPNTheme.theme.blueButton
                 fontSize: VPNTheme.theme.fontSizeSmall
-                labelText: VPNl18n.SplittunnelInfoLinkText // "Learn more"
+                labelText: VPNI18n.SplittunnelInfoLinkText // "Learn more"
                 Layout.alignment: Qt.AlignLeft
                 padding: 4
                 Layout.leftMargin: -4
 
                 onClicked: {
-                    VPNGleanDeprecated.recordGleanEvent("bundle_upsell_link_clicked");
+                    MZGleanDeprecated.recordGleanEvent("bundle_upsell_link_clicked");
                     Glean.sample.bundleUpsellLinkClicked.record();
                     VPNUrlOpener.openUrlLabel("relayPremium");
                 }
@@ -236,13 +236,13 @@ ColumnLayout {
             objectName: _objectName + "-relayUpsell-upgradeButton"
 
             onClicked: {
-                VPNGleanDeprecated.recordGleanEvent("bundle_upsell_upgrade_clicked");
+                MZGleanDeprecated.recordGleanEvent("bundle_upsell_upgrade_clicked");
                 Glean.sample.bundleUpsellUpgradeClicked.record();
                 VPNUrlOpener.openUrlLabel("upgradeToBundle");
             }
 
             contentItem: Label {
-                text: VPNl18n.SubscriptionManagementUpgrade // "Upgrade"
+                text: VPNI18n.SubscriptionManagementUpgrade // "Upgrade"
                 font.family: VPNTheme.theme.fontInterFamily
                 font.pixelSize: VPNTheme.theme.fontSizeSmall
                 color: VPNTheme.theme.white

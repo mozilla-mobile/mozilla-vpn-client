@@ -104,20 +104,20 @@ if __name__ == "__main__":
     # Setup default output directories.
     workspace_root = Path(os.path.dirname(os.path.realpath(__file__))).parent.parent
     if args.outdir is None:
-        args.outdir = os.path.join(workspace_root, "vpnglean", "prebuilt", "glean", "generated")
+        args.outdir = os.path.join(workspace_root, "qtglean", "prebuilt", "glean", "generated")
 
     if args.filename is None:
         print("Generating Mozilla VPN Glean files.")
 
         yaml_files_path = os.path.join(workspace_root, "glean")
-        vpnglean_yaml_files_path = os.path.join(workspace_root, "vpnglean")
+        qtglean_yaml_files_path = os.path.join(workspace_root, "qtglean")
 
         os.makedirs(args.outdir, exist_ok=True)
 
         # Generate C++ header files
         for [ output, input ] in [
             [os.path.join(args.outdir, "pings.h"), [os.path.join(yaml_files_path, "pings.yaml")]],
-            [os.path.join(args.outdir, "metrics.h"), [os.path.join(yaml_files_path, "metrics.yaml"), os.path.join(vpnglean_yaml_files_path, "metrics.yaml")]],
+            [os.path.join(args.outdir, "metrics.h"), [os.path.join(yaml_files_path, "metrics.yaml"), os.path.join(qtglean_yaml_files_path, "metrics.yaml")]],
         ]:
             print("Generating {} from {}".format(output, input))
             with open(output, 'w+', encoding='utf-8') as f:
@@ -126,7 +126,7 @@ if __name__ == "__main__":
         # Generate C++ source files
         for [ output, input ] in [
             [os.path.join(args.outdir, "pings.cpp"), [os.path.join(yaml_files_path, "pings.yaml")]],
-            [os.path.join(args.outdir, "metrics.cpp"), [os.path.join(yaml_files_path, "metrics.yaml"), os.path.join(vpnglean_yaml_files_path, "metrics.yaml")]],
+            [os.path.join(args.outdir, "metrics.cpp"), [os.path.join(yaml_files_path, "metrics.yaml"), os.path.join(qtglean_yaml_files_path, "metrics.yaml")]],
         ]:
             print("Generating {} from {}".format(output, input))
             with open(output, 'w+', encoding='utf-8') as f:
@@ -135,7 +135,7 @@ if __name__ == "__main__":
         # Generate Rust files
         for [ output, input ] in [
             [os.path.join(args.outdir, "pings.rs"), [os.path.join(yaml_files_path, "pings.yaml")]],
-            [os.path.join(args.outdir, "metrics.rs"), [os.path.join(yaml_files_path, "metrics.yaml"), os.path.join(vpnglean_yaml_files_path, "metrics.yaml")]],
+            [os.path.join(args.outdir, "metrics.rs"), [os.path.join(yaml_files_path, "metrics.yaml"), os.path.join(qtglean_yaml_files_path, "metrics.yaml")]],
         ]:
             print("Generating {} from {}".format(output, input))
             with open(output, 'w+', encoding='utf-8') as f:

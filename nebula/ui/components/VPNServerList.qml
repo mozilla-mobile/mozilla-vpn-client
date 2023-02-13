@@ -117,11 +117,11 @@ FocusScope {
 
                     iconSrc: "qrc:/ui/resources/tip.svg"
                     contentItem: VPNTextBlock {
-                        text: VPNl18n.ServersViewRecommendedCardBody
+                        text: VPNI18n.ServersViewRecommendedCardBody
                         textFormat: Text.StyledText
                         Layout.fillWidth: true
                     }
-                    title: VPNl18n.ServersViewRecommendedCardTitle
+                    title: VPNI18n.ServersViewRecommendedCardTitle
                     width: parent.width - VPNTheme.theme.windowMargin * 2
                 }
 
@@ -134,13 +134,13 @@ FocusScope {
                         leftMargin: VPNTheme.theme.windowMargin * 0.5
                         rightMargin: VPNTheme.theme.windowMargin * 0.5
                     }
-                    accessibleName: VPNl18n.ServersViewRecommendedRefreshLabel
+                    accessibleName: VPNI18n.ServersViewRecommendedRefreshLabel
                     canGrowVertical: true
                     height: statusTitle.implicitHeight + VPNTheme.theme.vSpacingSmall
-                    rowShouldBeDisabled: !(VPNController.state === VPNController.StateOff)
+                    rowShouldBeDisabled: !(VPNController.state === VPNController.StateOff) || VPNServerLatency.isActive
 
                     onClicked: {
-                        console.log("TODO: Request server data refresh");
+                        VPNServerLatency.refresh();
                     }
 
                     RowLayout {
@@ -170,8 +170,10 @@ FocusScope {
                             horizontalAlignment: Text.AlignLeft
                             // TODO: Replace placeholder strings and generate
                             // values that will be set instead of `%1`
-                            text: !statusComponent.rowShouldBeDisabled
-                                ? "Last updated %1 ago."
+                            text: VPNServerLatency.isActive
+                                ? "Checking... %1%".arg(Math.round(VPNServerLatency.progress * 100))
+                                : (VPNController.state === VPNController.StateOff)
+                                ? "Last updated %1 ago.".arg(VPNServerLatency.lastUpdateTime)
                                 : "Last updated %1 ago. To update this list please first disconnect from the VPN."
                             wrapMode: Text.WordWrap
                         }
@@ -203,6 +205,7 @@ FocusScope {
                 Repeater {
                     id: recommendedRepeater
                     model: VPNServerCountryModel.recommendedLocations(5)
+
                     delegate: VPNClickableRow {
                         property bool isAvailable: modelData.connectionScore >= 0
                         id: recommendedServer
@@ -238,6 +241,18 @@ FocusScope {
                                 score: modelData.connectionScore
                             }
                         }
+                    }
+                }
+
+                Timer {
+                    id: recommendedLocationsRefreshTimer
+                    interval: 2000
+                    running: VPNServerLatency.isActive
+                    onTriggered: {
+                        if (VPNServerLatency.isActive) {
+                            recommendedLocationsRefreshTimer.start();
+                        }
+                        recommendedRepeater.model = VPNServerCountryModel.recommendedLocations(5);
                     }
                 }
             }
@@ -293,7 +308,7 @@ FocusScope {
                             return includesName || includesLocalizedName || matchesCountryCode;
                         }
                     _searchBarHasError: countriesRepeater.count === 0
-                    _searchBarPlaceholderText: VPNl18n.ServersViewSearchPlaceholder
+                    _searchBarPlaceholderText: VPNI18n.ServersViewSearchPlaceholder
 
                     anchors {
                         left: parent.left

@@ -14,7 +14,7 @@ VPNViewBase {
     id: vpnFlickable
 
     objectName: "contactUs"
-    _menuTitle: VPNl18n.InAppSupportWorkflowSupportNavLinkText
+    _menuTitle: VPNI18n.InAppSupportWorkflowSupportNavLinkText
    _viewContentData: ColumnLayout {
        property string _emailAddress: ""
 
@@ -35,13 +35,13 @@ VPNViewBase {
                } else {
                    // TODO: Navigator.GetTheThing
                    getHelpStackView.replace("qrc:/ui/sharedViews/ViewErrorFullScreen.qml", {
-                       headlineText: VPNl18n.InAppSupportWorkflowSupportErrorHeader,
-                       errorMessage: VPNl18n.InAppSupportWorkflowSupportErrorText,
-                       primaryButtonText: VPNl18n.InAppSupportWorkflowSupportErrorButton,
+                       headlineText: VPNI18n.InAppSupportWorkflowSupportErrorHeader,
+                       errorMessage: VPNI18n.InAppSupportWorkflowSupportErrorText,
+                       primaryButtonText: VPNI18n.InAppSupportWorkflowSupportErrorButton,
                        primaryButtonOnClick: () => getHelpStackView.pop(),
                        primaryButtonObjectName: "errorTryAgainButton",
                        secondaryButtonIsSignOff: false,
-                       secondaryButtonText: VPNl18n.InAppSupportWorkflowSupportErrorBrowserButton,
+                       secondaryButtonText: VPNI18n.InAppSupportWorkflowSupportErrorBrowserButton,
                        secondaryButtonObjectName: "errorFxALinkButton",
                        secondaryButtonOnClick: () => {
                                VPNUrlOpener.openUrlLabel("sumo");
@@ -71,7 +71,7 @@ VPNViewBase {
                 ColumnLayout {
                     spacing: 10
                     VPNBoldLabel {
-                        property string enterEmailAddress: VPNl18n.InAppSupportWorkflowSupportEmailFieldLabel
+                        property string enterEmailAddress: VPNI18n.InAppSupportWorkflowSupportEmailFieldLabel
 
                         text: enterEmailAddress
                         lineHeight: VPNTheme.theme.labelLineHeight
@@ -89,7 +89,7 @@ VPNViewBase {
                         verticalAlignment: Text.AlignVCenter
                         Layout.fillWidth: true
                         hasError: !VPNAuthInApp.validateEmailAddress(emailInput.text)
-                        _placeholderText: VPNl18n.InAppSupportWorkflowSupportEmailFieldPlaceholder
+                        _placeholderText: VPNI18n.InAppSupportWorkflowSupportEmailFieldPlaceholder
                     }
                 }
 
@@ -99,7 +99,7 @@ VPNViewBase {
                     verticalAlignment: Text.AlignVCenter
                     Layout.fillWidth: true
                     hasError: !VPNAuthInApp.validateEmailAddress(confirmEmailInput.text) || emailInput.text != confirmEmailInput.text
-                    _placeholderText: VPNl18n.InAppSupportWorkflowSupportConfirmEmailPlaceholder
+                    _placeholderText: VPNI18n.InAppSupportWorkflowSupportConfirmEmailPlaceholder
                 }
             }
 
@@ -120,7 +120,7 @@ VPNViewBase {
                 spacing: 10
 
                 VPNBoldLabel {
-                    property string enterEmailAddress: VPNl18n.InAppSupportWorkflowSupportFieldHeader
+                    property string enterEmailAddress: VPNI18n.InAppSupportWorkflowSupportFieldHeader
 
                     text: enterEmailAddress
                     lineHeight: VPNTheme.theme.labelLineHeight
@@ -133,7 +133,7 @@ VPNViewBase {
 
                 VPNComboBox {
                     id: dropDown
-                    placeholderText: VPNl18n.InAppSupportWorkflowDropdownLabel
+                    placeholderText: VPNI18n.InAppSupportWorkflowDropdownLabel
                     model: VPNSupportCategoryModel
                     Layout.fillWidth: true
                     Layout.preferredWidth: undefined
@@ -146,12 +146,12 @@ VPNViewBase {
                 verticalAlignment: Text.AlignVCenter
                 Layout.alignment: Qt.AlignHCenter
                 Layout.fillWidth: true
-                _placeholderText: VPNl18n.InAppSupportWorkflowSubjectFieldPlaceholder
+                _placeholderText: VPNI18n.InAppSupportWorkflowSubjectFieldPlaceholder
             }
 
             VPNTextArea {
                 id: textArea
-                placeholderText: VPNl18n.InAppSupportWorkflowIssueFieldPlaceholder
+                placeholderText: VPNI18n.InAppSupportWorkflowIssueFieldPlaceholder
                 Layout.alignment: Qt.AlignHCenter
                 Layout.fillWidth: true
             }
@@ -176,7 +176,7 @@ VPNViewBase {
                 VPNTextBlock {
                     font.pixelSize: VPNTheme.theme.fontSize
                     horizontalAlignment: Text.AlignHCenter
-                    text: VPNl18n.InAppSupportWorkflowDisclaimerText
+                    text: VPNI18n.InAppSupportWorkflowDisclaimerText
                     anchors.left: parent.left
                     anchors.right: parent.right
 
@@ -184,7 +184,7 @@ VPNViewBase {
 
                 VPNLinkButton {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    labelText: VPNl18n.InAppSupportWorkflowPrivacyNoticeLinkText
+                    labelText: VPNI18n.InAppSupportWorkflowPrivacyNoticeLinkText
                     onClicked: VPNUrlOpener.openUrlLabel("privacyNotice")
                 }
             }
@@ -193,7 +193,7 @@ VPNViewBase {
                 spacing: VPNTheme.theme.windowMargin
 
                 VPNButton {
-                    text: VPNl18n.InAppSupportWorkflowSupportPrimaryButtonText
+                    text: VPNI18n.InAppSupportWorkflowSupportPrimaryButtonText
                     onClicked: {
                       VPNGleanDeprecated.recordGleanEvent("supportCaseSubmitted");
                       Glean.sample.supportCaseSubmitted.record();

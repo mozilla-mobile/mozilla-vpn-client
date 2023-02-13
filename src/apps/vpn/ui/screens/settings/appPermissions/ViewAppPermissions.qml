@@ -23,7 +23,7 @@ VPNViewBase {
     id: vpnFlickable
     objectName: "appPermissions"
 
-    _menuTitle: VPNl18n.SettingsAppExclusionSettings
+    _menuTitle: VPNI18n.SettingsAppExclusionSettings
     _viewContentData: ColumnLayout {
         Layout.fillWidth: true
 
@@ -111,12 +111,12 @@ VPNViewBase {
             Layout.leftMargin: VPNTheme.theme.vSpacing
             Layout.rightMargin: VPNTheme.theme.vSpacing
             Layout.topMargin: VPNTheme.theme.vSpacing
-            text: VPNl18n.SplittunnelInfoText
+            text: VPNI18n.SplittunnelInfoText
         }
 
         VPNLinkButton {
             id: helpLink
-            labelText: VPNl18n.SplittunnelInfoLinkText
+            labelText: VPNI18n.SplittunnelInfoLinkText
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: VPNTheme.theme.windowMargin / 2
@@ -128,7 +128,7 @@ VPNViewBase {
     Component.onCompleted: {
         console.log("Component ready");
         VPNAppPermissions.requestApplist();
-        VPNGleanDeprecated.recordGleanEvent("appPermissionsViewOpened");
+        MZGleanDeprecated.recordGleanEvent("appPermissionsViewOpened");
         Glean.sample.appPermissionsViewOpened.record();
     }
 

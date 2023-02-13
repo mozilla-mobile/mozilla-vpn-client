@@ -16,11 +16,11 @@ VPNStackView {
 
        stackView.push("qrc:/ui/sharedViews/ViewErrorFullScreen.qml", {
            // Problem confirming subscription...
-           headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
+           headlineText: VPNI18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
            // Another Firefox Account has already subscribed using this Apple ID.
            // Visit our help center below to learn more about how to manage your subscriptions.
-           errorMessage: VPNl18n.RestorePurchaseInUseErrorRestorePurchaseInUseErrorText,
+           errorMessage: VPNI18n.RestorePurchaseInUseErrorRestorePurchaseInUseErrorText,
 
            // Sign out
            primaryButtonText: qsTrId("vpn.main.signOut2"),

@@ -5,7 +5,7 @@
 get_filename_component(MZ_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src ABSOLUTE)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-include_directories(${CMAKE_BINARY_DIR}/vpnglean)
+include_directories(${CMAKE_BINARY_DIR}/qtglean)
 include_directories(${MZ_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR}/shared)
 include_directories(${MZ_SOURCE_DIR}/shared/glean)
@@ -34,7 +34,7 @@ target_link_libraries(unit_tests PRIVATE
 target_compile_definitions(unit_tests PRIVATE UNIT_TEST)
 target_compile_definitions(unit_tests PRIVATE MVPN_ADJUST)
 
-target_link_libraries(unit_tests PRIVATE glean vpnglean lottie nebula translations)
+target_link_libraries(unit_tests PRIVATE glean qtglean lottie nebula translations)
 
 # VPN Client source files
 target_sources(unit_tests PRIVATE
@@ -118,8 +118,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/frontend/navigator.h
     ${MZ_SOURCE_DIR}/apps/vpn/frontend/navigatorreloader.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/frontend/navigatorreloader.h
-    ${MZ_SOURCE_DIR}/apps/vpn/glean/glean.h
-    ${MZ_SOURCE_DIR}/apps/vpn/glean/glean.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.h
     ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorutils.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorutils.h
@@ -174,6 +172,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/releasemonitor.h
     ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.h
+    ${MZ_SOURCE_DIR}/apps/vpn/serverlatency.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/serverlatency.h
     ${MZ_SOURCE_DIR}/apps/vpn/sentry/sentryadapter.h
     ${MZ_SOURCE_DIR}/apps/vpn/statusicon.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/statusicon.h
@@ -188,10 +188,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/addonindex/taskaddonindex.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/controlleraction/taskcontrolleraction.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/controlleraction/taskcontrolleraction.h
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/function/taskfunction.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/function/taskfunction.h
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/group/taskgroup.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/group/taskgroup.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/ipfinder/taskipfinder.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/ipfinder/taskipfinder.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/release/taskrelease.cpp
@@ -233,6 +229,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/feature.h
     ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.cpp
     ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.h
+    ${MZ_SOURCE_DIR}/shared/glean/mzglean.h
+    ${MZ_SOURCE_DIR}/shared/glean/mzglean.cpp
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20Poly1305_32.c
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Curve25519_51.c
@@ -277,6 +275,10 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/task.h
     ${MZ_SOURCE_DIR}/shared/taskscheduler.cpp
     ${MZ_SOURCE_DIR}/shared/taskscheduler.h
+    ${MZ_SOURCE_DIR}/shared/tasks/function/taskfunction.cpp
+    ${MZ_SOURCE_DIR}/shared/tasks/function/taskfunction.h
+    ${MZ_SOURCE_DIR}/shared/tasks/group/taskgroup.cpp
+    ${MZ_SOURCE_DIR}/shared/tasks/group/taskgroup.h
     ${MZ_SOURCE_DIR}/shared/temporarydir.cpp
     ${MZ_SOURCE_DIR}/shared/temporarydir.h
     ${MZ_SOURCE_DIR}/shared/theme.cpp
@@ -331,8 +333,6 @@ target_sources(unit_tests PRIVATE
     testserveri18n.h
     teststatusicon.cpp
     teststatusicon.h
-    testtasks.cpp
-    testtasks.h
     testtasksentry.cpp
     testtasksentry.h
     websocket/testexponentialbackoffstrategy.cpp

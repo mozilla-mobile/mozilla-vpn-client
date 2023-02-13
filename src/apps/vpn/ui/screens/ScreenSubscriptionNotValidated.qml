@@ -20,20 +20,20 @@ VPNStackView {
 
         stackview.push("qrc:/ui/sharedViews/ViewErrorFullScreen.qml", {
             // "Problem confirming subscription…"
-            headlineText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
+            headlineText: VPNI18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
             // "An unexpected error....."
-            errorMessage: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorText,
+            errorMessage: VPNI18n.GenericPurchaseErrorGenericPurchaseErrorText,
 
             // "Try again"
-            primaryButtonText: VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton,
+            primaryButtonText: VPNI18n.GenericPurchaseErrorGenericPurchaseErrorButton,
             primaryButtonObjectName: "errorGetHelpButton",
             primaryButtonOnClick: stackview.handleButtonClick,
             secondaryButtonIsSignOff: false,
             getHelpLinkVisible: true,
             }
         );
-        VPNGleanDeprecated.recordGleanEvent("subNotValidatedViewed");
+        MZGleanDeprecated.recordGleanEvent("subNotValidatedViewed");
         Glean.record.subNotValidatedViewed.record();
     }
 }
