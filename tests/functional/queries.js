@@ -211,11 +211,12 @@ const screenGetHelp = {
 };
 
 const appExclusionsView = {
+  ADD_APPLICATION_BUTTON: new QmlQueryComposer('//addApplication'),
   APP_LIST: new QmlQueryComposer('//appList'),
+  APP_ROW2: new QmlQueryComposer('//com.example.two-row'),
   CHECKBOX1: new QmlQueryComposer('//com.example.one-checkbox'),
   CHECKBOX2: new QmlQueryComposer('//com.example.two-checkbox'),
   CLEAR_ALL: new QmlQueryComposer('//clearAll'),
-  APP_ROW2: new QmlQueryComposer('//com.example.two-row'),
   SCREEN: new QmlQueryComposer('//appPermissions')
 };
 
