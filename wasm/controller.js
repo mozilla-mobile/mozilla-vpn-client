@@ -125,7 +125,7 @@ class Controller {
   _writeCommand(cmd) {
     return new Promise(resolve => {
       this._waitReadCallback = resolve;
-      Module.inspectorCommand(cmd);
+      module.inspectorCommand(cmd);
     });
   }
 

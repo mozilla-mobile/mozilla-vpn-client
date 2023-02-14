@@ -60,7 +60,7 @@ module.exports = {
   },
 
   async send(msg) {
-    await driver.executeScript(`Module.inspectorCommand("${
+    await driver.executeScript(`module.inspectorCommand("${
         msg.replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0')}")`);
   },
 }
