@@ -25,47 +25,6 @@ VPNViewBase {
 
     _menuTitle: VPNI18n.SettingsAppExclusionSettings
     _viewContentData: ColumnLayout {
-        Layout.fillWidth: true
-
-        ColumnLayout{
-            id: messageBox
-            visible: true
-            Layout.leftMargin: VPNTheme.theme.windowMargin
-            Layout.rightMargin: VPNTheme.theme.windowMargin * 2
-            Layout.topMargin: -VPNTheme.theme.windowMargin
-            Layout.fillWidth: true
-            Layout.fillHeight: false
-            spacing: 0
-
-            Connections {
-                target: VPNAppPermissions
-                function onNotification(type,message,action) {
-                    console.log("Got notification: "+type + "  message:"+message);
-                    var component = Qt.createComponent("qrc:/nebula/components/VPNAlert.qml");
-                    if(component.status !== Component.Ready)
-                        {
-                            if( component.status == Component.Error )
-                                console.debug("Error:"+ component.errorString() );
-
-                        }
-                    var alert = component.createObject(vpnFlickable, {
-                                               isLayout:false,
-                                               visible:true,
-                                               alertText: message,
-                                               alertType: type,
-                                               alertActionText: action,
-                                               duration:type === "warning"? 0: 2000,
-                                               destructive:true,
-                                               // Pin y height to be below the alert bar as we can't render above it
-                                               setY: vpnFlickable.y+VPNTheme.theme.windowMargin,
-                                               onActionPressed: ()=>{VPNAppPermissions.openFilePicker();},
-                                           });
-
-                    alert.show();
-
-                }
-            }
-        }
 
         AppPermissionsList {
             id: enabledList
