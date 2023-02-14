@@ -29,12 +29,12 @@ class DatetimeMetric final {
   ~DatetimeMetric() = default;
 
   Q_INVOKABLE void set() const;
-  
+
   // Test  only functions
 
   Q_INVOKABLE QString testGetValueAsString(const QString& pingName = "") const;
   Q_INVOKABLE int32_t testGetNumRecordedErrors(ErrorType errorType) const;
-  
+
  private:
   int m_id;
 };
