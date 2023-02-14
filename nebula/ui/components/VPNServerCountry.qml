@@ -207,7 +207,8 @@ VPNClickableRow {
                         rightMargin: VPNTheme.theme.hSpacing
                         verticalCenter: parent.verticalCenter
                     }
-                    score: showConnectionScores ? modelData.connectionScore : (isAvailable ? VPNServerCountryModel.NoData : VPNServerCountryModel.Unavailable)
+                    score: (focusScope.currentServer.whichHop !== "multiHopExitServer") ? modelData.connectionScore
+                           : modelData.multiHopScore(segmentedNav.multiHopEntryServer[0], segmentedNav.multiHopEntryServer[1])
                 }
             }
         }

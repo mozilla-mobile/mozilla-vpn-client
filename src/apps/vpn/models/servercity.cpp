@@ -13,6 +13,7 @@
 #include "leakdetector.h"
 #include "location.h"
 #include "mozillavpn.h"
+#include "servercountrymodel.h"
 #include "serveri18n.h"
 #include "serverlatency.h"
 
@@ -115,15 +116,13 @@ const QString ServerCity::localizedName() const {
   return ServerI18N::translateCityName(m_country, m_name);
 }
 
-int ServerCity::connectionScore() const {
+int ServerCity::baseCityScore(const QString& originCountryCode) const {
   ServerLatency* serverLatency = MozillaVPN::instance()->serverLatency();
   qint64 now = QDateTime::currentSecsSinceEpoch();
   int score = Poor;
   int activeServerCount = 0;
-  uint32_t sumLatencyMsec = 0;
   for (const QString& pubkey : m_servers) {
     if (serverLatency->getCooldown(pubkey) <= now) {
-      sumLatencyMsec += serverLatency->getLatency(pubkey);
       activeServerCount++;
     }
   }
@@ -133,29 +132,13 @@ int ServerCity::connectionScore() const {
     return Unavailable;
   }
 
-  // In the unlikely event that the sum of the latencies is zero, then we
-  // haven't actually measured anything and have nothing to report.
-  if (sumLatencyMsec == 0) {
-    return NoData;
-  }
-
-  // Increase the score if the location has better than average latency.
-  uint32_t cityLatencyMsec = sumLatencyMsec / activeServerCount;
-  if (cityLatencyMsec < serverLatency->avgLatency()) {
-    score++;
-    // Give the location another point if the latency is *very* fast.
-    if (cityLatencyMsec < SCORE_EXCELLENT_LATENCY_THRESHOLD) {
-      score++;
-    }
-  }
-
   // Increase the score if the location has sufficient redundancy.
   if (activeServerCount >= SCORE_SERVER_REDUNDANCY_THRESHOLD) {
     score++;
   }
 
-  // Increase the score for locations in the same country as the user.
-  if (m_country == MozillaVPN::instance()->location()->countryCode()) {
+  // Increase the score for connections made within the same country.
+  if ((!originCountryCode.isEmpty()) && (m_country == originCountryCode)) {
     score++;
   }
 
@@ -167,15 +150,70 @@ int ServerCity::connectionScore() const {
 
 unsigned int ServerCity::latency() const {
   ServerLatency* serverLatency = MozillaVPN::instance()->serverLatency();
-  qint64 now = QDateTime::currentSecsSinceEpoch();
-  int activeServerCount = 0;
+  int numLatencySamples = 0;
   uint32_t sumLatencyMsec = 0;
   for (const QString& pubkey : m_servers) {
-    if (serverLatency->getCooldown(pubkey) <= now) {
-      sumLatencyMsec += serverLatency->getLatency(pubkey);
-      activeServerCount++;
+    unsigned int rtt = serverLatency->getLatency(pubkey);
+    if (rtt > 0) {
+      sumLatencyMsec += rtt;
+      numLatencySamples++;
     }
   }
 
-  return (sumLatencyMsec + activeServerCount - 1) / activeServerCount;
+  if (numLatencySamples == 0) {
+    return 0;
+  }
+  return (sumLatencyMsec + numLatencySamples - 1) / numLatencySamples;
+}
+
+int ServerCity::connectionScore() const {
+  int score = baseCityScore(MozillaVPN::instance()->location()->countryCode());
+  if (score <= Unavailable) {
+    return score;
+  }
+
+  // If there is no latency data, then we haven't actually measured anything
+  // and have no connectivity signals to report.
+  unsigned int cityLatencyMsec = latency();
+  if (cityLatencyMsec == 0) {
+    return NoData;
+  }
+
+  // Increase the score if the location has better than average latency.
+  if (cityLatencyMsec < MozillaVPN::instance()->serverLatency()->avgLatency()) {
+    score++;
+    // Give the location another point if the latency is *very* fast.
+    if (cityLatencyMsec < SCORE_EXCELLENT_LATENCY_THRESHOLD) {
+      score++;
+    }
+  }
+
+  if (score > Excellent) {
+    score = Excellent;
+  }
+  return score;
+}
+
+int ServerCity::multiHopScore(const QString& country,
+                              const QString& cityName) const {
+  int score = baseCityScore(country);
+  if (score <= Unavailable) {
+    return score;
+  }
+
+  // Increase the score if the distance betweens servers is less than 1/8th of
+  // the earth's circumference.
+  const ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
+  const ServerCity& entryCity = scm->findCity(country, cityName);
+  if (!entryCity.initialized()) {
+    return NoData;
+  }
+  if ((Location::distance(this, &entryCity) < (M_PI / 4))) {
+    score++;
+  }
+
+  if (score > Excellent) {
+    score = Excellent;
+  }
+  return score;
 }

@@ -280,13 +280,6 @@ QList<QVariant> ServerCountryModel::recommendedLocations(
     cityRanking -= city.latency() / latencyScale;
     cityRanking -= distance;
 
-#ifdef MZ_DEBUG
-    logger.debug() << "Evaluating" << city.name() << "-" << city.latency()
-                   << "ms"
-                   << "-" << QString::number(distance) << "-"
-                   << QString::number(cityRanking);
-#endif
-
     // Insert into the result list
     qsizetype i;
     for (i = 0; i < rankResults.count(); i++) {

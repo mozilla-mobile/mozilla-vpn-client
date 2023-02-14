@@ -100,3 +100,27 @@ double Location::distance(double latitude, double longitude) const {
 
   return qAcos(m_latSin * otherSin + m_latCos * otherCos * diffCos);
 }
+
+// The same algorithm as above, but static and accepts any QObject with
+// latitude and longitude properties.
+double Location::distance(const QObject* a, const QObject* b) {
+  bool aLatOkay;
+  bool aLongOkay;
+  bool bLatOkay;
+  bool bLongOkay;
+  double aLat = a->property("latitude").toDouble(&aLatOkay);
+  double aLong = a->property("longitude").toDouble(&aLongOkay);
+  double bLat = b->property("latitude").toDouble(&bLatOkay);
+  double bLong = b->property("longitude").toDouble(&bLongOkay);
+  if (!aLatOkay || !aLongOkay || !bLatOkay || !bLongOkay) {
+    return 0.0;
+  }
+
+  double aSin = qSin(aLat * M_PI / 180.0);
+  double aCos = qCos(aLat * M_PI / 180.0);
+  double bSin = qSin(bLat * M_PI / 180.0);
+  double bCos = qCos(bLat * M_PI / 180.0);
+  double diffCos = qCos((aLong - bLong) * M_PI / 180.0);
+
+  return qAcos(aSin * bSin + aCos * bCos * diffCos);
+}

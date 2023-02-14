@@ -61,6 +61,9 @@ class ServerCity final : public QObject {
 
   int connectionScore() const;
 
+  Q_INVOKABLE int multiHopScore(const QString& country,
+                                const QString& cityName) const;
+
   unsigned int latency() const;
 
   const QList<QString> servers() const { return m_servers; }
@@ -69,6 +72,8 @@ class ServerCity final : public QObject {
   void scoreChanged() const;
 
  private:
+  int baseCityScore(const QString& originCountryCode = QString()) const;
+
   QString m_country;
   QString m_name;
   QString m_code;
