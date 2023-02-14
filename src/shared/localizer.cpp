@@ -344,8 +344,8 @@ void Localizer::maybeLoadLanguageFallback(const QString& code) {
     logger.debug() << "Fallback language:" << fallbackCode;
 
     if (!createTranslator(QLocale(fallbackCode))) {
-      logger.error() << "Loading the fallback locale failed - code:"
-                     << fallbackCode;
+      logger.warning() << "Loading the fallback locale failed - code:"
+                       << fallbackCode;
       continue;
     }
   }
