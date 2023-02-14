@@ -53,7 +53,7 @@ ColumnLayout {
             Layout.leftMargin: -4
 
             textAlignment: Text.AlignLeft
-            labelText: VPNI18n.SettingsAppExclusionClearAllApps.arg(VPNSettings.vpnDisabledApps.length)
+            labelText: VPNI18n.SettingsAppExclusionClearAllApps
             fontSize: VPNTheme.theme.fontSize
             fontName: VPNTheme.theme.fontInterSemiBoldFamily
 

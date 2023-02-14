@@ -316,8 +316,8 @@ settings:
   dnsSettingsInputPlaceholder: Enter custom DNS
   dnsSettingsDisconnectWarning: Changing these settings will cause the VPN to disconnect and reconnect automatically.
   appExclusionClearAllApps: 
-    value: Clear all (%1)
-    comment: Button label. %1 refers to the number of apps to be removed from the exclusion list.
+    value: Clear all
+    comment: Button label to clear all apps from the exclusions list
 
 dnsOverwriteDialog:
   titleDNS: Override DNS settings?
