@@ -209,7 +209,7 @@ VPNViewBase {
                     }
                     Layout.topMargin: VPNTheme.theme.listSpacing
 
-                    visible: ipInput.valueInvalid && ipInput.visible
+                    visible: ipInput.valueInvalid && ipInput.visible && VPNSettings.dnsProviderFlags === VPNSettings.Custom
 
                     messages: [
                         {
