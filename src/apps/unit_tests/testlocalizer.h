@@ -30,6 +30,8 @@ class TestLocalizer final : public TestHelper {
   void completeness_data();
   void completeness();
 
+  void fallback();
+
  private:
   SettingsHolder* m_settingsHolder = nullptr;
 };

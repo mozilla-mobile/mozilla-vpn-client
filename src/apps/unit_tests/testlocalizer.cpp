@@ -39,8 +39,7 @@ void TestLocalizer::basic() {
   QCOMPARE(rn[Localizer::CodeRole], "code");
   QCOMPARE(rn[Localizer::RTLRole], "isRightToLeft");
 
-  // No language for this unit-test app
-  QVERIFY(l.rowCount(QModelIndex()) == 0);
+  QVERIFY(l.rowCount(QModelIndex()) == 3);
   QCOMPARE(l.data(QModelIndex(), Localizer::LocalizedLanguageNameRole),
            QVariant());
 }
@@ -242,6 +241,26 @@ void TestLocalizer::completeness() {
   for (const QString& key : output.keys()) {
     QCOMPARE(list.value(key, -1), output.value(key));
   }
+}
+
+void TestLocalizer::fallback() {
+  SettingsHolder::instance()->setLanguageCode("es_MX");
+
+  Localizer l;
+
+  // We have 3 languages in this test.
+  QCOMPARE(l.languages(), QStringList() << "es_CL"
+                                        << "es_ES"
+                                        << "es_MX");
+
+  // MX contains translations for "foo.1"
+  QCOMPARE(qtTrId("foo.1"), "hello world 1 es_MX");
+
+  // MX does not have "foo.2", fallback CL
+  QCOMPARE(qtTrId("foo.2"), "hello world 2 es_CL");
+
+  // MX and CL do not have "foo.3", fallback ES
+  QCOMPARE(qtTrId("foo.3"), "hello world 3 es_ES");
 }
 
 static TestLocalizer s_testLocalizer;

@@ -182,7 +182,9 @@ void Localizer::loadLanguagesFromI18n() {
     QStringList parts = file.split(".");
     Q_ASSERT(parts.length() == 2);
 
-    QString code = parts[0].remove(0, 11);
+    QString code =
+        parts[0].remove(0, strlen(AppConstants::LOCALIZER_FILENAME_PREFIX) +
+                               /* the final '_': */ 1);
 
     if (Constants::inProduction() &&
         m_translationCompleteness.value(code, 0) < 0.7) {
@@ -346,7 +348,6 @@ void Localizer::maybeLoadLanguageFallback(const QString& code) {
     if (!createTranslator(QLocale(fallbackCode))) {
       logger.warning() << "Loading the fallback locale failed - code:"
                        << fallbackCode;
-      continue;
     }
   }
 }
