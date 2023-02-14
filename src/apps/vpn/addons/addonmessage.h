@@ -75,8 +75,6 @@ class AddonMessage final : public Addon {
   Composer* composer() const { return m_composer; }
 
   // Explosed for testing.
-  static QString dateInternal(const QDateTime& nowDateTime,
-                              const QDateTime& messageDateTime);
   static qint64 planDateRetranslationInternal(const QDateTime& nowDateTime,
                                               const QDateTime& messageDateTime);
 
