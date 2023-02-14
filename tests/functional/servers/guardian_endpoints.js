@@ -237,6 +237,7 @@ exports.endpoints = {
 
     '/api/v3/vpn/products': {
       status: 200,
+      requiredHeaders: ['Authorization'],
       body: {
         products: [
           {
