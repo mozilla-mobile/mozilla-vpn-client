@@ -180,20 +180,15 @@ VPNViewBase {
                         ipInput.text = VPNSettings.userDNS;
                     }
 
-                    onTextChanged: text => {
-                        if (ipInput.text === "") {
-                            // If nothing is entered, thats valid too. We will ignore the value later.
-                            ipInput.valueInvalid = false;
+                    onEditingFinished: {
+                        if (ipInput.text === "" || VPN.validateUserDNS(ipInput.text)) {
                             VPNSettings.userDNS = ipInput.text
-                            return;
                         }
-                        if (VPN.validateUserDNS(ipInput.text)) {
-                            ipInput.valueInvalid = false;
-                            VPNSettings.userDNS = ipInput.text
-                        } else {
-                            ipInput.error = VPNI18n.SettingsDnsSettingsCustomDNSError
-                            ipInput.valueInvalid = true;
-                        }
+                    }
+
+                    onTextChanged: {
+                        ipInput.valueInvalid = ipInput.text !== "" && !VPN.validateUserDNS(ipInput.text);
+                        ipInput.error = VPNI18n.SettingsDnsSettingsCustomDNSError
                     }
                 }
 
