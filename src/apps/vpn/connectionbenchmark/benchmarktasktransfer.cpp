@@ -196,6 +196,11 @@ void BenchmarkTaskTransfer::dnsLookupFinished() {
     emit completed();
   });
 
+  if (m_dnsLookup.error() == QDnsLookup::OperationCancelledError) {
+    guard.dismiss();
+    return;
+  }
+
   if (m_dnsLookup.error() != QDnsLookup::NoError) {
     logger.error() << "DNS Lookup Failed:" << m_dnsLookup.errorString();
     return;
