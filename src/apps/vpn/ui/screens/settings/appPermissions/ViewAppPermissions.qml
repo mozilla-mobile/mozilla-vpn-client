@@ -56,7 +56,7 @@ VPNViewBase {
                                                alertActionText: action,
                                                duration:type === "warning"? 0: 2000,
                                                destructive:true,
-                                               // Pin y hight to be below the alert bar as we can't render above it
+                                               // Pin y height to be below the alert bar as we can't render above it
                                                setY: vpnFlickable.y+VPNTheme.theme.windowMargin,
                                                onActionPressed: ()=>{VPNAppPermissions.openFilePicker();},
                                            });
