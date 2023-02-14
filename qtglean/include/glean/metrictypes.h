@@ -8,6 +8,7 @@
 #include "counter.h"
 #include "event.h"
 #include "ping.h"
+#include "quantity.h"
 #include "string.h"
 #include "timingdistribution.h"
 
