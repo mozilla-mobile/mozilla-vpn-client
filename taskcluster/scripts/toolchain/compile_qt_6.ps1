@@ -68,6 +68,7 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
   -skip qtsensors  `
   -skip qtgamepad  `
   -skip qtwebchannel  `
+  -skip qtwebengine  `
   -skip qtandroidextras  `
   -feature-imageformat_png  `
   -qt-libpng  `
@@ -75,6 +76,15 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
   -openssl-runtime `
   -prefix $BUILD_PREFIX `
 
+if($?)
+{
+  Write-Output"Config succeeded"
+}
+else
+{
+  Write-Output "Failed to Config QT"
+  exit -1
+}
 
 
  cmake --build . --parallel
