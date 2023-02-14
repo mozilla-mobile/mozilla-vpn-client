@@ -586,6 +586,13 @@ module.exports = {
     assert(
         json.type === 'set_version_override' && !('error' in json),
         `Command failed: ${json.error}`);
+  },
+
+  async overrideWebSocketServerUrl(url) {
+    const json = await this._writeCommand(`override_websocket_server_url ${encodeURIComponent(url)}`);
+    assert(
+      json.type === 'override_websocket_server_url' && !('error' in json),
+      `Command failed: ${json.error}`);
     return json.value;
   },
 

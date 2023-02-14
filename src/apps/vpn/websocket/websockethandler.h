@@ -22,8 +22,10 @@ class WebSocketHandler final : public QObject {
 
   void initialize();
 
-#ifdef UNIT_TEST
+  // This is not in the UNIT_TEST block, because it is also used in the
+  // functional tests.
   static void testOverrideWebSocketServerUrl(const QString& url);
+#ifdef UNIT_TEST
   void testOverridePingInterval(int newInterval);
   void testOverrideBaseRetryInterval(int newInterval);
 

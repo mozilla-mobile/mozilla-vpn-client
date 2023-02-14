@@ -70,16 +70,6 @@ function init() {
         bodyClassList.add('wasm-loaded');
         status.textContent = '';
       },
-
-      environment: {
-        MVPN_API_BASE_URL: u.searchParams.get('guardian'),
-        MZ_FXA_API_BASE_URL: u.searchParams.get('fxa'),
-        MZ_ADDON_URL: u.searchParams.get('addon'),
-        MVPN_SKIP_ADDON_SIGNATURE: '1',
-        MZ_BENCHMARK_DOWNLOAD_URL: u.searchParams.get('benchmark'),
-        MZ_BENCHMARK_UPLOAD_URL: u.searchParams.get('benchmark'),
-        MZ_CAPTIVE_PORTAL_URL: u.searchParams.get('captivePortal'),
-      }
     });
     qtLoader.loadEmscriptenModule('mozillavpn');
 }
@@ -89,27 +79,49 @@ function mvpnNetworkRequest(id, method, url, body) {
   // detector does not support cors.
   if (url.endsWith("/success.txt")) {
     setTimeout(() => {
-            module.mvpnNetworkResponse(id, JSON.stringify({status: 200, body: btoa('success')})); }, 200);
+      module.mvpnNetworkResponse(id, JSON.stringify({ status: 200, body: btoa('success') }));
+    }, 200);
     return;
   }
 
-  const options = {method};
+  // Move this back to the QtLoader `environment` config after the update to Qt6.4.
+  // on Qt6.3 the environment load does not seem to be working, se we fallback to this replace hack
+  // Ticket: https://mozilla-hub.atlassian.net/browse/VPN-3321
+  const u = new URL(location);
+  const urlOverrides = [
+    [u.searchParams.get('guardian'), "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net"],
+    [u.searchParams.get('fxa'), "https://api-accounts.stage.mozaws.net"],
+    [u.searchParams.get('addon'), "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/"],
+    [u.searchParams.get('benchmark'), "https://archive.mozilla.org/pub/vpn/speedtest/50m.data"],
+    [u.searchParams.get('benchmark'), "https://dev.vpn-network-benchmark.nonprod.webservices.mozgcp.net/upload"],
+    [u.searchParams.get('captivePortal'), "http://%1/success.txt"],
+  ]
+
+  let parsedUrl = url;
+  for (const [override, def] of urlOverrides) {
+    if (url.includes(def)) {
+      parsedUrl = url.replace(def, override);
+      break;
+    }
+  }
+
+  const options = { method };
   if (method === 'POST') {
     options.body = body;
     options.headers = {
-     'Content-Type': 'application/json'
+      'Content-Type': 'application/json'
     };
   };
-  fetch(url, options).then(async resp => module.mvpnNetworkResponse(id, JSON.stringify({
-            status: resp.status,
-            body: btoa(String.fromCharCode.apply(
-                null, new Uint8Array(await resp.arrayBuffer())))
-          })))
-          .catch(() => {
-            console.error('Unable to fetch content for URL', url);
-            module.mvpnNetworkResponse(
-                id, JSON.stringify({status: 0, body: ''}));
-          });
+  fetch(parsedUrl, options).then(async resp => module.mvpnNetworkResponse(id, JSON.stringify({
+    status: resp.status,
+    body: btoa(String.fromCharCode.apply(
+      null, new Uint8Array(await resp.arrayBuffer())))
+  })))
+    .catch(() => {
+      console.error('Unable to fetch content for URL', parsedUrl);
+      module.mvpnNetworkResponse(
+        id, JSON.stringify({ status: 0, body: '' }));
+    });
 }
 
 let objs = [];

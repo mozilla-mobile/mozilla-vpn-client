@@ -48,6 +48,7 @@
 #include "task.h"
 #include "urlopener.h"
 #include "websocket/pushmessage.h"
+#include "websocket/websockethandler.h"
 
 #ifdef MZ_WASM
 #  include "platforms/wasm/wasminspector.h"
@@ -842,6 +843,14 @@ static QList<InspectorCommand> s_commands{
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QString versionOverride = QString(arguments[1]);
                        Constants::setVersionOverride(versionOverride);
+                       return QJsonObject();
+                     }},
+
+    InspectorCommand{"override_websocket_server_url",
+                     "Override the websocket server url", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       QString url = QString(arguments[1]);
+                       WebSocketHandler::testOverrideWebSocketServerUrl(url);
                        return QJsonObject();
                      }},
 };

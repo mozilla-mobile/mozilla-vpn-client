@@ -71,12 +71,12 @@ QString WebSocketHandler::webSocketServerUrl() {
   return httpServerUrl.toLower().replace("http", "ws");
 }
 
-#ifdef UNIT_TEST
 // static
 void WebSocketHandler::testOverrideWebSocketServerUrl(const QString& url) {
   WebSocketHandler::s_customWebSocketServerUrl = url;
 }
 
+#ifdef UNIT_TEST
 void WebSocketHandler::testOverridePingInterval(int newInterval) {
   m_pingInterval = newInterval;
 }

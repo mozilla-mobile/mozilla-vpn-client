@@ -72,6 +72,10 @@ describe('PushMessage.handlers', function() {
       }
     };
 
+    beforeEach(async () => {
+      await vpn.overrideWebSocketServerUrl(guardian.url.replace("http", "ws"));
+    });
+
     it('attempting to delete the current device leads to a logout',
        async () => {
          await vpn.authenticateInApp(true, true);
