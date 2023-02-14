@@ -6,7 +6,7 @@ task-defaults:
     worker:
         env:
             QT_VERSION: "6.3.2"
-            QT_MAJOR: "6.2"
+            QT_MAJOR: "6.3"
         max-run-time: 14400
 
 qt-mac:
