@@ -19,14 +19,14 @@ pub extern "C" fn glean_string_test_get_value(
     id: u32,
     ping_name: FfiStr
 ) -> *mut c_char {
-    let returnString = with_metric!(
+    let return_string = with_metric!(
         STRING_MAP,
         id,
         metric,
         metric.test_get_value(helpers::ping_name_from_ffi(ping_name)).unwrap_or("".to_string())
     );
 
-    CString::new(returnString)
+    CString::new(return_string)
         .expect("Unable to create CString.")
         .into_raw()
 }
