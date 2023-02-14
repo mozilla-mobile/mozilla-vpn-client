@@ -149,6 +149,7 @@ VPNFlickable {
                     id: tipAndTricksIntroButton
                     objectName: "tipsAndTricksIntroPopupDiscoverNowButton"
                     text: VPNI18n.GlobalDiscoverNow
+                    Layout.fillWidth: true
                     onClicked: {
                         tipAndTricksIntroButton.enabled = false
                         closedByPrimaryButton = true
@@ -160,6 +161,7 @@ VPNFlickable {
                     objectName: "tipsAndTricksIntroPopupGoBackButton"
                     labelText: VPNI18n.GlobalGoBack
                     onClicked: tipsAndTricksIntroPopup.close()
+                    Layout.alignment: Qt.AlignHCenter
                 }
             ]
 

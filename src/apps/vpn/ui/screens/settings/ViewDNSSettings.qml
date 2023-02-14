@@ -243,6 +243,7 @@ VPNViewBase {
                 VPNButton {
                     objectName: "dnsOverwritePopupDiscoverNowButton"
                     text: VPNI18n.DnsOverwriteDialogPrimaryButton
+                    Layout.fillWidth: true
                     onClicked: {
                         VPNSettings.dnsProviderFlags = VPNSettings.Custom;
                         dnsOverwritePopup.close()
@@ -252,6 +253,7 @@ VPNViewBase {
                     objectName: "dnsOverwritePopupGoBackButton"
                     labelText: VPNI18n.DnsOverwriteDialogSecondaryButton
                     onClicked: dnsOverwritePopup.close()
+                    Layout.alignment: Qt.AlignHCenter
                 }
             ]
 
