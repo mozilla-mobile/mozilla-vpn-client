@@ -5,14 +5,15 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 set -x
 
-# This script creates a qt-bundle that we can use in xcode-cloud and 
+# This script creates a qt-bundle that we can use in xcode-cloud and
 # in the taskcluser/ios builds ( to be coming ... )
 
 python3 -m pip install --upgrade pip
 python3 -m pip install --upgrade aqtinstall
 
+QT_VERSION="6.3.2"
+
 aqt install-qt -O qt_ios mac desktop $QT_VERSION -m qtwebsockets qt5compat
 aqt install-qt -O qt_ios mac ios $QT_VERSION -m qtwebsockets qt5compat
 
 zip -qr $UPLOAD_DIR/qt6_ios.zip qt_ios/*
-

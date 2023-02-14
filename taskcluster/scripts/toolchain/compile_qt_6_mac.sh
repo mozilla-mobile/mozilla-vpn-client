@@ -15,6 +15,9 @@ mkdir artifacts
 brew install cmake
 brew install ninja
 
+QT_VERSION="6.3.2"
+QT_MAJOR="6.3"
+
 echo "Download QT $QT_VERSION"
 curl -o qt.zip -L https://download.qt.io/archive/qt/$QT_MAJOR/$QT_VERSION/single/qt-everywhere-src-$QT_VERSION.zip
 unzip -q -aa qt.zip || true

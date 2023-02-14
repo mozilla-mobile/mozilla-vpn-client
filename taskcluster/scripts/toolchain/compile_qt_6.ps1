@@ -7,8 +7,8 @@ $TASK_WORKDIR =resolve-path "$REPO_ROOT_PATH/../../"
 $FETCHES_PATH =resolve-path "$TASK_WORKDIR/fetches"
 
 $BIN_PATH = "$REPO_ROOT_PATH/bin"
-$QT_VERSION = $env:QT_VERSION
-$QT_VERSION_MAJOR = $QT_VERSION.split(".")[0..1] -join(".") # e.g 6.2.3 -> 6.2
+$QT_VERSION = "6.3.2"
+$QT_VERSION_MAJOR = "6.3"
 
 $QT_URI = "https://download.qt.io/archive/qt/$QT_VERSION_MAJOR/$QT_VERSION/single/qt-everywhere-src-$QT_VERSION.zip"
 
@@ -101,4 +101,3 @@ Stop-Process -Name "mspdbsrv" -Force -ErrorAction SilentlyContinue
 Write-Output "Open Processes:"
 
 wmic process get description,executablepath
-

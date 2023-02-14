@@ -15,7 +15,7 @@ RUN mkdir -p /builds/worker/.cache/go-build &&\
 #NDK Version:
 ARG NDK_VERSION=android-ndk-r23b
 ARG NDK_FILE=${NDK_VERSION}-linux.zip
-ARG QT_VERSION=6.2.1
+ARG QT_VERSION=6.3.2
 ARG CMAKE_VERSION=3.22.1
 ARG ANDROID_ARCH=android_armv7
 ARG SENTRY_CLI_VERSION="2.9.0"
