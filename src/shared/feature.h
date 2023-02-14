@@ -8,8 +8,6 @@
 #include <QApplication>
 #include <QObject>
 
-#include "i18nstrings.h"
-
 class Feature : public QObject {
   Q_OBJECT
 

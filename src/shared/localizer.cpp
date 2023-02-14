@@ -7,7 +7,11 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QLocale>
+#include <QTranslator>
 
 #include "appconstants.h"
 #include "glean/generated/metrics.h"
@@ -161,12 +165,10 @@ void Localizer::initialize() {
   connect(settingsHolder, &SettingsHolder::languageCodeChanged, this,
           &Localizer::settingsChanged);
   settingsChanged();
-
-  QCoreApplication::installTranslator(&m_translator);
 }
 
 void Localizer::loadLanguagesFromI18n() {
-  QMap<QString, double> completeness =
+  m_translationCompleteness =
       loadTranslationCompleteness(":/i18n/translations.completeness");
 
   QDir dir(":/i18n");
@@ -180,11 +182,14 @@ void Localizer::loadLanguagesFromI18n() {
     QStringList parts = file.split(".");
     Q_ASSERT(parts.length() == 2);
 
-    QString code = parts[0].remove(0, 11);
+    QString code =
+        parts[0].remove(0, strlen(AppConstants::LOCALIZER_FILENAME_PREFIX) +
+                               /* the final '_': */ 1);
 
-    if (Constants::inProduction() && completeness.value(code, 0) < 0.7) {
-      logger.debug() << "Language excluded:" << code
-                     << "completeness:" << completeness.value(code, 0);
+    if (Constants::inProduction() &&
+        m_translationCompleteness.value(code, 0) < 0.7) {
+      logger.debug() << "Language excluded:" << code << "completeness:"
+                     << m_translationCompleteness.value(code, 0);
       continue;
     }
 
@@ -272,6 +277,20 @@ void Localizer::settingsChanged() {
 }
 
 bool Localizer::loadLanguage(const QString& code) {
+  // Unload the current translators.
+  for (QTranslator* translator : m_translators) {
+    QCoreApplication::removeTranslator(translator);
+    translator->deleteLater();
+  }
+  m_translators.clear();
+
+  double completeness = m_translationCompleteness.value(code, 0);
+  if (completeness < 1) {
+    logger.debug() << "Let's try to load another language as fallback for code"
+                   << code;
+    maybeLoadLanguageFallback(code);
+  }
+
   QLocale locale = QLocale(code);
   if (code.isEmpty()) {
     locale = QLocale(systemLanguageCode());
@@ -279,8 +298,7 @@ bool Localizer::loadLanguage(const QString& code) {
 
   QLocale::setDefault(locale);
 
-  if (!m_translator.load(locale, AppConstants::LOCALIZER_FILENAME_PREFIX, "_",
-                         ":/i18n")) {
+  if (!createTranslator(locale)) {
     logger.error() << "Loading the locale failed - code:" << code;
     return false;
   }
@@ -289,6 +307,55 @@ bool Localizer::loadLanguage(const QString& code) {
   emit localeChanged();
 
   return true;
+}
+
+bool Localizer::createTranslator(const QLocale& locale) {
+  QTranslator* translator = new QTranslator(this);
+  m_translators.append(translator);
+  QCoreApplication::installTranslator(translator);
+
+  return translator->load(locale, AppConstants::LOCALIZER_FILENAME_PREFIX, "_",
+                          ":/i18n");
+}
+
+void Localizer::maybeLoadLanguageFallback(const QString& code) {
+  if (m_translationFallback.isEmpty()) {
+    QFile file(":/i18n/translations_fallback.json");
+    Q_ASSERT(file.exists());
+
+    if (!file.open(QIODevice::ReadOnly)) {
+      logger.warning() << "Unable to open file translations.fallback:"
+                       << file.errorString();
+      return;
+    }
+
+    QJsonDocument json = QJsonDocument::fromJson(file.readAll());
+    QJsonObject obj = json.object();
+    for (const QString& key : obj.keys()) {
+      QStringList languages;
+      for (const QJsonValue& value : obj[key].toArray()) {
+        languages.prepend(value.toString());
+      }
+
+      m_translationFallback.insert(key, languages);
+    }
+  }
+
+  // First fallback, English where we are 100% sure we have all the
+  // translations. If something goes totally wrong, we use English strings.
+  if (!createTranslator(QLocale("en"))) {
+    logger.warning() << "Loading the fallback locale failed - code: en";
+  }
+
+  for (const QString& fallbackCode :
+       m_translationFallback.value(code, QStringList())) {
+    logger.debug() << "Fallback language:" << fallbackCode;
+
+    if (!createTranslator(QLocale(fallbackCode))) {
+      logger.warning() << "Loading the fallback locale failed - code:"
+                       << fallbackCode;
+    }
+  }
 }
 
 // static

@@ -4,7 +4,6 @@
 
 #include "appconstants.h"
 #include "helper.h"
-#include "i18nstrings.h"
 #include "leakdetector.h"
 #include "loghandler.h"
 #include "settingsholder.h"
@@ -42,7 +41,6 @@ int main(int argc, char* argv[]) {
 
   int failures = 0;
 
-  I18nStrings::initialize();
   LogHandler::enableStderr();
 
   // If arguments were passed, then run a subset of tests.
