@@ -39,7 +39,7 @@ void TestLocalizer::basic() {
   QCOMPARE(rn[Localizer::CodeRole], "code");
   QCOMPARE(rn[Localizer::RTLRole], "isRightToLeft");
 
-  QVERIFY(l.rowCount(QModelIndex()) == 3);
+  QVERIFY(l.rowCount(QModelIndex()) == 4);
   QCOMPARE(l.data(QModelIndex(), Localizer::LocalizedLanguageNameRole),
            QVariant());
 }
@@ -249,7 +249,8 @@ void TestLocalizer::fallback() {
   Localizer l;
 
   // We have 3 languages in this test.
-  QCOMPARE(l.languages(), QStringList() << "es_CL"
+  QCOMPARE(l.languages(), QStringList() << "en"
+                                        << "es_CL"
                                         << "es_ES"
                                         << "es_MX");
 
@@ -261,6 +262,9 @@ void TestLocalizer::fallback() {
 
   // MX and CL do not have "foo.3", fallback ES
   QCOMPARE(qtTrId("foo.3"), "hello world 3 es_ES");
+
+  // No translations for "foo.4", fallback English
+  QCOMPARE(qtTrId("foo.4"), "Hello world 4 - fallback");
 }
 
 static TestLocalizer s_testLocalizer;

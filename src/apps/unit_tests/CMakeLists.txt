@@ -111,7 +111,10 @@ file(APPEND ${GENERATED_DIR}/translations.qrc "        <file alias=\"completenes
 file(APPEND ${GENERATED_DIR}/translations.qrc "        <file alias=\"translations_fallback.json\">${MZ_SOURCE_DIR}/apps/unit_tests/languages/translations_fallback.json</file>\n")
 file(APPEND ${GENERATED_DIR}/translations.qrc "        <file alias=\"translations.completeness\">${MZ_SOURCE_DIR}/apps/unit_tests/languages/translations.completeness</file>\n")
 
-message("BAKU ${MZ_SOURCE_DIR}/apps/unit_tests/languages/unit_test_es_CL.ts")
+execute_process(
+    COMMAND ${QT_LRELEASE_EXECUTABLE} -verbose -idbased ${MZ_SOURCE_DIR}/apps/unit_tests/languages/unit_test_en.ts -qm ${GENERATED_DIR}/unit_test_en.qm)
+file(APPEND ${GENERATED_DIR}/translations.qrc "        <file alias=\"unit_test_en.qm\">${GENERATED_DIR}/unit_test_en.qm</file>\n")
+
 execute_process(
     COMMAND ${QT_LRELEASE_EXECUTABLE} -verbose -idbased ${MZ_SOURCE_DIR}/apps/unit_tests/languages/unit_test_es_CL.ts -qm ${GENERATED_DIR}/unit_test_es_CL.qm)
 file(APPEND ${GENERATED_DIR}/translations.qrc "        <file alias=\"unit_test_es_CL.qm\">${GENERATED_DIR}/unit_test_es_CL.qm</file>\n")

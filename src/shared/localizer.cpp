@@ -341,6 +341,12 @@ void Localizer::maybeLoadLanguageFallback(const QString& code) {
     }
   }
 
+  // First fallback, English where we are 100% sure we have all the
+  // translations. If something goes totally wrong, we use English strings.
+  if (!createTranslator(QLocale("en"))) {
+    logger.warning() << "Loading the fallback locale failed - code: en";
+  }
+
   for (const QString& fallbackCode :
        m_translationFallback.value(code, QStringList())) {
     logger.debug() << "Fallback language:" << fallbackCode;
