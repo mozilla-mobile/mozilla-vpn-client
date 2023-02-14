@@ -53,8 +53,8 @@ ColumnLayout {
             Layout.leftMargin: -4
 
             textAlignment: Text.AlignLeft
-            labelText: VPNI18n.GlobalClearAll.arg(VPNSettings.vpnDisabledApps.length)
-            fontSize: VPNTheme.theme.   fontSize
+            labelText: VPNI18n.SettingsAppExclusionClearAllApps.arg(VPNSettings.vpnDisabledApps.length)
+            fontSize: VPNTheme.theme.fontSize
             fontName: VPNTheme.theme.fontInterSemiBoldFamily
 
             onClicked: VPNAppPermissions.protectAll();

@@ -121,6 +121,7 @@ VPNButtonBase {
             id: iconLoader
             Layout.alignment: Qt.AlignVCenter
             sourceComponent: iconComponent
+            active: iconComponent
         }
 
         Label {

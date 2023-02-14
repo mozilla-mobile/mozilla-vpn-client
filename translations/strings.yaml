@@ -315,6 +315,9 @@ settings:
   dnsSettingsWarning: These options may cause some websites to break or not display content correctly.
   dnsSettingsInputPlaceholder: Enter custom DNS
   dnsSettingsDisconnectWarning: Changing these settings will cause the VPN to disconnect and reconnect automatically.
+  appExclusionClearAllApps: 
+    value: Clear all (%1)
+    comment: Button label. %1 refers to the number of apps to be removed from the exclusion list.
 
 dnsOverwriteDialog:
   titleDNS: Override DNS settings?
@@ -790,9 +793,6 @@ global:
   paste:
     value: Paste
     comment: Label for button to paste value from clipboard into input
-  clearAll:
-    value: Clear all (%1)
-    comment: Button label. %1 refers to the number of items to be cleared.
 
 getHelp:
   helpCenter: Help Center
