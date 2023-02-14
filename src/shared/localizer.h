@@ -71,8 +71,7 @@ class Localizer final : public QAbstractListModel {
   // Public for testing
   static QMap<QString, double> loadTranslationCompleteness(
       const QString& fileName);
-  Q_INVOKABLE static QString formatDate(const QDateTime& nowDateTime,
-                              const QDateTime& messageDateTime);
+  Q_INVOKABLE static QString formatDate(const QDateTime& messageDateTime, bool capitalize = false);
 
   // QAbstractListModel methods
 

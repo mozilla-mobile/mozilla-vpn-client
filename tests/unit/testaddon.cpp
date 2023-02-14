@@ -1058,7 +1058,7 @@ void TestAddon::message_date() {
   QVERIFY(date.isValid());
 
   QFETCH(QString, result);
-  QCOMPARE(Localizer::instance()->formatDate(now, date), result);
+  QCOMPARE(Localizer::instance()->formatDate(date), result);
 
   QFETCH(qint64, timer);
   QCOMPARE(AddonMessage::planDateRetranslationInternal(now, date), timer);
