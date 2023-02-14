@@ -14,6 +14,8 @@ jobs:
   linter:
     name: Run Main Linters (clang, l10n, etc.)
     runs-on: ubuntu-22.04
+    env:
+      QTVERSION: 6.3.2
     steps:
       - name: Clone repository
         uses: actions/checkout@v3

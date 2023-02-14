@@ -21,7 +21,7 @@ jobs:
     outputs:
       matrix: ${{ steps.testGen.outputs.tests }}
     env:
-      QTVERSION: 6.2.4
+      QTVERSION: 6.3.2
 
     steps:
       - name: Clone repository
@@ -43,7 +43,10 @@ jobs:
           pip install -r requirements.txt
 
       - name: Setup emsdk
-        uses: mymindstorm/setup-emsdk@v7
+        uses: mymindstorm/setup-emsdk@v11
+        with:
+          version: 3.0.0
+          actions-cache-folder: 'emsdk-cache'
 
       - name: Compiling
         shell: bash
@@ -92,7 +95,7 @@ jobs:
       matrix:
         test: ${{ fromJson(needs.wasmQt6.outputs.matrix) }}
     env:
-      QTVERSION: 6.2.4
+      QTVERSION: 6.3.2
 
     steps:
       - name: Clone repository

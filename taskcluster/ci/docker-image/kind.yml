@@ -33,35 +33,35 @@ tasks:
         parent: base
         symbol: I(wasm)
         args:
-            QT_VERSION: 6.2.4
+            QT_VERSION: 6.3.2
     android-build-arm64:
         parent: base
         symbol: I(android-arm64-v8a)
         definition: android-qt6-build
         args:
             ANDROID_ARCH: android_arm64_v8a
-            QT_VERSION: 6.2.4
+            QT_VERSION: 6.3.2
     android-build-armv7:
         parent: base
         symbol: I(android_armv7)
         definition: android-qt6-build
         args:
             ANDROID_ARCH: android_armv7
-            QT_VERSION: 6.2.4
+            QT_VERSION: 6.3.2
     android-build-x86:
         parent: base
         symbol: I(android_x86)
         definition: android-qt6-build
         args:
             ANDROID_ARCH: android_x86
-            QT_VERSION: 6.2.4
+            QT_VERSION: 6.3.2
     android-build-x64:
         parent: base
         symbol: I(android_x86_64)
         definition: android-qt6-build
         args:
             ANDROID_ARCH: android_x86_64
-            QT_VERSION: 6.2.4
+            QT_VERSION: 6.3.2
     android-qt-next:
         parent: base
         symbol: I(android_arm64_v8a_next)

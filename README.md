@@ -137,7 +137,7 @@ mkdir build && cmake -S . -B build -DCMAKE_INSTALL_PREFIX=/usr
 
 This generation step can be augmented by providing variable definitions on the
 command line to adjust features, or help CMake locate its dependencies. (Using these
-may look like `cmake -S . -B build -GXcode -DCMAKE_PREFIX_PATH=/Users/[your account]/Qt/6.2.4/macos/lib/cmake`)
+may look like `cmake -S . -B build -GXcode -DCMAKE_PREFIX_PATH=/Users/[your account]/Qt/6.3.2/macos/lib/cmake`)
 The following variables may be of use:
 
 - `CMAKE_PREFIX_PATH=<Qt install path>/lib/cmake`: can be set if CMake is unable
@@ -384,13 +384,13 @@ NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 6. Make sure qmake is available by setting the environment variable QT_IOS_BIN:
 
 ```
-export QT_IOS_BIN=/Users/[username]/Qt/6.2.4/ios/bin
+export QT_IOS_BIN=/Users/[username]/Qt/6.3.2/ios/bin
 ```
 
 Then generate the Xcode project using our script (and an optional adjust token):
 
 ```bash
-./scripts/macos/apple_compile.sh ios [--adjust <adjust_token>] -q ~/Qt/6.2.4/macos/bin
+./scripts/macos/apple_compile.sh ios [--adjust <adjust_token>] -q ~/Qt/6.3.2/macos/bin
 ```
 
 7. Xcode should automatically open. You can then run/test/archive/ship the app.
@@ -443,7 +443,7 @@ it from the [official website](https://golang.org/dl/).
 
 2. Follow the [Getting started](https://doc.qt.io/qt-6/android-getting-started.html) page.
 
-3. Set the `QT_HOST_PATH` environment variable to point to the location of the `androiddeployqt` tool  -- minus the `/bin` suffix i.e. if `$(which androiddeployqt)` is `$HOME/Qt/6.2.4/gcc_64/bin/androiddeployqt`, `QT_HOST_PATH` is `$HOME/Qt/6.2.4/gcc_64/`.
+3. Set the `QT_HOST_PATH` environment variable to point to the location of the `androiddeployqt` tool  -- minus the `/bin` suffix i.e. if `$(which androiddeployqt)` is `$HOME/Qt/6.3.2/gcc_64/bin/androiddeployqt`, `QT_HOST_PATH` is `$HOME/Qt/6.3.2/gcc_64/`.
 
 4. Set the `ANDROID_SDK_ROOT` and `ANDROID_NDK_ROOT` environment variables,
 to point to the Android SDK and NDK installation directories. Required NDK versions: 23.1.7779620 and 21.0.6113669.
@@ -577,8 +577,8 @@ export MVPN_BIN=$(pwd)/build/tests/dummyvpn/dummyvpn
  * `ARTIFACT_DIR` - optional (directory to put screenshots from test failures)
  * Sample .env file:
   ```
-  export PATH=$PATH:~/Qt/6.2.4/macos/bin:$PATH
-  export QT_MACOS_BIN=~/Qt/6.2.4/macos/bin
+  export PATH=$PATH:~/Qt/6.3.2/macos/bin:$PATH
+  export QT_MACOS_BIN=~/Qt/6.3.2/macos/bin
   MVPN_API_BASE_URL=http://localhost:5000
   MVPN_BIN=dummybuild/src/mozillavpn
   ARTIFACT_DIR=tests/artifact
