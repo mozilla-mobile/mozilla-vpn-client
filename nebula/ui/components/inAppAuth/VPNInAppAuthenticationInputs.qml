@@ -247,21 +247,21 @@ ColumnLayout {
         function onErrorOccurred(e, retryAfter) {
             switch(e) {
             case VPNAuthInApp.ErrorIncorrectPassword:
-                VPNGleanDeprecated.recordGleanEventWithExtraKeys("authenticationError", { "reason": "IncorrectPassword" });
+                MZGleanDeprecated.recordGleanEventWithExtraKeys("authenticationError", { "reason": "IncorrectPassword" });
                 Glean.sample.authenticationError.record({ reason: "IncorrectPassword" });
 
                 base._inputErrorMessage =  VPNI18n.InAppAuthInvalidPasswordErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
             case VPNAuthInApp.ErrorInvalidEmailAddress:
-                VPNGleanDeprecated.recordGleanEventWithExtraKeys("authenticationError", { "reason": "InvalidEmail" });
+                MZGleanDeprecated.recordGleanEventWithExtraKeys("authenticationError", { "reason": "InvalidEmail" });
                 Glean.sample.authenticationError.record({ reason: "InvalidEmail" });
 
                 base._inputErrorMessage =  VPNI18n.InAppAuthInvalidEmailErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
             case VPNAuthInApp.ErrorInvalidOrExpiredVerificationCode:
-                VPNGleanDeprecated.recordGleanEventWithExtraKeys("authenticationError", { "reason": "InvalidOrExpiredVerificationCode" });
+                MZGleanDeprecated.recordGleanEventWithExtraKeys("authenticationError", { "reason": "InvalidOrExpiredVerificationCode" });
                 Glean.sample.authenticationError.record({ reason: "InvalidOrExpiredVerificationCode" });
 
                 base._inputErrorMessage = VPNI18n.InAppAuthInvalidCodeErrorMessage;
@@ -269,7 +269,7 @@ ColumnLayout {
                 break;
 
             case VPNAuthInApp.ErrorInvalidTotpCode:
-                VPNGleanDeprecated.recordGleanEventWithExtraKeys("authenticationError", { "reason": "InvalidTotpCode" });
+                MZGleanDeprecated.recordGleanEventWithExtraKeys("authenticationError", { "reason": "InvalidTotpCode" });
                 Glean.sample.authenticationError.record({ reason: "InvalidTotpCode" });
 
                 base._inputErrorMessage = VPNI18n.InAppAuthInvalidCodeErrorMessage;
@@ -277,14 +277,14 @@ ColumnLayout {
                 break;
 
             case VPNAuthInApp.ErrorInvalidUnblockCode:
-                VPNGleanDeprecated.recordGleanEventWithExtraKeys("authenticationError", { "reason": "InvalidUnblockCode" });
+                MZGleanDeprecated.recordGleanEventWithExtraKeys("authenticationError", { "reason": "InvalidUnblockCode" });
                 Glean.sample.authenticationError.record({ reason: "InvalidUnblockCode" });
 
                 base._inputErrorMessage = VPNI18n.InAppAuthInvalidCodeErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
             case VPNAuthInApp.ErrorConnectionTimeout:
-                VPNGleanDeprecated.recordGleanEventWithExtraKeys("authenticationError", { "reason": "Timeout" });
+                MZGleanDeprecated.recordGleanEventWithExtraKeys("authenticationError", { "reason": "Timeout" });
                 Glean.sample.authenticationError.record({ reason: "Timeout" });
 
                 // In case of a timeout we want to exit here 

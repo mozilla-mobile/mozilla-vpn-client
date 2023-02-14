@@ -195,7 +195,7 @@ VPNViewBase {
                 VPNButton {
                     text: VPNI18n.InAppSupportWorkflowSupportPrimaryButtonText
                     onClicked: {
-                      VPNGleanDeprecated.recordGleanEvent("supportCaseSubmitted");
+                      MZGleanDeprecated.recordGleanEvent("supportCaseSubmitted");
                       Glean.sample.supportCaseSubmitted.record();
                       contactUsRoot._emailAddress = (VPN.userState === VPN.UserAuthenticated ? VPNUser.email : emailInput.text);
                       contactUsRoot.createSupportTicket(contactUsRoot._emailAddress, subjectInput.text, textArea.userEntry, dropDown.currentValue);

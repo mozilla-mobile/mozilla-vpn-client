@@ -31,7 +31,7 @@ VPNViewBase {
             backgroundColor: VPNTheme.theme.clickableRowBlue
             width: parent.width - VPNTheme.theme.windowMargin
             onClicked: {
-                VPNGleanDeprecated.recordGleanEvent("helpMenuHelpCenterOpened");
+                MZGleanDeprecated.recordGleanEvent("helpMenuHelpCenterOpened");
                 Glean.sample.helpMenuHelpCenterOpened.record();
                 VPNUrlOpener.openUrlLabel("sumo")
             }
@@ -47,7 +47,7 @@ VPNViewBase {
             backgroundColor: VPNTheme.theme.iconButtonLightBackground
             width: parent.width - VPNTheme.theme.windowMargin
             onClicked: {
-                VPNGleanDeprecated.recordGleanEvent("helpContactSupportOpened");
+                MZGleanDeprecated.recordGleanEvent("helpContactSupportOpened");
                 Glean.sample.helpContactSupportOpened.record();
                 getHelpStackView.push("qrc:/ui/screens/getHelp/contactUs/ViewContactUsForm.qml");
             }
@@ -63,7 +63,7 @@ VPNViewBase {
             backgroundColor: VPNFeatureList.get("shareLogs").isSupported ?VPNTheme.theme.clickableRowBlue : VPNTheme.theme.iconButtonLightBackground
             width: parent.width - VPNTheme.theme.windowMargin
             onClicked: {
-                VPNGleanDeprecated.recordGleanEvent("helpMenuViewLogsOpened");
+                MZGleanDeprecated.recordGleanEvent("helpMenuViewLogsOpened");
                 Glean.sample.helpMenuViewLogsOpened.record();
                 VPN.requestViewLogs()
             }

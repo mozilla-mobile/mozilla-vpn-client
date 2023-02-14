@@ -22,7 +22,7 @@ FocusScope {
     property var currentServer
 
     function setSelectedServer(countryCode, cityName, localizedCityName) {
-        VPNGleanDeprecated.recordGleanEventWithExtraKeys("userChangedEndpointGeo", { "server": currentServer.whichHop });
+        MZGleanDeprecated.recordGleanEventWithExtraKeys("userChangedEndpointGeo", { "server": currentServer.whichHop });
         Glean.sample.userChangedEndpointGeo.record({ server: currentServer.whichHop });
 
         if (currentServer.whichHop === "singleHopServer") {

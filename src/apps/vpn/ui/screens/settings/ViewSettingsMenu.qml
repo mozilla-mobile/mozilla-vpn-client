@@ -140,7 +140,7 @@ VPNViewBase {
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: VPNLocalizer.isRightToLeft
                 onClicked: {
-                    VPNGleanDeprecated.recordGleanEvent("settingsAboutUsOpened");
+                    MZGleanDeprecated.recordGleanEvent("settingsAboutUsOpened");
                     Glean.sample.settingsAboutUsOpened.record();
                     stackview.push("qrc:/ui/screens/settings/ViewAboutUs.qml")
                 }
