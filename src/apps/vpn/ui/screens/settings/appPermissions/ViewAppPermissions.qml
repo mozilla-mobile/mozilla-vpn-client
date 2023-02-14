@@ -111,7 +111,7 @@ VPNViewBase {
             Layout.leftMargin: VPNTheme.theme.vSpacing
             Layout.rightMargin: VPNTheme.theme.vSpacing
             Layout.topMargin: VPNTheme.theme.vSpacing
-            text: VPNI18n.SplittunnelInfoText
+            text: VPNI18n.SplittunnelInfoText2
         }
 
         VPNLinkButton {
