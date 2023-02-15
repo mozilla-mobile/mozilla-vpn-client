@@ -6,23 +6,7 @@ const assert = require('assert');
 const vpn = require('./helper.js');
 const queries = require('./queries.js');
 const fxaEndpoints = require('./servers/fxa_endpoints.js')
-// const { SubscriptionDetails } = require('./servers/guardian_endpoints.js');
-
-const INACTIVE_USER_DATA = {
-  avatar: '',
-  display_name: 'Test',
-  email: 'test@mozilla.com',
-  max_devices: 5,
-  subscriptions: {vpn: {active: false}}, //
-  devices: [{
-    name: 'Current device',
-    unique_id: '',
-    pubkey: '',
-    ipv4_address: '127.0.0.1',
-    ipv6_address: '::1',
-    created_at: new Date().toISOString()
-  }],
-};
+const { SubscriptionDetails } = require('./servers/guardian_endpoints.js');
 
 const SUBSCRIPTION_DETAILS = {
   plan: {amount: 123, currency: 'usd', interval: 'year', interval_count: 1},
@@ -148,59 +132,50 @@ describe('Subscription view', function() {
     this.ctx.resetCallbacks();
   });
 
-  it.only('Verify subscription before logging in', async () => {
-    this.ctx.fxaLoginCallback = (req) => {
-      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
-        sessionToken: 'session',
-        verified: true,
-        verificationMethod: ''
-      };
-      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
-    };
-    this.ctx.guardianSubscriptionDetailsCallback = req => {
-      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
-          .status = 401;
-      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
-          .body = {}
+  it.only('Verify subscription before enabling VPN', async () => {
+    
+    ///STEP 1: OVERRIDE GUARDIAN ENDPOINT TO EXPIRE SUBSCRIPTION
+    this.ctx.guardianSubscriptionDetailsCallback = () => {
+      ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails'].status = 200;
+      ctx.guardianOverrideEndpoints
+        .GETs['/api/v1/vpn/account']
+        .body = SubscriptionExpiredUserData;
     };
 
-    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      ///STEP 2: TURN ON THE VPN
+    await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
 
-    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
-            'text', 'Test'));
-    await vpn.waitForQuery(
-        queries.screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
-            'text', 'test@mozilla.com'));
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.USER_PROFILE.visible());
+    await vpn.setSetting('connectionChangeNotification', 'true');
+    await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
 
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await vpn.waitForCondition(async () => {
+      let connectingMsg = await vpn.getQueryProperty(
+          queries.screenHome.CONTROLLER_TITLE, 'text');
+      return connectingMsg === 'Connecting…';
+    });
 
-    await vpn.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible());
-    await vpn.setQueryProperty(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible(),
-        'text', 'P4ssw0rd!!');
-    await vpn.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
-            .enabled());
+    assert(
+        await vpn.getQueryProperty(
+            queries.screenHome.CONTROLLER_SUBTITLE, 'text') ===
+        'Masking connection and location');
 
-    this.ctx.guardianSubscriptionDetailsCallback = req => {
-      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
-          .status = 200;
-      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
-          .body = SUBSCRIPTION_DETAILS;
-    };
+    await vpn.waitForCondition(async () => {
+      return await vpn.getQueryProperty(
+                 queries.screenHome.CONTROLLER_TITLE, 'text') == 'VPN is on';
+    });
 
-    await vpn.waitForQueryAndClick(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
-            .enabled());
+    assert((await vpn.getQueryProperty(
+                queries.screenHome.SECURE_AND_PRIVATE_SUBTITLE, 'text'))
+               .startsWith('Secure and private '));
 
-    await vpn.waitForQuery(
-        queries.screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
+    await vpn.waitForCondition(() => {
+      return vpn.lastNotification().title === 'VPN Connected';
+    });
+
+    assert(vpn.lastNotification().title === 'VPN Connected');
+    assert(vpn.lastNotification().message.startsWith('Connected to '));
+
+    //STEP 3: GET THE EXPIRATION PAGE
   });
 
   it('Authentication needed - sample', async () => {
