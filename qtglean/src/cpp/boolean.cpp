@@ -29,5 +29,5 @@ bool BooleanMetric::testGetValue(const QString& pingName) const {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
   return glean_boolean_test_get_value(m_id, pingName.toLocal8Bit());
 #endif
-  return true;
+  return false;
 }

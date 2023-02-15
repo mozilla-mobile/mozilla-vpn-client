@@ -58,7 +58,6 @@ pub extern "C" fn glean_initialize(is_telemetry_enabled: bool, data_path: FfiStr
 
     register_pings();
     if channel == "staging" {
-        glean::set_debug_view_tag("MozillaVPNRust");
         glean::set_log_pings(true);
     };
 
