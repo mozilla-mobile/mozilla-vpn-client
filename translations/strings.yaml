@@ -473,14 +473,16 @@ serverUnavailableNotification:
 mobileOnboarding:
   panelOneTitle: Mozilla VPN
   panelOneSubtitle: A safe, reliable and fast VPN. Built by the makers of Firefox.
-  panelTwoTitle: Encrypt your activity
-  panelTwoSubtitle: Mozilla VPN keeps your location and browsing safe from eavesdroppers.
-  panelThreeTitle: Protect your privacy
-  panelThreeSubtitle: Route your activity and location through servers in more than 30 countries.
-  panelFourTitle: More security with one tap
-  panelFourSubtitle: Stream, download and game without limits, monthly caps or ISP throttling.
   signUpBtn: Sign up
   alreadyASubscriber: Already a subscriber?
+
+onboarding:
+  panelTwoTitle: Protect your privacy
+  panelTwoSubtitle: With more than 500 servers in 60 cities around the world, Mozilla VPN encrypts your browsing activity, data, and true location to keep you safe from network spies. 
+  panelThreeTitle: One tap to safety
+  panelThreeSubtitle: "Protecting yourself is simple: tap to connect to the VPN and you’re ready to browse safely. Mozilla VPN will start automatically for seamless protection."
+  panelFourTitle: Add even more privacy
+  panelFourSubtitle: You can set Mozilla VPN to protect you from ads, trackers, and malware. Plus, customize your protection for specific apps.
 
 inAppAuth:
   emailInputPlaceholder: Enter email

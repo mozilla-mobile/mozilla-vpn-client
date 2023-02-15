@@ -63,24 +63,24 @@ Item {
                 animationSpeed: 1
                 animationSrc: ":/nebula/resources/animations/lock_animation.json"
                 loopAnimation: true
-                titleStringId: "MobileOnboardingPanelTwoTitle"
-                subtitleStringId: "MobileOnboardingPanelTwoSubtitle"
+                titleStringId: "OnboardingPanelTwoTitle"
+                subtitleStringId: "OnboardingPanelTwoSubtitle"
                 panelId: "encrypt-your-activity"
             }
             ListElement {
                 animationSpeed: 1
                 animationSrc: ":/nebula/resources/animations/globe_animation.json"
                 loopAnimation: true
-                titleStringId: "MobileOnboardingPanelThreeTitle"
-                subtitleStringId: "MobileOnboardingPanelThreeSubtitle"
+                titleStringId: "OnboardingPanelThreeTitle"
+                subtitleStringId: "OnboardingPanelThreeSubtitle"
                 panelId: "protect-your-privacy"
             }
             ListElement {
                 animationSpeed: 1
                 animationSrc: ":/nebula/resources/animations/vpnactive_animation.json"
                 loopAnimation: true
-                titleStringId: "MobileOnboardingPanelFourTitle"
-                subtitleStringId: "MobileOnboardingPanelFourSubtitle"
+                titleStringId: "OnboardingPanelFourTitle"
+                subtitleStringId: "OnboardingPanelFourSubtitle"
                 panelId: "more-security"
             }
         }
