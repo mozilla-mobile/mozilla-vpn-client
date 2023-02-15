@@ -60,8 +60,8 @@ describe('Settings', function() {
     await vpn.waitForQueryAndClick(screenSettings.APP_EXCLUSIONS.visible());
     await vpn.waitForQuery(screenSettings.STACKVIEW.ready());
     
-    await vpn.waitForQuery(appExclusionsView.APP_ROW2.visible().prop(
-        'idxForFunctionalTests', '0'));
+    await vpn.waitForQuery(appExclusionsView.APP_ROW1.visible().prop(
+        'appIdForFunctionalTests', 'com.example.two'));
   });
 
   it('Back button works', async () => {

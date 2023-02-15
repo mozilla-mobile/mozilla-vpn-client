@@ -68,10 +68,10 @@ ColumnLayout {
             objectName: "appList"
             model: searchBarWrapper.getProxyModel()
             delegate: RowLayout {
-                property int idxForFunctionalTests: index
+                property string appIdForFunctionalTests: appID
                 id: appRow
 
-                objectName: `${appID}-row`
+                objectName: `app-${index}`
                 spacing: VPNTheme.theme.windowMargin
                 Layout.preferredHeight: VPNTheme.theme.navBarTopMargin
 
@@ -81,7 +81,7 @@ ColumnLayout {
 
                 VPNCheckBox {
                     id: checkBox
-                    objectName: appID + "-checkbox"
+                    objectName: "checkbox"
                     onClicked: () => appRow.handleClick()
                     checked: !appIsEnabled
                     Layout.alignment: Qt.AlignVCenter
