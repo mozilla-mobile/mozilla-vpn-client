@@ -85,6 +85,7 @@ ColumnLayout {
                     onClicked: () => appRow.handleClick()
                     checked: !appIsEnabled
                     Layout.alignment: Qt.AlignVCenter
+                    Accessible.name: appID
                 }
 
                 Rectangle {
