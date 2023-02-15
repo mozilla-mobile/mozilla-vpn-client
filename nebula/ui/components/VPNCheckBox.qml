@@ -10,12 +10,11 @@ import Mozilla.VPN 1.0
 import compat 0.1
 
 CheckBox {
-    // TODO
-    // property var accessibleName
+    property var uiState: VPNTheme.theme.uiState
+    property string accessibleName
+    property string accessibleDescription
 
     id: checkBox
-
-    property var uiState: VPNTheme.theme.uiState
 
     signal clicked()
 
@@ -44,11 +43,14 @@ CheckBox {
 
     }
     Keys.onReturnPressed: checkBox.clicked()
-    // TODO
-    // Accessible.name: accessibleName
+    Keys.onSpacePressed: checkBox.clicked()
+
     Accessible.onPressAction: clicked()
     Accessible.onToggleAction: clicked()
     Accessible.focusable: true
+    Accessible.name: accessibleName
+    Accessible.description: accessibleDescription
+
     states: [
         State {
             name: uiState.stateDefault

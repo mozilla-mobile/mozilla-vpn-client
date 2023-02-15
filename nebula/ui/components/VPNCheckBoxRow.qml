@@ -29,6 +29,10 @@ RowLayout {
         onClicked: checkBoxRow.clicked()
         checked: isChecked
         opacity: checkBoxRow.enabled ? 1 : 0.5
+
+        accessibleName: labelText
+        accessibleDescription: subLabelText
+
         Component.onCompleted: {
             if (!showAppImage) {
                 Layout.leftMargin = leftMargin
