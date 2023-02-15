@@ -4,6 +4,7 @@
 
 #ifndef QUANTITY_H
 #define QUANTITY_H
+
 #include <QObject>
 
 #include "errortype.h"
