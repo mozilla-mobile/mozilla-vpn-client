@@ -27,6 +27,22 @@ const SUBSCRIPTION_DETAILS = {
   },
 };
 
+const SUBSCRIPTION_EXPIRED_USER_DATA = {
+  avatar: '',
+  display_name: 'Test test',
+  email: 'test@mozilla.com',
+  max_devices: 5,
+  subscriptions: {vpn: {active: false}},
+  devices: [{
+    name: 'Current device',
+    unique_id: '',
+    pubkey: '',
+    ipv4_address: '127.0.0.1',
+    ipv6_address: '::1',
+    created_at: new Date().toISOString()
+  }],
+};
+
 describe('Subscription view', function() {
   this.timeout(3000000);
   this.ctx.authenticationNeeded = true;
@@ -115,14 +131,49 @@ describe('Subscription view', function() {
     this.ctx.resetCallbacks();
   });
 
+  //////
+  this.ctx.guardianOverrideEndpoints = {
+    GETs: {
+      '/api/v1/vpn/account':
+          {status: 200, requiredHeaders: ['Authorization'], body: SUBSCRIPTION_EXPIRED_USER_DATA},
+    },
+    POSTs: {
+      '/api/v2/vpn/login/verify': {
+        status: 200,
+        bodyValidator: guardianEndpoints.validators.guardianLoginVerify,
+        body: {user: SUBSCRIPTION_EXPIRED_USER_DATA, token: 'our-token'}
+      },
+
+      '/api/v1/vpn/device': {
+        status: 201,
+        requiredHeaders: ['Authorization'],
+        bodyValidator: guardianEndpoints.validators.guardianDevice,
+        callback: (req) => {
+          SUBSCRIPTION_EXPIRED_USER_DATA.devices[0].name = req.body.name;
+          SUBSCRIPTION_EXPIRED_USER_DATA.devices[0].pubkey = req.body.pubkey;
+          SUBSCRIPTION_EXPIRED_USER_DATA.devices[0].unique_id = req.body.unique_id;
+        },
+        body: {}
+      },
+    },
+    DELETEs: {
+      '/api/v1/vpn/device/': {
+        match: 'startWith',
+        status: 404,
+        requiredHeaders: ['Authorization'],
+        body: {},
+      },
+    },
+  };
+  //////
   it.only('Verify subscription before enabling VPN', async () => {
     
     ///STEP 1: OVERRIDE GUARDIAN ENDPOINT TO EXPIRE SUBSCRIPTION
     this.ctx.guardianSubscriptionDetailsCallback = () => {
-      ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails'].status = 200;
+      ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].status = 200;
       ctx.guardianOverrideEndpoints
         .GETs['/api/v1/vpn/account']
-        .body = SubscriptionExpiredUserData;
+        .body = SUBSCRIPTION_EXPIRED_USER_DATA;
     };
 
       ///STEP 2: TURN ON THE VPN
