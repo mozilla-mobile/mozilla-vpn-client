@@ -266,24 +266,36 @@ class VPNService : android.net.VpnService() {
     fun reconnect(forceFallBack: Boolean = false) {
         // Save the current timestamp - so that a silent switch won't
         // reset the timer in the app.
-        var currentConnectionTime = mConnectionTime
+        val currentConnectionTime = mConnectionTime
 
-        if (this.mConfig == null) {
-            // If we don't have a saved conf, retrieve the last connection from the Storage
-            val prefs = Prefs.get(this)
-            val lastConfString = prefs.getString("lastConf", "")
-            if (lastConfString.isNullOrEmpty()) {
-                // We have nothing to connect to -> Exit
-                Log.e(
-                    tag,
-                    "VPN service was triggered without defining a Server or having a tunnel"
-                )
-                return
+        val config = if(this.mConfig != null){
+                this.mConfig
+            } else{
+                val prefs = Prefs.get(this)
+                val lastConfString = prefs.getString("lastConf", "")
+                if (lastConfString.isNullOrEmpty()) {
+                    // We have nothing to connect to -> Exit
+                    Log.e(
+                        tag,
+                        "VPN service was triggered without defining a Server or having a tunnel"
+                    )
+                    throw Error("no config to use")
+                }
+                JSONObject(lastConfString)
             }
-            this.mConfig = JSONObject(lastConfString)
-        }
+
         Log.v(tag, "Try to reconnect tunnel with same conf")
-        this.turnOn(this.mConfig!!, forceFallBack)
+        try {
+            this.turnOn(config, forceFallBack)
+        } catch (e : Exception){
+            Log.e(
+                tag,
+                "VPN service - Reconnect failed"
+            )
+            // TODO: If we end up here, we might have screwed up the connection.
+            // we should put out a notification that the user go into the app and does a manual
+            // connection.
+        }
         if (currentConnectionTime != 0.toLong()) {
             // In case we have had a connection timestamp,
             // restore that, so that the silent switch is not
