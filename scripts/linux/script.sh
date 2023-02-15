@@ -120,11 +120,8 @@ print G "${SHORTVERSION}"
 rm -rf .tmp || die "Failed to remove the temporary directory"
 mkdir .tmp || die "Failed to create the temporary directory"
 
-print Y "Update the submodules..."
-git submodule init || die "Failed"
-git submodule update --remote --depth 1 i18n || die "Failed"
-git submodule update --remote --depth 1 3rdparty/wireguard-tools || die "Failed"
-git submodule update --depth 1 3rdparty/glean || die "Failed"
+print Y "Get the submodules..."
+git submodule update --init --depth 1 || die "Failed"
 print G "done."
 
 print G "Creating the orig tarball"
@@ -139,6 +136,9 @@ mkdir -p .tmp/${WORKDIR} || die "Failed"
 rsync -a --exclude='.*' ${RSYNC_EXCLUDE_DIRS} . .tmp/${WORKDIR} || die "Failed"
 print G "done."
 cd .tmp
+
+print Y "Importing translation files..."
+(cd $WORKDIR && python3 scripts/utils/import_languages.py) || die "Failed to import languages"
 
 print Y "Generating glean samples..."
 (cd $WORKDIR && python3 scripts/utils/generate_glean.py) || die "Failed to generate glean samples"
