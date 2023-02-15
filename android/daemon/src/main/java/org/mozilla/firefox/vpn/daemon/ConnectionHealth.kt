@@ -73,6 +73,10 @@ class ConnectionHealth(service: VPNService) {
         Log.e(TAG, "Started ConnectionHealth")
     }
     fun stop() {
+        if (!mActive) {
+            // If we have never been active there is nothing to unregister.
+            return
+        }
         mActive = false
         mTaskTimer.cancel()
         val mConnectivityManager = mService.getSystemService(Context.CONNECTIVITY_SERVICE)
