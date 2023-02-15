@@ -26,23 +26,6 @@ const SUBSCRIPTION_DETAILS = {
     status: 'active'
   },
 };
-//   plan: {amount: 123, currency: 'usd', interval: 'year', interval_count: 1},
-//   payment: {
-//     payment_provider: 'stripe',
-//     payment_type: 'credit',
-//     last4: '1234',
-//     exp_month: 12,
-//     exp_year: 2022,
-//     brand: 'visa',
-//   },
-//   subscription: {
-//     _subscription_type: 'web',
-//     created: 1,
-//     current_period_end: 2,
-//     cancel_at_period_end: true,
-//     status: 'cancelled',
-//   },
-// };
 
 describe('Subscription view', function() {
   this.timeout(3000000);
