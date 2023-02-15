@@ -13,6 +13,14 @@ $PERL_GCC_PATH =resolve-path "$FETCHES_PATH/c/bin"
 . "$FETCHES_PATH/QT_OUT/configure_qt.ps1"
 . "$REPO_ROOT_PATH/taskcluster/scripts/fetch/enable_win_rust.ps1"
 
+# Extract the sources
+$SOURCE_DSC = resolve-path "$FETCHES_PATH/mozillavpn_*.dsc"
+$SOURCE_VERSION = ((select-string $SOURCE_DSC -Pattern '^Version:') -split " ")[1]
+$SOURCE_TARGZ = resolve-path "$FETCHES_PATH/mozillavpn_$SOURCE_VERSION.orig.tar.gz" -Relative
+cd $TASK_WORKDIR
+tar -xzvf $SOURCE_TARGZ
+$SOURCE_DIR = resolve-path "$TASK_WORKDIR/mozillavpn-$SOURCE_VERSION"
+
 # Remove Long lasting ms-compiler-telemetry service:
 # This will sometimes live longer then our compile
 # and __sometimes__ taskcluster will fail to do cleanup once the task is done
@@ -49,13 +57,6 @@ Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x86.msm
 $SSL_PATH = resolve-path "$FETCHES_PATH/QT_OUT/SSL"
 $env:OPENSSL_ROOT_DIR = (resolve-path "$SSL_PATH").toString()
 $env:OPENSSL_USE_STATIC_LIBS = "TRUE"
-
-# Extract the sources
-$SOURCE_DSC = resolve-path "$FETCHES_PATH/mozillavpn_*.dsc"
-$SOURCE_VERSION = ((select-string $SOURCE_DSC -Pattern '^Version:') -split " ")[1]
-$SOURCE_TARGZ = resolve-path "$FETCHES_PATH/mozillavpn_$SOURCE_VERSION.orig.tar.gz"
-tar -C $TASK_WORKDIR -xzvf $SOURCE_TARGZ
-$SOURCE_DIR = resolve-path "$TASK_WORKDIR/mozillavpn-$SOURCE_VERSION"
 
 #Do not continune from this point on when we encounter an error
 $ErrorActionPreference = "Stop"
