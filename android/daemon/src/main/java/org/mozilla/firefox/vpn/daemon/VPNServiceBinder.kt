@@ -56,7 +56,11 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                     // [data] is here a json containing the wireguard conf
                     val buffer = data.createByteArray()
                     val json = buffer?.let { String(it) }
-                    val config = JSONObject(json)
+                    val config = json?.let { JSONObject(it) }
+                    if(config == null){
+                        Log.e(tag,"Client provided config was not parsable")
+                        return true
+                    }
                     val permissionIntent: Intent? = mService.checkPermissions()
                     if (permissionIntent != null) {
                         mResumeConfig = config
