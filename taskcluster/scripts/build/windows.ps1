@@ -50,6 +50,12 @@ $SSL_PATH = resolve-path "$FETCHES_PATH/QT_OUT/SSL"
 $env:OPENSSL_ROOT_DIR = (resolve-path "$SSL_PATH").toString()
 $env:OPENSSL_USE_STATIC_LIBS = "TRUE"
 
+# Extract the sources
+$SOURCE_DSC = resolve-path "$FETCHES_PATH/mozillavpn_*.dsc"
+$SOURCE_VERSION = ((select-string $SOURCE_DSC -Pattern '^Version:') -split " ")[1]
+$SOURCE_DIR = $TASK_WORKDIR/mozillavpn-$SOURCE_VERSION
+tar -C $TASK_WORKDIR -xzvf $FETCHES_PATH/mozillavpn_$SOURCE_VERSION.orig.tar.gz
+
 #Do not continune from this point on when we encounter an error
 $ErrorActionPreference = "Stop"
 mkdir $TASK_WORKDIR/cmake_build
@@ -65,10 +71,10 @@ if ($env:MOZ_SCM_LEVEL -eq "3") {
     $SENTRY_ENVELOPE_ENDPOINT = Get-Content sentry_envelope_endpoint
     $SENTRY_DSN = Get-Content sentry_dsn
     #
-    cmake -S . -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release -DSENTRY_DSN="$SENTRY_DSN" -DSENTRY_ENVELOPE_ENDPOINT="$SENTRY_ENVELOPE_ENDPOINT"
+    cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release -DSENTRY_DSN="$SENTRY_DSN" -DSENTRY_ENVELOPE_ENDPOINT="$SENTRY_ENVELOPE_ENDPOINT"
 } else {
     # Do the generic build
-   cmake -S . -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release
+   cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release
 }
 cmake --build $BUILD_DIR
 cmake --build $BUILD_DIR --target msi
