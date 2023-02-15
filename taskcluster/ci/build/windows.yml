@@ -10,6 +10,8 @@ task-defaults:
         tier: 1
         platform: windows/x86_64
     worker-type: b-win2012
+    dependencies:
+        build: build-linux/source
     fetches:
         fetch:
             - win-dev-env
@@ -17,6 +19,8 @@ task-defaults:
             - win-go
             - win-perl
             - win-sentry-cli
+        build:
+            - artifact: mozillavpn-sources.tar.gz
         toolchain:
             - qt-win
     worker:
