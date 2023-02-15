@@ -195,21 +195,22 @@ class VPNService : android.net.VpnService() {
         return intent
     }
 
-    fun turnOn(json: JSONObject, useFallbackServer: Boolean = false) {
+    fun turnOn(json: JSONObject?, useFallbackServer: Boolean = false) {
+        if(json == null){
+            throw Error("no json config provided")
+        }
         Log.sensitive(tag, json.toString())
         val wireguard_conf = buildWireugardConfig(json, useFallbackServer)
+        val wgConfig: String = wireguard_conf.toWgUserspaceString()
+        if(wgConfig.isEmpty()){
+            throw Error("WG_Userspace config is empty, can't continue")
+        }
         mCityname = json.getString("city")
 
         if (checkPermissions() != null) {
             throw Error("turn on was called without vpn-permission!")
-            return
         }
-        if (currentTunnelHandle != -1) {
-            Log.i(tag, "Currently have a connection, start switching")
-            // Turn the tunnel down because this might be a switch
-            wgTurnOff(currentTunnelHandle)
-        }
-        val wgConfig: String = wireguard_conf!!.toWgUserspaceString()
+
         val builder = Builder()
         setupBuilder(wireguard_conf, builder)
         builder.setSession("mvpn0")
@@ -218,11 +219,15 @@ class VPNService : android.net.VpnService() {
                 Log.e(tag, "Activation Error: did not get a TUN handle")
                 return
             }
+            // We should have everything to establish a new connection, turn down the old tunnel now.
+            if (currentTunnelHandle != -1) {
+                Log.i(tag, "Currently have a connection, close old handle")
+                wgTurnOff(currentTunnelHandle)
+            }
             currentTunnelHandle = wgTurnOn("mvpn0", tun.detachFd(), wgConfig)
         }
         if (currentTunnelHandle < 0) {
             throw Error("Activation Error Wireguard-Error -> $currentTunnelHandle")
-            return
         }
         protect(wgGetSocketV4(currentTunnelHandle))
         protect(wgGetSocketV6(currentTunnelHandle))
