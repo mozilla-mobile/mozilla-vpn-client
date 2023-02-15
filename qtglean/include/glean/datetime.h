@@ -5,14 +5,14 @@
 
 #ifndef DATETIME_H
 #define DATETIME_H
+#include <QDateTime>
 #include <QObject>
 #include <QString>
 
 #include "errortype.h"
 
-// NOTE: While most of datetime is implemented, two pieces are not yet:
+// NOTE: While most of datetime is implemented, one pieces are not yet:
 // - The ability to set an arbitrary datestamp
-// - testGetValue, which provides a language-specific object
 // More details: https://mozilla-hub.atlassian.net/browse/VPN-4173
 
 class DatetimeMetric final {
@@ -32,6 +32,7 @@ class DatetimeMetric final {
 
   // Test  only functions
 
+  Q_INVOKABLE QDateTime testGetValue(const QString& pingName = "") const;
   Q_INVOKABLE QString testGetValueAsString(const QString& pingName = "") const;
   Q_INVOKABLE int32_t testGetNumRecordedErrors(ErrorType errorType) const;
 

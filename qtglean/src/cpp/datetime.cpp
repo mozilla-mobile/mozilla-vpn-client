@@ -31,3 +31,8 @@ QString DatetimeMetric::testGetValueAsString(const QString& pingName) const {
 #endif
   return "";
 }
+
+QDateTime DatetimeMetric::testGetValue(const QString& pingName) const {
+  return QDateTime::fromString(testGetValueAsString(pingName),
+                               Qt::ISODateWithMs);
+}
