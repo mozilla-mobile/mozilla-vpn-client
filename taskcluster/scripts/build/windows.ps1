@@ -14,11 +14,10 @@ $PERL_GCC_PATH =resolve-path "$FETCHES_PATH/c/bin"
 . "$REPO_ROOT_PATH/taskcluster/scripts/fetch/enable_win_rust.ps1"
 
 # Extract the sources
+cd $TASK_WORKDIR
 $SOURCE_DSC = resolve-path "$FETCHES_PATH/mozillavpn_*.dsc"
 $SOURCE_VERSION = ((select-string $SOURCE_DSC -Pattern '^Version:') -split " ")[1]
-$SOURCE_TARGZ = resolve-path "$FETCHES_PATH/mozillavpn_$SOURCE_VERSION.orig.tar.gz" -Relative
-cd $TASK_WORKDIR
-tar -xzvf $SOURCE_TARGZ
+tar -xzvf (resolve-path "$FETCHES_PATH/mozillavpn_$SOURCE_VERSION.orig.tar.gz" -Relative)
 $SOURCE_DIR = resolve-path "$TASK_WORKDIR/mozillavpn-$SOURCE_VERSION"
 
 # Remove Long lasting ms-compiler-telemetry service:
@@ -26,11 +25,9 @@ $SOURCE_DIR = resolve-path "$TASK_WORKDIR/mozillavpn-$SOURCE_VERSION"
 # and __sometimes__ taskcluster will fail to do cleanup once the task is done
 Remove-Item $FETCHES_PATH/VisualStudio/VC/Tools/MSVC/14.30.30705/bin/HostX64/x64/VCTIP.EXE
 
-# Reqs
-git submodule update --init --depth 1
-git submodule update --remote i18n
-python3 -m pip install -r requirements.txt --user
-python3 -m pip install -r taskcluster/scripts/requirements.txt --user
+# Install python build tooling
+python3 -m pip install -r $SOURCE_DIR/requirements.txt --user
+python3 -m pip install -r $SOURCE_DIR/taskcluster/scripts/requirements.txt --user
 
 # Fix: pip scripts are not on path by default on tc, so glean would fail
 $PYTHON_SCRIPTS =resolve-path "$env:APPDATA\Python\Python36\Scripts"
