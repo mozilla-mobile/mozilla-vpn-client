@@ -283,14 +283,17 @@ QStringList ServerCountryModel::pickBest(const Location& location) const {
   // We rank cities using the distance between two points on a great circle,
   // which is given by:
   //    d = acos(sin(lat1)*sin(lat2) + cos(lat1)*cos(lat2)*cos(long1-long2))
-  //
-  // TODO: Include other ranking data, such as latency and number of servers.
   QString bestCountry;
   QString bestCity;
   double clientSin = qSin(latitude * M_PI / 180.0);
   double clientCos = qCos(latitude * M_PI / 180.0);
   double bestDistance = M_2_PI;
   for (const ServerCountry& country : m_countries) {
+    // If servers exist within the same country as the user, restrict the search
+    // to locations only within that country.
+    if (country.code() == location.countryCode()) {
+      bestDistance = M_2_PI;
+    }
     for (const ServerCity& city : country.cities()) {
       double citySin = qSin(city.latitude() * M_PI / 180.0);
       double cityCos = qCos(city.latitude() * M_PI / 180.0);
@@ -303,6 +306,10 @@ QStringList ServerCountryModel::pickBest(const Location& location) const {
         bestCity = city.name();
         bestDistance = distance;
       }
+    }
+    // If servers exist within the same country, then we are done.
+    if (country.code() == location.countryCode()) {
+      break;
     }
   }
 
