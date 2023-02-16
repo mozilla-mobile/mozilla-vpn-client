@@ -196,13 +196,13 @@ class VPNService : android.net.VpnService() {
     }
 
     fun turnOn(json: JSONObject?, useFallbackServer: Boolean = false) {
-        if(json == null){
+        if (json == null) {
             throw Error("no json config provided")
         }
         Log.sensitive(tag, json.toString())
         val wireguard_conf = buildWireugardConfig(json, useFallbackServer)
         val wgConfig: String = wireguard_conf.toWgUserspaceString()
-        if(wgConfig.isEmpty()){
+        if (wgConfig.isEmpty()) {
             throw Error("WG_Userspace config is empty, can't continue")
         }
         mCityname = json.getString("city")
@@ -268,26 +268,26 @@ class VPNService : android.net.VpnService() {
         // reset the timer in the app.
         val currentConnectionTime = mConnectionTime
 
-        val config = if(this.mConfig != null){
-                this.mConfig
-            } else{
-                val prefs = Prefs.get(this)
-                val lastConfString = prefs.getString("lastConf", "")
-                if (lastConfString.isNullOrEmpty()) {
-                    // We have nothing to connect to -> Exit
-                    Log.e(
-                        tag,
-                        "VPN service was triggered without defining a Server or having a tunnel"
-                    )
-                    throw Error("no config to use")
-                }
-                JSONObject(lastConfString)
+        val config = if (this.mConfig != null) {
+            this.mConfig
+        } else {
+            val prefs = Prefs.get(this)
+            val lastConfString = prefs.getString("lastConf", "")
+            if (lastConfString.isNullOrEmpty()) {
+                // We have nothing to connect to -> Exit
+                Log.e(
+                    tag,
+                    "VPN service was triggered without defining a Server or having a tunnel"
+                )
+                throw Error("no config to use")
             }
+            JSONObject(lastConfString)
+        }
 
         Log.v(tag, "Try to reconnect tunnel with same conf")
         try {
             this.turnOn(config, forceFallBack)
-        } catch (e : Exception){
+        } catch (e: Exception) {
             Log.e(
                 tag,
                 "VPN service - Reconnect failed"

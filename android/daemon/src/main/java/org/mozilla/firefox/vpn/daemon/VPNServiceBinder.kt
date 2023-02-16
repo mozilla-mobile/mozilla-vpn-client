@@ -57,8 +57,8 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                     val buffer = data.createByteArray()
                     val json = buffer?.let { String(it) }
                     val config = json?.let { JSONObject(it) }
-                    if(config == null){
-                        Log.e(tag,"Client provided config was not parsable")
+                    if (config == null) {
+                        Log.e(tag, "Client provided config was not parsable")
                         return true
                     }
                     val permissionIntent: Intent? = mService.checkPermissions()
