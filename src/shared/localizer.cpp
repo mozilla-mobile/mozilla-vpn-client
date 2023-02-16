@@ -244,7 +244,8 @@ QMap<QString, double> Localizer::loadTranslationCompleteness(
 }
 
 // static
-QString Localizer::formatDate(const QDateTime& messageDateTime, bool capitalize) {
+QString Localizer::formatDate(const QDateTime& messageDateTime,
+                              bool capitalize) {
   QDateTime nowDateTime = QDateTime::currentDateTime();
   qint64 diff = messageDateTime.secsTo(nowDateTime);
   if (diff < 0) {
@@ -265,9 +266,12 @@ QString Localizer::formatDate(const QDateTime& messageDateTime, bool capitalize)
       (nowDateTime.date().dayOfYear() == 1 &&
        messageDateTime.date().dayOfYear() ==
            messageDateTime.date().daysInYear())) {
-    return capitalize ? I18nStrings::instance()->t(
-        I18nStrings::InAppMessagingDateTimeYesterday) : I18nStrings::instance()->t(
-                            I18nStrings::ServersViewRecommendedRefreshLastUpdatedLabelYesterday) ;
+    return capitalize
+               ? I18nStrings::instance()->t(
+                     I18nStrings::InAppMessagingDateTimeYesterday)
+               : I18nStrings::instance()->t(
+                     I18nStrings::
+                         ServersViewRecommendedRefreshLastUpdatedLabelYesterday);
   }
 
   // Before yesterday (but still this week)
