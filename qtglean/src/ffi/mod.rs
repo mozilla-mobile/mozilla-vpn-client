@@ -11,5 +11,6 @@ pub mod counter;
 pub mod datetime;
 pub mod event;
 pub mod ping;
+pub mod quantity;
 pub mod string;
 pub mod timing_distribution;
