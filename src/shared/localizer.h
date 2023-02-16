@@ -6,11 +6,13 @@
 #define LOCALIZER_H
 
 #include <QAbstractListModel>
+#include <QList>
 #include <QLocale>
-#include <QTranslator>
+#include <QMap>
 
 #include "i18nstrings.h"
 
+class QTranslator;
 class SettingsHolder;
 
 class Localizer final : public QAbstractListModel {
@@ -95,7 +97,7 @@ class Localizer final : public QAbstractListModel {
   QString systemLanguageCode() const;
 
   void loadLanguagesFromI18n();
-  bool loadLanguage(const QString& code);
+  bool loadLanguage(const QString& requestedLocaleCode);
   QString findLanguageCode(const QString& languageCode,
                            const QString& countryCode) const;
 
@@ -104,14 +106,20 @@ class Localizer final : public QAbstractListModel {
 
   void settingsChanged();
 
+  bool createTranslator(const QLocale& locale);
+
+  void maybeLoadLanguageFallback(const QString& code);
+
  private:
-  QTranslator m_translator;
+  QList<QTranslator*> m_translators;
 
   QString m_code;
 
   QLocale m_locale;
 
   QList<Language> m_languages;
+  QMap<QString, double> m_translationCompleteness;
+  QMap<QString, QStringList> m_translationFallback;
 };
 
 #endif  // LOCALIZER_H

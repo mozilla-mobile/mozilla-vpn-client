@@ -75,6 +75,8 @@ class Navigator final : public QObject {
 
   ~Navigator();
 
+  Q_INVOKABLE void requestScreenFromBottomBar(
+      Navigator::Screen screen, Navigator::LoadingFlags loadingFlags = NoFlags);
   Q_INVOKABLE void requestScreen(
       Navigator::Screen screen, Navigator::LoadingFlags loadingFlags = NoFlags);
   Q_INVOKABLE void requestPreviousScreen();
