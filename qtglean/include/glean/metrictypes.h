@@ -6,6 +6,7 @@
 #define METRICTYPES_H
 
 #include "counter.h"
+#include "datetime.h"
 #include "event.h"
 #include "ping.h"
 #include "quantity.h"

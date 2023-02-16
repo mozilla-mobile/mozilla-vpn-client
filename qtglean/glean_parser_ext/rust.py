@@ -212,6 +212,7 @@ def output_rust(objs, output_fd, options={}):
         ("COUNTER_MAP", "CounterMetric"): [],
         ("STRING_MAP", "StringMetric"): [],
         ("QUANTITY_MAP", "QuantityMetric"): [],
+        ("DATETIME_MAP", "DatetimeMetric"): [],
     }
 
     # Map from a metric ID to the fully qualified path of the event object in Rust.
