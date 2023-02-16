@@ -1,0 +1,43 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include "addonsessionstate.h"
+
+#include <QHash>
+#include <QJsonValue>
+#include <QObject>
+#include <QString>
+
+#include "addonstatebase.h"
+#include "leakdetector.h"
+
+// static
+AddonSessionState* AddonSessionState::fromManifest(
+    const QJsonObject& manifest) {
+  return new AddonSessionState(AddonStateBase::parseManifest(manifest));
+}
+
+AddonSessionState::AddonSessionState(QHash<QString, QJsonValue> spec)
+    : AddonStateBase(spec) {
+  MZ_COUNT_CTOR(AddonSessionState);
+}
+
+AddonSessionState::~AddonSessionState() { MZ_COUNT_DTOR(AddonSessionState); }
+
+QJsonValue AddonSessionState::getInternal(const QString& key) const {
+  return m_state[key];
+}
+
+void AddonSessionState::setInternal(const QString& key,
+                                    const QJsonValue& value) {
+  m_state[key] = value;
+}
+
+void AddonSessionState::clearInternal(const QString& key) {
+  if (key.isEmpty()) {
+    m_state.clear();
+  }
+
+  m_state.remove(key);
+}
