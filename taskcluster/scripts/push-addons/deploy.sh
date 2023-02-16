@@ -5,15 +5,15 @@
 
 set -e
 
-git submodule sync --recursive
-git submodule update --init --force --recursive --depth=1
 # Reqs
+git submodule update --init --depth 1
+git submodule update --remote i18n
 pip3 install -r requirements.txt
 
 # Get Secrets for building
 echo "Fetching Tokens!"
 ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k addons_key -f addons_key.pem
-ls 
+ls
 cd /builds/worker/fetches/
 ls
 openssl dgst -sha256 -sign /builds/worker/checkouts/vcs/addons_key.pem -out addons/manifest.json.sig addons/manifest.json

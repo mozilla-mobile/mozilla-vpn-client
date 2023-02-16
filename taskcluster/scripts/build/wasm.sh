@@ -6,9 +6,9 @@ set -e
 
 source /opt/emsdk/emsdk_env.sh
 
-git submodule init
-git submodule update
-
+# Reqs
+git submodule update --init --depth 1
+git submodule update --remote i18n
 pip3 install -r requirements.txt
 
 export PATH="$QTPATH/wasm_32/bin:$PATH"

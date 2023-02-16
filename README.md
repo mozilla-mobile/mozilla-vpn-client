@@ -87,10 +87,10 @@ Qt6 can be installed in a number of ways:
 ```bash
 ./scripts/utils/qt6_compile.sh </qt6/source/code/path> </destination/path>
 ```
-- Grab a Static Qt-Build used in Mozilla CI: 
+- Grab a Static Qt-Build used in Mozilla CI:
   - [iOS](https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-ios.latest/artifacts/public%2Fbuild%2Fqt6_ios.zip)
   - [MacOS](https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-mac.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip)
-  - [Windows](https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-win.latest/artifacts/public%2Fbuild%2Fqt6_win.zip) 
+  - [Windows](https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-win.latest/artifacts/public%2Fbuild%2Fqt6_win.zip)
 
 ### Installing Python 3
 
@@ -317,27 +317,27 @@ This step needs to be executed each time Xcode updates.
 
 #### Building using Conda on MacOS
 
-We provide a Conda env for easy Setup. 
-Prerequisites: 
-- Have miniconda installed. 
+We provide a Conda env for easy Setup.
+Prerequisites:
+- Have miniconda installed.
 
-```bash 
+```bash
 $ conda env create -f env.yml
 $ conda activate VPN
 ```
- - Get a copy of a MacOS-SDK (every X-Code install ships this, or you can find it on the internet :) ) 
+ - Get a copy of a MacOS-SDK (every X-Code install ships this, or you can find it on the internet :) )
     - Set `SDKROOT` to the target SDK.
     - Add it to the conda env via: `conda env config vars set SDKROOT=<>`
-    - Default Paths where you probably find your SDK: 
+    - Default Paths where you probably find your SDK:
       - Default Xcode-command-line tool path: `/Library/Developer/CommandLineTools/SDKs/MacOSX.<VersionNumber>.sdk`
       - Default Xcode.app path: `/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk`
  - Get a Build of QT (See: [Installing Qt6](#Installing-Qt6) )
- 
+
 You are now ready to build!
 
-```bash 
+```bash
 (vpn) $ mkdir build && cmake -S . -B build -DCMAKE_PREFIX_PATH=${Path to QT}/lib/cmake
-(vpn) $ cmake --build build 
+(vpn) $ cmake --build build
 ```
 
 

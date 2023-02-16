@@ -31,8 +31,8 @@ print N "Taskcluster macOS compilation script"
 print N ""
 
 
-# TC NIT: we need to assert 
-# that everything is UTF-8 
+# TC NIT: we need to assert
+# that everything is UTF-8
 export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
 export PYTHONIOENCODING="UTF-8"
@@ -46,13 +46,13 @@ source ${TASK_HOME}/miniconda/bin/activate
 
 print Y "Installing provided conda env..."
 # TODO: Check why --force is needed if we install into TASK_HOME?
-conda env create --force -f env.yml       
-conda activate VPN         
-conda info 
+conda env create --force -f env.yml
+conda activate VPN
+conda info
 
 # Conda Cannot know installed MacOS SDK'S
 # and as we use conda'provided clang/llvm
-# we need to manually provide the Path. 
+# we need to manually provide the Path.
 #
 print G "Checking Available SDK'S..."
 # Now you would guess the SDK path is the same on all runners
@@ -61,13 +61,13 @@ print G "Checking Available SDK'S..."
 export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
 
 
-# Should already have been done by taskcluser, 
-# but double checking c: 
-print Y "Updating submodules..."
-git submodule init || die
-git submodule update || die
+# Should already have been done by taskcluser, but double checking c:
+print Y "Get the submodules..."
+git submodule update --init --depth 1 || die "Failed to init submodules"
+git submodule update --remote i18n || die "Failed to pull latest i18n from remote"
+print G "done."
 
-# Install dependendy got get-secret.py 
+# Install dependendy got get-secret.py
 python3 -m pip install -r taskcluster/scripts/requirements.txt
 print Y "Fetching tokens..."
 # Only on a release build we have access to those secrects. 
@@ -76,7 +76,7 @@ print Y "Fetching tokens..."
 ./taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
 export SENTRY_ENVELOPE_ENDPOINT=$(cat sentry_envelope_endpoint)
 export SENTRY_DSN=$(cat sentry_dsn)
-#Install Sentry CLI, if' not already installed from previous run. 
+#Install Sentry CLI, if' not already installed from previous run.
 if ! command -v sentry-cli &> /dev/null
 then
     npm install -g @sentry/cli
