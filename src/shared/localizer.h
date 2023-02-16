@@ -92,7 +92,7 @@ class Localizer final : public QAbstractListModel {
   QString systemLanguageCode() const;
 
   void loadLanguagesFromI18n();
-  bool loadLanguage(const QString& code);
+  bool loadLanguage(const QString& requestedLocaleCode);
   QString findLanguageCode(const QString& languageCode,
                            const QString& countryCode) const;
 

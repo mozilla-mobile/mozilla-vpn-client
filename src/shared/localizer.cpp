@@ -276,7 +276,7 @@ void Localizer::settingsChanged() {
   endResetModel();
 }
 
-bool Localizer::loadLanguage(const QString& code) {
+bool Localizer::loadLanguage(const QString& requestedLocalCode) {
   // Unload the current translators.
   for (QTranslator* translator : m_translators) {
     QCoreApplication::removeTranslator(translator);
@@ -284,22 +284,23 @@ bool Localizer::loadLanguage(const QString& code) {
   }
   m_translators.clear();
 
-  double completeness = m_translationCompleteness.value(code, 0);
+  QString localCode = requestedLocalCode;
+  if (localCode.isEmpty()) {
+    localCode = systemLanguageCode();
+  }
+
+  double completeness = m_translationCompleteness.value(localCode, 0);
   if (completeness < 1) {
     logger.debug() << "Let's try to load another language as fallback for code"
-                   << code;
-    maybeLoadLanguageFallback(code);
+                   << localCode;
+    maybeLoadLanguageFallback(localCode);
   }
 
-  QLocale locale = QLocale(code);
-  if (code.isEmpty()) {
-    locale = QLocale(systemLanguageCode());
-  }
-
+  QLocale locale = QLocale(localCode);
   QLocale::setDefault(locale);
 
   if (!createTranslator(locale)) {
-    logger.error() << "Loading the locale failed - code:" << code;
+    logger.error() << "Loading the locale failed - code:" << localCode;
     return false;
   }
 
