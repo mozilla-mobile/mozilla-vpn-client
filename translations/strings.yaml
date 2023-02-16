@@ -97,7 +97,7 @@ serversView:
     value: "Last updated: %1."
     comment: The time (or in extremely rare circumstances, the date, day of the week, or "yesterday") which the recommended servers list was last updated. Argument is the time or date/day
   recommendedRefreshLastUpdatedDisabledLabel:
-    value: "Last updated: %1. To update this list please first disconnect from the VPN."
+    value: "Last updated: %1. To update this list please disconnect from the VPN."
     comment: The time (or in extremely rare circumstances, the date, day of the week, or "yesterday") which the recommended servers list was last updated and instructions to re-enable the refresh button. Argument is the time or date/day
   recommendedRefreshLastUpdatedLabelYesterday: yesterday
 

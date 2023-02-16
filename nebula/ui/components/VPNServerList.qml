@@ -131,6 +131,7 @@ FocusScope {
                     canGrowVertical: true
                     height: statusTitle.implicitHeight + VPNTheme.theme.vSpacingSmall
                     rowShouldBeDisabled: !(VPNController.state === VPNController.StateOff) || VPNServerLatency.isActive
+                    opacity: 1.0
 
                     onClicked: {
                         VPNServerLatency.refresh();
