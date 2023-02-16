@@ -65,9 +65,8 @@ lconvert = os.path.join(qtbinpath, 'lconvert')
 lrelease = os.path.join(qtbinpath, 'lrelease')
 
 # Step 1 (continued)
-# Let's update the i18n repo
-os.system(f"git submodule init")
-os.system(f"git submodule update --remote --depth 1 i18n")
+# Get the latest translations from i18n remote
+os.system(f"git submodule update --init --remote --depth 1 i18n")
 
 # Step 2
 # Go through the i18n repo, check each XLIFF file and take

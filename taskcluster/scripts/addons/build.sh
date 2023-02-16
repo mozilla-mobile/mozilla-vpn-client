@@ -5,11 +5,9 @@
 
 set -e
 
-git submodule sync --recursive
-git submodule update --init --force --recursive --depth=1
-
-
 # Reqs
+git submodule update --init --depth 1
+git submodule update --remote i18n
 pip3 install -r requirements.txt
 
 python3 scripts/addon/generate_all.py

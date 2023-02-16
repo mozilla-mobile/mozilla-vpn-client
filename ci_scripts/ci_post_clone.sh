@@ -10,8 +10,7 @@ cd /Volumes/workspace/repository
 
 # make sure submodules are up to date
 # should already be done by XCode cloud cloning but just to make sure
-git submodule init
-git submodule update
+git submodule update --init
 
 # add necessary directories to path
 export PATH=/Users/local/.gem/ruby/2.6.0/bin:/Users/local/Library/Python/3.8/bin:$PATH
