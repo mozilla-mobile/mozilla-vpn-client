@@ -8,13 +8,13 @@ $FETCHES_PATH =resolve-path "$TASK_WORKDIR/fetches"
 $QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/bin/"
 $PERL_GCC_PATH =resolve-path "$FETCHES_PATH/c/bin"
 # Prep Env:
-# Enable qt, enable msvc, enable rust
+# Switch to the work dir, enable qt, enable msvc, enable rust
+Set-Location -Path $TASK_WORKDIR
 . "$FETCHES_PATH/VisualStudio/enter_dev_shell.ps1"
 . "$FETCHES_PATH/QT_OUT/configure_qt.ps1"
 . "$REPO_ROOT_PATH/taskcluster/scripts/fetch/enable_win_rust.ps1"
 
 # Extract the sources
-cd $TASK_WORKDIR
 $SOURCE_DSC = resolve-path "$FETCHES_PATH/mozillavpn_*.dsc"
 $SOURCE_VERSION = ((select-string $SOURCE_DSC -Pattern '^Version:') -split " ")[1]
 tar -xzvf (resolve-path "$FETCHES_PATH/mozillavpn_$SOURCE_VERSION.orig.tar.gz" -Relative)
