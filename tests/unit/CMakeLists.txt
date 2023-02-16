@@ -79,6 +79,10 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/addons/manager/addonindex.h
     ${MZ_SOURCE_DIR}/apps/vpn/addons/manager/addonmanager.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/addons/manager/addonmanager.h
+    ${MZ_SOURCE_DIR}/apps/vpn/addons/state/addonstatebase.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/addons/state/addonstatebase.h
+    ${MZ_SOURCE_DIR}/apps/vpn/addons/state/addonsessionstate.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/addons/state/addonsessionstate.h
     ${MZ_SOURCE_DIR}/apps/vpn/adjust/adjustfiltering.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/adjust/adjustfiltering.h
     ${MZ_SOURCE_DIR}/apps/vpn/adjust/adjustproxypackagehandler.cpp
@@ -309,6 +313,10 @@ target_sources(unit_tests PRIVATE
     testaddonapi.h
     testaddonindex.cpp
     testaddonindex.h
+    testaddonstatebase.cpp
+    testaddonstatebase.h
+    testaddonsessionstate.cpp
+    testaddonsessionstate.h
     testadjust.cpp
     testadjust.h
     testcommandlineparser.cpp
