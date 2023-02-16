@@ -11,7 +11,7 @@
 
 #include "errortype.h"
 
-// NOTE: While most of datetime is implemented, one pieces are not yet:
+// NOTE: While most of datetime is implemented, one piece is not yet:
 // - The ability to set an arbitrary datestamp
 // More details: https://mozilla-hub.atlassian.net/browse/VPN-4173
 
