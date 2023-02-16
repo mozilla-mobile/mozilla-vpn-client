@@ -108,8 +108,9 @@ else
   cd .tmp/mozillavpn-$SHORTVERSION || die "Failed"
   print G "done."
 
-  print Y "Get the submodules..."
-  git submodule update --init --depth 1 || die "Failed"
+  print Y "Update the submodules..."
+  git submodule init || die "Failed"
+  git submodule update --remote --depth 1 3rdparty/wireguard-tools || die "Failed"
   print G "done."
 
   print Y "Importing translation files..."
