@@ -61,13 +61,19 @@ foreach(LOCALE ${I18N_LOCALES})
         continue()
     endif()
 
+    if(${LOCALE} STREQUAL "en")
+       set(INCLUDE_UNTRANSLATED "")
+    else()
+       set(INCLUDE_UNTRANSLATED "-no-untranslated")
+    endif()
+
     add_custom_command(
         OUTPUT ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
         MAIN_DEPENDENCY ${I18N_DIR}/${LOCALE}/mozillavpn.xliff
         DEPENDS ${GENERATED_DIR}/i18nstrings_p.cpp
         COMMAND ${QT_LUPDATE_EXECUTABLE} -target-language ${LOCALE} ${GENERATED_DIR}/i18nstrings_p.cpp -ts ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
         COMMAND ${QT_LCONVERT_EXECUTABLE} -verbose -o ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
-                      -if ts -i ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
+                      -if ts -i ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts ${INCLUDE_UNTRANSLATED}
                       -if xlf -i ${I18N_DIR}/${LOCALE}/mozillavpn.xliff
     )
 
