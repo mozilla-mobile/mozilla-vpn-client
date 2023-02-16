@@ -89,6 +89,7 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
   Q_PROPERTY(bool stagingMode READ stagingMode CONSTANT)
   Q_PROPERTY(bool debugMode READ debugMode CONSTANT)
+  Q_PROPERTY(QString countryCode READ countryCode CONSTANT)
 
  public:
   MozillaVPN();
@@ -285,6 +286,8 @@ class MozillaVPN final : public QObject {
   void maybeRegenerateDeviceKey();
 
   bool checkCurrentDevice();
+
+  QString countryCode();
 
  public slots:
   void requestAbout();

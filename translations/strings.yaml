@@ -671,6 +671,15 @@ subscriptionManagement:
   planValueYearly:
     value: "%1 Yearly"
     comment: The %1 represents a localized currency string.
+  planValueMonthlyPlusTax:
+    value: "%1 Monthly + tax"
+    comment: The %1 represents a localized currency string. This string is only used in US and Canada
+  planValueHalfYearlyPlusTax:
+    value: "%1 Half-yearly + tax"
+    comment: The %1 represents a localized currency string. This string is only used in US and Canada
+  planValueYearlyPlusTax:
+    value: "%1 Yearly + tax"
+    comment: The %1 represents a localized currency string. This string is only used in US and Canada
   statusLabel:
     value: Status
     comment: Label for the current status of the subscription.
