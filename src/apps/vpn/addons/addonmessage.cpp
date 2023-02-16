@@ -166,7 +166,8 @@ QString AddonMessage::formattedDate() const {
   }
 
   return Localizer::instance()->formatDate(
-      QDateTime::fromSecsSinceEpoch(m_date), true);
+      QDateTime::currentDateTime(), QDateTime::fromSecsSinceEpoch(m_date),
+      true);
 }
 
 void AddonMessage::planDateRetranslation() {
