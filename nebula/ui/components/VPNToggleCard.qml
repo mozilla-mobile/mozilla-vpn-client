@@ -73,7 +73,7 @@ Item {
             checked: (!VPNSettings.protectSelectedApps)
             onClicked: handleClick()
             accessibleName: label.text
-            Accessible.description: subLabel.text
+            Accessible.description: sublabel.text
         }
     }
 }
