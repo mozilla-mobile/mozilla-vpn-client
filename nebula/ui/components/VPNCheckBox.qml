@@ -12,7 +12,6 @@ import compat 0.1
 CheckBox {
     property var uiState: VPNTheme.theme.uiState
     property string accessibleName
-    property string accessibleDescription
 
     id: checkBox
 
@@ -49,7 +48,7 @@ CheckBox {
     Accessible.onToggleAction: clicked()
     Accessible.focusable: true
     Accessible.name: accessibleName
-    Accessible.description: accessibleDescription
+    Accessible.role: Accessible.CheckBox
 
     states: [
         State {
