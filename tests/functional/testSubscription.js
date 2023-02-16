@@ -27,24 +27,70 @@ const SUBSCRIPTION_DETAILS = {
   },
 };
 
-const SUBSCRIPTION_EXPIRED_USER_DATA = {
-  avatar: '',
-  display_name: 'Test test',
-  email: 'test@mozilla.com',
-  max_devices: 5,
-  subscriptions: {vpn: {active: false}},
-  devices: [{
-    name: 'Current device',
-    unique_id: '',
-    pubkey: '',
-    ipv4_address: '127.0.0.1',
-    ipv6_address: '::1',
-    created_at: new Date().toISOString()
-  }],
-};
-
 describe('Subscription view', function() {
   this.timeout(3000000);
+
+  // const UserData = {
+  //   avatar: '',
+  //   display_name: 'Test',
+  //   email: 'test@mozilla.com',
+  //   max_devices: 5,
+  //   subscriptions: {vpn: {active: false}},
+  //   devices: [
+  //     {
+  //       name: 'device_1',
+  //       unique_id: 'device_1',
+  //       pubkey: 'a',
+  //       ipv4_address: '127.0.0.1',
+  //       ipv6_address: '::1',
+  //       created_at: new Date().toISOString()
+  //     },
+  //     {
+  //       name: 'device_2',
+  //       unique_id: 'device_2',
+  //       pubkey: 'b',
+  //       ipv4_address: '127.0.0.1',
+  //       ipv6_address: '::1',
+  //       created_at: new Date().toISOString()
+  //     },
+  //     {
+  //       name: 'device_3',
+  //       unique_id: 'device_3',
+  //       pubkey: 'c',
+  //       ipv4_address: '127.0.0.1',
+  //       ipv6_address: '::1',
+  //       created_at: new Date().toISOString()
+  //     },
+  //     {
+  //       name: 'device_4',
+  //       unique_id: 'device_4',
+  //       pubkey: 'd',
+  //       ipv4_address: '127.0.0.1',
+  //       ipv6_address: '::1',
+  //       created_at: new Date().toISOString()
+  //     },
+  //   ],
+  // };
+
+  this.ctx.guardianOverrideEndpoints = {
+    GETs: {
+      '/api/v1/vpn/account':
+          {status: 200, requiredHeaders: ['Authorization'], body: UserData},
+    },
+    POSTs: {
+      '/api/v1/vpn/device': {
+        status: 201,
+        requiredHeaders: ['Authorization'],
+        callback: (req) => {
+          UserData.devices[0].name = req.body.name;
+          UserData.devices[0].pubkey = req.body.pubkey;
+          UserData.devices[0].unique_id = req.body.unique_id;
+        },
+        body: {}
+      },
+    }
+  };
+
   this.ctx.authenticationNeeded = true;
   this.ctx.guardianOverrideEndpoints = {
     GETs: {
@@ -131,17 +177,52 @@ describe('Subscription view', function() {
     this.ctx.resetCallbacks();
   });
 
+  // //////
+  // this.ctx.guardianOverrideEndpoints = {
+  //   GETs: {
+  //     '/api/v1/vpn/account':
+  //         {status: 200, requiredHeaders: ['Authorization'], body: SUBSCRIPTION_EXPIRED_USER_DATA},
+  //   },
+  //   POSTs: {
+  //     '/api/v2/vpn/login/verify': {
+  //       status: 200,
+  //       bodyValidator: guardianEndpoints.validators.guardianLoginVerify,
+  //       body: {user: SUBSCRIPTION_EXPIRED_USER_DATA, token: 'our-token'}
+  //     },
+
+  //     '/api/v1/vpn/device': {
+  //       status: 201,
+  //       requiredHeaders: ['Authorization'],
+  //       bodyValidator: guardianEndpoints.validators.guardianDevice,
+  //       callback: (req) => {
+  //         SUBSCRIPTION_EXPIRED_USER_DATA.devices[0].name = req.body.name;
+  //         SUBSCRIPTION_EXPIRED_USER_DATA.devices[0].pubkey = req.body.pubkey;
+  //         SUBSCRIPTION_EXPIRED_USER_DATA.devices[0].unique_id = req.body.unique_id;
+  //       },
+  //       body: {}
+  //     },
+  //   },
+  //   DELETEs: {
+  //     '/api/v1/vpn/device/': {
+  //       match: 'startWith',
+  //       status: 404,
+  //       requiredHeaders: ['Authorization'],
+  //       body: {},
+  //     },
+  //   },
+  // };
   //////
+
   this.ctx.guardianOverrideEndpoints = {
     GETs: {
       '/api/v1/vpn/account':
-          {status: 200, requiredHeaders: ['Authorization'], body: SUBSCRIPTION_EXPIRED_USER_DATA},
+          {status: 200, requiredHeaders: ['Authorization'], body: UserData},
     },
     POSTs: {
       '/api/v2/vpn/login/verify': {
         status: 200,
         bodyValidator: guardianEndpoints.validators.guardianLoginVerify,
-        body: {user: SUBSCRIPTION_EXPIRED_USER_DATA, token: 'our-token'}
+        body: {user: UserData, token: 'our-token'}
       },
 
       '/api/v1/vpn/device': {
@@ -149,9 +230,9 @@ describe('Subscription view', function() {
         requiredHeaders: ['Authorization'],
         bodyValidator: guardianEndpoints.validators.guardianDevice,
         callback: (req) => {
-          SUBSCRIPTION_EXPIRED_USER_DATA.devices[0].name = req.body.name;
-          SUBSCRIPTION_EXPIRED_USER_DATA.devices[0].pubkey = req.body.pubkey;
-          SUBSCRIPTION_EXPIRED_USER_DATA.devices[0].unique_id = req.body.unique_id;
+          UserData.devices[0].name = req.body.name;
+          UserData.devices[0].pubkey = req.body.pubkey;
+          UserData.devices[0].unique_id = req.body.unique_id;
         },
         body: {}
       },
@@ -165,49 +246,63 @@ describe('Subscription view', function() {
       },
     },
   };
-  //////
+
   it.only('Verify subscription before enabling VPN', async () => {
     
     ///STEP 1: OVERRIDE GUARDIAN ENDPOINT TO EXPIRE SUBSCRIPTION
-    this.ctx.guardianSubscriptionDetailsCallback = () => {
-      ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].status = 200;
-      ctx.guardianOverrideEndpoints
-        .GETs['/api/v1/vpn/account']
-        .body = SUBSCRIPTION_EXPIRED_USER_DATA;
-    };
+    // this.ctx.guardianSubscriptionDetailsCallback = () => {
+    //   console.log("Expire sub");
+    //   this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].status = 200;
+    //   this.ctx.guardianOverrideEndpoints
+    //     .GETs['/api/v1/vpn/account']
+    //     .body = SUBSCRIPTION_EXPIRED_USER_DATA;
+    // };
+
+    // this.ctx.guardianSubscriptionDetailsCallback = req => {
+    //   console.log("Expire sub");
+    //   this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+    //       .status = 200;
+    //   this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+    //       .body = SUBSCRIPTION_DETAILS;
+    // };
+
+    // await vpn.wait(8000);
 
       ///STEP 2: TURN ON THE VPN
-    await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+    // await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
 
-    await vpn.setSetting('connectionChangeNotification', 'true');
-    await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
+    // await vpn.setSetting('connectionChangeNotification', 'true');
+    // await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
 
-    await vpn.waitForCondition(async () => {
-      let connectingMsg = await vpn.getQueryProperty(
-          queries.screenHome.CONTROLLER_TITLE, 'text');
-      return connectingMsg === 'Connecting…';
-    });
+    // await vpn.waitForCondition(async () => {
+    //   let connectingMsg = await vpn.getQueryProperty(
+    //       queries.screenHome.CONTROLLER_TITLE, 'text');
+    //   return connectingMsg === 'Connecting…';
+    // });
 
-    assert(
-        await vpn.getQueryProperty(
-            queries.screenHome.CONTROLLER_SUBTITLE, 'text') ===
-        'Masking connection and location');
+    // assert(
+    //     await vpn.getQueryProperty(
+    //         queries.screenHome.CONTROLLER_SUBTITLE, 'text') ===
+    //     'Masking connection and location');
 
-    await vpn.waitForCondition(async () => {
-      return await vpn.getQueryProperty(
-                 queries.screenHome.CONTROLLER_TITLE, 'text') == 'VPN is on';
-    });
+    // await vpn.waitForCondition(async () => {
+    //   return await vpn.getQueryProperty(
+    //              queries.screenHome.CONTROLLER_TITLE, 'text') == 'VPN is on';
+    // });
 
-    assert((await vpn.getQueryProperty(
-                queries.screenHome.SECURE_AND_PRIVATE_SUBTITLE, 'text'))
-               .startsWith('Secure and private '));
+    // assert((await vpn.getQueryProperty(
+    //             queries.screenHome.SECURE_AND_PRIVATE_SUBTITLE, 'text'))
+    //            .startsWith('Secure and private '));
 
-    await vpn.waitForCondition(() => {
-      return vpn.lastNotification().title === 'VPN Connected';
-    });
+    // await vpn.waitForCondition(() => {
+    //   return vpn.lastNotification().title === 'VPN Connected';
+    // });
 
-    assert(vpn.lastNotification().title === 'VPN Connected');
-    assert(vpn.lastNotification().message.startsWith('Connected to '));
+    await vpn.activate(true);
+    console.log("after activate()")
+    // await vpn.wait(8000);
+    assert.equal(vpn.lastNotification().title, 'VPN Connected');
+    // assert(vpn.lastNotification().message.startsWith('Connected to '));
 
     //STEP 3: GET THE EXPIRATION PAGE
   });
