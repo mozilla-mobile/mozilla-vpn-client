@@ -27,10 +27,54 @@ least a manifest.json file. The properties of this JSON file are:
 | name | The name of the add-on | String | Yes |
 | api_version | The version of the add-on framework | String | Yes |
 | type | One of the supported types (message, guide, tutorial, ...) | String | Yes |
-| conditions | List of conditions to met | Array of Condition objects | No |
+| conditions | List of conditions to meet | Array of Condition objects | No |
+| state | Object describing the state of the addon | Collection of state objects | No |
 
-Based on the add-on type, extra properties can be included. See the [tutorial](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/docs/tutorials.md),
+Based on the add-on type, extra properties can be in added. See the [tutorial](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/docs/tutorials.md),
 [guide](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/docs/guides.md), and [message](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/docs/message.md) documentation.
+
+## State Object
+
+An addon may have three different types of state: `session`, `local` or `global`.
+
+| Property | Description | Type | Required |
+| --- | --- | --- | --- |
+| session | An object describing the addons session state | State | No |
+| local | An object describing the addons local state | State | No |
+| global | An object describing the addons global state | State | No |
+
+The `State` interface is the same, regardless of the type of state.
+There is no limit of properties for a state, however the only supported state types are `string`, `number` and `boolean`.
+The state object may _not_ be nested.
+
+Following is the state interface, described using Typescript notation.
+
+```ts
+interface State {
+    [key: string]: {
+        type: “string” | “number” | “boolean”,
+        default: string | number | boolean,
+    }
+}
+
+```
+
+### Session state
+
+Session state is _not_ persisted throughout user sessions i.e. it is wiped once the application is killed.
+
+### Local state
+
+> **Note**: Global state is not supported yet, if you need to implement an addon that requires it please refer to [VPN-3929](https://mozilla-hub.atlassian.net/browse/VPN-3929).
+
+Local state is persisted throughout user sessions i.e. not wiped after the application is killed. It is _not_ synced among the devices of a given user. It is local to each device.
+
+### Global state
+
+> **Note**: Global state is not supported yet, if you need to implement an addon that requires it please refer to [VPN-2795](https://mozilla-hub.atlassian.net/browse/VPN-2795).
+
+Global state is persisted throughout user sessions and synced among user devices.
+
 
 ## Condition object
 
@@ -48,7 +92,7 @@ Add-ons can enable and disable themselves using the `conditions` key in the mani
 | trigger_time | A number identifying the number of seconds from the first execution of the client | Integer |  No | Yes |
 | start_time | The epoch time that activates the current add-on | Integer | No | Yes |
 | end_time | The epoch time that deactivates the current add-on | Integer | No | Yes |
-| javascript | A script file is executed to change the condition status. See below | String | No | Yes | 
+| javascript | A script file is executed to change the condition status. See below | String | No | Yes |
 | translation_threshold | The translation threshold to use. By default 1 (full translation required) | Number | No | No |
 
 Some conditions are dynamic. This means that the value can change their status dynamically during the app execution.
@@ -69,7 +113,7 @@ The list of setting keys can be found here: https://github.com/mozilla-mobile/mo
 
 ### Javascript conditions
 
-When the add-on manifest contains a `javascript` property in the `conditions` object, its value must be a javascript filename. 
+When the add-on manifest contains a `javascript` property in the `conditions` object, its value must be a javascript filename.
 
 The javascript file is executed when the add-on is loaded and it has to expose a function. For instance:
 
