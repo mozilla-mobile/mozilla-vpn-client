@@ -5,6 +5,7 @@
 #ifndef METRICTYPES_H
 #define METRICTYPES_H
 
+#include "boolean.h"
 #include "counter.h"
 #include "datetime.h"
 #include "event.h"

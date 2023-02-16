@@ -7,6 +7,7 @@ mod macros;
 
 pub mod helpers;
 
+pub mod boolean;
 pub mod counter;
 pub mod datetime;
 pub mod event;

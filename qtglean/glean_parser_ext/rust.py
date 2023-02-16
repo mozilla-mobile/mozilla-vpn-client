@@ -213,6 +213,7 @@ def output_rust(objs, output_fd, options={}):
         ("STRING_MAP", "StringMetric"): [],
         ("QUANTITY_MAP", "QuantityMetric"): [],
         ("DATETIME_MAP", "DatetimeMetric"): [],
+        ("BOOLEAN_MAP", "BooleanMetric"): [],
     }
 
     # Map from a metric ID to the fully qualified path of the event object in Rust.
