@@ -6,7 +6,8 @@
 set -e
 
 # Reqs
-git submodule update --init --depth=1
+git submodule update --init --depth 1
+git submodule update --remote i18n
 pip3 install -r requirements.txt
 
 # Get Secrets for building
