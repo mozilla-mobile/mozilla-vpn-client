@@ -211,6 +211,8 @@ def output_rust(objs, output_fd, options={}):
         ("TIMING_DISTRIBUTION_MAP", "TimingDistributionMetric"): [],
         ("COUNTER_MAP", "CounterMetric"): [],
         ("STRING_MAP", "StringMetric"): [],
+        ("QUANTITY_MAP", "QuantityMetric"): [],
+        ("DATETIME_MAP", "DatetimeMetric"): [],
         ("BOOLEAN_MAP", "BooleanMetric"): [],
     }
 

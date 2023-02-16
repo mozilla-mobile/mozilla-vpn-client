@@ -27,10 +27,14 @@ VPNViewBase {
 
             accessibleName: VPNI18n.GetHelpHelpCenter
             title: VPNI18n.GetHelpHelpCenter
-            onClicked: VPNUrlOpener.openUrlLabel("sumo")
             iconSource: "qrc:/nebula/resources/externalLink.svg"
             backgroundColor: VPNTheme.theme.clickableRowBlue
             width: parent.width - VPNTheme.theme.windowMargin
+            onClicked: {
+                MZGleanDeprecated.recordGleanEvent("helpMenuHelpCenterOpened");
+                Glean.sample.helpMenuHelpCenterOpened.record();
+                VPNUrlOpener.openUrlLabel("sumo")
+            }
         }
 
         VPNExternalLinkListItem {
@@ -38,11 +42,15 @@ VPNViewBase {
 
             accessibleName: VPNI18n.InAppSupportWorkflowSupportNavLinkText
             title: VPNI18n.InAppSupportWorkflowSupportNavLinkText
-            onClicked: getHelpStackView.push("qrc:/ui/screens/getHelp/contactUs/ViewContactUsForm.qml");
             iconSource: "qrc:/nebula/resources/chevron.svg"
             iconMirror: VPNLocalizer.isRightToLeft
             backgroundColor: VPNTheme.theme.iconButtonLightBackground
             width: parent.width - VPNTheme.theme.windowMargin
+            onClicked: {
+                MZGleanDeprecated.recordGleanEvent("helpContactSupportOpened");
+                Glean.sample.helpContactSupportOpened.record();
+                getHelpStackView.push("qrc:/ui/screens/getHelp/contactUs/ViewContactUsForm.qml");
+            }
         }
 
         VPNExternalLinkListItem {
@@ -50,11 +58,15 @@ VPNViewBase {
 
             accessibleName: VPNI18n.GetHelpViewLogs
             title: VPNI18n.GetHelpViewLogs
-            onClicked: VPN.requestViewLogs()
             iconSource: VPNFeatureList.get("shareLogs").isSupported ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"
             iconMirror: !VPNFeatureList.get("shareLogs").isSupported && VPNLocalizer.isRightToLeft
             backgroundColor: VPNFeatureList.get("shareLogs").isSupported ?VPNTheme.theme.clickableRowBlue : VPNTheme.theme.iconButtonLightBackground
             width: parent.width - VPNTheme.theme.windowMargin
+            onClicked: {
+                MZGleanDeprecated.recordGleanEvent("helpMenuViewLogsOpened");
+                Glean.sample.helpMenuViewLogsOpened.record();
+                VPN.requestViewLogs()
+            }
         }
 
         VPNExternalLinkListItem {

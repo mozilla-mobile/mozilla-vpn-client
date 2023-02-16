@@ -139,7 +139,11 @@ VPNViewBase {
                 imageLeftSrc: "qrc:/ui/resources/settings/aboutUs.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: VPNLocalizer.isRightToLeft
-                onClicked: stackview.push("qrc:/ui/screens/settings/ViewAboutUs.qml")
+                onClicked: {
+                    MZGleanDeprecated.recordGleanEvent("settingsAboutUsOpened");
+                    Glean.sample.settingsAboutUsOpened.record();
+                    stackview.push("qrc:/ui/screens/settings/ViewAboutUs.qml")
+                }
             }
 
             VPNSignOut {

@@ -7,8 +7,10 @@
 
 #include "boolean.h"
 #include "counter.h"
+#include "datetime.h"
 #include "event.h"
 #include "ping.h"
+#include "quantity.h"
 #include "string.h"
 #include "timingdistribution.h"
 
