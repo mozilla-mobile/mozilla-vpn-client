@@ -1,34 +1,41 @@
 {
   "api_version": "0.1",
-  "id": "message_update_v2.13",
-  "name": "Update to Mozilla VPN 2.13",
+  "id": "message_update_v2.14",
+  "name": "Update to Mozilla VPN 2.14",
   "type": "message",
   "conditions": {
-    "max_client_version": "2.12.9"
+    "max_client_version": "2.13.9"
   },
   "javascript": {
     "enable": "enable.js"
   },
   "message": {
     "date": 1671066000,
-    "id": "message_update_v2.13",
-    "title": "Update to Mozilla VPN 2.13",
+    "id": "message_update_v2.14",
+    "title": "Update to Mozilla VPN 2.14",
     "subtitle": "We’ve released an updated version of Mozilla VPN! Update to the latest version to get the newest features and bug fixes:",
     "badge": "new_update",
     "blocks": [
-      { "id": "c_1",
+      {
+        "id": "c_1",
         "type": "ulist",
         "content": [
-          { "id": "l_2",
-            "content": "When running a speed test, you’ll now be able to see upload as well as download speed." },
-          { "id": "l_3",
-            "content": "You can now see the IP address of the server you are connected to by tapping the info button." },
-          { "id": "l_4",
-            "content": "On Android, you can now turn the VPN on or off by using the quick actions in the notification bar." },
-            { "id": "l_5",
-            "content": "New multi-hop and app exclusion tutorials." },
-            { "id": "l_6",
-            "content": "We’ve also made bug fixes, UI adjustments and other performance improvements to make Mozilla VPN even better." }
+          {
+            "id": "l_1",
+            "content": "You can now choose to filter out malware, ads, and ad trackers, giving you more protection as you navigate the web. Find these features In “Privacy features” within the Settings menu."
+          },
+          {
+            "id": "l_2",
+            "content": "When you first launch the app, the app will now automatically suggest the server location that is closest to you."
+          },
+          {
+            "id": "l_3",
+            "content": "We’ve reorganized the options in the Settings menu to help you find important features of the app, like Privacy features, as well as App Exclusions functionality."
+          },
+          {
+            "id": "l_4",
+            "content": "We’ve also made bug fixes, UI adjustments and other performance improvements to make Mozilla VPN even better."
+          }
         ]
       },
       {
@@ -55,17 +62,20 @@
         "content": "Download update",
         "javascript": "updateWeb.js"
       },
-      { "id": "c_5",
+      {
+        "id": "c_5",
         "type": "button",
         "style": "link",
         "content": "Get help",
         "javascript": "getHelp.js"
       },
-      { "id": "extra_1",
+      {
+        "id": "extra_1",
         "type": "text",
-        "content": "Download Mozilla VPN 2.13"
+        "content": "Download Mozilla VPN 2.14"
       },
-      { "id": "extra_2",
+      {
+        "id": "extra_2",
         "type": "text",
         "content": "We’ve released an updated version of Mozilla VPN! Download it today to get the newest features and bug fixes:"
       }
