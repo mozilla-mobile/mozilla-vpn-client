@@ -9,8 +9,6 @@
 #include <QLocale>
 #include <QTranslator>
 
-#include "i18nstrings.h"
-
 class SettingsHolder;
 
 class Localizer final : public QAbstractListModel {
