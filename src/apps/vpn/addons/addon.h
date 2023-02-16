@@ -16,8 +16,8 @@ class QJsonObject;
 
 class AddonApi;
 constexpr const char* ADDON_SETTINGS_GROUP = "addon";
-constexpr const char* ADDON_DEFAULT_STATE = "Unknown";
-constexpr const char* ADDON_SETTINGS_STATE_KEY = "state";
+constexpr const char* ADDON_DEFAULT_STATUS = "Unknown";
+constexpr const char* ADDON_SETTINGS_STATUS_KEY = "state";
 
 class Addon : public QObject {
   Q_OBJECT
@@ -28,8 +28,8 @@ class Addon : public QObject {
   Q_PROPERTY(QString type READ type CONSTANT)
 
  public:
-  enum State {
-    // Initial state. This should be used only during the loading.
+  enum Status {
+    // Initial status. This should be used only during the loading.
     Unknown,
 
     // The add-on has just been installed. This is the first time the device
@@ -42,7 +42,7 @@ class Addon : public QObject {
     // The add-on is disabled.
     Disabled,
   };
-  Q_ENUM(State);
+  Q_ENUM(Status);
 
   static Addon* create(QObject* parent, const QString& manifestFileName);
 
@@ -75,16 +75,16 @@ class Addon : public QObject {
         const QString& name, const QString& type);
 
  private:
-  void updateAddonState(State newState);
+  void updateAddonStatus(Status newStatus);
 
   bool evaluateJavascript(const QJsonObject& javascript);
   bool evaluateJavascriptInternal(const QString& javascript, QJSValue* value);
 
-  struct StateQuery final : public SettingsHolder::AddonSettingQuery {
-    explicit StateQuery(const QString& ai)
+  struct StatusQuery final : public SettingsHolder::AddonSettingQuery {
+    explicit StatusQuery(const QString& ai)
         : SettingsHolder::AddonSettingQuery(ai, QString(ADDON_SETTINGS_GROUP),
-                                            QString(ADDON_SETTINGS_STATE_KEY),
-                                            QString(ADDON_DEFAULT_STATE)) {}
+                                            QString(ADDON_SETTINGS_STATUS_KEY),
+                                            QString(ADDON_DEFAULT_STATUS)) {}
   };
 
  private:
@@ -98,7 +98,7 @@ class Addon : public QObject {
   AddonApi* m_api = nullptr;
   AddonConditionWatcher* m_conditionWatcher = nullptr;
 
-  State m_state = Unknown;
+  Status m_status = Unknown;
 
   QJSValue m_jsEnableFunction;
   QJSValue m_jsDisableFunction;

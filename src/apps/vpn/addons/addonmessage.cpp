@@ -30,8 +30,8 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  MessageState messageState = loadMessageState(id);
-  if (messageState == MessageState::Dismissed) {
+  MessageStatus messageStatus = loadMessageStatus(id);
+  if (messageStatus == MessageStatus::Dismissed) {
     logger.info() << "Message" << id << "has been already dismissed";
     return nullptr;
   }
@@ -47,7 +47,7 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
   AddonMessage* message = new AddonMessage(parent, manifestFileName, id, name);
   auto guard = qScopeGuard([&] { message->deleteLater(); });
 
-  message->m_state = messageState;
+  message->m_status = messageStatus;
 
   message->m_title.initialize(QString("message.%1.title").arg(messageId),
                               messageObj["title"].toString());
@@ -84,53 +84,54 @@ AddonMessage::AddonMessage(QObject* parent, const QString& manifestFileName,
 AddonMessage::~AddonMessage() { MZ_COUNT_DTOR(AddonMessage); }
 
 // static
-AddonMessage::MessageState AddonMessage::loadMessageState(const QString& id) {
+AddonMessage::MessageStatus AddonMessage::loadMessageStatus(const QString& id) {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  QString stateSetting = settingsHolder->getAddonSetting(MessageStateQuery(id));
-  QMetaEnum stateMetaEnum = QMetaEnum::fromType<MessageState>();
+  QString statusSetting =
+      settingsHolder->getAddonSetting(MessageStatusQuery(id));
+  QMetaEnum statusMetaEnum = QMetaEnum::fromType<MessageStatus>();
 
-  bool isValidState = false;
-  int persistedState = stateMetaEnum.keyToValue(
-      stateSetting.toLocal8Bit().constData(), &isValidState);
+  bool isValidStatus = false;
+  int persistedStatus = statusMetaEnum.keyToValue(
+      statusSetting.toLocal8Bit().constData(), &isValidStatus);
 
-  if (isValidState) {
-    return static_cast<MessageState>(persistedState);
+  if (isValidStatus) {
+    return static_cast<MessageStatus>(persistedStatus);
   }
 
-  return MessageState::Received;
+  return MessageStatus::Received;
 }
 
-void AddonMessage::updateMessageState(MessageState newState) {
-  if (m_state == newState) return;
+void AddonMessage::updateMessageStatus(MessageStatus newStatus) {
+  if (m_status == newStatus) return;
 
-  QMetaEnum stateMetaEnum = QMetaEnum::fromType<MessageState>();
-  QString newStateSetting = stateMetaEnum.valueToKey(newState);
-  m_state = newState;
-  emit stateChanged(m_state);
+  QMetaEnum statusMetaEnum = QMetaEnum::fromType<MessageStatus>();
+  QString newStatusSetting = statusMetaEnum.valueToKey(newStatus);
+  m_status = newStatus;
+  emit statusChanged(m_status);
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  settingsHolder->setAddonSetting(MessageStateQuery(id()), newStateSetting);
+  settingsHolder->setAddonSetting(MessageStatusQuery(id()), newStatusSetting);
 
   mozilla::glean::sample::addon_message_state_changed.record(
       mozilla::glean::sample::AddonMessageStateChangedExtra{
           ._messageId = id(),
-          ._messageState = newStateSetting,
+          ._messageState = newStatusSetting,
       });
   emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
       GleanSample::addonMessageStateChanged,
-      {{"message_id", id()}, {"message_state", newStateSetting}});
+      {{"message_id", id()}, {"message_state", newStatusSetting}});
 }
 
 void AddonMessage::dismiss() {
   disable();
-  updateMessageState(MessageState::Dismissed);
+  updateMessageStatus(MessageStatus::Dismissed);
 }
 
-void AddonMessage::markAsRead() { updateMessageState(MessageState::Read); }
+void AddonMessage::markAsRead() { updateMessageStatus(MessageStatus::Read); }
 
 bool AddonMessage::containsSearchString(const QString& query) const {
   if (query.isEmpty()) {
@@ -158,7 +159,7 @@ bool AddonMessage::enabled() const {
     return false;
   }
 
-  return m_state != MessageState::Dismissed;
+  return m_status != MessageStatus::Dismissed;
 }
 
 QString AddonMessage::formattedDate() const {
@@ -243,10 +244,10 @@ void AddonMessage::maybePushNotification() {
     return;
   }
 
-  if (m_state == MessageState::Received) {
+  if (m_status == MessageStatus::Received) {
     NotificationHandler::instance()->newInAppMessageNotification(
         m_title.get(), m_subtitle.get());
-    updateMessageState(MessageState::Notified);
+    updateMessageStatus(MessageStatus::Notified);
   }
 }
 

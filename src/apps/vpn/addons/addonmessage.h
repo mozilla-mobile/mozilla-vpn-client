@@ -17,8 +17,8 @@ class TestAddon;
 #endif
 
 constexpr const char* ADDON_MESSAGE_SETTINGS_GROUP = "message";
-constexpr const char* ADDON_MESSAGE_SETTINGS_STATE_KEY = "state";
-constexpr const char* ADDON_MESSAGE_DEFAULT_STATE = "Received";
+constexpr const char* ADDON_MESSAGE_SETTINGS_STATUS_KEY = "state";
+constexpr const char* ADDON_MESSAGE_DEFAULT_STATUS = "Received";
 
 class AddonMessage final : public Addon {
   Q_OBJECT
@@ -32,7 +32,7 @@ class AddonMessage final : public Addon {
                  retranslationCompleted)
 
   Q_PROPERTY(Composer* composer READ composer CONSTANT)
-  Q_PROPERTY(bool isRead READ isRead NOTIFY stateChanged)
+  Q_PROPERTY(bool isRead READ isRead NOTIFY statusChanged)
   Q_PROPERTY(qint64 date MEMBER m_date WRITE setDate NOTIFY dateChanged)
   Q_PROPERTY(
       QString formattedDate READ formattedDate NOTIFY retranslationCompleted)
@@ -47,7 +47,7 @@ class AddonMessage final : public Addon {
 
   ~AddonMessage();
 
-  enum MessageState {
+  enum MessageStatus {
     // A message has been received
     Received,
     // A notification has been shown to the user i.e it's been enabled
@@ -57,7 +57,7 @@ class AddonMessage final : public Addon {
     // Message has been dismissed
     Dismissed
   };
-  Q_ENUM(MessageState);
+  Q_ENUM(MessageStatus);
 
   Q_INVOKABLE void dismiss();
   Q_INVOKABLE void markAsRead();
@@ -66,7 +66,7 @@ class AddonMessage final : public Addon {
   void setBadge(Badge badge);
   void setDate(qint64 date);
 
-  bool isRead() const { return m_state == MessageState::Read; }
+  bool isRead() const { return m_status == MessageStatus::Read; }
 
   QString formattedDate() const;
 
@@ -79,7 +79,7 @@ class AddonMessage final : public Addon {
                                               const QDateTime& messageDateTime);
 
  signals:
-  void stateChanged(AddonMessage::MessageState state);
+  void statusChanged(AddonMessage::MessageStatus status);
   void badgeChanged();
   void dateChanged();
 
@@ -87,15 +87,15 @@ class AddonMessage final : public Addon {
   AddonMessage(QObject* parent, const QString& manifestFileName,
                const QString& id, const QString& name);
 
-  struct MessageStateQuery final : public SettingsHolder::AddonSettingQuery {
-    explicit MessageStateQuery(const QString& ai)
+  struct MessageStatusQuery final : public SettingsHolder::AddonSettingQuery {
+    explicit MessageStatusQuery(const QString& ai)
         : SettingsHolder::AddonSettingQuery(
               ai, QString(ADDON_MESSAGE_SETTINGS_GROUP),
-              QString(ADDON_MESSAGE_SETTINGS_STATE_KEY),
-              QString(ADDON_MESSAGE_DEFAULT_STATE)) {}
+              QString(ADDON_MESSAGE_SETTINGS_STATUS_KEY),
+              QString(ADDON_MESSAGE_DEFAULT_STATUS)) {}
   };
-  static MessageState loadMessageState(const QString& id);
-  void updateMessageState(MessageState newState);
+  static MessageStatus loadMessageStatus(const QString& id);
+  void updateMessageStatus(MessageStatus newStatus);
 
   void planDateRetranslation();
   void setBadge(const QString& badge);
@@ -109,7 +109,7 @@ class AddonMessage final : public Addon {
 
   qint64 m_date = 0;
 
-  MessageState m_state = MessageState::Received;
+  MessageStatus m_status = MessageStatus::Received;
 
   Badge m_badge;
 
