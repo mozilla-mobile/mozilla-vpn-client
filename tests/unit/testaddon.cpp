@@ -24,6 +24,7 @@
 #include "glean/generated/metrics.h"
 #include "glean/mzglean.h"
 #include "helper.h"
+#include "i18nstrings.h"
 #include "localizer.h"
 #include "models/featuremodel.h"
 #include "qmlengineholder.h"
