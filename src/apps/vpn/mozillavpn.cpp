@@ -860,7 +860,7 @@ bool MozillaVPN::checkCurrentDevice() {
 }
 
 QString MozillaVPN::countryCode() {
-    return m_private->m_location.countryCode();
+  return m_private->m_location.countryCode();
 }
 
 void MozillaVPN::logout() {
