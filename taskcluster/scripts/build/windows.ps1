@@ -55,7 +55,6 @@ $ErrorActionPreference = "Stop"
 mkdir $TASK_WORKDIR/cmake_build
 $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
 
-
 cmake --version
 if ($env:MOZ_SCM_LEVEL -eq "3") {
     # Only on a release build we have access to those secrects.
@@ -65,10 +64,10 @@ if ($env:MOZ_SCM_LEVEL -eq "3") {
     $SENTRY_ENVELOPE_ENDPOINT = Get-Content sentry_envelope_endpoint
     $SENTRY_DSN = Get-Content sentry_dsn
     #
-    cmake -S . -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release -DSENTRY_DSN="$SENTRY_DSN" -DSENTRY_ENVELOPE_ENDPOINT="$SENTRY_ENVELOPE_ENDPOINT"
+    cmake -S . -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release -DSENTRY_DSN="$SENTRY_DSN" -DSENTRY_ENVELOPE_ENDPOINT="$SENTRY_ENVELOPE_ENDPOINT" -DCMAKE_PREFIX_PATH="$QTPATH/lib/cmake"
 } else {
     # Do the generic build
-   cmake -S . -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release
+   cmake -S . -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$QTPATH/lib/cmake"
 }
 cmake --build $BUILD_DIR
 cmake --build $BUILD_DIR --target msi
