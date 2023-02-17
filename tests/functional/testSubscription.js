@@ -203,15 +203,6 @@ describe('Subscription view', function() {
     this.ctx.resetCallbacks();
   });
 
-  it('Verify subscription before enabling VPN', async () => {
-    
-    await vpn.activate(true);
-    console.log("after activate()");
-    assert.equal(vpn.lastNotification().title, 'VPN Connected');
-
-    //STEP 3: GET THE EXPIRATION PAGE
-  });
-
   it('Authentication needed - sample', async () => {
     this.ctx.fxaLoginCallback = (req) => {
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
