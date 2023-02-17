@@ -25,8 +25,8 @@ python3 -m pip install -r requirements.txt --user
 python3 -m pip install -r taskcluster/scripts/requirements.txt --user
 
 # Fix: pip scripts are not on path by default on tc, so glean would fail
-$PYTHON_SCRIPTS =resolve-path "$env:APPDATA\Python\Python36\Scripts"
-$env:PATH ="$FETCHES_PATH;$QTPATH;$PYTHON_SCRIPTS;$env:PATH"
+# $PYTHON_SCRIPTS =resolve-path "$env:APPDATA\Python\Python36\Scripts"
+# $env:PATH ="$FETCHES_PATH;$QTPATH;$PYTHON_SCRIPTS;$env:PATH"
 
 # Setup Go and MinGW up (for gco)
 $env:GOROOT="$FETCHES_PATH\go\"
