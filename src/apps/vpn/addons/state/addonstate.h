@@ -24,7 +24,7 @@ struct AddonState {
 
  public:
   AddonState() = default;
-  ~AddonState() = default;
+  ~AddonState() { delete m_session; }
 
   /**
    * @brief Construct a new Addon State object.
