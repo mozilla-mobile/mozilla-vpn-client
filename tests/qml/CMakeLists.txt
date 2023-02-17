@@ -147,14 +147,6 @@ target_sources(qml_tests PRIVATE
     ../unit/mocinspectorhandler.cpp
 )
 
-if(WIN32)
-    if(${Qt6_VERSION} VERSION_GREATER_EQUAL 6.3.0)
-        message(WARNING "Remove the Qt6 windows hack!")
-    else()
-        target_sources(qml_tests PRIVATE qt6winhack.qrc)
-    endif()
-endif()
-
 ## Add the tests to be run.
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     list(APPEND QML_TEST_ARGS -platform offscreen)

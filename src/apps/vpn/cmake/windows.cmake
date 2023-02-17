@@ -11,9 +11,9 @@ set_target_properties(mozillavpn PROPERTIES
 )
 # Todo: This will force the generation of a .pdb
 # ignoring buildmode. we need to fix the relwithdebug target
-# and then we can remove this :) 
+# and then we can remove this :)
 target_compile_options(mozillavpn
-    PRIVATE 
+    PRIVATE
     $<$<CONFIG:Release>:/ZI>
 )
 
@@ -35,7 +35,7 @@ target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/wireguardutils.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/localsocketcontroller.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/localsocketcontroller.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowsapplistprovider.cpp 
+     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowsapplistprovider.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowsapplistprovider.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowsappimageprovider.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowsappimageprovider.h
@@ -71,20 +71,13 @@ target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowsstartatbootwatcher.h
 )
 
-# Windows Qt6 UI workaround resources
-if(Qt6_VERSION VERSION_GREATER_EQUAL 6.3.0)
-    message(WARNING "Remove the Qt6 windows hack!")
-else()
-    target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/ui/qt6winhack.qrc)
-endif()
-
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
 
 # Build the Balrog library as a DLL
 add_custom_target(balrogdll ALL
     BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/balrog.dll ${CMAKE_CURRENT_BINARY_DIR}/balrog.h
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/balrog
-    COMMAND ${CMAKE_COMMAND} -E env 
+    COMMAND ${CMAKE_COMMAND} -E env
                 GOCACHE=${CMAKE_BINARY_DIR}/go-cache
                 GOOS=windows CGO_ENABLED=1
                 CC=gcc
