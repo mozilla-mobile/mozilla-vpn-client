@@ -6,7 +6,7 @@ const assert = require('assert');
 const vpn = require('./helper.js');
 const queries = require('./queries.js');
 const fxaEndpoints = require('./servers/fxa_endpoints.js')
-const { SubscriptionDetails } = require('./servers/guardian_endpoints.js');
+const {validators} = require('./servers/guardian_endpoints.js');
 
 const SUBSCRIPTION_DETAILS = {
   plan: {amount: 123, currency: 'usd', interval: 'year', interval_count: 1},
@@ -28,90 +28,73 @@ const SUBSCRIPTION_DETAILS = {
 };
 
 describe('Subscription manager', function() {
-  describe('Expired subscription', function()   {
-     this.timeout(3000000);
+  describe('Expired subscription', function() {
+    this.timeout(30000);
 
-     const UserData = {
+    const UserDataActive = {
       avatar: '',
-      display_name: 'Test',
+      display_name: 'Test!!!!!!!!!!!!!',
+      email: 'test@mozilla.com',
+      max_devices: 5,
+      subscriptions: {vpn: {active: true}},
+      devices: [{
+        name: 'Current device',
+        unique_id: '',
+        pubkey: '',
+        ipv4_address: '127.0.0.1',
+        ipv6_address: '::1',
+        created_at: new Date().toISOString()
+      }],
+    };
+    const UserDataInActive = {
+      avatar: '',
+      display_name: 'Test test',
       email: 'test@mozilla.com',
       max_devices: 5,
       subscriptions: {vpn: {active: false}},
-      devices: [
-        {
-          name: 'device_1',
-          unique_id: 'device_1',
-          pubkey: 'a',
-          ipv4_address: '127.0.0.1',
-          ipv6_address: '::1',
-          created_at: new Date().toISOString()
-        },
-        {
-          name: 'device_2',
-          unique_id: 'device_2',
-          pubkey: 'b',
-          ipv4_address: '127.0.0.1',
-          ipv6_address: '::1',
-          created_at: new Date().toISOString()
-        },
-        {
-          name: 'device_3',
-          unique_id: 'device_3',
-          pubkey: 'c',
-          ipv4_address: '127.0.0.1',
-          ipv6_address: '::1',
-          created_at: new Date().toISOString()
-        },
-        {
-          name: 'device_4',
-          unique_id: 'device_4',
-          pubkey: 'd',
-          ipv4_address: '127.0.0.1',
-          ipv6_address: '::1',
-          created_at: new Date().toISOString()
-        },
-      ],
+      devices: [{
+        name: 'Current device',
+        unique_id: '',
+        pubkey: '',
+        ipv4_address: '127.0.0.1',
+        ipv6_address: '::1',
+        created_at: new Date().toISOString()
+      }],
     };
-    
-    it.only('Verify subscription before enabling VPN',
-       async () => {
-         await vpn.authenticateInApp(true, true);
-        //  await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-        //  await vpn.wait(3000);
-        //  console.log('before activate');
-         await vpn.activate(true)
-         console.log('after activate');
 
-         await vpn.wait(5000);
-
-         this.ctx.guardianOverrideEndpoints = {
-          GETs: {
-            '/api/v1/vpn/account':
-                {status: 200, requiredHeaders: ['Authorization'], body: UserData},
+    this.ctx.guardianOverrideEndpoints = {
+      GETs: {
+        '/api/v1/vpn/account': {
+          status: 200,
+          requiredHeaders: ['Authorization'],
+          body: UserDataActive
+        }
+      },
+      POSTs: {
+        '/api/v1/vpn/device': {
+          status: 201,
+          requiredHeaders: ['Authorization'],
+          bodyValidator: validators.guardianDevice,
+          callback: (req) => {
+            UserDataActive.devices[0].name = req.body.name;
+            UserDataActive.devices[0].pubkey = req.body.pubkey;
+            UserDataActive.devices[0].unique_id = req.body.unique_id;
           },
-          POSTs: {
-            '/api/v1/vpn/device': {
-              status: 201,
-              requiredHeaders: ['Authorization'],
-              callback: (req) => {
-                UserData.devices[0].name = req.body.name;
-                UserData.devices[0].pubkey = req.body.pubkey;
-                UserData.devices[0].unique_id = req.body.unique_id;
-              },
-              body: {}
-            },
-          }
-        };
+          body: {}
+        },
+      }
+    };
 
-        await vpn.wait(5000);
-        console.log('after overriding Guardian endpoint');
-        console.log(UserData);
-        
-        //  await vpn.wait(5000);
-        //  console.log("after activate() again")
-         assert.equal(vpn.lastNotification().title, 'VPN Connected');
-         // assert(vpn.lastNotification().message.startsWith('Connected to '));
-       });
+    it.only('Verify subscription before enabling VPN', async () => {
+      await vpn.authenticateInApp(true, true);
+
+      // Now set userdata to false
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
+          UserDataInActive;
+      console.log('after overriding Guardian endpoint');
+      console.log('activating');
+      await vpn.activate(true) await vpn.wait(5000);
+    });
   });
 });
 
