@@ -46,8 +46,8 @@ api.addon.composer.remove('c_2');
 api.addon.composer.remove('c_3');
 
 api.addon.setTitle(
-    'message.message_update_v2.13.block.extra_1', 'Download Mozilla VPN 2.13')
+    'message.message_update_v2.14.block.extra_1', 'Download Mozilla VPN 2.14')
 api.addon.setSubtitle(
-    'message.message_update_v2.13.block.extra_2',
+    'message.message_update_v2.14.block.extra_2',
     'We’ve released an updated version of Mozilla VPN! Download it today to get the newest features and bug fixes:');
 })
