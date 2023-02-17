@@ -79,6 +79,7 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/addons/manager/addonindex.h
     ${MZ_SOURCE_DIR}/apps/vpn/addons/manager/addonmanager.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/addons/manager/addonmanager.h
+    ${MZ_SOURCE_DIR}/apps/vpn/addons/state/addonstate.h
     ${MZ_SOURCE_DIR}/apps/vpn/addons/state/addonstatebase.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/addons/state/addonstatebase.h
     ${MZ_SOURCE_DIR}/apps/vpn/addons/state/addonsessionstate.cpp

@@ -66,6 +66,7 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/addons/manager/addonindex.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/addons/manager/addonmanager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/addons/manager/addonmanager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/addons/state/addonstate.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/addons/state/addonstatebase.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/addons/state/addonstatebase.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/addons/state/addonsessionstate.cpp
