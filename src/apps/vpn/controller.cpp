@@ -199,7 +199,7 @@ void Controller::implInitialized(bool status, bool a_connected,
 
 bool Controller::activate(const ServerData& serverData,
                           ServerSelectionPolicy serverSelectionPolicy) {
-  ogger.debug() << "Activation" << m_state;
+  logger.debug() << "Activation" << m_state;
   if (m_state != StateOff && m_state != StateSwitching &&
       m_state != StateSilentSwitching) {
     logger.debug() << "Already connected";
