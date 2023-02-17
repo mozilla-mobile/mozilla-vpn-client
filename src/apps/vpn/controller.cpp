@@ -27,6 +27,7 @@
 #include "settingsholder.h"
 #include "task.h"
 #include "tasks/account/taskaccount.h"
+#include "tasks/function/taskfunction.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "taskscheduler.h"
@@ -200,7 +201,6 @@ void Controller::implInitialized(bool status, bool a_connected,
 
 bool Controller::activate(const ServerData& serverData,
                           ServerSelectionPolicy serverSelectionPolicy) {
-  logger.debug() << "Activation" << m_state;
 
   if (m_state != StateOff && m_state != StateSwitching &&
       m_state != StateSilentSwitching) {
@@ -223,11 +223,13 @@ bool Controller::activate(const ServerData& serverData,
       return true;
     }
 
-    // Before attempting to enable VPN connection we should check that the subscription is active
+    // Before attempting to enable VPN connection we should check that the subscription is active.
     setState(StateCheckSubscription);
 
-    //Set up a network request to check the subscription status
-    TaskAccount* task = new TaskAccount(ErrorHandler::DoNotPropagateError);
+    // Set up a network request to check the subscription status.
+    // "task" is an empty task function which is being used to 
+    // replicate the behavior of a TaskAccount.
+    TaskFunction* task = new TaskFunction([]() {});
     NetworkRequest* request = new NetworkRequest(task, 200);
     request->auth(MozillaVPN::authorizationHeader());
     request->get(AppConstants::apiUrl(AppConstants::Account));
@@ -240,9 +242,8 @@ bool Controller::activate(const ServerData& serverData,
 
     connect(request, &NetworkRequest::requestCompleted, this,
             [](const QByteArray& data) {
-              logger.debug() << "Check subscription status completed";
               MozillaVPN::instance()->accountChecked(data);
-            });         
+            });    
 
     setState(StateConnecting);
   }

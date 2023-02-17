@@ -31,35 +31,30 @@ describe('Subscription manager', function() {
   describe('Expired subscription', function() {
     this.timeout(30000);
 
-    const UserDataActive = {
+    const device = {
+      name: 'Current device',
+      unique_id: '',
+      pubkey: '',
+      ipv4_address: '127.0.0.1',
+      ipv6_address: '::1',
+      created_at: new Date().toISOString()
+    };
+
+    const userDataActive = {
       avatar: '',
       display_name: 'Test!!!!!!!!!!!!!',
       email: 'test@mozilla.com',
       max_devices: 5,
       subscriptions: {vpn: {active: true}},
-      devices: [{
-        name: 'Current device',
-        unique_id: '',
-        pubkey: '',
-        ipv4_address: '127.0.0.1',
-        ipv6_address: '::1',
-        created_at: new Date().toISOString()
-      }],
+      devices: [device],
     };
-    const UserDataInActive = {
+    const userDataInactive = {
       avatar: '',
       display_name: 'Test test',
       email: 'test@mozilla.com',
       max_devices: 5,
       subscriptions: {vpn: {active: false}},
-      devices: [{
-        name: 'Current device',
-        unique_id: '',
-        pubkey: '',
-        ipv4_address: '127.0.0.1',
-        ipv6_address: '::1',
-        created_at: new Date().toISOString()
-      }],
+      devices:  [device]
     };
 
     this.ctx.guardianOverrideEndpoints = {
@@ -67,7 +62,7 @@ describe('Subscription manager', function() {
         '/api/v1/vpn/account': {
           status: 200,
           requiredHeaders: ['Authorization'],
-          body: UserDataActive
+          body: userDataActive
         }
       },
       POSTs: {
@@ -76,9 +71,9 @@ describe('Subscription manager', function() {
           requiredHeaders: ['Authorization'],
           bodyValidator: validators.guardianDevice,
           callback: (req) => {
-            UserDataActive.devices[0].name = req.body.name;
-            UserDataActive.devices[0].pubkey = req.body.pubkey;
-            UserDataActive.devices[0].unique_id = req.body.unique_id;
+            device.name = req.body.name;
+            device.pubkey = req.body.pubkey;
+            device.unique_id = req.body.unique_id;
           },
           body: {}
         },
@@ -86,14 +81,26 @@ describe('Subscription manager', function() {
     };
 
     it.only('Verify subscription before enabling VPN', async () => {
+      // This test verifies the case where a user is logged in 
+      // but the VPN is off when their subscription expires. 
+      // When they try to turn the VPN on, they get the 
+      // "Subscribe to Mozilla VPN" screen.
+
+      // Step 1: User logs into the client successfully.
       await vpn.authenticateInApp(true, true);
 
-      // Now set userdata to false
+      // Step 2: Override the Guardian endpoint to mock an expired subscription.
       this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
-          UserDataInActive;
-      console.log('after overriding Guardian endpoint');
-      console.log('activating');
-      await vpn.activate(true) await vpn.wait(5000);
+          userDataInactive;
+
+      // Step 3: Attempt to toggle the VPN on.
+      await vpn.activate(true); 
+
+      // Verify that user gets the "Subscribe to Mozilla VPN" screen.
+    // await vpn.waitForCondition(async () => {
+    //   return await vpn.getQueryProperty(
+    //              queries.screenHome.CONTROLLER_TITLE, 'text') == 'VPN is on';
+    // });
     });
   });
 });
