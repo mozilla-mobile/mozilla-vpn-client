@@ -154,6 +154,13 @@ QString translateItemWithLanguage(const QString& languageCode,
     }
   }
 
+  // Let's use 'en' translation, which is still better than what we obtain from
+  // Guardian.
+  result = s_items.value(itemKey("en", countryCode, cityName));
+  if (!result.isEmpty()) {
+    return result;
+  }
+
   return QString();
 }
 
