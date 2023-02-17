@@ -2,26 +2,11 @@
 if [[ ! -f ".env" ]]
 then
     echo ".env file does not exist"
-    touch .env
-    cat << 'EOF' > .env
+    echo "please create a .env file that with similar data:
         MVPN_API_BASE_URL=http://localhost:5000
-        MVPN_BIN=build/tests/dummyvpn/dummyvpn
-        ARTIFACT_DIR=tests/artifact
-EOF
-fi
-
-# check if build directory exists
-if [[ ! -d "./build/tests/dummyvpn" ]]
-then
-    echo "🔴 dummyvpn dir does not exist, run cmake command 'cmake -B build .' build it"
+        MVPN_BIN={your build path}/tests/dummyvpn/dummyvpn
+        ARTIFACT_DIR=tests/artifact"
     exit 1
-fi
-
-# create dummyvpn app if it doesnt exist
-if [[ ! -f "./build/tests/dummyvpn/dummyvpn" ]]
-then
-    echo "🔴 dummyvpn does not exist, run cmake command to create it"
-    cmake --build build -j$(nproc) --target dummyvpn
 fi
 
 # install node modules to run functional tests if it doesn't exist
