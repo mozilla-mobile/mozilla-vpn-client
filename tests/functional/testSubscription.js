@@ -42,7 +42,7 @@ describe('Subscription manager', function() {
 
     const userDataActive = {
       avatar: '',
-      display_name: 'Test!!!!!!!!!!!!!',
+      display_name: 'Test',
       email: 'test@mozilla.com',
       max_devices: 5,
       subscriptions: {vpn: {active: true}},
@@ -54,7 +54,7 @@ describe('Subscription manager', function() {
       email: 'test@mozilla.com',
       max_devices: 5,
       subscriptions: {vpn: {active: false}},
-      devices:  [device]
+      devices: [device]
     };
 
     this.ctx.guardianOverrideEndpoints = {

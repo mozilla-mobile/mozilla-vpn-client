@@ -25,8 +25,6 @@
 #include "serveri18n.h"
 #include "serverlatency.h"
 #include "settingsholder.h"
-#include "task.h"
-#include "tasks/account/taskaccount.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/heartbeat/taskheartbeat.h"
