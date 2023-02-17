@@ -1,0 +1,49 @@
+{
+  "api_version": "0.1",
+  "id": "message_whats_new_v2.14",
+  "name": "What's new message",
+  "type": "message",
+  "conditions": {
+    "min_client_version": "2.14.0",
+    "max_client_version": "2.14.9"
+  },
+  "javascript": {
+    "enable": "setDate.js"
+  },
+  "message": {
+    "date": 1675040400,
+    "id": "message_whats_new_v2.14",
+    "title": "Welcome to Mozilla VPN 2.14",
+    "subtitle": "You’re using the latest version of Mozilla VPN. Take a look at the newest features and updates:",
+    "badge": "whats_new",
+    "blocks": [
+      {
+        "id": "c_1",
+        "type": "ulist",
+        "content": [
+          {
+            "id": "l_1",
+            "content": "You can now choose to filter out malware, ads, and ad trackers, giving you more protection as you navigate the web. Find these features In “Privacy features” within the Settings menu."
+          },
+          {
+            "id": "l_2",
+            "content": "When you first launch the app, the app will now automatically suggest the server location that is closest to you."
+          },
+          {
+            "id": "l_3",
+            "content": "We’ve reorganized the options in the Settings menu to help you find important features of the app, like Privacy features, as well as App exclusions functionality."
+          },
+          {
+            "id": "l_4",
+            "content": "We’ve also made bug fixes, UI adjustments and other performance improvements to make Mozilla VPN even better."
+          }
+        ]
+      },
+      {
+        "id": "c_2",
+        "type": "text",
+        "content": "Thank you for installing the latest version of Mozilla VPN!"
+      }
+    ]
+  }
+}
