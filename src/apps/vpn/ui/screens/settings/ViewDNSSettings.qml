@@ -218,6 +218,14 @@ VPNViewBase {
         }
     }
 
+    onVisibleChanged: {
+      if (!visible) {
+        if (VPNSettings.userDNS === "" && VPNSettings.dnsProviderFlags === VPNSettings.Custom) {
+          VPNSettings.dnsProviderFlags = VPNSettings.Gateway;
+        }
+      }
+    }
+
     Loader {
         id: dnsOverwriteLoader
 
