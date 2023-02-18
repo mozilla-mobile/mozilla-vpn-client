@@ -80,7 +80,7 @@ describe('Subscription manager', function() {
       }
     };
 
-    it.only('Verify subscription before enabling VPN', async () => {
+    it('Verify subscription before enabling VPN', async () => {
       // This test verifies the case where a user is logged in
       // but the VPN is off when their subscription expires.
       // When they try to turn the VPN on, they get the
