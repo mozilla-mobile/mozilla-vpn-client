@@ -89,6 +89,9 @@ bool Location::fromJson(const QByteArray& json) {
 // This is done in spherical coordinates, and will return a value in the range
 // of zero to pi. Multiply by the Earth's radius if you want meaningful units.
 double Location::distance(double latitude, double longitude) const {
+  if (qIsNaN(latitude) || qIsNaN(longitude)) {
+    return 0.0;
+  }
   if (qIsNaN(m_latitude) || qIsNaN(m_longitude)) {
     return 0.0;
   }
