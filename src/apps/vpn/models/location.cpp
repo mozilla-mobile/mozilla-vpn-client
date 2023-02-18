@@ -115,6 +115,9 @@ double Location::distance(const QObject* a, const QObject* b) {
   if (!aLatOkay || !aLongOkay || !bLatOkay || !bLongOkay) {
     return 0.0;
   }
+  if (qIsNaN(aLat) || qIsNan(aLong) || qIsNaN(bLat) || qIsNan(bLong)) {
+    return 0.0;
+  }
 
   double aSin = qSin(aLat * M_PI / 180.0);
   double aCos = qCos(aLat * M_PI / 180.0);
