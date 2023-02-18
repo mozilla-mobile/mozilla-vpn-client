@@ -188,7 +188,7 @@ class Controller final : public QObject {
   void serverDataChanged();
 
  private:
-   ErrorHandler::ErrorPropagationPolicy m_errorPropagationPolicy =
+  ErrorHandler::ErrorPropagationPolicy m_errorPropagationPolicy =
       ErrorHandler::DoNotPropagateError;
   State m_state = StateInitializing;
 

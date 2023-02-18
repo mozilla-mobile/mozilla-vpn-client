@@ -25,8 +25,8 @@
 #include "serveri18n.h"
 #include "serverlatency.h"
 #include "settingsholder.h"
-#include "tasks/function/taskfunction.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
+#include "tasks/function/taskfunction.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "taskscheduler.h"
 
@@ -221,11 +221,12 @@ bool Controller::activate(const ServerData& serverData,
       return true;
     }
 
-    // Before attempting to enable VPN connection we should check that the subscription is active.
+    // Before attempting to enable VPN connection we should check that the
+    // subscription is active.
     setState(StateCheckSubscription);
 
     // Set up a network request to check the subscription status.
-    // "task" is an empty task function which is being used to 
+    // "task" is an empty task function which is being used to
     // replicate the behavior of a TaskAccount.
     TaskFunction* task = new TaskFunction([]() {});
     NetworkRequest* request = new NetworkRequest(task, 200);
@@ -241,7 +242,7 @@ bool Controller::activate(const ServerData& serverData,
     connect(request, &NetworkRequest::requestCompleted, this,
             [](const QByteArray& data) {
               MozillaVPN::instance()->accountChecked(data);
-            });    
+            });
 
     setState(StateConnecting);
   }
@@ -572,7 +573,8 @@ void Controller::quit() {
   m_nextStep = Quit;
 
   if (m_state == StateOn || m_state == StateSwitching ||
-      m_state == StateSilentSwitching || m_state == StateConnecting || m_state  == StateCheckSubscription) {
+      m_state == StateSilentSwitching || m_state == StateConnecting ||
+      m_state == StateCheckSubscription) {
     deactivate();
     return;
   }
@@ -589,8 +591,8 @@ void Controller::backendFailure() {
   m_nextStep = BackendFailure;
 
   if (m_state == StateOn || m_state == StateSwitching ||
-      m_state == StateSilentSwitching || m_state == StateConnecting || m_state == StateCheckSubscription ||
-      m_state == StateConfirming) {
+      m_state == StateSilentSwitching || m_state == StateConnecting ||
+      m_state == StateCheckSubscription || m_state == StateConfirming) {
     deactivate();
     return;
   }
@@ -757,7 +759,7 @@ void Controller::statusUpdated(const QString& serverIpv4Gateway,
 
   list.swap(m_getStatusCallbacks);
   for (const std::function<void(
-           const QString&serverIpv4Gateway, const QString&deviceIpv4Address,
+           const QString& serverIpv4Gateway, const QString& deviceIpv4Address,
            uint64_t txBytes, uint64_t rxBytes)>&func : list) {
     func(serverIpv4Gateway, deviceIpv4Address, txBytes, rxBytes);
   }

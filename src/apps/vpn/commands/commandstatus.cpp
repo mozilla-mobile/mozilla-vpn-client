@@ -138,7 +138,7 @@ int CommandStatus::run(QStringList& tokens) {
 
       case Controller::StateCheckSubscription:
         stream << "check subscription";
-        break;  
+        break;
 
       case Controller::StateConnecting:
         stream << "connecting";

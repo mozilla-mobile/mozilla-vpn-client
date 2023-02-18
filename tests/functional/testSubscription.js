@@ -81,9 +81,9 @@ describe('Subscription manager', function() {
     };
 
     it.only('Verify subscription before enabling VPN', async () => {
-      // This test verifies the case where a user is logged in 
-      // but the VPN is off when their subscription expires. 
-      // When they try to turn the VPN on, they get the 
+      // This test verifies the case where a user is logged in
+      // but the VPN is off when their subscription expires.
+      // When they try to turn the VPN on, they get the
       // "Subscribe to Mozilla VPN" screen.
 
       // Step 1: User logs into the client successfully.
@@ -814,7 +814,7 @@ describe('Subscription view', function() {
       }
 
       if (data.plan.expected &&
-          data.subscription.value._subscription_type == "web") {
+          data.subscription.value._subscription_type == 'web') {
         await vpn.waitForQuery(
             queries.screenSettings.subscriptionView.PLAN.visible());
         assert.equal(
@@ -843,7 +843,7 @@ describe('Subscription view', function() {
               queries.screenSettings.subscriptionView.CANCELLED_LABEL.visible(),
               'text'), data.subscription.expected.label);
 
-      if (data.subscription.value._subscription_type == "web") {
+      if (data.subscription.value._subscription_type == 'web') {
         if (data.payment.expected.card) {
           await vpn.waitForQuery(
               queries.screenSettings.subscriptionView.BRAND.visible());
@@ -1216,73 +1216,72 @@ describe('Subscription view', function() {
   }
 
   it('Correctly shows the VPN / Relay upgrade UI based on currency',
-    async () => {
-      this.ctx.fxaLoginCallback = (req) => {
-        this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
-          sessionToken: 'session',
-          verified: true,
-          verificationMethod: ''
-        };
-        this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
-      };
-      this.ctx.guardianSubscriptionDetailsCallback = req => {
-        this.ctx.guardianOverrideEndpoints
-            .GETs['/api/v1/vpn/subscriptionDetails']
-            .status = 200;
+     async () => {
+       this.ctx.fxaLoginCallback = (req) => {
+         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
+           sessionToken: 'session',
+           verified: true,
+           verificationMethod: ''
+         };
+         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
+       };
+       this.ctx.guardianSubscriptionDetailsCallback = req => {
+         this.ctx.guardianOverrideEndpoints
+             .GETs['/api/v1/vpn/subscriptionDetails']
+             .status = 200;
 
-        const SUBSCRIPTION_DETAILS_CLONE = Object.assign({},
-            SUBSCRIPTION_DETAILS);
-        SUBSCRIPTION_DETAILS_CLONE.plan = { currency: 'cad' };
-        this.ctx.guardianOverrideEndpoints
-            .GETs['/api/v1/vpn/subscriptionDetails']
-            .body = SUBSCRIPTION_DETAILS;
-      };
+         const SUBSCRIPTION_DETAILS_CLONE =
+             Object.assign({}, SUBSCRIPTION_DETAILS);
+         SUBSCRIPTION_DETAILS_CLONE.plan = {currency: 'cad'};
+         this.ctx.guardianOverrideEndpoints
+             .GETs['/api/v1/vpn/subscriptionDetails']
+             .body = SUBSCRIPTION_DETAILS;
+       };
 
-      if (!(await vpn.isFeatureFlippedOn('bundleUpgrade'))) {
-        await vpn.flipFeatureOn('bundleUpgrade');
-      }
+       if (!(await vpn.isFeatureFlippedOn('bundleUpgrade'))) {
+         await vpn.flipFeatureOn('bundleUpgrade');
+       }
 
-      await clickSettingsIcon();
-      await openSubscriptionManagement();
+       await clickSettingsIcon();
+       await openSubscriptionManagement();
 
-      await vpn.waitForQuery(
-          queries.screenSettings.subscriptionView.RELAY_UPSELL_PLAN.visible());
-    });
+       await vpn.waitForQuery(
+           queries.screenSettings.subscriptionView.RELAY_UPSELL_PLAN.visible());
+     });
 
-  it(
-      'Correctly hides the VPN / Relay upgrade UI based on currency',
-      async () => {
-        this.ctx.fxaLoginCallback = (req) => {
-          this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
-            sessionToken: 'session',
-            verified: true,
-            verificationMethod: ''
-          };
-          this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
-        };
-        this.ctx.guardianSubscriptionDetailsCallback = req => {
-          this.ctx.guardianOverrideEndpoints
-              .GETs['/api/v1/vpn/subscriptionDetails']
-              .status = 200;
+  it('Correctly hides the VPN / Relay upgrade UI based on currency',
+     async () => {
+       this.ctx.fxaLoginCallback = (req) => {
+         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
+           sessionToken: 'session',
+           verified: true,
+           verificationMethod: ''
+         };
+         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
+       };
+       this.ctx.guardianSubscriptionDetailsCallback = req => {
+         this.ctx.guardianOverrideEndpoints
+             .GETs['/api/v1/vpn/subscriptionDetails']
+             .status = 200;
 
-          const SUBSCRIPTION_DETAILS_CLONE =
-              Object.assign({}, SUBSCRIPTION_DETAILS);
-          SUBSCRIPTION_DETAILS_CLONE.plan = {currency: 'eur'};
-          this.ctx.guardianOverrideEndpoints
-              .GETs['/api/v1/vpn/subscriptionDetails']
-              .body = SUBSCRIPTION_DETAILS;
-        };
+         const SUBSCRIPTION_DETAILS_CLONE =
+             Object.assign({}, SUBSCRIPTION_DETAILS);
+         SUBSCRIPTION_DETAILS_CLONE.plan = {currency: 'eur'};
+         this.ctx.guardianOverrideEndpoints
+             .GETs['/api/v1/vpn/subscriptionDetails']
+             .body = SUBSCRIPTION_DETAILS;
+       };
 
-        if (!(await vpn.isFeatureFlippedOn('bundleUpgrade'))) {
-          await vpn.flipFeatureOn('bundleUpgrade');
-        }
+       if (!(await vpn.isFeatureFlippedOn('bundleUpgrade'))) {
+         await vpn.flipFeatureOn('bundleUpgrade');
+       }
 
-        await clickSettingsIcon();
-        await openSubscriptionManagement();
+       await clickSettingsIcon();
+       await openSubscriptionManagement();
 
-        await vpn.waitForQuery(queries.screenSettings.subscriptionView
-                                   .RELAY_UPSELL_STATUS.hidden());
-      });
+       await vpn.waitForQuery(queries.screenSettings.subscriptionView
+                                  .RELAY_UPSELL_STATUS.hidden());
+     });
 
   it('Hides Relay upsell if bundleUpgrade feature is not enabled', async () => {
     await vpn.flipFeatureOff('bundleUpgrade');
@@ -1345,5 +1344,4 @@ describe('Subscription view', function() {
   // TODO:
   // Upgrade button works
   // Learn more link works
-
 });

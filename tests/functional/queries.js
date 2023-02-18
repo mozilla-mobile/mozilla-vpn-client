@@ -144,7 +144,8 @@ const screenAuthenticationInApp = {
   AUTH_SIGNIN_BUTTON: new QmlQueryComposer('//authSignIn-button'),
   AUTH_SIGNIN_GET_HELP_LINK: new QmlQueryComposer('//authSignIn-getHelpLink'),
   AUTH_SIGNIN_BACK_BUTTON: new QmlQueryComposer('//authSignIn-backButton'),
-  AUTH_SIGNIN_PASSWORD_PASTE_BUTTON: new QmlQueryComposer('//authSignIn-inputPasteButton'),
+  AUTH_SIGNIN_PASSWORD_PASTE_BUTTON:
+      new QmlQueryComposer('//authSignIn-inputPasteButton'),
 
   AUTH_SIGNUP_PASSWORD_INPUT:
       new QmlQueryComposer('//authSignUp-passwordInput'),
@@ -157,7 +158,8 @@ const screenAuthenticationInApp = {
       new QmlQueryComposer('//authSignUp-passwordConditionCommon'),
   AUTH_SIGNUP_GET_HELP_LINK: new QmlQueryComposer('//authSignUp-getHelpLink'),
   AUTH_SIGNUP_BACK_BUTTON: new QmlQueryComposer('//authSignUp-backButton'),
-  AUTH_SIGNUP_PASSWORD_PASTE_BUTTON: new QmlQueryComposer('//authSignUp-inputPasteButton'),
+  AUTH_SIGNUP_PASSWORD_PASTE_BUTTON:
+      new QmlQueryComposer('//authSignUp-inputPasteButton'),
 
   AUTH_EMAILVER_TEXT_INPUT:
       new QmlQueryComposer('//authVerificationSessionByEmailNeeded-textInput'),
@@ -167,7 +169,8 @@ const screenAuthenticationInApp = {
       '//authVerificationSessionByEmailNeeded-getHelpLink'),
   AUTH_EMAILVER_BACK_BUTTON:
       new QmlQueryComposer('//authVerificationSessionByEmailNeeded-backButton'),
-  AUTH_EMAILVER_PASTE_BUTTON: new QmlQueryComposer('//authVerificationSessionByEmailNeeded-inputPasteButton'),
+  AUTH_EMAILVER_PASTE_BUTTON: new QmlQueryComposer(
+      '//authVerificationSessionByEmailNeeded-inputPasteButton'),
 
   AUTH_TOTP_TEXT_INPUT:
       new QmlQueryComposer('//authVerificationSessionByTotpNeeded-textInput'),
@@ -177,7 +180,8 @@ const screenAuthenticationInApp = {
       new QmlQueryComposer('//authVerificationSessionByTotpNeeded-getHelpLink'),
   AUTH_TOTP_BACK_BUTTON:
       new QmlQueryComposer('//authVerificationSessionByTotpNeeded-backButton'),
-  AUTH_TOTP_PASTE_BUTTON: new QmlQueryComposer('//authVerificationSessionByTotpNeeded-inputPasteButton'),
+  AUTH_TOTP_PASTE_BUTTON: new QmlQueryComposer(
+      '//authVerificationSessionByTotpNeeded-inputPasteButton'),
 
   AUTH_UNBLOCKCODE_TEXT_INPUT:
       new QmlQueryComposer('//authUnblockCodeNeeded-textInput'),
@@ -187,7 +191,8 @@ const screenAuthenticationInApp = {
       new QmlQueryComposer('//authUnblockCodeNeeded-getHelpLink'),
   AUTH_UNBLOCKCODE_BACK_BUTTON:
       new QmlQueryComposer('//authUnblockCodeNeeded-backButton'),
-  AUTH_UNBLOCKCODE_PASTE_BUTTON: new QmlQueryComposer('//authUnblockCodeNeeded-inputPasteButton'),
+  AUTH_UNBLOCKCODE_PASTE_BUTTON:
+      new QmlQueryComposer('//authUnblockCodeNeeded-inputPasteButton'),
 
   AUTH_ERROR_POPUP_BUTTON: new QmlQueryComposer('//authErrorPopup-button'),
 };
