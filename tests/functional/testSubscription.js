@@ -95,14 +95,10 @@ describe('Subscription manager', function() {
 
       // Step 3: Attempt to toggle the VPN on.
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-      // await vpn.setSetting('connectionChangeNotification', 'true');
       await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
 
       // Verify that user gets the "Subscribe to Mozilla VPN" screen.
-    // await vpn.waitForCondition(async () => {
-    //   return await vpn.getQueryProperty(
-    //              queries.screenHome.CONTROLLER_TITLE, 'text') == 'VPN is on';
-    // });
+      await vpn.waitForQuery(queries.screenHome.SUBSCRIPTION_NEEDED.visible());
     });
   });
 });

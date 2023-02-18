@@ -80,6 +80,7 @@ const screenHome = {
   TUTORIAL_POPUP_SECONDARY_BUTTON:
       new QmlQueryComposer('//tutorialPopupSecondaryButton'),
   TUTORIAL_UI: new QmlQueryComposer('//tutorialUiRoot'),
+  SUBSCRIPTION_NEEDED: new QmlQueryComposer('//vpnSubscriptionNeededView'),
 
   serverListView: {
     generateCountryId: (serverCode) => {
