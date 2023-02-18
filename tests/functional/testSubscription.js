@@ -94,7 +94,9 @@ describe('Subscription manager', function() {
           userDataInactive;
 
       // Step 3: Attempt to toggle the VPN on.
-      await vpn.activate(true); 
+      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+      // await vpn.setSetting('connectionChangeNotification', 'true');
+      await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
 
       // Verify that user gets the "Subscribe to Mozilla VPN" screen.
     // await vpn.waitForCondition(async () => {
