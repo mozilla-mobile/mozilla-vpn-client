@@ -402,6 +402,80 @@ describe('Settings', function () {
     await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
   });
 
+  it('Checking the DNS settings reset', async () => {
+    await vpn.setSetting('userDNS', '');
+
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.APP_PREFERENCES.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.appPreferencesView.DNS_SETTINGS.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    // Checking if the checkboxes are correctly set based on the settings prop
+    await vpn.setSetting('dnsProviderFlags', 0);
+    await vpn.waitForQuery(
+        queries.screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
+            .visible()
+            .prop('checked', true));
+    await vpn.waitForQuery(
+        queries.screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
+            .visible()
+            .prop('checked', false));
+
+    // Click on "Custom DNS" but leaving the input field empty.
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
+            .visible()
+            .prop('checked', false));
+    assert(await vpn.getSetting('dnsProviderFlags') === 1);
+
+    await vpn.setQueryProperty(
+        queries.screenSettings.appPreferencesView.dnsSettingsView
+            .CUSTOM_DNS_INPUT.visible(),
+        'text', '');
+
+    // Going back...
+    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    // .. the DNS setting is reset to the default value.
+    assert(await vpn.getSetting('dnsProviderFlags') === 0);
+
+    // Same test as before...
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.appPreferencesView.DNS_SETTINGS.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    await vpn.waitForQuery(
+        queries.screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
+            .visible()
+            .prop('checked', true));
+    await vpn.waitForQuery(
+        queries.screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
+            .visible()
+            .prop('checked', false));
+
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
+            .visible()
+            .prop('checked', false));
+    assert(await vpn.getSetting('dnsProviderFlags') === 1);
+
+    // But with a valid DNS value...
+    await vpn.setQueryProperty(
+        queries.screenSettings.appPreferencesView.dnsSettingsView
+            .CUSTOM_DNS_INPUT.visible(),
+        'text', '1.2.3.4');
+
+    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    // We keep the custom DNS.
+    assert(await vpn.getSetting('dnsProviderFlags') === 1);
+  });
+
   it('Checking the languages settings', async () => {
     await vpn.setSetting('languageCode', '');
 
