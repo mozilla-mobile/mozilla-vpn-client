@@ -31,9 +31,13 @@ describe('Subscription manager', function() {
   describe('Expired subscription', function() {
     this.timeout(30000);
 
-    // There are two constants defined below: userDataActive and userDataInactive which are used to override the Guardian endpoint to mock a subscription expiration by changing the VPN subscription from true to false. 
-    // Because this override should be happening on the same device, the device is defined here and used later in both userDataActive and userDataInactive. 
-    // Simply copying the same device definition in both cases will actually result in two distinct objects, causing the test to fail.
+    // There are two constants defined below: userDataActive and
+    // userDataInactive which are used to override the Guardian endpoint to mock
+    // a subscription expiration by changing the VPN subscription from true to
+    // false. Because this override should be happening on the same device, the
+    // device is defined here and used later in both userDataActive and
+    // userDataInactive. Simply copying the same device definition in both cases
+    // will actually result in two distinct objects, causing the test to fail.
     const device = {
       name: 'Current device',
       unique_id: '',
