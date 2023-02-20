@@ -234,9 +234,9 @@ bool Controller::activate(const ServerData& serverData,
     request->get(AppConstants::apiUrl(AppConstants::Account));
 
     connect(request, &NetworkRequest::requestFailed, this,
-            [task, this](QNetworkReply::NetworkError error, const QByteArray&) {
+            [](QNetworkReply::NetworkError error, const QByteArray&) {
               logger.error() << "Account request failed" << error;
-              REPORTNETWORKERROR(error, m_errorPropagationPolicy, task->name());
+              REPORTNETWORKERROR(error, ErrorHandler::DoNotPropagateError, "PreActivationSubscriptionCheck");
             });
 
     connect(request, &NetworkRequest::requestCompleted, this,

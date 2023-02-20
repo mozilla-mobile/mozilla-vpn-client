@@ -31,6 +31,9 @@ describe('Subscription manager', function() {
   describe('Expired subscription', function() {
     this.timeout(30000);
 
+    // There are two constants defined below: userDataActive and userDataInactive which are used to override the Guardian endpoint to mock a subscription expiration by changing the VPN subscription from true to false. 
+    // Because this override should be happening on the same device, the device is defined here and used later in both userDataActive and userDataInactive. 
+    // Simply copying the same device definition in both cases will actually result in two distinct objects, causing the test to fail.
     const device = {
       name: 'Current device',
       unique_id: '',
@@ -86,18 +89,17 @@ describe('Subscription manager', function() {
       // When they try to turn the VPN on, they get the
       // "Subscribe to Mozilla VPN" screen.
 
-      // Step 1: User logs into the client successfully.
       await vpn.authenticateInApp(true, true);
 
-      // Step 2: Override the Guardian endpoint to mock an expired subscription.
+      // Step 1: Override the Guardian endpoint to mock an expired subscription.
       this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
           userDataInactive;
 
-      // Step 3: Attempt to toggle the VPN on.
+      // Step 2: Attempt to toggle the VPN on. This should fail.
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
       await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
 
-      // Verify that user gets the "Subscribe to Mozilla VPN" screen.
+      // Step 3: Verify that user gets the "Subscribe to Mozilla VPN" screen.
       await vpn.waitForQuery(queries.screenHome.SUBSCRIPTION_NEEDED.visible());
     });
   });
