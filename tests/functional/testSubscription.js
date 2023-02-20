@@ -106,6 +106,24 @@ describe('Subscription manager', function() {
       // Step 3: Verify that user gets the "Subscribe to Mozilla VPN" screen.
       await vpn.waitForQuery(queries.screenHome.SUBSCRIPTION_NEEDED.visible());
     });
+
+    it('Enable VPN after API call for subscription verification fails', async () => {
+      // This test verifies the case where user is logged in
+      // but the VPN is off when their subscription expires, 
+      // and the client encounters an HTTP error when completing
+      // the API call to check subscription status.
+      // The expectation here is that the VPN toggles on successfully.
+
+      await vpn.authenticateInApp(true, true);
+
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
+      userDataInactive;
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].status = 500;
+
+      await vpn.activate(true);
+      assert(vpn.lastNotification().title === 'VPN Connected');
+      assert(vpn.lastNotification().message.startsWith('Connected to '));
+    });
   });
 });
 
