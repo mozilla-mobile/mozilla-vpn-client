@@ -289,7 +289,7 @@ class MozillaVPN final : public QObject {
  public slots:
   void requestAbout();
 
-  void scheduleRefreshDataTasks(bool refreshProducts);
+  Q_INVOKABLE void scheduleRefreshDataTasks(bool refreshProducts);
 
   static void registerUrlOpenerLabels();
 
