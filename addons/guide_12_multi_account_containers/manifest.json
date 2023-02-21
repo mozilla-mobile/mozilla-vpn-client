@@ -3,6 +3,9 @@
   "id": "guide_12_multi_account_containers",
   "name": "Guide: Multi-Account Containers",
   "type": "guide",
+  "conditions": {
+    "min_client_version": "2.15.0"
+  },
   "guide": {
     "id": "guide_multi_account_containers",
     "title": "Mozilla VPN in the Firefox browser",
