@@ -14,6 +14,7 @@
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
+#include "mozillavpn.h"
 #include "notificationhandler.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
@@ -165,7 +166,7 @@ QString AddonMessage::formattedDate() const {
     return QString();
   }
 
-  return Localizer::instance()->formatDate(
+  return MozillaVPN::instance()->formatDate(
       QDateTime::currentDateTime(), QDateTime::fromSecsSinceEpoch(m_date),
       true);
 }

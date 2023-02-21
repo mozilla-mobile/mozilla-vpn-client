@@ -170,8 +170,8 @@ FocusScope {
                             text: VPNServerLatency.isActive
                                 ? VPNI18n.ServersViewRecommendedRefreshlLoadingLabel.arg(Math.round(VPNServerLatency.progress * 100))
                                 : (VPNController.state === VPNController.StateOff)
-                                ? VPNI18n.ServersViewRecommendedRefreshLastUpdatedLabel.arg(VPNLocalizer.formatDate(new Date(), VPNServerLatency.lastUpdateTime))
-                                : VPNI18n.ServersViewRecommendedRefreshLastUpdatedDisabledLabel.arg(VPNLocalizer.formatDate(new Date(), VPNServerLatency.lastUpdateTime))
+                                ? VPNI18n.ServersViewRecommendedRefreshLastUpdatedLabel.arg(VPN.formatDate(new Date(), VPNServerLatency.lastUpdateTime))
+                                : VPNI18n.ServersViewRecommendedRefreshLastUpdatedDisabledLabel.arg(VPN.formatDate(new Date(), VPNServerLatency.lastUpdateTime))
                             wrapMode: Text.WordWrap
                         }
 

@@ -147,6 +147,9 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void launchPlayStore();
 #endif
   Q_INVOKABLE void requestViewLogs();
+  Q_INVOKABLE static QString formatDate(const QDateTime& nowDateTime,
+                                        const QDateTime& messageDateTime,
+                                        bool capitalize = false);
 
   void authenticateWithType(AuthenticationType authenticationType);
 
