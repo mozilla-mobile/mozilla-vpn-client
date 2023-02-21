@@ -166,9 +166,9 @@ QString AddonMessage::formattedDate() const {
     return QString();
   }
 
-  return MozillaVPN::instance()->formatDate(
+  return Localizer::instance()->formatDate(
       QDateTime::currentDateTime(), QDateTime::fromSecsSinceEpoch(m_date),
-      true);
+              I18nStrings::instance()->t(I18nStrings::InAppMessagingDateTimeYesterday));
 }
 
 void AddonMessage::planDateRetranslation() {

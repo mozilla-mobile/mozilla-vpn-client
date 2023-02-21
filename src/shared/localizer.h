@@ -74,6 +74,10 @@ class Localizer final : public QAbstractListModel {
   static QMap<QString, double> loadTranslationCompleteness(
       const QString& fileName);
 
+  Q_INVOKABLE QString formatDate(const QDateTime& nowDateTime,
+                                 const QDateTime& messageDateTime,
+                                 const QString& yesterday);
+
   // QAbstractListModel methods
 
   QHash<int, QByteArray> roleNames() const override;
