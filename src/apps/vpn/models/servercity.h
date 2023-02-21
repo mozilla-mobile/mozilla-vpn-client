@@ -30,16 +30,6 @@ class ServerCity final : public QObject {
   ServerCity& operator=(const ServerCity& other);
   ~ServerCity();
 
-  enum CityConnectionScores {
-    Unavailable = -1,
-    NoData = 0,
-    Poor = 1,
-    Moderate = 2,
-    Good = 3,
-    Excellent = 4,
-  };
-  Q_ENUM(CityConnectionScores);
-
   [[nodiscard]] bool fromJson(const QJsonObject& obj, const QString& country);
 
   bool initialized() const { return !m_name.isEmpty(); }
@@ -72,8 +62,6 @@ class ServerCity final : public QObject {
   void scoreChanged() const;
 
  private:
-  int baseCityScore(const QString& originCountryCode = QString()) const;
-
   QString m_country;
   QString m_name;
   QString m_code;

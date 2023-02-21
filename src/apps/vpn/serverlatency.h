@@ -12,6 +12,8 @@
 #include "pingsender.h"
 #include "task.h"
 
+class ServerCity;
+
 class ServerLatency final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(ServerLatency)
@@ -25,6 +27,16 @@ class ServerLatency final : public QObject {
  public:
   ServerLatency();
   ~ServerLatency();
+
+  enum ConnectionScores {
+    Unavailable = -1,
+    NoData = 0,
+    Poor = 1,
+    Moderate = 2,
+    Good = 3,
+    Excellent = 4,
+  };
+  Q_ENUM(ConnectionScores);
 
   unsigned int avgLatency() const;
   unsigned int getLatency(const QString& pubkey) const {
@@ -44,6 +56,8 @@ class ServerLatency final : public QObject {
   void stop();
 
   Q_INVOKABLE void refresh();
+
+  int baseCityScore(const ServerCity* city, const QString& originCountry) const;
 
  signals:
   void progressChanged();
