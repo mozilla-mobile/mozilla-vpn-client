@@ -576,7 +576,7 @@ bool WireguardUtilsLinux::rtmSendRule(int action, int flags, int addrfamily) {
   nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_TABLE, WG_ROUTE_TABLE);
   ssize_t result = sendto(m_nlsock, buf, nlmsg->nlmsg_len, 0,
                           (struct sockaddr*)&nladdr, sizeof(nladdr));
-  if (result != nlmsg->nlmsg_len) {
+  if (result != static_cast<ssize_t>(nlmsg->nlmsg_len)) {
     return false;
   }
 
@@ -597,7 +597,7 @@ bool WireguardUtilsLinux::rtmSendRule(int action, int flags, int addrfamily) {
   nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_SUPPRESS_PREFIXLEN, 0);
   result = sendto(m_nlsock, buf, nlmsg->nlmsg_len, 0, (struct sockaddr*)&nladdr,
                   sizeof(nladdr));
-  if (result != nlmsg->nlmsg_len) {
+  if (result != static_cast<ssize_t>(nlmsg->nlmsg_len)) {
     return false;
   }
 
@@ -647,7 +647,7 @@ bool WireguardUtilsLinux::rtmSendExclude(int action, int flags,
 
   ssize_t result = sendto(m_nlsock, buf, nlmsg->nlmsg_len, 0,
                           (struct sockaddr*)&nladdr, sizeof(nladdr));
-  if (result != nlmsg->nlmsg_len) {
+  if (result != static_cast<ssize_t>(nlmsg->nlmsg_len)) {
     return false;
   }
 
