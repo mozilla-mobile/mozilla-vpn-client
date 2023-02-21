@@ -1047,6 +1047,7 @@ void TestAddon::message_date_data() {
 
 void TestAddon::message_date() {
   Localizer localizer;
+  MozillaVPN vpn;
 
   QFETCH(QString, languageCode);
   SettingsHolder::instance()->setLanguageCode(languageCode);
