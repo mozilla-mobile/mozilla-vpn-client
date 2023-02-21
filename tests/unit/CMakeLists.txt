@@ -331,6 +331,8 @@ target_sources(unit_tests PRIVATE
     testreleasemonitor.h
     testserveri18n.cpp
     testserveri18n.h
+    testserverlatency.cpp
+    testserverlatency.h
     teststatusicon.cpp
     teststatusicon.h
     testtasksentry.cpp

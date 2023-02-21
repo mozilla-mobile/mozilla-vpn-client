@@ -38,13 +38,15 @@ class ServerLatency final : public QObject {
   };
   Q_ENUM(ConnectionScores);
 
+  const QDateTime& lastUpdateTime() const { return m_lastUpdateTime; }
+  bool isActive() const { return m_pingSender != nullptr; }
+  double progress() const;
+
   unsigned int avgLatency() const;
   unsigned int getLatency(const QString& pubkey) const {
     return m_latency.value(pubkey);
   };
-  const QDateTime& lastUpdateTime() const { return m_lastUpdateTime; }
-  bool isActive() const { return m_pingSender != nullptr; }
-  double progress() const;
+  void setLatency(const QString& pubkey, qint64 msec);
 
   qint64 getCooldown(const QString& pubkey) const {
     return m_cooldown.value(pubkey);

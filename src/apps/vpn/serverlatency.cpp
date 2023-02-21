@@ -256,9 +256,7 @@ void ServerLatency::recvPing(quint16 sequence) {
 
     qint64 latency(now - record.timestamp);
     if (latency <= std::numeric_limits<uint>::max()) {
-      m_sumLatencyMsec -= m_latency[record.publicKey];
-      m_sumLatencyMsec += latency;
-      m_latency[record.publicKey] = latency;
+      setLatency(record.publicKey, latency);
 
       const ServerCity& city =
           scm->findCity(record.countryCode, record.cityName);
@@ -282,6 +280,12 @@ unsigned int ServerLatency::avgLatency() const {
     return 0;
   }
   return (m_sumLatencyMsec + m_latency.count() - 1) / m_latency.count();
+}
+
+void ServerLatency::setLatency(const QString& pubkey, qint64 msec) {
+  m_sumLatencyMsec -= m_latency[pubkey];
+  m_sumLatencyMsec += msec;
+  m_latency[pubkey] = msec;
 }
 
 double ServerLatency::progress() const {
