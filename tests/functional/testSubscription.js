@@ -107,18 +107,21 @@ describe('Subscription manager', function() {
       await vpn.waitForQuery(queries.screenHome.SUBSCRIPTION_NEEDED.visible());
     });
 
-    it('Enable VPN after API call for subscription verification fails', async () => {
+    it('Enable VPN with 500 error', async () => {
       // This test verifies the case where user is logged in
-      // but the VPN is off when their subscription expires, 
+      // but the VPN is off when their subscription expires,
       // and the client encounters an HTTP error when completing
       // the API call to check subscription status.
       // The expectation here is that the VPN toggles on successfully.
 
       await vpn.authenticateInApp(true, true);
 
+      // Step 1: Override the Guardian endpoint to mock an expired subscription.
+      // Set the error status to 500.
       this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
-      userDataInactive;
-      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].status = 500;
+          userDataInactive;
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].status =
+          500;
 
       await vpn.activate(true);
       assert(vpn.lastNotification().title === 'VPN Connected');
