@@ -234,18 +234,24 @@ bool Controller::activate(const ServerData& serverData,
     request->get(AppConstants::apiUrl(AppConstants::Account));
 
     connect(request, &NetworkRequest::requestFailed, this,
-            [](QNetworkReply::NetworkError error, const QByteArray&) {
+            [this](QNetworkReply::NetworkError error, const QByteArray&) {
               logger.error() << "Account request failed" << error;
               REPORTNETWORKERROR(error, ErrorHandler::DoNotPropagateError,
                                  "PreActivationSubscriptionCheck");
+              if (MozillaVPN::instance()->state() == MozillaVPN::StateMain) {
+                setState(StateConnecting);
+              } else {
+                setState(StateOff);
+              }
             });
 
     connect(request, &NetworkRequest::requestCompleted, this,
-            [](const QByteArray& data) {
+            [this](const QByteArray& data) {
               MozillaVPN::instance()->accountChecked(data);
+              setState(StateConnecting);
             });
 
-    setState(StateConnecting);
+    connect(request, &QObject::destroyed, task, &QObject::deleteLater);
   }
 
   clearRetryCounter();
