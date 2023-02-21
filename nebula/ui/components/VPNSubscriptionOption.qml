@@ -132,7 +132,7 @@ RadioDelegate {
 
             //: “/month” stands for “per month”. %1 is replaced by the monthly cost (including currency).
             //% "%1/month"
-            property string monthlyPrice: qsTrId("vpn.subscription.price").arg(productMonthlyPrice)
+            property string monthlyPrice: VPNI18n.SubscriptionManagementPlanMonthly.arg(productMonthlyPrice)
 
             property int trialDays: productTrialDays
 
@@ -159,7 +159,19 @@ RadioDelegate {
                 font.pixelSize: VPNTheme.theme.fontSize
                 lineHeight: 17.68
                 lineHeightMode: Text.FixedHeight
-                text: col.subscriptionDuration !== -1 ? (col.subscriptionDuration > 1 ? col.monthlyPrice : col.productSingleMonth) : ""
+                text: {
+                    const isUsOrCa = VPN.countryCode === "US" || VPN.countryCode === "CA"
+
+                    if(col.subscriptionDuration === -1)
+                        return ""
+                    else if(col.subscriptionDuration > 1) {
+                        return isUsOrCa ? VPNI18n.SubscriptionManagementPlanMonthlyPlusTax.arg(productMonthlyPrice) : col.monthlyPrice
+                    }
+                    //col.subscriptionDuration === 1
+                    else {
+                        return isUsOrCa ? VPNI18n.SubscriptionManagementPlanMonthlyPlusTax.arg(productMonthlyPrice) : col.productSingleMonth
+                    }
+                }
                 wrapMode: Text.WordWrap
 
                 Layout.fillWidth: true
