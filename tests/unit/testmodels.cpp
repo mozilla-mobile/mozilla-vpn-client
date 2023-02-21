@@ -2204,7 +2204,7 @@ void TestModels::locationDistance_data() {
   obj.insert("lat_long", QJsonValue("-77.8400829,166.64453"));
   QTest::newRow("From McMurdo Station to Bering Island")
       << QJsonDocument(obj).toJson() << 55.0218511 << 165.9355717 << 14763.70;
-  
+
   obj.insert("lat_long", QJsonValue("90,0"));
   QTest::newRow("From North to South poles")
       << QJsonDocument(obj).toJson() << -90.0 << 123.456 << 20001.6;
@@ -2221,7 +2221,7 @@ void TestModels::locationDistance() {
   // here converts radians into kilometers using a spherical earth model with
   // 1 degree minute equal to 1 nautical mile.
   constexpr double scale = (1.852 * 360.0 * 60.0) / (M_PI * 2.0);
-  constexpr double epsilon = 0.1; // Maximum tolerated floating point error.
+  constexpr double epsilon = 0.1;  // Maximum tolerated floating point error.
   double distance;
   Location location;
   QVERIFY(location.fromJson(json));
