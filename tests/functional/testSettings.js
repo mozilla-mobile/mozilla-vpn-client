@@ -6,7 +6,7 @@ const assert = require('assert');
 const queries = require('./queries.js');
 const vpn = require('./helper.js');
 
-describe('Settings', function () {
+describe('Settings', function() {
   this.timeout(60000);
   this.ctx.authenticationNeeded = true;
 
@@ -47,12 +47,12 @@ describe('Settings', function () {
       await vpn.waitForCondition(async () => {
         const url = await vpn.getLastUrl();
         return url.includes('https://accounts.stage.mozaws.net') &&
-          url.includes('?email=test@mozilla.com');
+            url.includes('?email=test@mozilla.com');
       });
     }
 
     await vpn.waitForQuery(queries.screenSettings.PRIVACY.visible());
-    await vpn.waitForQuery(queries.screenSettings.APP_PERMISSIONS.visible());
+    await vpn.waitForQuery(queries.screenSettings.APP_EXCLUSIONS.visible());
     await vpn.waitForQuery(queries.screenSettings.TIPS_AND_TRICKS.visible());
     await vpn.waitForQuery(queries.screenSettings.MY_DEVICES.visible());
     await vpn.waitForQuery(queries.screenSettings.APP_PREFERENCES.visible());
@@ -653,7 +653,7 @@ describe('Settings', function () {
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
       return url.startsWith('file://') && url.includes('mozillavpn') &&
-        url.endsWith('.txt');
+          url.endsWith('.txt');
     });
 
     await vpn.waitForQueryAndClick(queries.screenGetHelp.HELP_CENTER.visible());

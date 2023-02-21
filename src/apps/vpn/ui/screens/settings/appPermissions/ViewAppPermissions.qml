@@ -25,70 +25,6 @@ VPNViewBase {
 
     _menuTitle: VPNI18n.SettingsAppExclusionSettings
     _viewContentData: ColumnLayout {
-        Layout.fillWidth: true
-
-        ColumnLayout{
-            id: messageBox
-            visible: true
-            Layout.leftMargin: VPNTheme.theme.windowMargin
-            Layout.rightMargin: VPNTheme.theme.windowMargin * 2
-            Layout.topMargin: -VPNTheme.theme.windowMargin
-            Layout.fillWidth: true
-            Layout.fillHeight: false
-            spacing: 0
-
-            Connections {
-                target: VPNAppPermissions
-                function onNotification(type,message,action) {
-                    console.log("Got notification: "+type + "  message:"+message);
-                    var component = Qt.createComponent("qrc:/nebula/components/VPNAlert.qml");
-                    if(component.status !== Component.Ready)
-                        {
-                            if( component.status == Component.Error )
-                                console.debug("Error:"+ component.errorString() );
-
-                        }
-                    var alert = component.createObject(vpnFlickable, {
-                                               isLayout:false,
-                                               visible:true,
-                                               alertText: message,
-                                               alertType: type,
-                                               alertActionText: action,
-                                               duration:type === "warning"? 0: 2000,
-                                               destructive:true,
-                                               // Pin y hight to be below the alert bar as we can't render above it
-                                               setY: vpnFlickable.y+VPNTheme.theme.windowMargin,
-                                               onActionPressed: ()=>{VPNAppPermissions.openFilePicker();},
-                                           });
-
-                    alert.show();
-
-                }
-            }
-        }
-
-        VPNToggleCard {
-            id: toggleCard
-
-            toggleObjectName: "settingsAppPermissionsToggle"
-            toggleEnabled: true
-            Layout.fillWidth: true
-            Layout.preferredHeight: childrenRect.height + VPNTheme.theme.windowMargin
-
-            //% "Protect all apps with VPN"
-            labelText: qsTrId("vpn.settings.protectAllApps")
-
-            //% "VPN protects all apps by default. Turn off to choose which apps Mozilla VPN should not protect."
-            sublabelText: qsTrId("vpn.settings.protectAllApps.description")
-
-            toolTipTitleText: qsTrId("vpn.settings.protectAllApps")
-
-            toggleChecked: (!VPNSettings.protectSelectedApps)
-
-            function handleClick() {
-                VPNSettings.protectSelectedApps = !VPNSettings.protectSelectedApps
-            }
-        }
 
         AppPermissionsList {
             id: enabledList
@@ -96,33 +32,7 @@ VPNViewBase {
             Layout.fillHeight: false
             Layout.leftMargin: VPNTheme.theme.vSpacing
             Layout.rightMargin: VPNTheme.theme.vSpacing
-            Layout.topMargin: VPNTheme.theme.vSpacing
             searchBarPlaceholder: searchApps
-
-            //% "Exclude apps from VPN protection"
-            //: Header for the list of apps protected by VPN
-            header: qsTrId("vpn.settings.excludeTitle")
-        }
-
-        VPNTextBlock {
-            id: helpInfoText
-            width: undefined
-            Layout.fillWidth: true
-            Layout.leftMargin: VPNTheme.theme.vSpacing
-            Layout.rightMargin: VPNTheme.theme.vSpacing
-            Layout.topMargin: VPNTheme.theme.vSpacing
-            text: VPNI18n.SplittunnelInfoText2
-        }
-
-        VPNLinkButton {
-            id: helpLink
-            labelText: VPNI18n.SplittunnelInfoLinkText
-            Layout.fillWidth: true
-            Layout.alignment: Qt.AlignHCenter
-            Layout.topMargin: VPNTheme.theme.windowMargin / 2
-            onClicked: {
-               VPNUrlOpener.openUrlLabel("splitTunnelHelp")
-            }
         }
     }
     Component.onCompleted: {

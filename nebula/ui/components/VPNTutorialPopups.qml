@@ -226,6 +226,7 @@ Item {
                 id: primaryButton
                 objectName: "tutorialPopupPrimaryButton"
                 text: ""
+                Layout.fillWidth: true
                 onClicked: tutorialPopup.primaryButtonOnClicked()
             },
             VPNLinkButton {

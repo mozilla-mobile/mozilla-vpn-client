@@ -4,12 +4,12 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
+import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
 
 VPNButtonBase {
     id: root
-
 
     property string labelText
     property variant fontName: VPNTheme.theme.fontInterFamily
@@ -17,10 +17,9 @@ VPNButtonBase {
     property var linkColor: VPNTheme.theme.blueButton
     property var fontSize: VPNTheme.theme.fontSize
     property real textAlignment: Text.AlignHCenter
-    property var buttonPadding: VPNTheme.theme.hSpacing
+    property Component iconComponent
 
-
-    radius: 4
+    radius: VPNTheme.theme.cornerRadius
 
     Keys.onReleased: event => {
         if (loaderVisible) {
@@ -32,6 +31,7 @@ VPNButtonBase {
     }
 
     Accessible.name: labelText
+    opacity: enabled? 1 : VPNTheme.theme.opacityDisabled
 
     Component.onCompleted: {
         state = Qt.binding(() => (
@@ -43,6 +43,14 @@ VPNButtonBase {
     }
 
     states: [
+        State {
+            name: uiState.stateDisabled
+
+            PropertyChanges {
+                target: label
+                color: root.linkColor.buttonDisabled
+            }
+        },
         State {
             name: uiState.stateHovered
 
@@ -78,14 +86,6 @@ VPNButtonBase {
                 color: root.linkColor.defaultColor
             }
 
-        },
-        State {
-            name: uiState.stateDisabled
-
-            PropertyChanges {
-                target: label
-                color: root.linkColor.buttonDisabled
-            }
         }
     ]
 
@@ -106,7 +106,7 @@ VPNButtonBase {
 
     VPNMouseArea {
         id: buttonMouseArea
-        hoverEnabled: loaderVisible === false
+        hoverEnabled: loaderVisible === false && parent.enabled
     }
 
     background: Rectangle {
@@ -114,20 +114,31 @@ VPNButtonBase {
         color: VPNTheme.theme.transparent
     }
 
-    contentItem: Label {
-        id: label
+    contentItem: RowLayout {
+        spacing: VPNTheme.theme.windowMargin / 2
 
-        text: labelText
-        color: root.linkColor.defaultColor
-        horizontalAlignment: textAlignment
-        verticalAlignment: Text.AlignVCenter
-        font.pixelSize: fontSize
-        font.family: fontName
-        wrapMode: Text.WordWrap
-        opacity: loaderVisible ? 0 : 1
-        Behavior on color {
-            ColorAnimation {
-                duration: 200
+        Loader {
+            id: iconLoader
+            Layout.alignment: Qt.AlignVCenter
+            sourceComponent: iconComponent
+            active: iconComponent
+        }
+
+        Label {
+            id: label
+
+            text: labelText
+            color: root.linkColor.defaultColor
+            horizontalAlignment: textAlignment
+            verticalAlignment: Text.AlignVCenter
+            font.pixelSize: fontSize
+            font.family: fontName
+            wrapMode: Text.WordWrap
+            opacity: loaderVisible ? 0 : 1
+            Behavior on color {
+                ColorAnimation {
+                    duration: 200
+                }
             }
         }
     }

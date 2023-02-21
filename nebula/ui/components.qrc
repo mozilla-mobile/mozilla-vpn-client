@@ -26,7 +26,6 @@
         <file>components/VPNCheckBoxAlert.qml</file>
         <file>components/VPNCheckBox.qml</file>
         <file>components/VPNCheckBoxRow.qml</file>
-        <file>components/VPNCheckmark.qml</file>
         <file>components/VPNCheckmarkList.qml</file>
         <file>components/VPNChevron.qml</file>
         <file>components/VPNClickableRow.qml</file>

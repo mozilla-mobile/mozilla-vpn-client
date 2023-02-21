@@ -184,7 +184,16 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
   for (const auto& id : keys) {
     m_applist.append(AppDescription(id, applistCopy[id]));
   }
-  std::sort(m_applist.begin(), m_applist.end());
+
+  std::sort(
+      m_applist.begin(), m_applist.end(),
+      [&](const AppDescription& a, const AppDescription& b) -> bool {
+        bool appADisabled = settingsHolder->vpnDisabledApps().contains(a.id);
+        bool appBDisabled = settingsHolder->vpnDisabledApps().contains(b.id);
+        return (appADisabled == appBDisabled) ? a.name < b.name
+               : (appADisabled)               ? -1
+                                              : 0;
+      });
   endResetModel();
 
   // In Case we removed Missing Apps during cleanup,

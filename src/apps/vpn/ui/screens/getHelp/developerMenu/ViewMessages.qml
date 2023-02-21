@@ -62,7 +62,6 @@ Item {
                     showDivider: false
                     labelText: addon.id
                     subLabelText: showMessageContent(addon)
-                    showAppImage: false
                     // Only enable the list on features where devModeEnable has any impact
                     enabled: true
                     Layout.minimumHeight: VPNTheme.theme.rowHeight * 1.5

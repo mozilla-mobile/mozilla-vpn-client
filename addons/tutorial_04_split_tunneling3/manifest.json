@@ -1,17 +1,16 @@
 {
   "api_version": "0.1",
-  "id": "tutorial_04_split_tunneling2",
+  "id": "tutorial_04_split_tunneling3",
   "name": "Tutorial: Split tunneling",
   "conditions": {
     "enabled_features": ["splitTunnel"],
-    "min_client_version": "2.14.0",
-    "max_client_version": "2.14.99"
+    "min_client_version": "2.15.0"
   },
   "type": "tutorial",
   "tutorial": {
-    "id": "04_split_tunneling",
+    "id": "04_split_tunneling3",
     "settings_rollback_needed": true,
-    "image": "qrc:/addons/tutorial_04_split_tunneling2/image.svg",
+    "image": "qrc:/addons/tutorial_04_split_tunneling3/image.svg",
     "title": "How to exclude apps from VPN protection",
     "subtitle": "Follow this walkthrough to learn how to exclude apps from VPN.",
     "completion_message": "You’ve learned how to exclude apps from VPN protection. Would you like to learn more tips and tricks?",
@@ -19,7 +18,7 @@
       {
         "id": "s1",
         "query": "//navigationLayout/navButton-settings{visible=true}",
-        "tooltip": "Select your account settings",
+        "tooltip": "Select settings",
         "next": {
           "op": "signal",
           "query_emitter": "//navigationLayout/navButton-settings{visible=true}",
@@ -27,28 +26,19 @@
         }
       }, {
         "id": "s2",
-        "query": "//appPermissionSettings{visible=true}",
+        "query": "//appExclusionSettings{visible=true}",
         "tooltip": "Select “App Exclusions”",
-        "next": {
-          "op": "signal",
-          "query_emitter": "//appPermissionSettings{visible=true}",
-          "signal": "clicked"
-        }
-      },{
-        "id": "s4",
-        "query": "//settingsAppPermissionsToggle{visible=true}",
-        "tooltip": "Toggle off to view apps",
         "conditions": {
           "javascript": "resetAppPermissions.js"
         },
         "next": {
           "op": "signal",
-          "query_emitter": "//settingsAppPermissionsToggle{visible=true}",
+          "query_emitter": "//appExclusionSettings{visible=true}",
           "signal": "clicked"
         }
       },{
-        "id": "s5",
-        "query": "//appPermissionList/app0/checkbox{visible=true}",
+        "id": "s3",
+        "query": "//app-0/checkbox{visible=true}",
         "tooltip": "Select an app to exclude it from VPN protection",
         "next": {
           "op": "signal",
@@ -59,3 +49,4 @@
     ]
   }
 }
+

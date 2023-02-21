@@ -7,7 +7,6 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
-import compat 0.1
 
 CheckBox {
     property var uiState: VPNTheme.theme.uiState
@@ -17,8 +16,8 @@ CheckBox {
 
     signal clicked()
 
-    Layout.preferredHeight: 20
-    Layout.preferredWidth: 20
+    Layout.preferredHeight: VPNTheme.theme.checkBoxHeightWidth
+    Layout.preferredWidth: VPNTheme.theme.checkBoxHeightWidth
     Layout.margins: 2
     Layout.alignment: Qt.AlignLeft | Qt.AlignTop
     Component.onCompleted: state = uiState.stateDefault
@@ -79,8 +78,19 @@ CheckBox {
         }
     ]
 
-    VPNCheckmark {
-        anchors.fill: checkBoxIndicator
+    VPNIcon {
+        id: checkmarkIcon
+        source: "qrc:/nebula/resources/checkmark-blue50.svg"
+        sourceSize.width: VPNTheme.theme.checkmarkHeightWidth
+        sourceSize.height: VPNTheme.theme.checkmarkHeightWidth
+        anchors.centerIn: parent
+        anchors.verticalCenterOffset: 1
+        opacity: checkBox.checked ? 1 : 0
+        Behavior on opacity {
+            PropertyAnimation {
+                duration: 100
+            }
+        }
     }
 
     VPNMouseArea {
@@ -90,12 +100,11 @@ CheckBox {
     indicator: Rectangle {
         id: checkBoxIndicator
 
-        height: 20
-        width: 20
+        anchors.fill: parent
         color: VPNTheme.theme.bgColor
         border.color: checkBox.checked ? VPNTheme.theme.blue : VPNTheme.theme.fontColor
         border.width: 2
-        radius: 4
+        radius: VPNTheme.theme.cornerRadius
         antialiasing: true
         state: checkBox.state
 

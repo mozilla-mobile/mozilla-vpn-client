@@ -74,7 +74,7 @@ VPNViewBase {
             }
 
             VPNSettingsItem {
-                objectName: "appPermissionSettings"
+                objectName: "appExclusionSettings"
                 settingTitle: VPNI18n.SettingsAppExclusionSettings
                 imageLeftSrc: "qrc:/ui/resources/settings/apppermissions.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
