@@ -278,8 +278,8 @@ void TestLocalizer::formattedDate_data() {
       << "en" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
       << QDateTime(QDate(2000, 1, 1), QTime(11, 0), QTimeZone(0)) << "10:00 AM"
       << (qint64)(14 * 3600);
-  QTest::addRow("it - future")
-      << "it" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+  QTest::addRow("es_ES - future")
+      << "es_ES" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
       << QDateTime(QDate(2000, 1, 1), QTime(11, 0), QTimeZone(0)) << "10:00"
       << (qint64)(14 * 3600);
 
@@ -287,8 +287,8 @@ void TestLocalizer::formattedDate_data() {
       << "en" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
       << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0)) << "10:00 AM"
       << (qint64)(14 * 3600);
-  QTest::addRow("it - same")
-      << "it" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+  QTest::addRow("es_ES - same")
+      << "es_ES" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
       << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0)) << "10:00"
       << (qint64)(14 * 3600);
 
@@ -296,18 +296,18 @@ void TestLocalizer::formattedDate_data() {
       << "en" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
       << QDateTime(QDate(2000, 1, 1), QTime(9, 0), QTimeZone(0)) << "9:00 AM"
       << (qint64)(15 * 3600);
-  QTest::addRow("it - one hour ago")
-      << "it" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 1), QTime(9, 0), QTimeZone(0)) << "09:00"
+  QTest::addRow("es_ES - one hour ago")
+      << "es_ES" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(9, 0), QTimeZone(0)) << "9:00"
       << (qint64)(15 * 3600);
 
   QTest::addRow("en - midnight")
       << "en" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
       << QDateTime(QDate(2000, 1, 1), QTime(0, 0), QTimeZone(0)) << "12:00 AM"
       << (qint64)(24 * 3600);
-  QTest::addRow("it - midnight")
-      << "it" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 1), QTime(0, 0), QTimeZone(0)) << "00:00"
+  QTest::addRow("es_ES - midnight")
+      << "es_ES" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(0, 0), QTimeZone(0)) << "0:00"
       << (qint64)(24 * 3600);
 
   QTest::addRow("en - yesterday but less than 24 hours")
