@@ -158,6 +158,19 @@ class Controller {
 
 const controller = new Controller();
 
+let fontLoaded = false;
 function inspectorMessage(obj) {
+  if (!fontLoaded) {
+    fontLoaded = true;
+
+    for (const font
+             of ['NotoSansPhagsPa-Regular.ttf', 'NotoSansSC-Regular.otf',
+                 'NotoSansTC-Regular.otf']) {
+      fetch(font)
+          .then(r => r.arrayBuffer())
+          .then(content => Module.mzLoadFont(font, content));
+    }
+  }
+
   controller._messageReceived(obj);
 }
