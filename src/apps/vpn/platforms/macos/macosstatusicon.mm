@@ -11,6 +11,30 @@
 #import <UserNotifications/UserNotifications.h>
 #import <QResource>
 
+@interface MacOSUserNotificationCenterDelegate : NSObject <NSUserNotificationCenterDelegate>
+@end
+
+@implementation MacOSUserNotificationCenterDelegate
+- (void)userNotificationCenter:(NSUserNotificationCenter*)center
+        didDeliverNotification:(NSUserNotification*)notification {
+  Q_UNUSED(center);
+  Q_UNUSED(notification);
+}
+
+- (void)userNotificationCenter:(NSUserNotificationCenter*)center
+       didActivateNotification:(NSUserNotification*)notification {
+  [center removeDeliveredNotification:notification];
+}
+
+- (BOOL)userNotificationCenter:(NSUserNotificationCenter*)center
+     shouldPresentNotification:(NSUserNotification*)notification {
+  Q_UNUSED(center);
+  Q_UNUSED(notification);
+
+  return NO;
+}
+@end
+
 /**
  * Creates a NSStatusItem with that can hold an icon. Additionally a NSView is
  * set as a subview to the button item of the status item. The view serves as
@@ -170,24 +194,13 @@ void MacOSStatusIcon::setToolTip(const QString& tooltip) {
 void MacOSStatusIcon::showMessage(const QString& title, const QString& message) {
   logger.debug() << "Show message";
 
-  UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
-  content.title = title.toNSString();
-  content.body = message.toNSString();
-  content.sound = [UNNotificationSound defaultSound];
-
-  UNTimeIntervalNotificationTrigger* trigger =
-      [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:1 repeats:NO];
-
-  UNNotificationRequest* request = [UNNotificationRequest requestWithIdentifier:@"mozillavpn"
-                                                                        content:content
-                                                                        trigger:trigger];
-
-  UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
-
-  [center addNotificationRequest:request
-           withCompletionHandler:^(NSError* _Nullable error) {
-             if (error) {
-               NSLog(@"Local Notification failed");
-             }
-           }];
+  NSUserNotificationCenter* userNotificationCenter =
+      [NSUserNotificationCenter defaultUserNotificationCenter];
+  if (userNotificationCenter.delegate == nil) {
+    userNotificationCenter.delegate = [[MacOSUserNotificationCenterDelegate alloc] init];
+  }
+  NSUserNotification* userNotification = [[[NSUserNotification alloc] init] autorelease];
+  userNotification.title = [title.toNSString() autorelease];
+  userNotification.informativeText = [message.toNSString() autorelease];
+  [userNotificationCenter scheduleNotification:userNotification];
 }
