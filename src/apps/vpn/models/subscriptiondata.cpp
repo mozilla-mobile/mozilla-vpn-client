@@ -225,14 +225,13 @@ void SubscriptionData::writeSettings() {
 }
 
 bool SubscriptionData::plusTax() {
-    MozillaVPN* vpn = MozillaVPN::instance();
-    QString countryCode = vpn->location()->countryCode();
+  MozillaVPN* vpn = MozillaVPN::instance();
+  QString countryCode = vpn->location()->countryCode();
 
-    connect(vpn->location(), &Location::changed, [this](){
-        emit plusTaxChanged();
-    });
+  connect(vpn->location(), &Location::changed,
+          [this]() { emit plusTaxChanged(); });
 
-    return countryCode == "US" || countryCode == "CA";
+  return countryCode == "US" || countryCode == "CA";
 }
 
 bool SubscriptionData::parseSubscriptionDataIap(
