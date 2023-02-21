@@ -247,6 +247,45 @@ QMap<QString, double> Localizer::loadTranslationCompleteness(
   return result;
 }
 
+// static
+QString Localizer::formatDate(const QDateTime& nowDateTime,
+                              const QDateTime& messageDateTime,
+                              const QString& yesterday) {
+  qint64 diff = messageDateTime.secsTo(nowDateTime);
+  if (diff < 0) {
+    // The message has a date set in the future...?
+    return Localizer::instance()->locale().toString(nowDateTime.time(),
+                                                    QLocale::ShortFormat);
+  }
+
+  // Today
+  if (diff < 86400 && messageDateTime.time() <= nowDateTime.time()) {
+    return Localizer::instance()->locale().toString(messageDateTime.time(),
+                                                    QLocale::ShortFormat);
+  }
+
+  // Yesterday
+  if (messageDateTime.date().dayOfYear() ==
+          nowDateTime.date().dayOfYear() - 1 ||
+      (nowDateTime.date().dayOfYear() == 1 &&
+       messageDateTime.date().dayOfYear() ==
+           messageDateTime.date().daysInYear())) {
+    return yesterday;
+  }
+
+  // Before yesterday (but still this week)
+  if (messageDateTime.date() >= nowDateTime.date().addDays(-6)) {
+    SettingsHolder* settingsHolder = SettingsHolder::instance();
+    QString code = settingsHolder->languageCode();
+    QLocale locale = QLocale(code);
+    return locale.dayName(messageDateTime.date().dayOfWeek());
+  }
+
+  // Before this week
+  return Localizer::instance()->locale().toString(messageDateTime.date(),
+                                                  QLocale::ShortFormat);
+}
+
 void Localizer::settingsChanged() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 

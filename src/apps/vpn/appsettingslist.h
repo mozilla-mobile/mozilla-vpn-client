@@ -316,6 +316,17 @@ SETTING_BOOL(serverUnavailableNotification,        // getter
              false                 // sensitive (do not log)
 )
 
+SETTING_BOOL(recommendedServerSelected,        // getter
+             setRecommendedServerSelected,     // setter
+             removeRecommendedServerSelected,  // remover
+             hasRecommendedServerSelected,     // has
+             "recommendedServerSelected",      // key
+             true,                             // default value
+             false,                            // user setting
+             false,                            // remove when reset
+             false                             // sensitive (do not log)
+)
+
 SETTING_STRING(
     stagingServerAddress,        // getter
     setStagingServerAddress,     // setter

@@ -14,8 +14,8 @@ VPNIcon {
     states: [
         // Low latency
         State {
-            when: (score === VPNServerCountryModel.Good ||
-                score == VPNServerCountryModel.Excellent)
+            when: (score === VPNServerCountryModel.Excellent ||
+                score === VPNServerCountryModel.Good)
             PropertyChanges {
                 target: latencyIndicator
                 source: "qrc:/nebula/resources/server-latency-strong.svg"
@@ -24,8 +24,16 @@ VPNIcon {
         },
         // Moderate latency
         State {
-            when: (score === VPNServerCountryModel.Moderate ||
-                score === VPNServerCountryModel.Poor)
+            when: (score === VPNServerCountryModel.Moderate)
+            PropertyChanges {
+                target: latencyIndicator
+                source: "qrc:/nebula/resources/server-latency-moderate.svg"
+                visible: true
+            }
+        },
+        // High latency
+        State {
+            when: (score === VPNServerCountryModel.Poor)
             PropertyChanges {
                 target: latencyIndicator
                 source: "qrc:/nebula/resources/server-latency-weak.svg"

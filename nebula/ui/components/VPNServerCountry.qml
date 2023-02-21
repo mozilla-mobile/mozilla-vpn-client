@@ -187,8 +187,8 @@ VPNClickableRow {
                     if (!isAvailable) {
                         return;
                     }
-
                     focusScope.setSelectedServer(del._countryCode, del._cityName,del._localizedCityName);
+                    VPNSettings.recommendedServerSelected = false
                 }
                 height: itemHeight
                 checked: del._countryCode === focusScope.currentServer.countryCode && del._cityName === focusScope.currentServer.cityName

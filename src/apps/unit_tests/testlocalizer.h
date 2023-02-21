@@ -32,6 +32,9 @@ class TestLocalizer final : public TestHelper {
 
   void fallback();
 
+  void formattedDate_data();
+  void formattedDate();
+
  private:
   SettingsHolder* m_settingsHolder = nullptr;
 };
