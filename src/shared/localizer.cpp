@@ -17,7 +17,6 @@
 #include "glean/generated/metrics.h"
 #include "glean/gleandeprecated.h"
 #include "glean/mzglean.h"
-#include "i18nstrings.h"
 #include "languagei18n.h"
 #include "leakdetector.h"
 #include "logger.h"
