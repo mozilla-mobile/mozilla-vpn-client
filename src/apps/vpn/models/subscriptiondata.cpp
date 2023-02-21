@@ -16,6 +16,8 @@
 #include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/location.h"
+#include "mozillavpn.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
 
@@ -220,6 +222,13 @@ bool SubscriptionData::fromJsonInternal(const QByteArray& json) {
 
 void SubscriptionData::writeSettings() {
   SettingsHolder::instance()->setSubscriptionData(m_rawJson);
+}
+
+bool SubscriptionData::plusTax() {
+    MozillaVPN* vpn = MozillaVPN::instance();
+    QString countryCode = vpn->location()->countryCode();
+
+    return countryCode == "US" || countryCode == "CA";
 }
 
 bool SubscriptionData::parseSubscriptionDataIap(

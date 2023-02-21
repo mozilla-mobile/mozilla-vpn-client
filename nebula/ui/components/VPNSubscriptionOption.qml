@@ -123,16 +123,9 @@ RadioDelegate {
             // TODO (maybe) - Do we want to add the subscription duration in months to the model?
             property var subscriptionDuration: getSubscriptionDuration(productType)
 
-            //% "Monthly plan"
-            property string productSingleMonth: qsTrId("vpn.subscription.monthlyPlan")
-
             //: %1 is replaced by the subscription duration in months. %2 is replaced by the total subscription cost.
             //% "%1-month plan: %2"
             property string productMultiMonth: qsTrId("vpn.subscription.multiMonthPlan").arg(col.subscriptionDuration).arg(productPrice)
-
-            //: “/month” stands for “per month”. %1 is replaced by the monthly cost (including currency).
-            //% "%1/month"
-            property string monthlyPrice: VPNI18n.SubscriptionManagementPlanMonthly.arg(productMonthlyPrice)
 
             property int trialDays: productTrialDays
 
@@ -144,7 +137,7 @@ RadioDelegate {
                 font.pixelSize: 16
                 lineHeight: VPNTheme.theme.labelLineHeight + 2
                 lineHeightMode: Text.FixedHeight
-                text: col.subscriptionDuration > 1 ? col.productMultiMonth : col.monthlyPrice
+                text: col.subscriptionDuration > 1 ? col.productMultiMonth : VPNI18n.SubscriptionManagementPlanMonthly.arg(productMonthlyPrice)
                 verticalAlignment: Text.AlignVCenter
                 wrapMode: Text.WordWrap
 
@@ -160,16 +153,11 @@ RadioDelegate {
                 lineHeight: 17.68
                 lineHeightMode: Text.FixedHeight
                 text: {
-                    const isUsOrCa = VPN.countryCode === "US" || VPN.countryCode === "CA"
-
-                    if(col.subscriptionDuration === -1)
-                        return ""
-                    else if(col.subscriptionDuration > 1) {
-                        return isUsOrCa ? VPNI18n.SubscriptionManagementPlanMonthlyPlusTax.arg(productMonthlyPrice) : col.monthlyPrice
+                    if(col.subscriptionDuration > 0) {
+                        return VPNSubscriptionData.plusTax ? VPNI18n.SubscriptionManagementPlanMonthlyPlusTax.arg(productMonthlyPrice) : VPNI18n.SubscriptionManagementPlanMonthlyWithoutTax.arg(productMonthlyPrice)
                     }
-                    //col.subscriptionDuration === 1
                     else {
-                        return isUsOrCa ? VPNI18n.SubscriptionManagementPlanMonthlyPlusTax.arg(productMonthlyPrice) : col.productSingleMonth
+                        return ""
                     }
                 }
                 wrapMode: Text.WordWrap

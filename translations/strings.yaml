@@ -683,6 +683,9 @@ subscriptionManagement:
   planMonthly:
     value: "Monthly plan: %1"
     comment: Price for a monthly subscription. %1 represents the localized currency string
+  planMonthlyWithoutTax:
+    value: "%1/month"
+    comment: Price for a monthly subscription without tax. %1 represents the localized currency string
   planMonthlyPlusTax:
     value: "%1/month + tax"
     comment: Price for a monthly subscription plus tax. %1 represents the localized currency string
@@ -724,9 +727,15 @@ subscriptionManagement:
   addFirefoxRelay:
     value: Add Firefox Relay
     comment: Block of text appearing above a link to learn more about the VPN / Relay bundle offering.
-  valueProp1: No logging of your network activity
-  valueProp2: No one can track you
-  valueProp3: 500+ servers in 30+ countries
+  valueProp1:
+    value: No logging of your network activity
+    comment: Value proposition used to upsell the product
+  valueProp2:
+    value: No one can track you
+    comment: Value proposition used to upsell the product
+  valueProp3:
+    value: 500+ servers in 30+ countries
+    comment: Value proposition used to upsell the product
 
 paymentMethods:
   amex: American Express
