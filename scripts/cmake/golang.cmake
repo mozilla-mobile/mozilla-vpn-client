@@ -77,29 +77,25 @@ function(add_go_library GOTARGET SOURCE)
     separate_arguments(DEFAULT_CGO_LDFLAGS NATIVE_COMMAND ${DEFAULT_CGO_LDFLAGS})
 
     ## The actual commands that do the building.
-    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-        ## Special case for apple universal binaries.
-        build_go_archive(${CMAKE_CURRENT_BINARY_DIR}/amd64/${ARCHIVE_NAME} ${DIR_NAME}/go.mod
-            GOARCH amd64
-            CGO_CFLAGS ${DEFAULT_CGO_CFLAGS} ${GOLANG_CGO_CFLAGS} -arch x86_64
-            CGO_LDFLAGS ${DEFAULT_CGO_LDFLAGS} ${GOLANG_CGO_LDFLAGS} -arch x86_64
-        )
-        build_go_archive(${CMAKE_CURRENT_BINARY_DIR}/arm64/${ARCHIVE_NAME} ${DIR_NAME}/go.mod
-            GOARCH arm64
-            CGO_CFLAGS ${DEFAULT_CGO_CFLAGS} ${GOLANG_CGO_CFLAGS} -arch arm64
-            CGO_LDFLAGS ${DEFAULT_CGO_LDFLAGS} ${GOLANG_CGO_LDFLAGS} -arch arm64
-        )
+    if((CMAKE_SYSTEM_NAME STREQUAL "Darwin") AND CMAKE_OSX_ARCHITECTURES)
+        foreach(OSXARCH ${CMAKE_OSX_ARCHITECTURES})
+            string(REPLACE "x86_64" "amd64" GOARCH ${OSXARCH})
+            build_go_archive(${CMAKE_CURRENT_BINARY_DIR}/${OSXARCH}/${ARCHIVE_NAME} ${DIR_NAME}/go.mod
+                GOARCH ${GOARCH}
+                CGO_CFLAGS ${DEFAULT_CGO_CFLAGS} ${GOLANG_CGO_CFLAGS} -arch ${OSXARCH}
+                CGO_LDFLAGS ${DEFAULT_CGO_LDFLAGS} ${GOLANG_CGO_LDFLAGS} -arch ${OSXARCH}
+            )
+            list(APPEND ARCH_ARCHIVE_FILES ${CMAKE_CURRENT_BINARY_DIR}/${OSXARCH}/${ARCHIVE_NAME})
+            list(APPEND ARCH_HEADER_FILES ${CMAKE_CURRENT_BINARY_DIR}/${OSXARCH}/${HEADER_NAME})
+        endforeach()
 
+        list(GET ARCH_HEADER_FILES 0 FIRST_HEADER_FILE)
         add_custom_command(
             OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${ARCHIVE_NAME} ${CMAKE_CURRENT_BINARY_DIR}/${HEADER_NAME}
-            DEPENDS
-                ${CMAKE_CURRENT_BINARY_DIR}/amd64/${HEADER_NAME}
-                ${CMAKE_CURRENT_BINARY_DIR}/amd64/${ARCHIVE_NAME}
-                ${CMAKE_CURRENT_BINARY_DIR}/arm64/${HEADER_NAME}
-                ${CMAKE_CURRENT_BINARY_DIR}/arm64/${ARCHIVE_NAME}
+            DEPENDS ${ARCH_ARCHIVE_FILES} ${ARCH_HEADER_FILES}
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-            COMMAND lipo -create -output ${ARCHIVE_NAME} amd64/${ARCHIVE_NAME} arm64/${ARCHIVE_NAME}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different amd64/${HEADER_NAME} ${HEADER_NAME}
+            COMMAND lipo -create -output ${ARCHIVE_NAME} ${ARCH_ARCHIVE_FILES}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FIRST_HEADER_FILE} ${HEADER_NAME}
         )
     else()
         ## Regular single architecture build
