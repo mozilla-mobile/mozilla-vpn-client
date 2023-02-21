@@ -138,7 +138,8 @@ int ServerCity::baseCityScore(const QString& originCountryCode) const {
   }
 
   // Increase the score for connections made within the same country.
-  if ((!originCountryCode.isEmpty()) && (m_country == originCountryCode)) {
+  if ((!originCountryCode.isEmpty()) &&
+      (m_country.compare(originCountryCode, Qt::CaseInsensitive) == 0)) {
     score++;
   }
 
