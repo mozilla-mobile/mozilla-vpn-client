@@ -1216,8 +1216,8 @@ void MozillaVPN::requestViewLogs() {
 
 // static
 QString MozillaVPN::formatDate(const QDateTime& nowDateTime,
-                              const QDateTime& messageDateTime,
-                              bool capitalize) {
+                               const QDateTime& messageDateTime,
+                               bool capitalize) {
   qint64 diff = messageDateTime.secsTo(nowDateTime);
   if (diff < 0) {
     // The message has a date set in the future...?

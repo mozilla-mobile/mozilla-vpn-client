@@ -131,6 +131,10 @@ void MozillaVPN::requestAbout() {}
 
 void MozillaVPN::requestViewLogs() {}
 
+QString MozillaVPN::formatDate(const QDateTime& nowDateTime,
+                               const QDateTime& messageDateTime,
+                               bool capitalize) {}
+
 void MozillaVPN::retrieveLogs() {}
 
 void MozillaVPN::storeInClipboard(const QString&) {}
