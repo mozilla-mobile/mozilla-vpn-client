@@ -367,5 +367,4 @@ void TestLocalizer::formattedDate() {
   QCOMPARE(Localizer::instance()->formatDate(now, date, "Yesterday"), result);
 }
 
-
 static TestLocalizer s_testLocalizer;

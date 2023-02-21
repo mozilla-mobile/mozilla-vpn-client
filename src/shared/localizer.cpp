@@ -249,9 +249,8 @@ QMap<QString, double> Localizer::loadTranslationCompleteness(
 
 // static
 QString Localizer::formatDate(const QDateTime& nowDateTime,
-                               const QDateTime& messageDateTime,
-                               const QString& yesterday) {
-
+                              const QDateTime& messageDateTime,
+                              const QString& yesterday) {
   qint64 diff = messageDateTime.secsTo(nowDateTime);
   if (diff < 0) {
     // The message has a date set in the future...?
@@ -286,7 +285,6 @@ QString Localizer::formatDate(const QDateTime& nowDateTime,
   return Localizer::instance()->locale().toString(messageDateTime.date(),
                                                   QLocale::ShortFormat);
 }
-
 
 void Localizer::settingsChanged() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
