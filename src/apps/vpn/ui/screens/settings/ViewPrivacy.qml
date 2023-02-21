@@ -46,6 +46,7 @@ VPNViewBase {
                 Loader {
                     active: !VPNController.silentServerSwitchingSupported && VPNController.state !== VPNController.StateOff
                     Layout.fillWidth: true
+                    visible: active
                     sourceComponent: VPNTextBlock {
                         width: parent.width
                         text: VPNI18n.SettingsDnsSettingsDisconnectWarning
