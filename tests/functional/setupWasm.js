@@ -120,7 +120,7 @@ exports.mochaHooks = {
   },
 
   async afterEach() {
-    if (this.currentTest.state === 'failed') {
+    if (!this.currentTest.state || this.currentTest.state === 'failed') {
       // Print error logs
       console.log('::group::Error Logs');
       console.log(fs.readFileSync(stdout).toString());

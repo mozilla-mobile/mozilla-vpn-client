@@ -16,7 +16,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const fs = require('fs');
-const {execSync, spawn} = require('child_process');
+const { execSync, spawn } = require('child_process');
 const vpn = require('./helper.js');
 const vpnWS = require('./helperWS.js');
 
@@ -43,7 +43,7 @@ async function startAndConnect() {
   });
 
   // Connect to VPN
-  await vpn.connect(vpnWS, {hostname: '127.0.0.1'});
+  await vpn.connect(vpnWS, { hostname: '127.0.0.1' });
 }
 
 exports.startAndConnect = startAndConnect;
@@ -77,7 +77,7 @@ exports.mochaHooks = {
     process.env['MZ_BENCHMARK_UPLOAD_URL'] = networkBenchmark.url;
 
     process.env['MZ_CAPTIVE_PORTAL_URL'] =
-        `http://%1:${captivePortalServer.port}/success.txt`;
+      `http://%1:${captivePortalServer.port}/success.txt`;
   },
 
   async afterAll() {
@@ -96,7 +96,7 @@ exports.mochaHooks = {
 
   async beforeEach() {
     if (this.currentTest.ctx.authenticationNeeded &&
-        !this.currentTest.ctx.vpnSettings) {
+      !this.currentTest.ctx.vpnSettings) {
       console.log('Retrieving the setting file...');
 
       guardian.overrideEndpoints = null;
@@ -115,20 +115,20 @@ exports.mochaHooks = {
       await vpn.quit();
 
       const content = await fs.readFileSync(fileName);
-      this.currentTest.ctx.vpnSettings = {fileName, content};
+      this.currentTest.ctx.vpnSettings = { fileName, content };
     }
 
     guardian.overrideEndpoints =
-        this.currentTest.ctx.guardianOverrideEndpoints || null;
+      this.currentTest.ctx.guardianOverrideEndpoints || null;
     fxaServer.overrideEndpoints =
-        this.currentTest.ctx.fxaOverrideEndpoints || null;
+      this.currentTest.ctx.fxaOverrideEndpoints || null;
     networkBenchmark.overrideEndpoints =
-        this.currentTest.ctx.networkBenchmarkOverrideEndpoints || null;
+      this.currentTest.ctx.networkBenchmarkOverrideEndpoints || null;
 
     if (this.currentTest.ctx.authenticationNeeded) {
       fs.writeFileSync(
-          this.currentTest.ctx.vpnSettings.fileName,
-          this.currentTest.ctx.vpnSettings.content);
+        this.currentTest.ctx.vpnSettings.fileName,
+        this.currentTest.ctx.vpnSettings.content);
       await startAndConnect();
     } else {
       if (this.currentTest.ctx.vpnSettings) {
@@ -150,7 +150,7 @@ exports.mochaHooks = {
 
   async afterEach() {
     // Collect errors on failure
-    if (this.currentTest.state === 'failed') {
+    if (!this.currentTest.state || this.currentTest.state === 'failed') {
       // Print error logs
       console.log('::group::Error Logs');
       console.log(stdErr);
