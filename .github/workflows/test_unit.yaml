@@ -18,17 +18,22 @@ jobs:
   linux-unit-tests:
     runs-on: ubuntu-22.04
     name: Run Unit tests on Linux
+    env:
+      QTVERSION: 6.3.2
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
         with:
           submodules: 'true'
 
-      - name: Install dependences
+     - name: Install Qt
         run: |
-          sudo apt-get update
-          sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
-          pip3 install -r requirements.txt
+          python3 -m pip install aqtinstall
+          python3 -m aqt install-qt -O /opt linux desktop $QTVERSION
+
+      - name: Install python dependencies
+        run: |
+          pip install -r requirements.txt
 
       - name: Cache grcov
         id: cache-grcov
@@ -82,7 +87,8 @@ jobs:
   macos-unit-tests:
     runs-on: macos-latest
     name: Run Unit tests on MacOS
-
+    env:
+      QTVERSION: 6.3.2
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
@@ -98,13 +104,8 @@ jobs:
       - name: Install Qt6
         shell: bash
         run: |
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git clone https://github.com/mozilla-mobile/qt_static_macos --depth 1
-          cd qt_static_macos
-          cat qt6* > qt_static.tar.gz
-          tar xf qt_static.tar.gz
-          sudo mv qt6 /opt
-          cd ..
+          python3 -m pip install aqtinstall
+          python3 -m aqt install-qt -O /opt mac desktop $QTVERSION -m all
 
       - name: Cache grcov
         id: cache-grcov
@@ -159,7 +160,8 @@ jobs:
   windows-unit-tests:
     name: Run Unit tests on Windows
     runs-on: windows-latest
-
+    env:
+      QTVERSION: 6.3.2
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
@@ -169,14 +171,12 @@ jobs:
       - name: Install Qt
         shell: bash
         run: |
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git clone https://github.com/mozilla-mobile/qt_static_windows --depth 1
-          mkdir /c/MozillaVPNBuild
-          cat qt_static_windows/qt6* | tar -xjf - -C /c/MozillaVPNBuild
+          python3 -m pip install aqtinstall
+          python3 -m aqt install-qt -O /opt windows desktop $QTVERSION -m all
 
       - name: Add msvc dev commands to PATH
         uses: ilammy/msvc-dev-cmd@v1
-
+git l
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
 
