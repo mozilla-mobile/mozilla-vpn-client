@@ -13,7 +13,6 @@
 #include <QTimer>
 #include <functional>
 
-#include "errorhandler.h"
 #include "ipaddress.h"
 #include "models/server.h"
 #include "models/serverdata.h"

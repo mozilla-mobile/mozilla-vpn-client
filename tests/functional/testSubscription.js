@@ -87,51 +87,55 @@ describe('Subscription manager', function() {
       }
     };
 
-    it('Verify subscription before enabling VPN', async () => {
-      // This test verifies the case where a user is logged in
-      // but the VPN is off when their subscription expires.
-      // When they try to turn the VPN on, they get the
-      // "Subscribe to Mozilla VPN" screen.
+    it('Prompts SubscriptionNeeded if a user\'s subscription is inactive on connection',
+       async () => {
+         // This test verifies the case where a user is logged in
+         // but the VPN is off when their subscription expires.
+         // When they try to turn the VPN on, they get the
+         // "Subscribe to Mozilla VPN" screen.
 
-      await vpn.authenticateInApp(true, true);
+         await vpn.authenticateInApp(true, true);
 
-      // Step 1: Override the Guardian endpoint to mock an expired subscription.
-      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
-          userDataInactive;
+         // Step 1: Override the Guardian endpoint to mock an expired
+         // subscription.
+         this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
+             userDataInactive;
 
-      // Step 2: Attempt to toggle the VPN on. This should fail.
-      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-      await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
+         await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+         await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
 
-      // Step 3: Verify that user gets the "Subscribe to Mozilla VPN" screen.
-      await vpn.waitForQuery(queries.screenHome.SUBSCRIPTION_NEEDED.visible());
-    });
+         // Step 3: Verify that user gets the "Subscribe to Mozilla VPN" screen.
+         await vpn.waitForQuery(
+             queries.screenHome.SUBSCRIPTION_NEEDED.visible());
+       });
 
-    it('Enable VPN with 500 error', async () => {
-      // This test verifies the case where user is logged in
-      // but the VPN is off when their subscription expires,
-      // and the client encounters an HTTP error when completing
-      // the API call to check subscription status.
-      // The expectation here is that the VPN toggles on successfully.
+    it('Continues to try connecting if call to check subscription status fails',
+       async () => {
+         // This test verifies the case where user is logged in
+         // but the VPN is off when their subscription expires,
+         // and the client encounters an HTTP error when completing
+         // the API call to check subscription status.
+         // The expectation here is that the VPN toggles on successfully.
 
-      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
-          userDataActive;
+         this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
+             userDataActive;
 
-      await vpn.authenticateInApp(true, true);
+         await vpn.authenticateInApp(true, true);
 
-      // Step 1: Override the Guardian endpoint to mock an expired subscription.
-      // Set the error status to 500.
-      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
-          userDataInactive;
-      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].status =
-          500;
+         // Step 1: Override the Guardian endpoint to mock an expired
+         // subscription. Set the error status to 500.
+         this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
+             userDataInactive;
+         this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].status =
+             500;
 
-      await vpn.activate();
-      await vpn.waitForCondition(async () => {
-        return await vpn.getQueryProperty(
-                   queries.screenHome.CONTROLLER_TITLE, 'text') == 'VPN is on';
-      });
-    });
+         await vpn.activate();
+         await vpn.waitForCondition(async () => {
+           return await vpn.getQueryProperty(
+                      queries.screenHome.CONTROLLER_TITLE, 'text') ==
+               'VPN is on';
+         });
+       });
   });
 });
 
