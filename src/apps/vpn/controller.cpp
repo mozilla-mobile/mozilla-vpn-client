@@ -238,6 +238,10 @@ bool Controller::activate(const ServerData& serverData,
               logger.error() << "Account request failed" << error;
               REPORTNETWORKERROR(error, ErrorHandler::DoNotPropagateError,
                                  "PreActivationSubscriptionCheck");
+
+              // Check if the error propagation has changed the Mozilla VPN
+              // state. Continue only if the user is still authenticated and
+              // subscribed.
               if (MozillaVPN::instance()->state() == MozillaVPN::StateMain) {
                 setState(StateConnecting);
               } else {
