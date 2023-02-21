@@ -114,6 +114,9 @@ describe('Subscription manager', function() {
       // the API call to check subscription status.
       // The expectation here is that the VPN toggles on successfully.
 
+      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
+          userDataActive;
+
       await vpn.authenticateInApp(true, true);
 
       // Step 1: Override the Guardian endpoint to mock an expired subscription.
@@ -123,9 +126,11 @@ describe('Subscription manager', function() {
       this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].status =
           500;
 
-      await vpn.activate(true);
-      assert(vpn.lastNotification().title === 'VPN Connected');
-      assert(vpn.lastNotification().message.startsWith('Connected to '));
+      await vpn.activate();
+      await vpn.waitForCondition(async () => {
+        return await vpn.getQueryProperty(
+                   queries.screenHome.CONTROLLER_TITLE, 'text') == 'VPN is on';
+      });
     });
   });
 });
