@@ -156,9 +156,7 @@ RadioDelegate {
                     if(col.subscriptionDuration > 0) {
                         return VPNSubscriptionData.plusTax ? VPNI18n.SubscriptionManagementPlanMonthlyPlusTax.arg(productMonthlyPrice) : VPNI18n.SubscriptionManagementPlanMonthlyWithoutTax.arg(productMonthlyPrice)
                     }
-                    else {
-                        return ""
-                    }
+                    return ""
                 }
                 wrapMode: Text.WordWrap
 
