@@ -17,6 +17,8 @@
 
 #if defined(MZ_WINDOWS)
 #  include <windows.h>
+
+#  include "platforms/windows/windowsutils.h"
 #elif defined(MZ_LINUX)
 #  include <QFileInfo>
 #endif
