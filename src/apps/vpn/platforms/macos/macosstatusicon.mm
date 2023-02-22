@@ -199,7 +199,7 @@ void MacOSStatusIcon::showMessage(const QString& title, const QString& message) 
   [center addNotificationRequest:request
            withCompletionHandler:^(NSError* _Nullable error) {
              if (error) {
-               NSLog(@"Local Notification failed: %@", error);
+               logger.error() << "Local Notification failed" << error;
              }
            }];
 }
