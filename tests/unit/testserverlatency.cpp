@@ -4,15 +4,15 @@
 
 #include "testserverlatency.h"
 
-#include "appconstants.h"
-#include "feature.h"
-#include "models/servercity.h"
-#include "models/location.h"
-#include "serverlatency.h"
-#include "settingsholder.h"
-
 #include <QDateTime>
 #include <QJsonObject>
+
+#include "appconstants.h"
+#include "feature.h"
+#include "models/location.h"
+#include "models/servercity.h"
+#include "serverlatency.h"
+#include "settingsholder.h"
 
 void TestServerLatency::init() {
   SettingsHolder settingsHolder;
@@ -48,7 +48,8 @@ void TestServerLatency::cooldown() {
   // The cooldown should be zero until otherwise set.
   QCOMPARE(serverLatency.getCooldown("Some Server"), 0);
   serverLatency.setCooldown("Some Server", 1234);
-  QVERIFY(serverLatency.getCooldown("Some Server") > QDateTime::currentSecsSinceEpoch());
+  QVERIFY(serverLatency.getCooldown("Some Server") >
+          QDateTime::currentSecsSinceEpoch());
 
   // Clear the cooldown and it should re-set to zero.
   serverLatency.setCooldown("Some Server", 0);
@@ -89,9 +90,10 @@ void TestServerLatency::baseCityScore_data() {
   obj.insert("servers", servers);
   QTest::addRow("one server -> poor")
       << obj << "Example Country" << QStringList() << ServerLatency::Poor;
-  
+
   QTest::addRow("one server on cooldown -> unavailable")
-      << obj << "Example Country" << QStringList(server.value("public_key").toString())
+      << obj << "Example Country"
+      << QStringList(server.value("public_key").toString())
       << ServerLatency::Unavailable;
 
   // Add two more servers to meet the minimum redundancy requirements.
