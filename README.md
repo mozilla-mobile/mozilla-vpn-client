@@ -479,7 +479,14 @@ Prerequisites:
 ```bash 
 $ conda env create -f env.yml
 $ conda activate VPN
-$ ./scripts/windows/hol.ps1
+# Setup the Conda env for clang-cl compilation
+$ ./scripts/windows/conda_setup_win_sdk.ps1 
+# Setup the Conda env to use a prebuild QT from Moz-CI
+$ ./scripts/windows/conda_setup_win_qt.ps1
+# Reactivate the ENV to apply the changes: 
+$ conda deactivate
+$ conda activate VPN
+
 ```
 You are now ready to build!
 ```bash
