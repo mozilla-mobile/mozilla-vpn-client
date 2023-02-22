@@ -1,15 +1,7 @@
-# Hol -- german for "go get"
-#
-# Does the Final setup for a Conda-Enviroment on windows. 
-# It does 2 things. 
-# 
-# It will download a prebuild of QT and set it up inside the
-# conda env. 
-# For that it will use the latest level-3 task. 
-#
-# It will also fetch a windows sdk from microsoft. 
-#
-# It will set env variables in the current conda env to enable linking with the SDK. 
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 
 $X_WIN_VERSION = "0.2.10"
 
@@ -20,22 +12,6 @@ if( $conda_env.active_prefix_name -eq "base"){
     Write-Output("Not in an active conda env. abort")
     return -1
 }
-
-$conda_folder = $conda_env.active_prefix 
-Write-Output("Installing in $conda_folder")
-$OLD_PWD = $PWD # Backup that to go back once we done. 
-Set-Location $conda_folder 
-
-$TASKCLUSTER_LINK = "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-win.latest/artifacts/public%2Fbuild%2Fqt6_win.zip"
-
-$ProgressPreference = 'SilentlyContinue'
-Set-Location $conda_folder 
-Write-Output("Downloading qt artifact ...")
-Invoke-WebRequest -Uri $TASKCLUSTER_LINK -OutFile "qt.zip" 
-Write-Output("Expanding qt artifact ...")
-Expand-Archive -Path "qt.zip" -DestinationPath "TaskCluster_QT"
-$ProgressPreference = 'Continue'
-Remove-Item "qt.zip" -ErrorAction SilentlyContinue
 
 Write-Output("Downloading x-win")
 # Small X-Win appretiation comment. 
@@ -80,10 +56,6 @@ conda env config vars set CMAKE_GENERATOR="Ninja" | Out-Null
 # Probably a CI related path? 
 conda env config vars set GOROOT="$conda_folder\go"| Out-Null
 
-# Let conda find QT: 
-conda env config vars set CMAKE_PREFIX_PATH="$conda_folder\\TaskCluster_QT\\QT_OUT\\lib\\cmake" | Out-Null
-conda env config vars set OPENSSL_ROOT_DIR="$conda_folder\\TaskCluster_QT\\QT_OUT\\SSL" | Out-Null
-
 $XWIN_PATH="$conda_folder\xwin"
 
 $INCLUDE_ADDS =   `
@@ -101,7 +73,7 @@ ForEach-Object -InputObject $INCLUDE_ADDS {
 $INCLUDE_TARGET= $INCLUDE_TARGET-replace("; ",";")
 
 conda env config vars set INCLUDE=$INCLUDE_TARGET | Out-Null
-conda env config vars set LIB="$conda_folder\TaskCluster_QT\QT_OUT\SSL\lib;$XWIN_PATH\sdk\lib\ucrt\x86_64;$XWIN_PATH\sdk\lib\um\x86_64;$XWIN_PATH\crt\lib\x86_64;" | Out-Null
+conda env config vars set LIB="$XWIN_PATH\sdk\lib\ucrt\x86_64;$XWIN_PATH\sdk\lib\um\x86_64;$XWIN_PATH\crt\lib\x86_64;" | Out-Null
 # Leaving this here: 
 # It's set in the MSVC dev enviroment but it seems we're fine without it. 
 #conda env config vars set LIBPATH="$XWIN_PATH\sdk\lib\ucrt\x86_64;$XWIN_PATH\sdk\lib\um\x86_64;$XWIN_PATH\crt\lib\x86_64;" | Out-Null
