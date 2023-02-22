@@ -18,7 +18,10 @@ VPNClickableRow {
     property string _countryCode: code
     property var currentCityIndex
     property alias serverCountryName: countryName.text
-    property bool showConnectionScores: (focusScope.currentServer.whichHop === "singleHopServer")
+
+    // The city connection score can be used for every case except the multihop exit location,
+    // where we need to use the scoring between the entry and exit locations instead.
+    property bool useMultiHopScore: (focusScope.currentServer.whichHop === "multiHopExitServer")
 
     property bool hasAvailableCities: cities.reduce((initialValue, city) => (initialValue || city.connectionScore >= 0), false)
 
@@ -207,8 +210,7 @@ VPNClickableRow {
                         rightMargin: VPNTheme.theme.hSpacing
                         verticalCenter: parent.verticalCenter
                     }
-                    score: (focusScope.currentServer.whichHop !== "multiHopExitServer") ? modelData.connectionScore
-                           : modelData.multiHopScore(segmentedNav.multiHopEntryServer[0], segmentedNav.multiHopEntryServer[1])
+                    score: useMultiHopScore ? modelData.multiHopScore(segmentedNav.multiHopEntryServer[0], segmentedNav.multiHopEntryServer[1]) : modelData.connectionScore
                 }
             }
         }
