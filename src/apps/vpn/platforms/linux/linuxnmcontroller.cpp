@@ -132,7 +132,7 @@ NMActiveConnection* LinuxNMController::getActiveConnection() const {
   }
 
   const GPtrArray* active = nm_client_get_active_connections(m_client);
-  for (int i = 0; i < active->len; i++) {
+  for (guint i = 0; i < active->len; i++) {
     NMActiveConnection* conn = NM_ACTIVE_CONNECTION(active->pdata[i]);
     if (m_tunnelUuid == nm_active_connection_get_uuid(conn)) {
       return conn;

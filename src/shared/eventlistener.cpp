@@ -126,7 +126,7 @@ QString EventListener::pipeLocation() {
   QString appName = qApp->applicationName().toLower();
   QString appNameSimple = appName.remove(QRegularExpression("[^a-z]"));
 
-#if defined(MVPN_WINDOWS)
+#if defined(MZ_WINDOWS)
   return QString("\\\\.\\pipe\\%1.ui").arg(appNameSimple);
 #else
   static QString path;
