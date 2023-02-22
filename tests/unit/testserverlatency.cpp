@@ -4,6 +4,7 @@
 
 #include "testserverlatency.h"
 
+#include "appconstants.h"
 #include "feature.h"
 #include "models/servercity.h"
 #include "models/location.h"
@@ -11,6 +12,7 @@
 #include "settingsholder.h"
 
 #include <QDateTime>
+#include <QJsonObject>
 
 void TestServerLatency::init() {
   SettingsHolder settingsHolder;
@@ -53,12 +55,94 @@ void TestServerLatency::cooldown() {
   QCOMPARE(serverLatency.getCooldown("Some Server"), 0);
 }
 
+constexpr const char* testServerCountryCode = "Middle Earth";
+
 void TestServerLatency::baseCityScore_data() {
-  // TODO: Implement Me!
+  QTest::addColumn<QJsonObject>("json");
+  QTest::addColumn<QString>("userCountry");
+  QTest::addColumn<QStringList>("serversOnCooldown");
+  QTest::addColumn<ServerLatency::ConnectionScores>("score");
+
+  QJsonObject obj;
+  QJsonArray servers;
+  obj.insert("name", "Mordor");
+  obj.insert("code", "mrdr");
+  obj.insert("latitude", 3.14159);
+  obj.insert("longitude", -2.718);
+  obj.insert("servers", servers);
+
+  QTest::addRow("no servers -> unavailable")
+      << obj << "Example Country" << QStringList()
+      << ServerLatency::Unavailable;
+
+  QJsonObject server;
+  server.insert("hostname", "wireguard-1.example.com");
+  server.insert("ipv4_addr_in", "169.254.0.1");
+  server.insert("ipv4_gateway", "169.254.0.2");
+  server.insert("ipv6_addr_in", "fc00:dead:beef::face:cafe");
+  server.insert("ipv6_gateway", "fc00:dead:beef::1337:c0de");
+  server.insert("public_key", "OnceUponATimeThereWasCakeButIAteIt");
+  server.insert("weight", 9000);
+  server.insert("multihop_port", 1234);
+  server.insert("socks5_name", "socks5.wireguard-1.example.com");
+  servers.append(server);
+  obj.insert("servers", servers);
+  QTest::addRow("one server -> poor")
+      << obj << "Example Country" << QStringList() << ServerLatency::Poor;
+  
+  QTest::addRow("one server on cooldown -> unavailable")
+      << obj << "Example Country" << QStringList(server.value("public_key").toString())
+      << ServerLatency::Unavailable;
+
+  // Add two more servers to meet the minimum redundancy requirements.
+  server.insert("hostname", "wireguard-2.example.com");
+  server.insert("public_key", "PieIsBetterAnywaysItsFullOfFruitAndPastry");
+  server.insert("socks5_name", "socks5.wireguard-2.example.com");
+  servers.append(server);
+  obj.insert("servers", servers);
+  server.insert("hostname", "wireguard-3.example.com");
+  server.insert("public_key", "ThePastryIsWarmAndFlakyAndBakedToPerfection");
+  server.insert("socks5_name", "socks5.wireguard-3.example.com");
+  servers.append(server);
+  obj.insert("servers", servers);
+  QTest::addRow("three servers -> moderate")
+      << obj << "Example Country" << QStringList() << ServerLatency::Moderate;
+
+  QTest::addRow("three servers one on cooldown -> poor")
+      << obj << "Example Country"
+      << QStringList(server.value("public_key").toString())
+      << ServerLatency::Poor;
+
+  QTest::addRow("same country -> good")
+      << obj << QString(testServerCountryCode).toLower() << QStringList()
+      << ServerLatency::Good;
+
+  QTest::addRow("case sensitive -> still good")
+      << obj << QString(testServerCountryCode).toUpper() << QStringList()
+      << ServerLatency::Good;
 }
 
 void TestServerLatency::baseCityScore() {
-  // TODO: Implement Me!
+  QFETCH(QJsonObject, json);
+  QFETCH(QString, userCountry);
+  QFETCH(QStringList, serversOnCooldown);
+  QFETCH(ServerLatency::ConnectionScores, score);
+
+  ServerLatency serverLatency;
+  for (const QString& pubkey : serversOnCooldown) {
+    serverLatency.setCooldown(pubkey,
+                              AppConstants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
+  }
+
+  // Establish an average latency of around 100ms.
+  for (int i = 0; i < 100; i++) {
+    serverLatency.setLatency("DummyServer" + QString::number(i), 100);
+  }
+
+  ServerCity city;
+  QVERIFY(city.fromJson(json, testServerCountryCode));
+
+  QCOMPARE(serverLatency.baseCityScore(&city, userCountry), score);
 }
 
 static TestServerLatency s_testServerLatency;
