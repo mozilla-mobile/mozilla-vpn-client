@@ -27,7 +27,7 @@ class Addon : public QObject {
   Q_PROPERTY(QString id READ id CONSTANT)
   Q_PROPERTY(QString name MEMBER m_name CONSTANT)
   Q_PROPERTY(QString type READ type CONSTANT)
-  Q_PROPERTY(AddonState state READ state CONSTANT)
+  Q_PROPERTY(AddonState* state READ state CONSTANT)
 
  public:
   enum Status {
@@ -58,7 +58,7 @@ class Addon : public QObject {
   const QString& id() const { return m_id; }
   const QString& type() const { return m_type; }
   const QString& manifestFileName() const { return m_manifestFileName; }
-  const AddonState state() { return m_state; }
+  AddonState* state() const { return m_state; }
 
   virtual void retranslate();
 
@@ -98,7 +98,7 @@ class Addon : public QObject {
 
   QTranslator m_translator;
 
-  AddonState m_state;
+  AddonState* m_state = nullptr;
 
   AddonApi* m_api = nullptr;
   AddonConditionWatcher* m_conditionWatcher = nullptr;

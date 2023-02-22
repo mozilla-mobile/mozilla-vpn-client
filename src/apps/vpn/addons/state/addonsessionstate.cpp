@@ -4,22 +4,10 @@
 
 #include "addonsessionstate.h"
 
-#include <QHash>
-#include <QJsonValue>
-#include <QObject>
-#include <QString>
-
-#include "addonstatebase.h"
 #include "leakdetector.h"
 
-// static
-AddonSessionState* AddonSessionState::fromManifest(
-    const QJsonObject& manifest) {
-  return new AddonSessionState(AddonStateBase::parseManifest(manifest));
-}
-
-AddonSessionState::AddonSessionState(QHash<QString, QJsonValue> spec)
-    : AddonStateBase(spec) {
+AddonSessionState::AddonSessionState(const QJsonObject& manifest)
+    : AddonStateBase(manifest) {
   MZ_COUNT_CTOR(AddonSessionState);
 }
 

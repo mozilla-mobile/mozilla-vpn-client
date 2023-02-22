@@ -7,7 +7,6 @@
 
 #include <QHash>
 #include <QJsonValue>
-#include <QObject>
 #include <QString>
 
 typedef QHash<QString, QJsonValue> StateHash;
@@ -24,12 +23,11 @@ typedef QHash<QString, QJsonValue> StateHash;
  * The values can be changed, but the kays are limited to whatever is defined in
  * the addon manifest. The type of the value cannot be changed.
  */
-class AddonStateBase : public QObject {
-  Q_OBJECT
-  Q_DISABLE_COPY_MOVE(AddonStateBase)
+class AddonStateBase {
+  Q_GADGET
 
  public:
-  ~AddonStateBase() = default;
+  virtual ~AddonStateBase() {}
 
   /**
    * @brief Get the value for a given key in the state.
@@ -71,10 +69,9 @@ class AddonStateBase : public QObject {
   Q_INVOKABLE void clear(const QString& key = "");
 
  protected:
-  AddonStateBase(StateHash spec);
+  AddonStateBase(const QJsonObject& spec);
+  AddonStateBase(const StateHash& spec) : m_defaults(spec) {}
   StateHash m_defaults;
-
-  static StateHash parseManifest(const QJsonObject& manifest);
 
   // Methods to override.
   virtual QJsonValue getInternal(const QString& key) const = 0;
@@ -83,6 +80,7 @@ class AddonStateBase : public QObject {
 
  private:
   static QJsonValue::Type typeToQJsonValueType(QString type);
+  static StateHash parseManifest(const QJsonObject& manifest);
 };
 
 #endif  // ADDONSTATEBASE_H

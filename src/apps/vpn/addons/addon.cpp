@@ -382,7 +382,7 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
     return nullptr;
   }
 
-  addon->m_state.setManifest(obj["state"].toObject());
+  addon->m_state = new AddonState(addon, obj["state"].toObject());
 
   QJsonObject javascript = obj["javascript"].toObject();
   if (!addon->evaluateJavascript(javascript)) {

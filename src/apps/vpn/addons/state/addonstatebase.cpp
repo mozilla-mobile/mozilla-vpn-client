@@ -4,7 +4,6 @@
 
 #include "addonstatebase.h"
 
-#include <QHash>
 #include <QJsonObject>
 
 #include "logger.h"
@@ -31,9 +30,8 @@ QJsonValue::Type AddonStateBase::typeToQJsonValueType(QString type) {
 }
 
 // static
-QHash<QString, QJsonValue> AddonStateBase::parseManifest(
-    const QJsonObject& manifest) {
-  QHash<QString, QJsonValue> spec;
+StateHash AddonStateBase::parseManifest(const QJsonObject& manifest) {
+  StateHash spec;
 
   foreach (const QString& key, manifest.keys()) {
     QJsonValue value = manifest.value(key);
@@ -71,8 +69,8 @@ QHash<QString, QJsonValue> AddonStateBase::parseManifest(
   return spec;
 }
 
-AddonStateBase::AddonStateBase(QHash<QString, QJsonValue> spec)
-    : m_defaults(spec) {}
+AddonStateBase::AddonStateBase(const QJsonObject& spec)
+    : m_defaults(AddonStateBase::parseManifest(spec)) {}
 
 QJsonValue AddonStateBase::get(const QString& key) const {
   if (!m_defaults.contains(key)) {
@@ -108,6 +106,7 @@ void AddonStateBase::set(const QString& key, QJsonValue value) {
 void AddonStateBase::clear(const QString& key) {
   if (key.isEmpty()) {
     clearInternal();
+    return;
   }
 
   if (!m_defaults.contains(key)) {

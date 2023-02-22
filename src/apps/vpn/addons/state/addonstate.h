@@ -6,6 +6,7 @@
 #define ADDONSTATE_H
 
 #include <QJsonObject>
+#include <QObject>
 
 #include "addonsessionstate.h"
 
@@ -18,35 +19,32 @@
  * sessions.
  *
  */
-struct AddonState {
-  Q_GADGET
+struct AddonState : public QObject {
+  Q_OBJECT
   Q_PROPERTY(AddonSessionState* session READ session)
 
  public:
-  AddonState() = default;
-  ~AddonState() { delete m_session; }
-
   /**
    * @brief Construct a new Addon State object.
    *
    * No validation is required here.
    *
    * 1. The session object construction will validate the object.
-   * 2. In case it is empty, an empty state will be generated. Empty states are
-   * allowed so that the state APIs will always be available. Attempts to record
-   * to invalid keys will simply be no-ops.
+   * 2. In case it is empty, an empty state will be generated. Empty states
+   * are allowed so that the state APIs will always be available. Attempts
+   * to record to invalid keys will simply be no-ops.
    *
    * @param manifest The JSON object in the "state" property of an addon
    * manifest.
    */
-  void setManifest(const QJsonObject& manifest) {
-    m_session = AddonSessionState::fromManifest(manifest["session"].toObject());
-  }
+  AddonState(QObject* parent, const QJsonObject& manifest)
+      : QObject(parent), m_session(manifest["session"].toObject()) {}
+  ~AddonState() = default;
 
-  AddonSessionState* session() const { return m_session; }
+  AddonSessionState* session() { return &m_session; }
 
  private:
-  AddonSessionState* m_session = nullptr;
+  AddonSessionState m_session;
 };
 
 #endif  // ADDONSTATE_H

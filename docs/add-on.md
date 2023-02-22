@@ -65,7 +65,7 @@ Session state is _not_ persisted throughout user sessions i.e. it is wiped once 
 
 ### Local state
 
-> **Note**: Global state is not supported yet, if you need to implement an addon that requires it please refer to [VPN-3929](https://mozilla-hub.atlassian.net/browse/VPN-3929).
+> **Note**: Local state is not supported yet, if you need to implement an addon that requires it please refer to [VPN-3929](https://mozilla-hub.atlassian.net/browse/VPN-3929).
 
 Local state is persisted throughout user sessions i.e. not wiped after the application is killed. It is _not_ synced among the devices of a given user. It is local to each device.
 

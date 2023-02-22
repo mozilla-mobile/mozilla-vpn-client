@@ -5,11 +5,6 @@
 #ifndef ADDONSESSIONSTATE_H
 #define ADDONSESSIONSTATE_H
 
-#include <QHash>
-#include <QJsonValue>
-#include <QObject>
-#include <QString>
-
 #include "addonstatebase.h"
 
 /**
@@ -19,7 +14,6 @@
 class AddonSessionState final : public AddonStateBase {
  public:
   ~AddonSessionState();
-  AddonSessionState(StateHash spec);
 
   /**
    * @brief Construct an AddonSessionState object from the JSON object under the
@@ -42,14 +36,12 @@ class AddonSessionState final : public AddonStateBase {
    * @param manifest The addon's manifest.
    * @return AddonState the generated state.
    */
-  static AddonSessionState* fromManifest(const QJsonObject& manifest);
+  AddonSessionState(const QJsonObject& manifest);
 
- protected:
+ private:
   QJsonValue getInternal(const QString& key) const override;
   void setInternal(const QString& key, const QJsonValue& value) override;
   void clearInternal(const QString& key = "") override;
-
- private:
   StateHash m_state;
 };
 

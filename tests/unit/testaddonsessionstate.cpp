@@ -13,12 +13,12 @@ void TestAddonSessionState::testGetAndSet() {
   QJsonObject manifest;
   manifest["numProp"] = numProp;
 
-  AddonSessionState* state = AddonSessionState::fromManifest(manifest);
+  AddonSessionState state(manifest);
 
-  QCOMPARE(state->get("numProp"), 10);
+  QCOMPARE(state.get("numProp"), 10);
 
-  state->set("numProp", QJsonValue(11));
-  QCOMPARE(state->get("numProp"), 11);
+  state.set("numProp", QJsonValue(11));
+  QCOMPARE(state.get("numProp"), 11);
 }
 
 void TestAddonSessionState::testClear() {
@@ -28,20 +28,20 @@ void TestAddonSessionState::testClear() {
   QJsonObject manifest;
   manifest["numProp"] = numProp;
 
-  AddonSessionState* state = AddonSessionState::fromManifest(manifest);
+  AddonSessionState state(manifest);
 
-  QCOMPARE(state->get("numProp"), 10);
+  QCOMPARE(state.get("numProp"), 10);
 
   // Clear without having recorded anything.
-  state->clear("numProp");
-  QCOMPARE(state->get("numProp"), 10);
+  state.clear("numProp");
+  QCOMPARE(state.get("numProp"), 10);
 
-  state->set("numProp", QJsonValue(11));
-  QCOMPARE(state->get("numProp"), 11);
+  state.set("numProp", QJsonValue(11));
+  QCOMPARE(state.get("numProp"), 11);
 
   // Clear after having recorded.
-  state->clear("numProp");
-  QCOMPARE(state->get("numProp"), 10);
+  state.clear("numProp");
+  QCOMPARE(state.get("numProp"), 10);
 }
 
 void TestAddonSessionState::testClearAll() {
@@ -59,39 +59,39 @@ void TestAddonSessionState::testClearAll() {
   manifest["prop2"] = prop2;
   manifest["prop3"] = prop3;
 
-  AddonSessionState* state = AddonSessionState::fromManifest(manifest);
+  AddonSessionState state(manifest);
 
-  QCOMPARE(state->get("prop1"), 10);
-  QCOMPARE(state->get("prop2"), 11);
-  QCOMPARE(state->get("prop3"), 12);
+  QCOMPARE(state.get("prop1"), 10);
+  QCOMPARE(state.get("prop2"), 11);
+  QCOMPARE(state.get("prop3"), 12);
   // Clear all without having recorded anything.
-  state->clear();
-  QCOMPARE(state->get("prop1"), 10);
-  QCOMPARE(state->get("prop2"), 11);
-  QCOMPARE(state->get("prop3"), 12);
+  state.clear();
+  QCOMPARE(state.get("prop1"), 10);
+  QCOMPARE(state.get("prop2"), 11);
+  QCOMPARE(state.get("prop3"), 12);
 
-  state->set("prop1", QJsonValue(1));
-  state->set("prop2", QJsonValue(2));
-  QCOMPARE(state->get("prop1"), 1);
-  QCOMPARE(state->get("prop2"), 2);
-  QCOMPARE(state->get("prop3"), 12);
+  state.set("prop1", QJsonValue(1));
+  state.set("prop2", QJsonValue(2));
+  QCOMPARE(state.get("prop1"), 1);
+  QCOMPARE(state.get("prop2"), 2);
+  QCOMPARE(state.get("prop3"), 12);
   // Clear all having recorded part of the properties anything.
-  state->clear();
-  QCOMPARE(state->get("prop1"), 10);
-  QCOMPARE(state->get("prop2"), 11);
-  QCOMPARE(state->get("prop3"), 12);
+  state.clear();
+  QCOMPARE(state.get("prop1"), 10);
+  QCOMPARE(state.get("prop2"), 11);
+  QCOMPARE(state.get("prop3"), 12);
 
-  state->set("prop1", QJsonValue(0));
-  state->set("prop2", QJsonValue(0));
-  state->set("prop3", QJsonValue(0));
-  QCOMPARE(state->get("prop1"), 0);
-  QCOMPARE(state->get("prop2"), 0);
-  QCOMPARE(state->get("prop3"), 0);
+  state.set("prop1", QJsonValue(0));
+  state.set("prop2", QJsonValue(0));
+  state.set("prop3", QJsonValue(0));
+  QCOMPARE(state.get("prop1"), 0);
+  QCOMPARE(state.get("prop2"), 0);
+  QCOMPARE(state.get("prop3"), 0);
   // Clear after having recorded all props
-  state->clear();
-  QCOMPARE(state->get("prop1"), 10);
-  QCOMPARE(state->get("prop2"), 11);
-  QCOMPARE(state->get("prop3"), 12);
+  state.clear();
+  QCOMPARE(state.get("prop1"), 10);
+  QCOMPARE(state.get("prop2"), 11);
+  QCOMPARE(state.get("prop3"), 12);
 }
 
 static TestAddonSessionState s_testAddonSessionState;

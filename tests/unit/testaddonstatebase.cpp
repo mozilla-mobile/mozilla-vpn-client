@@ -15,11 +15,8 @@
  */
 class StateSpy : public AddonStateBase {
  public:
-  static StateSpy fromManifest(const QJsonObject& manifest) {
-    return StateSpy(AddonStateBase::parseManifest(manifest));
-  }
-
-  StateSpy(StateHash spec) : AddonStateBase(spec) {}
+  StateSpy(const QJsonObject& manifest) : AddonStateBase(manifest) {}
+  StateSpy(const StateHash& manifest) : AddonStateBase(manifest) {}
 
   StateHash defaults() { return m_defaults; }
 
@@ -229,7 +226,7 @@ void TestAddonStateBase::testParseManifest() {
   QFETCH(StateHash, hash);
 
   StateSpy expectedState(hash);
-  StateSpy actualState = StateSpy::fromManifest(manifest);
+  StateSpy actualState(manifest);
   QCOMPARE(expectedState.defaults(), actualState.defaults());
 }
 
