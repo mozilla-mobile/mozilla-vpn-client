@@ -169,7 +169,7 @@ int ServerCity::multiHopScore(const QString& country,
     return score;
   }
 
-  // Increase the score if the distance betweens servers is less than 1/8th of
+  // Increase the score if the distance between servers is less than 1/8th of
   // the earth's circumference.
   const ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
   const ServerCity& entryCity = scm->findCity(country, cityName);

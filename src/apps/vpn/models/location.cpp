@@ -107,10 +107,10 @@ double Location::distance(double latitude, double longitude) const {
 // The same algorithm as above, but static and accepts any QObject with
 // latitude and longitude properties.
 double Location::distance(const QObject* a, const QObject* b) {
-  bool aLatOkay;
-  bool aLongOkay;
-  bool bLatOkay;
-  bool bLongOkay;
+  bool aLatOkay = false;
+  bool aLongOkay = false;
+  bool bLatOkay = false;
+  bool bLongOkay = false;
   double aLat = a->property("latitude").toDouble(&aLatOkay);
   double aLong = a->property("longitude").toDouble(&aLongOkay);
   double bLat = b->property("latitude").toDouble(&bLatOkay);
