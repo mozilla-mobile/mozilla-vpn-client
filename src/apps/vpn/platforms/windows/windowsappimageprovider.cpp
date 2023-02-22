@@ -58,7 +58,7 @@ QPixmap WindowsAppImageProvider::requestPixmap(const QString& path, QSize* size,
     WindowsUtils::windowsLog(path + " Failed to convert icon");
     return QPixmap();
   }
-  if (size) *size = pixmap.size();
+  if (size) *size =  QSize(32, 32);
   return pixmap;
 }
 
