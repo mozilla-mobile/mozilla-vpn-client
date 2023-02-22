@@ -60,10 +60,9 @@ Java_org_mozilla_firefox_vpn_daemon_VPNService_wgGetSocketV6(JNIEnv* env,
   return wgGetSocketV6(handle);
 }
 
-
 JNIEXPORT jint JNICALL
 Java_org_mozilla_firefox_vpn_daemon_VPNService_wgGetLatestHandle(JNIEnv* env,
-                                                             jclass c) {
+                                                                 jclass c) {
   return wgGetLatestHandle();
 }
 
