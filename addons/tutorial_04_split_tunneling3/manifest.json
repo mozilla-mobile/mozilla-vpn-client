@@ -27,7 +27,7 @@
       }, {
         "id": "s2",
         "query": "//appExclusionSettings{visible=true}",
-        "tooltip": "Select “App Exclusions”",
+        "tooltip": "Select “App exclusions”",
         "conditions": {
           "javascript": "resetAppPermissions.js"
         },
