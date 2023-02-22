@@ -310,7 +310,7 @@ module.exports = {
     await this.setVPNProperty('VPNUrlOpener', 'lastUrl', '');
 
     // Click on get started and wait for authenticating view
-    await this.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
+    await this.waitForQueryAndClick(queries.screenInitialize.SIGN_UP_BUTTON.visible());
 
     if (!wasm) {
       await this.waitForCondition(async () => {
