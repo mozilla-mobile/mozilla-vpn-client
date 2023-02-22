@@ -28,7 +28,7 @@
       }, {
         "id": "s2",
         "query": "//appPermissionSettings{visible=true}",
-        "tooltip": "Select “App Exclusions”",
+        "tooltip": "Select “App exclusions”",
         "next": {
           "op": "signal",
           "query_emitter": "//appPermissionSettings{visible=true}",
