@@ -11,30 +11,6 @@
 #import <UserNotifications/UserNotifications.h>
 #import <QResource>
 
-@interface MacOSUserNotificationCenterDelegate : NSObject <NSUserNotificationCenterDelegate>
-@end
-
-@implementation MacOSUserNotificationCenterDelegate
-- (void)userNotificationCenter:(NSUserNotificationCenter*)center
-        didDeliverNotification:(NSUserNotification*)notification {
-  Q_UNUSED(center);
-  Q_UNUSED(notification);
-}
-
-- (void)userNotificationCenter:(NSUserNotificationCenter*)center
-       didActivateNotification:(NSUserNotification*)notification {
-  [center removeDeliveredNotification:notification];
-}
-
-- (BOOL)userNotificationCenter:(NSUserNotificationCenter*)center
-     shouldPresentNotification:(NSUserNotification*)notification {
-  Q_UNUSED(center);
-  Q_UNUSED(notification);
-
-  return NO;
-}
-@end
-
 /**
  * Creates a NSStatusItem with that can hold an icon. Additionally a NSView is
  * set as a subview to the button item of the status item. The view serves as
@@ -194,13 +170,36 @@ void MacOSStatusIcon::setToolTip(const QString& tooltip) {
 void MacOSStatusIcon::showMessage(const QString& title, const QString& message) {
   logger.debug() << "Show message";
 
-  NSUserNotificationCenter* userNotificationCenter =
-      [NSUserNotificationCenter defaultUserNotificationCenter];
-  if (userNotificationCenter.delegate == nil) {
-    userNotificationCenter.delegate = [[MacOSUserNotificationCenterDelegate alloc] init];
-  }
-  NSUserNotification* userNotification = [[[NSUserNotification alloc] init] autorelease];
-  userNotification.title = [title.toNSString() autorelease];
-  userNotification.informativeText = [message.toNSString() autorelease];
-  [userNotificationCenter scheduleNotification:userNotification];
+  UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
+
+  // This is a no-op is authorization has been granted.
+  [center requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert |
+                                           UNAuthorizationOptionBadge)
+                        completionHandler:^(BOOL granted, NSError* _Nullable error) {
+                          if (error) {
+                            // Note: This error may happen if the application is not signed.
+                            NSLog(@"Error asking for permission to send notifications %@", error);
+                            return;
+                          }
+                        }];
+
+  UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
+
+  content.title = [title.toNSString() autorelease];
+  content.body = [message.toNSString() autorelease];
+  content.sound = [UNNotificationSound defaultSound];
+
+  UNTimeIntervalNotificationTrigger* trigger =
+      [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:1 repeats:NO];
+
+  UNNotificationRequest* request = [UNNotificationRequest requestWithIdentifier:@"mozillavpn"
+                                                                        content:content
+                                                                        trigger:trigger];
+
+  [center addNotificationRequest:request
+           withCompletionHandler:^(NSError* _Nullable error) {
+             if (error) {
+               logger.error() << "Local Notification failed" << error;
+             }
+           }];
 }
