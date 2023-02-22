@@ -116,7 +116,7 @@ if __name__ == "__main__":
 
         # Generate C++ header files
         for [ output, input ] in [
-            [os.path.join(args.outdir, "pings.h"), [os.path.join(yaml_files_path, "pings.yaml")]],
+            [os.path.join(args.outdir, "pings.h"), [os.path.join(yaml_files_path, "pings.yaml"), os.path.join(qtglean_yaml_files_path, "pings.yaml")]],
             [os.path.join(args.outdir, "metrics.h"), [os.path.join(yaml_files_path, "metrics.yaml"), os.path.join(qtglean_yaml_files_path, "metrics.yaml")]],
         ]:
             print("Generating {} from {}".format(output, input))
@@ -125,7 +125,7 @@ if __name__ == "__main__":
 
         # Generate C++ source files
         for [ output, input ] in [
-            [os.path.join(args.outdir, "pings.cpp"), [os.path.join(yaml_files_path, "pings.yaml")]],
+            [os.path.join(args.outdir, "pings.cpp"), [os.path.join(yaml_files_path, "pings.yaml"), os.path.join(qtglean_yaml_files_path, "pings.yaml")]],
             [os.path.join(args.outdir, "metrics.cpp"), [os.path.join(yaml_files_path, "metrics.yaml"), os.path.join(qtglean_yaml_files_path, "metrics.yaml")]],
         ]:
             print("Generating {} from {}".format(output, input))
@@ -134,7 +134,7 @@ if __name__ == "__main__":
 
         # Generate Rust files
         for [ output, input ] in [
-            [os.path.join(args.outdir, "pings.rs"), [os.path.join(yaml_files_path, "pings.yaml")]],
+            [os.path.join(args.outdir, "pings.rs"), [os.path.join(yaml_files_path, "pings.yaml"), os.path.join(qtglean_yaml_files_path, "pings.yaml")]],
             [os.path.join(args.outdir, "metrics.rs"), [os.path.join(yaml_files_path, "metrics.yaml"), os.path.join(qtglean_yaml_files_path, "metrics.yaml")]],
         ]:
             print("Generating {} from {}".format(output, input))
