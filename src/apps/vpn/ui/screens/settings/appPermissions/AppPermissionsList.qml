@@ -98,8 +98,7 @@ ColumnLayout {
                     radius: VPNTheme.theme.cornerRadius
 
                     Image {
-                        sourceSize.width: VPNTheme.theme.windowMargin * 2
-                        sourceSize.height: VPNTheme.theme.windowMargin * 2
+                        sourceSize: Qt.size(32, 32)
                         anchors.centerIn: parent
                         asynchronous: true
                         fillMode:  Image.PreserveAspectFit
