@@ -34,7 +34,11 @@ let stdErr = '';
 async function startAndConnect() {
   vpnProcess = spawn(app, ['ui', '--testing']);
   stdErr += 'VPN Process ID: ' + vpnProcess.pid;
+  vpnProcess.stdout.on('data', (data) => {
+    console.log('OUTPUT', data.toString());
+  });
   vpnProcess.stderr.on('data', (data) => {
+    console.log(data.toString());
     stdErr += data;
   });
 

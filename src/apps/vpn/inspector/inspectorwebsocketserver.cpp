@@ -42,12 +42,14 @@ void InspectorWebSocketServer::newConnectionReceived() {
 
   QHostAddress address = child->localAddress();
 
+  logger.warning() << "BAKU-web-socket" << address.toString();
 #if !defined(MZ_ANDROID) && !defined(MZ_IOS)
   // `::ffff:127.0.0.1` is the IPv4 localhost address written with the IPv6
   // notation.
   if (address != QHostAddress("::ffff:127.0.0.1") &&
       address != QHostAddress::LocalHost &&
       address != QHostAddress::LocalHostIPv6) {
+    logger.warning() << "BAKU HERE?!";
     logger.warning() << "Accepting connection from localhost only";
     child->close();
     return;

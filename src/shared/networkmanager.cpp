@@ -20,10 +20,12 @@ NetworkManager* s_instance = nullptr;
 
 bool localhostRequestCallback(NetworkRequest* request) {
   QString host(request->url().host());
+  qDebug() << "BAKU" << request->url().host();
   if (host == "localhost" || host == "127.0.0.1" || host == "::1") {
     return false;
   }
 
+  qDebug() << "BOOM";
   qFatal("Non localhost request detected!");
   Q_ASSERT(false);
   return true;

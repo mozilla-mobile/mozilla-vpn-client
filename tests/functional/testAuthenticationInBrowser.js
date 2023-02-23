@@ -21,24 +21,35 @@ describe('User authentication in browser', function() {
     if (!this.ctx.wasm) {
       await vpn.waitForCondition(async () => {
         const url = await vpn.getLastUrl();
+        console.log('BAKU', url);
         return url.includes('/api/v2/vpn/login');
       });
     }
+    console.log('A');
 
-    await vpn.clickOnQuery(
-        queries.screenInitialize.AUTHENTICATE_VIEW.visible());
-    await vpn.waitForQueryAndClick(
-        queries.screenAuthenticating.CANCEL_FOOTER_LINK.visible());
+    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    console.log('AA');
 
-    await vpn.waitForQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
+        await vpn.vpn.waitForQueryAndClick(
+            queries.screenInitialize.AUTHENTICATE_VIEW.visible());
+        console.log('B');
+        await vpn.waitForQueryAndClick(
+            queries.screenAuthenticating.CANCEL_FOOTER_LINK.visible());
+        console.log('C');
+
+        await vpn.vpn.waitForQueryAndClick(
+            queries.screenInitialize.SIGN_UP_BUTTON.visible());
+        console.log('D');
   });
 
   it('Completes authentication', async () => {
+    console.log('HERE?');
     await vpn.waitForInitialView();
     await vpn.authenticateInBrowser(true, true, this.ctx.wasm);
   });
 
   it('Completes authentication after logout', async () => {
+    console.log('HERE??');
     await vpn.authenticateInBrowser(true, true, this.ctx.wasm);
     await vpn.waitForQueryAndClick(queries.navBar.SETTINGS);
 

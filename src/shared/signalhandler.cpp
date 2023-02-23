@@ -4,8 +4,11 @@
 
 #include "signalhandler.h"
 
+#include <execinfo.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 #include "logger.h"
@@ -16,10 +19,25 @@ Logger logger("SignalHandler");
 
 int s_signalpipe = -1;
 
+void handler(int sig) {
+  void* array[10];
+  size_t size;
+
+  // get void*'s for all entries on the stack
+  size = backtrace(array, 10);
+
+  // print out all the frames to stderr
+  fprintf(stderr, "Error: signal %d:\n", sig);
+  backtrace_symbols_fd(array, size, STDERR_FILENO);
+  exit(1);
+}
+
 }  // namespace
 
 SignalHandler::SignalHandler() {
   Q_ASSERT(s_signalpipe < 0);
+
+  signal(SIGSEGV, handler);
 
   int quitSignals[] = {SIGQUIT, SIGINT, SIGTERM, SIGHUP};
 

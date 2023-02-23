@@ -238,8 +238,10 @@ static QList<InspectorCommand> s_commands{
         [](InspectorHandler*, const QList<QByteArray>& arguments) {
           QJsonObject obj;
 
+          qDebug() << 1;
           int id = qmlTypeId("Mozilla.VPN", 1, 0, qPrintable(arguments[1]));
 
+          qDebug() << 2;
           QQmlApplicationEngine* engine = qobject_cast<QQmlApplicationEngine*>(
               QmlEngineHolder::instance()->engine());
           QObject* item = engine->singletonInstance<QObject*>(id);
@@ -248,6 +250,7 @@ static QList<InspectorCommand> s_commands{
             return obj;
           }
 
+          qDebug() << 3;
           QVariant property = item->property(arguments[2]);
           if (!property.isValid()) {
             obj["error"] = "Property is invalid";
@@ -255,6 +258,7 @@ static QList<InspectorCommand> s_commands{
           }
 
           obj["value"] = property.toString();
+          qDebug() << 4 << property.toString();
           return obj;
         }},
 
