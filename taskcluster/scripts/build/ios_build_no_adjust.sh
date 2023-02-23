@@ -47,12 +47,15 @@ export PATH=$QT_IOS_BIN:$PATH
 cd $PROJECT_HOME
 # So ios qmake is just a wrapper script
 # and expects to find pwd/qt_ios/mac/bin/qmake >:c
-ln -s ../../fetches/qt_ios/ qt_ios 
+ln -s ../../fetches/qt_ios/ qt_ios
 
-
-print Y "Updating submodules..."
-git submodule init || die
-git submodule update || die
+print Y "Get the submodules..."
+git submodule update --init --depth 1 || die "Failed to init submodules"
+# Technically we do not need the following line because we later call the
+# apple compile script which calls import languages. However when we move to cmake
+# for iOS we can remove the call to import languages and this step will be necessary
+git submodule update --remote i18n || die "Failed to pull latest i18n from remote"
+print G "done."
 
 print Y "Configuring the build..."
 

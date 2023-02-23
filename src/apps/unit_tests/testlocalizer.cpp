@@ -39,8 +39,7 @@ void TestLocalizer::basic() {
   QCOMPARE(rn[Localizer::CodeRole], "code");
   QCOMPARE(rn[Localizer::RTLRole], "isRightToLeft");
 
-  // No language for this unit-test app
-  QVERIFY(l.rowCount(QModelIndex()) == 0);
+  QVERIFY(l.rowCount(QModelIndex()) == 4);
   QCOMPARE(l.data(QModelIndex(), Localizer::LocalizedLanguageNameRole),
            QVariant());
 }
@@ -242,6 +241,130 @@ void TestLocalizer::completeness() {
   for (const QString& key : output.keys()) {
     QCOMPARE(list.value(key, -1), output.value(key));
   }
+}
+
+void TestLocalizer::fallback() {
+  SettingsHolder::instance()->setLanguageCode("es_MX");
+
+  Localizer l;
+
+  // We have 3 languages in this test.
+  QCOMPARE(l.languages(), QStringList() << "en"
+                                        << "es_CL"
+                                        << "es_ES"
+                                        << "es_MX");
+
+  // MX contains translations for "foo.1"
+  QCOMPARE(qtTrId("foo.1"), "hello world 1 es_MX");
+
+  // MX does not have "foo.2", fallback CL
+  QCOMPARE(qtTrId("foo.2"), "hello world 2 es_CL");
+
+  // MX and CL do not have "foo.3", fallback ES
+  QCOMPARE(qtTrId("foo.3"), "hello world 3 es_ES");
+
+  // No translations for "foo.4", fallback English
+  QCOMPARE(qtTrId("foo.4"), "Hello world 4 - fallback");
+}
+
+void TestLocalizer::formattedDate_data() {
+  QTest::addColumn<QString>("languageCode");
+  QTest::addColumn<QDateTime>("now");
+  QTest::addColumn<QDateTime>("date");
+  QTest::addColumn<QString>("result");
+  QTest::addColumn<qint64>("timer");
+
+  QTest::addRow("en - future")
+      << "en" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(11, 0), QTimeZone(0)) << "10:00 AM"
+      << (qint64)(14 * 3600);
+  QTest::addRow("es_ES - future")
+      << "es_ES" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(11, 0), QTimeZone(0)) << "10:00"
+      << (qint64)(14 * 3600);
+
+  QTest::addRow("en - same")
+      << "en" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0)) << "10:00 AM"
+      << (qint64)(14 * 3600);
+  QTest::addRow("es_ES - same")
+      << "es_ES" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0)) << "10:00"
+      << (qint64)(14 * 3600);
+
+  QTest::addRow("en - one hour ago")
+      << "en" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(9, 0), QTimeZone(0)) << "9:00 AM"
+      << (qint64)(15 * 3600);
+  QTest::addRow("es_ES - one hour ago")
+      << "es_ES" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(9, 0), QTimeZone(0)) << "9:00"
+      << (qint64)(15 * 3600);
+
+  QTest::addRow("en - midnight")
+      << "en" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(0, 0), QTimeZone(0)) << "12:00 AM"
+      << (qint64)(24 * 3600);
+  QTest::addRow("es_ES - midnight")
+      << "es_ES" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(0, 0), QTimeZone(0)) << "0:00"
+      << (qint64)(24 * 3600);
+
+  QTest::addRow("en - yesterday but less than 24 hours")
+      << "en" << QDateTime(QDate(2000, 1, 2), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(21, 0), QTimeZone(0)) << "Yesterday"
+      << (qint64)(3 * 3600);
+
+  QTest::addRow("en - yesterday more than 24 hours")
+      << "en" << QDateTime(QDate(2000, 1, 2), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 1), QTime(9, 0), QTimeZone(0)) << "Yesterday"
+      << (qint64)-1;
+
+  QTest::addRow("en - 2 days ago")
+      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 8), QTime(10, 0), QTimeZone(0)) << "Saturday"
+      << (qint64)-1;
+
+  QTest::addRow("en - 3 days ago")
+      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 7), QTime(10, 0), QTimeZone(0)) << "Friday"
+      << (qint64)-1;
+
+  QTest::addRow("en - 4 days ago")
+      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 6), QTime(10, 0), QTimeZone(0)) << "Thursday"
+      << (qint64)-1;
+
+  QTest::addRow("en - 5 days ago")
+      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 5), QTime(10, 0), QTimeZone(0)) << "Wednesday"
+      << (qint64)-1;
+
+  QTest::addRow("en - 6 days ago")
+      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 4), QTime(10, 0), QTimeZone(0)) << "Tuesday"
+      << (qint64)-1;
+
+  QTest::addRow("en - 7 days ago")
+      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
+      << QDateTime(QDate(2000, 1, 3), QTime(10, 0), QTimeZone(0)) << "1/3/00"
+      << (qint64)-1;
+}
+
+void TestLocalizer::formattedDate() {
+  Localizer l;
+
+  QFETCH(QString, languageCode);
+  SettingsHolder::instance()->setLanguageCode(languageCode);
+
+  QFETCH(QDateTime, now);
+  QVERIFY(now.isValid());
+
+  QFETCH(QDateTime, date);
+  QVERIFY(date.isValid());
+
+  QFETCH(QString, result);
+  QCOMPARE(Localizer::instance()->formatDate(now, date, "Yesterday"), result);
 }
 
 static TestLocalizer s_testLocalizer;

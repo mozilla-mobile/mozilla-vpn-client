@@ -10,14 +10,15 @@
 #include <QTranslator>
 
 #include "settingsholder.h"
+#include "state/addonstate.h"
 
 class AddonConditionWatcher;
 class QJsonObject;
 
 class AddonApi;
 constexpr const char* ADDON_SETTINGS_GROUP = "addon";
-constexpr const char* ADDON_DEFAULT_STATE = "Unknown";
-constexpr const char* ADDON_SETTINGS_STATE_KEY = "state";
+constexpr const char* ADDON_DEFAULT_STATUS = "Unknown";
+constexpr const char* ADDON_SETTINGS_STATUS_KEY = "state";
 
 class Addon : public QObject {
   Q_OBJECT
@@ -26,10 +27,11 @@ class Addon : public QObject {
   Q_PROPERTY(QString id READ id CONSTANT)
   Q_PROPERTY(QString name MEMBER m_name CONSTANT)
   Q_PROPERTY(QString type READ type CONSTANT)
+  Q_PROPERTY(AddonState* state READ state CONSTANT)
 
  public:
-  enum State {
-    // Initial state. This should be used only during the loading.
+  enum Status {
+    // Initial status. This should be used only during the loading.
     Unknown,
 
     // The add-on has just been installed. This is the first time the device
@@ -42,7 +44,7 @@ class Addon : public QObject {
     // The add-on is disabled.
     Disabled,
   };
-  Q_ENUM(State);
+  Q_ENUM(Status);
 
   static Addon* create(QObject* parent, const QString& manifestFileName);
 
@@ -56,6 +58,10 @@ class Addon : public QObject {
   const QString& id() const { return m_id; }
   const QString& type() const { return m_type; }
   const QString& manifestFileName() const { return m_manifestFileName; }
+  AddonState* state() const {
+    Q_ASSERT(m_state);
+    return m_state;
+  }
 
   virtual void retranslate();
 
@@ -75,16 +81,16 @@ class Addon : public QObject {
         const QString& name, const QString& type);
 
  private:
-  void updateAddonState(State newState);
+  void updateAddonStatus(Status newStatus);
 
   bool evaluateJavascript(const QJsonObject& javascript);
   bool evaluateJavascriptInternal(const QString& javascript, QJSValue* value);
 
-  struct StateQuery final : public SettingsHolder::AddonSettingQuery {
-    explicit StateQuery(const QString& ai)
+  struct StatusQuery final : public SettingsHolder::AddonSettingQuery {
+    explicit StatusQuery(const QString& ai)
         : SettingsHolder::AddonSettingQuery(ai, QString(ADDON_SETTINGS_GROUP),
-                                            QString(ADDON_SETTINGS_STATE_KEY),
-                                            QString(ADDON_DEFAULT_STATE)) {}
+                                            QString(ADDON_SETTINGS_STATUS_KEY),
+                                            QString(ADDON_DEFAULT_STATUS)) {}
   };
 
  private:
@@ -95,10 +101,12 @@ class Addon : public QObject {
 
   QTranslator m_translator;
 
+  AddonState* m_state = nullptr;
+
   AddonApi* m_api = nullptr;
   AddonConditionWatcher* m_conditionWatcher = nullptr;
 
-  State m_state = Unknown;
+  Status m_status = Unknown;
 
   QJSValue m_jsEnableFunction;
   QJSValue m_jsDisableFunction;

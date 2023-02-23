@@ -170,9 +170,23 @@ void MacOSStatusIcon::setToolTip(const QString& tooltip) {
 void MacOSStatusIcon::showMessage(const QString& title, const QString& message) {
   logger.debug() << "Show message";
 
+  UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
+
+  // This is a no-op is authorization has been granted.
+  [center requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert |
+                                           UNAuthorizationOptionBadge)
+                        completionHandler:^(BOOL granted, NSError* _Nullable error) {
+                          if (error) {
+                            // Note: This error may happen if the application is not signed.
+                            NSLog(@"Error asking for permission to send notifications %@", error);
+                            return;
+                          }
+                        }];
+
   UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
-  content.title = title.toNSString();
-  content.body = message.toNSString();
+
+  content.title = [title.toNSString() autorelease];
+  content.body = [message.toNSString() autorelease];
   content.sound = [UNNotificationSound defaultSound];
 
   UNTimeIntervalNotificationTrigger* trigger =
@@ -182,12 +196,10 @@ void MacOSStatusIcon::showMessage(const QString& title, const QString& message) 
                                                                         content:content
                                                                         trigger:trigger];
 
-  UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
-
   [center addNotificationRequest:request
            withCompletionHandler:^(NSError* _Nullable error) {
              if (error) {
-               NSLog(@"Local Notification failed");
+               logger.error() << "Local Notification failed" << error;
              }
            }];
 }

@@ -180,20 +180,15 @@ VPNViewBase {
                         ipInput.text = VPNSettings.userDNS;
                     }
 
-                    onTextChanged: text => {
-                        if (ipInput.text === "") {
-                            // If nothing is entered, thats valid too. We will ignore the value later.
-                            ipInput.valueInvalid = false;
+                    onEditingFinished: {
+                        if (ipInput.text === "" || VPN.validateUserDNS(ipInput.text)) {
                             VPNSettings.userDNS = ipInput.text
-                            return;
                         }
-                        if (VPN.validateUserDNS(ipInput.text)) {
-                            ipInput.valueInvalid = false;
-                            VPNSettings.userDNS = ipInput.text
-                        } else {
-                            ipInput.error = VPNI18n.SettingsDnsSettingsCustomDNSError
-                            ipInput.valueInvalid = true;
-                        }
+                    }
+
+                    onTextChanged: {
+                        ipInput.valueInvalid = ipInput.text !== "" && !VPN.validateUserDNS(ipInput.text);
+                        ipInput.error = VPNI18n.SettingsDnsSettingsCustomDNSError
                     }
                 }
 
@@ -209,7 +204,7 @@ VPNViewBase {
                     }
                     Layout.topMargin: VPNTheme.theme.listSpacing
 
-                    visible: ipInput.valueInvalid && ipInput.visible
+                    visible: ipInput.valueInvalid && ipInput.visible && VPNSettings.dnsProviderFlags === VPNSettings.Custom
 
                     messages: [
                         {
@@ -221,6 +216,14 @@ VPNViewBase {
                 }
             }
         }
+    }
+
+    onVisibleChanged: {
+      if (!visible) {
+        if (VPNSettings.userDNS === "" && VPNSettings.dnsProviderFlags === VPNSettings.Custom) {
+          VPNSettings.dnsProviderFlags = VPNSettings.Gateway;
+        }
+      }
     }
 
     Loader {
@@ -240,6 +243,7 @@ VPNViewBase {
                 VPNButton {
                     objectName: "dnsOverwritePopupDiscoverNowButton"
                     text: VPNI18n.DnsOverwriteDialogPrimaryButton
+                    Layout.fillWidth: true
                     onClicked: {
                         VPNSettings.dnsProviderFlags = VPNSettings.Custom;
                         dnsOverwritePopup.close()
@@ -249,6 +253,7 @@ VPNViewBase {
                     objectName: "dnsOverwritePopupGoBackButton"
                     labelText: VPNI18n.DnsOverwriteDialogSecondaryButton
                     onClicked: dnsOverwritePopup.close()
+                    Layout.alignment: Qt.AlignHCenter
                 }
             ]
 

@@ -26,6 +26,39 @@
     "conditions": {
       "$ref": "conditions.json"
     },
+    "state": {
+      "type": "object",
+      "description": "State properties related to the addon",
+      "properties": {
+        "session": {
+          "type": "object",
+          "description": "Session state is not synced across user devices and is not persisted throughout device sessions",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "enum": [
+                  "boolean",
+                  "string",
+                  "number"
+                ]
+              },
+              "default": {
+                "type": [
+                  "integer",
+                  "string",
+                  "boolean"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "default"
+            ]
+          }
+        }
+      }
+    },
     "tutorial": {
       "$ref": "tutorial.json#"
     },
@@ -39,6 +72,10 @@
       "$ref": "javascript.json#"
     }
   },
-  "required": [ "id", "name", "api_version", "type" ]
+  "required": [
+    "id",
+    "name",
+    "api_version",
+    "type"
+  ]
 }
-

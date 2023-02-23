@@ -72,6 +72,7 @@ Item {
             Layout.preferredWidth: 45
             checked: (!VPNSettings.protectSelectedApps)
             onClicked: handleClick()
+            accessibleName: label.text
         }
     }
 }

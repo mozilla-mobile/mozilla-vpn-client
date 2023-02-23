@@ -2163,4 +2163,84 @@ void TestModels::locationFromJson() {
   }
 }
 
+void TestModels::locationDistance_data() {
+  QTest::addColumn<QByteArray>("json");
+  QTest::addColumn<double>("latitude");
+  QTest::addColumn<double>("longitude");
+  QTest::addColumn<double>("result");
+
+  QJsonObject obj;
+  obj.insert("city", QJsonValue("Mordor"));
+  obj.insert("country", QJsonValue("XX"));
+  obj.insert("subdivision", QJsonValue("MTDOOM"));
+  obj.insert("ip", QJsonValue("169.254.0.1"));
+
+  // Check for error handling if the coordinates are missing.
+  QTest::newRow("Both invalid to zero distance")
+      << QJsonDocument(obj).toJson() << qQNaN() << qQNaN() << 0.0;
+
+  QTest::newRow("Model invalid to zero distance")
+      << QJsonDocument(obj).toJson() << 123.456 << 55.555 << 0.0;
+
+  obj.insert("lat_long", QJsonValue("123.456,55.555"));
+  QTest::newRow("Args invalid to zero distance")
+      << QJsonDocument(obj).toJson() << qQNaN() << qQNaN() << 0.0;
+
+  // Test vectors are generated from: http://edwilliams.org/gccalc.htm
+  // with coordinates scraped from google maps.
+  // distances are in km, and computed using a spherical earth model.
+  obj.insert("lat_long", QJsonValue("39.9033766,32.7627648"));
+  QTest::newRow("From Ankara to Izmir")
+      << QJsonDocument(obj).toJson() << 38.4178607 << 26.9396341 << 528.06;
+
+  obj.insert("lat_long", QJsonValue("43.1666908,131.8834184"));
+  QTest::newRow("From Vladivastok to Anchorage")
+      << QJsonDocument(obj).toJson() << 61.1083688 << -150.000681 << 5313.05;
+
+  obj.insert("lat_long", QJsonValue("1.3143269,103.5571562"));
+  QTest::newRow("From Singapore to Ecuador")
+      << QJsonDocument(obj).toJson() << -0.1862486 << -78.717632 << 19719.47;
+
+  obj.insert("lat_long", QJsonValue("-77.8400829,166.64453"));
+  QTest::newRow("From McMurdo Station to Bering Island")
+      << QJsonDocument(obj).toJson() << 55.0218511 << 165.9355717 << 14763.70;
+
+  obj.insert("lat_long", QJsonValue("90,0"));
+  QTest::newRow("From North to South poles")
+      << QJsonDocument(obj).toJson() << -90.0 << 123.456 << 20001.6;
+}
+
+void TestModels::locationDistance() {
+  QFETCH(QByteArray, json);
+  QFETCH(double, latitude);
+  QFETCH(double, longitude);
+  QFETCH(double, result);
+
+  // A word about the scale. The Location class computes distance in radians,
+  // but the earth isn't actually round, it's squashed a little bit. This figure
+  // here converts radians into kilometers using a spherical earth model with
+  // 1 degree minute equal to 1 nautical mile.
+  constexpr double scale = (1.852 * 360.0 * 60.0) / (M_PI * 2.0);
+  constexpr double epsilon = 0.1;  // Maximum tolerated floating point error.
+  double distance;
+  Location location;
+  QVERIFY(location.fromJson(json));
+
+  // Check that we get the expected distance.
+  distance = location.distance(latitude, longitude) * scale;
+  QVERIFY(qFabs<double>(distance - result) < epsilon);
+
+  // Check that we get the same result when called between two QObjects
+  // with latitude/longitude coordinates.
+  QObject obj;
+  obj.setProperty("latitude", QVariant(latitude));
+  obj.setProperty("longitude", QVariant(longitude));
+  distance = Location::distance(&location, &obj) * scale;
+  QVERIFY(qFabs<double>(distance - result) < epsilon);
+
+  // And the same result again if we transpose the arguments.
+  distance = Location::distance(&obj, &location) * scale;
+  QVERIFY(qFabs<double>(distance - result) < epsilon);
+}
+
 static TestModels s_testModels;

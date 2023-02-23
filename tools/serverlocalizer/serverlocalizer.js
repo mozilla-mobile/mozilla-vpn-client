@@ -259,8 +259,6 @@ const ServerLocalizer = {
       const langCode = lang.countryName['xml:lang'];
       const value = lang.countryName['value'];
 
-      if (value === server.name) continue;
-
       if (this.languages.has(langCode)) {
         translations[this.languages.get(langCode)] = value;
       }

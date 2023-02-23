@@ -15,10 +15,7 @@ can be used to run tests locally or via the CI.
 
 # Linux-specific scripts
 
-- ./linux/ppa_script.sh - upload Ubuntu packages to the PPA
 - ./linux/script.sh - compile the client and upload it to the PPA
-
-TODO: unify build.sh and script.sh (or remove build.sh)
 
 # MacOS-specific scripts
 

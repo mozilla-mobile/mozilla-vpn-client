@@ -4,7 +4,7 @@
   "name": "Guide: Multi-Account Containers",
   "type": "guide",
   "conditions": {
-    "platforms": ["windows", "macos", "linux"]
+    "min_client_version": "2.15.0"
   },
   "guide": {
     "id": "guide_multi_account_containers",
@@ -13,9 +13,9 @@
     "image": "qrc:/addons/guide_12_multi_account_containers/image.svg",
     "blocks": [
       {
-        "id": "c_2",
+        "id": "c_5",
         "type": "text",
-        "content": "If you use the Multi-Account Containers add-on in Firefox, try adding Mozilla VPN to your unique containers. You can even set different server locations for your unique containers."
+        "content": "If you use the Multi-Account Containers add-on in Firefox on desktop, try adding Mozilla VPN to your unique containers. You can even set different server locations for your unique containers."
       },
       {
         "id": "c_3",
@@ -23,9 +23,9 @@
         "content": "Don’t use Multi-Account Containers? It’s a Firefox add-on that allows you to isolate your browsing for specific types of activities. For example, you can keep your online shopping data separate from your online banking data."
       },
       {
-        "id": "c_4",
+        "id": "c_6",
         "type": "text",
-        "content": "With Mozilla VPN, you can set your news container to always route through a server location in your home country, making it even easier to protect your data while traveling."
+        "content": "With Mozilla VPN, you can set your banking container to always route through a server location in your home country, making it even easier to protect your data and avoid fraud alerts while traveling."
       },
       { "id": "b",
         "type": "button",

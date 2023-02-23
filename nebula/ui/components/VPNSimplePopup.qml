@@ -61,7 +61,6 @@ VPNPopup {
 
             Component.onCompleted: {
                 for(var i = 0 ; i < buttons.length; i++) {
-                    buttons[i].Layout.fillWidth = true
                     if(i > 0) buttons[i].Layout.topMargin = VPNTheme.theme.vSpacingSmall
                 }
             }

@@ -7,15 +7,15 @@ import QtQuick 2.5
 import Mozilla.VPN 1.0
 
 VPNIcon {
-    property int score: VPNServerCountryModel.NoData
+    property int score: VPNServerLatency.NoData
 
     id: latencyIndicator
 
     states: [
         // Low latency
         State {
-            when: (score === VPNServerCountryModel.Good ||
-                score == VPNServerCountryModel.Excellent)
+            when: (score === VPNServerLatency.Good ||
+                score === VPNServerLatency.Excellent)
             PropertyChanges {
                 target: latencyIndicator
                 source: "qrc:/nebula/resources/server-latency-strong.svg"
@@ -24,8 +24,16 @@ VPNIcon {
         },
         // Moderate latency
         State {
-            when: (score === VPNServerCountryModel.Moderate ||
-                score === VPNServerCountryModel.Poor)
+            when: (score === VPNServerLatency.Moderate)
+            PropertyChanges {
+                target: latencyIndicator
+                source: "qrc:/nebula/resources/server-latency-moderate.svg"
+                visible: true
+            }
+        },
+        // High latency
+        State {
+            when: (score === VPNServerLatency.Poor)
             PropertyChanges {
                 target: latencyIndicator
                 source: "qrc:/nebula/resources/server-latency-weak.svg"
@@ -34,7 +42,7 @@ VPNIcon {
         },
         // Very high latency or server unavailable
         State {
-            when: score === VPNServerCountryModel.Unavailable
+            when: score === VPNServerLatency.Unavailable
             PropertyChanges {
                 target: latencyIndicator
                 source: "qrc:/nebula/resources/server-latency-unavailable.svg"
@@ -43,7 +51,7 @@ VPNIcon {
         },
         // No data
         State {
-            when: score === VPNServerCountryModel.NoData
+            when: score === VPNServerLatency.NoData
             PropertyChanges {
                 target: latencyIndicator
                 source: ""

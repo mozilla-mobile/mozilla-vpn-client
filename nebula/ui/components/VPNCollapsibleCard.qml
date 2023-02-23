@@ -102,6 +102,9 @@ Rectangle {
             VPNIcon {
                 id: icon
 
+                Layout.topMargin: VPNTheme.theme.listSpacing
+                Layout.alignment: Qt.AlignTop
+
                 source: iconSrc
                 visible: iconSrc !== ""
             }
@@ -161,7 +164,7 @@ Rectangle {
         Column {
             id: column
 
-            Layout.fillWidth: true
+            Layout.preferredWidth: accordionTitle.width
             Layout.leftMargin: icon.width + VPNTheme.theme.listSpacing * 4
             Layout.rightMargin: VPNTheme.theme.listSpacing
 
