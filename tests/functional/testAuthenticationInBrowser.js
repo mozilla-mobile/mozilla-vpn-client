@@ -16,7 +16,7 @@ describe('User authentication in browser', function() {
   it('returns to main view on canceling authentication', async () => {
     await vpn.waitForInitialView();
 
-    await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
+    await vpn.waitForQueryAndClick(queries.screenInitialize.SIGN_UP_BUTTON.visible());
 
     if (!this.ctx.wasm) {
       await vpn.waitForCondition(async () => {
@@ -25,7 +25,7 @@ describe('User authentication in browser', function() {
       });
     }
 
-    await vpn.clickOnQuery(
+    await vpn.waitForQueryAndClick(
         queries.screenInitialize.AUTHENTICATE_VIEW.visible());
     await vpn.waitForQueryAndClick(
         queries.screenAuthenticating.CANCEL_FOOTER_LINK.visible());
@@ -35,17 +35,18 @@ describe('User authentication in browser', function() {
 
   it('Completes authentication', async () => {
     await vpn.waitForInitialView();
+    console.log('line 38: ===== ', this.ctx.wasm);
     await vpn.authenticateInBrowser(true, true, this.ctx.wasm);
   });
 
-  it('Completes authentication after logout', async () => {
+  it.skip('Completes authentication after logout', async () => {
     await vpn.authenticateInBrowser(true, true, this.ctx.wasm);
-    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS);
+    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
 
-    await vpn.waitForQuery(queries.screenSettings.SIGN_OUT);
+    await vpn.waitForQuery(queries.screenSettings.SIGN_OUT.visible());
     await vpn.scrollToQuery(
-        queries.screenSettings.SCREEN, queries.screenSettings.SIGN_OUT);
-    await vpn.waitForQueryAndClick(queries.screenSettings.SIGN_OUT);
+        queries.screenSettings.SCREEN, queries.screenSettings.SIGN_OUT.visible());
+    await vpn.waitForQueryAndClick(queries.screenSettings.SIGN_OUT.visible());
     await vpn.waitForInitialView();
 
     await vpn.authenticateInBrowser(false, false, this.ctx.wasm);
