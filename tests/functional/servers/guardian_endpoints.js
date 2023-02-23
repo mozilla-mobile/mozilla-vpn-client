@@ -63,6 +63,7 @@ exports.validators = VALIDATORS;
 
 exports.endpoints = {
   GETs: {
+    '/': {status: 200, body: {}},
     '/api/v1/vpn/featurelist': {status: 200, body: {features: {}}},
 
     '/api/v1/vpn/versions': {status: 200, body: {}},
