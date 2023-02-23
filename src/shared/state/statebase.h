@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef ADDONSTATEBASE_H
-#define ADDONSTATEBASE_H
+#ifndef STATEBASE_H
+#define STATEBASE_H
 
 #include <QHash>
 #include <QJsonValue>
@@ -12,7 +12,9 @@
 typedef QHash<QString, QJsonValue> StateHash;
 
 /**
- * @brief Abstract base class describing the state of an addon.
+ * @brief Abstract base class describing the state of something.
+ *
+ * 1. When "something" is an addon:
  *
  * The state of an addon is a collection of properties that can change how the
  * addon is presented or how it behaves.
@@ -23,23 +25,23 @@ typedef QHash<QString, QJsonValue> StateHash;
  * The values can be changed, but the kays are limited to whatever is defined in
  * the addon manifest. The type of the value cannot be changed.
  */
-class AddonStateBase {
+class StateBase {
   Q_GADGET
 
  public:
-  virtual ~AddonStateBase() = default;
+  virtual ~StateBase() = default;
 
   /**
    * @brief Get the value for a given key in the state.
    *
-   * If key was not defined in the manifest,
+   * If key was not defined in the initial state,
    * QJsonValue::Undefined will be returned.
    *
    * If the key has never been written to, the default value will be
    * returned.
    *
    * @return QJsonValue The stored value for the given key. A nullptr is
-   * returned if the key is invalid i.e. not provided on the manifest on
+   * returned if the key is invalid i.e. not provided on the initial state on
    * init.
    */
   Q_INVOKABLE QJsonValue get(const QString& key) const;
@@ -47,9 +49,9 @@ class AddonStateBase {
   /**
    * @brief Sets the value for a given key in the addon state.
    *
-   * If key was not defined in the manifest, operation will be ignored.
+   * If key was not defined in the initial state, operation will be ignored.
    *
-   * `value` must be of the type defined in the manifest,
+   * `value` must be of the type defined in the initial state,
    * otherwise it will be ignored.
    *
    * @param key The key to set.
@@ -60,7 +62,7 @@ class AddonStateBase {
   /**
    * @brief Clears stored values in the state.
    *
-   * If key was not defined in the manifest, operation will be ignored.
+   * If key was not defined in the initial state, operation will be ignored.
    *
    * If the key has never been written to, this is a no-op.
    *
@@ -69,8 +71,8 @@ class AddonStateBase {
   Q_INVOKABLE void clear(const QString& key = "");
 
  protected:
-  AddonStateBase(const QJsonObject& spec);
-  AddonStateBase(const StateHash& spec) : m_defaults(spec) {}
+  StateBase(const QJsonObject& spec);
+  StateBase(const StateHash& spec) : m_defaults(spec) {}
   StateHash m_defaults;
 
   // Methods to override.
@@ -80,7 +82,7 @@ class AddonStateBase {
 
  private:
   static QJsonValue::Type typeToQJsonValueType(QString type);
-  static StateHash parseManifest(const QJsonObject& manifest);
+  static StateHash parseAddonManifest(const QJsonObject& initialState);
 };
 
-#endif  // ADDONSTATEBASE_H
+#endif  // STATEBASE_H

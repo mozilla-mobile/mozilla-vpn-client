@@ -2,18 +2,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "addonstatebase.h"
+#include "statebase.h"
 
 #include <QJsonObject>
 
 #include "logger.h"
 
 namespace {
-Logger logger("AddonStateBase");
+Logger logger("StateBase");
 }
 
 // static
-QJsonValue::Type AddonStateBase::typeToQJsonValueType(QString type) {
+QJsonValue::Type StateBase::typeToQJsonValueType(QString type) {
   if (type == "boolean") {
     return QJsonValue::Bool;
   }
@@ -30,21 +30,21 @@ QJsonValue::Type AddonStateBase::typeToQJsonValueType(QString type) {
 }
 
 // static
-StateHash AddonStateBase::parseManifest(const QJsonObject& manifest) {
+StateHash StateBase::parseAddonManifest(const QJsonObject& initialState) {
   StateHash spec;
 
-  foreach (const QString& key, manifest.keys()) {
-    QJsonValue value = manifest.value(key);
+  foreach (const QString& key, initialState.keys()) {
+    QJsonValue value = initialState.value(key);
 
     if (!value.isObject()) {
-      logger.error() << "Addon state value for key" << key
+      logger.error() << "State value for key" << key
                      << "is incorrectly formatted. Ignoring.";
       continue;
     }
 
     QJsonValue type = value["type"];
     if (!type.isString()) {
-      logger.error() << "Addon state value for key" << key
+      logger.error() << "State value for key" << key
                      << "has is incorrect 'type' property. Ignoring.";
       continue;
     }
@@ -52,13 +52,13 @@ StateHash AddonStateBase::parseManifest(const QJsonObject& manifest) {
     QJsonValue::Type expectedType = typeToQJsonValueType(type.toString());
     if (expectedType == QJsonValue::Undefined) {
       logger.error() << "Unkown type" << type.toString()
-                     << "provided for addon state property.";
+                     << "provided for state property.";
       continue;
     }
 
     QJsonValue def = value["default"];
     if (def.type() != expectedType) {
-      logger.error() << "Addon state default value for key" << key
+      logger.error() << "State default value for key" << key
                      << "has incorrectly typed 'default' property. Ignoring.";
       continue;
     }
@@ -69,14 +69,13 @@ StateHash AddonStateBase::parseManifest(const QJsonObject& manifest) {
   return spec;
 }
 
-AddonStateBase::AddonStateBase(const QJsonObject& spec)
-    : m_defaults(AddonStateBase::parseManifest(spec)) {}
+StateBase::StateBase(const QJsonObject& spec)
+    : m_defaults(StateBase::parseAddonManifest(spec)) {}
 
-QJsonValue AddonStateBase::get(const QString& key) const {
+QJsonValue StateBase::get(const QString& key) const {
   if (!m_defaults.contains(key)) {
-    logger.error()
-        << "Attempted to get key" << key
-        << "from addon state, but that key is invalid for this state. ";
+    logger.error() << "Attempted to get key" << key
+                   << "from state, but that key is invalid for this property. ";
     return QJsonValue();
   }
 
@@ -86,16 +85,16 @@ QJsonValue AddonStateBase::get(const QString& key) const {
   return m_defaults[key];
 }
 
-void AddonStateBase::set(const QString& key, QJsonValue value) {
+void StateBase::set(const QString& key, QJsonValue value) {
   if (!m_defaults.contains(key)) {
     logger.error() << "Attempted to set key" << key
-                   << "to addon state, but that key is invalid for this state. "
+                   << "to state, but that key is invalid for this property. "
                       "Ignoring.";
     return;
   }
 
   if (value.type() != m_defaults[key].type()) {
-    logger.error() << "Attempted to set state" << key
+    logger.error() << "Attempted to set property" << key
                    << "to value of incorrect type. Ignoring.";
     return;
   }
@@ -103,17 +102,16 @@ void AddonStateBase::set(const QString& key, QJsonValue value) {
   setInternal(key, value);
 }
 
-void AddonStateBase::clear(const QString& key) {
+void StateBase::clear(const QString& key) {
   if (key.isEmpty()) {
     clearInternal();
     return;
   }
 
   if (!m_defaults.contains(key)) {
-    logger.error()
-        << "Attempted to clear key" << key
-        << "from addon state, but that key is invalid for this state. "
-           "Ignoring.";
+    logger.error() << "Attempted to clear key" << key
+                   << "from state, but that key is invalid for this state. "
+                      "Ignoring.";
     return;
   }
 

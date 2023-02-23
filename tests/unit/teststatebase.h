@@ -4,12 +4,12 @@
 
 #include "helper.h"
 
-class TestAddonStateBase final : public TestHelper {
+class TestStateBase final : public TestHelper {
   Q_OBJECT
 
  private slots:
-  void testParseManifest_data();
-  void testParseManifest();
+  void testParseAddonManifest_data();
+  void testParseAddonManifest();
   void testGet_data();
   void testGet();
   void testSet_data();

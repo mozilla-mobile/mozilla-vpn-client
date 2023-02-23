@@ -33,7 +33,7 @@
 #include "logger.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
-#include "state/addonsessionstate.h"
+#include "state/sessionstate.h"
 #include "telemetry/gleansample.h"
 #include "versionutils.h"
 
@@ -383,7 +383,7 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
     return nullptr;
   }
 
-  addon->m_state = new AddonState(addon, obj["state"].toObject());
+  addon->m_state = new State(addon, obj["state"].toObject());
 
   QJsonObject javascript = obj["javascript"].toObject();
   if (!addon->evaluateJavascript(javascript)) {

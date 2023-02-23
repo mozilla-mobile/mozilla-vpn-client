@@ -4,7 +4,7 @@
 
 #include "helper.h"
 
-class TestAddonSessionState final : public TestHelper {
+class TestSessionState final : public TestHelper {
   Q_OBJECT
 
  private slots:

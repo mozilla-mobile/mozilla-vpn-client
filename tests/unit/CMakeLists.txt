@@ -163,11 +163,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/addons/manager/addonindex.h
     ${MZ_SOURCE_DIR}/shared/addons/manager/addonmanager.cpp
     ${MZ_SOURCE_DIR}/shared/addons/manager/addonmanager.h
-    ${MZ_SOURCE_DIR}/shared/addons/state/addonstate.h
-    ${MZ_SOURCE_DIR}/shared/addons/state/addonstatebase.cpp
-    ${MZ_SOURCE_DIR}/shared/addons/state/addonstatebase.h
-    ${MZ_SOURCE_DIR}/shared/addons/state/addonsessionstate.cpp
-    ${MZ_SOURCE_DIR}/shared/addons/state/addonsessionstate.h
     ${MZ_SOURCE_DIR}/shared/app.cpp
     ${MZ_SOURCE_DIR}/shared/app.h
     ${MZ_SOURCE_DIR}/shared/authenticationinapp/authenticationinapp.cpp
@@ -274,6 +269,11 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/simplenetworkmanager.h
     ${MZ_SOURCE_DIR}/shared/signature.cpp
     ${MZ_SOURCE_DIR}/shared/signature.h
+    ${MZ_SOURCE_DIR}/shared/state/state.h
+    ${MZ_SOURCE_DIR}/shared/state/statebase.cpp
+    ${MZ_SOURCE_DIR}/shared/state/statebase.h
+    ${MZ_SOURCE_DIR}/shared/state/sessionstate.cpp
+    ${MZ_SOURCE_DIR}/shared/state/sessionstate.h
     ${MZ_SOURCE_DIR}/shared/task.h
     ${MZ_SOURCE_DIR}/shared/taskscheduler.cpp
     ${MZ_SOURCE_DIR}/shared/taskscheduler.h

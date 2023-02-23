@@ -118,11 +118,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/addons/manager/addonindex.h
     ${MZ_SOURCE_DIR}/shared/addons/manager/addonmanager.cpp
     ${MZ_SOURCE_DIR}/shared/addons/manager/addonmanager.h
-    ${MZ_SOURCE_DIR}/shared/addons/state/addonstate.h
-    ${MZ_SOURCE_DIR}/shared/addons/state/addonstatebase.cpp
-    ${MZ_SOURCE_DIR}/shared/addons/state/addonstatebase.h
-    ${MZ_SOURCE_DIR}/shared/addons/state/addonsessionstate.cpp
-    ${MZ_SOURCE_DIR}/shared/addons/state/addonsessionstate.h
     ${MZ_SOURCE_DIR}/shared/app.cpp
     ${MZ_SOURCE_DIR}/shared/app.h
     ${MZ_SOURCE_DIR}/shared/authenticationinapp/authenticationinapp.cpp

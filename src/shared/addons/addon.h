@@ -10,7 +10,7 @@
 #include <QTranslator>
 
 #include "settingsholder.h"
-#include "state/addonstate.h"
+#include "state/state.h"
 
 class AddonConditionWatcher;
 class QJsonObject;
@@ -27,7 +27,7 @@ class Addon : public QObject {
   Q_PROPERTY(QString id READ id CONSTANT)
   Q_PROPERTY(QString name MEMBER m_name CONSTANT)
   Q_PROPERTY(QString type READ type CONSTANT)
-  Q_PROPERTY(AddonState* state READ state CONSTANT)
+  Q_PROPERTY(State* state READ state CONSTANT)
 
  public:
   enum Status {
@@ -58,7 +58,7 @@ class Addon : public QObject {
   const QString& id() const { return m_id; }
   const QString& type() const { return m_type; }
   const QString& manifestFileName() const { return m_manifestFileName; }
-  AddonState* state() const {
+  State* state() const {
     Q_ASSERT(m_state);
     return m_state;
   }
@@ -101,7 +101,7 @@ class Addon : public QObject {
 
   QTranslator m_translator;
 
-  AddonState* m_state = nullptr;
+  State* m_state = nullptr;
 
   AddonApi* m_api = nullptr;
   AddonConditionWatcher* m_conditionWatcher = nullptr;

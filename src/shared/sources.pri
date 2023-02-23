@@ -22,8 +22,6 @@ SOURCES += \
         $$PWD/addons/manager/addondirectory.cpp \
         $$PWD/addons/manager/addonindex.cpp \
         $$PWD/addons/manager/addonmanager.cpp \
-        $$PWD/addons/state/addonsessionstate.cpp \
-        $$PWD/addons/state/addonstatebase.cpp \
         $$PWD/app.cpp \
         $$PWD/authenticationlistener.cpp \
         $$PWD/authenticationinapp/authenticationinapp.cpp \
@@ -86,6 +84,8 @@ SOURCES += \
         $$PWD/settingsholder.cpp \
         $$PWD/signature.cpp \
         $$PWD/simplenetworkmanager.cpp \
+        $$PWD/state/sessionstate.cpp \
+        $$PWD/state/statebase.cpp \
         $$PWD/taskscheduler.cpp \
         $$PWD/tasks/addon/taskaddon.cpp \
         $$PWD/tasks/addonindex/taskaddonindex.cpp \
@@ -129,9 +129,6 @@ HEADERS += \
         $$PWD/addons/manager/addondirectory.h \
         $$PWD/addons/manager/addonindex.h \
         $$PWD/addons/manager/addonmanager.h \
-        $$PWD/addons/state/addonsessionstate.h \
-        $$PWD/addons/state/addonstatebase.h \
-        $$PWD/addons/state/addonstate.h \
         $$PWD/app.h \
         $$PWD/authenticationlistener.h \
         $$PWD/authenticationinapp/authenticationinapp.h \
@@ -190,6 +187,9 @@ HEADERS += \
         $$PWD/settingsholder.h \
         $$PWD/signature.h \
         $$PWD/simplenetworkmanager.h \
+        $$PWD/state/sessionstate.h \
+        $$PWD/state/statebase.h \
+        $$PWD/state/state.h \
         $$PWD/task.h \
         $$PWD/taskscheduler.h \
         $$PWD/tasks/addon/taskaddon.h \

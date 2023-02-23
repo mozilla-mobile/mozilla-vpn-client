@@ -2,21 +2,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef ADDONSESSIONSTATE_H
-#define ADDONSESSIONSTATE_H
+#ifndef SESSIONSTATE_H
+#define SESSIONSTATE_H
 
-#include "addonstatebase.h"
+#include "statebase.h"
 
 /**
- * @brief Addon State implementation,
+ * @brief Session State implementation,
  * in which state does not persist throughout restarts.
  */
-class AddonSessionState final : public AddonStateBase {
+class SessionState final : public StateBase {
  public:
-  ~AddonSessionState();
+  ~SessionState();
 
   /**
-   * @brief Construct an AddonSessionState object from the JSON object under the
+   * @brief Construct an SessionState object from the JSON object under the
    * `state` key of an Addon's manifest.
    *
    * The manifest should be in the following format:
@@ -30,13 +30,13 @@ class AddonSessionState final : public AddonStateBase {
    * }
    * ```
    *
-   * Invalid properties on the manifest will be ignored. In the worst case if
-   * the manifest is completely wrong an empty state will be generated.
+   * Invalid properties on the manifest will be ignored. In the worst case
+   * if the manifest is completely wrong an empty state will be generated.
    *
    * @param manifest The addon's manifest.
-   * @return AddonState the generated state.
+   * @return State the generated state.
    */
-  AddonSessionState(const QJsonObject& manifest);
+  SessionState(const QJsonObject& manifest);
 
  private:
   QJsonValue getInternal(const QString& key) const override;
@@ -45,4 +45,4 @@ class AddonSessionState final : public AddonStateBase {
   StateHash m_state;
 };
 
-#endif  // ADDONSESSIONSTATE_H
+#endif  // SESSIONSTATE_H

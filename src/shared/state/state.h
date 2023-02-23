@@ -2,13 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef ADDONSTATE_H
-#define ADDONSTATE_H
+#ifndef STATE_H
+#define STATE_H
 
 #include <QJsonObject>
 #include <QObject>
 
-#include "addonsessionstate.h"
+#include "sessionstate.h"
 
 /**
  * @brief Struct containing the different types of state an addon can hold.
@@ -19,13 +19,13 @@
  * sessions.
  *
  */
-struct AddonState : public QObject {
+struct State : public QObject {
   Q_OBJECT
-  Q_PROPERTY(AddonSessionState* session READ session)
+  Q_PROPERTY(SessionState* session READ session)
 
  public:
   /**
-   * @brief Construct a new Addon State object.
+   * @brief Construct a new State object.
    *
    * No validation is required here.
    *
@@ -34,17 +34,17 @@ struct AddonState : public QObject {
    * are allowed so that the state APIs will always be available. Attempts
    * to record to invalid keys will simply be no-ops.
    *
-   * @param manifest The JSON object in the "state" property of an addon
-   * manifest.
+   * @param initialState The JSON object in the "state" property of an addon
+   * initialState.
    */
-  AddonState(QObject* parent, const QJsonObject& manifest)
-      : QObject(parent), m_session(manifest["session"].toObject()) {}
-  ~AddonState() = default;
+  State(QObject* parent, const QJsonObject& initialState)
+      : QObject(parent), m_session(initialState["session"].toObject()) {}
+  ~State() = default;
 
-  AddonSessionState* session() { return &m_session; }
+  SessionState* session() { return &m_session; }
 
  private:
-  AddonSessionState m_session;
+  SessionState m_session;
 };
 
-#endif  // ADDONSTATE_H
+#endif  // STATE_H

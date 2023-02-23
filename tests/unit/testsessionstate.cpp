@@ -2,18 +2,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "testaddonsessionstate.h"
+#include "testsessionstate.h"
 
-#include "addons/state/addonsessionstate.h"
+#include "state/sessionstate.h"
 
-void TestAddonSessionState::testGetAndSet() {
+void TestSessionState::testGetAndSet() {
   QJsonObject numProp;
   numProp["type"] = "number";
   numProp["default"] = 10;
   QJsonObject manifest;
   manifest["numProp"] = numProp;
 
-  AddonSessionState state(manifest);
+  SessionState state(manifest);
 
   QCOMPARE(state.get("numProp"), 10);
 
@@ -21,14 +21,14 @@ void TestAddonSessionState::testGetAndSet() {
   QCOMPARE(state.get("numProp"), 11);
 }
 
-void TestAddonSessionState::testClear() {
+void TestSessionState::testClear() {
   QJsonObject numProp;
   numProp["type"] = "number";
   numProp["default"] = 10;
   QJsonObject manifest;
   manifest["numProp"] = numProp;
 
-  AddonSessionState state(manifest);
+  SessionState state(manifest);
 
   QCOMPARE(state.get("numProp"), 10);
 
@@ -44,7 +44,7 @@ void TestAddonSessionState::testClear() {
   QCOMPARE(state.get("numProp"), 10);
 }
 
-void TestAddonSessionState::testClearAll() {
+void TestSessionState::testClearAll() {
   QJsonObject prop1;
   prop1["type"] = "number";
   prop1["default"] = 10;
@@ -59,7 +59,7 @@ void TestAddonSessionState::testClearAll() {
   manifest["prop2"] = prop2;
   manifest["prop3"] = prop3;
 
-  AddonSessionState state(manifest);
+  SessionState state(manifest);
 
   QCOMPARE(state.get("prop1"), 10);
   QCOMPARE(state.get("prop2"), 11);
@@ -94,4 +94,4 @@ void TestAddonSessionState::testClearAll() {
   QCOMPARE(state.get("prop3"), 12);
 }
 
-static TestAddonSessionState s_testAddonSessionState;
+static TestSessionState s_testSessionState;

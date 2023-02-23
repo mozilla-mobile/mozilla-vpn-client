@@ -2,21 +2,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "testaddonstatebase.h"
+#include "teststatebase.h"
 
 #include <QHash>
 #include <QJsonObject>
 
-#include "addons/state/addonstatebase.h"
+#include "state/statebase.h"
 
 /**
  * @brief Empty state class that doesn't do anything other than server as a
  * testing class for the Base abstract class.
  */
-class StateSpy : public AddonStateBase {
+class StateSpy : public StateBase {
  public:
-  StateSpy(const QJsonObject& manifest) : AddonStateBase(manifest) {}
-  StateSpy(const StateHash& manifest) : AddonStateBase(manifest) {}
+  StateSpy(const QJsonObject& manifest) : StateBase(manifest) {}
+  StateSpy(const StateHash& manifest) : StateBase(manifest) {}
 
   StateHash defaults() { return m_defaults; }
 
@@ -38,7 +38,7 @@ class StateSpy : public AddonStateBase {
   }
 };
 
-void TestAddonStateBase::testParseManifest_data() {
+void TestStateBase::testParseAddonManifest_data() {
   QTest::addColumn<QJsonObject>("manifest");
   QTest::addColumn<StateHash>("hash");
 
@@ -221,7 +221,7 @@ void TestAddonStateBase::testParseManifest_data() {
   }
 }
 
-void TestAddonStateBase::testParseManifest() {
+void TestStateBase::testParseAddonManifest() {
   QFETCH(QJsonObject, manifest);
   QFETCH(StateHash, hash);
 
@@ -230,7 +230,7 @@ void TestAddonStateBase::testParseManifest() {
   QCOMPARE(expectedState.defaults(), actualState.defaults());
 }
 
-void TestAddonStateBase::testGet_data() {
+void TestStateBase::testGet_data() {
   QTest::addColumn<QString>("key");
   QTest::addColumn<StateHash>("defaults");
   QTest::addColumn<QJsonValue>("getInternalReturnValue");
@@ -270,7 +270,7 @@ void TestAddonStateBase::testGet_data() {
       << QJsonValue();
 }
 
-void TestAddonStateBase::testGet() {
+void TestStateBase::testGet() {
   QFETCH(QString, key);
   QFETCH(StateHash, defaults);
   QFETCH(QJsonValue, getInternalReturnValue);
@@ -282,7 +282,7 @@ void TestAddonStateBase::testGet() {
   QCOMPARE(state.get(key), expectedValue);
 }
 
-void TestAddonStateBase::testSet_data() {
+void TestStateBase::testSet_data() {
   QTest::addColumn<QString>("key");
   QTest::addColumn<QJsonValue>("value");
   QTest::addColumn<StateHash>("defaults");
@@ -320,7 +320,7 @@ void TestAddonStateBase::testSet_data() {
       << "strProp" << QJsonValue() << defaults << false;
 }
 
-void TestAddonStateBase::testSet() {
+void TestStateBase::testSet() {
   QFETCH(QString, key);
   QFETCH(QJsonValue, value);
   QFETCH(StateHash, defaults);
@@ -332,7 +332,7 @@ void TestAddonStateBase::testSet() {
   QCOMPARE(state.setInternalCalled, setInternalCalled);
 }
 
-void TestAddonStateBase::testClear_data() {
+void TestStateBase::testClear_data() {
   QTest::addColumn<QString>("key");
   QTest::addColumn<StateHash>("defaults");
   QTest::addColumn<bool>("clearInternalCalled");
@@ -353,7 +353,7 @@ void TestAddonStateBase::testClear_data() {
   QTest::addRow("invalid_key") << "invalid" << defaults << false;
 }
 
-void TestAddonStateBase::testClear() {
+void TestStateBase::testClear() {
   QFETCH(QString, key);
   QFETCH(StateHash, defaults);
   QFETCH(bool, clearInternalCalled);
@@ -364,4 +364,4 @@ void TestAddonStateBase::testClear() {
   QCOMPARE(state.clearInternalCalled, clearInternalCalled);
 }
 
-static TestAddonStateBase s_testAddonStateBase;
+static TestStateBase s_testStateBase;
