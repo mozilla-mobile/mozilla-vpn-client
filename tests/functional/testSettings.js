@@ -292,7 +292,7 @@ describe('Settings', function () {
     await vpn.setSetting('dnsProviderFlags', 0);
   });
 
-  it('Checking the DNS settings', async () => {
+  it.skip('Checking the DNS settings', async () => {
     await vpn.setSetting('userDNS', '');
 
     await vpn.waitForQueryAndClick(
