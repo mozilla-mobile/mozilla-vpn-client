@@ -29,6 +29,9 @@ constexpr const int SERVER_LATENCY_MAX_RETRIES = 2;
 // Delay the progressChanged() signal to rate-limit how often score changes.
 constexpr const uint32_t SERVER_LATENCY_PROGRESS_DELAY_MSEC = 500;
 
+// Minimum number of redundant servers we expect at a location.
+constexpr int SCORE_SERVER_REDUNDANCY_THRESHOLD = 3;
+
 namespace {
 Logger logger("ServerLatency");
 }
@@ -253,9 +256,7 @@ void ServerLatency::recvPing(quint16 sequence) {
 
     qint64 latency(now - record.timestamp);
     if (latency <= std::numeric_limits<uint>::max()) {
-      m_sumLatencyMsec -= m_latency[record.publicKey];
-      m_sumLatencyMsec += latency;
-      m_latency[record.publicKey] = latency;
+      setLatency(record.publicKey, latency);
 
       const ServerCity& city =
           scm->findCity(record.countryCode, record.cityName);
@@ -279,6 +280,12 @@ unsigned int ServerLatency::avgLatency() const {
     return 0;
   }
   return (m_sumLatencyMsec + m_latency.count() - 1) / m_latency.count();
+}
+
+void ServerLatency::setLatency(const QString& pubkey, qint64 msec) {
+  m_sumLatencyMsec -= m_latency[pubkey];
+  m_sumLatencyMsec += msec;
+  m_latency[pubkey] = msec;
 }
 
 double ServerLatency::progress() const {
@@ -305,4 +312,37 @@ void ServerLatency::setCooldown(const QString& publicKey, qint64 timeout) {
   if (city.initialized()) {
     emit city.scoreChanged();
   }
+}
+
+int ServerLatency::baseCityScore(const ServerCity* city,
+                                 const QString& originCountry) const {
+  qint64 now = QDateTime::currentSecsSinceEpoch();
+  int score = Poor;
+  int activeServerCount = 0;
+  for (const QString& pubkey : city->servers()) {
+    if (getCooldown(pubkey) <= now) {
+      activeServerCount++;
+    }
+  }
+
+  // Ensure there is at least one reachable server.
+  if (activeServerCount == 0) {
+    return Unavailable;
+  }
+
+  // Increase the score if the location has sufficient redundancy.
+  if (activeServerCount >= SCORE_SERVER_REDUNDANCY_THRESHOLD) {
+    score++;
+  }
+
+  // Increase the score for connections made within the same country.
+  if ((!originCountry.isEmpty()) &&
+      (originCountry.compare(city->country(), Qt::CaseInsensitive) == 0)) {
+    score++;
+  }
+
+  if (score > Excellent) {
+    score = Excellent;
+  }
+  return score;
 }
