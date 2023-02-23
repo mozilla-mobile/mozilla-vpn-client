@@ -364,6 +364,7 @@ module.exports = {
       console.log('post auth clicked');
       await this.wait(7000);
     }
+
     if (acceptTelemetry) {
       await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await this.waitForQuery(queries.screenTelemetry.BUTTON.visible());
