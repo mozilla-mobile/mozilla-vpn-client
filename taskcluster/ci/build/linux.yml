@@ -78,7 +78,7 @@ linux/flatpak:
     treeherder:
         platform: linux/flatpak
     worker:
-        docker-image: {in-tree: build}
+        docker-image: {in-tree: linux-build-jammy}
     run:
         using: run-task
         use-caches: true

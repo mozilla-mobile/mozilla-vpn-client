@@ -6,6 +6,10 @@
 
 set -e
 
+# Testing...  perhaps this is a bug?
+sudo apt-get update
+sudo apt-get install -y flatpak flatpak-builder
+
 # Install Dependencies
 mkdir fp-build-dir
 flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
