@@ -43,6 +43,8 @@ class Location final : public QObject {
 
   double distance(double latitude, double longitude) const;
 
+  static double distance(const QObject* a, const QObject* b);
+
   QHostAddress ipAddress() const { return m_ipAddress; }
 
  signals:

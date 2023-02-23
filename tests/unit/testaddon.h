@@ -35,15 +35,13 @@ class TestAddon final : public TestHelper {
 
   void message_create_data();
   void message_create();
-  void message_date_data();
-  void message_date();
   void message_notification_data();
   void message_notification();
-  void message_load_state_data();
-  void message_load_state();
+  void message_load_status_data();
+  void message_load_status();
   void message_dismiss();
 
-  void telemetry_state_change();
+  void telemetry_status_change();
 
  private:
   SettingsHolder* m_settingsHolder = nullptr;

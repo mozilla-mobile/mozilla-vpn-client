@@ -1,0 +1,52 @@
+{
+  "api_version": "0.1",
+  "id": "tutorial_04_split_tunneling3",
+  "name": "Tutorial: Split tunneling",
+  "conditions": {
+    "enabled_features": ["splitTunnel"],
+    "min_client_version": "2.15.0"
+  },
+  "type": "tutorial",
+  "tutorial": {
+    "id": "04_split_tunneling3",
+    "settings_rollback_needed": true,
+    "image": "qrc:/addons/tutorial_04_split_tunneling3/image.svg",
+    "title": "How to exclude apps from VPN protection",
+    "subtitle": "Follow this walkthrough to learn how to exclude apps from VPN.",
+    "completion_message": "You’ve learned how to exclude apps from VPN protection. Would you like to learn more tips and tricks?",
+    "steps": [
+      {
+        "id": "s1",
+        "query": "//navigationLayout/navButton-settings{visible=true}",
+        "tooltip": "Select settings",
+        "next": {
+          "op": "signal",
+          "query_emitter": "//navigationLayout/navButton-settings{visible=true}",
+          "signal": "clicked"
+        }
+      }, {
+        "id": "s2",
+        "query": "//appExclusionSettings{visible=true}",
+        "tooltip": "Select “App exclusions”",
+        "conditions": {
+          "javascript": "resetAppPermissions.js"
+        },
+        "next": {
+          "op": "signal",
+          "query_emitter": "//appExclusionSettings{visible=true}",
+          "signal": "clicked"
+        }
+      },{
+        "id": "s3",
+        "query": "//app-0/checkbox{visible=true}",
+        "tooltip": "Select an app to exclude it from VPN protection",
+        "next": {
+          "op": "signal",
+          "vpn_emitter": "settingsHolder",
+          "signal": "vpnDisabledAppsChanged"
+        }
+      }
+    ]
+  }
+}
+

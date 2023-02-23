@@ -89,6 +89,9 @@ bool Location::fromJson(const QByteArray& json) {
 // This is done in spherical coordinates, and will return a value in the range
 // of zero to pi. Multiply by the Earth's radius if you want meaningful units.
 double Location::distance(double latitude, double longitude) const {
+  if (qIsNaN(latitude) || qIsNaN(longitude)) {
+    return 0.0;
+  }
   if (qIsNaN(m_latitude) || qIsNaN(m_longitude)) {
     return 0.0;
   }
@@ -99,4 +102,31 @@ double Location::distance(double latitude, double longitude) const {
   double diffCos = qCos((longitude - m_longitude) * M_PI / 180.0);
 
   return qAcos(m_latSin * otherSin + m_latCos * otherCos * diffCos);
+}
+
+// The same algorithm as above, but static and accepts any QObject with
+// latitude and longitude properties.
+double Location::distance(const QObject* a, const QObject* b) {
+  bool aLatOkay = false;
+  bool aLongOkay = false;
+  bool bLatOkay = false;
+  bool bLongOkay = false;
+  double aLat = a->property("latitude").toDouble(&aLatOkay);
+  double aLong = a->property("longitude").toDouble(&aLongOkay);
+  double bLat = b->property("latitude").toDouble(&bLatOkay);
+  double bLong = b->property("longitude").toDouble(&bLongOkay);
+  if (!aLatOkay || !aLongOkay || !bLatOkay || !bLongOkay) {
+    return 0.0;
+  }
+  if (qIsNaN(aLat) || qIsNaN(aLong) || qIsNaN(bLat) || qIsNaN(bLong)) {
+    return 0.0;
+  }
+
+  double aSin = qSin(aLat * M_PI / 180.0);
+  double aCos = qCos(aLat * M_PI / 180.0);
+  double bSin = qSin(bLat * M_PI / 180.0);
+  double bCos = qCos(bLat * M_PI / 180.0);
+  double diffCos = qCos((aLong - bLong) * M_PI / 180.0);
+
+  return qAcos(aSin * bSin + aCos * bCos * diffCos);
 }

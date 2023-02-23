@@ -32,6 +32,7 @@
 #include "logger.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
+#include "state/addonsessionstate.h"
 #include "telemetry/gleansample.h"
 #include "versionutils.h"
 
@@ -381,6 +382,8 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
     return nullptr;
   }
 
+  addon->m_state = new AddonState(addon, obj["state"].toObject());
+
   QJsonObject javascript = obj["javascript"].toObject();
   if (!addon->evaluateJavascript(javascript)) {
     addon->deleteLater();
@@ -423,49 +426,49 @@ Addon::Addon(QObject* parent, const QString& manifestFileName,
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  QString stateSetting = settingsHolder->getAddonSetting(StateQuery(id));
-  QMetaEnum stateMetaEnum = QMetaEnum::fromType<State>();
+  QString statusSetting = settingsHolder->getAddonSetting(StatusQuery(id));
+  QMetaEnum statusMetaEnum = QMetaEnum::fromType<Status>();
 
-  bool isValidState = false;
-  int persistedState = stateMetaEnum.keyToValue(
-      stateSetting.toLocal8Bit().constData(), &isValidState);
+  bool isValidStatus = false;
+  int persistedStatus = statusMetaEnum.keyToValue(
+      statusSetting.toLocal8Bit().constData(), &isValidStatus);
 
-  if (isValidState) {
-    m_state = static_cast<State>(persistedState);
+  if (isValidStatus) {
+    m_status = static_cast<Status>(persistedStatus);
   }
 
-  if (m_state == Unknown) {
-    updateAddonState(Installed);
+  if (m_status == Unknown) {
+    updateAddonStatus(Installed);
   }
 }
 
 Addon::~Addon() { MZ_COUNT_DTOR(Addon); }
 
-void Addon::updateAddonState(State newState) {
-  Q_ASSERT(newState != Unknown);
+void Addon::updateAddonStatus(Status newStatus) {
+  Q_ASSERT(newStatus != Unknown);
 
-  if (m_state == newState) {
+  if (m_status == newStatus) {
     return;
   }
 
-  m_state = newState;
+  m_status = newStatus;
 
-  QMetaEnum stateMetaEnum = QMetaEnum::fromType<State>();
-  QString newStateSetting = stateMetaEnum.valueToKey(newState);
+  QMetaEnum statusMetaEnum = QMetaEnum::fromType<Status>();
+  QString newStatusSetting = statusMetaEnum.valueToKey(newStatus);
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  settingsHolder->setAddonSetting(StateQuery(id()), newStateSetting);
+  settingsHolder->setAddonSetting(StatusQuery(id()), newStatusSetting);
 
   mozilla::glean::sample::addon_state_changed.record(
       mozilla::glean::sample::AddonStateChangedExtra{
           ._addonId = m_id,
-          ._state = newStateSetting,
+          ._state = newStatusSetting,
       });
   emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
       GleanSample::addonStateChanged,
-      {{"addon_id", m_id}, {"state", newStateSetting}});
+      {{"addon_id", m_id}, {"state", newStatusSetting}});
 }
 
 void Addon::retranslate() {
@@ -560,7 +563,7 @@ void Addon::enable() {
     }
   }
 
-  updateAddonState(State::Enabled);
+  updateAddonStatus(Status::Enabled);
   emit conditionChanged(true);
 }
 
@@ -581,7 +584,7 @@ void Addon::disable() {
     }
   }
 
-  updateAddonState(State::Disabled);
+  updateAddonStatus(Status::Disabled);
   emit conditionChanged(false);
 }
 

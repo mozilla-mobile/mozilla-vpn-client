@@ -121,9 +121,6 @@ print G "done."
 rm -rf .tmp/src/android-build || die "Failed to remove the temporary directory"
 mkdir -p .tmp || die "Failed to create the temporary directory"
 
-print Y "Importing translation files..."
-python3 scripts/utils/import_languages.py || die "Failed to import languages"
-
 print Y "Patch Adjust files..."
 ./scripts/android/patch_adjust.sh
 

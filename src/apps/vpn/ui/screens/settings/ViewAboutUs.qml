@@ -252,6 +252,7 @@ VPNViewBase {
             VPNButton {
                 id: popupBtn
                 text: VPNI18n.UpdateButtonActionOnUpdate
+                Layout.fillWidth: true
                 onClicked: {
                    if (updatePopup.updateAvailable) {
                        VPN.update()

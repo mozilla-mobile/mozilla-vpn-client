@@ -7,6 +7,7 @@
 #include "appconstants.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
 #include "networkrequest.h"
 
 #ifdef MZ_IOS
@@ -56,6 +57,7 @@ TaskPurchase::~TaskPurchase() { MZ_COUNT_DTOR(TaskPurchase); }
 
 void TaskPurchase::run() {
   NetworkRequest* request = new NetworkRequest(this, 200);
+  request->auth(MozillaVPN::authorizationHeader());
 
   switch (m_op) {
 #ifdef MZ_IOS

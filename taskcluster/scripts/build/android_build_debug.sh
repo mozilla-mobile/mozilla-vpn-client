@@ -5,12 +5,8 @@
 set -e
 
 # This script is used in the Android Debug (universal) build task
-git submodule init
-git submodule update
-# glean
-./scripts/utils/generate_glean.py
-# translations
-./scripts/utils/import_languages.py
+git submodule update --init --depth 1
+git submodule update --remote i18n
 
 # $1 should be the qmake arch.
 # Note this is different from what aqt expects as arch:

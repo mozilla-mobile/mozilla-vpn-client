@@ -99,6 +99,9 @@ theme.swipeDelegateActionWidth = 56;
 theme.badgeHorizontalPadding = 8
 theme.badgeVerticalPadding = 3
 
+theme.checkBoxHeightWidth = 20;
+theme.checkmarkHeightWidth = 12;
+
 theme.darkFocusBorder = theme.fontColor;
 theme.lightFocusBorder = '#d5d3e0';
 
@@ -256,6 +259,8 @@ theme.greenAlert = {
   focusOutline: '#333FE1B0',
   focusBorder: '#1CC5A0',
 };
+
+theme.opacityDisabled = .5;
 
 theme.cornerRadius = 4;
 theme.focusBorderWidth = 2;

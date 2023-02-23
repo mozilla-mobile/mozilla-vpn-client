@@ -46,6 +46,7 @@ VPNViewBase {
                 Loader {
                     active: !VPNController.silentServerSwitchingSupported && VPNController.state !== VPNController.StateOff
                     Layout.fillWidth: true
+                    visible: active
                     sourceComponent: VPNTextBlock {
                         width: parent.width
                         text: VPNI18n.SettingsDnsSettingsDisconnectWarning
@@ -134,6 +135,7 @@ VPNViewBase {
                 VPNButton {
                     objectName: "privacyOverwritePopupDiscoverNowButton"
                     text: VPNI18n.DnsOverwriteDialogPrimaryButton
+                    Layout.fillWidth: true
                     onClicked: {
                         VPNSettings.dnsProviderFlags = privacyOverwriteLoader.dnsProviderValue;
                         privacyOverwritePopup.close()
@@ -142,6 +144,7 @@ VPNViewBase {
                 VPNLinkButton {
                     objectName: "privacyOverwritePopupGoBackButton"
                     labelText: VPNI18n.DnsOverwriteDialogSecondaryButton
+                    Layout.alignment: Qt.AlignHCenter
                     onClicked: privacyOverwritePopup.close()
                 }
             ]

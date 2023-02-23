@@ -90,6 +90,16 @@ serversView:
     comment: Label for the “recommended” servers tab
   searchPlaceholder: Search countries
   searchNoResultsLabel: No results. Try a different search
+  recommendedRefreshlLoadingLabel:
+    value: Checking (%1%)…
+    comment: Loading string while recommended servers are being calculated. Argument is the percentage of completion as an integer (i.e. 25)
+  recommendedRefreshLastUpdatedLabel:
+    value: "Last updated: %1."
+    comment: The time (or in extremely rare circumstances, the date, day of the week, or "yesterday") which the recommended servers list was last updated. Argument is the time or date/day
+  recommendedRefreshLastUpdatedDisabledLabel:
+    value: "Last updated: %1. To update this list please disconnect from the VPN."
+    comment: The time (or in extremely rare circumstances, the date, day of the week, or "yesterday") which the recommended servers list was last updated and instructions to re-enable the refresh button. Argument is the time or date/day
+  recommendedRefreshLastUpdatedLabelYesterday: yesterday
 
 languageView:
   searchPlaceholder:
@@ -132,9 +142,9 @@ splittunnel:
       - Success! You added “%1” to this list.
     comment:
       - Displayed in notification after the user added a missing app to the split-tunnel List; %1 is the name of the added application
-  infoText:
+  infoText2:
     value:
-      - For any questions about setting app permissions, we’ve provided some helpful tips on our website.
+      - For any questions about setting app exclusions, we’ve provided some helpful tips on our website.
     comment:
       - This displays as informational text below split tunneling settings. The link directs to a sumo article which will help certain users who are having network issues using this feature.
   infoLinkText: Learn more
@@ -315,6 +325,9 @@ settings:
   dnsSettingsWarning: These options may cause some websites to break or not display content correctly.
   dnsSettingsInputPlaceholder: Enter custom DNS
   dnsSettingsDisconnectWarning: Changing these settings will cause the VPN to disconnect and reconnect automatically.
+  appExclusionClearAllApps: 
+    value: Clear all
+    comment: Button label to clear all apps from the exclusions list
 
 dnsOverwriteDialog:
   titleDNS: Override DNS settings?

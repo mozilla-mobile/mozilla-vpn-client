@@ -15,10 +15,6 @@
 #include "networkrequest.h"
 #include "uploaddatagenerator.h"
 
-#if !defined(MZ_DUMMY) && !defined(MZ_ANDROID) && !defined(MZ_WASM)
-constexpr const char* MULLVAD_DEFAULT_DNS = "10.64.0.1";
-#endif
-
 namespace {
 Logger logger("BenchmarkTaskTransfer");
 }
@@ -54,7 +50,6 @@ void BenchmarkTaskTransfer::handleState(BenchmarkTask::State state) {
     createNetworkRequest();
 #else
     // Start DNS resolution
-    m_dnsLookup.setNameserver(QHostAddress(MULLVAD_DEFAULT_DNS));
     m_dnsLookup.lookup();
 #endif
 
@@ -195,6 +190,11 @@ void BenchmarkTaskTransfer::dnsLookupFinished() {
     emit finished(0, true);
     emit completed();
   });
+
+  if (m_dnsLookup.error() == QDnsLookup::OperationCancelledError) {
+    guard.dismiss();
+    return;
+  }
 
   if (m_dnsLookup.error() != QDnsLookup::NoError) {
     logger.error() << "DNS Lookup Failed:" << m_dnsLookup.errorString();

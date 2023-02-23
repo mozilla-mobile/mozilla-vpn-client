@@ -4,7 +4,7 @@
 
 
 import QtQuick 2.5
-import QtQuick.Controls 2.14
+import QtQuick.Controls
 import QtQuick.Layouts 1.14
 
 import Mozilla.VPN 1.0
@@ -14,91 +14,14 @@ import components 0.1
 
 ColumnLayout {
     id: appListContainer
-
-    property string header: ""
+    objectName: "appListContainer"
     property string searchBarPlaceholder: ""
 
-    spacing: VPNTheme.theme.windowMargin
-
-    // Ensure the inital presentation of the component is consistent with the
-    // "hidden" state. This prevents the transition from firing on the
-    // component load which appears as a "flicker".
-    opacity: 0
-    visible: false
-
-    states: [
-        State {
-            name: "visibleAndEnabled"
-            when: VPNSettings.protectSelectedApps
-            PropertyChanges {
-                target: appListContainer
-                opacity: 1
-                visible: true
-            }
-
-        },
-        State {
-            name: "hidden"
-            when: !VPNSettings.protectSelectedApps
-            PropertyChanges {
-                target: appListContainer
-                opacity: 0
-                visible: false
-            }
-        }
-    ]
-
-    transitions: [
-        Transition {
-            to: "hidden"
-            SequentialAnimation {
-                PropertyAnimation {
-                    target: appListContainer
-                    property: "opacity"
-                    to: 0
-                    duration: 150
-                }
-                PropertyAction {
-                    target: appListContainer
-                    property: "visible"
-                    value: false
-                }
-            }
-        },
-        Transition {
-            to: "visibleAndEnabled"
-            SequentialAnimation {
-                PropertyAction {
-                    target: appListContainer
-                    property: "visible"
-                    value: true
-                }
-                PropertyAnimation {
-                    target: appListContainer
-                    property: "opacity"
-                    from: 0
-                    to: 1
-                    duration: 150
-                }
-            }
-        }
-    ]
-
-    VPNBoldLabel {
-        id: label
-        text: header
-        Accessible.role: Accessible.Heading
-        color: VPNTheme.theme.fontColorDark
-        horizontalAlignment: Text.AlignLeft
-        verticalAlignment: Text.AlignVCenter
-        lineHeight: VPNTheme.theme.vSpacing
-        lineHeightMode: Text.FixedHeight
-        wrapMode: Text.WordWrap
-        Layout.fillWidth: true
-    }
+    spacing: VPNTheme.theme.vSpacing
 
     VPNSearchBar {
-        id: searchBar
+        property bool sorted: false;
+        id: searchBarWrapper
         _filterProxySource: VPNAppPermissions
         _filterProxyCallback: obj => {
              const filterValue = getSearchBarText();
@@ -106,63 +29,127 @@ ColumnLayout {
          }
         _searchBarHasError: applist.count === 0
         _searchBarPlaceholderText: searchBarPlaceholder
-
-        enabled: VPNSettings.protectSelectedApps
         Layout.fillWidth: true
     }
-
 
     ColumnLayout {
         id: col2
-        objectName: "appPermissionList"
+        objectName: "appExclusionsList"
 
-        spacing: VPNTheme.theme.windowMargin
-        Layout.fillHeight: false
-        Layout.topMargin: VPNTheme.theme.windowMargin / 2
+        spacing: VPNTheme.theme.windowMargin / 2
         Layout.fillWidth: true
+
+        VPNLinkButton {
+            property int numDisabledApps: VPNSettings.vpnDisabledApps.length
+
+            id: clearAllButton
+            objectName: "clearAll"
+
+            Layout.alignment: Qt.AlignLeft
+
+            // Hack to horizontally align the text
+            // with column of checkboxes. This is
+            // repeated on L132
+            Layout.leftMargin: -4
+
+            textAlignment: Text.AlignLeft
+            labelText: VPNI18n.SettingsAppExclusionClearAllApps
+            fontSize: VPNTheme.theme.fontSize
+            fontName: VPNTheme.theme.fontInterSemiBoldFamily
+
+            onClicked: VPNAppPermissions.protectAll();
+            enabled: VPNSettings.vpnDisabledApps.length > 0
+            visible: applist.count > 0
+        }
 
         Repeater {
             id: applist
-            model: searchBar.getProxyModel()
-            Layout.fillHeight: false
-            visible: count > 0
-            delegate: VPNCheckBoxRow {
-                objectName: "app" + index
 
-                showDivider: false
-                labelText: appName
-                subLabelText: appID
-                showAppImage: true
-                onClicked: VPNAppPermissions.flip(appID)
-                isChecked: !appIsEnabled
-                enabled: VPNSettings.protectSelectedApps
-                Layout.minimumHeight: VPNTheme.theme.rowHeight * 1.5
+            objectName: "appList"
+            model: searchBarWrapper.getProxyModel()
+            delegate: RowLayout {
+                property string appIdForFunctionalTests: appID
+                id: appRow
+
+                objectName: `app-${index}`
+                spacing: VPNTheme.theme.windowMargin
+                Layout.preferredHeight: VPNTheme.theme.navBarTopMargin
+
+                function handleClick() {
+                    VPNAppPermissions.flip(appID)
+                }
+
+                VPNCheckBox {
+                    id: checkBox
+                    objectName: "checkbox"
+                    onClicked: () => appRow.handleClick()
+                    checked: !appIsEnabled
+                    Layout.alignment: Qt.AlignVCenter
+                    Accessible.name: appID
+                }
+
+                Rectangle {
+                    Layout.preferredWidth: VPNTheme.theme.windowMargin * 2
+                    Layout.preferredHeight: VPNTheme.theme.windowMargin * 2
+                    Layout.maximumHeight: VPNTheme.theme.windowMargin * 2
+                    Layout.maximumWidth: VPNTheme.theme.windowMargin * 2
+                    Layout.alignment: Qt.AlignVCenter
+                    color: VPNTheme.theme.transparent
+                    radius: VPNTheme.theme.cornerRadius
+
+                    Image {
+                        sourceSize.width: VPNTheme.theme.windowMargin * 2
+                        sourceSize.height: VPNTheme.theme.windowMargin * 2
+                        anchors.centerIn: parent
+                        asynchronous: true
+                        fillMode:  Image.PreserveAspectFit
+                        Component.onCompleted: {
+                            if (appID !== "") {
+                                source = "image://app/"+appID
+                            }
+                        }
+                    }
+                }
+
+                VPNInterLabel {
+                    id: label
+                    Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                    Layout.fillWidth: true
+                    text: appName
+                    color: VPNTheme.theme.fontColorDark
+                    horizontalAlignment: Text.AlignLeft
+
+                    VPNMouseArea {
+                        anchors.fill: undefined
+                        width: parent.implicitWidth
+                        height: parent.implicitHeight
+                        propagateClickToParent: false
+                        onClicked: () => appRow.handleClick()
+                    }
+                }
             }
         }
-    }
 
-    VPNButton {
-        text: ""
-        Layout.fillWidth: true
-        width: undefined
-        onClicked: VPNAppPermissions.openFilePicker()
-        visible: Qt.platform.os === "windows"
-        contentItem: Text {
-            // for accessibility
-            text: addApplication
-            color: VPNTheme.theme.transparent
-        }
+        VPNLinkButton {
+            objectName: "addApplication"
+            labelText: addApplication
+            textAlignment: Text.AlignLeft
+            fontSize: VPNTheme.theme.fontSize
+            fontName: VPNTheme.theme.fontInterSemiBoldFamily
+            onClicked: VPNAppPermissions.openFilePicker()
 
-        RowLayout {
-            anchors.centerIn: parent
-            VPNIcon {
-                source: "qrc:/nebula/resources/plus.svg"
-                sourceSize.height: VPNTheme.theme.windowMargin
-                sourceSize.width: VPNTheme.theme.windowMargin
-            }
-            VPNBoldLabel {
-                text: addApplication
-                color: "white"
+            // Hack to horizontally align the "+" sign with the
+            // column of checkboxes
+            Layout.leftMargin: -1
+
+            visible: Qt.platform.os === "windows"
+            iconComponent: Component {
+                VPNIcon {
+                    source: "qrc:/nebula/resources/plus.svg"
+                    sourceSize.height: VPNTheme.theme.iconSmallSize
+                    sourceSize.width: VPNTheme.theme.iconSmallSize
+                    anchors.verticalCenter: parent.verticalCenter
+                }
             }
         }
     }

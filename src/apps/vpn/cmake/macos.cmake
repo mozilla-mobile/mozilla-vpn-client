@@ -96,18 +96,25 @@ target_sources(mozillavpn PRIVATE
 )
 
 # Build the Wireguard Go tunnel
-# FIXME: this builds in the source directory.
-get_filename_component(WIREGUARD_GO_DIR ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go ABSOLUTE)
-file(GLOB_RECURSE WIREGUARD_GO_DEPS ${WIREGUARD_GO_DIR}/*.go)
+# FIXME: This only builds for the host architecture.
+file(GLOB_RECURSE WIREGUARD_GO_DEPS ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/*.go)
 add_custom_target(build_wireguard_go
     COMMENT "Building wireguard-go"
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go
-    DEPENDS ${WIREGUARD_GO_DEPS}
-    COMMAND make
+    DEPENDS
+        ${WIREGUARD_GO_DEPS}
+        ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.mod
+        ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.sum
+    COMMAND ${CMAKE_COMMAND} -E env
+                GOCACHE=${CMAKE_BINARY_DIR}/go-cache
+                GOOS=darwin
+                CGO_ENABLED=1
+                GO111MODULE=on
+            go build -buildmode exe -buildvcs=false -trimpath -v -o ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
 )
 add_dependencies(mozillavpn build_wireguard_go)
 osx_bundle_files(mozillavpn
-    FILES ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/wireguard-go
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
     DESTINATION Resources/utils
 )
 
