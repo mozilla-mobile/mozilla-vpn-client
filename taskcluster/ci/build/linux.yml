@@ -73,3 +73,14 @@ linux/fedora-fc37:
         docker-image: {in-tree: linux-build-fedora-fc37}
     add-index-routes: linux-fedora-fc37
 
+linux/flatpak:
+    description: "Linux Build (Flatkpak)"
+    treeherder:
+        platform: linux/flatpak
+    worker:
+        docker-image: {in-tree: build}
+    run:
+        using: run-task
+        use-caches: true
+        cwd: '{checkout}'
+        command: ./taskcluster/scripts/build/flatpak.sh
