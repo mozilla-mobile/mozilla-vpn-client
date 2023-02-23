@@ -33,14 +33,14 @@ describe('User authentication in browser', function() {
     await vpn.waitForQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
   });
 
-  it('Completes authentication', async () => {
+  it.only('Completes authentication', async () => {
     await vpn.waitForInitialView();
     console.log('line 38: ===== ', this.ctx.wasm);
     await vpn.authenticateInBrowser(true, true, this.ctx.wasm);
     console.log('line 40, outside of auth in browser.');
   });
 
-  it.skip('Completes authentication after logout', async () => {
+  it('Completes authentication after logout', async () => {
     await vpn.authenticateInBrowser(true, true, this.ctx.wasm);
     await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
 
