@@ -37,6 +37,7 @@ describe('User authentication in browser', function() {
     await vpn.waitForInitialView();
     console.log('line 38: ===== ', this.ctx.wasm);
     await vpn.authenticateInBrowser(true, true, this.ctx.wasm);
+    console.log('line 40, outside of auth in browser.');
   });
 
   it.skip('Completes authentication after logout', async () => {

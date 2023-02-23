@@ -263,13 +263,16 @@ module.exports = {
   },
 
   async waitForVPNProperty(id, property, value) {
+    console.log('line 266', {id, property, value});
     try {
       return this.waitForCondition(async () => {
         const real = await this.getVPNProperty(id, property);
+        console.log('line 270', real);
         return real === value;
       });
     } catch (e) {
       const real = await this.getVPNProperty(id, property);
+      console.log('line 275', real);
       throw new Error(`Timeout for waitForVPNProperty - property: ${
           property} - value: ${real} - expected: ${value}`);
     }
@@ -313,6 +316,7 @@ module.exports = {
     await this.waitForQueryAndClick(queries.screenInitialize.SIGN_UP_BUTTON.visible());
 
     if (!wasm) {
+      console.log('line 316, inside warm check?');
       await this.waitForCondition(async () => {
         const url = await this.getLastUrl();
         return url.includes('/api/v2/vpn/login');
@@ -344,7 +348,10 @@ module.exports = {
     }
 
     // Wait for VPN client screen to move from spinning wheel to next screen
+    console.log('line 348');
+    console.log('line 349');
     await this.waitForVPNProperty('VPN', 'userState', 'UserAuthenticated');
+    console.log('line 351');
     await this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
 
     if (clickOnPostAuthenticate) {
