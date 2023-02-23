@@ -318,7 +318,7 @@ module.exports = {
     await this.wait();
     await this.waitForQueryAndClick(queries.screenInitialize.SIGN_UP_BUTTON.visible());
 
-    if (false) {
+    if (!wasm) {
       await this.waitForCondition(async () => {
         const url = await this.getLastUrl();
         return url.includes('/api/v2/vpn/login');
@@ -331,7 +331,7 @@ module.exports = {
       const urlObj = new URL(url);
 
       const options = {
-        hostname: urlObj.hostname,
+        hostname: 'localhost',
         port: parseInt(urlObj.searchParams.get('port'), 10),
         path: '/?code=the_code',
         method: 'GET',
