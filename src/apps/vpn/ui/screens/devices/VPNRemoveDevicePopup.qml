@@ -43,6 +43,7 @@ VPNSimplePopup {
             isCancelBtn: false
         },
         VPNCancelButton {
+            Layout.alignment: Qt.AlignHCenter
             onClicked: {
                 popup.close();
             }

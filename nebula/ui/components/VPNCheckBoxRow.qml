@@ -14,8 +14,7 @@ RowLayout {
     property string subLabelText
     property bool isChecked
     property bool showDivider: true
-    property var leftMargin: 18
-    property bool showAppImage: false
+    property int leftMargin: 18
     property alias labelWidth: labelWrapper.width
 
     signal clicked()
@@ -29,33 +28,8 @@ RowLayout {
         onClicked: checkBoxRow.clicked()
         checked: isChecked
         opacity: checkBoxRow.enabled ? 1 : 0.5
-        Component.onCompleted: {
-            if (!showAppImage) {
-                Layout.leftMargin = leftMargin
-            }
-        }
-    }
-
-    Rectangle {
-        visible: showAppImage
-        Layout.preferredWidth: VPNTheme.theme.windowMargin * 2
-        Layout.preferredHeight: VPNTheme.theme.windowMargin * 2
-        color: VPNTheme.theme.transparent
-        radius: 4
-        Layout.alignment: Qt.AlignTop
-
-        Image {
-            sourceSize.width: VPNTheme.theme.windowMargin * 2
-            sourceSize.height: VPNTheme.theme.windowMargin * 2
-            anchors.centerIn: parent
-            asynchronous: true
-            fillMode:  Image.PreserveAspectFit
-            Component.onCompleted: {
-                if (showAppImage && appID !== "") {
-                    source = "image://app/"+appID
-                }
-            }
-        }
+        accessibleName: labelText
+        Layout.leftMargin: leftMargin
     }
 
     ColumnLayout {
@@ -90,7 +64,7 @@ RowLayout {
             Layout.preferredWidth: parent.width
             text: subLabelText
             visible: !!subLabelText.length
-            wrapMode: showAppImage ? Text.WrapAtWordBoundaryOrAnywhere : Text.WordWrap
+            wrapMode: Text.WordWrap
         }
 
         Rectangle {

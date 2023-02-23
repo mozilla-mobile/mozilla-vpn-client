@@ -56,6 +56,7 @@ VPNViewBase {
                     }
 
                     VPNSettingsToggle {
+                        accessibleName: feature.name
                         checked: feature.isSupported
                         enabled: feature.isToggleable
                         Layout.preferredHeight: 24

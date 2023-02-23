@@ -210,11 +210,21 @@ const screenGetHelp = {
   }
 };
 
+const appExclusionsView = {
+  ADD_APPLICATION_BUTTON: new QmlQueryComposer('//addApplication'),
+  APP_LIST: new QmlQueryComposer('//appList'),
+  APP_ROW1: new QmlQueryComposer('//app-0'),
+  CHECKBOX1: new QmlQueryComposer('//app-0/checkbox'),
+  CHECKBOX2: new QmlQueryComposer('//app-1/checkbox'),
+  CLEAR_ALL: new QmlQueryComposer('//clearAll'),
+  SCREEN: new QmlQueryComposer('//appPermissions')
+};
+
 const screenSettings = {
   ABOUT_US: new QmlQueryComposer('//settingsAboutUs'),
   BACK: new QmlQueryComposer('//settings-back'),
   GET_HELP: new QmlQueryComposer('//settingsGetHelp'),
-  APP_PERMISSIONS: new QmlQueryComposer('//appPermissionSettings'),
+  APP_EXCLUSIONS: new QmlQueryComposer('//appExclusionSettings'),
   PRIVACY: new QmlQueryComposer('//privacySettings'),
   MY_DEVICES: new QmlQueryComposer('//settingsDevice'),
   SCREEN: new QmlQueryComposer('//settingsView-flickable'),
@@ -409,6 +419,7 @@ const global = {
 };
 
 module.exports = {
+  appExclusionsView,
   screenHome,
   screenInitialize,
   screenPostAuthentication,

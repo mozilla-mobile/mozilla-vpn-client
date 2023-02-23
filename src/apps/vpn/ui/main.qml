@@ -254,4 +254,31 @@ Window {
         id: navbar
     }
 
+    Connections {
+        target: VPNAppPermissions
+        function onNotification(type,message,action) {
+            console.log("Got notification: "+type + "  message:"+message);
+            var component = Qt.createComponent("qrc:/nebula/components/VPNAlert.qml");
+            if(component.status !== Component.Ready)
+                {
+                    if( component.status == Component.Error )
+                        console.debug("Error:"+ component.errorString() );
+
+                }
+            var alert = component.createObject(window, {
+                                       isLayout:false,
+                                       visible:true,
+                                       alertText: message,
+                                       alertType: type,
+                                       alertActionText: action,
+                                       duration:type === "warning"? 0: 2000,
+                                       destructive:true,
+                                       // Pin y height to be below the alert bar as we can't render above it
+                                       setY: VPNTheme.theme.windowMargin,
+                                       onActionPressed: ()=>{VPNAppPermissions.openFilePicker();},
+                                   });
+
+            alert.show();
+        }
+    }
 }

@@ -65,10 +65,9 @@ class MVPNWasm {
           this._guardianOverrideEndpointsPreset);
     } else if (u.hostname === 'api-accounts.stage.mozaws.net') {
       obj = this._findResponse(
-          method, u, body, fxaEndpoints.generateEndpoints({
-            GUARDIAN_URL:
-                'https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net'
-          }),
+          method, u, body,
+          fxaEndpoints.generateEndpoints(
+              'https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net'),
           this._fxaOverrideEndpoints, this._fxaOverrideEndpointsPreset);
     } else if (
         url == 'https://archive.mozilla.org/pub/vpn/speedtest/50m.data') {

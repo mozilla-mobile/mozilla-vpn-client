@@ -41,7 +41,7 @@ void TestAddon::init() {
   // Glean operations are queued and applied once Glean is initialized.
   // If we only initialize it in the test that actually tests telemetry all
   // of the Glean operations from previous tests will be applied and mess with
-  // the state of the test that actually is testing telemetry.
+  // the status of the test that actually is testing telemetry.
   //
   // Note: on tests Glean::initialize clears Glean's storage.
   MZGlean::initialize();
@@ -820,30 +820,30 @@ void TestAddon::message_create() {
   QCOMPARE(message->property("title").type(), QMetaType::QString);
 }
 
-void TestAddon::message_load_state_data() {
-  QTest::addColumn<AddonMessage::MessageState>("state");
+void TestAddon::message_load_status_data() {
+  QTest::addColumn<AddonMessage::MessageStatus>("status");
   QTest::addColumn<QString>("setting");
 
-  QTest::addRow("empty-setting") << AddonMessage::MessageState::Received << "";
+  QTest::addRow("empty-setting") << AddonMessage::MessageStatus::Received << "";
   QTest::addRow("wrong-setting")
-      << AddonMessage::MessageState::Received << "WRONG!";
+      << AddonMessage::MessageStatus::Received << "WRONG!";
 
   QTest::addRow("received")
-      << AddonMessage::MessageState::Received << "Received";
+      << AddonMessage::MessageStatus::Received << "Received";
   QTest::addRow("notified")
-      << AddonMessage::MessageState::Notified << "Notified";
-  QTest::addRow("read") << AddonMessage::MessageState::Read << "Read";
+      << AddonMessage::MessageStatus::Notified << "Notified";
+  QTest::addRow("read") << AddonMessage::MessageStatus::Read << "Read";
   QTest::addRow("dismissed")
-      << AddonMessage::MessageState::Dismissed << "Dismissed";
+      << AddonMessage::MessageStatus::Dismissed << "Dismissed";
 }
 
-void TestAddon::message_load_state() {
-  QFETCH(AddonMessage::MessageState, state);
+void TestAddon::message_load_status() {
+  QFETCH(AddonMessage::MessageStatus, status);
   QFETCH(QString, setting);
 
   SettingsHolder::instance()->setAddonSetting(
-      AddonMessage::MessageStateQuery("foo"), setting);
-  QCOMPARE(AddonMessage::loadMessageState("foo"), state);
+      AddonMessage::MessageStatusQuery("foo"), setting);
+  QCOMPARE(AddonMessage::loadMessageStatus("foo"), status);
 }
 
 void TestAddon::message_notification_data() {
@@ -961,109 +961,6 @@ void TestAddon::message_notification() {
   QCOMPARE(actual_message, message);
 }
 
-void TestAddon::message_date_data() {
-  QTest::addColumn<QString>("languageCode");
-  QTest::addColumn<QDateTime>("now");
-  QTest::addColumn<QDateTime>("date");
-  QTest::addColumn<QString>("result");
-  QTest::addColumn<qint64>("timer");
-
-  QTest::addRow("en - future")
-      << "en" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 1), QTime(11, 0), QTimeZone(0)) << "10:00 AM"
-      << (qint64)(14 * 3600);
-  QTest::addRow("it - future")
-      << "it" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 1), QTime(11, 0), QTimeZone(0)) << "10:00"
-      << (qint64)(14 * 3600);
-
-  QTest::addRow("en - same")
-      << "en" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0)) << "10:00 AM"
-      << (qint64)(14 * 3600);
-  QTest::addRow("it - same")
-      << "it" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0)) << "10:00"
-      << (qint64)(14 * 3600);
-
-  QTest::addRow("en - one hour ago")
-      << "en" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 1), QTime(9, 0), QTimeZone(0)) << "9:00 AM"
-      << (qint64)(15 * 3600);
-  QTest::addRow("it - one hour ago")
-      << "it" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 1), QTime(9, 0), QTimeZone(0)) << "09:00"
-      << (qint64)(15 * 3600);
-
-  QTest::addRow("en - midnight")
-      << "en" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 1), QTime(0, 0), QTimeZone(0)) << "12:00 AM"
-      << (qint64)(24 * 3600);
-  QTest::addRow("it - midnight")
-      << "it" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 1), QTime(0, 0), QTimeZone(0)) << "00:00"
-      << (qint64)(24 * 3600);
-
-  QTest::addRow("en - yesterday but less than 24 hours")
-      << "en" << QDateTime(QDate(2000, 1, 2), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 1), QTime(21, 0), QTimeZone(0)) << "Yesterday"
-      << (qint64)(3 * 3600);
-
-  QTest::addRow("en - yesterday more than 24 hours")
-      << "en" << QDateTime(QDate(2000, 1, 2), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 1), QTime(9, 0), QTimeZone(0)) << "Yesterday"
-      << (qint64)-1;
-
-  QTest::addRow("en - 2 days ago")
-      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 8), QTime(10, 0), QTimeZone(0)) << "Saturday"
-      << (qint64)-1;
-
-  QTest::addRow("en - 3 days ago")
-      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 7), QTime(10, 0), QTimeZone(0)) << "Friday"
-      << (qint64)-1;
-
-  QTest::addRow("en - 4 days ago")
-      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 6), QTime(10, 0), QTimeZone(0)) << "Thursday"
-      << (qint64)-1;
-
-  QTest::addRow("en - 5 days ago")
-      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 5), QTime(10, 0), QTimeZone(0)) << "Wednesday"
-      << (qint64)-1;
-
-  QTest::addRow("en - 6 days ago")
-      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 4), QTime(10, 0), QTimeZone(0)) << "Tuesday"
-      << (qint64)-1;
-
-  QTest::addRow("en - 7 days ago")
-      << "en" << QDateTime(QDate(2000, 1, 10), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 3), QTime(10, 0), QTimeZone(0)) << "1/3/00"
-      << (qint64)-1;
-}
-
-void TestAddon::message_date() {
-  Localizer localizer;
-
-  QFETCH(QString, languageCode);
-  SettingsHolder::instance()->setLanguageCode(languageCode);
-
-  QFETCH(QDateTime, now);
-  QVERIFY(now.isValid());
-
-  QFETCH(QDateTime, date);
-  QVERIFY(date.isValid());
-
-  QFETCH(QString, result);
-  QCOMPARE(AddonMessage::dateInternal(now, date), result);
-
-  QFETCH(qint64, timer);
-  QCOMPARE(AddonMessage::planDateRetranslationInternal(now, date), timer);
-}
-
 void TestAddon::message_dismiss() {
   Localizer l;
 
@@ -1094,7 +991,7 @@ void TestAddon::message_dismiss() {
             addonSetting = SettingsHolder::instance()->getAddonSetting(
                 SettingsHolder::AddonSettingQuery(
                     "bar", ADDON_MESSAGE_SETTINGS_GROUP,
-                    ADDON_MESSAGE_SETTINGS_STATE_KEY, "?!?"));
+                    ADDON_MESSAGE_SETTINGS_STATUS_KEY, "?!?"));
           });
 
   QCOMPARE(addonSetting, "");
@@ -1114,7 +1011,7 @@ void TestAddon::message_dismiss() {
   QVERIFY(!message2);
 }
 
-void TestAddon::telemetry_state_change() {
+void TestAddon::telemetry_status_change() {
   Localizer localizer;
 
   QJsonObject content;

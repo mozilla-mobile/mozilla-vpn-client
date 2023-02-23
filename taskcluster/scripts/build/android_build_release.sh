@@ -5,13 +5,8 @@
 set -e
 
 # This script is used in the Android Build Release (universal) build task
-git submodule init
-git submodule update
-# glean
-./scripts/utils/generate_glean.py
-# translations
-echo "Importing translations"
-./scripts/utils/import_languages.py
+git submodule update --init --depth 1
+git submodule update --remote i18n
 
 # Get Secrets for building
 echo "Fetching Tokens!"
@@ -34,7 +29,7 @@ mkdir -p /builds/worker/artifacts/
 
 
 sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
-# This will ask sentry to scan all files in there and upload 
+# This will ask sentry to scan all files in there and upload
 # missing debug info, for symbolification
 sentry-cli debug-files upload --org mozilla -p vpn-client --include-sources .tmp/src/android-build/build/intermediates/merged_native_libs
 

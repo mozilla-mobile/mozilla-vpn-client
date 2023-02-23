@@ -10,5 +10,4 @@ VPNLinkButton  {
     fontSize: VPNTheme.theme.fontSizeSmallest
     Layout.preferredHeight: 18
     linkColor: VPNTheme.theme.greyLink
-    buttonPadding: VPNTheme.theme.hSpacing / 2
 }

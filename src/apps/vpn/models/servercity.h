@@ -30,16 +30,6 @@ class ServerCity final : public QObject {
   ServerCity& operator=(const ServerCity& other);
   ~ServerCity();
 
-  enum CityConnectionScores {
-    Unavailable = -1,
-    NoData = 0,
-    Poor = 1,
-    Moderate = 2,
-    Good = 3,
-    Excellent = 4,
-  };
-  Q_ENUM(CityConnectionScores);
-
   [[nodiscard]] bool fromJson(const QJsonObject& obj, const QString& country);
 
   bool initialized() const { return !m_name.isEmpty(); }
@@ -60,6 +50,9 @@ class ServerCity final : public QObject {
   double longitude() const { return m_longitude; }
 
   int connectionScore() const;
+
+  Q_INVOKABLE int multiHopScore(const QString& country,
+                                const QString& cityName) const;
 
   unsigned int latency() const;
 

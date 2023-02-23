@@ -22,6 +22,8 @@ SOURCES += \
         apps/vpn/addons/manager/addondirectory.cpp \
         apps/vpn/addons/manager/addonindex.cpp \
         apps/vpn/addons/manager/addonmanager.cpp \
+        apps/vpn/addons/state/addonsessionstate.cpp \
+        apps/vpn/addons/state/addonstatebase.cpp \
         apps/vpn/appconstants.cpp \
         apps/vpn/apppermission.cpp \
         apps/vpn/authenticationlistener.cpp \
@@ -165,6 +167,9 @@ HEADERS += \
         apps/vpn/addons/manager/addondirectory.h \
         apps/vpn/addons/manager/addonindex.h \
         apps/vpn/addons/manager/addonmanager.h \
+        apps/vpn/addons/state/addonsessionstate.h \
+        apps/vpn/addons/state/addonstatebase.h \
+        apps/vpn/addons/state/addonstate.h \
         apps/vpn/appconstants.h \
         apps/vpn/appimageprovider.h \
         apps/vpn/apppermission.h \

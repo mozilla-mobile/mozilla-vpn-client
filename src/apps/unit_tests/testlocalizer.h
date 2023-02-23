@@ -30,6 +30,11 @@ class TestLocalizer final : public TestHelper {
   void completeness_data();
   void completeness();
 
+  void fallback();
+
+  void formattedDate_data();
+  void formattedDate();
+
  private:
   SettingsHolder* m_settingsHolder = nullptr;
 };

@@ -4,7 +4,8 @@
   "name": "Tutorial: Split tunneling",
   "conditions": {
     "enabled_features": ["splitTunnel"],
-    "min_client_version": "2.14.0"
+    "min_client_version": "2.14.0",
+    "max_client_version": "2.14.99"
   },
   "type": "tutorial",
   "tutorial": {
@@ -27,7 +28,7 @@
       }, {
         "id": "s2",
         "query": "//appPermissionSettings{visible=true}",
-        "tooltip": "Select “App Exclusions”",
+        "tooltip": "Select “App exclusions”",
         "next": {
           "op": "signal",
           "query_emitter": "//appPermissionSettings{visible=true}",

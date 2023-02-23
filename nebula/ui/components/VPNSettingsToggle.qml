@@ -14,6 +14,7 @@ CheckBox {
     property var uiState: VPNTheme.theme.uiState
     property alias forceFocus: vpnSettingsToggle.focus
     property var toolTipTitle
+    property string accessibleName
 
     onClicked: toolTip.hide()
     onActiveFocusChanged: if (focus && typeof(vpnFlickable) !== "undefined" && typeof(vpnFlickable.ensureVisible) !== "undefined") ensureVisible(vpnSettingsToggle)
@@ -54,7 +55,7 @@ CheckBox {
 
     VPNToolTip {
         id: toolTip
-        text: toolTipTitle
+        text: accessibleName
     }
 
 
@@ -140,13 +141,8 @@ CheckBox {
 
     focusPolicy: Qt.StrongFocus
 
-    function handleKeyClick() {
-        vpnSettingsToggle.clicked()
-    }
-
     Keys.onReleased: event => {
         if (event.key === Qt.Key_Return)
-            handleKeyClick();
             uiPlaceholder.state = uiState.stateDefault;
     }
 
@@ -154,6 +150,13 @@ CheckBox {
         if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
             uiPlaceholder.state = uiState.statePressed;
     }
+
+    Keys.onReturnPressed: clicked()
+    Keys.onSpacePressed: clicked()
+    Accessible.onPressAction: clicked()
+    Accessible.onToggleAction: clicked()
+    Accessible.focusable: true
+    Accessible.name: accessibleName
 
     Rectangle {
         id: uiPlaceholder /* Binding loop hack-around */

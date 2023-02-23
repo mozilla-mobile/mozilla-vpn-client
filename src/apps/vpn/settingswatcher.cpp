@@ -8,6 +8,7 @@
 #include <QMetaMethod>
 #include <QMetaObject>
 
+#include "dnshelper.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -30,10 +31,22 @@ SettingsWatcher::SettingsWatcher(QObject* parent) : QObject(parent) {
 
   CONNECT(captivePortalAlertChanged);
   CONNECT(protectSelectedAppsChanged);
-  CONNECT(dnsProviderFlagsChanged);
-  CONNECT(userDNSChanged);
 
 #undef CONNECT
+
+#define DNS_CONNECT(x)                                                  \
+  connect(settingsHolder, &SettingsHolder::x, this, [this]() {          \
+    SettingsHolder* settingsHolder = SettingsHolder::instance();        \
+    if (settingsHolder->dnsProviderFlags() != SettingsHolder::Custom || \
+        DNSHelper::validateUserDNS(settingsHolder->userDNS())) {        \
+      maybeServerSwitch();                                              \
+    }                                                                   \
+  });
+
+  DNS_CONNECT(dnsProviderFlagsChanged);
+  DNS_CONNECT(userDNSChanged);
+
+#undef DNS_CONNECT
 }
 
 SettingsWatcher::~SettingsWatcher() { MZ_COUNT_DTOR(SettingsWatcher); }
