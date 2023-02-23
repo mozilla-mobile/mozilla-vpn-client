@@ -280,20 +280,19 @@ VPNViewBase {
     function getPlanText(currencyCode, amount) {
         const amountDisplay = (amount || 0) / 100;
         const localizedCurrency = VPNLocalizer.localizeCurrency(amountDisplay, currencyCode);
-        const isUsdOrCad = ["USD", "CAD"].includes(VPNSubscriptionData.planCurrency)
 
         switch (VPNSubscriptionData.planBillingInterval) {
             case VPNSubscriptionData.BillingIntervalMonthly:
                 // {¤amount} Monthly
-                return isUsdOrCad ? VPNI18n.SubscriptionManagementPlanValueMonthlyPlusTax.arg(localizedCurrency)
+                return VPNSubscriptionData.planRequiresTax ? VPNI18n.SubscriptionManagementPlanValueMonthlyPlusTax.arg(localizedCurrency)
                                 : VPNI18n.SubscriptionManagementPlanValueMonthly.arg(localizedCurrency);
             case VPNSubscriptionData.BillingIntervalHalfYearly:
                 // {¤amount} Half-yearly
-                return isUsdOrCad ? VPNI18n.SubscriptionManagementPlanValueHalfYearlyPlusTax.arg(localizedCurrency)
+                return VPNSubscriptionData.planRequiresTax ? VPNI18n.SubscriptionManagementPlanValueHalfYearlyPlusTax.arg(localizedCurrency)
                                 : VPNI18n.SubscriptionManagementPlanValueHalfYearly.arg(localizedCurrency);
             case VPNSubscriptionData.BillingIntervalYearly:
                 // {¤amount} Yearly
-                return isUsdOrCad ? VPNI18n.SubscriptionManagementPlanValueYearlyPlusTax.arg(localizedCurrency)
+                return VPNSubscriptionData.planRequiresTax ? VPNI18n.SubscriptionManagementPlanValueYearlyPlusTax.arg(localizedCurrency)
                                 : VPNI18n.SubscriptionManagementPlanValueYearly.arg(localizedCurrency);
             default:
                 // If we made it here something went wrong. In case we encounter
