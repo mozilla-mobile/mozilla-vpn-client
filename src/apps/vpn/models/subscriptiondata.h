@@ -100,7 +100,7 @@ class SubscriptionData final : public QObject {
   TypeBillingInterval m_planBillingInterval = BillingIntervalUnknown;
   int m_planAmount = 0;
   QString m_planCurrency;
-  bool m_planRequiresTax;
+  bool m_planRequiresTax = false;
 
   QString m_paymentProvider;
   QString m_creditCardBrand;

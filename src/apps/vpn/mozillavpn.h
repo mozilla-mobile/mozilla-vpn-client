@@ -291,7 +291,7 @@ class MozillaVPN final : public QObject {
  public slots:
   void requestAbout();
 
-  Q_INVOKABLE void scheduleRefreshDataTasks(bool refreshProducts);
+  void scheduleRefreshDataTasks(bool refreshProducts);
 
   static void registerUrlOpenerLabels();
 
