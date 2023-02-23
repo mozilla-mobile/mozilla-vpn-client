@@ -69,7 +69,14 @@ jobs:
           sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
           sudo apt install firefox xvfb -y
           pip3 install -r requirements.txt
-          npm install
+          npm ci
+
+      - name: Check build
+        shell: bash
+        run: |
+            chmod +x ./build/dummyvpn
+            ./build/dummyvpn -v
+
 
       - name: Build addons
         shell: bash
