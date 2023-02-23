@@ -221,8 +221,10 @@ module.exports = {
   },
 
   async getVPNProperty(id, property) {
+    console.log('line 224 get vpnprop', {id, property});
     const json = await this._writeCommand(
         `property ${encodeURIComponent(id)} ${encodeURIComponent(property)}`);
+    console.log('line 227', json);
     assert(
         json.type === 'property' && !('error' in json),
         `Command failed: ${json.error}`);
