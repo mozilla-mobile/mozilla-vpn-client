@@ -69,7 +69,9 @@ exports.mochaHooks = {
     await captivePortalServer.start();
 
     process.env['MVPN_API_BASE_URL'] = guardian.url;
+    console.log('GUARDIAN URL', guardian.url);
     process.env['MZ_FXA_API_BASE_URL'] = fxaServer.url;
+    console.log('FXA BASE URL', fxaServer.url);
     process.env['MZ_ADDON_URL'] = `${addonServer.url}/01_empty_manifest/`;
     process.env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';
 
