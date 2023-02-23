@@ -72,7 +72,7 @@ StateHash StateBase::parseAddonManifest(const QJsonObject& initialState) {
 StateBase::StateBase(const QJsonObject& spec)
     : m_defaults(StateBase::parseAddonManifest(spec)) {}
 
-QJsonValue StateBase::get(const QString& key) const {
+QJsonValue StateBase::get(const QString& key) {
   if (!m_defaults.contains(key)) {
     logger.error() << "Attempted to get key" << key
                    << "from state, but that key is invalid for this property. ";
@@ -80,7 +80,18 @@ QJsonValue StateBase::get(const QString& key) const {
   }
 
   QJsonValue value = getInternal(key);
-  if (value.type() != QJsonValue::Null) return value;
+
+  if (value.type() == m_defaults[key].type()) {
+    return value;
+  }
+
+  if (value.type() != QJsonValue::Null) {
+    logger.error()
+        << "Attempted to get key" << key
+        << "from state, but the stored value is of unexpected type. Clearing.";
+
+    clear(key);
+  }
 
   return m_defaults[key];
 }
