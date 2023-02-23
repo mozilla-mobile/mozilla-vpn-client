@@ -155,26 +155,20 @@ void NotificationHandler::showNotification() {
         ServerData* serverData = vpn->serverData();
 
         if (serverData->multihop()) {
-          // Create a string for both servers
-          //VPNMultihopConnectedMessage
-          // notifyInternal(None,
-          //               I18nStrings::instance()->t(
-          //                   I18nStrings::NotificationsVPNConnectedTitle),
-          //               "Multihop server names here",
-          //               NOTIFICATION_TIME_MSEC);  
-        QString localizedPreviousExitCountryName =
+        QString localizedEntryCityName =
             vpn->controller()
                 ->currentServer()
-                .localizedPreviousExitCountryName();
-        QString localizedPreviousExitCityName =
-            vpn->controller()->currentServer().localizedPreviousExitCityName();
+                .localizedEntryCityName();
+
+        QString localizedExitCityName =
+            vpn->controller()->currentServer().localizedExitCityName();
 
             notifyInternal(None,
                           I18nStrings::instance()->t(
                               I18nStrings::NotificationsVPNConnectedTitle),
                           I18nStrings::instance()
                               ->t(I18nStrings::NotificationsVPNMultihopConnectedMessage)
-                              .arg(localizedPreviousExitCityName, localizedCityName),
+                              .arg(localizedExitCityName, localizedEntryCityName),
                           NOTIFICATION_TIME_MSEC);                    
         } else {
           // "VPN Connected"
