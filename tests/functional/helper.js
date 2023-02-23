@@ -342,7 +342,7 @@ module.exports = {
         req.on('error', error => {
           throw new Error(
               `Unable to connect to ${urlObj.hostname} to complete the
-              auth. ${error.message}, ${error.name}, ${error.stack});
+              auth. ${error.message}, ${error.name}, ${error.stack}`);
         });
         req.end();
       });
