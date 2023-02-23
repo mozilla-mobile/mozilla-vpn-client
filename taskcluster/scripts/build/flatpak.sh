@@ -12,7 +12,7 @@ flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flath
 flatpak-builder --user --install-deps-from=flathub --install-deps-only fp-build-dir ${MOZ_FETCHES_DIR}/org.mozilla.vpn.yml
 
 # Build the Flatpak
-flatpak-builder --user fp-build-dir ${MOZ_FETCHES_DIR}/org.mozilla.vpn.yml
+flatpak-builder --user --disable-rofiles-fuse fp-build-dir ${MOZ_FETCHES_DIR}/org.mozilla.vpn.yml
 
 # Export the Flatpak
 mkdir fp-export-dir
