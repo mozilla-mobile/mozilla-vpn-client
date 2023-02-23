@@ -27,7 +27,7 @@ class AddonStateBase {
   Q_GADGET
 
  public:
-  virtual ~AddonStateBase() {}
+  virtual ~AddonStateBase() = default;
 
   /**
    * @brief Get the value for a given key in the state.

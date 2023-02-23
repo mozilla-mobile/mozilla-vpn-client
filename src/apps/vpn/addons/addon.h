@@ -58,7 +58,10 @@ class Addon : public QObject {
   const QString& id() const { return m_id; }
   const QString& type() const { return m_type; }
   const QString& manifestFileName() const { return m_manifestFileName; }
-  AddonState* state() const { return m_state; }
+  AddonState* state() const {
+    Q_ASSERT(m_state);
+    return m_state;
+  }
 
   virtual void retranslate();
 
