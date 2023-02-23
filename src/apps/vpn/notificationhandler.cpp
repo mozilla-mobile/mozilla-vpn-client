@@ -152,23 +152,30 @@ void NotificationHandler::showNotification() {
         }
 
         // "VPN Connected"
-        // notifyInternal(None,
-        //                I18nStrings::instance()->t(
-        //                    I18nStrings::NotificationsVPNConnectedTitle),
-        //                I18nStrings::instance()
-        //                    ->t(I18nStrings::NotificationsVPNConnectedMessage)
-        //                    .arg(localizedCityName),
-        //                NOTIFICATION_TIME_MSEC);
-
         ServerData* serverData = vpn->serverData();
 
         if (serverData->multihop()) {
           // Create a string for both servers
-          notifyInternal(None,
-                        I18nStrings::instance()->t(
-                            I18nStrings::NotificationsVPNConnectedTitle),
-                        "Multihop server names here",
-                        NOTIFICATION_TIME_MSEC);                      
+          //VPNMultihopConnectedMessage
+          // notifyInternal(None,
+          //               I18nStrings::instance()->t(
+          //                   I18nStrings::NotificationsVPNConnectedTitle),
+          //               "Multihop server names here",
+          //               NOTIFICATION_TIME_MSEC);  
+        QString localizedPreviousExitCountryName =
+            vpn->controller()
+                ->currentServer()
+                .localizedPreviousExitCountryName();
+        QString localizedPreviousExitCityName =
+            vpn->controller()->currentServer().localizedPreviousExitCityName();
+
+            notifyInternal(None,
+                          I18nStrings::instance()->t(
+                              I18nStrings::NotificationsVPNConnectedTitle),
+                          I18nStrings::instance()
+                              ->t(I18nStrings::NotificationsVPNMultihopConnectedMessage)
+                              .arg(localizedPreviousExitCityName, localizedCityName),
+                          NOTIFICATION_TIME_MSEC);                    
         } else {
           // "VPN Connected"
           notifyInternal(None,
