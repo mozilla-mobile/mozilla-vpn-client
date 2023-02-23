@@ -35,10 +35,12 @@ describe('User authentication in browser', function() {
 
   it('Completes authentication', async () => {
     await vpn.waitForInitialView();
+    console.log('*****************************************', this.ctx.wasm);
     await vpn.authenticateInBrowser(true, true, this.ctx.wasm);
   });
 
   it('Completes authentication after logout', async () => {
+    console.log('*****************************************', this.ctx.wasm);
     await vpn.authenticateInBrowser(true, true, this.ctx.wasm);
     await vpn.waitForQueryAndClick(queries.navBar.SETTINGS);
 
