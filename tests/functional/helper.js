@@ -339,8 +339,8 @@ module.exports = {
       await new Promise(resolve => {
         const req = http.request(options, res => {});
         req.on('close', resolve);
-        req.on('error', error => {
-          throw new error(
+        req.on('error', () => {
+          throw new Error(
               `Unable to connect to ${urlObj.hostname} to complete the
               auth`);
         });
