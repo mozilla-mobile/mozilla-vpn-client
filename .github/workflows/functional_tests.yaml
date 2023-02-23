@@ -39,6 +39,7 @@ jobs:
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake
           cmake --build build/cmake -j$(nproc) --target dummyvpn
+          cp ./build/cmake/tests/dummyvpn/dummyvpn build/
 
       - uses: actions/upload-artifact@v3
         with:
