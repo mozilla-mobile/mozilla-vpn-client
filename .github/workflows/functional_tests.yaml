@@ -26,6 +26,9 @@ jobs:
         with:
           submodules: 'true'
 
+      - name: Poke at hosts
+        run: cat /etc/hosts
+
       - name: Install build dependecies
         run: |
           sudo apt-get update
