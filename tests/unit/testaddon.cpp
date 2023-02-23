@@ -41,7 +41,7 @@ void TestAddon::init() {
   // Glean operations are queued and applied once Glean is initialized.
   // If we only initialize it in the test that actually tests telemetry all
   // of the Glean operations from previous tests will be applied and mess with
-  // the state of the test that actually is testing telemetry.
+  // the status of the test that actually is testing telemetry.
   //
   // Note: on tests Glean::initialize clears Glean's storage.
   MZGlean::initialize();
@@ -820,30 +820,30 @@ void TestAddon::message_create() {
   QCOMPARE(message->property("title").type(), QMetaType::QString);
 }
 
-void TestAddon::message_load_state_data() {
-  QTest::addColumn<AddonMessage::MessageState>("state");
+void TestAddon::message_load_status_data() {
+  QTest::addColumn<AddonMessage::MessageStatus>("status");
   QTest::addColumn<QString>("setting");
 
-  QTest::addRow("empty-setting") << AddonMessage::MessageState::Received << "";
+  QTest::addRow("empty-setting") << AddonMessage::MessageStatus::Received << "";
   QTest::addRow("wrong-setting")
-      << AddonMessage::MessageState::Received << "WRONG!";
+      << AddonMessage::MessageStatus::Received << "WRONG!";
 
   QTest::addRow("received")
-      << AddonMessage::MessageState::Received << "Received";
+      << AddonMessage::MessageStatus::Received << "Received";
   QTest::addRow("notified")
-      << AddonMessage::MessageState::Notified << "Notified";
-  QTest::addRow("read") << AddonMessage::MessageState::Read << "Read";
+      << AddonMessage::MessageStatus::Notified << "Notified";
+  QTest::addRow("read") << AddonMessage::MessageStatus::Read << "Read";
   QTest::addRow("dismissed")
-      << AddonMessage::MessageState::Dismissed << "Dismissed";
+      << AddonMessage::MessageStatus::Dismissed << "Dismissed";
 }
 
-void TestAddon::message_load_state() {
-  QFETCH(AddonMessage::MessageState, state);
+void TestAddon::message_load_status() {
+  QFETCH(AddonMessage::MessageStatus, status);
   QFETCH(QString, setting);
 
   SettingsHolder::instance()->setAddonSetting(
-      AddonMessage::MessageStateQuery("foo"), setting);
-  QCOMPARE(AddonMessage::loadMessageState("foo"), state);
+      AddonMessage::MessageStatusQuery("foo"), setting);
+  QCOMPARE(AddonMessage::loadMessageStatus("foo"), status);
 }
 
 void TestAddon::message_notification_data() {
@@ -991,7 +991,7 @@ void TestAddon::message_dismiss() {
             addonSetting = SettingsHolder::instance()->getAddonSetting(
                 SettingsHolder::AddonSettingQuery(
                     "bar", ADDON_MESSAGE_SETTINGS_GROUP,
-                    ADDON_MESSAGE_SETTINGS_STATE_KEY, "?!?"));
+                    ADDON_MESSAGE_SETTINGS_STATUS_KEY, "?!?"));
           });
 
   QCOMPARE(addonSetting, "");
@@ -1011,7 +1011,7 @@ void TestAddon::message_dismiss() {
   QVERIFY(!message2);
 }
 
-void TestAddon::telemetry_state_change() {
+void TestAddon::telemetry_status_change() {
   Localizer localizer;
 
   QJsonObject content;

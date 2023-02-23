@@ -56,4 +56,6 @@ class TestModels final : public TestHelper {
   void locationBasic();
   void locationFromJson_data();
   void locationFromJson();
+  void locationDistance_data();
+  void locationDistance();
 };

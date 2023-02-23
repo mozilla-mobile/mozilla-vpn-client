@@ -25,16 +25,6 @@ class ServerCountryModel final : public QAbstractListModel {
     CitiesRole,
   };
 
-  enum ServerConnectionScores {
-    Unavailable = -1,
-    NoData = 0,
-    Poor = 1,
-    Moderate = 2,
-    Good = 3,
-    Excellent = 4,
-  };
-  Q_ENUM(ServerConnectionScores);
-
   ServerCountryModel();
   ~ServerCountryModel();
 
