@@ -335,9 +335,10 @@ module.exports = {
         const req = http.request(options, res => {});
         req.on('close', resolve);
         req.on('error', error => {
-          throw new error(
+          throw new Error(
               `Unable to connect to ${urlObj.hostname} to complete the
-              auth`);
+              auth`,
+              error.message, error.name, error.stack);
         });
         req.end();
       });
