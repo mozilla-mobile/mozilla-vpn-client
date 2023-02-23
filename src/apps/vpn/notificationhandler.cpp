@@ -170,7 +170,6 @@ void NotificationHandler::showNotification() {
                   .arg(localizedExitCityName, localizedEntryCityName),
               NOTIFICATION_TIME_MSEC);
         } else {
-          // "VPN Connected"
           notifyInternal(None,
                          I18nStrings::instance()->t(
                              I18nStrings::NotificationsVPNConnectedTitle),
