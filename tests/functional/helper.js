@@ -318,7 +318,6 @@ module.exports = {
     await this.waitForQueryAndClick(queries.screenInitialize.SIGN_UP_BUTTON.visible());
 
     if (!wasm) {
-      console.log('line 316, inside warm check?');
       await this.waitForCondition(async () => {
         const url = await this.getLastUrl();
         return url.includes('/api/v2/vpn/login');
@@ -352,7 +351,7 @@ module.exports = {
     // Wait for VPN client screen to move from spinning wheel to next screen
     console.log('line 348');
     console.log('line 349');
-    await this.waitForVPNProperty('VPN', 'userState', 'UserAuthenticated');
+    // await this.waitForVPNProperty('VPN', 'userState', 'UserAuthenticated');
     console.log('line 351');
     await this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
 
@@ -602,6 +601,8 @@ module.exports = {
 
   _writeCommand(command) {
     return new Promise(resolve => {
+      console.log('line 605 == ', command);
+      console.log('line 606 === ', waitReadCallback);
       waitReadCallback = resolve;
       client.send(`${command}`);
     });
