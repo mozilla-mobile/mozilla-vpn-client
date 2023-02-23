@@ -152,13 +152,33 @@ void NotificationHandler::showNotification() {
         }
 
         // "VPN Connected"
-        notifyInternal(None,
-                       I18nStrings::instance()->t(
-                           I18nStrings::NotificationsVPNConnectedTitle),
-                       I18nStrings::instance()
-                           ->t(I18nStrings::NotificationsVPNConnectedMessage)
-                           .arg(localizedCityName),
-                       NOTIFICATION_TIME_MSEC);
+        // notifyInternal(None,
+        //                I18nStrings::instance()->t(
+        //                    I18nStrings::NotificationsVPNConnectedTitle),
+        //                I18nStrings::instance()
+        //                    ->t(I18nStrings::NotificationsVPNConnectedMessage)
+        //                    .arg(localizedCityName),
+        //                NOTIFICATION_TIME_MSEC);
+
+        ServerData* serverData = vpn->serverData();
+
+        if (serverData->multihop()) {
+          // Create a string for both servers
+          notifyInternal(None,
+                        I18nStrings::instance()->t(
+                            I18nStrings::NotificationsVPNConnectedTitle),
+                        "Multihop server names here",
+                        NOTIFICATION_TIME_MSEC);                      
+        } else {
+          // "VPN Connected"
+          notifyInternal(None,
+                        I18nStrings::instance()->t(
+                            I18nStrings::NotificationsVPNConnectedTitle),
+                        I18nStrings::instance()
+                            ->t(I18nStrings::NotificationsVPNConnectedMessage)
+                            .arg(localizedCityName),
+                        NOTIFICATION_TIME_MSEC);
+        }
       }
       return;
 
