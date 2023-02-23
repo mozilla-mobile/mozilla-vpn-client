@@ -38,6 +38,7 @@ DesktopAuthenticationListener::DesktopAuthenticationListener(QObject* parent)
 }
 
 DesktopAuthenticationListener::~DesktopAuthenticationListener() {
+  logger.debug() << "DesktopAuthenticationListener shutting down";
   MZ_COUNT_DTOR(DesktopAuthenticationListener);
 }
 
