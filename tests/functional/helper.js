@@ -325,7 +325,7 @@ module.exports = {
       const urlObj = new URL(url);
 
       const options = {
-        hostname: urlObj.hostname,
+        hostname: '127.0.0.1',
         port: parseInt(urlObj.searchParams.get('port'), 10),
         path: '/?code=the_code',
         method: 'GET',
