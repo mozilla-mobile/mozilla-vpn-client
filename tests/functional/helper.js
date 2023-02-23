@@ -331,14 +331,18 @@ module.exports = {
         method: 'GET',
       };
 
+      console.log(url);
+      console.log(urlObj);
+      console.log(options);
+
+
       await new Promise(resolve => {
         const req = http.request(options, res => {});
         req.on('close', resolve);
         req.on('error', error => {
           throw new Error(
               `Unable to connect to ${urlObj.hostname} to complete the
-              auth`,
-              error.message, error.name, error.stack);
+              auth. ${error.message}, ${error.name}, ${error.stack});
         });
         req.end();
       });

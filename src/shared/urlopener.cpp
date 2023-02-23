@@ -59,10 +59,11 @@ void UrlOpener::openUrl(const QString& linkUrl) {
 
 void UrlOpener::openUrl(const QUrl& a_url) {
   QUrl url = replaceUrlParams(a_url);
+  logger.debug() << "Opening url 2: " << url.toDisplayString();
 
   if (!Constants::inProduction()) {
     setLastUrl(url.toString());
-
+    logger.debug() << "m_stealUrls" << m_stealUrls;
     if (m_stealUrls) {
       return;
     }
