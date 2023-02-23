@@ -77,7 +77,7 @@ target_sources(iosglean PUBLIC
 execute_process(
     COMMAND ${CMAKE_COMMAND} -E env
         ${CARGO_BUILD_TOOL} run --manifest-path ${GLEAN_VENDORED_PATH}/tools/embedded-uniffi-bindgen/Cargo.toml 
-            -- generate -l swift -o ${CMAKE_CURRENT_BINARY_DIR}/glean
+            -- generate --language swift --out-dir ${CMAKE_CURRENT_BINARY_DIR}/glean
             ${GLEAN_VENDORED_PATH}/glean-core/src/glean.udl
     COMMAND ${CMAKE_COMMAND} -E env     
             SOURCE_ROOT=${CMAKE_CURRENT_BINARY_DIR} 
