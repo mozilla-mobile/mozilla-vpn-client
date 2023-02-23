@@ -315,9 +315,10 @@ module.exports = {
     await this.setVPNProperty('VPNUrlOpener', 'lastUrl', '');
 
     // Click on get started and wait for authenticating view
+    await this.wait();
     await this.waitForQueryAndClick(queries.screenInitialize.SIGN_UP_BUTTON.visible());
 
-    if (!wasm) {
+    if (false) {
       await this.waitForCondition(async () => {
         const url = await this.getLastUrl();
         return url.includes('/api/v2/vpn/login');
@@ -352,34 +353,32 @@ module.exports = {
     console.log('line 348');
     console.log('line 349');
     // await this.waitForVPNProperty('VPN', 'userState', 'UserAuthenticated');
-    console.log('line 351');
-    await this.wait(7000);
-    await this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
+    // console.log('line 351');
+    // await this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
 
-    if (clickOnPostAuthenticate) {
-      await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await this.clickOnQuery(
-          queries.screenPostAuthentication.BUTTON.visible());
-      await this.wait();
-      console.log('post auth clicked');
-      await this.wait(7000);
-    }
+    // if (clickOnPostAuthenticate) {
+    //   console.log('line 360');
+    //   await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    //   await this.clickOnQuery(
+    //       queries.screenPostAuthentication.BUTTON.visible());
+    //   await this.wait();
+    //   console.log('post auth clicked');
+    // }
 
-    if (acceptTelemetry) {
-      await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await this.waitForQuery(queries.screenTelemetry.BUTTON.visible());
+    // if (acceptTelemetry) {
+    //   console.log('line 369');
+    //   await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    //   await this.waitForQuery(queries.screenTelemetry.BUTTON.visible());
 
-      await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await this.clickOnQuery(queries.screenTelemetry.BUTTON.visible());
+    //   await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    //   await this.clickOnQuery(queries.screenTelemetry.BUTTON.visible());
 
-      await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await this.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-      console.log('telemtry cleared');
-      await this.wait(7000);
-    }
+    //   await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    //   await this.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+    //   console.log('telemtry cleared');
+    // }
 
     console.log('all done');
-    await this.wait(7000);
   },
 
   async authenticateInApp(
