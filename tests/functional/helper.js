@@ -319,7 +319,7 @@ module.exports = {
       const urlObj = new URL(url);
 
       const options = {
-        hostname: urlObj.hostname,
+        hostname: '127.0.0.1',
         port: parseInt(urlObj.searchParams.get('port'), 10),
         path: '/?code=the_code',
         method: 'GET',
@@ -329,8 +329,9 @@ module.exports = {
         const req = http.request(options, res => {});
         req.on('close', resolve);
         req.on('error', error => {
-          throw new error(
-              `Unable to connect to ${urlObj.hostname} to complete the auth`);
+          throw new Error(
+              `Unable to connect to ${urlObj.hostname} to complete the
+              auth. ${error.name}, ${error.message}, ${error.stack}`);
         });
         req.end();
       });
