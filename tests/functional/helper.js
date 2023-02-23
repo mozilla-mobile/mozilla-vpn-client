@@ -353,6 +353,7 @@ module.exports = {
     console.log('line 349');
     // await this.waitForVPNProperty('VPN', 'userState', 'UserAuthenticated');
     console.log('line 351');
+    await this.wait(7000);
     await this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
 
     if (clickOnPostAuthenticate) {
@@ -360,6 +361,8 @@ module.exports = {
       await this.clickOnQuery(
           queries.screenPostAuthentication.BUTTON.visible());
       await this.wait();
+      console.log('post auth clicked');
+      await this.wait(7000);
     }
     if (acceptTelemetry) {
       await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
@@ -370,7 +373,12 @@ module.exports = {
 
       await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await this.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+      console.log('telemtry cleared');
+      await this.wait(7000);
     }
+
+    console.log('all done');
+    await this.wait(7000);
   },
 
   async authenticateInApp(
