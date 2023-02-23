@@ -183,7 +183,7 @@ bool SubscriptionData::fromJsonInternal(const QByteArray& json) {
     return false;
   }
 
-  //Payments made using USD or CAD are subject to tax
+  // Payments made using USD or CAD are subject to tax
   m_planRequiresTax = QStringList({"USD", "CAD"}).contains(m_planCurrency);
 
   // Payment
@@ -230,7 +230,8 @@ void SubscriptionData::writeSettings() {
 bool SubscriptionData::plusTax() {
   MozillaVPN* vpn = MozillaVPN::instance();
 
-  //This function is only meant to be used if there is no subscription data available
+  // This function is only meant to be used if there is no subscription data
+  // available
   Q_ASSERT(vpn->state() != MozillaVPN::StateMain);
 
   QString countryCode = vpn->location()->countryCode();

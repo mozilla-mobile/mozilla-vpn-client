@@ -189,8 +189,4 @@ VPNFlickable {
             }
         }
     }
-
-    Component.onCompleted: {
-        VPN.scheduleRefreshDataTasks(false)
-    }
 }
