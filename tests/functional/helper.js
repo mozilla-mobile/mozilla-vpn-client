@@ -333,6 +333,8 @@ module.exports = {
         method: 'GET',
       };
 
+      console.log("The request options are: ", options);
+
       await new Promise(resolve => {
         const req = http.request(options, res => {});
         req.on('close', resolve);
