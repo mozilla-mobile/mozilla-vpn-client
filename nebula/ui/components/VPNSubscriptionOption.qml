@@ -154,7 +154,7 @@ RadioDelegate {
                 lineHeightMode: Text.FixedHeight
                 text: {
                     if(col.subscriptionDuration > 0) {
-                        return VPNSubscriptionData.plusTax ? VPNI18n.SubscriptionManagementPlanMonthlyPlusTax.arg(productMonthlyPrice) : VPNI18n.SubscriptionManagementPlanMonthlyWithoutTax.arg(productMonthlyPrice)
+                        return ["USD", "CAD"].includes(productCurrencyCode) ? VPNI18n.SubscriptionManagementPlanMonthlyPlusTax.arg(productMonthlyPrice) : VPNI18n.SubscriptionManagementPlanMonthlyWithoutTax.arg(productMonthlyPrice)
                     }
                     return ""
                 }

@@ -14,7 +14,9 @@
 #include "glean/generated/pings.h"
 #include "glean/gleandeprecated.h"
 #include "glean/mzglean.h"
+#include "i18nstrings.h"
 #include "leakdetector.h"
+#include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
 #include "logoutobserver.h"
@@ -307,7 +309,6 @@ void MozillaVPN::initialize() {
     setUserState(UserAuthenticated);
     setState(StateAuthenticating);
     if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
-      scheduleTaskGetLocation();
       TaskScheduler::scheduleTask(new TaskProducts());
     }
     TaskScheduler::scheduleTask(
@@ -538,7 +539,6 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
 
   if (m_private->m_user.subscriptionNeeded()) {
     if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
-      scheduleTaskGetLocation();
       TaskScheduler::scheduleTask(new TaskProducts());
     }
     TaskScheduler::scheduleTask(
@@ -859,17 +859,6 @@ bool MozillaVPN::checkCurrentDevice() {
   settingsHolder->setPublicKey(settingsHolder->publicKey());
   resetJournalPublicAndPrivateKeys();
   return true;
-}
-
-void MozillaVPN::scheduleTaskGetLocation() {
-  // The VPN needs to be off in order to determine the client's real location.
-  if (!m_private->m_location.initialized()) {
-    Controller::State st = m_private->m_controller.state();
-    if (st == Controller::StateOff || st == Controller::StateInitializing) {
-      TaskScheduler::scheduleTask(
-          new TaskGetLocation(ErrorHandler::PropagateError));
-    }
-  }
 }
 
 void MozillaVPN::logout() {
@@ -1661,13 +1650,20 @@ void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {
           TaskGetSubscriptionDetails::NoAuthenticationFlow,
           ErrorHandler::PropagateError)};
 
-  // TaskGetLocation needs to complete before TaskServers in case this triggers
-  // an automatic server selection.
+  // The VPN needs to be off in order to determine the client's real location.
+  // And it also needs to complete before TaskServers in case this triggers an
+  // automatic server selection.
   //
   // TODO: This ordering requirement can be relaxed in the future once automatic
   // server selection is implemented upon activation. See JIRA issue
   // https://mozilla-hub.atlassian.net/browse/VPN-3726 for more information.
-  scheduleTaskGetLocation();
+  if (!m_private->m_location.initialized()) {
+    Controller::State st = m_private->m_controller.state();
+    if (st == Controller::StateOff || st == Controller::StateInitializing) {
+      TaskScheduler::scheduleTask(
+          new TaskGetLocation(ErrorHandler::PropagateError));
+    }
+  }
 
   if (refreshProducts) {
     if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {

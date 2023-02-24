@@ -36,8 +36,6 @@ class SubscriptionData final : public QObject {
   Q_PROPERTY(int creditCardExpMonth MEMBER m_creditCardExpMonth CONSTANT)
   Q_PROPERTY(int creditCardExpYear MEMBER m_creditCardExpYear CONSTANT)
 
-  Q_PROPERTY(bool plusTax READ plusTax NOTIFY plusTaxChanged)
-
  public:
   SubscriptionData();
   ~SubscriptionData();
@@ -73,8 +71,6 @@ class SubscriptionData final : public QObject {
   void reset() { m_rawJson.clear(); }
 
   void writeSettings();
-
-  bool plusTax();
 
  signals:
   void changed();

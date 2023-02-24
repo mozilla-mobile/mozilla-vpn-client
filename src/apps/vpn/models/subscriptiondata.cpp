@@ -227,21 +227,6 @@ void SubscriptionData::writeSettings() {
   SettingsHolder::instance()->setSubscriptionData(m_rawJson);
 }
 
-bool SubscriptionData::plusTax() {
-  MozillaVPN* vpn = MozillaVPN::instance();
-
-  // This function is only meant to be used if there is no subscription data
-  // available
-  Q_ASSERT(vpn->state() != MozillaVPN::StateMain);
-
-  QString countryCode = vpn->location()->countryCode();
-
-  connect(vpn->location(), &Location::changed,
-          [this]() { emit plusTaxChanged(); });
-
-  return countryCode == "US" || countryCode == "CA";
-}
-
 bool SubscriptionData::parseSubscriptionDataIap(
     const QJsonObject& subscriptionData) {
   logger.debug() << "Parse IAP start" << m_type;
