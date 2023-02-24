@@ -44,7 +44,7 @@ RUN mk-build-deps -i -r  --tool="apt-get --no-install-recommends --yes" \
 
 # Add worker user
 RUN mkdir /builds && \
-    useradd -d /builds/worker -s /bin/bash -m worker && \
+    useradd -d /builds/worker -s /bin/bash -m worker -o -u 1000 -g 1000 && \
     chown worker:worker /builds/worker && \
     mkdir /builds/worker/artifacts && \
     chown worker:worker /builds/worker/artifacts
