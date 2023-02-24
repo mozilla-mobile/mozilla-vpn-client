@@ -324,11 +324,12 @@ module.exports = {
       // makes a call to the DesktopAuthenticationListener to mock
       // a successful authentication in browser.
       const url = await this.getLastUrl();
-      const urlObj = new URL(url);
-
+      const authListenerPort = (new URL(url)).searchParams.get('port');
       const options = {
-        hostname: urlObj.hostname,
-        port: parseInt(urlObj.searchParams.get('port'), 10),
+        // We hardcode 127.0.0.1 to match listening on QHostAddress:LocalHost
+        // and hardcoded in guardian's vpnClientPixelImageAuthUrl
+        hostname: '127.0.0.1',
+        port: parseInt(authListenerPort, 10),
         path: '/?code=the_code',
         method: 'GET',
       };
