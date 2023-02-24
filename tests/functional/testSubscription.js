@@ -894,7 +894,7 @@ describe('Subscription view', function() {
           assert.equal(
               await vpn.getQueryProperty(
                   queries.screenSettings.subscriptionView.EXPIRES.visible(),
-                  'text') === data.payment.expected.expires);
+                  'text'), data.payment.expected.expires);
         }
         if (data.payment.expected.brand) {
           await vpn.waitForQuery(
