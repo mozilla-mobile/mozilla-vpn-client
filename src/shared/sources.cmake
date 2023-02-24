@@ -181,6 +181,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/signature.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/simplenetworkmanager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/simplenetworkmanager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/state/localstate.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/state/localstate.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/state/state.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/state/statebase.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/state/statebase.h

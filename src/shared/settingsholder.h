@@ -128,6 +128,9 @@ class SettingsHolder final : public QObject, public LogSerializer {
   QSettings* m_settingsJournal = nullptr;
   QMap<QString, QPair<const char*, QVariant>> m_transactionChanges;
 
+  // The LocalState class persists arbitrary state in the Settings.
+  friend class LocalState;
+
 #ifdef UNIT_TEST
   bool m_doNotClearOnDTOR = false;
   bool m_recoverFromJournal = false;
