@@ -39,6 +39,7 @@ void WasmIAPHandler::nativeRegisterProducts() {
             .arg(QRandomGenerator::system()->bounded(1, 100));
     product.m_trialDays = trialDays--;
     product.m_nonLocalizedMonthlyPrice = 123;
+    product.m_currencyCode = QStringList({"USD", "CAD", "EUR"}).at(QRandomGenerator::system()->bounded(0, 3))
   }
 
   QTimer::singleShot(200, this, []() {
