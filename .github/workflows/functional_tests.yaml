@@ -132,6 +132,15 @@ jobs:
         shell: bash
         run: ./scripts/addon/generate_all_tests.py
 
+      - name: Update /etc/hosts
+        shell: bash
+        run: |
+          echo "Current /etc/hosts"
+          cat /etc/hosts
+          echo "127.0.0.1 localhost" | sudo tee /etc/hosts
+          echo "New /etc/hosts"
+          cat /etc/hosts
+
       - name: Running ${{matrix.test.name}} Tests
         id: runTests
         uses: nick-invision/retry@v2
@@ -139,9 +148,6 @@ jobs:
           timeout_minutes: 15
           max_attempts: 3
           command: |
-            cat /etc/hosts
-            echo "127.0.0.1 localhost" | sudo tee /etc/hosts
-            cat /etc/hosts
             export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
             export HEADLESS=yes
             export TZ=Europe/London
