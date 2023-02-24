@@ -21,7 +21,7 @@ DesktopAuthenticationListener::DesktopAuthenticationListener(QObject* parent)
     : AuthenticationListener(parent) {
   MZ_COUNT_CTOR(DesktopAuthenticationListener);
 
-  m_server = new QOAuthHttpServerReplyHandler(QHostAddress::Any, this);
+  m_server = new QOAuthHttpServerReplyHandler(this);
   connect(m_server, &QAbstractOAuthReplyHandler::callbackReceived, this,
           [this](const QVariantMap& values) {
             logger.debug() << "DesktopAuthenticationListener data received";
@@ -53,7 +53,8 @@ void DesktopAuthenticationListener::start(Task* task,
                                    emailAddress));
 
   if (!m_server->isListening()) {
-    m_server->listen(QHostAddress::Any);
+    m_server->listen(QHostAddress::LocalHost);
+    m_server->listen(QHostAddress::LocalHostIPv6);
   }
 
   if (!m_server->isListening()) {
