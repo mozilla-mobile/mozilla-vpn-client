@@ -55,7 +55,7 @@ jobs:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
           GNUPGHOME: ${{ runner.temp }}/gnupg-data
-          PPA_TARGET_DISTS: bionic focal jammy kinetic
+          PPA_TARGET_DISTS: bionic focal jammy kinetic lunar
           PPA_URL: ${{ steps.gen-source.outputs.ppa-url }}
         run: |
           mkdir -m700 $GNUPGHOME
