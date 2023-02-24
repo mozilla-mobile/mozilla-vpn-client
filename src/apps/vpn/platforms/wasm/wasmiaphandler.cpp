@@ -41,6 +41,7 @@ void WasmIAPHandler::nativeRegisterProducts() {
     product.m_nonLocalizedMonthlyPrice = 123;
     product.m_currencyCode = QStringList({"USD", "CAD", "EUR"})
                                  .at(QRandomGenerator::system()->bounded(0, 3));
+  }
 
   QTimer::singleShot(200, this, []() {
     emit ProductsHandler::instance()->productsRegistrationCompleted();
