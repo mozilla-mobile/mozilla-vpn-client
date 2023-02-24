@@ -33,7 +33,7 @@ describe('User authentication in browser', function() {
     await vpn.waitForQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
   });
 
-  it.only('Completes authentication', async () => {
+  it('Completes authentication', async () => {
     await vpn.waitForInitialView();
     await vpn.authenticateInBrowser(true, true, this.ctx.wasm);
   });
