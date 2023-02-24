@@ -55,8 +55,8 @@ describe('Server list', function() {
           queries.screenHome.serverListView.COUNTRY_VIEW, countryId);
 
       if (currentCountryCode === server.code) {
-        assert(
-            await vpn.getQueryProperty(countryId, 'cityListVisible') ===
+        assert.equal(
+            await vpn.getQueryProperty(countryId, 'cityListVisible'),
             'true');
       }
 

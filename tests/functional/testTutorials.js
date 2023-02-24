@@ -37,9 +37,9 @@ describe('Tutorials', function () {
       await vpn.waitForQuery(
           queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON.visible());
 
-      assert(
+      assert.equal(
           (await vpn.getQueryProperty(
-              queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON, 'text')) ===
+              queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON, 'text')),
           'Resume tutorial');
     });
   });

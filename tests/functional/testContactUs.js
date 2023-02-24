@@ -16,9 +16,9 @@ describe('Contact us view', function() {
 
     await vpn.waitForQuery(
         queries.screenGetHelp.contactSupportView.USER_INFO.hidden());
-    assert(
+    assert.equal(
         await vpn.getQueryProperty(
-            queries.screenGetHelp.contactSupportView.USER_INFO, 'visible') ===
+            queries.screenGetHelp.contactSupportView.USER_INFO, 'visible'),
         'false');
   });
 
