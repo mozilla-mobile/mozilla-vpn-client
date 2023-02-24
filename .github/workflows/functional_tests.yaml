@@ -139,6 +139,9 @@ jobs:
           timeout_minutes: 15
           max_attempts: 3
           command: |
+            cat /etc/hosts
+            echo "127.0.0.1 localhost" | sudo tee /etc/hosts
+            cat /etc/hosts
             export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
             export HEADLESS=yes
             export TZ=Europe/London
