@@ -99,7 +99,7 @@ describe('Server list', function() {
       await vpn.wait();
 
       if (currentCountryCode === server.code) {
-        assert.only(
+        assert.equal(
             await vpn.getQueryProperty(countryId, 'cityListVisible'),
             'true');
       }
