@@ -266,7 +266,7 @@ describe('Subscription view', function() {
             interval: 'year',
             interval_count: 1
           },
-          expected: '$1.23 Yearly'
+          expected: '$1.23 Yearly + tax'
         }
       },
       {
@@ -278,7 +278,7 @@ describe('Subscription view', function() {
             interval: 'month',
             interval_count: 6
           },
-          expected: '$1.23 Half-yearly'
+          expected: '$1.23 Half-yearly + tax'
         }
       },
       {
@@ -290,7 +290,7 @@ describe('Subscription view', function() {
             interval: 'month',
             interval_count: 1
           },
-          expected: '$1.23 Monthly'
+          expected: '$1.23 Monthly + tax'
         }
       },
       {
@@ -660,7 +660,7 @@ describe('Subscription view', function() {
             interval: 'year',
             interval_count: 1
           },
-          expected: '$1.23 Yearly'
+          expected: '$1.23 Yearly + tax'
         };
       }
       if (!('payment' in data)) {
