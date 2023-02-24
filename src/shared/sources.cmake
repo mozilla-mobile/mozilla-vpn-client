@@ -4,7 +4,7 @@
 
 add_library(shared-sources INTERFACE)
 
-if(NOT MSVC)
+if(NOT MSVC AND NOT IOS)
   target_compile_options(shared-sources INTERFACE -Wall -Werror -Wno-conversion)
 endif()
 
