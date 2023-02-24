@@ -319,8 +319,10 @@ module.exports = {
       });
       await this.wait();
 
-      // We don't really want to go through the authentication flow because we
-      // are mocking everything.
+      // We don't want to go through the authentication flow because we
+      // are mocking everything. So this next chunk of code manually
+      // makes a call to the DesktopAuthenticationListener to mock
+      // a successful authentication in browser.
       const url = await this.getLastUrl();
       const urlObj = new URL(url);
 
