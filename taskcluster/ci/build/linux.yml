@@ -65,6 +65,14 @@ linux/kinetic:
         name: linux-kinetic
         type: build
 
+linux/lunar:
+    description: "Linux Build (Ubuntu/Lunar)"
+    treeherder:
+        platform: linux/lunar
+    worker:
+        docker-image: {in-tree: linux-build-lunar}
+    add-index-routes: linux-lunar
+
 linux/fedora-fc36:
     description: "Linux Build (Fedora/36)"
     treeherder:
