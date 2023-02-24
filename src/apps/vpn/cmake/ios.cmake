@@ -4,6 +4,12 @@
 
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
 
+if(IOS)
+    # This workaround will not be required anymore once Qt is updated
+    # See https://bugreports.qt.io/browse/QTBUG-93268
+    set_property(GLOBAL PROPERTY XCODE_EMIT_EFFECTIVE_PLATFORM_NAME ON)
+endif()
+
 # Configure the application bundle Info.plist
 set_target_properties(mozillavpn PROPERTIES
     OUTPUT_NAME "Mozilla VPN"

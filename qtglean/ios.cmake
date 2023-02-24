@@ -13,7 +13,7 @@ set(GLEAN_VENDORED_PATH ${CMAKE_SOURCE_DIR}/3rdparty/glean)
 
 add_library(iosglean SHARED)
 
-if(NOT MSVC)
+if(NOT MSVC AND NOT IOS)
   target_compile_options(iosglean PRIVATE -Wall -Werror -Wno-conversion)
 endif()
 

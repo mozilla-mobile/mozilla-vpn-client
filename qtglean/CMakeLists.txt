@@ -36,7 +36,7 @@ add_library(qtglean STATIC
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.cpp
 )
 
-if(NOT MSVC)
+if(NOT MSVC AND NOT IOS)
   target_compile_options(qtglean PRIVATE -Wall -Werror -Wno-conversion)
 endif()
 
