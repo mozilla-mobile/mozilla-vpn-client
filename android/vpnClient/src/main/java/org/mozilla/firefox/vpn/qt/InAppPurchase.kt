@@ -62,6 +62,7 @@ data class GooglePlaySubscriptionInfo(
     val monthlyPriceString: String,
     val monthlyPrice: Double,
     val trialDays: Int,
+    val currencyCode: String,
 )
 
 @Serializable
@@ -375,6 +376,7 @@ class InAppPurchase private constructor(ctx: Context) :
         }
 
         return GooglePlaySubscriptionInfo(
+            currencyCode = details.priceCurrencyCode
             totalPriceString = details.price,
             trialDays = trialDays,
             monthlyPriceString = monthlyPriceString,
