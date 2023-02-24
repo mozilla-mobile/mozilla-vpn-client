@@ -376,7 +376,7 @@ class InAppPurchase private constructor(ctx: Context) :
         }
 
         return GooglePlaySubscriptionInfo(
-            currencyCode = details.priceCurrencyCode
+            currencyCode = details.priceCurrencyCode,
             totalPriceString = details.price,
             trialDays = trialDays,
             monthlyPriceString = monthlyPriceString,
