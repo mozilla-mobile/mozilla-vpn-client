@@ -25,13 +25,10 @@ RUN yum-builddep -y /root/mozillavpn-rpm.spec -D "_version 0.0.1"
 #-- Worker User -------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------
 
-# Add worker user
-RUN mkdir /builds && \
-    useradd -d /builds/worker -s /bin/bash -m worker && \
-    chown worker:worker /builds/worker && \
-    mkdir /builds/worker/artifacts && \
-    chown worker:worker /builds/worker/artifacts
-
+# Setup the worker user
+# %include taskcluster/scripts/setup-worker.sh
+ADD topsrcdir/taskcluster/scripts/setup-worker.sh /root/setup-worker.sh
+RUN /root/setup-worker.sh
 WORKDIR /builds/worker/
 
 #----------------------------------------------------------------------------------------------------------------------
