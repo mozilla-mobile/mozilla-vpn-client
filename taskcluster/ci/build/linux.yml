@@ -71,7 +71,9 @@ linux/lunar:
         platform: linux/lunar
     worker:
         docker-image: {in-tree: linux-build-lunar}
-    add-index-routes: linux-lunar
+    add-index-routes:
+        name: linux-lunar
+        type: build
 
 linux/fedora-fc36:
     description: "Linux Build (Fedora/36)"
