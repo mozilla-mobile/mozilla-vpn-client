@@ -155,29 +155,28 @@ void NotificationHandler::showNotification() {
         ServerData* serverData = vpn->serverData();
 
         if (serverData->multihop()) {
-        QString localizedEntryCityName =
-            vpn->controller()
-                ->currentServer()
-                .localizedEntryCityName();
+          QString localizedEntryCityName =
+              vpn->controller()->currentServer().localizedEntryCityName();
 
-        QString localizedExitCityName =
-            vpn->controller()->currentServer().localizedExitCityName();
+          QString localizedExitCityName =
+              vpn->controller()->currentServer().localizedExitCityName();
 
-            notifyInternal(None,
-                          I18nStrings::instance()->t(
-                              I18nStrings::NotificationsVPNConnectedTitle),
-                          I18nStrings::instance()
-                              ->t(I18nStrings::NotificationsVPNMultihopConnectedMessage)
-                              .arg(localizedExitCityName, localizedEntryCityName),
-                          NOTIFICATION_TIME_MSEC);                    
+          notifyInternal(
+              None,
+              I18nStrings::instance()->t(
+                  I18nStrings::NotificationsVPNConnectedTitle),
+              I18nStrings::instance()
+                  ->t(I18nStrings::NotificationsVPNMultihopConnectedMessage)
+                  .arg(localizedExitCityName, localizedEntryCityName),
+              NOTIFICATION_TIME_MSEC);
         } else {
           notifyInternal(None,
-                        I18nStrings::instance()->t(
-                            I18nStrings::NotificationsVPNConnectedTitle),
-                        I18nStrings::instance()
-                            ->t(I18nStrings::NotificationsVPNConnectedMessage)
-                            .arg(localizedCityName),
-                        NOTIFICATION_TIME_MSEC);
+                         I18nStrings::instance()->t(
+                             I18nStrings::NotificationsVPNConnectedTitle),
+                         I18nStrings::instance()
+                             ->t(I18nStrings::NotificationsVPNConnectedMessage)
+                             .arg(localizedCityName),
+                         NOTIFICATION_TIME_MSEC);
         }
       }
       return;
