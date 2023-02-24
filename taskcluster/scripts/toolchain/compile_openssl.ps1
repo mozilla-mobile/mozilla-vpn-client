@@ -22,9 +22,6 @@ Set-Location openssl-OpenSSL_1_1_1m
 
 $NASM_PATH = resolve-path ../nasm-2.15.05
 $env:PATH = "$FETCHES_PATH/VisualStudio/VC/Tools/MSVC/14.30.30705/bin/Hostx64/x64;$env:PATH;$NASM_PATH"
-$env:LD = resolve-path "$FETCHES_PATH/VisualStudio/VC/Tools/MSVC/14.30.30705/bin/Hostx64/x64/link.exe"
-
-where link
 
 if(!(Test-Path ../SSL)){
     New-Item -Path ../SSL -ItemType "directory"
