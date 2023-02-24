@@ -15,14 +15,10 @@ print N ""
 export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
 
-print Y "Installing ruby dependencies..."
-# use --user-install for permissions
-gem install xcodeproj --user-install || die
-export PATH="$HOME/.gem/ruby/2.6.0/bin:$PATH"
-
 print Y "Installing rust..."
 curl https://sh.rustup.rs -sSf | sh -s -- -y || die
 export PATH="$HOME/.cargo/bin:$PATH"
+rustup target add x86_64-apple-ios aarch64-apple-ios
 
 print Y "Installing go..."
 curl -O https://dl.google.com/go/go1.17.6.darwin-amd64.tar.gz
@@ -34,20 +30,16 @@ print Y "Installing python dependencies..."
 python3 -m pip install -r requirements.txt --user
 export PYTHONIOENCODING="UTF-8"
 
-
 print Y "Installing QT..."
 PROJECT_HOME=`pwd`
-QTVERSION=$(ls ../../fetches/qt_ios)
+QTVERSION=$(ls ${MOZ_FETCHES_DIR}/qt_ios)
 echo "Using QT:$QTVERSION"
 
-cd ../../fetches/qt_ios/$QTVERSION/ios || die
-export QT_IOS_BIN=`pwd`/bin
-export PATH=$QT_IOS_BIN:$PATH
+print Y "Installing Homebrew..."
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-cd $PROJECT_HOME
-# So ios qmake is just a wrapper script
-# and expects to find pwd/qt_ios/mac/bin/qmake >:c
-ln -s ../../fetches/qt_ios/ qt_ios
+print Y "Installing cmake..."
+brew install cmake
 
 print Y "Get the submodules..."
 git submodule update --init --depth 1 || die "Failed to init submodules"
@@ -71,11 +63,12 @@ NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 EOF
 
 # NOTE: In case we want to release this, we need to get that token, see android-release.sh
-./scripts/macos/apple_compile.sh ios -q ../../fetches/qt_ios/$QTVERSION/macos/bin -a ReallyNotAnAPIToken || die
+# ./scripts/macos/apple_compile.sh ios -q ../../fetches/qt_ios/$QTVERSION/macos/bin -a ReallyNotAnAPIToken || die
+print Y "Building xcodeproj..."
+../../fetches/qt_ios/$QTVERSION/ios/bin/qt-cmake -S . -B ${MOZ_FETCHES_DIR}/build -GNinja
 
 print Y "Compiling..."
-# TODO: apple_compile.sh ios generated "MozillaVPN.xcodeproj"; the mac one generated "Mozilla VPN.xcodeproj"
-xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO -project MozillaVPN.xcodeproj || die
+xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO -project ${MOZ_FETCHES_DIR}/build/Mozilla\ VPN.xcodeproj || die
 
 print Y "Exporting the artifact..."
 mkdir -p tmp || die
