@@ -271,6 +271,9 @@ notifications:
   VPNConnectedMessage:
     value: "Connected to %1"
     comment: "%1 is the name of the city the VPN is connected to."
+  VPNMultihopConnectedMessage:
+    value: "Connected to %1, through %2"
+    comment: "%1 is the name of the exit server, %2 is the name of the entry server."
   VPNDisconnectedTitle: VPN Disconnected
   VPNDisconnectedMessage:
     value: "Disconnected from %1"
