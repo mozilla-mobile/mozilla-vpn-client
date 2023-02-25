@@ -1,0 +1,31 @@
+name: I18n Submodule Update
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+
+jobs:
+  i18n-update-check:
+    name: I18n Update Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+
+      - name: Update i18n submodule
+        shell: bash
+        run: |
+          ## Check if there are updates.
+          git submodule init i18n
+          git submodule update --remote i18n
+          if [ -z "$(git ls-files -m i18n)" ]; then
+            exit 0
+          fi
+
+          ## Commit an update to the repository.
+          git config --local user.email "${{github.actor}}@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add i18n
+          git commit -m "Update i18m submodule"
+
+          ## Push the commit
+          git push
