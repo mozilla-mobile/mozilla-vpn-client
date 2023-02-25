@@ -12,7 +12,7 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v3
 
-      - name: Update i18n submodule
+      - name: Update i18n submodule for default branch
         shell: bash
         run: |
           ## Check if there are updates.
@@ -30,3 +30,30 @@ jobs:
 
           ## Push the commit
           git push
+      
+      - name: Update i18n submodule for release branches
+        shell: bash
+        run: |
+          for GITREF in $(git ls-remote ${{github.repositoryUrl}} --refs 'refs/heads/releases/*' | awk '{print $2}'); do
+            BRANCH=$(echo $GITREF | sed 's/refs\/heads\///')
+            git checkout $BRANCH
+
+            ## Do not update release branches once they have been tagged.
+            if [ -n "$(git tag --points-at $BRANCH)" ];
+              continue
+            fi
+
+            ## Check to see if there are string updates.
+            git submodule init i18n
+            git submodule update --remote i18n
+            if [ -z "$(git ls-files -m i18n)" ]; then
+              continue
+            fi
+
+            ## Commit an update to the repository.
+            git add i18n
+            git config --local user.email "${{github.repository_owner}}@users.noreply.github.com"
+            git config --local user.name "github-actions[bot]"
+            git commit -m "Update i18m submodule"
+            git push ${{github.repositoryUrl}} $BRANCH
+          done
