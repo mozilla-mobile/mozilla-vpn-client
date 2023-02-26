@@ -19,26 +19,26 @@ describe('Telemetry view', function() {
   }
 
   it('Accept telemetry', async () => {
-    assert(await vpn.getSetting('telemetryPolicyShown') === false);
-    assert(await vpn.getSetting('gleanEnabled') === true);
+    assert.equal(await vpn.getSetting('telemetryPolicyShown'), false);
+    assert.equal(await vpn.getSetting('gleanEnabled'), true);
     await _getToTelemetryPage();
     await vpn.clickOnQuery(queries.screenTelemetry.BUTTON.visible());
 
     await vpn.waitForCondition(
         async () => await vpn.getSetting('telemetryPolicyShown') === true);
-    assert(await vpn.getSetting('telemetryPolicyShown') === true);
-    assert(await vpn.getSetting('gleanEnabled') === true);
+    assert.equal(await vpn.getSetting('telemetryPolicyShown'), true);
+    assert.equal(await vpn.getSetting('gleanEnabled'), true);
   });
 
   it('Deny telemetry', async () => {
-    assert(await vpn.getSetting('telemetryPolicyShown') === false);
-    assert(await vpn.getSetting('gleanEnabled') === true);
+    assert.equal(await vpn.getSetting('telemetryPolicyShown'), false);
+    assert.equal(await vpn.getSetting('gleanEnabled'), true);
     await _getToTelemetryPage();
     await vpn.clickOnQuery(queries.screenTelemetry.DECLINE_LINK.visible());
 
     await vpn.waitForCondition(
         async () => await vpn.getSetting('telemetryPolicyShown') === true);
-    assert(await vpn.getSetting('telemetryPolicyShown') === true);
-    assert(await vpn.getSetting('gleanEnabled') === false);
+    assert.equal(await vpn.getSetting('telemetryPolicyShown'), true);
+    assert.equal(await vpn.getSetting('gleanEnabled'), false);
   });
 });

@@ -36,9 +36,9 @@ describe('Onboarding', function() {
            queries.screenInitialize.SWIPE_VIEW, 'currentIndex', 0);
        await vpn.wait();
        await vpn.waitForQuery(queries.screenInitialize.PANEL_TITLE.visible());
-       assert(
+       assert.equal(
            await vpn.getQueryProperty(
-               queries.screenInitialize.PANEL_TITLE, 'text') === 'Mozilla VPN');
+               queries.screenInitialize.PANEL_TITLE, 'text'), 'Mozilla VPN');
      });
 
   it('Panel description is set correctly based on StackView currentIndex',
@@ -58,9 +58,9 @@ describe('Onboarding', function() {
        await vpn.setQueryProperty(
            queries.screenInitialize.SWIPE_VIEW, 'currentIndex', 2);
        await vpn.wait();
-       assert(
+       assert.equal(
            await vpn.getQueryProperty(
-               queries.screenInitialize.PANEL_TITLE.visible(), 'text') ===
+               queries.screenInitialize.PANEL_TITLE.visible(), 'text'),
            'Protect your privacy');
        const descriptionText = await vpn.getQueryProperty(
            queries.screenInitialize.PANEL_DESCRIPTION, 'text');

@@ -84,10 +84,10 @@ describe('Addons', function () {
     // Confirmation dialog for settings-rollback
     await vpn.waitForQuery(
       queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON.visible());
-    assert(
+    assert.equal(
       (await vpn.getQueryProperty(
         queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON.visible(),
-        'text')) === 'Continue');
+        'text')), 'Continue');
     await vpn.clickOnQuery(
       queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON.visible());
 
@@ -96,11 +96,11 @@ describe('Addons', function () {
         'Vienna';
     });
 
-    assert(
-      await vpn.getVPNProperty('VPNCurrentServer', 'exitCityName') ===
+    assert.equal(
+      await vpn.getVPNProperty('VPNCurrentServer', 'exitCityName'),
       'Vienna');
-    assert(
-      await vpn.getVPNProperty('VPNCurrentServer', 'exitCountryCode') ===
+    assert.equal(
+      await vpn.getVPNProperty('VPNCurrentServer', 'exitCountryCode'),
       'at');
 
     await vpn.waitForQuery(queries.screenHome.TUTORIAL_LEAVE.visible());
@@ -110,10 +110,10 @@ describe('Addons', function () {
     // Final dialog
     await vpn.waitForQuery(
       queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON.visible());
-    assert(
+    assert.equal(
       (await vpn.getQueryProperty(
         queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON.visible(),
-        'text')) === 'Let’s go!');
+        'text')), 'Let’s go!');
     await vpn.clickOnQuery(
       queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON.visible());
 
@@ -122,11 +122,11 @@ describe('Addons', function () {
         exitCityName;
     });
 
-    assert(
-      await vpn.getVPNProperty('VPNCurrentServer', 'exitCityName') ===
+    assert.equal(
+      await vpn.getVPNProperty('VPNCurrentServer', 'exitCityName'),
       exitCityName);
-    assert(
-      await vpn.getVPNProperty('VPNCurrentServer', 'exitCountryCode') ===
+    assert.equal(
+      await vpn.getVPNProperty('VPNCurrentServer', 'exitCountryCode'),
       exitCountryCode);
   });
 
