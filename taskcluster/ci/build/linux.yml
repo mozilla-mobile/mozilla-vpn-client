@@ -31,7 +31,9 @@ linux/bionic:
         platform: linux/bionic
     worker:
         docker-image: {in-tree: linux-build-bionic}
-    add-index-routes: linux-bionic
+    add-index-routes:
+        name: linux-bionic
+        type: build
 
 linux/focal:
     description: "Linux Build (Ubuntu/Focal)"
@@ -39,7 +41,9 @@ linux/focal:
         platform: linux/focal
     worker:
         docker-image: {in-tree: linux-build-focal}
-    add-index-routes: linux-focal
+    add-index-routes:
+        name: linux-focal
+        type: build
 
 linux/jammy:
     description: "Linux Build (Ubuntu/Jammy)"
@@ -47,7 +51,9 @@ linux/jammy:
         platform: linux/jammy
     worker:
         docker-image: {in-tree: linux-build-jammy}
-    add-index-routes: linux-jammy
+    add-index-routes:
+        name: linux-jammy
+        type: build
 
 linux/kinetic:
     description: "Linux Build (Ubuntu/Kinetic)"
@@ -55,7 +61,19 @@ linux/kinetic:
         platform: linux/kinetic
     worker:
         docker-image: {in-tree: linux-build-kinetic}
-    add-index-routes: linux-kinetic
+    add-index-routes:
+        name: linux-kinetic
+        type: build
+
+linux/lunar:
+    description: "Linux Build (Ubuntu/Lunar)"
+    treeherder:
+        platform: linux/lunar
+    worker:
+        docker-image: {in-tree: linux-build-lunar}
+    add-index-routes:
+        name: linux-lunar
+        type: build
 
 linux/fedora-fc36:
     description: "Linux Build (Fedora/36)"
@@ -63,7 +81,9 @@ linux/fedora-fc36:
         platform: linux/fedora-fc36
     worker:
         docker-image: {in-tree: linux-build-fedora-fc36}
-    add-index-routes: linux-fedora-fc36
+    add-index-routes:
+        name: linux-fedora-fc36
+        type: build
 
 linux/fedora-fc37:
     description: "Linux Build (Fedora/37)"
@@ -71,5 +91,6 @@ linux/fedora-fc37:
         platform: linux/fedora-fc37
     worker:
         docker-image: {in-tree: linux-build-fedora-fc37}
-    add-index-routes: linux-fedora-fc37
-
+    add-index-routes:
+        name: linux-fedora-fc37
+        type: build

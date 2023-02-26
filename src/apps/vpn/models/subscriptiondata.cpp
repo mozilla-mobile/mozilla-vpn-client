@@ -16,6 +16,8 @@
 #include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/location.h"
+#include "mozillavpn.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
 
@@ -181,6 +183,9 @@ bool SubscriptionData::fromJsonInternal(const QByteArray& json) {
     return false;
   }
 
+  // Payments made using USD or CAD are subject to tax
+  m_planRequiresTax = QStringList({"USD", "CAD"}).contains(m_planCurrency);
+
   // Payment
   QJsonObject paymentData = obj["payment"].toObject();
 
@@ -283,6 +288,7 @@ void SubscriptionData::resetData() {
   m_expiresOn = 0;
   m_isCancelled = false;
   m_isPrivacyBundleSubscriber = false;
+  m_planRequiresTax = false;
 
   m_planBillingInterval = BillingIntervalUnknown;
   m_planAmount = 0;

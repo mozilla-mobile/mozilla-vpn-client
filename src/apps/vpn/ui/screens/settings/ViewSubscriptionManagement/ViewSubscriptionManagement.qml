@@ -284,13 +284,16 @@ VPNViewBase {
         switch (VPNSubscriptionData.planBillingInterval) {
             case VPNSubscriptionData.BillingIntervalMonthly:
                 // {¤amount} Monthly
-                return VPNI18n.SubscriptionManagementPlanValueMonthly.arg(localizedCurrency);
+                return VPNSubscriptionData.planRequiresTax ? VPNI18n.SubscriptionManagementPlanValueMonthlyPlusTax.arg(localizedCurrency)
+                                : VPNI18n.SubscriptionManagementPlanValueMonthly.arg(localizedCurrency);
             case VPNSubscriptionData.BillingIntervalHalfYearly:
                 // {¤amount} Half-yearly
-                return VPNI18n.SubscriptionManagementPlanValueHalfYearly.arg(localizedCurrency);
+                return VPNSubscriptionData.planRequiresTax ? VPNI18n.SubscriptionManagementPlanValueHalfYearlyPlusTax.arg(localizedCurrency)
+                                : VPNI18n.SubscriptionManagementPlanValueHalfYearly.arg(localizedCurrency);
             case VPNSubscriptionData.BillingIntervalYearly:
                 // {¤amount} Yearly
-                return VPNI18n.SubscriptionManagementPlanValueYearly.arg(localizedCurrency);
+                return VPNSubscriptionData.planRequiresTax ? VPNI18n.SubscriptionManagementPlanValueYearlyPlusTax.arg(localizedCurrency)
+                                : VPNI18n.SubscriptionManagementPlanValueYearly.arg(localizedCurrency);
             default:
                 // If we made it here something went wrong. In case we encounter
                 // an unhandled TypeBillingInterval we should have should have

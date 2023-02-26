@@ -98,6 +98,12 @@ tasks:
         definition: linux-dpkg-build
         args:
             DOCKER_BASE_IMAGE: ubuntu:kinetic
+    linux-build-lunar:
+        symbol: I(linux-lunar)
+        definition: linux-dpkg-build
+        cache: false ## Disable caching while Ubuntu/Lunar is in beta.
+        args:
+            DOCKER_BASE_IMAGE: ubuntu:lunar
     linux-build-fedora-fc36:
         symbol: I(linux-fedora-fc36)
         definition: linux-rpm-build
