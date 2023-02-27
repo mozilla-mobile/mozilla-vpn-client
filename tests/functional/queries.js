@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-class QmlQueryComposer {
+ class QmlQueryComposer {
   constructor(path) {
     this.path = path;
   }
@@ -205,26 +205,25 @@ const screenGetHelp = {
   },
 
   contactSupportView: {
-    UNAUTH_USER_INPUTS: new QmlQueryComposer('//contactUs-unauthedUserInputs'),
     USER_INFO: new QmlQueryComposer('//contactUs-userInfo'),
-  }
-};
+    UNAUTH_USER_INPUT: new QmlQueryComposer('//contactUs-unauthedUserInputs'),
+    EMAIL_INPUT: new QmlQueryComposer('//contactUs-emailTextInput'),
+    CONFIRM_EMAIL_INPUTS: new QmlQueryComposer('//contactUs-confirmEmailTextInput'),
+    CATEGORY_DROPDOWN: new QmlQueryComposer('//contactUs-categoryDropDown'),
+    CATEGORY_DROPDOWN_TEXT: new QmlQueryComposer('//contactUs-categoryDropDown-comboBox'),
 
-const appExclusionsView = {
-  ADD_APPLICATION_BUTTON: new QmlQueryComposer('//addApplication'),
-  APP_LIST: new QmlQueryComposer('//appList'),
-  APP_ROW1: new QmlQueryComposer('//app-0'),
-  CHECKBOX1: new QmlQueryComposer('//app-0/checkbox'),
-  CHECKBOX2: new QmlQueryComposer('//app-1/checkbox'),
-  CLEAR_ALL: new QmlQueryComposer('//clearAll'),
-  SCREEN: new QmlQueryComposer('//appPermissions')
+    SUBJECT_INPUT: new QmlQueryComposer('//contactUs-subjectTextInput'),
+    DESCRIBE_TEXTAREA: new QmlQueryComposer('//contactUs-textAreaInput-textArea'),
+    SUBMIT_BUTTON: new QmlQueryComposer('//contactUs-submitButton'),
+    CANCEL_BUTTON: new QmlQueryComposer('//contactUs-cancelButton'),
+  }
 };
 
 const screenSettings = {
   ABOUT_US: new QmlQueryComposer('//settingsAboutUs'),
   BACK: new QmlQueryComposer('//settings-back'),
   GET_HELP: new QmlQueryComposer('//settingsGetHelp'),
-  APP_EXCLUSIONS: new QmlQueryComposer('//appExclusionSettings'),
+  APP_PERMISSIONS: new QmlQueryComposer('//appPermissionSettings'),
   PRIVACY: new QmlQueryComposer('//privacySettings'),
   MY_DEVICES: new QmlQueryComposer('//settingsDevice'),
   SCREEN: new QmlQueryComposer('//settingsView-flickable'),
@@ -419,7 +418,6 @@ const global = {
 };
 
 module.exports = {
-  appExclusionsView,
   screenHome,
   screenInitialize,
   screenPostAuthentication,

@@ -16,7 +16,6 @@ Item {
     property bool enabled: true
 
     id: root
-
     Layout.maximumHeight: VPNTheme.theme.rowHeight * 3
     Layout.minimumHeight: VPNTheme.theme.rowHeight * 3
     Layout.preferredHeight: VPNTheme.theme.rowHeight * 3
@@ -37,6 +36,7 @@ Item {
         }
 
         TextArea.flickable: TextArea {
+            objectName: root.objectName + "-textArea"
             property int maxCharacterCount: 1000
             property int textLength: textArea.text.length
             property bool forceBlurOnOutsidePress: true
@@ -158,4 +158,3 @@ Item {
     }
 
 }
-

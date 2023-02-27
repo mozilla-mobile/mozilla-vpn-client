@@ -85,7 +85,7 @@ VPNViewBase {
 
                     VPNTextField {
                         id: emailInput
-
+                        objectName: "contactUs-emailTextInput"
                         verticalAlignment: Text.AlignVCenter
                         Layout.fillWidth: true
                         hasError: !VPNAuthInApp.validateEmailAddress(emailInput.text)
@@ -95,7 +95,7 @@ VPNViewBase {
 
                 VPNTextField {
                     id: confirmEmailInput
-
+                    objectName: "contactUs-confirmEmailTextInput"
                     verticalAlignment: Text.AlignVCenter
                     Layout.fillWidth: true
                     hasError: !VPNAuthInApp.validateEmailAddress(confirmEmailInput.text) || emailInput.text != confirmEmailInput.text
@@ -133,6 +133,7 @@ VPNViewBase {
 
                 VPNComboBox {
                     id: dropDown
+                    objectName: "contactUs-categoryDropDown"
                     placeholderText: VPNI18n.InAppSupportWorkflowDropdownLabel
                     model: VPNSupportCategoryModel
                     Layout.fillWidth: true
@@ -142,7 +143,7 @@ VPNViewBase {
 
             VPNTextField {
                 id: subjectInput
-
+                objectName: "contactUs-subjectTextInput"
                 verticalAlignment: Text.AlignVCenter
                 Layout.alignment: Qt.AlignHCenter
                 Layout.fillWidth: true
@@ -151,6 +152,7 @@ VPNViewBase {
 
             VPNTextArea {
                 id: textArea
+                objectName: "contactUs-textAreaInput"
                 placeholderText: VPNI18n.InAppSupportWorkflowIssueFieldPlaceholder
                 Layout.alignment: Qt.AlignHCenter
                 Layout.fillWidth: true
@@ -183,6 +185,7 @@ VPNViewBase {
                 }
 
                 VPNLinkButton {
+                    objectName: "contactUs-subjectTextInput"
                     anchors.horizontalCenter: parent.horizontalCenter
                     labelText: VPNI18n.InAppSupportWorkflowPrivacyNoticeLinkText
                     onClicked: VPNUrlOpener.openUrlLabel("privacyNotice")
@@ -194,6 +197,7 @@ VPNViewBase {
 
                 VPNButton {
                     text: VPNI18n.InAppSupportWorkflowSupportPrimaryButtonText
+                    objectName: "contactUs-submitButton"
                     onClicked: {
                       MZGleanDeprecated.recordGleanEvent("supportCaseSubmitted");
                       Glean.sample.supportCaseSubmitted.record();
@@ -217,6 +221,7 @@ VPNViewBase {
                 }
 
                 VPNCancelButton {
+                    objectName: "contactUs-cancelButton"
                     Layout.minimumHeight: VPNTheme.theme.rowHeight
                     Layout.preferredWidth: width
                     Layout.alignment: Qt.AlignHCenter

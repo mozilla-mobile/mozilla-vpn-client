@@ -20,6 +20,14 @@ const UserData = {
   }],
 };
 
+const supportTicketData = {
+  email: "test@mozilla.com",
+  subject: "automated subject",
+  issueText: "automated issue text",
+  logs: "automated logs",
+  category: "other",
+}
+
 const SubscriptionDetails = {
   plan: {amount: 123, currency: 'usd', interval: 'year', interval_count: 1},
   payment: {
@@ -57,6 +65,13 @@ const VALIDATORS = {
     },
     required: ['name', 'unique_id', 'pubkey']
   },
+  supportTicketData: {
+    email: {type: 'string'},
+    subject: {type: 'string'},
+    issueText: {type: 'string'},
+    logs: {type: 'string'},
+    category: {type: 'string'},
+  }
 };
 
 exports.validators = VALIDATORS;
@@ -102,6 +117,12 @@ exports.endpoints = {
 
     '/api/v1/vpn/account':
         {status: 200, requiredHeaders: ['Authorization'], body: UserData},
+
+    '/api/v1/vpn/createSupportTicket':
+        {status: 201, requiredHeaders: ['Authorization'], body: supportTicketData},
+
+    '/api/v1/vpn/createGuestSupportTicket':
+        {status: 201, body: supportTicketData},
 
     '/api/v1/vpn/servers': {
       status: 200,
