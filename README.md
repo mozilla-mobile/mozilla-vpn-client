@@ -262,6 +262,9 @@ This will produce the application bundle in `build/src/Mozilla VPN.app`.
 
 > **Note**: to open the application from the command line, run `open -n build/src/Mozilla\ VPN.app`.
 
+> **Note**: To enable the VPN built from source you either need to install and run the released VPN client in the background, or run Daemon manually from the terminal. 
+To run Daemon from terminal go to `/Users/mozilla/Desktop/mozilla-vpn-client/build/src/Mozilla VPN.app/Contents/MacOS` and run `sudo ./Mozilla\ VPN macosdaemon`.
+
 5.  **Optional**: To build the installer package, we can specify the `pkg` target when
 building:
 ```bash
