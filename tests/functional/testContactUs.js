@@ -20,6 +20,7 @@ async function openContactUsInSettings(isAuthenticated) {
   }
 
   await vpn.waitForQuery(queries.screenGetHelp.LINKS.visible());
+  await vpn.wait();
   await vpn.waitForQueryAndClick(queries.screenGetHelp.SUPPORT.visible());
   await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 }
@@ -224,7 +225,7 @@ describe("Contact us view - authenticated user", function () {
   };
 
   it("VPNUserInfo visible to authenticated users", async () => {
-    await openContactUsInSettings();
+    await openContactUsInSettings(true);
 
     await vpn.waitForQuery(
       queries.screenGetHelp.contactSupportView.USER_INFO.visible()
@@ -232,7 +233,7 @@ describe("Contact us view - authenticated user", function () {
   });
 
   it("VPNUserInfo is disabled", async () => {
-    await openContactUsInSettings();
+    await openContactUsInSettings(true);
 
     await vpn.waitForQuery(
       queries.screenGetHelp.contactSupportView.USER_INFO.visible().disabled()
@@ -288,7 +289,7 @@ describe("Contact us view - authenticated user", function () {
 
   it("Email inputs are not visible to authenticated user", async () => {
     it("Email inputs are visible to unauthenticated user", async () => {
-      await openContactUsInSettings();
+      await openContactUsInSettings(true);
 
       await vpn.waitForQuery(
         queries.screenGetHelp.contactSupportView.UNAUTH_USER_INPUT.hidden()
