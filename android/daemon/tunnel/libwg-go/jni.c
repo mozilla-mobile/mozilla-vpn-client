@@ -23,11 +23,17 @@ extern char* wgVersion();
 
 JNIEXPORT jint JNICALL Java_org_mozilla_firefox_vpn_daemon_VPNService_wgTurnOn(
     JNIEnv* env, jclass c, jstring ifname, jint tun_fd, jstring settings) {
+  if (ifname == NULL) {
+    return -1;
+  }
   const char* ifname_str = (*env)->GetStringUTFChars(env, ifname, 0);
   if (ifname_str == NULL) {
     return -1;
   }
   size_t ifname_len = (*env)->GetStringUTFLength(env, ifname);
+  if (settings == NULL) {
+    return -1;
+  }
   const char* settings_str = (*env)->GetStringUTFChars(env, settings, 0);
   if (settings_str == NULL) {
     return -1;

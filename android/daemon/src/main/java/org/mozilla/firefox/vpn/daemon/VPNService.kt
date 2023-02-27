@@ -201,21 +201,22 @@ class VPNService : android.net.VpnService() {
         return intent
     }
 
-    fun turnOn(json: JSONObject, useFallbackServer: Boolean = false) {
+    fun turnOn(json: JSONObject?, useFallbackServer: Boolean = false) {
+        if (json == null) {
+            throw Error("no json config provided")
+        }
         Log.sensitive(tag, json.toString())
         val wireguard_conf = buildWireugardConfig(json, useFallbackServer)
+        val wgConfig: String = wireguard_conf.toWgUserspaceString()
+        if (wgConfig.isEmpty()) {
+            throw Error("WG_Userspace config is empty, can't continue")
+        }
         mCityname = json.getString("city")
 
         if (checkPermissions() != null) {
             throw Error("turn on was called without vpn-permission!")
-            return
         }
-        if (currentTunnelHandle != -1) {
-            Log.i(tag, "Currently have a connection, start switching")
-            // Turn the tunnel down because this might be a switch
-            wgTurnOff(currentTunnelHandle)
-        }
-        val wgConfig: String = wireguard_conf!!.toWgUserspaceString()
+
         val builder = Builder()
         setupBuilder(wireguard_conf, builder)
         builder.setSession("mvpn0")
@@ -224,11 +225,15 @@ class VPNService : android.net.VpnService() {
                 Log.e(tag, "Activation Error: did not get a TUN handle")
                 return
             }
+            // We should have everything to establish a new connection, turn down the old tunnel now.
+            if (currentTunnelHandle != -1) {
+                Log.i(tag, "Currently have a connection, close old handle")
+                wgTurnOff(currentTunnelHandle)
+            }
             currentTunnelHandle = wgTurnOn("mvpn0", tun.detachFd(), wgConfig)
         }
         if (currentTunnelHandle < 0) {
             throw Error("Activation Error Wireguard-Error -> $currentTunnelHandle")
-            return
         }
         protect(wgGetSocketV4(currentTunnelHandle))
         protect(wgGetSocketV6(currentTunnelHandle))
@@ -267,10 +272,11 @@ class VPNService : android.net.VpnService() {
     fun reconnect(forceFallBack: Boolean = false) {
         // Save the current timestamp - so that a silent switch won't
         // reset the timer in the app.
-        var currentConnectionTime = mConnectionTime
+        val currentConnectionTime = mConnectionTime
 
-        if (this.mConfig == null) {
-            // If we don't have a saved conf, retrieve the last connection from the Storage
+        val config = if (this.mConfig != null) {
+            this.mConfig
+        } else {
             val prefs = Prefs.get(this)
             val lastConfString = prefs.getString("lastConf", "")
             if (lastConfString.isNullOrEmpty()) {
@@ -279,12 +285,23 @@ class VPNService : android.net.VpnService() {
                     tag,
                     "VPN service was triggered without defining a Server or having a tunnel"
                 )
-                return
+                throw Error("no config to use")
             }
-            this.mConfig = JSONObject(lastConfString)
+            JSONObject(lastConfString)
         }
+
         Log.v(tag, "Try to reconnect tunnel with same conf")
-        this.turnOn(this.mConfig!!, forceFallBack)
+        try {
+            this.turnOn(config, forceFallBack)
+        } catch (e: Exception) {
+            Log.e(
+                tag,
+                "VPN service - Reconnect failed"
+            )
+            // TODO: If we end up here, we might have screwed up the connection.
+            // we should put out a notification that the user go into the app and does a manual
+            // connection.
+        }
         if (currentConnectionTime != 0.toLong()) {
             // In case we have had a connection timestamp,
             // restore that, so that the silent switch is not
