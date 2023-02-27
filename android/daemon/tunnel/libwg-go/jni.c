@@ -17,6 +17,7 @@ extern int wgTurnOn(struct go_string ifname, int tun_fd,
 extern void wgTurnOff(int handle);
 extern int wgGetSocketV4(int handle);
 extern int wgGetSocketV6(int handle);
+extern int wgGetLatestHandle();
 extern char* wgGetConfig(int handle);
 extern char* wgVersion();
 
@@ -57,6 +58,12 @@ Java_org_mozilla_firefox_vpn_daemon_VPNService_wgGetSocketV6(JNIEnv* env,
                                                              jclass c,
                                                              jint handle) {
   return wgGetSocketV6(handle);
+}
+
+JNIEXPORT jint JNICALL
+Java_org_mozilla_firefox_vpn_daemon_VPNService_wgGetLatestHandle(JNIEnv* env,
+                                                                 jclass c) {
+  return wgGetLatestHandle();
 }
 
 JNIEXPORT jstring JNICALL

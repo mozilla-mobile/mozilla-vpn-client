@@ -224,4 +224,10 @@ func wgVersion() *C.char {
 	return C.CString("unknown")
 }
 
+//export wgGetLatestHandle
+func wgGetLatestHandle() int32 {
+	return int32(len(tunnelHandles) -1)
+}
+
+
 func main() {}
