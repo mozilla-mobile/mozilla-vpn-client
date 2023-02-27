@@ -17,14 +17,14 @@ dotenv.config();
 
 const fs = require('fs');
 const {execSync, spawn} = require('child_process');
-const vpn = require('./helper.js');
-const vpnWS = require('./helperWS.js');
+const vpn = require('../helper.js');
+const vpnWS = require('../helperWS.js');
 
-const fxaServer = require('./servers/fxa.js');
-const guardian = require('./servers/guardian.js');
-const addonServer = require('./servers/addon.js');
-const networkBenchmark = require('./servers/networkBenchmark.js');
-const captivePortalServer = require('./servers/captivePortalServer.js');
+const fxaServer = require('../servers/fxa.js');
+const guardian = require('../servers/guardian.js');
+const addonServer = require('../servers/addon.js');
+const networkBenchmark = require('../servers/networkBenchmark.js');
+const captivePortalServer = require('../servers/captivePortalServer.js');
 
 const app = process.env.MVPN_BIN;
 let vpnProcess = null;
