@@ -56,7 +56,13 @@ TaskPurchase::TaskPurchase(Op op) : Task("TaskPurchase"), m_op(op) {
 TaskPurchase::~TaskPurchase() { MZ_COUNT_DTOR(TaskPurchase); }
 
 void TaskPurchase::run() {
-  NetworkRequest* request = new NetworkRequest(this, 200);
+  NetworkRequest* request = new NetworkRequest(this,
+#ifdef MZ_IOS
+                                               201
+#else
+                                               200
+#endif
+  );
   request->auth(MozillaVPN::authorizationHeader());
 
   switch (m_op) {
