@@ -86,7 +86,7 @@ MZViewBase {
 
                     MZTextField {
                         id: emailInput
-
+                        objectName: "contactUs-emailTextInput"
                         verticalAlignment: Text.AlignVCenter
                         Layout.fillWidth: true
                         hasError: !MZAuthInApp.validateEmailAddress(emailInput.text)
@@ -96,7 +96,7 @@ MZViewBase {
 
                 MZTextField {
                     id: confirmEmailInput
-
+                    objectName: "contactUs-confirmEmailTextInput"
                     verticalAlignment: Text.AlignVCenter
                     Layout.fillWidth: true
                     hasError: !MZAuthInApp.validateEmailAddress(confirmEmailInput.text) || emailInput.text != confirmEmailInput.text
@@ -134,7 +134,8 @@ MZViewBase {
 
                 MZComboBox {
                     id: dropDown
-                    placeholderText: MZI18n.InAppSupportWorkflowDropdownLabel
+                    objectName: "contactUs-categoryDropDown"
+                    placeholderText: VPNI18n.InAppSupportWorkflowDropdownLabel
                     model: VPNSupportCategoryModel
                     Layout.fillWidth: true
                     Layout.preferredWidth: undefined
@@ -143,7 +144,7 @@ MZViewBase {
 
             MZTextField {
                 id: subjectInput
-
+                objectName: "contactUs-subjectTextInput"
                 verticalAlignment: Text.AlignVCenter
                 Layout.alignment: Qt.AlignHCenter
                 Layout.fillWidth: true
@@ -152,7 +153,8 @@ MZViewBase {
 
             MZTextArea {
                 id: textArea
-                placeholderText: MZI18n.InAppSupportWorkflowIssueFieldPlaceholder
+                objectName: "contactUs-textAreaInput"
+                placeholderText: VPNI18n.InAppSupportWorkflowIssueFieldPlaceholder
                 Layout.alignment: Qt.AlignHCenter
                 Layout.fillWidth: true
             }
@@ -183,19 +185,20 @@ MZViewBase {
 
                 }
 
-                MZLinkButton {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    labelText: MZI18n.InAppSupportWorkflowPrivacyNoticeLinkText
-                    onClicked: MZUrlOpener.openUrlLabel("privacyNotice")
+                VPNLinkButton {
+                    objectName: "contactUs-subjectTextInput"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    labelText: VPNI18n.InAppSupportWorkflowPrivacyNoticeLinkText
+                    onClicked: VPNUrlOpener.openUrlLabel("privacyNotice")
                 }
             }
 
             ColumnLayout {
                 spacing: MZTheme.theme.windowMargin
 
-                MZButton {
-                    text: MZI18n.InAppSupportWorkflowSupportPrimaryButtonText
+                VPNButton {
+                    objectName: "contactUs-submitButton"
+                    text: VPNI18n.InAppSupportWorkflowSupportPrimaryButtonText
                     onClicked: {
                       MZGleanDeprecated.recordGleanEvent("supportCaseSubmitted");
                       Glean.sample.supportCaseSubmitted.record();
@@ -218,8 +221,9 @@ MZViewBase {
                     }
                 }
 
-                MZCancelButton {
-                    Layout.minimumHeight: MZTheme.theme.rowHeight
+                VPNCancelButton {
+                    objectName: "contactUs-cancelButton"
+                    Layout.minimumHeight: VPNTheme.theme.rowHeight
                     Layout.preferredWidth: width
                     Layout.alignment: Qt.AlignHCenter
                     onClicked: getHelpStackView.pop()

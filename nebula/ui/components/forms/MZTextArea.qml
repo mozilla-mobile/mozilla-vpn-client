@@ -38,6 +38,7 @@ Item {
         }
 
         TextArea.flickable: TextArea {
+            objectName: root.objectName + "-textArea"
             property int maxCharacterCount: 1000
             property int textLength: textArea.text.length
             property bool forceBlurOnOutsidePress: true
@@ -155,4 +156,3 @@ Item {
     }
 
 }
-

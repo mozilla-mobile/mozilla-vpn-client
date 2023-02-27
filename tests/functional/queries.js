@@ -213,6 +213,15 @@ const screenGetHelp = {
   contactSupportView: {
     UNAUTH_USER_INPUTS: new QmlQueryComposer('//contactUs-unauthedUserInputs'),
     USER_INFO: new QmlQueryComposer('//contactUs-userInfo'),
+    UNAUTH_USER_INPUT: new QmlQueryComposer('//contactUs-unauthedUserInputs'),
+    EMAIL_INPUT: new QmlQueryComposer('//contactUs-emailTextInput'),
+    CONFIRM_EMAIL_INPUTS: new QmlQueryComposer('//contactUs-confirmEmailTextInput'),
+    CATEGORY_DROPDOWN: new QmlQueryComposer('//contactUs-categoryDropDown'),
+    CATEGORY_DROPDOWN_TEXT: new QmlQueryComposer('//contactUs-categoryDropDown-comboBox'),
+    SUBJECT_INPUT: new QmlQueryComposer('//contactUs-subjectTextInput'),
+    DESCRIBE_TEXTAREA: new QmlQueryComposer('//contactUs-textAreaInput-textArea'),
+    SUBMIT_BUTTON: new QmlQueryComposer('//contactUs-submitButton'),
+    CANCEL_BUTTON: new QmlQueryComposer('//contactUs-cancelButton'),
   }
 };
 
