@@ -5,7 +5,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 set -e
-set -x
+
 
 . $(dirname $0)/../../../scripts/utils/commons.sh
 
