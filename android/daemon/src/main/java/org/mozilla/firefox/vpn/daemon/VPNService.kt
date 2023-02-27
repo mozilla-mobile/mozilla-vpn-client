@@ -58,6 +58,12 @@ class VPNService : android.net.VpnService() {
         Log.init(this)
         SharedLibraryLoader.loadSharedLibrary(this, "wg-go")
         Log.i(tag, "Initialised Service with Wireguard Version ${wgVersion()}")
+
+        // Check in with wg, if there is a tunnel.
+        // This should be 99% -1, however if the service get's destroyed and the
+        // wireguard tunnel lives on, we can recover from here :)
+        currentTunnelHandle = wgGetLatestHandle()
+        Log.i(tag, "Wireguard reported current tunnel: $currentTunnelHandle")
         mAlreadyInitialised = true
     }
 
@@ -432,5 +438,7 @@ class VPNService : android.net.VpnService() {
         private external fun wgTurnOn(ifName: String, tunFd: Int, settings: String): Int
         @JvmStatic
         private external fun wgVersion(): String?
+        @JvmStatic
+        private external fun wgGetLatestHandle(): Int
     }
 }
