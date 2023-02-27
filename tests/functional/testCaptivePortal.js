@@ -14,10 +14,10 @@ describe('Captive portal', function() {
 
     //Enable captive-portal-alert feature
     await vpn.setSetting('captivePortalAlert', 'false');
-    assert(await vpn.getSetting('captivePortalAlert') === false);
+    assert.equal(await vpn.getSetting('captivePortalAlert'), false);
 
     await vpn.setSetting('captivePortalAlert', 'true');
-    assert(await vpn.getSetting('captivePortalAlert') === true);
+    assert.equal(await vpn.getSetting('captivePortalAlert'), true);
   });
 
   it('Captive portal during the main view', async () => {
@@ -26,7 +26,7 @@ describe('Captive portal', function() {
     await vpn.wait();
 
     // No notifications during the main view.
-    assert(vpn.lastNotification().title === null);
+    assert.equal(vpn.lastNotification().title, null);
   });
 
   it('Captive portal during the authentication', async () => {
@@ -55,7 +55,7 @@ describe('Captive portal', function() {
     await vpn.wait();
 
     // No notifications during the main view.
-    assert(vpn.lastNotification().title === null);
+    assert.equal(vpn.lastNotification().title, null);
   });
 
   it('Captive portal in the Post authentication view', async () => {
@@ -66,7 +66,7 @@ describe('Captive portal', function() {
     await vpn.wait();
 
     // Notifications are not OK yet.
-    assert(vpn.lastNotification().title === null);
+    assert.equal(vpn.lastNotification().title, null);
   });
 
   it('Captive portal in the Telemetry policy view', async () => {
@@ -78,7 +78,7 @@ describe('Captive portal', function() {
     await vpn.wait();
 
     // Notifications are not OK yet.
-    assert(vpn.lastNotification().title === null);
+    assert.equal(vpn.lastNotification().title, null);
   });
 
   describe('Captive portal post auth', function() {
@@ -86,9 +86,9 @@ describe('Captive portal', function() {
 
     it('Captive portal in the Controller view', async () => {
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-      assert(
+      assert.equal(
           await vpn.getQueryProperty(
-              queries.screenHome.CONTROLLER_TITLE, 'text') === 'VPN is off');
+              queries.screenHome.CONTROLLER_TITLE, 'text'), 'VPN is off');
 
       vpn.resetLastNotification();
 
@@ -96,14 +96,14 @@ describe('Captive portal', function() {
       await vpn.wait();
 
       // Notifications are not OK yet.
-      assert(vpn.lastNotification().title === null);
+      assert.equal(vpn.lastNotification().title, null);
     });
 
     it('Captive portal when connected', async () => {
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-      assert(
+      assert.equal(
           await vpn.getQueryProperty(
-              queries.screenHome.CONTROLLER_TITLE, 'text') === 'VPN is off');
+              queries.screenHome.CONTROLLER_TITLE, 'text'), 'VPN is off');
 
       await vpn.activate();
       await vpn.waitForCondition(async () => {
@@ -123,14 +123,14 @@ describe('Captive portal', function() {
       await vpn.waitForCondition(() => {
         return vpn.lastNotification().title === 'Guest Wi-Fi portal blocked';
       });
-      assert(vpn.lastNotification().title === 'Guest Wi-Fi portal blocked');
+      assert.equal(vpn.lastNotification().title, 'Guest Wi-Fi portal blocked');
     });
 
     it('Clicking the alert and wait for recovering', async () => {
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-      assert(
+      assert.equal(
           await vpn.getQueryProperty(
-              queries.screenHome.CONTROLLER_TITLE, 'text') === 'VPN is off');
+              queries.screenHome.CONTROLLER_TITLE, 'text'), 'VPN is off');
 
       await vpn.activate();
 

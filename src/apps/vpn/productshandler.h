@@ -26,6 +26,7 @@ class ProductsHandler : public QAbstractListModel {
     ProductIdentifierRole = Qt::UserRole + 1,
     ProductPriceRole,
     ProductMonthlyPriceRole,
+    ProductCurrencyCodeRole,
     ProductTypeRole,
     ProductFeaturedRole,
     ProductSavingsRole,
@@ -36,6 +37,7 @@ class ProductsHandler : public QAbstractListModel {
     QString m_name;
     QString m_price;
     QString m_monthlyPrice;
+    QString m_currencyCode;
     int m_trialDays = 0;
     // This is not exposed and it's not localized. It's used to compute the
     // saving %.

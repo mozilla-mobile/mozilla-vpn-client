@@ -17,7 +17,7 @@ describe('Navigation bar', async function() {
 
   it('Is not visible over initial screen', async () => {
     await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-    assert(await navigationBarVisible() === 'false');
+    assert.equal(await navigationBarVisible(), 'false');
   });
 
 
@@ -26,14 +26,14 @@ describe('Navigation bar', async function() {
         queries.screenInitialize.GET_HELP_LINK.visible());
     await vpn.waitForQuery(queries.screenGetHelp.BACK_BUTTON.visible());
     await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-    assert(await navigationBarVisible() === 'false');
+    assert.equal(await navigationBarVisible(), 'false');
   });
 
 
   it('Is not visible over desktop onboarding', async () => {
     await vpn.waitForQueryAndClick(
         queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible());
-    assert(await navigationBarVisible() === 'false');
+    assert.equal(await navigationBarVisible(), 'false');
   });
 
 
@@ -52,14 +52,14 @@ describe('Navigation bar', async function() {
 
     await vpn.waitForQuery(
         queries.screenInitialize.AUTHENTICATE_VIEW.visible());
-    assert(await navigationBarVisible() === 'false');
+    assert.equal(await navigationBarVisible(), 'false');
   });
 
 
   it('Is not visible over telemetry screen', async () => {
     await vpn.authenticateInApp(true, false);
     await vpn.waitForQuery(queries.screenTelemetry.BUTTON.visible());
-    assert(await navigationBarVisible() === 'false');
+    assert.equal(await navigationBarVisible(), 'false');
   });
 
 
@@ -131,7 +131,7 @@ describe('Navigation bar', async function() {
       await vpn.waitForQuery(queries.screenGetHelp.BACK_BUTTON.visible());
 
       await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-      assert(await navigationBarVisible() === 'true');
+      assert.equal(await navigationBarVisible(), 'true');
     });
   });
 

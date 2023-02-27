@@ -11,14 +11,14 @@ describe('Connectivity', function() {
 
   it('check the ui', async () => {
     await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-    assert(
+    assert.equal(
         await vpn.getQueryProperty(
-            queries.screenHome.CONTROLLER_TITLE, 'text') === 'VPN is off');
+            queries.screenHome.CONTROLLER_TITLE, 'text'), 'VPN is off');
 
     await vpn.waitForQuery(queries.screenHome.CONTROLLER_SUBTITLE.visible());
-    assert(
+    assert.equal(
         await vpn.getQueryProperty(
-            queries.screenHome.CONTROLLER_SUBTITLE, 'text') ===
+            queries.screenHome.CONTROLLER_SUBTITLE, 'text'),
         'Turn on to protect your privacy');
 
     await vpn.waitForQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
@@ -36,9 +36,9 @@ describe('Connectivity', function() {
       return connectingMsg === 'Connecting…';
     });
 
-    assert(
+    assert.equal(
         await vpn.getQueryProperty(
-            queries.screenHome.CONTROLLER_SUBTITLE, 'text') ===
+            queries.screenHome.CONTROLLER_SUBTITLE, 'text'),
         'Masking connection and location');
 
     await vpn.waitForCondition(async () => {
@@ -54,7 +54,7 @@ describe('Connectivity', function() {
       return vpn.lastNotification().title === 'VPN Connected';
     });
 
-    assert(vpn.lastNotification().title === 'VPN Connected');
+    assert.equal(vpn.lastNotification().title, 'VPN Connected');
     assert(vpn.lastNotification().message.startsWith('Connected to '));
   });
 
@@ -76,16 +76,16 @@ describe('Connectivity', function() {
                  queries.screenHome.CONTROLLER_TITLE, 'text') === 'VPN is off';
     });
 
-    assert(
+    assert.equal(
         await vpn.getQueryProperty(
-            queries.screenHome.CONTROLLER_SUBTITLE, 'text') ===
+            queries.screenHome.CONTROLLER_SUBTITLE, 'text'),
         'Turn on to protect your privacy');
 
     await vpn.waitForCondition(() => {
       return vpn.lastNotification().title === 'VPN Disconnected';
     });
 
-    assert(vpn.lastNotification().title === 'VPN Disconnected');
+    assert.equal(vpn.lastNotification().title, 'VPN Disconnected');
     assert(vpn.lastNotification().message.startsWith('Disconnected from '));
   });
 
@@ -112,7 +112,7 @@ describe('Connectivity', function() {
     // The controller starts with the data we have set in the settings.
     const currentServer =
         await vpn.getVPNProperty('VPNController', 'currentServerString');
-    assert(currentServer === 'au-Melbourne--');
+    assert.equal(currentServer, 'au-Melbourne--');
 
     await vpn.setSetting(
         'serverData',
@@ -120,11 +120,11 @@ describe('Connectivity', function() {
 
     // After changing the settings, the controller has still the previous
     // values. VPNCurrentServer is updated, instead.
-    assert(
-        currentServer ===
+    assert.equal(
+        currentServer,
         await vpn.getVPNProperty('VPNController', 'currentServerString'));
-    assert(
-        await vpn.getVPNProperty('VPNCurrentServer', 'exitCityName') ===
+    assert.equal(
+        await vpn.getVPNProperty('VPNCurrentServer', 'exitCityName'),
         'Sydney');
 
     await vpn.waitForCondition(async () => {
@@ -135,11 +135,11 @@ describe('Connectivity', function() {
 
     // At the end of the activation, controller and VPNCurrentServer are again
     // in sync.
-    assert(
-        currentServer ===
+    assert.equal(
+        currentServer,
         await vpn.getVPNProperty('VPNController', 'currentServerString'));
-    assert(
-        await vpn.getVPNProperty('VPNCurrentServer', 'exitCityName') ===
+    assert.equal(
+        await vpn.getVPNProperty('VPNCurrentServer', 'exitCityName'),
         'Sydney');
   });
 });

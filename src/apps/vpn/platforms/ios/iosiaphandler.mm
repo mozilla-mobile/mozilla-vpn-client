@@ -315,6 +315,7 @@ void IOSIAPHandler::productRegistered(void* a_product) {
   productData->m_trialDays = discountDays;
   productData->m_monthlyPrice = monthlyPriceValue;
   productData->m_nonLocalizedMonthlyPrice = [monthlyPriceNS doubleValue];
+  productData->m_currencyCode = QString::fromNSString(product.priceLocale.currencyCode);
   productData->m_extra = product;
 }
 

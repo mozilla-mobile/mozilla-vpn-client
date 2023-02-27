@@ -77,17 +77,17 @@ describe('Backend failure', function() {
 
     it('BackendFailure in the Controller view', async () => {
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-      assert(
+      assert.equal(
           await vpn.getQueryProperty(
-              queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ===
+              queries.screenHome.CONTROLLER_TITLE.visible(), 'text'),
           'VPN is off');
 
       await backendFailureAndRestore();
 
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-      assert(
+      assert.equal(
           await vpn.getQueryProperty(
-              queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ===
+              queries.screenHome.CONTROLLER_TITLE.visible(), 'text'),
           'VPN is off');
     });
 
@@ -100,17 +100,17 @@ describe('Backend failure', function() {
         return connectingMsg === 'Connecting…';
       });
 
-      assert(
+      assert.equal(
           await vpn.getQueryProperty(
-              queries.screenHome.CONTROLLER_SUBTITLE, 'text') ===
+              queries.screenHome.CONTROLLER_SUBTITLE, 'text'),
           'Masking connection and location');
 
       await backendFailureAndRestore();
 
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-      assert(
+      assert.equal(
           await vpn.getQueryProperty(
-              queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ===
+              queries.screenHome.CONTROLLER_TITLE.visible(), 'text'),
           'VPN is off');
     });
 
@@ -125,9 +125,9 @@ describe('Backend failure', function() {
       await backendFailureAndRestore();
 
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-      assert(
+      assert.equal(
           await vpn.getQueryProperty(
-              queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ===
+              queries.screenHome.CONTROLLER_TITLE.visible(), 'text'),
           'VPN is off');
     });
 
@@ -148,9 +148,9 @@ describe('Backend failure', function() {
       await backendFailureAndRestore();
 
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-      assert(
+      assert.equal(
           await vpn.getQueryProperty(
-              queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ===
+              queries.screenHome.CONTROLLER_TITLE.visible(), 'text'),
           'VPN is off');
     });
   });

@@ -271,6 +271,9 @@ notifications:
   VPNConnectedMessage:
     value: "Connected to %1"
     comment: "%1 is the name of the city the VPN is connected to."
+  VPNMultihopConnectedMessage:
+    value: "Connected to %1, through %2"
+    comment: "%1 is the name of the exit server, %2 is the name of the entry server."
   VPNDisconnectedTitle: VPN Disconnected
   VPNDisconnectedMessage:
     value: "Disconnected from %1"
@@ -684,6 +687,24 @@ subscriptionManagement:
   planValueYearly:
     value: "%1 Yearly"
     comment: The %1 represents a localized currency string.
+  planValueMonthlyPlusTax:
+    value: "%1 Monthly + tax"
+    comment: The %1 represents a localized currency string
+  planValueHalfYearlyPlusTax:
+    value: "%1 Half-yearly + tax"
+    comment: The %1 represents a localized currency string
+  planValueYearlyPlusTax:
+    value: "%1 Yearly + tax"
+    comment: The %1 represents a localized currency string
+  planMonthly:
+    value: "Monthly plan: %1"
+    comment: Price for a monthly subscription. %1 represents the localized currency string
+  planMonthlyWithoutTax:
+    value: "%1/month"
+    comment: Price for a monthly subscription without tax. %1 represents the localized currency string
+  planMonthlyPlusTax:
+    value: "%1/month + tax"
+    comment: Price for a monthly subscription plus tax. %1 represents the localized currency string
   statusLabel:
     value: Status
     comment: Label for the current status of the subscription.
@@ -722,6 +743,15 @@ subscriptionManagement:
   addFirefoxRelay:
     value: Add Firefox Relay
     comment: Block of text appearing above a link to learn more about the VPN / Relay bundle offering.
+  valueProp1:
+    value: No logging of your network activity
+    comment: Value proposition used to promote the product
+  valueProp2:
+    value: No one can track you
+    comment: Value proposition used to promote the product
+  valueProp3:
+    value: 500+ servers in 30+ countries
+    comment: Value proposition used to promote the product
 
 paymentMethods:
   amex: American Express

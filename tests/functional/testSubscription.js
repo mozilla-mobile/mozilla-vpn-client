@@ -266,7 +266,7 @@ describe('Subscription view', function() {
             interval: 'year',
             interval_count: 1
           },
-          expected: '$1.23 Yearly'
+          expected: '$1.23 Yearly + tax'
         }
       },
       {
@@ -278,7 +278,7 @@ describe('Subscription view', function() {
             interval: 'month',
             interval_count: 6
           },
-          expected: '$1.23 Half-yearly'
+          expected: '$1.23 Half-yearly + tax'
         }
       },
       {
@@ -290,7 +290,7 @@ describe('Subscription view', function() {
             interval: 'month',
             interval_count: 1
           },
-          expected: '$1.23 Monthly'
+          expected: '$1.23 Monthly + tax'
         }
       },
       {
@@ -660,7 +660,7 @@ describe('Subscription view', function() {
             interval: 'year',
             interval_count: 1
           },
-          expected: '$1.23 Yearly'
+          expected: '$1.23 Yearly + tax'
         };
       }
       if (!('payment' in data)) {
@@ -730,9 +730,9 @@ describe('Subscription view', function() {
           queries.screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
 
       if (data.subscription.expected.status) {
-        assert(
+        assert.equal(
             await vpn.getQueryProperty(
-                queries.screenSettings.subscriptionView.STATUS_PILL, 'text') ===
+                queries.screenSettings.subscriptionView.STATUS_PILL, 'text'),
             data.subscription.expected.status);
       }
 
@@ -740,66 +740,66 @@ describe('Subscription view', function() {
           data.subscription.value._subscription_type == "web") {
         await vpn.waitForQuery(
             queries.screenSettings.subscriptionView.PLAN.visible());
-        assert(
+        assert.equal(
             await vpn.getQueryProperty(
                 queries.screenSettings.subscriptionView.PLAN.visible(),
-                'text') === data.plan.expected);
+                'text'), data.plan.expected);
       }
 
       if (data.subscription.expected.activated) {
         await vpn.waitForQuery(
             queries.screenSettings.subscriptionView.ACTIVATED.visible());
-        assert(
+        assert.equal(
             await vpn.getQueryProperty(
                 queries.screenSettings.subscriptionView.ACTIVATED.visible(),
-                'text') === data.subscription.expected.activated);
+                'text'), data.subscription.expected.activated);
       }
 
       await vpn.waitForQuery(
           queries.screenSettings.subscriptionView.CANCELLED.visible());
-      assert(
+      assert.equal(
           await vpn.getQueryProperty(
               queries.screenSettings.subscriptionView.CANCELLED.visible(),
-              'text') === data.subscription.expected.cancelled);
-      assert(
+              'text'), data.subscription.expected.cancelled);
+      assert.equal(
           await vpn.getQueryProperty(
               queries.screenSettings.subscriptionView.CANCELLED_LABEL.visible(),
-              'text') === data.subscription.expected.label);
+              'text'), data.subscription.expected.label);
 
       if (data.subscription.value._subscription_type == "web") {
         if (data.payment.expected.card) {
           await vpn.waitForQuery(
               queries.screenSettings.subscriptionView.BRAND.visible());
-          assert(
+          assert.equal(
               await vpn.getQueryProperty(
                   queries.screenSettings.subscriptionView.BRAND.visible(),
-                  'text') === data.payment.expected.card);
+                  'text'), data.payment.expected.card);
         }
         if (data.payment.expected.expires) {
           await vpn.waitForQuery(
               queries.screenSettings.subscriptionView.EXPIRES.visible());
-          assert(
+          assert.equal(
               await vpn.getQueryProperty(
                   queries.screenSettings.subscriptionView.EXPIRES.visible(),
-                  'text') === data.payment.expected.expires);
+                  'text'), data.payment.expected.expires);
         }
         if (data.payment.expected.brand) {
           await vpn.waitForQuery(
               queries.screenSettings.subscriptionView.PAYMENT_METHOD.visible());
-          assert(
+          assert.equal(
               await vpn.getQueryProperty(
                   queries.screenSettings.subscriptionView.PAYMENT_METHOD
                       .visible(),
-                  'text') === data.payment.expected.brand);
+                  'text'), data.payment.expected.brand);
         }
         if (data.payment.expected.payment) {
           await vpn.waitForQuery(queries.screenSettings.subscriptionView
                                      .PAYMENT_METHOD_LABEL.visible());
-          assert(
+          assert.equal(
               await vpn.getQueryProperty(
                   queries.screenSettings.subscriptionView.PAYMENT_METHOD_LABEL
                       .visible(),
-                  'text') === data.payment.expected.payment);
+                  'text'), data.payment.expected.payment);
         }
       }
 
@@ -1268,5 +1268,5 @@ describe('Subscription view', function() {
   // TODO:
   // Upgrade button works
   // Learn more link works
-  
+
 });

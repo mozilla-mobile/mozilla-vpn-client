@@ -279,6 +279,7 @@ void AndroidIAPHandler::updateProductsInfo(const QJsonArray& returnedProducts) {
     productData->m_price = product[QString("totalPriceString")].toString();
     productData->m_monthlyPrice =
         product[QString("monthlyPriceString")].toString();
+    productData->m_currencyCode = product[QString("currencyCode")].toString();
     productData->m_nonLocalizedMonthlyPrice =
         product[QString("monthlyPrice")].toDouble();
 

@@ -178,6 +178,7 @@ QHash<int, QByteArray> ProductsHandler::roleNames() const {
   roles[ProductIdentifierRole] = "productIdentifier";
   roles[ProductPriceRole] = "productPrice";
   roles[ProductMonthlyPriceRole] = "productMonthlyPrice";
+  roles[ProductCurrencyCodeRole] = "productCurrencyCode";
   roles[ProductTrialDaysRole] = "productTrialDays";
   roles[ProductTypeRole] = "productType";
   roles[ProductFeaturedRole] = "productFeatured";
@@ -207,6 +208,9 @@ QVariant ProductsHandler::data(const QModelIndex& index, int role) const {
 
     case ProductMonthlyPriceRole:
       return QVariant(m_products.at(index.row()).m_monthlyPrice);
+
+    case ProductCurrencyCodeRole:
+      return QVariant(m_products.at(index.row()).m_currencyCode);
 
     case ProductTypeRole:
       return QVariant(m_products.at(index.row()).m_type);

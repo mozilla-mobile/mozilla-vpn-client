@@ -63,20 +63,17 @@ VPNFlickable {
             Layout.alignment: Qt.AlignHCenter
 
             VPNCallout {
-                //% "No activity logs"
-                calloutCopy: qsTrId("vpn.subscription.featureTitle1")
+                calloutCopy: VPNI18n.SubscriptionManagementValueProp1
                 calloutImage: "qrc:/ui/resources/onboarding/onboarding4.svg"
             }
 
             VPNCallout {
-                // "Device level encryption" - String defined in ViewOnboarding.qml
-                calloutCopy: qsTrId("vpn.onboarding.headline.1")
+                calloutCopy: VPNI18n.SubscriptionManagementValueProp2
                 calloutImage: "qrc:/ui/resources/onboarding/onboarding1.svg"
             }
 
             VPNCallout {
-                // Servers in 30+ countries - String defined in ViewOnboarding.qml
-                calloutCopy: qsTrId("vpn.onboarding.headline.2")
+                calloutCopy: VPNI18n.SubscriptionManagementValueProp3
                 calloutImage: "qrc:/ui/resources/onboarding/onboarding2.svg"
             }
 
