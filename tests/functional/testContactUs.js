@@ -20,6 +20,7 @@ async function openContactUsInSettings(isAuthenticated) {
   }
 
   await vpn.waitForQuery(queries.screenGetHelp.LINKS.visible());
+  await vpn.wait();
   await vpn.waitForQueryAndClick(queries.screenGetHelp.SUPPORT.visible());
   await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 }
