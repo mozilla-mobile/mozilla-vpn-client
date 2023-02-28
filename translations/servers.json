@@ -223,6 +223,22 @@
     "wikiDataID": "Q3141"
    },
    {
+    "wikiDataID": "Q3183",
+    "city": "Perth",
+    "languages": {
+     "bg": "Пърт",
+     "cy": "Perth, Gorllewin Awstralia",
+     "el": "Περθ",
+     "fa": "پرث",
+     "ja": "パース",
+     "pa_IN": "ਪਰਥ",
+     "ru": "Перт",
+     "uk": "Перт",
+     "zh_CN": "珀斯",
+     "zh_TW": "伯斯"
+    }
+   },
+   {
     "city": "Sydney",
     "languages": {
      "bg": "Сидни",
@@ -964,7 +980,7 @@
      "sk": "Kodaň",
      "sq": "Kopenhagen",
      "sv_SE": "Köpenhamn",
-     "uk": "Копенгаґен",
+     "uk": "Копенгаген",
      "zh_CN": "哥本哈根",
      "zh_TW": "哥本哈根"
     },
@@ -2111,7 +2127,7 @@
    "oc": "Letònia",
    "pa_IN": "ਲਾਤਵੀਆ",
    "pt_BR": "Letônia",
-   "pt_PT": "Letônia",
+   "pt_PT": "Letónia",
    "ru": "Латвия",
    "sk": "Lotyšsko",
    "sq": "Letonia",
@@ -2430,7 +2446,7 @@
      "is": "Stafangur",
      "ja": "スタヴァンゲル",
      "ru": "Ставангер",
-     "uk": "Ставангер",
+     "uk": "Ставанґер",
      "zh_CN": "斯塔万格",
      "zh_TW": "斯塔万格"
     }
@@ -3474,7 +3490,7 @@
      "co": "New York",
      "cs": "New York",
      "cy": "Dinas Efrog Newydd",
-     "de": "New York City",
+     "de": "New York",
      "dsb": "New York City",
      "el": "Νέα Υόρκη",
      "en": "New York City",
@@ -3777,7 +3793,7 @@
    "pt_BR": "África do Sul",
    "pt_PT": "África do Sul",
    "ru": "ЮАР",
-   "sk": "Južná Afrika",
+   "sk": "Juhoafrická republika",
    "sq": "Republika Jugafrikane",
    "sv_SE": "Sydafrika",
    "uk": "Південно-Африканська Республіка",
