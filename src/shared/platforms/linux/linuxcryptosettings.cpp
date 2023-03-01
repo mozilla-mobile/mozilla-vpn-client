@@ -111,22 +111,61 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
 
 // static
 CryptoSettings::Version CryptoSettings::getSupportedVersion() {
-  // Check if "org.freedesktop.secrets" has been taken on the session D-Bus.
   if (!s_initialized) {
     s_initialized = true;
 
-    QDBusConnection bus = QDBusConnection::sessionBus();
-    QDBusMessage hasOwnerCall = QDBusMessage::createMethodCall(
-        "org.freedesktop.DBus", "/org/freedesktop/DBus", "org.freedesktop.DBus",
-        "NameHasOwner");
-    hasOwnerCall << QVariant("org.freedesktop.secrets");
+    // Check if "org.freedesktop.secrets" has been taken on the session D-Bus.
+    {
+      QDBusConnection bus = QDBusConnection::sessionBus();
+      QDBusMessage hasOwnerCall = QDBusMessage::createMethodCall(
+          "org.freedesktop.DBus", "/org/freedesktop/DBus",
+          "org.freedesktop.DBus", "NameHasOwner");
+      hasOwnerCall << QVariant("org.freedesktop.secrets");
 
-    QDBusMessage reply = bus.call(hasOwnerCall, QDBus::Block, 1000);
-    if (reply.type() == QDBusMessage::ReplyMessage &&
-        !reply.arguments().isEmpty() && reply.arguments().first().toBool()) {
-      logger.info() << "Encrypted settings with libsecrets is supported";
-      s_keyVersion = CryptoSettings::EncryptionChachaPolyV1;
+      QDBusMessage reply = bus.call(hasOwnerCall, QDBus::Block, 1000);
+      if (reply.type() != QDBusMessage::ReplyMessage ||
+          reply.arguments().isEmpty() || !reply.arguments().first().toBool()) {
+        logger.info() << "Encrypted settings with libsecrets is not supported";
+        return s_keyVersion;
+      }
     }
+
+    // Check if "org.freedesktop.Accounts" "AutomaticLoginUsers" is empty.
+    {
+      QDBusInterface iface(
+          "org.freedesktop.Accounts", "/org/freedesktop/Accounts",
+          "org.freedesktop.DBus.Properties", QDBusConnection::systemBus());
+
+      QDBusMessage reply =
+          iface.call("Get", "org.freedesktop.Accounts", "AutomaticLoginUsers");
+
+      if (reply.type() != QDBusMessage::ReplyMessage) {
+        logger.info() << "Encrypted settings with libsecrets is not supported "
+                         "(incompatible reply)";
+        return s_keyVersion;
+      }
+
+      QVariant v = reply.arguments().first();
+      QDBusArgument arg =
+          v.value<QDBusVariant>().variant().value<QDBusArgument>();
+
+      QStringList users;
+      arg.beginArray();
+      while (!arg.atEnd()) {
+        QString user;
+        arg >> user;
+        users << user;
+      }
+      arg.endArray();
+
+      if (!users.isEmpty()) {
+        logger.info() << "Encrypted settings with libsecrets is not supported "
+                         "with auto-login";
+        return s_keyVersion;
+      }
+    }
+
+    s_keyVersion = CryptoSettings::EncryptionChachaPolyV1;
   }
 
   return s_keyVersion;
