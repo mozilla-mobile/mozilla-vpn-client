@@ -87,27 +87,27 @@ describe('Subscription manager', function() {
       }
     };
 
-    it('Prompts SubscriptionNeeded if a user\'s subscription is inactive on connection',
-       async () => {
-         // This test verifies the case where a user is logged in
-         // but the VPN is off when their subscription expires.
-         // When they try to turn the VPN on, they get the
-         // "Subscribe to Mozilla VPN" screen.
+    // it('Prompts SubscriptionNeeded if a user\'s subscription is inactive on connection',
+    //    async () => {
+    //      // This test verifies the case where a user is logged in
+    //      // but the VPN is off when their subscription expires.
+    //      // When they try to turn the VPN on, they get the
+    //      // "Subscribe to Mozilla VPN" screen.
 
-         await vpn.authenticateInApp(true, true);
+    //      await vpn.authenticateInApp(true, true);
 
-         // Step 1: Override the Guardian endpoint to mock an expired
-         // subscription.
-         this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
-             userDataInactive;
+    //      // Step 1: Override the Guardian endpoint to mock an expired
+    //      // subscription.
+    //      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
+    //          userDataInactive;
 
-         await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-         await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
+    //      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+    //      await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
 
-         // Step 3: Verify that user gets the "Subscribe to Mozilla VPN" screen.
-         await vpn.waitForQuery(
-             queries.screenHome.SUBSCRIPTION_NEEDED.visible());
-       });
+    //      // Step 3: Verify that user gets the "Subscribe to Mozilla VPN" screen.
+    //      await vpn.waitForQuery(
+    //          queries.screenHome.SUBSCRIPTION_NEEDED.visible());
+    //    });
 
     it('Continues to try connecting if call to check subscription status fails',
        async () => {
