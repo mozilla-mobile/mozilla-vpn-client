@@ -311,11 +311,6 @@ static QList<InspectorCommand> s_commands{
                          return obj;
                        }
 
-                       QPointF pointF = item->mapToScene(QPoint(0, 0));
-                       QPoint point = pointF.toPoint();
-                       point.rx() += item->width() / 2;
-                       point.ry() += item->height() / 2;
-
                        // It seems that in QT/QML there is a race-condition bug
                        // between the rendering thread and the main one when
                        // simulating clicks using QTest. At this point, all the
@@ -326,6 +321,12 @@ static QList<InspectorCommand> s_commands{
                        // The horrible/temporary solution is to wait a bit more
                        // and to add a delay (VPN-3697)
                        QTest::qWait(150);
+
+                       QPointF pointF = item->mapToScene(QPoint(0, 0));
+                       QPoint point = pointF.toPoint();
+                       point.rx() += item->width() / 2;
+                       point.ry() += item->height() / 2;
+
                        QTest::mouseClick(item->window(), Qt::LeftButton,
                                          Qt::NoModifier, point);
 
