@@ -62,6 +62,8 @@ class NetworkRequest final : public QObject {
                    const QString& errorString, int status,
                    const QByteArray& data);
 
+  qint64 discardData();
+
  private:
   void getResource();
 

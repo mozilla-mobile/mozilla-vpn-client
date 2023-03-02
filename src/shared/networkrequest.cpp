@@ -235,6 +235,15 @@ void NetworkRequest::processData(QNetworkReply::NetworkError error,
   emit requestCompleted(data);
 }
 
+qint64 NetworkRequest::discardData() {
+  qint64 bytes = m_replyData.count();
+  if (m_reply != nullptr) {
+    bytes += m_reply->skip(m_reply->bytesAvailable());
+  }
+  m_replyData.clear();
+  return bytes;
+}
+
 bool NetworkRequest::isRedirect() const {
   int status = statusCode();
   return status >= 300 && status < 400;
