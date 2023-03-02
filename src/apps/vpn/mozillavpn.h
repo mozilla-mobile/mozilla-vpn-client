@@ -11,6 +11,7 @@
 #include <QStandardPaths>
 #include <QTimer>
 
+#include "authenticationlistener.h"
 #include "env.h"
 #include "errorhandler.h"
 
@@ -107,11 +108,6 @@ class MozillaVPN final : public QObject {
   bool stagingMode() const;
   bool debugMode() const;
 
-  enum AuthenticationType {
-    AuthenticationInBrowser,
-    AuthenticationInApp,
-  };
-
   // Exposed QML methods:
   Q_INVOKABLE void authenticate();
   Q_INVOKABLE void cancelAuthentication();
@@ -148,7 +144,8 @@ class MozillaVPN final : public QObject {
 #endif
   Q_INVOKABLE void requestViewLogs();
 
-  void authenticateWithType(AuthenticationType authenticationType);
+  void authenticateWithType(
+      AuthenticationListener::AuthenticationType authenticationType);
 
   // Private object getters:
   CaptivePortal* captivePortal() const;
@@ -241,6 +238,8 @@ class MozillaVPN final : public QObject {
 
   static QByteArray authorizationHeader();
 
+  void requestAbout();
+
  private:
   void setState(State state);
 
@@ -286,12 +285,13 @@ class MozillaVPN final : public QObject {
 
   bool checkCurrentDevice();
 
- public slots:
-  void requestAbout();
+  void errorHandled();
 
   void scheduleRefreshDataTasks(bool refreshProducts);
 
   static void registerUrlOpenerLabels();
+
+  static void registerErrorHandlers();
 
  signals:
   void stateChanged();

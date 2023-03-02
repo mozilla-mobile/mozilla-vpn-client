@@ -82,8 +82,8 @@ When the email address is received and validated, the client goes to
     * Too many requests
     * Unknown account - ?!?
 * Available methods:
-    * `VPNAuthInApp.checkAccount(emailAddress)`
-    * `VPNAuthInApp.validateEmailAddress(emailAddress) -> bool`
+    * `MZAuthInApp.checkAccount(emailAddress)`
+    * `MZAuthInApp.validateEmailAddress(emailAddress) -> bool`
 
 ### State: Checking-account
 
@@ -113,8 +113,8 @@ The client asks for the password. Then, it goes to the **Signing-in** state.
     * Failed to send email - the unblock code is needed but the email sending
       failed.
 * Available methods:
-    * `VPNAuthInApp.setPassword(password)`
-    * `VPNAuthInApp.signIn()`
+    * `MZAuthInApp.setPassword(password)`
+    * `MZAuthInApp.signIn()`
 
 ### State: Signing-in
 
@@ -140,7 +140,7 @@ email is sent to the user’s email address with a 6-digit code. In this state,
 the client needs to inform the user and ask for this 6-digit code.
 
 If needed, the user can ask to have a new email code. See:
-`VPNAuthInApp.resendUnblockCodeEmail()`.
+`MZAuthInApp.resendUnblockCodeEmail()`.
 
 From here we can go to **Verifying unblock code**.
 
@@ -149,8 +149,8 @@ From here we can go to **Verifying unblock code**.
     * Invalid unblock code
     * Too many requests
 * Available methods:
-    * `VPNAuthInApp.verifyUnblockCode(code)`
-    * `VPNAuthInApp.resendUnblockCodeEmail()`
+    * `MZAuthInApp.verifyUnblockCode(code)`
+    * `MZAuthInApp.resendUnblockCodeEmail()`
 
 ### State: Verifying unblock code
 
@@ -175,7 +175,7 @@ for the 6-digit code.  From here, we go to **Verifying session TOTP code**.
 * Errors: none
     * Invalid TOTP code
 * Available methods:
-    * `VPNAuthInApp.verifySessionTotpCode(code)`
+    * `MZAuthInApp.verifySessionTotpCode(code)`
 
 ### State: Verifying session TOTP code
 
@@ -204,11 +204,11 @@ From here we go to the **Signing-up** state where the real operation is done.
 * Next states: **Signing-up**
 * Errors: none
 * Available methods:
-    * `VPNAuthInApp.validatePasswordCommons(password) -> bool`
-    * `VPNAuthInApp.validatePasswordLength(password) -> bool`
-    * `VPNAuthInApp.validatePasswordEmail(password) -> bool`
-    * `VPNAuthInApp.setPassword(password)`
-    * `VPNAuthInApp.signUp()`
+    * `MZAuthInApp.validatePasswordCommons(password) -> bool`
+    * `MZAuthInApp.validatePasswordLength(password) -> bool`
+    * `MZAuthInApp.validatePasswordEmail(password) -> bool`
+    * `MZAuthInApp.setPassword(password)`
+    * `MZAuthInApp.signUp()`
 
 ### State: Signing-up
 
@@ -228,15 +228,15 @@ behavior is exactly the same: the user needs to insert a 6-digit code and then
 we go to **Verifying session email code**.
 
 If needed, the user can ask for a new session code email. See
-`VPNAuthInApp.resendVerificationSessionCodeEmail()`.
+`MZAuthInApp.resendVerificationSessionCodeEmail()`.
 
 * Next states: **Verifying session email code**
 * Errors:
     * Invalid or expired verification code
     * Too many requests
 * Available methods:
-    * `VPNAuthInApp.verifySessionEmailCode(code)`
-    * `VPNAuthInApp.resendVerificationSessionCodeEmail()`
+    * `MZAuthInApp.verifySessionEmailCode(code)`
+    * `MZAuthInApp.resendVerificationSessionCodeEmail()`
 
 ### State: Verifying session email code
 
@@ -272,7 +272,7 @@ accept a few things. Then the account deletion can proceed.
 * Next Step: **Deleting account**
 * Errors: none
 * Available methods:
-    * `VPNAuthInApp.deleteAccount()`
+    * `MZAuthInApp.deleteAccount()`
 
 ### State: Deleting account
 

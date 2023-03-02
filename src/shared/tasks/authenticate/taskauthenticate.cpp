@@ -15,8 +15,6 @@
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/user.h"
-#include "mozillavpn.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
 
@@ -25,7 +23,7 @@ Logger logger("TaskAuthenticate");
 }  // anonymous namespace
 
 TaskAuthenticate::TaskAuthenticate(
-    MozillaVPN::AuthenticationType authenticationType)
+    AuthenticationListener::AuthenticationType authenticationType)
     : Task("TaskAuthenticate"), m_authenticationType(authenticationType) {
   MZ_COUNT_CTOR(TaskAuthenticate);
 }
@@ -56,7 +54,7 @@ void TaskAuthenticate::run() {
 
             NetworkRequest* request = new NetworkRequest(this, 200);
             request->post(
-                AppConstants::apiUrl(AppConstants::LoginVerify),
+                AuthenticationListener::createLoginVerifyUrl(),
                 QJsonObject{{"code", pkceCodeSuccess},
                             {"code_verifier", QString(pkceCodeVerifier)}});
 
@@ -72,19 +70,19 @@ void TaskAuthenticate::run() {
             connect(request, &NetworkRequest::requestCompleted, this,
                     [this](const QByteArray& data) {
                       logger.debug() << "Authentication completed";
-                      authenticationCompleted(data);
+                      authenticationCompletedInternal(data);
                     });
           });
 
   connect(m_authenticationListener, &AuthenticationListener::failed, this,
-          [this](const ErrorHandler::ErrorType error) {
+          [this](ErrorHandler::ErrorType error) {
             REPORTERROR(error, name());
             m_authenticationListener->aboutToFinish();
           });
 
   connect(m_authenticationListener, &AuthenticationListener::abortedByUser,
           this, [this]() {
-            MozillaVPN::instance()->abortAuthentication();
+            emit authenticationAborted();
             m_authenticationListener->aboutToFinish();
           });
 
@@ -93,7 +91,7 @@ void TaskAuthenticate::run() {
                                   SettingsHolder::instance()->userEmail());
 }
 
-void TaskAuthenticate::authenticationCompleted(const QByteArray& data) {
+void TaskAuthenticate::authenticationCompletedInternal(const QByteArray& data) {
   logger.debug() << "Authentication completed";
 
   QJsonDocument json = QJsonDocument::fromJson(data);
@@ -122,8 +120,8 @@ void TaskAuthenticate::authenticationCompleted(const QByteArray& data) {
   QJsonDocument userDoc;
   userDoc.setObject(userObj.toObject());
 
-  MozillaVPN::instance()->authenticationCompleted(
-      userDoc.toJson(QJsonDocument::Compact), tokenValue.toString());
+  emit authenticationCompleted(userDoc.toJson(QJsonDocument::Compact),
+                               tokenValue.toString());
 
   m_authenticationListener->aboutToFinish();
 }

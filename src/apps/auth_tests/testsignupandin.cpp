@@ -14,6 +14,7 @@
 #include <QProcessEnvironment>
 #include <QTest>
 
+#include "appconstants.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "networkrequest.h"
 #include "tasks/authenticate/taskauthenticate.h"
@@ -53,7 +54,7 @@ void TestSignUpAndIn::signUp() {
   QCOMPARE(aia->state(), AuthenticationInApp::StateInitializing);
 
   // Starting the authentication flow.
-  TaskAuthenticate task(MozillaVPN::AuthenticationInApp);
+  TaskAuthenticate task(AuthenticationListener::AuthenticationInApp);
   task.run();
 
   EventLoop loop;
@@ -154,7 +155,7 @@ void TestSignUpAndIn::signUpWithError() {
   QCOMPARE(aia->state(), AuthenticationInApp::StateInitializing);
 
   // Starting the authentication flow.
-  TaskAuthenticate task(MozillaVPN::AuthenticationInApp);
+  TaskAuthenticate task(AuthenticationListener::AuthenticationInApp);
   task.run();
 
   EventLoop loop;
@@ -213,7 +214,7 @@ void TestSignUpAndIn::signIn() {
   QCOMPARE(aia->state(), AuthenticationInApp::StateInitializing);
 
   // Starting the authentication flow.
-  TaskAuthenticate task(MozillaVPN::AuthenticationInApp);
+  TaskAuthenticate task(AuthenticationListener::AuthenticationInApp);
   task.run();
 
   EventLoop loop;
@@ -312,7 +313,7 @@ void TestSignUpAndIn::signInWithError() {
   QCOMPARE(aia->state(), AuthenticationInApp::StateInitializing);
 
   // Starting the authentication flow.
-  TaskAuthenticate task(MozillaVPN::AuthenticationInApp);
+  TaskAuthenticate task(AuthenticationListener::AuthenticationInApp);
   task.run();
 
   EventLoop loop;

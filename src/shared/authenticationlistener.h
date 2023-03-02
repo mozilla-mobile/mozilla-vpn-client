@@ -5,11 +5,11 @@
 #ifndef AUTHENTICATIONLISTENER_H
 #define AUTHENTICATIONLISTENER_H
 
+#include <QNetworkReply>
 #include <QObject>
 #include <QUrl>
 
 #include "errorhandler.h"
-#include "mozillavpn.h"
 
 constexpr const char* CODE_CHALLENGE_METHOD = "S256";
 
@@ -20,8 +20,13 @@ class AuthenticationListener : public QObject {
   Q_DISABLE_COPY_MOVE(AuthenticationListener)
 
  public:
-  static AuthenticationListener* create(
-      QObject* parent, MozillaVPN::AuthenticationType authenticationType);
+  enum AuthenticationType {
+    AuthenticationInBrowser,
+    AuthenticationInApp,
+  };
+
+  static AuthenticationListener* create(QObject* parent,
+                                        AuthenticationType authenticationType);
 
   virtual void start(Task* task, const QString& codeChallenge,
                      const QString& codeChallengeMethod,
@@ -30,6 +35,8 @@ class AuthenticationListener : public QObject {
   static QUrl createAuthenticationUrl(const QString& codeChallenge,
                                       const QString& codeChallengeMethod,
                                       const QString& emailAddress);
+
+  static QUrl createLoginVerifyUrl();
 
   static void generatePkceCodes(QByteArray& pkceCodeVerifier,
                                 QByteArray& pkceCodeChallenge);

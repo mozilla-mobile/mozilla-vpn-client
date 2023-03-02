@@ -69,7 +69,7 @@ MZViewBase {
                 Layout.preferredHeight: MZTheme.theme.rowHeight
                 onClicked: {
                     VPN.storeInClipboard(releaseVersion.text)
-                    VPNErrorHandler.requestAlert(VPNErrorHandler.CopiedToClipboardConfirmationAlert);
+                    MZErrorHandler.requestAlert(MZErrorHandler.CopiedToClipboardConfirmationAlert);
                 }
 
                 RowLayout {

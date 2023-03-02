@@ -23,8 +23,8 @@ MZInAppAuthenticationBase {
 
     _inputs: MZInAppAuthenticationInputs {
         objectName: "authStart"
-        _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateStart && activeInput().text.length !== 0 && !activeInput().hasError && VPNAuthInApp.validateEmailAddress(activeInput().text)
-        _buttonOnClicked: (inputText) => { VPNAuthInApp.checkAccount(inputText); }
+        _buttonEnabled: MZAuthInApp.state === MZAuthInApp.StateStart && activeInput().text.length !== 0 && !activeInput().hasError && MZAuthInApp.validateEmailAddress(activeInput().text)
+        _buttonOnClicked: (inputText) => { MZAuthInApp.checkAccount(inputText); }
         _buttonText: qsTrId("vpn.postAuthentication.continue")
         _inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhEmailCharactersOnly | Qt.ImhNoAutoUppercase | Qt.ImhSensitiveData
         _inputPlaceholderText: MZI18n.InAppSupportWorkflowSupportEmailFieldPlaceholder

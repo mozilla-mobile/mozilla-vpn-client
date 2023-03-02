@@ -18,7 +18,7 @@ MZInAppAuthenticationBase {
         if (isReauthFlow) {
             cancelAuthenticationFlow();
         } else {
-            VPNAuthInApp.reset();
+            MZAuthInApp.reset();
         }
     }
     _menuButtonAccessibleName: qsTrId("vpn.connectionInfo.close")
@@ -28,8 +28,8 @@ MZInAppAuthenticationBase {
 
     _inputs: MZInAppAuthenticationInputs {
         objectName: "authUnblockCodeNeeded"
-        _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateUnblockCodeNeeded && activeInput().text.length === VPNAuthInApp.unblockCodeLength && !activeInput().hasError
-        _buttonOnClicked: (inputText) => { VPNAuthInApp.verifyUnblockCode(inputText) }
+        _buttonEnabled: MZAuthInApp.state === MZAuthInApp.StateUnblockCodeNeeded && activeInput().text.length === MZAuthInApp.unblockCodeLength && !activeInput().hasError
+        _buttonOnClicked: (inputText) => { MZAuthInApp.verifyUnblockCode(inputText) }
         _buttonText: MZI18n.InAppAuthVerifySecurityCodeButton
         _inputMethodHints: Qt.ImhNone
         _inputPlaceholderText: MZI18n.InAppAuthUnblockCodeInputPlaceholder
@@ -43,8 +43,8 @@ MZInAppAuthenticationBase {
             labelText: MZI18n.InAppAuthResendCodeLink
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
-                VPNAuthInApp.resendUnblockCodeEmail();
-                VPNErrorHandler.requestAlert(VPNErrorHandler.AuthCodeSentAlert);
+                MZAuthInApp.resendUnblockCodeEmail();
+                MZErrorHandler.requestAlert(MZErrorHandler.AuthCodeSentAlert);
             
             }
         }

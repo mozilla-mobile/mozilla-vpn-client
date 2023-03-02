@@ -19,5 +19,19 @@ FEATURE(gleanRust,             // Feature ID
         QStringList(),         // feature dependencies
         FeatureCallback_true)
 
+FEATURE(inAppAccountCreate,                  // Feature ID
+        "In-app Account Creation",           // Feature name
+        FeatureCallback_true,                // Can be flipped on
+        FeatureCallback_true,                // Can be flipped off
+        QStringList{"inAppAuthentication"},  // feature dependencies
+        FeatureCallback_true)
+
+FEATURE(inAppAuthentication,      // Feature ID
+        "In-app Authentication",  // Feature name
+        FeatureCallback_true,     // Can be flipped on
+        FeatureCallback_true,     // Can be flipped off
+        QStringList(),            // feature dependencies
+        FeatureCallback_true)
+
 // The app must implement its feature list file.
 #include "appfeaturelist.h"

@@ -503,22 +503,6 @@ int CommandUI::run(QStringList& tokens) {
     }
 
     qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNAuthInApp",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = AuthenticationInApp::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNErrorHandler",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = ErrorHandler::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNTutorial",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = Tutorial::instance();
@@ -530,6 +514,22 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNAddonManager",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = AddonManager::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.Shared", 1, 0, "MZAuthInApp",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = AuthenticationInApp::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.Shared", 1, 0, "MZErrorHandler",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = ErrorHandler::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

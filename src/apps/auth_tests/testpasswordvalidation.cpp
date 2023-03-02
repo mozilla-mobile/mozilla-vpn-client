@@ -9,6 +9,7 @@
 #include <QEventLoop>
 #include <QTest>
 
+#include "appconstants.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "authenticationinapp/incrementaldecoder.h"
 #include "tasks/authenticate/taskauthenticate.h"
@@ -116,7 +117,7 @@ void TestPasswordValidation::emailPassword() {
   QCOMPARE(aia->state(), AuthenticationInApp::StateInitializing);
 
   // Starting the authentication flow.
-  TaskAuthenticate task(MozillaVPN::AuthenticationInApp);
+  TaskAuthenticate task(AuthenticationListener::AuthenticationInApp);
   task.run();
 
   EventLoop loop;

@@ -89,7 +89,7 @@ MZViewBase {
 
                         verticalAlignment: Text.AlignVCenter
                         Layout.fillWidth: true
-                        hasError: !VPNAuthInApp.validateEmailAddress(emailInput.text)
+                        hasError: !MZAuthInApp.validateEmailAddress(emailInput.text)
                         _placeholderText: MZI18n.InAppSupportWorkflowSupportEmailFieldPlaceholder
                     }
                 }
@@ -99,7 +99,7 @@ MZViewBase {
 
                     verticalAlignment: Text.AlignVCenter
                     Layout.fillWidth: true
-                    hasError: !VPNAuthInApp.validateEmailAddress(confirmEmailInput.text) || emailInput.text != confirmEmailInput.text
+                    hasError: !MZAuthInApp.validateEmailAddress(confirmEmailInput.text) || emailInput.text != confirmEmailInput.text
                     _placeholderText: MZI18n.InAppSupportWorkflowSupportConfirmEmailPlaceholder
                 }
             }
@@ -203,7 +203,7 @@ MZViewBase {
                     }
                     enabled: dropDown.currentValue != null && textArea.userEntry != "" &&
                              (VPN.userState === VPN.UserAuthenticated ? true :
-                                (VPNAuthInApp.validateEmailAddress(emailInput.text) && emailInput.text == confirmEmailInput.text)
+                                (MZAuthInApp.validateEmailAddress(emailInput.text) && emailInput.text == confirmEmailInput.text)
                              )
                     opacity: enabled ? 1 : .5
                     Layout.preferredHeight: MZTheme.theme.rowHeight

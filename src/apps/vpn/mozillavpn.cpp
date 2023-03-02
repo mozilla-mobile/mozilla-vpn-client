@@ -211,6 +211,11 @@ MozillaVPN::MozillaVPN() : m_private(new MozillaVPNPrivate()) {
           &MozillaVPN::subscriptionNotValidated);
 
   registerUrlOpenerLabels();
+
+  registerErrorHandlers();
+
+  connect(ErrorHandler::instance(), &ErrorHandler::errorHandled, this,
+          &MozillaVPN::errorHandled);
 }
 
 MozillaVPN::~MozillaVPN() {
@@ -461,12 +466,12 @@ void MozillaVPN::maybeStateMain() {
 void MozillaVPN::authenticate() {
   return authenticateWithType(
       Feature::get(Feature::Feature_inAppAuthentication)->isSupported()
-          ? AuthenticationInApp
-          : AuthenticationInBrowser);
+          ? AuthenticationListener::AuthenticationInApp
+          : AuthenticationListener::AuthenticationInBrowser);
 }
 
 void MozillaVPN::authenticateWithType(
-    MozillaVPN::AuthenticationType authenticationType) {
+    AuthenticationListener::AuthenticationType authenticationType) {
   logger.debug() << "Authenticate";
 
   setState(StateAuthenticating);
@@ -494,7 +499,14 @@ void MozillaVPN::authenticateWithType(
       GleanSample::authenticationStarted);
 
   TaskScheduler::scheduleTask(new TaskHeartbeat());
-  TaskScheduler::scheduleTask(new TaskAuthenticate(authenticationType));
+
+  TaskAuthenticate* taskAuthenticate = new TaskAuthenticate(authenticationType);
+  connect(taskAuthenticate, &TaskAuthenticate::authenticationAborted, this,
+          &MozillaVPN::abortAuthentication);
+  connect(taskAuthenticate, &TaskAuthenticate::authenticationCompleted, this,
+          &MozillaVPN::authenticationCompleted);
+
+  TaskScheduler::scheduleTask(taskAuthenticate);
 }
 
 void MozillaVPN::abortAuthentication() {
@@ -1626,7 +1638,12 @@ QString MozillaVPN::graphicsApi() {
 void MozillaVPN::requestDeleteAccount() {
   logger.debug() << "delete account";
   Q_ASSERT(Feature::get(Feature::Feature_accountDeletion)->isSupported());
-  TaskScheduler::scheduleTask(new TaskDeleteAccount(m_private->m_user.email()));
+
+  TaskDeleteAccount* task = new TaskDeleteAccount(m_private->m_user.email());
+  connect(task, &TaskDeleteAccount::accountDeleted, this,
+          &MozillaVPN::accountDeleted);
+
+  TaskScheduler::scheduleTask(task);
 }
 
 void MozillaVPN::cancelReauthentication() {
@@ -1759,4 +1776,58 @@ QByteArray MozillaVPN::authorizationHeader() {
   QByteArray authorizationHeader = "Bearer ";
   authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
   return authorizationHeader;
+}
+
+void MozillaVPN::errorHandled() {
+  ErrorHandler::AlertType alert = ErrorHandler::instance()->alert();
+
+  // Any error in authenticating state sends to the Initial state.
+  if (m_state == MozillaVPN::StateAuthenticating) {
+    if (alert == ErrorHandler::GeoIpRestrictionAlert) {
+      mozilla::glean::sample::authentication_failure_by_geo.record();
+      emit GleanDeprecated::instance()->recordGleanEvent(
+          GleanSample::authenticationFailureByGeo);
+    } else {
+      mozilla::glean::sample::authentication_failure.record();
+      emit GleanDeprecated::instance()->recordGleanEvent(
+          GleanSample::authenticationFailure);
+    }
+
+    reset(true);
+    return;
+  }
+
+  if (alert == ErrorHandler::AuthenticationFailedAlert) {
+    reset(true);
+  }
+}
+
+void MozillaVPN::registerErrorHandlers() {
+  ErrorHandler::registerCustomErrorHandler(
+      ErrorHandler::NoConnectionError, true, []() {
+        MozillaVPN* vpn = MozillaVPN::instance();
+        return vpn->connectionHealth() && vpn->connectionHealth()->isUnsettled()
+                   ? ErrorHandler::NoAlert
+                   : ErrorHandler::NoConnectionAlert;
+      });
+
+  ErrorHandler::registerCustomErrorHandler(
+      ErrorHandler::DependentConnectionError, true, []() {
+        MozillaVPN* vpn = MozillaVPN::instance();
+        if (vpn->controller()->state() == Controller::State::StateOn ||
+            vpn->controller()->state() == Controller::State::StateConfirming) {
+          // connection likely isn't stable yet
+          logger.error()
+              << "Ignore network error probably caused by enabled VPN";
+          return ErrorHandler::NoAlert;
+        }
+
+        if (vpn->controller()->state() == Controller::State::StateOff) {
+          // We are off, so this means a request failed, not the
+          // VPN. Change it to No Connection
+          return ErrorHandler::NoConnectionAlert;
+        }
+
+        return ErrorHandler::ConnectionFailedAlert;
+      });
 }

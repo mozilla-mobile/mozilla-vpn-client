@@ -54,7 +54,7 @@ void AuthenticationInAppListener::fallbackRequired() {
   logger.debug() << "Fallback required";
 
   AuthenticationListener* fallbackListener =
-      create(this, MozillaVPN::AuthenticationInBrowser);
+      create(this, AuthenticationListener::AuthenticationInBrowser);
   fallbackListener->start(m_task, m_codeChallenge, m_codeChallengeMethod,
                           m_session->emailAddress());
 

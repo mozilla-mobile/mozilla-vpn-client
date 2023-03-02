@@ -6,13 +6,10 @@
 
 #include <QApplication>
 
-#include "connectionhealth.h"
-#include "controller.h"
 #include "glean/generated/metrics.h"
 #include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "telemetry/gleansample.h"
 
 // in seconds, hide alerts
@@ -36,7 +33,7 @@ struct ErrorTypeData {
   ErrorHandler::AlertType (*m_getAlert)() = nullptr;
 };
 
-ErrorTypeData s_errorData[] = {
+QList<ErrorTypeData> s_errorData{
     ErrorTypeData(ErrorHandler::NoError, true,
                   []() { return ErrorHandler::NoAlert; }),
 
@@ -44,35 +41,10 @@ ErrorTypeData s_errorData[] = {
                   []() { return ErrorHandler::ConnectionFailedAlert; }),
 
     ErrorTypeData(ErrorHandler::NoConnectionError, true,
-                  []() {
-                    MozillaVPN* vpn = MozillaVPN::instance();
-                    return vpn->connectionHealth() &&
-                                   vpn->connectionHealth()->isUnsettled()
-                               ? ErrorHandler::NoAlert
-                               : ErrorHandler::NoConnectionAlert;
-                  }),
+                  []() { return ErrorHandler::ConnectionFailedAlert; }),
 
-    ErrorTypeData(
-        ErrorHandler::VPNDependentConnectionError, true,
-        []() {
-          MozillaVPN* vpn = MozillaVPN::instance();
-          if (vpn->controller()->state() == Controller::State::StateOn ||
-              vpn->controller()->state() ==
-                  Controller::State::StateConfirming) {
-            // connection likely isn't stable yet
-            logger.error()
-                << "Ignore network error probably caused by enabled VPN";
-            return ErrorHandler::NoAlert;
-          }
-
-          if (vpn->controller()->state() == Controller::State::StateOff) {
-            // We are off, so this means a request failed, not the
-            // VPN. Change it to No Connection
-            return ErrorHandler::NoConnectionAlert;
-          }
-
-          return ErrorHandler::ConnectionFailedAlert;
-        }),
+    ErrorTypeData(ErrorHandler::DependentConnectionError, true,
+                  []() { return ErrorHandler::ConnectionFailedAlert; }),
 
     ErrorTypeData(ErrorHandler::AuthenticationError, false,
                   []() { return ErrorHandler::AuthenticationFailedAlert; }),
@@ -168,7 +140,7 @@ ErrorHandler::ErrorType ErrorHandler::toErrorType(
     case QNetworkReply::HostNotFoundError:
       return NoConnectionError;
     case QNetworkReply::TimeoutError:
-      return VPNDependentConnectionError;
+      return DependentConnectionError;
     case QNetworkReply::UnknownNetworkError:
       // On mac, this means: no internet
       // On Android check if
@@ -257,26 +229,7 @@ void ErrorHandler::errorHandle(ErrorHandler::ErrorType error,
   GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
       GleanSample::errorAlertShown, extraKeys);
 
-  // Any error in authenticating state sends to the Initial state.
-  MozillaVPN* vpn = MozillaVPN::instance();
-  if (vpn->state() == MozillaVPN::StateAuthenticating) {
-    if (alert == GeoIpRestrictionAlert) {
-      mozilla::glean::sample::authentication_failure_by_geo.record();
-      emit GleanDeprecated::instance()->recordGleanEvent(
-          GleanSample::authenticationFailureByGeo);
-    } else {
-      mozilla::glean::sample::authentication_failure.record();
-      emit GleanDeprecated::instance()->recordGleanEvent(
-          GleanSample::authenticationFailure);
-    }
-    vpn->reset(true);
-    return;
-  }
-
-  if (alert == AuthenticationFailedAlert) {
-    vpn->reset(true);
-    return;
-  }
+  emit errorHandled();
 }
 
 void ErrorHandler::requestAlert(AlertType alert) {
@@ -310,4 +263,12 @@ void ErrorHandler::networkErrorHandle(
     ErrorHandler::instance()->errorHandle(errorType, taskName, fileName,
                                           lineNumber);
   }
+}
+
+// static
+void ErrorHandler::registerCustomErrorHandler(ErrorType errorType,
+                                              bool supportPolicyPropagation,
+                                              AlertType (*getAlert)()) {
+  s_errorData.prepend(
+      ErrorTypeData(errorType, supportPolicyPropagation, getAlert));
 }

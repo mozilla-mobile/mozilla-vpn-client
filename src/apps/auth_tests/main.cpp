@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
 #endif
 
   SettingsHolder settingsHolder;
-  AppConstants::setStaging();
+  Constants::setStaging();
 
   QCoreApplication a(argc, argv);
 

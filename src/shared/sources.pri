@@ -3,10 +3,16 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 SOURCES += \
+        $$PWD/authenticationlistener.cpp \
+        $$PWD/authenticationinapp/authenticationinapp.cpp \
+        $$PWD/authenticationinapp/authenticationinapplistener.cpp \
+        $$PWD/authenticationinapp/authenticationinappsession.cpp \
+        $$PWD/authenticationinapp/incrementaldecoder.cpp \
         $$PWD/collator.cpp \
         $$PWD/constants.cpp \
         $$PWD/cryptosettings.cpp \
         $$PWD/curve25519.cpp \
+        $$PWD/errorhandler.cpp \
         $$PWD/feature.cpp \
         $$PWD/filterproxymodel.cpp \
         $$PWD/fontloader.cpp \
@@ -39,6 +45,8 @@ SOURCES += \
         $$PWD/signature.cpp \
         $$PWD/simplenetworkmanager.cpp \
         $$PWD/taskscheduler.cpp \
+        $$PWD/tasks/authenticate/taskauthenticate.cpp \
+        $$PWD/tasks/deleteaccount/taskdeleteaccount.cpp \
         $$PWD/tasks/function/taskfunction.cpp \
         $$PWD/tasks/group/taskgroup.cpp \
         $$PWD/temporarydir.cpp \
@@ -47,11 +55,17 @@ SOURCES += \
         $$PWD/versionutils.cpp
 
 HEADERS += \
+        $$PWD/authenticationlistener.h \
+        $$PWD/authenticationinapp/authenticationinapp.h \
+        $$PWD/authenticationinapp/authenticationinapplistener.h \
+        $$PWD/authenticationinapp/authenticationinappsession.h \
+        $$PWD/authenticationinapp/incrementaldecoder.h \
         $$PWD/collator.h \
         $$PWD/constants.h \
         $$PWD/cryptosettings.h \
         $$PWD/curve25519.h \
         $$PWD/env.h \
+        $$PWD/errorhandler.h \
         $$PWD/feature.h \
         $$PWD/filterproxymodel.h \
         $$PWD/fontloader.h \
@@ -81,6 +95,8 @@ HEADERS += \
         $$PWD/simplenetworkmanager.h \
         $$PWD/task.h \
         $$PWD/taskscheduler.h \
+        $$PWD/tasks/authenticate/taskauthenticate.h \
+        $$PWD/tasks/deleteaccount/taskdeleteaccount.h \
         $$PWD/tasks/function/taskfunction.h \
         $$PWD/tasks/group/taskgroup.h \
         $$PWD/temporarydir.h \

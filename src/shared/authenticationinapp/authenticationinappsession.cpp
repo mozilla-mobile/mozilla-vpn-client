@@ -12,6 +12,7 @@
 
 #include "authenticationinapp.h"
 #include "authenticationlistener.h"
+#include "constants.h"
 #include "feature.h"
 #include "glean/generated/metrics.h"
 #include "gleandeprecated.h"

@@ -6,7 +6,6 @@
 
 #include <QJsonObject>
 
-#include "appconstants.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "authenticationinapp/authenticationinappsession.h"
 #include "authenticationlistener.h"
@@ -52,7 +51,7 @@ void TaskDeleteAccount::run() {
 
         NetworkRequest* request = new NetworkRequest(this, 200);
         request->post(
-            AppConstants::apiUrl(AppConstants::LoginVerify),
+            AuthenticationListener::createLoginVerifyUrl(),
             QJsonObject{{"code", pkceCodeSuccess},
                         {"code_verifier", QString(pkceCodeVerifier)}});
 
@@ -82,8 +81,8 @@ void TaskDeleteAccount::run() {
   connect(m_authenticationInAppSession,
           &AuthenticationInAppSession::accountDeleted, this, [this]() {
             m_authenticationInAppSession->terminate();
+            emit accountDeleted();
             TaskScheduler::deleteTasks();
-            emit MozillaVPN::instance()->accountDeleted();
           });
 
   connect(AuthenticationInApp::instance(), &AuthenticationInApp::stateChanged,

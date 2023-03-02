@@ -118,10 +118,10 @@ MZFlickable {
                     Layout.minimumWidth: col.width - MZTheme.theme.vSpacing * 2
                     Component.onCompleted: {
                         if (
-                                VPNAuthInApp.state === VPNAuthInApp.StateSignIn ||
-                                VPNAuthInApp.state === VPNAuthInApp.StateSigningIn ||
-                                VPNAuthInApp.state === VPNAuthInApp.StateSignUp ||
-                                VPNAuthInApp.state === VPNAuthInApp.StateSigningUp
+                                MZAuthInApp.state === MZAuthInApp.StateSignIn ||
+                                MZAuthInApp.state === MZAuthInApp.StateSigningIn ||
+                                MZAuthInApp.state === MZAuthInApp.StateSignUp ||
+                                MZAuthInApp.state === MZAuthInApp.StateSigningUp
                                 ) {
                             fontSizeMode = Text.FixedSize
                             elide = Text.ElideMiddle
@@ -133,7 +133,7 @@ MZFlickable {
                     Layout.alignment: Qt.AlignHCenter
                     labelText: MZI18n.InAppAuthChangeEmailLink
                     visible: _changeEmailLinkVisible
-                    onClicked: VPNAuthInApp.reset()
+                    onClicked: MZAuthInApp.reset()
                 }
 
                 MZSubtitle {

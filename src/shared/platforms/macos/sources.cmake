@@ -3,5 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 target_sources(shared-sources INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/macos/macosauthenticationlistener.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/macos/macosauthenticationlistener.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/macos/macoscryptosettings.mm
 )
