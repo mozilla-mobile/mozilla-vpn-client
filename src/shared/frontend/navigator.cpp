@@ -406,3 +406,52 @@ void Navigator::registerScreen(int screenId, LoadPolicy loadPolicy,
   s_screens.append(ScreenData(screenId, loadPolicy, qmlComponentUrl,
                               requiresAppState, priorityGetter, quitBlocked));
 }
+
+void Navigator::reloadCurrentScreen() {
+  auto old_screen = m_currentScreen;
+
+  ScreenData* currentScreen = nullptr;
+  for (ScreenData& screen : s_screens) {
+    if (screen.m_screen == m_screenHistory.last()) {
+      currentScreen = &screen;
+      break;
+    }
+  }
+  Q_ASSERT(currentScreen);
+
+  for (int i = currentScreen->m_layers.length() - 1; i >= 0; --i) {
+    const Layer& layer = currentScreen->m_layers.at(i);
+
+    if (layer.m_type == Layer::eStackView) {
+      QVariant property = layer.m_layer->property("depth");
+      if (!property.isValid()) {
+        logger.warning() << "Invalid depth property!!";
+        continue;
+      }
+
+      int depth = property.toInt();
+      if (depth > 1) {
+        emit goBack(layer.m_layer);
+        return;
+      }
+
+      continue;
+    }
+
+    Q_ASSERT(layer.m_type == Layer::eView);
+    QVariant property = layer.m_layer->property("visible");
+    if (!property.isValid()) {
+      logger.warning() << "Invalid visible property!!";
+      continue;
+    }
+
+    bool visible = property.toBool();
+    if (visible) {
+      emit goBack(layer.m_layer);
+      return;
+    }
+
+    continue;
+  }
+  requestScreen(old_screen, ForceReloadAll);
+}

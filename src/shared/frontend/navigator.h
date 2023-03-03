@@ -62,6 +62,8 @@ class Navigator final : public QObject {
 
   Q_INVOKABLE bool eventHandled();
 
+  void reloadCurrentScreen();
+
   void registerReloader(NavigatorReloader* reloader);
   void unregisterReloader(NavigatorReloader* reloader);
 
