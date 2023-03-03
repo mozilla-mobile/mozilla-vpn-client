@@ -17,6 +17,7 @@
 #include "models/server.h"
 #include "models/servercountrymodel.h"
 #include "mozillavpn.h"
+#include "networkrequest.h"
 #include "rfc/rfc1112.h"
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
@@ -25,6 +26,7 @@
 #include "serverlatency.h"
 #include "settingsholder.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
+#include "tasks/function/taskfunction.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "taskscheduler.h"
 
@@ -198,7 +200,6 @@ void Controller::implInitialized(bool status, bool a_connected,
 bool Controller::activate(const ServerData& serverData,
                           ServerSelectionPolicy serverSelectionPolicy) {
   logger.debug() << "Activation" << m_state;
-
   if (m_state != StateOff && m_state != StateSwitching &&
       m_state != StateSilentSwitching) {
     logger.debug() << "Already connected";
@@ -219,7 +220,42 @@ bool Controller::activate(const ServerData& serverData,
       m_portalDetected = false;
       return true;
     }
-    setState(StateConnecting);
+
+    // Before attempting to enable VPN connection we should check that the
+    // subscription is active.
+    setState(StateCheckSubscription);
+
+    // Set up a network request to check the subscription status.
+    // "task" is an empty task function which is being used to
+    // replicate the behavior of a TaskAccount.
+    TaskFunction* task = new TaskFunction([]() {});
+    NetworkRequest* request = new NetworkRequest(task, 200);
+    request->auth(MozillaVPN::authorizationHeader());
+    request->get(AppConstants::apiUrl(AppConstants::Account));
+
+    connect(request, &NetworkRequest::requestFailed, this,
+            [this](QNetworkReply::NetworkError error, const QByteArray&) {
+              logger.error() << "Account request failed" << error;
+              REPORTNETWORKERROR(error, ErrorHandler::DoNotPropagateError,
+                                 "PreActivationSubscriptionCheck");
+
+              // Check if the error propagation has changed the Mozilla VPN
+              // state. Continue only if the user is still authenticated and
+              // subscribed.
+              if (MozillaVPN::instance()->state() == MozillaVPN::StateMain) {
+                setState(StateConnecting);
+              } else {
+                setState(StateOff);
+              }
+            });
+
+    connect(request, &NetworkRequest::requestCompleted, this,
+            [this](const QByteArray& data) {
+              MozillaVPN::instance()->accountChecked(data);
+              setState(StateConnecting);
+            });
+
+    connect(request, &QObject::destroyed, task, &QObject::deleteLater);
   }
 
   clearRetryCounter();
@@ -405,13 +441,13 @@ bool Controller::deactivate() {
 
   if (m_state != StateOn && m_state != StateSwitching &&
       m_state != StateSilentSwitching && m_state != StateConfirming &&
-      m_state != StateConnecting) {
+      m_state != StateConnecting && m_state != StateCheckSubscription) {
     logger.warning() << "Already disconnected";
     return false;
   }
 
   if (m_state == StateOn || m_state == StateConfirming ||
-      m_state == StateConnecting) {
+      m_state == StateConnecting || m_state == StateCheckSubscription) {
     setState(StateDisconnecting);
   }
 
@@ -548,7 +584,8 @@ void Controller::quit() {
   m_nextStep = Quit;
 
   if (m_state == StateOn || m_state == StateSwitching ||
-      m_state == StateSilentSwitching || m_state == StateConnecting) {
+      m_state == StateSilentSwitching || m_state == StateConnecting ||
+      m_state == StateCheckSubscription) {
     deactivate();
     return;
   }
@@ -566,7 +603,7 @@ void Controller::backendFailure() {
 
   if (m_state == StateOn || m_state == StateSwitching ||
       m_state == StateSilentSwitching || m_state == StateConnecting ||
-      m_state == StateConfirming) {
+      m_state == StateCheckSubscription || m_state == StateConfirming) {
     deactivate();
     return;
   }
@@ -579,7 +616,7 @@ void Controller::serverUnavailable() {
 
   if (m_state == StateOn || m_state == StateSwitching ||
       m_state == StateSilentSwitching || m_state == StateConnecting ||
-      m_state == StateConfirming) {
+      m_state == StateConfirming || m_state == StateCheckSubscription) {
     deactivate();
     return;
   }

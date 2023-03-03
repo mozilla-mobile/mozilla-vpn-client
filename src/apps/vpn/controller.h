@@ -41,6 +41,7 @@ class Controller final : public QObject {
   enum State {
     StateInitializing,
     StateOff,
+    StateCheckSubscription,
     StateConnecting,
     StateConfirming,
     StateOn,
