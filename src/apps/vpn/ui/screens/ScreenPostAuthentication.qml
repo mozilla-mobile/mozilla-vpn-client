@@ -11,7 +11,7 @@ import components 0.1
 Item {
     Component.onCompleted: fade.start()
 
-    VPNHeadline {
+    MZHeadline {
         id: headline
 
         anchors.top: parent.top
@@ -21,7 +21,7 @@ Item {
         text: qsTrId("vpn.postAuthentication..quickAccess")
     }
 
-    VPNSubtitle {
+    MZSubtitle {
         id: logoSubtitle
 
         //% "You can quickly access Mozilla VPN from your status bar."
@@ -39,7 +39,7 @@ Item {
         anchors.centerIn: parent
     }
 
-    VPNButton {
+    MZButton {
         id: button
         objectName: "postAuthenticationButton"
 

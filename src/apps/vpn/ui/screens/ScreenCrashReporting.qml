@@ -6,10 +6,11 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
-VPNFlickable {
+MZFlickable {
     id: vpnFlickable
 
     readonly property bool isMobile: window.fullscreenRequired()
@@ -23,9 +24,9 @@ VPNFlickable {
     ColumnLayout {
         id: content
 
-        spacing: VPNTheme.theme.windowMargin * 1.25  
+        spacing: MZTheme.theme.windowMargin * 1.25  
         height: vpnFlickable.height
-        width: Math.min(vpnFlickable.width, VPNTheme.theme.maxHorizontalContentWidth)
+        width: Math.min(vpnFlickable.width, MZTheme.theme.maxHorizontalContentWidth)
   
 
         Image {
@@ -39,35 +40,35 @@ VPNFlickable {
             fillMode: Image.PreserveAspectFit
         }
 
-        VPNHeadline {
+        MZHeadline {
             id: mainHeading
             text: qsTrId("vpn.crashreporter.mainHeading")
             horizontalAlignment: Text.AlignHCenter
 
             Layout.fillWidth: true
-            Layout.topMargin: VPNTheme.theme.vSpacingSmall
-            Layout.leftMargin: VPNTheme.theme.windowMargin * 2
-            Layout.rightMargin: VPNTheme.theme.windowMargin * 2
+            Layout.topMargin: MZTheme.theme.vSpacingSmall
+            Layout.leftMargin: MZTheme.theme.windowMargin * 2
+            Layout.rightMargin: MZTheme.theme.windowMargin * 2
         }
 
-        VPNTextBlock{
+        MZTextBlock{
             id: description
             
             horizontalAlignment: Text.AlignHCenter
             text: qsTrId("vpn.crashreporter.description")
 
             Layout.fillWidth: true
-            Layout.leftMargin: VPNTheme.theme.windowMargin * 2
-            Layout.rightMargin: VPNTheme.theme.windowMargin * 2
+            Layout.leftMargin: MZTheme.theme.windowMargin * 2
+            Layout.rightMargin: MZTheme.theme.windowMargin * 2
 
-            font.pixelSize: VPNTheme.theme.fontSize
+            font.pixelSize: MZTheme.theme.fontSize
            
         }
         Item {
             Layout.fillHeight: isMobile
         }
 
-        VPNButton {
+        MZButton {
             text: qsTrId("vpn.crashreporter.sendButtonLabel");
             
             onClicked: {
@@ -76,11 +77,11 @@ VPNFlickable {
             }
 
             Layout.fillWidth: true
-            Layout.topMargin: VPNTheme.theme.vSpacing
-            Layout.leftMargin: VPNTheme.theme.windowMargin * 2
-            Layout.rightMargin: VPNTheme.theme.windowMargin * 2
+            Layout.topMargin: MZTheme.theme.vSpacing
+            Layout.leftMargin: MZTheme.theme.windowMargin * 2
+            Layout.rightMargin: MZTheme.theme.windowMargin * 2
         }
-        VPNLinkButton {
+        MZLinkButton {
             labelText: qsTrId("vpn.crashreporter.dontSendButton");
         
             onClicked: {

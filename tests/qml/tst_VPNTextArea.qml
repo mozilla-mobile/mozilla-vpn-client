@@ -11,12 +11,12 @@ Item {
     width: 600;
     height: 800;
 
-    VPNTextArea {
+    MZTextArea {
         id: vpnTextAreaTest
     }
 
     TestCase {
-        name: "VPNTextArea"
+        name: "MZTextArea"
         when: windowShown
 
         function resetTextArea() {

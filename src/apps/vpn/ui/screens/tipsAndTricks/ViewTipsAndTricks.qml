@@ -5,21 +5,21 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 
-import Mozilla.VPN 1.0
+import Mozilla.Shared 1.0
 import components 0.1
 import telemetry 0.30
 
-VPNViewBase {
+MZViewBase {
     id: root
     objectName: "settingsTipsAndTricksPage"
 
-    _menuTitle: VPNI18n.SettingsTipsAndTricksSettings
+    _menuTitle: MZI18n.SettingsTipsAndTricksSettings
     _interactive: false
 
-    _viewContentData: VPNTabNavigation {
+    _viewContentData: MZTabNavigation {
         id: tabs
-        Layout.topMargin: -VPNTheme.theme.windowMargin
-        Layout.preferredHeight: root.height - VPNTheme.theme.menuHeight
+        Layout.topMargin: -MZTheme.theme.windowMargin
+        Layout.preferredHeight: root.height - MZTheme.theme.menuHeight
         Layout.preferredWidth: root.width
 
         tabList: ListModel {
@@ -43,15 +43,15 @@ VPNViewBase {
 
             // Quick tips
             Item {
-                property string title: VPNI18n.TipsAndTricksQuickTipsTitle
-                property string description: VPNI18n.TipsAndTricksQuickTipsDescription
+                property string title: MZI18n.TipsAndTricksQuickTipsTitle
+                property string description: MZI18n.TipsAndTricksQuickTipsDescription
                 property var filter: (addon) => !addon.advanced && !addon.highlighted
             }
 
             // Advanced tips
             Item {
-                property string title: VPNI18n.TipsAndTricksAdvancedTipsTitle
-                property string description: VPNI18n.TipsAndTricksAdvancedTipsDescription
+                property string title: MZI18n.TipsAndTricksAdvancedTipsTitle
+                property string description: MZI18n.TipsAndTricksAdvancedTipsDescription
                 property var filter: (addon) => addon.advanced && !addon.highlighted
             }
         }
@@ -61,22 +61,22 @@ VPNViewBase {
 
             // Highlighted tutorials
             Item {
-                property string title: VPNI18n.TipsAndTricksTutorialsTitle
-                property string description: VPNI18n.TipsAndTricksTutorialsDescription
+                property string title: MZI18n.TipsAndTricksTutorialsTitle
+                property string description: MZI18n.TipsAndTricksTutorialsDescription
                 property var filter: (addon) => addon.highlighted
             }
 
             // More tutorials
             Item {
-                property string title: VPNI18n.TipsAndTricksMoreTutorialsTitle
-                property string description: VPNI18n.TipsAndTricksMoreTutorialsDescription2
+                property string title: MZI18n.TipsAndTricksMoreTutorialsTitle
+                property string description: MZI18n.TipsAndTricksMoreTutorialsDescription2
                 property var filter: (addon) => !addon.highlighted
             }
         }
 
         stackContent: [
             // All
-            VPNViewBase {
+            MZViewBase {
                 objectName: 'allTab'
                 anchors.top: undefined
 
@@ -85,21 +85,21 @@ VPNViewBase {
                     objectName: 'layoutAll'
 
                     Layout.fillWidth: true
-                    Layout.leftMargin: VPNTheme.theme.windowMargin
-                    Layout.rightMargin: VPNTheme.theme.windowMargin
+                    Layout.leftMargin: MZTheme.theme.windowMargin
+                    Layout.rightMargin: MZTheme.theme.windowMargin
                     Layout.topMargin: 8
-                    spacing: VPNTheme.theme.vSpacing
+                    spacing: MZTheme.theme.vSpacing
 
                     Repeater {
                         model: 2
 
                         delegate: Column {
                             Layout.fillWidth: true
-                            spacing: VPNTheme.theme.vSpacing
+                            spacing: MZTheme.theme.vSpacing
 
                             objectName: 'columnAll'
 
-                            VPNTipsAndTricksSection {
+                            MZTipsAndTricksSection {
                                 objectName: 'tutorialsSectionAll'
 
                                 anchors.right: parent.right
@@ -114,7 +114,7 @@ VPNViewBase {
                                 customFilter: section.filter
                             }
 
-                            VPNTipsAndTricksSection {
+                            MZTipsAndTricksSection {
                                 anchors.right: parent.right
                                 anchors.left: parent.left
 
@@ -132,22 +132,22 @@ VPNViewBase {
             },
 
             // Tutorials
-            VPNViewBase {
+            MZViewBase {
                 anchors.top: undefined
 
                 _viewContentData: ColumnLayout {
                     id: layoutTutorial
 
                     Layout.fillWidth: true
-                    Layout.leftMargin: VPNTheme.theme.windowMargin
-                    Layout.rightMargin: VPNTheme.theme.windowMargin
+                    Layout.leftMargin: MZTheme.theme.windowMargin
+                    Layout.rightMargin: MZTheme.theme.windowMargin
                     Layout.topMargin: 8
-                    spacing: VPNTheme.theme.vSpacing
+                    spacing: MZTheme.theme.vSpacing
 
                     Repeater {
                         model: tutorialsSections.count
 
-                        delegate: VPNTipsAndTricksSection {
+                        delegate: MZTipsAndTricksSection {
                             Layout.fillWidth: true
 
                             property var section: tutorialsSections.get(index)
@@ -163,22 +163,22 @@ VPNViewBase {
             },
 
             // Tips
-            VPNViewBase {
+            MZViewBase {
                 anchors.top: undefined
 
                 _viewContentData: ColumnLayout {
                     id: layoutGuide
 
                     Layout.fillWidth: true
-                    Layout.leftMargin: VPNTheme.theme.windowMargin
-                    Layout.rightMargin: VPNTheme.theme.windowMargin
+                    Layout.leftMargin: MZTheme.theme.windowMargin
+                    Layout.rightMargin: MZTheme.theme.windowMargin
                     Layout.topMargin: 8
-                    spacing: VPNTheme.theme.vSpacing
+                    spacing: MZTheme.theme.vSpacing
 
                     Repeater {
                         model: guidesSections.count
 
-                        delegate: VPNTipsAndTricksSection {
+                        delegate: MZTipsAndTricksSection {
                             Layout.fillWidth: true
 
                             property var section: guidesSections.get(index)

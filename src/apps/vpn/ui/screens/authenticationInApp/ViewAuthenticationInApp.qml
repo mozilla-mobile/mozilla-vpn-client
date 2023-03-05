@@ -21,7 +21,7 @@ Item {
         anchors.fill: parent
     }
 
-    VPNInAppAuthenticationErrorPopup {
+    MZInAppAuthenticationErrorPopup {
         id: authError
         objectName: "authErrorPopup"
     }

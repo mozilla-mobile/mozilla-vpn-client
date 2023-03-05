@@ -7,10 +7,11 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 import QtQuick.Window 2.1
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
-VPNViewBase {
+MZViewBase {
     objectName: "viewAboutUs"
     property bool listenForUpdateEvents:false
     property string licenseURL: ""
@@ -19,44 +20,44 @@ VPNViewBase {
     _menuTitle: qsTrId("vpn.settings.aboutUs")
 
     _viewContentData: ColumnLayout {
-        spacing: VPNTheme.theme.windowMargin
+        spacing: MZTheme.theme.windowMargin
         Layout.fillWidth: true
         objectName: "aboutUsList"
 
         ColumnLayout {
-            Layout.leftMargin: VPNTheme.theme.windowMargin
-            Layout.rightMargin: VPNTheme.theme.windowMargin
+            Layout.leftMargin: MZTheme.theme.windowMargin
+            Layout.rightMargin: MZTheme.theme.windowMargin
             Layout.fillWidth: true
-            spacing: VPNTheme.theme.windowMargin
+            spacing: MZTheme.theme.windowMargin
 
             ColumnLayout {
-                spacing: VPNTheme.theme.windowMargin / 2
+                spacing: MZTheme.theme.windowMargin / 2
 
-                VPNBoldLabel {
+                MZBoldLabel {
                     text: qsTrId("vpn.main.productName")
                     Layout.fillWidth: true
                 }
-                VPNTextBlock {
+                MZTextBlock {
                     Layout.fillWidth: true
                     width: undefined
                     text: qsTrId("vpn.main.productDescription")
                 }
             }
-            VPNBoldLabel {
+            MZBoldLabel {
                 //% "Release version"
                 //: Refers to the installed version. For example: "Release Version: 1.23"
                 text: qsTrId("vpn.aboutUs.releaseVersion2")
                 Accessible.role: Accessible.StaticText
             }
-            VPNClickableRow {
-                property int marginOffset: VPNTheme.theme.windowMargin / 2
+            MZClickableRow {
+                property int marginOffset: MZTheme.theme.windowMargin / 2
 
                 id: copyVersionNumber
 
-                Accessible.name: VPNI18n.AboutUsCopyVersionNumber.arg(releaseVersion.text)
+                Accessible.name: MZI18n.AboutUsCopyVersionNumber.arg(releaseVersion.text)
                 Layout.leftMargin: -marginOffset
                 Layout.rightMargin: -marginOffset
-                Layout.topMargin: -VPNTheme.theme.windowMargin
+                Layout.topMargin: -MZTheme.theme.windowMargin
                 anchors {
                     left: undefined
                     right: undefined
@@ -65,7 +66,7 @@ VPNViewBase {
                 }
 
                 Layout.fillWidth: true
-                Layout.preferredHeight: VPNTheme.theme.rowHeight
+                Layout.preferredHeight: MZTheme.theme.rowHeight
                 onClicked: {
                     VPN.storeInClipboard(releaseVersion.text)
                     VPNErrorHandler.requestAlert(VPNErrorHandler.CopiedToClipboardConfirmationAlert);
@@ -79,7 +80,7 @@ VPNViewBase {
                     anchors.verticalCenter: copyVersionNumber.verticalCenter
                     spacing: parent.marginOffset
 
-                    VPNTextBlock {
+                    MZTextBlock {
                         id: releaseVersion
                         text: VPN.env.buildNumber === "" ? VPN.env.versionString : (VPN.env.versionString + " (" + VPN.env.buildNumber + ")")
                         width: undefined
@@ -124,22 +125,22 @@ VPNViewBase {
                    openView: ""
                }
            }
-           delegate: VPNExternalLinkListItem {
+           delegate: MZExternalLinkListItem {
                objectName: "aboutUsList-" + linkId
                title: linkTitle
                accessibleName: title
                Layout.fillWidth: true
-               Layout.preferredHeight: VPNTheme.theme.rowHeight
-               Layout.leftMargin: VPNTheme.theme.windowMargin / 2
-               Layout.rightMargin: VPNTheme.theme.windowMargin / 2
+               Layout.preferredHeight: MZTheme.theme.rowHeight
+               Layout.leftMargin: MZTheme.theme.windowMargin / 2
+               Layout.rightMargin: MZTheme.theme.windowMargin / 2
 
                onClicked: {
                    if (openUrl === "terms-of-service") {
-                       VPNUrlOpener.openUrlLabel("termsOfService");
+                       MZUrlOpener.openUrlLabel("termsOfService");
                    }
 
                    if (openUrl === "link-privacy-notice") {
-                       VPNUrlOpener.openUrlLabel("privacyNotice");
+                       MZUrlOpener.openUrlLabel("privacyNotice");
                    }
 
                    if (openView) {
@@ -147,31 +148,31 @@ VPNViewBase {
                    }
                }
                iconSource: openUrl ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"
-               iconMirror: !openUrl && VPNLocalizer.isRightToLeft
+               iconMirror: !openUrl && MZLocalizer.isRightToLeft
                anchors.left: undefined
                anchors.right: undefined
            }
            Component.onCompleted: {
               aboutUsListModel.append({
                    linkId: "license",
-                   linkTitle: VPNI18n.AboutUsLicenses,
+                   linkTitle: MZI18n.AboutUsLicenses,
                    openView: "qrc:/ui/screens/settings/ViewLicenses.qml"
               });
            }
         }
 
-        VPNButton {
+        MZButton {
             id:updateButton
             Layout.fillWidth: true
-            Layout.leftMargin: VPNTheme.theme.windowMargin
-            Layout.rightMargin: VPNTheme.theme.windowMargin
+            Layout.leftMargin: MZTheme.theme.windowMargin
+            Layout.rightMargin: MZTheme.theme.windowMargin
 
             onClicked: {
                 listenForUpdateEvents=true;
                 updateButtonImageAnimation.start();
                 VPNReleaseMonitor.runSoon();
             }
-            text: VPNI18n.UpdateButtonCheckForUpdateButtonText
+            text: MZI18n.UpdateButtonCheckForUpdateButtonText
             Image {
                 id:updateButtonImage
                 anchors {
@@ -179,13 +180,13 @@ VPNViewBase {
                     // If we wish to align to the text, maybe we can get
                     // the texts bounding box with "TextMetrics"?
                     left: updateButton.contentItem.left
-                    leftMargin: VPNTheme.theme.windowMargin
+                    leftMargin: MZTheme.theme.windowMargin
                     verticalCenter: parent.verticalCenter
                 }
                 fillMode: Image.PreserveAspectFit
                 source: "qrc:/nebula/resources/refresh.svg"
-                sourceSize.height: VPNTheme.theme.iconSize * 1.5
-                sourceSize.width: VPNTheme.theme.iconSize * 1.5
+                sourceSize.height: MZTheme.theme.iconSize * 1.5
+                sourceSize.width: MZTheme.theme.iconSize * 1.5
                 visible: true
                 z:6
 
@@ -222,23 +223,23 @@ VPNViewBase {
                 updateButtonImageAnimation.stop();
                 updatePopup.imageSrc = "qrc:/nebula/resources/updateStatusUpdateAvailable.svg";
                 updatePopup.imageSize = Qt.size(80, 80)
-                updatePopup.title = VPNI18n.UpdateButtonTitleOnUpdate
-                updatePopup.description = VPNI18n.UpdateButtonDescriptionOnUpdate
-                updatePopup.buttonText = VPNI18n.UpdateButtonActionOnUpdate
+                updatePopup.title = MZI18n.UpdateButtonTitleOnUpdate
+                updatePopup.description = MZI18n.UpdateButtonDescriptionOnUpdate
+                updatePopup.buttonText = MZI18n.UpdateButtonActionOnUpdate
             } else {
                 updateButtonImageAnimation.stop();
                 updatePopup.imageSrc = "qrc:/nebula/resources/updateStatusUpToDate.svg";
                 updatePopup.imageSize = Qt.size(80, 80)
-                updatePopup.title = VPNI18n.UpdateButtonTitleNoUpdate
-                updatePopup.description = VPNI18n.UpdateButtonDescriptionNoUpdate2
-                updatePopup.buttonText = VPNI18n.UpdateButtonActionNoUpdate
+                updatePopup.title = MZI18n.UpdateButtonTitleNoUpdate
+                updatePopup.description = MZI18n.UpdateButtonDescriptionNoUpdate2
+                updatePopup.buttonText = MZI18n.UpdateButtonActionNoUpdate
             }
             updatePopup.open()
             listenForUpdateEvents=false;
         }
     }
 
-    VPNSimplePopup {
+    MZSimplePopup {
         id: updatePopup
         property alias buttonText: popupBtn.text
         property bool updateAvailable
@@ -246,12 +247,12 @@ VPNViewBase {
         anchors.centerIn: Overlay.overlay
         imageSrc: "qrc:/nebula/resources/updateStatusUpdateAvailable.svg"
         imageSize: Qt.size(80, 80)
-        title: VPNI18n.UpdateButtonTitleOnUpdate
-        description: VPNI18n.UpdateButtonDescriptionOnUpdate
+        title: MZI18n.UpdateButtonTitleOnUpdate
+        description: MZI18n.UpdateButtonDescriptionOnUpdate
         buttons: [
-            VPNButton {
+            MZButton {
                 id: popupBtn
-                text: VPNI18n.UpdateButtonActionOnUpdate
+                text: MZI18n.UpdateButtonActionOnUpdate
                 Layout.fillWidth: true
                 onClicked: {
                    if (updatePopup.updateAvailable) {

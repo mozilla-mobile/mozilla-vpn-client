@@ -6,11 +6,12 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import Mozilla.VPN.qmlcomponents 1.0
 
-VPNViewBase {
+MZViewBase {
     id: vpnFlickable
     property var message
 
@@ -23,7 +24,7 @@ VPNViewBase {
                 Layout.fillWidth: true
             }
 
-            VPNIcon {
+            MZIcon {
                 id: logo
                 source: "qrc:/ui/resources/logo.svg"
                 sourceSize.height: 20
@@ -31,7 +32,7 @@ VPNViewBase {
                 antialiasing: true
             }
 
-            VPNBoldLabel {
+            MZBoldLabel {
                 text: qsTrId("MozillaVPN")
                 color: "#000000"
                 horizontalAlignment: Text.AlignHCenter
@@ -46,13 +47,13 @@ VPNViewBase {
         }
     }
     property Component rightMenuButton: Component {
-        VPNIconButton {
+        MZIconButton {
             id: deleteButton
 
-            accessibleName: VPNI18n.InAppMessagingDeleteMessage
+            accessibleName: MZI18n.InAppMessagingDeleteMessage
             anchors.rightMargin: 32
 
-            VPNIcon {
+            MZIcon {
                 id: icon
 
                 anchors.centerIn: parent
@@ -70,8 +71,8 @@ VPNViewBase {
 
     _viewContentData: ColumnLayout {
         Layout.fillHeight: true
-        Layout.leftMargin: VPNTheme.theme.windowMargin * 1.5
-        Layout.rightMargin: VPNTheme.theme.windowMargin * 1.5
+        Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+        Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
 
         spacing: 0
 
@@ -85,7 +86,7 @@ VPNViewBase {
             Loader {
                 Layout.preferredWidth: item.width
                 active: message.badge !== VPNAddonMessage.None
-                sourceComponent: VPNBadge {
+                sourceComponent: MZBadge {
 
                     badgeLabel.width: Math.min(badgeLabel.implicitWidth, badgeAndTimestampRow.width - dateLabel.width - badgeAndTimestampRow.spacing)
                     badgeType: {
@@ -107,38 +108,38 @@ VPNViewBase {
                         id: badgeInfo
 
                         property var warningBadge: {
-                            'badgeText': VPNI18n.InAppMessagingWarningBadge,
-                            'badgeTheme': VPNTheme.theme.orangeBadge
+                            'badgeText': MZI18n.InAppMessagingWarningBadge,
+                            'badgeTheme': MZTheme.theme.orangeBadge
                         };
                         property var criticalBadge: {
-                            'badgeText': VPNI18n.InAppMessagingCriticalBadge,
-                            'badgeTheme': VPNTheme.theme.redBadge
+                            'badgeText': MZI18n.InAppMessagingCriticalBadge,
+                            'badgeTheme': MZTheme.theme.redBadge
                         };
                         property var newUpdateBadge: {
-                            'badgeText': VPNI18n.InAppMessagingNewUpdateBadge,
-                            'badgeTheme': VPNTheme.theme.greenBadge
+                            'badgeText': MZI18n.InAppMessagingNewUpdateBadge,
+                            'badgeTheme': MZTheme.theme.greenBadge
                         };
                         property var whatsNewBadge: {
-                            'badgeText': VPNI18n.InAppMessagingWhatsNewBadge,
-                            'badgeTheme': VPNTheme.theme.blueBadge
+                            'badgeText': MZI18n.InAppMessagingWhatsNewBadge,
+                            'badgeTheme': MZTheme.theme.blueBadge
                         };
                         property var surveyBadge: {
-                            'badgeText': VPNI18n.InAppMessagingSurveyBadge,
-                            'badgeTheme': VPNTheme.theme.blueBadge
+                            'badgeText': MZI18n.InAppMessagingSurveyBadge,
+                            'badgeTheme': MZTheme.theme.blueBadge
                         };
                     }
                 }
             }
 
-            VPNInterLabel {
+            MZInterLabel {
                 id: dateLabel
 
                 Layout.preferredWidth: implicitWidth
                 Layout.alignment: Qt.AlignRight
 
                 text: message.formattedDate
-                color: VPNTheme.theme.fontColor
-                font.pixelSize: VPNTheme.theme.fontSizeSmall
+                color: MZTheme.theme.fontColor
+                font.pixelSize: MZTheme.theme.fontSizeSmall
                 lineHeight: 21
                 horizontalAlignment: Text.AlignRight
                 maximumLineCount: 1
@@ -148,38 +149,38 @@ VPNViewBase {
 
         Column {
             Layout.fillWidth: true
-            Layout.topMargin: VPNTheme.theme.windowMargin
+            Layout.topMargin: MZTheme.theme.windowMargin
 
-            VPNBoldLabel {
+            MZBoldLabel {
                 anchors.left: parent.left
                 anchors.right: parent.right
 
                 text: message.title
-                font.pixelSize: VPNTheme.theme.fontSizeLarge
+                font.pixelSize: MZTheme.theme.fontSizeLarge
                 lineHeightMode: Text.FixedHeight
                 lineHeight: 32
                 wrapMode: Text.Wrap
             }
 
-            VPNVerticalSpacer {
-                height: VPNTheme.theme.vSpacingSmall
+            MZVerticalSpacer {
+                height: MZTheme.theme.vSpacingSmall
             }
 
-            VPNInterLabel {
+            MZInterLabel {
                 anchors.left: parent.left
                 anchors.right: parent.right
 
                 text: message.subtitle
-                font.pixelSize: VPNTheme.theme.fontSizeSmall
-                color: VPNTheme.theme.fontColor
+                font.pixelSize: MZTheme.theme.fontSizeSmall
+                color: MZTheme.theme.fontColor
                 horizontalAlignment: Text.AlignLeft
             }
 
-            VPNComposerView {
+            MZComposerView {
                 anchors.left: parent.left
                 anchors.right: parent.right
 
-                view: VPNComposerView.View.Message
+                view: MZComposerView.View.Message
                 addon: message
             }
         }

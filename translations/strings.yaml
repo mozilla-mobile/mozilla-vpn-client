@@ -31,12 +31,12 @@
 #      - Also comments can be written using
 #      - multiple lines!
 #
-# In QML/JS, you can use the string IDs via the `VPNI18n` object. Each string
+# In QML/JS, you can use the string IDs via the `MZI18n` object. Each string
 # is converted in an enum composed by categoryName + stringId, in pascal case.
 # For instance:
 # ```
 # Text {
-#   text: VPNI18n.InitialViewSubTitle
+#   text: MZI18n.InitialViewSubTitle
 # ```
 #
 # In C++, you can do basically the same:
@@ -59,8 +59,8 @@
 # When you use a string with arguments, in QML, you can write:
 # ```
 # Text {
-#   text: VPNI18n.Something.arg("hello")
-#   otherText: VPNI18n.Something.arg("hello").arg("second argument")
+#   text: MZI18n.Something.arg("hello")
+#   otherText: MZI18n.Something.arg("hello").arg("second argument")
 # ```
 # In C++:
 # ```

@@ -6,10 +6,10 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import compat 0.1
-
 
 Item {
     property int safeAreaHeight: window.safeContentHeight
@@ -18,7 +18,7 @@ Item {
     //% "A fast, secure and easy to use VPN. Built by the makers of Firefox."
     property string logoSubtitle: qsTrId("vpn.main.productDescription")
 
-    VPNRadialGradient {
+    MZRadialGradient {
         height: Screen.height
         width: Screen.width
         anchors.top: parent.top
@@ -26,21 +26,21 @@ Item {
 
         gradient: Gradient {
             GradientStop {
-                color: VPNTheme.theme.onBoardingGradient.start
+                color: MZTheme.theme.onBoardingGradient.start
                 position: 0.0
             }
             GradientStop {
-                color: VPNTheme.theme.onBoardingGradient.middle
+                color: MZTheme.theme.onBoardingGradient.middle
                 position: 0.2
             }
             GradientStop {
-                color: VPNTheme.theme.onBoardingGradient.end
+                color: MZTheme.theme.onBoardingGradient.end
                 position: 0.5
             }
         }
     }
 
-    VPNFlickable {
+    MZFlickable {
         property bool firstRun: true
         id: onboardingPanel
 
@@ -95,7 +95,7 @@ Item {
             currentIndex: 0
 
             Component.onCompleted: {
-                contentItem.maximumFlickVelocity = 5 * VPNTheme.theme.maxContentWidth;
+                contentItem.maximumFlickVelocity = 5 * MZTheme.theme.maxContentWidth;
                 contentItem.snapMode = ListView.SnapOneItem;
             }
 
@@ -109,7 +109,7 @@ Item {
                     sourceComponent: SwipeDelegate {
                         background: Item {}
 
-                        VPNLottieAnimation {
+                        MZLottieAnimation {
                             id: panelAnimation
 
                             property real imageScaleValue: 0.9
@@ -187,8 +187,8 @@ Item {
 
                         Component.onCompleted: {
                             currentPanelValues._panelId = panelId;
-                            currentPanelValues._panelTitleText = VPNI18n[titleStringId];
-                            currentPanelValues._panelDescriptionText = VPNI18n[subtitleStringId];
+                            currentPanelValues._panelTitleText = MZI18n[titleStringId];
+                            currentPanelValues._panelDescriptionText = MZI18n[subtitleStringId];
                             updatePanel.start();
                         }
 
@@ -231,7 +231,7 @@ Item {
             }
         }
 
-        VPNHeaderLink {
+        MZHeaderLink {
             id: headerLink
             objectName: "getHelpLink"
             labelText: qsTrId("vpn.main.getHelp2")
@@ -243,9 +243,9 @@ Item {
             }
             anchors {
                 top: parent.top
-                topMargin: VPNTheme.theme.windowMargin
+                topMargin: MZTheme.theme.windowMargin
                 right: parent.right
-                rightMargin: VPNTheme.theme.windowMargin
+                rightMargin: MZTheme.theme.windowMargin
             }
         }
 
@@ -263,51 +263,51 @@ Item {
             anchors.fill: parent
 
             anchors.topMargin: onboardingPanel.height / 2
-            anchors.rightMargin: VPNTheme.theme.windowMargin * 2
-            anchors.leftMargin: VPNTheme.theme.windowMargin * 2
+            anchors.rightMargin: MZTheme.theme.windowMargin * 2
+            anchors.leftMargin: MZTheme.theme.windowMargin * 2
 
             Column {
                 id: panelText
                 Layout.preferredWidth: col.width
-                spacing: VPNTheme.theme.windowMargin / 2
+                spacing: MZTheme.theme.windowMargin / 2
 
-                VPNHeadline {
+                MZHeadline {
                     id: panelTitle
                     objectName: "panelTitle"
-                    color: VPNTheme.colors.white
+                    color: MZTheme.colors.white
                     width: parent.width
                 }
 
-                VPNSubtitle {
+                MZSubtitle {
                     id: panelDescription
                     objectName: "panelDescription"
-                    color: VPNTheme.colors.grey20
+                    color: MZTheme.colors.grey20
                     width: parent.width
                 }
             }
 
-            VPNVerticalSpacer {
+            MZVerticalSpacer {
                 // Pushes panelText and PanelBottomContent to top and bottom of
                 // the wrapping ColumnLayout
                 Layout.fillHeight: true
-                Layout.minimumHeight: VPNTheme.theme.windowMargin
+                Layout.minimumHeight: MZTheme.theme.windowMargin
             }
 
             Column {
                 id: panelBottomContent
                 Layout.preferredWidth: parent.width
-                spacing: VPNTheme.theme.windowMargin
+                spacing: MZTheme.theme.windowMargin
 
-                VPNInterLabel {
+                MZInterLabel {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: VPNI18n.FreeTrialsStartYourFreeTrial
-                    color: VPNTheme.colors.white80
-                    font.family: VPNTheme.theme.fontInterSemiBoldFamily
+                    text: MZI18n.FreeTrialsStartYourFreeTrial
+                    color: MZTheme.colors.white80
+                    font.family: MZTheme.theme.fontInterSemiBoldFamily
                     width: parent.width
                     visible: VPNFeatureList.get("freeTrial").isSupported
                 }
 
-                VPNVerticalSpacer {
+                MZVerticalSpacer {
                     height: 1
                 }
 
@@ -318,11 +318,11 @@ Item {
                     count: swipeView.count
                     currentIndex: swipeView.currentIndex
                     anchors.horizontalCenter: parent.horizontalCenter
-                    spacing: VPNTheme.theme.windowMargin / 2
+                    spacing: MZTheme.theme.windowMargin / 2
 
                     delegate: Rectangle {
                         id: circle
-                        color: index === swipeView.currentIndex ? VPNTheme.theme.blue : VPNTheme.theme.greyPressed
+                        color: index === swipeView.currentIndex ? MZTheme.theme.blue : MZTheme.theme.greyPressed
                         height: 6
                         width: 6
                         radius: 6
@@ -334,12 +334,12 @@ Item {
                     }
                 }
 
-                VPNButton {
+                MZButton {
                     id: signUpButton
                     objectName: "signUpButton"
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: VPNI18n.MobileOnboardingSignUpBtn
-                    width: Math.min(parent.width, VPNTheme.theme.maxHorizontalContentWidth)
+                    text: MZI18n.MobileOnboardingSignUpBtn
+                    width: Math.min(parent.width, MZTheme.theme.maxHorizontalContentWidth)
                     onClicked: {
                         const platform = Qt.platform.os;
                         if (platform === "android" || platform === "ios") {
@@ -349,12 +349,12 @@ Item {
                     }
                 }
 
-                VPNLinkButton {
+                MZLinkButton {
                     objectName: "alreadyASubscriberLink"
-                    labelText: VPNI18n.MobileOnboardingAlreadyASubscriber
+                    labelText: MZI18n.MobileOnboardingAlreadyASubscriber
                     anchors.horizontalCenter: parent.horizontalCenter
-                    height: VPNTheme.theme.rowHeight
-                    linkColor: VPNTheme.theme.whiteButton
+                    height: MZTheme.theme.rowHeight
+                    linkColor: MZTheme.theme.whiteButton
                     onClicked: {
                         const platform = Qt.platform.os;
                         if (platform === "android" || platform === "ios") {
@@ -365,9 +365,9 @@ Item {
                 }
             }
 
-            VPNVerticalSpacer {
+            MZVerticalSpacer {
                 id: spacerBottom
-                Layout.preferredHeight: Math.min(window.height * 0.08, VPNTheme.theme.rowHeight)
+                Layout.preferredHeight: Math.min(window.height * 0.08, MZTheme.theme.rowHeight)
             }
         }
 
@@ -388,12 +388,12 @@ Item {
         }
 
         Component.onCompleted: {
-            statusBarModifier.statusBarTextColor = VPNTheme.StatusBarTextColorLight;
+            statusBarModifier.statusBarTextColor = MZTheme.StatusBarTextColorLight;
         }
 
-        VPNMobileStatusBarModifier {
+        MZMobileStatusBarModifier {
             id: statusBarModifier
-            statusBarTextColor: VPNTheme.StatusBarTextColorLight
+            statusBarTextColor: MZTheme.StatusBarTextColorLight
 
         }
 

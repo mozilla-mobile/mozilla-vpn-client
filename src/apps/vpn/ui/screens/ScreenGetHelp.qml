@@ -6,6 +6,7 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.15
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
@@ -20,7 +21,7 @@ Item {
 
         spacing: 0
 
-        VPNMenu {
+        MZMenu {
             id: menu
 
             property int unlockCounter: 0
@@ -31,13 +32,13 @@ Item {
             
             _menuOnBackClicked: () => VPNNavigator.requestPreviousScreen()
             _menuIconButtonSource: getHelpStackView.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
-            _menuIconButtonMirror: getHelpStackView.depth !== 1 && VPNLocalizer.isRightToLeft
+            _menuIconButtonMirror: getHelpStackView.depth !== 1 && MZLocalizer.isRightToLeft
             titleClicked: () => {
                             if (unlockCounter >= 5) {
                                 unlockCounter = 0
-                                VPNSettings.developerUnlock = true
+                                MZSettings.developerUnlock = true
                             }
-                            else if (!VPNSettings.developerUnlock) {
+                            else if (!MZSettings.developerUnlock) {
                                 unlockTimeout.restart()
                                 unlockCounter = unlockCounter + 1
                             }
@@ -52,7 +53,7 @@ Item {
             }
         }
 
-        VPNStackView {
+        MZStackView {
             id: getHelpStackView
             objectName: "getHelpStackView"
 

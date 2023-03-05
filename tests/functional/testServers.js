@@ -20,9 +20,10 @@ describe('Server list', function() {
     await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
 
     servers = await vpn.servers();
-    currentCountryCode =
-        await vpn.getVPNProperty('VPNCurrentServer', 'exitCountryCode');
-    currentCity = await vpn.getVPNProperty('VPNCurrentServer', 'exitCityName');
+    currentCountryCode = await vpn.getMozillaProperty(
+        'Mozilla.VPN', 'VPNCurrentServer', 'exitCountryCode');
+    currentCity = await vpn.getMozillaProperty(
+        'Mozilla.VPN', 'VPNCurrentServer', 'exitCityName');
 
     for (let server of servers) {
       if (currentCountryCode === server.code) {

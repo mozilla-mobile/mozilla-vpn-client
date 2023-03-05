@@ -5,6 +5,7 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import Mozilla.VPN.qmlcomponents 1.0
 import components 0.1
@@ -29,17 +30,17 @@ Item {
             Layout.preferredHeight: window.height * 0.33
             Layout.topMargin: -safeAreaHeight //we want to cover the safe area with the image background color
 
-            VPNIconButton {
+            MZIconButton {
                 anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.topMargin: root.safeAreaHeight + 8
-                anchors.leftMargin: VPNTheme.theme.listSpacing
+                anchors.leftMargin: MZTheme.theme.listSpacing
                 buttonColorScheme: {
-                    'defaultColor': VPNTheme.theme.transparent,
+                    'defaultColor': MZTheme.theme.transparent,
                     'buttonHovered': "#1AFFFFFF",
                     'buttonPressed': '#33FFFFFF',
-                    'focusOutline': VPNTheme.theme.transparent,
-                    'focusBorder': VPNTheme.theme.lightFocusBorder
+                    'focusOutline': MZTheme.theme.transparent,
+                    'focusBorder': MZTheme.theme.lightFocusBorder
                 }
                 skipEnsureVisible: true
                 //% "Back"
@@ -57,7 +58,7 @@ Item {
                     anchors.centerIn: parent
 
                     source: "qrc:/nebula/resources/arrow-back-white.svg"
-                    sourceSize.width: VPNTheme.theme.iconSize * 1.5
+                    sourceSize.width: MZTheme.theme.iconSize * 1.5
                     fillMode: Image.PreserveAspectFit
                 }
             }
@@ -86,13 +87,13 @@ Item {
                 }
             }
 
-            VPNMobileStatusBarModifier {
+            MZMobileStatusBarModifier {
                 id: statusBarModifier
-                statusBarTextColor: VPNTheme.StatusBarTextColorLight
+                statusBarTextColor: MZTheme.StatusBarTextColorLight
             }
         }
 
-        VPNFlickable {
+        MZFlickable {
             id: vpnFlickable
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -104,9 +105,9 @@ Item {
                 anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.topMargin: VPNTheme.theme.vSpacingSmall
-                anchors.leftMargin: VPNTheme.theme.windowMargin
-                anchors.rightMargin: VPNTheme.theme.windowMargin
+                anchors.topMargin: MZTheme.theme.vSpacingSmall
+                anchors.leftMargin: MZTheme.theme.windowMargin
+                anchors.rightMargin: MZTheme.theme.windowMargin
 
                 ColumnLayout {
                     anchors.left: parent.left
@@ -114,51 +115,51 @@ Item {
 
                     spacing: 0
 
-                    VPNBoldInterLabel {
+                    MZBoldInterLabel {
                         Layout.fillWidth: true
 
-                        text: guide.advanced ? VPNI18n.TipsAndTricksAdvancedTipsGuideViewTitle : VPNI18n.TipsAndTricksQuickTipsGuideViewTitle
-                        font.pixelSize: VPNTheme.theme.fontSize
-                        lineHeight: VPNTheme.theme.labelLineHeight
-                        color: VPNTheme.theme.fontColor
+                        text: guide.advanced ? MZI18n.TipsAndTricksAdvancedTipsGuideViewTitle : MZI18n.TipsAndTricksQuickTipsGuideViewTitle
+                        font.pixelSize: MZTheme.theme.fontSize
+                        lineHeight: MZTheme.theme.labelLineHeight
+                        color: MZTheme.theme.fontColor
                     }
 
-                    VPNBoldLabel {
-                        Layout.topMargin: VPNTheme.theme.vSpacingSmall
+                    MZBoldLabel {
+                        Layout.topMargin: MZTheme.theme.vSpacingSmall
                         Layout.fillWidth: true
 
                         text: guide.title
                         lineHeightMode: Text.FixedHeight
-                        lineHeight: VPNTheme.theme.vSpacing
+                        lineHeight: MZTheme.theme.vSpacing
                         wrapMode: Text.Wrap
                         verticalAlignment: Text.AlignVCenter
                     }
 
-                    VPNInterLabel {
-                        Layout.topMargin: VPNTheme.theme.listSpacing
+                    MZInterLabel {
+                        Layout.topMargin: MZTheme.theme.listSpacing
                         Layout.fillWidth: true
 
                         visible: guide.subtitle
 
                         text: guide.subtitle
-                        font.pixelSize: VPNTheme.theme.fontSizeSmall
-                        color: VPNTheme.theme.fontColor
+                        font.pixelSize: MZTheme.theme.fontSizeSmall
+                        color: MZTheme.theme.fontColor
                         horizontalAlignment: Text.AlignLeft
                     }
 
                     Rectangle {
-                        Layout.topMargin: VPNTheme.theme.vSpacingSmall
+                        Layout.topMargin: MZTheme.theme.vSpacingSmall
                         Layout.fillWidth: true
                         Layout.preferredHeight: 1
 
                         visible: guide.subtitle
 
-                        color: VPNTheme.colors.grey10
+                        color: MZTheme.colors.grey10
                     }
 
-                    VPNComposerView {
+                    MZComposerView {
                         addon: guide
-                        view: VPNComposerView.View.Guide
+                        view: MZComposerView.View.Guide
                     }
                 }
             }

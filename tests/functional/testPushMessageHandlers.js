@@ -85,8 +85,8 @@ describe('PushMessage.handlers', function() {
            }
          }));
 
-         await vpn.waitForVPNProperty(
-             'VPN', 'userState', 'UserNotAuthenticated');
+         await vpn.waitForMozillaProperty(
+             'Mozilla.VPN', 'VPN', 'userState', 'UserNotAuthenticated');
        });
 
     it('attempting to delete a third device updates the device list',

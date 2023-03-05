@@ -10,7 +10,7 @@ import Mozilla.VPN 1.0
 import components 0.1
 import telemetry 0.30
 
-VPNScreenBase {
+MZScreenBase {
     objectName: "tipsAndTricks"
 
     Component.onCompleted: () => {

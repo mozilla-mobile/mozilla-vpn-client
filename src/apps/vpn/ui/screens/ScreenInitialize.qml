@@ -8,7 +8,7 @@ import QtQuick.Controls 2.14
 import Mozilla.VPN 1.0
 import components 0.1
 
-VPNStackView {
+MZStackView {
     id: stackview
     objectName: "initialStackView"
     anchors.fill: parent

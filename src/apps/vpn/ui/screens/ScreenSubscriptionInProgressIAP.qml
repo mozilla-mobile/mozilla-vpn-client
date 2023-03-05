@@ -4,7 +4,7 @@
 
 import components 0.1
 
-VPNLoader {
+MZLoader {
     objectName: "subscriptionInProgressIAP"
 
     //% "Please wait…"

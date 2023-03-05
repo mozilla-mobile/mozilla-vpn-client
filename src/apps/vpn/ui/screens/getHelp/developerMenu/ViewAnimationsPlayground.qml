@@ -6,6 +6,7 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
@@ -18,7 +19,7 @@ Item {
     property double currentAnimationFrame: 0
     property string selectedAnimationSource
 
-    VPNMenu {
+    MZMenu {
         id: menu
         // Do not translate this string!
         title: "Animations playground"
@@ -29,11 +30,11 @@ Item {
         id: animationContainer
 
         anchors.top: menu.bottom
-        color: VPNTheme.colors.grey50
+        color: MZTheme.colors.grey50
         height: parent.width * 0.6
         width: parent.width
 
-        VPNLottieAnimation {
+        MZLottieAnimation {
             id: lottieAnimationExample
             source: selectedAnimationSource
 
@@ -47,12 +48,12 @@ Item {
             }
         }
 
-        VPNInterLabel {
+        MZInterLabel {
             // Do not translate this string!
             text: "No animation selected"
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
-            color: VPNTheme.colors.white
+            color: MZTheme.colors.white
             visible: animationSelect.currentIndex < 0
         }
 
@@ -65,7 +66,7 @@ Item {
                 implicitWidth: parent.width
 
                 Rectangle {
-                    color: VPNTheme.colors.informational.default
+                    color: MZTheme.colors.informational.default
                     height: parent.height
                     width: animationProgress.visualPosition * parent.width
                 }
@@ -78,11 +79,11 @@ Item {
     ColumnLayout {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: animationContainer.bottom
-        anchors.topMargin: VPNTheme.theme.listSpacing * 3
-        spacing: VPNTheme.theme.listSpacing * 2
-        width: parent.width - VPNTheme.theme.windowMargin * 2
+        anchors.topMargin: MZTheme.theme.listSpacing * 3
+        spacing: MZTheme.theme.listSpacing * 2
+        width: parent.width - MZTheme.theme.windowMargin * 2
 
-        VPNComboBox {
+        MZComboBox {
             id: animationSelect
 
             currentIndex: -1
@@ -137,7 +138,7 @@ Item {
         RowLayout {
             Layout.fillWidth: true
 
-            VPNButton {
+            MZButton {
                 // Do not translate this string!
                 text: lottieAnimationExample.status.playing ? "pause" : "play"
                 enabled: animationSelect.currentIndex >= 0
@@ -153,7 +154,7 @@ Item {
                 Layout.fillWidth: true
             }
 
-            VPNButton {
+            MZButton {
                 // Do not translate this string!
                 text: "reset"
                 enabled: animationSelect.currentIndex >= 0 && lottieAnimationExample.status.playing

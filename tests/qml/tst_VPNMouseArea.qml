@@ -10,7 +10,7 @@ import components 0.1
 
 TestCase {
     id: testCase
-    name: "VPNMouseArea"
+    name: "MZMouseArea"
 
     property alias testComponent: testLoader.item
 
@@ -29,7 +29,7 @@ TestCase {
             property alias mouseArea: mouseArea
             property alias spyTestButtonClicked: spyTestButtonClicked
 
-            VPNMouseArea {
+            MZMouseArea {
                 id: mouseArea
                 qmlUnitTestWorkaround: true
             }
@@ -49,7 +49,7 @@ TestCase {
         const actual = testCase.testComponent.mouseArea.propagateClickToParent
         verify(expected === actual, `propagateClickToParent was ${actual} not ${expected}.`);
 
-        //Ensures parent gets 'clicked' event on VPNMouseArea 'release' signal
+        //Ensures parent gets 'clicked' event on MZMouseArea 'release' signal
         testCase.testComponent.mouseArea.released(TestEvent)
         compare(testCase.testComponent.spyTestButtonClicked.count, 1)
     }
@@ -61,7 +61,7 @@ TestCase {
         const actual = testCase.testComponent.mouseArea.propagateClickToParent
         verify(expected === actual, `propagateClickToParent was ${actual} not ${expected}.`);
 
-        //Ensures parent does not get `clicked' events on VPNMouseArea 'release' signal
+        //Ensures parent does not get `clicked' events on MZMouseArea 'release' signal
         testCase.testComponent.mouseArea.released(TestEvent)
         compare(testCase.testComponent.spyTestButtonClicked.count, 0)
     }

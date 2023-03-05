@@ -22,9 +22,10 @@ class Controller {
     return json.value || false;
   }
 
-  async getVPNProperty(id, property) {
-    const json = await this._writeCommand(
-        `property ${encodeURIComponent(id)} ${encodeURIComponent(property)}`);
+  async getMozillaProperty(namespace, id, property) {
+    const json =
+        await this._writeCommand(`property ${encodeURIComponent(namespace)} ${
+            encodeURIComponent(id)} ${encodeURIComponent(property)}`);
     assert(
         json.type === 'property' && !('error' in json),
         `Command failed: ${json.error}`);
@@ -45,15 +46,15 @@ class Controller {
     });
   }
 
-  async waitForVPNProperty(id, property, value) {
+  async waitForMozillaProperty(namespace, id, property, value) {
     try {
       return this.waitForCondition(async () => {
-        const real = await this.getVPNProperty(id, property);
+        const real = await this.getMozillaProperty(namespace, id, property);
         return real === value;
       });
     } catch (e) {
-      const real = await this.getVPNProperty(id, property);
-      throw new Error(`Timeout for waitForVPNProperty - property: ${
+      const real = await this.getMozillaProperty(namespace, id, property);
+      throw new Error(`Timeout for waitForMozillaProperty - property: ${
           property} - value: ${real} - expected: ${value}`);
     }
   }

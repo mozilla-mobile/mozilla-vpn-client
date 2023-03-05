@@ -6,6 +6,7 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
@@ -19,7 +20,7 @@ ColumnLayout {
         Layout.fillHeight: window.fullscreenRequired()
     }
 
-    VPNPanel {
+    MZPanel {
         anchors.horizontalCenter: undefined
         Layout.topMargin: window.fullscreenRequired() ? 0 : layout.height * 0.2
         Layout.preferredHeight: height
@@ -27,41 +28,41 @@ ColumnLayout {
         Layout.alignment: Qt.AlignHCenter
 
         logo: "qrc:/ui/resources/app-rating.svg"
-        logoTitle: VPNI18n.FeedbackFormReviewHeader
-        logoSubtitle: VPNI18n.FeedbackFormReviewBody
+        logoTitle: MZI18n.FeedbackFormReviewHeader
+        logoSubtitle: MZI18n.FeedbackFormReviewBody
     }
 
     Item {
         Layout.fillHeight: window.fullscreenRequired()
     }
 
-    VPNButton {
+    MZButton {
         id: leaveReviewBtn
 
         Layout.fillWidth: true
-        Layout.topMargin: VPNTheme.theme.vSpacing
-        Layout.leftMargin: VPNTheme.theme.windowMargin * 2
-        Layout.rightMargin: VPNTheme.theme.windowMargin * 2
+        Layout.topMargin: MZTheme.theme.vSpacing
+        Layout.leftMargin: MZTheme.theme.windowMargin * 2
+        Layout.rightMargin: MZTheme.theme.windowMargin * 2
 
-        text: VPNI18n.FeedbackFormLeaveReviewButton
+        text: MZI18n.FeedbackFormLeaveReviewButton
         onClicked: {
             getHelpStackView.push("qrc:/ui/screens/getHelp/giveFeedback/ViewGiveFeedbackThankYou.qml", StackView.Immediate);
             VPN.openAppStoreReviewLink();
         }
     }
 
-    VPNLinkButton {
+    MZLinkButton {
         id: skipLink
 
         Layout.fillWidth: true
-        Layout.topMargin: VPNTheme.theme.vSpacingSmall
-        Layout.leftMargin: VPNTheme.theme.windowMargin * 2
-        Layout.rightMargin: VPNTheme.theme.windowMargin * 2
-        Layout.bottomMargin: navbar.visible ? VPNTheme.theme.navBarHeightWithMargins : 34
+        Layout.topMargin: MZTheme.theme.vSpacingSmall
+        Layout.leftMargin: MZTheme.theme.windowMargin * 2
+        Layout.rightMargin: MZTheme.theme.windowMargin * 2
+        Layout.bottomMargin: navbar.visible ? MZTheme.theme.navBarHeightWithMargins : 34
 
         labelText: qsTrId("vpn.feedbackForm.skip")
         onClicked: getHelpStackView.push("qrc:/ui/screens/getHelp/giveFeedback/ViewGiveFeedbackThankYou.qml");
-        implicitHeight: VPNTheme.theme.rowHeight
+        implicitHeight: MZTheme.theme.rowHeight
     }
 
     Item {

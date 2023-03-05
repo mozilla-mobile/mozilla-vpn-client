@@ -5,11 +5,12 @@
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.inAppAuth 0.1
 
-VPNInAppAuthenticationBase {
+MZInAppAuthenticationBase {
     id: authSignIn
 
     states:[
@@ -20,7 +21,7 @@ VPNInAppAuthenticationBase {
                 target: authSignIn
 
                 _changeEmailLinkVisible: false
-                _subtitleText: VPNI18n.InAppAuthReauthSignInSubtitle
+                _subtitleText: MZI18n.InAppAuthReauthSignInSubtitle
             }
 
             PropertyChanges {
@@ -32,7 +33,7 @@ VPNInAppAuthenticationBase {
             PropertyChanges {
                 target: authInputs
 
-                _buttonText: VPNI18n.DeleteAccountAuthButtonLabel
+                _buttonText: MZI18n.DeleteAccountAuthButtonLabel
             }
         }
     ]
@@ -40,7 +41,7 @@ VPNInAppAuthenticationBase {
     _changeEmailLinkVisible: true
     _viewObjectName: "authSignIn"
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
-    _menuButtonImageMirror: VPNLocalizer.isRightToLeft
+    _menuButtonImageMirror: MZLocalizer.isRightToLeft
     _menuButtonOnClick: () => {
         if (isReauthFlow) {
             cancelAuthenticationFlow();
@@ -50,11 +51,11 @@ VPNInAppAuthenticationBase {
     }
     _menuButtonAccessibleName: qsTrId("vpn.main.back")
     _headlineText: VPNAuthInApp.emailAddress
-    _subtitleText: VPNI18n.InAppAuthSignInSubtitle
+    _subtitleText: MZI18n.InAppAuthSignInSubtitle
     _imgSource: "qrc:/nebula/resources/avatar.svg"
-    _inputLabel: VPNI18n.InAppAuthPasswordInputLabel
+    _inputLabel: MZI18n.InAppAuthPasswordInputLabel
 
-    _inputs: VPNInAppAuthenticationInputs {
+    _inputs: MZInAppAuthenticationInputs {
         objectName: "authSignIn"
         id: authInputs
 
@@ -63,28 +64,28 @@ VPNInAppAuthenticationBase {
              VPNAuthInApp.setPassword(inputText);
              VPNAuthInApp.signIn();
          }
-        _buttonText: VPNI18n.InAppAuthSignInButton
-        _inputPlaceholderText: VPNI18n.InAppAuthPasswordInputPlaceholder
+        _buttonText: MZI18n.InAppAuthSignInButton
+        _inputPlaceholderText: MZI18n.InAppAuthPasswordInputPlaceholder
     }
 
     _disclaimers: Loader {
         id: disclaimersLoader
 
         Layout.alignment: Qt.AlignHCenter
-        source: "qrc:/nebula/components/inAppAuth/VPNInAppAuthenticationLegalDisclaimer.qml"
+        source: "qrc:/nebula/components/inAppAuth/MZInAppAuthenticationLegalDisclaimer.qml"
     }
 
     _footerContent: Column {
         Layout.alignment: Qt.AlignHCenter
-        spacing: VPNTheme.theme.windowMargin
+        spacing: MZTheme.theme.windowMargin
 
-        VPNLinkButton {
-            labelText: VPNI18n.InAppAuthForgotPasswordLink
+        MZLinkButton {
+            labelText: MZI18n.InAppAuthForgotPasswordLink
             anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: VPNUrlOpener.openUrlLabel("forgotPassword")
+            onClicked: MZUrlOpener.openUrlLabel("forgotPassword")
         }
 
-        VPNCancelButton {
+        MZCancelButton {
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
                 if (isReauthFlow) {

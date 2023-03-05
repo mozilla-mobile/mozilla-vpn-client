@@ -6,10 +6,11 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
-VPNFlickable {
+MZFlickable {
     id: vpnFlickable
 
     height: parent.height
@@ -22,18 +23,18 @@ VPNFlickable {
     ColumnLayout {
         id: column
 
-        spacing: VPNTheme.theme.windowMargin * 1.25
+        spacing: MZTheme.theme.windowMargin * 1.25
         width: vpnFlickable.width
 
-        VPNVerticalSpacer {
+        MZVerticalSpacer {
             Layout.fillWidth: true
-            height: VPNTheme.theme.windowMargin
+            height: MZTheme.theme.windowMargin
         }
 
-        VPNPanel {
+        MZPanel {
             logo: "qrc:/ui/resources/updateRecommended.svg"
             logoTitle: qsTrId("vpn.settings.dataCollection")
-            logoSubtitle: VPNI18n.TelemetryPolicyViewDescription
+            logoSubtitle: MZI18n.TelemetryPolicyViewDescription
             Layout.fillWidth: true
             anchors.horizontalCenter: undefined
             height: undefined
@@ -43,41 +44,41 @@ VPNFlickable {
         }
 
         ColumnLayout {
-            spacing: VPNTheme.theme.windowMargin * 1.25
+            spacing: MZTheme.theme.windowMargin * 1.25
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignHCenter
 
-            VPNSubtitle {
+            MZSubtitle {
                 id: logoSubtitle
 
                 Layout.alignment: Qt.AlignHCenter
-                Layout.leftMargin: VPNTheme.theme.windowMargin * 3
-                Layout.rightMargin: VPNTheme.theme.windowMargin * 3
-                Layout.maximumWidth: VPNTheme.theme.maxHorizontalContentWidth
+                Layout.leftMargin: MZTheme.theme.windowMargin * 3
+                Layout.rightMargin: MZTheme.theme.windowMargin * 3
+                Layout.maximumWidth: MZTheme.theme.maxHorizontalContentWidth
                 Layout.fillWidth: true
-                text: VPNI18n.TelemetryPolicyViewQuestion
+                text: MZI18n.TelemetryPolicyViewQuestion
             }
 
-            VPNButton {
+            MZButton {
                 id: button
                 objectName: "telemetryPolicyButton"
                 //% "Allow on this device"
                 text: qsTrId("vpn.telemetryPolicy.allowOnThisDevice")
                 radius: 5
                 onClicked: {
-                    VPNSettings.gleanEnabled = true;
+                    MZSettings.gleanEnabled = true;
                     VPN.telemetryPolicyCompleted();
                 }
             }
 
-            VPNLinkButton {
+            MZLinkButton {
                 id: linkBtn
                 objectName: "declineTelemetryLink"
                 //% "Don’t allow"
                 labelText: qsTrId("vpn.telemetryPolicy.doNotAllow")
                 Layout.alignment: Qt.AlignHCenter
                 onClicked: {
-                    VPNSettings.gleanEnabled = false;
+                    MZSettings.gleanEnabled = false;
                     VPN.telemetryPolicyCompleted();
                 }
             }
@@ -87,29 +88,29 @@ VPNFlickable {
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignHCenter
             spacing: 0
-            VPNSubtitle {
+            MZSubtitle {
                 Layout.alignment: Qt.AlignHCenter
-                Layout.leftMargin: VPNTheme.theme.windowMargin * 3
-                Layout.rightMargin: VPNTheme.theme.windowMargin * 3
-                Layout.maximumWidth: VPNTheme.theme.maxHorizontalContentWidth
+                Layout.leftMargin: MZTheme.theme.windowMargin * 3
+                Layout.rightMargin: MZTheme.theme.windowMargin * 3
+                Layout.maximumWidth: MZTheme.theme.maxHorizontalContentWidth
                 Layout.fillWidth: true
                 //% "Learn more about what data Mozilla collects and how it’s used."
                 text: qsTrId("vpn.telemetryPolicy.learnMoreAboutData")
             }
 
-            VPNLinkButton {
+            MZLinkButton {
                 objectName: "privacyLink"
                 //% "Mozilla VPN Privacy Notice"
                 labelText: qsTrId("vpn.telemetryPolicy.MozillaVPNPrivacyNotice")
                 Layout.alignment: Qt.AlignHCenter
-                onClicked: VPNUrlOpener.openUrlLabel("privacyNotice")
+                onClicked: MZUrlOpener.openUrlLabel("privacyNotice")
             }
 
         }
 
-        VPNVerticalSpacer {
+        MZVerticalSpacer {
             Layout.fillWidth: true
-            height: VPNTheme.theme.windowMargin * 2
+            height: MZTheme.theme.windowMargin * 2
         }
     }
 

@@ -5,10 +5,11 @@
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
-VPNStackView {
+MZStackView {
     id: stackview
 
     function handleButtonClick() {
@@ -20,13 +21,13 @@ VPNStackView {
 
         stackview.push("qrc:/ui/sharedViews/ViewErrorFullScreen.qml", {
             // Sign in to Google Account
-            headlineText: VPNI18n.NotSignedInGoogleGoogleModalHeader,
+            headlineText: MZI18n.NotSignedInGoogleGoogleModalHeader,
 
             // To continue subscribing, please sign in to your Google Account
-            errorMessage: VPNI18n.NotSignedInGoogleGoogleModalBodyText,
+            errorMessage: MZI18n.NotSignedInGoogleGoogleModalBodyText,
 
             // Go to Play Store
-            primaryButtonText: VPNI18n.NotSignedInGoogleGoogleModalLinkText,
+            primaryButtonText: MZI18n.NotSignedInGoogleGoogleModalLinkText,
             primaryButtonObjectName: "errorGetHelpButton",
             primaryButtonOnClick: stackview.handleButtonClick,
             secondaryButtonIsSignOff: true,

@@ -6,11 +6,11 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
-import Mozilla.VPN 1.0
+import Mozilla.Shared 1.0
 import components 0.1
 import components.forms 0.1
 
-VPNViewBase {
+MZViewBase {
     property var useSystemLanguageEnabled: toggleCard.toggleChecked
 
     id: vpnFlickable
@@ -22,13 +22,13 @@ VPNViewBase {
         id: col
 
         Layout.fillWidth: true
-        spacing: VPNTheme.theme.windowMargin
+        spacing: MZTheme.theme.windowMargin
 
-        VPNToggleCard {
+        MZToggleCard {
             id: toggleCard
             toggleObjectName: "settingsSystemLanguageToggle"
             Layout.fillWidth: true
-            Layout.topMargin: -VPNTheme.theme.windowMargin
+            Layout.topMargin: -MZTheme.theme.windowMargin
             Layout.preferredHeight: childrenRect.height
 
             //% "Use system language"
@@ -49,13 +49,13 @@ VPNViewBase {
                 return qsTrId("vpn.settings.systemLanguageTitle");
             }
 
-            toggleChecked: VPNSettings.languageCode === ""
+            toggleChecked: MZSettings.languageCode === ""
             function handleClick() {
                 toggleChecked = !toggleChecked
                 if (toggleChecked) {
-                    VPNSettings.languageCode = "";
+                    MZSettings.languageCode = "";
                 } else {
-                    VPNSettings.languageCode = VPNSettings.previousLanguageCode;
+                    MZSettings.languageCode = MZSettings.previousLanguageCode;
                 }
             }
         }
@@ -64,22 +64,22 @@ VPNViewBase {
             id: languageList
             objectName: "languageList"
             opacity: useSystemLanguageEnabled ? .5 : 1
-            spacing: VPNTheme.theme.hSpacing
+            spacing: MZTheme.theme.hSpacing
             Layout.fillWidth: true
-            Layout.topMargin: VPNTheme.theme.windowMargin * 1.5
-            Layout.leftMargin: VPNTheme.theme.windowMargin * 1.5
-            Layout.rightMargin: VPNTheme.theme.windowMargin * 1.5
+            Layout.topMargin: MZTheme.theme.windowMargin * 1.5
+            Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+            Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
 
-            VPNSearchBar {
+            MZSearchBar {
                 id: searchBar
-                _filterProxySource: VPNLocalizer
+                _filterProxySource: MZLocalizer
                 _filterProxyCallback: obj => {
                      const filterValue = getSearchBarText();
                      return obj.nativeLanguageName.toLowerCase().includes(filterValue) ||
                              obj.localizedLanguageName.toLowerCase().includes(filterValue);
                  }
                 _searchBarHasError: repeater.count === 0
-                _searchBarPlaceholderText: VPNI18n.LanguageViewSearchPlaceholder
+                _searchBarPlaceholderText: MZI18n.LanguageViewSearchPlaceholder
 
                 enabled: !useSystemLanguageEnabled
                 anchors.left: parent.left
@@ -96,7 +96,7 @@ VPNViewBase {
                         const langItem = repeater.itemAt(idx);
                         if (langItem.isSelectedLanguage) {
                             const yCenter = vpnFlickable.height / 2;
-                            const selectedItemYPosition = langItem.y + (languageList.y + repeater.y + VPNTheme.theme.menuHeight + toggleCard.height + langItem.height) - yCenter;
+                            const selectedItemYPosition = langItem.y + (languageList.y + repeater.y + MZTheme.theme.menuHeight + toggleCard.height + langItem.height) - yCenter;
                             const destinationY = (selectedItemYPosition + vpnFlickable.height >col.implicitHeight) ? col.implicitHeight - vpnFlickable.height / 2: selectedItemYPosition;
                             if (destinationY < 0) {
                                 return;
@@ -120,14 +120,14 @@ VPNViewBase {
                         delRadio.forceActiveFocus();
                     }
 
-                    VPNRadioDelegate {
+                    MZRadioDelegate {
                         id: delRadio
                         objectName: "language-" + code
                         enabled: !useSystemLanguageEnabled
                         radioButtonLabelText: nativeLanguageName
-                        checked: VPNSettings.languageCode === code && !useSystemLanguageEnabled
+                        checked: MZSettings.languageCode === code && !useSystemLanguageEnabled
                         onClicked: {
-                            VPNSettings.languageCode = code;
+                            MZSettings.languageCode = code;
                         }
 
                         Layout.alignment: Qt.AlignLeft
@@ -144,8 +144,8 @@ VPNViewBase {
                         Keys.onUpPressed: repeater.itemAt(index - 1) ? repeater.itemAt(index - 1).pushFocusToRadio() : searchBar.forceActiveFocus()
                     }
 
-                    VPNTextBlock {
-                        Layout.leftMargin: delRadio.indicator.implicitWidth + VPNTheme.theme.hSpacing - 2
+                    MZTextBlock {
+                        Layout.leftMargin: delRadio.indicator.implicitWidth + MZTheme.theme.hSpacing - 2
                         Layout.topMargin: 4
                         Layout.fillWidth: true
                         text: localizedLanguageName

@@ -5,11 +5,12 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
+
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
-
-VPNFlickable {
+MZFlickable {
     id: vpnFlickable
 
     readonly property bool isMobile: window.fullScreenRequired()
@@ -22,22 +23,22 @@ VPNFlickable {
             name: "pre-activation"
             PropertyChanges { 
                 target: subTextBlock; 
-                text: VPNI18n.CaptivePortalAlertActionPreActivation
+                text: MZI18n.CaptivePortalAlertActionPreActivation
             }
             PropertyChanges{
                 target:openPortalButton
-                text: VPNI18n.CaptivePortalAlertButtonTextPreActivation
+                text: MZI18n.CaptivePortalAlertButtonTextPreActivation
             }
         },
         State {
             name: "post-activation"
             PropertyChanges { 
                 target: subTextBlock; 
-                text: VPNI18n.CaptivePortalAlertActionPostActivation
+                text: MZI18n.CaptivePortalAlertActionPostActivation
             }
             PropertyChanges{
                 target:openPortalButton
-                text: VPNI18n.CaptivePortalAlertButtonTextPostActivation
+                text: MZI18n.CaptivePortalAlertButtonTextPostActivation
             }
         }
     ]
@@ -47,10 +48,10 @@ VPNFlickable {
         id: content
 
         height: vpnFlickable.height
-        width: Math.min(vpnFlickable.width, VPNTheme.theme.maxHorizontalContentWidth)
+        width: Math.min(vpnFlickable.width, MZTheme.theme.maxHorizontalContentWidth)
         spacing: 0
 
-        VPNPanel {
+        MZPanel {
             id: vpnPanel
 
             anchors.horizontalCenter: undefined
@@ -58,38 +59,38 @@ VPNFlickable {
 
             logo: "qrc:/ui/resources/globe-warning.svg"
             logoSize: 80
-            logoSubtitle: VPNI18n.CaptivePortalAlertHeader
-            logoTitle: VPNI18n.CaptivePortalAlertTitle
+            logoSubtitle: MZI18n.CaptivePortalAlertHeader
+            logoTitle: MZI18n.CaptivePortalAlertTitle
             width: parent.width
 
         }
 
-        VPNSubtitle {
+        MZSubtitle {
             id: subTextBlock
 
-            color: VPNTheme.theme.fontColor
-            font.pixelSize: VPNTheme.theme.fontSizeSmall
-            font.family: VPNTheme.theme.fontBoldFamily
+            color: MZTheme.theme.fontColor
+            font.pixelSize: MZTheme.theme.fontSizeSmall
+            font.family: MZTheme.theme.fontBoldFamily
             width: openPortalButton.width
 
             Layout.fillWidth: true
-            Layout.topMargin: VPNTheme.theme.vSpacingSmall
-            Layout.leftMargin: VPNTheme.theme.windowMargin * 2
-            Layout.rightMargin: VPNTheme.theme.windowMargin * 2
+            Layout.topMargin: MZTheme.theme.vSpacingSmall
+            Layout.leftMargin: MZTheme.theme.windowMargin * 2
+            Layout.rightMargin: MZTheme.theme.windowMargin * 2
         }
 
         Item {
             Layout.fillHeight: isMobile
         }
 
-        VPNButton {
+        MZButton {
             id: openPortalButton
 
             objectName: "captivePortalAlertActionButton"
             radius: 4
             onClicked: {
                 if(vpnFlickable.state === "pre-activation"){
-                    VPNUrlOpener.openUrlLabel("captivePortal");
+                    MZUrlOpener.openUrlLabel("captivePortal");
                 }
                 if(vpnFlickable.state === "post-activation"){
                     VPNCaptivePortal.deactivationRequired();
@@ -98,9 +99,9 @@ VPNFlickable {
             }
 
             Layout.fillWidth: true
-            Layout.topMargin: VPNTheme.theme.vSpacing
-            Layout.leftMargin: VPNTheme.theme.windowMargin * 2
-            Layout.rightMargin: VPNTheme.theme.windowMargin * 2
+            Layout.topMargin: MZTheme.theme.vSpacing
+            Layout.leftMargin: MZTheme.theme.windowMargin * 2
+            Layout.rightMargin: MZTheme.theme.windowMargin * 2
             Layout.bottomMargin: 58
         }
 

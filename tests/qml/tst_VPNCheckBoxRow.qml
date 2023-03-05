@@ -23,7 +23,7 @@ Item {
     Component {
         id: testComponent
 
-            VPNCheckBoxRow {
+            MZCheckBoxRow {
                 id: checkBoxRowTest
 
                 property alias checkBoxRowTest: checkBoxRowTest
@@ -38,7 +38,7 @@ Item {
     }
 
     TestCase {
-        name: "VPNCheckBoxRow"
+        name: "MZCheckBoxRow"
         when: windowShown
 
         function test_clickingCheckBoxLabelTogglesCheckedState() {
@@ -48,7 +48,7 @@ Item {
             var actual = checkboxrow.isChecked
             verify(expected === actual, `isChecked was ${actual} not ${expected}.`);
 
-            //Simulate clicking in the center of the label of the checkbox. The last parameter (2) represents the topMargin for the VPNInterLabel in VPNCheckBoxRow
+            //Simulate clicking in the center of the label of the checkbox. The last parameter (2) represents the topMargin for the MZInterLabel in MZCheckBoxRow
             mouseClick(checkboxrow, checkboxrow.width - checkboxrow.labelWidth / 2, 2)
             expected = true
             actual = checkboxrow.isChecked
@@ -60,7 +60,7 @@ Item {
             actual = checkboxrow.isChecked
             verify(expected === actual, `isChecked was ${actual} not ${expected}.`);
 
-            //Simulate clicking to the right of the label of the checkbox. The last parameter (2) represents the topMargin for the VPNInterLabel in VPNCheckBoxRow
+            //Simulate clicking to the right of the label of the checkbox. The last parameter (2) represents the topMargin for the MZInterLabel in MZCheckBoxRow
             mouseClick(checkboxrow, checkboxrow.width + 1, 2)
             expected = false
             actual = checkboxrow.isChecked

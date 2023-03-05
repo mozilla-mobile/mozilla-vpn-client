@@ -6,6 +6,7 @@ import QtQuick 2.5
 import QtQuick.Layouts 1.14
 import QtQuick.Controls 2.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
@@ -116,39 +117,39 @@ ColumnLayout {
 
     RowLayout {
         objectName: _objectName + "-container"
-        spacing: VPNTheme.theme.listSpacing
+        spacing: MZTheme.theme.listSpacing
 
         Layout.alignment: Qt.AlignVCenter
-        Layout.bottomMargin: VPNTheme.theme.listSpacing
+        Layout.bottomMargin: MZTheme.theme.listSpacing
         Layout.fillWidth: true
-        Layout.preferredHeight: VPNTheme.theme.rowHeight
-        Layout.topMargin: VPNTheme.theme.listSpacing
+        Layout.preferredHeight: MZTheme.theme.rowHeight
+        Layout.topMargin: MZTheme.theme.listSpacing
 
-        VPNInterLabel {
+        MZInterLabel {
             id: rowLabel
             objectName: _objectName + "-labelText"
 
             horizontalAlignment: Text.AlignLeft
-            font.pixelSize: VPNTheme.theme.fontSizeSmall
+            font.pixelSize: MZTheme.theme.fontSizeSmall
             text: labelText
             wrapMode: Text.WordWrap
 
             Layout.alignment: Qt.AlignLeft
         }
 
-        VPNPaymentMethod {
+        MZPaymentMethod {
             id: paymentMethod
             objectName: _objectName + "-paymentMethod"
             paymentMethod: labelText
         }
 
-        VPNInterLabel {
+        MZInterLabel {
             id: rowText
             objectName: _objectName + "-valueText"
 
-            color: VPNTheme.theme.fontColorDark
+            color: MZTheme.theme.fontColorDark
             horizontalAlignment: Text.AlignRight
-            font.pixelSize: VPNTheme.theme.fontSizeSmall
+            font.pixelSize: MZTheme.theme.fontSizeSmall
             text: valueText
             wrapMode: Text.WordWrap
 
@@ -163,17 +164,17 @@ ColumnLayout {
             height: rowPill.implicitHeight
             Layout.fillWidth: true
 
-            VPNPill {
+            MZPill {
                 objectName: _objectName + "-pill"
                 property bool isActive:
                     VPNSubscriptionData.status === VPNSubscriptionData.Active
 
                 color: isActive
-                    ? VPNTheme.colors.green90
-                    : VPNTheme.colors.red70
+                    ? MZTheme.colors.green90
+                    : MZTheme.colors.red70
                 background: isActive
-                    ? VPNTheme.colors.green5
-                    : VPNTheme.colors.red5
+                    ? MZTheme.colors.green5
+                    : MZTheme.colors.red5
                 text: valueText
 
                 anchors {
@@ -190,8 +191,8 @@ ColumnLayout {
 
         visible: false
         Layout.fillWidth: true
-        Layout.topMargin: VPNTheme.theme.listSpacing
-        Layout.bottomMargin: VPNTheme.theme.windowMargin
+        Layout.topMargin: MZTheme.theme.listSpacing
+        Layout.bottomMargin: MZTheme.theme.windowMargin
 
         Component.onCompleted: {
             if (visible) {
@@ -203,11 +204,11 @@ ColumnLayout {
         ColumnLayout {
             Layout.fillWidth: true
 
-            VPNInterLabel {
-                color: VPNTheme.theme.fontColorDark
+            MZInterLabel {
+                color: MZTheme.theme.fontColorDark
                 horizontalAlignment: Text.AlignLeft
-                font.pixelSize: VPNTheme.theme.fontSizeSmall
-                text: VPNI18n.SubscriptionManagementAddFirefoxRelay // "Add Firefox Relay"
+                font.pixelSize: MZTheme.theme.fontSizeSmall
+                text: MZI18n.SubscriptionManagementAddFirefoxRelay // "Add Firefox Relay"
                 wrapMode: Text.WordWrap
                 lineHeight: 13
                 Layout.alignment: Qt.AlignLeft
@@ -215,11 +216,11 @@ ColumnLayout {
                 elide: Text.ElideRight
             }
 
-            VPNLinkButton {
+            MZLinkButton {
                 objectName: _objectName + "-relayUpsell-learnMoreLink"
-                linkColor: VPNTheme.theme.blueButton
-                fontSize: VPNTheme.theme.fontSizeSmall
-                labelText: VPNI18n.SplittunnelInfoLinkText // "Learn more"
+                linkColor: MZTheme.theme.blueButton
+                fontSize: MZTheme.theme.fontSizeSmall
+                labelText: MZI18n.SplittunnelInfoLinkText // "Learn more"
                 Layout.alignment: Qt.AlignLeft
                 padding: 4
                 Layout.leftMargin: -4
@@ -227,38 +228,38 @@ ColumnLayout {
                 onClicked: {
                     MZGleanDeprecated.recordGleanEvent("bundle_upsell_link_clicked");
                     Glean.sample.bundleUpsellLinkClicked.record();
-                    VPNUrlOpener.openUrlLabel("relayPremium");
+                    MZUrlOpener.openUrlLabel("relayPremium");
                 }
             }
         }
 
-        VPNButtonBase {
+        MZButtonBase {
             objectName: _objectName + "-relayUpsell-upgradeButton"
 
             onClicked: {
                 MZGleanDeprecated.recordGleanEvent("bundle_upsell_upgrade_clicked");
                 Glean.sample.bundleUpsellUpgradeClicked.record();
-                VPNUrlOpener.openUrlLabel("upgradeToBundle");
+                MZUrlOpener.openUrlLabel("upgradeToBundle");
             }
 
             contentItem: Label {
-                text: VPNI18n.SubscriptionManagementUpgrade // "Upgrade"
-                font.family: VPNTheme.theme.fontInterFamily
-                font.pixelSize: VPNTheme.theme.fontSizeSmall
-                color: VPNTheme.theme.white
+                text: MZI18n.SubscriptionManagementUpgrade // "Upgrade"
+                font.family: MZTheme.theme.fontInterFamily
+                font.pixelSize: MZTheme.theme.fontSizeSmall
+                color: MZTheme.theme.white
                 anchors.centerIn: parent
-                leftPadding: VPNTheme.theme.windowMargin
-                rightPadding: VPNTheme.theme.windowMargin
+                leftPadding: MZTheme.theme.windowMargin
+                rightPadding: MZTheme.theme.windowMargin
             }
 
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            Layout.preferredHeight: VPNTheme.theme.windowMarginb * 2
+            Layout.preferredHeight: MZTheme.theme.windowMarginb * 2
 
-            VPNUIStates {
-                colorScheme:VPNTheme.theme.blueButton
+            MZUIStates {
+                colorScheme:MZTheme.theme.blueButton
                 setMargins: -3
             }
-            VPNMouseArea {
+            MZMouseArea {
                 id: buttonMouseArea
             }
         }
@@ -267,7 +268,7 @@ ColumnLayout {
     Rectangle {
         id: divider
 
-        color: VPNTheme.colors.grey10
+        color: MZTheme.colors.grey10
 
         Layout.fillWidth: true
         Layout.leftMargin: 0

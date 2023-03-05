@@ -3,20 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
+import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
-
-import QtQuick 2.5
-import QtQuick.Layouts 1.14
-
-import Mozilla.VPN 1.0
-import components 0.1
 import components.inAppAuth 0.1
 
-
-VPNInAppAuthenticationBase {
+MZInAppAuthenticationBase {
     _viewObjectName: "authUnblockCodeNeeded"
     _menuButtonImageSource: "qrc:/nebula/resources/close-dark.svg"
     _menuButtonOnClick: () => {
@@ -27,25 +22,25 @@ VPNInAppAuthenticationBase {
         }
     }
     _menuButtonAccessibleName: qsTrId("vpn.connectionInfo.close")
-    _headlineText: VPNI18n.InAppAuthVerificationCodeTitle
-    _subtitleText: VPNI18n.InAppAuthEmailVerificationDescription
+    _headlineText: MZI18n.InAppAuthVerificationCodeTitle
+    _subtitleText: MZI18n.InAppAuthEmailVerificationDescription
     _imgSource: "qrc:/nebula/resources/verification-code.svg"
 
-    _inputs: VPNInAppAuthenticationInputs {
+    _inputs: MZInAppAuthenticationInputs {
         objectName: "authUnblockCodeNeeded"
         _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateUnblockCodeNeeded && activeInput().text.length === VPNAuthInApp.unblockCodeLength && !activeInput().hasError
         _buttonOnClicked: (inputText) => { VPNAuthInApp.verifyUnblockCode(inputText) }
-        _buttonText: VPNI18n.InAppAuthVerifySecurityCodeButton
+        _buttonText: MZI18n.InAppAuthVerifySecurityCodeButton
         _inputMethodHints: Qt.ImhNone
-        _inputPlaceholderText: VPNI18n.InAppAuthUnblockCodeInputPlaceholder
+        _inputPlaceholderText: MZI18n.InAppAuthUnblockCodeInputPlaceholder
     }
 
     _footerContent: Column {
         Layout.alignment: Qt.AlignHCenter
-        spacing: VPNTheme.theme.windowMargin
+        spacing: MZTheme.theme.windowMargin
 
-        VPNLinkButton {
-            labelText: VPNI18n.InAppAuthResendCodeLink
+        MZLinkButton {
+            labelText: MZI18n.InAppAuthResendCodeLink
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
                 VPNAuthInApp.resendUnblockCodeEmail();
@@ -53,7 +48,7 @@ VPNInAppAuthenticationBase {
             
             }
         }
-        VPNCancelButton {
+        MZCancelButton {
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
                 if (isReauthFlow) {

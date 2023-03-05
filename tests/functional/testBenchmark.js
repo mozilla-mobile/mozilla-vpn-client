@@ -33,21 +33,25 @@ describe('Benchmark', function() {
     await vpn.waitForQueryAndClick(
         queries.screenHome.CONNECTION_INFO_TOGGLE.visible());
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getVPNProperty('VPNConnectionBenchmark', 'state');
+      let state = await vpn.getMozillaProperty(
+          'Mozilla.VPN', 'VPNConnectionBenchmark', 'state');
       return state == 'StateRunning';
     });
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getVPNProperty('VPNConnectionBenchmark', 'state');
+      let state = await vpn.getMozillaProperty(
+          'Mozilla.VPN', 'VPNConnectionBenchmark', 'state');
       return state != 'StateRunning';
     });
 
     // We expect the benchmark to succeed.
-    let speed = await vpn.getVPNProperty('VPNConnectionBenchmark', 'speed');
-    let downloadBps = parseInt(
-        await vpn.getVPNProperty('VPNConnectionBenchmark', 'downloadBps'));
-    let uploadBps = parseInt(
-        await vpn.getVPNProperty('VPNConnectionBenchmark', 'uploadBps'));
-    let state = await vpn.getVPNProperty('VPNConnectionBenchmark', 'state');
+    let speed = await vpn.getMozillaProperty(
+        'Mozilla.VPN', 'VPNConnectionBenchmark', 'speed');
+    let downloadBps = parseInt(await vpn.getMozillaProperty(
+        'Mozilla.VPN', 'VPNConnectionBenchmark', 'downloadBps'));
+    let uploadBps = parseInt(await vpn.getMozillaProperty(
+        'Mozilla.VPN', 'VPNConnectionBenchmark', 'uploadBps'));
+    let state = await vpn.getMozillaProperty(
+        'Mozilla.VPN', 'VPNConnectionBenchmark', 'state');
     assert.strictEqual(state, 'StateReady');
 
     assert.strictEqual(
@@ -74,17 +78,20 @@ describe('Benchmark', function() {
     // Start the connection benchmark and wait for it to finish.
     await vpn.waitForQueryAndClick(queries.screenHome.CONNECTION_INFO_TOGGLE);
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getVPNProperty('VPNConnectionBenchmark', 'state');
+      let state = await vpn.getMozillaProperty(
+          'Mozilla.VPN', 'VPNConnectionBenchmark', 'state');
       return state == 'StateRunning';
     });
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getVPNProperty('VPNConnectionBenchmark', 'state');
+      let state = await vpn.getMozillaProperty(
+          'Mozilla.VPN', 'VPNConnectionBenchmark', 'state');
       return state != 'StateRunning';
     });
 
     // We expect the benchmark to fail.
     assert.strictEqual(
-        await vpn.getVPNProperty('VPNConnectionBenchmark', 'state'),
+        await vpn.getMozillaProperty(
+            'Mozilla.VPN', 'VPNConnectionBenchmark', 'state'),
         'StateError');
     await vpn.waitForQuery(queries.screenHome.CONNECTION_INFO_ERROR.visible());
 
@@ -105,17 +112,20 @@ describe('Benchmark', function() {
     // Start the connection benchmark and wait for it to finish.
     await vpn.waitForQueryAndClick(queries.screenHome.CONNECTION_INFO_TOGGLE);
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getVPNProperty('VPNConnectionBenchmark', 'state');
+      let state = await vpn.getMozillaProperty(
+          'Mozilla.VPN', 'VPNConnectionBenchmark', 'state');
       return state == 'StateRunning';
     });
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getVPNProperty('VPNConnectionBenchmark', 'state');
+      let state = await vpn.getMozillaProperty(
+          'Mozilla.VPN', 'VPNConnectionBenchmark', 'state');
       return state != 'StateRunning';
     });
 
     // We expect the benchmark to fail.
     assert.strictEqual(
-        await vpn.getVPNProperty('VPNConnectionBenchmark', 'state'),
+        await vpn.getMozillaProperty(
+            'Mozilla.VPN', 'VPNConnectionBenchmark', 'state'),
         'StateError');
     await vpn.waitForQuery(queries.screenHome.CONNECTION_INFO_ERROR.visible());
 
@@ -126,21 +136,25 @@ describe('Benchmark', function() {
 
     await vpn.waitForQueryAndClick(queries.screenHome.CONNECTION_INFO_RETRY);
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getVPNProperty('VPNConnectionBenchmark', 'state');
+      let state = await vpn.getMozillaProperty(
+          'Mozilla.VPN', 'VPNConnectionBenchmark', 'state');
       return state == 'StateRunning';
     });
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getVPNProperty('VPNConnectionBenchmark', 'state');
+      let state = await vpn.getMozillaProperty(
+          'Mozilla.VPN', 'VPNConnectionBenchmark', 'state');
       return state != 'StateRunning';
     });
 
     // This time we expect the benchmark to succeed.
-    let speed = await vpn.getVPNProperty('VPNConnectionBenchmark', 'speed');
-    let downloadBps = parseInt(
-        await vpn.getVPNProperty('VPNConnectionBenchmark', 'downloadBps'));
-    let uploadBps = parseInt(
-        await vpn.getVPNProperty('VPNConnectionBenchmark', 'uploadBps'));
-    let state = await vpn.getVPNProperty('VPNConnectionBenchmark', 'state');
+    let speed = await vpn.getMozillaProperty(
+        'Mozilla.VPN', 'VPNConnectionBenchmark', 'speed');
+    let downloadBps = parseInt(await vpn.getMozillaProperty(
+        'Mozilla.VPN', 'VPNConnectionBenchmark', 'downloadBps'));
+    let uploadBps = parseInt(await vpn.getMozillaProperty(
+        'Mozilla.VPN', 'VPNConnectionBenchmark', 'uploadBps'));
+    let state = await vpn.getMozillaProperty(
+        'Mozilla.VPN', 'VPNConnectionBenchmark', 'state');
     assert.strictEqual(state, 'StateReady');
 
     assert.strictEqual(
@@ -167,20 +181,23 @@ describe('Benchmark', function() {
     // Start the connection benchmark.
     await vpn.waitForQueryAndClick(queries.screenHome.CONNECTION_INFO_TOGGLE);
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getVPNProperty('VPNConnectionBenchmark', 'state');
+      let state = await vpn.getMozillaProperty(
+          'Mozilla.VPN', 'VPNConnectionBenchmark', 'state');
       return state == 'StateRunning';
     });
 
     // Disconnect the VPN, this should trigger an error.
     await vpn.deactivate();
     await vpn.waitForCondition(async () => {
-      let state = await vpn.getVPNProperty('VPNConnectionBenchmark', 'state');
+      let state = await vpn.getMozillaProperty(
+          'Mozilla.VPN', 'VPNConnectionBenchmark', 'state');
       return state != 'StateRunning';
     });
 
     // We expect the benchmark to fail.
     assert.strictEqual(
-        await vpn.getVPNProperty('VPNConnectionBenchmark', 'state'),
+        await vpn.getMozillaProperty(
+            'Mozilla.VPN', 'VPNConnectionBenchmark', 'state'),
         'StateError');
     await vpn.waitForQuery(queries.screenHome.CONNECTION_INFO_ERROR.visible());
 

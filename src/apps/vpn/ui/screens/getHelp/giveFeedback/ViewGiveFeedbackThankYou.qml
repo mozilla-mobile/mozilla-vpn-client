@@ -6,20 +6,20 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
-import Mozilla.VPN 1.0
+import Mozilla.Shared 1.0
 import components 0.1
 import components.forms 0.1
 
 ColumnLayout {
     id: layout
 
-    spacing: VPNTheme.theme.vSpacing
+    spacing: MZTheme.theme.vSpacing
 
     Item {
         Layout.fillHeight: window.fullscreenRequired()
     }
 
-    VPNPanel {
+    MZPanel {
         anchors.horizontalCenter: undefined
         Layout.topMargin: window.fullscreenRequired() ? 0 : layout.height * 0.2
         Layout.preferredHeight: height
@@ -37,11 +37,11 @@ ColumnLayout {
         Layout.fillHeight: window.fullscreenRequired()
     }
 
-    VPNButton {
+    MZButton {
         Layout.fillWidth: true
-        Layout.leftMargin: VPNTheme.theme.windowMargin * 2
-        Layout.rightMargin: VPNTheme.theme.windowMargin * 2
-        Layout.bottomMargin: navbar.visible ? VPNTheme.theme.navBarHeightWithMargins : 34
+        Layout.leftMargin: MZTheme.theme.windowMargin * 2
+        Layout.rightMargin: MZTheme.theme.windowMargin * 2
+        Layout.bottomMargin: navbar.visible ? MZTheme.theme.navBarHeightWithMargins : 34
 
         //% "Done"
         text: qsTrId("vpn.feedbackform.done")

@@ -5,10 +5,11 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
-VPNStackView {
+MZStackView {
     id: stackView
 
     Component.onCompleted: function(){
@@ -16,11 +17,11 @@ VPNStackView {
 
        stackView.push("qrc:/ui/sharedViews/ViewErrorFullScreen.qml", {
            // Problem confirming subscription...
-           headlineText: VPNI18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
+           headlineText: MZI18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
            // Another Firefox Account has already subscribed using this Apple ID.
            // Visit our help center below to learn more about how to manage your subscriptions.
-           errorMessage: VPNI18n.RestorePurchaseInUseErrorRestorePurchaseInUseErrorText,
+           errorMessage: MZI18n.RestorePurchaseInUseErrorRestorePurchaseInUseErrorText,
 
            // Sign out
            primaryButtonText: qsTrId("vpn.main.signOut2"),

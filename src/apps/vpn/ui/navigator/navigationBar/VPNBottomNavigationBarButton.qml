@@ -4,10 +4,12 @@
 
 import QtQuick 2.0
 import QtQuick.Layouts 1.14
+
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
-VPNIconButton {
+MZIconButton {
     id: btn
 
     property var _screen
@@ -20,11 +22,11 @@ VPNIconButton {
         VPNNavigator.requestScreenFromBottomBar(_screen, VPNNavigator.screen === _screen ? VPNNavigator.ForceReload : VPNNavigator.NoFlags);
     }
 
-    width: VPNTheme.theme.navBarIconSize
-    height: VPNTheme.theme.navBarIconSize
+    width: MZTheme.theme.navBarIconSize
+    height: MZTheme.theme.navBarIconSize
 
     backgroundRadius: height / 2
-    buttonColorScheme: VPNTheme.theme.iconButtonDarkBackground
+    buttonColorScheme: MZTheme.theme.iconButtonDarkBackground
     uiStatesVisible: !checked
 
     Rectangle {
@@ -33,13 +35,13 @@ VPNIconButton {
         visible: checked
         radius: parent.height / 2
         opacity: .2
-        color: VPNTheme.theme.white
+        color: MZTheme.theme.white
     }
 
     Image {
         id: image
         anchors.centerIn: parent
-        sourceSize.height: VPNTheme.theme.iconSize * 2
-        sourceSize.width: VPNTheme.theme.iconSize * 2
+        sourceSize.height: MZTheme.theme.iconSize * 2
+        sourceSize.width: MZTheme.theme.iconSize * 2
     }
 }

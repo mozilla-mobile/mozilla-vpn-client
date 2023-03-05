@@ -6,12 +6,12 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 
-
-VPNViewBase {
+MZViewBase {
     id: vpnFlickable
     objectName: "settingsNotifications"
 
@@ -19,9 +19,9 @@ VPNViewBase {
     _menuTitle: qsTrId("vpn.settings.notifications")
 
     _viewContentData: ColumnLayout {
-        spacing: VPNTheme.theme.windowMargin * 1.5
+        spacing: MZTheme.theme.windowMargin * 1.5
 
-        VPNCheckBoxRow {
+        MZCheckBoxRow {
             id: captivePortalAlert
             objectName: "settingCaptivePortalAlert"
             visible: VPNFeatureList.get("captivePortal").isSupported
@@ -29,15 +29,15 @@ VPNViewBase {
             labelText: qsTrId("vpn.settings.guestWifiAlert")
             //% "Get notified if a guest Wi-Fi portal is blocked due to VPN connection"
             subLabelText: qsTrId("vpn.settings.guestWifiAlert.description")
-            isChecked: (VPNSettings.captivePortalAlert)
+            isChecked: (MZSettings.captivePortalAlert)
             showDivider: false
             onClicked: {
-                VPNSettings.captivePortalAlert = !VPNSettings.captivePortalAlert
+                MZSettings.captivePortalAlert = !MZSettings.captivePortalAlert
             }
-            Layout.rightMargin: VPNTheme.theme.windowMargin
+            Layout.rightMargin: MZTheme.theme.windowMargin
         }
 
-        VPNCheckBoxRow {
+        MZCheckBoxRow {
             id: unsecuredNetworkAlert
             objectName: "settingUnsecuredNetworkAlert"
             visible: VPNFeatureList.get("unsecuredNetworkNotification").isSupported
@@ -45,16 +45,16 @@ VPNViewBase {
             labelText: qsTrId("vpn.settings.unsecuredNetworkAlert")
             //% "Get notified if you connect to an unsecured Wi-Fi network"
             subLabelText: qsTrId("vpn.settings.unsecuredNetworkAlert.description")
-            isChecked: (VPNSettings.unsecuredNetworkAlert)
+            isChecked: (MZSettings.unsecuredNetworkAlert)
             enabled: true
             showDivider: !enabled
             onClicked: {
-                VPNSettings.unsecuredNetworkAlert = !VPNSettings.unsecuredNetworkAlert
+                MZSettings.unsecuredNetworkAlert = !MZSettings.unsecuredNetworkAlert
             }
-            Layout.rightMargin: VPNTheme.theme.windowMargin
+            Layout.rightMargin: MZTheme.theme.windowMargin
         }
 
-        VPNCheckBoxRow {
+        MZCheckBoxRow {
             id: switchServersAlert
             objectName: "switchServersAlert"
             visible: VPNFeatureList.get("notificationControl").isSupported
@@ -62,15 +62,15 @@ VPNViewBase {
             labelText: qsTrId("vpn.settings.notification.serverSwitch2")
             //% "Get notified when you successfully switched servers"
             subLabelText: qsTrId("vpn.settings.notification.serverSwitch.description")
-            isChecked: (VPNSettings.serverSwitchNotification)
+            isChecked: (MZSettings.serverSwitchNotification)
             showDivider: false
             onClicked: {
-                VPNSettings.serverSwitchNotification = !VPNSettings.serverSwitchNotification
+                MZSettings.serverSwitchNotification = !MZSettings.serverSwitchNotification
             }
-            Layout.rightMargin: VPNTheme.theme.windowMargin
+            Layout.rightMargin: MZTheme.theme.windowMargin
         }
 
-        VPNCheckBoxRow {
+        MZCheckBoxRow {
             id: connectionChangeAlert
             objectName: "connectionChangeAlert"
             visible: VPNFeatureList.get("notificationControl").isSupported
@@ -79,26 +79,26 @@ VPNViewBase {
             labelText: qsTrId("vpn.settings.notification.connectionChange2")
             //% "Get notified when the connection status changes"
             subLabelText: qsTrId("vpn.settings.notification.connectionChange.description")
-            isChecked: (VPNSettings.connectionChangeNotification)
+            isChecked: (MZSettings.connectionChangeNotification)
             showDivider: false
             onClicked: {
-                VPNSettings.connectionChangeNotification = !VPNSettings.connectionChangeNotification
+                MZSettings.connectionChangeNotification = !MZSettings.connectionChangeNotification
             }
-            Layout.rightMargin: VPNTheme.theme.windowMargin
+            Layout.rightMargin: MZTheme.theme.windowMargin
         }
 
-        VPNCheckBoxRow {
+        MZCheckBoxRow {
             id: serverUnavailableNotification
             objectName: "serverUnavailableNotification"
             visible: VPNFeatureList.get("serverUnavailableNotification").isSupported
-            labelText: VPNI18n.ServerUnavailableNotificationPreferencesLabel
-            subLabelText: VPNI18n.ServerUnavailableNotificationPreferencesSubLabel
-            isChecked: (VPNSettings.serverUnavailableNotification)
+            labelText: MZI18n.ServerUnavailableNotificationPreferencesLabel
+            subLabelText: MZI18n.ServerUnavailableNotificationPreferencesSubLabel
+            isChecked: (MZSettings.serverUnavailableNotification)
             showDivider: false
             onClicked: {
-                VPNSettings.serverUnavailableNotification = !VPNSettings.serverUnavailableNotification
+                MZSettings.serverUnavailableNotification = !MZSettings.serverUnavailableNotification
             }
-            Layout.rightMargin: VPNTheme.theme.windowMargin
+            Layout.rightMargin: MZTheme.theme.windowMargin
         }
     }
     Component.onCompleted: {

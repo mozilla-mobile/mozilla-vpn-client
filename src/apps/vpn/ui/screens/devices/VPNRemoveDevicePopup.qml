@@ -6,11 +6,12 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import compat 0.1
 import components 0.1
 
-VPNSimplePopup {
+MZSimplePopup {
     id: popup
 
     property var deviceName
@@ -28,21 +29,21 @@ VPNSimplePopup {
     //% "Please confirm you would like to remove\n%1."
     description: qsTrId("vpn.devices.deviceRemovalConfirm").replace("\n", " ").arg(popup.deviceName)
     buttons: [
-        VPNPopupButton {
+        MZPopupButton {
             objectName: "confirmRemoveDeviceButton"
 
             //: This is the “remove” device button.
             //% "Remove"
             buttonText: qsTrId("vpn.devices.removeDeviceButton")
-            buttonTextColor: VPNTheme.theme.white
-            colorScheme: VPNTheme.theme.redButton
+            buttonTextColor: MZTheme.theme.white
+            colorScheme: MZTheme.theme.redButton
             onClicked: {
                 VPN.removeDeviceFromPublicKey(popup.devicePublicKey);
                 popup.close();
             }
             isCancelBtn: false
         },
-        VPNCancelButton {
+        MZCancelButton {
             Layout.alignment: Qt.AlignHCenter
             onClicked: {
                 popup.close();

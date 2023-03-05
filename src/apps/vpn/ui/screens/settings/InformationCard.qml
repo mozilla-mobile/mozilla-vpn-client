@@ -6,7 +6,7 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 import QtQuick.Window 2.12
 
-import Mozilla.VPN 1.0
+import Mozilla.Shared 1.0
 import compat 0.1
 import components 0.1
 
@@ -17,17 +17,17 @@ Rectangle {
     property alias _infoContent: infoContent.data
     id: card
 
-    color: VPNTheme.theme.white
+    color: MZTheme.theme.white
     radius: 4
 
-    VPNDropShadow {
+    MZDropShadow {
         anchors.fill: dropShadowSource
         source: dropShadowSource
 
         horizontalOffset: 1
         verticalOffset: 1
         radius: 6
-        color: VPNTheme.colors.grey60
+        color: MZTheme.colors.grey60
         opacity: .15
         transparentBorder: true
         cached: true
@@ -37,23 +37,23 @@ Rectangle {
         id: dropShadowSource
         anchors.fill: card
 
-        color: VPNTheme.theme.white
+        color: MZTheme.theme.white
         radius: card.radius
     }
 
     RowLayout {
         id: info
-        spacing: VPNTheme.theme.windowMargin * 0.75
+        spacing: MZTheme.theme.windowMargin * 0.75
 
         anchors {
             left: parent.left
             right: parent.right
-            leftMargin: VPNTheme.theme.windowMargin
-            rightMargin: VPNTheme.theme.windowMargin
+            leftMargin: MZTheme.theme.windowMargin
+            rightMargin: MZTheme.theme.windowMargin
             verticalCenter: parent.verticalCenter
         }
 
-        VPNIcon {
+        MZIcon {
             source: "qrc:/nebula/resources/info.svg"
             Layout.alignment: Qt.AlignTop
         }

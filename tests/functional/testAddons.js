@@ -15,8 +15,9 @@ describe('Addons', function () {
     await vpn.resetAddons('01_empty_manifest');
     await vpn.waitForCondition(async () => {
       return parseInt(
-        await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
-        0;
+                 await vpn.getMozillaProperty(
+                     'Mozilla.VPN', 'VPNAddonManager', 'count'),
+                 10) === 0;
     });
   });
 
@@ -24,15 +25,17 @@ describe('Addons', function () {
     await vpn.resetAddons('03_single_addon');
     await vpn.waitForCondition(async () => {
       return parseInt(
-        await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
-        1;
+                 await vpn.getMozillaProperty(
+                     'Mozilla.VPN', 'VPNAddonManager', 'count'),
+                 10) === 1;
     });
 
     await vpn.fetchAddons('02_broken_manifest');
     await vpn.waitForCondition(async () => {
       return parseInt(
-        await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
-        1;
+                 await vpn.getMozillaProperty(
+                     'Mozilla.VPN', 'VPNAddonManager', 'count'),
+                 10) === 1;
     });
   });
 
@@ -40,22 +43,25 @@ describe('Addons', function () {
     await vpn.resetAddons('03_single_addon');
     await vpn.waitForCondition(async () => {
       return parseInt(
-        await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
-        1;
+                 await vpn.getMozillaProperty(
+                     'Mozilla.VPN', 'VPNAddonManager', 'count'),
+                 10) === 1;
     });
 
     await vpn.fetchAddons('01_empty_manifest');
     await vpn.waitForCondition(async () => {
       return parseInt(
-        await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
-        0;
+                 await vpn.getMozillaProperty(
+                     'Mozilla.VPN', 'VPNAddonManager', 'count'),
+                 10) === 0;
     });
 
     await vpn.fetchAddons('03_single_addon');
     await vpn.waitForCondition(async () => {
       return parseInt(
-        await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
-        1;
+                 await vpn.getMozillaProperty(
+                     'Mozilla.VPN', 'VPNAddonManager', 'count'),
+                 10) === 1;
     });
   });
 
@@ -65,14 +71,15 @@ describe('Addons', function () {
 
     await vpn.waitForCondition(async () => {
       return parseInt(
-        await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
-        1;
+                 await vpn.getMozillaProperty(
+                     'Mozilla.VPN', 'VPNAddonManager', 'count'),
+                 10) === 1;
     });
 
-    const exitCityName =
-      await vpn.getVPNProperty('VPNCurrentServer', 'exitCityName');
-    const exitCountryCode =
-      await vpn.getVPNProperty('VPNCurrentServer', 'exitCountryCode');
+    const exitCityName = await vpn.getMozillaProperty(
+        'Mozilla.VPN', 'VPNCurrentServer', 'exitCityName');
+    const exitCountryCode = await vpn.getMozillaProperty(
+        'Mozilla.VPN', 'VPNCurrentServer', 'exitCountryCode');
 
     // Let's start the tutorial
     await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
@@ -92,16 +99,19 @@ describe('Addons', function () {
       queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON.visible());
 
     await vpn.waitForCondition(async () => {
-      return await vpn.getVPNProperty('VPNCurrentServer', 'exitCityName') ===
-        'Vienna';
+      return await vpn.getMozillaProperty(
+                 'Mozilla.VPN', 'VPNCurrentServer', 'exitCityName') ===
+          'Vienna';
     });
 
     assert.equal(
-      await vpn.getVPNProperty('VPNCurrentServer', 'exitCityName'),
-      'Vienna');
+        await vpn.getMozillaProperty(
+            'Mozilla.VPN', 'VPNCurrentServer', 'exitCityName'),
+        'Vienna');
     assert.equal(
-      await vpn.getVPNProperty('VPNCurrentServer', 'exitCountryCode'),
-      'at');
+        await vpn.getMozillaProperty(
+            'Mozilla.VPN', 'VPNCurrentServer', 'exitCountryCode'),
+        'at');
 
     await vpn.waitForQuery(queries.screenHome.TUTORIAL_LEAVE.visible());
     await vpn.waitForQueryAndClick(
@@ -118,16 +128,19 @@ describe('Addons', function () {
       queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON.visible());
 
     await vpn.waitForCondition(async () => {
-      return await vpn.getVPNProperty('VPNCurrentServer', 'exitCityName') ===
-        exitCityName;
+      return await vpn.getMozillaProperty(
+                 'Mozilla.VPN', 'VPNCurrentServer', 'exitCityName') ===
+          exitCityName;
     });
 
     assert.equal(
-      await vpn.getVPNProperty('VPNCurrentServer', 'exitCityName'),
-      exitCityName);
+        await vpn.getMozillaProperty(
+            'Mozilla.VPN', 'VPNCurrentServer', 'exitCityName'),
+        exitCityName);
     assert.equal(
-      await vpn.getVPNProperty('VPNCurrentServer', 'exitCountryCode'),
-      exitCountryCode);
+        await vpn.getMozillaProperty(
+            'Mozilla.VPN', 'VPNCurrentServer', 'exitCountryCode'),
+        exitCountryCode);
   });
 
   it('test only a single update message exists at a time', async () => {
@@ -136,9 +149,12 @@ describe('Addons', function () {
     // Load all production addons.
     // These are loaded all together, so we don't know the exact number of addons.
     await vpn.resetAddons('prod');
-    await vpn.waitForCondition(async () => (
-      parseInt(await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) > 0
-    ));
+    await vpn.waitForCondition(
+        async () =>
+            (parseInt(
+                 await vpn.getMozillaProperty(
+                     'Mozilla.VPN', 'VPNAddonManager', 'count'),
+                 10) > 0));
     const loadedMessages = await vpn.messages();
     const updateMessages = loadedMessages.filter(message => message.startsWith('message_update_'));
 
@@ -197,9 +213,12 @@ describe('Addons', function () {
         // Load all production addons.
         // These are loaded all together, so we don't know the exact number of addons.
         await vpn.resetAddons('prod');
-        await vpn.waitForCondition(async () => (
-          parseInt(await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) > 0
-        ));
+        await vpn.waitForCondition(
+            async () =>
+                (parseInt(
+                     await vpn.getMozillaProperty(
+                         'Mozilla.VPN', 'VPNAddonManager', 'count'),
+                     10) > 0));
 
 
         // Check if the message is there or not.
@@ -216,23 +235,26 @@ describe('Addons', function () {
     await vpn.resetAddons('06_translation_threshold');
     await vpn.waitForCondition(async () => {
       return parseInt(
-        await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
-        2;
+                 await vpn.getMozillaProperty(
+                     'Mozilla.VPN', 'VPNAddonManager', 'count'),
+                 10) === 2;
     });
 
     await vpn.setSetting('languageCode', 'it');
 
     await vpn.waitForCondition(async () => {
       return parseInt(
-        await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
-        1;
+                 await vpn.getMozillaProperty(
+                     'Mozilla.VPN', 'VPNAddonManager', 'count'),
+                 10) === 1;
     });
 
     await vpn.setSetting('languageCode', '');
     await vpn.waitForCondition(async () => {
       return parseInt(
-        await vpn.getVPNProperty('VPNAddonManager', 'count'), 10) ===
-        2;
+                 await vpn.getMozillaProperty(
+                     'Mozilla.VPN', 'VPNAddonManager', 'count'),
+                 10) === 2;
     });
   });
 });

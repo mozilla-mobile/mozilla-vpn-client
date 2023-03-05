@@ -6,19 +6,20 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
-VPNViewBase {
+MZViewBase {
     id: vpnFlickable
     objectName: "subscriptionManagmentView"
 
     Component.onDestruction: () => VPNProfileFlow.reset()
 
-    _menuTitle: VPNI18n.SubscriptionManagementMenuTitle
+    _menuTitle: MZI18n.SubscriptionManagementMenuTitle
     _menuOnBackClicked: () => { stackview.pop(null) }
     _viewContentData: ColumnLayout {
-        spacing: VPNTheme.theme.windowMargin
+        spacing: MZTheme.theme.windowMargin
 
         ListModel {
             id: subscriptionInfoModel
@@ -28,9 +29,9 @@ VPNViewBase {
             id: subscriptionPaymentModel
         }
 
-        VPNUserProfile {
-            Layout.leftMargin: VPNTheme.theme.windowMargin / 2
-            Layout.rightMargin: VPNTheme.theme.windowMargin / 2
+        MZUserProfile {
+            Layout.leftMargin: MZTheme.theme.windowMargin / 2
+            Layout.rightMargin: MZTheme.theme.windowMargin / 2
 
             objectName: "subscriptionUserProfile"
             _objNameBase: "subscriptionUserProfile"
@@ -39,7 +40,7 @@ VPNViewBase {
             _buttonOnClicked: () => {
                 MZGleanDeprecated.recordGleanEvent("manageAccountClicked");
                 Glean.sample.manageAccountClicked.record();
-                VPNUrlOpener.openUrlLabel("account");
+                MZUrlOpener.openUrlLabel("account");
             }
         }
 
@@ -48,18 +49,18 @@ VPNViewBase {
             objectName: "subscriptionItem"
 
             Layout.alignment: Qt.AlignTop
-            Layout.leftMargin: VPNTheme.theme.windowMargin
-            Layout.rightMargin: VPNTheme.theme.windowMargin
+            Layout.leftMargin: MZTheme.theme.windowMargin
+            Layout.rightMargin: MZTheme.theme.windowMargin
 
 
-            VPNMetropolisLabel {
-                color: VPNTheme.theme.fontColorDark
+            MZMetropolisLabel {
+                color: MZTheme.theme.fontColorDark
                 horizontalAlignment: Text.AlignLeft
-                font.family: VPNTheme.theme.fontBoldFamily
-                text: VPNI18n.SubscriptionManagementSummaryHeadline
+                font.family: MZTheme.theme.fontBoldFamily
+                text: MZI18n.SubscriptionManagementSummaryHeadline
 
-                Layout.bottomMargin: VPNTheme.theme.listSpacing * 0.5
-                Layout.topMargin: VPNTheme.theme.listSpacing * 0.5
+                Layout.bottomMargin: MZTheme.theme.listSpacing * 0.5
+                Layout.topMargin: MZTheme.theme.listSpacing * 0.5
                 Layout.fillWidth: true
             }
 
@@ -72,14 +73,14 @@ VPNViewBase {
                 }
             }
 
-            VPNMetropolisLabel {
-                color: VPNTheme.theme.fontColorDark
+            MZMetropolisLabel {
+                color: MZTheme.theme.fontColorDark
                 horizontalAlignment: Text.AlignLeft
-                font.family: VPNTheme.theme.fontBoldFamily
-                text: VPNI18n.SubscriptionManagementPaymentHeadline
+                font.family: MZTheme.theme.fontBoldFamily
+                text: MZI18n.SubscriptionManagementPaymentHeadline
 
-                Layout.topMargin: VPNTheme.theme.windowMargin * 2
-                Layout.bottomMargin: VPNTheme.theme.listSpacing * 0.5
+                Layout.topMargin: MZTheme.theme.windowMargin * 2
+                Layout.bottomMargin: MZTheme.theme.listSpacing * 0.5
                 Layout.fillWidth: true
             }
 
@@ -92,23 +93,23 @@ VPNViewBase {
                 }
             }
 
-            VPNButton {
+            MZButton {
                 objectName: "manageSubscriptionButton"
                 id: manageSubscriptionButton
 
                 onClicked: handleManageAccountClicked()
-                text: VPNI18n.SubscriptionManagementManageSubscriptionButton
+                text: MZI18n.SubscriptionManagementManageSubscriptionButton
                 width: undefined
 
-                Layout.topMargin: VPNTheme.theme.windowMargin * 2
+                Layout.topMargin: MZTheme.theme.windowMargin * 2
                 Layout.fillWidth: true
             }
 
-            VPNLinkButton {
+            MZLinkButton {
                 objectName: "accountDeletionButton"
-                fontName: VPNTheme.theme.fontBoldFamily
-                labelText: VPNI18n.DeleteAccountButtonLabel
-                linkColor: VPNTheme.theme.redLinkButton
+                fontName: MZTheme.theme.fontBoldFamily
+                labelText: MZI18n.DeleteAccountButtonLabel
+                linkColor: MZTheme.theme.redLinkButton
                 visible: VPNFeatureList.get("accountDeletion").isSupported
 
                 onClicked: {
@@ -117,7 +118,7 @@ VPNViewBase {
                 }
 
                 Layout.alignment: Qt.AlignHCenter
-                Layout.topMargin: VPNTheme.theme.vSpacing
+                Layout.topMargin: MZTheme.theme.vSpacing
             }
         }
     }
@@ -125,16 +126,16 @@ VPNViewBase {
     function handleManageAccountClicked() {
         switch(VPNSubscriptionData.type) {
             case VPNSubscriptionData.SubscriptionWeb:
-                VPNUrlOpener.openUrlLabel("subscriptionFxa");
+                MZUrlOpener.openUrlLabel("subscriptionFxa");
                 break;
             case VPNSubscriptionData.SubscriptionGoogle:
-                VPNUrlOpener.openUrlLabel("subscriptionIapGoogle");
+                MZUrlOpener.openUrlLabel("subscriptionIapGoogle");
                 break;
             case VPNSubscriptionData.SubscriptionApple:
-                VPNUrlOpener.openUrlLabel("subscriptionIapApple");
+                MZUrlOpener.openUrlLabel("subscriptionIapApple");
                 break;
             default:
-                VPNUrlOpener.openUrlLabel("account");
+                MZUrlOpener.openUrlLabel("account");
         }
 
         MZGleanDeprecated.recordGleanEvent("manageSubscriptionClicked");
@@ -169,7 +170,7 @@ VPNViewBase {
         ) {
             subscriptionInfoModel.append({
                 _objectName: "subscriptionItem-plan",
-                labelText: VPNI18n.SubscriptionManagementPlanLabel,
+                labelText: MZI18n.SubscriptionManagementPlanLabel,
                 valueText: getPlanText(
                     VPNSubscriptionData.planCurrency,
                     VPNSubscriptionData.planAmount,
@@ -181,10 +182,10 @@ VPNViewBase {
         // Status
         subscriptionInfoModel.append({
             _objectName: "subscriptionItem-status",
-            labelText: VPNI18n.SubscriptionManagementStatusLabel,
+            labelText: MZI18n.SubscriptionManagementStatusLabel,
             valueText: VPNSubscriptionData.status === VPNSubscriptionData.Active
-                ? VPNI18n.SubscriptionManagementStatusActive
-                : VPNI18n.SubscriptionManagementStatusInactive,
+                ? MZI18n.SubscriptionManagementStatusActive
+                : MZI18n.SubscriptionManagementStatusInactive,
             type: "pill",
         });
 
@@ -192,7 +193,7 @@ VPNViewBase {
         if (VPNSubscriptionData.createdAt) {
             subscriptionInfoModel.append({
                 _objectName: "subscriptionItem-activated",
-                labelText: VPNI18n.SubscriptionManagementActivatedLabel,
+                labelText: MZI18n.SubscriptionManagementActivatedLabel,
                 valueText: epochTimeToDate(VPNSubscriptionData.createdAt),
                 type: "text",
             });
@@ -202,8 +203,8 @@ VPNViewBase {
         subscriptionInfoModel.append({
             _objectName: "subscriptionItem-cancelled",
             labelText: VPNSubscriptionData.isCancelled
-                ? VPNI18n.SubscriptionManagementExpiresLabel
-                : VPNI18n.SubscriptionManagementNextLabel,
+                ? MZI18n.SubscriptionManagementExpiresLabel
+                : MZI18n.SubscriptionManagementNextLabel,
             valueText: epochTimeToDate(VPNSubscriptionData.expiresOn),
             type: "text",
         });
@@ -221,7 +222,7 @@ VPNViewBase {
                 subscriptionPaymentModel.append({
                     _objectName: "subscriptionItem-brand",
                     labelText: VPNSubscriptionData.creditCardBrand,
-                    valueText: VPNI18n.SubscriptionManagementCardLast4.arg(VPNSubscriptionData.creditCardLast4),
+                    valueText: MZI18n.SubscriptionManagementCardLast4.arg(VPNSubscriptionData.creditCardLast4),
                     type: "payment",
                 });
 
@@ -232,7 +233,7 @@ VPNViewBase {
                     // Credit card expires
                     subscriptionPaymentModel.append({
                         _objectName: "subscriptionItem-expires",
-                        labelText: VPNI18n.SubscriptionManagementCardExpiresLabel,
+                        labelText: MZI18n.SubscriptionManagementCardExpiresLabel,
                         valueText: getPaymentExpiration(),
                         type: "text",
                     });
@@ -266,12 +267,12 @@ VPNViewBase {
     }
 
     function epochTimeToDate(unixTimestamp) {
-        return new Date(unixTimestamp).toLocaleDateString(VPNLocalizer.locale, Locale.ShortFormat);
+        return new Date(unixTimestamp).toLocaleDateString(MZLocalizer.locale, Locale.ShortFormat);
     }
 
     function getPaymentExpiration() {
         return (
-            VPNLocalizer.locale.monthName(VPNSubscriptionData.creditCardExpMonth - 1)
+            MZLocalizer.locale.monthName(VPNSubscriptionData.creditCardExpMonth - 1)
             + " "
             + VPNSubscriptionData.creditCardExpYear
         );
@@ -279,21 +280,21 @@ VPNViewBase {
 
     function getPlanText(currencyCode, amount) {
         const amountDisplay = (amount || 0) / 100;
-        const localizedCurrency = VPNLocalizer.localizeCurrency(amountDisplay, currencyCode);
+        const localizedCurrency = MZLocalizer.localizeCurrency(amountDisplay, currencyCode);
 
         switch (VPNSubscriptionData.planBillingInterval) {
             case VPNSubscriptionData.BillingIntervalMonthly:
                 // {¤amount} Monthly
-                return VPNSubscriptionData.planRequiresTax ? VPNI18n.SubscriptionManagementPlanValueMonthlyPlusTax.arg(localizedCurrency)
-                                : VPNI18n.SubscriptionManagementPlanValueMonthly.arg(localizedCurrency);
+                return VPNSubscriptionData.planRequiresTax ? MZI18n.SubscriptionManagementPlanValueMonthlyPlusTax.arg(localizedCurrency)
+                                : MZI18n.SubscriptionManagementPlanValueMonthly.arg(localizedCurrency);
             case VPNSubscriptionData.BillingIntervalHalfYearly:
                 // {¤amount} Half-yearly
-                return VPNSubscriptionData.planRequiresTax ? VPNI18n.SubscriptionManagementPlanValueHalfYearlyPlusTax.arg(localizedCurrency)
-                                : VPNI18n.SubscriptionManagementPlanValueHalfYearly.arg(localizedCurrency);
+                return VPNSubscriptionData.planRequiresTax ? MZI18n.SubscriptionManagementPlanValueHalfYearlyPlusTax.arg(localizedCurrency)
+                                : MZI18n.SubscriptionManagementPlanValueHalfYearly.arg(localizedCurrency);
             case VPNSubscriptionData.BillingIntervalYearly:
                 // {¤amount} Yearly
-                return VPNSubscriptionData.planRequiresTax ? VPNI18n.SubscriptionManagementPlanValueYearlyPlusTax.arg(localizedCurrency)
-                                : VPNI18n.SubscriptionManagementPlanValueYearly.arg(localizedCurrency);
+                return VPNSubscriptionData.planRequiresTax ? MZI18n.SubscriptionManagementPlanValueYearlyPlusTax.arg(localizedCurrency)
+                                : MZI18n.SubscriptionManagementPlanValueYearly.arg(localizedCurrency);
             default:
                 // If we made it here something went wrong. In case we encounter
                 // an unhandled TypeBillingInterval we should have should have

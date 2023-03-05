@@ -6,10 +6,11 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
-VPNFlickable {
+MZFlickable {
     id: vpnFlickable
 
     property bool wasmView: false
@@ -17,11 +18,11 @@ VPNFlickable {
     flickContentHeight: col.y + col.height
 
     Rectangle {
-        color: VPNTheme.theme.bgColor
+        color: MZTheme.theme.bgColor
         anchors.fill: parent
     }
 
-    VPNHeaderLink {
+    MZHeaderLink {
         id: headerLink
 
         labelText: qsTrId("vpn.main.getHelp2")
@@ -40,11 +41,11 @@ VPNFlickable {
         anchors.topMargin: 20
     }
 
-    VPNHeadline {
+    MZHeadline {
         id: headline
         text: qsTrId("vpn.main.productName")
         anchors.top: logo.bottom
-        anchors.topMargin: VPNTheme.theme.windowMargin
+        anchors.topMargin: MZTheme.theme.windowMargin
         anchors.horizontalCenter: parent.horizontalCenter
     }
 
@@ -57,27 +58,27 @@ VPNFlickable {
 
         ColumnLayout {
             id: featureList
-            spacing: VPNTheme.theme.windowMargin
-            Layout.maximumWidth: VPNTheme.theme.maxHorizontalContentWidth
+            spacing: MZTheme.theme.windowMargin
+            Layout.maximumWidth: MZTheme.theme.maxHorizontalContentWidth
             Layout.topMargin: 24
             Layout.alignment: Qt.AlignHCenter
 
-            VPNCallout {
-                calloutCopy: VPNI18n.SubscriptionManagementValueProp1
+            MZCallout {
+                calloutCopy: MZI18n.SubscriptionManagementValueProp1
                 calloutImage: "qrc:/ui/resources/onboarding/onboarding4.svg"
             }
 
-            VPNCallout {
-                calloutCopy: VPNI18n.SubscriptionManagementValueProp2
+            MZCallout {
+                calloutCopy: MZI18n.SubscriptionManagementValueProp2
                 calloutImage: "qrc:/ui/resources/onboarding/onboarding1.svg"
             }
 
-            VPNCallout {
-                calloutCopy: VPNI18n.SubscriptionManagementValueProp3
+            MZCallout {
+                calloutCopy: MZI18n.SubscriptionManagementValueProp3
                 calloutImage: "qrc:/ui/resources/onboarding/onboarding2.svg"
             }
 
-            VPNCallout {
+            MZCallout {
                 //% "Connect up to %1 devices"
                 //: %1 is the number of devices.
                 //: Note: there is currently no support for proper plurals
@@ -88,11 +89,11 @@ VPNFlickable {
         }
 
         ColumnLayout {
-            Layout.leftMargin: VPNTheme.theme.windowMargin
-            Layout.rightMargin: VPNTheme.theme.windowMargin
-            Layout.maximumWidth: VPNTheme.theme.maxHorizontalContentWidth
+            Layout.leftMargin: MZTheme.theme.windowMargin
+            Layout.rightMargin: MZTheme.theme.windowMargin
+            Layout.maximumWidth: MZTheme.theme.maxHorizontalContentWidth
             Layout.alignment: Qt.AlignHCenter
-            spacing: VPNTheme.theme.windowMargin
+            spacing: MZTheme.theme.windowMargin
 
             ButtonGroup {
                 id: subscriptionOptions
@@ -101,25 +102,25 @@ VPNFlickable {
             Repeater {
                 id: productList
                 model: VPNProducts
-                delegate: VPNSubscriptionOption {}
+                delegate: MZSubscriptionOption {}
             }
         }
 
         ColumnLayout {
             id: footerInfo
-            spacing: VPNTheme.theme.windowMargin
+            spacing: MZTheme.theme.windowMargin
 
-            VPNButton {
+            MZButton {
                 id: subscribeNow
 
                 //% "Subscribe now"
                 text: qsTrId("vpn.updates.subscribeNow")
 
-                Layout.topMargin: VPNTheme.theme.windowMargin
-                Layout.leftMargin: VPNTheme.theme.windowMargin
-                Layout.rightMargin: VPNTheme.theme.windowMargin
+                Layout.topMargin: MZTheme.theme.windowMargin
+                Layout.leftMargin: MZTheme.theme.windowMargin
+                Layout.rightMargin: MZTheme.theme.windowMargin
                 Layout.fillWidth: true
-                Layout.maximumWidth: VPNTheme.theme.maxHorizontalContentWidth
+                Layout.maximumWidth: MZTheme.theme.maxHorizontalContentWidth
                 onClicked: VPNPurchase.subscribe(subscriptionOptions.checkedButton.productId)
             }
             GridLayout {
@@ -134,14 +135,14 @@ VPNFlickable {
                     }
                 }
 
-                VPNGreyLink {
+                MZGreyLink {
                     id: termsOfService
 
                     // Terms of Service - string defined in ViewAboutUs.qml
                     labelText: qsTrId("vpn.aboutUs.tos2")
                     Layout.alignment: grid.columns > 1 ? Qt.AlignRight : Qt.AlignHCenter
                     textAlignment: grid.columns > 1 ? Text.AlignRight : Text.AlignHCenter
-                    onClicked: VPNUrlOpener.openUrlLabel("termsOfService")
+                    onClicked: MZUrlOpener.openUrlLabel("termsOfService")
                 }
 
                 Rectangle {
@@ -149,41 +150,41 @@ VPNFlickable {
                     height: 4
                     radius: 2
                     Layout.alignment: Qt.AlignHCenter
-                    color: VPNTheme.theme.greyLink.defaultColor
+                    color: MZTheme.theme.greyLink.defaultColor
                     visible: parent.flow != Grid.TopToBottom
                     opacity: .8
                 }
 
-                VPNGreyLink {
+                MZGreyLink {
                     id: privacyNotice
 
                     // Privacy Notice - string defined in ViewAboutUs.qml
                     labelText: qsTrId("vpn.aboutUs.privacyNotice2")
-                    onClicked: VPNUrlOpener.openUrlLabel("privacyNotice")
+                    onClicked: MZUrlOpener.openUrlLabel("privacyNotice")
                     textAlignment: grid.columns > 1 ? Text.AlignLeft : Text.AlignHCenter
                     Layout.alignment: grid.columns > 1 ? Qt.AlignLeft : Qt.AlignHCenter
                 }
             }
 
-            VPNLinkButton {
+            MZLinkButton {
                 id: restorePurchase
                 visible: Qt.platform.os === "ios"
 
                 // Already a subscriber?
-                labelText: VPNI18n.RestorePurchaseRestorePurchaseButton
+                labelText: MZI18n.RestorePurchaseRestorePurchaseButton
                 Layout.alignment: Qt.AlignHCenter
                 onClicked: VPNPurchase.restore()
             }
 
-            VPNSignOut {
+            MZSignOut {
                 anchors.bottom: undefined
                 anchors.bottomMargin: undefined
                 anchors.horizontalCenter: undefined
                 Layout.alignment: Qt.AlignHCenter
-                Layout.preferredHeight: VPNTheme.theme.rowHeight
+                Layout.preferredHeight: MZTheme.theme.rowHeight
             }
 
-            VPNVerticalSpacer {
+            MZVerticalSpacer {
                 Layout.preferredHeight: 10
                 Layout.fillWidth: true
             }

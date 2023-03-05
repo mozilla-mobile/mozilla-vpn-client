@@ -6,6 +6,7 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
@@ -13,7 +14,7 @@ import components.forms 0.1
 
 // This is the second view in the Give Feedback flow
 
-VPNViewBase {
+MZViewBase {
     property var appRating
     property var feedbackCategory
 
@@ -24,17 +25,17 @@ VPNViewBase {
         id: col
 
         Layout.fillWidth: true
-        Layout.leftMargin: VPNTheme.theme.windowMargin * 1.5
-        Layout.rightMargin: VPNTheme.theme.windowMargin * 1.5
-        spacing: VPNTheme.theme.windowMargin
+        Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+        Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
+        spacing: MZTheme.theme.windowMargin
 
         ColumnLayout {
             Layout.alignment: Qt.AlignTop
             Layout.preferredWidth: parent.width
 
-            spacing: VPNTheme.theme.windowMargin * 1.5
+            spacing: MZTheme.theme.windowMargin * 1.5
 
-            VPNBoldLabel {
+            MZBoldLabel {
                 //% "We’re sorry to hear you’ve had a poor experience. Please let us know how we can improve."
                 property string lowRatingResponse: qsTrId("vpn.feedbackForm.lowRatingResponse")
 
@@ -45,20 +46,20 @@ VPNViewBase {
                 property string goodRatingResponse: qsTrId("vpn.feedbackForm.goodRatingResponse")
 
                 text: appRating < 3 ? lowRatingResponse : (appRating == 3 ? averageRatingResponse : goodRatingResponse)
-                lineHeight:VPNTheme.theme.windowMargin * 1.5
+                lineHeight:MZTheme.theme.windowMargin * 1.5
                 lineHeightMode: Text.FixedHeight
                 wrapMode: Text.WordWrap
                 verticalAlignment: Text.AlignVCenter
                 Layout.fillWidth: true
             }
 
-            VPNComboBox {
+            MZComboBox {
                 id: dropDown
-                placeholderText: VPNI18n.FeedbackFormChooseCategory
+                placeholderText: MZI18n.FeedbackFormChooseCategory
                 model: VPNFeedbackCategoryModel
             }
 
-            VPNTextArea {
+            MZTextArea {
                 id: textArea
                 //% "Enter feedback…"
                 placeholderText: qsTrId("vpn.feedbackForm.textAreaPlaceholder")
@@ -67,11 +68,11 @@ VPNViewBase {
 
         ColumnLayout {
             Layout.fillHeight: true
-            spacing: VPNTheme.theme.windowMargin * 1.5
+            spacing: MZTheme.theme.windowMargin * 1.5
 
-            VPNVerticalSpacer {
+            MZVerticalSpacer {
                 Layout.fillWidth: true
-                Layout.minimumHeight: VPNTheme.theme.windowMargin
+                Layout.minimumHeight: MZTheme.theme.windowMargin
                 Layout.fillHeight: !window.fullscreenRequired()
             }
 
@@ -79,33 +80,33 @@ VPNViewBase {
                 spacing: 0
                 Layout.fillWidth: true
 
-                VPNTextBlock {
-                    font.pixelSize: VPNTheme.theme.fontSize
+                MZTextBlock {
+                    font.pixelSize: MZTheme.theme.fontSize
                     horizontalAlignment: Text.AlignHCenter
                     //% "When you submit feedback, Mozilla VPN will collect technical and interaction data, including your IP address, to help us improve. This data won’t be associated with your Firefox account."
                     text: qsTrId("vpn.feedback.privacyDisclaimer")
                     width:parent.width
                 }
 
-                VPNLinkButton {
+                MZLinkButton {
                     //% "Mozilla VPN Privacy Notice"
                     labelText: qsTrId("vpn.feedbackForm.privacyNoticeLink")
                     Layout.alignment: Qt.AlignHCenter
-                    onClicked: VPNUrlOpener.openUrlLabel("privacyNotice")
+                    onClicked: MZUrlOpener.openUrlLabel("privacyNotice")
                     width: parent.width
                 }
             }
 
             ColumnLayout {
-                spacing: VPNTheme.theme.windowMargin
+                spacing: MZTheme.theme.windowMargin
 
-                VPNButton {
+                MZButton {
                      //% "Submit"
                     text: qsTrId("vpn.feedbackform.submit")
                     onClicked: sendFeedback(appRating, dropDown.currentValue, textArea.userEntry);
                     enabled: dropDown.currentValue != null
                     opacity: enabled ? 1 : .5
-                    Layout.preferredHeight: VPNTheme.theme.rowHeight
+                    Layout.preferredHeight: MZTheme.theme.rowHeight
                     Layout.fillWidth: true
                     width: undefined
                     height: undefined
@@ -115,13 +116,13 @@ VPNViewBase {
                         }
                     }
                 }
-                VPNLinkButton {
+                MZLinkButton {
                     //% "Skip"
                     labelText: qsTrId("vpn.feedbackForm.skip")
-                    Layout.preferredHeight: VPNTheme.theme.rowHeight
+                    Layout.preferredHeight: MZTheme.theme.rowHeight
                     Layout.alignment: Qt.AlignHCenter
                     onClicked: sendFeedback(appRating, 0, "");
-                    implicitHeight: VPNTheme.theme.rowHeight
+                    implicitHeight: MZTheme.theme.rowHeight
 
                 }
             }

@@ -5,10 +5,11 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
-VPNStackView {
+MZStackView {
     id: stackView
 
     Component.onCompleted: function() {
@@ -16,14 +17,14 @@ VPNStackView {
 
        stackView.push("qrc:/ui/sharedViews/ViewErrorFullScreen.qml", {
            // Problem confirming subscription...
-           headlineText: VPNI18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
+           headlineText: MZI18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
            // Sorry, we were unable to confirm your subscription.
            // Please try again or contact our support team for help.
-           errorMessage: VPNI18n.RestorePurchaseGenericPurchaseErrorRestorePurchaseGenericPurchaseErrorText,
+           errorMessage: MZI18n.RestorePurchaseGenericPurchaseErrorRestorePurchaseGenericPurchaseErrorText,
 
            // Try again (Error SubscriptionGenericError only happens on iOS, so ok to point to ScreenSubscriptionNeededIAP)
-           primaryButtonText: VPNI18n.GenericPurchaseErrorGenericPurchaseErrorButton,
+           primaryButtonText: MZI18n.GenericPurchaseErrorGenericPurchaseErrorButton,
            primaryButtonObjectName: "errorTryAgainButton",
            primaryButtonOnClick: () => { VPNNavigator.requestScreen(VPNNavigator.ScreenSubscriptionNeededIAP) },
            secondaryButtonIsSignOff: false,

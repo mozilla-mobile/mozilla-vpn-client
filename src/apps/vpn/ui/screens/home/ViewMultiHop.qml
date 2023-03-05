@@ -6,6 +6,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
@@ -25,7 +26,7 @@ StackView {
         }
     }
 
-    initialItem: VPNFlickable {
+    initialItem: MZFlickable {
 
         id: vpnFlickable
 
@@ -35,35 +36,35 @@ StackView {
         ColumnLayout {
             id: col
             anchors.top: parent.top
-            anchors.topMargin: VPNTheme.theme.windowMargin
+            anchors.topMargin: MZTheme.theme.windowMargin
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.leftMargin: VPNTheme.theme.windowMargin / 2
-            anchors.rightMargin: VPNTheme.theme.windowMargin / 2
-            spacing: VPNTheme.theme.vSpacing
+            anchors.leftMargin: MZTheme.theme.windowMargin / 2
+            anchors.rightMargin: MZTheme.theme.windowMargin / 2
+            spacing: MZTheme.theme.vSpacing
 
-            VPNCollapsibleCard {
-                title: VPNI18n.MultiHopFeatureMultiHopCardHeader
+            MZCollapsibleCard {
+                title: MZI18n.MultiHopFeatureMultiHopCardHeader
 
                 iconSrc: "qrc:/ui/resources/tip.svg"
-                contentItem: VPNTextBlock {
-                    text: VPNI18n.MultiHopFeatureMultiHopCardBody
+                contentItem: MZTextBlock {
+                    text: MZI18n.MultiHopFeatureMultiHopCardBody
                     textFormat: Text.StyledText
                     Layout.fillWidth: true
                 }
                 Layout.alignment: Qt.AlignHCenter
-                Layout.preferredWidth: parent.width - VPNTheme.theme.windowMargin
+                Layout.preferredWidth: parent.width - MZTheme.theme.windowMargin
             }
 
-            VPNRecentConnections {
+            MZRecentConnections {
                 Layout.fillWidth: true
                 showMultiHopRecentConnections: true
             }
 
-            VPNControllerNav {
+            MZControllerNav {
                 function handleClick() {
                     multiHopStackView.push(
-                        "qrc:/nebula/components/VPNServerList.qml",
+                        "qrc:/nebula/components/MZServerList.qml",
                         {
                             currentServer: entryLabel.serversList[0],
                             showRecentConnections: false
@@ -73,10 +74,10 @@ StackView {
                 }
 
                 objectName: "buttonSelectEntry"
-                titleText: VPNI18n.MultiHopFeatureMultiHopEntryLocationHeader
+                titleText: MZI18n.MultiHopFeatureMultiHopEntryLocationHeader
                 descriptionText: titleText
                 contentChildren: [
-                    VPNServerLabel {
+                    MZServerLabel {
                         id: entryLabel
 
                         serversList: [
@@ -94,9 +95,9 @@ StackView {
 
             ColumnLayout {
                 spacing: 8
-                VPNControllerNav {
+                MZControllerNav {
                     function handleClick() {
-                        multiHopStackView.push("qrc:/nebula/components/VPNServerList.qml",
+                        multiHopStackView.push("qrc:/nebula/components/MZServerList.qml",
                            {
                                 currentServer:  exitLabel.serversList[0],
                                 showRecentConnections: false
@@ -107,11 +108,11 @@ StackView {
 
                     objectName: "buttonSelectExit"
                     btnObjectName: "buttonSelectExit-btn"
-                    titleText: VPNI18n.MultiHopFeatureMultiHopExitLocationHeader
+                    titleText: MZI18n.MultiHopFeatureMultiHopExitLocationHeader
                     descriptionText: titleText
                     contentChildren: [
 
-                        VPNServerLabel {
+                        MZServerLabel {
                             id: exitLabel
                             serversList: [
 
@@ -129,16 +130,16 @@ StackView {
                     id: turnVPNOffAlert
                     spacing: 4
                     Layout.fillWidth: true
-                    Layout.preferredHeight: VPNTheme.theme.rowHeight
+                    Layout.preferredHeight: MZTheme.theme.rowHeight
 
                     Rectangle {
-                        color: VPNTheme.theme.transparent
-                        Layout.preferredHeight: VPNTheme.theme.vSpacing
-                        Layout.preferredWidth: VPNTheme.theme.vSpacing
+                        color: MZTheme.theme.transparent
+                        Layout.preferredHeight: MZTheme.theme.vSpacing
+                        Layout.preferredWidth: MZTheme.theme.vSpacing
                         Layout.leftMargin: 12
                         Layout.alignment: Qt.AlignTop
 
-                        VPNIcon {
+                        MZIcon {
                             id: warningIcon
                             source: "qrc:/ui/resources/connection-info-dark.svg"
                             sourceSize.height: 18
@@ -147,10 +148,10 @@ StackView {
                         }
                     }
 
-                    VPNTextBlock {
+                    MZTextBlock {
                         id: message
-                        text: VPNI18n.MultiHopFeatureMultiHopInfoText
-                        color: VPNTheme.colors.grey40
+                        text: MZI18n.MultiHopFeatureMultiHopInfoText
+                        color: MZTheme.colors.grey40
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignTop
                         Layout.topMargin: 4

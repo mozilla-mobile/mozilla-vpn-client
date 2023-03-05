@@ -28,7 +28,7 @@ Item {
         }
     }
 
-    VPNInAppAuthenticationErrorPopup {
+    MZInAppAuthenticationErrorPopup {
         id: authError
     }
 

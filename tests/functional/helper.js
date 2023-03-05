@@ -75,8 +75,8 @@ module.exports = {
       await this.waitForCondition(async () => {
         let title = await this.getQueryProperty(
             queries.screenHome.CONTROLLER_TITLE.visible(), 'text');
-        let unsettled =
-            await this.getVPNProperty('VPNConnectionHealth', 'unsettled');
+        let unsettled = await this.getMozillaProperty(
+            'Mozilla.VPN', 'VPNConnectionHealth', 'unsettled');
         return (title == 'VPN is on') && (unsettled == 'false');
       });
     }
@@ -220,9 +220,10 @@ module.exports = {
     await this.wait();
   },
 
-  async getVPNProperty(id, property) {
-    const json = await this._writeCommand(
-        `property ${encodeURIComponent(id)} ${encodeURIComponent(property)}`);
+  async getMozillaProperty(namespace, id, property) {
+    const json =
+        await this._writeCommand(`property ${encodeURIComponent(namespace)} ${
+            encodeURIComponent(id)} ${encodeURIComponent(property)}`);
     assert(
         json.type === 'property' && !('error' in json),
         `Command failed: ${json.error}`);
@@ -241,10 +242,10 @@ module.exports = {
     return json.value || '';
   },
 
-  async setVPNProperty(id, property, value) {
-    const json =
-        await this._writeCommand(`set_property ${encodeURIComponent(id)} ${
-            encodeURIComponent(property)} ${encodeURIComponent(value)}`);
+  async setMozillaProperty(namespace, id, property, value) {
+    const json = await this._writeCommand(`set_property ${
+        encodeURIComponent(namespace)} ${encodeURIComponent(id)} ${
+        encodeURIComponent(property)} ${encodeURIComponent(value)}`);
     assert(
         json.type === 'set_property' && !('error' in json),
         `Command failed: ${json.error}`);
@@ -262,15 +263,15 @@ module.exports = {
         `Command failed: ${json.error}`);
   },
 
-  async waitForVPNProperty(id, property, value) {
+  async waitForMozillaProperty(namespace, id, property, value) {
     try {
       return this.waitForCondition(async () => {
-        const real = await this.getVPNProperty(id, property);
+        const real = await this.getMozillaProperty(namespace, id, property);
         return real === value;
       });
     } catch (e) {
-      const real = await this.getVPNProperty(id, property);
-      throw new Error(`Timeout for waitForVPNProperty - property: ${
+      const real = await this.getMozillaProperty(namespace, id, property);
+      throw new Error(`Timeout for waitForMozillaProperty - property: ${
           property} - value: ${real} - expected: ${value}`);
     }
   },
@@ -284,7 +285,8 @@ module.exports = {
   },
 
   async getLastUrl() {
-    return await this.getVPNProperty('VPNUrlOpener', 'lastUrl');
+    return await this.getMozillaProperty(
+        'Mozilla.Shared', 'MZUrlOpener', 'lastUrl');
   },
 
   async waitForCondition(condition, waitTimeInMilliSecs = 500) {
@@ -307,7 +309,8 @@ module.exports = {
 
     // This method must be called when the client is on the "Get Started"view.
     await this.waitForInitialView();
-    await this.setVPNProperty('VPNUrlOpener', 'lastUrl', '');
+    await this.setMozillaProperty(
+        'Mozilla.Shared', 'MZUrlOpener', 'lastUrl', '');
 
     // Click on get started and wait for authenticating view
     await this.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
@@ -347,7 +350,8 @@ module.exports = {
     }
 
     // Wait for VPN client screen to move from spinning wheel to next screen
-    await this.waitForVPNProperty('VPN', 'userState', 'UserAuthenticated');
+    await this.waitForMozillaProperty(
+        'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
     await this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
 
     if (clickOnPostAuthenticate) {
@@ -395,7 +399,8 @@ module.exports = {
             .enabled());
 
     // Wait for VPN client screen to move from spinning wheel to next screen
-    await this.waitForVPNProperty('VPN', 'userState', 'UserAuthenticated');
+    await this.waitForMozillaProperty(
+        'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
     await this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
 
     if (clickOnPostAuthenticate) {
@@ -550,7 +555,8 @@ module.exports = {
   },
 
   async resetAddons(addonPath) {
-    await this.waitForVPNProperty('VPNAddonManager', 'loadCompleted', 'true');
+    await this.waitForMozillaProperty(
+        'Mozilla.VPN', 'VPNAddonManager', 'loadCompleted', 'true');
 
     _lastAddonLoadingCompleted = false;
 
@@ -567,7 +573,8 @@ module.exports = {
   },
 
   async fetchAddons(addonPath) {
-    await this.waitForVPNProperty('VPNAddonManager', 'loadCompleted', 'true');
+    await this.waitForMozillaProperty(
+        'Mozilla.VPN', 'VPNAddonManager', 'loadCompleted', 'true');
 
     _lastAddonLoadingCompleted = false;
 
