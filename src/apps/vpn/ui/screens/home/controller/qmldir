@@ -1,4 +1,5 @@
 ControllerView 0.1 ControllerView.qml
+ConnectionCheckmarkList 0.1 connectionInfo/ConnectionCheckmarkList.qml
 ConnectionInfoContent 0.1 connectionInfo/ConnectionInfoContent.qml
 ConnectionInfoError 0.1 connectionInfo/ConnectionInfoError.qml
 ConnectionInfoItem 0.1 connectionInfo/ConnectionInfoItem.qml

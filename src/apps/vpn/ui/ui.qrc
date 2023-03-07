@@ -34,6 +34,7 @@
         <file>screens/getHelp/giveFeedback/ViewGiveFeedbackForm.qml</file>
         <file>screens/getHelp/giveFeedback/ViewGiveFeedbackReview.qml</file>
         <file>screens/getHelp/giveFeedback/ViewGiveFeedbackThankYou.qml</file>
+        <file>screens/home/controller/connectionInfo/ConnectionCheckmarkList.qml</file>
         <file>screens/home/controller/connectionInfo/ConnectionInfoContent.qml</file>
         <file>screens/home/controller/connectionInfo/ConnectionInfoError.qml</file>
         <file>screens/home/controller/connectionInfo/ConnectionInfoItem.qml</file>

@@ -14,7 +14,6 @@ MZCheckBox 0.1 MZCheckBox.qml
 MZCheckBoxAlert 0.1 MZCheckBoxAlert.qml
 MZCheckBoxRow 0.1 MZCheckBoxRow.qml
 VPNCheckmark 0.1 VPNCheckmark.qml
-MZCheckmarkList 0.1 MZCheckmarkList.qml
 MZChevron 0.1 MZChevron.qml
 MZClickableRow 0.1 MZClickableRow.qml
 MZCollapsibleCard 0.1 MZCollapsibleCard.qml
@@ -41,7 +40,6 @@ MZLightLabel 0.1 MZLightLabel.qml
 MZLinkButton 0.1 MZLinkButton.qml
 MZList 0.1 MZList.qml
 MZLoader 0.1 MZLoader.qml
-MZLogoLoader 0.1 MZLogoLoader.qml
 MZLogsButton 0.1 MZLogsButton.qml
 MZLottieAnimation 0.1 MZLottieAnimation.qml
 MZMenu 0.1 MZMenu.qml

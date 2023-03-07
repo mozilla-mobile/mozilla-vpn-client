@@ -26,7 +26,6 @@
         <file>components/MZCheckBoxAlert.qml</file>
         <file>components/MZCheckBox.qml</file>
         <file>components/MZCheckBoxRow.qml</file>
-        <file>components/MZCheckmarkList.qml</file>
         <file>components/MZChevron.qml</file>
         <file>components/MZClickableRow.qml</file>
         <file>components/MZCollapsibleCard.qml</file>

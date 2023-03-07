@@ -67,7 +67,7 @@ MZFlickable {
                     }
                 }
 
-                MZCheckmarkList {
+                ConnectionCheckmarkList {
                     id: checkmarkList
 
                     listHeader: VPNConnectionBenchmark.speed === VPNConnectionBenchmark.SpeedSlow
