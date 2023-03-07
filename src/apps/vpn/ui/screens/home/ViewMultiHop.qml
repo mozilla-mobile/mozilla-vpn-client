@@ -61,7 +61,7 @@ StackView {
                 showMultiHopRecentConnections: true
             }
 
-            MZControllerNav {
+            ControllerNav {
                 function handleClick() {
                     multiHopStackView.push(
                         "qrc:/nebula/components/MZServerList.qml",
@@ -95,7 +95,7 @@ StackView {
 
             ColumnLayout {
                 spacing: 8
-                MZControllerNav {
+                ControllerNav {
                     function handleClick() {
                         multiHopStackView.push("qrc:/nebula/components/MZServerList.qml",
                            {

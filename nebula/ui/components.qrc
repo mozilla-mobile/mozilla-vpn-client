@@ -26,17 +26,9 @@
         <file>components/MZCheckBoxAlert.qml</file>
         <file>components/MZCheckBox.qml</file>
         <file>components/MZCheckBoxRow.qml</file>
-        <file>components/MZCheckmarkList.qml</file>
         <file>components/MZChevron.qml</file>
         <file>components/MZClickableRow.qml</file>
         <file>components/MZCollapsibleCard.qml</file>
-        <file>components/MZConnectionInfoError.qml</file>
-        <file>components/MZConnectionInfoScreen.qml</file>
-        <file>components/MZConnectionInfoContent.qml</file>
-        <file>components/MZConnectionInfoItem.qml</file>
-        <file>components/MZConnectionStability.qml</file>
-        <file>components/MZControllerNav.qml</file>
-        <file>components/MZControllerView.qml</file>
         <file>components/MZDropShadowWithStates.qml</file>
         <file>components/MZExternalLinkListItem.qml</file>
         <file>components/MZFlickable.qml</file>
@@ -53,15 +45,11 @@
         <file>components/MZIconButton.qml</file>
         <file>components/MZIcon.qml</file>
         <file>components/MZInterLabel.qml</file>
-        <file>components/MZIPAddress.qml</file>
-        <file>components/MZIPInfoPanel.qml</file>
         <file>components/MZLightLabel.qml</file>
         <file>components/MZLinkButton.qml</file>
         <file>components/MZList.qml</file>
         <file>components/MZLoader.qml</file>
-        <file>components/MZLogoLoader.qml</file>
         <file>components/MZLogsButton.qml</file>
-        <file>components/MZMainImage.qml</file>
         <file>components/MZMenu.qml</file>
         <file>components/MZMetropolisLabel.qml</file>
         <file>components/MZMobileStatusBarModifier.qml</file>

@@ -12,6 +12,7 @@ import components 0.1
 import compat 0.1
 import telemetry 0.30
 
+
 MZFlickable {
     id: vpnFlickable
 
@@ -72,12 +73,12 @@ MZFlickable {
             }
         }
 
-        MZControllerView {
+        ControllerView {
             id: box
             z: 1
         }
 
-        MZControllerNav {
+        ControllerNav {
             function handleClick() {
                 if (disableRowWhen) {
                     return

@@ -7,6 +7,9 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
+import components 0.1
+import compat 0.1
+import telemetry 0.30
 
 Item {
     id: box
@@ -433,7 +436,7 @@ Item {
             Qt.application.state === Qt.ApplicationInactive)
     }
 
-    MZMainImage {
+    ControllerImage {
         id: logo
 
         anchors.horizontalCenter: parent.horizontalCenter
@@ -581,7 +584,7 @@ Item {
           }
         }
 
-        MZConnectionStability {
+        ConnectionStability {
             id: connectionStability
             Accessible.ignored: connectionInfoScreenVisible || !visible
             width: parent.width
@@ -605,7 +608,7 @@ Item {
         Accessible.ignored: connectionInfoScreenVisible || ipInfoPanel.isOpen
     }
 
-    MZIPInfoPanel {
+    IPInfoPanel {
         id: ipInfoPanel
         objectName: "ipInfoPanel"
 
@@ -681,7 +684,7 @@ Item {
         }
     }
 
-    MZConnectionInfoScreen {
+    ConnectionInfoScreen {
         id: connectionInfoScreen
         isOpen: box.connectionInfoScreenVisible
 

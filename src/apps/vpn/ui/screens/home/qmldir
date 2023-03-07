@@ -1,0 +1,5 @@
+ViewHome 0.1 ViewHome.qml
+ConnectionStability 0.1 controller/ConnectionStability.qml
+ControllerImage 0.1 controller/ControllerImage.qml
+ControllerNav 0.1 controller/ControllerNav.qml
+ControllerView 0.1 controller/ControllerView.qml

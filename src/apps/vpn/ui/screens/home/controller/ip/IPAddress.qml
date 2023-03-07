@@ -6,6 +6,8 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
+import Mozilla.VPN 1.0
+import components 0.1
 
 RowLayout {
     property real maxPaintedTextWidth: box.width - ipVersion.paintedWidth - MZTheme.theme.windowMargin
