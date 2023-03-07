@@ -44,7 +44,6 @@
         <file>components/MZFocusOutline.qml</file>
         <file>components/MZFooterLink.qml</file>
         <file>components/MZFooterMargin.qml</file>
-        <file>components/MZGraphLegendMarker.qml</file>
         <file>components/MZGreyLink.qml</file>
         <file>components/MZGuideCard.qml</file>
         <file>components/MZHeaderLink.qml</file>

@@ -33,7 +33,6 @@ MZFocusBorder 0.1 MZFocusBorder.qml
 MZFocusOutline 0.1 MZFocusOutline.qml
 MZFooterMargin 0.1 MZFooterMargin.qml
 MZFooterLink 0.1 MZFooterLink.qml
-MZGraphLegendMarker 0.1 MZGraphLegendMarker.qml
 MZGreyLink 0.1 MZGreyLink.qml
 MZGuideCard 0.1 MZGuideCard.qml
 MZHeaderLink 0.1 MZHeaderLink.qml
