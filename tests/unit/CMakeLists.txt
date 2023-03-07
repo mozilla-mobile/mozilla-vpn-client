@@ -177,7 +177,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.h
     ${MZ_SOURCE_DIR}/apps/vpn/serverlatency.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/serverlatency.h
-    ${MZ_SOURCE_DIR}/apps/vpn/sentry/sentryadapter.h
     ${MZ_SOURCE_DIR}/apps/vpn/statusicon.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/statusicon.h
     ${MZ_SOURCE_DIR}/apps/vpn/systemtraynotificationhandler.h
@@ -197,8 +196,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/release/taskrelease.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/servers/taskservers.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/servers/taskservers.h
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/sentry/tasksentry.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/sentry/tasksentry.h
     ${MZ_SOURCE_DIR}/apps/vpn/tutorial/tutorial.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/tutorial/tutorial.h
     ${MZ_SOURCE_DIR}/apps/vpn/tutorial/tutorialstep.cpp
@@ -306,7 +303,6 @@ target_sources(unit_tests PRIVATE
     mocinspectorhandler.cpp
     mocmozillavpn.cpp
     mocsystemtraynotificationhandler.cpp
-    mocsentryadapter.cpp
     helper.h
     testaddon.cpp
     testaddon.h
@@ -344,8 +340,6 @@ target_sources(unit_tests PRIVATE
     testserverlatency.h
     teststatusicon.cpp
     teststatusicon.h
-    testtasksentry.cpp
-    testtasksentry.h
     websocket/testexponentialbackoffstrategy.cpp
     websocket/testexponentialbackoffstrategy.h
     websocket/testpushmessage.cpp

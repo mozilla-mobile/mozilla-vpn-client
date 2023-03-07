@@ -156,3 +156,4 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
 endif()
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/${MZ_PLATFORM_NAME}/sources.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/shared/cmake/sentry.cmake)

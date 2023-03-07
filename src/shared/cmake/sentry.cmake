@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-# This CMAKE File will Integrate Sentry into MVPN
+# This CMAKE File will Integrate Sentry into MZ
 
 
 # Defines which OS builds can include sentry. Check src/cmake Lists for all values of MZ_PLATFORM_NAME
@@ -32,48 +32,48 @@ endif()
 
 if( ${_SUPPORTED} GREATER -1 )
     message("Building sentry for ${CMAKE_SYSTEM_NAME}")
-    target_compile_definitions(mozillavpn PRIVATE SENTRY_ENVELOPE_ENDPOINT="${SENTRY_ENVELOPE_ENDPOINT}")
-    target_compile_definitions(mozillavpn PRIVATE SENTRY_DSN="${SENTRY_DSN}")
-    target_compile_definitions(mozillavpn PRIVATE SENTRY_ENABLED)
+    target_compile_definitions(shared-sources INTERFACE SENTRY_ENVELOPE_ENDPOINT="${SENTRY_ENVELOPE_ENDPOINT}")
+    target_compile_definitions(shared-sources INTERFACE SENTRY_DSN="${SENTRY_DSN}")
+    target_compile_definitions(shared-sources INTERFACE SENTRY_ENABLED)
     # Sentry support is given
-    target_sources(mozillavpn PRIVATE
-        apps/vpn/sentry/sentryadapter.cpp
-        apps/vpn/sentry/sentryadapter.h     
-        apps/vpn/tasks/sentry/tasksentry.cpp
-        apps/vpn/tasks/sentry/tasksentry.h
+    target_sources(shared-sources INTERFACE
+        shared/sentry/sentryadapter.cpp
+        shared/sentry/sentryadapter.h
+        shared/tasks/sentry/tasksentry.cpp
+        shared/tasks/sentry/tasksentry.h
     )
 
     # Configure Linking and Compile
     if(APPLE)
         include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
         # Let sentry.h know we are using a static build
-        target_compile_definitions(mozillavpn PRIVATE SENTRY_BUILD_STATIC)
-        # Let mozilla-vpn know we need to provide the upload client
-        target_compile_definitions(mozillavpn PRIVATE SENTRY_NONE_TRANSPORT)
+        target_compile_definitions(shared-sources INTERFACE SENTRY_BUILD_STATIC)
+        # Let's the app know we need to provide the upload client
+        target_compile_definitions(shared-sources INTERFACE SENTRY_NONE_TRANSPORT)
         # Compile Static for apple and link to libsentry.a
-        target_link_libraries(mozillavpn PUBLIC libsentry.a)
-        target_link_libraries(mozillavpn PUBLIC breakpad_client.a)
+        target_link_libraries(shared-sources INTERFACE libsentry.a)
+        target_link_libraries(shared-sources INTERFACE breakpad_client.a)
         # We are using breakpad as a backend - in process stackwalking is never the best option ... however!
         # this is super easy to link against and we do not need another binary shipped with the client.
         SET(SENTRY_ARGS -DSENTRY_BACKEND=breakpad -DSENTRY_BUILD_SHARED_LIBS=false -DSENTRY_TRANSPORT=none -DSENTRY_BUILD_TESTS=off -DSENTRY_BUILD_EXAMPLES=off)
     endif()
     if(WIN32)
         # Let sentry.h know we are using a static build
-        target_compile_definitions(mozillavpn PRIVATE SENTRY_BUILD_STATIC)
+        target_compile_definitions(shared-sources INTERFACE SENTRY_BUILD_STATIC)
         # Link against static sentry + breakpad + the stack unwind utils
-        target_link_libraries(mozillavpn PUBLIC sentry.lib)
-        target_link_libraries(mozillavpn PUBLIC breakpad_client.lib)
-        target_link_libraries(mozillavpn PUBLIC dbghelp.lib)
+        target_link_libraries(shared-sources INTERFACE sentry.lib)
+        target_link_libraries(shared-sources INTERFACE breakpad_client.lib)
+        target_link_libraries(shared-sources INTERFACE dbghelp.lib)
         # Windows will use the winhttp transport btw
         SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=false -DSENTRY_BACKEND=breakpad -DCMAKE_BUILD_TYPE=Release)
     endif()
 
     if(ANDROID)
-        # Let mozilla-vpn know we need to provide the upload client
-        target_compile_definitions(mozillavpn PRIVATE SENTRY_NONE_TRANSPORT)
+        # Let's the app know we need to provide the upload client
+        target_compile_definitions(shared-sources INTERFACE SENTRY_NONE_TRANSPORT)
 
-        target_link_libraries(mozillavpn PUBLIC libsentry.a)
-        target_link_libraries(mozillavpn PUBLIC libunwindstack.a)
+        target_link_libraries(shared-sources INTERFACE libsentry.a)
+        target_link_libraries(shared-sources INTERFACE libunwindstack.a)
         # We can only use inproc as crash backend.
         SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=false
                         -DANDROID_PLATFORM=21
@@ -87,15 +87,15 @@ if( ${_SUPPORTED} GREATER -1 )
 
     include(ExternalProject)
     ExternalProject_Add(sentry
-        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}../../3rdparty/sentry
+        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}../3rdparty/sentry
         GIT_REPOSITORY https://github.com/getsentry/sentry-native/
         GIT_TAG 0.5.0
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} ${SENTRY_ARGS}
     )
 
-    target_include_directories(mozillavpn PUBLIC ${EXTERNAL_INSTALL_LOCATION}/include)
-    target_link_directories( mozillavpn PUBLIC ${EXTERNAL_INSTALL_LOCATION}/lib)
-    add_dependencies(mozillavpn sentry)
+    target_include_directories(shared-sources INTERFACE ${EXTERNAL_INSTALL_LOCATION}/include)
+    target_link_directories( shared-sources INTERFACE ${EXTERNAL_INSTALL_LOCATION}/lib)
+    add_dependencies(shared-sources sentry)
 else()
     # Sentry is not supported on this Plattform.
     message("Sentry supported OS -> ${SENTRY_SUPPORTED_OS}")

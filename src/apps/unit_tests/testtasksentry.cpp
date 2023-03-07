@@ -6,8 +6,8 @@
 
 #include <QTextStream>
 
-#include "../../src/apps/vpn/tasks/sentry/tasksentry.h"
 #include "helper.h"
+#include "tasks/sentry/tasksentry.h"
 
 void TestTaskSentry::testParse_data() {
   QTest::addColumn<QByteArray>("input");

@@ -7,13 +7,13 @@
 #include <sentry.h>
 
 #include <QDir>
+#include <QStandardPaths>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
-#include "mozillavpn.h"
 #include "settingsholder.h"
 #include "tasks/sentry/tasksentry.h"
 #include "taskscheduler.h"
@@ -37,26 +37,25 @@ void SentryAdapter::init() {
   if (!Feature::get(Feature::Feature_sentry)->isSupported()) {
     return;
   }
-  if (QString(AppConstants::SENTRY_DSN_ENDPOINT).isEmpty() ||
-      QString(AppConstants::SENTRY_ENVELOPE_INGESTION).isEmpty()) {
+  if (QString(Constants::SENTRY_DSN_ENDPOINT).isEmpty() ||
+      QString(Constants::SENTRY_ENVELOPE_INGESTION).isEmpty()) {
     logger.error() << "Sentry failed to init, no sentry config present";
     return;
   }
 
-  auto vpn = MozillaVPN::instance();
   auto log = LogHandler::instance();
 
   QDir dataDir(
       QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation));
   QString sentryFolder = dataDir.absoluteFilePath("sentry");
 
-  connect(vpn, &MozillaVPN::aboutToQuit, this,
+  connect(qApp, &QCoreApplication::aboutToQuit, this,
           &SentryAdapter::onBeforeShutdown);
   connect(log, &LogHandler::logEntryAdded, this,
           &SentryAdapter::onLoglineAdded);
 
   sentry_options_t* options = sentry_options_new();
-  sentry_options_set_dsn(options, AppConstants::SENTRY_DSN_ENDPOINT);
+  sentry_options_set_dsn(options, Constants::SENTRY_DSN_ENDPOINT);
   sentry_options_set_environment(
       options, Constants::inProduction() ? "production" : "stage");
   sentry_options_set_release(
