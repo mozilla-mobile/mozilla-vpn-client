@@ -6,6 +6,7 @@ import QtQuick 2.5
 
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
+import components 0.1
 
 Rectangle {
     id: logo

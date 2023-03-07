@@ -44,7 +44,6 @@ MZLoader 0.1 MZLoader.qml
 MZLogoLoader 0.1 MZLogoLoader.qml
 MZLogsButton 0.1 MZLogsButton.qml
 MZLottieAnimation 0.1 MZLottieAnimation.qml
-MZMainImage 0.1 MZMainImage.qml
 MZMenu 0.1 MZMenu.qml
 MZMetropolisLabel 0.1 MZMetropolisLabel.qml
 MZMobileStatusBarModifier 0.1 MZMobileStatusBarModifier.qml

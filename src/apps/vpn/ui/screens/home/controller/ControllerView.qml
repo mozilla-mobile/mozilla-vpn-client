@@ -436,7 +436,7 @@ Item {
             Qt.application.state === Qt.ApplicationInactive)
     }
 
-    MZMainImage {
+    ControllerImage {
         id: logo
 
         anchors.horizontalCenter: parent.horizontalCenter
