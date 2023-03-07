@@ -11,6 +11,7 @@
 #include "addons/conditionwatchers/addonconditionwatcherjavascript.h"
 #include "feature.h"
 #include "helper.h"
+#include "localizer.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "urlopener.h"
@@ -18,6 +19,7 @@
 void TestAddonApi::controller() {
   MozillaVPN vpn;
   SettingsHolder settingsHolder;
+  Localizer l;
 
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
@@ -42,6 +44,7 @@ void TestAddonApi::controller() {
 void TestAddonApi::env() {
   MozillaVPN vpn;
   SettingsHolder settingsHolder;
+  Localizer l;
 
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
@@ -66,6 +69,7 @@ void TestAddonApi::env() {
 void TestAddonApi::featurelist() {
   MozillaVPN vpn;
   SettingsHolder settingsHolder;
+  Localizer l;
 
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
@@ -102,6 +106,7 @@ void TestAddonApi::featurelist() {
 void TestAddonApi::navigator() {
   MozillaVPN vpn;
   SettingsHolder settingsHolder;
+  Localizer l;
 
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
@@ -126,6 +131,7 @@ void TestAddonApi::navigator() {
 void TestAddonApi::settings() {
   MozillaVPN vpn;
   SettingsHolder settingsHolder;
+  Localizer l;
 
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
@@ -154,6 +160,7 @@ void TestAddonApi::settings() {
 void TestAddonApi::subscriptionData() {
   MozillaVPN vpn;
   SettingsHolder settingsHolder;
+  Localizer l;
 
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
@@ -178,6 +185,7 @@ void TestAddonApi::subscriptionData() {
 void TestAddonApi::urlopener() {
   MozillaVPN vpn;
   SettingsHolder settingsHolder;
+  Localizer l;
 
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);

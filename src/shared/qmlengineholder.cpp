@@ -8,7 +8,22 @@
 #include <QQmlApplicationEngine>
 #include <QWindow>
 
+#include "authenticationinapp/authenticationinapp.h"
+#include "errorhandler.h"
+#include "glean/generated/metrics.h"
+#include "glean/generated/pings.h"
+#include "glean/mzglean.h"
+#include "gleandeprecated.h"
 #include "leakdetector.h"
+#include "localizer.h"
+#include "models/licensemodel.h"
+#include "settingsholder.h"
+#include "telemetry/gleansample.h"
+#include "urlopener.h"
+
+#ifdef SENTRY_ENABLED
+#  include "sentry/sentryadapter.h"
+#endif
 
 namespace {
 QmlEngineHolder* s_instance = nullptr;
@@ -20,6 +35,31 @@ QmlEngineHolder::QmlEngineHolder(QQmlEngine* engine) : m_engine(engine) {
   Q_ASSERT(engine);
   Q_ASSERT(!s_instance);
   s_instance = this;
+
+  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "GleanPings",
+                               __DONOTUSE__GleanPings::instance());
+  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "Glean",
+                               __DONOTUSE__GleanMetrics::instance());
+  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZAuthInApp",
+                               AuthenticationInApp::instance());
+#ifdef SENTRY_ENABLED
+  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZCrashReporter",
+                               SentryAdapter::instance());
+#endif
+  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZErrorHandler",
+                               ErrorHandler::instance());
+  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZGleanDeprecated",
+                               GleanDeprecated::instance());
+  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZLicenseModel",
+                               LicenseModel::instance());
+  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZLocalizer",
+                               Localizer::instance());
+  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZLog",
+                               LogHandler::instance());
+  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZSettings",
+                               SettingsHolder::instance());
+  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZUrlOpener",
+                               UrlOpener::instance());
 }
 
 QmlEngineHolder::~QmlEngineHolder() {
