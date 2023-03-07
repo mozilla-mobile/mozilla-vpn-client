@@ -121,7 +121,7 @@ Rectangle {
         }
     }
 
-    MZConnectionInfoContent {
+    ConnectionInfoContent {
         id: connectionInfoContent
 
         opacity: visible && root.state !== "closing" ? 1 : 0
@@ -136,7 +136,7 @@ Rectangle {
         }
     }
 
-    MZConnectionInfoError {
+    ConnectionInfoError {
         id: connectionInfoError
         objectName: "connectionInfoError"
 

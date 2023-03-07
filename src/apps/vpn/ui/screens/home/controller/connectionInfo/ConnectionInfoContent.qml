@@ -93,7 +93,7 @@ MZFlickable {
                     Layout.rightMargin: MZTheme.theme.windowMargin
 
                     RowLayout {
-                        MZConnectionInfoItem {
+                        ConnectionInfoItem {
                             id: entryServerLabel
                             title: serverLocations.isMultipHop
                                 ? VPNCurrentServer.localizedEntryCityName
@@ -121,7 +121,7 @@ MZFlickable {
                             Layout.rightMargin: MZTheme.theme.listSpacing
                         }
 
-                        MZConnectionInfoItem {
+                        ConnectionInfoItem {
                             title: serverLocations.isMultipHop
                             ? VPNCurrentServer.localizedExitCityName
                             : VPNCurrentServer.localizedExitCountryName;
@@ -142,7 +142,7 @@ MZFlickable {
                         Layout.fillWidth: true
                     }
 
-                    MZConnectionInfoItem {
+                    ConnectionInfoItem {
                         title: MZI18n.ConnectionInfoLabelPing
                         subtitle: VPNConnectionBenchmark.pingLatency + " " + MZI18n.ConnectionInfoUnitPing
                         iconPath: "qrc:/nebula/resources/connection-green.svg"
@@ -155,7 +155,7 @@ MZFlickable {
                         Layout.fillWidth: true
                     }
 
-                    MZConnectionInfoItem {
+                    ConnectionInfoItem {
                         //% "Download"
                         title: qsTrId("vpn.connectionInfo.download")
                         subtitle: root.getConnectionLabel(VPNConnectionBenchmark.downloadBps)
@@ -171,7 +171,7 @@ MZFlickable {
                         Layout.fillWidth: true
                     }
 
-                    MZConnectionInfoItem {
+                    ConnectionInfoItem {
                         title: MZI18n.ConnectionInfoLabelUpload
                         subtitle: root.getConnectionLabel(VPNConnectionBenchmark.uploadBps)
                         iconPath: "qrc:/nebula/resources/upload.svg"

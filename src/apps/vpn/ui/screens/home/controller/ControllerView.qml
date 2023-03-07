@@ -584,7 +584,7 @@ Item {
           }
         }
 
-        MZConnectionStability {
+        ConnectionStability {
             id: connectionStability
             Accessible.ignored: connectionInfoScreenVisible || !visible
             width: parent.width
@@ -684,7 +684,7 @@ Item {
         }
     }
 
-    MZConnectionInfoScreen {
+    ConnectionInfoScreen {
         id: connectionInfoScreen
         isOpen: box.connectionInfoScreenVisible
 
