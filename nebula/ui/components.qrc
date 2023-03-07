@@ -30,13 +30,6 @@
         <file>components/MZChevron.qml</file>
         <file>components/MZClickableRow.qml</file>
         <file>components/MZCollapsibleCard.qml</file>
-        <file>components/MZConnectionInfoError.qml</file>
-        <file>components/MZConnectionInfoScreen.qml</file>
-        <file>components/MZConnectionInfoContent.qml</file>
-        <file>components/MZConnectionInfoItem.qml</file>
-        <file>components/MZConnectionStability.qml</file>
-        <file>components/MZControllerNav.qml</file>
-        <file>components/MZControllerView.qml</file>
         <file>components/MZDropShadowWithStates.qml</file>
         <file>components/MZExternalLinkListItem.qml</file>
         <file>components/MZFlickable.qml</file>

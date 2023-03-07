@@ -34,6 +34,15 @@
         <file>screens/getHelp/giveFeedback/ViewGiveFeedbackForm.qml</file>
         <file>screens/getHelp/giveFeedback/ViewGiveFeedbackReview.qml</file>
         <file>screens/getHelp/giveFeedback/ViewGiveFeedbackThankYou.qml</file>
+        <file>screens/home/controller/connectionInfo/MZConnectionInfoContent.qml</file>
+        <file>screens/home/controller/connectionInfo/MZConnectionInfoError.qml</file>
+        <file>screens/home/controller/connectionInfo/MZConnectionInfoItem.qml</file>
+        <file>screens/home/controller/connectionInfo/MZConnectionInfoScreen.qml</file>
+        <file>screens/home/controller/MZConnectionStability.qml</file>
+        <file>screens/home/controller/MZControllerNav.qml</file>
+        <file>screens/home/controller/MZControllerView.qml</file>
+        <file>screens/home/controller/qmldir</file>
+        <file>screens/home/qmldir</file>
         <file>screens/home/ViewHome.qml</file>
         <file>screens/home/ViewMultiHop.qml</file>
         <file>screens/home/ViewServers.qml</file>

@@ -1,0 +1,4 @@
+ViewHome 0.1 ViewHome.qml
+MZConnectionStability 0.1 controller/MZConnectionStability.qml
+MZControllerNav 0.1 controller/MZControllerNav.qml
+MZControllerView 0.1 controller/MZControllerView.qml
