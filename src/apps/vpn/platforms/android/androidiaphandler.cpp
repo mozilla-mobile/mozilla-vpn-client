@@ -4,7 +4,6 @@
 
 #include "androidiaphandler.h"
 
-#include <QCoreApplication>
 #include <QJniEnvironment>
 #include <QJniObject>
 #include <QJsonArray>
@@ -127,6 +126,7 @@ void AndroidIAPHandler::nativeStartSubscription(
 void AndroidIAPHandler::nativeRestoreSubscription() {
   // Not available on Android
   logger.error() << "Restore not possible on Android!!!";
+  emit subscriptionFailed();
 }
 
 void AndroidIAPHandler::launchPlayStore() {

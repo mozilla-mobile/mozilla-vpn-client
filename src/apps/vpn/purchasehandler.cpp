@@ -5,14 +5,7 @@
 #include "purchasehandler.h"
 
 #include <QCoreApplication>
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonValue>
-#include <QScopeGuard>
 
-#include "feature.h"
-#include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 
