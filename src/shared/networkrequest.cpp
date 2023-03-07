@@ -162,7 +162,7 @@ void NetworkRequest::replyFinished() {
     return;
   }
 
-#if QT_VERSION >= 0x060000 && QT_VERSION < 0x060400
+#if QT_VERSION < 0x060400
   if (m_reply->error() == QNetworkReply::HostNotFoundError && isRedirect()) {
     QUrl brokenUrl = m_reply->url();
 
@@ -254,7 +254,7 @@ void NetworkRequest::handleHeaderReceived() {
 }
 
 void NetworkRequest::handleRedirect(const QUrl& redirectUrl) {
-#if QT_VERSION >= 0x060000 && QT_VERSION < 0x060400
+#if QT_VERSION < 0x060400
   if (redirectUrl.host().isEmpty()) {
 #  ifdef MZ_DEBUG
     // See https://bugreports.qt.io/browse/QTBUG-100651

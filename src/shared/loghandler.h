@@ -18,12 +18,6 @@ class QTextStream;
 class LogHandler final : public QObject {
   Q_OBJECT
 
-#if QT_VERSION >= 0x060000
-  typedef QMutexLocker<QMutex> MutexLocker;
-#else
-  typedef QMutexLocker MutexLocker;
-#endif
-
  public:
   struct Log {
     Log() = default;
@@ -80,17 +74,17 @@ class LogHandler final : public QObject {
   void logEntryAdded(const QByteArray& log);
 
  private:
-  explicit LogHandler(const MutexLocker& proofOfLock);
+  explicit LogHandler(const QMutexLocker<QMutex>& proofOfLock);
 
-  static LogHandler* maybeCreate(const MutexLocker& proofOfLock);
+  static LogHandler* maybeCreate(const QMutexLocker<QMutex>& proofOfLock);
 
-  void addLog(const Log& log, const MutexLocker& proofOfLock);
+  void addLog(const Log& log, const QMutexLocker<QMutex>& proofOfLock);
 
-  void openLogFile(const MutexLocker& proofOfLock);
+  void openLogFile(const QMutexLocker<QMutex>& proofOfLock);
 
-  void closeLogFile(const MutexLocker& proofOfLock);
+  void closeLogFile(const QMutexLocker<QMutex>& proofOfLock);
 
-  static void cleanupLogFile(const MutexLocker& proofOfLock);
+  static void cleanupLogFile(const QMutexLocker<QMutex>& proofOfLock);
 
   bool m_stderrEnabled = false;
 
