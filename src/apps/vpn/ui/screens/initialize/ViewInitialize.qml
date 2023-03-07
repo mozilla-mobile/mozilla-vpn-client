@@ -299,14 +299,14 @@ Item {
                 id: panelBottomContent
                 spacing: MZTheme.theme.windowMargin
 
-                VPNVerticalSpacer {
+                MZVerticalSpacer {
                     // Pushes panelText and PanelBottomContent to top and bottom of
                     // the wrapping ColumnLayout
                     Layout.fillHeight: true
                     Layout.fillWidth: true
                 }
 
-                VPNInterLabel {
+                MZInterLabel {
                     
                     text: MZI18n.FreeTrialsStartYourFreeTrial
                     color: MZTheme.colors.white80
@@ -371,9 +371,9 @@ Item {
                     }
                 }
 
-                VPNVerticalSpacer {
+                MZVerticalSpacer {
                     id: spacerBottom
-                    Layout.preferredHeight: Math.min(window.height * 0.08, VPNTheme.theme.rowHeight)
+                    Layout.preferredHeight: Math.min(window.height * 0.08, MZTheme.theme.rowHeight)
                 }
             }
         }
