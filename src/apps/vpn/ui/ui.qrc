@@ -44,6 +44,8 @@
         <file>screens/home/controller/ControllerImage.qml</file>
         <file>screens/home/controller/ControllerNav.qml</file>
         <file>screens/home/controller/ControllerView.qml</file>
+        <file>screens/home/controller/ip/IPAddress.qml</file>
+        <file>screens/home/controller/ip/IPInfoPanel.qml</file>
         <file>screens/home/controller/qmldir</file>
         <file>screens/home/qmldir</file>
         <file>screens/home/ViewHome.qml</file>

@@ -608,7 +608,7 @@ Item {
         Accessible.ignored: connectionInfoScreenVisible || ipInfoPanel.isOpen
     }
 
-    MZIPInfoPanel {
+    IPInfoPanel {
         id: ipInfoPanel
         objectName: "ipInfoPanel"
 

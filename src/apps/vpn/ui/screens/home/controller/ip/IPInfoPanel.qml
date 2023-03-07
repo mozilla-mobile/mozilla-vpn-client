@@ -7,6 +7,7 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
+import components 0.1
 
 Rectangle {
     property bool isOpen: false
@@ -38,7 +39,7 @@ Rectangle {
             Layout.fillWidth: true
         }
 
-        MZIPAddress {
+        IPAddress {
             id: ipv4Address
 
             // Exit IP:
@@ -55,7 +56,7 @@ Rectangle {
             Layout.fillWidth: true
         }
 
-        MZIPAddress {
+        IPAddress {
             id: ipv6Address
 
             // Exit IPv6:

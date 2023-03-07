@@ -34,8 +34,6 @@ MZIcon 0.1 MZIcon.qml
 MZIconAndLabel 0.1 MZIconAndLabel.qml
 MZIconButton 0.1 MZIconButton.qml
 MZInterLabel 0.1 MZInterLabel.qml
-MZIPAddress 0.1 MZIPAddress.qml
-MZIPInfoPanel 0.1 MZIPInfoPanel.qml
 MZLightLabel 0.1 MZLightLabel.qml
 MZLinkButton 0.1 MZLinkButton.qml
 MZList 0.1 MZList.qml

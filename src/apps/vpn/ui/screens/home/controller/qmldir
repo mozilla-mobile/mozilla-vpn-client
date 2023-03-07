@@ -4,4 +4,6 @@ ConnectionInfoContent 0.1 connectionInfo/ConnectionInfoContent.qml
 ConnectionInfoError 0.1 connectionInfo/ConnectionInfoError.qml
 ConnectionInfoItem 0.1 connectionInfo/ConnectionInfoItem.qml
 ConnectionInfoScreen 0.1 connectionInfo/ConnectionInfoScreen.qml
+IPAddress 0.1 ip/IPAddress.qml
+IPInfoPanel 0.1 ip/IPInfoPanel.qml
 LogoLoader 0.1 connectionInfo/LogoLoader.qml

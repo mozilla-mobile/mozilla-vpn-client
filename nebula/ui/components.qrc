@@ -46,8 +46,6 @@
         <file>components/MZIconButton.qml</file>
         <file>components/MZIcon.qml</file>
         <file>components/MZInterLabel.qml</file>
-        <file>components/MZIPAddress.qml</file>
-        <file>components/MZIPInfoPanel.qml</file>
         <file>components/MZLightLabel.qml</file>
         <file>components/MZLinkButton.qml</file>
         <file>components/MZList.qml</file>
