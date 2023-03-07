@@ -4,7 +4,6 @@
 
 #include "platforms/wasm/wasmiaphandler.h"
 
-#include <QCoreApplication>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
@@ -116,4 +115,5 @@ void WasmIAPHandler::nativeStartSubscription(
 
 void WasmIAPHandler::nativeRestoreSubscription() {
   logger.error() << "Restore not possible on Wasm (yet?)!!!";
+  emit subscriptionFailed();
 }

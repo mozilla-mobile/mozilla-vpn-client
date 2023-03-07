@@ -12,12 +12,9 @@
 #include "tasks/purchase/taskpurchase.h"
 #include "taskscheduler.h"
 
-#include <QCoreApplication>
-#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QScopeGuard>
 
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>

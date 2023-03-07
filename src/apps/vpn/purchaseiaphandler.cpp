@@ -4,8 +4,6 @@
 
 #include "purchaseiaphandler.h"
 
-#include "feature.h"
-#include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -54,11 +52,5 @@ void PurchaseIAPHandler::startSubscription(const QString& productIdentifier) {
 
 void PurchaseIAPHandler::startRestoreSubscription() {
   logger.debug() << "Starting the restore of the subscription";
-
-#ifdef MZ_IOS
   nativeRestoreSubscription();
-#else
-  logger.error() << "Restore not implemented!";
-  emit subscriptionFailed();
-#endif
 }
